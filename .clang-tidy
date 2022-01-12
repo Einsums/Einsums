@@ -1,0 +1,1 @@
+Checks: '-*,performance-*,misc-*,-misc-non-private-member-variables-in-classes,modernize-*,bugprone-*,-bugprone-reserved-identifier'
