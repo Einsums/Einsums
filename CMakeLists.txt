@@ -51,3 +51,6 @@ find_package(BLAS REQUIRED)
 find_package(LAPACK REQUIRED)
 
 add_subdirectory(external)
+add_subdirectory(src)
+
+add_subdirectory(tests)

@@ -1,0 +1,18 @@
+add_library(EinsumsInCpp
+    Blas.cpp
+    Print.cpp
+    Timer.cpp
+)
+target_link_libraries(EinsumsInCpp
+    PUBLIC
+        project-options
+        LAPACK::LAPACK
+        BLAS::BLAS
+        range-v3::range-v3
+        fmt::fmt
+        h5cpp::h5cpp
+)
+target_include_directories(EinsumsInCpp
+    PUBLIC
+        include
+)
