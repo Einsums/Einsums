@@ -7,3 +7,4 @@ target_include_directories(h5cpp INTERFACE .)
 find_package(HDF5 REQUIRED COMPONENTS CXX)
 
 target_link_libraries(h5cpp INTERFACE HDF5::HDF5)
+add_library(h5cpp::h5cpp ALIAS h5cpp)
