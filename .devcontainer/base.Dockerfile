@@ -61,5 +61,10 @@ RUN apt-get autoremove -y \
 
 # Switch back to dialog for any ad-hoc use of apt-get
 ENV DEBIAN_FRONTEND=dialog
+ENV LD_LIBRARY_PATH=/opt/intel/oneapi/mkl/latest/lib/intel64
+ENV LIBRARY_PATH=/opt/intel/oneapi/mkl/latest/lib/intel64
+ENV CPATH=/opt/intel/oneapi/mkl/latest/include
+ENV MKLROOT=/opt/intel/oneapi/mkl/latest
+ENV NLSPATH=/opt/intel/oneapi/mkl/latest/lib/intel64/locale/%l_%t/%N
 
 USER vscode
