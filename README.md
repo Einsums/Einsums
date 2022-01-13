@@ -41,7 +41,7 @@ void build_Fock_2e_einsum(Tensor<2> *F,
 }
 ```
 
-![einsum Performance](images/Performance.png)
+![einsum Performance](/images/Performance.png)
 
 W Intermediates in CCD
 ```C++
