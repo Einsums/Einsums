@@ -1,6 +1,7 @@
 add_library(EinsumsInCpp
     Blas.cpp
     Print.cpp
+    State.cpp
     Timer.cpp
 )
 target_link_libraries(EinsumsInCpp

@@ -33,7 +33,7 @@ extern void FC_GLOBAL(daxpy, DAXPY)(int *, double *, const double *, int *, doub
 extern void FC_GLOBAL(dger, DGER)(int *, int *, double *, const double *, int *, const double *, int *, double *, int *);
 }
 
-namespace Orb::Blas {
+namespace EinsumsInCpp::Blas {
 
 void dgemm(char transa, char transb, int m, int n, int k, double alpha, const double *a, int lda, const double *b, int ldb, double beta,
            double *c, int ldc) {
@@ -50,7 +50,7 @@ void dgemv(char transa, int m, int n, double alpha, const double *a, int lda, co
     else if (transa == 'T' || transa == 't')
         transa = 'N';
     else
-        throw std::invalid_argument("Orb::Blas::dgemv transa argument is invalid.");
+        throw std::invalid_argument("EinsumsInCpp::Blas::dgemv transa argument is invalid.");
 
     FC_GLOBAL(dgemv, DGEMV)(&transa, &n, &m, &alpha, a, &lda, x, &incx, &beta, y, &incy);
 }
@@ -79,4 +79,4 @@ void dger(int m, int n, double alpha, const double *x, int inc_x, const double *
     FC_GLOBAL(dger, DGER)(&m, &n, &alpha, x, &inc_x, y, &inc_y, a, &lda);
 }
 
-} // namespace Orb::Blas
+} // namespace EinsumsInCpp::Blas

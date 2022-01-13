@@ -1,356 +1,241 @@
 #pragma once
 
-#include "EinsumsInCpp/Print.hpp"
+#include "Blas.hpp"
+#include "STL.hpp"
+#include "Tensor.hpp"
+#include "Timer.hpp"
 
-#include <functional>
-#include <iterator>
-#include <mutex>
-#include <tuple>
+#include <algorithm>
+#include <cmath>
+#include <cstddef>
+#include <limits>
+#include <stdexcept>
 #include <type_traits>
-#include <utility>
 
-namespace EinsumsInCpp {
+namespace EinsumsInCpp::LinearAlgebra {
 
-namespace Arguments {
+template <bool TransA, bool TransB, typename AType, typename BType, typename CType>
+auto gemm(const double alpha, const AType &A, const BType &B, const double beta, CType *C) ->
+    typename std::enable_if_t<is_incore_rank_tensor_v<AType, 2> && is_incore_rank_tensor_v<BType, 2> && is_incore_rank_tensor_v<CType, 2>> {
+    auto m = C->dim(0), n = C->dim(1), k = TransA ? A.dim(0) : A.dim(1);
+    auto lda = A.stride(0), ldb = B.stride(0), ldc = C->stride(0);
 
-namespace Detail {
-
-// declaration
-template <class SearchPattern, int Position, int Count, bool Branch, class PrevHead, class Arguments>
-struct TuplePosition;
-// initialization case
-template <class S, int P, int C, bool B, class not_used, class... Tail>
-struct TuplePosition<S, P, C, B, not_used, std::tuple<Tail...>> : TuplePosition<S, P, C, false, not_used, std::tuple<Tail...>> {};
-// recursive case
-template <class S, int P, int C, class not_used, class Head, class... Tail>
-struct TuplePosition<S, P, C, false, not_used, std::tuple<Head, Tail...>>
-    : TuplePosition<S, P + 1, C, std::is_convertible<Head, S>::value, Head, std::tuple<Tail...>> {};
-// match case
-template <class S, int P, int C, class Type, class... Tail>
-struct TuplePosition<S, P, C, true, Type, std::tuple<Tail...>> : std::integral_constant<int, P> {
-    using type = Type;
-    static constexpr bool present = true;
-};
-// default case
-template <class S, class H, int P, int C>
-struct TuplePosition<S, P, C, false, H, std::tuple<>> : std::integral_constant<int, -1> {
-    static constexpr bool present = false;
-};
-
-} // namespace Detail
-
-template <typename SearchPattern, typename... Args>
-struct TuplePosition : Detail::TuplePosition<const SearchPattern &, -1, 0, false, void, std::tuple<Args...>> {};
-
-template <typename SearchPattern, typename... Args,
-          typename Idx = TuplePosition<const SearchPattern &, const Args &..., const SearchPattern &>>
-auto get(const SearchPattern &definition, Args &&...args) -> typename Idx::type & {
-    auto tuple = std::forward_as_tuple(args..., definition);
-    return std::get<Idx::value>(tuple);
+    Timer::push("gemm");
+    Blas::dgemm(TransA ? 't' : 'n', TransB ? 't' : 'n', m, n, k, alpha, A.data(), lda, B.data(), ldb, beta, C->data(), ldc);
+    Timer::pop();
 }
 
-template <typename SearchPattern, typename... Args>
-auto get(Args &&...args) -> SearchPattern & {
-    auto tuple = std::forward_as_tuple(args...);
-    return std::get<SearchPattern>(tuple);
+/**
+ * @brief Version of gemm that returns a new tensor object.
+ *
+ * @tparam TransA
+ * @tparam TransB
+ * @tparam AType
+ * @tparam BType
+ * @param alpha
+ * @param A
+ * @param B
+ * @param beta
+ *
+ * @return std::enable_if_t<std::is_base_of_v<Detail::TensorBase<2, double>, AType> &&
+ * std::is_base_of_v<Detail::TensorBase<2, double>, BType>,
+ * Tensor<2, double>>
+ *
+ */
+template <bool TransA, bool TransB, typename AType, typename BType>
+auto gemm(const double alpha, const AType &A, const BType &B) ->
+    typename std::enable_if_t<is_incore_rank_tensor_v<AType, 2> && is_incore_rank_tensor_v<BType, 2>, Tensor<2, double>> {
+    Tensor<2, double> C{"gemm result", TransA ? A.dim(1) : A.dim(0), TransB ? B.dim(1) : B.dim(0)};
+
+    gemm<TransA, TransB>(alpha, A, B, 0.0, &C);
+
+    return C;
 }
 
-template <int Idx, typename... Args>
-auto getn(Args &&...args) -> typename std::tuple_element<Idx, std::tuple<Args...>>::type & {
-    auto tuple = std::forward_as_tuple(args...);
-    return std::get<Idx>(tuple);
+template <bool TransA, typename AType, typename XType, typename YType>
+auto gemv(const double alpha, const AType &A, const XType &x, const double beta, YType *y) ->
+    typename std::enable_if_t<is_incore_rank_tensor_v<AType, 2> && is_incore_rank_tensor_v<XType, 1> && is_incore_rank_tensor_v<YType, 1>> {
+    auto m = A.dim(0), n = A.dim(1);
+    auto lda = A.stride(0);
+    auto incx = x.stride(0);
+    auto incy = y->stride(0);
+
+    Timer::push("gemv");
+    Blas::dgemv(TransA ? 't' : 'n', m, n, alpha, A.data(), lda, x.data(), incx, beta, y->data(), incy);
+    Timer::pop();
 }
 
-// Does the parameter pack contain at least one of Type
-template <typename T, typename... List>
-struct Contains : std::true_type {};
+template <typename AType, typename WType, bool ComputeEigenvectors = true>
+auto syev(AType *A, WType *W) -> typename std::enable_if_t<is_incore_rank_tensor_v<AType, 2> && is_incore_rank_tensor_v<WType, 1>> {
+    assert(A->dim(0) == A->dim(1));
 
-template <typename T, typename Head, typename... Remaining>
-struct Contains<T, Head, Remaining...> : std::conditional<std::is_same_v<T, Head>, std::true_type, Contains<T, Remaining...>>::type {};
+    auto n = A->dim(0);
+    auto lda = A->stride(0);
+    int lwork = 3 * n;
+    std::vector<double> work(lwork);
 
-template <typename T>
-struct Contains<T> : std::false_type {};
-
-} // namespace Arguments
-
-/// Mimic Python's enumerate.
-template <typename T, typename Iter = decltype(std::begin(std::declval<T>())),
-          typename = decltype(std::end(std::declval<T>()))> // The type of the end isn't needed but we must ensure
-                                                            // it is valid.
-constexpr auto enumerate(T &&iterable) {
-    struct Iterator {
-        std::size_t i;
-        Iter iter;
-
-        auto operator!=(const Iterator &other) const -> bool { return iter != other.iter; }
-        void operator++() {
-            ++i;
-            ++iter;
-        }
-        auto operator*() const { return std::tie(i, *iter); }
-    };
-    struct IterableWrapper {
-        T iterable;
-        auto begin() { return Iterator{0, std::begin(iterable)}; }
-        auto end() { return Iterator{0, std::end(iterable)}; }
-    };
-
-    return IterableWrapper{std::forward<T>(iterable)};
+    Timer::push("syev");
+    Blas::dsyev(ComputeEigenvectors ? 'v' : 'n', 'u', n, A->data(), lda, W->data(), work.data(), lwork);
+    Timer::pop();
 }
 
-namespace Detail {
+template <typename AType, typename BType>
+auto gesv(AType *A, BType *B) -> typename std::enable_if_t<is_incore_rank_tensor_v<AType, 2> && is_incore_rank_tensor_v<BType, 2>, int> {
+    auto n = A->dim(0);
+    auto lda = A->stride(0);
+    auto ldb = B->dim(0);
 
-template <typename T, std::size_t... Is>
-constexpr auto create_array(T value, std::index_sequence<Is...>) -> std::array<T, sizeof...(Is)> {
-    // Cast Is to void to removing unused value warning
-    return {{(static_cast<void>(Is), value)...}};
+    auto nrhs = B->dim(1);
+
+    int lwork = n;
+    std::vector<int> ipiv(lwork);
+
+    Timer::push("gesv");
+    int info = Blas::dgesv(n, nrhs, A->data(), lda, ipiv.data(), B->data(), ldb);
+    Timer::pop();
+    return info;
 }
 
-template <typename T, std::size_t... Is>
-constexpr auto create_tuple(T value, std::index_sequence<Is...>) {
-    return std::tuple{(static_cast<void>(Is), value)...};
+template <typename AType, bool ComputeEigenvectors = true>
+auto syev(const AType &A) ->
+    typename std::enable_if_t<is_incore_rank_tensor_v<AType, 2>, std::tuple<Tensor<2, double>, Tensor<1, double>>> {
+    assert(A.dim(0) == A.dim(1));
+
+    Tensor<2, double> a = A;
+    Tensor<1, double> w{"eigenvalues", A.dim(0)};
+
+    syev<ComputeEigenvectors>(&a, &w);
+
+    return std::make_tuple(a, w);
 }
 
-template <typename T, std::size_t... Is>
-constexpr auto create_tuple_from_array(const T &arr, std::index_sequence<Is...>) {
-    return std::tuple((arr[Is])...);
+template <template <size_t, typename> typename AType, size_t Rank, typename T = double>
+auto scale(double scale, AType<Rank, T> *A) -> typename std::enable_if_t<is_incore_rank_tensor_v<AType<Rank, T>, Rank, double>> {
+    Timer::push("scal");
+    Blas::dscal(A->dim(0) * A->stride(0), scale, A->data(), 1);
+    Timer::pop();
 }
 
-template <typename T, int Position>
-constexpr auto positions_of_type() {
-    return std::make_tuple();
+template <typename AType>
+auto scale_row(size_t row, double scale, AType *A) -> typename std::enable_if_t<is_incore_rank_tensor_v<AType, 2, double>> {
+    Blas::dscal(A->dim(1), scale, A->data(row, 0ul), A->stride(1));
 }
 
-template <typename T, int Position, typename Head, typename... Args>
-constexpr auto positions_of_type() {
-    if constexpr (std::is_convertible_v<Head, T>) {
-        return std::tuple_cat(std::make_tuple(Position), positions_of_type<T, Position + 1, Args...>());
-    } else {
-        return positions_of_type<T, Position + 1, Args...>();
-    }
-}
-} // namespace Detail
-
-template <typename T, typename... Args>
-constexpr auto positions_of_type() {
-    return Detail::positions_of_type<T, 0, Args...>();
+template <typename AType>
+auto scale_column(size_t col, double scale, AType *A) -> typename std::enable_if_t<is_incore_rank_tensor_v<AType, 2, double>> {
+    Blas::dscal(A->dim(0), scale, A->data(0ul, col), A->stride(0));
 }
 
-template <typename T, typename... Args>
-constexpr auto count_of_type(/*Args... args*/) {
-    // return (std::is_same_v<Args, T> + ... + 0);
-    return (std::is_convertible_v<Args, T> + ... + 0);
-}
+/**
+ * @brief Computes the matrix power of a to alpha.  Return a new tensor, does not destroy a.
+ *
+ * @tparam AType
+ * @param a Matrix to take power of
+ * @param alpha The power to take
+ * @param cutoff Values below cutoff are considered zero.
+ *
+ * @return std::enable_if_t<std::is_base_of_v<Detail::TensorBase<2, double>, AType>, AType>
+ *
+ */
+template <typename AType>
+auto pow(const AType &a, double alpha, double cutoff = std::numeric_limits<double>::epsilon()) ->
+    typename std::enable_if_t<is_incore_rank_tensor_v<AType, 2>, AType> {
+    assert(a.dim(0) == a.dim(1));
 
-template <size_t N, typename T>
-constexpr auto create_array(const T &value) -> std::array<T, N> {
-    return Detail::create_array(value, std::make_index_sequence<N>());
-}
+    size_t n = a.dim(0);
+    Tensor<2> a1 = a;
+    Tensor<2> result{"pow result", a.dim(0), a.dim(1)};
+    Tensor<1> e{"e", n};
 
-template <size_t N, typename T>
-constexpr auto create_tuple(const T &value) {
-    return Detail::create_tuple(value, std::make_index_sequence<N>());
-}
+    // Diagonalize
+    syev(&a1, &e);
 
-template <size_t N, typename T>
-constexpr auto create_tuple_from_array(const T &arr) {
-    return Detail::create_tuple_from_array(arr, std::make_index_sequence<N>());
-}
+    Tensor<2> a2 = a1;
 
-template <typename Result, typename Tuple>
-constexpr auto get_array_from_tuple(Tuple &&tuple) -> Result {
-    constexpr auto get_array = [](auto &&...x) { return Result{std::forward<decltype(x)>(x)...}; };
-    return std::apply(get_array, std::forward<Tuple>(tuple));
-}
+    // Determine the largest magnitude of the eigenvalues to use as a scaling factor for the cutoff.
+    double max_e = std::fabs(e(n - 1)) > std::fabs(e(0)) ? std::fabs(e(n - 1)) : std::fabs(e(0));
 
-template <class Tuple, class F, std::size_t... I>
-constexpr auto for_each_impl(Tuple &&t, F &&f, std::index_sequence<I...>) -> F {
-    return (void)std::initializer_list<int>{(std::forward<F>(f)(std::get<I>(std::forward<Tuple>(t))), 0)...}, f;
-}
-
-template <class Tuple, class F>
-constexpr auto for_each(Tuple &&t, F &&f) -> F {
-    return for_each_impl(std::forward<Tuple>(t), std::forward<F>(f),
-                         std::make_index_sequence<std::tuple_size<std::remove_reference_t<Tuple>>::value>{});
-}
-
-template <typename ReturnType, typename Tuple>
-inline auto get_from_tuple(Tuple &&tuple, size_t index) -> ReturnType {
-    size_t currentIndex = 0;
-    ReturnType returnValue{-1ul};
-
-    for_each(tuple, [index, &currentIndex, &returnValue](auto &&value) {
-        if (currentIndex == index) {
-            // action(std::forward<decltype(value)>(value));
-            if constexpr (std::is_convertible_v<ReturnType, std::remove_reference_t<decltype(value)>>)
-                returnValue = value;
-        }
-        ++currentIndex;
-    });
-    return returnValue;
-}
-
-namespace Detail {
-template <typename T, typename Tuple>
-struct HasType;
-
-template <typename T>
-struct HasType<T, std::tuple<>> : std::false_type {};
-
-template <typename T, typename U, typename... Ts>
-struct HasType<T, std::tuple<U, Ts...>> : HasType<T, std::tuple<Ts...>> {};
-
-template <typename T, typename... Ts>
-struct HasType<T, std::tuple<T, Ts...>> : std::true_type {};
-} // namespace Detail
-
-template <typename S1, typename S2>
-struct intersect {
-    template <std::size_t... Indices>
-    static auto make_intersection(std::index_sequence<Indices...>) {
-
-        return std::tuple_cat(std::conditional_t<Detail::HasType<std::decay_t<std::tuple_element_t<Indices, S1>>, std::decay_t<S2>>::value,
-                                                 std::tuple<std::tuple_element_t<Indices, S1>>, std::tuple<>>{}...);
-    }
-    using type = decltype(make_intersection(std::make_index_sequence<std::tuple_size<S1>::value>{}));
-};
-
-template <typename S1, typename S2>
-using intersect_t = typename intersect<S1, S2>::type;
-
-template <typename S1, typename S2>
-struct difference {
-    template <std::size_t... Indices>
-    static auto make_difference(std::index_sequence<Indices...>) {
-
-        return std::tuple_cat(std::conditional_t<Detail::HasType<std::decay_t<std::tuple_element_t<Indices, S1>>, std::decay_t<S2>>::value,
-                                                 std::tuple<>, std::tuple<std::tuple_element_t<Indices, S1>>>{}...);
-    }
-    using type = decltype(make_difference(std::make_index_sequence<std::tuple_size<S1>::value>{}));
-};
-
-template <typename S1, typename S2>
-using difference_t = typename difference<S1, S2>::type;
-
-template <class Haystack, class Needle>
-struct contains;
-
-template <class Car, class... Cdr, class Needle>
-struct contains<std::tuple<Car, Cdr...>, Needle> : contains<std::tuple<Cdr...>, Needle> {};
-
-template <class... Cdr, class Needle>
-struct contains<std::tuple<Needle, Cdr...>, Needle> : std::true_type {};
-
-template <class Needle>
-struct contains<std::tuple<>, Needle> : std::false_type {};
-
-template <class Out, class In>
-struct filter;
-
-template <class... Out, class InCar, class... InCdr>
-struct filter<std::tuple<Out...>, std::tuple<InCar, InCdr...>> {
-    using type = typename std::conditional<contains<std::tuple<Out...>, InCar>::value,
-                                           typename filter<std::tuple<Out...>, std::tuple<InCdr...>>::type,
-                                           typename filter<std::tuple<Out..., InCar>, std::tuple<InCdr...>>::type>::type;
-};
-
-template <class Out>
-struct filter<Out, std::tuple<>> {
-    using type = Out;
-};
-
-template <class T>
-using unique_t = typename filter<std::tuple<>, T>::type;
-
-// template <class T>
-// using c_unique_t = typename filter<std::tuple<>, const T>::type;
-template <class T>
-struct c_unique {
-    using type = unique_t<std::decay_t<T>>;
-};
-template <class T>
-using c_unique_t = typename c_unique<T>::type;
-
-template <size_t Rank, typename T>
-struct Tensor;
-
-template <size_t Rank, typename T>
-struct TensorView;
-
-template <size_t Rank, typename T>
-struct DiskTensor;
-
-template <size_t ViewRank, size_t Rank, typename T>
-struct DiskView;
-
-template <typename D, size_t Rank, typename T = double>
-struct is_incore_rank_tensor
-    : public std::bool_constant<std::is_same_v<std::decay_t<D>, Tensor<Rank, T>> || std::is_same_v<std::decay_t<D>, TensorView<Rank, T>>> {
-};
-template <typename D, size_t Rank, typename T = double>
-inline constexpr bool is_incore_rank_tensor_v = is_incore_rank_tensor<D, Rank, T>::value;
-
-template <typename D, size_t Rank, size_t ViewRank = Rank, typename T = double>
-struct is_ondisk_tensor
-    : public std::bool_constant<std::is_same_v<D, DiskTensor<Rank, T>> || std::is_same_v<D, DiskView<ViewRank, Rank, T>>> {};
-template <typename D, size_t Rank, size_t ViewRank = Rank, typename T = double>
-inline constexpr bool is_ondisk_tensor_v = is_ondisk_tensor<D, Rank, ViewRank, T>::value;
-
-template <typename T>
-struct CircularBuffer {
-    explicit CircularBuffer(size_t size) : _buffer(std::unique_ptr<T[]>(new T[size])), _max_size(size) {}
-
-    void put(T item) {
-        std::lock_guard<std::mutex> lock(_mutex);
-
-        _buffer[_head] = item;
-
-        if (_full) {
-            _tail = (_tail + 1) % _max_size;
-        }
-
-        _head = (_head + 1) % _max_size;
-
-        _full = _head == _tail;
-    }
-
-    void reset() {
-        std::lock_guard<std::mutex> lock(_mutex);
-        _head = _tail;
-        _full = false;
-    }
-
-    [[nodiscard]] auto empty() const -> bool { return (!_full && (_head == _tail)); }
-
-    [[nodiscard]] auto full() const -> bool { return _full; }
-
-    [[nodiscard]] auto capacity() const -> size_t { return _max_size; }
-
-    [[nodiscard]] auto size() const -> size_t {
-        size_t size = _max_size;
-
-        if (!_full) {
-            if (_head >= _tail) {
-                size = _head - _tail;
-            } else {
-                size = _max_size + _head - _tail;
+    for (size_t i = 0; i < n; i++) {
+        if (alpha < 0.0 && std::fabs(e(i)) < cutoff * max_e) {
+            e(i) = 0.0;
+        } else {
+            e(i) = std::pow(e(i), alpha);
+            if (!std::isfinite(e(i))) {
+                e(i) = 0.0;
             }
         }
 
-        return size;
+        scale_row(i, e(i), &a2);
     }
 
-    auto operator[](int element) const -> const T & { return _buffer[element]; }
+    gemm<true, false>(1.0, a2, a1, 0.0, &result);
 
-  private:
-    std::unique_ptr<T[]> _buffer;
-    const size_t _max_size;
+    return result;
+}
 
-    std::mutex _mutex;
+template <template <size_t, typename> typename Type>
+auto dot(const Type<1, double> &A, const Type<1, double> &B) ->
+    typename std::enable_if_t<std::is_base_of_v<Detail::TensorBase<1, double>, Type<1, double>>, double> {
+    assert(A.dim(0) == B.dim(0));
 
-    size_t _head{0};
-    size_t _tail{0};
-    bool _full{false};
-};
+    Timer::push("dot");
+    auto result = Blas::ddot(A.dim(0), A.data(), A.stride(0), B.data(), B.stride(0));
+    Timer::pop();
+    return result;
+}
 
-} // namespace EinsumsInCpp
+template <template <size_t, typename> typename Type, size_t Rank>
+auto dot(const Type<Rank, double> &A, const Type<Rank, double> &B) ->
+    typename std::enable_if_t<std::is_base_of_v<Detail::TensorBase<Rank, double>, Type<Rank, double>>, double> {
+    Dim<1> dim{1};
+
+    for (size_t i = 0; i < Rank; i++) {
+        assert(A.dim(i) == B.dim(i));
+        dim[0] *= A.dim(i);
+    }
+
+    return dot(TensorView<1>(const_cast<Type<Rank, double> &>(A), dim), TensorView<1>(const_cast<Type<Rank, double> &>(B), dim));
+}
+
+template <template <size_t, typename> typename Type, size_t Rank>
+auto dot(const Type<Rank, double> &A, const Type<Rank, double> &B, const Type<Rank, double> &C) ->
+    typename std::enable_if_t<std::is_base_of_v<Detail::TensorBase<Rank, double>, Type<Rank, double>>, double> {
+    Dim<1> dim{1};
+
+    for (size_t i = 0; i < Rank; i++) {
+        assert(A.dim(i) == B.dim(i) && A.dim(i) == C.dim(i));
+        dim[0] *= A.dim(i);
+    }
+
+    auto vA = TensorView<1>(const_cast<Type<Rank, double> &>(A), dim);
+    auto vB = TensorView<1>(const_cast<Type<Rank, double> &>(B), dim);
+    auto vC = TensorView<1>(const_cast<Type<Rank, double> &>(C), dim);
+
+    Timer::push("dot3");
+    double result = 0.0;
+#pragma omp parallel for reduction(+ : result)
+    for (size_t i = 0; i < dim[0]; i++) {
+        result += vA(i) * vB(i) * vC(i);
+    }
+    Timer::pop();
+    return result;
+}
+
+template <template <size_t, typename> typename XType, template <size_t, typename> typename YType, size_t Rank>
+auto axpy(double alpha, const XType<Rank, double> &X, YType<Rank, double> *Y)
+    -> std::enable_if_t<is_incore_rank_tensor_v<XType<Rank, double>, Rank, double> &&
+                        is_incore_rank_tensor_v<YType<Rank, double>, Rank, double>> {
+    Timer::push("axpy");
+    Blas::daxpy(X.dim(0) * X.stride(0), alpha, X.data(), 1, Y->data(), 1);
+    Timer::pop();
+}
+
+template <template <size_t, typename> typename XYType, size_t XYRank, template <size_t, typename> typename AType, size_t ARank>
+auto ger(double alpha, const XYType<XYRank, double> &X, const XYType<XYRank, double> &Y, AType<ARank, double> *A)
+    -> std::enable_if_t<is_incore_rank_tensor_v<XYType<XYRank, double>, 2> && is_incore_rank_tensor_v<AType<ARank, double>, 2>, double> {
+    Timer::push("ger");
+    Blas::dger(X.dim(0), Y.dim(0), alpha, X.data(), X.stride(0), Y.data(), Y.stride(0), A->data(), A->stride(0));
+    Timer::pop();
+}
+
+} // namespace EinsumsInCpp::LinearAlgebra

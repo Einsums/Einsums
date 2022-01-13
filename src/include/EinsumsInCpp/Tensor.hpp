@@ -971,7 +971,7 @@ struct DiskTensor final : public Detail::TensorBase<Rank, T> {
 
     [[nodiscard]] auto disk() -> h5::ds_t & { return _disk; }
 
-    void _write(Tensor<Rank, T> &data) { h5::write(disk(), data); }
+    // void _write(Tensor<Rank, T> &data) { h5::write(disk(), data); }
 
     [[nodiscard]] auto name() const -> const std::string & { return _name; }
 

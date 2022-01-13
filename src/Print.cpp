@@ -11,7 +11,7 @@
 #include <thread>
 #include <unistd.h>
 
-namespace Orb {
+namespace EinsumsInCpp {
 
 namespace Print {
 
@@ -91,4 +91,4 @@ void println(const std::string &str) {
 }
 } // namespace Detail
 
-} // namespace Orb
+} // namespace EinsumsInCpp

@@ -1021,7 +1021,7 @@ TEST_CASE("einsum2") {
         LinearAlgebra::gemv<false>(1.0, A, B, 0.0, &C1);
 
         for (size_t i0 = 0; i0 < C0.dim(0); i0++) {
-            REQUIRE(C0(i0) == C1(i0));
+            REQUIRE_THAT(C0(i0), Catch::Matchers::WithinAbs(C1(i0), 0x000001));
         }
     }
 
@@ -1165,7 +1165,7 @@ TEST_CASE("einsum3") {
             for (size_t j0 = 0; j0 < gMO0.dim(1); j0++) {
                 for (size_t k0 = 0; k0 < gMO0.dim(2); k0++) {
                     for (size_t l0 = 0; l0 < gMO0.dim(3); l0++) {
-                        REQUIRE(gMO0(i0, j0, k0, l0) == gMO1(i0, j0, k0, l0));
+                        REQUIRE_THAT(gMO0(i0, j0, k0, l0), Catch::Matchers::WithinAbs(gMO1(i0, j0, k0, l0), 0x000001));
                     }
                 }
             }
@@ -1190,7 +1190,7 @@ TEST_CASE("einsum3") {
             for (size_t j0 = 0; j0 < gMO0.dim(1); j0++) {
                 for (size_t k0 = 0; k0 < gMO0.dim(2); k0++) {
                     for (size_t l0 = 0; l0 < gMO0.dim(3); l0++) {
-                        REQUIRE(gMO0(i0, j0, k0, l0) == gMO1(i0, j0, k0, l0));
+                        REQUIRE_THAT(gMO0(i0, j0, k0, l0), Catch::Matchers::WithinAbs(gMO1(i0, j0, k0, l0), 0x000001));
                     }
                 }
             }
@@ -1207,9 +1207,7 @@ TEST_CASE("einsum3") {
             for (size_t j0 = 0; j0 < gMO0.dim(1); j0++) {
                 for (size_t k0 = 0; k0 < gMO0.dim(2); k0++) {
                     for (size_t l0 = 0; l0 < gMO0.dim(3); l0++) {
-                        // println("i0 %lu j0 %lu k0 %lu l0 %lu, gMO0 %lf, gMO1 %lf", i0, j0, k0, l0, gMO0(i0, j0, k0, l0),
-                        // gMO1(i0, j0, k0, l0));
-                        REQUIRE(gMO0(i0, j0, k0, l0) == gMO1(i0, j0, k0, l0));
+                        REQUIRE_THAT(gMO0(i0, j0, k0, l0), Catch::Matchers::WithinAbs(gMO1(i0, j0, k0, l0), 0x000001));
                     }
                 }
             }
@@ -1251,7 +1249,7 @@ TEST_CASE("einsum4") {
             for (size_t j0 = 0; j0 < gMO0.dim(1); j0++) {
                 for (size_t k0 = 0; k0 < gMO0.dim(2); k0++) {
                     for (size_t l0 = 0; l0 < gMO0.dim(3); l0++) {
-                        REQUIRE(gMO0(i0, j0, k0, l0) == gMO1(i0, j0, k0, l0));
+                        REQUIRE_THAT(gMO0(i0, j0, k0, l0), Catch::Matchers::WithinAbs(gMO1(i0, j0, k0, l0), 0x000001));
                     }
                 }
             }
@@ -1611,7 +1609,7 @@ TEST_CASE("Transpose C", "[einsum]") {
 
         for (size_t i0 = 0; i0 < _i; i0++) {
             for (size_t j0 = 0; j0 < _j; j0++) {
-                REQUIRE(C0(i0, j0) == C(i0, j0));
+                REQUIRE_THAT(C(i0, j0), Catch::Matchers::WithinAbs(C0(i0, j0), 0x000001));
             }
         }
     }
@@ -1637,7 +1635,7 @@ TEST_CASE("Transpose C", "[einsum]") {
 
         for (size_t i0 = 0; i0 < _i; i0++) {
             for (size_t j0 = 0; j0 < _j; j0++) {
-                REQUIRE(C0(i0, j0) == C(i0, j0));
+                REQUIRE_THAT(C(i0, j0), Catch::Matchers::WithinAbs(C0(i0, j0), 0x000001));
             }
         }
     }
@@ -1663,7 +1661,7 @@ TEST_CASE("Transpose C", "[einsum]") {
 
         for (size_t i0 = 0; i0 < _i; i0++) {
             for (size_t j0 = 0; j0 < _j; j0++) {
-                REQUIRE(C0(i0, j0) == C(i0, j0));
+                REQUIRE_THAT(C(i0, j0), Catch::Matchers::WithinAbs(C0(i0, j0), 0x000001));
             }
         }
     }
@@ -1689,7 +1687,7 @@ TEST_CASE("Transpose C", "[einsum]") {
 
         for (size_t i0 = 0; i0 < _i; i0++) {
             for (size_t j0 = 0; j0 < _j; j0++) {
-                REQUIRE(C0(i0, j0) == C(i0, j0));
+                REQUIRE_THAT(C(i0, j0), Catch::Matchers::WithinAbs(C0(i0, j0), 0x000001));
             }
         }
     }
@@ -1723,7 +1721,7 @@ TEST_CASE("Transpose C", "[einsum]") {
             for (size_t n0 = 0; n0 < _n; n0++) {
                 for (size_t i0 = 0; i0 < _i; i0++) {
                     for (size_t j0 = 0; j0 < _j; j0++) {
-                        REQUIRE(W0(m0, n0, i0, j0) == Wmnij(m0, n0, i0, j0));
+                        REQUIRE_THAT(Wmnij(m0, n0, i0, j0), Catch::Matchers::WithinAbs(W0(m0, n0, i0, j0), 0x000001));
                     }
                 }
             }
