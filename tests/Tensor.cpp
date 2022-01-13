@@ -1,11 +1,11 @@
-#include <H5Fpublic.h>
-#include <type_traits>
-#define ORB_TESTING
-#include "EinsumsInCpp/LinearAlgebra.hpp"
-#include "EinsumsInCpp/Print.hpp"
 #include "EinsumsInCpp/Tensor.hpp"
 
+#include "EinsumsInCpp/LinearAlgebra.hpp"
+#include "EinsumsInCpp/Print.hpp"
+
+#include <H5Fpublic.h>
 #include <catch2/catch.hpp>
+#include <type_traits>
 
 TEST_CASE("Tensor creation", "[tensor]") {
     EinsumsInCpp::Tensor<2, double> A("A", 3, 3);

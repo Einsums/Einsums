@@ -5,7 +5,7 @@
 #include <catch2/catch.hpp>
 #include <h5cpp/io>
 
-int main(int argc, char *argv[]) {
+auto main(int argc, char *argv[]) -> int {
     EinsumsInCpp::Timer::initialize();
 
     // Disable HDF5 diagnostic reporting.

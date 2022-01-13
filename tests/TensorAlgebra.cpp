@@ -1,13 +1,12 @@
-#include "EinsumsInCpp/State.hpp"
-
-#include <H5Fpublic.h>
-#include <type_traits>
-#define ORB_TESTING
-#include "EinsumsInCpp/LinearAlgebra.hpp"
-#include "EinsumsInCpp/Tensor.hpp"
 #include "EinsumsInCpp/TensorAlgebra.hpp"
 
+#include "EinsumsInCpp/LinearAlgebra.hpp"
+#include "EinsumsInCpp/State.hpp"
+#include "EinsumsInCpp/Tensor.hpp"
+
+#include <H5Fpublic.h>
 #include <catch2/catch.hpp>
+#include <type_traits>
 
 TEST_CASE("Identity Tensor", "[tensor]") {
     using namespace EinsumsInCpp;
