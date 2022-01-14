@@ -44,12 +44,6 @@ if (EINSUMS_WARN_NOT_IMPLEMENTED)
     )
 endif()
 
-target_compile_options(project-options
-    INTERFACE
-        $<$<CXX_COMPILER_ID:Clang>:-Wno-switch>
-        $<$<CXX_COMPILER_ID:GNU>:-Wno-switch>
-)
-
 # Attempt to find MKL
 # set(BLA_VENDOR Intel10_64_dyn)
 
