@@ -51,7 +51,7 @@ target_compile_options(project-options
 )
 
 # Attempt to find MKL
-set(BLA_VENDOR Intel10_64_dyn)
+# set(BLA_VENDOR Intel10_64_dyn)
 
 find_package(BLAS REQUIRED)
 find_package(LAPACK REQUIRED)
