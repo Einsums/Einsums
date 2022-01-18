@@ -28,7 +28,7 @@ jobs:
 
     - name: Install Dependencies - macOS
       if: ${{ matrix.os == 'macos-latest' }}
-      run: brew install hdf5
+      run: brew install hdf5 cmake
 
     - name: Configure CMake
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
