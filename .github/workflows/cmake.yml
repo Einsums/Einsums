@@ -11,14 +11,24 @@ env:
 
 jobs:
   build:
+    strategy:
+      fail-fast: false
+      matrix:
+        build_type: [ Release, Debug ]
+        os: [ macos-latest, ubuntu-latest ]
     name: Build and Test
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
 
-    - name: Install Dependencies
+    - name: Install Dependencies - Ubuntu
+      if: ${{ matrix.os == 'ubuntu-latest' }}
       run: sudo apt-get install -y liblapack-dev libblas-dev libhdf5-dev
+
+    - name: Install Dependencies - macOS
+      if: ${{ matrix.os == 'macos-latest' }}
+      run: brew install hdf5
 
     - name: Configure CMake
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
