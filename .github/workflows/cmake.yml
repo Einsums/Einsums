@@ -29,7 +29,7 @@ jobs:
     - name: Install Dependencies - macOS
       if: ${{ matrix.os == 'macos-latest' }}
       run: |
-        brew install hdf5 cmake
+        brew install hdf5 cmake zlib
         echo "HDF5_ROOT=$(brew --prefix hdf5)" >> $GITHUB_ENV
 
     - name: Configure CMake
