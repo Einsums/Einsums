@@ -15,7 +15,7 @@ jobs:
       fail-fast: false
       matrix:
         build_type: [ Release, Debug ]
-        os: [ macos-latest, ubuntu-latest ]
+        os: [ ubuntu-latest ]
     name: Build and Test
     runs-on: ubuntu-latest
 
