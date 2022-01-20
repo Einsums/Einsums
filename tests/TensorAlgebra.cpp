@@ -594,6 +594,20 @@ TEST_CASE("sort2") {
                 REQUIRE(C(i, j) == A(i, j));
             }
         }
+
+        TensorView<2> A_view{A, Dim<2>{2, 2}, Offset<2>{1, 1}};
+        TensorView<2> C_view{C, Dim<2>{2, 2}, Offset<2>{1, 1}};
+
+        sort(Indices{j, i}, &C_view, Indices{i, j}, A_view);
+
+        for (int i = 0, ij = 1; i < 3; i++) {
+            for (int j = 0; j < 3; j++, ij++) {
+                if (i == 0 || j == 0)
+                    REQUIRE(C(i, j) == A(i, j));
+                else
+                    REQUIRE(C(j, i) == A(i, j));
+            }
+        }
     }
 
     SECTION("Rank 2 - axpy (2)") {
@@ -797,186 +811,10 @@ TEST_CASE("sort2") {
     }
 }
 
-#if 0
-TEST_CASE("sort") {
-    using namespace EinsumsInCpp;
-    using namespace EinsumsInCpp::TensorAlgebra;
-
-    SECTION("Rank 2") {
-        Tensor<2> A{"A", 3, 3};
-        Tensor<2> C{"C", 3, 3};
-
-        for (int i = 0, ij = 1; i < 3; i++) {
-            for (int j = 0; j < 3; j++, ij++) {
-                A(i, j) = ij;
-            }
-        }
-
-        sort("ji=ij", &C, A);
-
-        // println(A);
-        // println(C);
-
-        for (int i = 0, ij = 1; i < 3; i++) {
-            for (int j = 0; j < 3; j++, ij++) {
-                REQUIRE(C(j, i) == A(i, j));
-            }
-        }
-    }
-
-    SECTION("Rank 3") {
-        Tensor<3> A{"A", 3, 3, 3};
-        Tensor<3> B{"B", 3, 3, 3};
-
-        for (int i = 0, ij = 1; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                for (int k = 0; k < 3; k++, ij++) {
-                    A(i, j, k) = ij;
-                }
-            }
-        }
-
-        sort("kji=ijk", &B, A);
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                for (int k = 0; k < 3; k++) {
-                    REQUIRE(B(k, j, i) == A(i, j, k));
-                }
-            }
-        }
-
-        sort("ikj=ijk", &B, A);
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                for (int k = 0; k < 3; k++) {
-                    REQUIRE(B(i, k, j) == A(i, j, k));
-                }
-            }
-        }
-
-        sort("jki=ijk", &B, A);
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                for (int k = 0; k < 3; k++) {
-                    REQUIRE(B(j, k, i) == A(i, j, k));
-                }
-            }
-        }
-
-        sort("ijk=kji", &B, A);
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                for (int k = 0; k < 3; k++) {
-                    REQUIRE(B(i, j, k) == A(k, j, i));
-                }
-            }
-        }
-    }
-
-    SECTION("Rank 4") {
-        Tensor<4> A{"A", 3, 3, 3, 3};
-        Tensor<4> B{"B", 3, 3, 3, 3};
-
-        for (int i = 0, ij = 1; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                for (int k = 0; k < 3; k++) {
-                    for (int l = 0; l < 3; l++, ij++) {
-                        A(i, j, k, l) = ij;
-                    }
-                }
-            }
-        }
-
-        sort("ilkj=kjli", &B, A);
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                for (int k = 0; k < 3; k++) {
-                    for (int l = 0; l < 3; l++) {
-                        REQUIRE(B(i, l, k, j) == A(k, j, l, i));
-                    }
-                }
-            }
-        }
-    }
-
-    SECTION("Rank 5") {
-        Tensor<5, float> A{"A", 3, 3, 3, 3, 3};
-        Tensor<5, float> B{"B", 3, 3, 3, 3, 3};
-
-        for (short i = 0, ij = 1; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                for (int k = 0; k < 3; k++) {
-                    for (int l = 0; l < 3; l++) {
-                        for (int m = 0; m < 3; m++, ij++) {
-                            A(i, j, k, l, m) = ij;
-                        }
-                    }
-                }
-            }
-        }
-
-        sort("iklmj=jklmi", &B, A);
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                for (int k = 0; k < 3; k++) {
-                    for (int l = 0; l < 3; l++) {
-                        for (int m = 0; m < 3; m++) {
-                            REQUIRE(B(i, k, l, m, j) == A(j, k, l, m, i));
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    SECTION("Rank 2 - Different Sizes") {
-        Tensor<2> A{"A", 3, 9};
-        Tensor<2> B{"B", 9, 3};
-
-        for (int i = 0, ij = 0; i < A.dim(0); i++) {
-            for (int j = 0; j < A.dim(1); j++, ij++) {
-                A(i, j) = ij;
-            }
-        }
-
-        sort("ji=ij", &B, A);
-        for (int i = 0; i < A.dim(0); i++) {
-            for (int j = 0; j < A.dim(1); j++) {
-                REQUIRE(B(j, i) == A(i, j));
-            }
-        }
-    }
-
-    SECTION("Rank 3 - Different Sizes") {
-        Tensor<3> A{"A", 2, 3, 4};
-        Tensor<3> B{"B", 3, 4, 2};
-
-        for (int i = 0, ij = 1; i < A.dim(0); i++) {
-            for (int j = 0; j < A.dim(1); j++) {
-                for (int k = 0; k < A.dim(2); k++, ij++) {
-                    A(i, j, k) = ij;
-                }
-            }
-        }
-
-        sort("jki=ijk", &B, A);
-        for (int i = 0, ij = 1; i < A.dim(0); i++) {
-            for (int j = 0; j < A.dim(1); j++) {
-                for (int k = 0; k < A.dim(2); k++, ij++) {
-                    REQUIRE(B(j, k, i) == A(i, j, k));
-                }
-            }
-        }
-    }
-}
-#endif
-
 TEST_CASE("einsum2") {
     using namespace EinsumsInCpp;
     using namespace TensorAlgebra;
     using namespace TensorAlgebra::Index;
-
-    // Timer::initialize();
 
     SECTION("3x3 <- 3x5 * 5x3") {
         Tensor<2> C0{"C0", 3, 3};
