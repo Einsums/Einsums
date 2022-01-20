@@ -49,6 +49,7 @@ endif()
 
 find_package(BLAS REQUIRED)
 find_package(LAPACK REQUIRED)
+find_package(OpenMP)
 
 add_subdirectory(external)
 add_subdirectory(src)
