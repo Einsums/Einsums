@@ -1,0 +1,30 @@
+#include "EinsumsInCpp/Print.hpp"
+#include "EinsumsInCpp/STL.hpp"
+
+#include <cassert>
+#include <cstdlib>
+
+namespace EinsumsInCpp::Detail {
+
+auto allocate_aligned_memory(size_t align, size_t size) -> void * {
+    assert(align >= sizeof(void *));
+    assert(align && !(align & (align - 1))); // Align should be a power of 2 but disallow 0.
+
+    if (size == 0) {
+        return nullptr;
+    }
+
+    void *ptr{nullptr};
+    int rc = posix_memalign(&ptr, align, size);
+
+    if (rc != 0) {
+        println("posix_memalign returned non-zero!");
+        return nullptr;
+    }
+
+    return ptr;
+}
+
+void deallocate_aligned_memory(void *ptr) noexcept { return free(ptr); }
+
+} // namespace EinsumsInCpp::Detail

@@ -1,5 +1,6 @@
 add_library(EinsumsInCpp
     Blas.cpp
+    Memory.cpp
     Print.cpp
     State.cpp
     Timer.cpp

@@ -2,6 +2,7 @@
 
 #include "EinsumsInCpp/LinearAlgebra.hpp"
 #include "EinsumsInCpp/Print.hpp"
+#include "EinsumsInCpp/STL.hpp"
 
 #include <H5Fpublic.h>
 #include <catch2/catch.hpp>
@@ -16,27 +17,33 @@ TEST_CASE("Tensor creation", "[tensor]") {
     REQUIRE((B.dim(0) == 3 && B.dim(1) == 3));
     REQUIRE((C.dim(0) == 3 && C.dim(1) == 3));
 
-    CHECK_THAT(A.vector_data(), Catch::Matchers::Equals<double>({0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}));
-    CHECK_THAT(B.vector_data(), Catch::Matchers::Equals<double>({0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}));
-    CHECK_THAT(C.vector_data(), Catch::Matchers::Equals<double>({0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}));
+    CHECK_THAT(A.vector_data(), Catch::Matchers::Equals(std::vector<double, EinsumsInCpp::AlignedAllocator<double, 64>>{
+                                    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}));
+    CHECK_THAT(B.vector_data(), Catch::Matchers::Equals(std::vector<double, EinsumsInCpp::AlignedAllocator<double, 64>>{
+                                    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}));
+    CHECK_THAT(C.vector_data(), Catch::Matchers::Equals(std::vector<double, EinsumsInCpp::AlignedAllocator<double, 64>>{
+                                    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}));
 
     // Set A and B to identity
     A(0, 0) = 1.0;
     A(1, 1) = 1.0;
     A(2, 2) = 1.0;
 
-    CHECK_THAT(A.vector_data(), Catch::Matchers::Equals<double>({1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0}));
+    CHECK_THAT(A.vector_data(), Catch::Matchers::Equals(std::vector<double, EinsumsInCpp::AlignedAllocator<double, 64>>{
+                                    1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0}));
 
     B(0, 0) = 1.0;
     B(1, 1) = 1.0;
     B(2, 2) = 1.0;
 
-    CHECK_THAT(B.vector_data(), Catch::Matchers::Equals<double>({1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0}));
+    CHECK_THAT(B.vector_data(), Catch::Matchers::Equals(std::vector<double, EinsumsInCpp::AlignedAllocator<double, 64>>{
+                                    1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0}));
 
     // Perform basic matrix multiplication
     EinsumsInCpp::LinearAlgebra::gemm<false, false>(1.0, A, B, 0.0, &C);
 
-    CHECK_THAT(C.vector_data(), Catch::Matchers::Equals<double>({1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0}));
+    CHECK_THAT(C.vector_data(), Catch::Matchers::Equals(std::vector<double, EinsumsInCpp::AlignedAllocator<double, 64>>{
+                                    1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0}));
 }
 
 TEST_CASE("Tensor GEMMs", "[tensor]") {
@@ -48,20 +55,24 @@ TEST_CASE("Tensor GEMMs", "[tensor]") {
     REQUIRE((B.dim(0) == 3 && B.dim(1) == 3));
     REQUIRE((C.dim(0) == 3 && C.dim(1) == 3));
 
-    A.vector_data() = std::vector<double>{1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
-    B.vector_data() = std::vector<double>{11.0, 22.0, 33.0, 44.0, 55.0, 66.0, 77.0, 88.0, 99.0};
+    A.vector_data() = std::vector<double, EinsumsInCpp::AlignedAllocator<double, 64>>{1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
+    B.vector_data() = std::vector<double, EinsumsInCpp::AlignedAllocator<double, 64>>{11.0, 22.0, 33.0, 44.0, 55.0, 66.0, 77.0, 88.0, 99.0};
 
     EinsumsInCpp::LinearAlgebra::gemm<false, false>(1.0, A, B, 0.0, &C);
-    CHECK_THAT(C.vector_data(), Catch::Matchers::Equals<double>({330.0, 396.0, 462.0, 726.0, 891.0, 1056.0, 1122.0, 1386.0, 1650.0}));
+    CHECK_THAT(C.vector_data(), Catch::Matchers::Equals(std::vector<double, EinsumsInCpp::AlignedAllocator<double, 64>>{
+                                    330.0, 396.0, 462.0, 726.0, 891.0, 1056.0, 1122.0, 1386.0, 1650.0}));
 
     EinsumsInCpp::LinearAlgebra::gemm<true, false>(1.0, A, B, 0.0, &C);
-    CHECK_THAT(C.vector_data(), Catch::Matchers::Equals<double>({726.0, 858.0, 990.0, 858.0, 1023.0, 1188.0, 990.0, 1188.0, 1386.0}));
+    CHECK_THAT(C.vector_data(), Catch::Matchers::Equals(std::vector<double, EinsumsInCpp::AlignedAllocator<double, 64>>{
+                                    726.0, 858.0, 990.0, 858.0, 1023.0, 1188.0, 990.0, 1188.0, 1386.0}));
 
     EinsumsInCpp::LinearAlgebra::gemm<false, true>(1.0, A, B, 0.0, &C);
-    CHECK_THAT(C.vector_data(), Catch::Matchers::Equals<double>({154.0, 352.0, 550.0, 352.0, 847.0, 1342.0, 550.0, 1342.0, 2134.0}));
+    CHECK_THAT(C.vector_data(), Catch::Matchers::Equals(std::vector<double, EinsumsInCpp::AlignedAllocator<double, 64>>{
+                                    154.0, 352.0, 550.0, 352.0, 847.0, 1342.0, 550.0, 1342.0, 2134.0}));
 
     EinsumsInCpp::LinearAlgebra::gemm<true, true>(1.0, A, B, 0.0, &C);
-    CHECK_THAT(C.vector_data(), Catch::Matchers::Equals<double>({330.0, 726.0, 1122.0, 396.0, 891.0, 1386.0, 462.0, 1056.0, 1650.0}));
+    CHECK_THAT(C.vector_data(), Catch::Matchers::Equals(std::vector<double, EinsumsInCpp::AlignedAllocator<double, 64>>{
+                                    330.0, 726.0, 1122.0, 396.0, 891.0, 1386.0, 462.0, 1056.0, 1650.0}));
 }
 
 TEST_CASE("Tensor GEMVs", "[tensor]") {
@@ -73,14 +84,16 @@ TEST_CASE("Tensor GEMVs", "[tensor]") {
     REQUIRE((x.dim(0) == 3));
     REQUIRE((y.dim(0) == 3));
 
-    A.vector_data() = std::vector<double>{1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
-    x.vector_data() = std::vector<double>{11.0, 22.0, 33.0};
+    A.vector_data() = std::vector<double, EinsumsInCpp::AlignedAllocator<double, 64>>{1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
+    x.vector_data() = std::vector<double, EinsumsInCpp::AlignedAllocator<double, 64>>{11.0, 22.0, 33.0};
 
     EinsumsInCpp::LinearAlgebra::gemv<false>(1.0, A, x, 0.0, &y);
-    CHECK_THAT(y.vector_data(), Catch::Matchers::Equals<double>({154.0, 352.0, 550.0}));
+    CHECK_THAT(y.vector_data(),
+               Catch::Matchers::Equals(std::vector<double, EinsumsInCpp::AlignedAllocator<double, 64>>{154.0, 352.0, 550.0}));
 
     EinsumsInCpp::LinearAlgebra::gemv<true>(1.0, A, x, 0.0, &y);
-    CHECK_THAT(y.vector_data(), Catch::Matchers::Equals<double>({330.0, 396.0, 462.0}));
+    CHECK_THAT(y.vector_data(),
+               Catch::Matchers::Equals(std::vector<double, EinsumsInCpp::AlignedAllocator<double, 64>>{330.0, 396.0, 462.0}));
 }
 
 TEST_CASE("Tensor SYEVs", "[tensor]") {
@@ -90,7 +103,7 @@ TEST_CASE("Tensor SYEVs", "[tensor]") {
     REQUIRE((A.dim(0) == 3 && A.dim(1) == 3));
     REQUIRE((x.dim(0) == 3));
 
-    A.vector_data() = std::vector<double>{1.0, 2.0, 3.0, 2.0, 4.0, 5.0, 3.0, 5.0, 6.0};
+    A.vector_data() = std::vector<double, EinsumsInCpp::AlignedAllocator<double, 64>>{1.0, 2.0, 3.0, 2.0, 4.0, 5.0, 3.0, 5.0, 6.0};
 
     EinsumsInCpp::LinearAlgebra::syev(&A, &x);
 

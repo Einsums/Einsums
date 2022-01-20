@@ -111,6 +111,9 @@ auto get_dim_ranges(const TensorType<Rank, T> &tensor) {
 
 template <size_t Rank, typename T = double>
 struct Tensor final : public Detail::TensorBase<Rank, T> {
+
+    using vector = std::vector<T, AlignedAllocator<T, 64>>;
+
     Tensor() = default;
     Tensor(const Tensor &) = default;
     Tensor(Tensor &&) noexcept = default;
@@ -319,8 +322,8 @@ struct Tensor final : public Detail::TensorBase<Rank, T> {
     [[nodiscard]] auto dim(int d) const -> size_t { return _dims[d]; }
     auto dims() const -> Dim<Rank> { return _dims; }
 
-    auto vector_data() const -> const std::vector<T> & { return _data; }
-    auto vector_data() -> std::vector<T> & { return _data; }
+    auto vector_data() const -> const vector & { return _data; }
+    auto vector_data() -> vector & { return _data; }
 
     [[nodiscard]] auto name() const -> const std::string & { return _name; }
     void set_name(const std::string &name) { _name = name; }
@@ -341,7 +344,7 @@ struct Tensor final : public Detail::TensorBase<Rank, T> {
     std::string _name{"(Unnamed)"};
     Dim<Rank> _dims;
     Stride<Rank> _strides;
-    std::vector<T> _data;
+    vector _data;
 
     template <size_t Rank_, typename T_>
     friend struct TensorView;
