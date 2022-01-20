@@ -751,7 +751,7 @@ auto sort(const T C_prefactor, const std::tuple<CIndices...> &C_indices, CType<C
 
     // HPTT interface currently only works for full Tensors and not TensorViews
     if constexpr (std::is_same_v<CType<CRank, T>, Tensor<CRank, T>> && std::is_same_v<AType<ARank, T>, Tensor<ARank, T>>) {
-        println("Using HPTT");
+        // println("Using HPTT");
         std::array<int, CRank> perms{};
         std::array<int, CRank> size{};
 
@@ -764,12 +764,12 @@ auto sort(const T C_prefactor, const std::tuple<CIndices...> &C_indices, CType<C
                                       hptt::ESTIMATE, 1, nullptr, true);
         plan->execute();
     } else if constexpr (std::is_same_v<decltype(A_indices), decltype(C_indices)>) {
-        println("Using axpy variant algorithm.");
+        // println("Using axpy variant algorithm.");
         if (C_prefactor != T{1.0})
             LinearAlgebra::scale(C_prefactor, C);
         LinearAlgebra::axpy(A_prefactor, A, C);
     } else {
-        println("Using generic sorting algorithm.");
+        // println("Using generic sorting algorithm.");
         for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
             auto A_order =
                 Detail::construct_indices<AIndices...>(target_combination, target_position_in_A, target_combination, target_position_in_A);
