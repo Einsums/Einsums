@@ -1,8 +1,10 @@
 #pragma once
 
+#include "EinsumsInCpp/STL.hpp"
 #include "LinearAlgebra.hpp"
 #include "Print.hpp"
 #include "Tensor.hpp"
+#include "hptt.h"
 #include "range/v3/view/cartesian_product.hpp"
 
 #include <algorithm>
@@ -15,6 +17,11 @@
 #include <tuple>
 #include <type_traits>
 #include <utility>
+
+// HPTT includes <complex> which defined I as a shorthand for complex values.
+// This causes issues with EinsumsInCpp since we define I to be a useable index
+// for the user. Undefine the one defined in <complex> here.
+#undef I
 
 namespace EinsumsInCpp::TensorAlgebra {
 
@@ -101,62 +108,6 @@ template <size_t Rank, typename... Args>
 auto order_indices(const std::tuple<Args...> &combination, const std::array<size_t, Rank> &order) {
     return Detail::order_indices(combination, order, std::make_index_sequence<Rank>{});
 }
-
-#if 0
-template <template <size_t, typename> typename AType, template <size_t, typename> typename BType, size_t Rank, typename T = double>
-void sort(const std::string &operation, AType<Rank, T> *target, BType<Rank, T> &source) {
-    // sort("prqs=pqrs", target, source);
-
-    // Implement a slow version first:
-
-    // 1. Determine mapping from source to target
-    std::string::size_type equals = operation.find('=');
-    std::string target_indices = operation.substr(0, equals);
-    std::string source_indices = operation.substr(equals + 1);
-
-    // 2. ensure length of the source and target match
-    if (Rank != target_indices.size() || Rank != source_indices.size()) {
-        throw std::runtime_error("target and/or source indices do not match expected rank");
-    }
-
-    // 3. find the position of source indices in target
-    std::array<size_t, Rank> source_index_in_target;
-    std::array<size_t, Rank> target_index_in_source;
-    for (size_t i = 0; i < Rank; i++) {
-        std::string::size_type location = target_indices.find(source_indices[i]);
-        if (location != std::string::npos) {
-            source_index_in_target[i] = location;
-        } else {
-            throw std::runtime_error("not all source indices were found in target indices");
-        }
-
-        // perform the reverse source to ensure all target indices are found in source
-        location = source_indices.find(target_indices[i]);
-        if (location != std::string::npos) {
-            target_index_in_source[i] = location;
-        } else {
-            throw std::runtime_error("not all target indices were found in source indices");
-        }
-    }
-
-    // Mapping obtained.
-    // 4. Ensure that the dimensions match between the source and target
-    for (size_t i = 0; i < Rank; i++) {
-        if (target->dim(source_index_in_target[i]) != source.dim(i)) {
-            throw std::runtime_error("target dimensions do not match source dimensions");
-        }
-    }
-
-    // 5. Slow version: Go through all possible source index combinations and assign to targets location one-by-one.
-    auto source_dims = get_dim_ranges<Rank>(source);
-    for (auto combination : std::apply(ranges::views::cartesian_product, source_dims)) {
-        T value = std::apply(source, combination);
-        auto target_order = order_indices(combination, target_index_in_source);
-        T &target_value = std::apply(*target, target_order);
-        target_value = value;
-    }
-}
-#endif
 
 namespace Detail {
 
@@ -798,13 +749,27 @@ auto sort(const T C_prefactor, const std::tuple<CIndices...> &C_indices, CType<C
     auto target_dims = get_dim_ranges<CRank>(*C);
     auto a_dims = Detail::get_dim_ranges_for(A, target_position_in_A);
 
-    if constexpr (std::is_same_v<decltype(A_indices), decltype(C_indices)>) {
-        // println("Using axpy variant algorithm.");
+    // HPTT interface currently only works for full Tensors and not TensorViews
+    if constexpr (std::is_same_v<CType<CRank, T>, Tensor<CRank, T>> && std::is_same_v<AType<ARank, T>, Tensor<ARank, T>>) {
+        println("Using HPTT");
+        std::array<int, CRank> perms{};
+        std::array<int, CRank> size{};
+
+        for (int i0 = 0; i0 < ARank; i0++) {
+            perms[i0] = get_from_tuple<unsigned long>(target_position_in_A, (2 * i0) + 1);
+            size[i0] = A.dim(i0);
+        }
+
+        auto plan = hptt::create_plan(perms.data(), ARank, A_prefactor, A.data(), size.data(), nullptr, C_prefactor, C->data(), nullptr,
+                                      hptt::ESTIMATE, 1, nullptr, true);
+        plan->execute();
+    } else if constexpr (std::is_same_v<decltype(A_indices), decltype(C_indices)>) {
+        println("Using axpy variant algorithm.");
         if (C_prefactor != T{1.0})
             LinearAlgebra::scale(C_prefactor, C);
         LinearAlgebra::axpy(A_prefactor, A, C);
     } else {
-        // println("Using generic sorting algorithm.");
+        println("Using generic sorting algorithm.");
         for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
             auto A_order =
                 Detail::construct_indices<AIndices...>(target_combination, target_position_in_A, target_combination, target_position_in_A);

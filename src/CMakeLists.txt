@@ -12,6 +12,7 @@ target_link_libraries(EinsumsInCpp
         range-v3::range-v3
         fmt::fmt
         h5cpp::h5cpp
+        hptt::hptt
 )
 target_include_directories(EinsumsInCpp
     PUBLIC
