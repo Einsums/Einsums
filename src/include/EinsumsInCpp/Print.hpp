@@ -139,55 +139,13 @@ auto print_tuple_no_type(const std::tuple<Args...> &t) -> std::string {
     return out.str();
 }
 
-inline auto print_tuple_no_type(const std::tuple<> &t) -> std::string {
+inline auto print_tuple_no_type(const std::tuple<> &) -> std::string {
     std::ostringstream out;
     out << "( )";
     return out.str();
 }
 
 } // namespace EinsumsInCpp
-
-namespace fmt {
-
-// template <typename... Args>
-// struct formatter<std::tuple<Args...>> {
-//     // Presentation format: 't' - show types, 'n' - don't show types
-//     char presentation = 'n';
-
-//     // Parses format specification of the form ['t', 'n'].
-//     constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin()) {
-//         // [ctx.begin(), ctx.end()) is a character range that contains a part of
-//         // the format string starting from the format specifications to be parsed,
-//         // e.g. in
-//         //
-//         //   fmt::format("{:f} - point of interest", point{1, 2});
-//         //
-//         // the range will contain "f} - point of interest". The formatter should
-//         // parse specifiers until '}' or the end of the range. In this example
-//         // the formatter should parse the 'f' specifier and return an iterator
-//         // pointing to '}'.
-
-//         // Parse the presentation format and store it in the formatter
-//         auto it = ctx.begin(), end = ctx.end();
-//         if (it != end && (*it == 't' || *it == 'n'))
-//             presentation = *it++;
-
-//         // Check if reached the end of the range:
-//         if (it != end && *it != '}')
-//             throw format_error("invalid format");
-
-//         return it;
-//     }
-
-//     // Formats the tuple using the parsed format specification (presentation)
-//     template <typename FormatContext>
-//     auto format(const std::tuple<Args...> &t, FormatContext &ctx) -> decltype(ctx.out()) {
-//         return format_to(ctx.out(), "{:}", presentation == 'n' ? ::EinsumsInCpp::Detail::print_tuple_no_type(t) :
-//         ::EinsumsInCpp::Detail::print_tuple(t));
-//     }
-// };
-
-} // namespace fmt
 
 namespace EinsumsInCpp {
 

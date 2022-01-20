@@ -82,9 +82,6 @@ void print_timer_info(TimerDetail *timer) { // NOLINT
     if (!timer->children.empty()) {
         Print::indent();
 
-        // for (auto &child : timer->children) {
-        // print_timer_info(&child.second);
-        // }
         for (auto &child : timer->order) {
             print_timer_info(&timer->children[child]);
         }

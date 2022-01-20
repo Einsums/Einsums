@@ -67,7 +67,6 @@ using Count = Detail::Array<Detail::CountType, Rank>;
 using Range = Detail::Array<Detail::RangeType, 2>;
 
 struct All {};
-// constexpr struct All All;
 
 namespace Detail {
 

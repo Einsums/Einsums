@@ -125,16 +125,6 @@ constexpr auto _find_type_with_position() {
     }
 }
 
-// template <typename... Ts, typename... Args, std::size_t... Is>
-// constexpr auto find_type_with_position(const std::tuple<Ts...> &, const std::tuple<Args...> &, std::index_sequence<Is...>) {
-//     return std::tuple_cat(Detail::find_type_with_position<std::tuple_element_t<Is, std::tuple<Ts...>>, 0, Args...>()...);
-// }
-
-// template <typename... Ts, typename... Args, std::size_t... Is>
-// constexpr auto find_type_with_position(std::index_sequence<Is...>) {
-//     return std::tuple_cat(Detail::find_type_with_position<std::tuple_element_t<Is, std::tuple<Ts...>>, 0, Args...>()...);
-// }
-
 template <template <size_t, typename> typename TensorType, size_t Rank, typename... Args, std::size_t... I, typename T = double>
 auto get_dim_ranges_for(const TensorType<Rank, T> &tensor, const std::tuple<Args...> &args, std::index_sequence<I...>) {
     return std::tuple{ranges::views::ints(0, (int)tensor.dim(std::get<2 * I + 1>(args)))...};
@@ -164,11 +154,6 @@ template <typename AIndex, typename... TargetCombination>
 constexpr auto find_position(const std::tuple<TargetCombination...> &) {
     return Detail::find_position<AIndex, TargetCombination...>();
 }
-
-// template <typename... Ts, typename... Args>
-// constexpr auto find_type_with_position(const std::tuple<Ts...> &T, const std::tuple<Args...> &A) {
-//     return Detail::find_type_with_position(T, A, std::make_index_sequence<sizeof...(Ts)>());
-// }
 
 template <typename S1, typename... S2, std::size_t... Is>
 constexpr auto _find_type_with_position(std::index_sequence<Is...>) {
@@ -216,11 +201,6 @@ construct_indices(const std::tuple<TargetCombination...> &target_combination, co
                   const std::tuple<LinkCombination...> &link_combination, const std::tuple<LinkPositionInLink...> &link_position_in_link) {
     return std::make_tuple(construct_index<AIndices>(target_combination, target_position_in_C, link_combination, link_position_in_link)...);
 }
-
-// template <typename... PositionsInX, std::size_t... I>
-// constexpr auto _contiguous_positions(const std::tuple<PositionsInX...> &positions_in_x, std::index_sequence<I...>) -> bool {
-//     return ((std::get<(2 * I) + 1>(positions_in_x) + 1 == std::get<(2 * (I + 1)) + 1>(positions_in_x)) && ...);
-// }
 
 template <typename... PositionsInX, std::size_t... I>
 constexpr auto _contiguous_positions(const std::tuple<PositionsInX...> &x, std::index_sequence<I...>) -> bool {
@@ -295,11 +275,6 @@ void einsum_generic_algorithm(const std::tuple<CIndices...> & /*C_indices*/, con
                               const std::tuple<LinkPositionInLink...> &link_position_in_link, const T C_prefactor, CType<CRank, T> *C,
                               const T AB_prefactor, const AType<ARank, T> &A, const BType<BRank, T> &B) {
     Timer::push("generic algorithm");
-    // println("A index: {}", print_tuple_no_type(A_indices));
-    // println("B index: {}", print_tuple_no_type(B_indices));
-    // println("target_position_in_C: {}", print_tuple_no_type(target_position_in_C));
-    // println("link_position_in_link: {}", print_tuple_no_type(link_position_in_link));
-    // Print::Indent _outer;
 
     if constexpr (sizeof...(LinkDims) != 0) {
         for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
@@ -319,33 +294,22 @@ void einsum_generic_algorithm(const std::tuple<CIndices...> & /*C_indices*/, con
                 auto B_order = Detail::construct_indices<BIndices...>(target_combination, target_position_in_C, link_combination,
                                                                       link_position_in_link);
 
-                // println("link_combination: {}", print_tuple_no_type(link_combination));
-                // println("A_order: {}", print_tuple_no_type(A_order));
-                // println("B_order: {}", print_tuple_no_type(B_order));
-
                 // Get the tensor element using the operator()(MultiIndex...) function of Tensor.
                 T A_value = std::apply(A, A_order);
                 T B_value = std::apply(B, B_order);
 
                 sum += AB_prefactor * A_value * B_value;
-
-                // println("A: %lf B: %lf RunningSum: %lf", A_value, B_value, sum);
             }
 
             T &target_value = std::apply(*C, C_order);
             target_value *= C_prefactor;
             target_value += sum;
-
-            // println("C: %lf", sum);
         }
     } else {
-        // println("target_dims: {}", print_tuple_no_type(target_dims));
         for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
-            // println("target_combination: {}", print_tuple_no_type(target_combination));
 
             // This is the generic case.
             T sum{0};
-            // Print::Indent _indent;
 
             // Construct the tuples that will be used to access the tensor elements of A and B
             auto A_order =
@@ -355,23 +319,15 @@ void einsum_generic_algorithm(const std::tuple<CIndices...> & /*C_indices*/, con
             auto C_order =
                 Detail::construct_indices<CIndices...>(target_combination, target_position_in_C, std::tuple<>(), target_position_in_C);
 
-            // println("link_combination: {}", print_tuple_no_type(link_combination));
-            // println("A_order: {}", print_tuple_no_type(A_order));
-            // println("B_order: {}", print_tuple_no_type(B_order));
-
             // Get the tensor element using the operator()(MultiIndex...) function of Tensor.
             T A_value = std::apply(A, A_order);
             T B_value = std::apply(B, B_order);
 
             sum += AB_prefactor * A_value * B_value;
 
-            // println("A: %lf B: %lf RunningSum: %lf", A_value, B_value, sum);
-
             T &target_value = std::apply(*C, C_order);
             target_value *= C_prefactor;
             target_value += sum;
-
-            // println("C: %lf", sum);
         }
     }
     Timer::pop();
@@ -408,10 +364,6 @@ auto einsum(const T C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<C
     // 4. Determine the links between CIndices and BIndices
     constexpr auto CBlinks = intersect_t<std::tuple<CIndices...>, std::tuple<BIndices...>>();
 
-    // 3. Check the rank of C against A, B, and links.
-    // static_assert(sizeof...(AIndices) + sizeof...(BIndices) - 2 * std::tuple_size_v<decltype(links)> == sizeof...(CIndices),
-    //   "Rank of C does not matched deduced constraction size from A and B.");
-
     // Determine unique indices in A
     constexpr auto A_only = difference_t<std::tuple<AIndices...>, decltype(links)>();
     constexpr auto B_only = difference_t<std::tuple<BIndices...>, decltype(links)>();
@@ -424,12 +376,6 @@ auto einsum(const T C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<C
     constexpr bool A_hadamard_found = std::tuple_size_v<std::tuple<AIndices...>> != std::tuple_size_v<decltype(A_unique)>;
     constexpr bool B_hadamard_found = std::tuple_size_v<std::tuple<BIndices...>> != std::tuple_size_v<decltype(B_unique)>;
     constexpr bool C_hadamard_found = std::tuple_size_v<std::tuple<CIndices...>> != std::tuple_size_v<decltype(C_unique)>;
-
-    // println("Hadamard found: C {}, A {}, B {}", C_hadamard_found, A_hadamard_found, B_hadamard_found);
-    // println("C_unique {}", print_tuple_no_type(C_unique));
-    // println("A_unique {}", print_tuple_no_type(A_unique));
-    // println("B_unique {}", print_tuple_no_type(B_unique));
-    // println("link_unique {}", print_tuple_no_type(link_unique));
 
     constexpr auto link_position_in_A = Detail::find_type_with_position(links, A_indices);
     constexpr auto link_position_in_B = Detail::find_type_with_position(links, B_indices);
@@ -463,27 +409,6 @@ auto einsum(const T C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<C
     constexpr auto C_exactly_matches_B =
         sizeof...(CIndices) == sizeof...(BIndices) && same_indices<std::tuple<CIndices...>, std::tuple<BIndices...>>();
     constexpr auto A_exactly_matches_B = same_indices<std::tuple<AIndices...>, std::tuple<BIndices...>>();
-
-    // println("---------------------------------------------------------------------------------------------------------------------------");
-    // println("C: {}", print_tuple_no_type(C_indices));
-    // println("A: {}", print_tuple_no_type(A_indices));
-    // println("B: {}", print_tuple_no_type(B_indices));
-    // println("Link: {}", print_tuple_no_type(links));
-    // println("links contiguous in A          : {}", contiguous_link_position_in_A);
-    // println("links contiguous in B          : {}", contiguous_link_position_in_B);
-
-    // println("target contiguous in A         : {}", contiguous_target_position_in_A);
-    // println("target position in A           : {}", print_tuple_no_type(target_position_in_A));
-    // println("target contiguous in B         : {}", contiguous_target_position_in_B);
-
-    // println("A contiguous in C              : {}", contiguous_A_targets_in_C);
-    // println("A target position in C         : {}", print_tuple_no_type(A_target_position_in_C));
-    // println("B contiguous in C              : {}", contiguous_B_targets_in_C);
-    // println("B target position in C         : {}", print_tuple_no_type(B_target_position_in_C));
-
-    // println("links in same order in A & B   : {}", same_ordering_link_position_in_AB);
-    // println("targets in same order in C & A : {}", same_ordering_target_position_in_CA);
-    // println("targets in same order in C & B : {}", same_ordering_target_position_in_CB);
 
     constexpr auto is_gemm_possible = contiguous_link_position_in_A && contiguous_link_position_in_B && contiguous_target_position_in_A &&
                                       contiguous_target_position_in_B && contiguous_A_targets_in_C && contiguous_B_targets_in_C &&
@@ -522,18 +447,12 @@ auto einsum(const T C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<C
             target_value += temp;
         }
 
-        // return;
     } else if constexpr (!OnlyUseGenericAlgorithm) {
         // To use a gemm the input tensors need to be at least rank 2
         if constexpr (CRank >= 2 && ARank >= 2 && BRank >= 2) {
             if constexpr (!A_hadamard_found && !B_hadamard_found && !C_hadamard_found) {
                 if constexpr (is_gemv_possible) {
-                    // println("GEMV appears possible for this case but is not coded.");
-
                     constexpr bool transpose_A = std::get<1>(link_position_in_A) == 0;
-
-                    // println("transpose A? {}", transpose_A);
-                    // println("link_position_in_A: {}", print_tuple_no_type(link_position_in_A));
 
                     Dim<2> dA;
                     Dim<1> dB, dC;
@@ -556,20 +475,10 @@ auto einsum(const T C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<C
 
                     return;
                 } else if constexpr (is_gemm_possible) {
-                    // if (false) {
-                    // println("GEMM appears possible for this case.");
 
                     constexpr bool transpose_A = std::get<1>(link_position_in_A) == 0;
                     constexpr bool transpose_B = std::get<1>(link_position_in_B) != 0;
                     constexpr bool transpose_C = std::get<1>(A_target_position_in_C) != 0;
-
-                    // println("transpose A? {}", transpose_A);
-                    // println("link_position_in_A: {}", print_tuple_no_type(link_position_in_A));
-                    // println("transpose B? {}", transpose_B);
-                    // println("link_position_in_B: {}", print_tuple_no_type(link_position_in_B));
-                    // println("transpose C? {}", transpose_C);
-                    // println("A_target_position_in_C: {}", print_tuple_no_type(A_target_position_in_C));
-                    // println("B_target_position_in_C: {}", print_tuple_no_type(B_target_position_in_C));
 
                     Dim<2> dA, dB, dC;
 
@@ -588,46 +497,31 @@ auto einsum(const T C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<C
                     if (transpose_C)
                         std::swap(dC[0], dC[1]);
 
-                    // println("Dims of C: {} {}", dC[0], dC[1]);
-                    // println("Dims of A: {} {}", dA[0], dA[1]);
-                    // println("Dims of B: {} {}", dB[0], dB[1]);
-
                     TensorView<2, T> tC{*C, dC};
                     const TensorView<2, T> tA{const_cast<AType<ARank, T> &>(A), dA}, tB{const_cast<BType<BRank, T> &>(B), dB};
 
                     if constexpr (!transpose_C && !transpose_A && !transpose_B) {
-                        // println("Calling gemm<false, false>");
                         LinearAlgebra::gemm<false, false>(AB_prefactor, tA, tB, C_prefactor, &tC);
                         return;
                     } else if constexpr (!transpose_C && !transpose_A && transpose_B) {
-                        // println("Calling gemm<false, true>");
                         LinearAlgebra::gemm<false, true>(AB_prefactor, tA, tB, C_prefactor, &tC);
                         return;
                     } else if constexpr (!transpose_C && transpose_A && !transpose_B) {
-                        // println("Calling gemm<true, false>");
                         LinearAlgebra::gemm<true, false>(AB_prefactor, tA, tB, C_prefactor, &tC);
                         return;
                     } else if constexpr (!transpose_C && transpose_A && transpose_B) {
-                        // println("Calling gemm<true, true>");
                         LinearAlgebra::gemm<true, true>(AB_prefactor, tA, tB, C_prefactor, &tC);
                         return;
                     } else if constexpr (transpose_C && !transpose_A && !transpose_B) {
-                        // println("Calling gemm<true, true> === true, false, false");
                         LinearAlgebra::gemm<true, true>(AB_prefactor, tB, tA, C_prefactor, &tC);
                         return;
                     } else if constexpr (transpose_C && !transpose_A && transpose_B) {
-                        // println("Calling C^T gemm<false, true>");
-                        // println(tA);
-                        // println(tB);
-                        // println(tC);
                         LinearAlgebra::gemm<false, true>(AB_prefactor, tB, tA, C_prefactor, &tC);
                         return;
                     } else if constexpr (transpose_C && transpose_A && !transpose_B) {
-                        // println("Calling C^T gemm<true, false>");
                         LinearAlgebra::gemm<true, false>(AB_prefactor, tB, tA, C_prefactor, &tC);
                         return;
                     } else if constexpr (transpose_C && transpose_A && transpose_B) {
-                        // println("Calling C^T gemm<false, false> === true, true, true");
                         LinearAlgebra::gemm<false, false>(AB_prefactor, tB, tA, C_prefactor, &tC);
                         return;
                     } else {
@@ -751,7 +645,6 @@ auto sort(const T C_prefactor, const std::tuple<CIndices...> &C_indices, CType<C
 
     // HPTT interface currently only works for full Tensors and not TensorViews
     if constexpr (std::is_same_v<CType<CRank, T>, Tensor<CRank, T>> && std::is_same_v<AType<ARank, T>, Tensor<ARank, T>>) {
-        // println("Using HPTT");
         std::array<int, CRank> perms{};
         std::array<int, CRank> size{};
 
@@ -764,12 +657,10 @@ auto sort(const T C_prefactor, const std::tuple<CIndices...> &C_indices, CType<C
                                       hptt::ESTIMATE, 1, nullptr, true);
         plan->execute();
     } else if constexpr (std::is_same_v<decltype(A_indices), decltype(C_indices)>) {
-        // println("Using axpy variant algorithm.");
         if (C_prefactor != T{1.0})
             LinearAlgebra::scale(C_prefactor, C);
         LinearAlgebra::axpy(A_prefactor, A, C);
     } else {
-        // println("Using generic sorting algorithm.");
         for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
             auto A_order =
                 Detail::construct_indices<AIndices...>(target_combination, target_position_in_A, target_combination, target_position_in_A);
