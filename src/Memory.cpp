@@ -18,7 +18,7 @@ auto allocate_aligned_memory(size_t align, size_t size) -> void * {
     int rc = posix_memalign(&ptr, align, size);
 
     if (rc != 0) {
-        println("posix_memalign returned non-zero!");
+        EinsumsInCpp::println("posix_memalign returned non-zero!");
         return nullptr;
     }
 

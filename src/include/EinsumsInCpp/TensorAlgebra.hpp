@@ -645,8 +645,8 @@ auto sort(const T C_prefactor, const std::tuple<CIndices...> &C_indices, CType<C
 
     // HPTT interface currently only works for full Tensors and not TensorViews
     if constexpr (std::is_same_v<CType<CRank, T>, Tensor<CRank, T>> && std::is_same_v<AType<ARank, T>, Tensor<ARank, T>>) {
-        std::array<int, CRank> perms{};
-        std::array<int, CRank> size{};
+        std::array<int, ARank> perms{};
+        std::array<int, ARank> size{};
 
         for (int i0 = 0; i0 < ARank; i0++) {
             perms[i0] = get_from_tuple<unsigned long>(target_position_in_A, (2 * i0) + 1);
