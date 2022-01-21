@@ -44,11 +44,15 @@ if (EINSUMS_WARN_NOT_IMPLEMENTED)
     )
 endif()
 
-# Attempt to find MKL
-# set(BLA_VENDOR Intel10_64_dyn)
-
-find_package(BLAS REQUIRED)
-find_package(LAPACK REQUIRED)
+# Attempt to find MKL. This assumes the user set MKL_DIR.
+find_package(MKL CONFIG)
+if (TARGET MKL::MKL)
+    add_library(BLAS::BLAS ALIAS MKL::MKL)
+    add_library(LAPACK::LAPACK ALIAS MKL::MKL)
+else()
+    find_package(BLAS REQUIRED)
+    find_package(LAPACK REQUIRED)
+endif()
 find_package(OpenMP)
 
 add_subdirectory(external)
