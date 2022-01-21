@@ -5,6 +5,7 @@ add_library(h5cpp INTERFACE)
 target_include_directories(h5cpp SYSTEM INTERFACE .)
 
 find_package(HDF5 REQUIRED COMPONENTS CXX)
+find_package(ZLIB REQUIRED)
 
-target_link_libraries(h5cpp INTERFACE HDF5::HDF5)
+target_link_libraries(h5cpp INTERFACE HDF5::HDF5 ZLIB::ZLIB)
 add_library(h5cpp::h5cpp ALIAS h5cpp)
