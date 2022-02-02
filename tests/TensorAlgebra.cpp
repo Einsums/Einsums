@@ -1356,9 +1356,7 @@ TEST_CASE("Hadamard") {
 
         for (size_t i0 = 0; i0 < _i; i0++) {
             for (size_t j0 = 0; j0 < _j; j0++) {
-                for (size_t k0 = 0; k0 < _i; k0++) {
-                    REQUIRE(C0(i0, j0, k0) == C(i0, j0, k0));
-                }
+                REQUIRE(C0(i0, j0, i0) == C(i0, j0, i0));
             }
         }
     }
@@ -1385,11 +1383,7 @@ TEST_CASE("Hadamard") {
         // println(C);
 
         for (size_t i0 = 0; i0 < _i; i0++) {
-            for (size_t j0 = 0; j0 < _i; j0++) {
-                for (size_t k0 = 0; k0 < _i; k0++) {
-                    REQUIRE(C0(i0, j0, k0) == C(i0, j0, k0));
-                }
-            }
+            REQUIRE(C0(i0, i0, i0) == C(i0, i0, i0));
         }
     }
 
