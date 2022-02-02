@@ -49,3 +49,7 @@ _deps
 # Items specific to EinsumsInCpp
 *.h5
 .cache
+
+# Visual Studio files
+.vs
+CMakeSettings.json

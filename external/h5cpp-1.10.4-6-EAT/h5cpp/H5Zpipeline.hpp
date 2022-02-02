@@ -7,6 +7,19 @@
 #ifndef  H5CPP_PIPELINE_HPP
 #define  H5CPP_PIPELINE_HPP
 
+#if defined(_WIN32) || defined(_WIN64)
+#include <malloc.h>
+
+#define aligned_alloc(x, y) _aligned_malloc(y, x)
+#define aligned_free(x) _aligned_free(x)
+
+#else
+
+#define aligned_free(x) free(x)
+
+#endif
+
+
 namespace h5 {
 	int get_chunk_dims( const h5::dcpl_t& dcpl,  h5::chunk_t& chunk_dims );
 }
@@ -16,10 +29,23 @@ namespace h5{ namespace impl {
 		forward = 0, reverse = 1
 	};
 
+	template<typename T>
+	struct deleter {
+        deleter() = default;
+
+		template<typename U>
+        deleter(const deleter<U> &) {}
+
+		void operator()(T *ptr) const { 
+			static_assert(sizeof(T) > 0, "can't delete pointer to incomplete type");
+            aligned_free(ptr);
+		}
+	};
+
 	template <class Derived>
 	struct pipeline_t {
 		pipeline_t(){};
-		~pipeline_t(){};
+        ~pipeline_t() {};
 		void set_cache( const h5::dcpl_t& dcpl, size_t element_size );
 		void write(const h5::ds_t& ds, const h5::offset_t& start, const h5::stride_t& stride, const h5::block_t& block, const h5::count_t& count,
 				const h5::dxpl_t& dxpl, const void* ptr);
@@ -43,7 +69,7 @@ namespace h5{ namespace impl {
 		void push( filter::call_t filter );
 		void pop();
 
-		std::unique_ptr<char> ptr0, ptr1; // will call std::free on dtor
+		std::unique_ptr<char, deleter<char>> ptr0, ptr1; // will call std::free on dtor
 		filter::call_t filter[H5CPP_MAX_FILTER];
 		hsize_t n,
 				C[H5CPP_MAX_RANK], D[H5CPP_MAX_RANK],
@@ -127,8 +153,8 @@ inline void h5::impl::pipeline_t<Derived>::set_cache( const h5::dcpl_t& dcpl, si
 			filter::get_callback( H5Pget_filter2( dcpl, i, &flags[i], &cd_size[i], cd_values[i], 0, nullptr, &filter_config )));
 	}
 
-	ptr0 = std::move( std::unique_ptr<char>{ (char*)aligned_alloc( H5CPP_MEM_ALIGNMENT, block_size )} );
-	ptr1 = std::move( std::unique_ptr<char>{ (char*)aligned_alloc( H5CPP_MEM_ALIGNMENT, block_size )} );
+	ptr0 = std::move( std::unique_ptr<char, deleter<char>>{ (char*)aligned_alloc( H5CPP_MEM_ALIGNMENT, block_size )} );
+	ptr1 = std::move( std::unique_ptr<char, deleter<char>>{ (char*)aligned_alloc( H5CPP_MEM_ALIGNMENT, block_size )} );
 	// get an alias to smart ptr
 	if( (chunk0 = ptr0.get()) == NULL || (chunk1 = ptr1.get()) == NULL )
 	   	throw h5::error::io::dataset::open( H5CPP_ERROR_MSG("CTOR: couldn't allocate memory for caching chunks, invalid/check size?"));

@@ -3,4 +3,7 @@ add_subdirectory(range-v3-0.11.0)
 add_subdirectory(fmt-8.1.1)
 add_subdirectory(catch-2.13.3)
 add_subdirectory(h5cpp-1.10.4-6-EAT)
-add_subdirectory(hptt)
+
+if(EINSUMS_USE_HPTT)
+	add_subdirectory(hptt)
+endif()

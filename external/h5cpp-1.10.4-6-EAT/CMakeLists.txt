@@ -14,6 +14,8 @@ if (WIN32)
 	if (TARGET hdf5::zlib-static)
 		add_library(ZLIB::ZLIB ALIAS hdf5::zlib-static)
 	endif()
+
+	target_include_directories(h5cpp SYSTEM INTERFACE ../zlib)
 else(WIN32)
 	find_package(HDF5 REQUIRED COMPONENTS CXX)
 	find_package(ZLIB REQUIRED)

@@ -9,7 +9,12 @@
 #include <sstream>
 #include <string>
 #include <thread>
+
+#if defined(_WIN32) || defined(_WIN64)
+#include <io.h>
+#else
 #include <unistd.h>
+#endif
 
 namespace EinsumsInCpp {
 
@@ -27,7 +32,13 @@ std::thread::id main_thread_id = std::this_thread::get_id();
 
 bool suppress{false};
 
-auto printing_to_screen() -> bool { return isatty(fileno(stdout)); }
+auto printing_to_screen() -> bool { 
+#if defined(_WIN32) || defined(_WIN64)
+    return _isatty(_fileno(stdout));
+#else
+    return isatty(fileno(stdout));
+#endif
+}
 
 } // namespace
 
@@ -81,7 +92,7 @@ void print_line(const std::string &line) {
 
 namespace Detail {
 void println(const std::string &str) {
-    if (Print::suppress == false) [[likely]] {
+    if (Print::suppress == false) {
         std::istringstream iss(str);
 
         for (std::string line; std::getline(iss, line);) {

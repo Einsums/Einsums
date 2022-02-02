@@ -4,6 +4,7 @@
 
 #include <functional>
 #include <iterator>
+#include <memory>
 #include <mutex>
 #include <tuple>
 #include <type_traits>

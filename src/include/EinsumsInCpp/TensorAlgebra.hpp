@@ -4,7 +4,9 @@
 #include "LinearAlgebra.hpp"
 #include "Print.hpp"
 #include "Tensor.hpp"
+#if defined(EINSUMS_USE_HPTT)
 #include "hptt.h"
+#endif
 #include "range/v3/view/cartesian_product.hpp"
 
 #include <algorithm>
@@ -81,6 +83,7 @@ struct Indices : public std::tuple<Args...> {
     Indices(Args... args) : std::tuple<Args...>(args...){};
 };
 
+#if 0
 namespace Detail {
 
 template <template <size_t, typename> typename TensorType, size_t Rank, typename... Indices, typename... FilterIndices,
@@ -94,6 +97,7 @@ auto determine_dim_ranges(const TensorType<Rank, T> &source, const std::tuple<In
                           const std::tuple<FilterIndices...> &filterIndices) {
     return Detail::determine_dim_ranges(source, sourceIndices, filterIndices, std::make_index_sequence<sizeof...(FilterIndices)>{});
 }
+#endif
 
 namespace Detail {
 
@@ -165,10 +169,12 @@ constexpr auto find_type_with_position(const std::tuple<Ts...> &, const std::tup
     return _find_type_with_position<std::tuple<Ts...>, Us...>(std::make_index_sequence<sizeof...(Ts)>{});
 }
 
+#if 0
 template <typename... Ts, typename... Args>
 [[deprecated]] constexpr auto find_type_with_position() {
     return Detail::find_type_with_position<std::tuple<Ts...>, std::tuple<Args...>>(std::make_index_sequence<sizeof...(Ts)>());
 }
+#endif
 
 template <template <size_t, typename> typename TensorType, size_t Rank, typename... Args, typename T = double>
 auto get_dim_ranges_for(const TensorType<Rank, T> &tensor, const std::tuple<Args...> &args) {
@@ -644,6 +650,7 @@ auto sort(const T C_prefactor, const std::tuple<CIndices...> &C_indices, CType<C
     auto a_dims = Detail::get_dim_ranges_for(A, target_position_in_A);
 
     // HPTT interface currently only works for full Tensors and not TensorViews
+#if defined(EINSUMS_USE_HPTT)
     if constexpr (std::is_same_v<CType<CRank, T>, Tensor<CRank, T>> && std::is_same_v<AType<ARank, T>, Tensor<ARank, T>>) {
         std::array<int, ARank> perms{};
         std::array<int, ARank> size{};
@@ -656,7 +663,9 @@ auto sort(const T C_prefactor, const std::tuple<CIndices...> &C_indices, CType<C
         auto plan = hptt::create_plan(perms.data(), ARank, A_prefactor, A.data(), size.data(), nullptr, C_prefactor, C->data(), nullptr,
                                       hptt::ESTIMATE, 1, nullptr, true);
         plan->execute();
-    } else if constexpr (std::is_same_v<decltype(A_indices), decltype(C_indices)>) {
+    } else 
+#endif
+    if constexpr (std::is_same_v<decltype(A_indices), decltype(C_indices)>) {
         if (C_prefactor != T{1.0})
             LinearAlgebra::scale(C_prefactor, C);
         LinearAlgebra::axpy(A_prefactor, A, C);

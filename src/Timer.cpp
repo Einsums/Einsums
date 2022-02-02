@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <vector>
+#include <array>
 
 namespace EinsumsInCpp::Timer {
 

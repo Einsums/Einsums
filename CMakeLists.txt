@@ -44,6 +44,7 @@ if (EINSUMS_WARN_NOT_IMPLEMENTED)
     )
 endif()
 
+option(EINSUMS_USE_HPTT "Use the HPTT package for tensor transpositions" ON)
 # Attempt to find MKL. This assumes the user set MKL_DIR.
 find_package(MKL CONFIG)
 if (TARGET MKL::MKL)

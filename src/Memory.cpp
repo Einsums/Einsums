@@ -15,12 +15,16 @@ auto allocate_aligned_memory(size_t align, size_t size) -> void * {
     }
 
     void *ptr{nullptr};
+#if defined(_WIN32) || defined(_WIN64)
+    ptr = malloc(size);
+#else
     int rc = posix_memalign(&ptr, align, size);
 
     if (rc != 0) {
         EinsumsInCpp::println("posix_memalign returned non-zero!");
         return nullptr;
     }
+#endif
 
     return ptr;
 }
