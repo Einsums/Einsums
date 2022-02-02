@@ -3,6 +3,7 @@
 #include "EinsumsInCpp/Print.hpp"
 #include "EinsumsInCpp/STL.hpp"
 #include "EinsumsInCpp/State.hpp"
+#include "EinsumsInCpp/Timer.hpp"
 
 // Include headers from the ranges library that we need to handle cartesian_products
 #include "range/v3/view/cartesian_product.hpp"
@@ -625,6 +626,7 @@ auto create_identity_tensor(const std::string &name, MultiIndex... index) -> Ten
     static_assert(sizeof...(MultiIndex) >= 1, "Rank parameter doesn't make sense.");
 
     Tensor<sizeof...(MultiIndex), T> A{name, std::forward<MultiIndex>(index)...};
+    A.zero();
 
     for (size_t dim = 0; dim < std::get<0>(std::forward_as_tuple(index...)); dim++) {
         Detail::set_to(A, 1.0, create_tuple<sizeof...(MultiIndex)>(dim), std::make_index_sequence<sizeof...(MultiIndex)>());

@@ -419,7 +419,9 @@ class AlignedAllocator {
 
     template <class U, class... Args>
     void construct(U *p, Args &&...args) {
-        ::new (reinterpret_cast<void *>(p)) U(std::forward<Args>(args)...);
+        if constexpr (sizeof...(Args) > 0) {
+            ::new (reinterpret_cast<void *>(p)) U(std::forward<Args>(args)...);
+        }
     }
 
     void destroy(pointer p) { p->~T(); }
@@ -467,7 +469,9 @@ class AlignedAllocator<const T, Align> {
 
     template <class U, class... Args>
     void construct(U *p, Args &&...args) {
-        ::new (reinterpret_cast<void *>(p)) U(std::forward<Args>(args)...);
+        if constexpr (sizeof...(Args) > 0) {
+            ::new (reinterpret_cast<void *>(p)) U(std::forward<Args>(args)...);
+        }
     }
 
     void destroy(pointer p) { p->~T(); }

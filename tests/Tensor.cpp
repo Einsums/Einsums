@@ -17,6 +17,10 @@ TEST_CASE("Tensor creation", "[tensor]") {
     REQUIRE((B.dim(0) == 3 && B.dim(1) == 3));
     REQUIRE((C.dim(0) == 3 && C.dim(1) == 3));
 
+    A.zero();
+    B.zero();
+    C.zero();
+
     CHECK_THAT(A.vector_data(), Catch::Matchers::Equals(std::vector<double, EinsumsInCpp::AlignedAllocator<double, 64>>{
                                     0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}));
     CHECK_THAT(B.vector_data(), Catch::Matchers::Equals(std::vector<double, EinsumsInCpp::AlignedAllocator<double, 64>>{

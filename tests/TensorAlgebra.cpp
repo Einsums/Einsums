@@ -1254,6 +1254,7 @@ TEST_CASE("Hadamard") {
         Tensor<2> B = create_random_tensor("B", _j, _j);
         Tensor<2> C{"C", _i, _j};
         Tensor<2> C0{"C0", _i, _j};
+        C0.zero();
 
         // println(A);
         // println(B);
@@ -1281,6 +1282,7 @@ TEST_CASE("Hadamard") {
         Tensor<3> B = create_random_tensor("B", _j, _j, _i);
         Tensor<2> C{"C", _i, _j};
         Tensor<2> C0{"C0", _i, _j};
+        C0.zero();
 
         // println(A);
         // println(B);
@@ -1308,6 +1310,7 @@ TEST_CASE("Hadamard") {
         Tensor<3> B = create_random_tensor("B", _j, _i, _j);
         Tensor<2> C{"C", _i, _j};
         Tensor<2> C0{"C0", _i, _j};
+        C0.zero();
 
         // println(A);
         // println(B);
@@ -1335,6 +1338,7 @@ TEST_CASE("Hadamard") {
         Tensor<3> B = create_random_tensor("B", _j, _i, _j);
         Tensor<3> C{"C", _i, _j, _i};
         Tensor<3> C0{"C0", _i, _j, _i};
+        C0.zero();
 
         // println(A);
         // println(B);
@@ -1364,6 +1368,7 @@ TEST_CASE("Hadamard") {
         Tensor<3> B = create_random_tensor("B", _j, _i, _j);
         Tensor<3> C{"C", _i, _i, _i};
         Tensor<3> C0{"C0", _i, _i, _i};
+        C0.zero();
 
         // println(A);
         // println(B);
@@ -1393,6 +1398,8 @@ TEST_CASE("Hadamard") {
         Tensor<3> B = create_random_tensor("B", _j, _i, _k);
         Tensor<2> C{"C", _i, _i};
         Tensor<2> C0{"C0", _i, _i};
+        C0.zero();
+        C.zero();
 
         // println(A);
         // println(B);
@@ -1430,6 +1437,7 @@ TEST_CASE("Transpose C", "[einsum]") {
         Tensor<2> B = create_random_tensor("B", _k, _i);
         Tensor<2> C{"C", _i, _j};
         Tensor<2> C0{"C0", _i, _j};
+        C0.zero();
 
         einsum(Indices{i, j}, &C, Indices{j, k}, A, Indices{k, i}, B);
 
@@ -1456,6 +1464,7 @@ TEST_CASE("Transpose C", "[einsum]") {
         Tensor<2> B = create_random_tensor("B", _k, _i);
         Tensor<2> C{"C", _i, _j};
         Tensor<2> C0{"C0", _i, _j};
+        C0.zero();
 
         einsum(Indices{i, j}, &C, Indices{k, j}, A, Indices{k, i}, B);
 
@@ -1482,6 +1491,7 @@ TEST_CASE("Transpose C", "[einsum]") {
         Tensor<2> B = create_random_tensor("B", _i, _k);
         Tensor<2> C{"C", _i, _j};
         Tensor<2> C0{"C0", _i, _j};
+        C0.zero();
 
         einsum(Indices{i, j}, &C, Indices{j, k}, A, Indices{i, k}, B);
 
@@ -1508,6 +1518,7 @@ TEST_CASE("Transpose C", "[einsum]") {
         Tensor<2> B = create_random_tensor("B", _i, _k);
         Tensor<2> C{"C", _i, _j};
         Tensor<2> C0{"C0", _i, _j};
+        C0.zero();
 
         einsum(Indices{i, j}, &C, Indices{k, j}, A, Indices{i, k}, B);
 
