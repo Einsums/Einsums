@@ -267,7 +267,7 @@ endif ()
 
 target_compile_features(fmt INTERFACE ${FMT_REQUIRED_FEATURES})
 
-target_include_directories(fmt ${FMT_SYSTEM_HEADERS_ATTRIBUTE} PUBLIC
+target_include_directories(fmt ${FMT_SYSTEM_HEADERS_ATTRIBUTE} SYSTEM PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:${FMT_INC_DIR}>)
 
