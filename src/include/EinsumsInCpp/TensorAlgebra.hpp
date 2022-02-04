@@ -1,6 +1,7 @@
 #pragma once
 
-#include "EinsumsInCpp/STL.hpp"
+#include "STL.hpp"
+#include "OpenMP.h"
 #include "LinearAlgebra.hpp"
 #include "Print.hpp"
 #include "Tensor.hpp"
@@ -661,11 +662,11 @@ auto sort(const T C_prefactor, const std::tuple<CIndices...> &C_indices, CType<C
         }
 
         auto plan = hptt::create_plan(perms.data(), ARank, A_prefactor, A.data(), size.data(), nullptr, C_prefactor, C->data(), nullptr,
-                                      hptt::ESTIMATE, 1, nullptr, true);
+                                      hptt::ESTIMATE, omp_get_max_threads(), nullptr, true);
         plan->execute();
-    } else 
+    } else
 #endif
-    if constexpr (std::is_same_v<decltype(A_indices), decltype(C_indices)>) {
+        if constexpr (std::is_same_v<decltype(A_indices), decltype(C_indices)>) {
         if (C_prefactor != T{1.0})
             LinearAlgebra::scale(C_prefactor, C);
         LinearAlgebra::axpy(A_prefactor, A, C);
