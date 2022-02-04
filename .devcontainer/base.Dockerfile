@@ -25,6 +25,7 @@ RUN apt-get update \
     liblapack-dev \
     libhdf5-serial-dev \
     hdf5-tools \
+    lsb-release wget software-properties-common \
     #
     # [Optional] Update UID/GID if needed
     && if [ "${USER_GID}" != "1000"] || [ "${USER_UID}" != "1000" ]; then \
@@ -40,31 +41,85 @@ RUN apt-get update \
     && apt-get update \
     && apt-get -y install cmake
 
-# Obtain a newer version of LLVM and Clang from the LLVM developers directly.
-RUN apt-get update \
-    && wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key| apt-key add - \
-    && echo "deb http://apt.llvm.org/hirsute/ llvm-toolchain-hirsute main" >> /etc/apt/sources.list \
-    && apt-get update \
-    && apt-get -y install \
-    clang-format clang-tidy clang-tools clang clangd libc++-dev libc++1 libc++abi-dev libc++abi1 libclang-dev libclang1 libllvm-ocaml-dev libomp-dev libomp5 lld llvm-dev llvm-runtime llvm
-
 RUN wget -O- https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB \
     | gpg --dearmor | sudo tee /usr/share/keyrings/oneapi-archive-keyring.gpg > /dev/null \
     && echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main" > /etc/apt/sources.list.d/oneAPI.list \
     && apt-get update \
-    && apt install -y intel-oneapi-mkl-devel
+    && apt install -y intel-hpckit
+
+RUN wget https://apt.llvm.org/llvm.sh \
+    && chmod +x llvm.sh \
+    && ./llvm.sh 14 \
+    && apt install -y libomp-14-dev
 
 # Cleanup the image
 RUN apt-get autoremove -y \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/*
 
+# Set links to solve ninja dependencies when compiling
+RUN ln -s /usr/include /include
+
 # Switch back to dialog for any ad-hoc use of apt-get
 ENV DEBIAN_FRONTEND=dialog
-ENV LD_LIBRARY_PATH=/opt/intel/oneapi/mkl/latest/lib/intel64
-ENV LIBRARY_PATH=/opt/intel/oneapi/mkl/latest/lib/intel64
-ENV CPATH=/opt/intel/oneapi/mkl/latest/include
-ENV MKLROOT=/opt/intel/oneapi/mkl/latest
-ENV NLSPATH=/opt/intel/oneapi/mkl/latest/lib/intel64/locale/%l_%t/%N
+ENV LANG=C.UTF-8
+
+ENV ACL_BOARD_VENDOR_PATH='/opt/Intel/OpenCLFPGA/oneAPI/Boards'
+ENV ADVISOR_2022_DIR='/opt/intel/oneapi/advisor/2022.0.0'
+ENV APM='/opt/intel/oneapi/advisor/2022.0.0/perfmodels'
+ENV CCL_CONFIGURATION='cpu_gpu_dpcpp'
+ENV CCL_ROOT='/opt/intel/oneapi/ccl/2021.5.1'
+ENV CLASSPATH='/opt/intel/oneapi/mpi/2021.5.1//lib/mpi.jar:/opt/intel/oneapi/dal/2021.5.3/lib/onedal.jar'
+ENV CLCK_ROOT='/opt/intel/oneapi/clck/2021.5.0'
+ENV CMAKE_PREFIX_PATH='/opt/intel/oneapi/vpl/2022.0.0:/opt/intel/oneapi/tbb/2021.5.1/env/..:/opt/intel/oneapi/dal/2021.5.3:/opt/intel/oneapi/compiler/2022.0.2/linux/IntelDPCPP'
+ENV CMPLR_ROOT='/opt/intel/oneapi/compiler/2022.0.2'
+ENV CONDA_DEFAULT_ENV='intelpython-python3.9'
+ENV CONDA_EXE='/opt/intel/oneapi/intelpython/latest/bin/conda'
+ENV CONDA_PREFIX='/opt/intel/oneapi/intelpython/latest'
+ENV CONDA_PROMPT_MODIFIER='(intelpython-python3.9) '
+ENV CONDA_PYTHON_EXE='/opt/intel/oneapi/intelpython/latest/bin/python'
+ENV CONDA_SHLVL='1'
+ENV CPATH='/opt/intel/oneapi/vpl/2022.0.0/include:/opt/intel/oneapi/tbb/2021.5.1/env/../include:/opt/intel/oneapi/mpi/2021.5.1//include:/opt/intel/oneapi/mkl/2022.0.2/include:/opt/intel/oneapi/ippcp/2021.5.1/include:/opt/intel/oneapi/ipp/2021.5.2/include:/opt/intel/oneapi/dpl/2021.6.0/linux/include:/opt/intel/oneapi/dnnl/2022.0.2/cpu_dpcpp_gpu_dpcpp/lib:/opt/intel/oneapi/dev-utilities/2021.5.2/include:/opt/intel/oneapi/dal/2021.5.3/include:/opt/intel/oneapi/ccl/2021.5.1/include/cpu_gpu_dpcpp'
+ENV CPLUS_INCLUDE_PATH='/opt/intel/oneapi/clck/2021.5.0/include'
+ENV DAALROOT='/opt/intel/oneapi/dal/2021.5.3'
+ENV DALROOT='/opt/intel/oneapi/dal/2021.5.3'
+ENV DAL_MAJOR_BINARY='1'
+ENV DAL_MINOR_BINARY='1'
+ENV DNNLROOT='/opt/intel/oneapi/dnnl/2022.0.2/cpu_dpcpp_gpu_dpcpp'
+ENV DPL_ROOT='/opt/intel/oneapi/dpl/2021.6.0'
+ENV FI_PROVIDER_PATH='/opt/intel/oneapi/mpi/2021.5.1//libfabric/lib/prov:/usr/lib64/libfabric'
+ENV FPGA_VARS_ARGS=''
+ENV FPGA_VARS_DIR='/opt/intel/oneapi/compiler/2022.0.2/linux/lib/oclfpga'
+ENV GDB_INFO='/opt/intel/oneapi/debugger/2021.5.0/documentation/info/'
+ENV INFOPATH='/opt/intel/oneapi/debugger/2021.5.0/gdb/intel64/lib'
+ENV INSPECTOR_2022_DIR='/opt/intel/oneapi/inspector/2022.0.0'
+ENV INTELFPGAOCLSDKROOT='/opt/intel/oneapi/compiler/2022.0.2/linux/lib/oclfpga'
+ENV INTEL_LICENSE_FILE='/opt/intel/licenses:/root/intel/licenses:/opt/intel/oneapi/clck/2021.5.0/licensing:/opt/intel/licenses:/root/intel/licenses:/Users/Shared/Library/Application Support/Intel/Licenses'
+ENV INTEL_PYTHONHOME='/opt/intel/oneapi/debugger/2021.5.0/dep'
+ENV IPPCP_TARGET_ARCH='intel64'
+ENV IPPCRYPTOROOT='/opt/intel/oneapi/ippcp/2021.5.1'
+ENV IPPROOT='/opt/intel/oneapi/ipp/2021.5.2'
+ENV IPP_TARGET_ARCH='intel64'
+ENV I_MPI_ROOT='/opt/intel/oneapi/mpi/2021.5.1'
+ENV LD_LIBRARY_PATH='/opt/intel/oneapi/vpl/2022.0.0/lib:/opt/intel/oneapi/tbb/2021.5.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/mpi/2021.5.1//libfabric/lib:/opt/intel/oneapi/mpi/2021.5.1//lib/release:/opt/intel/oneapi/mpi/2021.5.1//lib:/opt/intel/oneapi/mkl/2022.0.2/lib/intel64:/opt/intel/oneapi/itac/2021.5.0/slib:/opt/intel/oneapi/ippcp/2021.5.1/lib/intel64:/opt/intel/oneapi/ipp/2021.5.2/lib/intel64:/opt/intel/oneapi/dnnl/2022.0.2/cpu_dpcpp_gpu_dpcpp/lib:/opt/intel/oneapi/debugger/2021.5.0/gdb/intel64/lib:/opt/intel/oneapi/debugger/2021.5.0/libipt/intel64/lib:/opt/intel/oneapi/debugger/2021.5.0/dep/lib:/opt/intel/oneapi/dal/2021.5.3/lib/intel64:/opt/intel/oneapi/compiler/2022.0.2/linux/lib:/opt/intel/oneapi/compiler/2022.0.2/linux/lib/x64:/opt/intel/oneapi/compiler/2022.0.2/linux/lib/oclfpga/host/linux64/lib:/opt/intel/oneapi/compiler/2022.0.2/linux/compiler/lib/intel64_lin:/opt/intel/oneapi/ccl/2021.5.1/lib/cpu_gpu_dpcpp'
+ENV LIBRARY_PATH='/opt/intel/oneapi/vpl/2022.0.0/lib:/opt/intel/oneapi/tbb/2021.5.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/mpi/2021.5.1//libfabric/lib:/opt/intel/oneapi/mpi/2021.5.1//lib/release:/opt/intel/oneapi/mpi/2021.5.1//lib:/opt/intel/oneapi/mkl/2022.0.2/lib/intel64:/opt/intel/oneapi/ippcp/2021.5.1/lib/intel64:/opt/intel/oneapi/ipp/2021.5.2/lib/intel64:/opt/intel/oneapi/dnnl/2022.0.2/cpu_dpcpp_gpu_dpcpp/lib:/opt/intel/oneapi/dal/2021.5.3/lib/intel64:/opt/intel/oneapi/compiler/2022.0.2/linux/compiler/lib/intel64_lin:/opt/intel/oneapi/compiler/2022.0.2/linux/lib:/opt/intel/oneapi/clck/2021.5.0/lib/intel64:/opt/intel/oneapi/ccl/2021.5.1/lib/cpu_gpu_dpcpp'
+ENV MANPATH='/opt/intel/oneapi/mpi/2021.5.1/man:/opt/intel/oneapi/itac/2021.5.0/man:/opt/intel/oneapi/debugger/2021.5.0/documentation/man:/opt/intel/oneapi/compiler/2022.0.2/documentation/en/man/common:/opt/intel/oneapi/clck/2021.5.0/man::'
+ENV MKLROOT='/opt/intel/oneapi/mkl/2022.0.2'
+ENV NLSPATH='/opt/intel/oneapi/mkl/2022.0.2/lib/intel64/locale/%l_%t/%N:/opt/intel/oneapi/compiler/2022.0.2/linux/compiler/lib/intel64_lin/locale/%l_%t/%N'
+ENV OCL_ICD_FILENAMES='libintelocl_emu.so:libalteracl.so:/opt/intel/oneapi/compiler/2022.0.2/linux/lib/x64/libintelocl.so'
+ENV ONEAPI_ROOT='/opt/intel/oneapi'
+ENV PATH='/opt/intel/oneapi/vtune/2022.1.0/bin64:/opt/intel/oneapi/vpl/2022.0.0/bin:/opt/intel/oneapi/mpi/2021.5.1//libfabric/bin:/opt/intel/oneapi/mpi/2021.5.1//bin:/opt/intel/oneapi/mkl/2022.0.2/bin/intel64:/opt/intel/oneapi/itac/2021.5.0/bin:/opt/intel/oneapi/intelpython/latest/bin:/opt/intel/oneapi/intelpython/latest/condabin:/opt/intel/oneapi/inspector/2022.0.0/bin64:/opt/intel/oneapi/dev-utilities/2021.5.2/bin:/opt/intel/oneapi/debugger/2021.5.0/gdb/intel64/bin:/opt/intel/oneapi/compiler/2022.0.2/linux/lib/oclfpga/bin:/opt/intel/oneapi/compiler/2022.0.2/linux/bin/intel64:/opt/intel/oneapi/compiler/2022.0.2/linux/bin:/opt/intel/oneapi/clck/2021.5.0/bin/intel64:/opt/intel/oneapi/advisor/2022.0.0/bin64:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+ENV PKG_CONFIG_PATH='/opt/intel/oneapi/vtune/2022.1.0/include/pkgconfig/lib64:/opt/intel/oneapi/vpl/2022.0.0/lib/pkgconfig:/opt/intel/oneapi/tbb/2021.5.1/env/../lib/pkgconfig:/opt/intel/oneapi/mpi/2021.5.1/lib/pkgconfig:/opt/intel/oneapi/mkl/2022.0.2/lib/pkgconfig:/opt/intel/oneapi/ippcp/2021.5.1/lib/pkgconfig:/opt/intel/oneapi/inspector/2022.0.0/include/pkgconfig/lib64:/opt/intel/oneapi/dpl/2021.6.0/lib/pkgconfig:/opt/intel/oneapi/dnnl/2022.0.2/cpu_dpcpp_gpu_dpcpp/../lib/pkgconfig:/opt/intel/oneapi/dal/2021.5.3/lib/pkgconfig:/opt/intel/oneapi/compiler/2022.0.2/lib/pkgconfig:/opt/intel/oneapi/ccl/2021.5.1/lib/pkgconfig:/opt/intel/oneapi/advisor/2022.0.0/include/pkgconfig/lib64:'
+ENV PYTHONPATH='/opt/intel/oneapi/advisor/2022.0.0/pythonapi'
+ENV SETVARS_COMPLETED='1'
+ENV TBBROOT='/opt/intel/oneapi/tbb/2021.5.1/env/..'
+ENV VTUNE_PROFILER_2022_DIR='/opt/intel/oneapi/vtune/2022.1.0'
+ENV VT_ADD_LIBS='-ldwarf -lelf -lvtunwind -lm -lpthread'
+ENV VT_LIB_DIR='/opt/intel/oneapi/itac/2021.5.0/lib'
+ENV VT_MPI='impi4'
+ENV VT_ROOT='/opt/intel/oneapi/itac/2021.5.0'
+ENV VT_SLIB_DIR='/opt/intel/oneapi/itac/2021.5.0/slib'
+ENV _CE_CONDA=''
+ENV _CE_M=''
 
 USER vscode
