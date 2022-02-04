@@ -3,7 +3,6 @@
 #include "EinsumsInCpp/Print.hpp"
 #include "EinsumsInCpp/STL.hpp"
 #include "EinsumsInCpp/State.hpp"
-#include "EinsumsInCpp/Timer.hpp"
 
 // Include headers from the ranges library that we need to handle cartesian_products
 #include "range/v3/view/cartesian_product.hpp"
