@@ -1,9 +1,9 @@
 #pragma once
 
-#include "STL.hpp"
-#include "OpenMP.h"
 #include "LinearAlgebra.hpp"
+#include "OpenMP.h"
 #include "Print.hpp"
+#include "STL.hpp"
 #include "Tensor.hpp"
 #if defined(EINSUMS_USE_HPTT)
 #include "hptt.h"
@@ -84,22 +84,6 @@ struct Indices : public std::tuple<Args...> {
     Indices(Args... args) : std::tuple<Args...>(args...){};
 };
 
-#if 0
-namespace Detail {
-
-template <template <size_t, typename> typename TensorType, size_t Rank, typename... Indices, typename... FilterIndices,
-          std::size_t... FilterIndex, typename T = double>
-auto determine_dim_ranges(const TensorType<Rank, T> &source, const std::tuple<Indices...> &sourceIndices,
-                          const std::tuple<FilterIndices...> &filterIndices) {}
-} // namespace Detail
-
-template <template <size_t, typename> typename TensorType, size_t Rank, typename... Indices, typename... FilterIndices, typename T = double>
-auto determine_dim_ranges(const TensorType<Rank, T> &source, const std::tuple<Indices...> &sourceIndices,
-                          const std::tuple<FilterIndices...> &filterIndices) {
-    return Detail::determine_dim_ranges(source, sourceIndices, filterIndices, std::make_index_sequence<sizeof...(FilterIndices)>{});
-}
-#endif
-
 namespace Detail {
 
 template <size_t Rank, typename... Args, std::size_t... I>
@@ -169,13 +153,6 @@ template <typename... Ts, typename... Us>
 constexpr auto find_type_with_position(const std::tuple<Ts...> &, const std::tuple<Us...> &) {
     return _find_type_with_position<std::tuple<Ts...>, Us...>(std::make_index_sequence<sizeof...(Ts)>{});
 }
-
-#if 0
-template <typename... Ts, typename... Args>
-[[deprecated]] constexpr auto find_type_with_position() {
-    return Detail::find_type_with_position<std::tuple<Ts...>, std::tuple<Args...>>(std::make_index_sequence<sizeof...(Ts)>());
-}
-#endif
 
 template <template <size_t, typename> typename TensorType, size_t Rank, typename... Args, typename T = double>
 auto get_dim_ranges_for(const TensorType<Rank, T> &tensor, const std::tuple<Args...> &args) {
@@ -557,8 +534,9 @@ auto einsum(const T C_prefactor, const std::tuple<CIndices...> &C_indices, CType
     -> std::enable_if_t<std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<ARank, T>, AType<ARank, T>> &&
                         std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<BRank, T>, BType<BRank, T>> &&
                         std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<CRank, T>, CType<CRank, T>>> {
-    Timer::push(fmt::format("einsum: C({}) = {} A({}) * B({}) + {} C({})", print_tuple_no_type(C_indices), AB_prefactor,
-                            print_tuple_no_type(A_indices), print_tuple_no_type(B_indices), C_prefactor, print_tuple_no_type(C_indices)));
+    Timer::push(fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{} + {} "{}"{})", C->name(), print_tuple_no_type(C_indices), AB_prefactor,
+                            A.name(), print_tuple_no_type(A_indices), B.name(), print_tuple_no_type(B_indices), C_prefactor, C->name(),
+                            print_tuple_no_type(C_indices)));
 
 #ifdef CONTINUOUSLY_TEST_EINSUM
     // Clone C into a new tensor
@@ -638,8 +616,8 @@ auto sort(const T C_prefactor, const std::tuple<CIndices...> &C_indices, CType<C
                         std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<ARank, T>, AType<ARank, T>> &&
                         sizeof...(CIndices) == sizeof...(AIndices) && sizeof...(CIndices) == CRank && sizeof...(AIndices) == ARank> {
 
-    Timer::push(fmt::format("sort: C({}) = {} A({}) + {} C({})", print_tuple_no_type(C_indices), A_prefactor,
-                            print_tuple_no_type(A_indices), C_prefactor, print_tuple_no_type(C_indices)));
+    Timer::push(fmt::format(R"(sort: "{}"{} = {} "{}"{} + {} "{}"{})", C->name(), print_tuple_no_type(C_indices), A_prefactor, A.name(),
+                            print_tuple_no_type(A_indices), C_prefactor, C->name(), print_tuple_no_type(C_indices)));
 
     // Error check:  If there are any remaining indices then we cannot perform a sort
     constexpr auto check = difference_t<std::tuple<AIndices...>, std::tuple<CIndices...>>();
