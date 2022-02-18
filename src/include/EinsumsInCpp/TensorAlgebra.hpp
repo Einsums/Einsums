@@ -468,17 +468,17 @@ auto einsum(const T C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<C
 
                     dA[0] = product_dims(A_target_position_in_C, *C);
                     dA[1] = product_dims(link_position_in_A, A);
-                    if (transpose_A)
+                    if constexpr (transpose_A)
                         std::swap(dA[0], dA[1]);
 
                     dB[0] = product_dims(link_position_in_B, B);
                     dB[1] = product_dims(B_target_position_in_C, *C);
-                    if (transpose_B)
+                    if constexpr (transpose_B)
                         std::swap(dB[0], dB[1]);
 
                     dC[0] = product_dims(A_target_position_in_C, *C);
                     dC[1] = product_dims(B_target_position_in_C, *C);
-                    if (transpose_C)
+                    if constexpr (transpose_C)
                         std::swap(dC[0], dC[1]);
 
                     TensorView<2, T> tC{*C, dC};

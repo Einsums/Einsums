@@ -546,7 +546,7 @@ struct TensorView final : public Detail::TensorBase<Rank, T> {
             // Else since we're different Ranks we cannot automatically determine our stride and the user MUST
             // provide the information
         } else {
-            if (std::accumulate(_dims.begin(), _dims.end(), 1.0, std::multiplies<>()) == other._data.size()) {
+            if (std::accumulate(_dims.begin(), _dims.end(), 1.0, std::multiplies<>()) == std::accumulate(other._dims.begin(), other._dims.end(), 1.0, std::multiplies<>())) {
                 struct stride {
                     size_t value{1};
                     stride() = default;
@@ -563,8 +563,9 @@ struct TensorView final : public Detail::TensorBase<Rank, T> {
             } else {
                 // Stride information cannot be automatically deduced.  It must be provided.
                 default_strides = Arguments::get(error_strides, args...);
-                assert(default_strides[0] != static_cast<size_t>(-1) &&
-                       "Unable to automatically deduce stride information.  It must be passed in.");
+                if (default_strides[0] == static_cast<size_t>(-1)) {
+                    throw std::runtime_error("Unable to automatically deduce stride information. Stride must be passed in.");
+                }
             }
         }
 
@@ -587,6 +588,9 @@ struct TensorView final : public Detail::TensorBase<Rank, T> {
 
     template <size_t Rank_, typename T_>
     friend struct Tensor;
+
+    template <size_t OtherRank_, typename T_>
+    friend struct TensorView;
 };
 
 template <typename T = double, typename... MultiIndex>

@@ -133,6 +133,28 @@ TEST_CASE("TensorView creation", "[tensor]") {
             REQUIRE(viewA(i, j) == ij);
 }
 
+TEST_CASE("Nested TensorView") {
+    EinsumsInCpp::Tensor<2, double> A("A", 10, 10);
+    A.set_all(0.0);
+    EinsumsInCpp::TensorView<2, double> viewA1(A, EinsumsInCpp::Dim<2>{5, 5}, EinsumsInCpp::Offset<2>{5, 5});
+    EinsumsInCpp::TensorView<2, double> viewA2(viewA1, EinsumsInCpp::Dim<2>{2, 2}, EinsumsInCpp::Offset<2>{2, 2});
+
+    viewA2(0, 0) = 1.0;
+    println(A);
+    println(viewA1);
+    println(viewA2);
+
+    // Making a lower rank TensorView from a another one can be done manually. One must pass Stride information.
+    // TODO: Allow einsum to determine what striding information is needed.
+    
+    // EinsumsInCpp::TensorView<1, double> viewA3(viewA1, EinsumsInCpp::Dim<1>{3}, EinsumsInCpp::Offset<2>{2, 2} /*, EinsumsInCpp::Stride<1>{1} */);
+    // viewA3(1) = 2.0;
+    // viewA3(2) = 3.0;
+
+    // println(viewA3);
+    // println(A);
+}
+
 TEST_CASE("Tensor-2D HDF5") {
     EinsumsInCpp::Tensor<2, double> A("A", 3, 3);
 
