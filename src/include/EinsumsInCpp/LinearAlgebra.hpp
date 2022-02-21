@@ -232,7 +232,7 @@ auto axpy(double alpha, const XType<Rank, double> &X, YType<Rank, double> *Y)
 
 template <template <size_t, typename> typename XYType, size_t XYRank, template <size_t, typename> typename AType, size_t ARank>
 auto ger(double alpha, const XYType<XYRank, double> &X, const XYType<XYRank, double> &Y, AType<ARank, double> *A)
-    -> std::enable_if_t<is_incore_rank_tensor_v<XYType<XYRank, double>, 2> && is_incore_rank_tensor_v<AType<ARank, double>, 2>, double> {
+    -> std::enable_if_t<is_incore_rank_tensor_v<XYType<XYRank, double>, 1> && is_incore_rank_tensor_v<AType<ARank, double>, 2>, double> {
     Timer::push("ger");
     Blas::dger(X.dim(0), Y.dim(0), alpha, X.data(), X.stride(0), Y.data(), Y.stride(0), A->data(), A->stride(0));
     Timer::pop();
