@@ -1419,6 +1419,131 @@ TEST_CASE("Hadamard") {
     }
 }
 
+TEST_CASE("unique_ptr") {
+    using namespace EinsumsInCpp;
+    using namespace TensorAlgebra;
+    using namespace TensorAlgebra::Index;
+
+    SECTION("C") {
+        auto C0 = std::make_unique<Tensor<2>>("C0", 3, 3);
+        Tensor<2> C1{"C1", 3, 3};
+        Tensor<2> A = create_random_tensor("A", 3, 5);
+        Tensor<2> B = create_random_tensor("B", 5, 3);
+
+        // Working to get the einsum to perform the gemm that follows.
+        TensorAlgebra::einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B);
+        LinearAlgebra::gemm<false, false>(1.0, A, B, 0, &C1);
+
+        for (size_t i0 = 0; i0 < C0->dim(0); i0++) {
+            for (size_t j0 = 0; j0 < C0->dim(1); j0++) {
+                REQUIRE_THAT(C0->operator()(i0, j0), Catch::Matchers::WithinRel(C1(i0, j0), 0.0001));
+            }
+        }
+    }
+
+    SECTION("A") {
+        Tensor<2> C0{"C0", 3, 3};
+        Tensor<2> C1{"C1", 3, 3};
+        auto A = std::make_unique<Tensor<2>>(create_random_tensor("A", 3, 5));
+        Tensor<2> B = create_random_tensor("B", 5, 3);
+
+        // Working to get the einsum to perform the gemm that follows.
+        TensorAlgebra::einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B);
+        LinearAlgebra::gemm<false, false>(1.0, *A, B, 0, &C1);
+
+        for (size_t i0 = 0; i0 < C0.dim(0); i0++) {
+            for (size_t j0 = 0; j0 < C0.dim(1); j0++) {
+                REQUIRE_THAT(C0(i0, j0), Catch::Matchers::WithinRel(C1(i0, j0), 0.0001));
+            }
+        }
+    }
+
+    SECTION("B") {
+        Tensor<2> C0{"C0", 3, 3};
+        Tensor<2> C1{"C1", 3, 3};
+        Tensor<2> A = create_random_tensor("A", 5, 3);
+        auto B = std::make_unique<Tensor<2>>(create_random_tensor("B", 3, 5));
+
+        // Working to get the einsum to perform the gemm that follows.
+        TensorAlgebra::einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B);
+        LinearAlgebra::gemm<false, false>(1.0, A, *B, 0, &C1);
+
+        for (size_t i0 = 0; i0 < C0.dim(0); i0++) {
+            for (size_t j0 = 0; j0 < C0.dim(1); j0++) {
+                REQUIRE_THAT(C0(i0, j0), Catch::Matchers::WithinRel(C1(i0, j0), 0.0001));
+            }
+        }
+    }
+
+    SECTION("AB") {
+        Tensor<2> C0{"C0", 3, 3};
+        Tensor<2> C1{"C1", 3, 3};
+        auto A = std::make_unique<Tensor<2>>(create_random_tensor("A", 3, 5));
+        auto B = std::make_unique<Tensor<2>>(create_random_tensor("B", 3, 5));
+
+        // Working to get the einsum to perform the gemm that follows.
+        TensorAlgebra::einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B);
+        LinearAlgebra::gemm<false, false>(1.0, *A, *B, 0, &C1);
+
+        for (size_t i0 = 0; i0 < C0.dim(0); i0++) {
+            for (size_t j0 = 0; j0 < C0.dim(1); j0++) {
+                REQUIRE_THAT(C0(i0, j0), Catch::Matchers::WithinRel(C1(i0, j0), 0.0001));
+            }
+        }
+    }
+
+    SECTION("CA") {
+        auto C0 = std::make_unique<Tensor<2>>("C0", 3, 3);
+        Tensor<2> C1{"C1", 3, 3};
+        auto A = std::make_unique<Tensor<2>>(create_random_tensor("A", 3, 5));
+        Tensor<2> B = create_random_tensor("B", 5, 3);
+
+        // Working to get the einsum to perform the gemm that follows.
+        TensorAlgebra::einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B);
+        LinearAlgebra::gemm<false, false>(1.0, *A, B, 0, &C1);
+
+        for (size_t i0 = 0; i0 < C0->dim(0); i0++) {
+            for (size_t j0 = 0; j0 < C0->dim(1); j0++) {
+                REQUIRE_THAT(C0->operator()(i0, j0), Catch::Matchers::WithinRel(C1(i0, j0), 0.0001));
+            }
+        }
+    }
+
+    SECTION("CB") {
+        auto C0 = std::make_unique<Tensor<2>>("C0", 3, 3);
+        Tensor<2> C1{"C1", 3, 3};
+        Tensor<2> A = create_random_tensor("A", 5, 3);
+        auto B = std::make_unique<Tensor<2>>(create_random_tensor("B", 3, 5));
+
+        // Working to get the einsum to perform the gemm that follows.
+        TensorAlgebra::einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B);
+        LinearAlgebra::gemm<false, false>(1.0, A, *B, 0, &C1);
+
+        for (size_t i0 = 0; i0 < C0->dim(0); i0++) {
+            for (size_t j0 = 0; j0 < C0->dim(1); j0++) {
+                REQUIRE_THAT(C0->operator()(i0, j0), Catch::Matchers::WithinRel(C1(i0, j0), 0.0001));
+            }
+        }
+    }
+
+    SECTION("CAB") {
+        auto C0 = std::make_unique<Tensor<2>>("C0", 3, 3);
+        Tensor<2> C1{"C1", 3, 3};
+        auto A = std::make_unique<Tensor<2>>(create_random_tensor("A", 3, 5));
+        auto B = std::make_unique<Tensor<2>>(create_random_tensor("B", 3, 5));
+
+        // Working to get the einsum to perform the gemm that follows.
+        TensorAlgebra::einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B);
+        LinearAlgebra::gemm<false, false>(1.0, *A, *B, 0, &C1);
+
+        for (size_t i0 = 0; i0 < C0->dim(0); i0++) {
+            for (size_t j0 = 0; j0 < C0->dim(1); j0++) {
+                REQUIRE_THAT(C0->operator()(i0, j0), Catch::Matchers::WithinRel(C1(i0, j0), 0.0001));
+            }
+        }
+    }
+}
+
 TEST_CASE("Transpose C", "[einsum]") {
     using namespace EinsumsInCpp;
     using namespace TensorAlgebra;

@@ -39,7 +39,7 @@ auto main() -> int {
     Timer::push("Allocation 1");
     auto pqrS = std::make_unique<Tensor<4>>("pqrS", nbs1, nbs2, nbs3, nmo4);
     Timer::pop();
-    einsum(Indices{p, q, r, S}, pqrS.get(), Indices{p, q, r, s}, *GAO, Indices{s, S}, C4);
+    einsum(Indices{p, q, r, S}, &pqrS, Indices{p, q, r, s}, GAO, Indices{s, S}, C4);
     GAO.reset(nullptr);
     Timer::pop();
 
@@ -48,30 +48,30 @@ auto main() -> int {
     auto pqSr = std::make_unique<Tensor<4>>("pqSr", nbs1, nbs2, nmo4, nbs3);
     Timer::pop();
     Timer::push("presort");
-    sort(Indices{p, q, S, r}, pqSr.get(), Indices{p, q, r, S}, *pqrS);
+    sort(Indices{p, q, S, r}, &pqSr, Indices{p, q, r, S}, pqrS);
     Timer::pop();
     pqrS.reset(nullptr);
 
     Timer::push("Allocation 2");
     auto pqSR = std::make_unique<Tensor<4>>("pqSR", nbs1, nbs2, nmo4, nmo3);
     Timer::pop();
-    einsum(Indices{p, q, S, R}, pqSR.get(), Indices{p, q, S, r}, *pqSr, Indices{r, R}, C3);
+    einsum(Indices{p, q, S, R}, &pqSR, Indices{p, q, S, r}, pqSr, Indices{r, R}, C3);
     pqSr.reset(nullptr);
     Timer::pop();
 
     Timer::push("C2");
-    Timer::push("Allocation1 ");
+    Timer::push("Allocation 1");
     auto RSpq = std::make_unique<Tensor<4>>("RSpq", nmo3, nmo4, nbs1, nbs2);
     Timer::pop();
     Timer::push("presort");
-    sort(Indices{R, S, p, q}, RSpq.get(), Indices{p, q, S, R}, *pqSR);
+    sort(Indices{R, S, p, q}, &RSpq, Indices{p, q, S, R}, pqSR);
     pqSR.reset(nullptr);
     Timer::pop();
 
     Timer::push("Allocation 2");
     auto RSpQ = std::make_unique<Tensor<4>>("RSpQ", nmo3, nmo4, nbs1, nmo2);
     Timer::pop();
-    einsum(Indices{R, S, p, Q}, RSpQ.get(), Indices{R, S, p, q}, *RSpq, Indices{q, Q}, C2);
+    einsum(Indices{R, S, p, Q}, &RSpQ, Indices{R, S, p, q}, RSpq, Indices{q, Q}, C2);
     RSpq.reset(nullptr);
     Timer::pop();
 
@@ -80,14 +80,14 @@ auto main() -> int {
     auto RSQp = std::make_unique<Tensor<4>>("RSQp", nmo3, nmo4, nmo2, nbs1);
     Timer::pop();
     Timer::push("presort");
-    sort(Indices{R, S, Q, p}, RSQp.get(), Indices{R, S, p, Q}, *RSpQ);
+    sort(Indices{R, S, Q, p}, &RSQp, Indices{R, S, p, Q}, RSpQ);
     RSpQ.reset(nullptr);
     Timer::pop();
 
     Timer::push("Allocation 2");
     auto RSQP = std::make_unique<Tensor<4>>("RSQP", nmo3, nmo4, nmo2, nmo1);
     Timer::pop();
-    einsum(Indices{R, S, Q, P}, RSQP.get(), Indices{R, S, Q, p}, *RSQp, Indices{p, P}, C1);
+    einsum(Indices{R, S, Q, P}, &RSQP, Indices{R, S, Q, p}, RSQp, Indices{p, P}, C1);
     RSQp.reset(nullptr);
     Timer::pop();
 
@@ -95,7 +95,7 @@ auto main() -> int {
     Timer::push("Allocation");
     Tensor<4> PQRS{"PQRS", nmo1, nmo2, nmo3, nmo4};
     Timer::pop();
-    sort(Indices{P, Q, R, S}, &PQRS, Indices{R, S, Q, P}, *RSQP);
+    sort(Indices{P, Q, R, S}, &PQRS, Indices{R, S, Q, P}, RSQP);
     RSQP.reset(nullptr);
     Timer::pop();
 
