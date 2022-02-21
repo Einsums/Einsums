@@ -329,6 +329,8 @@ struct Tensor final : public Detail::TensorBase<Rank, T> {
 
     [[nodiscard]] auto stride(int d) const noexcept -> size_t { return _strides[d]; }
 
+    auto strides() const noexcept -> const auto & { return _strides; }
+
     auto to_rank_1_view() const -> TensorView<1, T> {
         size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
         Dim<1> dim{size};
@@ -511,6 +513,8 @@ struct TensorView final : public Detail::TensorBase<Rank, T> {
 
     [[nodiscard]] auto stride(int d) const noexcept -> size_t { return _strides[d]; }
 
+    auto strides() const noexcept -> const auto & { return _strides; }
+
   private:
     auto common_initialization(const double *other) {
         _data = const_cast<double *>(other);
@@ -546,7 +550,8 @@ struct TensorView final : public Detail::TensorBase<Rank, T> {
             // Else since we're different Ranks we cannot automatically determine our stride and the user MUST
             // provide the information
         } else {
-            if (std::accumulate(_dims.begin(), _dims.end(), 1.0, std::multiplies<>()) == std::accumulate(other._dims.begin(), other._dims.end(), 1.0, std::multiplies<>())) {
+            if (std::accumulate(_dims.begin(), _dims.end(), 1.0, std::multiplies<>()) ==
+                std::accumulate(other._dims.begin(), other._dims.end(), 1.0, std::multiplies<>())) {
                 struct stride {
                     size_t value{1};
                     stride() = default;

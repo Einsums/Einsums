@@ -1597,3 +1597,43 @@ TEST_CASE("gemv") {
         // println(F);
     }
 }
+
+TEST_CASE("TensorView einsum") {
+    using namespace EinsumsInCpp;
+    using namespace EinsumsInCpp::TensorAlgebra;
+    using namespace EinsumsInCpp::TensorAlgebra::Index;
+
+    // Test if everything passed to einsum is a TensorView.
+    Tensor<2> A = create_random_tensor("A", 3, 5);
+    Tensor<2> B = create_random_tensor("B", 3, 5);
+    TensorView<2> A_view{A, Dim<2>{3, 3}};
+    TensorView<2> B_view{B, Dim<2>{3, 3}, Offset<2>{0, 2}};
+
+    Tensor<2> C{"C2", 10, 10};
+    TensorView<2> C_view{C, Dim<2>{3, 3}, Offset<2>{5, 5}};
+
+    // To perform the test we make an explicit copy of the TensorViews into their own Tensors
+    Tensor<2> A_copy{"A copy", 3, 3};
+    Tensor<2> B_copy{"B copy", 3, 3};
+
+    for (int x = 0; x < 3; x++) {
+        for (int y = 0; y < 3; y++) {
+            A_copy(x, y) = A_view(x, y);
+            B_copy(x, y) = B_view(x, y);
+        }
+    }
+
+    // The target solution is determined from not using views
+    Tensor<2> C_solution{"C solution", 3, 3};
+    einsum(Indices{i, j}, &C_solution, Indices{i, k}, A_copy, Indices{j, k}, B_copy);
+
+    // einsum where everything is a TensorView
+    einsum(Indices{i, j}, &C_view, Indices{i, k}, A_view, Indices{j, k}, B_view);
+
+    for (int x = 0; x < 3; x++) {
+        for (int y = 0; y < 3; y++) {
+            REQUIRE_THAT(C_view(x, y), Catch::Matchers::WithinAbs(C_solution(x, y), 0.001));
+            REQUIRE_THAT(C(x + 5, y + 5), Catch::Matchers::WithinAbs(C_solution(x, y), 0.001));
+        }
+    }
+}

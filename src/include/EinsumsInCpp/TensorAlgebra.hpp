@@ -222,11 +222,6 @@ constexpr auto product_dims(const std::tuple<PositionsInX...> &indices, const XT
     return (X.dim(std::get<2 * I + 1>(indices)) * ... * 1);
 }
 
-template <template <size_t, typename> typename XType, size_t XRank, typename... PositionsInX, std::size_t... I, typename T = double>
-constexpr auto product_strides(const std::tuple<PositionsInX...> &indices, const XType<XRank, T> &X, std::index_sequence<I...>) -> size_t {
-    return (X.stride(std::get<2 * I + 1>(indices)) * ... * 1);
-}
-
 template <typename LHS, typename RHS, std::size_t... I>
 constexpr auto same_indices(std::index_sequence<I...>) {
     return (std::is_same_v<std::tuple_element_t<I, LHS>, std::tuple_element_t<I, RHS>> && ...);
@@ -238,8 +233,8 @@ constexpr auto product_dims(const std::tuple<PositionsInX...> &indices, const XT
 }
 
 template <template <size_t, typename> typename XType, size_t XRank, typename... PositionsInX, typename T = double>
-constexpr auto product_strides(const std::tuple<PositionsInX...> &indices, const XType<XRank, T> &X) -> size_t {
-    return Detail::product_strides(indices, X, std::make_index_sequence<sizeof...(PositionsInX) / 2>());
+constexpr auto last_stride(const std::tuple<PositionsInX...> &indices, const XType<XRank, T> &X) -> size_t {
+    return X.stride(std::get<sizeof...(PositionsInX) - 1>(indices));
 }
 
 template <typename LHS, typename RHS>
@@ -465,24 +460,37 @@ auto einsum(const T C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<C
                     constexpr bool transpose_C = std::get<1>(A_target_position_in_C) != 0;
 
                     Dim<2> dA, dB, dC;
+                    Stride<2> sA, sB, sC;
 
                     dA[0] = product_dims(A_target_position_in_C, *C);
                     dA[1] = product_dims(link_position_in_A, A);
-                    if constexpr (transpose_A)
+                    sA[0] = last_stride(target_position_in_A, A);
+                    sA[1] = last_stride(link_position_in_A, A);
+                    if constexpr (transpose_A) {
                         std::swap(dA[0], dA[1]);
+                        std::swap(sA[0], sA[1]);
+                    }
 
                     dB[0] = product_dims(link_position_in_B, B);
                     dB[1] = product_dims(B_target_position_in_C, *C);
-                    if constexpr (transpose_B)
+                    sB[0] = last_stride(link_position_in_B, B);
+                    sB[1] = last_stride(target_position_in_B, B);
+                    if constexpr (transpose_B) {
                         std::swap(dB[0], dB[1]);
+                        std::swap(sB[0], sB[1]);
+                    }
 
                     dC[0] = product_dims(A_target_position_in_C, *C);
                     dC[1] = product_dims(B_target_position_in_C, *C);
-                    if constexpr (transpose_C)
+                    sC[0] = last_stride(A_target_position_in_C, *C);
+                    sC[1] = last_stride(B_target_position_in_C, *C);
+                    if constexpr (transpose_C) {
                         std::swap(dC[0], dC[1]);
+                        std::swap(sC[0], sC[1]);
+                    }
 
-                    TensorView<2, T> tC{*C, dC};
-                    const TensorView<2, T> tA{const_cast<AType<ARank, T> &>(A), dA}, tB{const_cast<BType<BRank, T> &>(B), dB};
+                    TensorView<2, T> tC{*C, dC, sC};
+                    const TensorView<2, T> tA{const_cast<AType<ARank, T> &>(A), dA, sA}, tB{const_cast<BType<BRank, T> &>(B), dB, sB};
 
                     if constexpr (!transpose_C && !transpose_A && !transpose_B) {
                         LinearAlgebra::gemm<false, false>(AB_prefactor, tA, tB, C_prefactor, &tC);
