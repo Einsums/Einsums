@@ -403,6 +403,12 @@ auto einsum(const T C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<C
     constexpr auto dot_product =
         sizeof...(CIndices) == 0 && A_exactly_matches_B && !A_hadamard_found && !B_hadamard_found && !C_hadamard_found;
 
+    constexpr auto outer_product = std::tuple_size_v<decltype(links)> == 0 && contiguous_target_position_in_A &&
+                                   contiguous_target_position_in_B && !A_hadamard_found && !B_hadamard_found && !C_hadamard_found;
+
+    Timer::push(fmt::format("ger possible {}", outer_product));
+    Timer::pop();
+
     if constexpr (dot_product) {
         T temp = LinearAlgebra::dot(A, B);
         (*C) *= C_prefactor;
@@ -425,7 +431,22 @@ auto einsum(const T C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<C
             target_value *= C_prefactor;
             target_value += temp;
         }
+    } else if constexpr (outer_product) {
+        constexpr bool swap_AB = std::get<1>(A_target_position_in_C) != 0;
 
+        Dim<2> dC;
+        dC[0] = product_dims(A_target_position_in_C, *C);
+        dC[1] = product_dims(B_target_position_in_C, *C);
+        TensorView<2, T> tC{*C, dC};
+
+        LinearAlgebra::scale(C_prefactor, C);
+        if constexpr (swap_AB) {
+            LinearAlgebra::ger(AB_prefactor, A.to_rank_1_view(), B.to_rank_1_view(), &tC);
+        } else {
+            LinearAlgebra::ger(AB_prefactor, B.to_rank_1_view(), A.to_rank_1_view(), &tC);
+        }
+
+        return;
     } else if constexpr (!OnlyUseGenericAlgorithm) {
         // To use a gemm the input tensors need to be at least rank 2
         if constexpr (CRank >= 2 && ARank >= 2 && BRank >= 2) {

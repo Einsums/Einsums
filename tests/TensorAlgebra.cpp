@@ -1762,3 +1762,40 @@ TEST_CASE("TensorView einsum") {
         }
     }
 }
+
+TEST_CASE("outer product") {
+    using namespace EinsumsInCpp;
+    using namespace EinsumsInCpp::TensorAlgebra;
+    using namespace EinsumsInCpp::TensorAlgebra::Index;
+
+    Tensor<1> A = create_random_tensor("A", 3);
+    Tensor<1> B = create_random_tensor("B", 3);
+    Tensor<2> C{"C", 3, 3};
+    C.set_all(0.0);
+
+    einsum(Indices{i, j}, &C, Indices{i}, A, Indices{j}, B);
+
+    for (int x = 0; x < 3; x++) {
+        for (int y = 0; y < 3; y++) {
+            REQUIRE_THAT(C(x, y), Catch::Matchers::WithinAbs(A(x) * B(y), 0.001));
+        }
+    }
+
+    C.set_all(0.0);
+    einsum(Indices{i, j}, &C, Indices{j}, A, Indices{i}, B);
+
+    for (int x = 0; x < 3; x++) {
+        for (int y = 0; y < 3; y++) {
+            REQUIRE_THAT(C(x, y), Catch::Matchers::WithinAbs(A(y) * B(x), 0.001));
+        }
+    }
+
+    C.set_all(0.0);
+    einsum(Indices{j, i}, &C, Indices{j}, A, Indices{i}, B);
+
+    for (int x = 0; x < 3; x++) {
+        for (int y = 0; y < 3; y++) {
+            REQUIRE_THAT(C(y, x), Catch::Matchers::WithinAbs(A(y) * B(x), 0.001));
+        }
+    }
+}
