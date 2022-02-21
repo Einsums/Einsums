@@ -4,7 +4,7 @@ add_library(EinsumsInCpp
     Print.cpp
     State.cpp
     Timer.cpp
-    $<$<NOT:$<BOOL:OpenMP_FOUND>>:OpenMP.c>
+    $<$<NOT:$<TARGET_EXISTS:OpenMP::OpenMP_CXX>>:OpenMP.c>
 )
 
 if (EINSUMS_USE_HPTT)
@@ -20,7 +20,7 @@ target_link_libraries(EinsumsInCpp
         fmt::fmt
         h5cpp::h5cpp
         $<$<BOOL:EINSUMS_USE_HPTT>:hptt::hptt>
-        $<$<BOOL:OpenMP_FOUND>:OpenMP::OpenMP_CXX>
+        $<$<TARGET_EXISTS:OpenMP::OpenMP_CXX>:OpenMP::OpenMP_CXX>
 )
 
 target_include_directories(EinsumsInCpp
