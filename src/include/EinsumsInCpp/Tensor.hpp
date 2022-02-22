@@ -432,6 +432,11 @@ struct TensorView final : public Detail::TensorBase<Rank, T> {
     }
 
     template <size_t OtherRank, typename... Args>
+    explicit TensorView(const TensorView<OtherRank, T> &other, const Dim<Rank> &dim, Args &&...args) : _name{other._name}, _dims{dim} {
+        common_initialization(const_cast<TensorView<OtherRank, T> &>(other), args...);
+    }
+
+    template <size_t OtherRank, typename... Args>
     explicit TensorView(std::string name, Tensor<OtherRank, T> &other, const Dim<Rank> &dim, Args &&...args)
         : _name{std::move(name)}, _dims{dim} {
         common_initialization(other, args...);
@@ -514,6 +519,22 @@ struct TensorView final : public Detail::TensorBase<Rank, T> {
     [[nodiscard]] auto stride(int d) const noexcept -> size_t { return _strides[d]; }
 
     auto strides() const noexcept -> const auto & { return _strides; }
+
+    auto to_rank_1_view() const -> TensorView<1, T> {
+        if constexpr (Rank == 1) {
+            return *this;
+        } else {
+            if (_strides[Rank - 1] != 1) {
+                throw std::runtime_error("Creating a Rank-1 TensorView for this Tensor(View) is not supported.");
+            }
+            size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
+            Dim<1> dim{size};
+
+            println("Creating a Rank-1 TensorView of an existing TensorView may not work. Be careful!");
+
+            return TensorView<1, T>{*this, dim, Stride<1>{1}};
+        }
+    }
 
   private:
     auto common_initialization(const double *other) {
