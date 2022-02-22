@@ -48,7 +48,7 @@ endif()
 option(EINSUMS_USE_HPTT "Use the HPTT package for tensor transpositions" ON)
 
 # Attempt to find MKL. This assumes the user set MKL_DIR.
-set(BLA_VENDOR Intel10_64_dyn)
+# set(BLA_VENDOR Intel10_64_dyn)
 # find_package(MKL CONFIG)
 # message(STATUS "${MKL_IMPORTED_TARGETS}")
 if (TARGET MKL::MKL)
