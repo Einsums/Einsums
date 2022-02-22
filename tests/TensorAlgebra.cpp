@@ -444,8 +444,7 @@ TEST_CASE("einsum1", "[tensor]") {
             }
         }
 
-        // einsum("ik=ij,jk", &C, A, B);
-        einsum(Indices{Index::i, Index::j}, &C, Indices{Index::i, Index::k}, A, Indices{Index::k, Index::j}, B);
+        REQUIRE_NOTHROW(einsum(Indices{Index::i, Index::j}, &C, Indices{Index::i, Index::k}, A, Indices{Index::k, Index::j}, B));
 
         // println(A);
         // println(B);
@@ -484,7 +483,8 @@ TEST_CASE("einsum1", "[tensor]") {
         // println(C);
 
         // einsum("il=ijk,jkl", &C, A, B);
-        einsum(Indices{Index::i, Index::l}, &C, Indices{Index::i, Index::j, Index::k}, A, Indices{Index::j, Index::k, Index::l}, B);
+        REQUIRE_NOTHROW(
+            einsum(Indices{Index::i, Index::l}, &C, Indices{Index::i, Index::j, Index::k}, A, Indices{Index::j, Index::k, Index::l}, B));
 
         // println(C);
 
@@ -535,7 +535,8 @@ TEST_CASE("einsum TensorView", "[tensor]") {
         // false, false
         {
             // einsum("ik=ij,jk", &result, view, view);
-            einsum(Indices{Index::i, Index::k}, &result, Indices{Index::i, Index::j}, view, Indices{Index::j, Index::k}, view);
+            REQUIRE_NOTHROW(
+                einsum(Indices{Index::i, Index::k}, &result, Indices{Index::i, Index::j}, view, Indices{Index::j, Index::k}, view));
             // gemm<false, false>(1.0, view, view, 0.0, &result);
 
             // Test against the view
@@ -822,7 +823,7 @@ TEST_CASE("einsum2") {
         Tensor<2> A = create_random_tensor("A", 3, 5);
         Tensor<2> B = create_random_tensor("B", 5, 3);
 
-        TensorAlgebra::einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B);
+        REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
         LinearAlgebra::gemm<false, false>(1.0, A, B, 0, &C1);
 
         for (size_t i0 = 0; i0 < C0.dim(0); i0++) {
@@ -838,7 +839,7 @@ TEST_CASE("einsum2") {
         Tensor<2> A = create_random_tensor("A", 3, 5);
         Tensor<2> B = create_random_tensor("B", 3, 5);
 
-        TensorAlgebra::einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{j, k}, B);
+        REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{j, k}, B));
         LinearAlgebra::gemm<false, true>(1.0, A, B, 0, &C1);
 
         for (size_t i0 = 0; i0 < C0.dim(0); i0++) {
@@ -854,7 +855,7 @@ TEST_CASE("einsum2") {
         Tensor<2> A = create_random_tensor("A", 3, 5);
         Tensor<1> B = create_random_tensor("B", 5);
 
-        TensorAlgebra::einsum(Indices{i}, &C0, Indices{i, j}, A, Indices{j}, B);
+        REQUIRE_NOTHROW(einsum(Indices{i}, &C0, Indices{i, j}, A, Indices{j}, B));
         LinearAlgebra::gemv<false>(1.0, A, B, 0.0, &C1);
 
         for (size_t i0 = 0; i0 < C0.dim(0); i0++) {
@@ -868,7 +869,7 @@ TEST_CASE("einsum2") {
         Tensor<3> A = create_random_tensor("A", 3, 4, 5);
         Tensor<3> B = create_random_tensor("B", 4, 3, 5);
 
-        TensorAlgebra::einsum(Indices{i}, &C0, Indices{i, j, k}, A, Indices{j, i, k}, B);
+        REQUIRE_NOTHROW(einsum(Indices{i}, &C0, Indices{i, j, k}, A, Indices{j, i, k}, B));
 
         for (size_t i0 = 0; i0 < 3; i0++) {
             double sum{0};
@@ -893,7 +894,7 @@ TEST_CASE("einsum2") {
         Tensor<3> B = create_random_tensor("B", 4, 3, 5);
 
         // Timer::push("einsum: 3x5 <- 3x4x5 * 4x3x5");
-        TensorAlgebra::einsum(Indices{i, k}, &C0, Indices{i, j, k}, A, Indices{j, i, k}, B);
+        REQUIRE_NOTHROW(einsum(Indices{i, k}, &C0, Indices{i, j, k}, A, Indices{j, i, k}, B));
         // Timer::pop();
 
         // Timer::push("hand  : 3x5 <- 3x4x5 * 4x3x5");
@@ -923,7 +924,7 @@ TEST_CASE("einsum2") {
         Tensor<3> B = create_random_tensor("B", 4, 3, 5);
 
         // Timer::push("einsum: 3x5 <- 3x4x5 * 4x3x5");
-        TensorAlgebra::einsum(Indices{i, l}, &C0, Indices{i, j, k}, A, Indices{j, i, k}, B);
+        REQUIRE_NOTHROW(einsum(Indices{i, l}, &C0, Indices{i, j, k}, A, Indices{j, i, k}, B));
         // Timer::pop();
 
         // Timer::push("hand  : 3x5 <- 3x4x5 * 4x3x5");
@@ -967,7 +968,7 @@ TEST_CASE("einsum3") {
         Tensor<2> B = create_random_tensor("B", 5, 3);
 
         // Working to get the einsum to perform the gemm that follows.
-        TensorAlgebra::einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B);
+        REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
         LinearAlgebra::gemm<false, false>(1.0, A, B, 0, &C1);
 
         for (size_t i0 = 0; i0 < C0.dim(0); i0++) {
@@ -984,7 +985,7 @@ TEST_CASE("einsum3") {
         Tensor<4> A = create_random_tensor("A", 3, 3, 3, 3);
         Tensor<2> B = create_random_tensor("B", 3, 3);
 
-        TensorAlgebra::einsum(Indices{i, j, k, l}, &gMO0, Indices{i, j, k, p}, A, Indices{p, l}, B);
+        REQUIRE_NOTHROW(einsum(Indices{i, j, k, l}, &gMO0, Indices{i, j, k, p}, A, Indices{p, l}, B));
 
         for (size_t i0 = 0; i0 < gMO0.dim(0); i0++) {
             for (size_t j0 = 0; j0 < gMO0.dim(1); j0++) {
@@ -1008,7 +1009,7 @@ TEST_CASE("einsum3") {
             }
         }
 
-        TensorAlgebra::einsum(Indices{i, j, k, l}, &gMO0, Indices{i, j, p, l}, A, Indices{p, k}, B);
+        REQUIRE_NOTHROW(einsum(Indices{i, j, k, l}, &gMO0, Indices{i, j, p, l}, A, Indices{p, k}, B));
 
         gMO1.zero();
         for (size_t i0 = 0; i0 < gMO0.dim(0); i0++) {
@@ -1036,7 +1037,7 @@ TEST_CASE("einsum3") {
         for (size_t i0 = 0; i0 < gMO0.dim(0); i0++) {
             for (size_t j0 = 0; j0 < gMO0.dim(1); j0++) {
                 auto vgMO0 = gMO0(i0, j0, All{}, All{});
-                TensorAlgebra::einsum(Indices{k, l}, &vgMO0, Indices{p, l}, A(i0, j0, All{}, All{}), Indices{p, k}, B);
+                REQUIRE_NOTHROW(einsum(Indices{k, l}, &vgMO0, Indices{p, l}, A(i0, j0, All{}, All{}), Indices{p, k}, B));
             }
         }
 
@@ -1068,7 +1069,7 @@ TEST_CASE("einsum4") {
         Tensor<4> A = create_random_tensor("A", 3, 3, 3, 3);
         Tensor<2> B = create_random_tensor("B", 3, 3);
 
-        TensorAlgebra::einsum(Indices{p, q, r, l}, &gMO0, Indices{p, q, r, s}, A, Indices{s, l}, B);
+        REQUIRE_NOTHROW(einsum(Indices{p, q, r, l}, &gMO0, Indices{p, q, r, s}, A, Indices{s, l}, B));
 
         for (size_t i0 = 0; i0 < gMO0.dim(0); i0++) {
             for (size_t j0 = 0; j0 < gMO0.dim(1); j0++) {
@@ -1092,7 +1093,7 @@ TEST_CASE("einsum4") {
             }
         }
 
-        TensorAlgebra::einsum(Indices{p, q, k, s}, &gMO0, Indices{p, q, r, s}, A, Indices{r, k}, B);
+        REQUIRE_NOTHROW(einsum(Indices{p, q, k, s}, &gMO0, Indices{p, q, r, s}, A, Indices{r, k}, B));
 
         gMO1.zero();
         for (size_t i0 = 0; i0 < gMO0.dim(0); i0++) {
@@ -1237,8 +1238,8 @@ TEST_CASE("IntegralTransformation") {
         // println(g_m);
         // println(t_i);
 
-        einsum(1.0, Indices{Index::n, Index::j}, &W_mi, 0.25, Indices{Index::n, Index::e, Index::f}, g_m,
-               Indices{Index::j, Index::e, Index::f}, t_i);
+        REQUIRE_NOTHROW(einsum(1.0, Indices{Index::n, Index::j}, &W_mi, 0.25, Indices{Index::n, Index::e, Index::f}, g_m,
+                               Indices{Index::j, Index::e, Index::f}, t_i));
     }
 }
 
@@ -1265,7 +1266,7 @@ TEST_CASE("Hadamard") {
             }
         }
 
-        einsum(Indices{i, j}, &C, Indices{i, i}, A, Indices{j, j}, B);
+        REQUIRE_NOTHROW(einsum(Indices{i, j}, &C, Indices{i, i}, A, Indices{j, j}, B));
 
         // println(C0);
         // println(C);
@@ -1293,7 +1294,7 @@ TEST_CASE("Hadamard") {
             }
         }
 
-        einsum(Indices{i, j}, &C, Indices{i, i, j}, A, Indices{j, j, i}, B);
+        REQUIRE_NOTHROW(einsum(Indices{i, j}, &C, Indices{i, i, j}, A, Indices{j, j, i}, B));
 
         // println(C0);
         // println(C);
@@ -1321,7 +1322,7 @@ TEST_CASE("Hadamard") {
             }
         }
 
-        einsum(Indices{i, j}, &C, Indices{i, j, i}, A, Indices{j, i, j}, B);
+        REQUIRE_NOTHROW(einsum(Indices{i, j}, &C, Indices{i, j, i}, A, Indices{j, i, j}, B));
 
         // println(C0);
         // println(C);
@@ -1349,7 +1350,7 @@ TEST_CASE("Hadamard") {
             }
         }
 
-        einsum(Indices{i, j, i}, &C, Indices{i, j, i}, A, Indices{j, i, j}, B);
+        REQUIRE_NOTHROW(einsum(Indices{i, j, i}, &C, Indices{i, j, i}, A, Indices{j, i, j}, B));
 
         // println(C0);
         // println(C);
@@ -1377,7 +1378,7 @@ TEST_CASE("Hadamard") {
             }
         }
 
-        einsum(Indices{i, i, i}, &C, Indices{i, j, i}, A, Indices{j, i, j}, B);
+        REQUIRE_NOTHROW(einsum(Indices{i, i, i}, &C, Indices{i, j, i}, A, Indices{j, i, j}, B));
 
         // println(C0);
         // println(C);
@@ -1406,7 +1407,7 @@ TEST_CASE("Hadamard") {
             }
         }
 
-        einsum(Indices{i, i}, &C, Indices{i, j, k}, A, Indices{j, i, k}, B);
+        REQUIRE_NOTHROW(einsum(Indices{i, i}, &C, Indices{i, j, k}, A, Indices{j, i, k}, B));
 
         // println(C0);
         // println(C);
@@ -1431,7 +1432,7 @@ TEST_CASE("unique_ptr") {
         Tensor<2> B = create_random_tensor("B", 5, 3);
 
         // Working to get the einsum to perform the gemm that follows.
-        TensorAlgebra::einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B);
+        REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
         LinearAlgebra::gemm<false, false>(1.0, A, B, 0, &C1);
 
         for (size_t i0 = 0; i0 < C0->dim(0); i0++) {
@@ -1448,7 +1449,7 @@ TEST_CASE("unique_ptr") {
         Tensor<2> B = create_random_tensor("B", 5, 3);
 
         // Working to get the einsum to perform the gemm that follows.
-        TensorAlgebra::einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B);
+        REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
         LinearAlgebra::gemm<false, false>(1.0, *A, B, 0, &C1);
 
         for (size_t i0 = 0; i0 < C0.dim(0); i0++) {
@@ -1465,7 +1466,7 @@ TEST_CASE("unique_ptr") {
         auto B = std::make_unique<Tensor<2>>(create_random_tensor("B", 3, 5));
 
         // Working to get the einsum to perform the gemm that follows.
-        TensorAlgebra::einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B);
+        REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
         LinearAlgebra::gemm<false, false>(1.0, A, *B, 0, &C1);
 
         for (size_t i0 = 0; i0 < C0.dim(0); i0++) {
@@ -1482,7 +1483,7 @@ TEST_CASE("unique_ptr") {
         auto B = std::make_unique<Tensor<2>>(create_random_tensor("B", 3, 5));
 
         // Working to get the einsum to perform the gemm that follows.
-        TensorAlgebra::einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B);
+        REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
         LinearAlgebra::gemm<false, false>(1.0, *A, *B, 0, &C1);
 
         for (size_t i0 = 0; i0 < C0.dim(0); i0++) {
@@ -1499,7 +1500,7 @@ TEST_CASE("unique_ptr") {
         Tensor<2> B = create_random_tensor("B", 5, 3);
 
         // Working to get the einsum to perform the gemm that follows.
-        TensorAlgebra::einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B);
+        REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
         LinearAlgebra::gemm<false, false>(1.0, *A, B, 0, &C1);
 
         for (size_t i0 = 0; i0 < C0->dim(0); i0++) {
@@ -1516,7 +1517,7 @@ TEST_CASE("unique_ptr") {
         auto B = std::make_unique<Tensor<2>>(create_random_tensor("B", 3, 5));
 
         // Working to get the einsum to perform the gemm that follows.
-        TensorAlgebra::einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B);
+        REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
         LinearAlgebra::gemm<false, false>(1.0, A, *B, 0, &C1);
 
         for (size_t i0 = 0; i0 < C0->dim(0); i0++) {
@@ -1533,7 +1534,7 @@ TEST_CASE("unique_ptr") {
         auto B = std::make_unique<Tensor<2>>(create_random_tensor("B", 3, 5));
 
         // Working to get the einsum to perform the gemm that follows.
-        TensorAlgebra::einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B);
+        REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
         LinearAlgebra::gemm<false, false>(1.0, *A, *B, 0, &C1);
 
         for (size_t i0 = 0; i0 < C0->dim(0); i0++) {
@@ -1558,7 +1559,7 @@ TEST_CASE("Transpose C", "[einsum]") {
         Tensor<2> C0{"C0", _i, _j};
         C0.zero();
 
-        einsum(Indices{i, j}, &C, Indices{j, k}, A, Indices{k, i}, B);
+        REQUIRE_NOTHROW(einsum(Indices{i, j}, &C, Indices{j, k}, A, Indices{k, i}, B));
 
         for (size_t i0 = 0; i0 < _i; i0++) {
             for (size_t j0 = 0; j0 < _j; j0++) {
@@ -1585,7 +1586,7 @@ TEST_CASE("Transpose C", "[einsum]") {
         Tensor<2> C0{"C0", _i, _j};
         C0.zero();
 
-        einsum(Indices{i, j}, &C, Indices{k, j}, A, Indices{k, i}, B);
+        REQUIRE_NOTHROW(einsum(Indices{i, j}, &C, Indices{k, j}, A, Indices{k, i}, B));
 
         for (size_t i0 = 0; i0 < _i; i0++) {
             for (size_t j0 = 0; j0 < _j; j0++) {
@@ -1612,7 +1613,7 @@ TEST_CASE("Transpose C", "[einsum]") {
         Tensor<2> C0{"C0", _i, _j};
         C0.zero();
 
-        einsum(Indices{i, j}, &C, Indices{j, k}, A, Indices{i, k}, B);
+        REQUIRE_NOTHROW(einsum(Indices{i, j}, &C, Indices{j, k}, A, Indices{i, k}, B));
 
         for (size_t i0 = 0; i0 < _i; i0++) {
             for (size_t j0 = 0; j0 < _j; j0++) {
@@ -1639,7 +1640,7 @@ TEST_CASE("Transpose C", "[einsum]") {
         Tensor<2> C0{"C0", _i, _j};
         C0.zero();
 
-        einsum(Indices{i, j}, &C, Indices{k, j}, A, Indices{i, k}, B);
+        REQUIRE_NOTHROW(einsum(Indices{i, j}, &C, Indices{k, j}, A, Indices{i, k}, B));
 
         for (size_t i0 = 0; i0 < _i; i0++) {
             for (size_t j0 = 0; j0 < _j; j0++) {
@@ -1668,7 +1669,7 @@ TEST_CASE("Transpose C", "[einsum]") {
         Tensor<4> t_oovv = create_random_tensor("t_oovv", _i, _j, _e, _f);
         Tensor<4> g_oovv = create_random_tensor("g_oovv", _m, _n, _e, _f);
 
-        einsum(1.0, Indices{m, n, i, j}, &Wmnij, 0.25, Indices{i, j, e, f}, t_oovv, Indices{m, n, e, f}, g_oovv);
+        REQUIRE_NOTHROW(einsum(1.0, Indices{m, n, i, j}, &Wmnij, 0.25, Indices{i, j, e, f}, t_oovv, Indices{m, n, e, f}, g_oovv));
 
         for (size_t m0 = 0; m0 < _m; m0++) {
             for (size_t n0 = 0; n0 < _n; n0++) {
@@ -1710,7 +1711,7 @@ TEST_CASE("gemv") {
         Tensor<2> F{"F", _p, _q};
         Tensor<2> F0{"F0", _p, _q};
 
-        einsum(1.0, Indices{p, q}, &F0, 2.0, Indices{p, q, r, s}, g, Indices{r, s}, D);
+        REQUIRE_NOTHROW(einsum(1.0, Indices{p, q}, &F0, 2.0, Indices{p, q, r, s}, g, Indices{r, s}, D));
 
         TensorView<2> gv{g, Dim<2>{_p * _q, _r * _s}};
         TensorView<1> dv{D, Dim<1>{_r * _s}};
@@ -1750,10 +1751,10 @@ TEST_CASE("TensorView einsum") {
 
     // The target solution is determined from not using views
     Tensor<2> C_solution{"C solution", 3, 3};
-    einsum(Indices{i, j}, &C_solution, Indices{i, k}, A_copy, Indices{j, k}, B_copy);
+    REQUIRE_NOTHROW(einsum(Indices{i, j}, &C_solution, Indices{i, k}, A_copy, Indices{j, k}, B_copy));
 
     // einsum where everything is a TensorView
-    einsum(Indices{i, j}, &C_view, Indices{i, k}, A_view, Indices{j, k}, B_view);
+    REQUIRE_NOTHROW(einsum(Indices{i, j}, &C_view, Indices{i, k}, A_view, Indices{j, k}, B_view));
 
     for (int x = 0; x < 3; x++) {
         for (int y = 0; y < 3; y++) {
@@ -1774,7 +1775,7 @@ TEST_CASE("outer product") {
         Tensor<2> C{"C", 3, 3};
         C.set_all(0.0);
 
-        einsum(Indices{i, j}, &C, Indices{i}, A, Indices{j}, B);
+        REQUIRE_NOTHROW(einsum(Indices{i, j}, &C, Indices{i}, A, Indices{j}, B));
 
         for (int x = 0; x < 3; x++) {
             for (int y = 0; y < 3; y++) {
@@ -1783,7 +1784,7 @@ TEST_CASE("outer product") {
         }
 
         C.set_all(0.0);
-        einsum(Indices{i, j}, &C, Indices{j}, A, Indices{i}, B);
+        REQUIRE_NOTHROW(einsum(Indices{i, j}, &C, Indices{j}, A, Indices{i}, B));
 
         for (int x = 0; x < 3; x++) {
             for (int y = 0; y < 3; y++) {
@@ -1792,7 +1793,7 @@ TEST_CASE("outer product") {
         }
 
         C.set_all(0.0);
-        einsum(Indices{j, i}, &C, Indices{j}, A, Indices{i}, B);
+        REQUIRE_NOTHROW(einsum(Indices{j, i}, &C, Indices{j}, A, Indices{i}, B));
 
         for (int x = 0; x < 3; x++) {
             for (int y = 0; y < 3; y++) {
@@ -1801,7 +1802,7 @@ TEST_CASE("outer product") {
         }
 
         C.set_all(0.0);
-        einsum(Indices{j, i}, &C, Indices{i}, A, Indices{j}, B);
+        REQUIRE_NOTHROW(einsum(Indices{j, i}, &C, Indices{i}, A, Indices{j}, B));
 
         for (int x = 0; x < 3; x++) {
             for (int y = 0; y < 3; y++) {
@@ -1816,7 +1817,7 @@ TEST_CASE("outer product") {
         Tensor<3> C{"C", 3, 3, 3};
 
         C.set_all(0.0);
-        einsum(Indices{i, j, k}, &C, Indices{i, j}, A, Indices{k}, B);
+        REQUIRE_NOTHROW(einsum(Indices{i, j, k}, &C, Indices{i, j}, A, Indices{k}, B));
 
         for (int x = 0; x < 3; x++) {
             for (int y = 0; y < 3; y++) {
@@ -1827,7 +1828,7 @@ TEST_CASE("outer product") {
         }
 
         C.set_all(0.0);
-        einsum(Indices{k, i, j}, &C, Indices{i, j}, A, Indices{k}, B);
+        REQUIRE_NOTHROW(einsum(Indices{k, i, j}, &C, Indices{i, j}, A, Indices{k}, B));
 
         for (int x = 0; x < 3; x++) {
             for (int y = 0; y < 3; y++) {
@@ -1838,7 +1839,7 @@ TEST_CASE("outer product") {
         }
 
         C.set_all(0.0);
-        einsum(Indices{k, i, j}, &C, Indices{k}, B, Indices{i, j}, A);
+        REQUIRE_NOTHROW(einsum(Indices{k, i, j}, &C, Indices{k}, B, Indices{i, j}, A));
 
         for (int x = 0; x < 3; x++) {
             for (int y = 0; y < 3; y++) {
@@ -1855,7 +1856,7 @@ TEST_CASE("outer product") {
         Tensor<4> C{"C", 3, 3, 3, 3};
 
         C.set_all(0.0);
-        einsum(Indices{i, j, k, l}, &C, Indices{i, j}, A, Indices{k, l}, B);
+        REQUIRE_NOTHROW(einsum(Indices{i, j, k, l}, &C, Indices{i, j}, A, Indices{k, l}, B));
 
         for (int w = 0; w < 3; w++) {
             for (int x = 0; x < 3; x++) {
@@ -1868,7 +1869,7 @@ TEST_CASE("outer product") {
         }
 
         C.set_all(0.0);
-        einsum(Indices{i, j, k, l}, &C, Indices{k, l}, A, Indices{i, j}, B);
+        REQUIRE_NOTHROW(einsum(Indices{i, j, k, l}, &C, Indices{k, l}, A, Indices{i, j}, B));
 
         for (int w = 0; w < 3; w++) {
             for (int x = 0; x < 3; x++) {
@@ -1879,5 +1880,110 @@ TEST_CASE("outer product") {
                 }
             }
         }
+    }
+}
+
+TEST_CASE("view outer product") {
+    using namespace EinsumsInCpp;
+    using namespace EinsumsInCpp::TensorAlgebra;
+    using namespace EinsumsInCpp::TensorAlgebra::Index;
+
+    SECTION("1 * 1 -> 2") {
+        Tensor<1> A = create_random_tensor("A", 6);
+        Tensor<1> B = create_random_tensor("B", 6);
+
+        auto vA = TensorView<1>(A, Dim<1>{3}, Offset<1>{3});
+        auto vB = TensorView<1>(B, Dim<1>{3});
+        Tensor<2> C{"C", 3, 3};
+        C.set_all(0.0);
+
+        REQUIRE_NOTHROW(einsum(Indices{i, j}, &C, Indices{i}, vA, Indices{j}, vB));
+
+        for (int x = 0; x < 3; x++) {
+            for (int y = 0; y < 3; y++) {
+                REQUIRE_THAT(C(x, y), Catch::Matchers::WithinAbs(vA(x) * vB(y), 0.001));
+            }
+        }
+
+        C.set_all(0.0);
+        REQUIRE_NOTHROW(einsum(Indices{i, j}, &C, Indices{j}, vA, Indices{i}, vB));
+
+        for (int x = 0; x < 3; x++) {
+            for (int y = 0; y < 3; y++) {
+                REQUIRE_THAT(C(x, y), Catch::Matchers::WithinAbs(vA(y) * vB(x), 0.001));
+            }
+        }
+
+        C.set_all(0.0);
+        REQUIRE_NOTHROW(einsum(Indices{j, i}, &C, Indices{j}, vA, Indices{i}, vB));
+
+        for (int x = 0; x < 3; x++) {
+            for (int y = 0; y < 3; y++) {
+                REQUIRE_THAT(C(y, x), Catch::Matchers::WithinAbs(vA(y) * vB(x), 0.001));
+            }
+        }
+
+        C.set_all(0.0);
+        REQUIRE_NOTHROW(einsum(Indices{j, i}, &C, Indices{i}, vA, Indices{j}, vB));
+
+        for (int x = 0; x < 3; x++) {
+            for (int y = 0; y < 3; y++) {
+                REQUIRE_THAT(C(y, x), Catch::Matchers::WithinAbs(vA(x) * vB(y), 0.001));
+            }
+        }
+    }
+
+    SECTION("2 * 2 -> 4") {
+        Tensor<2> A = create_random_tensor("A", 9, 9);
+        Tensor<2> B = create_random_tensor("B", 12, 12);
+        auto vA = TensorView{A, Dim<2>{3, 3}, Offset<2>{6, 3}};
+        auto vB = TensorView{B, Dim<2>{3, 3}, Offset<2>{5, 7}};
+        Tensor<4> C{"C", 3, 3, 3, 3};
+
+        C.set_all(0.0);
+        REQUIRE_NOTHROW(einsum(Indices{i, j, k, l}, &C, Indices{i, j}, vA, Indices{k, l}, vB));
+
+        for (int w = 0; w < 3; w++) {
+            for (int x = 0; x < 3; x++) {
+                for (int y = 0; y < 3; y++) {
+                    for (int z = 0; z < 3; z++) {
+                        REQUIRE_THAT(C(w, x, y, z), Catch::Matchers::WithinAbs(vA(w, x) * vB(y, z), 0.001));
+                    }
+                }
+            }
+        }
+
+        C.set_all(0.0);
+        REQUIRE_NOTHROW(einsum(Indices{i, j, k, l}, &C, Indices{k, l}, vA, Indices{i, j}, vB));
+
+        for (int w = 0; w < 3; w++) {
+            for (int x = 0; x < 3; x++) {
+                for (int y = 0; y < 3; y++) {
+                    for (int z = 0; z < 3; z++) {
+                        REQUIRE_THAT(C(w, x, y, z), Catch::Matchers::WithinAbs(vA(y, z) * vB(w, x), 0.001));
+                    }
+                }
+            }
+        }
+    }
+}
+
+TEST_CASE("element transform") {
+    using namespace EinsumsInCpp;
+    using namespace EinsumsInCpp::TensorAlgebra;
+    using namespace EinsumsInCpp::TensorAlgebra::Index;
+
+    SECTION("tensor") {
+        Timer::push("Allocation");
+        Tensor<4> A = create_random_tensor("A", 32, 32, 32, 32);
+        Timer::pop();
+        // Tensor<2> Acopy = A;
+
+        Timer::push("Transform");
+        element_transform(&A, [](double val) -> double { return 1.0 / val; });
+        Timer::pop();
+
+        // println(A);
+        // println(Acopy);
     }
 }
