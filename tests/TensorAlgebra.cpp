@@ -1974,16 +1974,19 @@ TEST_CASE("element transform") {
     using namespace EinsumsInCpp::TensorAlgebra::Index;
 
     SECTION("tensor") {
-        Timer::push("Allocation");
         Tensor<4> A = create_random_tensor("A", 32, 32, 32, 32);
-        Timer::pop();
-        // Tensor<2> Acopy = A;
+        Tensor<4> Acopy = A;
 
-        Timer::push("Transform");
         element_transform(&A, [](double val) -> double { return 1.0 / val; });
-        Timer::pop();
 
-        // println(A);
-        // println(Acopy);
+        for (int w = 0; w < 3; w++) {
+            for (int x = 0; x < 3; x++) {
+                for (int y = 0; y < 3; y++) {
+                    for (int z = 0; z < 3; z++) {
+                        REQUIRE_THAT(A(w, x, y, z), Catch::Matchers::WithinAbs(1.0 / Acopy(w, x, y, z), 0.001));
+                    }
+                }
+            }
+        }
     }
 }
