@@ -76,7 +76,7 @@ void daxpy(int n, double alpha_x, const double *x, int inc_x, double *y, int inc
 }
 
 void dger(int m, int n, double alpha, const double *x, int inc_x, const double *y, int inc_y, double *a, int lda) {
-    FC_GLOBAL(dger, DGER)(&m, &n, &alpha, x, &inc_x, y, &inc_y, a, &lda);
+    FC_GLOBAL(dger, DGER)(&n, &m, &alpha, y, &inc_y, x, &inc_x, a, &lda);
 }
 
 } // namespace EinsumsInCpp::Blas

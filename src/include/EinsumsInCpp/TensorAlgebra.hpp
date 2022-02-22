@@ -437,13 +437,18 @@ auto einsum(const T C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<C
         Dim<2> dC;
         dC[0] = product_dims(A_target_position_in_C, *C);
         dC[1] = product_dims(B_target_position_in_C, *C);
+        if constexpr (swap_AB)
+            std::swap(dC[0], dC[1]);
+
         TensorView<2, T> tC{*C, dC};
 
-        LinearAlgebra::scale(C_prefactor, C);
+        if (C_prefactor != T{1.0})
+            LinearAlgebra::scale(C_prefactor, C);
+
         if constexpr (swap_AB) {
-            LinearAlgebra::ger(AB_prefactor, A.to_rank_1_view(), B.to_rank_1_view(), &tC);
-        } else {
             LinearAlgebra::ger(AB_prefactor, B.to_rank_1_view(), A.to_rank_1_view(), &tC);
+        } else {
+            LinearAlgebra::ger(AB_prefactor, A.to_rank_1_view(), B.to_rank_1_view(), &tC);
         }
 
         return;

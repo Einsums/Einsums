@@ -1768,34 +1768,116 @@ TEST_CASE("outer product") {
     using namespace EinsumsInCpp::TensorAlgebra;
     using namespace EinsumsInCpp::TensorAlgebra::Index;
 
-    Tensor<1> A = create_random_tensor("A", 3);
-    Tensor<1> B = create_random_tensor("B", 3);
-    Tensor<2> C{"C", 3, 3};
-    C.set_all(0.0);
+    SECTION("1 * 1 -> 2") {
+        Tensor<1> A = create_random_tensor("A", 3);
+        Tensor<1> B = create_random_tensor("B", 3);
+        Tensor<2> C{"C", 3, 3};
+        C.set_all(0.0);
 
-    einsum(Indices{i, j}, &C, Indices{i}, A, Indices{j}, B);
+        einsum(Indices{i, j}, &C, Indices{i}, A, Indices{j}, B);
 
-    for (int x = 0; x < 3; x++) {
-        for (int y = 0; y < 3; y++) {
-            REQUIRE_THAT(C(x, y), Catch::Matchers::WithinAbs(A(x) * B(y), 0.001));
+        for (int x = 0; x < 3; x++) {
+            for (int y = 0; y < 3; y++) {
+                REQUIRE_THAT(C(x, y), Catch::Matchers::WithinAbs(A(x) * B(y), 0.001));
+            }
+        }
+
+        C.set_all(0.0);
+        einsum(Indices{i, j}, &C, Indices{j}, A, Indices{i}, B);
+
+        for (int x = 0; x < 3; x++) {
+            for (int y = 0; y < 3; y++) {
+                REQUIRE_THAT(C(x, y), Catch::Matchers::WithinAbs(A(y) * B(x), 0.001));
+            }
+        }
+
+        C.set_all(0.0);
+        einsum(Indices{j, i}, &C, Indices{j}, A, Indices{i}, B);
+
+        for (int x = 0; x < 3; x++) {
+            for (int y = 0; y < 3; y++) {
+                REQUIRE_THAT(C(y, x), Catch::Matchers::WithinAbs(A(y) * B(x), 0.001));
+            }
+        }
+
+        C.set_all(0.0);
+        einsum(Indices{j, i}, &C, Indices{i}, A, Indices{j}, B);
+
+        for (int x = 0; x < 3; x++) {
+            for (int y = 0; y < 3; y++) {
+                REQUIRE_THAT(C(y, x), Catch::Matchers::WithinAbs(A(x) * B(y), 0.001));
+            }
         }
     }
 
-    C.set_all(0.0);
-    einsum(Indices{i, j}, &C, Indices{j}, A, Indices{i}, B);
+    SECTION("2 * 1 -> 3") {
+        Tensor<2> A = create_random_tensor("A", 3, 3);
+        Tensor<1> B = create_random_tensor("B", 3);
+        Tensor<3> C{"C", 3, 3, 3};
 
-    for (int x = 0; x < 3; x++) {
-        for (int y = 0; y < 3; y++) {
-            REQUIRE_THAT(C(x, y), Catch::Matchers::WithinAbs(A(y) * B(x), 0.001));
+        C.set_all(0.0);
+        einsum(Indices{i, j, k}, &C, Indices{i, j}, A, Indices{k}, B);
+
+        for (int x = 0; x < 3; x++) {
+            for (int y = 0; y < 3; y++) {
+                for (int z = 0; z < 3; z++) {
+                    REQUIRE_THAT(C(x, y, z), Catch::Matchers::WithinAbs(A(x, y) * B(z), 0.001));
+                }
+            }
+        }
+
+        C.set_all(0.0);
+        einsum(Indices{k, i, j}, &C, Indices{i, j}, A, Indices{k}, B);
+
+        for (int x = 0; x < 3; x++) {
+            for (int y = 0; y < 3; y++) {
+                for (int z = 0; z < 3; z++) {
+                    REQUIRE_THAT(C(z, x, y), Catch::Matchers::WithinAbs(A(x, y) * B(z), 0.001));
+                }
+            }
+        }
+
+        C.set_all(0.0);
+        einsum(Indices{k, i, j}, &C, Indices{k}, B, Indices{i, j}, A);
+
+        for (int x = 0; x < 3; x++) {
+            for (int y = 0; y < 3; y++) {
+                for (int z = 0; z < 3; z++) {
+                    REQUIRE_THAT(C(z, x, y), Catch::Matchers::WithinAbs(A(x, y) * B(z), 0.001));
+                }
+            }
         }
     }
 
-    C.set_all(0.0);
-    einsum(Indices{j, i}, &C, Indices{j}, A, Indices{i}, B);
+    SECTION("2 * 2 -> 4") {
+        Tensor<2> A = create_random_tensor("A", 3, 3);
+        Tensor<2> B = create_random_tensor("B", 3, 3);
+        Tensor<4> C{"C", 3, 3, 3, 3};
 
-    for (int x = 0; x < 3; x++) {
-        for (int y = 0; y < 3; y++) {
-            REQUIRE_THAT(C(y, x), Catch::Matchers::WithinAbs(A(y) * B(x), 0.001));
+        C.set_all(0.0);
+        einsum(Indices{i, j, k, l}, &C, Indices{i, j}, A, Indices{k, l}, B);
+
+        for (int w = 0; w < 3; w++) {
+            for (int x = 0; x < 3; x++) {
+                for (int y = 0; y < 3; y++) {
+                    for (int z = 0; z < 3; z++) {
+                        REQUIRE_THAT(C(w, x, y, z), Catch::Matchers::WithinAbs(A(w, x) * B(y, z), 0.001));
+                    }
+                }
+            }
+        }
+
+        C.set_all(0.0);
+        einsum(Indices{i, j, k, l}, &C, Indices{k, l}, A, Indices{i, j}, B);
+
+        for (int w = 0; w < 3; w++) {
+            for (int x = 0; x < 3; x++) {
+                for (int y = 0; y < 3; y++) {
+                    for (int z = 0; z < 3; z++) {
+                        REQUIRE_THAT(C(w, x, y, z), Catch::Matchers::WithinAbs(A(y, z) * B(w, x), 0.001));
+                    }
+                }
+            }
         }
     }
 }
