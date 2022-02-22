@@ -2,13 +2,13 @@
 
 #include "EinsumsInCpp/Print.hpp"
 
+#include <array>
 #include <cassert>
 #include <chrono>
 #include <cstring>
 #include <map>
 #include <memory>
 #include <vector>
-#include <array>
 
 namespace EinsumsInCpp::Timer {
 
@@ -68,8 +68,11 @@ void print_timer_info(TimerDetail *timer) { // NOLINT
     if (timer != root) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wformat"
-        snprintf(buffer.data(), 512, "%5zu ms : %5zu calls : %5zu ms per call", duration_cast<milliseconds>(timer->total_time),
-                 timer->total_calls, duration_cast<milliseconds>(timer->total_time) / timer->total_calls);
+        if (timer->total_calls != 0)
+            snprintf(buffer.data(), 512, "%5zu ms : %5zu calls : %5zu ms per call", duration_cast<milliseconds>(timer->total_time),
+                     timer->total_calls, duration_cast<milliseconds>(timer->total_time) / timer->total_calls);
+        else
+            snprintf(buffer.data(), 512, "total_calls == 0!!!");
         println("{0:<{1}} : {3: <{4}}{2}", const_cast<const char *>(buffer.data()), 70 - Print::current_indent_level(), timer->name, "",
                 Print::current_indent_level());
 #pragma clang diagnostic pop
