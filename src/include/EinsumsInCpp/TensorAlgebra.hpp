@@ -896,6 +896,7 @@ auto sort(const std::tuple<CIndices...> &C_indices, CType<CRank, T> *C, const st
 
 template <template <size_t, typename> typename CType, size_t CRank, typename UnaryOperator, typename T = double>
 auto element_transform(CType<CRank, T> *C, UnaryOperator unary_opt) {
+    Timer::push(fmt::format("element transform: {}", C->name()));
     auto target_dims = get_dim_ranges<CRank>(*C);
     auto view = std::apply(ranges::views::cartesian_product, target_dims);
 
@@ -904,6 +905,7 @@ auto element_transform(CType<CRank, T> *C, UnaryOperator unary_opt) {
         T &target_value = std::apply(*C, *it);
         target_value = unary_opt(target_value);
     }
+    Timer::pop();
 }
 
 } // namespace EinsumsInCpp::TensorAlgebra
