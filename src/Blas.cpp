@@ -1,5 +1,6 @@
 #include "EinsumsInCpp/Blas.hpp"
 
+#include <fmt/format.h>
 #include <stdexcept>
 
 #ifndef FC_SYMBOL
@@ -76,6 +77,18 @@ void daxpy(int n, double alpha_x, const double *x, int inc_x, double *y, int inc
 }
 
 void dger(int m, int n, double alpha, const double *x, int inc_x, const double *y, int inc_y, double *a, int lda) {
+    if (m < 0) {
+        throw std::runtime_error(fmt::format("dger: m ({}) is less than zero.", m));
+    } else if (n < 0) {
+        throw std::runtime_error(fmt::format("dger: n ({}) is less than zero.", n));
+    } else if (inc_x == 0) {
+        throw std::runtime_error(fmt::format("dger: inc_x ({}) is zero.", inc_x));
+    } else if (inc_y == 0) {
+        throw std::runtime_error(fmt::format("dger: inc_y ({}) is zero.", inc_y));
+    } else if (lda < std::max(1, n)) {
+        throw std::runtime_error(fmt::format("dger: lda ({}) is less than max(1, n ({})).", lda, n));
+    }
+
     FC_GLOBAL(dger, DGER)(&n, &m, &alpha, y, &inc_y, x, &inc_x, a, &lda);
 }
 
