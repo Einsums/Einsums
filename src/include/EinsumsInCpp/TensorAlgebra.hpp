@@ -255,11 +255,13 @@ void einsum_generic_algorithm(const std::tuple<CIndices...> & /*C_indices*/, con
                               const T AB_prefactor, const AType<ARank, T> &A, const BType<BRank, T> &B) {
     Timer::push("generic algorithm");
 
+    auto view = std::apply(ranges::views::cartesian_product, target_dims);
+
     if constexpr (sizeof...(LinkDims) != 0) {
-        for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
+#pragma omp parallel for
+        for (auto it = view.begin(); it < view.end(); it++) {
             // println("target_combination: {}", print_tuple_no_type(target_combination));
-            auto C_order =
-                Detail::construct_indices<CIndices...>(target_combination, target_position_in_C, std::tuple<>(), target_position_in_C);
+            auto C_order = Detail::construct_indices<CIndices...>(*it, target_position_in_C, std::tuple<>(), target_position_in_C);
             // println("C_order: {}", print_tuple_no_type(C_order));
 
             // This is the generic case.
@@ -268,10 +270,8 @@ void einsum_generic_algorithm(const std::tuple<CIndices...> & /*C_indices*/, con
                 // Print::Indent _indent;
 
                 // Construct the tuples that will be used to access the tensor elements of A and B
-                auto A_order = Detail::construct_indices<AIndices...>(target_combination, target_position_in_C, link_combination,
-                                                                      link_position_in_link);
-                auto B_order = Detail::construct_indices<BIndices...>(target_combination, target_position_in_C, link_combination,
-                                                                      link_position_in_link);
+                auto A_order = Detail::construct_indices<AIndices...>(*it, target_position_in_C, link_combination, link_position_in_link);
+                auto B_order = Detail::construct_indices<BIndices...>(*it, target_position_in_C, link_combination, link_position_in_link);
 
                 // Get the tensor element using the operator()(MultiIndex...) function of Tensor.
                 T A_value = std::apply(A, A_order);
@@ -285,18 +285,16 @@ void einsum_generic_algorithm(const std::tuple<CIndices...> & /*C_indices*/, con
             target_value += sum;
         }
     } else {
-        for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
+#pragma omp parallel for
+        for (auto it = view.begin(); it < view.end(); it++) {
 
             // This is the generic case.
             T sum{0};
 
             // Construct the tuples that will be used to access the tensor elements of A and B
-            auto A_order =
-                Detail::construct_indices<AIndices...>(target_combination, target_position_in_C, std::tuple<>(), target_position_in_C);
-            auto B_order =
-                Detail::construct_indices<BIndices...>(target_combination, target_position_in_C, std::tuple<>(), target_position_in_C);
-            auto C_order =
-                Detail::construct_indices<CIndices...>(target_combination, target_position_in_C, std::tuple<>(), target_position_in_C);
+            auto A_order = Detail::construct_indices<AIndices...>(*it, target_position_in_C, std::tuple<>(), target_position_in_C);
+            auto B_order = Detail::construct_indices<BIndices...>(*it, target_position_in_C, std::tuple<>(), target_position_in_C);
+            auto C_order = Detail::construct_indices<CIndices...>(*it, target_position_in_C, std::tuple<>(), target_position_in_C);
 
             // Get the tensor element using the operator()(MultiIndex...) function of Tensor.
             T A_value = std::apply(A, A_order);
@@ -406,9 +404,6 @@ auto einsum(const T C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<C
     constexpr auto outer_product = std::tuple_size_v<decltype(links)> == 0 && contiguous_target_position_in_A &&
                                    contiguous_target_position_in_B && !A_hadamard_found && !B_hadamard_found && !C_hadamard_found;
 
-    Timer::push(fmt::format("ger possible {}", outer_product));
-    Timer::pop();
-
     if constexpr (dot_product) {
         T temp = LinearAlgebra::dot(A, B);
         (*C) *= C_prefactor;
@@ -432,26 +427,43 @@ auto einsum(const T C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<C
             target_value += temp;
         }
     } else if constexpr (outer_product) {
-        constexpr bool swap_AB = std::get<1>(A_target_position_in_C) != 0;
+        do { // do {} while (false) trick to allow us to use a break below to "break" out of the loop.
+            constexpr bool swap_AB = std::get<1>(A_target_position_in_C) != 0;
 
-        Dim<2> dC;
-        dC[0] = product_dims(A_target_position_in_C, *C);
-        dC[1] = product_dims(B_target_position_in_C, *C);
-        if constexpr (swap_AB)
-            std::swap(dC[0], dC[1]);
+            Dim<2> dC;
+            dC[0] = product_dims(A_target_position_in_C, *C);
+            dC[1] = product_dims(B_target_position_in_C, *C);
+            if constexpr (swap_AB)
+                std::swap(dC[0], dC[1]);
 
-        TensorView<2, T> tC{*C, dC};
+            TensorView<2, T> tC{*C, dC};
 
-        if (C_prefactor != T{1.0})
-            LinearAlgebra::scale(C_prefactor, C);
+            if (C_prefactor != T{1.0})
+                LinearAlgebra::scale(C_prefactor, C);
 
-        if constexpr (swap_AB) {
-            LinearAlgebra::ger(AB_prefactor, B.to_rank_1_view(), A.to_rank_1_view(), &tC);
-        } else {
-            LinearAlgebra::ger(AB_prefactor, A.to_rank_1_view(), B.to_rank_1_view(), &tC);
-        }
-
-        return;
+            try {
+                if constexpr (swap_AB) {
+                    LinearAlgebra::ger(AB_prefactor, B.to_rank_1_view(), A.to_rank_1_view(), &tC);
+                } else {
+                    LinearAlgebra::ger(AB_prefactor, A.to_rank_1_view(), B.to_rank_1_view(), &tC);
+                }
+            } catch (std::runtime_error &e) {
+                // TODO: If ger throws exception the timer gets out of sync.
+                Timer::pop();
+                println(
+                    bg(fmt::color::yellow) | fg(fmt::color::black),
+                    "Optimized outer product failed. Likely from a non-contiguous TensorView. Attempting to perform generic algorithm.");
+                if (C_prefactor == T{0.0}) {
+                    println(bg(fmt::color::red) | fg(fmt::color::white),
+                            "WARNING!! Unable to undo C_prefactor ({}) on C ({}) tensor. Check your results!!!", C_prefactor, C->name());
+                } else {
+                    LinearAlgebra::scale(1.0 / C_prefactor, C);
+                }
+                break; // out of the do {} while(false) loop.
+            }
+            // If we got to this position, assume we successfully called ger.
+            return;
+        } while (false);
     } else if constexpr (!OnlyUseGenericAlgorithm) {
         // To use a gemm the input tensors need to be at least rank 2
         if constexpr (CRank >= 2 && ARank >= 2 && BRank >= 2) {
@@ -835,11 +847,12 @@ auto sort(const T C_prefactor, const std::tuple<CIndices...> &C_indices, CType<C
             LinearAlgebra::scale(C_prefactor, C);
         LinearAlgebra::axpy(A_prefactor, A, C);
     } else {
-        for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
-            auto A_order =
-                Detail::construct_indices<AIndices...>(target_combination, target_position_in_A, target_combination, target_position_in_A);
+        auto view = std::apply(ranges::views::cartesian_product, target_dims);
+#pragma omp parallel for
+        for (auto it = view.begin(); it < view.end(); it++) {
+            auto A_order = Detail::construct_indices<AIndices...>(*it, target_position_in_A, *it, target_position_in_A);
 
-            T &target_value = std::apply(*C, target_combination);
+            T &target_value = std::apply(*C, *it);
             T A_value = std::apply(A, A_order);
 
             target_value = C_prefactor * target_value + A_prefactor * A_value;
@@ -875,6 +888,18 @@ auto sort(const std::tuple<CIndices...> &C_indices, CType<CRank, T> *C, const st
                         std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<ARank, T>, AType<ARank, T>> &&
                         sizeof...(CIndices) == sizeof...(AIndices) && sizeof...(CIndices) == CRank && sizeof...(AIndices) == ARank> {
     sort(T{0}, C_indices, C, T{1}, A_indices, *A);
+}
+
+template <template <size_t, typename> typename CType, size_t CRank, typename UnaryOperator, typename T = double>
+auto element_transform(CType<CRank, T> *C, UnaryOperator unary_opt) {
+    auto target_dims = get_dim_ranges<CRank>(*C);
+    auto view = std::apply(ranges::views::cartesian_product, target_dims);
+
+#pragma omp parallel for
+    for (auto it = view.begin(); it < view.end(); it++) {
+        T &target_value = std::apply(*C, *it);
+        target_value = unary_opt(target_value);
+    }
 }
 
 } // namespace EinsumsInCpp::TensorAlgebra
