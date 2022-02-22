@@ -450,12 +450,16 @@ auto einsum(const T C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<C
             } catch (std::runtime_error &e) {
                 // TODO: If ger throws exception the timer gets out of sync.
                 Timer::pop();
+#if defined(EINSUMS_SHOW_WARNING)
                 println(
                     bg(fmt::color::yellow) | fg(fmt::color::black),
                     "Optimized outer product failed. Likely from a non-contiguous TensorView. Attempting to perform generic algorithm.");
+#endif
                 if (C_prefactor == T{0.0}) {
+#if defined(EINSUMS_SHOW_WARNING)
                     println(bg(fmt::color::red) | fg(fmt::color::white),
                             "WARNING!! Unable to undo C_prefactor ({}) on C ({}) tensor. Check your results!!!", C_prefactor, C->name());
+#endif
                 } else {
                     LinearAlgebra::scale(1.0 / C_prefactor, C);
                 }

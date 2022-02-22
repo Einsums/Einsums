@@ -28,13 +28,6 @@ if (EINSUMS_TEST_EINSUM_ABORT)
     )
 endif()
 
-option(EINSUMS_VERBOSE "Print what algorithm einsum is using" OFF)
-if (EINSUMS_VERBOSE)
-    target_compile_definitions(project-options
-        INTERFACE
-            EINSUMS_VERBOSE    
-    )
-endif()
 
 option(EINSUMS_WARN_NOT_IMPLEMENTED "If a specific case is not implemented in einsum then warn the user" OFF)
 if (EINSUMS_WARN_NOT_IMPLEMENTED)
@@ -44,9 +37,20 @@ if (EINSUMS_WARN_NOT_IMPLEMENTED)
     )
 endif()
 
+option(EINSUMS_SHOW_WARNING "Does the code report warnings to the user or not" ON)
+if (EINSUMS_SHOW_WARNING)
+    target_compile_definitions(project-options
+        INTERFACE
+            EINSUMS_SHOW_WARNING
+    )
+endif()
+
 option(EINSUMS_USE_HPTT "Use the HPTT package for tensor transpositions" ON)
+
 # Attempt to find MKL. This assumes the user set MKL_DIR.
-find_package(MKL CONFIG)
+set(BLA_VENDOR Intel10_64_dyn)
+# find_package(MKL CONFIG)
+# message(STATUS "${MKL_IMPORTED_TARGETS}")
 if (TARGET MKL::MKL)
     add_library(BLAS::BLAS ALIAS MKL::MKL)
     add_library(LAPACK::LAPACK ALIAS MKL::MKL)
@@ -60,3 +64,4 @@ add_subdirectory(external)
 add_subdirectory(src)
 
 add_subdirectory(tests)
+add_subdirectory(timing)

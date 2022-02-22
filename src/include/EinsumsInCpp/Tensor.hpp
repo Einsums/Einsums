@@ -530,7 +530,9 @@ struct TensorView final : public Detail::TensorBase<Rank, T> {
             size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
             Dim<1> dim{size};
 
+#if defined(EINSUMS_SHOW_WARNING)
             println("Creating a Rank-1 TensorView of an existing TensorView may not work. Be careful!");
+#endif
 
             return TensorView<1, T>{*this, dim, Stride<1>{1}};
         }
