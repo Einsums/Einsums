@@ -577,16 +577,19 @@ auto einsum(const T C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<C
 
 template <template <size_t, typename> typename AType, size_t ARank, template <size_t, typename> typename BType, size_t BRank,
           template <size_t, typename> typename CType, size_t CRank, typename... CIndices, typename... AIndices, typename... BIndices,
-          typename T = double>
-auto einsum(const T C_prefactor, const std::tuple<CIndices...> &C_indices, CType<CRank, T> *C, const T AB_prefactor,
+          typename U, typename T = double>
+auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<CRank, T> *C, const U UAB_prefactor,
             const std::tuple<AIndices...> &A_indices, const AType<ARank, T> &A, const std::tuple<BIndices...> &B_indices,
             const BType<BRank, T> &B)
     -> std::enable_if_t<std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<ARank, T>, AType<ARank, T>> &&
                         std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<BRank, T>, BType<BRank, T>> &&
-                        std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<CRank, T>, CType<CRank, T>>> {
-    Timer::push(fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{} + {} "{}"{})", C->name(), print_tuple_no_type(C_indices), AB_prefactor,
-                            A.name(), print_tuple_no_type(A_indices), B.name(), print_tuple_no_type(B_indices), C_prefactor, C->name(),
+                        std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<CRank, T>, CType<CRank, T>> && std::is_arithmetic_v<U>> {
+    Timer::push(fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{} + {} "{}"{})", C->name(), print_tuple_no_type(C_indices), UAB_prefactor,
+                            A.name(), print_tuple_no_type(A_indices), B.name(), print_tuple_no_type(B_indices), UC_prefactor, C->name(),
                             print_tuple_no_type(C_indices)));
+
+    const T C_prefactor = UC_prefactor;
+    const T AB_prefactor = UAB_prefactor;
 
 #ifdef CONTINUOUSLY_TEST_EINSUM
     // Clone C into a new tensor
@@ -647,176 +650,144 @@ auto einsum(const T C_prefactor, const std::tuple<CIndices...> &C_indices, CType
     Timer::pop();
 }
 
-template <template <size_t, typename> typename AType, size_t ARank, template <size_t, typename> typename BType, size_t BRank,
-          template <size_t, typename> typename CType, size_t CRank, typename... CIndices, typename... AIndices, typename... BIndices,
-          typename T = double>
-auto einsum(const T C_prefactor, const std::tuple<CIndices...> &C_indices, std::unique_ptr<CType<CRank, T>> *C, const T AB_prefactor,
-            const std::tuple<AIndices...> &A_indices, const std::unique_ptr<AType<ARank, T>> &A, const std::tuple<BIndices...> &B_indices,
-            const std::unique_ptr<BType<BRank, T>> &B)
-    -> std::enable_if_t<std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<ARank, T>, AType<ARank, T>> &&
-                        std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<BRank, T>, BType<BRank, T>> &&
-                        std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<CRank, T>, CType<CRank, T>>> {
-    einsum(C_prefactor, C_indices, C->get(), AB_prefactor, A_indices, *A, B_indices, *B);
-}
+// Einsums with provided prefactors.
+// 1. C n A n B n is defined above as the base implementation.
 
-template <template <size_t, typename> typename AType, size_t ARank, template <size_t, typename> typename BType, size_t BRank,
-          template <size_t, typename> typename CType, size_t CRank, typename... CIndices, typename... AIndices, typename... BIndices,
-          typename T = double>
-auto einsum(const T C_prefactor, const std::tuple<CIndices...> &C_indices, std::unique_ptr<CType<CRank, T>> *C, const T AB_prefactor,
-            const std::tuple<AIndices...> &A_indices, const AType<ARank, T> &A, const std::tuple<BIndices...> &B_indices,
-            const std::unique_ptr<BType<BRank, T>> &B)
-    -> std::enable_if_t<std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<ARank, T>, AType<ARank, T>> &&
-                        std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<BRank, T>, BType<BRank, T>> &&
-                        std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<CRank, T>, CType<CRank, T>>> {
-    einsum(C_prefactor, C_indices, C->get(), AB_prefactor, A_indices, A, B_indices, *B);
-}
-
-template <template <size_t, typename> typename AType, size_t ARank, template <size_t, typename> typename BType, size_t BRank,
-          template <size_t, typename> typename CType, size_t CRank, typename... CIndices, typename... AIndices, typename... BIndices,
-          typename T = double>
-auto einsum(const T C_prefactor, const std::tuple<CIndices...> &C_indices, std::unique_ptr<CType<CRank, T>> *C, const T AB_prefactor,
-            const std::tuple<AIndices...> &A_indices, const std::unique_ptr<AType<ARank, T>> &A, const std::tuple<BIndices...> &B_indices,
-            const BType<BRank, T> &B)
-    -> std::enable_if_t<std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<ARank, T>, AType<ARank, T>> &&
-                        std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<BRank, T>, BType<BRank, T>> &&
-                        std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<CRank, T>, CType<CRank, T>>> {
-    einsum(C_prefactor, C_indices, C->get(), AB_prefactor, A_indices, *A, B_indices, B);
-}
-
-template <template <size_t, typename> typename AType, size_t ARank, template <size_t, typename> typename BType, size_t BRank,
-          template <size_t, typename> typename CType, size_t CRank, typename... CIndices, typename... AIndices, typename... BIndices,
-          typename T = double>
-auto einsum(const T C_prefactor, const std::tuple<CIndices...> &C_indices, std::unique_ptr<CType<CRank, T>> *C, const T AB_prefactor,
-            const std::tuple<AIndices...> &A_indices, const AType<ARank, T> &A, const std::tuple<BIndices...> &B_indices,
-            const BType<BRank, T> &B)
-    -> std::enable_if_t<std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<ARank, T>, AType<ARank, T>> &&
-                        std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<BRank, T>, BType<BRank, T>> &&
-                        std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<CRank, T>, CType<CRank, T>>> {
-    einsum(C_prefactor, C_indices, C->get(), AB_prefactor, A_indices, A, B_indices, B);
-}
-
-template <template <size_t, typename> typename AType, size_t ARank, template <size_t, typename> typename BType, size_t BRank,
-          template <size_t, typename> typename CType, size_t CRank, typename... CIndices, typename... AIndices, typename... BIndices,
-          typename T = double>
-auto einsum(const T C_prefactor, const std::tuple<CIndices...> &C_indices, CType<CRank, T> *C, const T AB_prefactor,
-            const std::tuple<AIndices...> &A_indices, const AType<ARank, T> &A, const std::tuple<BIndices...> &B_indices,
-            const std::unique_ptr<BType<BRank, T>> &B)
-    -> std::enable_if_t<std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<ARank, T>, AType<ARank, T>> &&
-                        std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<BRank, T>, BType<BRank, T>> &&
-                        std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<CRank, T>, CType<CRank, T>>> {
+// 2. C n A n B y
+template <typename AType, typename BType, typename CType, typename... CIndices, typename... AIndices, typename... BIndices, typename T>
+auto einsum(const T C_prefactor, const std::tuple<CIndices...> &C_indices, CType *C, const T AB_prefactor,
+            const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices, const BType &B)
+    -> std::enable_if_t<!is_smart_pointer_v<CType> && !is_smart_pointer_v<AType> && is_smart_pointer_v<BType>> {
     einsum(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, *B);
 }
 
-template <template <size_t, typename> typename AType, size_t ARank, template <size_t, typename> typename BType, size_t BRank,
-          template <size_t, typename> typename CType, size_t CRank, typename... CIndices, typename... AIndices, typename... BIndices,
-          typename T = double>
-auto einsum(const T C_prefactor, const std::tuple<CIndices...> &C_indices, CType<CRank, T> *C, const T AB_prefactor,
-            const std::tuple<AIndices...> &A_indices, const std::unique_ptr<AType<ARank, T>> &A, const std::tuple<BIndices...> &B_indices,
-            const BType<BRank, T> &B)
-    -> std::enable_if_t<std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<ARank, T>, AType<ARank, T>> &&
-                        std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<BRank, T>, BType<BRank, T>> &&
-                        std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<CRank, T>, CType<CRank, T>>> {
+// 3. C n A y B n
+template <typename AType, typename BType, typename CType, typename... CIndices, typename... AIndices, typename... BIndices, typename T>
+auto einsum(const T C_prefactor, const std::tuple<CIndices...> &C_indices, CType *C, const T AB_prefactor,
+            const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices, const BType &B)
+    -> std::enable_if_t<!is_smart_pointer_v<CType> && is_smart_pointer_v<AType> && ~is_smart_pointer_v<BType>> {
     einsum(C_prefactor, C_indices, C, AB_prefactor, A_indices, *A, B_indices, B);
+}
+
+// 4. C n A y B y
+template <typename AType, typename BType, typename CType, typename... CIndices, typename... AIndices, typename... BIndices, typename T>
+auto einsum(const T C_prefactor, const std::tuple<CIndices...> &C_indices, CType *C, const T AB_prefactor,
+            const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices, const BType &B)
+    -> std::enable_if_t<!is_smart_pointer_v<CType> && is_smart_pointer_v<AType> && is_smart_pointer_v<BType>> {
+    einsum(C_prefactor, C_indices, C, AB_prefactor, A_indices, *A, B_indices, *B);
+}
+
+// 5. C y A n B n
+template <typename AType, typename BType, typename CType, typename... CIndices, typename... AIndices, typename... BIndices, typename T>
+auto einsum(const T C_prefactor, const std::tuple<CIndices...> &C_indices, CType *C, const T AB_prefactor,
+            const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices, const BType &B)
+    -> std::enable_if_t<is_smart_pointer_v<CType> && !is_smart_pointer_v<AType> && !is_smart_pointer_v<BType>> {
+    einsum(C_prefactor, C_indices, C->get(), AB_prefactor, A_indices, A, B_indices, B);
+}
+
+// 6. C y A n B y
+template <typename AType, typename BType, typename CType, typename... CIndices, typename... AIndices, typename... BIndices, typename T>
+auto einsum(const T C_prefactor, const std::tuple<CIndices...> &C_indices, CType *C, const T AB_prefactor,
+            const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices, const BType &B)
+    -> std::enable_if_t<is_smart_pointer_v<CType> && !is_smart_pointer_v<AType> && is_smart_pointer_v<BType>> {
+    einsum(C_prefactor, C_indices, C->get(), AB_prefactor, A_indices, A, B_indices, *B);
+}
+
+// 7. C y A y B n
+template <typename AType, typename BType, typename CType, typename... CIndices, typename... AIndices, typename... BIndices, typename T>
+auto einsum(const T C_prefactor, const std::tuple<CIndices...> &C_indices, CType *C, const T AB_prefactor,
+            const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices, const BType &B)
+    -> std::enable_if_t<is_smart_pointer_v<CType> && is_smart_pointer_v<AType> && !is_smart_pointer_v<BType>> {
+    einsum(C_prefactor, C_indices, C->get(), AB_prefactor, A_indices, *A, B_indices, B);
+}
+
+// 8. C y A y B y
+template <typename AType, typename BType, typename CType, typename... CIndices, typename... AIndices, typename... BIndices, typename T>
+auto einsum(const T C_prefactor, const std::tuple<CIndices...> &C_indices, CType *C, const T AB_prefactor,
+            const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices, const BType &B)
+    -> std::enable_if_t<is_smart_pointer_v<CType> && is_smart_pointer_v<AType> && is_smart_pointer_v<BType>> {
+    einsum(C_prefactor, C_indices, C->get(), AB_prefactor, A_indices, *A, B_indices, *B);
 }
 
 //
 // Einsums with default prefactors.
 //
-template <template <size_t, typename> typename AType, size_t ARank, template <size_t, typename> typename BType, size_t BRank,
-          template <size_t, typename> typename CType, size_t CRank, typename... CIndices, typename... AIndices, typename... BIndices,
-          typename T = double>
-auto einsum(const std::tuple<CIndices...> &C_indices, CType<CRank, T> *C, const std::tuple<AIndices...> &A_indices,
-            const AType<ARank, T> &A, const std::tuple<BIndices...> &B_indices, const BType<BRank, T> &B)
-    -> std::enable_if_t<std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<ARank, T>, AType<ARank, T>> &&
-                        std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<BRank, T>, BType<BRank, T>> &&
-                        std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<CRank, T>, CType<CRank, T>>> {
-    einsum(T{0}, C_indices, C, T{1}, A_indices, A, B_indices, B);
+
+// 1. C n A n B n
+template <typename AType, typename BType, typename CType, typename... CIndices, typename... AIndices, typename... BIndices>
+auto einsum(const std::tuple<CIndices...> &C_indices, CType *C, const std::tuple<AIndices...> &A_indices, const AType &A,
+            const std::tuple<BIndices...> &B_indices, const BType &B)
+    -> std::enable_if_t<!is_smart_pointer_v<CType> && !is_smart_pointer_v<AType> && !is_smart_pointer_v<BType>> {
+    einsum(0, C_indices, C, 1, A_indices, A, B_indices, B);
 }
 
-template <template <size_t, typename> typename AType, size_t ARank, template <size_t, typename> typename BType, size_t BRank,
-          template <size_t, typename> typename CType, size_t CRank, typename... CIndices, typename... AIndices, typename... BIndices,
-          typename T = double>
-auto einsum(const std::tuple<CIndices...> &C_indices, std::unique_ptr<CType<CRank, T>> *C, const std::tuple<AIndices...> &A_indices,
-            const std::unique_ptr<AType<ARank, T>> &A, const std::tuple<BIndices...> &B_indices, const std::unique_ptr<BType<BRank, T>> &B)
-    -> std::enable_if_t<std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<ARank, T>, AType<ARank, T>> &&
-                        std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<BRank, T>, BType<BRank, T>> &&
-                        std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<CRank, T>, CType<CRank, T>>> {
-    einsum(T{0}, C_indices, C->get(), T{1}, A_indices, *A, B_indices, *B);
+// 2. C n A n B y
+template <typename AType, typename BType, typename CType, typename... CIndices, typename... AIndices, typename... BIndices>
+auto einsum(const std::tuple<CIndices...> &C_indices, CType *C, const std::tuple<AIndices...> &A_indices, const AType &A,
+            const std::tuple<BIndices...> &B_indices, const BType &B)
+    -> std::enable_if_t<!is_smart_pointer_v<CType> && !is_smart_pointer_v<AType> && is_smart_pointer_v<BType>> {
+    einsum(0, C_indices, C, 1, A_indices, A, B_indices, *B);
 }
 
-template <template <size_t, typename> typename AType, size_t ARank, template <size_t, typename> typename BType, size_t BRank,
-          template <size_t, typename> typename CType, size_t CRank, typename... CIndices, typename... AIndices, typename... BIndices,
-          typename T = double>
-auto einsum(const std::tuple<CIndices...> &C_indices, std::unique_ptr<CType<CRank, T>> *C, const std::tuple<AIndices...> &A_indices,
-            const std::unique_ptr<AType<ARank, T>> &A, const std::tuple<BIndices...> &B_indices, const BType<BRank, T> &B)
-    -> std::enable_if_t<std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<ARank, T>, AType<ARank, T>> &&
-                        std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<BRank, T>, BType<BRank, T>> &&
-                        std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<CRank, T>, CType<CRank, T>>> {
-    einsum(T{0}, C_indices, C->get(), T{1}, A_indices, *A, B_indices, B);
+// 3. C n A y B n
+template <typename AType, typename BType, typename CType, typename... CIndices, typename... AIndices, typename... BIndices>
+auto einsum(const std::tuple<CIndices...> &C_indices, CType *C, const std::tuple<AIndices...> &A_indices, const AType &A,
+            const std::tuple<BIndices...> &B_indices, const BType &B)
+    -> std::enable_if_t<!is_smart_pointer_v<CType> && is_smart_pointer_v<AType> && !is_smart_pointer_v<BType>> {
+    einsum(0, C_indices, C, 1, A_indices, *A, B_indices, B);
 }
 
-template <template <size_t, typename> typename AType, size_t ARank, template <size_t, typename> typename BType, size_t BRank,
-          template <size_t, typename> typename CType, size_t CRank, typename... CIndices, typename... AIndices, typename... BIndices,
-          typename T = double>
-auto einsum(const std::tuple<CIndices...> &C_indices, std::unique_ptr<CType<CRank, T>> *C, const std::tuple<AIndices...> &A_indices,
-            const AType<ARank, T> &A, const std::tuple<BIndices...> &B_indices, const std::unique_ptr<BType<BRank, T>> &B)
-    -> std::enable_if_t<std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<ARank, T>, AType<ARank, T>> &&
-                        std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<BRank, T>, BType<BRank, T>> &&
-                        std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<CRank, T>, CType<CRank, T>>> {
-    einsum(T{0}, C_indices, C->get(), T{1}, A_indices, A, B_indices, *B);
+// 4. C n A y B y
+template <typename AType, typename BType, typename CType, typename... CIndices, typename... AIndices, typename... BIndices>
+auto einsum(const std::tuple<CIndices...> &C_indices, CType *C, const std::tuple<AIndices...> &A_indices, const AType &A,
+            const std::tuple<BIndices...> &B_indices, const BType &B)
+    -> std::enable_if_t<!is_smart_pointer_v<CType> && is_smart_pointer_v<AType> && is_smart_pointer_v<BType>> {
+    einsum(0, C_indices, C, 1, A_indices, *A, B_indices, *B);
 }
 
-template <template <size_t, typename> typename AType, size_t ARank, template <size_t, typename> typename BType, size_t BRank,
-          template <size_t, typename> typename CType, size_t CRank, typename... CIndices, typename... AIndices, typename... BIndices,
-          typename T = double>
-auto einsum(const std::tuple<CIndices...> &C_indices, CType<CRank, T> *C, const std::tuple<AIndices...> &A_indices,
-            const std::unique_ptr<AType<ARank, T>> &A, const std::tuple<BIndices...> &B_indices, const std::unique_ptr<BType<BRank, T>> &B)
-    -> std::enable_if_t<std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<ARank, T>, AType<ARank, T>> &&
-                        std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<BRank, T>, BType<BRank, T>> &&
-                        std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<CRank, T>, CType<CRank, T>>> {
-    einsum(T{0}, C_indices, C, T{1}, A_indices, *A, B_indices, *B);
+// 5. C y A n B n
+template <typename AType, typename BType, typename CType, typename... CIndices, typename... AIndices, typename... BIndices>
+auto einsum(const std::tuple<CIndices...> &C_indices, CType *C, const std::tuple<AIndices...> &A_indices, const AType &A,
+            const std::tuple<BIndices...> &B_indices, const BType &B)
+    -> std::enable_if_t<is_smart_pointer_v<CType> && !is_smart_pointer_v<AType> && !is_smart_pointer_v<BType>> {
+    einsum(0, C_indices, C->get(), 1, A_indices, A, B_indices, B);
 }
 
-template <template <size_t, typename> typename AType, size_t ARank, template <size_t, typename> typename BType, size_t BRank,
-          template <size_t, typename> typename CType, size_t CRank, typename... CIndices, typename... AIndices, typename... BIndices,
-          typename T = double>
-auto einsum(const std::tuple<CIndices...> &C_indices, std::unique_ptr<CType<CRank, T>> *C, const std::tuple<AIndices...> &A_indices,
-            const AType<ARank, T> &A, const std::tuple<BIndices...> &B_indices, const BType<BRank, T> &B)
-    -> std::enable_if_t<std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<ARank, T>, AType<ARank, T>> &&
-                        std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<BRank, T>, BType<BRank, T>> &&
-                        std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<CRank, T>, CType<CRank, T>>> {
-    einsum(T{0}, C_indices, C->get(), T{1}, A_indices, A, B_indices, B);
+// 6. C y A n B y
+template <typename AType, typename BType, typename CType, typename... CIndices, typename... AIndices, typename... BIndices>
+auto einsum(const std::tuple<CIndices...> &C_indices, CType *C, const std::tuple<AIndices...> &A_indices, const AType &A,
+            const std::tuple<BIndices...> &B_indices, const BType &B)
+    -> std::enable_if_t<is_smart_pointer_v<CType> && !is_smart_pointer_v<AType> && is_smart_pointer_v<BType>> {
+    einsum(0, C_indices, C->get(), 1, A_indices, A, B_indices, *B);
 }
 
-template <template <size_t, typename> typename AType, size_t ARank, template <size_t, typename> typename BType, size_t BRank,
-          template <size_t, typename> typename CType, size_t CRank, typename... CIndices, typename... AIndices, typename... BIndices,
-          typename T = double>
-auto einsum(const std::tuple<CIndices...> &C_indices, CType<CRank, T> *C, const std::tuple<AIndices...> &A_indices,
-            const std::unique_ptr<AType<ARank, T>> &A, const std::tuple<BIndices...> &B_indices, const BType<BRank, T> &B)
-    -> std::enable_if_t<std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<ARank, T>, AType<ARank, T>> &&
-                        std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<BRank, T>, BType<BRank, T>> &&
-                        std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<CRank, T>, CType<CRank, T>>> {
-    einsum(T{0}, C_indices, C, T{1}, A_indices, *A, B_indices, B);
+// 7. C y A y B n
+template <typename AType, typename BType, typename CType, typename... CIndices, typename... AIndices, typename... BIndices>
+auto einsum(const std::tuple<CIndices...> &C_indices, CType *C, const std::tuple<AIndices...> &A_indices, const AType &A,
+            const std::tuple<BIndices...> &B_indices, const BType &B)
+    -> std::enable_if_t<is_smart_pointer_v<CType> && is_smart_pointer_v<AType> && !is_smart_pointer_v<BType>> {
+    einsum(0, C_indices, C->get(), 1, A_indices, *A, B_indices, B);
 }
 
-template <template <size_t, typename> typename AType, size_t ARank, template <size_t, typename> typename BType, size_t BRank,
-          template <size_t, typename> typename CType, size_t CRank, typename... CIndices, typename... AIndices, typename... BIndices,
-          typename T = double>
-auto einsum(const std::tuple<CIndices...> &C_indices, CType<CRank, T> *C, const std::tuple<AIndices...> &A_indices,
-            const AType<ARank, T> &A, const std::tuple<BIndices...> &B_indices, const std::unique_ptr<BType<BRank, T>> &B)
-    -> std::enable_if_t<std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<ARank, T>, AType<ARank, T>> &&
-                        std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<BRank, T>, BType<BRank, T>> &&
-                        std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<CRank, T>, CType<CRank, T>>> {
-    einsum(T{0}, C_indices, C, T{1}, A_indices, A, B_indices, *B);
+// 8. C y A y B y
+template <typename AType, typename BType, typename CType, typename... CIndices, typename... AIndices, typename... BIndices>
+auto einsum(const std::tuple<CIndices...> &C_indices, CType *C, const std::tuple<AIndices...> &A_indices, const AType &A,
+            const std::tuple<BIndices...> &B_indices, const BType &B)
+    -> std::enable_if_t<is_smart_pointer_v<CType> && is_smart_pointer_v<AType> && is_smart_pointer_v<BType>> {
+    einsum(0, C_indices, C->get(), 1, A_indices, *A, B_indices, *B);
 }
 
+//
+// sort algorithm
+//
 template <template <size_t, typename> typename AType, size_t ARank, template <size_t, typename> typename CType, size_t CRank,
           typename... CIndices, typename... AIndices, typename U, typename T = double>
 auto sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<CRank, T> *C, const U UA_prefactor,
           const std::tuple<AIndices...> &A_indices, const AType<ARank, T> &A)
     -> std::enable_if_t<std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<CRank, T>, CType<CRank, T>> &&
                         std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<ARank, T>, AType<ARank, T>> &&
-                        sizeof...(CIndices) == sizeof...(AIndices) && sizeof...(CIndices) == CRank && sizeof...(AIndices) == ARank> {
+                        sizeof...(CIndices) == sizeof...(AIndices) && sizeof...(CIndices) == CRank && sizeof...(AIndices) == ARank &&
+                        std::is_arithmetic_v<U>> {
 
     Timer::push(fmt::format(R"(sort: "{}"{} = {} "{}"{} + {} "{}"{})", C->name(), print_tuple_no_type(C_indices), UA_prefactor, A.name(),
                             print_tuple_no_type(A_indices), UC_prefactor, C->name(), print_tuple_no_type(C_indices)));
@@ -868,13 +839,10 @@ auto sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<
 }
 
 // Sort with default values, no smart pointers
-template <template <size_t, typename> typename AType, size_t ARank, template <size_t, typename> typename CType, size_t CRank,
-          typename... CIndices, typename... AIndices, typename T = double>
-auto sort(const std::tuple<CIndices...> &C_indices, CType<CRank, T> *C, const std::tuple<AIndices...> &A_indices, const AType<ARank, T> &A)
-    -> std::enable_if_t<std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<CRank, T>, CType<CRank, T>> &&
-                        std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<ARank, T>, AType<ARank, T>> &&
-                        sizeof...(CIndices) == sizeof...(AIndices) && sizeof...(CIndices) == CRank && sizeof...(AIndices) == ARank> {
-    sort(T{0}, C_indices, C, T{1}, A_indices, A);
+template <typename ObjectA, typename ObjectC, typename... CIndices, typename... AIndices>
+auto sort(const std::tuple<CIndices...> &C_indices, ObjectC *C, const std::tuple<AIndices...> &A_indices, const ObjectA &A)
+    -> std::enable_if_t<!is_smart_pointer_v<ObjectA> && !is_smart_pointer_v<ObjectC>> {
+    sort(0, C_indices, C, 1, A_indices, A);
 }
 
 // Sort with default values, two smart pointers
