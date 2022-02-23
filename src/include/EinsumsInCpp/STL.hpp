@@ -298,6 +298,24 @@ template <typename D, size_t Rank, size_t ViewRank = Rank, typename T = double>
 inline constexpr bool is_ondisk_tensor_v = is_ondisk_tensor<D, Rank, ViewRank, T>::value;
 
 template <typename T>
+struct is_smart_pointer_helper : public std::false_type {};
+
+template <typename T>
+struct is_smart_pointer_helper<std::shared_ptr<T>> : public std::true_type {};
+
+template <typename T>
+struct is_smart_pointer_helper<std::unique_ptr<T>> : public std::true_type {};
+
+template <typename T>
+struct is_smart_pointer_helper<std::weak_ptr<T>> : public std::true_type {};
+
+template <typename T>
+struct is_smart_pointer : public is_smart_pointer_helper<typename std::remove_cv<T>::type> {};
+
+template <typename T>
+inline constexpr bool is_smart_pointer_v = is_smart_pointer<T>::value;
+
+template <typename T>
 struct CircularBuffer {
     explicit CircularBuffer(size_t size) : _buffer(std::unique_ptr<T[]>(new T[size])), _max_size(size) {}
 

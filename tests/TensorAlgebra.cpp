@@ -1989,4 +1989,10 @@ TEST_CASE("element transform") {
             }
         }
     }
+
+    SECTION("smartptr tensor") {
+        auto A = std::make_unique<Tensor<4>>("A", 32, 32, 32, 32);
+
+        element_transform(&A, [](double val) -> double { return 1.0 / val; });
+    }
 }

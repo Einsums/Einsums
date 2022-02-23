@@ -811,15 +811,17 @@ auto einsum(const std::tuple<CIndices...> &C_indices, CType<CRank, T> *C, const 
 }
 
 template <template <size_t, typename> typename AType, size_t ARank, template <size_t, typename> typename CType, size_t CRank,
-          typename... CIndices, typename... AIndices, typename T = double>
-auto sort(const T C_prefactor, const std::tuple<CIndices...> &C_indices, CType<CRank, T> *C, const T A_prefactor,
+          typename... CIndices, typename... AIndices, typename U, typename T = double>
+auto sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<CRank, T> *C, const U UA_prefactor,
           const std::tuple<AIndices...> &A_indices, const AType<ARank, T> &A)
     -> std::enable_if_t<std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<CRank, T>, CType<CRank, T>> &&
                         std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<ARank, T>, AType<ARank, T>> &&
                         sizeof...(CIndices) == sizeof...(AIndices) && sizeof...(CIndices) == CRank && sizeof...(AIndices) == ARank> {
 
-    Timer::push(fmt::format(R"(sort: "{}"{} = {} "{}"{} + {} "{}"{})", C->name(), print_tuple_no_type(C_indices), A_prefactor, A.name(),
-                            print_tuple_no_type(A_indices), C_prefactor, C->name(), print_tuple_no_type(C_indices)));
+    Timer::push(fmt::format(R"(sort: "{}"{} = {} "{}"{} + {} "{}"{})", C->name(), print_tuple_no_type(C_indices), UA_prefactor, A.name(),
+                            print_tuple_no_type(A_indices), UC_prefactor, C->name(), print_tuple_no_type(C_indices)));
+    const T C_prefactor = UC_prefactor;
+    const T A_prefactor = UA_prefactor;
 
     // Error check:  If there are any remaining indices then we cannot perform a sort
     constexpr auto check = difference_t<std::tuple<AIndices...>, std::tuple<CIndices...>>();
@@ -865,6 +867,7 @@ auto sort(const T C_prefactor, const std::tuple<CIndices...> &C_indices, CType<C
     Timer::pop();
 }
 
+// Sort with default values, no smart pointers
 template <template <size_t, typename> typename AType, size_t ARank, template <size_t, typename> typename CType, size_t CRank,
           typename... CIndices, typename... AIndices, typename T = double>
 auto sort(const std::tuple<CIndices...> &C_indices, CType<CRank, T> *C, const std::tuple<AIndices...> &A_indices, const AType<ARank, T> &A)
@@ -874,28 +877,34 @@ auto sort(const std::tuple<CIndices...> &C_indices, CType<CRank, T> *C, const st
     sort(T{0}, C_indices, C, T{1}, A_indices, A);
 }
 
-template <template <size_t, typename> typename AType, size_t ARank, template <size_t, typename> typename CType, size_t CRank,
-          typename... CIndices, typename... AIndices, typename T = double>
-auto sort(const std::tuple<CIndices...> &C_indices, std::unique_ptr<CType<CRank, T>> *C, const std::tuple<AIndices...> &A_indices,
-          const std::unique_ptr<AType<ARank, T>> &A)
-    -> std::enable_if_t<std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<CRank, T>, CType<CRank, T>> &&
-                        std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<ARank, T>, AType<ARank, T>> &&
-                        sizeof...(CIndices) == sizeof...(AIndices) && sizeof...(CIndices) == CRank && sizeof...(AIndices) == ARank> {
-    sort(T{0}, C_indices, C->get(), T{1}, A_indices, *A);
+// Sort with default values, two smart pointers
+template <typename SmartPointerA, typename SmartPointerC, typename... CIndices, typename... AIndices>
+auto sort(const std::tuple<CIndices...> &C_indices, SmartPointerC *C, const std::tuple<AIndices...> &A_indices, const SmartPointerA &A)
+    -> std::enable_if_t<is_smart_pointer_v<SmartPointerA> && is_smart_pointer_v<SmartPointerC>> {
+    sort(0, C_indices, C->get(), 1, A_indices, *A);
 }
 
-template <template <size_t, typename> typename AType, size_t ARank, template <size_t, typename> typename CType, size_t CRank,
-          typename... CIndices, typename... AIndices, typename T = double>
-auto sort(const std::tuple<CIndices...> &C_indices, CType<CRank, T> *C, const std::tuple<AIndices...> &A_indices,
-          const std::unique_ptr<AType<ARank, T>> &A)
-    -> std::enable_if_t<std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<CRank, T>, CType<CRank, T>> &&
-                        std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<ARank, T>, AType<ARank, T>> &&
-                        sizeof...(CIndices) == sizeof...(AIndices) && sizeof...(CIndices) == CRank && sizeof...(AIndices) == ARank> {
-    sort(T{0}, C_indices, C, T{1}, A_indices, *A);
+// Sort with default values, one smart pointer (A)
+template <typename SmartPointerA, typename PointerC, typename... CIndices, typename... AIndices>
+auto sort(const std::tuple<CIndices...> &C_indices, PointerC *C, const std::tuple<AIndices...> &A_indices, const SmartPointerA &A)
+    -> std::enable_if_t<is_smart_pointer_v<SmartPointerA> && !is_smart_pointer_v<PointerC>> {
+    sort(0, C_indices, C, 1, A_indices, *A);
 }
+
+// Sort with default values, one smart pointer (C)
+template <typename ObjectA, typename SmartPointerC, typename... CIndices, typename... AIndices>
+auto sort(const std::tuple<CIndices...> &C_indices, SmartPointerC *C, const std::tuple<AIndices...> &A_indices, const ObjectA &A)
+    -> std::enable_if_t<!is_smart_pointer_v<ObjectA> && is_smart_pointer_v<SmartPointerC>> {
+    sort(0, C_indices, C->get(), 1, A_indices, A);
+}
+
+//
+// Element Transform
+///
 
 template <template <size_t, typename> typename CType, size_t CRank, typename UnaryOperator, typename T = double>
-auto element_transform(CType<CRank, T> *C, UnaryOperator unary_opt) {
+auto element_transform(CType<CRank, T> *C, UnaryOperator unary_opt)
+    -> std::enable_if_t<std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<CRank, T>, CType<CRank, T>>> {
     Timer::push(fmt::format("element transform: {}", C->name()));
     auto target_dims = get_dim_ranges<CRank>(*C);
     auto view = std::apply(ranges::views::cartesian_product, target_dims);
@@ -906,6 +915,11 @@ auto element_transform(CType<CRank, T> *C, UnaryOperator unary_opt) {
         target_value = unary_opt(target_value);
     }
     Timer::pop();
+}
+
+template <typename SmartPtr, typename UnaryOperator>
+auto element_transform(SmartPtr *C, UnaryOperator unary_opt) -> std::enable_if_t<is_smart_pointer_v<SmartPtr>> {
+    element_transform(C->get(), unary_opt);
 }
 
 } // namespace EinsumsInCpp::TensorAlgebra
