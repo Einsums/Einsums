@@ -1,4 +1,6 @@
 #define CATCH_CONFIG_RUNNER
+#include "EinsumsInCpp/OpenMP.h"
+#include "EinsumsInCpp/Print.hpp"
 #include "EinsumsInCpp/State.hpp"
 #include "EinsumsInCpp/Timer.hpp"
 
@@ -16,8 +18,11 @@ auto main(int argc, char *argv[]) -> int {
     // in size this should be considered.
     EinsumsInCpp::State::data = h5::create("Data.h5", H5F_ACC_TRUNC);
 
+    EinsumsInCpp::println("Running on {} thread(s)", omp_get_max_threads());
+
     int result = Catch::Session().run(argc, argv);
 
+    // EinsumsInCpp::Timer::report();
     EinsumsInCpp::Timer::finalize();
     return result;
 }

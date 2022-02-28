@@ -1,4 +1,5 @@
 #include "EinsumsInCpp/LinearAlgebra.hpp"
+#include "EinsumsInCpp/OpenMP.h"
 #include "EinsumsInCpp/Print.hpp"
 #include "EinsumsInCpp/STL.hpp"
 #include "EinsumsInCpp/State.hpp"
@@ -22,6 +23,7 @@ auto main() -> int {
     int nmo1{NMO}, nmo2{NMO}, nmo3{NMO}, nmo4{NMO};
     int nbs1{NBS}, nbs2{NBS}, nbs3{NBS}, nbs4{NBS};
 
+    println("Running on {} threads", omp_get_max_threads());
     println("NMO {} :: NBS {}", NMO, NBS);
 
     Timer::push("Allocations");
@@ -100,6 +102,8 @@ auto main() -> int {
     Timer::pop();
 
     Timer::pop(); // Full Transformation
+
+    element_transform(&PQRS, [](double value) -> double { return 1.0 / value; });
 
     Timer::report();
     Timer::finalize();
