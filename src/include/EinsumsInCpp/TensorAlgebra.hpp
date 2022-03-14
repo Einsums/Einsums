@@ -878,7 +878,7 @@ auto element_transform(CType<CRank, T> *C, UnaryOperator unary_opt)
     auto view = std::apply(ranges::views::cartesian_product, target_dims);
 
 #pragma omp parallel for
-    for (auto it = view.begin(); it < view.end(); it++) {
+    for (auto it = view.begin(); it != view.end(); it++) {
         T &target_value = std::apply(*C, *it);
         target_value = unary_opt(target_value);
     }
@@ -888,6 +888,26 @@ auto element_transform(CType<CRank, T> *C, UnaryOperator unary_opt)
 template <typename SmartPtr, typename UnaryOperator>
 auto element_transform(SmartPtr *C, UnaryOperator unary_opt) -> std::enable_if_t<is_smart_pointer_v<SmartPtr>> {
     element_transform(C->get(), unary_opt);
+}
+
+template <template <size_t, typename> typename CType, template <size_t, typename> typename... MultiTensors, size_t Rank,
+          typename MultiOperator, typename T = double>
+auto element(MultiOperator multi_opt, CType<Rank, T> *C, MultiTensors<Rank, T>... tensors) {
+    Timer::push("element");
+    auto target_dims = get_dim_ranges<Rank>(*C);
+    auto view = std::apply(ranges::views::cartesian_product, target_dims);
+
+    // Ensure the various tensors passed in are the same dimensionality
+    if (((C->dims() != tensors.dims()) || ...)) {
+        println_abort("element: at least one tensor does not have same dimensionality as destination");
+    }
+
+#pragma omp parallel for
+    for (auto it = view.begin(); it != view.end(); it++) {
+        T &target_value = std::apply(*C, *it);
+        target_value = multi_opt(target_value, std::apply(tensors, *it)...);
+    }
+    Timer::pop();
 }
 
 } // namespace EinsumsInCpp::TensorAlgebra

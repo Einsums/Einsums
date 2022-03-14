@@ -21,6 +21,7 @@ target_link_libraries(EinsumsInCpp
         h5cpp::h5cpp
         $<$<BOOL:EINSUMS_USE_HPTT>:hptt::hptt>
         $<$<TARGET_EXISTS:OpenMP::OpenMP_CXX>:OpenMP::OpenMP_CXX>
+        Backward::Backward
 )
 
 target_include_directories(EinsumsInCpp

@@ -116,6 +116,26 @@ TEST_CASE("Tensor SYEVs", "[tensor]") {
     CHECK_THAT(x(2), Catch::Matchers::WithinRel(+11.344814, 0.00001));
 }
 
+TEST_CASE("Tensor Invert") {
+    EinsumsInCpp::Tensor<2, double> A("A", 3, 3);
+    A(0, 0) = 1.0;
+    A(0, 1) = 2.0;
+    A(0, 2) = 3.0;
+    A(1, 0) = 3.0;
+    A(1, 1) = 2.0;
+    A(1, 2) = 1.0;
+    A(2, 0) = 2.0;
+    A(2, 1) = 1.0;
+    A(2, 2) = 3.0;
+
+    EinsumsInCpp::LinearAlgebra::invert(&A);
+
+    CHECK_THAT(A.vector_data(),
+               Catch::Matchers::Approx(std::vector<double, EinsumsInCpp::AlignedAllocator<double, 64>>{
+                                           -5.0 / 12, 0.25, 1.0 / 3.0, 7.0 / 12.0, 0.25, -2.0 / 3.0, 1.0 / 12.0, -0.25, 1.0 / 3.0})
+                   .margin(0.00001));
+}
+
 TEST_CASE("TensorView creation", "[tensor]") {
     EinsumsInCpp::Tensor<3, double> A("A", 3, 3, 3);
     EinsumsInCpp::TensorView<2, double> viewA(A, EinsumsInCpp::Dim<2>{3, 9});
@@ -218,6 +238,10 @@ TEST_CASE("TensorView-2D HDF5") {
                     REQUIRE(viewA(i, j) == B(i, j));
         }
     }
+}
+
+TEST_CASE("TensorView Ranges") {
+    using namespace EinsumsInCpp;
 
     SECTION("Subviews") {
         auto C = EinsumsInCpp::create_random_tensor("C", 3, 3);
@@ -244,6 +268,14 @@ TEST_CASE("TensorView-2D HDF5") {
         REQUIRE(C(2, 1) == viewC(1, 0));
         REQUIRE(C(2, 2) == viewC(1, 1));
     }
+
+    // SECTION("Subviews 3") {
+    //     auto C = create_random_tensor("C", 3, 3, 3, 3);
+    //     auto viewC = C(0, 0, Range{1, 3}, Range{1, 3});
+
+    //     println(C);
+    //     println(viewC);
+    // }
 }
 
 TEST_CASE("Tensor 2D - HDF5 wrapper") {

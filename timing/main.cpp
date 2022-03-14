@@ -17,8 +17,8 @@ auto main() -> int {
 
     Timer::initialize();
 
-#define NMO 100
-#define NBS 100
+#define NMO 10
+#define NBS 10
 
     int nmo1{NMO}, nmo2{NMO}, nmo3{NMO}, nmo4{NMO};
     int nbs1{NBS}, nbs2{NBS}, nbs3{NBS}, nbs4{NBS};
@@ -104,6 +104,8 @@ auto main() -> int {
     Timer::pop(); // Full Transformation
 
     element_transform(&PQRS, [](double value) -> double { return 1.0 / value; });
+
+    Print::stacktrace();
 
     Timer::report();
     Timer::finalize();

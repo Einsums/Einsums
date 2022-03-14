@@ -1341,9 +1341,6 @@ TEST_CASE("Hadamard") {
         Tensor<3> C0{"C0", _i, _j, _i};
         C0.zero();
 
-        // println(A);
-        // println(B);
-
         for (size_t i0 = 0; i0 < _i; i0++) {
             for (size_t j0 = 0; j0 < _j; j0++) {
                 C0(i0, j0, i0) += A(i0, j0, i0) * B(j0, i0, j0);
@@ -1352,12 +1349,9 @@ TEST_CASE("Hadamard") {
 
         REQUIRE_NOTHROW(einsum(Indices{i, j, i}, &C, Indices{i, j, i}, A, Indices{j, i, j}, B));
 
-        // println(C0);
-        // println(C);
-
         for (size_t i0 = 0; i0 < _i; i0++) {
             for (size_t j0 = 0; j0 < _j; j0++) {
-                REQUIRE(C0(i0, j0, i0) == C(i0, j0, i0));
+                CHECK_THAT(C(i0, j0, i0), Catch::Matchers::WithinRel(C0(i0, j0, i0), 0.00001));
             }
         }
     }
@@ -1369,9 +1363,6 @@ TEST_CASE("Hadamard") {
         Tensor<3> C0{"C0", _i, _i, _i};
         C0.zero();
 
-        // println(A);
-        // println(B);
-
         for (size_t i0 = 0; i0 < _i; i0++) {
             for (size_t j0 = 0; j0 < _j; j0++) {
                 C0(i0, i0, i0) += A(i0, j0, i0) * B(j0, i0, j0);
@@ -1380,11 +1371,8 @@ TEST_CASE("Hadamard") {
 
         REQUIRE_NOTHROW(einsum(Indices{i, i, i}, &C, Indices{i, j, i}, A, Indices{j, i, j}, B));
 
-        // println(C0);
-        // println(C);
-
         for (size_t i0 = 0; i0 < _i; i0++) {
-            REQUIRE(C0(i0, i0, i0) == C(i0, i0, i0));
+            CHECK_THAT(C(i0, i0, i0), Catch::Matchers::WithinRel(C0(i0, i0, i0), 0.00001));
         }
     }
 
@@ -1396,9 +1384,6 @@ TEST_CASE("Hadamard") {
         C0.zero();
         C.zero();
 
-        // println(A);
-        // println(B);
-
         for (size_t i0 = 0; i0 < _i; i0++) {
             for (size_t j0 = 0; j0 < _j; j0++) {
                 for (size_t k0 = 0; k0 < _k; k0++) {
@@ -1409,12 +1394,9 @@ TEST_CASE("Hadamard") {
 
         REQUIRE_NOTHROW(einsum(Indices{i, i}, &C, Indices{i, j, k}, A, Indices{j, i, k}, B));
 
-        // println(C0);
-        // println(C);
-
         for (size_t i0 = 0; i0 < _i; i0++) {
             for (size_t j0 = 0; j0 < _i; j0++) {
-                REQUIRE(C0(i0, j0) == C(i0, j0));
+                CHECK_THAT(C(i0, j0), Catch::Matchers::WithinRel(C0(i0, j0), 0.00001));
             }
         }
     }
@@ -1995,4 +1977,61 @@ TEST_CASE("element transform") {
 
         element_transform(&A, [](double val) -> double { return 1.0 / val; });
     }
+}
+
+TEST_CASE("element") {
+    using namespace EinsumsInCpp;
+    using namespace EinsumsInCpp::TensorAlgebra;
+    using namespace EinsumsInCpp::TensorAlgebra::Index;
+
+    SECTION("1") {
+        Tensor<4> A = create_random_tensor("A", 10, 10, 10, 10);
+        Tensor<4> Acopy = A;
+
+        Tensor<4> B = create_random_tensor("B", 10, 10, 10, 10);
+
+        element([](double const &Aval, double const &Bval) -> double { return Aval + Bval; }, &A, B);
+
+        for (int w = 0; w < 10; w++) {
+            for (int x = 0; x < 10; x++) {
+                for (int y = 0; y < 10; y++) {
+                    for (int z = 0; z < 10; z++) {
+                        REQUIRE_THAT(A(w, x, y, z), Catch::Matchers::WithinAbs(Acopy(w, x, y, z) + B(w, x, y, z), 0.001));
+                    }
+                }
+            }
+        }
+    }
+
+    SECTION("2") {
+        Tensor<4> A = create_random_tensor("A", 10, 10, 10, 10);
+        Tensor<4> Acopy = A;
+
+        Tensor<4> B = create_random_tensor("B", 10, 10, 10, 10);
+        Tensor<4> C = create_random_tensor("C", 10, 10, 10, 10);
+
+        element([](double const &Aval, double const &Bval, double const &Cval) -> double { return Aval + Bval + Cval; }, &A, B, C);
+
+        for (int w = 0; w < 10; w++) {
+            for (int x = 0; x < 10; x++) {
+                for (int y = 0; y < 10; y++) {
+                    for (int z = 0; z < 10; z++) {
+                        REQUIRE_THAT(A(w, x, y, z), Catch::Matchers::WithinAbs(Acopy(w, x, y, z) + B(w, x, y, z) + C(w, x, y, z), 0.001));
+                    }
+                }
+            }
+        }
+    }
+
+    // SECTION("2 - error") {
+
+    //     Tensor<4> A = create_random_tensor("A", 10, 10, 10, 10);
+    //     Tensor<4> Acopy = A;
+
+    //     Tensor<4> B = create_random_tensor("B", 10, 10, 10, 9);
+    //     Tensor<4> C = create_random_tensor("C", 10, 10, 10, 10);
+
+    //     element(
+    //         &A, [](double const &Aval, double const &Bval, double const &Cval) -> double { return Aval + Bval + Cval; }, B, C);
+    // }
 }

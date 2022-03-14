@@ -238,4 +238,69 @@ auto ger(double alpha, const XYType<XYRank, double> &X, const XYType<XYRank, dou
     Timer::pop();
 }
 
+template <template <size_t, typename> typename TensorType, size_t TensorRank>
+auto getrf(TensorType<TensorRank, double> *A, std::vector<int> *pivot)
+    -> std::enable_if_t<is_incore_rank_tensor_v<TensorType<TensorRank, double>, 2>, int> {
+    Timer::push("getrf");
+    if (pivot->size() < std::min(A->dim(0), A->dim(1))) {
+        println("getrf: resizing pivot vector from {} to {}", pivot->size(), std::min(A->dim(0), A->dim(1)));
+        pivot->resize(std::min(A->dim(0), A->dim(1)));
+    }
+    int result = Blas::dgetrf(A->dim(0), A->dim(1), A->data(), A->stride(0), pivot->data());
+    Timer::pop();
+
+    if (result < 0) {
+        println("getrf: argument {} has an invalid value", -result);
+    std:
+        abort();
+    }
+
+    return result;
+}
+
+template <template <size_t, typename> typename TensorType, size_t TensorRank>
+auto getri(TensorType<TensorRank, double> *A, const std::vector<int> &pivot)
+    -> std::enable_if_t<is_incore_rank_tensor_v<TensorType<TensorRank, double>, 2>, int> {
+    Timer::push("getri");
+
+    // Call dgetri once to determine work size
+    std::vector<double> work(1);
+    Blas::dgetri(A->dim(0), A->data(), A->stride(0), pivot.data(), work.data(), -1);
+    work.resize(static_cast<int>(work[0]));
+    std::fill(work.begin(), work.end(), 0.0);
+    int result = Blas::dgetri(A->dim(0), A->data(), A->stride(0), pivot.data(), work.data(), (int)work.size());
+    Timer::pop();
+
+    if (result < 0) {
+        println("getri: argument {} has an invalid value", -result);
+    }
+    return result;
+}
+
+template <template <size_t, typename> typename TensorType, size_t TensorRank>
+auto invert(TensorType<TensorRank, double> *A) -> std::enable_if_t<is_incore_rank_tensor_v<TensorType<TensorRank, double>, 2>> {
+    Timer::push("invert");
+
+    std::vector<int> pivot(A->dim(0));
+    int result = getrf(A, &pivot);
+    if (result > 0) {
+        Timer::pop();
+        println("invert: getrf: the ({}, {}) element of the factor U or L is zero, and the inverse could not be computed", result, result);
+        std::abort();
+    }
+
+    result = getri(A, pivot);
+    if (result > 0) {
+        Timer::pop();
+        println("invert: getri: the ({}, {}) element of the factor U or L i zero, and the inverse could not be computed", result, result);
+        std::abort();
+    }
+    Timer::pop();
+}
+
+template <typename SmartPtr>
+auto invert(SmartPtr *A) -> std::enable_if_t<is_smart_pointer_v<SmartPtr>> {
+    return invert(A->get());
+}
+
 } // namespace EinsumsInCpp::LinearAlgebra

@@ -50,6 +50,8 @@ struct Indent {
     ~Indent() { deindent(); }
 };
 
+void stacktrace();
+
 } // namespace Print
 
 namespace Detail {
@@ -149,6 +151,11 @@ inline auto print_tuple_no_type(const std::tuple<> &) -> std::string {
 
 namespace EinsumsInCpp {
 
+using fmt::bg;       // NOLINT
+using fmt::color;    // NOLINT
+using fmt::emphasis; // NOLINT
+using fmt::fg;       // NOLINT
+
 template <typename... Ts>
 void println(const std::string_view &format, const Ts... ts) {
     std::string s = fmt::format(format, ts...);
@@ -170,9 +177,14 @@ inline void println(const fmt::text_style &style, const std::string_view &format
 
 inline void println() { Detail::println("\n"); }
 
-using fmt::bg;       // NOLINT
-using fmt::color;    // NOLINT
-using fmt::emphasis; // NOLINT
-using fmt::fg;       // NOLINT
+template <typename... Ts>
+inline void println_abort(const std::string_view &format, const Ts... ts) {
+    std::string message = std::string("ERROR: ") + format.data();
+    println(bg(fmt::color::red) | fg(fmt::color::white), message, ts...);
+
+    Print::stacktrace();
+
+    std::abort();
+}
 
 } // namespace EinsumsInCpp

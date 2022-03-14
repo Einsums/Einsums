@@ -1,5 +1,7 @@
 #include "EinsumsInCpp/Print.hpp"
 
+#include "EinsumsInCpp/Backtrace.hpp"
+
 #include <algorithm>
 #include <cstdarg>
 #include <cstdio>
@@ -32,7 +34,7 @@ std::thread::id main_thread_id = std::this_thread::get_id();
 
 bool suppress{false};
 
-auto printing_to_screen() -> bool { 
+auto printing_to_screen() -> bool {
 #if defined(_WIN32) || defined(_WIN64)
     return _isatty(_fileno(stdout));
 #else
@@ -65,6 +67,18 @@ void always_print_thread_id(bool onoff) { print_master_thread_id = onoff; }
 
 void suppress_output(bool onoff) { suppress = onoff; }
 
+void stacktrace() {
+    using namespace backward;
+    StackTrace st;
+    st.load_here(32);
+
+    TraceResolver tr;
+    tr.load_stacktrace(st);
+    for (size_t i = 0; i < st.size(); ++i) {
+        ResolvedTrace trace = tr.resolve(st[i]);
+        println("# {} {} {} [{}]", i, trace.object_filename, trace.object_function, trace.addr);
+    }
+}
 } // namespace Print
 
 namespace {

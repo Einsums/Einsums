@@ -46,4 +46,28 @@ void daxpy(int n, double alpha_x, const double *x, int inc_x, double *y, int inc
  */
 void dger(int m, int n, double alpha, const double *x, int inc_x, const double *y, int inc_y, double *a, int lda);
 
+/*!
+ * Computes the LU factorization of a general M-by-N matrix A
+ * using partial pivoting with row interchanges.
+ *
+ * The factorization has the form
+ *   A = P * L * U
+ * where P is a permutation matri, L is lower triangular with
+ * unit diagonal elements (lower trapezoidal if m > n) and U is upper
+ * triangular (upper trapezoidal if m < n).
+ *
+ */
+auto dgetrf(int, int, double *, int, int *) -> int;
+
+/*!
+ * Computes the inverse of a matrix using the LU factorization computed
+ * by getrf
+ *
+ * Returns INFO
+ *   0 if successful
+ *  <0 the (-INFO)-th argument has an illegal value
+ *  >0 U(INFO, INFO) is exactly zero; the matrix is singular
+ */
+auto dgetri(int, double *, int, const int *, double *, int) -> int;
+
 } // namespace EinsumsInCpp::Blas

@@ -60,6 +60,8 @@ else()
 endif()
 find_package(OpenMP)
 
+include(cmake/BackwardConfig.cmake)
+
 add_subdirectory(external)
 add_subdirectory(src)
 

@@ -32,6 +32,8 @@ extern void FC_GLOBAL(dscal, DSCAL)(int *, double *, double *, int *);
 extern double FC_GLOBAL(ddot, DDOT)(int *, const double *, int *, const double *, int *); // NOLINT
 extern void FC_GLOBAL(daxpy, DAXPY)(int *, double *, const double *, int *, double *, int *);
 extern void FC_GLOBAL(dger, DGER)(int *, int *, double *, const double *, int *, const double *, int *, double *, int *);
+extern void FC_GLOBAL(dgetrf, DGETRF)(int *, int *, double *, int *, int *, int *);
+extern void FC_GLOBAL(dgetri, DGETRI)(int *, double *, int *, int *, double *, int *, int *);
 }
 
 namespace EinsumsInCpp::Blas {
@@ -90,6 +92,18 @@ void dger(int m, int n, double alpha, const double *x, int inc_x, const double *
     }
 
     FC_GLOBAL(dger, DGER)(&n, &m, &alpha, y, &inc_y, x, &inc_x, a, &lda);
+}
+
+auto dgetrf(int m, int n, double *a, int lda, int *ipiv) -> int {
+    int info{0};
+    FC_GLOBAL(dgetrf, DGETRF)(&m, &n, a, &lda, ipiv, &info);
+    return info;
+}
+
+auto dgetri(int n, double *a, int lda, const int *ipiv, double *work, int lwork) -> int {
+    int info{0};
+    FC_GLOBAL(dgetri, DGETRI)(&n, a, &lda, (int *)ipiv, work, &lwork, &info);
+    return info;
 }
 
 } // namespace EinsumsInCpp::Blas
