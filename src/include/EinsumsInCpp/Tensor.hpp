@@ -1227,4 +1227,20 @@ struct DiskView final : public Detail::TensorBase<ViewRank, T> {
     // std::unique_ptr<Tensor<ViewRank, T>> _tensor;
 };
 
+#ifdef __cpp_deduction_guides
+template <typename... Args>
+Tensor(const std::string &, Args...) -> Tensor<sizeof...(Args)>;
+
+template <size_t Rank, size_t OtherRank, typename... Args>
+TensorView(Tensor<OtherRank> &, const Dim<Rank> &, Args...) -> TensorView<Rank>;
+template <size_t Rank, size_t OtherRank, typename... Args>
+TensorView(const Tensor<OtherRank> &, const Dim<Rank> &, Args...) -> TensorView<Rank>;
+template <size_t Rank, size_t OtherRank, typename... Args>
+TensorView(TensorView<OtherRank> &, const Dim<Rank> &, Args...) -> TensorView<Rank>;
+template <size_t Rank, size_t OtherRank, typename... Args>
+TensorView(const TensorView<OtherRank> &, const Dim<Rank> &, Args...) -> TensorView<Rank>;
+template <size_t Rank, size_t OtherRank, typename... Args>
+TensorView(std::string, Tensor<OtherRank> &, const Dim<Rank> &, Args...) -> TensorView<Rank>;
+#endif
+
 } // namespace EinsumsInCpp

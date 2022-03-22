@@ -137,8 +137,13 @@ TEST_CASE("Tensor Invert") {
 }
 
 TEST_CASE("TensorView creation", "[tensor]") {
-    EinsumsInCpp::Tensor<3, double> A("A", 3, 3, 3);
-    EinsumsInCpp::TensorView<2, double> viewA(A, EinsumsInCpp::Dim<2>{3, 9});
+    // With the aid of deduction guides we can choose to not specify the rank on the tensor
+    EinsumsInCpp::Tensor A("A", 3, 3, 3);
+    EinsumsInCpp::TensorView viewA(A, EinsumsInCpp::Dim<2>{3, 9});
+
+    // Since we are changing the underlying datatype to float the deduction guides will not work.
+    EinsumsInCpp::Tensor<3, float> fA("A", 3, 3, 3);
+    EinsumsInCpp::TensorView fviewA(fA, EinsumsInCpp::Dim<2>{3, 9});
 
     for (int i = 0, ijk = 0; i < 3; i++)
         for (int j = 0; j < 3; j++)

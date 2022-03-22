@@ -13,9 +13,7 @@ auto main(int argc, char *argv[]) -> int {
     // Disable HDF5 diagnostic reporting.
     H5Eset_auto(0, nullptr, nullptr);
 
-    // Create the integral file in the temporary directory
-    // This does not delete the file. Since the integral file can grow large
-    // in size this should be considered.
+    // Create a file to hold the data from the DiskTensor tests.
     EinsumsInCpp::State::data = h5::create("Data.h5", H5F_ACC_TRUNC);
 
     EinsumsInCpp::println("Running on {} thread(s)", omp_get_max_threads());
