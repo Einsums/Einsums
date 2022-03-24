@@ -1,7 +1,7 @@
-#include "EinsumsInCpp/State.hpp"
+#include "einsums/State.hpp"
 
-namespace EinsumsInCpp::State {
+namespace einsums::State {
 
 h5::fd_t data;
 
-} // namespace EinsumsInCpp::State
+} // namespace einsums::State

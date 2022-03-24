@@ -1,10 +1,10 @@
-#include "EinsumsInCpp/Print.hpp"
-#include "EinsumsInCpp/STL.hpp"
+#include "einsums/Print.hpp"
+#include "einsums/STL.hpp"
 
 #include <cassert>
 #include <cstdlib>
 
-namespace EinsumsInCpp::Detail {
+namespace einsums::Detail {
 
 auto allocate_aligned_memory(size_t align, size_t size) -> void * {
     assert(align >= sizeof(void *));
@@ -21,7 +21,7 @@ auto allocate_aligned_memory(size_t align, size_t size) -> void * {
     int rc = posix_memalign(&ptr, align, size);
 
     if (rc != 0) {
-        EinsumsInCpp::println("posix_memalign returned non-zero!");
+        einsums::println("posix_memalign returned non-zero!");
         return nullptr;
     }
 #endif
@@ -31,4 +31,4 @@ auto allocate_aligned_memory(size_t align, size_t size) -> void * {
 
 void deallocate_aligned_memory(void *ptr) noexcept { return free(ptr); }
 
-} // namespace EinsumsInCpp::Detail
+} // namespace einsums::Detail

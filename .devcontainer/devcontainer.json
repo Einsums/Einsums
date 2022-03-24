@@ -1,6 +1,6 @@
 {
-    "name": "EinsumsInCpp",
-    "image": "jetturney/code-dev:mkl",
+    "name": "einsums",
+    "image": "jetturney/code-dev:latest",
     "runArgs": [
         "--cap-add=SYS_PTRACE",
         "--security-opt",

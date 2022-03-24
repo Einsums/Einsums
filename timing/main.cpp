@@ -1,17 +1,17 @@
-#include "EinsumsInCpp/LinearAlgebra.hpp"
-#include "EinsumsInCpp/OpenMP.h"
-#include "EinsumsInCpp/Print.hpp"
-#include "EinsumsInCpp/STL.hpp"
-#include "EinsumsInCpp/State.hpp"
-#include "EinsumsInCpp/Tensor.hpp"
-#include "EinsumsInCpp/TensorAlgebra.hpp"
-#include "EinsumsInCpp/Timer.hpp"
+#include "einsums/LinearAlgebra.hpp"
+#include "einsums/OpenMP.h"
+#include "einsums/Print.hpp"
+#include "einsums/STL.hpp"
+#include "einsums/State.hpp"
+#include "einsums/Tensor.hpp"
+#include "einsums/TensorAlgebra.hpp"
+#include "einsums/Timer.hpp"
 
 auto main() -> int {
     ////////////////////////////////////
     // Form the two-electron integrals//
     ////////////////////////////////////
-    using namespace EinsumsInCpp;
+    using namespace einsums;
     using namespace TensorAlgebra;
     using namespace TensorAlgebra::Index;
 

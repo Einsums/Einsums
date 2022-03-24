@@ -13,7 +13,7 @@
 #include <stdexcept>
 #include <string_view>
 
-namespace EinsumsInCpp {
+namespace einsums {
 
 // Forward declare the Tensor object for printing purposes
 template <size_t Rank, typename T>
@@ -67,15 +67,15 @@ constexpr auto type_name() noexcept {
 
 #ifdef __clang__
     name = __PRETTY_FUNCTION__;
-    prefix = "auto EinsumsInCpp::type_name() [T = ";
+    prefix = "auto einsums::type_name() [T = ";
     suffix = "]";
 #elif defined(__GNUC__)
     name = __PRETTY_FUNCTION__;
-    prefix = "constexpr auto EinsumsInCpp::type_name() [with T = ";
+    prefix = "constexpr auto einsums::type_name() [with T = ";
     suffix = "]";
 #elif defined(_MSC_VER)
     name = __FUNCSIG__;
-    prefix = "auto __cdecl EinsumsInCpp::type_name<";
+    prefix = "auto __cdecl einsums::type_name<";
     suffix = ">(void) noexcept";
 #endif
     name.remove_prefix(prefix.size());
@@ -147,9 +147,9 @@ inline auto print_tuple_no_type(const std::tuple<> &) -> std::string {
     return out.str();
 }
 
-} // namespace EinsumsInCpp
+} // namespace einsums
 
-namespace EinsumsInCpp {
+namespace einsums {
 
 using fmt::bg;       // NOLINT
 using fmt::color;    // NOLINT
@@ -187,4 +187,4 @@ inline void println_abort(const std::string_view &format, const Ts... ts) {
     std::abort();
 }
 
-} // namespace EinsumsInCpp
+} // namespace einsums

@@ -5,11 +5,11 @@ Provides compile-time contraction pattern analysis to determine optimal operatio
 ## Examples
 This will optimize at compile-time to a BLAS dgemm call.
 ```C++
-#include "EinsumsInCpp/TensorAlgebra.hpp"
+#include "einsums/TensorAlgebra.hpp"
 
-using EinsumsInCpp;  // Provides Tensor and create_random_tensor
-using EinsumsInCpp::TensorAlgebra;  // Provides einsum and Indices
-using EinsumsInCpp::TensorAlgrebra::Index;  // Provides i, j, k
+using einsums;  // Provides Tensor and create_random_tensor
+using einsums::TensorAlgebra;  // Provides einsum and Indices
+using einsums::TensorAlgrebra::Index;  // Provides i, j, k
 
 Tensor<2> A = create_random_tensor("A", 7, 7);
 Tensor<2> B = create_random_tensor("B", 7, 7);
@@ -20,15 +20,15 @@ einsum(Indices{i, j}, &C, Indices{i, k}, A, Indices{k, j}, B);
 
 Two-Electron Contribution to the Fock Matrix
 ```C++
-#include "EinsumsInCpp/TensorAlgebra.hpp"
+#include "einsums/TensorAlgebra.hpp"
 
-using namespace EinsumsInCpp;
+using namespace einsums;
 
 void build_Fock_2e_einsum(Tensor<2> *F, 
                           const Tensor<4> &g,
                           const Tensor<2> &D) {
-    using namespace EinsumsInCpp::TensorAlgebra;
-    using namespace EinsumsInCpp::TensorAlgebra::Index;
+    using namespace einsums::TensorAlgebra;
+    using namespace einsums::TensorAlgebra::Index;
 
     // Will compile-time optimize to BLAS gemv
     einsum(1.0, Indices{p, q}, F,

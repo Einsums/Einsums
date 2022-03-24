@@ -22,11 +22,11 @@
 #include <utility>
 
 // HPTT includes <complex> which defined I as a shorthand for complex values.
-// This causes issues with EinsumsInCpp since we define I to be a useable index
+// This causes issues with einsums since we define I to be a useable index
 // for the user. Undefine the one defined in <complex> here.
 #undef I
 
-namespace EinsumsInCpp::TensorAlgebra {
+namespace einsums::TensorAlgebra {
 
 namespace Index {
 
@@ -315,10 +315,9 @@ template <bool OnlyUseGenericAlgorithm, template <size_t, typename> typename ATy
           typename... CIndices, typename... AIndices, typename... BIndices, typename T = double>
 auto einsum(const T C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<CRank, T> *C, const T AB_prefactor,
             const std::tuple<AIndices...> & /*As*/, const AType<ARank, T> &A, const std::tuple<BIndices...> & /*Bs*/,
-            const BType<BRank, T> &B)
-    -> std::enable_if_t<std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<ARank, T>, AType<ARank, T>> &&
-                        std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<BRank, T>, BType<BRank, T>> &&
-                        std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<CRank, T>, CType<CRank, T>>> {
+            const BType<BRank, T> &B) -> std::enable_if_t<std::is_base_of_v<::einsums::Detail::TensorBase<ARank, T>, AType<ARank, T>> &&
+                                                          std::is_base_of_v<::einsums::Detail::TensorBase<BRank, T>, BType<BRank, T>> &&
+                                                          std::is_base_of_v<::einsums::Detail::TensorBase<CRank, T>, CType<CRank, T>>> {
     Print::Indent _indent;
 
     constexpr auto A_indices = std::tuple<AIndices...>();
@@ -581,9 +580,9 @@ template <template <size_t, typename> typename AType, size_t ARank, template <si
 auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<CRank, T> *C, const U UAB_prefactor,
             const std::tuple<AIndices...> &A_indices, const AType<ARank, T> &A, const std::tuple<BIndices...> &B_indices,
             const BType<BRank, T> &B)
-    -> std::enable_if_t<std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<ARank, T>, AType<ARank, T>> &&
-                        std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<BRank, T>, BType<BRank, T>> &&
-                        std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<CRank, T>, CType<CRank, T>> && std::is_arithmetic_v<U>> {
+    -> std::enable_if_t<std::is_base_of_v<::einsums::Detail::TensorBase<ARank, T>, AType<ARank, T>> &&
+                        std::is_base_of_v<::einsums::Detail::TensorBase<BRank, T>, BType<BRank, T>> &&
+                        std::is_base_of_v<::einsums::Detail::TensorBase<CRank, T>, CType<CRank, T>> && std::is_arithmetic_v<U>> {
     Timer::push(fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{} + {} "{}"{})", C->name(), print_tuple_no_type(C_indices), UAB_prefactor,
                             A.name(), print_tuple_no_type(A_indices), B.name(), print_tuple_no_type(B_indices), UC_prefactor, C->name(),
                             print_tuple_no_type(C_indices)));
@@ -784,8 +783,8 @@ template <template <size_t, typename> typename AType, size_t ARank, template <si
           typename... CIndices, typename... AIndices, typename U, typename T = double>
 auto sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<CRank, T> *C, const U UA_prefactor,
           const std::tuple<AIndices...> &A_indices, const AType<ARank, T> &A)
-    -> std::enable_if_t<std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<CRank, T>, CType<CRank, T>> &&
-                        std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<ARank, T>, AType<ARank, T>> &&
+    -> std::enable_if_t<std::is_base_of_v<::einsums::Detail::TensorBase<CRank, T>, CType<CRank, T>> &&
+                        std::is_base_of_v<::einsums::Detail::TensorBase<ARank, T>, AType<ARank, T>> &&
                         sizeof...(CIndices) == sizeof...(AIndices) && sizeof...(CIndices) == CRank && sizeof...(AIndices) == ARank &&
                         std::is_arithmetic_v<U>> {
 
@@ -872,7 +871,7 @@ auto sort(const std::tuple<CIndices...> &C_indices, SmartPointerC *C, const std:
 
 template <template <size_t, typename> typename CType, size_t CRank, typename UnaryOperator, typename T = double>
 auto element_transform(CType<CRank, T> *C, UnaryOperator unary_opt)
-    -> std::enable_if_t<std::is_base_of_v<::EinsumsInCpp::Detail::TensorBase<CRank, T>, CType<CRank, T>>> {
+    -> std::enable_if_t<std::is_base_of_v<::einsums::Detail::TensorBase<CRank, T>, CType<CRank, T>>> {
     Timer::push(fmt::format("element transform: {}", C->name()));
     auto target_dims = get_dim_ranges<CRank>(*C);
     auto view = std::apply(ranges::views::cartesian_product, target_dims);
@@ -910,4 +909,4 @@ auto element(MultiOperator multi_opt, CType<Rank, T> *C, MultiTensors<Rank, T>..
     Timer::pop();
 }
 
-} // namespace EinsumsInCpp::TensorAlgebra
+} // namespace einsums::TensorAlgebra

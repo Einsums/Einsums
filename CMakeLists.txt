@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
 
-project(EinsumsInCpp)
+project(einsums)
 
 add_library(project-options INTERFACE)
 target_compile_features(project-options 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "EinsumsInCpp/Print.hpp"
+#include "einsums/Print.hpp"
 
 #include <functional>
 #include <iterator>
@@ -10,7 +10,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace EinsumsInCpp {
+namespace einsums {
 
 namespace Arguments {
 
@@ -505,4 +505,4 @@ inline auto operator!=(const AlignedAllocator<T, TAlign> &, const AlignedAllocat
     return TAlign != UAlign;
 }
 
-} // namespace EinsumsInCpp
+} // namespace einsums

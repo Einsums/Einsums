@@ -12,7 +12,7 @@
 #include <stdexcept>
 #include <type_traits>
 
-namespace EinsumsInCpp::LinearAlgebra {
+namespace einsums::LinearAlgebra {
 
 template <bool TransA, bool TransB, typename AType, typename BType, typename CType>
 auto gemm(const double alpha, const AType &A, const BType &B, const double beta, CType *C) ->
@@ -303,4 +303,4 @@ auto invert(SmartPtr *A) -> std::enable_if_t<is_smart_pointer_v<SmartPtr>> {
     return invert(A->get());
 }
 
-} // namespace EinsumsInCpp::LinearAlgebra
+} // namespace einsums::LinearAlgebra

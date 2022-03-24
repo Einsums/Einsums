@@ -1,8 +1,8 @@
-#include "EinsumsInCpp/LinearAlgebra.hpp"
-#include "EinsumsInCpp/Print.hpp"
-#include "EinsumsInCpp/STL.hpp"
-#include "EinsumsInCpp/Tensor.hpp"
-#include "EinsumsInCpp/Timer.hpp"
+#include "einsums/LinearAlgebra.hpp"
+#include "einsums/Print.hpp"
+#include "einsums/STL.hpp"
+#include "einsums/Tensor.hpp"
+#include "einsums/Timer.hpp"
 #include "range/v3/view/cartesian_product.hpp"
 
 #include <algorithm>
@@ -14,7 +14,7 @@
 #include <utility>
 
 TEST_CASE("Creation", "[disktensor]") {
-    using namespace EinsumsInCpp;
+    using namespace einsums;
 
     DiskTensor<2> A(State::data, "/A0", 3, 3);
     DiskTensor<2> B(State::data, "/B0", 3, 3);
@@ -27,7 +27,7 @@ TEST_CASE("Creation", "[disktensor]") {
 
 #if 0
 TEST_CASE("Write/Read", "[disktensor]") {
-    using namespace EinsumsInCpp;
+    using namespace einsums;
 
     DiskTensor<2> A(State::data, "/A1", 3, 3);
 
@@ -76,7 +76,7 @@ TEST_CASE("Write/Read", "[disktensor]") {
 }
 
 TEST_CASE("DiskView 3x3", "[disktensor]") {
-    using namespace EinsumsInCpp;
+    using namespace einsums;
 
     DiskTensor<2> A(State::data, "/A2", 3, 3);
 
@@ -144,7 +144,7 @@ TEST_CASE("DiskView 3x3", "[disktensor]") {
 #endif
 
 TEST_CASE("DiskView 7x7x7x7", "[disktensor]") {
-    using namespace EinsumsInCpp;
+    using namespace einsums;
 
     SECTION("Write [7,7] data to [:,2,4,:]") {
         DiskTensor<4> g(State::data, "g0", 7, 7, 7, 7);

@@ -1,6 +1,6 @@
-#include "EinsumsInCpp/Timer.hpp"
+#include "einsums/Timer.hpp"
 
-#include "EinsumsInCpp/Print.hpp"
+#include "einsums/Print.hpp"
 
 #include <array>
 #include <cassert>
@@ -10,7 +10,7 @@
 #include <memory>
 #include <vector>
 
-namespace EinsumsInCpp::Timer {
+namespace einsums::Timer {
 
 using clock = std::chrono::high_resolution_clock;
 using time_point = std::chrono::time_point<clock>;
@@ -117,4 +117,4 @@ void pop() {
     current_timer = current_timer->parent;
 }
 
-} // namespace EinsumsInCpp::Timer
+} // namespace einsums::Timer

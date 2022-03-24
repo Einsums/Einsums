@@ -1,8 +1,8 @@
 #pragma once
 
-#include "EinsumsInCpp/Print.hpp"
-#include "EinsumsInCpp/STL.hpp"
-#include "EinsumsInCpp/State.hpp"
+#include "einsums/Print.hpp"
+#include "einsums/STL.hpp"
+#include "einsums/State.hpp"
 
 // Include headers from the ranges library that we need to handle cartesian_products
 #include "range/v3/view/cartesian_product.hpp"
@@ -30,7 +30,7 @@
 #include <utility>
 #include <vector>
 
-namespace EinsumsInCpp {
+namespace einsums {
 
 // The following Detail and "using" statements below are needed to ensure
 // Dims, Strides, and Offsets are strong-types in C++.
@@ -666,13 +666,13 @@ auto create_identity_tensor(const std::string &name, MultiIndex... index) -> Ten
     return A;
 }
 
-} // namespace EinsumsInCpp
+} // namespace einsums
 
 // Include HDF5 interface
 #include "H5.hpp"
 
 // Tensor IO interface
-namespace EinsumsInCpp {
+namespace einsums {
 
 template <size_t Rank, typename T = double, class... Args>
 void write(const h5::fd_t &fd, const Tensor<Rank, T> &ref, Args &&...args) {
@@ -782,7 +782,7 @@ void write(const h5::fd_t &fd, const TensorView<Rank, T> &ref, Args &&...args) {
 template <size_t Rank, typename T = double>
 auto read(const h5::fd_t &fd, const std::string &name) -> Tensor<Rank, T> {
     try {
-        auto temp = h5::read<EinsumsInCpp::Tensor<Rank, T>>(fd, name);
+        auto temp = h5::read<einsums::Tensor<Rank, T>>(fd, name);
         temp.set_name(name);
         return temp;
     } catch (std::exception &e) {
@@ -1243,4 +1243,4 @@ template <size_t Rank, size_t OtherRank, typename... Args>
 TensorView(std::string, Tensor<OtherRank> &, const Dim<Rank> &, Args...) -> TensorView<Rank>;
 #endif
 
-} // namespace EinsumsInCpp
+} // namespace einsums

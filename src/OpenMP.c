@@ -1,5 +1,3 @@
-#include "EinsumsInCpp/OpenMP.h"
+#include "einsums/OpenMP.h"
 
-int omp_get_max_threads() {
-    return 1;
-}
+int omp_get_max_threads() { return 1; }

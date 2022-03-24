@@ -1,16 +1,16 @@
-#include "EinsumsInCpp/TensorAlgebra.hpp"
+#include "einsums/TensorAlgebra.hpp"
 
-#include "EinsumsInCpp/LinearAlgebra.hpp"
-#include "EinsumsInCpp/State.hpp"
-#include "EinsumsInCpp/Tensor.hpp"
+#include "einsums/LinearAlgebra.hpp"
+#include "einsums/State.hpp"
+#include "einsums/Tensor.hpp"
 
 #include <H5Fpublic.h>
 #include <catch2/catch.hpp>
 #include <type_traits>
 
 TEST_CASE("Identity Tensor", "[tensor]") {
-    using namespace EinsumsInCpp;
-    using namespace EinsumsInCpp::TensorAlgebra;
+    using namespace einsums;
+    using namespace einsums::TensorAlgebra;
 
     Tensor<2, double> I = create_identity_tensor("I", 3, 3);
 
@@ -26,8 +26,8 @@ TEST_CASE("Identity Tensor", "[tensor]") {
 }
 
 TEST_CASE("Scale Row", "[tensor]") {
-    using namespace EinsumsInCpp;
-    using namespace EinsumsInCpp::LinearAlgebra;
+    using namespace einsums;
+    using namespace einsums::LinearAlgebra;
 
     Tensor<2> I_original = create_random_tensor("I", 3, 3);
     Tensor<2> I_copy = I_original;
@@ -46,8 +46,8 @@ TEST_CASE("Scale Row", "[tensor]") {
 }
 
 TEST_CASE("Scale Column", "[tensor]") {
-    using namespace EinsumsInCpp;
-    using namespace EinsumsInCpp::LinearAlgebra;
+    using namespace einsums;
+    using namespace einsums::LinearAlgebra;
 
     Tensor<2> I_original = create_random_tensor("I", 3, 3);
     Tensor<2> I_copy = I_original;
@@ -66,8 +66,8 @@ TEST_CASE("Scale Column", "[tensor]") {
 }
 
 TEST_CASE("Scale Row TensorView", "[tensor]") {
-    using namespace EinsumsInCpp;
-    using namespace EinsumsInCpp::LinearAlgebra;
+    using namespace einsums;
+    using namespace einsums::LinearAlgebra;
 
     Tensor<2> I_original = create_random_tensor("I", 3, 3);
     Tensor<2> I_copy = I_original;
@@ -92,8 +92,8 @@ TEST_CASE("Scale Row TensorView", "[tensor]") {
 }
 
 TEST_CASE("Scale Column TensorView", "[tensor]") {
-    using namespace EinsumsInCpp;
-    using namespace EinsumsInCpp::LinearAlgebra;
+    using namespace einsums;
+    using namespace einsums::LinearAlgebra;
 
     Tensor<2> I_original = create_random_tensor("I", 3, 3);
     Tensor<2> I_copy = I_original;
@@ -118,8 +118,8 @@ TEST_CASE("Scale Column TensorView", "[tensor]") {
 }
 
 TEST_CASE("GEMM TensorView", "[tensor]") {
-    using namespace EinsumsInCpp;
-    using namespace EinsumsInCpp::LinearAlgebra;
+    using namespace einsums;
+    using namespace einsums::LinearAlgebra;
 
     Tensor<2> I_original{"I", 3, 3};
 
@@ -184,8 +184,8 @@ TEST_CASE("GEMM TensorView", "[tensor]") {
 }
 
 TEST_CASE("Subset TensorView", "[tensor]") {
-    using namespace EinsumsInCpp;
-    using namespace EinsumsInCpp::LinearAlgebra;
+    using namespace einsums;
+    using namespace einsums::LinearAlgebra;
 
     SECTION("Subset View 7x7[1,:] -> 1x7") {
         const size_t size = 7;
@@ -429,7 +429,7 @@ TEST_CASE("Subset TensorView", "[tensor]") {
 }
 
 TEST_CASE("einsum1", "[tensor]") {
-    using namespace EinsumsInCpp;
+    using namespace einsums;
     using namespace TensorAlgebra;
 
     SECTION("ik=ij,jk") {
@@ -504,8 +504,8 @@ TEST_CASE("einsum1", "[tensor]") {
 }
 
 TEST_CASE("einsum TensorView", "[tensor]") {
-    using namespace EinsumsInCpp;
-    using namespace EinsumsInCpp::TensorAlgebra;
+    using namespace einsums;
+    using namespace einsums::TensorAlgebra;
 
     SECTION("Subset View GEMM 7x3x3[4,:,:] -> [2,:,:]") {
         // Description: Obtain view [4,:,:] (3x3 view) perform GEMM and store result into
@@ -574,8 +574,8 @@ TEST_CASE("einsum TensorView", "[tensor]") {
 }
 
 TEST_CASE("sort2") {
-    using namespace EinsumsInCpp;
-    using namespace EinsumsInCpp::TensorAlgebra;
+    using namespace einsums;
+    using namespace einsums::TensorAlgebra;
     using namespace TensorAlgebra::Index;
 
     SECTION("Rank 2 - axpy") {
@@ -813,7 +813,7 @@ TEST_CASE("sort2") {
 }
 
 TEST_CASE("einsum2") {
-    using namespace EinsumsInCpp;
+    using namespace einsums;
     using namespace TensorAlgebra;
     using namespace TensorAlgebra::Index;
 
@@ -955,7 +955,7 @@ TEST_CASE("einsum2") {
 }
 
 TEST_CASE("einsum3") {
-    using namespace EinsumsInCpp;
+    using namespace einsums;
     using namespace TensorAlgebra;
     using namespace TensorAlgebra::Index;
 
@@ -1057,7 +1057,7 @@ TEST_CASE("einsum3") {
 }
 
 TEST_CASE("einsum4") {
-    using namespace EinsumsInCpp;
+    using namespace einsums;
     using namespace TensorAlgebra;
     using namespace TensorAlgebra::Index;
 
@@ -1145,7 +1145,7 @@ TEST_CASE("einsum4") {
 }
 
 TEST_CASE("IntegralTransformation") {
-    using namespace EinsumsInCpp;
+    using namespace einsums;
     using namespace TensorAlgebra;
     using namespace TensorAlgebra::Index;
 
@@ -1244,7 +1244,7 @@ TEST_CASE("IntegralTransformation") {
 }
 
 TEST_CASE("Hadamard") {
-    using namespace EinsumsInCpp;
+    using namespace einsums;
     using namespace TensorAlgebra;
     using namespace TensorAlgebra::Index;
 
@@ -1403,7 +1403,7 @@ TEST_CASE("Hadamard") {
 }
 
 TEST_CASE("unique_ptr") {
-    using namespace EinsumsInCpp;
+    using namespace einsums;
     using namespace TensorAlgebra;
     using namespace TensorAlgebra::Index;
 
@@ -1528,7 +1528,7 @@ TEST_CASE("unique_ptr") {
 }
 
 TEST_CASE("Transpose C", "[einsum]") {
-    using namespace EinsumsInCpp;
+    using namespace einsums;
     using namespace TensorAlgebra;
     using namespace TensorAlgebra::Index;
 
@@ -1680,9 +1680,9 @@ TEST_CASE("Transpose C", "[einsum]") {
 }
 
 TEST_CASE("gemv") {
-    using namespace EinsumsInCpp;
-    using namespace EinsumsInCpp::TensorAlgebra;
-    using namespace EinsumsInCpp::TensorAlgebra::Index;
+    using namespace einsums;
+    using namespace einsums::TensorAlgebra;
+    using namespace einsums::TensorAlgebra::Index;
 
     SECTION("check") {
         size_t _p = 7, _q = 7, _r = 7, _s = 7;
@@ -1707,9 +1707,9 @@ TEST_CASE("gemv") {
 }
 
 TEST_CASE("TensorView einsum") {
-    using namespace EinsumsInCpp;
-    using namespace EinsumsInCpp::TensorAlgebra;
-    using namespace EinsumsInCpp::TensorAlgebra::Index;
+    using namespace einsums;
+    using namespace einsums::TensorAlgebra;
+    using namespace einsums::TensorAlgebra::Index;
 
     // Test if everything passed to einsum is a TensorView.
     Tensor<2> A = create_random_tensor("A", 3, 5);
@@ -1747,9 +1747,9 @@ TEST_CASE("TensorView einsum") {
 }
 
 TEST_CASE("outer product") {
-    using namespace EinsumsInCpp;
-    using namespace EinsumsInCpp::TensorAlgebra;
-    using namespace EinsumsInCpp::TensorAlgebra::Index;
+    using namespace einsums;
+    using namespace einsums::TensorAlgebra;
+    using namespace einsums::TensorAlgebra::Index;
 
     SECTION("1 * 1 -> 2") {
         Tensor<1> A = create_random_tensor("A", 3);
@@ -1866,9 +1866,9 @@ TEST_CASE("outer product") {
 }
 
 TEST_CASE("view outer product") {
-    using namespace EinsumsInCpp;
-    using namespace EinsumsInCpp::TensorAlgebra;
-    using namespace EinsumsInCpp::TensorAlgebra::Index;
+    using namespace einsums;
+    using namespace einsums::TensorAlgebra;
+    using namespace einsums::TensorAlgebra::Index;
 
     SECTION("1 * 1 -> 2") {
         Tensor<1> A = create_random_tensor("A", 6);
@@ -1951,9 +1951,9 @@ TEST_CASE("view outer product") {
 }
 
 TEST_CASE("element transform") {
-    using namespace EinsumsInCpp;
-    using namespace EinsumsInCpp::TensorAlgebra;
-    using namespace EinsumsInCpp::TensorAlgebra::Index;
+    using namespace einsums;
+    using namespace einsums::TensorAlgebra;
+    using namespace einsums::TensorAlgebra::Index;
 
     SECTION("tensor") {
         Tensor<4> A = create_random_tensor("A", 32, 32, 32, 32);
@@ -1980,9 +1980,9 @@ TEST_CASE("element transform") {
 }
 
 TEST_CASE("element") {
-    using namespace EinsumsInCpp;
-    using namespace EinsumsInCpp::TensorAlgebra;
-    using namespace EinsumsInCpp::TensorAlgebra::Index;
+    using namespace einsums;
+    using namespace einsums::TensorAlgebra;
+    using namespace einsums::TensorAlgebra::Index;
 
     SECTION("1") {
         Tensor<4> A = create_random_tensor("A", 10, 10, 10, 10);

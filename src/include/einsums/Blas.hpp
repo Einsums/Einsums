@@ -3,7 +3,7 @@
 #include <vector>
 
 // Namespace for BLAS and LAPACK routines.
-namespace EinsumsInCpp::Blas {
+namespace einsums::Blas {
 
 /*!
  * Performs matrix multiplication for general square matices of type double.
@@ -70,4 +70,4 @@ auto dgetrf(int, int, double *, int, int *) -> int;
  */
 auto dgetri(int, double *, int, const int *, double *, int) -> int;
 
-} // namespace EinsumsInCpp::Blas
+} // namespace einsums::Blas

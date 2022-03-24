@@ -1,6 +1,6 @@
-#include "EinsumsInCpp/Print.hpp"
+#include "einsums/Print.hpp"
 
-#include "EinsumsInCpp/Backtrace.hpp"
+#include "einsums/Backtrace.hpp"
 
 #include <algorithm>
 #include <cstdarg>
@@ -18,7 +18,7 @@
 #include <unistd.h>
 #endif
 
-namespace EinsumsInCpp {
+namespace einsums {
 
 namespace Print {
 
@@ -116,4 +116,4 @@ void println(const std::string &str) {
 }
 } // namespace Detail
 
-} // namespace EinsumsInCpp
+} // namespace einsums

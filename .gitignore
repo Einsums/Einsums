@@ -46,7 +46,7 @@ compile_commands.json
 CTestTestfile.cmake
 _deps
 
-# Items specific to EinsumsInCpp
+# Items specific to einsums
 *.h5
 .cache
 

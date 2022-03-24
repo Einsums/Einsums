@@ -1,4 +1,4 @@
-add_library(EinsumsInCpp
+add_library(einsums
     Blas.cpp
     Memory.cpp
     Print.cpp
@@ -8,10 +8,10 @@ add_library(EinsumsInCpp
 )
 
 if (EINSUMS_USE_HPTT)
-target_compile_definitions(EinsumsInCpp PUBLIC EINSUMS_USE_HPTT)
+target_compile_definitions(einsums PUBLIC EINSUMS_USE_HPTT)
 endif()
 
-target_link_libraries(EinsumsInCpp
+target_link_libraries(einsums
     PUBLIC
         project-options
         LAPACK::LAPACK
@@ -24,7 +24,7 @@ target_link_libraries(EinsumsInCpp
         Backward::Backward
 )
 
-target_include_directories(EinsumsInCpp
+target_include_directories(einsums
     PUBLIC
         include
 )

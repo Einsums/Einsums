@@ -1,4 +1,4 @@
-#include "EinsumsInCpp/Blas.hpp"
+#include "einsums/Blas.hpp"
 
 #include <fmt/format.h>
 #include <stdexcept>
@@ -36,7 +36,7 @@ extern void FC_GLOBAL(dgetrf, DGETRF)(int *, int *, double *, int *, int *, int 
 extern void FC_GLOBAL(dgetri, DGETRI)(int *, double *, int *, int *, double *, int *, int *);
 }
 
-namespace EinsumsInCpp::Blas {
+namespace einsums::Blas {
 
 void dgemm(char transa, char transb, int m, int n, int k, double alpha, const double *a, int lda, const double *b, int ldb, double beta,
            double *c, int ldc) {
@@ -53,7 +53,7 @@ void dgemv(char transa, int m, int n, double alpha, const double *a, int lda, co
     else if (transa == 'T' || transa == 't')
         transa = 'N';
     else
-        throw std::invalid_argument("EinsumsInCpp::Blas::dgemv transa argument is invalid.");
+        throw std::invalid_argument("einsums::Blas::dgemv transa argument is invalid.");
 
     FC_GLOBAL(dgemv, DGEMV)(&transa, &n, &m, &alpha, a, &lda, x, &incx, &beta, y, &incy);
 }
@@ -106,4 +106,4 @@ auto dgetri(int n, double *a, int lda, const int *ipiv, double *work, int lwork)
     return info;
 }
 
-} // namespace EinsumsInCpp::Blas
+} // namespace einsums::Blas
