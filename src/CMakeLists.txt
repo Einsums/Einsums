@@ -8,7 +8,7 @@ add_library(einsums
 )
 
 if (EINSUMS_USE_HPTT)
-target_compile_definitions(einsums PUBLIC EINSUMS_USE_HPTT)
+    target_compile_definitions(einsums PUBLIC EINSUMS_USE_HPTT)
 endif()
 
 target_link_libraries(einsums
