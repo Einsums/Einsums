@@ -1,4 +1,9 @@
 add_library(einsums
+
+    backends/netlib/dgemm.cpp
+    backends/netlib/lsame.cpp
+    backends/netlib/xerbla.cpp
+
     Blas.cpp
     Memory.cpp
     Print.cpp

@@ -2045,8 +2045,8 @@ TEST_CASE("F12 - V term") {
     int nocc{1}, ncabs{4}, nobs{2};
     int nall{nobs + ncabs};
 
-    auto F = create_random_tensor("F", nall, nall, nall, nall);
-    auto G = create_random_tensor("G", nall, nall, nall, nall);
+    auto F = create_incremented_tensor("F", nall, nall, nall, nall);
+    auto G = create_incremented_tensor("G", nall, nall, nall, nall);
 
     TensorView<4> F_ooco{F, Dim<4>{nocc, nocc, ncabs, nocc}, Offset<4>{0, 0, nobs, 0}};
     TensorView<4> F_oooc{F, Dim<4>{nocc, nocc, nocc, ncabs}, Offset<4>{0, 0, 0, nobs}};
@@ -2065,6 +2065,9 @@ TEST_CASE("F12 - V term") {
 
     Tensor result = Tensor{"Result", nocc, nocc, nocc, nocc};
     Tensor result2 = Tensor{"Result2", nocc, nocc, nocc, nocc};
+
+    println(F);
+    println(G);
 
     omp_set_num_threads(1);
     einsum(Indices{i, j, k, l}, &ijkl_1, Indices{i, j, p, n}, G_ooco, Indices{k, l, p, n}, F_ooco);

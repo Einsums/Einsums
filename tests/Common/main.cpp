@@ -20,7 +20,7 @@ auto main(int argc, char *argv[]) -> int {
 
     int result = Catch::Session().run(argc, argv);
 
-    // einsums::Timer::report();
+    einsums::Timer::report();
     einsums::Timer::finalize();
     return result;
 }

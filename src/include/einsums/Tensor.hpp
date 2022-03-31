@@ -643,6 +643,22 @@ auto create_random_tensor(const std::string &name, MultiIndex... index) -> Tenso
     return A;
 }
 
+template <typename T = double, typename... MultiIndex>
+auto create_incremented_tensor(const std::string &name, MultiIndex... index) -> Tensor<sizeof...(MultiIndex), T> {
+    Tensor<sizeof...(MultiIndex), T> A(name, std::forward<MultiIndex>(index)...);
+
+    double counter{0.0};
+    auto target_dims = get_dim_ranges<sizeof...(MultiIndex)>(A);
+    auto view = std::apply(ranges::views::cartesian_product, target_dims);
+
+    for (auto it = view.begin(); it != view.end(); it++) {
+        std::apply(A, *it) = counter;
+        counter += 1.0;
+    }
+
+    return A;
+}
+
 namespace Detail {
 
 template <typename T, typename Tuple, std::size_t... I>
@@ -851,7 +867,7 @@ auto println(const AType<Rank, T> &A) -> typename std::enable_if_t<std::is_base_
                     auto new_tuple = std::tuple_cat(target_combination.base(), std::tuple(j));
                     T value = std::apply(A, new_tuple);
                     if (std::fabs(value) > std::numeric_limits<double>::epsilon() * 1000) {
-                        if (std::fabs(value) > 1.0E+3) {
+                        if (std::fabs(value) > 1.0E+5) {
                             // oss << "\033[91m" << std::setw(14) << value << "\033[0m";
                             oss << "\x1b[0;37;41m" << std::setw(14) << value << "\x1b[0m";
                         } else {
@@ -874,7 +890,7 @@ auto println(const AType<Rank, T> &A) -> typename std::enable_if_t<std::is_base_
 
                 T value = std::apply(A, target_combination);
                 if (std::fabs(value) > std::numeric_limits<double>::epsilon()) {
-                    if (std::fabs(value) > 1.0E+3) {
+                    if (std::fabs(value) > 1.0E+5) {
                         // oss << "\033[91m" << std::setw(14) << value << "\033[0m";
                         oss << "\x1b[0;37;41m" << std::setw(14) << value << "\x1b[0m";
                     } else {

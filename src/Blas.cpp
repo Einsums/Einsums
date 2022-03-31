@@ -1,5 +1,7 @@
 #include "einsums/Blas.hpp"
 
+#include "backends/netlib/netlib.hpp"
+
 #include <fmt/format.h>
 #include <stdexcept>
 
@@ -42,7 +44,8 @@ void dgemm(char transa, char transb, int m, int n, int k, double alpha, const do
            double *c, int ldc) {
     if (m == 0 || n == 0 || k == 0)
         return;
-    FC_GLOBAL(dgemm, DGEMM)(&transb, &transa, &n, &m, &k, &alpha, b, &ldb, a, &lda, &beta, c, &ldc);
+    // FC_GLOBAL(dgemm, DGEMM)(&transb, &transa, &n, &m, &k, &alpha, b, &ldb, a, &lda, &beta, c, &ldc);
+    ::einsums::backend::netlib::dgemm(&transb, &transa, &n, &m, &k, &alpha, b, &ldb, a, &lda, &beta, c, &ldc);
 }
 
 void dgemv(char transa, int m, int n, double alpha, const double *a, int lda, const double *x, int incx, double beta, double *y, int incy) {
