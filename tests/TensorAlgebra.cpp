@@ -2083,6 +2083,9 @@ TEST_CASE("F12 - V term") {
                 for (size_t _l = 0; _l < nocc; _l++) {
                     for (size_t _p = 0; _p < ncabs; _p++) {
                         for (size_t _n = 0; _n < nocc; _n++) {
+                            println("A({}, {}, {}, {}) = {}", _i, _j, _p, _n, G_ooco(_i, _j, _p, _n));
+                            println("B({}, {}, {}, {}) = {}", _k, _l, _p, _n, F_ooco(_k, _l, _p, _n));
+
                             result(_i, _j, _k, _l) += G(_i, _j, nobs + _p, _n) * F(_k, _l, nobs + _p, _n);
                             result2(_i, _j, _k, _l) += G_ooco(_i, _j, _p, _n) * F_ooco(_k, _l, _p, _n);
                         }

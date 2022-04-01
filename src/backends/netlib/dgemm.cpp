@@ -195,11 +195,17 @@ int dgemm(char *transa, char *transb, int *m, int *n, int *k, double *alpha, con
     // #define C(I, J) c[(I)-1 + ((J)-1) * (*ldc)]
 
     auto A = [&](int I, int J) -> const double & {
-        println("A({}, {}) = A[{}] = {}", I, J, (I)-1 + ((J)-1) * (*lda), a[(I)-1 + ((J)-1) * (*lda)]);
+        println("A({}, {}) = A[{}] = {}", I - 1, J - 1, (I)-1 + ((J)-1) * (*lda), a[(I)-1 + ((J)-1) * (*lda)]);
         return a[(I)-1 + ((J)-1) * (*lda)];
     };
-    auto B = [&](int I, int J) -> const double & { return b[(I)-1 + ((J)-1) * (*ldb)]; };
-    auto C = [&](int I, int J) -> double & { return c[(I)-1 + ((J)-1) * (*ldc)]; };
+    auto B = [&](int I, int J) -> const double & {
+        println("B({}, {}) = B[{}] = {}", I - 1, J - 1, (I)-1 + ((J)-1) * (*ldb), b[(I)-1 + ((J)-1) * (*ldb)]);
+        return b[(I)-1 + ((J)-1) * (*ldb)];
+    };
+    auto C = [&](int I, int J) -> double & {
+        println("C({}, {}) = A[{}] = {}", I - 1, J - 1, (I)-1 + ((J)-1) * (*ldc), c[(I)-1 + ((J)-1) * (*ldc)]);
+        return c[(I)-1 + ((J)-1) * (*ldc)];
+    };
 
     nota = lsame(transa, "N");
     notb = lsame(transb, "N");
