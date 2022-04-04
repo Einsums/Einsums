@@ -10,14 +10,10 @@ namespace einsums::Blas {
 
 void dgemm(char transa, char transb, int m, int n, int k, double alpha, const double *a, int lda, const double *b, int ldb, double beta,
            double *c, int ldc) {
-    if (m == 0 || n == 0 || k == 0)
-        return;
     ::einsums::backend::vendor::dgemm(transa, transb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc);
 }
 
 void dgemv(char transa, int m, int n, double alpha, const double *a, int lda, const double *x, int incx, double beta, double *y, int incy) {
-    if (m == 0 || n == 0)
-        return;
     ::einsums::backend::vendor::dgemv(transa, m, n, alpha, a, lda, x, incx, beta, y, incy);
 }
 

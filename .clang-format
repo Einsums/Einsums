@@ -7,3 +7,4 @@ Language: Cpp
 ColumnLimit: 140
 IncludeBlocks: Regroup
 AlwaysBreakTemplateDeclarations: Yes
+AllowShortFunctionsOnASingleLine: InlineOnly
