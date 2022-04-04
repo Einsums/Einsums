@@ -1,8 +1,11 @@
 #pragma once
 
 namespace einsums::backend::netlib {
-int xerbla(const char *srname, int *info);
-long int lsame(const char *ca, const char *cb);
 
-int dgemm(char *, char *, int *, int *, int *, double *, const double *, int *, const double *, int *, double *, double *, int *);
+/*!
+ * Performs matrix multiplication for general square matices of type double.
+ */
+void dgemm(char transa, char transb, int m, int n, int k, double alpha, const double *a, int lda, const double *b, int ldb, double beta,
+           double *c, int ldc);
+
 } // namespace einsums::backend::netlib

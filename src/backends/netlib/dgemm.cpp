@@ -5,14 +5,17 @@
 
 #include "einsums/Print.hpp"
 #include "einsums/Timer.hpp"
+#include "internal.hpp"
 #include "netlib.hpp"
 
 #include <algorithm>
 
 namespace einsums::backend::netlib {
+
+namespace {
 /* Subroutine */
-int dgemm(char *transa, char *transb, int *m, int *n, int *k, double *alpha, const double *a, int *lda, const double *b, int *ldb,
-          double *beta, double *c, int *ldc) {
+auto _dgemm(char *transa, char *transb, int *m, int *n, int *k, double *alpha, const double *a, int *lda, const double *b, int *ldb,
+            double *beta, double *c, int *ldc) -> int {
     Timer::Timer timer("netlib::dgemm");
     println("dgemm: ta({}) tb({}) m({}) n({}) k({}) alpha({}), lda({}), ldb({}), beta({}), ldc({})", *transa, *transb, *m, *n, *k, *alpha,
             *lda, *ldb, *beta, *ldc);
@@ -405,4 +408,11 @@ int dgemm(char *transa, char *transb, int *m, int *n, int *k, double *alpha, con
     /*     End of DGEMM . */
 
 } /* dgemm_ */
+} // namespace
+
+void dgemm(char transa, char transb, int m, int n, int k, double alpha, const double *a, int lda, const double *b, int ldb, double beta,
+           double *c, int ldc) {
+    _dgemm(&transa, &transb, &m, &n, &k, &alpha, a, &lda, b, &ldb, &beta, c, &ldc);
+}
+
 } // namespace einsums::backend::netlib

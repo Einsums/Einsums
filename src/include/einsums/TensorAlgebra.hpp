@@ -533,16 +533,16 @@ auto einsum(const T C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<C
                     TensorView<2, T> tC{*C, dC, sC};
                     const TensorView<2, T> tA{const_cast<AType<ARank, T> &>(A), dA, sA}, tB{const_cast<BType<BRank, T> &>(B), dB, sB};
 
-                    println("--------------------");
-                    println(*C);
-                    println(tC);
-                    println("--------------------");
-                    println(A);
-                    println(tA);
-                    println("--------------------");
-                    println(B);
-                    println(tB);
-                    println("--------------------");
+                    // println("--------------------");
+                    // println(*C);
+                    // println(tC);
+                    // println("--------------------");
+                    // println(A);
+                    // println(tA);
+                    // println("--------------------");
+                    // println(B);
+                    // println(tB);
+                    // println("--------------------");
 
                     if constexpr (!transpose_C && !transpose_A && !transpose_B) {
                         LinearAlgebra::gemm<false, false>(AB_prefactor, tA, tB, C_prefactor, &tC);

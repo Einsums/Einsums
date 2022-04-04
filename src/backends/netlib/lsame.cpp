@@ -3,7 +3,7 @@
         -lf2c -lm   (in that order)
 */
 
-#include "f2c.h"
+#include "internal.hpp"
 
 namespace einsums::backend::netlib {
 

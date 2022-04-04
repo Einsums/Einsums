@@ -1,9 +1,9 @@
 #include "einsums/Print.hpp"
-#include "netlib.hpp"
+#include "internal.hpp"
 
 namespace einsums::backend::netlib {
 
-/* Subroutine */ int xerbla(const char *srname, int *info) {
+/* Subroutine */ auto xerbla(const char *srname, int *info) -> int {
     /*  -- LAPACK auxiliary routine (version 2.0) --
            Univ. of Tennessee, Univ. of California Berkeley, NAG Ltd.,
            Courant Institute, Argonne National Lab, and Rice University
