@@ -3,10 +3,10 @@
         -lf2c -lm   (in that order)
 */
 
+#include "Netlib.hpp"
 #include "einsums/Print.hpp"
 #include "einsums/Timer.hpp"
 #include "internal.hpp"
-#include "netlib.hpp"
 
 #include <algorithm>
 
