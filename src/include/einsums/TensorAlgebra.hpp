@@ -222,6 +222,11 @@ constexpr auto product_dims(const std::tuple<PositionsInX...> &indices, const XT
     return (X.dim(std::get<2 * I + 1>(indices)) * ... * 1);
 }
 
+template <template <size_t, typename> typename XType, size_t XRank, typename... PositionsInX, std::size_t... I, typename T = double>
+constexpr auto is_same_dims(const std::tuple<PositionsInX...> &indices, const XType<XRank, T> &X, std::index_sequence<I...>) -> bool {
+    return ((X.dim(std::get<1>(indices)) == X.dim(std::get<2 * I + 1>(indices))) && ... && 1);
+}
+
 template <typename LHS, typename RHS, std::size_t... I>
 constexpr auto same_indices(std::index_sequence<I...>) {
     return (std::is_same_v<std::tuple_element_t<I, LHS>, std::tuple_element_t<I, RHS>> && ...);
@@ -230,6 +235,11 @@ constexpr auto same_indices(std::index_sequence<I...>) {
 template <template <size_t, typename> typename XType, size_t XRank, typename... PositionsInX, typename T = double>
 constexpr auto product_dims(const std::tuple<PositionsInX...> &indices, const XType<XRank, T> &X) -> size_t {
     return Detail::product_dims(indices, X, std::make_index_sequence<sizeof...(PositionsInX) / 2>());
+}
+
+template <template <size_t, typename> typename XType, size_t XRank, typename... PositionsInX, typename T = double>
+constexpr auto is_same_dims(const std::tuple<PositionsInX...> &indices, const XType<XRank, T> &X) -> size_t {
+    return Detail::is_same_dims(indices, X, std::make_index_sequence<sizeof...(PositionsInX) / 2>());
 }
 
 template <template <size_t, typename> typename XType, size_t XRank, typename... PositionsInX, typename T = double>
@@ -425,6 +435,8 @@ auto einsum(const T C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<C
             target_value *= C_prefactor;
             target_value += temp;
         }
+
+        return;
     } else if constexpr (outer_product) {
         do { // do {} while (false) trick to allow us to use a break below to "break" out of the loop.
             constexpr bool swap_AB = std::get<1>(A_target_position_in_C) != 0;
@@ -468,121 +480,135 @@ auto einsum(const T C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<C
             return;
         } while (false);
     } else if constexpr (!OnlyUseGenericAlgorithm) {
-        // To use a gemm the input tensors need to be at least rank 2
-        if constexpr (CRank >= 2 && ARank >= 2 && BRank >= 2) {
-            if constexpr (!A_hadamard_found && !B_hadamard_found && !C_hadamard_found) {
-                if constexpr (is_gemv_possible) {
-                    constexpr bool transpose_A = std::get<1>(link_position_in_A) == 0;
+        do { // do {} while (false) trick to allow us to use a break below to "break" out of the loop.
 
-                    Dim<2> dA;
-                    Dim<1> dB, dC;
+            // To use a gemm the input tensors need to be at least rank 2
+            if constexpr (CRank >= 2 && ARank >= 2 && BRank >= 2) {
+                if constexpr (!A_hadamard_found && !B_hadamard_found && !C_hadamard_found) {
+                    if constexpr (is_gemv_possible) {
+                        constexpr bool transpose_A = std::get<1>(link_position_in_A) == 0;
 
-                    dA[0] = product_dims(A_target_position_in_C, *C);
-                    dA[1] = product_dims(link_position_in_A, A);
+                        Dim<2> dA;
+                        Dim<1> dB, dC;
 
-                    dB[0] = product_dims(link_position_in_A, A);
-                    dC[0] = product_dims(A_target_position_in_C, *C);
+                        dA[0] = product_dims(A_target_position_in_C, *C);
+                        dA[1] = product_dims(link_position_in_A, A);
 
-                    const TensorView<2, T> tA{const_cast<AType<ARank, T> &>(A), dA};
-                    const TensorView<1, T> tB{const_cast<BType<BRank, T> &>(B), dB};
-                    TensorView<1, T> tC{*C, dC};
+                        dB[0] = product_dims(link_position_in_A, A);
+                        dC[0] = product_dims(A_target_position_in_C, *C);
 
-                    if constexpr (transpose_A) {
-                        LinearAlgebra::gemv<true>(AB_prefactor, tA, tB, C_prefactor, &tC);
-                    } else {
-                        LinearAlgebra::gemv<false>(AB_prefactor, tA, tB, C_prefactor, &tC);
-                    }
+                        const TensorView<2, T> tA{const_cast<AType<ARank, T> &>(A), dA};
+                        const TensorView<1, T> tB{const_cast<BType<BRank, T> &>(B), dB};
+                        TensorView<1, T> tC{*C, dC};
 
-                    return;
-                } else if constexpr (is_gemm_possible) {
+                        if constexpr (transpose_A) {
+                            LinearAlgebra::gemv<true>(AB_prefactor, tA, tB, C_prefactor, &tC);
+                        } else {
+                            LinearAlgebra::gemv<false>(AB_prefactor, tA, tB, C_prefactor, &tC);
+                        }
 
-                    constexpr bool transpose_A = std::get<1>(link_position_in_A) == 0;
-                    constexpr bool transpose_B = std::get<1>(link_position_in_B) != 0;
-                    constexpr bool transpose_C = std::get<1>(A_target_position_in_C) != 0;
-
-                    Dim<2> dA, dB, dC;
-                    Stride<2> sA, sB, sC;
-
-                    dA[0] = product_dims(A_target_position_in_C, *C);
-                    dA[1] = product_dims(link_position_in_A, A);
-                    sA[0] = last_stride(target_position_in_A, A);
-                    sA[1] = last_stride(link_position_in_A, A);
-                    if constexpr (transpose_A) {
-                        std::swap(dA[0], dA[1]);
-                        std::swap(sA[0], sA[1]);
-                    }
-
-                    dB[0] = product_dims(link_position_in_B, B);
-                    dB[1] = product_dims(B_target_position_in_C, *C);
-                    sB[0] = last_stride(link_position_in_B, B);
-                    sB[1] = last_stride(target_position_in_B, B);
-                    if constexpr (transpose_B) {
-                        std::swap(dB[0], dB[1]);
-                        std::swap(sB[0], sB[1]);
-                    }
-
-                    dC[0] = product_dims(A_target_position_in_C, *C);
-                    dC[1] = product_dims(B_target_position_in_C, *C);
-                    sC[0] = last_stride(A_target_position_in_C, *C);
-                    sC[1] = last_stride(B_target_position_in_C, *C);
-                    if constexpr (transpose_C) {
-                        std::swap(dC[0], dC[1]);
-                        std::swap(sC[0], sC[1]);
-                    }
-
-                    TensorView<2, T> tC{*C, dC, sC};
-                    const TensorView<2, T> tA{const_cast<AType<ARank, T> &>(A), dA, sA}, tB{const_cast<BType<BRank, T> &>(B), dB, sB};
-
-                    // println("--------------------");
-                    // println(*C);
-                    // println(tC);
-                    // println("--------------------");
-                    // println(A);
-                    // println(tA);
-                    // println("--------------------");
-                    // println(B);
-                    // println(tB);
-                    // println("--------------------");
-
-                    if constexpr (!transpose_C && !transpose_A && !transpose_B) {
-                        LinearAlgebra::gemm<false, false>(AB_prefactor, tA, tB, C_prefactor, &tC);
                         return;
-                    } else if constexpr (!transpose_C && !transpose_A && transpose_B) {
-                        LinearAlgebra::gemm<false, true>(AB_prefactor, tA, tB, C_prefactor, &tC);
-                        return;
-                    } else if constexpr (!transpose_C && transpose_A && !transpose_B) {
-                        LinearAlgebra::gemm<true, false>(AB_prefactor, tA, tB, C_prefactor, &tC);
-                        return;
-                    } else if constexpr (!transpose_C && transpose_A && transpose_B) {
-                        LinearAlgebra::gemm<true, true>(AB_prefactor, tA, tB, C_prefactor, &tC);
-                        return;
-                    } else if constexpr (transpose_C && !transpose_A && !transpose_B) {
-                        LinearAlgebra::gemm<true, true>(AB_prefactor, tB, tA, C_prefactor, &tC);
-                        return;
-                    } else if constexpr (transpose_C && !transpose_A && transpose_B) {
-                        LinearAlgebra::gemm<false, true>(AB_prefactor, tB, tA, C_prefactor, &tC);
-                        return;
-                    } else if constexpr (transpose_C && transpose_A && !transpose_B) {
-                        LinearAlgebra::gemm<true, false>(AB_prefactor, tB, tA, C_prefactor, &tC);
-                        return;
-                    } else if constexpr (transpose_C && transpose_A && transpose_B) {
-                        LinearAlgebra::gemm<false, false>(AB_prefactor, tB, tA, C_prefactor, &tC);
-                        return;
-                    } else {
-                        println("This GEMM case is not programmed: transpose_C {}, transpose_A {}, transpose_B {}", transpose_C,
-                                transpose_A, transpose_B);
-                        std::abort();
+                    } else if constexpr (is_gemm_possible) {
+
+                        if (!C->full_view_of_underlying() || !A.full_view_of_underlying() || !B.full_view_of_underlying() ||
+                            !is_same_dims(A_target_position_in_C, *C) || !is_same_dims(link_position_in_A, A) ||
+                            !is_same_dims(link_position_in_B, B) || !is_same_dims(B_target_position_in_C, *C) ||
+                            !is_same_dims(A_target_position_in_C, *C) || !is_same_dims(B_target_position_in_C, *C)) {
+                            // Fall through to generic algorithm.
+                            break;
+                        }
+
+                        constexpr bool transpose_A = std::get<1>(link_position_in_A) == 0;
+                        constexpr bool transpose_B = std::get<1>(link_position_in_B) != 0;
+                        constexpr bool transpose_C = std::get<1>(A_target_position_in_C) != 0;
+
+                        Dim<2> dA, dB, dC;
+                        Stride<2> sA, sB, sC;
+
+                        dA[0] = product_dims(A_target_position_in_C, *C);
+                        dA[1] = product_dims(link_position_in_A, A);
+                        sA[0] = last_stride(target_position_in_A, A);
+                        sA[1] = last_stride(link_position_in_A, A);
+                        if constexpr (transpose_A) {
+                            std::swap(dA[0], dA[1]);
+                            std::swap(sA[0], sA[1]);
+                        }
+
+                        dB[0] = product_dims(link_position_in_B, B);
+                        dB[1] = product_dims(B_target_position_in_C, *C);
+                        sB[0] = last_stride(link_position_in_B, B);
+                        sB[1] = last_stride(target_position_in_B, B);
+                        if constexpr (transpose_B) {
+                            std::swap(dB[0], dB[1]);
+                            std::swap(sB[0], sB[1]);
+                        }
+
+                        dC[0] = product_dims(A_target_position_in_C, *C);
+                        dC[1] = product_dims(B_target_position_in_C, *C);
+                        sC[0] = last_stride(A_target_position_in_C, *C);
+                        sC[1] = last_stride(B_target_position_in_C, *C);
+                        if constexpr (transpose_C) {
+                            std::swap(dC[0], dC[1]);
+                            std::swap(sC[0], sC[1]);
+                        }
+
+                        TensorView<2, T> tC{*C, dC, sC};
+                        const TensorView<2, T> tA{const_cast<AType<ARank, T> &>(A), dA, sA}, tB{const_cast<BType<BRank, T> &>(B), dB, sB};
+
+                        // println("--------------------");
+                        // println(*C);
+                        // println(tC);
+                        // println("--------------------");
+                        // println(A);
+                        // println(tA);
+                        // println("--------------------");
+                        // println(B);
+                        // println(tB);
+                        // println("--------------------");
+
+                        if constexpr (!transpose_C && !transpose_A && !transpose_B) {
+                            LinearAlgebra::gemm<false, false>(AB_prefactor, tA, tB, C_prefactor, &tC);
+                            return;
+                        } else if constexpr (!transpose_C && !transpose_A && transpose_B) {
+                            LinearAlgebra::gemm<false, true>(AB_prefactor, tA, tB, C_prefactor, &tC);
+                            return;
+                        } else if constexpr (!transpose_C && transpose_A && !transpose_B) {
+                            LinearAlgebra::gemm<true, false>(AB_prefactor, tA, tB, C_prefactor, &tC);
+                            return;
+                        } else if constexpr (!transpose_C && transpose_A && transpose_B) {
+                            LinearAlgebra::gemm<true, true>(AB_prefactor, tA, tB, C_prefactor, &tC);
+                            return;
+                        } else if constexpr (transpose_C && !transpose_A && !transpose_B) {
+                            LinearAlgebra::gemm<true, true>(AB_prefactor, tB, tA, C_prefactor, &tC);
+                            return;
+                        } else if constexpr (transpose_C && !transpose_A && transpose_B) {
+                            LinearAlgebra::gemm<false, true>(AB_prefactor, tB, tA, C_prefactor, &tC);
+                            return;
+                        } else if constexpr (transpose_C && transpose_A && !transpose_B) {
+                            LinearAlgebra::gemm<true, false>(AB_prefactor, tB, tA, C_prefactor, &tC);
+                            return;
+                        } else if constexpr (transpose_C && transpose_A && transpose_B) {
+                            LinearAlgebra::gemm<false, false>(AB_prefactor, tB, tA, C_prefactor, &tC);
+                            return;
+                        } else {
+                            println("This GEMM case is not programmed: transpose_C {}, transpose_A {}, transpose_B {}", transpose_C,
+                                    transpose_A, transpose_B);
+                            std::abort();
+                        }
                     }
                 }
             }
-        }
+            // If we make it here, then none of our algorithms for this last block could be used.
+            // Fall through to the generic algorithm below.
+        } while (false);
     }
 
-    if constexpr (!dot_product && !element_wise_multiplication) {
-        einsum_generic_algorithm<T>(C_indices, A_indices, B_indices, target_dims, link_dims, target_position_in_C, link_position_in_link,
-                                    C_prefactor, C, AB_prefactor, A, B);
-    }
+    // If we somehow make it here, then none of our algorithms above could be used. Attempt to use
+    // the generic algorithm instead.
+    einsum_generic_algorithm<T>(C_indices, A_indices, B_indices, target_dims, link_dims, target_position_in_C, link_position_in_link,
+                                C_prefactor, C, AB_prefactor, A, B);
 }
+
 } // namespace Detail
 
 template <template <size_t, typename> typename AType, size_t ARank, template <size_t, typename> typename BType, size_t BRank,
@@ -601,7 +627,7 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
     const T C_prefactor = UC_prefactor;
     const T AB_prefactor = UAB_prefactor;
 
-#ifdef CONTINUOUSLY_TEST_EINSUM
+#if defined(EINSUMS_CONTINUOUSLY_TEST_EINSUM)
     // Clone C into a new tensor
     Tensor<CRank, T> testC{C->dims()};
     testC = *C;
@@ -615,7 +641,7 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
     // Perform the actual einsum
     Detail::einsum<false>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
 
-#ifdef CONTINUOUSLY_TEST_EINSUM
+#if defined(EINSUMS_CONTINUOUSLY_TEST_EINSUM)
     if constexpr (CRank != 0) {
         // Need to walk through the entire C and testC comparing values and reporting differences.
         auto target_dims = get_dim_ranges<CRank>(*C);
@@ -633,7 +659,7 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
                 println(bg(fmt::color::red) | fg(fmt::color::white), "    {:f} C({:}) += {:f} A({:}) * B({:})", C_prefactor,
                         print_tuple_no_type(C_indices), AB_prefactor, print_tuple_no_type(A_indices), print_tuple_no_type(B_indices));
 
-#ifdef CONTINUOUSLY_TEST_EINSUM_ABORT
+#if defined(EINSUMS_TEST_EINSUM_ABORT)
                 std::abort();
 #endif
             }
@@ -651,7 +677,7 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
             println(bg(fmt::color::red) | fg(fmt::color::white), "    {:f} C() += {:f} A({:}) * B({:})", C_prefactor, AB_prefactor,
                     print_tuple_no_type(A_indices), print_tuple_no_type(B_indices));
 
-#ifdef CONTINUOUSLY_TEST_EINSUM_ABORT
+#if defined(EINSUMS_TEST_EINSUM_ABORT)
             std::abort();
 #endif
         }

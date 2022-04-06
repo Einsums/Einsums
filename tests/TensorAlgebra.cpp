@@ -2066,13 +2066,12 @@ TEST_CASE("F12 - V term") {
     Tensor result = Tensor{"Result", nocc, nocc, nocc, nocc};
     Tensor result2 = Tensor{"Result2", nocc, nocc, nocc, nocc};
 
-    println(F);
-    println(G);
+    // println(F);
+    // println(G);
 
-    omp_set_num_threads(1);
     einsum(Indices{i, j, k, l}, &ijkl_1, Indices{i, j, p, n}, G_ooco, Indices{k, l, p, n}, F_ooco);
-    // einsum(Indices{i, j, k, l}, &ijkl_2, Indices{i, j, m, q}, G_oooc, Indices{k, l, m, q}, F_oooc);
-    // einsum(Indices{i, j, k, l}, &ijkl_3, Indices{i, j, p, q}, G_oopq, Indices{k, l, p, q}, F_oopq);
+    einsum(Indices{i, j, k, l}, &ijkl_2, Indices{i, j, m, q}, G_oooc, Indices{k, l, m, q}, F_oooc);
+    einsum(Indices{i, j, k, l}, &ijkl_3, Indices{i, j, p, q}, G_oopq, Indices{k, l, p, q}, F_oopq);
 
     result.set_all(0.0);
     result2.set_all(0.0);
@@ -2083,8 +2082,8 @@ TEST_CASE("F12 - V term") {
                 for (size_t _l = 0; _l < nocc; _l++) {
                     for (size_t _p = 0; _p < ncabs; _p++) {
                         for (size_t _n = 0; _n < nocc; _n++) {
-                            println("A({}, {}, {}, {}) = {}", _i, _j, _p, _n, G_ooco(_i, _j, _p, _n));
-                            println("B({}, {}, {}, {}) = {}", _k, _l, _p, _n, F_ooco(_k, _l, _p, _n));
+                            // println("A({}, {}, {}, {}) = {}", _i, _j, _p, _n, G_ooco(_i, _j, _p, _n));
+                            // println("B({}, {}, {}, {}) = {}", _k, _l, _p, _n, F_ooco(_k, _l, _p, _n));
 
                             result(_i, _j, _k, _l) += G(_i, _j, nobs + _p, _n) * F(_k, _l, nobs + _p, _n);
                             result2(_i, _j, _k, _l) += G_ooco(_i, _j, _p, _n) * F_ooco(_k, _l, _p, _n);
@@ -2096,8 +2095,8 @@ TEST_CASE("F12 - V term") {
     }
     Timer::pop();
 
-    println(result);
-    println(ijkl_1);
+    // println(result);
+    // println(ijkl_1);
 
     for (size_t _i = 0; _i < nocc; _i++) {
         for (size_t _j = 0; _j < nocc; _j++) {
