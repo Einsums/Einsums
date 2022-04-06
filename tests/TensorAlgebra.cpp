@@ -2035,3 +2035,86 @@ TEST_CASE("element") {
     //         &A, [](double const &Aval, double const &Bval, double const &Cval) -> double { return Aval + Bval + Cval; }, B, C);
     // }
 }
+
+TEST_CASE("F12 - V term") {
+    using namespace einsums;
+    using namespace einsums::TensorAlgebra;
+    using namespace einsums::TensorAlgebra::Index;
+
+    // int nocc{5}, ncabs{116}, nobs{41};
+    int nocc{1}, ncabs{4}, nobs{2};
+    int nall{nobs + ncabs};
+
+    auto F = create_incremented_tensor("F", nall, nall, nall, nall);
+    auto G = create_incremented_tensor("G", nall, nall, nall, nall);
+
+    TensorView<4> F_ooco{F, Dim<4>{nocc, nocc, ncabs, nocc}, Offset<4>{0, 0, nobs, 0}};
+    TensorView<4> F_oooc{F, Dim<4>{nocc, nocc, nocc, ncabs}, Offset<4>{0, 0, 0, nobs}};
+    TensorView<4> F_oopq{F, Dim<4>{nocc, nocc, nobs, nobs}, Offset<4>{0, 0, 0, 0}};
+    TensorView<4> G_ooco{G, Dim<4>{nocc, nocc, ncabs, nocc}, Offset<4>{0, 0, nobs, 0}};
+    TensorView<4> G_oooc{G, Dim<4>{nocc, nocc, nocc, ncabs}, Offset<4>{0, 0, 0, nobs}};
+    TensorView<4> G_oopq{G, Dim<4>{nocc, nocc, nobs, nobs}, Offset<4>{0, 0, 0, 0}};
+
+    Tensor ijkl_1 = Tensor{"Einsum Temp 1", nocc, nocc, nocc, nocc};
+    Tensor ijkl_2 = Tensor{"Einsum Temp 2", nocc, nocc, nocc, nocc};
+    Tensor ijkl_3 = Tensor{"Einsum Temp 3", nocc, nocc, nocc, nocc};
+
+    ijkl_1.set_all(0.0);
+    ijkl_2.set_all(0.0);
+    ijkl_3.set_all(0.0);
+
+    Tensor result = Tensor{"Result", nocc, nocc, nocc, nocc};
+    Tensor result2 = Tensor{"Result2", nocc, nocc, nocc, nocc};
+
+    // println(F);
+    // println(G);
+
+    einsum(Indices{i, j, k, l}, &ijkl_1, Indices{i, j, p, n}, G_ooco, Indices{k, l, p, n}, F_ooco);
+    einsum(Indices{i, j, k, l}, &ijkl_2, Indices{i, j, m, q}, G_oooc, Indices{k, l, m, q}, F_oooc);
+    einsum(Indices{i, j, k, l}, &ijkl_3, Indices{i, j, p, q}, G_oopq, Indices{k, l, p, q}, F_oopq);
+
+    result.set_all(0.0);
+    result2.set_all(0.0);
+    Timer::push("raw for loops");
+    for (size_t _i = 0; _i < nocc; _i++) {
+        for (size_t _j = 0; _j < nocc; _j++) {
+            for (size_t _k = 0; _k < nocc; _k++) {
+                for (size_t _l = 0; _l < nocc; _l++) {
+                    for (size_t _p = 0; _p < ncabs; _p++) {
+                        for (size_t _n = 0; _n < nocc; _n++) {
+                            // println("A({}, {}, {}, {}) = {}", _i, _j, _p, _n, G_ooco(_i, _j, _p, _n));
+                            // println("B({}, {}, {}, {}) = {}", _k, _l, _p, _n, F_ooco(_k, _l, _p, _n));
+
+                            result(_i, _j, _k, _l) += G(_i, _j, nobs + _p, _n) * F(_k, _l, nobs + _p, _n);
+                            result2(_i, _j, _k, _l) += G_ooco(_i, _j, _p, _n) * F_ooco(_k, _l, _p, _n);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    Timer::pop();
+
+    // println(result);
+    // println(ijkl_1);
+
+    for (size_t _i = 0; _i < nocc; _i++) {
+        for (size_t _j = 0; _j < nocc; _j++) {
+            for (size_t _k = 0; _k < nocc; _k++) {
+                for (size_t _l = 0; _l < nocc; _l++) {
+                    REQUIRE_THAT(result2(_i, _j, _k, _l), Catch::Matchers::WithinAbs(result(_i, _j, _k, _l), 0.001));
+                }
+            }
+        }
+    }
+
+    for (size_t _i = 0; _i < nocc; _i++) {
+        for (size_t _j = 0; _j < nocc; _j++) {
+            for (size_t _k = 0; _k < nocc; _k++) {
+                for (size_t _l = 0; _l < nocc; _l++) {
+                    REQUIRE_THAT(ijkl_1(_i, _j, _k, _l), Catch::Matchers::WithinAbs(result(_i, _j, _k, _l), 0.001));
+                }
+            }
+        }
+    }
+}
