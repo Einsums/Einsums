@@ -510,10 +510,7 @@ auto einsum(const T C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<C
                         return;
                     } else if constexpr (is_gemm_possible) {
 
-                        if (!C->full_view_of_underlying() || !A.full_view_of_underlying() || !B.full_view_of_underlying() ||
-                            !is_same_dims(A_target_position_in_C, *C) || !is_same_dims(link_position_in_A, A) ||
-                            !is_same_dims(link_position_in_B, B) || !is_same_dims(B_target_position_in_C, *C) ||
-                            !is_same_dims(A_target_position_in_C, *C) || !is_same_dims(B_target_position_in_C, *C)) {
+                        if (!C->full_view_of_underlying() || !A.full_view_of_underlying() || !B.full_view_of_underlying()) {
                             // Fall through to generic algorithm.
                             break;
                         }
