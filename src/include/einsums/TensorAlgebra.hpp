@@ -268,7 +268,11 @@ void einsum_generic_algorithm(const std::tuple<CIndices...> & /*C_indices*/, con
     auto view = std::apply(ranges::views::cartesian_product, target_dims);
 
     if constexpr (sizeof...(LinkDims) != 0) {
+#if defined(__INTEL_LLVM_COMPILER) || defined(__INTEL_COMPILER)
 #pragma omp parallel for simd
+#else
+#pragma omp parallel for
+#endif
         for (auto it = view.begin(); it < view.end(); it++) {
             // println("target_combination: {}", print_tuple_no_type(target_combination));
             auto C_order = Detail::construct_indices<CIndices...>(*it, target_position_in_C, std::tuple<>(), target_position_in_C);
@@ -295,7 +299,11 @@ void einsum_generic_algorithm(const std::tuple<CIndices...> & /*C_indices*/, con
             target_value += sum;
         }
     } else {
+#if defined(__INTEL_LLVM_COMPILER) || defined(__INTEL_COMPILER)
 #pragma omp parallel for simd
+#else
+#pragma omp parallel for
+#endif
         for (auto it = view.begin(); it < view.end(); it++) {
 
             // This is the generic case.
@@ -858,7 +866,11 @@ auto sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<
         LinearAlgebra::axpy(A_prefactor, A, C);
     } else {
         auto view = std::apply(ranges::views::cartesian_product, target_dims);
+#if defined(__INTEL_LLVM_COMPILER) || defined(__INTEL_COMPILER)
 #pragma omp parallel for simd
+#else
+#pragma omp parallel for
+#endif
         for (auto it = view.begin(); it < view.end(); it++) {
             auto A_order = Detail::construct_indices<AIndices...>(*it, target_position_in_A, *it, target_position_in_A);
 
@@ -869,7 +881,7 @@ auto sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<
         }
     }
     Timer::pop();
-}
+} // namespace einsums::TensorAlgebra
 
 // Sort with default values, no smart pointers
 template <typename ObjectA, typename ObjectC, typename... CIndices, typename... AIndices>
@@ -909,8 +921,11 @@ auto element_transform(CType<CRank, T> *C, UnaryOperator unary_opt)
     Timer::push(fmt::format("element transform: {}", C->name()));
     auto target_dims = get_dim_ranges<CRank>(*C);
     auto view = std::apply(ranges::views::cartesian_product, target_dims);
-
+#if defined(__INTEL_LLVM_COMPILER) || defined(__INTEL_COMPILER)
 #pragma omp parallel for simd
+#else
+#pragma omp parallel for
+#endif
     for (auto it = view.begin(); it != view.end(); it++) {
         T &target_value = std::apply(*C, *it);
         target_value = unary_opt(target_value);
@@ -935,7 +950,11 @@ auto element(MultiOperator multi_opt, CType<Rank, T> *C, MultiTensors<Rank, T>..
         println_abort("element: at least one tensor does not have same dimensionality as destination");
     }
 
+#if defined(__INTEL_LLVM_COMPILER) || defined(__INTEL_COMPILER)
 #pragma omp parallel for simd
+#else
+#pragma omp parallel for
+#endif
     for (auto it = view.begin(); it != view.end(); it++) {
         T &target_value = std::apply(*C, *it);
         target_value = multi_opt(target_value, std::apply(tensors, *it)...);
