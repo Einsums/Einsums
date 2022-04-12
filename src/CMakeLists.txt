@@ -26,7 +26,7 @@ target_link_libraries(einsums
         range-v3::range-v3
         fmt::fmt
         h5cpp::h5cpp
-        $<$<BOOL:EINSUMS_USE_HPTT>:hptt::hptt>
+        $<$<TARGET_EXISTS:hptt::hptt>:hptt::hptt>
         $<$<TARGET_EXISTS:OpenMP::OpenMP_CXX>:OpenMP::OpenMP_CXX>
         Backward::Backward
 )
