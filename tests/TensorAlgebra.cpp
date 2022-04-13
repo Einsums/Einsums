@@ -27,7 +27,7 @@ TEST_CASE("Identity Tensor", "[tensor]") {
 
 TEST_CASE("Scale Row", "[tensor]") {
     using namespace einsums;
-    using namespace einsums::LinearAlgebra;
+    using namespace einsums::linear_algebra;
 
     Tensor<2> I_original = create_random_tensor("I", 3, 3);
     Tensor<2> I_copy = I_original;
@@ -47,7 +47,7 @@ TEST_CASE("Scale Row", "[tensor]") {
 
 TEST_CASE("Scale Column", "[tensor]") {
     using namespace einsums;
-    using namespace einsums::LinearAlgebra;
+    using namespace einsums::linear_algebra;
 
     Tensor<2> I_original = create_random_tensor("I", 3, 3);
     Tensor<2> I_copy = I_original;
@@ -67,7 +67,7 @@ TEST_CASE("Scale Column", "[tensor]") {
 
 TEST_CASE("Scale Row TensorView", "[tensor]") {
     using namespace einsums;
-    using namespace einsums::LinearAlgebra;
+    using namespace einsums::linear_algebra;
 
     Tensor<2> I_original = create_random_tensor("I", 3, 3);
     Tensor<2> I_copy = I_original;
@@ -93,7 +93,7 @@ TEST_CASE("Scale Row TensorView", "[tensor]") {
 
 TEST_CASE("Scale Column TensorView", "[tensor]") {
     using namespace einsums;
-    using namespace einsums::LinearAlgebra;
+    using namespace einsums::linear_algebra;
 
     Tensor<2> I_original = create_random_tensor("I", 3, 3);
     Tensor<2> I_copy = I_original;
@@ -119,7 +119,7 @@ TEST_CASE("Scale Column TensorView", "[tensor]") {
 
 TEST_CASE("GEMM TensorView", "[tensor]") {
     using namespace einsums;
-    using namespace einsums::LinearAlgebra;
+    using namespace einsums::linear_algebra;
 
     Tensor<2> I_original{"I", 3, 3};
 
@@ -185,7 +185,7 @@ TEST_CASE("GEMM TensorView", "[tensor]") {
 
 TEST_CASE("Subset TensorView", "[tensor]") {
     using namespace einsums;
-    using namespace einsums::LinearAlgebra;
+    using namespace einsums::linear_algebra;
 
     SECTION("Subset View 7x7[1,:] -> 1x7") {
         const size_t size = 7;
@@ -824,7 +824,7 @@ TEST_CASE("einsum2") {
         Tensor<2> B = create_random_tensor("B", 5, 3);
 
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
-        LinearAlgebra::gemm<false, false>(1.0, A, B, 0, &C1);
+        linear_algebra::gemm<false, false>(1.0, A, B, 0, &C1);
 
         for (size_t i0 = 0; i0 < C0.dim(0); i0++) {
             for (size_t j0 = 0; j0 < C0.dim(1); j0++) {
@@ -840,7 +840,7 @@ TEST_CASE("einsum2") {
         Tensor<2> B = create_random_tensor("B", 3, 5);
 
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{j, k}, B));
-        LinearAlgebra::gemm<false, true>(1.0, A, B, 0, &C1);
+        linear_algebra::gemm<false, true>(1.0, A, B, 0, &C1);
 
         for (size_t i0 = 0; i0 < C0.dim(0); i0++) {
             for (size_t j0 = 0; j0 < C0.dim(1); j0++) {
@@ -856,7 +856,7 @@ TEST_CASE("einsum2") {
         Tensor<1> B = create_random_tensor("B", 5);
 
         REQUIRE_NOTHROW(einsum(Indices{i}, &C0, Indices{i, j}, A, Indices{j}, B));
-        LinearAlgebra::gemv<false>(1.0, A, B, 0.0, &C1);
+        linear_algebra::gemv<false>(1.0, A, B, 0.0, &C1);
 
         for (size_t i0 = 0; i0 < C0.dim(0); i0++) {
             REQUIRE_THAT(C0(i0), Catch::Matchers::WithinAbs(C1(i0), 0.001));
@@ -969,7 +969,7 @@ TEST_CASE("einsum3") {
 
         // Working to get the einsum to perform the gemm that follows.
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
-        LinearAlgebra::gemm<false, false>(1.0, A, B, 0, &C1);
+        linear_algebra::gemm<false, false>(1.0, A, B, 0, &C1);
 
         for (size_t i0 = 0; i0 < C0.dim(0); i0++) {
             for (size_t j0 = 0; j0 < C0.dim(1); j0++) {
@@ -1415,7 +1415,7 @@ TEST_CASE("unique_ptr") {
 
         // Working to get the einsum to perform the gemm that follows.
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
-        LinearAlgebra::gemm<false, false>(1.0, A, B, 0, &C1);
+        linear_algebra::gemm<false, false>(1.0, A, B, 0, &C1);
 
         for (size_t i0 = 0; i0 < C0->dim(0); i0++) {
             for (size_t j0 = 0; j0 < C0->dim(1); j0++) {
@@ -1432,7 +1432,7 @@ TEST_CASE("unique_ptr") {
 
         // Working to get the einsum to perform the gemm that follows.
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
-        LinearAlgebra::gemm<false, false>(1.0, *A, B, 0, &C1);
+        linear_algebra::gemm<false, false>(1.0, *A, B, 0, &C1);
 
         for (size_t i0 = 0; i0 < C0.dim(0); i0++) {
             for (size_t j0 = 0; j0 < C0.dim(1); j0++) {
@@ -1449,7 +1449,7 @@ TEST_CASE("unique_ptr") {
 
         // Working to get the einsum to perform the gemm that follows.
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
-        LinearAlgebra::gemm<false, false>(1.0, A, *B, 0, &C1);
+        linear_algebra::gemm<false, false>(1.0, A, *B, 0, &C1);
 
         for (size_t i0 = 0; i0 < C0.dim(0); i0++) {
             for (size_t j0 = 0; j0 < C0.dim(1); j0++) {
@@ -1466,7 +1466,7 @@ TEST_CASE("unique_ptr") {
 
         // Working to get the einsum to perform the gemm that follows.
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
-        LinearAlgebra::gemm<false, false>(1.0, *A, *B, 0, &C1);
+        linear_algebra::gemm<false, false>(1.0, *A, *B, 0, &C1);
 
         for (size_t i0 = 0; i0 < C0.dim(0); i0++) {
             for (size_t j0 = 0; j0 < C0.dim(1); j0++) {
@@ -1483,7 +1483,7 @@ TEST_CASE("unique_ptr") {
 
         // Working to get the einsum to perform the gemm that follows.
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
-        LinearAlgebra::gemm<false, false>(1.0, *A, B, 0, &C1);
+        linear_algebra::gemm<false, false>(1.0, *A, B, 0, &C1);
 
         for (size_t i0 = 0; i0 < C0->dim(0); i0++) {
             for (size_t j0 = 0; j0 < C0->dim(1); j0++) {
@@ -1500,7 +1500,7 @@ TEST_CASE("unique_ptr") {
 
         // Working to get the einsum to perform the gemm that follows.
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
-        LinearAlgebra::gemm<false, false>(1.0, A, *B, 0, &C1);
+        linear_algebra::gemm<false, false>(1.0, A, *B, 0, &C1);
 
         for (size_t i0 = 0; i0 < C0->dim(0); i0++) {
             for (size_t j0 = 0; j0 < C0->dim(1); j0++) {
@@ -1517,7 +1517,7 @@ TEST_CASE("unique_ptr") {
 
         // Working to get the einsum to perform the gemm that follows.
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
-        LinearAlgebra::gemm<false, false>(1.0, *A, *B, 0, &C1);
+        linear_algebra::gemm<false, false>(1.0, *A, *B, 0, &C1);
 
         for (size_t i0 = 0; i0 < C0->dim(0); i0++) {
             for (size_t j0 = 0; j0 < C0->dim(1); j0++) {
@@ -1699,7 +1699,7 @@ TEST_CASE("gemv") {
         TensorView<1> dv{D, Dim<1>{_r * _s}};
         TensorView<1> Fv{F, Dim<1>{_p * _q}};
 
-        LinearAlgebra::gemv<false>(2.0, gv, dv, 1.0, &Fv);
+        linear_algebra::gemv<false>(2.0, gv, dv, 1.0, &Fv);
 
         // println(F0);
         // println(F);

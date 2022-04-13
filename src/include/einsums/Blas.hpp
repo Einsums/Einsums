@@ -3,7 +3,7 @@
 #include <vector>
 
 // Namespace for BLAS and LAPACK routines.
-namespace einsums::Blas {
+namespace einsums::blas {
 
 /*!
  * Performs matrix multiplication for general square matices of type double.
@@ -70,4 +70,10 @@ auto dgetrf(int, int, double *, int, int *) -> int;
  */
 auto dgetri(int, double *, int, const int *, double *, int) -> int;
 
-} // namespace einsums::Blas
+/*!
+ * Return the value of the 1-norm, Frobenius norm, infinity-norm, or the
+ * largest absolute value of any element of a general rectangular matrix
+ */
+auto dlange(char norm_type, int m, int n, const double *A, int lda, double *work) -> double;
+
+} // namespace einsums::blas

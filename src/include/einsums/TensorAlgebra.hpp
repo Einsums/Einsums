@@ -422,7 +422,7 @@ auto einsum(const T C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<C
                                    contiguous_target_position_in_B && !A_hadamard_found && !B_hadamard_found && !C_hadamard_found;
 
     if constexpr (dot_product) {
-        T temp = LinearAlgebra::dot(A, B);
+        T temp = linear_algebra::dot(A, B);
         (*C) *= C_prefactor;
         (*C) += AB_prefactor * temp;
 
@@ -458,13 +458,13 @@ auto einsum(const T C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<C
             TensorView<2, T> tC{*C, dC};
 
             if (C_prefactor != T{1.0})
-                LinearAlgebra::scale(C_prefactor, C);
+                linear_algebra::scale(C_prefactor, C);
 
             try {
                 if constexpr (swap_AB) {
-                    LinearAlgebra::ger(AB_prefactor, B.to_rank_1_view(), A.to_rank_1_view(), &tC);
+                    linear_algebra::ger(AB_prefactor, B.to_rank_1_view(), A.to_rank_1_view(), &tC);
                 } else {
-                    LinearAlgebra::ger(AB_prefactor, A.to_rank_1_view(), B.to_rank_1_view(), &tC);
+                    linear_algebra::ger(AB_prefactor, A.to_rank_1_view(), B.to_rank_1_view(), &tC);
                 }
             } catch (std::runtime_error &e) {
                 // TODO: If ger throws exception the timer gets out of sync.
@@ -480,7 +480,7 @@ auto einsum(const T C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<C
                             "WARNING!! Unable to undo C_prefactor ({}) on C ({}) tensor. Check your results!!!", C_prefactor, C->name());
 #endif
                 } else {
-                    LinearAlgebra::scale(1.0 / C_prefactor, C);
+                    linear_algebra::scale(1.0 / C_prefactor, C);
                 }
                 break; // out of the do {} while(false) loop.
             }
@@ -510,9 +510,9 @@ auto einsum(const T C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<C
                         TensorView<1, T> tC{*C, dC};
 
                         if constexpr (transpose_A) {
-                            LinearAlgebra::gemv<true>(AB_prefactor, tA, tB, C_prefactor, &tC);
+                            linear_algebra::gemv<true>(AB_prefactor, tA, tB, C_prefactor, &tC);
                         } else {
-                            LinearAlgebra::gemv<false>(AB_prefactor, tA, tB, C_prefactor, &tC);
+                            linear_algebra::gemv<false>(AB_prefactor, tA, tB, C_prefactor, &tC);
                         }
 
                         return;
@@ -572,28 +572,28 @@ auto einsum(const T C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<C
                         // println("--------------------");
 
                         if constexpr (!transpose_C && !transpose_A && !transpose_B) {
-                            LinearAlgebra::gemm<false, false>(AB_prefactor, tA, tB, C_prefactor, &tC);
+                            linear_algebra::gemm<false, false>(AB_prefactor, tA, tB, C_prefactor, &tC);
                             return;
                         } else if constexpr (!transpose_C && !transpose_A && transpose_B) {
-                            LinearAlgebra::gemm<false, true>(AB_prefactor, tA, tB, C_prefactor, &tC);
+                            linear_algebra::gemm<false, true>(AB_prefactor, tA, tB, C_prefactor, &tC);
                             return;
                         } else if constexpr (!transpose_C && transpose_A && !transpose_B) {
-                            LinearAlgebra::gemm<true, false>(AB_prefactor, tA, tB, C_prefactor, &tC);
+                            linear_algebra::gemm<true, false>(AB_prefactor, tA, tB, C_prefactor, &tC);
                             return;
                         } else if constexpr (!transpose_C && transpose_A && transpose_B) {
-                            LinearAlgebra::gemm<true, true>(AB_prefactor, tA, tB, C_prefactor, &tC);
+                            linear_algebra::gemm<true, true>(AB_prefactor, tA, tB, C_prefactor, &tC);
                             return;
                         } else if constexpr (transpose_C && !transpose_A && !transpose_B) {
-                            LinearAlgebra::gemm<true, true>(AB_prefactor, tB, tA, C_prefactor, &tC);
+                            linear_algebra::gemm<true, true>(AB_prefactor, tB, tA, C_prefactor, &tC);
                             return;
                         } else if constexpr (transpose_C && !transpose_A && transpose_B) {
-                            LinearAlgebra::gemm<false, true>(AB_prefactor, tB, tA, C_prefactor, &tC);
+                            linear_algebra::gemm<false, true>(AB_prefactor, tB, tA, C_prefactor, &tC);
                             return;
                         } else if constexpr (transpose_C && transpose_A && !transpose_B) {
-                            LinearAlgebra::gemm<true, false>(AB_prefactor, tB, tA, C_prefactor, &tC);
+                            linear_algebra::gemm<true, false>(AB_prefactor, tB, tA, C_prefactor, &tC);
                             return;
                         } else if constexpr (transpose_C && transpose_A && transpose_B) {
-                            LinearAlgebra::gemm<false, false>(AB_prefactor, tB, tA, C_prefactor, &tC);
+                            linear_algebra::gemm<false, false>(AB_prefactor, tB, tA, C_prefactor, &tC);
                             return;
                         } else {
                             println("This GEMM case is not programmed: transpose_C {}, transpose_A {}, transpose_B {}", transpose_C,
@@ -862,8 +862,8 @@ auto sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<
 #endif
         if constexpr (std::is_same_v<decltype(A_indices), decltype(C_indices)>) {
         if (C_prefactor != T{1.0})
-            LinearAlgebra::scale(C_prefactor, C);
-        LinearAlgebra::axpy(A_prefactor, A, C);
+            linear_algebra::scale(C_prefactor, C);
+        linear_algebra::axpy(A_prefactor, A, C);
     } else {
         auto view = std::apply(ranges::views::cartesian_product, target_dims);
 #if defined(__INTEL_LLVM_COMPILER) || defined(__INTEL_COMPILER)

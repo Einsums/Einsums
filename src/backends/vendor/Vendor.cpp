@@ -34,6 +34,7 @@ extern void FC_GLOBAL(daxpy, DAXPY)(int *, double *, const double *, int *, doub
 extern void FC_GLOBAL(dger, DGER)(int *, int *, double *, const double *, int *, const double *, int *, double *, int *);
 extern void FC_GLOBAL(dgetrf, DGETRF)(int *, int *, double *, int *, int *, int *);
 extern void FC_GLOBAL(dgetri, DGETRI)(int *, double *, int *, int *, double *, int *, int *);
+extern double FC_GLOBAL(dlange, DLANGE)(char, int, int, const double *, int, double *);
 }
 
 namespace einsums::backend::vendor {
@@ -108,6 +109,10 @@ auto dgetri(int n, double *a, int lda, const int *ipiv, double *work, int lwork)
     int info{0};
     FC_GLOBAL(dgetri, DGETRI)(&n, a, &lda, (int *)ipiv, work, &lwork, &info);
     return info;
+}
+
+auto dlange(char norm_type, int m, int n, const double *A, int lda, double *work) -> double {
+    return FC_GLOBAL(dlange, DLANGE)(norm_type, m, n, A, lda, work);
 }
 
 } // namespace einsums::backend::vendor

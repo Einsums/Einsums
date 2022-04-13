@@ -6,7 +6,7 @@
 #include <fmt/format.h>
 #include <stdexcept>
 
-namespace einsums::Blas {
+namespace einsums::blas {
 
 void dgemm(char transa, char transb, int m, int n, int k, double alpha, const double *a, int lda, const double *b, int ldb, double beta,
            double *c, int ldc) {
@@ -49,4 +49,8 @@ auto dgetri(int n, double *a, int lda, const int *ipiv, double *work, int lwork)
     return ::einsums::backend::vendor::dgetri(n, a, lda, (int *)ipiv, work, lwork);
 }
 
-} // namespace einsums::Blas
+auto dlange(char norm_type, int m, int n, const double *A, int lda, double *work) -> double {
+    return ::einsums::backend::vendor::dlange(norm_type, n, m, A, lda, work);
+}
+
+} // namespace einsums::blas

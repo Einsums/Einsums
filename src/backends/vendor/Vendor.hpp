@@ -67,4 +67,6 @@ auto dgetrf(int, int, double *, int, int *) -> int;
  */
 auto dgetri(int, double *, int, const int *, double *, int) -> int;
 
+auto dlange(char norm_type, int m, int n, const double *A, int lda, double *work) -> double;
+
 } // namespace einsums::backend::vendor

@@ -12,7 +12,7 @@
 #include <stdexcept>
 #include <type_traits>
 
-namespace einsums::LinearAlgebra {
+namespace einsums::linear_algebra {
 
 template <bool TransA, bool TransB, typename AType, typename BType, typename CType>
 auto gemm(const double alpha, const AType &A, const BType &B, const double beta, CType *C) ->
@@ -21,7 +21,7 @@ auto gemm(const double alpha, const AType &A, const BType &B, const double beta,
     auto lda = A.stride(0), ldb = B.stride(0), ldc = C->stride(0);
 
     Timer::push("gemm");
-    Blas::dgemm(TransA ? 't' : 'n', TransB ? 't' : 'n', m, n, k, alpha, A.data(), lda, B.data(), ldb, beta, C->data(), ldc);
+    blas::dgemm(TransA ? 't' : 'n', TransB ? 't' : 'n', m, n, k, alpha, A.data(), lda, B.data(), ldb, beta, C->data(), ldc);
     Timer::pop();
 }
 
@@ -61,7 +61,7 @@ auto gemv(const double alpha, const AType &A, const XType &x, const double beta,
     auto incy = y->stride(0);
 
     Timer::push("gemv");
-    Blas::dgemv(TransA ? 't' : 'n', m, n, alpha, A.data(), lda, x.data(), incx, beta, y->data(), incy);
+    blas::dgemv(TransA ? 't' : 'n', m, n, alpha, A.data(), lda, x.data(), incx, beta, y->data(), incy);
     Timer::pop();
 }
 
@@ -75,7 +75,7 @@ auto syev(AType *A, WType *W) -> typename std::enable_if_t<is_incore_rank_tensor
     std::vector<double> work(lwork);
 
     Timer::push("syev");
-    Blas::dsyev(ComputeEigenvectors ? 'v' : 'n', 'u', n, A->data(), lda, W->data(), work.data(), lwork);
+    blas::dsyev(ComputeEigenvectors ? 'v' : 'n', 'u', n, A->data(), lda, W->data(), work.data(), lwork);
     Timer::pop();
 }
 
@@ -91,7 +91,7 @@ auto gesv(AType *A, BType *B) -> typename std::enable_if_t<is_incore_rank_tensor
     std::vector<int> ipiv(lwork);
 
     Timer::push("gesv");
-    int info = Blas::dgesv(n, nrhs, A->data(), lda, ipiv.data(), B->data(), ldb);
+    int info = blas::dgesv(n, nrhs, A->data(), lda, ipiv.data(), B->data(), ldb);
     Timer::pop();
     return info;
 }
@@ -112,18 +112,18 @@ auto syev(const AType &A) ->
 template <template <size_t, typename> typename AType, size_t Rank, typename T = double>
 auto scale(double scale, AType<Rank, T> *A) -> typename std::enable_if_t<is_incore_rank_tensor_v<AType<Rank, T>, Rank, double>> {
     Timer::push("scal");
-    Blas::dscal(A->dim(0) * A->stride(0), scale, A->data(), 1);
+    blas::dscal(A->dim(0) * A->stride(0), scale, A->data(), 1);
     Timer::pop();
 }
 
 template <typename AType>
 auto scale_row(size_t row, double scale, AType *A) -> typename std::enable_if_t<is_incore_rank_tensor_v<AType, 2, double>> {
-    Blas::dscal(A->dim(1), scale, A->data(row, 0ul), A->stride(1));
+    blas::dscal(A->dim(1), scale, A->data(row, 0ul), A->stride(1));
 }
 
 template <typename AType>
 auto scale_column(size_t col, double scale, AType *A) -> typename std::enable_if_t<is_incore_rank_tensor_v<AType, 2, double>> {
-    Blas::dscal(A->dim(0), scale, A->data(0ul, col), A->stride(0));
+    blas::dscal(A->dim(0), scale, A->data(0ul, col), A->stride(0));
 }
 
 /**
@@ -179,7 +179,7 @@ auto dot(const Type<1, double> &A, const Type<1, double> &B) ->
     assert(A.dim(0) == B.dim(0));
 
     Timer::push("dot");
-    auto result = Blas::ddot(A.dim(0), A.data(), A.stride(0), B.data(), B.stride(0));
+    auto result = blas::ddot(A.dim(0), A.data(), A.stride(0), B.data(), B.stride(0));
     Timer::pop();
     return result;
 }
@@ -226,7 +226,7 @@ auto axpy(double alpha, const XType<Rank, double> &X, YType<Rank, double> *Y)
     -> std::enable_if_t<is_incore_rank_tensor_v<XType<Rank, double>, Rank, double> &&
                         is_incore_rank_tensor_v<YType<Rank, double>, Rank, double>> {
     Timer::push("axpy");
-    Blas::daxpy(X.dim(0) * X.stride(0), alpha, X.data(), 1, Y->data(), 1);
+    blas::daxpy(X.dim(0) * X.stride(0), alpha, X.data(), 1, Y->data(), 1);
     Timer::pop();
 }
 
@@ -234,7 +234,7 @@ template <template <size_t, typename> typename XYType, size_t XYRank, template <
 auto ger(double alpha, const XYType<XYRank, double> &X, const XYType<XYRank, double> &Y, AType<ARank, double> *A)
     -> std::enable_if_t<is_incore_rank_tensor_v<XYType<XYRank, double>, 1> && is_incore_rank_tensor_v<AType<ARank, double>, 2>> {
     Timer::push("ger");
-    Blas::dger(X.dim(0), Y.dim(0), alpha, X.data(), X.stride(0), Y.data(), Y.stride(0), A->data(), A->stride(0));
+    blas::dger(X.dim(0), Y.dim(0), alpha, X.data(), X.stride(0), Y.data(), Y.stride(0), A->data(), A->stride(0));
     Timer::pop();
 }
 
@@ -246,7 +246,7 @@ auto getrf(TensorType<TensorRank, double> *A, std::vector<int> *pivot)
         println("getrf: resizing pivot vector from {} to {}", pivot->size(), std::min(A->dim(0), A->dim(1)));
         pivot->resize(std::min(A->dim(0), A->dim(1)));
     }
-    int result = Blas::dgetrf(A->dim(0), A->dim(1), A->data(), A->stride(0), pivot->data());
+    int result = blas::dgetrf(A->dim(0), A->dim(1), A->data(), A->stride(0), pivot->data());
     Timer::pop();
 
     if (result < 0) {
@@ -265,10 +265,10 @@ auto getri(TensorType<TensorRank, double> *A, const std::vector<int> &pivot)
 
     // Call dgetri once to determine work size
     std::vector<double> work(1);
-    Blas::dgetri(A->dim(0), A->data(), A->stride(0), pivot.data(), work.data(), -1);
+    blas::dgetri(A->dim(0), A->data(), A->stride(0), pivot.data(), work.data(), -1);
     work.resize(static_cast<int>(work[0]));
     std::fill(work.begin(), work.end(), 0.0);
-    int result = Blas::dgetri(A->dim(0), A->data(), A->stride(0), pivot.data(), work.data(), (int)work.size());
+    int result = blas::dgetri(A->dim(0), A->data(), A->stride(0), pivot.data(), work.data(), (int)work.size());
     Timer::pop();
 
     if (result < 0) {
@@ -303,4 +303,16 @@ auto invert(SmartPtr *A) -> std::enable_if_t<is_smart_pointer_v<SmartPtr>> {
     return invert(A->get());
 }
 
-} // namespace einsums::LinearAlgebra
+enum class Norm : char { MaxAbs = 'M', One = 'O', Infinity = 'I', Frobenius = 'F', Two = 'F' };
+
+template <typename AType>
+auto norm(Norm norm_type, const AType &a) -> typename std::enable_if_t<is_incore_rank_tensor_v<AType, 2>, AType> {
+    if (norm_type != Norm::Infinity) {
+        return blas::dlange(norm_type, a->dim(0), a->dim(1), a->data(), a->stride(0), nullptr);
+    } else {
+        std::vector<double> work(a->dim(0), 0.0);
+        return blas::dlange(norm_type, a->dim(0), a->dim(1), a->data(), a->stride(0), work.data());
+    }
+}
+
+} // namespace einsums::linear_algebra
