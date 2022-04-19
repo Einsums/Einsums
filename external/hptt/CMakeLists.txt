@@ -43,7 +43,7 @@ set(HPTT_SRCS src/hptt.cpp src/plan.cpp src/transpose.cpp src/utils.cpp)
 
 add_library(hptt STATIC ${HPTT_SRCS})
 # target_compile_features(hptt PUBLIC cxx_std_17)
-target_link_libraries(hptt PUBLIC project-options)
+target_link_libraries(hptt PUBLIC einsums-project-options)
 if (OpenMP_FOUND)
   target_link_libraries(hptt PUBLIC OpenMP::OpenMP_CXX)
 endif()

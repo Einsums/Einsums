@@ -6,5 +6,6 @@
 namespace einsums::State {
 
 extern h5::fd_t data;
+extern h5::fd_t checkpoint_file;
 
 } // namespace einsums::State

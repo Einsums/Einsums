@@ -1,7 +1,9 @@
 set(RANGES_CXX_STD 17)
 add_subdirectory(range-v3-0.11.0)
 add_subdirectory(fmt-8.1.1)
-add_subdirectory(catch-2.13.3)
+if (NOT TARGET Catch2::Catch2)
+	add_subdirectory(catch-2.13.3)
+endif()
 add_subdirectory(h5cpp-1.10.4-6-EAT)
 
 if(EINSUMS_USE_HPTT)

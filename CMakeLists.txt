@@ -2,19 +2,19 @@ cmake_minimum_required(VERSION 3.20)
 
 project(einsums)
 
-add_library(project-options INTERFACE)
-target_compile_features(project-options 
+add_library(einsums-project-options INTERFACE)
+target_compile_features(einsums-project-options 
     INTERFACE 
         cxx_std_17
 )
-set_target_properties(project-options 
+set_target_properties(einsums-project-options 
     PROPERTIES 
         CXX_EXTENSIONS OFF
 )
 
 option(EINSUMS_CONTINUOUSLY_TEST_EINSUM "Every call to TensorAlgebra::einsum is tested" OFF)
 if (EINSUMS_CONTINUOUSLY_TEST_EINSUM)
-    target_compile_definitions(project-options
+    target_compile_definitions(einsums-project-options
         INTERFACE
             EINSUMS_CONTINUOUSLY_TEST_EINSUM
     )
@@ -22,7 +22,7 @@ endif()
 
 option(EINSUMS_TEST_EINSUM_ABORT "Abort execution if an error is found" ON)
 if (EINSUMS_TEST_EINSUM_ABORT)
-    target_compile_definitions(project-options
+    target_compile_definitions(einsums-project-options
         INTERFACE
             EINSUMS_TEST_EINSUM_ABORT
     )
@@ -31,7 +31,7 @@ endif()
 
 option(EINSUMS_WARN_NOT_IMPLEMENTED "If a specific case is not implemented in einsum then warn the user" OFF)
 if (EINSUMS_WARN_NOT_IMPLEMENTED)
-    target_compile_definitions(project-options
+    target_compile_definitions(einsums-project-options
         INTERFACE
             EINSUMS_WARN_NOT_IMPLEMENTED
     )
@@ -39,7 +39,7 @@ endif()
 
 option(EINSUMS_SHOW_WARNING "Does the code report warnings to the user or not" ON)
 if (EINSUMS_SHOW_WARNING)
-    target_compile_definitions(project-options
+    target_compile_definitions(einsums-project-options
         INTERFACE
             EINSUMS_SHOW_WARNING
     )
@@ -51,7 +51,7 @@ include(cmake/DetectHostArch.cmake)
 detect_host_arch()
 message(STATUS "${CMAKE_CXX_COMPILER_ID} flags: ${HOST_FLAGS}")
 
-target_compile_options(project-options
+target_compile_options(einsums-project-options
     INTERFACE
         ${HOST_FLAGS}
 )

@@ -20,7 +20,7 @@ endif()
 
 target_link_libraries(einsums
     PUBLIC
-        project-options
+        einsums-project-options
         LAPACK::LAPACK
         BLAS::BLAS
         range-v3::range-v3
