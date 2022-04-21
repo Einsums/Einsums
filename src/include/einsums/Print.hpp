@@ -18,8 +18,9 @@ namespace einsums {
 // Forward declare the Tensor object for printing purposes
 template <size_t Rank, typename T>
 struct Tensor;
+} // namespace einsums
 
-namespace Print {
+namespace print {
 
 /** Adds spaces to the global indentation counter. */
 void indent();
@@ -52,9 +53,9 @@ struct Indent {
 
 void stacktrace();
 
-} // namespace Print
+} // namespace print
 
-namespace Detail {
+namespace detail {
 void println(const std::string &oss);
 }
 
@@ -83,7 +84,7 @@ constexpr auto type_name() noexcept {
     return name;
 }
 
-namespace Detail {
+namespace detail {
 
 template <typename Tuple, std::size_t N>
 struct TuplePrinter {
@@ -121,13 +122,13 @@ auto print_tuple_no_type(const std::tuple<Args...> &) -> std::string {
     return {"()"};
 }
 
-} // namespace Detail
+} // namespace detail
 
 template <typename... Args, std::enable_if_t<sizeof...(Args) != 0, int> = 0>
 auto print_tuple(const std::tuple<Args...> &t) -> std::string {
     std::ostringstream out;
     out << "(";
-    Detail::TuplePrinter<decltype(t), sizeof...(Args)>::print(out, t);
+    detail::TuplePrinter<decltype(t), sizeof...(Args)>::print(out, t);
     out << ")";
     return out.str();
 }
@@ -136,7 +137,7 @@ template <typename... Args, std::enable_if_t<sizeof...(Args) != 0, int> = 0>
 auto print_tuple_no_type(const std::tuple<Args...> &t) -> std::string {
     std::ostringstream out;
     out << "(";
-    Detail::TuplePrinterNoType<decltype(t), sizeof...(Args)>::print(out, t);
+    detail::TuplePrinterNoType<decltype(t), sizeof...(Args)>::print(out, t);
     out << ")";
     return out.str();
 }
@@ -147,10 +148,6 @@ inline auto print_tuple_no_type(const std::tuple<> &) -> std::string {
     return out.str();
 }
 
-} // namespace einsums
-
-namespace einsums {
-
 using fmt::bg;       // NOLINT
 using fmt::color;    // NOLINT
 using fmt::emphasis; // NOLINT
@@ -159,32 +156,34 @@ using fmt::fg;       // NOLINT
 template <typename... Ts>
 void println(const std::string_view &format, const Ts... ts) {
     std::string s = fmt::format(format, ts...);
-    Detail::println(s);
+    detail::println(s);
 }
 
 template <typename... Ts>
 void println(const fmt::text_style &style, const std::string_view &format, const Ts... ts) {
     std::string s = fmt::format(style, format, ts...);
-    Detail::println(s);
+    detail::println(s);
 }
 
-inline void println(const std::string &format) { Detail::println(format); }
+inline void println(const std::string &format) {
+    detail::println(format);
+}
 
 inline void println(const fmt::text_style &style, const std::string_view &format) {
     std::string s = fmt::format(style, format);
-    Detail::println(s);
+    detail::println(s);
 }
 
-inline void println() { Detail::println("\n"); }
+inline void println() {
+    detail::println("\n");
+}
 
 template <typename... Ts>
 inline void println_abort(const std::string_view &format, const Ts... ts) {
     std::string message = std::string("ERROR: ") + format.data();
     println(bg(fmt::color::red) | fg(fmt::color::white), message, ts...);
 
-    Print::stacktrace();
+    print::stacktrace();
 
     std::abort();
 }
-
-} // namespace einsums

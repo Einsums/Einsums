@@ -10,7 +10,7 @@
 
 TEST_CASE("Identity Tensor", "[tensor]") {
     using namespace einsums;
-    using namespace einsums::TensorAlgebra;
+    using namespace einsums::tensor_algebra;
 
     Tensor<2, double> I = create_identity_tensor("I", 3, 3);
 
@@ -430,7 +430,7 @@ TEST_CASE("Subset TensorView", "[tensor]") {
 
 TEST_CASE("einsum1", "[tensor]") {
     using namespace einsums;
-    using namespace TensorAlgebra;
+    using namespace einsums::tensor_algebra;
 
     SECTION("ik=ij,jk") {
         Tensor<2> A{"A", 3, 3};
@@ -444,7 +444,7 @@ TEST_CASE("einsum1", "[tensor]") {
             }
         }
 
-        REQUIRE_NOTHROW(einsum(Indices{Index::i, Index::j}, &C, Indices{Index::i, Index::k}, A, Indices{Index::k, Index::j}, B));
+        REQUIRE_NOTHROW(einsum(Indices{index::i, index::j}, &C, Indices{index::i, index::k}, A, Indices{index::k, index::j}, B));
 
         // println(A);
         // println(B);
@@ -484,7 +484,7 @@ TEST_CASE("einsum1", "[tensor]") {
 
         // einsum("il=ijk,jkl", &C, A, B);
         REQUIRE_NOTHROW(
-            einsum(Indices{Index::i, Index::l}, &C, Indices{Index::i, Index::j, Index::k}, A, Indices{Index::j, Index::k, Index::l}, B));
+            einsum(Indices{index::i, index::l}, &C, Indices{index::i, index::j, index::k}, A, Indices{index::j, index::k, index::l}, B));
 
         // println(C);
 
@@ -505,7 +505,7 @@ TEST_CASE("einsum1", "[tensor]") {
 
 TEST_CASE("einsum TensorView", "[tensor]") {
     using namespace einsums;
-    using namespace einsums::TensorAlgebra;
+    using namespace einsums::tensor_algebra;
 
     SECTION("Subset View GEMM 7x3x3[4,:,:] -> [2,:,:]") {
         // Description: Obtain view [4,:,:] (3x3 view) perform GEMM and store result into
@@ -536,7 +536,7 @@ TEST_CASE("einsum TensorView", "[tensor]") {
         {
             // einsum("ik=ij,jk", &result, view, view);
             REQUIRE_NOTHROW(
-                einsum(Indices{Index::i, Index::k}, &result, Indices{Index::i, Index::j}, view, Indices{Index::j, Index::k}, view));
+                einsum(Indices{index::i, index::k}, &result, Indices{index::i, index::j}, view, Indices{index::j, index::k}, view));
             // gemm<false, false>(1.0, view, view, 0.0, &result);
 
             // Test against the view
@@ -575,8 +575,8 @@ TEST_CASE("einsum TensorView", "[tensor]") {
 
 TEST_CASE("sort2") {
     using namespace einsums;
-    using namespace einsums::TensorAlgebra;
-    using namespace TensorAlgebra::Index;
+    using namespace einsums::tensor_algebra;
+    using namespace einsums::tensor_algebra::index;
 
     SECTION("Rank 2 - axpy") {
         Tensor<2> A{"A", 3, 3};
@@ -814,8 +814,8 @@ TEST_CASE("sort2") {
 
 TEST_CASE("einsum2") {
     using namespace einsums;
-    using namespace TensorAlgebra;
-    using namespace TensorAlgebra::Index;
+    using namespace einsums::tensor_algebra;
+    using namespace einsums::tensor_algebra::index;
 
     SECTION("3x3 <- 3x5 * 5x3") {
         Tensor<2> C0{"C0", 3, 3};
@@ -893,11 +893,11 @@ TEST_CASE("einsum2") {
         Tensor<3> A = create_random_tensor("A", 3, 4, 5);
         Tensor<3> B = create_random_tensor("B", 4, 3, 5);
 
-        // Timer::push("einsum: 3x5 <- 3x4x5 * 4x3x5");
+        // timer::push("einsum: 3x5 <- 3x4x5 * 4x3x5");
         REQUIRE_NOTHROW(einsum(Indices{i, k}, &C0, Indices{i, j, k}, A, Indices{j, i, k}, B));
-        // Timer::pop();
+        // timer::pop();
 
-        // Timer::push("hand  : 3x5 <- 3x4x5 * 4x3x5");
+        // timer::push("hand  : 3x5 <- 3x4x5 * 4x3x5");
         for (size_t i0 = 0; i0 < 3; i0++) {
             for (size_t k0 = 0; k0 < 5; k0++) {
                 double sum{0};
@@ -908,7 +908,7 @@ TEST_CASE("einsum2") {
                 C1(i0, k0) = sum;
             }
         }
-        // Timer::pop();
+        // timer::pop();
 
         for (size_t i0 = 0; i0 < 3; i0++) {
             for (size_t j0 = 0; j0 < 5; j0++) {
@@ -923,11 +923,11 @@ TEST_CASE("einsum2") {
         Tensor<3> A = create_random_tensor("A", 3, 4, 5);
         Tensor<3> B = create_random_tensor("B", 4, 3, 5);
 
-        // Timer::push("einsum: 3x5 <- 3x4x5 * 4x3x5");
+        // timer::push("einsum: 3x5 <- 3x4x5 * 4x3x5");
         REQUIRE_NOTHROW(einsum(Indices{i, l}, &C0, Indices{i, j, k}, A, Indices{j, i, k}, B));
-        // Timer::pop();
+        // timer::pop();
 
-        // Timer::push("hand  : 3x5 <- 3x4x5 * 4x3x5");
+        // timer::push("hand  : 3x5 <- 3x4x5 * 4x3x5");
         for (size_t i0 = 0; i0 < 3; i0++) {
             for (size_t k0 = 0; k0 < 5; k0++) {
                 for (size_t l0 = 0; l0 < 5; l0++) {
@@ -940,7 +940,7 @@ TEST_CASE("einsum2") {
                 }
             }
         }
-        // Timer::pop();
+        // timer::pop();
 
         for (size_t i0 = 0; i0 < 3; i0++) {
             for (size_t j0 = 0; j0 < 5; j0++) {
@@ -950,16 +950,16 @@ TEST_CASE("einsum2") {
         }
     }
 
-    // Timer::report();
-    // Timer::finalize();
+    // timer::report();
+    // timer::finalize();
 }
 
 TEST_CASE("einsum3") {
     using namespace einsums;
-    using namespace TensorAlgebra;
-    using namespace TensorAlgebra::Index;
+    using namespace einsums::tensor_algebra;
+    using namespace einsums::tensor_algebra::index;
 
-    // Timer::initialize();
+    // timer::initialize();
 
     SECTION("3x3 <- 3x5 * 5x3") {
         Tensor<2> C0{"C0", 3, 3};
@@ -1052,16 +1052,16 @@ TEST_CASE("einsum3") {
         }
     }
 
-    // Timer::report();
-    // Timer::finalize();
+    // timer::report();
+    // timer::finalize();
 }
 
 TEST_CASE("einsum4") {
     using namespace einsums;
-    using namespace TensorAlgebra;
-    using namespace TensorAlgebra::Index;
+    using namespace einsums::tensor_algebra;
+    using namespace einsums::tensor_algebra::index;
 
-    // Timer::initialize();
+    // timer::initialize();
     SECTION("3x3x3x3 <- 3x3x3x3 * 3x3") {
         // This one is to represent a two-electron integral transformation
         Tensor<4> gMO0{"g0", 3, 3, 3, 3};
@@ -1140,16 +1140,16 @@ TEST_CASE("einsum4") {
 #endif
     }
 
-    // Timer::report();
-    // Timer::finalize();
+    // timer::report();
+    // timer::finalize();
 }
 
 TEST_CASE("IntegralTransformation") {
     using namespace einsums;
-    using namespace TensorAlgebra;
-    using namespace TensorAlgebra::Index;
+    using namespace einsums::tensor_algebra;
+    using namespace einsums::tensor_algebra::index;
 
-    // Timer::initialize();
+    // timer::initialize();
     // SECTION("3x3x3x3 <- 3x3x3x3 * 3x3 * 3x3 * 3x3 * 3x3") {
     //     Tensor<2> C1 = create_random_tensor("C1", 4, 2);
     //     Tensor<2> C2 = create_random_tensor("C2", 4, 2);
@@ -1238,15 +1238,15 @@ TEST_CASE("IntegralTransformation") {
         // println(g_m);
         // println(t_i);
 
-        REQUIRE_NOTHROW(einsum(1.0, Indices{Index::n, Index::j}, &W_mi, 0.25, Indices{Index::n, Index::e, Index::f}, g_m,
-                               Indices{Index::j, Index::e, Index::f}, t_i));
+        REQUIRE_NOTHROW(einsum(1.0, Indices{index::n, index::j}, &W_mi, 0.25, Indices{index::n, index::e, index::f}, g_m,
+                               Indices{index::j, index::e, index::f}, t_i));
     }
 }
 
 TEST_CASE("Hadamard") {
     using namespace einsums;
-    using namespace TensorAlgebra;
-    using namespace TensorAlgebra::Index;
+    using namespace einsums::tensor_algebra;
+    using namespace einsums::tensor_algebra::index;
 
     size_t _i = 3, _j = 4, _k = 5;
 
@@ -1404,8 +1404,8 @@ TEST_CASE("Hadamard") {
 
 TEST_CASE("unique_ptr") {
     using namespace einsums;
-    using namespace TensorAlgebra;
-    using namespace TensorAlgebra::Index;
+    using namespace einsums::tensor_algebra;
+    using namespace einsums::tensor_algebra::index;
 
     SECTION("C") {
         auto C0 = std::make_unique<Tensor<2>>("C0", 3, 3);
@@ -1529,8 +1529,8 @@ TEST_CASE("unique_ptr") {
 
 TEST_CASE("Transpose C", "[einsum]") {
     using namespace einsums;
-    using namespace TensorAlgebra;
-    using namespace TensorAlgebra::Index;
+    using namespace einsums::tensor_algebra;
+    using namespace einsums::tensor_algebra::index;
 
     size_t _i = 3, _j = 4, _k = 5;
 
@@ -1681,8 +1681,8 @@ TEST_CASE("Transpose C", "[einsum]") {
 
 TEST_CASE("gemv") {
     using namespace einsums;
-    using namespace einsums::TensorAlgebra;
-    using namespace einsums::TensorAlgebra::Index;
+    using namespace einsums::tensor_algebra;
+    using namespace einsums::tensor_algebra::index;
 
     SECTION("check") {
         size_t _p = 7, _q = 7, _r = 7, _s = 7;
@@ -1708,8 +1708,8 @@ TEST_CASE("gemv") {
 
 TEST_CASE("TensorView einsum") {
     using namespace einsums;
-    using namespace einsums::TensorAlgebra;
-    using namespace einsums::TensorAlgebra::Index;
+    using namespace einsums::tensor_algebra;
+    using namespace einsums::tensor_algebra::index;
 
     // Test if everything passed to einsum is a TensorView.
     Tensor<2> A = create_random_tensor("A", 3, 5);
@@ -1748,8 +1748,8 @@ TEST_CASE("TensorView einsum") {
 
 TEST_CASE("outer product") {
     using namespace einsums;
-    using namespace einsums::TensorAlgebra;
-    using namespace einsums::TensorAlgebra::Index;
+    using namespace einsums::tensor_algebra;
+    using namespace einsums::tensor_algebra::index;
 
     SECTION("1 * 1 -> 2") {
         Tensor<1> A = create_random_tensor("A", 3);
@@ -1867,8 +1867,8 @@ TEST_CASE("outer product") {
 
 TEST_CASE("view outer product") {
     using namespace einsums;
-    using namespace einsums::TensorAlgebra;
-    using namespace einsums::TensorAlgebra::Index;
+    using namespace einsums::tensor_algebra;
+    using namespace einsums::tensor_algebra::index;
 
     SECTION("1 * 1 -> 2") {
         Tensor<1> A = create_random_tensor("A", 6);
@@ -1952,8 +1952,8 @@ TEST_CASE("view outer product") {
 
 TEST_CASE("element transform") {
     using namespace einsums;
-    using namespace einsums::TensorAlgebra;
-    using namespace einsums::TensorAlgebra::Index;
+    using namespace einsums::tensor_algebra;
+    using namespace einsums::tensor_algebra::index;
 
     SECTION("tensor") {
         Tensor<4> A = create_random_tensor("A", 32, 32, 32, 32);
@@ -1981,8 +1981,8 @@ TEST_CASE("element transform") {
 
 TEST_CASE("element") {
     using namespace einsums;
-    using namespace einsums::TensorAlgebra;
-    using namespace einsums::TensorAlgebra::Index;
+    using namespace einsums::tensor_algebra;
+    using namespace einsums::tensor_algebra::index;
 
     SECTION("1") {
         Tensor<4> A = create_random_tensor("A", 10, 10, 10, 10);
@@ -2038,8 +2038,8 @@ TEST_CASE("element") {
 
 TEST_CASE("F12 - V term") {
     using namespace einsums;
-    using namespace einsums::TensorAlgebra;
-    using namespace einsums::TensorAlgebra::Index;
+    using namespace einsums::tensor_algebra;
+    using namespace einsums::tensor_algebra::index;
 
     // int nocc{5}, ncabs{116}, nobs{41};
     int nocc{1}, ncabs{4}, nobs{2};
@@ -2075,7 +2075,7 @@ TEST_CASE("F12 - V term") {
 
     result.set_all(0.0);
     result2.set_all(0.0);
-    Timer::push("raw for loops");
+    timer::push("raw for loops");
     for (size_t _i = 0; _i < nocc; _i++) {
         for (size_t _j = 0; _j < nocc; _j++) {
             for (size_t _k = 0; _k < nocc; _k++) {
@@ -2093,7 +2093,7 @@ TEST_CASE("F12 - V term") {
             }
         }
     }
-    Timer::pop();
+    timer::pop();
 
     // println(result);
     // println(ijkl_1);

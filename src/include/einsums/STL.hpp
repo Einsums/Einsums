@@ -372,10 +372,10 @@ struct CircularBuffer {
     bool _full{false};
 };
 
-namespace Detail {
+namespace detail {
 auto allocate_aligned_memory(size_t align, size_t size) -> void *;
 void deallocate_aligned_memory(void *ptr) noexcept;
-} // namespace Detail
+} // namespace detail
 
 template <typename T, size_t Align = 32>
 class AlignedAllocator;
@@ -425,7 +425,7 @@ class AlignedAllocator {
 
     auto allocate(size_type n, typename AlignedAllocator<void, Align>::const_pointer = 0) -> pointer {
         const auto alignment = static_cast<size_type>(Align);
-        void *ptr = Detail::allocate_aligned_memory(alignment, n * sizeof(T));
+        void *ptr = detail::allocate_aligned_memory(alignment, n * sizeof(T));
         if (ptr == nullptr) {
             throw std::bad_alloc();
         }
@@ -433,7 +433,7 @@ class AlignedAllocator {
         return reinterpret_cast<pointer>(ptr);
     }
 
-    void deallocate(pointer p, size_type) noexcept { return Detail::deallocate_aligned_memory(p); }
+    void deallocate(pointer p, size_type) noexcept { return detail::deallocate_aligned_memory(p); }
 
     template <class U, class... Args>
     void construct(U *p, Args &&...args) {
@@ -475,7 +475,7 @@ class AlignedAllocator<const T, Align> {
 
     auto allocate(size_type n, typename AlignedAllocator<void, Align>::const_pointer = 0) -> pointer {
         const auto alignment = static_cast<size_type>(Align);
-        void *ptr = Detail::allocate_aligned_memory(alignment, n * sizeof(T));
+        void *ptr = detail::allocate_aligned_memory(alignment, n * sizeof(T));
         if (ptr == nullptr) {
             throw std::bad_alloc();
         }
@@ -483,7 +483,7 @@ class AlignedAllocator<const T, Align> {
         return reinterpret_cast<pointer>(ptr);
     }
 
-    void deallocate(pointer p, size_type) noexcept { return Detail::deallocate_aligned_memory(p); }
+    void deallocate(pointer p, size_type) noexcept { return detail::deallocate_aligned_memory(p); }
 
     template <class U, class... Args>
     void construct(U *p, Args &&...args) {

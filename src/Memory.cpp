@@ -4,7 +4,7 @@
 #include <cassert>
 #include <cstdlib>
 
-namespace einsums::Detail {
+namespace einsums::detail {
 
 auto allocate_aligned_memory(size_t align, size_t size) -> void * {
     assert(align >= sizeof(void *));
@@ -21,7 +21,7 @@ auto allocate_aligned_memory(size_t align, size_t size) -> void * {
     int rc = posix_memalign(&ptr, align, size);
 
     if (rc != 0) {
-        einsums::println("posix_memalign returned non-zero!");
+        println("posix_memalign returned non-zero!");
         return nullptr;
     }
 #endif
@@ -29,6 +29,8 @@ auto allocate_aligned_memory(size_t align, size_t size) -> void * {
     return ptr;
 }
 
-void deallocate_aligned_memory(void *ptr) noexcept { return free(ptr); }
+void deallocate_aligned_memory(void *ptr) noexcept {
+    return free(ptr);
+}
 
-} // namespace einsums::Detail
+} // namespace einsums::detail

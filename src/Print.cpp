@@ -18,9 +18,7 @@
 #include <unistd.h>
 #endif
 
-namespace einsums {
-
-namespace Print {
+namespace print {
 
 namespace {
 
@@ -61,11 +59,17 @@ void deindent() {
     update_indent_string();
 }
 
-auto current_indent_level() -> int { return indent_level; }
+auto current_indent_level() -> int {
+    return indent_level;
+}
 
-void always_print_thread_id(bool onoff) { print_master_thread_id = onoff; }
+void always_print_thread_id(bool onoff) {
+    print_master_thread_id = onoff;
+}
 
-void suppress_output(bool onoff) { suppress = onoff; }
+void suppress_output(bool onoff) {
+    suppress = onoff;
+}
 
 void stacktrace() {
     using namespace backward;
@@ -79,24 +83,24 @@ void stacktrace() {
         println("# {} {} {} [{}]", i, trace.object_filename, trace.object_function, trace.addr);
     }
 }
-} // namespace Print
+} // namespace print
 
 namespace {
 
 void print_line(const std::string &line) {
     std::string line_header;
-    if (Print::print_master_thread_id && std::this_thread::get_id() == Print::main_thread_id) {
+    if (print::print_master_thread_id && std::this_thread::get_id() == print::main_thread_id) {
         std::ostringstream oss;
         oss << "[ main #" << std::setw(6) << std::this_thread::get_id() << " ] ";
         line_header = oss.str();
-    } else if (std::this_thread::get_id() != Print::main_thread_id) {
+    } else if (std::this_thread::get_id() != print::main_thread_id) {
         std::ostringstream oss;
         oss << "[ tid  #" << std::setw(6) << std::this_thread::get_id() << " ] ";
         line_header = oss.str();
     }
-    line_header.append(Print::indent_string);
+    line_header.append(print::indent_string);
 
-    std::lock_guard<std::mutex> guard(Print::lock);
+    std::lock_guard<std::mutex> guard(print::lock);
     std::printf("%s", line_header.c_str());
     std::printf("%s", line.c_str());
     std::printf("\n");
@@ -104,9 +108,9 @@ void print_line(const std::string &line) {
 
 } // namespace
 
-namespace Detail {
+namespace detail {
 void println(const std::string &str) {
-    if (Print::suppress == false) {
+    if (print::suppress == false) {
         std::istringstream iss(str);
 
         for (std::string line; std::getline(iss, line);) {
@@ -114,6 +118,4 @@ void println(const std::string &str) {
         }
     }
 }
-} // namespace Detail
-
-} // namespace einsums
+} // namespace detail

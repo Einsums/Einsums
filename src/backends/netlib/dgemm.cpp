@@ -16,7 +16,7 @@ namespace {
 /* Subroutine */
 auto _dgemm(char *transa, char *transb, int *m, int *n, int *k, double *alpha, const double *a, int *lda, const double *b, int *ldb,
             double *beta, double *c, int *ldc) -> int {
-    Timer::Timer timer("netlib::dgemm");
+    timer::Timer timer("netlib::dgemm");
     println("dgemm: ta({}) tb({}) m({}) n({}) k({}) alpha({}), lda({}), ldb({}), beta({}), ldc({})", *transa, *transb, *m, *n, *k, *alpha,
             *lda, *ldb, *beta, *ldc);
     println("first elements C({}) A({}) B({})", c[0], a[0], b[0]);

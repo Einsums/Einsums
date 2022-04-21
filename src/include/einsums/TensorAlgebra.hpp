@@ -26,9 +26,9 @@
 // for the user. Undefine the one defined in <complex> here.
 #undef I
 
-namespace einsums::TensorAlgebra {
+namespace einsums::tensor_algebra {
 
-namespace Index {
+namespace index {
 
 #define MAKE_INDEX(x)                                                                                                                      \
     struct x {                                                                                                                             \
@@ -77,28 +77,28 @@ MAKE_INDEX(S); // NOLINT
 MAKE_INDEX(s); // NOLINT
 
 #undef MAKE_INDEX
-} // namespace Index
+} // namespace index
 
 template <typename... Args>
 struct Indices : public std::tuple<Args...> {
     Indices(Args... args) : std::tuple<Args...>(args...){};
 };
 
-namespace Detail {
+namespace detail {
 
 template <size_t Rank, typename... Args, std::size_t... I>
 auto order_indices(const std::tuple<Args...> &combination, const std::array<size_t, Rank> &order, std::index_sequence<I...>) {
     return std::tuple{get_from_tuple<size_t>(combination, order[I])...};
 }
 
-} // namespace Detail
+} // namespace detail
 
 template <size_t Rank, typename... Args>
 auto order_indices(const std::tuple<Args...> &combination, const std::array<size_t, Rank> &order) {
-    return Detail::order_indices(combination, order, std::make_index_sequence<Rank>{});
+    return detail::order_indices(combination, order, std::make_index_sequence<Rank>{});
 }
 
-namespace Detail {
+namespace detail {
 
 template <typename T, int Position>
 constexpr auto _find_type_with_position() {
@@ -141,12 +141,12 @@ constexpr auto find_position() {
 
 template <typename AIndex, typename... TargetCombination>
 constexpr auto find_position(const std::tuple<TargetCombination...> &) {
-    return Detail::find_position<AIndex, TargetCombination...>();
+    return detail::find_position<AIndex, TargetCombination...>();
 }
 
 template <typename S1, typename... S2, std::size_t... Is>
 constexpr auto _find_type_with_position(std::index_sequence<Is...>) {
-    return std::tuple_cat(Detail::_find_type_with_position<std::tuple_element_t<Is, S1>, 0, S2...>()...);
+    return std::tuple_cat(detail::_find_type_with_position<std::tuple_element_t<Is, S1>, 0, S2...>()...);
 }
 
 template <typename... Ts, typename... Us>
@@ -156,7 +156,7 @@ constexpr auto find_type_with_position(const std::tuple<Ts...> &, const std::tup
 
 template <template <size_t, typename> typename TensorType, size_t Rank, typename... Args, typename T = double>
 auto get_dim_ranges_for(const TensorType<Rank, T> &tensor, const std::tuple<Args...> &args) {
-    return Detail::get_dim_ranges_for(tensor, args, std::make_index_sequence<sizeof...(Args) / 2>{});
+    return detail::get_dim_ranges_for(tensor, args, std::make_index_sequence<sizeof...(Args) / 2>{});
 }
 
 template <typename AIndex, typename... TargetCombination, typename... TargetPositionInC, typename... LinkCombination,
@@ -164,8 +164,8 @@ template <typename AIndex, typename... TargetCombination, typename... TargetPosi
 auto construct_index(const std::tuple<TargetCombination...> &target_combination, const std::tuple<TargetPositionInC...> &,
                      const std::tuple<LinkCombination...> &link_combination, const std::tuple<LinkPositionInLink...> &) {
 
-    constexpr auto IsAIndexInC = Detail::find_position<AIndex, TargetPositionInC...>();
-    constexpr auto IsAIndexInLink = Detail::find_position<AIndex, LinkPositionInLink...>();
+    constexpr auto IsAIndexInC = detail::find_position<AIndex, TargetPositionInC...>();
+    constexpr auto IsAIndexInLink = detail::find_position<AIndex, LinkPositionInLink...>();
 
     static_assert(IsAIndexInC != -1 || IsAIndexInLink != -1, "Looks like the indices in your einsum are not quite right! :(");
 
@@ -234,12 +234,12 @@ constexpr auto same_indices(std::index_sequence<I...>) {
 
 template <template <size_t, typename> typename XType, size_t XRank, typename... PositionsInX, typename T = double>
 constexpr auto product_dims(const std::tuple<PositionsInX...> &indices, const XType<XRank, T> &X) -> size_t {
-    return Detail::product_dims(indices, X, std::make_index_sequence<sizeof...(PositionsInX) / 2>());
+    return detail::product_dims(indices, X, std::make_index_sequence<sizeof...(PositionsInX) / 2>());
 }
 
 template <template <size_t, typename> typename XType, size_t XRank, typename... PositionsInX, typename T = double>
 constexpr auto is_same_dims(const std::tuple<PositionsInX...> &indices, const XType<XRank, T> &X) -> size_t {
-    return Detail::is_same_dims(indices, X, std::make_index_sequence<sizeof...(PositionsInX) / 2>());
+    return detail::is_same_dims(indices, X, std::make_index_sequence<sizeof...(PositionsInX) / 2>());
 }
 
 template <template <size_t, typename> typename XType, size_t XRank, typename... PositionsInX, typename T = double>
@@ -252,7 +252,7 @@ constexpr auto same_indices() {
     if constexpr (std::tuple_size_v<LHS> != std::tuple_size_v<RHS>)
         return false;
     else
-        return Detail::same_indices<LHS, RHS>(std::make_index_sequence<std::tuple_size_v<LHS>>());
+        return detail::same_indices<LHS, RHS>(std::make_index_sequence<std::tuple_size_v<LHS>>());
 }
 
 template <typename T, typename... CIndices, typename... AIndices, typename... BIndices, typename... TargetDims, typename... LinkDims,
@@ -263,7 +263,7 @@ void einsum_generic_algorithm(const std::tuple<CIndices...> & /*C_indices*/, con
                               const std::tuple<LinkDims...> &link_dims, const std::tuple<TargetPositionInC...> &target_position_in_C,
                               const std::tuple<LinkPositionInLink...> &link_position_in_link, const T C_prefactor, CType<CRank, T> *C,
                               const T AB_prefactor, const AType<ARank, T> &A, const BType<BRank, T> &B) {
-    Timer::push("generic algorithm");
+    timer::push("generic algorithm");
 
     auto view = std::apply(ranges::views::cartesian_product, target_dims);
 
@@ -275,7 +275,7 @@ void einsum_generic_algorithm(const std::tuple<CIndices...> & /*C_indices*/, con
 #endif
         for (auto it = view.begin(); it < view.end(); it++) {
             // println("target_combination: {}", print_tuple_no_type(target_combination));
-            auto C_order = Detail::construct_indices<CIndices...>(*it, target_position_in_C, std::tuple<>(), target_position_in_C);
+            auto C_order = detail::construct_indices<CIndices...>(*it, target_position_in_C, std::tuple<>(), target_position_in_C);
             // println("C_order: {}", print_tuple_no_type(C_order));
 
             // This is the generic case.
@@ -284,8 +284,8 @@ void einsum_generic_algorithm(const std::tuple<CIndices...> & /*C_indices*/, con
                 // Print::Indent _indent;
 
                 // Construct the tuples that will be used to access the tensor elements of A and B
-                auto A_order = Detail::construct_indices<AIndices...>(*it, target_position_in_C, link_combination, link_position_in_link);
-                auto B_order = Detail::construct_indices<BIndices...>(*it, target_position_in_C, link_combination, link_position_in_link);
+                auto A_order = detail::construct_indices<AIndices...>(*it, target_position_in_C, link_combination, link_position_in_link);
+                auto B_order = detail::construct_indices<BIndices...>(*it, target_position_in_C, link_combination, link_position_in_link);
 
                 // Get the tensor element using the operator()(MultiIndex...) function of Tensor.
                 T A_value = std::apply(A, A_order);
@@ -310,9 +310,9 @@ void einsum_generic_algorithm(const std::tuple<CIndices...> & /*C_indices*/, con
             T sum{0};
 
             // Construct the tuples that will be used to access the tensor elements of A and B
-            auto A_order = Detail::construct_indices<AIndices...>(*it, target_position_in_C, std::tuple<>(), target_position_in_C);
-            auto B_order = Detail::construct_indices<BIndices...>(*it, target_position_in_C, std::tuple<>(), target_position_in_C);
-            auto C_order = Detail::construct_indices<CIndices...>(*it, target_position_in_C, std::tuple<>(), target_position_in_C);
+            auto A_order = detail::construct_indices<AIndices...>(*it, target_position_in_C, std::tuple<>(), target_position_in_C);
+            auto B_order = detail::construct_indices<BIndices...>(*it, target_position_in_C, std::tuple<>(), target_position_in_C);
+            auto C_order = detail::construct_indices<CIndices...>(*it, target_position_in_C, std::tuple<>(), target_position_in_C);
 
             // Get the tensor element using the operator()(MultiIndex...) function of Tensor.
             T A_value = std::apply(A, A_order);
@@ -325,7 +325,7 @@ void einsum_generic_algorithm(const std::tuple<CIndices...> & /*C_indices*/, con
             target_value += sum;
         }
     }
-    Timer::pop();
+    timer::pop();
 }
 
 template <bool OnlyUseGenericAlgorithm, template <size_t, typename> typename AType, size_t ARank,
@@ -333,10 +333,10 @@ template <bool OnlyUseGenericAlgorithm, template <size_t, typename> typename ATy
           typename... CIndices, typename... AIndices, typename... BIndices, typename T = double>
 auto einsum(const T C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<CRank, T> *C, const T AB_prefactor,
             const std::tuple<AIndices...> & /*As*/, const AType<ARank, T> &A, const std::tuple<BIndices...> & /*Bs*/,
-            const BType<BRank, T> &B) -> std::enable_if_t<std::is_base_of_v<::einsums::Detail::TensorBase<ARank, T>, AType<ARank, T>> &&
-                                                          std::is_base_of_v<::einsums::Detail::TensorBase<BRank, T>, BType<BRank, T>> &&
-                                                          std::is_base_of_v<::einsums::Detail::TensorBase<CRank, T>, CType<CRank, T>>> {
-    Print::Indent _indent;
+            const BType<BRank, T> &B) -> std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<ARank, T>, AType<ARank, T>> &&
+                                                          std::is_base_of_v<::einsums::detail::TensorBase<BRank, T>, BType<BRank, T>> &&
+                                                          std::is_base_of_v<::einsums::detail::TensorBase<CRank, T>, CType<CRank, T>>> {
+    print::Indent _indent;
 
     constexpr auto A_indices = std::tuple<AIndices...>();
     constexpr auto B_indices = std::tuple<BIndices...>();
@@ -371,32 +371,32 @@ auto einsum(const T C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<C
     constexpr bool B_hadamard_found = std::tuple_size_v<std::tuple<BIndices...>> != std::tuple_size_v<decltype(B_unique)>;
     constexpr bool C_hadamard_found = std::tuple_size_v<std::tuple<CIndices...>> != std::tuple_size_v<decltype(C_unique)>;
 
-    constexpr auto link_position_in_A = Detail::find_type_with_position(links, A_indices);
-    constexpr auto link_position_in_B = Detail::find_type_with_position(links, B_indices);
-    constexpr auto link_position_in_link = Detail::find_type_with_position(links, links);
+    constexpr auto link_position_in_A = detail::find_type_with_position(links, A_indices);
+    constexpr auto link_position_in_B = detail::find_type_with_position(links, B_indices);
+    constexpr auto link_position_in_link = detail::find_type_with_position(links, links);
 
-    constexpr auto target_position_in_A = Detail::find_type_with_position(C_indices, A_indices);
-    constexpr auto target_position_in_B = Detail::find_type_with_position(C_indices, B_indices);
-    constexpr auto target_position_in_C = Detail::find_type_with_position(C_indices, C_indices);
+    constexpr auto target_position_in_A = detail::find_type_with_position(C_indices, A_indices);
+    constexpr auto target_position_in_B = detail::find_type_with_position(C_indices, B_indices);
+    constexpr auto target_position_in_C = detail::find_type_with_position(C_indices, C_indices);
 
-    constexpr auto A_target_position_in_C = Detail::find_type_with_position(A_indices, C_indices);
-    constexpr auto B_target_position_in_C = Detail::find_type_with_position(B_indices, C_indices);
+    constexpr auto A_target_position_in_C = detail::find_type_with_position(A_indices, C_indices);
+    constexpr auto B_target_position_in_C = detail::find_type_with_position(B_indices, C_indices);
 
-    auto target_dims = Detail::get_dim_ranges_for(*C, Detail::find_type_with_position(C_unique, C_indices));
-    auto link_dims = Detail::get_dim_ranges_for(A, link_position_in_A);
+    auto target_dims = detail::get_dim_ranges_for(*C, detail::find_type_with_position(C_unique, C_indices));
+    auto link_dims = detail::get_dim_ranges_for(A, link_position_in_A);
 
-    constexpr auto contiguous_link_position_in_A = Detail::contiguous_positions(link_position_in_A);
-    constexpr auto contiguous_link_position_in_B = Detail::contiguous_positions(link_position_in_B);
+    constexpr auto contiguous_link_position_in_A = detail::contiguous_positions(link_position_in_A);
+    constexpr auto contiguous_link_position_in_B = detail::contiguous_positions(link_position_in_B);
 
-    constexpr auto contiguous_target_position_in_A = Detail::contiguous_positions(target_position_in_A);
-    constexpr auto contiguous_target_position_in_B = Detail::contiguous_positions(target_position_in_B);
+    constexpr auto contiguous_target_position_in_A = detail::contiguous_positions(target_position_in_A);
+    constexpr auto contiguous_target_position_in_B = detail::contiguous_positions(target_position_in_B);
 
-    constexpr auto contiguous_A_targets_in_C = Detail::contiguous_positions(A_target_position_in_C);
-    constexpr auto contiguous_B_targets_in_C = Detail::contiguous_positions(B_target_position_in_C);
+    constexpr auto contiguous_A_targets_in_C = detail::contiguous_positions(A_target_position_in_C);
+    constexpr auto contiguous_B_targets_in_C = detail::contiguous_positions(B_target_position_in_C);
 
-    constexpr auto same_ordering_link_position_in_AB = Detail::is_same_ordering(link_position_in_A, link_position_in_B);
-    constexpr auto same_ordering_target_position_in_CA = Detail::is_same_ordering(target_position_in_A, A_target_position_in_C);
-    constexpr auto same_ordering_target_position_in_CB = Detail::is_same_ordering(target_position_in_B, B_target_position_in_C);
+    constexpr auto same_ordering_link_position_in_AB = detail::is_same_ordering(link_position_in_A, link_position_in_B);
+    constexpr auto same_ordering_target_position_in_CA = detail::is_same_ordering(target_position_in_A, A_target_position_in_C);
+    constexpr auto same_ordering_target_position_in_CB = detail::is_same_ordering(target_position_in_B, B_target_position_in_C);
 
     constexpr auto C_exactly_matches_A =
         sizeof...(CIndices) == sizeof...(AIndices) && same_indices<std::tuple<CIndices...>, std::tuple<AIndices...>>();
@@ -468,7 +468,7 @@ auto einsum(const T C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<C
                 }
             } catch (std::runtime_error &e) {
                 // TODO: If ger throws exception the timer gets out of sync.
-                Timer::pop();
+                timer::pop();
 #if defined(EINSUMS_SHOW_WARNING)
                 println(
                     bg(fmt::color::yellow) | fg(fmt::color::black),
@@ -614,7 +614,7 @@ auto einsum(const T C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<C
                                 C_prefactor, C, AB_prefactor, A, B);
 }
 
-} // namespace Detail
+} // namespace detail
 
 template <template <size_t, typename> typename AType, size_t ARank, template <size_t, typename> typename BType, size_t BRank,
           template <size_t, typename> typename CType, size_t CRank, typename... CIndices, typename... AIndices, typename... BIndices,
@@ -622,10 +622,10 @@ template <template <size_t, typename> typename AType, size_t ARank, template <si
 auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<CRank, T> *C, const U UAB_prefactor,
             const std::tuple<AIndices...> &A_indices, const AType<ARank, T> &A, const std::tuple<BIndices...> &B_indices,
             const BType<BRank, T> &B)
-    -> std::enable_if_t<std::is_base_of_v<::einsums::Detail::TensorBase<ARank, T>, AType<ARank, T>> &&
-                        std::is_base_of_v<::einsums::Detail::TensorBase<BRank, T>, BType<BRank, T>> &&
-                        std::is_base_of_v<::einsums::Detail::TensorBase<CRank, T>, CType<CRank, T>> && std::is_arithmetic_v<U>> {
-    Timer::push(fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{} + {} "{}"{})", C->name(), print_tuple_no_type(C_indices), UAB_prefactor,
+    -> std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<ARank, T>, AType<ARank, T>> &&
+                        std::is_base_of_v<::einsums::detail::TensorBase<BRank, T>, BType<BRank, T>> &&
+                        std::is_base_of_v<::einsums::detail::TensorBase<CRank, T>, CType<CRank, T>> && std::is_arithmetic_v<U>> {
+    timer::push(fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{} + {} "{}"{})", C->name(), print_tuple_no_type(C_indices), UAB_prefactor,
                             A.name(), print_tuple_no_type(A_indices), B.name(), print_tuple_no_type(B_indices), UC_prefactor, C->name(),
                             print_tuple_no_type(C_indices)));
 
@@ -638,13 +638,13 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
     testC = *C;
 
     // Perform the einsum using only the generic algorithm
-    Timer::push("testing");
-    Detail::einsum<true>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, A, B_indices, B);
-    Timer::pop();
+    timer::push("testing");
+    detail::einsum<true>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, A, B_indices, B);
+    timer::pop();
 #endif
 
     // Perform the actual einsum
-    Detail::einsum<false>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
+    detail::einsum<false>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
 
 #if defined(EINSUMS_CONTINUOUSLY_TEST_EINSUM)
     if constexpr (CRank != 0) {
@@ -688,7 +688,7 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
         }
     }
 #endif
-    Timer::pop();
+    timer::pop();
 }
 
 // Einsums with provided prefactors.
@@ -825,12 +825,12 @@ template <template <size_t, typename> typename AType, size_t ARank, template <si
           typename... CIndices, typename... AIndices, typename U, typename T = double>
 auto sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<CRank, T> *C, const U UA_prefactor,
           const std::tuple<AIndices...> &A_indices, const AType<ARank, T> &A)
-    -> std::enable_if_t<std::is_base_of_v<::einsums::Detail::TensorBase<CRank, T>, CType<CRank, T>> &&
-                        std::is_base_of_v<::einsums::Detail::TensorBase<ARank, T>, AType<ARank, T>> &&
+    -> std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<CRank, T>, CType<CRank, T>> &&
+                        std::is_base_of_v<::einsums::detail::TensorBase<ARank, T>, AType<ARank, T>> &&
                         sizeof...(CIndices) == sizeof...(AIndices) && sizeof...(CIndices) == CRank && sizeof...(AIndices) == ARank &&
                         std::is_arithmetic_v<U>> {
 
-    Timer::push(fmt::format(R"(sort: "{}"{} = {} "{}"{} + {} "{}"{})", C->name(), print_tuple_no_type(C_indices), UA_prefactor, A.name(),
+    timer::push(fmt::format(R"(sort: "{}"{} = {} "{}"{} + {} "{}"{})", C->name(), print_tuple_no_type(C_indices), UA_prefactor, A.name(),
                             print_tuple_no_type(A_indices), UC_prefactor, C->name(), print_tuple_no_type(C_indices)));
     const T C_prefactor = UC_prefactor;
     const T A_prefactor = UA_prefactor;
@@ -839,10 +839,10 @@ auto sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<
     constexpr auto check = difference_t<std::tuple<AIndices...>, std::tuple<CIndices...>>();
     static_assert(std::tuple_size_v<decltype(check)> == 0);
 
-    auto target_position_in_A = Detail::find_type_with_position(C_indices, A_indices);
+    auto target_position_in_A = detail::find_type_with_position(C_indices, A_indices);
 
     auto target_dims = get_dim_ranges<CRank>(*C);
-    auto a_dims = Detail::get_dim_ranges_for(A, target_position_in_A);
+    auto a_dims = detail::get_dim_ranges_for(A, target_position_in_A);
 
     // HPTT interface currently only works for full Tensors and not TensorViews
 #if defined(EINSUMS_USE_HPTT)
@@ -872,7 +872,7 @@ auto sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<
 #pragma omp parallel for
 #endif
         for (auto it = view.begin(); it < view.end(); it++) {
-            auto A_order = Detail::construct_indices<AIndices...>(*it, target_position_in_A, *it, target_position_in_A);
+            auto A_order = detail::construct_indices<AIndices...>(*it, target_position_in_A, *it, target_position_in_A);
 
             T &target_value = std::apply(*C, *it);
             T A_value = std::apply(A, A_order);
@@ -880,7 +880,7 @@ auto sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<
             target_value = C_prefactor * target_value + A_prefactor * A_value;
         }
     }
-    Timer::pop();
+    timer::pop();
 } // namespace einsums::TensorAlgebra
 
 // Sort with default values, no smart pointers
@@ -917,8 +917,8 @@ auto sort(const std::tuple<CIndices...> &C_indices, SmartPointerC *C, const std:
 
 template <template <size_t, typename> typename CType, size_t CRank, typename UnaryOperator, typename T = double>
 auto element_transform(CType<CRank, T> *C, UnaryOperator unary_opt)
-    -> std::enable_if_t<std::is_base_of_v<::einsums::Detail::TensorBase<CRank, T>, CType<CRank, T>>> {
-    Timer::push(fmt::format("element transform: {}", C->name()));
+    -> std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<CRank, T>, CType<CRank, T>>> {
+    timer::push(fmt::format("element transform: {}", C->name()));
     auto target_dims = get_dim_ranges<CRank>(*C);
     auto view = std::apply(ranges::views::cartesian_product, target_dims);
 #if defined(__INTEL_LLVM_COMPILER) || defined(__INTEL_COMPILER)
@@ -930,7 +930,7 @@ auto element_transform(CType<CRank, T> *C, UnaryOperator unary_opt)
         T &target_value = std::apply(*C, *it);
         target_value = unary_opt(target_value);
     }
-    Timer::pop();
+    timer::pop();
 }
 
 template <typename SmartPtr, typename UnaryOperator>
@@ -941,7 +941,7 @@ auto element_transform(SmartPtr *C, UnaryOperator unary_opt) -> std::enable_if_t
 template <template <size_t, typename> typename CType, template <size_t, typename> typename... MultiTensors, size_t Rank,
           typename MultiOperator, typename T = double>
 auto element(MultiOperator multi_opt, CType<Rank, T> *C, MultiTensors<Rank, T>... tensors) {
-    Timer::push("element");
+    timer::push("element");
     auto target_dims = get_dim_ranges<Rank>(*C);
     auto view = std::apply(ranges::views::cartesian_product, target_dims);
 
@@ -959,7 +959,7 @@ auto element(MultiOperator multi_opt, CType<Rank, T> *C, MultiTensors<Rank, T>..
         T &target_value = std::apply(*C, *it);
         target_value = multi_opt(target_value, std::apply(tensors, *it)...);
     }
-    Timer::pop();
+    timer::pop();
 }
 
-} // namespace einsums::TensorAlgebra
+} // namespace einsums::tensor_algebra

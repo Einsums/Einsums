@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace einsums::Timer {
+namespace einsums::timer {
 
 void initialize();
 void finalize();
@@ -17,4 +17,4 @@ struct Timer {
     ~Timer() { pop(); }
 };
 
-} // namespace einsums::Timer
+} // namespace einsums::timer

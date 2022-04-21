@@ -10,7 +10,7 @@
 #include <memory>
 #include <vector>
 
-namespace einsums::Timer {
+namespace einsums::timer {
 
 using clock = std::chrono::high_resolution_clock;
 using time_point = std::chrono::time_point<clock>;
@@ -73,8 +73,8 @@ void print_timer_info(TimerDetail *timer) { // NOLINT
                      timer->total_calls, duration_cast<milliseconds>(timer->total_time) / timer->total_calls);
         else
             snprintf(buffer.data(), 512, "total_calls == 0!!!");
-        println("{0:<{1}} : {3: <{4}}{2}", const_cast<const char *>(buffer.data()), 70 - Print::current_indent_level(), timer->name, "",
-                Print::current_indent_level());
+        println("{0:<{1}} : {3: <{4}}{2}", const_cast<const char *>(buffer.data()), 70 - print::current_indent_level(), timer->name, "",
+                print::current_indent_level());
 #pragma clang diagnostic pop
     } else {
         println();
@@ -84,19 +84,21 @@ void print_timer_info(TimerDetail *timer) { // NOLINT
     }
 
     if (!timer->children.empty()) {
-        Print::indent();
+        print::indent();
 
         for (auto &child : timer->order) {
             print_timer_info(&timer->children[child]);
         }
 
-        Print::deindent();
+        print::deindent();
     }
 }
 
 } // namespace
 
-void report() { print_timer_info(root); }
+void report() {
+    print_timer_info(root);
+}
 
 void push(const std::string &name) {
     assert(current_timer != nullptr);
@@ -117,4 +119,4 @@ void pop() {
     current_timer = current_timer->parent;
 }
 
-} // namespace einsums::Timer
+} // namespace einsums::timer
