@@ -1149,7 +1149,7 @@ TensorView(std::string, Tensor<OtherRank> &, const Dim<Rank> &, Args...) -> Tens
 } // namespace einsums
 
 template <template <size_t, typename> typename AType, size_t Rank, typename T>
-auto println(const AType<Rank, T> &A) ->
+auto println(const AType<Rank, T> &A, int width = 12) ->
     typename std::enable_if_t<std::is_base_of_v<einsums::detail::TensorBase<Rank, T>, AType<Rank, T>>> {
     println("Name: {}", A.name());
     {
@@ -1183,10 +1183,15 @@ auto println(const AType<Rank, T> &A) ->
 
             for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
                 std::ostringstream oss;
-                oss << "(";
-                detail::TuplePrinterNoType<decltype(target_combination), Rank - 1>::print(oss, target_combination);
-                oss << ", *): ";
                 for (int j = 0; j < final_dim; j++) {
+                    if (j % width == 0) {
+                        std::ostringstream tmp;
+                        detail::TuplePrinterNoType<decltype(target_combination), Rank - 1>::print(tmp, target_combination);
+                        if (final_dim >= j + width)
+                            oss << fmt::format("{:<14}", fmt::format("({}, {:d}-{:d}): ", tmp.str(), j, j + width));
+                        else
+                            oss << fmt::format("{:<14}", fmt::format("({}, {:d}-{:d}): ", tmp.str(), j, final_dim));
+                    }
                     auto new_tuple = std::tuple_cat(target_combination.base(), std::tuple(j));
                     T value = std::apply(A, new_tuple);
                     if (std::fabs(value) > std::numeric_limits<double>::epsilon() * 1000) {
@@ -1199,8 +1204,12 @@ auto println(const AType<Rank, T> &A) ->
                     } else {
                         oss << std::setw(14) << 0.0;
                     }
+                    if (j % width == width - 1 && j != final_dim - 1) {
+                        oss << "\n";
+                    }
                 }
                 println("{}", oss.str());
+                println();
             }
         } else if constexpr (Rank == 1 && einsums::is_incore_rank_tensor_v<AType<Rank, T>, Rank>) {
             auto target_dims = einsums::get_dim_ranges<Rank>(A);

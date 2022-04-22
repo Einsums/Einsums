@@ -35,6 +35,8 @@ extern void FC_GLOBAL(dger, DGER)(int *, int *, double *, const double *, int *,
 extern void FC_GLOBAL(dgetrf, DGETRF)(int *, int *, double *, int *, int *, int *);
 extern void FC_GLOBAL(dgetri, DGETRI)(int *, double *, int *, int *, double *, int *, int *);
 extern double FC_GLOBAL(dlange, DLANGE)(char, int, int, const double *, int, double *);
+extern void FC_GLOBAL(dgesdd, DGESDD)(char *, int *, int *, double *, int *, double *, double *, int *, double *, int *, double *, int *,
+                                      int *, int *);
 }
 
 namespace einsums::backend::vendor {
@@ -113,6 +115,13 @@ auto dgetri(int n, double *a, int lda, const int *ipiv, double *work, int lwork)
 
 auto dlange(char norm_type, int m, int n, const double *A, int lda, double *work) -> double {
     return FC_GLOBAL(dlange, DLANGE)(norm_type, m, n, A, lda, work);
+}
+
+auto dgesdd(char jobz, int m, int n, double *a, int lda, double *s, double *u, int ldu, double *vt, int ldvt, double *work, int lwork,
+            int *iwork) -> int {
+    int info{0};
+    FC_GLOBAL(dgesdd, DGESDD)(&jobz, &m, &n, a, &lda, s, u, &ldu, vt, &ldvt, work, &lwork, iwork, &info);
+    return info;
 }
 
 } // namespace einsums::backend::vendor

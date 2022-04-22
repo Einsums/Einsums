@@ -51,10 +51,10 @@ include(cmake/DetectHostArch.cmake)
 detect_host_arch()
 message(STATUS "${CMAKE_CXX_COMPILER_ID} flags: ${HOST_FLAGS}")
 
-target_compile_options(einsums-project-options
-    INTERFACE
-        ${HOST_FLAGS}
-)
+# target_compile_options(einsums-project-options
+#     INTERFACE
+#         ${HOST_FLAGS}
+# )
 
 # Attempt to find MKL. This assumes the user set MKL_DIR.
 # set(BLA_VENDOR Intel10_64_dyn)

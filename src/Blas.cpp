@@ -53,4 +53,9 @@ auto dlange(char norm_type, int m, int n, const double *A, int lda, double *work
     return ::einsums::backend::vendor::dlange(norm_type, n, m, A, lda, work);
 }
 
+auto dgesdd(char jobz, int m, int n, double *a, int lda, double *s, double *u, int ldu, double *vt, int ldvt, double *work, int lwork,
+            int *iwork) -> int {
+    return ::einsums::backend::vendor::dgesdd(jobz, m, n, a, lda, s, u, ldu, vt, ldvt, work, lwork, iwork);
+}
+
 } // namespace einsums::blas

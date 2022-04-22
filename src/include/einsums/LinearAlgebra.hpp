@@ -10,6 +10,7 @@
 #include <cstddef>
 #include <limits>
 #include <stdexcept>
+#include <tuple>
 #include <type_traits>
 
 namespace einsums::linear_algebra {
@@ -313,6 +314,22 @@ auto norm(Norm norm_type, const AType &a) -> typename std::enable_if_t<is_incore
         std::vector<double> work(a->dim(0), 0.0);
         return blas::dlange(norm_type, a->dim(0), a->dim(1), a->data(), a->stride(0), work.data());
     }
+}
+
+template <typename AType>
+auto svd_a(const AType &_A) -> typename std::enable_if_t<is_incore_rank_tensor_v<AType, 2>, std::tuple<Tensor<2>, Tensor<1>, Tensor<2>>> {
+    // Calling svd will destroy the original data.
+    Tensor<2> A = _A;
+
+    size_t sU = A.dim(0);
+    size_t sV = A.dim(1);
+    size_t sS = std::min(sU, sV);
+
+    auto U = Tensor{"U", sU, sU};
+    auto S = Tensor{"S", sS};
+    auto Vt = Tensor{"Vt", sV, sV};
+
+    return std::make_tuple(U, S, Vt);
 }
 
 } // namespace einsums::linear_algebra
