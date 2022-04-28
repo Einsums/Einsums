@@ -4,6 +4,7 @@
 #include "OpenMP.h"
 #include "Print.hpp"
 #include "STL.hpp"
+#include "Section.hpp"
 #include "Tensor.hpp"
 #if defined(EINSUMS_USE_HPTT)
 #include "hptt.h"
@@ -625,9 +626,9 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
     -> std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<ARank, T>, AType<ARank, T>> &&
                         std::is_base_of_v<::einsums::detail::TensorBase<BRank, T>, BType<BRank, T>> &&
                         std::is_base_of_v<::einsums::detail::TensorBase<CRank, T>, CType<CRank, T>> && std::is_arithmetic_v<U>> {
-    timer::push(fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{} + {} "{}"{})", C->name(), print_tuple_no_type(C_indices), UAB_prefactor,
-                            A.name(), print_tuple_no_type(A_indices), B.name(), print_tuple_no_type(B_indices), UC_prefactor, C->name(),
-                            print_tuple_no_type(C_indices)));
+    Section section(fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{} + {} "{}"{})", C->name(), print_tuple_no_type(C_indices),
+                                UAB_prefactor, A.name(), print_tuple_no_type(A_indices), B.name(), print_tuple_no_type(B_indices),
+                                UC_prefactor, C->name(), print_tuple_no_type(C_indices)));
 
     const T C_prefactor = UC_prefactor;
     const T AB_prefactor = UAB_prefactor;
@@ -688,7 +689,6 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
         }
     }
 #endif
-    timer::pop();
 }
 
 // Einsums with provided prefactors.
@@ -830,8 +830,9 @@ auto sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<
                         sizeof...(CIndices) == sizeof...(AIndices) && sizeof...(CIndices) == CRank && sizeof...(AIndices) == ARank &&
                         std::is_arithmetic_v<U>> {
 
-    timer::push(fmt::format(R"(sort: "{}"{} = {} "{}"{} + {} "{}"{})", C->name(), print_tuple_no_type(C_indices), UA_prefactor, A.name(),
-                            print_tuple_no_type(A_indices), UC_prefactor, C->name(), print_tuple_no_type(C_indices)));
+    Section section{fmt::format(R"(sort: "{}"{} = {} "{}"{} + {} "{}"{})", C->name(), print_tuple_no_type(C_indices), UA_prefactor,
+                                A.name(), print_tuple_no_type(A_indices), UC_prefactor, C->name(), print_tuple_no_type(C_indices))};
+
     const T C_prefactor = UC_prefactor;
     const T A_prefactor = UA_prefactor;
 
@@ -880,7 +881,6 @@ auto sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<
             target_value = C_prefactor * target_value + A_prefactor * A_value;
         }
     }
-    timer::pop();
 } // namespace einsums::TensorAlgebra
 
 // Sort with default values, no smart pointers
@@ -918,7 +918,7 @@ auto sort(const std::tuple<CIndices...> &C_indices, SmartPointerC *C, const std:
 template <template <size_t, typename> typename CType, size_t CRank, typename UnaryOperator, typename T = double>
 auto element_transform(CType<CRank, T> *C, UnaryOperator unary_opt)
     -> std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<CRank, T>, CType<CRank, T>>> {
-    timer::push(fmt::format("element transform: {}", C->name()));
+    Section section(fmt::format("element transform: {}", C->name()));
     auto target_dims = get_dim_ranges<CRank>(*C);
     auto view = std::apply(ranges::views::cartesian_product, target_dims);
 #if defined(__INTEL_LLVM_COMPILER) || defined(__INTEL_COMPILER)
@@ -930,7 +930,6 @@ auto element_transform(CType<CRank, T> *C, UnaryOperator unary_opt)
         T &target_value = std::apply(*C, *it);
         target_value = unary_opt(target_value);
     }
-    timer::pop();
 }
 
 template <typename SmartPtr, typename UnaryOperator>
@@ -941,7 +940,7 @@ auto element_transform(SmartPtr *C, UnaryOperator unary_opt) -> std::enable_if_t
 template <template <size_t, typename> typename CType, template <size_t, typename> typename... MultiTensors, size_t Rank,
           typename MultiOperator, typename T = double>
 auto element(MultiOperator multi_opt, CType<Rank, T> *C, MultiTensors<Rank, T>... tensors) {
-    timer::push("element");
+    Section section("element");
     auto target_dims = get_dim_ranges<Rank>(*C);
     auto view = std::apply(ranges::views::cartesian_product, target_dims);
 
@@ -959,7 +958,6 @@ auto element(MultiOperator multi_opt, CType<Rank, T> *C, MultiTensors<Rank, T>..
         T &target_value = std::apply(*C, *it);
         target_value = multi_opt(target_value, std::apply(tensors, *it)...);
     }
-    timer::pop();
 }
 
 } // namespace einsums::tensor_algebra

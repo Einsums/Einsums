@@ -1,6 +1,7 @@
 #include "einsums/Print.hpp"
 
 #include "einsums/Backtrace.hpp"
+#include "einsums/Timer.hpp"
 
 #include <algorithm>
 #include <cstdarg>

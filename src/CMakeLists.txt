@@ -6,9 +6,12 @@ add_library(einsums
 
     backends/vendor/Vendor.cpp
 
+    backends/mkl/mkl.cpp
+
     Blas.cpp
     Memory.cpp
     Print.cpp
+    Section.cpp
     State.cpp
     Timer.cpp
     $<$<NOT:$<TARGET_EXISTS:OpenMP::OpenMP_CXX>>:OpenMP.c>
@@ -30,6 +33,11 @@ target_link_libraries(einsums
         $<$<TARGET_EXISTS:OpenMP::OpenMP_CXX>:OpenMP::OpenMP_CXX>
         Backward::Backward
 )
+
+target_link_libraries(einsums
+    PRIVATE
+        ittnotify
+)   
 
 target_include_directories(einsums
     PUBLIC

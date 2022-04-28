@@ -317,7 +317,7 @@ inline constexpr bool is_smart_pointer_v = is_smart_pointer<T>::value;
 
 template <typename T>
 struct CircularBuffer {
-    explicit CircularBuffer(size_t size) : _buffer(std::unique_ptr<T[]>(new T[size])), _max_size(size) {}
+    explicit CircularBuffer(size_t size) : _buffer(std::unique_ptr<T[]>(new T[size])), _max_size(size) {} // NOLINT
 
     void put(T item) {
         std::lock_guard<std::mutex> lock(_mutex);
@@ -362,7 +362,7 @@ struct CircularBuffer {
     auto operator[](int element) const -> const T & { return _buffer[element]; }
 
   private:
-    std::unique_ptr<T[]> _buffer;
+    std::unique_ptr<T[]> _buffer; // NOLINT
     const size_t _max_size;
 
     std::mutex _mutex;

@@ -199,7 +199,7 @@ auto dot(const Type<Rank, double> &A, const Type<Rank, double> &B) ->
 }
 
 template <template <size_t, typename> typename Type, size_t Rank>
-auto dot(const Type<Rank, double> &A, const Type<Rank, double> &B, const Type<Rank, double> &C) ->
+auto dot(const Type<Rank, double> &A, const Type<Rank, double> &B, const Type<Rank, double> &C) -> // NOLINT
     typename std::enable_if_t<std::is_base_of_v<detail::TensorBase<Rank, double>, Type<Rank, double>>, double> {
     Dim<1> dim{1};
 
@@ -318,16 +318,42 @@ auto norm(Norm norm_type, const AType &a) -> typename std::enable_if_t<is_incore
 
 template <typename AType>
 auto svd_a(const AType &_A) -> typename std::enable_if_t<is_incore_rank_tensor_v<AType, 2>, std::tuple<Tensor<2>, Tensor<1>, Tensor<2>>> {
+    timer::Timer timer{"svd_a"};
     // Calling svd will destroy the original data.
     Tensor<2> A = _A;
 
-    size_t sU = A.dim(0);
-    size_t sV = A.dim(1);
-    size_t sS = std::min(sU, sV);
+    size_t m = A.dim(0);
+    size_t n = A.dim(1);
 
-    auto U = Tensor{"U", sU, sU};
-    auto S = Tensor{"S", sS};
-    auto Vt = Tensor{"Vt", sV, sV};
+    auto U = Tensor{"U (stored columnwise)", n, m};
+    U.zero();
+    auto S = Tensor{"S", n};
+    S.zero();
+    auto Vt = Tensor{"Vt (stored rowwise)", n, n};
+    Vt.zero();
+
+    // Workspace is not needed if we are using cblas/LAPACKE C wrapper.
+    std::vector<int> iwork(8 * n);
+
+    double lwork;
+    // workspace query
+    // blas::dgesdd('A', m, n, A.data(), n, S.data(), U.data(), k, Vt.data(), n, &lwork, -1, iwork.data());
+
+    // std::vector<double> work((int)lwork);
+
+    // int info = blas::dgesdd('A', m, n, A.data(), n, S.data(), U.data(), k, Vt.data(), n, work.data(), lwork, iwork.data());
+    int info = blas::dgesdd('A', static_cast<int>(m), static_cast<int>(n), A.data(), static_cast<int>(n), S.data(), U.data(),
+                            static_cast<int>(m), Vt.data(), static_cast<int>(n), nullptr, 0, nullptr);
+
+    if (info != 0) {
+        if (info < 0) {
+            println("svd_a: Argument {} has an invalid parameter", -info);
+            std::abort();
+        } else {
+            println("svd_a: error value {}", info);
+            std::abort();
+        }
+    }
 
     return std::make_tuple(U, S, Vt);
 }
