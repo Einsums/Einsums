@@ -253,6 +253,7 @@ struct Tensor final : public detail::TensorBase<Rank, T> {
             std::fill(begin, end, 0);
         }
     }
+
     void set_all(double value) {
 #pragma omp parallel
         {
@@ -526,7 +527,9 @@ struct TensorView final : public detail::TensorBase<Rank, T> {
 
     TensorView() = delete;
     TensorView(const TensorView &) = default;
-    TensorView(TensorView &&) noexcept = default;
+    // This prevented the generic operator= from working below.
+    // Doing this breaks DIIS for RHF.
+    // TensorView(TensorView &&) noexcept = default;
     ~TensorView() = default;
 
     // std::enable_if doesn't work with constructors.  So we explicitly create individual
@@ -579,23 +582,44 @@ struct TensorView final : public detail::TensorBase<Rank, T> {
         return *this;
     }
 
-    auto operator=(const TensorView<Rank, T> &other) -> TensorView & {
-        if (this == &other)
-            return *this;
+    template <typename AType>
+    auto operator=(const AType &other) -> typename std::enable_if_t<is_incore_rank_tensor_v<AType, Rank>, TensorView &> {
+        if constexpr (std::is_same_v<AType, TensorView<Rank, T>>) {
+            if (this == &other)
+                return *this;
+        }
 
         auto target_dims = get_dim_ranges<Rank>(*this);
-        size_t item{0};
+        auto view = std::apply(ranges::views::cartesian_product, target_dims);
 
-        for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
-            T &target = std::apply(*this, target_combination);
-            target = std::apply(other, target_combination);
+#pragma parallel for
+        for (auto target_combination = view.begin(); target_combination != view.end(); target_combination++) {
+            T &target = std::apply(*this, *target_combination);
+            target = std::apply(other, *target_combination);
         }
 
         return *this;
     }
 
-    auto data() -> T * { return &_data[0]; }
-    auto data() const -> const T * { return static_cast<const T *>(&_data[0]); }
+    auto operator=(const T &fill_value) -> TensorView & {
+        auto target_dims = get_dim_ranges<Rank>(*this);
+        auto view = std::apply(ranges::views::cartesian_product, target_dims);
+
+#pragma parallel for
+        for (auto target_combination = view.begin(); target_combination != view.end(); target_combination++) {
+            T &target = std::apply(*this, *target_combination);
+            target = fill_value;
+        }
+
+        return *this;
+    }
+
+    auto data() -> T * {
+        return &_data[0];
+    }
+    auto data() const -> const T * {
+        return static_cast<const T *>(&_data[0]);
+    }
     template <typename... MultiIndex>
     auto data(MultiIndex... index) const -> T * {
         assert(sizeof...(MultiIndex) <= _dims.size());
@@ -626,15 +650,27 @@ struct TensorView final : public detail::TensorBase<Rank, T> {
         return _data[ordinal];
     }
 
-    [[nodiscard]] auto dim(int d) const -> size_t { return _dims[d]; }
-    auto dims() const -> Dim<Rank> { return _dims; }
+    [[nodiscard]] auto dim(int d) const -> size_t {
+        return _dims[d];
+    }
+    auto dims() const -> Dim<Rank> {
+        return _dims;
+    }
 
-    [[nodiscard]] auto name() const -> const std::string & { return _name; }
-    void set_name(const std::string &name) { _name = name; }
+    [[nodiscard]] auto name() const -> const std::string & {
+        return _name;
+    }
+    void set_name(const std::string &name) {
+        _name = name;
+    }
 
-    [[nodiscard]] auto stride(int d) const noexcept -> size_t { return _strides[d]; }
+    [[nodiscard]] auto stride(int d) const noexcept -> size_t {
+        return _strides[d];
+    }
 
-    auto strides() const noexcept -> const auto & { return _strides; }
+    auto strides() const noexcept -> const auto & {
+        return _strides;
+    }
 
     auto to_rank_1_view() const -> TensorView<1, T> {
         if constexpr (Rank == 1) {
@@ -952,7 +988,7 @@ auto read(const h5::fd_t &fd, const std::string &name) -> Tensor<0, T> {
 
 template <size_t Rank, typename T = double>
 void zero(Tensor<Rank, T> &A) {
-    std::fill(A.vector_data().begin(), A.vector_data().end(), 0.0);
+    A.zero();
 }
 
 template <size_t Rank, typename T = double>
@@ -1183,7 +1219,8 @@ struct DiskView final : public detail::TensorBase<ViewRank, T> {
         // Check dims
         for (int i = 0; i < ViewRank; i++) {
             if (_dims[i] != other.dim(i)) {
-                throw std::runtime_error("DiskView::operator= : dims do not match");
+                throw std::runtime_error(
+                    fmt::format("DiskView::operator= : dims do not match (i {} dim {} other {})", i, _dims[i], other.dim(i)));
             }
         }
 

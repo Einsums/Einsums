@@ -6,16 +6,15 @@
 struct Section {
     struct Impl;
 
-    Section(const std::string &name);
-    Section(const std::string &name, const std::string &domain);
+    Section(const std::string &name, bool pushTimer = true);
+    Section(const std::string &name, const std::string &domain, bool pushTimer = true);
 
     ~Section();
 
-  private:
-    std::unique_ptr<Impl> _impl;
-};
+    void end();
 
-struct Frame {
-    Frame();
-    ~Frame();
+  private:
+    void begin();
+
+    std::unique_ptr<Impl> _impl;
 };
