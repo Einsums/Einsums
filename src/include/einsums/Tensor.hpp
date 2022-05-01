@@ -527,9 +527,6 @@ struct TensorView final : public detail::TensorBase<Rank, T> {
 
     TensorView() = delete;
     TensorView(const TensorView &) = default;
-    // This prevented the generic operator= from working below.
-    // Doing this breaks DIIS for RHF.
-    // TensorView(TensorView &&) noexcept = default;
     ~TensorView() = default;
 
     // std::enable_if doesn't work with constructors.  So we explicitly create individual
@@ -592,7 +589,26 @@ struct TensorView final : public detail::TensorBase<Rank, T> {
         auto target_dims = get_dim_ranges<Rank>(*this);
         auto view = std::apply(ranges::views::cartesian_product, target_dims);
 
-#pragma parallel for
+#pragma omp parallel for
+        for (auto target_combination = view.begin(); target_combination != view.end(); target_combination++) {
+            T &target = std::apply(*this, *target_combination);
+            target = std::apply(other, *target_combination);
+        }
+
+        return *this;
+    }
+
+    template <typename AType>
+    auto operator=(const AType &&other) -> typename std::enable_if_t<is_incore_rank_tensor_v<AType, Rank>, TensorView &> {
+        if constexpr (std::is_same_v<AType, TensorView<Rank, T>>) {
+            if (this == &other)
+                return *this;
+        }
+
+        auto target_dims = get_dim_ranges<Rank>(*this);
+        auto view = std::apply(ranges::views::cartesian_product, target_dims);
+
+#pragma omp parallel for
         for (auto target_combination = view.begin(); target_combination != view.end(); target_combination++) {
             T &target = std::apply(*this, *target_combination);
             target = std::apply(other, *target_combination);
@@ -605,7 +621,7 @@ struct TensorView final : public detail::TensorBase<Rank, T> {
         auto target_dims = get_dim_ranges<Rank>(*this);
         auto view = std::apply(ranges::views::cartesian_product, target_dims);
 
-#pragma parallel for
+#pragma omp parallel for
         for (auto target_combination = view.begin(); target_combination != view.end(); target_combination++) {
             T &target = std::apply(*this, *target_combination);
             target = fill_value;
