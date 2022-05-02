@@ -76,8 +76,12 @@ MAKE_INDEX(R); // NOLINT
 MAKE_INDEX(r); // NOLINT
 MAKE_INDEX(S); // NOLINT
 MAKE_INDEX(s); // NOLINT
+MAKE_INDEX(Z); // NOLINT
 
 #undef MAKE_INDEX
+
+constexpr auto list = std::make_tuple(i, j, k, l, m, n, a, b, c, d, e, f, p, q, r, s);
+
 } // namespace index
 
 template <typename... Args>
@@ -185,6 +189,15 @@ constexpr auto
 construct_indices(const std::tuple<TargetCombination...> &target_combination, const std::tuple<TargetPositionInC...> &target_position_in_C,
                   const std::tuple<LinkCombination...> &link_combination, const std::tuple<LinkPositionInLink...> &link_position_in_link) {
     return std::make_tuple(construct_index<AIndices>(target_combination, target_position_in_C, link_combination, link_position_in_link)...);
+}
+
+template <typename... AIndices, typename... TargetCombination, typename... TargetPositionInC, typename... LinkCombination,
+          typename... LinkPositionInLink>
+constexpr auto construct_indices_a(const std::tuple<AIndices...> &, const std::tuple<TargetCombination...> &target_combination,
+                                   const std::tuple<TargetPositionInC...> &target_position_in_C,
+                                   const std::tuple<LinkCombination...> &link_combination,
+                                   const std::tuple<LinkPositionInLink...> &link_position_in_link) {
+    return construct_indices<AIndices...>(target_combination, target_position_in_C, link_combination, link_position_in_link);
 }
 
 template <typename... PositionsInX, std::size_t... I>
@@ -958,6 +971,98 @@ auto element(MultiOperator multi_opt, CType<Rank, T> *C, MultiTensors<Rank, T>..
         T &target_value = std::apply(*C, *it);
         target_value = multi_opt(target_value, std::apply(tensors, *it)...);
     }
+}
+
+template <int Remaining, typename Skip, typename Head, typename... Args>
+constexpr auto _get_n_skip() {
+    // They are the same, skip it.
+    if constexpr (std::is_same_v<std::decay_t<Skip>, std::decay_t<Head>> && Remaining > 0) {
+        return _get_n_skip<Remaining, Skip, Args...>();
+    } else if constexpr (Remaining > 0) {
+        // They are not the same, add it.
+        return std::tuple_cat(std::make_tuple(Head()), _get_n_skip<Remaining - 1, Skip, Args...>());
+    } else {
+        return std::tuple{};
+    }
+}
+
+template <unsigned int N, typename Skip, typename... List>
+constexpr auto get_n_skip(const Skip &, const std::tuple<List...> &) {
+    return _get_n_skip<N, Skip, List...>();
+}
+
+template <int Remaining, typename Head, typename... Args>
+constexpr auto _get_n() {
+    if constexpr (Remaining > 0) {
+        // They are not the same, add it.
+        return std::tuple_cat(std::make_tuple(Head()), _get_n<Remaining - 1, Args...>());
+    } else {
+        return std::tuple{};
+    }
+}
+
+template <unsigned int N, typename... List>
+constexpr auto get_n(const std::tuple<List...> &) {
+    return _get_n<N, List...>();
+}
+
+/**
+ * Returns the mode-`mode` unfolding of `tensor` with modes startng at `0`
+ *
+ * @returns unfolded_tensor of shape ``(tensor.dim(mode), -1)``
+ */
+template <unsigned int mode, template <size_t, typename> typename CType, size_t CRank, typename T = double>
+auto unfold(const CType<CRank, T> &source)
+    -> std::enable_if_t<std::is_same_v<Tensor<CRank, T>, CType<CRank, T>> && (mode < CRank), Tensor<2, T>> {
+    Section section{fmt::format("mode-{} unfold on {} threads", mode, omp_get_max_threads())};
+
+    Dim<2> target_dims;
+    target_dims[0] = source.dim(mode);
+    target_dims[1] = 1;
+    for (int i = 0; i < CRank; i++) {
+        if (i == mode)
+            continue;
+        target_dims[1] *= source.dim(i);
+    }
+
+    auto target = Tensor{fmt::format("mode-{} unfolding of {}", mode, source.name()), target_dims[0], target_dims[1]};
+    auto target_indices = std::make_tuple(std::get<mode>(index::list), index::Z);
+    auto source_indices = get_n<CRank>(index::list);
+
+    // Use similar logic found in einsums:
+    constexpr auto link = intersect_t<decltype(target_indices), decltype(source_indices)>();
+    constexpr auto target_only = difference_t<decltype(target_indices), decltype(link)>();
+    constexpr auto source_only = difference_t<decltype(source_indices), decltype(link)>();
+
+    auto source_position_in_source = detail::find_type_with_position(source_only, source_indices);
+    auto link_position_in_source = detail::find_type_with_position(link, source_indices);
+
+    auto link_dims = detail::get_dim_ranges_for(target, detail::find_type_with_position(link, target_indices));
+    auto source_dims = detail::get_dim_ranges_for(source, source_position_in_source);
+
+    auto link_view = std::apply(ranges::views::cartesian_product, link_dims);
+    auto source_view = std::apply(ranges::views::cartesian_product, source_dims);
+
+#pragma omp parallel for
+    for (auto link_it = link_view.begin(); link_it < link_view.end(); link_it++) {
+        size_t Z{0};
+        for (auto source_it = source_view.begin(); source_it < source_view.end(); source_it++) {
+
+            auto target_order = std::make_tuple(std::get<0>(*link_it), Z);
+
+            auto source_order =
+                detail::construct_indices_a(source_indices, *source_it, source_position_in_source, *link_it, link_position_in_source);
+
+            T &target_value = std::apply(target, target_order);
+            T source_value = std::apply(source, source_order);
+
+            target_value = source_value;
+
+            Z++;
+        }
+    }
+
+    return target;
 }
 
 } // namespace einsums::tensor_algebra
