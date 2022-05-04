@@ -187,3 +187,9 @@ inline void println_abort(const std::string_view &format, const Ts... ts) {
 
     std::abort();
 }
+
+template <typename... Ts>
+inline void println_warn(const std::string_view &format, const Ts... ts) {
+    std::string message = std::string("WARNING: ") + format.data();
+    println(bg(fmt::color::yellow) | fg(fmt::color::black), message, ts...);
+}
