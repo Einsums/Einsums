@@ -31,8 +31,10 @@ namespace einsums::tensor_algebra {
 
 namespace index {
 
+struct LabelBase {};
+
 #define MAKE_INDEX(x)                                                                                                                      \
-    struct x {                                                                                                                             \
+    struct x : public LabelBase {                                                                                                          \
         static constexpr char letter = static_cast<const char (&)[2]>(#x)[0];                                                              \
         constexpr x() = default;                                                                                                           \
     };                                                                                                                                     \
@@ -1012,8 +1014,7 @@ constexpr auto get_n(const std::tuple<List...> &) {
  * @returns unfolded_tensor of shape ``(tensor.dim(mode), -1)``
  */
 template <unsigned int mode, template <size_t, typename> typename CType, size_t CRank, typename T = double>
-auto unfold(const CType<CRank, T> &source)
-    -> std::enable_if_t<std::is_same_v<Tensor<CRank, T>, CType<CRank, T>> && (mode < CRank), Tensor<2, T>> {
+auto unfold(const CType<CRank, T> &source) -> std::enable_if_t<std::is_same_v<Tensor<CRank, T>, CType<CRank, T>>, Tensor<2, T>> {
     Section section{fmt::format("mode-{} unfold on {} threads", mode, omp_get_max_threads())};
 
     Dim<2> target_dims;
@@ -1030,9 +1031,9 @@ auto unfold(const CType<CRank, T> &source)
     auto source_indices = get_n<CRank>(index::list);
 
     // Use similar logic found in einsums:
-    constexpr auto link = intersect_t<decltype(target_indices), decltype(source_indices)>();
-    constexpr auto target_only = difference_t<decltype(target_indices), decltype(link)>();
-    constexpr auto source_only = difference_t<decltype(source_indices), decltype(link)>();
+    auto link = intersect_t<decltype(target_indices), decltype(source_indices)>();
+    auto target_only = difference_t<decltype(target_indices), decltype(link)>();
+    auto source_only = difference_t<decltype(source_indices), decltype(link)>();
 
     auto source_position_in_source = detail::find_type_with_position(source_only, source_indices);
     auto link_position_in_source = detail::find_type_with_position(link, source_indices);
