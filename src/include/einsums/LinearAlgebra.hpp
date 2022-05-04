@@ -325,9 +325,9 @@ auto svd_a(const AType &_A) -> typename std::enable_if_t<is_incore_rank_tensor_v
     size_t m = A.dim(0);
     size_t n = A.dim(1);
 
-    auto U = Tensor{"U (stored columnwise)", n, m};
+    auto U = Tensor{"U (stored columnwise)", m, m};
     U.zero();
-    auto S = Tensor{"S", n};
+    auto S = Tensor{"S", std::min(m, n)};
     S.zero();
     auto Vt = Tensor{"Vt (stored rowwise)", n, n};
     Vt.zero();
