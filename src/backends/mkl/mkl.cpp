@@ -2,15 +2,15 @@
 
 #include "einsums/Print.hpp"
 #include "fmt/format.h"
-#include "mkl_cblas.h"
-#include "mkl_lapacke.h"
 
-#include <cctype>
-#include <mkl.h>
+#include <CL/sycl.hpp>
+#include <oneapi/mkl.hpp>
 
 namespace einsums::backend::mkl {
 
 namespace {
+
+std::vector<sycl::device *> g_Devices;
 
 auto transpose_to_cblas(char transpose) -> CBLAS_TRANSPOSE {
     switch (transpose) {
@@ -29,6 +29,13 @@ auto transpose_to_cblas(char transpose) -> CBLAS_TRANSPOSE {
 }
 
 } // namespace
+
+void initialize() {
+    auto platforms = sycl::platform::get_platforms();
+
+    for (auto platform : platforms) {
+    }
+}
 
 void dgemm(char transa, char transb, int m, int n, int k, double alpha, const double *a, int lda, const double *b, int ldb, // NOLINT
            double beta, double *c, int ldc) {

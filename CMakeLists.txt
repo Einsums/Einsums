@@ -28,7 +28,6 @@ if (EINSUMS_TEST_EINSUM_ABORT)
     )
 endif()
 
-
 option(EINSUMS_WARN_NOT_IMPLEMENTED "If a specific case is not implemented in einsum then warn the user" OFF)
 if (EINSUMS_WARN_NOT_IMPLEMENTED)
     target_compile_definitions(einsums-project-options
@@ -58,6 +57,8 @@ message(STATUS "${CMAKE_CXX_COMPILER_ID} flags: ${HOST_FLAGS}")
 # )
 
 include(cmake/FindITTNOTIFY.cmake)
+
+include(cmake/FindIntelSYCL.cmake)
 
 # Attempt to find MKL. This assumes the user set MKL_DIR.
 # set(BLA_VENDOR Intel10_64_dyn)

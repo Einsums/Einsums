@@ -6,7 +6,7 @@ add_library(einsums
 
     backends/vendor/Vendor.cpp
 
-    backends/mkl/mkl.cpp
+    $<$<TARGET_EXISTS:Intel::SYCL>:backends/mkl/mkl.cpp>
 
     Blas.cpp
     Memory.cpp
@@ -31,6 +31,7 @@ target_link_libraries(einsums
         h5cpp::h5cpp
         $<$<TARGET_EXISTS:hptt::hptt>:hptt::hptt>
         $<$<TARGET_EXISTS:OpenMP::OpenMP_CXX>:OpenMP::OpenMP_CXX>
+        $<$<TARGET_EXISTS:Intel::SYCL>:Intel::SYCL>
         Backward::Backward
 )
 
