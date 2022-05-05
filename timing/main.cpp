@@ -1,3 +1,4 @@
+#include "einsums/Blas.hpp"
 #include "einsums/LinearAlgebra.hpp"
 #include "einsums/OpenMP.h"
 #include "einsums/Print.hpp"
@@ -16,9 +17,10 @@ auto main() -> int {
     using namespace einsums::tensor_algebra::index;
 
     timer::initialize();
+    blas::initialize();
 
-#define NMO 10
-#define NBS 10
+#define NMO 200
+#define NBS 200
 
     int nmo1{NMO}, nmo2{NMO}, nmo3{NMO}, nmo4{NMO};
     int nbs1{NBS}, nbs2{NBS}, nbs3{NBS}, nbs4{NBS};
@@ -105,9 +107,10 @@ auto main() -> int {
 
     element_transform(&PQRS, [](double value) -> double { return 1.0 / value; });
 
-    print::stacktrace();
+    // print::stacktrace();
 
     timer::report();
+    blas::finalize();
     timer::finalize();
 
     // Typically you would build a new wavefunction and populate it with data

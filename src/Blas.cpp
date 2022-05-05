@@ -9,9 +9,17 @@
 
 namespace einsums::blas {
 
+void initialize() {
+    ::einsums::backend::mkl::initialize();
+}
+
+void finalize() {
+    ::einsums::backend::mkl::finalize();
+}
+
 void dgemm(char transa, char transb, int m, int n, int k, double alpha, const double *a, int lda, const double *b, int ldb, double beta,
            double *c, int ldc) {
-    ::einsums::backend::vendor::dgemm(transa, transb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc);
+    ::einsums::backend::mkl::dgemm(transa, transb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc);
 }
 
 void dgemv(char transa, int m, int n, double alpha, const double *a, int lda, const double *x, int incx, double beta, double *y, int incy) {

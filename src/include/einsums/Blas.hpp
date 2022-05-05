@@ -5,6 +5,10 @@
 // Namespace for BLAS and LAPACK routines.
 namespace einsums::blas {
 
+// Some of the backends may require additional initialization before their use.
+void initialize();
+void finalize();
+
 /*!
  * Performs matrix multiplication for general square matices of type double.
  */

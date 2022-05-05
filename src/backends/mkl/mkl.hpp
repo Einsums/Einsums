@@ -2,6 +2,9 @@
 
 namespace einsums::backend::mkl {
 
+void initialize();
+void finalize();
+
 /*!
  * Performs matrix multiplication for general square matices of type double.
  */

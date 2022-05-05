@@ -69,7 +69,7 @@ if(IntelSYCL_FOUND AND NOT TARGET intelsycl)
     target_include_directories(intelsycl INTERFACE
         ${INTEL_SYCL_INCLUDE_DIRS})
     target_compile_options(intelsycl INTERFACE "-fsycl")
-    target_link_libraries(intelsycl INTERFACE ${INTEL_SYCL_LIBRARIES})
+    target_link_libraries(intelsycl INTERFACE mkl_sycl ${INTEL_SYCL_LIBRARIES})
     add_library(Intel::SYCL ALIAS intelsycl)
     # set(imp_libs
     #     $<$<STREQUAL:$<TARGET_PROPERTY:TYPE>,SHARED_LIBRARY>:-fsycl>
