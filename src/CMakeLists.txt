@@ -6,7 +6,9 @@ add_library(einsums
 
     backends/vendor/Vendor.cpp
 
-    $<$<TARGET_EXISTS:Intel::SYCL>:backends/mkl/mkl.cpp>
+    backends/cblas/cblas.cpp
+
+    $<$<TARGET_EXISTS:Intel::SYCL>:backends/onemkl/onemkl.cpp>
 
     Blas.cpp
     Memory.cpp

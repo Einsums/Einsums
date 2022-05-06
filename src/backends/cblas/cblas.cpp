@@ -1,19 +1,13 @@
-#include "mkl.hpp"
-
 #include "einsums/Print.hpp"
 #include "fmt/format.h"
-#include "oneapi/mkl/types.hpp"
 
-#include <CL/sycl.hpp>
+#include <cblas.h>
 #include <exception>
-#include <oneapi/mkl.hpp>
+#include <lapacke.h>
 
-namespace einsums::backend::mkl {
+namespace einsums::backend::cblas {
 
 namespace {
-
-// List of valid SYCL devices
-std::vector<sycl::device> g_Devices;
 
 auto transpose_to_cblas(char transpose) -> CBLAS_TRANSPOSE {
     switch (transpose) {
@@ -31,61 +25,23 @@ auto transpose_to_cblas(char transpose) -> CBLAS_TRANSPOSE {
     return CblasNoTrans;
 }
 
-auto transpose_to_oneapi(char transpose) -> oneapi::mkl::transpose {
-    switch (transpose) {
-    case 'N':
-    case 'n':
-        return oneapi::mkl::transpose::nontrans;
-    case 'T':
-    case 't':
-        return oneapi::mkl::transpose::trans;
-    case 'C':
-    case 'c':
-        return oneapi::mkl::transpose::conjtrans;
-    }
-    println_warn("Unknown transpose code {}, defaulting to CblasNoTrans.", transpose);
-    return oneapi::mkl::transpose::nontrans;
-}
-
 } // namespace
 
 void initialize() {
-    g_Devices.emplace_back(sycl::host_selector());
 }
 
 void finalize() {
-    g_Devices.clear();
 }
 
 void dgemm(char transa, char transb, int m, int n, int k, double alpha, const double *a, int lda, const double *b, int ldb, // NOLINT
            double beta, double *c, int ldc) {
-
-    println_warn("About to call oneapi version of gemm");
-
     if (m == 0 || n == 0 || k == 0)
         return;
 
-    // auto TransA = transpose_to_cblas(transa);
-    // auto TransB = transpose_to_cblas(transb);
+    auto TransA = transpose_to_cblas(transa);
+    auto TransB = transpose_to_cblas(transb);
 
-    // cblas_dgemm(CblasRowMajor, TransA, TransB, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc);
-    auto exception_handler = [](const sycl::exception_list &exceptions) {
-        for (std::exception_ptr const &e : exceptions) {
-            try {
-                std::rethrow_exception(e);
-            } catch (sycl::exception const &e) {
-                println("Caught asynchronous SYCL exception during GEMM:\n{}\n{}", e.what(), e.code().value());
-            }
-        }
-    };
-
-    sycl::queue queue(g_Devices[0], exception_handler);
-
-    // Call gemm. This call is asynchronous.
-    auto event = oneapi::mkl::blas::row_major::gemm(queue, transpose_to_oneapi(transa), transpose_to_oneapi(transb), m, n, k, alpha, a, lda,
-                                                    b, ldb, beta, c, ldc);
-    // The call to gemm returns immediately. Wait for the event to be completed.
-    event.wait();
+    cblas_dgemm(CblasRowMajor, TransA, TransB, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc);
 }
 
 void dgemv(char transa, int m, int n, double alpha, const double *a, int lda, const double *x, int incx, double beta, double *y, // NOLINT
@@ -94,7 +50,7 @@ void dgemv(char transa, int m, int n, double alpha, const double *a, int lda, co
         return;
     auto TransA = transpose_to_cblas(transa);
     if (TransA == CblasConjTrans)
-        throw std::invalid_argument("einsums::backend::vendor::dgemv transa argument is invalid.");
+        throw std::invalid_argument("einsums::backend::cblas::dgemv transa argument is invalid.");
 
     cblas_dgemv(CblasRowMajor, TransA, m, n, alpha, a, lda, x, incx, beta, y, incy);
 }
@@ -121,15 +77,15 @@ void daxpy(int n, double alpha_x, const double *x, int inc_x, double *y, int inc
 
 void dger(int m, int n, double alpha, const double *x, int inc_x, const double *y, int inc_y, double *a, int lda) {
     if (m < 0) {
-        throw std::runtime_error(fmt::format("einsums::backend::vendor::dger: m ({}) is less than zero.", m));
+        throw std::runtime_error(fmt::format("einsums::backend::cblas::dger: m ({}) is less than zero.", m));
     } else if (n < 0) {
-        throw std::runtime_error(fmt::format("einsums::backend::vendor::dger: n ({}) is less than zero.", n));
+        throw std::runtime_error(fmt::format("einsums::backend::cblas::dger: n ({}) is less than zero.", n));
     } else if (inc_x == 0) {
-        throw std::runtime_error(fmt::format("einsums::backend::vendor::dger: inc_x ({}) is zero.", inc_x));
+        throw std::runtime_error(fmt::format("einsums::backend::cblas::dger: inc_x ({}) is zero.", inc_x));
     } else if (inc_y == 0) {
-        throw std::runtime_error(fmt::format("einsums::backend::vendor::dger: inc_y ({}) is zero.", inc_y));
+        throw std::runtime_error(fmt::format("einsums::backend::cblas::dger: inc_y ({}) is zero.", inc_y));
     } else if (lda < std::max(1, n)) {
-        throw std::runtime_error(fmt::format("einsums::backend::vendor::dger: lda ({}) is less than max(1, n ({})).", lda, n));
+        throw std::runtime_error(fmt::format("einsums::backend::cblas::dger: lda ({}) is less than max(1, n ({})).", lda, n));
     }
 
     cblas_dger(CblasRowMajor, m, n, alpha, y, inc_y, x, inc_x, a, lda);
@@ -151,4 +107,4 @@ auto dgesdd(char jobz, int m, int n, double *a, int lda, double *s, double *u, i
     return LAPACKE_dgesdd(LAPACK_ROW_MAJOR, jobz, m, n, a, lda, s, u, ldu, vt, ldvt);
 }
 
-} // namespace einsums::backend::mkl
+} // namespace einsums::backend::cblas

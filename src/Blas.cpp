@@ -1,7 +1,8 @@
 #include "einsums/Blas.hpp"
 
-#include "backends/mkl/mkl.hpp"
+#include "backends/cblas/cblas.hpp"
 #include "backends/netlib/Netlib.hpp"
+#include "backends/onemkl/onemkl.hpp"
 #include "backends/vendor/Vendor.hpp"
 
 #include <fmt/format.h>
@@ -10,16 +11,16 @@
 namespace einsums::blas {
 
 void initialize() {
-    ::einsums::backend::mkl::initialize();
+    ::einsums::backend::onemkl::initialize();
 }
 
 void finalize() {
-    ::einsums::backend::mkl::finalize();
+    ::einsums::backend::onemkl::finalize();
 }
 
 void dgemm(char transa, char transb, int m, int n, int k, double alpha, const double *a, int lda, const double *b, int ldb, double beta,
            double *c, int ldc) {
-    ::einsums::backend::mkl::dgemm(transa, transb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc);
+    ::einsums::backend::onemkl::dgemm(transa, transb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc);
 }
 
 void dgemv(char transa, int m, int n, double alpha, const double *a, int lda, const double *x, int incx, double beta, double *y, int incy) {
@@ -64,7 +65,7 @@ auto dlange(char norm_type, int m, int n, const double *A, int lda, double *work
 
 auto dgesdd(char jobz, int m, int n, double *a, int lda, double *s, double *u, int ldu, double *vt, int ldvt, double *work, int lwork,
             int *iwork) -> int {
-    return ::einsums::backend::mkl::dgesdd(jobz, m, n, a, lda, s, u, ldu, vt, ldvt, work, lwork, iwork);
+    return ::einsums::backend::cblas::dgesdd(jobz, m, n, a, lda, s, u, ldu, vt, ldvt, work, lwork, iwork);
 }
 
 } // namespace einsums::blas

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace einsums::backend::mkl {
+namespace einsums::backend::cblas {
 
 void initialize();
 void finalize();
@@ -74,4 +74,4 @@ auto dlange(char norm_type, int m, int n, const double *A, int lda, double *work
 
 auto dgesdd(char, int, int, double *, int, double *, double *, int, double *, int, double *, int, int *) -> int;
 
-} // namespace einsums::backend::mkl
+} // namespace einsums::backend::cblas
