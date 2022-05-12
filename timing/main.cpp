@@ -8,6 +8,8 @@
 #include "einsums/TensorAlgebra.hpp"
 #include "einsums/Timer.hpp"
 
+#include <cstdlib>
+
 auto main() -> int {
     ////////////////////////////////////
     // Form the two-electron integrals//
@@ -19,6 +21,7 @@ auto main() -> int {
     timer::initialize();
     blas::initialize();
 
+#if 0
 #define NMO 200
 #define NBS 200
 
@@ -106,8 +109,56 @@ auto main() -> int {
     timer::pop(); // Full Transformation
 
     element_transform(&PQRS, [](double value) -> double { return 1.0 / value; });
+#endif
 
-    // print::stacktrace();
+    // const size_t size = 7;
+    // const size_t d1 = 4;
+
+    // Tensor<3> I_original = create_random_tensor("Original", size, size, size);
+    // println(I_original);
+
+    // TensorView<2> I_view = I_original(d1, All{}, All{});
+    // println(I_view);
+
+    // for (size_t i = 0; i < size; i++) {
+    //     for (size_t j = 0; j < size; j++) {
+    //         I_original(d1, i, j) == I_view(i, j);
+    //     }
+    // }
+
+    // size_t _i = 3, _j = 4, _k = 5;
+
+    // Tensor<3> A = create_random_tensor("A", _i, _j, _i);
+    // Tensor<3> B = create_random_tensor("B", _j, _i, _j);
+    // Tensor<3> C{"Einsum C", _i, _j, _i};
+    // Tensor<3> C0{"Correct C", _i, _j, _i};
+    // C0.zero();
+    // C.zero();
+
+    // for (size_t i0 = 0; i0 < _i; i0++) {
+    //     for (size_t j0 = 0; j0 < _j; j0++) {
+    //         println("C({}, {}, {}) A({}, {}, {}) B({}, {}, {})", i0, j0, i0, i0, j0, i0, j0, i0, j0);
+    //         C0(i0, j0, i0) += A(i0, j0, i0) * B(j0, i0, j0);
+    //     }
+    // }
+
+    // einsum(Indices{i, j, i}, &C, Indices{i, j, i}, A, Indices{j, i, j}, B);
+
+    // println(C0);
+    // println(C);
+
+    // for (size_t i0 = 0; i0 < _i; i0++) {
+    //     for (size_t j0 = 0; j0 < _j; j0++) {
+    //         CHECK_THAT(C(i0, j0, i0), Catch::Matchers::WithinRel(C0(i0, j0, i0), 0.00001));
+    //     }
+    // }
+
+    Tensor<2> A = create_random_tensor("A", 3, 3);
+    Tensor<1> B = create_random_tensor("B", 3);
+    Tensor<3> C{"C", 3, 3, 3};
+
+    C.set_all(0.0);
+    einsum(Indices{i, j, k}, &C, Indices{i, j}, A, Indices{k}, B);
 
     timer::report();
     blas::finalize();

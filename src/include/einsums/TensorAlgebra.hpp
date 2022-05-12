@@ -121,6 +121,20 @@ constexpr auto _find_type_with_position() {
     }
 }
 
+template <typename T, int Position>
+constexpr auto _unique_type_with_position() {
+    return std::make_tuple();
+}
+
+template <typename T, int Position, typename Head, typename... Args>
+constexpr auto _unique_find_type_with_position() {
+    if constexpr (std::is_same_v<std::decay_t<Head>, std::decay_t<T>>) {
+        return std::tuple_cat(std::make_pair(std::decay_t<T>(), Position));
+    } else {
+        return _unique_find_type_with_position<T, Position + 1, Args...>();
+    }
+}
+
 template <template <size_t, typename> typename TensorType, size_t Rank, typename... Args, std::size_t... I, typename T = double>
 auto get_dim_ranges_for(const TensorType<Rank, T> &tensor, const std::tuple<Args...> &args, std::index_sequence<I...>) {
     return std::tuple{ranges::views::ints(0, (int)tensor.dim(std::get<2 * I + 1>(args)))...};
@@ -161,6 +175,16 @@ constexpr auto find_type_with_position(const std::tuple<Ts...> &, const std::tup
     return _find_type_with_position<std::tuple<Ts...>, Us...>(std::make_index_sequence<sizeof...(Ts)>{});
 }
 
+template <typename S1, typename... S2, std::size_t... Is>
+constexpr auto _unique_find_type_with_position(std::index_sequence<Is...>) {
+    return std::tuple_cat(detail::_unique_find_type_with_position<std::tuple_element_t<Is, S1>, 0, S2...>()...);
+}
+
+template <typename... Ts, typename... Us>
+constexpr auto unique_find_type_with_position(const std::tuple<Ts...> &, const std::tuple<Us...> &) {
+    return _unique_find_type_with_position<std::tuple<Ts...>, Us...>(std::make_index_sequence<sizeof...(Ts)>{});
+}
+
 template <template <size_t, typename> typename TensorType, size_t Rank, typename... Args, typename T = double>
 auto get_dim_ranges_for(const TensorType<Rank, T> &tensor, const std::tuple<Args...> &args) {
     return detail::get_dim_ranges_for(tensor, args, std::make_index_sequence<sizeof...(Args) / 2>{});
@@ -193,12 +217,47 @@ construct_indices(const std::tuple<TargetCombination...> &target_combination, co
     return std::make_tuple(construct_index<AIndices>(target_combination, target_position_in_C, link_combination, link_position_in_link)...);
 }
 
+template <typename AIndex, typename... UniqueTargetIndices, typename... UniqueTargetCombination, typename... TargetPositionInC,
+          typename... UniqueLinkIndices, typename... UniqueLinkCombination, typename... LinkPositionInLink>
+auto construct_index_from_unique_target_combination(const std::tuple<UniqueTargetIndices...> &unique_target_indices,
+                                                    const std::tuple<UniqueTargetCombination...> &unique_target_combination,
+                                                    const std::tuple<TargetPositionInC...> &,
+                                                    const std::tuple<UniqueLinkIndices...> &unique_link_indices,
+                                                    const std::tuple<UniqueLinkCombination...> &unique_link_combination,
+                                                    const std::tuple<LinkPositionInLink...> &) {
+
+    constexpr auto IsAIndexInC = detail::find_position<AIndex, UniqueTargetIndices...>();
+    constexpr auto IsAIndexInLink = detail::find_position<AIndex, UniqueLinkIndices...>();
+
+    static_assert(IsAIndexInC != -1 || IsAIndexInLink != -1, "Looks like the indices in your einsum are not quite right! :(");
+
+    if constexpr (IsAIndexInC != -1) {
+        return std::get<IsAIndexInC>(unique_target_combination);
+    } else if constexpr (IsAIndexInLink != -1) {
+        return std::get<IsAIndexInLink>(unique_link_combination);
+    } else {
+        return -1;
+    }
+}
+template <typename... AIndices, typename... UniqueTargetIndices, typename... UniqueTargetCombination, typename... TargetPositionInC,
+          typename... UniqueLinkIndices, typename... UniqueLinkCombination, typename... LinkPositionInLink>
+constexpr auto construct_indices_from_unique_combination(const std::tuple<UniqueTargetIndices...> &unique_target_indices,
+                                                         const std::tuple<UniqueTargetCombination...> &unique_target_combination,
+                                                         const std::tuple<TargetPositionInC...> &target_position_in_C,
+                                                         const std::tuple<UniqueLinkIndices...> &unique_link_indices,
+                                                         const std::tuple<UniqueLinkCombination...> &unique_link_combination,
+                                                         const std::tuple<LinkPositionInLink...> &link_position_in_link) {
+    return std::make_tuple(construct_index_from_unique_target_combination<AIndices>(unique_target_indices, unique_target_combination,
+                                                                                    target_position_in_C, unique_link_indices,
+                                                                                    unique_link_combination, link_position_in_link)...);
+}
+
 template <typename... AIndices, typename... TargetCombination, typename... TargetPositionInC, typename... LinkCombination,
           typename... LinkPositionInLink>
-constexpr auto construct_indices_a(const std::tuple<AIndices...> &, const std::tuple<TargetCombination...> &target_combination,
-                                   const std::tuple<TargetPositionInC...> &target_position_in_C,
-                                   const std::tuple<LinkCombination...> &link_combination,
-                                   const std::tuple<LinkPositionInLink...> &link_position_in_link) {
+constexpr auto construct_indices(const std::tuple<AIndices...> &, const std::tuple<TargetCombination...> &target_combination,
+                                 const std::tuple<TargetPositionInC...> &target_position_in_C,
+                                 const std::tuple<LinkCombination...> &link_combination,
+                                 const std::tuple<LinkPositionInLink...> &link_position_in_link) {
     return construct_indices<AIndices...>(target_combination, target_position_in_C, link_combination, link_position_in_link);
 }
 
@@ -271,11 +330,14 @@ constexpr auto same_indices() {
         return detail::same_indices<LHS, RHS>(std::make_index_sequence<std::tuple_size_v<LHS>>());
 }
 
-template <typename T, typename... CIndices, typename... AIndices, typename... BIndices, typename... TargetDims, typename... LinkDims,
+template <typename T, typename... CUniqueIndices, typename... AUniqueIndices, typename... BUniqueIndices, typename... LinkUniqueIndices,
+          typename... CIndices, typename... AIndices, typename... BIndices, typename... TargetDims, typename... LinkDims,
           typename... TargetPositionInC, typename... LinkPositionInLink, template <size_t, typename> typename CType, size_t CRank,
           template <size_t, typename> typename AType, size_t ARank, template <size_t, typename> typename BType, size_t BRank>
-void einsum_generic_algorithm(const std::tuple<CIndices...> & /*C_indices*/, const std::tuple<AIndices...> & /*A_indices*/,
-                              const std::tuple<BIndices...> & /*B_indices*/, const std::tuple<TargetDims...> &target_dims,
+void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, const std::tuple<AUniqueIndices...> &A_unique,
+                              const std::tuple<BUniqueIndices...> &B_unique, const std::tuple<LinkUniqueIndices...> &link_unique,
+                              const std::tuple<CIndices...> &C_indices, const std::tuple<AIndices...> &A_indices,
+                              const std::tuple<BIndices...> &B_indices, const std::tuple<TargetDims...> &target_dims,
                               const std::tuple<LinkDims...> &link_dims, const std::tuple<TargetPositionInC...> &target_position_in_C,
                               const std::tuple<LinkPositionInLink...> &link_position_in_link, const T C_prefactor, CType<CRank, T> *C,
                               const T AB_prefactor, const AType<ARank, T> &A, const BType<BRank, T> &B) {
@@ -291,7 +353,8 @@ void einsum_generic_algorithm(const std::tuple<CIndices...> & /*C_indices*/, con
 #endif
         for (auto it = view.begin(); it < view.end(); it++) {
             // println("target_combination: {}", print_tuple_no_type(target_combination));
-            auto C_order = detail::construct_indices<CIndices...>(*it, target_position_in_C, std::tuple<>(), target_position_in_C);
+            auto C_order = detail::construct_indices_from_unique_combination<CIndices...>(
+                C_unique, *it, target_position_in_C, std::tuple<>(), std::tuple<>(), target_position_in_C);
             // println("C_order: {}", print_tuple_no_type(C_order));
 
             // This is the generic case.
@@ -300,8 +363,10 @@ void einsum_generic_algorithm(const std::tuple<CIndices...> & /*C_indices*/, con
                 // Print::Indent _indent;
 
                 // Construct the tuples that will be used to access the tensor elements of A and B
-                auto A_order = detail::construct_indices<AIndices...>(*it, target_position_in_C, link_combination, link_position_in_link);
-                auto B_order = detail::construct_indices<BIndices...>(*it, target_position_in_C, link_combination, link_position_in_link);
+                auto A_order = detail::construct_indices_from_unique_combination<AIndices...>(
+                    C_unique, *it, target_position_in_C, link_unique, link_combination, link_position_in_link);
+                auto B_order = detail::construct_indices_from_unique_combination<BIndices...>(
+                    C_unique, *it, target_position_in_C, link_unique, link_combination, link_position_in_link);
 
                 // Get the tensor element using the operator()(MultiIndex...) function of Tensor.
                 T A_value = std::apply(A, A_order);
@@ -315,6 +380,17 @@ void einsum_generic_algorithm(const std::tuple<CIndices...> & /*C_indices*/, con
             target_value += sum;
         }
     } else {
+        // println("beginning contraction");
+        // println("target_dims {}", target_dims);
+        // println("target_position_in_C {}", print_tuple_no_type(target_position_in_C));
+        // println("AUniqueIndices... {}", print_tuple_no_type(A_unique));
+        // println("BUniqueIndices... {}", print_tuple_no_type(B_unique));
+        // println("CUniqueIndices... {}", print_tuple_no_type(C_unique));
+        // println("LinkUniqueIndices... {}", print_tuple_no_type(link_unique));
+        // println("AIndices... {}", print_tuple_no_type(A_indices));
+        // println("BIndices... {}", print_tuple_no_type(B_indices));
+        // println("CIndices... {}", print_tuple_no_type(C_indices));
+
 #if defined(__INTEL_LLVM_COMPILER) || defined(__INTEL_COMPILER)
 #pragma omp parallel for simd
 #else
@@ -322,15 +398,18 @@ void einsum_generic_algorithm(const std::tuple<CIndices...> & /*C_indices*/, con
 #endif
         for (auto it = view.begin(); it < view.end(); it++) {
 
-            // This is the generic case.
+            // // This is the generic case.
             T sum{0};
 
-            // Construct the tuples that will be used to access the tensor elements of A and B
-            auto A_order = detail::construct_indices<AIndices...>(*it, target_position_in_C, std::tuple<>(), target_position_in_C);
-            auto B_order = detail::construct_indices<BIndices...>(*it, target_position_in_C, std::tuple<>(), target_position_in_C);
-            auto C_order = detail::construct_indices<CIndices...>(*it, target_position_in_C, std::tuple<>(), target_position_in_C);
+            // // Construct the tuples that will be used to access the tensor elements of A and B
+            auto A_order = detail::construct_indices_from_unique_combination<AIndices...>(
+                C_unique, *it, target_position_in_C, std::tuple<>(), std::tuple<>(), target_position_in_C);
+            auto B_order = detail::construct_indices_from_unique_combination<BIndices...>(
+                C_unique, *it, target_position_in_C, std::tuple<>(), std::tuple<>(), target_position_in_C);
+            auto C_order = detail::construct_indices_from_unique_combination<CIndices...>(
+                C_unique, *it, target_position_in_C, std::tuple<>(), std::tuple<>(), target_position_in_C);
 
-            // Get the tensor element using the operator()(MultiIndex...) function of Tensor.
+            // // Get the tensor element using the operator()(MultiIndex...) function of Tensor.
             T A_value = std::apply(A, A_order);
             T B_value = std::apply(B, B_order);
 
@@ -339,7 +418,10 @@ void einsum_generic_algorithm(const std::tuple<CIndices...> & /*C_indices*/, con
             T &target_value = std::apply(*C, C_order);
             target_value *= C_prefactor;
             target_value += sum;
+
+            // println("it {} C{}={:3.4f} A{}={:3.4f} B{}={:3.4f}", *it, C_order, target_value, A_order, A_value, B_order, B_value);
         }
+        // println("ending contraction");
     }
     timer::pop();
 }
@@ -387,19 +469,29 @@ auto einsum(const T C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<C
     constexpr bool B_hadamard_found = std::tuple_size_v<std::tuple<BIndices...>> != std::tuple_size_v<decltype(B_unique)>;
     constexpr bool C_hadamard_found = std::tuple_size_v<std::tuple<CIndices...>> != std::tuple_size_v<decltype(C_unique)>;
 
-    constexpr auto link_position_in_A = detail::find_type_with_position(links, A_indices);
-    constexpr auto link_position_in_B = detail::find_type_with_position(links, B_indices);
-    constexpr auto link_position_in_link = detail::find_type_with_position(links, links);
+    constexpr auto link_position_in_A = detail::find_type_with_position(link_unique, A_indices);
+    constexpr auto link_position_in_B = detail::find_type_with_position(link_unique, B_indices);
+    constexpr auto link_position_in_link = detail::find_type_with_position(link_unique, links);
 
-    constexpr auto target_position_in_A = detail::find_type_with_position(C_indices, A_indices);
-    constexpr auto target_position_in_B = detail::find_type_with_position(C_indices, B_indices);
-    constexpr auto target_position_in_C = detail::find_type_with_position(C_indices, C_indices);
+    constexpr auto target_position_in_A = detail::find_type_with_position(C_unique, A_indices);
+    constexpr auto target_position_in_B = detail::find_type_with_position(C_unique, B_indices);
+    constexpr auto target_position_in_C = detail::find_type_with_position(C_unique, C_indices);
+
+    // println("1 - A_indices {}", print_tuple_no_type(A_indices));
+    // println("1 - B_indices {}", print_tuple_no_type(B_indices));
+    // println("1 - C_indices {}", print_tuple_no_type(C_indices));
+    // println("1 - A_unique {}", print_tuple_no_type(A_unique));
+    // println("1 - B_unique {}", print_tuple_no_type(B_unique));
+    // println("1 - C_unique {}", print_tuple_no_type(C_unique));
+    // println("1 - target_position_in_A {}", print_tuple_no_type(target_position_in_A));
+    // println("1 - target_position_in_B {}", print_tuple_no_type(target_position_in_B));
+    // println("1 - target_position_in_C {}", print_tuple_no_type(target_position_in_C));
 
     constexpr auto A_target_position_in_C = detail::find_type_with_position(A_indices, C_indices);
     constexpr auto B_target_position_in_C = detail::find_type_with_position(B_indices, C_indices);
 
-    auto target_dims = detail::get_dim_ranges_for(*C, detail::find_type_with_position(C_unique, C_indices));
-    auto link_dims = detail::get_dim_ranges_for(A, link_position_in_A);
+    auto unique_target_dims = detail::get_dim_ranges_for(*C, detail::unique_find_type_with_position(C_unique, C_indices));
+    auto unique_link_dims = detail::get_dim_ranges_for(A, link_position_in_A);
 
     constexpr auto contiguous_link_position_in_A = detail::contiguous_positions(link_position_in_A);
     constexpr auto contiguous_link_position_in_B = detail::contiguous_positions(link_position_in_B);
@@ -483,8 +575,6 @@ auto einsum(const T C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<C
                     linear_algebra::ger(AB_prefactor, A.to_rank_1_view(), B.to_rank_1_view(), &tC);
                 }
             } catch (std::runtime_error &e) {
-                // TODO: If ger throws exception the timer gets out of sync.
-                timer::pop();
 #if defined(EINSUMS_SHOW_WARNING)
                 println(
                     bg(fmt::color::yellow) | fg(fmt::color::black),
@@ -626,8 +716,8 @@ auto einsum(const T C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<C
 
     // If we somehow make it here, then none of our algorithms above could be used. Attempt to use
     // the generic algorithm instead.
-    einsum_generic_algorithm<T>(C_indices, A_indices, B_indices, target_dims, link_dims, target_position_in_C, link_position_in_link,
-                                C_prefactor, C, AB_prefactor, A, B);
+    einsum_generic_algorithm<T>(C_unique, A_unique, B_unique, link_unique, C_indices, A_indices, B_indices, unique_target_dims,
+                                unique_link_dims, target_position_in_C, link_position_in_link, C_prefactor, C, AB_prefactor, A, B);
 }
 
 } // namespace detail
@@ -668,8 +758,8 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
         auto target_dims = get_dim_ranges<CRank>(*C);
 
         for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
-            const double Cvalue = std::apply(*C, target_combination);
-            const double Ctest = std::apply(testC, target_combination);
+            double Cvalue{std::apply(*C, target_combination)};
+            double Ctest{std::apply(testC, target_combination)};
 
             if (std::fabs(Cvalue - Ctest) > 1.0E-6) {
                 println(emphasis::bold | bg(fmt::color::red) | fg(fmt::color::white), "    !!! EINSUM ERROR !!!");
@@ -680,6 +770,12 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
                 println(bg(fmt::color::red) | fg(fmt::color::white), "    {:f} C({:}) += {:f} A({:}) * B({:})", C_prefactor,
                         print_tuple_no_type(C_indices), AB_prefactor, print_tuple_no_type(A_indices), print_tuple_no_type(B_indices));
 
+                println("Expected:");
+                println(testC);
+                println("Obtained");
+                println(*C);
+                println(A);
+                println(B);
 #if defined(EINSUMS_TEST_EINSUM_ABORT)
                 std::abort();
 #endif
@@ -697,6 +793,13 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
             println(bg(fmt::color::red) | fg(fmt::color::white), "    tensor element ()");
             println(bg(fmt::color::red) | fg(fmt::color::white), "    {:f} C() += {:f} A({:}) * B({:})", C_prefactor, AB_prefactor,
                     print_tuple_no_type(A_indices), print_tuple_no_type(B_indices));
+
+            println("Expected:");
+            println(testC);
+            println("Obtained");
+            println(*C);
+            println(A);
+            println(B);
 
 #if defined(EINSUMS_TEST_EINSUM_ABORT)
             std::abort();
@@ -1052,7 +1155,7 @@ auto unfold(const CType<CRank, T> &source) -> std::enable_if_t<std::is_same_v<Te
             auto target_order = std::make_tuple(std::get<0>(*link_it), Z);
 
             auto source_order =
-                detail::construct_indices_a(source_indices, *source_it, source_position_in_source, *link_it, link_position_in_source);
+                detail::construct_indices(source_indices, *source_it, source_position_in_source, *link_it, link_position_in_source);
 
             T &target_value = std::apply(target, target_order);
             T source_value = std::apply(source, source_order);

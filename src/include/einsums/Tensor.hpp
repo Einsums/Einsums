@@ -307,7 +307,9 @@ struct Tensor final : public detail::TensorBase<Rank, T> {
         // e.g.:
         //    Tensor T{"Big Tensor", 7, 7, 7, 7};
         //    T(0, 0) === T(0, 0, :, :) === TensorView{T, Dims<2>{7, 7}, Offset{0, 0}, Stride{49, 1}} ??
+        // println("Here");
 
+#if 0
         // Get positions of All
         auto all_positions =
             get_array_from_tuple<std::array<int, count_of_type<All, MultiIndex...>()>>(positions_of_type<All, MultiIndex...>());
@@ -338,6 +340,38 @@ struct Tensor final : public detail::TensorBase<Rank, T> {
             dims[value] = range[1] - range[0];
             strides[value] = _strides[value];
         }
+#endif
+        const auto &indices = std::forward_as_tuple(index...);
+
+        Offset<Rank> offsets;
+        Stride<count_of_type<All, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> strides{};
+        Dim<count_of_type<All, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> dims{};
+
+        int counter{0};
+        for_sequence<sizeof...(MultiIndex)>([&](auto i) {
+            // println("looking at {}", i);
+            if constexpr (std::is_same_v<size_t, std::tuple_element_t<i, std::tuple<MultiIndex...>>>) {
+                offsets[i] = std::get<i>(indices);
+            } else if constexpr (std::is_same_v<All, std::tuple_element_t<i, std::tuple<MultiIndex...>>>) {
+                strides[counter] = _strides[i];
+                dims[counter] = _dims[i];
+                counter++;
+
+            } else if constexpr (std::is_same_v<Range, std::tuple_element_t<i, std::tuple<MultiIndex...>>>) {
+                auto range = std::get<i>(indices);
+                offsets[counter] = range[0];
+                dims[counter] = range[1] - range[0];
+                strides[counter] = _strides[i];
+                counter++;
+            }
+            // println(offsets);
+            // println(strides);
+            // println(dims);
+        });
+
+        // println(offsets);
+        // println(dims);
+        // println(strides);
 
         return TensorView<count_of_type<All, MultiIndex...>() + count_of_type<Range, MultiIndex...>(), T>{*this, std::move(dims), offsets,
                                                                                                           strides};
@@ -534,27 +568,32 @@ struct TensorView final : public detail::TensorBase<Rank, T> {
     // call to common_initialization is able to perform an enable_if check.
     template <size_t OtherRank, typename... Args>
     explicit TensorView(const Tensor<OtherRank, T> &other, const Dim<Rank> &dim, Args &&...args) : _name{other._name}, _dims{dim} {
+        // println(" here 1");
         common_initialization(const_cast<Tensor<OtherRank, T> &>(other), args...);
     }
 
     template <size_t OtherRank, typename... Args>
     explicit TensorView(Tensor<OtherRank, T> &other, const Dim<Rank> &dim, Args &&...args) : _name{other._name}, _dims{dim} {
+        // println(" here 2");
         common_initialization(other, args...);
     }
 
     template <size_t OtherRank, typename... Args>
     explicit TensorView(TensorView<OtherRank, T> &other, const Dim<Rank> &dim, Args &&...args) : _name{other._name}, _dims{dim} {
+        // println(" here 3");
         common_initialization(other, args...);
     }
 
     template <size_t OtherRank, typename... Args>
     explicit TensorView(const TensorView<OtherRank, T> &other, const Dim<Rank> &dim, Args &&...args) : _name{other._name}, _dims{dim} {
+        // println(" here 4");
         common_initialization(const_cast<TensorView<OtherRank, T> &>(other), args...);
     }
 
     template <size_t OtherRank, typename... Args>
     explicit TensorView(std::string name, Tensor<OtherRank, T> &other, const Dim<Rank> &dim, Args &&...args)
         : _name{std::move(name)}, _dims{dim} {
+        // println(" here 5");
         common_initialization(other, args...);
     }
 
@@ -803,6 +842,22 @@ struct TensorView final : public detail::TensorBase<Rank, T> {
 };
 
 template <typename T = double, typename... MultiIndex>
+auto create_incremented_tensor(const std::string &name, MultiIndex... index) -> Tensor<sizeof...(MultiIndex), T> {
+    Tensor<sizeof...(MultiIndex), T> A(name, std::forward<MultiIndex>(index)...);
+
+    double counter{0.0};
+    auto target_dims = get_dim_ranges<sizeof...(MultiIndex)>(A);
+    auto view = std::apply(ranges::views::cartesian_product, target_dims);
+
+    for (auto it = view.begin(); it != view.end(); it++) {
+        std::apply(A, *it) = counter;
+        counter += 1.0;
+    }
+
+    return A;
+}
+
+template <typename T = double, typename... MultiIndex>
 auto create_random_tensor(const std::string &name, MultiIndex... index) -> Tensor<sizeof...(MultiIndex), T> {
     Tensor<sizeof...(MultiIndex), T> A(name, std::forward<MultiIndex>(index)...);
 
@@ -820,22 +875,6 @@ auto create_random_tensor(const std::string &name, MultiIndex... index) -> Tenso
         re.seed(d.count());
     }
     std::generate(A.vector_data().begin(), A.vector_data().end(), [&]() { return unif(re); });
-
-    return A;
-}
-
-template <typename T = double, typename... MultiIndex>
-auto create_incremented_tensor(const std::string &name, MultiIndex... index) -> Tensor<sizeof...(MultiIndex), T> {
-    Tensor<sizeof...(MultiIndex), T> A(name, std::forward<MultiIndex>(index)...);
-
-    double counter{0.0};
-    auto target_dims = get_dim_ranges<sizeof...(MultiIndex)>(A);
-    auto view = std::apply(ranges::views::cartesian_product, target_dims);
-
-    for (auto it = view.begin(); it != view.end(); it++) {
-        std::apply(A, *it) = counter;
-        counter += 1.0;
-    }
 
     return A;
 }
@@ -1360,16 +1399,16 @@ auto println(const AType<Rank, T> &A, int width = 12) ->
                     }
                     auto new_tuple = std::tuple_cat(target_combination.base(), std::tuple(j));
                     T value = std::apply(A, new_tuple);
-                    if (std::fabs(value) > std::numeric_limits<double>::epsilon() * 1000) {
-                        if (std::fabs(value) > 1.0E+5) {
-                            // oss << "\033[91m" << std::setw(14) << value << "\033[0m";
-                            oss << "\x1b[0;37;41m" << std::setw(14) << value << "\x1b[0m";
-                        } else {
-                            oss << std::setw(14) << value;
-                        }
+                    // if (std::fabs(value) > std::numeric_limits<double>::epsilon() * 1000) {
+                    if (std::fabs(value) > 1.0E+5) {
+                        // oss << "\033[91m" << std::setw(14) << value << "\033[0m";
+                        oss << "\x1b[0;37;41m" << std::setw(14) << value << "\x1b[0m";
                     } else {
-                        oss << std::setw(14) << 0.0;
+                        oss << std::setw(14) << value;
                     }
+                    // } else {
+                    // oss << std::setw(14) << 0.0;
+                    // }
                     if (j % width == width - 1 && j != final_dim - 1) {
                         oss << "\n";
                     }

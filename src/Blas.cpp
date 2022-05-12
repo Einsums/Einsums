@@ -11,16 +11,20 @@
 namespace einsums::blas {
 
 void initialize() {
+#if defined(SYCL_LANGUAGE_VERSION)
     ::einsums::backend::onemkl::initialize();
+#endif
 }
 
 void finalize() {
+#if defined(SYCL_LANGUAGE_VERSION)
     ::einsums::backend::onemkl::finalize();
+#endif
 }
 
 void dgemm(char transa, char transb, int m, int n, int k, double alpha, const double *a, int lda, const double *b, int ldb, double beta,
            double *c, int ldc) {
-    ::einsums::backend::onemkl::dgemm(transa, transb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc);
+    ::einsums::backend::vendor::dgemm(transa, transb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc);
 }
 
 void dgemv(char transa, int m, int n, double alpha, const double *a, int lda, const double *x, int incx, double beta, double *y, int incy) {

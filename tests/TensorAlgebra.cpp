@@ -143,6 +143,7 @@ TEST_CASE("GEMM TensorView", "[tensor]") {
 
     SECTION("Result into 2x2 view of matrix") {
         Tensor<2> result{"result", 5, 5};
+        result.zero();
         TensorView<2> result_view{result, Dim<2>{2, 2}, Offset<2>{3, 2}};
 
         gemm<false, false>(1.0, I_view, I_view, 0.0, &result_view);
@@ -318,7 +319,7 @@ TEST_CASE("Subset TensorView", "[tensor]") {
         // Set submatrix to a set of known values
         for (size_t i = 0, ij = 1; i < 3; i++) {
             for (size_t j = 0; j < 3; j++, ij++) {
-                original(d1, i, j) = ij;
+                original(d1, i, j) = static_cast<double>(ij);
             }
         }
 
@@ -855,6 +856,9 @@ TEST_CASE("einsum2") {
         Tensor<2> A = create_random_tensor("A", 3, 5);
         Tensor<1> B = create_random_tensor("B", 5);
 
+        C0.zero();
+        C1.zero();
+
         REQUIRE_NOTHROW(einsum(Indices{i}, &C0, Indices{i, j}, A, Indices{j}, B));
         linear_algebra::gemv<false>(1.0, A, B, 0.0, &C1);
 
@@ -865,7 +869,9 @@ TEST_CASE("einsum2") {
 
     SECTION("3 <- 3x4x5 * 4x3x5") {
         Tensor<1> C0{"C0", 3};
+        zero(C0);
         Tensor<1> C1{"C1", 3};
+        zero(C1);
         Tensor<3> A = create_random_tensor("A", 3, 4, 5);
         Tensor<3> B = create_random_tensor("B", 4, 3, 5);
 
@@ -890,6 +896,8 @@ TEST_CASE("einsum2") {
     SECTION("3x5 <- 3x4x5 * 4x3x5") {
         Tensor<2> C0{"C0", 3, 5};
         Tensor<2> C1{"C1", 3, 5};
+        zero(C0);
+        zero(C1);
         Tensor<3> A = create_random_tensor("A", 3, 4, 5);
         Tensor<3> B = create_random_tensor("B", 4, 3, 5);
 
@@ -919,7 +927,9 @@ TEST_CASE("einsum2") {
 
     SECTION("3, l <- 3x4x5 * 4x3x5") {
         Tensor<2> C0{"C0", 3, 5};
+        zero(C0);
         Tensor<2> C1{"C1", 3, 5};
+        zero(C1);
         Tensor<3> A = create_random_tensor("A", 3, 4, 5);
         Tensor<3> B = create_random_tensor("B", 4, 3, 5);
 
@@ -982,6 +992,8 @@ TEST_CASE("einsum3") {
         // This one is to represent a two-electron integral transformation
         Tensor<4> gMO0{"g0", 3, 3, 3, 3};
         Tensor<4> gMO1{"g1", 3, 3, 3, 3};
+        zero(gMO0);
+        zero(gMO1);
         Tensor<4> A = create_random_tensor("A", 3, 3, 3, 3);
         Tensor<2> B = create_random_tensor("B", 3, 3);
 
@@ -1066,6 +1078,8 @@ TEST_CASE("einsum4") {
         // This one is to represent a two-electron integral transformation
         Tensor<4> gMO0{"g0", 3, 3, 3, 3};
         Tensor<4> gMO1{"g1", 3, 3, 3, 3};
+        zero(gMO0);
+        zero(gMO1);
         Tensor<4> A = create_random_tensor("A", 3, 3, 3, 3);
         Tensor<2> B = create_random_tensor("B", 3, 3);
 
@@ -1256,6 +1270,7 @@ TEST_CASE("Hadamard") {
         Tensor<2> C{"C", _i, _j};
         Tensor<2> C0{"C0", _i, _j};
         C0.zero();
+        C.zero();
 
         // println(A);
         // println(B);
@@ -1284,6 +1299,7 @@ TEST_CASE("Hadamard") {
         Tensor<2> C{"C", _i, _j};
         Tensor<2> C0{"C0", _i, _j};
         C0.zero();
+        C.zero();
 
         // println(A);
         // println(B);
@@ -1312,6 +1328,7 @@ TEST_CASE("Hadamard") {
         Tensor<2> C{"C", _i, _j};
         Tensor<2> C0{"C0", _i, _j};
         C0.zero();
+        C.zero();
 
         // println(A);
         // println(B);
@@ -1340,6 +1357,7 @@ TEST_CASE("Hadamard") {
         Tensor<3> C{"C", _i, _j, _i};
         Tensor<3> C0{"C0", _i, _j, _i};
         C0.zero();
+        C.zero();
 
         for (size_t i0 = 0; i0 < _i; i0++) {
             for (size_t j0 = 0; j0 < _j; j0++) {
@@ -1362,6 +1380,7 @@ TEST_CASE("Hadamard") {
         Tensor<3> C{"C", _i, _i, _i};
         Tensor<3> C0{"C0", _i, _i, _i};
         C0.zero();
+        C.zero();
 
         for (size_t i0 = 0; i0 < _i; i0++) {
             for (size_t j0 = 0; j0 < _j; j0++) {
@@ -1444,8 +1463,8 @@ TEST_CASE("unique_ptr") {
     SECTION("B") {
         Tensor<2> C0{"C0", 3, 3};
         Tensor<2> C1{"C1", 3, 3};
-        Tensor<2> A = create_random_tensor("A", 5, 3);
-        auto B = std::make_unique<Tensor<2>>(create_random_tensor("B", 3, 5));
+        Tensor<2> A = create_random_tensor("A", 3, 5);
+        auto B = std::make_unique<Tensor<2>>(create_random_tensor("B", 5, 3));
 
         // Working to get the einsum to perform the gemm that follows.
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
@@ -1462,7 +1481,7 @@ TEST_CASE("unique_ptr") {
         Tensor<2> C0{"C0", 3, 3};
         Tensor<2> C1{"C1", 3, 3};
         auto A = std::make_unique<Tensor<2>>(create_random_tensor("A", 3, 5));
-        auto B = std::make_unique<Tensor<2>>(create_random_tensor("B", 3, 5));
+        auto B = std::make_unique<Tensor<2>>(create_random_tensor("B", 5, 3));
 
         // Working to get the einsum to perform the gemm that follows.
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
@@ -1495,8 +1514,8 @@ TEST_CASE("unique_ptr") {
     SECTION("CB") {
         auto C0 = std::make_unique<Tensor<2>>("C0", 3, 3);
         Tensor<2> C1{"C1", 3, 3};
-        Tensor<2> A = create_random_tensor("A", 5, 3);
-        auto B = std::make_unique<Tensor<2>>(create_random_tensor("B", 3, 5));
+        Tensor<2> A = create_random_tensor("A", 3, 5);
+        auto B = std::make_unique<Tensor<2>>(create_random_tensor("B", 5, 3));
 
         // Working to get the einsum to perform the gemm that follows.
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
@@ -1513,7 +1532,7 @@ TEST_CASE("unique_ptr") {
         auto C0 = std::make_unique<Tensor<2>>("C0", 3, 3);
         Tensor<2> C1{"C1", 3, 3};
         auto A = std::make_unique<Tensor<2>>(create_random_tensor("A", 3, 5));
-        auto B = std::make_unique<Tensor<2>>(create_random_tensor("B", 3, 5));
+        auto B = std::make_unique<Tensor<2>>(create_random_tensor("B", 5, 3));
 
         // Working to get the einsum to perform the gemm that follows.
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
@@ -1646,7 +1665,9 @@ TEST_CASE("Transpose C", "[einsum]") {
         size_t _m = 12, _n = 12, _i = 5, _j = 5, _e = 7, _f = 7;
 
         Tensor<4> Wmnij{"Wmnij", _m, _n, _i, _j};
+        zero(Wmnij);
         Tensor<4> W0{"Wmnij", _m, _n, _i, _j};
+        zero(W0);
 
         Tensor<4> t_oovv = create_random_tensor("t_oovv", _i, _j, _e, _f);
         Tensor<4> g_oovv = create_random_tensor("g_oovv", _m, _n, _e, _f);
@@ -1718,6 +1739,7 @@ TEST_CASE("TensorView einsum") {
     TensorView<2> B_view{B, Dim<2>{3, 3}, Offset<2>{0, 2}};
 
     Tensor<2> C{"C2", 10, 10};
+    C.zero();
     TensorView<2> C_view{C, Dim<2>{3, 3}, Offset<2>{5, 5}};
 
     // To perform the test we make an explicit copy of the TensorViews into their own Tensors
@@ -1733,6 +1755,7 @@ TEST_CASE("TensorView einsum") {
 
     // The target solution is determined from not using views
     Tensor<2> C_solution{"C solution", 3, 3};
+    C_solution.zero();
     REQUIRE_NOTHROW(einsum(Indices{i, j}, &C_solution, Indices{i, k}, A_copy, Indices{j, k}, B_copy));
 
     // einsum where everything is a TensorView

@@ -227,8 +227,21 @@ auto dlange(char norm_type, int m, int n, const double *A, int lda, double *) ->
 
 auto dgesdd(char jobz, int m, int n, double *a, int lda, double *s, double *u, int ldu, double *vt, int ldvt, double *, int, int *) -> int {
     // TODO: Wrap gesvd here.
-    println_warn("onemkl::dgesdd not wrapped");
-    return LAPACKE_dgesdd(LAPACK_ROW_MAJOR, jobz, m, n, a, lda, s, u, ldu, vt, ldvt);
+    // return LAPACKE_dgesdd(LAPACK_ROW_MAJOR, jobz, m, n, a, lda, s, u, ldu, vt, ldvt);
+
+    if (jobz != 'A' || jobz != 'a') {
+        throw std::runtime_error("dgess: only jobz == 'A' was expected");
+    }
+
+    uint64_t scratchpad_size = oneapi::mkl::lapack::gesvd_scratchpad_size<double>(g_Queues[0], oneapi::mkl::jobsvd::vectors,
+                                                                                  oneapi::mkl::jobsvd::vectors, m, n, lda, ldu, ldvt);
+    std::vector<double> scratchpad(scratchpad_size);
+
+    auto event = oneapi::mkl::lapack::gesvd(g_Queues[0], oneapi::mkl::jobsvd::vectors, oneapi::mkl::jobsvd::vectors, m, n, a, lda, s, u,
+                                            ldu, vt, ldvt, scratchpad.data(), scratchpad_size);
+    event.wait();
+
+    return 0;
 }
 
 } // namespace einsums::backend::onemkl

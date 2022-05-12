@@ -14,6 +14,10 @@ auto allocate_aligned_memory(size_t align, size_t size) -> void * {
         return nullptr;
     }
 
+    // Determine padding to round up to align boundary.
+    size_t extra = align - (size % align);
+    size += extra;
+
     void *ptr{nullptr};
 #if defined(_WIN32) || defined(_WIN64)
     ptr = malloc(size);
