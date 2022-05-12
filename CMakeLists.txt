@@ -57,7 +57,6 @@ message(STATUS "${CMAKE_CXX_COMPILER_ID} flags: ${HOST_FLAGS}")
 # )
 
 include(cmake/FindITTNOTIFY.cmake)
-
 include(cmake/FindIntelSYCL.cmake)
 
 # Attempt to find MKL. This assumes the user set MKL_DIR.
@@ -71,6 +70,9 @@ else()
     find_package(BLAS REQUIRED)
     find_package(LAPACK REQUIRED)
 endif()
+
+check_include_file(lapacke.h HAVE_LAPACKE_HEADER)
+
 find_package(OpenMP)
 
 include(cmake/BackwardConfig.cmake)

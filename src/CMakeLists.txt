@@ -6,7 +6,7 @@ add_library(einsums
 
     backends/vendor/Vendor.cpp
 
-    backends/cblas/cblas.cpp
+    $<$<BOOL:HAVE_LAPACKE_HEADER>:backends/cblas/cblas.cpp>
 
     $<$<TARGET_EXISTS:Intel::SYCL>:backends/onemkl/onemkl.cpp>
 
