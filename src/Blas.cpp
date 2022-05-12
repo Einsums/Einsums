@@ -69,7 +69,11 @@ auto dlange(char norm_type, int m, int n, const double *A, int lda, double *work
 
 auto dgesdd(char jobz, int m, int n, double *a, int lda, double *s, double *u, int ldu, double *vt, int ldvt, double *work, int lwork,
             int *iwork) -> int {
+#if defined(EINSUMS_HAVE_LAPACKE)
     return ::einsums::backend::cblas::dgesdd(jobz, m, n, a, lda, s, u, ldu, vt, ldvt, work, lwork, iwork);
+#else
+    throw std::runtime_error("dgesdd not implemented.");
+#endif
 }
 
 } // namespace einsums::blas

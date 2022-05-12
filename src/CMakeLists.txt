@@ -5,7 +5,7 @@ add_library(einsums
     backends/netlib/xerbla.cpp
 
     backends/vendor/Vendor.cpp
-    
+
     $<$<TARGET_EXISTS:Intel::SYCL>:backends/onemkl/onemkl.cpp>
 
     Blas.cpp
@@ -19,6 +19,7 @@ add_library(einsums
 
 if (HAVE_LAPACKE_HEADER)
     target_sources(einsums PUBLIC backends/cblas/cblas.cpp)
+    target_compile_definitions(einsums PRIVATE EINSUMS_HAVE_LAPACKE)
 endif()
 
 if (EINSUMS_USE_HPTT)
@@ -37,12 +38,10 @@ target_link_libraries(einsums
         $<$<TARGET_EXISTS:OpenMP::OpenMP_CXX>:OpenMP::OpenMP_CXX>
         $<$<TARGET_EXISTS:Intel::SYCL>:Intel::SYCL>
         Backward::Backward
-)
 
-target_link_libraries(einsums
     PRIVATE
-        ittnotify
-)   
+        $<$<TARGET_EXISTS:ittnotify>:ittnotify>
+)
 
 target_include_directories(einsums
     PUBLIC
