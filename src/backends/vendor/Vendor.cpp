@@ -1,5 +1,7 @@
 #include "Vendor.hpp"
 
+#include "einsums/Print.hpp"
+
 #include <fmt/format.h>
 #include <stdexcept>
 
@@ -34,7 +36,7 @@ extern void FC_GLOBAL(daxpy, DAXPY)(int *, double *, const double *, int *, doub
 extern void FC_GLOBAL(dger, DGER)(int *, int *, double *, const double *, int *, const double *, int *, double *, int *);
 extern void FC_GLOBAL(dgetrf, DGETRF)(int *, int *, double *, int *, int *, int *);
 extern void FC_GLOBAL(dgetri, DGETRI)(int *, double *, int *, int *, double *, int *, int *);
-extern double FC_GLOBAL(dlange, DLANGE)(char, int, int, const double *, int, double *);
+extern double FC_GLOBAL(dlange, DLANGE)(char, int, int, const double *, int, double *); // NOLINT
 extern void FC_GLOBAL(dgesdd, DGESDD)(char *, int *, int *, double *, int *, double *, double *, int *, double *, int *, double *, int *,
                                       int *, int *);
 }
@@ -119,8 +121,9 @@ auto dlange(char norm_type, int m, int n, const double *A, int lda, double *work
 
 auto dgesdd(char jobz, int m, int n, double *a, int lda, double *s, double *u, int ldu, double *vt, int ldvt, double *work, int lwork,
             int *iwork) -> int {
+    println("dgesdd: m {}, n {}, lda {}, ldu {}, ldvt {}", m, n, lda, ldu, ldvt);
     int info{0};
-    FC_GLOBAL(dgesdd, DGESDD)(&jobz, &m, &n, a, &lda, s, u, &ldu, vt, &ldvt, work, &lwork, iwork, &info);
+    FC_GLOBAL(dgesdd, DGESDD)(&jobz, &n, &m, a, &lda, s, vt, &ldvt, u, &ldu, work, &lwork, iwork, &info);
     return info;
 }
 

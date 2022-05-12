@@ -1,4 +1,5 @@
 #define CATCH_CONFIG_RUNNER
+#include "einsums/Blas.hpp"
 #include "einsums/OpenMP.h"
 #include "einsums/Print.hpp"
 #include "einsums/State.hpp"
@@ -9,6 +10,7 @@
 
 auto main(int argc, char *argv[]) -> int {
     einsums::timer::initialize();
+    einsums::blas::initialize();
 
     // Disable HDF5 diagnostic reporting.
     H5Eset_auto(0, nullptr, nullptr);
@@ -21,6 +23,7 @@ auto main(int argc, char *argv[]) -> int {
     int result = Catch::Session().run(argc, argv);
 
     einsums::timer::report();
+    einsums::blas::finalize();
     einsums::timer::finalize();
     return result;
 }

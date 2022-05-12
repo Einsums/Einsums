@@ -191,6 +191,16 @@ inline auto get_from_tuple(Tuple &&tuple, size_t index) -> ReturnType {
     return returnValue;
 }
 
+template <typename T, T... S, typename F>
+constexpr void for_sequence(std::integer_sequence<T, S...>, F f) {
+    (static_cast<void>(f(std::integral_constant<T, S>{})), ...);
+}
+
+template <auto n, typename F>
+constexpr void for_sequence(F f) {
+    for_sequence(std::make_integer_sequence<decltype(n), n>{}, f);
+}
+
 namespace Detail {
 template <typename T, typename Tuple>
 struct HasType;
@@ -317,7 +327,7 @@ inline constexpr bool is_smart_pointer_v = is_smart_pointer<T>::value;
 
 template <typename T>
 struct CircularBuffer {
-    explicit CircularBuffer(size_t size) : _buffer(std::unique_ptr<T[]>(new T[size])), _max_size(size) {}
+    explicit CircularBuffer(size_t size) : _buffer(std::unique_ptr<T[]>(new T[size])), _max_size(size) {} // NOLINT
 
     void put(T item) {
         std::lock_guard<std::mutex> lock(_mutex);
@@ -362,7 +372,7 @@ struct CircularBuffer {
     auto operator[](int element) const -> const T & { return _buffer[element]; }
 
   private:
-    std::unique_ptr<T[]> _buffer;
+    std::unique_ptr<T[]> _buffer; // NOLINT
     const size_t _max_size;
 
     std::mutex _mutex;

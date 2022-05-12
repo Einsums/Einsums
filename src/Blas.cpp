@@ -1,12 +1,26 @@
 #include "einsums/Blas.hpp"
 
+#include "backends/cblas/cblas.hpp"
 #include "backends/netlib/Netlib.hpp"
+#include "backends/onemkl/onemkl.hpp"
 #include "backends/vendor/Vendor.hpp"
 
 #include <fmt/format.h>
 #include <stdexcept>
 
 namespace einsums::blas {
+
+void initialize() {
+#if defined(SYCL_LANGUAGE_VERSION)
+    ::einsums::backend::onemkl::initialize();
+#endif
+}
+
+void finalize() {
+#if defined(SYCL_LANGUAGE_VERSION)
+    ::einsums::backend::onemkl::finalize();
+#endif
+}
 
 void dgemm(char transa, char transb, int m, int n, int k, double alpha, const double *a, int lda, const double *b, int ldb, double beta,
            double *c, int ldc) {
@@ -55,7 +69,11 @@ auto dlange(char norm_type, int m, int n, const double *A, int lda, double *work
 
 auto dgesdd(char jobz, int m, int n, double *a, int lda, double *s, double *u, int ldu, double *vt, int ldvt, double *work, int lwork,
             int *iwork) -> int {
-    return ::einsums::backend::vendor::dgesdd(jobz, m, n, a, lda, s, u, ldu, vt, ldvt, work, lwork, iwork);
+#if defined(EINSUMS_HAVE_LAPACKE)
+    return ::einsums::backend::cblas::dgesdd(jobz, m, n, a, lda, s, u, ldu, vt, ldvt, work, lwork, iwork);
+#else
+    throw std::runtime_error("dgesdd not implemented.");
+#endif
 }
 
 } // namespace einsums::blas

@@ -1,11 +1,7 @@
 #pragma once
 
-#include <vector>
+namespace einsums::backend::onemkl {
 
-// Namespace for BLAS and LAPACK routines.
-namespace einsums::blas {
-
-// Some of the backends may require additional initialization before their use.
 void initialize();
 void finalize();
 
@@ -74,16 +70,8 @@ auto dgetrf(int, int, double *, int, int *) -> int;
  */
 auto dgetri(int, double *, int, const int *, double *, int) -> int;
 
-/*!
- * Return the value of the 1-norm, Frobenius norm, infinity-norm, or the
- * largest absolute value of any element of a general rectangular matrix
- */
 auto dlange(char norm_type, int m, int n, const double *A, int lda, double *work) -> double;
 
-/*!
- * Computes the singular value decomposition of a general rectangular
- * matrix using a divide and conquer method.
- */
 auto dgesdd(char, int, int, double *, int, double *, double *, int, double *, int, double *, int, int *) -> int;
 
-} // namespace einsums::blas
+} // namespace einsums::backend::onemkl

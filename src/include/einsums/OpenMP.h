@@ -9,6 +9,9 @@ extern "C" {
 #endif
 
 int omp_get_max_threads();
+int omp_get_num_threads();
+int omp_get_thread_num();
+int omp_in_parallel();
 
 #if defined(__cplusplus)
 }

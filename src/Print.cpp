@@ -1,6 +1,8 @@
 #include "einsums/Print.hpp"
 
 #include "einsums/Backtrace.hpp"
+#include "einsums/OpenMP.h"
+#include "einsums/Timer.hpp"
 
 #include <algorithm>
 #include <cstdarg>
@@ -89,14 +91,17 @@ namespace {
 
 void print_line(const std::string &line) {
     std::string line_header;
-    if (print::print_master_thread_id && std::this_thread::get_id() == print::main_thread_id) {
-        std::ostringstream oss;
-        oss << "[ main #" << std::setw(6) << std::this_thread::get_id() << " ] ";
-        line_header = oss.str();
-    } else if (std::this_thread::get_id() != print::main_thread_id) {
-        std::ostringstream oss;
-        oss << "[ tid  #" << std::setw(6) << std::this_thread::get_id() << " ] ";
-        line_header = oss.str();
+
+    if (omp_in_parallel()) {
+        if (omp_get_thread_num() == 0) {
+            std::ostringstream oss;
+            oss << "[ main #" << std::setw(6) << 0 << " ] ";
+            line_header = oss.str();
+        } else {
+            std::ostringstream oss;
+            oss << "[ tid  #" << std::setw(6) << omp_get_thread_num() << " ] ";
+            line_header = oss.str();
+        }
     }
     line_header.append(print::indent_string);
 
