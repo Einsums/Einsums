@@ -5,9 +5,7 @@ add_library(einsums
     backends/netlib/xerbla.cpp
 
     backends/vendor/Vendor.cpp
-
-    $<${HAVE_LAPACKE_HEADER}:backends/cblas/cblas.cpp>
-
+    
     $<$<TARGET_EXISTS:Intel::SYCL>:backends/onemkl/onemkl.cpp>
 
     Blas.cpp
@@ -18,6 +16,10 @@ add_library(einsums
     Timer.cpp
     $<$<NOT:$<TARGET_EXISTS:OpenMP::OpenMP_CXX>>:OpenMP.c>
 )
+
+if (HAVE_LAPACKE_HEADER)
+    target_sources(einsums PUBLIC backends/cblas/cblas.cpp)
+endif()
 
 if (EINSUMS_USE_HPTT)
     target_compile_definitions(einsums PUBLIC EINSUMS_USE_HPTT)
