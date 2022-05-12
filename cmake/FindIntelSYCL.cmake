@@ -64,7 +64,6 @@ find_package_handle_standard_args(IntelSYCL
         INTEL_SYCL_SUPPORTED)
 
 if(IntelSYCL_FOUND AND NOT TARGET intelsycl)
-    message(STATUS "here")
     add_library(intelsycl INTERFACE)
     target_include_directories(intelsycl INTERFACE
         ${INTEL_SYCL_INCLUDE_DIRS})
