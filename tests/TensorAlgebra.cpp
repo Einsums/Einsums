@@ -2141,3 +2141,44 @@ TEST_CASE("F12 - V term") {
         }
     }
 }
+
+TEST_CASE("B_tilde") {
+    using namespace einsums;
+    using namespace einsums::tensor_algebra;
+    using namespace einsums::tensor_algebra::index;
+
+    // int nocc{5}, ncabs{116}, nobs{41};
+    int nocc{5}, ncabs{10}, nobs{10};
+    assert(nobs > nocc); // sanity check
+    int nall{nobs + ncabs}, nvir{nobs - nocc};
+
+    Tensor CD{"CD", nocc, nocc, nvir, nvir};
+    Tensor CD0{"CD0", nocc, nocc, nvir, nvir};
+    zero(CD);
+    zero(CD0);
+    auto C = create_random_tensor("C", nocc, nocc, nvir, nvir);
+    auto D = create_random_tensor("D", nocc, nocc, nvir, nvir);
+    auto D_ij = D(2, 2, All{}, All{});
+
+    einsum(Indices{k, l, a, b}, &CD, Indices{k, l, a, b}, C, Indices{a, b}, D_ij);
+
+    for (int _k = 0; _k < nocc; _k++) {
+        for (int _l = 0; _l < nocc; _l++) {
+            for (int _a = 0; _a < nvir; _a++) {
+                for (int _b = 0; _b < nvir; _b++) {
+                    CD0(_k, _l, _a, _b) = C(_k, _l, _a, _b) * D(2, 2, _a, _b);
+                }
+            }
+        }
+    }
+
+    for (int _k = 0; _k < nocc; _k++) {
+        for (int _l = 0; _l < nocc; _l++) {
+            for (int _a = 0; _a < nvir; _a++) {
+                for (int _b = 0; _b < nvir; _b++) {
+                    REQUIRE_THAT(CD(_k, _l, _a, _b), Catch::Matchers::WithinAbs(CD0(_k, _l, _a, _b), 0.000001));
+                }
+            }
+        }
+    }
+}

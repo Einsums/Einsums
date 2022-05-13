@@ -446,9 +446,9 @@ auto einsum(const T C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<C
     static_assert(sizeof...(BIndices) == BRank, "Rank of B does not match Indices given for B.");
 
     // 2. Determine the links from AIndices and BIndices
-    constexpr auto links0 = intersect_t<std::tuple<AIndices...>, std::tuple<BIndices...>>();
+    constexpr auto linksAB = intersect_t<std::tuple<AIndices...>, std::tuple<BIndices...>>();
     // 2a. Remove any links that appear in the target
-    constexpr auto links = difference_t<decltype(links0), std::tuple<CIndices...>>();
+    constexpr auto links = difference_t<decltype(linksAB), std::tuple<CIndices...>>();
 
     // 3. Determine the links between CIndices and AIndices
     constexpr auto CAlinks = intersect_t<std::tuple<CIndices...>, std::tuple<AIndices...>>();
@@ -526,7 +526,7 @@ auto einsum(const T C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<C
     constexpr auto dot_product =
         sizeof...(CIndices) == 0 && A_exactly_matches_B && !A_hadamard_found && !B_hadamard_found && !C_hadamard_found;
 
-    constexpr auto outer_product = std::tuple_size_v<decltype(links)> == 0 && contiguous_target_position_in_A &&
+    constexpr auto outer_product = std::tuple_size_v<decltype(linksAB)> == 0 && contiguous_target_position_in_A &&
                                    contiguous_target_position_in_B && !A_hadamard_found && !B_hadamard_found && !C_hadamard_found;
 
     if constexpr (dot_product) {
