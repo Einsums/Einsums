@@ -350,7 +350,7 @@ struct Tensor final : public detail::TensorBase<Rank, T> {
         int counter{0};
         for_sequence<sizeof...(MultiIndex)>([&](auto i) {
             // println("looking at {}", i);
-            if constexpr (std::is_same_v<size_t, std::tuple_element_t<i, std::tuple<MultiIndex...>>>) {
+            if constexpr (std::is_convertible_v<std::tuple_element_t<i, std::tuple<MultiIndex...>>, size_t>) {
                 offsets[i] = std::get<i>(indices);
             } else if constexpr (std::is_same_v<All, std::tuple_element_t<i, std::tuple<MultiIndex...>>>) {
                 strides[counter] = _strides[i];
