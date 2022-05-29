@@ -2059,6 +2059,33 @@ TEST_CASE("element") {
     // }
 }
 
+TEST_CASE("einsum element") {
+    using namespace einsums;
+    using namespace einsums::tensor_algebra;
+    using namespace einsums::tensor_algebra::index;
+
+    SECTION("1") {
+        Tensor<2> C = Tensor{"C", 100, 100};
+        Tensor<2> C0 = Tensor{"C", 100, 100};
+
+        zero(C);
+        zero(C0);
+
+        Tensor<2> B = create_random_tensor("B", 100, 100);
+        Tensor<2> A = create_random_tensor("A", 100, 100);
+
+        element([](double const &Cval, double const &Aval, double const &Bval) -> double { return Aval * Bval; }, &C0, A, B);
+
+        einsum(Indices{i, j}, &C, Indices{i, j}, A, Indices{i, j}, B);
+
+        for (int w = 0; w < 100; w++) {
+            for (int x = 0; x < 100; x++) {
+                REQUIRE_THAT(C(w, x), Catch::Matchers::WithinAbs(C0(w, x), 1.0e-5));
+            }
+        }
+    }
+}
+
 TEST_CASE("F12 - V term") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
