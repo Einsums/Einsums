@@ -536,20 +536,25 @@ auto einsum(const T C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<C
 
         return;
     } else if constexpr (element_wise_multiplication) {
-        Dim<1> common;
-        common[0] = 1;
-        for (auto el : C->dims()) {
-            common[0] *= el;
+        timer::Timer element_wise_multiplication{"Element-Wise Multiplication"};
+
+        auto target_dims = get_dim_ranges<CRank>(*C);
+        auto view = std::apply(ranges::views::cartesian_product, target_dims);
+
+        // Ensure the various tensors passed in are the same dimensionality
+        if (((C->dims() != A.dims()) || C->dims() != B.dims())) {
+            println_abort("einsum: at least one tensor does not have same dimensionality as destination");
         }
 
-        TensorView<1, T> tC{*C, common};
-        const TensorView<1, T> tA{const_cast<AType<ARank, T> &>(A), common}, tB{const_cast<BType<BRank, T> &>(B), common};
-
-        for (size_t i = 0; i < common[0]; i++) {
-            T temp = AB_prefactor * tA(i) * tB(i);
-            T &target_value = tC(i);
-            target_value *= C_prefactor;
-            target_value += temp;
+#if defined(__INTEL_LLVM_COMPILER) || defined(__INTEL_COMPILER)
+#pragma omp parallel for simd
+#else
+#pragma omp parallel for
+#endif
+        for (auto it = view.begin(); it != view.end(); it++) {
+            T &target_value = std::apply(*C, *it);
+            T AB_product = std::apply(A, *it) * std::apply(B, *it);
+            target_value = C_prefactor * target_value + AB_prefactor * AB_product;
         }
 
         return;

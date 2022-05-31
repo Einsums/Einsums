@@ -2064,23 +2064,72 @@ TEST_CASE("einsum element") {
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
 
+    const int _i{50}, _j{50};
+
     SECTION("1") {
-        Tensor<2> C = Tensor{"C", 100, 100};
-        Tensor<2> C0 = Tensor{"C", 100, 100};
+        Tensor<2> C = Tensor{"C", _i, _j};
+        Tensor<2> C0 = Tensor{"C", _i, _j};
 
         zero(C);
         zero(C0);
 
-        Tensor<2> B = create_random_tensor("B", 100, 100);
-        Tensor<2> A = create_random_tensor("A", 100, 100);
+        Tensor<2> B = create_random_tensor("B", _i, _j);
+        Tensor<2> A = create_random_tensor("A", _i, _j);
 
         element([](double const &Cval, double const &Aval, double const &Bval) -> double { return Aval * Bval; }, &C0, A, B);
 
         einsum(Indices{i, j}, &C, Indices{i, j}, A, Indices{i, j}, B);
 
-        for (int w = 0; w < 100; w++) {
-            for (int x = 0; x < 100; x++) {
+        for (int w = 0; w < _i; w++) {
+            for (int x = 0; x < _j; x++) {
                 REQUIRE_THAT(C(w, x), Catch::Matchers::WithinAbs(C0(w, x), 1.0e-5));
+            }
+        }
+    }
+
+    SECTION("2") {
+        Tensor<2> C = create_random_tensor("C", _i, _j);
+        Tensor<2> C0 = C;
+        Tensor<2> testresult{"result", _i, _j};
+        zero(testresult);
+
+        Tensor<2> A = create_random_tensor("A", _i, _j);
+
+        element([](double const &Cval, double const &Aval) -> double { return Cval * Aval; }, &C, A);
+
+        einsum(Indices{i, j}, &testresult, Indices{i, j}, C0, Indices{i, j}, A);
+
+        for (int w = 0; w < _i; w++) {
+            for (int x = 0; x < _j; x++) {
+                REQUIRE_THAT(C(w, x), Catch::Matchers::WithinAbs(testresult(w, x), 1.0e-5));
+            }
+        }
+    }
+
+    SECTION("3") {
+        Tensor<4> parentC = create_random_tensor("parentC", _i, _i, _i, _j);
+        Tensor<4> parentC0 = parentC;
+        Tensor<4> parentA = create_random_tensor("parentA", _i, _i, _i, _j);
+
+        auto C = parentC(3, All{}, All{}, 4);
+        auto C0 = parentC0(3, All{}, All{}, 4);
+        Tensor<2> testresult{"result", _i, _j};
+
+        for (int w = 0; w < _i; w++) {
+            for (int x = 0; x < _j; x++) {
+                testresult(w, x) = C(w, x);
+            }
+        }
+
+        auto A = parentA(1, 2, All{}, All{});
+
+        element([](double const &Cval, double const &Aval) -> double { return Cval * Aval; }, &C, A);
+
+        einsum(Indices{i, j}, &testresult, Indices{i, j}, C0, Indices{i, j}, A);
+
+        for (int w = 0; w < _i; w++) {
+            for (int x = 0; x < _j; x++) {
+                REQUIRE_THAT(C(w, x), Catch::Matchers::WithinAbs(testresult(w, x), 1.0e-5));
             }
         }
     }
