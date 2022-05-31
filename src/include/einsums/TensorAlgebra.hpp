@@ -219,10 +219,10 @@ construct_indices(const std::tuple<TargetCombination...> &target_combination, co
 
 template <typename AIndex, typename... UniqueTargetIndices, typename... UniqueTargetCombination, typename... TargetPositionInC,
           typename... UniqueLinkIndices, typename... UniqueLinkCombination, typename... LinkPositionInLink>
-auto construct_index_from_unique_target_combination(const std::tuple<UniqueTargetIndices...> &unique_target_indices,
+auto construct_index_from_unique_target_combination(const std::tuple<UniqueTargetIndices...> & /*unique_target_indices*/,
                                                     const std::tuple<UniqueTargetCombination...> &unique_target_combination,
                                                     const std::tuple<TargetPositionInC...> &,
-                                                    const std::tuple<UniqueLinkIndices...> &unique_link_indices,
+                                                    const std::tuple<UniqueLinkIndices...> & /*unique_link_indices*/,
                                                     const std::tuple<UniqueLinkCombination...> &unique_link_combination,
                                                     const std::tuple<LinkPositionInLink...> &) {
 
@@ -334,10 +334,10 @@ template <typename T, typename... CUniqueIndices, typename... AUniqueIndices, ty
           typename... CIndices, typename... AIndices, typename... BIndices, typename... TargetDims, typename... LinkDims,
           typename... TargetPositionInC, typename... LinkPositionInLink, template <size_t, typename> typename CType, size_t CRank,
           template <size_t, typename> typename AType, size_t ARank, template <size_t, typename> typename BType, size_t BRank>
-void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, const std::tuple<AUniqueIndices...> &A_unique,
-                              const std::tuple<BUniqueIndices...> &B_unique, const std::tuple<LinkUniqueIndices...> &link_unique,
-                              const std::tuple<CIndices...> &C_indices, const std::tuple<AIndices...> &A_indices,
-                              const std::tuple<BIndices...> &B_indices, const std::tuple<TargetDims...> &target_dims,
+void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, const std::tuple<AUniqueIndices...> & /*A_unique*/,
+                              const std::tuple<BUniqueIndices...> & /*B_unique*/, const std::tuple<LinkUniqueIndices...> &link_unique,
+                              const std::tuple<CIndices...> & /*C_indices*/, const std::tuple<AIndices...> & /*A_indices*/,
+                              const std::tuple<BIndices...> & /*B_indices*/, const std::tuple<TargetDims...> &target_dims,
                               const std::tuple<LinkDims...> &link_dims, const std::tuple<TargetPositionInC...> &target_position_in_C,
                               const std::tuple<LinkPositionInLink...> &link_position_in_link, const T C_prefactor, CType<CRank, T> *C,
                               const T AB_prefactor, const AType<ARank, T> &A, const BType<BRank, T> &B) {
