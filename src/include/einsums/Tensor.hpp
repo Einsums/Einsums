@@ -1402,9 +1402,9 @@ auto println(const AType<Rank, T> &A, int width = 12) ->
                     // if (std::fabs(value) > std::numeric_limits<double>::epsilon() * 1000) {
                     if (std::fabs(value) > 1.0E+5) {
                         // oss << "\033[91m" << std::setw(14) << value << "\033[0m";
-                        oss << "\x1b[0;37;41m" << std::setw(14) << value << "\x1b[0m";
+                        oss << "\x1b[0;37;41m" << fmt::format("{:14.8f}", value) << "\x1b[0m";
                     } else {
-                        oss << std::setw(14) << value;
+                        oss << fmt::format("{:14.8f}", value);
                     }
                     // } else {
                     // oss << std::setw(14) << 0.0;
@@ -1429,12 +1429,12 @@ auto println(const AType<Rank, T> &A, int width = 12) ->
                 if (std::fabs(value) > std::numeric_limits<double>::epsilon()) {
                     if (std::fabs(value) > 1.0E+5) {
                         // oss << "\033[91m" << std::setw(14) << value << "\033[0m";
-                        oss << "\x1b[0;37;41m" << std::setw(14) << value << "\x1b[0m";
+                        oss << "\x1b[0;37;41m" << fmt::format("{:14.8f}", value) << "\x1b[0m";
                     } else {
-                        oss << std::setw(14) << value;
+                        oss << fmt::format("{:14.8f}", value);
                     }
                 } else {
-                    oss << std::setw(14) << 0.0;
+                    oss << fmt::format("{:14.8f}", 0.0);
                 }
 
                 println("{}", oss.str());
