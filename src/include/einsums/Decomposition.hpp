@@ -71,10 +71,12 @@ auto parafac(const Tensor<TRank, TType> &tensor, size_t rank, int n_iter_max = 1
 
     // Get the sizes of each dimension of the tensor
     auto tensor_dim_ranges = get_dim_ranges(tensor);
+    size_t t_rank = tensor_dim_ranges.size();
 
     // Perform SVD guess for parafac decomposition procedure
     auto factors = initialize_cp(tensor, rank);
 
+    // Get set of unfolded matrices
     std::vector<Tensor<2, TType>> unfolded_matrices;
     for_sequence<TRank>([&](auto i) {
         unfolded_matrices.push_back(tensor_algebra::unfold<i>(tensor));
@@ -82,18 +84,18 @@ auto parafac(const Tensor<TRank, TType> &tensor, size_t rank, int n_iter_max = 1
 
     int iter = 0;
     while (iter < n_iter_max) {
-        for_sequence<TRank>([&](auto i) {
+        for_sequence<TRank>([&](auto n) {
             // Form V intermediate
             Tensor<2, TType> V;
             bool first = true;
 
-            for_sequence<TRank>([&](auto j) {
-                if (j == i) continue;
+            for_sequence<TRank>([&](auto m) {
+                if (m == n) continue;
 
                 Tensor<2, Type> A_tA{"V", rank, rank};
                 // A_tA = A^T[j] @ A[j]
                 einsum(0.0, Indices{r, s}, &A_tA, 
-                       1.0, Indices{r, I}, factors[j], Indices{I, s}, factors[j]);
+                       1.0, Indices{I, r}, factors[j], Indices{I, s}, factors[m]);
 
                 if (first) {
                     V = A_tA;
@@ -110,16 +112,15 @@ auto parafac(const Tensor<TRank, TType> &tensor, size_t rank, int n_iter_max = 1
             first = true;
 
             for_sequence<TRank>([&](auto j) {
-                auto m = TRank - j - 1;
-
-                if (m == i) continue;
+                size_t m = t_rank - j - 1;
+                if (m == n) continue;
 
                 if (first) {
                     KR = factors[m];
                     first = false;
                 } else {
                     // Perform a Khatri-Rao contraction
-                    // (TODO: Implement a Khatri-Rao procedure to replace this "hacky" workaround)
+                    // TODO: Implement an actual Khatri-Rao procedure to replace this "hacky" workaround
                     size_t running_dim = get_dim_ranges(KR)[0];
                     size_t appended_dim = tensor_dim_ranges[m];
                     Tensor<3, TType> KRtemp{"KRtemp", running_dim, appended_dim, rank};
@@ -133,23 +134,25 @@ auto parafac(const Tensor<TRank, TType> &tensor, size_t rank, int n_iter_max = 1
             });
 
             // Update factors[i]
-            size_t Iprod = get_dim_ranges(factors[i])[0];
+            size_t idim = tensor_dim_ranges[i];
 
-            Tensor<2, Ttype> fcopy{"fcopy", rank, Iprod};
+            Tensor<2, Ttype> fcopy{"fcopy", rank, idim};
 
             // Step 1: Matrix Multiplication
             einsum(0.0, Indices{r, I}, &fcopy,
-                   1.0, Indices{I, J}, unfolded_matrices[i], Indices{J, r}, V);
+                   1.0, Indices{I, K}, unfolded_matrices[i], Indices{K, r}, KR);
 
             // Step 2: Linear Solving (instead of inversion, for numerical stability)
             linear_algebra::gesv(&V, &fcopy);
 
             // Transpose the factors to get the right form
-            TensorView<2, TType> fview{fcopy, Dim<Rank>{Iprod, rank}};
+            TensorView<2, TType> fview{fcopy, Dim<Rank>{idim, rank}};
             factors[i] = fview;
         });
     }
 
+    // Return **non-normalized** factors
+    // TODO: Normalize :)
     return factors;
 
 }
