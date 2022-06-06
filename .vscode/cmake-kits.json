@@ -2,8 +2,8 @@
   {
     "name": "Intel oneAPI 2022",
     "compilers": {
-      "C": "/opt/intel/oneapi/compiler/2022.0.2/linux/bin/icx",
-      "CXX": "/opt/intel/oneapi/compiler/2022.0.2/linux/bin/icpx"
+      "C": "/opt/intel/oneapi/compiler/2022.1.0/linux/bin/icx",
+      "CXX": "/opt/intel/oneapi/compiler/2022.1.0/linux/bin/icpx"
     }
   }
 ]
