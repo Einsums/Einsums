@@ -3,7 +3,14 @@
 
 #include <cblas.h>
 #include <exception>
+
+#if defined(EINSUMS_HAVE_LAPACKE)
 #include <lapacke.h>
+#endif
+
+#if defined(EINSUMS_HAVE_MKL_LAPACKE)
+#include <mkl_lapacke.h>
+#endif
 
 namespace einsums::backend::cblas {
 

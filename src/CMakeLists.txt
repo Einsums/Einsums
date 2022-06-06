@@ -19,7 +19,12 @@ add_library(einsums
 
 if (HAVE_LAPACKE_HEADER)
     target_sources(einsums PUBLIC backends/cblas/cblas.cpp)
-    target_compile_definitions(einsums PRIVATE EINSUMS_HAVE_LAPACKE)
+    target_compile_definitions(einsums PUBLIC EINSUMS_HAVE_LAPACKE)
+endif()
+
+if (HAVE_MKL_LAPACKE_HEADER)
+    target_sources(einsums PUBLIC backends/cblas/cblas.cpp)
+    target_compile_definitions(einsums PUBLIC EINSUMS_HAVE_MKL_LAPACKE)
 endif()
 
 if (EINSUMS_USE_HPTT)
