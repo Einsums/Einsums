@@ -3,12 +3,12 @@ cmake_minimum_required(VERSION 3.20)
 project(einsums)
 
 add_library(einsums-project-options INTERFACE)
-target_compile_features(einsums-project-options 
-    INTERFACE 
+target_compile_features(einsums-project-options
+    INTERFACE
         cxx_std_17
 )
-set_target_properties(einsums-project-options 
-    PROPERTIES 
+set_target_properties(einsums-project-options
+    PROPERTIES
         CXX_EXTENSIONS OFF
 )
 
@@ -50,7 +50,7 @@ include(cmake/DetectHostArch.cmake)
 detect_host_arch()
 message(STATUS "${CMAKE_CXX_COMPILER_ID} flags: ${HOST_FLAGS}")
 
-# NOTE: Ideally this would be included but clangd assumes the possible -xHost is specifying the programming language. 
+# NOTE: Ideally this would be included but clangd assumes the possible -xHost is specifying the programming language.
 # target_compile_options(einsums-project-options
 #     INTERFACE
 #         ${HOST_FLAGS}
@@ -72,6 +72,9 @@ else()
 endif()
 
 check_include_file(lapacke.h HAVE_LAPACKE_HEADER)
+if (NOT HAVE_LAPACKE_HEADER)
+    check_include_file(mkl_lapacke.h HAVE_MKL_LAPACKE_HEADER)
+endif()
 
 find_package(OpenMP)
 
