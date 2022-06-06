@@ -7,9 +7,9 @@
 #include <cmath>
 #include <functional>
 
-using einsums;
-using einsums::TensorAlgebra;
-using einsums::TensorAlgebra::Index;
+using namespace einsums;
+using namespace einsums::tensor_algebra;
+using namespace einsums::tensor_algebra::index;
 
 namespace einsums::decomposition {
 
@@ -67,11 +67,10 @@ auto initialize_cp(const TTensor<TRank, TType> &tensor, size_t rank) -> std::vec
  *   tensor = [|weights; factor[0], ..., factors[-1] |].
  */
 template <template <size_t, typename> typename TTensor, size_t TRank, typename TType = double>
-auto parafac(const Tensor<TRank, TType> &tensor, size_t rank, int n_iter_max = 100, double tolerance = 1.e-8) -> std::vector<Tensor<2, TType>> {
+auto parafac(const TTensor<TRank, TType> &tensor, size_t rank, int n_iter_max = 100, double tolerance = 1.e-8) -> std::vector<Tensor<2, TType>> {
 
     // Get the sizes of each dimension of the tensor
-    auto tensor_dim_ranges = get_dim_ranges(tensor);
-    size_t t_rank = tensor_dim_ranges.size();
+    auto tensor_dim_ranges = get_dim_ranges<TRank>(tensor);
 
     // Perform SVD guess for parafac decomposition procedure
     auto factors = initialize_cp(tensor, rank);
@@ -90,20 +89,21 @@ auto parafac(const Tensor<TRank, TType> &tensor, size_t rank, int n_iter_max = 1
             bool first = true;
 
             for_sequence<TRank>([&](auto m) {
-                if (m == n) continue;
+                if (m != n) {
 
-                Tensor<2, Type> A_tA{"V", rank, rank};
-                // A_tA = A^T[j] @ A[j]
-                einsum(0.0, Indices{r, s}, &A_tA, 
-                       1.0, Indices{I, r}, factors[j], Indices{I, s}, factors[m]);
+                    Tensor<2, TType> A_tA{"V", rank, rank};
+                    // A_tA = A^T[j] @ A[j]
+                    einsum(0.0, Indices{r, s}, &A_tA, 
+                           1.0, Indices{I, r}, factors[m], Indices{I, s}, factors[m]);
 
-                if (first) {
-                    V = A_tA;
-                    first = false;
-                } else {
-                    Tensor<2, Ttype> Vcopy = V;
-                    einsum(0.0, Indices{r, s}, &V,
-                           1.0, Indices{r, s}, Vcopy, Indices{r, s}, A_tA);
+                    if (first) {
+                        V = A_tA;
+                        first = false;
+                    } else {
+                        Tensor<2, TType> Vcopy = V;
+                        einsum(0.0, Indices{r, s}, &V,
+                               1.0, Indices{r, s}, Vcopy, Indices{r, s}, A_tA);
+                    }
                 }
             });
 
@@ -112,42 +112,43 @@ auto parafac(const Tensor<TRank, TType> &tensor, size_t rank, int n_iter_max = 1
             first = true;
 
             for_sequence<TRank>([&](auto j) {
-                size_t m = t_rank - j - 1;
-                if (m == n) continue;
+                size_t m = TRank - j - 1;
+                if (m != n) {
+                    if (first) {
+                        KR = factors[m];
+                        first = false;
+                    } else {
+                        // Perform a Khatri-Rao contraction
+                        // TODO: Implement an actual Khatri-Rao procedure to replace this "hacky" workaround
+                        size_t running_dim = KR.dim(0);
+                        size_t appended_dim = tensor.dim(m);
+                        Tensor<3, TType> KRtemp{"KRtemp", running_dim, appended_dim, rank};
 
-                if (first) {
-                    KR = factors[m];
-                    first = false;
-                } else {
-                    // Perform a Khatri-Rao contraction
-                    // TODO: Implement an actual Khatri-Rao procedure to replace this "hacky" workaround
-                    size_t running_dim = get_dim_ranges(KR)[0];
-                    size_t appended_dim = tensor_dim_ranges[m];
-                    Tensor<3, TType> KRtemp{"KRtemp", running_dim, appended_dim, rank};
+                        einsum(0.0, Indices{I, J, r}, &KRtemp,
+                               1.0, Indices{I, r}, KR, Indices{J, r}, factors[m]);
 
-                    einsum(0.0, Indices{I, J, r}, &KRtemp,
-                           1.0, Indices{I, r}, KR, Indices{J, r}, factors[m]);
+                        TensorView<2, TType> KRview{KRtemp, Dim<2>{running_dim * appended_dim, rank}};
+                        KR = KRview;
+                    }
 
-                    TensorView<2, TType> KRview{KRtemp, {running_dim * appended_dim, rank}};
-                    KR = KRview;
                 }
             });
 
             // Update factors[i]
-            size_t idim = tensor_dim_ranges[i];
+            size_t ndim = tensor.dim(n);
 
-            Tensor<2, Ttype> fcopy{"fcopy", rank, idim};
+            Tensor<2, TType> fcopy{"fcopy", rank, ndim};
 
             // Step 1: Matrix Multiplication
             einsum(0.0, Indices{r, I}, &fcopy,
-                   1.0, Indices{I, K}, unfolded_matrices[i], Indices{K, r}, KR);
+                   1.0, Indices{I, K}, unfolded_matrices[n], Indices{K, r}, KR);
 
             // Step 2: Linear Solving (instead of inversion, for numerical stability)
             linear_algebra::gesv(&V, &fcopy);
 
             // Transpose the factors to get the right form
-            TensorView<2, TType> fview{fcopy, Dim<Rank>{idim, rank}};
-            factors[i] = fview;
+            TensorView<2, TType> fview{fcopy, Dim<2>{ndim, rank}};
+            factors[n] = fview;
         });
     }
 
