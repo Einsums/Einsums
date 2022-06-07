@@ -1,7 +1,8 @@
-add_executable(test-all 
-    Common/main.cpp 
-    Disk.cpp 
-    Tensor.cpp 
+add_executable(test-all
+    Common/main.cpp
+    Disk.cpp
+    LinearAlgebra.cpp
+    Tensor.cpp
     TensorAlgebra.cpp
     )
 target_link_libraries(test-all Catch2::Catch2 einsums)

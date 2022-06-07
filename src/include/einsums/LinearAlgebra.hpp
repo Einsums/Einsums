@@ -80,13 +80,14 @@ auto syev(AType *A, WType *W) -> typename std::enable_if_t<is_incore_rank_tensor
     timer::pop();
 }
 
+// This assumes column-major ordering!!
 template <typename AType, typename BType>
 auto gesv(AType *A, BType *B) -> typename std::enable_if_t<is_incore_rank_tensor_v<AType, 2> && is_incore_rank_tensor_v<BType, 2>, int> {
     auto n = A->dim(0);
-    auto lda = A->stride(0);
-    auto ldb = B->dim(0);
+    auto lda = A->dim(0);
+    auto ldb = B->dim(1);
 
-    auto nrhs = B->dim(1);
+    auto nrhs = B->dim(0);
 
     int lwork = n;
     std::vector<int> ipiv(lwork);
