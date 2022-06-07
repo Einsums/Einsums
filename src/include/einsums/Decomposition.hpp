@@ -53,8 +53,6 @@ auto initialize_cp(const TTensor<TRank, TType> &tensor, size_t rank) -> std::vec
 
         // Need to save the factors
         factors.emplace_back(Tensor{U(All{}, Range{0, rank})});
-
-        println(factors[i]);
     });
 
     return factors;
@@ -69,9 +67,6 @@ auto initialize_cp(const TTensor<TRank, TType> &tensor, size_t rank) -> std::vec
 template <template <size_t, typename> typename TTensor, size_t TRank, typename TType = double>
 auto parafac(const TTensor<TRank, TType> &tensor, size_t rank, int n_iter_max = 100, double tolerance = 1.e-8) -> std::vector<Tensor<2, TType>> {
 
-    // Get the sizes of each dimension of the tensor
-    auto tensor_dim_ranges = get_dim_ranges<TRank>(tensor);
-
     // Perform SVD guess for parafac decomposition procedure
     auto factors = initialize_cp(tensor, rank);
 
@@ -83,73 +78,96 @@ auto parafac(const TTensor<TRank, TType> &tensor, size_t rank, int n_iter_max = 
 
     int iter = 0;
     while (iter < n_iter_max) {
+        int n_ind = 0;
         for_sequence<TRank>([&](auto n) {
-            // Form V intermediate
+            // Form V and Khatri-Rao product intermediates
             Tensor<2, TType> V;
+            std::vector<Tensor<2, TType>> KRs;
             bool first = true;
 
+            int m_ind = 0;
             for_sequence<TRank>([&](auto m) {
-                if (m != n) {
-
+                if (m_ind != n_ind) {
                     Tensor<2, TType> A_tA{"V", rank, rank};
                     // A_tA = A^T[j] @ A[j]
                     einsum(0.0, Indices{r, s}, &A_tA, 
-                           1.0, Indices{I, r}, factors[m], Indices{I, s}, factors[m]);
+                           1.0, Indices{I, r}, factors[m_ind], Indices{I, s}, factors[m_ind]);
 
                     if (first) {
                         V = A_tA;
+                        KRs.push_back(factors[m_ind]);
                         first = false;
                     } else {
+                        // Uses a Hamamard Contraction to build V
                         Tensor<2, TType> Vcopy = V;
                         einsum(0.0, Indices{r, s}, &V,
                                1.0, Indices{r, s}, Vcopy, Indices{r, s}, A_tA);
-                    }
-                }
-            });
-
-            // Form Khatri-Rao Intermediate
-            Tensor<2, TType> KR;
-            first = true;
-
-            for_sequence<TRank>([&](auto j) {
-                size_t m = TRank - j - 1;
-                if (m != n) {
-                    if (first) {
-                        KR = factors[m];
-                        first = false;
-                    } else {
+                        
                         // Perform a Khatri-Rao contraction
                         // TODO: Implement an actual Khatri-Rao procedure to replace this "hacky" workaround
-                        size_t running_dim = KR.dim(0);
-                        size_t appended_dim = tensor.dim(m);
+                        Tensor<2, TType>& oldKR = KRs.back();
+
+                        size_t running_dim = oldKR.dim(0);
+                        size_t appended_dim = tensor.dim(m_ind);
                         Tensor<3, TType> KRtemp{"KRtemp", running_dim, appended_dim, rank};
 
-                        einsum(0.0, Indices{I, J, r}, &KRtemp,
-                               1.0, Indices{I, r}, KR, Indices{J, r}, factors[m]);
+                        einsum(0.0, Indices{I, M, r}, &KRtemp,
+                               1.0, Indices{I, r}, oldKR, Indices{M, r}, factors[m_ind]);
 
-                        TensorView<2, TType> KRview{KRtemp, Dim<2>{running_dim * appended_dim, rank}};
-                        KR = KRview;
+                        // TensorView<2, TType> KRview{KRtemp, Dim<2>{running_dim * appended_dim, rank}};
+                        // KR = KRview;
+
+                        Tensor<2, TType> newKR{"New KR", running_dim * appended_dim, rank};
+
+                        for (size_t I = 0; I < running_dim; I++) {
+                            for (size_t M = 0; M < appended_dim; M++) {
+                                for (size_t r = 0; r < rank; r++) {
+                                    newKR(I * appended_dim + M, r) = KRtemp(I, M, r);
+                                }
+                            }
+                        }
+                        KRs.push_back(newKR);
                     }
-
                 }
+                m_ind += 1;
             });
 
-            // Update factors[i]
-            size_t ndim = tensor.dim(n);
+            /*
+            // Update factors[n]
+            size_t ndim = tensor.dim(n_ind);
 
             Tensor<2, TType> fcopy{"fcopy", rank, ndim};
 
             // Step 1: Matrix Multiplication
             einsum(0.0, Indices{r, I}, &fcopy,
-                   1.0, Indices{I, K}, unfolded_matrices[n], Indices{K, r}, KR);
+                   1.0, Indices{I, K}, unfolded_matrices[n_ind], Indices{K, r}, KRs[KRs.size() - 1]);
 
             // Step 2: Linear Solving (instead of inversion, for numerical stability)
             linear_algebra::gesv(&V, &fcopy);
 
-            // Transpose the factors to get the right form
-            TensorView<2, TType> fview{fcopy, Dim<2>{ndim, rank}};
-            factors[n] = fview;
+            Tensor<2, TType> ones{"ones", rank, ndim};
+            ones.set_all(1.0);
+
+            // factors[n] = fcopy^T
+            einsum(0.0, Indices{I, r}, &factors[n_ind], 
+                   1.0, Indices{r, I}, fcopy, Indices{r, I}, ones);
+
+            println(factors[n_ind]);
+            */
+            size_t ndim = tensor.dim(n_ind);
+            Tensor<2, TType> fcopy{"fcopy", ndim, rank};
+
+            einsum(0.0, Indices{I, r}, &fcopy,
+                   1.0, Indices{I, K}, unfolded_matrices[n_ind], Indices{K, r}, KRs.back());
+            
+            linear_algebra::invert(&V);
+
+            einsum(0.0, Indices{I, s}, &factors[n_ind],
+                   1.0, Indices{I, r}, fcopy, Indices{r, s}, V);
+            
+            n_ind += 1;
         });
+        iter += 1;
     }
 
     // Return **non-normalized** factors
