@@ -71,9 +71,10 @@ else()
     find_package(LAPACK REQUIRED)
 endif()
 
-check_include_file(lapacke.h HAVE_LAPACKE_HEADER)
-if (NOT HAVE_LAPACKE_HEADER)
-    check_include_file(mkl_lapacke.h HAVE_MKL_LAPACKE_HEADER)
+# Prefer MKL lapacke over vendor lapacke
+check_include_file(mkl_lapacke.h HAVE_MKL_LAPACKE_HEADER)
+if (NOT HAVE_MKL_LAPACKE_HEADER)
+    check_include_file(lapacke.h HAVE_LAPACKE_HEADER)
 endif()
 
 find_package(OpenMP)
