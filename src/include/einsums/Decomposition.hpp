@@ -146,15 +146,13 @@ auto parafac(const TTensor<TRank, TType> &tensor, size_t rank, int n_iter_max = 
 
     int iter = 0;
     while (iter < n_iter_max) {
-        int n_ind = 0;
-        for_sequence<TRank>([&](auto n) {
+        for_sequence<TRank>([&](auto n_ind) {
             // Form V and Khatri-Rao product intermediates
             Tensor<2, TType> V;
             std::vector<Tensor<2, TType>> KRs;
             bool first = true;
 
-            int m_ind = 0;
-            for_sequence<TRank>([&](auto m) {
+            for_sequence<TRank>([&](auto m_ind) {
                 if (m_ind != n_ind) {
                     Tensor<2, TType> A_tA{"V", rank, rank};
                     // A_tA = A^T[j] @ A[j]
@@ -194,53 +192,28 @@ auto parafac(const TTensor<TRank, TType> &tensor, size_t rank, int n_iter_max = 
                                 }
                             }
                         }
+                        
                         KRs.push_back(newKR);
                     }
                 }
-                m_ind += 1;
             });
 
-            /*
-            // Update factors[n]
-            size_t ndim = tensor.dim(n_ind);
+            // Update factors[n_ind]
 
-            Tensor<2, TType> fcopy{"fcopy", rank, ndim};
+            size_t ndim = tensor.dim(n_ind);
 
             // Step 1: Matrix Multiplication
-            einsum(0.0, Indices{r, I}, &fcopy,
+            einsum(0.0, Indices{I, r}, &factors[n_ind],
                    1.0, Indices{I, K}, unfolded_matrices[n_ind], Indices{K, r}, KRs.back());
 
-            // Step 2: Linear Solving (instead of inversion, for numerical stability)
-            linear_algebra::gesv(&V, &fcopy);
-
-            Tensor<2, TType> ones{"ones", rank, ndim};
-            ones.set_all(1.0);
-
-            // factors[n] = fcopy^T
-            einsum(0.0, Indices{I, r}, &factors[n_ind], 
-                   1.0, Indices{r, I}, fcopy, Indices{r, I}, ones);
-
-            // println(factors[n_ind]);
-            */
+            // Step 2: Linear Solve (instead of inversion, for numerical stability, column-major ordering)
+            linear_algebra::gesv(&V, &factors[n_ind]);
             
-            size_t ndim = tensor.dim(n_ind);
-            Tensor<2, TType> fcopy{"fcopy", ndim, rank};
-
-            einsum(0.0, Indices{I, r}, &fcopy,
-                   1.0, Indices{I, K}, unfolded_matrices[n_ind], Indices{K, r}, KRs.back());
-            
-            linear_algebra::invert(&V);
-
-            einsum(0.0, Indices{I, s}, &factors[n_ind],
-                   1.0, Indices{I, r}, fcopy, Indices{r, s}, V);
-            
-            n_ind += 1;
         });
         iter += 1;
     }
 
     // Return **non-normalized** factors
-    // TODO: Normalize :)
     return factors;
 
 }
