@@ -142,11 +142,21 @@ auto parafac(const TTensor<TRank, TType> &tensor, size_t rank, int n_iter_max = 
     });
 
     // Perform SVD guess for parafac decomposition procedure
-    auto factors = initialize_cp<TRank, TType>(unfolded_matrices, rank);
+    std::vector<Tensor<2, TType>> factors = initialize_cp<TRank, TType>(unfolded_matrices, rank);
+    
+    // Keep track of previous factors (for tracking convergence)
+    std::vector<Tensor<2, TType>> prev_factors;
+    for_sequence<TRank>([&](auto i) {
+        prev_factors.push_back(Tensor<2, TType>{"prev factor element", tensor.dim(i), rank});
+    });
 
     int iter = 0;
+    // bool converged = false;
     while (iter < n_iter_max) {
         for_sequence<TRank>([&](auto n_ind) {
+            // Update prev factors
+            // prev_factors[n_ind] = factors[n_ind];
+
             // Form V and Khatri-Rao product intermediates
             Tensor<2, TType> V;
             std::vector<Tensor<2, TType>> KRs;
@@ -199,7 +209,22 @@ auto parafac(const TTensor<TRank, TType> &tensor, size_t rank, int n_iter_max = 
             linear_algebra::gesv(&V, &factors[n_ind]);
             
         });
+
+        // Check for convergence
+        double rmsd_max = 0.0;
+        for_sequence<TRank>([&](auto n) {
+            rmsd_max = std::max(rmsd_max, rmsd(factors[n], prev_factors[n]));
+        });
+
+        if (rmsd_max < tolerance) {
+            converged = true;
+            break;
+        }
+
         iter += 1;
+    }
+    if (!converged) {
+        println_warn("CP decomposition failed to converge in {} iterations", n_iter_max);
     }
 
     // Return **non-normalized** factors

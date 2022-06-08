@@ -19,10 +19,12 @@ TEST_CASE("CP 1") {
                              0.60919366, 0.97363788, 0.24531965, 0.23757898, 0.43426057, 0.64763913,
                              0.61224901, 0.86068415, 0.12051599};
 
-    auto factors = parafac(test1, 2, 10, 1.0e-6);
+    auto factors = parafac(test1, 2, 20, 1.0e-6);
 
     Tensor<3, double> test1_cp = parafac_reconstruct<3, double>(factors);
 
+    println(factors[0]);
+    
     REQUIRE((rmsd(test1, test1_cp) < 0.17392));
 }
 
@@ -39,9 +41,11 @@ TEST_CASE("CP 2") {
                              0.84288292, 0.48603425, 0.93286471, 0.47101289, 0.32736096, 0.50067919,
                              0.49932342, 0.91922942, 0.44777189, 0.23009644, 0.34874549, 0.19356636};
 
-    auto factors = parafac(test2, 2, 10, 1.0e-6);
+    auto factors = parafac(test2, 2, 20, 1.0e-6);
 
     Tensor<3, double> test2_cp = parafac_reconstruct<3, double>(factors);
+
+    println(factors[0]);
 
     REQUIRE((rmsd(test2, test2_cp) <= 0.122492));
 }
@@ -61,7 +65,7 @@ TEST_CASE("CP 3") {
                              0.72334792, 0.98646368, 0.13764230, 0.95949904, 0.07774470, 0.18239083,
                              0.82591821, 0.40939436, 0.22088749, 0.90281597, 0.37465773, 0.02541923};
 
-    auto factors = parafac(test3, 2, 10, 1.0e-6);
+    auto factors = parafac(test3, 2, 20, 1.0e-6);
 
     Tensor<4, double> test2_cp = parafac_reconstruct<4, double>(factors);
 
