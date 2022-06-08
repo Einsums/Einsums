@@ -102,20 +102,20 @@ auto parafac_reconstruct(const std::vector<Tensor<2, TType>>& factors) -> Tensor
 
 }
 
-template <template <size_t, typename> typename TTensor, size_t TRank, typename TType = double>
-auto initialize_cp(const TTensor<TRank, TType> &tensor, size_t rank) -> std::vector<Tensor<2, TType>> {
+template <size_t TRank, typename TType = double>
+auto initialize_cp(std::vector<Tensor<2, TType>> &folds, size_t rank) -> std::vector<Tensor<2, TType>> {
 
     std::vector<Tensor<2, TType>> factors;
 
     // Perform compile-time looping.
     for_sequence<TRank>([&](auto i) {
-        auto [U, S, _] = linear_algebra::svd_a(tensor_algebra::unfold<i>(tensor));
+        auto [U, S, _] = linear_algebra::svd_a(folds[i]);
 
         // println(tensor_algebra::unfold<i>(tensor));
         // println(S);
 
-        if (tensor.dim(i) < rank) {
-            println_warn("dimension {} size {} is less than the requested decomposition rank {}", i, tensor.dim(i), rank);
+        if (folds[i].dim(0) < rank) {
+            println_warn("dimension {} size {} is less than the requested decomposition rank {}", i, folds[i].dim(0), rank);
             // TODO: Need to padd U up to rank
         }
 
@@ -135,14 +135,14 @@ auto initialize_cp(const TTensor<TRank, TType> &tensor, size_t rank) -> std::vec
 template <template <size_t, typename> typename TTensor, size_t TRank, typename TType = double>
 auto parafac(const TTensor<TRank, TType> &tensor, size_t rank, int n_iter_max = 100, double tolerance = 1.e-8) -> std::vector<Tensor<2, TType>> {
 
-    // Perform SVD guess for parafac decomposition procedure
-    auto factors = initialize_cp(tensor, rank);
-
-    // Get set of unfolded matrices
+    // Compute set of unfolded matrices
     std::vector<Tensor<2, TType>> unfolded_matrices;
     for_sequence<TRank>([&](auto i) {
         unfolded_matrices.push_back(tensor_algebra::unfold<i>(tensor));
     });
+
+    // Perform SVD guess for parafac decomposition procedure
+    auto factors = initialize_cp<TRank, TType>(unfolded_matrices, rank);
 
     int iter = 0;
     while (iter < n_iter_max) {
@@ -180,19 +180,8 @@ auto parafac(const TTensor<TRank, TType> &tensor, size_t rank, int n_iter_max = 
                         einsum(0.0, Indices{I, M, r}, &KRtemp,
                                1.0, Indices{I, r}, oldKR, Indices{M, r}, factors[m_ind]);
 
-                        // TensorView<2, TType> KRview{KRtemp, Dim<2>{running_dim * appended_dim, rank}};
-                        // KR = KRview;
-
-                        Tensor<2, TType> newKR{"New KR", running_dim * appended_dim, rank};
-
-                        for (size_t I = 0; I < running_dim; I++) {
-                            for (size_t M = 0; M < appended_dim; M++) {
-                                for (size_t r = 0; r < rank; r++) {
-                                    newKR(I * appended_dim + M, r) = KRtemp(I, M, r);
-                                }
-                            }
-                        }
-                        
+                        TensorView<2, TType> KRview{KRtemp, Dim<2>{running_dim * appended_dim, rank}};
+                        Tensor<2, TType> newKR = KRview;
                         KRs.push_back(newKR);
                     }
                 }
