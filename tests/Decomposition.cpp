@@ -21,12 +21,9 @@ TEST_CASE("CP 1") {
 
     auto factors = parafac(test1, 2, 10, 1.0e-6);
 
-    CHECK_THAT(factors[0].vector_data(), Catch::Matchers::Equals(std::vector<double, einsums::AlignedAllocator<double, 64>>{
-                                            1.52094859, 0.25583807, 1.74374003, 0.79559132, 1.498266, -0.50882886}));
+    Tensor<3, double> test1_cp = parafac_reconstruct<3, double>(factors);
 
-    CHECK_THAT(factors[1].vector_data(), Catch::Matchers::Equals(std::vector<double, einsums::AlignedAllocator<double, 64>>{
-                                            -0.66754524, -0.26756225, -0.5229646, 0.41945054, -0.54818362, -0.92958005}));
-    
-    CHECK_THAT(factors[2].vector_data(), Catch::Matchers::Equals(std::vector<double, einsums::AlignedAllocator<double, 64>>{
-                                            -0.66634092, 0.53102556, -0.62631181, 0.57979445, -0.44226493, -0.69426301}));
+    double diff = rmsd(test1, test1_cp);
+
+    REQUIRE((rmsd(test1, test1_cp) < 0.17392));
 }
