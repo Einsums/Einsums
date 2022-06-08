@@ -60,11 +60,8 @@ auto rmsd(const TTensor<TRank, TType> &tensor1, const TTensor<TRank, TType> &ten
  */
 template <size_t TRank, typename TType = double>
 auto parafac_reconstruct(const std::vector<Tensor<2, TType>>& factors) -> Tensor<TRank, TType> {
-
     size_t rank = 0;
-    size_t tensor_size;
     Dim<TRank> dims;
-    std::vector<size_t> offsets_per_dim;
 
     size_t i = 0;
     for (const auto& factor : factors) {
@@ -72,15 +69,6 @@ auto parafac_reconstruct(const std::vector<Tensor<2, TType>>& factors) -> Tensor
         if (!rank) rank = factor.dim(1);
         i++;
     }
-
-    offsets_per_dim.resize(TRank);
-    size_t offset = 1;
-    for (size_t n = 0; n < TRank; n++) {
-        size_t m = TRank - n - 1;
-        offsets_per_dim[m] = offset;
-        offset *= dims[m];
-    }
-    tensor_size = offset;
 
     Tensor<TRank, TType> new_tensor(dims);
     new_tensor.zero();
@@ -99,7 +87,6 @@ auto parafac_reconstruct(const std::vector<Tensor<2, TType>>& factors) -> Tensor
     }
 
     return new_tensor;
-
 }
 
 template <size_t TRank, typename TType = double>
@@ -143,7 +130,7 @@ auto parafac(const TTensor<TRank, TType> &tensor, size_t rank, int n_iter_max = 
 
     // Perform SVD guess for parafac decomposition procedure
     std::vector<Tensor<2, TType>> factors = initialize_cp<TRank, TType>(unfolded_matrices, rank);
-    
+
     // Keep track of previous factors (for tracking convergence)
     std::vector<Tensor<2, TType>> prev_factors;
     for_sequence<TRank>([&](auto i) {
@@ -151,11 +138,11 @@ auto parafac(const TTensor<TRank, TType> &tensor, size_t rank, int n_iter_max = 
     });
 
     int iter = 0;
-    // bool converged = false;
+    bool converged = false;
     while (iter < n_iter_max) {
         for_sequence<TRank>([&](auto n_ind) {
             // Update prev factors
-            // prev_factors[n_ind] = factors[n_ind];
+            prev_factors[n_ind] = factors[n_ind];
 
             // Form V and Khatri-Rao product intermediates
             Tensor<2, TType> V;
