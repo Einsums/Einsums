@@ -7,10 +7,6 @@
 #include <cmath>
 #include <functional>
 
-using namespace einsums;
-using namespace einsums::tensor_algebra;
-using namespace einsums::tensor_algebra::index;
-
 namespace einsums::decomposition {
 
 template <size_t TRank>
@@ -121,6 +117,9 @@ auto initialize_cp(std::vector<Tensor<2, TType>> &folds, size_t rank) -> std::ve
  */
 template <template <size_t, typename> typename TTensor, size_t TRank, typename TType = double>
 auto parafac(const TTensor<TRank, TType> &tensor, size_t rank, int n_iter_max = 100, double tolerance = 1.e-8) -> std::vector<Tensor<2, TType>> {
+
+    using namespace einsums::tensor_algebra;
+    using namespace einsums::tensor_algebra::index;
 
     // Compute set of unfolded matrices
     std::vector<Tensor<2, TType>> unfolded_matrices;
