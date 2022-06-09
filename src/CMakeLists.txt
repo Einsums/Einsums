@@ -34,6 +34,7 @@ endif()
 target_link_libraries(einsums
     PUBLIC
         einsums-project-options
+        $<$<TARGET_EXISTS:lapacke>:lapacke>
         LAPACK::LAPACK
         BLAS::BLAS
         range-v3::range-v3

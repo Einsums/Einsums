@@ -71,10 +71,13 @@ else()
     find_package(LAPACK REQUIRED)
 endif()
 
-# Prefer MKL lapacke over vendor lapacke
+# Prefer MKL lapacke over vendor lapacke.  Additionally MKL lapacke is bundled in with lapack.
 check_include_file(mkl_lapacke.h HAVE_MKL_LAPACKE_HEADER)
 if (NOT HAVE_MKL_LAPACKE_HEADER)
-    check_include_file(lapacke.h HAVE_LAPACKE_HEADER)
+    include(cmake/FindLAPACKE)
+    if (LAPACKE_FOUND)
+        check_include_file(lapacke.h HAVE_LAPACKE_HEADER)
+    endif()
 endif()
 
 find_package(OpenMP)
