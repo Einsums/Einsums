@@ -145,7 +145,7 @@ auto parafac(const TTensor<TRank, TType> &tensor, size_t rank, int n_iter_max = 
 
             // Form V and Khatri-Rao product intermediates
             Tensor<2, TType> V;
-            std::vector<Tensor<2, TType>> KRs;
+            Tensor<2, TType> *KR;
             bool first = true;
 
             for_sequence<TRank>([&](auto m_ind) {
@@ -157,7 +157,9 @@ auto parafac(const TTensor<TRank, TType> &tensor, size_t rank, int n_iter_max = 
 
                     if (first) {
                         V = A_tA;
-                        KRs.push_back(factors[m_ind]);
+                        Tensor<2, TType>* KRcopy = new Tensor<2, TType>("KR product", tensor.dim(m_ind), rank);
+                        *KRcopy = factors[m_ind];
+                        KR = KRcopy;
                         first = false;
                     } else {
                         // Uses a Hamamard Contraction to build V
@@ -167,18 +169,20 @@ auto parafac(const TTensor<TRank, TType> &tensor, size_t rank, int n_iter_max = 
                         
                         // Perform a Khatri-Rao contraction
                         // TODO: Implement an actual Khatri-Rao procedure to replace this "hacky" workaround
-                        Tensor<2, TType>& oldKR = KRs.back();
 
-                        size_t running_dim = oldKR.dim(0);
+                        size_t running_dim = KR->dim(0);
                         size_t appended_dim = tensor.dim(m_ind);
                         Tensor<3, TType> KRtemp{"KRtemp", running_dim, appended_dim, rank};
 
                         einsum(0.0, Indices{I, M, r}, &KRtemp,
-                               1.0, Indices{I, r}, oldKR, Indices{M, r}, factors[m_ind]);
+                               1.0, Indices{I, r}, *KR, Indices{M, r}, factors[m_ind]);
 
+                        // Rebuild KR
+                        delete KR;
                         TensorView<2, TType> KRview{KRtemp, Dim<2>{running_dim * appended_dim, rank}};
-                        Tensor<2, TType> newKR = KRview;
-                        KRs.push_back(newKR);
+                        Tensor<2, TType> *newKR = new Tensor<2, TType>("KR product", running_dim * appended_dim, rank);
+                        *newKR = KRview;
+                        KR = newKR;
                     }
                 }
             });
@@ -189,7 +193,8 @@ auto parafac(const TTensor<TRank, TType> &tensor, size_t rank, int n_iter_max = 
 
             // Step 1: Matrix Multiplication
             einsum(0.0, Indices{I, r}, &factors[n_ind],
-                   1.0, Indices{I, K}, unfolded_matrices[n_ind], Indices{K, r}, KRs.back());
+                   1.0, Indices{I, K}, unfolded_matrices[n_ind], Indices{K, r}, *KR);
+            delete KR;
 
             // Step 2: Linear Solve (instead of inversion, for numerical stability, column-major ordering)
             linear_algebra::gesv(&V, &factors[n_ind]);
