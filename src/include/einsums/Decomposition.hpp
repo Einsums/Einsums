@@ -134,6 +134,7 @@ auto parafac(const TTensor<TRank, TType> &tensor, size_t rank, int n_iter_max = 
     std::vector<Tensor<2, TType>> prev_factors;
     for_sequence<TRank>([&](auto i) {
         prev_factors.push_back(Tensor<2, TType>{"prev factor element", tensor.dim(i), rank});
+        prev_factors[i].zero();
     });
 
     int iter = 0;
@@ -172,23 +173,28 @@ auto parafac(const TTensor<TRank, TType> &tensor, size_t rank, int n_iter_max = 
 
                         size_t running_dim = KR->dim(0);
                         size_t appended_dim = tensor.dim(m_ind);
-                        Tensor<3, TType> KRtemp{"KRtemp", running_dim, appended_dim, rank};
-
-                        einsum(0.0, Indices{I, M, r}, &KRtemp,
-                               1.0, Indices{I, r}, *KR, Indices{M, r}, factors[m_ind]);
-
-                        // Rebuild KR
-                        delete KR;
-                        TensorView<2, TType> KRview{KRtemp, Dim<2>{running_dim * appended_dim, rank}};
+                        
                         Tensor<2, TType> *newKR = new Tensor<2, TType>("KR product", running_dim * appended_dim, rank);
-                        *newKR = KRview;
+                        newKR->zero();
+
+                        // einsum(0.0, Indices{I, M, r}, newKR,
+                        //       1.0, Indices{I, r}, *KR, Indices{M, r}, factors[m_ind]);
+
+                        for (size_t I = 0; I < running_dim; I++) {
+                            for (size_t M = 0; M < appended_dim; M++) {
+                                for (size_t R = 0; R < rank; R++) {
+                                    (*newKR)(I * appended_dim + M, R) += (*KR)(I, R) * factors[m_ind](M, R);
+                                }
+                            }
+                        }
+
+                        delete KR;
                         KR = newKR;
                     }
                 }
             });
 
             // Update factors[n_ind]
-
             size_t ndim = tensor.dim(n_ind);
 
             // Step 1: Matrix Multiplication
