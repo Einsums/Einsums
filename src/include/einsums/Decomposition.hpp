@@ -463,6 +463,9 @@ auto tucker_ho_oi(const TTensor<TRank, TType> &tensor, std::vector<size_t> &rank
 
         iter += 1;
     }
+    if (!converged) {
+        println_warn("Tucker HO-OI decomposition failed to converge in {} iterations", n_iter_max);
+    }
 
     return std::make_tuple(g_tensor, factors);
 }

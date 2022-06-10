@@ -102,7 +102,7 @@ TEST_CASE("TUCKER 1") {
     REQUIRE(isgreaterequal(diff, 0.0));
     REQUIRE(islessequal(diff, 0.178837));
 
-    result = tucker_ho_oi(test1, ranks);
+    result = tucker_ho_oi(test1, ranks, 50, 1.0e-6);
     g_tensor = std::get<0>(result);
     factors = std::get<1>(result);
 
@@ -138,7 +138,7 @@ TEST_CASE("TUCKER 2") {
     REQUIRE(isgreaterequal(diff, 0.0));
     REQUIRE(islessequal(diff, 0.110250));
 
-    result = tucker_ho_oi(test2, ranks);
+    result = tucker_ho_oi(test2, ranks, 50, 1.0e-6);
     g_tensor = std::get<0>(result);
     factors = std::get<1>(result);
 
@@ -177,7 +177,7 @@ TEST_CASE("TUCKER 3") {
     REQUIRE(isgreaterequal(diff, 0.0));
     REQUIRE(islessequal(diff, 0.196843));
 
-    result = tucker_ho_oi(test3, ranks);
+    result = tucker_ho_oi(test3, ranks, 50, 1.0e-6);
     g_tensor = std::get<0>(result);
     factors = std::get<1>(result);
 
