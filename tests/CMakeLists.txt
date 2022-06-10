@@ -4,6 +4,7 @@ add_executable(test-all
     LinearAlgebra.cpp
     Tensor.cpp
     TensorAlgebra.cpp
+    Decomposition.cpp
     )
 target_link_libraries(test-all Catch2::Catch2 einsums)
 # catch_discover_tests(test-tensoralgebra
