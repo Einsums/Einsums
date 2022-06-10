@@ -120,6 +120,7 @@ auto parafac(const TTensor<TRank, TType> &tensor, size_t rank, int n_iter_max = 
 
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
+    using vector = std::vector<TType, AlignedAllocator<TType, 64>>;
 
     // Compute set of unfolded matrices
     std::vector<Tensor<2, TType>> unfolded_matrices;
@@ -173,13 +174,20 @@ auto parafac(const TTensor<TRank, TType> &tensor, size_t rank, int n_iter_max = 
 
                         size_t running_dim = KR->dim(0);
                         size_t appended_dim = tensor.dim(m_ind);
+
+                        Tensor<3, TType> KRbuff{"KR temp", running_dim, appended_dim, rank};
+
+                        einsum(0.0, Indices{I, M, r}, &KRbuff,
+                               1.0, Indices{I, r}, *KR, Indices{M, r}, factors[m_ind]);
                         
                         Tensor<2, TType> *newKR = new Tensor<2, TType>("KR product", running_dim * appended_dim, rank);
-                        newKR->zero();
 
-                        // einsum(0.0, Indices{I, M, r}, newKR,
-                        //       1.0, Indices{I, r}, *KR, Indices{M, r}, factors[m_ind]);
+                        const vector &KRbuffd = KRbuff.vector_data();
+                        vector &newKRd = newKR->vector_data();
 
+                        std::copy(KRbuffd.begin(), KRbuffd.end(), newKRd.begin());
+
+                        /*
                         for (size_t I = 0; I < running_dim; I++) {
                             for (size_t M = 0; M < appended_dim; M++) {
                                 for (size_t R = 0; R < rank; R++) {
@@ -187,6 +195,7 @@ auto parafac(const TTensor<TRank, TType> &tensor, size_t rank, int n_iter_max = 
                                 }
                             }
                         }
+                        */
 
                         delete KR;
                         KR = newKR;
