@@ -6,7 +6,7 @@ add_executable(test-all
     TensorAlgebra.cpp
 )
 
-if (UNIX AND NOT APPLE)
+if (NOT HAVE_MKL_LAPACKE_HEADER AND NOT LAPACKE_FOUND)
     target_sources(test-all PUBLIC Decomposition.cpp)
 endif()
 
