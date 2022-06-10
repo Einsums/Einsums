@@ -376,6 +376,8 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
             }
 
             T &target_value = std::apply(*C, C_order);
+            if (C_prefactor == 0.0)
+                target_value = 0.0;
             target_value *= C_prefactor;
             target_value += sum;
         }
@@ -399,7 +401,7 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
         for (auto it = view.begin(); it < view.end(); it++) {
 
             // // This is the generic case.
-            T sum{0};
+            // T sum{0};
 
             // // Construct the tuples that will be used to access the tensor elements of A and B
             auto A_order = detail::construct_indices_from_unique_combination<AIndices...>(
@@ -413,9 +415,11 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
             T A_value = std::apply(A, A_order);
             T B_value = std::apply(B, B_order);
 
-            sum += AB_prefactor * A_value * B_value;
+            T sum = AB_prefactor * A_value * B_value;
 
             T &target_value = std::apply(*C, C_order);
+            if (C_prefactor == 0.0)
+                target_value = 0.0;
             target_value *= C_prefactor;
             target_value += sum;
 
