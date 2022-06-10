@@ -4,9 +4,10 @@ add_executable(test-all
     LinearAlgebra.cpp
     Tensor.cpp
     TensorAlgebra.cpp
-    Decomposition.cpp
-    )
+)
+
+if (UNIX AND NOT APPLE)
+    target_sources(test-all PUBLIC Decomposition.cpp)
+endif()
+
 target_link_libraries(test-all Catch2::Catch2 einsums)
-# catch_discover_tests(test-tensoralgebra
-#     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-# )
