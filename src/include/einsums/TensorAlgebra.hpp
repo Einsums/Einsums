@@ -27,22 +27,29 @@
 // for the user. Undefine the one defined in <complex> here.
 #undef I
 
-namespace einsums::tensor_algebra {
-
-namespace index {
-
+namespace einsums::tensor_algebra::index {
 struct LabelBase {};
+} // namespace einsums::tensor_algebra::index
 
 #define MAKE_INDEX(x)                                                                                                                      \
+    namespace einsums::tensor_algebra::index {                                                                                             \
     struct x : public LabelBase {                                                                                                          \
         static constexpr char letter = static_cast<const char (&)[2]>(#x)[0];                                                              \
         constexpr x() = default;                                                                                                           \
     };                                                                                                                                     \
     static struct x x;                                                                                                                     \
-    inline auto operator<<(std::ostream &os, const struct x &)->std::ostream & {                                                           \
+    inline auto operator<<(std::ostream &os, const struct x &) -> std::ostream & {                                                         \
         os << x::letter;                                                                                                                   \
         return os;                                                                                                                         \
-    }
+    }                                                                                                                                      \
+    }                                                                                                                                      \
+    template <>                                                                                                                            \
+    struct fmt::formatter<struct ::einsums::tensor_algebra::index::x> : fmt::formatter<char> {                                             \
+        template <typename FormatContext>                                                                                                  \
+        auto format(const struct ::einsums::tensor_algebra::index::x &, FormatContext &ctx) {                                              \
+            return formatter<char>::format(::einsums::tensor_algebra::index::x::letter, ctx);                                              \
+        }                                                                                                                                  \
+    };
 
 MAKE_INDEX(A); // NOLINT
 MAKE_INDEX(a); // NOLINT
@@ -81,6 +88,10 @@ MAKE_INDEX(s); // NOLINT
 MAKE_INDEX(Z); // NOLINT
 
 #undef MAKE_INDEX
+
+namespace einsums::tensor_algebra {
+
+namespace index {
 
 constexpr auto list = std::make_tuple(i, j, k, l, m, n, a, b, c, d, e, f, p, q, r, s);
 
@@ -140,6 +151,11 @@ auto get_dim_ranges_for(const TensorType<Rank, T> &tensor, const std::tuple<Args
     return std::tuple{ranges::views::ints(0, (int)tensor.dim(std::get<2 * I + 1>(args)))...};
 }
 
+template <template <size_t, typename> typename TensorType, size_t Rank, typename... Args, std::size_t... I, typename T = double>
+auto get_dim_for(const TensorType<Rank, T> &tensor, const std::tuple<Args...> &args, std::index_sequence<I...>) {
+    return std::tuple{tensor.dim(std::get<2 * I + 1>(args))...};
+}
+
 template <typename T, int Position>
 constexpr auto find_position() {
     return -1;
@@ -188,6 +204,11 @@ constexpr auto unique_find_type_with_position(const std::tuple<Ts...> &, const s
 template <template <size_t, typename> typename TensorType, size_t Rank, typename... Args, typename T = double>
 auto get_dim_ranges_for(const TensorType<Rank, T> &tensor, const std::tuple<Args...> &args) {
     return detail::get_dim_ranges_for(tensor, args, std::make_index_sequence<sizeof...(Args) / 2>{});
+}
+
+template <template <size_t, typename> typename TensorType, size_t Rank, typename... Args, typename T = double>
+auto get_dim_for(const TensorType<Rank, T> &tensor, const std::tuple<Args...> &args) {
+    return detail::get_dim_for(tensor, args, std::make_index_sequence<sizeof...(Args) / 2>{});
 }
 
 template <typename AIndex, typename... TargetCombination, typename... TargetPositionInC, typename... LinkCombination,
@@ -1176,6 +1197,61 @@ auto unfold(const CType<CRank, T> &source) -> std::enable_if_t<std::is_same_v<Te
     }
 
     return target;
+}
+
+/** Computes the Khatri-Rao product of tensors A and B.
+ *
+ * Example:
+ *    Tensor<2> result = khatri_rao(Indices{I, r}, A, Indices{J, r}, B);
+ *
+ * Result is described as {(I,J), r}. If multiple common indices are provided they will be collapsed into a single index in the result.
+ */
+template <template <size_t, typename> typename AType, size_t ARank, template <size_t, typename> typename BType, size_t BRank,
+          typename... AIndices, typename... BIndices, typename T = double>
+auto khatri_rao(const std::tuple<AIndices...> &, const AType<ARank, T> &A, const std::tuple<BIndices...> &, const BType<BRank, T> &B)
+    -> std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<ARank, T>, AType<ARank, T>> &&
+                            std::is_base_of_v<::einsums::detail::TensorBase<BRank, T>, BType<BRank, T>>,
+                        Tensor<2, T>> {
+
+    constexpr auto A_indices = std::tuple<AIndices...>();
+    constexpr auto B_indices = std::tuple<BIndices...>();
+
+    // Determine the common indices between A and B
+    constexpr auto common = intersect_t<std::tuple<AIndices...>, std::tuple<BIndices...>>();
+    // Determine unique indices in A
+    constexpr auto A_only = difference_t<std::tuple<AIndices...>, decltype(common)>();
+    // Determine unique indices in B
+    constexpr auto B_only = difference_t<std::tuple<BIndices...>, decltype(common)>();
+
+    // Record the positions of each types.
+    constexpr auto A_common_position = detail::find_type_with_position(common, A_indices);
+    constexpr auto B_common_position = detail::find_type_with_position(common, B_indices);
+    constexpr auto A_only_position = detail::find_type_with_position(A_only, A_indices);
+    constexpr auto B_only_position = detail::find_type_with_position(B_only, B_indices);
+
+    // Obtain dimensions of the indices discovered above
+    auto A_common_dims = detail::get_dim_for(A, A_common_position);
+    auto B_common_dims = detail::get_dim_for(B, B_common_position);
+    auto A_only_dims = detail::get_dim_for(A, A_only_position);
+    auto B_only_dims = detail::get_dim_for(B, B_only_position);
+
+    // Sanity check - ensure the common dims between A and B are the same size.
+    for_sequence<std::tuple_size_v<decltype(common)>>([&](auto i) {
+        if (std::get<i>(A_common_dims) != std::get<i>(B_common_dims)) {
+            throw std::runtime_error(fmt::format("Common dimensions for index {} of A and B do not match.", std::get<i>(common)));
+        }
+    });
+
+    auto result_dims = std::tuple_cat(std::make_tuple("KR product"), A_only_dims, B_only_dims, A_common_dims);
+
+    // Construct resulting tensor
+    auto result = std::make_from_tuple<Tensor<std::tuple_size_v<decltype(result_dims)> - 1, T>>(result_dims);
+
+    // Perform the actual Khatri-Rao product using our einsum routine.
+    einsum(std::tuple_cat(A_only, B_only, common), &result, std::tuple_cat(A_only, common), A, std::tuple_cat(B_only, common), B);
+
+    // Return a reconstruction of the result tensor ... this can be considered as a simple reshape of the tensor.
+    return Tensor<2, T>{std::move(result), "KR product", -1, detail::product_dims(A_common_position, A)};
 }
 
 } // namespace einsums::tensor_algebra
