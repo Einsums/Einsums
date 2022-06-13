@@ -294,3 +294,29 @@ TEST_CASE("Tensor 2D - HDF5 wrapper") {
         for (int j = 0; j < 3; j++)
             REQUIRE(B(i, j) == B(i, j));
 }
+
+TEST_CASE("reshape") {
+    SECTION("1") {
+        auto C = einsums::create_incremented_tensor("C", 10, 10, 10);
+        REQUIRE_NOTHROW(einsums::Tensor{std::move(C), "D", 10, -1});
+        // NOTE: At this point tensor C is no longer valid.
+    }
+
+    SECTION("2") {
+        auto C = einsums::create_incremented_tensor("C", 10, 10, 10);
+        REQUIRE_NOTHROW(einsums::Tensor{std::move(C), "D", 100, 10});
+        // NOTE: At this point tensor C is no longer valid.
+    }
+
+    SECTION("3") {
+        auto C = einsums::create_incremented_tensor("C", 10, 10, 10);
+        REQUIRE_THROWS(einsums::Tensor{std::move(C), "D", -1, -1});
+        // NOTE: At this point tensor C is no longer valid.
+    }
+
+    SECTION("4") {
+        auto C = einsums::create_incremented_tensor("C", 10, 10, 10);
+        REQUIRE_THROWS(einsums::Tensor{std::move(C), "D", 9, 9});
+        // NOTE: At this point tensor C is no longer valid.
+    }
+}

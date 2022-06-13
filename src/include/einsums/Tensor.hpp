@@ -197,6 +197,59 @@ struct Tensor final : public detail::TensorBase<Rank, T> {
         _data.resize(size);
     }
 
+    // Once this is called "otherTensor" is no longer a valid tensor.
+    template <size_t OtherRank, typename... Dims>
+    explicit Tensor(Tensor<OtherRank, T> &&existingTensor, std::string name, Dims... dims)
+        : _data(std::move(existingTensor._data)), _name{std::move(name)}, _dims{static_cast<size_t>(dims)...} {
+        static_assert(Rank == sizeof...(dims), "Declared rank does not match provided dims");
+
+        struct stride {
+            size_t value{1};
+            stride() = default;
+            auto operator()(size_t dim) -> size_t {
+                auto old_value = value;
+                value *= dim;
+                return old_value;
+            }
+        };
+
+        // Check to see if the user provided a dim of "-1" in one place. If found then the user requests that we
+        // compute this dimensionality of this "0" index for them.
+        int nfound{0};
+        int location{-1};
+        for (auto [i, dim] : enumerate(_dims)) {
+            if (dim == -1) {
+                nfound++;
+                location = i;
+            }
+        }
+
+        if (nfound > 1) {
+            throw std::runtime_error("More than one -1 was provided.");
+        }
+
+        if (nfound == 1) {
+            size_t size{1};
+            for (auto [i, dim] : enumerate(_dims)) {
+                if (i != location)
+                    size *= dim;
+            }
+            if (size > existingTensor.size()) {
+                throw std::runtime_error("Size of new tensor is larger than the parent tensor.");
+            }
+            _dims[location] = existingTensor.size() / size;
+        }
+
+        // Row-major order of dimensions
+        std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), stride());
+        size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
+
+        // Check size
+        if (_data.size() != size) {
+            throw std::runtime_error("Provided dims to not match size of parent tensor");
+        }
+    }
+
     Tensor(Dim<Rank> dims) : _dims{std::move(dims)} {
         struct stride {
             size_t value{1};
@@ -498,6 +551,9 @@ struct Tensor final : public detail::TensorBase<Rank, T> {
 
     template <size_t Rank_, typename T_>
     friend struct TensorView;
+
+    template <size_t OtherRank, typename T_>
+    friend struct Tensor;
 };
 
 template <>
@@ -1335,6 +1391,8 @@ struct DiskView final : public detail::TensorBase<ViewRank, T> {
 #ifdef __cpp_deduction_guides
 template <typename... Args>
 Tensor(const std::string &, Args...) -> Tensor<sizeof...(Args)>;
+template <size_t OtherRank, typename... Dims>
+explicit Tensor(Tensor<OtherRank> &&otherTensor, std::string name, Dims... dims) -> Tensor<sizeof...(dims)>;
 
 template <size_t Rank, size_t OtherRank, typename... Args>
 TensorView(Tensor<OtherRank> &, const Dim<Rank> &, Args...) -> TensorView<Rank>;
