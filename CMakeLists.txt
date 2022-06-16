@@ -57,7 +57,7 @@ message(STATUS "${CMAKE_CXX_COMPILER_ID} flags: ${HOST_FLAGS}")
 # )
 
 include(cmake/FindITTNOTIFY.cmake)
-include(cmake/FindIntelSYCL.cmake)
+# include(cmake/FindIntelSYCL.cmake)
 
 # Attempt to find MKL. This assumes the user set MKL_DIR.
 # set(BLA_VENDOR Intel10_64_dyn)

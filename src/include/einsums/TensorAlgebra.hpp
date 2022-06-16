@@ -6,6 +6,8 @@
 #include "STL.hpp"
 #include "Section.hpp"
 #include "Tensor.hpp"
+
+#include <cmath>
 #if defined(EINSUMS_USE_HPTT)
 #include "hptt.h"
 #endif
@@ -761,9 +763,12 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
     -> std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<ARank, T>, AType<ARank, T>> &&
                         std::is_base_of_v<::einsums::detail::TensorBase<BRank, T>, BType<BRank, T>> &&
                         std::is_base_of_v<::einsums::detail::TensorBase<CRank, T>, CType<CRank, T>> && std::is_arithmetic_v<U>> {
-    Section section(fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{} + {} "{}"{})", C->name(), print_tuple_no_type(C_indices),
-                                UAB_prefactor, A.name(), print_tuple_no_type(A_indices), B.name(), print_tuple_no_type(B_indices),
-                                UC_prefactor, C->name(), print_tuple_no_type(C_indices)));
+    Section section(FP_ZERO != std::fpclassify(UC_prefactor)
+                        ? fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{} + {} "{}"{})", C->name(), print_tuple_no_type(C_indices),
+                                      UAB_prefactor, A.name(), print_tuple_no_type(A_indices), B.name(), print_tuple_no_type(B_indices),
+                                      UC_prefactor, C->name(), print_tuple_no_type(C_indices))
+                        : fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{})", C->name(), print_tuple_no_type(C_indices), UAB_prefactor,
+                                      A.name(), print_tuple_no_type(A_indices), B.name(), print_tuple_no_type(B_indices)));
 
     const T C_prefactor = UC_prefactor;
     const T AB_prefactor = UAB_prefactor;
@@ -978,8 +983,11 @@ auto sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<
                         sizeof...(CIndices) == sizeof...(AIndices) && sizeof...(CIndices) == CRank && sizeof...(AIndices) == ARank &&
                         std::is_arithmetic_v<U>> {
 
-    Section section{fmt::format(R"(sort: "{}"{} = {} "{}"{} + {} "{}"{})", C->name(), print_tuple_no_type(C_indices), UA_prefactor,
-                                A.name(), print_tuple_no_type(A_indices), UC_prefactor, C->name(), print_tuple_no_type(C_indices))};
+    Section section{FP_ZERO != std::fpclassify(UC_prefactor)
+                        ? fmt::format(R"(sort: "{}"{} = {} "{}"{} + {} "{}"{})", C->name(), print_tuple_no_type(C_indices), UA_prefactor,
+                                      A.name(), print_tuple_no_type(A_indices), UC_prefactor, C->name(), print_tuple_no_type(C_indices))
+                        : fmt::format(R"(sort: "{}"{} = {} "{}"{})", C->name(), print_tuple_no_type(C_indices), UA_prefactor, A.name(),
+                                      print_tuple_no_type(A_indices))};
 
     const T C_prefactor = UC_prefactor;
     const T A_prefactor = UA_prefactor;
