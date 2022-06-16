@@ -1132,7 +1132,7 @@ struct DiskTensor final : public detail::TensorBase<Rank, T> {
             if (_dims[i] < 10)
                 chunk_temp[i] = _dims[i];
             else
-                chunk_temp[i] = 10;
+                chunk_temp[i] = 64;
         }
 
         // Check to see if the data set exists
@@ -1404,6 +1404,9 @@ template <size_t Rank, size_t OtherRank, typename... Args>
 TensorView(const TensorView<OtherRank> &, const Dim<Rank> &, Args...) -> TensorView<Rank>;
 template <size_t Rank, size_t OtherRank, typename... Args>
 TensorView(std::string, Tensor<OtherRank> &, const Dim<Rank> &, Args...) -> TensorView<Rank>;
+
+template <typename... Dims>
+DiskTensor(h5::fd_t &file, std::string name, Dims... dims) -> DiskTensor<sizeof...(Dims)>;
 #endif
 
 } // namespace einsums
