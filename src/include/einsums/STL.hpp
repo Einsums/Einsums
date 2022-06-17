@@ -294,11 +294,11 @@ struct DiskTensor;
 template <size_t ViewRank, size_t Rank, typename T>
 struct DiskView;
 
-template <typename D, size_t Rank, typename T = double>
+template <typename D, size_t Rank, typename T>
 struct is_incore_rank_tensor
     : public std::bool_constant<std::is_same_v<std::decay_t<D>, Tensor<Rank, T>> || std::is_same_v<std::decay_t<D>, TensorView<Rank, T>>> {
 };
-template <typename D, size_t Rank, typename T = double>
+template <typename D, size_t Rank, typename T>
 inline constexpr bool is_incore_rank_tensor_v = is_incore_rank_tensor<D, Rank, T>::value;
 
 template <typename D, size_t Rank, size_t ViewRank = Rank, typename T = double>

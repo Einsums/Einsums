@@ -674,9 +674,10 @@ struct TensorView final : public detail::TensorBase<Rank, T> {
         return *this;
     }
 
-    template <typename AType>
-    auto operator=(const AType &other) -> typename std::enable_if_t<is_incore_rank_tensor_v<AType, Rank>, TensorView &> {
-        if constexpr (std::is_same_v<AType, TensorView<Rank, T>>) {
+    template <template <size_t, typename> typename AType>
+    auto operator=(const AType<Rank, T> &other) ->
+        typename std::enable_if_t<is_incore_rank_tensor_v<AType<Rank, T>, Rank, T>, TensorView &> {
+        if constexpr (std::is_same_v<AType<Rank, T>, TensorView<Rank, T>>) {
             if (this == &other)
                 return *this;
         }
@@ -693,9 +694,10 @@ struct TensorView final : public detail::TensorBase<Rank, T> {
         return *this;
     }
 
-    template <typename AType>
-    auto operator=(const AType &&other) -> typename std::enable_if_t<is_incore_rank_tensor_v<AType, Rank>, TensorView &> {
-        if constexpr (std::is_same_v<AType, TensorView<Rank, T>>) {
+    template <template <size_t, typename> typename AType>
+    auto operator=(const AType<Rank, T> &&other) ->
+        typename std::enable_if_t<is_incore_rank_tensor_v<AType<Rank, T>, Rank, T>, TensorView &> {
+        if constexpr (std::is_same_v<AType<Rank, T>, TensorView<Rank, T>>) {
             if (this == &other)
                 return *this;
         }
@@ -907,7 +909,7 @@ auto create_incremented_tensor(const std::string &name, MultiIndex... index) -> 
 
     for (auto it = view.begin(); it != view.end(); it++) {
         std::apply(A, *it) = counter;
-        counter += 1.0;
+        counter += T{1.0};
     }
 
     return A;
@@ -920,7 +922,7 @@ auto create_random_tensor(const std::string &name, MultiIndex... index) -> Tenso
     double lower_bound = 0.0;
     double upper_bound = 1.0;
 
-    std::uniform_real_distribution<double> unif(lower_bound, upper_bound);
+    std::uniform_real_distribution<T> unif(lower_bound, upper_bound);
     std::default_random_engine re;
 
     {
@@ -1418,13 +1420,15 @@ auto println(const AType<Rank, T> &A, int width = 12) ->
     {
         print::Indent indent{};
 
-        if constexpr (einsums::is_incore_rank_tensor_v<AType<Rank, T>, Rank>) {
+        if constexpr (einsums::is_incore_rank_tensor_v<AType<Rank, T>, Rank, T>) {
             if constexpr (std::is_same_v<AType<Rank, T>, einsums::Tensor<Rank, T>>)
                 println("Type: In Core Tensor");
             else
                 println("Type: In Core Tensor View");
         } else
             println("Type: Disk Tensor");
+
+        println("Data Type: {}", type_name<T>());
 
         {
             std::ostringstream oss;
@@ -1443,7 +1447,7 @@ auto println(const AType<Rank, T> &A, int width = 12) ->
         }
         println();
 
-        if constexpr (Rank > 1 && einsums::is_incore_rank_tensor_v<AType<Rank, T>, Rank>) {
+        if constexpr (Rank > 1 && einsums::is_incore_rank_tensor_v<AType<Rank, T>, Rank, T>) {
             auto target_dims = einsums::get_dim_ranges<Rank - 1>(A);
             auto final_dim = A.dim(Rank - 1);
 
@@ -1477,7 +1481,7 @@ auto println(const AType<Rank, T> &A, int width = 12) ->
                 println("{}", oss.str());
                 println();
             }
-        } else if constexpr (Rank == 1 && einsums::is_incore_rank_tensor_v<AType<Rank, T>, Rank>) {
+        } else if constexpr (Rank == 1 && einsums::is_incore_rank_tensor_v<AType<Rank, T>, Rank, T>) {
             auto target_dims = einsums::get_dim_ranges<Rank>(A);
 
             for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {

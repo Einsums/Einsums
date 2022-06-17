@@ -102,3 +102,14 @@ TEST_CASE("dgesv") {
                                            0.84222739, -0.10380185, 0.10571095, 0.95546491, 0.22065963, 1.90063673, 5.35766149, 4.04060266})
                    .margin(0.00001));
 }
+
+TEST_CASE("gemm") {
+    using namespace einsums;
+    using namespace einsums::linear_algebra;
+
+    SECTION("float") {
+        auto a = create_incremented_tensor<float>("a", 3, 3);
+        auto b = create_incremented_tensor<float>("b", 3, 3);
+        // auto c = Tensor
+    }
+}
