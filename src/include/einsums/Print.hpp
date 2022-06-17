@@ -5,6 +5,7 @@
 #include "fmt/format.h"
 #include "fmt/ranges.h"
 
+#include <algorithm>
 #include <cassert>
 #include <cstring>
 #include <iomanip>
@@ -60,30 +61,64 @@ void println(const std::string &oss);
 }
 
 //
-// Taken from https://stackoverflow.com/questions/81870/is-it-possible-to-print-a-variables-type-in-standard-c/56766138#56766138
+// Taken from https://stackoverflow.com/posts/59522794/revisions
 //
+namespace detail {
 template <typename T>
-constexpr auto type_name() noexcept {
-    std::string_view name = "Error: unsupported compiler", prefix, suffix;
-
-#ifdef __clang__
-    name = __PRETTY_FUNCTION__;
-    prefix = "auto einsums::type_name() [T = ";
-    suffix = "]";
-#elif defined(__GNUC__)
-    name = __PRETTY_FUNCTION__;
-    prefix = "constexpr auto einsums::type_name() [with T = ";
-    suffix = "]";
-#elif defined(_MSC_VER)
-    name = __FUNCSIG__;
-    prefix = "auto __cdecl einsums::type_name<";
-    suffix = ">(void) noexcept";
+constexpr const auto &RawTypeName() {
+#ifdef _MSC_VER
+    return __FUNCSIG__;
+#else
+    return __PRETTY_FUNCTION__;
 #endif
-    name.remove_prefix(prefix.size());
-    name.remove_suffix(suffix.size());
+}
+
+struct RawTypeNameFormat {
+    std::size_t leading_junk = 0, trailing_junk = 0;
+};
+
+// Returns `false` on failure.
+inline constexpr bool GetRawTypeNameFormat(RawTypeNameFormat *format) {
+    const auto &str = RawTypeName<int>();
+    for (std::size_t i = 0;; i++) {
+        if (str[i] == 'i' && str[i + 1] == 'n' && str[i + 2] == 't') {
+            if (format) {
+                format->leading_junk = i;
+                format->trailing_junk = sizeof(str) - i - 3 - 1; // `3` is the length of "int", `1` is the space for the null terminator.
+            }
+            return true;
+        }
+    }
+    return false;
+}
+
+inline static constexpr RawTypeNameFormat format = [] {
+    static_assert(GetRawTypeNameFormat(nullptr), "Unable to figure out how to generate type names on this compiler.");
+    RawTypeNameFormat format;
+    GetRawTypeNameFormat(&format);
+    return format;
+}();
+} // namespace detail
+
+// Returns the type name in a `std::array<char, N>` (null-terminated).
+template <typename T>
+[[nodiscard]] constexpr auto CexprTypeName() {
+    constexpr std::size_t len = sizeof(detail::RawTypeName<T>()) - detail::format.leading_junk - detail::format.trailing_junk;
+    std::array<char, len> name{};
+    for (std::size_t i = 0; i < len - 1; i++)
+        name[i] = detail::RawTypeName<T>()[i + detail::format.leading_junk];
     return name;
 }
 
+template <typename T>
+[[nodiscard]] auto type_name() -> const char * {
+    static constexpr auto name = CexprTypeName<T>();
+    return name.data();
+}
+template <typename T>
+[[nodiscard]] auto type_name(const T &) -> const char * {
+    return type_name<T>();
+}
 namespace detail {
 
 template <typename Tuple, std::size_t N>
