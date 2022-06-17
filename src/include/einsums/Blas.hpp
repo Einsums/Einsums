@@ -1,5 +1,6 @@
 #pragma once
 
+#include <complex>
 #include <vector>
 
 // Namespace for BLAS and LAPACK routines.
@@ -12,8 +13,43 @@ void finalize();
 /*!
  * Performs matrix multiplication for general square matices of type double.
  */
+void sgemm(char transa, char transb, int m, int n, int k, float alpha, const float *a, int lda, const float *b, int ldb, float beta,
+           float *c, int ldc);
 void dgemm(char transa, char transb, int m, int n, int k, double alpha, const double *a, int lda, const double *b, int ldb, double beta,
            double *c, int ldc);
+void cgemm(char transa, char transb, int m, int n, int k, std::complex<float> alpha, const std::complex<float> *a, int lda,
+           const std::complex<float> *b, int ldb, std::complex<float> beta, std::complex<float> *c, int ldc);
+void zgemm(char transa, char transb, int m, int n, int k, std::complex<double> alpha, const std::complex<double> *a, int lda,
+           const std::complex<double> *b, int ldb, std::complex<double> beta, std::complex<double> *c, int ldc);
+
+template <typename T>
+void gemm(char transa, char transb, int m, int n, int k, T alpha, const T *a, int lda, const T *b, int ldb, T beta, T *c, int ldc);
+
+template <>
+inline void gemm<float>(char transa, char transb, int m, int n, int k, float alpha, const float *a, int lda, const float *b, int ldb,
+                        float beta, float *c, int ldc) {
+    sgemm(transa, transb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc);
+}
+
+template <>
+inline void gemm<double>(char transa, char transb, int m, int n, int k, double alpha, const double *a, int lda, const double *b, int ldb,
+                         double beta, double *c, int ldc) {
+    dgemm(transa, transb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc);
+}
+
+template <>
+inline void gemm<std::complex<float>>(char transa, char transb, int m, int n, int k, std::complex<float> alpha,
+                                      const std::complex<float> *a, int lda, const std::complex<float> *b, int ldb,
+                                      std::complex<float> beta, std::complex<float> *c, int ldc) {
+    cgemm(transa, transb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc);
+}
+
+template <>
+inline void gemm<std::complex<double>>(char transa, char transb, int m, int n, int k, std::complex<double> alpha,
+                                       const std::complex<double> *a, int lda, const std::complex<double> *b, int ldb,
+                                       std::complex<double> beta, std::complex<double> *c, int ldc) {
+    zgemm(transa, transb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc);
+}
 
 /*!
  * Performs matrix vector multiplication.
