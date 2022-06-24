@@ -1378,6 +1378,8 @@ TensorView(std::string, Tensor<T, OtherRank> &, const Dim<Rank> &, Args...) -> T
 
 template <typename... Dims>
 DiskTensor(h5::fd_t &file, std::string name, Dims... dims) -> DiskTensor<double, sizeof...(Dims)>;
+
+// Supposedly C++20 will allow template deduction guides for template aliases. i.e. Dim, Stride, Offset, Count, Range.
 #endif
 
 } // namespace einsums
