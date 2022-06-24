@@ -24,6 +24,8 @@
 #endif
 
 extern "C" {
+extern void FC_GLOBAL(sgemm, SGEMM)(char *, char *, int *, int *, int *, float *, const float *, int *, const float *, int *, float *,
+                                    float *, int *);
 extern void FC_GLOBAL(dgemm, DGEMM)(char *, char *, int *, int *, int *, double *, const double *, int *, const double *, int *, double *,
                                     double *, int *);
 extern void FC_GLOBAL(dgemv, DGEMV)(char *, int *, int *, double *, const double *, int *, const double *, int *, double *, double *,
@@ -42,6 +44,13 @@ extern void FC_GLOBAL(dgesdd, DGESDD)(char *, int *, int *, double *, int *, dou
 }
 
 namespace einsums::backend::vendor {
+
+void sgemm(char transa, char transb, int m, int n, int k, float alpha, const float *a, int lda, const float *b, int ldb, float beta,
+           float *c, int ldc) {
+    if (m == 0 || n == 0 || k == 0)
+        return;
+    FC_GLOBAL(sgemm, SGEMM)(&transb, &transa, &n, &m, &k, &alpha, b, &ldb, a, &lda, &beta, c, &ldc);
+}
 
 void dgemm(char transa, char transb, int m, int n, int k, double alpha, const double *a, int lda, const double *b, int ldb, double beta,
            double *c, int ldc) {

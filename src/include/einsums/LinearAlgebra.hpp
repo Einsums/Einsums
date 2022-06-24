@@ -19,14 +19,14 @@ namespace einsums::linear_algebra {
 
 template <bool TransA, bool TransB, template <size_t, typename> typename AType, template <size_t, typename> typename BType,
           template <size_t, typename> typename CType, size_t Rank, typename T>
-auto gemm(const double alpha, const AType<Rank, T> &A, const BType<Rank, T> &B, const double beta, CType<Rank, T> *C) ->
+auto gemm(const T alpha, const AType<Rank, T> &A, const BType<Rank, T> &B, const T beta, CType<Rank, T> *C) ->
     typename std::enable_if_t<is_incore_rank_tensor_v<AType<Rank, T>, 2, T> && is_incore_rank_tensor_v<BType<Rank, T>, 2, T> &&
                               is_incore_rank_tensor_v<CType<Rank, T>, 2, T>> {
     auto m = C->dim(0), n = C->dim(1), k = TransA ? A.dim(0) : A.dim(1);
     auto lda = A.stride(0), ldb = B.stride(0), ldc = C->stride(0);
 
     timer::push(fmt::format("gemm<{}, {}>", TransA, TransB));
-    blas::dgemm(TransA ? 't' : 'n', TransB ? 't' : 'n', m, n, k, alpha, A.data(), lda, B.data(), ldb, beta, C->data(), ldc);
+    blas::gemm(TransA ? 't' : 'n', TransB ? 't' : 'n', m, n, k, alpha, A.data(), lda, B.data(), ldb, beta, C->data(), ldc);
     timer::pop();
 }
 
@@ -49,7 +49,7 @@ auto gemm(const double alpha, const AType<Rank, T> &A, const BType<Rank, T> &B, 
  */
 template <bool TransA, bool TransB, template <size_t, typename> typename AType, template <size_t, typename> typename BType, size_t Rank,
           typename T>
-auto gemm(const double alpha, const AType<Rank, T> &A, const BType<Rank, T> &B)
+auto gemm(const T alpha, const AType<Rank, T> &A, const BType<Rank, T> &B)
     -> std::enable_if_t<is_incore_rank_tensor_v<AType<Rank, T>, 2, T> && is_incore_rank_tensor_v<BType<Rank, T>, 2, T>, Tensor<2, double>> {
     Tensor<2, double> C{"gemm result", TransA ? A.dim(1) : A.dim(0), TransB ? B.dim(1) : B.dim(0)};
 

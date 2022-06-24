@@ -108,8 +108,12 @@ TEST_CASE("gemm") {
     using namespace einsums::linear_algebra;
 
     SECTION("float") {
-        auto a = create_incremented_tensor<float>("a", 3, 3);
-        auto b = create_incremented_tensor<float>("b", 3, 3);
-        // auto c = Tensor
+        auto A = create_incremented_tensor<float>("a", 3, 3);
+        auto B = create_incremented_tensor<float>("b", 3, 3);
+        auto C = create_incremented_tensor<float>("c", 3, 3);
+        zero(C);
+
+        // Perform basic matrix multiplication
+        einsums::linear_algebra::gemm<false, false>(1.0f, A, B, 0.0f, &C);
     }
 }

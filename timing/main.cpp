@@ -3,6 +3,7 @@
 #include "einsums/OpenMP.h"
 #include "einsums/Print.hpp"
 #include "einsums/STL.hpp"
+#include "einsums/Section.hpp"
 #include "einsums/State.hpp"
 #include "einsums/Tensor.hpp"
 #include "einsums/TensorAlgebra.hpp"
@@ -21,14 +22,21 @@ auto main() -> int {
     timer::initialize();
     blas::initialize();
 
-#if 0
-#define NMO 200
+    // Disable HDF5 diagnostic reporting.
+    H5Eset_auto(0, nullptr, nullptr);
+
+    // Create a file to hold the data from the DiskTensor tests.
+    einsums::state::data = h5::create("Data.h5", H5F_ACC_TRUNC);
+
+#define NMO 64
 #define NBS 200
 
     int nmo1{NMO}, nmo2{NMO}, nmo3{NMO}, nmo4{NMO};
     int nbs1{NBS}, nbs2{NBS}, nbs3{NBS}, nbs4{NBS};
 
     println("Running on {} threads", omp_get_max_threads());
+
+#if 0
     println("NMO {} :: NBS {}", NMO, NBS);
 
     timer::push("Allocations");
@@ -153,13 +161,20 @@ auto main() -> int {
     //     }
     // }
 
-    Tensor<2> A = create_random_tensor("A", 3, 3);
-    Tensor<1> B = create_random_tensor("B", 3);
-    Tensor<3> C{"C", 3, 3, 3};
+    // Tensor<2> A = create_random_tensor("A", 3, 3);
+    // Tensor<1> B = create_random_tensor("B", 3);
+    // Tensor<3> C{"C", 3, 3, 3};
 
-    C.set_all(0.0);
-    einsum(Indices{i, j, k}, &C, Indices{i, j}, A, Indices{k}, B);
+    // C.set_all(0.0);
+    // einsum(Indices{i, j, k}, &C, Indices{i, j}, A, Indices{k}, B);
 
+    auto eri = create_random_tensor("eri", NMO, NMO, NMO, NMO);
+    DiskTensor g(state::data, "eri", NMO, NMO, NMO, NMO);
+
+    {
+        Section section{"disk write"};
+        g(All{}, All{}, All{}, All{}) = eri;
+    }
     timer::report();
     blas::finalize();
     timer::finalize();
