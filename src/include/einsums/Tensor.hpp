@@ -126,26 +126,26 @@ namespace einsums {
 
 namespace detail {
 
-template <size_t Rank, typename T>
+template <typename T, size_t Rank>
 struct TensorBase {
     [[nodiscard]] virtual auto dim(int d) const -> size_t = 0;
 };
 
 } // namespace detail
 
-template <size_t Rank, typename T>
+template <typename T, size_t Rank>
 struct TensorView;
 
-template <size_t ViewRank, size_t Rank, typename T>
+template <typename T, size_t ViewRank, size_t Rank>
 struct DiskView;
 
-template <size_t Rank, typename T>
+template <typename T, size_t Rank>
 struct DiskTensor;
 
 namespace detail {
 
-template <template <size_t, typename> typename TensorType, size_t Rank, std::size_t... I, typename T = double>
-auto get_dim_ranges(const TensorType<Rank, T> &tensor, std::index_sequence<I...>) {
+template <template <typename, size_t> typename TensorType, size_t Rank, std::size_t... I, typename T>
+auto get_dim_ranges(const TensorType<T, Rank> &tensor, std::index_sequence<I...>) {
     return std::tuple{ranges::views::ints(0, (int)tensor.dim(I))...};
 }
 
@@ -159,13 +159,13 @@ void add_elements(Target &target, const Source1 &source1, const Source2 &source2
 
 } // namespace detail
 
-template <int N, template <size_t, typename> typename TensorType, size_t Rank, typename T = double>
-auto get_dim_ranges(const TensorType<Rank, T> &tensor) {
+template <int N, template <typename, size_t> typename TensorType, size_t Rank, typename T>
+auto get_dim_ranges(const TensorType<T, Rank> &tensor) {
     return detail::get_dim_ranges(tensor, std::make_index_sequence<N>{});
 }
 
-template <size_t Rank, typename T = double>
-struct Tensor final : public detail::TensorBase<Rank, T> {
+template <typename T, size_t Rank>
+struct Tensor final : public detail::TensorBase<T, Rank> {
 
     using vector = std::vector<T, AlignedAllocator<T, 64>>;
 
@@ -199,7 +199,7 @@ struct Tensor final : public detail::TensorBase<Rank, T> {
 
     // Once this is called "otherTensor" is no longer a valid tensor.
     template <size_t OtherRank, typename... Dims>
-    explicit Tensor(Tensor<OtherRank, T> &&existingTensor, std::string name, Dims... dims)
+    explicit Tensor(Tensor<T, OtherRank> &&existingTensor, std::string name, Dims... dims)
         : _data(std::move(existingTensor._data)), _name{std::move(name)}, _dims{static_cast<size_t>(dims)...} {
         static_assert(Rank == sizeof...(dims), "Declared rank does not match provided dims");
 
@@ -270,7 +270,7 @@ struct Tensor final : public detail::TensorBase<Rank, T> {
         _data.resize(size);
     }
 
-    Tensor(const TensorView<Rank, T> &other) : _name{other._name}, _dims{other._dims} {
+    Tensor(const TensorView<T, Rank> &other) : _name{other._name}, _dims{other._dims} {
         struct stride {
             size_t value{1};
             stride() = default;
@@ -355,45 +355,12 @@ struct Tensor final : public detail::TensorBase<Rank, T> {
     template <typename... MultiIndex>
     auto operator()(MultiIndex... index)
         -> std::enable_if_t<count_of_type<All, MultiIndex...>() >= 1,
-                            TensorView<count_of_type<All, MultiIndex...>() + count_of_type<Range, MultiIndex...>(), T>> {
+                            TensorView<T, count_of_type<All, MultiIndex...>() + count_of_type<Range, MultiIndex...>()>> {
         // Construct a TensorView using the indices provided as the starting point for the view.
         // e.g.:
         //    Tensor T{"Big Tensor", 7, 7, 7, 7};
         //    T(0, 0) === T(0, 0, :, :) === TensorView{T, Dims<2>{7, 7}, Offset{0, 0}, Stride{49, 1}} ??
         // println("Here");
-
-#if 0
-        // Get positions of All
-        auto all_positions =
-            get_array_from_tuple<std::array<int, count_of_type<All, MultiIndex...>()>>(positions_of_type<All, MultiIndex...>());
-        auto range_positions =
-            get_array_from_tuple<std::array<int, count_of_type<Range, MultiIndex...>()>>(positions_of_type<Range, MultiIndex...>());
-        auto index_positions =
-            get_array_from_tuple<std::array<int, Rank - count_of_type<All, MultiIndex...>() - count_of_type<Range, MultiIndex...>()>>(
-                positions_of_type<size_t, MultiIndex...>());
-
-        const auto &indices = std::forward_as_tuple(index...);
-
-        Offset<Rank> offsets;
-        Stride<count_of_type<All, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> strides{};
-        Dim<count_of_type<All, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> dims{};
-
-        for (auto [i, value] : enumerate(index_positions)) {
-            offsets[value] = get_from_tuple<unsigned long>(indices, value);
-            // printf("offset[%d] = %lu\n", value, offsets[value]);
-        }
-        for (auto [i, value] : enumerate(all_positions)) {
-            strides[value] = _strides[value];
-            dims[value] = _dims[value];
-        }
-        for (auto [i, value] : enumerate(range_positions)) {
-            auto range = get_from_tuple<Range>(indices, value);
-
-            offsets[value] = range[0];
-            dims[value] = range[1] - range[0];
-            strides[value] = _strides[value];
-        }
-#endif
         const auto &indices = std::forward_as_tuple(index...);
 
         Offset<Rank> offsets;
@@ -426,12 +393,12 @@ struct Tensor final : public detail::TensorBase<Rank, T> {
         // println(dims);
         // println(strides);
 
-        return TensorView<count_of_type<All, MultiIndex...>() + count_of_type<Range, MultiIndex...>(), T>{*this, std::move(dims), offsets,
+        return TensorView<T, count_of_type<All, MultiIndex...>() + count_of_type<Range, MultiIndex...>()>{*this, std::move(dims), offsets,
                                                                                                           strides};
     }
 
     template <typename... MultiIndex>
-    auto operator()(MultiIndex... index) const -> std::enable_if_t<count_of_type<Range, MultiIndex...>() == Rank, TensorView<Rank, T>> {
+    auto operator()(MultiIndex... index) const -> std::enable_if_t<count_of_type<Range, MultiIndex...>() == Rank, TensorView<T, Rank>> {
         Dim<Rank> dims{};
         Offset<Rank> offset{};
         Stride<Rank> stride = _strides;
@@ -445,10 +412,10 @@ struct Tensor final : public detail::TensorBase<Rank, T> {
             dims[r] = range[1] - range[0];
         }
 
-        return TensorView<Rank, T>{*this, std::move(dims), std::move(offset), std::move(stride)};
+        return TensorView<T, Rank>{*this, std::move(dims), std::move(offset), std::move(stride)};
     }
 
-    auto operator=(const Tensor<Rank, T> &other) -> Tensor<Rank, T> & {
+    auto operator=(const Tensor<T, Rank> &other) -> Tensor<T, Rank> & {
         bool realloc{false};
         for (int i = 0; i < Rank; i++) {
             if (dim(i) == 0)
@@ -487,7 +454,7 @@ struct Tensor final : public detail::TensorBase<Rank, T> {
         return *this;
     }
 
-    auto operator=(const TensorView<Rank, T> &other) -> Tensor<Rank, T> & {
+    auto operator=(const TensorView<T, Rank> &other) -> Tensor<T, Rank> & {
         auto target_dims = get_dim_ranges<Rank>(*this);
         for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
             T &target_value = std::apply(*this, target_combination);
@@ -527,11 +494,11 @@ struct Tensor final : public detail::TensorBase<Rank, T> {
         return _strides;
     }
 
-    auto to_rank_1_view() const -> TensorView<1, T> {
+    auto to_rank_1_view() const -> TensorView<T, 1> {
         size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
         Dim<1> dim{size};
 
-        return TensorView<1, T>{*this, dim};
+        return TensorView<T, 1>{*this, dim};
     }
 
     // Returns the linear size of the tensor
@@ -549,15 +516,15 @@ struct Tensor final : public detail::TensorBase<Rank, T> {
     Stride<Rank> _strides;
     vector _data;
 
-    template <size_t Rank_, typename T_>
+    template <typename T_, size_t Rank_>
     friend struct TensorView;
 
-    template <size_t OtherRank, typename T_>
+    template <typename T_, size_t OtherRank>
     friend struct Tensor;
 };
 
 template <>
-struct Tensor<0, double> : public detail::TensorBase<0, double> {
+struct Tensor<double, 0> : public detail::TensorBase<double, 0> {
 
     Tensor() = default;
     Tensor(const Tensor &) = default;
@@ -571,27 +538,27 @@ struct Tensor<0, double> : public detail::TensorBase<0, double> {
     auto data() -> double * { return &_data; }
     [[nodiscard]] auto data() const -> const double * { return &_data; }
 
-    auto operator=(const Tensor<0, double> &other) -> Tensor<0, double> & {
+    auto operator=(const Tensor<double, 0> &other) -> Tensor<double, 0> & {
         _data = other._data;
         return *this;
     }
 
-    auto operator=(const double &other) -> Tensor<0, double> & {
+    auto operator=(const double &other) -> Tensor<double, 0> & {
         _data = other;
         return *this;
     }
 
-    auto operator+=(const double &other) -> Tensor<0, double> & {
+    auto operator+=(const double &other) -> Tensor<double, 0> & {
         _data += other;
         return *this;
     }
 
-    auto operator*=(const double &other) -> Tensor<0, double> & {
+    auto operator*=(const double &other) -> Tensor<double, 0> & {
         _data *= other;
         return *this;
     }
 
-    auto operator/=(const double &other) -> Tensor<0, double> & {
+    auto operator/=(const double &other) -> Tensor<double, 0> & {
         _data /= other;
         return *this;
     }
@@ -612,8 +579,8 @@ struct Tensor<0, double> : public detail::TensorBase<0, double> {
     double _data{};
 };
 
-template <size_t Rank, typename T = double>
-struct TensorView final : public detail::TensorBase<Rank, T> {
+template <typename T, size_t Rank>
+struct TensorView final : public detail::TensorBase<T, Rank> {
 
     TensorView() = delete;
     TensorView(const TensorView &) = default;
@@ -623,31 +590,31 @@ struct TensorView final : public detail::TensorBase<Rank, T> {
     // constructors for the types of tensors we support (Tensor and TensorView).  The
     // call to common_initialization is able to perform an enable_if check.
     template <size_t OtherRank, typename... Args>
-    explicit TensorView(const Tensor<OtherRank, T> &other, const Dim<Rank> &dim, Args &&...args) : _name{other._name}, _dims{dim} {
+    explicit TensorView(const Tensor<T, OtherRank> &other, const Dim<Rank> &dim, Args &&...args) : _name{other._name}, _dims{dim} {
         // println(" here 1");
-        common_initialization(const_cast<Tensor<OtherRank, T> &>(other), args...);
+        common_initialization(const_cast<Tensor<T, OtherRank> &>(other), args...);
     }
 
     template <size_t OtherRank, typename... Args>
-    explicit TensorView(Tensor<OtherRank, T> &other, const Dim<Rank> &dim, Args &&...args) : _name{other._name}, _dims{dim} {
+    explicit TensorView(Tensor<T, OtherRank> &other, const Dim<Rank> &dim, Args &&...args) : _name{other._name}, _dims{dim} {
         // println(" here 2");
         common_initialization(other, args...);
     }
 
     template <size_t OtherRank, typename... Args>
-    explicit TensorView(TensorView<OtherRank, T> &other, const Dim<Rank> &dim, Args &&...args) : _name{other._name}, _dims{dim} {
+    explicit TensorView(TensorView<T, OtherRank> &other, const Dim<Rank> &dim, Args &&...args) : _name{other._name}, _dims{dim} {
         // println(" here 3");
         common_initialization(other, args...);
     }
 
     template <size_t OtherRank, typename... Args>
-    explicit TensorView(const TensorView<OtherRank, T> &other, const Dim<Rank> &dim, Args &&...args) : _name{other._name}, _dims{dim} {
+    explicit TensorView(const TensorView<T, OtherRank> &other, const Dim<Rank> &dim, Args &&...args) : _name{other._name}, _dims{dim} {
         // println(" here 4");
-        common_initialization(const_cast<TensorView<OtherRank, T> &>(other), args...);
+        common_initialization(const_cast<TensorView<T, OtherRank> &>(other), args...);
     }
 
     template <size_t OtherRank, typename... Args>
-    explicit TensorView(std::string name, Tensor<OtherRank, T> &other, const Dim<Rank> &dim, Args &&...args)
+    explicit TensorView(std::string name, Tensor<T, OtherRank> &other, const Dim<Rank> &dim, Args &&...args)
         : _name{std::move(name)}, _dims{dim} {
         // println(" here 5");
         common_initialization(other, args...);
@@ -674,10 +641,10 @@ struct TensorView final : public detail::TensorBase<Rank, T> {
         return *this;
     }
 
-    template <template <size_t, typename> typename AType>
-    auto operator=(const AType<Rank, T> &other) ->
-        typename std::enable_if_t<is_incore_rank_tensor_v<AType<Rank, T>, Rank, T>, TensorView &> {
-        if constexpr (std::is_same_v<AType<Rank, T>, TensorView<Rank, T>>) {
+    template <template <typename, size_t> typename AType>
+    auto operator=(const AType<T, Rank> &other) ->
+        typename std::enable_if_t<is_incore_rank_tensor_v<AType<T, Rank>, Rank, T>, TensorView &> {
+        if constexpr (std::is_same_v<AType<T, Rank>, TensorView<T, Rank>>) {
             if (this == &other)
                 return *this;
         }
@@ -694,10 +661,10 @@ struct TensorView final : public detail::TensorBase<Rank, T> {
         return *this;
     }
 
-    template <template <size_t, typename> typename AType>
-    auto operator=(const AType<Rank, T> &&other) ->
-        typename std::enable_if_t<is_incore_rank_tensor_v<AType<Rank, T>, Rank, T>, TensorView &> {
-        if constexpr (std::is_same_v<AType<Rank, T>, TensorView<Rank, T>>) {
+    template <template <typename, size_t> typename AType>
+    auto operator=(const AType<T, Rank> &&other) ->
+        typename std::enable_if_t<is_incore_rank_tensor_v<AType<T, Rank>, Rank, T>, TensorView &> {
+        if constexpr (std::is_same_v<AType<T, Rank>, TensorView<T, Rank>>) {
             if (this == &other)
                 return *this;
         }
@@ -785,7 +752,7 @@ struct TensorView final : public detail::TensorBase<Rank, T> {
         return _strides;
     }
 
-    auto to_rank_1_view() const -> TensorView<1, T> {
+    auto to_rank_1_view() const -> TensorView<T, 1> {
         if constexpr (Rank == 1) {
             return *this;
         } else {
@@ -799,7 +766,7 @@ struct TensorView final : public detail::TensorBase<Rank, T> {
             println("Creating a Rank-1 TensorView of an existing TensorView may not work. Be careful!");
 #endif
 
-            return TensorView<1, T>{*this, dim, Stride<1>{1}};
+            return TensorView<T, 1>{*this, dim, Stride<1>{1}};
         }
     }
 
@@ -829,9 +796,9 @@ struct TensorView final : public detail::TensorBase<Rank, T> {
         _full_view_of_underlying = true;
     }
 
-    template <template <size_t, typename> typename TensorType, size_t OtherRank, typename... Args>
-    auto common_initialization(TensorType<OtherRank, T> &other, Args &&...args)
-        -> std::enable_if_t<std::is_base_of_v<detail::TensorBase<OtherRank, T>, TensorType<OtherRank, T>>> {
+    template <template <typename, size_t> typename TensorType, size_t OtherRank, typename... Args>
+    auto common_initialization(TensorType<T, OtherRank> &other, Args &&...args)
+        -> std::enable_if_t<std::is_base_of_v<detail::TensorBase<T, OtherRank>, TensorType<T, OtherRank>>> {
 
         static_assert(Rank <= OtherRank, "A TensorView must be the same Rank or smaller that the Tensor being viewed.");
 
@@ -892,16 +859,16 @@ struct TensorView final : public detail::TensorBase<Rank, T> {
 
     T *_data;
 
-    template <size_t Rank_, typename T_>
+    template <typename T_, size_t Rank_>
     friend struct Tensor;
 
-    template <size_t OtherRank_, typename T_>
+    template <typename T_, size_t OtherRank_>
     friend struct TensorView;
 };
 
 template <typename T = double, typename... MultiIndex>
-auto create_incremented_tensor(const std::string &name, MultiIndex... index) -> Tensor<sizeof...(MultiIndex), T> {
-    Tensor<sizeof...(MultiIndex), T> A(name, std::forward<MultiIndex>(index)...);
+auto create_incremented_tensor(const std::string &name, MultiIndex... index) -> Tensor<T, sizeof...(MultiIndex)> {
+    Tensor<T, sizeof...(MultiIndex)> A(name, std::forward<MultiIndex>(index)...);
 
     double counter{0.0};
     auto target_dims = get_dim_ranges<sizeof...(MultiIndex)>(A);
@@ -916,8 +883,8 @@ auto create_incremented_tensor(const std::string &name, MultiIndex... index) -> 
 }
 
 template <typename T = double, typename... MultiIndex>
-auto create_random_tensor(const std::string &name, MultiIndex... index) -> Tensor<sizeof...(MultiIndex), T> {
-    Tensor<sizeof...(MultiIndex), T> A(name, std::forward<MultiIndex>(index)...);
+auto create_random_tensor(const std::string &name, MultiIndex... index) -> Tensor<T, sizeof...(MultiIndex)> {
+    Tensor<T, sizeof...(MultiIndex)> A(name, std::forward<MultiIndex>(index)...);
 
     double lower_bound = 0.0;
     double upper_bound = 1.0;
@@ -947,10 +914,10 @@ void set_to(T &tensor, double value, Tuple const &tuple, std::index_sequence<I..
 } // namespace detail
 
 template <typename T = double, typename... MultiIndex>
-auto create_identity_tensor(const std::string &name, MultiIndex... index) -> Tensor<sizeof...(MultiIndex), T> {
+auto create_identity_tensor(const std::string &name, MultiIndex... index) -> Tensor<T, sizeof...(MultiIndex)> {
     static_assert(sizeof...(MultiIndex) >= 1, "Rank parameter doesn't make sense.");
 
-    Tensor<sizeof...(MultiIndex), T> A{name, std::forward<MultiIndex>(index)...};
+    Tensor<T, sizeof...(MultiIndex)> A{name, std::forward<MultiIndex>(index)...};
     A.zero();
 
     for (size_t dim = 0; dim < std::get<0>(std::forward_as_tuple(index...)); dim++) {
@@ -968,8 +935,8 @@ auto create_identity_tensor(const std::string &name, MultiIndex... index) -> Ten
 // Tensor IO interface
 namespace einsums {
 
-template <size_t Rank, typename T = double, class... Args>
-void write(const h5::fd_t &fd, const Tensor<Rank, T> &ref, Args &&...args) {
+template <size_t Rank, typename T, class... Args>
+void write(const h5::fd_t &fd, const Tensor<T, Rank> &ref, Args &&...args) {
     // Can these h5 parameters be moved into the Tensor class?
     h5::current_dims current_dims_default;
     h5::max_dims max_dims_default;
@@ -1008,7 +975,7 @@ void write(const h5::fd_t &fd, const Tensor<Rank, T> &ref, Args &&...args) {
 }
 
 template <typename T = double>
-void write(const h5::fd_t &fd, const Tensor<0, T> &ref) {
+void write(const h5::fd_t &fd, const Tensor<T, 0> &ref) {
     h5::ds_t ds;
     if (H5Lexists(fd, ref.name().c_str(), H5P_DEFAULT) <= 0) {
         ds = h5::create<T>(fd, ref.name(), h5::current_dims{1});
@@ -1019,7 +986,7 @@ void write(const h5::fd_t &fd, const Tensor<0, T> &ref) {
 }
 
 template <size_t Rank, typename T = double, class... Args>
-void write(const h5::fd_t &fd, const TensorView<Rank, T> &ref, Args &&...args) {
+void write(const h5::fd_t &fd, const TensorView<T, Rank> &ref, Args &&...args) {
     h5::count count_default{1, 1, 1, 1, 1, 1, 1};
     h5::offset offset_default{0, 0, 0, 0, 0, 0, 0};
     h5::stride stride_default{1, 1, 1, 1, 1, 1, 1};
@@ -1074,9 +1041,9 @@ void write(const h5::fd_t &fd, const TensorView<Rank, T> &ref, Args &&...args) {
 
 // This needs to be expanded to handle the various h5 parameters like above.
 template <size_t Rank, typename T = double>
-auto read(const h5::fd_t &fd, const std::string &name) -> Tensor<Rank, T> {
+auto read(const h5::fd_t &fd, const std::string &name) -> Tensor<T, Rank> {
     try {
-        auto temp = h5::read<einsums::Tensor<Rank, T>>(fd, name);
+        auto temp = h5::read<einsums::Tensor<T, Rank>>(fd, name);
         temp.set_name(name);
         return temp;
     } catch (std::exception &e) {
@@ -1086,10 +1053,10 @@ auto read(const h5::fd_t &fd, const std::string &name) -> Tensor<Rank, T> {
 }
 
 template <typename T = double>
-auto read(const h5::fd_t &fd, const std::string &name) -> Tensor<0, T> {
+auto read(const h5::fd_t &fd, const std::string &name) -> Tensor<T, 0> {
     try {
         T temp{0};
-        Tensor<0, T> tensor{name};
+        Tensor<T, 0> tensor{name};
         h5::read<T>(fd, name, &temp, h5::count{1});
         tensor = temp;
         return tensor;
@@ -1099,13 +1066,13 @@ auto read(const h5::fd_t &fd, const std::string &name) -> Tensor<0, T> {
     }
 }
 
-template <size_t Rank, typename T = double>
-void zero(Tensor<Rank, T> &A) {
+template <typename T, size_t Rank>
+void zero(Tensor<T, Rank> &A) {
     A.zero();
 }
 
-template <size_t Rank, typename T = double>
-struct DiskTensor final : public detail::TensorBase<Rank, T> {
+template <typename T, size_t Rank>
+struct DiskTensor final : public detail::TensorBase<T, Rank> {
     DiskTensor() = default;
     DiskTensor(const DiskTensor &) = default;
     DiskTensor(DiskTensor &&) noexcept = default;
@@ -1168,7 +1135,7 @@ struct DiskTensor final : public detail::TensorBase<Rank, T> {
 
     [[nodiscard]] auto disk() -> h5::ds_t & { return _disk; }
 
-    // void _write(Tensor<Rank, T> &data) { h5::write(disk(), data); }
+    // void _write(Tensor<T, Rank> &data) { h5::write(disk(), data); }
 
     [[nodiscard]] auto name() const -> const std::string & { return _name; }
 
@@ -1179,7 +1146,7 @@ struct DiskTensor final : public detail::TensorBase<Rank, T> {
     template <typename... MultiIndex>
     auto operator()(MultiIndex... index)
         -> std::enable_if_t<count_of_type<All, MultiIndex...>() + count_of_type<Range, MultiIndex...>() != 0,
-                            DiskView<count_of_type<All, MultiIndex...>() + count_of_type<Range, MultiIndex...>(), Rank, T>> {
+                            DiskView<T, count_of_type<All, MultiIndex...>() + count_of_type<Range, MultiIndex...>(), Rank>> {
         // Get positions of All
         auto all_positions =
             get_array_from_tuple<std::array<int, count_of_type<All, MultiIndex...>()>>(positions_of_type<All, MultiIndex...>());
@@ -1223,14 +1190,14 @@ struct DiskTensor final : public detail::TensorBase<Rank, T> {
             }
         }
 
-        return DiskView<count_of_type<All, MultiIndex...>() + count_of_type<Range, MultiIndex...>(), Rank, T>(*this, dims_all, counts,
+        return DiskView<T, count_of_type<All, MultiIndex...>() + count_of_type<Range, MultiIndex...>(), Rank>(*this, dims_all, counts,
                                                                                                               offsets, strides);
     }
 
     template <typename... MultiIndex>
     auto operator()(MultiIndex... index) const
         -> std::enable_if_t<count_of_type<All, MultiIndex...>() + count_of_type<Range, MultiIndex...>() != 0,
-                            const DiskView<count_of_type<All, MultiIndex...>() + count_of_type<Range, MultiIndex...>(), Rank, T>> {
+                            const DiskView<T, count_of_type<All, MultiIndex...>() + count_of_type<Range, MultiIndex...>(), Rank>> {
         // Get positions of All
         auto all_positions =
             get_array_from_tuple<std::array<int, count_of_type<All, MultiIndex...>()>>(positions_of_type<All, MultiIndex...>());
@@ -1274,7 +1241,7 @@ struct DiskTensor final : public detail::TensorBase<Rank, T> {
             }
         }
 
-        return DiskView<count_of_type<All, MultiIndex...>() + count_of_type<Range, MultiIndex...>(), Rank, T>(*this, dims_all, counts,
+        return DiskView<T, count_of_type<All, MultiIndex...>() + count_of_type<Range, MultiIndex...>(), Rank>(*this, dims_all, counts,
                                                                                                               offsets, strides);
     }
 
@@ -1291,16 +1258,16 @@ struct DiskTensor final : public detail::TensorBase<Rank, T> {
     bool _existed{false};
 };
 
-template <size_t ViewRank, size_t Rank, typename T = double>
-struct DiskView final : public detail::TensorBase<ViewRank, T> {
-    DiskView(DiskTensor<Rank, T> &parent, const Dim<ViewRank> &dims, const Count<Rank> &counts, const Offset<Rank> &offsets,
+template <typename T, size_t ViewRank, size_t Rank>
+struct DiskView final : public detail::TensorBase<T, ViewRank> {
+    DiskView(DiskTensor<T, Rank> &parent, const Dim<ViewRank> &dims, const Count<Rank> &counts, const Offset<Rank> &offsets,
              const Stride<Rank> &strides)
         : _parent(parent), _dims(dims), _counts(counts), _offsets(offsets), _strides(strides), _tensor{_dims} {
         h5::read<double>(_parent.disk(), _tensor.data(), h5::count{_counts}, h5::offset{_offsets});
     };
-    DiskView(const DiskTensor<Rank, T> &parent, const Dim<ViewRank> &dims, const Count<Rank> &counts, const Offset<Rank> &offsets,
+    DiskView(const DiskTensor<T, Rank> &parent, const Dim<ViewRank> &dims, const Count<Rank> &counts, const Offset<Rank> &offsets,
              const Stride<Rank> &strides)
-        : _parent(const_cast<DiskTensor<Rank, T> &>(parent)), _dims(dims), _counts(counts), _offsets(offsets),
+        : _parent(const_cast<DiskTensor<T, Rank> &>(parent)), _dims(dims), _counts(counts), _offsets(offsets),
           _strides(strides), _tensor{_dims} {
         h5::read<double>(_parent.disk(), _tensor.data(), h5::count{_counts}, h5::offset{_offsets});
         set_read_only(true);
@@ -1323,8 +1290,8 @@ struct DiskView final : public detail::TensorBase<ViewRank, T> {
     }
 
     // TODO: I'm not entirely sure if a TensorView can be sent to the disk.
-    template <template <size_t, typename> typename TType>
-    auto operator=(const TType<ViewRank, T> &other) -> DiskView & {
+    template <template <typename, size_t> typename TType>
+    auto operator=(const TType<T, ViewRank> &other) -> DiskView & {
         if (_readOnly) {
             throw std::runtime_error("Attempting to write data to a read only disk view.");
         }
@@ -1346,12 +1313,12 @@ struct DiskView final : public detail::TensorBase<ViewRank, T> {
 
     void _create_tensor() {
         if (!_tensor) {
-            _tensor = std::make_unique<Tensor<ViewRank, T>>(_dims);
+            _tensor = std::make_unique<Tensor<T, ViewRank>>(_dims);
         }
     }
 
     // Does not perform a disk read. That was handled by the constructor.
-    auto get() -> Tensor<ViewRank, T> & { return _tensor; }
+    auto get() -> Tensor<T, ViewRank> & { return _tensor; }
 
     void put() {
         if (!_readOnly)
@@ -1371,19 +1338,19 @@ struct DiskView final : public detail::TensorBase<ViewRank, T> {
     [[nodiscard]] auto dim(int d) const -> size_t { return _tensor.dim(d); }
     auto dims() const -> Dim<Rank> { return _tensor.dims(); }
 
-    operator Tensor<ViewRank, T> &() const { return _tensor; }
-    operator const Tensor<ViewRank, T> &() const { return _tensor; }
+    operator Tensor<T, ViewRank> &() const { return _tensor; }
+    operator const Tensor<T, ViewRank> &() const { return _tensor; }
 
     void zero() { _tensor.zero(); }
     void set_all(double value) { _tensor.set_all(value); }
 
   private:
-    DiskTensor<Rank, T> &_parent;
+    DiskTensor<T, Rank> &_parent;
     Dim<ViewRank> _dims;
     Count<Rank> _counts;
     Offset<Rank> _offsets;
     Stride<Rank> _strides;
-    Tensor<ViewRank, T> _tensor;
+    Tensor<T, ViewRank> _tensor;
 
     bool _readOnly{false};
 
@@ -1392,36 +1359,38 @@ struct DiskView final : public detail::TensorBase<ViewRank, T> {
 
 #ifdef __cpp_deduction_guides
 template <typename... Args>
-Tensor(const std::string &, Args...) -> Tensor<sizeof...(Args)>;
-template <size_t OtherRank, typename... Dims>
-explicit Tensor(Tensor<OtherRank> &&otherTensor, std::string name, Dims... dims) -> Tensor<sizeof...(dims)>;
+Tensor(const std::string &, Args...) -> Tensor<double, sizeof...(Args)>;
+template <typename T, size_t OtherRank, typename... Dims>
+explicit Tensor(Tensor<T, OtherRank> &&otherTensor, std::string name, Dims... dims) -> Tensor<T, sizeof...(dims)>;
+template <size_t Rank, typename... Args>
+explicit Tensor(const Dim<Rank> &, Args...) -> Tensor<double, Rank>;
 
-template <size_t Rank, size_t OtherRank, typename... Args>
-TensorView(Tensor<OtherRank> &, const Dim<Rank> &, Args...) -> TensorView<Rank>;
-template <size_t Rank, size_t OtherRank, typename... Args>
-TensorView(const Tensor<OtherRank> &, const Dim<Rank> &, Args...) -> TensorView<Rank>;
-template <size_t Rank, size_t OtherRank, typename... Args>
-TensorView(TensorView<OtherRank> &, const Dim<Rank> &, Args...) -> TensorView<Rank>;
-template <size_t Rank, size_t OtherRank, typename... Args>
-TensorView(const TensorView<OtherRank> &, const Dim<Rank> &, Args...) -> TensorView<Rank>;
-template <size_t Rank, size_t OtherRank, typename... Args>
-TensorView(std::string, Tensor<OtherRank> &, const Dim<Rank> &, Args...) -> TensorView<Rank>;
+template <typename T, size_t Rank, size_t OtherRank, typename... Args>
+TensorView(Tensor<T, OtherRank> &, const Dim<Rank> &, Args...) -> TensorView<T, Rank>;
+template <typename T, size_t Rank, size_t OtherRank, typename... Args>
+TensorView(const Tensor<T, OtherRank> &, const Dim<Rank> &, Args...) -> TensorView<T, Rank>;
+template <typename T, size_t Rank, size_t OtherRank, typename... Args>
+TensorView(TensorView<T, OtherRank> &, const Dim<Rank> &, Args...) -> TensorView<T, Rank>;
+template <typename T, size_t Rank, size_t OtherRank, typename... Args>
+TensorView(const TensorView<T, OtherRank> &, const Dim<Rank> &, Args...) -> TensorView<T, Rank>;
+template <typename T, size_t Rank, size_t OtherRank, typename... Args>
+TensorView(std::string, Tensor<T, OtherRank> &, const Dim<Rank> &, Args...) -> TensorView<T, Rank>;
 
 template <typename... Dims>
-DiskTensor(h5::fd_t &file, std::string name, Dims... dims) -> DiskTensor<sizeof...(Dims)>;
+DiskTensor(h5::fd_t &file, std::string name, Dims... dims) -> DiskTensor<double, sizeof...(Dims)>;
 #endif
 
 } // namespace einsums
 
-template <template <size_t, typename> typename AType, size_t Rank, typename T>
-auto println(const AType<Rank, T> &A, int width = 12) ->
-    typename std::enable_if_t<std::is_base_of_v<einsums::detail::TensorBase<Rank, T>, AType<Rank, T>>> {
+template <template <typename, size_t> typename AType, size_t Rank, typename T>
+auto println(const AType<T, Rank> &A, int width = 12) ->
+    typename std::enable_if_t<std::is_base_of_v<einsums::detail::TensorBase<T, Rank>, AType<T, Rank>>> {
     println("Name: {}", A.name());
     {
         print::Indent indent{};
 
-        if constexpr (einsums::is_incore_rank_tensor_v<AType<Rank, T>, Rank, T>) {
-            if constexpr (std::is_same_v<AType<Rank, T>, einsums::Tensor<Rank, T>>)
+        if constexpr (einsums::is_incore_rank_tensor_v<AType<T, Rank>, Rank, T>) {
+            if constexpr (std::is_same_v<AType<T, Rank>, einsums::Tensor<T, Rank>>)
                 println("Type: In Core Tensor");
             else
                 println("Type: In Core Tensor View");
@@ -1447,7 +1416,7 @@ auto println(const AType<Rank, T> &A, int width = 12) ->
         }
         println();
 
-        if constexpr (Rank > 1 && einsums::is_incore_rank_tensor_v<AType<Rank, T>, Rank, T>) {
+        if constexpr (Rank > 1 && einsums::is_incore_rank_tensor_v<AType<T, Rank>, Rank, T>) {
             auto target_dims = einsums::get_dim_ranges<Rank - 1>(A);
             auto final_dim = A.dim(Rank - 1);
 
@@ -1481,7 +1450,7 @@ auto println(const AType<Rank, T> &A, int width = 12) ->
                 println("{}", oss.str());
                 println();
             }
-        } else if constexpr (Rank == 1 && einsums::is_incore_rank_tensor_v<AType<Rank, T>, Rank, T>) {
+        } else if constexpr (Rank == 1 && einsums::is_incore_rank_tensor_v<AType<T, Rank>, Rank, T>) {
             auto target_dims = einsums::get_dim_ranges<Rank>(A);
 
             for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {

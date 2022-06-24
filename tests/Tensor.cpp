@@ -9,9 +9,9 @@
 #include <type_traits>
 
 TEST_CASE("Tensor creation", "[tensor]") {
-    einsums::Tensor<2, double> A("A", 3, 3);
-    einsums::Tensor<2, double> B("B", 3, 3);
-    einsums::Tensor<2, double> C("C", 3, 3);
+    einsums::Tensor A("A", 3, 3);
+    einsums::Tensor B("B", 3, 3);
+    einsums::Tensor C("C", 3, 3);
 
     REQUIRE((A.dim(0) == 3 && A.dim(1) == 3));
     REQUIRE((B.dim(0) == 3 && B.dim(1) == 3));
@@ -51,9 +51,9 @@ TEST_CASE("Tensor creation", "[tensor]") {
 }
 
 TEST_CASE("Tensor GEMMs", "[tensor]") {
-    einsums::Tensor<2, double> A("A", 3, 3);
-    einsums::Tensor<2, double> B("B", 3, 3);
-    einsums::Tensor<2, double> C("C", 3, 3);
+    einsums::Tensor A("A", 3, 3);
+    einsums::Tensor B("B", 3, 3);
+    einsums::Tensor C("C", 3, 3);
 
     REQUIRE((A.dim(0) == 3 && A.dim(1) == 3));
     REQUIRE((B.dim(0) == 3 && B.dim(1) == 3));
@@ -80,9 +80,9 @@ TEST_CASE("Tensor GEMMs", "[tensor]") {
 }
 
 TEST_CASE("Tensor GEMVs", "[tensor]") {
-    einsums::Tensor<2, double> A("A", 3, 3);
-    einsums::Tensor<1, double> x("x", 3);
-    einsums::Tensor<1, double> y("y", 3);
+    einsums::Tensor A("A", 3, 3);
+    einsums::Tensor x("x", 3);
+    einsums::Tensor y("y", 3);
 
     REQUIRE((A.dim(0) == 3 && A.dim(1) == 3));
     REQUIRE((x.dim(0) == 3));
@@ -99,8 +99,8 @@ TEST_CASE("Tensor GEMVs", "[tensor]") {
 }
 
 TEST_CASE("Tensor SYEVs", "[tensor]") {
-    einsums::Tensor<2, double> A("A", 3, 3);
-    einsums::Tensor<1, double> x("x", 3);
+    einsums::Tensor A("A", 3, 3);
+    einsums::Tensor x("x", 3);
 
     REQUIRE((A.dim(0) == 3 && A.dim(1) == 3));
     REQUIRE((x.dim(0) == 3));
@@ -115,7 +115,7 @@ TEST_CASE("Tensor SYEVs", "[tensor]") {
 }
 
 TEST_CASE("Tensor Invert") {
-    einsums::Tensor<2, double> A("A", 3, 3);
+    einsums::Tensor A("A", 3, 3);
     A(0, 0) = 1.0;
     A(0, 1) = 2.0;
     A(0, 2) = 3.0;
@@ -140,7 +140,7 @@ TEST_CASE("TensorView creation", "[tensor]") {
     einsums::TensorView viewA(A, einsums::Dim<2>{3, 9});
 
     // Since we are changing the underlying datatype to float the deduction guides will not work.
-    einsums::Tensor<3, float> fA("A", 3, 3, 3);
+    einsums::Tensor fA("A", 3, 3, 3);
     einsums::TensorView fviewA(fA, einsums::Dim<2>{3, 9});
 
     for (int i = 0, ijk = 0; i < 3; i++)
@@ -157,7 +157,7 @@ TEST_CASE("TensorView creation", "[tensor]") {
 }
 
 TEST_CASE("Tensor-2D HDF5") {
-    einsums::Tensor<2, double> A("A", 3, 3);
+    einsums::Tensor A("A", 3, 3);
 
     for (int i = 0, ij = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++, ij++) {
@@ -172,7 +172,7 @@ TEST_CASE("Tensor-2D HDF5") {
     }
 
     {
-        auto B = h5::read<einsums::Tensor<2, double>>("tensor.h5", "Matrix A");
+        auto B = h5::read<einsums::Tensor<double, 2>>("tensor.h5", "Matrix A");
 
         REQUIRE((B.dim(0) == 10 && B.dim(1) == 20));
         REQUIRE(B(2, 2) == 0.0);
@@ -194,7 +194,7 @@ TEST_CASE("Tensor-1D HDF5") {
     }
 
     {
-        auto B = h5::read<einsums::Tensor<1, double>>("tensor-1d.h5", "A");
+        auto B = h5::read<einsums::Tensor<double, 1>>("tensor-1d.h5", "A");
 
         REQUIRE(A(0) == B(0));
         REQUIRE(A(1) == B(1));
@@ -212,7 +212,7 @@ TEST_CASE("Tensor-3D HDF5") {
     }
 
     {
-        auto B = h5::read<einsums::Tensor<3, double>>("tensor-3d.h5", "A");
+        auto B = h5::read<einsums::Tensor<double, 3>>("tensor-3d.h5", "A");
 
         REQUIRE(B.dim(0) == 3);
         REQUIRE(B.dim(1) == 2);
@@ -223,7 +223,7 @@ TEST_CASE("Tensor-3D HDF5") {
 TEST_CASE("TensorView-2D HDF5") {
     SECTION("Subview Offset{0,0,0}") {
         auto A = einsums::create_random_tensor("A", 3, 3, 3);
-        einsums::TensorView<2, double> viewA(A, einsums::Dim<2>{3, 9});
+        einsums::TensorView<double, 2> viewA(A, einsums::Dim<2>{3, 9});
 
         REQUIRE((A.dim(0) == 3 && A.dim(1) == 3 && A.dim(2) == 3));
         REQUIRE((viewA.dim(0) == 3 && viewA.dim(1) == 9));
@@ -235,7 +235,7 @@ TEST_CASE("TensorView-2D HDF5") {
         }
 
         {
-            auto B = h5::read<einsums::Tensor<2, double>>("tensorview-2d.h5", "A");
+            auto B = h5::read<einsums::Tensor<double, 2>>("tensorview-2d.h5", "A");
             for (int i = 0; i < 3; i++)
                 for (int j = 0; j < 9; j++)
                     REQUIRE(viewA(i, j) == B(i, j));
@@ -248,7 +248,7 @@ TEST_CASE("TensorView Ranges") {
 
     SECTION("Subviews") {
         auto C = einsums::create_random_tensor("C", 3, 3);
-        einsums::TensorView<2> viewC(C, einsums::Dim<2>{2, 2}, einsums::Offset<2>{1, 1}, einsums::Stride<2>{3, 1});
+        einsums::TensorView viewC(C, einsums::Dim<2>{2, 2}, einsums::Offset<2>{1, 1}, einsums::Stride<2>{3, 1});
 
         // einsums::println("C strides: %zu %zu\n", C.strides()[0], C.strides()[1]);
 
@@ -261,7 +261,7 @@ TEST_CASE("TensorView Ranges") {
     SECTION("Subviews 2") {
         auto C = einsums::create_random_tensor("C", 3, 3);
         // std::array<einsums::Range, 2> test;
-        einsums::TensorView<2> viewC = C(einsums::Range{1, 3}, einsums::Range{1, 3});
+        einsums::TensorView viewC = C(einsums::Range{1, 3}, einsums::Range{1, 3});
 
         // einsums::println(C);
         // einsums::println(viewC);
