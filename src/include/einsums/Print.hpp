@@ -14,13 +14,6 @@
 #include <stdexcept>
 #include <string_view>
 
-namespace einsums {
-
-// Forward declare the Tensor object for printing purposes
-template <size_t Rank, typename T>
-struct Tensor;
-} // namespace einsums
-
 namespace print {
 
 /** Adds spaces to the global indentation counter. */
@@ -65,7 +58,7 @@ void println(const std::string &oss);
 //
 namespace detail {
 template <typename T>
-constexpr const auto &RawTypeName() {
+constexpr auto RawTypeName() -> const auto & {
 #ifdef _MSC_VER
     return __FUNCSIG__;
 #else
@@ -78,7 +71,7 @@ struct RawTypeNameFormat {
 };
 
 // Returns `false` on failure.
-inline constexpr bool GetRawTypeNameFormat(RawTypeNameFormat *format) {
+inline constexpr auto GetRawTypeNameFormat(RawTypeNameFormat *format) -> bool {
     const auto &str = RawTypeName<int>();
     for (std::size_t i = 0;; i++) {
         if (str[i] == 'i' && str[i + 1] == 'n' && str[i + 2] == 't') {

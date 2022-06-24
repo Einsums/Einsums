@@ -33,8 +33,8 @@ auto validate_cp_rank(const Dim<TRank> shape, const std::string &rounding = "rou
 /**
  * Computes the RMSD between two tensors of arbitrary dimension
  */
-template <template <size_t, typename> typename TTensor, size_t TRank, typename TType = double>
-auto rmsd(const TTensor<TRank, TType> &tensor1, const TTensor<TRank, TType> &tensor2) -> TType {
+template <template <typename, size_t> typename TTensor, size_t TRank, typename TType = double>
+auto rmsd(const TTensor<TType, TRank> &tensor1, const TTensor<TType, TRank> &tensor2) -> TType {
     TType diff = 0.0;
     auto target_dims = get_dim_ranges<TRank>(tensor1);
 
@@ -42,7 +42,7 @@ auto rmsd(const TTensor<TRank, TType> &tensor1, const TTensor<TRank, TType> &ten
     for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
         TType target1 = std::apply(tensor1, target_combination);
         TType target2 = std::apply(tensor2, target_combination);
-        diff += (target1 - target2)*(target1 - target2);
+        diff += (target1 - target2) * (target1 - target2);
         nelem += 1;
     }
 
@@ -51,22 +51,23 @@ auto rmsd(const TTensor<TRank, TType> &tensor1, const TTensor<TRank, TType> &ten
 
 /**
  * Reconstructs a tensor given a CANDECOMP/PARAFAC decomposition
- * 
+ *
  *   factors = The decomposed CANDECOMP matrices (dimension: [dim[i], rank])
  */
-template <size_t TRank, typename TType = double>
-auto parafac_reconstruct(const std::vector<Tensor<2, TType>>& factors) -> Tensor<TRank, TType> {
+template <size_t TRank, typename TType>
+auto parafac_reconstruct(const std::vector<Tensor<TType, 2>> &factors) -> Tensor<TType, TRank> {
     size_t rank = 0;
     Dim<TRank> dims;
 
     size_t i = 0;
-    for (const auto& factor : factors) {
+    for (const auto &factor : factors) {
         dims[i] = factor.dim(0);
-        if (!rank) rank = factor.dim(1);
+        if (!rank)
+            rank = factor.dim(1);
         i++;
     }
 
-    Tensor<TRank, TType> new_tensor(dims);
+    Tensor<TType, TRank> new_tensor(dims);
     new_tensor.zero();
 
     auto indices = get_dim_ranges<TRank>(new_tensor);
@@ -75,9 +76,7 @@ auto parafac_reconstruct(const std::vector<Tensor<2, TType>>& factors) -> Tensor
         TType &target = std::apply(new_tensor, idx_combo);
         for (size_t r = 0; r < rank; r++) {
             double temp = 1.0;
-            for_sequence<TRank>([&](auto n) {
-                temp *= factors[n](std::get<n>(idx_combo), r);
-            });
+            for_sequence<TRank>([&](auto n) { temp *= factors[n](std::get<n>(idx_combo), r); });
             target += temp;
         }
     }
@@ -85,10 +84,10 @@ auto parafac_reconstruct(const std::vector<Tensor<2, TType>>& factors) -> Tensor
     return new_tensor;
 }
 
-template <size_t TRank, typename TType = double>
-auto initialize_cp(std::vector<Tensor<2, TType>> &folds, size_t rank) -> std::vector<Tensor<2, TType>> {
+template <size_t TRank, typename TType>
+auto initialize_cp(std::vector<Tensor<TType, 2>> &folds, size_t rank) -> std::vector<Tensor<TType, 2>> {
 
-    std::vector<Tensor<2, TType>> factors;
+    std::vector<Tensor<TType, 2>> factors;
 
     // Perform compile-time looping.
     for_sequence<TRank>([&](auto i) {
@@ -115,26 +114,25 @@ auto initialize_cp(std::vector<Tensor<2, TType>> &folds, size_t rank) -> std::ve
  *
  *   tensor = [|weights; factor[0], ..., factors[-1] |].
  */
-template <template <size_t, typename> typename TTensor, size_t TRank, typename TType = double>
-auto parafac(const TTensor<TRank, TType> &tensor, size_t rank, int n_iter_max = 100, double tolerance = 1.e-8) -> std::vector<Tensor<2, TType>> {
+template <template <typename, size_t> typename TTensor, size_t TRank, typename TType = double>
+auto parafac(const TTensor<TType, TRank> &tensor, size_t rank, int n_iter_max = 100, double tolerance = 1.e-8)
+    -> std::vector<Tensor<TType, 2>> {
 
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
     using vector = std::vector<TType, AlignedAllocator<TType, 64>>;
 
     // Compute set of unfolded matrices
-    std::vector<Tensor<2, TType>> unfolded_matrices;
-    for_sequence<TRank>([&](auto i) {
-        unfolded_matrices.push_back(tensor_algebra::unfold<i>(tensor));
-    });
+    std::vector<Tensor<TType, 2>> unfolded_matrices;
+    for_sequence<TRank>([&](auto i) { unfolded_matrices.push_back(tensor_algebra::unfold<i>(tensor)); });
 
     // Perform SVD guess for parafac decomposition procedure
-    std::vector<Tensor<2, TType>> factors = initialize_cp<TRank, TType>(unfolded_matrices, rank);
+    std::vector<Tensor<TType, 2>> factors = initialize_cp<TRank>(unfolded_matrices, rank);
 
     // Keep track of previous factors (for tracking convergence)
-    std::vector<Tensor<2, TType>> prev_factors;
+    std::vector<Tensor<TType, 2>> prev_factors;
     for_sequence<TRank>([&](auto i) {
-        prev_factors.push_back(Tensor<2, TType>{"prev factor element", tensor.dim(i), rank});
+        prev_factors.push_back(Tensor<TType, 2>{"prev factor element", tensor.dim(i), rank});
         prev_factors[i].zero();
     });
 
@@ -146,41 +144,38 @@ auto parafac(const TTensor<TRank, TType> &tensor, size_t rank, int n_iter_max = 
             prev_factors[n_ind] = factors[n_ind];
 
             // Form V and Khatri-Rao product intermediates
-            Tensor<2, TType> V;
-            Tensor<2, TType> *KR;
+            Tensor<TType, 2> V;
+            Tensor<TType, 2> *KR;
             bool first = true;
 
             for_sequence<TRank>([&](auto m_ind) {
                 if (m_ind != n_ind) {
-                    Tensor<2, TType> A_tA{"V", rank, rank};
+                    Tensor<TType, 2> A_tA{"V", rank, rank};
                     // A_tA = A^T[j] @ A[j]
-                    einsum(0.0, Indices{r, s}, &A_tA, 
-                           1.0, Indices{I, r}, factors[m_ind], Indices{I, s}, factors[m_ind]);
+                    einsum(0.0, Indices{r, s}, &A_tA, 1.0, Indices{I, r}, factors[m_ind], Indices{I, s}, factors[m_ind]);
 
                     if (first) {
                         V = A_tA;
-                        Tensor<2, TType>* KRcopy = new Tensor<2, TType>("KR product", tensor.dim(m_ind), rank);
+                        auto *KRcopy = new Tensor<TType, 2>("KR product", tensor.dim(m_ind), rank);
                         *KRcopy = factors[m_ind];
                         KR = KRcopy;
                         first = false;
                     } else {
                         // Uses a Hamamard Contraction to build V
-                        Tensor<2, TType> Vcopy = V;
-                        einsum(0.0, Indices{r, s}, &V,
-                               1.0, Indices{r, s}, Vcopy, Indices{r, s}, A_tA);
-                        
+                        Tensor<TType, 2> Vcopy = V;
+                        einsum(0.0, Indices{r, s}, &V, 1.0, Indices{r, s}, Vcopy, Indices{r, s}, A_tA);
+
                         // Perform a Khatri-Rao contraction
                         // TODO: Implement an actual Khatri-Rao procedure to replace this "hacky" workaround
 
                         size_t running_dim = KR->dim(0);
                         size_t appended_dim = tensor.dim(m_ind);
 
-                        Tensor<3, TType> KRbuff{"KR temp", running_dim, appended_dim, rank};
+                        Tensor<TType, 3> KRbuff{"KR temp", running_dim, appended_dim, rank};
 
-                        einsum(0.0, Indices{I, M, r}, &KRbuff,
-                               1.0, Indices{I, r}, *KR, Indices{M, r}, factors[m_ind]);
-                        
-                        Tensor<2, TType> *newKR = new Tensor<2, TType>("KR product", running_dim * appended_dim, rank);
+                        einsum(0.0, Indices{I, M, r}, &KRbuff, 1.0, Indices{I, r}, *KR, Indices{M, r}, factors[m_ind]);
+
+                        auto *newKR = new Tensor<TType, 2>("KR product", running_dim * appended_dim, rank);
 
                         const vector &KRbuffd = KRbuff.vector_data();
                         vector &newKRd = newKR->vector_data();
@@ -207,20 +202,16 @@ auto parafac(const TTensor<TRank, TType> &tensor, size_t rank, int n_iter_max = 
             size_t ndim = tensor.dim(n_ind);
 
             // Step 1: Matrix Multiplication
-            einsum(0.0, Indices{I, r}, &factors[n_ind],
-                   1.0, Indices{I, K}, unfolded_matrices[n_ind], Indices{K, r}, *KR);
+            einsum(0.0, Indices{I, r}, &factors[n_ind], 1.0, Indices{I, K}, unfolded_matrices[n_ind], Indices{K, r}, *KR);
             delete KR;
 
             // Step 2: Linear Solve (instead of inversion, for numerical stability, column-major ordering)
             linear_algebra::gesv(&V, &factors[n_ind]);
-            
         });
 
         // Check for convergence
         double rmsd_max = 0.0;
-        for_sequence<TRank>([&](auto n) {
-            rmsd_max = std::max(rmsd_max, rmsd(factors[n], prev_factors[n]));
-        });
+        for_sequence<TRank>([&](auto n) { rmsd_max = std::max(rmsd_max, rmsd(factors[n], prev_factors[n])); });
 
         if (rmsd_max < tolerance) {
             converged = true;
@@ -235,17 +226,16 @@ auto parafac(const TTensor<TRank, TType> &tensor, size_t rank, int n_iter_max = 
 
     // Return **non-normalized** factors
     return factors;
-
 }
 
-template <template <size_t, typename> typename TTensor, size_t TRank, typename TType = double>
-auto tucker_reconstruct(const TTensor<TRank, TType> &g_tensor, const std::vector<TTensor<2, TType>>& factors) {
+template <template <typename, size_t> typename TTensor, size_t TRank, typename TType = double>
+auto tucker_reconstruct(const TTensor<TType, TRank> &g_tensor, const std::vector<TTensor<TType, 2>> &factors) {
 
     // Dimension workspace for temps
     Dim<TRank> dims_buffer = g_tensor.dims();
     // Buffers to hold intermediates while rebuilding the tensor
-    Tensor<TRank, TType>* old_tensor_buffer;
-    Tensor<TRank, TType>* new_tensor_buffer;
+    Tensor<TType, TRank> *old_tensor_buffer;
+    Tensor<TType, TRank> *new_tensor_buffer;
 
     old_tensor_buffer = new Tensor(dims_buffer);
     *old_tensor_buffer = g_tensor;
@@ -275,7 +265,7 @@ auto tucker_reconstruct(const TTensor<TRank, TType> &g_tensor, const std::vector
         old_tensor_buffer = new_tensor_buffer;
     });
 
-    Tensor<TRank, TType> new_tensor = *(new_tensor_buffer);
+    Tensor<TType, TRank> new_tensor = *(new_tensor_buffer);
     // Only delete one of the buffers, to avoid a double free
     delete new_tensor_buffer;
 
@@ -283,9 +273,9 @@ auto tucker_reconstruct(const TTensor<TRank, TType> &g_tensor, const std::vector
 }
 
 template <size_t TRank, typename TType = double>
-auto initialize_tucker(std::vector<Tensor<2, TType>> &folds, std::vector<size_t> &ranks) -> std::vector<Tensor<2, TType>> {
+auto initialize_tucker(std::vector<Tensor<TType, 2>> &folds, std::vector<size_t> &ranks) -> std::vector<Tensor<TType, 2>> {
 
-    std::vector<Tensor<2, TType>> factors;
+    std::vector<Tensor<TType, 2>> factors;
 
     // Perform compile-time looping.
     for_sequence<TRank>([&](auto i) {
@@ -310,35 +300,33 @@ auto initialize_tucker(std::vector<Tensor<2, TType>> &folds, std::vector<size_t>
 /**
  * Tucker decomposition of a tensor via Higher-Order SVD (HO-SVD).
  * Computes a rank-`rank` decomposition of `tensor` such that:
- * 
+ *
  *   tensor = [|weights[r0][r1]...; factor[0][r0], ..., factors[-1][rn] |]
  */
-template <template <size_t, typename> typename TTensor, size_t TRank, typename TType = double>
-auto tucker_ho_svd(const TTensor<TRank, TType> &tensor, std::vector<size_t> &ranks,
-                   const std::vector<Tensor<2, TType>> &folds = std::vector<Tensor<2, TType>>()) 
-                   -> std::tuple<Tensor<TRank, TType>, std::vector<Tensor<2, TType>>> {
+template <template <typename, size_t> typename TTensor, size_t TRank, typename TType = double>
+auto tucker_ho_svd(const TTensor<TType, TRank> &tensor, std::vector<size_t> &ranks,
+                   const std::vector<Tensor<TType, 2>> &folds = std::vector<Tensor<TType, 2>>())
+    -> std::tuple<Tensor<TType, TRank>, std::vector<Tensor<TType, 2>>> {
 
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
 
     // Compute set of unfolded matrices
-    std::vector<Tensor<2, TType>> unfolded_matrices;
+    std::vector<Tensor<TType, 2>> unfolded_matrices;
     if (!folds.size()) {
-        for_sequence<TRank>([&](auto i) {
-            unfolded_matrices.push_back(tensor_algebra::unfold<i>(tensor));
-        });
+        for_sequence<TRank>([&](auto i) { unfolded_matrices.push_back(tensor_algebra::unfold<i>(tensor)); });
     } else {
         unfolded_matrices = folds;
     }
 
     // Perform SVD guess for tucker decomposition procedure
-    std::vector<Tensor<2, TType>> factors = initialize_tucker<TRank, TType>(unfolded_matrices, ranks);
+    std::vector<Tensor<TType, 2>> factors = initialize_tucker<TRank>(unfolded_matrices, ranks);
 
     // Get the dimension workspace for temps
     Dim<TRank> dims_buffer = tensor.dims();
     // Make buffers to hold intermediates while forming G
-    Tensor<TRank, TType>* old_g_buffer;
-    Tensor<TRank, TType>* new_g_buffer;
+    Tensor<TType, TRank> *old_g_buffer;
+    Tensor<TType, TRank> *new_g_buffer;
 
     old_g_buffer = new Tensor(dims_buffer);
     *old_g_buffer = tensor;
@@ -368,8 +356,7 @@ auto tucker_ho_svd(const TTensor<TRank, TType> &tensor, std::vector<size_t> &ran
         old_g_buffer = new_g_buffer;
     });
 
-
-    Tensor<TRank, TType> g_tensor = *(new_g_buffer);
+    Tensor<TType, TRank> g_tensor = *(new_g_buffer);
     // ONLY delete one of the buffers, to avoid a double free
     delete new_g_buffer;
 
@@ -382,10 +369,9 @@ auto tucker_ho_svd(const TTensor<TRank, TType> &tensor, std::vector<size_t> &ran
  *
  *   tensor = [|weights[r0][r1]...; factor[0][r1], ..., factors[-1][rn] |].
  */
-template <template<size_t, typename> typename TTensor, size_t TRank, typename TType = double>
-auto tucker_ho_oi(const TTensor<TRank, TType> &tensor, std::vector<size_t> &ranks,
-                  int n_iter_max = 100, double tolerance = 1.e-8) 
-                  -> std::tuple<TTensor<TRank, TType>, std::vector<Tensor<2, TType>>> {
+template <template <typename, size_t> typename TTensor, size_t TRank, typename TType = double>
+auto tucker_ho_oi(const TTensor<TType, TRank> &tensor, std::vector<size_t> &ranks, int n_iter_max = 100, double tolerance = 1.e-8)
+    -> std::tuple<TTensor<TType, TRank>, std::vector<Tensor<TType, 2>>> {
 
     // Use HO SVD as a starting guess
     auto ho_svd_guess = tucker_ho_svd(tensor, ranks);
@@ -395,14 +381,14 @@ auto tucker_ho_oi(const TTensor<TRank, TType> &tensor, std::vector<size_t> &rank
     int iter = 0;
     bool converged = false;
     while (iter < n_iter_max) {
-        std::vector<Tensor<2, TType>> new_folds;
+        std::vector<Tensor<TType, 2>> new_folds;
 
         for_sequence<TRank>([&](auto i) {
             // Make the workspace for the contraction
             Dim<TRank> dims_buffer = tensor.dims();
             // Make buffers to form intermediates while forming new folds
-            Tensor<TRank, TType>* old_fold_buffer;
-            Tensor<TRank, TType>* new_fold_buffer;
+            Tensor<TType, TRank> *old_fold_buffer;
+            Tensor<TType, TRank> *new_fold_buffer;
 
             // Initialize old fold buffer to the tensor
             old_fold_buffer = new Tensor(dims_buffer);
@@ -434,7 +420,7 @@ auto tucker_ho_oi(const TTensor<TRank, TType> &tensor, std::vector<size_t> &rank
                 }
             });
 
-            Tensor<2, TType> new_fold = tensor_algebra::unfold<i>(*new_fold_buffer);
+            Tensor<TType, 2> new_fold = tensor_algebra::unfold<i>(*new_fold_buffer);
             new_folds.push_back(new_fold);
 
             // Only delete once to avoid a double free
@@ -448,9 +434,7 @@ auto tucker_ho_oi(const TTensor<TRank, TType> &tensor, std::vector<size_t> &rank
 
         // Check for convergence
         double rmsd_max = rmsd(new_g_tensor, g_tensor);
-        for_sequence<TRank>([&](auto n) {
-            rmsd_max = std::max(rmsd_max, rmsd(new_factors[n], factors[n]));
-        });
+        for_sequence<TRank>([&](auto n) { rmsd_max = std::max(rmsd_max, rmsd(new_factors[n], factors[n])); });
 
         // Update G and factors
         g_tensor = new_g_tensor;

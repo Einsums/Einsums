@@ -12,7 +12,7 @@ TEST_CASE("Identity Tensor", "[tensor]") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
 
-    Tensor<2, double> I = create_identity_tensor("I", 3, 3);
+    Tensor I = create_identity_tensor("I", 3, 3);
 
     REQUIRE(I(0, 0) == 1.0);
     REQUIRE(I(0, 1) == 0.0);
@@ -29,8 +29,8 @@ TEST_CASE("Scale Row", "[tensor]") {
     using namespace einsums;
     using namespace einsums::linear_algebra;
 
-    Tensor<2> I_original = create_random_tensor("I", 3, 3);
-    Tensor<2> I_copy = I_original;
+    Tensor I_original = create_random_tensor("I", 3, 3);
+    Tensor I_copy = I_original;
 
     scale_row(1, 2.0, &I_copy);
 
@@ -49,8 +49,8 @@ TEST_CASE("Scale Column", "[tensor]") {
     using namespace einsums;
     using namespace einsums::linear_algebra;
 
-    Tensor<2> I_original = create_random_tensor("I", 3, 3);
-    Tensor<2> I_copy = I_original;
+    Tensor I_original = create_random_tensor("I", 3, 3);
+    Tensor I_copy = I_original;
 
     scale_column(1, 2.0, &I_copy);
 
@@ -69,9 +69,9 @@ TEST_CASE("Scale Row TensorView", "[tensor]") {
     using namespace einsums;
     using namespace einsums::linear_algebra;
 
-    Tensor<2> I_original = create_random_tensor("I", 3, 3);
-    Tensor<2> I_copy = I_original;
-    TensorView<2> I_view{I_copy, Dim<2>{2, 2}, Offset<2>{1, 1}};
+    Tensor I_original = create_random_tensor("I", 3, 3);
+    Tensor I_copy = I_original;
+    TensorView I_view{I_copy, Dim<2>{2, 2}, Offset<2>{1, 1}};
 
     scale_row(1, 2.0, &I_view);
 
@@ -95,9 +95,9 @@ TEST_CASE("Scale Column TensorView", "[tensor]") {
     using namespace einsums;
     using namespace einsums::linear_algebra;
 
-    Tensor<2> I_original = create_random_tensor("I", 3, 3);
-    Tensor<2> I_copy = I_original;
-    TensorView<2> I_view{I_copy, Dim<2>{2, 2}, Offset<2>{1, 1}};
+    Tensor I_original = create_random_tensor("I", 3, 3);
+    Tensor I_copy = I_original;
+    TensorView I_view{I_copy, Dim<2>{2, 2}, Offset<2>{1, 1}};
 
     scale_column(1, 2.0, &I_view);
 
@@ -121,17 +121,17 @@ TEST_CASE("GEMM TensorView", "[tensor]") {
     using namespace einsums;
     using namespace einsums::linear_algebra;
 
-    Tensor<2> I_original{"I", 3, 3};
+    Tensor I_original{"I", 3, 3};
 
     for (int i = 0, ij = 1; i < 3; i++)
         for (int j = 0; j < 3; j++, ij++)
             I_original(i, j) = ij;
 
-    Tensor<2> I_copy = I_original;
-    TensorView<2> I_view{I_copy, Dim<2>{2, 2}, Offset<2>{1, 1}};
+    Tensor I_copy = I_original;
+    TensorView I_view{I_copy, Dim<2>{2, 2}, Offset<2>{1, 1}};
 
     SECTION("Result into 2x2 matrix") {
-        Tensor<2> result{"result", 2, 2};
+        Tensor result{"result", 2, 2};
 
         gemm<false, false>(1.0, I_view, I_view, 0.0, &result);
 
@@ -142,9 +142,9 @@ TEST_CASE("GEMM TensorView", "[tensor]") {
     }
 
     SECTION("Result into 2x2 view of matrix") {
-        Tensor<2> result{"result", 5, 5};
+        Tensor result{"result", 5, 5};
         result.zero();
-        TensorView<2> result_view{result, Dim<2>{2, 2}, Offset<2>{3, 2}};
+        TensorView result_view{result, Dim<2>{2, 2}, Offset<2>{3, 2}};
 
         gemm<false, false>(1.0, I_view, I_view, 0.0, &result_view);
 
@@ -162,7 +162,7 @@ TEST_CASE("GEMM TensorView", "[tensor]") {
     }
 
     SECTION("Transpose") {
-        Tensor<2> result{"result", 2, 2};
+        Tensor result{"result", 2, 2};
 
         gemm<false, true>(1.0, I_view, I_view, 0.0, &result);
         REQUIRE(result(0, 0) == 61.0);
@@ -192,8 +192,8 @@ TEST_CASE("Subset TensorView", "[tensor]") {
         const size_t size = 7;
         const size_t row = 1;
 
-        Tensor<2> I_original = create_random_tensor("Original", size, size);
-        TensorView<1> I_view = I_original(row, All{});
+        Tensor I_original = create_random_tensor("Original", size, size);
+        TensorView I_view = I_original(row, All{});
 
         for (size_t i = 0; i < size; i++) {
             REQUIRE(I_original(row, i) == I_view(i));
@@ -204,8 +204,8 @@ TEST_CASE("Subset TensorView", "[tensor]") {
         const size_t size = 7;
         const size_t d1 = 4;
 
-        Tensor<3> I_original = create_random_tensor("Original", size, size, size);
-        TensorView<2> I_view = I_original(d1, All{}, All{});
+        Tensor I_original = create_random_tensor("Original", size, size, size);
+        TensorView I_view = I_original(d1, All{}, All{});
 
         for (size_t i = 0; i < size; i++) {
             for (size_t j = 0; j < size; j++) {
@@ -219,8 +219,8 @@ TEST_CASE("Subset TensorView", "[tensor]") {
         const size_t d1 = 4;
         const size_t d2 = 3;
 
-        Tensor<3> I_original = create_random_tensor("Original", size, size, size);
-        TensorView<1> I_view = I_original(d1, d2, All{});
+        Tensor I_original = create_random_tensor("Original", size, size, size);
+        TensorView I_view = I_original(d1, d2, All{});
 
         for (size_t i = 0; i < size; i++) {
             REQUIRE(I_original(d1, d2, i) == I_view(i));
@@ -231,7 +231,7 @@ TEST_CASE("Subset TensorView", "[tensor]") {
         const size_t d1_size = 7, d2_size = 3, d3_size = 3;
         const size_t d1 = 4;
 
-        Tensor<3> original = create_random_tensor("Original", d1_size, d2_size, d3_size);
+        Tensor original = create_random_tensor("Original", d1_size, d2_size, d3_size);
 
         // Set submatrix to a set of known values
         for (size_t i = 0, ij = 1; i < 3; i++) {
@@ -241,8 +241,8 @@ TEST_CASE("Subset TensorView", "[tensor]") {
         }
 
         // Obtain a 3x3 view of original[4,:,:]
-        TensorView<2> view = original(d1, All{}, All{});
-        Tensor<2> result{"result", d2_size, d3_size};
+        TensorView view = original(d1, All{}, All{});
+        Tensor result{"result", d2_size, d3_size};
 
         // false, false
         {
@@ -314,7 +314,7 @@ TEST_CASE("Subset TensorView", "[tensor]") {
         const size_t e1 = 2;
         const std::array<size_t, 6> untouched_d1{0, 1, 3, 4, 5, 6};
 
-        Tensor<3> original = create_random_tensor("Original", d1_size, d2_size, d3_size);
+        Tensor original = create_random_tensor("Original", d1_size, d2_size, d3_size);
 
         // Set submatrix to a set of known values
         for (size_t i = 0, ij = 1; i < 3; i++) {
@@ -323,14 +323,14 @@ TEST_CASE("Subset TensorView", "[tensor]") {
             }
         }
 
-        Tensor<3> copy = original;
+        Tensor copy = original;
 
         // Obtain a 3x3 view of original[4,:,:]
         //   A view does not copy data it is just an offset pointer into the original with necessary striding information.
-        TensorView<2> view = original(d1, All{}, All{});
+        TensorView view = original(d1, All{}, All{});
 
         // Obtain a 3x3 view of original[2,:,:] to store the result
-        TensorView<2> result = original(e1, All{}, All{});
+        TensorView result = original(e1, All{}, All{});
 
         // false, false
         {
@@ -434,9 +434,9 @@ TEST_CASE("einsum1", "[tensor]") {
     using namespace einsums::tensor_algebra;
 
     SECTION("ik=ij,jk") {
-        Tensor<2> A{"A", 3, 3};
-        Tensor<2> B{"B", 3, 3};
-        Tensor<2> C{"C", 3, 3};
+        Tensor A{"A", 3, 3};
+        Tensor B{"B", 3, 3};
+        Tensor C{"C", 3, 3};
 
         for (int i = 0, ij = 1; i < 3; i++) {
             for (int j = 0; j < 3; j++, ij++) {
@@ -466,9 +466,9 @@ TEST_CASE("einsum1", "[tensor]") {
     }
 
     SECTION("il=ijk,jkl") {
-        Tensor<3> A{"A", 3, 3, 3};
-        Tensor<3> B{"B", 3, 3, 3};
-        Tensor<2> C{"C", 3, 3};
+        Tensor A{"A", 3, 3, 3};
+        Tensor B{"B", 3, 3, 3};
+        Tensor C{"C", 3, 3};
 
         for (int i = 0, ij = 1; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -516,7 +516,7 @@ TEST_CASE("einsum TensorView", "[tensor]") {
         const size_t e1 = 2;
         const std::array<size_t, 6> untouched1{0, 1, 3, 4, 5, 6};
 
-        Tensor<3> original = create_random_tensor("Original", d1_size, d2_size, d3_size);
+        Tensor original = create_random_tensor("Original", d1_size, d2_size, d3_size);
 
         // Set submatrix to a set of known values
         for (size_t i = 0, ij = 1; i < 3; i++) {
@@ -525,13 +525,13 @@ TEST_CASE("einsum TensorView", "[tensor]") {
             }
         }
 
-        Tensor<3> copy = original;
+        Tensor copy = original;
 
         // Obtain a 3x3 view of original[4,:,:]
-        TensorView<2> view = original(d1, All{}, All{});
+        TensorView view = original(d1, All{}, All{});
 
         // Obtain a 3x3 view of original[2,:,:] to store the result
-        TensorView<2> result = original(e1, All{}, All{});
+        TensorView result = original(e1, All{}, All{});
 
         // false, false
         {
@@ -580,8 +580,8 @@ TEST_CASE("sort2") {
     using namespace einsums::tensor_algebra::index;
 
     SECTION("Rank 2 - axpy") {
-        Tensor<2> A{"A", 3, 3};
-        Tensor<2> C{"C", 3, 3};
+        Tensor A{"A", 3, 3};
+        Tensor C{"C", 3, 3};
 
         for (int i = 0, ij = 1; i < 3; i++) {
             for (int j = 0; j < 3; j++, ij++) {
@@ -597,8 +597,8 @@ TEST_CASE("sort2") {
             }
         }
 
-        TensorView<2> A_view{A, Dim<2>{2, 2}, Offset<2>{1, 1}};
-        TensorView<2> C_view{C, Dim<2>{2, 2}, Offset<2>{1, 1}};
+        TensorView A_view{A, Dim<2>{2, 2}, Offset<2>{1, 1}};
+        TensorView C_view{C, Dim<2>{2, 2}, Offset<2>{1, 1}};
 
         sort(Indices{j, i}, &C_view, Indices{i, j}, A_view);
 
@@ -613,9 +613,9 @@ TEST_CASE("sort2") {
     }
 
     SECTION("Rank 2 - axpy (2)") {
-        Tensor<2> A = create_random_tensor("A", 3, 3);
-        Tensor<2> C0{"C", 3, 3};
-        Tensor<2> C1{"C", 3, 3};
+        Tensor A = create_random_tensor("A", 3, 3);
+        Tensor C0{"C", 3, 3};
+        Tensor C1{"C", 3, 3};
 
         for (int i = 0, ij = 1; i < 3; i++) {
             for (int j = 0; j < 3; j++, ij++) {
@@ -649,8 +649,8 @@ TEST_CASE("sort2") {
     }
 
     SECTION("Rank 2") {
-        Tensor<2> A{"A", 3, 3};
-        Tensor<2> C{"C", 3, 3};
+        Tensor A{"A", 3, 3};
+        Tensor C{"C", 3, 3};
 
         for (int i = 0, ij = 1; i < 3; i++) {
             for (int j = 0; j < 3; j++, ij++) {
@@ -668,8 +668,8 @@ TEST_CASE("sort2") {
     }
 
     SECTION("Rank 3") {
-        Tensor<3> A{"A", 3, 3, 3};
-        Tensor<3> B{"B", 3, 3, 3};
+        Tensor A{"A", 3, 3, 3};
+        Tensor B{"B", 3, 3, 3};
 
         for (int i = 0, ij = 1; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -717,8 +717,8 @@ TEST_CASE("sort2") {
     }
 
     SECTION("Rank 4") {
-        Tensor<4> A{"A", 3, 3, 3, 3};
-        Tensor<4> B{"B", 3, 3, 3, 3};
+        Tensor A{"A", 3, 3, 3, 3};
+        Tensor B{"B", 3, 3, 3, 3};
 
         for (int i = 0, ij = 1; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -743,8 +743,8 @@ TEST_CASE("sort2") {
     }
 
     SECTION("Rank 5") {
-        Tensor<5, float> A{"A", 3, 3, 3, 3, 3};
-        Tensor<5, float> B{"B", 3, 3, 3, 3, 3};
+        Tensor<float, 5> A{"A", 3, 3, 3, 3, 3};
+        Tensor<float, 5> B{"B", 3, 3, 3, 3, 3};
 
         for (short i = 0, ij = 1; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -773,8 +773,8 @@ TEST_CASE("sort2") {
     }
 
     SECTION("Rank 2 - Different Sizes") {
-        Tensor<2> A{"A", 3, 9};
-        Tensor<2> B{"B", 9, 3};
+        Tensor A{"A", 3, 9};
+        Tensor B{"B", 9, 3};
 
         for (int i = 0, ij = 0; i < A.dim(0); i++) {
             for (int j = 0; j < A.dim(1); j++, ij++) {
@@ -791,8 +791,8 @@ TEST_CASE("sort2") {
     }
 
     SECTION("Rank 3 - Different Sizes") {
-        Tensor<3> A{"A", 2, 3, 4};
-        Tensor<3> B{"B", 3, 4, 2};
+        Tensor A{"A", 2, 3, 4};
+        Tensor B{"B", 3, 4, 2};
 
         for (int i = 0, ij = 1; i < A.dim(0); i++) {
             for (int j = 0; j < A.dim(1); j++) {
@@ -819,10 +819,10 @@ TEST_CASE("einsum2") {
     using namespace einsums::tensor_algebra::index;
 
     SECTION("3x3 <- 3x5 * 5x3") {
-        Tensor<2> C0{"C0", 3, 3};
-        Tensor<2> C1{"C1", 3, 3};
-        Tensor<2> A = create_random_tensor("A", 3, 5);
-        Tensor<2> B = create_random_tensor("B", 5, 3);
+        Tensor C0{"C0", 3, 3};
+        Tensor C1{"C1", 3, 3};
+        Tensor A = create_random_tensor("A", 3, 5);
+        Tensor B = create_random_tensor("B", 5, 3);
 
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
         linear_algebra::gemm<false, false>(1.0, A, B, 0.0, &C1);
@@ -835,10 +835,10 @@ TEST_CASE("einsum2") {
     }
 
     SECTION("3x3 <- 3x5 * 3x5") {
-        Tensor<2> C0{"C0", 3, 3};
-        Tensor<2> C1{"C1", 3, 3};
-        Tensor<2> A = create_random_tensor("A", 3, 5);
-        Tensor<2> B = create_random_tensor("B", 3, 5);
+        Tensor C0{"C0", 3, 3};
+        Tensor C1{"C1", 3, 3};
+        Tensor A = create_random_tensor("A", 3, 5);
+        Tensor B = create_random_tensor("B", 3, 5);
 
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{j, k}, B));
         linear_algebra::gemm<false, true>(1.0, A, B, 0.0, &C1);
@@ -851,10 +851,10 @@ TEST_CASE("einsum2") {
     }
 
     SECTION("3 <- 3x5 * 5") {
-        Tensor<1> C0{"C0", 3};
-        Tensor<1> C1{"C1", 3};
-        Tensor<2> A = create_random_tensor("A", 3, 5);
-        Tensor<1> B = create_random_tensor("B", 5);
+        Tensor C0{"C0", 3};
+        Tensor C1{"C1", 3};
+        Tensor A = create_random_tensor("A", 3, 5);
+        Tensor B = create_random_tensor("B", 5);
 
         C0.zero();
         C1.zero();
@@ -868,12 +868,12 @@ TEST_CASE("einsum2") {
     }
 
     SECTION("3 <- 3x4x5 * 4x3x5") {
-        Tensor<1> C0{"C0", 3};
+        Tensor C0{"C0", 3};
         zero(C0);
-        Tensor<1> C1{"C1", 3};
+        Tensor C1{"C1", 3};
         zero(C1);
-        Tensor<3> A = create_random_tensor("A", 3, 4, 5);
-        Tensor<3> B = create_random_tensor("B", 4, 3, 5);
+        Tensor A = create_random_tensor("A", 3, 4, 5);
+        Tensor B = create_random_tensor("B", 4, 3, 5);
 
         REQUIRE_NOTHROW(einsum(Indices{i}, &C0, Indices{i, j, k}, A, Indices{j, i, k}, B));
 
@@ -894,12 +894,12 @@ TEST_CASE("einsum2") {
     }
 
     SECTION("3x5 <- 3x4x5 * 4x3x5") {
-        Tensor<2> C0{"C0", 3, 5};
-        Tensor<2> C1{"C1", 3, 5};
+        Tensor C0{"C0", 3, 5};
+        Tensor C1{"C1", 3, 5};
         zero(C0);
         zero(C1);
-        Tensor<3> A = create_random_tensor("A", 3, 4, 5);
-        Tensor<3> B = create_random_tensor("B", 4, 3, 5);
+        Tensor A = create_random_tensor("A", 3, 4, 5);
+        Tensor B = create_random_tensor("B", 4, 3, 5);
 
         // timer::push("einsum: 3x5 <- 3x4x5 * 4x3x5");
         REQUIRE_NOTHROW(einsum(Indices{i, k}, &C0, Indices{i, j, k}, A, Indices{j, i, k}, B));
@@ -926,12 +926,12 @@ TEST_CASE("einsum2") {
     }
 
     SECTION("3, l <- 3x4x5 * 4x3x5") {
-        Tensor<2> C0{"C0", 3, 5};
+        Tensor C0{"C0", 3, 5};
         zero(C0);
-        Tensor<2> C1{"C1", 3, 5};
+        Tensor C1{"C1", 3, 5};
         zero(C1);
-        Tensor<3> A = create_random_tensor("A", 3, 4, 5);
-        Tensor<3> B = create_random_tensor("B", 4, 3, 5);
+        Tensor A = create_random_tensor("A", 3, 4, 5);
+        Tensor B = create_random_tensor("B", 4, 3, 5);
 
         // timer::push("einsum: 3x5 <- 3x4x5 * 4x3x5");
         REQUIRE_NOTHROW(einsum(Indices{i, l}, &C0, Indices{i, j, k}, A, Indices{j, i, k}, B));
@@ -972,10 +972,10 @@ TEST_CASE("einsum3") {
     // timer::initialize();
 
     SECTION("3x3 <- 3x5 * 5x3") {
-        Tensor<2> C0{"C0", 3, 3};
-        Tensor<2> C1{"C1", 3, 3};
-        Tensor<2> A = create_random_tensor("A", 3, 5);
-        Tensor<2> B = create_random_tensor("B", 5, 3);
+        Tensor C0{"C0", 3, 3};
+        Tensor C1{"C1", 3, 3};
+        Tensor A = create_random_tensor("A", 3, 5);
+        Tensor B = create_random_tensor("B", 5, 3);
 
         // Working to get the einsum to perform the gemm that follows.
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
@@ -990,12 +990,12 @@ TEST_CASE("einsum3") {
 
     SECTION("3x3x3x3 <- 3x3x3x3 * 3x3") {
         // This one is to represent a two-electron integral transformation
-        Tensor<4> gMO0{"g0", 3, 3, 3, 3};
-        Tensor<4> gMO1{"g1", 3, 3, 3, 3};
+        Tensor gMO0{"g0", 3, 3, 3, 3};
+        Tensor gMO1{"g1", 3, 3, 3, 3};
         zero(gMO0);
         zero(gMO1);
-        Tensor<4> A = create_random_tensor("A", 3, 3, 3, 3);
-        Tensor<2> B = create_random_tensor("B", 3, 3);
+        Tensor A = create_random_tensor("A", 3, 3, 3, 3);
+        Tensor B = create_random_tensor("B", 3, 3);
 
         REQUIRE_NOTHROW(einsum(Indices{i, j, k, l}, &gMO0, Indices{i, j, k, p}, A, Indices{p, l}, B));
 
@@ -1076,12 +1076,12 @@ TEST_CASE("einsum4") {
     // timer::initialize();
     SECTION("3x3x3x3 <- 3x3x3x3 * 3x3") {
         // This one is to represent a two-electron integral transformation
-        Tensor<4> gMO0{"g0", 3, 3, 3, 3};
-        Tensor<4> gMO1{"g1", 3, 3, 3, 3};
+        Tensor gMO0{"g0", 3, 3, 3, 3};
+        Tensor gMO1{"g1", 3, 3, 3, 3};
         zero(gMO0);
         zero(gMO1);
-        Tensor<4> A = create_random_tensor("A", 3, 3, 3, 3);
-        Tensor<2> B = create_random_tensor("B", 3, 3);
+        Tensor A = create_random_tensor("A", 3, 3, 3, 3);
+        Tensor B = create_random_tensor("B", 3, 3);
 
         REQUIRE_NOTHROW(einsum(Indices{p, q, r, l}, &gMO0, Indices{p, q, r, s}, A, Indices{s, l}, B));
 
@@ -1165,14 +1165,14 @@ TEST_CASE("IntegralTransformation") {
 
     // timer::initialize();
     // SECTION("3x3x3x3 <- 3x3x3x3 * 3x3 * 3x3 * 3x3 * 3x3") {
-    //     Tensor<2> C1 = create_random_tensor("C1", 4, 2);
-    //     Tensor<2> C2 = create_random_tensor("C2", 4, 2);
-    //     Tensor<2> C3 = create_random_tensor("C3", 4, 3);
-    //     Tensor<2> C4 = create_random_tensor("C4", 4, 4);
+    //     Tensor C1 = create_random_tensor("C1", 4, 2);
+    //     Tensor C2 = create_random_tensor("C2", 4, 2);
+    //     Tensor C3 = create_random_tensor("C3", 4, 3);
+    //     Tensor C4 = create_random_tensor("C4", 4, 4);
 
-    //     Tensor<4> true_answer{"true", 2, 2, 3, 4};
-    //     Tensor<4> memory_ao = create_random_tensor("ao", 4, 4, 4, 4);
-    //     DiskTensor<4> disk_ao{State::data, "ao", 4, 4, 4, 4};
+    //     Tensor true_answer{"true", 2, 2, 3, 4};
+    //     Tensor memory_ao = create_random_tensor("ao", 4, 4, 4, 4);
+    //     DiskTensor disk_ao{State::data, "ao", 4, 4, 4, 4};
 
     //     // #pragma omp parallel for collapse(8)
     //     for (size_t i0 = 0; i0 < C1.dim(1); i0++) {
@@ -1244,9 +1244,9 @@ TEST_CASE("IntegralTransformation") {
     // }
 
     SECTION("R2 <- R3 * R3") {
-        Tensor<2> W_mi = create_random_tensor("W_mi", 4, 4);
-        Tensor<3> g_m = create_random_tensor("g_m", 4, 8, 8);
-        Tensor<3> t_i = create_random_tensor("t_i", 4, 8, 8);
+        Tensor W_mi = create_random_tensor("W_mi", 4, 4);
+        Tensor g_m = create_random_tensor("g_m", 4, 8, 8);
+        Tensor t_i = create_random_tensor("t_i", 4, 8, 8);
 
         // println(W_mi);
         // println(g_m);
@@ -1265,10 +1265,10 @@ TEST_CASE("Hadamard") {
     size_t _i = 3, _j = 4, _k = 5;
 
     SECTION("i,j <- i,i * j*j") {
-        Tensor<2> A = create_random_tensor("A", _i, _i);
-        Tensor<2> B = create_random_tensor("B", _j, _j);
-        Tensor<2> C{"C", _i, _j};
-        Tensor<2> C0{"C0", _i, _j};
+        Tensor A = create_random_tensor("A", _i, _i);
+        Tensor B = create_random_tensor("B", _j, _j);
+        Tensor C{"C", _i, _j};
+        Tensor C0{"C0", _i, _j};
         C0.zero();
         C.zero();
 
@@ -1294,10 +1294,10 @@ TEST_CASE("Hadamard") {
     }
 
     SECTION("i,j <- i,i,j * j,j,i") {
-        Tensor<3> A = create_random_tensor("A", _i, _i, _j);
-        Tensor<3> B = create_random_tensor("B", _j, _j, _i);
-        Tensor<2> C{"C", _i, _j};
-        Tensor<2> C0{"C0", _i, _j};
+        Tensor A = create_random_tensor("A", _i, _i, _j);
+        Tensor B = create_random_tensor("B", _j, _j, _i);
+        Tensor C{"C", _i, _j};
+        Tensor C0{"C0", _i, _j};
         C0.zero();
         C.zero();
 
@@ -1323,10 +1323,10 @@ TEST_CASE("Hadamard") {
     }
 
     SECTION("i,j <- i,j,i * j,i,j") {
-        Tensor<3> A = create_random_tensor("A", _i, _j, _i);
-        Tensor<3> B = create_random_tensor("B", _j, _i, _j);
-        Tensor<2> C{"C", _i, _j};
-        Tensor<2> C0{"C0", _i, _j};
+        Tensor A = create_random_tensor("A", _i, _j, _i);
+        Tensor B = create_random_tensor("B", _j, _i, _j);
+        Tensor C{"C", _i, _j};
+        Tensor C0{"C0", _i, _j};
         C0.zero();
         C.zero();
 
@@ -1352,10 +1352,10 @@ TEST_CASE("Hadamard") {
     }
 
     SECTION("i,j,i <- i,j,i * j,i,j") {
-        Tensor<3> A = create_random_tensor("A", _i, _j, _i);
-        Tensor<3> B = create_random_tensor("B", _j, _i, _j);
-        Tensor<3> C{"C", _i, _j, _i};
-        Tensor<3> C0{"C0", _i, _j, _i};
+        Tensor A = create_random_tensor("A", _i, _j, _i);
+        Tensor B = create_random_tensor("B", _j, _i, _j);
+        Tensor C{"C", _i, _j, _i};
+        Tensor C0{"C0", _i, _j, _i};
         C0.zero();
         C.zero();
 
@@ -1375,10 +1375,10 @@ TEST_CASE("Hadamard") {
     }
 
     SECTION("i,i,i <- i,j,i * j,i,j") {
-        Tensor<3> A = create_random_tensor("A", _i, _j, _i);
-        Tensor<3> B = create_random_tensor("B", _j, _i, _j);
-        Tensor<3> C{"C", _i, _i, _i};
-        Tensor<3> C0{"C0", _i, _i, _i};
+        Tensor A = create_random_tensor("A", _i, _j, _i);
+        Tensor B = create_random_tensor("B", _j, _i, _j);
+        Tensor C{"C", _i, _i, _i};
+        Tensor C0{"C0", _i, _i, _i};
         C0.zero();
         C.zero();
 
@@ -1396,10 +1396,10 @@ TEST_CASE("Hadamard") {
     }
 
     SECTION("i,i <- i,j,k * j,i,k") {
-        Tensor<3> A = create_random_tensor("A", _i, _j, _k);
-        Tensor<3> B = create_random_tensor("B", _j, _i, _k);
-        Tensor<2> C{"C", _i, _i};
-        Tensor<2> C0{"C0", _i, _i};
+        Tensor A = create_random_tensor("A", _i, _j, _k);
+        Tensor B = create_random_tensor("B", _j, _i, _k);
+        Tensor C{"C", _i, _i};
+        Tensor C0{"C0", _i, _i};
         C0.zero();
         C.zero();
 
@@ -1427,10 +1427,10 @@ TEST_CASE("unique_ptr") {
     using namespace einsums::tensor_algebra::index;
 
     SECTION("C") {
-        auto C0 = std::make_unique<Tensor<2>>("C0", 3, 3);
-        Tensor<2> C1{"C1", 3, 3};
-        Tensor<2> A = create_random_tensor("A", 3, 5);
-        Tensor<2> B = create_random_tensor("B", 5, 3);
+        auto C0 = std::make_unique<Tensor<double, 2>>("C0", 3, 3);
+        Tensor C1{"C1", 3, 3};
+        Tensor A = create_random_tensor("A", 3, 5);
+        Tensor B = create_random_tensor("B", 5, 3);
 
         // Working to get the einsum to perform the gemm that follows.
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
@@ -1444,10 +1444,10 @@ TEST_CASE("unique_ptr") {
     }
 
     SECTION("A") {
-        Tensor<2> C0{"C0", 3, 3};
-        Tensor<2> C1{"C1", 3, 3};
-        auto A = std::make_unique<Tensor<2>>(create_random_tensor("A", 3, 5));
-        Tensor<2> B = create_random_tensor("B", 5, 3);
+        Tensor C0{"C0", 3, 3};
+        Tensor C1{"C1", 3, 3};
+        auto A = std::make_unique<Tensor<double, 2>>(create_random_tensor("A", 3, 5));
+        Tensor B = create_random_tensor("B", 5, 3);
 
         // Working to get the einsum to perform the gemm that follows.
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
@@ -1461,10 +1461,10 @@ TEST_CASE("unique_ptr") {
     }
 
     SECTION("B") {
-        Tensor<2> C0{"C0", 3, 3};
-        Tensor<2> C1{"C1", 3, 3};
-        Tensor<2> A = create_random_tensor("A", 3, 5);
-        auto B = std::make_unique<Tensor<2>>(create_random_tensor("B", 5, 3));
+        Tensor C0{"C0", 3, 3};
+        Tensor C1{"C1", 3, 3};
+        Tensor A = create_random_tensor("A", 3, 5);
+        auto B = std::make_unique<Tensor<double, 2>>(create_random_tensor("B", 5, 3));
 
         // Working to get the einsum to perform the gemm that follows.
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
@@ -1478,10 +1478,10 @@ TEST_CASE("unique_ptr") {
     }
 
     SECTION("AB") {
-        Tensor<2> C0{"C0", 3, 3};
-        Tensor<2> C1{"C1", 3, 3};
-        auto A = std::make_unique<Tensor<2>>(create_random_tensor("A", 3, 5));
-        auto B = std::make_unique<Tensor<2>>(create_random_tensor("B", 5, 3));
+        Tensor C0{"C0", 3, 3};
+        Tensor C1{"C1", 3, 3};
+        auto A = std::make_unique<Tensor<double, 2>>(create_random_tensor("A", 3, 5));
+        auto B = std::make_unique<Tensor<double, 2>>(create_random_tensor("B", 5, 3));
 
         // Working to get the einsum to perform the gemm that follows.
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
@@ -1495,10 +1495,10 @@ TEST_CASE("unique_ptr") {
     }
 
     SECTION("CA") {
-        auto C0 = std::make_unique<Tensor<2>>("C0", 3, 3);
-        Tensor<2> C1{"C1", 3, 3};
-        auto A = std::make_unique<Tensor<2>>(create_random_tensor("A", 3, 5));
-        Tensor<2> B = create_random_tensor("B", 5, 3);
+        auto C0 = std::make_unique<Tensor<double, 2>>("C0", 3, 3);
+        Tensor C1{"C1", 3, 3};
+        auto A = std::make_unique<Tensor<double, 2>>(create_random_tensor("A", 3, 5));
+        Tensor B = create_random_tensor("B", 5, 3);
 
         // Working to get the einsum to perform the gemm that follows.
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
@@ -1512,10 +1512,10 @@ TEST_CASE("unique_ptr") {
     }
 
     SECTION("CB") {
-        auto C0 = std::make_unique<Tensor<2>>("C0", 3, 3);
-        Tensor<2> C1{"C1", 3, 3};
-        Tensor<2> A = create_random_tensor("A", 3, 5);
-        auto B = std::make_unique<Tensor<2>>(create_random_tensor("B", 5, 3));
+        auto C0 = std::make_unique<Tensor<double, 2>>("C0", 3, 3);
+        Tensor C1{"C1", 3, 3};
+        Tensor A = create_random_tensor("A", 3, 5);
+        auto B = std::make_unique<Tensor<double, 2>>(create_random_tensor("B", 5, 3));
 
         // Working to get the einsum to perform the gemm that follows.
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
@@ -1529,10 +1529,10 @@ TEST_CASE("unique_ptr") {
     }
 
     SECTION("CAB") {
-        auto C0 = std::make_unique<Tensor<2>>("C0", 3, 3);
-        Tensor<2> C1{"C1", 3, 3};
-        auto A = std::make_unique<Tensor<2>>(create_random_tensor("A", 3, 5));
-        auto B = std::make_unique<Tensor<2>>(create_random_tensor("B", 5, 3));
+        auto C0 = std::make_unique<Tensor<double, 2>>("C0", 3, 3);
+        Tensor C1{"C1", 3, 3};
+        auto A = std::make_unique<Tensor<double, 2>>(create_random_tensor("A", 3, 5));
+        auto B = std::make_unique<Tensor<double, 2>>(create_random_tensor("B", 5, 3));
 
         // Working to get the einsum to perform the gemm that follows.
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
@@ -1554,10 +1554,10 @@ TEST_CASE("Transpose C", "[einsum]") {
     size_t _i = 3, _j = 4, _k = 5;
 
     SECTION("i,j <- j,k * k,i === true, false, false") {
-        Tensor<2> A = create_random_tensor("A", _j, _k);
-        Tensor<2> B = create_random_tensor("B", _k, _i);
-        Tensor<2> C{"C", _i, _j};
-        Tensor<2> C0{"C0", _i, _j};
+        Tensor A = create_random_tensor("A", _j, _k);
+        Tensor B = create_random_tensor("B", _k, _i);
+        Tensor C{"C", _i, _j};
+        Tensor C0{"C0", _i, _j};
         C0.zero();
 
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C, Indices{j, k}, A, Indices{k, i}, B));
@@ -1581,10 +1581,10 @@ TEST_CASE("Transpose C", "[einsum]") {
     }
 
     SECTION("i,j <- k,j * k,i === true, true, false") {
-        Tensor<2> A = create_random_tensor("A", _k, _j);
-        Tensor<2> B = create_random_tensor("B", _k, _i);
-        Tensor<2> C{"C", _i, _j};
-        Tensor<2> C0{"C0", _i, _j};
+        Tensor A = create_random_tensor("A", _k, _j);
+        Tensor B = create_random_tensor("B", _k, _i);
+        Tensor C{"C", _i, _j};
+        Tensor C0{"C0", _i, _j};
         C0.zero();
 
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C, Indices{k, j}, A, Indices{k, i}, B));
@@ -1608,10 +1608,10 @@ TEST_CASE("Transpose C", "[einsum]") {
     }
 
     SECTION("i,j <- j,k * i,k === true, false, true") {
-        Tensor<2> A = create_random_tensor("A", _j, _k);
-        Tensor<2> B = create_random_tensor("B", _i, _k);
-        Tensor<2> C{"C", _i, _j};
-        Tensor<2> C0{"C0", _i, _j};
+        Tensor A = create_random_tensor("A", _j, _k);
+        Tensor B = create_random_tensor("B", _i, _k);
+        Tensor C{"C", _i, _j};
+        Tensor C0{"C0", _i, _j};
         C0.zero();
 
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C, Indices{j, k}, A, Indices{i, k}, B));
@@ -1635,10 +1635,10 @@ TEST_CASE("Transpose C", "[einsum]") {
     }
 
     SECTION("i,j <- k,j * i,k === true, true, true") {
-        Tensor<2> A = create_random_tensor("A", _k, _j);
-        Tensor<2> B = create_random_tensor("B", _i, _k);
-        Tensor<2> C{"C", _i, _j};
-        Tensor<2> C0{"C0", _i, _j};
+        Tensor A = create_random_tensor("A", _k, _j);
+        Tensor B = create_random_tensor("B", _i, _k);
+        Tensor C{"C", _i, _j};
+        Tensor C0{"C0", _i, _j};
         C0.zero();
 
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C, Indices{k, j}, A, Indices{i, k}, B));
@@ -1664,13 +1664,13 @@ TEST_CASE("Transpose C", "[einsum]") {
     SECTION("Wmnij <- 0.25 t_ijef * g_mnef") {
         size_t _m = 12, _n = 12, _i = 5, _j = 5, _e = 7, _f = 7;
 
-        Tensor<4> Wmnij{"Wmnij", _m, _n, _i, _j};
+        Tensor Wmnij{"Wmnij", _m, _n, _i, _j};
         zero(Wmnij);
-        Tensor<4> W0{"Wmnij", _m, _n, _i, _j};
+        Tensor W0{"Wmnij", _m, _n, _i, _j};
         zero(W0);
 
-        Tensor<4> t_oovv = create_random_tensor("t_oovv", _i, _j, _e, _f);
-        Tensor<4> g_oovv = create_random_tensor("g_oovv", _m, _n, _e, _f);
+        Tensor t_oovv = create_random_tensor("t_oovv", _i, _j, _e, _f);
+        Tensor g_oovv = create_random_tensor("g_oovv", _m, _n, _e, _f);
 
         REQUIRE_NOTHROW(einsum(1.0, Indices{m, n, i, j}, &Wmnij, 0.25, Indices{i, j, e, f}, t_oovv, Indices{m, n, e, f}, g_oovv));
 
@@ -1708,17 +1708,17 @@ TEST_CASE("gemv") {
     SECTION("check") {
         size_t _p = 7, _q = 7, _r = 7, _s = 7;
 
-        Tensor<4> g = create_random_tensor("g", _p, _q, _r, _s);
-        Tensor<2> D = create_random_tensor("d", _r, _s);
+        Tensor g = create_random_tensor("g", _p, _q, _r, _s);
+        Tensor D = create_random_tensor("d", _r, _s);
 
-        Tensor<2> F{"F", _p, _q};
-        Tensor<2> F0{"F0", _p, _q};
+        Tensor F{"F", _p, _q};
+        Tensor F0{"F0", _p, _q};
 
         REQUIRE_NOTHROW(einsum(1.0, Indices{p, q}, &F0, 2.0, Indices{p, q, r, s}, g, Indices{r, s}, D));
 
-        TensorView<2> gv{g, Dim<2>{_p * _q, _r * _s}};
-        TensorView<1> dv{D, Dim<1>{_r * _s}};
-        TensorView<1> Fv{F, Dim<1>{_p * _q}};
+        TensorView gv{g, Dim<2>{_p * _q, _r * _s}};
+        TensorView dv{D, Dim<1>{_r * _s}};
+        TensorView Fv{F, Dim<1>{_p * _q}};
 
         linear_algebra::gemv<false>(2.0, gv, dv, 1.0, &Fv);
 
@@ -1733,18 +1733,18 @@ TEST_CASE("TensorView einsum") {
     using namespace einsums::tensor_algebra::index;
 
     // Test if everything passed to einsum is a TensorView.
-    Tensor<2> A = create_random_tensor("A", 3, 5);
-    Tensor<2> B = create_random_tensor("B", 3, 5);
-    TensorView<2> A_view{A, Dim<2>{3, 3}};
-    TensorView<2> B_view{B, Dim<2>{3, 3}, Offset<2>{0, 2}};
+    Tensor A = create_random_tensor("A", 3, 5);
+    Tensor B = create_random_tensor("B", 3, 5);
+    TensorView A_view{A, Dim<2>{3, 3}};
+    TensorView B_view{B, Dim<2>{3, 3}, Offset<2>{0, 2}};
 
-    Tensor<2> C{"C2", 10, 10};
+    Tensor C{"C2", 10, 10};
     C.zero();
-    TensorView<2> C_view{C, Dim<2>{3, 3}, Offset<2>{5, 5}};
+    TensorView C_view{C, Dim<2>{3, 3}, Offset<2>{5, 5}};
 
     // To perform the test we make an explicit copy of the TensorViews into their own Tensors
-    Tensor<2> A_copy{"A copy", 3, 3};
-    Tensor<2> B_copy{"B copy", 3, 3};
+    Tensor A_copy{"A copy", 3, 3};
+    Tensor B_copy{"B copy", 3, 3};
 
     for (int x = 0; x < 3; x++) {
         for (int y = 0; y < 3; y++) {
@@ -1754,7 +1754,7 @@ TEST_CASE("TensorView einsum") {
     }
 
     // The target solution is determined from not using views
-    Tensor<2> C_solution{"C solution", 3, 3};
+    Tensor C_solution{"C solution", 3, 3};
     C_solution.zero();
     REQUIRE_NOTHROW(einsum(Indices{i, j}, &C_solution, Indices{i, k}, A_copy, Indices{j, k}, B_copy));
 
@@ -1775,9 +1775,9 @@ TEST_CASE("outer product") {
     using namespace einsums::tensor_algebra::index;
 
     SECTION("1 * 1 -> 2") {
-        Tensor<1> A = create_random_tensor("A", 3);
-        Tensor<1> B = create_random_tensor("B", 3);
-        Tensor<2> C{"C", 3, 3};
+        Tensor A = create_random_tensor("A", 3);
+        Tensor B = create_random_tensor("B", 3);
+        Tensor C{"C", 3, 3};
         C.set_all(0.0);
 
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C, Indices{i}, A, Indices{j}, B));
@@ -1817,9 +1817,9 @@ TEST_CASE("outer product") {
     }
 
     SECTION("2 * 1 -> 3") {
-        Tensor<2> A = create_random_tensor("A", 3, 3);
-        Tensor<1> B = create_random_tensor("B", 3);
-        Tensor<3> C{"C", 3, 3, 3};
+        Tensor A = create_random_tensor("A", 3, 3);
+        Tensor B = create_random_tensor("B", 3);
+        Tensor C{"C", 3, 3, 3};
 
         C.set_all(0.0);
         REQUIRE_NOTHROW(einsum(Indices{i, j, k}, &C, Indices{i, j}, A, Indices{k}, B));
@@ -1856,9 +1856,9 @@ TEST_CASE("outer product") {
     }
 
     SECTION("2 * 2 -> 4") {
-        Tensor<2> A = create_random_tensor("A", 3, 3);
-        Tensor<2> B = create_random_tensor("B", 3, 3);
-        Tensor<4> C{"C", 3, 3, 3, 3};
+        Tensor A = create_random_tensor("A", 3, 3);
+        Tensor B = create_random_tensor("B", 3, 3);
+        Tensor C{"C", 3, 3, 3, 3};
 
         C.set_all(0.0);
         REQUIRE_NOTHROW(einsum(Indices{i, j, k, l}, &C, Indices{i, j}, A, Indices{k, l}, B));
@@ -1894,12 +1894,12 @@ TEST_CASE("view outer product") {
     using namespace einsums::tensor_algebra::index;
 
     SECTION("1 * 1 -> 2") {
-        Tensor<1> A = create_random_tensor("A", 6);
-        Tensor<1> B = create_random_tensor("B", 6);
+        Tensor A = create_random_tensor("A", 6);
+        Tensor B = create_random_tensor("B", 6);
 
-        auto vA = TensorView<1>(A, Dim<1>{3}, Offset<1>{3});
-        auto vB = TensorView<1>(B, Dim<1>{3});
-        Tensor<2> C{"C", 3, 3};
+        auto vA = TensorView(A, Dim<1>{3}, Offset<1>{3});
+        auto vB = TensorView(B, Dim<1>{3});
+        Tensor C{"C", 3, 3};
         C.set_all(0.0);
 
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C, Indices{i}, vA, Indices{j}, vB));
@@ -1939,11 +1939,11 @@ TEST_CASE("view outer product") {
     }
 
     SECTION("2 * 2 -> 4") {
-        Tensor<2> A = create_random_tensor("A", 9, 9);
-        Tensor<2> B = create_random_tensor("B", 12, 12);
+        Tensor A = create_random_tensor("A", 9, 9);
+        Tensor B = create_random_tensor("B", 12, 12);
         auto vA = TensorView{A, Dim<2>{3, 3}, Offset<2>{6, 3}};
         auto vB = TensorView{B, Dim<2>{3, 3}, Offset<2>{5, 7}};
-        Tensor<4> C{"C", 3, 3, 3, 3};
+        Tensor C{"C", 3, 3, 3, 3};
 
         C.set_all(0.0);
         REQUIRE_NOTHROW(einsum(Indices{i, j, k, l}, &C, Indices{i, j}, vA, Indices{k, l}, vB));
@@ -1979,8 +1979,8 @@ TEST_CASE("element transform") {
     using namespace einsums::tensor_algebra::index;
 
     SECTION("tensor") {
-        Tensor<4> A = create_random_tensor("A", 32, 32, 32, 32);
-        Tensor<4> Acopy = A;
+        Tensor A = create_random_tensor("A", 32, 32, 32, 32);
+        Tensor Acopy = A;
 
         element_transform(&A, [](double val) -> double { return 1.0 / val; });
 
@@ -1996,7 +1996,7 @@ TEST_CASE("element transform") {
     }
 
     SECTION("smartptr tensor") {
-        auto A = std::make_unique<Tensor<4>>("A", 32, 32, 32, 32);
+        auto A = std::make_unique<Tensor<double, 4>>("A", 32, 32, 32, 32);
 
         element_transform(&A, [](double val) -> double { return 1.0 / val; });
     }
@@ -2008,10 +2008,10 @@ TEST_CASE("element") {
     using namespace einsums::tensor_algebra::index;
 
     SECTION("1") {
-        Tensor<4> A = create_random_tensor("A", 10, 10, 10, 10);
-        Tensor<4> Acopy = A;
+        Tensor A = create_random_tensor("A", 10, 10, 10, 10);
+        Tensor Acopy = A;
 
-        Tensor<4> B = create_random_tensor("B", 10, 10, 10, 10);
+        Tensor B = create_random_tensor("B", 10, 10, 10, 10);
 
         element([](double const &Aval, double const &Bval) -> double { return Aval + Bval; }, &A, B);
 
@@ -2027,11 +2027,11 @@ TEST_CASE("element") {
     }
 
     SECTION("2") {
-        Tensor<4> A = create_random_tensor("A", 10, 10, 10, 10);
-        Tensor<4> Acopy = A;
+        Tensor A = create_random_tensor("A", 10, 10, 10, 10);
+        Tensor Acopy = A;
 
-        Tensor<4> B = create_random_tensor("B", 10, 10, 10, 10);
-        Tensor<4> C = create_random_tensor("C", 10, 10, 10, 10);
+        Tensor B = create_random_tensor("B", 10, 10, 10, 10);
+        Tensor C = create_random_tensor("C", 10, 10, 10, 10);
 
         element([](double const &Aval, double const &Bval, double const &Cval) -> double { return Aval + Bval + Cval; }, &A, B, C);
 
@@ -2048,11 +2048,11 @@ TEST_CASE("element") {
 
     // SECTION("2 - error") {
 
-    //     Tensor<4> A = create_random_tensor("A", 10, 10, 10, 10);
-    //     Tensor<4> Acopy = A;
+    //     Tensor A = create_random_tensor("A", 10, 10, 10, 10);
+    //     Tensor Acopy = A;
 
-    //     Tensor<4> B = create_random_tensor("B", 10, 10, 10, 9);
-    //     Tensor<4> C = create_random_tensor("C", 10, 10, 10, 10);
+    //     Tensor B = create_random_tensor("B", 10, 10, 10, 9);
+    //     Tensor C = create_random_tensor("C", 10, 10, 10, 10);
 
     //     element(
     //         &A, [](double const &Aval, double const &Bval, double const &Cval) -> double { return Aval + Bval + Cval; }, B, C);
@@ -2067,14 +2067,14 @@ TEST_CASE("einsum element") {
     const int _i{50}, _j{50};
 
     SECTION("1") {
-        Tensor<2> C = Tensor{"C", _i, _j};
-        Tensor<2> C0 = Tensor{"C", _i, _j};
+        Tensor C = Tensor{"C", _i, _j};
+        Tensor C0 = Tensor{"C", _i, _j};
 
         zero(C);
         zero(C0);
 
-        Tensor<2> B = create_random_tensor("B", _i, _j);
-        Tensor<2> A = create_random_tensor("A", _i, _j);
+        Tensor B = create_random_tensor("B", _i, _j);
+        Tensor A = create_random_tensor("A", _i, _j);
 
         element([](double const &Cval, double const &Aval, double const &Bval) -> double { return Aval * Bval; }, &C0, A, B);
 
@@ -2088,12 +2088,12 @@ TEST_CASE("einsum element") {
     }
 
     SECTION("2") {
-        Tensor<2> C = create_random_tensor("C", _i, _j);
-        Tensor<2> C0 = C;
-        Tensor<2> testresult{"result", _i, _j};
+        Tensor C = create_random_tensor("C", _i, _j);
+        Tensor C0 = C;
+        Tensor testresult{"result", _i, _j};
         zero(testresult);
 
-        Tensor<2> A = create_random_tensor("A", _i, _j);
+        Tensor A = create_random_tensor("A", _i, _j);
 
         element([](double const &Cval, double const &Aval) -> double { return Cval * Aval; }, &C, A);
 
@@ -2107,13 +2107,13 @@ TEST_CASE("einsum element") {
     }
 
     SECTION("3") {
-        Tensor<4> parentC = create_random_tensor("parentC", _i, _i, _i, _j);
-        Tensor<4> parentC0 = parentC;
-        Tensor<4> parentA = create_random_tensor("parentA", _i, _i, _i, _j);
+        Tensor parentC = create_random_tensor("parentC", _i, _i, _i, _j);
+        Tensor parentC0 = parentC;
+        Tensor parentA = create_random_tensor("parentA", _i, _i, _i, _j);
 
         auto C = parentC(3, All{}, All{}, 4);
         auto C0 = parentC0(3, All{}, All{}, 4);
-        Tensor<2> testresult{"result", _i, _j};
+        Tensor testresult{"result", _i, _j};
 
         for (int w = 0; w < _i; w++) {
             for (int x = 0; x < _j; x++) {
@@ -2147,12 +2147,12 @@ TEST_CASE("F12 - V term") {
     auto F = create_incremented_tensor("F", nall, nall, nall, nall);
     auto G = create_incremented_tensor("G", nall, nall, nall, nall);
 
-    TensorView<4> F_ooco{F, Dim<4>{nocc, nocc, ncabs, nocc}, Offset<4>{0, 0, nobs, 0}};
-    TensorView<4> F_oooc{F, Dim<4>{nocc, nocc, nocc, ncabs}, Offset<4>{0, 0, 0, nobs}};
-    TensorView<4> F_oopq{F, Dim<4>{nocc, nocc, nobs, nobs}, Offset<4>{0, 0, 0, 0}};
-    TensorView<4> G_ooco{G, Dim<4>{nocc, nocc, ncabs, nocc}, Offset<4>{0, 0, nobs, 0}};
-    TensorView<4> G_oooc{G, Dim<4>{nocc, nocc, nocc, ncabs}, Offset<4>{0, 0, 0, nobs}};
-    TensorView<4> G_oopq{G, Dim<4>{nocc, nocc, nobs, nobs}, Offset<4>{0, 0, 0, 0}};
+    TensorView F_ooco{F, Dim<4>{nocc, nocc, ncabs, nocc}, Offset<4>{0, 0, nobs, 0}};
+    TensorView F_oooc{F, Dim<4>{nocc, nocc, nocc, ncabs}, Offset<4>{0, 0, 0, nobs}};
+    TensorView F_oopq{F, Dim<4>{nocc, nocc, nobs, nobs}, Offset<4>{0, 0, 0, 0}};
+    TensorView G_ooco{G, Dim<4>{nocc, nocc, ncabs, nocc}, Offset<4>{0, 0, nobs, 0}};
+    TensorView G_oooc{G, Dim<4>{nocc, nocc, nocc, ncabs}, Offset<4>{0, 0, 0, nobs}};
+    TensorView G_oopq{G, Dim<4>{nocc, nocc, nobs, nobs}, Offset<4>{0, 0, 0, 0}};
 
     Tensor ijkl_1 = Tensor{"Einsum Temp 1", nocc, nocc, nocc, nocc};
     Tensor ijkl_2 = Tensor{"Einsum Temp 2", nocc, nocc, nocc, nocc};

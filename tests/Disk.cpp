@@ -16,9 +16,9 @@
 TEST_CASE("Creation", "[disktensor]") {
     using namespace einsums;
 
-    DiskTensor<2> A(state::data, "/A0", 3, 3);
-    DiskTensor<2> B(state::data, "/B0", 3, 3);
-    DiskTensor<2> C(state::data, "/C0", 3, 3);
+    DiskTensor A(state::data, "/A0", 3, 3);
+    DiskTensor B(state::data, "/B0", 3, 3);
+    DiskTensor C(state::data, "/C0", 3, 3);
 
     REQUIRE((A.dim(0) == 3 && A.dim(1) == 3));
     REQUIRE((B.dim(0) == 3 && B.dim(1) == 3));
@@ -147,20 +147,20 @@ TEST_CASE("DiskView 7x7x7x7", "[disktensor]") {
     using namespace einsums;
 
     SECTION("Write [7,7] data to [:,2,4,:]") {
-        DiskTensor<4> g(state::data, "g0", 7, 7, 7, 7);
-        Tensor<2> data = create_random_tensor("data", 7, 7);
+        DiskTensor g(state::data, "g0", 7, 7, 7, 7);
+        Tensor data = create_random_tensor("data", 7, 7);
         g(All{}, 2, 4, All{}) = data;
     }
 
     SECTION("Write [7,2,7] data to [:,4-5,2,:]") {
-        DiskTensor<4> g(state::data, "g1", 7, 7, 7, 7);
-        Tensor<3> data2 = create_random_tensor("data", 7, 2, 7);
+        DiskTensor g(state::data, "g1", 7, 7, 7, 7);
+        Tensor data2 = create_random_tensor("data", 7, 2, 7);
         g(All{}, Range{4, 6}, 2, All{}) = data2;
     }
 
     SECTION("Write/Read [7,7] data to/from [2,2,:,:]") {
-        DiskTensor<4> g(state::data, "g2", 3, 3, 3, 3);
-        Tensor<2> data3 = create_random_tensor("data", 3, 3);
+        DiskTensor g(state::data, "g2", 3, 3, 3, 3);
+        Tensor data3 = create_random_tensor("data", 3, 3);
         double value = 0.0;
 
         for (size_t i = 0; i < 3; i++) {

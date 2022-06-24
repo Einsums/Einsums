@@ -148,13 +148,13 @@ constexpr auto _unique_find_type_with_position() {
     }
 }
 
-template <template <size_t, typename> typename TensorType, size_t Rank, typename... Args, std::size_t... I, typename T = double>
-auto get_dim_ranges_for(const TensorType<Rank, T> &tensor, const std::tuple<Args...> &args, std::index_sequence<I...>) {
+template <template <typename, size_t> typename TensorType, size_t Rank, typename... Args, std::size_t... I, typename T = double>
+auto get_dim_ranges_for(const TensorType<T, Rank> &tensor, const std::tuple<Args...> &args, std::index_sequence<I...>) {
     return std::tuple{ranges::views::ints(0, (int)tensor.dim(std::get<2 * I + 1>(args)))...};
 }
 
-template <template <size_t, typename> typename TensorType, size_t Rank, typename... Args, std::size_t... I, typename T = double>
-auto get_dim_for(const TensorType<Rank, T> &tensor, const std::tuple<Args...> &args, std::index_sequence<I...>) {
+template <template <typename, size_t> typename TensorType, size_t Rank, typename... Args, std::size_t... I, typename T = double>
+auto get_dim_for(const TensorType<T, Rank> &tensor, const std::tuple<Args...> &args, std::index_sequence<I...>) {
     return std::tuple{tensor.dim(std::get<2 * I + 1>(args))...};
 }
 
@@ -203,13 +203,13 @@ constexpr auto unique_find_type_with_position(const std::tuple<Ts...> &, const s
     return _unique_find_type_with_position<std::tuple<Ts...>, Us...>(std::make_index_sequence<sizeof...(Ts)>{});
 }
 
-template <template <size_t, typename> typename TensorType, size_t Rank, typename... Args, typename T = double>
-auto get_dim_ranges_for(const TensorType<Rank, T> &tensor, const std::tuple<Args...> &args) {
+template <template <typename, size_t> typename TensorType, size_t Rank, typename... Args, typename T = double>
+auto get_dim_ranges_for(const TensorType<T, Rank> &tensor, const std::tuple<Args...> &args) {
     return detail::get_dim_ranges_for(tensor, args, std::make_index_sequence<sizeof...(Args) / 2>{});
 }
 
-template <template <size_t, typename> typename TensorType, size_t Rank, typename... Args, typename T = double>
-auto get_dim_for(const TensorType<Rank, T> &tensor, const std::tuple<Args...> &args) {
+template <template <typename, size_t> typename TensorType, size_t Rank, typename... Args, typename T = double>
+auto get_dim_for(const TensorType<T, Rank> &tensor, const std::tuple<Args...> &args) {
     return detail::get_dim_for(tensor, args, std::make_index_sequence<sizeof...(Args) / 2>{});
 }
 
@@ -315,13 +315,13 @@ constexpr auto is_same_ordering(const std::tuple<PositionsInX...> &positions_in_
         return _is_same_ordering(positions_in_x, positions_in_y, std::make_index_sequence<sizeof...(PositionsInX) / 2>{});
 }
 
-template <template <size_t, typename> typename XType, size_t XRank, typename... PositionsInX, std::size_t... I, typename T = double>
-constexpr auto product_dims(const std::tuple<PositionsInX...> &indices, const XType<XRank, T> &X, std::index_sequence<I...>) -> size_t {
+template <template <typename, size_t> typename XType, size_t XRank, typename... PositionsInX, std::size_t... I, typename T = double>
+constexpr auto product_dims(const std::tuple<PositionsInX...> &indices, const XType<T, XRank> &X, std::index_sequence<I...>) -> size_t {
     return (X.dim(std::get<2 * I + 1>(indices)) * ... * 1);
 }
 
-template <template <size_t, typename> typename XType, size_t XRank, typename... PositionsInX, std::size_t... I, typename T = double>
-constexpr auto is_same_dims(const std::tuple<PositionsInX...> &indices, const XType<XRank, T> &X, std::index_sequence<I...>) -> bool {
+template <template <typename, size_t> typename XType, size_t XRank, typename... PositionsInX, std::size_t... I, typename T = double>
+constexpr auto is_same_dims(const std::tuple<PositionsInX...> &indices, const XType<T, XRank> &X, std::index_sequence<I...>) -> bool {
     return ((X.dim(std::get<1>(indices)) == X.dim(std::get<2 * I + 1>(indices))) && ... && 1);
 }
 
@@ -330,18 +330,18 @@ constexpr auto same_indices(std::index_sequence<I...>) {
     return (std::is_same_v<std::tuple_element_t<I, LHS>, std::tuple_element_t<I, RHS>> && ...);
 }
 
-template <template <size_t, typename> typename XType, size_t XRank, typename... PositionsInX, typename T = double>
-constexpr auto product_dims(const std::tuple<PositionsInX...> &indices, const XType<XRank, T> &X) -> size_t {
+template <template <typename, size_t> typename XType, size_t XRank, typename... PositionsInX, typename T = double>
+constexpr auto product_dims(const std::tuple<PositionsInX...> &indices, const XType<T, XRank> &X) -> size_t {
     return detail::product_dims(indices, X, std::make_index_sequence<sizeof...(PositionsInX) / 2>());
 }
 
-template <template <size_t, typename> typename XType, size_t XRank, typename... PositionsInX, typename T = double>
-constexpr auto is_same_dims(const std::tuple<PositionsInX...> &indices, const XType<XRank, T> &X) -> size_t {
+template <template <typename, size_t> typename XType, size_t XRank, typename... PositionsInX, typename T = double>
+constexpr auto is_same_dims(const std::tuple<PositionsInX...> &indices, const XType<T, XRank> &X) -> size_t {
     return detail::is_same_dims(indices, X, std::make_index_sequence<sizeof...(PositionsInX) / 2>());
 }
 
-template <template <size_t, typename> typename XType, size_t XRank, typename... PositionsInX, typename T = double>
-constexpr auto last_stride(const std::tuple<PositionsInX...> &indices, const XType<XRank, T> &X) -> size_t {
+template <template <typename, size_t> typename XType, size_t XRank, typename... PositionsInX, typename T = double>
+constexpr auto last_stride(const std::tuple<PositionsInX...> &indices, const XType<T, XRank> &X) -> size_t {
     return X.stride(std::get<sizeof...(PositionsInX) - 1>(indices));
 }
 
@@ -355,15 +355,15 @@ constexpr auto same_indices() {
 
 template <typename T, typename... CUniqueIndices, typename... AUniqueIndices, typename... BUniqueIndices, typename... LinkUniqueIndices,
           typename... CIndices, typename... AIndices, typename... BIndices, typename... TargetDims, typename... LinkDims,
-          typename... TargetPositionInC, typename... LinkPositionInLink, template <size_t, typename> typename CType, size_t CRank,
-          template <size_t, typename> typename AType, size_t ARank, template <size_t, typename> typename BType, size_t BRank>
+          typename... TargetPositionInC, typename... LinkPositionInLink, template <typename, size_t> typename CType, size_t CRank,
+          template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename BType, size_t BRank>
 void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, const std::tuple<AUniqueIndices...> & /*A_unique*/,
                               const std::tuple<BUniqueIndices...> & /*B_unique*/, const std::tuple<LinkUniqueIndices...> &link_unique,
                               const std::tuple<CIndices...> & /*C_indices*/, const std::tuple<AIndices...> & /*A_indices*/,
                               const std::tuple<BIndices...> & /*B_indices*/, const std::tuple<TargetDims...> &target_dims,
                               const std::tuple<LinkDims...> &link_dims, const std::tuple<TargetPositionInC...> &target_position_in_C,
-                              const std::tuple<LinkPositionInLink...> &link_position_in_link, const T C_prefactor, CType<CRank, T> *C,
-                              const T AB_prefactor, const AType<ARank, T> &A, const BType<BRank, T> &B) {
+                              const std::tuple<LinkPositionInLink...> &link_position_in_link, const T C_prefactor, CType<T, CRank> *C,
+                              const T AB_prefactor, const AType<T, ARank> &A, const BType<T, BRank> &B) {
     timer::push("generic algorithm");
 
     auto view = std::apply(ranges::views::cartesian_product, target_dims);
@@ -453,14 +453,14 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
     timer::pop();
 }
 
-template <bool OnlyUseGenericAlgorithm, template <size_t, typename> typename AType, size_t ARank,
-          template <size_t, typename> typename BType, size_t BRank, template <size_t, typename> typename CType, size_t CRank,
+template <bool OnlyUseGenericAlgorithm, template <typename, size_t> typename AType, size_t ARank,
+          template <typename, size_t> typename BType, size_t BRank, template <typename, size_t> typename CType, size_t CRank,
           typename... CIndices, typename... AIndices, typename... BIndices, typename T = double>
-auto einsum(const T C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<CRank, T> *C, const T AB_prefactor,
-            const std::tuple<AIndices...> & /*As*/, const AType<ARank, T> &A, const std::tuple<BIndices...> & /*Bs*/,
-            const BType<BRank, T> &B) -> std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<ARank, T>, AType<ARank, T>> &&
-                                                          std::is_base_of_v<::einsums::detail::TensorBase<BRank, T>, BType<BRank, T>> &&
-                                                          std::is_base_of_v<::einsums::detail::TensorBase<CRank, T>, CType<CRank, T>>> {
+auto einsum(const T C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<T, CRank> *C, const T AB_prefactor,
+            const std::tuple<AIndices...> & /*As*/, const AType<T, ARank> &A, const std::tuple<BIndices...> & /*Bs*/,
+            const BType<T, BRank> &B) -> std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<T, ARank>, AType<T, ARank>> &&
+                                                          std::is_base_of_v<::einsums::detail::TensorBase<T, BRank>, BType<T, BRank>> &&
+                                                          std::is_base_of_v<::einsums::detail::TensorBase<T, CRank>, CType<T, CRank>>> {
     print::Indent _indent;
 
     constexpr auto A_indices = std::tuple<AIndices...>();
@@ -595,7 +595,7 @@ auto einsum(const T C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<C
             if constexpr (swap_AB)
                 std::swap(dC[0], dC[1]);
 
-            TensorView<2, T> tC{*C, dC};
+            TensorView<T, 2> tC{*C, dC};
 
             if (C_prefactor != T{1.0})
                 linear_algebra::scale(C_prefactor, C);
@@ -643,9 +643,9 @@ auto einsum(const T C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<C
                         dB[0] = product_dims(link_position_in_A, A);
                         dC[0] = product_dims(A_target_position_in_C, *C);
 
-                        const TensorView<2, T> tA{const_cast<AType<ARank, T> &>(A), dA};
-                        const TensorView<1, T> tB{const_cast<BType<BRank, T> &>(B), dB};
-                        TensorView<1, T> tC{*C, dC};
+                        const TensorView<T, 2> tA{const_cast<AType<T, ARank> &>(A), dA};
+                        const TensorView<T, 1> tB{const_cast<BType<T, BRank> &>(B), dB};
+                        TensorView<T, 1> tC{*C, dC};
 
                         if constexpr (transpose_A) {
                             linear_algebra::gemv<true>(AB_prefactor, tA, tB, C_prefactor, &tC);
@@ -695,8 +695,8 @@ auto einsum(const T C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<C
                             std::swap(sC[0], sC[1]);
                         }
 
-                        TensorView<2, T> tC{*C, dC, sC};
-                        const TensorView<2, T> tA{const_cast<AType<ARank, T> &>(A), dA, sA}, tB{const_cast<BType<BRank, T> &>(B), dB, sB};
+                        TensorView<T, 2> tC{*C, dC, sC};
+                        const TensorView<T, 2> tA{const_cast<AType<T, ARank> &>(A), dA, sA}, tB{const_cast<BType<T, BRank> &>(B), dB, sB};
 
                         // println("--------------------");
                         // println(*C);
@@ -754,15 +754,15 @@ auto einsum(const T C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<C
 
 } // namespace detail
 
-template <template <size_t, typename> typename AType, size_t ARank, template <size_t, typename> typename BType, size_t BRank,
-          template <size_t, typename> typename CType, size_t CRank, typename... CIndices, typename... AIndices, typename... BIndices,
+template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename BType, size_t BRank,
+          template <typename, size_t> typename CType, size_t CRank, typename... CIndices, typename... AIndices, typename... BIndices,
           typename U, typename T = double>
-auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<CRank, T> *C, const U UAB_prefactor,
-            const std::tuple<AIndices...> &A_indices, const AType<ARank, T> &A, const std::tuple<BIndices...> &B_indices,
-            const BType<BRank, T> &B)
-    -> std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<ARank, T>, AType<ARank, T>> &&
-                        std::is_base_of_v<::einsums::detail::TensorBase<BRank, T>, BType<BRank, T>> &&
-                        std::is_base_of_v<::einsums::detail::TensorBase<CRank, T>, CType<CRank, T>> && std::is_arithmetic_v<U>> {
+auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<T, CRank> *C, const U UAB_prefactor,
+            const std::tuple<AIndices...> &A_indices, const AType<T, ARank> &A, const std::tuple<BIndices...> &B_indices,
+            const BType<T, BRank> &B)
+    -> std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<T, ARank>, AType<T, ARank>> &&
+                        std::is_base_of_v<::einsums::detail::TensorBase<T, BRank>, BType<T, BRank>> &&
+                        std::is_base_of_v<::einsums::detail::TensorBase<T, CRank>, CType<T, CRank>> && std::is_arithmetic_v<U>> {
     Section section(FP_ZERO != std::fpclassify(UC_prefactor)
                         ? fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{} + {} "{}"{})", C->name(), print_tuple_no_type(C_indices),
                                       UAB_prefactor, A.name(), print_tuple_no_type(A_indices), B.name(), print_tuple_no_type(B_indices),
@@ -775,7 +775,7 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
 
 #if defined(EINSUMS_CONTINUOUSLY_TEST_EINSUM)
     // Clone C into a new tensor
-    Tensor<CRank, T> testC{C->dims()};
+    Tensor<T, CRank> testC{C->dims()};
     testC = *C;
 
     // Perform the einsum using only the generic algorithm
@@ -974,12 +974,12 @@ auto einsum(const std::tuple<CIndices...> &C_indices, CType *C, const std::tuple
 //
 // sort algorithm
 //
-template <template <size_t, typename> typename AType, size_t ARank, template <size_t, typename> typename CType, size_t CRank,
+template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename CType, size_t CRank,
           typename... CIndices, typename... AIndices, typename U, typename T = double>
-auto sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<CRank, T> *C, const U UA_prefactor,
-          const std::tuple<AIndices...> &A_indices, const AType<ARank, T> &A)
-    -> std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<CRank, T>, CType<CRank, T>> &&
-                        std::is_base_of_v<::einsums::detail::TensorBase<ARank, T>, AType<ARank, T>> &&
+auto sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<T, CRank> *C, const U UA_prefactor,
+          const std::tuple<AIndices...> &A_indices, const AType<T, ARank> &A)
+    -> std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<T, CRank>, CType<T, CRank>> &&
+                        std::is_base_of_v<::einsums::detail::TensorBase<T, ARank>, AType<T, ARank>> &&
                         sizeof...(CIndices) == sizeof...(AIndices) && sizeof...(CIndices) == CRank && sizeof...(AIndices) == ARank &&
                         std::is_arithmetic_v<U>> {
 
@@ -1003,7 +1003,7 @@ auto sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<
 
     // HPTT interface currently only works for full Tensors and not TensorViews
 #if defined(EINSUMS_USE_HPTT)
-    if constexpr (std::is_same_v<CType<CRank, T>, Tensor<CRank, T>> && std::is_same_v<AType<ARank, T>, Tensor<ARank, T>>) {
+    if constexpr (std::is_same_v<CType<T, CRank>, Tensor<T, CRank>> && std::is_same_v<AType<T, ARank>, Tensor<T, ARank>>) {
         std::array<int, ARank> perms{};
         std::array<int, ARank> size{};
 
@@ -1071,9 +1071,9 @@ auto sort(const std::tuple<CIndices...> &C_indices, SmartPointerC *C, const std:
 // Element Transform
 ///
 
-template <template <size_t, typename> typename CType, size_t CRank, typename UnaryOperator, typename T = double>
-auto element_transform(CType<CRank, T> *C, UnaryOperator unary_opt)
-    -> std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<CRank, T>, CType<CRank, T>>> {
+template <template <typename, size_t> typename CType, size_t CRank, typename UnaryOperator, typename T = double>
+auto element_transform(CType<T, CRank> *C, UnaryOperator unary_opt)
+    -> std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<T, CRank>, CType<T, CRank>>> {
     Section section(fmt::format("element transform: {}", C->name()));
     auto target_dims = get_dim_ranges<CRank>(*C);
     auto view = std::apply(ranges::views::cartesian_product, target_dims);
@@ -1093,9 +1093,9 @@ auto element_transform(SmartPtr *C, UnaryOperator unary_opt) -> std::enable_if_t
     element_transform(C->get(), unary_opt);
 }
 
-template <template <size_t, typename> typename CType, template <size_t, typename> typename... MultiTensors, size_t Rank,
+template <template <typename, size_t> typename CType, template <typename, size_t> typename... MultiTensors, size_t Rank,
           typename MultiOperator, typename T = double>
-auto element(MultiOperator multi_opt, CType<Rank, T> *C, MultiTensors<Rank, T>... tensors) {
+auto element(MultiOperator multi_opt, CType<T, Rank> *C, MultiTensors<T, Rank>... tensors) {
     Section section("element");
     auto target_dims = get_dim_ranges<Rank>(*C);
     auto view = std::apply(ranges::views::cartesian_product, target_dims);
@@ -1154,8 +1154,8 @@ constexpr auto get_n(const std::tuple<List...> &) {
  *
  * @returns unfolded_tensor of shape ``(tensor.dim(mode), -1)``
  */
-template <unsigned int mode, template <size_t, typename> typename CType, size_t CRank, typename T = double>
-auto unfold(const CType<CRank, T> &source) -> std::enable_if_t<std::is_same_v<Tensor<CRank, T>, CType<CRank, T>>, Tensor<2, T>> {
+template <unsigned int mode, template <typename, size_t> typename CType, size_t CRank, typename T = double>
+auto unfold(const CType<T, CRank> &source) -> std::enable_if_t<std::is_same_v<Tensor<T, CRank>, CType<T, CRank>>, Tensor<T, 2>> {
     Section section{fmt::format("mode-{} unfold on {} threads", mode, omp_get_max_threads())};
 
     Dim<2> target_dims;
@@ -1214,12 +1214,12 @@ auto unfold(const CType<CRank, T> &source) -> std::enable_if_t<std::is_same_v<Te
  *
  * Result is described as {(I,J), r}. If multiple common indices are provided they will be collapsed into a single index in the result.
  */
-template <template <size_t, typename> typename AType, size_t ARank, template <size_t, typename> typename BType, size_t BRank,
+template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename BType, size_t BRank,
           typename... AIndices, typename... BIndices, typename T = double>
-auto khatri_rao(const std::tuple<AIndices...> &, const AType<ARank, T> &A, const std::tuple<BIndices...> &, const BType<BRank, T> &B)
-    -> std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<ARank, T>, AType<ARank, T>> &&
-                            std::is_base_of_v<::einsums::detail::TensorBase<BRank, T>, BType<BRank, T>>,
-                        Tensor<2, T>> {
+auto khatri_rao(const std::tuple<AIndices...> &, const AType<T, ARank> &A, const std::tuple<BIndices...> &, const BType<T, BRank> &B)
+    -> std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<T, ARank>, AType<T, ARank>> &&
+                            std::is_base_of_v<::einsums::detail::TensorBase<T, BRank>, BType<T, BRank>>,
+                        Tensor<T, 2>> {
 
     constexpr auto A_indices = std::tuple<AIndices...>();
     constexpr auto B_indices = std::tuple<BIndices...>();
@@ -1253,13 +1253,13 @@ auto khatri_rao(const std::tuple<AIndices...> &, const AType<ARank, T> &A, const
     auto result_dims = std::tuple_cat(std::make_tuple("KR product"), A_only_dims, B_only_dims, A_common_dims);
 
     // Construct resulting tensor
-    auto result = std::make_from_tuple<Tensor<std::tuple_size_v<decltype(result_dims)> - 1, T>>(result_dims);
+    auto result = std::make_from_tuple<Tensor<T, std::tuple_size_v<decltype(result_dims)> - 1>>(result_dims);
 
     // Perform the actual Khatri-Rao product using our einsum routine.
     einsum(std::tuple_cat(A_only, B_only, common), &result, std::tuple_cat(A_only, common), A, std::tuple_cat(B_only, common), B);
 
     // Return a reconstruction of the result tensor ... this can be considered as a simple reshape of the tensor.
-    return Tensor<2, T>{std::move(result), "KR product", -1, detail::product_dims(A_common_position, A)};
+    return Tensor<T, 2>{std::move(result), "KR product", -1, detail::product_dims(A_common_position, A)};
 }
 
 } // namespace einsums::tensor_algebra

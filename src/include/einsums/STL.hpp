@@ -282,28 +282,28 @@ struct c_unique {
 template <class T>
 using c_unique_t = typename c_unique<T>::type;
 
-template <size_t Rank, typename T>
+template <typename T, size_t Rank>
 struct Tensor;
 
-template <size_t Rank, typename T>
+template <typename T, size_t Rank>
 struct TensorView;
 
-template <size_t Rank, typename T>
+template <typename T, size_t Rank>
 struct DiskTensor;
 
-template <size_t ViewRank, size_t Rank, typename T>
+template <typename T, size_t ViewRank, size_t Rank>
 struct DiskView;
 
 template <typename D, size_t Rank, typename T>
 struct is_incore_rank_tensor
-    : public std::bool_constant<std::is_same_v<std::decay_t<D>, Tensor<Rank, T>> || std::is_same_v<std::decay_t<D>, TensorView<Rank, T>>> {
+    : public std::bool_constant<std::is_same_v<std::decay_t<D>, Tensor<T, Rank>> || std::is_same_v<std::decay_t<D>, TensorView<T, Rank>>> {
 };
 template <typename D, size_t Rank, typename T>
 inline constexpr bool is_incore_rank_tensor_v = is_incore_rank_tensor<D, Rank, T>::value;
 
 template <typename D, size_t Rank, size_t ViewRank = Rank, typename T = double>
 struct is_ondisk_tensor
-    : public std::bool_constant<std::is_same_v<D, DiskTensor<Rank, T>> || std::is_same_v<D, DiskView<ViewRank, Rank, T>>> {};
+    : public std::bool_constant<std::is_same_v<D, DiskTensor<T, Rank>> || std::is_same_v<D, DiskView<T, ViewRank, Rank>>> {};
 template <typename D, size_t Rank, size_t ViewRank = Rank, typename T = double>
 inline constexpr bool is_ondisk_tensor_v = is_ondisk_tensor<D, Rank, ViewRank, T>::value;
 
