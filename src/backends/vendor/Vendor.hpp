@@ -5,6 +5,8 @@ namespace einsums::backend::vendor {
 /*!
  * Performs matrix multiplication for general square matices of type double.
  */
+void sgemm(char transa, char transb, int m, int n, int k, float alpha, const float *a, int lda, const float *b, int ldb, float beta,
+           float *c, int ldc);
 void dgemm(char transa, char transb, int m, int n, int k, double alpha, const double *a, int lda, const double *b, int ldb, double beta,
            double *c, int ldc);
 

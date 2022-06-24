@@ -825,7 +825,7 @@ TEST_CASE("einsum2") {
         Tensor<2> B = create_random_tensor("B", 5, 3);
 
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
-        linear_algebra::gemm<false, false>(1.0, A, B, 0, &C1);
+        linear_algebra::gemm<false, false>(1.0, A, B, 0.0, &C1);
 
         for (size_t i0 = 0; i0 < C0.dim(0); i0++) {
             for (size_t j0 = 0; j0 < C0.dim(1); j0++) {
@@ -841,7 +841,7 @@ TEST_CASE("einsum2") {
         Tensor<2> B = create_random_tensor("B", 3, 5);
 
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{j, k}, B));
-        linear_algebra::gemm<false, true>(1.0, A, B, 0, &C1);
+        linear_algebra::gemm<false, true>(1.0, A, B, 0.0, &C1);
 
         for (size_t i0 = 0; i0 < C0.dim(0); i0++) {
             for (size_t j0 = 0; j0 < C0.dim(1); j0++) {
@@ -979,7 +979,7 @@ TEST_CASE("einsum3") {
 
         // Working to get the einsum to perform the gemm that follows.
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
-        linear_algebra::gemm<false, false>(1.0, A, B, 0, &C1);
+        linear_algebra::gemm<false, false>(1.0, A, B, 0.0, &C1);
 
         for (size_t i0 = 0; i0 < C0.dim(0); i0++) {
             for (size_t j0 = 0; j0 < C0.dim(1); j0++) {
@@ -1434,7 +1434,7 @@ TEST_CASE("unique_ptr") {
 
         // Working to get the einsum to perform the gemm that follows.
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
-        linear_algebra::gemm<false, false>(1.0, A, B, 0, &C1);
+        linear_algebra::gemm<false, false>(1.0, A, B, 0.0, &C1);
 
         for (size_t i0 = 0; i0 < C0->dim(0); i0++) {
             for (size_t j0 = 0; j0 < C0->dim(1); j0++) {
@@ -1451,7 +1451,7 @@ TEST_CASE("unique_ptr") {
 
         // Working to get the einsum to perform the gemm that follows.
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
-        linear_algebra::gemm<false, false>(1.0, *A, B, 0, &C1);
+        linear_algebra::gemm<false, false>(1.0, *A, B, 0.0, &C1);
 
         for (size_t i0 = 0; i0 < C0.dim(0); i0++) {
             for (size_t j0 = 0; j0 < C0.dim(1); j0++) {
@@ -1468,7 +1468,7 @@ TEST_CASE("unique_ptr") {
 
         // Working to get the einsum to perform the gemm that follows.
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
-        linear_algebra::gemm<false, false>(1.0, A, *B, 0, &C1);
+        linear_algebra::gemm<false, false>(1.0, A, *B, 0.0, &C1);
 
         for (size_t i0 = 0; i0 < C0.dim(0); i0++) {
             for (size_t j0 = 0; j0 < C0.dim(1); j0++) {
@@ -1485,7 +1485,7 @@ TEST_CASE("unique_ptr") {
 
         // Working to get the einsum to perform the gemm that follows.
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
-        linear_algebra::gemm<false, false>(1.0, *A, *B, 0, &C1);
+        linear_algebra::gemm<false, false>(1.0, *A, *B, 0.0, &C1);
 
         for (size_t i0 = 0; i0 < C0.dim(0); i0++) {
             for (size_t j0 = 0; j0 < C0.dim(1); j0++) {
@@ -1502,7 +1502,7 @@ TEST_CASE("unique_ptr") {
 
         // Working to get the einsum to perform the gemm that follows.
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
-        linear_algebra::gemm<false, false>(1.0, *A, B, 0, &C1);
+        linear_algebra::gemm<false, false>(1.0, *A, B, 0.0, &C1);
 
         for (size_t i0 = 0; i0 < C0->dim(0); i0++) {
             for (size_t j0 = 0; j0 < C0->dim(1); j0++) {
@@ -1519,7 +1519,7 @@ TEST_CASE("unique_ptr") {
 
         // Working to get the einsum to perform the gemm that follows.
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
-        linear_algebra::gemm<false, false>(1.0, A, *B, 0, &C1);
+        linear_algebra::gemm<false, false>(1.0, A, *B, 0.0, &C1);
 
         for (size_t i0 = 0; i0 < C0->dim(0); i0++) {
             for (size_t j0 = 0; j0 < C0->dim(1); j0++) {
@@ -1536,7 +1536,7 @@ TEST_CASE("unique_ptr") {
 
         // Working to get the einsum to perform the gemm that follows.
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
-        linear_algebra::gemm<false, false>(1.0, *A, *B, 0, &C1);
+        linear_algebra::gemm<false, false>(1.0, *A, *B, 0.0, &C1);
 
         for (size_t i0 = 0; i0 < C0->dim(0); i0++) {
             for (size_t j0 = 0; j0 < C0->dim(1); j0++) {
