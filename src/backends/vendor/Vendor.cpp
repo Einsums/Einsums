@@ -28,6 +28,10 @@ extern void FC_GLOBAL(sgemm, SGEMM)(char *, char *, int *, int *, int *, float *
                                     float *, int *);
 extern void FC_GLOBAL(dgemm, DGEMM)(char *, char *, int *, int *, int *, double *, const double *, int *, const double *, int *, double *,
                                     double *, int *);
+extern void FC_GLOBAL(cgemm, CGEMM)(char *, char *, int *, int *, int *, std::complex<float> *, const std::complex<float> *, int *,
+                                    const std::complex<float> *, int *, std::complex<float> *, std::complex<float> *, int *);
+extern void FC_GLOBAL(zgemm, ZGEMM)(char *, char *, int *, int *, int *, std::complex<double> *, const std::complex<double> *, int *,
+                                    const std::complex<double> *, int *, std::complex<double> *, std::complex<double> *, int *);
 extern void FC_GLOBAL(dgemv, DGEMV)(char *, int *, int *, double *, const double *, int *, const double *, int *, double *, double *,
                                     int *);
 extern void FC_GLOBAL(dsyev, DSYEV)(char *, char *, int *, double *, int *, double *, double *, int *, int *);
@@ -57,6 +61,20 @@ void dgemm(char transa, char transb, int m, int n, int k, double alpha, const do
     if (m == 0 || n == 0 || k == 0)
         return;
     FC_GLOBAL(dgemm, DGEMM)(&transb, &transa, &n, &m, &k, &alpha, b, &ldb, a, &lda, &beta, c, &ldc);
+}
+
+void cgemm(char transa, char transb, int m, int n, int k, std::complex<float> alpha, const std::complex<float> *a, int lda,
+           const std::complex<float> *b, int ldb, std::complex<float> beta, std::complex<float> *c, int ldc) {
+    if (m == 0 || n == 0 || k == 0)
+        return;
+    FC_GLOBAL(cgemm, CGEMM)(&transb, &transa, &n, &m, &k, &alpha, b, &ldb, a, &lda, &beta, c, &ldc);
+}
+
+void zgemm(char transa, char transb, int m, int n, int k, std::complex<double> alpha, const std::complex<double> *a, int lda,
+           const std::complex<double> *b, int ldb, std::complex<double> beta, std::complex<double> *c, int ldc) {
+    if (m == 0 || n == 0 || k == 0)
+        return;
+    FC_GLOBAL(zgemm, ZGEMM)(&transb, &transa, &n, &m, &k, &alpha, b, &ldb, a, &lda, &beta, c, &ldc);
 }
 
 void dgemv(char transa, int m, int n, double alpha, const double *a, int lda, const double *x, int incx, double beta, double *y, int incy) {

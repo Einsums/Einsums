@@ -9,9 +9,11 @@
 #include <type_traits>
 
 TEST_CASE("Tensor creation", "[tensor]") {
-    einsums::Tensor A("A", 3, 3);
-    einsums::Tensor B("B", 3, 3);
-    einsums::Tensor C("C", 3, 3);
+    using namespace einsums;
+
+    Tensor A("A", 3, 3);
+    Tensor B("B", 3, 3);
+    auto C = create_tensor<double>("C", 3, 3);
 
     REQUIRE((A.dim(0) == 3 && A.dim(1) == 3));
     REQUIRE((B.dim(0) == 3 && B.dim(1) == 3));
