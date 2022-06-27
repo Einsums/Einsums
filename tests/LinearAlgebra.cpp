@@ -110,10 +110,40 @@ TEST_CASE("gemm") {
     SECTION("float") {
         auto A = create_incremented_tensor<float>("a", 3, 3);
         auto B = create_incremented_tensor<float>("b", 3, 3);
-        auto C = create_incremented_tensor<float>("c", 3, 3);
+        auto C = create_tensor<float>("c", 3, 3);
         zero(C);
 
         // Perform basic matrix multiplication
         einsums::linear_algebra::gemm<false, false>(1.0f, A, B, 0.0f, &C);
+
+        /// TODO: Actually test it.
+    }
+
+    SECTION("double") {
+        auto A = create_incremented_tensor<double>("a", 3, 3);
+        auto B = create_incremented_tensor<double>("b", 3, 3);
+        auto C = create_tensor<double>("c", 3, 3);
+        zero(C);
+
+        // Perform basic matrix multiplication
+        einsums::linear_algebra::gemm<false, false>(1.0, A, B, 0.0, &C);
+
+        /// TODO: Actually test it.
+    }
+
+    SECTION("complex float") {
+        auto A = create_incremented_tensor<std::complex<float>>("a", 3, 3);
+        auto B = create_incremented_tensor<std::complex<float>>("b", 3, 3);
+        auto C = create_tensor<std::complex<float>>("c", 3, 3);
+        zero(C);
+
+        // Perform basic matrix multiplication
+        einsums::linear_algebra::gemm<false, false>(std::complex<float>(1.0), A, B, std::complex<float>(0.0), &C);
+
+        /// TODO: Actually test it.
+        println(A);
+
+        auto D = create_random_tensor<std::complex<float>>("d", 3, 3);
+        println(D);
     }
 }

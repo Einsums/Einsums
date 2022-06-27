@@ -870,13 +870,17 @@ template <typename T = double, typename... MultiIndex>
 auto create_incremented_tensor(const std::string &name, MultiIndex... index) -> Tensor<T, sizeof...(MultiIndex)> {
     Tensor<T, sizeof...(MultiIndex)> A(name, std::forward<MultiIndex>(index)...);
 
-    double counter{0.0};
+    T counter{0.0};
     auto target_dims = get_dim_ranges<sizeof...(MultiIndex)>(A);
     auto view = std::apply(ranges::views::cartesian_product, target_dims);
 
     for (auto it = view.begin(); it != view.end(); it++) {
         std::apply(A, *it) = counter;
-        counter += T{1.0};
+        if constexpr (std::is_same_v<T, std::complex<float>> || std::is_same_v<T, std::complex<double>>) {
+            counter += T{1.0, 1.0};
+        } else {
+            counter += T{1.0};
+        }
     }
 
     return A;
@@ -889,7 +893,7 @@ auto create_random_tensor(const std::string &name, MultiIndex... index) -> Tenso
     double lower_bound = 0.0;
     double upper_bound = 1.0;
 
-    std::uniform_real_distribution<T> unif(lower_bound, upper_bound);
+    std::uniform_real_distribution<double> unif(lower_bound, upper_bound);
     std::default_random_engine re;
 
     {
@@ -899,8 +903,18 @@ auto create_random_tensor(const std::string &name, MultiIndex... index) -> Tenso
 
         re.seed(d.count());
     }
-    std::generate(A.vector_data().begin(), A.vector_data().end(), [&]() { return unif(re); });
 
+    if constexpr (std::is_same_v<T, std::complex<float>>) {
+        std::generate(A.vector_data().begin(), A.vector_data().end(), [&]() {
+            return T{static_cast<float>(unif(re)), static_cast<float>(unif(re))};
+        });
+    } else if constexpr (std::is_same_v<T, std::complex<double>>) {
+        std::generate(A.vector_data().begin(), A.vector_data().end(), [&]() {
+            return T{static_cast<double>(unif(re)), static_cast<double>(unif(re))};
+        });
+    } else {
+        std::generate(A.vector_data().begin(), A.vector_data().end(), [&]() { return T{unif(re)}; });
+    }
     return A;
 }
 
@@ -1382,6 +1396,12 @@ DiskTensor(h5::fd_t &file, std::string name, Dims... dims) -> DiskTensor<double,
 // Supposedly C++20 will allow template deduction guides for template aliases. i.e. Dim, Stride, Offset, Count, Range.
 #endif
 
+// Useful factories
+template <typename Type, typename... Args>
+auto create_tensor(const std::string name, Args... args) -> Tensor<Type, sizeof...(Args)> {
+    return Tensor<Type, sizeof...(Args)>{name, args...};
+}
+
 } // namespace einsums
 
 template <template <typename, size_t> typename AType, size_t Rank, typename T>
@@ -1438,9 +1458,9 @@ auto println(const AType<T, Rank> &A, int width = 12) ->
                     // if (std::fabs(value) > std::numeric_limits<double>::epsilon() * 1000) {
                     if (std::fabs(value) > 1.0E+5) {
                         // oss << "\033[91m" << std::setw(14) << value << "\033[0m";
-                        oss << "\x1b[0;37;41m" << fmt::format("{:14.8f}", value) << "\x1b[0m";
+                        oss << "\x1b[0;37;41m" << fmt::format("{:14.8f} ", value) << "\x1b[0m";
                     } else {
-                        oss << fmt::format("{:14.8f}", value);
+                        oss << fmt::format("{:14.8f} ", value);
                     }
                     // } else {
                     // oss << std::setw(14) << 0.0;
@@ -1462,16 +1482,16 @@ auto println(const AType<T, Rank> &A, int width = 12) ->
                 oss << "): ";
 
                 T value = std::apply(A, target_combination);
-                if (std::fabs(value) > std::numeric_limits<double>::epsilon()) {
-                    if (std::fabs(value) > 1.0E+5) {
-                        // oss << "\033[91m" << std::setw(14) << value << "\033[0m";
-                        oss << "\x1b[0;37;41m" << fmt::format("{:14.8f}", value) << "\x1b[0m";
-                    } else {
-                        oss << fmt::format("{:14.8f}", value);
-                    }
+                // if (std::fabs(value) > std::numeric_limits<T>::epsilon()) {
+                if (std::fabs(value) > 1.0E+5) {
+                    // oss << "\033[91m" << std::setw(14) << value << "\033[0m";
+                    oss << "\x1b[0;37;41m" << fmt::format("{:14.8f} ", value) << "\x1b[0m";
                 } else {
-                    oss << fmt::format("{:14.8f}", 0.0);
+                    oss << fmt::format("{:14.8f} ", value);
                 }
+                // } else {
+                //     oss << fmt::format("{:14.8f}", T{0.0});
+                // }
 
                 println("{}", oss.str());
             }
