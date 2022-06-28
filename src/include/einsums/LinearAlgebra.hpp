@@ -69,7 +69,7 @@ auto gemv(const double alpha, const AType<T, ARank> &A, const XType<T, XYRank> &
     auto incy = y->stride(0);
 
     timer::push(fmt::format("gemv<{}>", TransA));
-    blas::dgemv(TransA ? 't' : 'n', m, n, alpha, A.data(), lda, x.data(), incx, beta, y->data(), incy);
+    blas::gemv(TransA ? 't' : 'n', m, n, alpha, A.data(), lda, x.data(), incx, beta, y->data(), incy);
     timer::pop();
 }
 
@@ -82,10 +82,10 @@ auto syev(AType<T, ARank> *A, WType<T, WRank> *W)
     auto n = A->dim(0);
     auto lda = A->stride(0);
     int lwork = 3 * n;
-    std::vector<double> work(lwork);
+    std::vector<T> work(lwork);
 
     timer::push(fmt::format("syev<ComputeEigenvectors={}>", ComputeEigenvectors));
-    blas::dsyev(ComputeEigenvectors ? 'v' : 'n', 'u', n, A->data(), lda, W->data(), work.data(), lwork);
+    blas::syev(ComputeEigenvectors ? 'v' : 'n', 'u', n, A->data(), lda, W->data(), work.data(), lwork);
     timer::pop();
 }
 
