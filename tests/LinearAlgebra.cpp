@@ -81,13 +81,7 @@ TEST_CASE("dgesv") {
     b.vector_data() = std::vector<double, einsums::AlignedAllocator<double, 64>>{4.02, 6.19, -8.22, -7.57, -3.03, -1.56, 4.00, -8.67,
                                                                                  1.75, 2.86, 9.81,  -4.09, -4.57, -8.61, 8.99};
 
-    // println(a);
-    // println(b);
-
     linear_algebra::gesv(&a, &b);
-
-    // println(a);
-    // println(b);
 
     CHECK_THAT(a.vector_data(),
                Catch::Matchers::Approx(std::vector<double, einsums::AlignedAllocator<double, 64>>{
@@ -103,47 +97,50 @@ TEST_CASE("dgesv") {
                    .margin(0.00001));
 }
 
-TEST_CASE("gemm") {
+template <typename T>
+void gemm_test() {
     using namespace einsums;
     using namespace einsums::linear_algebra;
 
+    auto A = create_incremented_tensor<T>("a", 3, 3);
+    auto B = create_incremented_tensor<T>("b", 3, 3);
+    auto C = create_tensor<T>("c", 3, 3);
+    auto C0 = create_tensor<T>("C0", 3, 3);
+    zero(C);
+    zero(C0);
+
+    // Perform basic matrix multiplication
+    einsums::linear_algebra::gemm<false, false>(T{1.0}, A, B, T{0.0}, &C);
+
+    for (size_t i = 0; i < 3; i++) {
+        for (size_t j = 0; j < 3; j++) {
+            for (size_t k = 0; k < 3; k++) {
+                C0(i, j) += A(i, k) * B(k, j);
+            }
+        }
+    }
+
+    for (size_t i = 0; i < 3; i++) {
+        for (size_t j = 0; j < 3; j++) {
+            REQUIRE(C0(i, j) == C(i, j));
+        }
+    }
+}
+
+TEST_CASE("gemm") {
     SECTION("float") {
-        auto A = create_incremented_tensor<float>("a", 3, 3);
-        auto B = create_incremented_tensor<float>("b", 3, 3);
-        auto C = create_tensor<float>("c", 3, 3);
-        zero(C);
-
-        // Perform basic matrix multiplication
-        einsums::linear_algebra::gemm<false, false>(1.0f, A, B, 0.0f, &C);
-
-        /// TODO: Actually test it.
+        gemm_test<float>();
     }
 
     SECTION("double") {
-        auto A = create_incremented_tensor<double>("a", 3, 3);
-        auto B = create_incremented_tensor<double>("b", 3, 3);
-        auto C = create_tensor<double>("c", 3, 3);
-        zero(C);
-
-        // Perform basic matrix multiplication
-        einsums::linear_algebra::gemm<false, false>(1.0, A, B, 0.0, &C);
-
-        /// TODO: Actually test it.
+        gemm_test<double>();
     }
 
     SECTION("complex float") {
-        auto A = create_incremented_tensor<std::complex<float>>("a", 3, 3);
-        auto B = create_incremented_tensor<std::complex<float>>("b", 3, 3);
-        auto C = create_tensor<std::complex<float>>("c", 3, 3);
-        zero(C);
+        gemm_test<std::complex<float>>();
+    }
 
-        // Perform basic matrix multiplication
-        einsums::linear_algebra::gemm<false, false>(std::complex<float>(1.0), A, B, std::complex<float>(0.0), &C);
-
-        /// TODO: Actually test it.
-        println(A);
-
-        auto D = create_random_tensor<std::complex<float>>("d", 3, 3);
-        println(D);
+    SECTION("complex double") {
+        gemm_test<std::complex<double>>();
     }
 }
