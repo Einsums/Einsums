@@ -92,7 +92,21 @@ inline void gemv<std::complex<double>>(char transa, int m, int n, std::complex<d
 /*!
  * Performs symmetric matrix diagonalization.
  */
+auto ssyev(char job, char uplo, int n, float *a, int lda, float *w, float *work, int lwork) -> int;
 auto dsyev(char job, char uplo, int n, double *a, int lda, double *w, double *work, int lwork) -> int;
+
+template <typename T>
+auto syev(char job, char uplo, int n, T *a, int lda, T *w, T *work, int lwork) -> int;
+
+template <>
+inline auto syev<double>(char job, char uplo, int n, double *a, int lda, double *w, double *work, int lwork) -> int {
+    return dsyev(job, uplo, n, a, lda, w, work, lwork);
+}
+
+template <>
+inline auto syev<float>(char job, char uplo, int n, float *a, int lda, float *w, float *work, int lwork) -> int {
+    return ssyev(job, uplo, n, a, lda, w, work, lwork);
+}
 
 /*!
  * Computes the solution to system of linear equations A * x = B for general

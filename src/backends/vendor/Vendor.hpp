@@ -29,6 +29,7 @@ void zgemv(char transa, int m, int n, std::complex<double> alpha, const std::com
 /*!
  * Performs symmetric matrix diagonalization.
  */
+auto ssyev(char job, char uplo, int n, float *a, int lda, float *w, float *work, int lwork) -> int;
 auto dsyev(char job, char uplo, int n, double *a, int lda, double *w, double *work, int lwork) -> int;
 
 /*!

@@ -42,7 +42,9 @@ extern void FC_GLOBAL(cgemv, CGEMV)(char *, int *, int *, std::complex<float> *,
 extern void FC_GLOBAL(zgemv, ZGEMV)(char *, int *, int *, std::complex<double> *, const std::complex<double> *, int *,
                                     const std::complex<double> *, int *, std::complex<double> *, std::complex<double> *, int *);
 
+extern void FC_GLOBAL(ssyev, SSYEV)(char *, char *, int *, float *, int *, float *, float *, int *, int *);
 extern void FC_GLOBAL(dsyev, DSYEV)(char *, char *, int *, double *, int *, double *, double *, int *, int *);
+
 extern void FC_GLOBAL(dgesv, DGESV)(int *, int *, double *, int *, int *, double *, int *, int *);
 extern void FC_GLOBAL(dscal, DSCAL)(int *, double *, double *, int *);
 extern double FC_GLOBAL(ddot, DDOT)(int *, const double *, int *, const double *, int *); // NOLINT
@@ -137,6 +139,12 @@ void zgemv(char transa, int m, int n, std::complex<double> alpha, const std::com
         throw std::invalid_argument("einsums::backend::vendor::dgemv transa argument is invalid.");
 
     FC_GLOBAL(zgemv, ZGEMV)(&transa, &n, &m, &alpha, a, &lda, x, &incx, &beta, y, &incy);
+}
+
+auto ssyev(char job, char uplo, int n, float *a, int lda, float *w, float *work, int lwork) -> int {
+    int info{0};
+    FC_GLOBAL(ssyev, SSYEV)(&job, &uplo, &n, a, &lda, w, work, &lwork, &info);
+    return info;
 }
 
 auto dsyev(char job, char uplo, int n, double *a, int lda, double *w, double *work, int lwork) -> int {
