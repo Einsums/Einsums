@@ -24,6 +24,7 @@
 #endif
 
 extern "C" {
+
 extern void FC_GLOBAL(sgemm, SGEMM)(char *, char *, int *, int *, int *, float *, const float *, int *, const float *, int *, float *,
                                     float *, int *);
 extern void FC_GLOBAL(dgemm, DGEMM)(char *, char *, int *, int *, int *, double *, const double *, int *, const double *, int *, double *,
@@ -32,8 +33,15 @@ extern void FC_GLOBAL(cgemm, CGEMM)(char *, char *, int *, int *, int *, std::co
                                     const std::complex<float> *, int *, std::complex<float> *, std::complex<float> *, int *);
 extern void FC_GLOBAL(zgemm, ZGEMM)(char *, char *, int *, int *, int *, std::complex<double> *, const std::complex<double> *, int *,
                                     const std::complex<double> *, int *, std::complex<double> *, std::complex<double> *, int *);
+
+extern void FC_GLOBAL(sgemv, SGEMV)(char *, int *, int *, float *, const float *, int *, const float *, int *, float *, float *, int *);
 extern void FC_GLOBAL(dgemv, DGEMV)(char *, int *, int *, double *, const double *, int *, const double *, int *, double *, double *,
                                     int *);
+extern void FC_GLOBAL(cgemv, CGEMV)(char *, int *, int *, std::complex<float> *, const std::complex<float> *, int *,
+                                    const std::complex<float> *, int *, std::complex<float> *, std::complex<float> *, int *);
+extern void FC_GLOBAL(zgemv, ZGEMV)(char *, int *, int *, std::complex<double> *, const std::complex<double> *, int *,
+                                    const std::complex<double> *, int *, std::complex<double> *, std::complex<double> *, int *);
+
 extern void FC_GLOBAL(dsyev, DSYEV)(char *, char *, int *, double *, int *, double *, double *, int *, int *);
 extern void FC_GLOBAL(dgesv, DGESV)(int *, int *, double *, int *, int *, double *, int *, int *);
 extern void FC_GLOBAL(dscal, DSCAL)(int *, double *, double *, int *);
@@ -77,6 +85,19 @@ void zgemm(char transa, char transb, int m, int n, int k, std::complex<double> a
     FC_GLOBAL(zgemm, ZGEMM)(&transb, &transa, &n, &m, &k, &alpha, b, &ldb, a, &lda, &beta, c, &ldc);
 }
 
+void sgemv(char transa, int m, int n, float alpha, const float *a, int lda, const float *x, int incx, float beta, float *y, int incy) {
+    if (m == 0 || n == 0)
+        return;
+    if (transa == 'N' || transa == 'n')
+        transa = 'T';
+    else if (transa == 'T' || transa == 't')
+        transa = 'N';
+    else
+        throw std::invalid_argument("einsums::backend::vendor::dgemv transa argument is invalid.");
+
+    FC_GLOBAL(sgemv, SGEMV)(&transa, &n, &m, &alpha, a, &lda, x, &incx, &beta, y, &incy);
+}
+
 void dgemv(char transa, int m, int n, double alpha, const double *a, int lda, const double *x, int incx, double beta, double *y, int incy) {
     if (m == 0 || n == 0)
         return;
@@ -88,6 +109,34 @@ void dgemv(char transa, int m, int n, double alpha, const double *a, int lda, co
         throw std::invalid_argument("einsums::backend::vendor::dgemv transa argument is invalid.");
 
     FC_GLOBAL(dgemv, DGEMV)(&transa, &n, &m, &alpha, a, &lda, x, &incx, &beta, y, &incy);
+}
+
+void cgemv(char transa, int m, int n, std::complex<float> alpha, const std::complex<float> *a, int lda, const std::complex<float> *x,
+           int incx, std::complex<float> beta, std::complex<float> *y, int incy) {
+    if (m == 0 || n == 0)
+        return;
+    if (transa == 'N' || transa == 'n')
+        transa = 'T';
+    else if (transa == 'T' || transa == 't')
+        transa = 'N';
+    else
+        throw std::invalid_argument("einsums::backend::vendor::dgemv transa argument is invalid.");
+
+    FC_GLOBAL(cgemv, CGEMV)(&transa, &n, &m, &alpha, a, &lda, x, &incx, &beta, y, &incy);
+}
+
+void zgemv(char transa, int m, int n, std::complex<double> alpha, const std::complex<double> *a, int lda, const std::complex<double> *x,
+           int incx, std::complex<double> beta, std::complex<double> *y, int incy) {
+    if (m == 0 || n == 0)
+        return;
+    if (transa == 'N' || transa == 'n')
+        transa = 'T';
+    else if (transa == 'T' || transa == 't')
+        transa = 'N';
+    else
+        throw std::invalid_argument("einsums::backend::vendor::dgemv transa argument is invalid.");
+
+    FC_GLOBAL(zgemv, ZGEMV)(&transa, &n, &m, &alpha, a, &lda, x, &incx, &beta, y, &incy);
 }
 
 auto dsyev(char job, char uplo, int n, double *a, int lda, double *w, double *work, int lwork) -> int {

@@ -54,7 +54,40 @@ inline void gemm<std::complex<double>>(char transa, char transb, int m, int n, i
 /*!
  * Performs matrix vector multiplication.
  */
+void sgemv(char transa, int m, int n, float alpha, const float *a, int lda, const float *x, int incx, float beta, float *y, int incy);
 void dgemv(char transa, int m, int n, double alpha, const double *a, int lda, const double *x, int incx, double beta, double *y, int incy);
+void cgemv(char transa, int m, int n, std::complex<float> alpha, const std::complex<float> *a, int lda, const std::complex<float> *x,
+           int incx, std::complex<float> beta, std::complex<float> *y, int incy);
+void zgemv(char transa, int m, int n, std::complex<double> alpha, const std::complex<double> *a, int lda, const std::complex<double> *x,
+           int incx, std::complex<double> beta, std::complex<double> *y, int incy);
+
+template <typename T>
+void gemv(char transa, int m, int n, T alpha, const T *a, int lda, const T *x, int incx, T beta, T *y, int incy);
+
+template <>
+inline void gemv<float>(char transa, int m, int n, float alpha, const float *a, int lda, const float *x, int incx, float beta, float *y,
+                        int incy) {
+    sgemv(transa, m, n, alpha, a, lda, x, incx, beta, y, incy);
+}
+
+template <>
+inline void gemv<double>(char transa, int m, int n, double alpha, const double *a, int lda, const double *x, int incx, double beta,
+                         double *y, int incy) {
+    dgemv(transa, m, n, alpha, a, lda, x, incx, beta, y, incy);
+}
+
+template <>
+inline void gemv<std::complex<float>>(char transa, int m, int n, std::complex<float> alpha, const std::complex<float> *a, int lda,
+                                      const std::complex<float> *x, int incx, std::complex<float> beta, std::complex<float> *y, int incy) {
+    cgemv(transa, m, n, alpha, a, lda, x, incx, beta, y, incy);
+}
+
+template <>
+inline void gemv<std::complex<double>>(char transa, int m, int n, std::complex<double> alpha, const std::complex<double> *a, int lda,
+                                       const std::complex<double> *x, int incx, std::complex<double> beta, std::complex<double> *y,
+                                       int incy) {
+    zgemv(transa, m, n, alpha, a, lda, x, incx, beta, y, incy);
+}
 
 /*!
  * Performs symmetric matrix diagonalization.
