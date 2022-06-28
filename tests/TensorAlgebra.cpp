@@ -193,7 +193,7 @@ TEST_CASE("Subset TensorView", "[tensor]") {
         const size_t row = 1;
 
         Tensor I_original = create_random_tensor("Original", size, size);
-        TensorView I_view = I_original(row, All{});
+        TensorView I_view = I_original(row, All);
 
         for (size_t i = 0; i < size; i++) {
             REQUIRE(I_original(row, i) == I_view(i));
@@ -205,7 +205,7 @@ TEST_CASE("Subset TensorView", "[tensor]") {
         const size_t d1 = 4;
 
         Tensor I_original = create_random_tensor("Original", size, size, size);
-        TensorView I_view = I_original(d1, All{}, All{});
+        TensorView I_view = I_original(d1, All, All);
 
         for (size_t i = 0; i < size; i++) {
             for (size_t j = 0; j < size; j++) {
@@ -220,7 +220,7 @@ TEST_CASE("Subset TensorView", "[tensor]") {
         const size_t d2 = 3;
 
         Tensor I_original = create_random_tensor("Original", size, size, size);
-        TensorView I_view = I_original(d1, d2, All{});
+        TensorView I_view = I_original(d1, d2, All);
 
         for (size_t i = 0; i < size; i++) {
             REQUIRE(I_original(d1, d2, i) == I_view(i));
@@ -241,7 +241,7 @@ TEST_CASE("Subset TensorView", "[tensor]") {
         }
 
         // Obtain a 3x3 view of original[4,:,:]
-        TensorView view = original(d1, All{}, All{});
+        TensorView view = original(d1, All, All);
         Tensor result{"result", d2_size, d3_size};
 
         // false, false
@@ -327,10 +327,10 @@ TEST_CASE("Subset TensorView", "[tensor]") {
 
         // Obtain a 3x3 view of original[4,:,:]
         //   A view does not copy data it is just an offset pointer into the original with necessary striding information.
-        TensorView view = original(d1, All{}, All{});
+        TensorView view = original(d1, All, All);
 
         // Obtain a 3x3 view of original[2,:,:] to store the result
-        TensorView result = original(e1, All{}, All{});
+        TensorView result = original(e1, All, All);
 
         // false, false
         {
@@ -528,10 +528,10 @@ TEST_CASE("einsum TensorView", "[tensor]") {
         Tensor copy = original;
 
         // Obtain a 3x3 view of original[4,:,:]
-        TensorView view = original(d1, All{}, All{});
+        TensorView view = original(d1, All, All);
 
         // Obtain a 3x3 view of original[2,:,:] to store the result
-        TensorView result = original(e1, All{}, All{});
+        TensorView result = original(e1, All, All);
 
         // false, false
         {
@@ -1048,8 +1048,8 @@ TEST_CASE("einsum3") {
 
         for (size_t i0 = 0; i0 < gMO0.dim(0); i0++) {
             for (size_t j0 = 0; j0 < gMO0.dim(1); j0++) {
-                auto vgMO0 = gMO0(i0, j0, All{}, All{});
-                REQUIRE_NOTHROW(einsum(Indices{k, l}, &vgMO0, Indices{p, l}, A(i0, j0, All{}, All{}), Indices{p, k}, B));
+                auto vgMO0 = gMO0(i0, j0, All, All);
+                REQUIRE_NOTHROW(einsum(Indices{k, l}, &vgMO0, Indices{p, l}, A(i0, j0, All, All), Indices{p, k}, B));
             }
         }
 
@@ -1135,8 +1135,8 @@ TEST_CASE("einsum4") {
 #if 0
         for (size_t i0 = 0; i0 < gMO0.dim(0); i0++) {
             for (size_t j0 = 0; j0 < gMO0.dim(1); j0++) {
-                auto vgMO0 = gMO0(i0, j0, All{}, All{});
-                TensorAlgebra::einsum(Indices{k, s}, &vgMO0, Indices{r, s}, A(i0, j0, All{}, All{}), Indices{r, k}, B);
+                auto vgMO0 = gMO0(i0, j0, All, All);
+                TensorAlgebra::einsum(Indices{k, s}, &vgMO0, Indices{r, s}, A(i0, j0, All, All), Indices{r, k}, B);
             }
         }
 
@@ -1201,8 +1201,8 @@ TEST_CASE("IntegralTransformation") {
     //     write(State::data, C3);
     //     write(State::data, C4);
 
-    //     disk_ao(All{}, All{}, All{}, All{}) = memory_ao;
-    //     auto temp = disk_ao(All{}, All{}, All{}, All{});
+    //     disk_ao(All, All, All, All) = memory_ao;
+    //     auto temp = disk_ao(All, All, All, All);
     //     auto &temp2 = temp.get();
 
     //     // Ensure the data was saved to disk correctly
@@ -1232,7 +1232,7 @@ TEST_CASE("IntegralTransformation") {
 
     //     for (size_t i0 = 0; i0 < C1.dim(1); i0++) {
     //         for (size_t j0 = 0; j0 < C2.dim(1); j0++) {
-    //             auto disk_view = disk_result(i0, j0, All{}, All{});
+    //             auto disk_view = disk_result(i0, j0, All, All);
     //             auto &disk_tensor = disk_view.get();
     //             for (size_t k0 = 0; k0 < C3.dim(1); k0++) {
     //                 for (size_t l0 = 0; l0 < C4.dim(1); l0++) {
@@ -2111,8 +2111,8 @@ TEST_CASE("einsum element") {
         Tensor parentC0 = parentC;
         Tensor parentA = create_random_tensor("parentA", _i, _i, _i, _j);
 
-        auto C = parentC(3, All{}, All{}, 4);
-        auto C0 = parentC0(3, All{}, All{}, 4);
+        auto C = parentC(3, All, All, 4);
+        auto C0 = parentC0(3, All, All, 4);
         Tensor testresult{"result", _i, _j};
 
         for (int w = 0; w < _i; w++) {
@@ -2121,7 +2121,7 @@ TEST_CASE("einsum element") {
             }
         }
 
-        auto A = parentA(1, 2, All{}, All{});
+        auto A = parentA(1, 2, All, All);
 
         element([](double const &Cval, double const &Aval) -> double { return Cval * Aval; }, &C, A);
 
@@ -2234,7 +2234,7 @@ TEST_CASE("B_tilde") {
     zero(CD0);
     auto C = create_random_tensor("C", nocc, nocc, nvir, nvir);
     auto D = create_random_tensor("D", nocc, nocc, nvir, nvir);
-    auto D_ij = D(2, 2, All{}, All{});
+    auto D_ij = D(2, 2, All, All);
 
     einsum(Indices{k, l, a, b}, &CD, Indices{k, l, a, b}, C, Indices{a, b}, D_ij);
 
