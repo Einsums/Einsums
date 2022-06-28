@@ -125,7 +125,7 @@ auto main() -> int {
     // Tensor<3> I_original = create_random_tensor("Original", size, size, size);
     // println(I_original);
 
-    // TensorView<2> I_view = I_original(d1, All{}, All{});
+    // TensorView<2> I_view = I_original(d1, All, All);
     // println(I_view);
 
     // for (size_t i = 0; i < size; i++) {
@@ -173,7 +173,7 @@ auto main() -> int {
 
     {
         Section section{"disk write"};
-        g(All{}, All{}, All{}, All{}) = eri;
+        g(All, All, All, All) = eri;
     }
     timer::report();
     blas::finalize();

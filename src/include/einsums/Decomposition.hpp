@@ -102,7 +102,7 @@ auto initialize_cp(std::vector<Tensor<TType, 2>> &folds, size_t rank) -> std::ve
         }
 
         // Need to save the factors
-        factors.emplace_back(Tensor{U(All{}, Range{0, rank})});
+        factors.emplace_back(Tensor{U(All, Range{0, rank})});
     });
 
     return factors;
@@ -291,7 +291,7 @@ auto initialize_tucker(std::vector<Tensor<TType, 2>> &folds, std::vector<size_t>
         }
 
         // Need to save the factors
-        factors.emplace_back(Tensor{U(All{}, Range{0, rank})});
+        factors.emplace_back(Tensor{U(All, Range{0, rank})});
     });
 
     return factors;

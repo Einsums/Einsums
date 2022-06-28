@@ -36,25 +36,25 @@ TEST_CASE("Write/Read", "[disktensor]") {
     // println(Ad);
     A._write(Ad);
 
-    auto suba = A(0, All{});
+    auto suba = A(0, All);
     // println(suba);
     REQUIRE(suba(0) == Ad(0, 0));
     REQUIRE(suba(1) == Ad(0, 1));
     REQUIRE(suba(2) == Ad(0, 2));
 
-    auto subb = A(1, All{});
+    auto subb = A(1, All);
     // println(subb);
     REQUIRE(subb(0) == Ad(1, 0));
     REQUIRE(subb(1) == Ad(1, 1));
     REQUIRE(subb(2) == Ad(1, 2));
 
-    auto subc = A(All{}, 1);
+    auto subc = A(All, 1);
     // println(subc);
     REQUIRE(subc(0) == Ad(0, 1));
     REQUIRE(subc(1) == Ad(1, 1));
     REQUIRE(subc(2) == Ad(2, 1));
 
-    auto subd = A(Range{0, 2}, All{});
+    auto subd = A(Range{0, 2}, All);
     // println(subd);
     REQUIRE((subd.dim(0) == 2 && subd.dim(1) == 3));
     REQUIRE(subd(0, 0) == Ad(0, 0));
@@ -64,7 +64,7 @@ TEST_CASE("Write/Read", "[disktensor]") {
     REQUIRE(subd(1, 1) == Ad(1, 1));
     REQUIRE(subd(1, 2) == Ad(1, 2));
 
-    auto tempe = A(All{}, Range{1, 3});
+    auto tempe = A(All, Range{1, 3});
     auto &sube = tempe.get();
     REQUIRE((sube.dim(0) == 3 && sube.dim(1) == 2));
     REQUIRE(sube(0, 0) == Ad(0, 1));
@@ -87,7 +87,7 @@ TEST_CASE("DiskView 3x3", "[disktensor]") {
 
     {
         // Obtaining a DiskView does not automatically allocate memory.
-        auto suba = A(2, All{});
+        auto suba = A(2, All);
 
         Tensor<1> tempa{"tempa", 3};
         tempa(0) = 1.0;
@@ -149,13 +149,13 @@ TEST_CASE("DiskView 7x7x7x7", "[disktensor]") {
     SECTION("Write [7,7] data to [:,2,4,:]") {
         DiskTensor g(state::data, "g0", 7, 7, 7, 7);
         Tensor data = create_random_tensor("data", 7, 7);
-        g(All{}, 2, 4, All{}) = data;
+        g(All, 2, 4, All) = data;
     }
 
     SECTION("Write [7,2,7] data to [:,4-5,2,:]") {
         DiskTensor g(state::data, "g1", 7, 7, 7, 7);
         Tensor data2 = create_random_tensor("data", 7, 2, 7);
-        g(All{}, Range{4, 6}, 2, All{}) = data2;
+        g(All, Range{4, 6}, 2, All) = data2;
     }
 
     SECTION("Write/Read [7,7] data to/from [2,2,:,:]") {
@@ -173,7 +173,7 @@ TEST_CASE("DiskView 7x7x7x7", "[disktensor]") {
                     }
                 }
 
-                auto diskView = g(i, j, All{}, All{});
+                auto diskView = g(i, j, All, All);
                 auto &tensor = diskView.get();
 
                 tensor = data3;
