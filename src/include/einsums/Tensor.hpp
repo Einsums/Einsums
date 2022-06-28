@@ -1140,6 +1140,58 @@ struct DiskTensor final : public detail::TensorBase<T, Rank> {
         }
     }
 
+    // Constructs a DiskTensor shaped like the provided Tensor. Data from the provided tensor
+    // is NOT saved.
+    explicit DiskTensor(h5::fd_t &file, const Tensor<T, Rank> &tensor) : _file{file}, _name{tensor.name()} {
+        // Save dimension information from the provided tensor.
+        h5::current_dims cdims;
+        for (int i = 0; i < Rank; i++) {
+            _dims[i] = tensor.dim(i);
+            cdims[i] = _dims[i];
+        }
+
+        struct stride {
+            size_t value{1};
+            stride() = default;
+            auto operator()(size_t dim) -> size_t {
+                auto old_value = value;
+                value *= dim;
+                return old_value;
+            }
+        };
+
+        // Row-major order of dimensions
+        std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), stride());
+
+        std::array<size_t, Rank> chunk_temp{};
+        for (int i = 0; i < Rank; i++) {
+            if (_dims[i] < 10)
+                chunk_temp[i] = _dims[i];
+            else
+                chunk_temp[i] = 64;
+        }
+
+        // Check to see if the data set exists
+        if (H5Lexists(_file, _name.c_str(), H5P_DEFAULT) > 0) {
+            _existed = true;
+            try {
+                _disk = h5::open(state::data, _name);
+            } catch (std::exception &e) {
+                println("Unable to open disk tensor '%s'", _name.c_str());
+                std::abort();
+            }
+        } else {
+            _existed = false;
+            // Use h5cpp create data structure on disk.  Refrain from allocating any memory
+            try {
+                _disk = h5::create<double>(_file, _name, cdims, h5::chunk{chunk_temp} | h5::gzip{9} | h5::fill_value<double>(0.0));
+            } catch (std::exception &e) {
+                println("Unable to create disk tensor '%s'", _name.c_str());
+                std::abort();
+            }
+        }
+    }
+
     // Provides ability to store another tensor to a part of a disk tensor.
 
     [[nodiscard]] auto dim(int d) const -> size_t { return _dims[d]; }
@@ -1400,6 +1452,11 @@ DiskTensor(h5::fd_t &file, std::string name, Dims... dims) -> DiskTensor<double,
 template <typename Type, typename... Args>
 auto create_tensor(const std::string name, Args... args) -> Tensor<Type, sizeof...(Args)> {
     return Tensor<Type, sizeof...(Args)>{name, args...};
+}
+
+template <typename T, size_t Rank>
+auto create_disk_tensor_like(h5::fd_t &file, const Tensor<T, Rank> &tensor) -> DiskTensor<T, Rank> {
+    return DiskTensor(file, tensor);
 }
 
 } // namespace einsums

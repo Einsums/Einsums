@@ -116,7 +116,7 @@ auto syev(const AType<T, ARank> &A) ->
     Tensor<T, 2> a = A;
     Tensor<T, 1> w{"eigenvalues", A.dim(0)};
 
-    syev<ComputeEigenvectors>(&a, &w);
+    blas::syev<ComputeEigenvectors>(&a, &w);
 
     return std::make_tuple(a, w);
 }
