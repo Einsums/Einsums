@@ -41,8 +41,22 @@ void zgemm(char transa, char transb, int m, int n, int k, std::complex<double> a
     ::einsums::backend::vendor::zgemm(transa, transb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc);
 }
 
+void sgemv(char transa, int m, int n, float alpha, const float *a, int lda, const float *x, int incx, float beta, float *y, int incy) {
+    ::einsums::backend::vendor::sgemv(transa, m, n, alpha, a, lda, x, incx, beta, y, incy);
+}
+
 void dgemv(char transa, int m, int n, double alpha, const double *a, int lda, const double *x, int incx, double beta, double *y, int incy) {
     ::einsums::backend::vendor::dgemv(transa, m, n, alpha, a, lda, x, incx, beta, y, incy);
+}
+
+void cgemv(char transa, int m, int n, std::complex<float> alpha, const std::complex<float> *a, int lda, const std::complex<float> *x,
+           int incx, std::complex<float> beta, std::complex<float> *y, int incy) {
+    ::einsums::backend::vendor::cgemv(transa, m, n, alpha, a, lda, x, incx, beta, y, incy);
+}
+
+void zgemv(char transa, int m, int n, std::complex<double> alpha, const std::complex<double> *a, int lda, const std::complex<double> *x,
+           int incx, std::complex<double> beta, std::complex<double> *y, int incy) {
+    ::einsums::backend::vendor::zgemv(transa, m, n, alpha, a, lda, x, incx, beta, y, incy);
 }
 
 auto dsyev(char job, char uplo, int n, double *a, int lda, double *w, double *work, int lwork) -> int {
