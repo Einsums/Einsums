@@ -59,12 +59,26 @@ void zgemv(char transa, int m, int n, std::complex<double> alpha, const std::com
     ::einsums::backend::vendor::zgemv(transa, m, n, alpha, a, lda, x, incx, beta, y, incy);
 }
 
+auto ssyev(char job, char uplo, int n, float *a, int lda, float *w, float *work, int lwork) -> int {
+    return ::einsums::backend::vendor::ssyev(job, uplo, n, a, lda, w, work, lwork);
+}
+
 auto dsyev(char job, char uplo, int n, double *a, int lda, double *w, double *work, int lwork) -> int {
     return ::einsums::backend::vendor::dsyev(job, uplo, n, a, lda, w, work, lwork);
 }
 
 auto dgesv(int n, int nrhs, double *a, int lda, int *ipiv, double *b, int ldb) -> int {
     return ::einsums::backend::vendor::dgesv(n, nrhs, a, lda, ipiv, b, ldb);
+}
+
+auto cheev(char job, char uplo, int n, std::complex<float> *a, int lda, float *w, std::complex<float> *work, int lwork, float *rwork)
+    -> int {
+    return ::einsums::backend::vendor::cheev(job, uplo, n, a, lda, w, work, lwork, rwork);
+}
+
+auto zheev(char job, char uplo, int n, std::complex<double> *a, int lda, double *w, std::complex<double> *work, int lwork, double *rwork)
+    -> int {
+    return ::einsums::backend::vendor::zheev(job, uplo, n, a, lda, w, work, lwork, rwork);
 }
 
 void dscal(int n, double alpha, double *vec, int inc) {

@@ -326,6 +326,25 @@ template <typename T>
 inline constexpr bool is_smart_pointer_v = is_smart_pointer<T>::value;
 
 template <typename T>
+struct is_complex_t : public std::false_type {};
+
+template <typename T>
+struct is_complex_t<std::complex<T>> : public std::true_type {};
+
+template <typename T>
+inline constexpr bool is_complex_v = is_complex_t<T>::value;
+
+template <typename T>
+struct complex_type {
+    using type = void;
+};
+
+template <typename T>
+struct complex_type<std::complex<T>> {
+    using type = T;
+};
+
+template <typename T>
 struct CircularBuffer {
     explicit CircularBuffer(size_t size) : _buffer(std::unique_ptr<T[]>(new T[size])), _max_size(size) {} // NOLINT
 

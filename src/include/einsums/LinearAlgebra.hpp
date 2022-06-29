@@ -4,6 +4,7 @@
 #include "STL.hpp"
 #include "Tensor.hpp"
 #include "Timer.hpp"
+#include "einsums/Section.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -75,8 +76,9 @@ auto gemv(const double alpha, const AType<T, ARank> &A, const XType<T, XYRank> &
 
 template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename WType, size_t WRank, typename T,
           bool ComputeEigenvectors = true>
-auto syev(AType<T, ARank> *A, WType<T, WRank> *W)
-    -> std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, 2, T> && is_incore_rank_tensor_v<WType<T, WRank>, 1, T>> {
+auto syev(AType<T, ARank> *A, WType<T, WRank> *W) -> std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, 2, T> &&
+                                                                      is_incore_rank_tensor_v<WType<T, WRank>, 1, T> && !is_complex_v<T>> {
+    Section section{fmt::format("syev<ComputeEigenvectors={}>", ComputeEigenvectors)};
     assert(A->dim(0) == A->dim(1));
 
     auto n = A->dim(0);
@@ -84,9 +86,24 @@ auto syev(AType<T, ARank> *A, WType<T, WRank> *W)
     int lwork = 3 * n;
     std::vector<T> work(lwork);
 
-    timer::push(fmt::format("syev<ComputeEigenvectors={}>", ComputeEigenvectors));
     blas::syev(ComputeEigenvectors ? 'v' : 'n', 'u', n, A->data(), lda, W->data(), work.data(), lwork);
-    timer::pop();
+}
+
+template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename WType, size_t WRank, typename T,
+          bool ComputeEigenvectors = true>
+auto heev(AType<T, ARank> *A, WType<typename complex_type<T>::type, WRank> *W)
+    -> std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, 2, T> && is_incore_rank_tensor_v<WType<T, WRank>, 1, T> &&
+                        is_complex_v<T>> {
+    Section section{fmt::format("heev<ComputeEigenvectors={}>", ComputeEigenvectors)};
+    assert(A->dim(0) == A->dim(1));
+
+    auto n = A->dim(0);
+    auto lda = A->stride(0);
+    int lwork = 2 * n;
+    std::vector<T> work(lwork);
+    std::vector<typename complex_type<T>::type> rwork(3 * n);
+
+    blas::heev(ComputeEigenvectors ? 'v' : 'n', 'u', n, A->data(), lda, W->data(), work.data(), lwork, rwork.data());
 }
 
 // This assumes column-major ordering!!

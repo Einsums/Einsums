@@ -144,3 +144,60 @@ TEST_CASE("gemm") {
         gemm_test<std::complex<double>>();
     }
 }
+
+template <typename T>
+void syev_test() {
+    using namespace einsums;
+    using namespace einsums::linear_algebra;
+
+    auto A = create_tensor<T>("a", 3, 3);
+    auto b = create_tensor<T>("b", 3);
+
+    A.vector_data() = std::vector<T, einsums::AlignedAllocator<T, 64>>{1.0, 2.0, 3.0, 2.0, 4.0, 5.0, 3.0, 5.0, 6.0};
+
+    // Perform basic matrix multiplication
+    einsums::linear_algebra::syev(&A, &b);
+
+    CHECK_THAT(b(0), Catch::Matchers::WithinRel(-0.515729, 0.00001));
+    CHECK_THAT(b(1), Catch::Matchers::WithinRel(+0.170915, 0.00001));
+    CHECK_THAT(b(2), Catch::Matchers::WithinRel(+11.344814, 0.00001));
+}
+
+TEST_CASE("syev") {
+    SECTION("float") {
+        syev_test<float>();
+    }
+
+    SECTION("double") {
+        syev_test<double>();
+    }
+}
+
+template <typename T>
+void heev_test() {
+    using namespace einsums;
+    using namespace einsums::linear_algebra;
+
+    auto A = create_tensor<T>("a", 3, 3);
+    auto b = create_tensor<typename complex_type<T>::type>("b", 3);
+
+    A.vector_data() = std::vector<T, einsums::AlignedAllocator<T, 64>>{
+        {0.199889, 0.0},       {-0.330816, -0.127778},  {-0.0546237, 0.176589}, {-0.330816, 0.127778}, {0.629179, 0.0},
+        {-0.224813, 0.327171}, {-0.0546237, -0.176589}, {-0.0224813, 0.327171}, {0.170931, 0.0}};
+
+    println(A);
+
+    einsums::linear_algebra::heev(&A, &b);
+
+    println(A);
+    println(b);
+}
+
+TEST_CASE("heev") {
+    SECTION("float") {
+        heev_test<std::complex<float>>();
+    }
+    SECTION("double") {
+        heev_test<std::complex<double>>();
+    }
+}

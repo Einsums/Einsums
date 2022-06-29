@@ -242,8 +242,9 @@ struct formatter<std::complex<double>, charT> {
     typename FormatContext::iterator format(const std::complex<double> &c, FormatContext &ctx) {
         detail::handle_dynamic_spec<detail::precision_checker>(specs_.precision, specs_.precision_ref, ctx);
         auto specs = std::string();
+        specs += "+";
         if (specs_.precision > 0)
-            specs = fmt::format(".{}", specs_.precision);
+            specs += fmt::format(".{}", specs_.precision);
         if (specs_.type == presentation_type::fixed_lower)
             specs += 'f';
         auto real = fmt::format(ctx.locale().template get<std::locale>(), fmt::runtime("{:" + specs + "}"), c.real());
@@ -251,7 +252,7 @@ struct formatter<std::complex<double>, charT> {
         auto fill_align_width = std::string();
         if (specs_.width > 0)
             fill_align_width = fmt::format(">{}", specs_.width);
-        return format_to(ctx.out(), runtime("{:" + fill_align_width + "}"), fmt::format("({}+{}i)", real, imag));
+        return format_to(ctx.out(), runtime("{:" + fill_align_width + "}"), fmt::format("({} {}i)", real, imag));
     }
 };
 
@@ -273,8 +274,9 @@ struct formatter<std::complex<float>, charT> {
     typename FormatContext::iterator format(const std::complex<float> &c, FormatContext &ctx) {
         detail::handle_dynamic_spec<detail::precision_checker>(specs_.precision, specs_.precision_ref, ctx);
         auto specs = std::string();
+        specs += "+";
         if (specs_.precision > 0)
-            specs = fmt::format(".{}", specs_.precision);
+            specs += fmt::format(".{}", specs_.precision);
         if (specs_.type == presentation_type::fixed_lower)
             specs += 'f';
         auto real = fmt::format(ctx.locale().template get<std::locale>(), fmt::runtime("{:" + specs + "}"), c.real());
@@ -282,7 +284,7 @@ struct formatter<std::complex<float>, charT> {
         auto fill_align_width = std::string();
         if (specs_.width > 0)
             fill_align_width = fmt::format(">{}", specs_.width);
-        return format_to(ctx.out(), runtime("{:" + fill_align_width + "}"), fmt::format("({}+{}i)", real, imag));
+        return format_to(ctx.out(), runtime("{:" + fill_align_width + "}"), fmt::format("({} {}i)", real, imag));
     }
 };
 FMT_END_NAMESPACE
