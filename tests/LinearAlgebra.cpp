@@ -185,12 +185,12 @@ void heev_test() {
         {0.199889, 0.0},       {-0.330816, -0.127778},  {-0.0546237, 0.176589}, {-0.330816, 0.127778}, {0.629179, 0.0},
         {-0.224813, 0.327171}, {-0.0546237, -0.176589}, {-0.0224813, 0.327171}, {0.170931, 0.0}};
 
-    println(A);
-
     einsums::linear_algebra::heev(&A, &b);
 
-    println(A);
-    println(b);
+    // Sometimes 0.0 will be reported as -0.0 therefore we test the Abs of the first two
+    CHECK_THAT(b(0), Catch::Matchers::WithinAbs(0.0, 0.00001));
+    CHECK_THAT(b(1), Catch::Matchers::WithinAbs(0.0, 0.00001));
+    CHECK_THAT(b(2), Catch::Matchers::WithinRel(1.0, 0.00001));
 }
 
 TEST_CASE("heev") {
