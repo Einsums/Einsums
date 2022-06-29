@@ -110,6 +110,7 @@ auto heev(AType<T, ARank> *A, WType<typename complex_type<T>::type, WRank> *W)
 template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename BType, size_t BRank, typename T>
 auto gesv(AType<T, ARank> *A, BType<T, BRank> *B)
     -> std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, 2, T> && is_incore_rank_tensor_v<BType<T, BRank>, 2, T>, int> {
+    Section section{"gesv"};
     auto n = A->dim(0);
     auto lda = A->dim(0);
     auto ldb = B->dim(1);
@@ -119,9 +120,7 @@ auto gesv(AType<T, ARank> *A, BType<T, BRank> *B)
     int lwork = n;
     std::vector<int> ipiv(lwork);
 
-    timer::push("gesv");
-    int info = blas::dgesv(n, nrhs, A->data(), lda, ipiv.data(), B->data(), ldb);
-    timer::pop();
+    int info = blas::gesv(n, nrhs, A->data(), lda, ipiv.data(), B->data(), ldb);
     return info;
 }
 

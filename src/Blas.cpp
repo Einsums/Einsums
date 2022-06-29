@@ -67,8 +67,20 @@ auto dsyev(char job, char uplo, int n, double *a, int lda, double *w, double *wo
     return ::einsums::backend::vendor::dsyev(job, uplo, n, a, lda, w, work, lwork);
 }
 
+auto sgesv(int n, int nrhs, float *a, int lda, int *ipiv, float *b, int ldb) -> int {
+    return ::einsums::backend::vendor::sgesv(n, nrhs, a, lda, ipiv, b, ldb);
+}
+
 auto dgesv(int n, int nrhs, double *a, int lda, int *ipiv, double *b, int ldb) -> int {
     return ::einsums::backend::vendor::dgesv(n, nrhs, a, lda, ipiv, b, ldb);
+}
+
+auto cgesv(int n, int nrhs, std::complex<float> *a, int lda, int *ipiv, std::complex<float> *b, int ldb) -> int {
+    return ::einsums::backend::vendor::cgesv(n, nrhs, a, lda, ipiv, b, ldb);
+}
+
+auto zgesv(int n, int nrhs, std::complex<double> *a, int lda, int *ipiv, std::complex<double> *b, int ldb) -> int {
+    return ::einsums::backend::vendor::zgesv(n, nrhs, a, lda, ipiv, b, ldb);
 }
 
 auto cheev(char job, char uplo, int n, std::complex<float> *a, int lda, float *w, std::complex<float> *work, int lwork, float *rwork)

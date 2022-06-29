@@ -44,7 +44,10 @@ auto zheev(char job, char uplo, int n, std::complex<double> *a, int lda, double 
  * Computes the solution to system of linear equations A * x = B for general
  * matrices.
  */
+auto sgesv(int n, int nrhs, float *a, int lda, int *ipiv, float *b, int ldb) -> int;
 auto dgesv(int n, int nrhs, double *a, int lda, int *ipiv, double *b, int ldb) -> int;
+auto cgesv(int n, int nrhs, std::complex<float> *a, int lda, int *ipiv, std::complex<float> *b, int ldb) -> int;
+auto zgesv(int n, int nrhs, std::complex<double> *a, int lda, int *ipiv, std::complex<double> *b, int ldb) -> int;
 
 void dscal(int n, double alpha, double *vec, int inc);
 
