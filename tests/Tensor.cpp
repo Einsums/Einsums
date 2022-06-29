@@ -322,3 +322,24 @@ TEST_CASE("reshape") {
         // NOTE: At this point tensor C is no longer valid.
     }
 }
+
+TEST_CASE("types") {
+    using namespace einsums;
+
+    SECTION("float->double") {
+        auto A = create_random_tensor<float>("A", 10, 10);
+        auto B = create_tensor<double>("B", 10, 10);
+
+        B = A;
+    }
+
+    SECTION("float->complex<double>") {
+        auto A = create_random_tensor("A", 10, 10);
+        auto B = create_tensor<std::complex<double>>("B", 10, 10);
+
+        B = A;
+
+        println(A);
+        println(B, 5);
+    }
+}
