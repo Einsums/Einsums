@@ -171,7 +171,7 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
 
     Tensor() = default;
     Tensor(const Tensor &) = default;
-    Tensor(Tensor &&) noexcept = default;
+    // Tensor(Tensor &&) noexcept = default;
     ~Tensor() = default;
 
     template <typename... Dims>
@@ -384,14 +384,7 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
                 strides[counter] = _strides[i];
                 counter++;
             }
-            // println(offsets);
-            // println(strides);
-            // println(dims);
         });
-
-        // println(offsets);
-        // println(dims);
-        // println(strides);
 
         return TensorView<T, count_of_type<All_t, MultiIndex...>() + count_of_type<Range, MultiIndex...>()>{*this, std::move(dims), offsets,
                                                                                                             strides};
@@ -415,7 +408,8 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
         return TensorView<T, Rank>{*this, std::move(dims), std::move(offset), std::move(stride)};
     }
 
-    auto operator=(const Tensor<T, Rank> &other) -> Tensor<T, Rank> & {
+    template <typename TOther>
+    auto operator=(const Tensor<TOther, Rank> &other) -> Tensor<T, Rank> & {
         bool realloc{false};
         for (int i = 0; i < Rank; i++) {
             if (dim(i) == 0)
@@ -449,12 +443,23 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
             // Resize the data structure
             _data.resize(size);
         }
-        std::copy(other._data.begin(), other._data.end(), _data.begin());
+
+        if constexpr (std::is_same_v<T, TOther>) {
+            std::copy(other._data.begin(), other._data.end(), _data.begin());
+        } else {
+            auto target_dims = get_dim_ranges<Rank>(*this);
+            for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
+                T &target_value = std::apply(*this, target_combination);
+                T value = std::apply(other, target_combination);
+                target_value = value;
+            }
+        }
 
         return *this;
     }
 
-    auto operator=(const TensorView<T, Rank> &other) -> Tensor<T, Rank> & {
+    template <typename TOther>
+    auto operator=(const TensorView<TOther, Rank> &other) -> Tensor<T, Rank> & {
         auto target_dims = get_dim_ranges<Rank>(*this);
         for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
             T &target_value = std::apply(*this, target_combination);
@@ -913,7 +918,7 @@ auto create_random_tensor(const std::string &name, MultiIndex... index) -> Tenso
             return T{static_cast<double>(unif(re)), static_cast<double>(unif(re))};
         });
     } else {
-        std::generate(A.vector_data().begin(), A.vector_data().end(), [&]() { return T{unif(re)}; });
+        std::generate(A.vector_data().begin(), A.vector_data().end(), [&]() { return static_cast<T>(unif(re)); });
     }
     return A;
 }
