@@ -134,7 +134,34 @@ inline auto heev<double>(char job, char uplo, int n, std::complex<double> *a, in
  * Computes the solution to system of linear equations A * x = B for general
  * matrices.
  */
+auto sgesv(int n, int nrhs, float *a, int lda, int *ipiv, float *b, int ldb) -> int;
 auto dgesv(int n, int nrhs, double *a, int lda, int *ipiv, double *b, int ldb) -> int;
+auto cgesv(int n, int nrhs, std::complex<float> *a, int lda, int *ipiv, std::complex<float> *b, int ldb) -> int;
+auto zgesv(int n, int nrhs, std::complex<double> *a, int lda, int *ipiv, std::complex<double> *b, int ldb) -> int;
+
+template <typename T>
+auto gesv(int n, int nrhs, T *a, int lda, int *ipiv, T *b, int ldb) -> int;
+
+template <>
+inline auto gesv<float>(int n, int nrhs, float *a, int lda, int *ipiv, float *b, int ldb) -> int {
+    return sgesv(n, nrhs, a, lda, ipiv, b, ldb);
+}
+
+template <>
+inline auto gesv<double>(int n, int nrhs, double *a, int lda, int *ipiv, double *b, int ldb) -> int {
+    return dgesv(n, nrhs, a, lda, ipiv, b, ldb);
+}
+
+template <>
+inline auto gesv<std::complex<float>>(int n, int nrhs, std::complex<float> *a, int lda, int *ipiv, std::complex<float> *b, int ldb) -> int {
+    return cgesv(n, nrhs, a, lda, ipiv, b, ldb);
+}
+
+template <>
+inline auto gesv<std::complex<double>>(int n, int nrhs, std::complex<double> *a, int lda, int *ipiv, std::complex<double> *b, int ldb)
+    -> int {
+    return zgesv(n, nrhs, a, lda, ipiv, b, ldb);
+}
 
 void dscal(int n, double alpha, double *vec, int inc);
 

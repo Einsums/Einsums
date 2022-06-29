@@ -6,7 +6,8 @@
 
 #include <catch2/catch.hpp>
 
-TEST_CASE("dgesv") {
+template <typename T>
+void gesv_test() {
     /*
    LAPACKE_dgesv Example.
    ======================
@@ -72,29 +73,41 @@ TEST_CASE("dgesv") {
 
     using namespace einsums;
 
-    Tensor a{"a", N, LDA};
-    Tensor b{"b", NRHS, LDB};
+    auto a = create_tensor<T>("a", N, LDA);
+    auto b = create_tensor<T>("b", NRHS, LDB);
 
-    a.vector_data() = std::vector<double, einsums::AlignedAllocator<double, 64>>{
-        6.80, -2.11, 5.66, 5.97, 8.23, -6.05, -3.30, 5.36,  -4.44, 1.08,  -0.45, 2.58, -2.70,
-        0.27, 9.04,  8.32, 2.71, 4.35, -7.17, 2.14,  -9.67, -5.14, -7.26, 6.08,  -6.87};
-    b.vector_data() = std::vector<double, einsums::AlignedAllocator<double, 64>>{4.02, 6.19, -8.22, -7.57, -3.03, -1.56, 4.00, -8.67,
-                                                                                 1.75, 2.86, 9.81,  -4.09, -4.57, -8.61, 8.99};
+    a.vector_data() = std::vector<T, einsums::AlignedAllocator<T, 64>>{6.80,  -2.11, 5.66,  5.97,  8.23,  -6.05, -3.30, 5.36, -4.44,
+                                                                       1.08,  -0.45, 2.58,  -2.70, 0.27,  9.04,  8.32,  2.71, 4.35,
+                                                                       -7.17, 2.14,  -9.67, -5.14, -7.26, 6.08,  -6.87};
+    b.vector_data() = std::vector<T, einsums::AlignedAllocator<T, 64>>{4.02, 6.19, -8.22, -7.57, -3.03, -1.56, 4.00, -8.67,
+                                                                       1.75, 2.86, 9.81,  -4.09, -4.57, -8.61, 8.99};
 
     linear_algebra::gesv(&a, &b);
 
     CHECK_THAT(a.vector_data(),
-               Catch::Matchers::Approx(std::vector<double, einsums::AlignedAllocator<double, 64>>{
+               Catch::Matchers::Approx(std::vector<T, einsums::AlignedAllocator<T, 64>>{
                                            8.23000000,  0.82624544,  0.68772783,  0.72539490, -0.25637910,  1.08000000,   -6.94234508,
                                            -0.66508563, 0.75240087,  0.43545957,  9.04000000, -7.91925881,  -14.18404477, 0.02320302,
                                            -0.58842060, 2.14000000,  6.55183475,  7.23579360, -13.81984350, -0.33743379,  -6.87000000,
                                            -3.99369380, -5.19145820, 14.18877913, -3.42921969})
                    .margin(0.00001));
     CHECK_THAT(b.vector_data(),
-               Catch::Matchers::Approx(std::vector<double, einsums::AlignedAllocator<double, 64>>{
+               Catch::Matchers::Approx(std::vector<T, einsums::AlignedAllocator<T, 64>>{
                                            -0.80071403, -0.69524338, 0.59391499, 1.32172561, 0.56575620, -0.38962139, -0.55442713,
                                            0.84222739, -0.10380185, 0.10571095, 0.95546491, 0.22065963, 1.90063673, 5.35766149, 4.04060266})
                    .margin(0.00001));
+}
+
+TEST_CASE("gesv") {
+    SECTION("float") {
+        gesv_test<float>();
+    }
+    SECTION("double") {
+        gesv_test<double>();
+    }
+    SECTION("complex<float>") {
+        // gesv_test<std::complex<float>>();
+    }
 }
 
 template <typename T>
