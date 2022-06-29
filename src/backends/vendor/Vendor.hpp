@@ -33,6 +33,14 @@ auto ssyev(char job, char uplo, int n, float *a, int lda, float *w, float *work,
 auto dsyev(char job, char uplo, int n, double *a, int lda, double *w, double *work, int lwork) -> int;
 
 /*!
+ * Computes all eigenvalues and, optionally, eigenvectors of a Hermitian matrix.
+ */
+auto cheev(char job, char uplo, int n, std::complex<float> *a, int lda, float *w, std::complex<float> *work, int lwork, float *rwork)
+    -> int;
+auto zheev(char job, char uplo, int n, std::complex<double> *a, int lda, double *w, std::complex<double> *work, int lwork, double *rwork)
+    -> int;
+
+/*!
  * Computes the solution to system of linear equations A * x = B for general
  * matrices.
  */

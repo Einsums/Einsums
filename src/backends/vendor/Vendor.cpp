@@ -42,6 +42,11 @@ extern void FC_GLOBAL(cgemv, CGEMV)(char *, int *, int *, std::complex<float> *,
 extern void FC_GLOBAL(zgemv, ZGEMV)(char *, int *, int *, std::complex<double> *, const std::complex<double> *, int *,
                                     const std::complex<double> *, int *, std::complex<double> *, std::complex<double> *, int *);
 
+extern void FC_GLOBAL(cheev, CHEEV)(char *job, char *uplo, int *n, std::complex<float> *a, int *lda, float *w, std::complex<float> *work,
+                                    int *lwork, float *rwork, int *info);
+extern void FC_GLOBAL(zheev, ZHEEV)(char *job, char *uplo, int *n, std::complex<double> *a, int *lda, double *w, std::complex<double> *work,
+                                    int *lwork, double *rwork, int *info);
+
 extern void FC_GLOBAL(ssyev, SSYEV)(char *, char *, int *, float *, int *, float *, float *, int *, int *);
 extern void FC_GLOBAL(dsyev, DSYEV)(char *, char *, int *, double *, int *, double *, double *, int *, int *);
 
@@ -150,6 +155,19 @@ auto ssyev(char job, char uplo, int n, float *a, int lda, float *w, float *work,
 auto dsyev(char job, char uplo, int n, double *a, int lda, double *w, double *work, int lwork) -> int {
     int info{0};
     FC_GLOBAL(dsyev, DSYEV)(&job, &uplo, &n, a, &lda, w, work, &lwork, &info);
+    return info;
+}
+
+auto cheev(char job, char uplo, int n, std::complex<float> *a, int lda, float *w, std::complex<float> *work, int lwork, float *rwork)
+    -> int {
+    int info{0};
+    FC_GLOBAL(cheev, CHEEV)(&job, &uplo, &n, a, &lda, w, work, &lwork, rwork, &info);
+    return info;
+}
+auto zheev(char job, char uplo, int n, std::complex<double> *a, int lda, double *w, std::complex<double> *work, int lwork, double *rwork)
+    -> int {
+    int info{0};
+    FC_GLOBAL(zheev, ZHEEV)(&job, &uplo, &n, a, &lda, w, work, &lwork, rwork, &info);
     return info;
 }
 

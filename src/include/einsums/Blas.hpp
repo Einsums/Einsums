@@ -99,13 +99,35 @@ template <typename T>
 auto syev(char job, char uplo, int n, T *a, int lda, T *w, T *work, int lwork) -> int;
 
 template <>
+inline auto syev<float>(char job, char uplo, int n, float *a, int lda, float *w, float *work, int lwork) -> int {
+    return ssyev(job, uplo, n, a, lda, w, work, lwork);
+}
+template <>
 inline auto syev<double>(char job, char uplo, int n, double *a, int lda, double *w, double *work, int lwork) -> int {
     return dsyev(job, uplo, n, a, lda, w, work, lwork);
 }
 
+/*!
+ * Computes all eigenvalues and, optionally, eigenvectors of a Hermitian matrix.
+ */
+auto cheev(char job, char uplo, int n, std::complex<float> *a, int lda, float *w, std::complex<float> *work, int lwork, float *rwork)
+    -> int;
+auto zheev(char job, char uplo, int n, std::complex<double> *a, int lda, double *w, std::complex<double> *work, int lwork, double *rworl)
+    -> int;
+
+template <typename T>
+auto heev(char job, char uplo, int n, std::complex<T> *a, int lda, T *w, std::complex<T> *work, int lwork, T *rwork) -> int;
+
 template <>
-inline auto syev<float>(char job, char uplo, int n, float *a, int lda, float *w, float *work, int lwork) -> int {
-    return ssyev(job, uplo, n, a, lda, w, work, lwork);
+inline auto heev<float>(char job, char uplo, int n, std::complex<float> *a, int lda, float *w, std::complex<float> *work, int lwork,
+                        float *rwork) -> int {
+    return cheev(job, uplo, n, a, lda, w, work, lwork, rwork);
+}
+
+template <>
+inline auto heev<double>(char job, char uplo, int n, std::complex<double> *a, int lda, double *w, std::complex<double> *work, int lwork,
+                         double *rwork) -> int {
+    return zheev(job, uplo, n, a, lda, w, work, lwork, rwork);
 }
 
 /*!
