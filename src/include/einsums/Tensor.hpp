@@ -913,7 +913,7 @@ auto create_random_tensor(const std::string &name, MultiIndex... index) -> Tenso
             return T{static_cast<double>(unif(re)), static_cast<double>(unif(re))};
         });
     } else {
-        std::generate(A.vector_data().begin(), A.vector_data().end(), [&]() { return T{unif(re)}; });
+        std::generate(A.vector_data().begin(), A.vector_data().end(), [&]() { return static_cast<T>(unif(re)); });
     }
     return A;
 }

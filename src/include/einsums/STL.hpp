@@ -336,13 +336,16 @@ inline constexpr bool is_complex_v = is_complex_t<T>::value;
 
 template <typename T>
 struct complex_type {
-    using type = void;
+    using type = T;
 };
 
 template <typename T>
 struct complex_type<std::complex<T>> {
     using type = T;
 };
+
+template <typename T>
+using complex_type_t = typename complex_type<T>::type;
 
 template <typename T>
 struct CircularBuffer {
