@@ -353,17 +353,20 @@ constexpr auto same_indices() {
         return detail::same_indices<LHS, RHS>(std::make_index_sequence<std::tuple_size_v<LHS>>());
 }
 
-template <typename T, typename... CUniqueIndices, typename... AUniqueIndices, typename... BUniqueIndices, typename... LinkUniqueIndices,
+template <typename... CUniqueIndices, typename... AUniqueIndices, typename... BUniqueIndices, typename... LinkUniqueIndices,
           typename... CIndices, typename... AIndices, typename... BIndices, typename... TargetDims, typename... LinkDims,
-          typename... TargetPositionInC, typename... LinkPositionInLink, template <typename, size_t> typename CType, size_t CRank,
-          template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename BType, size_t BRank>
+          typename... TargetPositionInC, typename... LinkPositionInLink, template <typename, size_t> typename CType, typename CDataType,
+          size_t CRank, template <typename, size_t> typename AType, typename ADataType, size_t ARank,
+          template <typename, size_t> typename BType, typename BDataType, size_t BRank>
 void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, const std::tuple<AUniqueIndices...> & /*A_unique*/,
                               const std::tuple<BUniqueIndices...> & /*B_unique*/, const std::tuple<LinkUniqueIndices...> &link_unique,
                               const std::tuple<CIndices...> & /*C_indices*/, const std::tuple<AIndices...> & /*A_indices*/,
                               const std::tuple<BIndices...> & /*B_indices*/, const std::tuple<TargetDims...> &target_dims,
                               const std::tuple<LinkDims...> &link_dims, const std::tuple<TargetPositionInC...> &target_position_in_C,
-                              const std::tuple<LinkPositionInLink...> &link_position_in_link, const T C_prefactor, CType<T, CRank> *C,
-                              const T AB_prefactor, const AType<T, ARank> &A, const BType<T, BRank> &B) {
+                              const std::tuple<LinkPositionInLink...> &link_position_in_link, const CDataType C_prefactor,
+                              CType<CDataType, CRank> *C,
+                              const std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> AB_prefactor,
+                              const AType<ADataType, ARank> &A, const BType<BDataType, BRank> &B) {
     timer::push("generic algorithm");
 
     auto view = std::apply(ranges::views::cartesian_product, target_dims);
@@ -381,7 +384,7 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
             // println("C_order: {}", print_tuple_no_type(C_order));
 
             // This is the generic case.
-            T sum{0};
+            CDataType sum{0};
             for (auto link_combination : std::apply(ranges::views::cartesian_product, link_dims)) {
                 // Print::Indent _indent;
 
@@ -392,15 +395,15 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
                     C_unique, *it, target_position_in_C, link_unique, link_combination, link_position_in_link);
 
                 // Get the tensor element using the operator()(MultiIndex...) function of Tensor.
-                T A_value = std::apply(A, A_order);
-                T B_value = std::apply(B, B_order);
+                ADataType A_value = std::apply(A, A_order);
+                BDataType B_value = std::apply(B, B_order);
 
                 sum += AB_prefactor * A_value * B_value;
             }
 
-            T &target_value = std::apply(*C, C_order);
-            if (C_prefactor == 0.0)
-                target_value = 0.0;
+            CDataType &target_value = std::apply(*C, C_order);
+            if (C_prefactor == CDataType{0.0})
+                target_value = CDataType{0.0};
             target_value *= C_prefactor;
             target_value += sum;
         }
@@ -423,10 +426,7 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
 #endif
         for (auto it = view.begin(); it < view.end(); it++) {
 
-            // // This is the generic case.
-            // T sum{0};
-
-            // // Construct the tuples that will be used to access the tensor elements of A and B
+            // Construct the tuples that will be used to access the tensor elements of A and B
             auto A_order = detail::construct_indices_from_unique_combination<AIndices...>(
                 C_unique, *it, target_position_in_C, std::tuple<>(), std::tuple<>(), target_position_in_C);
             auto B_order = detail::construct_indices_from_unique_combination<BIndices...>(
@@ -434,38 +434,38 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
             auto C_order = detail::construct_indices_from_unique_combination<CIndices...>(
                 C_unique, *it, target_position_in_C, std::tuple<>(), std::tuple<>(), target_position_in_C);
 
-            // // Get the tensor element using the operator()(MultiIndex...) function of Tensor.
-            T A_value = std::apply(A, A_order);
-            T B_value = std::apply(B, B_order);
+            // Get the tensor element using the operator()(MultiIndex...) function of Tensor.
+            ADataType A_value = std::apply(A, A_order);
+            BDataType B_value = std::apply(B, B_order);
 
-            T sum = AB_prefactor * A_value * B_value;
+            CDataType sum = AB_prefactor * A_value * B_value;
 
-            T &target_value = std::apply(*C, C_order);
+            CDataType &target_value = std::apply(*C, C_order);
             if (C_prefactor == 0.0)
                 target_value = 0.0;
             target_value *= C_prefactor;
             target_value += sum;
-
-            // println("it {} C{}={:3.4f} A{}={:3.4f} B{}={:3.4f}", *it, C_order, target_value, A_order, A_value, B_order, B_value);
         }
-        // println("ending contraction");
     }
     timer::pop();
 }
 
-template <bool OnlyUseGenericAlgorithm, template <typename, size_t> typename AType, size_t ARank,
-          template <typename, size_t> typename BType, size_t BRank, template <typename, size_t> typename CType, size_t CRank,
-          typename... CIndices, typename... AIndices, typename... BIndices, typename T = double>
-auto einsum(const T C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<T, CRank> *C, const T AB_prefactor,
-            const std::tuple<AIndices...> & /*As*/, const AType<T, ARank> &A, const std::tuple<BIndices...> & /*Bs*/,
-            const BType<T, BRank> &B) -> std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<T, ARank>, AType<T, ARank>> &&
-                                                          std::is_base_of_v<::einsums::detail::TensorBase<T, BRank>, BType<T, BRank>> &&
-                                                          std::is_base_of_v<::einsums::detail::TensorBase<T, CRank>, CType<T, CRank>>> {
+template <bool OnlyUseGenericAlgorithm, template <typename, size_t> typename AType, typename ADataType, size_t ARank,
+          template <typename, size_t> typename BType, typename BDataType, size_t BRank, template <typename, size_t> typename CType,
+          typename CDataType, size_t CRank, typename... CIndices, typename... AIndices, typename... BIndices>
+auto einsum(const CDataType C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<CDataType, CRank> *C,
+            const std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> AB_prefactor,
+            const std::tuple<AIndices...> & /*As*/, const AType<ADataType, ARank> &A, const std::tuple<BIndices...> & /*Bs*/,
+            const BType<BDataType, BRank> &B)
+    -> std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<ADataType, ARank>, AType<ADataType, ARank>> &&
+                        std::is_base_of_v<::einsums::detail::TensorBase<BDataType, BRank>, BType<BDataType, BRank>> &&
+                        std::is_base_of_v<::einsums::detail::TensorBase<CDataType, CRank>, CType<CDataType, CRank>>> {
     print::Indent _indent;
 
     constexpr auto A_indices = std::tuple<AIndices...>();
     constexpr auto B_indices = std::tuple<BIndices...>();
     constexpr auto C_indices = std::tuple<CIndices...>();
+    using ABDataType = std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType>;
 
     // 1. Ensure the ranks are correct. (Compile-time check.)
     static_assert(sizeof...(CIndices) == CRank, "Rank of C does not match Indices given for C.");
@@ -556,8 +556,13 @@ auto einsum(const T C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<T
     constexpr auto outer_product = std::tuple_size_v<decltype(linksAB)> == 0 && contiguous_target_position_in_A &&
                                    contiguous_target_position_in_B && !A_hadamard_found && !B_hadamard_found && !C_hadamard_found;
 
-    if constexpr (dot_product) {
-        T temp = linear_algebra::dot(A, B);
+    if constexpr (!std::is_same_v<CDataType, ADataType> || !std::is_same_v<CDataType, BDataType>) {
+        // Mixed datatypes go directly to the generic algorithm.
+        einsum_generic_algorithm(C_unique, A_unique, B_unique, link_unique, C_indices, A_indices, B_indices, unique_target_dims,
+                                 unique_link_dims, target_position_in_C, link_position_in_link, C_prefactor, C, AB_prefactor, A, B);
+        return;
+    } else if constexpr (dot_product) {
+        CDataType temp = linear_algebra::dot(A, B);
         (*C) *= C_prefactor;
         (*C) += AB_prefactor * temp;
 
@@ -579,8 +584,8 @@ auto einsum(const T C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<T
 #pragma omp parallel for
 #endif
         for (auto it = view.begin(); it != view.end(); it++) {
-            T &target_value = std::apply(*C, *it);
-            T AB_product = std::apply(A, *it) * std::apply(B, *it);
+            CDataType &target_value = std::apply(*C, *it);
+            ABDataType AB_product = std::apply(A, *it) * std::apply(B, *it);
             target_value = C_prefactor * target_value + AB_prefactor * AB_product;
         }
 
@@ -595,9 +600,9 @@ auto einsum(const T C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<T
             if constexpr (swap_AB)
                 std::swap(dC[0], dC[1]);
 
-            TensorView<T, 2> tC{*C, dC};
+            TensorView<CDataType, 2> tC{*C, dC};
 
-            if (C_prefactor != T{1.0})
+            if (C_prefactor != CDataType{1.0})
                 linear_algebra::scale(C_prefactor, C);
 
             try {
@@ -612,7 +617,7 @@ auto einsum(const T C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<T
                     bg(fmt::color::yellow) | fg(fmt::color::black),
                     "Optimized outer product failed. Likely from a non-contiguous TensorView. Attempting to perform generic algorithm.");
 #endif
-                if (C_prefactor == T{0.0}) {
+                if (C_prefactor == CDataType{0.0}) {
 #if defined(EINSUMS_SHOW_WARNING)
                     println(bg(fmt::color::red) | fg(fmt::color::white),
                             "WARNING!! Unable to undo C_prefactor ({}) on C ({}) tensor. Check your results!!!", C_prefactor, C->name());
@@ -643,9 +648,9 @@ auto einsum(const T C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<T
                         dB[0] = product_dims(link_position_in_A, A);
                         dC[0] = product_dims(A_target_position_in_C, *C);
 
-                        const TensorView<T, 2> tA{const_cast<AType<T, ARank> &>(A), dA};
-                        const TensorView<T, 1> tB{const_cast<BType<T, BRank> &>(B), dB};
-                        TensorView<T, 1> tC{*C, dC};
+                        const TensorView<ADataType, 2> tA{const_cast<AType<ADataType, ARank> &>(A), dA};
+                        const TensorView<BDataType, 1> tB{const_cast<BType<BDataType, BRank> &>(B), dB};
+                        TensorView<CDataType, 1> tC{*C, dC};
 
                         if constexpr (transpose_A) {
                             linear_algebra::gemv<true>(AB_prefactor, tA, tB, C_prefactor, &tC);
@@ -695,8 +700,9 @@ auto einsum(const T C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<T
                             std::swap(sC[0], sC[1]);
                         }
 
-                        TensorView<T, 2> tC{*C, dC, sC};
-                        const TensorView<T, 2> tA{const_cast<AType<T, ARank> &>(A), dA, sA}, tB{const_cast<BType<T, BRank> &>(B), dB, sB};
+                        TensorView<CDataType, 2> tC{*C, dC, sC};
+                        const TensorView<ADataType, 2> tA{const_cast<AType<ADataType, ARank> &>(A), dA, sA};
+                        const TensorView<BDataType, 2> tB{const_cast<BType<BDataType, BRank> &>(B), dB, sB};
 
                         // println("--------------------");
                         // println(*C);
@@ -748,21 +754,24 @@ auto einsum(const T C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<T
 
     // If we somehow make it here, then none of our algorithms above could be used. Attempt to use
     // the generic algorithm instead.
-    einsum_generic_algorithm<T>(C_unique, A_unique, B_unique, link_unique, C_indices, A_indices, B_indices, unique_target_dims,
-                                unique_link_dims, target_position_in_C, link_position_in_link, C_prefactor, C, AB_prefactor, A, B);
+    einsum_generic_algorithm(C_unique, A_unique, B_unique, link_unique, C_indices, A_indices, B_indices, unique_target_dims,
+                             unique_link_dims, target_position_in_C, link_position_in_link, C_prefactor, C, AB_prefactor, A, B);
 }
 
 } // namespace detail
 
-template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename BType, size_t BRank,
-          template <typename, size_t> typename CType, size_t CRank, typename... CIndices, typename... AIndices, typename... BIndices,
-          typename U, typename T = double>
-auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<T, CRank> *C, const U UAB_prefactor,
-            const std::tuple<AIndices...> &A_indices, const AType<T, ARank> &A, const std::tuple<BIndices...> &B_indices,
-            const BType<T, BRank> &B)
-    -> std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<T, ARank>, AType<T, ARank>> &&
-                        std::is_base_of_v<::einsums::detail::TensorBase<T, BRank>, BType<T, BRank>> &&
-                        std::is_base_of_v<::einsums::detail::TensorBase<T, CRank>, CType<T, CRank>> && std::is_arithmetic_v<U>> {
+template <template <typename, size_t> typename AType, typename ADataType, size_t ARank, template <typename, size_t> typename BType,
+          typename BDataType, size_t BRank, template <typename, size_t> typename CType, typename CDataType, size_t CRank,
+          typename... CIndices, typename... AIndices, typename... BIndices, typename U>
+auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<CDataType, CRank> *C, const U UAB_prefactor,
+            const std::tuple<AIndices...> &A_indices, const AType<ADataType, ARank> &A, const std::tuple<BIndices...> &B_indices,
+            const BType<BDataType, BRank> &B)
+    -> std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<ADataType, ARank>, AType<ADataType, ARank>> &&
+                        std::is_base_of_v<::einsums::detail::TensorBase<BDataType, BRank>, BType<BDataType, BRank>> &&
+                        std::is_base_of_v<::einsums::detail::TensorBase<CDataType, CRank>, CType<CDataType, CRank>> &&
+                        std::is_arithmetic_v<U>> {
+    using ABDataType = std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType>;
+
     Section section(FP_ZERO != std::fpclassify(UC_prefactor)
                         ? fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{} + {} "{}"{})", C->name(), print_tuple_no_type(C_indices),
                                       UAB_prefactor, A.name(), print_tuple_no_type(A_indices), B.name(), print_tuple_no_type(B_indices),
@@ -770,8 +779,8 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
                         : fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{})", C->name(), print_tuple_no_type(C_indices), UAB_prefactor,
                                       A.name(), print_tuple_no_type(A_indices), B.name(), print_tuple_no_type(B_indices)));
 
-    const T C_prefactor = UC_prefactor;
-    const T AB_prefactor = UAB_prefactor;
+    const CDataType C_prefactor = UC_prefactor;
+    const ABDataType AB_prefactor = UAB_prefactor;
 
 #if defined(EINSUMS_CONTINUOUSLY_TEST_EINSUM)
     // Clone C into a new tensor
@@ -793,8 +802,8 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
         auto target_dims = get_dim_ranges<CRank>(*C);
 
         for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
-            double Cvalue{std::apply(*C, target_combination)};
-            double Ctest{std::apply(testC, target_combination)};
+            CDataType Cvalue{std::apply(*C, target_combination)};
+            CDataType Ctest{std::apply(testC, target_combination)};
 
             if (std::fabs(Cvalue - Ctest) > 1.0E-6) {
                 println(emphasis::bold | bg(fmt::color::red) | fg(fmt::color::white), "    !!! EINSUM ERROR !!!");
@@ -817,8 +826,8 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
             }
         }
     } else {
-        const double Cvalue = *C;
-        const double Ctest = testC;
+        const CDataType Cvalue = *C;
+        const CDataType Ctest = testC;
 
         if (std::fabs(Cvalue - testC) > 1.0E-6) {
             println(emphasis::bold | bg(fmt::color::red) | fg(fmt::color::white), "!!! EINSUM ERROR !!!");
