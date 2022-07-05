@@ -334,26 +334,15 @@ void types_test() {
 }
 
 TEST_CASE("types") {
-    using namespace einsums;
-
     SECTION("float->double") {
-        auto A = create_random_tensor<float>("A", 10, 10);
-        auto B = create_random_tensor<double>("B", 10, 10);
-
-        B = A;
+        types_test<double, float>();
     }
 
     SECTION("float->complex<double>") {
-        auto A = create_random_tensor("A", 10, 10);
-        auto B = create_random_tensor<std::complex<double>>("B", 10, 10);
-
-        B = A;
+        types_test<std::complex<double>, float>();
     }
 
     SECTION("double->complex<float>") {
-        auto A = create_random_tensor("A", 10, 10);
-        auto B = create_random_tensor<std::complex<float>>("B", 10, 10);
-
-        B = A;
+        types_test<std::complex<float>, double>();
     }
 }
