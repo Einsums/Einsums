@@ -338,8 +338,5 @@ TEST_CASE("types") {
         auto B = create_tensor<std::complex<double>>("B", 10, 10);
 
         B = A;
-
-        println(A);
-        println(B, 5);
     }
 }
