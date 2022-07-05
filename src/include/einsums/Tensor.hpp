@@ -1517,12 +1517,16 @@ auto println(const AType<T, Rank> &A, int width = 12) ->
                     }
                     auto new_tuple = std::tuple_cat(target_combination.base(), std::tuple(j));
                     T value = std::apply(A, new_tuple);
-                    // if (std::fabs(value) > std::numeric_limits<double>::epsilon() * 1000) {
                     if (std::fabs(value) > 1.0E+5) {
-                        // oss << "\033[91m" << std::setw(14) << value << "\033[0m";
-                        oss << "\x1b[0;37;41m" << fmt::format("{:14.8f} ", value) << "\x1b[0m";
+                        if constexpr (std::is_floating_point_v<T>)
+                            oss << "\x1b[0;37;41m" << fmt::format("{:14.8f} ", value) << "\x1b[0m";
+                        else
+                            oss << "\x1b[0;37;41m" << fmt::format("{:14d} ", value) << "\x1b[0m";
                     } else {
-                        oss << fmt::format("{:14.8f} ", value);
+                        if constexpr (std::is_floating_point_v<T>)
+                            oss << fmt::format("{:14.8f} ", value);
+                        else
+                            oss << fmt::format("{:14} ", value);
                     }
                     // } else {
                     // oss << std::setw(14) << 0.0;
@@ -1544,16 +1548,17 @@ auto println(const AType<T, Rank> &A, int width = 12) ->
                 oss << "): ";
 
                 T value = std::apply(A, target_combination);
-                // if (std::fabs(value) > std::numeric_limits<T>::epsilon()) {
                 if (std::fabs(value) > 1.0E+5) {
-                    // oss << "\033[91m" << std::setw(14) << value << "\033[0m";
-                    oss << "\x1b[0;37;41m" << fmt::format("{:14.8f} ", value) << "\x1b[0m";
+                    if constexpr (std::is_floating_point_v<T>)
+                        oss << "\x1b[0;37;41m" << fmt::format("{:14.8f} ", value) << "\x1b[0m";
+                    else
+                        oss << "\x1b[0;37;41m" << fmt::format("{:14d} ", value) << "\x1b[0m";
                 } else {
-                    oss << fmt::format("{:14.8f} ", value);
+                    if constexpr (std::is_floating_point_v<T>)
+                        oss << fmt::format("{:14.8f} ", value);
+                    else
+                        oss << fmt::format("{:14d} ", value);
                 }
-                // } else {
-                //     oss << fmt::format("{:14.8f}", T{0.0});
-                // }
 
                 println("{}", oss.str());
             }

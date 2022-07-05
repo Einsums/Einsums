@@ -323,23 +323,40 @@ TEST_CASE("reshape") {
     }
 }
 
+template <typename Destination, typename Source>
+void types_test() {
+    using namespace einsums;
+
+    auto A = create_random_tensor<Source>("A", 10, 10);
+    auto B = create_random_tensor<Destination>("B", 10, 10);
+
+    B = A;
+}
+
 TEST_CASE("types") {
     using namespace einsums;
 
     SECTION("float->double") {
         auto A = create_random_tensor<float>("A", 10, 10);
-        auto B = create_tensor<double>("B", 10, 10);
+        auto B = create_random_tensor<double>("B", 10, 10);
 
         B = A;
     }
 
     SECTION("float->complex<double>") {
         auto A = create_random_tensor("A", 10, 10);
-        auto B = create_tensor<std::complex<double>>("B", 10, 10);
+        auto B = create_random_tensor<std::complex<double>>("B", 10, 10);
 
         B = A;
 
         println(A);
-        println(B, 5);
+        println(B);
+    }
+
+    SECTION("double->complex<float>") {
+        auto A = create_random_tensor("A", 10, 10);
+        auto B = create_random_tensor<std::complex<float>>("B", 10, 10);
+
+        B = A;
     }
 }
