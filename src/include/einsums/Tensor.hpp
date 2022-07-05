@@ -307,7 +307,7 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
         }
     }
 
-    void set_all(double value) {
+    void set_all(T value) {
 #pragma omp parallel
         {
             auto tid = omp_get_thread_num();
@@ -780,8 +780,8 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
     }
 
   private:
-    auto common_initialization(const double *other) {
-        _data = const_cast<double *>(other);
+    auto common_initialization(const T *other) {
+        _data = const_cast<T *>(other);
 
         struct stride {
             size_t value{1};
@@ -925,8 +925,8 @@ auto create_random_tensor(const std::string &name, MultiIndex... index) -> Tenso
 
 namespace detail {
 
-template <typename T, typename Tuple, std::size_t... I>
-void set_to(T &tensor, double value, Tuple const &tuple, std::index_sequence<I...>) {
+template <template <typename, size_t> typename TensorType, typename DataType, size_t Rank, typename Tuple, std::size_t... I>
+void set_to(TensorType<DataType, Rank> &tensor, DataType value, Tuple const &tuple, std::index_sequence<I...>) {
     tensor(std::get<I>(tuple)...) = value;
 }
 
@@ -940,7 +940,7 @@ auto create_identity_tensor(const std::string &name, MultiIndex... index) -> Ten
     A.zero();
 
     for (size_t dim = 0; dim < std::get<0>(std::forward_as_tuple(index...)); dim++) {
-        detail::set_to(A, 1.0, create_tuple<sizeof...(MultiIndex)>(dim), std::make_index_sequence<sizeof...(MultiIndex)>());
+        detail::set_to(A, T{1.0}, create_tuple<sizeof...(MultiIndex)>(dim), std::make_index_sequence<sizeof...(MultiIndex)>());
     }
 
     return A;
@@ -993,7 +993,7 @@ void write(const h5::fd_t &fd, const Tensor<T, Rank> &ref, Args &&...args) {
     h5::write(ds, ref, count, offset, stride);
 }
 
-template <typename T = double>
+template <typename T>
 void write(const h5::fd_t &fd, const Tensor<T, 0> &ref) {
     h5::ds_t ds;
     if (H5Lexists(fd, ref.name().c_str(), H5P_DEFAULT) <= 0) {
@@ -1001,10 +1001,10 @@ void write(const h5::fd_t &fd, const Tensor<T, 0> &ref) {
     } else {
         ds = h5::open(fd, ref.name());
     }
-    h5::write<double>(ds, ref.data(), h5::count{1});
+    h5::write<T>(ds, ref.data(), h5::count{1});
 }
 
-template <size_t Rank, typename T = double, class... Args>
+template <size_t Rank, typename T, class... Args>
 void write(const h5::fd_t &fd, const TensorView<T, Rank> &ref, Args &&...args) {
     h5::count count_default{1, 1, 1, 1, 1, 1, 1};
     h5::offset offset_default{0, 0, 0, 0, 0, 0, 0};
@@ -1040,8 +1040,8 @@ void write(const h5::fd_t &fd, const TensorView<T, Rank> &ref, Args &&...args) {
                 chunk_temp[i] = 10;
         }
 
-        ds = h5::create<double>(fd, ref.name().c_str(), h5::current_dims{ref.dims()},
-                                h5::chunk{chunk_temp} | h5::gzip{9} | h5::fill_value<double>(0.0));
+        ds = h5::create<T>(fd, ref.name().c_str(), h5::current_dims{ref.dims()},
+                           h5::chunk{chunk_temp} | h5::gzip{9} | h5::fill_value<T>(0.0));
     }
 
     auto dims = get_dim_ranges<Rank - 1>(ref);
@@ -1054,12 +1054,12 @@ void write(const h5::fd_t &fd, const TensorView<T, Rank> &ref, Args &&...args) {
 
         // Get the data pointer from the view
         T *data = ref.data_array(view_offset);
-        h5::write<double>(ds, data, count_default, disk_offset);
+        h5::write<T>(ds, data, count_default, disk_offset);
     }
 }
 
 // This needs to be expanded to handle the various h5 parameters like above.
-template <size_t Rank, typename T = double>
+template <size_t Rank, typename T>
 auto read(const h5::fd_t &fd, const std::string &name) -> Tensor<T, Rank> {
     try {
         auto temp = h5::read<einsums::Tensor<T, Rank>>(fd, name);
@@ -1127,19 +1127,19 @@ struct DiskTensor final : public detail::TensorBase<T, Rank> {
         if (H5Lexists(_file, _name.c_str(), H5P_DEFAULT) > 0) {
             _existed = true;
             try {
-                _disk = h5::open(state::data, _name);
+                _disk = h5::open(_file, _name);
             } catch (std::exception &e) {
-                println("Unable to open disk tensor '%s'", _name.c_str());
+                println("Unable to open disk tensor '{}'", _name);
                 std::abort();
             }
         } else {
             _existed = false;
             // Use h5cpp create data structure on disk.  Refrain from allocating any memory
             try {
-                _disk = h5::create<double>(_file, _name, h5::current_dims{static_cast<size_t>(dims)...},
-                                           h5::chunk{chunk_temp} | h5::gzip{9} | h5::fill_value<double>(0.0));
+                _disk = h5::create<T>(_file, _name, h5::current_dims{static_cast<size_t>(dims)...},
+                                      h5::chunk{chunk_temp} | h5::gzip{9} /* | h5::fill_value<T>(0.0) */);
             } catch (std::exception &e) {
-                println("Unable to create disk tensor '%s'", _name.c_str());
+                println("Unable to create disk tensor '{}'", _name);
                 std::abort();
             }
         }
@@ -1189,7 +1189,7 @@ struct DiskTensor final : public detail::TensorBase<T, Rank> {
             _existed = false;
             // Use h5cpp create data structure on disk.  Refrain from allocating any memory
             try {
-                _disk = h5::create<double>(_file, _name, cdims, h5::chunk{chunk_temp} | h5::gzip{9} | h5::fill_value<double>(0.0));
+                _disk = h5::create<T>(_file, _name, cdims, h5::chunk{chunk_temp} | h5::gzip{9} | h5::fill_value<T>(0.0));
             } catch (std::exception &e) {
                 println("Unable to create disk tensor '%s'", _name.c_str());
                 std::abort();
@@ -1334,13 +1334,13 @@ struct DiskView final : public detail::TensorBase<T, ViewRank> {
     DiskView(DiskTensor<T, Rank> &parent, const Dim<ViewRank> &dims, const Count<Rank> &counts, const Offset<Rank> &offsets,
              const Stride<Rank> &strides)
         : _parent(parent), _dims(dims), _counts(counts), _offsets(offsets), _strides(strides), _tensor{_dims} {
-        h5::read<double>(_parent.disk(), _tensor.data(), h5::count{_counts}, h5::offset{_offsets});
+        h5::read<T>(_parent.disk(), _tensor.data(), h5::count{_counts}, h5::offset{_offsets});
     };
     DiskView(const DiskTensor<T, Rank> &parent, const Dim<ViewRank> &dims, const Count<Rank> &counts, const Offset<Rank> &offsets,
              const Stride<Rank> &strides)
         : _parent(const_cast<DiskTensor<T, Rank> &>(parent)), _dims(dims), _counts(counts), _offsets(offsets),
           _strides(strides), _tensor{_dims} {
-        h5::read<double>(_parent.disk(), _tensor.data(), h5::count{_counts}, h5::offset{_offsets});
+        h5::read<T>(_parent.disk(), _tensor.data(), h5::count{_counts}, h5::offset{_offsets});
         set_read_only(true);
     };
     DiskView(const DiskView &) = default;
@@ -1393,7 +1393,7 @@ struct DiskView final : public detail::TensorBase<T, ViewRank> {
 
     void put() {
         if (!_readOnly)
-            h5::write<double>(_parent.disk(), _tensor.data(), h5::count{_counts}, h5::offset{_offsets});
+            h5::write<T>(_parent.disk(), _tensor.data(), h5::count{_counts}, h5::offset{_offsets});
     }
 
     template <typename... MultiIndex>
@@ -1413,7 +1413,7 @@ struct DiskView final : public detail::TensorBase<T, ViewRank> {
     operator const Tensor<T, ViewRank> &() const { return _tensor; }
 
     void zero() { _tensor.zero(); }
-    void set_all(double value) { _tensor.set_all(value); }
+    void set_all(T value) { _tensor.set_all(value); }
 
   private:
     DiskTensor<T, Rank> &_parent;
@@ -1457,6 +1457,11 @@ DiskTensor(h5::fd_t &file, std::string name, Dims... dims) -> DiskTensor<double,
 template <typename Type, typename... Args>
 auto create_tensor(const std::string name, Args... args) -> Tensor<Type, sizeof...(Args)> {
     return Tensor<Type, sizeof...(Args)>{name, args...};
+}
+
+template <typename Type, typename... Args>
+auto create_disk_tensor(h5::fd_t &file, const std::string name, Args... args) -> DiskTensor<Type, sizeof...(Args)> {
+    return DiskTensor<Type, sizeof...(Args)>{file, name, args...};
 }
 
 template <typename T, size_t Rank>
