@@ -13,16 +13,29 @@
 #include <type_traits>
 #include <utility>
 
-TEST_CASE("Creation", "[disktensor]") {
+TEST_CASE("disktensor-creation", "[disktensor]") {
     using namespace einsums;
 
-    DiskTensor A(state::data, "/A0", 3, 3);
-    DiskTensor B(state::data, "/B0", 3, 3);
-    DiskTensor C(state::data, "/C0", 3, 3);
+    SECTION("double") {
+        DiskTensor A(state::data, "/A0", 3, 3);
+        DiskTensor B(state::data, "/B0", 3, 3);
+        DiskTensor C(state::data, "/C0", 3, 3);
 
-    REQUIRE((A.dim(0) == 3 && A.dim(1) == 3));
-    REQUIRE((B.dim(0) == 3 && B.dim(1) == 3));
-    REQUIRE((C.dim(0) == 3 && C.dim(1) == 3));
+        REQUIRE((A.dim(0) == 3 && A.dim(1) == 3));
+        REQUIRE((B.dim(0) == 3 && B.dim(1) == 3));
+        REQUIRE((C.dim(0) == 3 && C.dim(1) == 3));
+    }
+
+    SECTION("float") {
+        auto A = create_disk_tensor<float>(state::data, "/A1", 3, 3);
+        REQUIRE((A.dim(0) == 3 && A.dim(1) == 3));
+    }
+
+    // Complex datatypes currently not supported.  It should be able to handle this through defining a HDF5 compound datatype.
+    // SECTION("complex<double>") {
+    //     auto A = create_disk_tensor<std::complex<double>>(state::data, "/A2", 3, 3);
+    //     REQUIRE((A.dim(0) == 3 && A.dim(1) == 3));
+    // }
 }
 
 #if 0

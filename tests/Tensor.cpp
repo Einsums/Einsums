@@ -290,7 +290,7 @@ TEST_CASE("Tensor 2D - HDF5 wrapper") {
 
     einsums::write(fd, A);
 
-    auto B = einsums::read<2>(fd, "A");
+    auto B = einsums::read<2, double>(fd, "A");
 
     for (int i = 0; i < 3; i++)
         for (int j = 0; j < 3; j++)
@@ -348,9 +348,6 @@ TEST_CASE("types") {
         auto B = create_random_tensor<std::complex<double>>("B", 10, 10);
 
         B = A;
-
-        println(A);
-        println(B);
     }
 
     SECTION("double->complex<float>") {
