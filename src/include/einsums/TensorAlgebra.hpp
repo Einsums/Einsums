@@ -1104,7 +1104,7 @@ auto element_transform(SmartPtr *C, UnaryOperator unary_opt) -> std::enable_if_t
 
 template <template <typename, size_t> typename CType, template <typename, size_t> typename... MultiTensors, size_t Rank,
           typename MultiOperator, typename T = double>
-auto element(MultiOperator multi_opt, CType<T, Rank> *C, MultiTensors<T, Rank>... tensors) {
+auto element(MultiOperator multi_opt, CType<T, Rank> *C, MultiTensors<T, Rank> &...tensors) {
     Section section("element");
     auto target_dims = get_dim_ranges<Rank>(*C);
     auto view = std::apply(ranges::views::cartesian_product, target_dims);
