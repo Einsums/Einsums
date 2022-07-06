@@ -44,10 +44,10 @@ struct OffsetType {};
 struct CountType {};
 struct RangeType {};
 
-template <typename T, size_t Rank>
-struct Array : public std::array<std::size_t, Rank> {
+template <typename T, size_t Rank, typename UnderlyingType = std::size_t>
+struct Array : public std::array<UnderlyingType, Rank> {
     template <typename... Args>
-    constexpr explicit Array(Args... args) : std::array<std::size_t, Rank>{static_cast<std::size_t>(args)...} {}
+    constexpr explicit Array(Args... args) : std::array<UnderlyingType, Rank>{static_cast<UnderlyingType>(args)...} {}
     using type = T;
 };
 
@@ -65,7 +65,7 @@ using Offset = detail::Array<detail::OffsetType, Rank>;
 template <size_t Rank>
 using Count = detail::Array<detail::CountType, Rank>;
 
-using Range = detail::Array<detail::RangeType, 2>;
+using Range = detail::Array<detail::RangeType, 2, std::int64_t>;
 
 struct All_t {};
 static struct All_t All;
@@ -325,12 +325,43 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
         return _data.data();
     }
     template <typename... MultiIndex>
-    auto data(MultiIndex... index) -> T * {
+    auto data(MultiIndex... index)
+        -> std::enable_if_t<count_of_type<All_t, MultiIndex...>() == 0 && count_of_type<Range, MultiIndex...>() == 0, T *> {
         assert(sizeof...(MultiIndex) <= _dims.size());
 
         auto index_list = {static_cast<size_t>(index)...};
         size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), 0);
         return &_data[ordinal];
+    }
+
+    auto operator*=(const T &b) -> Tensor<T, Rank> & {
+#pragma omp parallel
+        {
+            auto tid = omp_get_thread_num();
+            auto chunksize = _data.size() / omp_get_num_threads();
+            auto begin = _data.begin() + chunksize * tid;
+            auto end = (tid == omp_get_num_threads() - 1) ? _data.end() : begin + chunksize;
+#pragma omp simd
+            for (auto i = begin; i < end; i++) {
+                (*i) *= b;
+            }
+        }
+        return *this;
+    }
+
+    auto operator+=(const T &b) -> Tensor<T, Rank> & {
+#pragma omp parallel
+        {
+            auto tid = omp_get_thread_num();
+            auto chunksize = _data.size() / omp_get_num_threads();
+            auto begin = _data.begin() + chunksize * tid;
+            auto end = (tid == omp_get_num_threads() - 1) ? _data.end() : begin + chunksize;
+#pragma omp simd
+            for (auto i = begin; i < end; i++) {
+                (*i) += b;
+            }
+        }
+        return *this;
     }
 
     template <typename... MultiIndex>
@@ -370,8 +401,11 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
         int counter{0};
         for_sequence<sizeof...(MultiIndex)>([&](auto i) {
             // println("looking at {}", i);
-            if constexpr (std::is_convertible_v<std::tuple_element_t<i, std::tuple<MultiIndex...>>, size_t>) {
-                offsets[i] = std::get<i>(indices);
+            if constexpr (std::is_convertible_v<std::tuple_element_t<i, std::tuple<MultiIndex...>>, std::int64_t>) {
+                auto tmp = static_cast<std::int64_t>(std::get<i>(indices));
+                if (tmp < 0)
+                    tmp = _dims[i] + tmp;
+                offsets[i] = tmp;
             } else if constexpr (std::is_same_v<All_t, std::tuple_element_t<i, std::tuple<MultiIndex...>>>) {
                 strides[counter] = _strides[i];
                 dims[counter] = _dims[i];
@@ -380,6 +414,10 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
             } else if constexpr (std::is_same_v<Range, std::tuple_element_t<i, std::tuple<MultiIndex...>>>) {
                 auto range = std::get<i>(indices);
                 offsets[counter] = range[0];
+                if (range[1] < 0) {
+                    auto temp = _dims[i] + range[1];
+                    range[1] = temp;
+                }
                 dims[counter] = range[1] - range[0];
                 strides[counter] = _strides[i];
                 counter++;
@@ -399,9 +437,12 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
         auto ranges = get_array_from_tuple<std::array<Range, Rank>>(std::forward_as_tuple(index...));
 
         for (int r = 0; r < Rank; r++) {
-            const auto &range = ranges[r];
-
+            auto range = ranges[r];
             offset[r] = range[0];
+            if (range[1] < 0) {
+                auto temp = _dims[r] + range[1];
+                range[1] = temp;
+            }
             dims[r] = range[1] - range[0];
         }
 
@@ -649,6 +690,7 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
     template <template <typename, size_t> typename AType>
     auto operator=(const AType<T, Rank> &other) ->
         typename std::enable_if_t<is_incore_rank_tensor_v<AType<T, Rank>, Rank, T>, TensorView &> {
+        println("operator= {} {}", _name, other.name());
         if constexpr (std::is_same_v<AType<T, Rank>, TensorView<T, Rank>>) {
             if (this == &other)
                 return *this;
@@ -669,6 +711,7 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
     template <template <typename, size_t> typename AType>
     auto operator=(const AType<T, Rank> &&other) ->
         typename std::enable_if_t<is_incore_rank_tensor_v<AType<T, Rank>, Rank, T>, TensorView &> {
+        println("operator=&& {} {}", _name, other.name());
         if constexpr (std::is_same_v<AType<T, Rank>, TensorView<T, Rank>>) {
             if (this == &other)
                 return *this;
