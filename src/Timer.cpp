@@ -101,7 +101,16 @@ void report() {
 }
 
 void push(const std::string &name) {
-    assert(current_timer != nullptr);
+    // assert(current_timer != nullptr);
+    static bool already_warned{false};
+
+    if (current_timer == nullptr) {
+        if (already_warned == false) {
+            println("Timer::push: Timer was not initialized prior to calling `push`. This is the only warning you will receive.");
+            already_warned = true;
+        }
+        return;
+    }
 
     if (current_timer->children.count(name) == 0) {
         current_timer->children[name].name = name;
@@ -114,6 +123,16 @@ void push(const std::string &name) {
 }
 
 void pop() {
+    static bool already_warned{false};
+
+    if (current_timer == nullptr) {
+        if (already_warned == false) {
+            println("Timer::pop: current_timer is already nullptr; something might be wrong. This is the only warning you will receive.");
+            already_warned = true;
+        }
+        return;
+    }
+
     current_timer->total_time += clock::now() - current_timer->start_time;
     current_timer->total_calls++;
     current_timer = current_timer->parent;
