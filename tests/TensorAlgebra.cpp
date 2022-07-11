@@ -2392,25 +2392,14 @@ TEST_CASE("andy") {
 
         einsum(0.0, Indices{index::i, index::a, index::W}, &ortho_temp_1, 1.0, Indices{index::i, index::W}, y_iW_,
                Indices{index::a, index::W}, y_aW_);
-
-        ortho_temp_0.zero();
-#pragma omp parallel for
-        for (size_t iaW = 0; iaW < nocc_ * nvirt_ * proj_rank_; iaW++) {
-            size_t i = iaW / (nvirt_ * proj_rank_);
-            size_t a = (iaW % (nvirt_ * proj_rank_)) / proj_rank_;
-            size_t W = iaW % proj_rank_;
-            ortho_temp_0(i, a, W) += y_iW_(i, W) * y_aW_(a, W);
-        }
-
-        for (int i = 0; i < nocc_; i++) {
-            for (int a = 0; a < nvirt_; a++) {
-                for (int w = 0; w < proj_rank_; w++) {
-                    REQUIRE_THAT(ortho_temp_1(i, a, w), Catch::Matchers::WithinAbs(ortho_temp_0(i, a, w), 0.000001));
-                }
-            }
-        }
     }
 
     SECTION("2") {
+        auto tau_ = create_random_tensor("tau", proj_rank_, proj_rank_);
+        auto ortho_temp_1 = create_random_tensor("ortho temp 1", nocc_, nvirt_, proj_rank_);
+        auto ortho_temp_2 = create_tensor("ortho temp 2", nocc_, nvirt_, proj_rank_);
+
+        einsum(0.0, Indices{index::i, index::a, index::P}, &ortho_temp_2, 1.0, Indices{index::i, index::a, index::W}, ortho_temp_1,
+               Indices{index::P, index::W}, tau_);
     }
 }

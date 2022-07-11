@@ -24,6 +24,10 @@
 #include <type_traits>
 #include <utility>
 
+#if defined(EINSUMS_USE_CATCH2)
+#include <catch2/catch.hpp>
+#endif
+
 // HPTT includes <complex> which defined I as a shorthand for complex values.
 // This causes issues with einsums since we define I to be a useable index
 // for the user. Undefine the one defined in <complex> here.
@@ -817,6 +821,15 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
                     print_info_and_abort = true;
                 }
             }
+
+#if defined(EINSUMS_USE_CATCH2)
+            if constexpr (!is_complex_v<CDataType>) {
+                REQUIRE_THAT(Cvalue,
+                             Catch::Matchers::WithinRel(Ctest, static_cast<CDataType>(0.001)) || Catch::Matchers::WithinAbs(0, 0.0001));
+                CHECK(print_info_and_abort == false);
+            }
+#endif
+
             if (std::fabs(Cvalue - Ctest) > 1.0E-6) {
                 print_info_and_abort = true;
             }

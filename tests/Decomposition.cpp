@@ -1,3 +1,8 @@
+// CP test cases generate some massive intermediates that the auto einsum tests struggle with
+// undefine the test and simply use the manual tests listed in this file.
+#undef EINSUMS_USE_CATCH2
+#undef EINSUMS_CONTINUOUSLY_TEST_EINSUM
+
 #include "einsums/Decomposition.hpp"
 
 #include "einsums/LinearAlgebra.hpp"
