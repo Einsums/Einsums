@@ -2350,7 +2350,7 @@ void einsum_mixed_test() {
     for (size_t i = 0; i < i_; i++) {
         for (size_t j = 0; j < j_; j++) {
             // println("{:20.14f} {:20.14f} {:20.14f}", C(i, j), C0(i, j), std::abs(C(i, j) - C0(i, j)));
-            CHECK(std::abs(C(i, j) - C0(i, j)) < complex_type_t<TC>{1.0E-5});
+            CHECK(std::abs(C(i, j) - C0(i, j)) < complex_type_t<TC>{1.0E-4});
             // REQUIRE_THAT(C(i, j), Catch::Matchers::WithinAbs(C0(i, j), complex_type_t<TC>{1.0E-16}));
         }
     }
@@ -2374,5 +2374,42 @@ TEST_CASE("einsum-mixed") {
     }
     SECTION("cf-cd-f") {
         einsum_mixed_test<std::complex<float>, std::complex<float>, std::complex<float>>();
+    }
+}
+
+TEST_CASE("andy") {
+    using namespace einsums;
+    using namespace einsums::tensor_algebra;
+
+    size_t proj_rank_{100}, nocc_{5}, nvirt_{30};
+
+    SECTION("1") {
+        auto y_iW_ = create_random_tensor<double>("y_iW", nocc_, proj_rank_);
+        auto y_aW_ = create_random_tensor<double>("y_aW", nvirt_, proj_rank_);
+        auto ortho_temp_1 = create_tensor<double>("ortho temp 1", nocc_, nvirt_, proj_rank_);
+        auto ortho_temp_0 = create_tensor<double>("ortho temp 1", nocc_, nvirt_, proj_rank_);
+
+        einsum(0.0, Indices{index::i, index::a, index::W}, &ortho_temp_1, 1.0, Indices{index::i, index::W}, y_iW_,
+               Indices{index::a, index::W}, y_aW_);
+
+        ortho_temp_0.zero();
+#pragma omp parallel for
+        for (size_t iaW = 0; iaW < nocc_ * nvirt_ * proj_rank_; iaW++) {
+            size_t i = iaW / (nvirt_ * proj_rank_);
+            size_t a = (iaW % (nvirt_ * proj_rank_)) / proj_rank_;
+            size_t W = iaW % proj_rank_;
+            ortho_temp_0(i, a, W) += y_iW_(i, W) * y_aW_(a, W);
+        }
+
+        for (int i = 0; i < nocc_; i++) {
+            for (int a = 0; a < nvirt_; a++) {
+                for (int w = 0; w < proj_rank_; w++) {
+                    REQUIRE_THAT(ortho_temp_1(i, a, w), Catch::Matchers::WithinAbs(ortho_temp_0(i, a, w), 0.000001));
+                }
+            }
+        }
+    }
+
+    SECTION("2") {
     }
 }

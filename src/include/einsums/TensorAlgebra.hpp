@@ -87,6 +87,11 @@ MAKE_INDEX(R); // NOLINT
 MAKE_INDEX(r); // NOLINT
 MAKE_INDEX(S); // NOLINT
 MAKE_INDEX(s); // NOLINT
+
+MAKE_INDEX(w); // NOLINT
+MAKE_INDEX(W); // NOLINT
+
+// Z is a special index used internally. DO NOT USE.
 MAKE_INDEX(Z); // NOLINT
 
 #undef MAKE_INDEX
@@ -784,7 +789,7 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
 
 #if defined(EINSUMS_CONTINUOUSLY_TEST_EINSUM)
     // Clone C into a new tensor
-    Tensor<T, CRank> testC{C->dims()};
+    Tensor<CDataType, CRank> testC{C->dims()};
     testC = *C;
 
     // Perform the einsum using only the generic algorithm
@@ -800,12 +805,23 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
     if constexpr (CRank != 0) {
         // Need to walk through the entire C and testC comparing values and reporting differences.
         auto target_dims = get_dim_ranges<CRank>(*C);
+        bool print_info_and_abort{false};
 
         for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
             CDataType Cvalue{std::apply(*C, target_combination)};
             CDataType Ctest{std::apply(testC, target_combination)};
 
+            if constexpr (!is_complex_v<CDataType>) {
+                if (std::isnan(Cvalue) || std::isnan(Ctest)) {
+                    println(bg(fmt::color::red) | fg(fmt::color::white), "NAN DETECTED!");
+                    print_info_and_abort = true;
+                }
+            }
             if (std::fabs(Cvalue - Ctest) > 1.0E-6) {
+                print_info_and_abort = true;
+            }
+
+            if (print_info_and_abort) {
                 println(emphasis::bold | bg(fmt::color::red) | fg(fmt::color::white), "    !!! EINSUM ERROR !!!");
                 println(bg(fmt::color::red) | fg(fmt::color::white), "    Expected {:20.14f}", Ctest);
                 println(bg(fmt::color::red) | fg(fmt::color::white), "    Obtained {:20.14f}", Cvalue);

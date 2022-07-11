@@ -50,6 +50,10 @@ include(cmake/DetectHostArch.cmake)
 detect_host_arch()
 message(STATUS "${CMAKE_CXX_COMPILER_ID} flags: ${HOST_FLAGS}")
 
+if (UNIX)
+target_compile_options(einsums-project-options INTERFACE -fp-model=precise)
+endif ()
+
 # NOTE: Ideally this would be included but clangd assumes the possible -xHost is specifying the programming language.
 # target_compile_options(einsums-project-options
 #     INTERFACE
