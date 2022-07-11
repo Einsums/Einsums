@@ -711,7 +711,6 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
     template <template <typename, size_t> typename AType>
     auto operator=(const AType<T, Rank> &&other) ->
         typename std::enable_if_t<is_incore_rank_tensor_v<AType<T, Rank>, Rank, T>, TensorView &> {
-        println("operator=&& {} {}", _name, other.name());
         if constexpr (std::is_same_v<AType<T, Rank>, TensorView<T, Rank>>) {
             if (this == &other)
                 return *this;
@@ -1497,12 +1496,12 @@ DiskTensor(h5::fd_t &file, std::string name, Dims... dims) -> DiskTensor<double,
 #endif
 
 // Useful factories
-template <typename Type, typename... Args>
+template <typename Type = double, typename... Args>
 auto create_tensor(const std::string name, Args... args) -> Tensor<Type, sizeof...(Args)> {
     return Tensor<Type, sizeof...(Args)>{name, args...};
 }
 
-template <typename Type, typename... Args>
+template <typename Type = double, typename... Args>
 auto create_disk_tensor(h5::fd_t &file, const std::string name, Args... args) -> DiskTensor<Type, sizeof...(Args)> {
     return DiskTensor<Type, sizeof...(Args)>{file, name, args...};
 }
@@ -1565,7 +1564,7 @@ auto println(const AType<T, Rank> &A, int width = 12) ->
                     }
                     auto new_tuple = std::tuple_cat(target_combination.base(), std::tuple(j));
                     T value = std::apply(A, new_tuple);
-                    if (std::fabs(value) > 1.0E+5) {
+                    if (std::fabs(value) > 1.0E+10) {
                         if constexpr (std::is_floating_point_v<T>)
                             oss << "\x1b[0;37;41m" << fmt::format("{:14.8f} ", value) << "\x1b[0m";
                         else
