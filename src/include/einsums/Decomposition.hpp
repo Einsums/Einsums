@@ -3,6 +3,7 @@
 #include "einsums/LinearAlgebra.hpp"
 #include "einsums/Tensor.hpp"
 #include "einsums/TensorAlgebra.hpp"
+#include "einsums/OpenMP.h"
 
 #include <cmath>
 #include <functional>
@@ -91,18 +92,26 @@ auto initialize_cp(std::vector<Tensor<TType, 2>> &folds, size_t rank) -> std::ve
 
     // Perform compile-time looping.
     for_sequence<TRank>([&](auto i) {
+        auto nthread = omp_get_num_threads();
+        omp_set_num_threads(1);
         auto [U, S, _] = linear_algebra::svd_a(folds[i]);
+        omp_set_num_threads(nthread);
 
         // println(tensor_algebra::unfold<i>(tensor));
         // println(S);
 
         if (folds[i].dim(0) < rank) {
-            println_warn("dimension {} size {} is less than the requested decomposition rank {}", i, folds[i].dim(0), rank);
+            // println_warn("dimension {} size {} is less than the requested decomposition rank {}", i, folds[i].dim(0), rank);
             // TODO: Need to padd U up to rank
-        }
+            Tensor<TType, 2> Unew = create_random_tensor("Padded SVD Left Vectors", folds[i].dim(0), rank);
+            Unew(All, Range{0, folds[i].dim(0)}) = U(All, Range{0, folds[i].dim(0)});
 
-        // Need to save the factors
-        factors.emplace_back(Tensor{U(All, Range{0, rank})});
+            // Need to save the factors
+            factors.push_back(Unew);
+        } else {
+            // Need to save the factors
+            factors.emplace_back(Tensor{U(All, Range{0, rank})});
+        }
     });
 
     return factors;

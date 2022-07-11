@@ -72,6 +72,28 @@ TEST_CASE("CP 3") {
     REQUIRE(islessequal(diff, 0.228199));
 }
 
+TEST_CASE("CP 4") {
+    using namespace einsums;
+    using namespace einsums::tensor_algebra;
+    using namespace einsums::decomposition;
+
+    Tensor test2("test 2", 3, 4, 2);
+
+    test2.vector_data() = std::vector<double, einsums::AlignedAllocator<double, 64>>{
+        0.29945093, 0.0090937,  0.99788559, 0.0821231,  0.29625705, 0.80278977, 0.15189681, 0.35832086,
+        0.09648153, 0.39398175, 0.49662056, 0.83101396, 0.84288292, 0.48603425, 0.93286471, 0.47101289,
+        0.32736096, 0.50067919, 0.49932342, 0.91922942, 0.44777189, 0.23009644, 0.34874549, 0.19356636};
+
+    auto factors = parafac(test2, 24, 50, 1.0e-6);
+
+    Tensor test2_cp = parafac_reconstruct<3>(factors);
+
+    double diff = rmsd(test2, test2_cp);
+
+    REQUIRE(isgreaterequal(diff, 0.0));
+    REQUIRE(islessequal(diff, 1.0e-6));
+}
+
 TEST_CASE("TUCKER 1") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
