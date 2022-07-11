@@ -44,6 +44,13 @@ if (EINSUMS_SHOW_WARNING)
     )
 endif()
 
+option(EINSUMS_TEST_NANS "Test the result of every einsum for nans" ON)
+if (EINSUMS_TEST_NANS)
+    target_compile_definitions(einsums-project-options
+        INTERFACE
+            EINSUMS_TEST_NANS
+    ) 
+endif()
 option(EINSUMS_USE_HPTT "Use the HPTT package for tensor transpositions" ON)
 
 include(cmake/DetectHostArch.cmake)

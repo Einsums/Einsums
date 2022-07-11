@@ -805,6 +805,21 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
     // Perform the actual einsum
     detail::einsum<false>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
 
+#if defined(EINSUMS_TEST_NANS)
+    if constexpr (CRank != 0) {
+        auto target_dims = get_dim_ranges<CRank>(*C);
+        for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
+            CDataType Cvalue{std::apply(*C, target_combination)};
+            if constexpr (!is_complex_v<CDataType>) {
+                if (std::isnan(Cvalue)) {
+                    println(bg(fmt::color::red) | fg(fmt::color::white), "NAN DETECTED!");
+                    throw std::runtime_error("NAN detected in resulting tensor.");
+                }
+            }
+        }
+    }
+#endif
+
 #if defined(EINSUMS_CONTINUOUSLY_TEST_EINSUM)
     if constexpr (CRank != 0) {
         // Need to walk through the entire C and testC comparing values and reporting differences.
