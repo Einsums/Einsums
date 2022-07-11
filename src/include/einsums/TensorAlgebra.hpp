@@ -94,6 +94,8 @@ MAKE_INDEX(s); // NOLINT
 
 MAKE_INDEX(w); // NOLINT
 MAKE_INDEX(W); // NOLINT
+MAKE_INDEX(x); // NOLINT
+MAKE_INDEX(X); // NOLINT
 
 // Z is a special index used internally. DO NOT USE.
 MAKE_INDEX(Z); // NOLINT
@@ -450,8 +452,8 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
             CDataType sum = AB_prefactor * A_value * B_value;
 
             CDataType &target_value = std::apply(*C, C_order);
-            if (C_prefactor == 0.0)
-                target_value = 0.0;
+            if (C_prefactor == CDataType{0.0})
+                target_value = CDataType{0.0};
             target_value *= C_prefactor;
             target_value += sum;
         }
@@ -812,7 +814,13 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
             CDataType Cvalue{std::apply(*C, target_combination)};
             if constexpr (!is_complex_v<CDataType>) {
                 if (std::isnan(Cvalue)) {
-                    println(bg(fmt::color::red) | fg(fmt::color::white), "NAN DETECTED!");
+                    println(bg(fmt::color::red) | fg(fmt::color::white), "NaN DETECTED!");
+                    println(bg(fmt::color::red) | fg(fmt::color::white), "    {:f} C({:}) += {:f} A({:}) * B({:})", C_prefactor,
+                            print_tuple_no_type(C_indices), AB_prefactor, print_tuple_no_type(A_indices), print_tuple_no_type(B_indices));
+
+                    println(A);
+                    println(B);
+
                     throw std::runtime_error("NAN detected in resulting tensor.");
                 }
             }

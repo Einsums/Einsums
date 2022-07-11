@@ -1776,43 +1776,45 @@ TEST_CASE("outer product") {
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
 
+    size_t _x{100}, _y{100};
+
     SECTION("1 * 1 -> 2") {
-        Tensor A = create_random_tensor("A", 3);
-        Tensor B = create_random_tensor("B", 3);
-        Tensor C{"C", 3, 3};
-        C.set_all(0.0);
+        Tensor A = create_random_tensor("A", _x);
+        Tensor B = create_random_tensor("B", _y);
+        Tensor C{"C", _x, _y};
+        // C.set_all(0.0);
 
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C, Indices{i}, A, Indices{j}, B));
 
-        for (int x = 0; x < 3; x++) {
-            for (int y = 0; y < 3; y++) {
+        for (int x = 0; x < _x; x++) {
+            for (int y = 0; y < _y; y++) {
                 REQUIRE_THAT(C(x, y), Catch::Matchers::WithinAbs(A(x) * B(y), 0.001));
             }
         }
 
-        C.set_all(0.0);
+        // C.set_all(0.0);
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C, Indices{j}, A, Indices{i}, B));
 
-        for (int x = 0; x < 3; x++) {
-            for (int y = 0; y < 3; y++) {
+        for (int x = 0; x < _x; x++) {
+            for (int y = 0; y < _y; y++) {
                 REQUIRE_THAT(C(x, y), Catch::Matchers::WithinAbs(A(y) * B(x), 0.001));
             }
         }
 
-        C.set_all(0.0);
+        // C.set_all(0.0);
         REQUIRE_NOTHROW(einsum(Indices{j, i}, &C, Indices{j}, A, Indices{i}, B));
 
-        for (int x = 0; x < 3; x++) {
-            for (int y = 0; y < 3; y++) {
+        for (int x = 0; x < _x; x++) {
+            for (int y = 0; y < _y; y++) {
                 REQUIRE_THAT(C(y, x), Catch::Matchers::WithinAbs(A(y) * B(x), 0.001));
             }
         }
 
-        C.set_all(0.0);
+        // C.set_all(0.0);
         REQUIRE_NOTHROW(einsum(Indices{j, i}, &C, Indices{i}, A, Indices{j}, B));
 
-        for (int x = 0; x < 3; x++) {
-            for (int y = 0; y < 3; y++) {
+        for (int x = 0; x < _x; x++) {
+            for (int y = 0; y < _y; y++) {
                 REQUIRE_THAT(C(y, x), Catch::Matchers::WithinAbs(A(x) * B(y), 0.001));
             }
         }
@@ -2382,13 +2384,13 @@ TEST_CASE("andy") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
 
-    size_t proj_rank_{100}, nocc_{5}, nvirt_{30};
+    size_t proj_rank_{100}, nocc_{5}, nvirt_{28};
 
     SECTION("1") {
-        auto y_iW_ = create_random_tensor<double>("y_iW", nocc_, proj_rank_);
-        auto y_aW_ = create_random_tensor<double>("y_aW", nvirt_, proj_rank_);
-        auto ortho_temp_1 = create_tensor<double>("ortho temp 1", nocc_, nvirt_, proj_rank_);
-        auto ortho_temp_0 = create_tensor<double>("ortho temp 1", nocc_, nvirt_, proj_rank_);
+        auto y_iW_ = create_random_tensor("y_iW", nocc_, proj_rank_);
+        auto y_aW_ = create_random_tensor("y_aW", nvirt_, proj_rank_);
+        auto ortho_temp_1 = create_tensor("ortho temp 1", nocc_, nvirt_, proj_rank_);
+        auto ortho_temp_0 = create_tensor("ortho temp 1", nocc_, nvirt_, proj_rank_);
 
         einsum(0.0, Indices{index::i, index::a, index::W}, &ortho_temp_1, 1.0, Indices{index::i, index::W}, y_iW_,
                Indices{index::a, index::W}, y_aW_);
@@ -2401,5 +2403,45 @@ TEST_CASE("andy") {
 
         einsum(0.0, Indices{index::i, index::a, index::P}, &ortho_temp_2, 1.0, Indices{index::i, index::a, index::W}, ortho_temp_1,
                Indices{index::P, index::W}, tau_);
+    }
+
+    SECTION("3") {
+        auto a = create_random_tensor("a", nvirt_, nvirt_);
+        auto b = create_random_tensor("b", nvirt_, nvirt_);
+        auto c = create_tensor("c", nvirt_, nvirt_);
+
+        einsum(0.0, Indices{index::p, index::q}, &c, -1.0, Indices{index::p, index::q}, a, Indices{index::p, index::q}, b);
+
+        for (int x = 0; x < nvirt_; x++) {
+            for (int y = 0; y < nvirt_; y++) {
+                REQUIRE_THAT(c(x, y), Catch::Matchers::WithinRel(-a(x, y) * b(x, y)));
+            }
+        }
+    }
+
+    SECTION("4") {
+        auto A = create_random_tensor("a", proj_rank_, nocc_, nvirt_);
+        auto B = create_random_tensor("b", nocc_, nvirt_, proj_rank_);
+        auto c = create_tensor("c", proj_rank_, proj_rank_);
+        auto c0 = create_tensor("c0", proj_rank_, proj_rank_);
+
+        einsum(Indices{index::Q, index::X}, &c, Indices{index::Q, index::i, index::a}, A, Indices{index::i, index::a, index::X}, B);
+
+        zero(c0);
+        for (size_t Q = 0; Q < proj_rank_; Q++) {
+            for (size_t X = 0; X < proj_rank_; X++) {
+                for (size_t i = 0; i < nocc_; i++) {
+                    for (size_t a = 0; a < nvirt_; a++) {
+                        c0(Q, X) += A(Q, i, a) * B(i, a, X);
+                    }
+                }
+            }
+        }
+
+        for (size_t Q = 0; Q < proj_rank_; Q++) {
+            for (size_t X = 0; X < proj_rank_; X++) {
+                REQUIRE_THAT(c(Q, X), Catch::Matchers::WithinRel(c0(Q, X), 0.00001));
+            }
+        }
     }
 }
