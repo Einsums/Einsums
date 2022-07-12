@@ -4,6 +4,7 @@
 #include "einsums/Print.hpp"
 #include "einsums/STL.hpp"
 #include "einsums/State.hpp"
+#include "einsums/_Common.hpp"
 
 // Include headers from the ranges library that we need to handle cartesian_products
 #include "range/v3/view/cartesian_product.hpp"
@@ -30,46 +31,6 @@
 #include <type_traits>
 #include <utility>
 #include <vector>
-
-namespace einsums {
-
-// The following detail and "using" statements below are needed to ensure
-// Dims, Strides, and Offsets are strong-types in C++.
-
-namespace detail {
-
-struct DimType {};
-struct StrideType {};
-struct OffsetType {};
-struct CountType {};
-struct RangeType {};
-
-template <typename T, size_t Rank, typename UnderlyingType = std::size_t>
-struct Array : public std::array<UnderlyingType, Rank> {
-    template <typename... Args>
-    constexpr explicit Array(Args... args) : std::array<UnderlyingType, Rank>{static_cast<UnderlyingType>(args)...} {}
-    using type = T;
-};
-
-} // namespace detail
-
-template <size_t Rank>
-using Dim = detail::Array<detail::DimType, Rank>;
-
-template <size_t Rank>
-using Stride = detail::Array<detail::StrideType, Rank>;
-
-template <size_t Rank>
-using Offset = detail::Array<detail::OffsetType, Rank>;
-
-template <size_t Rank>
-using Count = detail::Array<detail::CountType, Rank>;
-
-using Range = detail::Array<detail::RangeType, 2, std::int64_t>;
-
-struct All_t {};
-static struct All_t All;
-} // namespace einsums
 
 template <size_t Rank>
 void println(const einsums::Dim<Rank> &dim) {

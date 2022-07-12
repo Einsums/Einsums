@@ -2444,4 +2444,68 @@ TEST_CASE("andy") {
             }
         }
     }
+
+    SECTION("5") {
+        auto F_TEMP = create_random_tensor("F_TEMP", proj_rank_, proj_rank_, proj_rank_);
+        auto y_aW = create_random_tensor("y_aW", nvirt_, proj_rank_);
+        auto F_BAR = create_tensor("F_BAR", proj_rank_, nvirt_, proj_rank_);
+        auto F_BAR0 = create_tensor("F_BAR", proj_rank_, nvirt_, proj_rank_);
+
+        einsum(Indices{index::Q, index::a, index::X}, &F_BAR, Indices{index::Q, index::Y, index::X}, F_TEMP, Indices{index::a, index::Y},
+               y_aW);
+
+        zero(F_BAR0);
+        for (size_t Q = 0; Q < proj_rank_; Q++) {
+            for (size_t a = 0; a < nvirt_; a++) {
+                for (size_t X = 0; X < proj_rank_; X++) {
+                    for (size_t Y = 0; Y < proj_rank_; Y++) {
+                        F_BAR0(Q, a, X) += F_TEMP(Q, Y, X) * y_aW(a, Y);
+                    }
+                }
+            }
+        }
+
+        for (size_t Q = 0; Q < proj_rank_; Q++) {
+            for (size_t a = 0; a < nvirt_; a++) {
+                for (size_t X = 0; X < proj_rank_; X++) {
+                    REQUIRE_THAT(F_BAR(Q, a, X), Catch::Matchers::WithinRel(F_BAR0(Q, a, X), 0.00001));
+                }
+            }
+        }
+    }
+
+    SECTION("6") {
+        auto A = create_random_tensor("A", 84);
+        auto C = create_tensor("C", 84, 84);
+
+        einsum(Indices{index::a, index::b}, &C, Indices{index::a}, A, Indices{index::b}, A);
+
+        for (size_t a = 0; a < 84; a++) {
+            for (size_t b = 0; b < 84; b++) {
+                REQUIRE_THAT(C(a, b), Catch::Matchers::WithinRel(A(a) * A(b), 0.00001));
+            }
+        }
+    }
+
+    SECTION("7") {
+        auto A = create_tensor("A", 9);
+        A(0) = 0.26052754;
+        A(1) = 0.20708203;
+        A(2) = 0.18034861;
+        A(3) = 0.18034861;
+        A(4) = 0.10959806;
+        A(5) = 0.10285149;
+        A(6) = 0.10285149;
+        A(7) = 0.10164104;
+        A(8) = 0.06130642;
+        auto C = create_tensor("C", 9, 9);
+
+        einsum(Indices{index::a, index::b}, &C, Indices{index::a}, A, Indices{index::b}, A);
+
+        for (size_t a = 0; a < 9; a++) {
+            for (size_t b = 0; b < 9; b++) {
+                REQUIRE_THAT(C(a, b), Catch::Matchers::WithinRel(A(a) * A(b), 0.00001));
+            }
+        }
+    }
 }

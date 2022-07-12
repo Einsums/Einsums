@@ -1,9 +1,9 @@
 #pragma once
 
 #include "einsums/LinearAlgebra.hpp"
+#include "einsums/OpenMP.h"
 #include "einsums/Tensor.hpp"
 #include "einsums/TensorAlgebra.hpp"
-#include "einsums/OpenMP.h"
 
 #include <cmath>
 #include <functional>
@@ -112,6 +112,11 @@ auto initialize_cp(std::vector<Tensor<TType, 2>> &folds, size_t rank) -> std::ve
             // Need to save the factors
             factors.emplace_back(Tensor{U(All, Range{0, rank})});
         }
+
+        /*
+        // Random guess
+        factors.emplace_back(create_random_tensor<TType>("Padded SVD Left Vectors", folds[i].dim(0), rank));
+        */
     });
 
     return factors;
