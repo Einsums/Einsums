@@ -1,14 +1,15 @@
 #include "einsums/Print.hpp"
 #include "fmt/format.h"
 
-#include <cblas.h>
 #include <exception>
 
 #if defined(EINSUMS_HAVE_LAPACKE)
+#include <cblas.h>
 #include <lapacke.h>
 #endif
 
 #if defined(EINSUMS_HAVE_MKL_LAPACKE)
+#include <mkl_cblas.h>
 #include <mkl_lapacke.h>
 #endif
 
