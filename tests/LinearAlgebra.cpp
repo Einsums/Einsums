@@ -230,11 +230,11 @@ TEST_CASE("Lyapunov") {
     Q.vector_data() = std::vector<double, einsums::AlignedAllocator<double, 64>>{ 
         -0.05892104, 0.00000000, 0.00634896, 0.00000000, -0.02508491, 0.00000000, 0.00634896, 0.00000000, 0.00155829};
 
-    auto X = linear_algebra::solve_lyapunov(A, Q);
+    auto X = einsums::linear_algebra::solve_lyapunov(A, Q);
 
-    auto Qtest = linear_algebra::gemm<false, false>(1.0, A, X);
-    auto Q2 = linear_algebra::gemm<false, true>(1.0, X, A);
-    linear_algebra::axpy(1.0, Q2, &Qtest);
+    auto Qtest = einsums::linear_algebra::gemm<false, false>(1.0, A, X);
+    auto Q2 = einsums::linear_algebra::gemm<false, true>(1.0, X, A);
+    einsums::linear_algebra::axpy(1.0, Q2, &Qtest);
 
     for (size_t i = 0; i < 9; i++) {
         CHECK_THAT(Q.data()[i], Catch::Matchers::WithinAbs(Qtest.data()[i], 0.00001));
