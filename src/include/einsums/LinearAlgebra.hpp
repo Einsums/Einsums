@@ -389,7 +389,7 @@ auto svd_a(const AType<double, ARank> &_A) ->
     return std::make_tuple(U, S, Vt);
 }
 
-auto solve_lyapunov(const Tensor<double, 2>& A, const Tensor<double, 2>& Q) -> Tensor<double, 2> {
+inline auto solve_lyapunov(const Tensor<double, 2>& A, const Tensor<double, 2>& Q) -> Tensor<double, 2> {
 
     if (A.dim(0) != A.dim(1)) {
         println("solve_lyapunov: Dimensions of A ({} x {}), do not match", A.dim(0), A.dim(1));
