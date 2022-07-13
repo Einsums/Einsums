@@ -74,4 +74,8 @@ auto dlange(char norm_type, int m, int n, const double *A, int lda, double *work
 
 auto dgesdd(char, int, int, double *, int, double *, double *, int, double *, int, double *, int, int *) -> int;
 
+auto dgees(char jobvs, int n, double* a, int lda, int* sdim, double* wr, double* wi, double* vs, int ldvs) -> int;
+
+auto dtrsyl(char trana, char tranb, int isgn, int m, int n, const double* a, int lda, const double* b, int ldb, double* c, int ldc, double* scale) -> int;
+
 } // namespace einsums::backend::cblas
