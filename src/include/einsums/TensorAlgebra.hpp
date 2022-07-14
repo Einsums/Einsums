@@ -811,6 +811,19 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
 
                     throw std::runtime_error("Infinity detected in resulting tensor.");
                 }
+
+                if (std::abs(Cvalue) > 1000000) {
+                    println(bg(fmt::color::red) | fg(fmt::color::white), "Large value DETECTED!");
+                    println(bg(fmt::color::red) | fg(fmt::color::white), "    {:f} {}({:}) += {:f} {}({:}) * {}({:})", C_prefactor,
+                            C->name(), print_tuple_no_type(C_indices), AB_prefactor, A.name(), print_tuple_no_type(A_indices), B.name(),
+                            print_tuple_no_type(B_indices));
+
+                    println(*C);
+                    println(A);
+                    println(B);
+
+                    throw std::runtime_error("Large value detected in resulting tensor.");
+                }
             }
         }
     }
