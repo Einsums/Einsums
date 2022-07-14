@@ -44,6 +44,14 @@ if (EINSUMS_SHOW_WARNING)
     )
 endif()
 
+option(EINSUMS_RUNTIME_INDICES_CHECK "Check the sizes of corresponding indices at runtime" ON)
+if (EINSUMS_RUNTIME_INDICES_CHECK)
+    target_compile_definitions(einsums-project-options
+        INTERFACE
+            EINSUMS_RUNTIME_INDICES_CHECK
+    )
+endif()
+
 option(EINSUMS_TEST_NANS "Test the result of every einsum for nans" ON)
 if (EINSUMS_TEST_NANS)
     target_compile_definitions(einsums-project-options
