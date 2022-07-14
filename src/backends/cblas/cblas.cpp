@@ -115,4 +115,12 @@ auto dgesdd(char jobz, int m, int n, double *a, int lda, double *s, double *u, i
     return LAPACKE_dgesdd(LAPACK_ROW_MAJOR, jobz, m, n, a, lda, s, u, ldu, vt, ldvt);
 }
 
+auto dgees(char jobvs, int n, double* a, int lda, int* sdim, double* wr, double* wi, double* vs, int ldvs) -> int {
+    return LAPACKE_dgees(LAPACK_ROW_MAJOR, jobvs, 'N', nullptr, n, a, lda, sdim, wr, wi, vs, ldvs);
+}
+
+auto dtrsyl(char trana, char tranb, int isgn, int m, int n, const double* a, int lda, const double* b, int ldb, double* c, int ldc, double* scale) -> int {
+    return LAPACKE_dtrsyl(LAPACK_ROW_MAJOR, trana, tranb, isgn, m, n, a, lda, b, ldb, c, ldc, scale);
+}
+
 } // namespace einsums::backend::cblas

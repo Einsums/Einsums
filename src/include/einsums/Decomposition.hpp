@@ -32,6 +32,22 @@ auto validate_cp_rank(const Dim<TRank> shape, const std::string &rounding = "rou
 }
 
 /**
+ * Computes the 2-norm of a tensor
+ */
+template <template <typename, size_t> typename TTensor, size_t TRank, typename TType = double>
+auto norm(const TTensor<TType, TRank> &tensor) -> TType {
+    TType val = 0.0;
+    auto target_dims = get_dim_ranges<TRank>(tensor);
+
+    for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
+        TType target = std::apply(tensor, target_combination);
+        val += target * target;
+    }
+
+    return std::sqrt(val);
+}
+
+/**
  * Computes the RMSD between two tensors of arbitrary dimension
  */
 template <template <typename, size_t> typename TTensor, size_t TRank, typename TType = double>
@@ -100,6 +116,15 @@ auto initialize_cp(std::vector<Tensor<TType, 2>> &folds, size_t rank) -> std::ve
         // println(tensor_algebra::unfold<i>(tensor));
         // println(S);
 
+        // If (i == 0), Scale U by the singular values
+        if (i == 0) {
+            for (size_t c = 0; c < U.dim(0); c++) {
+                double scaling_factor = 0.0;
+                if (c < S.dim(0)) scaling_factor = S(c);
+                linear_algebra::scale_column(c, S(c), &U);
+            }
+        }
+
         if (folds[i].dim(0) < rank) {
             // println_warn("dimension {} size {} is less than the requested decomposition rank {}", i, folds[i].dim(0), rank);
             // TODO: Need to padd U up to rank
@@ -143,20 +168,16 @@ auto parafac(const TTensor<TType, TRank> &tensor, size_t rank, int n_iter_max = 
     // Perform SVD guess for parafac decomposition procedure
     std::vector<Tensor<TType, 2>> factors = initialize_cp<TRank>(unfolded_matrices, rank);
 
-    // Keep track of previous factors (for tracking convergence)
-    std::vector<Tensor<TType, 2>> prev_factors;
-    for_sequence<TRank>([&](auto i) {
-        prev_factors.push_back(Tensor<TType, 2>{"prev factor element", tensor.dim(i), rank});
-        prev_factors[i].zero();
-    });
+    double tensor_norm = norm(tensor);
+    size_t nelem = 1;
+    for_sequence<TRank>([&](auto i) { nelem *= tensor.dim(i); });
+    tensor_norm /= std::sqrt((double) nelem);
 
     int iter = 0;
     bool converged = false;
+    double prev_error = 0.0;
     while (iter < n_iter_max) {
         for_sequence<TRank>([&](auto n_ind) {
-            // Update prev factors
-            prev_factors[n_ind] = factors[n_ind];
-
             // Form V and Khatri-Rao product intermediates
             Tensor<TType, 2> V;
             Tensor<TType, 2> *KR;
@@ -224,14 +245,21 @@ auto parafac(const TTensor<TType, TRank> &tensor, size_t rank, int n_iter_max = 
         });
 
         // Check for convergence
-        double rmsd_max = 0.0;
-        for_sequence<TRank>([&](auto n) { rmsd_max = std::max(rmsd_max, rmsd(factors[n], prev_factors[n])); });
+        // Reconstruct Tensor based on the factors
+        Tensor<TType, TRank> rec_tensor = parafac_reconstruct<TRank>(factors);
 
-        if (rmsd_max < tolerance) {
+        double unnormalized_error = rmsd(rec_tensor, tensor);
+        double curr_error = unnormalized_error / tensor_norm;
+        double delta = std::abs(curr_error - prev_error);
+
+        // printf("    @CP Iteration %d, ERROR: %8.8f, DELTA: %8.8f\n", iter, curr_error, delta);
+
+        if (iter >= 2 && delta < tolerance) {
             converged = true;
             break;
         }
 
+        prev_error = curr_error;
         iter += 1;
     }
     if (!converged) {

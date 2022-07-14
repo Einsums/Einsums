@@ -389,4 +389,47 @@ auto svd_a(const AType<double, ARank> &_A) ->
     return std::make_tuple(U, S, Vt);
 }
 
+inline auto solve_lyapunov(const Tensor<double, 2>& A, const Tensor<double, 2>& Q) -> Tensor<double, 2> {
+
+    if (A.dim(0) != A.dim(1)) {
+        println("solve_lyapunov: Dimensions of A ({} x {}), do not match", A.dim(0), A.dim(1));
+        std::abort();
+    }
+    if (Q.dim(0) != Q.dim(1)) {
+        println("solve_lyapunov: Dimensions of Q ({} x {}), do not match", Q.dim(0), Q.dim(1));
+        std::abort();
+    }
+    if (A.dim(0) != Q.dim(0)) {
+        println("solve_lyapunov: Dimensions of A ({} x {}) and Q ({} x {}), do not match", 
+                    A.dim(0), A.dim(1), Q.dim(0), Q.dim(1));
+        std::abort();
+    }
+
+    timer::push("solve_lyapunov");
+
+    size_t n = A.dim(0);
+    // Compute Schur Decomposition of A
+    Tensor<double, 2> R = A; // R is a copy of A
+    Tensor<double, 2> wr("Schur Real Buffer", n, n);
+    Tensor<double, 2> wi("Schur Imaginary Buffer", n, n);
+    Tensor<double, 2> U("Lyapunov U", n, n);
+    std::vector<int> sdim(1);
+    blas::dgees('V', n, R.data(), n, sdim.data(), wr.data(), wi.data(), U.data(), n);
+
+    // Compute F = U^T * Q * U
+    Tensor<double, 2> Fbuff = gemm<true, false>(1.0, U, Q);
+    Tensor<double, 2> F = gemm<false, false>(1.0, Fbuff, U);
+
+    // Call the Sylvester Solve
+    std::vector<double> scale(1);
+    blas::dtrsyl('N', 'N', 1, n, n, const_cast<const double *>(R.data()), n, const_cast<const double *>(R.data()), n, F.data(), n, scale.data());
+
+    Tensor<double, 2> Xbuff = gemm<false, false>(scale[0], U, F);
+    Tensor<double, 2> X = gemm<false, true>(1.0, Xbuff, U);
+
+    timer::pop();
+
+    return X;
+}
+
 } // namespace einsums::linear_algebra
