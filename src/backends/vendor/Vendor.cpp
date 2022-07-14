@@ -61,7 +61,17 @@ extern void FC_GLOBAL(daxpy, DAXPY)(int *, double *, const double *, int *, doub
 extern void FC_GLOBAL(dger, DGER)(int *, int *, double *, const double *, int *, const double *, int *, double *, int *);
 extern void FC_GLOBAL(dgetrf, DGETRF)(int *, int *, double *, int *, int *, int *);
 extern void FC_GLOBAL(dgetri, DGETRI)(int *, double *, int *, int *, double *, int *, int *);
-extern double FC_GLOBAL(dlange, DLANGE)(char, int, int, const double *, int, double *); // NOLINT
+
+extern float FC_GLOBAL(slange, SLANGE)(char, int, int, const float *, int, float *);                  // NOLINT
+extern double FC_GLOBAL(dlange, DLANGE)(char, int, int, const double *, int, double *);               // NOLINT
+extern float FC_GLOBAL(clange, CLANGE)(char, int, int, const std::complex<float> *, int, float *);    // NOLINT
+extern double FC_GLOBAL(zlange, ZLANGE)(char, int, int, const std::complex<double> *, int, double *); // NOLINT
+
+extern void FC_GLOBAL(slassq, SLASSQ)(int *n, const float *x, int *incx, float *scale, float *sumsq);
+extern void FC_GLOBAL(dlassq, DLASSQ)(int *n, const double *x, int *incx, double *scale, double *sumsq);
+extern void FC_GLOBAL(classq, CLASSQ)(int *n, const std::complex<float> *x, int *incx, float *scale, float *sumsq);
+extern void FC_GLOBAL(zlassq, ZLASSQ)(int *n, const std::complex<double> *x, int *incx, double *scale, double *sumsq);
+
 extern void FC_GLOBAL(dgesdd, DGESDD)(char *, int *, int *, double *, int *, double *, double *, int *, double *, int *, double *, int *,
                                       int *, int *);
 }
@@ -239,8 +249,36 @@ auto dgetri(int n, double *a, int lda, const int *ipiv, double *work, int lwork)
     return info;
 }
 
+auto slange(char norm_type, int m, int n, const float *A, int lda, float *work) -> float {
+    return FC_GLOBAL(slange, SLANGE)(norm_type, m, n, A, lda, work);
+}
+
 auto dlange(char norm_type, int m, int n, const double *A, int lda, double *work) -> double {
     return FC_GLOBAL(dlange, DLANGE)(norm_type, m, n, A, lda, work);
+}
+
+auto clange(char norm_type, int m, int n, const std::complex<float> *A, int lda, float *work) -> float {
+    return FC_GLOBAL(clange, CLANGE)(norm_type, m, n, A, lda, work);
+}
+
+auto zlange(char norm_type, int m, int n, const std::complex<double> *A, int lda, double *work) -> double {
+    return FC_GLOBAL(zlange, ZLANGE)(norm_type, m, n, A, lda, work);
+}
+
+void slassq(int n, const float *x, int incx, float *scale, float *sumsq) {
+    FC_GLOBAL(slassq, SLASSQ)(&n, x, &incx, scale, sumsq);
+}
+
+void dlassq(int n, const double *x, int incx, double *scale, double *sumsq) {
+    FC_GLOBAL(dlassq, DLASSQ)(&n, x, &incx, scale, sumsq);
+}
+
+void classq(int n, const std::complex<float> *x, int incx, float *scale, float *sumsq) {
+    FC_GLOBAL(classq, CLASSQ)(&n, x, &incx, scale, sumsq);
+}
+
+void zlassq(int n, const std::complex<double> *x, int incx, double *scale, double *sumsq) {
+    FC_GLOBAL(zlassq, ZLASSQ)(&n, x, &incx, scale, sumsq);
 }
 
 auto dgesdd(char jobz, int m, int n, double *a, int lda, double *s, double *u, int ldu, double *vt, int ldvt, double *work, int lwork,

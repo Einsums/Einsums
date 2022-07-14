@@ -334,15 +334,23 @@ auto invert(SmartPtr *A) -> std::enable_if_t<is_smart_pointer_v<SmartPtr>> {
 
 enum class Norm : char { MaxAbs = 'M', One = 'O', Infinity = 'I', Frobenius = 'F', Two = 'F' };
 
-template <template <typename, size_t> typename AType, size_t ARank>
-auto norm(Norm norm_type, const AType<double, ARank> &a) ->
-    typename std::enable_if_t<is_incore_rank_tensor_v<AType<double, ARank>, 2, double>, AType<double, ARank>> {
+template <template <typename, size_t> typename AType, typename ADataType, size_t ARank>
+auto norm(Norm norm_type, const AType<ADataType, ARank> &a) ->
+    typename std::enable_if_t<is_incore_rank_tensor_v<AType<ADataType, ARank>, 2, ADataType>, complex_type_t<ADataType>> {
     if (norm_type != Norm::Infinity) {
-        return blas::dlange(norm_type, a->dim(0), a->dim(1), a->data(), a->stride(0), nullptr);
+        return blas::lange(norm_type, a->dim(0), a->dim(1), a->data(), a->stride(0), nullptr);
     } else {
-        std::vector<double> work(a->dim(0), 0.0);
-        return blas::dlange(norm_type, a->dim(0), a->dim(1), a->data(), a->stride(0), work.data());
+        std::vector<complex_type_t<ADataType>> work(a->dim(0), 0.0);
+        return blas::lange(norm_type, a->dim(0), a->dim(1), a->data(), a->stride(0), work.data());
     }
+}
+
+template <template <typename, size_t> typename AType, typename ADataType, size_t ARank>
+auto sum_square(const AType<ADataType, ARank> &a, complex_type_t<ADataType> *scale, complex_type_t<ADataType> *sumsq) ->
+    typename std::enable_if_t<is_incore_rank_tensor_v<AType<ADataType, ARank>, 1, ADataType>> {
+    int n = a.dim(0);
+    int incx = a.stride(0);
+    blas::lassq(n, a.data(), incx, scale, sumsq);
 }
 
 template <template <typename, size_t> typename AType, size_t ARank>

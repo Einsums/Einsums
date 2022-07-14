@@ -1,5 +1,7 @@
 #pragma once
 
+#include "einsums/STL.hpp"
+
 #include <complex>
 #include <vector>
 
@@ -210,7 +212,61 @@ auto dgetri(int, double *, int, const int *, double *, int) -> int;
  * Return the value of the 1-norm, Frobenius norm, infinity-norm, or the
  * largest absolute value of any element of a general rectangular matrix
  */
+auto slange(char norm_type, int m, int n, const float *A, int lda, float *work) -> float;
 auto dlange(char norm_type, int m, int n, const double *A, int lda, double *work) -> double;
+auto clange(char norm_type, int m, int n, const std::complex<float> *A, int lda, float *work) -> float;
+auto zlange(char norm_type, int m, int n, const std::complex<double> *A, int lda, double *work) -> double;
+
+template <typename T>
+auto lange(char norm_type, int m, int n, const T *A, int lda, complex_type_t<T> *work) -> complex_type_t<T>;
+
+template <>
+inline auto lange<float>(char norm_type, int m, int n, const float *A, int lda, float *work) -> float {
+    return slange(norm_type, m, n, A, lda, work);
+}
+
+template <>
+inline auto lange<double>(char norm_type, int m, int n, const double *A, int lda, double *work) -> double {
+    return dlange(norm_type, m, n, A, lda, work);
+}
+
+template <>
+inline auto lange<std::complex<float>>(char norm_type, int m, int n, const std::complex<float> *A, int lda, float *work) -> float {
+    return clange(norm_type, m, n, A, lda, work);
+}
+
+template <>
+inline auto lange<std::complex<double>>(char norm_type, int m, int n, const std::complex<double> *A, int lda, double *work) -> double {
+    return zlange(norm_type, m, n, A, lda, work);
+}
+
+void slassq(int n, const float *x, int incx, float *scale, float *sumsq);
+void dlassq(int n, const double *x, int incx, double *scale, double *sumsq);
+void classq(int n, const std::complex<float> *x, int incx, float *scale, float *sumsq);
+void zlassq(int n, const std::complex<double> *x, int incx, double *scale, double *sumsq);
+
+template <typename T>
+void lassq(int n, const T *x, int incx, complex_type_t<T> *scale, complex_type_t<T> *sumsq);
+
+template <>
+inline void lassq<float>(int n, const float *x, int incx, float *scale, float *sumsq) {
+    slassq(n, x, incx, scale, sumsq);
+}
+
+template <>
+inline void lassq<double>(int n, const double *x, int incx, double *scale, double *sumsq) {
+    dlassq(n, x, incx, scale, sumsq);
+}
+
+template <>
+inline void lassq<std::complex<float>>(int n, const std::complex<float> *x, int incx, float *scale, float *sumsq) {
+    classq(n, x, incx, scale, sumsq);
+}
+
+template <>
+inline void lassq<std::complex<double>>(int n, const std::complex<double> *x, int incx, double *scale, double *sumsq) {
+    zlassq(n, x, incx, scale, sumsq);
+}
 
 /*!
  * Computes the singular value decomposition of a general rectangular

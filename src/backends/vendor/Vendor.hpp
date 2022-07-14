@@ -92,7 +92,15 @@ auto dgetrf(int, int, double *, int, int *) -> int;
  */
 auto dgetri(int, double *, int, const int *, double *, int) -> int;
 
+auto slange(char norm_type, int m, int n, const float *A, int lda, float *work) -> float;
 auto dlange(char norm_type, int m, int n, const double *A, int lda, double *work) -> double;
+auto clange(char norm_type, int m, int n, const std::complex<float> *A, int lda, float *work) -> float;
+auto zlange(char norm_type, int m, int n, const std::complex<double> *A, int lda, double *work) -> double;
+
+void slassq(int n, const float *x, int incx, float *scale, float *sumsq);
+void dlassq(int n, const double *x, int incx, double *scale, double *sumsq);
+void classq(int n, const std::complex<float> *x, int incx, float *scale, float *sumsq);
+void zlassq(int n, const std::complex<double> *x, int incx, double *scale, double *sumsq);
 
 auto dgesdd(char, int, int, double *, int, double *, double *, int, double *, int, double *, int, int *) -> int;
 

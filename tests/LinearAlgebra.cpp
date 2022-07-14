@@ -3,6 +3,7 @@
 #include "einsums/Print.hpp"
 #include "einsums/STL.hpp"
 #include "einsums/Tensor.hpp"
+#include "einsums/Utilities.hpp"
 
 #include <catch2/catch.hpp>
 

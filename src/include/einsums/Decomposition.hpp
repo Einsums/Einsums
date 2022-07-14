@@ -4,6 +4,7 @@
 #include "einsums/OpenMP.h"
 #include "einsums/Tensor.hpp"
 #include "einsums/TensorAlgebra.hpp"
+#include "einsums/Utilities.hpp"
 
 #include <cmath>
 #include <functional>
@@ -115,12 +116,28 @@ auto initialize_cp(std::vector<Tensor<TType, 2>> &folds, size_t rank) -> std::ve
 
         // println(tensor_algebra::unfold<i>(tensor));
         // println(S);
+        // println(U);
+        // println(S);
 
         // If (i == 0), Scale U by the singular values
         if (i == 0) {
             for (size_t c = 0; c < U.dim(0); c++) {
                 double scaling_factor = 0.0;
-                if (c < S.dim(0)) scaling_factor = S(c);
+                if (c < S.dim(0))
+                    scaling_factor = S(c);
+                linear_algebra::scale_column(c, S(c), &U);
+            }
+        }
+
+        // println("After scaling");
+        // println(U);
+
+        // If (i == 0), Scale U by the singular values
+        if (i == 0) {
+            for (size_t c = 0; c < U.dim(0); c++) {
+                double scaling_factor = 0.0;
+                if (c < S.dim(0))
+                    scaling_factor = S(c);
                 linear_algebra::scale_column(c, S(c), &U);
             }
         }
@@ -138,10 +155,10 @@ auto initialize_cp(std::vector<Tensor<TType, 2>> &folds, size_t rank) -> std::ve
             factors.emplace_back(Tensor{U(All, Range{0, rank})});
         }
 
-        /*
-        // Random guess
-        factors.emplace_back(create_random_tensor<TType>("Padded SVD Left Vectors", folds[i].dim(0), rank));
-        */
+        // println("latest factor added");
+        // println(factors[factors.size() - 1]);
+        // Tensor<TType, 2> Unew = create_random_tensor("Padded SVD Left Vectors", folds[i].dim(0), rank);
+        // factors.emplace_back(Unew);
     });
 
     return factors;
@@ -171,7 +188,7 @@ auto parafac(const TTensor<TType, TRank> &tensor, size_t rank, int n_iter_max = 
     double tensor_norm = norm(tensor);
     size_t nelem = 1;
     for_sequence<TRank>([&](auto i) { nelem *= tensor.dim(i); });
-    tensor_norm /= std::sqrt((double) nelem);
+    tensor_norm /= std::sqrt((double)nelem);
 
     int iter = 0;
     bool converged = false;
@@ -187,6 +204,8 @@ auto parafac(const TTensor<TType, TRank> &tensor, size_t rank, int n_iter_max = 
                 if (m_ind != n_ind) {
                     Tensor<TType, 2> A_tA{"V", rank, rank};
                     // A_tA = A^T[j] @ A[j]
+                    // println("iter {}, mind {}", iter, m_ind);
+                    // println(factors[m_ind]);
                     einsum(0.0, Indices{r, s}, &A_tA, 1.0, Indices{I, r}, factors[m_ind], Indices{I, s}, factors[m_ind]);
 
                     if (first) {

@@ -3,6 +3,7 @@
 #include "einsums/LinearAlgebra.hpp"
 #include "einsums/Print.hpp"
 #include "einsums/STL.hpp"
+#include "einsums/Utilities.hpp"
 
 #include <H5Fpublic.h>
 #include <catch2/catch.hpp>

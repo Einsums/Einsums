@@ -117,8 +117,36 @@ auto dgetri(int n, double *a, int lda, const int *ipiv, double *work, int lwork)
     return ::einsums::backend::vendor::dgetri(n, a, lda, (int *)ipiv, work, lwork);
 }
 
+auto slange(char norm_type, int m, int n, const float *A, int lda, float *work) -> float {
+    return ::einsums::backend::vendor::slange(norm_type, n, m, A, lda, work);
+}
+
 auto dlange(char norm_type, int m, int n, const double *A, int lda, double *work) -> double {
     return ::einsums::backend::vendor::dlange(norm_type, n, m, A, lda, work);
+}
+
+auto clange(char norm_type, int m, int n, const std::complex<float> *A, int lda, float *work) -> float {
+    return ::einsums::backend::vendor::clange(norm_type, n, m, A, lda, work);
+}
+
+auto zlange(char norm_type, int m, int n, const std::complex<double> *A, int lda, double *work) -> double {
+    return ::einsums::backend::vendor::zlange(norm_type, n, m, A, lda, work);
+}
+
+void slassq(int n, const float *x, int incx, float *scale, float *sumsq) {
+    return ::einsums::backend::vendor::slassq(n, x, incx, scale, sumsq);
+}
+
+void dlassq(int n, const double *x, int incx, double *scale, double *sumsq) {
+    return ::einsums::backend::vendor::dlassq(n, x, incx, scale, sumsq);
+}
+
+void classq(int n, const std::complex<float> *x, int incx, float *scale, float *sumsq) {
+    return ::einsums::backend::vendor::classq(n, x, incx, scale, sumsq);
+}
+
+void zlassq(int n, const std::complex<double> *x, int incx, double *scale, double *sumsq) {
+    return ::einsums::backend::vendor::zlassq(n, x, incx, scale, sumsq);
 }
 
 auto dgesdd(char jobz, int m, int n, double *a, int lda, double *s, double *u, int ldu, double *vt, int ldvt, double *work, int lwork,

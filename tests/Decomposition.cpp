@@ -89,9 +89,12 @@ TEST_CASE("CP 4") {
         0.09648153, 0.39398175, 0.49662056, 0.83101396, 0.84288292, 0.48603425, 0.93286471, 0.47101289,
         0.32736096, 0.50067919, 0.49932342, 0.91922942, 0.44777189, 0.23009644, 0.34874549, 0.19356636};
 
-    auto factors = parafac(test2, 24, 50, 1.0e-6);
+    auto factors = parafac(test2, 24, 100, 1.0e-6);
 
     Tensor test2_cp = parafac_reconstruct<3>(factors);
+
+    // println(test2);
+    // println(test2_cp);
 
     double diff = rmsd(test2, test2_cp);
 
