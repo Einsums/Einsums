@@ -62,8 +62,8 @@ extern void FC_GLOBAL(zscal, ZSCAL)(int *, std::complex<double> *, std::complex<
 
 extern float FC_GLOBAL(sdot, SDOT)(int *, const float *, int *, const float *, int *);
 extern double FC_GLOBAL(ddot, DDOT)(int *, const double *, int *, const double *, int *);
-extern std::complex<float> FC_GLOBAL(cdotu, CDOTU)(int *, const std::complex<float> *, int *, const std::complex<float> *, int *);
-extern std::complex<double> FC_GLOBAL(zdotu, ZDOTU)(int *, const std::complex<double> *, int *, const std::complex<double> *, int *);
+extern float _Complex FC_GLOBAL(cdotu, CDOTU)(int *, const std::complex<float> *, int *, const std::complex<float> *, int *);
+extern double _Complex FC_GLOBAL(zdotu, ZDOTU)(int *, const std::complex<double> *, int *, const std::complex<double> *, int *);
 
 extern void FC_GLOBAL(daxpy, DAXPY)(int *, double *, const double *, int *, double *, int *);
 extern void FC_GLOBAL(dger, DGER)(int *, int *, double *, const double *, int *, const double *, int *, double *, int *);
