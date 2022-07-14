@@ -52,7 +52,10 @@ auto dgesv(int n, int nrhs, double *a, int lda, int *ipiv, double *b, int ldb) -
 auto cgesv(int n, int nrhs, std::complex<float> *a, int lda, int *ipiv, std::complex<float> *b, int ldb) -> int;
 auto zgesv(int n, int nrhs, std::complex<double> *a, int lda, int *ipiv, std::complex<double> *b, int ldb) -> int;
 
+void sscal(int n, float alpha, float *vec, int inc);
 void dscal(int n, double alpha, double *vec, int inc);
+void cscal(int n, std::complex<float> alpha, std::complex<float> *vec, int inc);
+void zscal(int n, std::complex<double> alpha, std::complex<double> *vec, int inc);
 
 auto ddot(int n, const double *x, int incx, const double *y, int incy) -> double;
 

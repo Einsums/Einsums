@@ -167,8 +167,20 @@ auto zgesv(int n, int nrhs, std::complex<double> *a, int lda, int *ipiv, std::co
                          reinterpret_cast<lapack_complex_double *>(b), ldb);
 }
 
+void sscal(int n, float alpha, float *vec, int inc) {
+    cblas_sscal(n, alpha, vec, inc);
+}
+
 void dscal(int n, double alpha, double *vec, int inc) {
     cblas_dscal(n, alpha, vec, inc);
+}
+
+void cscal(int n, std::complex<float> alpha, std::complex<float> *vec, int inc) {
+    cblas_cscal(n, static_cast<const void *>(&alpha), static_cast<void *>(vec), inc);
+}
+
+void zscal(int n, std::complex<double> alpha, std::complex<double> *vec, int inc) {
+    cblas_zscal(n, static_cast<const void *>(&alpha), static_cast<void *>(vec), inc);
 }
 
 auto ddot(int n, const double *x, int incx, const double *y, int incy) -> double {
