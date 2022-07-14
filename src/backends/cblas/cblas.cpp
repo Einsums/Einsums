@@ -183,8 +183,28 @@ void zscal(int n, std::complex<double> alpha, std::complex<double> *vec, int inc
     cblas_zscal(n, static_cast<const void *>(&alpha), static_cast<void *>(vec), inc);
 }
 
+auto sdot(int n, const float *x, int incx, const float *y, int incy) -> double {
+    return cblas_sdot(n, x, incx, y, incy);
+}
+
 auto ddot(int n, const double *x, int incx, const double *y, int incy) -> double {
     return cblas_ddot(n, x, incx, y, incy);
+}
+
+auto cdot(int n, const std::complex<float> *x, int incx, const std::complex<float> *y, int incy) -> std::complex<float> {
+    std::complex<float> result;
+
+    cblas_cdotu_sub(n, static_cast<const void *>(x), incx, static_cast<const void *>(y), incy, static_cast<void *>(&result));
+
+    return result;
+}
+
+auto zdot(int n, const std::complex<double> *x, int incx, const std::complex<double> *y, int incy) -> std::complex<double> {
+    std::complex<double> result;
+
+    cblas_zdotu_sub(n, static_cast<const void *>(x), incx, static_cast<const void *>(y), incy, static_cast<void *>(&result));
+
+    return result;
 }
 
 void daxpy(int n, double alpha_x, const double *x, int inc_x, double *y, int inc_y) {

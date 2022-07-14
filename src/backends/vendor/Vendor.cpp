@@ -60,7 +60,11 @@ extern void FC_GLOBAL(dscal, DSCAL)(int *, double *, double *, int *);
 extern void FC_GLOBAL(cscal, CSCAL)(int *, std::complex<float> *, std::complex<float> *, int *);
 extern void FC_GLOBAL(zscal, ZSCAL)(int *, std::complex<double> *, std::complex<double> *, int *);
 
-extern double FC_GLOBAL(ddot, DDOT)(int *, const double *, int *, const double *, int *); // NOLINT
+extern float FC_GLOBAL(sdot, SDOT)(int *, const float *, int *, const float *, int *);
+extern double FC_GLOBAL(ddot, DDOT)(int *, const double *, int *, const double *, int *);
+extern std::complex<float> FC_GLOBAL(cdotu, CDOTU)(int *, const std::complex<float> *, int *, const std::complex<float> *, int *);
+extern std::complex<double> FC_GLOBAL(zdotu, ZDOTU)(int *, const std::complex<double> *, int *, const std::complex<double> *, int *);
+
 extern void FC_GLOBAL(daxpy, DAXPY)(int *, double *, const double *, int *, double *, int *);
 extern void FC_GLOBAL(dger, DGER)(int *, int *, double *, const double *, int *, const double *, int *, double *, int *);
 extern void FC_GLOBAL(dgetrf, DGETRF)(int *, int *, double *, int *, int *, int *);
@@ -234,8 +238,20 @@ void zscal(int n, std::complex<double> alpha, std::complex<double> *vec, int inc
     FC_GLOBAL(zscal, ZSCAL)(&n, &alpha, vec, &inc);
 }
 
+auto sdot(int n, const float *x, int incx, const float *y, int incy) -> float {
+    return FC_GLOBAL(sdot, SDOT)(&n, x, &incx, y, &incy);
+}
+
 auto ddot(int n, const double *x, int incx, const double *y, int incy) -> double {
     return FC_GLOBAL(ddot, DDOT)(&n, x, &incx, y, &incy);
+}
+
+auto cdot(int n, const std::complex<float> *x, int incx, const std::complex<float> *y, int incy) -> std::complex<float> {
+    return FC_GLOBAL(cdotu, CDOTU)(&n, x, &incx, y, &incy);
+}
+
+auto zdot(int n, const std::complex<double> *x, int incx, const std::complex<double> *y, int incy) -> std::complex<double> {
+    return FC_GLOBAL(zdotu, ZDOTU)(&n, x, &incx, y, &incy);
 }
 
 void daxpy(int n, double alpha_x, const double *x, int inc_x, double *y, int inc_y) {

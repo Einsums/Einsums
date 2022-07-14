@@ -57,7 +57,10 @@ void dscal(int n, double alpha, double *vec, int inc);
 void cscal(int n, std::complex<float> alpha, std::complex<float> *vec, int inc);
 void zscal(int n, std::complex<double> alpha, std::complex<double> *vec, int inc);
 
+auto sdot(int n, const float *x, int incx, const float *y, int incy) -> float;
 auto ddot(int n, const double *x, int incx, const double *y, int incy) -> double;
+auto cdot(int n, const std::complex<float> *x, int incx, const std::complex<float> *y, int incy) -> std::complex<float>;
+auto zdot(int n, const std::complex<double> *x, int incx, const std::complex<double> *y, int incy) -> std::complex<double>;
 
 void daxpy(int n, double alpha_x, const double *x, int inc_x, double *y, int inc_y);
 
