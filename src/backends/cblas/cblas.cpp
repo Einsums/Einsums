@@ -131,6 +131,10 @@ void zgemv(char transa, int m, int n, std::complex<double> alpha, const std::com
                 static_cast<const void *>(&beta), static_cast<void *>(y), incy);
 }
 
+auto ssyev(char job, char uplo, int n, float *a, int lda, float *w, float *, int) -> int {
+    return LAPACKE_ssyev(LAPACK_ROW_MAJOR, job, uplo, n, a, lda, w);
+}
+
 auto dsyev(char job, char uplo, int n, double *a, int lda, double *w, double *, int) -> int {
     return LAPACKE_dsyev(LAPACK_ROW_MAJOR, job, uplo, n, a, lda, w);
 }
