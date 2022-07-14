@@ -447,6 +447,8 @@ auto einsum(const CDataType C_prefactor, const std::tuple<CIndices...> & /*Cs*/,
     // println("1 - target_position_in_A {}", print_tuple_no_type(target_position_in_A));
     // println("1 - target_position_in_B {}", print_tuple_no_type(target_position_in_B));
     // println("1 - target_position_in_C {}", print_tuple_no_type(target_position_in_C));
+    // println("1 - link_position_in_A {}", print_tuple_no_type(link_position_in_A));
+    // println("1 - link_position_in_B {}", print_tuple_no_type(link_position_in_B));
 
     constexpr auto A_target_position_in_C = detail::find_type_with_position(A_indices, C_indices);
     constexpr auto B_target_position_in_C = detail::find_type_with_position(B_indices, C_indices);
@@ -489,6 +491,54 @@ auto einsum(const CDataType C_prefactor, const std::tuple<CIndices...> & /*Cs*/,
 
     constexpr auto outer_product = std::tuple_size_v<decltype(linksAB)> == 0 && contiguous_target_position_in_A &&
                                    contiguous_target_position_in_B && !A_hadamard_found && !B_hadamard_found && !C_hadamard_found;
+
+    // Runtime check of sizes
+#if defined(EINSUMS_RUNTIME_INDICES_CHECK)
+    bool runtime_indices_abort{false};
+    for_sequence<ARank>([&](auto a) {
+        size_t dimA = A.dim(a);
+        for_sequence<BRank>([&](auto b) {
+            size_t dimB = B.dim(b);
+            if (std::get<a>(A_indices).letter == std::get<b>(B_indices).letter) {
+                if (dimA != dimB) {
+                    println(bg(fmt::color::red) | fg(fmt::color::white), "{:f} {}({:}) += {:f} {}({:}) * {}({:})", C_prefactor, C->name(),
+                            print_tuple_no_type(C_indices), AB_prefactor, A.name(), print_tuple_no_type(A_indices), B.name(),
+                            print_tuple_no_type(B_indices));
+                    runtime_indices_abort = true;
+                }
+            }
+        });
+        for_sequence<CRank>([&](auto c) {
+            size_t dimC = C->dim(c);
+            if (std::get<a>(A_indices).letter == std::get<c>(C_indices).letter) {
+                if (dimA != dimC) {
+                    println(bg(fmt::color::red) | fg(fmt::color::white), "{:f} {}({:}) += {:f} {}({:}) * {}({:})", C_prefactor, C->name(),
+                            print_tuple_no_type(C_indices), AB_prefactor, A.name(), print_tuple_no_type(A_indices), B.name(),
+                            print_tuple_no_type(B_indices));
+                    runtime_indices_abort = true;
+                }
+            }
+        });
+    });
+    for_sequence<BRank>([&](auto b) {
+        size_t dimB = B.dim(b);
+        for_sequence<CRank>([&](auto c) {
+            size_t dimC = C->dim(c);
+            if (std::get<b>(B_indices).letter == std::get<c>(C_indices).letter) {
+                if (dimB != dimC) {
+                    println(bg(fmt::color::red) | fg(fmt::color::white), "{:f} {}({:}) += {:f} {}({:}) * {}({:})", C_prefactor, C->name(),
+                            print_tuple_no_type(C_indices), AB_prefactor, A.name(), print_tuple_no_type(A_indices), B.name(),
+                            print_tuple_no_type(B_indices));
+                    runtime_indices_abort = true;
+                }
+            }
+        });
+    });
+
+    if (runtime_indices_abort) {
+        throw std::runtime_error("einsum: Inconsistent dimensions found!");
+    }
+#endif
 
     if constexpr (!std::is_same_v<CDataType, ADataType> || !std::is_same_v<CDataType, BDataType>) {
         // Mixed datatypes go directly to the generic algorithm.
