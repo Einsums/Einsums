@@ -78,6 +78,11 @@ extern void FC_GLOBAL(dgesdd, DGESDD)(char *, int *, int *, double *, int *, dou
 
 namespace einsums::backend::vendor {
 
+void initialize() {
+}
+void finalize() {
+}
+
 void sgemm(char transa, char transb, int m, int n, int k, float alpha, const float *a, int lda, const float *b, int ldb, float beta,
            float *c, int ldc) {
     if (m == 0 || n == 0 || k == 0)

@@ -4,6 +4,9 @@
 
 namespace einsums::backend::vendor {
 
+void initialize();
+void finalize();
+
 /*!
  * Performs matrix multiplication for general square matices of type double.
  */
