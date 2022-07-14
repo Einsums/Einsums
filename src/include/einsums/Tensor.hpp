@@ -423,6 +423,9 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
     }
 
     [[nodiscard]] auto dim(int d) const -> size_t {
+        // Add support for negative indices.
+        if (d < 0)
+            d += Rank;
         return _dims[d];
     }
     auto dims() const -> Dim<Rank> {
@@ -702,6 +705,8 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
     }
 
     [[nodiscard]] auto dim(int d) const -> size_t {
+        if (d < 0)
+            d += Rank;
         return _dims[d];
     }
     auto dims() const -> Dim<Rank> {

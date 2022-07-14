@@ -55,14 +55,12 @@ auto create_random_tensor(const std::string &name, MultiIndex... index) -> Tenso
     }
 
     if constexpr (sizeof...(MultiIndex) == 2) {
-        for (int col = 0; col < A.dim(1); col++) {
+        for (int col = 0; col < A.dim(-1); col++) {
             complex_type_t<T> scale{1}, sumsq{0};
 
-            // blas::lassq(A.dim(0), A.data()[col], A.dim(1), &scale, &sumsq);
             auto column = A(All, col);
-
-            // println(column);
-
+            // auto collapsed = TensorView{A, Dim<2>{-1, A.dim(-1)}};
+            // auto column = collapsed(All, col);
             linear_algebra::sum_square(column, &scale, &sumsq);
             T value = scale * sqrt(sumsq);
             column /= value;
