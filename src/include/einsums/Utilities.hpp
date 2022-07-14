@@ -24,7 +24,7 @@ auto create_incremented_tensor(const std::string &name, MultiIndex... index) -> 
     return A;
 }
 
-template <typename T = double, typename... MultiIndex>
+template <typename T = double, bool Normalize = false, typename... MultiIndex>
 auto create_random_tensor(const std::string &name, MultiIndex... index) -> Tensor<T, sizeof...(MultiIndex)> {
     Tensor<T, sizeof...(MultiIndex)> A(name, std::forward<MultiIndex>(index)...);
 
@@ -54,7 +54,7 @@ auto create_random_tensor(const std::string &name, MultiIndex... index) -> Tenso
         std::generate(A.vector_data().begin(), A.vector_data().end(), [&]() { return static_cast<T>(unif(re)); });
     }
 
-    if constexpr (sizeof...(MultiIndex) == 2) {
+    if constexpr (Normalize == true && sizeof...(MultiIndex) == 2) {
         for (int col = 0; col < A.dim(-1); col++) {
             complex_type_t<T> scale{1}, sumsq{0};
 
