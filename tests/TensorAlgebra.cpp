@@ -1717,6 +1717,9 @@ TEST_CASE("gemv") {
         Tensor F{"F", _p, _q};
         Tensor F0{"F0", _p, _q};
 
+        zero(F);
+        zero(F0);
+
         REQUIRE_NOTHROW(einsum(1.0, Indices{p, q}, &F0, 2.0, Indices{p, q, r, s}, g, Indices{r, s}, D));
 
         TensorView gv{g, Dim<2>{_p * _q, _r * _s}};
@@ -1783,7 +1786,7 @@ TEST_CASE("outer product") {
         Tensor A = create_random_tensor("A", _x);
         Tensor B = create_random_tensor("B", _y);
         Tensor C{"C", _x, _y};
-        // C.set_all(0.0);
+        zero(C);
 
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C, Indices{i}, A, Indices{j}, B));
 
@@ -2385,7 +2388,7 @@ TEST_CASE("andy") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
 
-    size_t proj_rank_{100}, nocc_{5}, nvirt_{28};
+    size_t proj_rank_{10}, nocc_{5}, nvirt_{28};
 
     SECTION("1") {
         auto y_iW_ = create_random_tensor("y_iW", nocc_, proj_rank_);
@@ -2410,6 +2413,7 @@ TEST_CASE("andy") {
         auto a = create_random_tensor("a", nvirt_, nvirt_);
         auto b = create_random_tensor("b", nvirt_, nvirt_);
         auto c = create_tensor("c", nvirt_, nvirt_);
+        zero(c);
 
         einsum(0.0, Indices{index::p, index::q}, &c, -1.0, Indices{index::p, index::q}, a, Indices{index::p, index::q}, b);
 
@@ -2478,6 +2482,7 @@ TEST_CASE("andy") {
     SECTION("6") {
         auto A = create_random_tensor("A", 84);
         auto C = create_tensor("C", 84, 84);
+        zero(C);
 
         einsum(Indices{index::a, index::b}, &C, Indices{index::a}, A, Indices{index::b}, A);
 
@@ -2500,6 +2505,7 @@ TEST_CASE("andy") {
         A(7) = 0.10164104;
         A(8) = 0.06130642;
         auto C = create_tensor("C", 9, 9);
+        zero(C);
 
         einsum(Indices{index::a, index::b}, &C, Indices{index::a}, A, Indices{index::b}, A);
 
