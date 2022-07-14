@@ -74,7 +74,7 @@ TEST_CASE("CP 3") {
     double diff = rmsd(test3, test3_cp);
 
     REQUIRE(isgreaterequal(diff, 0.0));
-    REQUIRE(islessequal(diff, 0.228199));
+    REQUIRE(islessequal(diff, 0.228200));
 }
 
 TEST_CASE("CP 4") {
@@ -204,4 +204,30 @@ TEST_CASE("TUCKER 3") {
 
     REQUIRE(isgreaterequal(diff, 0.0));
     REQUIRE(islessequal(diff, 0.192402));
+}
+
+TEST_CASE("Lyapunov") {
+    using namespace einsums;
+    using namespace einsums::linear_algebra;
+    // Solves for X, where
+    // AX + XA^T = Q
+
+    auto A = create_tensor<double>("A", 3, 3);
+    auto Q = create_tensor<double>("Q", 3, 3);
+
+    A.vector_data() = std::vector<double, einsums::AlignedAllocator<double, 64>>{
+        1.25898804, -0.00000000, -0.58802280, -0.00000000, 1.51359048, 0.00000000, -0.58802280, 0.00000000, 1.71673427};
+
+    Q.vector_data() = std::vector<double, einsums::AlignedAllocator<double, 64>>{ 
+        -0.05892104, 0.00000000, 0.00634896, 0.00000000, -0.02508491, 0.00000000, 0.00634896, 0.00000000, 0.00155829};
+
+    auto X = einsums::linear_algebra::solve_lyapunov(A, Q);
+
+    auto Qtest = einsums::linear_algebra::gemm<false, false>(1.0, A, X);
+    auto Q2 = einsums::linear_algebra::gemm<false, true>(1.0, X, A);
+    einsums::linear_algebra::axpy(1.0, Q2, &Qtest);
+
+    for (size_t i = 0; i < 9; i++) {
+        CHECK_THAT(Q.data()[i], Catch::Matchers::WithinAbs(Qtest.data()[i], 0.00001));
+    }
 }
