@@ -55,7 +55,11 @@ extern void FC_GLOBAL(dgesv, DGESV)(int *, int *, double *, int *, int *, double
 extern void FC_GLOBAL(cgesv, CGESV)(int *, int *, std::complex<float> *, int *, int *, std::complex<float> *, int *, int *);
 extern void FC_GLOBAL(zgesv, ZGESV)(int *, int *, std::complex<double> *, int *, int *, std::complex<double> *, int *, int *);
 
+extern void FC_GLOBAL(sscal, SSCAL)(int *, float *, float *, int *);
 extern void FC_GLOBAL(dscal, DSCAL)(int *, double *, double *, int *);
+extern void FC_GLOBAL(cscal, CSCAL)(int *, std::complex<float> *, std::complex<float> *, int *);
+extern void FC_GLOBAL(zscal, ZSCAL)(int *, std::complex<double> *, std::complex<double> *, int *);
+
 extern double FC_GLOBAL(ddot, DDOT)(int *, const double *, int *, const double *, int *); // NOLINT
 extern void FC_GLOBAL(daxpy, DAXPY)(int *, double *, const double *, int *, double *, int *);
 extern void FC_GLOBAL(dger, DGER)(int *, int *, double *, const double *, int *, const double *, int *, double *, int *);
@@ -214,8 +218,20 @@ auto zgesv(int n, int nrhs, std::complex<double> *a, int lda, int *ipiv, std::co
     return info;
 }
 
+void sscal(int n, float alpha, float *vec, int inc) {
+    FC_GLOBAL(sscal, SSCAL)(&n, &alpha, vec, &inc);
+}
+
 void dscal(int n, double alpha, double *vec, int inc) {
     FC_GLOBAL(dscal, DSCAL)(&n, &alpha, vec, &inc);
+}
+
+void cscal(int n, std::complex<float> alpha, std::complex<float> *vec, int inc) {
+    FC_GLOBAL(cscal, CSCAL)(&n, &alpha, vec, &inc);
+}
+
+void zscal(int n, std::complex<double> alpha, std::complex<double> *vec, int inc) {
+    FC_GLOBAL(zscal, ZSCAL)(&n, &alpha, vec, &inc);
 }
 
 auto ddot(int n, const double *x, int incx, const double *y, int incy) -> double {
