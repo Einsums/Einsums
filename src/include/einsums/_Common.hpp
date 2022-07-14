@@ -1,7 +1,10 @@
 #pragma once
 
+#include "einsums/Print.hpp"
+
 #include <array>
 #include <cstdint>
+#include <ostream>
 
 namespace einsums {
 
@@ -40,3 +43,54 @@ struct All_t {};
 static struct All_t All;
 
 } // namespace einsums
+
+template <size_t Rank>
+void println(const einsums::Dim<Rank> &dim) {
+    std::ostringstream oss;
+    for (size_t i = 0; i < Rank; i++) {
+        oss << dim[i] << " ";
+    }
+    println("Dim{{{}}}", oss.str());
+}
+
+template <size_t Rank>
+void println(const einsums::Stride<Rank> &stride) {
+    std::ostringstream oss;
+    for (size_t i = 0; i < Rank; i++) {
+        oss << stride[i] << " ";
+    }
+    println("Stride{{{}}}", oss.str().c_str());
+}
+
+template <size_t Rank>
+void println(const einsums::Count<Rank> &count) {
+    std::ostringstream oss;
+    for (size_t i = 0; i < Rank; i++) {
+        oss << count[i] << " ";
+    }
+    println("Count{{{}}}", oss.str().c_str());
+}
+
+template <size_t Rank>
+void println(const einsums::Offset<Rank> &offset) {
+    std::ostringstream oss;
+    for (size_t i = 0; i < Rank; i++) {
+        oss << offset[i] << " ";
+    }
+    println("Offset{{{}}}", oss.str().c_str());
+}
+
+inline void println(const einsums::Range &range) {
+    std::ostringstream oss;
+    oss << range[0] << " " << range[1];
+    println("Range{{{}}}", oss.str().c_str());
+}
+
+template <size_t Rank, typename T>
+inline void println(const std::array<T, Rank> &array) {
+    std::ostringstream oss;
+    for (size_t i = 0; i < Rank; i++) {
+        oss << array[i] << " ";
+    }
+    println("std::array{{{}}}", oss.str().c_str());
+}

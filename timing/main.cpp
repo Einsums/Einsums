@@ -8,6 +8,7 @@
 #include "einsums/Tensor.hpp"
 #include "einsums/TensorAlgebra.hpp"
 #include "einsums/Timer.hpp"
+#include "einsums/Utilities.hpp"
 
 #include <cstdlib>
 

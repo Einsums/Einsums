@@ -32,7 +32,9 @@
 // HPTT includes <complex> which defined I as a shorthand for complex values.
 // This causes issues with einsums since we define I to be a useable index
 // for the user. Undefine the one defined in <complex> here.
+#if defined(I)
 #undef I
+#endif
 
 namespace einsums::tensor_algebra {
 
@@ -736,13 +738,28 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
             if constexpr (!is_complex_v<CDataType>) {
                 if (std::isnan(Cvalue)) {
                     println(bg(fmt::color::red) | fg(fmt::color::white), "NaN DETECTED!");
-                    println(bg(fmt::color::red) | fg(fmt::color::white), "    {:f} C({:}) += {:f} A({:}) * B({:})", C_prefactor,
-                            print_tuple_no_type(C_indices), AB_prefactor, print_tuple_no_type(A_indices), print_tuple_no_type(B_indices));
+                    println(bg(fmt::color::red) | fg(fmt::color::white), "    {:f} {}({:}) += {:f} {}({:}) * {}({:})", C_prefactor,
+                            C->name(), print_tuple_no_type(C_indices), AB_prefactor, A.name(), print_tuple_no_type(A_indices), B.name(),
+                            print_tuple_no_type(B_indices));
 
+                    println(*C);
                     println(A);
                     println(B);
 
                     throw std::runtime_error("NAN detected in resulting tensor.");
+                }
+
+                if (std::isinf(Cvalue)) {
+                    println(bg(fmt::color::red) | fg(fmt::color::white), "Infinity DETECTED!");
+                    println(bg(fmt::color::red) | fg(fmt::color::white), "    {:f} {}({:}) += {:f} {}({:}) * {}({:})", C_prefactor,
+                            C->name(), print_tuple_no_type(C_indices), AB_prefactor, A.name(), print_tuple_no_type(A_indices), B.name(),
+                            print_tuple_no_type(B_indices));
+
+                    println(*C);
+                    println(A);
+                    println(B);
+
+                    throw std::runtime_error("Infinity detected in resulting tensor.");
                 }
             }
         }

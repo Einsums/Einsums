@@ -3,6 +3,7 @@
 #include "einsums/STL.hpp"
 #include "einsums/Tensor.hpp"
 #include "einsums/Timer.hpp"
+#include "einsums/Utilities.hpp"
 #include "range/v3/view/cartesian_product.hpp"
 
 #include <algorithm>

@@ -4,6 +4,7 @@
 #include "einsums/STL.hpp"
 #include "einsums/State.hpp"
 #include "einsums/Tensor.hpp"
+#include "einsums/Utilities.hpp"
 
 #include <H5Fpublic.h>
 #include <catch2/catch.hpp>
