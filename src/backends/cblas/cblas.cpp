@@ -139,8 +139,32 @@ auto dsyev(char job, char uplo, int n, double *a, int lda, double *w, double *, 
     return LAPACKE_dsyev(LAPACK_ROW_MAJOR, job, uplo, n, a, lda, w);
 }
 
+auto cheev(char job, char uplo, int n, std::complex<float> *a, int lda, float *w, std::complex<float> * /*work*/, int /*lwork*/,
+           float * /*rwork*/) -> int {
+    return LAPACKE_cheev(LAPACK_ROW_MAJOR, job, uplo, n, reinterpret_cast<lapack_complex_float *>(a), lda, w);
+}
+
+auto zheev(char job, char uplo, int n, std::complex<double> *a, int lda, double *w, std::complex<double> * /*work*/, int /*lwork*/,
+           double * /*rwork*/) -> int {
+    return LAPACKE_zheev(LAPACK_ROW_MAJOR, job, uplo, n, reinterpret_cast<lapack_complex_double *>(a), lda, w);
+}
+
+auto sgesv(int n, int nrhs, float *a, int lda, int *ipiv, float *b, int ldb) -> int {
+    return LAPACKE_sgesv(LAPACK_ROW_MAJOR, n, nrhs, a, lda, ipiv, b, ldb);
+}
+
 auto dgesv(int n, int nrhs, double *a, int lda, int *ipiv, double *b, int ldb) -> int {
     return LAPACKE_dgesv(LAPACK_ROW_MAJOR, n, nrhs, a, lda, ipiv, b, ldb);
+}
+
+auto cgesv(int n, int nrhs, std::complex<float> *a, int lda, int *ipiv, std::complex<float> *b, int ldb) -> int {
+    return LAPACKE_cgesv(LAPACK_ROW_MAJOR, n, nrhs, reinterpret_cast<lapack_complex_float *>(a), lda, ipiv,
+                         reinterpret_cast<lapack_complex_float *>(b), ldb);
+}
+
+auto zgesv(int n, int nrhs, std::complex<double> *a, int lda, int *ipiv, std::complex<double> *b, int ldb) -> int {
+    return LAPACKE_zgesv(LAPACK_ROW_MAJOR, n, nrhs, reinterpret_cast<lapack_complex_double *>(a), lda, ipiv,
+                         reinterpret_cast<lapack_complex_double *>(b), ldb);
 }
 
 void dscal(int n, double alpha, double *vec, int inc) {
