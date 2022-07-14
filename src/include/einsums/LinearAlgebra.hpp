@@ -397,7 +397,7 @@ auto svd_a(const AType<double, ARank> &_A) ->
     return std::make_tuple(U, S, Vt);
 }
 
-inline auto solve_lyapunov(const Tensor<double, 2>& A, const Tensor<double, 2>& Q) -> Tensor<double, 2> {
+inline auto solve_continuous_lyapunov(const Tensor<double, 2> &A, const Tensor<double, 2> &Q) -> Tensor<double, 2> {
 
     if (A.dim(0) != A.dim(1)) {
         println("solve_lyapunov: Dimensions of A ({} x {}), do not match", A.dim(0), A.dim(1));
@@ -408,14 +408,15 @@ inline auto solve_lyapunov(const Tensor<double, 2>& A, const Tensor<double, 2>& 
         std::abort();
     }
     if (A.dim(0) != Q.dim(0)) {
-        println("solve_lyapunov: Dimensions of A ({} x {}) and Q ({} x {}), do not match", 
-                    A.dim(0), A.dim(1), Q.dim(0), Q.dim(1));
+        println("solve_lyapunov: Dimensions of A ({} x {}) and Q ({} x {}), do not match", A.dim(0), A.dim(1), Q.dim(0), Q.dim(1));
         std::abort();
     }
 
     timer::push("solve_lyapunov");
 
     size_t n = A.dim(0);
+
+    /// TODO: Break this off into a separate schur function
     // Compute Schur Decomposition of A
     Tensor<double, 2> R = A; // R is a copy of A
     Tensor<double, 2> wr("Schur Real Buffer", n, n);
@@ -430,7 +431,8 @@ inline auto solve_lyapunov(const Tensor<double, 2>& A, const Tensor<double, 2>& 
 
     // Call the Sylvester Solve
     std::vector<double> scale(1);
-    blas::dtrsyl('N', 'N', 1, n, n, const_cast<const double *>(R.data()), n, const_cast<const double *>(R.data()), n, F.data(), n, scale.data());
+    blas::dtrsyl('N', 'N', 1, n, n, const_cast<const double *>(R.data()), n, const_cast<const double *>(R.data()), n, F.data(), n,
+                 scale.data());
 
     Tensor<double, 2> Xbuff = gemm<false, false>(scale[0], U, F);
     Tensor<double, 2> X = gemm<false, true>(1.0, Xbuff, U);
@@ -439,5 +441,7 @@ inline auto solve_lyapunov(const Tensor<double, 2>& A, const Tensor<double, 2>& 
 
     return X;
 }
+
+ALIAS_TEMPLATE_FUNCTION(solve_lyapunov, solve_continuous_lyapunov)
 
 } // namespace einsums::linear_algebra
