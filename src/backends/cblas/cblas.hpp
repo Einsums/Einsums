@@ -1,5 +1,7 @@
 #pragma once
 
+#include <complex>
+
 namespace einsums::backend::cblas {
 
 void initialize();
@@ -8,13 +10,24 @@ void finalize();
 /*!
  * Performs matrix multiplication for general square matices of type double.
  */
+void sgemm(char transa, char transb, int m, int n, int k, float alpha, const float *a, int lda, const float *b, int ldb, float beta,
+           float *c, int ldc);
 void dgemm(char transa, char transb, int m, int n, int k, double alpha, const double *a, int lda, const double *b, int ldb, double beta,
            double *c, int ldc);
+void cgemm(char transa, char transb, int m, int n, int k, std::complex<float> alpha, const std::complex<float> *a, int lda,
+           const std::complex<float> *b, int ldb, std::complex<float> beta, std::complex<float> *c, int ldc);
+void zgemm(char transa, char transb, int m, int n, int k, std::complex<double> alpha, const std::complex<double> *a, int lda,
+           const std::complex<double> *b, int ldb, std::complex<double> beta, std::complex<double> *c, int ldc);
 
 /*!
  * Performs matrix vector multiplication.
  */
+void sgemv(char transa, int m, int n, float alpha, const float *a, int lda, const float *x, int incx, float beta, float *y, int incy);
 void dgemv(char transa, int m, int n, double alpha, const double *a, int lda, const double *x, int incx, double beta, double *y, int incy);
+void cgemv(char transa, int m, int n, std::complex<float> alpha, const std::complex<float> *a, int lda, const std::complex<float> *x,
+           int incx, std::complex<float> beta, std::complex<float> *y, int incy);
+void zgemv(char transa, int m, int n, std::complex<double> alpha, const std::complex<double> *a, int lda, const std::complex<double> *x,
+           int incx, std::complex<double> beta, std::complex<double> *y, int incy);
 
 /*!
  * Performs symmetric matrix diagonalization.
@@ -74,8 +87,9 @@ auto dlange(char norm_type, int m, int n, const double *A, int lda, double *work
 
 auto dgesdd(char, int, int, double *, int, double *, double *, int, double *, int, double *, int, int *) -> int;
 
-auto dgees(char jobvs, int n, double* a, int lda, int* sdim, double* wr, double* wi, double* vs, int ldvs) -> int;
+auto dgees(char jobvs, int n, double *a, int lda, int *sdim, double *wr, double *wi, double *vs, int ldvs) -> int;
 
-auto dtrsyl(char trana, char tranb, int isgn, int m, int n, const double* a, int lda, const double* b, int ldb, double* c, int ldc, double* scale) -> int;
+auto dtrsyl(char trana, char tranb, int isgn, int m, int n, const double *a, int lda, const double *b, int ldb, double *c, int ldc,
+            double *scale) -> int;
 
 } // namespace einsums::backend::cblas

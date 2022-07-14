@@ -41,6 +41,17 @@ void initialize() {
 void finalize() {
 }
 
+void sgemm(char transa, char transb, int m, int n, int k, float alpha, const float *a, int lda, const float *b, int ldb, float beta,
+           float *c, int ldc) {
+    if (m == 0 || n == 0 || k == 0)
+        return;
+
+    auto TransA = transpose_to_cblas(transa);
+    auto TransB = transpose_to_cblas(transb);
+
+    cblas_sgemm(CblasRowMajor, TransA, TransB, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc);
+}
+
 void dgemm(char transa, char transb, int m, int n, int k, double alpha, const double *a, int lda, const double *b, int ldb, // NOLINT
            double beta, double *c, int ldc) {
     if (m == 0 || n == 0 || k == 0)
@@ -52,8 +63,41 @@ void dgemm(char transa, char transb, int m, int n, int k, double alpha, const do
     cblas_dgemm(CblasRowMajor, TransA, TransB, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc);
 }
 
-void dgemv(char transa, int m, int n, double alpha, const double *a, int lda, const double *x, int incx, double beta, double *y, // NOLINT
-           int incy) {
+void cgemm(char transa, char transb, int m, int n, int k, std::complex<float> alpha, const std::complex<float> *a, int lda,
+           const std::complex<float> *b, int ldb, std::complex<float> beta, std::complex<float> *c, int ldc) {
+    if (m == 0 || n == 0 || k == 0)
+        return;
+
+    auto TransA = transpose_to_cblas(transa);
+    auto TransB = transpose_to_cblas(transb);
+
+    cblas_cgemm(CblasRowMajor, TransA, TransB, m, n, k, static_cast<void *>(&alpha), static_cast<const void *>(a), lda,
+                static_cast<const void *>(b), ldb, static_cast<void *>(&beta), static_cast<void *>(c), ldc);
+}
+
+void zgemm(char transa, char transb, int m, int n, int k, std::complex<double> alpha, const std::complex<double> *a, int lda,
+           const std::complex<double> *b, int ldb, std::complex<double> beta, std::complex<double> *c, int ldc) {
+    if (m == 0 || n == 0 || k == 0)
+        return;
+
+    auto TransA = transpose_to_cblas(transa);
+    auto TransB = transpose_to_cblas(transb);
+
+    cblas_zgemm(CblasRowMajor, TransA, TransB, m, n, k, static_cast<void *>(&alpha), static_cast<const void *>(a), lda,
+                static_cast<const void *>(b), ldb, static_cast<void *>(&beta), static_cast<void *>(c), ldc);
+}
+
+void sgemv(char transa, int m, int n, float alpha, const float *a, int lda, const float *x, int incx, float beta, float *y, int incy) {
+    if (m == 0 || n == 0)
+        return;
+    auto TransA = transpose_to_cblas(transa);
+    if (TransA == CblasConjTrans)
+        throw std::invalid_argument("einsums::backend::cblas::dgemv transa argument is invalid.");
+
+    cblas_sgemv(CblasRowMajor, TransA, m, n, alpha, a, lda, x, incx, beta, y, incy);
+}
+
+void dgemv(char transa, int m, int n, double alpha, const double *a, int lda, const double *x, int incx, double beta, double *y, int incy) {
     if (m == 0 || n == 0)
         return;
     auto TransA = transpose_to_cblas(transa);
@@ -61,6 +105,30 @@ void dgemv(char transa, int m, int n, double alpha, const double *a, int lda, co
         throw std::invalid_argument("einsums::backend::cblas::dgemv transa argument is invalid.");
 
     cblas_dgemv(CblasRowMajor, TransA, m, n, alpha, a, lda, x, incx, beta, y, incy);
+}
+
+void cgemv(char transa, int m, int n, std::complex<float> alpha, const std::complex<float> *a, int lda, const std::complex<float> *x,
+           int incx, std::complex<float> beta, std::complex<float> *y, int incy) {
+    if (m == 0 || n == 0)
+        return;
+    auto TransA = transpose_to_cblas(transa);
+    if (TransA == CblasConjTrans)
+        throw std::invalid_argument("einsums::backend::cblas::dgemv transa argument is invalid.");
+
+    cblas_cgemv(CblasRowMajor, TransA, m, n, static_cast<const void *>(&alpha), static_cast<const void *>(a), lda, x, incx,
+                static_cast<const void *>(&beta), static_cast<void *>(y), incy);
+}
+
+void zgemv(char transa, int m, int n, std::complex<double> alpha, const std::complex<double> *a, int lda, const std::complex<double> *x,
+           int incx, std::complex<double> beta, std::complex<double> *y, int incy) {
+    if (m == 0 || n == 0)
+        return;
+    auto TransA = transpose_to_cblas(transa);
+    if (TransA == CblasConjTrans)
+        throw std::invalid_argument("einsums::backend::cblas::dgemv transa argument is invalid.");
+
+    cblas_zgemv(CblasRowMajor, TransA, m, n, static_cast<const void *>(&alpha), static_cast<const void *>(a), lda, x, incx,
+                static_cast<const void *>(&beta), static_cast<void *>(y), incy);
 }
 
 auto dsyev(char job, char uplo, int n, double *a, int lda, double *w, double *, int) -> int {
