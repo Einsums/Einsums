@@ -417,6 +417,13 @@ auto einsum(const CDataType C_prefactor, const std::tuple<CIndices...> & /*Cs*/,
     // 4. Determine the links between CIndices and BIndices
     constexpr auto CBlinks = intersect_t<std::tuple<CIndices...>, std::tuple<BIndices...>>();
 
+    // Remove anything from A that exists in C
+    constexpr auto CminusA = difference_t<std::tuple<CIndices...>, std::tuple<AIndices...>>();
+    constexpr auto CminusB = difference_t<std::tuple<CIndices...>, std::tuple<BIndices...>>();
+
+    constexpr bool have_remaining_indices_in_CminusA = std::tuple_size_v<decltype(CminusA)>;
+    constexpr bool have_remaining_indices_in_CminusB = std::tuple_size_v<decltype(CminusB)>;
+
     // Determine unique indices in A
     constexpr auto A_only = difference_t<std::tuple<AIndices...>, decltype(links)>();
     constexpr auto B_only = difference_t<std::tuple<BIndices...>, decltype(links)>();
@@ -438,17 +445,17 @@ auto einsum(const CDataType C_prefactor, const std::tuple<CIndices...> & /*Cs*/,
     constexpr auto target_position_in_B = detail::find_type_with_position(C_unique, B_indices);
     constexpr auto target_position_in_C = detail::find_type_with_position(C_unique, C_indices);
 
-    // println("1 - A_indices {}", print_tuple_no_type(A_indices));
-    // println("1 - B_indices {}", print_tuple_no_type(B_indices));
-    // println("1 - C_indices {}", print_tuple_no_type(C_indices));
-    // println("1 - A_unique {}", print_tuple_no_type(A_unique));
-    // println("1 - B_unique {}", print_tuple_no_type(B_unique));
-    // println("1 - C_unique {}", print_tuple_no_type(C_unique));
-    // println("1 - target_position_in_A {}", print_tuple_no_type(target_position_in_A));
-    // println("1 - target_position_in_B {}", print_tuple_no_type(target_position_in_B));
-    // println("1 - target_position_in_C {}", print_tuple_no_type(target_position_in_C));
-    // println("1 - link_position_in_A {}", print_tuple_no_type(link_position_in_A));
-    // println("1 - link_position_in_B {}", print_tuple_no_type(link_position_in_B));
+    // println("A_indices {}", print_tuple_no_type(A_indices));
+    // println("B_indices {}", print_tuple_no_type(B_indices));
+    // println("C_indices {}", print_tuple_no_type(C_indices));
+    // println("A_unique {}", print_tuple_no_type(A_unique));
+    // println("B_unique {}", print_tuple_no_type(B_unique));
+    // println("C_unique {}", print_tuple_no_type(C_unique));
+    // println("target_position_in_A {}", print_tuple_no_type(target_position_in_A));
+    // println("target_position_in_B {}", print_tuple_no_type(target_position_in_B));
+    // println("target_position_in_C {}", print_tuple_no_type(target_position_in_C));
+    // println("link_position_in_A {}", print_tuple_no_type(link_position_in_A));
+    // println("link_position_in_B {}", print_tuple_no_type(link_position_in_B));
 
     constexpr auto A_target_position_in_C = detail::find_type_with_position(A_indices, C_indices);
     constexpr auto B_target_position_in_C = detail::find_type_with_position(B_indices, C_indices);
@@ -475,7 +482,11 @@ auto einsum(const CDataType C_prefactor, const std::tuple<CIndices...> & /*Cs*/,
         sizeof...(CIndices) == sizeof...(BIndices) && same_indices<std::tuple<CIndices...>, std::tuple<BIndices...>>();
     constexpr auto A_exactly_matches_B = same_indices<std::tuple<AIndices...>, std::tuple<BIndices...>>();
 
-    constexpr auto is_gemm_possible = contiguous_link_position_in_A && contiguous_link_position_in_B && contiguous_target_position_in_A &&
+    // println("contiguous_link_position_in_A {}", contiguous_link_position_in_A);
+    // println("contiguous_link_position_in_B {}", contiguous_link_position_in_B);
+
+    constexpr auto is_gemm_possible = have_remaining_indices_in_CminusA && have_remaining_indices_in_CminusB &&
+                                      contiguous_link_position_in_A && contiguous_link_position_in_B && contiguous_target_position_in_A &&
                                       contiguous_target_position_in_B && contiguous_A_targets_in_C && contiguous_B_targets_in_C &&
                                       same_ordering_link_position_in_AB && same_ordering_target_position_in_CA &&
                                       same_ordering_target_position_in_CB && !A_hadamard_found && !B_hadamard_found && !C_hadamard_found;
@@ -819,7 +830,7 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
                     throw std::runtime_error("Infinity detected in resulting tensor.");
                 }
 
-                if (std::abs(Cvalue) > 1000000) {
+                if (std::abs(Cvalue) > 100000000) {
                     println(bg(fmt::color::red) | fg(fmt::color::white), "Large value DETECTED!");
                     println(bg(fmt::color::red) | fg(fmt::color::white), "    {:f} {}({:}) += {:f} {}({:}) * {}({:})", C_prefactor,
                             C->name(), print_tuple_no_type(C_indices), AB_prefactor, A.name(), print_tuple_no_type(A_indices), B.name(),

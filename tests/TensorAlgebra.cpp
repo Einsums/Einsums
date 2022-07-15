@@ -2515,4 +2515,17 @@ TEST_CASE("andy") {
             }
         }
     }
+
+    SECTION("8") {
+        size_t naux_{3}, nvirt_{2}, u_rank_{4};
+
+        auto C_TILDE = create_random_tensor("C_TILDE", naux_, nvirt_, u_rank_);
+        auto B_QY = create_random_tensor("B_QY", naux_, u_rank_);
+
+        auto D_TILDE = create_tensor("D_TILDE", nvirt_, u_rank_);
+        zero(D_TILDE);
+
+        einsum(0.0, Indices{index::a, index::X}, &D_TILDE, 1.0, Indices{index::Q, index::a, index::X}, C_TILDE, Indices{index::Q, index::X},
+               B_QY);
+    }
 }
