@@ -207,8 +207,20 @@ auto zdot(int n, const std::complex<double> *x, int incx, const std::complex<dou
     return result;
 }
 
+void saxpy(int n, float alpha_x, const float *x, int inc_x, float *y, int inc_y) {
+    cblas_saxpy(n, alpha_x, x, inc_x, y, inc_y);
+}
+
 void daxpy(int n, double alpha_x, const double *x, int inc_x, double *y, int inc_y) {
     cblas_daxpy(n, alpha_x, x, inc_x, y, inc_y);
+}
+
+void caxpy(int n, std::complex<float> alpha_x, const std::complex<float> *x, int inc_x, std::complex<float> *y, int inc_y) {
+    cblas_caxpy(n, static_cast<const void *>(&alpha_x), static_cast<const void *>(x), inc_x, static_cast<void *>(y), inc_y);
+}
+
+void zaxpy(int n, std::complex<double> alpha_x, const std::complex<double> *x, int inc_x, std::complex<double> *y, int inc_y) {
+    cblas_zaxpy(n, static_cast<const void *>(&alpha_x), static_cast<const void *>(x), inc_x, static_cast<void *>(y), inc_y);
 }
 
 void dger(int m, int n, double alpha, const double *x, int inc_x, const double *y, int inc_y, double *a, int lda) {

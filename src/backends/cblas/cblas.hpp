@@ -62,7 +62,10 @@ auto ddot(int n, const double *x, int incx, const double *y, int incy) -> double
 auto cdot(int n, const std::complex<float> *x, int incx, const std::complex<float> *y, int incy) -> std::complex<float>;
 auto zdot(int n, const std::complex<double> *x, int incx, const std::complex<double> *y, int incy) -> std::complex<double>;
 
+void saxpy(int n, float alpha_x, const float *x, int inc_x, float *y, int inc_y);
 void daxpy(int n, double alpha_x, const double *x, int inc_x, double *y, int inc_y);
+void caxpy(int n, std::complex<float> alpha_x, const std::complex<float> *x, int inc_x, std::complex<float> *y, int inc_y);
+void zaxpy(int n, std::complex<double> alpha_x, const std::complex<double> *x, int inc_x, std::complex<double> *y, int inc_y);
 
 /*!
  * Performs a rank-1 update of a general matrix.

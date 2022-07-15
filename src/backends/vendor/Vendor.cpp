@@ -65,7 +65,11 @@ extern double FC_GLOBAL(ddot, DDOT)(int *, const double *, int *, const double *
 extern float _Complex FC_GLOBAL(cdotu, CDOTU)(int *, const std::complex<float> *, int *, const std::complex<float> *, int *);
 extern double _Complex FC_GLOBAL(zdotu, ZDOTU)(int *, const std::complex<double> *, int *, const std::complex<double> *, int *);
 
+extern void FC_GLOBAL(saxpy, SAXPY)(int *, float *, const float *, int *, float *, int *);
 extern void FC_GLOBAL(daxpy, DAXPY)(int *, double *, const double *, int *, double *, int *);
+extern void FC_GLOBAL(caxpy, CAXPY)(int *, std::complex<float> *, const std::complex<float> *, int *, std::complex<float> *, int *);
+extern void FC_GLOBAL(zaxpy, ZAXPY)(int *, std::complex<double> *, const std::complex<double> *, int *, std::complex<double> *, int *);
+
 extern void FC_GLOBAL(dger, DGER)(int *, int *, double *, const double *, int *, const double *, int *, double *, int *);
 extern void FC_GLOBAL(dgetrf, DGETRF)(int *, int *, double *, int *, int *, int *);
 extern void FC_GLOBAL(dgetri, DGETRI)(int *, double *, int *, int *, double *, int *, int *);
@@ -254,8 +258,20 @@ auto zdot(int n, const std::complex<double> *x, int incx, const std::complex<dou
     return FC_GLOBAL(zdotu, ZDOTU)(&n, x, &incx, y, &incy);
 }
 
+void saxpy(int n, float alpha_x, const float *x, int inc_x, float *y, int inc_y) {
+    FC_GLOBAL(saxpy, SAXPY)(&n, &alpha_x, x, &inc_x, y, &inc_y);
+}
+
 void daxpy(int n, double alpha_x, const double *x, int inc_x, double *y, int inc_y) {
     FC_GLOBAL(daxpy, DAXPY)(&n, &alpha_x, x, &inc_x, y, &inc_y);
+}
+
+void caxpy(int n, std::complex<float> alpha_x, const std::complex<float> *x, int inc_x, std::complex<float> *y, int inc_y) {
+    FC_GLOBAL(caxpy, CAXPY)(&n, &alpha_x, x, &inc_x, y, &inc_y);
+}
+
+void zaxpy(int n, std::complex<double> alpha_x, const std::complex<double> *x, int inc_x, std::complex<double> *y, int inc_y) {
+    FC_GLOBAL(zaxpy, ZAXPY)(&n, &alpha_x, x, &inc_x, y, &inc_y);
 }
 
 void dger(int m, int n, double alpha, const double *x, int inc_x, const double *y, int inc_y, double *a, int lda) {
