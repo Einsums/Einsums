@@ -83,6 +83,7 @@ MAKE_INDEX(x); // NOLINT
 MAKE_INDEX(X); // NOLINT
 MAKE_INDEX(y); // NOLINT
 MAKE_INDEX(Y); // NOLINT
+MAKE_INDEX(z); // NOLINT
 
 // Z is a special index used internally. DO NOT USE.
 MAKE_INDEX(Z); // NOLINT
