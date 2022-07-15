@@ -132,16 +132,6 @@ auto initialize_cp(std::vector<Tensor<TType, 2>> &folds, size_t rank) -> std::ve
         // println("After scaling");
         // println(U);
 
-        // If (i == 0), Scale U by the singular values
-        if (i == 0) {
-            for (size_t c = 0; c < U.dim(0); c++) {
-                double scaling_factor = 0.0;
-                if (c < S.dim(0))
-                    scaling_factor = S(c);
-                linear_algebra::scale_column(c, S(c), &U);
-            }
-        }
-
         if (folds[i].dim(0) < rank) {
             // println_warn("dimension {} size {} is less than the requested decomposition rank {}", i, folds[i].dim(0), rank);
             // TODO: Need to padd U up to rank
