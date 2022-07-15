@@ -8,6 +8,11 @@
 #include <fmt/format.h>
 #include <stdexcept>
 
+/// FIXME: Remove.
+namespace einsums::tensor_algebra {
+bool einsum_raw_for_loop{false};
+}
+
 namespace einsums::blas {
 
 void initialize() {
@@ -158,7 +163,7 @@ auto dgesdd(char jobz, int m, int n, double *a, int lda, double *s, double *u, i
 #endif
 }
 
-auto dgees(char jobvs, int n, double* a, int lda, int* sdim, double* wr, double* wi, double* vs, int ldvs) -> int {
+auto dgees(char jobvs, int n, double *a, int lda, int *sdim, double *wr, double *wi, double *vs, int ldvs) -> int {
 #if defined(EINSUMS_HAVE_LAPACKE) || defined(EINSUMS_HAVE_MKL_LAPACKE)
     return ::einsums::backend::cblas::dgees(jobvs, n, a, lda, sdim, wr, wi, vs, ldvs);
 #else
@@ -166,7 +171,8 @@ auto dgees(char jobvs, int n, double* a, int lda, int* sdim, double* wr, double*
 #endif
 }
 
-auto dtrsyl(char trana, char tranb, int isgn, int m, int n, const double* a, int lda, const double* b, int ldb, double* c, int ldc, double* scale) -> int {
+auto dtrsyl(char trana, char tranb, int isgn, int m, int n, const double *a, int lda, const double *b, int ldb, double *c, int ldc,
+            double *scale) -> int {
 #if defined(EINSUMS_HAVE_LAPACKE) || defined(EINSUMS_HAVE_MKL_LAPACKE)
     return ::einsums::backend::cblas::dtrsyl(trana, tranb, isgn, m, n, a, lda, b, ldb, c, ldc, scale);
 #else
