@@ -28,7 +28,7 @@ template <typename T = double, bool Normalize = false, typename... MultiIndex>
 auto create_random_tensor(const std::string &name, MultiIndex... index) -> Tensor<T, sizeof...(MultiIndex)> {
     Tensor<T, sizeof...(MultiIndex)> A(name, std::forward<MultiIndex>(index)...);
 
-    double lower_bound = 0.0;
+    double lower_bound = -1.0;
     double upper_bound = 1.0;
 
     std::uniform_real_distribution<double> unif(lower_bound, upper_bound);
