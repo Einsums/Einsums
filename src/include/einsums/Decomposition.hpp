@@ -109,7 +109,7 @@ auto initialize_cp(std::vector<Tensor<TType, 2>> &folds, size_t rank) -> std::ve
 
     // Perform compile-time looping.
     for_sequence<TRank>([&](auto i) {
-        auto nthread = omp_get_num_threads();
+        auto nthread = omp_get_max_threads();
         omp_set_num_threads(1);
         auto [U, S, _] = linear_algebra::svd_a(folds[i]);
         omp_set_num_threads(nthread);
