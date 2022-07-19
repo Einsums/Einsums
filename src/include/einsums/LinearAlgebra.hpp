@@ -69,9 +69,8 @@ auto gemv(const double alpha, const AType<T, ARank> &A, const XType<T, XYRank> &
     auto incx = x.stride(0);
     auto incy = y->stride(0);
 
-    timer::push(fmt::format("gemv<{}>", TransA));
+    Section section(fmt::format("gemv<{}>", TransA));
     blas::gemv(TransA ? 't' : 'n', m, n, alpha, A.data(), lda, x.data(), incx, beta, y->data(), incy);
-    timer::pop();
 }
 
 template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename WType, size_t WRank, typename T,

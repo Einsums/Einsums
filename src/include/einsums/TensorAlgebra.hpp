@@ -445,18 +445,6 @@ auto einsum(const CDataType C_prefactor, const std::tuple<CIndices...> & /*Cs*/,
     constexpr auto target_position_in_B = detail::find_type_with_position(C_unique, B_indices);
     constexpr auto target_position_in_C = detail::find_type_with_position(C_unique, C_indices);
 
-    // println("A_indices {}", print_tuple_no_type(A_indices));
-    // println("B_indices {}", print_tuple_no_type(B_indices));
-    // println("C_indices {}", print_tuple_no_type(C_indices));
-    // println("A_unique {}", print_tuple_no_type(A_unique));
-    // println("B_unique {}", print_tuple_no_type(B_unique));
-    // println("C_unique {}", print_tuple_no_type(C_unique));
-    // println("target_position_in_A {}", print_tuple_no_type(target_position_in_A));
-    // println("target_position_in_B {}", print_tuple_no_type(target_position_in_B));
-    // println("target_position_in_C {}", print_tuple_no_type(target_position_in_C));
-    // println("link_position_in_A {}", print_tuple_no_type(link_position_in_A));
-    // println("link_position_in_B {}", print_tuple_no_type(link_position_in_B));
-
     constexpr auto A_target_position_in_C = detail::find_type_with_position(A_indices, C_indices);
     constexpr auto B_target_position_in_C = detail::find_type_with_position(B_indices, C_indices);
 
@@ -482,9 +470,6 @@ auto einsum(const CDataType C_prefactor, const std::tuple<CIndices...> & /*Cs*/,
         sizeof...(CIndices) == sizeof...(BIndices) && same_indices<std::tuple<CIndices...>, std::tuple<BIndices...>>();
     constexpr auto A_exactly_matches_B = same_indices<std::tuple<AIndices...>, std::tuple<BIndices...>>();
 
-    // println("contiguous_link_position_in_A {}", contiguous_link_position_in_A);
-    // println("contiguous_link_position_in_B {}", contiguous_link_position_in_B);
-
     constexpr auto is_gemm_possible = have_remaining_indices_in_CminusA && have_remaining_indices_in_CminusB &&
                                       contiguous_link_position_in_A && contiguous_link_position_in_B && contiguous_target_position_in_A &&
                                       contiguous_target_position_in_B && contiguous_A_targets_in_C && contiguous_B_targets_in_C &&
@@ -502,6 +487,31 @@ auto einsum(const CDataType C_prefactor, const std::tuple<CIndices...> & /*Cs*/,
 
     constexpr auto outer_product = std::tuple_size_v<decltype(linksAB)> == 0 && contiguous_target_position_in_A &&
                                    contiguous_target_position_in_B && !A_hadamard_found && !B_hadamard_found && !C_hadamard_found;
+
+    // println("A_indices {}", print_tuple_no_type(A_indices));
+    // println("B_indices {}", print_tuple_no_type(B_indices));
+    // println("C_indices {}", print_tuple_no_type(C_indices));
+    // println("A_unique {}", print_tuple_no_type(A_unique));
+    // println("B_unique {}", print_tuple_no_type(B_unique));
+    // println("C_unique {}", print_tuple_no_type(C_unique));
+    // println("target_position_in_A {}", print_tuple_no_type(target_position_in_A));
+    // println("target_position_in_B {}", print_tuple_no_type(target_position_in_B));
+    // println("target_position_in_C {}", print_tuple_no_type(target_position_in_C));
+    // println("link_position_in_A {}", print_tuple_no_type(link_position_in_A));
+    // println("link_position_in_B {}", print_tuple_no_type(link_position_in_B));
+    // println("contiguous_link_position_in_A {}", contiguous_link_position_in_A);
+    // println("contiguous_link_position_in_B {}", contiguous_link_position_in_B);
+    // println("contiguous_target_position_in_A {}", contiguous_target_position_in_A);
+    // println("same_ordering_link_position_in_AB {}", same_ordering_link_position_in_AB);
+    // println("same_ordering_target_position_in_CA {}", same_ordering_target_position_in_CA);
+    // println("same_ordering_target_position_in_CB {}", same_ordering_target_position_in_CB);
+    // println("std::tuple_size_v<decltype(B_target_position_in_C)> == 0 {}", std::tuple_size_v<decltype(B_target_position_in_C)> == 0);
+    // println("A_hadamard_found {}", A_hadamard_found);
+    // println("B_hadamard_found {}", B_hadamard_found);
+    // println("C_hadamard_found {}", C_hadamard_found);
+
+    // println("is_gemv_possible {}", is_gemv_possible);
+    // println("is_gemm_possible {}", is_gemm_possible);
 
     // Runtime check of sizes
 #if defined(EINSUMS_RUNTIME_INDICES_CHECK)
@@ -563,7 +573,7 @@ auto einsum(const CDataType C_prefactor, const std::tuple<CIndices...> & /*Cs*/,
 
         return;
     } else if constexpr (element_wise_multiplication) {
-        timer::Timer element_wise_multiplication{"Element-Wise Multiplication"};
+        timer::Timer element_wise_multiplication{"element-wise multiplication"};
 
         auto target_dims = get_dim_ranges<CRank>(*C);
         auto view = std::apply(ranges::views::cartesian_product, target_dims);
@@ -627,34 +637,52 @@ auto einsum(const CDataType C_prefactor, const std::tuple<CIndices...> & /*Cs*/,
         } while (false);
     } else if constexpr (!OnlyUseGenericAlgorithm) {
         do { // do {} while (false) trick to allow us to use a break below to "break" out of the loop.
+            if constexpr (is_gemv_possible) {
+                constexpr bool transpose_A = std::get<1>(link_position_in_A) == 0;
 
+                Dim<2> dA;
+                Dim<1> dB, dC;
+                Stride<2> sA;
+                Stride<1> sB, sC;
+
+                dA[0] = product_dims(A_target_position_in_C, *C);
+                dA[1] = product_dims(link_position_in_A, A);
+                sA[0] = last_stride(target_position_in_A, A);
+                sA[1] = last_stride(link_position_in_A, A);
+                if constexpr (transpose_A) {
+                    std::swap(dA[0], dA[1]);
+                    std::swap(sA[0], sA[1]);
+                }
+
+                dB[0] = product_dims(link_position_in_B, B);
+                sB[0] = last_stride(link_position_in_B, B);
+
+                dC[0] = product_dims(A_target_position_in_C, *C);
+                sC[0] = last_stride(A_target_position_in_C, *C);
+
+                const TensorView<ADataType, 2> tA{const_cast<AType<ADataType, ARank> &>(A), dA, sA};
+                const TensorView<BDataType, 1> tB{const_cast<BType<BDataType, BRank> &>(B), dB, sB};
+                TensorView<CDataType, 1> tC{*C, dC, sC};
+
+                // println(*C);
+                // println(tC);
+                // println(A);
+                // println(tA);
+                // println(B);
+                // println(tB);
+
+                if constexpr (transpose_A) {
+                    linear_algebra::gemv<true>(AB_prefactor, tA, tB, C_prefactor, &tC);
+                } else {
+                    linear_algebra::gemv<false>(AB_prefactor, tA, tB, C_prefactor, &tC);
+                }
+
+                return;
+            }
             // To use a gemm the input tensors need to be at least rank 2
-            if constexpr (CRank >= 2 && ARank >= 2 && BRank >= 2) {
+            else if constexpr (CRank >= 2 && ARank >= 2 && BRank >= 2) {
                 if constexpr (!A_hadamard_found && !B_hadamard_found && !C_hadamard_found) {
-                    if constexpr (is_gemv_possible) {
-                        constexpr bool transpose_A = std::get<1>(link_position_in_A) == 0;
-
-                        Dim<2> dA;
-                        Dim<1> dB, dC;
-
-                        dA[0] = product_dims(A_target_position_in_C, *C);
-                        dA[1] = product_dims(link_position_in_A, A);
-
-                        dB[0] = product_dims(link_position_in_A, A);
-                        dC[0] = product_dims(A_target_position_in_C, *C);
-
-                        const TensorView<ADataType, 2> tA{const_cast<AType<ADataType, ARank> &>(A), dA};
-                        const TensorView<BDataType, 1> tB{const_cast<BType<BDataType, BRank> &>(B), dB};
-                        TensorView<CDataType, 1> tC{*C, dC};
-
-                        if constexpr (transpose_A) {
-                            linear_algebra::gemv<true>(AB_prefactor, tA, tB, C_prefactor, &tC);
-                        } else {
-                            linear_algebra::gemv<false>(AB_prefactor, tA, tB, C_prefactor, &tC);
-                        }
-
-                        return;
-                    } else if constexpr (is_gemm_possible) {
+                    if constexpr (is_gemm_possible) {
 
                         if (!C->full_view_of_underlying() || !A.full_view_of_underlying() || !B.full_view_of_underlying()) {
                             // Fall through to generic algorithm.

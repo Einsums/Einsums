@@ -2084,7 +2084,7 @@ TEST_CASE("einsum element") {
         Tensor B = create_random_tensor("B", _i, _j);
         Tensor A = create_random_tensor("A", _i, _j);
 
-        element([](double const &Cval, double const &Aval, double const &Bval) -> double { return Aval * Bval; }, &C0, A, B);
+        element([](double const & /*Cval*/, double const &Aval, double const &Bval) -> double { return Aval * Bval; }, &C0, A, B);
 
         einsum(Indices{i, j}, &C, Indices{i, j}, A, Indices{i, j}, B);
 
@@ -2527,5 +2527,29 @@ TEST_CASE("andy") {
 
         einsum(0.0, Indices{index::a, index::X}, &D_TILDE, 1.0, Indices{index::Q, index::a, index::X}, C_TILDE, Indices{index::Q, index::X},
                B_QY);
+    }
+
+    SECTION("9") {
+        size_t naux_{3}, u_rank_{4};
+
+        auto Qov = create_random_tensor("Qov", naux_, nocc_, nvirt_);
+        auto ia_X = create_random_tensor("ia_X", nocc_, nvirt_, u_rank_);
+
+        auto N_QX = create_tensor("N_QX", naux_, u_rank_);
+        zero(N_QX);
+
+        einsum(Indices{index::Q, index::X}, &N_QX, Indices{index::Q, index::i, index::a}, Qov, Indices{index::i, index::a, index::X}, ia_X);
+    }
+
+    SECTION("10") {
+        size_t naux_{3}, u_rank_{4};
+
+        auto t_ia = create_random_tensor("t_ia", nocc_, nvirt_);
+        auto ia_X = create_random_tensor("ia_X", nocc_, nvirt_, u_rank_);
+
+        auto M_X = create_tensor("M_X", u_rank_);
+        zero(M_X);
+
+        einsum(Indices{index::X}, &M_X, Indices{index::i, index::a, index::X}, ia_X, Indices{index::i, index::a}, t_ia);
     }
 }
