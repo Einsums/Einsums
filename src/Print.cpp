@@ -82,7 +82,8 @@ void stacktrace() {
     tr.load_stacktrace(st);
     for (size_t i = 0; i < st.size(); ++i) {
         ResolvedTrace trace = tr.resolve(st[i]);
-        println("# {} {} {} [{}]", i, trace.object_filename, trace.object_function, trace.addr);
+        println("# {} {} {} {}:{} [{}]", i, trace.object_filename, trace.object_function, trace.source.function, trace.source.line,
+                trace.addr);
     }
 }
 } // namespace print
