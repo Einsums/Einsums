@@ -825,10 +825,6 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
         // Determine the ordinal using the offsets provided (if any) and the strides of the parent
         size_t ordinal = std::inner_product(offsets.begin(), offsets.end(), other._strides.begin(), 0);
         _data = &(other._data[ordinal]);
-
-        if (stride(-1) == 1) {
-            _full_view_of_underlying = true;
-        }
     }
 
     std::string _name{"(Unnamed View)"};
