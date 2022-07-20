@@ -2549,10 +2549,10 @@ TEST_CASE("andy") {
 
     SECTION("11") {
         auto B_Qmo = create_random_tensor("Q", naux_, nocc_ + nvirt_, nocc_ + nvirt_);
-        // println(B_Qmo, 5, false);
+        // println(B_Qmo);
         auto Qov = B_Qmo(All, Range{0, nocc_}, Range{nocc_, nocc_ + nvirt_});
 
-        // println(Qov, 5, false);
+        // println(Qov, {.full_output = false});
 
         auto ia_X = create_random_tensor("ia_X", nocc_, nvirt_, u_rank_);
 
