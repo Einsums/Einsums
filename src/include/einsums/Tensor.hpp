@@ -1368,8 +1368,13 @@ auto create_disk_tensor_like(h5::fd_t &file, const Tensor<T, Rank> &tensor) -> D
 
 } // namespace einsums
 
+struct TensorPrintOptions {
+    int width{5};
+    bool full_output{true};
+};
+
 template <template <typename, size_t> typename AType, size_t Rank, typename T>
-auto println(const AType<T, Rank> &A, int width = 5, bool full_output = true) ->
+auto println(const AType<T, Rank> &A, TensorPrintOptions options = {}) ->
     typename std::enable_if_t<std::is_base_of_v<einsums::detail::TensorBase<T, Rank>, AType<T, Rank>>> {
     println("Name: {}", A.name());
     {
@@ -1401,7 +1406,7 @@ auto println(const AType<T, Rank> &A, int width = 5, bool full_output = true) ->
             println("Strides{{{}}}", oss.str());
         }
 
-        if (full_output) {
+        if (options.full_output) {
             println();
 
             if constexpr (Rank > 1 && einsums::is_incore_rank_tensor_v<AType<T, Rank>, Rank, T>) {
@@ -1412,15 +1417,15 @@ auto println(const AType<T, Rank> &A, int width = 5, bool full_output = true) ->
                 for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
                     std::ostringstream oss;
                     for (int j = 0; j < final_dim; j++) {
-                        if (j % width == 0) {
+                        if (j % options.width == 0) {
                             std::ostringstream tmp;
                             detail::TuplePrinterNoType<decltype(target_combination), Rank - 1>::print(tmp, target_combination);
-                            if (final_dim >= j + width)
-                                oss << fmt::format("{:<14}",
-                                                   fmt::format("({}, {:{}d}-{:{}d}): ", tmp.str(), j, ndigits, j + width, ndigits));
+                            if (final_dim >= j + options.width)
+                                oss << fmt::format(
+                                    "{:<14}", fmt::format("({}, {:{}d}-{:{}d}): ", tmp.str(), j, ndigits, j + options.width - 1, ndigits));
                             else
                                 oss << fmt::format("{:<14}",
-                                                   fmt::format("({}, {:{}d}-{:{}d}): ", tmp.str(), j, ndigits, final_dim, ndigits));
+                                                   fmt::format("({}, {:{}d}-{:{}d}): ", tmp.str(), j, ndigits, final_dim - 1, ndigits));
                         }
                         auto new_tuple = std::tuple_cat(target_combination.base(), std::tuple(j));
                         T value = std::apply(A, new_tuple);
@@ -1438,7 +1443,7 @@ auto println(const AType<T, Rank> &A, int width = 5, bool full_output = true) ->
                         // } else {
                         // oss << std::setw(14) << 0.0;
                         // }
-                        if (j % width == width - 1 && j != final_dim - 1) {
+                        if (j % options.width == options.width - 1 && j != final_dim - 1) {
                             oss << "\n";
                         }
                     }
