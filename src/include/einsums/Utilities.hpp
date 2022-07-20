@@ -43,15 +43,36 @@ auto create_random_tensor(const std::string &name, MultiIndex... index) -> Tenso
     }
 
     if constexpr (std::is_same_v<T, std::complex<float>>) {
-        std::generate(A.vector_data().begin(), A.vector_data().end(), [&]() {
-            return T{static_cast<float>(unif(re)), static_cast<float>(unif(re))};
-        });
+#pragma omp parallel
+        {
+            auto tid = omp_get_thread_num();
+            auto chunksize = A.vector_data().size() / omp_get_num_threads();
+            auto begin = A.vector_data().begin() + chunksize * tid;
+            auto end = (tid == omp_get_num_threads() - 1) ? A.vector_data().end() : begin + chunksize;
+            std::generate(A.vector_data().begin(), A.vector_data().end(), [&]() {
+                return T{static_cast<float>(unif(re)), static_cast<float>(unif(re))};
+            });
+        }
     } else if constexpr (std::is_same_v<T, std::complex<double>>) {
-        std::generate(A.vector_data().begin(), A.vector_data().end(), [&]() {
-            return T{static_cast<double>(unif(re)), static_cast<double>(unif(re))};
-        });
+#pragma omp parallel
+        {
+            auto tid = omp_get_thread_num();
+            auto chunksize = A.vector_data().size() / omp_get_num_threads();
+            auto begin = A.vector_data().begin() + chunksize * tid;
+            auto end = (tid == omp_get_num_threads() - 1) ? A.vector_data().end() : begin + chunksize;
+            std::generate(A.vector_data().begin(), A.vector_data().end(), [&]() {
+                return T{static_cast<double>(unif(re)), static_cast<double>(unif(re))};
+            });
+        }
     } else {
-        std::generate(A.vector_data().begin(), A.vector_data().end(), [&]() { return static_cast<T>(unif(re)); });
+#pragma omp parallel
+        {
+            auto tid = omp_get_thread_num();
+            auto chunksize = A.vector_data().size() / omp_get_num_threads();
+            auto begin = A.vector_data().begin() + chunksize * tid;
+            auto end = (tid == omp_get_num_threads() - 1) ? A.vector_data().end() : begin + chunksize;
+            std::generate(A.vector_data().begin(), A.vector_data().end(), [&]() { return static_cast<T>(unif(re)); });
+        }
     }
 
     if constexpr (Normalize == true && sizeof...(MultiIndex) == 2) {
