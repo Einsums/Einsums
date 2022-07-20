@@ -447,6 +447,8 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
     }
 
     [[nodiscard]] auto stride(int d) const noexcept -> size_t {
+        if (d < 0)
+            d += Rank;
         return _strides[d];
     }
 
@@ -604,7 +606,6 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
     template <template <typename, size_t> typename AType>
     auto operator=(const AType<T, Rank> &other) ->
         typename std::enable_if_t<is_incore_rank_tensor_v<AType<T, Rank>, Rank, T>, TensorView &> {
-        println("operator= {} {}", _name, other.name());
         if constexpr (std::is_same_v<AType<T, Rank>, TensorView<T, Rank>>) {
             if (this == &other)
                 return *this;
@@ -721,6 +722,8 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
     }
 
     [[nodiscard]] auto stride(int d) const noexcept -> size_t {
+        if (d < 0)
+            d += Rank;
         return _strides[d];
     }
 
@@ -811,8 +814,6 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
                     throw std::runtime_error("Unable to automatically deduce stride information. Stride must be passed in.");
                 }
             }
-
-            /// TODO: Determine if we have full view of the underlying tensor.
         }
 
         default_offsets.fill(0);
@@ -824,6 +825,10 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
         // Determine the ordinal using the offsets provided (if any) and the strides of the parent
         size_t ordinal = std::inner_product(offsets.begin(), offsets.end(), other._strides.begin(), 0);
         _data = &(other._data[ordinal]);
+
+        if (stride(-1) == 1) {
+            _full_view_of_underlying = true;
+        }
     }
 
     std::string _name{"(Unnamed View)"};
@@ -1368,7 +1373,7 @@ auto create_disk_tensor_like(h5::fd_t &file, const Tensor<T, Rank> &tensor) -> D
 } // namespace einsums
 
 template <template <typename, size_t> typename AType, size_t Rank, typename T>
-auto println(const AType<T, Rank> &A, int width = 12) ->
+auto println(const AType<T, Rank> &A, int width = 5, bool full_output = true) ->
     typename std::enable_if_t<std::is_base_of_v<einsums::detail::TensorBase<T, Rank>, AType<T, Rank>>> {
     println("Name: {}", A.name());
     {
@@ -1399,26 +1404,62 @@ auto println(const AType<T, Rank> &A, int width = 12) ->
             }
             println("Strides{{{}}}", oss.str());
         }
-        println();
 
-        if constexpr (Rank > 1 && einsums::is_incore_rank_tensor_v<AType<T, Rank>, Rank, T>) {
-            auto target_dims = einsums::get_dim_ranges<Rank - 1>(A);
-            auto final_dim = A.dim(Rank - 1);
+        if (full_output) {
+            println();
 
-            for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
-                std::ostringstream oss;
-                for (int j = 0; j < final_dim; j++) {
-                    if (j % width == 0) {
-                        std::ostringstream tmp;
-                        detail::TuplePrinterNoType<decltype(target_combination), Rank - 1>::print(tmp, target_combination);
-                        if (final_dim >= j + width)
-                            oss << fmt::format("{:<14}", fmt::format("({}, {:d}-{:d}): ", tmp.str(), j, j + width));
-                        else
-                            oss << fmt::format("{:<14}", fmt::format("({}, {:d}-{:d}): ", tmp.str(), j, final_dim));
+            if constexpr (Rank > 1 && einsums::is_incore_rank_tensor_v<AType<T, Rank>, Rank, T>) {
+                auto target_dims = einsums::get_dim_ranges<Rank - 1>(A);
+                auto final_dim = A.dim(Rank - 1);
+                auto ndigits = einsums::ndigits(final_dim);
+
+                for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
+                    std::ostringstream oss;
+                    for (int j = 0; j < final_dim; j++) {
+                        if (j % width == 0) {
+                            std::ostringstream tmp;
+                            detail::TuplePrinterNoType<decltype(target_combination), Rank - 1>::print(tmp, target_combination);
+                            if (final_dim >= j + width)
+                                oss << fmt::format("{:<14}",
+                                                   fmt::format("({}, {:{}d}-{:{}d}): ", tmp.str(), j, ndigits, j + width, ndigits));
+                            else
+                                oss << fmt::format("{:<14}",
+                                                   fmt::format("({}, {:{}d}-{:{}d}): ", tmp.str(), j, ndigits, final_dim, ndigits));
+                        }
+                        auto new_tuple = std::tuple_cat(target_combination.base(), std::tuple(j));
+                        T value = std::apply(A, new_tuple);
+                        if (std::fabs(value) > 1.0E+10) {
+                            if constexpr (std::is_floating_point_v<T>)
+                                oss << "\x1b[0;37;41m" << fmt::format("{:14.8f} ", value) << "\x1b[0m";
+                            else
+                                oss << "\x1b[0;37;41m" << fmt::format("{:14d} ", value) << "\x1b[0m";
+                        } else {
+                            if constexpr (std::is_floating_point_v<T>)
+                                oss << fmt::format("{:14.8f} ", value);
+                            else
+                                oss << fmt::format("{:14} ", value);
+                        }
+                        // } else {
+                        // oss << std::setw(14) << 0.0;
+                        // }
+                        if (j % width == width - 1 && j != final_dim - 1) {
+                            oss << "\n";
+                        }
                     }
-                    auto new_tuple = std::tuple_cat(target_combination.base(), std::tuple(j));
-                    T value = std::apply(A, new_tuple);
-                    if (std::fabs(value) > 1.0E+10) {
+                    println("{}", oss.str());
+                    println();
+                }
+            } else if constexpr (Rank == 1 && einsums::is_incore_rank_tensor_v<AType<T, Rank>, Rank, T>) {
+                auto target_dims = einsums::get_dim_ranges<Rank>(A);
+
+                for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
+                    std::ostringstream oss;
+                    oss << "(";
+                    detail::TuplePrinterNoType<decltype(target_combination), Rank>::print(oss, target_combination);
+                    oss << "): ";
+
+                    T value = std::apply(A, target_combination);
+                    if (std::fabs(value) > 1.0E+5) {
                         if constexpr (std::is_floating_point_v<T>)
                             oss << "\x1b[0;37;41m" << fmt::format("{:14.8f} ", value) << "\x1b[0m";
                         else
@@ -1427,41 +1468,11 @@ auto println(const AType<T, Rank> &A, int width = 12) ->
                         if constexpr (std::is_floating_point_v<T>)
                             oss << fmt::format("{:14.8f} ", value);
                         else
-                            oss << fmt::format("{:14} ", value);
+                            oss << fmt::format("{:14d} ", value);
                     }
-                    // } else {
-                    // oss << std::setw(14) << 0.0;
-                    // }
-                    if (j % width == width - 1 && j != final_dim - 1) {
-                        oss << "\n";
-                    }
+
+                    println("{}", oss.str());
                 }
-                println("{}", oss.str());
-                println();
-            }
-        } else if constexpr (Rank == 1 && einsums::is_incore_rank_tensor_v<AType<T, Rank>, Rank, T>) {
-            auto target_dims = einsums::get_dim_ranges<Rank>(A);
-
-            for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
-                std::ostringstream oss;
-                oss << "(";
-                detail::TuplePrinterNoType<decltype(target_combination), Rank>::print(oss, target_combination);
-                oss << "): ";
-
-                T value = std::apply(A, target_combination);
-                if (std::fabs(value) > 1.0E+5) {
-                    if constexpr (std::is_floating_point_v<T>)
-                        oss << "\x1b[0;37;41m" << fmt::format("{:14.8f} ", value) << "\x1b[0m";
-                    else
-                        oss << "\x1b[0;37;41m" << fmt::format("{:14d} ", value) << "\x1b[0m";
-                } else {
-                    if constexpr (std::is_floating_point_v<T>)
-                        oss << fmt::format("{:14.8f} ", value);
-                    else
-                        oss << fmt::format("{:14d} ", value);
-                }
-
-                println("{}", oss.str());
             }
         }
     }

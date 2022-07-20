@@ -638,6 +638,12 @@ auto einsum(const CDataType C_prefactor, const std::tuple<CIndices...> & /*Cs*/,
     } else if constexpr (!OnlyUseGenericAlgorithm) {
         do { // do {} while (false) trick to allow us to use a break below to "break" out of the loop.
             if constexpr (is_gemv_possible) {
+
+                if (!C->full_view_of_underlying() || !A.full_view_of_underlying() || !B.full_view_of_underlying()) {
+                    // Fall through to generic algorithm.
+                    break;
+                }
+
                 constexpr bool transpose_A = std::get<1>(link_position_in_A) == 0;
 
                 Dim<2> dA;

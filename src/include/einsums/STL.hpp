@@ -537,4 +537,16 @@ inline auto operator!=(const AlignedAllocator<T, TAlign> &, const AlignedAllocat
     return TAlign != UAlign;
 }
 
+template <typename T>
+inline auto ndigits(T number) -> int {
+    int digits{0};
+    if (number < 0)
+        digits = 1; // Remove this line if '-' counts as a digit
+    while (number) {
+        number /= 10;
+        digits++;
+    }
+    return digits;
+}
+
 } // namespace einsums

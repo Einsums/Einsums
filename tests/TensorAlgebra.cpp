@@ -2388,7 +2388,7 @@ TEST_CASE("andy") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
 
-    size_t proj_rank_{10}, nocc_{5}, nvirt_{28};
+    size_t proj_rank_{10}, nocc_{5}, nvirt_{28}, naux_{3}, u_rank_{4};
 
     SECTION("1") {
         auto y_iW_ = create_random_tensor("y_iW", nocc_, proj_rank_);
@@ -2517,8 +2517,6 @@ TEST_CASE("andy") {
     }
 
     SECTION("8") {
-        size_t naux_{3}, nvirt_{2}, u_rank_{4};
-
         auto C_TILDE = create_random_tensor("C_TILDE", naux_, nvirt_, u_rank_);
         auto B_QY = create_random_tensor("B_QY", naux_, u_rank_);
 
@@ -2530,8 +2528,6 @@ TEST_CASE("andy") {
     }
 
     SECTION("9") {
-        size_t naux_{3}, u_rank_{4};
-
         auto Qov = create_random_tensor("Qov", naux_, nocc_, nvirt_);
         auto ia_X = create_random_tensor("ia_X", nocc_, nvirt_, u_rank_);
 
@@ -2542,8 +2538,6 @@ TEST_CASE("andy") {
     }
 
     SECTION("10") {
-        size_t naux_{3}, u_rank_{4};
-
         auto t_ia = create_random_tensor("t_ia", nocc_, nvirt_);
         auto ia_X = create_random_tensor("ia_X", nocc_, nvirt_, u_rank_);
 
@@ -2551,5 +2545,20 @@ TEST_CASE("andy") {
         zero(M_X);
 
         einsum(Indices{index::X}, &M_X, Indices{index::i, index::a, index::X}, ia_X, Indices{index::i, index::a}, t_ia);
+    }
+
+    SECTION("11") {
+        auto B_Qmo = create_random_tensor("Q", naux_, nocc_ + nvirt_, nocc_ + nvirt_);
+        // println(B_Qmo, 5, false);
+        auto Qov = B_Qmo(All, Range{0, nocc_}, Range{nocc_, nocc_ + nvirt_});
+
+        // println(Qov, 5, false);
+
+        auto ia_X = create_random_tensor("ia_X", nocc_, nvirt_, u_rank_);
+
+        auto N_QX = create_tensor("N_QX", naux_, u_rank_);
+        zero(N_QX);
+
+        einsum(Indices{index::Q, index::X}, &N_QX, Indices{index::Q, index::i, index::a}, Qov, Indices{index::i, index::a, index::X}, ia_X);
     }
 }
