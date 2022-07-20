@@ -384,7 +384,8 @@ auto svd_a(const AType<double, ARank> &_A) ->
 
     if (info != 0) {
         if (info < 0) {
-            println_abort("svd_a: Argument {} has an invalid parameter", -info);
+            println_abort("svd_a: Argument {} has an invalid parameter\n#2 (m) = {}, #3 (n) = {}, #5 (n) = {}, #8 (m) = {}", -info, m, n, n,
+                          m);
         } else {
             println_abort("svd_a: error value {}", info);
         }
