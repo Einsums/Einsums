@@ -307,8 +307,11 @@ TEST_CASE("reshape") {
 
     SECTION("2") {
         auto C = einsums::create_incremented_tensor("C", 10, 10, 10);
-        REQUIRE_NOTHROW(einsums::Tensor{std::move(C), "D", 100, 10});
+        auto D = einsums::Tensor{std::move(C), "D", 100, 10};
         // NOTE: At this point tensor C is no longer valid.
+
+        // println(C); // <- This will cause a segfault when println tries to print the tensor elements
+        // println(D); // <- This succeeds.
     }
 
     SECTION("3") {
