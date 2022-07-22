@@ -232,16 +232,18 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
     auto data() -> T * {
         return _data.data();
     }
+
     auto data() const -> const T * {
         return _data.data();
     }
+
     template <typename... MultiIndex>
     auto data(MultiIndex... index)
         -> std::enable_if_t<count_of_type<All_t, MultiIndex...>() == 0 && count_of_type<Range, MultiIndex...>() == 0, T *> {
         assert(sizeof...(MultiIndex) <= _dims.size());
 
         auto index_list = {static_cast<size_t>(index)...};
-        size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), 0);
+        size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
         return &_data[ordinal];
     }
 
@@ -280,7 +282,7 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
         -> std::enable_if_t<count_of_type<All_t, MultiIndex...>() == 0 && count_of_type<Range, MultiIndex...>() == 0, const T &> {
         assert(sizeof...(MultiIndex) == _dims.size());
         auto index_list = {static_cast<size_t>(index)...};
-        size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), 0);
+        size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
         return _data[ordinal];
     }
 
@@ -289,7 +291,7 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
         -> std::enable_if_t<count_of_type<All_t, MultiIndex...>() == 0 && count_of_type<Range, MultiIndex...>() == 0, T &> {
         assert(sizeof...(MultiIndex) == _dims.size());
         auto index_list = {static_cast<size_t>(index)...};
-        size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), 0);
+        size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
         return _data[ordinal];
     }
 
@@ -680,12 +682,12 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
         assert(sizeof...(MultiIndex) <= _dims.size());
 
         auto index_list = {std::forward<MultiIndex>(index)...};
-        size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), 0);
+        size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
         return &_data[ordinal];
     }
 
     auto data_array(const std::array<size_t, Rank> &index_list) const -> T * {
-        size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), 0);
+        size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
         return &_data[ordinal];
     }
 
@@ -693,7 +695,7 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
     auto operator()(MultiIndex... index) const -> const T & {
         assert(sizeof...(MultiIndex) == _dims.size());
         auto index_list = {std::forward<MultiIndex>(index)...};
-        size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), 0);
+        size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
         return _data[ordinal];
     }
 
@@ -701,7 +703,7 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
     auto operator()(MultiIndex... index) -> T & {
         assert(sizeof...(MultiIndex) == _dims.size());
         auto index_list = {std::forward<MultiIndex>(index)...};
-        size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), 0);
+        size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
         return _data[ordinal];
     }
 
@@ -823,7 +825,7 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
         const Offset<OtherRank> &offsets = Arguments::get(default_offsets, args...);
 
         // Determine the ordinal using the offsets provided (if any) and the strides of the parent
-        size_t ordinal = std::inner_product(offsets.begin(), offsets.end(), other._strides.begin(), 0);
+        size_t ordinal = std::inner_product(offsets.begin(), offsets.end(), other._strides.begin(), size_t{0});
         _data = &(other._data[ordinal]);
     }
 
