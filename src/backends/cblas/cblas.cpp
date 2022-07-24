@@ -264,4 +264,12 @@ auto dtrsyl(char trana, char tranb, int isgn, int m, int n, const double *a, int
     return LAPACKE_dtrsyl(LAPACK_ROW_MAJOR, trana, tranb, isgn, m, n, a, lda, b, ldb, c, ldc, scale);
 }
 
+auto dgeqrf(int m, int n, double *a, int lda, double *tau) -> int {
+    return LAPACKE_dgeqrf(LAPACK_ROW_MAJOR, m, n, a, lda, tau);
+}
+
+auto dorgqr(int m, int n, int k, double *a, int lda, const double* tau) -> int {
+    return LAPACKE_dorgqr(LAPACK_ROW_MAJOR, m, n, k, a, lda, tau);
+}
+
 } // namespace einsums::backend::cblas

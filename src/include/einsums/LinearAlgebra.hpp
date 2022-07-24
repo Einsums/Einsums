@@ -4,6 +4,7 @@
 #include "STL.hpp"
 #include "Tensor.hpp"
 #include "Timer.hpp"
+#include "Utilities.hpp"
 #include "einsums/Section.hpp"
 
 #include <algorithm>

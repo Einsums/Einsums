@@ -113,4 +113,8 @@ auto dgees(char jobvs, int n, double *a, int lda, int *sdim, double *wr, double 
 auto dtrsyl(char trana, char tranb, int isgn, int m, int n, const double *a, int lda, const double *b, int ldb, double *c, int ldc,
             double *scale) -> int;
 
+auto dgeqrf(int m, int n, double *a, int lda, double *tau) -> int;
+
+auto dorgqr(int m, int n, int k, double *a, int lda, const double* tau) -> int;
+
 } // namespace einsums::backend::cblas
