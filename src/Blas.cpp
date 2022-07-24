@@ -177,6 +177,7 @@ auto dtrsyl(char trana, char tranb, int isgn, int m, int n, const double *a, int
     return ::einsums::backend::cblas::dtrsyl(trana, tranb, isgn, m, n, a, lda, b, ldb, c, ldc, scale);
 #else
     throw std::runtime_error("dtrsyl not implemented.");
+#endif
 }
 
 auto dgeqrf(int m, int n, double *a, int lda, double *tau) -> int {
