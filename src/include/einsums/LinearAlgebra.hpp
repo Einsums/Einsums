@@ -344,14 +344,6 @@ auto norm(Norm norm_type, const AType<ADataType, ARank> &a) ->
     }
 }
 
-template <template <typename, size_t> typename AType, typename ADataType, size_t ARank>
-auto sum_square(const AType<ADataType, ARank> &a, complex_type_t<ADataType> *scale, complex_type_t<ADataType> *sumsq) ->
-    typename std::enable_if_t<is_incore_rank_tensor_v<AType<ADataType, ARank>, 1, ADataType>> {
-    int n = a.dim(0);
-    int incx = a.stride(0);
-    blas::lassq(n, a.data(), incx, scale, sumsq);
-}
-
 template <template <typename, size_t> typename AType, size_t ARank>
 auto svd_a(const AType<double, ARank> &_A) ->
     typename std::enable_if_t<is_incore_rank_tensor_v<AType<double, ARank>, 2, double>,
@@ -392,6 +384,74 @@ auto svd_a(const AType<double, ARank> &_A) ->
     }
 
     return std::make_tuple(U, S, Vt);
+}
+
+template <template <typename, size_t> typename AType, size_t ARank>
+auto truncated_svd(const AType<double, ARank> &_A, size_t k) ->
+    typename std::enable_if_t<is_incore_rank_tensor_v<AType<double, ARank>, 2, double>,
+                              std::tuple<Tensor<double, 2>, Tensor<double, 1>, Tensor<double, 2>>> {
+    Section section{"truncated_svd"};
+
+    size_t m = _A.dim(0);
+    size_t n = _A.dim(1);
+
+    // Omega Test Matrix
+    Tensor<double, 2> omega = create_random_tensor("omega", n, k+5);
+
+    // Matrix Y = A * Omega
+    Tensor<double, 2> Y("Y", m, k+5);
+    gemm<false, false>(1.0, _A, omega, 0.0, &Y);
+
+    Tensor<double, 1> tau("tau", std::min(m,k+5));
+    // Compute QR factorization of Y
+    int info1 = blas::dgeqrf(m, k+5, Y.data(), k+5, tau.data());
+    // Extract Matrix Q out of QR factorization
+    int info2 = blas::dorgqr(m, k+5, tau.dim(0), Y.data(), k+5, const_cast<const double *>(tau.data()));
+
+    Tensor<double, 2>& Q1 = Y;
+
+    // Cast the matrix A into a smaller rank (B)
+    Tensor<double, 2> B("B", k+5, n);
+    gemm<true, false>(1.0, Q1, _A, 0.0, &B);
+
+    // Perform svd on B
+    auto [Utilde, S, Vt] = svd_a(B);
+
+    // Cast U back into full basis
+    Tensor<double, 2> U("U", m, k+5);
+    gemm<false, false>(1.0, Q1, Utilde, 0.0, &U);
+
+    return std::make_tuple(U, S, Vt);
+}
+
+template <typename T>
+inline auto pseudoinverse(const Tensor<T, 2>& A, double tol) -> Tensor<T, 2> {
+    timer::push("pseudoinverse");
+
+    // auto nthread = omp_get_max_threads();
+    // omp_set_num_threads(1);
+    auto [U, S, Vh] = svd_a(A);
+    // omp_set_num_threads(nthread);
+
+    size_t new_dim;
+    for (size_t v = 0; v < S.dim(0); v++) {
+        T val = S(v);
+        if (val > tol) scale_column(v, 1.0 / val, &U);
+        else {
+            new_dim = v;
+            break;
+        }
+    }
+
+    TensorView<T, 2> U_view = U(All, Range{0, new_dim});
+    TensorView<T, 2> V_view = Vh(Range{0, new_dim}, All);
+
+    Tensor<T, 2> pinv("pinv", A.dim(0), A.dim(1));
+    gemm<false, false>(1.0, U_view, V_view, 0.0, &pinv);
+
+    timer::pop();
+
+    return pinv;
 }
 
 template <typename T>
