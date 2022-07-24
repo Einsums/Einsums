@@ -177,6 +177,21 @@ auto dtrsyl(char trana, char tranb, int isgn, int m, int n, const double *a, int
     return ::einsums::backend::cblas::dtrsyl(trana, tranb, isgn, m, n, a, lda, b, ldb, c, ldc, scale);
 #else
     throw std::runtime_error("dtrsyl not implemented.");
+}
+
+auto dgeqrf(int m, int n, double *a, int lda, double *tau) -> int {
+#if defined(EINSUMS_HAVE_LAPACKE) || defined(EINSUMS_HAVE_MKL_LAPACKE)
+    return ::einsums::backend::cblas::dgeqrf(m, n, a, lda, tau);
+#else
+    throw std::runtime_error("dgeqrf not implemented.");
+#endif
+}
+
+auto dorgqr(int m, int n, int k, double *a, int lda, const double* tau) -> int {
+#if defined(EINSUMS_HAVE_LAPACKE) || defined(EINSUMS_HAVE_MKL_LAPACKE)
+    return ::einsums::backend::cblas::dorgqr(m, n, k, a, lda, tau);
+#else
+    throw std::runtime_error("dorgqr not implemented.");
 #endif
 }
 
