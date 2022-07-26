@@ -235,3 +235,26 @@ TEST_CASE("Lyapunov") {
         CHECK_THAT(Q.data()[i], Catch::Matchers::WithinAbs(Qtest.data()[i], 0.00001));
     }
 }
+
+template <typename T>
+void truncated_svd_test() {
+    using namespace einsums;
+
+    auto a = create_random_tensor<T>("a", 10, 10);
+    auto [b, c, d] = linear_algebra::truncated_svd(a, 5);
+}
+
+TEST_CASE("truncated_svd") {
+    SECTION("float") {
+        truncated_svd_test<float>();
+    }
+    SECTION("double") {
+        truncated_svd_test<double>();
+    }
+    SECTION("complex float") {
+        truncated_svd_test<std::complex<float>>();
+    }
+    SECTION("complex double") {
+        truncated_svd_test<std::complex<double>>();
+    }
+}
