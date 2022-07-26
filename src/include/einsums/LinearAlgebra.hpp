@@ -90,7 +90,7 @@ auto syev(AType<T, ARank> *A, WType<T, WRank> *W) -> std::enable_if_t<is_incore_
 
 template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename WType, size_t WRank, typename T,
           bool ComputeEigenvectors = true>
-auto heev(AType<T, ARank> *A, WType<complex_type_t<T>, WRank> *W)
+auto heev(AType<T, ARank> *A, WType<remove_complex_t<T>, WRank> *W)
     -> std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, 2, T> && is_incore_rank_tensor_v<WType<T, WRank>, 1, T> &&
                         is_complex_v<T>> {
     Section section{fmt::format("heev<ComputeEigenvectors={}>", ComputeEigenvectors)};
@@ -100,7 +100,7 @@ auto heev(AType<T, ARank> *A, WType<complex_type_t<T>, WRank> *W)
     auto lda = A->stride(0);
     int lwork = 2 * n;
     std::vector<T> work(lwork);
-    std::vector<complex_type_t<T>> rwork(3 * n);
+    std::vector<remove_complex_t<T>> rwork(3 * n);
 
     blas::heev(ComputeEigenvectors ? 'v' : 'n', 'u', n, A->data(), lda, W->data(), work.data(), lwork, rwork.data());
 }
@@ -335,45 +335,35 @@ enum class Norm : char { MaxAbs = 'M', One = 'O', Infinity = 'I', Frobenius = 'F
 
 template <template <typename, size_t> typename AType, typename ADataType, size_t ARank>
 auto norm(Norm norm_type, const AType<ADataType, ARank> &a) ->
-    typename std::enable_if_t<is_incore_rank_tensor_v<AType<ADataType, ARank>, 2, ADataType>, complex_type_t<ADataType>> {
+    typename std::enable_if_t<is_incore_rank_tensor_v<AType<ADataType, ARank>, 2, ADataType>, remove_complex_t<ADataType>> {
     if (norm_type != Norm::Infinity) {
         return blas::lange(norm_type, a->dim(0), a->dim(1), a->data(), a->stride(0), nullptr);
     } else {
-        std::vector<complex_type_t<ADataType>> work(a->dim(0), 0.0);
+        std::vector<remove_complex_t<ADataType>> work(a->dim(0), 0.0);
         return blas::lange(norm_type, a->dim(0), a->dim(1), a->data(), a->stride(0), work.data());
     }
 }
 
-template <template <typename, size_t> typename AType, size_t ARank>
-auto svd_a(const AType<double, ARank> &_A) ->
-    typename std::enable_if_t<is_incore_rank_tensor_v<AType<double, ARank>, 2, double>,
-                              std::tuple<Tensor<double, 2>, Tensor<double, 1>, Tensor<double, 2>>> {
+template <template <typename, size_t> typename AType, typename T, size_t ARank>
+auto svd_a(const AType<T, ARank> &_A) -> typename std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, 2, T>,
+                                                                   std::tuple<Tensor<T, 2>, Tensor<remove_complex_t<T>, 1>, Tensor<T, 2>>> {
     Section section{"svd_a"};
-    // Calling svd will destroy the original data.
-    Tensor<double, 2> A = _A;
+    // Calling svd will destroy the original data. Make a copy of it.
+    Tensor<T, 2> A = _A;
 
     size_t m = A.dim(0);
     size_t n = A.dim(1);
 
-    auto U = Tensor{"U (stored columnwise)", m, m};
+    // Test if it absolutely necessary to zero out these tensors first.
+    auto U = create_tensor<T>("U (stored columnwise)", m, m);
     U.zero();
-    auto S = Tensor{"S", std::min(m, n)};
+    auto S = create_tensor<remove_complex_t<T>>("S", std::min(m, n));
     S.zero();
-    auto Vt = Tensor{"Vt (stored rowwise)", n, n};
+    auto Vt = create_tensor<T>("Vt (stored rowwise)", n, n);
     Vt.zero();
 
-    // Workspace is not needed if we are using cblas/LAPACKE C wrapper.
-    std::vector<int> iwork(8 * n);
-
-    double lwork;
-    // workspace query
-    // blas::dgesdd('A', m, n, A.data(), n, S.data(), U.data(), k, Vt.data(), n, &lwork, -1, iwork.data());
-
-    // std::vector<double> work((int)lwork);
-
-    // int info = blas::dgesdd('A', m, n, A.data(), n, S.data(), U.data(), k, Vt.data(), n, work.data(), lwork, iwork.data());
-    int info = blas::dgesdd('A', static_cast<int>(m), static_cast<int>(n), A.data(), static_cast<int>(n), S.data(), U.data(),
-                            static_cast<int>(m), Vt.data(), static_cast<int>(n), nullptr, 0, nullptr);
+    int info = blas::gesdd('A', static_cast<int>(m), static_cast<int>(n), A.data(), static_cast<int>(n), S.data(), U.data(),
+                           static_cast<int>(m), Vt.data(), static_cast<int>(n));
 
     if (info != 0) {
         if (info < 0) {
@@ -386,46 +376,49 @@ auto svd_a(const AType<double, ARank> &_A) ->
     return std::make_tuple(U, S, Vt);
 }
 
-template <template <typename, size_t> typename AType, size_t ARank>
-auto truncated_svd(const AType<double, ARank> &_A, size_t k) ->
-    typename std::enable_if_t<is_incore_rank_tensor_v<AType<double, ARank>, 2, double>,
-                              std::tuple<Tensor<double, 2>, Tensor<double, 1>, Tensor<double, 2>>> {
+template <template <typename, size_t> typename AType, typename T, size_t ARank>
+auto truncated_svd(const AType<T, ARank> &_A, size_t k) ->
+    typename std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, 2, T>,
+                              std::tuple<Tensor<T, 2>, Tensor<remove_complex_t<T>, 1>, Tensor<T, 2>>> {
     Section section{"truncated_svd"};
 
     size_t m = _A.dim(0);
     size_t n = _A.dim(1);
 
     // Omega Test Matrix
-    Tensor<double, 2> omega = create_random_tensor("omega", n, k+5);
+    auto omega = create_random_tensor<T>("omega", n, k + 5);
 
     // Matrix Y = A * Omega
-    Tensor<double, 2> Y("Y", m, k+5);
-    gemm<false, false>(1.0, _A, omega, 0.0, &Y);
+    Tensor<T, 2> Y("Y", m, k + 5);
+    gemm<false, false>(T{1.0}, _A, omega, T{0.0}, &Y);
 
-    Tensor<double, 1> tau("tau", std::min(m,k+5));
+    Tensor<T, 1> tau("tau", std::min(m, k + 5));
     // Compute QR factorization of Y
-    int info1 = blas::dgeqrf(m, k+5, Y.data(), k+5, tau.data());
+    int info1 = blas::geqrf(m, k + 5, Y.data(), k + 5, tau.data());
     // Extract Matrix Q out of QR factorization
-    int info2 = blas::dorgqr(m, k+5, tau.dim(0), Y.data(), k+5, const_cast<const double *>(tau.data()));
-
-    Tensor<double, 2>& Q1 = Y;
+    if constexpr (!is_complex_v<T>) {
+        int info2 = blas::orgqr(m, k + 5, tau.dim(0), Y.data(), k + 5, const_cast<const T *>(tau.data()));
+    } else {
+        int info2 = blas::ungqr(m, k + 5, tau.dim(0), Y.data(), k + 5, const_cast<const T *>(tau.data()));
+    }
+    // Tensor<T, 2>& Q1 = Y; // Just use Y instead of Q1.
 
     // Cast the matrix A into a smaller rank (B)
-    Tensor<double, 2> B("B", k+5, n);
-    gemm<true, false>(1.0, Q1, _A, 0.0, &B);
+    Tensor<T, 2> B("B", k + 5, n);
+    gemm<true, false>(T{1.0}, Y, _A, T{0.0}, &B);
 
     // Perform svd on B
     auto [Utilde, S, Vt] = svd_a(B);
 
     // Cast U back into full basis
-    Tensor<double, 2> U("U", m, k+5);
-    gemm<false, false>(1.0, Q1, Utilde, 0.0, &U);
+    Tensor<T, 2> U("U", m, k + 5);
+    gemm<false, false>(T{1.0}, Y, Utilde, T{0.0}, &U);
 
     return std::make_tuple(U, S, Vt);
 }
 
 template <typename T>
-inline auto pseudoinverse(const Tensor<T, 2>& A, double tol) -> Tensor<T, 2> {
+inline auto pseudoinverse(const Tensor<T, 2> &A, double tol) -> Tensor<T, 2> {
     timer::push("pseudoinverse");
 
     // auto nthread = omp_get_max_threads();
@@ -436,7 +429,8 @@ inline auto pseudoinverse(const Tensor<T, 2>& A, double tol) -> Tensor<T, 2> {
     size_t new_dim;
     for (size_t v = 0; v < S.dim(0); v++) {
         T val = S(v);
-        if (val > tol) scale_column(v, 1.0 / val, &U);
+        if (val > tol)
+            scale_column(v, 1.0 / val, &U);
         else {
             new_dim = v;
             break;

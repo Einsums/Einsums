@@ -2356,8 +2356,8 @@ void einsum_mixed_test() {
     for (size_t i = 0; i < i_; i++) {
         for (size_t j = 0; j < j_; j++) {
             // println("{:20.14f} {:20.14f} {:20.14f}", C(i, j), C0(i, j), std::abs(C(i, j) - C0(i, j)));
-            CHECK(std::abs(C(i, j) - C0(i, j)) < complex_type_t<TC>{1.0E-4});
-            // REQUIRE_THAT(C(i, j), Catch::Matchers::WithinAbs(C0(i, j), complex_type_t<TC>{1.0E-16}));
+            CHECK(std::abs(C(i, j) - C0(i, j)) < remove_complex_t<TC>{1.0E-4});
+            // REQUIRE_THAT(C(i, j), Catch::Matchers::WithinAbs(C0(i, j), remove_complex_t<TC>{1.0E-16}));
         }
     }
 }

@@ -6,7 +6,7 @@
 namespace einsums {
 
 template <template <typename, size_t> typename AType, typename ADataType, size_t ARank>
-auto sum_square(const AType<ADataType, ARank> &a, complex_type_t<ADataType> *scale, complex_type_t<ADataType> *sumsq) ->
+auto sum_square(const AType<ADataType, ARank> &a, remove_complex_t<ADataType> *scale, remove_complex_t<ADataType> *sumsq) ->
     typename std::enable_if_t<is_incore_rank_tensor_v<AType<ADataType, ARank>, 1, ADataType>> {
     int n = a.dim(0);
     int incx = a.stride(0);
@@ -86,7 +86,7 @@ auto create_random_tensor(const std::string &name, MultiIndex... index) -> Tenso
 
     if constexpr (Normalize == true && sizeof...(MultiIndex) == 2) {
         for (int col = 0; col < A.dim(-1); col++) {
-            complex_type_t<T> scale{1}, sumsq{0};
+            remove_complex_t<T> scale{1}, sumsq{0};
 
             auto column = A(All, col);
             // auto collapsed = TensorView{A, Dim<2>{-1, A.dim(-1)}};
