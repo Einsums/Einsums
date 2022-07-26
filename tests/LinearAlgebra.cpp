@@ -216,6 +216,7 @@ TEST_CASE("heev") {
     }
 }
 
+#if !defined(__APPLE__)
 template <typename T>
 void truncated_svd_test() {
     using namespace einsums;
@@ -238,3 +239,4 @@ TEST_CASE("truncated_svd") {
         truncated_svd_test<std::complex<double>>();
     }
 }
+#endif
