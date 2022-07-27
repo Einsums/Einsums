@@ -1,8 +1,17 @@
 #pragma once
 
+#include "Blas.hpp"
 #include "einsums/LinearAlgebra.hpp"
 
 namespace einsums {
+
+template <template <typename, size_t> typename AType, typename ADataType, size_t ARank>
+auto sum_square(const AType<ADataType, ARank> &a, remove_complex_t<ADataType> *scale, remove_complex_t<ADataType> *sumsq) ->
+    typename std::enable_if_t<is_incore_rank_tensor_v<AType<ADataType, ARank>, 1, ADataType>> {
+    int n = a.dim(0);
+    int incx = a.stride(0);
+    blas::lassq(n, a.data(), incx, scale, sumsq);
+}
 
 template <typename T = double, typename... MultiIndex>
 auto create_incremented_tensor(const std::string &name, MultiIndex... index) -> Tensor<T, sizeof...(MultiIndex)> {
@@ -43,25 +52,46 @@ auto create_random_tensor(const std::string &name, MultiIndex... index) -> Tenso
     }
 
     if constexpr (std::is_same_v<T, std::complex<float>>) {
-        std::generate(A.vector_data().begin(), A.vector_data().end(), [&]() {
-            return T{static_cast<float>(unif(re)), static_cast<float>(unif(re))};
-        });
+#pragma omp parallel
+        {
+            auto tid = omp_get_thread_num();
+            auto chunksize = A.vector_data().size() / omp_get_num_threads();
+            auto begin = A.vector_data().begin() + chunksize * tid;
+            auto end = (tid == omp_get_num_threads() - 1) ? A.vector_data().end() : begin + chunksize;
+            std::generate(A.vector_data().begin(), A.vector_data().end(), [&]() {
+                return T{static_cast<float>(unif(re)), static_cast<float>(unif(re))};
+            });
+        }
     } else if constexpr (std::is_same_v<T, std::complex<double>>) {
-        std::generate(A.vector_data().begin(), A.vector_data().end(), [&]() {
-            return T{static_cast<double>(unif(re)), static_cast<double>(unif(re))};
-        });
+#pragma omp parallel
+        {
+            auto tid = omp_get_thread_num();
+            auto chunksize = A.vector_data().size() / omp_get_num_threads();
+            auto begin = A.vector_data().begin() + chunksize * tid;
+            auto end = (tid == omp_get_num_threads() - 1) ? A.vector_data().end() : begin + chunksize;
+            std::generate(A.vector_data().begin(), A.vector_data().end(), [&]() {
+                return T{static_cast<double>(unif(re)), static_cast<double>(unif(re))};
+            });
+        }
     } else {
-        std::generate(A.vector_data().begin(), A.vector_data().end(), [&]() { return static_cast<T>(unif(re)); });
+#pragma omp parallel
+        {
+            auto tid = omp_get_thread_num();
+            auto chunksize = A.vector_data().size() / omp_get_num_threads();
+            auto begin = A.vector_data().begin() + chunksize * tid;
+            auto end = (tid == omp_get_num_threads() - 1) ? A.vector_data().end() : begin + chunksize;
+            std::generate(A.vector_data().begin(), A.vector_data().end(), [&]() { return static_cast<T>(unif(re)); });
+        }
     }
 
     if constexpr (Normalize == true && sizeof...(MultiIndex) == 2) {
         for (int col = 0; col < A.dim(-1); col++) {
-            complex_type_t<T> scale{1}, sumsq{0};
+            remove_complex_t<T> scale{1}, sumsq{0};
 
             auto column = A(All, col);
             // auto collapsed = TensorView{A, Dim<2>{-1, A.dim(-1)}};
             // auto column = collapsed(All, col);
-            linear_algebra::sum_square(column, &scale, &sumsq);
+            sum_square(column, &scale, &sumsq);
             T value = scale * sqrt(sumsq);
             column /= value;
         }

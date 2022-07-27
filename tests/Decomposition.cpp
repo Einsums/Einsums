@@ -1,7 +1,8 @@
-// CP test cases generate some massive intermediates that the auto einsum tests struggle with
-// undefine the test and simply use the manual tests listed in this file.
+// CP test cases generate some massive intermediates that the auto einsum tests struggle with.
+// Undefine the tests and simply use the manual tests listed in this file.
 #undef EINSUMS_USE_CATCH2
 #undef EINSUMS_CONTINUOUSLY_TEST_EINSUM
+#undef EINSUMS_TEST_NANS
 
 #include "einsums/Decomposition.hpp"
 
@@ -221,7 +222,7 @@ TEST_CASE("Lyapunov") {
     A.vector_data() = std::vector<double, einsums::AlignedAllocator<double, 64>>{
         1.25898804, -0.00000000, -0.58802280, -0.00000000, 1.51359048, 0.00000000, -0.58802280, 0.00000000, 1.71673427};
 
-    Q.vector_data() = std::vector<double, einsums::AlignedAllocator<double, 64>>{ 
+    Q.vector_data() = std::vector<double, einsums::AlignedAllocator<double, 64>>{
         -0.05892104, 0.00000000, 0.00634896, 0.00000000, -0.02508491, 0.00000000, 0.00634896, 0.00000000, 0.00155829};
 
     auto X = einsums::linear_algebra::solve_lyapunov(A, Q);
@@ -232,5 +233,28 @@ TEST_CASE("Lyapunov") {
 
     for (size_t i = 0; i < 9; i++) {
         CHECK_THAT(Q.data()[i], Catch::Matchers::WithinAbs(Qtest.data()[i], 0.00001));
+    }
+}
+
+template <typename T>
+void truncated_svd_test() {
+    using namespace einsums;
+
+    auto a = create_random_tensor<T>("a", 10, 10);
+    auto [b, c, d] = linear_algebra::truncated_svd(a, 5);
+}
+
+TEST_CASE("truncated_svd") {
+    SECTION("float") {
+        truncated_svd_test<float>();
+    }
+    SECTION("double") {
+        truncated_svd_test<double>();
+    }
+    SECTION("complex float") {
+        truncated_svd_test<std::complex<float>>();
+    }
+    SECTION("complex double") {
+        truncated_svd_test<std::complex<double>>();
     }
 }

@@ -232,16 +232,18 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
     auto data() -> T * {
         return _data.data();
     }
+
     auto data() const -> const T * {
         return _data.data();
     }
+
     template <typename... MultiIndex>
     auto data(MultiIndex... index)
         -> std::enable_if_t<count_of_type<All_t, MultiIndex...>() == 0 && count_of_type<Range, MultiIndex...>() == 0, T *> {
         assert(sizeof...(MultiIndex) <= _dims.size());
 
         auto index_list = {static_cast<size_t>(index)...};
-        size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), 0);
+        size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
         return &_data[ordinal];
     }
 
@@ -280,7 +282,7 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
         -> std::enable_if_t<count_of_type<All_t, MultiIndex...>() == 0 && count_of_type<Range, MultiIndex...>() == 0, const T &> {
         assert(sizeof...(MultiIndex) == _dims.size());
         auto index_list = {static_cast<size_t>(index)...};
-        size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), 0);
+        size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
         return _data[ordinal];
     }
 
@@ -289,7 +291,7 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
         -> std::enable_if_t<count_of_type<All_t, MultiIndex...>() == 0 && count_of_type<Range, MultiIndex...>() == 0, T &> {
         assert(sizeof...(MultiIndex) == _dims.size());
         auto index_list = {static_cast<size_t>(index)...};
-        size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), 0);
+        size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
         return _data[ordinal];
     }
 
@@ -680,12 +682,12 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
         assert(sizeof...(MultiIndex) <= _dims.size());
 
         auto index_list = {std::forward<MultiIndex>(index)...};
-        size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), 0);
+        size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
         return &_data[ordinal];
     }
 
     auto data_array(const std::array<size_t, Rank> &index_list) const -> T * {
-        size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), 0);
+        size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
         return &_data[ordinal];
     }
 
@@ -693,7 +695,7 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
     auto operator()(MultiIndex... index) const -> const T & {
         assert(sizeof...(MultiIndex) == _dims.size());
         auto index_list = {std::forward<MultiIndex>(index)...};
-        size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), 0);
+        size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
         return _data[ordinal];
     }
 
@@ -701,7 +703,7 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
     auto operator()(MultiIndex... index) -> T & {
         assert(sizeof...(MultiIndex) == _dims.size());
         auto index_list = {std::forward<MultiIndex>(index)...};
-        size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), 0);
+        size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
         return _data[ordinal];
     }
 
@@ -823,7 +825,7 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
         const Offset<OtherRank> &offsets = Arguments::get(default_offsets, args...);
 
         // Determine the ordinal using the offsets provided (if any) and the strides of the parent
-        size_t ordinal = std::inner_product(offsets.begin(), offsets.end(), other._strides.begin(), 0);
+        size_t ordinal = std::inner_product(offsets.begin(), offsets.end(), other._strides.begin(), size_t{0});
         _data = &(other._data[ordinal]);
     }
 
@@ -1368,8 +1370,13 @@ auto create_disk_tensor_like(h5::fd_t &file, const Tensor<T, Rank> &tensor) -> D
 
 } // namespace einsums
 
+struct TensorPrintOptions {
+    int width{5};
+    bool full_output{true};
+};
+
 template <template <typename, size_t> typename AType, size_t Rank, typename T>
-auto println(const AType<T, Rank> &A, int width = 5, bool full_output = true) ->
+auto println(const AType<T, Rank> &A, TensorPrintOptions options = {}) ->
     typename std::enable_if_t<std::is_base_of_v<einsums::detail::TensorBase<T, Rank>, AType<T, Rank>>> {
     println("Name: {}", A.name());
     {
@@ -1401,7 +1408,7 @@ auto println(const AType<T, Rank> &A, int width = 5, bool full_output = true) ->
             println("Strides{{{}}}", oss.str());
         }
 
-        if (full_output) {
+        if (options.full_output) {
             println();
 
             if constexpr (Rank > 1 && einsums::is_incore_rank_tensor_v<AType<T, Rank>, Rank, T>) {
@@ -1412,15 +1419,15 @@ auto println(const AType<T, Rank> &A, int width = 5, bool full_output = true) ->
                 for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
                     std::ostringstream oss;
                     for (int j = 0; j < final_dim; j++) {
-                        if (j % width == 0) {
+                        if (j % options.width == 0) {
                             std::ostringstream tmp;
                             detail::TuplePrinterNoType<decltype(target_combination), Rank - 1>::print(tmp, target_combination);
-                            if (final_dim >= j + width)
-                                oss << fmt::format("{:<14}",
-                                                   fmt::format("({}, {:{}d}-{:{}d}): ", tmp.str(), j, ndigits, j + width, ndigits));
+                            if (final_dim >= j + options.width)
+                                oss << fmt::format(
+                                    "{:<14}", fmt::format("({}, {:{}d}-{:{}d}): ", tmp.str(), j, ndigits, j + options.width - 1, ndigits));
                             else
                                 oss << fmt::format("{:<14}",
-                                                   fmt::format("({}, {:{}d}-{:{}d}): ", tmp.str(), j, ndigits, final_dim, ndigits));
+                                                   fmt::format("({}, {:{}d}-{:{}d}): ", tmp.str(), j, ndigits, final_dim - 1, ndigits));
                         }
                         auto new_tuple = std::tuple_cat(target_combination.base(), std::tuple(j));
                         T value = std::apply(A, new_tuple);
@@ -1438,7 +1445,7 @@ auto println(const AType<T, Rank> &A, int width = 5, bool full_output = true) ->
                         // } else {
                         // oss << std::setw(14) << 0.0;
                         // }
-                        if (j % width == width - 1 && j != final_dim - 1) {
+                        if (j % options.width == options.width - 1 && j != final_dim - 1) {
                             oss << "\n";
                         }
                     }

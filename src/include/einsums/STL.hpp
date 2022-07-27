@@ -344,8 +344,13 @@ struct complex_type<std::complex<T>> {
     using type = T;
 };
 
+/**
+ * @brief Returns the inner type of a std::complex<>.
+ *
+ * @tparam T type to
+ */
 template <typename T>
-using complex_type_t = typename complex_type<T>::type;
+using remove_complex_t = typename complex_type<T>::type;
 
 template <typename T>
 struct CircularBuffer {

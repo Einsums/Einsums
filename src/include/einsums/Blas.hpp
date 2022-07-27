@@ -218,7 +218,7 @@ auto clange(char norm_type, int m, int n, const std::complex<float> *A, int lda,
 auto zlange(char norm_type, int m, int n, const std::complex<double> *A, int lda, double *work) -> double;
 
 template <typename T>
-auto lange(char norm_type, int m, int n, const T *A, int lda, complex_type_t<T> *work) -> complex_type_t<T>;
+auto lange(char norm_type, int m, int n, const T *A, int lda, remove_complex_t<T> *work) -> remove_complex_t<T>;
 
 template <>
 inline auto lange<float>(char norm_type, int m, int n, const float *A, int lda, float *work) -> float {
@@ -246,7 +246,7 @@ void classq(int n, const std::complex<float> *x, int incx, float *scale, float *
 void zlassq(int n, const std::complex<double> *x, int incx, double *scale, double *sumsq);
 
 template <typename T>
-void lassq(int n, const T *x, int incx, complex_type_t<T> *scale, complex_type_t<T> *sumsq);
+void lassq(int n, const T *x, int incx, remove_complex_t<T> *scale, remove_complex_t<T> *sumsq);
 
 template <>
 inline void lassq<float>(int n, const float *x, int incx, float *scale, float *sumsq) {
@@ -272,18 +272,114 @@ inline void lassq<std::complex<double>>(int n, const std::complex<double> *x, in
  * Computes the singular value decomposition of a general rectangular
  * matrix using a divide and conquer method.
  */
-auto dgesdd(char, int, int, double *, int, double *, double *, int, double *, int, double *, int, int *) -> int;
+auto sgesdd(char jobz, int m, int n, float *a, int lda, float *s, float *u, int ldu, float *vt, int ldvt) -> int;
+auto dgesdd(char jobz, int m, int n, double *a, int lda, double *s, double *u, int ldu, double *vt, int ldvt) -> int;
+auto cgesdd(char jobz, int m, int n, std::complex<float> *a, int lda, float *s, std::complex<float> *u, int ldu, std::complex<float> *vt,
+            int ldvt) -> int;
+auto zgesdd(char jobz, int m, int n, std::complex<double> *a, int lda, double *s, std::complex<double> *u, int ldu,
+            std::complex<double> *vt, int ldvt) -> int;
+
+template <typename T>
+auto gesdd(char jobz, int m, int n, T *a, int lda, remove_complex_t<T> *s, T *u, int ldu, T *vt, int ldvt) -> int;
+
+template <>
+inline auto gesdd<float>(char jobz, int m, int n, float *a, int lda, float *s, float *u, int ldu, float *vt, int ldvt) -> int {
+    return sgesdd(jobz, m, n, a, lda, s, u, ldu, vt, ldvt);
+}
+
+template <>
+inline auto gesdd<double>(char jobz, int m, int n, double *a, int lda, double *s, double *u, int ldu, double *vt, int ldvt) -> int {
+    return dgesdd(jobz, m, n, a, lda, s, u, ldu, vt, ldvt);
+}
+
+template <>
+inline auto gesdd<std::complex<float>>(char jobz, int m, int n, std::complex<float> *a, int lda, float *s, std::complex<float> *u, int ldu,
+                                       std::complex<float> *vt, int ldvt) -> int {
+    return cgesdd(jobz, m, n, a, lda, s, u, ldu, vt, ldvt);
+}
+
+template <>
+inline auto gesdd<std::complex<double>>(char jobz, int m, int n, std::complex<double> *a, int lda, double *s, std::complex<double> *u,
+                                        int ldu, std::complex<double> *vt, int ldvt) -> int {
+    return zgesdd(jobz, m, n, a, lda, s, u, ldu, vt, ldvt);
+}
 
 /*!
  * Computes the Schur Decomposition of a Matrix
  * (Used in Lyapunov Solves)
  */
-auto dgees(char jobvs, int n, double* a, int lda, int* sdim, double* wr, double* wi, double* vs, int ldvs) -> int;
+auto dgees(char jobvs, int n, double *a, int lda, int *sdim, double *wr, double *wi, double *vs, int ldvs) -> int;
 
 /*!
  * Sylvester Solve
  * (Used in Lyapunov Solves)
  */
-auto dtrsyl(char trana, char tranb, int isgn, int m, int n, const double* a, int lda, const double* b, int ldb, double* c, int ldc, double* scale) -> int;
+auto dtrsyl(char trana, char tranb, int isgn, int m, int n, const double *a, int lda, const double *b, int ldb, double *c, int ldc,
+            double *scale) -> int;
+
+/*!
+ * Computes a QR factorizaton (Useful for orthonormalizing matrices)
+ */
+auto sgeqrf(int m, int n, float *a, int lda, float *tau) -> int;
+auto dgeqrf(int m, int n, double *a, int lda, double *tau) -> int;
+auto cgeqrf(int m, int n, std::complex<float> *a, int lda, std::complex<float> *tau) -> int;
+auto zgeqrf(int m, int n, std::complex<double> *a, int lda, std::complex<double> *tau) -> int;
+
+template <typename T>
+auto geqrf(int m, int n, T *a, int lda, T *tau) -> int;
+
+template <>
+inline auto geqrf<float>(int m, int n, float *a, int lda, float *tau) -> int {
+    return sgeqrf(m, n, a, lda, tau);
+}
+
+template <>
+inline auto geqrf<double>(int m, int n, double *a, int lda, double *tau) -> int {
+    return dgeqrf(m, n, a, lda, tau);
+}
+
+template <>
+inline auto geqrf<std::complex<float>>(int m, int n, std::complex<float> *a, int lda, std::complex<float> *tau) -> int {
+    return cgeqrf(m, n, a, lda, tau);
+}
+
+template <>
+inline auto geqrf<std::complex<double>>(int m, int n, std::complex<double> *a, int lda, std::complex<double> *tau) -> int {
+    return zgeqrf(m, n, a, lda, tau);
+}
+
+/*!
+ * Returns the orthogonal/unitary matrix Q from the output of dgeqrf
+ */
+auto sorgqr(int m, int n, int k, float *a, int lda, const float *tau) -> int;
+auto dorgqr(int m, int n, int k, double *a, int lda, const double *tau) -> int;
+auto cungqr(int m, int n, int k, std::complex<float> *a, int lda, const std::complex<float> *tau) -> int;
+auto zungqr(int m, int n, int k, std::complex<double> *a, int lda, const std::complex<double> *tau) -> int;
+
+template <typename T>
+auto orgqr(int m, int n, int k, T *a, int lda, const T *tau) -> int;
+
+template <>
+inline auto orgqr<float>(int m, int n, int k, float *a, int lda, const float *tau) -> int {
+    return sorgqr(m, n, k, a, lda, tau);
+}
+
+template <>
+inline auto orgqr<double>(int m, int n, int k, double *a, int lda, const double *tau) -> int {
+    return dorgqr(m, n, k, a, lda, tau);
+}
+
+template <typename T>
+auto ungqr(int m, int n, int k, T *a, int lda, const T *tau) -> int;
+
+template <>
+inline auto ungqr<std::complex<float>>(int m, int n, int k, std::complex<float> *a, int lda, const std::complex<float> *tau) -> int {
+    return cungqr(m, n, k, a, lda, tau);
+}
+
+template <>
+inline auto ungqr<std::complex<double>>(int m, int n, int k, std::complex<double> *a, int lda, const std::complex<double> *tau) -> int {
+    return zungqr(m, n, k, a, lda, tau);
+}
 
 } // namespace einsums::blas

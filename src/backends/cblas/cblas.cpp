@@ -251,8 +251,24 @@ auto dlange(char norm_type, int m, int n, const double *A, int lda, double *) ->
     return LAPACKE_dlange(LAPACK_ROW_MAJOR, norm_type, m, n, A, lda);
 }
 
-auto dgesdd(char jobz, int m, int n, double *a, int lda, double *s, double *u, int ldu, double *vt, int ldvt, double *, int, int *) -> int {
+auto sgesdd(char jobz, int m, int n, float *a, int lda, float *s, float *u, int ldu, float *vt, int ldvt) -> int {
+    return LAPACKE_sgesdd(LAPACK_ROW_MAJOR, jobz, m, n, a, lda, s, u, ldu, vt, ldvt);
+}
+
+auto dgesdd(char jobz, int m, int n, double *a, int lda, double *s, double *u, int ldu, double *vt, int ldvt) -> int {
     return LAPACKE_dgesdd(LAPACK_ROW_MAJOR, jobz, m, n, a, lda, s, u, ldu, vt, ldvt);
+}
+
+auto cgesdd(char jobz, int m, int n, std::complex<float> *a, int lda, float *s, std::complex<float> *u, int ldu, std::complex<float> *vt,
+            int ldvt) -> int {
+    return LAPACKE_cgesdd(LAPACK_ROW_MAJOR, jobz, m, n, reinterpret_cast<lapack_complex_float *>(a), lda, s,
+                          reinterpret_cast<lapack_complex_float *>(u), ldu, reinterpret_cast<lapack_complex_float *>(vt), ldvt);
+}
+
+auto zgesdd(char jobz, int m, int n, std::complex<double> *a, int lda, double *s, std::complex<double> *u, int ldu,
+            std::complex<double> *vt, int ldvt) -> int {
+    return LAPACKE_zgesdd(LAPACK_ROW_MAJOR, jobz, m, n, reinterpret_cast<lapack_complex_double *>(a), lda, s,
+                          reinterpret_cast<lapack_complex_double *>(u), ldu, reinterpret_cast<lapack_complex_double *>(vt), ldvt);
 }
 
 auto dgees(char jobvs, int n, double *a, int lda, int *sdim, double *wr, double *wi, double *vs, int ldvs) -> int {
@@ -262,6 +278,42 @@ auto dgees(char jobvs, int n, double *a, int lda, int *sdim, double *wr, double 
 auto dtrsyl(char trana, char tranb, int isgn, int m, int n, const double *a, int lda, const double *b, int ldb, double *c, int ldc,
             double *scale) -> int {
     return LAPACKE_dtrsyl(LAPACK_ROW_MAJOR, trana, tranb, isgn, m, n, a, lda, b, ldb, c, ldc, scale);
+}
+
+auto sgeqrf(int m, int n, float *a, int lda, float *tau) -> int {
+    return LAPACKE_sgeqrf(LAPACK_ROW_MAJOR, m, n, a, lda, tau);
+}
+
+auto dgeqrf(int m, int n, double *a, int lda, double *tau) -> int {
+    return LAPACKE_dgeqrf(LAPACK_ROW_MAJOR, m, n, a, lda, tau);
+}
+
+auto cgeqrf(int m, int n, std::complex<float> *a, int lda, std::complex<float> *tau) -> int {
+    return LAPACKE_cgeqrf(LAPACK_ROW_MAJOR, m, n, reinterpret_cast<lapack_complex_float *>(a), lda,
+                          reinterpret_cast<lapack_complex_float *>(tau));
+}
+
+auto zgeqrf(int m, int n, std::complex<double> *a, int lda, std::complex<double> *tau) -> int {
+    return LAPACKE_zgeqrf(LAPACK_ROW_MAJOR, m, n, reinterpret_cast<lapack_complex_double *>(a), lda,
+                          reinterpret_cast<lapack_complex_double *>(tau));
+}
+
+auto sorgqr(int m, int n, int k, float *a, int lda, const float *tau) -> int {
+    return LAPACKE_sorgqr(LAPACK_ROW_MAJOR, m, n, k, a, lda, tau);
+}
+
+auto dorgqr(int m, int n, int k, double *a, int lda, const double *tau) -> int {
+    return LAPACKE_dorgqr(LAPACK_ROW_MAJOR, m, n, k, a, lda, tau);
+}
+
+auto cungqr(int m, int n, int k, std::complex<float> *a, int lda, const std::complex<float> *tau) -> int {
+    return LAPACKE_cungqr(LAPACK_ROW_MAJOR, m, n, k, reinterpret_cast<lapack_complex_float *>(a), lda,
+                          reinterpret_cast<const lapack_complex_float *>(tau));
+}
+
+auto zungqr(int m, int n, int k, std::complex<double> *a, int lda, const std::complex<double> *tau) -> int {
+    return LAPACKE_zungqr(LAPACK_ROW_MAJOR, m, n, k, reinterpret_cast<lapack_complex_double *>(a), lda,
+                          reinterpret_cast<const lapack_complex_double *>(tau));
 }
 
 } // namespace einsums::backend::cblas
