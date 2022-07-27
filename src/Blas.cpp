@@ -27,6 +27,7 @@ void finalize() {
 #endif
 }
 
+namespace detail {
 void sgemm(char transa, char transb, int m, int n, int k, float alpha, const float *a, int lda, const float *b, int ldb, float beta,
            float *c, int ldc) {
     ::einsums::backend::vendor::sgemm(transa, transb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc);
@@ -98,28 +99,110 @@ auto zheev(char job, char uplo, int n, std::complex<double> *a, int lda, double 
     return ::einsums::backend::vendor::zheev(job, uplo, n, a, lda, w, work, lwork, rwork);
 }
 
+void sscal(int n, float alpha, float *vec, int inc) {
+    ::einsums::backend::vendor::sscal(n, alpha, vec, inc);
+}
+
 void dscal(int n, double alpha, double *vec, int inc) {
     ::einsums::backend::vendor::dscal(n, alpha, vec, inc);
+}
+
+void cscal(int n, std::complex<float> alpha, std::complex<float> *vec, int inc) {
+    ::einsums::backend::vendor::cscal(n, alpha, vec, inc);
+}
+
+void zscal(int n, std::complex<double> alpha, std::complex<double> *vec, int inc) {
+    ::einsums::backend::vendor::zscal(n, alpha, vec, inc);
+}
+
+void csscal(int n, float alpha, std::complex<float> *vec, int inc) {
+    ::einsums::backend::vendor::csscal(n, alpha, vec, inc);
+}
+
+void zdscal(int n, double alpha, std::complex<double> *vec, int inc) {
+    ::einsums::backend::vendor::zdscal(n, alpha, vec, inc);
+}
+
+auto sdot(int n, const float *x, int incx, const float *y, int incy) -> float {
+    return ::einsums::backend::vendor::sdot(n, x, incx, y, incy);
 }
 
 auto ddot(int n, const double *x, int incx, const double *y, int incy) -> double {
     return ::einsums::backend::vendor::ddot(n, x, incx, y, incy);
 }
 
+auto cdot(int n, const std::complex<float> *x, int incx, const std::complex<float> *y, int incy) -> std::complex<float> {
+    return ::einsums::backend::vendor::cdot(n, x, incx, y, incy);
+}
+
+auto zdot(int n, const std::complex<double> *x, int incx, const std::complex<double> *y, int incy) -> std::complex<double> {
+    return ::einsums::backend::vendor::zdot(n, x, incx, y, incy);
+}
+
+void saxpy(int n, float alpha_x, const float *x, int inc_x, float *y, int inc_y) {
+    ::einsums::backend::vendor::saxpy(n, alpha_x, x, inc_x, y, inc_y);
+}
+
 void daxpy(int n, double alpha_x, const double *x, int inc_x, double *y, int inc_y) {
     ::einsums::backend::vendor::daxpy(n, alpha_x, x, inc_x, y, inc_y);
+}
+
+void caxpy(int n, std::complex<float> alpha_x, const std::complex<float> *x, int inc_x, std::complex<float> *y, int inc_y) {
+    ::einsums::backend::vendor::caxpy(n, alpha_x, x, inc_x, y, inc_y);
+}
+
+void zaxpy(int n, std::complex<double> alpha_x, const std::complex<double> *x, int inc_x, std::complex<double> *y, int inc_y) {
+    ::einsums::backend::vendor::zaxpy(n, alpha_x, x, inc_x, y, inc_y);
+}
+
+void sdger(int m, int n, float alpha, const float *x, int inc_x, const float *y, int inc_y, float *a, int lda) {
+    ::einsums::backend::vendor::sger(m, n, alpha, x, inc_x, y, inc_y, a, lda);
 }
 
 void dger(int m, int n, double alpha, const double *x, int inc_x, const double *y, int inc_y, double *a, int lda) {
     ::einsums::backend::vendor::dger(m, n, alpha, x, inc_x, y, inc_y, a, lda);
 }
 
+void cger(int m, int n, std::complex<float> alpha, const std::complex<float> *x, int inc_x, const std::complex<float> *y, int inc_y,
+          std::complex<float> *a, int lda) {
+    ::einsums::backend::vendor::cger(m, n, alpha, x, inc_x, y, inc_y, a, lda);
+}
+
+void zger(int m, int n, std::complex<double> alpha, const std::complex<double> *x, int inc_x, const std::complex<double> *y, int inc_y,
+          std::complex<double> *a, int lda) {
+    ::einsums::backend::vendor::zger(m, n, alpha, x, inc_x, y, inc_y, a, lda);
+}
+
+auto sgetrf(int m, int n, float *a, int lda, int *ipiv) -> int {
+    return ::einsums::backend::vendor::sgetrf(m, n, a, lda, ipiv);
+}
+
 auto dgetrf(int m, int n, double *a, int lda, int *ipiv) -> int {
     return ::einsums::backend::vendor::dgetrf(m, n, a, lda, ipiv);
 }
 
-auto dgetri(int n, double *a, int lda, const int *ipiv, double *work, int lwork) -> int {
-    return ::einsums::backend::vendor::dgetri(n, a, lda, (int *)ipiv, work, lwork);
+auto cgetrf(int m, int n, std::complex<float> *a, int lda, int *ipiv) -> int {
+    return ::einsums::backend::vendor::cgetrf(m, n, a, lda, ipiv);
+}
+
+auto zgetrf(int m, int n, std::complex<double> *a, int lda, int *ipiv) -> int {
+    return ::einsums::backend::vendor::zgetrf(m, n, a, lda, ipiv);
+}
+
+auto sgetri(int n, float *a, int lda, const int *ipiv) -> int {
+    return ::einsums::backend::vendor::sgetri(n, a, lda, ipiv);
+}
+
+auto dgetri(int n, double *a, int lda, const int *ipiv) -> int {
+    return ::einsums::backend::vendor::dgetri(n, a, lda, ipiv);
+}
+
+auto cgetri(int n, std::complex<float> *a, int lda, const int *ipiv) -> int {
+    return ::einsums::backend::vendor::cgetri(n, a, lda, ipiv);
+}
+
+auto zgetri(int n, std::complex<double> *a, int lda, const int *ipiv) -> int {
+    return ::einsums::backend::vendor::zgetri(n, a, lda, ipiv);
 }
 
 auto slange(char norm_type, int m, int n, const float *A, int lda, float *work) -> float {
@@ -196,10 +279,37 @@ auto dgees(char jobvs, int n, double *a, int lda, int *sdim, double *wr, double 
 #endif
 }
 
+auto strsyl(char trana, char tranb, int isgn, int m, int n, const float *a, int lda, const float *b, int ldb, float *c, int ldc,
+            float *scale) -> int {
+#if defined(EINSUMS_HAVE_LAPACKE) || defined(EINSUMS_HAVE_MKL_LAPACKE)
+    return ::einsums::backend::cblas::strsyl(trana, tranb, isgn, m, n, a, lda, b, ldb, c, ldc, scale);
+#else
+    throw std::runtime_error("dtrsyl not implemented.");
+#endif
+}
+
 auto dtrsyl(char trana, char tranb, int isgn, int m, int n, const double *a, int lda, const double *b, int ldb, double *c, int ldc,
             double *scale) -> int {
 #if defined(EINSUMS_HAVE_LAPACKE) || defined(EINSUMS_HAVE_MKL_LAPACKE)
     return ::einsums::backend::cblas::dtrsyl(trana, tranb, isgn, m, n, a, lda, b, ldb, c, ldc, scale);
+#else
+    throw std::runtime_error("dtrsyl not implemented.");
+#endif
+}
+
+auto ctrsyl(char trana, char tranb, int isgn, int m, int n, const std::complex<float> *a, int lda, const std::complex<float> *b, int ldb,
+            std::complex<float> *c, int ldc, float *scale) -> int {
+#if defined(EINSUMS_HAVE_LAPACKE) || defined(EINSUMS_HAVE_MKL_LAPACKE)
+    return ::einsums::backend::cblas::ctrsyl(trana, tranb, isgn, m, n, a, lda, b, ldb, c, ldc, scale);
+#else
+    throw std::runtime_error("dtrsyl not implemented.");
+#endif
+}
+
+auto ztrsyl(char trana, char tranb, int isgn, int m, int n, const std::complex<double> *a, int lda, const std::complex<double> *b, int ldb,
+            std::complex<double> *c, int ldc, double *scale) -> int {
+#if defined(EINSUMS_HAVE_LAPACKE) || defined(EINSUMS_HAVE_MKL_LAPACKE)
+    return ::einsums::backend::cblas::ztrsyl(trana, tranb, isgn, m, n, a, lda, b, ldb, c, ldc, scale);
 #else
     throw std::runtime_error("dtrsyl not implemented.");
 #endif
@@ -269,4 +379,5 @@ auto zungqr(int m, int n, int k, std::complex<double> *a, int lda, const std::co
 #endif
 }
 
+} // namespace detail
 } // namespace einsums::blas

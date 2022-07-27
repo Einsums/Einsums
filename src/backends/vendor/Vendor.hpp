@@ -56,6 +56,8 @@ void sscal(int n, float alpha, float *vec, int inc);
 void dscal(int n, double alpha, double *vec, int inc);
 void cscal(int n, std::complex<float> alpha, std::complex<float> *vec, int inc);
 void zscal(int n, std::complex<double> alpha, std::complex<double> *vec, int inc);
+void csscal(int n, float alpha, std::complex<float> *vec, int inc);
+void zdscal(int n, double alpha, std::complex<double> *vec, int inc);
 
 auto sdot(int n, const float *x, int incx, const float *y, int incy) -> float;
 auto ddot(int n, const double *x, int incx, const double *y, int incy) -> double;
@@ -78,7 +80,12 @@ void zaxpy(int n, std::complex<double> alpha_x, const std::complex<double> *x, i
  *   y is an n-element vector,
  *   A is an m-by-n general matrix
  */
+void sger(int m, int n, float alpha, const float *x, int inc_x, const float *y, int inc_y, float *a, int lda);
 void dger(int m, int n, double alpha, const double *x, int inc_x, const double *y, int inc_y, double *a, int lda);
+void cger(int m, int n, std::complex<float> alpha, const std::complex<float> *x, int inc_x, const std::complex<float> *y, int inc_y,
+          std::complex<float> *a, int lda);
+void zger(int m, int n, std::complex<double> alpha, const std::complex<double> *x, int inc_x, const std::complex<double> *y, int inc_y,
+          std::complex<double> *a, int lda);
 
 /*!
  * Computes the LU factorization of a general M-by-N matrix A
@@ -91,7 +98,10 @@ void dger(int m, int n, double alpha, const double *x, int inc_x, const double *
  * triangular (upper trapezoidal if m < n).
  *
  */
+auto sgetrf(int, int, float *, int, int *) -> int;
 auto dgetrf(int, int, double *, int, int *) -> int;
+auto cgetrf(int, int, std::complex<float> *, int, int *) -> int;
+auto zgetrf(int, int, std::complex<double> *, int, int *) -> int;
 
 /*!
  * Computes the inverse of a matrix using the LU factorization computed
@@ -102,7 +112,10 @@ auto dgetrf(int, int, double *, int, int *) -> int;
  *  <0 the (-INFO)-th argument has an illegal value
  *  >0 U(INFO, INFO) is exactly zero; the matrix is singular
  */
-auto dgetri(int, double *, int, const int *, double *, int) -> int;
+auto sgetri(int, float *, int, const int *) -> int;
+auto dgetri(int, double *, int, const int *) -> int;
+auto cgetri(int, std::complex<float> *, int, const int *) -> int;
+auto zgetri(int, std::complex<double> *, int, const int *) -> int;
 
 auto slange(char norm_type, int m, int n, const float *A, int lda, float *work) -> float;
 auto dlange(char norm_type, int m, int n, const double *A, int lda, double *work) -> double;

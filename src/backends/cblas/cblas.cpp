@@ -271,13 +271,35 @@ auto zgesdd(char jobz, int m, int n, std::complex<double> *a, int lda, double *s
                           reinterpret_cast<lapack_complex_double *>(u), ldu, reinterpret_cast<lapack_complex_double *>(vt), ldvt);
 }
 
+auto sgees(char jobvs, int n, float *a, int lda, int *sdim, float *wr, float *wi, float *vs, int ldvs) -> int {
+    return LAPACKE_sgees(LAPACK_ROW_MAJOR, jobvs, 'N', nullptr, n, a, lda, sdim, wr, wi, vs, ldvs);
+}
+
 auto dgees(char jobvs, int n, double *a, int lda, int *sdim, double *wr, double *wi, double *vs, int ldvs) -> int {
     return LAPACKE_dgees(LAPACK_ROW_MAJOR, jobvs, 'N', nullptr, n, a, lda, sdim, wr, wi, vs, ldvs);
+}
+
+auto strsyl(char trana, char tranb, int isgn, int m, int n, const float *a, int lda, const float *b, int ldb, float *c, int ldc,
+            float *scale) -> int {
+    return LAPACKE_strsyl(LAPACK_ROW_MAJOR, trana, tranb, isgn, m, n, a, lda, b, ldb, c, ldc, scale);
 }
 
 auto dtrsyl(char trana, char tranb, int isgn, int m, int n, const double *a, int lda, const double *b, int ldb, double *c, int ldc,
             double *scale) -> int {
     return LAPACKE_dtrsyl(LAPACK_ROW_MAJOR, trana, tranb, isgn, m, n, a, lda, b, ldb, c, ldc, scale);
+}
+
+auto ctrsyl(char trana, char tranb, int isgn, int m, int n, const std::complex<float> *a, int lda, const std::complex<float> *b, int ldb,
+            std::complex<float> *c, int ldc, float *scale) -> int {
+    return LAPACKE_ctrsyl(LAPACK_ROW_MAJOR, trana, tranb, isgn, m, n, reinterpret_cast<const lapack_complex_float *>(a), lda,
+                          reinterpret_cast<const lapack_complex_float *>(b), ldb, reinterpret_cast<lapack_complex_float *>(c), ldc, scale);
+}
+
+auto ztrsyl(char trana, char tranb, int isgn, int m, int n, const std::complex<double> *a, int lda, const std::complex<double> *b, int ldb,
+            std::complex<double> *c, int ldc, double *scale) -> int {
+    return LAPACKE_ztrsyl(LAPACK_ROW_MAJOR, trana, tranb, isgn, m, n, reinterpret_cast<const lapack_complex_double *>(a), lda,
+                          reinterpret_cast<const lapack_complex_double *>(b), ldb, reinterpret_cast<lapack_complex_double *>(c), ldc,
+                          scale);
 }
 
 auto sgeqrf(int m, int n, float *a, int lda, float *tau) -> int {

@@ -136,21 +136,22 @@ auto syev(const AType<T, ARank> &A) ->
     return std::make_tuple(a, w);
 }
 
-template <template <typename, size_t> typename AType, size_t ARank, typename T = double>
-auto scale(double scale, AType<T, ARank> *A) -> typename std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, ARank, double>> {
+template <template <typename, size_t> typename AType, size_t ARank, typename T>
+auto scale(T scale, AType<T, ARank> *A) -> typename std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, ARank, T>> {
     timer::push("scal");
-    blas::dscal(A->dim(0) * A->stride(0), scale, A->data(), 1);
+    blas::scal(A->dim(0) * A->stride(0), scale, A->data(), 1);
     timer::pop();
 }
 
-template <typename AType>
-auto scale_row(size_t row, double scale, AType *A) -> typename std::enable_if_t<is_incore_rank_tensor_v<AType, 2, double>> {
-    blas::dscal(A->dim(1), scale, A->data(row, 0ul), A->stride(1));
+template <template <typename, size_t> typename AType, size_t ARank, typename T>
+auto scale_row(size_t row, T scale, AType<T, ARank> *A) -> typename std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, 2, T>> {
+    blas::scal(A->dim(1), scale, A->data(row, 0ul), A->stride(1));
 }
 
-template <typename AType>
-auto scale_column(size_t col, double scale, AType *A) -> typename std::enable_if_t<is_incore_rank_tensor_v<AType, 2, double>> {
-    blas::dscal(A->dim(0), scale, A->data(0ul, col), A->stride(0));
+template <template <typename, size_t> typename AType, size_t ARank, typename T>
+auto scale_column(size_t col, T scale, AType<T, ARank> *A) ->
+    typename std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, 2, double>> {
+    blas::scal(A->dim(0), scale, A->data(0ul, col), A->stride(0));
 }
 
 /**
@@ -200,20 +201,20 @@ auto pow(const AType<T, ARank> &a, T alpha, T cutoff = std::numeric_limits<T>::e
     return result;
 }
 
-template <template <typename, size_t> typename Type>
-auto dot(const Type<double, 1> &A, const Type<double, 1> &B) ->
-    typename std::enable_if_t<std::is_base_of_v<detail::TensorBase<double, 1>, Type<double, 1>>, double> {
+template <template <typename, size_t> typename Type, typename T>
+auto dot(const Type<T, 1> &A, const Type<T, 1> &B) ->
+    typename std::enable_if_t<std::is_base_of_v<detail::TensorBase<T, 1>, Type<T, 1>>, T> {
     assert(A.dim(0) == B.dim(0));
 
     timer::push("dot");
-    auto result = blas::ddot(A.dim(0), A.data(), A.stride(0), B.data(), B.stride(0));
+    auto result = blas::dot(A.dim(0), A.data(), A.stride(0), B.data(), B.stride(0));
     timer::pop();
     return result;
 }
 
-template <template <typename, size_t> typename Type, size_t Rank>
-auto dot(const Type<double, Rank> &A, const Type<double, Rank> &B) ->
-    typename std::enable_if_t<std::is_base_of_v<detail::TensorBase<double, Rank>, Type<double, Rank>>, double> {
+template <template <typename, size_t> typename Type, typename T, size_t Rank>
+auto dot(const Type<T, Rank> &A, const Type<T, Rank> &B) ->
+    typename std::enable_if_t<std::is_base_of_v<detail::TensorBase<T, Rank>, Type<T, Rank>>, T> {
     Dim<1> dim{1};
 
     for (size_t i = 0; i < Rank; i++) {
@@ -225,9 +226,9 @@ auto dot(const Type<double, Rank> &A, const Type<double, Rank> &B) ->
                TensorView<double, 1>(const_cast<Type<double, Rank> &>(B), dim));
 }
 
-template <template <typename, size_t> typename Type, size_t Rank>
-auto dot(const Type<double, Rank> &A, const Type<double, Rank> &B, const Type<double, Rank> &C) -> // NOLINT
-    typename std::enable_if_t<std::is_base_of_v<detail::TensorBase<double, Rank>, Type<double, Rank>>, double> {
+template <template <typename, size_t> typename Type, typename T, size_t Rank>
+auto dot(const Type<T, Rank> &A, const Type<T, Rank> &B, const Type<T, Rank> &C) -> // NOLINT
+    typename std::enable_if_t<std::is_base_of_v<detail::TensorBase<T, Rank>, Type<T, Rank>>, T> {
     Dim<1> dim{1};
 
     for (size_t i = 0; i < Rank; i++) {
@@ -235,12 +236,12 @@ auto dot(const Type<double, Rank> &A, const Type<double, Rank> &B, const Type<do
         dim[0] *= A.dim(i);
     }
 
-    auto vA = TensorView<double, 1>(const_cast<Type<double, Rank> &>(A), dim);
-    auto vB = TensorView<double, 1>(const_cast<Type<double, Rank> &>(B), dim);
-    auto vC = TensorView<double, 1>(const_cast<Type<double, Rank> &>(C), dim);
+    auto vA = TensorView<T, 1>(const_cast<Type<T, Rank> &>(A), dim);
+    auto vB = TensorView<T, 1>(const_cast<Type<T, Rank> &>(B), dim);
+    auto vC = TensorView<T, 1>(const_cast<Type<T, Rank> &>(C), dim);
 
     timer::push("dot3");
-    double result = 0.0;
+    T result{0};
 #pragma omp parallel for reduction(+ : result)
     for (size_t i = 0; i < dim[0]; i++) {
         result += vA(i) * vB(i) * vC(i);
@@ -249,32 +250,30 @@ auto dot(const Type<double, Rank> &A, const Type<double, Rank> &B, const Type<do
     return result;
 }
 
-template <template <typename, size_t> typename XType, template <typename, size_t> typename YType, size_t Rank>
-auto axpy(double alpha, const XType<double, Rank> &X, YType<double, Rank> *Y)
-    -> std::enable_if_t<is_incore_rank_tensor_v<XType<double, Rank>, Rank, double> &&
-                        is_incore_rank_tensor_v<YType<double, Rank>, Rank, double>> {
+template <template <typename, size_t> typename XType, template <typename, size_t> typename YType, typename T, size_t Rank>
+auto axpy(T alpha, const XType<T, Rank> &X, YType<T, Rank> *Y)
+    -> std::enable_if_t<is_incore_rank_tensor_v<XType<T, Rank>, Rank, T> && is_incore_rank_tensor_v<YType<T, Rank>, Rank, T>> {
     timer::push("axpy");
-    blas::daxpy(X.dim(0) * X.stride(0), alpha, X.data(), 1, Y->data(), 1);
+    blas::axpy(X.dim(0) * X.stride(0), alpha, X.data(), 1, Y->data(), 1);
     timer::pop();
 }
 
-template <template <typename, size_t> typename XYType, size_t XYRank, template <typename, size_t> typename AType, size_t ARank>
-auto ger(double alpha, const XYType<double, XYRank> &X, const XYType<double, XYRank> &Y, AType<double, ARank> *A)
-    -> std::enable_if_t<is_incore_rank_tensor_v<XYType<double, XYRank>, 1, double> &&
-                        is_incore_rank_tensor_v<AType<double, ARank>, 2, double>> {
+template <template <typename, size_t> typename XYType, size_t XYRank, template <typename, size_t> typename AType, typename T, size_t ARank>
+auto ger(T alpha, const XYType<T, XYRank> &X, const XYType<T, XYRank> &Y, AType<T, ARank> *A)
+    -> std::enable_if_t<is_incore_rank_tensor_v<XYType<T, XYRank>, 1, T> && is_incore_rank_tensor_v<AType<T, ARank>, 2, T>> {
     timer::Timer timer{"ger"};
-    blas::dger(X.dim(0), Y.dim(0), alpha, X.data(), X.stride(0), Y.data(), Y.stride(0), A->data(), A->stride(0));
+    blas::ger(X.dim(0), Y.dim(0), alpha, X.data(), X.stride(0), Y.data(), Y.stride(0), A->data(), A->stride(0));
 }
 
-template <template <typename, size_t> typename TensorType, size_t TensorRank>
-auto getrf(TensorType<double, TensorRank> *A, std::vector<int> *pivot)
-    -> std::enable_if_t<is_incore_rank_tensor_v<TensorType<double, TensorRank>, 2, double>, int> {
+template <template <typename, size_t> typename TensorType, typename T, size_t TensorRank>
+auto getrf(TensorType<T, TensorRank> *A, std::vector<int> *pivot)
+    -> std::enable_if_t<is_incore_rank_tensor_v<TensorType<T, TensorRank>, 2, T>, int> {
     timer::push("getrf");
     if (pivot->size() < std::min(A->dim(0), A->dim(1))) {
         println("getrf: resizing pivot vector from {} to {}", pivot->size(), std::min(A->dim(0), A->dim(1)));
         pivot->resize(std::min(A->dim(0), A->dim(1)));
     }
-    int result = blas::dgetrf(A->dim(0), A->dim(1), A->data(), A->stride(0), pivot->data());
+    int result = blas::getrf(A->dim(0), A->dim(1), A->data(), A->stride(0), pivot->data());
     timer::pop();
 
     if (result < 0) {
@@ -286,17 +285,12 @@ auto getrf(TensorType<double, TensorRank> *A, std::vector<int> *pivot)
     return result;
 }
 
-template <template <typename, size_t> typename TensorType, size_t TensorRank>
-auto getri(TensorType<double, TensorRank> *A, const std::vector<int> &pivot)
-    -> std::enable_if_t<is_incore_rank_tensor_v<TensorType<double, TensorRank>, 2, double>, int> {
+template <template <typename, size_t> typename TensorType, typename T, size_t TensorRank>
+auto getri(TensorType<T, TensorRank> *A, const std::vector<int> &pivot)
+    -> std::enable_if_t<is_incore_rank_tensor_v<TensorType<T, TensorRank>, 2, T>, int> {
     timer::push("getri");
 
-    // Call dgetri once to determine work size
-    std::vector<double> work(1);
-    blas::dgetri(A->dim(0), A->data(), A->stride(0), pivot.data(), work.data(), -1);
-    work.resize(static_cast<int>(work[0]));
-    std::fill(work.begin(), work.end(), 0.0);
-    int result = blas::dgetri(A->dim(0), A->data(), A->stride(0), pivot.data(), work.data(), (int)work.size());
+    int result = blas::getri(A->dim(0), A->data(), A->stride(0), pivot.data());
     timer::pop();
 
     if (result < 0) {
@@ -305,8 +299,8 @@ auto getri(TensorType<double, TensorRank> *A, const std::vector<int> &pivot)
     return result;
 }
 
-template <template <typename, size_t> typename TensorType, size_t TensorRank>
-auto invert(TensorType<double, TensorRank> *A) -> std::enable_if_t<is_incore_rank_tensor_v<TensorType<double, TensorRank>, 2, double>> {
+template <template <typename, size_t> typename TensorType, typename T, size_t TensorRank>
+auto invert(TensorType<T, TensorRank> *A) -> std::enable_if_t<is_incore_rank_tensor_v<TensorType<T, TensorRank>, 2, T>> {
     timer::push("invert");
 
     std::vector<int> pivot(A->dim(0));
@@ -474,7 +468,7 @@ inline auto solve_continuous_lyapunov(const Tensor<T, 2> &A, const Tensor<T, 2> 
     Tensor<T, 2> wi("Schur Imaginary Buffer", n, n);
     Tensor<T, 2> U("Lyapunov U", n, n);
     std::vector<int> sdim(1);
-    blas::dgees('V', n, R.data(), n, sdim.data(), wr.data(), wi.data(), U.data(), n);
+    blas::gees('V', n, R.data(), n, sdim.data(), wr.data(), wi.data(), U.data(), n);
 
     // Compute F = U^T * Q * U
     Tensor<T, 2> Fbuff = gemm<true, false>(1.0, U, Q);
@@ -482,7 +476,7 @@ inline auto solve_continuous_lyapunov(const Tensor<T, 2> &A, const Tensor<T, 2> 
 
     // Call the Sylvester Solve
     std::vector<T> scale(1);
-    blas::dtrsyl('N', 'N', 1, n, n, const_cast<const T *>(R.data()), n, const_cast<const T *>(R.data()), n, F.data(), n, scale.data());
+    blas::trsyl('N', 'N', 1, n, n, const_cast<const T *>(R.data()), n, const_cast<const T *>(R.data()), n, F.data(), n, scale.data());
 
     Tensor<T, 2> Xbuff = gemm<false, false>(scale[0], U, F);
     Tensor<T, 2> X = gemm<false, true>(1.0, Xbuff, U);

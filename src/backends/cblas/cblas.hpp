@@ -111,10 +111,17 @@ auto dgesdd(char, int, int, double *, int, double *, double *, int, double *, in
 auto cgesdd(char, int, int, std::complex<float> *, int, float *, std::complex<float> *, int, std::complex<float> *, int) -> int;
 auto zgesdd(char, int, int, std::complex<double> *, int, double *, std::complex<double> *, int, std::complex<double> *, int) -> int;
 
+auto sgees(char jobvs, int n, float *a, int lda, int *sdim, float *wr, float *wi, float *vs, int ldvs) -> int;
 auto dgees(char jobvs, int n, double *a, int lda, int *sdim, double *wr, double *wi, double *vs, int ldvs) -> int;
 
+auto strsyl(char trana, char tranb, int isgn, int m, int n, const float *a, int lda, const float *b, int ldb, float *c, int ldc,
+            float *scale) -> int;
 auto dtrsyl(char trana, char tranb, int isgn, int m, int n, const double *a, int lda, const double *b, int ldb, double *c, int ldc,
             double *scale) -> int;
+auto ctrsyl(char trana, char tranb, int isgn, int m, int n, const std::complex<float> *a, int lda, const std::complex<float> *b, int ldb,
+            std::complex<float> *c, int ldc, float *scale) -> int;
+auto ztrsyl(char trana, char tranb, int isgn, int m, int n, const std::complex<double> *a, int lda, const std::complex<double> *b, int ldb,
+            std::complex<double> *c, int ldc, double *scale) -> int;
 
 auto sgeqrf(int m, int n, float *a, int lda, float *tau) -> int;
 auto dgeqrf(int m, int n, double *a, int lda, double *tau) -> int;

@@ -59,6 +59,8 @@ extern void FC_GLOBAL(sscal, SSCAL)(int *, float *, float *, int *);
 extern void FC_GLOBAL(dscal, DSCAL)(int *, double *, double *, int *);
 extern void FC_GLOBAL(cscal, CSCAL)(int *, std::complex<float> *, std::complex<float> *, int *);
 extern void FC_GLOBAL(zscal, ZSCAL)(int *, std::complex<double> *, std::complex<double> *, int *);
+extern void FC_GLOBAL(csscal, CSSCAL)(int *, float *, std::complex<float> *, int *);
+extern void FC_GLOBAL(zdscal, ZDSCAL)(int *, double *, std::complex<double> *, int *);
 
 extern float FC_GLOBAL(sdot, SDOT)(int *, const float *, int *, const float *, int *);
 extern double FC_GLOBAL(ddot, DDOT)(int *, const double *, int *, const double *, int *);
@@ -70,9 +72,22 @@ extern void FC_GLOBAL(daxpy, DAXPY)(int *, double *, const double *, int *, doub
 extern void FC_GLOBAL(caxpy, CAXPY)(int *, std::complex<float> *, const std::complex<float> *, int *, std::complex<float> *, int *);
 extern void FC_GLOBAL(zaxpy, ZAXPY)(int *, std::complex<double> *, const std::complex<double> *, int *, std::complex<double> *, int *);
 
+extern void FC_GLOBAL(sger, DGER)(int *, int *, float *, const float *, int *, const float *, int *, float *, int *);
 extern void FC_GLOBAL(dger, DGER)(int *, int *, double *, const double *, int *, const double *, int *, double *, int *);
+extern void FC_GLOBAL(cgeru, CGERU)(int *, int *, std::complex<float> *, const std::complex<float> *, int *, const std::complex<float> *,
+                                    int *, std::complex<float> *, int *);
+extern void FC_GLOBAL(zgeru, ZGERU)(int *, int *, std::complex<double> *, const std::complex<double> *, int *, const std::complex<double> *,
+                                    int *, std::complex<double> *, int *);
+
+extern void FC_GLOBAL(sgetrf, SGETRF)(int *, int *, float *, int *, int *, int *);
 extern void FC_GLOBAL(dgetrf, DGETRF)(int *, int *, double *, int *, int *, int *);
+extern void FC_GLOBAL(cgetrf, CGETRF)(int *, int *, std::complex<float> *, int *, int *, int *);
+extern void FC_GLOBAL(zgetrf, ZGETRF)(int *, int *, std::complex<double> *, int *, int *, int *);
+
+extern void FC_GLOBAL(sgetri, SGETRI)(int *, float *, int *, int *, float *, int *, int *);
 extern void FC_GLOBAL(dgetri, DGETRI)(int *, double *, int *, int *, double *, int *, int *);
+extern void FC_GLOBAL(cgetri, CGETRI)(int *, std::complex<float> *, int *, int *, std::complex<float> *, int *, int *);
+extern void FC_GLOBAL(zgetri, ZGETRI)(int *, std::complex<double> *, int *, int *, std::complex<double> *, int *, int *);
 
 extern float FC_GLOBAL(slange, SLANGE)(char, int, int, const float *, int, float *);                  // NOLINT
 extern double FC_GLOBAL(dlange, DLANGE)(char, int, int, const double *, int, double *);               // NOLINT
@@ -242,6 +257,14 @@ void zscal(int n, std::complex<double> alpha, std::complex<double> *vec, int inc
     FC_GLOBAL(zscal, ZSCAL)(&n, &alpha, vec, &inc);
 }
 
+void csscal(int n, float alpha, std::complex<float> *vec, int inc) {
+    FC_GLOBAL(csscal, CSSCAL)(&n, &alpha, vec, &inc);
+}
+
+void zdscal(int n, double alpha, std::complex<double> *vec, int inc) {
+    FC_GLOBAL(zdscal, ZDSCAL)(&n, &alpha, vec, &inc);
+}
+
 auto sdot(int n, const float *x, int incx, const float *y, int incy) -> float {
     return FC_GLOBAL(sdot, SDOT)(&n, x, &incx, y, &incy);
 }
@@ -274,20 +297,48 @@ void zaxpy(int n, std::complex<double> alpha_x, const std::complex<double> *x, i
     FC_GLOBAL(zaxpy, ZAXPY)(&n, &alpha_x, x, &inc_x, y, &inc_y);
 }
 
-void dger(int m, int n, double alpha, const double *x, int inc_x, const double *y, int inc_y, double *a, int lda) {
+namespace {
+void ger_parameter_check(int m, int n, int inc_x, int inc_y, int lda) {
     if (m < 0) {
-        throw std::runtime_error(fmt::format("einsums::backend::vendor::dger: m ({}) is less than zero.", m));
+        throw std::runtime_error(fmt::format("einsums::backend::vendor::ger: m ({}) is less than zero.", m));
     } else if (n < 0) {
-        throw std::runtime_error(fmt::format("einsums::backend::vendor::dger: n ({}) is less than zero.", n));
+        throw std::runtime_error(fmt::format("einsums::backend::vendor::ger: n ({}) is less than zero.", n));
     } else if (inc_x == 0) {
-        throw std::runtime_error(fmt::format("einsums::backend::vendor::dger: inc_x ({}) is zero.", inc_x));
+        throw std::runtime_error(fmt::format("einsums::backend::vendor::ger: inc_x ({}) is zero.", inc_x));
     } else if (inc_y == 0) {
-        throw std::runtime_error(fmt::format("einsums::backend::vendor::dger: inc_y ({}) is zero.", inc_y));
+        throw std::runtime_error(fmt::format("einsums::backend::vendor::ger: inc_y ({}) is zero.", inc_y));
     } else if (lda < std::max(1, n)) {
-        throw std::runtime_error(fmt::format("einsums::backend::vendor::dger: lda ({}) is less than max(1, n ({})).", lda, n));
+        throw std::runtime_error(fmt::format("einsums::backend::vendor::ger: lda ({}) is less than max(1, n ({})).", lda, n));
     }
+}
+} // namespace
 
+void sger(int m, int n, float alpha, const float *x, int inc_x, const float *y, int inc_y, float *a, int lda) {
+    ger_parameter_check(m, n, inc_x, inc_y, lda);
+    FC_GLOBAL(sger, SGER)(&n, &m, &alpha, y, &inc_y, x, &inc_x, a, &lda);
+}
+
+void dger(int m, int n, double alpha, const double *x, int inc_x, const double *y, int inc_y, double *a, int lda) {
+    ger_parameter_check(m, n, inc_x, inc_y, lda);
     FC_GLOBAL(dger, DGER)(&n, &m, &alpha, y, &inc_y, x, &inc_x, a, &lda);
+}
+
+void cger(int m, int n, std::complex<float> alpha, const std::complex<float> *x, int inc_x, const std::complex<float> *y, int inc_y,
+          std::complex<float> *a, int lda) {
+    ger_parameter_check(m, n, inc_x, inc_y, lda);
+    FC_GLOBAL(cgeru, CGERU)(&n, &m, &alpha, y, &inc_y, x, &inc_x, a, &lda);
+}
+
+void zger(int m, int n, std::complex<double> alpha, const std::complex<double> *x, int inc_x, const std::complex<double> *y, int inc_y,
+          std::complex<double> *a, int lda) {
+    ger_parameter_check(m, n, inc_x, inc_y, lda);
+    FC_GLOBAL(zgeru, ZGERU)(&n, &m, &alpha, y, &inc_y, x, &inc_x, a, &lda);
+}
+
+auto sgetrf(int m, int n, float *a, int lda, int *ipiv) -> int {
+    int info{0};
+    FC_GLOBAL(sgetrf, SGETRF)(&m, &n, a, &lda, ipiv, &info);
+    return info;
 }
 
 auto dgetrf(int m, int n, double *a, int lda, int *ipiv) -> int {
@@ -296,9 +347,47 @@ auto dgetrf(int m, int n, double *a, int lda, int *ipiv) -> int {
     return info;
 }
 
-auto dgetri(int n, double *a, int lda, const int *ipiv, double *work, int lwork) -> int {
+auto cgetrf(int m, int n, std::complex<float> *a, int lda, int *ipiv) -> int {
     int info{0};
-    FC_GLOBAL(dgetri, DGETRI)(&n, a, &lda, (int *)ipiv, work, &lwork, &info);
+    FC_GLOBAL(cgetrf, CGETRF)(&m, &n, a, &lda, ipiv, &info);
+    return info;
+}
+
+auto zgetrf(int m, int n, std::complex<double> *a, int lda, int *ipiv) -> int {
+    int info{0};
+    FC_GLOBAL(zgetrf, ZGETRF)(&m, &n, a, &lda, ipiv, &info);
+    return info;
+}
+
+auto sgetri(int n, float *a, int lda, const int *ipiv) -> int {
+    int info{0};
+    int lwork = n * 64;
+    std::vector<float> work(lwork);
+    FC_GLOBAL(sgetri, SGETRI)(&n, a, &lda, (int *)ipiv, work.data(), &lwork, &info);
+    return info;
+}
+
+auto dgetri(int n, double *a, int lda, const int *ipiv) -> int {
+    int info{0};
+    int lwork = n * 64;
+    std::vector<double> work(lwork);
+    FC_GLOBAL(dgetri, DGETRI)(&n, a, &lda, (int *)ipiv, work.data(), &lwork, &info);
+    return info;
+}
+
+auto cgetri(int n, std::complex<float> *a, int lda, const int *ipiv) -> int {
+    int info{0};
+    int lwork = n * 64;
+    std::vector<std::complex<float>> work(lwork);
+    FC_GLOBAL(cgetri, CGETRI)(&n, a, &lda, (int *)ipiv, work.data(), &lwork, &info);
+    return info;
+}
+
+auto zgetri(int n, std::complex<double> *a, int lda, const int *ipiv) -> int {
+    int info{0};
+    int lwork = n * 64;
+    std::vector<std::complex<double>> work(lwork);
+    FC_GLOBAL(zgetri, ZGETRI)(&n, a, &lda, (int *)ipiv, work.data(), &lwork, &info);
     return info;
 }
 
