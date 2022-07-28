@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
 
+include(FeatureSummary)
 project(einsums)
 
 add_library(einsums-project-options INTERFACE)
@@ -59,7 +60,16 @@ if (EINSUMS_TEST_NANS)
             EINSUMS_TEST_NANS
     ) 
 endif()
+
 option(EINSUMS_USE_HPTT "Use the HPTT package for tensor transpositions" ON)
+
+add_feature_info(EINSUMS_CONTINUOUSLY_TEST_EINSUM ${EINSUMS_CONTINUOUSLY_TEST_EINSUM} "Test every call to einsum. EXPENSIVE!")
+add_feature_info(EINSUMS_TEST_EINSUM_ABORT ${EINSUMS_TEST_EINSUM_ABORT} "Abort execution if an error found")
+add_feature_info(EINSUMS_WARN_NOT_IMPLEMENTED ${EINSUMS_WARN_NOT_IMPLEMENTED} "Report if a specific case is not implemented")
+add_feature_info(EINSUMS_SHOW_WARNING ${EINSUMS_SHOW_WARNING} "Does the code report warnings to the user or not")
+add_feature_info(EINSUMS_TEST_NANS ${EINSUMS_TEST_NANS} "Test the result of every einsum for nans, infs, and large values")
+add_feature_info(EINSUMS_RUNTIME_INDICES_CHECK ${EINSUMS_RUNTIME_INDICES_CHECK} "Check the sizes of corresponding indices at runtime")
+add_feature_info(EINSUMS_USE_HPTT ${EINSUMS_USE_HPTT} "Build with internal HPTT version")
 
 include(cmake/DetectHostArch.cmake)
 detect_host_arch()
@@ -110,3 +120,8 @@ add_subdirectory(src)
 
 add_subdirectory(tests)
 add_subdirectory(timing)
+
+feature_summary(INCLUDE_QUIET_PACKAGES WHAT
+    PACKAGES_FOUND PACKAGES_NOT_FOUND
+    ENABLED_FEATURES DISABLED_FEATURES
+)
