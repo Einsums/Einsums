@@ -1,7 +1,11 @@
 cmake_minimum_required(VERSION 3.20)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 include(FeatureSummary)
-project(einsums)
+include(EinsumsBranding)
+include(EinsumsAPI)
+
+project(einsums VERSION ${EINSUMS_VERSION})
 
 add_library(einsums-project-options INTERFACE)
 target_compile_features(einsums-project-options
@@ -53,7 +57,7 @@ if (EINSUMS_RUNTIME_INDICES_CHECK)
     )
 endif()
 
-option(EINSUMS_TEST_NANS "Test the result of every einsum for nans" ON)
+option(EINSUMS_TEST_NANS "Test the result of every einsum for nans" OFF)
 if (EINSUMS_TEST_NANS)
     target_compile_definitions(einsums-project-options
         INTERFACE
@@ -80,6 +84,8 @@ if (UNIX)
         target_compile_options(einsums-project-options INTERFACE -fp-model=precise)
     endif()
 endif ()
+
+target_compile_options(einsums-project-options INTERFACE -fPIC)
 
 # NOTE: Ideally this would be included but clangd assumes the possible -xHost is specifying the programming language.
 # target_compile_options(einsums-project-options
