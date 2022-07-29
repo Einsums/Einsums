@@ -1,16 +1,18 @@
 #pragma once
 
+#include "einsums/_Export.hpp"
+
 #include <string>
 
 namespace einsums::timer {
 
-void initialize();
-void finalize();
+void EINSUMS_EXPORT initialize();
+void EINSUMS_EXPORT finalize();
 
-void report();
+void EINSUMS_EXPORT report();
 
-void push(const std::string &name);
-void pop();
+void EINSUMS_EXPORT push(const std::string &name);
+void EINSUMS_EXPORT pop();
 
 struct Timer {
     Timer(const std::string &name) { push(name); }

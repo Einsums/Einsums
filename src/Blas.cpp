@@ -8,11 +8,6 @@
 #include <fmt/format.h>
 #include <stdexcept>
 
-/// FIXME: Remove.
-namespace einsums::tensor_algebra {
-bool einsum_raw_for_loop{false};
-}
-
 namespace einsums::blas {
 
 void initialize() {

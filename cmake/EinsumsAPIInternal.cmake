@@ -26,7 +26,7 @@ elseif(WIN32)
     set(_EINSUMS_DOC_PATH "share/doc/einsums")
     set(_EINSUMS_BIN_PATH "bin")
     set(_EINSUMS_LIBRARY_ARCHIVE_PATH "${_EINSUMS_BIN_PATH}")
-  
+
     set(_EINSUMS_HEADER_INSTALL_PATH "include/einsums")
     set(_EINSUMS_CMAKE_INSTALL_PATH "lib/cmake")
 endif ()
@@ -151,7 +151,7 @@ function(extend_einsums_target target_name)
     cmake_parse_arguments(_arg
         ""
         "SOURCES_PREFIX;SOURCES_PREFIX_FROM_TARGET;FEATURE_INFO"
-        "CONDITION;DEPENDS;PUBLIC_DEPENDS;DEFINES;PUBLIC_DEFINES;INCLUDES;PUBLIC_INCLUDES;SOURCES;PROPERTIES"
+        "CONDITION;DEPENDS;PUBLIC_DEPENDS;DEFINES;PUBLIC_DEFINES;INCLUDES;PUBLIC_INCLUDES;SOURCES;PROPERTIES;OPTIONS;PUBLIC_OPTIONS"
         ${ARGN}
     )
 
@@ -191,6 +191,10 @@ function(extend_einsums_target target_name)
         PRIVATE ${_arg_DEFINES}
         PUBLIC ${_arg_PUBLIC_DEFINES}
     )
+    target_compile_options(${target_name}
+        PRIVATE ${_arg_OPTIONS}
+        PUBLIC ${_arg_PUBLIC_OPTIONS}
+    )
     target_include_directories(${target_name} PRIVATE ${_arg_INCLUDES})
 
     set_public_includes(${target_name} "${_arg_PUBLIC_INCLUDES}")
@@ -210,7 +214,7 @@ function(extend_einsums_target target_name)
     target_sources(${target_name} PRIVATE ${_arg_SOURCES})
 
     set_public_headers(${target_name} "${_arg_SOURCES}")
-    
+
     if (_arg_PROPERTIES)
         set_target_properties(${target_name} PROPERTIES ${_arg_PROPERTIES})
     endif()

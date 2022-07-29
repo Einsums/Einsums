@@ -1,6 +1,7 @@
 #pragma once
 
 #include "einsums/Print.hpp"
+#include "einsums/_Export.hpp"
 
 #include <functional>
 #include <iterator>
@@ -410,8 +411,8 @@ struct CircularBuffer {
 };
 
 namespace detail {
-auto allocate_aligned_memory(size_t align, size_t size) -> void *;
-void deallocate_aligned_memory(void *ptr) noexcept;
+auto EINSUMS_EXPORT allocate_aligned_memory(size_t align, size_t size) -> void *;
+void EINSUMS_EXPORT deallocate_aligned_memory(void *ptr) noexcept;
 } // namespace detail
 
 template <typename T, size_t Align = 32>

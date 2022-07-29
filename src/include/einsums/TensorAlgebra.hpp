@@ -789,9 +789,6 @@ auto einsum(const CDataType C_prefactor, const std::tuple<CIndices...> & /*Cs*/,
 
 } // namespace detail
 
-/// FIXME: Hack for Andy. Remove this once his paper is completed. This is defined in Blas.cpp for now.
-extern bool einsum_raw_for_loop;
-
 template <template <typename, size_t> typename AType, typename ADataType, size_t ARank, template <typename, size_t> typename BType,
           typename BDataType, size_t BRank, template <typename, size_t> typename CType, typename CDataType, size_t CRank,
           typename... CIndices, typename... AIndices, typename... BIndices, typename U>
@@ -826,11 +823,7 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
 #endif
 
     // Perform the actual einsum
-    /// FIXME: Remove once Andy's paper is completed.
-    if (einsum_raw_for_loop)
-        detail::einsum<true>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
-    else
-        detail::einsum<false>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
+    detail::einsum<false>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
 
 #if defined(EINSUMS_TEST_NANS)
     if constexpr (CRank != 0) {

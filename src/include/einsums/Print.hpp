@@ -1,5 +1,6 @@
 #pragma once
 
+#include "einsums/_Export.hpp"
 #include "fmt/color.h"
 #include "fmt/core.h"
 #include "fmt/format.h"
@@ -18,12 +19,12 @@
 namespace print {
 
 /** Adds spaces to the global indentation counter. */
-void indent();
+void EINSUMS_EXPORT indent();
 /** Removes spaces from the global indentation counter. */
-void deindent();
+void EINSUMS_EXPORT deindent();
 
 /** Returns the current indentation level. */
-auto current_indent_level() -> int;
+auto EINSUMS_EXPORT current_indent_level() -> int;
 
 /**
  * @brief Controls whether a line header is printed for the main thread or not.
@@ -32,26 +33,26 @@ auto current_indent_level() -> int;
  *
  *
  */
-void always_print_thread_id(bool onoff);
+void EINSUMS_EXPORT always_print_thread_id(bool onoff);
 
 /**
  * @brief Silences all output.
  *
  * @param onoff If true, output is suppressed, otherwise printing is allowed.
  */
-void suppress_output(bool onoff);
+void EINSUMS_EXPORT suppress_output(bool onoff);
 
 struct Indent {
     Indent() { indent(); }
     ~Indent() { deindent(); }
 };
 
-void stacktrace();
+void EINSUMS_EXPORT stacktrace();
 
 } // namespace print
 
 namespace detail {
-void println(const std::string &oss);
+void EINSUMS_EXPORT println(const std::string &oss);
 }
 
 //
