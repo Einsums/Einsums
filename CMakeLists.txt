@@ -5,12 +5,17 @@ include(FeatureSummary)
 include(EinsumsBranding)
 include(EinsumsAPI)
 
-project(einsums VERSION ${EINSUMS_VERSION})
+project(einsums
+    VERSION ${EINSUMS_VERSION}
+    LANGUAGES C CXX
+)
 
-# Force C++ standard, do not fall back, do not use compiler extensions
+# Force C++ standard globally, do not fall back, do not use compiler extensions
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+
+# Force position independent code globally.
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 option(EINSUMS_CONTINUOUSLY_TEST_EINSUM "Every call to TensorAlgebra::einsum is tested" OFF)
