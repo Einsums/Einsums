@@ -54,17 +54,50 @@ auto norm(const TTensor<TType, TRank> &tensor) -> TType {
 template <template <typename, size_t> typename TTensor, size_t TRank, typename TType = double>
 auto rmsd(const TTensor<TType, TRank> &tensor1, const TTensor<TType, TRank> &tensor2) -> TType {
     TType diff = 0.0;
-    auto target_dims = get_dim_ranges<TRank>(tensor1);
 
-    size_t nelem = 0;
-    for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
+    size_t nelem = 1;
+    for_sequence<TRank>([&](auto i) {  nelem *= tensor1.dim(i); });
+
+    auto target_dims = get_dim_ranges<TRank>(tensor1);
+    auto view = std::apply(ranges::views::cartesian_product, target_dims);
+
+#pragma omp parallel for reduction(+ : diff)
+    for (auto it = view.begin(); it < view.end(); it++) {
+        auto target_combination = *it;   
         TType target1 = std::apply(tensor1, target_combination);
         TType target2 = std::apply(tensor2, target_combination);
         diff += (target1 - target2) * (target1 - target2);
-        nelem += 1;
     }
 
     return std::sqrt(diff / nelem);
+}
+
+/**
+ * "Weight" a tensor for weighted CANDECOMP/PARAFAC decompositions (returns a copy) by input weights
+ */
+template<template <typename, size_t> typename TTensor, size_t TRank, typename TType = double>
+auto weight_tensor(const TTensor<TType, TRank>& tensor, const TTensor<TType, 1>& weights) -> Tensor<TType, TRank> {
+
+    if (tensor.dim(0) != weights.dim(0)) {
+        println_abort("The first dimension of the tensor and the dimension of the weight DO NOT match");
+    }
+    
+    Tensor<TType, TRank> weighted_tensor(tensor.dims());
+    auto target_dims = get_dim_ranges<TRank>(tensor);
+
+    auto view = std::apply(ranges::views::cartesian_product, target_dims);
+    
+#pragma omp parallel for
+    for (auto it = view.begin(); it < view.end(); it++) {
+        auto target_combination = *it;
+        const TType &source = std::apply(tensor, target_combination);
+        TType &target = std::apply(weighted_tensor, target_combination);
+        const TType &scale = weights(std::get<0>(target_combination));
+
+        target = scale * source;
+    }
+
+    return weighted_tensor;
 }
 
 /**
@@ -89,8 +122,11 @@ auto parafac_reconstruct(const std::vector<Tensor<TType, 2>> &factors) -> Tensor
     new_tensor.zero();
 
     auto indices = get_dim_ranges<TRank>(new_tensor);
+    auto view = std::apply(ranges::views::cartesian_product, indices);
 
-    for (auto idx_combo : std::apply(ranges::views::cartesian_product, indices)) {
+#pragma omp parallel for
+    for (auto it = view.begin(); it < view.end(); it++) {
+        auto idx_combo = *it;
         TType &target = std::apply(new_tensor, idx_combo);
         for (size_t r = 0; r < rank; r++) {
             double temp = 1.0;
@@ -109,10 +145,10 @@ auto initialize_cp(std::vector<Tensor<TType, 2>> &folds, size_t rank) -> std::ve
 
     // Perform compile-time looping.
     for_sequence<TRank>([&](auto i) {
-        auto nthread = omp_get_max_threads();
-        omp_set_num_threads(1);
+        // auto nthread = omp_get_max_threads();
+        // omp_set_num_threads(1);
         auto [U, S, _] = linear_algebra::svd_a(folds[i]);
-        omp_set_num_threads(nthread);
+        // omp_set_num_threads(nthread);
 
         // println(tensor_algebra::unfold<i>(tensor));
         // println(S);
@@ -121,11 +157,9 @@ auto initialize_cp(std::vector<Tensor<TType, 2>> &folds, size_t rank) -> std::ve
 
         // If (i == 0), Scale U by the singular values
         if (i == 0) {
-            for (size_t c = 0; c < U.dim(0); c++) {
-                double scaling_factor = 0.0;
-                if (c < S.dim(0))
-                    scaling_factor = S(c);
-                linear_algebra::scale_column(c, S(c), &U);
+            for (size_t v = 0; v < S.dim(0); v++) {
+                double scaling_factor = S(v);
+                if (std::abs(scaling_factor) > 1.0e-14) linear_algebra::scale_column(v, scaling_factor, &U);
             }
         }
 
@@ -264,6 +298,160 @@ auto parafac(const TTensor<TType, TRank> &tensor, size_t rank, int n_iter_max = 
         // printf("    @CP Iteration %d, ERROR: %8.8f, DELTA: %8.8f\n", iter, curr_error, delta);
 
         if (iter >= 2 && delta < tolerance) {
+            converged = true;
+            break;
+        }
+
+        prev_error = curr_error;
+        iter += 1;
+    }
+    if (!converged) {
+        println_warn("CP decomposition failed to converge in {} iterations", n_iter_max);
+    }
+
+    // Return **non-normalized** factors
+    return factors;
+}
+
+/**
+ * Weighted CANDECOMP/PARAFAC decomposition via alternating least squares (ALS).
+ * Computes a rank-`rank` decomposition of `tensor` such that:
+ *
+ *   tensor = [| factor[0], ..., factors[-1] |].
+ *   weights = The weights to multiply the tensor by
+ */
+template <template <typename, size_t> typename TTensor, size_t TRank, typename TType = double>
+auto weighted_parafac(const TTensor<TType, TRank> &tensor, const TTensor<TType, 1>& weights,
+                        size_t rank, int n_iter_max = 100, double tolerance = 1.e-8)
+    -> std::vector<Tensor<TType, 2>> {
+
+    using namespace einsums::tensor_algebra;
+    using namespace einsums::tensor_algebra::index;
+    using vector = std::vector<TType, AlignedAllocator<TType, 64>>;
+
+    // Compute set of unfolded matrices (unweighted)
+    std::vector<Tensor<TType, 2>> unweighted_folds;
+    for_sequence<TRank>([&](auto i) {
+        unweighted_folds.push_back(tensor_algebra::unfold<i>(tensor));
+    });
+
+    // Create the weighted tensor
+    Tensor<TType, 1> square_weights("square_weights", weights.dim(0));
+    einsum(0.0, Indices{index::P}, &square_weights, 1.0,
+            Indices{index::P}, weights, Indices{index::P}, weights);
+    Tensor<TType, TRank> weighted_tensor = weight_tensor(tensor, square_weights);
+
+    // Compute set of unfolded matrices (weighted)
+    std::vector<Tensor<TType, 2>> weighted_folds;
+    for_sequence<TRank>([&](auto i) {
+        weighted_folds.push_back(tensor_algebra::unfold<i>(weighted_tensor));
+    });
+
+    // Perform SVD guess for parafac decomposition procedure
+    std::vector<Tensor<TType, 2>> factors = initialize_cp<TRank>(unweighted_folds, rank);
+
+    double tensor_norm = norm(tensor);
+    size_t nelem = 1;
+    for_sequence<TRank>([&](auto i) { nelem *= tensor.dim(i); });
+    tensor_norm /= std::sqrt((double)nelem);
+
+    int iter = 0;
+    bool converged = false;
+    double prev_error = 0.0;
+    while (iter < n_iter_max) {
+        size_t n = 0;
+        for_sequence<TRank>([&](auto n_ind) {
+
+            // Form V and Khatri-Rao product intermediates
+            Tensor<TType, 2> V;
+            Tensor<TType, 2> *KR;
+            bool first = true;
+
+            size_t m = 0;
+            for_sequence<TRank>([&](auto m_ind) {
+                if (m_ind != n_ind) {
+                    Tensor<TType, 2> A_tA{"V", rank, rank};
+                    // A_tA = A^T[j] @ A[j]
+                    if (m == 0) {
+                        Tensor<TType, 2> weighted_factor = weight_tensor(factors[m_ind], weights);
+                        einsum(0.0, Indices{r, s}, &A_tA, 1.0, Indices{I, r}, weighted_factor, Indices{I, s}, weighted_factor);
+                    } else {
+                        einsum(0.0, Indices{r, s}, &A_tA, 1.0, Indices{I, r}, factors[m_ind], Indices{I, s}, factors[m_ind]);
+                    }
+
+                    if (first) {
+                        V = A_tA;
+                        auto *KRcopy = new Tensor<TType, 2>("KR product", tensor.dim(m_ind), rank);
+                        *KRcopy = factors[m_ind];
+                        KR = KRcopy;
+                        first = false;
+                    } else {
+                        // Uses a Hamamard Contraction to build V
+                        Tensor<TType, 2> Vcopy = V;
+                        einsum(0.0, Indices{r, s}, &V, 1.0, Indices{r, s}, Vcopy, Indices{r, s}, A_tA);
+
+                        // Perform a Khatri-Rao contraction
+                        // TODO: Implement an actual Khatri-Rao procedure to replace this "hacky" workaround
+
+                        size_t running_dim = KR->dim(0);
+                        size_t appended_dim = tensor.dim(m_ind);
+
+                        Tensor<TType, 3> KRbuff{"KR temp", running_dim, appended_dim, rank};
+
+                        einsum(0.0, Indices{I, M, r}, &KRbuff, 1.0, Indices{I, r}, *KR, Indices{M, r}, factors[m_ind]);
+
+                        auto *newKR = new Tensor<TType, 2>("KR product", running_dim * appended_dim, rank);
+
+                        const vector &KRbuffd = KRbuff.vector_data();
+                        vector &newKRd = newKR->vector_data();
+
+                        std::copy(KRbuffd.begin(), KRbuffd.end(), newKRd.begin());
+
+                        /*
+                        for (size_t I = 0; I < running_dim; I++) {
+                            for (size_t M = 0; M < appended_dim; M++) {
+                                for (size_t R = 0; R < rank; R++) {
+                                    (*newKR)(I * appended_dim + M, R) += (*KR)(I, R) * factors[m_ind](M, R);
+                                }
+                            }
+                        }
+                        */
+
+                        delete KR;
+                        KR = newKR;
+                    }
+                }
+                m += 1;
+            });
+
+            // Update factors[n_ind]
+            size_t ndim = tensor.dim(n_ind);
+
+            // Step 1: Matrix Multiplication
+            if (n == 0) {
+                einsum(0.0, Indices{I, r}, &factors[n_ind], 1.0, Indices{I, K}, unweighted_folds[n_ind], Indices{K, r}, *KR);
+            } else {
+                einsum(0.0, Indices{I, r}, &factors[n_ind], 1.0, Indices{I, K}, weighted_folds[n_ind], Indices{K, r}, *KR);
+            }
+            delete KR;
+
+            // Step 2: Linear Solve (instead of inversion, for numerical stability, column-major ordering)
+            linear_algebra::gesv(&V, &factors[n_ind]);
+            
+            n += 1;
+        });
+
+        // Check for convergence
+        // Reconstruct Tensor based on the factors
+        Tensor<TType, TRank> rec_tensor = parafac_reconstruct<TRank>(factors);
+
+        double unnormalized_error = rmsd(rec_tensor, tensor);
+        double curr_error = unnormalized_error / tensor_norm;
+        double delta = std::abs(curr_error - prev_error);
+
+        // printf("    @CP Iteration %d, ERROR: %8.8f, DELTA: %8.8f\n", iter, curr_error, delta);
+
+        if (iter >= 1 && delta < tolerance) {
             converged = true;
             break;
         }
