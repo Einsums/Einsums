@@ -1,9 +1,11 @@
 #pragma once
 
+#include "einsums/_Export.hpp"
+
 #include <memory>
 #include <string>
 
-struct Section {
+struct EINSUMS_EXPORT Section {
     struct Impl;
 
     Section(const std::string &name, bool pushTimer = true);

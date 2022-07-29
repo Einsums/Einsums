@@ -2,6 +2,7 @@
 
 #include "Print.hpp"
 #include "_Common.hpp"
+#include "_Export.hpp"
 
 #include <ostream>
 
@@ -26,7 +27,7 @@ struct LabelBase {};
     }                                                                                                                                      \
     }                                                                                                                                      \
     template <>                                                                                                                            \
-    struct fmt::formatter<struct ::einsums::tensor_algebra::index::x> : fmt::formatter<char> {                                             \
+    struct EINSUMS_EXPORT fmt::formatter<struct ::einsums::tensor_algebra::index::x> : fmt::formatter<char> {                              \
         template <typename FormatContext>                                                                                                  \
         auto format(const struct ::einsums::tensor_algebra::index::x &, FormatContext &ctx) {                                              \
             return formatter<char>::format(::einsums::tensor_algebra::index::x::letter, ctx);                                              \
@@ -94,12 +95,12 @@ namespace einsums::tensor_algebra {
 
 namespace index {
 
-constexpr auto list = std::make_tuple(i, j, k, l, m, n, a, b, c, d, e, f, p, q, r, s);
+constexpr auto EINSUMS_EXPORT list = std::make_tuple(i, j, k, l, m, n, a, b, c, d, e, f, p, q, r, s);
 
 } // namespace index
 
 template <typename... Args>
-struct Indices : public std::tuple<Args...> {
+struct EINSUMS_EXPORT Indices : public std::tuple<Args...> {
     Indices(Args... args) : std::tuple<Args...>(args...){};
 };
 

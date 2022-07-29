@@ -42,8 +42,6 @@ endif()
 set(HPTT_SRCS src/hptt.cpp src/plan.cpp src/transpose.cpp src/utils.cpp)
 
 add_library(hptt STATIC ${HPTT_SRCS})
-# target_compile_features(hptt PUBLIC cxx_std_17)
-target_link_libraries(hptt PUBLIC einsums-project-options)
 if (OpenMP_FOUND)
   target_link_libraries(hptt PUBLIC OpenMP::OpenMP_CXX)
 endif()
@@ -57,13 +55,13 @@ install(TARGETS hptt
         LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
         ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 
-set(HPTT_INCLUDES 
-    include/compute_node.h 
-    include/hptt_types.h 
-    include/hptt.h 
-    include/macros.h 
-    include/plan.h 
-    include/utils.h 
+set(HPTT_INCLUDES
+    include/compute_node.h
+    include/hptt_types.h
+    include/hptt.h
+    include/macros.h
+    include/plan.h
+    include/utils.h
     include/transpose.h)
 
 install(FILES ${HPTT_INCLUDES}
