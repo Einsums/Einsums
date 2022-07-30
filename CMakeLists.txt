@@ -53,24 +53,8 @@ else()
     find_package(LAPACK REQUIRED)
 endif()
 
-check_include_file(mkl_cblas.h HAVE_MKL_CBLAS_HEADER)
-if (NOT HAVE_MKL_CBLAS_HEADER)
-    check_include_file(cblas.h HAVE_CBLAS_HEADER)
-    if (NOT HAVE_CBLAS_HEADER)
-        add_subdirectory(src/backends/cblas/cblas)
-    endif()
-endif()
-
-# Prefer MKL lapacke over vendor lapacke.  Additionally MKL lapacke is bundled in with lapack.
-check_include_file(mkl_lapacke.h HAVE_MKL_LAPACKE_HEADER)
-if (NOT HAVE_MKL_LAPACKE_HEADER)
-    include(cmake/FindLAPACKE.cmake)
-    if (LAPACKE_FOUND)
-        check_include_file(lapacke.h HAVE_LAPACKE_HEADER)
-    else()
-        # Nothing was found. We will build our internal copy of lapacke
-    endif()
-endif()
+find_package(CBLAS)
+find_package(LAPACKE)
 
 find_package(OpenMP)
 

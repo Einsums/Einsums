@@ -233,7 +233,7 @@ void zlassq(int n, const std::complex<double> *x, int incx, double *scale, doubl
 }
 
 auto sgesdd(char jobz, int m, int n, float *a, int lda, float *s, float *u, int ldu, float *vt, int ldvt) -> int {
-#if defined(EINSUMS_HAVE_LAPACKE) || defined(EINSUMS_HAVE_MKL_LAPACKE)
+#if defined(EINSUMS_HAVE_LAPACKE_H) || defined(EINSUMS_HAVE_MKL_LAPACKE_H)
     return ::einsums::backend::cblas::sgesdd(jobz, m, n, a, lda, s, u, ldu, vt, ldvt);
 #else
     throw std::runtime_error("dgesdd not implemented.");
@@ -241,7 +241,7 @@ auto sgesdd(char jobz, int m, int n, float *a, int lda, float *s, float *u, int 
 }
 
 auto dgesdd(char jobz, int m, int n, double *a, int lda, double *s, double *u, int ldu, double *vt, int ldvt) -> int {
-#if defined(EINSUMS_HAVE_LAPACKE) || defined(EINSUMS_HAVE_MKL_LAPACKE)
+#if defined(EINSUMS_HAVE_LAPACKE_H) || defined(EINSUMS_HAVE_MKL_LAPACKE_H)
     return ::einsums::backend::cblas::dgesdd(jobz, m, n, a, lda, s, u, ldu, vt, ldvt);
 #else
     throw std::runtime_error("dgesdd not implemented.");
@@ -250,7 +250,7 @@ auto dgesdd(char jobz, int m, int n, double *a, int lda, double *s, double *u, i
 
 auto cgesdd(char jobz, int m, int n, std::complex<float> *a, int lda, float *s, std::complex<float> *u, int ldu, std::complex<float> *vt,
             int ldvt) -> int {
-#if defined(EINSUMS_HAVE_LAPACKE) || defined(EINSUMS_HAVE_MKL_LAPACKE)
+#if defined(EINSUMS_HAVE_LAPACKE_H) || defined(EINSUMS_HAVE_MKL_LAPACKE_H)
     return ::einsums::backend::cblas::cgesdd(jobz, m, n, a, lda, s, u, ldu, vt, ldvt);
 #else
     throw std::runtime_error("dgesdd not implemented.");
@@ -259,7 +259,7 @@ auto cgesdd(char jobz, int m, int n, std::complex<float> *a, int lda, float *s, 
 
 auto zgesdd(char jobz, int m, int n, std::complex<double> *a, int lda, double *s, std::complex<double> *u, int ldu,
             std::complex<double> *vt, int ldvt) -> int {
-#if defined(EINSUMS_HAVE_LAPACKE) || defined(EINSUMS_HAVE_MKL_LAPACKE)
+#if defined(EINSUMS_HAVE_LAPACKE_H) || defined(EINSUMS_HAVE_MKL_LAPACKE_H)
     return ::einsums::backend::cblas::zgesdd(jobz, m, n, a, lda, s, u, ldu, vt, ldvt);
 #else
     throw std::runtime_error("dgesdd not implemented.");
@@ -267,7 +267,7 @@ auto zgesdd(char jobz, int m, int n, std::complex<double> *a, int lda, double *s
 }
 
 auto dgees(char jobvs, int n, double *a, int lda, int *sdim, double *wr, double *wi, double *vs, int ldvs) -> int {
-#if defined(EINSUMS_HAVE_LAPACKE) || defined(EINSUMS_HAVE_MKL_LAPACKE)
+#if defined(EINSUMS_HAVE_LAPACKE_H) || defined(EINSUMS_HAVE_MKL_LAPACKE_H)
     return ::einsums::backend::cblas::dgees(jobvs, n, a, lda, sdim, wr, wi, vs, ldvs);
 #else
     throw std::runtime_error("dgees not implemented.");
@@ -276,7 +276,7 @@ auto dgees(char jobvs, int n, double *a, int lda, int *sdim, double *wr, double 
 
 auto strsyl(char trana, char tranb, int isgn, int m, int n, const float *a, int lda, const float *b, int ldb, float *c, int ldc,
             float *scale) -> int {
-#if defined(EINSUMS_HAVE_LAPACKE) || defined(EINSUMS_HAVE_MKL_LAPACKE)
+#if defined(EINSUMS_HAVE_LAPACKE_H) || defined(EINSUMS_HAVE_MKL_LAPACKE_H)
     return ::einsums::backend::cblas::strsyl(trana, tranb, isgn, m, n, a, lda, b, ldb, c, ldc, scale);
 #else
     throw std::runtime_error("dtrsyl not implemented.");
@@ -285,7 +285,7 @@ auto strsyl(char trana, char tranb, int isgn, int m, int n, const float *a, int 
 
 auto dtrsyl(char trana, char tranb, int isgn, int m, int n, const double *a, int lda, const double *b, int ldb, double *c, int ldc,
             double *scale) -> int {
-#if defined(EINSUMS_HAVE_LAPACKE) || defined(EINSUMS_HAVE_MKL_LAPACKE)
+#if defined(EINSUMS_HAVE_LAPACKE_H) || defined(EINSUMS_HAVE_MKL_LAPACKE_H)
     return ::einsums::backend::cblas::dtrsyl(trana, tranb, isgn, m, n, a, lda, b, ldb, c, ldc, scale);
 #else
     throw std::runtime_error("dtrsyl not implemented.");
@@ -294,7 +294,7 @@ auto dtrsyl(char trana, char tranb, int isgn, int m, int n, const double *a, int
 
 auto ctrsyl(char trana, char tranb, int isgn, int m, int n, const std::complex<float> *a, int lda, const std::complex<float> *b, int ldb,
             std::complex<float> *c, int ldc, float *scale) -> int {
-#if defined(EINSUMS_HAVE_LAPACKE) || defined(EINSUMS_HAVE_MKL_LAPACKE)
+#if defined(EINSUMS_HAVE_LAPACKE_H) || defined(EINSUMS_HAVE_MKL_LAPACKE_H)
     return ::einsums::backend::cblas::ctrsyl(trana, tranb, isgn, m, n, a, lda, b, ldb, c, ldc, scale);
 #else
     throw std::runtime_error("dtrsyl not implemented.");
@@ -303,7 +303,7 @@ auto ctrsyl(char trana, char tranb, int isgn, int m, int n, const std::complex<f
 
 auto ztrsyl(char trana, char tranb, int isgn, int m, int n, const std::complex<double> *a, int lda, const std::complex<double> *b, int ldb,
             std::complex<double> *c, int ldc, double *scale) -> int {
-#if defined(EINSUMS_HAVE_LAPACKE) || defined(EINSUMS_HAVE_MKL_LAPACKE)
+#if defined(EINSUMS_HAVE_LAPACKE_H) || defined(EINSUMS_HAVE_MKL_LAPACKE_H)
     return ::einsums::backend::cblas::ztrsyl(trana, tranb, isgn, m, n, a, lda, b, ldb, c, ldc, scale);
 #else
     throw std::runtime_error("dtrsyl not implemented.");
@@ -311,7 +311,7 @@ auto ztrsyl(char trana, char tranb, int isgn, int m, int n, const std::complex<d
 }
 
 auto sgeqrf(int m, int n, float *a, int lda, float *tau) -> int {
-#if defined(EINSUMS_HAVE_LAPACKE) || defined(EINSUMS_HAVE_MKL_LAPACKE)
+#if defined(EINSUMS_HAVE_LAPACKE_H) || defined(EINSUMS_HAVE_MKL_LAPACKE_H)
     return ::einsums::backend::cblas::sgeqrf(m, n, a, lda, tau);
 #else
     throw std::runtime_error("dgeqrf not implemented.");
@@ -319,7 +319,7 @@ auto sgeqrf(int m, int n, float *a, int lda, float *tau) -> int {
 }
 
 auto dgeqrf(int m, int n, double *a, int lda, double *tau) -> int {
-#if defined(EINSUMS_HAVE_LAPACKE) || defined(EINSUMS_HAVE_MKL_LAPACKE)
+#if defined(EINSUMS_HAVE_LAPACKE_H) || defined(EINSUMS_HAVE_MKL_LAPACKE_H)
     return ::einsums::backend::cblas::dgeqrf(m, n, a, lda, tau);
 #else
     throw std::runtime_error("dgeqrf not implemented.");
@@ -327,7 +327,7 @@ auto dgeqrf(int m, int n, double *a, int lda, double *tau) -> int {
 }
 
 auto cgeqrf(int m, int n, std::complex<float> *a, int lda, std::complex<float> *tau) -> int {
-#if defined(EINSUMS_HAVE_LAPACKE) || defined(EINSUMS_HAVE_MKL_LAPACKE)
+#if defined(EINSUMS_HAVE_LAPACKE_H) || defined(EINSUMS_HAVE_MKL_LAPACKE_H)
     return ::einsums::backend::cblas::cgeqrf(m, n, a, lda, tau);
 #else
     throw std::runtime_error("dgeqrf not implemented.");
@@ -335,7 +335,7 @@ auto cgeqrf(int m, int n, std::complex<float> *a, int lda, std::complex<float> *
 }
 
 auto zgeqrf(int m, int n, std::complex<double> *a, int lda, std::complex<double> *tau) -> int {
-#if defined(EINSUMS_HAVE_LAPACKE) || defined(EINSUMS_HAVE_MKL_LAPACKE)
+#if defined(EINSUMS_HAVE_LAPACKE_H) || defined(EINSUMS_HAVE_MKL_LAPACKE_H)
     return ::einsums::backend::cblas::zgeqrf(m, n, a, lda, tau);
 #else
     throw std::runtime_error("dgeqrf not implemented.");
@@ -343,7 +343,7 @@ auto zgeqrf(int m, int n, std::complex<double> *a, int lda, std::complex<double>
 }
 
 auto sorgqr(int m, int n, int k, float *a, int lda, const float *tau) -> int {
-#if defined(EINSUMS_HAVE_LAPACKE) || defined(EINSUMS_HAVE_MKL_LAPACKE)
+#if defined(EINSUMS_HAVE_LAPACKE_H) || defined(EINSUMS_HAVE_MKL_LAPACKE_H)
     return ::einsums::backend::cblas::sorgqr(m, n, k, a, lda, tau);
 #else
     throw std::runtime_error("dorgqr not implemented.");
@@ -351,7 +351,7 @@ auto sorgqr(int m, int n, int k, float *a, int lda, const float *tau) -> int {
 }
 
 auto dorgqr(int m, int n, int k, double *a, int lda, const double *tau) -> int {
-#if defined(EINSUMS_HAVE_LAPACKE) || defined(EINSUMS_HAVE_MKL_LAPACKE)
+#if defined(EINSUMS_HAVE_LAPACKE_H) || defined(EINSUMS_HAVE_MKL_LAPACKE_H)
     return ::einsums::backend::cblas::dorgqr(m, n, k, a, lda, tau);
 #else
     throw std::runtime_error("dorgqr not implemented.");
@@ -359,7 +359,7 @@ auto dorgqr(int m, int n, int k, double *a, int lda, const double *tau) -> int {
 }
 
 auto cungqr(int m, int n, int k, std::complex<float> *a, int lda, const std::complex<float> *tau) -> int {
-#if defined(EINSUMS_HAVE_LAPACKE) || defined(EINSUMS_HAVE_MKL_LAPACKE)
+#if defined(EINSUMS_HAVE_LAPACKE_H) || defined(EINSUMS_HAVE_MKL_LAPACKE_H)
     return ::einsums::backend::cblas::cungqr(m, n, k, a, lda, tau);
 #else
     throw std::runtime_error("dorgqr not implemented.");
@@ -367,7 +367,7 @@ auto cungqr(int m, int n, int k, std::complex<float> *a, int lda, const std::com
 }
 
 auto zungqr(int m, int n, int k, std::complex<double> *a, int lda, const std::complex<double> *tau) -> int {
-#if defined(EINSUMS_HAVE_LAPACKE) || defined(EINSUMS_HAVE_MKL_LAPACKE)
+#if defined(EINSUMS_HAVE_LAPACKE_H) || defined(EINSUMS_HAVE_MKL_LAPACKE_H)
     return ::einsums::backend::cblas::zungqr(m, n, k, a, lda, tau);
 #else
     throw std::runtime_error("dorgqr not implemented.");

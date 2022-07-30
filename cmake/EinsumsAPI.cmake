@@ -127,20 +127,21 @@ function(add_einsums_library name)
     einsums_output_binary_dir(_output_binary_dir)
     string(REGEX MATCH "^[0-9]*" EINSUMS_VERSION_MAJOR ${EINSUMS_VERSION})
     set_target_properties(${name} PROPERTIES
-        LINK_DEPENDS_NO_SHARED ON
-        SOURCES_DIR "${CMAKE_CURRENT_SOURCE_DIR}"
-        VERSION "${EINSUMS_VERSION}"
-        SOVERSION "${EINSUMS_VERSION_MAJOR}"
-        MACHO_CURRENT_VERSION ${EINSUMS_VERSION}
-        MACHO_COMPATIBILITY_VERSION ${EINSUMS_VERSION_COMPAT}
-        CXX_EXTENSIONS OFF
-        CXX_VISIBILITY_PRESET hidden
-        VISIBILITY_INLINES_HIDDEN ON
-        BUILD_RPATH "${_LIB_RPATH};${CMAKE_BUILD_RPATH}"
-        INSTALL_RPATH "${_LIB_RPATH};${CMAKE_INSTALL_RPATH}"
-        RUNTIME_OUTPUT_DIRECTORY "${_output_binary_dir}/${_DESTINATION}"
-        LIBRARY_OUTPUT_DIRECTORY "${_output_binary_dir}/${EINSUMS_LIBRARY_PATH}"
-        ARCHIVE_OUTPUT_DIRECTORY "${_output_binary_dir}/${EINSUMS_LIBRARY_ARCHIVE_PATH}"
+        LINK_DEPENDS_NO_SHARED          ON
+        SOURCES_DIR                     "${CMAKE_CURRENT_SOURCE_DIR}"
+        VERSION                         "${EINSUMS_VERSION}"
+        SOVERSION                       "${EINSUMS_VERSION_MAJOR}"
+        MACHO_CURRENT_VERSION           ${EINSUMS_VERSION}
+        MACHO_COMPATIBILITY_VERSION     ${EINSUMS_VERSION_COMPAT}
+        CXX_EXTENSIONS                  OFF
+        C_VISIBILITY_PRESET             hidden
+        CXX_VISIBILITY_PRESET           hidden
+        VISIBILITY_INLINES_HIDDEN       ON
+        BUILD_RPATH                     "${_LIB_RPATH};${CMAKE_BUILD_RPATH}"
+        INSTALL_RPATH                   "${_LIB_RPATH};${CMAKE_INSTALL_RPATH}"
+        RUNTIME_OUTPUT_DIRECTORY        "${_output_binary_dir}/${_DESTINATION}"
+        LIBRARY_OUTPUT_DIRECTORY        "${_output_binary_dir}/${EINSUMS_LIBRARY_PATH}"
+        ARCHIVE_OUTPUT_DIRECTORY        "${_output_binary_dir}/${EINSUMS_LIBRARY_ARCHIVE_PATH}"
         ${_arg_PROPERTIES}
     )
 
