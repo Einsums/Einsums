@@ -221,7 +221,7 @@ auto parafac(const TTensor<TType, TRank> &tensor, size_t rank, int n_iter_max = 
         for_sequence<TRank>([&](auto n_ind) {
             // Form V and Khatri-Rao product intermediates
             Tensor<TType, 2> V;
-            Tensor<TType, 2> *KR;
+            Tensor<TType, 2> KR;
             bool first = true;
 
             for_sequence<TRank>([&](auto m_ind) {
@@ -234,9 +234,7 @@ auto parafac(const TTensor<TType, TRank> &tensor, size_t rank, int n_iter_max = 
 
                     if (first) {
                         V = A_tA;
-                        auto *KRcopy = new Tensor<TType, 2>("KR product", tensor.dim(m_ind), rank);
-                        *KRcopy = factors[m_ind];
-                        KR = KRcopy;
+                        KR = factors[m_ind];
                         first = false;
                     } else {
                         // Uses a Hamamard Contraction to build V
@@ -244,34 +242,7 @@ auto parafac(const TTensor<TType, TRank> &tensor, size_t rank, int n_iter_max = 
                         einsum(0.0, Indices{r, s}, &V, 1.0, Indices{r, s}, Vcopy, Indices{r, s}, A_tA);
 
                         // Perform a Khatri-Rao contraction
-                        // TODO: Implement an actual Khatri-Rao procedure to replace this "hacky" workaround
-
-                        size_t running_dim = KR->dim(0);
-                        size_t appended_dim = tensor.dim(m_ind);
-
-                        Tensor<TType, 3> KRbuff{"KR temp", running_dim, appended_dim, rank};
-
-                        einsum(0.0, Indices{I, M, r}, &KRbuff, 1.0, Indices{I, r}, *KR, Indices{M, r}, factors[m_ind]);
-
-                        auto *newKR = new Tensor<TType, 2>("KR product", running_dim * appended_dim, rank);
-
-                        const vector &KRbuffd = KRbuff.vector_data();
-                        vector &newKRd = newKR->vector_data();
-
-                        std::copy(KRbuffd.begin(), KRbuffd.end(), newKRd.begin());
-
-                        /*
-                        for (size_t I = 0; I < running_dim; I++) {
-                            for (size_t M = 0; M < appended_dim; M++) {
-                                for (size_t R = 0; R < rank; R++) {
-                                    (*newKR)(I * appended_dim + M, R) += (*KR)(I, R) * factors[m_ind](M, R);
-                                }
-                            }
-                        }
-                        */
-
-                        delete KR;
-                        KR = newKR;
+                        KR = tensor_algebra::khatri_rao(Indices{I, r}, KR, Indices{M, r}, factors[m_ind]);
                     }
                 }
             });
@@ -280,8 +251,7 @@ auto parafac(const TTensor<TType, TRank> &tensor, size_t rank, int n_iter_max = 
             size_t ndim = tensor.dim(n_ind);
 
             // Step 1: Matrix Multiplication
-            einsum(0.0, Indices{I, r}, &factors[n_ind], 1.0, Indices{I, K}, unfolded_matrices[n_ind], Indices{K, r}, *KR);
-            delete KR;
+            einsum(0.0, Indices{I, r}, &factors[n_ind], 1.0, Indices{I, K}, unfolded_matrices[n_ind], Indices{K, r}, KR);
 
             // Step 2: Linear Solve (instead of inversion, for numerical stability, column-major ordering)
             linear_algebra::gesv(&V, &factors[n_ind]);
@@ -330,25 +300,24 @@ auto weighted_parafac(const TTensor<TType, TRank> &tensor, const TTensor<TType, 
     using vector = std::vector<TType, AlignedAllocator<TType, 64>>;
 
     // Compute set of unfolded matrices (unweighted)
-    std::vector<Tensor<TType, 2>> unweighted_folds;
+    std::vector<Tensor<TType, 2>> unfolded_matrices;
     for_sequence<TRank>([&](auto i) {
-        unweighted_folds.push_back(tensor_algebra::unfold<i>(tensor));
-    });
-
-    // Create the weighted tensor
-    Tensor<TType, 1> square_weights("square_weights", weights.dim(0));
-    einsum(0.0, Indices{index::P}, &square_weights, 1.0,
-            Indices{index::P}, weights, Indices{index::P}, weights);
-    Tensor<TType, TRank> weighted_tensor = weight_tensor(tensor, square_weights);
-
-    // Compute set of unfolded matrices (weighted)
-    std::vector<Tensor<TType, 2>> weighted_folds;
-    for_sequence<TRank>([&](auto i) {
-        weighted_folds.push_back(tensor_algebra::unfold<i>(weighted_tensor));
+        unfolded_matrices.push_back(tensor_algebra::unfold<i>(tensor));
     });
 
     // Perform SVD guess for parafac decomposition procedure
-    std::vector<Tensor<TType, 2>> factors = initialize_cp<TRank>(unweighted_folds, rank);
+    std::vector<Tensor<TType, 2>> factors = initialize_cp<TRank>(unfolded_matrices, rank);
+
+    { // Define new scope (for memory optimization)
+        // Create the weighted tensor
+        Tensor<TType, 1> square_weights("square_weights", weights.dim(0));
+        einsum(0.0, Indices{index::P}, &square_weights, 1.0,
+                Indices{index::P}, weights, Indices{index::P}, weights);
+        Tensor<TType, TRank> weighted_tensor = weight_tensor(tensor, square_weights);
+        for_sequence<TRank>([&](auto i) {
+            if (i != 0) unfolded_matrices[i] = tensor_algebra::unfold<i>(weighted_tensor);
+        });
+    }
 
     double tensor_norm = norm(tensor);
     size_t nelem = 1;
@@ -364,7 +333,7 @@ auto weighted_parafac(const TTensor<TType, TRank> &tensor, const TTensor<TType, 
 
             // Form V and Khatri-Rao product intermediates
             Tensor<TType, 2> V;
-            Tensor<TType, 2> *KR;
+            Tensor<TType, 2> KR;
             bool first = true;
 
             size_t m = 0;
@@ -381,9 +350,7 @@ auto weighted_parafac(const TTensor<TType, TRank> &tensor, const TTensor<TType, 
 
                     if (first) {
                         V = A_tA;
-                        auto *KRcopy = new Tensor<TType, 2>("KR product", tensor.dim(m_ind), rank);
-                        *KRcopy = factors[m_ind];
-                        KR = KRcopy;
+                        KR = factors[m_ind];
                         first = false;
                     } else {
                         // Uses a Hamamard Contraction to build V
@@ -391,34 +358,7 @@ auto weighted_parafac(const TTensor<TType, TRank> &tensor, const TTensor<TType, 
                         einsum(0.0, Indices{r, s}, &V, 1.0, Indices{r, s}, Vcopy, Indices{r, s}, A_tA);
 
                         // Perform a Khatri-Rao contraction
-                        // TODO: Implement an actual Khatri-Rao procedure to replace this "hacky" workaround
-
-                        size_t running_dim = KR->dim(0);
-                        size_t appended_dim = tensor.dim(m_ind);
-
-                        Tensor<TType, 3> KRbuff{"KR temp", running_dim, appended_dim, rank};
-
-                        einsum(0.0, Indices{I, M, r}, &KRbuff, 1.0, Indices{I, r}, *KR, Indices{M, r}, factors[m_ind]);
-
-                        auto *newKR = new Tensor<TType, 2>("KR product", running_dim * appended_dim, rank);
-
-                        const vector &KRbuffd = KRbuff.vector_data();
-                        vector &newKRd = newKR->vector_data();
-
-                        std::copy(KRbuffd.begin(), KRbuffd.end(), newKRd.begin());
-
-                        /*
-                        for (size_t I = 0; I < running_dim; I++) {
-                            for (size_t M = 0; M < appended_dim; M++) {
-                                for (size_t R = 0; R < rank; R++) {
-                                    (*newKR)(I * appended_dim + M, R) += (*KR)(I, R) * factors[m_ind](M, R);
-                                }
-                            }
-                        }
-                        */
-
-                        delete KR;
-                        KR = newKR;
+                        KR = tensor_algebra::khatri_rao(Indices{I, r}, KR, Indices{M, r}, factors[m_ind]);
                     }
                 }
                 m += 1;
@@ -428,12 +368,7 @@ auto weighted_parafac(const TTensor<TType, TRank> &tensor, const TTensor<TType, 
             size_t ndim = tensor.dim(n_ind);
 
             // Step 1: Matrix Multiplication
-            if (n == 0) {
-                einsum(0.0, Indices{I, r}, &factors[n_ind], 1.0, Indices{I, K}, unweighted_folds[n_ind], Indices{K, r}, *KR);
-            } else {
-                einsum(0.0, Indices{I, r}, &factors[n_ind], 1.0, Indices{I, K}, weighted_folds[n_ind], Indices{K, r}, *KR);
-            }
-            delete KR;
+            einsum(0.0, Indices{I, r}, &factors[n_ind], 1.0, Indices{I, K}, unfolded_matrices[n_ind], Indices{K, r}, KR);
 
             // Step 2: Linear Solve (instead of inversion, for numerical stability, column-major ordering)
             linear_algebra::gesv(&V, &factors[n_ind]);
