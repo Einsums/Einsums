@@ -140,6 +140,8 @@ auto parafac_reconstruct(const std::vector<Tensor<TType, 2>> &factors) -> Tensor
 
 template <size_t TRank, typename TType>
 auto initialize_cp(std::vector<Tensor<TType, 2>> &folds, size_t rank) -> std::vector<Tensor<TType, 2>> {
+    using namespace einsums::tensor_algebra;
+    using namespace einsums::tensor_algebra::index;
 
     std::vector<Tensor<TType, 2>> factors;
 
