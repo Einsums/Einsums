@@ -145,20 +145,26 @@ auto initialize_cp(std::vector<Tensor<TType, 2>> &folds, size_t rank) -> std::ve
 
     // Perform compile-time looping.
     for_sequence<TRank>([&](auto i) {
-        // auto nthread = omp_get_max_threads();
-        // omp_set_num_threads(1);
-        auto [U, S, _] = linear_algebra::svd_a(folds[i]);
-        // omp_set_num_threads(nthread);
+        size_t m = folds[i].dim(0);
 
-        // println(tensor_algebra::unfold<i>(tensor));
-        // println(S);
-        // println(U);
-        // println(S);
+        // Multiply the fold by its transpose
+        Tensor<double, 2> fold_squared("fold squared", m, m);
+        einsum(0.0, Indices{index::M, index::N}, &fold_squared, 1.0,
+                Indices{index::M, index::p}, folds[i], Indices{index::N, index::p}, folds[i]);
+        
+        Tensor<double, 1> S("eigenvalues", m);
+
+        // Diagonalize fold squared (akin to SVD)
+        linear_algebra::syev(&fold_squared, &S);
+
+        // Reorder into row major form
+        Tensor<double, 2> U("Left Singular Vectors", m, m);
+        sort(Indices{index::M, index::N}, &U, Indices{index::N, index::M}, fold_squared);
 
         // If (i == 0), Scale U by the singular values
         if (i == 0) {
             for (size_t v = 0; v < S.dim(0); v++) {
-                double scaling_factor = S(v);
+                double scaling_factor = std::sqrt(S(v));
                 if (std::abs(scaling_factor) > 1.0e-14) linear_algebra::scale_column(v, scaling_factor, &U);
             }
         }
