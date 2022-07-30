@@ -56,7 +56,7 @@ extend_einsums_target(einsums
         lapacke
         LAPACK::LAPACK
     CONDITION
-        HAVE_LAPACKE_H
+        (HAVE_LAPACKE_H AND HAVE_CBLAS_H)
 )
 
 extend_einsums_target(einsums
@@ -64,8 +64,9 @@ extend_einsums_target(einsums
         backends/cblas/cblas.cpp
     DEFINES
         EINSUMS_HAVE_MKL_LAPACKE_H
+        EINSUMS_HAVE_MKL_CBLAS_H
     CONDITION
-        HAVE_MKL_LAPACKE_H
+        (HAVE_MKL_LAPACKE_H AND HAVE_MKL_CBLAS_H)
 )
 
 extend_einsums_target(einsums
