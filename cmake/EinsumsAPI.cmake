@@ -68,6 +68,12 @@ function(add_einsums_library name)
     add_library(${name} ${library_type})
     add_library(Einsums::${name} ALIAS ${name})
 
+    # Disable CMake automatically defining ${name}_EXPORTS
+    set_target_properties(${name}
+        PROPERTIES
+            DEFINE_SYMBOL ""
+    )
+
     if (${name} MATCHES "^[^0-9-]+$")
         if (EINSUMS_STATIC_BUILD)
             set(export_symbol_suffix "STATIC_LIBRARY")
