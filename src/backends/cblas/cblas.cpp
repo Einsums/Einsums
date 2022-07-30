@@ -3,13 +3,19 @@
 
 #include <exception>
 
-#if defined(EINSUMS_HAVE_LAPACKE_H)
+#if defined(EINSUMS_HAVE_CBLAS_H)
 #include <cblas.h>
+#endif
+
+#if defined(EINSUMS_HAVE_LAPACKE_H)
 #include <lapacke.h>
 #endif
 
-#if defined(EINSUMS_HAVE_MKL_LAPACKE_H)
+#if defined(EINSUMS_HAVE_MKL_CBLAS_H)
 #include <mkl_cblas.h>
+#endif
+
+#if defined(EINSUMS_HAVE_MKL_LAPACKE_H)
 #include <mkl_lapacke.h>
 #endif
 
