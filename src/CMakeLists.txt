@@ -52,9 +52,7 @@ extend_einsums_target(einsums
         backends/cblas/cblas.cpp
     DEFINES
         EINSUMS_HAVE_LAPACKE_H
-    DEPENDS
-        lapacke
-        LAPACK::LAPACK
+        EINSUMS_HAVE_CBLAS_H
     CONDITION
         (HAVE_LAPACKE_H AND HAVE_CBLAS_H)
 )
@@ -122,8 +120,8 @@ extend_einsums_target(einsums
         NOT CBLAS_FOUND
     INCLUDES
         backends/cblas/cblas/include
-    DEFINES
-        HAVE_CBLAS_H
+    # DEFINES
+        # EINSUMS_HAVE_CBLAS_H
     SOURCES_PREFIX
         backends/cblas/cblas
     SOURCES
@@ -326,8 +324,8 @@ extend_einsums_target(einsums
         NOT LAPACKE_FOUND
     INCLUDES
         backends/cblas/lapacke/include
-    DEFINES
-        HAVE_LAPACKE_H
+    # DEFINES
+        # EINSUMS_HAVE_LAPACKE_H
     SOURCES_PREFIX
         backends/cblas/lapacke
     SOURCES
