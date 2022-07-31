@@ -121,7 +121,7 @@ endif()
 extend_einsums_target(einsums
     CONDITION
         NOT CBLAS_FOUND
-    FEATURE_INFO Internal CBLAS
+    FEATURE_INFO "Internal CBLAS"
     INCLUDES
         backends/cblas/cblas/include
     DEFINES
@@ -326,7 +326,7 @@ extend_einsums_target(einsums
 extend_einsums_target(einsums
     CONDITION
         NOT LAPACKE_FOUND
-    FEATURE_INFO Internal LAPACKE
+    FEATURE_INFO "Internal LAPACKE"
     INCLUDES
         backends/cblas/lapacke/include
     DEFINES
