@@ -62,7 +62,7 @@ extend_einsums_target(einsums
     DEPENDS
         cblas
     DEFINES
-'        EINSUMS_HAVE_CBLAS_H
+        EINSUMS_HAVE_CBLAS_H
     CONDITION
         HAVE_CBLAS_H
 )
