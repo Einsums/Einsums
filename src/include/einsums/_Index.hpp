@@ -95,7 +95,7 @@ namespace einsums::tensor_algebra {
 
 namespace index {
 
-constexpr auto EINSUMS_EXPORT list = std::make_tuple(i, j, k, l, m, n, a, b, c, d, e, f, p, q, r, s);
+constexpr auto list = std::make_tuple(i, j, k, l, m, n, a, b, c, d, e, f, p, q, r, s);
 
 } // namespace index
 
