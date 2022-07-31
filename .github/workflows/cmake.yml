@@ -18,6 +18,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - uses: seanmiddleditch/gha-setup-ninja@master
 
     - name: Install Dependencies - Ubuntu
       if: ${{ matrix.os == 'ubuntu-latest' }}
@@ -31,7 +32,7 @@ jobs:
         echo "LAPACKE_DIR=/home/linuxbrew/.linuxbrew/opt/lapack" >> $GITHUB_ENV
 
     - name: Configure CMake
-      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DEINSUMS_SHOW_WARNING=OFF
+      run: cmake -G Ninja -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DEINSUMS_SHOW_WARNING=OFF -DCMAKE_VERBOSE_MAKEFILE=ON
 
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
