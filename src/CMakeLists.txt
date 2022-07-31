@@ -50,6 +50,9 @@ extend_einsums_target(einsums
 extend_einsums_target(einsums
     SOURCES
         backends/cblas/cblas.cpp
+    DEPENDS
+        lapacke
+        cblas
     DEFINES
         EINSUMS_HAVE_LAPACKE_H
         EINSUMS_HAVE_CBLAS_H
@@ -117,7 +120,7 @@ endif()
 
 extend_einsums_target(einsums
     CONDITION
-        NOT CBLAS_FOUND
+        (NOT CBLAS_FOUND AND NOT LAPACKE_FOUND)
     INCLUDES
         backends/cblas/cblas/include
     # DEFINES
@@ -321,7 +324,7 @@ extend_einsums_target(einsums
 
 extend_einsums_target(einsums
     CONDITION
-        NOT LAPACKE_FOUND
+        (NOT LAPACKE_FOUND AND NOT CBLAS_FOUND)
     INCLUDES
         backends/cblas/lapacke/include
     # DEFINES
