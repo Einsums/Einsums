@@ -6,6 +6,8 @@ add_einsums_library(einsums
 
         backends/vendor/Vendor.cpp
 
+        backends/cblas/cblas.cpp
+
         Blas.cpp
         Memory.cpp
         Print.cpp
@@ -48,21 +50,24 @@ extend_einsums_target(einsums
 )
 
 extend_einsums_target(einsums
-    SOURCES
-        backends/cblas/cblas.cpp
     DEPENDS
         lapacke
-        cblas
-    # DEFINES
-        # EINSUMS_HAVE_LAPACKE_H
-        # EINSUMS_HAVE_CBLAS_H
+    DEFINES
+        EINSUMS_HAVE_LAPACKE_H
     CONDITION
-        (HAVE_LAPACKE_H AND HAVE_CBLAS_H)
+        HAVE_LAPACKE_H
 )
 
 extend_einsums_target(einsums
-    SOURCES
-        backends/cblas/cblas.cpp
+    DEPENDS
+        cblas
+    DEFINES
+'        EINSUMS_HAVE_CBLAS_H
+    CONDITION
+        HAVE_CBLAS_H
+)
+
+extend_einsums_target(einsums
     DEFINES
         EINSUMS_HAVE_MKL_LAPACKE_H
         EINSUMS_HAVE_MKL_CBLAS_H

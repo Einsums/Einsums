@@ -35,10 +35,6 @@ else()
                 INTERFACE
                     ${LAPACKE_LIBRARIES}
             )
-            target_compile_definitions(lapacke
-                INTERFACE
-                    HAVE_LAPACKE
-            )
         endif()
     endif()
 endif()

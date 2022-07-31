@@ -25,8 +25,6 @@ else()
         find_package_handle_standard_args(CBLAS DEFAULT_MSG CBLAS_LIBRARIES CBLAS_INCLUDE_DIRS)
 
         if (CBLAS_FOUND)
-            set(HAVE_CBLAS_H TRUE)
-
             message(STATUS "Found components for CBLAS.")
 
             add_library(cblas INTERFACE)
@@ -38,10 +36,8 @@ else()
                 INTERFACE
                     ${CBLAS_LIBRARIES}
             )
-            target_compile_definitions(cblas
-                INTERFACE
-                    HAVE_CBLAS
-            )
         endif()
+    else()
+        set(HAVE_CBLAS_H OFF)
     endif()
 endif()
