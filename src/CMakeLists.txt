@@ -91,6 +91,8 @@ extend_einsums_target(einsums
         HAVE_ITTNOTIFY
     CONDITION
         TARGET ittnotify
+    FEATURE_INFO
+        "VTune Instrumentation and Tracing Technology API"
 )
 
 extend_einsums_target(einsums
