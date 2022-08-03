@@ -3,6 +3,7 @@ add_executable(test-all
     Disk.cpp
     Decomposition.cpp
     LinearAlgebra.cpp
+    Other.cpp
     Tensor.cpp
     TensorAlgebra.cpp
 )

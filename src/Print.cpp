@@ -50,15 +50,19 @@ void update_indent_string() {
 }
 
 void indent() {
-    indent_level += 4;
-    update_indent_string();
+    if (omp_get_thread_num() == 0) {
+        indent_level += 4;
+        update_indent_string();
+    }
 }
 
 void deindent() {
-    indent_level -= 4;
-    if (indent_level < 0)
-        indent_level = 0;
-    update_indent_string();
+    if (omp_get_thread_num() == 0) {
+        indent_level -= 4;
+        if (indent_level < 0)
+            indent_level = 0;
+        update_indent_string();
+    }
 }
 
 auto current_indent_level() -> int {
