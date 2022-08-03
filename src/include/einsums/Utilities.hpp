@@ -1,7 +1,8 @@
 #pragma once
 
-#include "Blas.hpp"
+#include "einsums/Blas.hpp"
 #include "einsums/LinearAlgebra.hpp"
+#include "einsums/OpenMP.h"
 
 namespace einsums {
 
@@ -145,5 +146,17 @@ template <typename T>
 auto arange(T stop) -> Tensor<T, 1> {
     return arange(T{0}, stop);
 }
+
+struct DisableOMPNestedScope {
+    DisableOMPNestedScope() {
+        _old_nested = omp_get_nested();
+        omp_set_nested(0);
+    }
+
+    ~DisableOMPNestedScope() { omp_set_nested(_old_nested); }
+
+  private:
+    int _old_nested;
+};
 
 } // namespace einsums
