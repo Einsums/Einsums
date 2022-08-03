@@ -11,7 +11,7 @@ void EINSUMS_EXPORT finalize();
 
 void EINSUMS_EXPORT report();
 
-void EINSUMS_EXPORT push(const std::string &name);
+void EINSUMS_EXPORT push(std::string name);
 void EINSUMS_EXPORT pop();
 
 struct Timer {

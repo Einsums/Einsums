@@ -1,5 +1,6 @@
 #include "einsums/Timer.hpp"
 
+#include "einsums/OpenMP.h"
 #include "einsums/Print.hpp"
 
 #include <array>
@@ -100,42 +101,51 @@ void report() {
     print_timer_info(root);
 }
 
-void push(const std::string &name) {
+void push(std::string name) {
     // assert(current_timer != nullptr);
     static bool already_warned{false};
 
-    if (current_timer == nullptr) {
-        if (already_warned == false) {
-            println("Timer::push: Timer was not initialized prior to calling `push`. This is the only warning you will receive.");
-            already_warned = true;
+    if (omp_get_thread_num() == 0) {
+        if (omp_in_parallel()) {
+            name = fmt::format("{} (master thread only)", name);
         }
-        return;
-    }
 
-    if (current_timer->children.count(name) == 0) {
-        current_timer->children[name].name = name;
-        current_timer->children[name].parent = current_timer;
-        current_timer->order.push_back(name);
-    }
+        if (current_timer == nullptr) {
+            if (already_warned == false) {
+                println("Timer::push: Timer was not initialized prior to calling `push`. This is the only warning you will receive.");
+                already_warned = true;
+            }
+            return;
+        }
 
-    current_timer = &current_timer->children[name];
-    current_timer->start_time = clock::now();
+        if (current_timer->children.count(name) == 0) {
+            current_timer->children[name].name = name;
+            current_timer->children[name].parent = current_timer;
+            current_timer->order.push_back(name);
+        }
+
+        current_timer = &current_timer->children[name];
+        current_timer->start_time = clock::now();
+    }
 }
 
 void pop() {
     static bool already_warned{false};
 
-    if (current_timer == nullptr) {
-        if (already_warned == false) {
-            println("Timer::pop: current_timer is already nullptr; something might be wrong. This is the only warning you will receive.");
-            already_warned = true;
+    if (omp_get_thread_num() == 0) {
+        if (current_timer == nullptr) {
+            if (already_warned == false) {
+                println(
+                    "Timer::pop: current_timer is already nullptr; something might be wrong. This is the only warning you will receive.");
+                already_warned = true;
+            }
+            return;
         }
-        return;
-    }
 
-    current_timer->total_time += clock::now() - current_timer->start_time;
-    current_timer->total_calls++;
-    current_timer = current_timer->parent;
+        current_timer->total_time += clock::now() - current_timer->start_time;
+        current_timer->total_calls++;
+        current_timer = current_timer->parent;
+    }
 }
 
 } // namespace einsums::timer
