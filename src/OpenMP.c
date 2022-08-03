@@ -19,3 +19,11 @@ void omp_set_num_threads(int nthread) {
 int omp_in_parallel() {
     return 0;
 }
+
+void omp_set_nested(int val) {
+    (void)val;
+}
+
+int omp_get_nested() {
+    return 0;
+}
