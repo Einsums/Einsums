@@ -52,7 +52,7 @@ TEST_CASE("CP 2") {
     double diff = rmsd(test2, test2_cp);
 
     REQUIRE(isgreaterequal(diff, 0.0));
-    REQUIRE(islessequal(diff, 0.122493));
+    REQUIRE(islessequal(diff, 0.122492));
 }
 
 TEST_CASE("CP 3") {

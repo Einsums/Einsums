@@ -178,13 +178,13 @@ auto initialize_cp(std::vector<Tensor<TType, 2>> &folds, size_t rank) -> std::ve
             // println_warn("dimension {} size {} is less than the requested decomposition rank {}", i, folds[i].dim(0), rank);
             // TODO: Need to padd U up to rank
             Tensor<TType, 2> Unew = create_random_tensor("Padded SVD Left Vectors", folds[i].dim(0), rank);
-            Unew(All, Range{0, folds[i].dim(0)}) = U(All, Range{0, folds[i].dim(0)});
+            Unew(All, Range{0, m}) = U(All, All);
 
             // Need to save the factors
             factors.push_back(Unew);
         } else {
             // Need to save the factors
-            factors.emplace_back(Tensor{U(All, Range{0, rank})});
+            factors.emplace_back(Tensor{U(All, Range{m-rank, m})});
         }
 
         // println("latest factor added");
