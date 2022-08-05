@@ -1,12 +1,16 @@
 #pragma once
 
 #include "einsums/Print.hpp"
+#include "einsums/_Export.hpp"
 
 #include <array>
 #include <cstdint>
 #include <ostream>
 
 namespace einsums {
+
+auto EINSUMS_EXPORT initialize() -> int;
+void EINSUMS_EXPORT finalize(bool timerReport = false);
 
 // The following detail and "using" statements below are needed to ensure Dims, Strides, and Offsets are strong-types in C++
 namespace detail {

@@ -57,6 +57,9 @@ find_package(CBLAS)
 find_package(LAPACKE)
 
 find_package(OpenMP)
+if (OpenMP_FOUND)
+    message(STATUS "OpenMP Version ${OpenMP_CXX_VERSION_MAJOR}")
+endif()
 
 include(cmake/BackwardConfig.cmake)
 

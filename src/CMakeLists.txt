@@ -9,6 +9,7 @@ add_einsums_library(einsums
         backends/cblas/cblas.cpp
 
         Blas.cpp
+        InitializeFinalize.cpp
         Memory.cpp
         Print.cpp
         Section.cpp
@@ -54,6 +55,7 @@ extend_einsums_target(einsums
         lapacke
     DEFINES
         EINSUMS_HAVE_LAPACKE_H
+        EINSUMS_HAVE_LAPACKE
     CONDITION
         HAVE_LAPACKE_H
 )
@@ -63,6 +65,7 @@ extend_einsums_target(einsums
         cblas
     DEFINES
         EINSUMS_HAVE_CBLAS_H
+        EINSUMS_HAVE_CBLAS
     CONDITION
         HAVE_CBLAS_H
 )
@@ -71,6 +74,8 @@ extend_einsums_target(einsums
     DEFINES
         EINSUMS_HAVE_MKL_LAPACKE_H
         EINSUMS_HAVE_MKL_CBLAS_H
+        EINSUMS_HAVE_CBLAS
+        EINSUMS_HAVE_LAPACKE
     CONDITION
         (HAVE_MKL_LAPACKE_H AND HAVE_MKL_CBLAS_H)
 )
@@ -133,6 +138,7 @@ extend_einsums_target(einsums
         backends/cblas/cblas/include
     DEFINES
         EINSUMS_HAVE_CBLAS_H
+        EINSUMS_HAVE_CBLAS
     SOURCES_PREFIX
         backends/cblas/cblas
     SOURCES
@@ -338,6 +344,7 @@ extend_einsums_target(einsums
         backends/cblas/lapacke/include
     DEFINES
         EINSUMS_HAVE_LAPACKE_H
+        EINSUMS_HAVE_LAPACKE
     SOURCES_PREFIX
         backends/cblas/lapacke
     SOURCES
