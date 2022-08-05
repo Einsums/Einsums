@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/vscode/devcontainers/base:ubuntu-21.04
+FROM mcr.microsoft.com/vscode/devcontainers/base:ubuntu-22.04
 
 # This Dockerfile's base image has a non-root user with sudo access. Use the "remoteUser"
 # property in devcontainer.json to use it. On Linux, the container's GID/UIDs will be
@@ -21,11 +21,14 @@ RUN apt-get update \
     ninja-build \
     ccache \
     zsh \
-    libblas-dev \
-    liblapack-dev \
+    # libblas-dev \
+    # liblapack-dev \
+    cmake \
     libhdf5-serial-dev \
     hdf5-tools \
-    lsb-release wget software-properties-common \
+    lsb-release \
+    wget \
+    software-properties-common \
     #
     # [Optional] Update UID/GID if needed
     && if [ "${USER_GID}" != "1000"] || [ "${USER_UID}" != "1000" ]; then \
@@ -35,11 +38,11 @@ RUN apt-get update \
     fi
 
 # Obtain a newer version of CMake from kitware directly.
-RUN apt-get update \
-    && wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | tee /etc/apt/trusted.gpg.d/kitware.gpg >/dev/null \
-    && echo "deb https://apt.kitware.com/ubuntu/ focal main" >> /etc/apt/sources.list \
-    && apt-get update \
-    && apt-get -y install cmake
+# RUN apt-get update \
+#     && wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | tee /etc/apt/trusted.gpg.d/kitware.gpg >/dev/null \
+#     && echo "deb https://apt.kitware.com/ubuntu/ focal main" >> /etc/apt/sources.list \
+#     && apt-get update \
+#     && apt-get -y install cmake
 
 RUN wget -O- https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB \
     | gpg --dearmor | sudo tee /usr/share/keyrings/oneapi-archive-keyring.gpg > /dev/null \
