@@ -3,14 +3,18 @@
 #include "einsums/OpenMP.h"
 #include "einsums/Print.hpp"
 #include "einsums/State.hpp"
+#include "einsums/Tensor.hpp"
 #include "einsums/Timer.hpp"
 
 #include <catch2/catch.hpp>
 #include <h5cpp/io>
 
 auto main(int argc, char *argv[]) -> int {
-    einsums::timer::initialize();
-    einsums::blas::initialize();
+    // This call replaces the two commented out below.
+    einsums::initialize();
+
+    // einsums::timer::initialize();
+    // einsums::blas::initialize();
 
     // Disable HDF5 diagnostic reporting.
     H5Eset_auto(0, nullptr, nullptr);
@@ -23,7 +27,13 @@ auto main(int argc, char *argv[]) -> int {
     int result = Catch::Session().run(argc, argv);
 
     // einsums::timer::report();
-    einsums::blas::finalize();
-    einsums::timer::finalize();
+    // einsums::blas::finalize();
+    // einsums::timer::finalize();
+
+    // This replaces the three calls commented out above.
+    // Passing false means "do not print timer report", whereas passing true will print the
+    // timer report.
+    einsums::finalize(false);
+
     return result;
 }
