@@ -36,9 +36,6 @@
  * column-major(Fortran) layout or vice versa.
  */
 
-void LAPACKE_spp_trans( int matrix_layout, char uplo, lapack_int n,
-                        const float *in,
-                        float *out )
-{
-    LAPACKE_stp_trans( matrix_layout, uplo, 'n', n, in, out );
+void LAPACKE_spp_trans(int matrix_layout, char uplo, lapack_int n, const float *in, float *out) {
+    LAPACKE_stp_trans(matrix_layout, uplo, 'n', n, in, out);
 }

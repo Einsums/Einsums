@@ -33,15 +33,12 @@
 
 /* Check a matrix for NaN entries. */
 
-lapack_logical LAPACKE_zpb_nancheck( int matrix_layout, char uplo,
-                                      lapack_int n, lapack_int kd,
-                                      const lapack_complex_double* ab,
-                                      lapack_int ldab )
-{
-    if( LAPACKE_lsame( uplo, 'u' ) ) {
-        return LAPACKE_zgb_nancheck( matrix_layout, n, n, 0, kd, ab, ldab );
-    } else if( LAPACKE_lsame( uplo, 'l' ) ) {
-        return LAPACKE_zgb_nancheck( matrix_layout, n, n, kd, 0, ab, ldab );
+lapack_logical LAPACKE_zpb_nancheck(int matrix_layout, char uplo, lapack_int n, lapack_int kd, const lapack_complex_double *ab,
+                                    lapack_int ldab) {
+    if (LAPACKE_lsame(uplo, 'u')) {
+        return LAPACKE_zgb_nancheck(matrix_layout, n, n, 0, kd, ab, ldab);
+    } else if (LAPACKE_lsame(uplo, 'l')) {
+        return LAPACKE_zgb_nancheck(matrix_layout, n, n, kd, 0, ab, ldab);
     }
-    return (lapack_logical) 0;
+    return (lapack_logical)0;
 }

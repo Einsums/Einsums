@@ -32,85 +32,77 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_ztgsna( int matrix_layout, char job, char howmny,
-                           const lapack_logical* select, lapack_int n,
-                           const lapack_complex_double* a, lapack_int lda,
-                           const lapack_complex_double* b, lapack_int ldb,
-                           const lapack_complex_double* vl, lapack_int ldvl,
-                           const lapack_complex_double* vr, lapack_int ldvr,
-                           double* s, double* dif, lapack_int mm,
-                           lapack_int* m )
-{
+lapack_int LAPACKE_ztgsna(int matrix_layout, char job, char howmny, const lapack_logical *select, lapack_int n,
+                          const lapack_complex_double *a, lapack_int lda, const lapack_complex_double *b, lapack_int ldb,
+                          const lapack_complex_double *vl, lapack_int ldvl, const lapack_complex_double *vr, lapack_int ldvr, double *s,
+                          double *dif, lapack_int mm, lapack_int *m) {
     lapack_int info = 0;
     lapack_int lwork = -1;
-    lapack_int* iwork = NULL;
-    lapack_complex_double* work = NULL;
+    lapack_int *iwork = NULL;
+    lapack_complex_double *work = NULL;
     lapack_complex_double work_query;
-    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
-        LAPACKE_xerbla( "LAPACKE_ztgsna", -1 );
+    if (matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR) {
+        LAPACKE_xerbla("LAPACKE_ztgsna", -1);
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
-    if( LAPACKE_get_nancheck() ) {
+    if (LAPACKE_get_nancheck()) {
         /* Optionally check input matrices for NaNs */
-        if( LAPACKE_zge_nancheck( matrix_layout, n, n, a, lda ) ) {
+        if (LAPACKE_zge_nancheck(matrix_layout, n, n, a, lda)) {
             return -6;
         }
-        if( LAPACKE_zge_nancheck( matrix_layout, n, n, b, ldb ) ) {
+        if (LAPACKE_zge_nancheck(matrix_layout, n, n, b, ldb)) {
             return -8;
         }
-        if( LAPACKE_lsame( job, 'b' ) || LAPACKE_lsame( job, 'e' ) ) {
-            if( LAPACKE_zge_nancheck( matrix_layout, n, mm, vl, ldvl ) ) {
+        if (LAPACKE_lsame(job, 'b') || LAPACKE_lsame(job, 'e')) {
+            if (LAPACKE_zge_nancheck(matrix_layout, n, mm, vl, ldvl)) {
                 return -10;
             }
         }
-        if( LAPACKE_lsame( job, 'b' ) || LAPACKE_lsame( job, 'e' ) ) {
-            if( LAPACKE_zge_nancheck( matrix_layout, n, mm, vr, ldvr ) ) {
+        if (LAPACKE_lsame(job, 'b') || LAPACKE_lsame(job, 'e')) {
+            if (LAPACKE_zge_nancheck(matrix_layout, n, mm, vr, ldvr)) {
                 return -12;
             }
         }
     }
 #endif
     /* Allocate memory for working array(s) */
-    if( LAPACKE_lsame( job, 'b' ) || LAPACKE_lsame( job, 'v' ) ) {
-        iwork = (lapack_int*)LAPACKE_malloc( sizeof(lapack_int) * MAX(1,n+2) );
-        if( iwork == NULL ) {
+    if (LAPACKE_lsame(job, 'b') || LAPACKE_lsame(job, 'v')) {
+        iwork = (lapack_int *)LAPACKE_malloc(sizeof(lapack_int) * MAX(1, n + 2));
+        if (iwork == NULL) {
             info = LAPACK_WORK_MEMORY_ERROR;
             goto exit_level_0;
         }
     }
     /* Query optimal working array(s) size */
-    info = LAPACKE_ztgsna_work( matrix_layout, job, howmny, select, n, a, lda, b,
-                                ldb, vl, ldvl, vr, ldvr, s, dif, mm, m,
-                                &work_query, lwork, iwork );
-    if( info != 0 ) {
+    info = LAPACKE_ztgsna_work(matrix_layout, job, howmny, select, n, a, lda, b, ldb, vl, ldvl, vr, ldvr, s, dif, mm, m, &work_query, lwork,
+                               iwork);
+    if (info != 0) {
         goto exit_level_1;
     }
-    lwork = LAPACK_Z2INT( work_query );
+    lwork = LAPACK_Z2INT(work_query);
     /* Allocate memory for work arrays */
-    if( LAPACKE_lsame( job, 'b' ) || LAPACKE_lsame( job, 'v' ) ) {
-        work = (lapack_complex_double*)
-            LAPACKE_malloc( sizeof(lapack_complex_double) * lwork );
-        if( work == NULL ) {
+    if (LAPACKE_lsame(job, 'b') || LAPACKE_lsame(job, 'v')) {
+        work = (lapack_complex_double *)LAPACKE_malloc(sizeof(lapack_complex_double) * lwork);
+        if (work == NULL) {
             info = LAPACK_WORK_MEMORY_ERROR;
             goto exit_level_1;
         }
     }
     /* Call middle-level interface */
-    info = LAPACKE_ztgsna_work( matrix_layout, job, howmny, select, n, a, lda, b,
-                                ldb, vl, ldvl, vr, ldvr, s, dif, mm, m, work,
-                                lwork, iwork );
+    info =
+        LAPACKE_ztgsna_work(matrix_layout, job, howmny, select, n, a, lda, b, ldb, vl, ldvl, vr, ldvr, s, dif, mm, m, work, lwork, iwork);
     /* Release memory and exit */
-    if( LAPACKE_lsame( job, 'b' ) || LAPACKE_lsame( job, 'v' ) ) {
-        LAPACKE_free( work );
+    if (LAPACKE_lsame(job, 'b') || LAPACKE_lsame(job, 'v')) {
+        LAPACKE_free(work);
     }
 exit_level_1:
-    if( LAPACKE_lsame( job, 'b' ) || LAPACKE_lsame( job, 'v' ) ) {
-        LAPACKE_free( iwork );
+    if (LAPACKE_lsame(job, 'b') || LAPACKE_lsame(job, 'v')) {
+        LAPACKE_free(iwork);
     }
 exit_level_0:
-    if( info == LAPACK_WORK_MEMORY_ERROR ) {
-        LAPACKE_xerbla( "LAPACKE_ztgsna", info );
+    if (info == LAPACK_WORK_MEMORY_ERROR) {
+        LAPACKE_xerbla("LAPACKE_ztgsna", info);
     }
     return info;
 }

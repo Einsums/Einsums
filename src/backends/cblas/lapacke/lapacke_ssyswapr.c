@@ -32,20 +32,18 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_ssyswapr( int matrix_layout, char uplo, lapack_int n,
-                             float* a, lapack_int lda, lapack_int i1, lapack_int i2 )
-{
-    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
-        LAPACKE_xerbla( "LAPACKE_ssyswapr", -1 );
+lapack_int LAPACKE_ssyswapr(int matrix_layout, char uplo, lapack_int n, float *a, lapack_int lda, lapack_int i1, lapack_int i2) {
+    if (matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR) {
+        LAPACKE_xerbla("LAPACKE_ssyswapr", -1);
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
-    if( LAPACKE_get_nancheck() ) {
+    if (LAPACKE_get_nancheck()) {
         /* Optionally check input matrices for NaNs */
-        if( LAPACKE_ssy_nancheck( matrix_layout, uplo, n, a, lda ) ) {
+        if (LAPACKE_ssy_nancheck(matrix_layout, uplo, n, a, lda)) {
             return -4;
         }
     }
 #endif
-    return LAPACKE_ssyswapr_work( matrix_layout, uplo, n, a, lda, i1, i2 );
+    return LAPACKE_ssyswapr_work(matrix_layout, uplo, n, a, lda, i1, i2);
 }

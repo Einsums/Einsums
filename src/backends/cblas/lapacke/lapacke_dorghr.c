@@ -32,50 +32,45 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_dorghr( int matrix_layout, lapack_int n, lapack_int ilo,
-                           lapack_int ihi, double* a, lapack_int lda,
-                           const double* tau )
-{
+lapack_int LAPACKE_dorghr(int matrix_layout, lapack_int n, lapack_int ilo, lapack_int ihi, double *a, lapack_int lda, const double *tau) {
     lapack_int info = 0;
     lapack_int lwork = -1;
-    double* work = NULL;
+    double *work = NULL;
     double work_query;
-    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
-        LAPACKE_xerbla( "LAPACKE_dorghr", -1 );
+    if (matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR) {
+        LAPACKE_xerbla("LAPACKE_dorghr", -1);
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
-    if( LAPACKE_get_nancheck() ) {
+    if (LAPACKE_get_nancheck()) {
         /* Optionally check input matrices for NaNs */
-        if( LAPACKE_dge_nancheck( matrix_layout, n, n, a, lda ) ) {
+        if (LAPACKE_dge_nancheck(matrix_layout, n, n, a, lda)) {
             return -5;
         }
-        if( LAPACKE_d_nancheck( n-1, tau, 1 ) ) {
+        if (LAPACKE_d_nancheck(n - 1, tau, 1)) {
             return -7;
         }
     }
 #endif
     /* Query optimal working array(s) size */
-    info = LAPACKE_dorghr_work( matrix_layout, n, ilo, ihi, a, lda, tau,
-                                &work_query, lwork );
-    if( info != 0 ) {
+    info = LAPACKE_dorghr_work(matrix_layout, n, ilo, ihi, a, lda, tau, &work_query, lwork);
+    if (info != 0) {
         goto exit_level_0;
     }
     lwork = (lapack_int)work_query;
     /* Allocate memory for work arrays */
-    work = (double*)LAPACKE_malloc( sizeof(double) * lwork );
-    if( work == NULL ) {
+    work = (double *)LAPACKE_malloc(sizeof(double) * lwork);
+    if (work == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_0;
     }
     /* Call middle-level interface */
-    info = LAPACKE_dorghr_work( matrix_layout, n, ilo, ihi, a, lda, tau, work,
-                                lwork );
+    info = LAPACKE_dorghr_work(matrix_layout, n, ilo, ihi, a, lda, tau, work, lwork);
     /* Release memory and exit */
-    LAPACKE_free( work );
+    LAPACKE_free(work);
 exit_level_0:
-    if( info == LAPACK_WORK_MEMORY_ERROR ) {
-        LAPACKE_xerbla( "LAPACKE_dorghr", info );
+    if (info == LAPACK_WORK_MEMORY_ERROR) {
+        LAPACKE_xerbla("LAPACKE_dorghr", info);
     }
     return info;
 }

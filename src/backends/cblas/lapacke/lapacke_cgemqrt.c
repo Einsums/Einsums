@@ -32,51 +32,44 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_cgemqrt( int matrix_layout, char side, char trans,
-                            lapack_int m, lapack_int n, lapack_int k,
-                            lapack_int nb, const lapack_complex_float* v,
-                            lapack_int ldv, const lapack_complex_float* t,
-                            lapack_int ldt, lapack_complex_float* c,
-                            lapack_int ldc )
-{
+lapack_int LAPACKE_cgemqrt(int matrix_layout, char side, char trans, lapack_int m, lapack_int n, lapack_int k, lapack_int nb,
+                           const lapack_complex_float *v, lapack_int ldv, const lapack_complex_float *t, lapack_int ldt,
+                           lapack_complex_float *c, lapack_int ldc) {
     lapack_int nrows_v;
     lapack_int info = 0;
-    lapack_complex_float* work = NULL;
-    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
-        LAPACKE_xerbla( "LAPACKE_cgemqrt", -1 );
+    lapack_complex_float *work = NULL;
+    if (matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR) {
+        LAPACKE_xerbla("LAPACKE_cgemqrt", -1);
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
-    if( LAPACKE_get_nancheck() ) {
+    if (LAPACKE_get_nancheck()) {
         /* Optionally check input matrices for NaNs */
-        nrows_v = LAPACKE_lsame( side, 'L' ) ? m :
-                             ( LAPACKE_lsame( side, 'R' ) ? n : 0 );
-        if( LAPACKE_cge_nancheck( matrix_layout, m, n, c, ldc ) ) {
+        nrows_v = LAPACKE_lsame(side, 'L') ? m : (LAPACKE_lsame(side, 'R') ? n : 0);
+        if (LAPACKE_cge_nancheck(matrix_layout, m, n, c, ldc)) {
             return -12;
         }
-        if( LAPACKE_cge_nancheck( matrix_layout, nb, k, t, ldt ) ) {
+        if (LAPACKE_cge_nancheck(matrix_layout, nb, k, t, ldt)) {
             return -10;
         }
-        if( LAPACKE_cge_nancheck( matrix_layout, nrows_v, k, v, ldv ) ) {
+        if (LAPACKE_cge_nancheck(matrix_layout, nrows_v, k, v, ldv)) {
             return -8;
         }
     }
 #endif
     /* Allocate memory for working array(s) */
-    work = (lapack_complex_float*)
-        LAPACKE_malloc( sizeof(lapack_complex_float) * MAX(1,m) * MAX(1,nb) );
-    if( work == NULL ) {
+    work = (lapack_complex_float *)LAPACKE_malloc(sizeof(lapack_complex_float) * MAX(1, m) * MAX(1, nb));
+    if (work == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_0;
     }
     /* Call middle-level interface */
-    info = LAPACKE_cgemqrt_work( matrix_layout, side, trans, m, n, k, nb, v, ldv,
-                                 t, ldt, c, ldc, work );
+    info = LAPACKE_cgemqrt_work(matrix_layout, side, trans, m, n, k, nb, v, ldv, t, ldt, c, ldc, work);
     /* Release memory and exit */
-    LAPACKE_free( work );
+    LAPACKE_free(work);
 exit_level_0:
-    if( info == LAPACK_WORK_MEMORY_ERROR ) {
-        LAPACKE_xerbla( "LAPACKE_cgemqrt", info );
+    if (info == LAPACK_WORK_MEMORY_ERROR) {
+        LAPACKE_xerbla("LAPACKE_cgemqrt", info);
     }
     return info;
 }

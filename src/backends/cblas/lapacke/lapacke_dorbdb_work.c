@@ -32,15 +32,10 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_dorbdb_work( int matrix_layout, char trans, char signs,
-                                lapack_int m, lapack_int p, lapack_int q,
-                                double* x11, lapack_int ldx11, double* x12,
-                                lapack_int ldx12, double* x21, lapack_int ldx21,
-                                double* x22, lapack_int ldx22, double* theta,
-                                double* phi, double* taup1, double* taup2,
-                                double* tauq1, double* tauq2, double* work,
-                                lapack_int lwork )
-{
+lapack_int LAPACKE_dorbdb_work(int matrix_layout, char trans, char signs, lapack_int m, lapack_int p, lapack_int q, double *x11,
+                               lapack_int ldx11, double *x12, lapack_int ldx12, double *x21, lapack_int ldx21, double *x22,
+                               lapack_int ldx22, double *theta, double *phi, double *taup1, double *taup2, double *tauq1, double *tauq2,
+                               double *work, lapack_int lwork) {
     lapack_int info = 0;
     /* LAPACK function works with matrices in both layouts. It is supported
      * through TRANS parameter. So all conversion between layouts can be
@@ -56,24 +51,22 @@ lapack_int LAPACKE_dorbdb_work( int matrix_layout, char trans, char signs,
      *   LAPACK_ROW_MAJOR |     'T'       | ->     'T'
      *       (note that for row major layout trans parameter is ignored)
      */
-    if( matrix_layout == LAPACK_COL_MAJOR ||
-        matrix_layout == LAPACK_ROW_MAJOR ) {
+    if (matrix_layout == LAPACK_COL_MAJOR || matrix_layout == LAPACK_ROW_MAJOR) {
         char ltrans;
-        if( !LAPACKE_lsame( trans, 't' ) && matrix_layout == LAPACK_COL_MAJOR ) {
+        if (!LAPACKE_lsame(trans, 't') && matrix_layout == LAPACK_COL_MAJOR) {
             ltrans = 'n';
         } else {
             ltrans = 't';
         }
         /* Call LAPACK function and adjust info */
-        LAPACK_dorbdb( &ltrans, &signs, &m, &p, &q, x11, &ldx11, x12, &ldx12,
-                       x21, &ldx21, x22, &ldx22, theta, phi, taup1, taup2,
-                       tauq1, tauq2, work, &lwork, &info );
-        if( info < 0 ) {
+        LAPACK_dorbdb(&ltrans, &signs, &m, &p, &q, x11, &ldx11, x12, &ldx12, x21, &ldx21, x22, &ldx22, theta, phi, taup1, taup2, tauq1,
+                      tauq2, work, &lwork, &info);
+        if (info < 0) {
             info = info - 1;
         }
     } else {
         info = -1;
-        LAPACKE_xerbla( "LAPACKE_dorbdb_work", info );
+        LAPACKE_xerbla("LAPACKE_dorbdb_work", info);
     }
     return info;
 }

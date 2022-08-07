@@ -32,11 +32,9 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_slarnv_work( lapack_int idist, lapack_int* iseed,
-                                lapack_int n, float* x )
-{
+lapack_int LAPACKE_slarnv_work(lapack_int idist, lapack_int *iseed, lapack_int n, float *x) {
     lapack_int info = 0;
     /* Call LAPACK function and adjust info */
-    LAPACK_slarnv( &idist, iseed, &n, x );
+    LAPACK_slarnv(&idist, iseed, &n, x);
     return info;
 }

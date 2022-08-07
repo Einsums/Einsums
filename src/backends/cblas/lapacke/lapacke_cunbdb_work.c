@@ -32,19 +32,11 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_cunbdb_work( int matrix_layout, char trans, char signs,
-                                lapack_int m, lapack_int p, lapack_int q,
-                                lapack_complex_float* x11, lapack_int ldx11,
-                                lapack_complex_float* x12, lapack_int ldx12,
-                                lapack_complex_float* x21, lapack_int ldx21,
-                                lapack_complex_float* x22, lapack_int ldx22,
-                                float* theta, float* phi,
-                                lapack_complex_float* taup1,
-                                lapack_complex_float* taup2,
-                                lapack_complex_float* tauq1,
-                                lapack_complex_float* tauq2,
-                                lapack_complex_float* work, lapack_int lwork )
-{
+lapack_int LAPACKE_cunbdb_work(int matrix_layout, char trans, char signs, lapack_int m, lapack_int p, lapack_int q,
+                               lapack_complex_float *x11, lapack_int ldx11, lapack_complex_float *x12, lapack_int ldx12,
+                               lapack_complex_float *x21, lapack_int ldx21, lapack_complex_float *x22, lapack_int ldx22, float *theta,
+                               float *phi, lapack_complex_float *taup1, lapack_complex_float *taup2, lapack_complex_float *tauq1,
+                               lapack_complex_float *tauq2, lapack_complex_float *work, lapack_int lwork) {
     lapack_int info = 0;
     /* LAPACK function works with matrices in both layouts. It is supported
      * through TRANS parameter. So all conversion between layouts can be
@@ -60,24 +52,22 @@ lapack_int LAPACKE_cunbdb_work( int matrix_layout, char trans, char signs,
      *   LAPACK_ROW_MAJOR |     'T'       | ->     'T'
      *       (note that for row major layout trans parameter is ignored)
      */
-    if( matrix_layout == LAPACK_COL_MAJOR ||
-        matrix_layout == LAPACK_ROW_MAJOR ) {
+    if (matrix_layout == LAPACK_COL_MAJOR || matrix_layout == LAPACK_ROW_MAJOR) {
         char ltrans;
-        if( !LAPACKE_lsame( trans, 't' ) && matrix_layout == LAPACK_COL_MAJOR ) {
+        if (!LAPACKE_lsame(trans, 't') && matrix_layout == LAPACK_COL_MAJOR) {
             ltrans = 'n';
         } else {
             ltrans = 't';
         }
         /* Call LAPACK function and adjust info */
-        LAPACK_cunbdb( &ltrans, &signs, &m, &p, &q, x11, &ldx11, x12, &ldx12,
-                       x21, &ldx21, x22, &ldx22, theta, phi, taup1, taup2,
-                       tauq1, tauq2, work, &lwork, &info );
-        if( info < 0 ) {
+        LAPACK_cunbdb(&ltrans, &signs, &m, &p, &q, x11, &ldx11, x12, &ldx12, x21, &ldx21, x22, &ldx22, theta, phi, taup1, taup2, tauq1,
+                      tauq2, work, &lwork, &info);
+        if (info < 0) {
             info = info - 1;
         }
     } else {
         info = -1;
-        LAPACKE_xerbla( "LAPACKE_cunbdb_work", info );
+        LAPACKE_xerbla("LAPACKE_cunbdb_work", info);
     }
     return info;
 }

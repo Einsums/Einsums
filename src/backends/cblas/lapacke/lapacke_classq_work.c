@@ -32,9 +32,8 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_classq_work( lapack_int n, lapack_complex_float* x, lapack_int incx, float* scale, float* sumsq )
-{
+lapack_int LAPACKE_classq_work(lapack_int n, lapack_complex_float *x, lapack_int incx, float *scale, float *sumsq) {
     lapack_int info = 0;
-    LAPACK_classq( &n, x, &incx, scale, sumsq );
+    LAPACK_classq(&n, x, &incx, scale, sumsq);
     return info;
 }

@@ -32,45 +32,43 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_dlaset_work( int matrix_layout, char uplo, lapack_int m,
-                                lapack_int n, double alpha, double beta,
-                                double* a, lapack_int lda )
-{
+lapack_int LAPACKE_dlaset_work(int matrix_layout, char uplo, lapack_int m, lapack_int n, double alpha, double beta, double *a,
+                               lapack_int lda) {
     lapack_int info = 0;
-    if( matrix_layout == LAPACK_COL_MAJOR ) {
+    if (matrix_layout == LAPACK_COL_MAJOR) {
         /* Call LAPACK function and adjust info */
-        LAPACK_dlaset( &uplo, &m, &n, &alpha, &beta, a, &lda );
-    } else if( matrix_layout == LAPACK_ROW_MAJOR ) {
-        lapack_int lda_t = MAX(1,m);
-        double* a_t = NULL;
+        LAPACK_dlaset(&uplo, &m, &n, &alpha, &beta, a, &lda);
+    } else if (matrix_layout == LAPACK_ROW_MAJOR) {
+        lapack_int lda_t = MAX(1, m);
+        double *a_t = NULL;
         /* Check leading dimension(s) */
-        if( lda < n ) {
+        if (lda < n) {
             info = -8;
-            LAPACKE_xerbla( "LAPACKE_dlaset_work", info );
+            LAPACKE_xerbla("LAPACKE_dlaset_work", info);
             return info;
         }
         /* Allocate memory for temporary array(s) */
-        a_t = (double*)LAPACKE_malloc( sizeof(double) * lda_t * MAX(1,n) );
-        if( a_t == NULL ) {
+        a_t = (double *)LAPACKE_malloc(sizeof(double) * lda_t * MAX(1, n));
+        if (a_t == NULL) {
             info = LAPACK_TRANSPOSE_MEMORY_ERROR;
             goto exit_level_0;
         }
         /* Transpose input matrices */
-        LAPACKE_dge_trans( matrix_layout, m, n, a, lda, a_t, lda_t );
+        LAPACKE_dge_trans(matrix_layout, m, n, a, lda, a_t, lda_t);
         /* Call LAPACK function and adjust info */
-        LAPACK_dlaset( &uplo, &m, &n, &alpha, &beta, a_t, &lda_t );
-        info = 0;  /* LAPACK call is ok! */
+        LAPACK_dlaset(&uplo, &m, &n, &alpha, &beta, a_t, &lda_t);
+        info = 0; /* LAPACK call is ok! */
         /* Transpose output matrices */
-        LAPACKE_dge_trans( LAPACK_COL_MAJOR, m, n, a_t, lda_t, a, lda );
+        LAPACKE_dge_trans(LAPACK_COL_MAJOR, m, n, a_t, lda_t, a, lda);
         /* Release memory and exit */
-        LAPACKE_free( a_t );
-exit_level_0:
-        if( info == LAPACK_TRANSPOSE_MEMORY_ERROR ) {
-            LAPACKE_xerbla( "LAPACKE_dlaset_work", info );
+        LAPACKE_free(a_t);
+    exit_level_0:
+        if (info == LAPACK_TRANSPOSE_MEMORY_ERROR) {
+            LAPACKE_xerbla("LAPACKE_dlaset_work", info);
         }
     } else {
         info = -1;
-        LAPACKE_xerbla( "LAPACKE_dlaset_work", info );
+        LAPACKE_xerbla("LAPACKE_dlaset_work", info);
     }
     return info;
 }

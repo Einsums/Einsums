@@ -32,43 +32,40 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_spftri_work( int matrix_layout, char transr, char uplo,
-                                lapack_int n, float* a )
-{
+lapack_int LAPACKE_spftri_work(int matrix_layout, char transr, char uplo, lapack_int n, float *a) {
     lapack_int info = 0;
-    if( matrix_layout == LAPACK_COL_MAJOR ) {
+    if (matrix_layout == LAPACK_COL_MAJOR) {
         /* Call LAPACK function and adjust info */
-        LAPACK_spftri( &transr, &uplo, &n, a, &info );
-        if( info < 0 ) {
+        LAPACK_spftri(&transr, &uplo, &n, a, &info);
+        if (info < 0) {
             info = info - 1;
         }
-    } else if( matrix_layout == LAPACK_ROW_MAJOR ) {
-        float* a_t = NULL;
+    } else if (matrix_layout == LAPACK_ROW_MAJOR) {
+        float *a_t = NULL;
         /* Allocate memory for temporary array(s) */
-        a_t = (float*)
-            LAPACKE_malloc( sizeof(float) * ( MAX(1,n) * MAX(2,n+1) ) / 2 );
-        if( a_t == NULL ) {
+        a_t = (float *)LAPACKE_malloc(sizeof(float) * (MAX(1, n) * MAX(2, n + 1)) / 2);
+        if (a_t == NULL) {
             info = LAPACK_TRANSPOSE_MEMORY_ERROR;
             goto exit_level_0;
         }
         /* Transpose input matrices */
-        LAPACKE_spf_trans( matrix_layout, transr, uplo, n, a, a_t );
+        LAPACKE_spf_trans(matrix_layout, transr, uplo, n, a, a_t);
         /* Call LAPACK function and adjust info */
-        LAPACK_spftri( &transr, &uplo, &n, a_t, &info );
-        if( info < 0 ) {
+        LAPACK_spftri(&transr, &uplo, &n, a_t, &info);
+        if (info < 0) {
             info = info - 1;
         }
         /* Transpose output matrices */
-        LAPACKE_spf_trans( LAPACK_COL_MAJOR, transr, uplo, n, a_t, a );
+        LAPACKE_spf_trans(LAPACK_COL_MAJOR, transr, uplo, n, a_t, a);
         /* Release memory and exit */
-        LAPACKE_free( a_t );
-exit_level_0:
-        if( info == LAPACK_TRANSPOSE_MEMORY_ERROR ) {
-            LAPACKE_xerbla( "LAPACKE_spftri_work", info );
+        LAPACKE_free(a_t);
+    exit_level_0:
+        if (info == LAPACK_TRANSPOSE_MEMORY_ERROR) {
+            LAPACKE_xerbla("LAPACKE_spftri_work", info);
         }
     } else {
         info = -1;
-        LAPACKE_xerbla( "LAPACKE_spftri_work", info );
+        LAPACKE_xerbla("LAPACKE_spftri_work", info);
     }
     return info;
 }

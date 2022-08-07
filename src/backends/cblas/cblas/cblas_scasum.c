@@ -9,15 +9,14 @@
  */
 #include "cblas.h"
 #include "cblas_f77.h"
-float cblas_scasum( const CBLAS_INT N, const void *X, const CBLAS_INT incX)
-{
-   float asum;
+float cblas_scasum(const CBLAS_INT N, const void *X, const CBLAS_INT incX) {
+    float asum;
 #ifdef F77_INT
-   F77_INT F77_N=N, F77_incX=incX;
+    F77_INT F77_N = N, F77_incX = incX;
 #else
-   #define F77_N N
-   #define F77_incX incX
+#define F77_N N
+#define F77_incX incX
 #endif
-   F77_scasum_sub( &F77_N, X, &F77_incX, &asum);
-   return asum;
+    F77_scasum_sub(&F77_N, X, &F77_incX, &asum);
+    return asum;
 }

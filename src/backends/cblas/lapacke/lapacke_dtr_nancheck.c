@@ -33,30 +33,25 @@
 
 /* Check a matrix for NaN entries. */
 
-lapack_logical LAPACKE_dtr_nancheck( int matrix_layout, char uplo, char diag,
-                                      lapack_int n,
-                                      const double *a,
-                                      lapack_int lda )
-{
+lapack_logical LAPACKE_dtr_nancheck(int matrix_layout, char uplo, char diag, lapack_int n, const double *a, lapack_int lda) {
     lapack_int i, j, st;
     lapack_logical colmaj, lower, unit;
 
-    if( a == NULL ) return (lapack_logical) 0;
+    if (a == NULL)
+        return (lapack_logical)0;
 
-    colmaj = ( matrix_layout == LAPACK_COL_MAJOR );
-    lower  = LAPACKE_lsame( uplo, 'l' );
-    unit   = LAPACKE_lsame( diag, 'u' );
+    colmaj = (matrix_layout == LAPACK_COL_MAJOR);
+    lower = LAPACKE_lsame(uplo, 'l');
+    unit = LAPACKE_lsame(diag, 'u');
 
-    if( ( !colmaj && ( matrix_layout != LAPACK_ROW_MAJOR ) ) ||
-        ( !lower  && !LAPACKE_lsame( uplo, 'u' ) ) ||
-        ( !unit   && !LAPACKE_lsame( diag, 'n' ) ) ) {
+    if ((!colmaj && (matrix_layout != LAPACK_ROW_MAJOR)) || (!lower && !LAPACKE_lsame(uplo, 'u')) || (!unit && !LAPACKE_lsame(diag, 'n'))) {
         /* Just exit if any of input parameters are wrong */
-        return (lapack_logical) 0;
+        return (lapack_logical)0;
     }
-    if( unit ) {
+    if (unit) {
         /* If unit, then don't touch diagonal, start from 1st column or row */
         st = 1;
-    } else  {
+    } else {
         /* If non-unit, then check diagonal also, starting from [0,0] */
         st = 0;
     }
@@ -65,20 +60,20 @@ lapack_logical LAPACKE_dtr_nancheck( int matrix_layout, char uplo, char diag,
      * and col_major lower and row_major upper are equals too -
      * using one code for equal cases. XOR( colmaj, upper )
      */
-    if( ( colmaj || lower ) && !( colmaj && lower ) ) {
-        for( j = st; j < n; j++ ) {
-            for( i = 0; i < MIN( j+1-st, lda ); i++ ) {
-                if( LAPACK_DISNAN( a[i+j*lda] ) )
-                    return (lapack_logical) 1;
+    if ((colmaj || lower) && !(colmaj && lower)) {
+        for (j = st; j < n; j++) {
+            for (i = 0; i < MIN(j + 1 - st, lda); i++) {
+                if (LAPACK_DISNAN(a[i + j * lda]))
+                    return (lapack_logical)1;
             }
         }
     } else {
-        for( j = 0; j < n-st; j++ ) {
-            for( i = j+st; i < MIN( n, lda ); i++ ) {
-                if( LAPACK_DISNAN( a[i+j*lda] ) )
-                    return (lapack_logical) 1;
+        for (j = 0; j < n - st; j++) {
+            for (i = j + st; i < MIN(n, lda); i++) {
+                if (LAPACK_DISNAN(a[i + j * lda]))
+                    return (lapack_logical)1;
             }
         }
     }
-    return (lapack_logical) 0;
+    return (lapack_logical)0;
 }

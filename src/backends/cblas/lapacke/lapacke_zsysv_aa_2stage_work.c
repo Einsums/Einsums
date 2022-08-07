@@ -32,92 +32,83 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_zsysv_aa_2stage_work( int matrix_layout, char uplo, lapack_int n,
-                               lapack_int nrhs, lapack_complex_double* a, lapack_int lda,
-                               lapack_complex_double* tb, lapack_int ltb, lapack_int* ipiv, 
-                               lapack_int* ipiv2, lapack_complex_double* b, lapack_int ldb,
-                               lapack_complex_double* work, lapack_int lwork )
-{
+lapack_int LAPACKE_zsysv_aa_2stage_work(int matrix_layout, char uplo, lapack_int n, lapack_int nrhs, lapack_complex_double *a,
+                                        lapack_int lda, lapack_complex_double *tb, lapack_int ltb, lapack_int *ipiv, lapack_int *ipiv2,
+                                        lapack_complex_double *b, lapack_int ldb, lapack_complex_double *work, lapack_int lwork) {
     lapack_int info = 0;
-    if( matrix_layout == LAPACK_COL_MAJOR ) {
+    if (matrix_layout == LAPACK_COL_MAJOR) {
         /* Call LAPACK function and adjust info */
-        LAPACK_zsysv_aa_2stage( &uplo, &n, &nrhs, a, &lda, tb, 
-        				 &ltb, ipiv, ipiv2, b, &ldb, work, &lwork,
-                         &info );
-        if( info < 0 ) {
+        LAPACK_zsysv_aa_2stage(&uplo, &n, &nrhs, a, &lda, tb, &ltb, ipiv, ipiv2, b, &ldb, work, &lwork, &info);
+        if (info < 0) {
             info = info - 1;
         }
-    } else if( matrix_layout == LAPACK_ROW_MAJOR ) {
-        lapack_int lda_t = MAX(1,n);
-        lapack_int ldb_t = MAX(1,n);
-        lapack_complex_double* a_t = NULL;
-        lapack_complex_double* tb_t = NULL;
-        lapack_complex_double* b_t = NULL;
+    } else if (matrix_layout == LAPACK_ROW_MAJOR) {
+        lapack_int lda_t = MAX(1, n);
+        lapack_int ldb_t = MAX(1, n);
+        lapack_complex_double *a_t = NULL;
+        lapack_complex_double *tb_t = NULL;
+        lapack_complex_double *b_t = NULL;
         /* Check leading dimension(s) */
-        if( lda < n ) {
+        if (lda < n) {
             info = -6;
-            LAPACKE_xerbla( "LAPACKE_zsysv_aa_2stage_work", info );
+            LAPACKE_xerbla("LAPACKE_zsysv_aa_2stage_work", info);
             return info;
         }
-        if( ltb < 4*n ) {
+        if (ltb < 4 * n) {
             info = -8;
-            LAPACKE_xerbla( "LAPACKE_zsysv_aa_2stage_work", info );
+            LAPACKE_xerbla("LAPACKE_zsysv_aa_2stage_work", info);
             return info;
         }
-        if( ldb < nrhs ) {
+        if (ldb < nrhs) {
             info = -12;
-            LAPACKE_xerbla( "LAPACKE_zsysv_aa_2stage_work", info );
+            LAPACKE_xerbla("LAPACKE_zsysv_aa_2stage_work", info);
             return info;
         }
         /* Query optimal working array(s) size if requested */
-        if( lwork == -1 ) {
-            LAPACK_zsysv_aa_2stage( &uplo, &n, &nrhs, a, &lda_t,
-            			 tb, &ltb, ipiv, ipiv2, b, &ldb_t, work,
-                          &lwork, &info );
+        if (lwork == -1) {
+            LAPACK_zsysv_aa_2stage(&uplo, &n, &nrhs, a, &lda_t, tb, &ltb, ipiv, ipiv2, b, &ldb_t, work, &lwork, &info);
             return (info < 0) ? (info - 1) : info;
         }
         /* Allocate memory for temporary array(s) */
-        a_t = (lapack_complex_double*)LAPACKE_malloc( sizeof(lapack_complex_double) * lda_t * MAX(1,n) );
-        if( a_t == NULL ) {
+        a_t = (lapack_complex_double *)LAPACKE_malloc(sizeof(lapack_complex_double) * lda_t * MAX(1, n));
+        if (a_t == NULL) {
             info = LAPACK_TRANSPOSE_MEMORY_ERROR;
             goto exit_level_0;
         }
-        tb_t = (lapack_complex_double*)LAPACKE_malloc( sizeof(lapack_complex_double) * ltb );
-        if( tb_t == NULL ) {
+        tb_t = (lapack_complex_double *)LAPACKE_malloc(sizeof(lapack_complex_double) * ltb);
+        if (tb_t == NULL) {
             info = LAPACK_TRANSPOSE_MEMORY_ERROR;
             goto exit_level_1;
         }
-        b_t = (lapack_complex_double*)LAPACKE_malloc( sizeof(lapack_complex_double) * ldb_t * MAX(1,nrhs) );
-        if( b_t == NULL ) {
+        b_t = (lapack_complex_double *)LAPACKE_malloc(sizeof(lapack_complex_double) * ldb_t * MAX(1, nrhs));
+        if (b_t == NULL) {
             info = LAPACK_TRANSPOSE_MEMORY_ERROR;
             goto exit_level_2;
         }
         /* Transpose input matrices */
-        LAPACKE_zsy_trans( matrix_layout, uplo, n, a, lda, a_t, lda_t );
-        LAPACKE_zge_trans( matrix_layout, n, nrhs, b, ldb, b_t, ldb_t );
+        LAPACKE_zsy_trans(matrix_layout, uplo, n, a, lda, a_t, lda_t);
+        LAPACKE_zge_trans(matrix_layout, n, nrhs, b, ldb, b_t, ldb_t);
         /* Call LAPACK function and adjust info */
-        LAPACK_zsysv_aa_2stage( &uplo, &n, &nrhs, a_t, &lda_t, 
-        			  tb_t, &ltb, ipiv, ipiv2, b_t, &ldb_t, work,
-                      &lwork, &info );
-        if( info < 0 ) {
+        LAPACK_zsysv_aa_2stage(&uplo, &n, &nrhs, a_t, &lda_t, tb_t, &ltb, ipiv, ipiv2, b_t, &ldb_t, work, &lwork, &info);
+        if (info < 0) {
             info = info - 1;
         }
         /* Transpose output matrices */
-        LAPACKE_zsy_trans( LAPACK_COL_MAJOR, uplo, n, a_t, lda_t, a, lda );
-        LAPACKE_zge_trans( LAPACK_COL_MAJOR, n, nrhs, b_t, ldb_t, b, ldb );
+        LAPACKE_zsy_trans(LAPACK_COL_MAJOR, uplo, n, a_t, lda_t, a, lda);
+        LAPACKE_zge_trans(LAPACK_COL_MAJOR, n, nrhs, b_t, ldb_t, b, ldb);
         /* Release memory and exit */
-        LAPACKE_free( b_t );
-exit_level_2:
-        LAPACKE_free( tb_t );
-exit_level_1:
-        LAPACKE_free( a_t );
-exit_level_0:
-        if( info == LAPACK_TRANSPOSE_MEMORY_ERROR ) {
-            LAPACKE_xerbla( "LAPACKE_zsysv_aa_2stage_work", info );
+        LAPACKE_free(b_t);
+    exit_level_2:
+        LAPACKE_free(tb_t);
+    exit_level_1:
+        LAPACKE_free(a_t);
+    exit_level_0:
+        if (info == LAPACK_TRANSPOSE_MEMORY_ERROR) {
+            LAPACKE_xerbla("LAPACKE_zsysv_aa_2stage_work", info);
         }
     } else {
         info = -1;
-        LAPACKE_xerbla( "LAPACKE_zsysv_aa_2stage_work", info );
+        LAPACKE_xerbla("LAPACKE_zsysv_aa_2stage_work", info);
     }
     return info;
 }

@@ -32,22 +32,12 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_zuncsd_work( int matrix_layout, char jobu1, char jobu2,
-                                char jobv1t, char jobv2t, char trans,
-                                char signs, lapack_int m, lapack_int p,
-                                lapack_int q, lapack_complex_double* x11,
-                                lapack_int ldx11, lapack_complex_double* x12,
-                                lapack_int ldx12, lapack_complex_double* x21,
-                                lapack_int ldx21, lapack_complex_double* x22,
-                                lapack_int ldx22, double* theta,
-                                lapack_complex_double* u1, lapack_int ldu1,
-                                lapack_complex_double* u2, lapack_int ldu2,
-                                lapack_complex_double* v1t, lapack_int ldv1t,
-                                lapack_complex_double* v2t, lapack_int ldv2t,
-                                lapack_complex_double* work, lapack_int lwork,
-                                double* rwork, lapack_int lrwork,
-                                lapack_int* iwork )
-{
+lapack_int LAPACKE_zuncsd_work(int matrix_layout, char jobu1, char jobu2, char jobv1t, char jobv2t, char trans, char signs, lapack_int m,
+                               lapack_int p, lapack_int q, lapack_complex_double *x11, lapack_int ldx11, lapack_complex_double *x12,
+                               lapack_int ldx12, lapack_complex_double *x21, lapack_int ldx21, lapack_complex_double *x22, lapack_int ldx22,
+                               double *theta, lapack_complex_double *u1, lapack_int ldu1, lapack_complex_double *u2, lapack_int ldu2,
+                               lapack_complex_double *v1t, lapack_int ldv1t, lapack_complex_double *v2t, lapack_int ldv2t,
+                               lapack_complex_double *work, lapack_int lwork, double *rwork, lapack_int lrwork, lapack_int *iwork) {
     lapack_int info = 0;
     /* LAPACK function works with matrices in both layouts. It is supported
      * through TRANS parameter. So all conversion between layouts can be
@@ -63,25 +53,22 @@ lapack_int LAPACKE_zuncsd_work( int matrix_layout, char jobu1, char jobu2,
      *   LAPACK_ROW_MAJOR |     'T'       | ->     'T'
      *       (note that for row major layout trans parameter is ignored)
      */
-    if( matrix_layout == LAPACK_COL_MAJOR ||
-        matrix_layout == LAPACK_ROW_MAJOR ) {
+    if (matrix_layout == LAPACK_COL_MAJOR || matrix_layout == LAPACK_ROW_MAJOR) {
         char ltrans;
-        if( !LAPACKE_lsame( trans, 't' ) && matrix_layout == LAPACK_COL_MAJOR ) {
+        if (!LAPACKE_lsame(trans, 't') && matrix_layout == LAPACK_COL_MAJOR) {
             ltrans = 'n';
         } else {
             ltrans = 't';
         }
         /* Call LAPACK function and adjust info */
-        LAPACK_zuncsd( &jobu1, &jobu2, &jobv1t, &jobv2t, &ltrans, &signs, &m,
-                       &p, &q, x11, &ldx11, x12, &ldx12, x21, &ldx21, x22,
-                       &ldx22, theta, u1, &ldu1, u2, &ldu2, v1t, &ldv1t, v2t,
-                       &ldv2t, work, &lwork, rwork, &lrwork, iwork, &info );
-        if( info < 0 ) {
+        LAPACK_zuncsd(&jobu1, &jobu2, &jobv1t, &jobv2t, &ltrans, &signs, &m, &p, &q, x11, &ldx11, x12, &ldx12, x21, &ldx21, x22, &ldx22,
+                      theta, u1, &ldu1, u2, &ldu2, v1t, &ldv1t, v2t, &ldv2t, work, &lwork, rwork, &lrwork, iwork, &info);
+        if (info < 0) {
             info = info - 1;
         }
     } else {
         info = -1;
-        LAPACKE_xerbla( "LAPACKE_zuncsd_work", info );
+        LAPACKE_xerbla("LAPACKE_zuncsd_work", info);
     }
     return info;
 }

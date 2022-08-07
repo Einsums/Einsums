@@ -32,10 +32,9 @@
 
 #include "lapacke_utils.h"
 
-float LAPACKE_slapy3_work( float x, float y, float z )
-{
+float LAPACKE_slapy3_work(float x, float y, float z) {
     float res = 0.;
     /* Call LAPACK function and adjust info */
-    res = LAPACK_slapy3( &x, &y, &z );
+    res = LAPACK_slapy3(&x, &y, &z);
     return res;
 }

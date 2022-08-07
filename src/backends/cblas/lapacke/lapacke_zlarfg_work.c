@@ -32,12 +32,10 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_zlarfg_work( lapack_int n, lapack_complex_double* alpha,
-                                lapack_complex_double* x, lapack_int incx,
-                                lapack_complex_double* tau )
-{
+lapack_int LAPACKE_zlarfg_work(lapack_int n, lapack_complex_double *alpha, lapack_complex_double *x, lapack_int incx,
+                               lapack_complex_double *tau) {
     lapack_int info = 0;
     /* Call LAPACK function and adjust info */
-    LAPACK_zlarfg( &n, alpha, x, &incx, tau );
+    LAPACK_zlarfg(&n, alpha, x, &incx, tau);
     return info;
 }

@@ -32,50 +32,46 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_dsgesv( int matrix_layout, lapack_int n, lapack_int nrhs,
-                           double* a, lapack_int lda, lapack_int* ipiv,
-                           double* b, lapack_int ldb, double* x, lapack_int ldx,
-                           lapack_int* iter )
-{
+lapack_int LAPACKE_dsgesv(int matrix_layout, lapack_int n, lapack_int nrhs, double *a, lapack_int lda, lapack_int *ipiv, double *b,
+                          lapack_int ldb, double *x, lapack_int ldx, lapack_int *iter) {
     lapack_int info = 0;
-    float* swork = NULL;
-    double* work = NULL;
-    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
-        LAPACKE_xerbla( "LAPACKE_dsgesv", -1 );
+    float *swork = NULL;
+    double *work = NULL;
+    if (matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR) {
+        LAPACKE_xerbla("LAPACKE_dsgesv", -1);
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
-    if( LAPACKE_get_nancheck() ) {
+    if (LAPACKE_get_nancheck()) {
         /* Optionally check input matrices for NaNs */
-        if( LAPACKE_dge_nancheck( matrix_layout, n, n, a, lda ) ) {
+        if (LAPACKE_dge_nancheck(matrix_layout, n, n, a, lda)) {
             return -4;
         }
-        if( LAPACKE_dge_nancheck( matrix_layout, n, nrhs, b, ldb ) ) {
+        if (LAPACKE_dge_nancheck(matrix_layout, n, nrhs, b, ldb)) {
             return -7;
         }
     }
 #endif
     /* Allocate memory for working array(s) */
-    swork = (float*)LAPACKE_malloc( sizeof(float) * MAX(1,n) * MAX(1,n+nrhs) );
-    if( swork == NULL ) {
+    swork = (float *)LAPACKE_malloc(sizeof(float) * MAX(1, n) * MAX(1, n + nrhs));
+    if (swork == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_0;
     }
-    work = (double*)LAPACKE_malloc( sizeof(double) * MAX(1,n) * MAX(1,nrhs) );
-    if( work == NULL ) {
+    work = (double *)LAPACKE_malloc(sizeof(double) * MAX(1, n) * MAX(1, nrhs));
+    if (work == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_1;
     }
     /* Call middle-level interface */
-    info = LAPACKE_dsgesv_work( matrix_layout, n, nrhs, a, lda, ipiv, b, ldb, x,
-                                ldx, work, swork, iter );
+    info = LAPACKE_dsgesv_work(matrix_layout, n, nrhs, a, lda, ipiv, b, ldb, x, ldx, work, swork, iter);
     /* Release memory and exit */
-    LAPACKE_free( work );
+    LAPACKE_free(work);
 exit_level_1:
-    LAPACKE_free( swork );
+    LAPACKE_free(swork);
 exit_level_0:
-    if( info == LAPACK_WORK_MEMORY_ERROR ) {
-        LAPACKE_xerbla( "LAPACKE_dsgesv", info );
+    if (info == LAPACK_WORK_MEMORY_ERROR) {
+        LAPACKE_xerbla("LAPACKE_dsgesv", info);
     }
     return info;
 }

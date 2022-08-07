@@ -32,10 +32,9 @@
 
 #include "lapacke_utils.h"
 
-float LAPACKE_slamch_work( char cmach )
-{
+float LAPACKE_slamch_work(char cmach) {
     float res;
     /* Call LAPACK function and adjust info */
-    res = LAPACK_slamch( &cmach );
+    res = LAPACK_slamch(&cmach);
     return res;
 }

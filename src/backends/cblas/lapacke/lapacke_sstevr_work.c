@@ -32,74 +32,60 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_sstevr_work( int matrix_layout, char jobz, char range,
-                                lapack_int n, float* d, float* e, float vl,
-                                float vu, lapack_int il, lapack_int iu,
-                                float abstol, lapack_int* m, float* w, float* z,
-                                lapack_int ldz, lapack_int* isuppz, float* work,
-                                lapack_int lwork, lapack_int* iwork,
-                                lapack_int liwork )
-{
+lapack_int LAPACKE_sstevr_work(int matrix_layout, char jobz, char range, lapack_int n, float *d, float *e, float vl, float vu,
+                               lapack_int il, lapack_int iu, float abstol, lapack_int *m, float *w, float *z, lapack_int ldz,
+                               lapack_int *isuppz, float *work, lapack_int lwork, lapack_int *iwork, lapack_int liwork) {
     lapack_int info = 0;
-    if( matrix_layout == LAPACK_COL_MAJOR ) {
+    if (matrix_layout == LAPACK_COL_MAJOR) {
         /* Call LAPACK function and adjust info */
-        LAPACK_sstevr( &jobz, &range, &n, d, e, &vl, &vu, &il, &iu, &abstol, m,
-                       w, z, &ldz, isuppz, work, &lwork, iwork, &liwork,
-                       &info );
-        if( info < 0 ) {
+        LAPACK_sstevr(&jobz, &range, &n, d, e, &vl, &vu, &il, &iu, &abstol, m, w, z, &ldz, isuppz, work, &lwork, iwork, &liwork, &info);
+        if (info < 0) {
             info = info - 1;
         }
-    } else if( matrix_layout == LAPACK_ROW_MAJOR ) {
-        lapack_int ncols_z = ( LAPACKE_lsame( range, 'a' ) ||
-                             LAPACKE_lsame( range, 'v' ) ) ? n :
-                             ( LAPACKE_lsame( range, 'i' ) ? (iu-il+1) : 1);
-        lapack_int ldz_t = MAX(1,n);
-        float* z_t = NULL;
+    } else if (matrix_layout == LAPACK_ROW_MAJOR) {
+        lapack_int ncols_z = (LAPACKE_lsame(range, 'a') || LAPACKE_lsame(range, 'v')) ? n : (LAPACKE_lsame(range, 'i') ? (iu - il + 1) : 1);
+        lapack_int ldz_t = MAX(1, n);
+        float *z_t = NULL;
         /* Check leading dimension(s) */
-        if( ldz < ncols_z ) {
+        if (ldz < ncols_z) {
             info = -15;
-            LAPACKE_xerbla( "LAPACKE_sstevr_work", info );
+            LAPACKE_xerbla("LAPACKE_sstevr_work", info);
             return info;
         }
         /* Query optimal working array(s) size if requested */
-        if( liwork == -1 || lwork == -1 ) {
-            LAPACK_sstevr( &jobz, &range, &n, d, e, &vl, &vu, &il, &iu, &abstol,
-                           m, w, z, &ldz_t, isuppz, work, &lwork, iwork,
-                           &liwork, &info );
+        if (liwork == -1 || lwork == -1) {
+            LAPACK_sstevr(&jobz, &range, &n, d, e, &vl, &vu, &il, &iu, &abstol, m, w, z, &ldz_t, isuppz, work, &lwork, iwork, &liwork,
+                          &info);
             return (info < 0) ? (info - 1) : info;
         }
         /* Allocate memory for temporary array(s) */
-        if( LAPACKE_lsame( jobz, 'v' ) ) {
-            z_t = (float*)
-                LAPACKE_malloc( sizeof(float) * ldz_t * MAX(1,ncols_z) );
-            if( z_t == NULL ) {
+        if (LAPACKE_lsame(jobz, 'v')) {
+            z_t = (float *)LAPACKE_malloc(sizeof(float) * ldz_t * MAX(1, ncols_z));
+            if (z_t == NULL) {
                 info = LAPACK_TRANSPOSE_MEMORY_ERROR;
                 goto exit_level_0;
             }
         }
         /* Call LAPACK function and adjust info */
-        LAPACK_sstevr( &jobz, &range, &n, d, e, &vl, &vu, &il, &iu, &abstol, m,
-                       w, z_t, &ldz_t, isuppz, work, &lwork, iwork, &liwork,
-                       &info );
-        if( info < 0 ) {
+        LAPACK_sstevr(&jobz, &range, &n, d, e, &vl, &vu, &il, &iu, &abstol, m, w, z_t, &ldz_t, isuppz, work, &lwork, iwork, &liwork, &info);
+        if (info < 0) {
             info = info - 1;
         }
         /* Transpose output matrices */
-        if( LAPACKE_lsame( jobz, 'v' ) ) {
-            LAPACKE_sge_trans( LAPACK_COL_MAJOR, n, ncols_z, z_t, ldz_t, z,
-                               ldz );
+        if (LAPACKE_lsame(jobz, 'v')) {
+            LAPACKE_sge_trans(LAPACK_COL_MAJOR, n, ncols_z, z_t, ldz_t, z, ldz);
         }
         /* Release memory and exit */
-        if( LAPACKE_lsame( jobz, 'v' ) ) {
-            LAPACKE_free( z_t );
+        if (LAPACKE_lsame(jobz, 'v')) {
+            LAPACKE_free(z_t);
         }
-exit_level_0:
-        if( info == LAPACK_TRANSPOSE_MEMORY_ERROR ) {
-            LAPACKE_xerbla( "LAPACKE_sstevr_work", info );
+    exit_level_0:
+        if (info == LAPACK_TRANSPOSE_MEMORY_ERROR) {
+            LAPACKE_xerbla("LAPACKE_sstevr_work", info);
         }
     } else {
         info = -1;
-        LAPACKE_xerbla( "LAPACKE_sstevr_work", info );
+        LAPACKE_xerbla("LAPACKE_sstevr_work", info);
     }
     return info;
 }

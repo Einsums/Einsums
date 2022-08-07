@@ -32,81 +32,74 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_zuncsd2by1( int matrix_layout, char jobu1, char jobu2,
-                           char jobv1t, lapack_int m, lapack_int p, lapack_int q,
-                           lapack_complex_double* x11, lapack_int ldx11,
-                           lapack_complex_double* x21, lapack_int ldx21,
-                           double* theta, lapack_complex_double* u1,
-                           lapack_int ldu1, lapack_complex_double* u2,
-                           lapack_int ldu2, lapack_complex_double* v1t, lapack_int ldv1t )
-{
+lapack_int LAPACKE_zuncsd2by1(int matrix_layout, char jobu1, char jobu2, char jobv1t, lapack_int m, lapack_int p, lapack_int q,
+                              lapack_complex_double *x11, lapack_int ldx11, lapack_complex_double *x21, lapack_int ldx21, double *theta,
+                              lapack_complex_double *u1, lapack_int ldu1, lapack_complex_double *u2, lapack_int ldu2,
+                              lapack_complex_double *v1t, lapack_int ldv1t) {
     lapack_int info = 0;
     lapack_int lrwork = -1;
     lapack_int lwork = -1;
-    lapack_int* iwork = NULL;
-    double* rwork = NULL;
-    lapack_complex_double* work = NULL;
+    lapack_int *iwork = NULL;
+    double *rwork = NULL;
+    lapack_complex_double *work = NULL;
     double rwork_query;
     lapack_complex_double work_query;
     lapack_int nrows_x11, nrows_x21;
-    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
-        LAPACKE_xerbla( "LAPACKE_zuncsd2by1", -1 );
+    if (matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR) {
+        LAPACKE_xerbla("LAPACKE_zuncsd2by1", -1);
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
-    if( LAPACKE_get_nancheck() ) {
+    if (LAPACKE_get_nancheck()) {
         /* Optionally check input matrices for NaNs */
         nrows_x11 = p;
-        nrows_x21 = m-p;
-        if( LAPACKE_zge_nancheck( matrix_layout, nrows_x11, q, x11, ldx11 ) ) {
+        nrows_x21 = m - p;
+        if (LAPACKE_zge_nancheck(matrix_layout, nrows_x11, q, x11, ldx11)) {
             return -8;
         }
- 
-        if( LAPACKE_zge_nancheck( matrix_layout, nrows_x21, q, x21, ldx21 ) ) {
+
+        if (LAPACKE_zge_nancheck(matrix_layout, nrows_x21, q, x21, ldx21)) {
             return -9;
         }
     }
 #endif
     /* Allocate memory for working array(s) */
-    iwork = (lapack_int*)LAPACKE_malloc( sizeof(lapack_int) * MAX(1,m-MIN(MIN(p,m-p),MIN(q,m-q))) );
-    if( iwork == NULL ) {
+    iwork = (lapack_int *)LAPACKE_malloc(sizeof(lapack_int) * MAX(1, m - MIN(MIN(p, m - p), MIN(q, m - q))));
+    if (iwork == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_0;
     }
     /* Query optimal working array(s) size */
-    info = LAPACKE_zuncsd2by1_work( matrix_layout, jobu1, jobu2, jobv1t, m, p, q,
-                                x11, ldx11, x21, ldx21, theta, u1, ldu1, u2,
-                                ldu2, v1t, ldv1t, &work_query,
-                                lwork, &rwork_query, lrwork, iwork );
-    if( info != 0 ) {
+    info = LAPACKE_zuncsd2by1_work(matrix_layout, jobu1, jobu2, jobv1t, m, p, q, x11, ldx11, x21, ldx21, theta, u1, ldu1, u2, ldu2, v1t,
+                                   ldv1t, &work_query, lwork, &rwork_query, lrwork, iwork);
+    if (info != 0) {
         goto exit_level_2;
     }
     lrwork = (lapack_int)rwork_query;
-    lwork = LAPACK_Z2INT( work_query );
+    lwork = LAPACK_Z2INT(work_query);
     /* Allocate memory for work arrays */
-    rwork = (double*)LAPACKE_malloc( sizeof(double) * lrwork );
-    if( rwork == NULL ) {
+    rwork = (double *)LAPACKE_malloc(sizeof(double) * lrwork);
+    if (rwork == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_1;
     }
-    work = (lapack_complex_double*)LAPACKE_malloc( sizeof(lapack_complex_double) * lwork );
-    if( work == NULL ) {
+    work = (lapack_complex_double *)LAPACKE_malloc(sizeof(lapack_complex_double) * lwork);
+    if (work == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_2;
     }
     /* Call middle-level interface */
-    info = LAPACKE_zuncsd2by1_work( matrix_layout, jobu1, jobu2, jobv1t, m, p, q,
-                                x11, ldx11, x21, ldx21, theta, u1, ldu1, u2,
-                                ldu2, v1t, ldv1t, work, lwork, rwork, lrwork, iwork );
+    info = LAPACKE_zuncsd2by1_work(matrix_layout, jobu1, jobu2, jobv1t, m, p, q, x11, ldx11, x21, ldx21, theta, u1, ldu1, u2, ldu2, v1t,
+                                   ldv1t, work, lwork, rwork, lrwork, iwork);
     /* Release memory and exit */
-    LAPACKE_free( work );
+    LAPACKE_free(work);
 exit_level_2:
-    LAPACKE_free( rwork );
+    LAPACKE_free(rwork);
 exit_level_1:
-    LAPACKE_free( iwork );
+    LAPACKE_free(iwork);
 exit_level_0:
-    if( info == LAPACK_WORK_MEMORY_ERROR ) {
-        LAPACKE_xerbla( "LAPACKE_zuncsd2by1", info );
+    if (info == LAPACK_WORK_MEMORY_ERROR) {
+        LAPACKE_xerbla("LAPACKE_zuncsd2by1", info);
     }
     return info;
 }

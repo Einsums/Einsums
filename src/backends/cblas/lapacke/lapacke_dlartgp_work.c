@@ -32,11 +32,9 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_dlartgp_work( double f, double g, double* cs, double* sn,
-                                 double* r )
-{
+lapack_int LAPACKE_dlartgp_work(double f, double g, double *cs, double *sn, double *r) {
     lapack_int info = 0;
     /* Call LAPACK function and adjust info */
-    LAPACK_dlartgp( &f, &g, cs, sn, r );
+    LAPACK_dlartgp(&f, &g, cs, sn, r);
     return info;
 }

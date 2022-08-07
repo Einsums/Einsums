@@ -32,50 +32,48 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_ssyconv_work( int matrix_layout, char uplo, char way,
-                                 lapack_int n, float* a, lapack_int lda,
-                                 const lapack_int* ipiv, float* e )
-{
+lapack_int LAPACKE_ssyconv_work(int matrix_layout, char uplo, char way, lapack_int n, float *a, lapack_int lda, const lapack_int *ipiv,
+                                float *e) {
     lapack_int info = 0;
-    if( matrix_layout == LAPACK_COL_MAJOR ) {
+    if (matrix_layout == LAPACK_COL_MAJOR) {
         /* Call LAPACK function and adjust info */
-        LAPACK_ssyconv( &uplo, &way, &n, a, &lda, ipiv, e, &info );
-        if( info < 0 ) {
+        LAPACK_ssyconv(&uplo, &way, &n, a, &lda, ipiv, e, &info);
+        if (info < 0) {
             info = info - 1;
         }
-    } else if( matrix_layout == LAPACK_ROW_MAJOR ) {
-        lapack_int lda_t = MAX(1,lda);
-        float* a_t = NULL;
+    } else if (matrix_layout == LAPACK_ROW_MAJOR) {
+        lapack_int lda_t = MAX(1, lda);
+        float *a_t = NULL;
         /* Check leading dimension(s) */
-        if( lda < n ) {
+        if (lda < n) {
             info = -6;
-            LAPACKE_xerbla( "LAPACKE_ssyconv_work", info );
+            LAPACKE_xerbla("LAPACKE_ssyconv_work", info);
             return info;
         }
         /* Allocate memory for temporary array(s) */
-        a_t = (float*)LAPACKE_malloc( sizeof(float) * lda_t * MAX(1,n) );
-        if( a_t == NULL ) {
+        a_t = (float *)LAPACKE_malloc(sizeof(float) * lda_t * MAX(1, n));
+        if (a_t == NULL) {
             info = LAPACK_TRANSPOSE_MEMORY_ERROR;
             goto exit_level_0;
         }
         /* Transpose input matrices */
-        LAPACKE_sge_trans( matrix_layout, lda, n, a, lda, a_t, lda_t );
+        LAPACKE_sge_trans(matrix_layout, lda, n, a, lda, a_t, lda_t);
         /* Call LAPACK function and adjust info */
-        LAPACK_ssyconv( &uplo, &way, &n, a_t, &lda_t, ipiv, e, &info );
-        if( info < 0 ) {
+        LAPACK_ssyconv(&uplo, &way, &n, a_t, &lda_t, ipiv, e, &info);
+        if (info < 0) {
             info = info - 1;
         }
         /* Transpose output matrices */
-        LAPACKE_sge_trans( LAPACK_COL_MAJOR, lda, n, a_t, lda_t, a, lda );
+        LAPACKE_sge_trans(LAPACK_COL_MAJOR, lda, n, a_t, lda_t, a, lda);
         /* Release memory and exit */
-        LAPACKE_free( a_t );
-exit_level_0:
-        if( info == LAPACK_TRANSPOSE_MEMORY_ERROR ) {
-            LAPACKE_xerbla( "LAPACKE_ssyconv_work", info );
+        LAPACKE_free(a_t);
+    exit_level_0:
+        if (info == LAPACK_TRANSPOSE_MEMORY_ERROR) {
+            LAPACKE_xerbla("LAPACKE_ssyconv_work", info);
         }
     } else {
         info = -1;
-        LAPACKE_xerbla( "LAPACKE_ssyconv_work", info );
+        LAPACKE_xerbla("LAPACKE_ssyconv_work", info);
     }
     return info;
 }

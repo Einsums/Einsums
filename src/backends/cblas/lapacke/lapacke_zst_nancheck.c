@@ -33,10 +33,6 @@
 
 /* Check a matrix for NaN entries. */
 
-lapack_logical LAPACKE_zst_nancheck( lapack_int n,
-                                      const lapack_complex_double *d,
-                                      const lapack_complex_double *e )
-{
-    return LAPACKE_z_nancheck( n,   d, 1 )
-        || LAPACKE_z_nancheck( n-1, e, 1 );
+lapack_logical LAPACKE_zst_nancheck(lapack_int n, const lapack_complex_double *d, const lapack_complex_double *e) {
+    return LAPACKE_z_nancheck(n, d, 1) || LAPACKE_z_nancheck(n - 1, e, 1);
 }

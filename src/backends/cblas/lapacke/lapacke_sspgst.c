@@ -32,23 +32,21 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_sspgst( int matrix_layout, lapack_int itype, char uplo,
-                           lapack_int n, float* ap, const float* bp )
-{
-    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
-        LAPACKE_xerbla( "LAPACKE_sspgst", -1 );
+lapack_int LAPACKE_sspgst(int matrix_layout, lapack_int itype, char uplo, lapack_int n, float *ap, const float *bp) {
+    if (matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR) {
+        LAPACKE_xerbla("LAPACKE_sspgst", -1);
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
-    if( LAPACKE_get_nancheck() ) {
+    if (LAPACKE_get_nancheck()) {
         /* Optionally check input matrices for NaNs */
-        if( LAPACKE_ssp_nancheck( n, ap ) ) {
+        if (LAPACKE_ssp_nancheck(n, ap)) {
             return -5;
         }
-        if( LAPACKE_ssp_nancheck( n, bp ) ) {
+        if (LAPACKE_ssp_nancheck(n, bp)) {
             return -6;
         }
     }
 #endif
-    return LAPACKE_sspgst_work( matrix_layout, itype, uplo, n, ap, bp );
+    return LAPACKE_sspgst_work(matrix_layout, itype, uplo, n, ap, bp);
 }

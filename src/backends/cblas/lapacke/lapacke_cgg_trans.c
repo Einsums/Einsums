@@ -36,9 +36,7 @@
  * layout or vice versa.
  */
 
-void LAPACKE_cgg_trans( int matrix_layout, lapack_int m, lapack_int n,
-                        const lapack_complex_float* in, lapack_int ldin,
-                        lapack_complex_float* out, lapack_int ldout )
-{
-    LAPACKE_cge_trans( matrix_layout, m, n, in, ldin, out, ldout );
+void LAPACKE_cgg_trans(int matrix_layout, lapack_int m, lapack_int n, const lapack_complex_float *in, lapack_int ldin,
+                       lapack_complex_float *out, lapack_int ldout) {
+    LAPACKE_cge_trans(matrix_layout, m, n, in, ldin, out, ldout);
 }

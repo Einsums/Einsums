@@ -32,58 +32,53 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_dormbr( int matrix_layout, char vect, char side, char trans,
-                           lapack_int m, lapack_int n, lapack_int k,
-                           const double* a, lapack_int lda, const double* tau,
-                           double* c, lapack_int ldc )
-{
+lapack_int LAPACKE_dormbr(int matrix_layout, char vect, char side, char trans, lapack_int m, lapack_int n, lapack_int k, const double *a,
+                          lapack_int lda, const double *tau, double *c, lapack_int ldc) {
     lapack_int info = 0;
     lapack_int lwork = -1;
-    double* work = NULL;
+    double *work = NULL;
     double work_query;
     lapack_int nq, ar, ac;
-    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
-        LAPACKE_xerbla( "LAPACKE_dormbr", -1 );
+    if (matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR) {
+        LAPACKE_xerbla("LAPACKE_dormbr", -1);
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
-    if( LAPACKE_get_nancheck() ) {
+    if (LAPACKE_get_nancheck()) {
         /* Optionally check input matrices for NaNs */
-        nq = LAPACKE_lsame( side, 'l' ) ? m : n;
-        ar = LAPACKE_lsame( vect, 'q' ) ? nq : MIN(nq,k);
-        ac = LAPACKE_lsame( vect, 'q' ) ? MIN(nq,k) : nq;
-        if( LAPACKE_dge_nancheck( matrix_layout, ar, ac, a, lda ) ) {
+        nq = LAPACKE_lsame(side, 'l') ? m : n;
+        ar = LAPACKE_lsame(vect, 'q') ? nq : MIN(nq, k);
+        ac = LAPACKE_lsame(vect, 'q') ? MIN(nq, k) : nq;
+        if (LAPACKE_dge_nancheck(matrix_layout, ar, ac, a, lda)) {
             return -8;
         }
-        if( LAPACKE_dge_nancheck( matrix_layout, m, n, c, ldc ) ) {
+        if (LAPACKE_dge_nancheck(matrix_layout, m, n, c, ldc)) {
             return -11;
         }
-        if( LAPACKE_d_nancheck( MIN(nq,k), tau, 1 ) ) {
+        if (LAPACKE_d_nancheck(MIN(nq, k), tau, 1)) {
             return -10;
         }
     }
 #endif
     /* Query optimal working array(s) size */
-    info = LAPACKE_dormbr_work( matrix_layout, vect, side, trans, m, n, k, a,
-                                lda, tau, c, ldc, &work_query, lwork );
-    if( info != 0 ) {
+    info = LAPACKE_dormbr_work(matrix_layout, vect, side, trans, m, n, k, a, lda, tau, c, ldc, &work_query, lwork);
+    if (info != 0) {
         goto exit_level_0;
     }
     lwork = (lapack_int)work_query;
     /* Allocate memory for work arrays */
-    work = (double*)LAPACKE_malloc( sizeof(double) * lwork );
-    if( work == NULL ) {
+    work = (double *)LAPACKE_malloc(sizeof(double) * lwork);
+    if (work == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_0;
     }
     /* Call middle-level interface */
-    info = LAPACKE_dormbr_work( matrix_layout, vect, side, trans, m, n, k, a,
-                                lda, tau, c, ldc, work, lwork );
+    info = LAPACKE_dormbr_work(matrix_layout, vect, side, trans, m, n, k, a, lda, tau, c, ldc, work, lwork);
     /* Release memory and exit */
-    LAPACKE_free( work );
+    LAPACKE_free(work);
 exit_level_0:
-    if( info == LAPACK_WORK_MEMORY_ERROR ) {
-        LAPACKE_xerbla( "LAPACKE_dormbr", info );
+    if (info == LAPACK_WORK_MEMORY_ERROR) {
+        LAPACKE_xerbla("LAPACKE_dormbr", info);
     }
     return info;
 }

@@ -32,20 +32,18 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_ctftri( int matrix_layout, char transr, char uplo, char diag,
-                           lapack_int n, lapack_complex_float* a )
-{
-    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
-        LAPACKE_xerbla( "LAPACKE_ctftri", -1 );
+lapack_int LAPACKE_ctftri(int matrix_layout, char transr, char uplo, char diag, lapack_int n, lapack_complex_float *a) {
+    if (matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR) {
+        LAPACKE_xerbla("LAPACKE_ctftri", -1);
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
-    if( LAPACKE_get_nancheck() ) {
+    if (LAPACKE_get_nancheck()) {
         /* Optionally check input matrices for NaNs */
-        if( LAPACKE_ctf_nancheck( matrix_layout, transr, uplo, diag, n, a ) ) {
+        if (LAPACKE_ctf_nancheck(matrix_layout, transr, uplo, diag, n, a)) {
             return -6;
         }
     }
 #endif
-    return LAPACKE_ctftri_work( matrix_layout, transr, uplo, diag, n, a );
+    return LAPACKE_ctftri_work(matrix_layout, transr, uplo, diag, n, a);
 }

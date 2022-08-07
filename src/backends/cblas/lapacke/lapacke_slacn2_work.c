@@ -32,12 +32,9 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_slacn2_work( lapack_int n, float* v, float* x,
-                                lapack_int* isgn, float* est, lapack_int* kase,
-                                lapack_int* isave )
-{
+lapack_int LAPACKE_slacn2_work(lapack_int n, float *v, float *x, lapack_int *isgn, float *est, lapack_int *kase, lapack_int *isave) {
     lapack_int info = 0;
     /* Call LAPACK function and adjust info */
-    LAPACK_slacn2( &n, v, x, isgn, est, kase, isave );
+    LAPACK_slacn2(&n, v, x, isgn, est, kase, isave);
     return info;
 }

@@ -32,9 +32,8 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_slassq_work( lapack_int n, float* x, lapack_int incx, float* scale, float* sumsq )
-{
+lapack_int LAPACKE_slassq_work(lapack_int n, float *x, lapack_int incx, float *scale, float *sumsq) {
     lapack_int info = 0;
-    LAPACK_slassq( &n, x, &incx, scale, sumsq );
+    LAPACK_slassq(&n, x, &incx, scale, sumsq);
     return info;
 }

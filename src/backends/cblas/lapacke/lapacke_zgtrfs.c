@@ -32,81 +32,70 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_zgtrfs( int matrix_layout, char trans, lapack_int n,
-                           lapack_int nrhs, const lapack_complex_double* dl,
-                           const lapack_complex_double* d,
-                           const lapack_complex_double* du,
-                           const lapack_complex_double* dlf,
-                           const lapack_complex_double* df,
-                           const lapack_complex_double* duf,
-                           const lapack_complex_double* du2,
-                           const lapack_int* ipiv,
-                           const lapack_complex_double* b, lapack_int ldb,
-                           lapack_complex_double* x, lapack_int ldx,
-                           double* ferr, double* berr )
-{
+lapack_int LAPACKE_zgtrfs(int matrix_layout, char trans, lapack_int n, lapack_int nrhs, const lapack_complex_double *dl,
+                          const lapack_complex_double *d, const lapack_complex_double *du, const lapack_complex_double *dlf,
+                          const lapack_complex_double *df, const lapack_complex_double *duf, const lapack_complex_double *du2,
+                          const lapack_int *ipiv, const lapack_complex_double *b, lapack_int ldb, lapack_complex_double *x, lapack_int ldx,
+                          double *ferr, double *berr) {
     lapack_int info = 0;
-    double* rwork = NULL;
-    lapack_complex_double* work = NULL;
-    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
-        LAPACKE_xerbla( "LAPACKE_zgtrfs", -1 );
+    double *rwork = NULL;
+    lapack_complex_double *work = NULL;
+    if (matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR) {
+        LAPACKE_xerbla("LAPACKE_zgtrfs", -1);
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
-    if( LAPACKE_get_nancheck() ) {
+    if (LAPACKE_get_nancheck()) {
         /* Optionally check input matrices for NaNs */
-        if( LAPACKE_zge_nancheck( matrix_layout, n, nrhs, b, ldb ) ) {
+        if (LAPACKE_zge_nancheck(matrix_layout, n, nrhs, b, ldb)) {
             return -13;
         }
-        if( LAPACKE_z_nancheck( n, d, 1 ) ) {
+        if (LAPACKE_z_nancheck(n, d, 1)) {
             return -6;
         }
-        if( LAPACKE_z_nancheck( n, df, 1 ) ) {
+        if (LAPACKE_z_nancheck(n, df, 1)) {
             return -9;
         }
-        if( LAPACKE_z_nancheck( n-1, dl, 1 ) ) {
+        if (LAPACKE_z_nancheck(n - 1, dl, 1)) {
             return -5;
         }
-        if( LAPACKE_z_nancheck( n-1, dlf, 1 ) ) {
+        if (LAPACKE_z_nancheck(n - 1, dlf, 1)) {
             return -8;
         }
-        if( LAPACKE_z_nancheck( n-1, du, 1 ) ) {
+        if (LAPACKE_z_nancheck(n - 1, du, 1)) {
             return -7;
         }
-        if( LAPACKE_z_nancheck( n-2, du2, 1 ) ) {
+        if (LAPACKE_z_nancheck(n - 2, du2, 1)) {
             return -11;
         }
-        if( LAPACKE_z_nancheck( n-1, duf, 1 ) ) {
+        if (LAPACKE_z_nancheck(n - 1, duf, 1)) {
             return -10;
         }
-        if( LAPACKE_zge_nancheck( matrix_layout, n, nrhs, x, ldx ) ) {
+        if (LAPACKE_zge_nancheck(matrix_layout, n, nrhs, x, ldx)) {
             return -15;
         }
     }
 #endif
     /* Allocate memory for working array(s) */
-    rwork = (double*)LAPACKE_malloc( sizeof(double) * MAX(1,n) );
-    if( rwork == NULL ) {
+    rwork = (double *)LAPACKE_malloc(sizeof(double) * MAX(1, n));
+    if (rwork == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_0;
     }
-    work = (lapack_complex_double*)
-        LAPACKE_malloc( sizeof(lapack_complex_double) * MAX(1,2*n) );
-    if( work == NULL ) {
+    work = (lapack_complex_double *)LAPACKE_malloc(sizeof(lapack_complex_double) * MAX(1, 2 * n));
+    if (work == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_1;
     }
     /* Call middle-level interface */
-    info = LAPACKE_zgtrfs_work( matrix_layout, trans, n, nrhs, dl, d, du, dlf,
-                                df, duf, du2, ipiv, b, ldb, x, ldx, ferr, berr,
-                                work, rwork );
+    info = LAPACKE_zgtrfs_work(matrix_layout, trans, n, nrhs, dl, d, du, dlf, df, duf, du2, ipiv, b, ldb, x, ldx, ferr, berr, work, rwork);
     /* Release memory and exit */
-    LAPACKE_free( work );
+    LAPACKE_free(work);
 exit_level_1:
-    LAPACKE_free( rwork );
+    LAPACKE_free(rwork);
 exit_level_0:
-    if( info == LAPACK_WORK_MEMORY_ERROR ) {
-        LAPACKE_xerbla( "LAPACKE_zgtrfs", info );
+    if (info == LAPACK_WORK_MEMORY_ERROR) {
+        LAPACKE_xerbla("LAPACKE_zgtrfs", info);
     }
     return info;
 }

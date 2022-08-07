@@ -36,14 +36,11 @@
  * column-major(Fortran) layout or vice versa.
  */
 
-void LAPACKE_dsb_trans( int matrix_layout, char uplo, lapack_int n,
-                        lapack_int kd,
-                        const double *in, lapack_int ldin,
-                        double *out, lapack_int ldout )
-{
-    if( LAPACKE_lsame( uplo, 'u' ) ) {
-        LAPACKE_dgb_trans( matrix_layout, n, n, 0, kd, in, ldin, out, ldout );
-    } else if( LAPACKE_lsame( uplo, 'l' ) ) {
-        LAPACKE_dgb_trans( matrix_layout, n, n, kd, 0, in, ldin, out, ldout );
+void LAPACKE_dsb_trans(int matrix_layout, char uplo, lapack_int n, lapack_int kd, const double *in, lapack_int ldin, double *out,
+                       lapack_int ldout) {
+    if (LAPACKE_lsame(uplo, 'u')) {
+        LAPACKE_dgb_trans(matrix_layout, n, n, 0, kd, in, ldin, out, ldout);
+    } else if (LAPACKE_lsame(uplo, 'l')) {
+        LAPACKE_dgb_trans(matrix_layout, n, n, kd, 0, in, ldin, out, ldout);
     }
 }

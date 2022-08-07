@@ -32,50 +32,46 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_cgecon( int matrix_layout, char norm, lapack_int n,
-                           const lapack_complex_float* a, lapack_int lda,
-                           float anorm, float* rcond )
-{
+lapack_int LAPACKE_cgecon(int matrix_layout, char norm, lapack_int n, const lapack_complex_float *a, lapack_int lda, float anorm,
+                          float *rcond) {
     lapack_int info = 0;
-    float* rwork = NULL;
-    lapack_complex_float* work = NULL;
-    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
-        LAPACKE_xerbla( "LAPACKE_cgecon", -1 );
+    float *rwork = NULL;
+    lapack_complex_float *work = NULL;
+    if (matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR) {
+        LAPACKE_xerbla("LAPACKE_cgecon", -1);
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
-    if( LAPACKE_get_nancheck() ) {
+    if (LAPACKE_get_nancheck()) {
         /* Optionally check input matrices for NaNs */
-        if( LAPACKE_cge_nancheck( matrix_layout, n, n, a, lda ) ) {
+        if (LAPACKE_cge_nancheck(matrix_layout, n, n, a, lda)) {
             return -4;
         }
-        if( LAPACKE_s_nancheck( 1, &anorm, 1 ) ) {
+        if (LAPACKE_s_nancheck(1, &anorm, 1)) {
             return -6;
         }
     }
 #endif
     /* Allocate memory for working array(s) */
-    rwork = (float*)LAPACKE_malloc( sizeof(float) * MAX(1,2*n) );
-    if( rwork == NULL ) {
+    rwork = (float *)LAPACKE_malloc(sizeof(float) * MAX(1, 2 * n));
+    if (rwork == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_0;
     }
-    work = (lapack_complex_float*)
-        LAPACKE_malloc( sizeof(lapack_complex_float) * MAX(1,2*n) );
-    if( work == NULL ) {
+    work = (lapack_complex_float *)LAPACKE_malloc(sizeof(lapack_complex_float) * MAX(1, 2 * n));
+    if (work == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_1;
     }
     /* Call middle-level interface */
-    info = LAPACKE_cgecon_work( matrix_layout, norm, n, a, lda, anorm, rcond,
-                                work, rwork );
+    info = LAPACKE_cgecon_work(matrix_layout, norm, n, a, lda, anorm, rcond, work, rwork);
     /* Release memory and exit */
-    LAPACKE_free( work );
+    LAPACKE_free(work);
 exit_level_1:
-    LAPACKE_free( rwork );
+    LAPACKE_free(rwork);
 exit_level_0:
-    if( info == LAPACK_WORK_MEMORY_ERROR ) {
-        LAPACKE_xerbla( "LAPACKE_cgecon", info );
+    if (info == LAPACK_WORK_MEMORY_ERROR) {
+        LAPACKE_xerbla("LAPACKE_cgecon", info);
     }
     return info;
 }

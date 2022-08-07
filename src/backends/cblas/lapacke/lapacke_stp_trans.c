@@ -36,29 +36,25 @@
  * column-major(Fortran) layout or vice versa.
  */
 
-void LAPACKE_stp_trans( int matrix_layout, char uplo, char diag,
-                        lapack_int n, const float *in,
-                        float *out )
-{
+void LAPACKE_stp_trans(int matrix_layout, char uplo, char diag, lapack_int n, const float *in, float *out) {
     lapack_int i, j, st;
     lapack_logical colmaj, upper, unit;
 
-    if( in == NULL || out == NULL ) return ;
+    if (in == NULL || out == NULL)
+        return;
 
-    colmaj = ( matrix_layout == LAPACK_COL_MAJOR );
-    upper  = LAPACKE_lsame( uplo, 'u' );
-    unit   = LAPACKE_lsame( diag, 'u' );
+    colmaj = (matrix_layout == LAPACK_COL_MAJOR);
+    upper = LAPACKE_lsame(uplo, 'u');
+    unit = LAPACKE_lsame(diag, 'u');
 
-    if( ( !colmaj && ( matrix_layout != LAPACK_ROW_MAJOR ) ) ||
-        ( !upper  && !LAPACKE_lsame( uplo, 'l' ) ) ||
-        ( !unit   && !LAPACKE_lsame( diag, 'n' ) ) ) {
+    if ((!colmaj && (matrix_layout != LAPACK_ROW_MAJOR)) || (!upper && !LAPACKE_lsame(uplo, 'l')) || (!unit && !LAPACKE_lsame(diag, 'n'))) {
         /* Just exit if any of input parameters are wrong */
         return;
     }
-    if( unit ) {
+    if (unit) {
         /* If unit, then don't touch diagonal, start from 1st column or row */
         st = 1;
-    } else  {
+    } else {
         /* If non-unit, then check diagonal also, starting from [0,0] */
         st = 0;
     }
@@ -68,16 +64,16 @@ void LAPACKE_stp_trans( int matrix_layout, char uplo, char diag,
      * and col_major lower and row_major upper are equals too -
      * using one code for equal cases. XOR( colmaj, upper )
      */
-    if( !( colmaj || upper ) || ( colmaj && upper ) ) {
-        for( j = st; j < n; j++ ) {
-            for( i = 0; i < j+1-st; i++ ) {
-                out[ j-i + (i*(2*n-i+1))/2 ] = in[ ((j+1)*j)/2 + i ];
+    if (!(colmaj || upper) || (colmaj && upper)) {
+        for (j = st; j < n; j++) {
+            for (i = 0; i < j + 1 - st; i++) {
+                out[j - i + (i * (2 * n - i + 1)) / 2] = in[((j + 1) * j) / 2 + i];
             }
         }
     } else {
-        for( j = 0; j < n-st; j++ ) {
-            for( i = j+st; i < n; i++ ) {
-                out[ j + ((i+1)*i)/2 ] = in[ (j*(2*n-j+1))/2 + i-j ];
+        for (j = 0; j < n - st; j++) {
+            for (i = j + st; i < n; i++) {
+                out[j + ((i + 1) * i) / 2] = in[(j * (2 * n - j + 1)) / 2 + i - j];
             }
         }
     }

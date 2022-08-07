@@ -32,10 +32,9 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_spttrf_work( lapack_int n, float* d, float* e )
-{
+lapack_int LAPACKE_spttrf_work(lapack_int n, float *d, float *e) {
     lapack_int info = 0;
     /* Call LAPACK function and adjust info */
-    LAPACK_spttrf( &n, d, e, &info );
+    LAPACK_spttrf(&n, d, e, &info);
     return info;
 }

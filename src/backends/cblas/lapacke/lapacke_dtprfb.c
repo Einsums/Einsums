@@ -32,23 +32,20 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_dtprfb( int matrix_layout, char side, char trans, char direct,
-                           char storev, lapack_int m, lapack_int n,
-                           lapack_int k, lapack_int l, const double* v,
-                           lapack_int ldv, const double* t, lapack_int ldt,
-                           double* a, lapack_int lda, double* b, lapack_int ldb )
-{
+lapack_int LAPACKE_dtprfb(int matrix_layout, char side, char trans, char direct, char storev, lapack_int m, lapack_int n, lapack_int k,
+                          lapack_int l, const double *v, lapack_int ldv, const double *t, lapack_int ldt, double *a, lapack_int lda,
+                          double *b, lapack_int ldb) {
     lapack_int ncols_v, nrows_v, ncols_a, nrows_a;
     lapack_int info = 0;
     lapack_int ldwork;
     lapack_int work_size;
-    double* work = NULL;
-    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
-        LAPACKE_xerbla( "LAPACKE_dtprfb", -1 );
+    double *work = NULL;
+    if (matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR) {
+        LAPACKE_xerbla("LAPACKE_dtprfb", -1);
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
-    if( LAPACKE_get_nancheck() ) {
+    if (LAPACKE_get_nancheck()) {
         /* Optionally check input matrices for NaNs
          * V is m-by-k (left,  columnwise)
          *   or n-by-k (right, columnwise)
@@ -59,60 +56,52 @@ lapack_int LAPACKE_dtprfb( int matrix_layout, char side, char trans, char direct
          *   or m-by-k (right)
          * B is m-by-n
          */
-        if( LAPACKE_lsame( storev, 'C' ) ) {
+        if (LAPACKE_lsame(storev, 'C')) {
             ncols_v = k;
-            nrows_v = LAPACKE_lsame( side, 'L' ) ? m :
-                      LAPACKE_lsame( side, 'R' ) ? n : 0;
-        } else if( LAPACKE_lsame( storev, 'R' ) ) {
-            ncols_v = LAPACKE_lsame( side, 'L' ) ? m :
-                      LAPACKE_lsame( side, 'R' ) ? n : 0;
+            nrows_v = LAPACKE_lsame(side, 'L') ? m : LAPACKE_lsame(side, 'R') ? n : 0;
+        } else if (LAPACKE_lsame(storev, 'R')) {
+            ncols_v = LAPACKE_lsame(side, 'L') ? m : LAPACKE_lsame(side, 'R') ? n : 0;
             nrows_v = k;
         } else {
             ncols_v = 0;
             nrows_v = 0;
         }
-        nrows_a = LAPACKE_lsame( side, 'L' ) ? k :
-                  LAPACKE_lsame( side, 'R' ) ? m : 0;
-        ncols_a = LAPACKE_lsame( side, 'L' ) ? n :
-                  LAPACKE_lsame( side, 'R' ) ? k : 0;
-        if( LAPACKE_dge_nancheck( matrix_layout, ncols_a, nrows_a, a, lda ) ) {
+        nrows_a = LAPACKE_lsame(side, 'L') ? k : LAPACKE_lsame(side, 'R') ? m : 0;
+        ncols_a = LAPACKE_lsame(side, 'L') ? n : LAPACKE_lsame(side, 'R') ? k : 0;
+        if (LAPACKE_dge_nancheck(matrix_layout, ncols_a, nrows_a, a, lda)) {
             return -14;
         }
-        if( LAPACKE_dge_nancheck( matrix_layout, m, n, b, ldb ) ) {
+        if (LAPACKE_dge_nancheck(matrix_layout, m, n, b, ldb)) {
             return -16;
         }
-        if( LAPACKE_dge_nancheck( matrix_layout, k, k, t, ldt ) ) {
+        if (LAPACKE_dge_nancheck(matrix_layout, k, k, t, ldt)) {
             return -12;
         }
-        if( LAPACKE_dge_nancheck( matrix_layout, nrows_v, ncols_v, v, ldv ) ) {
+        if (LAPACKE_dge_nancheck(matrix_layout, nrows_v, ncols_v, v, ldv)) {
             return -10;
         }
     }
 #endif
-    if (side=='l' ||  side=='L') {
+    if (side == 'l' || side == 'L') {
         ldwork = k;
-        work_size = MAX(1,ldwork) * MAX(1,n);
-    }
-    else {
+        work_size = MAX(1, ldwork) * MAX(1, n);
+    } else {
         ldwork = m;
-        work_size = MAX(1,ldwork) * MAX(1,k);
+        work_size = MAX(1, ldwork) * MAX(1, k);
     }
     /* Allocate memory for working array(s) */
-    work = (double*)
-        LAPACKE_malloc( sizeof(double) * work_size );
-    if( work == NULL ) {
+    work = (double *)LAPACKE_malloc(sizeof(double) * work_size);
+    if (work == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_0;
     }
     /* Call middle-level interface */
-    info = LAPACKE_dtprfb_work( matrix_layout, side, trans, direct, storev, m, n,
-                                k, l, v, ldv, t, ldt, a, lda, b, ldb, work,
-                                ldwork );
+    info = LAPACKE_dtprfb_work(matrix_layout, side, trans, direct, storev, m, n, k, l, v, ldv, t, ldt, a, lda, b, ldb, work, ldwork);
     /* Release memory and exit */
-    LAPACKE_free( work );
+    LAPACKE_free(work);
 exit_level_0:
-    if( info == LAPACK_WORK_MEMORY_ERROR ) {
-        LAPACKE_xerbla( "LAPACKE_dtprfb", info );
+    if (info == LAPACK_WORK_MEMORY_ERROR) {
+        LAPACKE_xerbla("LAPACKE_dtprfb", info);
     }
     return info;
 }

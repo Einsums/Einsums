@@ -32,70 +32,63 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_dtfsm_work( int matrix_layout, char transr, char side,
-                               char uplo, char trans, char diag, lapack_int m,
-                               lapack_int n, double alpha, const double* a,
-                               double* b, lapack_int ldb )
-{
+lapack_int LAPACKE_dtfsm_work(int matrix_layout, char transr, char side, char uplo, char trans, char diag, lapack_int m, lapack_int n,
+                              double alpha, const double *a, double *b, lapack_int ldb) {
     lapack_int info = 0;
-    if( matrix_layout == LAPACK_COL_MAJOR ) {
+    if (matrix_layout == LAPACK_COL_MAJOR) {
         /* Call LAPACK function and adjust info */
-        LAPACK_dtfsm( &transr, &side, &uplo, &trans, &diag, &m, &n, &alpha, a,
-                      b, &ldb );
-        if( info < 0 ) {
+        LAPACK_dtfsm(&transr, &side, &uplo, &trans, &diag, &m, &n, &alpha, a, b, &ldb);
+        if (info < 0) {
             info = info - 1;
         }
-    } else if( matrix_layout == LAPACK_ROW_MAJOR ) {
-        lapack_int ldb_t = MAX(1,m);
-        double* b_t = NULL;
-        double* a_t = NULL;
+    } else if (matrix_layout == LAPACK_ROW_MAJOR) {
+        lapack_int ldb_t = MAX(1, m);
+        double *b_t = NULL;
+        double *a_t = NULL;
         /* Check leading dimension(s) */
-        if( ldb < n ) {
+        if (ldb < n) {
             info = -12;
-            LAPACKE_xerbla( "LAPACKE_dtfsm_work", info );
+            LAPACKE_xerbla("LAPACKE_dtfsm_work", info);
             return info;
         }
         /* Allocate memory for temporary array(s) */
-        b_t = (double*)LAPACKE_malloc( sizeof(double) * ldb_t * MAX(1,n) );
-        if( b_t == NULL ) {
+        b_t = (double *)LAPACKE_malloc(sizeof(double) * ldb_t * MAX(1, n));
+        if (b_t == NULL) {
             info = LAPACK_TRANSPOSE_MEMORY_ERROR;
             goto exit_level_0;
         }
-        if( IS_D_NONZERO(alpha) ) {
-            a_t = (double*)
-                LAPACKE_malloc( sizeof(double) *
-                                ( MAX(1,n) * MAX(2,n+1) ) / 2 );
-            if( a_t == NULL ) {
+        if (IS_D_NONZERO(alpha)) {
+            a_t = (double *)LAPACKE_malloc(sizeof(double) * (MAX(1, n) * MAX(2, n + 1)) / 2);
+            if (a_t == NULL) {
                 info = LAPACK_TRANSPOSE_MEMORY_ERROR;
                 goto exit_level_1;
             }
         }
         /* Transpose input matrices */
-        if( IS_D_NONZERO(alpha) ) {
-            LAPACKE_dge_trans( matrix_layout, m, n, b, ldb, b_t, ldb_t );
+        if (IS_D_NONZERO(alpha)) {
+            LAPACKE_dge_trans(matrix_layout, m, n, b, ldb, b_t, ldb_t);
         }
-        if( IS_D_NONZERO(alpha) ) {
-            LAPACKE_dtf_trans( matrix_layout, transr, uplo, diag, n, a, a_t );
+        if (IS_D_NONZERO(alpha)) {
+            LAPACKE_dtf_trans(matrix_layout, transr, uplo, diag, n, a, a_t);
         }
         /* Call LAPACK function and adjust info */
-        LAPACK_dtfsm( &transr, &side, &uplo, &trans, &diag, &m, &n, &alpha, a_t,
-                      b_t, &ldb_t );
-        info = 0;  /* LAPACK call is ok! */
+        LAPACK_dtfsm(&transr, &side, &uplo, &trans, &diag, &m, &n, &alpha, a_t, b_t, &ldb_t);
+        info = 0; /* LAPACK call is ok! */
         /* Transpose output matrices */
-        LAPACKE_dge_trans( LAPACK_COL_MAJOR, m, n, b_t, ldb_t, b, ldb );
+        LAPACKE_dge_trans(LAPACK_COL_MAJOR, m, n, b_t, ldb_t, b, ldb);
         /* Release memory and exit */
-        if( IS_D_NONZERO(alpha) ) {
-            LAPACKE_free( a_t );
+        if (IS_D_NONZERO(alpha)) {
+            LAPACKE_free(a_t);
         }
-exit_level_1:
-        LAPACKE_free( b_t );
-exit_level_0:
-        if( info == LAPACK_TRANSPOSE_MEMORY_ERROR ) {
-            LAPACKE_xerbla( "LAPACKE_dtfsm_work", info );
+    exit_level_1:
+        LAPACKE_free(b_t);
+    exit_level_0:
+        if (info == LAPACK_TRANSPOSE_MEMORY_ERROR) {
+            LAPACKE_xerbla("LAPACKE_dtfsm_work", info);
         }
     } else {
         info = -1;
-        LAPACKE_xerbla( "LAPACKE_dtfsm_work", info );
+        LAPACKE_xerbla("LAPACKE_dtfsm_work", info);
     }
     return info;
 }

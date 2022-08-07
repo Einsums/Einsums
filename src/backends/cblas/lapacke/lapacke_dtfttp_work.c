@@ -32,52 +32,48 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_dtfttp_work( int matrix_layout, char transr, char uplo,
-                                lapack_int n, const double* arf, double* ap )
-{
+lapack_int LAPACKE_dtfttp_work(int matrix_layout, char transr, char uplo, lapack_int n, const double *arf, double *ap) {
     lapack_int info = 0;
-    if( matrix_layout == LAPACK_COL_MAJOR ) {
+    if (matrix_layout == LAPACK_COL_MAJOR) {
         /* Call LAPACK function and adjust info */
-        LAPACK_dtfttp( &transr, &uplo, &n, arf, ap, &info );
-        if( info < 0 ) {
+        LAPACK_dtfttp(&transr, &uplo, &n, arf, ap, &info);
+        if (info < 0) {
             info = info - 1;
         }
-    } else if( matrix_layout == LAPACK_ROW_MAJOR ) {
-        double* ap_t = NULL;
-        double* arf_t = NULL;
+    } else if (matrix_layout == LAPACK_ROW_MAJOR) {
+        double *ap_t = NULL;
+        double *arf_t = NULL;
         /* Allocate memory for temporary array(s) */
-        ap_t = (double*)
-            LAPACKE_malloc( sizeof(double) * ( MAX(1,n) * MAX(2,n+1) ) / 2 );
-        if( ap_t == NULL ) {
+        ap_t = (double *)LAPACKE_malloc(sizeof(double) * (MAX(1, n) * MAX(2, n + 1)) / 2);
+        if (ap_t == NULL) {
             info = LAPACK_TRANSPOSE_MEMORY_ERROR;
             goto exit_level_0;
         }
-        arf_t = (double*)
-            LAPACKE_malloc( sizeof(double) * ( MAX(1,n) * MAX(2,n+1) ) / 2 );
-        if( arf_t == NULL ) {
+        arf_t = (double *)LAPACKE_malloc(sizeof(double) * (MAX(1, n) * MAX(2, n + 1)) / 2);
+        if (arf_t == NULL) {
             info = LAPACK_TRANSPOSE_MEMORY_ERROR;
             goto exit_level_1;
         }
         /* Transpose input matrices */
-        LAPACKE_dpf_trans( matrix_layout, transr, uplo, n, arf, arf_t );
+        LAPACKE_dpf_trans(matrix_layout, transr, uplo, n, arf, arf_t);
         /* Call LAPACK function and adjust info */
-        LAPACK_dtfttp( &transr, &uplo, &n, arf_t, ap_t, &info );
-        if( info < 0 ) {
+        LAPACK_dtfttp(&transr, &uplo, &n, arf_t, ap_t, &info);
+        if (info < 0) {
             info = info - 1;
         }
         /* Transpose output matrices */
-        LAPACKE_dpp_trans( LAPACK_COL_MAJOR, uplo, n, ap_t, ap );
+        LAPACKE_dpp_trans(LAPACK_COL_MAJOR, uplo, n, ap_t, ap);
         /* Release memory and exit */
-        LAPACKE_free( arf_t );
-exit_level_1:
-        LAPACKE_free( ap_t );
-exit_level_0:
-        if( info == LAPACK_TRANSPOSE_MEMORY_ERROR ) {
-            LAPACKE_xerbla( "LAPACKE_dtfttp_work", info );
+        LAPACKE_free(arf_t);
+    exit_level_1:
+        LAPACKE_free(ap_t);
+    exit_level_0:
+        if (info == LAPACK_TRANSPOSE_MEMORY_ERROR) {
+            LAPACKE_xerbla("LAPACKE_dtfttp_work", info);
         }
     } else {
         info = -1;
-        LAPACKE_xerbla( "LAPACKE_dtfttp_work", info );
+        LAPACKE_xerbla("LAPACKE_dtfttp_work", info);
     }
     return info;
 }

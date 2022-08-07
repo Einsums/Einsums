@@ -36,9 +36,6 @@
  * column-major(Fortran) layout or vice versa.
  */
 
-void LAPACKE_zsp_trans( int matrix_layout, char uplo, lapack_int n,
-                        const lapack_complex_double *in,
-                        lapack_complex_double *out )
-{
-    LAPACKE_ztp_trans( matrix_layout, uplo, 'n', n, in, out );
+void LAPACKE_zsp_trans(int matrix_layout, char uplo, lapack_int n, const lapack_complex_double *in, lapack_complex_double *out) {
+    LAPACKE_ztp_trans(matrix_layout, uplo, 'n', n, in, out);
 }

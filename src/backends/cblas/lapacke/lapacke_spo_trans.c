@@ -36,9 +36,6 @@
  * layout or vice versa.
  */
 
-void LAPACKE_spo_trans( int matrix_layout, char uplo, lapack_int n,
-                        const float *in, lapack_int ldin,
-                        float *out, lapack_int ldout )
-{
-    LAPACKE_str_trans( matrix_layout, uplo, 'n', n, in, ldin, out, ldout );
+void LAPACKE_spo_trans(int matrix_layout, char uplo, lapack_int n, const float *in, lapack_int ldin, float *out, lapack_int ldout) {
+    LAPACKE_str_trans(matrix_layout, uplo, 'n', n, in, ldin, out, ldout);
 }

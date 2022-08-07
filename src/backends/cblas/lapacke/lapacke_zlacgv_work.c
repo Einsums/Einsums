@@ -32,11 +32,9 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_zlacgv_work( lapack_int n, lapack_complex_double* x,
-                                lapack_int incx )
-{
+lapack_int LAPACKE_zlacgv_work(lapack_int n, lapack_complex_double *x, lapack_int incx) {
     lapack_int info = 0;
     /* Call LAPACK function and adjust info */
-    LAPACK_zlacgv( &n, x, &incx );
+    LAPACK_zlacgv(&n, x, &incx);
     return info;
 }

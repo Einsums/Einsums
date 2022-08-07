@@ -32,120 +32,102 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_zhbevx_2stage_work( int matrix_layout, char jobz, char range,
-                                char uplo, lapack_int n, lapack_int kd,
-                                lapack_complex_double* ab, lapack_int ldab,
-                                lapack_complex_double* q, lapack_int ldq,
-                                double vl, double vu, lapack_int il,
-                                lapack_int iu, double abstol, lapack_int* m,
-                                double* w, lapack_complex_double* z,
-                                lapack_int ldz, lapack_complex_double* work,
-                                lapack_int lwork, double* rwork, lapack_int* iwork,
-                                lapack_int* ifail )
-{
+lapack_int LAPACKE_zhbevx_2stage_work(int matrix_layout, char jobz, char range, char uplo, lapack_int n, lapack_int kd,
+                                      lapack_complex_double *ab, lapack_int ldab, lapack_complex_double *q, lapack_int ldq, double vl,
+                                      double vu, lapack_int il, lapack_int iu, double abstol, lapack_int *m, double *w,
+                                      lapack_complex_double *z, lapack_int ldz, lapack_complex_double *work, lapack_int lwork,
+                                      double *rwork, lapack_int *iwork, lapack_int *ifail) {
     lapack_int info = 0;
-    if( matrix_layout == LAPACK_COL_MAJOR ) {
+    if (matrix_layout == LAPACK_COL_MAJOR) {
         /* Call LAPACK function and adjust info */
-        LAPACK_zhbevx_2stage( &jobz, &range, &uplo, &n, &kd, ab, &ldab, q, &ldq, &vl,
-                       &vu, &il, &iu, &abstol, m, w, z, &ldz, work, &lwork, rwork,
-                       iwork, ifail, &info );
-        if( info < 0 ) {
+        LAPACK_zhbevx_2stage(&jobz, &range, &uplo, &n, &kd, ab, &ldab, q, &ldq, &vl, &vu, &il, &iu, &abstol, m, w, z, &ldz, work, &lwork,
+                             rwork, iwork, ifail, &info);
+        if (info < 0) {
             info = info - 1;
         }
-    } else if( matrix_layout == LAPACK_ROW_MAJOR ) {
-        lapack_int ncols_z = ( LAPACKE_lsame( range, 'a' ) ||
-                             LAPACKE_lsame( range, 'v' ) ) ? n :
-                             ( LAPACKE_lsame( range, 'i' ) ? (iu-il+1) : 1);
-        lapack_int ldab_t = MAX(1,kd+1);
-        lapack_int ldq_t = MAX(1,n);
-        lapack_int ldz_t = MAX(1,n);
-        lapack_complex_double* ab_t = NULL;
-        lapack_complex_double* q_t = NULL;
-        lapack_complex_double* z_t = NULL;
+    } else if (matrix_layout == LAPACK_ROW_MAJOR) {
+        lapack_int ncols_z = (LAPACKE_lsame(range, 'a') || LAPACKE_lsame(range, 'v')) ? n : (LAPACKE_lsame(range, 'i') ? (iu - il + 1) : 1);
+        lapack_int ldab_t = MAX(1, kd + 1);
+        lapack_int ldq_t = MAX(1, n);
+        lapack_int ldz_t = MAX(1, n);
+        lapack_complex_double *ab_t = NULL;
+        lapack_complex_double *q_t = NULL;
+        lapack_complex_double *z_t = NULL;
         /* Check leading dimension(s) */
-        if( ldab < n ) {
+        if (ldab < n) {
             info = -8;
-            LAPACKE_xerbla( "LAPACKE_zhbevx_2stage_work", info );
+            LAPACKE_xerbla("LAPACKE_zhbevx_2stage_work", info);
             return info;
         }
-        if( ldq < n ) {
+        if (ldq < n) {
             info = -10;
-            LAPACKE_xerbla( "LAPACKE_zhbevx_2stage_work", info );
+            LAPACKE_xerbla("LAPACKE_zhbevx_2stage_work", info);
             return info;
         }
-        if( ldz < ncols_z ) {
+        if (ldz < ncols_z) {
             info = -19;
-            LAPACKE_xerbla( "LAPACKE_zhbevx_2stage_work", info );
+            LAPACKE_xerbla("LAPACKE_zhbevx_2stage_work", info);
             return info;
         }
         /* Allocate memory for temporary array(s) */
-        ab_t = (lapack_complex_double*)
-            LAPACKE_malloc( sizeof(lapack_complex_double) * ldab_t * MAX(1,n) );
-        if( ab_t == NULL ) {
+        ab_t = (lapack_complex_double *)LAPACKE_malloc(sizeof(lapack_complex_double) * ldab_t * MAX(1, n));
+        if (ab_t == NULL) {
             info = LAPACK_TRANSPOSE_MEMORY_ERROR;
             goto exit_level_0;
         }
-        if( LAPACKE_lsame( jobz, 'v' ) ) {
-            q_t = (lapack_complex_double*)
-                LAPACKE_malloc( sizeof(lapack_complex_double) *
-                                ldq_t * MAX(1,n) );
-            if( q_t == NULL ) {
+        if (LAPACKE_lsame(jobz, 'v')) {
+            q_t = (lapack_complex_double *)LAPACKE_malloc(sizeof(lapack_complex_double) * ldq_t * MAX(1, n));
+            if (q_t == NULL) {
                 info = LAPACK_TRANSPOSE_MEMORY_ERROR;
                 goto exit_level_1;
             }
         }
-        if( LAPACKE_lsame( jobz, 'v' ) ) {
-            z_t = (lapack_complex_double*)
-                LAPACKE_malloc( sizeof(lapack_complex_double) *
-                                ldz_t * MAX(1,ncols_z) );
-            if( z_t == NULL ) {
+        if (LAPACKE_lsame(jobz, 'v')) {
+            z_t = (lapack_complex_double *)LAPACKE_malloc(sizeof(lapack_complex_double) * ldz_t * MAX(1, ncols_z));
+            if (z_t == NULL) {
                 info = LAPACK_TRANSPOSE_MEMORY_ERROR;
                 goto exit_level_2;
             }
         }
         /* Query optimal working array(s) size if requested */
-        if( lwork == -1 ) {
-             LAPACK_zhbevx_2stage( &jobz, &range, &uplo, &n, &kd, ab_t, &ldab_t, q_t,
-                       &ldq_t, &vl, &vu, &il, &iu, &abstol, m, w, z_t, &ldz_t,
-                       work, &lwork, rwork, iwork, ifail, &info );
+        if (lwork == -1) {
+            LAPACK_zhbevx_2stage(&jobz, &range, &uplo, &n, &kd, ab_t, &ldab_t, q_t, &ldq_t, &vl, &vu, &il, &iu, &abstol, m, w, z_t, &ldz_t,
+                                 work, &lwork, rwork, iwork, ifail, &info);
             return (info < 0) ? (info - 1) : info;
         }
         /* Transpose input matrices */
-        LAPACKE_zhb_trans( matrix_layout, uplo, n, kd, ab, ldab, ab_t, ldab_t );
+        LAPACKE_zhb_trans(matrix_layout, uplo, n, kd, ab, ldab, ab_t, ldab_t);
         /* Call LAPACK function and adjust info */
-        LAPACK_zhbevx_2stage( &jobz, &range, &uplo, &n, &kd, ab_t, &ldab_t, q_t,
-                       &ldq_t, &vl, &vu, &il, &iu, &abstol, m, w, z_t, &ldz_t,
-                       work, &lwork, rwork, iwork, ifail, &info );
-        if( info < 0 ) {
+        LAPACK_zhbevx_2stage(&jobz, &range, &uplo, &n, &kd, ab_t, &ldab_t, q_t, &ldq_t, &vl, &vu, &il, &iu, &abstol, m, w, z_t, &ldz_t,
+                             work, &lwork, rwork, iwork, ifail, &info);
+        if (info < 0) {
             info = info - 1;
         }
         /* Transpose output matrices */
-        LAPACKE_zhb_trans( LAPACK_COL_MAJOR, uplo, n, kd, ab_t, ldab_t, ab,
-                           ldab );
-        if( LAPACKE_lsame( jobz, 'v' ) ) {
-            LAPACKE_zge_trans( LAPACK_COL_MAJOR, n, n, q_t, ldq_t, q, ldq );
+        LAPACKE_zhb_trans(LAPACK_COL_MAJOR, uplo, n, kd, ab_t, ldab_t, ab, ldab);
+        if (LAPACKE_lsame(jobz, 'v')) {
+            LAPACKE_zge_trans(LAPACK_COL_MAJOR, n, n, q_t, ldq_t, q, ldq);
         }
-        if( LAPACKE_lsame( jobz, 'v' ) ) {
-            LAPACKE_zge_trans( LAPACK_COL_MAJOR, n, ncols_z, z_t, ldz_t, z,
-                               ldz );
+        if (LAPACKE_lsame(jobz, 'v')) {
+            LAPACKE_zge_trans(LAPACK_COL_MAJOR, n, ncols_z, z_t, ldz_t, z, ldz);
         }
         /* Release memory and exit */
-        if( LAPACKE_lsame( jobz, 'v' ) ) {
-            LAPACKE_free( z_t );
+        if (LAPACKE_lsame(jobz, 'v')) {
+            LAPACKE_free(z_t);
         }
-exit_level_2:
-        if( LAPACKE_lsame( jobz, 'v' ) ) {
-            LAPACKE_free( q_t );
+    exit_level_2:
+        if (LAPACKE_lsame(jobz, 'v')) {
+            LAPACKE_free(q_t);
         }
-exit_level_1:
-        LAPACKE_free( ab_t );
-exit_level_0:
-        if( info == LAPACK_TRANSPOSE_MEMORY_ERROR ) {
-            LAPACKE_xerbla( "LAPACKE_zhbevx_2stage_work", info );
+    exit_level_1:
+        LAPACKE_free(ab_t);
+    exit_level_0:
+        if (info == LAPACK_TRANSPOSE_MEMORY_ERROR) {
+            LAPACKE_xerbla("LAPACKE_zhbevx_2stage_work", info);
         }
     } else {
         info = -1;
-        LAPACKE_xerbla( "LAPACKE_zhbevx_2stage_work", info );
+        LAPACKE_xerbla("LAPACKE_zhbevx_2stage_work", info);
     }
     return info;
 }

@@ -33,10 +33,6 @@
 
 /* Check a matrix for NaN entries. */
 
-lapack_logical LAPACKE_spt_nancheck( lapack_int n,
-                                      const float *d,
-                                      const float *e )
-{
-    return LAPACKE_s_nancheck( n,   d, 1 )
-        || LAPACKE_s_nancheck( n-1, e, 1 );
+lapack_logical LAPACKE_spt_nancheck(lapack_int n, const float *d, const float *e) {
+    return LAPACKE_s_nancheck(n, d, 1) || LAPACKE_s_nancheck(n - 1, e, 1);
 }

@@ -32,58 +32,51 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_cunmql( int matrix_layout, char side, char trans,
-                           lapack_int m, lapack_int n, lapack_int k,
-                           const lapack_complex_float* a, lapack_int lda,
-                           const lapack_complex_float* tau,
-                           lapack_complex_float* c, lapack_int ldc )
-{
+lapack_int LAPACKE_cunmql(int matrix_layout, char side, char trans, lapack_int m, lapack_int n, lapack_int k, const lapack_complex_float *a,
+                          lapack_int lda, const lapack_complex_float *tau, lapack_complex_float *c, lapack_int ldc) {
     lapack_int info = 0;
     lapack_int lwork = -1;
-    lapack_complex_float* work = NULL;
+    lapack_complex_float *work = NULL;
     lapack_complex_float work_query;
     lapack_int r;
-    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
-        LAPACKE_xerbla( "LAPACKE_cunmql", -1 );
+    if (matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR) {
+        LAPACKE_xerbla("LAPACKE_cunmql", -1);
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
-    if( LAPACKE_get_nancheck() ) {
+    if (LAPACKE_get_nancheck()) {
         /* Optionally check input matrices for NaNs */
-        r = LAPACKE_lsame( side, 'l' ) ? m : n;
-        if( LAPACKE_cge_nancheck( matrix_layout, r, k, a, lda ) ) {
+        r = LAPACKE_lsame(side, 'l') ? m : n;
+        if (LAPACKE_cge_nancheck(matrix_layout, r, k, a, lda)) {
             return -7;
         }
-        if( LAPACKE_cge_nancheck( matrix_layout, m, n, c, ldc ) ) {
+        if (LAPACKE_cge_nancheck(matrix_layout, m, n, c, ldc)) {
             return -10;
         }
-        if( LAPACKE_c_nancheck( k, tau, 1 ) ) {
+        if (LAPACKE_c_nancheck(k, tau, 1)) {
             return -9;
         }
     }
 #endif
     /* Query optimal working array(s) size */
-    info = LAPACKE_cunmql_work( matrix_layout, side, trans, m, n, k, a, lda, tau,
-                                c, ldc, &work_query, lwork );
-    if( info != 0 ) {
+    info = LAPACKE_cunmql_work(matrix_layout, side, trans, m, n, k, a, lda, tau, c, ldc, &work_query, lwork);
+    if (info != 0) {
         goto exit_level_0;
     }
-    lwork = LAPACK_C2INT( work_query );
+    lwork = LAPACK_C2INT(work_query);
     /* Allocate memory for work arrays */
-    work = (lapack_complex_float*)
-        LAPACKE_malloc( sizeof(lapack_complex_float) * lwork );
-    if( work == NULL ) {
+    work = (lapack_complex_float *)LAPACKE_malloc(sizeof(lapack_complex_float) * lwork);
+    if (work == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_0;
     }
     /* Call middle-level interface */
-    info = LAPACKE_cunmql_work( matrix_layout, side, trans, m, n, k, a, lda, tau,
-                                c, ldc, work, lwork );
+    info = LAPACKE_cunmql_work(matrix_layout, side, trans, m, n, k, a, lda, tau, c, ldc, work, lwork);
     /* Release memory and exit */
-    LAPACKE_free( work );
+    LAPACKE_free(work);
 exit_level_0:
-    if( info == LAPACK_WORK_MEMORY_ERROR ) {
-        LAPACKE_xerbla( "LAPACKE_cunmql", info );
+    if (info == LAPACK_WORK_MEMORY_ERROR) {
+        LAPACKE_xerbla("LAPACKE_cunmql", info);
     }
     return info;
 }

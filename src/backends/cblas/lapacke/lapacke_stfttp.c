@@ -32,20 +32,18 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_stfttp( int matrix_layout, char transr, char uplo,
-                           lapack_int n, const float* arf, float* ap )
-{
-    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
-        LAPACKE_xerbla( "LAPACKE_stfttp", -1 );
+lapack_int LAPACKE_stfttp(int matrix_layout, char transr, char uplo, lapack_int n, const float *arf, float *ap) {
+    if (matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR) {
+        LAPACKE_xerbla("LAPACKE_stfttp", -1);
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
-    if( LAPACKE_get_nancheck() ) {
+    if (LAPACKE_get_nancheck()) {
         /* Optionally check input matrices for NaNs */
-        if( LAPACKE_spf_nancheck( n, arf ) ) {
+        if (LAPACKE_spf_nancheck(n, arf)) {
             return -5;
         }
     }
 #endif
-    return LAPACKE_stfttp_work( matrix_layout, transr, uplo, n, arf, ap );
+    return LAPACKE_stfttp_work(matrix_layout, transr, uplo, n, arf, ap);
 }

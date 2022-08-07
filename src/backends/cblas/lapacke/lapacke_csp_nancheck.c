@@ -36,9 +36,7 @@
  * check 1d array for NaNs. It doesn't depend upon uplo or matrix_layout.
  */
 
-lapack_logical LAPACKE_csp_nancheck( lapack_int n,
-                                      const lapack_complex_float *ap )
-{
-    lapack_int len = n*(n+1)/2;
-    return LAPACKE_c_nancheck( len, ap, 1 );
+lapack_logical LAPACKE_csp_nancheck(lapack_int n, const lapack_complex_float *ap) {
+    lapack_int len = n * (n + 1) / 2;
+    return LAPACKE_c_nancheck(len, ap, 1);
 }

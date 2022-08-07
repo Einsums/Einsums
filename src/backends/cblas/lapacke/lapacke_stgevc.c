@@ -32,54 +32,49 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_stgevc( int matrix_layout, char side, char howmny,
-                           const lapack_logical* select, lapack_int n,
-                           const float* s, lapack_int lds, const float* p,
-                           lapack_int ldp, float* vl, lapack_int ldvl,
-                           float* vr, lapack_int ldvr, lapack_int mm,
-                           lapack_int* m )
-{
+lapack_int LAPACKE_stgevc(int matrix_layout, char side, char howmny, const lapack_logical *select, lapack_int n, const float *s,
+                          lapack_int lds, const float *p, lapack_int ldp, float *vl, lapack_int ldvl, float *vr, lapack_int ldvr,
+                          lapack_int mm, lapack_int *m) {
     lapack_int info = 0;
-    float* work = NULL;
-    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
-        LAPACKE_xerbla( "LAPACKE_stgevc", -1 );
+    float *work = NULL;
+    if (matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR) {
+        LAPACKE_xerbla("LAPACKE_stgevc", -1);
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
-    if( LAPACKE_get_nancheck() ) {
+    if (LAPACKE_get_nancheck()) {
         /* Optionally check input matrices for NaNs */
-        if( LAPACKE_sge_nancheck( matrix_layout, n, n, p, ldp ) ) {
+        if (LAPACKE_sge_nancheck(matrix_layout, n, n, p, ldp)) {
             return -8;
         }
-        if( LAPACKE_sge_nancheck( matrix_layout, n, n, s, lds ) ) {
+        if (LAPACKE_sge_nancheck(matrix_layout, n, n, s, lds)) {
             return -6;
         }
-        if( LAPACKE_lsame( side, 'b' ) || LAPACKE_lsame( side, 'l' ) ) {
-            if( LAPACKE_sge_nancheck( matrix_layout, n, mm, vl, ldvl ) ) {
+        if (LAPACKE_lsame(side, 'b') || LAPACKE_lsame(side, 'l')) {
+            if (LAPACKE_sge_nancheck(matrix_layout, n, mm, vl, ldvl)) {
                 return -10;
             }
         }
-        if( LAPACKE_lsame( side, 'b' ) || LAPACKE_lsame( side, 'r' ) ) {
-            if( LAPACKE_sge_nancheck( matrix_layout, n, mm, vr, ldvr ) ) {
+        if (LAPACKE_lsame(side, 'b') || LAPACKE_lsame(side, 'r')) {
+            if (LAPACKE_sge_nancheck(matrix_layout, n, mm, vr, ldvr)) {
                 return -12;
             }
         }
     }
 #endif
     /* Allocate memory for working array(s) */
-    work = (float*)LAPACKE_malloc( sizeof(float) * MAX(1,6*n) );
-    if( work == NULL ) {
+    work = (float *)LAPACKE_malloc(sizeof(float) * MAX(1, 6 * n));
+    if (work == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_0;
     }
     /* Call middle-level interface */
-    info = LAPACKE_stgevc_work( matrix_layout, side, howmny, select, n, s, lds,
-                                p, ldp, vl, ldvl, vr, ldvr, mm, m, work );
+    info = LAPACKE_stgevc_work(matrix_layout, side, howmny, select, n, s, lds, p, ldp, vl, ldvl, vr, ldvr, mm, m, work);
     /* Release memory and exit */
-    LAPACKE_free( work );
+    LAPACKE_free(work);
 exit_level_0:
-    if( info == LAPACK_WORK_MEMORY_ERROR ) {
-        LAPACKE_xerbla( "LAPACKE_stgevc", info );
+    if (info == LAPACK_WORK_MEMORY_ERROR) {
+        LAPACKE_xerbla("LAPACKE_stgevc", info);
     }
     return info;
 }

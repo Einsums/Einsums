@@ -32,12 +32,10 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_clarfg_work( lapack_int n, lapack_complex_float* alpha,
-                                lapack_complex_float* x, lapack_int incx,
-                                lapack_complex_float* tau )
-{
+lapack_int LAPACKE_clarfg_work(lapack_int n, lapack_complex_float *alpha, lapack_complex_float *x, lapack_int incx,
+                               lapack_complex_float *tau) {
     lapack_int info = 0;
     /* Call LAPACK function and adjust info */
-    LAPACK_clarfg( &n, alpha, x, &incx, tau );
+    LAPACK_clarfg(&n, alpha, x, &incx, tau);
     return info;
 }

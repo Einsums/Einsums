@@ -32,38 +32,35 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_zgeqr2( int matrix_layout, lapack_int m, lapack_int n,
-                           lapack_complex_double* a, lapack_int lda,
-                           lapack_complex_double* tau )
-{
+lapack_int LAPACKE_zgeqr2(int matrix_layout, lapack_int m, lapack_int n, lapack_complex_double *a, lapack_int lda,
+                          lapack_complex_double *tau) {
     lapack_int info = 0;
-    lapack_complex_double* work = NULL;
-    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
-        LAPACKE_xerbla( "LAPACKE_zgeqr2", -1 );
+    lapack_complex_double *work = NULL;
+    if (matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR) {
+        LAPACKE_xerbla("LAPACKE_zgeqr2", -1);
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
-    if( LAPACKE_get_nancheck() ) {
+    if (LAPACKE_get_nancheck()) {
         /* Optionally check input matrices for NaNs */
-        if( LAPACKE_zge_nancheck( matrix_layout, m, n, a, lda ) ) {
+        if (LAPACKE_zge_nancheck(matrix_layout, m, n, a, lda)) {
             return -4;
         }
     }
 #endif
     /* Allocate memory for working array(s) */
-    work = (lapack_complex_double*)
-        LAPACKE_malloc( sizeof(lapack_complex_double) * MAX(1,n) );
-    if( work == NULL ) {
+    work = (lapack_complex_double *)LAPACKE_malloc(sizeof(lapack_complex_double) * MAX(1, n));
+    if (work == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_0;
     }
     /* Call middle-level interface */
-    info = LAPACKE_zgeqr2_work( matrix_layout, m, n, a, lda, tau, work );
+    info = LAPACKE_zgeqr2_work(matrix_layout, m, n, a, lda, tau, work);
     /* Release memory and exit */
-    LAPACKE_free( work );
+    LAPACKE_free(work);
 exit_level_0:
-    if( info == LAPACK_WORK_MEMORY_ERROR ) {
-        LAPACKE_xerbla( "LAPACKE_zgeqr2", info );
+    if (info == LAPACK_WORK_MEMORY_ERROR) {
+        LAPACKE_xerbla("LAPACKE_zgeqr2", info);
     }
     return info;
 }

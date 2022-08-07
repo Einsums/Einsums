@@ -32,71 +32,64 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_dposvxx( int matrix_layout, char fact, char uplo,
-                            lapack_int n, lapack_int nrhs, double* a,
-                            lapack_int lda, double* af, lapack_int ldaf,
-                            char* equed, double* s, double* b, lapack_int ldb,
-                            double* x, lapack_int ldx, double* rcond,
-                            double* rpvgrw, double* berr, lapack_int n_err_bnds,
-                            double* err_bnds_norm, double* err_bnds_comp,
-                            lapack_int nparams, double* params )
-{
+lapack_int LAPACKE_dposvxx(int matrix_layout, char fact, char uplo, lapack_int n, lapack_int nrhs, double *a, lapack_int lda, double *af,
+                           lapack_int ldaf, char *equed, double *s, double *b, lapack_int ldb, double *x, lapack_int ldx, double *rcond,
+                           double *rpvgrw, double *berr, lapack_int n_err_bnds, double *err_bnds_norm, double *err_bnds_comp,
+                           lapack_int nparams, double *params) {
     lapack_int info = 0;
-    lapack_int* iwork = NULL;
-    double* work = NULL;
-    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
-        LAPACKE_xerbla( "LAPACKE_dposvxx", -1 );
+    lapack_int *iwork = NULL;
+    double *work = NULL;
+    if (matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR) {
+        LAPACKE_xerbla("LAPACKE_dposvxx", -1);
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
-    if( LAPACKE_get_nancheck() ) {
+    if (LAPACKE_get_nancheck()) {
         /* Optionally check input matrices for NaNs */
-        if( LAPACKE_dpo_nancheck( matrix_layout, uplo, n, a, lda ) ) {
+        if (LAPACKE_dpo_nancheck(matrix_layout, uplo, n, a, lda)) {
             return -6;
         }
-        if( LAPACKE_lsame( fact, 'f' ) ) {
-            if( LAPACKE_dpo_nancheck( matrix_layout, uplo, n, af, ldaf ) ) {
+        if (LAPACKE_lsame(fact, 'f')) {
+            if (LAPACKE_dpo_nancheck(matrix_layout, uplo, n, af, ldaf)) {
                 return -8;
             }
         }
-        if( LAPACKE_dge_nancheck( matrix_layout, n, nrhs, b, ldb ) ) {
+        if (LAPACKE_dge_nancheck(matrix_layout, n, nrhs, b, ldb)) {
             return -12;
         }
-        if( nparams>0 ) {
-            if( LAPACKE_d_nancheck( nparams, params, 1 ) ) {
+        if (nparams > 0) {
+            if (LAPACKE_d_nancheck(nparams, params, 1)) {
                 return -23;
             }
         }
-        if( LAPACKE_lsame( fact, 'f' ) && LAPACKE_lsame( *equed, 'y' ) ) {
-            if( LAPACKE_d_nancheck( n, s, 1 ) ) {
+        if (LAPACKE_lsame(fact, 'f') && LAPACKE_lsame(*equed, 'y')) {
+            if (LAPACKE_d_nancheck(n, s, 1)) {
                 return -11;
             }
         }
     }
 #endif
     /* Allocate memory for working array(s) */
-    iwork = (lapack_int*)LAPACKE_malloc( sizeof(lapack_int) * MAX(1,n) );
-    if( iwork == NULL ) {
+    iwork = (lapack_int *)LAPACKE_malloc(sizeof(lapack_int) * MAX(1, n));
+    if (iwork == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_0;
     }
-    work = (double*)LAPACKE_malloc( sizeof(double) * MAX(1,4*n) );
-    if( work == NULL ) {
+    work = (double *)LAPACKE_malloc(sizeof(double) * MAX(1, 4 * n));
+    if (work == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_1;
     }
     /* Call middle-level interface */
-    info = LAPACKE_dposvxx_work( matrix_layout, fact, uplo, n, nrhs, a, lda, af,
-                                 ldaf, equed, s, b, ldb, x, ldx, rcond, rpvgrw,
-                                 berr, n_err_bnds, err_bnds_norm, err_bnds_comp,
-                                 nparams, params, work, iwork );
+    info = LAPACKE_dposvxx_work(matrix_layout, fact, uplo, n, nrhs, a, lda, af, ldaf, equed, s, b, ldb, x, ldx, rcond, rpvgrw, berr,
+                                n_err_bnds, err_bnds_norm, err_bnds_comp, nparams, params, work, iwork);
     /* Release memory and exit */
-    LAPACKE_free( work );
+    LAPACKE_free(work);
 exit_level_1:
-    LAPACKE_free( iwork );
+    LAPACKE_free(iwork);
 exit_level_0:
-    if( info == LAPACK_WORK_MEMORY_ERROR ) {
-        LAPACKE_xerbla( "LAPACKE_dposvxx", info );
+    if (info == LAPACK_WORK_MEMORY_ERROR) {
+        LAPACKE_xerbla("LAPACKE_dposvxx", info);
     }
     return info;
 }

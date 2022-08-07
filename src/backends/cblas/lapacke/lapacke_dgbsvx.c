@@ -32,75 +32,65 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_dgbsvx( int matrix_layout, char fact, char trans,
-                           lapack_int n, lapack_int kl, lapack_int ku,
-                           lapack_int nrhs, double* ab, lapack_int ldab,
-                           double* afb, lapack_int ldafb, lapack_int* ipiv,
-                           char* equed, double* r, double* c, double* b,
-                           lapack_int ldb, double* x, lapack_int ldx,
-                           double* rcond, double* ferr, double* berr,
-                           double* rpivot )
-{
+lapack_int LAPACKE_dgbsvx(int matrix_layout, char fact, char trans, lapack_int n, lapack_int kl, lapack_int ku, lapack_int nrhs, double *ab,
+                          lapack_int ldab, double *afb, lapack_int ldafb, lapack_int *ipiv, char *equed, double *r, double *c, double *b,
+                          lapack_int ldb, double *x, lapack_int ldx, double *rcond, double *ferr, double *berr, double *rpivot) {
     lapack_int info = 0;
-    lapack_int* iwork = NULL;
-    double* work = NULL;
-    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
-        LAPACKE_xerbla( "LAPACKE_dgbsvx", -1 );
+    lapack_int *iwork = NULL;
+    double *work = NULL;
+    if (matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR) {
+        LAPACKE_xerbla("LAPACKE_dgbsvx", -1);
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
-    if( LAPACKE_get_nancheck() ) {
+    if (LAPACKE_get_nancheck()) {
         /* Optionally check input matrices for NaNs */
-        if( LAPACKE_dgb_nancheck( matrix_layout, n, n, kl, ku, ab, ldab ) ) {
+        if (LAPACKE_dgb_nancheck(matrix_layout, n, n, kl, ku, ab, ldab)) {
             return -8;
         }
-        if( LAPACKE_lsame( fact, 'f' ) ) {
-            if( LAPACKE_dgb_nancheck( matrix_layout, n, n, kl, kl+ku, afb,
-                ldafb ) ) {
+        if (LAPACKE_lsame(fact, 'f')) {
+            if (LAPACKE_dgb_nancheck(matrix_layout, n, n, kl, kl + ku, afb, ldafb)) {
                 return -10;
             }
         }
-        if( LAPACKE_dge_nancheck( matrix_layout, n, nrhs, b, ldb ) ) {
+        if (LAPACKE_dge_nancheck(matrix_layout, n, nrhs, b, ldb)) {
             return -16;
         }
-        if( LAPACKE_lsame( fact, 'f' ) && ( LAPACKE_lsame( *equed, 'b' ) ||
-            LAPACKE_lsame( *equed, 'c' ) ) ) {
-            if( LAPACKE_d_nancheck( n, c, 1 ) ) {
+        if (LAPACKE_lsame(fact, 'f') && (LAPACKE_lsame(*equed, 'b') || LAPACKE_lsame(*equed, 'c'))) {
+            if (LAPACKE_d_nancheck(n, c, 1)) {
                 return -15;
             }
         }
-        if( LAPACKE_lsame( fact, 'f' ) && ( LAPACKE_lsame( *equed, 'b' ) ||
-            LAPACKE_lsame( *equed, 'r' ) ) ) {
-            if( LAPACKE_d_nancheck( n, r, 1 ) ) {
+        if (LAPACKE_lsame(fact, 'f') && (LAPACKE_lsame(*equed, 'b') || LAPACKE_lsame(*equed, 'r'))) {
+            if (LAPACKE_d_nancheck(n, r, 1)) {
                 return -14;
             }
         }
     }
 #endif
     /* Allocate memory for working array(s) */
-    iwork = (lapack_int*)LAPACKE_malloc( sizeof(lapack_int) * MAX(1,n) );
-    if( iwork == NULL ) {
+    iwork = (lapack_int *)LAPACKE_malloc(sizeof(lapack_int) * MAX(1, n));
+    if (iwork == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_0;
     }
-    work = (double*)LAPACKE_malloc( sizeof(double) * MAX(1,3*n) );
-    if( work == NULL ) {
+    work = (double *)LAPACKE_malloc(sizeof(double) * MAX(1, 3 * n));
+    if (work == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_1;
     }
     /* Call middle-level interface */
-    info = LAPACKE_dgbsvx_work( matrix_layout, fact, trans, n, kl, ku, nrhs, ab,
-                                ldab, afb, ldafb, ipiv, equed, r, c, b, ldb, x,
-                                ldx, rcond, ferr, berr, work, iwork );
+    info = LAPACKE_dgbsvx_work(matrix_layout, fact, trans, n, kl, ku, nrhs, ab, ldab, afb, ldafb, ipiv, equed, r, c, b, ldb, x, ldx, rcond,
+                               ferr, berr, work, iwork);
     /* Backup significant data from working array(s) */
     *rpivot = work[0];
     /* Release memory and exit */
-    LAPACKE_free( work );
+    LAPACKE_free(work);
 exit_level_1:
-    LAPACKE_free( iwork );
+    LAPACKE_free(iwork);
 exit_level_0:
-    if( info == LAPACK_WORK_MEMORY_ERROR ) {
-        LAPACKE_xerbla( "LAPACKE_dgbsvx", info );
+    if (info == LAPACK_WORK_MEMORY_ERROR) {
+        LAPACKE_xerbla("LAPACKE_dgbsvx", info);
     }
     return info;
 }

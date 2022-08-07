@@ -32,56 +32,53 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_sopmtr( int matrix_layout, char side, char uplo, char trans,
-                           lapack_int m, lapack_int n, const float* ap,
-                           const float* tau, float* c, lapack_int ldc )
-{
+lapack_int LAPACKE_sopmtr(int matrix_layout, char side, char uplo, char trans, lapack_int m, lapack_int n, const float *ap,
+                          const float *tau, float *c, lapack_int ldc) {
     lapack_int info = 0;
     /* Additional scalars declarations for work arrays */
     lapack_int lwork;
-    float* work = NULL;
+    float *work = NULL;
     lapack_int r;
-    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
-        LAPACKE_xerbla( "LAPACKE_sopmtr", -1 );
+    if (matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR) {
+        LAPACKE_xerbla("LAPACKE_sopmtr", -1);
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
-    if( LAPACKE_get_nancheck() ) {
+    if (LAPACKE_get_nancheck()) {
         /* Optionally check input matrices for NaNs */
-        r = LAPACKE_lsame( side, 'l' ) ? m : n;
-        if( LAPACKE_ssp_nancheck( r, ap ) ) {
+        r = LAPACKE_lsame(side, 'l') ? m : n;
+        if (LAPACKE_ssp_nancheck(r, ap)) {
             return -7;
         }
-        if( LAPACKE_sge_nancheck( matrix_layout, m, n, c, ldc ) ) {
+        if (LAPACKE_sge_nancheck(matrix_layout, m, n, c, ldc)) {
             return -9;
         }
-        if( LAPACKE_s_nancheck( r-1, tau, 1 ) ) {
+        if (LAPACKE_s_nancheck(r - 1, tau, 1)) {
             return -8;
         }
     }
 #endif
     /* Additional scalars initializations for work arrays */
-    if( LAPACKE_lsame( side, 'l' ) ) {
-        lwork = MAX(1,n);
-    } else if( LAPACKE_lsame( side, 'r' ) ) {
-        lwork = MAX(1,m);
+    if (LAPACKE_lsame(side, 'l')) {
+        lwork = MAX(1, n);
+    } else if (LAPACKE_lsame(side, 'r')) {
+        lwork = MAX(1, m);
     } else {
         lwork = 1; /* Any value */
     }
     /* Allocate memory for working array(s) */
-    work = (float*)LAPACKE_malloc( sizeof(float) * lwork );
-    if( work == NULL ) {
+    work = (float *)LAPACKE_malloc(sizeof(float) * lwork);
+    if (work == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_0;
     }
     /* Call middle-level interface */
-    info = LAPACKE_sopmtr_work( matrix_layout, side, uplo, trans, m, n, ap, tau,
-                                c, ldc, work );
+    info = LAPACKE_sopmtr_work(matrix_layout, side, uplo, trans, m, n, ap, tau, c, ldc, work);
     /* Release memory and exit */
-    LAPACKE_free( work );
+    LAPACKE_free(work);
 exit_level_0:
-    if( info == LAPACK_WORK_MEMORY_ERROR ) {
-        LAPACKE_xerbla( "LAPACKE_sopmtr", info );
+    if (info == LAPACK_WORK_MEMORY_ERROR) {
+        LAPACKE_xerbla("LAPACKE_sopmtr", info);
     }
     return info;
 }

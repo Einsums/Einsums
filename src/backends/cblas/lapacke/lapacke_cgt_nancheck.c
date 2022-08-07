@@ -33,12 +33,7 @@
 
 /* Check a matrix for NaN entries. */
 
-lapack_logical LAPACKE_cgt_nancheck( lapack_int n,
-                                      const lapack_complex_float *dl,
-                                      const lapack_complex_float *d,
-                                      const lapack_complex_float *du )
-{
-    return LAPACKE_c_nancheck( n-1, dl, 1 )
-        || LAPACKE_c_nancheck( n  , d,  1 )
-        || LAPACKE_c_nancheck( n-1, du, 1 );
+lapack_logical LAPACKE_cgt_nancheck(lapack_int n, const lapack_complex_float *dl, const lapack_complex_float *d,
+                                    const lapack_complex_float *du) {
+    return LAPACKE_c_nancheck(n - 1, dl, 1) || LAPACKE_c_nancheck(n, d, 1) || LAPACKE_c_nancheck(n - 1, du, 1);
 }

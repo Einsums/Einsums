@@ -32,11 +32,9 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_zpttrf_work( lapack_int n, double* d,
-                                lapack_complex_double* e )
-{
+lapack_int LAPACKE_zpttrf_work(lapack_int n, double *d, lapack_complex_double *e) {
     lapack_int info = 0;
     /* Call LAPACK function and adjust info */
-    LAPACK_zpttrf( &n, d, e, &info );
+    LAPACK_zpttrf(&n, d, e, &info);
     return info;
 }

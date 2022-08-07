@@ -32,48 +32,46 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_spbequ_work( int matrix_layout, char uplo, lapack_int n,
-                                lapack_int kd, const float* ab, lapack_int ldab,
-                                float* s, float* scond, float* amax )
-{
+lapack_int LAPACKE_spbequ_work(int matrix_layout, char uplo, lapack_int n, lapack_int kd, const float *ab, lapack_int ldab, float *s,
+                               float *scond, float *amax) {
     lapack_int info = 0;
-    if( matrix_layout == LAPACK_COL_MAJOR ) {
+    if (matrix_layout == LAPACK_COL_MAJOR) {
         /* Call LAPACK function and adjust info */
-        LAPACK_spbequ( &uplo, &n, &kd, ab, &ldab, s, scond, amax, &info );
-        if( info < 0 ) {
+        LAPACK_spbequ(&uplo, &n, &kd, ab, &ldab, s, scond, amax, &info);
+        if (info < 0) {
             info = info - 1;
         }
-    } else if( matrix_layout == LAPACK_ROW_MAJOR ) {
-        lapack_int ldab_t = MAX(1,kd+1);
-        float* ab_t = NULL;
+    } else if (matrix_layout == LAPACK_ROW_MAJOR) {
+        lapack_int ldab_t = MAX(1, kd + 1);
+        float *ab_t = NULL;
         /* Check leading dimension(s) */
-        if( ldab < n ) {
+        if (ldab < n) {
             info = -6;
-            LAPACKE_xerbla( "LAPACKE_spbequ_work", info );
+            LAPACKE_xerbla("LAPACKE_spbequ_work", info);
             return info;
         }
         /* Allocate memory for temporary array(s) */
-        ab_t = (float*)LAPACKE_malloc( sizeof(float) * ldab_t * MAX(1,n) );
-        if( ab_t == NULL ) {
+        ab_t = (float *)LAPACKE_malloc(sizeof(float) * ldab_t * MAX(1, n));
+        if (ab_t == NULL) {
             info = LAPACK_TRANSPOSE_MEMORY_ERROR;
             goto exit_level_0;
         }
         /* Transpose input matrices */
-        LAPACKE_spb_trans( matrix_layout, uplo, n, kd, ab, ldab, ab_t, ldab_t );
+        LAPACKE_spb_trans(matrix_layout, uplo, n, kd, ab, ldab, ab_t, ldab_t);
         /* Call LAPACK function and adjust info */
-        LAPACK_spbequ( &uplo, &n, &kd, ab_t, &ldab_t, s, scond, amax, &info );
-        if( info < 0 ) {
+        LAPACK_spbequ(&uplo, &n, &kd, ab_t, &ldab_t, s, scond, amax, &info);
+        if (info < 0) {
             info = info - 1;
         }
         /* Release memory and exit */
-        LAPACKE_free( ab_t );
-exit_level_0:
-        if( info == LAPACK_TRANSPOSE_MEMORY_ERROR ) {
-            LAPACKE_xerbla( "LAPACKE_spbequ_work", info );
+        LAPACKE_free(ab_t);
+    exit_level_0:
+        if (info == LAPACK_TRANSPOSE_MEMORY_ERROR) {
+            LAPACKE_xerbla("LAPACKE_spbequ_work", info);
         }
     } else {
         info = -1;
-        LAPACKE_xerbla( "LAPACKE_spbequ_work", info );
+        LAPACKE_xerbla("LAPACKE_spbequ_work", info);
     }
     return info;
 }

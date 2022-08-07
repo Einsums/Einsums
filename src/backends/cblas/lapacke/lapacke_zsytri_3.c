@@ -32,51 +32,47 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_zsytri_3( int matrix_layout, char uplo, lapack_int n,
-                           lapack_complex_double* a, lapack_int lda,
-                           const lapack_complex_double* e, const lapack_int* ipiv )
-{
+lapack_int LAPACKE_zsytri_3(int matrix_layout, char uplo, lapack_int n, lapack_complex_double *a, lapack_int lda,
+                            const lapack_complex_double *e, const lapack_int *ipiv) {
     lapack_int info = 0;
     lapack_int lwork = -1;
-    lapack_complex_double* work = NULL;
+    lapack_complex_double *work = NULL;
     lapack_complex_double work_query;
-    lapack_int e_start = LAPACKE_lsame( uplo, 'U' ) ? 1 : 0;
-    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
-        LAPACKE_xerbla( "LAPACKE_zsytri_3", -1 );
+    lapack_int e_start = LAPACKE_lsame(uplo, 'U') ? 1 : 0;
+    if (matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR) {
+        LAPACKE_xerbla("LAPACKE_zsytri_3", -1);
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
-    if( LAPACKE_get_nancheck() ) {
+    if (LAPACKE_get_nancheck()) {
         /* Optionally check input matrices for NaNs */
-        if( LAPACKE_zsy_nancheck( matrix_layout, uplo, n, a, lda ) ) {
+        if (LAPACKE_zsy_nancheck(matrix_layout, uplo, n, a, lda)) {
             return -4;
         }
-        if( LAPACKE_z_nancheck( n-1, e + e_start, 1 ) ) {
+        if (LAPACKE_z_nancheck(n - 1, e + e_start, 1)) {
             return -6;
         }
     }
 #endif
-     /* Query optimal working array(s) size */
-    info = LAPACKE_zsytri_3_work( matrix_layout, uplo, n, a, lda, e, ipiv,
-                                &work_query, lwork );
-    if( info != 0 ) {
+    /* Query optimal working array(s) size */
+    info = LAPACKE_zsytri_3_work(matrix_layout, uplo, n, a, lda, e, ipiv, &work_query, lwork);
+    if (info != 0) {
         goto exit_level_0;
     }
-    lwork = LAPACK_Z2INT( work_query );
-   /* Allocate memory for working array(s) */
-    work = (lapack_complex_double*)
-        LAPACKE_malloc( sizeof(lapack_complex_double) * lwork );
-    if( work == NULL ) {
+    lwork = LAPACK_Z2INT(work_query);
+    /* Allocate memory for working array(s) */
+    work = (lapack_complex_double *)LAPACKE_malloc(sizeof(lapack_complex_double) * lwork);
+    if (work == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_0;
     }
     /* Call middle-level interface */
-    info = LAPACKE_zsytri_3_work( matrix_layout, uplo, n, a, lda, e, ipiv, work, lwork );
+    info = LAPACKE_zsytri_3_work(matrix_layout, uplo, n, a, lda, e, ipiv, work, lwork);
     /* Release memory and exit */
-    LAPACKE_free( work );
+    LAPACKE_free(work);
 exit_level_0:
-    if( info == LAPACK_WORK_MEMORY_ERROR ) {
-        LAPACKE_xerbla( "LAPACKE_zsytri_3", info );
+    if (info == LAPACK_WORK_MEMORY_ERROR) {
+        LAPACKE_xerbla("LAPACKE_zsytri_3", info);
     }
     return info;
 }

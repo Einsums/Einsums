@@ -32,46 +32,40 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_dggsvd( int matrix_layout, char jobu, char jobv, char jobq,
-                           lapack_int m, lapack_int n, lapack_int p,
-                           lapack_int* k, lapack_int* l, double* a,
-                           lapack_int lda, double* b, lapack_int ldb,
-                           double* alpha, double* beta, double* u,
-                           lapack_int ldu, double* v, lapack_int ldv, double* q,
-                           lapack_int ldq, lapack_int* iwork )
-{
+lapack_int LAPACKE_dggsvd(int matrix_layout, char jobu, char jobv, char jobq, lapack_int m, lapack_int n, lapack_int p, lapack_int *k,
+                          lapack_int *l, double *a, lapack_int lda, double *b, lapack_int ldb, double *alpha, double *beta, double *u,
+                          lapack_int ldu, double *v, lapack_int ldv, double *q, lapack_int ldq, lapack_int *iwork) {
     lapack_int info = 0;
-    double* work = NULL;
-    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
-        LAPACKE_xerbla( "LAPACKE_dggsvd", -1 );
+    double *work = NULL;
+    if (matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR) {
+        LAPACKE_xerbla("LAPACKE_dggsvd", -1);
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
-    if( LAPACKE_get_nancheck() ) {
+    if (LAPACKE_get_nancheck()) {
         /* Optionally check input matrices for NaNs */
-        if( LAPACKE_dge_nancheck( matrix_layout, m, n, a, lda ) ) {
+        if (LAPACKE_dge_nancheck(matrix_layout, m, n, a, lda)) {
             return -10;
         }
-        if( LAPACKE_dge_nancheck( matrix_layout, p, n, b, ldb ) ) {
+        if (LAPACKE_dge_nancheck(matrix_layout, p, n, b, ldb)) {
             return -12;
         }
     }
 #endif
     /* Allocate memory for working array(s) */
-    work = (double*)LAPACKE_malloc( sizeof(double) * MAX(1,MAX3(3*n,m,p)+n) );
-    if( work == NULL ) {
+    work = (double *)LAPACKE_malloc(sizeof(double) * MAX(1, MAX3(3 * n, m, p) + n));
+    if (work == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_0;
     }
     /* Call middle-level interface */
-    info = LAPACKE_dggsvd_work( matrix_layout, jobu, jobv, jobq, m, n, p, k, l,
-                                a, lda, b, ldb, alpha, beta, u, ldu, v, ldv, q,
-                                ldq, work, iwork );
+    info = LAPACKE_dggsvd_work(matrix_layout, jobu, jobv, jobq, m, n, p, k, l, a, lda, b, ldb, alpha, beta, u, ldu, v, ldv, q, ldq, work,
+                               iwork);
     /* Release memory and exit */
-    LAPACKE_free( work );
+    LAPACKE_free(work);
 exit_level_0:
-    if( info == LAPACK_WORK_MEMORY_ERROR ) {
-        LAPACKE_xerbla( "LAPACKE_dggsvd", info );
+    if (info == LAPACK_WORK_MEMORY_ERROR) {
+        LAPACKE_xerbla("LAPACKE_dggsvd", info);
     }
     return info;
 }

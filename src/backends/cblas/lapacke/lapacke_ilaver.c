@@ -32,11 +32,8 @@
 
 #include "lapacke_utils.h"
 
-void LAPACKE_ilaver( lapack_int* vers_major,
-                     lapack_int* vers_minor,
-                     lapack_int* vers_patch )
-{
+void LAPACKE_ilaver(lapack_int *vers_major, lapack_int *vers_minor, lapack_int *vers_patch) {
     /* Call LAPACK function */
-    LAPACK_ilaver( vers_major, vers_minor, vers_patch );
-    return ;
+    LAPACK_ilaver(vers_major, vers_minor, vers_patch);
+    return;
 }

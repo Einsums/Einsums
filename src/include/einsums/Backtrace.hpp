@@ -560,14 +560,17 @@ class handle {
         }
     }
 
-    explicit handle() : _val(), _empty(true) {}
+    explicit handle() : _val(), _empty(true) {
+    }
     explicit handle(T val) : _val(val), _empty(false) {
         if (!_val)
             _empty = true;
     }
 
 #ifdef BACKWARD_ATLEAST_CXX11
-    handle(handle &&from) : _empty(true) { swap(from); }
+    handle(handle &&from) : _empty(true) {
+        swap(from);
+    }
     handle &operator=(handle &&from) {
         swap(from);
         return *this;
@@ -600,7 +603,9 @@ class handle {
         }
         return reinterpret_cast<const dummy *>(_val);
     }
-    T get() { return _val; }
+    T get() {
+        return _val;
+    }
     T release() {
         _empty = true;
         return _val;
@@ -612,14 +617,24 @@ class handle {
                                 // bools without throwing... It's a lost cause anyway!
     }
 
-    T &operator->() { return _val; }
-    const T &operator->() const { return _val; }
+    T &operator->() {
+        return _val;
+    }
+    const T &operator->() const {
+        return _val;
+    }
 
     typedef typename rm_ptr<T>::type &ref_t;
     typedef const typename rm_ptr<T>::type &const_ref_t;
-    ref_t operator*() { return *_val; }
-    const_ref_t operator*() const { return *_val; }
-    ref_t operator[](size_t idx) { return _val[idx]; }
+    ref_t operator*() {
+        return *_val;
+    }
+    const_ref_t operator*() const {
+        return *_val;
+    }
+    ref_t operator[](size_t idx) {
+        return _val[idx];
+    }
 
     // Watch out, we've got a badass over here
     T *operator&() {
@@ -779,13 +794,23 @@ class StackTraceImplBase {
 #endif
     }
 
-    void set_context(void *context) { _context = context; }
-    void *context() const { return _context; }
+    void set_context(void *context) {
+        _context = context;
+    }
+    void *context() const {
+        return _context;
+    }
 
-    void set_error_addr(void *error_addr) { _error_addr = error_addr; }
-    void *error_addr() const { return _error_addr; }
+    void set_error_addr(void *error_addr) {
+        _error_addr = error_addr;
+    }
+    void *error_addr() const {
+        return _error_addr;
+    }
 
-    size_t skip_n_firsts() const { return _skip; }
+    size_t skip_n_firsts() const {
+        return _skip;
+    }
 
   private:
     size_t _thread_id;
@@ -2199,7 +2224,9 @@ class TraceResolverLinuxImpl<trace_resolver_tag::libdwarf> : public TraceResolve
     }
 
   public:
-    static int close_dwarf(Dwarf_Debug dwarf) { return dwarf_finish(dwarf, NULL); }
+    static int close_dwarf(Dwarf_Debug dwarf) {
+        return dwarf_finish(dwarf, NULL);
+    }
 
   private:
     bool _dwarf_loaded;
@@ -3658,7 +3685,9 @@ class SourceFile {
     void swap(SourceFile &b) { _file.swap(b._file); }
 
 #ifdef BACKWARD_ATLEAST_CXX11
-    SourceFile(SourceFile &&from) : _file(nullptr) { swap(from); }
+    SourceFile(SourceFile &&from) : _file(nullptr) {
+        swap(from);
+    }
     SourceFile &operator=(SourceFile &&from) {
         swap(from);
         return *this;
@@ -4050,7 +4079,9 @@ class SignalHandling {
         _loaded = success;
     }
 
-    bool loaded() const { return _loaded; }
+    bool loaded() const {
+        return _loaded;
+    }
 
     static void handleSignal(int, siginfo_t *info, void *_ctx) {
         ucontext_t *uctx = static_cast<ucontext_t *>(_ctx);
@@ -4162,7 +4193,9 @@ class SignalHandling {
         _set_purecall_handler(&terminator);
         _set_invalid_parameter_handler(&invalid_parameter_handler);
     }
-    bool loaded() const { return true; }
+    bool loaded() const {
+        return true;
+    }
 
     ~SignalHandling() {
         {

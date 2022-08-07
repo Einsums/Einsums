@@ -32,55 +32,47 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_cgbcon_work( int matrix_layout, char norm, lapack_int n,
-                                lapack_int kl, lapack_int ku,
-                                const lapack_complex_float* ab, lapack_int ldab,
-                                const lapack_int* ipiv, float anorm,
-                                float* rcond, lapack_complex_float* work,
-                                float* rwork )
-{
+lapack_int LAPACKE_cgbcon_work(int matrix_layout, char norm, lapack_int n, lapack_int kl, lapack_int ku, const lapack_complex_float *ab,
+                               lapack_int ldab, const lapack_int *ipiv, float anorm, float *rcond, lapack_complex_float *work,
+                               float *rwork) {
     lapack_int info = 0;
-    if( matrix_layout == LAPACK_COL_MAJOR ) {
+    if (matrix_layout == LAPACK_COL_MAJOR) {
         /* Call LAPACK function and adjust info */
-        LAPACK_cgbcon( &norm, &n, &kl, &ku, ab, &ldab, ipiv, &anorm, rcond,
-                       work, rwork, &info );
-        if( info < 0 ) {
+        LAPACK_cgbcon(&norm, &n, &kl, &ku, ab, &ldab, ipiv, &anorm, rcond, work, rwork, &info);
+        if (info < 0) {
             info = info - 1;
         }
-    } else if( matrix_layout == LAPACK_ROW_MAJOR ) {
-        lapack_int ldab_t = MAX(1,2*kl+ku+1);
-        lapack_complex_float* ab_t = NULL;
+    } else if (matrix_layout == LAPACK_ROW_MAJOR) {
+        lapack_int ldab_t = MAX(1, 2 * kl + ku + 1);
+        lapack_complex_float *ab_t = NULL;
         /* Check leading dimension(s) */
-        if( ldab < n ) {
+        if (ldab < n) {
             info = -7;
-            LAPACKE_xerbla( "LAPACKE_cgbcon_work", info );
+            LAPACKE_xerbla("LAPACKE_cgbcon_work", info);
             return info;
         }
         /* Allocate memory for temporary array(s) */
-        ab_t = (lapack_complex_float*)
-            LAPACKE_malloc( sizeof(lapack_complex_float) * ldab_t * MAX(1,n) );
-        if( ab_t == NULL ) {
+        ab_t = (lapack_complex_float *)LAPACKE_malloc(sizeof(lapack_complex_float) * ldab_t * MAX(1, n));
+        if (ab_t == NULL) {
             info = LAPACK_TRANSPOSE_MEMORY_ERROR;
             goto exit_level_0;
         }
         /* Transpose input matrices */
-        LAPACKE_cgb_trans( matrix_layout, n, n, kl, kl+ku, ab, ldab, ab_t,
-                           ldab_t );
+        LAPACKE_cgb_trans(matrix_layout, n, n, kl, kl + ku, ab, ldab, ab_t, ldab_t);
         /* Call LAPACK function and adjust info */
-        LAPACK_cgbcon( &norm, &n, &kl, &ku, ab_t, &ldab_t, ipiv, &anorm, rcond,
-                       work, rwork, &info );
-        if( info < 0 ) {
+        LAPACK_cgbcon(&norm, &n, &kl, &ku, ab_t, &ldab_t, ipiv, &anorm, rcond, work, rwork, &info);
+        if (info < 0) {
             info = info - 1;
         }
         /* Release memory and exit */
-        LAPACKE_free( ab_t );
-exit_level_0:
-        if( info == LAPACK_TRANSPOSE_MEMORY_ERROR ) {
-            LAPACKE_xerbla( "LAPACKE_cgbcon_work", info );
+        LAPACKE_free(ab_t);
+    exit_level_0:
+        if (info == LAPACK_TRANSPOSE_MEMORY_ERROR) {
+            LAPACKE_xerbla("LAPACKE_cgbcon_work", info);
         }
     } else {
         info = -1;
-        LAPACKE_xerbla( "LAPACKE_cgbcon_work", info );
+        LAPACKE_xerbla("LAPACKE_cgbcon_work", info);
     }
     return info;
 }

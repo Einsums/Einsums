@@ -32,51 +32,46 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_dggqrf( int matrix_layout, lapack_int n, lapack_int m,
-                           lapack_int p, double* a, lapack_int lda,
-                           double* taua, double* b, lapack_int ldb,
-                           double* taub )
-{
+lapack_int LAPACKE_dggqrf(int matrix_layout, lapack_int n, lapack_int m, lapack_int p, double *a, lapack_int lda, double *taua, double *b,
+                          lapack_int ldb, double *taub) {
     lapack_int info = 0;
     lapack_int lwork = -1;
-    double* work = NULL;
+    double *work = NULL;
     double work_query;
-    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
-        LAPACKE_xerbla( "LAPACKE_dggqrf", -1 );
+    if (matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR) {
+        LAPACKE_xerbla("LAPACKE_dggqrf", -1);
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
-    if( LAPACKE_get_nancheck() ) {
+    if (LAPACKE_get_nancheck()) {
         /* Optionally check input matrices for NaNs */
-        if( LAPACKE_dge_nancheck( matrix_layout, n, m, a, lda ) ) {
+        if (LAPACKE_dge_nancheck(matrix_layout, n, m, a, lda)) {
             return -5;
         }
-        if( LAPACKE_dge_nancheck( matrix_layout, n, p, b, ldb ) ) {
+        if (LAPACKE_dge_nancheck(matrix_layout, n, p, b, ldb)) {
             return -8;
         }
     }
 #endif
     /* Query optimal working array(s) size */
-    info = LAPACKE_dggqrf_work( matrix_layout, n, m, p, a, lda, taua, b, ldb,
-                                taub, &work_query, lwork );
-    if( info != 0 ) {
+    info = LAPACKE_dggqrf_work(matrix_layout, n, m, p, a, lda, taua, b, ldb, taub, &work_query, lwork);
+    if (info != 0) {
         goto exit_level_0;
     }
     lwork = (lapack_int)work_query;
     /* Allocate memory for work arrays */
-    work = (double*)LAPACKE_malloc( sizeof(double) * lwork );
-    if( work == NULL ) {
+    work = (double *)LAPACKE_malloc(sizeof(double) * lwork);
+    if (work == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_0;
     }
     /* Call middle-level interface */
-    info = LAPACKE_dggqrf_work( matrix_layout, n, m, p, a, lda, taua, b, ldb,
-                                taub, work, lwork );
+    info = LAPACKE_dggqrf_work(matrix_layout, n, m, p, a, lda, taua, b, ldb, taub, work, lwork);
     /* Release memory and exit */
-    LAPACKE_free( work );
+    LAPACKE_free(work);
 exit_level_0:
-    if( info == LAPACK_WORK_MEMORY_ERROR ) {
-        LAPACKE_xerbla( "LAPACKE_dggqrf", info );
+    if (info == LAPACK_WORK_MEMORY_ERROR) {
+        LAPACKE_xerbla("LAPACKE_dggqrf", info);
     }
     return info;
 }

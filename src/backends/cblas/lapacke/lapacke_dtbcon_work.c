@@ -32,52 +32,46 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_dtbcon_work( int matrix_layout, char norm, char uplo,
-                                char diag, lapack_int n, lapack_int kd,
-                                const double* ab, lapack_int ldab,
-                                double* rcond, double* work, lapack_int* iwork )
-{
+lapack_int LAPACKE_dtbcon_work(int matrix_layout, char norm, char uplo, char diag, lapack_int n, lapack_int kd, const double *ab,
+                               lapack_int ldab, double *rcond, double *work, lapack_int *iwork) {
     lapack_int info = 0;
-    if( matrix_layout == LAPACK_COL_MAJOR ) {
+    if (matrix_layout == LAPACK_COL_MAJOR) {
         /* Call LAPACK function and adjust info */
-        LAPACK_dtbcon( &norm, &uplo, &diag, &n, &kd, ab, &ldab, rcond, work,
-                       iwork, &info );
-        if( info < 0 ) {
+        LAPACK_dtbcon(&norm, &uplo, &diag, &n, &kd, ab, &ldab, rcond, work, iwork, &info);
+        if (info < 0) {
             info = info - 1;
         }
-    } else if( matrix_layout == LAPACK_ROW_MAJOR ) {
-        lapack_int ldab_t = MAX(1,kd+1);
-        double* ab_t = NULL;
+    } else if (matrix_layout == LAPACK_ROW_MAJOR) {
+        lapack_int ldab_t = MAX(1, kd + 1);
+        double *ab_t = NULL;
         /* Check leading dimension(s) */
-        if( ldab < n ) {
+        if (ldab < n) {
             info = -8;
-            LAPACKE_xerbla( "LAPACKE_dtbcon_work", info );
+            LAPACKE_xerbla("LAPACKE_dtbcon_work", info);
             return info;
         }
         /* Allocate memory for temporary array(s) */
-        ab_t = (double*)LAPACKE_malloc( sizeof(double) * ldab_t * MAX(1,n) );
-        if( ab_t == NULL ) {
+        ab_t = (double *)LAPACKE_malloc(sizeof(double) * ldab_t * MAX(1, n));
+        if (ab_t == NULL) {
             info = LAPACK_TRANSPOSE_MEMORY_ERROR;
             goto exit_level_0;
         }
         /* Transpose input matrices */
-        LAPACKE_dtb_trans( matrix_layout, uplo, diag, n, kd, ab, ldab, ab_t,
-                           ldab_t );
+        LAPACKE_dtb_trans(matrix_layout, uplo, diag, n, kd, ab, ldab, ab_t, ldab_t);
         /* Call LAPACK function and adjust info */
-        LAPACK_dtbcon( &norm, &uplo, &diag, &n, &kd, ab_t, &ldab_t, rcond, work,
-                       iwork, &info );
-        if( info < 0 ) {
+        LAPACK_dtbcon(&norm, &uplo, &diag, &n, &kd, ab_t, &ldab_t, rcond, work, iwork, &info);
+        if (info < 0) {
             info = info - 1;
         }
         /* Release memory and exit */
-        LAPACKE_free( ab_t );
-exit_level_0:
-        if( info == LAPACK_TRANSPOSE_MEMORY_ERROR ) {
-            LAPACKE_xerbla( "LAPACKE_dtbcon_work", info );
+        LAPACKE_free(ab_t);
+    exit_level_0:
+        if (info == LAPACK_TRANSPOSE_MEMORY_ERROR) {
+            LAPACKE_xerbla("LAPACKE_dtbcon_work", info);
         }
     } else {
         info = -1;
-        LAPACKE_xerbla( "LAPACKE_dtbcon_work", info );
+        LAPACKE_xerbla("LAPACKE_dtbcon_work", info);
     }
     return info;
 }

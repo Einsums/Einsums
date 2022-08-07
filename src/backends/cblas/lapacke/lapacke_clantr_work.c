@@ -32,59 +32,56 @@
 
 #include "lapacke_utils.h"
 
-float LAPACKE_clantr_work( int matrix_layout, char norm, char uplo,
-                                char diag, lapack_int m, lapack_int n,
-                                const lapack_complex_float* a, lapack_int lda,
-                                float* work )
-{
+float LAPACKE_clantr_work(int matrix_layout, char norm, char uplo, char diag, lapack_int m, lapack_int n, const lapack_complex_float *a,
+                          lapack_int lda, float *work) {
     lapack_int info = 0;
     float res = 0.;
-    if( matrix_layout == LAPACK_COL_MAJOR ) {
+    if (matrix_layout == LAPACK_COL_MAJOR) {
         /* Call LAPACK function */
-        res = LAPACK_clantr( &norm, &uplo, &diag, &m, &n, a, &lda, work );
-    } else if( matrix_layout == LAPACK_ROW_MAJOR ) {
-        float* work_lapack = NULL;
+        res = LAPACK_clantr(&norm, &uplo, &diag, &m, &n, a, &lda, work);
+    } else if (matrix_layout == LAPACK_ROW_MAJOR) {
+        float *work_lapack = NULL;
         char norm_lapack;
         char uplo_lapack;
         /* Check leading dimension(s) */
-        if( lda < n ) {
+        if (lda < n) {
             info = -8;
-            LAPACKE_xerbla( "LAPACKE_clantr_work", info );
+            LAPACKE_xerbla("LAPACKE_clantr_work", info);
             return info;
         }
-        if( LAPACKE_lsame( norm, '1' ) || LAPACKE_lsame( norm, 'o' ) ) {
+        if (LAPACKE_lsame(norm, '1') || LAPACKE_lsame(norm, 'o')) {
             norm_lapack = 'i';
-        } else if( LAPACKE_lsame( norm, 'i' ) ) {
+        } else if (LAPACKE_lsame(norm, 'i')) {
             norm_lapack = '1';
         } else {
             norm_lapack = norm;
         }
-        if( LAPACKE_lsame( uplo, 'u' ) ) {
+        if (LAPACKE_lsame(uplo, 'u')) {
             uplo_lapack = 'l';
         } else {
             uplo_lapack = 'u';
         }
         /* Allocate memory for work array(s) */
-        if( LAPACKE_lsame( norm_lapack, 'i' ) ) {
-            work_lapack = (float*)LAPACKE_malloc( sizeof(float) * MAX(1,n) );
-            if( work_lapack == NULL ) {
+        if (LAPACKE_lsame(norm_lapack, 'i')) {
+            work_lapack = (float *)LAPACKE_malloc(sizeof(float) * MAX(1, n));
+            if (work_lapack == NULL) {
                 info = LAPACK_WORK_MEMORY_ERROR;
                 goto exit_level_0;
             }
         }
         /* Call LAPACK function */
-        res = LAPACK_clantr( &norm_lapack, &uplo_lapack, &diag, &n, &m, a, &lda, work_lapack );
+        res = LAPACK_clantr(&norm_lapack, &uplo_lapack, &diag, &n, &m, a, &lda, work_lapack);
         /* Release memory and exit */
-        if( work_lapack ) {
-            LAPACKE_free( work_lapack );
+        if (work_lapack) {
+            LAPACKE_free(work_lapack);
         }
-exit_level_0:
-        if( info == LAPACK_WORK_MEMORY_ERROR ) {
-            LAPACKE_xerbla( "LAPACKE_clantr_work", info );
+    exit_level_0:
+        if (info == LAPACK_WORK_MEMORY_ERROR) {
+            LAPACKE_xerbla("LAPACKE_clantr_work", info);
         }
     } else {
         info = -1;
-        LAPACKE_xerbla( "LAPACKE_clantr_work", info );
+        LAPACKE_xerbla("LAPACKE_clantr_work", info);
     }
     return res;
 }

@@ -56,14 +56,14 @@ auto rmsd(const TTensor<TType, TRank> &tensor1, const TTensor<TType, TRank> &ten
     TType diff = 0.0;
 
     size_t nelem = 1;
-    for_sequence<TRank>([&](auto i) {  nelem *= tensor1.dim(i); });
+    for_sequence<TRank>([&](auto i) { nelem *= tensor1.dim(i); });
 
     auto target_dims = get_dim_ranges<TRank>(tensor1);
     auto view = std::apply(ranges::views::cartesian_product, target_dims);
 
 #pragma omp parallel for reduction(+ : diff)
     for (auto it = view.begin(); it < view.end(); it++) {
-        auto target_combination = *it;   
+        auto target_combination = *it;
         TType target1 = std::apply(tensor1, target_combination);
         TType target2 = std::apply(tensor2, target_combination);
         diff += (target1 - target2) * (target1 - target2);
@@ -75,18 +75,18 @@ auto rmsd(const TTensor<TType, TRank> &tensor1, const TTensor<TType, TRank> &ten
 /**
  * "Weight" a tensor for weighted CANDECOMP/PARAFAC decompositions (returns a copy) by input weights
  */
-template<template <typename, size_t> typename TTensor, size_t TRank, typename TType = double>
-auto weight_tensor(const TTensor<TType, TRank>& tensor, const TTensor<TType, 1>& weights) -> Tensor<TType, TRank> {
+template <template <typename, size_t> typename TTensor, size_t TRank, typename TType = double>
+auto weight_tensor(const TTensor<TType, TRank> &tensor, const TTensor<TType, 1> &weights) -> Tensor<TType, TRank> {
 
     if (tensor.dim(0) != weights.dim(0)) {
         println_abort("The first dimension of the tensor and the dimension of the weight DO NOT match");
     }
-    
+
     Tensor<TType, TRank> weighted_tensor(tensor.dims());
     auto target_dims = get_dim_ranges<TRank>(tensor);
 
     auto view = std::apply(ranges::views::cartesian_product, target_dims);
-    
+
 #pragma omp parallel for
     for (auto it = view.begin(); it < view.end(); it++) {
         auto target_combination = *it;
@@ -151,9 +151,9 @@ auto initialize_cp(std::vector<Tensor<TType, 2>> &folds, size_t rank) -> std::ve
 
         // Multiply the fold by its transpose
         Tensor<double, 2> fold_squared("fold squared", m, m);
-        einsum(0.0, Indices{index::M, index::N}, &fold_squared, 1.0,
-                Indices{index::M, index::p}, folds[i], Indices{index::N, index::p}, folds[i]);
-        
+        einsum(0.0, Indices{index::M, index::N}, &fold_squared, 1.0, Indices{index::M, index::p}, folds[i], Indices{index::N, index::p},
+               folds[i]);
+
         Tensor<double, 1> S("eigenvalues", m);
 
         // Diagonalize fold squared (akin to SVD)
@@ -167,7 +167,8 @@ auto initialize_cp(std::vector<Tensor<TType, 2>> &folds, size_t rank) -> std::ve
         if (i == 0) {
             for (size_t v = 0; v < S.dim(0); v++) {
                 double scaling_factor = std::sqrt(S(v));
-                if (std::abs(scaling_factor) > 1.0e-14) linear_algebra::scale_column(v, scaling_factor, &U);
+                if (std::abs(scaling_factor) > 1.0e-14)
+                    linear_algebra::scale_column(v, scaling_factor, &U);
             }
         }
 
@@ -184,7 +185,7 @@ auto initialize_cp(std::vector<Tensor<TType, 2>> &folds, size_t rank) -> std::ve
             factors.push_back(Unew);
         } else {
             // Need to save the factors
-            factors.emplace_back(Tensor{U(All, Range{m-rank, m})});
+            factors.emplace_back(Tensor{U(All, Range{m - rank, m})});
         }
 
         // println("latest factor added");
@@ -299,9 +300,8 @@ auto parafac(const TTensor<TType, TRank> &tensor, size_t rank, int n_iter_max = 
  *   weights = The weights to multiply the tensor by
  */
 template <template <typename, size_t> typename TTensor, size_t TRank, typename TType = double>
-auto weighted_parafac(const TTensor<TType, TRank> &tensor, const TTensor<TType, 1>& weights,
-                        size_t rank, int n_iter_max = 100, double tolerance = 1.e-8)
-    -> std::vector<Tensor<TType, 2>> {
+auto weighted_parafac(const TTensor<TType, TRank> &tensor, const TTensor<TType, 1> &weights, size_t rank, int n_iter_max = 100,
+                      double tolerance = 1.e-8) -> std::vector<Tensor<TType, 2>> {
 
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
@@ -309,9 +309,7 @@ auto weighted_parafac(const TTensor<TType, TRank> &tensor, const TTensor<TType, 
 
     // Compute set of unfolded matrices (unweighted)
     std::vector<Tensor<TType, 2>> unfolded_matrices;
-    for_sequence<TRank>([&](auto i) {
-        unfolded_matrices.push_back(tensor_algebra::unfold<i>(tensor));
-    });
+    for_sequence<TRank>([&](auto i) { unfolded_matrices.push_back(tensor_algebra::unfold<i>(tensor)); });
 
     // Perform SVD guess for parafac decomposition procedure
     std::vector<Tensor<TType, 2>> factors = initialize_cp<TRank>(unfolded_matrices, rank);
@@ -319,11 +317,11 @@ auto weighted_parafac(const TTensor<TType, TRank> &tensor, const TTensor<TType, 
     { // Define new scope (for memory optimization)
         // Create the weighted tensor
         Tensor<TType, 1> square_weights("square_weights", weights.dim(0));
-        einsum(0.0, Indices{index::P}, &square_weights, 1.0,
-                Indices{index::P}, weights, Indices{index::P}, weights);
+        einsum(0.0, Indices{index::P}, &square_weights, 1.0, Indices{index::P}, weights, Indices{index::P}, weights);
         Tensor<TType, TRank> weighted_tensor = weight_tensor(tensor, square_weights);
         for_sequence<TRank>([&](auto i) {
-            if (i != 0) unfolded_matrices[i] = tensor_algebra::unfold<i>(weighted_tensor);
+            if (i != 0)
+                unfolded_matrices[i] = tensor_algebra::unfold<i>(weighted_tensor);
         });
     }
 
@@ -338,7 +336,6 @@ auto weighted_parafac(const TTensor<TType, TRank> &tensor, const TTensor<TType, 
     while (iter < n_iter_max) {
         size_t n = 0;
         for_sequence<TRank>([&](auto n_ind) {
-
             // Form V and Khatri-Rao product intermediates
             Tensor<TType, 2> V;
             Tensor<TType, 2> KR;
@@ -380,7 +377,7 @@ auto weighted_parafac(const TTensor<TType, TRank> &tensor, const TTensor<TType, 
 
             // Step 2: Linear Solve (instead of inversion, for numerical stability, column-major ordering)
             linear_algebra::gesv(&V, &factors[n_ind]);
-            
+
             n += 1;
         });
 

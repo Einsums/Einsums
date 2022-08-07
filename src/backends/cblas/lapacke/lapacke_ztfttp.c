@@ -32,21 +32,19 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_ztfttp( int matrix_layout, char transr, char uplo,
-                           lapack_int n, const lapack_complex_double* arf,
-                           lapack_complex_double* ap )
-{
-    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
-        LAPACKE_xerbla( "LAPACKE_ztfttp", -1 );
+lapack_int LAPACKE_ztfttp(int matrix_layout, char transr, char uplo, lapack_int n, const lapack_complex_double *arf,
+                          lapack_complex_double *ap) {
+    if (matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR) {
+        LAPACKE_xerbla("LAPACKE_ztfttp", -1);
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
-    if( LAPACKE_get_nancheck() ) {
+    if (LAPACKE_get_nancheck()) {
         /* Optionally check input matrices for NaNs */
-        if( LAPACKE_zpf_nancheck( n, arf ) ) {
+        if (LAPACKE_zpf_nancheck(n, arf)) {
             return -5;
         }
     }
 #endif
-    return LAPACKE_ztfttp_work( matrix_layout, transr, uplo, n, arf, ap );
+    return LAPACKE_ztfttp_work(matrix_layout, transr, uplo, n, arf, ap);
 }

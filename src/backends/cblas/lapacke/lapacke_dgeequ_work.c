@@ -32,49 +32,46 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_dgeequ_work( int matrix_layout, lapack_int m, lapack_int n,
-                                const double* a, lapack_int lda, double* r,
-                                double* c, double* rowcnd, double* colcnd,
-                                double* amax )
-{
+lapack_int LAPACKE_dgeequ_work(int matrix_layout, lapack_int m, lapack_int n, const double *a, lapack_int lda, double *r, double *c,
+                               double *rowcnd, double *colcnd, double *amax) {
     lapack_int info = 0;
-    if( matrix_layout == LAPACK_COL_MAJOR ) {
+    if (matrix_layout == LAPACK_COL_MAJOR) {
         /* Call LAPACK function and adjust info */
-        LAPACK_dgeequ( &m, &n, a, &lda, r, c, rowcnd, colcnd, amax, &info );
-        if( info < 0 ) {
+        LAPACK_dgeequ(&m, &n, a, &lda, r, c, rowcnd, colcnd, amax, &info);
+        if (info < 0) {
             info = info - 1;
         }
-    } else if( matrix_layout == LAPACK_ROW_MAJOR ) {
-        lapack_int lda_t = MAX(1,m);
-        double* a_t = NULL;
+    } else if (matrix_layout == LAPACK_ROW_MAJOR) {
+        lapack_int lda_t = MAX(1, m);
+        double *a_t = NULL;
         /* Check leading dimension(s) */
-        if( lda < n ) {
+        if (lda < n) {
             info = -5;
-            LAPACKE_xerbla( "LAPACKE_dgeequ_work", info );
+            LAPACKE_xerbla("LAPACKE_dgeequ_work", info);
             return info;
         }
         /* Allocate memory for temporary array(s) */
-        a_t = (double*)LAPACKE_malloc( sizeof(double) * lda_t * MAX(1,n) );
-        if( a_t == NULL ) {
+        a_t = (double *)LAPACKE_malloc(sizeof(double) * lda_t * MAX(1, n));
+        if (a_t == NULL) {
             info = LAPACK_TRANSPOSE_MEMORY_ERROR;
             goto exit_level_0;
         }
         /* Transpose input matrices */
-        LAPACKE_dge_trans( matrix_layout, m, n, a, lda, a_t, lda_t );
+        LAPACKE_dge_trans(matrix_layout, m, n, a, lda, a_t, lda_t);
         /* Call LAPACK function and adjust info */
-        LAPACK_dgeequ( &m, &n, a_t, &lda_t, r, c, rowcnd, colcnd, amax, &info );
-        if( info < 0 ) {
+        LAPACK_dgeequ(&m, &n, a_t, &lda_t, r, c, rowcnd, colcnd, amax, &info);
+        if (info < 0) {
             info = info - 1;
         }
         /* Release memory and exit */
-        LAPACKE_free( a_t );
-exit_level_0:
-        if( info == LAPACK_TRANSPOSE_MEMORY_ERROR ) {
-            LAPACKE_xerbla( "LAPACKE_dgeequ_work", info );
+        LAPACKE_free(a_t);
+    exit_level_0:
+        if (info == LAPACK_TRANSPOSE_MEMORY_ERROR) {
+            LAPACKE_xerbla("LAPACKE_dgeequ_work", info);
         }
     } else {
         info = -1;
-        LAPACKE_xerbla( "LAPACKE_dgeequ_work", info );
+        LAPACKE_xerbla("LAPACKE_dgeequ_work", info);
     }
     return info;
 }

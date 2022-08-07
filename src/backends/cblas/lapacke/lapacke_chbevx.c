@@ -32,73 +32,66 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_chbevx( int matrix_layout, char jobz, char range, char uplo,
-                           lapack_int n, lapack_int kd,
-                           lapack_complex_float* ab, lapack_int ldab,
-                           lapack_complex_float* q, lapack_int ldq, float vl,
-                           float vu, lapack_int il, lapack_int iu, float abstol,
-                           lapack_int* m, float* w, lapack_complex_float* z,
-                           lapack_int ldz, lapack_int* ifail )
-{
+lapack_int LAPACKE_chbevx(int matrix_layout, char jobz, char range, char uplo, lapack_int n, lapack_int kd, lapack_complex_float *ab,
+                          lapack_int ldab, lapack_complex_float *q, lapack_int ldq, float vl, float vu, lapack_int il, lapack_int iu,
+                          float abstol, lapack_int *m, float *w, lapack_complex_float *z, lapack_int ldz, lapack_int *ifail) {
     lapack_int info = 0;
-    lapack_int* iwork = NULL;
-    float* rwork = NULL;
-    lapack_complex_float* work = NULL;
-    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
-        LAPACKE_xerbla( "LAPACKE_chbevx", -1 );
+    lapack_int *iwork = NULL;
+    float *rwork = NULL;
+    lapack_complex_float *work = NULL;
+    if (matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR) {
+        LAPACKE_xerbla("LAPACKE_chbevx", -1);
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
-    if( LAPACKE_get_nancheck() ) {
+    if (LAPACKE_get_nancheck()) {
         /* Optionally check input matrices for NaNs */
-        if( LAPACKE_chb_nancheck( matrix_layout, uplo, n, kd, ab, ldab ) ) {
+        if (LAPACKE_chb_nancheck(matrix_layout, uplo, n, kd, ab, ldab)) {
             return -7;
         }
-        if( LAPACKE_s_nancheck( 1, &abstol, 1 ) ) {
+        if (LAPACKE_s_nancheck(1, &abstol, 1)) {
             return -15;
         }
-        if( LAPACKE_lsame( range, 'v' ) ) {
-            if( LAPACKE_s_nancheck( 1, &vl, 1 ) ) {
+        if (LAPACKE_lsame(range, 'v')) {
+            if (LAPACKE_s_nancheck(1, &vl, 1)) {
                 return -11;
             }
         }
-        if( LAPACKE_lsame( range, 'v' ) ) {
-            if( LAPACKE_s_nancheck( 1, &vu, 1 ) ) {
+        if (LAPACKE_lsame(range, 'v')) {
+            if (LAPACKE_s_nancheck(1, &vu, 1)) {
                 return -12;
             }
         }
     }
 #endif
     /* Allocate memory for working array(s) */
-    iwork = (lapack_int*)LAPACKE_malloc( sizeof(lapack_int) * MAX(1,5*n) );
-    if( iwork == NULL ) {
+    iwork = (lapack_int *)LAPACKE_malloc(sizeof(lapack_int) * MAX(1, 5 * n));
+    if (iwork == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_0;
     }
-    rwork = (float*)LAPACKE_malloc( sizeof(float) * MAX(1,7*n) );
-    if( rwork == NULL ) {
+    rwork = (float *)LAPACKE_malloc(sizeof(float) * MAX(1, 7 * n));
+    if (rwork == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_1;
     }
-    work = (lapack_complex_float*)
-        LAPACKE_malloc( sizeof(lapack_complex_float) * MAX(1,n) );
-    if( work == NULL ) {
+    work = (lapack_complex_float *)LAPACKE_malloc(sizeof(lapack_complex_float) * MAX(1, n));
+    if (work == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_2;
     }
     /* Call middle-level interface */
-    info = LAPACKE_chbevx_work( matrix_layout, jobz, range, uplo, n, kd, ab,
-                                ldab, q, ldq, vl, vu, il, iu, abstol, m, w, z,
-                                ldz, work, rwork, iwork, ifail );
+    info = LAPACKE_chbevx_work(matrix_layout, jobz, range, uplo, n, kd, ab, ldab, q, ldq, vl, vu, il, iu, abstol, m, w, z, ldz, work, rwork,
+                               iwork, ifail);
     /* Release memory and exit */
-    LAPACKE_free( work );
+    LAPACKE_free(work);
 exit_level_2:
-    LAPACKE_free( rwork );
+    LAPACKE_free(rwork);
 exit_level_1:
-    LAPACKE_free( iwork );
+    LAPACKE_free(iwork);
 exit_level_0:
-    if( info == LAPACK_WORK_MEMORY_ERROR ) {
-        LAPACKE_xerbla( "LAPACKE_chbevx", info );
+    if (info == LAPACK_WORK_MEMORY_ERROR) {
+        LAPACKE_xerbla("LAPACKE_chbevx", info);
     }
     return info;
 }

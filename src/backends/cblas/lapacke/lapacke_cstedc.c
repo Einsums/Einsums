@@ -32,78 +32,72 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_cstedc( int matrix_layout, char compz, lapack_int n, float* d,
-                           float* e, lapack_complex_float* z, lapack_int ldz )
-{
+lapack_int LAPACKE_cstedc(int matrix_layout, char compz, lapack_int n, float *d, float *e, lapack_complex_float *z, lapack_int ldz) {
     lapack_int info = 0;
     lapack_int liwork = -1;
     lapack_int lrwork = -1;
     lapack_int lwork = -1;
-    lapack_int* iwork = NULL;
-    float* rwork = NULL;
-    lapack_complex_float* work = NULL;
+    lapack_int *iwork = NULL;
+    float *rwork = NULL;
+    lapack_complex_float *work = NULL;
     lapack_int iwork_query;
     float rwork_query;
     lapack_complex_float work_query;
-    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
-        LAPACKE_xerbla( "LAPACKE_cstedc", -1 );
+    if (matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR) {
+        LAPACKE_xerbla("LAPACKE_cstedc", -1);
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
-    if( LAPACKE_get_nancheck() ) {
+    if (LAPACKE_get_nancheck()) {
         /* Optionally check input matrices for NaNs */
-        if( LAPACKE_s_nancheck( n, d, 1 ) ) {
+        if (LAPACKE_s_nancheck(n, d, 1)) {
             return -4;
         }
-        if( LAPACKE_s_nancheck( n-1, e, 1 ) ) {
+        if (LAPACKE_s_nancheck(n - 1, e, 1)) {
             return -5;
         }
-        if( LAPACKE_lsame( compz, 'v' ) ) {
-            if( LAPACKE_cge_nancheck( matrix_layout, n, n, z, ldz ) ) {
+        if (LAPACKE_lsame(compz, 'v')) {
+            if (LAPACKE_cge_nancheck(matrix_layout, n, n, z, ldz)) {
                 return -6;
             }
         }
     }
 #endif
     /* Query optimal working array(s) size */
-    info = LAPACKE_cstedc_work( matrix_layout, compz, n, d, e, z, ldz,
-                                &work_query, lwork, &rwork_query, lrwork,
-                                &iwork_query, liwork );
-    if( info != 0 ) {
+    info = LAPACKE_cstedc_work(matrix_layout, compz, n, d, e, z, ldz, &work_query, lwork, &rwork_query, lrwork, &iwork_query, liwork);
+    if (info != 0) {
         goto exit_level_0;
     }
     liwork = iwork_query;
     lrwork = (lapack_int)rwork_query;
-    lwork = LAPACK_C2INT( work_query );
+    lwork = LAPACK_C2INT(work_query);
     /* Allocate memory for work arrays */
-    iwork = (lapack_int*)LAPACKE_malloc( sizeof(lapack_int) * liwork );
-    if( iwork == NULL ) {
+    iwork = (lapack_int *)LAPACKE_malloc(sizeof(lapack_int) * liwork);
+    if (iwork == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_0;
     }
-    rwork = (float*)LAPACKE_malloc( sizeof(float) * lrwork );
-    if( rwork == NULL ) {
+    rwork = (float *)LAPACKE_malloc(sizeof(float) * lrwork);
+    if (rwork == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_1;
     }
-    work = (lapack_complex_float*)
-        LAPACKE_malloc( sizeof(lapack_complex_float) * lwork );
-    if( work == NULL ) {
+    work = (lapack_complex_float *)LAPACKE_malloc(sizeof(lapack_complex_float) * lwork);
+    if (work == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_2;
     }
     /* Call middle-level interface */
-    info = LAPACKE_cstedc_work( matrix_layout, compz, n, d, e, z, ldz, work,
-                                lwork, rwork, lrwork, iwork, liwork );
+    info = LAPACKE_cstedc_work(matrix_layout, compz, n, d, e, z, ldz, work, lwork, rwork, lrwork, iwork, liwork);
     /* Release memory and exit */
-    LAPACKE_free( work );
+    LAPACKE_free(work);
 exit_level_2:
-    LAPACKE_free( rwork );
+    LAPACKE_free(rwork);
 exit_level_1:
-    LAPACKE_free( iwork );
+    LAPACKE_free(iwork);
 exit_level_0:
-    if( info == LAPACK_WORK_MEMORY_ERROR ) {
-        LAPACKE_xerbla( "LAPACKE_cstedc", info );
+    if (info == LAPACK_WORK_MEMORY_ERROR) {
+        LAPACKE_xerbla("LAPACKE_cstedc", info);
     }
     return info;
 }

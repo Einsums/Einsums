@@ -32,96 +32,82 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_zggesx( int matrix_layout, char jobvsl, char jobvsr,
-                           char sort, LAPACK_Z_SELECT2 selctg, char sense,
-                           lapack_int n, lapack_complex_double* a,
-                           lapack_int lda, lapack_complex_double* b,
-                           lapack_int ldb, lapack_int* sdim,
-                           lapack_complex_double* alpha,
-                           lapack_complex_double* beta,
-                           lapack_complex_double* vsl, lapack_int ldvsl,
-                           lapack_complex_double* vsr, lapack_int ldvsr,
-                           double* rconde, double* rcondv )
-{
+lapack_int LAPACKE_zggesx(int matrix_layout, char jobvsl, char jobvsr, char sort, LAPACK_Z_SELECT2 selctg, char sense, lapack_int n,
+                          lapack_complex_double *a, lapack_int lda, lapack_complex_double *b, lapack_int ldb, lapack_int *sdim,
+                          lapack_complex_double *alpha, lapack_complex_double *beta, lapack_complex_double *vsl, lapack_int ldvsl,
+                          lapack_complex_double *vsr, lapack_int ldvsr, double *rconde, double *rcondv) {
     lapack_int info = 0;
     lapack_int liwork = -1;
     lapack_int lwork = -1;
-    lapack_logical* bwork = NULL;
-    lapack_int* iwork = NULL;
-    double* rwork = NULL;
-    lapack_complex_double* work = NULL;
+    lapack_logical *bwork = NULL;
+    lapack_int *iwork = NULL;
+    double *rwork = NULL;
+    lapack_complex_double *work = NULL;
     lapack_int iwork_query;
     lapack_complex_double work_query;
-    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
-        LAPACKE_xerbla( "LAPACKE_zggesx", -1 );
+    if (matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR) {
+        LAPACKE_xerbla("LAPACKE_zggesx", -1);
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
-    if( LAPACKE_get_nancheck() ) {
+    if (LAPACKE_get_nancheck()) {
         /* Optionally check input matrices for NaNs */
-        if( LAPACKE_zge_nancheck( matrix_layout, n, n, a, lda ) ) {
+        if (LAPACKE_zge_nancheck(matrix_layout, n, n, a, lda)) {
             return -8;
         }
-        if( LAPACKE_zge_nancheck( matrix_layout, n, n, b, ldb ) ) {
+        if (LAPACKE_zge_nancheck(matrix_layout, n, n, b, ldb)) {
             return -10;
         }
     }
 #endif
     /* Allocate memory for working array(s) */
-    if( LAPACKE_lsame( sort, 's' ) ) {
-        bwork = (lapack_logical*)
-            LAPACKE_malloc( sizeof(lapack_logical) * MAX(1,n) );
-        if( bwork == NULL ) {
+    if (LAPACKE_lsame(sort, 's')) {
+        bwork = (lapack_logical *)LAPACKE_malloc(sizeof(lapack_logical) * MAX(1, n));
+        if (bwork == NULL) {
             info = LAPACK_WORK_MEMORY_ERROR;
             goto exit_level_0;
         }
     }
-    rwork = (double*)LAPACKE_malloc( sizeof(double) * MAX(1,8*n) );
-    if( rwork == NULL ) {
+    rwork = (double *)LAPACKE_malloc(sizeof(double) * MAX(1, 8 * n));
+    if (rwork == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_1;
     }
     /* Query optimal working array(s) size */
-    info = LAPACKE_zggesx_work( matrix_layout, jobvsl, jobvsr, sort, selctg,
-                                sense, n, a, lda, b, ldb, sdim, alpha, beta,
-                                vsl, ldvsl, vsr, ldvsr, rconde, rcondv,
-                                &work_query, lwork, rwork, &iwork_query, liwork,
-                                bwork );
-    if( info != 0 ) {
+    info = LAPACKE_zggesx_work(matrix_layout, jobvsl, jobvsr, sort, selctg, sense, n, a, lda, b, ldb, sdim, alpha, beta, vsl, ldvsl, vsr,
+                               ldvsr, rconde, rcondv, &work_query, lwork, rwork, &iwork_query, liwork, bwork);
+    if (info != 0) {
         goto exit_level_2;
     }
     liwork = iwork_query;
-    lwork = LAPACK_Z2INT( work_query );
+    lwork = LAPACK_Z2INT(work_query);
     /* Allocate memory for work arrays */
-    iwork = (lapack_int*)LAPACKE_malloc( sizeof(lapack_int) * liwork );
-    if( iwork == NULL ) {
+    iwork = (lapack_int *)LAPACKE_malloc(sizeof(lapack_int) * liwork);
+    if (iwork == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_2;
     }
-    work = (lapack_complex_double*)
-        LAPACKE_malloc( sizeof(lapack_complex_double) * lwork );
-    if( work == NULL ) {
+    work = (lapack_complex_double *)LAPACKE_malloc(sizeof(lapack_complex_double) * lwork);
+    if (work == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_3;
     }
     /* Call middle-level interface */
-    info = LAPACKE_zggesx_work( matrix_layout, jobvsl, jobvsr, sort, selctg,
-                                sense, n, a, lda, b, ldb, sdim, alpha, beta,
-                                vsl, ldvsl, vsr, ldvsr, rconde, rcondv, work,
-                                lwork, rwork, iwork, liwork, bwork );
+    info = LAPACKE_zggesx_work(matrix_layout, jobvsl, jobvsr, sort, selctg, sense, n, a, lda, b, ldb, sdim, alpha, beta, vsl, ldvsl, vsr,
+                               ldvsr, rconde, rcondv, work, lwork, rwork, iwork, liwork, bwork);
     /* Release memory and exit */
-    LAPACKE_free( work );
+    LAPACKE_free(work);
 exit_level_3:
-    LAPACKE_free( iwork );
+    LAPACKE_free(iwork);
 exit_level_2:
-    LAPACKE_free( rwork );
+    LAPACKE_free(rwork);
 exit_level_1:
-    if( LAPACKE_lsame( sort, 's' ) ) {
-        LAPACKE_free( bwork );
+    if (LAPACKE_lsame(sort, 's')) {
+        LAPACKE_free(bwork);
     }
 exit_level_0:
-    if( info == LAPACK_WORK_MEMORY_ERROR ) {
-        LAPACKE_xerbla( "LAPACKE_zggesx", info );
+    if (info == LAPACK_WORK_MEMORY_ERROR) {
+        LAPACKE_xerbla("LAPACKE_zggesx", info);
     }
     return info;
 }

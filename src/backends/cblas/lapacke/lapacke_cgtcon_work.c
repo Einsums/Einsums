@@ -32,17 +32,11 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_cgtcon_work( char norm, lapack_int n,
-                                const lapack_complex_float* dl,
-                                const lapack_complex_float* d,
-                                const lapack_complex_float* du,
-                                const lapack_complex_float* du2,
-                                const lapack_int* ipiv, float anorm,
-                                float* rcond, lapack_complex_float* work )
-{
+lapack_int LAPACKE_cgtcon_work(char norm, lapack_int n, const lapack_complex_float *dl, const lapack_complex_float *d,
+                               const lapack_complex_float *du, const lapack_complex_float *du2, const lapack_int *ipiv, float anorm,
+                               float *rcond, lapack_complex_float *work) {
     lapack_int info = 0;
     /* Call LAPACK function and adjust info */
-    LAPACK_cgtcon( &norm, &n, dl, d, du, du2, ipiv, &anorm, rcond, work,
-                   &info );
+    LAPACK_cgtcon(&norm, &n, dl, d, du, du2, ipiv, &anorm, rcond, work, &info);
     return info;
 }

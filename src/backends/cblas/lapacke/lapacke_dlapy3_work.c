@@ -32,10 +32,9 @@
 
 #include "lapacke_utils.h"
 
-double LAPACKE_dlapy3_work( double x, double y, double z )
-{
+double LAPACKE_dlapy3_work(double x, double y, double z) {
     double res = 0.;
     /* Call LAPACK function and adjust info */
-    res = LAPACK_dlapy3( &x, &y, &z );
+    res = LAPACK_dlapy3(&x, &y, &z);
     return res;
 }

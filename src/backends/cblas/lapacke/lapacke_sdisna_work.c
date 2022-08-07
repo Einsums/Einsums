@@ -32,11 +32,9 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_sdisna_work( char job, lapack_int m, lapack_int n,
-                                const float* d, float* sep )
-{
+lapack_int LAPACKE_sdisna_work(char job, lapack_int m, lapack_int n, const float *d, float *sep) {
     lapack_int info = 0;
     /* Call LAPACK function and adjust info */
-    LAPACK_sdisna( &job, &m, &n, d, sep, &info );
+    LAPACK_sdisna(&job, &m, &n, d, sep, &info);
     return info;
 }

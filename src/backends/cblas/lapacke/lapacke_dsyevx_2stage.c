@@ -32,73 +32,68 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_dsyevx_2stage( int matrix_layout, char jobz, char range, char uplo,
-                           lapack_int n, double* a, lapack_int lda, double vl,
-                           double vu, lapack_int il, lapack_int iu,
-                           double abstol, lapack_int* m, double* w, double* z,
-                           lapack_int ldz, lapack_int* ifail )
-{
+lapack_int LAPACKE_dsyevx_2stage(int matrix_layout, char jobz, char range, char uplo, lapack_int n, double *a, lapack_int lda, double vl,
+                                 double vu, lapack_int il, lapack_int iu, double abstol, lapack_int *m, double *w, double *z,
+                                 lapack_int ldz, lapack_int *ifail) {
     lapack_int info = 0;
     lapack_int lwork = -1;
-    lapack_int* iwork = NULL;
-    double* work = NULL;
+    lapack_int *iwork = NULL;
+    double *work = NULL;
     double work_query;
-    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
-        LAPACKE_xerbla( "LAPACKE_dsyevx_2stage", -1 );
+    if (matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR) {
+        LAPACKE_xerbla("LAPACKE_dsyevx_2stage", -1);
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
-    if( LAPACKE_get_nancheck() ) {
+    if (LAPACKE_get_nancheck()) {
         /* Optionally check input matrices for NaNs */
-        if( LAPACKE_dsy_nancheck( matrix_layout, uplo, n, a, lda ) ) {
+        if (LAPACKE_dsy_nancheck(matrix_layout, uplo, n, a, lda)) {
             return -6;
         }
-        if( LAPACKE_d_nancheck( 1, &abstol, 1 ) ) {
+        if (LAPACKE_d_nancheck(1, &abstol, 1)) {
             return -12;
         }
-        if( LAPACKE_lsame( range, 'v' ) ) {
-            if( LAPACKE_d_nancheck( 1, &vl, 1 ) ) {
+        if (LAPACKE_lsame(range, 'v')) {
+            if (LAPACKE_d_nancheck(1, &vl, 1)) {
                 return -8;
             }
         }
-        if( LAPACKE_lsame( range, 'v' ) ) {
-            if( LAPACKE_d_nancheck( 1, &vu, 1 ) ) {
+        if (LAPACKE_lsame(range, 'v')) {
+            if (LAPACKE_d_nancheck(1, &vu, 1)) {
                 return -9;
             }
         }
     }
 #endif
     /* Allocate memory for working array(s) */
-    iwork = (lapack_int*)LAPACKE_malloc( sizeof(lapack_int) * MAX(1,5*n) );
-    if( iwork == NULL ) {
+    iwork = (lapack_int *)LAPACKE_malloc(sizeof(lapack_int) * MAX(1, 5 * n));
+    if (iwork == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_0;
     }
     /* Query optimal working array(s) size */
-    info = LAPACKE_dsyevx_2stage_work( matrix_layout, jobz, range, uplo, n, a, lda, vl,
-                                vu, il, iu, abstol, m, w, z, ldz, &work_query,
-                                lwork, iwork, ifail );
-    if( info != 0 ) {
+    info = LAPACKE_dsyevx_2stage_work(matrix_layout, jobz, range, uplo, n, a, lda, vl, vu, il, iu, abstol, m, w, z, ldz, &work_query, lwork,
+                                      iwork, ifail);
+    if (info != 0) {
         goto exit_level_1;
     }
     lwork = (lapack_int)work_query;
     /* Allocate memory for work arrays */
-    work = (double*)LAPACKE_malloc( sizeof(double) * lwork );
-    if( work == NULL ) {
+    work = (double *)LAPACKE_malloc(sizeof(double) * lwork);
+    if (work == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_1;
     }
     /* Call middle-level interface */
-    info = LAPACKE_dsyevx_2stage_work( matrix_layout, jobz, range, uplo, n, a, lda, vl,
-                                vu, il, iu, abstol, m, w, z, ldz, work, lwork,
-                                iwork, ifail );
+    info = LAPACKE_dsyevx_2stage_work(matrix_layout, jobz, range, uplo, n, a, lda, vl, vu, il, iu, abstol, m, w, z, ldz, work, lwork, iwork,
+                                      ifail);
     /* Release memory and exit */
-    LAPACKE_free( work );
+    LAPACKE_free(work);
 exit_level_1:
-    LAPACKE_free( iwork );
+    LAPACKE_free(iwork);
 exit_level_0:
-    if( info == LAPACK_WORK_MEMORY_ERROR ) {
-        LAPACKE_xerbla( "LAPACKE_dsyevx_2stage", info );
+    if (info == LAPACK_WORK_MEMORY_ERROR) {
+        LAPACKE_xerbla("LAPACKE_dsyevx_2stage", info);
     }
     return info;
 }

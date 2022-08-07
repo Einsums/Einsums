@@ -34,18 +34,18 @@
 #include "lapacke_utils.h"
 
 #ifndef LAPACK_COMPLEX_CUSTOM
-lapack_complex_float lapack_make_complex_float( float re, float im ) {
-   lapack_complex_float z;
+lapack_complex_float lapack_make_complex_float(float re, float im) {
+    lapack_complex_float z;
 #if defined(LAPACK_COMPLEX_STRUCTURE)
     z.real = re;
     z.imag = im;
 #elif defined(LAPACK_COMPLEX_C99)
     z = re + im * I;
 #elif defined(LAPACK_COMPLEX_CPP)
-    z = std::complex<float>(re,im);
+    z = std::complex<float>(re, im);
 #else /* C99 is default */
-    z = re + im*I;
+    z = re + im * I;
 #endif
-   return z;
+    return z;
 }
 #endif

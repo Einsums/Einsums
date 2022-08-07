@@ -37,9 +37,7 @@
  * matrix_layout.
  */
 
-lapack_logical LAPACKE_spf_nancheck( lapack_int n,
-                                      const float *a )
-{
-    lapack_int len = n*(n+1)/2;
-    return LAPACKE_s_nancheck( len, a, 1 );
+lapack_logical LAPACKE_spf_nancheck(lapack_int n, const float *a) {
+    lapack_int len = n * (n + 1) / 2;
+    return LAPACKE_s_nancheck(len, a, 1);
 }

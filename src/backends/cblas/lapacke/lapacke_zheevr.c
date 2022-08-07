@@ -32,89 +32,81 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_zheevr( int matrix_layout, char jobz, char range, char uplo,
-                           lapack_int n, lapack_complex_double* a,
-                           lapack_int lda, double vl, double vu, lapack_int il,
-                           lapack_int iu, double abstol, lapack_int* m,
-                           double* w, lapack_complex_double* z, lapack_int ldz,
-                           lapack_int* isuppz )
-{
+lapack_int LAPACKE_zheevr(int matrix_layout, char jobz, char range, char uplo, lapack_int n, lapack_complex_double *a, lapack_int lda,
+                          double vl, double vu, lapack_int il, lapack_int iu, double abstol, lapack_int *m, double *w,
+                          lapack_complex_double *z, lapack_int ldz, lapack_int *isuppz) {
     lapack_int info = 0;
     lapack_int liwork = -1;
     lapack_int lrwork = -1;
     lapack_int lwork = -1;
-    lapack_int* iwork = NULL;
-    double* rwork = NULL;
-    lapack_complex_double* work = NULL;
+    lapack_int *iwork = NULL;
+    double *rwork = NULL;
+    lapack_complex_double *work = NULL;
     lapack_int iwork_query;
     double rwork_query;
     lapack_complex_double work_query;
-    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
-        LAPACKE_xerbla( "LAPACKE_zheevr", -1 );
+    if (matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR) {
+        LAPACKE_xerbla("LAPACKE_zheevr", -1);
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
-    if( LAPACKE_get_nancheck() ) {
+    if (LAPACKE_get_nancheck()) {
         /* Optionally check input matrices for NaNs */
-        if( LAPACKE_zhe_nancheck( matrix_layout, uplo, n, a, lda ) ) {
+        if (LAPACKE_zhe_nancheck(matrix_layout, uplo, n, a, lda)) {
             return -6;
         }
-        if( LAPACKE_d_nancheck( 1, &abstol, 1 ) ) {
+        if (LAPACKE_d_nancheck(1, &abstol, 1)) {
             return -12;
         }
-        if( LAPACKE_lsame( range, 'v' ) ) {
-            if( LAPACKE_d_nancheck( 1, &vl, 1 ) ) {
+        if (LAPACKE_lsame(range, 'v')) {
+            if (LAPACKE_d_nancheck(1, &vl, 1)) {
                 return -8;
             }
         }
-        if( LAPACKE_lsame( range, 'v' ) ) {
-            if( LAPACKE_d_nancheck( 1, &vu, 1 ) ) {
+        if (LAPACKE_lsame(range, 'v')) {
+            if (LAPACKE_d_nancheck(1, &vu, 1)) {
                 return -9;
             }
         }
     }
 #endif
     /* Query optimal working array(s) size */
-    info = LAPACKE_zheevr_work( matrix_layout, jobz, range, uplo, n, a, lda, vl,
-                                vu, il, iu, abstol, m, w, z, ldz, isuppz,
-                                &work_query, lwork, &rwork_query, lrwork,
-                                &iwork_query, liwork );
-    if( info != 0 ) {
+    info = LAPACKE_zheevr_work(matrix_layout, jobz, range, uplo, n, a, lda, vl, vu, il, iu, abstol, m, w, z, ldz, isuppz, &work_query,
+                               lwork, &rwork_query, lrwork, &iwork_query, liwork);
+    if (info != 0) {
         goto exit_level_0;
     }
     liwork = iwork_query;
     lrwork = (lapack_int)rwork_query;
-    lwork = LAPACK_Z2INT( work_query );
+    lwork = LAPACK_Z2INT(work_query);
     /* Allocate memory for work arrays */
-    iwork = (lapack_int*)LAPACKE_malloc( sizeof(lapack_int) * liwork );
-    if( iwork == NULL ) {
+    iwork = (lapack_int *)LAPACKE_malloc(sizeof(lapack_int) * liwork);
+    if (iwork == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_0;
     }
-    rwork = (double*)LAPACKE_malloc( sizeof(double) * lrwork );
-    if( rwork == NULL ) {
+    rwork = (double *)LAPACKE_malloc(sizeof(double) * lrwork);
+    if (rwork == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_1;
     }
-    work = (lapack_complex_double*)
-        LAPACKE_malloc( sizeof(lapack_complex_double) * lwork );
-    if( work == NULL ) {
+    work = (lapack_complex_double *)LAPACKE_malloc(sizeof(lapack_complex_double) * lwork);
+    if (work == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_2;
     }
     /* Call middle-level interface */
-    info = LAPACKE_zheevr_work( matrix_layout, jobz, range, uplo, n, a, lda, vl,
-                                vu, il, iu, abstol, m, w, z, ldz, isuppz, work,
-                                lwork, rwork, lrwork, iwork, liwork );
+    info = LAPACKE_zheevr_work(matrix_layout, jobz, range, uplo, n, a, lda, vl, vu, il, iu, abstol, m, w, z, ldz, isuppz, work, lwork,
+                               rwork, lrwork, iwork, liwork);
     /* Release memory and exit */
-    LAPACKE_free( work );
+    LAPACKE_free(work);
 exit_level_2:
-    LAPACKE_free( rwork );
+    LAPACKE_free(rwork);
 exit_level_1:
-    LAPACKE_free( iwork );
+    LAPACKE_free(iwork);
 exit_level_0:
-    if( info == LAPACK_WORK_MEMORY_ERROR ) {
-        LAPACKE_xerbla( "LAPACKE_zheevr", info );
+    if (info == LAPACK_WORK_MEMORY_ERROR) {
+        LAPACKE_xerbla("LAPACKE_zheevr", info);
     }
     return info;
 }

@@ -32,11 +32,9 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_sptcon_work( lapack_int n, const float* d, const float* e,
-                                float anorm, float* rcond, float* work )
-{
+lapack_int LAPACKE_sptcon_work(lapack_int n, const float *d, const float *e, float anorm, float *rcond, float *work) {
     lapack_int info = 0;
     /* Call LAPACK function and adjust info */
-    LAPACK_sptcon( &n, d, e, &anorm, rcond, work, &info );
+    LAPACK_sptcon(&n, d, e, &anorm, rcond, work, &info);
     return info;
 }

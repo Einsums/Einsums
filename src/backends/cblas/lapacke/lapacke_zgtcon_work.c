@@ -32,17 +32,11 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_zgtcon_work( char norm, lapack_int n,
-                                const lapack_complex_double* dl,
-                                const lapack_complex_double* d,
-                                const lapack_complex_double* du,
-                                const lapack_complex_double* du2,
-                                const lapack_int* ipiv, double anorm,
-                                double* rcond, lapack_complex_double* work )
-{
+lapack_int LAPACKE_zgtcon_work(char norm, lapack_int n, const lapack_complex_double *dl, const lapack_complex_double *d,
+                               const lapack_complex_double *du, const lapack_complex_double *du2, const lapack_int *ipiv, double anorm,
+                               double *rcond, lapack_complex_double *work) {
     lapack_int info = 0;
     /* Call LAPACK function and adjust info */
-    LAPACK_zgtcon( &norm, &n, dl, d, du, du2, ipiv, &anorm, rcond, work,
-                   &info );
+    LAPACK_zgtcon(&norm, &n, dl, d, du, du2, ipiv, &anorm, rcond, work, &info);
     return info;
 }

@@ -32,53 +32,50 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_zpteqr_work( int matrix_layout, char compz, lapack_int n,
-                                double* d, double* e, lapack_complex_double* z,
-                                lapack_int ldz, double* work )
-{
+lapack_int LAPACKE_zpteqr_work(int matrix_layout, char compz, lapack_int n, double *d, double *e, lapack_complex_double *z, lapack_int ldz,
+                               double *work) {
     lapack_int info = 0;
-    if( matrix_layout == LAPACK_COL_MAJOR ) {
+    if (matrix_layout == LAPACK_COL_MAJOR) {
         /* Call LAPACK function and adjust info */
-        LAPACK_zpteqr( &compz, &n, d, e, z, &ldz, work, &info );
-        if( info < 0 ) {
+        LAPACK_zpteqr(&compz, &n, d, e, z, &ldz, work, &info);
+        if (info < 0) {
             info = info - 1;
         }
-    } else if( matrix_layout == LAPACK_ROW_MAJOR ) {
-        lapack_int ldz_t = MAX(1,n);
-        lapack_complex_double* z_t = NULL;
+    } else if (matrix_layout == LAPACK_ROW_MAJOR) {
+        lapack_int ldz_t = MAX(1, n);
+        lapack_complex_double *z_t = NULL;
         /* Check leading dimension(s) */
-        if( ldz < n ) {
+        if (ldz < n) {
             info = -7;
-            LAPACKE_xerbla( "LAPACKE_zpteqr_work", info );
+            LAPACKE_xerbla("LAPACKE_zpteqr_work", info);
             return info;
         }
         /* Allocate memory for temporary array(s) */
-        z_t = (lapack_complex_double*)
-            LAPACKE_malloc( sizeof(lapack_complex_double) * ldz_t * MAX(1,n) );
-        if( z_t == NULL ) {
+        z_t = (lapack_complex_double *)LAPACKE_malloc(sizeof(lapack_complex_double) * ldz_t * MAX(1, n));
+        if (z_t == NULL) {
             info = LAPACK_TRANSPOSE_MEMORY_ERROR;
             goto exit_level_0;
         }
         /* Transpose input matrices */
-        if( LAPACKE_lsame( compz, 'v' ) ) {
-            LAPACKE_zge_trans( matrix_layout, n, n, z, ldz, z_t, ldz_t );
+        if (LAPACKE_lsame(compz, 'v')) {
+            LAPACKE_zge_trans(matrix_layout, n, n, z, ldz, z_t, ldz_t);
         }
         /* Call LAPACK function and adjust info */
-        LAPACK_zpteqr( &compz, &n, d, e, z_t, &ldz_t, work, &info );
-        if( info < 0 ) {
+        LAPACK_zpteqr(&compz, &n, d, e, z_t, &ldz_t, work, &info);
+        if (info < 0) {
             info = info - 1;
         }
         /* Transpose output matrices */
-        LAPACKE_zge_trans( LAPACK_COL_MAJOR, n, n, z_t, ldz_t, z, ldz );
+        LAPACKE_zge_trans(LAPACK_COL_MAJOR, n, n, z_t, ldz_t, z, ldz);
         /* Release memory and exit */
-        LAPACKE_free( z_t );
-exit_level_0:
-        if( info == LAPACK_TRANSPOSE_MEMORY_ERROR ) {
-            LAPACKE_xerbla( "LAPACKE_zpteqr_work", info );
+        LAPACKE_free(z_t);
+    exit_level_0:
+        if (info == LAPACK_TRANSPOSE_MEMORY_ERROR) {
+            LAPACKE_xerbla("LAPACKE_zpteqr_work", info);
         }
     } else {
         info = -1;
-        LAPACKE_xerbla( "LAPACKE_zpteqr_work", info );
+        LAPACKE_xerbla("LAPACKE_zpteqr_work", info);
     }
     return info;
 }

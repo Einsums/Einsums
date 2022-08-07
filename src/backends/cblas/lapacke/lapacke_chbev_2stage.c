@@ -32,57 +32,51 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_chbev_2stage( int matrix_layout, char jobz, char uplo, lapack_int n,
-                          lapack_int kd, lapack_complex_float* ab,
-                          lapack_int ldab, float* w, lapack_complex_float* z,
-                          lapack_int ldz )
-{
+lapack_int LAPACKE_chbev_2stage(int matrix_layout, char jobz, char uplo, lapack_int n, lapack_int kd, lapack_complex_float *ab,
+                                lapack_int ldab, float *w, lapack_complex_float *z, lapack_int ldz) {
     lapack_int info = 0;
     lapack_int lwork = -1;
-    float* rwork = NULL;
-    lapack_complex_float* work = NULL;
+    float *rwork = NULL;
+    lapack_complex_float *work = NULL;
     lapack_complex_float work_query;
-    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
-        LAPACKE_xerbla( "LAPACKE_chbev_2stage", -1 );
+    if (matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR) {
+        LAPACKE_xerbla("LAPACKE_chbev_2stage", -1);
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
-    if( LAPACKE_get_nancheck() ) {
+    if (LAPACKE_get_nancheck()) {
         /* Optionally check input matrices for NaNs */
-        if( LAPACKE_chb_nancheck( matrix_layout, uplo, n, kd, ab, ldab ) ) {
+        if (LAPACKE_chb_nancheck(matrix_layout, uplo, n, kd, ab, ldab)) {
             return -6;
         }
     }
 #endif
     /* Query optimal working array(s) size */
-    info = LAPACKE_chbev_2stage_work( matrix_layout, jobz, uplo, n, kd, ab, ldab, w, z,
-                               ldz, &work_query, lwork, rwork );
-    if( info != 0 ) {
+    info = LAPACKE_chbev_2stage_work(matrix_layout, jobz, uplo, n, kd, ab, ldab, w, z, ldz, &work_query, lwork, rwork);
+    if (info != 0) {
         goto exit_level_0;
     }
-    lwork = LAPACK_C2INT( work_query );
+    lwork = LAPACK_C2INT(work_query);
     /* Allocate memory for working array(s) */
-    rwork = (float*)LAPACKE_malloc( sizeof(float) * MAX(1,3*n-2) );
-    if( rwork == NULL ) {
+    rwork = (float *)LAPACKE_malloc(sizeof(float) * MAX(1, 3 * n - 2));
+    if (rwork == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_0;
     }
-    work = (lapack_complex_float*)
-        LAPACKE_malloc( sizeof(lapack_complex_float) * lwork );
-    if( work == NULL ) {
+    work = (lapack_complex_float *)LAPACKE_malloc(sizeof(lapack_complex_float) * lwork);
+    if (work == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_1;
     }
     /* Call middle-level interface */
-    info = LAPACKE_chbev_2stage_work( matrix_layout, jobz, uplo, n, kd, ab, ldab, w, z,
-                               ldz, work, lwork, rwork );
+    info = LAPACKE_chbev_2stage_work(matrix_layout, jobz, uplo, n, kd, ab, ldab, w, z, ldz, work, lwork, rwork);
     /* Release memory and exit */
-    LAPACKE_free( work );
+    LAPACKE_free(work);
 exit_level_1:
-    LAPACKE_free( rwork );
+    LAPACKE_free(rwork);
 exit_level_0:
-    if( info == LAPACK_WORK_MEMORY_ERROR ) {
-        LAPACKE_xerbla( "LAPACKE_chbev_2stage", info );
+    if (info == LAPACK_WORK_MEMORY_ERROR) {
+        LAPACKE_xerbla("LAPACKE_chbev_2stage", info);
     }
     return info;
 }

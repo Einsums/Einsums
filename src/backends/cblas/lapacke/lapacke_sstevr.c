@@ -32,78 +32,72 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_sstevr( int matrix_layout, char jobz, char range,
-                           lapack_int n, float* d, float* e, float vl, float vu,
-                           lapack_int il, lapack_int iu, float abstol,
-                           lapack_int* m, float* w, float* z, lapack_int ldz,
-                           lapack_int* isuppz )
-{
+lapack_int LAPACKE_sstevr(int matrix_layout, char jobz, char range, lapack_int n, float *d, float *e, float vl, float vu, lapack_int il,
+                          lapack_int iu, float abstol, lapack_int *m, float *w, float *z, lapack_int ldz, lapack_int *isuppz) {
     lapack_int info = 0;
     lapack_int liwork = -1;
     lapack_int lwork = -1;
-    lapack_int* iwork = NULL;
-    float* work = NULL;
+    lapack_int *iwork = NULL;
+    float *work = NULL;
     lapack_int iwork_query;
     float work_query;
-    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
-        LAPACKE_xerbla( "LAPACKE_sstevr", -1 );
+    if (matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR) {
+        LAPACKE_xerbla("LAPACKE_sstevr", -1);
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
-    if( LAPACKE_get_nancheck() ) {
+    if (LAPACKE_get_nancheck()) {
         /* Optionally check input matrices for NaNs */
-        if( LAPACKE_s_nancheck( 1, &abstol, 1 ) ) {
+        if (LAPACKE_s_nancheck(1, &abstol, 1)) {
             return -11;
         }
-        if( LAPACKE_s_nancheck( n, d, 1 ) ) {
+        if (LAPACKE_s_nancheck(n, d, 1)) {
             return -5;
         }
-        if( LAPACKE_s_nancheck( n-1, e, 1 ) ) {
+        if (LAPACKE_s_nancheck(n - 1, e, 1)) {
             return -6;
         }
-        if( LAPACKE_lsame( range, 'v' ) ) {
-            if( LAPACKE_s_nancheck( 1, &vl, 1 ) ) {
+        if (LAPACKE_lsame(range, 'v')) {
+            if (LAPACKE_s_nancheck(1, &vl, 1)) {
                 return -7;
             }
         }
-        if( LAPACKE_lsame( range, 'v' ) ) {
-            if( LAPACKE_s_nancheck( 1, &vu, 1 ) ) {
+        if (LAPACKE_lsame(range, 'v')) {
+            if (LAPACKE_s_nancheck(1, &vu, 1)) {
                 return -8;
             }
         }
     }
 #endif
     /* Query optimal working array(s) size */
-    info = LAPACKE_sstevr_work( matrix_layout, jobz, range, n, d, e, vl, vu, il,
-                                iu, abstol, m, w, z, ldz, isuppz, &work_query,
-                                lwork, &iwork_query, liwork );
-    if( info != 0 ) {
+    info = LAPACKE_sstevr_work(matrix_layout, jobz, range, n, d, e, vl, vu, il, iu, abstol, m, w, z, ldz, isuppz, &work_query, lwork,
+                               &iwork_query, liwork);
+    if (info != 0) {
         goto exit_level_0;
     }
     liwork = iwork_query;
     lwork = (lapack_int)work_query;
     /* Allocate memory for work arrays */
-    iwork = (lapack_int*)LAPACKE_malloc( sizeof(lapack_int) * liwork );
-    if( iwork == NULL ) {
+    iwork = (lapack_int *)LAPACKE_malloc(sizeof(lapack_int) * liwork);
+    if (iwork == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_0;
     }
-    work = (float*)LAPACKE_malloc( sizeof(float) * lwork );
-    if( work == NULL ) {
+    work = (float *)LAPACKE_malloc(sizeof(float) * lwork);
+    if (work == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_1;
     }
     /* Call middle-level interface */
-    info = LAPACKE_sstevr_work( matrix_layout, jobz, range, n, d, e, vl, vu, il,
-                                iu, abstol, m, w, z, ldz, isuppz, work, lwork,
-                                iwork, liwork );
+    info =
+        LAPACKE_sstevr_work(matrix_layout, jobz, range, n, d, e, vl, vu, il, iu, abstol, m, w, z, ldz, isuppz, work, lwork, iwork, liwork);
     /* Release memory and exit */
-    LAPACKE_free( work );
+    LAPACKE_free(work);
 exit_level_1:
-    LAPACKE_free( iwork );
+    LAPACKE_free(iwork);
 exit_level_0:
-    if( info == LAPACK_WORK_MEMORY_ERROR ) {
-        LAPACKE_xerbla( "LAPACKE_sstevr", info );
+    if (info == LAPACK_WORK_MEMORY_ERROR) {
+        LAPACKE_xerbla("LAPACKE_sstevr", info);
     }
     return info;
 }

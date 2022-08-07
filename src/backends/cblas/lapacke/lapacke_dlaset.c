@@ -32,31 +32,28 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_dlaset( int matrix_layout, char uplo, lapack_int m,
-                           lapack_int n, double alpha, double beta, double* a,
-                           lapack_int lda )
-{
+lapack_int LAPACKE_dlaset(int matrix_layout, char uplo, lapack_int m, lapack_int n, double alpha, double beta, double *a, lapack_int lda) {
 
-    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
-        LAPACKE_xerbla( "LAPACKE_dlaset", -1 );
+    if (matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR) {
+        LAPACKE_xerbla("LAPACKE_dlaset", -1);
         return -1;
     }
 
-/*****************************************************************************
-*  Note: we do not check NaNs in A since the goal of this subroutine is to
-*  initialized A. It is OK if A has NaNs in input.
-*****************************************************************************/
+    /*****************************************************************************
+     *  Note: we do not check NaNs in A since the goal of this subroutine is to
+     *  initialized A. It is OK if A has NaNs in input.
+     *****************************************************************************/
 
 #ifndef LAPACK_DISABLE_NAN_CHECK
-    if( LAPACKE_get_nancheck() ) {
-        if( LAPACKE_d_nancheck( 1, &alpha, 1 ) ) {
+    if (LAPACKE_get_nancheck()) {
+        if (LAPACKE_d_nancheck(1, &alpha, 1)) {
             return -5;
         }
-        if( LAPACKE_d_nancheck( 1, &beta, 1 ) ) {
+        if (LAPACKE_d_nancheck(1, &beta, 1)) {
             return -6;
         }
     }
 #endif
 
-    return LAPACKE_dlaset_work( matrix_layout, uplo, m, n, alpha, beta, a, lda );
+    return LAPACKE_dlaset_work(matrix_layout, uplo, m, n, alpha, beta, a, lda);
 }

@@ -32,63 +32,58 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_ssbevx( int matrix_layout, char jobz, char range, char uplo,
-                           lapack_int n, lapack_int kd, float* ab,
-                           lapack_int ldab, float* q, lapack_int ldq, float vl,
-                           float vu, lapack_int il, lapack_int iu, float abstol,
-                           lapack_int* m, float* w, float* z, lapack_int ldz,
-                           lapack_int* ifail )
-{
+lapack_int LAPACKE_ssbevx(int matrix_layout, char jobz, char range, char uplo, lapack_int n, lapack_int kd, float *ab, lapack_int ldab,
+                          float *q, lapack_int ldq, float vl, float vu, lapack_int il, lapack_int iu, float abstol, lapack_int *m, float *w,
+                          float *z, lapack_int ldz, lapack_int *ifail) {
     lapack_int info = 0;
-    lapack_int* iwork = NULL;
-    float* work = NULL;
-    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
-        LAPACKE_xerbla( "LAPACKE_ssbevx", -1 );
+    lapack_int *iwork = NULL;
+    float *work = NULL;
+    if (matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR) {
+        LAPACKE_xerbla("LAPACKE_ssbevx", -1);
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
-    if( LAPACKE_get_nancheck() ) {
+    if (LAPACKE_get_nancheck()) {
         /* Optionally check input matrices for NaNs */
-        if( LAPACKE_ssb_nancheck( matrix_layout, uplo, n, kd, ab, ldab ) ) {
+        if (LAPACKE_ssb_nancheck(matrix_layout, uplo, n, kd, ab, ldab)) {
             return -7;
         }
-        if( LAPACKE_s_nancheck( 1, &abstol, 1 ) ) {
+        if (LAPACKE_s_nancheck(1, &abstol, 1)) {
             return -15;
         }
-        if( LAPACKE_lsame( range, 'v' ) ) {
-            if( LAPACKE_s_nancheck( 1, &vl, 1 ) ) {
+        if (LAPACKE_lsame(range, 'v')) {
+            if (LAPACKE_s_nancheck(1, &vl, 1)) {
                 return -11;
             }
         }
-        if( LAPACKE_lsame( range, 'v' ) ) {
-            if( LAPACKE_s_nancheck( 1, &vu, 1 ) ) {
+        if (LAPACKE_lsame(range, 'v')) {
+            if (LAPACKE_s_nancheck(1, &vu, 1)) {
                 return -12;
             }
         }
     }
 #endif
     /* Allocate memory for working array(s) */
-    iwork = (lapack_int*)LAPACKE_malloc( sizeof(lapack_int) * MAX(1,5*n) );
-    if( iwork == NULL ) {
+    iwork = (lapack_int *)LAPACKE_malloc(sizeof(lapack_int) * MAX(1, 5 * n));
+    if (iwork == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_0;
     }
-    work = (float*)LAPACKE_malloc( sizeof(float) * MAX(1,7*n) );
-    if( work == NULL ) {
+    work = (float *)LAPACKE_malloc(sizeof(float) * MAX(1, 7 * n));
+    if (work == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_1;
     }
     /* Call middle-level interface */
-    info = LAPACKE_ssbevx_work( matrix_layout, jobz, range, uplo, n, kd, ab,
-                                ldab, q, ldq, vl, vu, il, iu, abstol, m, w, z,
-                                ldz, work, iwork, ifail );
+    info = LAPACKE_ssbevx_work(matrix_layout, jobz, range, uplo, n, kd, ab, ldab, q, ldq, vl, vu, il, iu, abstol, m, w, z, ldz, work, iwork,
+                               ifail);
     /* Release memory and exit */
-    LAPACKE_free( work );
+    LAPACKE_free(work);
 exit_level_1:
-    LAPACKE_free( iwork );
+    LAPACKE_free(iwork);
 exit_level_0:
-    if( info == LAPACK_WORK_MEMORY_ERROR ) {
-        LAPACKE_xerbla( "LAPACKE_ssbevx", info );
+    if (info == LAPACK_WORK_MEMORY_ERROR) {
+        LAPACKE_xerbla("LAPACKE_ssbevx", info);
     }
     return info;
 }

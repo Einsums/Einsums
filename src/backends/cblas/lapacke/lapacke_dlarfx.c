@@ -32,30 +32,27 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_dlarfx( int matrix_layout, char side, lapack_int m,
-                           lapack_int n, const double* v, double tau, double* c,
-                           lapack_int ldc, double* work )
-{
+lapack_int LAPACKE_dlarfx(int matrix_layout, char side, lapack_int m, lapack_int n, const double *v, double tau, double *c, lapack_int ldc,
+                          double *work) {
     lapack_int lv;
-    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
-        LAPACKE_xerbla( "LAPACKE_dlarfx", -1 );
+    if (matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR) {
+        LAPACKE_xerbla("LAPACKE_dlarfx", -1);
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
-    if( LAPACKE_get_nancheck() ) {
+    if (LAPACKE_get_nancheck()) {
         /* Optionally check input matrices for NaNs */
-        if( LAPACKE_dge_nancheck( matrix_layout, m, n, c, ldc ) ) {
+        if (LAPACKE_dge_nancheck(matrix_layout, m, n, c, ldc)) {
             return -7;
         }
-        if( LAPACKE_d_nancheck( 1, &tau, 1 ) ) {
+        if (LAPACKE_d_nancheck(1, &tau, 1)) {
             return -6;
         }
-        lv = (LAPACKE_lsame( side, 'l' ) ? m : n);
-        if( LAPACKE_d_nancheck( lv, v, 1 ) ) {
+        lv = (LAPACKE_lsame(side, 'l') ? m : n);
+        if (LAPACKE_d_nancheck(lv, v, 1)) {
             return -5;
         }
     }
 #endif
-    return LAPACKE_dlarfx_work( matrix_layout, side, m, n, v, tau, c, ldc,
-                                work );
+    return LAPACKE_dlarfx_work(matrix_layout, side, m, n, v, tau, c, ldc, work);
 }

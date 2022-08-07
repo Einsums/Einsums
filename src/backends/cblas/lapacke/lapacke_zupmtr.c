@@ -32,59 +32,53 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_zupmtr( int matrix_layout, char side, char uplo, char trans,
-                           lapack_int m, lapack_int n,
-                           const lapack_complex_double* ap,
-                           const lapack_complex_double* tau,
-                           lapack_complex_double* c, lapack_int ldc )
-{
+lapack_int LAPACKE_zupmtr(int matrix_layout, char side, char uplo, char trans, lapack_int m, lapack_int n, const lapack_complex_double *ap,
+                          const lapack_complex_double *tau, lapack_complex_double *c, lapack_int ldc) {
     lapack_int info = 0;
     /* Additional scalars declarations for work arrays */
     lapack_int lwork;
-    lapack_complex_double* work = NULL;
-    lapack_int r ;
-    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
-        LAPACKE_xerbla( "LAPACKE_zupmtr", -1 );
+    lapack_complex_double *work = NULL;
+    lapack_int r;
+    if (matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR) {
+        LAPACKE_xerbla("LAPACKE_zupmtr", -1);
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
-    if( LAPACKE_get_nancheck() ) {
+    if (LAPACKE_get_nancheck()) {
         /* Optionally check input matrices for NaNs */
-        r = LAPACKE_lsame( side, 'l' ) ? m : n;
-        if( LAPACKE_zpp_nancheck( r, ap ) ) {
+        r = LAPACKE_lsame(side, 'l') ? m : n;
+        if (LAPACKE_zpp_nancheck(r, ap)) {
             return -7;
         }
-        if( LAPACKE_zge_nancheck( matrix_layout, m, n, c, ldc ) ) {
+        if (LAPACKE_zge_nancheck(matrix_layout, m, n, c, ldc)) {
             return -9;
         }
-        if( LAPACKE_z_nancheck( r-1, tau, 1 ) ) {
+        if (LAPACKE_z_nancheck(r - 1, tau, 1)) {
             return -8;
         }
     }
 #endif
     /* Additional scalars initializations for work arrays */
-    if( LAPACKE_lsame( side, 'l' ) ) {
-        lwork = MAX(1,n);
-    } else if( LAPACKE_lsame( side, 'r' ) ) {
-        lwork = MAX(1,m);
+    if (LAPACKE_lsame(side, 'l')) {
+        lwork = MAX(1, n);
+    } else if (LAPACKE_lsame(side, 'r')) {
+        lwork = MAX(1, m);
     } else {
         lwork = 1; /* Any value */
     }
     /* Allocate memory for working array(s) */
-    work = (lapack_complex_double*)
-        LAPACKE_malloc( sizeof(lapack_complex_double) * lwork );
-    if( work == NULL ) {
+    work = (lapack_complex_double *)LAPACKE_malloc(sizeof(lapack_complex_double) * lwork);
+    if (work == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_0;
     }
     /* Call middle-level interface */
-    info = LAPACKE_zupmtr_work( matrix_layout, side, uplo, trans, m, n, ap, tau,
-                                c, ldc, work );
+    info = LAPACKE_zupmtr_work(matrix_layout, side, uplo, trans, m, n, ap, tau, c, ldc, work);
     /* Release memory and exit */
-    LAPACKE_free( work );
+    LAPACKE_free(work);
 exit_level_0:
-    if( info == LAPACK_WORK_MEMORY_ERROR ) {
-        LAPACKE_xerbla( "LAPACKE_zupmtr", info );
+    if (info == LAPACK_WORK_MEMORY_ERROR) {
+        LAPACKE_xerbla("LAPACKE_zupmtr", info);
     }
     return info;
 }

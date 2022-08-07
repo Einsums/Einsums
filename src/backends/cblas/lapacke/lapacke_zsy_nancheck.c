@@ -33,10 +33,6 @@
 
 /* Check a matrix for NaN entries. */
 
-lapack_logical LAPACKE_zsy_nancheck( int matrix_layout, char uplo,
-                                      lapack_int n,
-                                      const lapack_complex_double *a,
-                                      lapack_int lda )
-{
-    return LAPACKE_ztr_nancheck( matrix_layout, uplo, 'n', n, a, lda );
+lapack_logical LAPACKE_zsy_nancheck(int matrix_layout, char uplo, lapack_int n, const lapack_complex_double *a, lapack_int lda) {
+    return LAPACKE_ztr_nancheck(matrix_layout, uplo, 'n', n, a, lda);
 }

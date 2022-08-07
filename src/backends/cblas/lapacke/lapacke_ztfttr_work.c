@@ -32,61 +32,56 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_ztfttr_work( int matrix_layout, char transr, char uplo,
-                                lapack_int n, const lapack_complex_double* arf,
-                                lapack_complex_double* a, lapack_int lda )
-{
+lapack_int LAPACKE_ztfttr_work(int matrix_layout, char transr, char uplo, lapack_int n, const lapack_complex_double *arf,
+                               lapack_complex_double *a, lapack_int lda) {
     lapack_int info = 0;
-    if( matrix_layout == LAPACK_COL_MAJOR ) {
+    if (matrix_layout == LAPACK_COL_MAJOR) {
         /* Call LAPACK function and adjust info */
-        LAPACK_ztfttr( &transr, &uplo, &n, arf, a, &lda, &info );
-        if( info < 0 ) {
+        LAPACK_ztfttr(&transr, &uplo, &n, arf, a, &lda, &info);
+        if (info < 0) {
             info = info - 1;
         }
-    } else if( matrix_layout == LAPACK_ROW_MAJOR ) {
-        lapack_int lda_t = MAX(1,n);
-        lapack_complex_double* a_t = NULL;
-        lapack_complex_double* arf_t = NULL;
+    } else if (matrix_layout == LAPACK_ROW_MAJOR) {
+        lapack_int lda_t = MAX(1, n);
+        lapack_complex_double *a_t = NULL;
+        lapack_complex_double *arf_t = NULL;
         /* Check leading dimension(s) */
-        if( lda < n ) {
+        if (lda < n) {
             info = -7;
-            LAPACKE_xerbla( "LAPACKE_ztfttr_work", info );
+            LAPACKE_xerbla("LAPACKE_ztfttr_work", info);
             return info;
         }
         /* Allocate memory for temporary array(s) */
-        a_t = (lapack_complex_double*)
-            LAPACKE_malloc( sizeof(lapack_complex_double) * lda_t * MAX(1,n) );
-        if( a_t == NULL ) {
+        a_t = (lapack_complex_double *)LAPACKE_malloc(sizeof(lapack_complex_double) * lda_t * MAX(1, n));
+        if (a_t == NULL) {
             info = LAPACK_TRANSPOSE_MEMORY_ERROR;
             goto exit_level_0;
         }
-        arf_t = (lapack_complex_double*)
-            LAPACKE_malloc( sizeof(lapack_complex_double) *
-                            ( MAX(1,n) * MAX(2,n+1) ) / 2 );
-        if( arf_t == NULL ) {
+        arf_t = (lapack_complex_double *)LAPACKE_malloc(sizeof(lapack_complex_double) * (MAX(1, n) * MAX(2, n + 1)) / 2);
+        if (arf_t == NULL) {
             info = LAPACK_TRANSPOSE_MEMORY_ERROR;
             goto exit_level_1;
         }
         /* Transpose input matrices */
-        LAPACKE_zpf_trans( matrix_layout, transr, uplo, n, arf, arf_t );
+        LAPACKE_zpf_trans(matrix_layout, transr, uplo, n, arf, arf_t);
         /* Call LAPACK function and adjust info */
-        LAPACK_ztfttr( &transr, &uplo, &n, arf_t, a_t, &lda_t, &info );
-        if( info < 0 ) {
+        LAPACK_ztfttr(&transr, &uplo, &n, arf_t, a_t, &lda_t, &info);
+        if (info < 0) {
             info = info - 1;
         }
         /* Transpose output matrices */
-        LAPACKE_zge_trans( LAPACK_COL_MAJOR, n, n, a_t, lda_t, a, lda );
+        LAPACKE_zge_trans(LAPACK_COL_MAJOR, n, n, a_t, lda_t, a, lda);
         /* Release memory and exit */
-        LAPACKE_free( arf_t );
-exit_level_1:
-        LAPACKE_free( a_t );
-exit_level_0:
-        if( info == LAPACK_TRANSPOSE_MEMORY_ERROR ) {
-            LAPACKE_xerbla( "LAPACKE_ztfttr_work", info );
+        LAPACKE_free(arf_t);
+    exit_level_1:
+        LAPACKE_free(a_t);
+    exit_level_0:
+        if (info == LAPACK_TRANSPOSE_MEMORY_ERROR) {
+            LAPACKE_xerbla("LAPACKE_ztfttr_work", info);
         }
     } else {
         info = -1;
-        LAPACKE_xerbla( "LAPACKE_ztfttr_work", info );
+        LAPACKE_xerbla("LAPACKE_ztfttr_work", info);
     }
     return info;
 }

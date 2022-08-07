@@ -32,74 +32,67 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_sgesvdq( int matrix_layout, char joba, char jobp,
-                           char jobr, char jobu, char jobv,
-                           lapack_int m, lapack_int n, float* a,
-                           lapack_int lda, float* s, float* u, lapack_int ldu,
-                           float* v, lapack_int ldv, lapack_int* numrank)
-{
+lapack_int LAPACKE_sgesvdq(int matrix_layout, char joba, char jobp, char jobr, char jobu, char jobv, lapack_int m, lapack_int n, float *a,
+                           lapack_int lda, float *s, float *u, lapack_int ldu, float *v, lapack_int ldv, lapack_int *numrank) {
     lapack_int info = 0;
     lapack_int liwork = -1;
-    lapack_int* iwork = NULL;
+    lapack_int *iwork = NULL;
     lapack_int iwork_query;
     lapack_int lwork = -1;
-    float* work = NULL;
+    float *work = NULL;
     float work_query;
     lapack_int lrwork = -1;
-    float* rwork = NULL;
+    float *rwork = NULL;
     float rwork_query;
     lapack_int i;
-    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
-        LAPACKE_xerbla( "LAPACKE_sgesvdq", -1 );
+    if (matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR) {
+        LAPACKE_xerbla("LAPACKE_sgesvdq", -1);
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
-    if( LAPACKE_get_nancheck() ) {
+    if (LAPACKE_get_nancheck()) {
         /* Optionally check input matrices for NaNs */
-        if( LAPACKE_sge_nancheck( matrix_layout, m, n, a, lda ) ) {
+        if (LAPACKE_sge_nancheck(matrix_layout, m, n, a, lda)) {
             return -6;
         }
     }
 #endif
     /* Query optimal working array(s) size */
-    info = LAPACKE_sgesvdq_work( matrix_layout, joba, jobp, jobr, jobu, jobv,
-                                 m, n, a, lda, s, u, ldu, v, ldv, numrank,
-                                 &iwork_query, liwork, &work_query, lwork,
-                                 &rwork_query, lrwork );
-    if( info != 0 ) {
+    info = LAPACKE_sgesvdq_work(matrix_layout, joba, jobp, jobr, jobu, jobv, m, n, a, lda, s, u, ldu, v, ldv, numrank, &iwork_query, liwork,
+                                &work_query, lwork, &rwork_query, lrwork);
+    if (info != 0) {
         goto exit_level_0;
     }
     liwork = iwork_query;
     lwork = (lapack_int)work_query;
     lrwork = (lapack_int)rwork_query;
     /* Allocate memory for work arrays */
-    iwork = (lapack_int*)LAPACKE_malloc( sizeof(lapack_int) * liwork );
-    if( iwork == NULL ) {
+    iwork = (lapack_int *)LAPACKE_malloc(sizeof(lapack_int) * liwork);
+    if (iwork == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_0;
     }
-    work = (float*)LAPACKE_malloc( sizeof(float) * lwork );
-    if( work == NULL ) {
+    work = (float *)LAPACKE_malloc(sizeof(float) * lwork);
+    if (work == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_0;
     }
-    rwork = (float*)LAPACKE_malloc( sizeof(float) * lrwork );
-    if( rwork == NULL ) {
+    rwork = (float *)LAPACKE_malloc(sizeof(float) * lrwork);
+    if (rwork == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_0;
     }
     /* Call middle-level interface */
-    info = LAPACKE_sgesvdq_work( matrix_layout, joba, jobp, jobr, jobu, jobv,
-                                 m, n, a, lda, s, u, ldu, v, ldv, numrank,
-                                 iwork, liwork, work, lwork, rwork, lrwork );
+    info = LAPACKE_sgesvdq_work(matrix_layout, joba, jobp, jobr, jobu, jobv, m, n, a, lda, s, u, ldu, v, ldv, numrank, iwork, liwork, work,
+                                lwork, rwork, lrwork);
 
     /* Release memory and exit */
-    LAPACKE_free( iwork );
-    LAPACKE_free( work );
-    LAPACKE_free( rwork );
+    LAPACKE_free(iwork);
+    LAPACKE_free(work);
+    LAPACKE_free(rwork);
 exit_level_0:
-    if( info == LAPACK_WORK_MEMORY_ERROR ) {
-        LAPACKE_xerbla( "LAPACKE_sgesvdq", info );
+    if (info == LAPACK_WORK_MEMORY_ERROR) {
+        LAPACKE_xerbla("LAPACKE_sgesvdq", info);
     }
     return info;
 }

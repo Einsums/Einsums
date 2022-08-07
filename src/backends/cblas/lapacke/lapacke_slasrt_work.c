@@ -32,10 +32,9 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_slasrt_work( char id, lapack_int n, float* d )
-{
+lapack_int LAPACKE_slasrt_work(char id, lapack_int n, float *d) {
     lapack_int info = 0;
     /* Call LAPACK function and adjust info */
-    LAPACK_slasrt( &id, &n, d, &info );
+    LAPACK_slasrt(&id, &n, d, &info);
     return info;
 }

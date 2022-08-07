@@ -32,36 +32,32 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_sgghrd( int matrix_layout, char compq, char compz,
-                           lapack_int n, lapack_int ilo, lapack_int ihi,
-                           float* a, lapack_int lda, float* b, lapack_int ldb,
-                           float* q, lapack_int ldq, float* z, lapack_int ldz )
-{
-    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
-        LAPACKE_xerbla( "LAPACKE_sgghrd", -1 );
+lapack_int LAPACKE_sgghrd(int matrix_layout, char compq, char compz, lapack_int n, lapack_int ilo, lapack_int ihi, float *a, lapack_int lda,
+                          float *b, lapack_int ldb, float *q, lapack_int ldq, float *z, lapack_int ldz) {
+    if (matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR) {
+        LAPACKE_xerbla("LAPACKE_sgghrd", -1);
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
-    if( LAPACKE_get_nancheck() ) {
+    if (LAPACKE_get_nancheck()) {
         /* Optionally check input matrices for NaNs */
-        if( LAPACKE_sge_nancheck( matrix_layout, n, n, a, lda ) ) {
+        if (LAPACKE_sge_nancheck(matrix_layout, n, n, a, lda)) {
             return -7;
         }
-        if( LAPACKE_sge_nancheck( matrix_layout, n, n, b, ldb ) ) {
+        if (LAPACKE_sge_nancheck(matrix_layout, n, n, b, ldb)) {
             return -9;
         }
-        if( LAPACKE_lsame( compq, 'i' ) || LAPACKE_lsame( compq, 'v' ) ) {
-            if( LAPACKE_sge_nancheck( matrix_layout, n, n, q, ldq ) ) {
+        if (LAPACKE_lsame(compq, 'i') || LAPACKE_lsame(compq, 'v')) {
+            if (LAPACKE_sge_nancheck(matrix_layout, n, n, q, ldq)) {
                 return -11;
             }
         }
-        if( LAPACKE_lsame( compz, 'i' ) || LAPACKE_lsame( compz, 'v' ) ) {
-            if( LAPACKE_sge_nancheck( matrix_layout, n, n, z, ldz ) ) {
+        if (LAPACKE_lsame(compz, 'i') || LAPACKE_lsame(compz, 'v')) {
+            if (LAPACKE_sge_nancheck(matrix_layout, n, n, z, ldz)) {
                 return -13;
             }
         }
     }
 #endif
-    return LAPACKE_sgghrd_work( matrix_layout, compq, compz, n, ilo, ihi, a, lda,
-                                b, ldb, q, ldq, z, ldz );
+    return LAPACKE_sgghrd_work(matrix_layout, compq, compz, n, ilo, ihi, a, lda, b, ldb, q, ldq, z, ldz);
 }

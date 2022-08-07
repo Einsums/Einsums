@@ -32,20 +32,18 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_spotrf2( int matrix_layout, char uplo, lapack_int n, float* a,
-                           lapack_int lda )
-{
-    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
-        LAPACKE_xerbla( "LAPACKE_spotrf2", -1 );
+lapack_int LAPACKE_spotrf2(int matrix_layout, char uplo, lapack_int n, float *a, lapack_int lda) {
+    if (matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR) {
+        LAPACKE_xerbla("LAPACKE_spotrf2", -1);
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
-    if( LAPACKE_get_nancheck() ) {
+    if (LAPACKE_get_nancheck()) {
         /* Optionally check input matrices for NaNs */
-        if( LAPACKE_spo_nancheck( matrix_layout, uplo, n, a, lda ) ) {
+        if (LAPACKE_spo_nancheck(matrix_layout, uplo, n, a, lda)) {
             return -4;
         }
     }
 #endif
-    return LAPACKE_spotrf2_work( matrix_layout, uplo, n, a, lda );
+    return LAPACKE_spotrf2_work(matrix_layout, uplo, n, a, lda);
 }

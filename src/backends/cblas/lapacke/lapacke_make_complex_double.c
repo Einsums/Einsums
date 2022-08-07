@@ -34,7 +34,7 @@
 #include "lapacke_utils.h"
 
 #ifndef LAPACK_COMPLEX_CUSTOM
-lapack_complex_double lapack_make_complex_double( double re, double im ) {
+lapack_complex_double lapack_make_complex_double(double re, double im) {
     lapack_complex_double z;
 #if defined(LAPACK_COMPLEX_STRUCTURE)
     z.real = re;
@@ -42,10 +42,10 @@ lapack_complex_double lapack_make_complex_double( double re, double im ) {
 #elif defined(LAPACK_COMPLEX_C99)
     z = re + im * I;
 #elif defined(LAPACK_COMPLEX_CPP)
-    z = std::complex<double>(re,im);
+    z = std::complex<double>(re, im);
 #else /* C99 is default */
-    z = re + im*I;
+    z = re + im * I;
 #endif
-   return z;
+    return z;
 }
 #endif

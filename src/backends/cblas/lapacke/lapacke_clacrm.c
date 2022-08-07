@@ -32,44 +32,39 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_clacrm(int matrix_layout, lapack_int m,
-                           lapack_int n, const lapack_complex_float* a,
-                           lapack_int lda, const float* b, lapack_int ldb,
-                           lapack_complex_float* c, lapack_int ldc)
-{
+lapack_int LAPACKE_clacrm(int matrix_layout, lapack_int m, lapack_int n, const lapack_complex_float *a, lapack_int lda, const float *b,
+                          lapack_int ldb, lapack_complex_float *c, lapack_int ldc) {
     lapack_int info = 0;
-    float* rwork = NULL;
+    float *rwork = NULL;
 
     if (matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR) {
         LAPACKE_xerbla("LAPACKE_clacrm", -1);
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
-    if ( LAPACKE_get_nancheck() ) {
+    if (LAPACKE_get_nancheck()) {
         /* Optionally check input matrices for NaNs */
-        if( LAPACKE_cge_nancheck( matrix_layout, m, n, a, lda ) ) {
+        if (LAPACKE_cge_nancheck(matrix_layout, m, n, a, lda)) {
             return -4;
         }
-        if( LAPACKE_sge_nancheck( matrix_layout, n, n, b, ldb ) ) {
+        if (LAPACKE_sge_nancheck(matrix_layout, n, n, b, ldb)) {
             return -6;
         }
     }
 #endif
     /* Allocate memory for work array(s) */
-    rwork = (float*)
-        LAPACKE_malloc(sizeof(float) * MAX(1, 2 * m * n));
+    rwork = (float *)LAPACKE_malloc(sizeof(float) * MAX(1, 2 * m * n));
     if (rwork == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_0;
     }
     /* Call middle-level interface */
-    info = LAPACKE_clacrm_work(matrix_layout, m, n, a, lda, b, ldb,
-                                c, ldc, rwork);
+    info = LAPACKE_clacrm_work(matrix_layout, m, n, a, lda, b, ldb, c, ldc, rwork);
     /* Release memory and exit */
     LAPACKE_free(rwork);
 exit_level_0:
-    if( info == LAPACK_WORK_MEMORY_ERROR ) {
-        LAPACKE_xerbla( "LAPACKE_clacrm", info );
+    if (info == LAPACK_WORK_MEMORY_ERROR) {
+        LAPACKE_xerbla("LAPACKE_clacrm", info);
     }
     return info;
 }

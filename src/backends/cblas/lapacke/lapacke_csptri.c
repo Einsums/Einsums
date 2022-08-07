@@ -32,37 +32,34 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_csptri( int matrix_layout, char uplo, lapack_int n,
-                           lapack_complex_float* ap, const lapack_int* ipiv )
-{
+lapack_int LAPACKE_csptri(int matrix_layout, char uplo, lapack_int n, lapack_complex_float *ap, const lapack_int *ipiv) {
     lapack_int info = 0;
-    lapack_complex_float* work = NULL;
-    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
-        LAPACKE_xerbla( "LAPACKE_csptri", -1 );
+    lapack_complex_float *work = NULL;
+    if (matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR) {
+        LAPACKE_xerbla("LAPACKE_csptri", -1);
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
-    if( LAPACKE_get_nancheck() ) {
+    if (LAPACKE_get_nancheck()) {
         /* Optionally check input matrices for NaNs */
-        if( LAPACKE_csp_nancheck( n, ap ) ) {
+        if (LAPACKE_csp_nancheck(n, ap)) {
             return -4;
         }
     }
 #endif
     /* Allocate memory for working array(s) */
-    work = (lapack_complex_float*)
-        LAPACKE_malloc( sizeof(lapack_complex_float) * MAX(1,n) );
-    if( work == NULL ) {
+    work = (lapack_complex_float *)LAPACKE_malloc(sizeof(lapack_complex_float) * MAX(1, n));
+    if (work == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_0;
     }
     /* Call middle-level interface */
-    info = LAPACKE_csptri_work( matrix_layout, uplo, n, ap, ipiv, work );
+    info = LAPACKE_csptri_work(matrix_layout, uplo, n, ap, ipiv, work);
     /* Release memory and exit */
-    LAPACKE_free( work );
+    LAPACKE_free(work);
 exit_level_0:
-    if( info == LAPACK_WORK_MEMORY_ERROR ) {
-        LAPACKE_xerbla( "LAPACKE_csptri", info );
+    if (info == LAPACK_WORK_MEMORY_ERROR) {
+        LAPACKE_xerbla("LAPACKE_csptri", info);
     }
     return info;
 }

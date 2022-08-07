@@ -32,88 +32,79 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_dgeesx_work( int matrix_layout, char jobvs, char sort,
-                                LAPACK_D_SELECT2 select, char sense,
-                                lapack_int n, double* a, lapack_int lda,
-                                lapack_int* sdim, double* wr, double* wi,
-                                double* vs, lapack_int ldvs, double* rconde,
-                                double* rcondv, double* work, lapack_int lwork,
-                                lapack_int* iwork, lapack_int liwork,
-                                lapack_logical* bwork )
-{
+lapack_int LAPACKE_dgeesx_work(int matrix_layout, char jobvs, char sort, LAPACK_D_SELECT2 select, char sense, lapack_int n, double *a,
+                               lapack_int lda, lapack_int *sdim, double *wr, double *wi, double *vs, lapack_int ldvs, double *rconde,
+                               double *rcondv, double *work, lapack_int lwork, lapack_int *iwork, lapack_int liwork,
+                               lapack_logical *bwork) {
     lapack_int info = 0;
-    if( matrix_layout == LAPACK_COL_MAJOR ) {
+    if (matrix_layout == LAPACK_COL_MAJOR) {
         /* Call LAPACK function and adjust info */
-        LAPACK_dgeesx( &jobvs, &sort, select, &sense, &n, a, &lda, sdim, wr, wi,
-                       vs, &ldvs, rconde, rcondv, work, &lwork, iwork, &liwork,
-                       bwork, &info );
-        if( info < 0 ) {
+        LAPACK_dgeesx(&jobvs, &sort, select, &sense, &n, a, &lda, sdim, wr, wi, vs, &ldvs, rconde, rcondv, work, &lwork, iwork, &liwork,
+                      bwork, &info);
+        if (info < 0) {
             info = info - 1;
         }
-    } else if( matrix_layout == LAPACK_ROW_MAJOR ) {
-        lapack_int lda_t = MAX(1,n);
-        lapack_int ldvs_t = MAX(1,n);
-        double* a_t = NULL;
-        double* vs_t = NULL;
+    } else if (matrix_layout == LAPACK_ROW_MAJOR) {
+        lapack_int lda_t = MAX(1, n);
+        lapack_int ldvs_t = MAX(1, n);
+        double *a_t = NULL;
+        double *vs_t = NULL;
         /* Check leading dimension(s) */
-        if( lda < n ) {
+        if (lda < n) {
             info = -8;
-            LAPACKE_xerbla( "LAPACKE_dgeesx_work", info );
+            LAPACKE_xerbla("LAPACKE_dgeesx_work", info);
             return info;
         }
-        if( ldvs < n ) {
+        if (ldvs < n) {
             info = -13;
-            LAPACKE_xerbla( "LAPACKE_dgeesx_work", info );
+            LAPACKE_xerbla("LAPACKE_dgeesx_work", info);
             return info;
         }
         /* Query optimal working array(s) size if requested */
-        if( liwork == -1 || lwork == -1 ) {
-            LAPACK_dgeesx( &jobvs, &sort, select, &sense, &n, a, &lda_t, sdim,
-                           wr, wi, vs, &ldvs_t, rconde, rcondv, work, &lwork,
-                           iwork, &liwork, bwork, &info );
+        if (liwork == -1 || lwork == -1) {
+            LAPACK_dgeesx(&jobvs, &sort, select, &sense, &n, a, &lda_t, sdim, wr, wi, vs, &ldvs_t, rconde, rcondv, work, &lwork, iwork,
+                          &liwork, bwork, &info);
             return (info < 0) ? (info - 1) : info;
         }
         /* Allocate memory for temporary array(s) */
-        a_t = (double*)LAPACKE_malloc( sizeof(double) * lda_t * MAX(1,n) );
-        if( a_t == NULL ) {
+        a_t = (double *)LAPACKE_malloc(sizeof(double) * lda_t * MAX(1, n));
+        if (a_t == NULL) {
             info = LAPACK_TRANSPOSE_MEMORY_ERROR;
             goto exit_level_0;
         }
-        if( LAPACKE_lsame( jobvs, 'v' ) ) {
-            vs_t = (double*)
-                LAPACKE_malloc( sizeof(double) * ldvs_t * MAX(1,n) );
-            if( vs_t == NULL ) {
+        if (LAPACKE_lsame(jobvs, 'v')) {
+            vs_t = (double *)LAPACKE_malloc(sizeof(double) * ldvs_t * MAX(1, n));
+            if (vs_t == NULL) {
                 info = LAPACK_TRANSPOSE_MEMORY_ERROR;
                 goto exit_level_1;
             }
         }
         /* Transpose input matrices */
-        LAPACKE_dge_trans( matrix_layout, n, n, a, lda, a_t, lda_t );
+        LAPACKE_dge_trans(matrix_layout, n, n, a, lda, a_t, lda_t);
         /* Call LAPACK function and adjust info */
-        LAPACK_dgeesx( &jobvs, &sort, select, &sense, &n, a_t, &lda_t, sdim, wr,
-                       wi, vs_t, &ldvs_t, rconde, rcondv, work, &lwork, iwork,
-                       &liwork, bwork, &info );
-        if( info < 0 ) {
+        LAPACK_dgeesx(&jobvs, &sort, select, &sense, &n, a_t, &lda_t, sdim, wr, wi, vs_t, &ldvs_t, rconde, rcondv, work, &lwork, iwork,
+                      &liwork, bwork, &info);
+        if (info < 0) {
             info = info - 1;
         }
         /* Transpose output matrices */
-        LAPACKE_dge_trans( LAPACK_COL_MAJOR, n, n, a_t, lda_t, a, lda );
-        if( LAPACKE_lsame( jobvs, 'v' ) ) {
-            LAPACKE_dge_trans( LAPACK_COL_MAJOR, n, n, vs_t, ldvs_t, vs, ldvs );
+        LAPACKE_dge_trans(LAPACK_COL_MAJOR, n, n, a_t, lda_t, a, lda);
+        if (LAPACKE_lsame(jobvs, 'v')) {
+            LAPACKE_dge_trans(LAPACK_COL_MAJOR, n, n, vs_t, ldvs_t, vs, ldvs);
         }
         /* Release memory and exit */
-        if( LAPACKE_lsame( jobvs, 'v' ) ) {
-            LAPACKE_free( vs_t );
+        if (LAPACKE_lsame(jobvs, 'v')) {
+            LAPACKE_free(vs_t);
         }
-exit_level_1:
-        LAPACKE_free( a_t );
-exit_level_0:
-        if( info == LAPACK_TRANSPOSE_MEMORY_ERROR ) {
-            LAPACKE_xerbla( "LAPACKE_dgeesx_work", info );
+    exit_level_1:
+        LAPACKE_free(a_t);
+    exit_level_0:
+        if (info == LAPACK_TRANSPOSE_MEMORY_ERROR) {
+            LAPACKE_xerbla("LAPACKE_dgeesx_work", info);
         }
     } else {
         info = -1;
-        LAPACKE_xerbla( "LAPACKE_dgeesx_work", info );
+        LAPACKE_xerbla("LAPACKE_dgeesx_work", info);
     }
     return info;
 }

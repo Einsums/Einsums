@@ -32,42 +32,38 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_cspcon( int matrix_layout, char uplo, lapack_int n,
-                           const lapack_complex_float* ap,
-                           const lapack_int* ipiv, float anorm, float* rcond )
-{
+lapack_int LAPACKE_cspcon(int matrix_layout, char uplo, lapack_int n, const lapack_complex_float *ap, const lapack_int *ipiv, float anorm,
+                          float *rcond) {
     lapack_int info = 0;
-    lapack_complex_float* work = NULL;
-    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
-        LAPACKE_xerbla( "LAPACKE_cspcon", -1 );
+    lapack_complex_float *work = NULL;
+    if (matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR) {
+        LAPACKE_xerbla("LAPACKE_cspcon", -1);
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
-    if( LAPACKE_get_nancheck() ) {
+    if (LAPACKE_get_nancheck()) {
         /* Optionally check input matrices for NaNs */
-        if( LAPACKE_s_nancheck( 1, &anorm, 1 ) ) {
+        if (LAPACKE_s_nancheck(1, &anorm, 1)) {
             return -6;
         }
-        if( LAPACKE_csp_nancheck( n, ap ) ) {
+        if (LAPACKE_csp_nancheck(n, ap)) {
             return -4;
         }
     }
 #endif
     /* Allocate memory for working array(s) */
-    work = (lapack_complex_float*)
-        LAPACKE_malloc( sizeof(lapack_complex_float) * MAX(1,2*n) );
-    if( work == NULL ) {
+    work = (lapack_complex_float *)LAPACKE_malloc(sizeof(lapack_complex_float) * MAX(1, 2 * n));
+    if (work == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_0;
     }
     /* Call middle-level interface */
-    info = LAPACKE_cspcon_work( matrix_layout, uplo, n, ap, ipiv, anorm, rcond,
-                                work );
+    info = LAPACKE_cspcon_work(matrix_layout, uplo, n, ap, ipiv, anorm, rcond, work);
     /* Release memory and exit */
-    LAPACKE_free( work );
+    LAPACKE_free(work);
 exit_level_0:
-    if( info == LAPACK_WORK_MEMORY_ERROR ) {
-        LAPACKE_xerbla( "LAPACKE_cspcon", info );
+    if (info == LAPACK_WORK_MEMORY_ERROR) {
+        LAPACKE_xerbla("LAPACKE_cspcon", info);
     }
     return info;
 }

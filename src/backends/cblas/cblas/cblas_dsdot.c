@@ -9,17 +9,15 @@
  */
 #include "cblas.h"
 #include "cblas_f77.h"
-double  cblas_dsdot( const CBLAS_INT N, const float *X,
-                      const CBLAS_INT incX, const float *Y, const CBLAS_INT incY)
-{
-   double dot;
+double cblas_dsdot(const CBLAS_INT N, const float *X, const CBLAS_INT incX, const float *Y, const CBLAS_INT incY) {
+    double dot;
 #ifdef F77_INT
-   F77_INT F77_N=N, F77_incX=incX, F77_incY=incY;
+    F77_INT F77_N = N, F77_incX = incX, F77_incY = incY;
 #else
-   #define F77_N N
-   #define F77_incX incX
-   #define F77_incY incY
+#define F77_N N
+#define F77_incX incX
+#define F77_incY incY
 #endif
-   F77_dsdot_sub( &F77_N, X, &F77_incX, Y, &F77_incY, &dot);
-   return dot;
+    F77_dsdot_sub(&F77_N, X, &F77_incX, Y, &F77_incY, &dot);
+    return dot;
 }

@@ -32,43 +32,39 @@
 
 #include "lapacke_utils.h"
 
-float LAPACKE_clanhe( int matrix_layout, char norm, char uplo, lapack_int n,
-                      const lapack_complex_float* a, lapack_int lda )
-{
+float LAPACKE_clanhe(int matrix_layout, char norm, char uplo, lapack_int n, const lapack_complex_float *a, lapack_int lda) {
     lapack_int info = 0;
     float res = 0.;
-    float* work = NULL;
-    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
-        LAPACKE_xerbla( "LAPACKE_clanhe", -1 );
+    float *work = NULL;
+    if (matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR) {
+        LAPACKE_xerbla("LAPACKE_clanhe", -1);
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
-    if( LAPACKE_get_nancheck() ) {
+    if (LAPACKE_get_nancheck()) {
         /* Optionally check input matrices for NaNs */
-        if( LAPACKE_che_nancheck( matrix_layout, uplo, n, a, lda ) ) {
+        if (LAPACKE_che_nancheck(matrix_layout, uplo, n, a, lda)) {
             return -5;
         }
     }
 #endif
     /* Allocate memory for working array(s) */
-    if( LAPACKE_lsame( norm, 'i' ) || LAPACKE_lsame( norm, '1' ) ||
-        LAPACKE_lsame( norm, 'O' ) ) {
-        work = (float*)LAPACKE_malloc( sizeof(float) * MAX(1,n) );
-        if( work == NULL ) {
+    if (LAPACKE_lsame(norm, 'i') || LAPACKE_lsame(norm, '1') || LAPACKE_lsame(norm, 'O')) {
+        work = (float *)LAPACKE_malloc(sizeof(float) * MAX(1, n));
+        if (work == NULL) {
             info = LAPACK_WORK_MEMORY_ERROR;
             goto exit_level_0;
         }
     }
     /* Call middle-level interface */
-    res = LAPACKE_clanhe_work( matrix_layout, norm, uplo, n, a, lda, work );
+    res = LAPACKE_clanhe_work(matrix_layout, norm, uplo, n, a, lda, work);
     /* Release memory and exit */
-    if( LAPACKE_lsame( norm, 'i' ) || LAPACKE_lsame( norm, '1' ) ||
-        LAPACKE_lsame( norm, 'O' ) ) {
-        LAPACKE_free( work );
+    if (LAPACKE_lsame(norm, 'i') || LAPACKE_lsame(norm, '1') || LAPACKE_lsame(norm, 'O')) {
+        LAPACKE_free(work);
     }
 exit_level_0:
-    if( info == LAPACK_WORK_MEMORY_ERROR ) {
-        LAPACKE_xerbla( "LAPACKE_clanhe", info );
+    if (info == LAPACK_WORK_MEMORY_ERROR) {
+        LAPACKE_xerbla("LAPACKE_clanhe", info);
     }
     return res;
 }

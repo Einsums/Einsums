@@ -32,75 +32,69 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_dormrz_work( int matrix_layout, char side, char trans,
-                                lapack_int m, lapack_int n, lapack_int k,
-                                lapack_int l, const double* a, lapack_int lda,
-                                const double* tau, double* c, lapack_int ldc,
-                                double* work, lapack_int lwork )
-{
+lapack_int LAPACKE_dormrz_work(int matrix_layout, char side, char trans, lapack_int m, lapack_int n, lapack_int k, lapack_int l,
+                               const double *a, lapack_int lda, const double *tau, double *c, lapack_int ldc, double *work,
+                               lapack_int lwork) {
     lapack_int info = 0;
     lapack_int lda_t, ldc_t;
     double *a_t = NULL, *c_t = NULL;
-    if( matrix_layout == LAPACK_COL_MAJOR ) {
+    if (matrix_layout == LAPACK_COL_MAJOR) {
         /* Call LAPACK function and adjust info */
-        LAPACK_dormrz( &side, &trans, &m, &n, &k, &l, a, &lda, tau, c, &ldc,
-                       work, &lwork, &info );
-        if( info < 0 ) {
+        LAPACK_dormrz(&side, &trans, &m, &n, &k, &l, a, &lda, tau, c, &ldc, work, &lwork, &info);
+        if (info < 0) {
             info = info - 1;
         }
-    } else if( matrix_layout == LAPACK_ROW_MAJOR ) {
-        lda_t = MAX(1,k);
-        ldc_t = MAX(1,m);
+    } else if (matrix_layout == LAPACK_ROW_MAJOR) {
+        lda_t = MAX(1, k);
+        ldc_t = MAX(1, m);
         /* Check leading dimension(s) */
-        if( lda < m ) {
+        if (lda < m) {
             info = -9;
-            LAPACKE_xerbla( "LAPACKE_dormrz_work", info );
+            LAPACKE_xerbla("LAPACKE_dormrz_work", info);
             return info;
         }
-        if( ldc < n ) {
+        if (ldc < n) {
             info = -12;
-            LAPACKE_xerbla( "LAPACKE_dormrz_work", info );
+            LAPACKE_xerbla("LAPACKE_dormrz_work", info);
             return info;
         }
         /* Query optimal working array(s) size if requested */
-        if( lwork == -1 ) {
-            LAPACK_dormrz( &side, &trans, &m, &n, &k, &l, a, &lda_t, tau, c,
-                           &ldc_t, work, &lwork, &info );
+        if (lwork == -1) {
+            LAPACK_dormrz(&side, &trans, &m, &n, &k, &l, a, &lda_t, tau, c, &ldc_t, work, &lwork, &info);
             return (info < 0) ? (info - 1) : info;
         }
         /* Allocate memory for temporary array(s) */
-        a_t = (double*)LAPACKE_malloc( sizeof(double) * lda_t * MAX(1,m) );
-        if( a_t == NULL ) {
+        a_t = (double *)LAPACKE_malloc(sizeof(double) * lda_t * MAX(1, m));
+        if (a_t == NULL) {
             info = LAPACK_TRANSPOSE_MEMORY_ERROR;
             goto exit_level_0;
         }
-        c_t = (double*)LAPACKE_malloc( sizeof(double) * ldc_t * MAX(1,n) );
-        if( c_t == NULL ) {
+        c_t = (double *)LAPACKE_malloc(sizeof(double) * ldc_t * MAX(1, n));
+        if (c_t == NULL) {
             info = LAPACK_TRANSPOSE_MEMORY_ERROR;
             goto exit_level_1;
         }
         /* Transpose input matrices */
-        LAPACKE_dge_trans( matrix_layout, k, m, a, lda, a_t, lda_t );
-        LAPACKE_dge_trans( matrix_layout, m, n, c, ldc, c_t, ldc_t );
+        LAPACKE_dge_trans(matrix_layout, k, m, a, lda, a_t, lda_t);
+        LAPACKE_dge_trans(matrix_layout, m, n, c, ldc, c_t, ldc_t);
         /* Call LAPACK function and adjust info */
-        LAPACK_dormrz( &side, &trans, &m, &n, &k, &l, a_t, &lda_t, tau, c_t,
-                       &ldc_t, work, &lwork, &info );
-        if( info < 0 ) {
+        LAPACK_dormrz(&side, &trans, &m, &n, &k, &l, a_t, &lda_t, tau, c_t, &ldc_t, work, &lwork, &info);
+        if (info < 0) {
             info = info - 1;
         }
         /* Transpose output matrices */
-        LAPACKE_dge_trans( LAPACK_COL_MAJOR, m, n, c_t, ldc_t, c, ldc );
+        LAPACKE_dge_trans(LAPACK_COL_MAJOR, m, n, c_t, ldc_t, c, ldc);
         /* Release memory and exit */
-        LAPACKE_free( c_t );
-exit_level_1:
-        LAPACKE_free( a_t );
-exit_level_0:
-        if( info == LAPACK_TRANSPOSE_MEMORY_ERROR ) {
-            LAPACKE_xerbla( "LAPACKE_dormrz_work", info );
+        LAPACKE_free(c_t);
+    exit_level_1:
+        LAPACKE_free(a_t);
+    exit_level_0:
+        if (info == LAPACK_TRANSPOSE_MEMORY_ERROR) {
+            LAPACKE_xerbla("LAPACKE_dormrz_work", info);
         }
     } else {
         info = -1;
-        LAPACKE_xerbla( "LAPACKE_dormrz_work", info );
+        LAPACKE_xerbla("LAPACKE_dormrz_work", info);
     }
     return info;
 }

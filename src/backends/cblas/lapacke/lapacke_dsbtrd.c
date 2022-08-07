@@ -32,43 +32,40 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_dsbtrd( int matrix_layout, char vect, char uplo, lapack_int n,
-                           lapack_int kd, double* ab, lapack_int ldab,
-                           double* d, double* e, double* q, lapack_int ldq )
-{
+lapack_int LAPACKE_dsbtrd(int matrix_layout, char vect, char uplo, lapack_int n, lapack_int kd, double *ab, lapack_int ldab, double *d,
+                          double *e, double *q, lapack_int ldq) {
     lapack_int info = 0;
-    double* work = NULL;
-    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
-        LAPACKE_xerbla( "LAPACKE_dsbtrd", -1 );
+    double *work = NULL;
+    if (matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR) {
+        LAPACKE_xerbla("LAPACKE_dsbtrd", -1);
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
-    if( LAPACKE_get_nancheck() ) {
+    if (LAPACKE_get_nancheck()) {
         /* Optionally check input matrices for NaNs */
-        if( LAPACKE_dsb_nancheck( matrix_layout, uplo, n, kd, ab, ldab ) ) {
+        if (LAPACKE_dsb_nancheck(matrix_layout, uplo, n, kd, ab, ldab)) {
             return -6;
         }
-        if( LAPACKE_lsame( vect, 'u' ) ) {
-            if( LAPACKE_dge_nancheck( matrix_layout, n, n, q, ldq ) ) {
+        if (LAPACKE_lsame(vect, 'u')) {
+            if (LAPACKE_dge_nancheck(matrix_layout, n, n, q, ldq)) {
                 return -10;
             }
         }
     }
 #endif
     /* Allocate memory for working array(s) */
-    work = (double*)LAPACKE_malloc( sizeof(double) * MAX(1,n) );
-    if( work == NULL ) {
+    work = (double *)LAPACKE_malloc(sizeof(double) * MAX(1, n));
+    if (work == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_0;
     }
     /* Call middle-level interface */
-    info = LAPACKE_dsbtrd_work( matrix_layout, vect, uplo, n, kd, ab, ldab, d, e,
-                                q, ldq, work );
+    info = LAPACKE_dsbtrd_work(matrix_layout, vect, uplo, n, kd, ab, ldab, d, e, q, ldq, work);
     /* Release memory and exit */
-    LAPACKE_free( work );
+    LAPACKE_free(work);
 exit_level_0:
-    if( info == LAPACK_WORK_MEMORY_ERROR ) {
-        LAPACKE_xerbla( "LAPACKE_dsbtrd", info );
+    if (info == LAPACK_WORK_MEMORY_ERROR) {
+        LAPACKE_xerbla("LAPACKE_dsbtrd", info);
     }
     return info;
 }

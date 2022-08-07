@@ -32,11 +32,9 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_slartgp_work( float f, float g, float* cs, float* sn,
-                                 float* r )
-{
+lapack_int LAPACKE_slartgp_work(float f, float g, float *cs, float *sn, float *r) {
     lapack_int info = 0;
     /* Call LAPACK function and adjust info */
-    LAPACK_slartgp( &f, &g, cs, sn, r );
+    LAPACK_slartgp(&f, &g, cs, sn, r);
     return info;
 }

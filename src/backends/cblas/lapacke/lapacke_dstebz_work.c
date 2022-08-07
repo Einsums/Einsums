@@ -32,16 +32,11 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_dstebz_work( char range, char order, lapack_int n, double vl,
-                                double vu, lapack_int il, lapack_int iu,
-                                double abstol, const double* d, const double* e,
-                                lapack_int* m, lapack_int* nsplit, double* w,
-                                lapack_int* iblock, lapack_int* isplit,
-                                double* work, lapack_int* iwork )
-{
+lapack_int LAPACKE_dstebz_work(char range, char order, lapack_int n, double vl, double vu, lapack_int il, lapack_int iu, double abstol,
+                               const double *d, const double *e, lapack_int *m, lapack_int *nsplit, double *w, lapack_int *iblock,
+                               lapack_int *isplit, double *work, lapack_int *iwork) {
     lapack_int info = 0;
     /* Call LAPACK function and adjust info */
-    LAPACK_dstebz( &range, &order, &n, &vl, &vu, &il, &iu, &abstol, d, e, m,
-                   nsplit, w, iblock, isplit, work, iwork, &info );
+    LAPACK_dstebz(&range, &order, &n, &vl, &vu, &il, &iu, &abstol, d, e, m, nsplit, w, iblock, isplit, work, iwork, &info);
     return info;
 }

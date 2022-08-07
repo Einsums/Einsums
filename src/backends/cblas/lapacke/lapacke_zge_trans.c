@@ -36,18 +36,17 @@
  * layout or vice versa.
  */
 
-void LAPACKE_zge_trans( int matrix_layout, lapack_int m, lapack_int n,
-                        const lapack_complex_double* in, lapack_int ldin,
-                        lapack_complex_double* out, lapack_int ldout )
-{
+void LAPACKE_zge_trans(int matrix_layout, lapack_int m, lapack_int n, const lapack_complex_double *in, lapack_int ldin,
+                       lapack_complex_double *out, lapack_int ldout) {
     lapack_int i, j, x, y;
 
-    if( in == NULL || out == NULL ) return;
+    if (in == NULL || out == NULL)
+        return;
 
-    if( matrix_layout == LAPACK_COL_MAJOR ) {
+    if (matrix_layout == LAPACK_COL_MAJOR) {
         x = n;
         y = m;
-    } else if ( matrix_layout == LAPACK_ROW_MAJOR ) {
+    } else if (matrix_layout == LAPACK_ROW_MAJOR) {
         x = m;
         y = n;
     } else {
@@ -56,9 +55,9 @@ void LAPACKE_zge_trans( int matrix_layout, lapack_int m, lapack_int n,
     }
 
     /* In case of incorrect m, n, ldin or ldout the function does nothing */
-    for( i = 0; i < MIN( y, ldin ); i++ ) {
-        for( j = 0; j < MIN( x, ldout ); j++ ) {
-            out[ (size_t)i*ldout + j ] = in[ (size_t)j*ldin + i ];
+    for (i = 0; i < MIN(y, ldin); i++) {
+        for (j = 0; j < MIN(x, ldout); j++) {
+            out[(size_t)i * ldout + j] = in[(size_t)j * ldin + i];
         }
     }
 }

@@ -32,13 +32,10 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_cgttrf_work( lapack_int n, lapack_complex_float* dl,
-                                lapack_complex_float* d,
-                                lapack_complex_float* du,
-                                lapack_complex_float* du2, lapack_int* ipiv )
-{
+lapack_int LAPACKE_cgttrf_work(lapack_int n, lapack_complex_float *dl, lapack_complex_float *d, lapack_complex_float *du,
+                               lapack_complex_float *du2, lapack_int *ipiv) {
     lapack_int info = 0;
     /* Call LAPACK function and adjust info */
-    LAPACK_cgttrf( &n, dl, d, du, du2, ipiv, &info );
+    LAPACK_cgttrf(&n, dl, d, du, du2, ipiv, &info);
     return info;
 }

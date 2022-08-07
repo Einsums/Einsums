@@ -4,7 +4,6 @@
 
 #include <h5cpp/core>
 
-
 // Items in this namespace contribute to the global state of the program
 namespace einsums::state {
 

@@ -32,65 +32,57 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_cheev_work( int matrix_layout, char jobz, char uplo,
-                               lapack_int n, lapack_complex_float* a,
-                               lapack_int lda, float* w,
-                               lapack_complex_float* work, lapack_int lwork,
-                               float* rwork )
-{
+lapack_int LAPACKE_cheev_work(int matrix_layout, char jobz, char uplo, lapack_int n, lapack_complex_float *a, lapack_int lda, float *w,
+                              lapack_complex_float *work, lapack_int lwork, float *rwork) {
     lapack_int info = 0;
-    if( matrix_layout == LAPACK_COL_MAJOR ) {
+    if (matrix_layout == LAPACK_COL_MAJOR) {
         /* Call LAPACK function and adjust info */
-        LAPACK_cheev( &jobz, &uplo, &n, a, &lda, w, work, &lwork, rwork,
-                      &info );
-        if( info < 0 ) {
+        LAPACK_cheev(&jobz, &uplo, &n, a, &lda, w, work, &lwork, rwork, &info);
+        if (info < 0) {
             info = info - 1;
         }
-    } else if( matrix_layout == LAPACK_ROW_MAJOR ) {
-        lapack_int lda_t = MAX(1,n);
-        lapack_complex_float* a_t = NULL;
+    } else if (matrix_layout == LAPACK_ROW_MAJOR) {
+        lapack_int lda_t = MAX(1, n);
+        lapack_complex_float *a_t = NULL;
         /* Check leading dimension(s) */
-        if( lda < n ) {
+        if (lda < n) {
             info = -6;
-            LAPACKE_xerbla( "LAPACKE_cheev_work", info );
+            LAPACKE_xerbla("LAPACKE_cheev_work", info);
             return info;
         }
         /* Query optimal working array(s) size if requested */
-        if( lwork == -1 ) {
-            LAPACK_cheev( &jobz, &uplo, &n, a, &lda_t, w, work, &lwork, rwork,
-                          &info );
+        if (lwork == -1) {
+            LAPACK_cheev(&jobz, &uplo, &n, a, &lda_t, w, work, &lwork, rwork, &info);
             return (info < 0) ? (info - 1) : info;
         }
         /* Allocate memory for temporary array(s) */
-        a_t = (lapack_complex_float*)
-            LAPACKE_malloc( sizeof(lapack_complex_float) * lda_t * MAX(1,n) );
-        if( a_t == NULL ) {
+        a_t = (lapack_complex_float *)LAPACKE_malloc(sizeof(lapack_complex_float) * lda_t * MAX(1, n));
+        if (a_t == NULL) {
             info = LAPACK_TRANSPOSE_MEMORY_ERROR;
             goto exit_level_0;
         }
         /* Transpose input matrices */
-        LAPACKE_che_trans( matrix_layout, uplo, n, a, lda, a_t, lda_t );
+        LAPACKE_che_trans(matrix_layout, uplo, n, a, lda, a_t, lda_t);
         /* Call LAPACK function and adjust info */
-        LAPACK_cheev( &jobz, &uplo, &n, a_t, &lda_t, w, work, &lwork, rwork,
-                      &info );
-        if( info < 0 ) {
+        LAPACK_cheev(&jobz, &uplo, &n, a_t, &lda_t, w, work, &lwork, rwork, &info);
+        if (info < 0) {
             info = info - 1;
         }
         /* Transpose output matrices */
-        if ( jobz == 'V' || jobz == 'v' ) {
-            LAPACKE_cge_trans( LAPACK_COL_MAJOR, n, n, a_t, lda_t, a, lda );
+        if (jobz == 'V' || jobz == 'v') {
+            LAPACKE_cge_trans(LAPACK_COL_MAJOR, n, n, a_t, lda_t, a, lda);
         } else {
-            LAPACKE_che_trans( LAPACK_COL_MAJOR, uplo, n, a_t, lda_t, a, lda );
+            LAPACKE_che_trans(LAPACK_COL_MAJOR, uplo, n, a_t, lda_t, a, lda);
         }
         /* Release memory and exit */
-        LAPACKE_free( a_t );
-exit_level_0:
-        if( info == LAPACK_TRANSPOSE_MEMORY_ERROR ) {
-            LAPACKE_xerbla( "LAPACKE_cheev_work", info );
+        LAPACKE_free(a_t);
+    exit_level_0:
+        if (info == LAPACK_TRANSPOSE_MEMORY_ERROR) {
+            LAPACKE_xerbla("LAPACKE_cheev_work", info);
         }
     } else {
         info = -1;
-        LAPACKE_xerbla( "LAPACKE_cheev_work", info );
+        LAPACKE_xerbla("LAPACKE_cheev_work", info);
     }
     return info;
 }

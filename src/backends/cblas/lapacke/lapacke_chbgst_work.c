@@ -32,96 +32,85 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_chbgst_work( int matrix_layout, char vect, char uplo,
-                                lapack_int n, lapack_int ka, lapack_int kb,
-                                lapack_complex_float* ab, lapack_int ldab,
-                                const lapack_complex_float* bb, lapack_int ldbb,
-                                lapack_complex_float* x, lapack_int ldx,
-                                lapack_complex_float* work, float* rwork )
-{
+lapack_int LAPACKE_chbgst_work(int matrix_layout, char vect, char uplo, lapack_int n, lapack_int ka, lapack_int kb,
+                               lapack_complex_float *ab, lapack_int ldab, const lapack_complex_float *bb, lapack_int ldbb,
+                               lapack_complex_float *x, lapack_int ldx, lapack_complex_float *work, float *rwork) {
     lapack_int info = 0;
-    if( matrix_layout == LAPACK_COL_MAJOR ) {
+    if (matrix_layout == LAPACK_COL_MAJOR) {
         /* Call LAPACK function and adjust info */
-        LAPACK_chbgst( &vect, &uplo, &n, &ka, &kb, ab, &ldab, bb, &ldbb, x,
-                       &ldx, work, rwork, &info );
-        if( info < 0 ) {
+        LAPACK_chbgst(&vect, &uplo, &n, &ka, &kb, ab, &ldab, bb, &ldbb, x, &ldx, work, rwork, &info);
+        if (info < 0) {
             info = info - 1;
         }
-    } else if( matrix_layout == LAPACK_ROW_MAJOR ) {
-        lapack_int ldab_t = MAX(1,ka+1);
-        lapack_int ldbb_t = MAX(1,kb+1);
-        lapack_int ldx_t = MAX(1,n);
-        lapack_complex_float* ab_t = NULL;
-        lapack_complex_float* bb_t = NULL;
-        lapack_complex_float* x_t = NULL;
+    } else if (matrix_layout == LAPACK_ROW_MAJOR) {
+        lapack_int ldab_t = MAX(1, ka + 1);
+        lapack_int ldbb_t = MAX(1, kb + 1);
+        lapack_int ldx_t = MAX(1, n);
+        lapack_complex_float *ab_t = NULL;
+        lapack_complex_float *bb_t = NULL;
+        lapack_complex_float *x_t = NULL;
         /* Check leading dimension(s) */
-        if( ldab < n ) {
+        if (ldab < n) {
             info = -8;
-            LAPACKE_xerbla( "LAPACKE_chbgst_work", info );
+            LAPACKE_xerbla("LAPACKE_chbgst_work", info);
             return info;
         }
-        if( ldbb < n ) {
+        if (ldbb < n) {
             info = -10;
-            LAPACKE_xerbla( "LAPACKE_chbgst_work", info );
+            LAPACKE_xerbla("LAPACKE_chbgst_work", info);
             return info;
         }
-        if( ldx < n ) {
+        if (ldx < n) {
             info = -12;
-            LAPACKE_xerbla( "LAPACKE_chbgst_work", info );
+            LAPACKE_xerbla("LAPACKE_chbgst_work", info);
             return info;
         }
         /* Allocate memory for temporary array(s) */
-        ab_t = (lapack_complex_float*)
-            LAPACKE_malloc( sizeof(lapack_complex_float) * ldab_t * MAX(1,n) );
-        if( ab_t == NULL ) {
+        ab_t = (lapack_complex_float *)LAPACKE_malloc(sizeof(lapack_complex_float) * ldab_t * MAX(1, n));
+        if (ab_t == NULL) {
             info = LAPACK_TRANSPOSE_MEMORY_ERROR;
             goto exit_level_0;
         }
-        bb_t = (lapack_complex_float*)
-            LAPACKE_malloc( sizeof(lapack_complex_float) * ldbb_t * MAX(1,n) );
-        if( bb_t == NULL ) {
+        bb_t = (lapack_complex_float *)LAPACKE_malloc(sizeof(lapack_complex_float) * ldbb_t * MAX(1, n));
+        if (bb_t == NULL) {
             info = LAPACK_TRANSPOSE_MEMORY_ERROR;
             goto exit_level_1;
         }
-        if( LAPACKE_lsame( vect, 'v' ) ) {
-            x_t = (lapack_complex_float*)
-                LAPACKE_malloc( sizeof(lapack_complex_float) *
-                                ldx_t * MAX(1,n) );
-            if( x_t == NULL ) {
+        if (LAPACKE_lsame(vect, 'v')) {
+            x_t = (lapack_complex_float *)LAPACKE_malloc(sizeof(lapack_complex_float) * ldx_t * MAX(1, n));
+            if (x_t == NULL) {
                 info = LAPACK_TRANSPOSE_MEMORY_ERROR;
                 goto exit_level_2;
             }
         }
         /* Transpose input matrices */
-        LAPACKE_chb_trans( matrix_layout, uplo, n, ka, ab, ldab, ab_t, ldab_t );
-        LAPACKE_chb_trans( matrix_layout, uplo, n, kb, bb, ldbb, bb_t, ldbb_t );
+        LAPACKE_chb_trans(matrix_layout, uplo, n, ka, ab, ldab, ab_t, ldab_t);
+        LAPACKE_chb_trans(matrix_layout, uplo, n, kb, bb, ldbb, bb_t, ldbb_t);
         /* Call LAPACK function and adjust info */
-        LAPACK_chbgst( &vect, &uplo, &n, &ka, &kb, ab_t, &ldab_t, bb_t, &ldbb_t,
-                       x_t, &ldx_t, work, rwork, &info );
-        if( info < 0 ) {
+        LAPACK_chbgst(&vect, &uplo, &n, &ka, &kb, ab_t, &ldab_t, bb_t, &ldbb_t, x_t, &ldx_t, work, rwork, &info);
+        if (info < 0) {
             info = info - 1;
         }
         /* Transpose output matrices */
-        LAPACKE_chb_trans( LAPACK_COL_MAJOR, uplo, n, ka, ab_t, ldab_t, ab,
-                           ldab );
-        if( LAPACKE_lsame( vect, 'v' ) ) {
-            LAPACKE_cge_trans( LAPACK_COL_MAJOR, n, n, x_t, ldx_t, x, ldx );
+        LAPACKE_chb_trans(LAPACK_COL_MAJOR, uplo, n, ka, ab_t, ldab_t, ab, ldab);
+        if (LAPACKE_lsame(vect, 'v')) {
+            LAPACKE_cge_trans(LAPACK_COL_MAJOR, n, n, x_t, ldx_t, x, ldx);
         }
         /* Release memory and exit */
-        if( LAPACKE_lsame( vect, 'v' ) ) {
-            LAPACKE_free( x_t );
+        if (LAPACKE_lsame(vect, 'v')) {
+            LAPACKE_free(x_t);
         }
-exit_level_2:
-        LAPACKE_free( bb_t );
-exit_level_1:
-        LAPACKE_free( ab_t );
-exit_level_0:
-        if( info == LAPACK_TRANSPOSE_MEMORY_ERROR ) {
-            LAPACKE_xerbla( "LAPACKE_chbgst_work", info );
+    exit_level_2:
+        LAPACKE_free(bb_t);
+    exit_level_1:
+        LAPACKE_free(ab_t);
+    exit_level_0:
+        if (info == LAPACK_TRANSPOSE_MEMORY_ERROR) {
+            LAPACKE_xerbla("LAPACKE_chbgst_work", info);
         }
     } else {
         info = -1;
-        LAPACKE_xerbla( "LAPACKE_chbgst_work", info );
+        LAPACKE_xerbla("LAPACKE_chbgst_work", info);
     }
     return info;
 }

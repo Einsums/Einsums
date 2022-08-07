@@ -32,10 +32,8 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_zlassq_work( lapack_int n, lapack_complex_double* x,
-                                lapack_int incx, double* scale, double* sumsq )
-{
+lapack_int LAPACKE_zlassq_work(lapack_int n, lapack_complex_double *x, lapack_int incx, double *scale, double *sumsq) {
     lapack_int info = 0;
-    LAPACK_zlassq( &n, x, &incx, scale, sumsq );
+    LAPACK_zlassq(&n, x, &incx, scale, sumsq);
     return info;
 }

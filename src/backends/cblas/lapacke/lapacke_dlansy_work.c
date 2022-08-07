@@ -32,47 +32,44 @@
 
 #include "lapacke_utils.h"
 
-double LAPACKE_dlansy_work( int matrix_layout, char norm, char uplo,
-                                lapack_int n, const double* a, lapack_int lda,
-                                double* work )
-{
+double LAPACKE_dlansy_work(int matrix_layout, char norm, char uplo, lapack_int n, const double *a, lapack_int lda, double *work) {
     lapack_int info = 0;
     double res = 0.;
-    if( matrix_layout == LAPACK_COL_MAJOR ) {
+    if (matrix_layout == LAPACK_COL_MAJOR) {
         /* Call LAPACK function and adjust info */
-        res = LAPACK_dlansy( &norm, &uplo, &n, a, &lda, work );
-        if( info < 0 ) {
+        res = LAPACK_dlansy(&norm, &uplo, &n, a, &lda, work);
+        if (info < 0) {
             info = info - 1;
         }
-    } else if( matrix_layout == LAPACK_ROW_MAJOR ) {
-        lapack_int lda_t = MAX(1,n);
-        double* a_t = NULL;
+    } else if (matrix_layout == LAPACK_ROW_MAJOR) {
+        lapack_int lda_t = MAX(1, n);
+        double *a_t = NULL;
         /* Check leading dimension(s) */
-        if( lda < n ) {
+        if (lda < n) {
             info = -6;
-            LAPACKE_xerbla( "LAPACKE_dlansy_work", info );
+            LAPACKE_xerbla("LAPACKE_dlansy_work", info);
             return info;
         }
         /* Allocate memory for temporary array(s) */
-        a_t = (double*)LAPACKE_malloc( sizeof(double) * lda_t * MAX(1,n) );
-        if( a_t == NULL ) {
+        a_t = (double *)LAPACKE_malloc(sizeof(double) * lda_t * MAX(1, n));
+        if (a_t == NULL) {
             info = LAPACK_TRANSPOSE_MEMORY_ERROR;
             goto exit_level_0;
         }
         /* Transpose input matrices */
-        LAPACKE_dsy_trans( matrix_layout, uplo, n, a, lda, a_t, lda_t );
+        LAPACKE_dsy_trans(matrix_layout, uplo, n, a, lda, a_t, lda_t);
         /* Call LAPACK function and adjust info */
-        res = LAPACK_dlansy( &norm, &uplo, &n, a_t, &lda_t, work );
-        info = 0;  /* LAPACK call is ok! */
+        res = LAPACK_dlansy(&norm, &uplo, &n, a_t, &lda_t, work);
+        info = 0; /* LAPACK call is ok! */
         /* Release memory and exit */
-        LAPACKE_free( a_t );
-exit_level_0:
-        if( info == LAPACK_TRANSPOSE_MEMORY_ERROR ) {
-            LAPACKE_xerbla( "LAPACKE_dlansy_work", info );
+        LAPACKE_free(a_t);
+    exit_level_0:
+        if (info == LAPACK_TRANSPOSE_MEMORY_ERROR) {
+            LAPACKE_xerbla("LAPACKE_dlansy_work", info);
         }
     } else {
         info = -1;
-        LAPACKE_xerbla( "LAPACKE_dlansy_work", info );
+        LAPACKE_xerbla("LAPACKE_dlansy_work", info);
     }
     return res;
 }

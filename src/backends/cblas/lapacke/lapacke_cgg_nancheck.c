@@ -33,10 +33,6 @@
 
 /* Check a matrix for NaN entries. */
 
-lapack_logical LAPACKE_cgg_nancheck( int matrix_layout, lapack_int m,
-                                      lapack_int n,
-                                      const lapack_complex_float *a,
-                                      lapack_int lda )
-{
-    return LAPACKE_cge_nancheck( matrix_layout, m, n, a, lda );
+lapack_logical LAPACKE_cgg_nancheck(int matrix_layout, lapack_int m, lapack_int n, const lapack_complex_float *a, lapack_int lda) {
+    return LAPACKE_cge_nancheck(matrix_layout, m, n, a, lda);
 }

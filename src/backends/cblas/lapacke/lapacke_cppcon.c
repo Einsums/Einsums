@@ -32,50 +32,45 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_cppcon( int matrix_layout, char uplo, lapack_int n,
-                           const lapack_complex_float* ap, float anorm,
-                           float* rcond )
-{
+lapack_int LAPACKE_cppcon(int matrix_layout, char uplo, lapack_int n, const lapack_complex_float *ap, float anorm, float *rcond) {
     lapack_int info = 0;
-    float* rwork = NULL;
-    lapack_complex_float* work = NULL;
-    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
-        LAPACKE_xerbla( "LAPACKE_cppcon", -1 );
+    float *rwork = NULL;
+    lapack_complex_float *work = NULL;
+    if (matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR) {
+        LAPACKE_xerbla("LAPACKE_cppcon", -1);
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
-    if( LAPACKE_get_nancheck() ) {
+    if (LAPACKE_get_nancheck()) {
         /* Optionally check input matrices for NaNs */
-        if( LAPACKE_s_nancheck( 1, &anorm, 1 ) ) {
+        if (LAPACKE_s_nancheck(1, &anorm, 1)) {
             return -5;
         }
-        if( LAPACKE_cpp_nancheck( n, ap ) ) {
+        if (LAPACKE_cpp_nancheck(n, ap)) {
             return -4;
         }
     }
 #endif
     /* Allocate memory for working array(s) */
-    rwork = (float*)LAPACKE_malloc( sizeof(float) * MAX(1,n) );
-    if( rwork == NULL ) {
+    rwork = (float *)LAPACKE_malloc(sizeof(float) * MAX(1, n));
+    if (rwork == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_0;
     }
-    work = (lapack_complex_float*)
-        LAPACKE_malloc( sizeof(lapack_complex_float) * MAX(1,2*n) );
-    if( work == NULL ) {
+    work = (lapack_complex_float *)LAPACKE_malloc(sizeof(lapack_complex_float) * MAX(1, 2 * n));
+    if (work == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_1;
     }
     /* Call middle-level interface */
-    info = LAPACKE_cppcon_work( matrix_layout, uplo, n, ap, anorm, rcond, work,
-                                rwork );
+    info = LAPACKE_cppcon_work(matrix_layout, uplo, n, ap, anorm, rcond, work, rwork);
     /* Release memory and exit */
-    LAPACKE_free( work );
+    LAPACKE_free(work);
 exit_level_1:
-    LAPACKE_free( rwork );
+    LAPACKE_free(rwork);
 exit_level_0:
-    if( info == LAPACK_WORK_MEMORY_ERROR ) {
-        LAPACKE_xerbla( "LAPACKE_cppcon", info );
+    if (info == LAPACK_WORK_MEMORY_ERROR) {
+        LAPACKE_xerbla("LAPACKE_cppcon", info);
     }
     return info;
 }

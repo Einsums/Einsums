@@ -32,149 +32,126 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_csysvxx_work( int matrix_layout, char fact, char uplo,
-                                 lapack_int n, lapack_int nrhs,
-                                 lapack_complex_float* a, lapack_int lda,
-                                 lapack_complex_float* af, lapack_int ldaf,
-                                 lapack_int* ipiv, char* equed, float* s,
-                                 lapack_complex_float* b, lapack_int ldb,
-                                 lapack_complex_float* x, lapack_int ldx,
-                                 float* rcond, float* rpvgrw, float* berr,
-                                 lapack_int n_err_bnds, float* err_bnds_norm,
-                                 float* err_bnds_comp, lapack_int nparams,
-                                 float* params, lapack_complex_float* work,
-                                 float* rwork )
-{
+lapack_int LAPACKE_csysvxx_work(int matrix_layout, char fact, char uplo, lapack_int n, lapack_int nrhs, lapack_complex_float *a,
+                                lapack_int lda, lapack_complex_float *af, lapack_int ldaf, lapack_int *ipiv, char *equed, float *s,
+                                lapack_complex_float *b, lapack_int ldb, lapack_complex_float *x, lapack_int ldx, float *rcond,
+                                float *rpvgrw, float *berr, lapack_int n_err_bnds, float *err_bnds_norm, float *err_bnds_comp,
+                                lapack_int nparams, float *params, lapack_complex_float *work, float *rwork) {
     lapack_int info = 0;
-    if( matrix_layout == LAPACK_COL_MAJOR ) {
+    if (matrix_layout == LAPACK_COL_MAJOR) {
         /* Call LAPACK function and adjust info */
-        LAPACK_csysvxx( &fact, &uplo, &n, &nrhs, a, &lda, af, &ldaf, ipiv,
-                        equed, s, b, &ldb, x, &ldx, rcond, rpvgrw, berr,
-                        &n_err_bnds, err_bnds_norm, err_bnds_comp, &nparams,
-                        params, work, rwork, &info );
-        if( info < 0 ) {
+        LAPACK_csysvxx(&fact, &uplo, &n, &nrhs, a, &lda, af, &ldaf, ipiv, equed, s, b, &ldb, x, &ldx, rcond, rpvgrw, berr, &n_err_bnds,
+                       err_bnds_norm, err_bnds_comp, &nparams, params, work, rwork, &info);
+        if (info < 0) {
             info = info - 1;
         }
-    } else if( matrix_layout == LAPACK_ROW_MAJOR ) {
-        lapack_int lda_t = MAX(1,n);
-        lapack_int ldaf_t = MAX(1,n);
-        lapack_int ldb_t = MAX(1,n);
-        lapack_int ldx_t = MAX(1,n);
-        lapack_complex_float* a_t = NULL;
-        lapack_complex_float* af_t = NULL;
-        lapack_complex_float* b_t = NULL;
-        lapack_complex_float* x_t = NULL;
-        float* err_bnds_norm_t = NULL;
-        float* err_bnds_comp_t = NULL;
+    } else if (matrix_layout == LAPACK_ROW_MAJOR) {
+        lapack_int lda_t = MAX(1, n);
+        lapack_int ldaf_t = MAX(1, n);
+        lapack_int ldb_t = MAX(1, n);
+        lapack_int ldx_t = MAX(1, n);
+        lapack_complex_float *a_t = NULL;
+        lapack_complex_float *af_t = NULL;
+        lapack_complex_float *b_t = NULL;
+        lapack_complex_float *x_t = NULL;
+        float *err_bnds_norm_t = NULL;
+        float *err_bnds_comp_t = NULL;
         /* Check leading dimension(s) */
-        if( lda < n ) {
+        if (lda < n) {
             info = -7;
-            LAPACKE_xerbla( "LAPACKE_csysvxx_work", info );
+            LAPACKE_xerbla("LAPACKE_csysvxx_work", info);
             return info;
         }
-        if( ldaf < n ) {
+        if (ldaf < n) {
             info = -9;
-            LAPACKE_xerbla( "LAPACKE_csysvxx_work", info );
+            LAPACKE_xerbla("LAPACKE_csysvxx_work", info);
             return info;
         }
-        if( ldb < nrhs ) {
+        if (ldb < nrhs) {
             info = -14;
-            LAPACKE_xerbla( "LAPACKE_csysvxx_work", info );
+            LAPACKE_xerbla("LAPACKE_csysvxx_work", info);
             return info;
         }
-        if( ldx < nrhs ) {
+        if (ldx < nrhs) {
             info = -16;
-            LAPACKE_xerbla( "LAPACKE_csysvxx_work", info );
+            LAPACKE_xerbla("LAPACKE_csysvxx_work", info);
             return info;
         }
         /* Allocate memory for temporary array(s) */
-        a_t = (lapack_complex_float*)
-            LAPACKE_malloc( sizeof(lapack_complex_float) * lda_t * MAX(1,n) );
-        if( a_t == NULL ) {
+        a_t = (lapack_complex_float *)LAPACKE_malloc(sizeof(lapack_complex_float) * lda_t * MAX(1, n));
+        if (a_t == NULL) {
             info = LAPACK_TRANSPOSE_MEMORY_ERROR;
             goto exit_level_0;
         }
-        af_t = (lapack_complex_float*)
-            LAPACKE_malloc( sizeof(lapack_complex_float) * ldaf_t * MAX(1,n) );
-        if( af_t == NULL ) {
+        af_t = (lapack_complex_float *)LAPACKE_malloc(sizeof(lapack_complex_float) * ldaf_t * MAX(1, n));
+        if (af_t == NULL) {
             info = LAPACK_TRANSPOSE_MEMORY_ERROR;
             goto exit_level_1;
         }
-        b_t = (lapack_complex_float*)
-            LAPACKE_malloc( sizeof(lapack_complex_float) *
-                            ldb_t * MAX(1,nrhs) );
-        if( b_t == NULL ) {
+        b_t = (lapack_complex_float *)LAPACKE_malloc(sizeof(lapack_complex_float) * ldb_t * MAX(1, nrhs));
+        if (b_t == NULL) {
             info = LAPACK_TRANSPOSE_MEMORY_ERROR;
             goto exit_level_2;
         }
-        x_t = (lapack_complex_float*)
-            LAPACKE_malloc( sizeof(lapack_complex_float) *
-                            ldx_t * MAX(1,nrhs) );
-        if( x_t == NULL ) {
+        x_t = (lapack_complex_float *)LAPACKE_malloc(sizeof(lapack_complex_float) * ldx_t * MAX(1, nrhs));
+        if (x_t == NULL) {
             info = LAPACK_TRANSPOSE_MEMORY_ERROR;
             goto exit_level_3;
         }
-        err_bnds_norm_t = (float*)
-            LAPACKE_malloc( sizeof(float) * nrhs * MAX(1,n_err_bnds) );
-        if( err_bnds_norm_t == NULL ) {
+        err_bnds_norm_t = (float *)LAPACKE_malloc(sizeof(float) * nrhs * MAX(1, n_err_bnds));
+        if (err_bnds_norm_t == NULL) {
             info = LAPACK_TRANSPOSE_MEMORY_ERROR;
             goto exit_level_4;
         }
-        err_bnds_comp_t = (float*)
-            LAPACKE_malloc( sizeof(float) * nrhs * MAX(1,n_err_bnds) );
-        if( err_bnds_comp_t == NULL ) {
+        err_bnds_comp_t = (float *)LAPACKE_malloc(sizeof(float) * nrhs * MAX(1, n_err_bnds));
+        if (err_bnds_comp_t == NULL) {
             info = LAPACK_TRANSPOSE_MEMORY_ERROR;
             goto exit_level_5;
         }
         /* Transpose input matrices */
-        LAPACKE_csy_trans( matrix_layout, uplo, n, a, lda, a_t, lda_t );
-        if( LAPACKE_lsame( fact, 'f' ) ) {
-            LAPACKE_csy_trans( matrix_layout, uplo, n, af, ldaf, af_t, ldaf_t );
+        LAPACKE_csy_trans(matrix_layout, uplo, n, a, lda, a_t, lda_t);
+        if (LAPACKE_lsame(fact, 'f')) {
+            LAPACKE_csy_trans(matrix_layout, uplo, n, af, ldaf, af_t, ldaf_t);
         }
-        LAPACKE_cge_trans( matrix_layout, n, nrhs, b, ldb, b_t, ldb_t );
+        LAPACKE_cge_trans(matrix_layout, n, nrhs, b, ldb, b_t, ldb_t);
         /* Call LAPACK function and adjust info */
-        LAPACK_csysvxx( &fact, &uplo, &n, &nrhs, a_t, &lda_t, af_t, &ldaf_t,
-                        ipiv, equed, s, b_t, &ldb_t, x_t, &ldx_t, rcond, rpvgrw,
-                        berr, &n_err_bnds, err_bnds_norm_t, err_bnds_comp_t,
-                        &nparams, params, work, rwork, &info );
-        if( info < 0 ) {
+        LAPACK_csysvxx(&fact, &uplo, &n, &nrhs, a_t, &lda_t, af_t, &ldaf_t, ipiv, equed, s, b_t, &ldb_t, x_t, &ldx_t, rcond, rpvgrw, berr,
+                       &n_err_bnds, err_bnds_norm_t, err_bnds_comp_t, &nparams, params, work, rwork, &info);
+        if (info < 0) {
             info = info - 1;
         }
         /* Transpose output matrices */
-        if( LAPACKE_lsame( fact, 'e' ) && LAPACKE_lsame( *equed, 'y' ) ) {
-            LAPACKE_csy_trans( LAPACK_COL_MAJOR, uplo, n, a_t, lda_t, a, lda );
+        if (LAPACKE_lsame(fact, 'e') && LAPACKE_lsame(*equed, 'y')) {
+            LAPACKE_csy_trans(LAPACK_COL_MAJOR, uplo, n, a_t, lda_t, a, lda);
         }
-        if( LAPACKE_lsame( fact, 'e' ) || LAPACKE_lsame( fact, 'n' ) ) {
-            LAPACKE_csy_trans( LAPACK_COL_MAJOR, uplo, n, af_t, ldaf_t, af,
-                               ldaf );
+        if (LAPACKE_lsame(fact, 'e') || LAPACKE_lsame(fact, 'n')) {
+            LAPACKE_csy_trans(LAPACK_COL_MAJOR, uplo, n, af_t, ldaf_t, af, ldaf);
         }
-        if( LAPACKE_lsame( fact, 'f' ) && LAPACKE_lsame( *equed, 'y' ) ) {
-            LAPACKE_cge_trans( LAPACK_COL_MAJOR, n, nrhs, b_t, ldb_t, b, ldb );
+        if (LAPACKE_lsame(fact, 'f') && LAPACKE_lsame(*equed, 'y')) {
+            LAPACKE_cge_trans(LAPACK_COL_MAJOR, n, nrhs, b_t, ldb_t, b, ldb);
         }
-        LAPACKE_cge_trans( LAPACK_COL_MAJOR, n, nrhs, x_t, ldx_t, x, ldx );
-        LAPACKE_sge_trans( LAPACK_COL_MAJOR, nrhs, n_err_bnds, err_bnds_norm_t,
-                           nrhs, err_bnds_norm, n_err_bnds );
-        LAPACKE_sge_trans( LAPACK_COL_MAJOR, nrhs, n_err_bnds, err_bnds_comp_t,
-                           nrhs, err_bnds_comp, n_err_bnds );
+        LAPACKE_cge_trans(LAPACK_COL_MAJOR, n, nrhs, x_t, ldx_t, x, ldx);
+        LAPACKE_sge_trans(LAPACK_COL_MAJOR, nrhs, n_err_bnds, err_bnds_norm_t, nrhs, err_bnds_norm, n_err_bnds);
+        LAPACKE_sge_trans(LAPACK_COL_MAJOR, nrhs, n_err_bnds, err_bnds_comp_t, nrhs, err_bnds_comp, n_err_bnds);
         /* Release memory and exit */
-        LAPACKE_free( err_bnds_comp_t );
-exit_level_5:
-        LAPACKE_free( err_bnds_norm_t );
-exit_level_4:
-        LAPACKE_free( x_t );
-exit_level_3:
-        LAPACKE_free( b_t );
-exit_level_2:
-        LAPACKE_free( af_t );
-exit_level_1:
-        LAPACKE_free( a_t );
-exit_level_0:
-        if( info == LAPACK_TRANSPOSE_MEMORY_ERROR ) {
-            LAPACKE_xerbla( "LAPACKE_csysvxx_work", info );
+        LAPACKE_free(err_bnds_comp_t);
+    exit_level_5:
+        LAPACKE_free(err_bnds_norm_t);
+    exit_level_4:
+        LAPACKE_free(x_t);
+    exit_level_3:
+        LAPACKE_free(b_t);
+    exit_level_2:
+        LAPACKE_free(af_t);
+    exit_level_1:
+        LAPACKE_free(a_t);
+    exit_level_0:
+        if (info == LAPACK_TRANSPOSE_MEMORY_ERROR) {
+            LAPACKE_xerbla("LAPACKE_csysvxx_work", info);
         }
     } else {
         info = -1;
-        LAPACKE_xerbla( "LAPACKE_csysvxx_work", info );
+        LAPACKE_xerbla("LAPACKE_csysvxx_work", info);
     }
     return info;
 }

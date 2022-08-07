@@ -32,11 +32,9 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_slarfg_work( lapack_int n, float* alpha, float* x,
-                                lapack_int incx, float* tau )
-{
+lapack_int LAPACKE_slarfg_work(lapack_int n, float *alpha, float *x, lapack_int incx, float *tau) {
     lapack_int info = 0;
     /* Call LAPACK function and adjust info */
-    LAPACK_slarfg( &n, alpha, x, &incx, tau );
+    LAPACK_slarfg(&n, alpha, x, &incx, tau);
     return info;
 }

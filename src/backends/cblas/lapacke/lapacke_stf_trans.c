@@ -37,32 +37,27 @@
  * This functions does copy diagonal for both unit and non-unit cases.
  */
 
-void LAPACKE_stf_trans( int matrix_layout, char transr, char uplo, char diag,
-                        lapack_int n, const float *in,
-                        float *out )
-{
+void LAPACKE_stf_trans(int matrix_layout, char transr, char uplo, char diag, lapack_int n, const float *in, float *out) {
     lapack_int row, col;
     lapack_logical rowmaj, ntr, lower, unit;
 
-    if( in == NULL || out == NULL ) return ;
+    if (in == NULL || out == NULL)
+        return;
 
     rowmaj = (matrix_layout == LAPACK_ROW_MAJOR);
-    ntr    = LAPACKE_lsame( transr, 'n' );
-    lower  = LAPACKE_lsame( uplo,   'l' );
-    unit   = LAPACKE_lsame( diag,   'u' );
+    ntr = LAPACKE_lsame(transr, 'n');
+    lower = LAPACKE_lsame(uplo, 'l');
+    unit = LAPACKE_lsame(diag, 'u');
 
-    if( ( !rowmaj && ( matrix_layout != LAPACK_COL_MAJOR ) ) ||
-        ( !ntr    && !LAPACKE_lsame( transr, 't' ) &&
-                     !LAPACKE_lsame( transr, 'c' ) ) ||
-        ( !lower  && !LAPACKE_lsame( uplo,   'u' ) ) ||
-        ( !unit   && !LAPACKE_lsame( diag,   'n' ) ) ) {
+    if ((!rowmaj && (matrix_layout != LAPACK_COL_MAJOR)) || (!ntr && !LAPACKE_lsame(transr, 't') && !LAPACKE_lsame(transr, 'c')) ||
+        (!lower && !LAPACKE_lsame(uplo, 'u')) || (!unit && !LAPACKE_lsame(diag, 'n'))) {
         /* Just exit if input parameters are wrong */
         return;
     }
 
     /* Determine parameters of array representing RFP */
-    if( ntr ) {
-        if( n%2 == 0 ) {
+    if (ntr) {
+        if (n % 2 == 0) {
             row = n + 1;
             col = n / 2;
         } else {
@@ -70,7 +65,7 @@ void LAPACKE_stf_trans( int matrix_layout, char transr, char uplo, char diag,
             col = (n + 1) / 2;
         }
     } else {
-        if( n%2 == 0 ) {
+        if (n % 2 == 0) {
             row = n / 2;
             col = n + 1;
         } else {
@@ -80,9 +75,9 @@ void LAPACKE_stf_trans( int matrix_layout, char transr, char uplo, char diag,
     }
 
     /* Perform conversion: */
-    if( rowmaj ) {
-        LAPACKE_sge_trans( LAPACK_ROW_MAJOR, row, col, in, col, out, row );
+    if (rowmaj) {
+        LAPACKE_sge_trans(LAPACK_ROW_MAJOR, row, col, in, col, out, row);
     } else {
-        LAPACKE_sge_trans( LAPACK_COL_MAJOR, row, col, in, row, out, col );
+        LAPACKE_sge_trans(LAPACK_COL_MAJOR, row, col, in, row, out, col);
     }
 }

@@ -32,53 +32,47 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_dstein_work( int matrix_layout, lapack_int n, const double* d,
-                                const double* e, lapack_int m, const double* w,
-                                const lapack_int* iblock,
-                                const lapack_int* isplit, double* z,
-                                lapack_int ldz, double* work, lapack_int* iwork,
-                                lapack_int* ifailv )
-{
+lapack_int LAPACKE_dstein_work(int matrix_layout, lapack_int n, const double *d, const double *e, lapack_int m, const double *w,
+                               const lapack_int *iblock, const lapack_int *isplit, double *z, lapack_int ldz, double *work,
+                               lapack_int *iwork, lapack_int *ifailv) {
     lapack_int info = 0;
-    if( matrix_layout == LAPACK_COL_MAJOR ) {
+    if (matrix_layout == LAPACK_COL_MAJOR) {
         /* Call LAPACK function and adjust info */
-        LAPACK_dstein( &n, d, e, &m, w, iblock, isplit, z, &ldz, work, iwork,
-                       ifailv, &info );
-        if( info < 0 ) {
+        LAPACK_dstein(&n, d, e, &m, w, iblock, isplit, z, &ldz, work, iwork, ifailv, &info);
+        if (info < 0) {
             info = info - 1;
         }
-    } else if( matrix_layout == LAPACK_ROW_MAJOR ) {
-        lapack_int ldz_t = MAX(1,n);
-        double* z_t = NULL;
+    } else if (matrix_layout == LAPACK_ROW_MAJOR) {
+        lapack_int ldz_t = MAX(1, n);
+        double *z_t = NULL;
         /* Check leading dimension(s) */
-        if( ldz < m ) {
+        if (ldz < m) {
             info = -10;
-            LAPACKE_xerbla( "LAPACKE_dstein_work", info );
+            LAPACKE_xerbla("LAPACKE_dstein_work", info);
             return info;
         }
         /* Allocate memory for temporary array(s) */
-        z_t = (double*)LAPACKE_malloc( sizeof(double) * ldz_t * MAX(1,m) );
-        if( z_t == NULL ) {
+        z_t = (double *)LAPACKE_malloc(sizeof(double) * ldz_t * MAX(1, m));
+        if (z_t == NULL) {
             info = LAPACK_TRANSPOSE_MEMORY_ERROR;
             goto exit_level_0;
         }
         /* Call LAPACK function and adjust info */
-        LAPACK_dstein( &n, d, e, &m, w, iblock, isplit, z_t, &ldz_t, work,
-                       iwork, ifailv, &info );
-        if( info < 0 ) {
+        LAPACK_dstein(&n, d, e, &m, w, iblock, isplit, z_t, &ldz_t, work, iwork, ifailv, &info);
+        if (info < 0) {
             info = info - 1;
         }
         /* Transpose output matrices */
-        LAPACKE_dge_trans( LAPACK_COL_MAJOR, n, m, z_t, ldz_t, z, ldz );
+        LAPACKE_dge_trans(LAPACK_COL_MAJOR, n, m, z_t, ldz_t, z, ldz);
         /* Release memory and exit */
-        LAPACKE_free( z_t );
-exit_level_0:
-        if( info == LAPACK_TRANSPOSE_MEMORY_ERROR ) {
-            LAPACKE_xerbla( "LAPACKE_dstein_work", info );
+        LAPACKE_free(z_t);
+    exit_level_0:
+        if (info == LAPACK_TRANSPOSE_MEMORY_ERROR) {
+            LAPACKE_xerbla("LAPACKE_dstein_work", info);
         }
     } else {
         info = -1;
-        LAPACKE_xerbla( "LAPACKE_dstein_work", info );
+        LAPACKE_xerbla("LAPACKE_dstein_work", info);
     }
     return info;
 }

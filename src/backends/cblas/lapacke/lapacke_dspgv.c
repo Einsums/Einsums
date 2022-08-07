@@ -32,41 +32,38 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_dspgv( int matrix_layout, lapack_int itype, char jobz,
-                          char uplo, lapack_int n, double* ap, double* bp,
-                          double* w, double* z, lapack_int ldz )
-{
+lapack_int LAPACKE_dspgv(int matrix_layout, lapack_int itype, char jobz, char uplo, lapack_int n, double *ap, double *bp, double *w,
+                         double *z, lapack_int ldz) {
     lapack_int info = 0;
-    double* work = NULL;
-    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
-        LAPACKE_xerbla( "LAPACKE_dspgv", -1 );
+    double *work = NULL;
+    if (matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR) {
+        LAPACKE_xerbla("LAPACKE_dspgv", -1);
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
-    if( LAPACKE_get_nancheck() ) {
+    if (LAPACKE_get_nancheck()) {
         /* Optionally check input matrices for NaNs */
-        if( LAPACKE_dsp_nancheck( n, ap ) ) {
+        if (LAPACKE_dsp_nancheck(n, ap)) {
             return -6;
         }
-        if( LAPACKE_dsp_nancheck( n, bp ) ) {
+        if (LAPACKE_dsp_nancheck(n, bp)) {
             return -7;
         }
     }
 #endif
     /* Allocate memory for working array(s) */
-    work = (double*)LAPACKE_malloc( sizeof(double) * MAX(1,3*n) );
-    if( work == NULL ) {
+    work = (double *)LAPACKE_malloc(sizeof(double) * MAX(1, 3 * n));
+    if (work == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_0;
     }
     /* Call middle-level interface */
-    info = LAPACKE_dspgv_work( matrix_layout, itype, jobz, uplo, n, ap, bp, w, z,
-                               ldz, work );
+    info = LAPACKE_dspgv_work(matrix_layout, itype, jobz, uplo, n, ap, bp, w, z, ldz, work);
     /* Release memory and exit */
-    LAPACKE_free( work );
+    LAPACKE_free(work);
 exit_level_0:
-    if( info == LAPACK_WORK_MEMORY_ERROR ) {
-        LAPACKE_xerbla( "LAPACKE_dspgv", info );
+    if (info == LAPACK_WORK_MEMORY_ERROR) {
+        LAPACKE_xerbla("LAPACKE_dspgv", info);
     }
     return info;
 }

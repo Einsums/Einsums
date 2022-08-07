@@ -32,80 +32,71 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_ctgsyl( int matrix_layout, char trans, lapack_int ijob,
-                           lapack_int m, lapack_int n,
-                           const lapack_complex_float* a, lapack_int lda,
-                           const lapack_complex_float* b, lapack_int ldb,
-                           lapack_complex_float* c, lapack_int ldc,
-                           const lapack_complex_float* d, lapack_int ldd,
-                           const lapack_complex_float* e, lapack_int lde,
-                           lapack_complex_float* f, lapack_int ldf,
-                           float* scale, float* dif )
-{
+lapack_int LAPACKE_ctgsyl(int matrix_layout, char trans, lapack_int ijob, lapack_int m, lapack_int n, const lapack_complex_float *a,
+                          lapack_int lda, const lapack_complex_float *b, lapack_int ldb, lapack_complex_float *c, lapack_int ldc,
+                          const lapack_complex_float *d, lapack_int ldd, const lapack_complex_float *e, lapack_int lde,
+                          lapack_complex_float *f, lapack_int ldf, float *scale, float *dif) {
     lapack_int info = 0;
     lapack_int lwork = -1;
-    lapack_int* iwork = NULL;
-    lapack_complex_float* work = NULL;
+    lapack_int *iwork = NULL;
+    lapack_complex_float *work = NULL;
     lapack_complex_float work_query;
-    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
-        LAPACKE_xerbla( "LAPACKE_ctgsyl", -1 );
+    if (matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR) {
+        LAPACKE_xerbla("LAPACKE_ctgsyl", -1);
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
-    if( LAPACKE_get_nancheck() ) {
+    if (LAPACKE_get_nancheck()) {
         /* Optionally check input matrices for NaNs */
-        if( LAPACKE_cge_nancheck( matrix_layout, m, m, a, lda ) ) {
+        if (LAPACKE_cge_nancheck(matrix_layout, m, m, a, lda)) {
             return -6;
         }
-        if( LAPACKE_cge_nancheck( matrix_layout, n, n, b, ldb ) ) {
+        if (LAPACKE_cge_nancheck(matrix_layout, n, n, b, ldb)) {
             return -8;
         }
-        if( LAPACKE_cge_nancheck( matrix_layout, m, n, c, ldc ) ) {
+        if (LAPACKE_cge_nancheck(matrix_layout, m, n, c, ldc)) {
             return -10;
         }
-        if( LAPACKE_cge_nancheck( matrix_layout, m, m, d, ldd ) ) {
+        if (LAPACKE_cge_nancheck(matrix_layout, m, m, d, ldd)) {
             return -12;
         }
-        if( LAPACKE_cge_nancheck( matrix_layout, n, n, e, lde ) ) {
+        if (LAPACKE_cge_nancheck(matrix_layout, n, n, e, lde)) {
             return -14;
         }
-        if( LAPACKE_cge_nancheck( matrix_layout, m, n, f, ldf ) ) {
+        if (LAPACKE_cge_nancheck(matrix_layout, m, n, f, ldf)) {
             return -16;
         }
     }
 #endif
     /* Allocate memory for working array(s) */
-    iwork = (lapack_int*)LAPACKE_malloc( sizeof(lapack_int) * MAX(1,m+n+2) );
-    if( iwork == NULL ) {
+    iwork = (lapack_int *)LAPACKE_malloc(sizeof(lapack_int) * MAX(1, m + n + 2));
+    if (iwork == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_0;
     }
     /* Query optimal working array(s) size */
-    info = LAPACKE_ctgsyl_work( matrix_layout, trans, ijob, m, n, a, lda, b, ldb,
-                                c, ldc, d, ldd, e, lde, f, ldf, scale, dif,
-                                &work_query, lwork, iwork );
-    if( info != 0 ) {
+    info = LAPACKE_ctgsyl_work(matrix_layout, trans, ijob, m, n, a, lda, b, ldb, c, ldc, d, ldd, e, lde, f, ldf, scale, dif, &work_query,
+                               lwork, iwork);
+    if (info != 0) {
         goto exit_level_1;
     }
-    lwork = LAPACK_C2INT( work_query );
+    lwork = LAPACK_C2INT(work_query);
     /* Allocate memory for work arrays */
-    work = (lapack_complex_float*)
-        LAPACKE_malloc( sizeof(lapack_complex_float) * lwork );
-    if( work == NULL ) {
+    work = (lapack_complex_float *)LAPACKE_malloc(sizeof(lapack_complex_float) * lwork);
+    if (work == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_1;
     }
     /* Call middle-level interface */
-    info = LAPACKE_ctgsyl_work( matrix_layout, trans, ijob, m, n, a, lda, b, ldb,
-                                c, ldc, d, ldd, e, lde, f, ldf, scale, dif,
-                                work, lwork, iwork );
+    info = LAPACKE_ctgsyl_work(matrix_layout, trans, ijob, m, n, a, lda, b, ldb, c, ldc, d, ldd, e, lde, f, ldf, scale, dif, work, lwork,
+                               iwork);
     /* Release memory and exit */
-    LAPACKE_free( work );
+    LAPACKE_free(work);
 exit_level_1:
-    LAPACKE_free( iwork );
+    LAPACKE_free(iwork);
 exit_level_0:
-    if( info == LAPACK_WORK_MEMORY_ERROR ) {
-        LAPACKE_xerbla( "LAPACKE_ctgsyl", info );
+    if (info == LAPACK_WORK_MEMORY_ERROR) {
+        LAPACKE_xerbla("LAPACKE_ctgsyl", info);
     }
     return info;
 }

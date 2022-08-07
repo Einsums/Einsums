@@ -32,52 +32,50 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_slaswp_work( int matrix_layout, lapack_int n, float* a,
-                                lapack_int lda, lapack_int k1, lapack_int k2,
-                                const lapack_int* ipiv, lapack_int incx )
-{
+lapack_int LAPACKE_slaswp_work(int matrix_layout, lapack_int n, float *a, lapack_int lda, lapack_int k1, lapack_int k2,
+                               const lapack_int *ipiv, lapack_int incx) {
     lapack_int info = 0;
-    if( matrix_layout == LAPACK_COL_MAJOR ) {
+    if (matrix_layout == LAPACK_COL_MAJOR) {
         /* Call LAPACK function and adjust info */
-        LAPACK_slaswp( &n, a, &lda, &k1, &k2, ipiv, &incx );
-        if( info < 0 ) {
+        LAPACK_slaswp(&n, a, &lda, &k1, &k2, ipiv, &incx);
+        if (info < 0) {
             info = info - 1;
         }
-    } else if( matrix_layout == LAPACK_ROW_MAJOR ) {
-        lapack_int lda_t = MAX(1,k2);
+    } else if (matrix_layout == LAPACK_ROW_MAJOR) {
+        lapack_int lda_t = MAX(1, k2);
         lapack_int i;
-        for( i = k1; i <= k2; i++ ) {
-            lda_t = MAX( lda_t, ipiv[k1 + ( i - k1 ) * ABS( incx ) - 1] );
+        for (i = k1; i <= k2; i++) {
+            lda_t = MAX(lda_t, ipiv[k1 + (i - k1) * ABS(incx) - 1]);
         }
-        float* a_t = NULL;
+        float *a_t = NULL;
         /* Check leading dimension(s) */
-        if( lda < n ) {
+        if (lda < n) {
             info = -4;
-            LAPACKE_xerbla( "LAPACKE_slaswp_work", info );
+            LAPACKE_xerbla("LAPACKE_slaswp_work", info);
             return info;
         }
         /* Allocate memory for temporary array(s) */
-        a_t = (float*)LAPACKE_malloc( sizeof(float) * lda_t * MAX(1,n) );
-        if( a_t == NULL ) {
+        a_t = (float *)LAPACKE_malloc(sizeof(float) * lda_t * MAX(1, n));
+        if (a_t == NULL) {
             info = LAPACK_TRANSPOSE_MEMORY_ERROR;
             goto exit_level_0;
         }
         /* Transpose input matrices */
-        LAPACKE_sge_trans( matrix_layout, lda_t, n, a, lda, a_t, lda_t );
+        LAPACKE_sge_trans(matrix_layout, lda_t, n, a, lda, a_t, lda_t);
         /* Call LAPACK function and adjust info */
-        LAPACK_slaswp( &n, a_t, &lda_t, &k1, &k2, ipiv, &incx );
-        info = 0;  /* LAPACK call is ok! */
+        LAPACK_slaswp(&n, a_t, &lda_t, &k1, &k2, ipiv, &incx);
+        info = 0; /* LAPACK call is ok! */
         /* Transpose output matrices */
-        LAPACKE_sge_trans( LAPACK_COL_MAJOR, lda_t, n, a_t, lda_t, a, lda );
+        LAPACKE_sge_trans(LAPACK_COL_MAJOR, lda_t, n, a_t, lda_t, a, lda);
         /* Release memory and exit */
-        LAPACKE_free( a_t );
-exit_level_0:
-        if( info == LAPACK_TRANSPOSE_MEMORY_ERROR ) {
-            LAPACKE_xerbla( "LAPACKE_slaswp_work", info );
+        LAPACKE_free(a_t);
+    exit_level_0:
+        if (info == LAPACK_TRANSPOSE_MEMORY_ERROR) {
+            LAPACKE_xerbla("LAPACKE_slaswp_work", info);
         }
     } else {
         info = -1;
-        LAPACKE_xerbla( "LAPACKE_slaswp_work", info );
+        LAPACKE_xerbla("LAPACKE_slaswp_work", info);
     }
     return info;
 }

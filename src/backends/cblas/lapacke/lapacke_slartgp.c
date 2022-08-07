@@ -32,18 +32,17 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_slartgp( float f, float g, float* cs, float* sn, float* r )
-{
+lapack_int LAPACKE_slartgp(float f, float g, float *cs, float *sn, float *r) {
 #ifndef LAPACK_DISABLE_NAN_CHECK
-    if( LAPACKE_get_nancheck() ) {
+    if (LAPACKE_get_nancheck()) {
         /* Optionally check input matrices for NaNs */
-        if( LAPACKE_s_nancheck( 1, &f, 1 ) ) {
+        if (LAPACKE_s_nancheck(1, &f, 1)) {
             return -1;
         }
-        if( LAPACKE_s_nancheck( 1, &g, 1 ) ) {
+        if (LAPACKE_s_nancheck(1, &g, 1)) {
             return -2;
         }
     }
 #endif
-    return LAPACKE_slartgp_work( f, g, cs, sn, r );
+    return LAPACKE_slartgp_work(f, g, cs, sn, r);
 }

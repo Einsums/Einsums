@@ -32,74 +32,68 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_cgesvdq( int matrix_layout, char joba, char jobp,
-                           char jobr, char jobu, char jobv,
-                           lapack_int m, lapack_int n, lapack_complex_float* a,
-                           lapack_int lda, float* s, lapack_complex_float* u, lapack_int ldu,
-                           lapack_complex_float* v, lapack_int ldv, lapack_int* numrank)
-{
+lapack_int LAPACKE_cgesvdq(int matrix_layout, char joba, char jobp, char jobr, char jobu, char jobv, lapack_int m, lapack_int n,
+                           lapack_complex_float *a, lapack_int lda, float *s, lapack_complex_float *u, lapack_int ldu,
+                           lapack_complex_float *v, lapack_int ldv, lapack_int *numrank) {
     lapack_int info = 0;
     lapack_int liwork = -1;
-    lapack_int* iwork = NULL;
+    lapack_int *iwork = NULL;
     lapack_int iwork_query;
     lapack_int lcwork = -1;
-    lapack_complex_float* cwork = NULL;
+    lapack_complex_float *cwork = NULL;
     lapack_complex_float cwork_query;
     lapack_int lrwork = -1;
-    float* rwork = NULL;
+    float *rwork = NULL;
     float rwork_query;
     lapack_int i;
-    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
-        LAPACKE_xerbla( "LAPACKE_cgesvdq", -1 );
+    if (matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR) {
+        LAPACKE_xerbla("LAPACKE_cgesvdq", -1);
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
-    if( LAPACKE_get_nancheck() ) {
+    if (LAPACKE_get_nancheck()) {
         /* Optionally check input matrices for NaNs */
-        if( LAPACKE_cge_nancheck( matrix_layout, m, n, a, lda ) ) {
+        if (LAPACKE_cge_nancheck(matrix_layout, m, n, a, lda)) {
             return -6;
         }
     }
 #endif
     /* Query optimal working array(s) size */
-    info = LAPACKE_cgesvdq_work( matrix_layout, joba, jobp, jobr, jobu, jobv,
-                                 m, n, a, lda, s, u, ldu, v, ldv, numrank,
-                                 &iwork_query, liwork, &cwork_query, lcwork,
-                                 &rwork_query, lrwork );
-    if( info != 0 ) {
+    info = LAPACKE_cgesvdq_work(matrix_layout, joba, jobp, jobr, jobu, jobv, m, n, a, lda, s, u, ldu, v, ldv, numrank, &iwork_query, liwork,
+                                &cwork_query, lcwork, &rwork_query, lrwork);
+    if (info != 0) {
         goto exit_level_0;
     }
     liwork = iwork_query;
     lcwork = LAPACK_C2INT(cwork_query);
     lrwork = (lapack_int)rwork_query;
     /* Allocate memory for work arrays */
-    iwork = (lapack_int*)LAPACKE_malloc( sizeof(lapack_int) * liwork );
-    if( iwork == NULL ) {
+    iwork = (lapack_int *)LAPACKE_malloc(sizeof(lapack_int) * liwork);
+    if (iwork == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_0;
     }
-    cwork = (lapack_complex_float*)LAPACKE_malloc( sizeof(lapack_complex_float) * lcwork );
-    if( cwork == NULL ) {
+    cwork = (lapack_complex_float *)LAPACKE_malloc(sizeof(lapack_complex_float) * lcwork);
+    if (cwork == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_0;
     }
-    rwork = (float*)LAPACKE_malloc( sizeof(float) * lrwork );
-    if( rwork == NULL ) {
+    rwork = (float *)LAPACKE_malloc(sizeof(float) * lrwork);
+    if (rwork == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_0;
     }
     /* Call middle-level interface */
-    info = LAPACKE_cgesvdq_work( matrix_layout, joba, jobp, jobr, jobu, jobv,
-                                 m, n, a, lda, s, u, ldu, v, ldv, numrank,
-                                 iwork, liwork, cwork, lcwork, rwork, lrwork );
+    info = LAPACKE_cgesvdq_work(matrix_layout, joba, jobp, jobr, jobu, jobv, m, n, a, lda, s, u, ldu, v, ldv, numrank, iwork, liwork, cwork,
+                                lcwork, rwork, lrwork);
 
     /* Release memory and exit */
-    LAPACKE_free( iwork );
-    LAPACKE_free( cwork );
-    LAPACKE_free( rwork );
+    LAPACKE_free(iwork);
+    LAPACKE_free(cwork);
+    LAPACKE_free(rwork);
 exit_level_0:
-    if( info == LAPACK_WORK_MEMORY_ERROR ) {
-        LAPACKE_xerbla( "LAPACKE_cgesvdq", info );
+    if (info == LAPACK_WORK_MEMORY_ERROR) {
+        LAPACKE_xerbla("LAPACKE_cgesvdq", info);
     }
     return info;
 }

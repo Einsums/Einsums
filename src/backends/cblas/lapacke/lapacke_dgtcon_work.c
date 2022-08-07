@@ -32,15 +32,10 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_dgtcon_work( char norm, lapack_int n, const double* dl,
-                                const double* d, const double* du,
-                                const double* du2, const lapack_int* ipiv,
-                                double anorm, double* rcond, double* work,
-                                lapack_int* iwork )
-{
+lapack_int LAPACKE_dgtcon_work(char norm, lapack_int n, const double *dl, const double *d, const double *du, const double *du2,
+                               const lapack_int *ipiv, double anorm, double *rcond, double *work, lapack_int *iwork) {
     lapack_int info = 0;
     /* Call LAPACK function and adjust info */
-    LAPACK_dgtcon( &norm, &n, dl, d, du, du2, ipiv, &anorm, rcond, work, iwork,
-                   &info );
+    LAPACK_dgtcon(&norm, &n, dl, d, du, du2, ipiv, &anorm, rcond, work, iwork, &info);
     return info;
 }

@@ -32,12 +32,9 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_zptcon_work( lapack_int n, const double* d,
-                                const lapack_complex_double* e, double anorm,
-                                double* rcond, double* work )
-{
+lapack_int LAPACKE_zptcon_work(lapack_int n, const double *d, const lapack_complex_double *e, double anorm, double *rcond, double *work) {
     lapack_int info = 0;
     /* Call LAPACK function and adjust info */
-    LAPACK_zptcon( &n, d, e, &anorm, rcond, work, &info );
+    LAPACK_zptcon(&n, d, e, &anorm, rcond, work, &info);
     return info;
 }

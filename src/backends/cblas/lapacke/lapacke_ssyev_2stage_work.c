@@ -32,55 +32,53 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_ssyev_2stage_work( int matrix_layout, char jobz, char uplo,
-                               lapack_int n, float* a, lapack_int lda, float* w,
-                               float* work, lapack_int lwork )
-{
+lapack_int LAPACKE_ssyev_2stage_work(int matrix_layout, char jobz, char uplo, lapack_int n, float *a, lapack_int lda, float *w, float *work,
+                                     lapack_int lwork) {
     lapack_int info = 0;
-    if( matrix_layout == LAPACK_COL_MAJOR ) {
+    if (matrix_layout == LAPACK_COL_MAJOR) {
         /* Call LAPACK function and adjust info */
-        LAPACK_ssyev_2stage( &jobz, &uplo, &n, a, &lda, w, work, &lwork, &info );
-        if( info < 0 ) {
+        LAPACK_ssyev_2stage(&jobz, &uplo, &n, a, &lda, w, work, &lwork, &info);
+        if (info < 0) {
             info = info - 1;
         }
-    } else if( matrix_layout == LAPACK_ROW_MAJOR ) {
-        lapack_int lda_t = MAX(1,n);
-        float* a_t = NULL;
+    } else if (matrix_layout == LAPACK_ROW_MAJOR) {
+        lapack_int lda_t = MAX(1, n);
+        float *a_t = NULL;
         /* Check leading dimension(s) */
-        if( lda < n ) {
+        if (lda < n) {
             info = -6;
-            LAPACKE_xerbla( "LAPACKE_ssyev_2stage_work", info );
+            LAPACKE_xerbla("LAPACKE_ssyev_2stage_work", info);
             return info;
         }
         /* Query optimal working array(s) size if requested */
-        if( lwork == -1 ) {
-            LAPACK_ssyev_2stage( &jobz, &uplo, &n, a, &lda_t, w, work, &lwork, &info );
+        if (lwork == -1) {
+            LAPACK_ssyev_2stage(&jobz, &uplo, &n, a, &lda_t, w, work, &lwork, &info);
             return (info < 0) ? (info - 1) : info;
         }
         /* Allocate memory for temporary array(s) */
-        a_t = (float*)LAPACKE_malloc( sizeof(float) * lda_t * MAX(1,n) );
-        if( a_t == NULL ) {
+        a_t = (float *)LAPACKE_malloc(sizeof(float) * lda_t * MAX(1, n));
+        if (a_t == NULL) {
             info = LAPACK_TRANSPOSE_MEMORY_ERROR;
             goto exit_level_0;
         }
         /* Transpose input matrices */
-        LAPACKE_sge_trans( matrix_layout, n, n, a, lda, a_t, lda_t );
+        LAPACKE_sge_trans(matrix_layout, n, n, a, lda, a_t, lda_t);
         /* Call LAPACK function and adjust info */
-        LAPACK_ssyev_2stage( &jobz, &uplo, &n, a_t, &lda_t, w, work, &lwork, &info );
-        if( info < 0 ) {
+        LAPACK_ssyev_2stage(&jobz, &uplo, &n, a_t, &lda_t, w, work, &lwork, &info);
+        if (info < 0) {
             info = info - 1;
         }
         /* Transpose output matrices */
-        LAPACKE_sge_trans( LAPACK_COL_MAJOR, n, n, a_t, lda_t, a, lda );
+        LAPACKE_sge_trans(LAPACK_COL_MAJOR, n, n, a_t, lda_t, a, lda);
         /* Release memory and exit */
-        LAPACKE_free( a_t );
-exit_level_0:
-        if( info == LAPACK_TRANSPOSE_MEMORY_ERROR ) {
-            LAPACKE_xerbla( "LAPACKE_ssyev_2stage_work", info );
+        LAPACKE_free(a_t);
+    exit_level_0:
+        if (info == LAPACK_TRANSPOSE_MEMORY_ERROR) {
+            LAPACKE_xerbla("LAPACKE_ssyev_2stage_work", info);
         }
     } else {
         info = -1;
-        LAPACKE_xerbla( "LAPACKE_ssyev_2stage_work", info );
+        LAPACKE_xerbla("LAPACKE_ssyev_2stage_work", info);
     }
     return info;
 }

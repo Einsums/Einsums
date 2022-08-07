@@ -36,47 +36,42 @@
  * check 1d array for NaNs. It doesn't depend upon uplo or matrix_layout.
  */
 
-lapack_logical LAPACKE_dtp_nancheck( int matrix_layout, char uplo, char diag,
-                                      lapack_int n,
-                                      const double *ap )
-{
+lapack_logical LAPACKE_dtp_nancheck(int matrix_layout, char uplo, char diag, lapack_int n, const double *ap) {
     lapack_int i, len;
     lapack_logical colmaj, upper, unit;
 
-    if( ap == NULL ) return (lapack_logical) 0;
+    if (ap == NULL)
+        return (lapack_logical)0;
 
-    colmaj = ( matrix_layout == LAPACK_COL_MAJOR );
-    upper  = LAPACKE_lsame( uplo, 'u' );
-    unit   = LAPACKE_lsame( diag, 'u' );
+    colmaj = (matrix_layout == LAPACK_COL_MAJOR);
+    upper = LAPACKE_lsame(uplo, 'u');
+    unit = LAPACKE_lsame(diag, 'u');
 
-    if( ( !colmaj && ( matrix_layout != LAPACK_ROW_MAJOR ) ) ||
-        ( !upper  && !LAPACKE_lsame( uplo, 'l' ) ) ||
-        ( !unit   && !LAPACKE_lsame( diag, 'n' ) ) ) {
+    if ((!colmaj && (matrix_layout != LAPACK_ROW_MAJOR)) || (!upper && !LAPACKE_lsame(uplo, 'l')) || (!unit && !LAPACKE_lsame(diag, 'n'))) {
         /* Just exit if any of input parameters are wrong */
-        return (lapack_logical) 0;
+        return (lapack_logical)0;
     }
 
-    if( unit ) {
+    if (unit) {
         /* Unit case, diagonal should be excluded from the check for NaN. */
 
         /* Since col_major upper and row_major lower are equal,
          * and col_major lower and row_major upper are equals too -
          * using one code for equal cases. XOR( colmaj, upper )
          */
-        if( ( colmaj || upper ) && !( colmaj && upper ) ) {
-            for( i = 1; i < n; i++ )
-                if( LAPACKE_d_nancheck( i, &ap[ ((size_t)i+1)*i/2 ], 1 ) )
-                    return (lapack_logical) 1;
+        if ((colmaj || upper) && !(colmaj && upper)) {
+            for (i = 1; i < n; i++)
+                if (LAPACKE_d_nancheck(i, &ap[((size_t)i + 1) * i / 2], 1))
+                    return (lapack_logical)1;
         } else {
-            for( i = 0; i < n-1; i++ )
-                if( LAPACKE_d_nancheck( n-i-1,
-                    &ap[ (size_t)i+1 + i*((size_t)2*n-i+1)/2 ], 1 ) )
-                    return (lapack_logical) 1;
+            for (i = 0; i < n - 1; i++)
+                if (LAPACKE_d_nancheck(n - i - 1, &ap[(size_t)i + 1 + i * ((size_t)2 * n - i + 1) / 2], 1))
+                    return (lapack_logical)1;
         }
-        return (lapack_logical) 0;
+        return (lapack_logical)0;
     } else {
         /* Non-unit case - just check whole array for NaNs. */
-        len = n*(n+1)/2;
-        return LAPACKE_d_nancheck( len, ap, 1 );
+        len = n * (n + 1) / 2;
+        return LAPACKE_d_nancheck(len, ap, 1);
     }
 }

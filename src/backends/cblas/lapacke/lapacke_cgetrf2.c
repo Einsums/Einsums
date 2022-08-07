@@ -32,21 +32,18 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_cgetrf2( int matrix_layout, lapack_int m, lapack_int n,
-                           lapack_complex_float* a, lapack_int lda,
-                           lapack_int* ipiv )
-{
-    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
-        LAPACKE_xerbla( "LAPACKE_cgetrf2", -1 );
+lapack_int LAPACKE_cgetrf2(int matrix_layout, lapack_int m, lapack_int n, lapack_complex_float *a, lapack_int lda, lapack_int *ipiv) {
+    if (matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR) {
+        LAPACKE_xerbla("LAPACKE_cgetrf2", -1);
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
-    if( LAPACKE_get_nancheck() ) {
+    if (LAPACKE_get_nancheck()) {
         /* Optionally check input matrices for NaNs */
-        if( LAPACKE_cge_nancheck( matrix_layout, m, n, a, lda ) ) {
+        if (LAPACKE_cge_nancheck(matrix_layout, m, n, a, lda)) {
             return -4;
         }
     }
 #endif
-    return LAPACKE_cgetrf2_work( matrix_layout, m, n, a, lda, ipiv );
+    return LAPACKE_cgetrf2_work(matrix_layout, m, n, a, lda, ipiv);
 }

@@ -32,8 +32,6 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_dlarnv( lapack_int idist, lapack_int* iseed, lapack_int n,
-                           double* x )
-{
-    return LAPACKE_dlarnv_work( idist, iseed, n, x );
+lapack_int LAPACKE_dlarnv(lapack_int idist, lapack_int *iseed, lapack_int n, double *x) {
+    return LAPACKE_dlarnv_work(idist, iseed, n, x);
 }

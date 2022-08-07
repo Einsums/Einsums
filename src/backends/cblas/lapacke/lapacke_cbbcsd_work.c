@@ -32,19 +32,11 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_cbbcsd_work( int matrix_layout, char jobu1, char jobu2,
-                                char jobv1t, char jobv2t, char trans,
-                                lapack_int m, lapack_int p, lapack_int q,
-                                float* theta, float* phi,
-                                lapack_complex_float* u1, lapack_int ldu1,
-                                lapack_complex_float* u2, lapack_int ldu2,
-                                lapack_complex_float* v1t, lapack_int ldv1t,
-                                lapack_complex_float* v2t, lapack_int ldv2t,
-                                float* b11d, float* b11e, float* b12d,
-                                float* b12e, float* b21d, float* b21e,
-                                float* b22d, float* b22e, float* rwork,
-                                lapack_int lrwork )
-{
+lapack_int LAPACKE_cbbcsd_work(int matrix_layout, char jobu1, char jobu2, char jobv1t, char jobv2t, char trans, lapack_int m, lapack_int p,
+                               lapack_int q, float *theta, float *phi, lapack_complex_float *u1, lapack_int ldu1, lapack_complex_float *u2,
+                               lapack_int ldu2, lapack_complex_float *v1t, lapack_int ldv1t, lapack_complex_float *v2t, lapack_int ldv2t,
+                               float *b11d, float *b11e, float *b12d, float *b12e, float *b21d, float *b21e, float *b22d, float *b22e,
+                               float *rwork, lapack_int lrwork) {
     lapack_int info = 0;
     /* LAPACK function works with matrices in both layouts. It is supported
      * through TRANS parameter. So all conversion between layouts can be
@@ -60,25 +52,22 @@ lapack_int LAPACKE_cbbcsd_work( int matrix_layout, char jobu1, char jobu2,
      *   LAPACK_ROW_MAJOR |     'T'       | ->     'T'
      *       (note that for row major layout trans parameter is ignored)
      */
-    if( matrix_layout == LAPACK_COL_MAJOR ||
-        matrix_layout == LAPACK_ROW_MAJOR ) {
+    if (matrix_layout == LAPACK_COL_MAJOR || matrix_layout == LAPACK_ROW_MAJOR) {
         char ltrans;
-        if( !LAPACKE_lsame( trans, 't' ) && matrix_layout == LAPACK_COL_MAJOR ) {
+        if (!LAPACKE_lsame(trans, 't') && matrix_layout == LAPACK_COL_MAJOR) {
             ltrans = 'n';
         } else {
             ltrans = 't';
         }
         /* Call LAPACK function and adjust info */
-        LAPACK_cbbcsd( &jobu1, &jobu2, &jobv1t, &jobv2t, &ltrans, &m, &p, &q,
-                       theta, phi, u1, &ldu1, u2, &ldu2, v1t, &ldv1t, v2t,
-                       &ldv2t, b11d, b11e, b12d, b12e, b21d, b21e, b22d, b22e,
-                       rwork, &lrwork, &info );
-        if( info < 0 ) {
+        LAPACK_cbbcsd(&jobu1, &jobu2, &jobv1t, &jobv2t, &ltrans, &m, &p, &q, theta, phi, u1, &ldu1, u2, &ldu2, v1t, &ldv1t, v2t, &ldv2t,
+                      b11d, b11e, b12d, b12e, b21d, b21e, b22d, b22e, rwork, &lrwork, &info);
+        if (info < 0) {
             info = info - 1;
         }
     } else {
         info = -1;
-        LAPACKE_xerbla( "LAPACKE_cbbcsd_work", info );
+        LAPACKE_xerbla("LAPACKE_cbbcsd_work", info);
     }
     return info;
 }

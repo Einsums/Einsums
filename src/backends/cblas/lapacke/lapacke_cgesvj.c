@@ -32,66 +32,59 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_cgesvj( int matrix_layout, char joba, char jobu, char jobv,
-                           lapack_int m, lapack_int n,
-                           lapack_complex_float * a, lapack_int lda,
-                           float* sva, lapack_int mv,
-                           lapack_complex_float* v, lapack_int ldv, float* stat )
-{
+lapack_int LAPACKE_cgesvj(int matrix_layout, char joba, char jobu, char jobv, lapack_int m, lapack_int n, lapack_complex_float *a,
+                          lapack_int lda, float *sva, lapack_int mv, lapack_complex_float *v, lapack_int ldv, float *stat) {
     lapack_int info = 0;
-    lapack_int lwork = m+n;
-    lapack_int lrwork = MAX(6,m+n);
-    float* rwork = NULL;
-    lapack_complex_float* cwork = NULL;
+    lapack_int lwork = m + n;
+    lapack_int lrwork = MAX(6, m + n);
+    float *rwork = NULL;
+    lapack_complex_float *cwork = NULL;
     lapack_int i;
     lapack_int nrows_v;
-    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
-        LAPACKE_xerbla( "LAPACKE_cgesvj", -1 );
+    if (matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR) {
+        LAPACKE_xerbla("LAPACKE_cgesvj", -1);
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
-    if( LAPACKE_get_nancheck() ) {
+    if (LAPACKE_get_nancheck()) {
         /* Optionally check input matrices for NaNs */
-        nrows_v = LAPACKE_lsame( jobv, 'v' ) ? MAX(0,n) :
-                ( LAPACKE_lsame( jobv, 'a' ) ? MAX(0,mv) : 0);
-        if( LAPACKE_cge_nancheck( matrix_layout, m, n, a, lda ) ) {
+        nrows_v = LAPACKE_lsame(jobv, 'v') ? MAX(0, n) : (LAPACKE_lsame(jobv, 'a') ? MAX(0, mv) : 0);
+        if (LAPACKE_cge_nancheck(matrix_layout, m, n, a, lda)) {
             return -7;
         }
-        if( LAPACKE_lsame( jobv, 'a' ) || LAPACKE_lsame( jobv, 'v' ) ) {
-            if( LAPACKE_cge_nancheck( matrix_layout, nrows_v, n, v, ldv ) ) {
+        if (LAPACKE_lsame(jobv, 'a') || LAPACKE_lsame(jobv, 'v')) {
+            if (LAPACKE_cge_nancheck(matrix_layout, nrows_v, n, v, ldv)) {
                 return -11;
             }
         }
     }
 #endif
     /* Allocate memory for working array(s) */
-    cwork = (lapack_complex_float*)
-        LAPACKE_malloc( sizeof(lapack_complex_float) * lwork );
-    if( cwork == NULL ) {
+    cwork = (lapack_complex_float *)LAPACKE_malloc(sizeof(lapack_complex_float) * lwork);
+    if (cwork == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_0;
     }
-    rwork = (float*)LAPACKE_malloc( sizeof(float) * lrwork );
-    if( rwork == NULL ) {
+    rwork = (float *)LAPACKE_malloc(sizeof(float) * lrwork);
+    if (rwork == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_1;
     }
-    rwork[0] = stat[0];  /* Significant if jobu = 'c' */
+    rwork[0] = stat[0]; /* Significant if jobu = 'c' */
     /* Call middle-level interface */
-    info = LAPACKE_cgesvj_work( matrix_layout, joba, jobu, jobv, m, n, a, lda,
-                                sva, mv, v, ldv, cwork, lwork, rwork, lrwork );
+    info = LAPACKE_cgesvj_work(matrix_layout, joba, jobu, jobv, m, n, a, lda, sva, mv, v, ldv, cwork, lwork, rwork, lrwork);
     /* Backup significant data from working array(s) */
-    for( i=0; i<6; i++ ) {
+    for (i = 0; i < 6; i++) {
         stat[i] = rwork[i];
     }
 
     /* Release memory and exit */
-    LAPACKE_free( rwork );
+    LAPACKE_free(rwork);
 exit_level_1:
-    LAPACKE_free( cwork );
+    LAPACKE_free(cwork);
 exit_level_0:
-    if( info == LAPACK_WORK_MEMORY_ERROR ) {
-        LAPACKE_xerbla( "LAPACKE_cgesvj", info );
+    if (info == LAPACK_WORK_MEMORY_ERROR) {
+        LAPACKE_xerbla("LAPACKE_cgesvj", info);
     }
     return info;
 }

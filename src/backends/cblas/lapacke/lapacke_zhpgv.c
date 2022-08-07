@@ -32,51 +32,46 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_zhpgv( int matrix_layout, lapack_int itype, char jobz,
-                          char uplo, lapack_int n, lapack_complex_double* ap,
-                          lapack_complex_double* bp, double* w,
-                          lapack_complex_double* z, lapack_int ldz )
-{
+lapack_int LAPACKE_zhpgv(int matrix_layout, lapack_int itype, char jobz, char uplo, lapack_int n, lapack_complex_double *ap,
+                         lapack_complex_double *bp, double *w, lapack_complex_double *z, lapack_int ldz) {
     lapack_int info = 0;
-    double* rwork = NULL;
-    lapack_complex_double* work = NULL;
-    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
-        LAPACKE_xerbla( "LAPACKE_zhpgv", -1 );
+    double *rwork = NULL;
+    lapack_complex_double *work = NULL;
+    if (matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR) {
+        LAPACKE_xerbla("LAPACKE_zhpgv", -1);
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
-    if( LAPACKE_get_nancheck() ) {
+    if (LAPACKE_get_nancheck()) {
         /* Optionally check input matrices for NaNs */
-        if( LAPACKE_zhp_nancheck( n, ap ) ) {
+        if (LAPACKE_zhp_nancheck(n, ap)) {
             return -6;
         }
-        if( LAPACKE_zhp_nancheck( n, bp ) ) {
+        if (LAPACKE_zhp_nancheck(n, bp)) {
             return -7;
         }
     }
 #endif
     /* Allocate memory for working array(s) */
-    rwork = (double*)LAPACKE_malloc( sizeof(double) * MAX(1,3*n-2) );
-    if( rwork == NULL ) {
+    rwork = (double *)LAPACKE_malloc(sizeof(double) * MAX(1, 3 * n - 2));
+    if (rwork == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_0;
     }
-    work = (lapack_complex_double*)
-        LAPACKE_malloc( sizeof(lapack_complex_double) * MAX(1,2*n-1) );
-    if( work == NULL ) {
+    work = (lapack_complex_double *)LAPACKE_malloc(sizeof(lapack_complex_double) * MAX(1, 2 * n - 1));
+    if (work == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_1;
     }
     /* Call middle-level interface */
-    info = LAPACKE_zhpgv_work( matrix_layout, itype, jobz, uplo, n, ap, bp, w, z,
-                               ldz, work, rwork );
+    info = LAPACKE_zhpgv_work(matrix_layout, itype, jobz, uplo, n, ap, bp, w, z, ldz, work, rwork);
     /* Release memory and exit */
-    LAPACKE_free( work );
+    LAPACKE_free(work);
 exit_level_1:
-    LAPACKE_free( rwork );
+    LAPACKE_free(rwork);
 exit_level_0:
-    if( info == LAPACK_WORK_MEMORY_ERROR ) {
-        LAPACKE_xerbla( "LAPACKE_zhpgv", info );
+    if (info == LAPACK_WORK_MEMORY_ERROR) {
+        LAPACKE_xerbla("LAPACKE_zhpgv", info);
     }
     return info;
 }

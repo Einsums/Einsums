@@ -36,29 +36,26 @@
  * layout or vice versa.
  */
 
-void LAPACKE_ztr_trans( int matrix_layout, char uplo, char diag, lapack_int n,
-                        const lapack_complex_double *in, lapack_int ldin,
-                        lapack_complex_double *out, lapack_int ldout )
-{
+void LAPACKE_ztr_trans(int matrix_layout, char uplo, char diag, lapack_int n, const lapack_complex_double *in, lapack_int ldin,
+                       lapack_complex_double *out, lapack_int ldout) {
     lapack_int i, j, st;
     lapack_logical colmaj, lower, unit;
 
-    if( in == NULL || out == NULL ) return ;
+    if (in == NULL || out == NULL)
+        return;
 
-    colmaj = ( matrix_layout == LAPACK_COL_MAJOR );
-    lower  = LAPACKE_lsame( uplo, 'l' );
-    unit   = LAPACKE_lsame( diag, 'u' );
+    colmaj = (matrix_layout == LAPACK_COL_MAJOR);
+    lower = LAPACKE_lsame(uplo, 'l');
+    unit = LAPACKE_lsame(diag, 'u');
 
-    if( ( !colmaj && ( matrix_layout != LAPACK_ROW_MAJOR ) ) ||
-        ( !lower  && !LAPACKE_lsame( uplo, 'u' ) ) ||
-        ( !unit   && !LAPACKE_lsame( diag, 'n' ) ) ) {
+    if ((!colmaj && (matrix_layout != LAPACK_ROW_MAJOR)) || (!lower && !LAPACKE_lsame(uplo, 'u')) || (!unit && !LAPACKE_lsame(diag, 'n'))) {
         /* Just exit if any of input parameters are wrong */
         return;
     }
-    if( unit ) {
+    if (unit) {
         /* If unit, then don't touch diagonal, start from 1st column or row */
         st = 1;
-    } else  {
+    } else {
         /* If non-unit, then check diagonal also, starting from [0,0] */
         st = 0;
     }
@@ -68,16 +65,16 @@ void LAPACKE_ztr_trans( int matrix_layout, char uplo, char diag, lapack_int n,
      * and col_major lower and row_major upper are equals too -
      * using one code for equal cases. XOR( colmaj, upper )
      */
-    if( ( colmaj || lower ) && !( colmaj && lower ) ) {
-        for( j = st; j < MIN( n, ldout ); j++ ) {
-            for( i = 0; i < MIN( j+1-st, ldin ); i++ ) {
-                out[ j+i*ldout ] = in[ i+j*ldin ];
+    if ((colmaj || lower) && !(colmaj && lower)) {
+        for (j = st; j < MIN(n, ldout); j++) {
+            for (i = 0; i < MIN(j + 1 - st, ldin); i++) {
+                out[j + i * ldout] = in[i + j * ldin];
             }
         }
     } else {
-        for( j = 0; j < MIN( n-st, ldout ); j++ ) {
-            for( i = j+st; i < MIN( n, ldin ); i++ ) {
-                out[ j+i*ldout ] = in[ i+j*ldin ];
+        for (j = 0; j < MIN(n - st, ldout); j++) {
+            for (i = j + st; i < MIN(n, ldin); i++) {
+                out[j + i * ldout] = in[i + j * ldin];
             }
         }
     }

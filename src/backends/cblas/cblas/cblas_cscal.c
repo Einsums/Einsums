@@ -8,14 +8,12 @@
  */
 #include "cblas.h"
 #include "cblas_f77.h"
-void cblas_cscal( const CBLAS_INT N, const void *alpha, void *X,
-                       const CBLAS_INT incX)
-{
+void cblas_cscal(const CBLAS_INT N, const void *alpha, void *X, const CBLAS_INT incX) {
 #ifdef F77_INT
-   F77_INT F77_N=N, F77_incX=incX;
+    F77_INT F77_N = N, F77_incX = incX;
 #else
-   #define F77_N N
-   #define F77_incX incX
+#define F77_N N
+#define F77_incX incX
 #endif
-   F77_cscal( &F77_N, alpha, X, &F77_incX);
+    F77_cscal(&F77_N, alpha, X, &F77_incX);
 }

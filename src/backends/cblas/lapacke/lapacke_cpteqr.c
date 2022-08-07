@@ -32,52 +32,50 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_cpteqr( int matrix_layout, char compz, lapack_int n, float* d,
-                           float* e, lapack_complex_float* z, lapack_int ldz )
-{
+lapack_int LAPACKE_cpteqr(int matrix_layout, char compz, lapack_int n, float *d, float *e, lapack_complex_float *z, lapack_int ldz) {
     lapack_int info = 0;
     /* Additional scalars declarations for work arrays */
     lapack_int lwork;
-    float* work = NULL;
-    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
-        LAPACKE_xerbla( "LAPACKE_cpteqr", -1 );
+    float *work = NULL;
+    if (matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR) {
+        LAPACKE_xerbla("LAPACKE_cpteqr", -1);
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
-    if( LAPACKE_get_nancheck() ) {
+    if (LAPACKE_get_nancheck()) {
         /* Optionally check input matrices for NaNs */
-        if( LAPACKE_s_nancheck( n, d, 1 ) ) {
+        if (LAPACKE_s_nancheck(n, d, 1)) {
             return -4;
         }
-        if( LAPACKE_s_nancheck( n-1, e, 1 ) ) {
+        if (LAPACKE_s_nancheck(n - 1, e, 1)) {
             return -5;
         }
-        if( LAPACKE_lsame( compz, 'v' ) ) {
-            if( LAPACKE_cge_nancheck( matrix_layout, n, n, z, ldz ) ) {
+        if (LAPACKE_lsame(compz, 'v')) {
+            if (LAPACKE_cge_nancheck(matrix_layout, n, n, z, ldz)) {
                 return -6;
             }
         }
     }
 #endif
     /* Additional scalars initializations for work arrays */
-    if( LAPACKE_lsame( compz, 'n' ) ) {
+    if (LAPACKE_lsame(compz, 'n')) {
         lwork = 1;
     } else {
-        lwork = MAX(1,4*n-4);
+        lwork = MAX(1, 4 * n - 4);
     }
     /* Allocate memory for working array(s) */
-    work = (float*)LAPACKE_malloc( sizeof(float) * lwork );
-    if( work == NULL ) {
+    work = (float *)LAPACKE_malloc(sizeof(float) * lwork);
+    if (work == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_0;
     }
     /* Call middle-level interface */
-    info = LAPACKE_cpteqr_work( matrix_layout, compz, n, d, e, z, ldz, work );
+    info = LAPACKE_cpteqr_work(matrix_layout, compz, n, d, e, z, ldz, work);
     /* Release memory and exit */
-    LAPACKE_free( work );
+    LAPACKE_free(work);
 exit_level_0:
-    if( info == LAPACK_WORK_MEMORY_ERROR ) {
-        LAPACKE_xerbla( "LAPACKE_cpteqr", info );
+    if (info == LAPACK_WORK_MEMORY_ERROR) {
+        LAPACKE_xerbla("LAPACKE_cpteqr", info);
     }
     return info;
 }

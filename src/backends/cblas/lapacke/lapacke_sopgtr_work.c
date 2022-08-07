@@ -32,59 +32,56 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_sopgtr_work( int matrix_layout, char uplo, lapack_int n,
-                                const float* ap, const float* tau, float* q,
-                                lapack_int ldq, float* work )
-{
+lapack_int LAPACKE_sopgtr_work(int matrix_layout, char uplo, lapack_int n, const float *ap, const float *tau, float *q, lapack_int ldq,
+                               float *work) {
     lapack_int info = 0;
     lapack_int ldq_t;
     float *q_t = NULL, *ap_t = NULL;
-    if( matrix_layout == LAPACK_COL_MAJOR ) {
+    if (matrix_layout == LAPACK_COL_MAJOR) {
         /* Call LAPACK function and adjust info */
-        LAPACK_sopgtr( &uplo, &n, ap, tau, q, &ldq, work, &info );
-        if( info < 0 ) {
+        LAPACK_sopgtr(&uplo, &n, ap, tau, q, &ldq, work, &info);
+        if (info < 0) {
             info = info - 1;
         }
-    } else if( matrix_layout == LAPACK_ROW_MAJOR ) {
-        ldq_t = MAX(1,n);
+    } else if (matrix_layout == LAPACK_ROW_MAJOR) {
+        ldq_t = MAX(1, n);
         /* Check leading dimension(s) */
-        if( ldq < n ) {
+        if (ldq < n) {
             info = -7;
-            LAPACKE_xerbla( "LAPACKE_sopgtr_work", info );
+            LAPACKE_xerbla("LAPACKE_sopgtr_work", info);
             return info;
         }
         /* Allocate memory for temporary array(s) */
-        q_t = (float*)LAPACKE_malloc( sizeof(float) * ldq_t * MAX(1,n) );
-        if( q_t == NULL ) {
+        q_t = (float *)LAPACKE_malloc(sizeof(float) * ldq_t * MAX(1, n));
+        if (q_t == NULL) {
             info = LAPACK_TRANSPOSE_MEMORY_ERROR;
             goto exit_level_0;
         }
-        ap_t = (float*)
-            LAPACKE_malloc( sizeof(float) * ( MAX(1,n) * MAX(2,n+1) ) / 2 );
-        if( ap_t == NULL ) {
+        ap_t = (float *)LAPACKE_malloc(sizeof(float) * (MAX(1, n) * MAX(2, n + 1)) / 2);
+        if (ap_t == NULL) {
             info = LAPACK_TRANSPOSE_MEMORY_ERROR;
             goto exit_level_1;
         }
         /* Transpose input matrices */
-        LAPACKE_ssp_trans( matrix_layout, uplo, n, ap, ap_t );
+        LAPACKE_ssp_trans(matrix_layout, uplo, n, ap, ap_t);
         /* Call LAPACK function and adjust info */
-        LAPACK_sopgtr( &uplo, &n, ap_t, tau, q_t, &ldq_t, work, &info );
-        if( info < 0 ) {
+        LAPACK_sopgtr(&uplo, &n, ap_t, tau, q_t, &ldq_t, work, &info);
+        if (info < 0) {
             info = info - 1;
         }
         /* Transpose output matrices */
-        LAPACKE_sge_trans( LAPACK_COL_MAJOR, n, n, q_t, ldq_t, q, ldq );
+        LAPACKE_sge_trans(LAPACK_COL_MAJOR, n, n, q_t, ldq_t, q, ldq);
         /* Release memory and exit */
-        LAPACKE_free( ap_t );
-exit_level_1:
-        LAPACKE_free( q_t );
-exit_level_0:
-        if( info == LAPACK_TRANSPOSE_MEMORY_ERROR ) {
-            LAPACKE_xerbla( "LAPACKE_sopgtr_work", info );
+        LAPACKE_free(ap_t);
+    exit_level_1:
+        LAPACKE_free(q_t);
+    exit_level_0:
+        if (info == LAPACK_TRANSPOSE_MEMORY_ERROR) {
+            LAPACKE_xerbla("LAPACKE_sopgtr_work", info);
         }
     } else {
         info = -1;
-        LAPACKE_xerbla( "LAPACKE_sopgtr_work", info );
+        LAPACKE_xerbla("LAPACKE_sopgtr_work", info);
     }
     return info;
 }

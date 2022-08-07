@@ -32,47 +32,43 @@
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_zgeqlf( int matrix_layout, lapack_int m, lapack_int n,
-                           lapack_complex_double* a, lapack_int lda,
-                           lapack_complex_double* tau )
-{
+lapack_int LAPACKE_zgeqlf(int matrix_layout, lapack_int m, lapack_int n, lapack_complex_double *a, lapack_int lda,
+                          lapack_complex_double *tau) {
     lapack_int info = 0;
     lapack_int lwork = -1;
-    lapack_complex_double* work = NULL;
+    lapack_complex_double *work = NULL;
     lapack_complex_double work_query;
-    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
-        LAPACKE_xerbla( "LAPACKE_zgeqlf", -1 );
+    if (matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR) {
+        LAPACKE_xerbla("LAPACKE_zgeqlf", -1);
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
-    if( LAPACKE_get_nancheck() ) {
+    if (LAPACKE_get_nancheck()) {
         /* Optionally check input matrices for NaNs */
-        if( LAPACKE_zge_nancheck( matrix_layout, m, n, a, lda ) ) {
+        if (LAPACKE_zge_nancheck(matrix_layout, m, n, a, lda)) {
             return -4;
         }
     }
 #endif
     /* Query optimal working array(s) size */
-    info = LAPACKE_zgeqlf_work( matrix_layout, m, n, a, lda, tau, &work_query,
-                                lwork );
-    if( info != 0 ) {
+    info = LAPACKE_zgeqlf_work(matrix_layout, m, n, a, lda, tau, &work_query, lwork);
+    if (info != 0) {
         goto exit_level_0;
     }
-    lwork = LAPACK_Z2INT( work_query );
+    lwork = LAPACK_Z2INT(work_query);
     /* Allocate memory for work arrays */
-    work = (lapack_complex_double*)
-        LAPACKE_malloc( sizeof(lapack_complex_double) * lwork );
-    if( work == NULL ) {
+    work = (lapack_complex_double *)LAPACKE_malloc(sizeof(lapack_complex_double) * lwork);
+    if (work == NULL) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_0;
     }
     /* Call middle-level interface */
-    info = LAPACKE_zgeqlf_work( matrix_layout, m, n, a, lda, tau, work, lwork );
+    info = LAPACKE_zgeqlf_work(matrix_layout, m, n, a, lda, tau, work, lwork);
     /* Release memory and exit */
-    LAPACKE_free( work );
+    LAPACKE_free(work);
 exit_level_0:
-    if( info == LAPACK_WORK_MEMORY_ERROR ) {
-        LAPACKE_xerbla( "LAPACKE_zgeqlf", info );
+    if (info == LAPACK_WORK_MEMORY_ERROR) {
+        LAPACKE_xerbla("LAPACKE_zgeqlf", info);
     }
     return info;
 }
