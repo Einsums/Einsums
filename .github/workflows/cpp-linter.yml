@@ -11,7 +11,7 @@ on:
 
 jobs:
   cpp-linter:
-    name: Build and Test
+    name: C++ Tidy / Format
     runs-on: ubuntu-latest
 
     steps:
@@ -22,7 +22,7 @@ jobs:
       run: sudo apt-get install -y liblapacke-dev liblapack-dev libblas-dev libhdf5-dev
 
     - name: Configure CMake
-      run: cmake -G Ninja -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=Release -DEINSUMS_SHOW_WARNING=OFF
+      run: cmake -G Ninja -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=Release
 
     - uses: cpp-linter/cpp-linter-action@v1
       id: linter
