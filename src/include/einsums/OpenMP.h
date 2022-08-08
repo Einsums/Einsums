@@ -28,8 +28,9 @@ void EINSUMS_EXPORT omp_set_nested(int val);
  *
  * @return int
  */
-
 int EINSUMS_EXPORT omp_get_nested();
+
+void EINSUMS_EXPORT omp_set_max_active_levels(int max_levels);
 
 #if defined(__cplusplus)
 }

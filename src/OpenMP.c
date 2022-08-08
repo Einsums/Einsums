@@ -27,3 +27,7 @@ void omp_set_nested(int val) {
 int omp_get_nested() {
     return 0;
 }
+
+void omp_set_max_active_levels(int max_levels) {
+    (void)max_levels;
+}

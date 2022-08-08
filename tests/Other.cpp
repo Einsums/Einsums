@@ -25,7 +25,6 @@ TEST_CASE("timer") {
     auto B = create_random_tensor("B", 100, 100);
 
     // println("pre omp_get_max_active_levels {}", omp_get_max_active_levels());
-    omp_set_nested(false);
 #pragma omp parallel for
     for (int _i = 0; _i < 1000; _i++) {
         timer::push("B: test timer");
