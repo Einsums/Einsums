@@ -32,7 +32,8 @@ jobs:
         version: 14
         style: file
         tidy-checks: ''
-        database: 'build'
+        files-changed-only: false
+        database: '${{github.workspace}}/build'
     - name: Fail fast?/
       if: steps.linter.outputs.checks-failed > 0
       run: |
