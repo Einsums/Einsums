@@ -7,6 +7,9 @@
 #include <cstdint>
 #include <ostream>
 
+#define EINSUMS_STRINGIFY(a) EINSUMS_STRINGIFY2(a)
+#define EINSUMS_STRINGIFY2(a) #a
+
 namespace einsums {
 
 auto EINSUMS_EXPORT initialize() -> int;
