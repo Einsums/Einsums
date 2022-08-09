@@ -124,6 +124,18 @@ auto create_identity_tensor(const std::string &name, MultiIndex... index) -> Ten
     return A;
 }
 
+template <template <typename, size_t> typename TensorType, typename DataType, size_t Rank>
+auto create_tensor_like(const TensorType<DataType, Rank> &tensor) -> Tensor<DataType, Rank> {
+    return Tensor<DataType, Rank>{tensor.dims()};
+}
+
+template <template <typename, size_t> typename TensorType, typename DataType, size_t Rank>
+auto create_tensor_like(const std::string name, const TensorType<DataType, Rank> &tensor) -> Tensor<DataType, Rank> {
+    auto result = Tensor<DataType, Rank>{tensor.dims()};
+    result.set_name(name);
+    return result;
+}
+
 template <typename T>
 auto arange(T start, T stop, T step = T{1}) -> Tensor<T, 1> {
     assert(stop >= start);

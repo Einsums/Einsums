@@ -52,7 +52,18 @@ struct DiskView;
 
 template <typename T, size_t Rank>
 struct DiskTensor;
+} // namespace einsums
 
+struct TensorPrintOptions {
+    int width{5};
+    bool full_output{true};
+};
+
+template <template <typename, size_t> typename AType, size_t Rank, typename T>
+auto println(const AType<T, Rank> &A, TensorPrintOptions options = {}) ->
+    typename std::enable_if_t<std::is_base_of_v<einsums::detail::TensorBase<T, Rank>, AType<T, Rank>>>;
+
+namespace einsums {
 namespace detail {
 
 template <template <typename, size_t> typename TensorType, size_t Rank, std::size_t... I, typename T>
@@ -242,46 +253,26 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
         -> std::enable_if_t<count_of_type<All_t, MultiIndex...>() == 0 && count_of_type<Range, MultiIndex...>() == 0, T *> {
         assert(sizeof...(MultiIndex) <= _dims.size());
 
-        auto index_list = {static_cast<size_t>(index)...};
+        auto index_list = std::array{static_cast<std::int64_t>(index)...};
+        for (auto [i, index] : enumerate(index_list)) {
+            if (index < 0) {
+                index_list[i] = _dims[i] + index;
+            }
+        }
         size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
         return &_data[ordinal];
-    }
-
-    auto operator*=(const T &b) -> Tensor<T, Rank> & {
-#pragma omp parallel
-        {
-            auto tid = omp_get_thread_num();
-            auto chunksize = _data.size() / omp_get_num_threads();
-            auto begin = _data.begin() + chunksize * tid;
-            auto end = (tid == omp_get_num_threads() - 1) ? _data.end() : begin + chunksize;
-#pragma omp simd
-            for (auto i = begin; i < end; i++) {
-                (*i) *= b;
-            }
-        }
-        return *this;
-    }
-
-    auto operator+=(const T &b) -> Tensor<T, Rank> & {
-#pragma omp parallel
-        {
-            auto tid = omp_get_thread_num();
-            auto chunksize = _data.size() / omp_get_num_threads();
-            auto begin = _data.begin() + chunksize * tid;
-            auto end = (tid == omp_get_num_threads() - 1) ? _data.end() : begin + chunksize;
-#pragma omp simd
-            for (auto i = begin; i < end; i++) {
-                (*i) += b;
-            }
-        }
-        return *this;
     }
 
     template <typename... MultiIndex>
     auto operator()(MultiIndex... index) const
         -> std::enable_if_t<count_of_type<All_t, MultiIndex...>() == 0 && count_of_type<Range, MultiIndex...>() == 0, const T &> {
         assert(sizeof...(MultiIndex) == _dims.size());
-        auto index_list = {static_cast<size_t>(index)...};
+        auto index_list = std::array{static_cast<std::int64_t>(index)...};
+        for (auto [i, index] : enumerate(index_list)) {
+            if (index < 0) {
+                index_list[i] = _dims[i] + index;
+            }
+        }
         size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
         return _data[ordinal];
     }
@@ -290,7 +281,12 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
     auto operator()(MultiIndex... index)
         -> std::enable_if_t<count_of_type<All_t, MultiIndex...>() == 0 && count_of_type<Range, MultiIndex...>() == 0, T &> {
         assert(sizeof...(MultiIndex) == _dims.size());
-        auto index_list = {static_cast<size_t>(index)...};
+        auto index_list = std::array{static_cast<std::int64_t>(index)...};
+        for (auto [i, index] : enumerate(index_list)) {
+            if (index < 0) {
+                index_list[i] = _dims[i] + index;
+            }
+        }
         size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
         return _data[ordinal];
     }
@@ -362,8 +358,48 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
         return TensorView<T, Rank>{*this, std::move(dims), std::move(offset), std::move(stride)};
     }
 
+    auto operator=(const Tensor<T, Rank> &other) -> Tensor<T, Rank> & {
+        bool realloc{false};
+        for (int i = 0; i < Rank; i++) {
+            if (dim(i) == 0)
+                realloc = true;
+            else if (dim(i) != other.dim(i)) {
+                // std::string str = fmt::format("Tensor::operator= dimensions do not match (this){} (other){}", dim(i), other.dim(i));
+                // if constexpr (Rank != 1) {
+                // throw std::runtime_error(str);
+                // } else
+                realloc = true;
+            }
+        }
+
+        if (realloc) {
+            struct stride {
+                size_t value{1};
+                stride() = default;
+                auto operator()(size_t dim) -> size_t {
+                    auto old_value = value;
+                    value *= dim;
+                    return old_value;
+                }
+            };
+
+            _dims = other._dims;
+
+            // Row-major order of dimensions
+            std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), stride());
+            size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
+
+            // Resize the data structure
+            _data.resize(size);
+        }
+
+        std::copy(other._data.begin(), other._data.end(), _data.begin());
+
+        return *this;
+    }
+
     template <typename TOther>
-    auto operator=(const Tensor<TOther, Rank> &other) -> Tensor<T, Rank> & {
+    auto operator=(const Tensor<TOther, Rank> &other) -> std::enable_if_t<!std::is_same_v<T, TOther>, Tensor<T, Rank> &> {
         bool realloc{false};
         for (int i = 0; i < Rank; i++) {
             if (dim(i) == 0)
@@ -398,15 +434,11 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
             _data.resize(size);
         }
 
-        if constexpr (std::is_same_v<T, TOther>) {
-            std::copy(other._data.begin(), other._data.end(), _data.begin());
-        } else {
-            auto target_dims = get_dim_ranges<Rank>(*this);
-            for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
-                T &target_value = std::apply(*this, target_combination);
-                T value = std::apply(other, target_combination);
-                target_value = value;
-            }
+        auto target_dims = get_dim_ranges<Rank>(*this);
+        for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
+            T &target_value = std::apply(*this, target_combination);
+            T value = std::apply(other, target_combination);
+            target_value = value;
         }
 
         return *this;
@@ -423,6 +455,35 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
 
         return *this;
     }
+
+    auto operator=(const T &fill_value) -> Tensor & {
+        set_all(fill_value);
+        return *this;
+    }
+
+#if defined(OPERATOR)
+#undef OPERATOR
+#endif
+#define OPERATOR(OP)                                                                                                                       \
+    auto operator OP(const T &b)->Tensor<T, Rank> & {                                                                                      \
+        _Pragma("omp parallel") {                                                                                                          \
+            auto tid = omp_get_thread_num();                                                                                               \
+            auto chunksize = _data.size() / omp_get_num_threads();                                                                         \
+            auto begin = _data.begin() + chunksize * tid;                                                                                  \
+            auto end = (tid == omp_get_num_threads() - 1) ? _data.end() : begin + chunksize;                                               \
+            _Pragma("omp simd") for (auto i = begin; i < end; i++) {                                                                       \
+                (*i) OP b;                                                                                                                 \
+            }                                                                                                                              \
+        }                                                                                                                                  \
+        return *this;                                                                                                                      \
+    }
+
+    OPERATOR(*=)
+    OPERATOR(/=)
+    OPERATOR(+=)
+    OPERATOR(-=)
+
+#undef OPERATOR
 
     [[nodiscard]] auto dim(int d) const -> size_t {
         // Add support for negative indices.
@@ -467,7 +528,7 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
 
     // Returns the linear size of the tensor
     [[nodiscard]] auto size() const {
-        return _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
+        return std::accumulate(std::begin(_dims), std::begin(_dims) + Rank, 1, std::multiplies<>{});
     }
 
     [[nodiscard]] auto full_view_of_underlying() const noexcept -> bool {
@@ -487,8 +548,8 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
     friend struct Tensor;
 };
 
-template <>
-struct Tensor<double, 0> : public detail::TensorBase<double, 0> {
+template <typename T>
+struct Tensor<T, 0> : public detail::TensorBase<T, 0> {
 
     Tensor() = default;
     Tensor(const Tensor &) = default;
@@ -499,48 +560,61 @@ struct Tensor<double, 0> : public detail::TensorBase<double, 0> {
 
     Tensor(Dim<0>) {}
 
-    auto data() -> double * { return &_data; }
-    [[nodiscard]] auto data() const -> const double * { return &_data; }
+    auto data() -> T * { return &_data; }
+    [[nodiscard]] auto data() const -> const T * { return &_data; }
 
-    auto operator=(const Tensor<double, 0> &other) -> Tensor<double, 0> & {
+    auto operator=(const Tensor<T, 0> &other) -> Tensor<T, 0> & {
         _data = other._data;
         return *this;
     }
 
-    auto operator=(const double &other) -> Tensor<double, 0> & {
+    auto operator=(const T &other) -> Tensor<T, 0> & {
         _data = other;
         return *this;
     }
 
-    auto operator+=(const double &other) -> Tensor<double, 0> & {
-        _data += other;
-        return *this;
+#if defined(OPERATOR)
+#undef OPERATOR
+#endif
+#define OPERATOR(OP)                                                                                                                       \
+    auto operator OP(const T &other)->Tensor<T, 0> & {                                                                                     \
+        _data OP other;                                                                                                                    \
+        return *this;                                                                                                                      \
     }
 
-    auto operator*=(const double &other) -> Tensor<double, 0> & {
-        _data *= other;
-        return *this;
+    OPERATOR(*=)
+    OPERATOR(/=)
+    OPERATOR(+=)
+    OPERATOR(-=)
+
+#undef OPERATOR
+
+    operator T() const {
+        return _data;
     }
 
-    auto operator/=(const double &other) -> Tensor<double, 0> & {
-        _data /= other;
-        return *this;
+    [[nodiscard]] auto name() const -> const std::string & {
+        return _name;
+    }
+    void set_name(const std::string &name) {
+        _name = name;
     }
 
-    operator double() const { return _data; }
+    [[nodiscard]] auto dim(int) const -> size_t override {
+        return 1;
+    }
 
-    [[nodiscard]] auto name() const -> const std::string & { return _name; }
-    void set_name(const std::string &name) { _name = name; }
+    [[nodiscard]] auto dims() const -> Dim<0> {
+        return Dim<0>{};
+    }
 
-    [[nodiscard]] auto dim(int) const -> size_t override { return 1; }
-
-    [[nodiscard]] auto dims() const -> Dim<0> { return Dim<0>{}; }
-
-    [[nodiscard]] auto full_view_of_underlying() const noexcept -> bool { return true; }
+    [[nodiscard]] auto full_view_of_underlying() const noexcept -> bool {
+        return true;
+    }
 
   private:
     std::string _name{"(Unnamed)"};
-    double _data{};
+    T _data{};
 };
 
 template <typename T, size_t Rank>
@@ -658,18 +732,27 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
         return *this;
     }
 
-    auto operator/=(const T &value) -> TensorView & {
-        auto target_dims = get_dim_ranges<Rank>(*this);
-        auto view = std::apply(ranges::views::cartesian_product, target_dims);
-
-#pragma omp parallel for
-        for (auto target_combination = view.begin(); target_combination != view.end(); target_combination++) {
-            T &target = std::apply(*this, *target_combination);
-            target /= value;
-        }
-
-        return *this;
+#if defined(OPERATOR)
+#undef OPERATOR)
+#endif
+#define OPERATOR(OP)                                                                                                                       \
+    auto operator OP(const T &value)->TensorView & {                                                                                       \
+        auto target_dims = get_dim_ranges<Rank>(*this);                                                                                    \
+        auto view = std::apply(ranges::views::cartesian_product, target_dims);                                                             \
+        _Pragma("omp parallel for") for (auto target_combination = view.begin(); target_combination != view.end(); target_combination++) { \
+            T &target = std::apply(*this, *target_combination);                                                                            \
+            target OP value;                                                                                                               \
+        }                                                                                                                                  \
+                                                                                                                                           \
+        return *this;                                                                                                                      \
     }
+
+    OPERATOR(*=)
+    OPERATOR(/=)
+    OPERATOR(+=)
+    OPERATOR(-=)
+
+#undef OPERATOR
 
     auto data() -> T * {
         return &_data[0];
@@ -755,6 +838,10 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
         return _full_view_of_underlying;
     }
 
+    [[nodiscard]] auto size() const {
+        return std::accumulate(std::begin(_dims), std::begin(_dims) + Rank, 1, std::multiplies<>{});
+    }
+
   private:
     auto common_initialization(const T *other) {
         _data = const_cast<T *>(other);
@@ -787,6 +874,35 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
         Offset<OtherRank> default_offsets{};
         Stride<Rank> error_strides{};
         error_strides[0] = -1;
+
+        // Check to see if the user provided a dim of "-1" in one place. If found then the user requests that we compute this
+        // dimensionality for them.
+        int nfound{0};
+        int location{-1};
+        for (auto [i, dim] : enumerate(_dims)) {
+            if (dim == -1) {
+                nfound++;
+                location = i;
+            }
+        }
+
+        if (nfound > 1) {
+            throw std::runtime_error("More than one -1 was provided.");
+        }
+
+        if (nfound == 1 && Rank == 1) {
+            default_offsets.fill(0);
+            default_strides.fill(1);
+
+            auto offsets = Arguments::get(default_offsets, args...);
+            auto strides = Arguments::get(default_strides, args...);
+
+            _dims[location] = static_cast<std::int64_t>(std::ceil((other.size() - offsets[0]) / static_cast<float>(strides[0])));
+        }
+
+        if (nfound == 1 && Rank > 1) {
+            throw std::runtime_error("Haven't coded up this case yet.");
+        }
 
         // If the Ranks are the same then use "other"s stride information
         if constexpr (Rank == OtherRank) {
@@ -1370,13 +1486,8 @@ auto create_disk_tensor_like(h5::fd_t &file, const Tensor<T, Rank> &tensor) -> D
 
 } // namespace einsums
 
-struct TensorPrintOptions {
-    int width{5};
-    bool full_output{true};
-};
-
 template <template <typename, size_t> typename AType, size_t Rank, typename T>
-auto println(const AType<T, Rank> &A, TensorPrintOptions options = {}) ->
+auto println(const AType<T, Rank> &A, TensorPrintOptions options) ->
     typename std::enable_if_t<std::is_base_of_v<einsums::detail::TensorBase<T, Rank>, AType<T, Rank>>> {
     println("Name: {}", A.name());
     {

@@ -30,7 +30,7 @@ struct Array : public std::array<UnderlyingType, Rank> {
 } // namespace detail
 
 template <std::size_t Rank>
-using Dim = detail::Array<detail::DimType, Rank>;
+using Dim = detail::Array<detail::DimType, Rank, std::int64_t>;
 
 template <std::size_t Rank>
 using Stride = detail::Array<detail::StrideType, Rank>;
