@@ -4,6 +4,7 @@ add_executable(test-all
     Decomposition.cpp
     LinearAlgebra.cpp
     Other.cpp
+    Polynomial.cpp
     Tensor.cpp
     TensorAlgebra.cpp
 )
