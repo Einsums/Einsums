@@ -52,7 +52,9 @@ auto invert(const TensorType<T, Rank> &tensor) -> Tensor<T, Rank> {
         auto begin = data.begin() + chunksize * tid;
         auto end = (tid == omp_get_num_threads() - 1) ? data.end() : begin + chunksize;
 
+#if defined(__INTEL_LLVM_COMPILER) || defined(__INTEL_COMPILER)
 #pragma omp simd
+#endif
         for (auto i = begin; i < end; i++) {
             T &val = *i;
             *i = T{1} / val;
