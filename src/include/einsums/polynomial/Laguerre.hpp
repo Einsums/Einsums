@@ -1,5 +1,6 @@
 #pragma once
 
+#include "einsums/ElementOperations.hpp"
 #include "einsums/LinearAlgebra.hpp"
 #include "einsums/Tensor.hpp"
 #include "einsums/Utilities.hpp"
@@ -44,12 +45,40 @@ auto laguerre_companion(const Tensor<T, 1> &c) -> std::enable_if_t<std::is_signe
     return mat;
 }
 
-template <int axis, typename T>
-auto laguerre_derivative(const Tensor<T, 1> &c, int m = 1, T scale = T{1}) -> Tensor<T, 1> {
+template <typename T>
+auto laguerre_derivative(const Tensor<T, 1> &_c, unsigned int m = 1, T scale = T{1}) -> Tensor<T, 1> {
+    Tensor<T, 1> c = _c;
+    c.set_name("c derivative");
+
+    if (m == 0)
+        return c;
+
+    auto n = c.dim(0);
+    if (m >= n) {
+        Tensor<T, 1> result{_c.name(), c.dim(0) - 1};
+        zero(result);
+        return result;
+    }
+
+    for (int i = 0; i < m; i++) {
+        n -= 1;
+        c *= scale;
+        Tensor<T, 1> der{_c.name(), n};
+        zero(der);
+        for (int j = n; j >= 1; j -= 1) {
+            der(j - 1) = -c(j);
+            c(j - 1) += c(j);
+        }
+        der(0) = -c(1);
+        c = der;
+    }
+
+    return c;
 }
 
-template <typename T>
-auto laguerre_value(const Tensor<T, 1> &x, const Tensor<T, 1> &c) -> Tensor<T, 1> {
+template <template <typename, size_t> typename XType, template <typename, size_t> typename CType, typename T>
+auto laguerre_value(const XType<T, 1> &x, const CType<T, 1> &c)
+    -> std::enable_if_t<is_incore_rank_tensor_v<XType<T, 1>, 1, T> && is_incore_rank_tensor_v<CType<T, 1>, 1, T>, Tensor<T, 1>> {
     auto c0 = create_tensor_like("c0", x), c1 = create_tensor_like("c1", x);
     zero(c0);
     zero(c1);
@@ -62,7 +91,6 @@ auto laguerre_value(const Tensor<T, 1> &x, const Tensor<T, 1> &c) -> Tensor<T, 1
         c1 = c(1);
     } else {
         size_t nd = c.dim(0);
-        // println("nd {}", nd);
 
         c0 = c(-2);
         c1 = c(-1);
@@ -85,38 +113,20 @@ auto laguerre_value(const Tensor<T, 1> &x, const Tensor<T, 1> &c) -> Tensor<T, 1
             tmp1 /= nd;
             c1 = tmp;
             c1 += tmp1;
-
-            // println(tmp);
-            // println(c0);
         }
     }
 
-    // println("---");
-
-    // println(x);
-    // println(c0);
-    // println(c1);
-
-    auto result = create_tensor_like("result", x);
+    auto result = create_tensor_like("laguerre_value", x);
     result = T{1};
-    // println(result);
     result -= x;
-    // println(result);
     result *= c1;
-    // println(result);
     result += c0;
-
-    // println("adding c0 to result");
-    // println(c0);
-
-    // println("final result");
-    // println(result);
 
     return result;
 }
 
 template <typename T = double>
-auto laggauss(unsigned int degree) -> void /*std::tuple<Tensor<T, 1>, Tensor<T, 1>>*/ {
+auto laggauss(unsigned int degree) -> std::tuple<Tensor<T, 1>, Tensor<T, 1>> {
     // First approximation of roots. We use the fact that the companion matrix is symmetric in this case in order to obtain better zeros.
     auto c = create_tensor<double>("c", degree + 1);
     zero(c);
@@ -125,15 +135,32 @@ auto laggauss(unsigned int degree) -> void /*std::tuple<Tensor<T, 1>, Tensor<T, 
     auto x = create_tensor<double>("x", degree);
     zero(x);
 
-    println(m);
-    println(x);
     linear_algebra::syev(&m, &x);
 
     // Improve roots by one application of Newtown.
     auto dy = laguerre_value(x, c);
-    // auto df = laguerre_value(x, laguerre_derivative(c));
+    auto df = laguerre_value(x, laguerre_derivative(c));
 
-    // x -= (dy / df);
+    dy /= df;
+    x -= dy;
+
+    auto fm = laguerre_value(x, TensorView{c, Dim<1>{-1}, Offset<1>{1}});
+    fm.set_name("fm");
+
+    // Scale the factor to avoid possible numerical overflow
+    using namespace einsums::element_operations::new_tensor;
+
+    fm /= max(abs(fm));
+    df /= max(abs(df));
+
+    fm *= df;
+
+    auto w = invert(fm);
+    w /= sum(w);
+
+    w.set_name("w");
+
+    return std::make_tuple(x, w);
 }
 
 } // namespace einsums::polynomial

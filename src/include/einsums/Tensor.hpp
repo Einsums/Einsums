@@ -812,8 +812,12 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
     template <typename... MultiIndex>
     auto data(MultiIndex... index) const -> T * {
         assert(sizeof...(MultiIndex) <= _dims.size());
-
-        auto index_list = {std::forward<MultiIndex>(index)...};
+        auto index_list = std::array{static_cast<std::int64_t>(index)...};
+        for (auto [i, index] : enumerate(index_list)) {
+            if (index < 0) {
+                index_list[i] = _dims[i] + index;
+            }
+        }
         size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
         return &_data[ordinal];
     }
@@ -826,7 +830,12 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
     template <typename... MultiIndex>
     auto operator()(MultiIndex... index) const -> const T & {
         assert(sizeof...(MultiIndex) == _dims.size());
-        auto index_list = {std::forward<MultiIndex>(index)...};
+        auto index_list = std::array{static_cast<std::int64_t>(index)...};
+        for (auto [i, index] : enumerate(index_list)) {
+            if (index < 0) {
+                index_list[i] = _dims[i] + index;
+            }
+        }
         size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
         return _data[ordinal];
     }
@@ -834,7 +843,12 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
     template <typename... MultiIndex>
     auto operator()(MultiIndex... index) -> T & {
         assert(sizeof...(MultiIndex) == _dims.size());
-        auto index_list = {std::forward<MultiIndex>(index)...};
+        auto index_list = std::array{static_cast<std::int64_t>(index)...};
+        for (auto [i, index] : enumerate(index_list)) {
+            if (index < 0) {
+                index_list[i] = _dims[i] + index;
+            }
+        }
         size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
         return _data[ordinal];
     }
