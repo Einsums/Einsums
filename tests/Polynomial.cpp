@@ -5,7 +5,7 @@
 TEST_CASE("laggauss3") {
     using namespace einsums;
 
-    auto [x, w] = polynomial::laggauss(3);
+    auto [x, w] = polynomial::laguerre::gauss_laguerre(3);
 
     CHECK_THAT(x.vector_data(), Catch::Matchers::Approx(
                                     std::vector<double, einsums::AlignedAllocator<double, 64>>{0.4157745568, 2.2942803603, 6.2899450829}));
@@ -16,7 +16,7 @@ TEST_CASE("laggauss3") {
 TEST_CASE("laggauss10") {
     using namespace einsums;
 
-    auto [x, w] = polynomial::laggauss(10);
+    auto [x, w] = polynomial::laguerre::gauss_laguerre(10);
 
     CHECK_THAT(x.vector_data(), Catch::Matchers::Approx(std::vector<double, einsums::AlignedAllocator<double, 64>>{
                                     0.13779347, 0.72945455, 1.8083429, 3.4014337, 5.55249614, 8.33015275, 11.84378584, 16.27925783,

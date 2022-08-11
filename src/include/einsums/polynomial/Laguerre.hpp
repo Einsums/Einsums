@@ -5,10 +5,10 @@
 #include "einsums/Tensor.hpp"
 #include "einsums/Utilities.hpp"
 
-namespace einsums::polynomial {
+namespace einsums::polynomial::laguerre {
 
 template <typename T>
-auto laguerre_companion(const Tensor<T, 1> &c) -> std::enable_if_t<std::is_signed_v<T>, Tensor<T, 2>> {
+auto companion(const Tensor<T, 1> &c) -> std::enable_if_t<std::is_signed_v<T>, Tensor<T, 2>> {
     if (c.dim(0) < 2) {
         throw std::runtime_error("Series (c) must have maximum degree of at least 1.");
     }
@@ -46,7 +46,7 @@ auto laguerre_companion(const Tensor<T, 1> &c) -> std::enable_if_t<std::is_signe
 }
 
 template <typename T>
-auto laguerre_derivative(const Tensor<T, 1> &_c, unsigned int m = 1, T scale = T{1}) -> Tensor<T, 1> {
+auto derivative(const Tensor<T, 1> &_c, unsigned int m = 1, T scale = T{1}) -> Tensor<T, 1> {
     Tensor<T, 1> c = _c;
     c.set_name("c derivative");
 
@@ -77,7 +77,7 @@ auto laguerre_derivative(const Tensor<T, 1> &_c, unsigned int m = 1, T scale = T
 }
 
 template <template <typename, size_t> typename XType, template <typename, size_t> typename CType, typename T>
-auto laguerre_value(const XType<T, 1> &x, const CType<T, 1> &c)
+auto value(const XType<T, 1> &x, const CType<T, 1> &c)
     -> std::enable_if_t<is_incore_rank_tensor_v<XType<T, 1>, 1, T> && is_incore_rank_tensor_v<CType<T, 1>, 1, T>, Tensor<T, 1>> {
     auto c0 = create_tensor_like("c0", x), c1 = create_tensor_like("c1", x);
     zero(c0);
@@ -126,25 +126,25 @@ auto laguerre_value(const XType<T, 1> &x, const CType<T, 1> &c)
 }
 
 template <typename T = double>
-auto laggauss(unsigned int degree) -> std::tuple<Tensor<T, 1>, Tensor<T, 1>> {
+auto gauss_laguerre(unsigned int degree) -> std::tuple<Tensor<T, 1>, Tensor<T, 1>> {
     // First approximation of roots. We use the fact that the companion matrix is symmetric in this case in order to obtain better zeros.
     auto c = create_tensor<double>("c", degree + 1);
     zero(c);
     c(-1) = 1.0;
-    auto m = laguerre_companion(c);
+    auto m = companion(c);
     auto x = create_tensor<double>("x", degree);
     zero(x);
 
     linear_algebra::syev(&m, &x);
 
     // Improve roots by one application of Newtown.
-    auto dy = laguerre_value(x, c);
-    auto df = laguerre_value(x, laguerre_derivative(c));
+    auto dy = value(x, c);
+    auto df = value(x, derivative(c));
 
     dy /= df;
     x -= dy;
 
-    auto fm = laguerre_value(x, TensorView{c, Dim<1>{-1}, Offset<1>{1}});
+    auto fm = value(x, TensorView{c, Dim<1>{-1}, Offset<1>{1}});
     fm.set_name("fm");
 
     // Scale the factor to avoid possible numerical overflow
@@ -163,4 +163,4 @@ auto laggauss(unsigned int degree) -> std::tuple<Tensor<T, 1>, Tensor<T, 1>> {
     return std::make_tuple(x, w);
 }
 
-} // namespace einsums::polynomial
+} // namespace einsums::polynomial::laguerre
