@@ -2,7 +2,7 @@
 
 #include <catch2/catch.hpp>
 
-TEST_CASE("laggauss3") {
+TEST_CASE("gauss_laguerre3") {
     using namespace einsums;
 
     auto [x, w] = polynomial::laguerre::gauss_laguerre(3);
@@ -13,7 +13,7 @@ TEST_CASE("laggauss3") {
                                     std::vector<double, einsums::AlignedAllocator<double, 64>>{0.7110930099, 0.2785177336, 0.0103892565}));
 }
 
-TEST_CASE("laggauss10") {
+TEST_CASE("gauss_laguerre10") {
     using namespace einsums;
 
     auto [x, w] = polynomial::laguerre::gauss_laguerre(10);
