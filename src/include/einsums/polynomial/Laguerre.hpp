@@ -163,4 +163,15 @@ auto gauss_laguerre(unsigned int degree) -> std::tuple<Tensor<T, 1>, Tensor<T, 1
     return std::make_tuple(x, w);
 }
 
+template <template <typename, size_t> typename TensorType, typename T, size_t Rank>
+auto weight(const TensorType<T, Rank> &tensor) -> Tensor<T, Rank> {
+    auto result = create_tensor_like(tensor);
+    result = tensor;
+    auto &data = result.vector_data();
+
+    element_operations::detail::omp_loop(data, [&](T &value) { return std::exp(-value); });
+
+    return result;
+}
+
 } // namespace einsums::polynomial::laguerre
