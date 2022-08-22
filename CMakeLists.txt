@@ -58,7 +58,7 @@ find_package(LAPACKE)
 
 find_package(OpenMP)
 if (OpenMP_FOUND)
-    message(STATUS "OpenMP Version ${OpenMP_CXX_VERSION_MAJOR}")
+    message(STATUS "OpenMP Version ${OpenMP_CXX_VERSION_MAJOR}.${OpenMP_CXX_VERSION_MINOR}")
 endif()
 
 include(cmake/BackwardConfig.cmake)
