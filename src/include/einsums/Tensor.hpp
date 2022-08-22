@@ -1611,9 +1611,13 @@ auto println(const AType<T, Rank> &A, TensorPrintOptions options) ->
                             else
                                 oss << "\x1b[0;37;41m" << fmt::format("{:14d} ", value) << "\x1b[0m";
                         } else {
-                            if constexpr (std::is_floating_point_v<T>)
-                                oss << fmt::format("{:14.8f} ", value);
-                            else
+                            if constexpr (std::is_floating_point_v<T>) {
+                                if (std::fabs(value) < 1.0E-4) {
+                                    oss << fmt::format("{:14.4e} ", value);
+                                } else {
+                                    oss << fmt::format("{:14.8f} ", value);
+                                }
+                            } else
                                 oss << fmt::format("{:14} ", value);
                         }
                         // } else {
@@ -1643,7 +1647,11 @@ auto println(const AType<T, Rank> &A, TensorPrintOptions options) ->
                             oss << "\x1b[0;37;41m" << fmt::format("{:14d} ", value) << "\x1b[0m";
                     } else {
                         if constexpr (std::is_floating_point_v<T>)
-                            oss << fmt::format("{:14.8f} ", value);
+                            if (std::fabs(value) < 1.0E-4) {
+                                oss << fmt::format("{:14.4e} ", value);
+                            } else {
+                                oss << fmt::format("{:14.8f} ", value);
+                            }
                         else
                             oss << fmt::format("{:14d} ", value);
                     }
