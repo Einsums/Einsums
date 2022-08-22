@@ -1,4 +1,5 @@
 #include "einsums/polynomial/Laguerre.hpp"
+#include "einsums/polynomial/Utilities.hpp"
 
 #include <catch2/catch.hpp>
 
