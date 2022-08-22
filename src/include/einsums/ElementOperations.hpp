@@ -6,6 +6,27 @@
 
 namespace einsums::element_operations {
 
+namespace detail {
+template <typename vector, typename Functor>
+void omp_loop(vector &data, Functor functor) {
+    // TODO: This only works for Tensors not their views because we assume data is a std::vector
+#pragma omp parallel
+    {
+        auto tid = omp_get_thread_num();
+        auto chunksize = data.size() / omp_get_num_threads();
+        auto begin = data.begin() + chunksize * tid;
+        auto end = (tid == omp_get_num_threads() - 1) ? data.end() : begin + chunksize;
+
+#if defined(__INTEL_LLVM_COMPILER) || defined(__INTEL_COMPILER)
+#pragma omp simd
+#endif
+        for (auto i = begin; i < end; i++) {
+            *i = functor(*i);
+        }
+    }
+}
+} // namespace detail
+
 template <template <typename, size_t> typename TensorType, typename T, size_t Rank>
 auto sum(const TensorType<T, Rank> &tensor) -> T {
     // TODO: This currently only works with Tensor's not TensorViews. And it needs to be OpenMP'd
@@ -30,10 +51,7 @@ auto abs(const TensorType<T, Rank> &tensor) -> Tensor<T, Rank> {
     auto result = create_tensor_like(tensor);
     result = tensor;
 
-    // TODO: OpenMP this.
-    for (auto it = result.vector_data().begin(); it != result.vector_data().end(); it++) {
-        *it = std::abs(*it);
-    }
+    detail::omp_loop(result.vector_data(), [](T &value) { return std::abs(value); });
 
     return result;
 }
@@ -45,21 +63,18 @@ auto invert(const TensorType<T, Rank> &tensor) -> Tensor<T, Rank> {
     auto &data = result.vector_data();
 
     // TODO: This only works for Tensor's not their views.
-#pragma omp parallel
-    {
-        auto tid = omp_get_thread_num();
-        auto chunksize = data.size() / omp_get_num_threads();
-        auto begin = data.begin() + chunksize * tid;
-        auto end = (tid == omp_get_num_threads() - 1) ? data.end() : begin + chunksize;
+    detail::omp_loop(data, [&](T &value) { return T{1} / value; });
 
-#if defined(__INTEL_LLVM_COMPILER) || defined(__INTEL_COMPILER)
-#pragma omp simd
-#endif
-        for (auto i = begin; i < end; i++) {
-            T &val = *i;
-            *i = T{1} / val;
-        }
-    }
+    return result;
+}
+
+template <template <typename, size_t> typename TensorType, typename T, size_t Rank>
+auto exp(const TensorType<T, Rank> &tensor) -> Tensor<T, Rank> {
+    auto result = create_tensor_like(tensor);
+    result = tensor;
+    auto &data = result.vector_data();
+
+    detail::omp_loop(data, [&](T &value) { return std::exp(value); });
 
     return result;
 }
