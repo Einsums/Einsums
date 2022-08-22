@@ -1,18 +1,9 @@
 #pragma once
 
 #include "einsums/Blas.hpp"
-#include "einsums/LinearAlgebra.hpp"
 #include "einsums/OpenMP.h"
 
 namespace einsums {
-
-template <template <typename, size_t> typename AType, typename ADataType, size_t ARank>
-auto sum_square(const AType<ADataType, ARank> &a, remove_complex_t<ADataType> *scale, remove_complex_t<ADataType> *sumsq) ->
-    typename std::enable_if_t<is_incore_rank_tensor_v<AType<ADataType, ARank>, 1, ADataType>> {
-    int n = a.dim(0);
-    int incx = a.stride(0);
-    blas::lassq(n, a.data(), incx, scale, sumsq);
-}
 
 template <typename T = double, typename... MultiIndex>
 auto create_incremented_tensor(const std::string &name, MultiIndex... index) -> Tensor<T, sizeof...(MultiIndex)> {
@@ -124,6 +115,16 @@ auto create_identity_tensor(const std::string &name, MultiIndex... index) -> Ten
     return A;
 }
 
+template <typename T = double, typename... MultiIndex>
+auto create_ones_tensor(const std::string &name, MultiIndex... index) -> Tensor<T, sizeof...(MultiIndex)> {
+    static_assert(sizeof...(MultiIndex) >= 1, "Rank parameter doesn't make sense.");
+
+    Tensor<T, sizeof...(MultiIndex)> A{name, std::forward<MultiIndex>(index)...};
+    A.set_all(T{1});
+
+    return A;
+}
+
 template <template <typename, size_t> typename TensorType, typename DataType, size_t Rank>
 auto create_tensor_like(const TensorType<DataType, Rank> &tensor) -> Tensor<DataType, Rank> {
     return Tensor<DataType, Rank>{tensor.dims()};
@@ -157,6 +158,11 @@ auto arange(T start, T stop, T step = T{1}) -> Tensor<T, 1> {
 template <typename T>
 auto arange(T stop) -> Tensor<T, 1> {
     return arange(T{0}, stop);
+}
+
+template <typename T>
+auto divmod(T n, T d) -> std::tuple<T, T> {
+    return {n / d, n % d};
 }
 
 struct DisableOMPNestedScope {

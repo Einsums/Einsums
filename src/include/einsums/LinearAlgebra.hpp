@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Blas.hpp"
-#include "STL.hpp"
-#include "Tensor.hpp"
-#include "Timer.hpp"
-#include "Utilities.hpp"
+#include "einsums/Blas.hpp"
+#include "einsums/STL.hpp"
 #include "einsums/Section.hpp"
+#include "einsums/Tensor.hpp"
+#include "einsums/Timer.hpp"
+#include "einsums/Utilities.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -17,7 +17,13 @@
 
 namespace einsums::linear_algebra {
 
-// template <typename, size_t> typename AType, size_t Rank, typename T
+template <template <typename, size_t> typename AType, typename ADataType, size_t ARank>
+auto sum_square(const AType<ADataType, ARank> &a, remove_complex_t<ADataType> *scale, remove_complex_t<ADataType> *sumsq) ->
+    typename std::enable_if_t<is_incore_rank_tensor_v<AType<ADataType, ARank>, 1, ADataType>> {
+    int n = a.dim(0);
+    int incx = a.stride(0);
+    blas::lassq(n, a.data(), incx, scale, sumsq);
+}
 
 template <bool TransA, bool TransB, template <typename, size_t> typename AType, template <typename, size_t> typename BType,
           template <typename, size_t> typename CType, size_t Rank, typename T>
