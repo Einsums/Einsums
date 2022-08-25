@@ -1137,7 +1137,7 @@ void write(const h5::fd_t &fd, const TensorView<T, Rank> &ref, Args &&...args) {
 }
 
 // This needs to be expanded to handle the various h5 parameters like above.
-template <size_t Rank, typename T>
+template <typename T, size_t Rank>
 auto read(const h5::fd_t &fd, const std::string &name) -> Tensor<T, Rank> {
     try {
         auto temp = h5::read<einsums::Tensor<T, Rank>>(fd, name);
@@ -1149,7 +1149,7 @@ auto read(const h5::fd_t &fd, const std::string &name) -> Tensor<T, Rank> {
     }
 }
 
-template <typename T = double>
+template <typename T>
 auto read(const h5::fd_t &fd, const std::string &name) -> Tensor<T, 0> {
     try {
         T temp{0};

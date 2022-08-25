@@ -291,7 +291,7 @@ TEST_CASE("Tensor 2D - HDF5 wrapper") {
 
     einsums::write(fd, A);
 
-    auto B = einsums::read<2, double>(fd, "A");
+    auto B = einsums::read<double, 2>(fd, "A");
 
     for (int i = 0; i < 3; i++)
         for (int j = 0; j < 3; j++)
