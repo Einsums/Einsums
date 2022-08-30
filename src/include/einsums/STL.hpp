@@ -353,6 +353,15 @@ struct complex_type<std::complex<T>> {
 template <typename T>
 using remove_complex_t = typename complex_type<T>::type;
 
+// From: https://stackoverflow.com/questions/29671643/checking-type-of-parameter-pack-using-enable-if
+template <bool...>
+struct bool_pack;
+template <bool... bs>
+using all_true = std::is_same<bool_pack<bs..., true>, bool_pack<true, bs...>>;
+
+template <class R, class... Ts>
+using are_all_convertible = all_true<std::is_convertible_v<Ts, R>...>;
+
 template <typename T>
 struct CircularBuffer {
     explicit CircularBuffer(size_t size) : _buffer(std::unique_ptr<T[]>(new T[size])), _max_size(size) {} // NOLINT

@@ -23,6 +23,7 @@ struct StrideType {};
 struct OffsetType {};
 struct CountType {};
 struct RangeType {};
+struct ChunkType {};
 
 template <typename T, std::size_t Rank, typename UnderlyingType = std::size_t>
 struct Array : public std::array<UnderlyingType, Rank> {
@@ -45,6 +46,9 @@ template <std::size_t Rank>
 using Count = detail::Array<detail::CountType, Rank>;
 
 using Range = detail::Array<detail::RangeType, 2, std::int64_t>;
+
+template <std::size_t Rank>
+using Chunk = detail::Array<detail::ChunkType, Rank, std::int64_t>;
 
 struct All_t {};
 static struct All_t All;

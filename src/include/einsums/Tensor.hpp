@@ -3,6 +3,7 @@
 #include "einsums/OpenMP.h"
 #include "einsums/Print.hpp"
 #include "einsums/STL.hpp"
+#include "einsums/Section.hpp"
 #include "einsums/State.hpp"
 #include "einsums/_Common.hpp"
 
@@ -1111,15 +1112,14 @@ void write(const h5::fd_t &fd, const TensorView<T, Rank> &ref, Args &&...args) {
         ds = h5::open(fd, ref.name().c_str());
     } else {
         std::array<size_t, Rank> chunk_temp{};
-        for (int i = 0; i < Rank; i++) {
-            if (ref.dim(i) < 10)
-                chunk_temp[i] = ref.dim(i);
-            else
-                chunk_temp[i] = 10;
+        chunk_temp[0] = 1;
+        for (int i = 1; i < Rank; i++) {
+            chunk_temp[i] = ref.dim(i);
         }
+        println("chunk_temp {}", chunk_temp);
 
         ds = h5::create<T>(fd, ref.name().c_str(), h5::current_dims{ref.dims()},
-                           h5::chunk{chunk_temp} | h5::gzip{9} | h5::fill_value<T>(0.0));
+                           h5::chunk{chunk_temp} /*| h5::gzip{9} | h5::fill_value<T>(0.0)*/);
     }
 
     auto dims = get_dim_ranges<Rank - 1>(ref);
@@ -1176,6 +1176,44 @@ struct DiskTensor final : public detail::TensorBase<T, Rank> {
     ~DiskTensor() = default;
 
     template <typename... Dims>
+    explicit DiskTensor(h5::fd_t &file, std::string name, Chunk<Rank> strides, Dims... dims)
+        : _file{file}, _name{std::move(name)}, _dims{static_cast<size_t>(dims)...} {
+        struct stride {
+            size_t value{1};
+            stride() = default;
+            auto operator()(size_t dim) -> size_t {
+                auto old_value = value;
+                value *= dim;
+                return old_value;
+            }
+        };
+
+        // Row-major order of dimensions
+        std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), stride());
+
+        // Check to see if the data set exists
+        if (H5Lexists(_file, _name.c_str(), H5P_DEFAULT) > 0) {
+            _existed = true;
+            try {
+                _disk = h5::open(_file, _name);
+            } catch (std::exception &e) {
+                println("Unable to open disk tensor '{}'", _name);
+                std::abort();
+            }
+        } else {
+            _existed = false;
+            // Use h5cpp create data structure on disk.  Refrain from allocating any memory
+            try {
+                _disk = h5::create<T>(_file, _name, h5::current_dims{static_cast<size_t>(dims)...},
+                                      h5::chunk{strides} /* | h5::gzip{9} | h5::fill_value<T>(0.0) */);
+            } catch (std::exception &e) {
+                println("Unable to create disk tensor '{}': {}", _name, e.what());
+                std::abort();
+            }
+        }
+    }
+
+    template <typename... Dims, typename = typename std::enable_if<are_all_convertible<size_t, Dims...>::value>::type>
     explicit DiskTensor(h5::fd_t &file, std::string name, Dims... dims)
         : _file{file}, _name{std::move(name)}, _dims{static_cast<size_t>(dims)...} {
         static_assert(Rank == sizeof...(dims), "Declared Rank does not match provided dims");
@@ -1194,11 +1232,13 @@ struct DiskTensor final : public detail::TensorBase<T, Rank> {
         std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), stride());
 
         std::array<size_t, Rank> chunk_temp{};
-        for (int i = 0; i < Rank; i++) {
-            if (_dims[i] < 10)
+        chunk_temp[0] = 1;
+        for (int i = 1; i < Rank; i++) {
+            constexpr size_t chunk_min{64};
+            if (_dims[i] < chunk_min)
                 chunk_temp[i] = _dims[i];
             else
-                chunk_temp[i] = 64;
+                chunk_temp[i] = chunk_min;
         }
 
         // Check to see if the data set exists
@@ -1215,9 +1255,9 @@ struct DiskTensor final : public detail::TensorBase<T, Rank> {
             // Use h5cpp create data structure on disk.  Refrain from allocating any memory
             try {
                 _disk = h5::create<T>(_file, _name, h5::current_dims{static_cast<size_t>(dims)...},
-                                      h5::chunk{chunk_temp} | h5::gzip{9} /* | h5::fill_value<T>(0.0) */);
+                                      h5::chunk{chunk_temp} /* | h5::gzip{9} | h5::fill_value<T>(0.0) */);
             } catch (std::exception &e) {
-                println("Unable to create disk tensor '{}'", _name);
+                println("Unable to create disk tensor '{}': {}", _name, e.what());
                 std::abort();
             }
         }
@@ -1247,11 +1287,13 @@ struct DiskTensor final : public detail::TensorBase<T, Rank> {
         std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), stride());
 
         std::array<size_t, Rank> chunk_temp{};
-        for (int i = 0; i < Rank; i++) {
-            if (_dims[i] < 10)
+        chunk_temp[0] = 1;
+        for (int i = 1; i < Rank; i++) {
+            constexpr size_t chunk_min{64};
+            if (_dims[i] < chunk_min)
                 chunk_temp[i] = _dims[i];
             else
-                chunk_temp[i] = 64;
+                chunk_temp[i] = chunk_min;
         }
 
         // Check to see if the data set exists
@@ -1267,7 +1309,7 @@ struct DiskTensor final : public detail::TensorBase<T, Rank> {
             _existed = false;
             // Use h5cpp create data structure on disk.  Refrain from allocating any memory
             try {
-                _disk = h5::create<T>(_file, _name, cdims, h5::chunk{chunk_temp} | h5::gzip{9} | h5::fill_value<T>(0.0));
+                _disk = h5::create<T>(_file, _name, cdims, h5::chunk{chunk_temp} /*| h5::gzip{9} | h5::fill_value<T>(0.0)*/);
             } catch (std::exception &e) {
                 println("Unable to create disk tensor '%s'", _name.c_str());
                 std::abort();
@@ -1418,6 +1460,7 @@ struct DiskView final : public detail::TensorBase<T, ViewRank> {
              const Stride<Rank> &strides)
         : _parent(const_cast<DiskTensor<T, Rank> &>(parent)), _dims(dims), _counts(counts), _offsets(offsets),
           _strides(strides), _tensor{_dims} {
+        Section section("DiskView constructor");
         h5::read<T>(_parent.disk(), _tensor.data(), h5::count{_counts}, h5::offset{_offsets});
         set_read_only(true);
     };

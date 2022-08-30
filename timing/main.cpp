@@ -169,13 +169,68 @@ auto main() -> int {
     // C.set_all(0.0);
     // einsum(Indices{i, j, k}, &C, Indices{i, j}, A, Indices{k}, B);
 
+    println("Creating tensors");
+    timer::push(fmt::format("Creating random tensor {} {} {} {}", NMO, NMO, NMO, NMO));
     auto eri = create_random_tensor("eri", NMO, NMO, NMO, NMO);
+    timer::pop();
+    timer::push("Creating disk tensor");
     DiskTensor g(state::data, "eri", NMO, NMO, NMO, NMO);
+    timer::pop();
 
     {
-        Section section{"disk write"};
+        Section section{"disk write (everything at once)"};
+        println("writing");
         g(All, All, All, All) = eri;
     }
+
+    {
+        Section section{"disk read (equivalent to chunking)"};
+
+        println("Reading equivalent to chunking");
+        for (int i = 0; i < NMO; i++) {
+            println("i {}", i);
+            auto data = g(i, All, All, All);
+        }
+    }
+
+    {
+        Section section{"disk read (different to chunking)"};
+        println("Reading equivalent to chunking");
+        for (int i = 0; i < NMO; i++) {
+            println("i {}", i);
+            auto data = g(All, All, i, All);
+        }
+    }
+
+    timer::push("Creating disk tensor2");
+    // The compiler is unable to deduce the Rank from this constructor type.
+    DiskTensor<double, 4> g2(state::data, "eri2", Chunk<4>{NMO, NMO, 1, NMO}, NMO, NMO, NMO, NMO);
+    timer::pop();
+    {
+        Section section{"disk write2 non-default chunk (everything at once)"};
+        println("writing");
+        g2(All, All, All, All) = eri;
+    }
+
+    {
+        Section section{"disk read2 (equivalent to chunking)"};
+
+        println("Reading equivalent to chunking");
+        for (int i = 0; i < NMO; i++) {
+            println("i {}", i);
+            auto data = g2(All, All, i, All);
+        }
+    }
+
+    {
+        Section section{"disk read2 (different to chunking)"};
+        println("Reading not equivalent to chunking");
+        for (int i = 0; i < NMO; i++) {
+            println("i {}", i);
+            auto data = g(i, All, All, All);
+        }
+    }
+
     timer::report();
     blas::finalize();
     timer::finalize();
