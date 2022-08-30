@@ -1175,7 +1175,7 @@ struct DiskTensor final : public detail::TensorBase<T, Rank> {
     ~DiskTensor() = default;
 
     template <typename... Dims>
-    explicit DiskTensor(h5::fd_t &file, std::string name, Chunk<Rank> strides, Dims... dims)
+    explicit DiskTensor(h5::fd_t &file, std::string name, Chunk<Rank> chunk, Dims... dims)
         : _file{file}, _name{std::move(name)}, _dims{static_cast<size_t>(dims)...} {
         struct stride {
             size_t value{1};
@@ -1204,7 +1204,7 @@ struct DiskTensor final : public detail::TensorBase<T, Rank> {
             // Use h5cpp create data structure on disk.  Refrain from allocating any memory
             try {
                 _disk = h5::create<T>(_file, _name, h5::current_dims{static_cast<size_t>(dims)...},
-                                      h5::chunk{strides} /* | h5::gzip{9} | h5::fill_value<T>(0.0) */);
+                                      h5::chunk{chunk} /* | h5::gzip{9} | h5::fill_value<T>(0.0) */);
             } catch (std::exception &e) {
                 println("Unable to create disk tensor '{}': {}", _name, e.what());
                 std::abort();
