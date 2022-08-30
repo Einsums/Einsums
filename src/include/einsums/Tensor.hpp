@@ -1116,7 +1116,6 @@ void write(const h5::fd_t &fd, const TensorView<T, Rank> &ref, Args &&...args) {
         for (int i = 1; i < Rank; i++) {
             chunk_temp[i] = ref.dim(i);
         }
-        println("chunk_temp {}", chunk_temp);
 
         ds = h5::create<T>(fd, ref.name().c_str(), h5::current_dims{ref.dims()},
                            h5::chunk{chunk_temp} /*| h5::gzip{9} | h5::fill_value<T>(0.0)*/);
