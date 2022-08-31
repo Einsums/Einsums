@@ -188,7 +188,7 @@ auto main() -> int {
 
         println("Reading equivalent to chunking");
         for (int i = 0; i < NMO; i++) {
-            println("i {}", i);
+            // println("i {}", i);
             auto data = g(i, All, All, All);
         }
     }
@@ -197,14 +197,14 @@ auto main() -> int {
         Section section{"disk read (different to chunking)"};
         println("Reading equivalent to chunking");
         for (int i = 0; i < NMO; i++) {
-            println("i {}", i);
+            // println("i {}", i);
             auto data = g(All, All, i, All);
         }
     }
 
     timer::push("Creating disk tensor2");
     // The compiler is unable to deduce the Rank from this constructor type.
-    DiskTensor<double, 4> g2(state::data, "eri2", Chunk<4>{NMO, NMO, 1, NMO}, NMO, NMO, NMO, NMO);
+    DiskTensor g2(state::data, "eri2", Chunk<4>{NMO, NMO, 1, NMO}, NMO, NMO, NMO, NMO);
     timer::pop();
     {
         Section section{"disk write2 non-default chunk (everything at once)"};
@@ -217,7 +217,7 @@ auto main() -> int {
 
         println("Reading equivalent to chunking");
         for (int i = 0; i < NMO; i++) {
-            println("i {}", i);
+            // println("i {}", i);
             auto data = g2(All, All, i, All);
         }
     }
@@ -226,8 +226,26 @@ auto main() -> int {
         Section section{"disk read2 (different to chunking)"};
         println("Reading not equivalent to chunking");
         for (int i = 0; i < NMO; i++) {
-            println("i {}", i);
-            auto data = g(i, All, All, All);
+            // println("i {}", i);
+            auto data = g2(i, All, All, All);
+        }
+    }
+
+    timer::push("Creating disk tensor3 bad chunking");
+    DiskTensor g3(state::data, "eri3", Chunk<4>{2, 2, 2, 2}, NMO, NMO, NMO, NMO);
+    timer::pop();
+    {
+        Section section{"disk write3 (everything at once)"};
+        println("writing");
+        g3(All, All, All, All) = eri;
+    }
+
+    {
+        Section section{"disk read3 (different to chunking)"};
+        println("Reading not equivalent to chunking");
+        for (int i = 0; i < NMO; i++) {
+            // println("i {}", i);
+            auto data = g3(i, All, All, All);
         }
     }
 

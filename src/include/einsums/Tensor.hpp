@@ -1175,7 +1175,7 @@ struct DiskTensor final : public detail::TensorBase<T, Rank> {
     ~DiskTensor() = default;
 
     template <typename... Dims>
-    explicit DiskTensor(h5::fd_t &file, std::string name, Chunk<Rank> chunk, Dims... dims)
+    explicit DiskTensor(h5::fd_t &file, std::string name, Chunk<sizeof...(Dims)> chunk, Dims... dims)
         : _file{file}, _name{std::move(name)}, _dims{static_cast<size_t>(dims)...} {
         struct stride {
             size_t value{1};
@@ -1569,6 +1569,8 @@ TensorView(std::string, Tensor<T, OtherRank> &, const Dim<Rank> &, Args...) -> T
 
 template <typename... Dims>
 DiskTensor(h5::fd_t &file, std::string name, Dims... dims) -> DiskTensor<double, sizeof...(Dims)>;
+template <typename... Dims>
+DiskTensor(h5::fd_t &file, std::string name, Chunk<sizeof...(Dims)> chunk, Dims... dims) -> DiskTensor<double, sizeof...(Dims)>;
 
 // Supposedly C++20 will allow template deduction guides for template aliases. i.e. Dim, Stride, Offset, Count, Range.
 #endif
