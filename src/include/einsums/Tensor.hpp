@@ -1495,8 +1495,10 @@ struct DiskView final : public detail::TensorBase<T, ViewRank> {
             }
         }
 
+        // Performing the write here will cause a double write to occur. The destructor above will call put to save
+        // the data to disk.
         // Sync the data to disk and into our internal tensor.
-        h5::write<T>(_parent.disk(), other.data(), h5::count{_counts}, h5::offset{_offsets});
+        // h5::write<T>(_parent.disk(), other.data(), h5::count{_counts}, h5::offset{_offsets});
         _tensor = other;
 
         return *this;
