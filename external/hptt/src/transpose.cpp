@@ -880,8 +880,8 @@ static void axpy_1D( const floatType* __restrict__ A, floatType* __restrict__ B,
       )
    } else {
       if( useStreamingStores)
-#pragma vector nontemporal
          HPTT_DUPLICATE(spawnThreads,
+_Pragma("vector nontemporal")
             for(int32_t i = myStart; i < myEnd; i++)
                if( conjA )
                   B[i] = alpha * conj(A[i]);
