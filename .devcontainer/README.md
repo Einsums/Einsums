@@ -12,16 +12,15 @@ From the top source directory, run
 
 This uses the new-ish [VTune web interface](https://www.intel.com/content/www/us/en/develop/documentation/vtune-help/top/launch/web-server-ui.html).
 
-    source /opt/intel/oneapi/vtune/latest/vtune-var.sh
-    vtune-backend --web-port=8080 --enable-server-profiling
+    vtune-backend --enable-server-profiling --no-https
 
 `vtune-backend` will print some information to the screen including something like:
 
-    Serving GUI at https://127.0.0.1:8080?one-time-token=XXXXXXXX
+    Serving GUI at https://127.0.0.1:YYYYY?one-time-token=XXXXXXXX
 
-Ctrl+Click the link and VSCode will open a new browser window with the VTune graphical interface. If it doesn't work try running:
+Ctrl+Click the link and VSCode will open a new browser window with the VTune graphical interface. VSCode will forward port automatically. If it doesn't work try running:
 
-    vtune-backend --web-port=8080 --reset-passphrase
+    vtune-backend --no-https --reset-passphrase
 
 Open the given web addres and create a new password for the VTune web interface. Once this is done you can Ctrl+C `vtune-backend` and run the first `vtune-backend` command above.
 
