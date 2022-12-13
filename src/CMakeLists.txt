@@ -1,15 +1,16 @@
 add_einsums_library(einsums
     SOURCES
-        backends/netlib/dgemm.cpp
-        backends/netlib/lsame.cpp
-        backends/netlib/xerbla.cpp
+        backends/linear_algebra/netlib/dgemm.cpp
+        backends/linear_algebra/netlib/lsame.cpp
+        backends/linear_algebra/netlib/xerbla.cpp
 
-        backends/vendor/Vendor.cpp
+        backends/linear_algebra/vendor/Vendor.cpp
 
-        backends/cblas/cblas.cpp
+        backends/linear_algebra/cblas/cblas.cpp
 
         Blas.cpp
         InitializeFinalize.cpp
+        FFT.cpp
         Memory.cpp
         Print.cpp
         Section.cpp
@@ -78,6 +79,19 @@ extend_einsums_target(einsums
         EINSUMS_HAVE_LAPACKE
     CONDITION
         (HAVE_MKL_LAPACKE_H AND HAVE_MKL_CBLAS_H)
+    FEATURE_INFO
+        "MKL backend"
+)
+
+extend_einsums_target(einsums
+    CONDITION
+        (HAVE_MKL_LAPACKE_H AND HAVE_MKL_CBLAS_H)
+    SOURCES_PREFIX
+        backends/fft/mkl
+    SOURCES
+        fft.cpp
+    FEATURE_INFO
+        "MKL FFT backend"
 )
 
 extend_einsums_target(einsums
@@ -87,6 +101,8 @@ extend_einsums_target(einsums
         hptt::hptt
     CONDITION
         EINSUMS_USE_HPTT
+    FEATURE_INFO
+        "HPTT backend"
 )
 
 extend_einsums_target(einsums
@@ -135,12 +151,12 @@ extend_einsums_target(einsums
         NOT CBLAS_FOUND
     FEATURE_INFO "Internal CBLAS"
     INCLUDES
-        backends/cblas/cblas/include
+        backends/linear_algebra/cblas/cblas/include
     DEFINES
         EINSUMS_HAVE_CBLAS_H
         EINSUMS_HAVE_CBLAS
     SOURCES_PREFIX
-        backends/cblas/cblas
+        backends/linear_algebra/cblas/cblas
     SOURCES
         # Error handling routines for level 2 & 3
         cblas_globals.c
@@ -341,12 +357,12 @@ extend_einsums_target(einsums
         NOT LAPACKE_FOUND
     FEATURE_INFO "Internal LAPACKE"
     INCLUDES
-        backends/cblas/lapacke/include
+        backends/linear_algebra/cblas/lapacke/include
     DEFINES
         EINSUMS_HAVE_LAPACKE_H
         EINSUMS_HAVE_LAPACKE
     SOURCES_PREFIX
-        backends/cblas/lapacke
+        backends/linear_algebra/cblas/lapacke
     SOURCES
         lapacke_nancheck.c
         lapacke_ilaver.c

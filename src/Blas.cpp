@@ -1,9 +1,9 @@
 #include "einsums/Blas.hpp"
 
-#include "backends/cblas/cblas.hpp"
-#include "backends/netlib/Netlib.hpp"
-#include "backends/onemkl/onemkl.hpp"
-#include "backends/vendor/Vendor.hpp"
+#include "backends/linear_algebra/cblas/cblas.hpp"
+#include "backends/linear_algebra/netlib/Netlib.hpp"
+#include "backends/linear_algebra/onemkl/onemkl.hpp"
+#include "backends/linear_algebra/vendor/Vendor.hpp"
 
 #include <fmt/format.h>
 #include <stdexcept>
