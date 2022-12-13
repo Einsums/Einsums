@@ -1,5 +1,6 @@
 #include "einsums/Blas.hpp"
 #include "einsums/ElementOperations.hpp"
+#include "einsums/FFT.hpp"
 #include "einsums/LinearAlgebra.hpp"
 #include "einsums/OpenMP.h"
 #include "einsums/Print.hpp"
@@ -12,7 +13,23 @@
 #include "einsums/Utilities.hpp"
 #include "einsums/polynomial/Laguerre.hpp"
 
+#include <cmath>
 #include <cstdlib>
+
+double moda(int K, int L, int M) {
+    return (double)(((long long)K * L) % M);
+}
+
+void init_r(einsums::Tensor<double, 1> &data, int N, int H) {
+    double TWOPI = 6.2831853071795864769, phase, factor;
+    int n;
+
+    factor = (2 * (N - H) % N == 0) ? 1.0 : 2.0;
+    for (n = 0; n < N; n++) {
+        phase = moda(n, H, N) / N;
+        data(n) = factor * cos(TWOPI * phase) / N;
+    }
+}
 
 auto main() -> int {
     ////////////////////////////////////
@@ -263,6 +280,22 @@ auto main() -> int {
         einsum(Indices{i}, &w, Indices{i}, w, Indices{i}, exp(t));
     }
     println(w);
+
+    // BEGIN: FFT tests
+
+    // auto result = fft::fftfreq(8, 0.1);
+    // println(result);
+
+    const int N = 6;
+    int H = -1;
+    auto x_real = create_tensor("sample data", N);
+    auto x_result = create_tensor<std::complex<double>>("FFT result", N / 2 + 1);
+
+    init_r(x_real, N, H);
+    println(x_real);
+
+    fft::fft(x_real, &x_result);
+    println(x_result);
 
     timer::report();
     blas::finalize();

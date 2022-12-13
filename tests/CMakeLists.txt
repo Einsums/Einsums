@@ -2,6 +2,7 @@ add_executable(test-all
     Common/main.cpp
     Disk.cpp
     Decomposition.cpp
+    FFT.cpp
     LinearAlgebra.cpp
     Other.cpp
     Polynomial.cpp
