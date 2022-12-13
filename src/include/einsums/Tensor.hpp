@@ -241,13 +241,9 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
         }
     }
 
-    auto data() -> T * {
-        return _data.data();
-    }
+    auto data() -> T * { return _data.data(); }
 
-    auto data() const -> const T * {
-        return _data.data();
-    }
+    auto data() const -> const T * { return _data.data(); }
 
     template <typename... MultiIndex>
     auto data(MultiIndex... index)
@@ -470,9 +466,7 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
             auto chunksize = _data.size() / omp_get_num_threads();                                                                         \
             auto begin = _data.begin() + chunksize * tid;                                                                                  \
             auto end = (tid == omp_get_num_threads() - 1) ? _data.end() : begin + chunksize;                                               \
-            _Pragma("omp simd") for (auto i = begin; i < end; i++) {                                                                       \
-                (*i) OP b;                                                                                                                 \
-            }                                                                                                                              \
+            _Pragma("omp simd") for (auto i = begin; i < end; i++) { (*i) OP b; }                                                          \
         }                                                                                                                                  \
         return *this;                                                                                                                      \
     }                                                                                                                                      \
@@ -488,9 +482,7 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
             auto bbegin = b._data.begin() + chunksize * tid;                                                                               \
             auto aend = (tid == omp_get_num_threads() - 1) ? _data.end() : abegin + chunksize;                                             \
             auto j = bbegin;                                                                                                               \
-            _Pragma("omp simd") for (auto i = abegin; i < aend; i++) {                                                                     \
-                (*i) OP(*j++);                                                                                                             \
-            }                                                                                                                              \
+            _Pragma("omp simd") for (auto i = abegin; i < aend; i++) { (*i) OP(*j++); }                                                    \
         }                                                                                                                                  \
         return *this;                                                                                                                      \
     }
@@ -541,23 +533,13 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
             d += Rank;
         return _dims[d];
     }
-    auto dims() const -> Dim<Rank> {
-        return _dims;
-    }
+    auto dims() const -> Dim<Rank> { return _dims; }
 
-    auto vector_data() const -> const vector & {
-        return _data;
-    }
-    auto vector_data() -> vector & {
-        return _data;
-    }
+    auto vector_data() const -> const vector & { return _data; }
+    auto vector_data() -> vector & { return _data; }
 
-    [[nodiscard]] auto name() const -> const std::string & {
-        return _name;
-    }
-    void set_name(const std::string &name) {
-        _name = name;
-    }
+    [[nodiscard]] auto name() const -> const std::string & { return _name; }
+    void set_name(const std::string &name) { _name = name; }
 
     [[nodiscard]] auto stride(int d) const noexcept -> size_t {
         if (d < 0)
@@ -565,9 +547,7 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
         return _strides[d];
     }
 
-    auto strides() const noexcept -> const auto & {
-        return _strides;
-    }
+    auto strides() const noexcept -> const auto & { return _strides; }
 
     auto to_rank_1_view() const -> TensorView<T, 1> {
         size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
@@ -577,13 +557,9 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
     }
 
     // Returns the linear size of the tensor
-    [[nodiscard]] auto size() const {
-        return std::accumulate(std::begin(_dims), std::begin(_dims) + Rank, 1, std::multiplies<>{});
-    }
+    [[nodiscard]] auto size() const { return std::accumulate(std::begin(_dims), std::begin(_dims) + Rank, 1, std::multiplies<>{}); }
 
-    [[nodiscard]] auto full_view_of_underlying() const noexcept -> bool {
-        return true;
-    }
+    [[nodiscard]] auto full_view_of_underlying() const noexcept -> bool { return true; }
 
   private:
     std::string _name{"(Unnamed)"};
@@ -639,28 +615,16 @@ struct Tensor<T, 0> : public detail::TensorBase<T, 0> {
 
 #undef OPERATOR
 
-    operator T() const {
-        return _data;
-    }
+    operator T() const { return _data; }
 
-    [[nodiscard]] auto name() const -> const std::string & {
-        return _name;
-    }
-    void set_name(const std::string &name) {
-        _name = name;
-    }
+    [[nodiscard]] auto name() const -> const std::string & { return _name; }
+    void set_name(const std::string &name) { _name = name; }
 
-    [[nodiscard]] auto dim(int) const -> size_t override {
-        return 1;
-    }
+    [[nodiscard]] auto dim(int) const -> size_t override { return 1; }
 
-    [[nodiscard]] auto dims() const -> Dim<0> {
-        return Dim<0>{};
-    }
+    [[nodiscard]] auto dims() const -> Dim<0> { return Dim<0>{}; }
 
-    [[nodiscard]] auto full_view_of_underlying() const noexcept -> bool {
-        return true;
-    }
+    [[nodiscard]] auto full_view_of_underlying() const noexcept -> bool { return true; }
 
   private:
     std::string _name{"(Unnamed)"};
@@ -804,12 +768,8 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
 
 #undef OPERATOR
 
-    auto data() -> T * {
-        return &_data[0];
-    }
-    auto data() const -> const T * {
-        return static_cast<const T *>(&_data[0]);
-    }
+    auto data() -> T * { return &_data[0]; }
+    auto data() const -> const T * { return static_cast<const T *>(&_data[0]); }
     template <typename... MultiIndex>
     auto data(MultiIndex... index) const -> T * {
         assert(sizeof...(MultiIndex) <= _dims.size());
@@ -859,16 +819,10 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
             d += Rank;
         return _dims[d];
     }
-    auto dims() const -> Dim<Rank> {
-        return _dims;
-    }
+    auto dims() const -> Dim<Rank> { return _dims; }
 
-    [[nodiscard]] auto name() const -> const std::string & {
-        return _name;
-    }
-    void set_name(const std::string &name) {
-        _name = name;
-    }
+    [[nodiscard]] auto name() const -> const std::string & { return _name; }
+    void set_name(const std::string &name) { _name = name; }
 
     [[nodiscard]] auto stride(int d) const noexcept -> size_t {
         if (d < 0)
@@ -876,9 +830,7 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
         return _strides[d];
     }
 
-    auto strides() const noexcept -> const auto & {
-        return _strides;
-    }
+    auto strides() const noexcept -> const auto & { return _strides; }
 
     auto to_rank_1_view() const -> TensorView<T, 1> {
         if constexpr (Rank == 1) {
@@ -898,13 +850,9 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
         }
     }
 
-    [[nodiscard]] auto full_view_of_underlying() const noexcept -> bool {
-        return _full_view_of_underlying;
-    }
+    [[nodiscard]] auto full_view_of_underlying() const noexcept -> bool { return _full_view_of_underlying; }
 
-    [[nodiscard]] auto size() const {
-        return std::accumulate(std::begin(_dims), std::begin(_dims) + Rank, 1, std::multiplies<>{});
-    }
+    [[nodiscard]] auto size() const { return std::accumulate(std::begin(_dims), std::begin(_dims) + Rank, 1, std::multiplies<>{}); }
 
   private:
     auto common_initialization(const T *other) {
@@ -1689,8 +1637,11 @@ auto println(const AType<T, Rank> &A, TensorPrintOptions options) ->
                     if (std::fabs(value) > 1.0E+5) {
                         if constexpr (std::is_floating_point_v<T>)
                             oss << "\x1b[0;37;41m" << fmt::format("{:14.8f} ", value) << "\x1b[0m";
-                        else
-                            oss << "\x1b[0;37;41m" << fmt::format("{:14d} ", value) << "\x1b[0m";
+                        else if constexpr (einsums::is_complex_v<T>) {
+                            oss << "\x1b[0;37;41m(" << fmt::format("{:14.8f} ", value.real()) << " + "
+                                << fmt::format("{:14.8f}i)", value.imag()) << "\x1b[0m";
+                        } else
+                            oss << "\x1b[0;37;41m" << fmt::format("{:14} ", value) << "\x1b[0m";
                     } else {
                         if constexpr (std::is_floating_point_v<T>)
                             if (std::fabs(value) < 1.0E-4) {
@@ -1698,8 +1649,10 @@ auto println(const AType<T, Rank> &A, TensorPrintOptions options) ->
                             } else {
                                 oss << fmt::format("{:14.8f} ", value);
                             }
-                        else
-                            oss << fmt::format("{:14d} ", value);
+                        else if constexpr (einsums::is_complex_v<T>) {
+                            oss << fmt::format("{:14.8f} ", value.real()) << " + " << fmt::format("{:14.8f}i)", value.imag());
+                        } else
+                            oss << fmt::format("{:14} ", value);
                     }
 
                     println("{}", oss.str());

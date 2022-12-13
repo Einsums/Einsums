@@ -353,6 +353,18 @@ struct complex_type<std::complex<T>> {
 template <typename T>
 using remove_complex_t = typename complex_type<T>::type;
 
+template <typename T>
+struct add_complex {
+    using type = std::complex<T>;
+};
+template <typename T>
+struct add_complex<std::complex<T>> {
+    using type = std::complex<T>;
+};
+
+template <typename T>
+using add_complex_t = typename add_complex<T>::type;
+
 // From: https://stackoverflow.com/questions/29671643/checking-type-of-parameter-pack-using-enable-if
 template <bool...>
 struct bool_pack;
