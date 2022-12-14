@@ -1602,6 +1602,9 @@ auto println(const AType<T, Rank> &A, TensorPrintOptions options) ->
                         if (std::fabs(value) > 1.0E+10) {
                             if constexpr (std::is_floating_point_v<T>)
                                 oss << "\x1b[0;37;41m" << fmt::format("{:14.8f} ", value) << "\x1b[0m";
+                            else if constexpr (einsums::is_complex_v<T>)
+                                oss << "\x1b[0;37;41m(" << fmt::format("{:14.8f} ", value.real()) << " + "
+                                    << fmt::format("{:14.8f}i)", value.imag()) << "\x1b[0m";
                             else
                                 oss << "\x1b[0;37;41m" << fmt::format("{:14d} ", value) << "\x1b[0m";
                         } else {
@@ -1611,6 +1614,8 @@ auto println(const AType<T, Rank> &A, TensorPrintOptions options) ->
                                 } else {
                                     oss << fmt::format("{:14.8f} ", value);
                                 }
+                            } else if constexpr (einsums::is_complex_v<T>) {
+                                oss << fmt::format("{:14.8f} ", value.real()) << " + " << fmt::format("{:14.8f}i)", value.imag());
                             } else
                                 oss << fmt::format("{:14} ", value);
                         }

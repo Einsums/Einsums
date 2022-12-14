@@ -905,12 +905,30 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
 
             if (print_info_and_abort) {
                 println(emphasis::bold | bg(fmt::color::red) | fg(fmt::color::white), "    !!! EINSUM ERROR !!!");
-                println(bg(fmt::color::red) | fg(fmt::color::white), "    Expected {:20.14f}", Ctest);
-                println(bg(fmt::color::red) | fg(fmt::color::white), "    Obtained {:20.14f}", Cvalue);
-
+                if constexpr (is_complex_v<CDataType>) {
+                    println(bg(fmt::color::red) | fg(fmt::color::white), "    Expected {:20.14f} + {:20.14f}i", Ctest.real(), Ctest.imag());
+                    println(bg(fmt::color::red) | fg(fmt::color::white), "    Obtained {:20.14f} + {:20.14f}i", Cvalue.real(),
+                            Cvalue.imag());
+                } else {
+                    println(bg(fmt::color::red) | fg(fmt::color::white), "    Expected {:20.14f}", Ctest);
+                    println(bg(fmt::color::red) | fg(fmt::color::white), "    Obtained {:20.14f}", Cvalue);
+                }
                 println(bg(fmt::color::red) | fg(fmt::color::white), "    tensor element ({:})", print_tuple_no_type(target_combination));
-                println(bg(fmt::color::red) | fg(fmt::color::white), "    {:f} C({:}) += {:f} A({:}) * B({:})", C_prefactor,
-                        print_tuple_no_type(C_indices), AB_prefactor, print_tuple_no_type(A_indices), print_tuple_no_type(B_indices));
+                std::string C_prefactor_string;
+                if constexpr (is_complex_v<CDataType>) {
+                    C_prefactor_string = fmt::format("({:f} + {:f}i)", C_prefactor.real(), C_prefactor.imag());
+                } else {
+                    C_prefactor_string = fmt::format("{:f}", C_prefactor);
+                }
+                std::string AB_prefactor_string;
+                if constexpr (is_complex_v<ABDataType>) {
+                    AB_prefactor_string = fmt::format("({:f} + {:f}i)", AB_prefactor.real(), AB_prefactor.imag());
+                } else {
+                    AB_prefactor_string = fmt::format("{:f}", AB_prefactor);
+                }
+                println(bg(fmt::color::red) | fg(fmt::color::white), "    {} C({:}) += {:f} A({:}) * B({:})", C_prefactor_string,
+                        print_tuple_no_type(C_indices), AB_prefactor_string, print_tuple_no_type(A_indices),
+                        print_tuple_no_type(B_indices));
 
                 println("Expected:");
                 println(testC);
@@ -929,12 +947,29 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
 
         if (std::fabs(Cvalue - testC) > 1.0E-6) {
             println(emphasis::bold | bg(fmt::color::red) | fg(fmt::color::white), "!!! EINSUM ERROR !!!");
-            println(bg(fmt::color::red) | fg(fmt::color::white), "    Expected {:20.14f}", Ctest);
-            println(bg(fmt::color::red) | fg(fmt::color::white), "    Obtained {:20.14f}", Cvalue);
+            if constexpr (is_complex_v<CDataType>) {
+                println(bg(fmt::color::red) | fg(fmt::color::white), "    Expected {:20.14f} + {:20.14f}i", Ctest.real(), Ctest.imag());
+                println(bg(fmt::color::red) | fg(fmt::color::white), "    Obtained {:20.14f} + {:20.14f}i", Cvalue.real(), Cvalue.imag());
+            } else {
+                println(bg(fmt::color::red) | fg(fmt::color::white), "    Expected {:20.14f}", Ctest);
+                println(bg(fmt::color::red) | fg(fmt::color::white), "    Obtained {:20.14f}", Cvalue);
+            }
 
             println(bg(fmt::color::red) | fg(fmt::color::white), "    tensor element ()");
-            println(bg(fmt::color::red) | fg(fmt::color::white), "    {:f} C() += {:f} A({:}) * B({:})", C_prefactor, AB_prefactor,
-                    print_tuple_no_type(A_indices), print_tuple_no_type(B_indices));
+            std::string C_prefactor_string;
+            if constexpr (is_complex_v<CDataType>) {
+                C_prefactor_string = fmt::format("({:f} + {:f}i)", C_prefactor.real(), C_prefactor.imag());
+            } else {
+                C_prefactor_string = fmt::format("{:f}", C_prefactor);
+            }
+            std::string AB_prefactor_string;
+            if constexpr (is_complex_v<ABDataType>) {
+                AB_prefactor_string = fmt::format("({:f} + {:f}i)", AB_prefactor.real(), AB_prefactor.imag());
+            } else {
+                AB_prefactor_string = fmt::format("{:f}", AB_prefactor);
+            }
+            println(bg(fmt::color::red) | fg(fmt::color::white), "    {} C() += {} A({:}) * B({:})", C_prefactor_string,
+                    AB_prefactor_string, print_tuple_no_type(A_indices), print_tuple_no_type(B_indices));
 
             println("Expected:");
             println(testC);
