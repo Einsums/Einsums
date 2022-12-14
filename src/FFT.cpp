@@ -2,6 +2,7 @@
 
 #include "backends/fft/mkl/fft.hpp"
 #include "einsums/LinearAlgebra.hpp"
+#include "einsums/Print.hpp"
 #include "einsums/STL.hpp"
 #include "einsums/Tensor.hpp"
 #include "einsums/Utilities.hpp"
@@ -26,13 +27,26 @@ auto fftfreq(int n, double d) -> Tensor<double, 1> {
 
 namespace detail {
 
+namespace {
+template <typename T>
+void check_size(const Tensor<T, 1> &a, const Tensor<std::complex<T>, 1> *result) {
+    if (result->dim(0) >= a.dim(0) / 2 + 1)
+        return;
+
+    println_abort("fft called with too small result tensor size\nsize of \"{}\" is {}\nsize of \"{}\" is {}", a.name(), a.dim(0),
+                  result->name(), result->dim(0));
+}
+} // namespace
+
 void scfft(const Tensor<float, 1> &a, Tensor<std::complex<float>, 1> *result) {
+    check_size(a, result);
     backend::mkl::scfft(a, result);
 }
 
 void ccfft(const Tensor<std::complex<float>, 1> &a, Tensor<std::complex<float>, 1> *result);
 
 void dzfft(const Tensor<double, 1> &a, Tensor<std::complex<double>, 1> *result) {
+    check_size(a, result);
     backend::mkl::dzfft(a, result);
 }
 
