@@ -43,14 +43,18 @@ void scfft(const Tensor<float, 1> &a, Tensor<std::complex<float>, 1> *result) {
     backend::mkl::scfft(a, result);
 }
 
-void ccfft(const Tensor<std::complex<float>, 1> &a, Tensor<std::complex<float>, 1> *result);
+void ccfft(const Tensor<std::complex<float>, 1> &a, Tensor<std::complex<float>, 1> *result) {
+    backend::mkl::ccfft(a, result);
+}
 
 void dzfft(const Tensor<double, 1> &a, Tensor<std::complex<double>, 1> *result) {
     check_size(a, result);
     backend::mkl::dzfft(a, result);
 }
 
-void zzfft(const Tensor<std::complex<double>, 1> &a, Tensor<std::complex<double>, 1> *result);
+void zzfft(const Tensor<std::complex<double>, 1> &a, Tensor<std::complex<double>, 1> *result) {
+    backend::mkl::zzfft(a, result);
+}
 } // namespace detail
 
 } // namespace einsums::fft
