@@ -10,7 +10,7 @@ add_einsums_library(einsums
 
         Blas.cpp
         InitializeFinalize.cpp
-        FFT.cpp
+        # FFT.cpp
         Memory.cpp
         Print.cpp
         Section.cpp
@@ -86,10 +86,9 @@ extend_einsums_target(einsums
 extend_einsums_target(einsums
     CONDITION
         (HAVE_MKL_LAPACKE_H AND HAVE_MKL_CBLAS_H)
-    SOURCES_PREFIX
-        backends/fft/mkl
     SOURCES
-        fft.cpp
+        FFT.cpp
+        backends/fft/mkl/fft.cpp
     FEATURE_INFO
         "MKL FFT backend"
 )
