@@ -3,8 +3,6 @@
 #include "einsums/Tensor.hpp"
 #include "einsums/_Export.hpp"
 
-// #include <mkl_dfti.h>
-
 namespace einsums::fft {
 
 namespace detail {}
