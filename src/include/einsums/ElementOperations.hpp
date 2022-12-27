@@ -79,5 +79,16 @@ auto exp(const TensorType<T, Rank> &tensor) -> Tensor<T, Rank> {
     return result;
 }
 
+template <template <typename, size_t> typename TensorType, typename T, size_t Rank>
+auto scale(const T &scale, const TensorType<T, Rank> &tensor) -> Tensor<T, Rank> {
+    auto result = create_tensor_like(tensor);
+    result = tensor;
+    auto &data = result.vector_data();
+
+    detail::omp_loop(data, [&](T &value) { return scale * value; });
+
+    return result;
+}
+
 } // namespace new_tensor
 } // namespace einsums::element_operations
