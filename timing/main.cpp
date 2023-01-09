@@ -1,4 +1,5 @@
 #include "einsums/Blas.hpp"
+#include "einsums/ElementOperations.hpp"
 #include "einsums/LinearAlgebra.hpp"
 #include "einsums/OpenMP.h"
 #include "einsums/Print.hpp"
@@ -9,6 +10,7 @@
 #include "einsums/TensorAlgebra.hpp"
 #include "einsums/Timer.hpp"
 #include "einsums/Utilities.hpp"
+#include "einsums/polynomial/Laguerre.hpp"
 
 #include <cstdlib>
 
@@ -169,6 +171,7 @@ auto main() -> int {
     // C.set_all(0.0);
     // einsum(Indices{i, j, k}, &C, Indices{i, j}, A, Indices{k}, B);
 
+#if 0
     println("Creating tensors");
     timer::push(fmt::format("Creating random tensor {} {} {} {}", NMO, NMO, NMO, NMO));
     auto eri = create_random_tensor("eri", NMO, NMO, NMO, NMO);
@@ -248,6 +251,18 @@ auto main() -> int {
             auto data = g3(i, All, All, All);
         }
     }
+#endif
+
+    auto [t, w] = polynomial::laguerre::gauss_laguerre(40);
+    println(t);
+    println(w);
+
+    auto weights = create_tensor_like(w);
+    {
+        using namespace element_operations::new_tensor;
+        einsum(Indices{i}, &w, Indices{i}, w, Indices{i}, exp(t));
+    }
+    println(w);
 
     timer::report();
     blas::finalize();
