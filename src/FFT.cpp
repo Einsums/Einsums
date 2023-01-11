@@ -74,6 +74,16 @@ void zdifft(const Tensor<std::complex<double>, 1> &a, Tensor<double, 1> *result)
     backend::mkl::zdifft(a, result);
 }
 
+void ccifft(const Tensor<std::complex<float>, 1> &a, Tensor<std::complex<float>, 1> *result) {
+    // TODO: Add appropriate icheck_size(...);
+    backend::mkl::ccifft(a, result);
+}
+
+void zzifft(const Tensor<std::complex<double>, 1> &a, Tensor<std::complex<double>, 1> *result) {
+    // TODO: Add appropriate icheck_size(...);
+    backend::mkl::zzifft(a, result);
+}
+
 } // namespace detail
 
 } // namespace einsums::fft
