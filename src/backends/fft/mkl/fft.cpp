@@ -95,6 +95,9 @@ void csifft(const Tensor<std::complex<float>, 1> &a, Tensor<float, 1> *result) {
     DFTI_DESCRIPTOR_HANDLE handle = nullptr;
     MKL_LONG status;
 
+    // The descriptors are odd.  You create the descriptor as if you're doing
+    // a forward transform. In this case, from float -> complex<float> and
+    // then you can call the compute backward function.
     verify(DftiCreateDescriptor(&handle, DFTI_SINGLE, DFTI_REAL, 1, result->dim(0)));
     verify(DftiSetValue(handle, DFTI_PLACEMENT, DFTI_NOT_INPLACE));
     verify(DftiSetValue(handle, DFTI_CONJUGATE_EVEN_STORAGE, DFTI_COMPLEX_COMPLEX));
@@ -102,6 +105,23 @@ void csifft(const Tensor<std::complex<float>, 1> &a, Tensor<float, 1> *result) {
 
     auto *x_real = const_cast<float *>(result->data());
     auto *x_cmplx = (MKL_Complex8 *)a.data();
+
+    verify(DftiComputeBackward(handle, x_cmplx, x_real));
+
+    DftiFreeDescriptor(&handle);
+}
+
+void zdifft(const Tensor<std::complex<double>, 1> &a, Tensor<double, 1> *result) {
+    DFTI_DESCRIPTOR_HANDLE handle = nullptr;
+    MKL_LONG status;
+
+    verify(DftiCreateDescriptor(&handle, DFTI_DOUBLE, DFTI_REAL, 1, result->dim(0)));
+    verify(DftiSetValue(handle, DFTI_PLACEMENT, DFTI_NOT_INPLACE));
+    verify(DftiSetValue(handle, DFTI_CONJUGATE_EVEN_STORAGE, DFTI_COMPLEX_COMPLEX));
+    verify(DftiCommitDescriptor(handle));
+
+    auto *x_real = const_cast<double *>(result->data());
+    auto *x_cmplx = (MKL_Complex16 *)a.data();
 
     verify(DftiComputeBackward(handle, x_cmplx, x_real));
 
