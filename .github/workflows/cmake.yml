@@ -23,7 +23,9 @@ jobs:
 
     - name: Install Dependencies - Ubuntu
       if: ${{ matrix.os == 'ubuntu-latest' }}
-      run: sudo apt-get install -y liblapacke-dev liblapack-dev libblas-dev libhdf5-dev
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y liblapacke-dev liblapack-dev libblas-dev libhdf5-dev
 
     - name: Install Dependencies - macOS
       if: ${{ matrix.os == 'macos-latest' }}
