@@ -18,6 +18,15 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # Force position independent code globally.
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
+include(EinsumsBuildTypeASAN)
+include(EinsumsBuildTypeMSAN)
+include(EinsumsBuildTypeUBSAN)
+
+########################################################
+# User input options                                   #
+########################################################
+include(EinsumsOptionUtilities)
+
 option(EINSUMS_CONTINUOUSLY_TEST_EINSUM "Every call to TensorAlgebra::einsum is tested" OFF)
 option(EINSUMS_TEST_EINSUM_ABORT "Abort execution if an error is found" ON)
 option(EINSUMS_WARN_NOT_IMPLEMENTED "If a specific case is not implemented in einsum then warn the user" OFF)
@@ -55,6 +64,19 @@ endif()
 
 find_package(CBLAS)
 find_package(LAPACKE)
+
+if (TARGET MKL::MKL)
+    set(EINSUMS_FFT_LIBRARY_DEFAULT "mkl")
+else()
+    set(EINSUMS_FFT_LIBRARY_DEFAULT "fftw3")
+endif()
+
+einsums_option_multichoice(
+    EINSUMS_FFT_LIBRARY
+    "FFT library"
+    "${EINSUMS_FFT_LIBRARY_DEFAULT}"
+    fftw3 mkl "fftpack[built-in]")
+
 
 find_package(OpenMP)
 if (OpenMP_FOUND)
