@@ -40,7 +40,7 @@ void init_data(einsums::Tensor<std::complex<T>, 1> &data, int N, int H) {
 }
 
 template <typename T, int N = 6, int H = -1>
-void verify_r(einsums::Tensor<T, 1> &x) {
+auto verify_r(einsums::Tensor<T, 1> &x) -> std::enable_if_t<!einsums::is_complex_v<T>> {
     T err, errthr, maxerr;
     int n;
 
@@ -62,7 +62,7 @@ void verify_r(einsums::Tensor<T, 1> &x) {
 }
 
 template <typename Source, typename Result, int N = 6, int H = -1>
-void ifft1d_1() {
+auto ifft1d_1() -> std::enable_if_t<!einsums::is_complex_v<Result>> {
     using namespace einsums;
 
     auto x_data = create_tensor<Source>("sample data", einsums::is_complex_v<Source> ? N / 2 + 1 : N);
@@ -77,6 +77,58 @@ void ifft1d_1() {
     // println(x_result);
 
     verify_r(x_result);
+}
+
+template <typename Source, typename Result, int N = 7, int H = -N / 2>
+auto ifft1d_1() -> std::enable_if_t<einsums::is_complex_v<Source> && einsums::is_complex_v<Result>> {
+    using namespace einsums;
+    using SourceBase = einsums::remove_complex_t<Source>;
+    using ResultBase = einsums::remove_complex_t<Result>;
+
+    auto x_data = create_tensor<Source>("Sample data", N);
+    auto x_result = create_tensor<Result>("FFT result", N);
+
+    // Initialize data
+    {
+        SourceBase TWOPI = 6.2831853071795864769, phase;
+        int n;
+
+        for (n = 0; n < N; n++) {
+            phase = moda<SourceBase>(n, -H, N) / N;
+            x_data(n).real(cos(TWOPI * phase) / N);
+            x_data(n).imag(sin(TWOPI * phase) / N);
+        }
+    }
+
+    fft::ifft(x_data, &x_result);
+
+    // println(x_data);
+    // println(x_result);
+
+    // Verify that x has unit peak at H
+    {
+        ResultBase err, errthr, maxerr;
+        int n;
+
+        errthr = 5.0 * log((ResultBase)N) / log(2.0) * std::numeric_limits<ResultBase>::epsilon();
+        maxerr = 0.0;
+
+        for (n = 0; n < N; n++) {
+            ResultBase re_exp = 0.0, im_exp = 0.0, re_got, im_got;
+
+            if ((n - H) % N == 0)
+                re_exp = 1.0;
+
+            re_got = x_result(n).real();
+            im_got = x_result(n).imag();
+            err = abs(re_got - re_exp) + abs(im_got - im_exp);
+            if (err > maxerr)
+                maxerr = err;
+
+            // println("n {} {} -- {} {}, {} {}", n, (n - H) % N, re_got, re_exp, im_got, im_exp);
+            REQUIRE((err < errthr));
+        }
+    }
 }
 
 template <typename Source, typename Result, int N = 6, int H = -1>
@@ -187,4 +239,10 @@ TEST_CASE("ifft1") {
 }
 TEST_CASE("ifft2") {
     ifft1d_1<std::complex<double>, double>();
+}
+TEST_CASE("ifft3") {
+    ifft1d_1<std::complex<float>, std::complex<float>>();
+}
+TEST_CASE("ifft4") {
+    ifft1d_1<std::complex<double>, std::complex<double>>();
 }

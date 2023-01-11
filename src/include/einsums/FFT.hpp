@@ -26,6 +26,9 @@ void EINSUMS_EXPORT zzfft(const Tensor<std::complex<double>, 1> &a, Tensor<std::
 void EINSUMS_EXPORT csifft(const Tensor<std::complex<float>, 1> &a, Tensor<float, 1> *result);
 void EINSUMS_EXPORT zdifft(const Tensor<std::complex<double>, 1> &a, Tensor<double, 1> *result);
 
+void EINSUMS_EXPORT ccifft(const Tensor<std::complex<float>, 1> &a, Tensor<std::complex<float>, 1> *result);
+void EINSUMS_EXPORT zzifft(const Tensor<std::complex<double>, 1> &a, Tensor<std::complex<double>, 1> *result);
+
 } // namespace detail
 
 inline void fft(const Tensor<float, 1> &a, Tensor<std::complex<float>, 1> *result) {
@@ -50,6 +53,14 @@ inline void ifft(const Tensor<std::complex<float>, 1> &a, Tensor<float, 1> *resu
 
 inline void ifft(const Tensor<std::complex<double>, 1> &a, Tensor<double, 1> *result) {
     detail::zdifft(a, result);
+}
+
+inline void ifft(const Tensor<std::complex<float>, 1> &a, Tensor<std::complex<float>, 1> *result) {
+    detail::ccifft(a, result);
+}
+
+inline void ifft(const Tensor<std::complex<double>, 1> &a, Tensor<std::complex<double>, 1> *result) {
+    detail::zzifft(a, result);
 }
 
 } // namespace einsums::fft
