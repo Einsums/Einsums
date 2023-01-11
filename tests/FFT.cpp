@@ -185,3 +185,6 @@ TEST_CASE("fft5") {
 TEST_CASE("ifft1") {
     ifft1d_1<std::complex<float>, float>();
 }
+TEST_CASE("ifft2") {
+    ifft1d_1<std::complex<double>, double>();
+}
