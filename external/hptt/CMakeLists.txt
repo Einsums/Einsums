@@ -45,7 +45,7 @@ add_library(hptt STATIC ${HPTT_SRCS})
 if (OpenMP_FOUND)
   target_link_libraries(hptt PUBLIC OpenMP::OpenMP_CXX)
 endif()
-target_include_directories(hptt PUBLIC SYSTEM ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(hptt SYSTEM PUBLIC ${PROJECT_SOURCE_DIR}/include)
 #target_compile_definitions(hptt PRIVATE ${HPTT_CXX_COMPILE_DEFS})
 target_compile_options(hptt PRIVATE ${HPTT_CXX_FLAGS})
 
