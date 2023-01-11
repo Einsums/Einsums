@@ -2,6 +2,7 @@
 
 #include "einsums/ElementOperations.hpp"
 #include "einsums/LinearAlgebra.hpp"
+#include "einsums/Section.hpp"
 #include "einsums/Tensor.hpp"
 #include "einsums/Utilities.hpp"
 
@@ -9,6 +10,8 @@ namespace einsums::polynomial::laguerre {
 
 template <typename T>
 auto companion(const Tensor<T, 1> &c) -> std::enable_if_t<std::is_signed_v<T>, Tensor<T, 2>> {
+    Section section{"companion"};
+
     if (c.dim(0) < 2) {
         throw std::runtime_error("Series (c) must have maximum degree of at least 1.");
     }
@@ -47,6 +50,8 @@ auto companion(const Tensor<T, 1> &c) -> std::enable_if_t<std::is_signed_v<T>, T
 
 template <typename T>
 auto derivative(const Tensor<T, 1> &_c, unsigned int m = 1, T scale = T{1}) -> Tensor<T, 1> {
+    Section section{"derivative"};
+
     Tensor<T, 1> c = _c;
     c.set_name("c derivative");
 
@@ -79,6 +84,8 @@ auto derivative(const Tensor<T, 1> &_c, unsigned int m = 1, T scale = T{1}) -> T
 template <template <typename, size_t> typename XType, template <typename, size_t> typename CType, typename T>
 auto value(const XType<T, 1> &x, const CType<T, 1> &c)
     -> std::enable_if_t<is_incore_rank_tensor_v<XType<T, 1>, 1, T> && is_incore_rank_tensor_v<CType<T, 1>, 1, T>, Tensor<T, 1>> {
+    Section section{"value"};
+
     auto c0 = create_tensor_like("c0", x), c1 = create_tensor_like("c1", x);
     zero(c0);
     zero(c1);
@@ -127,6 +134,8 @@ auto value(const XType<T, 1> &x, const CType<T, 1> &c)
 
 template <typename T = double>
 auto gauss_laguerre(unsigned int degree) -> std::tuple<Tensor<T, 1>, Tensor<T, 1>> {
+    Section section{"gauss_laguerre"};
+
     // First approximation of roots. We use the fact that the companion matrix is symmetric in this case in order to obtain better zeros.
     auto c = create_tensor<double>("c", degree + 1);
     zero(c);
@@ -165,6 +174,8 @@ auto gauss_laguerre(unsigned int degree) -> std::tuple<Tensor<T, 1>, Tensor<T, 1
 
 template <template <typename, size_t> typename TensorType, typename T, size_t Rank>
 auto weight(const TensorType<T, Rank> &tensor) -> Tensor<T, Rank> {
+    Section section{"weight"};
+
     auto result = create_tensor_like(tensor);
     result = tensor;
     auto &data = result.vector_data();
