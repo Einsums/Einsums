@@ -21,9 +21,10 @@ void EINSUMS_EXPORT dzfft(const Tensor<double, 1> &a, Tensor<std::complex<double
 void EINSUMS_EXPORT zzfft(const Tensor<std::complex<double>, 1> &a, Tensor<std::complex<double>, 1> *result);
 
 /*************************************
- * Real or complex -> real           *
+ * Real or complex <- complex        *
  *************************************/
-// void EINSUMS_EXPORT
+void EINSUMS_EXPORT csifft(const Tensor<std::complex<float>, 1> &a, Tensor<float, 1> *result);
+
 } // namespace detail
 
 inline void fft(const Tensor<float, 1> &a, Tensor<std::complex<float>, 1> *result) {
@@ -40,6 +41,10 @@ inline void fft(const Tensor<double, 1> &a, Tensor<std::complex<double>, 1> *res
 
 inline void fft(const Tensor<std::complex<double>, 1> &a, Tensor<std::complex<double>, 1> *result) {
     detail::zzfft(a, result);
+}
+
+inline void ifft(const Tensor<std::complex<float>, 1> &a, Tensor<float, 1> *result) {
+    detail::csifft(a, result);
 }
 
 } // namespace einsums::fft

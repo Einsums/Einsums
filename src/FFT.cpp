@@ -36,6 +36,14 @@ void check_size(const Tensor<T, 1> &a, const Tensor<std::complex<T>, 1> *result)
     println_abort("fft called with too small result tensor size\nsize of \"{}\" is {}\nsize of \"{}\" is {}", a.name(), a.dim(0),
                   result->name(), result->dim(0));
 }
+
+template <typename T>
+void icheck_size(const Tensor<std::complex<T>, 1> &a, const Tensor<T, 1> *result) {
+    if (a.dim(0) >= result->dim(0) / 2 + 1)
+        return;
+
+    println_abort("ifft called with too small");
+}
 } // namespace
 
 void scfft(const Tensor<float, 1> &a, Tensor<std::complex<float>, 1> *result) {
@@ -55,6 +63,12 @@ void dzfft(const Tensor<double, 1> &a, Tensor<std::complex<double>, 1> *result) 
 void zzfft(const Tensor<std::complex<double>, 1> &a, Tensor<std::complex<double>, 1> *result) {
     backend::mkl::zzfft(a, result);
 }
+
+void csifft(const Tensor<std::complex<float>, 1> &a, Tensor<float, 1> *result) {
+    icheck_size(a, result);
+    backend::mkl::csifft(a, result);
+}
+
 } // namespace detail
 
 } // namespace einsums::fft

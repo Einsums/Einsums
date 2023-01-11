@@ -15,6 +15,10 @@ inline void verify(MKL_LONG status) {
 }
 } // namespace
 
+/*******************************************************************************
+ * Forward transforms                                                          *
+ *******************************************************************************/
+
 void scfft(const Tensor<float, 1> &a, Tensor<std::complex<float>, 1> *result) {
     DFTI_DESCRIPTOR_HANDLE handle = nullptr;
     MKL_LONG status;
@@ -79,6 +83,27 @@ void zzfft(const Tensor<std::complex<double>, 1> &a, Tensor<std::complex<double>
     auto *x_output = reinterpret_cast<MKL_Complex16 *>(result->data());
 
     verify(DftiComputeForward(handle, x_input, x_output));
+
+    DftiFreeDescriptor(&handle);
+}
+
+/*******************************************************************************
+ * Backward transforms                                                         *
+ *******************************************************************************/
+
+void csifft(const Tensor<std::complex<float>, 1> &a, Tensor<float, 1> *result) {
+    DFTI_DESCRIPTOR_HANDLE handle = nullptr;
+    MKL_LONG status;
+
+    verify(DftiCreateDescriptor(&handle, DFTI_SINGLE, DFTI_REAL, 1, result->dim(0)));
+    verify(DftiSetValue(handle, DFTI_PLACEMENT, DFTI_NOT_INPLACE));
+    verify(DftiSetValue(handle, DFTI_CONJUGATE_EVEN_STORAGE, DFTI_COMPLEX_COMPLEX));
+    verify(DftiCommitDescriptor(handle));
+
+    auto *x_real = const_cast<float *>(result->data());
+    auto *x_cmplx = (MKL_Complex8 *)a.data();
+
+    verify(DftiComputeBackward(handle, x_cmplx, x_real));
 
     DftiFreeDescriptor(&handle);
 }
