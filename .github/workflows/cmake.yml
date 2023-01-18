@@ -33,6 +33,7 @@ jobs:
         brew install hdf5 cmake zlib lapack fftw
         echo "HDF5_ROOT=$(brew --prefix hdf5)" >> $GITHUB_ENV
         echo "LAPACKE_DIR=/home/linuxbrew/.linuxbrew/opt/lapack" >> $GITHUB_ENV
+        echo "FFTW_ROOT=$(brew --prefix fftw)" >> $GITHUB_ENV
 
     - name: Configure CMake
       run: cmake -G Ninja -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DEINSUMS_SHOW_WARNING=OFF
