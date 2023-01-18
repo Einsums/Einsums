@@ -100,6 +100,8 @@ extend_einsums_target(einsums
         EINSUMS_FFT_LIBRARY MATCHES FFTW3
     DEFINES
         EINSUMS_HAVE_FFT_LIBRARY_FFTW3
+    DEPENDS
+        FFT::FFT
     SOURCES
         backends/fft/fftw3/fft.cpp
     FEATURE_INFO
