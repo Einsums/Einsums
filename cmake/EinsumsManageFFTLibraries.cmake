@@ -20,32 +20,18 @@ elseif(EINSUMS_FFT_LIBRARY MATCHES FFTW3)
     # Attempt to find FFTW for real
     find_package(FFTW
         COMPONENTS
-            FLOAT_OPENMP_LIB
-            DOUBLE_OPENMP_LIB
+            FLOAT_LIB
+            DOUBLE_LIB
     )
 
-    if (NOT FFTW_FLOAT_OPENMP_LIB_FOUND OR NOT FFTW_DOUBLE_OPENMP_LIB_FOUND)
-        find_package(FFTW
-            COMPONENTS
-                FLOAT_LIB
-                DOUBLE_LIB
-        )
-        if (NOT FFTW_FLOAT_LIB_FOUND OR NOT FFTW_DOUBLE_LIB_FOUND)
-            message(FATAL_ERROR "Did not find FFTW3.")
-        else()
-            add_library(FFT::FFT INTERFACE IMPORTED)
-            target_link_libraries(FFT::FFTW
-                INTERFACE
-                    FFTW::Float
-                    FFTW::Double
-            )
-        endif()
+    if (NOT FFTW_FLOAT_LIB_FOUND OR NOT FFTW_DOUBLE_LIB_FOUND)
+        message(FATAL_ERROR "Did not find FFTW3.")
     else()
         add_library(FFT::FFT INTERFACE IMPORTED)
-        target_link_libraries(FFT::FFT
+        target_link_libraries(FFT::FFTW
             INTERFACE
-                FFTW::FloatOpenMP
-                FFTW::DoubleOpenMP
+                FFTW::Float
+                FFTW::Double
         )
     endif()
 
