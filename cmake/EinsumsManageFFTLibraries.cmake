@@ -15,7 +15,7 @@ if (EINSUMS_FFT_LIBRARY MATCHES MKL)
         message(FATAL_ERROR "MKL FFT library library requested but MKL not found.")
     endif()
 elseif(EINSUMS_FFT_LIBRARY MATCHES FFTW3)
-    set(FFTW_USE_STATIC_LIBS TRUE)
+    # set(FFTW_USE_STATIC_LIBS TRUE)
 
     # Attempt to find FFTW for real
     find_package(FFTW
