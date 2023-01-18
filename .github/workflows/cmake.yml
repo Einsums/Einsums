@@ -25,12 +25,12 @@ jobs:
       if: ${{ matrix.os == 'ubuntu-latest' }}
       run: |
         sudo apt-get update
-        sudo apt-get install -y liblapacke-dev liblapack-dev libblas-dev libhdf5-dev
+        sudo apt-get install -y liblapacke-dev liblapack-dev libblas-dev libhdf5-dev libfftw3-dev
 
     - name: Install Dependencies - macOS
       if: ${{ matrix.os == 'macos-latest' }}
       run: |
-        brew install hdf5 cmake zlib lapack
+        brew install hdf5 cmake zlib lapack fftw
         echo "HDF5_ROOT=$(brew --prefix hdf5)" >> $GITHUB_ENV
         echo "LAPACKE_DIR=/home/linuxbrew/.linuxbrew/opt/lapack" >> $GITHUB_ENV
 
