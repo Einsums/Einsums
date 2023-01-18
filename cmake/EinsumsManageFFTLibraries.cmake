@@ -28,7 +28,7 @@ elseif(EINSUMS_FFT_LIBRARY MATCHES FFTW3)
         message(FATAL_ERROR "Did not find FFTW3.")
     else()
         add_library(FFT::FFT INTERFACE IMPORTED)
-        target_link_libraries(FFT::FFTW
+        target_link_libraries(FFT::FFT
             INTERFACE
                 FFTW::Float
                 FFTW::Double
