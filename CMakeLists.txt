@@ -52,7 +52,7 @@ include(cmake/FindITTNOTIFY.cmake)
 
 # Attempt to find MKL. This assumes the user set MKL_DIR.
 # set(BLA_VENDOR Intel10_64_dyn)
-# find_package(MKL CONFIG)
+find_package(MKL CONFIG)
 # message(STATUS "${MKL_IMPORTED_TARGETS}")
 if (TARGET MKL::MKL)
     add_library(BLAS::BLAS ALIAS MKL::MKL)
@@ -77,6 +77,7 @@ einsums_option_multichoice(
     "${EINSUMS_FFT_LIBRARY_DEFAULT}"
     fftw3 mkl "fftpack[built-in]")
 
+include(EinsumsManageFFTLibraries)
 
 find_package(OpenMP)
 if (OpenMP_FOUND)
