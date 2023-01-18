@@ -2,6 +2,20 @@
 
 Provides compile-time contraction pattern analysis to determine optimal operation to perform.
 
+## Requirements
+A C++ compiler with C++17 support.
+
+The following libraries are required to build EinsumsInCpp:
+
+* BLAS and LAPACK.
+* A Fast Fourier Transform library, either FFTW3 or DFT from MKL.
+
+On my personal development machine, I use MKL for the above requirements. On GitHub Actions, stock BLAS, LAPACK, and FFTW3 are used.
+
+Optional requirements:
+
+* For call stack backtracing, refer to the requirements listed [here](https://github.com/bombela/backward-cpp).
+
 ## Examples
 This will optimize at compile-time to a BLAS dgemm call.
 ```C++
@@ -24,7 +38,7 @@ Two-Electron Contribution to the Fock Matrix
 
 using namespace einsums;
 
-void build_Fock_2e_einsum(Tensor<2> *F, 
+void build_Fock_2e_einsum(Tensor<2> *F,
                           const Tensor<4> &g,
                           const Tensor<2> &D) {
     using namespace einsums::TensorAlgebra;
@@ -36,7 +50,7 @@ void build_Fock_2e_einsum(Tensor<2> *F,
 
     // As written cannot be optimized.
     // A generic arbitrary contraction function will be used.
-    einsum(1.0, Indices{p, q}, F, 
+    einsum(1.0, Indices{p, q}, F,
           -1.0, Indices{p, r, q, s}, g, Indices{r, s}, D);
 }
 ```
@@ -47,27 +61,27 @@ W Intermediates in CCD
 ```C++
 Wmnij = g_oooo;
 // Compile-time optimizes to gemm
-einsum(1.0,  Indices{m, n, i, j}, &Wmnij, 
-       0.25, Indices{i, j, e, f}, t_oovv, 
+einsum(1.0,  Indices{m, n, i, j}, &Wmnij,
+       0.25, Indices{i, j, e, f}, t_oovv,
              Indices{m, n, e, f}, g_oovv);
 
 Wabef = g_vvvv;
 // Compile-time optimizes to gemm
-einsum(1.0,  Indices{a, b, e, f}, &Wabef, 
+einsum(1.0,  Indices{a, b, e, f}, &Wabef,
        0.25, Indices{m, n, e, f}, g_oovv,
              Indices{m, n, a, b}, t_oovv);
 
 Wmbej = g_ovvo;
 // As written uses generic arbitrary contraction function
-einsum(1.0, Indices{m, b, e, j}, &Wmbej, 
-      -0.5, Indices{j, n, f, b}, t_oovv, 
+einsum(1.0, Indices{m, b, e, j}, &Wmbej,
+      -0.5, Indices{j, n, f, b}, t_oovv,
             Indices{m, n, e, f}, g_oovv);
 ```
 
 CCD Energy
 ```C++
 /// Compile-time optimizes to a dot product
-einsum(0.0,  Indices{}, &e_ccd, 
-       0.25, Indices{i, j, a, b}, new_t_oovv, 
+einsum(0.0,  Indices{}, &e_ccd,
+       0.25, Indices{i, j, a, b}, new_t_oovv,
              Indices{i, j, a, b}, g_oovv);
 ```
