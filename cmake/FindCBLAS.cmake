@@ -1,4 +1,5 @@
 include(FindPackageHandleStandardArgs)
+include(CheckIncludeFile)
 
 # MKL include cblas by default. If we find the mkl_cblas.h
 # header then assume we have cblas.
