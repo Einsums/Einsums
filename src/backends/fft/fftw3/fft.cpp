@@ -5,7 +5,7 @@
 #if defined(EINSUMS_HAVE_FFT_LIBRARY_MKL)
 #include <fftw/fftw3.h>
 #elif defined(EINSUMS_HAVE_FFT_LIBRARY_FFTW3)
-#include <fftw3/fftw3.h>
+#include <fftw3.h>
 #else
 #error Unable to find FFTW header.
 #endif
