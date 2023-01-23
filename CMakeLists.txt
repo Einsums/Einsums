@@ -52,6 +52,7 @@ include(cmake/FindITTNOTIFY.cmake)
 
 # Attempt to find MKL. This assumes the user set MKL_DIR.
 # set(BLA_VENDOR Intel10_64_dyn)
+set(MKL_INTERFACE lp64)
 find_package(MKL CONFIG)
 # message(STATUS "${MKL_IMPORTED_TARGETS}")
 if (TARGET MKL::MKL)
