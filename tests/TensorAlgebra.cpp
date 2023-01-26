@@ -2384,6 +2384,55 @@ TEST_CASE("einsum-mixed") {
     // }
 }
 
+template <typename T>
+void dot_test() {
+    using namespace einsums;
+    using namespace einsums::tensor_algebra;
+    using namespace einsums::tensor_algebra::index;
+    using namespace einsums::linear_algebra;
+
+    size_t i_{10}, j_{10}, a_{10}, b_{10};
+
+    SECTION("1") {
+        auto A = create_random_tensor("A", i_);
+        auto B = create_random_tensor("B", i_);
+        Tensor<double, 0> C_obtained("C obtained");
+
+        auto C_expected = dot(A, B);
+
+        einsum(Indices{}, &C_obtained, Indices{i}, A, Indices{i}, B);
+
+        REQUIRE_THAT(C_obtained, Catch::Matchers::WithinRel(C_expected, 0.000001));
+    }
+
+    SECTION("2") {
+        auto A = create_random_tensor("A", i_, j_);
+        auto B = create_random_tensor("B", i_, j_);
+        Tensor<double, 0> C_obtained("C obtained");
+
+        auto C_expected = dot(A, B);
+
+        einsum(Indices{}, &C_obtained, Indices{i, j}, A, Indices{i, j}, B);
+
+        REQUIRE_THAT(C_obtained, Catch::Matchers::WithinRel(C_expected, 0.000001));
+    }
+}
+
+TEST_CASE("dot") {
+    SECTION("float") {
+        dot_test<float>();
+    }
+    SECTION("double") {
+        dot_test<double>();
+    }
+    SECTION("cfloat") {
+        dot_test<std::complex<float>>();
+    }
+    SECTION("cdouble") {
+        dot_test<std::complex<double>>();
+    }
+}
+
 TEST_CASE("andy") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;

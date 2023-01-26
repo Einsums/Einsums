@@ -305,7 +305,30 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
 
     auto view = std::apply(ranges::views::cartesian_product, target_dims);
 
-    if constexpr (sizeof...(LinkDims) != 0) {
+    if constexpr (sizeof...(CIndices) == 0 && sizeof...(LinkDims) != 0) {
+        CDataType sum{0};
+        for (auto link_combination : std::apply(ranges::views::cartesian_product, link_dims)) {
+            // Print::Indent _indent;
+
+            // Construct the tuples that will be used to access the tensor elements of A and B
+            auto A_order = detail::construct_indices_from_unique_combination<AIndices...>(C_unique, {}, {}, link_unique, link_combination,
+                                                                                          link_position_in_link);
+            auto B_order = detail::construct_indices_from_unique_combination<BIndices...>(C_unique, {}, {}, link_unique, link_combination,
+                                                                                          link_position_in_link);
+
+            // Get the tensor element using the operator()(MultiIndex...) function of Tensor.
+            ADataType A_value = std::apply(A, A_order);
+            BDataType B_value = std::apply(B, B_order);
+
+            sum += AB_prefactor * A_value * B_value;
+        }
+
+        CDataType &target_value = *C;
+        if (C_prefactor == CDataType{0.0})
+            target_value = CDataType{0.0};
+        target_value *= C_prefactor;
+        target_value += sum;
+    } else if constexpr (sizeof...(LinkDims) != 0) {
 #if defined(__INTEL_LLVM_COMPILER) || defined(__INTEL_COMPILER)
 #pragma omp parallel for simd
 #else
@@ -512,6 +535,7 @@ auto einsum(const CDataType C_prefactor, const std::tuple<CIndices...> & /*Cs*/,
 
     // println("is_gemv_possible {}", is_gemv_possible);
     // println("is_gemm_possible {}", is_gemm_possible);
+    // println("dot_product {}", dot_product);
 
     // Runtime check of sizes
 #if defined(EINSUMS_RUNTIME_INDICES_CHECK)
@@ -779,12 +803,13 @@ auto einsum(const CDataType C_prefactor, const std::tuple<CIndices...> & /*Cs*/,
             // If we make it here, then none of our algorithms for this last block could be used.
             // Fall through to the generic algorithm below.
         } while (false);
-    }
+    } // else {
 
     // If we somehow make it here, then none of our algorithms above could be used. Attempt to use
     // the generic algorithm instead.
     einsum_generic_algorithm(C_unique, A_unique, B_unique, link_unique, C_indices, A_indices, B_indices, unique_target_dims,
                              unique_link_dims, target_position_in_C, link_position_in_link, C_prefactor, C, AB_prefactor, A, B);
+    //}
 }
 
 } // namespace detail

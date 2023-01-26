@@ -616,6 +616,7 @@ struct Tensor<T, 0> : public detail::TensorBase<T, 0> {
 #undef OPERATOR
 
     operator T() const { return _data; }
+    operator T &() { return _data; }
 
     [[nodiscard]] auto name() const -> const std::string & { return _name; }
     void set_name(const std::string &name) { _name = name; }
@@ -1560,7 +1561,7 @@ auto println(const AType<T, Rank> &A, TensorPrintOptions options) ->
 
         println("Data Type: {}", type_name<T>());
 
-        {
+        if constexpr (Rank > 0) {
             std::ostringstream oss;
             for (size_t i = 0; i < Rank; i++) {
                 oss << A.dim(i) << " ";
@@ -1568,7 +1569,7 @@ auto println(const AType<T, Rank> &A, TensorPrintOptions options) ->
             println("Dims{{{}}}", oss.str().c_str());
         }
 
-        {
+        if constexpr (Rank > 0) {
             std::ostringstream oss;
             for (size_t i = 0; i < Rank; i++) {
                 oss << A.stride(i) << " ";
@@ -1579,7 +1580,25 @@ auto println(const AType<T, Rank> &A, TensorPrintOptions options) ->
         if (options.full_output) {
             println();
 
-            if constexpr (Rank > 1 && einsums::is_incore_rank_tensor_v<AType<T, Rank>, Rank, T>) {
+            if constexpr (Rank == 0) {
+                T value = A;
+
+                std::ostringstream oss;
+                oss << "              ";
+                if constexpr (std::is_floating_point_v<T>) {
+                    if (std::fabs(value) < 1.0E-4) {
+                        oss << fmt::format("{:14.4e} ", value);
+                    } else {
+                        oss << fmt::format("{:14.8f} ", value);
+                    }
+                } else if constexpr (einsums::is_complex_v<T>) {
+                    oss << fmt::format("{:14.8f} ", value.real()) << " + " << fmt::format("{:14.8f}i)", value.imag());
+                } else
+                    oss << fmt::format("{:14} ", value);
+
+                println("{}", oss.str());
+                println();
+            } else if constexpr (Rank > 1 && einsums::is_incore_rank_tensor_v<AType<T, Rank>, Rank, T>) {
                 auto target_dims = einsums::get_dim_ranges<Rank - 1>(A);
                 auto final_dim = A.dim(Rank - 1);
                 auto ndigits = einsums::ndigits(final_dim);
