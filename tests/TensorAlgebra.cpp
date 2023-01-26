@@ -2416,6 +2416,30 @@ void dot_test() {
 
         REQUIRE_THAT(C_obtained, Catch::Matchers::WithinRel(C_expected, 0.000001));
     }
+
+    SECTION("3") {
+        auto A = create_random_tensor("A", i_, j_, a_);
+        auto B = create_random_tensor("B", i_, j_, a_);
+        Tensor<double, 0> C_obtained("C obtained");
+
+        auto C_expected = dot(A, B);
+
+        einsum(Indices{}, &C_obtained, Indices{i, j, a}, A, Indices{i, j, a}, B);
+
+        REQUIRE_THAT(C_obtained, Catch::Matchers::WithinRel(C_expected, 0.000001));
+    }
+
+    SECTION("4") {
+        auto A = create_random_tensor("A", i_, j_, a_, b_);
+        auto B = create_random_tensor("B", i_, j_, a_, b_);
+        Tensor<double, 0> C_obtained("C obtained");
+
+        auto C_expected = dot(A, B);
+
+        einsum(Indices{}, &C_obtained, Indices{i, j, a, b}, A, Indices{i, j, a, b}, B);
+
+        REQUIRE_THAT(C_obtained, Catch::Matchers::WithinRel(C_expected, 0.000001));
+    }
 }
 
 TEST_CASE("dot") {

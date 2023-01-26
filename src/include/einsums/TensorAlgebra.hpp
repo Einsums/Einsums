@@ -803,13 +803,12 @@ auto einsum(const CDataType C_prefactor, const std::tuple<CIndices...> & /*Cs*/,
             // If we make it here, then none of our algorithms for this last block could be used.
             // Fall through to the generic algorithm below.
         } while (false);
-    } // else {
+    }
 
     // If we somehow make it here, then none of our algorithms above could be used. Attempt to use
     // the generic algorithm instead.
     einsum_generic_algorithm(C_unique, A_unique, B_unique, link_unique, C_indices, A_indices, B_indices, unique_target_dims,
                              unique_link_dims, target_position_in_C, link_position_in_link, C_prefactor, C, AB_prefactor, A, B);
-    //}
 }
 
 } // namespace detail
