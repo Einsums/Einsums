@@ -8,23 +8,28 @@
         "seccomp=unconfined",
         "--userns=host"
     ],
-    "settings": {
-        "terminal.integrated": {
-            "profiles.linux": {
-                "zsh": {
-                    "path": "zsh"
-                }
-            },
-            "defaultProfile.linux": "zsh"
-        },
-        "files.eol": "\n",
-        "resmon.show.battery": false,
-        "resmon.show.cpufreq": false
-    },
     "remoteUser": "vscode",
-    "extensions": [
-        "ms-vscode.cmake-tools",
-        "llvm-vs-code-extensions.vscode-clangd",
-        "mutantdino.resourcemonitor",
-    ]
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "terminal.integrated": {
+                    "profiles.linux": {
+                        "zsh": {
+                            "path": "zsh"
+                        }
+                    },
+                    "defaultProfile.linux": "zsh"
+                },
+                "files.eol": "\n",
+                "resmon.show.battery": false,
+                "resmon.show.cpufreq": false
+            },
+            "extensions": [
+                "ms-vscode.cmake-tools",
+                "llvm-vs-code-extensions.vscode-clangd",
+                "mutantdino.resourcemonitor",
+                "matepek.vscode-catch2-test-adapter"
+            ]
+        }
+    }
 }
