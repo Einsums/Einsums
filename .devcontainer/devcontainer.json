@@ -6,9 +6,7 @@
         "--cap-add=SYS_PTRACE",
         "--security-opt",
         "seccomp=unconfined",
-        "--userns=host",
-        "-v", "${env:HOME}/.gnupg/pubring.kbx:/root/.gnupg/pubring.kbx",
-        "-v", "${env:HOME}/.gnupg/trustdb.gpg:/root/.gnupg/trustdb.gpg"
+        "--userns=host"
     ],
     "remoteUser": "vscode",
     "customizations": {
