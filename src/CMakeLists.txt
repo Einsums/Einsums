@@ -52,6 +52,19 @@ extend_einsums_target(einsums
 )
 
 extend_einsums_target(einsums
+    CONDITION
+        EINSUMS_FFT_LIBRARY MATCHES FFTW3
+    DEFINES
+        EINSUMS_HAVE_FFT_LIBRARY_FFTW3
+    DEPENDS
+        FFT::FFT
+    SOURCES
+        backends/fft/fftw3/fft.cpp
+    FEATURE_INFO
+        "FFTW3 backend"
+)
+
+extend_einsums_target(einsums
     DEPENDS
         lapacke
     DEFINES
@@ -93,19 +106,6 @@ extend_einsums_target(einsums
         backends/fft/fftw3/fft.cpp
     FEATURE_INFO
         "MKL FFT+FFTW3 backends"
-)
-
-extend_einsums_target(einsums
-    CONDITION
-        EINSUMS_FFT_LIBRARY MATCHES FFTW3
-    DEFINES
-        EINSUMS_HAVE_FFT_LIBRARY_FFTW3
-    DEPENDS
-        FFT::FFT
-    SOURCES
-        backends/fft/fftw3/fft.cpp
-    FEATURE_INFO
-        "FFTW3 backend"
 )
 
 extend_einsums_target(einsums

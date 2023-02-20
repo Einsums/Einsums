@@ -8,15 +8,15 @@ if (TARGET MKL::MKL)
     endif()
 endif()
 
-if (EINSUMS_FFT_LIBRARY MATCHES MKL)
+function(fft_mkl)
     if (TARGET MKL::MKL)
         add_library(FFT::FFT ALIAS MKL::MKL)
     else()
-        message(FATAL_ERROR "MKL FFT library library requested but MKL not found.")
+        message(FATAL_ERROR "MKL FFT library requested but MKL was not found.")
     endif()
-elseif(EINSUMS_FFT_LIBRARY MATCHES FFTW3)
-    # set(FFTW_USE_STATIC_LIBS TRUE)
+endfunction()
 
+function(fft_fftw3)
     # Attempt to find FFTW for real
     find_package(FFTW
         COMPONENTS
@@ -34,12 +34,62 @@ elseif(EINSUMS_FFT_LIBRARY MATCHES FFTW3)
                 FFTW::Double
         )
     endif()
+endfunction()
 
-    # If not found, check to see if MKL is available
-    # If MKL is available then use MKL's implementation of FFTW.
+function(build_fftw3)
+    # Machinery for running the external project
+    set(EXTERNAL_FFTW_VERSION 3.3.10)
+    set(EINSUMS_BUILD_OWN_FFTW_URL
+        "http://www.fftw.org/fftw-${EXTERNAL_FFTW_VERSION}.tar.gz" CACHE STRING
+        "URL from where to download fftw (use an absolute path when offline, adjust EINSUMS_BUILD_OWN_FFTW_MD5 if downloading other version than ${EXTERNAL_FFTW_VERSION})")
+    set(EINSUMS_BUILD_OWN_FFTW_MD5 8ccbf6a5ea78a16dbc3e1306e234cc5c CACHE STRING
+        "Expected MD5 hash for the file at GMX_BUILD_OWN_FFTW_URL")
+    mark_as_advanced(EINSUMS_BUILD_OWN_FFTW_URL EINSUMS_BUILD_OWN_FFTW_MD5)
 
-    # Needs to be tested: If MKL and separate FFTW are found and separate
-    # FFTW is requested...what happens?
+    set(FFTW_ARCH ENABLE_SSE=ON ENABLE_SSE2=ON)
+    if (HAS_AVX)
+        list(APPEND FFTW_ARCH ENABLE_AVX=ON)
+    endif (HAS_AVX)
+
+    if (HAS_AVX2)
+        list(APPEND FFTW_ARCH ENABLE_AVX2=ON)
+    endif (HAS_AVX2)
+
+    list(TRANSFORM FFTW_ARCH PREPEND -D)
+
+    include(ExternalProject)
+    ExternalProject_Add(
+        build-fftw
+        URL ${EINSUMS_BUILD_OWN_FFTW_URL}
+        URL_MD5 ${EINSUMS_BUILD_OWN_FFTW_MD5}
+        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR> -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=OFF -DENABLE_OPENMP=ON -DENABLE_FLOAT=ON -DDISABLE_FORTRAN=ON ${FFTW_ARCH}
+    )
+    ExternalProject_get_property(build-fftw INSTALL_DIR)
+    set(FFTW_LIBRARIES ${INSTALL_DIR}/lib/libfftw3f${CMAKE_STATIC_LIBRARY_SUFFIX})
+    set(FFTW_INCLUDE_DIRS ${INSTALL_DIR}/include)
+
+    add_library(fftw INTERFACE)
+    target_link_libraries(fftw INTERFACE ${FFTW_LIBRARIES})
+    target_include_directories(fftw INTERFACE ${FFTW_INCLUDE_DIRS})
+
+    add_library(FFT::FFT ALIAS fftw)
+
+    set(EINSUMS_FFT_LIBRARY FFTW3 PARENT_SCOPE)
+endfunction()
+
+if (EINSUMS_FFT_LIBRARY MATCHES MKL)
+    fft_mkl()
+elseif(EINSUMS_FFT_LIBRARY MATCHES FFTW3)
+
+    # Check for fftw3
+    fft_fftw3()
+
+    if (NOT TARGET FFT::FFT)
+        # Check to see if MKL FFT is available
+        fft_mkl()
+    endif()
+
+    build_fftw3()
 
 endif()
 

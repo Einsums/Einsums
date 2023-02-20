@@ -51,7 +51,9 @@ include(cmake/FindITTNOTIFY.cmake)
 # include(cmake/FindIntelSYCL.cmake)
 
 # Attempt to find MKL. This assumes the user set MKL_DIR.
-# set(BLA_VENDOR Intel10_64_dyn)
+# Intel oneAPI 2023 doesn't accept lp64 when using icpx. I modified
+# my local copy of MKLConfig.cmake to accept this parameter. I'm working to support
+# ilp64 and then this line and my modification to MKLConfig.cmake will not be needed.
 set(MKL_INTERFACE lp64)
 find_package(MKL CONFIG)
 # message(STATUS "${MKL_IMPORTED_TARGETS}")
@@ -66,6 +68,7 @@ endif()
 find_package(CBLAS)
 find_package(LAPACKE)
 
+# Set default FFT library to mkl, if mkl was found
 if (TARGET MKL::MKL)
     set(EINSUMS_FFT_LIBRARY_DEFAULT "mkl")
 else()
@@ -76,7 +79,7 @@ einsums_option_multichoice(
     EINSUMS_FFT_LIBRARY
     "FFT library"
     "${EINSUMS_FFT_LIBRARY_DEFAULT}"
-    fftw3 mkl "fftpack[built-in]")
+    fftw3 mkl)
 
 include(EinsumsManageFFTLibraries)
 
