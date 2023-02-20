@@ -69,6 +69,7 @@ function(build_fftw3)
     add_library(fftw INTERFACE IMPORTED)
     target_link_libraries(fftw INTERFACE ${FFTW_LIBRARIES})
     target_include_directories(fftw INTERFACE ${FFTW_INCLUDE_DIRS})
+    add_dependencies(fftw build-fftw)
 
     add_library(FFT::FFT ALIAS fftw)
 
