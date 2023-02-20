@@ -89,8 +89,9 @@ elseif(EINSUMS_FFT_LIBRARY MATCHES FFTW3)
         fft_mkl()
     endif()
 
-    build_fftw3()
-
+    if (NOT TARGET FFT::FFT)
+        build_fftw3()
+    endif()
 endif()
 
 # Make sure an FFT library was found
