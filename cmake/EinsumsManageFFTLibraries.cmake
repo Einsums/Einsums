@@ -66,9 +66,14 @@ function(build_fftw3)
     set(FFTW_LIBRARIES ${INSTALL_DIR}/lib/libfftw3f${CMAKE_STATIC_LIBRARY_SUFFIX})
     set(FFTW_INCLUDE_DIRS ${INSTALL_DIR}/include)
 
-    add_library(fftw INTERFACE IMPORTED)
-    target_link_libraries(fftw INTERFACE ${FFTW_LIBRARIES})
-    target_include_directories(fftw INTERFACE ${FFTW_INCLUDE_DIRS})
+    add_library(fftw STATIC IMPORTED GLOBAL)
+    set_target_properties(fftw
+        PROPERTIES
+            IMPORTED_LOCATION ${FFTW_LIBRARIES}
+            INTERFACE_INCLUDE_DIRECTORIES ${FFTW_INCLUDE_DIRS}
+    )
+    # target_link_libraries(fftw INTERFACE ${FFTW_LIBRARIES})
+    # target_include_directories(fftw INTERFACE ${FFTW_INCLUDE_DIRS})
     add_dependencies(fftw build-fftw)
 
     add_library(FFT::FFT ALIAS fftw)
