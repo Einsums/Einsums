@@ -24,9 +24,7 @@ function(fft_fftw3)
             DOUBLE_LIB
     )
 
-    if (NOT FFTW_FLOAT_LIB_FOUND OR NOT FFTW_DOUBLE_LIB_FOUND)
-        message(FATAL_ERROR "Did not find FFTW3.")
-    else()
+    if (FFTW_FLOAT_LIB_FOUND AND FFTW_DOUBLE_LIB_FOUND)
         add_library(FFT::FFT INTERFACE IMPORTED)
         target_link_libraries(FFT::FFT
             INTERFACE
