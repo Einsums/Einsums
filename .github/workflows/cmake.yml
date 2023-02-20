@@ -13,8 +13,7 @@ jobs:
       matrix:
         build_type: [ Release, Debug ]
         os: [ ubuntu-latest, macos-latest ]
-        fftw: [ Repository, Build ]
-    name: Build and Test
+    name: Build
     runs-on: ubuntu-latest
 
     steps:
@@ -26,24 +25,14 @@ jobs:
       if: ${{ matrix.os == 'ubuntu-latest' }}
       run: |
         sudo apt-get update
-        sudo apt-get install -y liblapacke-dev liblapack-dev libblas-dev libhdf5-dev
-
-    - name: Install Dependencies - Ubuntu - FFTW
-      if: ${{ matrix.os == 'ubuntu-latest' && matrix.fftw == 'Repository' }}
-      run: |
-        sudo apt-get install -y libfftw3-dev
+        sudo apt-get install -y liblapacke-dev liblapack-dev libblas-dev libhdf5-dev libfftw3-dev
 
     - name: Install Dependencies - macOS
       if: ${{ matrix.os == 'macos-latest' }}
       run: |
-        brew install hdf5 cmake zlib lapack
+        brew install hdf5 cmake zlib lapack fftw
         echo "HDF5_ROOT=$(brew --prefix hdf5)" >> $GITHUB_ENV
         echo "LAPACKE_DIR=/home/linuxbrew/.linuxbrew/opt/lapack" >> $GITHUB_ENV
-
-    - name: Install Dependencies - macOS - FFTW
-      if: ${{ matrix.os == 'macos-latest' && matrix.fftw == 'Repository' }}
-      run: |
-        brew install fftw
         echo "FFTW_ROOT=$(brew --prefix fftw)" >> $GITHUB_ENV
 
     - name: Configure CMake
