@@ -12,7 +12,7 @@ function(fft_mkl)
     if (TARGET MKL::MKL)
         add_library(FFT::FFT ALIAS MKL::MKL)
     else()
-        message(FATAL_ERROR "MKL FFT library requested but MKL was not found.")
+        message(WARNING "MKL FFT library requested but MKL was not found.")
     endif()
 endfunction()
 
