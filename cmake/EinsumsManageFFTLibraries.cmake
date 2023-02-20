@@ -12,7 +12,7 @@ function(fft_mkl)
     if (TARGET MKL::MKL)
         add_library(FFT::FFT ALIAS MKL::MKL)
     else()
-        message(WARNING "MKL FFT library requested but MKL was not found.")
+        message(FATAL_ERROR "MKL FFT library requested but MKL was not found.")
     endif()
 endfunction()
 
@@ -66,7 +66,7 @@ function(build_fftw3)
     set(FFTW_LIBRARIES ${INSTALL_DIR}/lib/libfftw3f${CMAKE_STATIC_LIBRARY_SUFFIX})
     set(FFTW_INCLUDE_DIRS ${INSTALL_DIR}/include)
 
-    add_library(fftw INTERFACE)
+    add_library(fftw INTERFACE IMPORTED)
     target_link_libraries(fftw INTERFACE ${FFTW_LIBRARIES})
     target_include_directories(fftw INTERFACE ${FFTW_INCLUDE_DIRS})
 
@@ -81,11 +81,6 @@ elseif(EINSUMS_FFT_LIBRARY MATCHES FFTW3)
 
     # Check for fftw3
     fft_fftw3()
-
-    if (NOT TARGET FFT::FFT)
-        # Check to see if MKL FFT is available
-        fft_mkl()
-    endif()
 
     if (NOT TARGET FFT::FFT)
         build_fftw3()
