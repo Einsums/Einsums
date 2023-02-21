@@ -13,6 +13,16 @@
 
 namespace einsums {
 
+#if defined(MKL_ILP64)
+using eint = long long int;
+using euint = unsigned long long int;
+using elong = long long int;
+#else
+using eint = int;
+using euint = unsigned int;
+using elong = long int;
+#endif
+
 auto EINSUMS_EXPORT initialize() -> int;
 void EINSUMS_EXPORT finalize(bool timerReport = false);
 
