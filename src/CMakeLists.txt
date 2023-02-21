@@ -97,6 +97,20 @@ extend_einsums_target(einsums
 )
 
 extend_einsums_target(einsums
+    PUBLIC_DEFINES
+        MKL_ILP64
+    CONDITION
+        (HAVE_MKL_LAPACKE_H AND HAVE_MKL_CBLAS_H AND MKL_INTERFACE STREQUAL ilp64)
+)
+
+extend_einsums_target(einsums
+    PUBLIC_DEFINES
+        MKL_LP64
+    CONDITION
+        (HAVE_MKL_LAPACKE_H AND HAVE_MKL_CBLAS_H AND MKL_INTERFACE STREQUAL lp64)
+)
+
+extend_einsums_target(einsums
     CONDITION
         EINSUMS_FFT_LIBRARY STREQUAL MKL
     DEFINES
