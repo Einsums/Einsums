@@ -1,6 +1,7 @@
 #pragma once
 
 #include "einsums/Tensor.hpp"
+#include "einsums/_Compiler.hpp"
 
 #include <algorithm>
 
@@ -17,9 +18,7 @@ void omp_loop(vector &data, Functor functor) {
         auto begin = data.begin() + chunksize * tid;
         auto end = (tid == omp_get_num_threads() - 1) ? data.end() : begin + chunksize;
 
-#if defined(__INTEL_LLVM_COMPILER) || defined(__INTEL_COMPILER)
-#pragma omp simd
-#endif
+        EINSUMS_OMP_SIMD
         for (auto i = begin; i < end; i++) {
             *i = functor(*i);
         }

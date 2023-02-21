@@ -12,6 +12,8 @@
 #include "einsums/Timer.hpp"
 #include "einsums/Utilities.hpp"
 #include "einsums/polynomial/Laguerre.hpp"
+#include "range/v3/algorithm/for_each.hpp"
+#include "range/v3/view/zip.hpp"
 
 #include <cmath>
 #include <cstdlib>
@@ -255,16 +257,23 @@ auto main() -> int {
     }
 #endif
 
-    auto [t, w] = polynomial::laguerre::gauss_laguerre(40);
-    println(t);
-    println(w);
+    auto [_t, _w] = polynomial::laguerre::gauss_laguerre(40);
+    println(_t);
+    println(_w);
 
-    auto weights = create_tensor_like(w);
+    auto weights = create_tensor_like(_w);
     {
         using namespace element_operations::new_tensor;
-        einsum(Indices{i}, &w, Indices{i}, w, Indices{i}, exp(t));
+        einsum(Indices{i}, &_w, Indices{i}, _w, Indices{i}, exp(_t));
     }
-    println(w);
+    println(_w);
+
+    ranges::for_each(ranges::views::zip(_t.vector_data(), _w.vector_data()), [](auto &&v) {
+        auto t = std::get<0>(v);
+        auto w = std::get<1>(v);
+
+        println("test : {:14.10f} {:14.10f}", t, w);
+    });
 
     // BEGIN: FFT tests
 
