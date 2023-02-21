@@ -7,6 +7,7 @@
 #include "Section.hpp"
 #include "Tensor.hpp"
 #include "_Index.hpp"
+#include "einsums/_Compiler.hpp"
 
 #include <cmath>
 #if defined(EINSUMS_USE_HPTT)
@@ -329,11 +330,7 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
         target_value *= C_prefactor;
         target_value += sum;
     } else if constexpr (sizeof...(LinkDims) != 0) {
-#if defined(__INTEL_LLVM_COMPILER) || defined(__INTEL_COMPILER)
-#pragma omp parallel for simd
-#else
-#pragma omp parallel for
-#endif
+        EINSUMS_OMP_PARALLEL_FOR
         for (auto it = view.begin(); it < view.end(); it++) {
             // println("target_combination: {}", print_tuple_no_type(target_combination));
             auto C_order = detail::construct_indices_from_unique_combination<CIndices...>(
@@ -376,11 +373,7 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
         // println("BIndices... {}", print_tuple_no_type(B_indices));
         // println("CIndices... {}", print_tuple_no_type(C_indices));
 
-#if defined(__INTEL_LLVM_COMPILER) || defined(__INTEL_COMPILER)
-#pragma omp parallel for simd
-#else
-#pragma omp parallel for
-#endif
+        EINSUMS_OMP_PARALLEL_FOR
         for (auto it = view.begin(); it < view.end(); it++) {
 
             // Construct the tuples that will be used to access the tensor elements of A and B
@@ -607,11 +600,7 @@ auto einsum(const CDataType C_prefactor, const std::tuple<CIndices...> & /*Cs*/,
             println_abort("einsum: at least one tensor does not have same dimensionality as destination");
         }
 
-#if defined(__INTEL_LLVM_COMPILER) || defined(__INTEL_COMPILER)
-#pragma omp parallel for simd
-#else
-#pragma omp parallel for
-#endif
+        EINSUMS_OMP_PARALLEL_FOR
         for (auto it = view.begin(); it != view.end(); it++) {
             CDataType &target_value = std::apply(*C, *it);
             ABDataType AB_product = std::apply(A, *it) * std::apply(B, *it);
@@ -1189,11 +1178,8 @@ auto sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<
         linear_algebra::axpy(A_prefactor, A, C);
     } else {
         auto view = std::apply(ranges::views::cartesian_product, target_dims);
-#if defined(__INTEL_LLVM_COMPILER) || defined(__INTEL_COMPILER)
-#pragma omp parallel for simd
-#else
-#pragma omp parallel for
-#endif
+
+        EINSUMS_OMP_PARALLEL_FOR
         for (auto it = view.begin(); it < view.end(); it++) {
             auto A_order = detail::construct_indices<AIndices...>(*it, target_position_in_A, *it, target_position_in_A);
 
@@ -1243,11 +1229,8 @@ auto element_transform(CType<T, CRank> *C, UnaryOperator unary_opt)
     Section section(fmt::format("element transform: {}", C->name()));
     auto target_dims = get_dim_ranges<CRank>(*C);
     auto view = std::apply(ranges::views::cartesian_product, target_dims);
-#if defined(__INTEL_LLVM_COMPILER) || defined(__INTEL_COMPILER)
-#pragma omp parallel for simd
-#else
-#pragma omp parallel for
-#endif
+
+    EINSUMS_OMP_PARALLEL_FOR
     for (auto it = view.begin(); it != view.end(); it++) {
         T &target_value = std::apply(*C, *it);
         target_value = unary_opt(target_value);
@@ -1271,11 +1254,7 @@ auto element(MultiOperator multi_opt, CType<T, Rank> *C, MultiTensors<T, Rank> &
         println_abort("element: at least one tensor does not have same dimensionality as destination");
     }
 
-#if defined(__INTEL_LLVM_COMPILER) || defined(__INTEL_COMPILER)
-#pragma omp parallel for simd
-#else
-#pragma omp parallel for
-#endif
+    EINSUMS_OMP_PARALLEL_FOR
     for (auto it = view.begin(); it != view.end(); it++) {
         T &target_value = std::apply(*C, *it);
         target_value = multi_opt(target_value, std::apply(tensors, *it)...);

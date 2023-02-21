@@ -458,15 +458,14 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
         return *this;
     }
 
-#if defined(__INTEL_LLVM_COMPILER) || defined(__INTEL_COMPILER)
 #define OPERATOR(OP)                                                                                                                       \
     auto operator OP(const T &b)->Tensor<T, Rank> & {                                                                                      \
-        _Pragma("omp parallel") {                                                                                                          \
+        EINSUMS_OMP_PARALLEL {                                                                                                             \
             auto tid = omp_get_thread_num();                                                                                               \
             auto chunksize = _data.size() / omp_get_num_threads();                                                                         \
             auto begin = _data.begin() + chunksize * tid;                                                                                  \
             auto end = (tid == omp_get_num_threads() - 1) ? _data.end() : begin + chunksize;                                               \
-            _Pragma("omp simd") for (auto i = begin; i < end; i++) { (*i) OP b; }                                                          \
+            EINSUMS_OMP_SIMD for (auto i = begin; i < end; i++) { (*i) OP b; }                                                             \
         }                                                                                                                                  \
         return *this;                                                                                                                      \
     }                                                                                                                                      \
@@ -475,50 +474,17 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
         if (size() != b.size()) {                                                                                                          \
             throw std::runtime_error(fmt::format("operator" EINSUMS_STRINGIFY(OP) " : tensors differ in size : {} {}", size(), b.size())); \
         }                                                                                                                                  \
-        _Pragma("omp parallel") {                                                                                                          \
+        EINSUMS_OMP_PARALLEL {                                                                                                             \
             auto tid = omp_get_thread_num();                                                                                               \
             auto chunksize = _data.size() / omp_get_num_threads();                                                                         \
             auto abegin = _data.begin() + chunksize * tid;                                                                                 \
             auto bbegin = b._data.begin() + chunksize * tid;                                                                               \
             auto aend = (tid == omp_get_num_threads() - 1) ? _data.end() : abegin + chunksize;                                             \
             auto j = bbegin;                                                                                                               \
-            _Pragma("omp simd") for (auto i = abegin; i < aend; i++) { (*i) OP(*j++); }                                                    \
+            EINSUMS_OMP_SIMD for (auto i = abegin; i < aend; i++) { (*i) OP(*j++); }                                                       \
         }                                                                                                                                  \
         return *this;                                                                                                                      \
     }
-#else
-#define OPERATOR(OP)                                                                                                                       \
-    auto operator OP(const T &b)->Tensor<T, Rank> & {                                                                                      \
-        _Pragma("omp parallel") {                                                                                                          \
-            auto tid = omp_get_thread_num();                                                                                               \
-            auto chunksize = _data.size() / omp_get_num_threads();                                                                         \
-            auto begin = _data.begin() + chunksize * tid;                                                                                  \
-            auto end = (tid == omp_get_num_threads() - 1) ? _data.end() : begin + chunksize;                                               \
-            for (auto i = begin; i < end; i++) {                                                                                           \
-                (*i) OP b;                                                                                                                 \
-            }                                                                                                                              \
-        }                                                                                                                                  \
-        return *this;                                                                                                                      \
-    }                                                                                                                                      \
-                                                                                                                                           \
-    auto operator OP(const Tensor<T, Rank> &b)->Tensor<T, Rank> & {                                                                        \
-        if (size() != b.size()) {                                                                                                          \
-            throw std::runtime_error(fmt::format("operator" EINSUMS_STRINGIFY(OP) " : tensors differ in size : {} {}", size(), b.size())); \
-        }                                                                                                                                  \
-        _Pragma("omp parallel") {                                                                                                          \
-            auto tid = omp_get_thread_num();                                                                                               \
-            auto chunksize = _data.size() / omp_get_num_threads();                                                                         \
-            auto abegin = _data.begin() + chunksize * tid;                                                                                 \
-            auto bbegin = b._data.begin() + chunksize * tid;                                                                               \
-            auto aend = (tid == omp_get_num_threads() - 1) ? _data.end() : abegin + chunksize;                                             \
-            auto j = bbegin;                                                                                                               \
-            for (auto i = abegin; i < aend; i++) {                                                                                         \
-                (*i) OP(*j++);                                                                                                             \
-            }                                                                                                                              \
-        }                                                                                                                                  \
-        return *this;                                                                                                                      \
-    }
-#endif
 
     OPERATOR(*=)
     OPERATOR(/=)
