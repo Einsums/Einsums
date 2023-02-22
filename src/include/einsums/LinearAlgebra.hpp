@@ -438,9 +438,9 @@ auto truncated_syev(const AType<T, ARank> &A, size_t k) ->
 
     Tensor<double, 1> tau("tau", std::min(n, k + 5));
     // Compute QR factorization of Y
-    int info1 = blas::geqrf(n, k + 5, Y.data(), k + 5, tau.data());
+    eint info1 = blas::geqrf(n, k + 5, Y.data(), k + 5, tau.data());
     // Extract Matrix Q out of QR factorization
-    int info2 = blas::orgqr(n, k + 5, tau.dim(0), Y.data(), k + 5, const_cast<const double *>(tau.data()));
+    eint info2 = blas::orgqr(n, k + 5, tau.dim(0), Y.data(), k + 5, const_cast<const double *>(tau.data()));
 
     Tensor<double, 2> &Q1 = Y;
 

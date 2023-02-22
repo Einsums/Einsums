@@ -20,216 +20,217 @@ void finalize() {
 }
 
 namespace detail {
-void sgemm(char transa, char transb, int m, int n, int k, float alpha, const float *a, int lda, const float *b, int ldb, float beta,
-           float *c, int ldc) {
+void sgemm(char transa, char transb, eint m, eint n, eint k, float alpha, const float *a, eint lda, const float *b, eint ldb, float beta,
+           float *c, eint ldc) {
     ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::sgemm(transa, transb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc);
 }
 
-void dgemm(char transa, char transb, int m, int n, int k, double alpha, const double *a, int lda, const double *b, int ldb, double beta,
-           double *c, int ldc) {
+void dgemm(char transa, char transb, eint m, eint n, eint k, double alpha, const double *a, eint lda, const double *b, eint ldb,
+           double beta, double *c, eint ldc) {
     ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::dgemm(transa, transb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc);
 }
 
-void cgemm(char transa, char transb, int m, int n, int k, std::complex<float> alpha, const std::complex<float> *a, int lda,
-           const std::complex<float> *b, int ldb, std::complex<float> beta, std::complex<float> *c, int ldc) {
+void cgemm(char transa, char transb, eint m, eint n, eint k, std::complex<float> alpha, const std::complex<float> *a, eint lda,
+           const std::complex<float> *b, eint ldb, std::complex<float> beta, std::complex<float> *c, eint ldc) {
     ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::cgemm(transa, transb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc);
 }
-void zgemm(char transa, char transb, int m, int n, int k, std::complex<double> alpha, const std::complex<double> *a, int lda,
-           const std::complex<double> *b, int ldb, std::complex<double> beta, std::complex<double> *c, int ldc) {
+void zgemm(char transa, char transb, eint m, eint n, eint k, std::complex<double> alpha, const std::complex<double> *a, eint lda,
+           const std::complex<double> *b, eint ldb, std::complex<double> beta, std::complex<double> *c, eint ldc) {
     ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::zgemm(transa, transb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc);
 }
 
-void sgemv(char transa, int m, int n, float alpha, const float *a, int lda, const float *x, int incx, float beta, float *y, int incy) {
+void sgemv(char transa, eint m, eint n, float alpha, const float *a, eint lda, const float *x, eint incx, float beta, float *y, eint incy) {
     ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::sgemv(transa, m, n, alpha, a, lda, x, incx, beta, y, incy);
 }
 
-void dgemv(char transa, int m, int n, double alpha, const double *a, int lda, const double *x, int incx, double beta, double *y, int incy) {
+void dgemv(char transa, eint m, eint n, double alpha, const double *a, eint lda, const double *x, eint incx, double beta, double *y,
+           eint incy) {
     ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::dgemv(transa, m, n, alpha, a, lda, x, incx, beta, y, incy);
 }
 
-void cgemv(char transa, int m, int n, std::complex<float> alpha, const std::complex<float> *a, int lda, const std::complex<float> *x,
-           int incx, std::complex<float> beta, std::complex<float> *y, int incy) {
+void cgemv(char transa, eint m, eint n, std::complex<float> alpha, const std::complex<float> *a, eint lda, const std::complex<float> *x,
+           eint incx, std::complex<float> beta, std::complex<float> *y, eint incy) {
     ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::cgemv(transa, m, n, alpha, a, lda, x, incx, beta, y, incy);
 }
 
-void zgemv(char transa, int m, int n, std::complex<double> alpha, const std::complex<double> *a, int lda, const std::complex<double> *x,
-           int incx, std::complex<double> beta, std::complex<double> *y, int incy) {
+void zgemv(char transa, eint m, eint n, std::complex<double> alpha, const std::complex<double> *a, eint lda, const std::complex<double> *x,
+           eint incx, std::complex<double> beta, std::complex<double> *y, eint incy) {
     ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::zgemv(transa, m, n, alpha, a, lda, x, incx, beta, y, incy);
 }
 
-auto ssyev(char job, char uplo, int n, float *a, int lda, float *w, float *work, int lwork) -> int {
+auto ssyev(char job, char uplo, eint n, float *a, eint lda, float *w, float *work, eint lwork) -> eint {
     return ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::ssyev(job, uplo, n, a, lda, w, work, lwork);
 }
 
-auto dsyev(char job, char uplo, int n, double *a, int lda, double *w, double *work, int lwork) -> int {
+auto dsyev(char job, char uplo, eint n, double *a, eint lda, double *w, double *work, eint lwork) -> eint {
     return ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::dsyev(job, uplo, n, a, lda, w, work, lwork);
 }
 
-auto sgesv(int n, int nrhs, float *a, int lda, eint *ipiv, float *b, int ldb) -> int {
+auto sgesv(eint n, eint nrhs, float *a, eint lda, eint *ipiv, float *b, eint ldb) -> eint {
     return ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::sgesv(n, nrhs, a, lda, ipiv, b, ldb);
 }
 
-auto dgesv(int n, int nrhs, double *a, int lda, eint *ipiv, double *b, int ldb) -> int {
+auto dgesv(eint n, eint nrhs, double *a, eint lda, eint *ipiv, double *b, eint ldb) -> eint {
     return ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::dgesv(n, nrhs, a, lda, ipiv, b, ldb);
 }
 
-auto cgesv(int n, int nrhs, std::complex<float> *a, int lda, eint *ipiv, std::complex<float> *b, int ldb) -> int {
+auto cgesv(eint n, eint nrhs, std::complex<float> *a, eint lda, eint *ipiv, std::complex<float> *b, eint ldb) -> eint {
     return ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::cgesv(n, nrhs, a, lda, ipiv, b, ldb);
 }
 
-auto zgesv(int n, int nrhs, std::complex<double> *a, int lda, eint *ipiv, std::complex<double> *b, int ldb) -> int {
+auto zgesv(eint n, eint nrhs, std::complex<double> *a, eint lda, eint *ipiv, std::complex<double> *b, eint ldb) -> eint {
     return ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::zgesv(n, nrhs, a, lda, ipiv, b, ldb);
 }
 
-auto cheev(char job, char uplo, int n, std::complex<float> *a, int lda, float *w, std::complex<float> *work, int lwork, float *rwork)
-    -> int {
+auto cheev(char job, char uplo, eint n, std::complex<float> *a, eint lda, float *w, std::complex<float> *work, eint lwork, float *rwork)
+    -> eint {
     return ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::cheev(job, uplo, n, a, lda, w, work, lwork, rwork);
 }
 
-auto zheev(char job, char uplo, int n, std::complex<double> *a, int lda, double *w, std::complex<double> *work, int lwork, double *rwork)
-    -> int {
+auto zheev(char job, char uplo, eint n, std::complex<double> *a, eint lda, double *w, std::complex<double> *work, eint lwork, double *rwork)
+    -> eint {
     return ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::zheev(job, uplo, n, a, lda, w, work, lwork, rwork);
 }
 
-void sscal(int n, float alpha, float *vec, int inc) {
+void sscal(eint n, float alpha, float *vec, eint inc) {
     ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::sscal(n, alpha, vec, inc);
 }
 
-void dscal(int n, double alpha, double *vec, int inc) {
+void dscal(eint n, double alpha, double *vec, eint inc) {
     ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::dscal(n, alpha, vec, inc);
 }
 
-void cscal(int n, std::complex<float> alpha, std::complex<float> *vec, int inc) {
+void cscal(eint n, std::complex<float> alpha, std::complex<float> *vec, eint inc) {
     ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::cscal(n, alpha, vec, inc);
 }
 
-void zscal(int n, std::complex<double> alpha, std::complex<double> *vec, int inc) {
+void zscal(eint n, std::complex<double> alpha, std::complex<double> *vec, eint inc) {
     ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::zscal(n, alpha, vec, inc);
 }
 
-void csscal(int n, float alpha, std::complex<float> *vec, int inc) {
+void csscal(eint n, float alpha, std::complex<float> *vec, eint inc) {
     ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::csscal(n, alpha, vec, inc);
 }
 
-void zdscal(int n, double alpha, std::complex<double> *vec, int inc) {
+void zdscal(eint n, double alpha, std::complex<double> *vec, eint inc) {
     ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::zdscal(n, alpha, vec, inc);
 }
 
-auto sdot(int n, const float *x, int incx, const float *y, int incy) -> float {
+auto sdot(eint n, const float *x, eint incx, const float *y, eint incy) -> float {
     return ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::sdot(n, x, incx, y, incy);
 }
 
-auto ddot(int n, const double *x, int incx, const double *y, int incy) -> double {
+auto ddot(eint n, const double *x, eint incx, const double *y, eint incy) -> double {
     return ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::ddot(n, x, incx, y, incy);
 }
 
-auto cdot(int n, const std::complex<float> *x, int incx, const std::complex<float> *y, int incy) -> std::complex<float> {
+auto cdot(eint n, const std::complex<float> *x, eint incx, const std::complex<float> *y, eint incy) -> std::complex<float> {
     return ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::cdot(n, x, incx, y, incy);
 }
 
-auto zdot(int n, const std::complex<double> *x, int incx, const std::complex<double> *y, int incy) -> std::complex<double> {
+auto zdot(eint n, const std::complex<double> *x, eint incx, const std::complex<double> *y, eint incy) -> std::complex<double> {
     return ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::zdot(n, x, incx, y, incy);
 }
 
-void saxpy(int n, float alpha_x, const float *x, int inc_x, float *y, int inc_y) {
+void saxpy(eint n, float alpha_x, const float *x, eint inc_x, float *y, eint inc_y) {
     ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::saxpy(n, alpha_x, x, inc_x, y, inc_y);
 }
 
-void daxpy(int n, double alpha_x, const double *x, int inc_x, double *y, int inc_y) {
+void daxpy(eint n, double alpha_x, const double *x, eint inc_x, double *y, eint inc_y) {
     ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::daxpy(n, alpha_x, x, inc_x, y, inc_y);
 }
 
-void caxpy(int n, std::complex<float> alpha_x, const std::complex<float> *x, int inc_x, std::complex<float> *y, int inc_y) {
+void caxpy(eint n, std::complex<float> alpha_x, const std::complex<float> *x, eint inc_x, std::complex<float> *y, eint inc_y) {
     ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::caxpy(n, alpha_x, x, inc_x, y, inc_y);
 }
 
-void zaxpy(int n, std::complex<double> alpha_x, const std::complex<double> *x, int inc_x, std::complex<double> *y, int inc_y) {
+void zaxpy(eint n, std::complex<double> alpha_x, const std::complex<double> *x, eint inc_x, std::complex<double> *y, eint inc_y) {
     ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::zaxpy(n, alpha_x, x, inc_x, y, inc_y);
 }
 
-void sger(int m, int n, float alpha, const float *x, int inc_x, const float *y, int inc_y, float *a, int lda) {
+void sger(eint m, eint n, float alpha, const float *x, eint inc_x, const float *y, eint inc_y, float *a, eint lda) {
     ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::sger(m, n, alpha, x, inc_x, y, inc_y, a, lda);
 }
 
-void dger(int m, int n, double alpha, const double *x, int inc_x, const double *y, int inc_y, double *a, int lda) {
+void dger(eint m, eint n, double alpha, const double *x, eint inc_x, const double *y, eint inc_y, double *a, eint lda) {
     ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::dger(m, n, alpha, x, inc_x, y, inc_y, a, lda);
 }
 
-void cger(int m, int n, std::complex<float> alpha, const std::complex<float> *x, int inc_x, const std::complex<float> *y, int inc_y,
-          std::complex<float> *a, int lda) {
+void cger(eint m, eint n, std::complex<float> alpha, const std::complex<float> *x, eint inc_x, const std::complex<float> *y, eint inc_y,
+          std::complex<float> *a, eint lda) {
     ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::cger(m, n, alpha, x, inc_x, y, inc_y, a, lda);
 }
 
-void zger(int m, int n, std::complex<double> alpha, const std::complex<double> *x, int inc_x, const std::complex<double> *y, int inc_y,
-          std::complex<double> *a, int lda) {
+void zger(eint m, eint n, std::complex<double> alpha, const std::complex<double> *x, eint inc_x, const std::complex<double> *y, eint inc_y,
+          std::complex<double> *a, eint lda) {
     ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::zger(m, n, alpha, x, inc_x, y, inc_y, a, lda);
 }
 
-auto sgetrf(int m, int n, float *a, int lda, eint *ipiv) -> int {
+auto sgetrf(eint m, eint n, float *a, eint lda, eint *ipiv) -> eint {
     return ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::sgetrf(m, n, a, lda, ipiv);
 }
 
-auto dgetrf(int m, int n, double *a, int lda, eint *ipiv) -> int {
+auto dgetrf(eint m, eint n, double *a, eint lda, eint *ipiv) -> eint {
     return ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::dgetrf(m, n, a, lda, ipiv);
 }
 
-auto cgetrf(int m, int n, std::complex<float> *a, int lda, eint *ipiv) -> int {
+auto cgetrf(eint m, eint n, std::complex<float> *a, eint lda, eint *ipiv) -> eint {
     return ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::cgetrf(m, n, a, lda, ipiv);
 }
 
-auto zgetrf(int m, int n, std::complex<double> *a, int lda, eint *ipiv) -> int {
+auto zgetrf(eint m, eint n, std::complex<double> *a, eint lda, eint *ipiv) -> eint {
     return ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::zgetrf(m, n, a, lda, ipiv);
 }
 
-auto sgetri(int n, float *a, int lda, const eint *ipiv) -> int {
+auto sgetri(eint n, float *a, eint lda, const eint *ipiv) -> eint {
     return ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::sgetri(n, a, lda, ipiv);
 }
 
-auto dgetri(int n, double *a, int lda, const eint *ipiv) -> int {
+auto dgetri(eint n, double *a, eint lda, const eint *ipiv) -> eint {
     return ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::dgetri(n, a, lda, ipiv);
 }
 
-auto cgetri(int n, std::complex<float> *a, int lda, const eint *ipiv) -> int {
+auto cgetri(eint n, std::complex<float> *a, eint lda, const eint *ipiv) -> eint {
     return ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::cgetri(n, a, lda, ipiv);
 }
 
-auto zgetri(int n, std::complex<double> *a, int lda, const eint *ipiv) -> int {
+auto zgetri(eint n, std::complex<double> *a, eint lda, const eint *ipiv) -> eint {
     return ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::zgetri(n, a, lda, ipiv);
 }
 
-auto slange(char norm_type, int m, int n, const float *A, int lda, float *work) -> float {
+auto slange(char norm_type, eint m, eint n, const float *A, eint lda, float *work) -> float {
     return ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::slange(norm_type, n, m, A, lda, work);
 }
 
-auto dlange(char norm_type, int m, int n, const double *A, int lda, double *work) -> double {
+auto dlange(char norm_type, eint m, eint n, const double *A, eint lda, double *work) -> double {
     return ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::dlange(norm_type, n, m, A, lda, work);
 }
 
-auto clange(char norm_type, int m, int n, const std::complex<float> *A, int lda, float *work) -> float {
+auto clange(char norm_type, eint m, eint n, const std::complex<float> *A, eint lda, float *work) -> float {
     return ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::clange(norm_type, n, m, A, lda, work);
 }
 
-auto zlange(char norm_type, int m, int n, const std::complex<double> *A, int lda, double *work) -> double {
+auto zlange(char norm_type, eint m, eint n, const std::complex<double> *A, eint lda, double *work) -> double {
     return ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::zlange(norm_type, n, m, A, lda, work);
 }
 
-void slassq(int n, const float *x, int incx, float *scale, float *sumsq) {
+void slassq(eint n, const float *x, eint incx, float *scale, float *sumsq) {
     return ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::slassq(n, x, incx, scale, sumsq);
 }
 
-void dlassq(int n, const double *x, int incx, double *scale, double *sumsq) {
+void dlassq(eint n, const double *x, eint incx, double *scale, double *sumsq) {
     return ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::dlassq(n, x, incx, scale, sumsq);
 }
 
-void classq(int n, const std::complex<float> *x, int incx, float *scale, float *sumsq) {
+void classq(eint n, const std::complex<float> *x, eint incx, float *scale, float *sumsq) {
     return ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::classq(n, x, incx, scale, sumsq);
 }
 
-void zlassq(int n, const std::complex<double> *x, int incx, double *scale, double *sumsq) {
+void zlassq(eint n, const std::complex<double> *x, eint incx, double *scale, double *sumsq) {
     return ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::zlassq(n, x, incx, scale, sumsq);
 }
 
-auto sgesdd(char jobz, int m, int n, float *a, int lda, float *s, float *u, int ldu, float *vt, int ldvt) -> int {
+auto sgesdd(char jobz, eint m, eint n, float *a, eint lda, float *s, float *u, eint ldu, float *vt, eint ldvt) -> eint {
 #if defined(EINSUMS_HAVE_MKL_LAPACKE_H)
     return ::einsums::backend::mkl::sgesdd(jobz, m, n, a, lda, s, u, ldu, vt, ldvt);
 #elif defined(EINSUMS_HAVE_LAPACKE)
@@ -239,7 +240,7 @@ auto sgesdd(char jobz, int m, int n, float *a, int lda, float *s, float *u, int 
 #endif
 }
 
-auto dgesdd(char jobz, int m, int n, double *a, int lda, double *s, double *u, int ldu, double *vt, int ldvt) -> int {
+auto dgesdd(char jobz, eint m, eint n, double *a, eint lda, double *s, double *u, eint ldu, double *vt, eint ldvt) -> eint {
 #if defined(EINSUMS_HAVE_MKL_LAPACKE_H)
     return ::einsums::backend::mkl::dgesdd(jobz, m, n, a, lda, s, u, ldu, vt, ldvt);
 #elif defined(EINSUMS_HAVE_LAPACKE)
@@ -249,8 +250,8 @@ auto dgesdd(char jobz, int m, int n, double *a, int lda, double *s, double *u, i
 #endif
 }
 
-auto cgesdd(char jobz, int m, int n, std::complex<float> *a, int lda, float *s, std::complex<float> *u, int ldu, std::complex<float> *vt,
-            int ldvt) -> int {
+auto cgesdd(char jobz, eint m, eint n, std::complex<float> *a, eint lda, float *s, std::complex<float> *u, eint ldu,
+            std::complex<float> *vt, eint ldvt) -> eint {
 #if defined(EINSUMS_HAVE_MKL_LAPACKE_H)
     return ::einsums::backend::mkl::cgesdd(jobz, m, n, a, lda, s, u, ldu, vt, ldvt);
 #elif defined(EINSUMS_HAVE_LAPACKE)
@@ -260,8 +261,8 @@ auto cgesdd(char jobz, int m, int n, std::complex<float> *a, int lda, float *s, 
 #endif
 }
 
-auto zgesdd(char jobz, int m, int n, std::complex<double> *a, int lda, double *s, std::complex<double> *u, int ldu,
-            std::complex<double> *vt, int ldvt) -> int {
+auto zgesdd(char jobz, eint m, eint n, std::complex<double> *a, eint lda, double *s, std::complex<double> *u, eint ldu,
+            std::complex<double> *vt, eint ldvt) -> eint {
 #if defined(EINSUMS_HAVE_MKL_LAPACKE_H)
     return ::einsums::backend::mkl::zgesdd(jobz, m, n, a, lda, s, u, ldu, vt, ldvt);
 #elif defined(EINSUMS_HAVE_LAPACKE)
@@ -271,7 +272,7 @@ auto zgesdd(char jobz, int m, int n, std::complex<double> *a, int lda, double *s
 #endif
 }
 
-auto dgees(char jobvs, int n, double *a, int lda, eint *sdim, double *wr, double *wi, double *vs, int ldvs) -> int {
+auto dgees(char jobvs, eint n, double *a, eint lda, eint *sdim, double *wr, double *wi, double *vs, eint ldvs) -> eint {
 #if defined(EINSUMS_HAVE_MKL_LAPACKE_H)
     return ::einsums::backend::mkl::dgees(jobvs, n, a, lda, sdim, wr, wi, vs, ldvs);
 #elif defined(EINSUMS_HAVE_LAPACKE)
@@ -281,8 +282,8 @@ auto dgees(char jobvs, int n, double *a, int lda, eint *sdim, double *wr, double
 #endif
 }
 
-auto strsyl(char trana, char tranb, int isgn, int m, int n, const float *a, int lda, const float *b, int ldb, float *c, int ldc,
-            float *scale) -> int {
+auto strsyl(char trana, char tranb, eint isgn, eint m, eint n, const float *a, eint lda, const float *b, eint ldb, float *c, eint ldc,
+            float *scale) -> eint {
 #if defined(EINSUMS_HAVE_MKL_LAPACKE_H)
     return ::einsums::backend::mkl::strsyl(trana, tranb, isgn, m, n, a, lda, b, ldb, c, ldc, scale);
 #elif defined(EINSUMS_HAVE_LAPACKE)
@@ -292,8 +293,8 @@ auto strsyl(char trana, char tranb, int isgn, int m, int n, const float *a, int 
 #endif
 }
 
-auto dtrsyl(char trana, char tranb, int isgn, int m, int n, const double *a, int lda, const double *b, int ldb, double *c, int ldc,
-            double *scale) -> int {
+auto dtrsyl(char trana, char tranb, eint isgn, eint m, eint n, const double *a, eint lda, const double *b, eint ldb, double *c, eint ldc,
+            double *scale) -> eint {
 #if defined(EINSUMS_HAVE_MKL_LAPACKE_H)
     return ::einsums::backend::mkl::dtrsyl(trana, tranb, isgn, m, n, a, lda, b, ldb, c, ldc, scale);
 #elif defined(EINSUMS_HAVE_LAPACKE)
@@ -303,8 +304,8 @@ auto dtrsyl(char trana, char tranb, int isgn, int m, int n, const double *a, int
 #endif
 }
 
-auto ctrsyl(char trana, char tranb, int isgn, int m, int n, const std::complex<float> *a, int lda, const std::complex<float> *b, int ldb,
-            std::complex<float> *c, int ldc, float *scale) -> int {
+auto ctrsyl(char trana, char tranb, eint isgn, eint m, eint n, const std::complex<float> *a, eint lda, const std::complex<float> *b,
+            eint ldb, std::complex<float> *c, eint ldc, float *scale) -> eint {
 #if defined(EINSUMS_HAVE_MKL_LAPACKE_H)
     return ::einsums::backend::mkl::ctrsyl(trana, tranb, isgn, m, n, a, lda, b, ldb, c, ldc, scale);
 #elif defined(EINSUMS_HAVE_LAPACKE)
@@ -314,8 +315,8 @@ auto ctrsyl(char trana, char tranb, int isgn, int m, int n, const std::complex<f
 #endif
 }
 
-auto ztrsyl(char trana, char tranb, int isgn, int m, int n, const std::complex<double> *a, int lda, const std::complex<double> *b, int ldb,
-            std::complex<double> *c, int ldc, double *scale) -> int {
+auto ztrsyl(char trana, char tranb, eint isgn, eint m, eint n, const std::complex<double> *a, eint lda, const std::complex<double> *b,
+            eint ldb, std::complex<double> *c, eint ldc, double *scale) -> eint {
 #if defined(EINSUMS_HAVE_MKL_LAPACKE_H)
     return ::einsums::backend::mkl::ztrsyl(trana, tranb, isgn, m, n, a, lda, b, ldb, c, ldc, scale);
 #elif defined(EINSUMS_HAVE_LAPACKE)
@@ -325,7 +326,7 @@ auto ztrsyl(char trana, char tranb, int isgn, int m, int n, const std::complex<d
 #endif
 }
 
-auto sgeqrf(int m, int n, float *a, int lda, float *tau) -> int {
+auto sgeqrf(eint m, eint n, float *a, eint lda, float *tau) -> eint {
 #if defined(EINSUMS_HAVE_MKL_LAPACKE_H)
     return ::einsums::backend::mkl::sgeqrf(m, n, a, lda, tau);
 #elif defined(EINSUMS_HAVE_LAPACKE)
@@ -335,7 +336,7 @@ auto sgeqrf(int m, int n, float *a, int lda, float *tau) -> int {
 #endif
 }
 
-auto dgeqrf(int m, int n, double *a, int lda, double *tau) -> int {
+auto dgeqrf(eint m, eint n, double *a, eint lda, double *tau) -> eint {
 #if defined(EINSUMS_HAVE_MKL_LAPACKE_H)
     return ::einsums::backend::mkl::dgeqrf(m, n, a, lda, tau);
 #elif defined(EINSUMS_HAVE_LAPACKE)
@@ -345,7 +346,7 @@ auto dgeqrf(int m, int n, double *a, int lda, double *tau) -> int {
 #endif
 }
 
-auto cgeqrf(int m, int n, std::complex<float> *a, int lda, std::complex<float> *tau) -> int {
+auto cgeqrf(eint m, eint n, std::complex<float> *a, eint lda, std::complex<float> *tau) -> eint {
 #if defined(EINSUMS_HAVE_MKL_LAPACKE_H)
     return ::einsums::backend::mkl::cgeqrf(m, n, a, lda, tau);
 #elif defined(EINSUMS_HAVE_LAPACKE)
@@ -355,7 +356,7 @@ auto cgeqrf(int m, int n, std::complex<float> *a, int lda, std::complex<float> *
 #endif
 }
 
-auto zgeqrf(int m, int n, std::complex<double> *a, int lda, std::complex<double> *tau) -> int {
+auto zgeqrf(eint m, eint n, std::complex<double> *a, eint lda, std::complex<double> *tau) -> eint {
 #if defined(EINSUMS_HAVE_MKL_LAPACKE_H)
     return ::einsums::backend::mkl::zgeqrf(m, n, a, lda, tau);
 #elif defined(EINSUMS_HAVE_LAPACKE)
@@ -365,7 +366,7 @@ auto zgeqrf(int m, int n, std::complex<double> *a, int lda, std::complex<double>
 #endif
 }
 
-auto sorgqr(int m, int n, int k, float *a, int lda, const float *tau) -> int {
+auto sorgqr(eint m, eint n, eint k, float *a, eint lda, const float *tau) -> eint {
 #if defined(EINSUMS_HAVE_MKL_LAPACKE_H)
     return ::einsums::backend::mkl::sorgqr(m, n, k, a, lda, tau);
 #elif defined(EINSUMS_HAVE_LAPACKE)
@@ -375,7 +376,7 @@ auto sorgqr(int m, int n, int k, float *a, int lda, const float *tau) -> int {
 #endif
 }
 
-auto dorgqr(int m, int n, int k, double *a, int lda, const double *tau) -> int {
+auto dorgqr(eint m, eint n, eint k, double *a, eint lda, const double *tau) -> eint {
 #if defined(EINSUMS_HAVE_MKL_LAPACKE_H)
     return ::einsums::backend::mkl::dorgqr(m, n, k, a, lda, tau);
 #elif defined(EINSUMS_HAVE_LAPACKE)
@@ -385,7 +386,7 @@ auto dorgqr(int m, int n, int k, double *a, int lda, const double *tau) -> int {
 #endif
 }
 
-auto cungqr(int m, int n, int k, std::complex<float> *a, int lda, const std::complex<float> *tau) -> int {
+auto cungqr(eint m, eint n, eint k, std::complex<float> *a, eint lda, const std::complex<float> *tau) -> eint {
 #if defined(EINSUMS_HAVE_MKL_LAPACKE_H)
     return ::einsums::backend::mkl::cungqr(m, n, k, a, lda, tau);
 #elif defined(EINSUMS_HAVE_LAPACKE)
@@ -395,7 +396,7 @@ auto cungqr(int m, int n, int k, std::complex<float> *a, int lda, const std::com
 #endif
 }
 
-auto zungqr(int m, int n, int k, std::complex<double> *a, int lda, const std::complex<double> *tau) -> int {
+auto zungqr(eint m, eint n, eint k, std::complex<double> *a, eint lda, const std::complex<double> *tau) -> eint {
 #if defined(EINSUMS_HAVE_MKL_LAPACKE_H)
     return ::einsums::backend::mkl::zungqr(m, n, k, a, lda, tau);
 #elif defined(EINSUMS_HAVE_LAPACKE)
