@@ -1,6 +1,7 @@
 #include "einsums/Section.hpp"
 
 #include "einsums/Print.hpp"
+#include "einsums/STL.hpp"
 #include "einsums/Timer.hpp"
 
 #include <cstddef>
@@ -21,7 +22,7 @@ struct Section::Impl {
 };
 
 Section::Section(const std::string &name, bool pushTimer) : _impl{new Section::Impl} {
-    _impl->name = name;
+    _impl->name = einsums::trim_copy(name);
     _impl->push_timer = pushTimer;
 
 #if defined(HAVE_ITTNOTIFY)
@@ -33,7 +34,7 @@ Section::Section(const std::string &name, bool pushTimer) : _impl{new Section::I
 }
 
 Section::Section(const std::string &name, const std::string &domain, bool pushTimer) : _impl{new Section::Impl} {
-    _impl->name = name;
+    _impl->name = einsums::trim_copy(name);
     _impl->push_timer = pushTimer;
 
 #if defined(HAVE_ITTNOTIFY)

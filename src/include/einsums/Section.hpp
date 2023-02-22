@@ -20,3 +20,7 @@ struct EINSUMS_EXPORT Section {
 
     std::unique_ptr<Impl> _impl;
 };
+
+// Use of LabeledSection requires fmt/format.h to be included and the use of
+// (BEGIN|END)_EINSUMS_NAMESPACE_CPP() defined in _Common.hpp
+#define LabeledSection(x) Section _section(fmt::format("{}::{} {}", s_Namespace, __func__, EINSUMS_STRINGIFY(x)))
