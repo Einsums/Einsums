@@ -123,7 +123,7 @@ auto gesv(AType<T, ARank> *A, BType<T, BRank> *B)
     auto nrhs = B->dim(0);
 
     int lwork = n;
-    std::vector<int> ipiv(lwork);
+    std::vector<eint> ipiv(lwork);
 
     int info = blas::gesv(n, nrhs, A->data(), lda, ipiv.data(), B->data(), ldb);
     return info;
@@ -272,7 +272,7 @@ auto ger(T alpha, const XYType<T, XYRank> &X, const XYType<T, XYRank> &Y, AType<
 }
 
 template <template <typename, size_t> typename TensorType, typename T, size_t TensorRank>
-auto getrf(TensorType<T, TensorRank> *A, std::vector<int> *pivot)
+auto getrf(TensorType<T, TensorRank> *A, std::vector<eint> *pivot)
     -> std::enable_if_t<is_incore_rank_tensor_v<TensorType<T, TensorRank>, 2, T>, int> {
     timer::push("getrf");
     if (pivot->size() < std::min(A->dim(0), A->dim(1))) {
@@ -292,7 +292,7 @@ auto getrf(TensorType<T, TensorRank> *A, std::vector<int> *pivot)
 }
 
 template <template <typename, size_t> typename TensorType, typename T, size_t TensorRank>
-auto getri(TensorType<T, TensorRank> *A, const std::vector<int> &pivot)
+auto getri(TensorType<T, TensorRank> *A, const std::vector<eint> &pivot)
     -> std::enable_if_t<is_incore_rank_tensor_v<TensorType<T, TensorRank>, 2, T>, int> {
     timer::push("getri");
 
@@ -309,7 +309,7 @@ template <template <typename, size_t> typename TensorType, typename T, size_t Te
 auto invert(TensorType<T, TensorRank> *A) -> std::enable_if_t<is_incore_rank_tensor_v<TensorType<T, TensorRank>, 2, T>> {
     timer::push("invert");
 
-    std::vector<int> pivot(A->dim(0));
+    std::vector<eint> pivot(A->dim(0));
     int result = getrf(A, &pivot);
     if (result > 0) {
         timer::pop();
@@ -519,7 +519,7 @@ inline auto solve_continuous_lyapunov(const Tensor<T, 2> &A, const Tensor<T, 2> 
     Tensor<T, 2> wr("Schur Real Buffer", n, n);
     Tensor<T, 2> wi("Schur Imaginary Buffer", n, n);
     Tensor<T, 2> U("Lyapunov U", n, n);
-    std::vector<int> sdim(1);
+    std::vector<eint> sdim(1);
     blas::gees('V', n, R.data(), n, sdim.data(), wr.data(), wi.data(), U.data(), n);
 
     // Compute F = U^T * Q * U

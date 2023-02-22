@@ -11,6 +11,14 @@
 #define EINSUMS_STRINGIFY(a) EINSUMS_STRINGIFY2(a)
 #define EINSUMS_STRINGIFY2(a) #a
 
+#define BEGIN_EINSUMS_NAMESPACE_CPP(x)                                                                                                     \
+    namespace x {                                                                                                                          \
+    namespace {                                                                                                                            \
+    std::string s_Namespace = #x;                                                                                                          \
+    }
+
+#define END_EINSUMS_NAMESPACE_CPP(x) }
+
 namespace einsums {
 
 #if defined(MKL_ILP64)

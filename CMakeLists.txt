@@ -50,13 +50,7 @@ message(STATUS "${CMAKE_CXX_COMPILER_ID} flags: ${HOST_FLAGS}")
 include(cmake/FindITTNOTIFY.cmake)
 # include(cmake/FindIntelSYCL.cmake)
 
-# Attempt to find MKL. This assumes the user set MKL_DIR.
-# Intel oneAPI 2023 doesn't accept lp64 when using icpx. I modified
-# my local copy of MKLConfig.cmake to accept this parameter. I'm working to support
-# ilp64 and then this line and my modification to MKLConfig.cmake will not be needed.
-set(MKL_INTERFACE lp64)
 find_package(MKL CONFIG)
-# message(STATUS "${MKL_IMPORTED_TARGETS}")
 if (TARGET MKL::MKL)
     add_library(BLAS::BLAS ALIAS MKL::MKL)
     add_library(LAPACK::LAPACK ALIAS MKL::MKL)

@@ -1,13 +1,5 @@
 add_einsums_library(einsums
     SOURCES
-        backends/linear_algebra/netlib/dgemm.cpp
-        backends/linear_algebra/netlib/lsame.cpp
-        backends/linear_algebra/netlib/xerbla.cpp
-
-        backends/linear_algebra/vendor/Vendor.cpp
-
-        backends/linear_algebra/cblas/cblas.cpp
-
         Blas.cpp
         InitializeFinalize.cpp
         FFT.cpp
@@ -75,6 +67,8 @@ extend_einsums_target(einsums
 )
 
 extend_einsums_target(einsums
+    SOURCES
+        backends/linear_algebra/cblas/cblas.cpp
     DEPENDS
         cblas
     DEFINES
@@ -85,13 +79,16 @@ extend_einsums_target(einsums
 )
 
 extend_einsums_target(einsums
+    SOURCES
+        backends/linear_algebra/mkl/mkl.cpp
     DEFINES
         EINSUMS_HAVE_MKL_LAPACKE_H
         EINSUMS_HAVE_MKL_CBLAS_H
         EINSUMS_HAVE_CBLAS
         EINSUMS_HAVE_LAPACKE
+        EINSUMS_LINEAR_ALGEBRA_NAMESPACE=mkl
     CONDITION
-        (HAVE_MKL_LAPACKE_H AND HAVE_MKL_CBLAS_H)
+        TARGET MKL::MKL
     FEATURE_INFO
         "MKL backend"
 )
@@ -99,20 +96,28 @@ extend_einsums_target(einsums
 extend_einsums_target(einsums
     PUBLIC_DEFINES
         MKL_ILP64
+    DEFINES
+        MKL_INTERFACE=ILP64
     CONDITION
-        (HAVE_MKL_LAPACKE_H AND HAVE_MKL_CBLAS_H AND MKL_INTERFACE STREQUAL ilp64)
+        (TARGET MKL::MKL AND MKL_INTERFACE STREQUAL ilp64)
+    FEATURE_INFO
+        "MKL ILP64 (64-bit integers)"
 )
 
 extend_einsums_target(einsums
     PUBLIC_DEFINES
         MKL_LP64
+    DEFINES
+        MKL_INTERFACE=LP64
     CONDITION
-        (HAVE_MKL_LAPACKE_H AND HAVE_MKL_CBLAS_H AND MKL_INTERFACE STREQUAL lp64)
+        (TARGET MKL::MKL AND MKL_INTERFACE STREQUAL lp64)
+    FEATURE_INFO
+        "MKL LP64 (32-bit integers)"
 )
 
 extend_einsums_target(einsums
     CONDITION
-        EINSUMS_FFT_LIBRARY STREQUAL MKL
+        (TARGET MKL::MKL AND EINSUMS_FFT_LIBRARY STREQUAL MKL)
     DEFINES
         EINSUMS_HAVE_FFT_LIBRARY_MKL
     SOURCES
@@ -120,6 +125,17 @@ extend_einsums_target(einsums
         backends/fft/fftw3/fft.cpp
     FEATURE_INFO
         "MKL FFT+FFTW3 backends"
+)
+
+extend_einsums_target(einsums
+    SOURCES
+        backends/linear_algebra/vendor/Vendor.cpp
+    DEFINES
+        EINSUMS_LINEAR_ALGEBRA_NAMESPACE=vendor
+    CONDITION
+        NOT TARGET MKL::MKL
+    FEATURE_INFO
+        "Generic vendor backend"
 )
 
 extend_einsums_target(einsums

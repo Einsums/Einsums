@@ -1,6 +1,7 @@
 #pragma once
 
 #include "einsums/STL.hpp"
+#include "einsums/_Common.hpp"
 #include "einsums/_Export.hpp"
 
 #include <complex>
@@ -148,32 +149,33 @@ inline auto heev<double>(char job, char uplo, int n, std::complex<double> *a, in
  * matrices.
  */
 namespace detail {
-auto EINSUMS_EXPORT sgesv(int n, int nrhs, float *a, int lda, int *ipiv, float *b, int ldb) -> int;
-auto EINSUMS_EXPORT dgesv(int n, int nrhs, double *a, int lda, int *ipiv, double *b, int ldb) -> int;
-auto EINSUMS_EXPORT cgesv(int n, int nrhs, std::complex<float> *a, int lda, int *ipiv, std::complex<float> *b, int ldb) -> int;
-auto EINSUMS_EXPORT zgesv(int n, int nrhs, std::complex<double> *a, int lda, int *ipiv, std::complex<double> *b, int ldb) -> int;
+auto EINSUMS_EXPORT sgesv(int n, int nrhs, float *a, int lda, eint *ipiv, float *b, int ldb) -> int;
+auto EINSUMS_EXPORT dgesv(int n, int nrhs, double *a, int lda, eint *ipiv, double *b, int ldb) -> int;
+auto EINSUMS_EXPORT cgesv(int n, int nrhs, std::complex<float> *a, int lda, eint *ipiv, std::complex<float> *b, int ldb) -> int;
+auto EINSUMS_EXPORT zgesv(int n, int nrhs, std::complex<double> *a, int lda, eint *ipiv, std::complex<double> *b, int ldb) -> int;
 } // namespace detail
 
 template <typename T>
-auto gesv(int n, int nrhs, T *a, int lda, int *ipiv, T *b, int ldb) -> int;
+auto gesv(int n, int nrhs, T *a, int lda, eint *ipiv, T *b, int ldb) -> int;
 
 template <>
-inline auto gesv<float>(int n, int nrhs, float *a, int lda, int *ipiv, float *b, int ldb) -> int {
+inline auto gesv<float>(int n, int nrhs, float *a, int lda, eint *ipiv, float *b, int ldb) -> int {
     return detail::sgesv(n, nrhs, a, lda, ipiv, b, ldb);
 }
 
 template <>
-inline auto gesv<double>(int n, int nrhs, double *a, int lda, int *ipiv, double *b, int ldb) -> int {
+inline auto gesv<double>(int n, int nrhs, double *a, int lda, eint *ipiv, double *b, int ldb) -> int {
     return detail::dgesv(n, nrhs, a, lda, ipiv, b, ldb);
 }
 
 template <>
-inline auto gesv<std::complex<float>>(int n, int nrhs, std::complex<float> *a, int lda, int *ipiv, std::complex<float> *b, int ldb) -> int {
+inline auto gesv<std::complex<float>>(int n, int nrhs, std::complex<float> *a, int lda, eint *ipiv, std::complex<float> *b, int ldb)
+    -> int {
     return detail::cgesv(n, nrhs, a, lda, ipiv, b, ldb);
 }
 
 template <>
-inline auto gesv<std::complex<double>>(int n, int nrhs, std::complex<double> *a, int lda, int *ipiv, std::complex<double> *b, int ldb)
+inline auto gesv<std::complex<double>>(int n, int nrhs, std::complex<double> *a, int lda, eint *ipiv, std::complex<double> *b, int ldb)
     -> int {
     return detail::zgesv(n, nrhs, a, lda, ipiv, b, ldb);
 }
@@ -334,10 +336,10 @@ inline void ger<std::complex<double>>(int m, int n, std::complex<double> alpha, 
 }
 
 namespace detail {
-auto EINSUMS_EXPORT sgetrf(int, int, float *, int, int *) -> int;
-auto EINSUMS_EXPORT dgetrf(int, int, double *, int, int *) -> int;
-auto EINSUMS_EXPORT cgetrf(int, int, std::complex<float> *, int, int *) -> int;
-auto EINSUMS_EXPORT zgetrf(int, int, std::complex<double> *, int, int *) -> int;
+auto EINSUMS_EXPORT sgetrf(int, int, float *, int, eint *) -> int;
+auto EINSUMS_EXPORT dgetrf(int, int, double *, int, eint *) -> int;
+auto EINSUMS_EXPORT cgetrf(int, int, std::complex<float> *, int, eint *) -> int;
+auto EINSUMS_EXPORT zgetrf(int, int, std::complex<double> *, int, eint *) -> int;
 } // namespace detail
 
 /*!
@@ -352,33 +354,33 @@ auto EINSUMS_EXPORT zgetrf(int, int, std::complex<double> *, int, int *) -> int;
  *
  */
 template <typename T>
-auto getrf(int, int, T *, int, int *) -> int;
+auto getrf(int, int, T *, int, eint *) -> int;
 
 template <>
-inline auto getrf<float>(int m, int n, float *a, int lda, int *ipiv) -> int {
+inline auto getrf<float>(int m, int n, float *a, int lda, eint *ipiv) -> int {
     return detail::sgetrf(m, n, a, lda, ipiv);
 }
 
 template <>
-inline auto getrf<double>(int m, int n, double *a, int lda, int *ipiv) -> int {
+inline auto getrf<double>(int m, int n, double *a, int lda, eint *ipiv) -> int {
     return detail::dgetrf(m, n, a, lda, ipiv);
 }
 
 template <>
-inline auto getrf<std::complex<float>>(int m, int n, std::complex<float> *a, int lda, int *ipiv) -> int {
+inline auto getrf<std::complex<float>>(int m, int n, std::complex<float> *a, int lda, eint *ipiv) -> int {
     return detail::cgetrf(m, n, a, lda, ipiv);
 }
 
 template <>
-inline auto getrf<std::complex<double>>(int m, int n, std::complex<double> *a, int lda, int *ipiv) -> int {
+inline auto getrf<std::complex<double>>(int m, int n, std::complex<double> *a, int lda, eint *ipiv) -> int {
     return detail::zgetrf(m, n, a, lda, ipiv);
 }
 
 namespace detail {
-auto EINSUMS_EXPORT sgetri(int n, float *a, int lda, const int *ipiv) -> int;
-auto EINSUMS_EXPORT dgetri(int n, double *a, int lda, const int *ipiv) -> int;
-auto EINSUMS_EXPORT cgetri(int n, std::complex<float> *a, int lda, const int *ipiv) -> int;
-auto EINSUMS_EXPORT zgetri(int n, std::complex<double> *a, int lda, const int *ipiv) -> int;
+auto EINSUMS_EXPORT sgetri(int n, float *a, int lda, const eint *ipiv) -> int;
+auto EINSUMS_EXPORT dgetri(int n, double *a, int lda, const eint *ipiv) -> int;
+auto EINSUMS_EXPORT cgetri(int n, std::complex<float> *a, int lda, const eint *ipiv) -> int;
+auto EINSUMS_EXPORT zgetri(int n, std::complex<double> *a, int lda, const eint *ipiv) -> int;
 } // namespace detail
 
 /*!
@@ -391,25 +393,25 @@ auto EINSUMS_EXPORT zgetri(int n, std::complex<double> *a, int lda, const int *i
  *  >0 U(INFO, INFO) is exactly zero; the matrix is singular
  */
 template <typename T>
-auto getri(int n, T *a, int lda, const int *ipiv) -> int;
+auto getri(int n, T *a, int lda, const eint *ipiv) -> int;
 
 template <>
-inline auto getri<float>(int n, float *a, int lda, const int *ipiv) -> int {
+inline auto getri<float>(int n, float *a, int lda, const eint *ipiv) -> int {
     return detail::sgetri(n, a, lda, ipiv);
 }
 
 template <>
-inline auto getri<double>(int n, double *a, int lda, const int *ipiv) -> int {
+inline auto getri<double>(int n, double *a, int lda, const eint *ipiv) -> int {
     return detail::dgetri(n, a, lda, ipiv);
 }
 
 template <>
-inline auto getri<std::complex<float>>(int n, std::complex<float> *a, int lda, const int *ipiv) -> int {
+inline auto getri<std::complex<float>>(int n, std::complex<float> *a, int lda, const eint *ipiv) -> int {
     return detail::cgetri(n, a, lda, ipiv);
 }
 
 template <>
-inline auto getri<std::complex<double>>(int n, std::complex<double> *a, int lda, const int *ipiv) -> int {
+inline auto getri<std::complex<double>>(int n, std::complex<double> *a, int lda, const eint *ipiv) -> int {
     return detail::zgetri(n, a, lda, ipiv);
 }
 
@@ -516,8 +518,8 @@ inline auto gesdd<std::complex<double>>(char jobz, int m, int n, std::complex<do
 }
 
 namespace detail {
-auto EINSUMS_EXPORT sgees(char jobvs, int n, float *a, int lda, int *sdim, float *wr, float *wi, float *vs, int ldvs) -> int;
-auto EINSUMS_EXPORT dgees(char jobvs, int n, double *a, int lda, int *sdim, double *wr, double *wi, double *vs, int ldvs) -> int;
+auto EINSUMS_EXPORT sgees(char jobvs, int n, float *a, int lda, eint *sdim, float *wr, float *wi, float *vs, int ldvs) -> int;
+auto EINSUMS_EXPORT dgees(char jobvs, int n, double *a, int lda, eint *sdim, double *wr, double *wi, double *vs, int ldvs) -> int;
 } // namespace detail
 
 /*!
@@ -525,15 +527,15 @@ auto EINSUMS_EXPORT dgees(char jobvs, int n, double *a, int lda, int *sdim, doub
  * (Used in Lyapunov Solves)
  */
 template <typename T>
-auto gees(char jobvs, int n, T *a, int lda, int *sdim, T *wr, T *wi, T *vs, int ldvs) -> int;
+auto gees(char jobvs, int n, T *a, int lda, eint *sdim, T *wr, T *wi, T *vs, int ldvs) -> int;
 
 template <>
-inline auto gees<float>(char jobvs, int n, float *a, int lda, int *sdim, float *wr, float *wi, float *vs, int ldvs) -> int {
+inline auto gees<float>(char jobvs, int n, float *a, int lda, eint *sdim, float *wr, float *wi, float *vs, int ldvs) -> int {
     return detail::sgees(jobvs, n, a, lda, sdim, wr, wi, vs, ldvs);
 }
 
 template <>
-inline auto gees<double>(char jobvs, int n, double *a, int lda, int *sdim, double *wr, double *wi, double *vs, int ldvs) -> int {
+inline auto gees<double>(char jobvs, int n, double *a, int lda, eint *sdim, double *wr, double *wi, double *vs, int ldvs) -> int {
     return detail::dgees(jobvs, n, a, lda, sdim, wr, wi, vs, ldvs);
 }
 
