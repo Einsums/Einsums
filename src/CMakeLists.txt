@@ -163,6 +163,7 @@ extend_einsums_target(einsums
 extend_einsums_target(einsums
     PUBLIC_OPTIONS
         -fp-model=precise
+        -Rno-debug-disables-optimization
     CONDITION
         (UNIX AND (CMAKE_CXX_COMPILER_ID MATCHES Intel OR CMAKE_CXX_COMPILIER_ID MATCHES IntelLLVM))
 )

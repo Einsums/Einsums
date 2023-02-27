@@ -14,7 +14,7 @@
 #define BEGIN_EINSUMS_NAMESPACE_CPP(x)                                                                                                     \
     namespace x {                                                                                                                          \
     namespace {                                                                                                                            \
-    std::string s_Namespace = #x;                                                                                                          \
+    static std::string s_Namespace = #x;                                                                                                   \
     }
 
 #define END_EINSUMS_NAMESPACE_CPP(x) }
