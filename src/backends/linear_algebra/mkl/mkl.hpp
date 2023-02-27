@@ -79,6 +79,13 @@ void caxpy(const eint n, const std::complex<float> alpha_x, const std::complex<f
 void zaxpy(const eint n, const std::complex<double> alpha_x, const std::complex<double> *x, const eint inc_x, std::complex<double> *y,
            const eint inc_y);
 
+void saxpby(const eint n, const float a, const float *x, const eint incx, const float b, float *y, const eint incy);
+void daxpby(const eint n, const double a, const double *x, const eint incx, const double b, double *y, const eint incy);
+void caxpby(const eint n, const std::complex<float> a, const std::complex<float> *x, const eint incx, const std::complex<float> b,
+            std::complex<float> *y, const eint incy);
+void zaxpby(const eint n, const std::complex<double> a, const std::complex<double> *x, const eint incx, const std::complex<double> b,
+            std::complex<double> *y, const eint incy);
+
 /*!
  * Performs a rank-1 update of a general matrix.
  *

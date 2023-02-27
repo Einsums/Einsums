@@ -294,6 +294,40 @@ inline void axpy<std::complex<double>>(eint n, std::complex<double> alpha_x, con
 }
 
 namespace detail {
+void EINSUMS_EXPORT saxpby(eint n, float alpha_x, const float *x, eint inc_x, float b, float *y, eint inc_y);
+void EINSUMS_EXPORT daxpby(eint n, double alpha_x, const double *x, eint inc_x, double b, double *y, eint inc_y);
+void EINSUMS_EXPORT caxpby(eint n, std::complex<float> alpha_x, const std::complex<float> *x, eint inc_x, std::complex<float> b,
+                           std::complex<float> *y, eint inc_y);
+void EINSUMS_EXPORT zaxpby(eint n, std::complex<double> alpha_x, const std::complex<double> *x, eint inc_x, std::complex<double> b,
+                           std::complex<double> *y, eint inc_y);
+} // namespace detail
+
+template <typename T>
+void axpby(eint n, T alpha_x, const T *x, eint inc_x, T b, T *y, eint inc_y);
+
+template <>
+inline void axpby<float>(eint n, float alpha_x, const float *x, eint inc_x, float b, float *y, eint inc_y) {
+    detail::saxpby(n, alpha_x, x, inc_x, b, y, inc_y);
+}
+
+template <>
+inline void axpby<double>(eint n, double alpha_x, const double *x, eint inc_x, double b, double *y, eint inc_y) {
+    detail::daxpby(n, alpha_x, x, inc_x, b, y, inc_y);
+}
+
+template <>
+inline void axpby<std::complex<float>>(eint n, std::complex<float> alpha_x, const std::complex<float> *x, eint inc_x, std::complex<float> b,
+                                       std::complex<float> *y, eint inc_y) {
+    detail::caxpby(n, alpha_x, x, inc_x, b, y, inc_y);
+}
+
+template <>
+inline void axpby<std::complex<double>>(eint n, std::complex<double> alpha_x, const std::complex<double> *x, eint inc_x,
+                                        std::complex<double> b, std::complex<double> *y, eint inc_y) {
+    detail::zaxpby(n, alpha_x, x, inc_x, b, y, inc_y);
+}
+
+namespace detail {
 void EINSUMS_EXPORT sger(eint m, eint n, float alpha, const float *x, eint inc_x, const float *y, eint inc_y, float *a, eint lda);
 void EINSUMS_EXPORT dger(eint m, eint n, double alpha, const double *x, eint inc_x, const double *y, eint inc_y, double *a, eint lda);
 void EINSUMS_EXPORT cger(eint m, eint n, std::complex<float> alpha, const std::complex<float> *x, eint inc_x, const std::complex<float> *y,

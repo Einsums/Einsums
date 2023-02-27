@@ -296,6 +296,30 @@ void zaxpy(const eint n, const std::complex<double> alpha_x, const std::complex<
             reinterpret_cast<MKL_Complex16 *>(y), &inc_y);
 }
 
+void saxpby(const eint n, const float a, const float *x, const eint incx, const float b, float *y, const eint incy) {
+    LabeledSection1(mkl_interface());
+    ::saxpby(&n, &a, x, &incx, &b, y, &incy);
+}
+
+void daxpby(const eint n, const double a, const double *x, const eint incx, const double b, double *y, const eint incy) {
+    LabeledSection1(mkl_interface());
+    ::daxpby(&n, &a, x, &incx, &b, y, &incy);
+}
+
+void caxpby(const eint n, const std::complex<float> a, const std::complex<float> *x, const eint incx, const std::complex<float> b,
+            std::complex<float> *y, const eint incy) {
+    LabeledSection1(mkl_interface());
+    ::caxpby(&n, reinterpret_cast<const MKL_Complex8 *>(&a), reinterpret_cast<const MKL_Complex8 *>(x), &incx,
+             reinterpret_cast<const MKL_Complex8 *>(&b), reinterpret_cast<MKL_Complex8 *>(y), &incy);
+}
+
+void zaxpby(const eint n, const std::complex<double> a, const std::complex<double> *x, const eint incx, const std::complex<double> b,
+            std::complex<double> *y, const eint incy) {
+    LabeledSection1(mkl_interface());
+    ::zaxpby(&n, reinterpret_cast<const MKL_Complex16 *>(&a), reinterpret_cast<const MKL_Complex16 *>(x), &incx,
+             reinterpret_cast<const MKL_Complex16 *>(&b), reinterpret_cast<MKL_Complex16 *>(y), &incy);
+}
+
 namespace {
 void ger_parameter_check(eint m, eint n, eint inc_x, eint inc_y, eint lda) {
     if (m < 0) {
