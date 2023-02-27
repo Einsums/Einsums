@@ -1,10 +1,12 @@
 #include "fft.hpp"
 
 #include "einsums/Print.hpp"
+#include "einsums/Section.hpp"
+#include "einsums/_Common.hpp"
 
 #include <mkl_dfti.h>
 
-namespace einsums::backend::mkl {
+BEGIN_EINSUMS_NAMESPACE_CPP(einsums::backend::mkl)
 
 namespace {
 inline void verify(MKL_LONG status) {
@@ -20,6 +22,8 @@ inline void verify(MKL_LONG status) {
  *******************************************************************************/
 
 void scfft(const Tensor<float, 1> &a, Tensor<std::complex<float>, 1> *result) {
+    LabeledSection0();
+
     DFTI_DESCRIPTOR_HANDLE handle = nullptr;
 
     verify(DftiCreateDescriptor(&handle, DFTI_SINGLE, DFTI_REAL, 1, a.dim(0)));
@@ -36,6 +40,8 @@ void scfft(const Tensor<float, 1> &a, Tensor<std::complex<float>, 1> *result) {
 }
 
 void ccfft(const Tensor<std::complex<float>, 1> &a, Tensor<std::complex<float>, 1> *result) {
+    LabeledSection0();
+
     DFTI_DESCRIPTOR_HANDLE handle = nullptr;
 
     verify(DftiCreateDescriptor(&handle, DFTI_SINGLE, DFTI_COMPLEX, 1, a.dim(0)));
@@ -52,6 +58,8 @@ void ccfft(const Tensor<std::complex<float>, 1> &a, Tensor<std::complex<float>, 
 }
 
 void dzfft(const Tensor<double, 1> &a, Tensor<std::complex<double>, 1> *result) {
+    LabeledSection0();
+
     DFTI_DESCRIPTOR_HANDLE handle = nullptr;
 
     verify(DftiCreateDescriptor(&handle, DFTI_DOUBLE, DFTI_REAL, 1, a.dim(0)));
@@ -68,6 +76,8 @@ void dzfft(const Tensor<double, 1> &a, Tensor<std::complex<double>, 1> *result) 
 }
 
 void zzfft(const Tensor<std::complex<double>, 1> &a, Tensor<std::complex<double>, 1> *result) {
+    LabeledSection0();
+
     DFTI_DESCRIPTOR_HANDLE handle = nullptr;
 
     verify(DftiCreateDescriptor(&handle, DFTI_DOUBLE, DFTI_COMPLEX, 1, a.dim(0)));
@@ -88,6 +98,8 @@ void zzfft(const Tensor<std::complex<double>, 1> &a, Tensor<std::complex<double>
  *******************************************************************************/
 
 void csifft(const Tensor<std::complex<float>, 1> &a, Tensor<float, 1> *result) {
+    LabeledSection0();
+
     DFTI_DESCRIPTOR_HANDLE handle = nullptr;
 
     // The descriptors are odd.  You create the descriptor as if you're doing
@@ -107,6 +119,8 @@ void csifft(const Tensor<std::complex<float>, 1> &a, Tensor<float, 1> *result) {
 }
 
 void zdifft(const Tensor<std::complex<double>, 1> &a, Tensor<double, 1> *result) {
+    LabeledSection0();
+
     DFTI_DESCRIPTOR_HANDLE handle = nullptr;
 
     verify(DftiCreateDescriptor(&handle, DFTI_DOUBLE, DFTI_REAL, 1, result->dim(0)));
@@ -123,6 +137,8 @@ void zdifft(const Tensor<std::complex<double>, 1> &a, Tensor<double, 1> *result)
 }
 
 void ccifft(const Tensor<std::complex<float>, 1> &a, Tensor<std::complex<float>, 1> *result) {
+    LabeledSection0();
+
     DFTI_DESCRIPTOR_HANDLE handle = nullptr;
 
     verify(DftiCreateDescriptor(&handle, DFTI_SINGLE, DFTI_COMPLEX, 1, result->dim(0)));
@@ -139,6 +155,8 @@ void ccifft(const Tensor<std::complex<float>, 1> &a, Tensor<std::complex<float>,
 }
 
 void zzifft(const Tensor<std::complex<double>, 1> &a, Tensor<std::complex<double>, 1> *result) {
+    LabeledSection0();
+
     DFTI_DESCRIPTOR_HANDLE handle = nullptr;
 
     verify(DftiCreateDescriptor(&handle, DFTI_DOUBLE, DFTI_COMPLEX, 1, result->dim(0)));
@@ -154,4 +172,4 @@ void zzifft(const Tensor<std::complex<double>, 1> &a, Tensor<std::complex<double
     DftiFreeDescriptor(&handle);
 }
 
-} // namespace einsums::backend::mkl
+END_EINSUMS_NAMESPACE_CPP(einsums::backend::mkl)

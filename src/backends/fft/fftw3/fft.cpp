@@ -1,6 +1,8 @@
 #include "fft.hpp"
 
 #include "einsums/Print.hpp"
+#include "einsums/Section.hpp"
+#include "einsums/_Common.hpp"
 
 #if defined(EINSUMS_HAVE_FFT_LIBRARY_MKL)
 #include <fftw/fftw3.h>
@@ -10,7 +12,7 @@
 #error Unable to find FFTW header.
 #endif
 
-namespace einsums::backend::fftw3 {
+BEGIN_EINSUMS_NAMESPACE_CPP(einsums::backend::fftw3)
 
 namespace {
 template <typename Plan>
@@ -26,6 +28,8 @@ inline void verify(Plan plan) {
  *******************************************************************************/
 
 void scfft(const Tensor<float, 1> &a, Tensor<std::complex<float>, 1> *result) {
+    LabeledSection0();
+
     fftwf_plan r2c = nullptr;
 
     verify((r2c = fftwf_plan_dft_r2c_1d(a.dim(0), const_cast<float *>(a.data()), reinterpret_cast<fftwf_complex *>(result->data()),
@@ -35,6 +39,8 @@ void scfft(const Tensor<float, 1> &a, Tensor<std::complex<float>, 1> *result) {
 }
 
 void ccfft(const Tensor<std::complex<float>, 1> &a, Tensor<std::complex<float>, 1> *result) {
+    LabeledSection0();
+
     fftwf_plan c2c = nullptr;
 
     verify((c2c = fftwf_plan_dft_1d(a.dim(0), reinterpret_cast<fftwf_complex *>(const_cast<std::complex<float> *>(a.data())),
@@ -44,6 +50,8 @@ void ccfft(const Tensor<std::complex<float>, 1> &a, Tensor<std::complex<float>, 
 }
 
 void dzfft(const Tensor<double, 1> &a, Tensor<std::complex<double>, 1> *result) {
+    LabeledSection0();
+
     fftw_plan r2c = nullptr;
 
     verify((r2c = fftw_plan_dft_r2c_1d(a.dim(0), const_cast<double *>(a.data()), reinterpret_cast<fftw_complex *>(result->data()),
@@ -53,6 +61,8 @@ void dzfft(const Tensor<double, 1> &a, Tensor<std::complex<double>, 1> *result) 
 }
 
 void zzfft(const Tensor<std::complex<double>, 1> &a, Tensor<std::complex<double>, 1> *result) {
+    LabeledSection0();
+
     fftw_plan c2c = nullptr;
 
     verify((c2c = fftw_plan_dft_1d(a.dim(0), reinterpret_cast<fftw_complex *>(const_cast<std::complex<double> *>(a.data())),
@@ -65,6 +75,8 @@ void zzfft(const Tensor<std::complex<double>, 1> &a, Tensor<std::complex<double>
  * Backward transforms                                                         *
  *******************************************************************************/
 void csifft(const Tensor<std::complex<float>, 1> &a, Tensor<float, 1> *result) {
+    LabeledSection0();
+
     fftwf_plan c2r = nullptr;
 
     verify(c2r = fftwf_plan_dft_c2r_1d(result->dim(0), reinterpret_cast<fftwf_complex *>(const_cast<std::complex<float> *>(a.data())),
@@ -74,6 +86,8 @@ void csifft(const Tensor<std::complex<float>, 1> &a, Tensor<float, 1> *result) {
 }
 
 void zdifft(const Tensor<std::complex<double>, 1> &a, Tensor<double, 1> *result) {
+    LabeledSection0();
+
     fftw_plan c2r = nullptr;
 
     verify(c2r = fftw_plan_dft_c2r_1d(result->dim(0), reinterpret_cast<fftw_complex *>(const_cast<std::complex<double> *>(a.data())),
@@ -83,6 +97,8 @@ void zdifft(const Tensor<std::complex<double>, 1> &a, Tensor<double, 1> *result)
 }
 
 void ccifft(const Tensor<std::complex<float>, 1> &a, Tensor<std::complex<float>, 1> *result) {
+    LabeledSection0();
+
     fftwf_plan c2r = nullptr;
 
     verify(c2r = fftwf_plan_dft_1d(result->dim(0), reinterpret_cast<fftwf_complex *>(const_cast<std::complex<float> *>(a.data())),
@@ -92,6 +108,8 @@ void ccifft(const Tensor<std::complex<float>, 1> &a, Tensor<std::complex<float>,
 }
 
 void zzifft(const Tensor<std::complex<double>, 1> &a, Tensor<std::complex<double>, 1> *result) {
+    LabeledSection0();
+
     fftw_plan c2c = nullptr;
 
     verify(c2c = fftw_plan_dft_1d(result->dim(0), reinterpret_cast<fftw_complex *>(const_cast<std::complex<double> *>(a.data())),

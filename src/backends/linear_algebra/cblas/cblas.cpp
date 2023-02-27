@@ -1,4 +1,6 @@
 #include "einsums/Print.hpp"
+#include "einsums/Section.hpp"
+#include "einsums/_Common.hpp"
 #include "fmt/format.h"
 
 #include <exception>
@@ -11,15 +13,7 @@
 #include <lapacke.h>
 #endif
 
-#if defined(EINSUMS_HAVE_MKL_CBLAS_H)
-#include <mkl_cblas.h>
-#endif
-
-#if defined(EINSUMS_HAVE_MKL_LAPACKE_H)
-#include <mkl_lapacke.h>
-#endif
-
-namespace einsums::backend::cblas {
+BEGIN_EINSUMS_NAMESPACE_CPP(einsums::backend::cblas)
 
 namespace {
 
@@ -49,6 +43,8 @@ void finalize() {
 
 void sgemm(char transa, char transb, int m, int n, int k, float alpha, const float *a, int lda, const float *b, int ldb, float beta,
            float *c, int ldc) {
+    LabeledSection0();
+
     if (m == 0 || n == 0 || k == 0)
         return;
 
@@ -60,6 +56,8 @@ void sgemm(char transa, char transb, int m, int n, int k, float alpha, const flo
 
 void dgemm(char transa, char transb, int m, int n, int k, double alpha, const double *a, int lda, const double *b, int ldb, // NOLINT
            double beta, double *c, int ldc) {
+    LabeledSection0();
+
     if (m == 0 || n == 0 || k == 0)
         return;
 
@@ -71,6 +69,8 @@ void dgemm(char transa, char transb, int m, int n, int k, double alpha, const do
 
 void cgemm(char transa, char transb, int m, int n, int k, std::complex<float> alpha, const std::complex<float> *a, int lda,
            const std::complex<float> *b, int ldb, std::complex<float> beta, std::complex<float> *c, int ldc) {
+    LabeledSection0();
+
     if (m == 0 || n == 0 || k == 0)
         return;
 
@@ -83,6 +83,8 @@ void cgemm(char transa, char transb, int m, int n, int k, std::complex<float> al
 
 void zgemm(char transa, char transb, int m, int n, int k, std::complex<double> alpha, const std::complex<double> *a, int lda,
            const std::complex<double> *b, int ldb, std::complex<double> beta, std::complex<double> *c, int ldc) {
+    LabeledSection0();
+
     if (m == 0 || n == 0 || k == 0)
         return;
 
@@ -94,6 +96,8 @@ void zgemm(char transa, char transb, int m, int n, int k, std::complex<double> a
 }
 
 void sgemv(char transa, int m, int n, float alpha, const float *a, int lda, const float *x, int incx, float beta, float *y, int incy) {
+    LabeledSection0();
+
     if (m == 0 || n == 0)
         return;
     auto TransA = transpose_to_cblas(transa);
@@ -104,6 +108,8 @@ void sgemv(char transa, int m, int n, float alpha, const float *a, int lda, cons
 }
 
 void dgemv(char transa, int m, int n, double alpha, const double *a, int lda, const double *x, int incx, double beta, double *y, int incy) {
+    LabeledSection0();
+
     if (m == 0 || n == 0)
         return;
     auto TransA = transpose_to_cblas(transa);
@@ -115,6 +121,8 @@ void dgemv(char transa, int m, int n, double alpha, const double *a, int lda, co
 
 void cgemv(char transa, int m, int n, std::complex<float> alpha, const std::complex<float> *a, int lda, const std::complex<float> *x,
            int incx, std::complex<float> beta, std::complex<float> *y, int incy) {
+    LabeledSection0();
+
     if (m == 0 || n == 0)
         return;
     auto TransA = transpose_to_cblas(transa);
@@ -127,6 +135,8 @@ void cgemv(char transa, int m, int n, std::complex<float> alpha, const std::comp
 
 void zgemv(char transa, int m, int n, std::complex<double> alpha, const std::complex<double> *a, int lda, const std::complex<double> *x,
            int incx, std::complex<double> beta, std::complex<double> *y, int incy) {
+    LabeledSection0();
+
     if (m == 0 || n == 0)
         return;
     auto TransA = transpose_to_cblas(transa);
@@ -138,66 +148,96 @@ void zgemv(char transa, int m, int n, std::complex<double> alpha, const std::com
 }
 
 auto ssyev(char job, char uplo, int n, float *a, int lda, float *w, float *, int) -> int {
+    LabeledSection0();
+
     return LAPACKE_ssyev(LAPACK_ROW_MAJOR, job, uplo, n, a, lda, w);
 }
 
 auto dsyev(char job, char uplo, int n, double *a, int lda, double *w, double *, int) -> int {
+    LabeledSection0();
+
     return LAPACKE_dsyev(LAPACK_ROW_MAJOR, job, uplo, n, a, lda, w);
 }
 
 auto cheev(char job, char uplo, int n, std::complex<float> *a, int lda, float *w, std::complex<float> * /*work*/, int /*lwork*/,
            float * /*rwork*/) -> int {
+    LabeledSection0();
+
     return LAPACKE_cheev(LAPACK_ROW_MAJOR, job, uplo, n, reinterpret_cast<lapack_complex_float *>(a), lda, w);
 }
 
 auto zheev(char job, char uplo, int n, std::complex<double> *a, int lda, double *w, std::complex<double> * /*work*/, int /*lwork*/,
            double * /*rwork*/) -> int {
+    LabeledSection0();
+
     return LAPACKE_zheev(LAPACK_ROW_MAJOR, job, uplo, n, reinterpret_cast<lapack_complex_double *>(a), lda, w);
 }
 
 auto sgesv(int n, int nrhs, float *a, int lda, int *ipiv, float *b, int ldb) -> int {
+    LabeledSection0();
+
     return LAPACKE_sgesv(LAPACK_ROW_MAJOR, n, nrhs, a, lda, ipiv, b, ldb);
 }
 
 auto dgesv(int n, int nrhs, double *a, int lda, int *ipiv, double *b, int ldb) -> int {
+    LabeledSection0();
+
     return LAPACKE_dgesv(LAPACK_ROW_MAJOR, n, nrhs, a, lda, ipiv, b, ldb);
 }
 
 auto cgesv(int n, int nrhs, std::complex<float> *a, int lda, int *ipiv, std::complex<float> *b, int ldb) -> int {
+    LabeledSection0();
+
     return LAPACKE_cgesv(LAPACK_ROW_MAJOR, n, nrhs, reinterpret_cast<lapack_complex_float *>(a), lda, ipiv,
                          reinterpret_cast<lapack_complex_float *>(b), ldb);
 }
 
 auto zgesv(int n, int nrhs, std::complex<double> *a, int lda, int *ipiv, std::complex<double> *b, int ldb) -> int {
+    LabeledSection0();
+
     return LAPACKE_zgesv(LAPACK_ROW_MAJOR, n, nrhs, reinterpret_cast<lapack_complex_double *>(a), lda, ipiv,
                          reinterpret_cast<lapack_complex_double *>(b), ldb);
 }
 
 void sscal(int n, float alpha, float *vec, int inc) {
+    LabeledSection0();
+
     cblas_sscal(n, alpha, vec, inc);
 }
 
 void dscal(int n, double alpha, double *vec, int inc) {
+    LabeledSection0();
+
     cblas_dscal(n, alpha, vec, inc);
 }
 
 void cscal(int n, std::complex<float> alpha, std::complex<float> *vec, int inc) {
+    LabeledSection0();
+
     cblas_cscal(n, static_cast<const void *>(&alpha), static_cast<void *>(vec), inc);
 }
 
 void zscal(int n, std::complex<double> alpha, std::complex<double> *vec, int inc) {
+    LabeledSection0();
+
     cblas_zscal(n, static_cast<const void *>(&alpha), static_cast<void *>(vec), inc);
 }
 
 auto sdot(int n, const float *x, int incx, const float *y, int incy) -> double {
+    LabeledSection0();
+
     return cblas_sdot(n, x, incx, y, incy);
 }
 
 auto ddot(int n, const double *x, int incx, const double *y, int incy) -> double {
+    LabeledSection0();
+
     return cblas_ddot(n, x, incx, y, incy);
 }
 
 auto cdot(int n, const std::complex<float> *x, int incx, const std::complex<float> *y, int incy) -> std::complex<float> {
+    LabeledSection0();
+
     std::complex<float> result;
 
     cblas_cdotu_sub(n, static_cast<const void *>(x), incx, static_cast<const void *>(y), incy, static_cast<void *>(&result));
@@ -206,6 +246,8 @@ auto cdot(int n, const std::complex<float> *x, int incx, const std::complex<floa
 }
 
 auto zdot(int n, const std::complex<double> *x, int incx, const std::complex<double> *y, int incy) -> std::complex<double> {
+    LabeledSection0();
+
     std::complex<double> result;
 
     cblas_zdotu_sub(n, static_cast<const void *>(x), incx, static_cast<const void *>(y), incy, static_cast<void *>(&result));
@@ -214,22 +256,32 @@ auto zdot(int n, const std::complex<double> *x, int incx, const std::complex<dou
 }
 
 void saxpy(int n, float alpha_x, const float *x, int inc_x, float *y, int inc_y) {
+    LabeledSection0();
+
     cblas_saxpy(n, alpha_x, x, inc_x, y, inc_y);
 }
 
 void daxpy(int n, double alpha_x, const double *x, int inc_x, double *y, int inc_y) {
+    LabeledSection0();
+
     cblas_daxpy(n, alpha_x, x, inc_x, y, inc_y);
 }
 
 void caxpy(int n, std::complex<float> alpha_x, const std::complex<float> *x, int inc_x, std::complex<float> *y, int inc_y) {
+    LabeledSection0();
+
     cblas_caxpy(n, static_cast<const void *>(&alpha_x), static_cast<const void *>(x), inc_x, static_cast<void *>(y), inc_y);
 }
 
 void zaxpy(int n, std::complex<double> alpha_x, const std::complex<double> *x, int inc_x, std::complex<double> *y, int inc_y) {
+    LabeledSection0();
+
     cblas_zaxpy(n, static_cast<const void *>(&alpha_x), static_cast<const void *>(x), inc_x, static_cast<void *>(y), inc_y);
 }
 
 void dger(int m, int n, double alpha, const double *x, int inc_x, const double *y, int inc_y, double *a, int lda) {
+    LabeledSection0();
+
     if (m < 0) {
         throw std::runtime_error(fmt::format("einsums::backend::cblas::dger: m ({}) is less than zero.", m));
     } else if (n < 0) {
@@ -246,102 +298,144 @@ void dger(int m, int n, double alpha, const double *x, int inc_x, const double *
 }
 
 auto dgetrf(int m, int n, double *a, int lda, int *ipiv) -> int {
+    LabeledSection0();
+
     return LAPACKE_dgetrf(LAPACK_ROW_MAJOR, m, n, a, lda, ipiv);
 }
 
 auto dgetri(int n, double *a, int lda, const int *ipiv, double *, int) -> int {
+    LabeledSection0();
+
     return LAPACKE_dgetri(LAPACK_ROW_MAJOR, n, a, lda, (int *)ipiv);
 }
 
 auto dlange(char norm_type, int m, int n, const double *A, int lda, double *) -> double {
+    LabeledSection0();
+
     return LAPACKE_dlange(LAPACK_ROW_MAJOR, norm_type, m, n, A, lda);
 }
 
 auto sgesdd(char jobz, int m, int n, float *a, int lda, float *s, float *u, int ldu, float *vt, int ldvt) -> int {
+    LabeledSection0();
+
     return LAPACKE_sgesdd(LAPACK_ROW_MAJOR, jobz, m, n, a, lda, s, u, ldu, vt, ldvt);
 }
 
 auto dgesdd(char jobz, int m, int n, double *a, int lda, double *s, double *u, int ldu, double *vt, int ldvt) -> int {
+    LabeledSection0();
+
     return LAPACKE_dgesdd(LAPACK_ROW_MAJOR, jobz, m, n, a, lda, s, u, ldu, vt, ldvt);
 }
 
 auto cgesdd(char jobz, int m, int n, std::complex<float> *a, int lda, float *s, std::complex<float> *u, int ldu, std::complex<float> *vt,
             int ldvt) -> int {
+    LabeledSection0();
+
     return LAPACKE_cgesdd(LAPACK_ROW_MAJOR, jobz, m, n, reinterpret_cast<lapack_complex_float *>(a), lda, s,
                           reinterpret_cast<lapack_complex_float *>(u), ldu, reinterpret_cast<lapack_complex_float *>(vt), ldvt);
 }
 
 auto zgesdd(char jobz, int m, int n, std::complex<double> *a, int lda, double *s, std::complex<double> *u, int ldu,
             std::complex<double> *vt, int ldvt) -> int {
+    LabeledSection0();
+
     return LAPACKE_zgesdd(LAPACK_ROW_MAJOR, jobz, m, n, reinterpret_cast<lapack_complex_double *>(a), lda, s,
                           reinterpret_cast<lapack_complex_double *>(u), ldu, reinterpret_cast<lapack_complex_double *>(vt), ldvt);
 }
 
 auto sgees(char jobvs, int n, float *a, int lda, int *sdim, float *wr, float *wi, float *vs, int ldvs) -> int {
+    LabeledSection0();
+
     return LAPACKE_sgees(LAPACK_ROW_MAJOR, jobvs, 'N', nullptr, n, a, lda, sdim, wr, wi, vs, ldvs);
 }
 
 auto dgees(char jobvs, int n, double *a, int lda, int *sdim, double *wr, double *wi, double *vs, int ldvs) -> int {
+    LabeledSection0();
+
     return LAPACKE_dgees(LAPACK_ROW_MAJOR, jobvs, 'N', nullptr, n, a, lda, sdim, wr, wi, vs, ldvs);
 }
 
 auto strsyl(char trana, char tranb, int isgn, int m, int n, const float *a, int lda, const float *b, int ldb, float *c, int ldc,
             float *scale) -> int {
+    LabeledSection0();
+
     return LAPACKE_strsyl(LAPACK_ROW_MAJOR, trana, tranb, isgn, m, n, a, lda, b, ldb, c, ldc, scale);
 }
 
 auto dtrsyl(char trana, char tranb, int isgn, int m, int n, const double *a, int lda, const double *b, int ldb, double *c, int ldc,
             double *scale) -> int {
+    LabeledSection0();
+
     return LAPACKE_dtrsyl(LAPACK_ROW_MAJOR, trana, tranb, isgn, m, n, a, lda, b, ldb, c, ldc, scale);
 }
 
 auto ctrsyl(char trana, char tranb, int isgn, int m, int n, const std::complex<float> *a, int lda, const std::complex<float> *b, int ldb,
             std::complex<float> *c, int ldc, float *scale) -> int {
+    LabeledSection0();
+
     return LAPACKE_ctrsyl(LAPACK_ROW_MAJOR, trana, tranb, isgn, m, n, reinterpret_cast<const lapack_complex_float *>(a), lda,
                           reinterpret_cast<const lapack_complex_float *>(b), ldb, reinterpret_cast<lapack_complex_float *>(c), ldc, scale);
 }
 
 auto ztrsyl(char trana, char tranb, int isgn, int m, int n, const std::complex<double> *a, int lda, const std::complex<double> *b, int ldb,
             std::complex<double> *c, int ldc, double *scale) -> int {
+    LabeledSection0();
+
     return LAPACKE_ztrsyl(LAPACK_ROW_MAJOR, trana, tranb, isgn, m, n, reinterpret_cast<const lapack_complex_double *>(a), lda,
                           reinterpret_cast<const lapack_complex_double *>(b), ldb, reinterpret_cast<lapack_complex_double *>(c), ldc,
                           scale);
 }
 
 auto sgeqrf(int m, int n, float *a, int lda, float *tau) -> int {
+    LabeledSection0();
+
     return LAPACKE_sgeqrf(LAPACK_ROW_MAJOR, m, n, a, lda, tau);
 }
 
 auto dgeqrf(int m, int n, double *a, int lda, double *tau) -> int {
+    LabeledSection0();
+
     return LAPACKE_dgeqrf(LAPACK_ROW_MAJOR, m, n, a, lda, tau);
 }
 
 auto cgeqrf(int m, int n, std::complex<float> *a, int lda, std::complex<float> *tau) -> int {
+    LabeledSection0();
+
     return LAPACKE_cgeqrf(LAPACK_ROW_MAJOR, m, n, reinterpret_cast<lapack_complex_float *>(a), lda,
                           reinterpret_cast<lapack_complex_float *>(tau));
 }
 
 auto zgeqrf(int m, int n, std::complex<double> *a, int lda, std::complex<double> *tau) -> int {
+    LabeledSection0();
+
     return LAPACKE_zgeqrf(LAPACK_ROW_MAJOR, m, n, reinterpret_cast<lapack_complex_double *>(a), lda,
                           reinterpret_cast<lapack_complex_double *>(tau));
 }
 
 auto sorgqr(int m, int n, int k, float *a, int lda, const float *tau) -> int {
+    LabeledSection0();
+
     return LAPACKE_sorgqr(LAPACK_ROW_MAJOR, m, n, k, a, lda, tau);
 }
 
 auto dorgqr(int m, int n, int k, double *a, int lda, const double *tau) -> int {
+    LabeledSection0();
+
     return LAPACKE_dorgqr(LAPACK_ROW_MAJOR, m, n, k, a, lda, tau);
 }
 
 auto cungqr(int m, int n, int k, std::complex<float> *a, int lda, const std::complex<float> *tau) -> int {
+    LabeledSection0();
+
     return LAPACKE_cungqr(LAPACK_ROW_MAJOR, m, n, k, reinterpret_cast<lapack_complex_float *>(a), lda,
                           reinterpret_cast<const lapack_complex_float *>(tau));
 }
 
 auto zungqr(int m, int n, int k, std::complex<double> *a, int lda, const std::complex<double> *tau) -> int {
+    LabeledSection0();
+
     return LAPACKE_zungqr(LAPACK_ROW_MAJOR, m, n, k, reinterpret_cast<lapack_complex_double *>(a), lda,
                           reinterpret_cast<const lapack_complex_double *>(tau));
 }
 
-} // namespace einsums::backend::cblas
+END_EINSUMS_NAMESPACE_CPP(einsums::backend::cblas)
