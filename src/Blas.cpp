@@ -148,6 +148,24 @@ void zaxpy(eint n, std::complex<double> alpha_x, const std::complex<double> *x, 
     ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::zaxpy(n, alpha_x, x, inc_x, y, inc_y);
 }
 
+void saxpby(eint n, float alpha_x, const float *x, eint inc_x, float b, float *y, eint inc_y) {
+    ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::saxpby(n, alpha_x, x, inc_x, b, y, inc_y);
+}
+
+void daxpby(eint n, double alpha_x, const double *x, eint inc_x, double b, double *y, eint inc_y) {
+    ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::daxpby(n, alpha_x, x, inc_x, b, y, inc_y);
+}
+
+void caxpby(eint n, std::complex<float> alpha_x, const std::complex<float> *x, eint inc_x, std::complex<float> b, std::complex<float> *y,
+            eint inc_y) {
+    ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::caxpby(n, alpha_x, x, inc_x, b, y, inc_y);
+}
+
+void zaxpby(eint n, std::complex<double> alpha_x, const std::complex<double> *x, eint inc_x, std::complex<double> b,
+            std::complex<double> *y, eint inc_y) {
+    ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::zaxpby(n, alpha_x, x, inc_x, b, y, inc_y);
+}
+
 void sger(eint m, eint n, float alpha, const float *x, eint inc_x, const float *y, eint inc_y, float *a, eint lda) {
     ::einsums::backend::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::sger(m, n, alpha, x, inc_x, y, inc_y, a, lda);
 }
