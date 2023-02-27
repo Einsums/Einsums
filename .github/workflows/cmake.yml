@@ -13,6 +13,7 @@ jobs:
       matrix:
         build_type: [ Release, Debug ]
         os: [ ubuntu-latest, macos-latest ]
+        hptt: [ HPTT=ON, HPTT=OFF ]
     name: Build
     runs-on: ubuntu-latest
 
@@ -36,7 +37,7 @@ jobs:
         echo "FFTW_ROOT=$(brew --prefix fftw)" >> $GITHUB_ENV
 
     - name: Configure CMake
-      run: cmake -G Ninja -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DEINSUMS_SHOW_WARNING=OFF
+      run: cmake -G Ninja -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DEINSUMS_SHOW_WARNING=OFF -DEINSUMS_USE_${{matrix.hptt}}
 
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
