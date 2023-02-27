@@ -1,5 +1,6 @@
 #include "Vendor.hpp"
 
+#include "einsums/LinearAlgebra.hpp"
 #include "einsums/Print.hpp"
 #include "einsums/Section.hpp"
 #include "einsums/_Common.hpp"
@@ -357,6 +358,32 @@ void zaxpy(int n, std::complex<double> alpha_x, const std::complex<double> *x, i
     LabeledSection0();
 
     FC_GLOBAL(zaxpy, ZAXPY)(&n, &alpha_x, x, &inc_x, y, &inc_y);
+}
+
+void saxpby(const int n, const float a, const float *x, const int incx, const float b, float *y, const int incy) {
+    LabeledSection0();
+    sscal(n, b, y, incy);
+    saxpy(n, a, x, incx, y, incy);
+}
+
+void daxpby(const int n, const double a, const double *x, const int incx, const double b, double *y, const int incy) {
+    LabeledSection0();
+    dscal(n, b, y, incy);
+    daxpy(n, a, x, incx, y, incy);
+}
+
+void caxpby(const int n, const std::complex<float> a, const std::complex<float> *x, const int incx, const std::complex<float> b,
+            std::complex<float> *y, const int incy) {
+    LabeledSection0();
+    cscal(n, b, y, incy);
+    caxpy(n, a, x, incx, y, incy);
+}
+
+void zaxpby(const int n, const std::complex<double> a, const std::complex<double> *x, const int incx, const std::complex<double> b,
+            std::complex<double> *y, const int incy) {
+    LabeledSection0();
+    zscal(n, b, y, incy);
+    zaxpy(n, a, x, incx, y, incy);
 }
 
 namespace {

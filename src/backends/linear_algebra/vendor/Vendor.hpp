@@ -29,6 +29,13 @@ void cgemv(char transa, int m, int n, std::complex<float> alpha, const std::comp
 void zgemv(char transa, int m, int n, std::complex<double> alpha, const std::complex<double> *a, int lda, const std::complex<double> *x,
            int incx, std::complex<double> beta, std::complex<double> *y, int incy);
 
+void saxpby(const int n, const float a, const float *x, const int incx, const float b, float *y, const int incy);
+void daxpby(const int n, const double a, const double *x, const int incx, const double b, double *y, const int incy);
+void caxpby(const int n, const std::complex<float> a, const std::complex<float> *x, const int incx, const std::complex<float> b,
+            std::complex<float> *y, const int incy);
+void zaxpby(const int n, const std::complex<double> a, const std::complex<double> *x, const int incx, const std::complex<double> b,
+            std::complex<double> *y, const int incy);
+
 /*!
  * Performs symmetric matrix diagonalization.
  */
