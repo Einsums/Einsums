@@ -1173,9 +1173,7 @@ auto sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<
     } else
 #endif
         if constexpr (std::is_same_v<decltype(A_indices), decltype(C_indices)>) {
-        if (C_prefactor != T{1.0})
-            linear_algebra::scale(C_prefactor, C);
-        linear_algebra::axpy(A_prefactor, A, C);
+        linear_algebra::axpby(A_prefactor, A, C_prefactor, C);
     } else {
         auto view = std::apply(ranges::views::cartesian_product, target_dims);
 

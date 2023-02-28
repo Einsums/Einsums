@@ -284,6 +284,14 @@ auto axpy(T alpha, const XType<T, Rank> &X, YType<T, Rank> *Y)
     blas::axpy(X.dim(0) * X.stride(0), alpha, X.data(), 1, Y->data(), 1);
 }
 
+template <template <typename, size_t> typename XType, template <typename, size_t> typename YType, typename T, size_t Rank>
+auto axpby(T alpha, const XType<T, Rank> &X, T beta, YType<T, Rank> *Y)
+    -> std::enable_if_t<is_incore_rank_tensor_v<XType<T, Rank>, Rank, T> && is_incore_rank_tensor_v<YType<T, Rank>, Rank, T>> {
+    LabeledSection0();
+
+    blas::axpby(X.dim(0) * X.stride(0), alpha, X.data(), 1, beta, Y->data(), 1);
+}
+
 template <template <typename, size_t> typename XYType, size_t XYRank, template <typename, size_t> typename AType, typename T, size_t ARank>
 auto ger(T alpha, const XYType<T, XYRank> &X, const XYType<T, XYRank> &Y, AType<T, ARank> *A)
     -> std::enable_if_t<is_incore_rank_tensor_v<XYType<T, XYRank>, 1, T> && is_incore_rank_tensor_v<AType<T, ARank>, 2, T>> {
