@@ -2,17 +2,21 @@
 
 #include "einsums/LinearAlgebra.hpp"
 #include "einsums/OpenMP.h"
+#include "einsums/Section.hpp"
 #include "einsums/Tensor.hpp"
 #include "einsums/TensorAlgebra.hpp"
 #include "einsums/Utilities.hpp"
+#include "einsums/_Common.hpp"
 
 #include <cmath>
 #include <functional>
 
-namespace einsums::decomposition {
+BEGIN_EINSUMS_NAMESPACE_CPP(einsums::decomposition)
 
 template <size_t TRank>
 auto validate_cp_rank(const Dim<TRank> shape, const std::string &rounding = "round") -> size_t {
+    LabeledSection1(fmt::format("<TRank={}>", TRank));
+
     using rounding_func_t = double (*)(double);
     rounding_func_t rounding_func;
 
@@ -37,6 +41,8 @@ auto validate_cp_rank(const Dim<TRank> shape, const std::string &rounding = "rou
  */
 template <template <typename, size_t> typename TTensor, size_t TRank, typename TType = double>
 auto norm(const TTensor<TType, TRank> &tensor) -> TType {
+    LabeledSection0();
+
     TType val = 0.0;
     auto target_dims = get_dim_ranges<TRank>(tensor);
 
@@ -53,6 +59,8 @@ auto norm(const TTensor<TType, TRank> &tensor) -> TType {
  */
 template <template <typename, size_t> typename TTensor, size_t TRank, typename TType = double>
 auto rmsd(const TTensor<TType, TRank> &tensor1, const TTensor<TType, TRank> &tensor2) -> TType {
+    LabeledSection0();
+
     TType diff = 0.0;
 
     size_t nelem = 1;
@@ -77,6 +85,7 @@ auto rmsd(const TTensor<TType, TRank> &tensor1, const TTensor<TType, TRank> &ten
  */
 template <template <typename, size_t> typename TTensor, size_t TRank, typename TType = double>
 auto weight_tensor(const TTensor<TType, TRank> &tensor, const TTensor<TType, 1> &weights) -> Tensor<TType, TRank> {
+    LabeledSection0();
 
     if (tensor.dim(0) != weights.dim(0)) {
         println_abort("The first dimension of the tensor and the dimension of the weight DO NOT match");
@@ -107,6 +116,8 @@ auto weight_tensor(const TTensor<TType, TRank> &tensor, const TTensor<TType, 1> 
  */
 template <size_t TRank, typename TType>
 auto parafac_reconstruct(const std::vector<Tensor<TType, 2>> &factors) -> Tensor<TType, TRank> {
+    LabeledSection0();
+
     size_t rank = 0;
     Dim<TRank> dims;
 
@@ -140,6 +151,8 @@ auto parafac_reconstruct(const std::vector<Tensor<TType, 2>> &factors) -> Tensor
 
 template <size_t TRank, typename TType>
 auto initialize_cp(std::vector<Tensor<TType, 2>> &folds, size_t rank) -> std::vector<Tensor<TType, 2>> {
+    LabeledSection0();
+
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
 
@@ -206,6 +219,7 @@ auto initialize_cp(std::vector<Tensor<TType, 2>> &folds, size_t rank) -> std::ve
 template <template <typename, size_t> typename TTensor, size_t TRank, typename TType = double>
 auto parafac(const TTensor<TType, TRank> &tensor, size_t rank, int n_iter_max = 100, double tolerance = 1.e-8)
     -> std::vector<Tensor<TType, 2>> {
+    LabeledSection0();
 
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
@@ -302,6 +316,7 @@ auto parafac(const TTensor<TType, TRank> &tensor, size_t rank, int n_iter_max = 
 template <template <typename, size_t> typename TTensor, size_t TRank, typename TType = double>
 auto weighted_parafac(const TTensor<TType, TRank> &tensor, const TTensor<TType, 1> &weights, size_t rank, int n_iter_max = 100,
                       double tolerance = 1.e-8) -> std::vector<Tensor<TType, 2>> {
+    LabeledSection0();
 
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
@@ -409,6 +424,7 @@ auto weighted_parafac(const TTensor<TType, TRank> &tensor, const TTensor<TType, 
 
 template <template <typename, size_t> typename TTensor, size_t TRank, typename TType = double>
 auto tucker_reconstruct(const TTensor<TType, TRank> &g_tensor, const std::vector<TTensor<TType, 2>> &factors) {
+    LabeledSection0();
 
     // Dimension workspace for temps
     Dim<TRank> dims_buffer = g_tensor.dims();
@@ -453,6 +469,7 @@ auto tucker_reconstruct(const TTensor<TType, TRank> &g_tensor, const std::vector
 
 template <size_t TRank, typename TType = double>
 auto initialize_tucker(std::vector<Tensor<TType, 2>> &folds, std::vector<size_t> &ranks) -> std::vector<Tensor<TType, 2>> {
+    LabeledSection0();
 
     std::vector<Tensor<TType, 2>> factors;
 
@@ -486,6 +503,7 @@ template <template <typename, size_t> typename TTensor, size_t TRank, typename T
 auto tucker_ho_svd(const TTensor<TType, TRank> &tensor, std::vector<size_t> &ranks,
                    const std::vector<Tensor<TType, 2>> &folds = std::vector<Tensor<TType, 2>>())
     -> std::tuple<Tensor<TType, TRank>, std::vector<Tensor<TType, 2>>> {
+    LabeledSection0();
 
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
@@ -551,6 +569,7 @@ auto tucker_ho_svd(const TTensor<TType, TRank> &tensor, std::vector<size_t> &ran
 template <template <typename, size_t> typename TTensor, size_t TRank, typename TType = double>
 auto tucker_ho_oi(const TTensor<TType, TRank> &tensor, std::vector<size_t> &ranks, int n_iter_max = 100, double tolerance = 1.e-8)
     -> std::tuple<TTensor<TType, TRank>, std::vector<Tensor<TType, 2>>> {
+    LabeledSection0();
 
     // Use HO SVD as a starting guess
     auto ho_svd_guess = tucker_ho_svd(tensor, ranks);
@@ -633,4 +652,4 @@ auto tucker_ho_oi(const TTensor<TType, TRank> &tensor, std::vector<size_t> &rank
     return std::make_tuple(g_tensor, factors);
 }
 
-} // namespace einsums::decomposition
+END_EINSUMS_NAMESPACE_CPP(einsums::decomposition)

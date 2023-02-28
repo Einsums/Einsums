@@ -17,7 +17,6 @@
 #include <type_traits>
 
 BEGIN_EINSUMS_NAMESPACE_CPP(einsums::linear_algebra)
-// namespace einsums::linear_algebra {
 
 template <template <typename, size_t> typename AType, typename ADataType, size_t ARank>
 auto sum_square(const AType<ADataType, ARank> &a, remove_complex_t<ADataType> *scale, remove_complex_t<ADataType> *sumsq) ->
@@ -39,7 +38,6 @@ auto gemm(const T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const
     auto m = C->dim(0), n = C->dim(1), k = TransA ? A.dim(0) : A.dim(1);
     auto lda = A.stride(0), ldb = B.stride(0), ldc = C->stride(0);
 
-    Section section(fmt::format("gemm<{}, {}>", TransA, TransB));
     blas::gemm(TransA ? 't' : 'n', TransB ? 't' : 'n', m, n, k, alpha, A.data(), lda, B.data(), ldb, beta, C->data(), ldc);
 }
 

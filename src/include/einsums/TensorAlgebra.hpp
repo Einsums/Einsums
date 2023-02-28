@@ -7,6 +7,7 @@
 #include "Section.hpp"
 #include "Tensor.hpp"
 #include "_Index.hpp"
+#include "einsums/_Common.hpp"
 #include "einsums/_Compiler.hpp"
 
 #include <cmath>
@@ -37,7 +38,7 @@
 #undef I
 #endif
 
-namespace einsums::tensor_algebra {
+BEGIN_EINSUMS_NAMESPACE_CPP(einsums::tensor_algebra)
 
 namespace detail {
 
@@ -302,7 +303,7 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
                               CType<CDataType, CRank> *C,
                               const std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> AB_prefactor,
                               const AType<ADataType, ARank> &A, const BType<BDataType, BRank> &B) {
-    timer::push("generic algorithm");
+    LabeledSection0();
 
     auto view = std::apply(ranges::views::cartesian_product, target_dims);
 
@@ -397,7 +398,6 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
             target_value += sum;
         }
     }
-    timer::pop();
 }
 
 template <bool OnlyUseGenericAlgorithm, template <typename, size_t> typename AType, typename ADataType, size_t ARank,
@@ -814,7 +814,7 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
                         std::is_arithmetic_v<U>> {
     using ABDataType = std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType>;
 
-    Section section(FP_ZERO != std::fpclassify(UC_prefactor)
+    LabeledSection1(FP_ZERO != std::fpclassify(UC_prefactor)
                         ? fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{} + {} "{}"{})", C->name(), print_tuple_no_type(C_indices),
                                       UAB_prefactor, A.name(), print_tuple_no_type(A_indices), B.name(), print_tuple_no_type(B_indices),
                                       UC_prefactor, C->name(), print_tuple_no_type(C_indices))
@@ -1138,11 +1138,11 @@ auto sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<
                         sizeof...(CIndices) == sizeof...(AIndices) && sizeof...(CIndices) == CRank && sizeof...(AIndices) == ARank &&
                         std::is_arithmetic_v<U>> {
 
-    Section section{FP_ZERO != std::fpclassify(UC_prefactor)
+    LabeledSection1(FP_ZERO != std::fpclassify(UC_prefactor)
                         ? fmt::format(R"(sort: "{}"{} = {} "{}"{} + {} "{}"{})", C->name(), print_tuple_no_type(C_indices), UA_prefactor,
                                       A.name(), print_tuple_no_type(A_indices), UC_prefactor, C->name(), print_tuple_no_type(C_indices))
                         : fmt::format(R"(sort: "{}"{} = {} "{}"{})", C->name(), print_tuple_no_type(C_indices), UA_prefactor, A.name(),
-                                      print_tuple_no_type(A_indices))};
+                                      print_tuple_no_type(A_indices)));
 
     const T C_prefactor = UC_prefactor;
     const T A_prefactor = UA_prefactor;
@@ -1224,7 +1224,8 @@ auto sort(const std::tuple<CIndices...> &C_indices, SmartPointerC *C, const std:
 template <template <typename, size_t> typename CType, size_t CRank, typename UnaryOperator, typename T = double>
 auto element_transform(CType<T, CRank> *C, UnaryOperator unary_opt)
     -> std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<T, CRank>, CType<T, CRank>>> {
-    Section section(fmt::format("element transform: {}", C->name()));
+    LabeledSection0();
+
     auto target_dims = get_dim_ranges<CRank>(*C);
     auto view = std::apply(ranges::views::cartesian_product, target_dims);
 
@@ -1243,7 +1244,8 @@ auto element_transform(SmartPtr *C, UnaryOperator unary_opt) -> std::enable_if_t
 template <template <typename, size_t> typename CType, template <typename, size_t> typename... MultiTensors, size_t Rank,
           typename MultiOperator, typename T = double>
 auto element(MultiOperator multi_opt, CType<T, Rank> *C, MultiTensors<T, Rank> &...tensors) {
-    Section section("element");
+    LabeledSection0();
+
     auto target_dims = get_dim_ranges<Rank>(*C);
     auto view = std::apply(ranges::views::cartesian_product, target_dims);
 
@@ -1299,7 +1301,7 @@ constexpr auto get_n(const std::tuple<List...> &) {
  */
 template <unsigned int mode, template <typename, size_t> typename CType, size_t CRank, typename T = double>
 auto unfold(const CType<T, CRank> &source) -> std::enable_if_t<std::is_same_v<Tensor<T, CRank>, CType<T, CRank>>, Tensor<T, 2>> {
-    Section section{fmt::format("mode-{} unfold on {} threads", mode, omp_get_max_threads())};
+    LabeledSection1(fmt::format("mode-{} unfold on {} threads", mode, omp_get_max_threads()));
 
     Dim<2> target_dims;
     target_dims[0] = source.dim(mode);
@@ -1363,6 +1365,7 @@ auto khatri_rao(const std::tuple<AIndices...> &, const AType<T, ARank> &A, const
     -> std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<T, ARank>, AType<T, ARank>> &&
                             std::is_base_of_v<::einsums::detail::TensorBase<T, BRank>, BType<T, BRank>>,
                         Tensor<T, 2>> {
+    LabeledSection0();
 
     constexpr auto A_indices = std::tuple<AIndices...>();
     constexpr auto B_indices = std::tuple<BIndices...>();
@@ -1405,4 +1408,4 @@ auto khatri_rao(const std::tuple<AIndices...> &, const AType<T, ARank> &A, const
     return Tensor<T, 2>{std::move(result), "KR product", -1, detail::product_dims(A_common_position, A)};
 }
 
-} // namespace einsums::tensor_algebra
+END_EINSUMS_NAMESPACE_CPP(einsums::tensor_algebra)

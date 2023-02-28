@@ -1,15 +1,19 @@
 #pragma once
 
+#include "einsums/Section.hpp"
 #include "einsums/Tensor.hpp"
+#include "einsums/_Common.hpp"
 #include "einsums/_Compiler.hpp"
 
 #include <algorithm>
 
-namespace einsums::element_operations {
+BEGIN_EINSUMS_NAMESPACE_CPP(einsums::element_operations)
 
-namespace detail {
+BEGIN_EINSUMS_NAMESPACE_CPP(detail)
 template <typename vector, typename Functor>
 void omp_loop(vector &data, Functor functor) {
+    LabeledSection0();
+
     // TODO: This only works for Tensors not their views because we assume data is a std::vector
 #pragma omp parallel
     {
@@ -24,10 +28,12 @@ void omp_loop(vector &data, Functor functor) {
         }
     }
 }
-} // namespace detail
+END_EINSUMS_NAMESPACE_CPP(detail)
 
 template <template <typename, size_t> typename TensorType, typename T, size_t Rank>
 auto sum(const TensorType<T, Rank> &tensor) -> T {
+    LabeledSection0();
+
     // TODO: This currently only works with Tensor's not TensorViews. And it needs to be OpenMP'd
     T result = std::accumulate(tensor.vector_data().begin(), tensor.vector_data().end(), T{0});
     return result;
@@ -35,18 +41,22 @@ auto sum(const TensorType<T, Rank> &tensor) -> T {
 
 template <template <typename, size_t> typename TensorType, typename T, size_t Rank>
 auto max(const TensorType<T, Rank> &tensor) -> T {
+    LabeledSection0();
+
     // TODO: This currently only works with Tensor's not TensorViews. And it needs to be OpenMP'd
     auto result = std::max_element(tensor.vector_data().begin(), tensor.vector_data().end());
     return *result;
 }
 
-namespace new_tensor {
+BEGIN_EINSUMS_NAMESPACE_CPP(new_tensor)
 
 using einsums::element_operations::max; // nolint
 using einsums::element_operations::sum; // nolint
 
 template <template <typename, size_t> typename TensorType, typename T, size_t Rank>
 auto abs(const TensorType<T, Rank> &tensor) -> Tensor<T, Rank> {
+    LabeledSection0();
+
     auto result = create_tensor_like(tensor);
     result = tensor;
 
@@ -57,6 +67,8 @@ auto abs(const TensorType<T, Rank> &tensor) -> Tensor<T, Rank> {
 
 template <template <typename, size_t> typename TensorType, typename T, size_t Rank>
 auto invert(const TensorType<T, Rank> &tensor) -> Tensor<T, Rank> {
+    LabeledSection0();
+
     auto result = create_tensor_like(tensor);
     result = tensor;
     auto &data = result.vector_data();
@@ -69,6 +81,8 @@ auto invert(const TensorType<T, Rank> &tensor) -> Tensor<T, Rank> {
 
 template <template <typename, size_t> typename TensorType, typename T, size_t Rank>
 auto exp(const TensorType<T, Rank> &tensor) -> Tensor<T, Rank> {
+    LabeledSection0();
+
     auto result = create_tensor_like(tensor);
     result = tensor;
     auto &data = result.vector_data();
@@ -80,6 +94,8 @@ auto exp(const TensorType<T, Rank> &tensor) -> Tensor<T, Rank> {
 
 template <template <typename, size_t> typename TensorType, typename T, size_t Rank>
 auto scale(const T &scale, const TensorType<T, Rank> &tensor) -> Tensor<T, Rank> {
+    LabeledSection0();
+
     auto result = create_tensor_like(tensor);
     result = tensor;
     auto &data = result.vector_data();
@@ -89,5 +105,5 @@ auto scale(const T &scale, const TensorType<T, Rank> &tensor) -> Tensor<T, Rank>
     return result;
 }
 
-} // namespace new_tensor
-} // namespace einsums::element_operations
+END_EINSUMS_NAMESPACE_CPP(new_tensor)
+END_EINSUMS_NAMESPACE_CPP(einsums::element_operations)

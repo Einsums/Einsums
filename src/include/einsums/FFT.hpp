@@ -1,6 +1,8 @@
 #pragma once
 
+#include "einsums/Section.hpp"
 #include "einsums/Tensor.hpp"
+#include "einsums/_Common.hpp"
 #include "einsums/_Export.hpp"
 
 namespace einsums::fft {
