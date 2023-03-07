@@ -1,14 +1,15 @@
 cmake_minimum_required(VERSION 3.20)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-include(FeatureSummary)
 include(EinsumsBranding)
-include(EinsumsAPI)
 
 project(einsums
     VERSION ${EINSUMS_VERSION}
     LANGUAGES C CXX
 )
+
+include(FeatureSummary)
+include(EinsumsAPI)
 
 # Force C++ standard globally, do not fall back, do not use compiler extensions
 set(CMAKE_CXX_STANDARD 17)
