@@ -6,7 +6,7 @@
 
 #include <mkl_dfti.h>
 
-BEGIN_EINSUMS_NAMESPACE_CPP(einsums::backend::mkl)
+BEGIN_EINSUMS_NAMESPACE_CPP(einsums::backend::fft::mkl)
 
 namespace {
 inline void verify(MKL_LONG status) {
@@ -31,7 +31,7 @@ void scfft(const Tensor<float, 1> &a, Tensor<std::complex<float>, 1> *result) {
     verify(DftiSetValue(handle, DFTI_CONJUGATE_EVEN_STORAGE, DFTI_COMPLEX_COMPLEX));
     verify(DftiCommitDescriptor(handle));
 
-    auto *x_real = const_cast<float *>(a.data());
+    auto *x_real  = const_cast<float *>(a.data());
     auto *x_cmplx = (MKL_Complex8 *)result->data();
 
     verify(DftiComputeForward(handle, x_real, x_cmplx));
@@ -49,7 +49,7 @@ void ccfft(const Tensor<std::complex<float>, 1> &a, Tensor<std::complex<float>, 
     verify(DftiSetValue(handle, DFTI_CONJUGATE_EVEN_STORAGE, DFTI_COMPLEX_COMPLEX));
     verify(DftiCommitDescriptor(handle));
 
-    auto *x_input = reinterpret_cast<MKL_Complex8 *>(const_cast<std::complex<float> *>(a.data()));
+    auto *x_input  = reinterpret_cast<MKL_Complex8 *>(const_cast<std::complex<float> *>(a.data()));
     auto *x_output = reinterpret_cast<MKL_Complex8 *>(result->data());
 
     verify(DftiComputeForward(handle, x_input, x_output));
@@ -67,7 +67,7 @@ void dzfft(const Tensor<double, 1> &a, Tensor<std::complex<double>, 1> *result) 
     verify(DftiSetValue(handle, DFTI_CONJUGATE_EVEN_STORAGE, DFTI_COMPLEX_COMPLEX));
     verify(DftiCommitDescriptor(handle));
 
-    auto *x_real = const_cast<double *>(a.data());
+    auto *x_real  = const_cast<double *>(a.data());
     auto *x_cmplx = (MKL_Complex16 *)result->data();
 
     verify(DftiComputeForward(handle, x_real, x_cmplx));
@@ -85,7 +85,7 @@ void zzfft(const Tensor<std::complex<double>, 1> &a, Tensor<std::complex<double>
     verify(DftiSetValue(handle, DFTI_CONJUGATE_EVEN_STORAGE, DFTI_COMPLEX_COMPLEX));
     verify(DftiCommitDescriptor(handle));
 
-    auto *x_input = reinterpret_cast<MKL_Complex16 *>(const_cast<std::complex<double> *>(a.data()));
+    auto *x_input  = reinterpret_cast<MKL_Complex16 *>(const_cast<std::complex<double> *>(a.data()));
     auto *x_output = reinterpret_cast<MKL_Complex16 *>(result->data());
 
     verify(DftiComputeForward(handle, x_input, x_output));
@@ -110,7 +110,7 @@ void csifft(const Tensor<std::complex<float>, 1> &a, Tensor<float, 1> *result) {
     verify(DftiSetValue(handle, DFTI_CONJUGATE_EVEN_STORAGE, DFTI_COMPLEX_COMPLEX));
     verify(DftiCommitDescriptor(handle));
 
-    auto *x_real = const_cast<float *>(result->data());
+    auto *x_real  = const_cast<float *>(result->data());
     auto *x_cmplx = (MKL_Complex8 *)a.data();
 
     verify(DftiComputeBackward(handle, x_cmplx, x_real));
@@ -128,7 +128,7 @@ void zdifft(const Tensor<std::complex<double>, 1> &a, Tensor<double, 1> *result)
     verify(DftiSetValue(handle, DFTI_CONJUGATE_EVEN_STORAGE, DFTI_COMPLEX_COMPLEX));
     verify(DftiCommitDescriptor(handle));
 
-    auto *x_real = const_cast<double *>(result->data());
+    auto *x_real  = const_cast<double *>(result->data());
     auto *x_cmplx = (MKL_Complex16 *)a.data();
 
     verify(DftiComputeBackward(handle, x_cmplx, x_real));
@@ -172,4 +172,4 @@ void zzifft(const Tensor<std::complex<double>, 1> &a, Tensor<std::complex<double
     DftiFreeDescriptor(&handle);
 }
 
-END_EINSUMS_NAMESPACE_CPP(einsums::backend::mkl)
+END_EINSUMS_NAMESPACE_CPP(einsums::backend::fft::mkl)

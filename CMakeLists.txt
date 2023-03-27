@@ -51,6 +51,11 @@ message(STATUS "${CMAKE_CXX_COMPILER_ID} flags: ${HOST_FLAGS}")
 include(cmake/FindITTNOTIFY.cmake)
 # include(cmake/FindIntelSYCL.cmake)
 
+find_package(MPI)
+if (TARGET MPI::MPI_CXX)
+    set(HDF5_PREFER_PARALLEL True)
+endif()
+
 find_package(MKL CONFIG)
 if (TARGET MKL::MKL)
     add_library(BLAS::BLAS ALIAS MKL::MKL)

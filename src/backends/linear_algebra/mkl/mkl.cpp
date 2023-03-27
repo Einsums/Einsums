@@ -10,7 +10,7 @@
 #include <mkl_lapacke.h>
 #include <stdexcept>
 
-BEGIN_EINSUMS_NAMESPACE_CPP(einsums::backend::mkl)
+BEGIN_EINSUMS_NAMESPACE_CPP(einsums::backend::linear_algebra::mkl)
 
 namespace {
 auto mkl_interface() -> std::string {
@@ -397,8 +397,8 @@ auto zgetrf(const eint m, const eint n, std::complex<double> *a, const eint lda,
 auto sgetri(const eint n, float *a, const eint lda, const eint *ipiv) -> eint {
     LabeledSection1(mkl_interface());
 
-    eint info{0};
-    eint lwork = n * 64;
+    eint               info{0};
+    eint               lwork = n * 64;
     std::vector<float> work(lwork);
     ::sgetri(&n, a, &lda, (eint *)ipiv, work.data(), &lwork, &info);
     return info;
@@ -407,8 +407,8 @@ auto sgetri(const eint n, float *a, const eint lda, const eint *ipiv) -> eint {
 auto dgetri(const eint n, double *a, const eint lda, const eint *ipiv) -> eint {
     LabeledSection1(mkl_interface());
 
-    eint info{0};
-    eint lwork = n * 64;
+    eint                info{0};
+    eint                lwork = n * 64;
     std::vector<double> work(lwork);
     ::dgetri(&n, a, &lda, (eint *)ipiv, work.data(), &lwork, &info);
     return info;
@@ -417,8 +417,8 @@ auto dgetri(const eint n, double *a, const eint lda, const eint *ipiv) -> eint {
 auto cgetri(const eint n, std::complex<float> *a, const eint lda, const eint *ipiv) -> eint {
     LabeledSection1(mkl_interface());
 
-    eint info{0};
-    eint lwork = n * 64;
+    eint                             info{0};
+    eint                             lwork = n * 64;
     std::vector<std::complex<float>> work(lwork);
     ::cgetri(&n, reinterpret_cast<MKL_Complex8 *>(a), &lda, (eint *)ipiv, reinterpret_cast<MKL_Complex8 *>(work.data()), &lwork, &info);
     return info;
@@ -427,8 +427,8 @@ auto cgetri(const eint n, std::complex<float> *a, const eint lda, const eint *ip
 auto zgetri(const eint n, std::complex<double> *a, const eint lda, const eint *ipiv) -> eint {
     LabeledSection1(mkl_interface());
 
-    eint info{0};
-    eint lwork = n * 64;
+    eint                              info{0};
+    eint                              lwork = n * 64;
     std::vector<std::complex<double>> work(lwork);
     ::zgetri(&n, reinterpret_cast<MKL_Complex16 *>(a), &lda, (eint *)ipiv, reinterpret_cast<MKL_Complex16 *>(work.data()), &lwork, &info);
     return info;
@@ -595,4 +595,4 @@ auto zungqr(eint m, eint n, eint k, std::complex<double> *a, eint lda, const std
                           reinterpret_cast<const lapack_complex_double *>(tau));
 }
 
-END_EINSUMS_NAMESPACE_CPP(einsums::backend::mkl)
+END_EINSUMS_NAMESPACE_CPP(einsums::backend::linear_algebra::mkl)

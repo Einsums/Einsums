@@ -12,7 +12,7 @@
 
 #include <cmath>
 #if defined(EINSUMS_USE_HPTT)
-#include "hptt.h"
+#    include "hptt.h"
 #endif
 #include "range/v3/view/cartesian_product.hpp"
 
@@ -28,17 +28,17 @@
 #include <utility>
 
 #if defined(EINSUMS_USE_CATCH2)
-#include <catch2/catch.hpp>
+#    include <catch2/catch.hpp>
 #endif
 
 // HPTT includes <complex> which defined I as a shorthand for complex values.
 // This causes issues with einsums since we define I to be a useable index
 // for the user. Undefine the one defined in <complex> here.
 #if defined(I)
-#undef I
+#    undef I
 #endif
 
-BEGIN_EINSUMS_NAMESPACE_CPP(einsums::tensor_algebra)
+BEGIN_EINSUMS_NAMESPACE_HPP(einsums::tensor_algebra)
 
 namespace detail {
 
@@ -152,9 +152,9 @@ auto get_dim_for(const TensorType<T, Rank> &tensor, const std::tuple<Args...> &a
 template <typename AIndex, typename... TargetCombination, typename... TargetPositionInC, typename... LinkCombination,
           typename... LinkPositionInLink>
 auto construct_index(const std::tuple<TargetCombination...> &target_combination, const std::tuple<TargetPositionInC...> &,
-                     const std::tuple<LinkCombination...> &link_combination, const std::tuple<LinkPositionInLink...> &) {
+                     const std::tuple<LinkCombination...>   &link_combination, const std::tuple<LinkPositionInLink...> &) {
 
-    constexpr auto IsAIndexInC = detail::find_position<AIndex, TargetPositionInC...>();
+    constexpr auto IsAIndexInC    = detail::find_position<AIndex, TargetPositionInC...>();
     constexpr auto IsAIndexInLink = detail::find_position<AIndex, LinkPositionInLink...>();
 
     static_assert(IsAIndexInC != -1 || IsAIndexInLink != -1, "Looks like the indices in your einsum are not quite right! :(");
@@ -185,7 +185,7 @@ auto construct_index_from_unique_target_combination(const std::tuple<UniqueTarge
                                                     const std::tuple<UniqueLinkCombination...> &unique_link_combination,
                                                     const std::tuple<LinkPositionInLink...> &) {
 
-    constexpr auto IsAIndexInC = detail::find_position<AIndex, UniqueTargetIndices...>();
+    constexpr auto IsAIndexInC    = detail::find_position<AIndex, UniqueTargetIndices...>();
     constexpr auto IsAIndexInLink = detail::find_position<AIndex, UniqueLinkIndices...>();
 
     static_assert(IsAIndexInC != -1 || IsAIndexInLink != -1, "Looks like the indices in your einsum are not quite right! :(");
@@ -200,12 +200,12 @@ auto construct_index_from_unique_target_combination(const std::tuple<UniqueTarge
 }
 template <typename... AIndices, typename... UniqueTargetIndices, typename... UniqueTargetCombination, typename... TargetPositionInC,
           typename... UniqueLinkIndices, typename... UniqueLinkCombination, typename... LinkPositionInLink>
-constexpr auto construct_indices_from_unique_combination(const std::tuple<UniqueTargetIndices...> &unique_target_indices,
+constexpr auto construct_indices_from_unique_combination(const std::tuple<UniqueTargetIndices...>     &unique_target_indices,
                                                          const std::tuple<UniqueTargetCombination...> &unique_target_combination,
-                                                         const std::tuple<TargetPositionInC...> &target_position_in_C,
-                                                         const std::tuple<UniqueLinkIndices...> &unique_link_indices,
-                                                         const std::tuple<UniqueLinkCombination...> &unique_link_combination,
-                                                         const std::tuple<LinkPositionInLink...> &link_position_in_link) {
+                                                         const std::tuple<TargetPositionInC...>       &target_position_in_C,
+                                                         const std::tuple<UniqueLinkIndices...>       &unique_link_indices,
+                                                         const std::tuple<UniqueLinkCombination...>   &unique_link_combination,
+                                                         const std::tuple<LinkPositionInLink...>      &link_position_in_link) {
     return std::make_tuple(construct_index_from_unique_target_combination<AIndices>(unique_target_indices, unique_target_combination,
                                                                                     target_position_in_C, unique_link_indices,
                                                                                     unique_link_combination, link_position_in_link)...);
@@ -214,8 +214,8 @@ constexpr auto construct_indices_from_unique_combination(const std::tuple<Unique
 template <typename... AIndices, typename... TargetCombination, typename... TargetPositionInC, typename... LinkCombination,
           typename... LinkPositionInLink>
 constexpr auto construct_indices(const std::tuple<AIndices...> &, const std::tuple<TargetCombination...> &target_combination,
-                                 const std::tuple<TargetPositionInC...> &target_position_in_C,
-                                 const std::tuple<LinkCombination...> &link_combination,
+                                 const std::tuple<TargetPositionInC...>  &target_position_in_C,
+                                 const std::tuple<LinkCombination...>    &link_combination,
                                  const std::tuple<LinkPositionInLink...> &link_position_in_link) {
     return construct_indices<AIndices...>(target_combination, target_position_in_C, link_combination, link_position_in_link);
 }
@@ -300,7 +300,7 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
                               const std::tuple<BIndices...> & /*B_indices*/, const std::tuple<TargetDims...> &target_dims,
                               const std::tuple<LinkDims...> &link_dims, const std::tuple<TargetPositionInC...> &target_position_in_C,
                               const std::tuple<LinkPositionInLink...> &link_position_in_link, const CDataType C_prefactor,
-                              CType<CDataType, CRank> *C,
+                              CType<CDataType, CRank>                                                                *C,
                               const std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> AB_prefactor,
                               const AType<ADataType, ARank> &A, const BType<BDataType, BRank> &B) {
     LabeledSection0();
@@ -415,7 +415,7 @@ auto einsum(const CDataType C_prefactor, const std::tuple<CIndices...> & /*Cs*/,
     constexpr auto A_indices = std::tuple<AIndices...>();
     constexpr auto B_indices = std::tuple<BIndices...>();
     constexpr auto C_indices = std::tuple<CIndices...>();
-    using ABDataType = std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType>;
+    using ABDataType         = std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType>;
 
     // 1. Ensure the ranks are correct. (Compile-time check.)
     static_assert(sizeof...(CIndices) == CRank, "Rank of C does not match Indices given for C.");
@@ -444,17 +444,17 @@ auto einsum(const CDataType C_prefactor, const std::tuple<CIndices...> & /*Cs*/,
     constexpr auto A_only = difference_t<std::tuple<AIndices...>, decltype(links)>();
     constexpr auto B_only = difference_t<std::tuple<BIndices...>, decltype(links)>();
 
-    constexpr auto A_unique = unique_t<std::tuple<AIndices...>>();
-    constexpr auto B_unique = unique_t<std::tuple<BIndices...>>();
-    constexpr auto C_unique = unique_t<std::tuple<CIndices...>>();
+    constexpr auto A_unique    = unique_t<std::tuple<AIndices...>>();
+    constexpr auto B_unique    = unique_t<std::tuple<BIndices...>>();
+    constexpr auto C_unique    = unique_t<std::tuple<CIndices...>>();
     constexpr auto link_unique = c_unique_t<decltype(links)>();
 
     constexpr bool A_hadamard_found = std::tuple_size_v<std::tuple<AIndices...>> != std::tuple_size_v<decltype(A_unique)>;
     constexpr bool B_hadamard_found = std::tuple_size_v<std::tuple<BIndices...>> != std::tuple_size_v<decltype(B_unique)>;
     constexpr bool C_hadamard_found = std::tuple_size_v<std::tuple<CIndices...>> != std::tuple_size_v<decltype(C_unique)>;
 
-    constexpr auto link_position_in_A = detail::find_type_with_position(link_unique, A_indices);
-    constexpr auto link_position_in_B = detail::find_type_with_position(link_unique, B_indices);
+    constexpr auto link_position_in_A    = detail::find_type_with_position(link_unique, A_indices);
+    constexpr auto link_position_in_B    = detail::find_type_with_position(link_unique, B_indices);
     constexpr auto link_position_in_link = detail::find_type_with_position(link_unique, links);
 
     constexpr auto target_position_in_A = detail::find_type_with_position(C_unique, A_indices);
@@ -465,7 +465,7 @@ auto einsum(const CDataType C_prefactor, const std::tuple<CIndices...> & /*Cs*/,
     constexpr auto B_target_position_in_C = detail::find_type_with_position(B_indices, C_indices);
 
     auto unique_target_dims = detail::get_dim_ranges_for(*C, detail::unique_find_type_with_position(C_unique, C_indices));
-    auto unique_link_dims = detail::get_dim_ranges_for(A, link_position_in_A);
+    auto unique_link_dims   = detail::get_dim_ranges_for(A, link_position_in_A);
 
     constexpr auto contiguous_link_position_in_A = detail::contiguous_positions(link_position_in_A);
     constexpr auto contiguous_link_position_in_B = detail::contiguous_positions(link_position_in_B);
@@ -476,7 +476,7 @@ auto einsum(const CDataType C_prefactor, const std::tuple<CIndices...> & /*Cs*/,
     constexpr auto contiguous_A_targets_in_C = detail::contiguous_positions(A_target_position_in_C);
     constexpr auto contiguous_B_targets_in_C = detail::contiguous_positions(B_target_position_in_C);
 
-    constexpr auto same_ordering_link_position_in_AB = detail::is_same_ordering(link_position_in_A, link_position_in_B);
+    constexpr auto same_ordering_link_position_in_AB   = detail::is_same_ordering(link_position_in_A, link_position_in_B);
     constexpr auto same_ordering_target_position_in_CA = detail::is_same_ordering(target_position_in_A, A_target_position_in_C);
     constexpr auto same_ordering_target_position_in_CB = detail::is_same_ordering(target_position_in_B, B_target_position_in_C);
 
@@ -593,7 +593,7 @@ auto einsum(const CDataType C_prefactor, const std::tuple<CIndices...> & /*Cs*/,
         timer::Timer element_wise_multiplication{"element-wise multiplication"};
 
         auto target_dims = get_dim_ranges<CRank>(*C);
-        auto view = std::apply(ranges::views::cartesian_product, target_dims);
+        auto view        = std::apply(ranges::views::cartesian_product, target_dims);
 
         // Ensure the various tensors passed in are the same dimensionality
         if (((C->dims() != A.dims()) || C->dims() != B.dims())) {
@@ -603,8 +603,8 @@ auto einsum(const CDataType C_prefactor, const std::tuple<CIndices...> & /*Cs*/,
         EINSUMS_OMP_PARALLEL_FOR
         for (auto it = view.begin(); it != view.end(); it++) {
             CDataType &target_value = std::apply(*C, *it);
-            ABDataType AB_product = std::apply(A, *it) * std::apply(B, *it);
-            target_value = C_prefactor * target_value + AB_prefactor * AB_product;
+            ABDataType AB_product   = std::apply(A, *it) * std::apply(B, *it);
+            target_value            = C_prefactor * target_value + AB_prefactor * AB_product;
         }
 
         return;
@@ -659,8 +659,8 @@ auto einsum(const CDataType C_prefactor, const std::tuple<CIndices...> & /*Cs*/,
 
                 constexpr bool transpose_A = std::get<1>(link_position_in_A) == 0;
 
-                Dim<2> dA;
-                Dim<1> dB, dC;
+                Dim<2>    dA;
+                Dim<1>    dB, dC;
                 Stride<2> sA;
                 Stride<1> sB, sC;
 
@@ -681,7 +681,7 @@ auto einsum(const CDataType C_prefactor, const std::tuple<CIndices...> & /*Cs*/,
 
                 const TensorView<ADataType, 2> tA{const_cast<AType<ADataType, ARank> &>(A), dA, sA};
                 const TensorView<BDataType, 1> tB{const_cast<BType<BDataType, BRank> &>(B), dB, sB};
-                TensorView<CDataType, 1> tC{*C, dC, sC};
+                TensorView<CDataType, 1>       tC{*C, dC, sC};
 
                 // println(*C);
                 // println(tC);
@@ -712,7 +712,7 @@ auto einsum(const CDataType C_prefactor, const std::tuple<CIndices...> & /*Cs*/,
                         constexpr bool transpose_B = std::get<1>(link_position_in_B) != 0;
                         constexpr bool transpose_C = std::get<1>(A_target_position_in_C) != 0;
 
-                        Dim<2> dA, dB, dC;
+                        Dim<2>    dA, dB, dC;
                         Stride<2> sA, sB, sC;
 
                         dA[0] = product_dims(A_target_position_in_C, *C);
@@ -742,7 +742,7 @@ auto einsum(const CDataType C_prefactor, const std::tuple<CIndices...> & /*Cs*/,
                             std::swap(sC[0], sC[1]);
                         }
 
-                        TensorView<CDataType, 2> tC{*C, dC, sC};
+                        TensorView<CDataType, 2>       tC{*C, dC, sC};
                         const TensorView<ADataType, 2> tA{const_cast<AType<ADataType, ARank> &>(A), dA, sA};
                         const TensorView<BDataType, 2> tB{const_cast<BType<BDataType, BRank> &>(B), dB, sB};
 
@@ -821,7 +821,7 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
                         : fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{})", C->name(), print_tuple_no_type(C_indices), UAB_prefactor,
                                       A.name(), print_tuple_no_type(A_indices), B.name(), print_tuple_no_type(B_indices)));
 
-    const CDataType C_prefactor = UC_prefactor;
+    const CDataType  C_prefactor  = UC_prefactor;
     const ABDataType AB_prefactor = UAB_prefactor;
 
 #if defined(EINSUMS_CONTINUOUSLY_TEST_EINSUM)
@@ -904,13 +904,13 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
                 }
             }
 
-#if defined(EINSUMS_USE_CATCH2)
+#    if defined(EINSUMS_USE_CATCH2)
             if constexpr (!is_complex_v<CDataType>) {
                 REQUIRE_THAT(Cvalue,
                              Catch::Matchers::WithinRel(Ctest, static_cast<CDataType>(0.001)) || Catch::Matchers::WithinAbs(0, 0.0001));
                 CHECK(print_info_and_abort == false);
             }
-#endif
+#    endif
 
             if (std::fabs(Cvalue - Ctest) > 1.0E-6) {
                 print_info_and_abort = true;
@@ -949,14 +949,14 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
                 println(*C);
                 println(A);
                 println(B);
-#if defined(EINSUMS_TEST_EINSUM_ABORT)
+#    if defined(EINSUMS_TEST_EINSUM_ABORT)
                 std::abort();
-#endif
+#    endif
             }
         }
     } else {
         const CDataType Cvalue = *C;
-        const CDataType Ctest = testC;
+        const CDataType Ctest  = testC;
 
         if (std::fabs(Cvalue - testC) > 1.0E-6) {
             println(emphasis::bold | bg(fmt::color::red) | fg(fmt::color::white), "!!! EINSUM ERROR !!!");
@@ -991,9 +991,9 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
             println(A);
             println(B);
 
-#if defined(EINSUMS_TEST_EINSUM_ABORT)
+#    if defined(EINSUMS_TEST_EINSUM_ABORT)
             std::abort();
-#endif
+#    endif
         }
     }
 #endif
@@ -1154,7 +1154,7 @@ auto sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<
     auto target_position_in_A = detail::find_type_with_position(C_indices, A_indices);
 
     auto target_dims = get_dim_ranges<CRank>(*C);
-    auto a_dims = detail::get_dim_ranges_for(A, target_position_in_A);
+    auto a_dims      = detail::get_dim_ranges_for(A, target_position_in_A);
 
     // HPTT interface currently only works for full Tensors and not TensorViews
 #if defined(EINSUMS_USE_HPTT)
@@ -1164,7 +1164,7 @@ auto sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<
 
         for (int i0 = 0; i0 < ARank; i0++) {
             perms[i0] = get_from_tuple<unsigned long>(target_position_in_A, (2 * i0) + 1);
-            size[i0] = A.dim(i0);
+            size[i0]  = A.dim(i0);
         }
 
         auto plan = hptt::create_plan(perms.data(), ARank, A_prefactor, A.data(), size.data(), nullptr, C_prefactor, C->data(), nullptr,
@@ -1182,7 +1182,7 @@ auto sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<
             auto A_order = detail::construct_indices<AIndices...>(*it, target_position_in_A, *it, target_position_in_A);
 
             T &target_value = std::apply(*C, *it);
-            T A_value = std::apply(A, A_order);
+            T  A_value      = std::apply(A, A_order);
 
             target_value = C_prefactor * target_value + A_prefactor * A_value;
         }
@@ -1227,12 +1227,12 @@ auto element_transform(CType<T, CRank> *C, UnaryOperator unary_opt)
     LabeledSection0();
 
     auto target_dims = get_dim_ranges<CRank>(*C);
-    auto view = std::apply(ranges::views::cartesian_product, target_dims);
+    auto view        = std::apply(ranges::views::cartesian_product, target_dims);
 
     EINSUMS_OMP_PARALLEL_FOR
     for (auto it = view.begin(); it != view.end(); it++) {
         T &target_value = std::apply(*C, *it);
-        target_value = unary_opt(target_value);
+        target_value    = unary_opt(target_value);
     }
 }
 
@@ -1247,7 +1247,7 @@ auto element(MultiOperator multi_opt, CType<T, Rank> *C, MultiTensors<T, Rank> &
     LabeledSection0();
 
     auto target_dims = get_dim_ranges<Rank>(*C);
-    auto view = std::apply(ranges::views::cartesian_product, target_dims);
+    auto view        = std::apply(ranges::views::cartesian_product, target_dims);
 
     // Ensure the various tensors passed in are the same dimensionality
     if (((C->dims() != tensors.dims()) || ...)) {
@@ -1257,7 +1257,7 @@ auto element(MultiOperator multi_opt, CType<T, Rank> *C, MultiTensors<T, Rank> &
     EINSUMS_OMP_PARALLEL_FOR
     for (auto it = view.begin(); it != view.end(); it++) {
         T &target_value = std::apply(*C, *it);
-        target_value = multi_opt(target_value, std::apply(tensors, *it)...);
+        target_value    = multi_opt(target_value, std::apply(tensors, *it)...);
     }
 }
 
@@ -1312,22 +1312,22 @@ auto unfold(const CType<T, CRank> &source) -> std::enable_if_t<std::is_same_v<Te
         target_dims[1] *= source.dim(i);
     }
 
-    auto target = Tensor{fmt::format("mode-{} unfolding of {}", mode, source.name()), target_dims[0], target_dims[1]};
+    auto target         = Tensor{fmt::format("mode-{} unfolding of {}", mode, source.name()), target_dims[0], target_dims[1]};
     auto target_indices = std::make_tuple(std::get<mode>(index::list), index::Z);
     auto source_indices = get_n<CRank>(index::list);
 
     // Use similar logic found in einsums:
-    auto link = intersect_t<decltype(target_indices), decltype(source_indices)>();
+    auto link        = intersect_t<decltype(target_indices), decltype(source_indices)>();
     auto target_only = difference_t<decltype(target_indices), decltype(link)>();
     auto source_only = difference_t<decltype(source_indices), decltype(link)>();
 
     auto source_position_in_source = detail::find_type_with_position(source_only, source_indices);
-    auto link_position_in_source = detail::find_type_with_position(link, source_indices);
+    auto link_position_in_source   = detail::find_type_with_position(link, source_indices);
 
-    auto link_dims = detail::get_dim_ranges_for(target, detail::find_type_with_position(link, target_indices));
+    auto link_dims   = detail::get_dim_ranges_for(target, detail::find_type_with_position(link, target_indices));
     auto source_dims = detail::get_dim_ranges_for(source, source_position_in_source);
 
-    auto link_view = std::apply(ranges::views::cartesian_product, link_dims);
+    auto link_view   = std::apply(ranges::views::cartesian_product, link_dims);
     auto source_view = std::apply(ranges::views::cartesian_product, source_dims);
 
 #pragma omp parallel for
@@ -1341,7 +1341,7 @@ auto unfold(const CType<T, CRank> &source) -> std::enable_if_t<std::is_same_v<Te
                 detail::construct_indices(source_indices, *source_it, source_position_in_source, *link_it, link_position_in_source);
 
             T &target_value = std::apply(target, target_order);
-            T source_value = std::apply(source, source_order);
+            T  source_value = std::apply(source, source_order);
 
             target_value = source_value;
 
@@ -1380,14 +1380,14 @@ auto khatri_rao(const std::tuple<AIndices...> &, const AType<T, ARank> &A, const
     // Record the positions of each types.
     constexpr auto A_common_position = detail::find_type_with_position(common, A_indices);
     constexpr auto B_common_position = detail::find_type_with_position(common, B_indices);
-    constexpr auto A_only_position = detail::find_type_with_position(A_only, A_indices);
-    constexpr auto B_only_position = detail::find_type_with_position(B_only, B_indices);
+    constexpr auto A_only_position   = detail::find_type_with_position(A_only, A_indices);
+    constexpr auto B_only_position   = detail::find_type_with_position(B_only, B_indices);
 
     // Obtain dimensions of the indices discovered above
     auto A_common_dims = detail::get_dim_for(A, A_common_position);
     auto B_common_dims = detail::get_dim_for(B, B_common_position);
-    auto A_only_dims = detail::get_dim_for(A, A_only_position);
-    auto B_only_dims = detail::get_dim_for(B, B_only_position);
+    auto A_only_dims   = detail::get_dim_for(A, A_only_position);
+    auto B_only_dims   = detail::get_dim_for(B, B_only_position);
 
     // Sanity check - ensure the common dims between A and B are the same size.
     for_sequence<std::tuple_size_v<decltype(common)>>([&](auto i) {
@@ -1408,4 +1408,4 @@ auto khatri_rao(const std::tuple<AIndices...> &, const AType<T, ARank> &A, const
     return Tensor<T, 2>{std::move(result), "KR product", -1, detail::product_dims(A_common_position, A)};
 }
 
-END_EINSUMS_NAMESPACE_CPP(einsums::tensor_algebra)
+END_EINSUMS_NAMESPACE_HPP(einsums::tensor_algebra)

@@ -8,3 +8,7 @@ ColumnLimit: 140
 IncludeBlocks: Regroup
 AlwaysBreakTemplateDeclarations: Yes
 AllowShortFunctionsOnASingleLine: InlineOnly
+AlignConsecutiveMacros: true
+IndentPPDirectives: AfterHash
+AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: true

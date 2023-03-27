@@ -4,7 +4,7 @@
 
 #include <complex>
 
-namespace einsums::backend::mkl {
+BEGIN_EINSUMS_NAMESPACE_HPP(einsums::backend::linear_algebra::mkl)
 
 void initialize();
 void finalize();
@@ -176,4 +176,4 @@ auto dorgqr(eint m, eint n, eint k, double *a, eint lda, const double *tau) -> e
 auto cungqr(eint m, eint n, eint k, std::complex<float> *a, eint lda, const std::complex<float> *tau) -> eint;
 auto zungqr(eint m, eint n, eint k, std::complex<double> *a, eint lda, const std::complex<double> *tau) -> eint;
 
-} // namespace einsums::backend::mkl
+END_EINSUMS_NAMESPACE_HPP(einsums::backend::linear_algebra::mkl)

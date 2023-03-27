@@ -10,27 +10,27 @@
 #include <h5cpp/io>
 
 auto main(int argc, char *argv[]) -> int {
-    // This call replaces the two commented out below.
     einsums::initialize();
 
-    // einsums::timer::initialize();
-    // einsums::blas::initialize();
-
-    // Disable HDF5 diagnostic reporting.
-    H5Eset_auto(0, nullptr, nullptr);
-
+#if defined(EINSUMS_IN_PARALLEL)
+    MPI_Comm comm = MPI_COMM_WORLD;
+    MPI_Info info = MPI_INFO_NULL;
+    // Create a file to hold the data from the DiskTensor tests.
+    einsums::state::data = h5::create("Data.h5", H5F_ACC_TRUNC, h5::fcpl, h5::mpiio({comm, info}));
+#else
     // Create a file to hold the data from the DiskTensor tests.
     einsums::state::data = h5::create("Data.h5", H5F_ACC_TRUNC);
+#endif
 
     println("Running on {} thread(s)", omp_get_max_threads());
 
     int result = Catch::Session().run(argc, argv);
 
-    // einsums::timer::report();
-    // einsums::blas::finalize();
-    // einsums::timer::finalize();
+    // Ensure file is closed before finalize is called. If einsums is running parallel MPI will have been
+    // finalized BEFORE the HDF5 file has been closed and MPI will report that an MPI function was called
+    // after having been finalized.
+    H5Fclose(einsums::state::data);
 
-    // This replaces the three calls commented out above.
     // Passing false means "do not print timer report", whereas passing true will print the
     // timer report.
     einsums::finalize(false);

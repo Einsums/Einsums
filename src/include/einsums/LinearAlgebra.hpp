@@ -16,14 +16,14 @@
 #include <tuple>
 #include <type_traits>
 
-BEGIN_EINSUMS_NAMESPACE_CPP(einsums::linear_algebra)
+BEGIN_EINSUMS_NAMESPACE_HPP(einsums::linear_algebra)
 
 template <template <typename, size_t> typename AType, typename ADataType, size_t ARank>
 auto sum_square(const AType<ADataType, ARank> &a, remove_complex_t<ADataType> *scale, remove_complex_t<ADataType> *sumsq) ->
     typename std::enable_if_t<is_incore_rank_tensor_v<AType<ADataType, ARank>, 1, ADataType>> {
     LabeledSection0();
 
-    int n = a.dim(0);
+    int n    = a.dim(0);
     int incx = a.stride(0);
     blas::lassq(n, a.data(), incx, scale, sumsq);
 }
@@ -78,7 +78,7 @@ auto gemv(const double alpha, const AType<T, ARank> &A, const XType<T, XYRank> &
                         is_incore_rank_tensor_v<YType<T, XYRank>, 1, T>> {
     LabeledSection1(fmt::format("<TransA={}>", TransA));
     auto m = A.dim(0), n = A.dim(1);
-    auto lda = A.stride(0);
+    auto lda  = A.stride(0);
     auto incx = x.stride(0);
     auto incy = y->stride(0);
 
@@ -93,9 +93,9 @@ auto syev(AType<T, ARank> *A, WType<T, WRank> *W) -> std::enable_if_t<is_incore_
 
     assert(A->dim(0) == A->dim(1));
 
-    auto n = A->dim(0);
-    auto lda = A->stride(0);
-    int lwork = 3 * n;
+    auto           n     = A->dim(0);
+    auto           lda   = A->stride(0);
+    int            lwork = 3 * n;
     std::vector<T> work(lwork);
 
     blas::syev(ComputeEigenvectors ? 'v' : 'n', 'u', n, A->data(), lda, W->data(), work.data(), lwork);
@@ -109,10 +109,10 @@ auto heev(AType<T, ARank> *A, WType<remove_complex_t<T>, WRank> *W)
     LabeledSection1(fmt::format("<ComputeEigenvectors={}>", ComputeEigenvectors));
     assert(A->dim(0) == A->dim(1));
 
-    auto n = A->dim(0);
-    auto lda = A->stride(0);
-    int lwork = 2 * n;
-    std::vector<T> work(lwork);
+    auto                             n     = A->dim(0);
+    auto                             lda   = A->stride(0);
+    int                              lwork = 2 * n;
+    std::vector<T>                   work(lwork);
     std::vector<remove_complex_t<T>> rwork(3 * n);
 
     blas::heev(ComputeEigenvectors ? 'v' : 'n', 'u', n, A->data(), lda, W->data(), work.data(), lwork, rwork.data());
@@ -124,13 +124,13 @@ auto gesv(AType<T, ARank> *A, BType<T, BRank> *B)
     -> std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, 2, T> && is_incore_rank_tensor_v<BType<T, BRank>, 2, T>, int> {
     LabeledSection0();
 
-    auto n = A->dim(0);
+    auto n   = A->dim(0);
     auto lda = A->dim(0);
     auto ldb = B->dim(1);
 
     auto nrhs = B->dim(0);
 
-    int lwork = n;
+    int               lwork = n;
     std::vector<eint> ipiv(lwork);
 
     int info = blas::gesv(n, nrhs, A->data(), lda, ipiv.data(), B->data(), ldb);
@@ -192,7 +192,7 @@ auto pow(const AType<T, ARank> &a, T alpha, T cutoff = std::numeric_limits<T>::e
 
     assert(a.dim(0) == a.dim(1));
 
-    size_t n = a.dim(0);
+    size_t       n  = a.dim(0);
     Tensor<T, 2> a1 = a;
     Tensor<T, 2> result{"pow result", a.dim(0), a.dim(1)};
     Tensor<T, 1> e{"e", n};
@@ -225,7 +225,7 @@ auto pow(const AType<T, ARank> &a, T alpha, T cutoff = std::numeric_limits<T>::e
 
 template <template <typename, size_t> typename Type, typename T>
 auto dot(const Type<T, 1> &A, const Type<T, 1> &B) ->
-    typename std::enable_if_t<std::is_base_of_v<detail::TensorBase<T, 1>, Type<T, 1>>, T> {
+    typename std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<T, 1>, Type<T, 1>>, T> {
     LabeledSection0();
 
     assert(A.dim(0) == B.dim(0));
@@ -236,7 +236,7 @@ auto dot(const Type<T, 1> &A, const Type<T, 1> &B) ->
 
 template <template <typename, size_t> typename Type, typename T, size_t Rank>
 auto dot(const Type<T, Rank> &A, const Type<T, Rank> &B) ->
-    typename std::enable_if_t<std::is_base_of_v<detail::TensorBase<T, Rank>, Type<T, Rank>>, T> {
+    typename std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<T, Rank>, Type<T, Rank>>, T> {
     LabeledSection0();
 
     Dim<1> dim{1};
@@ -252,7 +252,7 @@ auto dot(const Type<T, Rank> &A, const Type<T, Rank> &B) ->
 
 template <template <typename, size_t> typename Type, typename T, size_t Rank>
 auto dot(const Type<T, Rank> &A, const Type<T, Rank> &B, const Type<T, Rank> &C) -> // NOLINT
-    typename std::enable_if_t<std::is_base_of_v<detail::TensorBase<T, Rank>, Type<T, Rank>>, T> {
+    typename std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<T, Rank>, Type<T, Rank>>, T> {
     LabeledSection0();
 
     Dim<1> dim{1};
@@ -336,7 +336,7 @@ auto invert(TensorType<T, TensorRank> *A) -> std::enable_if_t<is_incore_rank_ten
     LabeledSection0();
 
     std::vector<eint> pivot(A->dim(0));
-    int result = getrf(A, &pivot);
+    int               result = getrf(A, &pivot);
     if (result > 0) {
         println("invert: getrf: the ({}, {}) element of the factor U or L is zero, and the inverse could not be computed", result, result);
         std::abort();
@@ -575,27 +575,27 @@ inline auto solve_continuous_lyapunov(const Tensor<T, 2> &A, const Tensor<T, 2> 
 
     /// TODO: Break this off into a separate schur function
     // Compute Schur Decomposition of A
-    Tensor<T, 2> R = A; // R is a copy of A
-    Tensor<T, 2> wr("Schur Real Buffer", n, n);
-    Tensor<T, 2> wi("Schur Imaginary Buffer", n, n);
-    Tensor<T, 2> U("Lyapunov U", n, n);
+    Tensor<T, 2>      R = A; // R is a copy of A
+    Tensor<T, 2>      wr("Schur Real Buffer", n, n);
+    Tensor<T, 2>      wi("Schur Imaginary Buffer", n, n);
+    Tensor<T, 2>      U("Lyapunov U", n, n);
     std::vector<eint> sdim(1);
     blas::gees('V', n, R.data(), n, sdim.data(), wr.data(), wi.data(), U.data(), n);
 
     // Compute F = U^T * Q * U
     Tensor<T, 2> Fbuff = gemm<true, false>(1.0, U, Q);
-    Tensor<T, 2> F = gemm<false, false>(1.0, Fbuff, U);
+    Tensor<T, 2> F     = gemm<false, false>(1.0, Fbuff, U);
 
     // Call the Sylvester Solve
     std::vector<T> scale(1);
     blas::trsyl('N', 'N', 1, n, n, const_cast<const T *>(R.data()), n, const_cast<const T *>(R.data()), n, F.data(), n, scale.data());
 
     Tensor<T, 2> Xbuff = gemm<false, false>(scale[0], U, F);
-    Tensor<T, 2> X = gemm<false, true>(1.0, Xbuff, U);
+    Tensor<T, 2> X     = gemm<false, true>(1.0, Xbuff, U);
 
     return X;
 }
 
 ALIAS_TEMPLATE_FUNCTION(solve_lyapunov, solve_continuous_lyapunov)
 
-END_EINSUMS_NAMESPACE_CPP(einsums::linear_algebra)
+END_EINSUMS_NAMESPACE_HPP(einsums::linear_algebra)

@@ -3,6 +3,7 @@
 #include "einsums/Backtrace.hpp"
 #include "einsums/OpenMP.h"
 #include "einsums/Timer.hpp"
+#include "einsums/parallel/MPI.hpp"
 
 #include <algorithm>
 #include <cstdarg>
@@ -15,24 +16,21 @@
 #include <thread>
 
 #if defined(_WIN32) || defined(_WIN64)
-#include <io.h>
+#    include <io.h>
 #else
-#include <unistd.h>
+#    include <unistd.h>
 #endif
 
 namespace print {
 
 namespace {
 
-std::mutex lock;
-
-int indent_level{0};
-std::string indent_string{};
-
-bool print_master_thread_id{false};
+std::mutex      lock;
+int             indent_level{0};
+std::string     indent_string{};
+bool            print_master_thread_id{false};
 std::thread::id main_thread_id = std::this_thread::get_id();
-
-bool suppress{false};
+bool            suppress{false};
 
 auto printing_to_screen() -> bool {
 #if defined(_WIN32) || defined(_WIN64)
@@ -95,25 +93,30 @@ void stacktrace() {
 namespace {
 
 void print_line(const std::string &line) {
-    std::string line_header;
+    einsums::mpi::ErrorOr<int> size = einsums::mpi::rank();
+    int                        rank = size.value();
 
-    if (omp_in_parallel()) {
-        if (omp_get_thread_num() == 0) {
-            std::ostringstream oss;
-            oss << "[ main #" << std::setw(6) << 0 << " ] ";
-            line_header = oss.str();
-        } else {
-            std::ostringstream oss;
-            oss << "[ tid  #" << std::setw(6) << omp_get_thread_num() << " ] ";
-            line_header = oss.str();
+    if (rank == 0) {
+        std::string line_header;
+
+        if (omp_in_parallel()) {
+            if (omp_get_thread_num() == 0) {
+                std::ostringstream oss;
+                oss << "[ main #" << std::setw(6) << 0 << " ] ";
+                line_header = oss.str();
+            } else {
+                std::ostringstream oss;
+                oss << "[ tid  #" << std::setw(6) << omp_get_thread_num() << " ] ";
+                line_header = oss.str();
+            }
         }
-    }
-    line_header.append(print::indent_string);
+        line_header.append(print::indent_string);
 
-    std::lock_guard<std::mutex> guard(print::lock);
-    std::printf("%s", line_header.c_str());
-    std::printf("%s", line.c_str());
-    std::printf("\n");
+        std::lock_guard<std::mutex> guard(print::lock);
+        std::printf("%s", line_header.c_str());
+        std::printf("%s", line.c_str());
+        std::printf("\n");
+    }
 }
 
 } // namespace

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "einsums/Error.hpp"
 #include "einsums/Print.hpp"
 #include "einsums/_Compiler.hpp"
 #include "einsums/_Export.hpp"
@@ -8,13 +9,21 @@
 #include <cstdint>
 #include <ostream>
 
-#define EINSUMS_STRINGIFY(a) EINSUMS_STRINGIFY2(a)
+#define EINSUMS_STRINGIFY(a)  EINSUMS_STRINGIFY2(a)
 #define EINSUMS_STRINGIFY2(a) #a
+
+#define BEGIN_EINSUMS_NAMESPACE_HPP(x)                                                                                                     \
+    namespace x {                                                                                                                          \
+    namespace detail {                                                                                                                     \
+    extern EINSUMS_EXPORT std::string s_Namespace;                                                                                         \
+    }
+
+#define END_EINSUMS_NAMESPACE_HPP(x) }
 
 #define BEGIN_EINSUMS_NAMESPACE_CPP(x)                                                                                                     \
     namespace x {                                                                                                                          \
-    namespace {                                                                                                                            \
-    static std::string s_Namespace = #x;                                                                                                   \
+    namespace detail {                                                                                                                     \
+    EINSUMS_EXPORT std::string s_Namespace = #x;                                                                                           \
     }
 
 #define END_EINSUMS_NAMESPACE_CPP(x) }
@@ -22,11 +31,11 @@
 namespace einsums {
 
 #if defined(MKL_ILP64)
-using eint = long long int;
+using eint  = long long int;
 using euint = unsigned long long int;
 using elong = long long int;
 #else
-using eint = int;
+using eint  = int;
 using euint = unsigned int;
 using elong = long int;
 #endif

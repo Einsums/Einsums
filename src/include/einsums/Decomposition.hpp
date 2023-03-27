@@ -11,7 +11,7 @@
 #include <cmath>
 #include <functional>
 
-BEGIN_EINSUMS_NAMESPACE_CPP(einsums::decomposition)
+BEGIN_EINSUMS_NAMESPACE_HPP(einsums::decomposition)
 
 template <size_t TRank>
 auto validate_cp_rank(const Dim<TRank> shape, const std::string &rounding = "round") -> size_t {
@@ -31,7 +31,7 @@ auto validate_cp_rank(const Dim<TRank> shape, const std::string &rounding = "rou
     }
 
     double prod = std::accumulate(shape.begin(), shape.end(), 1, std::multiplies<double>());
-    double sum = std::accumulate(shape.begin(), shape.end(), 0, std::plus<double>());
+    double sum  = std::accumulate(shape.begin(), shape.end(), 0, std::plus<double>());
 
     return static_cast<int>(rounding_func(prod / sum));
 }
@@ -43,8 +43,8 @@ template <template <typename, size_t> typename TTensor, size_t TRank, typename T
 auto norm(const TTensor<TType, TRank> &tensor) -> TType {
     LabeledSection0();
 
-    TType val = 0.0;
-    auto target_dims = get_dim_ranges<TRank>(tensor);
+    TType val         = 0.0;
+    auto  target_dims = get_dim_ranges<TRank>(tensor);
 
     for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
         TType target = std::apply(tensor, target_combination);
@@ -67,13 +67,13 @@ auto rmsd(const TTensor<TType, TRank> &tensor1, const TTensor<TType, TRank> &ten
     for_sequence<TRank>([&](auto i) { nelem *= tensor1.dim(i); });
 
     auto target_dims = get_dim_ranges<TRank>(tensor1);
-    auto view = std::apply(ranges::views::cartesian_product, target_dims);
+    auto view        = std::apply(ranges::views::cartesian_product, target_dims);
 
 #pragma omp parallel for reduction(+ : diff)
     for (auto it = view.begin(); it < view.end(); it++) {
-        auto target_combination = *it;
-        TType target1 = std::apply(tensor1, target_combination);
-        TType target2 = std::apply(tensor2, target_combination);
+        auto  target_combination = *it;
+        TType target1            = std::apply(tensor1, target_combination);
+        TType target2            = std::apply(tensor2, target_combination);
         diff += (target1 - target2) * (target1 - target2);
     }
 
@@ -92,16 +92,16 @@ auto weight_tensor(const TTensor<TType, TRank> &tensor, const TTensor<TType, 1> 
     }
 
     Tensor<TType, TRank> weighted_tensor(tensor.dims());
-    auto target_dims = get_dim_ranges<TRank>(tensor);
+    auto                 target_dims = get_dim_ranges<TRank>(tensor);
 
     auto view = std::apply(ranges::views::cartesian_product, target_dims);
 
 #pragma omp parallel for
     for (auto it = view.begin(); it < view.end(); it++) {
-        auto target_combination = *it;
-        const TType &source = std::apply(tensor, target_combination);
-        TType &target = std::apply(weighted_tensor, target_combination);
-        const TType &scale = weights(std::get<0>(target_combination));
+        auto         target_combination = *it;
+        const TType &source             = std::apply(tensor, target_combination);
+        TType       &target             = std::apply(weighted_tensor, target_combination);
+        const TType &scale              = weights(std::get<0>(target_combination));
 
         target = scale * source;
     }
@@ -118,7 +118,7 @@ template <size_t TRank, typename TType>
 auto parafac_reconstruct(const std::vector<Tensor<TType, 2>> &factors) -> Tensor<TType, TRank> {
     LabeledSection0();
 
-    size_t rank = 0;
+    size_t     rank = 0;
     Dim<TRank> dims;
 
     size_t i = 0;
@@ -133,12 +133,12 @@ auto parafac_reconstruct(const std::vector<Tensor<TType, 2>> &factors) -> Tensor
     new_tensor.zero();
 
     auto indices = get_dim_ranges<TRank>(new_tensor);
-    auto view = std::apply(ranges::views::cartesian_product, indices);
+    auto view    = std::apply(ranges::views::cartesian_product, indices);
 
 #pragma omp parallel for
     for (auto it = view.begin(); it < view.end(); it++) {
-        auto idx_combo = *it;
-        TType &target = std::apply(new_tensor, idx_combo);
+        auto   idx_combo = *it;
+        TType &target    = std::apply(new_tensor, idx_combo);
         for (size_t r = 0; r < rank; r++) {
             double temp = 1.0;
             for_sequence<TRank>([&](auto n) { temp *= factors[n](std::get<n>(idx_combo), r); });
@@ -191,7 +191,7 @@ auto initialize_cp(std::vector<Tensor<TType, 2>> &folds, size_t rank) -> std::ve
         if (folds[i].dim(0) < rank) {
             // println_warn("dimension {} size {} is less than the requested decomposition rank {}", i, folds[i].dim(0), rank);
             // TODO: Need to padd U up to rank
-            Tensor<TType, 2> Unew = create_random_tensor("Padded SVD Left Vectors", folds[i].dim(0), rank);
+            Tensor<TType, 2> Unew  = create_random_tensor("Padded SVD Left Vectors", folds[i].dim(0), rank);
             Unew(All, Range{0, m}) = U(All, All);
 
             // Need to save the factors
@@ -233,19 +233,19 @@ auto parafac(const TTensor<TType, TRank> &tensor, size_t rank, int n_iter_max = 
     std::vector<Tensor<TType, 2>> factors = initialize_cp<TRank>(unfolded_matrices, rank);
 
     double tensor_norm = norm(tensor);
-    size_t nelem = 1;
+    size_t nelem       = 1;
     for_sequence<TRank>([&](auto i) { nelem *= tensor.dim(i); });
     tensor_norm /= std::sqrt((double)nelem);
 
-    int iter = 0;
-    bool converged = false;
+    int    iter       = 0;
+    bool   converged  = false;
     double prev_error = 0.0;
     while (iter < n_iter_max) {
         for_sequence<TRank>([&](auto n_ind) {
             // Form V and Khatri-Rao product intermediates
             Tensor<TType, 2> V;
             Tensor<TType, 2> KR;
-            bool first = true;
+            bool             first = true;
 
             for_sequence<TRank>([&](auto m_ind) {
                 if (m_ind != n_ind) {
@@ -256,8 +256,8 @@ auto parafac(const TTensor<TType, TRank> &tensor, size_t rank, int n_iter_max = 
                     einsum(0.0, Indices{r, s}, &A_tA, 1.0, Indices{I, r}, factors[m_ind], Indices{I, s}, factors[m_ind]);
 
                     if (first) {
-                        V = A_tA;
-                        KR = factors[m_ind];
+                        V     = A_tA;
+                        KR    = factors[m_ind];
                         first = false;
                     } else {
                         // Uses a Hamamard Contraction to build V
@@ -285,8 +285,8 @@ auto parafac(const TTensor<TType, TRank> &tensor, size_t rank, int n_iter_max = 
         Tensor<TType, TRank> rec_tensor = parafac_reconstruct<TRank>(factors);
 
         double unnormalized_error = rmsd(rec_tensor, tensor);
-        double curr_error = unnormalized_error / tensor_norm;
-        double delta = std::abs(curr_error - prev_error);
+        double curr_error         = unnormalized_error / tensor_norm;
+        double delta              = std::abs(curr_error - prev_error);
 
         // printf("    @CP Iteration %d, ERROR: %8.8f, DELTA: %8.8f\n", iter, curr_error, delta);
 
@@ -341,12 +341,12 @@ auto weighted_parafac(const TTensor<TType, TRank> &tensor, const TTensor<TType, 
     }
 
     double tensor_norm = norm(tensor);
-    size_t nelem = 1;
+    size_t nelem       = 1;
     for_sequence<TRank>([&](auto i) { nelem *= tensor.dim(i); });
     tensor_norm /= std::sqrt((double)nelem);
 
-    int iter = 0;
-    bool converged = false;
+    int    iter       = 0;
+    bool   converged  = false;
     double prev_error = 0.0;
     while (iter < n_iter_max) {
         size_t n = 0;
@@ -354,7 +354,7 @@ auto weighted_parafac(const TTensor<TType, TRank> &tensor, const TTensor<TType, 
             // Form V and Khatri-Rao product intermediates
             Tensor<TType, 2> V;
             Tensor<TType, 2> KR;
-            bool first = true;
+            bool             first = true;
 
             size_t m = 0;
             for_sequence<TRank>([&](auto m_ind) {
@@ -369,8 +369,8 @@ auto weighted_parafac(const TTensor<TType, TRank> &tensor, const TTensor<TType, 
                     }
 
                     if (first) {
-                        V = A_tA;
-                        KR = factors[m_ind];
+                        V     = A_tA;
+                        KR    = factors[m_ind];
                         first = false;
                     } else {
                         // Uses a Hamamard Contraction to build V
@@ -401,8 +401,8 @@ auto weighted_parafac(const TTensor<TType, TRank> &tensor, const TTensor<TType, 
         Tensor<TType, TRank> rec_tensor = parafac_reconstruct<TRank>(factors);
 
         double unnormalized_error = rmsd(rec_tensor, tensor);
-        double curr_error = unnormalized_error / tensor_norm;
-        double delta = std::abs(curr_error - prev_error);
+        double curr_error         = unnormalized_error / tensor_norm;
+        double delta              = std::abs(curr_error - prev_error);
 
         // printf("    @CP Iteration %d, ERROR: %8.8f, DELTA: %8.8f\n", iter, curr_error, delta);
 
@@ -432,13 +432,13 @@ auto tucker_reconstruct(const TTensor<TType, TRank> &g_tensor, const std::vector
     Tensor<TType, TRank> *old_tensor_buffer;
     Tensor<TType, TRank> *new_tensor_buffer;
 
-    old_tensor_buffer = new Tensor(dims_buffer);
+    old_tensor_buffer  = new Tensor(dims_buffer);
     *old_tensor_buffer = g_tensor;
 
     // Reform the tensor (with all its intermediates)
     for_sequence<TRank>([&](auto i) {
-        size_t full_idx = factors[i].dim(0);
-        dims_buffer[i] = full_idx;
+        size_t full_idx   = factors[i].dim(0);
+        dims_buffer[i]    = full_idx;
         new_tensor_buffer = new Tensor(dims_buffer);
         new_tensor_buffer->zero();
 
@@ -446,7 +446,7 @@ auto tucker_reconstruct(const TTensor<TType, TRank> &g_tensor, const std::vector
 
         for (auto source_combination : std::apply(ranges::views::cartesian_product, source_dims)) {
             for (size_t n = 0; n < full_idx; n++) {
-                auto target_combination = source_combination;
+                auto target_combination         = source_combination;
                 std::get<i>(target_combination) = n;
 
                 TType &source = std::apply(*old_tensor_buffer, source_combination);
@@ -475,7 +475,7 @@ auto initialize_tucker(std::vector<Tensor<TType, 2>> &folds, std::vector<size_t>
 
     // Perform compile-time looping.
     for_sequence<TRank>([&](auto i) {
-        size_t rank = ranks[i];
+        size_t rank    = ranks[i];
         auto [U, S, _] = linear_algebra::svd_dd(folds[i]);
 
         // println(tensor_algebra::unfold<i>(tensor));
@@ -525,21 +525,21 @@ auto tucker_ho_svd(const TTensor<TType, TRank> &tensor, std::vector<size_t> &ran
     Tensor<TType, TRank> *old_g_buffer;
     Tensor<TType, TRank> *new_g_buffer;
 
-    old_g_buffer = new Tensor(dims_buffer);
+    old_g_buffer  = new Tensor(dims_buffer);
     *old_g_buffer = tensor;
 
     // Form G (with all of its intermediates)
     for_sequence<TRank>([&](auto i) {
-        size_t rank = ranks[i];
+        size_t rank    = ranks[i];
         dims_buffer[i] = rank;
-        new_g_buffer = new Tensor(dims_buffer);
+        new_g_buffer   = new Tensor(dims_buffer);
         new_g_buffer->zero();
 
         auto source_dims = get_dim_ranges<TRank>(*old_g_buffer);
 
         for (auto source_combination : std::apply(ranges::views::cartesian_product, source_dims)) {
             for (size_t r = 0; r < rank; r++) {
-                auto target_combination = source_combination;
+                auto target_combination         = source_combination;
                 std::get<i>(target_combination) = r;
 
                 TType &source = std::apply(*old_g_buffer, source_combination);
@@ -573,10 +573,10 @@ auto tucker_ho_oi(const TTensor<TType, TRank> &tensor, std::vector<size_t> &rank
 
     // Use HO SVD as a starting guess
     auto ho_svd_guess = tucker_ho_svd(tensor, ranks);
-    auto g_tensor = std::get<0>(ho_svd_guess);
-    auto factors = std::get<1>(ho_svd_guess);
+    auto g_tensor     = std::get<0>(ho_svd_guess);
+    auto factors      = std::get<1>(ho_svd_guess);
 
-    int iter = 0;
+    int  iter      = 0;
     bool converged = false;
     while (iter < n_iter_max) {
         std::vector<Tensor<TType, 2>> new_folds;
@@ -589,13 +589,13 @@ auto tucker_ho_oi(const TTensor<TType, TRank> &tensor, std::vector<size_t> &rank
             Tensor<TType, TRank> *new_fold_buffer;
 
             // Initialize old fold buffer to the tensor
-            old_fold_buffer = new Tensor(dims_buffer);
+            old_fold_buffer  = new Tensor(dims_buffer);
             *old_fold_buffer = tensor;
 
             for_sequence<TRank>([&](auto j) {
                 if (j != i) {
-                    size_t rank = ranks[j];
-                    dims_buffer[j] = rank;
+                    size_t rank     = ranks[j];
+                    dims_buffer[j]  = rank;
                     new_fold_buffer = new Tensor(dims_buffer);
                     new_fold_buffer->zero();
 
@@ -603,7 +603,7 @@ auto tucker_ho_oi(const TTensor<TType, TRank> &tensor, std::vector<size_t> &rank
 
                     for (auto source_combination : std::apply(ranges::views::cartesian_product, source_dims)) {
                         for (size_t r = 0; r < rank; r++) {
-                            auto target_combination = source_combination;
+                            auto target_combination         = source_combination;
                             std::get<j>(target_combination) = r;
 
                             TType &source = std::apply(*old_fold_buffer, source_combination);
@@ -626,9 +626,9 @@ auto tucker_ho_oi(const TTensor<TType, TRank> &tensor, std::vector<size_t> &rank
         });
 
         // Reformulate guess based on HO SVD of new_folds
-        auto new_ho_svd = tucker_ho_svd(tensor, ranks, new_folds);
+        auto new_ho_svd   = tucker_ho_svd(tensor, ranks, new_folds);
         auto new_g_tensor = std::get<0>(new_ho_svd);
-        auto new_factors = std::get<1>(new_ho_svd);
+        auto new_factors  = std::get<1>(new_ho_svd);
 
         // Check for convergence
         double rmsd_max = rmsd(new_g_tensor, g_tensor);
@@ -636,7 +636,7 @@ auto tucker_ho_oi(const TTensor<TType, TRank> &tensor, std::vector<size_t> &rank
 
         // Update G and factors
         g_tensor = new_g_tensor;
-        factors = new_factors;
+        factors  = new_factors;
 
         if (rmsd_max < tolerance) {
             converged = true;
@@ -652,4 +652,4 @@ auto tucker_ho_oi(const TTensor<TType, TRank> &tensor, std::vector<size_t> &rank
     return std::make_tuple(g_tensor, factors);
 }
 
-END_EINSUMS_NAMESPACE_CPP(einsums::decomposition)
+END_EINSUMS_NAMESPACE_HPP(einsums::decomposition)

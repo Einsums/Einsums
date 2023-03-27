@@ -1,12 +1,16 @@
 add_einsums_library(einsums
     SOURCES
         Blas.cpp
+        Decomposition.cpp
+        ElementOperations.cpp
         InitializeFinalize.cpp
         FFT.cpp
+        LinearAlgebra.cpp
         Memory.cpp
         Print.cpp
         Section.cpp
         State.cpp
+        TensorAlgebra.cpp
         Timer.cpp
     PUBLIC_INCLUDES
         include
@@ -18,6 +22,19 @@ add_einsums_library(einsums
         range-v3::range-v3
         fmt::fmt
         h5cpp::h5cpp
+)
+
+extend_einsums_target(einsums
+    SOURCES
+        parallel/MPI.cpp
+    PUBLIC_DEPENDS
+        MPI::MPI_CXX
+    PUBLIC_DEFINES
+        EINSUMS_IN_PARALLEL
+    CONDITION
+        TARGET MPI::MPI_CXX
+    FEATURE_INFO
+        "MPI parallelism"
 )
 
 extend_einsums_target(einsums

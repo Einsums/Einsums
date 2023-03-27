@@ -22,6 +22,6 @@ struct EINSUMS_EXPORT Section {
 };
 
 // Use of LabeledSection requires fmt/format.h to be included and the use of
-// (BEGIN|END)_EINSUMS_NAMESPACE_CPP() defined in _Common.hpp
-#define LabeledSection1(x) Section _section(fmt::format("{}::{} {}", s_Namespace, __func__, x))
-#define LabeledSection0() Section _section(fmt::format("{}::{}", s_Namespace, __func__))
+// (BEGIN|END)_EINSUMS_NAMESPACE_(CPP|HPP)() defined in _Common.hpp
+#define LabeledSection1(x) Section _section(fmt::format("{}::{} {}", detail::s_Namespace, __func__, x))
+#define LabeledSection0()  Section _section(fmt::format("{}::{}", detail::s_Namespace, __func__))

@@ -7,9 +7,9 @@
 
 #include <algorithm>
 
-BEGIN_EINSUMS_NAMESPACE_CPP(einsums::element_operations)
+BEGIN_EINSUMS_NAMESPACE_HPP(einsums::element_operations)
 
-BEGIN_EINSUMS_NAMESPACE_CPP(detail)
+BEGIN_EINSUMS_NAMESPACE_HPP(detail)
 template <typename vector, typename Functor>
 void omp_loop(vector &data, Functor functor) {
     LabeledSection0();
@@ -17,10 +17,10 @@ void omp_loop(vector &data, Functor functor) {
     // TODO: This only works for Tensors not their views because we assume data is a std::vector
 #pragma omp parallel
     {
-        auto tid = omp_get_thread_num();
+        auto tid       = omp_get_thread_num();
         auto chunksize = data.size() / omp_get_num_threads();
-        auto begin = data.begin() + chunksize * tid;
-        auto end = (tid == omp_get_num_threads() - 1) ? data.end() : begin + chunksize;
+        auto begin     = data.begin() + chunksize * tid;
+        auto end       = (tid == omp_get_num_threads() - 1) ? data.end() : begin + chunksize;
 
         EINSUMS_OMP_SIMD
         for (auto i = begin; i < end; i++) {
@@ -28,7 +28,7 @@ void omp_loop(vector &data, Functor functor) {
         }
     }
 }
-END_EINSUMS_NAMESPACE_CPP(detail)
+END_EINSUMS_NAMESPACE_HPP(detail)
 
 template <template <typename, size_t> typename TensorType, typename T, size_t Rank>
 auto sum(const TensorType<T, Rank> &tensor) -> T {
@@ -48,7 +48,7 @@ auto max(const TensorType<T, Rank> &tensor) -> T {
     return *result;
 }
 
-BEGIN_EINSUMS_NAMESPACE_CPP(new_tensor)
+BEGIN_EINSUMS_NAMESPACE_HPP(new_tensor)
 
 using einsums::element_operations::max; // nolint
 using einsums::element_operations::sum; // nolint
@@ -58,9 +58,9 @@ auto abs(const TensorType<T, Rank> &tensor) -> Tensor<T, Rank> {
     LabeledSection0();
 
     auto result = create_tensor_like(tensor);
-    result = tensor;
+    result      = tensor;
 
-    detail::omp_loop(result.vector_data(), [](T &value) { return std::abs(value); });
+    ::einsums::element_operations::detail::omp_loop(result.vector_data(), [](T &value) { return std::abs(value); });
 
     return result;
 }
@@ -70,11 +70,11 @@ auto invert(const TensorType<T, Rank> &tensor) -> Tensor<T, Rank> {
     LabeledSection0();
 
     auto result = create_tensor_like(tensor);
-    result = tensor;
-    auto &data = result.vector_data();
+    result      = tensor;
+    auto &data  = result.vector_data();
 
     // TODO: This only works for Tensor's not their views.
-    detail::omp_loop(data, [&](T &value) { return T{1} / value; });
+    ::einsums::element_operations::detail::omp_loop(data, [&](T &value) { return T{1} / value; });
 
     return result;
 }
@@ -84,10 +84,10 @@ auto exp(const TensorType<T, Rank> &tensor) -> Tensor<T, Rank> {
     LabeledSection0();
 
     auto result = create_tensor_like(tensor);
-    result = tensor;
-    auto &data = result.vector_data();
+    result      = tensor;
+    auto &data  = result.vector_data();
 
-    detail::omp_loop(data, [&](T &value) { return std::exp(value); });
+    ::einsums::element_operations::detail::omp_loop(data, [&](T &value) { return std::exp(value); });
 
     return result;
 }
@@ -97,13 +97,13 @@ auto scale(const T &scale, const TensorType<T, Rank> &tensor) -> Tensor<T, Rank>
     LabeledSection0();
 
     auto result = create_tensor_like(tensor);
-    result = tensor;
-    auto &data = result.vector_data();
+    result      = tensor;
+    auto &data  = result.vector_data();
 
-    detail::omp_loop(data, [&](T &value) { return scale * value; });
+    ::einsums::element_operations::detail::omp_loop(data, [&](T &value) { return scale * value; });
 
     return result;
 }
 
-END_EINSUMS_NAMESPACE_CPP(new_tensor)
-END_EINSUMS_NAMESPACE_CPP(einsums::element_operations)
+END_EINSUMS_NAMESPACE_HPP(new_tensor)
+END_EINSUMS_NAMESPACE_HPP(einsums::element_operations)

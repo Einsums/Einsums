@@ -16,6 +16,13 @@ extend_einsums_target(test-all
         (HAVE_MKL_LAPACKE_H AND HAVE_MKL_CBLAS_H)
 )
 
+extend_einsums_target(test-all
+    SOURCES
+        Parallel.cpp
+    CONDITION
+        TARGET MPI::MPI_CXX
+)
+
 # Enable einsum auto test capabilities
 target_compile_definitions(test-all 
     PRIVATE 

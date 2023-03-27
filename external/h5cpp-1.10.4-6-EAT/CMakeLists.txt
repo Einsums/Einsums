@@ -22,4 +22,7 @@ else(WIN32)
 endif(WIN32)
 
 target_link_libraries(h5cpp INTERFACE HDF5::HDF5 ZLIB::ZLIB)
+if (TARGET MPI::MPI_CXX)
+	target_link_libraries(h5cpp INTERFACE MPI::MPI_CXX)
+endif()
 add_library(h5cpp::h5cpp ALIAS h5cpp)
