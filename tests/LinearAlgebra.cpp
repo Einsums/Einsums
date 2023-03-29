@@ -8,64 +8,274 @@
 #include <catch2/catch.hpp>
 
 template <typename T>
-void gesv_test() {
+void gesvd_test() {
     /*
-   LAPACKE_dgesv Example.
-   ======================
+       DGESVD Example.
+       ==============
 
-   The program computes the solution to the system of linear
-   equations with a square matrix A and multiple
-   right-hand sides B, where A is the coefficient matrix:
+       Program computes the singular value decomposition of a general
+       rectangular matrix A:
 
-     6.80  -6.05  -0.45   8.32  -9.67
-    -2.11  -3.30   2.58   2.71  -5.14
-     5.66   5.36  -2.70   4.35  -7.26
-     5.97  -4.44   0.27  -7.17   6.08
-     8.23   1.08   9.04   2.14  -6.87
+         8.79   9.93   9.83   5.45   3.16
+         6.11   6.91   5.04  -0.27   7.98
+        -9.15  -7.93   4.86   4.85   3.01
+         9.57   1.64   8.83   0.74   5.80
+        -3.49   4.02   9.80  10.00   4.27
+         9.84   0.15  -8.99  -6.02  -5.31
 
-   and B is the right-hand side matrix:
+       Description.
+       ============
 
-     4.02  -1.56   9.81
-     6.19   4.00  -4.09
-    -8.22  -8.67  -4.57
-    -7.57   1.75  -8.61
-    -3.03   2.86   8.99
+       The routine computes the singular value decomposition (SVD) of a real
+       m-by-n matrix A, optionally computing the left and/or right singular
+       vectors. The SVD is written as
+
+       A = U*SIGMA*VT
+
+       where SIGMA is an m-by-n matrix which is zero except for its min(m,n)
+       diagonal elements, U is an m-by-m orthogonal matrix and VT (V transposed)
+       is an n-by-n orthogonal matrix. The diagonal elements of SIGMA
+       are the singular values of A; they are real and non-negative, and are
+       returned in descending order. The first min(m, n) columns of U and V are
+       the left and right singular vectors of A.
+
+       Note that the routine returns VT, not V.
+
+       Example Program Results.
+       ========================
+
+     DGESVD Example Program Results
+
+     Singular values
+      27.47  22.64   8.56   5.99   2.01
+
+     Left singular vectors (stored columnwise)
+      -0.59   0.26   0.36   0.31   0.23
+      -0.40   0.24  -0.22  -0.75  -0.36
+      -0.03  -0.60  -0.45   0.23  -0.31
+      -0.43   0.24  -0.69   0.33   0.16
+      -0.47  -0.35   0.39   0.16  -0.52
+       0.29   0.58  -0.02   0.38  -0.65
+
+     Right singular vectors (stored rowwise)
+      -0.25  -0.40  -0.69  -0.37  -0.41
+       0.81   0.36  -0.25  -0.37  -0.10
+      -0.26   0.70  -0.22   0.39  -0.49
+       0.40  -0.45   0.25   0.43  -0.62
+      -0.22   0.14   0.59  -0.63  -0.44
+    */
+    constexpr int M{6};
+    constexpr int N{5};
+    constexpr int LDA{M};
+    constexpr int LDU{M};
+    constexpr int LDVT{N};
+
+    using namespace einsums;
+
+    auto a = create_tensor<T>("a", N, LDA);
+
+    a.vector_data() = std::vector<T, einsums::AlignedAllocator<T, 64>>{8.79, 6.11, -9.15, 9.57,  -3.49, 9.84, 9.93, 6.91,  -7.93, 1.64,
+                                                                       4.02, 0.15, 9.83,  5.04,  4.86,  8.83, 9.80, -8.99, 5.45,  -0.27,
+                                                                       4.85, 0.74, 10.00, -6.02, 3.16,  7.98, 3.01, 5.80,  4.27,  -5.31};
+
+    auto [u, s, vt] = linear_algebra::svd(a);
+
+    // println(a);
+    // println(u);
+    // println(s);
+    // println(vt);
+
+    CHECK_THAT(u.vector_data(),
+               Catch::Matchers::Approx(std::vector<T, einsums::AlignedAllocator<T, 64>>{
+                                           0.25138279,  0.81483669,  -0.26061851, 0.39672378, -0.21802776, 0.39684555,  0.35866150,
+                                           0.70076821,  -0.45071124, 0.14020995,  0.69215101, -0.24888801, -0.22081145, 0.25132115,
+                                           0.58911945,  0.36617044,  -0.36859354, 0.38593848, 0.43424860,  -0.62652825, 0.40763524,
+                                           -0.09796257, -0.49325014, -0.62268407, -0.43955169})
+                   .margin(0.00001));
+
+    CHECK_THAT(s.vector_data(), Catch::Matchers::Approx(std::vector<T, einsums::AlignedAllocator<T, 64>>{
+                                                            27.46873242, 22.64318501, 8.55838823, 5.98572320, 2.01489966})
+                                    .margin(0.00001));
+
+    CHECK_THAT(vt.vector_data(),
+               Catch::Matchers::Approx(
+                   std::vector<T, einsums::AlignedAllocator<T, 64>>{
+                       0.59114259, 0.39756730,  0.03347835,  0.42970681, 0.46974775,  -0.29335850, 0.26316738,  0.24379860,  -0.60027254,
+                       0.23616664, -0.35089183, 0.57626247,  0.35543054, -0.22239095, -0.45083907, -0.68586266, 0.38744465,  -0.02085230,
+                       0.31426409, -0.75346601, 0.23345041,  0.33186099, 0.15873522,  0.37907773,  0.22993860,  -0.36358970, -0.30547556,
+                       0.16492754, -0.51825762, -0.65255153, 0.55075318, 0.18203492,  0.53617334,  -0.38966295, -0.46077210, 0.10910708})
+                   .margin(0.00001));
+}
+
+TEST_CASE("gesvd") {
+    SECTION("float") {
+        gesvd_test<float>();
+    }
+    SECTION("double") {
+        gesvd_test<double>();
+    }
+}
+
+template <typename T>
+void gesdd_test() {
+    /*
+   DGESDD Example.
+   ==============
+
+   Program computes the singular value decomposition of a general
+   rectangular matrix A using a divide and conquer method, where A is:
+
+     7.52  -1.10  -7.95   1.08
+    -0.76   0.62   9.34  -7.10
+     5.13   6.62  -5.66   0.87
+    -4.75   8.52   5.75   5.30
+     1.33   4.91  -5.49  -3.52
+    -2.40  -6.77   2.34   3.95
 
    Description.
    ============
 
-   The routine solves for X the system of linear equations A*X = B,
-   where A is an n-by-n matrix, the columns of matrix B are individual
-   right-hand sides, and the columns of X are the corresponding
-   solutions.
+   The routine computes the singular value decomposition (SVD) of a real
+   m-by-n matrix A, optionally computing the left and/or right singular
+   vectors. If singular vectors are desired, it uses a divide and conquer
+   algorithm. The SVD is written as
 
-   The LU decomposition with partial pivoting and row interchanges is
-   used to factor A as A = P*L*U, where P is a permutation matrix, L
-   is unit lower triangular, and U is upper triangular. The factored
-   form of A is then used to solve the system of equations A*X = B.
+   A = U*SIGMA*VT
+
+   where SIGMA is an m-by-n matrix which is zero except for its min(m,n)
+   diagonal elements, U is an m-by-m orthogonal matrix and VT (V transposed)
+   is an n-by-n orthogonal matrix. The diagonal elements of SIGMA
+   are the singular values of A; they are real and non-negative, and are
+   returned in descending order. The first min(m, n) columns of U and V are
+   the left and right singular vectors of A.
+
+   Note that the routine returns VT, not V.
 
    Example Program Results.
    ========================
 
- LAPACKE_dgesv (column-major, high-level) Example Program Results
+ DGESDD Example Program Results
 
- Solution
-  -0.80  -0.39   0.96
-  -0.70  -0.55   0.22
-   0.59   0.84   1.90
-   1.32  -0.10   5.36
-   0.57   0.11   4.04
+ Singular values
+  18.37  13.63  10.85   4.49
 
- Details of LU factorization
-   8.23   1.08   9.04   2.14  -6.87
-   0.83  -6.94  -7.92   6.55  -3.99
-   0.69  -0.67 -14.18   7.24  -5.19
-   0.73   0.75   0.02 -13.82  14.19
-  -0.26   0.44  -0.59  -0.34  -3.43
+ Left singular vectors (stored columnwise)
+  -0.57   0.18   0.01   0.53
+   0.46  -0.11  -0.72   0.42
+  -0.45  -0.41   0.00   0.36
+   0.33  -0.69   0.49   0.19
+  -0.32  -0.31  -0.28  -0.61
+   0.21   0.46   0.39   0.09
 
- Pivot indices
-      5      5      3      4      5
-    */
+ Right singular vectors (stored rowwise)
+  -0.52  -0.12   0.85  -0.03
+   0.08  -0.99  -0.09  -0.01
+  -0.28  -0.02  -0.14   0.95
+   0.81   0.01   0.50   0.31
+*/
+    constexpr int M{6};
+    constexpr int N{4};
+    constexpr int LDA{M};
+    constexpr int LDU{M};
+    constexpr int LDVT{N};
+
+    using namespace einsums;
+
+    auto a = create_tensor<T>("a", N, LDA);
+
+    a.vector_data() =
+        std::vector<T, einsums::AlignedAllocator<T, 64>>{7.52,  -0.76, 5.13,  -4.75, 1.33,  -2.40, -1.10, 0.62,  6.62, 8.52, 4.91,  -6.77,
+                                                         -7.95, 9.34,  -5.66, 5.75,  -5.49, 2.34,  1.08,  -7.10, 0.87, 5.30, -3.52, 3.95};
+
+    auto [u, s, vt] = linear_algebra::svd_dd(a);
+
+    CHECK_THAT(u.vector_data(), Catch::Matchers::Approx(std::vector<T, einsums::AlignedAllocator<T, 64>>{
+                                                            -0.51664471, 0.07861311, -0.28063941, -0.80507127, -0.12123225, -0.99232861,
+                                                            -0.02120364, -0.01170762, 0.84706383, -0.09452544, -0.14127098, -0.50357751,
+                                                            -0.02939123, -0.01299383, 0.94912298, -0.31326168})
+                                    .margin(0.00001));
+    CHECK_THAT(s.vector_data(),
+               Catch::Matchers::Approx(std::vector<T, einsums::AlignedAllocator<T, 64>>{18.36597845, 13.62997968, 10.85333573, 4.49156909})
+                   .margin(0.00001));
+
+    CHECK_THAT(vt.vector_data(),
+               Catch::Matchers::Approx(
+                   std::vector<T, einsums::AlignedAllocator<T, 64>>{
+                       -0.57267370, 0.45942229,  -0.45044682, 0.33409639,  -0.31739725, 0.21380422,  0.17756270,  -0.10752776, -0.41395666,
+                       -0.69262324, -0.30837134, 0.45905264,  0.00562710,  -0.72402666, 0.00417222,  0.49481800,  -0.28034658, 0.39025282,
+                       -0.52902201, -0.41737321, -0.36285960, -0.18512862, 0.60982975,  -0.09001830, -0.36919986, 0.13722622,  0.63616578,
+                       -0.17527229, 0.18919257,  0.61126044,  0.47361570,  0.24519971,  -0.29890829, 0.31434824,  0.56381357,  0.45773196})
+                   .margin(0.00001));
+}
+
+TEST_CASE("gesdd") {
+    SECTION("double") {
+        gesdd_test<double>();
+    }
+    SECTION("float") {
+        gesdd_test<float>();
+    }
+}
+
+template <typename T>
+void gesv_test() {
+    /*
+       LAPACKE_dgesv Example.
+       ======================
+
+       The program computes the solution to the system of linear
+       equations with a square matrix A and multiple
+       right-hand sides B, where A is the coefficient matrix:
+
+         6.80  -6.05  -0.45   8.32  -9.67
+        -2.11  -3.30   2.58   2.71  -5.14
+         5.66   5.36  -2.70   4.35  -7.26
+         5.97  -4.44   0.27  -7.17   6.08
+         8.23   1.08   9.04   2.14  -6.87
+
+       and B is the right-hand side matrix:
+
+         4.02  -1.56   9.81
+         6.19   4.00  -4.09
+        -8.22  -8.67  -4.57
+        -7.57   1.75  -8.61
+        -3.03   2.86   8.99
+
+       Description.
+       ============
+
+       The routine solves for X the system of linear equations A*X = B,
+       where A is an n-by-n matrix, the columns of matrix B are individual
+       right-hand sides, and the columns of X are the corresponding
+       solutions.
+
+       The LU decomposition with partial pivoting and row interchanges is
+       used to factor A as A = P*L*U, where P is a permutation matrix, L
+       is unit lower triangular, and U is upper triangular. The factored
+       form of A is then used to solve the system of equations A*X = B.
+
+       Example Program Results.
+       ========================
+
+     LAPACKE_dgesv (column-major, high-level) Example Program Results
+
+     Solution
+      -0.80  -0.39   0.96
+      -0.70  -0.55   0.22
+       0.59   0.84   1.90
+       1.32  -0.10   5.36
+       0.57   0.11   4.04
+
+     Details of LU factorization
+       8.23   1.08   9.04   2.14  -6.87
+       0.83  -6.94  -7.92   6.55  -3.99
+       0.69  -0.67 -14.18   7.24  -5.19
+       0.73   0.75   0.02 -13.82  14.19
+      -0.26   0.44  -0.59  -0.34  -3.43
+
+     Pivot indices
+          5      5      3      4      5
+        */
 
     constexpr int N{5};
     constexpr int NRHS{3};

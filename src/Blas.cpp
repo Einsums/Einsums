@@ -290,6 +290,28 @@ auto zgesdd(char jobz, eint m, eint n, std::complex<double> *a, eint lda, double
 #endif
 }
 
+auto sgesvd(char jobu, char jobvt, eint m, eint n, float *a, eint lda, float *s, float *u, eint ldu, float *vt, eint ldvt, float *superb)
+    -> eint {
+#if defined(EINSUMS_HAVE_MKL_LAPACKE_H)
+    return ::einsums::backend::mkl::sgesvd(jobu, jobvt, m, n, a, lda, s, u, ldu, vt, ldvt, superb);
+#elif defined(EINSUMS_HAVE_LAPACKE_H)
+    return ::einsums::backend::cblas::sgesvd(jobu, jobvt, m, n, a, lda, s, u, ldu, vt, ldvt, superb);
+#else
+    throw std::runtime_error("dgesvd not implemented.");
+#endif
+}
+
+auto dgesvd(char jobu, char jobvt, eint m, eint n, double *a, eint lda, double *s, double *u, eint ldu, double *vt, eint ldvt,
+            double *superb) -> eint {
+#if defined(EINSUMS_HAVE_MKL_LAPACKE_H)
+    return ::einsums::backend::mkl::dgesvd(jobu, jobvt, m, n, a, lda, s, u, ldu, vt, ldvt, superb);
+#elif defined(EINSUMS_HAVE_LAPACKE_H)
+    return ::einsums::backend::cblas::dgesvd(jobu, jobvt, m, n, a, lda, s, u, ldu, vt, ldvt, superb);
+#else
+    throw std::runtime_error("dgesvd not implemented.");
+#endif
+}
+
 auto dgees(char jobvs, eint n, double *a, eint lda, eint *sdim, double *wr, double *wi, double *vs, eint ldvs) -> eint {
 #if defined(EINSUMS_HAVE_MKL_LAPACKE_H)
     return ::einsums::backend::mkl::dgees(jobvs, n, a, lda, sdim, wr, wi, vs, ldvs);

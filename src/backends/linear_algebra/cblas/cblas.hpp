@@ -106,6 +106,9 @@ auto dgetri(int, double *, int, const int *, double *, int) -> int;
 
 auto dlange(char norm_type, int m, int n, const double *A, int lda, double *work) -> double;
 
+auto sgesvd(char, char, int, int, float *, int, float *, float *, int, float *, int, float *) -> int;
+auto dgesvd(char, char, int, int, double *, int, double *, double *, int, double *, int, double *) -> int;
+
 auto sgesdd(char, int, int, float *, int, float *, float *, int, float *, int) -> int;
 auto dgesdd(char, int, int, double *, int, double *, double *, int, double *, int) -> int;
 auto cgesdd(char, int, int, std::complex<float> *, int, float *, std::complex<float> *, int, std::complex<float> *, int) -> int;

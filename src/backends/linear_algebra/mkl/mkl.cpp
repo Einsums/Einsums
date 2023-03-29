@@ -502,6 +502,18 @@ auto zgesdd(char jobz, eint m, eint n, std::complex<double> *a, eint lda, double
                           reinterpret_cast<lapack_complex_double *>(u), ldu, reinterpret_cast<lapack_complex_double *>(vt), ldvt);
 }
 
+auto sgesvd(char jobu, char jobvt, eint m, eint n, float *a, eint lda, float *s, float *u, eint ldu, float *vt, eint ldvt, float *superb)
+    -> eint {
+    LabeledSection1(mkl_interface());
+    return LAPACKE_sgesvd(LAPACK_ROW_MAJOR, jobu, jobvt, m, n, a, lda, s, u, ldu, vt, ldvt, superb);
+}
+
+auto dgesvd(char jobu, char jobvt, eint m, eint n, double *a, eint lda, double *s, double *u, eint ldu, double *vt, eint ldvt,
+            double *superb) -> eint {
+    LabeledSection1(mkl_interface());
+    return LAPACKE_dgesvd(LAPACK_ROW_MAJOR, jobu, jobvt, m, n, a, lda, s, u, ldu, vt, ldvt, superb);
+}
+
 auto sgees(char jobvs, eint n, float *a, eint lda, eint *sdim, float *wr, float *wi, float *vs, eint ldvs) -> eint {
     LabeledSection1(mkl_interface());
     return LAPACKE_sgees(LAPACK_ROW_MAJOR, jobvs, 'N', nullptr, n, a, lda, sdim, wr, wi, vs, ldvs);

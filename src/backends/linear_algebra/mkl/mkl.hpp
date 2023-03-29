@@ -151,6 +151,9 @@ auto dgesdd(char, eint, eint, double *, eint, double *, double *, eint, double *
 auto cgesdd(char, eint, eint, std::complex<float> *, eint, float *, std::complex<float> *, eint, std::complex<float> *, eint) -> eint;
 auto zgesdd(char, eint, eint, std::complex<double> *, eint, double *, std::complex<double> *, eint, std::complex<double> *, eint) -> eint;
 
+auto sgesvd(char, char, eint, eint, float *, eint, float *, float *, eint, float *, eint, float *) -> eint;
+auto dgesvd(char, char, eint, eint, double *, eint, double *, double *, eint, double *, eint, double *) -> eint;
+
 auto sgees(char jobvs, eint n, float *a, eint lda, eint *sdim, float *wr, float *wi, float *vs, eint ldvs) -> eint;
 auto dgees(char jobvs, eint n, double *a, eint lda, eint *sdim, double *wr, double *wi, double *vs, eint ldvs) -> eint;
 

@@ -371,9 +371,49 @@ auto norm(Norm norm_type, const AType<ADataType, ARank> &a) ->
     }
 }
 
+// Uses the original svd function found in lapack, gesvd, request all left and right vectors.
 template <template <typename, size_t> typename AType, typename T, size_t ARank>
-auto svd_a(const AType<T, ARank> &_A) -> typename std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, 2, T>,
-                                                                   std::tuple<Tensor<T, 2>, Tensor<remove_complex_t<T>, 1>, Tensor<T, 2>>> {
+auto svd(const AType<T, ARank> &_A) -> typename std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, 2, T>,
+                                                                 std::tuple<Tensor<T, 2>, Tensor<remove_complex_t<T>, 1>, Tensor<T, 2>>> {
+    LabeledSection0();
+
+    // Calling svd will destroy the original data. Make a copy of it.
+    Tensor<T, 2> A = _A;
+
+    size_t m = A.dim(0);
+    size_t n = A.dim(1);
+
+    // Test if it absolutely necessary to zero out these tensors first.
+    auto U = create_tensor<T>("U (stored columnwise)", m, m);
+    U.zero();
+    auto S = create_tensor<remove_complex_t<T>>("S", std::min(m, n));
+    S.zero();
+    auto Vt = create_tensor<T>("Vt (stored rowwise)", n, n);
+    Vt.zero();
+    auto superb = create_tensor<T>("superb", std::min(m, n) - 2);
+    superb.zero();
+
+    int info = blas::gesvd('A', 'A', m, n, A.data(), n, S.data(), U.data(), m, Vt.data(), n, superb.data());
+
+    if (info != 0) {
+        if (info < 0) {
+            println_abort("svd: Argument {} has an invalid parameter\n#2 (m) = {}, #3 (n) = {}, #5 (n) = {}, #8 (m) = {}", -info, m, n, n,
+                          m);
+        } else {
+            println_abort("svd: error value {}", info);
+        }
+    }
+
+    return std::make_tuple(U, S, Vt);
+}
+
+enum class Vectors : char { All = 'A', Some = 'S', Overwrite = 'O', None = 'N' };
+
+// TODO: This needs to be renamed to indicated that it uses the divide-and-conquer algorithm
+template <template <typename, size_t> typename AType, typename T, size_t ARank>
+auto svd_dd(const AType<T, ARank> &_A, Vectors job = Vectors::All) ->
+    typename std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, 2, T>,
+                              std::tuple<Tensor<T, 2>, Tensor<remove_complex_t<T>, 1>, Tensor<T, 2>>> {
     LabeledSection0();
 
     // Calling svd will destroy the original data. Make a copy of it.
@@ -390,8 +430,8 @@ auto svd_a(const AType<T, ARank> &_A) -> typename std::enable_if_t<is_incore_ran
     auto Vt = create_tensor<T>("Vt (stored rowwise)", n, n);
     Vt.zero();
 
-    int info = blas::gesdd('A', static_cast<int>(m), static_cast<int>(n), A.data(), static_cast<int>(n), S.data(), U.data(),
-                           static_cast<int>(m), Vt.data(), static_cast<int>(n));
+    int info = blas::gesdd(static_cast<char>(job), static_cast<int>(m), static_cast<int>(n), A.data(), static_cast<int>(n), S.data(),
+                           U.data(), static_cast<int>(m), Vt.data(), static_cast<int>(n));
 
     if (info != 0) {
         if (info < 0) {
@@ -437,7 +477,7 @@ auto truncated_svd(const AType<T, ARank> &_A, size_t k) ->
     gemm<true, false>(T{1.0}, Y, _A, T{0.0}, &B);
 
     // Perform svd on B
-    auto [Utilde, S, Vt] = svd_a(B);
+    auto [Utilde, S, Vt] = svd_dd(B);
 
     // Cast U back into full basis
     Tensor<T, 2> U("U", m, k + 5);

@@ -315,6 +315,18 @@ auto dlange(char norm_type, int m, int n, const double *A, int lda, double *) ->
     return LAPACKE_dlange(LAPACK_ROW_MAJOR, norm_type, m, n, A, lda);
 }
 
+auto sgesvd(char jobu, char jobvt, eint m, eint n, float *a, eint lda, float *s, float *u, eint ldu, float *vt, eint ldvt, float *superb)
+    -> eint {
+    LabeledSection0();
+    return LAPACKE_sgesvd(LAPACK_ROW_MAJOR, jobu, jobvt, m, n, a, lda, s, u, ldu, vt, ldvt, superb);
+}
+
+auto dgesvd(char jobu, char jobvt, eint m, eint n, double *a, eint lda, double *s, double *u, eint ldu, double *vt, eint ldvt,
+            double *superb) -> eint {
+    LabeledSection0();
+    return LAPACKE_dgesvd(LAPACK_ROW_MAJOR, jobu, jobvt, m, n, a, lda, s, u, ldu, vt, ldvt, superb);
+}
+
 auto sgesdd(char jobz, int m, int n, float *a, int lda, float *s, float *u, int ldu, float *vt, int ldvt) -> int {
     LabeledSection0();
 

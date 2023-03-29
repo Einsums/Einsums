@@ -555,6 +555,28 @@ inline auto gesdd<std::complex<double>>(char jobz, eint m, eint n, std::complex<
 }
 
 namespace detail {
+auto EINSUMS_EXPORT sgesvd(char jobu, char jobvt, eint m, eint n, float *a, eint lda, float *s, float *u, eint ldu, float *vt, eint ldvt,
+                           float *superb) -> eint;
+auto EINSUMS_EXPORT dgesvd(char jobu, char jobvt, eint m, eint n, double *a, eint lda, double *s, double *u, eint ldu, double *vt,
+                           eint ldvt, double *superb) -> eint;
+} // namespace detail
+
+template <typename T>
+auto gesvd(char jobu, char jobvt, eint m, eint n, T *a, eint lda, T *s, T *u, eint ldu, T *vt, eint ldvt, T *superb);
+
+template <>
+inline auto gesvd<float>(char jobu, char jobvt, eint m, eint n, float *a, eint lda, float *s, float *u, eint ldu, float *vt, eint ldvt,
+                         float *superb) {
+    return detail::sgesvd(jobu, jobvt, m, n, a, lda, s, u, ldu, vt, ldvt, superb);
+}
+
+template <>
+inline auto gesvd<double>(char jobu, char jobvt, eint m, eint n, double *a, eint lda, double *s, double *u, eint ldu, double *vt, eint ldvt,
+                          double *superb) {
+    return detail::dgesvd(jobu, jobvt, m, n, a, lda, s, u, ldu, vt, ldvt, superb);
+}
+
+namespace detail {
 auto EINSUMS_EXPORT sgees(char jobvs, eint n, float *a, eint lda, eint *sdim, float *wr, float *wi, float *vs, eint ldvs) -> eint;
 auto EINSUMS_EXPORT dgees(char jobvs, eint n, double *a, eint lda, eint *sdim, double *wr, double *wi, double *vs, eint ldvs) -> eint;
 } // namespace detail

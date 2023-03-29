@@ -476,7 +476,7 @@ auto initialize_tucker(std::vector<Tensor<TType, 2>> &folds, std::vector<size_t>
     // Perform compile-time looping.
     for_sequence<TRank>([&](auto i) {
         size_t rank = ranks[i];
-        auto [U, S, _] = linear_algebra::svd_a(folds[i]);
+        auto [U, S, _] = linear_algebra::svd_dd(folds[i]);
 
         // println(tensor_algebra::unfold<i>(tensor));
         // println(S);
