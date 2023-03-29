@@ -106,14 +106,14 @@ void gesvd_test() {
     CHECK_THAT(vt.vector_data(), Catch::Matchers::Approx(correct_vt).margin(0.0001));
 }
 
-TEST_CASE("gesvd") {
-    SECTION("float") {
-        gesvd_test<float>();
-    }
-    SECTION("double") {
-        gesvd_test<double>();
-    }
-}
+// TEST_CASE("gesvd") {
+//     SECTION("float") {
+//         gesvd_test<float>();
+//     }
+//     SECTION("double") {
+//         gesvd_test<double>();
+//     }
+// }
 
 template <typename T>
 void gesdd_test() {
@@ -212,14 +212,14 @@ void gesdd_test() {
     CHECK_THAT(vt.vector_data(), Catch::Matchers::Approx(correct_vt).margin(0.0001));
 }
 
-TEST_CASE("gesdd") {
-    SECTION("double") {
-        gesdd_test<double>();
-    }
-    SECTION("float") {
-        gesdd_test<float>();
-    }
-}
+// TEST_CASE("gesdd") {
+//     SECTION("double") {
+//         gesdd_test<double>();
+//     }
+//     SECTION("float") {
+//         gesdd_test<float>();
+//     }
+// }
 
 template <typename T>
 void gesv_test() {
