@@ -358,15 +358,8 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
     auto operator=(const Tensor<T, Rank> &other) -> Tensor<T, Rank> & {
         bool realloc{false};
         for (int i = 0; i < Rank; i++) {
-            if (dim(i) == 0)
+            if (dim(i) == 0 || (dim(i) != other.dim(i)))
                 realloc = true;
-            else if (dim(i) != other.dim(i)) {
-                // std::string str = fmt::format("Tensor::operator= dimensions do not match (this){} (other){}", dim(i), other.dim(i));
-                // if constexpr (Rank != 1) {
-                // throw std::runtime_error(str);
-                // } else
-                realloc = true;
-            }
         }
 
         if (realloc) {
