@@ -7,6 +7,7 @@
 #include "einsums/Utilities.hpp"
 
 #include <catch2/catch.hpp>
+#include <filesystem>
 
 using namespace einsums;
 namespace {
@@ -200,6 +201,64 @@ TEST_CASE("gesdd") {
     }
     SECTION("float") {
         gesdd_test<float>();
+    }
+}
+
+TEST_CASE("erica_svd") {
+    std::filesystem::path current_source_path(TEST_PATH);
+    current_source_path /= "EricaSVD.h5";
+
+    h5::fd_t erica_svd = h5::open(current_source_path.c_str(), H5F_ACC_RDONLY);
+
+    auto a = read<double, 2>(erica_svd, "SVD Input");
+    auto answer = read<double, 2>(erica_svd, "SVD VT Output");
+
+    SECTION("svd") {
+        auto [u, s, vt] = linear_algebra::svd(a);
+        // println(s);
+
+        // Using u, s, and vt reconstruct a and test a against the reconstructed a
+        auto new_a = reconstruct(u, s, vt, a.dim(0), a.dim(1));
+
+        CHECK_THAT(new_a.vector_data(), Catch::Matchers::Approx(a.vector_data()).margin(0.0001));
+
+        // Compute overlap between matrices
+        auto overlap = create_tensor("overlap", a.dim(0), a.dim(0));
+        {
+            using namespace einsums;
+            using namespace einsums::tensor_algebra;
+            einsum(Indices{index::i, index::j}, &overlap, Indices{index::i, index::k}, vt, Indices{index::j, index::k}, answer);
+            // println(overlap);
+
+            // Check the diagonal values to ensure they are either 1 or -1.
+            for (size_t i = 0; i < a.dim(0); i++) {
+                CHECK_THAT(std::fabs(overlap(i, i)), Catch::Matchers::WithinAbs(1.0, 0.000001));
+            }
+        }
+    }
+
+    SECTION("dd") {
+        auto [u, s, vt] = linear_algebra::svd_dd(a);
+        // println(s);
+
+        // Using u, s, and vt reconstruct a and test a against the reconstructed a
+        auto new_a = reconstruct(u, s, vt, a.dim(0), a.dim(1));
+
+        CHECK_THAT(new_a.vector_data(), Catch::Matchers::Approx(a.vector_data()).margin(0.0001));
+
+        // Compute overlap between matrices
+        auto overlap = create_tensor("overlap", a.dim(0), a.dim(0));
+        {
+            using namespace einsums;
+            using namespace einsums::tensor_algebra;
+            einsum(Indices{index::i, index::j}, &overlap, Indices{index::i, index::k}, vt, Indices{index::j, index::k}, answer);
+            // println(overlap);
+
+            // Check the diagonal values to ensure they are either 1 or -1.
+            for (size_t i = 0; i < a.dim(0); i++) {
+                CHECK_THAT(std::fabs(overlap(i, i)), Catch::Matchers::WithinAbs(1.0, 0.000001));
+            }
+        }
     }
 }
 

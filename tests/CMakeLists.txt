@@ -17,5 +17,10 @@ extend_einsums_target(test-all
 )
 
 # Enable einsum auto test capabilities
-target_compile_definitions(test-all PRIVATE EINSUMS_USE_CATCH2 EINSUMS_CONTINUOUSLY_TEST_EINSUM)
+target_compile_definitions(test-all 
+    PRIVATE 
+        EINSUMS_USE_CATCH2 
+        EINSUMS_CONTINUOUSLY_TEST_EINSUM
+        TEST_PATH="${CMAKE_CURRENT_LIST_DIR}"    
+)
 target_link_libraries(test-all Catch2::Catch2 einsums)

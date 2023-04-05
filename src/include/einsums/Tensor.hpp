@@ -1604,9 +1604,6 @@ auto println(const AType<T, Rank> &A, TensorPrintOptions options) ->
                             } else
                                 oss << fmt::format("{:14} ", value);
                         }
-                        // } else {
-                        // oss << std::setw(14) << 0.0;
-                        // }
                         if (j % options.width == options.width - 1 && j != final_dim - 1) {
                             oss << "\n";
                         }
