@@ -10,7 +10,7 @@
 
 #include <algorithm>
 
-namespace einsums::backend::netlib {
+namespace einsums::backend::linear_algebra::netlib {
 
 namespace {
 /* Subroutine */
@@ -25,11 +25,11 @@ auto _dgemm(char *transa, char *transb, int *m, int *n, int *k, double *alpha, c
     int a_dim1, a_offset, b_dim1, b_offset, c_dim1, c_offset, i__1, i__2, i__3;
 
     /* Local variables */
-    int info;
+    int      info;
     long int nota, notb;
-    double temp;
-    int i, j, l, ncola;
-    int nrowa, nrowb;
+    double   temp;
+    int      i, j, l, ncola;
+    int      nrowa, nrowb;
 
     /*  Purpose
         =======
@@ -193,9 +193,9 @@ auto _dgemm(char *transa, char *transb, int *m, int *n, int *k, double *alpha, c
        Parameter adjustments
            Function Body */
 
-    //#define A(I, J) a[(I)-1 + ((J)-1) * (*lda)]
-    // #define B(I, J) b[(I)-1 + ((J)-1) * (*ldb)]
-    // #define C(I, J) c[(I)-1 + ((J)-1) * (*ldc)]
+    // #define A(I, J) a[(I)-1 + ((J)-1) * (*lda)]
+    //  #define B(I, J) b[(I)-1 + ((J)-1) * (*ldb)]
+    //  #define C(I, J) c[(I)-1 + ((J)-1) * (*ldc)]
 
     auto A = [&](int I, int J) -> const double & {
         println("A({}, {}) = A[{}] = {}", I - 1, J - 1, (I)-1 + ((J)-1) * (*lda), a[(I)-1 + ((J)-1) * (*lda)]);
@@ -415,4 +415,4 @@ void dgemm(char transa, char transb, int m, int n, int k, double alpha, const do
     _dgemm(&transb, &transa, &n, &m, &k, &alpha, b, &ldb, a, &lda, &beta, c, &ldc);
 }
 
-} // namespace einsums::backend::netlib
+} // namespace einsums::backend::linear_algebra::netlib

@@ -1,7 +1,7 @@
 #include "einsums/Print.hpp"
 #include "internal.hpp"
 
-namespace einsums::backend::netlib {
+namespace einsums::backend::linear_algebra::netlib {
 
 /* Subroutine */ auto xerbla(const char *srname, int *info) -> int {
     /*  -- LAPACK auxiliary routine (version 2.0) --
@@ -40,4 +40,4 @@ namespace einsums::backend::netlib {
 
     return 0;
 } /* xerbla_ */
-} // namespace einsums::backend::netlib
+} // namespace einsums::backend::linear_algebra::netlib

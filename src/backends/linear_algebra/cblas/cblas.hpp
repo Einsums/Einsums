@@ -2,7 +2,7 @@
 
 #include <complex>
 
-namespace einsums::backend::cblas {
+namespace einsums::backend::linear_algebra::cblas {
 
 void initialize();
 void finalize();
@@ -136,4 +136,4 @@ auto dorgqr(int m, int n, int k, double *a, int lda, const double *tau) -> int;
 auto cungqr(int m, int n, int k, std::complex<float> *a, int lda, const std::complex<float> *tau) -> int;
 auto zungqr(int m, int n, int k, std::complex<double> *a, int lda, const std::complex<double> *tau) -> int;
 
-} // namespace einsums::backend::cblas
+} // namespace einsums::backend::linear_algebra::cblas

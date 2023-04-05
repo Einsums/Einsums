@@ -5,7 +5,7 @@
 
 #include "internal.hpp"
 
-namespace einsums::backend::netlib {
+namespace einsums::backend::linear_algebra::netlib {
 
 long int lsame(const char *ca, const char *cb) {
 
@@ -105,4 +105,4 @@ long int lsame(const char *ca, const char *cb) {
     return ret_val;
 } /* lsame_ */
 
-} // namespace einsums::backend::netlib
+} // namespace einsums::backend::linear_algebra::netlib

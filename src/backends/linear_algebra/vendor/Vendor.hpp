@@ -2,7 +2,7 @@
 
 #include <complex>
 
-namespace einsums::backend::vendor {
+namespace einsums::backend::linear_algebra::vendor {
 
 void initialize();
 void finalize();
@@ -136,4 +136,4 @@ void zlassq(int n, const std::complex<double> *x, int incx, double *scale, doubl
 
 auto dgesdd(char, int, int, double *, int, double *, double *, int, double *, int, double *, int, int *) -> int;
 
-} // namespace einsums::backend::vendor
+} // namespace einsums::backend::linear_algebra::vendor

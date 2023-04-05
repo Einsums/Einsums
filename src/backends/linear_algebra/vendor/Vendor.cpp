@@ -9,21 +9,21 @@
 #include <stdexcept>
 
 #ifndef FC_SYMBOL
-#define FC_SYMBOL 2
+#    define FC_SYMBOL 2
 #endif
 
 #if FC_SYMBOL == 1
 /* Mangling for Fortran global symbols without underscores. */
-#define FC_GLOBAL(name, NAME) name
+#    define FC_GLOBAL(name, NAME) name
 #elif FC_SYMBOL == 2
 /* Mangling for Fortran global symbols with underscores. */
-#define FC_GLOBAL(name, NAME) name##_
+#    define FC_GLOBAL(name, NAME) name##_
 #elif FC_SYMBOL == 3
 /* Mangling for Fortran global symbols without underscores. */
-#define FC_GLOBAL(name, NAME) NAME
+#    define FC_GLOBAL(name, NAME) NAME
 #elif FC_SYMBOL == 4
 /* Mangling for Fortran global symbols with underscores. */
-#define FC_GLOBAL(name, NAME) NAME##_
+#    define FC_GLOBAL(name, NAME) NAME##_
 #endif
 
 extern "C" {
@@ -65,7 +65,7 @@ extern void FC_GLOBAL(zscal, ZSCAL)(int *, std::complex<double> *, std::complex<
 extern void FC_GLOBAL(csscal, CSSCAL)(int *, float *, std::complex<float> *, int *);
 extern void FC_GLOBAL(zdscal, ZDSCAL)(int *, double *, std::complex<double> *, int *);
 
-extern float FC_GLOBAL(sdot, SDOT)(int *, const float *, int *, const float *, int *);
+extern float  FC_GLOBAL(sdot, SDOT)(int *, const float *, int *, const float *, int *);
 extern double FC_GLOBAL(ddot, DDOT)(int *, const double *, int *, const double *, int *);
 extern float _Complex FC_GLOBAL(cdotu, CDOTU)(int *, const std::complex<float> *, int *, const std::complex<float> *, int *);
 extern double _Complex FC_GLOBAL(zdotu, ZDOTU)(int *, const std::complex<double> *, int *, const std::complex<double> *, int *);
@@ -92,9 +92,9 @@ extern void FC_GLOBAL(dgetri, DGETRI)(int *, double *, int *, int *, double *, i
 extern void FC_GLOBAL(cgetri, CGETRI)(int *, std::complex<float> *, int *, int *, std::complex<float> *, int *, int *);
 extern void FC_GLOBAL(zgetri, ZGETRI)(int *, std::complex<double> *, int *, int *, std::complex<double> *, int *, int *);
 
-extern float FC_GLOBAL(slange, SLANGE)(char, int, int, const float *, int, float *);                  // NOLINT
+extern float  FC_GLOBAL(slange, SLANGE)(char, int, int, const float *, int, float *);                 // NOLINT
 extern double FC_GLOBAL(dlange, DLANGE)(char, int, int, const double *, int, double *);               // NOLINT
-extern float FC_GLOBAL(clange, CLANGE)(char, int, int, const std::complex<float> *, int, float *);    // NOLINT
+extern float  FC_GLOBAL(clange, CLANGE)(char, int, int, const std::complex<float> *, int, float *);   // NOLINT
 extern double FC_GLOBAL(zlange, ZLANGE)(char, int, int, const std::complex<double> *, int, double *); // NOLINT
 
 extern void FC_GLOBAL(slassq, SLASSQ)(int *n, const float *x, int *incx, float *scale, float *sumsq);
@@ -106,7 +106,7 @@ extern void FC_GLOBAL(dgesdd, DGESDD)(char *, int *, int *, double *, int *, dou
                                       int *, int *);
 }
 
-BEGIN_EINSUMS_NAMESPACE_CPP(einsums::backend::vendor)
+BEGIN_EINSUMS_NAMESPACE_CPP(einsums::backend::linear_algebra::vendor)
 
 void initialize() {
 }
@@ -467,8 +467,8 @@ auto zgetrf(int m, int n, std::complex<double> *a, int lda, int *ipiv) -> int {
 auto sgetri(int n, float *a, int lda, const int *ipiv) -> int {
     LabeledSection0();
 
-    int info{0};
-    int lwork = n * 64;
+    int                info{0};
+    int                lwork = n * 64;
     std::vector<float> work(lwork);
     FC_GLOBAL(sgetri, SGETRI)(&n, a, &lda, (int *)ipiv, work.data(), &lwork, &info);
     return info;
@@ -477,8 +477,8 @@ auto sgetri(int n, float *a, int lda, const int *ipiv) -> int {
 auto dgetri(int n, double *a, int lda, const int *ipiv) -> int {
     LabeledSection0();
 
-    int info{0};
-    int lwork = n * 64;
+    int                 info{0};
+    int                 lwork = n * 64;
     std::vector<double> work(lwork);
     FC_GLOBAL(dgetri, DGETRI)(&n, a, &lda, (int *)ipiv, work.data(), &lwork, &info);
     return info;
@@ -487,8 +487,8 @@ auto dgetri(int n, double *a, int lda, const int *ipiv) -> int {
 auto cgetri(int n, std::complex<float> *a, int lda, const int *ipiv) -> int {
     LabeledSection0();
 
-    int info{0};
-    int lwork = n * 64;
+    int                              info{0};
+    int                              lwork = n * 64;
     std::vector<std::complex<float>> work(lwork);
     FC_GLOBAL(cgetri, CGETRI)(&n, a, &lda, (int *)ipiv, work.data(), &lwork, &info);
     return info;
@@ -497,8 +497,8 @@ auto cgetri(int n, std::complex<float> *a, int lda, const int *ipiv) -> int {
 auto zgetri(int n, std::complex<double> *a, int lda, const int *ipiv) -> int {
     LabeledSection0();
 
-    int info{0};
-    int lwork = n * 64;
+    int                               info{0};
+    int                               lwork = n * 64;
     std::vector<std::complex<double>> work(lwork);
     FC_GLOBAL(zgetri, ZGETRI)(&n, a, &lda, (int *)ipiv, work.data(), &lwork, &info);
     return info;

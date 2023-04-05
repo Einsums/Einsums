@@ -6,14 +6,14 @@
 #include <exception>
 
 #if defined(EINSUMS_HAVE_CBLAS_H)
-#include <cblas.h>
+#    include <cblas.h>
 #endif
 
 #if defined(EINSUMS_HAVE_LAPACKE_H)
-#include <lapacke.h>
+#    include <lapacke.h>
 #endif
 
-BEGIN_EINSUMS_NAMESPACE_CPP(einsums::backend::cblas)
+BEGIN_EINSUMS_NAMESPACE_CPP(einsums::backend::linear_algebra::cblas)
 
 namespace {
 
