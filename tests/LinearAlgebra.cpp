@@ -3,9 +3,29 @@
 #include "einsums/Print.hpp"
 #include "einsums/STL.hpp"
 #include "einsums/Tensor.hpp"
+#include "einsums/TensorAlgebra.hpp"
 #include "einsums/Utilities.hpp"
 
 #include <catch2/catch.hpp>
+
+using namespace einsums;
+namespace {
+template <typename T>
+auto reconstruct(const Tensor<T, 2> &u, const Tensor<T, 1> &s, const Tensor<T, 2> &vt, size_t N, size_t LDA) -> Tensor<T, 2> {
+    using namespace einsums::tensor_algebra;
+
+    auto half = create_tensor<T>("sigma", N, LDA);
+    zero(half);
+    auto new_a = create_tensor<T>("new a", N, LDA);
+    zero(new_a);
+    auto sigma = diagonal_like(s, new_a);
+
+    einsum(Indices{index::i, index::j}, &half, Indices{index::i, index::k}, u, Indices{index::k, index::j}, sigma);
+    einsum(Indices{index::i, index::j}, &new_a, Indices{index::i, index::k}, half, Indices{index::k, index::j}, vt);
+
+    return new_a;
+}
+} // namespace
 
 template <typename T>
 void gesvd_test() {
@@ -80,40 +100,20 @@ void gesvd_test() {
 
     auto [u, s, vt] = linear_algebra::svd(a);
 
-    auto correct_u = std::vector<T, einsums::AlignedAllocator<T, 64>>{
-        0.25138279, 0.81483669,  -0.26061851, 0.39672378,  -0.21802776, 0.39684555,  0.35866150, 0.70076821,  -0.45071124,
-        0.14020995, 0.69215101,  -0.24888801, -0.22081145, 0.25132115,  0.58911945,  0.36617044, -0.36859354, 0.38593848,
-        0.43424860, -0.62652825, 0.40763524,  -0.09796257, -0.49325014, -0.62268407, -0.43955169};
+    // Using u, s, and vt reconstruct a and test a against the reconstructed a
+    auto new_a = reconstruct(u, s, vt, N, LDA);
 
-    auto phase_correct_u = (correct_u[0] > 0.0 && u(0, 0) > 0.0) || (correct_u[0] < 0.0 && u(0, 0) < 0.0);
-    linear_algebra::scale(phase_correct_u ? T(1.0) : T(-1.0), &u);
-
-    CHECK_THAT(u.vector_data(), Catch::Matchers::Approx(correct_u).margin(0.0001));
-
-    CHECK_THAT(s.vector_data(), Catch::Matchers::Approx(std::vector<T, einsums::AlignedAllocator<T, 64>>{
-                                                            27.46873242, 22.64318501, 8.55838823, 5.98572320, 2.01489966})
-                                    .margin(0.0001));
-
-    auto correct_vt = std::vector<T, einsums::AlignedAllocator<T, 64>>{
-        0.59114259, 0.39756730,  0.03347835,  0.42970681, 0.46974775,  -0.29335850, 0.26316738,  0.24379860,  -0.60027254,
-        0.23616664, -0.35089183, 0.57626247,  0.35543054, -0.22239095, -0.45083907, -0.68586266, 0.38744465,  -0.02085230,
-        0.31426409, -0.75346601, 0.23345041,  0.33186099, 0.15873522,  0.37907773,  0.22993860,  -0.36358970, -0.30547556,
-        0.16492754, -0.51825762, -0.65255153, 0.55075318, 0.18203492,  0.53617334,  -0.38966295, -0.46077210, 0.10910708};
-
-    auto phase_correct_vt = (correct_vt[0] > 0.0 && vt(0, 0) > 0.0) || (correct_vt[0] < 0.0 && vt(0, 0) < 0.0);
-    linear_algebra::scale(phase_correct_vt ? T(1.0) : T(-1.0), &vt);
-
-    CHECK_THAT(vt.vector_data(), Catch::Matchers::Approx(correct_vt).margin(0.0001));
+    CHECK_THAT(new_a.vector_data(), Catch::Matchers::Approx(a.vector_data()).margin(0.0001));
 }
 
-// TEST_CASE("gesvd") {
-//     SECTION("float") {
-//         gesvd_test<float>();
-//     }
-//     SECTION("double") {
-//         gesvd_test<double>();
-//     }
-// }
+TEST_CASE("gesvd") {
+    SECTION("float") {
+        gesvd_test<float>();
+    }
+    SECTION("double") {
+        gesvd_test<double>();
+    }
+}
 
 template <typename T>
 void gesdd_test() {
@@ -188,38 +188,20 @@ void gesdd_test() {
 
     auto [u, s, vt] = linear_algebra::svd_dd(a);
 
-    auto correct_u = std::vector<T, einsums::AlignedAllocator<T, 64>>{
-        -0.51664471, 0.07861311,  -0.28063941, -0.80507127, -0.12123225, -0.99232861, -0.02120364, -0.01170762,
-        0.84706383,  -0.09452544, -0.14127098, -0.50357751, -0.02939123, -0.01299383, 0.94912298,  -0.31326168};
+    // Using u, s, and vt reconstruct a and test a against the reconstructed a
+    auto new_a = reconstruct(u, s, vt, N, LDA);
 
-    auto phase_correct_u = (correct_u[0] > 0.0 && u(0, 0) > 0.0) || (correct_u[0] < 0.0 && u(0, 0) < 0.0);
-    linear_algebra::scale(phase_correct_u ? T(1.0) : T(-1.0), &u);
-
-    CHECK_THAT(u.vector_data(), Catch::Matchers::Approx(correct_u).margin(0.0001));
-    CHECK_THAT(s.vector_data(),
-               Catch::Matchers::Approx(std::vector<T, einsums::AlignedAllocator<T, 64>>{18.36597845, 13.62997968, 10.85333573, 4.49156909})
-                   .margin(0.0001));
-
-    auto correct_vt = std::vector<T, einsums::AlignedAllocator<T, 64>>{
-        -0.57267370, 0.45942229,  -0.45044682, 0.33409639,  -0.31739725, 0.21380422,  0.17756270,  -0.10752776, -0.41395666,
-        -0.69262324, -0.30837134, 0.45905264,  0.00562710,  -0.72402666, 0.00417222,  0.49481800,  -0.28034658, 0.39025282,
-        -0.52902201, -0.41737321, -0.36285960, -0.18512862, 0.60982975,  -0.09001830, -0.36919986, 0.13722622,  0.63616578,
-        -0.17527229, 0.18919257,  0.61126044,  0.47361570,  0.24519971,  -0.29890829, 0.31434824,  0.56381357,  0.45773196};
-
-    auto phase_correct_vt = (correct_vt[0] > 0.0 && vt(0, 0) > 0.0) || (correct_vt[0] < 0.0 && vt(0, 0) < 0.0);
-    linear_algebra::scale(phase_correct_vt ? T(1.0) : T(-1.0), &vt);
-
-    CHECK_THAT(vt.vector_data(), Catch::Matchers::Approx(correct_vt).margin(0.0001));
+    CHECK_THAT(new_a.vector_data(), Catch::Matchers::Approx(a.vector_data()).margin(0.0001));
 }
 
-// TEST_CASE("gesdd") {
-//     SECTION("double") {
-//         gesdd_test<double>();
-//     }
-//     SECTION("float") {
-//         gesdd_test<float>();
-//     }
-// }
+TEST_CASE("gesdd") {
+    SECTION("double") {
+        gesdd_test<double>();
+    }
+    SECTION("float") {
+        gesdd_test<float>();
+    }
+}
 
 template <typename T>
 void gesv_test() {

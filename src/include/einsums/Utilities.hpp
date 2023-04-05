@@ -101,6 +101,26 @@ void set_to(TensorType<DataType, Rank> &tensor, DataType value, Tuple const &tup
 
 } // namespace detail
 
+template <typename T>
+auto diagonal(const Tensor<T, 1> &v) -> Tensor<T, 2> {
+    auto result = create_tensor(v.name(), v.dim(0), v.dim(0));
+    zero(result);
+    for (size_t i = 0; i < v.dim(0); i++) {
+        result(i, i) = v(i);
+    }
+    return result;
+}
+
+template <typename T>
+auto diagonal_like(const Tensor<T, 1> &v, const Tensor<T, 2> &like) -> Tensor<T, 2> {
+    auto result = create_tensor_like(v.name(), like);
+    zero(result);
+    for (size_t i = 0; i < v.dim(0); i++) {
+        result(i, i) = v(i);
+    }
+    return result;
+}
+
 template <typename T = double, typename... MultiIndex>
 auto create_identity_tensor(const std::string &name, MultiIndex... index) -> Tensor<T, sizeof...(MultiIndex)> {
     static_assert(sizeof...(MultiIndex) >= 1, "Rank parameter doesn't make sense.");

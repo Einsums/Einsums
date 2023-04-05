@@ -409,7 +409,6 @@ auto svd(const AType<T, ARank> &_A) -> typename std::enable_if_t<is_incore_rank_
 
 enum class Vectors : char { All = 'A', Some = 'S', Overwrite = 'O', None = 'N' };
 
-// TODO: This needs to be renamed to indicated that it uses the divide-and-conquer algorithm
 template <template <typename, size_t> typename AType, typename T, size_t ARank>
 auto svd_dd(const AType<T, ARank> &_A, Vectors job = Vectors::All) ->
     typename std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, 2, T>,
@@ -470,7 +469,6 @@ auto truncated_svd(const AType<T, ARank> &_A, size_t k) ->
     } else {
         int info2 = blas::ungqr(m, k + 5, tau.dim(0), Y.data(), k + 5, const_cast<const T *>(tau.data()));
     }
-    // Tensor<T, 2>& Q1 = Y; // Just use Y instead of Q1.
 
     // Cast the matrix A into a smaller rank (B)
     Tensor<T, 2> B("B", k + 5, n);
@@ -536,10 +534,7 @@ template <typename T>
 inline auto pseudoinverse(const Tensor<T, 2> &A, double tol) -> Tensor<T, 2> {
     LabeledSection0();
 
-    // auto nthread = omp_get_max_threads();
-    // omp_set_num_threads(1);
     auto [U, S, Vh] = svd_a(A);
-    // omp_set_num_threads(nthread);
 
     size_t new_dim;
     for (size_t v = 0; v < S.dim(0); v++) {
