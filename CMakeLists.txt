@@ -51,7 +51,8 @@ message(STATUS "${CMAKE_CXX_COMPILER_ID} flags: ${HOST_FLAGS}")
 include(cmake/FindITTNOTIFY.cmake)
 # include(cmake/FindIntelSYCL.cmake)
 
-find_package(MPI)
+# We don't do anything in parallel yet.
+# find_package(MPI)
 if (TARGET MPI::MPI_CXX)
     set(HDF5_PREFER_PARALLEL True)
 endif()

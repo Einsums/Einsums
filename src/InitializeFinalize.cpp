@@ -9,9 +9,11 @@
 namespace einsums {
 
 auto initialize() -> int {
+#if defined(EINSUMS_IN_PARALLEL)
     ErrorOr<void, mpi::Error> result = mpi::initialize(0, nullptr);
     if (result.is_error())
         return 1;
+#endif
 
     timer::initialize();
     blas::initialize();
@@ -28,7 +30,9 @@ auto initialize() -> int {
 void finalize(bool timerReport) {
     blas::finalize();
 
+#if defined(EINSUMS_IN_PARALLEL)
     ErrorOr<void, mpi::Error> result = mpi::finalize();
+#endif
 
     if (timerReport)
         timer::report();

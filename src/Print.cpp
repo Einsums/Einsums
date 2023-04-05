@@ -93,8 +93,12 @@ void stacktrace() {
 namespace {
 
 void print_line(const std::string &line) {
+#if defined(EINSUMS_IN_PARALLEL)
     einsums::mpi::ErrorOr<int> size = einsums::mpi::rank();
     int                        rank = size.value();
+#else
+    constexpr int rank = 0;
+#endif
 
     if (rank == 0) {
         std::string line_header;
