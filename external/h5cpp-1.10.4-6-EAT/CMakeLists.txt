@@ -17,7 +17,7 @@ if (WIN32)
 
 	target_include_directories(h5cpp SYSTEM INTERFACE ../zlib)
 else(WIN32)
-	find_package(HDF5 REQUIRED COMPONENTS CXX)
+	find_package(HDF5 REQUIRED)
 	find_package(ZLIB REQUIRED)
 endif(WIN32)
 
