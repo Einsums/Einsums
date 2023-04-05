@@ -30,6 +30,7 @@ extend_einsums_target(einsums
     PUBLIC_DEPENDS
         MPI::MPI_CXX
     PUBLIC_DEFINES
+        H5_HAVE_PARALLEL
         EINSUMS_IN_PARALLEL
     CONDITION
         TARGET MPI::MPI_CXX

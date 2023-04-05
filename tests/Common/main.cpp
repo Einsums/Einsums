@@ -9,6 +9,11 @@
 #include <catch2/catch.hpp>
 #include <h5cpp/io>
 
+#if defined(EINSUMS_IN_PARALLEL)
+#    include <h5cpp/H5Pall.hpp>
+#    include <mpi.h>
+#endif
+
 auto main(int argc, char *argv[]) -> int {
     einsums::initialize();
 
