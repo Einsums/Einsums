@@ -1,9 +1,11 @@
 #pragma once
 
-#include "einsums/_Common.hpp"
-#include "einsums/_Compiler.hpp"
+#if defined(EINSUMS_IN_PARALLEL)
 
-#include <mpi.h>
+#    include "einsums/_Common.hpp"
+#    include "einsums/_Compiler.hpp"
+
+#    include <mpi.h>
 
 namespace einsums::mpi {
 
@@ -26,12 +28,12 @@ enum class ThreadLevel { Single = 0, Funneled, Serialized, Multiple };
 
 EINSUMS_EXPORT auto query_thread() -> ErrorOr<ThreadLevel>;
 
-#define EINSUMS_MPI_TEST(condition)                                                                                                        \
-    {                                                                                                                                      \
-        Error mpi_error_code = static_cast<Error>(condition);                                                                              \
-        if (mpi_error_code != Error::Success)                                                                                              \
-            return mpi_error_code;                                                                                                         \
-    }
+#    define EINSUMS_MPI_TEST(condition)                                                                                                    \
+        {                                                                                                                                  \
+            Error mpi_error_code = static_cast<Error>(condition);                                                                          \
+            if (mpi_error_code != Error::Success)                                                                                          \
+                return mpi_error_code;                                                                                                     \
+        }
 
 struct Status {
     Status() : _status() {}
@@ -173,3 +175,5 @@ struct fmt::formatter<einsums::mpi::ThreadLevel> {
         }
     }
 };
+
+#endif
