@@ -26,7 +26,7 @@ include(EinsumsBuildTypeUBSAN)
 ########################################################
 # User input options                                   #
 ########################################################
-include(EinsumsOptionUtilities)
+include(einsums_option_multichoice)
 
 option(EINSUMS_CONTINUOUSLY_TEST_EINSUM "Every call to TensorAlgebra::einsum is tested" OFF)
 option(EINSUMS_TEST_EINSUM_ABORT "Abort execution if an error is found" ON)
