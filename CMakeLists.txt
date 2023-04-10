@@ -26,15 +26,15 @@ include(EinsumsBuildTypeUBSAN)
 ########################################################
 # User input options                                   #
 ########################################################
-include(einsums_option_multichoice)
+include(einsums_option)
 
-option(EINSUMS_CONTINUOUSLY_TEST_EINSUM "Every call to TensorAlgebra::einsum is tested" OFF)
-option(EINSUMS_TEST_EINSUM_ABORT "Abort execution if an error is found" ON)
-option(EINSUMS_WARN_NOT_IMPLEMENTED "If a specific case is not implemented in einsum then warn the user" OFF)
-option(EINSUMS_SHOW_WARNING "Does the code report warnings to the user or not" ON)
-option(EINSUMS_RUNTIME_INDICES_CHECK "Check the sizes of corresponding indices at runtime" ON)
-option(EINSUMS_TEST_NANS "Test the result of every einsum for nans" OFF)
-option(EINSUMS_USE_HPTT "Use the HPTT package for tensor transpositions" ON)
+einsums_option(EINSUMS_CONTINUOUSLY_TEST_EINSUM BOOL "Every call to TensorAlgebra::einsum is tested" OFF)
+einsums_option(EINSUMS_TEST_EINSUM_ABORT BOOL "Abort execution if an error is found" ON)
+einsums_option(EINSUMS_WARN_NOT_IMPLEMENTED BOOL "If a specific case is not implemented in einsum then warn the user" OFF)
+einsums_option(EINSUMS_SHOW_WARNING BOOL "Does the code report warnings to the user or not" ON)
+einsums_option(EINSUMS_RUNTIME_INDICES_CHECK BOOL "Check the sizes of corresponding indices at runtime" ON)
+einsums_option(EINSUMS_TEST_NANS BOOL "Test the result of every einsum for nans" OFF)
+einsums_option(EINSUMS_USE_HPTT BOOL "Use the HPTT package for tensor transpositions" ON)
 
 add_feature_info(EINSUMS_CONTINUOUSLY_TEST_EINSUM ${EINSUMS_CONTINUOUSLY_TEST_EINSUM} "Test every call to einsum. EXPENSIVE!")
 add_feature_info(EINSUMS_TEST_EINSUM_ABORT ${EINSUMS_TEST_EINSUM_ABORT} "Abort execution if an error found")
@@ -75,11 +75,13 @@ if (TARGET MKL::MKL)
     set(EINSUMS_FFT_LIBRARY_DEFAULT "mkl")
 endif()
 
-einsums_option_multichoice(
+einsums_option(
     EINSUMS_FFT_LIBRARY
+    STRING
     "FFT library"
-    "${EINSUMS_FFT_LIBRARY_DEFAULT}"
-    fftw3 mkl)
+    ${EINSUMS_FFT_LIBRARY_DEFAULT}
+    STRINGS "fftw3;mkl"
+)
 
 include(EinsumsManageFFTLibraries)
 
