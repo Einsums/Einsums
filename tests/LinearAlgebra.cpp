@@ -210,7 +210,7 @@ TEST_CASE("erica_svd") {
 
     h5::fd_t erica_svd = h5::open(current_source_path.c_str(), H5F_ACC_RDONLY);
 
-    auto a = read<double, 2>(erica_svd, "SVD Input");
+    auto a      = read<double, 2>(erica_svd, "SVD Input");
     auto answer = read<double, 2>(erica_svd, "SVD VT Output");
 
     SECTION("svd") {
@@ -235,6 +235,12 @@ TEST_CASE("erica_svd") {
                 CHECK_THAT(std::fabs(overlap(i, i)), Catch::Matchers::WithinAbs(1.0, 0.000001));
             }
         }
+
+        // auto [qr, tau] = linear_algebra::qr(a);
+        // auto q         = linear_algebra::q(qr, tau);
+
+        // println(q);
+        // println(vt);
     }
 
     SECTION("dd") {
@@ -371,9 +377,9 @@ void gemm_test() {
     using namespace einsums;
     using namespace einsums::linear_algebra;
 
-    auto A = create_incremented_tensor<T>("a", 3, 3);
-    auto B = create_incremented_tensor<T>("b", 3, 3);
-    auto C = create_tensor<T>("c", 3, 3);
+    auto A  = create_incremented_tensor<T>("a", 3, 3);
+    auto B  = create_incremented_tensor<T>("b", 3, 3);
+    auto C  = create_tensor<T>("c", 3, 3);
     auto C0 = create_tensor<T>("C0", 3, 3);
     zero(C);
     zero(C0);

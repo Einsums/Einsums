@@ -9,9 +9,9 @@ template <typename T = double, typename... MultiIndex>
 auto create_incremented_tensor(const std::string &name, MultiIndex... index) -> Tensor<T, sizeof...(MultiIndex)> {
     Tensor<T, sizeof...(MultiIndex)> A(name, std::forward<MultiIndex>(index)...);
 
-    T counter{0.0};
+    T    counter{0.0};
     auto target_dims = get_dim_ranges<sizeof...(MultiIndex)>(A);
-    auto view = std::apply(ranges::views::cartesian_product, target_dims);
+    auto view        = std::apply(ranges::views::cartesian_product, target_dims);
 
     for (auto it = view.begin(); it != view.end(); it++) {
         std::apply(A, *it) = counter;
@@ -33,7 +33,7 @@ auto create_random_tensor(const std::string &name, MultiIndex... index) -> Tenso
     double upper_bound = 1.0;
 
     std::uniform_real_distribution<double> unif(lower_bound, upper_bound);
-    std::default_random_engine re;
+    std::default_random_engine             re;
 
     {
         static std::chrono::high_resolution_clock::time_point beginning = std::chrono::high_resolution_clock::now();
@@ -46,10 +46,10 @@ auto create_random_tensor(const std::string &name, MultiIndex... index) -> Tenso
     if constexpr (std::is_same_v<T, std::complex<float>>) {
 #pragma omp parallel
         {
-            auto tid = omp_get_thread_num();
+            auto tid       = omp_get_thread_num();
             auto chunksize = A.vector_data().size() / omp_get_num_threads();
-            auto begin = A.vector_data().begin() + chunksize * tid;
-            auto end = (tid == omp_get_num_threads() - 1) ? A.vector_data().end() : begin + chunksize;
+            auto begin     = A.vector_data().begin() + chunksize * tid;
+            auto end       = (tid == omp_get_num_threads() - 1) ? A.vector_data().end() : begin + chunksize;
             std::generate(A.vector_data().begin(), A.vector_data().end(), [&]() {
                 return T{static_cast<float>(unif(re)), static_cast<float>(unif(re))};
             });
@@ -57,10 +57,10 @@ auto create_random_tensor(const std::string &name, MultiIndex... index) -> Tenso
     } else if constexpr (std::is_same_v<T, std::complex<double>>) {
 #pragma omp parallel
         {
-            auto tid = omp_get_thread_num();
+            auto tid       = omp_get_thread_num();
             auto chunksize = A.vector_data().size() / omp_get_num_threads();
-            auto begin = A.vector_data().begin() + chunksize * tid;
-            auto end = (tid == omp_get_num_threads() - 1) ? A.vector_data().end() : begin + chunksize;
+            auto begin     = A.vector_data().begin() + chunksize * tid;
+            auto end       = (tid == omp_get_num_threads() - 1) ? A.vector_data().end() : begin + chunksize;
             std::generate(A.vector_data().begin(), A.vector_data().end(), [&]() {
                 return T{static_cast<double>(unif(re)), static_cast<double>(unif(re))};
             });
@@ -68,10 +68,10 @@ auto create_random_tensor(const std::string &name, MultiIndex... index) -> Tenso
     } else {
 #pragma omp parallel
         {
-            auto tid = omp_get_thread_num();
+            auto tid       = omp_get_thread_num();
             auto chunksize = A.vector_data().size() / omp_get_num_threads();
-            auto begin = A.vector_data().begin() + chunksize * tid;
-            auto end = (tid == omp_get_num_threads() - 1) ? A.vector_data().end() : begin + chunksize;
+            auto begin     = A.vector_data().begin() + chunksize * tid;
+            auto end       = (tid == omp_get_num_threads() - 1) ? A.vector_data().end() : begin + chunksize;
             std::generate(A.vector_data().begin(), A.vector_data().end(), [&]() { return static_cast<T>(unif(re)); });
         }
     }
@@ -195,6 +195,18 @@ struct DisableOMPNestedScope {
 
   private:
     int _old_nested;
+};
+
+struct DisableOMPThreads {
+    DisableOMPThreads() {
+        _old_max_threads = omp_get_max_threads();
+        omp_set_num_threads(1);
+    }
+
+    ~DisableOMPThreads() { omp_set_num_threads(_old_max_threads); }
+
+  private:
+    int _old_max_threads;
 };
 
 } // namespace einsums

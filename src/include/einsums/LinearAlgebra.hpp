@@ -377,11 +377,14 @@ auto svd(const AType<T, ARank> &_A) -> typename std::enable_if_t<is_incore_rank_
                                                                  std::tuple<Tensor<T, 2>, Tensor<remove_complex_t<T>, 1>, Tensor<T, 2>>> {
     LabeledSection0();
 
+    DisableOMPThreads nothreads;
+
     // Calling svd will destroy the original data. Make a copy of it.
     Tensor<T, 2> A = _A;
 
-    size_t m = A.dim(0);
-    size_t n = A.dim(1);
+    size_t m   = A.dim(0);
+    size_t n   = A.dim(1);
+    size_t lda = A.stride(0);
 
     // Test if it absolutely necessary to zero out these tensors first.
     auto U = create_tensor<T>("U (stored columnwise)", m, m);
@@ -393,7 +396,7 @@ auto svd(const AType<T, ARank> &_A) -> typename std::enable_if_t<is_incore_rank_
     auto superb = create_tensor<T>("superb", std::min(m, n) - 2);
     superb.zero();
 
-    int info = blas::gesvd('A', 'A', m, n, A.data(), n, S.data(), U.data(), m, Vt.data(), n, superb.data());
+    int info = blas::gesvd('A', 'A', m, n, A.data(), lda, S.data(), U.data(), m, Vt.data(), n, superb.data());
 
     if (info != 0) {
         if (info < 0) {
@@ -414,6 +417,8 @@ auto svd_dd(const AType<T, ARank> &_A, Vectors job = Vectors::All) ->
     typename std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, 2, T>,
                               std::tuple<Tensor<T, 2>, Tensor<remove_complex_t<T>, 1>, Tensor<T, 2>>> {
     LabeledSection0();
+
+    DisableOMPThreads nothreads;
 
     // Calling svd will destroy the original data. Make a copy of it.
     Tensor<T, 2> A = _A;
@@ -597,5 +602,43 @@ inline auto solve_continuous_lyapunov(const Tensor<T, 2> &A, const Tensor<T, 2> 
 }
 
 ALIAS_TEMPLATE_FUNCTION(solve_lyapunov, solve_continuous_lyapunov)
+
+template <template <typename, size_t> typename AType, size_t ARank, typename T>
+auto qr(const AType<T, ARank> &_A) ->
+    typename std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, 2, T>, std::tuple<Tensor<T, 2>, Tensor<T, 1>>> {
+    LabeledSection0();
+
+    // Copy A because it will be overwritten by the QR call.
+    Tensor<T, 2> A = _A;
+    const eint   m = A.dim(0);
+    const eint   n = A.dim(1);
+
+    Tensor<double, 1> tau("tau", std::min(m, n));
+    // Compute QR factorization of Y
+    eint info = blas::geqrf(m, n, A.data(), n, tau.data());
+
+    if (info != 0) {
+        println_abort("{} parameter to geqrf has an illegal value.", -info);
+    }
+
+    // Extract Matrix Q out of QR factorization
+    // eint info2 = blas::orgqr(m, n, tau.dim(0), A.data(), n, const_cast<const double *>(tau.data()));
+    return {A, tau};
+}
+
+template <typename T>
+auto q(const Tensor<T, 2> &qr, const Tensor<T, 1> &tau) -> Tensor<T, 2> {
+    const eint m = qr.dim(1);
+    const eint p = qr.dim(0);
+
+    Tensor<T, 2> Q = qr;
+
+    eint info = blas::orgqr(m, m, p, Q.data(), m, tau.data());
+    if (info != 0) {
+        println_abort("{} parameter to orgqr has an illegal value. {} {} {}", -info, m, m, p);
+    }
+
+    return Q;
+}
 
 END_EINSUMS_NAMESPACE_HPP(einsums::linear_algebra)
