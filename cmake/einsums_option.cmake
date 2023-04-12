@@ -1,7 +1,7 @@
 include(CMakeDependentOption)
 include(CMakeParseArguments)
 
-function(einsums_option NAME TYPE DESCRIPTION DEFAULT)
+macro(einsums_option NAME TYPE DESCRIPTION DEFAULT)
 
     set(options ADVANCED)
     set(one_value_args CATEGORY DEPENDS)
@@ -21,7 +21,7 @@ function(einsums_option NAME TYPE DESCRIPTION DEFAULT)
         endif()
 
         if (NOT DEFINED ${NAME})
-            set(${NAME} ${DEFAULT} CACHE ${TYPE} "${DESCRIPTION}" FORCE PARENT_SCOPE)
+            set(${NAME} ${DEFAULT} CACHE ${TYPE} "${DESCRIPTION}" FORCE)
         else()
             get_property(
                 _option_is_cache_property 
@@ -30,7 +30,7 @@ function(einsums_option NAME TYPE DESCRIPTION DEFAULT)
                 SET
             )
             if (NOT _option_is_cache_property)
-                set(${NAME} ${DEFAULT} CACHE ${TYPE} "${DESCRIPTION}" FORCE PARENT_SCOPE)
+                set(${NAME} ${DEFAULT} CACHE ${TYPE} "${DESCRIPTION}" FORCE)
                 if (EINSUMS_OPTION_ADVANCED)
                     mark_as_advanced(${NAME})
                 endif()
@@ -54,6 +54,4 @@ function(einsums_option NAME TYPE DESCRIPTION DEFAULT)
     endif()
 
     set_property(GLOBAL APPEND PROPERTY EINSUMS_MODULE_CONFIG ${NAME})
-
-    set(${NAME} "${${NAME}}" PARENT_SCOPE)
-endfunction()
+endmacro()
