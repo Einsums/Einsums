@@ -89,6 +89,8 @@ elseif(EINSUMS_FFT_LIBRARY MATCHES fftw3)
     # if (NOT TARGET FFT::FFT)
         # build_fftw3()
     # endif()
+else()
+    message(FATAL_ERROR "EINSUMS_FFT_LIBRARY(${EINSUMS_FFT_LIBRARY}) does not match mkl or fftw3.")
 endif()
 
 # Make sure an FFT library was found
