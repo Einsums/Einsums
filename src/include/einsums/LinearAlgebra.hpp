@@ -410,6 +410,61 @@ auto svd(const AType<T, ARank> &_A) -> typename std::enable_if_t<is_incore_rank_
     return std::make_tuple(U, S, Vt);
 }
 
+template <template <typename, size_t> typename AType, typename T, size_t Rank>
+auto svd_nullspace(const AType<T, Rank> &_A) -> typename std::enable_if_t<is_incore_rank_tensor_v<AType<T, Rank>, 2, T>, Tensor<T, 2>> {
+    LabeledSection0();
+
+    // Calling svd will destroy the original data. Make a copy of it.
+    Tensor<T, 2> A = _A;
+
+    eint m   = A.dim(0);
+    eint n   = A.dim(1);
+    eint lda = A.stride(0);
+
+    auto U = create_tensor<T>("U", m, m);
+    zero(U);
+    auto S = create_tensor<T>("S", n);
+    zero(S);
+    auto V = create_tensor<T>("V", n, n);
+    zero(V);
+    auto superb = create_tensor<T>("superb", std::min(m, n) - 2);
+
+    int info = blas::gesvd('N', 'A', m, n, A.data(), lda, S.data(), U.data(), m, V.data(), n, superb.data());
+
+    if (info != 0) {
+        if (info < 0) {
+            println_abort("svd: Argument {} has an invalid parameter\n#2 (m) = {}, #3 (n) = {}, #5 (n) = {}, #8 (m) = {}", -info, m, n, n,
+                          m);
+        } else {
+            println_abort("svd: error value {}", info);
+        }
+    }
+
+    // Determine the rank of the nullspace matrix
+    int rank = 0;
+    for (int i = 0; i < n; i++) {
+        if (S(i) > 1e-12) {
+            rank++;
+        }
+    }
+
+    // println("rank {}", rank);
+    auto Vview     = V(Range{rank, V.dim(0)}, All);
+    auto nullspace = Tensor(V);
+
+    // Normalize nullspace. LAPACK does not guarentee them to be orthonormal
+    for (int i = 0; i < nullspace.dim(0); i++) {
+        T sum{0};
+        for (int j = 0; j < nullspace.dim(1); j++) {
+            sum += std::pow(nullspace(i, j), 2.0);
+        }
+        sum = std::sqrt(sum);
+        scale_row(i, sum, &nullspace);
+    }
+
+    return nullspace;
+}
+
 enum class Vectors : char { All = 'A', Some = 'S', Overwrite = 'O', None = 'N' };
 
 template <template <typename, size_t> typename AType, typename T, size_t ARank>
@@ -428,11 +483,11 @@ auto svd_dd(const AType<T, ARank> &_A, Vectors job = Vectors::All) ->
 
     // Test if it absolutely necessary to zero out these tensors first.
     auto U = create_tensor<T>("U (stored columnwise)", m, m);
-    U.zero();
+    zero(U);
     auto S = create_tensor<remove_complex_t<T>>("S", std::min(m, n));
-    S.zero();
+    zero(S);
     auto Vt = create_tensor<T>("Vt (stored rowwise)", n, n);
-    Vt.zero();
+    zero(Vt);
 
     int info = blas::gesdd(static_cast<char>(job), static_cast<int>(m), static_cast<int>(n), A.data(), static_cast<int>(n), S.data(),
                            U.data(), static_cast<int>(m), Vt.data(), static_cast<int>(n));
