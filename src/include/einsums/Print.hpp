@@ -78,7 +78,7 @@ inline constexpr auto GetRawTypeNameFormat(RawTypeNameFormat *format) -> bool {
     for (std::size_t i = 0;; i++) {
         if (str[i] == 'i' && str[i + 1] == 'n' && str[i + 2] == 't') {
             if (format) {
-                format->leading_junk = i;
+                format->leading_junk  = i;
                 format->trailing_junk = sizeof(str) - i - 3 - 1; // `3` is the length of "int", `1` is the space for the null terminator.
             }
             return true;
@@ -184,8 +184,8 @@ using fmt::emphasis; // NOLINT
 using fmt::fg;       // NOLINT
 
 template <typename... Ts>
-void println(const std::string_view &format, const Ts... ts) {
-    std::string s = fmt::format(format, ts...);
+void println(const std::string_view &f, const Ts... ts) {
+    std::string s = fmt::format(fmt::runtime(f), ts...);
     detail::println(s);
 }
 

@@ -15,6 +15,7 @@ include(EinsumsAPI)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+set(RANGES_CXX_STD 17)
 
 # Force position independent code globally.
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)

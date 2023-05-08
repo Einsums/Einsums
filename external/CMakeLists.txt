@@ -1,6 +1,5 @@
-set(RANGES_CXX_STD 17)
 add_subdirectory(range-v3-0.11.0)
-add_subdirectory(fmt-8.1.1)
+add_subdirectory(fmt-9.1.0)
 if (NOT TARGET Catch2::Catch2)
 	add_subdirectory(catch-3.1.0)
 endif()

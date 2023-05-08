@@ -1,9 +1,9 @@
 [
     {
-        "name": "Intel oneAPI 2023",
+        "name": "Intel oneAPI Latest",
         "compilers": {
-            "C": "/opt/intel/oneapi/compiler/2023.0.0/linux/bin/icx",
-            "CXX": "/opt/intel/oneapi/compiler/2023.0.0/linux/bin/icpx"
+            "C": "/opt/intel/oneapi/compiler/latest/linux/bin/icx",
+            "CXX": "/opt/intel/oneapi/compiler/latest/linux/bin/icpx"
         }
     }
 ]
