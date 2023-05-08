@@ -1,22 +1,18 @@
 #pragma once
 
-#include "LinearAlgebra.hpp"
-#include "OpenMP.h"
-#include "Print.hpp"
-#include "STL.hpp"
-#include "Section.hpp"
-#include "Tensor.hpp"
-#include "_Index.hpp"
+#include "einsums/LinearAlgebra.hpp"
+#include "einsums/OpenMP.h"
+#include "einsums/Print.hpp"
+#include "einsums/STL.hpp"
+#include "einsums/Section.hpp"
+#include "einsums/Tensor.hpp"
 #include "einsums/_Common.hpp"
 #include "einsums/_Compiler.hpp"
-
-#include <cmath>
-#if defined(EINSUMS_USE_HPTT)
-#    include "hptt.h"
-#endif
-#include "range/v3/view/cartesian_product.hpp"
+#include "einsums/_Index.hpp"
+#include "einsums/_TensorAlgebraUtilities.hpp"
 
 #include <algorithm>
+#include <cmath>
 #include <cstddef>
 #include <functional>
 #include <numeric>
@@ -31,263 +27,9 @@
 #    include <catch2/catch.hpp>
 #endif
 
-// HPTT includes <complex> which defined I as a shorthand for complex values.
-// This causes issues with einsums since we define I to be a useable index
-// for the user. Undefine the one defined in <complex> here.
-#if defined(I)
-#    undef I
-#endif
-
 BEGIN_EINSUMS_NAMESPACE_HPP(einsums::tensor_algebra)
 
 namespace detail {
-
-template <size_t Rank, typename... Args, std::size_t... I>
-auto order_indices(const std::tuple<Args...> &combination, const std::array<size_t, Rank> &order, std::index_sequence<I...>) {
-    return std::tuple{get_from_tuple<size_t>(combination, order[I])...};
-}
-
-} // namespace detail
-
-template <size_t Rank, typename... Args>
-auto order_indices(const std::tuple<Args...> &combination, const std::array<size_t, Rank> &order) {
-    return detail::order_indices(combination, order, std::make_index_sequence<Rank>{});
-}
-
-namespace detail {
-
-template <typename T, int Position>
-constexpr auto _find_type_with_position() {
-    return std::make_tuple();
-}
-
-template <typename T, int Position, typename Head, typename... Args>
-constexpr auto _find_type_with_position() {
-    if constexpr (std::is_same_v<std::decay_t<Head>, std::decay_t<T>>) {
-        return std::tuple_cat(std::make_pair(std::decay_t<T>(), Position), _find_type_with_position<T, Position + 1, Args...>());
-    } else {
-        return _find_type_with_position<T, Position + 1, Args...>();
-    }
-}
-
-template <typename T, int Position>
-constexpr auto _unique_type_with_position() {
-    return std::make_tuple();
-}
-
-template <typename T, int Position, typename Head, typename... Args>
-constexpr auto _unique_find_type_with_position() {
-    if constexpr (std::is_same_v<std::decay_t<Head>, std::decay_t<T>>) {
-        return std::tuple_cat(std::make_pair(std::decay_t<T>(), Position));
-    } else {
-        return _unique_find_type_with_position<T, Position + 1, Args...>();
-    }
-}
-
-template <template <typename, size_t> typename TensorType, size_t Rank, typename... Args, std::size_t... I, typename T = double>
-auto get_dim_ranges_for(const TensorType<T, Rank> &tensor, const std::tuple<Args...> &args, std::index_sequence<I...>) {
-    return std::tuple{ranges::views::ints(0, (int)tensor.dim(std::get<2 * I + 1>(args)))...};
-}
-
-template <template <typename, size_t> typename TensorType, size_t Rank, typename... Args, std::size_t... I, typename T = double>
-auto get_dim_for(const TensorType<T, Rank> &tensor, const std::tuple<Args...> &args, std::index_sequence<I...>) {
-    return std::tuple{tensor.dim(std::get<2 * I + 1>(args))...};
-}
-
-template <typename T, int Position>
-constexpr auto find_position() {
-    return -1;
-}
-
-template <typename T, int Position, typename Head, typename... Args>
-constexpr auto find_position() {
-    if constexpr (std::is_same_v<std::decay_t<Head>, std::decay_t<T>>) {
-        // Found it
-        return Position;
-    } else {
-        return find_position<T, Position + 1, Args...>();
-    }
-}
-
-template <typename AIndex, typename... Args>
-constexpr auto find_position() {
-    return find_position<AIndex, 0, Args...>();
-}
-
-template <typename AIndex, typename... TargetCombination>
-constexpr auto find_position(const std::tuple<TargetCombination...> &) {
-    return detail::find_position<AIndex, TargetCombination...>();
-}
-
-template <typename S1, typename... S2, std::size_t... Is>
-constexpr auto _find_type_with_position(std::index_sequence<Is...>) {
-    return std::tuple_cat(detail::_find_type_with_position<std::tuple_element_t<Is, S1>, 0, S2...>()...);
-}
-
-template <typename... Ts, typename... Us>
-constexpr auto find_type_with_position(const std::tuple<Ts...> &, const std::tuple<Us...> &) {
-    return _find_type_with_position<std::tuple<Ts...>, Us...>(std::make_index_sequence<sizeof...(Ts)>{});
-}
-
-template <typename S1, typename... S2, std::size_t... Is>
-constexpr auto _unique_find_type_with_position(std::index_sequence<Is...>) {
-    return std::tuple_cat(detail::_unique_find_type_with_position<std::tuple_element_t<Is, S1>, 0, S2...>()...);
-}
-
-template <typename... Ts, typename... Us>
-constexpr auto unique_find_type_with_position(const std::tuple<Ts...> &, const std::tuple<Us...> &) {
-    return _unique_find_type_with_position<std::tuple<Ts...>, Us...>(std::make_index_sequence<sizeof...(Ts)>{});
-}
-
-template <template <typename, size_t> typename TensorType, size_t Rank, typename... Args, typename T = double>
-auto get_dim_ranges_for(const TensorType<T, Rank> &tensor, const std::tuple<Args...> &args) {
-    return detail::get_dim_ranges_for(tensor, args, std::make_index_sequence<sizeof...(Args) / 2>{});
-}
-
-template <template <typename, size_t> typename TensorType, size_t Rank, typename... Args, typename T = double>
-auto get_dim_for(const TensorType<T, Rank> &tensor, const std::tuple<Args...> &args) {
-    return detail::get_dim_for(tensor, args, std::make_index_sequence<sizeof...(Args) / 2>{});
-}
-
-template <typename AIndex, typename... TargetCombination, typename... TargetPositionInC, typename... LinkCombination,
-          typename... LinkPositionInLink>
-auto construct_index(const std::tuple<TargetCombination...> &target_combination, const std::tuple<TargetPositionInC...> &,
-                     const std::tuple<LinkCombination...>   &link_combination, const std::tuple<LinkPositionInLink...> &) {
-
-    constexpr auto IsAIndexInC    = detail::find_position<AIndex, TargetPositionInC...>();
-    constexpr auto IsAIndexInLink = detail::find_position<AIndex, LinkPositionInLink...>();
-
-    static_assert(IsAIndexInC != -1 || IsAIndexInLink != -1, "Looks like the indices in your einsum are not quite right! :(");
-
-    if constexpr (IsAIndexInC != -1) {
-        return std::get<IsAIndexInC / 2>(target_combination);
-    } else if constexpr (IsAIndexInLink != -1) {
-        return std::get<IsAIndexInLink / 2>(link_combination);
-    } else {
-        return -1;
-    }
-}
-
-template <typename... AIndices, typename... TargetCombination, typename... TargetPositionInC, typename... LinkCombination,
-          typename... LinkPositionInLink>
-constexpr auto
-construct_indices(const std::tuple<TargetCombination...> &target_combination, const std::tuple<TargetPositionInC...> &target_position_in_C,
-                  const std::tuple<LinkCombination...> &link_combination, const std::tuple<LinkPositionInLink...> &link_position_in_link) {
-    return std::make_tuple(construct_index<AIndices>(target_combination, target_position_in_C, link_combination, link_position_in_link)...);
-}
-
-template <typename AIndex, typename... UniqueTargetIndices, typename... UniqueTargetCombination, typename... TargetPositionInC,
-          typename... UniqueLinkIndices, typename... UniqueLinkCombination, typename... LinkPositionInLink>
-auto construct_index_from_unique_target_combination(const std::tuple<UniqueTargetIndices...> & /*unique_target_indices*/,
-                                                    const std::tuple<UniqueTargetCombination...> &unique_target_combination,
-                                                    const std::tuple<TargetPositionInC...> &,
-                                                    const std::tuple<UniqueLinkIndices...> & /*unique_link_indices*/,
-                                                    const std::tuple<UniqueLinkCombination...> &unique_link_combination,
-                                                    const std::tuple<LinkPositionInLink...> &) {
-
-    constexpr auto IsAIndexInC    = detail::find_position<AIndex, UniqueTargetIndices...>();
-    constexpr auto IsAIndexInLink = detail::find_position<AIndex, UniqueLinkIndices...>();
-
-    static_assert(IsAIndexInC != -1 || IsAIndexInLink != -1, "Looks like the indices in your einsum are not quite right! :(");
-
-    if constexpr (IsAIndexInC != -1) {
-        return std::get<IsAIndexInC>(unique_target_combination);
-    } else if constexpr (IsAIndexInLink != -1) {
-        return std::get<IsAIndexInLink>(unique_link_combination);
-    } else {
-        return -1;
-    }
-}
-template <typename... AIndices, typename... UniqueTargetIndices, typename... UniqueTargetCombination, typename... TargetPositionInC,
-          typename... UniqueLinkIndices, typename... UniqueLinkCombination, typename... LinkPositionInLink>
-constexpr auto construct_indices_from_unique_combination(const std::tuple<UniqueTargetIndices...>     &unique_target_indices,
-                                                         const std::tuple<UniqueTargetCombination...> &unique_target_combination,
-                                                         const std::tuple<TargetPositionInC...>       &target_position_in_C,
-                                                         const std::tuple<UniqueLinkIndices...>       &unique_link_indices,
-                                                         const std::tuple<UniqueLinkCombination...>   &unique_link_combination,
-                                                         const std::tuple<LinkPositionInLink...>      &link_position_in_link) {
-    return std::make_tuple(construct_index_from_unique_target_combination<AIndices>(unique_target_indices, unique_target_combination,
-                                                                                    target_position_in_C, unique_link_indices,
-                                                                                    unique_link_combination, link_position_in_link)...);
-}
-
-template <typename... AIndices, typename... TargetCombination, typename... TargetPositionInC, typename... LinkCombination,
-          typename... LinkPositionInLink>
-constexpr auto construct_indices(const std::tuple<AIndices...> &, const std::tuple<TargetCombination...> &target_combination,
-                                 const std::tuple<TargetPositionInC...>  &target_position_in_C,
-                                 const std::tuple<LinkCombination...>    &link_combination,
-                                 const std::tuple<LinkPositionInLink...> &link_position_in_link) {
-    return construct_indices<AIndices...>(target_combination, target_position_in_C, link_combination, link_position_in_link);
-}
-
-template <typename... PositionsInX, std::size_t... I>
-constexpr auto _contiguous_positions(const std::tuple<PositionsInX...> &x, std::index_sequence<I...>) -> bool {
-    return ((std::get<2 * I + 1>(x) == std::get<2 * I + 3>(x) - 1) && ... && true);
-}
-
-template <typename... PositionsInX>
-constexpr auto contiguous_positions(const std::tuple<PositionsInX...> &x) -> bool {
-    if constexpr (sizeof...(PositionsInX) <= 2) {
-        return true;
-    } else {
-        return _contiguous_positions(x, std::make_index_sequence<sizeof...(PositionsInX) / 2 - 1>{});
-    }
-}
-
-template <typename... PositionsInX, typename... PositionsInY, std::size_t... I>
-constexpr auto _is_same_ordering(const std::tuple<PositionsInX...> &positions_in_x, const std::tuple<PositionsInY...> &positions_in_y,
-                                 std::index_sequence<I...>) {
-    return (std::is_same_v<decltype(std::get<2 * I>(positions_in_x)), decltype(std::get<2 * I>(positions_in_y))> && ...);
-}
-
-template <typename... PositionsInX, typename... PositionsInY>
-constexpr auto is_same_ordering(const std::tuple<PositionsInX...> &positions_in_x, const std::tuple<PositionsInY...> &positions_in_y) {
-    // static_assert(sizeof...(PositionsInX) == sizeof...(PositionsInY) && sizeof...(PositionsInX) > 0);
-    if constexpr (sizeof...(PositionsInX) == 0 || sizeof...(PositionsInY) == 0)
-        return false; // NOLINT
-    else if constexpr (sizeof...(PositionsInX) != sizeof...(PositionsInY))
-        return false;
-    else
-        return _is_same_ordering(positions_in_x, positions_in_y, std::make_index_sequence<sizeof...(PositionsInX) / 2>{});
-}
-
-template <template <typename, size_t> typename XType, size_t XRank, typename... PositionsInX, std::size_t... I, typename T = double>
-constexpr auto product_dims(const std::tuple<PositionsInX...> &indices, const XType<T, XRank> &X, std::index_sequence<I...>) -> size_t {
-    return (X.dim(std::get<2 * I + 1>(indices)) * ... * 1);
-}
-
-template <template <typename, size_t> typename XType, size_t XRank, typename... PositionsInX, std::size_t... I, typename T = double>
-constexpr auto is_same_dims(const std::tuple<PositionsInX...> &indices, const XType<T, XRank> &X, std::index_sequence<I...>) -> bool {
-    return ((X.dim(std::get<1>(indices)) == X.dim(std::get<2 * I + 1>(indices))) && ... && 1);
-}
-
-template <typename LHS, typename RHS, std::size_t... I>
-constexpr auto same_indices(std::index_sequence<I...>) {
-    return (std::is_same_v<std::tuple_element_t<I, LHS>, std::tuple_element_t<I, RHS>> && ...);
-}
-
-template <template <typename, size_t> typename XType, size_t XRank, typename... PositionsInX, typename T = double>
-constexpr auto product_dims(const std::tuple<PositionsInX...> &indices, const XType<T, XRank> &X) -> size_t {
-    return detail::product_dims(indices, X, std::make_index_sequence<sizeof...(PositionsInX) / 2>());
-}
-
-template <template <typename, size_t> typename XType, size_t XRank, typename... PositionsInX, typename T = double>
-constexpr auto is_same_dims(const std::tuple<PositionsInX...> &indices, const XType<T, XRank> &X) -> size_t {
-    return detail::is_same_dims(indices, X, std::make_index_sequence<sizeof...(PositionsInX) / 2>());
-}
-
-template <template <typename, size_t> typename XType, size_t XRank, typename... PositionsInX, typename T = double>
-constexpr auto last_stride(const std::tuple<PositionsInX...> &indices, const XType<T, XRank> &X) -> size_t {
-    return X.stride(std::get<sizeof...(PositionsInX) - 1>(indices));
-}
-
-template <typename LHS, typename RHS>
-constexpr auto same_indices() {
-    if constexpr (std::tuple_size_v<LHS> != std::tuple_size_v<RHS>)
-        return false;
-    else
-        return detail::same_indices<LHS, RHS>(std::make_index_sequence<std::tuple_size_v<LHS>>());
-}
 
 template <typename... CUniqueIndices, typename... AUniqueIndices, typename... BUniqueIndices, typename... LinkUniqueIndices,
           typename... CIndices, typename... AIndices, typename... BIndices, typename... TargetDims, typename... LinkDims,
@@ -392,8 +134,8 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
             CDataType sum = AB_prefactor * A_value * B_value;
 
             CDataType &target_value = std::apply(*C, C_order);
-            if (C_prefactor == CDataType{0.0})
-                target_value = CDataType{0.0};
+            // if (C_prefactor == CDataType{0.0})
+            // target_value = CDataType{0.0};
             target_value *= C_prefactor;
             target_value += sum;
         }
@@ -1124,97 +866,6 @@ auto einsum(const std::tuple<CIndices...> &C_indices, CType *C, const std::tuple
             const std::tuple<BIndices...> &B_indices, const BType &B)
     -> std::enable_if_t<is_smart_pointer_v<CType> && is_smart_pointer_v<AType> && is_smart_pointer_v<BType>> {
     einsum(0, C_indices, C->get(), 1, A_indices, *A, B_indices, *B);
-}
-
-//
-// sort algorithm
-//
-template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename CType, size_t CRank,
-          typename... CIndices, typename... AIndices, typename U, typename T = double>
-auto sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<T, CRank> *C, const U UA_prefactor,
-          const std::tuple<AIndices...> &A_indices, const AType<T, ARank> &A)
-    -> std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<T, CRank>, CType<T, CRank>> &&
-                        std::is_base_of_v<::einsums::detail::TensorBase<T, ARank>, AType<T, ARank>> &&
-                        sizeof...(CIndices) == sizeof...(AIndices) && sizeof...(CIndices) == CRank && sizeof...(AIndices) == ARank &&
-                        std::is_arithmetic_v<U>> {
-
-    LabeledSection1(FP_ZERO != std::fpclassify(UC_prefactor)
-                        ? fmt::format(R"(sort: "{}"{} = {} "{}"{} + {} "{}"{})", C->name(), print_tuple_no_type(C_indices), UA_prefactor,
-                                      A.name(), print_tuple_no_type(A_indices), UC_prefactor, C->name(), print_tuple_no_type(C_indices))
-                        : fmt::format(R"(sort: "{}"{} = {} "{}"{})", C->name(), print_tuple_no_type(C_indices), UA_prefactor, A.name(),
-                                      print_tuple_no_type(A_indices)));
-
-    const T C_prefactor = UC_prefactor;
-    const T A_prefactor = UA_prefactor;
-
-    // Error check:  If there are any remaining indices then we cannot perform a sort
-    constexpr auto check = difference_t<std::tuple<AIndices...>, std::tuple<CIndices...>>();
-    static_assert(std::tuple_size_v<decltype(check)> == 0);
-
-    auto target_position_in_A = detail::find_type_with_position(C_indices, A_indices);
-
-    auto target_dims = get_dim_ranges<CRank>(*C);
-    auto a_dims      = detail::get_dim_ranges_for(A, target_position_in_A);
-
-    // HPTT interface currently only works for full Tensors and not TensorViews
-#if defined(EINSUMS_USE_HPTT)
-    if constexpr (std::is_same_v<CType<T, CRank>, Tensor<T, CRank>> && std::is_same_v<AType<T, ARank>, Tensor<T, ARank>>) {
-        std::array<int, ARank> perms{};
-        std::array<int, ARank> size{};
-
-        for (int i0 = 0; i0 < ARank; i0++) {
-            perms[i0] = get_from_tuple<unsigned long>(target_position_in_A, (2 * i0) + 1);
-            size[i0]  = A.dim(i0);
-        }
-
-        auto plan = hptt::create_plan(perms.data(), ARank, A_prefactor, A.data(), size.data(), nullptr, C_prefactor, C->data(), nullptr,
-                                      hptt::ESTIMATE, omp_get_max_threads(), nullptr, true);
-        plan->execute();
-    } else
-#endif
-        if constexpr (std::is_same_v<decltype(A_indices), decltype(C_indices)>) {
-        linear_algebra::axpby(A_prefactor, A, C_prefactor, C);
-    } else {
-        auto view = std::apply(ranges::views::cartesian_product, target_dims);
-
-        EINSUMS_OMP_PARALLEL_FOR
-        for (auto it = view.begin(); it < view.end(); it++) {
-            auto A_order = detail::construct_indices<AIndices...>(*it, target_position_in_A, *it, target_position_in_A);
-
-            T &target_value = std::apply(*C, *it);
-            T  A_value      = std::apply(A, A_order);
-
-            target_value = C_prefactor * target_value + A_prefactor * A_value;
-        }
-    }
-} // namespace einsums::TensorAlgebra
-
-// Sort with default values, no smart pointers
-template <typename ObjectA, typename ObjectC, typename... CIndices, typename... AIndices>
-auto sort(const std::tuple<CIndices...> &C_indices, ObjectC *C, const std::tuple<AIndices...> &A_indices, const ObjectA &A)
-    -> std::enable_if_t<!is_smart_pointer_v<ObjectA> && !is_smart_pointer_v<ObjectC>> {
-    sort(0, C_indices, C, 1, A_indices, A);
-}
-
-// Sort with default values, two smart pointers
-template <typename SmartPointerA, typename SmartPointerC, typename... CIndices, typename... AIndices>
-auto sort(const std::tuple<CIndices...> &C_indices, SmartPointerC *C, const std::tuple<AIndices...> &A_indices, const SmartPointerA &A)
-    -> std::enable_if_t<is_smart_pointer_v<SmartPointerA> && is_smart_pointer_v<SmartPointerC>> {
-    sort(0, C_indices, C->get(), 1, A_indices, *A);
-}
-
-// Sort with default values, one smart pointer (A)
-template <typename SmartPointerA, typename PointerC, typename... CIndices, typename... AIndices>
-auto sort(const std::tuple<CIndices...> &C_indices, PointerC *C, const std::tuple<AIndices...> &A_indices, const SmartPointerA &A)
-    -> std::enable_if_t<is_smart_pointer_v<SmartPointerA> && !is_smart_pointer_v<PointerC>> {
-    sort(0, C_indices, C, 1, A_indices, *A);
-}
-
-// Sort with default values, one smart pointer (C)
-template <typename ObjectA, typename SmartPointerC, typename... CIndices, typename... AIndices>
-auto sort(const std::tuple<CIndices...> &C_indices, SmartPointerC *C, const std::tuple<AIndices...> &A_indices, const ObjectA &A)
-    -> std::enable_if_t<!is_smart_pointer_v<ObjectA> && is_smart_pointer_v<SmartPointerC>> {
-    sort(0, C_indices, C->get(), 1, A_indices, A);
 }
 
 //

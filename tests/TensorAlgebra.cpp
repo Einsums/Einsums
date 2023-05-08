@@ -2,6 +2,7 @@
 
 #include "einsums/LinearAlgebra.hpp"
 #include "einsums/STL.hpp"
+#include "einsums/Sort.hpp"
 #include "einsums/State.hpp"
 #include "einsums/Tensor.hpp"
 #include "einsums/Utilities.hpp"

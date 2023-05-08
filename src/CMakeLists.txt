@@ -25,6 +25,17 @@ add_einsums_library(einsums
 )
 
 extend_einsums_target(einsums
+    PUBLIC_DEFINES
+        EINSUMS_HAVE_EIGEN3
+    PUBLIC_DEPENDS
+        Eigen3::Eigen
+    CONDITION
+        TARGET Eigen3::Eigen
+    FEATURE_INFO
+        "Eigen3 interface"
+)
+
+extend_einsums_target(einsums
     SOURCES
         parallel/MPI.cpp
     PUBLIC_DEPENDS

@@ -16,6 +16,17 @@
 #include <tuple>
 #include <type_traits>
 
+#if defined(EINSUMS_HAVE_EIGEN3)
+#    include <Eigen/Core>
+#    include <Eigen/SVD>
+
+template <typename T>
+using RowMatrix = ::Eigen::Matrix<T, ::Eigen::Dynamic, ::Eigen::Dynamic, ::Eigen::RowMajor>;
+
+using RowMatrixXd = RowMatrix<double>;
+
+#endif
+
 BEGIN_EINSUMS_NAMESPACE_HPP(einsums::linear_algebra)
 
 template <template <typename, size_t> typename AType, typename ADataType, size_t ARank>
@@ -370,6 +381,40 @@ auto norm(Norm norm_type, const AType<ADataType, ARank> &a) ->
         return blas::lange(norm_type, a->dim(0), a->dim(1), a->data(), a->stride(0), work.data());
     }
 }
+
+#if defined(EINSUMS_HAVE_EIGEN3)
+template <template <typename, size_t> typename AType, typename T, size_t ARank>
+auto svd_eigen(const AType<T, ARank> &_A) ->
+    typename std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, 2, T>,
+                              std::tuple<Tensor<T, 2>, Tensor<remove_complex_t<T>, 1>, Tensor<T, 2>>> {
+    LabeledSection0();
+
+    // using namespace einsums::tensor_algebra;
+
+    // Calling svd will destroy the original data. Make a copy of it.
+    Tensor<T, 2> eA = _A;
+    // auto eA = create_tensor("tmpA", _A.dim(1), _A.dim(2));
+    // sort(Indices{index::i, index::j}, &eA, Indices{index::j, index::i}, _A);
+
+    Eigen::Map<RowMatrixXd>       A(eA.vector_data().data(), _A.dim(0), _A.dim(1));
+    Eigen::JacobiSVD<RowMatrixXd> svd(A, Eigen::ComputeFullV | Eigen::ComputeFullU);
+
+    auto U = svd.matrixU();
+    auto S = svd.singularValues();
+    auto V = svd.matrixV();
+
+    auto eU = create_tensor("U", U.rows(), U.cols());
+    auto eS = create_tensor("S", S.size());
+    auto eV = create_tensor("V", V.rows(), V.cols());
+
+    // Eigen::Map<Eigen::MatrixX2d>
+    RowMatrixXd::Map(eU.vector_data().data(), eU.dim(0), eU.dim(1)) = U;
+    Eigen::VectorXd::Map(eS.vector_data().data(), eS.dim(0))        = S;
+    RowMatrixXd::Map(eV.vector_data().data(), eV.dim(0), eV.dim(1)) = V;
+
+    return std::make_tuple(eU, eS, eV);
+}
+#endif
 
 // Uses the original svd function found in lapack, gesvd, request all left and right vectors.
 template <template <typename, size_t> typename AType, typename T, size_t ARank>

@@ -2,6 +2,7 @@
 
 #include "einsums/Print.hpp"
 #include "einsums/STL.hpp"
+#include "einsums/Sort.hpp"
 #include "einsums/Tensor.hpp"
 #include "einsums/TensorAlgebra.hpp"
 #include "einsums/Utilities.hpp"
@@ -215,6 +216,7 @@ TEST_CASE("erica_svd") {
 
     SECTION("svd") {
         auto [u, s, vt] = linear_algebra::svd(a);
+        // println("correct S");
         // println(s);
 
         // Using u, s, and vt reconstruct a and test a against the reconstructed a
@@ -265,6 +267,33 @@ TEST_CASE("erica_svd") {
                 CHECK_THAT(std::fabs(overlap(i, i)), Catch::Matchers::WithinAbs(1.0, 0.000001));
             }
         }
+    }
+
+    SECTION("eigen") {
+#if defined(EINSUMS_HAVE_EIGEN3)
+        using namespace einsums;
+        using namespace einsums::tensor_algebra;
+
+        // Try the transpose of a
+        auto tA = create_tensor("tempA", a.dim(1), a.dim(0));
+        sort(Indices{index::i, index::j}, &tA, Indices{index::j, index::i}, a);
+        auto [u, s, vt] = linear_algebra::svd_eigen(tA);
+
+        // println("eigen S");
+        // println(s);
+
+        // Compute overlap between matrices
+        auto overlap = create_tensor("overlap", vt.dim(0), vt.dim(0));
+        {
+            einsum(Indices{index::i, index::j}, &overlap, Indices{index::k, index::i}, u, Indices{index::j, index::k}, answer);
+            println(overlap);
+
+            // Check the diagonal values to ensure they are either 1 or -1.
+            // for (size_t i = 0; i < a.dim(0); i++) {
+            //     CHECK_THAT(std::fabs(overlap(i, i)), Catch::Matchers::WithinAbs(1.0, 0.000001));
+            // }
+        }
+#endif
     }
 }
 
