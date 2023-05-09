@@ -9,18 +9,23 @@
 #include "einsums/_Index.hpp"
 #include "einsums/_TensorAlgebraUtilities.hpp"
 
-#if defined(EINSUMS_USE_HPTT)
-#    include "hptt.h"
-
-// HPTT includes <complex> which defined I as a shorthand for complex values.
-// This causes issues with einsums since we define I to be a useable index
-// for the user. Undefine the one defined in <complex> here.
-#    if defined(I)
-#        undef I
-#    endif
-#endif
-
 BEGIN_EINSUMS_NAMESPACE_HPP(einsums::tensor_algebra)
+
+#if defined(EINSUMS_USE_HPTT)
+
+namespace detail {
+
+void EINSUMS_EXPORT sort(const int *perm, const int dim, const float alpha, const float *A, const int *sizeA, const float beta, float *B);
+void EINSUMS_EXPORT sort(const int *perm, const int dim, const double alpha, const double *A, const int *sizeA, const double beta,
+                         double *B);
+void EINSUMS_EXPORT sort(const int *perm, const int dim, const std::complex<float> alpha, const std::complex<float> *A, const int *sizeA,
+                         const std::complex<float> beta, std::complex<float> *B);
+void EINSUMS_EXPORT sort(const int *perm, const int dim, const std::complex<double> alpha, const std::complex<double> *A, const int *sizeA,
+                         const std::complex<double> beta, std::complex<double> *B);
+
+} // namespace detail
+
+#endif
 
 //
 // sort algorithm
@@ -63,9 +68,7 @@ auto sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<
             size[i0]  = A.dim(i0);
         }
 
-        auto plan = hptt::create_plan(perms.data(), ARank, A_prefactor, A.data(), size.data(), nullptr, C_prefactor, C->data(), nullptr,
-                                      hptt::ESTIMATE, omp_get_max_threads(), nullptr, true);
-        plan->execute();
+        detail::sort(perms.data(), ARank, A_prefactor, A.data(), size.data(), C_prefactor, C->data());
     } else
 #endif
         if constexpr (std::is_same_v<decltype(A_indices), decltype(C_indices)>) {

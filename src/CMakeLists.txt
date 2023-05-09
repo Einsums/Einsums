@@ -168,9 +168,11 @@ extend_einsums_target(einsums
 )
 
 extend_einsums_target(einsums
+    SOURCES
+        Sort.cpp
     PUBLIC_DEFINES
         EINSUMS_USE_HPTT
-    PUBLIC_DEPENDS
+    DEPENDS
         hptt::hptt
     CONDITION
         EINSUMS_USE_HPTT
