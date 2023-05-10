@@ -12,14 +12,29 @@ void finalize();
 /*!
  * Performs matrix multiplication for general square matices of type double.
  */
-void sgemm(const char transa, const char transb, eint m, eint n, eint k, float alpha, const float *a, eint lda, const float *b, eint ldb,
-           float beta, float *c, eint ldc);
-void dgemm(const char transa, const char transb, eint m, eint n, eint k, double alpha, const double *a, eint lda, const double *b, eint ldb,
-           double beta, double *c, eint ldc);
-void cgemm(const char transa, const char transb, eint m, eint n, eint k, std::complex<float> alpha, const std::complex<float> *a, eint lda,
-           const std::complex<float> *b, eint ldb, std::complex<float> beta, std::complex<float> *c, eint ldc);
-void zgemm(const char transa, const char transb, eint m, eint n, eint k, std::complex<double> alpha, const std::complex<double> *a,
-           eint lda, const std::complex<double> *b, eint ldb, std::complex<double> beta, std::complex<double> *c, eint ldc);
+#define mkl_def_gemm(x, type)                                                                                                              \
+    void x##gemm(const char transa, const char transb, eint m, eint n, eint k, type alpha, const type *a, eint lda, const type *b,         \
+                 eint ldb, type beta, type *c, eint ldc)
+
+mkl_def_gemm(s, float);
+mkl_def_gemm(d, double);
+mkl_def_gemm(c, std::complex<float>);
+mkl_def_gemm(z, std::complex<double>);
+
+#undef gemm
+
+/*!
+ * Computes groups of matrix-matrix products with general matrices.
+ */
+#define mkl_def_gemm_batch_strided(x, type)                                                                                                \
+    void x##gemm_batch_strided(const char transa, const char transb, eint m, eint n, eint k, type alpha, const type *a, eint lda,          \
+                               eint stridea, const type *b, eint ldb, eint strideb, type beta, type *c, eint ldc, eint stridec,            \
+                               eint batch_size)
+
+mkl_def_gemm_batch_strided(s, float);
+mkl_def_gemm_batch_strided(d, double);
+mkl_def_gemm_batch_strided(c, std::complex<float>);
+mkl_def_gemm_batch_strided(z, std::complex<double>);
 
 /*!
  * Performs matrix vector multiplication.

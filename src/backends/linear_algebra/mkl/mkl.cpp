@@ -13,9 +13,26 @@
 BEGIN_EINSUMS_NAMESPACE_CPP(einsums::backend::linear_algebra::mkl)
 
 namespace {
-auto mkl_interface() -> std::string {
+constexpr auto mkl_interface() {
     return EINSUMS_STRINGIFY(MKL_INTERFACE);
 }
+
+auto transpose_to_cblas(char transpose) -> CBLAS_TRANSPOSE {
+    switch (transpose) {
+    case 'N':
+    case 'n':
+        return CblasNoTrans;
+    case 'T':
+    case 't':
+        return CblasTrans;
+    case 'C':
+    case 'c':
+        return CblasConjTrans;
+    }
+    println_warn("Unknown transpose code {}, defaulting to CblasNoTrans.", transpose);
+    return CblasNoTrans;
+}
+
 } // namespace
 
 void initialize() {
@@ -62,6 +79,30 @@ void zgemm(char transa, char transb, eint m, eint n, eint k, const std::complex<
             reinterpret_cast<const MKL_Complex16 *>(a), &lda, reinterpret_cast<const MKL_Complex16 *>(&beta),
             reinterpret_cast<MKL_Complex16 *>(c), &ldc);
 }
+
+#define impl_gemm_batch_strided(x, type)                                                                                                   \
+    mkl_def_gemm_batch_strided(x, type) {                                                                                                  \
+        LabeledSection1(mkl_interface());                                                                                                  \
+        if (m == 0 || n == 0 || k == 0)                                                                                                    \
+            return;                                                                                                                        \
+        cblas_##x##gemm_batch_strided(CblasRowMajor, transpose_to_cblas(transa), transpose_to_cblas(transb), m, n, k, alpha, a, lda,       \
+                                      stridea, b, ldb, strideb, beta, c, ldc, stridec, batch_size);                                        \
+    }
+
+impl_gemm_batch_strided(s, float);
+impl_gemm_batch_strided(d, double);
+
+#define impl_gemm_batch_strided_complex(x, type)                                                                                           \
+    mkl_def_gemm_batch_strided(x, type) {                                                                                                  \
+        LabeledSection1(mkl_interface());                                                                                                  \
+        if (m == 0 || n == 0 || k == 0)                                                                                                    \
+            return;                                                                                                                        \
+        cblas_##x##gemm_batch_strided(CblasRowMajor, transpose_to_cblas(transa), transpose_to_cblas(transb), m, n, k, &alpha, a, lda,      \
+                                      stridea, b, ldb, strideb, &beta, c, ldc, stridec, batch_size);                                       \
+    }
+
+impl_gemm_batch_strided_complex(c, std::complex<float>);
+impl_gemm_batch_strided_complex(z, std::complex<double>);
 
 void sgemv(const char transa, const eint m, const eint n, const float alpha, const float *a, const eint lda, const float *x,
            const eint incx, const float beta, float *y, const eint incy) {
