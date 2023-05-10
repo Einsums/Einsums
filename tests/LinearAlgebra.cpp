@@ -289,9 +289,9 @@ TEST_CASE("erica_svd") {
             // println(overlap);
 
             // Check the diagonal values to ensure they are either 1 or -1.
-            // for (size_t i = 0; i < a.dim(0); i++) {
-            //     CHECK_THAT(std::fabs(overlap(i, i)), Catch::Matchers::WithinAbs(1.0, 0.000001));
-            // }
+            for (size_t i = 0; i < a.dim(0); i++) {
+                CHECK_THAT(std::fabs(overlap(i, i)), Catch::Matchers::WithinAbs(1.0, 0.000001));
+            }
         }
 #endif
     }
