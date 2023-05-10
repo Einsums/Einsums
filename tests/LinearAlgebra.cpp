@@ -286,7 +286,7 @@ TEST_CASE("erica_svd") {
         auto overlap = create_tensor("overlap", vt.dim(0), vt.dim(0));
         {
             einsum(Indices{index::i, index::j}, &overlap, Indices{index::k, index::i}, u, Indices{index::j, index::k}, answer);
-            println(overlap);
+            // println(overlap);
 
             // Check the diagonal values to ensure they are either 1 or -1.
             // for (size_t i = 0; i < a.dim(0); i++) {
