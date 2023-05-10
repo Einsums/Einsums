@@ -31,8 +31,8 @@ jobs:
     - name: Install Dependencies - macOS
       if: ${{ matrix.os == 'macos-latest' }}
       run: |
-        brew install hdf5 cmake zlib lapack fftw
-        echo "HDF5_ROOT=$(brew --prefix hdf5)" >> $GITHUB_ENV
+        brew install hdf5@1.10 cmake zlib lapack fftw
+        echo "HDF5_ROOT=$(brew --prefix hdf5@1.10)" >> $GITHUB_ENV
         echo "LAPACKE_DIR=/home/linuxbrew/.linuxbrew/opt/lapack" >> $GITHUB_ENV
         echo "FFTW_ROOT=$(brew --prefix fftw)" >> $GITHUB_ENV
 
