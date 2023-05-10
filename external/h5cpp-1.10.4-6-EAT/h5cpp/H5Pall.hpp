@@ -103,7 +103,9 @@ struct aprop_t final : prop_t<phid_t, init, capi, capi_call> {
 /* CAPI macros are sequence calls: (H5OPEN, register_property_class), these are all meant to be read only/copied from,
  */
 #define H5CPP__capicall(name, default_id)                                                                                                  \
-    ::hid_t inline default_##name() { return default_id; }                                                                                 \
+    ::hid_t inline default_##name() {                                                                                                      \
+        return default_id;                                                                                                                 \
+    }                                                                                                                                      \
     template <class... args>                                                                                                               \
     using name##_args = impl::capi_t<args...>;                                                                                             \
     template <class capi, typename capi::fn_t capi_call>                                                                                   \
@@ -204,9 +206,9 @@ using mdc_config             = impl::fapl_call<impl::fapl_args<hid_t, H5AC_cache
 using mdc_image_config       = impl::fapl_call<impl::fapl_args<hid_t, H5AC_cache_image_config_t *>, H5Pset_mdc_image_config>;
 using mdc_log_options        = impl::fapl_call<impl::fapl_args<hid_t, hbool_t, const char *, hbool_t>, H5Pset_mdc_log_options>;
 #endif
-#if H5_VERSION_GE(1, 14, 0) // FIXME: find out why the compile error with valid 1.8.0 version
-using fapl_direct = impl::fapl_call < impl::fapl_args<hid_t, size_t, size_t, size_t, H5Pset_fapl_direct>;
-#endif
+// #if H5_VERSION_GE(1, 14, 0) // FIXME: find out why the compile error with valid 1.8.0 version
+// using fapl_direct = impl::fapl_call < impl::fapl_args<hid_t, size_t, size_t, size_t, H5Pset_fapl_direct>;
+// #endif
 //
 namespace flag {
 using fapl_sec2  = impl::fapl_call<impl::fapl_args<hid_t>, H5Pset_fapl_sec2>;
