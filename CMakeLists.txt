@@ -69,7 +69,7 @@ endif()
 
 find_package(CBLAS)
 find_package(LAPACKE)
-find_package(Eigen3)
+# find_package(Eigen3)
 
 # Set default FFT library to mkl, if mkl was found, otherwise FFTW3
 set(EINSUMS_FFT_LIBRARY_DEFAULT "fftw3")

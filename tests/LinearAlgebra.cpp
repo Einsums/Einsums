@@ -279,18 +279,25 @@ TEST_CASE("erica_svd") {
         sort(Indices{index::i, index::j}, &tA, Indices{index::j, index::i}, a);
         auto [u, s, vt] = linear_algebra::svd_eigen(tA);
 
+        auto [u1, s1, vt1] = linear_algebra::svd(tA);
+
         // println("eigen S");
         // println(s);
 
+        // println(s1);
+
         // Compute overlap between matrices
-        auto overlap = create_tensor("overlap", vt.dim(0), vt.dim(0));
+        auto overlap  = create_tensor("overlap", u.dim(0), u.dim(0));
+        auto overlap1 = create_tensor("overlap", u.dim(0), u.dim(0));
         {
             einsum(Indices{index::i, index::j}, &overlap, Indices{index::k, index::i}, u, Indices{index::j, index::k}, answer);
+            einsum(Indices{index::i, index::j}, &overlap1, Indices{index::k, index::i}, u1, Indices{index::j, index::k}, answer);
             // println(overlap);
 
             // Check the diagonal values to ensure they are either 1 or -1.
             for (size_t i = 0; i < a.dim(0); i++) {
                 CHECK_THAT(std::fabs(overlap(i, i)), Catch::Matchers::WithinAbs(1.0, 0.000001));
+                CHECK_THAT(std::fabs(overlap1(i, i)), Catch::Matchers::WithinAbs(1.0, 0.000001));
             }
         }
 #endif
