@@ -12,9 +12,6 @@
 #include "range/v3/view/cartesian_product.hpp"
 #include "range/v3/view/iota.hpp"
 
-#include <H5Lpublic.h>
-#include <H5Ppublic.h>
-#include <H5public.h>
 #include <algorithm>
 #include <array>
 #include <cassert>
@@ -56,7 +53,7 @@ struct DiskTensor;
 } // namespace einsums
 
 struct TensorPrintOptions {
-    int width{5};
+    int  width{5};
     bool full_output{true};
 };
 
@@ -92,7 +89,7 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
 
     using vector = std::vector<T, AlignedAllocator<T, 64>>;
 
-    Tensor() = default;
+    Tensor()               = default;
     Tensor(const Tensor &) = default;
     // Tensor(Tensor &&) noexcept = default;
     ~Tensor() = default;
@@ -214,18 +211,18 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
         auto target_dims = get_dim_ranges<Rank>(*this);
         for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
             T &target_value = std::apply(*this, target_combination);
-            T value = std::apply(other, target_combination);
-            target_value = value;
+            T  value        = std::apply(other, target_combination);
+            target_value    = value;
         }
     }
 
     void zero() {
 #pragma omp parallel
         {
-            auto tid = omp_get_thread_num();
+            auto tid       = omp_get_thread_num();
             auto chunksize = _data.size() / omp_get_num_threads();
-            auto begin = _data.begin() + chunksize * tid;
-            auto end = (tid == omp_get_num_threads() - 1) ? _data.end() : begin + chunksize;
+            auto begin     = _data.begin() + chunksize * tid;
+            auto end       = (tid == omp_get_num_threads() - 1) ? _data.end() : begin + chunksize;
             std::fill(begin, end, 0);
         }
     }
@@ -233,10 +230,10 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
     void set_all(T value) {
 #pragma omp parallel
         {
-            auto tid = omp_get_thread_num();
+            auto tid       = omp_get_thread_num();
             auto chunksize = _data.size() / omp_get_num_threads();
-            auto begin = _data.begin() + chunksize * tid;
-            auto end = (tid == omp_get_num_threads() - 1) ? _data.end() : begin + chunksize;
+            auto begin     = _data.begin() + chunksize * tid;
+            auto end       = (tid == omp_get_num_threads() - 1) ? _data.end() : begin + chunksize;
             std::fill(begin, end, value);
         }
     }
@@ -300,9 +297,9 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
         // println("Here");
         const auto &indices = std::forward_as_tuple(index...);
 
-        Offset<Rank> offsets;
+        Offset<Rank>                                                                          offsets;
         Stride<count_of_type<All_t, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> strides{};
-        Dim<count_of_type<All_t, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> dims{};
+        Dim<count_of_type<All_t, MultiIndex...>() + count_of_type<Range, MultiIndex...>()>    dims{};
 
         int counter{0};
         for_sequence<sizeof...(MultiIndex)>([&](auto i) {
@@ -314,17 +311,17 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
                 offsets[i] = tmp;
             } else if constexpr (std::is_same_v<All_t, std::tuple_element_t<i, std::tuple<MultiIndex...>>>) {
                 strides[counter] = _strides[i];
-                dims[counter] = _dims[i];
+                dims[counter]    = _dims[i];
                 counter++;
 
             } else if constexpr (std::is_same_v<Range, std::tuple_element_t<i, std::tuple<MultiIndex...>>>) {
-                auto range = std::get<i>(indices);
+                auto range       = std::get<i>(indices);
                 offsets[counter] = range[0];
                 if (range[1] < 0) {
                     auto temp = _dims[i] + range[1];
-                    range[1] = temp;
+                    range[1]  = temp;
                 }
-                dims[counter] = range[1] - range[0];
+                dims[counter]    = range[1] - range[0];
                 strides[counter] = _strides[i];
                 counter++;
             }
@@ -336,7 +333,7 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
 
     template <typename... MultiIndex>
     auto operator()(MultiIndex... index) const -> std::enable_if_t<count_of_type<Range, MultiIndex...>() == Rank, TensorView<T, Rank>> {
-        Dim<Rank> dims{};
+        Dim<Rank>    dims{};
         Offset<Rank> offset{};
         Stride<Rank> stride = _strides;
 
@@ -344,10 +341,10 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
 
         for (int r = 0; r < Rank; r++) {
             auto range = ranges[r];
-            offset[r] = range[0];
+            offset[r]  = range[0];
             if (range[1] < 0) {
                 auto temp = _dims[r] + range[1];
-                range[1] = temp;
+                range[1]  = temp;
             }
             dims[r] = range[1] - range[0];
         }
@@ -427,8 +424,8 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
         auto target_dims = get_dim_ranges<Rank>(*this);
         for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
             T &target_value = std::apply(*this, target_combination);
-            T value = std::apply(other, target_combination);
-            target_value = value;
+            T  value        = std::apply(other, target_combination);
+            target_value    = value;
         }
 
         return *this;
@@ -439,8 +436,8 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
         auto target_dims = get_dim_ranges<Rank>(*this);
         for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
             T &target_value = std::apply(*this, target_combination);
-            T value = std::apply(other, target_combination);
-            target_value = value;
+            T  value        = std::apply(other, target_combination);
+            target_value    = value;
         }
 
         return *this;
@@ -454,11 +451,13 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
 #define OPERATOR(OP)                                                                                                                       \
     auto operator OP(const T &b)->Tensor<T, Rank> & {                                                                                      \
         EINSUMS_OMP_PARALLEL {                                                                                                             \
-            auto tid = omp_get_thread_num();                                                                                               \
+            auto tid       = omp_get_thread_num();                                                                                         \
             auto chunksize = _data.size() / omp_get_num_threads();                                                                         \
-            auto begin = _data.begin() + chunksize * tid;                                                                                  \
-            auto end = (tid == omp_get_num_threads() - 1) ? _data.end() : begin + chunksize;                                               \
-            EINSUMS_OMP_SIMD for (auto i = begin; i < end; i++) { (*i) OP b; }                                                             \
+            auto begin     = _data.begin() + chunksize * tid;                                                                              \
+            auto end       = (tid == omp_get_num_threads() - 1) ? _data.end() : begin + chunksize;                                         \
+            EINSUMS_OMP_SIMD for (auto i = begin; i < end; i++) {                                                                          \
+                (*i) OP b;                                                                                                                 \
+            }                                                                                                                              \
         }                                                                                                                                  \
         return *this;                                                                                                                      \
     }                                                                                                                                      \
@@ -468,13 +467,15 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
             throw std::runtime_error(fmt::format("operator" EINSUMS_STRINGIFY(OP) " : tensors differ in size : {} {}", size(), b.size())); \
         }                                                                                                                                  \
         EINSUMS_OMP_PARALLEL {                                                                                                             \
-            auto tid = omp_get_thread_num();                                                                                               \
+            auto tid       = omp_get_thread_num();                                                                                         \
             auto chunksize = _data.size() / omp_get_num_threads();                                                                         \
-            auto abegin = _data.begin() + chunksize * tid;                                                                                 \
-            auto bbegin = b._data.begin() + chunksize * tid;                                                                               \
-            auto aend = (tid == omp_get_num_threads() - 1) ? _data.end() : abegin + chunksize;                                             \
-            auto j = bbegin;                                                                                                               \
-            EINSUMS_OMP_SIMD for (auto i = abegin; i < aend; i++) { (*i) OP(*j++); }                                                       \
+            auto abegin    = _data.begin() + chunksize * tid;                                                                              \
+            auto bbegin    = b._data.begin() + chunksize * tid;                                                                            \
+            auto aend      = (tid == omp_get_num_threads() - 1) ? _data.end() : abegin + chunksize;                                        \
+            auto j         = bbegin;                                                                                                       \
+            EINSUMS_OMP_SIMD for (auto i = abegin; i < aend; i++) {                                                                        \
+                (*i) OP(*j++);                                                                                                             \
+            }                                                                                                                              \
         }                                                                                                                                  \
         return *this;                                                                                                                      \
     }
@@ -498,7 +499,7 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
     auto vector_data() -> vector & { return _data; }
 
     [[nodiscard]] auto name() const -> const std::string & { return _name; }
-    void set_name(const std::string &name) { _name = name; }
+    void               set_name(const std::string &name) { _name = name; }
 
     [[nodiscard]] auto stride(int d) const noexcept -> size_t {
         if (d < 0)
@@ -521,10 +522,10 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
     [[nodiscard]] auto full_view_of_underlying() const noexcept -> bool { return true; }
 
   private:
-    std::string _name{"(Unnamed)"};
-    Dim<Rank> _dims;
+    std::string  _name{"(Unnamed)"};
+    Dim<Rank>    _dims;
     Stride<Rank> _strides;
-    vector _data;
+    vector       _data;
 
     template <typename T_, size_t Rank_>
     friend struct TensorView;
@@ -536,16 +537,16 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
 template <typename T>
 struct Tensor<T, 0> : public detail::TensorBase<T, 0> {
 
-    Tensor() = default;
-    Tensor(const Tensor &) = default;
+    Tensor()                   = default;
+    Tensor(const Tensor &)     = default;
     Tensor(Tensor &&) noexcept = default;
-    ~Tensor() = default;
+    ~Tensor()                  = default;
 
     explicit Tensor(std::string name) : _name{std::move(name)} {};
 
     Tensor(Dim<0>) {}
 
-    auto data() -> T * { return &_data; }
+    auto               data() -> T               *{ return &_data; }
     [[nodiscard]] auto data() const -> const T * { return &_data; }
 
     auto operator=(const Tensor<T, 0> &other) -> Tensor<T, 0> & {
@@ -559,7 +560,7 @@ struct Tensor<T, 0> : public detail::TensorBase<T, 0> {
     }
 
 #if defined(OPERATOR)
-#undef OPERATOR
+#    undef OPERATOR
 #endif
 #define OPERATOR(OP)                                                                                                                       \
     auto operator OP(const T &other)->Tensor<T, 0> & {                                                                                     \
@@ -578,7 +579,7 @@ struct Tensor<T, 0> : public detail::TensorBase<T, 0> {
     operator T &() { return _data; }
 
     [[nodiscard]] auto name() const -> const std::string & { return _name; }
-    void set_name(const std::string &name) { _name = name; }
+    void               set_name(const std::string &name) { _name = name; }
 
     [[nodiscard]] auto dim(int) const -> size_t override { return 1; }
 
@@ -588,15 +589,15 @@ struct Tensor<T, 0> : public detail::TensorBase<T, 0> {
 
   private:
     std::string _name{"(Unnamed)"};
-    T _data{};
+    T           _data{};
 };
 
 template <typename T, size_t Rank>
 struct TensorView final : public detail::TensorBase<T, Rank> {
 
-    TensorView() = delete;
+    TensorView()                   = delete;
     TensorView(const TensorView &) = default;
-    ~TensorView() = default;
+    ~TensorView()                  = default;
 
     // std::enable_if doesn't work with constructors.  So we explicitly create individual
     // constructors for the types of tensors we support (Tensor and TensorView).  The
@@ -641,12 +642,12 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
         // Can't perform checks on data. Assume the user knows what they're doing.
         // This function is used when interfacing with libint2.
 
-        auto target_dims = get_dim_ranges<Rank>(*this);
+        auto   target_dims = get_dim_ranges<Rank>(*this);
         size_t item{0};
 
         for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
             T &target = std::apply(*this, target_combination);
-            target = other[item];
+            target    = other[item];
             item++;
         }
 
@@ -662,12 +663,12 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
         }
 
         auto target_dims = get_dim_ranges<Rank>(*this);
-        auto view = std::apply(ranges::views::cartesian_product, target_dims);
+        auto view        = std::apply(ranges::views::cartesian_product, target_dims);
 
 #pragma omp parallel for
         for (auto target_combination = view.begin(); target_combination != view.end(); target_combination++) {
             T &target = std::apply(*this, *target_combination);
-            target = std::apply(other, *target_combination);
+            target    = std::apply(other, *target_combination);
         }
 
         return *this;
@@ -682,12 +683,12 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
         }
 
         auto target_dims = get_dim_ranges<Rank>(*this);
-        auto view = std::apply(ranges::views::cartesian_product, target_dims);
+        auto view        = std::apply(ranges::views::cartesian_product, target_dims);
 
 #pragma omp parallel for
         for (auto target_combination = view.begin(); target_combination != view.end(); target_combination++) {
             T &target = std::apply(*this, *target_combination);
-            target = std::apply(other, *target_combination);
+            target    = std::apply(other, *target_combination);
         }
 
         return *this;
@@ -695,26 +696,26 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
 
     auto operator=(const T &fill_value) -> TensorView & {
         auto target_dims = get_dim_ranges<Rank>(*this);
-        auto view = std::apply(ranges::views::cartesian_product, target_dims);
+        auto view        = std::apply(ranges::views::cartesian_product, target_dims);
 
 #pragma omp parallel for
         for (auto target_combination = view.begin(); target_combination != view.end(); target_combination++) {
             T &target = std::apply(*this, *target_combination);
-            target = fill_value;
+            target    = fill_value;
         }
 
         return *this;
     }
 
 #if defined(OPERATOR)
-#undef OPERATOR)
+#    undef OPERATOR)
 #endif
 #define OPERATOR(OP)                                                                                                                       \
     auto operator OP(const T &value)->TensorView & {                                                                                       \
         auto target_dims = get_dim_ranges<Rank>(*this);                                                                                    \
-        auto view = std::apply(ranges::views::cartesian_product, target_dims);                                                             \
+        auto view        = std::apply(ranges::views::cartesian_product, target_dims);                                                      \
         _Pragma("omp parallel for") for (auto target_combination = view.begin(); target_combination != view.end(); target_combination++) { \
-            T &target = std::apply(*this, *target_combination);                                                                            \
+            T        &target = std::apply(*this, *target_combination);                                                                     \
             target OP value;                                                                                                               \
         }                                                                                                                                  \
                                                                                                                                            \
@@ -782,7 +783,7 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
     auto dims() const -> Dim<Rank> { return _dims; }
 
     [[nodiscard]] auto name() const -> const std::string & { return _name; }
-    void set_name(const std::string &name) { _name = name; }
+    void               set_name(const std::string &name) { _name = name; }
 
     [[nodiscard]] auto stride(int d) const noexcept -> size_t {
         if (d < 0)
@@ -842,9 +843,9 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
 
         static_assert(Rank <= OtherRank, "A TensorView must be the same Rank or smaller that the Tensor being viewed.");
 
-        Stride<Rank> default_strides{};
+        Stride<Rank>      default_strides{};
         Offset<OtherRank> default_offsets{};
-        Stride<Rank> error_strides{};
+        Stride<Rank>      error_strides{};
         error_strides[0] = -1;
 
         // Check to see if the user provided a dim of "-1" in one place. If found then the user requests that we compute this
@@ -909,16 +910,16 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
         default_offsets.fill(0);
 
         // Use default_* unless the caller provides one to use.
-        _strides = Arguments::get(default_strides, args...);
+        _strides                         = Arguments::get(default_strides, args...);
         const Offset<OtherRank> &offsets = Arguments::get(default_offsets, args...);
 
         // Determine the ordinal using the offsets provided (if any) and the strides of the parent
         size_t ordinal = std::inner_product(offsets.begin(), offsets.end(), other._strides.begin(), size_t{0});
-        _data = &(other._data[ordinal]);
+        _data          = &(other._data[ordinal]);
     }
 
-    std::string _name{"(Unnamed View)"};
-    Dim<Rank> _dims;
+    std::string  _name{"(Unnamed View)"};
+    Dim<Rank>    _dims;
     Stride<Rank> _strides;
     // Offsets<Rank> _offsets;
 
@@ -945,31 +946,31 @@ template <size_t Rank, typename T, class... Args>
 void write(const h5::fd_t &fd, const Tensor<T, Rank> &ref, Args &&...args) {
     // Can these h5 parameters be moved into the Tensor class?
     h5::current_dims current_dims_default;
-    h5::max_dims max_dims_default;
-    h5::count count_default;
-    h5::offset offset_default{0, 0, 0, 0, 0, 0, 0};
-    h5::stride stride_default{1, 1, 1, 1, 1, 1, 1};
-    h5::block block_default{1, 1, 1, 1, 1, 1, 1};
+    h5::max_dims     max_dims_default;
+    h5::count        count_default;
+    h5::offset       offset_default{0, 0, 0, 0, 0, 0, 0};
+    h5::stride       stride_default{1, 1, 1, 1, 1, 1, 1};
+    h5::block        block_default{1, 1, 1, 1, 1, 1, 1};
 
     current_dims_default.rank = Rank;
-    max_dims_default.rank = Rank;
-    count_default.rank = Rank;
-    offset_default.rank = Rank;
-    stride_default.rank = Rank;
-    block_default.rank = Rank;
+    max_dims_default.rank     = Rank;
+    count_default.rank        = Rank;
+    offset_default.rank       = Rank;
+    stride_default.rank       = Rank;
+    block_default.rank        = Rank;
 
     for (int i = 0; i < Rank; i++) {
         current_dims_default[i] = ref.dim(i);
-        max_dims_default[i] = ref.dim(i);
-        count_default[i] = ref.dim(i);
+        max_dims_default[i]     = ref.dim(i);
+        count_default[i]        = ref.dim(i);
     }
 
     const h5::current_dims &current_dims = h5::arg::get(current_dims_default, args...);
-    const h5::max_dims &max_dims = h5::arg::get(max_dims_default, args...);
-    const h5::count &count = h5::arg::get(count_default, args...);
-    const h5::offset &offset = h5::arg::get(offset_default, args...);
-    const h5::stride &stride = h5::arg::get(stride_default, args...);
-    const h5::block &block = h5::arg::get(block_default, args...);
+    const h5::max_dims     &max_dims     = h5::arg::get(max_dims_default, args...);
+    const h5::count        &count        = h5::arg::get(count_default, args...);
+    const h5::offset       &offset       = h5::arg::get(offset_default, args...);
+    const h5::stride       &stride       = h5::arg::get(stride_default, args...);
+    const h5::block        &block        = h5::arg::get(block_default, args...);
 
     h5::ds_t ds;
     if (H5Lexists(fd, ref.name().c_str(), H5P_DEFAULT) <= 0) {
@@ -993,17 +994,17 @@ void write(const h5::fd_t &fd, const Tensor<T, 0> &ref) {
 
 template <size_t Rank, typename T, class... Args>
 void write(const h5::fd_t &fd, const TensorView<T, Rank> &ref, Args &&...args) {
-    h5::count count_default{1, 1, 1, 1, 1, 1, 1};
+    h5::count  count_default{1, 1, 1, 1, 1, 1, 1};
     h5::offset offset_default{0, 0, 0, 0, 0, 0, 0};
     h5::stride stride_default{1, 1, 1, 1, 1, 1, 1};
     h5::offset view_offset{0, 0, 0, 0, 0, 0, 0};
     h5::offset disk_offset{0, 0, 0, 0, 0, 0, 0};
 
-    count_default.rank = Rank;
+    count_default.rank  = Rank;
     offset_default.rank = Rank;
     stride_default.rank = Rank;
-    view_offset.rank = Rank;
-    disk_offset.rank = Rank;
+    view_offset.rank    = Rank;
+    disk_offset.rank    = Rank;
 
     if (ref.stride(Rank - 1) != 1) {
         throw std::runtime_error("Final dimension of TensorView must be contiguous to write.");
@@ -1059,7 +1060,7 @@ auto read(const h5::fd_t &fd, const std::string &name) -> Tensor<T, Rank> {
 template <typename T>
 auto read(const h5::fd_t &fd, const std::string &name) -> Tensor<T, 0> {
     try {
-        T temp{0};
+        T            temp{0};
         Tensor<T, 0> tensor{name};
         h5::read<T>(fd, name, &temp, h5::count{1});
         tensor = temp;
@@ -1077,10 +1078,10 @@ void zero(Tensor<T, Rank> &A) {
 
 template <typename T, size_t Rank>
 struct DiskTensor final : public detail::TensorBase<T, Rank> {
-    DiskTensor() = default;
-    DiskTensor(const DiskTensor &) = default;
+    DiskTensor()                       = default;
+    DiskTensor(const DiskTensor &)     = default;
     DiskTensor(DiskTensor &&) noexcept = default;
-    ~DiskTensor() = default;
+    ~DiskTensor()                      = default;
 
     template <typename... Dims>
     explicit DiskTensor(h5::fd_t &file, std::string name, Chunk<sizeof...(Dims)> chunk, Dims... dims)
@@ -1227,7 +1228,7 @@ struct DiskTensor final : public detail::TensorBase<T, Rank> {
     // Provides ability to store another tensor to a part of a disk tensor.
 
     [[nodiscard]] auto dim(int d) const -> size_t { return _dims[d]; }
-    auto dims() const -> Dim<Rank> { return _dims; }
+    auto               dims() const -> Dim<Rank> { return _dims; }
 
     [[nodiscard]] auto existed() const -> bool { return _existed; }
 
@@ -1258,7 +1259,7 @@ struct DiskTensor final : public detail::TensorBase<T, Rank> {
         // Need the offset and stride into the large tensor
         Offset<Rank> offsets{};
         Stride<Rank> strides{};
-        Count<Rank> counts{};
+        Count<Rank>  counts{};
 
         std::fill(counts.begin(), counts.end(), 1.0);
 
@@ -1272,12 +1273,12 @@ struct DiskTensor final : public detail::TensorBase<T, Rank> {
         for (auto [i, value] : enumerate(all_positions)) {
             // println("here");
             strides[value] = _strides[value];
-            counts[value] = _dims[value];
+            counts[value]  = _dims[value];
             // dims_all[i] = _dims[value];
         }
         for (auto [i, value] : enumerate(range_positions)) {
             offsets[value] = get_from_tuple<Range>(indices, value)[0];
-            counts[value] = get_from_tuple<Range>(indices, value)[1] - get_from_tuple<Range>(indices, value)[0];
+            counts[value]  = get_from_tuple<Range>(indices, value)[1] - get_from_tuple<Range>(indices, value)[0];
         }
 
         // Go through counts and anything that isn't equal to 1 is copied to the dims_all
@@ -1309,7 +1310,7 @@ struct DiskTensor final : public detail::TensorBase<T, Rank> {
         // Need the offset and stride into the large tensor
         Offset<Rank> offsets{};
         Stride<Rank> strides{};
-        Count<Rank> counts{};
+        Count<Rank>  counts{};
 
         std::fill(counts.begin(), counts.end(), 1.0);
 
@@ -1323,12 +1324,12 @@ struct DiskTensor final : public detail::TensorBase<T, Rank> {
         for (auto [i, value] : enumerate(all_positions)) {
             // println("here");
             strides[value] = _strides[value];
-            counts[value] = _dims[value];
+            counts[value]  = _dims[value];
             // dims_all[i] = _dims[value];
         }
         for (auto [i, value] : enumerate(range_positions)) {
             offsets[value] = get_from_tuple<Range>(indices, value)[0];
-            counts[value] = get_from_tuple<Range>(indices, value)[1] - get_from_tuple<Range>(indices, value)[0];
+            counts[value]  = get_from_tuple<Range>(indices, value)[1] - get_from_tuple<Range>(indices, value)[0];
         }
 
         // Go through counts and anything that isn't equal to 1 is copied to the dims_all
@@ -1346,8 +1347,8 @@ struct DiskTensor final : public detail::TensorBase<T, Rank> {
   private:
     h5::fd_t &_file;
 
-    std::string _name;
-    Dim<Rank> _dims;
+    std::string  _name;
+    Dim<Rank>    _dims;
     Stride<Rank> _strides;
 
     h5::ds_t _disk;
@@ -1365,13 +1366,13 @@ struct DiskView final : public detail::TensorBase<T, ViewRank> {
     };
     DiskView(const DiskTensor<T, Rank> &parent, const Dim<ViewRank> &dims, const Count<Rank> &counts, const Offset<Rank> &offsets,
              const Stride<Rank> &strides)
-        : _parent(const_cast<DiskTensor<T, Rank> &>(parent)), _dims(dims), _counts(counts), _offsets(offsets),
-          _strides(strides), _tensor{_dims} {
+        : _parent(const_cast<DiskTensor<T, Rank> &>(parent)), _dims(dims), _counts(counts), _offsets(offsets), _strides(strides),
+          _tensor{_dims} {
         Section section("DiskView constructor");
         h5::read<T>(_parent.disk(), _tensor.data(), h5::count{_counts}, h5::offset{_offsets});
         set_read_only(true);
     };
-    DiskView(const DiskView &) = default;
+    DiskView(const DiskView &)     = default;
     DiskView(DiskView &&) noexcept = default;
 
     ~DiskView() { put(); }
@@ -1437,7 +1438,7 @@ struct DiskView final : public detail::TensorBase<T, ViewRank> {
     }
 
     [[nodiscard]] auto dim(int d) const -> size_t { return _tensor.dim(d); }
-    auto dims() const -> Dim<Rank> { return _tensor.dims(); }
+    auto               dims() const -> Dim<Rank> { return _tensor.dims(); }
 
     operator Tensor<T, ViewRank> &() const { return _tensor; }
     operator const Tensor<T, ViewRank> &() const { return _tensor; }
@@ -1447,11 +1448,11 @@ struct DiskView final : public detail::TensorBase<T, ViewRank> {
 
   private:
     DiskTensor<T, Rank> &_parent;
-    Dim<ViewRank> _dims;
-    Count<Rank> _counts;
-    Offset<Rank> _offsets;
-    Stride<Rank> _strides;
-    Tensor<T, ViewRank> _tensor;
+    Dim<ViewRank>        _dims;
+    Count<Rank>          _counts;
+    Offset<Rank>         _offsets;
+    Stride<Rank>         _strides;
+    Tensor<T, ViewRank>  _tensor;
 
     bool _readOnly{false};
 
@@ -1559,8 +1560,8 @@ auto println(const AType<T, Rank> &A, TensorPrintOptions options) ->
                 println();
             } else if constexpr (Rank > 1 && einsums::is_incore_rank_tensor_v<AType<T, Rank>, Rank, T>) {
                 auto target_dims = einsums::get_dim_ranges<Rank - 1>(A);
-                auto final_dim = A.dim(Rank - 1);
-                auto ndigits = einsums::ndigits(final_dim);
+                auto final_dim   = A.dim(Rank - 1);
+                auto ndigits     = einsums::ndigits(final_dim);
 
                 for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
                     std::ostringstream oss;
@@ -1576,7 +1577,7 @@ auto println(const AType<T, Rank> &A, TensorPrintOptions options) ->
                                                    fmt::format("({}, {:{}d}-{:{}d}): ", tmp.str(), j, ndigits, final_dim - 1, ndigits));
                         }
                         auto new_tuple = std::tuple_cat(target_combination.base(), std::tuple(j));
-                        T value = std::apply(A, new_tuple);
+                        T    value     = std::apply(A, new_tuple);
                         if (std::fabs(value) > 1.0E+10) {
                             if constexpr (std::is_floating_point_v<T>)
                                 oss << "\x1b[0;37;41m" << fmt::format("{:14.8f} ", value) << "\x1b[0m";
