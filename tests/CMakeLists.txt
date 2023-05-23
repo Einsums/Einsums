@@ -13,7 +13,7 @@ extend_einsums_target(test-all
     SOURCES
         FFT.cpp
     CONDITION
-        (HAVE_MKL_LAPACKE_H AND HAVE_MKL_CBLAS_H)
+        TARGET FFT::FFT
 )
 
 extend_einsums_target(test-all

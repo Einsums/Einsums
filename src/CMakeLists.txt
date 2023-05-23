@@ -4,7 +4,6 @@ add_einsums_library(einsums
         Decomposition.cpp
         ElementOperations.cpp
         InitializeFinalize.cpp
-        FFT.cpp
         LinearAlgebra.cpp
         Memory.cpp
         Print.cpp
@@ -70,6 +69,13 @@ extend_einsums_target(einsums
         OpenMP::OpenMP_CXX
     CONDITION
         TARGET OpenMP::OpenMP_CXX
+)
+
+extend_einsums_target(einsums
+    CONDITION
+        TARGET FFT::FFT
+    SOURCES
+        FFT.cpp
 )
 
 extend_einsums_target(einsums

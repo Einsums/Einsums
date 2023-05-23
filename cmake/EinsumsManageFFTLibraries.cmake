@@ -1,7 +1,7 @@
 include_guard()
 
 # If MKL is found then we must use it.
-if (TARGET MKL::MKL)
+if (NOT EINSUMS_FFT_LIBRARY MATCHES off AND TARGET MKL::MKL)
     if (NOT EINSUMS_FFT_LIBRARY MATCHES mkl)
         # Do this atleast until we can ensure we link to FFTW3 for FFT and not MKL.
         message(FATAL_ERROR "MKL was detected. You must use MKL's FFT library")
@@ -89,11 +89,13 @@ elseif(EINSUMS_FFT_LIBRARY MATCHES fftw3)
     # if (NOT TARGET FFT::FFT)
         # build_fftw3()
     # endif()
+elseif(EINSUMS_FFT_LIBRARY MATCHES off)
+    message(STATUS "FFT support will not be included.")
 else()
     message(FATAL_ERROR "EINSUMS_FFT_LIBRARY(${EINSUMS_FFT_LIBRARY}) does not match mkl or fftw3.")
 endif()
 
 # Make sure an FFT library was found
 if (NOT TARGET FFT::FFT)
-    message(FATAL_ERROR "No FFT library was found or being built.")
+    message(STATUS "No FFT library was found or being built.")
 endif()

@@ -70,7 +70,6 @@ endif()
 
 find_package(CBLAS)
 find_package(LAPACKE)
-# find_package(Eigen3)
 
 # Set default FFT library to mkl, if mkl was found, otherwise FFTW3
 set(EINSUMS_FFT_LIBRARY_DEFAULT "fftw3")
@@ -83,7 +82,7 @@ einsums_option(
     STRING
     "FFT library"
     ${EINSUMS_FFT_LIBRARY_DEFAULT}
-    STRINGS "fftw3;mkl"
+    STRINGS "fftw3;mkl;off"
 )
 
 include(EinsumsManageFFTLibraries)
@@ -100,6 +99,7 @@ add_subdirectory(src)
 
 add_subdirectory(tests)
 add_subdirectory(timing)
+# add_subdirectory(experiments)
 
 feature_summary(INCLUDE_QUIET_PACKAGES WHAT
     PACKAGES_FOUND PACKAGES_NOT_FOUND
