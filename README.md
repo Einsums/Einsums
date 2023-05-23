@@ -8,12 +8,12 @@ A C++ compiler with C++17 support.
 The following libraries are required to build EinsumsInCpp:
 
 * BLAS and LAPACK.
-* A Fast Fourier Transform library, either FFTW3 or DFT from MKL.
 
 On my personal development machine, I use MKL for the above requirements. On GitHub Actions, stock BLAS, LAPACK, and FFTW3 are used.
 
 Optional requirements:
 
+* A Fast Fourier Transform library, either FFTW3 or DFT from MKL.
 * For call stack backtracing, refer to the requirements listed [here](https://github.com/bombela/backward-cpp).
 
 ## Examples
