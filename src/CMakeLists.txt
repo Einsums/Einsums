@@ -92,7 +92,7 @@ extend_einsums_target(einsums
         EINSUMS_HAVE_LAPACKE_H
         EINSUMS_HAVE_LAPACKE
     CONDITION
-        HAVE_LAPACKE_H
+        TARGET lapacke
 )
 
 extend_einsums_target(einsums
@@ -104,7 +104,7 @@ extend_einsums_target(einsums
         EINSUMS_HAVE_CBLAS_H
         EINSUMS_HAVE_CBLAS
     CONDITION
-        HAVE_CBLAS_H
+        TARGET cblas
 )
 
 extend_einsums_target(einsums

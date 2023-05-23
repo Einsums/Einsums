@@ -1,11 +1,14 @@
 include(FindPackageHandleStandardArgs)
 include(CheckIncludeFile)
 
-# MKL include cblas by default. If we find the mkl_cblas.h
-# header then assume we have cblas.
-check_include_file(mkl_cblas.h HAVE_MKL_CBLAS_H)
-if (HAVE_MKL_CBLAS_H)
-    set(CBLAS_FOUND TRUE)
+# Check for mkl_cblas.h only if we are using MKL.
+if (TARGET MKL::MKL)
+    # MKL include cblas by default. If we find the mkl_cblas.h
+    # header then assume we have cblas.
+    check_include_file(mkl_cblas.h HAVE_MKL_CBLAS_H)
+    if (HAVE_MKL_CBLAS_H)
+        set(CBLAS_FOUND TRUE)
+    endif()
 else()
     check_include_file(cblas.h HAVE_CBLAS_H)
     if (HAVE_CBLAS_H)

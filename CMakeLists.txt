@@ -58,6 +58,7 @@ if (TARGET MPI::MPI_CXX)
     set(HDF5_PREFER_PARALLEL True)
 endif()
 
+# Prefer to use MKL
 find_package(MKL CONFIG)
 if (TARGET MKL::MKL)
     add_library(BLAS::BLAS ALIAS MKL::MKL)
