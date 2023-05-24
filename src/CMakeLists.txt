@@ -230,6 +230,13 @@ endif()
 
 extend_einsums_target(einsums
     CONDITION
+        NOT CBLAS_FOUND OR NOT LAPACKE_FOUND
+    SOURCES
+        backends/linear_algebra/cblas/cblas.cpp
+)
+
+extend_einsums_target(einsums
+    CONDITION
         NOT CBLAS_FOUND
     FEATURE_INFO "Internal CBLAS"
     INCLUDES
