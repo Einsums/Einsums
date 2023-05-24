@@ -450,40 +450,4 @@ auto zungqr(int m, int n, int k, std::complex<double> *a, int lda, const std::co
                           reinterpret_cast<const lapack_complex_double *>(tau));
 }
 
-auto sgesdd(char jobz, int m, int n, float *a, int lda, float *s, float *u, int ldu, float *vt, int ldvt) -> int {
-    LabeledSection0();
-    return LAPACKE_sgesdd(LAPACK_ROW_MAJOR, jobz, m, n, a, lda, s, u, ldu, vt, ldvt);
-}
-
-auto dgesdd(char jobz, int m, int n, double *a, int lda, double *s, double *u, int ldu, double *vt, int ldvt) -> int {
-    LabeledSection0();
-    return LAPACKE_dgesdd(LAPACK_ROW_MAJOR, jobz, m, n, a, lda, s, u, ldu, vt, ldvt);
-}
-
-auto cgesdd(char jobz, int m, int n, std::complex<float> *a, int lda, float *s, std::complex<float> *u, int ldu, std::complex<float> *vt,
-            int ldvt) -> int {
-    LabeledSection0();
-    return LAPACKE_cgesdd(LAPACK_ROW_MAJOR, jobz, m, n, reinterpret_cast<lapack_complex_float *>(a), lda, s,
-                          reinterpret_cast<lapack_complex_float *>(u), ldu, reinterpret_cast<lapack_complex_float *>(vt), ldvt);
-}
-
-auto zgesdd(char jobz, int m, int n, std::complex<double> *a, int lda, double *s, std::complex<double> *u, int ldu,
-            std::complex<double> *vt, int ldvt) -> int {
-    LabeledSection0();
-    return LAPACKE_zgesdd(LAPACK_ROW_MAJOR, jobz, m, n, reinterpret_cast<lapack_complex_double *>(a), lda, s,
-                          reinterpret_cast<lapack_complex_double *>(u), ldu, reinterpret_cast<lapack_complex_double *>(vt), ldvt);
-}
-
-auto sgesvd(char jobu, char jobvt, int m, int n, float *a, int lda, float *s, float *u, int ldu, float *vt, int ldvt, float *superb)
-    -> int {
-    LabeledSection0();
-    return LAPACKE_sgesvd(LAPACK_ROW_MAJOR, jobu, jobvt, m, n, a, lda, s, u, ldu, vt, ldvt, superb);
-}
-
-auto dgesvd(char jobu, char jobvt, int m, int n, double *a, int lda, double *s, double *u, int ldu, double *vt, int ldvt, double *superb)
-    -> int {
-    LabeledSection0();
-    return LAPACKE_dgesvd(LAPACK_ROW_MAJOR, jobu, jobvt, m, n, a, lda, s, u, ldu, vt, ldvt, superb);
-}
-
 END_EINSUMS_NAMESPACE_CPP(einsums::backend::cblas)

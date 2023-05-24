@@ -136,12 +136,4 @@ auto dorgqr(int m, int n, int k, double *a, int lda, const double *tau) -> int;
 auto cungqr(int m, int n, int k, std::complex<float> *a, int lda, const std::complex<float> *tau) -> int;
 auto zungqr(int m, int n, int k, std::complex<double> *a, int lda, const std::complex<double> *tau) -> int;
 
-auto sgesdd(char, int, int, float *, int, float *, float *, int, float *, int) -> int;
-auto dgesdd(char, int, int, double *, int, double *, double *, int, double *, int) -> int;
-auto cgesdd(char, int, int, std::complex<float> *, int, float *, std::complex<float> *, int, std::complex<float> *, int) -> int;
-auto zgesdd(char, int, int, std::complex<double> *, int, double *, std::complex<double> *, int, std::complex<double> *, int) -> int;
-
-auto sgesvd(char, char, int, int, float *, int, float *, float *, int, float *, int, float *) -> int;
-auto dgesvd(char, char, int, int, double *, int, double *, double *, int, double *, int, double *) -> int;
-
 } // namespace einsums::backend::linear_algebra::cblas
