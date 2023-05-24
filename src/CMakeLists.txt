@@ -80,7 +80,7 @@ extend_einsums_target(einsums
 
 extend_einsums_target(einsums
     CONDITION
-        EINSUMS_FFT_LIBRARY MATCHES fftw3
+        (TARGET FFT::FFT AND EINSUMS_FFT_LIBRARY MATCHES fftw3)
     DEFINES
         EINSUMS_HAVE_FFT_LIBRARY_FFTW3
     DEPENDS
@@ -152,7 +152,7 @@ extend_einsums_target(einsums
 
 extend_einsums_target(einsums
     CONDITION
-        (TARGET MKL::MKL AND EINSUMS_FFT_LIBRARY STREQUAL mkl)
+        (TARGET MKL::MKL AND TARGET FFT::FFT AND EINSUMS_FFT_LIBRARY STREQUAL mkl)
     DEFINES
         EINSUMS_HAVE_FFT_LIBRARY_MKL
     SOURCES
