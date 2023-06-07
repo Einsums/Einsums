@@ -257,8 +257,7 @@ auto dot(const Type<T, Rank> &A, const Type<T, Rank> &B) ->
         dim[0] *= A.dim(i);
     }
 
-    return dot(TensorView<double, 1>(const_cast<Type<double, Rank> &>(A), dim),
-               TensorView<double, 1>(const_cast<Type<double, Rank> &>(B), dim));
+    return dot(TensorView<T, 1>(const_cast<Type<T, Rank> &>(A), dim), TensorView<T, 1>(const_cast<Type<T, Rank> &>(B), dim));
 }
 
 template <template <typename, size_t> typename Type, typename T, size_t Rank>

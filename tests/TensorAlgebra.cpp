@@ -2395,51 +2395,71 @@ void dot_test() {
     size_t i_{10}, j_{10}, a_{10}, b_{10};
 
     SECTION("1") {
-        auto              A = create_random_tensor("A", i_);
-        auto              B = create_random_tensor("B", i_);
-        Tensor<double, 0> C_obtained("C obtained");
+        auto         A = create_random_tensor<T>("A", i_);
+        auto         B = create_random_tensor<T>("B", i_);
+        Tensor<T, 0> C_obtained("C obtained");
 
         auto C_expected = dot(A, B);
 
         einsum(Indices{}, &C_obtained, Indices{i}, A, Indices{i}, B);
 
-        REQUIRE_THAT(C_obtained, Catch::Matchers::WithinRel(C_expected, 0.000001));
+        if constexpr (!einsums::is_complex_v<T>) {
+            REQUIRE_THAT(C_obtained, Catch::Matchers::WithinAbsMatcher(C_expected, 0.0001));
+        } else {
+            REQUIRE_THAT(((T)C_obtained).real(), Catch::Matchers::WithinAbsMatcher(C_expected.real(), 0.0001));
+            REQUIRE_THAT(((T)C_obtained).imag(), Catch::Matchers::WithinAbsMatcher(C_expected.imag(), 0.0001));
+        }
     }
 
     SECTION("2") {
-        auto              A = create_random_tensor("A", i_, j_);
-        auto              B = create_random_tensor("B", i_, j_);
-        Tensor<double, 0> C_obtained("C obtained");
+        auto         A = create_random_tensor<T>("A", i_, j_);
+        auto         B = create_random_tensor<T>("B", i_, j_);
+        Tensor<T, 0> C_obtained("C obtained");
 
         auto C_expected = dot(A, B);
 
         einsum(Indices{}, &C_obtained, Indices{i, j}, A, Indices{i, j}, B);
 
-        REQUIRE_THAT(C_obtained, Catch::Matchers::WithinRel(C_expected, 0.000001));
+        if constexpr (!einsums::is_complex_v<T>) {
+            REQUIRE_THAT(C_obtained, Catch::Matchers::WithinAbsMatcher(C_expected, 0.0001));
+        } else {
+            REQUIRE_THAT(((T)C_obtained).real(), Catch::Matchers::WithinAbsMatcher(C_expected.real(), 0.0001));
+            REQUIRE_THAT(((T)C_obtained).imag(), Catch::Matchers::WithinAbsMatcher(C_expected.imag(), 0.0001));
+        }
     }
 
     SECTION("3") {
-        auto              A = create_random_tensor("A", i_, j_, a_);
-        auto              B = create_random_tensor("B", i_, j_, a_);
-        Tensor<double, 0> C_obtained("C obtained");
+        auto         A = create_random_tensor<T>("A", i_, j_, a_);
+        auto         B = create_random_tensor<T>("B", i_, j_, a_);
+        Tensor<T, 0> C_obtained("C obtained");
 
         auto C_expected = dot(A, B);
 
         einsum(Indices{}, &C_obtained, Indices{i, j, a}, A, Indices{i, j, a}, B);
 
-        REQUIRE_THAT(C_obtained, Catch::Matchers::WithinRel(C_expected, 0.000001));
+        if constexpr (!einsums::is_complex_v<T>) {
+            REQUIRE_THAT(C_obtained, Catch::Matchers::WithinAbsMatcher(C_expected, 0.0001));
+        } else {
+            REQUIRE_THAT(((T)C_obtained).real(), Catch::Matchers::WithinAbsMatcher(C_expected.real(), 0.0001));
+            REQUIRE_THAT(((T)C_obtained).imag(), Catch::Matchers::WithinAbsMatcher(C_expected.imag(), 0.0001));
+        }
     }
 
     SECTION("4") {
-        auto              A = create_random_tensor("A", i_, j_, a_, b_);
-        auto              B = create_random_tensor("B", i_, j_, a_, b_);
-        Tensor<double, 0> C_obtained("C obtained");
+        auto         A = create_random_tensor<T>("A", i_, j_, a_, b_);
+        auto         B = create_random_tensor<T>("B", i_, j_, a_, b_);
+        Tensor<T, 0> C_obtained("C obtained");
 
         auto C_expected = dot(A, B);
 
         einsum(Indices{}, &C_obtained, Indices{i, j, a, b}, A, Indices{i, j, a, b}, B);
 
-        REQUIRE_THAT(C_obtained, Catch::Matchers::WithinRel(C_expected, 0.000001));
+        if constexpr (!einsums::is_complex_v<T>) {
+            REQUIRE_THAT(C_obtained, Catch::Matchers::WithinAbsMatcher(C_expected, 0.0001));
+        } else {
+            REQUIRE_THAT(((T)C_obtained).real(), Catch::Matchers::WithinAbsMatcher(C_expected.real(), 0.0001));
+            REQUIRE_THAT(((T)C_obtained).imag(), Catch::Matchers::WithinAbsMatcher(C_expected.imag(), 0.0001));
+        }
     }
 }
 

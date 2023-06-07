@@ -700,7 +700,8 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
         const CDataType Cvalue = *C;
         const CDataType Ctest  = testC;
 
-        if (std::fabs(Cvalue - testC) > 1.0E-6) {
+        // testC could be a Tensor<CDataType, 0> type. Cast it to the underlying data type.
+        if (std::abs(Cvalue - (CDataType)testC) > 1.0E-6) {
             println(emphasis::bold | bg(fmt::color::red) | fg(fmt::color::white), "!!! EINSUM ERROR !!!");
             if constexpr (is_complex_v<CDataType>) {
                 println(bg(fmt::color::red) | fg(fmt::color::white), "    Expected {:20.14f} + {:20.14f}i", Ctest.real(), Ctest.imag());
