@@ -43,8 +43,9 @@ auto printing_to_screen() -> bool {
 } // namespace
 
 void update_indent_string() {
-    indent_string = "";
-    indent_string.insert(0, indent_level, ' ');
+    indent_string.clear();
+    if (indent_level > 0)
+        indent_string.insert(0, indent_level, ' ');
 }
 
 void indent() {

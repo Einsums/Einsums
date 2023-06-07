@@ -9,14 +9,17 @@
 #include <cstring>
 #include <map>
 #include <memory>
+#include <mutex>
 #include <vector>
 
 namespace einsums::timer {
 
-using clock = std::chrono::high_resolution_clock;
+using clock      = std::chrono::high_resolution_clock;
 using time_point = std::chrono::time_point<clock>;
 
 namespace {
+
+std::mutex lock;
 
 struct TimerDetail {
     // Description of the timing block
@@ -28,9 +31,9 @@ struct TimerDetail {
     // Number of times the timer has been called
     size_t total_calls{0};
 
-    TimerDetail *parent;
+    TimerDetail                       *parent;
     std::map<std::string, TimerDetail> children;
-    std::vector<std::string> order;
+    std::vector<std::string>           order;
 
     time_point start_time;
 };
@@ -41,8 +44,8 @@ TimerDetail *root;
 } // namespace
 
 void initialize() {
-    root = new TimerDetail();
-    root->name = "Total Run Time";
+    root              = new TimerDetail();
+    root->name        = "Total Run Time";
     root->total_calls = 1;
 
     current_timer = root;
@@ -105,6 +108,8 @@ void push(std::string name) {
     // assert(current_timer != nullptr);
     static bool already_warned{false};
 
+    std::lock_guard<std::mutex> guard(lock);
+
     if (omp_get_thread_num() == 0) {
         if (omp_in_parallel()) {
             name = fmt::format("{} (master thread only)", name);
@@ -119,18 +124,20 @@ void push(std::string name) {
         }
 
         if (current_timer->children.count(name) == 0) {
-            current_timer->children[name].name = name;
+            current_timer->children[name].name   = name;
             current_timer->children[name].parent = current_timer;
             current_timer->order.push_back(name);
         }
 
-        current_timer = &current_timer->children[name];
+        current_timer             = &current_timer->children[name];
         current_timer->start_time = clock::now();
     }
 }
 
 void pop() {
     static bool already_warned{false};
+
+    std::lock_guard<std::mutex> guard(lock);
 
     if (omp_get_thread_num() == 0) {
         if (current_timer == nullptr) {
