@@ -97,6 +97,8 @@ include(cmake/BackwardConfig.cmake)
 add_subdirectory(external)
 add_subdirectory(src)
 
+enable_testing()
+
 add_subdirectory(tests)
 add_subdirectory(timing)
 # add_subdirectory(experiments)

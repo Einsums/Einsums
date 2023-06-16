@@ -21,13 +21,13 @@ auto main(int argc, char *argv[]) -> int {
     MPI_Comm comm = MPI_COMM_WORLD;
     MPI_Info info = MPI_INFO_NULL;
     // Create a file to hold the data from the DiskTensor tests.
-    einsums::state::data = h5::create("Data.h5", H5F_ACC_TRUNC, h5::fcpl, h5::mpiio({comm, info}));
+    einsums::state::data = h5::create(std::string(std::tmpnam(nullptr)), H5F_ACC_TRUNC, h5::fcpl, h5::mpiio({comm, info}));
 #else
     // Create a file to hold the data from the DiskTensor tests.
-    einsums::state::data = h5::create("Data.h5", H5F_ACC_TRUNC);
+    einsums::state::data = h5::create(std::string(std::tmpnam(nullptr)), H5F_ACC_TRUNC);
 #endif
 
-    println("Running on {} thread(s)", omp_get_max_threads());
+    // println("Running on {} thread(s)", omp_get_max_threads());
 
     int result = Catch::Session().run(argc, argv);
 

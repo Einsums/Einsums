@@ -31,3 +31,7 @@ target_compile_definitions(test-all
         TEST_PATH="${CMAKE_CURRENT_LIST_DIR}"    
 )
 target_link_libraries(test-all Catch2::Catch2 einsums)
+
+include(CTest)
+include(Catch)
+catch_discover_tests(test-all)
