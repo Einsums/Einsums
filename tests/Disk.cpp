@@ -7,7 +7,7 @@
 #include "range/v3/view/cartesian_product.hpp"
 
 #include <algorithm>
-#include <catch2/catch.hpp>
+#include <catch2/catch_all.hpp>
 #include <filesystem>
 #include <stdexcept>
 #include <tuple>

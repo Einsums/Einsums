@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.24)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 include(EinsumsBranding)
@@ -36,13 +36,14 @@ einsums_option(EINSUMS_SHOW_WARNING BOOL "Does the code report warnings to the u
 einsums_option(EINSUMS_RUNTIME_INDICES_CHECK BOOL "Check the sizes of corresponding indices at runtime" ON)
 einsums_option(EINSUMS_TEST_NANS BOOL "Test the result of every einsum for nans" OFF)
 einsums_option(EINSUMS_USE_HPTT BOOL "Use the HPTT package for tensor transpositions" ON)
+einsums_option(EINSUMS_ENABLE_TESTING BOOL "Build testing (requires Catch2)" ${PROJECT_IS_TOP_LEVEL})
 
 add_feature_info(EINSUMS_CONTINUOUSLY_TEST_EINSUM ${EINSUMS_CONTINUOUSLY_TEST_EINSUM} "Test every call to einsum. EXPENSIVE!")
 add_feature_info(EINSUMS_TEST_EINSUM_ABORT ${EINSUMS_TEST_EINSUM_ABORT} "Abort execution if an error found")
 add_feature_info(EINSUMS_WARN_NOT_IMPLEMENTED ${EINSUMS_WARN_NOT_IMPLEMENTED} "Report if a specific case is not implemented")
 add_feature_info(EINSUMS_SHOW_WARNING ${EINSUMS_SHOW_WARNING} "Does the code report warnings to the user or not")
-add_feature_info(EINSUMS_TEST_NANS ${EINSUMS_TEST_NANS} "Test the result of every einsum for nans, infs, and large values")
 add_feature_info(EINSUMS_RUNTIME_INDICES_CHECK ${EINSUMS_RUNTIME_INDICES_CHECK} "Check the sizes of corresponding indices at runtime")
+add_feature_info(EINSUMS_TEST_NANS ${EINSUMS_TEST_NANS} "Test the result of every einsum for nans, infs, and large values")
 add_feature_info(EINSUMS_USE_HPTT ${EINSUMS_USE_HPTT} "Build with internal HPTT version")
 
 include(cmake/DetectHostArch.cmake)
@@ -68,9 +69,6 @@ else()
     find_package(LAPACK REQUIRED)
 endif()
 
-find_package(CBLAS)
-find_package(LAPACKE)
-
 # Set default FFT library to mkl, if mkl was found, otherwise FFTW3
 set(EINSUMS_FFT_LIBRARY_DEFAULT "fftw3")
 if (TARGET MKL::MKL)
@@ -80,7 +78,7 @@ endif()
 einsums_option(
     EINSUMS_FFT_LIBRARY
     STRING
-    "FFT library"
+    "FFT library (lowercase)"
     ${EINSUMS_FFT_LIBRARY_DEFAULT}
     STRINGS "fftw3;mkl;off"
 )
@@ -94,12 +92,14 @@ endif()
 
 include(cmake/BackwardConfig.cmake)
 
+add_subdirectory(ext)
 add_subdirectory(external)
 add_subdirectory(src)
 
-enable_testing()
-
-add_subdirectory(tests)
+if (EINSUMS_ENABLE_TESTING)
+    enable_testing()
+    add_subdirectory(tests)
+endif()
 add_subdirectory(timing)
 # add_subdirectory(experiments)
 

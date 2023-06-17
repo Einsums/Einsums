@@ -6,7 +6,7 @@
 #include "einsums/Tensor.hpp"
 #include "einsums/Timer.hpp"
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_all.hpp>
 #include <h5cpp/io>
 
 #if defined(EINSUMS_IN_PARALLEL)

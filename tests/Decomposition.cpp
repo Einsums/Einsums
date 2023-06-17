@@ -10,7 +10,7 @@
 #include "einsums/Tensor.hpp"
 #include "einsums/TensorAlgebra.hpp"
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_all.hpp>
 
 TEST_CASE("CP 1") {
     using namespace einsums;

@@ -10,7 +10,12 @@ endif()
 
 function(fft_mkl)
     if (TARGET MKL::MKL)
-        add_library(FFT::FFT ALIAS MKL::MKL)
+        add_library(Einsums_FFT INTERFACE)
+        target_link_libraries(
+          Einsums_FFT
+          INTERFACE
+            MKL::MKL
+          )
     else()
         message(FATAL_ERROR "MKL FFT library requested but MKL was not found.")
     endif()
@@ -19,14 +24,16 @@ endfunction()
 function(fft_fftw3)
     # Attempt to find FFTW for real
     find_package(FFTW
+        MODULE
+        REQUIRED
         COMPONENTS
             FLOAT_LIB
             DOUBLE_LIB
     )
 
     if (FFTW_FLOAT_LIB_FOUND AND FFTW_DOUBLE_LIB_FOUND)
-        add_library(FFT::FFT INTERFACE IMPORTED)
-        target_link_libraries(FFT::FFT
+        add_library(Einsums_FFT INTERFACE)
+        target_link_libraries(Einsums_FFT
             INTERFACE
                 FFTW::Float
                 FFTW::Double
@@ -74,7 +81,7 @@ function(build_fftw3)
             INTERFACE_INCLUDE_DIRECTORIES ${FFTW_INCLUDE_DIRS}
     )
     add_dependencies(fftw build-fftw)
-    add_library(FFT::FFT ALIAS fftw)
+    add_library(Einsums_FFT ALIAS fftw)
 
     set(EINSUMS_FFT_LIBRARY FFTW3 PARENT_SCOPE)
 endfunction()
@@ -86,16 +93,16 @@ elseif(EINSUMS_FFT_LIBRARY MATCHES fftw3)
     # Check for fftw3
     fft_fftw3()
 
-    # if (NOT TARGET FFT::FFT)
+    # if (NOT TARGET Einsums_FFT)
         # build_fftw3()
     # endif()
 elseif(EINSUMS_FFT_LIBRARY MATCHES off)
     message(STATUS "FFT support will not be included.")
 else()
-    message(FATAL_ERROR "EINSUMS_FFT_LIBRARY(${EINSUMS_FFT_LIBRARY}) does not match mkl or fftw3.")
+    message(FATAL_ERROR "EINSUMS_FFT_LIBRARY(${EINSUMS_FFT_LIBRARY}) does not match mkl or fftw3 or off.")
 endif()
 
 # Make sure an FFT library was found
-if (NOT TARGET FFT::FFT)
+if (NOT TARGET Einsums_FFT)
     message(STATUS "No FFT library was found or being built.")
 endif()

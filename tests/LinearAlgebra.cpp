@@ -7,7 +7,7 @@
 #include "einsums/TensorAlgebra.hpp"
 #include "einsums/Utilities.hpp"
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_all.hpp>
 #include <filesystem>
 
 using namespace einsums;

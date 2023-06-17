@@ -1,0 +1,40 @@
+name: einsdev
+channels:
+  - conda-forge
+  - nodefaults
+dependencies:
+
+    # development
+  - cmake
+  - cxx-compiler
+  - ninja
+
+
+
+    # OpenBLAS
+    # * linux needs the openmp variant
+    # * openblas-devel is only a pkg on defaults channel
+    # * on c-f, openblas is the pkg that brings headers; libopenblas has only basic libs
+  - libblas=*=*openblas
+  - openblas=*=*openmp*
+
+    # prebuilt to save einsums building from src
+  - catch2                  # optional -- disable with EINSUMS_ENABLE_TESTING=OFF
+  - fftw                    # optional -- disable with EINSUMS_FFT_LIBRARY=off
+  - fmt<10
+  - range-v3
+  - liblapacke
+
+
+#  - backward-cpp
+  - libdwarf-dev  # try w/o?
+  - elfutils                # provides dwarf.h
+
+    # HDF5
+    # * zlib brings headers; hdf5 package only brings libzlib
+  - hdf5
+  - zlib
+
+##  - llvm-openmp
+##  - mkl-devel
+##  - libblas=*=*mkl

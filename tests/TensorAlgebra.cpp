@@ -8,7 +8,7 @@
 #include "einsums/Utilities.hpp"
 
 #include <H5Fpublic.h>
-#include <catch2/catch.hpp>
+#include <catch2/catch_all.hpp>
 #include <complex>
 #include <type_traits>
 
