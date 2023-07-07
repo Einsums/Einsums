@@ -2488,8 +2488,8 @@ TEST_CASE("andy") {
         auto y_iW_        = create_random_tensor("y_iW", nocc_, proj_rank_);
         auto y_aW_        = create_random_tensor("y_aW", nvirt_, proj_rank_);
         auto ortho_temp_1 = create_tensor("ortho temp 1", nocc_, nvirt_, proj_rank_);
-        auto ortho_temp_0 = create_tensor("ortho temp 1", nocc_, nvirt_, proj_rank_);
 
+        zero(ortho_temp_1);
         einsum(0.0, Indices{index::i, index::a, index::W}, &ortho_temp_1, 1.0, Indices{index::i, index::W}, y_iW_,
                Indices{index::a, index::W}, y_aW_);
     }
@@ -2499,6 +2499,7 @@ TEST_CASE("andy") {
         auto ortho_temp_1 = create_random_tensor("ortho temp 1", nocc_, nvirt_, proj_rank_);
         auto ortho_temp_2 = create_tensor("ortho temp 2", nocc_, nvirt_, proj_rank_);
 
+        zero(ortho_temp_2);
         einsum(0.0, Indices{index::i, index::a, index::P}, &ortho_temp_2, 1.0, Indices{index::i, index::a, index::W}, ortho_temp_1,
                Indices{index::P, index::W}, tau_);
     }
@@ -2524,6 +2525,7 @@ TEST_CASE("andy") {
         auto c  = create_tensor("c", proj_rank_, proj_rank_);
         auto c0 = create_tensor("c0", proj_rank_, proj_rank_);
 
+        zero(c);
         einsum(Indices{index::Q, index::X}, &c, Indices{index::Q, index::i, index::a}, A, Indices{index::i, index::a, index::X}, B);
 
         zero(c0);
@@ -2550,6 +2552,7 @@ TEST_CASE("andy") {
         auto F_BAR  = create_tensor("F_BAR", proj_rank_, nvirt_, proj_rank_);
         auto F_BAR0 = create_tensor("F_BAR", proj_rank_, nvirt_, proj_rank_);
 
+        zero(F_BAR);
         einsum(Indices{index::Q, index::a, index::X}, &F_BAR, Indices{index::Q, index::Y, index::X}, F_TEMP, Indices{index::a, index::Y},
                y_aW);
 

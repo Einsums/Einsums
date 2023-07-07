@@ -134,8 +134,8 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
             CDataType sum = AB_prefactor * A_value * B_value;
 
             CDataType &target_value = std::apply(*C, C_order);
-            // if (C_prefactor == CDataType{0.0})
-            // target_value = CDataType{0.0};
+            if (C_prefactor == CDataType{0.0})
+                target_value = CDataType{0.0};
             target_value *= C_prefactor;
             target_value += sum;
         }
