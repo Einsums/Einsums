@@ -16,6 +16,7 @@
 #include <array>
 #include <cassert>
 #include <chrono>
+#include <complex>
 #include <exception>
 #include <functional>
 #include <iomanip>
@@ -455,9 +456,7 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
             auto chunksize = _data.size() / omp_get_num_threads();                                                                         \
             auto begin     = _data.begin() + chunksize * tid;                                                                              \
             auto end       = (tid == omp_get_num_threads() - 1) ? _data.end() : begin + chunksize;                                         \
-            EINSUMS_OMP_SIMD for (auto i = begin; i < end; i++) {                                                                          \
-                (*i) OP b;                                                                                                                 \
-            }                                                                                                                              \
+            EINSUMS_OMP_SIMD for (auto i = begin; i < end; i++) { (*i) OP b; }                                                             \
         }                                                                                                                                  \
         return *this;                                                                                                                      \
     }                                                                                                                                      \
@@ -473,9 +472,7 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
             auto bbegin    = b._data.begin() + chunksize * tid;                                                                            \
             auto aend      = (tid == omp_get_num_threads() - 1) ? _data.end() : abegin + chunksize;                                        \
             auto j         = bbegin;                                                                                                       \
-            EINSUMS_OMP_SIMD for (auto i = abegin; i < aend; i++) {                                                                        \
-                (*i) OP(*j++);                                                                                                             \
-            }                                                                                                                              \
+            EINSUMS_OMP_SIMD for (auto i = abegin; i < aend; i++) { (*i) OP(*j++); }                                                       \
         }                                                                                                                                  \
         return *this;                                                                                                                      \
     }
@@ -1366,8 +1363,8 @@ struct DiskView final : public detail::TensorBase<T, ViewRank> {
     };
     DiskView(const DiskTensor<T, Rank> &parent, const Dim<ViewRank> &dims, const Count<Rank> &counts, const Offset<Rank> &offsets,
              const Stride<Rank> &strides)
-        : _parent(const_cast<DiskTensor<T, Rank> &>(parent)), _dims(dims), _counts(counts), _offsets(offsets), _strides(strides),
-          _tensor{_dims} {
+        : _parent(const_cast<DiskTensor<T, Rank> &>(parent)), _dims(dims), _counts(counts), _offsets(offsets),
+          _strides(strides), _tensor{_dims} {
         Section section("DiskView constructor");
         h5::read<T>(_parent.disk(), _tensor.data(), h5::count{_counts}, h5::offset{_offsets});
         set_read_only(true);
@@ -1546,7 +1543,7 @@ auto println(const AType<T, Rank> &A, TensorPrintOptions options) ->
                 std::ostringstream oss;
                 oss << "              ";
                 if constexpr (std::is_floating_point_v<T>) {
-                    if (std::fabs(value) < 1.0E-4) {
+                    if (std::abs(value) < 1.0E-4) {
                         oss << fmt::format("{:14.4e} ", value);
                     } else {
                         oss << fmt::format("{:14.8f} ", value);
@@ -1578,7 +1575,7 @@ auto println(const AType<T, Rank> &A, TensorPrintOptions options) ->
                         }
                         auto new_tuple = std::tuple_cat(target_combination.base(), std::tuple(j));
                         T    value     = std::apply(A, new_tuple);
-                        if (std::fabs(value) > 1.0E+10) {
+                        if (std::abs(value) > 1.0E+10) {
                             if constexpr (std::is_floating_point_v<T>)
                                 oss << "\x1b[0;37;41m" << fmt::format("{:14.8f} ", value) << "\x1b[0m";
                             else if constexpr (einsums::is_complex_v<T>)
@@ -1588,7 +1585,7 @@ auto println(const AType<T, Rank> &A, TensorPrintOptions options) ->
                                 oss << "\x1b[0;37;41m" << fmt::format("{:14d} ", value) << "\x1b[0m";
                         } else {
                             if constexpr (std::is_floating_point_v<T>) {
-                                if (std::fabs(value) < 1.0E-4) {
+                                if (std::abs(value) < 1.0E-4) {
                                     oss << fmt::format("{:14.4e} ", value);
                                 } else {
                                     oss << fmt::format("{:14.8f} ", value);
@@ -1615,7 +1612,7 @@ auto println(const AType<T, Rank> &A, TensorPrintOptions options) ->
                     oss << "): ";
 
                     T value = std::apply(A, target_combination);
-                    if (std::fabs(value) > 1.0E+5) {
+                    if (std::abs(value) > 1.0E+5) {
                         if constexpr (std::is_floating_point_v<T>)
                             oss << "\x1b[0;37;41m" << fmt::format("{:14.8f} ", value) << "\x1b[0m";
                         else if constexpr (einsums::is_complex_v<T>) {
@@ -1625,7 +1622,7 @@ auto println(const AType<T, Rank> &A, TensorPrintOptions options) ->
                             oss << "\x1b[0;37;41m" << fmt::format("{:14} ", value) << "\x1b[0m";
                     } else {
                         if constexpr (std::is_floating_point_v<T>)
-                            if (std::fabs(value) < 1.0E-4) {
+                            if (std::abs(value) < 1.0E-4) {
                                 oss << fmt::format("{:14.4e} ", value);
                             } else {
                                 oss << fmt::format("{:14.8f} ", value);

@@ -13,6 +13,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <complex>
 #include <cstddef>
 #include <functional>
 #include <numeric>
@@ -654,7 +655,7 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
             }
 #    endif
 
-            if (std::fabs(Cvalue - Ctest) > 1.0E-6) {
+            if (std::abs(Cvalue - Ctest) > 1.0E-6) {
                 print_info_and_abort = true;
             }
 

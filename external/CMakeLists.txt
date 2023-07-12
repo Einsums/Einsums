@@ -1,10 +1,15 @@
 add_subdirectory(range-v3-0.11.0)
 add_subdirectory(fmt-9.1.0)
-if (NOT TARGET Catch2::Catch2)
-	add_subdirectory(catch-3.1.0)
+if(NOT TARGET Catch2::Catch2)
+  add_subdirectory(catch-3.1.0)
 endif()
 add_subdirectory(h5cpp-1.10.4-6-EAT)
 
 if(EINSUMS_USE_HPTT)
-	add_subdirectory(hptt)
+  add_subdirectory(hptt)
 endif()
+
+set(CBLAS ON)
+set(LAPACKE ON)
+set(BUILD_TESTING OFF)
+# add_subdirectory(lapack)
