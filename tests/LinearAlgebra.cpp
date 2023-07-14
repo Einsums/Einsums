@@ -205,105 +205,6 @@ TEST_CASE("gesdd") {
     }
 }
 
-TEST_CASE("erica_svd") {
-    std::filesystem::path current_source_path(TEST_PATH);
-    current_source_path /= "EricaSVD.h5";
-
-    h5::fd_t erica_svd = h5::open(current_source_path.c_str(), H5F_ACC_RDONLY);
-
-    auto a      = read<double, 2>(erica_svd, "SVD Input");
-    auto answer = read<double, 2>(erica_svd, "SVD VT Output");
-
-    SECTION("svd") {
-        auto [u, s, vt] = linear_algebra::svd(a);
-        // println("correct S");
-        // println(s);
-
-        // Using u, s, and vt reconstruct a and test a against the reconstructed a
-        auto new_a = reconstruct(u, s, vt, a.dim(0), a.dim(1));
-
-        CHECK_THAT(new_a.vector_data(), Catch::Matchers::Approx(a.vector_data()).margin(0.0001));
-
-        // Compute overlap between matrices
-        auto overlap = create_tensor("overlap", a.dim(0), a.dim(0));
-        {
-            using namespace einsums;
-            using namespace einsums::tensor_algebra;
-            einsum(Indices{index::i, index::j}, &overlap, Indices{index::i, index::k}, vt, Indices{index::j, index::k}, answer);
-            // println(overlap);
-
-            // Check the diagonal values to ensure they are either 1 or -1.
-            for (size_t i = 0; i < a.dim(0); i++) {
-                CHECK_THAT(std::fabs(overlap(i, i)), Catch::Matchers::WithinAbs(1.0, 0.000001));
-            }
-        }
-
-        // auto [qr, tau] = linear_algebra::qr(a);
-        // auto q         = linear_algebra::q(qr, tau);
-
-        // println(q);
-        // println(vt);
-    }
-
-    SECTION("dd") {
-        auto [u, s, vt] = linear_algebra::svd_dd(a);
-        // println(s);
-
-        // Using u, s, and vt reconstruct a and test a against the reconstructed a
-        auto new_a = reconstruct(u, s, vt, a.dim(0), a.dim(1));
-
-        CHECK_THAT(new_a.vector_data(), Catch::Matchers::Approx(a.vector_data()).margin(0.0001));
-
-        // Compute overlap between matrices
-        auto overlap = create_tensor("overlap", a.dim(0), a.dim(0));
-        {
-            using namespace einsums;
-            using namespace einsums::tensor_algebra;
-            einsum(Indices{index::i, index::j}, &overlap, Indices{index::i, index::k}, vt, Indices{index::j, index::k}, answer);
-            // println(overlap);
-
-            // Check the diagonal values to ensure they are either 1 or -1.
-            for (size_t i = 0; i < a.dim(0); i++) {
-                CHECK_THAT(std::fabs(overlap(i, i)), Catch::Matchers::WithinAbs(1.0, 0.000001));
-            }
-        }
-    }
-
-    SECTION("eigen") {
-#if defined(EINSUMS_HAVE_EIGEN3)
-        using namespace einsums;
-        using namespace einsums::tensor_algebra;
-
-        // Try the transpose of a
-        auto tA = create_tensor("tempA", a.dim(1), a.dim(0));
-        sort(Indices{index::i, index::j}, &tA, Indices{index::j, index::i}, a);
-        auto [u, s, vt] = linear_algebra::svd_eigen(tA);
-
-        auto [u1, s1, vt1] = linear_algebra::svd(tA);
-
-        // println("eigen S");
-        // println(s);
-
-        // println(s1);
-
-        // Compute overlap between matrices
-        auto overlap  = create_tensor("overlap", u.dim(0), u.dim(0));
-        auto overlap1 = create_tensor("overlap", u.dim(0), u.dim(0));
-        {
-            einsum(Indices{index::i, index::j}, &overlap, Indices{index::k, index::i}, u, Indices{index::j, index::k}, answer);
-            einsum(Indices{index::i, index::j}, &overlap1, Indices{index::k, index::i}, u1, Indices{index::j, index::k}, answer);
-            // println(overlap);
-
-            // Check the diagonal values to ensure they are either 1 or -1.
-            for (size_t i = 0; i < a.dim(0); i++) {
-                CHECK_THAT(std::fabs(overlap(i, i)), Catch::Matchers::WithinAbs(1.0, 0.000001));
-                CHECK_THAT(std::fabs(overlap1(i, i)), Catch::Matchers::WithinAbs(1.0, 0.000001));
-            }
-        }
-#endif
-    }
-}
-
 template <typename T>
 void gesv_test() {
     /*
@@ -409,7 +310,7 @@ TEST_CASE("gesv") {
 }
 
 template <typename T>
-void gemm_test() {
+void gemm_test_1() {
     using namespace einsums;
     using namespace einsums::linear_algebra;
 
@@ -438,21 +339,55 @@ void gemm_test() {
     }
 }
 
-TEST_CASE("gemm") {
+TEST_CASE("gemm_1") {
     SECTION("float") {
-        gemm_test<float>();
+        gemm_test_1<float>();
     }
 
     SECTION("double") {
-        gemm_test<double>();
+        gemm_test_1<double>();
     }
 
     SECTION("complex float") {
-        gemm_test<std::complex<float>>();
+        gemm_test_1<std::complex<float>>();
     }
 
     SECTION("complex double") {
-        gemm_test<std::complex<double>>();
+        gemm_test_1<std::complex<double>>();
+    }
+}
+
+template <typename T>
+void gemm_test_2() {
+    using namespace einsums;
+    using namespace einsums::linear_algebra;
+
+    auto A  = create_incremented_tensor<T>("a", 3, 2);
+    auto B  = create_incremented_tensor<T>("b", 2, 3);
+    auto C0 = create_tensor<T>("C0", 3, 3);
+    zero(C0);
+
+    // Perform basic matrix multiplication
+    auto C = einsums::linear_algebra::gemm<false, false>(T{1.0}, A, B);
+
+    for (size_t i = 0; i < 3; i++) {
+        for (size_t j = 0; j < 3; j++) {
+            for (size_t k = 0; k < 3; k++) {
+                C0(i, j) += A(i, k) * B(k, j);
+            }
+        }
+    }
+
+    for (size_t i = 0; i < 3; i++) {
+        for (size_t j = 0; j < 3; j++) {
+            REQUIRE(C0(i, j) == C(i, j));
+        }
+    }
+}
+
+TEST_CASE("gemm_2") {
+    SECTION("double") {
+        gemm_test_2<double>();
     }
 }
 
