@@ -372,7 +372,7 @@ void gemm_test_2() {
 
     for (size_t i = 0; i < 3; i++) {
         for (size_t j = 0; j < 3; j++) {
-            for (size_t k = 0; k < 3; k++) {
+            for (size_t k = 0; k < 2; k++) {
                 C0(i, j) += A(i, k) * B(k, j);
             }
         }
