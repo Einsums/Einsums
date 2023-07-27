@@ -75,7 +75,7 @@ auto gemm(const T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B)
     -> std::enable_if_t<is_incore_rank_tensor_v<AType<T, Rank>, 2, T> && is_incore_rank_tensor_v<BType<T, Rank>, 2, T>, Tensor<T, 2>> {
     LabeledSection0();
 
-    Tensor<T, 2> C{"gemm result", TransA ? A.dim(1) : A.dim(0), TransB ? B.dim(1) : B.dim(0)};
+    Tensor<T, 2> C{"gemm result", TransA ? A.dim(1) : A.dim(0), TransB ? B.dim(0) : B.dim(1)};
 
     gemm<TransA, TransB>(alpha, A, B, 0.0, &C);
 
