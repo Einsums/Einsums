@@ -9,15 +9,15 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/tests/test-all",
-            "args": [
-                "\"Matrix->View\""
-            ],
+            // "args": [
+            //     "\"Matrix->View\""
+            // ],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],
             "externalConsole": false,
-            "MIMode": "gdb",
-            "miDebuggerPath": "/opt/intel/oneapi/debugger/2021.6.0/gdb/intel64/bin/gdb-oneapi",
+            "MIMode": "lldb",
+            // "miDebuggerPath": "/opt/intel/oneapi/debugger/2021.6.0/gdb/intel64/bin/gdb-oneapi",
             "setupCommands": [
                 {
                     "description": "Enable pretty-printing for gdb",

@@ -42,3 +42,51 @@ TEST_CASE("timer") {
     // println("omp_get_supported_active_levels {}", omp_get_supported_active_levels());
     // println("post omp_get_max_active_levels {}", omp_get_max_active_levels());
 }
+
+TEST_CASE("zero-fill") {
+    using namespace einsums;
+
+    auto A    = create_tensor("A", 10000 * 10000);
+    auto data = A.vector_data();
+    for (int _i = 0; _i < 100; _i++) {
+        timer::push("fill");
+        std::fill(data.begin(), data.end(), 0.0);
+        timer::pop();
+    }
+
+    // Make sure the tensor is actually zero
+    for (int _i = 0; _i < 10000 * 10000; _i++) {
+        REQUIRE(A(_i) == double(0.0));
+    }
+}
+
+TEST_CASE("zero-memset") {
+    using namespace einsums;
+
+    auto A    = create_tensor("A", 10000 * 10000);
+    auto data = A.data();
+    for (int _i = 0; _i < 100; _i++) {
+        timer::push("memset");
+        memset(data, 0, sizeof(double) * 10000 * 10000);
+        timer::pop();
+    }
+
+    for (int _i = 0; _i < 10000 * 10000; _i++) {
+        REQUIRE(A(_i) == double(0.0));
+    }
+}
+
+TEST_CASE("zero-tensor") {
+    using namespace einsums;
+
+    auto A = create_tensor("A", 10000 * 10000);
+    for (int _i = 0; _i < 100; _i++) {
+        timer::push("tensor->zero");
+        A.zero();
+        timer::pop();
+    }
+
+    for (int _i = 0; _i < 10000 * 10000; _i++) {
+        REQUIRE(A(_i) == double(0.0));
+    }
+}

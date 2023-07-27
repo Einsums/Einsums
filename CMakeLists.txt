@@ -98,7 +98,7 @@ einsums_option(EINSUMS_FFT_LIBRARY STRING "FFT library"
 
 include(EinsumsManageFFTLibraries)
 
-find_package(OpenMP)
+find_package(OpenMP REQUIRED MODULE COMPONENTS CXX)
 if(OpenMP_FOUND)
   message(
     STATUS

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "OpenMP.h"
 #include "einsums/OpenMP.h"
 #include "einsums/Print.hpp"
 #include "einsums/STL.hpp"
@@ -218,25 +219,27 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
     }
 
     void zero() {
-#pragma omp parallel
-        {
-            auto tid       = omp_get_thread_num();
-            auto chunksize = _data.size() / omp_get_num_threads();
-            auto begin     = _data.begin() + chunksize * tid;
-            auto end       = (tid == omp_get_num_threads() - 1) ? _data.end() : begin + chunksize;
-            std::fill(begin, end, 0);
-        }
+        // #pragma omp parallel
+        //         {
+        //             auto tid       = omp_get_thread_num();
+        //             auto chunksize = _data.size() / omp_get_num_threads();
+        //             auto begin     = _data.begin() + chunksize * tid;
+        //             auto end       = (tid == omp_get_num_threads() - 1) ? _data.end() : begin + chunksize;
+        //             memset(&(*begin), 0, end - begin);
+        //         }
+        memset(_data.data(), 0, sizeof(T) * _data.size());
     }
 
     void set_all(T value) {
-#pragma omp parallel
-        {
-            auto tid       = omp_get_thread_num();
-            auto chunksize = _data.size() / omp_get_num_threads();
-            auto begin     = _data.begin() + chunksize * tid;
-            auto end       = (tid == omp_get_num_threads() - 1) ? _data.end() : begin + chunksize;
-            std::fill(begin, end, value);
-        }
+        // #pragma omp parallel
+        //         {
+        //             auto tid       = omp_get_thread_num();
+        //             auto chunksize = _data.size() / omp_get_num_threads();
+        //             auto begin     = _data.begin() + chunksize * tid;
+        //             auto end       = (tid == omp_get_num_threads() - 1) ? _data.end() : begin + chunksize;
+        //             std::fill(begin, end, value);
+        //         }
+        std::fill(_data.begin(), _data.end(), value);
     }
 
     auto data() -> T * { return _data.data(); }
