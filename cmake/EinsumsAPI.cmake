@@ -97,7 +97,7 @@ function(add_einsums_library name)
         DEPENDS ${_arg_DEPENDS} ${IMPLICIT_DEPENDS}
         PUBLIC_DEPENDS ${_arg_PUBLIC_DEPENDS}
         OPTIONS ${_arg_OPTIONS}
-        PUBLIC_OPTIONS ${_arg_OPTIONS}
+        PUBLIC_OPTIONS ${_arg_PUBLIC_OPTIONS}
     )
 
     if (EINSUMS_STATIC_BUILD)

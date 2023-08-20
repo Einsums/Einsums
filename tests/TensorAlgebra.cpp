@@ -2079,9 +2079,6 @@ TEST_CASE("einsum element") {
         Tensor C  = Tensor{"C", _i, _j};
         Tensor C0 = Tensor{"C", _i, _j};
 
-        zero(C);
-        zero(C0);
-
         Tensor B = create_random_tensor("B", _i, _j);
         Tensor A = create_random_tensor("A", _i, _j);
 

@@ -343,6 +343,12 @@ auto einsum(const CDataType C_prefactor, const std::tuple<CIndices...> & /*Cs*/,
             println_abort("einsum: at least one tensor does not have same dimensionality as destination");
         }
 
+        // Horrible hack. For some reason, in the for loop below, the result could be
+        // NAN if the target_value is initially a trash value.
+        if (C_prefactor == CDataType(0)) {
+            C->zero();
+        }
+
         EINSUMS_OMP_PARALLEL_FOR
         for (auto it = view.begin(); it != view.end(); it++) {
             CDataType &target_value = std::apply(*C, *it);
@@ -643,6 +649,20 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
             if constexpr (!is_complex_v<CDataType>) {
                 if (std::isnan(Cvalue) || std::isnan(Ctest)) {
                     println(bg(fmt::color::red) | fg(fmt::color::white), "NAN DETECTED!");
+                    println("Source tensors");
+                    println(A);
+                    println(B);
+                    if (std::isnan(Cvalue)) {
+                        println("NAN detected in C");
+                        println("location of detected NAN {}", print_tuple_no_type(target_combination));
+                        println(*C);
+                    }
+                    if (std::isnan(Ctest)) {
+                        println("NAN detected in reference Ctest");
+                        println("location of detected NAN {}", print_tuple_no_type(target_combination));
+                        println(testC);
+                    }
+
                     print_info_and_abort = true;
                 }
             }
@@ -909,8 +929,8 @@ auto element(MultiOperator multi_opt, CType<T, Rank> *C, MultiTensors<T, Rank> &
 
     EINSUMS_OMP_PARALLEL_FOR
     for (auto it = view.begin(); it != view.end(); it++) {
-        T &target_value = std::apply(*C, *it);
-        target_value    = multi_opt(target_value, std::apply(tensors, *it)...);
+        T target_value      = std::apply(*C, *it);
+        std::apply(*C, *it) = multi_opt(target_value, std::apply(tensors, *it)...);
     }
 }
 
