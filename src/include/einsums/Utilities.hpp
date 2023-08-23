@@ -1,7 +1,7 @@
 #pragma once
 
-#include "einsums/Blas.hpp"
 #include "einsums/OpenMP.h"
+#include "einsums/Section.hpp"
 
 namespace einsums {
 
@@ -27,6 +27,8 @@ auto create_incremented_tensor(const std::string &name, MultiIndex... index) -> 
 
 template <typename T = double, bool Normalize = false, typename... MultiIndex>
 auto create_random_tensor(const std::string &name, MultiIndex... index) -> Tensor<T, sizeof...(MultiIndex)> {
+    Section section{fmt::format("create_random_tensor {}", name)};
+
     Tensor<T, sizeof...(MultiIndex)> A(name, std::forward<MultiIndex>(index)...);
 
     double lower_bound = -1.0;
