@@ -1,13 +1,11 @@
 #pragma once
 
-#include "Print.hpp"
-#include "_Common.hpp"
 #include "_Export.hpp"
 
 #include <ostream>
 
 #if defined(I)
-#undef I
+#    undef I
 #endif
 
 namespace einsums::tensor_algebra::index {
@@ -18,12 +16,12 @@ struct LabelBase {};
     namespace einsums::tensor_algebra::index {                                                                                             \
     struct x : public LabelBase {                                                                                                          \
         static constexpr char letter = static_cast<const char (&)[2]>(#x)[0];                                                              \
-        constexpr x() = default;                                                                                                           \
+        constexpr x()                = default;                                                                                            \
     };                                                                                                                                     \
     static struct x x;                                                                                                                     \
-    inline auto operator<<(std::ostream &os, const struct x &) -> std::ostream & {                                                         \
-        os << x::letter;                                                                                                                   \
-        return os;                                                                                                                         \
+    inline auto     operator<<(std::ostream &os, const struct x &) -> std::ostream     &{                                                     \
+            os << x::letter;                                                                                                               \
+            return os;                                                                                                                     \
     }                                                                                                                                      \
     }                                                                                                                                      \
     template <>                                                                                                                            \
