@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.24)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 include(EinsumsBranding)
@@ -44,6 +44,8 @@ einsums_option(EINSUMS_TEST_NANS BOOL
                "Test the result of every einsum for nans" OFF)
 einsums_option(EINSUMS_USE_HPTT BOOL
                "Use the HPTT package for tensor transpositions" ON)
+einsums_option(EINSUMS_ENABLE_TESTING BOOL "Build testing (requires Catch2)"
+               ${PROJECT_IS_TOP_LEVEL})
 
 add_feature_info(
   EINSUMS_CONTINUOUSLY_TEST_EINSUM ${EINSUMS_CONTINUOUSLY_TEST_EINSUM}

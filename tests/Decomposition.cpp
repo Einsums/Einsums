@@ -10,7 +10,7 @@
 #include "einsums/Tensor.hpp"
 #include "einsums/TensorAlgebra.hpp"
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_all.hpp>
 
 TEST_CASE("CP 1") {
     using namespace einsums;
@@ -115,9 +115,9 @@ TEST_CASE("TUCKER 1") {
         0.60919366, 0.97363788, 0.24531965, 0.23757898, 0.43426057, 0.64763913, 0.61224901, 0.86068415, 0.12051599};
 
     std::vector<size_t> ranks{2, 2, 2};
-    auto result = tucker_ho_svd(test1, ranks);
-    auto g_tensor = std::get<0>(result);
-    auto factors = std::get<1>(result);
+    auto                result   = tucker_ho_svd(test1, ranks);
+    auto                g_tensor = std::get<0>(result);
+    auto                factors  = std::get<1>(result);
 
     auto test1_ho_svd = tucker_reconstruct(g_tensor, factors);
 
@@ -126,9 +126,9 @@ TEST_CASE("TUCKER 1") {
     REQUIRE(isgreaterequal(diff, 0.0));
     REQUIRE(islessequal(diff, 0.178837));
 
-    result = tucker_ho_oi(test1, ranks, 50, 1.0e-6);
+    result   = tucker_ho_oi(test1, ranks, 50, 1.0e-6);
     g_tensor = std::get<0>(result);
-    factors = std::get<1>(result);
+    factors  = std::get<1>(result);
 
     auto test1_ho_oi = tucker_reconstruct(g_tensor, factors);
 
@@ -150,9 +150,9 @@ TEST_CASE("TUCKER 2") {
         0.32736096, 0.50067919, 0.49932342, 0.91922942, 0.44777189, 0.23009644, 0.34874549, 0.19356636};
 
     std::vector<size_t> ranks{2, 3, 2};
-    auto result = tucker_ho_svd(test2, ranks);
-    auto g_tensor = std::get<0>(result);
-    auto factors = std::get<1>(result);
+    auto                result   = tucker_ho_svd(test2, ranks);
+    auto                g_tensor = std::get<0>(result);
+    auto                factors  = std::get<1>(result);
 
     auto test2_ho_svd = tucker_reconstruct(g_tensor, factors);
 
@@ -161,9 +161,9 @@ TEST_CASE("TUCKER 2") {
     REQUIRE(isgreaterequal(diff, 0.0));
     REQUIRE(islessequal(diff, 0.110250));
 
-    result = tucker_ho_oi(test2, ranks, 50, 1.0e-6);
+    result   = tucker_ho_oi(test2, ranks, 50, 1.0e-6);
     g_tensor = std::get<0>(result);
-    factors = std::get<1>(result);
+    factors  = std::get<1>(result);
 
     auto test2_ho_oi = tucker_reconstruct(g_tensor, factors);
 
@@ -187,9 +187,9 @@ TEST_CASE("TUCKER 3") {
         0.95949904, 0.07774470, 0.18239083, 0.82591821, 0.40939436, 0.22088749, 0.90281597, 0.37465773, 0.02541923};
 
     std::vector<size_t> ranks{2, 2, 2, 2};
-    auto result = tucker_ho_svd(test3, ranks);
-    auto g_tensor = std::get<0>(result);
-    auto factors = std::get<1>(result);
+    auto                result   = tucker_ho_svd(test3, ranks);
+    auto                g_tensor = std::get<0>(result);
+    auto                factors  = std::get<1>(result);
 
     auto test3_ho_svd = tucker_reconstruct(g_tensor, factors);
 
@@ -198,9 +198,9 @@ TEST_CASE("TUCKER 3") {
     REQUIRE(isgreaterequal(diff, 0.0));
     REQUIRE(islessequal(diff, 0.196843));
 
-    result = tucker_ho_oi(test3, ranks, 50, 1.0e-6);
+    result   = tucker_ho_oi(test3, ranks, 50, 1.0e-6);
     g_tensor = std::get<0>(result);
-    factors = std::get<1>(result);
+    factors  = std::get<1>(result);
 
     auto test3_ho_oi = tucker_reconstruct(g_tensor, factors);
 
@@ -228,7 +228,7 @@ TEST_CASE("Lyapunov") {
     auto X = einsums::linear_algebra::solve_lyapunov(A, Q);
 
     auto Qtest = einsums::linear_algebra::gemm<false, false>(1.0, A, X);
-    auto Q2 = einsums::linear_algebra::gemm<false, true>(1.0, X, A);
+    auto Q2    = einsums::linear_algebra::gemm<false, true>(1.0, X, A);
     einsums::linear_algebra::axpy(1.0, Q2, &Qtest);
 
     for (size_t i = 0; i < 9; i++) {
@@ -240,7 +240,7 @@ template <typename T>
 void truncated_svd_test() {
     using namespace einsums;
 
-    auto a = create_random_tensor<T>("a", 10, 10);
+    auto a         = create_random_tensor<T>("a", 10, 10);
     auto [b, c, d] = linear_algebra::truncated_svd(a, 5);
 }
 

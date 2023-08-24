@@ -1,7 +1,7 @@
 #include "einsums/polynomial/Laguerre.hpp"
 #include "einsums/polynomial/Utilities.hpp"
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_all.hpp>
 
 TEST_CASE("gauss_laguerre3") {
     using namespace einsums;

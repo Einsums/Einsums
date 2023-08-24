@@ -25,7 +25,7 @@
 #include <utility>
 
 #if defined(EINSUMS_USE_CATCH2)
-#    include <catch2/catch.hpp>
+#    include <catch2/catch_all.hpp>
 #endif
 
 BEGIN_EINSUMS_NAMESPACE_HPP(einsums::tensor_algebra)

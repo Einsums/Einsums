@@ -2,7 +2,7 @@
 
 #include "einsums/STL.hpp"
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_all.hpp>
 #include <limits>
 #include <type_traits>
 
@@ -16,12 +16,12 @@ auto moda(int K, int L, int M) -> T {
 
 template <typename T>
 void init_data(einsums::Tensor<T, 1> &data, int N, int H) {
-    T TWOPI = 6.2831853071795864769, phase, factor;
+    T   TWOPI = 6.2831853071795864769, phase, factor;
     int n;
 
     factor = (2 * (N - H) % N == 0) ? 1.0 : 2.0;
     for (n = 0; n < N; n++) {
-        phase = moda<T>(n, H, N) / N;
+        phase   = moda<T>(n, H, N) / N;
         data(n) = factor * cos(TWOPI * phase) / N;
     }
 }
@@ -30,7 +30,7 @@ void init_data(einsums::Tensor<T, 1> &data, int N, int H) {
 template <typename T>
 void init_data(einsums::Tensor<std::complex<T>, 1> &data, int N, int H) {
     double TWOPI = 6.2831853071795864769, phase;
-    int n;
+    int    n;
 
     for (n = 0; n < N / 2 + 1; n++) {
         phase = moda<T>(n, H, N) / N;
@@ -41,7 +41,7 @@ void init_data(einsums::Tensor<std::complex<T>, 1> &data, int N, int H) {
 
 template <typename T, int N = 6, int H = -1>
 auto verify_r(einsums::Tensor<T, 1> &x) -> std::enable_if_t<!einsums::is_complex_v<T>> {
-    T err, errthr, maxerr;
+    T   err, errthr, maxerr;
     int n;
 
     errthr = 2.5 * log((T)N) / logf(2.0) * std::numeric_limits<T>::epsilon();
@@ -53,7 +53,7 @@ auto verify_r(einsums::Tensor<T, 1> &x) -> std::enable_if_t<!einsums::is_complex
             re_exp = 1.0;
 
         re_got = x(n);
-        err = abs(re_got - re_exp);
+        err    = abs(re_got - re_exp);
         if (err > maxerr)
             maxerr = err;
         // println("re_exp {}, re_got {}, err {}, errthr {}", re_exp, re_got, err, errthr);
@@ -65,7 +65,7 @@ template <typename Source, typename Result, int N = 6, int H = -1>
 auto ifft1d_1() -> std::enable_if_t<!einsums::is_complex_v<Result>> {
     using namespace einsums;
 
-    auto x_data = create_tensor<Source>("sample data", einsums::is_complex_v<Source> ? N / 2 + 1 : N);
+    auto x_data   = create_tensor<Source>("sample data", einsums::is_complex_v<Source> ? N / 2 + 1 : N);
     auto x_result = create_tensor<Result>("FFT result", N);
 
     init_data(x_data, N, H);
@@ -85,13 +85,13 @@ auto ifft1d_1() -> std::enable_if_t<einsums::is_complex_v<Source> && einsums::is
     using SourceBase = einsums::remove_complex_t<Source>;
     using ResultBase = einsums::remove_complex_t<Result>;
 
-    auto x_data = create_tensor<Source>("Sample data", N);
+    auto x_data   = create_tensor<Source>("Sample data", N);
     auto x_result = create_tensor<Result>("FFT result", N);
 
     // Initialize data
     {
         SourceBase TWOPI = 6.2831853071795864769, phase;
-        int n;
+        int        n;
 
         for (n = 0; n < N; n++) {
             phase = moda<SourceBase>(n, -H, N) / N;
@@ -108,7 +108,7 @@ auto ifft1d_1() -> std::enable_if_t<einsums::is_complex_v<Source> && einsums::is
     // Verify that x has unit peak at H
     {
         ResultBase err, errthr, maxerr;
-        int n;
+        int        n;
 
         errthr = 5.0 * log((ResultBase)N) / log(2.0) * std::numeric_limits<ResultBase>::epsilon();
         maxerr = 0.0;
@@ -121,7 +121,7 @@ auto ifft1d_1() -> std::enable_if_t<einsums::is_complex_v<Source> && einsums::is
 
             re_got = x_result(n).real();
             im_got = x_result(n).imag();
-            err = abs(re_got - re_exp) + abs(im_got - im_exp);
+            err    = abs(re_got - re_exp) + abs(im_got - im_exp);
             if (err > maxerr)
                 maxerr = err;
 
@@ -135,7 +135,7 @@ template <typename Source, typename Result, int N = 6, int H = -1>
 auto fft1d_1() -> std::enable_if_t<!einsums::is_complex_v<Source>> {
     using namespace einsums;
 
-    auto x_data = create_tensor<Source>("sample data", N);
+    auto x_data   = create_tensor<Source>("sample data", N);
     auto x_result = create_tensor<Result>("FFT result", einsums::is_complex_v<Source> ? N : N / 2 + 1);
 
     init_data(x_data, N, H);
@@ -171,13 +171,13 @@ auto fft1d_1() -> std::enable_if_t<einsums::is_complex_v<Source> && einsums::is_
     using SourceBase = einsums::remove_complex_t<Source>;
     using ResultBase = einsums::remove_complex_t<Result>;
 
-    auto x_data = create_tensor<Source>("Sample Data", N);
+    auto x_data   = create_tensor<Source>("Sample Data", N);
     auto x_result = create_tensor<Result>("Result", N);
 
     // Initialize data
     {
         SourceBase TWOPI = 6.2831853071795864769, phase;
-        int n;
+        int        n;
 
         for (n = 0; n < N; n++) {
             phase = moda<SourceBase>(n, H, N) / N;
@@ -195,7 +195,7 @@ auto fft1d_1() -> std::enable_if_t<einsums::is_complex_v<Source> && einsums::is_
     // Verify the results
     {
         ResultBase err, errthr, maxerr;
-        int n;
+        int        n;
 
         errthr = 5.0 * log((ResultBase)N) / log(2.0) * std::numeric_limits<ResultBase>::epsilon();
 

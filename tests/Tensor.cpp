@@ -6,7 +6,7 @@
 #include "einsums/Utilities.hpp"
 
 #include <H5Fpublic.h>
-#include <catch2/catch.hpp>
+#include <catch2/catch_all.hpp>
 #include <type_traits>
 
 TEST_CASE("Tensor creation", "[tensor]") {
@@ -14,7 +14,7 @@ TEST_CASE("Tensor creation", "[tensor]") {
 
     Tensor A("A", 3, 3);
     Tensor B("B", 3, 3);
-    auto C = create_tensor<double>("C", 3, 3);
+    auto   C = create_tensor<double>("C", 3, 3);
 
     REQUIRE((A.dim(0) == 3 && A.dim(1) == 3));
     REQUIRE((B.dim(0) == 3 && B.dim(1) == 3));
@@ -139,11 +139,11 @@ TEST_CASE("Tensor Invert") {
 
 TEST_CASE("TensorView creation", "[tensor]") {
     // With the aid of deduction guides we can choose to not specify the rank on the tensor
-    einsums::Tensor A("A", 3, 3, 3);
+    einsums::Tensor     A("A", 3, 3, 3);
     einsums::TensorView viewA(A, einsums::Dim<2>{3, 9});
 
     // Since we are changing the underlying datatype to float the deduction guides will not work.
-    einsums::Tensor fA("A", 3, 3, 3);
+    einsums::Tensor     fA("A", 3, 3, 3);
     einsums::TensorView fviewA(fA, einsums::Dim<2>{3, 9});
 
     for (int i = 0, ijk = 0; i < 3; i++)
@@ -225,7 +225,7 @@ TEST_CASE("Tensor-3D HDF5") {
 
 TEST_CASE("TensorView-2D HDF5") {
     SECTION("Subview Offset{0,0,0}") {
-        auto A = einsums::create_random_tensor("A", 3, 3, 3);
+        auto                           A = einsums::create_random_tensor("A", 3, 3, 3);
         einsums::TensorView<double, 2> viewA(A, einsums::Dim<2>{3, 9});
 
         REQUIRE((A.dim(0) == 3 && A.dim(1) == 3 && A.dim(2) == 3));
@@ -250,7 +250,7 @@ TEST_CASE("TensorView Ranges") {
     using namespace einsums;
 
     SECTION("Subviews") {
-        auto C = einsums::create_random_tensor("C", 3, 3);
+        auto                C = einsums::create_random_tensor("C", 3, 3);
         einsums::TensorView viewC(C, einsums::Dim<2>{2, 2}, einsums::Offset<2>{1, 1}, einsums::Stride<2>{3, 1});
 
         // einsums::println("C strides: %zu %zu\n", C.strides()[0], C.strides()[1]);

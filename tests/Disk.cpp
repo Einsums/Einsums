@@ -7,7 +7,7 @@
 #include "range/v3/view/cartesian_product.hpp"
 
 #include <algorithm>
-#include <catch2/catch.hpp>
+#include <catch2/catch_all.hpp>
 #include <filesystem>
 #include <stdexcept>
 #include <tuple>
@@ -162,20 +162,20 @@ TEST_CASE("DiskView 7x7x7x7", "[disktensor]") {
 
     SECTION("Write [7,7] data to [:,2,4,:]") {
         DiskTensor g(state::data, "g0", 7, 7, 7, 7);
-        Tensor data = create_random_tensor("data", 7, 7);
+        Tensor     data   = create_random_tensor("data", 7, 7);
         g(All, 2, 4, All) = data;
     }
 
     SECTION("Write [7,2,7] data to [:,4-5,2,:]") {
         DiskTensor g(state::data, "g1", 7, 7, 7, 7);
-        Tensor data2 = create_random_tensor("data", 7, 2, 7);
+        Tensor     data2            = create_random_tensor("data", 7, 2, 7);
         g(All, Range{4, 6}, 2, All) = data2;
     }
 
     SECTION("Write/Read [7,7] data to/from [2,2,:,:]") {
         DiskTensor g(state::data, "g2", 3, 3, 3, 3);
-        Tensor data3 = create_random_tensor("data", 3, 3);
-        double value = 0.0;
+        Tensor     data3 = create_random_tensor("data", 3, 3);
+        double     value = 0.0;
 
         for (size_t i = 0; i < 3; i++) {
             for (size_t j = 0; j < 3; j++) {
@@ -187,8 +187,8 @@ TEST_CASE("DiskView 7x7x7x7", "[disktensor]") {
                     }
                 }
 
-                auto diskView = g(i, j, All, All);
-                auto &tensor = diskView.get();
+                auto  diskView = g(i, j, All, All);
+                auto &tensor   = diskView.get();
 
                 tensor = data3;
 
