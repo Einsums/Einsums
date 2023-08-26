@@ -38,5 +38,10 @@ endif()
 add_subdirectory(h5cpp-1.10.4-6-EAT)
 
 if(EINSUMS_USE_HPTT)
+  if(CMAKE_SYSTEM_PROCESSOR STREQUAL "arm64" OR CMAKE_SYSTEM_PROCESSOR STREQUAL
+                                                "ARM64")
+    set(ENABLE_ARM ON)
+    set(ENABLE_AVX OFF)
+  endif()
   add_subdirectory(hptt)
 endif()
