@@ -2,7 +2,7 @@ include(FetchContent)
 
 # <<< Catch2 >>>
 if(EINSUMS_ENABLE_TESTING)
-  find_package(Catch2 3 QUIET)
+  find_package(Catch2 3 GLOBAL QUIET)
 
   if(NOT Catch2_FOUND)
     FetchContent_Declare(
@@ -15,7 +15,7 @@ if(EINSUMS_ENABLE_TESTING)
 endif()
 
 # <<< range-v3 >>>
-find_package(range-v3 0.11 QUIET)
+find_package(range-v3 0.11 GLOBAL QUIET)
 if(NOT range-v3_FOUND)
   FetchContent_Declare(
     rangev3
@@ -25,7 +25,16 @@ if(NOT range-v3_FOUND)
   FetchContent_MakeAvailable(rangev3)
 endif()
 
-add_subdirectory(fmt-9.1.0)
+# <<< fmt >>>
+find_package(fmt 9.1 GLOBAL QUIET)
+if(NOT fmt_FOUND)
+  FetchContent_Declare(
+    fmt
+    GIT_REPOSITORY https://github.com/fmtlib/fmt.git
+    GIT_TAG 10.1.0)
+
+  FetchContent_MakeAvailable(fmt)
+endif()
 add_subdirectory(h5cpp-1.10.4-6-EAT)
 
 if(EINSUMS_USE_HPTT)
