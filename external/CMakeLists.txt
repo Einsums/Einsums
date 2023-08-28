@@ -35,8 +35,12 @@ if(NOT fmt_FOUND)
 
   FetchContent_MakeAvailable(fmt)
 endif()
+
+# <<< h5cpp >>>
+# This version is modified to support higher rank tensors.
 add_subdirectory(h5cpp-1.10.4-6-EAT)
 
+# <<< hptt >> Not using hptt is just asking for slow sorts.
 if(EINSUMS_USE_HPTT)
   if(CMAKE_SYSTEM_PROCESSOR STREQUAL "arm64" OR CMAKE_SYSTEM_PROCESSOR STREQUAL
                                                 "ARM64")
