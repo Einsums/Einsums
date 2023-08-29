@@ -21,7 +21,18 @@ jobs:
         shell: bash -el {0}
     steps:
       - uses: actions/checkout@v3
-      - uses: conda-incubator/setup-miniconda@v2
+      - name: Install Linux dependencies
+        if: ${{ runner.os == 'Linux' }}
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          activate-environment: einsums-dev
+          environment-file: devtools/conda-envs/linux-dev.yml
+          miniforge-variant: Mambaforge
+          use-mamba: true
+          channels: conda-forge
+      - name: Install macOS dependencies
+        if: ${{ runner.os == 'macOS' }}
+        uses: conda-incubator/setup-miniconda@v2
         with:
           activate-environment: einsums-dev
           environment-file: devtools/conda-envs/linux-dev.yml
