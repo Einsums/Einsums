@@ -35,7 +35,7 @@ jobs:
         uses: conda-incubator/setup-miniconda@v2
         with:
           activate-environment: einsums-dev
-          environment-file: devtools/conda-envs/linux-dev.yml
+          environment-file: devtools/conda-envs/macos-dev.yml
           miniforge-variant: Mambaforge
           use-mamba: true
           channels: conda-forge
