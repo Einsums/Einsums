@@ -7,27 +7,31 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        build_type: [ Release, Debug ]
-        os: [ ubuntu-latest, macos-latest ]
-        hptt: [ HPTT=ON, HPTT=OFF ]
+        build_type: [ Debug ]
+        os: [ ubuntu-latest ]
+        hptt: [ HPTT=ON ]
+        # build_type: [ Release, Debug ]
+        # os: [ ubuntu-latest, macos-latest ]
+        # hptt: [ HPTT=ON, HPTT=OFF ]
     name: Build
-    runs-on: ubuntu-latest
-
+    # runs-on: ubuntu-latest
+    runs-on: ${{matrix.os}}
+    defaults:
+      run:
+        shell: bash -el {0}
     steps:
-    - uses: actions/checkout@v3
-    - uses: mamba-org/setup-micromamba@v1
-      with:
-        micromamba-version: '1.4.3-0'
-        environment-file: devtools/conda-envs/linux-dev.yml
-        cache-environment: true
-        post-cleanup: 'all'
-
-    - name: Configure CMake
-      run: cmake -G Ninja -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DEINSUMS_SHOW_WARNING=OFF -DEINSUMS_USE_${{matrix.hptt}}
-
-    - name: Build
-      run: cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
-
-    - name: Test
-      working-directory: ${{github.workspace}}/build/tests
-      run: ./test-all
+      - uses: actions/checkout@v3
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          activate-environment: einsums-dev
+          environment-file: devtools/conda-envs/linux-dev.yml
+          miniforge-variant: Mambaforge
+          use-mamba: true
+          channels: conda-forge
+      - name: Configure CMake
+        run: cmake -G Ninja -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DEINSUMS_SHOW_WARNING=OFF -DEINSUMS_USE_${{matrix.hptt}}
+      - name: Build
+        run: cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
+      - name: Test
+        working-directory: ${{github.workspace}}/build/tests
+        run: ./test-all
