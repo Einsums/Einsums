@@ -23,7 +23,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Install dependencies
-        if: ${{ runner.os == 'Linux' }}
         uses: conda-incubator/setup-miniconda@v2
         with:
           activate-environment: einsums-dev
