@@ -7,35 +7,27 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # build_type: [ Debug ]
-        # os: [ ubuntu-latest ]
-        # hptt: [ HPTT=ON ]
         build_type: [ Release, Debug ]
         os: [ ubuntu-latest, macos-latest ]
         hptt: [ HPTT=ON, HPTT=OFF ]
-    name: Build
-    # runs-on: ubuntu-latest
+        include:
+          - os: ubuntu-latest
+            environment: linux-dev.yml
+          - os: macos-latest
+            environment: macos-dev.yml
+    name: Build and Test
     runs-on: ${{matrix.os}}
     defaults:
       run:
         shell: bash -el {0}
     steps:
       - uses: actions/checkout@v3
-      - name: Install Linux dependencies
+      - name: Install dependencies
         if: ${{ runner.os == 'Linux' }}
         uses: conda-incubator/setup-miniconda@v2
         with:
           activate-environment: einsums-dev
-          environment-file: devtools/conda-envs/linux-dev.yml
-          miniforge-variant: Mambaforge
-          use-mamba: true
-          channels: conda-forge
-      - name: Install macOS dependencies
-        if: ${{ runner.os == 'macOS' }}
-        uses: conda-incubator/setup-miniconda@v2
-        with:
-          activate-environment: einsums-dev
-          environment-file: devtools/conda-envs/macos-dev.yml
+          environment-file: devtools/conda-envs/${{matrix.environment}}
           miniforge-variant: Mambaforge
           use-mamba: true
           channels: conda-forge
