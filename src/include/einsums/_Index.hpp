@@ -28,11 +28,12 @@
 
 #pragma once
 
+#include <ostream>
+#include <tuple>
+
 #include "_Export.hpp"
 
-#include <ostream>
-
-#if defined(I)
+#ifdef I
 #    undef I
 #endif
 
@@ -140,7 +141,7 @@ namespace index {
  */
 constexpr auto list = std::make_tuple(i, j, k, l, m, n, a, b, c, d, e, f, p, q, r, s);
 
-} // namespace index
+}  // namespace index
 
 /**
  * @struct Indices
@@ -151,7 +152,7 @@ constexpr auto list = std::make_tuple(i, j, k, l, m, n, a, b, c, d, e, f, p, q, 
  */
 template <typename... Args>
 struct EINSUMS_EXPORT Indices : public std::tuple<Args...> {
-    Indices(Args... args) : std::tuple<Args...>(args...){};
+    explicit Indices(Args... args) : std::tuple<Args...>(args...){}
 };
 
 } // namespace einsums::tensor_algebra

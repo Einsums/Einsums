@@ -28,9 +28,9 @@
 
 #pragma once
 
-#include "einsums/_Export.hpp"
-
 #include <h5cpp/core>
+
+#include "einsums/_Export.hpp"
 
 // Items in this namespace contribute to the global state of the program
 namespace einsums::state {

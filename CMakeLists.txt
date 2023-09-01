@@ -61,9 +61,9 @@ einsums_option(EINSUMS_USE_HPTT BOOL
                "Use the HPTT package for tensor transpositions" ON)
 einsums_option(EINSUMS_ENABLE_TESTING BOOL "Build testing (requires Catch2)"
                ${PROJECT_IS_TOP_LEVEL})
-einsums_option(EINSUMS_INSTALL_CMAKEDIR STRING
-               "Directory to which Einsums CMake config files installed."
-               share/cmake/Einsums)
+
+einsums_option(EINSUMS_BUILD_HIP BOOL
+	       "Build HIP backend for graphics card acceleration." OFF)
 
 add_feature_info(
   EINSUMS_CONTINUOUSLY_TEST_EINSUM ${EINSUMS_CONTINUOUSLY_TEST_EINSUM}
@@ -119,6 +119,15 @@ if(OpenMP_FOUND)
       "OpenMP Version ${OpenMP_CXX_VERSION_MAJOR}.${OpenMP_CXX_VERSION_MINOR}")
 endif()
 
+<<<<<<< HEAD
+=======
+if(EINSUMS_BUILD_HIP)
+  find_package(HIP REQUIRED)
+endif()
+
+include(cmake/BackwardConfig.cmake)
+
+>>>>>>> d7eaf33 (Linted and fixed several files.)
 add_subdirectory(external)
 add_subdirectory(src)
 
