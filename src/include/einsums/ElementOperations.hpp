@@ -1,11 +1,33 @@
+/*
+ * Copyright (c) 2022 Justin Turney
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 #pragma once
+
+#include <algorithm>
 
 #include "einsums/Section.hpp"
 #include "einsums/Tensor.hpp"
 #include "einsums/_Common.hpp"
 #include "einsums/_Compiler.hpp"
-
-#include <algorithm>
 
 BEGIN_EINSUMS_NAMESPACE_HPP(einsums::element_operations)
 
@@ -20,7 +42,8 @@ void omp_loop(vector &data, Functor functor) {
         auto tid       = omp_get_thread_num();
         auto chunksize = data.size() / omp_get_num_threads();
         auto begin     = data.begin() + chunksize * tid;
-        auto end       = (tid == omp_get_num_threads() - 1) ? data.end() : begin + chunksize;
+        auto end       = (tid == omp_get_num_threads() - 1) ? data.end()
+                          : begin + chunksize;
 
         EINSUMS_OMP_SIMD
         for (auto i = begin; i < end; i++) {
@@ -30,42 +53,49 @@ void omp_loop(vector &data, Functor functor) {
 }
 END_EINSUMS_NAMESPACE_HPP(detail)
 
-template <template <typename, size_t> typename TensorType, typename T, size_t Rank>
+template <template <typename, size_t> typename TensorType, typename T,
+          size_t Rank>
 auto sum(const TensorType<T, Rank> &tensor) -> T {
     LabeledSection0();
 
     // TODO: This currently only works with Tensor's not TensorViews. And it needs to be OpenMP'd
-    T result = std::accumulate(tensor.vector_data().begin(), tensor.vector_data().end(), T{0});
+    T result = std::accumulate(tensor.vector_data().begin(),
+                               tensor.vector_data().end(), T{0});
     return result;
 }
 
-template <template <typename, size_t> typename TensorType, typename T, size_t Rank>
+template <template <typename, size_t> typename TensorType, typename T,
+          size_t Rank>
 auto max(const TensorType<T, Rank> &tensor) -> T {
     LabeledSection0();
 
     // TODO: This currently only works with Tensor's not TensorViews. And it needs to be OpenMP'd
-    auto result = std::max_element(tensor.vector_data().begin(), tensor.vector_data().end());
+    auto result = std::max_element(tensor.vector_data().begin(),
+                                   tensor.vector_data().end());
     return *result;
 }
 
 BEGIN_EINSUMS_NAMESPACE_HPP(new_tensor)
 
-using einsums::element_operations::max; // nolint
-using einsums::element_operations::sum; // nolint
+using einsums::element_operations::max;  // nolint
+using einsums::element_operations::sum;  // nolint
 
-template <template <typename, size_t> typename TensorType, typename T, size_t Rank>
+template <template <typename, size_t> typename TensorType, typename T,
+          size_t Rank>
 auto abs(const TensorType<T, Rank> &tensor) -> Tensor<T, Rank> {
     LabeledSection0();
 
     auto result = create_tensor_like(tensor);
     result      = tensor;
 
-    ::einsums::element_operations::detail::omp_loop(result.vector_data(), [](T &value) { return std::abs(value); });
+    ::einsums::element_operations::detail::omp_loop(result.vector_data(),
+                                 [](T &value) { return std::abs(value); });
 
     return result;
 }
 
-template <template <typename, size_t> typename TensorType, typename T, size_t Rank>
+template <template <typename, size_t> typename TensorType, typename T,
+          size_t Rank>
 auto invert(const TensorType<T, Rank> &tensor) -> Tensor<T, Rank> {
     LabeledSection0();
 
@@ -74,12 +104,14 @@ auto invert(const TensorType<T, Rank> &tensor) -> Tensor<T, Rank> {
     auto &data  = result.vector_data();
 
     // TODO: This only works for Tensor's not their views.
-    ::einsums::element_operations::detail::omp_loop(data, [&](T &value) { return T{1} / value; });
+    ::einsums::element_operations::detail::omp_loop(data, [&](T &value) {
+                                                        return T{1} / value; });
 
     return result;
 }
 
-template <template <typename, size_t> typename TensorType, typename T, size_t Rank>
+template <template <typename, size_t> typename TensorType, typename T,
+          size_t Rank>
 auto exp(const TensorType<T, Rank> &tensor) -> Tensor<T, Rank> {
     LabeledSection0();
 
@@ -87,20 +119,24 @@ auto exp(const TensorType<T, Rank> &tensor) -> Tensor<T, Rank> {
     result      = tensor;
     auto &data  = result.vector_data();
 
-    ::einsums::element_operations::detail::omp_loop(data, [&](T &value) { return std::exp(value); });
+    ::einsums::element_operations::detail::omp_loop(data,
+                                     [&](T &value) { return std::exp(value); });
 
     return result;
 }
 
-template <template <typename, size_t> typename TensorType, typename T, size_t Rank>
-auto scale(const T &scale, const TensorType<T, Rank> &tensor) -> Tensor<T, Rank> {
+template <template <typename, size_t> typename TensorType, typename T,
+          size_t Rank>
+auto scale(const T &scale, const TensorType<T, Rank> &tensor)
+        -> Tensor<T, Rank> {
     LabeledSection0();
 
     auto result = create_tensor_like(tensor);
     result      = tensor;
     auto &data  = result.vector_data();
 
-    ::einsums::element_operations::detail::omp_loop(data, [&](T &value) { return scale * value; });
+    ::einsums::element_operations::detail::omp_loop(data,
+                                     [&](T &value) { return scale * value; });
 
     return result;
 }
