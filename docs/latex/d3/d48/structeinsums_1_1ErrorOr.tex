@@ -1,4 +1,4 @@
-\hypertarget{structeinsums_1_1ErrorOr}{}\doxysection{einsums\+::Error\+Or$<$ T, E $>$ Struct Template Reference}
+\hypertarget{structeinsums_1_1ErrorOr}{}\doxysection{einsums\+::Error\+Or$<$ T, E $>$ Class Template Reference}
 \label{structeinsums_1_1ErrorOr}\index{einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}}
 
 
@@ -59,6 +59,14 @@ std\+::variant$<$ \mbox{\hyperlink{structeinsums_1_1ErrorOr_a76fac62b37315816e1e
 \end{DoxyCompactItemize}
 
 
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$typename T, typename E$>$\newline
+class einsums\+::\+Error\+Or$<$ T, E $>$}
+
+Represents a pair which contains a result or an error.
+
+Specialization of the \mbox{\hyperlink{structeinsums_1_1ErrorOr}{Error\+Or}} type where the value type is void. 
+
 \doxysubsection{Member Typedef Documentation}
 \mbox{\Hypertarget{structeinsums_1_1ErrorOr_ae1c037df7a89b5dddae2faed291f41c6}\label{structeinsums_1_1ErrorOr_ae1c037df7a89b5dddae2faed291f41c6}} 
 \index{einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}!ErrorType@{ErrorType}}
@@ -84,13 +92,20 @@ using \mbox{\hyperlink{structeinsums_1_1ErrorOr}{einsums\+::\+Error\+Or}}$<$ T, 
 {\footnotesize\ttfamily template$<$typename T , typename E $>$ \\
 \mbox{\hyperlink{structeinsums_1_1ErrorOr}{einsums\+::\+Error\+Or}}$<$ T, E $>$\+::\mbox{\hyperlink{structeinsums_1_1ErrorOr}{Error\+Or}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
 
-\mbox{\Hypertarget{structeinsums_1_1ErrorOr_a22e41e4cf06c60e0d37ec224a9f1e829}\label{structeinsums_1_1ErrorOr_a22e41e4cf06c60e0d37ec224a9f1e829}} 
+Default constructor. \mbox{\Hypertarget{structeinsums_1_1ErrorOr_a22e41e4cf06c60e0d37ec224a9f1e829}\label{structeinsums_1_1ErrorOr_a22e41e4cf06c60e0d37ec224a9f1e829}} 
 \index{einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}!ErrorOr@{ErrorOr}}
 \index{ErrorOr@{ErrorOr}!einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}}
 \doxysubsubsection{\texorpdfstring{ErrorOr()}{ErrorOr()}\hspace{0.1cm}{\footnotesize\ttfamily [2/5]}}
 {\footnotesize\ttfamily template$<$typename T , typename E $>$ \\
 \mbox{\hyperlink{structeinsums_1_1ErrorOr}{einsums\+::\+Error\+Or}}$<$ T, E $>$\+::\mbox{\hyperlink{structeinsums_1_1ErrorOr}{Error\+Or}} (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structeinsums_1_1ErrorOr}{Error\+Or}}$<$ T, E $>$ \&\&}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}, {\ttfamily [noexcept]}}
 
+Move constructor.
+
+
+\begin{DoxyParams}{Parameters}
+{\em \mbox{\hyperlink{structeinsums_1_1ErrorOr}{Error\+Or}}} & The value to move. \\
+\hline
+\end{DoxyParams}
 \mbox{\Hypertarget{structeinsums_1_1ErrorOr_aaa9b6564cff8556bbb7eb54690989b89}\label{structeinsums_1_1ErrorOr_aaa9b6564cff8556bbb7eb54690989b89}} 
 \index{einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}!ErrorOr@{ErrorOr}}
 \index{ErrorOr@{ErrorOr}!einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}}
@@ -98,6 +113,13 @@ using \mbox{\hyperlink{structeinsums_1_1ErrorOr}{einsums\+::\+Error\+Or}}$<$ T, 
 {\footnotesize\ttfamily template$<$typename T , typename E $>$ \\
 \mbox{\hyperlink{structeinsums_1_1ErrorOr}{einsums\+::\+Error\+Or}}$<$ T, E $>$\+::\mbox{\hyperlink{structeinsums_1_1ErrorOr}{Error\+Or}} (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structeinsums_1_1ErrorOr}{Error\+Or}}$<$ T, E $>$ const \&}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
 
+Copy constructor.
+
+
+\begin{DoxyParams}{Parameters}
+{\em \mbox{\hyperlink{structeinsums_1_1ErrorOr}{Error\+Or}}} & the value to copy. \\
+\hline
+\end{DoxyParams}
 \mbox{\Hypertarget{structeinsums_1_1ErrorOr_a009d95ecb723c4d821fff31013079257}\label{structeinsums_1_1ErrorOr_a009d95ecb723c4d821fff31013079257}} 
 \index{einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}!ErrorOr@{ErrorOr}}
 \index{ErrorOr@{ErrorOr}!einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}}
@@ -106,6 +128,13 @@ using \mbox{\hyperlink{structeinsums_1_1ErrorOr}{einsums\+::\+Error\+Or}}$<$ T, 
 template$<$typename U $>$ \\
 \mbox{\hyperlink{structeinsums_1_1ErrorOr}{einsums\+::\+Error\+Or}}$<$ T, E $>$\+::\mbox{\hyperlink{structeinsums_1_1ErrorOr}{Error\+Or}} (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structeinsums_1_1ErrorOr}{Error\+Or}}$<$ U, \mbox{\hyperlink{structeinsums_1_1ErrorOr_ae1c037df7a89b5dddae2faed291f41c6}{Error\+Type}} $>$ \&\&}]{value }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
+Conversion constructor.
+
+
+\begin{DoxyParams}{Parameters}
+{\em value} & The value to convert. \\
+\hline
+\end{DoxyParams}
 \mbox{\Hypertarget{structeinsums_1_1ErrorOr_af0195cb1342f5960067bfa113a8eb50b}\label{structeinsums_1_1ErrorOr_af0195cb1342f5960067bfa113a8eb50b}} 
 \index{einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}!ErrorOr@{ErrorOr}}
 \index{ErrorOr@{ErrorOr}!einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}}
@@ -114,6 +143,13 @@ template$<$typename U $>$ \\
 template$<$typename U $>$ \\
 \mbox{\hyperlink{structeinsums_1_1ErrorOr}{einsums\+::\+Error\+Or}}$<$ T, E $>$\+::\mbox{\hyperlink{structeinsums_1_1ErrorOr}{Error\+Or}} (\begin{DoxyParamCaption}\item[{U \&\&}]{value }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
+Converts a value into an \mbox{\hyperlink{structeinsums_1_1ErrorOr}{Error\+Or}} object.
+
+
+\begin{DoxyParams}{Parameters}
+{\em value} & The value to pack. \\
+\hline
+\end{DoxyParams}
 
 
 \doxysubsection{Member Function Documentation}
@@ -124,6 +160,11 @@ template$<$typename U $>$ \\
 {\footnotesize\ttfamily template$<$typename T , typename E $>$ \\
 auto \mbox{\hyperlink{structeinsums_1_1ErrorOr}{einsums\+::\+Error\+Or}}$<$ T, E $>$\+::error (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) -\/$>$ \mbox{\hyperlink{structeinsums_1_1ErrorOr_ae1c037df7a89b5dddae2faed291f41c6}{Error\+Type}} \& \hspace{0.3cm}{\ttfamily [inline]}}
 
+Returns the error part of the struct.
+
+\begin{DoxyReturn}{Returns}
+The error part of the struct. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{structeinsums_1_1ErrorOr_adfe323385531dc5a0221dfc7e489ebe3}\label{structeinsums_1_1ErrorOr_adfe323385531dc5a0221dfc7e489ebe3}} 
 \index{einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}!error@{error}}
 \index{error@{error}!einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}}
@@ -138,6 +179,11 @@ auto \mbox{\hyperlink{structeinsums_1_1ErrorOr}{einsums\+::\+Error\+Or}}$<$ T, E
 {\footnotesize\ttfamily template$<$typename T , typename E $>$ \\
 auto \mbox{\hyperlink{structeinsums_1_1ErrorOr}{einsums\+::\+Error\+Or}}$<$ T, E $>$\+::is\+\_\+error (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const -\/$>$ bool \hspace{0.3cm}{\ttfamily [inline]}}
 
+Returns whether this object represents an error or not.
+
+\begin{DoxyReturn}{Returns}
+true if error, false if not. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{structeinsums_1_1ErrorOr_ad1cb87d4b055a73c98751abcd170aac2}\label{structeinsums_1_1ErrorOr_ad1cb87d4b055a73c98751abcd170aac2}} 
 \index{einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}!operator=@{operator=}}
 \index{operator=@{operator=}!einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}}
@@ -145,6 +191,16 @@ auto \mbox{\hyperlink{structeinsums_1_1ErrorOr}{einsums\+::\+Error\+Or}}$<$ T, E
 {\footnotesize\ttfamily template$<$typename T , typename E $>$ \\
 auto \mbox{\hyperlink{structeinsums_1_1ErrorOr}{einsums\+::\+Error\+Or}}$<$ T, E $>$\+::operator= (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structeinsums_1_1ErrorOr}{Error\+Or}}$<$ T, E $>$ \&\&}]{ }\end{DoxyParamCaption}) -\/$>$  \mbox{\hyperlink{structeinsums_1_1ErrorOr}{Error\+Or}} \&=default\hspace{0.3cm}{\ttfamily [default]}, {\ttfamily [noexcept]}}
 
+Move assignment.
+
+
+\begin{DoxyParams}{Parameters}
+{\em \mbox{\hyperlink{structeinsums_1_1ErrorOr}{Error\+Or}}} & The value to move.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A reference to the new object. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{structeinsums_1_1ErrorOr_a62eea83dac24a1d17eb610cf4eecce7c}\label{structeinsums_1_1ErrorOr_a62eea83dac24a1d17eb610cf4eecce7c}} 
 \index{einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}!operator=@{operator=}}
 \index{operator=@{operator=}!einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}}
@@ -152,6 +208,16 @@ auto \mbox{\hyperlink{structeinsums_1_1ErrorOr}{einsums\+::\+Error\+Or}}$<$ T, E
 {\footnotesize\ttfamily template$<$typename T , typename E $>$ \\
 auto \mbox{\hyperlink{structeinsums_1_1ErrorOr}{einsums\+::\+Error\+Or}}$<$ T, E $>$\+::operator= (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structeinsums_1_1ErrorOr}{Error\+Or}}$<$ T, E $>$ const \&}]{ }\end{DoxyParamCaption}) -\/$>$  \mbox{\hyperlink{structeinsums_1_1ErrorOr}{Error\+Or}} \&=delete\hspace{0.3cm}{\ttfamily [delete]}}
 
+Copy assignment.
+
+
+\begin{DoxyParams}{Parameters}
+{\em \mbox{\hyperlink{structeinsums_1_1ErrorOr}{Error\+Or}}} & The value to copy.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A reference to this. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{structeinsums_1_1ErrorOr_a3935925120f78e5c7896e7ce3b75c37a}\label{structeinsums_1_1ErrorOr_a3935925120f78e5c7896e7ce3b75c37a}} 
 \index{einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}!value@{value}}
 \index{value@{value}!einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}}
@@ -159,6 +225,11 @@ auto \mbox{\hyperlink{structeinsums_1_1ErrorOr}{einsums\+::\+Error\+Or}}$<$ T, E
 {\footnotesize\ttfamily template$<$typename T , typename E $>$ \\
 auto \mbox{\hyperlink{structeinsums_1_1ErrorOr}{einsums\+::\+Error\+Or}}$<$ T, E $>$\+::value (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) -\/$>$ \mbox{\hyperlink{structeinsums_1_1ErrorOr_a76fac62b37315816e1e67289b47ed3f0}{Result\+Type}} \& \hspace{0.3cm}{\ttfamily [inline]}}
 
+Returns the value part of the struct.
+
+\begin{DoxyReturn}{Returns}
+The value part of the struct. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{structeinsums_1_1ErrorOr_ab097765e1b53b98668fe41ae8bb8bed4}\label{structeinsums_1_1ErrorOr_ab097765e1b53b98668fe41ae8bb8bed4}} 
 \index{einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}!value@{value}}
 \index{value@{value}!einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}}
@@ -189,6 +260,6 @@ std\+::variant$<$\mbox{\hyperlink{structeinsums_1_1ErrorOr_a76fac62b37315816e1e6
 
 
 
-The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
 \item 
 \mbox{\hyperlink{Error_8hpp}{Error.\+hpp}}\end{DoxyCompactItemize}

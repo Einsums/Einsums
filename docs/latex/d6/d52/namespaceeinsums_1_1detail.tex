@@ -42,6 +42,17 @@ void \mbox{\hyperlink{__Export_8hpp_ad5ec33d87b554501185251a886ebf557}{EINSUMS\+
 {\footnotesize\ttfamily template$<$size\+\_\+t N, typename Target , typename Source1 , typename Source2 $>$ \\
 void einsums\+::detail\+::add\+\_\+elements (\begin{DoxyParamCaption}\item[{Target \&}]{target,  }\item[{const Source1 \&}]{source1,  }\item[{const Source2 \&}]{source2 }\end{DoxyParamCaption})}
 
+Add elements from the two sources and put them into the target.
+
+
+\begin{DoxyParams}{Parameters}
+{\em target} & The output. \\
+\hline
+{\em source1} & The first source. \\
+\hline
+{\em source2} & The second source. \\
+\hline
+\end{DoxyParams}
 \mbox{\Hypertarget{namespaceeinsums_1_1detail_aff0084c5eed7e31bef33df18fa6cff3c}\label{namespaceeinsums_1_1detail_aff0084c5eed7e31bef33df18fa6cff3c}} 
 \index{einsums::detail@{einsums::detail}!allocate\_aligned\_memory@{allocate\_aligned\_memory}}
 \index{allocate\_aligned\_memory@{allocate\_aligned\_memory}!einsums::detail@{einsums::detail}}
@@ -61,6 +72,18 @@ void einsums\+::detail\+::add\+\_\+elements (\begin{DoxyParamCaption}\item[{Targ
 {\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename Tensor\+Type, size\+\_\+t Rank, std\+::size\+\_\+t... I, typename T $>$ \\
 auto einsums\+::detail\+::get\+\_\+dim\+\_\+ranges (\begin{DoxyParamCaption}\item[{const Tensor\+Type$<$ T, Rank $>$ \&}]{tensor,  }\item[{std\+::index\+\_\+sequence$<$ I... $>$}]{ }\end{DoxyParamCaption})}
 
+Returns the ranges of the tensor along different axes.
+
+
+\begin{DoxyParams}{Parameters}
+{\em tensor} & The tensor to query. \\
+\hline
+{\em The} & index sequence.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A tuple containing the dimension ranges. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{namespaceeinsums_1_1detail_ac2262e9c8086c8d665dbeaaf1a48de0e}\label{namespaceeinsums_1_1detail_ac2262e9c8086c8d665dbeaaf1a48de0e}} 
 \index{einsums::detail@{einsums::detail}!set\_to@{set\_to}}
 \index{set\_to@{set\_to}!einsums::detail@{einsums::detail}}

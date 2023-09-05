@@ -20,6 +20,12 @@ virtual auto \mbox{\hyperlink{structeinsums_1_1detail_1_1TensorBase_a217c12e3cc5
 \end{DoxyCompactItemize}
 
 
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$typename T, size\+\_\+t Rank$>$\newline
+struct einsums\+::detail\+::\+Tensor\+Base$<$ T, Rank $>$}
+
+Base class for all tensors. 
+
 \doxysubsection{Member Function Documentation}
 \mbox{\Hypertarget{structeinsums_1_1detail_1_1TensorBase_a217c12e3cc502b0b642f1fa2e81fc1fd}\label{structeinsums_1_1detail_1_1TensorBase_a217c12e3cc502b0b642f1fa2e81fc1fd}} 
 \index{einsums::detail::TensorBase$<$ T, Rank $>$@{einsums::detail::TensorBase$<$ T, Rank $>$}!dim@{dim}}
@@ -28,6 +34,16 @@ virtual auto \mbox{\hyperlink{structeinsums_1_1detail_1_1TensorBase_a217c12e3cc5
 {\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
 virtual auto \mbox{\hyperlink{structeinsums_1_1detail_1_1TensorBase}{einsums\+::detail\+::\+Tensor\+Base}}$<$ T, Rank $>$\+::dim (\begin{DoxyParamCaption}\item[{int}]{d }\end{DoxyParamCaption}) const -\/$>$  size\+\_\+t\hspace{0.3cm}{\ttfamily [pure virtual]}}
 
+Returns the dimension of the given tensor.
+
+
+\begin{DoxyParams}{Parameters}
+{\em d} & The axis whose dimension to return.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The dimension along a given axis. 
+\end{DoxyReturn}
 
 
 Implemented in \mbox{\hyperlink{structeinsums_1_1Tensor_3_01T_00_010_01_4_ad934dba7e2afdf5a6d498c038fa588c9}{einsums\+::\+Tensor$<$ T, 0 $>$}}, \mbox{\hyperlink{structeinsums_1_1DiskView_a11755a5a24a573c97449c80567ab45cd}{einsums\+::\+Disk\+View$<$ T, View\+Rank, Rank $>$}}, \mbox{\hyperlink{structeinsums_1_1DiskTensor_a7662e2dd4ad8ec1642ddb14baf8d149c}{einsums\+::\+Disk\+Tensor$<$ T, Rank $>$}}, \mbox{\hyperlink{structeinsums_1_1TensorView_a5be48ea8d047713bb0fcc78e86099f75}{einsums\+::\+Tensor\+View$<$ T, Rank $>$}}, \mbox{\hyperlink{structeinsums_1_1Tensor_a8788fa3ff7ff0f4e6428012aa5f3533a}{einsums\+::\+Tensor$<$ T, Rank $>$}}, and \mbox{\hyperlink{structeinsums_1_1Tensor_a8788fa3ff7ff0f4e6428012aa5f3533a}{einsums\+::\+Tensor$<$ T, View\+Rank $>$}}.

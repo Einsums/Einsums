@@ -139,6 +139,14 @@ std\+::string \mbox{\hyperlink{structeinsums_1_1Tensor_a55b72046e40beb5d02abef25
 \end{DoxyCompactItemize}
 
 
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$typename T, size\+\_\+t Rank$>$\newline
+struct einsums\+::\+Tensor$<$ T, Rank $>$}
+
+Represents a general tensor.
+
+An empty tensor. 
+
 \doxysubsection{Member Typedef Documentation}
 \mbox{\Hypertarget{structeinsums_1_1Tensor_a8994bc2cfc973d189ce2f4b15f44348e}\label{structeinsums_1_1Tensor_a8994bc2cfc973d189ce2f4b15f44348e}} 
 \index{einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}!vector@{vector}}
@@ -157,13 +165,20 @@ using \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank
 {\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
 \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank $>$\+::\mbox{\hyperlink{structeinsums_1_1Tensor}{Tensor}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
 
-\mbox{\Hypertarget{structeinsums_1_1Tensor_ac58dcc0769706aa945501dde464fc19e}\label{structeinsums_1_1Tensor_ac58dcc0769706aa945501dde464fc19e}} 
+Default constructor. \mbox{\Hypertarget{structeinsums_1_1Tensor_ac58dcc0769706aa945501dde464fc19e}\label{structeinsums_1_1Tensor_ac58dcc0769706aa945501dde464fc19e}} 
 \index{einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}!Tensor@{Tensor}}
 \index{Tensor@{Tensor}!einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}}
 \doxysubsubsection{\texorpdfstring{Tensor()}{Tensor()}\hspace{0.1cm}{\footnotesize\ttfamily [2/6]}}
 {\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
 \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank $>$\+::\mbox{\hyperlink{structeinsums_1_1Tensor}{Tensor}} (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{structeinsums_1_1Tensor}{Tensor}}$<$ T, Rank $>$ \&}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
 
+Default copy constructor.
+
+
+\begin{DoxyParams}{Parameters}
+{\em tensor} & The tensor to copy. \\
+\hline
+\end{DoxyParams}
 \mbox{\Hypertarget{structeinsums_1_1Tensor_a047d1b5bb528cec689d66b1bed457028}\label{structeinsums_1_1Tensor_a047d1b5bb528cec689d66b1bed457028}} 
 \index{einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}!````~Tensor@{$\sim$Tensor}}
 \index{````~Tensor@{$\sim$Tensor}!einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}}
@@ -171,7 +186,7 @@ using \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank
 {\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
 \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank $>$\+::$\sim$\mbox{\hyperlink{structeinsums_1_1Tensor}{Tensor}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
 
-\mbox{\Hypertarget{structeinsums_1_1Tensor_aa058f7dcb24818dc713e79cff58e2d5c}\label{structeinsums_1_1Tensor_aa058f7dcb24818dc713e79cff58e2d5c}} 
+The default tensor destructor. \mbox{\Hypertarget{structeinsums_1_1Tensor_aa058f7dcb24818dc713e79cff58e2d5c}\label{structeinsums_1_1Tensor_aa058f7dcb24818dc713e79cff58e2d5c}} 
 \index{einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}!Tensor@{Tensor}}
 \index{Tensor@{Tensor}!einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}}
 \doxysubsubsection{\texorpdfstring{Tensor()}{Tensor()}\hspace{0.1cm}{\footnotesize\ttfamily [3/6]}}
@@ -179,6 +194,15 @@ using \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank
 template$<$typename... Dims$>$ \\
 \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank $>$\+::\mbox{\hyperlink{structeinsums_1_1Tensor}{Tensor}} (\begin{DoxyParamCaption}\item[{std\+::string}]{name,  }\item[{Dims...}]{dims }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [explicit]}}
 
+Construct an empty tensor with the given name and dimensions.
+
+
+\begin{DoxyParams}{Parameters}
+{\em name} & The new name. \\
+\hline
+{\em dims} & The dimensions of the tensor. \\
+\hline
+\end{DoxyParams}
 \mbox{\Hypertarget{structeinsums_1_1Tensor_a3793a5a761a57c8e096f74da8989b830}\label{structeinsums_1_1Tensor_a3793a5a761a57c8e096f74da8989b830}} 
 \index{einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}!Tensor@{Tensor}}
 \index{Tensor@{Tensor}!einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}}
@@ -187,6 +211,17 @@ template$<$typename... Dims$>$ \\
 template$<$size\+\_\+t Other\+Rank, typename... Dims$>$ \\
 \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank $>$\+::\mbox{\hyperlink{structeinsums_1_1Tensor}{Tensor}} (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structeinsums_1_1Tensor}{Tensor}}$<$ T, Other\+Rank $>$ \&\&}]{existing\+Tensor,  }\item[{std\+::string}]{name,  }\item[{Dims...}]{dims }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [explicit]}}
 
+Move constructor that changes name and dimensions.
+
+
+\begin{DoxyParams}{Parameters}
+{\em existing\+Tensor} & The tensor to move. At exit, this is no longer a valid tensor. \\
+\hline
+{\em name} & The new name. \\
+\hline
+{\em dims} & The new dimensions. \\
+\hline
+\end{DoxyParams}
 \mbox{\Hypertarget{structeinsums_1_1Tensor_a224214eae6ca8a367b59c5bc697674a3}\label{structeinsums_1_1Tensor_a224214eae6ca8a367b59c5bc697674a3}} 
 \index{einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}!Tensor@{Tensor}}
 \index{Tensor@{Tensor}!einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}}
@@ -194,6 +229,13 @@ template$<$size\+\_\+t Other\+Rank, typename... Dims$>$ \\
 {\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
 \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank $>$\+::\mbox{\hyperlink{structeinsums_1_1Tensor}{Tensor}} (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_a8c1a58f7bcdc7d0bab4c5df086098d3d}{Dim}}$<$ Rank $>$}]{dims }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
+Construct a new tensor with the given dimensions.
+
+
+\begin{DoxyParams}{Parameters}
+{\em dims} & The dimensions of the new tensor. \\
+\hline
+\end{DoxyParams}
 \mbox{\Hypertarget{structeinsums_1_1Tensor_aef2f4fce689772c1b5ba605123d60628}\label{structeinsums_1_1Tensor_aef2f4fce689772c1b5ba605123d60628}} 
 \index{einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}!Tensor@{Tensor}}
 \index{Tensor@{Tensor}!einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}}
@@ -201,6 +243,13 @@ template$<$size\+\_\+t Other\+Rank, typename... Dims$>$ \\
 {\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
 \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank $>$\+::\mbox{\hyperlink{structeinsums_1_1Tensor}{Tensor}} (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{structeinsums_1_1TensorView}{Tensor\+View}}$<$ T, Rank $>$ \&}]{other }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
+Copies a tensor view.
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & The tensor to copy. \\
+\hline
+\end{DoxyParams}
 
 
 \doxysubsection{Member Function Documentation}
@@ -211,6 +260,11 @@ template$<$size\+\_\+t Other\+Rank, typename... Dims$>$ \\
 {\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
 auto \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank $>$\+::data (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) -\/$>$ T $\ast$ \hspace{0.3cm}{\ttfamily [inline]}}
 
+Returns a pointer to the data.
+
+\begin{DoxyReturn}{Returns}
+A pointer to the data of the tensor. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{structeinsums_1_1Tensor_a97e59dcd604e49171f691dc4783a5eb0}\label{structeinsums_1_1Tensor_a97e59dcd604e49171f691dc4783a5eb0}} 
 \index{einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}!data@{data}}
 \index{data@{data}!einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}}
@@ -218,6 +272,11 @@ auto \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank 
 {\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
 auto \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank $>$\+::data (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const -\/$>$ const T $\ast$ \hspace{0.3cm}{\ttfamily [inline]}}
 
+Returns a constant pointer to the data.
+
+\begin{DoxyReturn}{Returns}
+An immutable pointer to the data. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{structeinsums_1_1Tensor_aace122cfeba6652ffac35798c46ee23d}\label{structeinsums_1_1Tensor_aace122cfeba6652ffac35798c46ee23d}} 
 \index{einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}!data@{data}}
 \index{data@{data}!einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}}
@@ -226,6 +285,16 @@ auto \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank 
 template$<$typename... Multi\+Index$>$ \\
 auto \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank $>$\+::data (\begin{DoxyParamCaption}\item[{Multi\+Index...}]{index }\end{DoxyParamCaption}) \&\& -\/$>$ std\+::enable\+\_\+if\+\_\+t$<$\mbox{\hyperlink{namespaceeinsums_aaf7903a19c8a79a368737d29bcc6774c}{count\+\_\+of\+\_\+type}}$<$\mbox{\hyperlink{structeinsums_1_1All__t}{All\+\_\+t}}, Multi\+Index...$>$() =\hspace{0.3cm}{\ttfamily [pure virtual]}}
 
+Returns multiple data entries.
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & The index of the data to retrieve.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The value at the given index. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{structeinsums_1_1Tensor_a8788fa3ff7ff0f4e6428012aa5f3533a}\label{structeinsums_1_1Tensor_a8788fa3ff7ff0f4e6428012aa5f3533a}} 
 \index{einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}!dim@{dim}}
 \index{dim@{dim}!einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}}
@@ -233,6 +302,16 @@ auto \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank 
 {\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
 auto \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank $>$\+::dim (\begin{DoxyParamCaption}\item[{int}]{d }\end{DoxyParamCaption}) const -\/$>$ size\+\_\+t \hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
 
+Return the dimension on a given axis.
+
+
+\begin{DoxyParams}{Parameters}
+{\em d} & The axis.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The dimension on the given axis. 
+\end{DoxyReturn}
 
 
 Implements \mbox{\hyperlink{structeinsums_1_1detail_1_1TensorBase_a217c12e3cc502b0b642f1fa2e81fc1fd}{einsums\+::detail\+::\+Tensor\+Base$<$ T, Rank $>$}}.
@@ -244,6 +323,11 @@ Implements \mbox{\hyperlink{structeinsums_1_1detail_1_1TensorBase_a217c12e3cc502
 {\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
 auto \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank $>$\+::dims (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const -\/$>$ \mbox{\hyperlink{namespaceeinsums_a8c1a58f7bcdc7d0bab4c5df086098d3d}{Dim}}$<$Rank$>$ \hspace{0.3cm}{\ttfamily [inline]}}
 
+Returns the dimensions of the tensor.
+
+\begin{DoxyReturn}{Returns}
+The dimensions of the tensor. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{structeinsums_1_1Tensor_a3942ef71ec6a1e1bbf8441dec1fba6c7}\label{structeinsums_1_1Tensor_a3942ef71ec6a1e1bbf8441dec1fba6c7}} 
 \index{einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}!for@{for}}
 \index{for@{for}!einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}}
@@ -272,6 +356,8 @@ auto \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank 
 {\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
 auto \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank $>$\+::full\+\_\+view\+\_\+of\+\_\+underlying (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const -\/$>$ bool \hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
 
+\begin{DoxyRefDesc}{Todo}
+\item[\mbox{\hyperlink{todo__todo000027}{Todo}}]I don\textquotesingle{}t know what this does. \end{DoxyRefDesc}
 \mbox{\Hypertarget{structeinsums_1_1Tensor_acbdaaa9ffc3afbe44f06db5f439d8795}\label{structeinsums_1_1Tensor_acbdaaa9ffc3afbe44f06db5f439d8795}} 
 \index{einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}!MultiIndex@{MultiIndex}}
 \index{MultiIndex@{MultiIndex}!einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}}
@@ -300,6 +386,11 @@ auto \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank 
 {\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
 auto \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank $>$\+::name (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const -\/$>$ const std\+::string \& \hspace{0.3cm}{\ttfamily [inline]}}
 
+Returns the name of the tensor.
+
+\begin{DoxyReturn}{Returns}
+A string with the name of the tensor. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{structeinsums_1_1Tensor_a2f05a10d9343bcb6ff4bee510730520d}\label{structeinsums_1_1Tensor_a2f05a10d9343bcb6ff4bee510730520d}} 
 \index{einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}!operator()@{operator()}}
 \index{operator()@{operator()}!einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}}
@@ -308,6 +399,16 @@ auto \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank 
 template$<$typename... Multi\+Index$>$ \\
 auto \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank $>$\+::operator() (\begin{DoxyParamCaption}\item[{Multi\+Index...}]{index }\end{DoxyParamCaption}) -\/$>$ std\+::enable\+\_\+if\+\_\+t$<$\mbox{\hyperlink{namespaceeinsums_aaf7903a19c8a79a368737d29bcc6774c}{count\+\_\+of\+\_\+type}}$<$\mbox{\hyperlink{structeinsums_1_1All__t}{All\+\_\+t}}, Multi\+Index...$>$() $>$= 1,                             \mbox{\hyperlink{structeinsums_1_1TensorView}{Tensor\+View}}$<$T, \mbox{\hyperlink{namespaceeinsums_aaf7903a19c8a79a368737d29bcc6774c}{count\+\_\+of\+\_\+type}}$<$\mbox{\hyperlink{structeinsums_1_1All__t}{All\+\_\+t}}, Multi\+Index...$>$() + \mbox{\hyperlink{namespaceeinsums_aaf7903a19c8a79a368737d29bcc6774c}{count\+\_\+of\+\_\+type}}$<$\mbox{\hyperlink{namespaceeinsums_a09cb83e4ce99aafb4305bc16c03dc054}{Range}}, Multi\+Index...$>$()$>$$>$ \hspace{0.3cm}{\ttfamily [inline]}}
 
+Subscripts the tensor.
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & The index to retrieve.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The data at the given index. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{structeinsums_1_1Tensor_ac5d754078a93cc7e5e1747bc45e062cc}\label{structeinsums_1_1Tensor_ac5d754078a93cc7e5e1747bc45e062cc}} 
 \index{einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}!operator()@{operator()}}
 \index{operator()@{operator()}!einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}}
@@ -316,6 +417,16 @@ auto \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank 
 template$<$typename... Multi\+Index$>$ \\
 auto \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank $>$\+::operator() (\begin{DoxyParamCaption}\item[{Multi\+Index...}]{index }\end{DoxyParamCaption}) \&\& -\/$>$ std\+::enable\+\_\+if\+\_\+t$<$\mbox{\hyperlink{namespaceeinsums_aaf7903a19c8a79a368737d29bcc6774c}{count\+\_\+of\+\_\+type}}$<$\mbox{\hyperlink{structeinsums_1_1All__t}{All\+\_\+t}}, Multi\+Index...$>$() =\hspace{0.3cm}{\ttfamily [pure virtual]}}
 
+Subscripts the tensor.
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & The index to retrieve.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The data at the given index. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{structeinsums_1_1Tensor_a0d046dc112a11df043948385d89e2805}\label{structeinsums_1_1Tensor_a0d046dc112a11df043948385d89e2805}} 
 \index{einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}!operator()@{operator()}}
 \index{operator()@{operator()}!einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}}
@@ -324,6 +435,16 @@ auto \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank 
 template$<$typename... Multi\+Index$>$ \\
 auto \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank $>$\+::operator() (\begin{DoxyParamCaption}\item[{Multi\+Index...}]{index }\end{DoxyParamCaption}) const \&\& -\/$>$ std\+::enable\+\_\+if\+\_\+t$<$\mbox{\hyperlink{namespaceeinsums_aaf7903a19c8a79a368737d29bcc6774c}{count\+\_\+of\+\_\+type}}$<$\mbox{\hyperlink{structeinsums_1_1All__t}{All\+\_\+t}}, Multi\+Index...$>$() =\hspace{0.3cm}{\ttfamily [pure virtual]}}
 
+Subscripts the tensor.
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & The index to retrieve.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The data at the given index. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{structeinsums_1_1Tensor_a29e7335955a494f0f66196921ddfc619}\label{structeinsums_1_1Tensor_a29e7335955a494f0f66196921ddfc619}} 
 \index{einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}!operator()@{operator()}}
 \index{operator()@{operator()}!einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}}
@@ -332,6 +453,16 @@ auto \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank 
 template$<$typename... Multi\+Index$>$ \\
 auto \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank $>$\+::operator() (\begin{DoxyParamCaption}\item[{Multi\+Index...}]{index }\end{DoxyParamCaption}) const -\/$>$ std\+::enable\+\_\+if\+\_\+t$<$\mbox{\hyperlink{namespaceeinsums_aaf7903a19c8a79a368737d29bcc6774c}{count\+\_\+of\+\_\+type}}$<$\mbox{\hyperlink{namespaceeinsums_a09cb83e4ce99aafb4305bc16c03dc054}{Range}}, Multi\+Index...$>$() == Rank, \mbox{\hyperlink{structeinsums_1_1TensorView}{Tensor\+View}}$<$T, Rank$>$$>$ \hspace{0.3cm}{\ttfamily [inline]}}
 
+Subscripts the tensor.
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & The index to retrieve.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The data at the given index. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{structeinsums_1_1Tensor_a64dc758da05de83100dfeef76929afb0}\label{structeinsums_1_1Tensor_a64dc758da05de83100dfeef76929afb0}} 
 \index{einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}!operator=@{operator=}}
 \index{operator=@{operator=}!einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}}
@@ -339,6 +470,16 @@ auto \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank 
 {\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
 auto \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank $>$\+::operator= (\begin{DoxyParamCaption}\item[{const T \&}]{fill\+\_\+value }\end{DoxyParamCaption}) -\/$>$ \mbox{\hyperlink{structeinsums_1_1Tensor}{Tensor}} \& \hspace{0.3cm}{\ttfamily [inline]}}
 
+Fill assignment. Sets each entry to the fill value.
+
+
+\begin{DoxyParams}{Parameters}
+{\em fill\+\_\+value} & The value to set.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A reference to this. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{structeinsums_1_1Tensor_a0485e6526578281e12bce130fc8e27df}\label{structeinsums_1_1Tensor_a0485e6526578281e12bce130fc8e27df}} 
 \index{einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}!operator=@{operator=}}
 \index{operator=@{operator=}!einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}}
@@ -346,6 +487,16 @@ auto \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank 
 {\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
 auto \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank $>$\+::operator= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{structeinsums_1_1Tensor}{Tensor}}$<$ T, Rank $>$ \&}]{other }\end{DoxyParamCaption}) -\/$>$ \mbox{\hyperlink{structeinsums_1_1Tensor}{Tensor}}$<$T, Rank$>$ \& \hspace{0.3cm}{\ttfamily [inline]}}
 
+Copy assignment.
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & The tensor to copy.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A reference to this. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{structeinsums_1_1Tensor_a76906cd888329580fec5def722ed682b}\label{structeinsums_1_1Tensor_a76906cd888329580fec5def722ed682b}} 
 \index{einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}!operator=@{operator=}}
 \index{operator=@{operator=}!einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}}
@@ -354,6 +505,16 @@ auto \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank 
 template$<$typename TOther $>$ \\
 auto \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank $>$\+::operator= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{structeinsums_1_1Tensor}{Tensor}}$<$ TOther, Rank $>$ \&}]{other }\end{DoxyParamCaption}) -\/$>$ std\+::enable\+\_\+if\+\_\+t$<$!std\+::is\+\_\+same\+\_\+v$<$T, TOther$>$, \mbox{\hyperlink{structeinsums_1_1Tensor}{Tensor}}$<$T, Rank$>$ \&$>$ \hspace{0.3cm}{\ttfamily [inline]}}
 
+Copy assignment with entry casting.
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & The tensor to copy.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A reference to this. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{structeinsums_1_1Tensor_a96a89f10ea26981d626c160378bdaf84}\label{structeinsums_1_1Tensor_a96a89f10ea26981d626c160378bdaf84}} 
 \index{einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}!operator=@{operator=}}
 \index{operator=@{operator=}!einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}}
@@ -362,6 +523,16 @@ auto \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank 
 template$<$typename TOther $>$ \\
 auto \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank $>$\+::operator= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{structeinsums_1_1TensorView}{Tensor\+View}}$<$ TOther, Rank $>$ \&}]{other }\end{DoxyParamCaption}) -\/$>$ \mbox{\hyperlink{structeinsums_1_1Tensor}{Tensor}}$<$T, Rank$>$ \& \hspace{0.3cm}{\ttfamily [inline]}}
 
+Copy assignment with entry casting.
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & The tensor to copy.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A reference to this. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{structeinsums_1_1Tensor_a9a45da5b055e5a387406ad703cb09c72}\label{structeinsums_1_1Tensor_a9a45da5b055e5a387406ad703cb09c72}} 
 \index{einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}!set\_all@{set\_all}}
 \index{set\_all@{set\_all}!einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}}
@@ -369,6 +540,13 @@ auto \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank 
 {\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
 void \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank $>$\+::set\+\_\+all (\begin{DoxyParamCaption}\item[{T}]{value }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
+Sets all entries to the given value.
+
+
+\begin{DoxyParams}{Parameters}
+{\em value} & The value to set. \\
+\hline
+\end{DoxyParams}
 \mbox{\Hypertarget{structeinsums_1_1Tensor_a792604d90785cb80cbf57d443547ff5a}\label{structeinsums_1_1Tensor_a792604d90785cb80cbf57d443547ff5a}} 
 \index{einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}!set\_name@{set\_name}}
 \index{set\_name@{set\_name}!einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}}
@@ -376,6 +554,13 @@ void \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank 
 {\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
 void \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank $>$\+::set\+\_\+name (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{name }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
+Sets the name of the tensor.
+
+
+\begin{DoxyParams}{Parameters}
+{\em name} & The new name of the tensor. \\
+\hline
+\end{DoxyParams}
 \mbox{\Hypertarget{structeinsums_1_1Tensor_a8f96bfa97d69183420d840d2dc7814b0}\label{structeinsums_1_1Tensor_a8f96bfa97d69183420d840d2dc7814b0}} 
 \index{einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}!size@{size}}
 \index{size@{size}!einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}}
@@ -383,6 +568,11 @@ void \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank 
 {\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
 auto \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank $>$\+::size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
 
+Returns the linear size of the tensor.
+
+\begin{DoxyReturn}{Returns}
+The linear size of the tensor. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{structeinsums_1_1Tensor_a37b80a87dbef800e49036f8bd13eb4b7}\label{structeinsums_1_1Tensor_a37b80a87dbef800e49036f8bd13eb4b7}} 
 \index{einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}!stride@{stride}}
 \index{stride@{stride}!einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}}
@@ -390,6 +580,16 @@ auto \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank 
 {\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
 auto \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank $>$\+::stride (\begin{DoxyParamCaption}\item[{int}]{d }\end{DoxyParamCaption}) const -\/$>$ size\+\_\+t \hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
 
+Returns the stride of the tensor along a given axis.
+
+
+\begin{DoxyParams}{Parameters}
+{\em d} & The axis for the stride.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The stride along a given axis. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{structeinsums_1_1Tensor_a7278819bb8f1931af42b68d692489b5d}\label{structeinsums_1_1Tensor_a7278819bb8f1931af42b68d692489b5d}} 
 \index{einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}!strides@{strides}}
 \index{strides@{strides}!einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}}
@@ -397,6 +597,11 @@ auto \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank 
 {\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
 auto \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank $>$\+::strides (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const -\/$>$ const auto \& \hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
 
+Returns the strides of the tensor.
+
+\begin{DoxyReturn}{Returns}
+The strides of the tensor. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{structeinsums_1_1Tensor_aa465abdb7834e2b2dbaf3910f2bd7274}\label{structeinsums_1_1Tensor_aa465abdb7834e2b2dbaf3910f2bd7274}} 
 \index{einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}!to\_rank\_1\_view@{to\_rank\_1\_view}}
 \index{to\_rank\_1\_view@{to\_rank\_1\_view}!einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}}
@@ -404,6 +609,11 @@ auto \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank 
 {\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
 auto \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank $>$\+::to\+\_\+rank\+\_\+1\+\_\+view (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const -\/$>$ \mbox{\hyperlink{structeinsums_1_1TensorView}{Tensor\+View}}$<$T, 1$>$ \hspace{0.3cm}{\ttfamily [inline]}}
 
+Morphs the tensor into a rank-\/1 tensor, or a single long strip of data.
+
+\begin{DoxyReturn}{Returns}
+A view of the tensor as a single array. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{structeinsums_1_1Tensor_a65f64f209dbc53add2a3eb338ad75a9f}\label{structeinsums_1_1Tensor_a65f64f209dbc53add2a3eb338ad75a9f}} 
 \index{einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}!vector\_data@{vector\_data}}
 \index{vector\_data@{vector\_data}!einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}}
@@ -411,6 +621,11 @@ auto \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank 
 {\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
 auto \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank $>$\+::vector\+\_\+data (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) -\/$>$ \mbox{\hyperlink{structeinsums_1_1Tensor_a8994bc2cfc973d189ce2f4b15f44348e}{vector}} \& \hspace{0.3cm}{\ttfamily [inline]}}
 
+Returns the data as a vector.
+
+\begin{DoxyReturn}{Returns}
+A vector reference to the data. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{structeinsums_1_1Tensor_a5874692ada253d0cb21809ee1ff60360}\label{structeinsums_1_1Tensor_a5874692ada253d0cb21809ee1ff60360}} 
 \index{einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}!vector\_data@{vector\_data}}
 \index{vector\_data@{vector\_data}!einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}}
@@ -418,6 +633,11 @@ auto \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank 
 {\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
 auto \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank $>$\+::vector\+\_\+data (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const -\/$>$ const \mbox{\hyperlink{structeinsums_1_1Tensor_a8994bc2cfc973d189ce2f4b15f44348e}{vector}} \& \hspace{0.3cm}{\ttfamily [inline]}}
 
+Returns the data as a vector.
+
+\begin{DoxyReturn}{Returns}
+A vector reference to the data. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{structeinsums_1_1Tensor_ad13a71286619127bb49bf689b0686db2}\label{structeinsums_1_1Tensor_ad13a71286619127bb49bf689b0686db2}} 
 \index{einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}!zero@{zero}}
 \index{zero@{zero}!einsums::Tensor$<$ T, Rank $>$@{einsums::Tensor$<$ T, Rank $>$}}
@@ -425,7 +645,7 @@ auto \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank 
 {\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
 void \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank $>$\+::zero (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
-
+Clears the tensor data. 
 
 \doxysubsection{Friends And Related Function Documentation}
 \mbox{\Hypertarget{structeinsums_1_1Tensor_a590dacb85b9bccb010f0f68c40b723b8}\label{structeinsums_1_1Tensor_a590dacb85b9bccb010f0f68c40b723b8}} 

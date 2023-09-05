@@ -20,6 +20,12 @@
  * SOFTWARE.
  */
 
+/**
+ * @file State.hpp
+ *
+ * Contains state information.
+ */
+
 #pragma once
 
 #include <h5cpp/core>

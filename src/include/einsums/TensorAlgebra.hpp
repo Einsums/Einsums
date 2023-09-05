@@ -1,3 +1,9 @@
+/**
+ * @file TensorAlgebra.hpp
+ *
+ * Perform tensor algebra.
+ */
+
 #pragma once
 
 #include "einsums/LinearAlgebra.hpp"

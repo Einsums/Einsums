@@ -31,6 +31,9 @@ Include dependency graph for Element\+Operations.\+hpp\+:\nopagebreak
 \end{DoxyCompactItemize}
 
 
+\doxysubsection{Detailed Description}
+Contains functions for performing element operations. 
+
 \doxysubsection{Function Documentation}
 \mbox{\Hypertarget{ElementOperations_8hpp_ad8049c4f49d86fce3cd0875a6d8bb4f5}\label{ElementOperations_8hpp_ad8049c4f49d86fce3cd0875a6d8bb4f5}} 
 \index{ElementOperations.hpp@{ElementOperations.hpp}!abs@{abs}}
@@ -39,6 +42,16 @@ Include dependency graph for Element\+Operations.\+hpp\+:\nopagebreak
 {\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename Tensor\+Type, typename T , size\+\_\+t Rank$>$ \\
 auto abs (\begin{DoxyParamCaption}\item[{const Tensor\+Type$<$ T, Rank $>$ \&}]{tensor }\end{DoxyParamCaption}) -\/$>$ Tensor$<$T, Rank$>$ }
 
+Compute the absolute value of each element in the tensor.
+
+
+\begin{DoxyParams}{Parameters}
+{\em tensor} & The tensor to absolute value.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A new tensor whose elements are the absolute value of the input. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{ElementOperations_8hpp_ac769b8e869ec5ad89f832168c171d90a}\label{ElementOperations_8hpp_ac769b8e869ec5ad89f832168c171d90a}} 
 \index{ElementOperations.hpp@{ElementOperations.hpp}!exp@{exp}}
 \index{exp@{exp}!ElementOperations.hpp@{ElementOperations.hpp}}
@@ -46,6 +59,16 @@ auto abs (\begin{DoxyParamCaption}\item[{const Tensor\+Type$<$ T, Rank $>$ \&}]{
 {\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename Tensor\+Type, typename T , size\+\_\+t Rank$>$ \\
 auto exp (\begin{DoxyParamCaption}\item[{const Tensor\+Type$<$ T, Rank $>$ \&}]{tensor }\end{DoxyParamCaption}) -\/$>$ Tensor$<$T, Rank$>$ }
 
+Exponentiate the elements of the input tensor.
+
+
+\begin{DoxyParams}{Parameters}
+{\em tensor} & The tensor to exponentiate.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A tensor whose elements are the exponetial of the input\textquotesingle{}s. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{ElementOperations_8hpp_a001b78bf85f85ef2eda23e135484d90f}\label{ElementOperations_8hpp_a001b78bf85f85ef2eda23e135484d90f}} 
 \index{ElementOperations.hpp@{ElementOperations.hpp}!invert@{invert}}
 \index{invert@{invert}!ElementOperations.hpp@{ElementOperations.hpp}}
@@ -53,6 +76,16 @@ auto exp (\begin{DoxyParamCaption}\item[{const Tensor\+Type$<$ T, Rank $>$ \&}]{
 {\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename Tensor\+Type, typename T , size\+\_\+t Rank$>$ \\
 auto invert (\begin{DoxyParamCaption}\item[{const Tensor\+Type$<$ T, Rank $>$ \&}]{tensor }\end{DoxyParamCaption}) -\/$>$ Tensor$<$T, Rank$>$ }
 
+Finds the reciprocal of each element in the tensor.
+
+
+\begin{DoxyParams}{Parameters}
+{\em tensor} & The tensor to invert.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A tensor whose elements are the reciprocal of the input\textquotesingle{}s. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{ElementOperations_8hpp_a03b31e12aba0a8c38f2a0d1599dd3551}\label{ElementOperations_8hpp_a03b31e12aba0a8c38f2a0d1599dd3551}} 
 \index{ElementOperations.hpp@{ElementOperations.hpp}!max@{max}}
 \index{max@{max}!ElementOperations.hpp@{ElementOperations.hpp}}
@@ -60,6 +93,16 @@ auto invert (\begin{DoxyParamCaption}\item[{const Tensor\+Type$<$ T, Rank $>$ \&
 {\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename Tensor\+Type, typename T , size\+\_\+t Rank$>$ \\
 auto max (\begin{DoxyParamCaption}\item[{const Tensor\+Type$<$ T, Rank $>$ \&}]{tensor }\end{DoxyParamCaption}) -\/$>$ T }
 
+Finds the max element in the tensor.
+
+
+\begin{DoxyParams}{Parameters}
+{\em tensor} & The tensor to evaulate.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The max element in the tensor. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{ElementOperations_8hpp_af5439ec02d3ba3ef1f7657b499012567}\label{ElementOperations_8hpp_af5439ec02d3ba3ef1f7657b499012567}} 
 \index{ElementOperations.hpp@{ElementOperations.hpp}!omp\_loop@{omp\_loop}}
 \index{omp\_loop@{omp\_loop}!ElementOperations.hpp@{ElementOperations.hpp}}
@@ -67,6 +110,17 @@ auto max (\begin{DoxyParamCaption}\item[{const Tensor\+Type$<$ T, Rank $>$ \&}]{
 {\footnotesize\ttfamily template$<$typename vector , typename Functor $>$ \\
 void omp\+\_\+loop (\begin{DoxyParamCaption}\item[{vector \&}]{data,  }\item[{Functor}]{functor }\end{DoxyParamCaption})}
 
+\begin{DoxyRefDesc}{Todo}
+\item[\mbox{\hyperlink{todo__todo000032}{Todo}}]Omp-\/a Loop-\/a doopity doo. What in the world could this do?\end{DoxyRefDesc}
+
+
+
+\begin{DoxyParams}{Parameters}
+{\em data} & Vector of data. \\
+\hline
+{\em functor} & A functor??? \\
+\hline
+\end{DoxyParams}
 \mbox{\Hypertarget{ElementOperations_8hpp_a1be82ac2bb2e4f1e1b0257c14065335d}\label{ElementOperations_8hpp_a1be82ac2bb2e4f1e1b0257c14065335d}} 
 \index{ElementOperations.hpp@{ElementOperations.hpp}!scale@{scale}}
 \index{scale@{scale}!ElementOperations.hpp@{ElementOperations.hpp}}
@@ -74,6 +128,18 @@ void omp\+\_\+loop (\begin{DoxyParamCaption}\item[{vector \&}]{data,  }\item[{Fu
 {\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename Tensor\+Type, typename T , size\+\_\+t Rank$>$ \\
 auto scale (\begin{DoxyParamCaption}\item[{const T \&}]{scale,  }\item[{const Tensor\+Type$<$ T, Rank $>$ \&}]{tensor }\end{DoxyParamCaption}) -\/$>$ Tensor$<$T, Rank$>$ }
 
+Perform scalar multiplication on a tensor.
+
+
+\begin{DoxyParams}{Parameters}
+{\em scale} & The value to scale by. \\
+\hline
+{\em tensor} & The tensor to scale.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A new tensor whose elements have been scaled. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{ElementOperations_8hpp_a79f00e3042f622a53a576bd1ad0c5d88}\label{ElementOperations_8hpp_a79f00e3042f622a53a576bd1ad0c5d88}} 
 \index{ElementOperations.hpp@{ElementOperations.hpp}!sum@{sum}}
 \index{sum@{sum}!ElementOperations.hpp@{ElementOperations.hpp}}
@@ -81,3 +147,15 @@ auto scale (\begin{DoxyParamCaption}\item[{const T \&}]{scale,  }\item[{const Te
 {\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename Tensor\+Type, typename T , size\+\_\+t Rank$>$ \\
 auto sum (\begin{DoxyParamCaption}\item[{const Tensor\+Type$<$ T, Rank $>$ \&}]{tensor }\end{DoxyParamCaption}) -\/$>$ T }
 
+Computes a sum. \begin{DoxyRefDesc}{Todo}
+\item[\mbox{\hyperlink{todo__todo000033}{Todo}}]Needs more information.\end{DoxyRefDesc}
+
+
+
+\begin{DoxyParams}{Parameters}
+{\em tensor} & A tensor to sum.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A sum??? 
+\end{DoxyReturn}

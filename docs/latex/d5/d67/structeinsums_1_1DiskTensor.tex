@@ -117,6 +117,16 @@ bool \mbox{\hyperlink{structeinsums_1_1DiskTensor_a0e6a4428d5a4aaaf116171c7cf2b5
 \end{DoxyCompactItemize}
 
 
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$typename T, size\+\_\+t Rank$>$\newline
+struct einsums\+::\+Disk\+Tensor$<$ T, Rank $>$}
+
+\begin{DoxyRefDesc}{Todo}
+\item[\mbox{\hyperlink{todo__todo000026}{Todo}}]What is this? \end{DoxyRefDesc}
+
+
+A tensor stored on disk. 
+
 \doxysubsection{Constructor \& Destructor Documentation}
 \mbox{\Hypertarget{structeinsums_1_1DiskTensor_ae8e8ccf2b6dbe268a40bd892718d9008}\label{structeinsums_1_1DiskTensor_ae8e8ccf2b6dbe268a40bd892718d9008}} 
 \index{einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}!DiskTensor@{DiskTensor}}
@@ -177,8 +187,18 @@ template$<$typename... Dims, typename  = typename std\+::enable\+\_\+if$<$are\+\
 \index{dim@{dim}!einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}}
 \doxysubsubsection{\texorpdfstring{dim()}{dim()}}
 {\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
-auto \mbox{\hyperlink{structeinsums_1_1DiskTensor}{einsums\+::\+Disk\+Tensor}}$<$ T, Rank $>$\+::dim (\begin{DoxyParamCaption}\item[{int}]{d }\end{DoxyParamCaption}) const -\/$>$ size\+\_\+t \hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
+auto \mbox{\hyperlink{structeinsums_1_1DiskTensor}{einsums\+::\+Disk\+Tensor}}$<$ T, Rank $>$\+::dim (\begin{DoxyParamCaption}\item[{int}]{d }\end{DoxyParamCaption}) const -\/$>$  size\+\_\+t\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
 
+Returns the dimension of the given tensor.
+
+
+\begin{DoxyParams}{Parameters}
+{\em d} & The axis whose dimension to return.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The dimension along a given axis. 
+\end{DoxyReturn}
 
 
 Implements \mbox{\hyperlink{structeinsums_1_1detail_1_1TensorBase_a217c12e3cc502b0b642f1fa2e81fc1fd}{einsums\+::detail\+::\+Tensor\+Base$<$ T, Rank $>$}}.

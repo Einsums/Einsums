@@ -133,8 +133,18 @@ auto \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, 0 $>$
 \index{dim@{dim}!einsums::Tensor$<$ T, 0 $>$@{einsums::Tensor$<$ T, 0 $>$}}
 \doxysubsubsection{\texorpdfstring{dim()}{dim()}}
 {\footnotesize\ttfamily template$<$typename T $>$ \\
-auto \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, 0 $>$\+::dim (\begin{DoxyParamCaption}\item[{int}]{ }\end{DoxyParamCaption}) const -\/$>$ size\+\_\+t\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+auto \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, 0 $>$\+::dim (\begin{DoxyParamCaption}\item[{int}]{d }\end{DoxyParamCaption}) const -\/$>$ size\+\_\+t\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
 
+Returns the dimension of the given tensor.
+
+
+\begin{DoxyParams}{Parameters}
+{\em d} & The axis whose dimension to return.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The dimension along a given axis. 
+\end{DoxyReturn}
 
 
 Implements \mbox{\hyperlink{structeinsums_1_1detail_1_1TensorBase_a217c12e3cc502b0b642f1fa2e81fc1fd}{einsums\+::detail\+::\+Tensor\+Base$<$ T, 0 $>$}}.

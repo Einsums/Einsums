@@ -1,9 +1,9 @@
 <map id="Timer.hpp" name="Timer.hpp">
-<area shape="rect" id="node1" title=" " alt="" coords="354,5,441,32"/>
+<area shape="rect" id="node1" title=" " alt="" coords="345,5,431,32"/>
 <area shape="rect" id="node2" href="$d4/dff/InitializeFinalize_8cpp.html" title=" " alt="" coords="5,80,160,107"/>
 <area shape="rect" id="node3" href="$da/d09/LinearAlgebra_8hpp.html" title=" " alt="" coords="185,80,325,107"/>
-<area shape="rect" id="node11" href="$de/dc4/Section_8cpp.html" title=" " alt="" coords="349,80,446,107"/>
-<area shape="rect" id="node12" href="$d5/ddd/Print_8cpp.html" title=" " alt="" coords="470,80,549,107"/>
+<area shape="rect" id="node11" href="$d5/ddd/Print_8cpp.html" title=" " alt="" coords="349,80,427,107"/>
+<area shape="rect" id="node12" href="$de/dc4/Section_8cpp.html" title=" " alt="" coords="451,80,549,107"/>
 <area shape="rect" id="node13" href="$d0/dc2/Timer_8cpp.html" title=" " alt="" coords="573,80,659,107"/>
 <area shape="rect" id="node4" href="$d4/d17/FFT_8cpp.html" title=" " alt="" coords="85,155,155,181"/>
 <area shape="rect" id="node5" href="$db/d65/Decomposition_8hpp.html" title=" " alt="" coords="219,229,367,256"/>

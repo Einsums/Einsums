@@ -20,6 +20,12 @@
  * SOFTWARE.
  */
 
+/**
+ * @file FFT.hpp
+ *
+ * Contains things for performing fast Fourier transforms.
+ */
+
 #pragma once
 
 #include "einsums/Section.hpp"
@@ -31,6 +37,14 @@ namespace einsums::fft {
 
 namespace detail {}
 
+/**
+ * Find the fast Fourier frequencies.
+ * 
+ * @param n The number of items in the list.
+ * @param d The scale factor.
+ *
+ * @return The frequency step in the list.
+ */
 auto EINSUMS_EXPORT fftfreq(int n, double d = 1.0) -> Tensor<double, 1>;
 
 namespace detail {

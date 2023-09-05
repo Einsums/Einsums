@@ -20,6 +20,12 @@
  * SOFTWARE.
  */
 
+/**
+ * @file Print.hpp
+ *
+ * Contains printing functions.
+ */
+
 #pragma once
 
 #include <algorithm>
@@ -66,22 +72,35 @@ void EINSUMS_EXPORT always_print_thread_id(bool onoff);
  */
 void EINSUMS_EXPORT suppress_output(bool onoff);
 
+/**
+ * @struct Indent
+ *
+ * Represents an indentation. @todo Better description.
+ */
 struct Indent {
     Indent() { indent(); }
     ~Indent() { deindent(); }
 };
 
+/**
+ * Print a stacktrace. @todo Double check the description.
+ */
 void EINSUMS_EXPORT stacktrace();
 
 } // namespace print
 
 namespace detail {
+/**
+ * Print a line to the output stream.
+ *
+ * @param oss The line to print.
+ */
 void EINSUMS_EXPORT println(const std::string &oss);
 }
 
-//
-// Taken from https://stackoverflow.com/posts/59522794/revisions
-//
+/**
+ * Taken from https://stackoverflow.com/posts/59522794/revisions
+ */
 namespace detail {
 template <typename T>
 constexpr auto RawTypeName() -> const auto & {
@@ -92,11 +111,22 @@ constexpr auto RawTypeName() -> const auto & {
 #endif
 }
 
+/**
+ * @struct RawTypeNameFormat
+ *
+ * @todo Describe this struct.
+ */
 struct RawTypeNameFormat {
     std::size_t leading_junk = 0, trailing_junk = 0;
 };
 
-// Returns `false` on failure.
+/**
+ * Gets a formatted type name string. @todo Double check.
+ *
+ * @param format The output parameter which will contain the format.
+ *
+ * @return True on success, false on failure.
+ */
 inline constexpr auto GetRawTypeNameFormat(RawTypeNameFormat *format) -> bool {
     const auto &str = RawTypeName<int>();
     for (std::size_t i = 0;; i++) {
@@ -111,6 +141,11 @@ inline constexpr auto GetRawTypeNameFormat(RawTypeNameFormat *format) -> bool {
     return false;
 }
 
+/**
+ * @var format
+ *
+ * @todo Describe this.
+ */
 inline static constexpr RawTypeNameFormat format = [] {
     static_assert(GetRawTypeNameFormat(nullptr), "Unable to figure out how to generate type names on this compiler.");
     RawTypeNameFormat format;
@@ -120,6 +155,11 @@ inline static constexpr RawTypeNameFormat format = [] {
 } // namespace detail
 
 // Returns the type name in a `std::array<char, N>` (null-terminated).
+/**
+ * Returns the type name of the value type in an array.
+ * 
+ * @return Type name of the value type in an array.
+ */
 template <typename T>
 [[nodiscard]] constexpr auto CexprTypeName() {
     constexpr std::size_t len = sizeof(detail::RawTypeName<T>()) - detail::format.leading_junk - detail::format.trailing_junk;
@@ -129,48 +169,119 @@ template <typename T>
     return name;
 }
 
+/**
+ * Returns the type name of an array as a string.
+ *
+ * @return A string representing the name of the type.
+ */
 template <typename T>
 [[nodiscard]] auto type_name() -> const char * {
     static constexpr auto name = CexprTypeName<T>();
     return name.data();
 }
+
+/**
+ * returns the type name of the input as a string.
+ * 
+ * @param The object whose type is to be returned.
+ * 
+ * @return A string representing the name of the type of the parameter.
+ */
 template <typename T>
 [[nodiscard]] auto type_name(const T &) -> const char * {
     return type_name<T>();
 }
 namespace detail {
 
+/**
+ * @struct TuplePrinter
+ *
+ * Prints a tuple.
+ */
 template <typename Tuple, std::size_t N>
 struct TuplePrinter {
+    /**
+     * Prints a tuple to the output stream.
+     *
+     * @param os Output stream.
+     * @param t Tuple to print.
+     */
     static void print(std::ostream &os, const Tuple &t) {
         TuplePrinter<Tuple, N - 1>::print(os, t);
         os << ", (" << type_name<decltype(std::get<N - 1>(t))>() << ")" << std::get<N - 1>(t);
     }
 };
 
+/**
+ * @struct TuplePrinter
+ * 
+ * Base case for printing a tuple.
+ */
 template <typename Tuple>
 struct TuplePrinter<Tuple, 1> {
+    /**
+     * Prints a tuple with one element.
+     *
+     * @param os The output stream.
+     * @param t The tuple to print.
+     */
     static void print(std::ostream &os, const Tuple &t) { os << "(" << type_name<decltype(std::get<0>(t))>() << ")" << std::get<0>(t); }
 };
 
+/**
+ * @struct TuplePrinterNoType
+ *
+ * Print a tuple without type information.
+ */
 template <typename Tuple, std::size_t N>
 struct TuplePrinterNoType {
+    /**
+     * Print a tuple without type information.
+     *
+     * @param os The output stream.
+     * @param t The tuple to print.
+     */
     static void print(std::ostream &os, const Tuple &t) {
         TuplePrinterNoType<Tuple, N - 1>::print(os, t);
         os << ", " << std::get<N - 1>(t);
     }
 };
 
+/**
+ * @struct TuplePrinterNoType
+ *
+ * Base case for printing tuples without types.
+ */
 template <typename Tuple>
 struct TuplePrinterNoType<Tuple, 1> {
+    /**
+     * Print a tuple with only one element without printing the type.
+     *
+     * @param os The output stream.
+     * @param t The tuple to print.
+     */
     static void print(std::ostream &os, const Tuple &t) { os << std::get<0>(t); }
 };
 
+/**
+ * Prints an empty tuple.
+ * 
+ * @param The tuple to print.
+ *
+ * @return A string representing the tuple.
+ */
 template <typename... Args, std::enable_if_t<sizeof...(Args) == 0, int> = 0>
 auto print_tuple(const std::tuple<Args...> &) -> std::string {
     return {"()"};
 }
 
+/**
+ * Prints an empty tuple without a type.
+ *
+ * @param The tuple to print. 
+ *
+ * @return A string representing the tuple.
+ */
 template <typename... Args, std::enable_if_t<sizeof...(Args) == 0, int> = 0>
 auto print_tuple_no_type(const std::tuple<Args...> &) -> std::string {
     return {"()"};
@@ -178,6 +289,13 @@ auto print_tuple_no_type(const std::tuple<Args...> &) -> std::string {
 
 } // namespace detail
 
+/**
+ * Print a tuple.
+ *
+ * @param t The tuple to print.
+ *
+ * @return A string representing the tuple.
+ */
 template <typename... Args, std::enable_if_t<sizeof...(Args) != 0, int> = 0>
 auto print_tuple(const std::tuple<Args...> &t) -> std::string {
     std::ostringstream out;
@@ -187,6 +305,13 @@ auto print_tuple(const std::tuple<Args...> &t) -> std::string {
     return out.str();
 }
 
+/**
+ * Print a tuple without type.
+ * 
+ * @param t The tuple to print.
+ *
+ * @return A string representing the tuple.
+ */
 template <typename... Args, std::enable_if_t<sizeof...(Args) != 0, int> = 0>
 auto print_tuple_no_type(const std::tuple<Args...> &t) -> std::string {
     std::ostringstream out;
@@ -196,6 +321,13 @@ auto print_tuple_no_type(const std::tuple<Args...> &t) -> std::string {
     return out.str();
 }
 
+/**
+ * Print an empty tuple without type.
+ *
+ * @param The tuple to print.
+ *
+ * @return A string representing the tuple.
+ */
 inline auto print_tuple_no_type(const std::tuple<> &) -> std::string {
     std::ostringstream out;
     out << "( )";
@@ -207,31 +339,64 @@ using fmt::color;    // NOLINT
 using fmt::emphasis; // NOLINT
 using fmt::fg;       // NOLINT
 
+/**
+ * Print a series of objects using the given format string.
+ * 
+ * @param f The format string.
+ * @param ts The objects to print.
+ */
 template <typename... Ts>
 void println(const std::string_view &f, const Ts... ts) {
     std::string s = fmt::format(fmt::runtime(f), ts...);
     detail::println(s);
 }
 
+/**
+ * Print a series of objects using the given format string and style.
+ *
+ * @param style The style to use when printing.
+ * @param format The format string.
+ * @param ts The objects to print.
+ */
 template <typename... Ts>
 void println(const fmt::text_style &style, const std::string_view &format, const Ts... ts) {
     std::string s = fmt::format(style, format, ts...);
     detail::println(s);
 }
 
+/**
+ * Print a format string with no formatted arguments.
+ *
+ * @param format The string to print.
+ */
 inline void println(const std::string &format) {
     detail::println(format);
 }
 
+/**
+ * Print a format string with no formatted arguments in the given style.
+ * 
+ * @param style The style to print with.
+ * @param format The format string to print.
+ */
 inline void println(const fmt::text_style &style, const std::string_view &format) {
     std::string s = fmt::format(style, format);
     detail::println(s);
 }
 
+/**
+ * Print an empty line.
+ */
 inline void println() {
     detail::println("\n");
 }
 
+/**
+ * Print a line then abort. Contains an error message.
+ *
+ * @param format The format string.
+ * @param ts A list of objects to use for the format string.
+ */
 template <typename... Ts>
 inline void println_abort(const std::string_view &format, const Ts... ts) {
     std::string message = std::string("ERROR: ") + format.data();
@@ -242,6 +407,12 @@ inline void println_abort(const std::string_view &format, const Ts... ts) {
     std::abort();
 }
 
+/**
+ * Print a warning.
+ * 
+ * @param format The format string.
+ * @param ts The objects to use for the format string.
+ */
 template <typename... Ts>
 inline void println_warn(const std::string_view &format, const Ts... ts) {
     std::string message = std::string("WARNING: ") + format.data();

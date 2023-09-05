@@ -1,3 +1,9 @@
+/**
+ * @file LinearAlgebra.hpp
+ * 
+ * Functions to perform linear algebra.
+ */
+
 #pragma once
 
 #include "einsums/Blas.hpp"
@@ -29,6 +35,15 @@ using RowMatrixXd = RowMatrix<double>;
 
 BEGIN_EINSUMS_NAMESPACE_HPP(einsums::linear_algebra)
 
+/**
+ * @todo What does this do?
+ *
+ * @param a The tensor.
+ * @param scale The scalar.
+ * @param The output.
+ *
+ * @return The sum squared?
+ */
 template <template <typename, size_t> typename AType, typename ADataType, size_t ARank>
 auto sum_square(const AType<ADataType, ARank> &a, remove_complex_t<ADataType> *scale, remove_complex_t<ADataType> *sumsq) ->
     typename std::enable_if_t<is_incore_rank_tensor_v<AType<ADataType, ARank>, 1, ADataType>> {
@@ -39,6 +54,15 @@ auto sum_square(const AType<ADataType, ARank> &a, remove_complex_t<ADataType> *s
     blas::lassq(n, a.data(), incx, scale, sumsq);
 }
 
+/**
+ * Wrapper around Blas's gemm.
+ * 
+ * @param alpha Scale constant.
+ * @param A The left tensor.
+ * @param B The right tensor.
+ * @param beta Another scale constant.
+ * @param C The third tensor that is added on to the end. Also the result.
+ */
 template <bool TransA, bool TransB, template <typename, size_t> typename AType, template <typename, size_t> typename BType,
           template <typename, size_t> typename CType, size_t Rank, typename T>
 auto gemm(const T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const T beta, CType<T, Rank> *C) ->
@@ -82,6 +106,15 @@ auto gemm(const T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B)
     return C;
 }
 
+/**
+ * Wrapper around Blas's gemv.
+ *
+ * @param alpha The first scale constant.
+ * @param A The array.
+ * @param x The first vector.
+ * @param beta The second scale constant.
+ * @param y The vector to add. Also the output vector.
+ */
 template <bool TransA, template <typename, size_t> typename AType, template <typename, size_t> typename XType,
           template <typename, size_t> typename YType, size_t ARank, size_t XYRank, typename T>
 auto gemv(const double alpha, const AType<T, ARank> &A, const XType<T, XYRank> &x, const double beta, YType<T, XYRank> *y)
@@ -96,6 +129,12 @@ auto gemv(const double alpha, const AType<T, ARank> &A, const XType<T, XYRank> &
     blas::gemv(TransA ? 't' : 'n', m, n, alpha, A.data(), lda, x.data(), incx, beta, y->data(), incy);
 }
 
+/**
+ * Computes eigenvalues of symmetric matrices.
+ *
+ * @param A The tensor to decompose. Will contain the eigenvectors at the end.
+ * @param W The output for eigenvalues.
+ */
 template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename WType, size_t WRank, typename T,
           bool ComputeEigenvectors = true>
 auto syev(AType<T, ARank> *A, WType<T, WRank> *W) -> std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, 2, T> &&
@@ -112,6 +151,12 @@ auto syev(AType<T, ARank> *A, WType<T, WRank> *W) -> std::enable_if_t<is_incore_
     blas::syev(ComputeEigenvectors ? 'v' : 'n', 'u', n, A->data(), lda, W->data(), work.data(), lwork);
 }
 
+/**
+ * Computes the eigenvalues and eigenvectors of a hermitian matrix.
+ *
+ * @param A The input matrix. At the end, it will contain the eigenvectors.
+ * @param W The eigenvalue output.
+ */
 template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename WType, size_t WRank, typename T,
           bool ComputeEigenvectors = true>
 auto heev(AType<T, ARank> *A, WType<remove_complex_t<T>, WRank> *W)
@@ -130,6 +175,14 @@ auto heev(AType<T, ARank> *A, WType<remove_complex_t<T>, WRank> *W)
 }
 
 // This assumes column-major ordering!!
+/**
+ * Compute the solution to a linear system.
+ * 
+ * @param A The input array.
+ * @param B The constants array. On exit, it contains the solutions.
+ *
+ * @return An informational flag from LAPACK.
+ */
 template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename BType, size_t BRank, typename T>
 auto gesv(AType<T, ARank> *A, BType<T, BRank> *B)
     -> std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, 2, T> && is_incore_rank_tensor_v<BType<T, BRank>, 2, T>, int> {
@@ -148,6 +201,13 @@ auto gesv(AType<T, ARank> *A, BType<T, BRank> *B)
     return info;
 }
 
+/**
+ * Computes eigenvalues and eigenvectors of a symmetric matrix.
+ *
+ * @param A The matrix to decompose.
+ * 
+ * @return A tuple containing the eigenvalues and eigenvectors.
+ */
 template <template <typename, size_t> typename AType, size_t ARank, typename T, bool ComputeEigenvectors = true>
 auto syev(const AType<T, ARank> &A) ->
     typename std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, 2, T>, std::tuple<Tensor<T, 2>, Tensor<T, 1>>> {
@@ -163,6 +223,12 @@ auto syev(const AType<T, ARank> &A) ->
     return std::make_tuple(a, w);
 }
 
+/**
+ * Performs scalar multiplication on a matrix.
+ *
+ * @param scale The scalar value.
+ * @param A The matrix.
+ */
 template <template <typename, size_t> typename AType, size_t ARank, typename T>
 auto scale(T scale, AType<T, ARank> *A) -> typename std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, ARank, T>> {
     LabeledSection0();
@@ -170,6 +236,13 @@ auto scale(T scale, AType<T, ARank> *A) -> typename std::enable_if_t<is_incore_r
     blas::scal(A->dim(0) * A->stride(0), scale, A->data(), 1);
 }
 
+/**
+ * Scales a row within a matrix.
+ *
+ * @param row The row to scale.
+ * @param scale The scalar.
+ * @param A The matrix to scale.
+ */
 template <template <typename, size_t> typename AType, size_t ARank, typename T>
 auto scale_row(size_t row, T scale, AType<T, ARank> *A) -> typename std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, 2, T>> {
     LabeledSection0();
@@ -177,6 +250,13 @@ auto scale_row(size_t row, T scale, AType<T, ARank> *A) -> typename std::enable_
     blas::scal(A->dim(1), scale, A->data(row, 0ul), A->stride(1));
 }
 
+/**
+ * Scales a column in a matrix.
+ *
+ * @param col The column to scale.
+ * @param scale The scalar.
+ * @param A The matrix.
+ */
 template <template <typename, size_t> typename AType, size_t ARank, typename T>
 auto scale_column(size_t col, T scale, AType<T, ARank> *A) ->
     typename std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, 2, double>> {
@@ -234,6 +314,14 @@ auto pow(const AType<T, ARank> &a, T alpha, T cutoff = std::numeric_limits<T>::e
     return result;
 }
 
+/**
+ * Computes the dot product between two vectors.
+ *
+ * @param A The first vector.
+ * @param B The second vector.
+ * 
+ * @return The dot product.
+ */
 template <template <typename, size_t> typename Type, typename T>
 auto dot(const Type<T, 1> &A, const Type<T, 1> &B) ->
     typename std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<T, 1>, Type<T, 1>>, T> {
@@ -245,6 +333,14 @@ auto dot(const Type<T, 1> &A, const Type<T, 1> &B) ->
     return result;
 }
 
+/**
+ * Computes the multi-dimensional dot product. @todo Double check this.
+ *
+ * @param A The first tensor.
+ * @param B The second tensor.
+ *
+ * @return The dot product.
+ */
 template <template <typename, size_t> typename Type, typename T, size_t Rank>
 auto dot(const Type<T, Rank> &A, const Type<T, Rank> &B) ->
     typename std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<T, Rank>, Type<T, Rank>>, T> {
@@ -260,6 +356,15 @@ auto dot(const Type<T, Rank> &A, const Type<T, Rank> &B) ->
     return dot(TensorView<T, 1>(const_cast<Type<T, Rank> &>(A), dim), TensorView<T, 1>(const_cast<Type<T, Rank> &>(B), dim));
 }
 
+/**
+ * Returns the trinary dot product. @todo Double check this description.
+ * 
+ * @param A The first tensor.
+ * @param B The second tensor.
+ * @param C The third tensor.
+ *
+ * @return The trinary dot product.
+ */
 template <template <typename, size_t> typename Type, typename T, size_t Rank>
 auto dot(const Type<T, Rank> &A, const Type<T, Rank> &B, const Type<T, Rank> &C) -> // NOLINT
     typename std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<T, Rank>, Type<T, Rank>>, T> {
@@ -284,6 +389,13 @@ auto dot(const Type<T, Rank> &A, const Type<T, Rank> &B, const Type<T, Rank> &C)
     return result;
 }
 
+/**
+ * Computes a linear combination of vectors.
+ *
+ * @param alpha The scalar to multiply to the first tensor.
+ * @param X The first tensor.
+ * @param Y The second tensor.
+ */
 template <template <typename, size_t> typename XType, template <typename, size_t> typename YType, typename T, size_t Rank>
 auto axpy(T alpha, const XType<T, Rank> &X, YType<T, Rank> *Y)
     -> std::enable_if_t<is_incore_rank_tensor_v<XType<T, Rank>, Rank, T> && is_incore_rank_tensor_v<YType<T, Rank>, Rank, T>> {
@@ -292,6 +404,14 @@ auto axpy(T alpha, const XType<T, Rank> &X, YType<T, Rank> *Y)
     blas::axpy(X.dim(0) * X.stride(0), alpha, X.data(), 1, Y->data(), 1);
 }
 
+/**
+ * Computes a linear combination of tensors.
+ *
+ * @param alpha The scalar to multiply the first tensor by.
+ * @param X The first tensor.
+ * @param beta The scalar to multiply the second tensor by.
+ * @param Y The second tensor.
+ */
 template <template <typename, size_t> typename XType, template <typename, size_t> typename YType, typename T, size_t Rank>
 auto axpby(T alpha, const XType<T, Rank> &X, T beta, YType<T, Rank> *Y)
     -> std::enable_if_t<is_incore_rank_tensor_v<XType<T, Rank>, Rank, T> && is_incore_rank_tensor_v<YType<T, Rank>, Rank, T>> {
@@ -300,6 +420,14 @@ auto axpby(T alpha, const XType<T, Rank> &X, T beta, YType<T, Rank> *Y)
     blas::axpby(X.dim(0) * X.stride(0), alpha, X.data(), 1, beta, Y->data(), 1);
 }
 
+/**
+ * Wraps Blas's ger function, which is a bit complicated to describe.
+ *
+ * @param alpha The scalar to multiply the first product by.
+ * @param X The first tensor.
+ * @param Y The second tensor.
+ * @param A The matrix to add to. Also the result.
+ */
 template <template <typename, size_t> typename XYType, size_t XYRank, template <typename, size_t> typename AType, typename T, size_t ARank>
 auto ger(T alpha, const XYType<T, XYRank> &X, const XYType<T, XYRank> &Y, AType<T, ARank> *A)
     -> std::enable_if_t<is_incore_rank_tensor_v<XYType<T, XYRank>, 1, T> && is_incore_rank_tensor_v<AType<T, ARank>, 2, T>> {
@@ -308,6 +436,12 @@ auto ger(T alpha, const XYType<T, XYRank> &X, const XYType<T, XYRank> &Y, AType<
     blas::ger(X.dim(0), Y.dim(0), alpha, X.data(), X.stride(0), Y.data(), Y.stride(0), A->data(), A->stride(0));
 }
 
+/**
+ * Computes LU decomposition.
+ * 
+ * @param A The matrix to decompose. On output, it contains L and U.
+ * @param pivot The pivots used.
+ */
 template <template <typename, size_t> typename TensorType, typename T, size_t TensorRank>
 auto getrf(TensorType<T, TensorRank> *A, std::vector<eint> *pivot)
     -> std::enable_if_t<is_incore_rank_tensor_v<TensorType<T, TensorRank>, 2, T>, int> {
@@ -328,6 +462,15 @@ auto getrf(TensorType<T, TensorRank> *A, std::vector<eint> *pivot)
     return result;
 }
 
+/**
+ * Computes the inverse of an LU decomposed matrix.
+ *
+ * @param A The LU decomposed matrix as returned by getrf. At exit, contains
+ * the inverse of A.
+ * @param pivot The pivots used in getrf.
+ *
+ * @return A return value from Blas.
+ */
 template <template <typename, size_t> typename TensorType, typename T, size_t TensorRank>
 auto getri(TensorType<T, TensorRank> *A, const std::vector<eint> &pivot)
     -> std::enable_if_t<is_incore_rank_tensor_v<TensorType<T, TensorRank>, 2, T>, int> {
@@ -341,6 +484,12 @@ auto getri(TensorType<T, TensorRank> *A, const std::vector<eint> &pivot)
     return result;
 }
 
+/**
+ * Computes the inverse of a matrix.
+ *
+ * @param A The matrix to invert. At exit, contains the inverse.
+ *
+ */
 template <template <typename, size_t> typename TensorType, typename T, size_t TensorRank>
 auto invert(TensorType<T, TensorRank> *A) -> std::enable_if_t<is_incore_rank_tensor_v<TensorType<T, TensorRank>, 2, T>> {
     LabeledSection0();
@@ -359,6 +508,11 @@ auto invert(TensorType<T, TensorRank> *A) -> std::enable_if_t<is_incore_rank_ten
     }
 }
 
+/**
+ * Computes the inverse of a matrix.
+ *
+ * @param A The matrix to invert.
+ */
 template <typename SmartPtr>
 auto invert(SmartPtr *A) -> std::enable_if_t<is_smart_pointer_v<SmartPtr>> {
     LabeledSection0();
@@ -366,8 +520,19 @@ auto invert(SmartPtr *A) -> std::enable_if_t<is_smart_pointer_v<SmartPtr>> {
     return invert(A->get());
 }
 
+/**
+ * @enum Norm
+ *
+ * Represents different ways of computing a norm.
+ */
 enum class Norm : char { MaxAbs = 'M', One = 'O', Infinity = 'I', Frobenius = 'F', Two = 'F' };
 
+/**
+ * Compute a norm of a matrix.
+ *
+ * @param norm_type The kind of norm to compute.
+ * @param a The matrix to find the norm of.
+ */
 template <template <typename, size_t> typename AType, typename ADataType, size_t ARank>
 auto norm(Norm norm_type, const AType<ADataType, ARank> &a) ->
     typename std::enable_if_t<is_incore_rank_tensor_v<AType<ADataType, ARank>, 2, ADataType>, remove_complex_t<ADataType>> {
@@ -382,6 +547,13 @@ auto norm(Norm norm_type, const AType<ADataType, ARank> &a) ->
 }
 
 #if defined(EINSUMS_HAVE_EIGEN3)
+/**
+ * Computes the singular value decomposition of a matrix.
+ *
+ * @param A The matrix to decompose.
+ *
+ * @return A tuple containing the singular values and the singular vectors.
+ */
 template <template <typename, size_t> typename AType, typename T, size_t ARank>
 auto svd_eigen(const AType<T, ARank> &_A) ->
     typename std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, 2, T>,
@@ -416,6 +588,13 @@ auto svd_eigen(const AType<T, ARank> &_A) ->
 #endif
 
 // Uses the original svd function found in lapack, gesvd, request all left and right vectors.
+/**
+ * Compute the singular value decomposition.
+ * 
+ * @param A The matrix to decomopse.
+ *
+ * @return A tuple containing the singular values and the singular vectors.
+ */
 template <template <typename, size_t> typename AType, typename T, size_t ARank>
 auto svd(const AType<T, ARank> &_A) -> typename std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, 2, T>,
                                                                  std::tuple<Tensor<T, 2>, Tensor<remove_complex_t<T>, 1>, Tensor<T, 2>>> {
@@ -454,6 +633,13 @@ auto svd(const AType<T, ARank> &_A) -> typename std::enable_if_t<is_incore_rank_
     return std::make_tuple(U, S, Vt);
 }
 
+/**
+ * Compute the nullspace of a matrix.
+ *
+ * @param A The matrix to find the nullspace of.
+ *
+ * @return The matrix representation of the nullspace.
+ */
 template <template <typename, size_t> typename AType, typename T, size_t Rank>
 auto svd_nullspace(const AType<T, Rank> &_A) -> typename std::enable_if_t<is_incore_rank_tensor_v<AType<T, Rank>, 2, T>, Tensor<T, 2>> {
     LabeledSection0();
@@ -509,8 +695,21 @@ auto svd_nullspace(const AType<T, Rank> &_A) -> typename std::enable_if_t<is_inc
     return nullspace;
 }
 
+/**
+ * @enum Vectors
+ *
+ * Options for computing vectors in the singular value decomposition algorithm.
+ */
 enum class Vectors : char { All = 'A', Some = 'S', Overwrite = 'O', None = 'N' };
 
+/**
+ * Perform singular value decomposition.
+ *
+ * @param A The array to decompose.
+ * @param job Which vectors to compute.
+ *
+ * @return A tuple containing the singular values and the singular vectors.
+ */
 template <template <typename, size_t> typename AType, typename T, size_t ARank>
 auto svd_dd(const AType<T, ARank> &_A, Vectors job = Vectors::All) ->
     typename std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, 2, T>,
@@ -548,6 +747,14 @@ auto svd_dd(const AType<T, ARank> &_A, Vectors job = Vectors::All) ->
     return std::make_tuple(U, S, Vt);
 }
 
+/**
+ * Compute the truncated singular value. @todo How is this different?
+ *
+ * @param _A The matrix to decompose.
+ * @param k The truncation parameter.
+ *
+ * @return A tuple containing the singular values and singular vectors.
+ */
 template <template <typename, size_t> typename AType, typename T, size_t ARank>
 auto truncated_svd(const AType<T, ARank> &_A, size_t k) ->
     typename std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, 2, T>,
@@ -588,6 +795,15 @@ auto truncated_svd(const AType<T, ARank> &_A, size_t k) ->
     return std::make_tuple(U, S, Vt);
 }
 
+/**
+ * Computes a truncated eigendecomposition of a symmetric matrix.
+ * @todo How is this different?
+ *
+ * @param A The matrix to decompose.
+ * @param k The truncation parameter.
+ *
+ * @return A tuple containing the eigenvalues and eigenvectors.
+ */
 template <template <typename, size_t> typename AType, size_t ARank, typename T>
 auto truncated_syev(const AType<T, ARank> &A, size_t k) ->
     typename std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, 2, T>, std::tuple<Tensor<T, 2>, Tensor<T, 1>>> {
@@ -634,6 +850,14 @@ auto truncated_syev(const AType<T, ARank> &A, size_t k) ->
     return std::make_tuple(U, w);
 }
 
+/**
+ * Computes a pseudoinverse of a non-square matrix.
+ *
+ * @param The matrix to invert.
+ * @param tol The tolerance.
+ *
+ * @return The pseudoinverse.
+ */
 template <typename T>
 inline auto pseudoinverse(const Tensor<T, 2> &A, double tol) -> Tensor<T, 2> {
     LabeledSection0();
@@ -660,6 +884,14 @@ inline auto pseudoinverse(const Tensor<T, 2> &A, double tol) -> Tensor<T, 2> {
     return pinv;
 }
 
+/**
+ * Solves a continuous Lyapunov. @todo What does this mean?
+ *
+ * @param A The matrix to solve. 
+ * @param Q The other parameters.
+ *
+ * @return The solution.
+ */
 template <typename T>
 inline auto solve_continuous_lyapunov(const Tensor<T, 2> &A, const Tensor<T, 2> &Q) -> Tensor<T, 2> {
     LabeledSection0();
@@ -702,6 +934,14 @@ inline auto solve_continuous_lyapunov(const Tensor<T, 2> &A, const Tensor<T, 2> 
 
 ALIAS_TEMPLATE_FUNCTION(solve_lyapunov, solve_continuous_lyapunov)
 
+/**
+ * Computes the QR decomposition of a matrix.
+ *
+ * @param A The matrix to decompose.
+ *
+ * @return A tuple containing information for the final step of 
+ * QR decomposition.
+ */
 template <template <typename, size_t> typename AType, size_t ARank, typename T>
 auto qr(const AType<T, ARank> &_A) ->
     typename std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, 2, T>, std::tuple<Tensor<T, 2>, Tensor<T, 1>>> {
@@ -725,6 +965,14 @@ auto qr(const AType<T, ARank> &_A) ->
     return {A, tau};
 }
 
+/**
+ * Compute the QR decomposition of a matrix.
+ *
+ * @param qr The first part of the tuple from calling qr.
+ * @param tau The second part of the tuple from calling qr.
+ *
+ * @return The Q matrix.
+ */
 template <typename T>
 auto q(const Tensor<T, 2> &qr, const Tensor<T, 1> &tau) -> Tensor<T, 2> {
     const eint m = qr.dim(1);

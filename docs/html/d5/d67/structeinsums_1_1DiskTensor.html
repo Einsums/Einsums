@@ -196,7 +196,13 @@ Private Attributes</h2></td></tr>
 <tr class="memitem:a0e6a4428d5a4aaaf116171c7cf2b5d21"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d67/structeinsums_1_1DiskTensor.html#a0e6a4428d5a4aaaf116171c7cf2b5d21">_existed</a> {false}</td></tr>
 <tr class="separator:a0e6a4428d5a4aaaf116171c7cf2b5d21"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><h3>template&lt;typename T, size_t Rank&gt;<br />
+struct einsums::DiskTensor&lt; T, Rank &gt;</h3>
+
+<dl class="todo DocNodeLTR"><dt><b><a class="el" href="../../dd/da0/todo.html#_todo000026">Todo:</a></b></dt><dd>&#x202A;What is this? </dd></dl>
+<p class="DocNodeLTR">A tensor stored on disk. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ae8e8ccf2b6dbe268a40bd892718d9008"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae8e8ccf2b6dbe268a40bd892718d9008">&#9670;&nbsp;</a></span>DiskTensor() <span class="overload">[1/6]</span></h2>
 
@@ -460,7 +466,7 @@ template&lt;typename T , size_t Rank&gt; </div>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>d</em></td><td>)</td>
-          <td> const -&gt; size_t </td>
+          <td> const -&gt;  size_t</td>
         </tr>
       </table>
   </td>
@@ -469,6 +475,14 @@ template&lt;typename T , size_t Rank&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Returns the dimension of the given tensor.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">d</td><td>&#x202A;The axis whose dimension to return.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;The dimension along a given axis. </dd></dl>
 
 <p>Implements <a class="el" href="../../dc/d54/structeinsums_1_1detail_1_1TensorBase.html#a217c12e3cc502b0b642f1fa2e81fc1fd">einsums::detail::TensorBase&lt; T, Rank &gt;</a>.</p>
 
@@ -1176,8 +1190,8 @@ template&lt;typename T , size_t Rank&gt; </div>
 <div class="line">        </div>
 <div class="line">        <span class="keyword">auto</span> all_positions =</div>
 <div class="line">            <a class="code" href="../../dc/d42/namespaceeinsums.html#a8f98b0188912397bf2396461fafb7712">get_array_from_tuple</a>&lt;std::array&lt;int, <a class="code" href="../../dc/d42/namespaceeinsums.html#aaf7903a19c8a79a368737d29bcc6774c">count_of_type</a>&lt;All_t, MultiIndex...&gt;()&gt;&gt;(positions_of_type&lt;All_t, MultiIndex...&gt;())</div>
-<div class="ttc" id="anamespaceeinsums_html_a8f98b0188912397bf2396461fafb7712"><div class="ttname"><a href="../../dc/d42/namespaceeinsums.html#a8f98b0188912397bf2396461fafb7712">einsums::get_array_from_tuple</a></div><div class="ttdeci">constexpr auto get_array_from_tuple(Tuple &amp;&amp;tuple) -&gt; Result</div><div class="ttdef"><b>Definition:</b> STL.hpp:163</div></div>
-<div class="ttc" id="anamespaceeinsums_html_aaf7903a19c8a79a368737d29bcc6774c"><div class="ttname"><a href="../../dc/d42/namespaceeinsums.html#aaf7903a19c8a79a368737d29bcc6774c">einsums::count_of_type</a></div><div class="ttdeci">constexpr auto count_of_type()</div><div class="ttdef"><b>Definition:</b> STL.hpp:142</div></div>
+<div class="ttc" id="anamespaceeinsums_html_a8f98b0188912397bf2396461fafb7712"><div class="ttname"><a href="../../dc/d42/namespaceeinsums.html#a8f98b0188912397bf2396461fafb7712">einsums::get_array_from_tuple</a></div><div class="ttdeci">constexpr auto get_array_from_tuple(Tuple &amp;&amp;tuple) -&gt; Result</div><div class="ttdef"><b>Definition:</b> STL.hpp:170</div></div>
+<div class="ttc" id="anamespaceeinsums_html_aaf7903a19c8a79a368737d29bcc6774c"><div class="ttname"><a href="../../dc/d42/namespaceeinsums.html#aaf7903a19c8a79a368737d29bcc6774c">einsums::count_of_type</a></div><div class="ttdeci">constexpr auto count_of_type()</div><div class="ttdef"><b>Definition:</b> STL.hpp:149</div></div>
 </div><!-- fragment -->
 </div>
 </div>

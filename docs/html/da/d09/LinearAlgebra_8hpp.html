@@ -282,7 +282,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a9d11f83f55e39a6b13352f8122990435"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../da/d09/LinearAlgebra_8hpp.html#a9d11f83f55e39a6b13352f8122990435">q</a> (const Tensor&lt; T, 2 &gt; &amp;<a class="el" href="../../da/d09/LinearAlgebra_8hpp.html#a36e42bb8a4a14c30edeaeb389e32ef89">qr</a>, const Tensor&lt; T, 1 &gt; &amp;tau) -&gt; Tensor&lt; T, 2 &gt;</td></tr>
 <tr class="separator:a9d11f83f55e39a6b13352f8122990435"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Enumeration Type Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p class="DocNodeLTR">Functions to perform linear algebra. </p>
+</div><h2 class="groupheader">Enumeration Type Documentation</h2>
 <a id="aaed1a2b8619f32e31ea9510326d86e3a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aaed1a2b8619f32e31ea9510326d86e3a">&#9670;&nbsp;</a></span>Norm</h2>
 
@@ -302,6 +304,7 @@ Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Represents different ways of computing a norm. </p>
 <table class="fieldtable">
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="aaed1a2b8619f32e31ea9510326d86e3aa70daa745cdfcc8f37de05539bc55d60d"></a>MaxAbs&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="aaed1a2b8619f32e31ea9510326d86e3aa06c2cea18679d64399783748fa367bdd"></a>One&#160;</td><td class="fielddoc"></td></tr>
@@ -331,6 +334,7 @@ Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Options for computing vectors in the singular value decomposition algorithm. </p>
 <table class="fieldtable">
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a909aff8e078eb49362bcd4b25326ef38ab1c94ca2fbc3e78fc30069c8d0f01680"></a>All&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="a909aff8e078eb49362bcd4b25326ef38a695c6ae413c00446733d926ccadefd8b"></a>Some&#160;</td><td class="fielddoc"></td></tr>
@@ -380,6 +384,16 @@ template&lt;template&lt; typename, size_t &gt; typename XType, template&lt; type
         </tr>
       </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Computes a linear combination of tensors.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">alpha</td><td>&#x202A;The scalar to multiply the first tensor by. </td></tr>
+    <tr><td class="paramname">X</td><td>&#x202A;The first tensor. </td></tr>
+    <tr><td class="paramname">beta</td><td>&#x202A;The scalar to multiply the second tensor by. </td></tr>
+    <tr><td class="paramname">Y</td><td>&#x202A;The second tensor. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -416,6 +430,15 @@ template&lt;template&lt; typename, size_t &gt; typename XType, template&lt; type
         </tr>
       </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Computes a linear combination of vectors.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">alpha</td><td>&#x202A;The scalar to multiply to the first tensor. </td></tr>
+    <tr><td class="paramname">X</td><td>&#x202A;The first tensor. </td></tr>
+    <tr><td class="paramname">Y</td><td>&#x202A;The second tensor. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -446,6 +469,15 @@ template&lt;template&lt; typename, size_t &gt; typename Type, typename T &gt; </
         </tr>
       </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Computes the dot product between two vectors.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">A</td><td>&#x202A;The first vector. </td></tr>
+    <tr><td class="paramname">B</td><td>&#x202A;The second vector.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;The dot product. </dd></dl>
 
 </div>
 </div>
@@ -476,6 +508,15 @@ template&lt;template&lt; typename, size_t &gt; typename Type, typename T , size_
         </tr>
       </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Computes the multi-dimensional dot product. </p><dl class="todo DocNodeLTR"><dt><b><a class="el" href="../../dd/da0/todo.html#_todo000011">Todo:</a></b></dt><dd>&#x202A;Double check this.</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">A</td><td>&#x202A;The first tensor. </td></tr>
+    <tr><td class="paramname">B</td><td>&#x202A;The second tensor.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;The dot product. </dd></dl>
 
 </div>
 </div>
@@ -513,6 +554,16 @@ template&lt;template&lt; typename, size_t &gt; typename Type, typename T , size_
         </tr>
       </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Returns the trinary dot product. </p><dl class="todo DocNodeLTR"><dt><b><a class="el" href="../../dd/da0/todo.html#_todo000012">Todo:</a></b></dt><dd>&#x202A;Double check this description.</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">A</td><td>&#x202A;The first tensor. </td></tr>
+    <tr><td class="paramname">B</td><td>&#x202A;The second tensor. </td></tr>
+    <tr><td class="paramname">C</td><td>&#x202A;The third tensor.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;The trinary dot product. </dd></dl>
 
 </div>
 </div>
@@ -619,6 +670,17 @@ template&lt;bool TransA, bool TransB, template&lt; typename, size_t &gt; typenam
         </tr>
       </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Wrapper around Blas's gemm.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">alpha</td><td>&#x202A;Scale constant. </td></tr>
+    <tr><td class="paramname">A</td><td>&#x202A;The left tensor. </td></tr>
+    <tr><td class="paramname">B</td><td>&#x202A;The right tensor. </td></tr>
+    <tr><td class="paramname">beta</td><td>&#x202A;Another scale constant. </td></tr>
+    <tr><td class="paramname">C</td><td>&#x202A;The third tensor that is added on to the end. Also the result. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -668,6 +730,17 @@ template&lt;bool TransA, template&lt; typename, size_t &gt; typename AType, temp
         </tr>
       </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Wrapper around Blas's gemv.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">alpha</td><td>&#x202A;The first scale constant. </td></tr>
+    <tr><td class="paramname">A</td><td>&#x202A;The array. </td></tr>
+    <tr><td class="paramname">x</td><td>&#x202A;The first vector. </td></tr>
+    <tr><td class="paramname">beta</td><td>&#x202A;The second scale constant. </td></tr>
+    <tr><td class="paramname">y</td><td>&#x202A;The vector to add. Also the output vector. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -710,6 +783,16 @@ template&lt;template&lt; typename, size_t &gt; typename XYType, size_t XYRank, t
         </tr>
       </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Wraps Blas's ger function, which is a bit complicated to describe.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">alpha</td><td>&#x202A;The scalar to multiply the first product by. </td></tr>
+    <tr><td class="paramname">X</td><td>&#x202A;The first tensor. </td></tr>
+    <tr><td class="paramname">Y</td><td>&#x202A;The second tensor. </td></tr>
+    <tr><td class="paramname">A</td><td>&#x202A;The matrix to add to. Also the result. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -740,6 +823,15 @@ template&lt;template&lt; typename, size_t &gt; typename AType, size_t ARank, tem
         </tr>
       </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Compute the solution to a linear system.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">A</td><td>&#x202A;The input array. </td></tr>
+    <tr><td class="paramname">B</td><td>&#x202A;The constants array. On exit, it contains the solutions.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;An informational flag from LAPACK. </dd></dl>
 
 </div>
 </div>
@@ -770,6 +862,14 @@ template&lt;template&lt; typename, size_t &gt; typename TensorType, typename T ,
         </tr>
       </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Computes LU decomposition.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">A</td><td>&#x202A;The matrix to decompose. On output, it contains L and U. </td></tr>
+    <tr><td class="paramname">pivot</td><td>&#x202A;The pivots used. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -800,6 +900,15 @@ template&lt;template&lt; typename, size_t &gt; typename TensorType, typename T ,
         </tr>
       </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Computes the inverse of an LU decomposed matrix.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">A</td><td>&#x202A;The LU decomposed matrix as returned by getrf. At exit, contains the inverse of A. </td></tr>
+    <tr><td class="paramname">pivot</td><td>&#x202A;The pivots used in getrf.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;A return value from Blas. </dd></dl>
 
 </div>
 </div>
@@ -831,6 +940,14 @@ template&lt;template&lt; typename, size_t &gt; typename AType, size_t ARank, tem
         </tr>
       </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Computes the eigenvalues and eigenvectors of a hermitian matrix.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">A</td><td>&#x202A;The input matrix. At the end, it will contain the eigenvectors. </td></tr>
+    <tr><td class="paramname">W</td><td>&#x202A;The eigenvalue output. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -851,6 +968,13 @@ template&lt;typename SmartPtr &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Computes the inverse of a matrix.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">A</td><td>&#x202A;The matrix to invert. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -871,6 +995,13 @@ template&lt;template&lt; typename, size_t &gt; typename TensorType, typename T ,
         </tr>
       </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Computes the inverse of a matrix.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">A</td><td>&#x202A;The matrix to invert. At exit, contains the inverse. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -901,6 +1032,14 @@ template&lt;template&lt; typename, size_t &gt; typename AType, typename ADataTyp
         </tr>
       </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Compute a norm of a matrix.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">norm_type</td><td>&#x202A;The kind of norm to compute. </td></tr>
+    <tr><td class="paramname">a</td><td>&#x202A;The matrix to find the norm of. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -992,6 +1131,15 @@ template&lt;typename T &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Computes a pseudoinverse of a non-square matrix.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">The</td><td>&#x202A;matrix to invert. </td></tr>
+    <tr><td class="paramname">tol</td><td>&#x202A;The tolerance.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;The pseudoinverse. </dd></dl>
 
 </div>
 </div>
@@ -1022,6 +1170,15 @@ template&lt;typename T &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Compute the QR decomposition of a matrix.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">qr</td><td>&#x202A;The first part of the tuple from calling qr. </td></tr>
+    <tr><td class="paramname">tau</td><td>&#x202A;The second part of the tuple from calling qr.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;The Q matrix. </dd></dl>
 
 </div>
 </div>
@@ -1042,6 +1199,14 @@ template&lt;template&lt; typename, size_t &gt; typename AType, size_t ARank, typ
         </tr>
       </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Computes the QR decomposition of a matrix.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">A</td><td>&#x202A;The matrix to decompose.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;A tuple containing information for the final step of QR decomposition. </dd></dl>
 
 </div>
 </div>
@@ -1072,6 +1237,14 @@ template&lt;template&lt; typename, size_t &gt; typename AType, size_t ARank, typ
         </tr>
       </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Performs scalar multiplication on a matrix.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">scale</td><td>&#x202A;The scalar value. </td></tr>
+    <tr><td class="paramname">A</td><td>&#x202A;The matrix. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1108,6 +1281,15 @@ template&lt;template&lt; typename, size_t &gt; typename AType, size_t ARank, typ
         </tr>
       </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Scales a column in a matrix.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">col</td><td>&#x202A;The column to scale. </td></tr>
+    <tr><td class="paramname">scale</td><td>&#x202A;The scalar. </td></tr>
+    <tr><td class="paramname">A</td><td>&#x202A;The matrix. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1144,6 +1326,15 @@ template&lt;template&lt; typename, size_t &gt; typename AType, size_t ARank, typ
         </tr>
       </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Scales a row within a matrix.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">row</td><td>&#x202A;The row to scale. </td></tr>
+    <tr><td class="paramname">scale</td><td>&#x202A;The scalar. </td></tr>
+    <tr><td class="paramname">A</td><td>&#x202A;The matrix to scale. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1182,6 +1373,15 @@ template&lt;typename T &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Solves a continuous Lyapunov. </p><dl class="todo DocNodeLTR"><dt><b><a class="el" href="../../dd/da0/todo.html#_todo000015">Todo:</a></b></dt><dd>&#x202A;What does this mean?</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">A</td><td>&#x202A;The matrix to solve. </td></tr>
+    <tr><td class="paramname">Q</td><td>&#x202A;The other parameters.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;The solution. </dd></dl>
 <p class="DocNodeLTR">TODO: Break this off into a separate schur function</p>
 
 </div>
@@ -1219,6 +1419,16 @@ template&lt;template&lt; typename, size_t &gt; typename AType, typename ADataTyp
         </tr>
       </table>
 </div><div class="memdoc">
+<dl class="todo DocNodeLTR"><dt><b><a class="el" href="../../dd/da0/todo.html#_todo000010">Todo:</a></b></dt><dd>&#x202A;What does this do?</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">a</td><td>&#x202A;The tensor. </td></tr>
+    <tr><td class="paramname">scale</td><td>&#x202A;The scalar. </td></tr>
+    <tr><td class="paramname">The</td><td>&#x202A;output.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;The sum squared? </dd></dl>
 
 </div>
 </div>
@@ -1240,6 +1450,14 @@ template&lt;template&lt; typename, size_t &gt; typename AType, typename T , size
         </tr>
       </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Compute the singular value decomposition.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">A</td><td>&#x202A;The matrix to decomopse.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;A tuple containing the singular values and the singular vectors. </dd></dl>
 
 </div>
 </div>
@@ -1271,6 +1489,15 @@ template&lt;template&lt; typename, size_t &gt; typename AType, typename T , size
         </tr>
       </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Perform singular value decomposition.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">A</td><td>&#x202A;The array to decompose. </td></tr>
+    <tr><td class="paramname">job</td><td>&#x202A;Which vectors to compute.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;A tuple containing the singular values and the singular vectors. </dd></dl>
 
 </div>
 </div>
@@ -1291,6 +1518,14 @@ template&lt;template&lt; typename, size_t &gt; typename AType, typename T , size
         </tr>
       </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Compute the nullspace of a matrix.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">A</td><td>&#x202A;The matrix to find the nullspace of.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;The matrix representation of the nullspace. </dd></dl>
 
 </div>
 </div>
@@ -1322,6 +1557,14 @@ template&lt;template&lt; typename, size_t &gt; typename AType, size_t ARank, tem
         </tr>
       </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Computes eigenvalues of symmetric matrices.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">A</td><td>&#x202A;The tensor to decompose. Will contain the eigenvectors at the end. </td></tr>
+    <tr><td class="paramname">W</td><td>&#x202A;The output for eigenvalues. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1342,6 +1585,14 @@ template&lt;template&lt; typename, size_t &gt; typename AType, size_t ARank, typ
         </tr>
       </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Computes eigenvalues and eigenvectors of a symmetric matrix.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">A</td><td>&#x202A;The matrix to decompose.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;A tuple containing the eigenvalues and eigenvectors. </dd></dl>
 
 </div>
 </div>
@@ -1373,6 +1624,15 @@ template&lt;template&lt; typename, size_t &gt; typename AType, typename T , size
         </tr>
       </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Compute the truncated singular value. </p><dl class="todo DocNodeLTR"><dt><b><a class="el" href="../../dd/da0/todo.html#_todo000013">Todo:</a></b></dt><dd>&#x202A;How is this different?</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">_A</td><td>&#x202A;The matrix to decompose. </td></tr>
+    <tr><td class="paramname">k</td><td>&#x202A;The truncation parameter.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;A tuple containing the singular values and singular vectors. </dd></dl>
 
 </div>
 </div>
@@ -1403,6 +1663,15 @@ template&lt;template&lt; typename, size_t &gt; typename AType, size_t ARank, typ
         </tr>
       </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Computes a truncated eigendecomposition of a symmetric matrix. </p><dl class="todo DocNodeLTR"><dt><b><a class="el" href="../../dd/da0/todo.html#_todo000014">Todo:</a></b></dt><dd>&#x202A;How is this different?</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">A</td><td>&#x202A;The matrix to decompose. </td></tr>
+    <tr><td class="paramname">k</td><td>&#x202A;The truncation parameter.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;A tuple containing the eigenvalues and eigenvectors. </dd></dl>
 
 </div>
 </div>

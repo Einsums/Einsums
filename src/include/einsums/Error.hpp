@@ -20,6 +20,12 @@
  * SOFTWARE.
  */
 
+/**
+ * @file Error.hpp
+ * 
+ * Utilities to help with error processing.
+ */
+
 #pragma once
 
 #include <iterator>
@@ -30,6 +36,11 @@
 
 namespace einsums {
 
+/**
+ * @struct Empty
+ *
+ * An empty struct.
+ */
 struct Empty {};
 
 // struct Error {
@@ -37,6 +48,11 @@ struct Empty {};
 //     EINSUMS_ALWAYS_INLINE auto operator=(Error &&) -> Error & = default;
 // };
 
+/**
+ * @struct ErrorOr
+ *
+ * Represents a pair which contains a result or an error.
+ */
 template <typename T, typename E>
 struct [[nodiscard]] ErrorOr {
   private:
@@ -47,30 +63,84 @@ struct [[nodiscard]] ErrorOr {
     using ResultType = T;
     using ErrorType  = E;
 
+    /**
+     * Default constructor.
+     */
     ErrorOr() = default;
 
+    /**
+     * Move constructor.
+     * 
+     * @param ErrorOr The value to move.
+     */
     ErrorOr(ErrorOr &&) noexcept                     = default;
+
+    /**
+     * Move assignment.
+     *
+     * @param ErrorOr The value to move.
+     *
+     * @return A reference to the new object.
+     */
     auto operator=(ErrorOr &&) noexcept -> ErrorOr & = default;
 
+    /**
+     * Copy constructor.
+     *
+     * @param ErrorOr the value to copy.
+     */
     ErrorOr(ErrorOr const &)                     = delete;
+
+    /**
+     * Copy assignment.
+     * 
+     * @param ErrorOr The value to copy.
+     *
+     * @return A reference to this.
+     */
     auto operator=(ErrorOr const &) -> ErrorOr & = delete;
 
+    /**
+     * Conversion constructor.
+     *
+     * @param value The value to convert.
+     */
     template <typename U>
     ErrorOr(ErrorOr<U, ErrorType> &&value) :
         _value_or_error(std::move(value._value_or_error)) {}
 
+    /**
+     * Converts a value into an ErrorOr object.
+     *
+     * @param value The value to pack.
+     */
     template <typename U>
     ErrorOr(U &&value) : _value_or_error(std::forward<U>(value)) {}
 
+    /**
+     * Returns the value part of the struct.
+     *
+     * @return The value part of the struct.
+     */
     auto value() -> ResultType & {
         return std::get<ResultType>(_value_or_error); }
     auto value() const -> ResultType const & {
         return std::get<ResultType>(_value_or_error); }
 
+    /**
+     * Returns the error part of the struct.
+     *
+     * @return The error part of the struct.
+     */
     auto error() -> ErrorType & { return std::get<ErrorType>(_value_or_error); }
     auto error() const -> ErrorType const & {
         return std::get<ErrorType>(_value_or_error); }
 
+    /**
+     * Returns whether this object represents an error or not.
+     *
+     * @return true if error, false if not.
+     */
     [[nodiscard]] auto is_error() const -> bool {
         try {
             std::get<ErrorType>(_value_or_error);
@@ -84,6 +154,11 @@ struct [[nodiscard]] ErrorOr {
     std::variant<ResultType, ErrorType> _value_or_error;
 };
 
+/**
+ * @class ErrorOr
+ *
+ * Specialization of the ErrorOr type where the value type is void.
+ */
 template <typename ErrorType>
 struct [[nodiscard]] ErrorOr<void, ErrorType> :
         public ErrorOr<Empty, ErrorType> {

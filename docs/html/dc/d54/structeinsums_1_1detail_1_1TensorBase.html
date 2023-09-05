@@ -97,7 +97,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a217c12e3cc502b0b642f1fa2e81fc1fd"><td class="memItemLeft" align="right" valign="top">virtual auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/d54/structeinsums_1_1detail_1_1TensorBase.html#a217c12e3cc502b0b642f1fa2e81fc1fd">dim</a> (int d) const -&gt; size_t=0</td></tr>
 <tr class="separator:a217c12e3cc502b0b642f1fa2e81fc1fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Function Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><h3>template&lt;typename T, size_t Rank&gt;<br />
+struct einsums::detail::TensorBase&lt; T, Rank &gt;</h3>
+
+<p class="DocNodeLTR">Base class for all tensors. </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a217c12e3cc502b0b642f1fa2e81fc1fd"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a217c12e3cc502b0b642f1fa2e81fc1fd">&#9670;&nbsp;</a></span>dim()</h2>
 
@@ -123,6 +128,14 @@ template&lt;typename T , size_t Rank&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Returns the dimension of the given tensor.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">d</td><td>&#x202A;The axis whose dimension to return.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;The dimension along a given axis. </dd></dl>
 
 <p>Implemented in <a class="el" href="../../d9/dba/structeinsums_1_1Tensor_3_01T_00_010_01_4.html#ad934dba7e2afdf5a6d498c038fa588c9">einsums::Tensor&lt; T, 0 &gt;</a>, <a class="el" href="../../d6/d2c/structeinsums_1_1DiskView.html#a11755a5a24a573c97449c80567ab45cd">einsums::DiskView&lt; T, ViewRank, Rank &gt;</a>, <a class="el" href="../../d5/d67/structeinsums_1_1DiskTensor.html#a7662e2dd4ad8ec1642ddb14baf8d149c">einsums::DiskTensor&lt; T, Rank &gt;</a>, <a class="el" href="../../d4/d52/structeinsums_1_1TensorView.html#a5be48ea8d047713bb0fcc78e86099f75">einsums::TensorView&lt; T, Rank &gt;</a>, <a class="el" href="../../d9/dc7/structeinsums_1_1Tensor.html#a8788fa3ff7ff0f4e6428012aa5f3533a">einsums::Tensor&lt; T, Rank &gt;</a>, and <a class="el" href="../../d9/dc7/structeinsums_1_1Tensor.html#a8788fa3ff7ff0f4e6428012aa5f3533a">einsums::Tensor&lt; T, ViewRank &gt;</a>.</p>
 

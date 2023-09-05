@@ -38,6 +38,13 @@
 BEGIN_EINSUMS_NAMESPACE_HPP(einsums::element_operations)
 
 BEGIN_EINSUMS_NAMESPACE_HPP(detail)
+
+/**
+ * @todo Omp-a Loop-a doopity doo. What in the world could this do?
+ * 
+ * @param data Vector of data.
+ * @param functor A functor???
+ */
 template <typename vector, typename Functor>
 void omp_loop(vector &data, Functor functor) {
     LabeledSection0();
@@ -59,6 +66,14 @@ void omp_loop(vector &data, Functor functor) {
 }
 END_EINSUMS_NAMESPACE_HPP(detail)
 
+/**
+ * Computes a sum.
+ * @todo Needs more information.
+ *
+ * @param tensor A tensor to sum.
+ *
+ * @return A sum???
+ */
 template <template <typename, size_t> typename TensorType, typename T,
           size_t Rank>
 auto sum(const TensorType<T, Rank> &tensor) -> T {
@@ -70,6 +85,13 @@ auto sum(const TensorType<T, Rank> &tensor) -> T {
     return result;
 }
 
+/**
+ * Finds the max element in the tensor.
+ *
+ * @param tensor The tensor to evaulate.
+ *
+ * @return The max element in the tensor.
+ */
 template <template <typename, size_t> typename TensorType, typename T,
           size_t Rank>
 auto max(const TensorType<T, Rank> &tensor) -> T {
@@ -86,6 +108,13 @@ BEGIN_EINSUMS_NAMESPACE_HPP(new_tensor)
 using einsums::element_operations::max;  // nolint
 using einsums::element_operations::sum;  // nolint
 
+/**
+ * Compute the absolute value of each element in the tensor.
+ *
+ * @param tensor The tensor to absolute value.
+ * 
+ * @return A new tensor whose elements are the absolute value of the input.
+ */
 template <template <typename, size_t> typename TensorType, typename T,
           size_t Rank>
 auto abs(const TensorType<T, Rank> &tensor) -> Tensor<T, Rank> {
@@ -100,6 +129,13 @@ auto abs(const TensorType<T, Rank> &tensor) -> Tensor<T, Rank> {
     return result;
 }
 
+/**
+ * Finds the reciprocal of each element in the tensor.
+ *
+ * @param tensor The tensor to invert.
+ *
+ * @return A tensor whose elements are the reciprocal of the input's.
+ */
 template <template <typename, size_t> typename TensorType, typename T,
           size_t Rank>
 auto invert(const TensorType<T, Rank> &tensor) -> Tensor<T, Rank> {
@@ -116,6 +152,13 @@ auto invert(const TensorType<T, Rank> &tensor) -> Tensor<T, Rank> {
     return result;
 }
 
+/**
+ * Exponentiate the elements of the input tensor.
+ *
+ * @param tensor The tensor to exponentiate.
+ *
+ * @return A tensor whose elements are the exponetial of the input's.
+ */
 template <template <typename, size_t> typename TensorType, typename T,
           size_t Rank>
 auto exp(const TensorType<T, Rank> &tensor) -> Tensor<T, Rank> {
@@ -131,6 +174,14 @@ auto exp(const TensorType<T, Rank> &tensor) -> Tensor<T, Rank> {
     return result;
 }
 
+/**
+ * Perform scalar multiplication on a tensor.
+ *
+ * @param scale The value to scale by.
+ * @param tensor The tensor to scale.
+ *
+ * @return A new tensor whose elements have been scaled.
+ */
 template <template <typename, size_t> typename TensorType, typename T,
           size_t Rank>
 auto scale(const T &scale, const TensorType<T, Rank> &tensor)

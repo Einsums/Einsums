@@ -1,3 +1,9 @@
+/**
+ * @file OpenMP.h
+ *
+ * Contains functions for running OpenMP.
+ */
+
 #pragma once
 
 #if defined(_OPENMP)

@@ -96,7 +96,7 @@ struct \mbox{\hyperlink{structeinsums_1_1DisableOMPThreads}{Disable\+OMPThreads}
 \item 
 struct \mbox{\hyperlink{structeinsums_1_1Empty}{Empty}}
 \item 
-struct \mbox{\hyperlink{structeinsums_1_1ErrorOr}{Error\+Or}}
+class \mbox{\hyperlink{structeinsums_1_1ErrorOr}{Error\+Or}}
 \item 
 struct \mbox{\hyperlink{structeinsums_1_1ErrorOr_3_01void_00_01ErrorType_01_4}{Error\+Or$<$ void, Error\+Type $>$}}
 \end{DoxyCompactItemize}
@@ -542,6 +542,16 @@ constexpr auto einsums\+::get\+\_\+array\+\_\+from\+\_\+tuple (\begin{DoxyParamC
 {\footnotesize\ttfamily template$<$int N, template$<$ typename, size\+\_\+t $>$ typename Tensor\+Type, size\+\_\+t Rank, typename T $>$ \\
 auto einsums\+::get\+\_\+dim\+\_\+ranges (\begin{DoxyParamCaption}\item[{const Tensor\+Type$<$ T, Rank $>$ \&}]{tensor }\end{DoxyParamCaption})}
 
+Finds the ranges of each dimension of the tensor.
+
+
+\begin{DoxyParams}{Parameters}
+{\em tensor} & The tensor to query.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A tuple containing the ranges of each dimension. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{namespaceeinsums_ad24da978e4fbddf56d625782645a2f17}\label{namespaceeinsums_ad24da978e4fbddf56d625782645a2f17}} 
 \index{einsums@{einsums}!get\_from\_tuple@{get\_from\_tuple}}
 \index{get\_from\_tuple@{get\_from\_tuple}!einsums@{einsums}}
@@ -595,6 +605,18 @@ constexpr auto einsums\+::positions\+\_\+of\+\_\+type (\begin{DoxyParamCaption}{
 {\footnotesize\ttfamily template$<$typename T $>$ \\
 auto einsums\+::read (\begin{DoxyParamCaption}\item[{const h5\+::fd\+\_\+t \&}]{fd,  }\item[{const std\+::string \&}]{name }\end{DoxyParamCaption}) -\/$>$ \mbox{\hyperlink{structeinsums_1_1Tensor}{Tensor}}$<$T, 0$>$ }
 
+Read an empty tensor from a file.
+
+
+\begin{DoxyParams}{Parameters}
+{\em fd} & The file descriptor to read from. \\
+\hline
+{\em name} & The name of the new tensor.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The new tensor. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{namespaceeinsums_ae15bc2f581377beb9da08fc8d0a7e928}\label{namespaceeinsums_ae15bc2f581377beb9da08fc8d0a7e928}} 
 \index{einsums@{einsums}!read@{read}}
 \index{read@{read}!einsums@{einsums}}
@@ -602,6 +624,18 @@ auto einsums\+::read (\begin{DoxyParamCaption}\item[{const h5\+::fd\+\_\+t \&}]{
 {\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
 auto einsums\+::read (\begin{DoxyParamCaption}\item[{const h5\+::fd\+\_\+t \&}]{fd,  }\item[{const std\+::string \&}]{name }\end{DoxyParamCaption}) -\/$>$ \mbox{\hyperlink{structeinsums_1_1Tensor}{Tensor}}$<$T, Rank$>$ }
 
+Read a tensor from a file.
+
+
+\begin{DoxyParams}{Parameters}
+{\em fd} & The file descriptor to read from. \\
+\hline
+{\em name} & The name of the new tensor.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A new tensor with the given data. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{namespaceeinsums_a7d6be2c45506b693c6b512e232318fd6}\label{namespaceeinsums_a7d6be2c45506b693c6b512e232318fd6}} 
 \index{einsums@{einsums}!write@{write}}
 \index{write@{write}!einsums@{einsums}}
@@ -609,6 +643,15 @@ auto einsums\+::read (\begin{DoxyParamCaption}\item[{const h5\+::fd\+\_\+t \&}]{
 {\footnotesize\ttfamily template$<$typename T $>$ \\
 void einsums\+::write (\begin{DoxyParamCaption}\item[{const h5\+::fd\+\_\+t \&}]{fd,  }\item[{const \mbox{\hyperlink{structeinsums_1_1Tensor}{Tensor}}$<$ T, 0 $>$ \&}]{ref }\end{DoxyParamCaption})}
 
+Write an empty tensor to a file.
+
+
+\begin{DoxyParams}{Parameters}
+{\em fd} & The file descriptor. \\
+\hline
+{\em ref} & The tensor to write. \\
+\hline
+\end{DoxyParams}
 \mbox{\Hypertarget{namespaceeinsums_ad4b8e06472ea9229e80fb20d1e99cb15}\label{namespaceeinsums_ad4b8e06472ea9229e80fb20d1e99cb15}} 
 \index{einsums@{einsums}!write@{write}}
 \index{write@{write}!einsums@{einsums}}
@@ -616,6 +659,17 @@ void einsums\+::write (\begin{DoxyParamCaption}\item[{const h5\+::fd\+\_\+t \&}]
 {\footnotesize\ttfamily template$<$size\+\_\+t Rank, typename T , class... Args$>$ \\
 void einsums\+::write (\begin{DoxyParamCaption}\item[{const h5\+::fd\+\_\+t \&}]{fd,  }\item[{const \mbox{\hyperlink{structeinsums_1_1Tensor}{Tensor}}$<$ T, Rank $>$ \&}]{ref,  }\item[{Args \&\&...}]{args }\end{DoxyParamCaption})}
 
+Write the tensor data to a file.
+
+
+\begin{DoxyParams}{Parameters}
+{\em fd} & A file descriptor. \\
+\hline
+{\em ref} & The tensor to write. \\
+\hline
+{\em args} & Extra arguments. \\
+\hline
+\end{DoxyParams}
 \mbox{\Hypertarget{namespaceeinsums_a7bc3393b66dec35525cff395c5ae447b}\label{namespaceeinsums_a7bc3393b66dec35525cff395c5ae447b}} 
 \index{einsums@{einsums}!write@{write}}
 \index{write@{write}!einsums@{einsums}}
@@ -623,6 +677,17 @@ void einsums\+::write (\begin{DoxyParamCaption}\item[{const h5\+::fd\+\_\+t \&}]
 {\footnotesize\ttfamily template$<$size\+\_\+t Rank, typename T , class... Args$>$ \\
 void einsums\+::write (\begin{DoxyParamCaption}\item[{const h5\+::fd\+\_\+t \&}]{fd,  }\item[{const \mbox{\hyperlink{structeinsums_1_1TensorView}{Tensor\+View}}$<$ T, Rank $>$ \&}]{ref,  }\item[{Args \&\&...}]{args }\end{DoxyParamCaption})}
 
+Write a tensor view to a file.
+
+
+\begin{DoxyParams}{Parameters}
+{\em fd} & The file descriptor. \\
+\hline
+{\em ref} & The tensor view to write. \\
+\hline
+{\em args} & Extra arguments. \\
+\hline
+\end{DoxyParams}
 \mbox{\Hypertarget{namespaceeinsums_a3a0b2c04fe72ddbc7eb54ece078ef9e1}\label{namespaceeinsums_a3a0b2c04fe72ddbc7eb54ece078ef9e1}} 
 \index{einsums@{einsums}!zero@{zero}}
 \index{zero@{zero}!einsums@{einsums}}
@@ -630,6 +695,13 @@ void einsums\+::write (\begin{DoxyParamCaption}\item[{const h5\+::fd\+\_\+t \&}]
 {\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
 void einsums\+::zero (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structeinsums_1_1Tensor}{Tensor}}$<$ T, Rank $>$ \&}]{A }\end{DoxyParamCaption})}
 
+Clear a tensor.
+
+
+\begin{DoxyParams}{Parameters}
+{\em A} & The tensor to clear. \\
+\hline
+\end{DoxyParams}
 
 
 \doxysubsection{Variable Documentation}

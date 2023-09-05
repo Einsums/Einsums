@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>&#x202A;Einsums: &#x202A;einsums::ErrorOr&lt; T, E &gt; Struct Template Reference</title>
+<title>&#x202A;Einsums: &#x202A;einsums::ErrorOr&lt; T, E &gt; Class Template Reference</title>
 <link href="../../tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="../../jquery.js"></script>
 <script type="text/javascript" src="../../dynsections.js"></script>
@@ -73,7 +73,7 @@ $(function() {
 <a href="#friends">Friends</a> &#124;
 <a href="../../d0/d42/structeinsums_1_1ErrorOr-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">einsums::ErrorOr&lt; T, E &gt; Struct Template Reference</div>  </div>
+<div class="title">einsums::ErrorOr&lt; T, E &gt; Class Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
@@ -136,7 +136,13 @@ Friends</h2></td></tr>
 <tr class="memitem:a7418440fe9f1181a8e17de11e3077e57"><td class="memTemplItemLeft" align="right" valign="top">class&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d3/d48/structeinsums_1_1ErrorOr.html#a7418440fe9f1181a8e17de11e3077e57">ErrorOr</a></td></tr>
 <tr class="separator:a7418440fe9f1181a8e17de11e3077e57"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Typedef Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><h3>template&lt;typename T, typename E&gt;<br />
+class einsums::ErrorOr&lt; T, E &gt;</h3>
+
+<p class="DocNodeLTR">Represents a pair which contains a result or an error.</p>
+<p class="DocNodeLTR">Specialization of the <a class="el" href="../../d3/d48/structeinsums_1_1ErrorOr.html">ErrorOr</a> type where the value type is void. </p>
+</div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="ae1c037df7a89b5dddae2faed291f41c6"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae1c037df7a89b5dddae2faed291f41c6">&#9670;&nbsp;</a></span>ErrorType</h2>
 
@@ -194,6 +200,7 @@ template&lt;typename T , typename E &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Default constructor. </p>
 
 </div>
 </div>
@@ -222,6 +229,13 @@ template&lt;typename T , typename E &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Move constructor.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname"><a class="el" href="../../d3/d48/structeinsums_1_1ErrorOr.html">ErrorOr</a></td><td>&#x202A;The value to move. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -250,6 +264,13 @@ template&lt;typename T , typename E &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Copy constructor.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname"><a class="el" href="../../d3/d48/structeinsums_1_1ErrorOr.html">ErrorOr</a></td><td>&#x202A;the value to copy. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -280,6 +301,13 @@ template&lt;typename U &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Conversion constructor.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">value</td><td>&#x202A;The value to convert. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -310,6 +338,13 @@ template&lt;typename U &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Converts a value into an <a class="el" href="../../d3/d48/structeinsums_1_1ErrorOr.html">ErrorOr</a> object.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">value</td><td>&#x202A;The value to pack. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -338,6 +373,8 @@ template&lt;typename T , typename E &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Returns the error part of the struct.</p>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;The error part of the struct. </dd></dl>
 
 </div>
 </div>
@@ -392,6 +429,8 @@ template&lt;typename T , typename E &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Returns whether this object represents an error or not.</p>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;true if error, false if not. </dd></dl>
 
 </div>
 </div>
@@ -420,6 +459,14 @@ template&lt;typename T , typename E &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Move assignment.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname"><a class="el" href="../../d3/d48/structeinsums_1_1ErrorOr.html">ErrorOr</a></td><td>&#x202A;The value to move.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;A reference to the new object. </dd></dl>
 
 </div>
 </div>
@@ -448,6 +495,14 @@ template&lt;typename T , typename E &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Copy assignment.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname"><a class="el" href="../../d3/d48/structeinsums_1_1ErrorOr.html">ErrorOr</a></td><td>&#x202A;The value to copy.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;A reference to this. </dd></dl>
 
 </div>
 </div>
@@ -475,6 +530,8 @@ template&lt;typename T , typename E &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Returns the value part of the struct.</p>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;The value part of the struct. </dd></dl>
 
 </div>
 </div>
@@ -557,7 +614,7 @@ template&lt;typename T , typename E &gt; </div>
 
 </div>
 </div>
-<hr/>The documentation for this struct was generated from the following file:<ul>
+<hr/>The documentation for this class was generated from the following file:<ul>
 <li><a class="el" href="../../d1/d93/Error_8hpp_source.html">Error.hpp</a></li>
 </ul>
 </div><!-- contents -->

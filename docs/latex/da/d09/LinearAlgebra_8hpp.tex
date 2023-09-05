@@ -115,6 +115,9 @@ enum class \mbox{\hyperlink{LinearAlgebra_8hpp_a909aff8e078eb49362bcd4b25326ef38
 \end{DoxyCompactItemize}
 
 
+\doxysubsection{Detailed Description}
+Functions to perform linear algebra. 
+
 \doxysubsection{Enumeration Type Documentation}
 \mbox{\Hypertarget{LinearAlgebra_8hpp_aaed1a2b8619f32e31ea9510326d86e3a}\label{LinearAlgebra_8hpp_aaed1a2b8619f32e31ea9510326d86e3a}} 
 \index{LinearAlgebra.hpp@{LinearAlgebra.hpp}!Norm@{Norm}}
@@ -122,7 +125,7 @@ enum class \mbox{\hyperlink{LinearAlgebra_8hpp_a909aff8e078eb49362bcd4b25326ef38
 \doxysubsubsection{\texorpdfstring{Norm}{Norm}}
 {\footnotesize\ttfamily enum \mbox{\hyperlink{LinearAlgebra_8hpp_aaed1a2b8619f32e31ea9510326d86e3a}{Norm}} \+: char\hspace{0.3cm}{\ttfamily [strong]}}
 
-\begin{DoxyEnumFields}{Enumerator}
+Represents different ways of computing a norm. \begin{DoxyEnumFields}{Enumerator}
 \raisebox{\heightof{T}}[0pt][0pt]{\index{MaxAbs@{MaxAbs}!LinearAlgebra.hpp@{LinearAlgebra.hpp}}\index{LinearAlgebra.hpp@{LinearAlgebra.hpp}!MaxAbs@{MaxAbs}}}\mbox{\Hypertarget{LinearAlgebra_8hpp_aaed1a2b8619f32e31ea9510326d86e3aa70daa745cdfcc8f37de05539bc55d60d}\label{LinearAlgebra_8hpp_aaed1a2b8619f32e31ea9510326d86e3aa70daa745cdfcc8f37de05539bc55d60d}} 
 Max\+Abs&\\
 \hline
@@ -150,7 +153,7 @@ Two&\\
 \doxysubsubsection{\texorpdfstring{Vectors}{Vectors}}
 {\footnotesize\ttfamily enum \mbox{\hyperlink{LinearAlgebra_8hpp_a909aff8e078eb49362bcd4b25326ef38}{Vectors}} \+: char\hspace{0.3cm}{\ttfamily [strong]}}
 
-\begin{DoxyEnumFields}{Enumerator}
+Options for computing vectors in the singular value decomposition algorithm. \begin{DoxyEnumFields}{Enumerator}
 \raisebox{\heightof{T}}[0pt][0pt]{\index{All@{All}!LinearAlgebra.hpp@{LinearAlgebra.hpp}}\index{LinearAlgebra.hpp@{LinearAlgebra.hpp}!All@{All}}}\mbox{\Hypertarget{LinearAlgebra_8hpp_a909aff8e078eb49362bcd4b25326ef38ab1c94ca2fbc3e78fc30069c8d0f01680}\label{LinearAlgebra_8hpp_a909aff8e078eb49362bcd4b25326ef38ab1c94ca2fbc3e78fc30069c8d0f01680}} 
 All&\\
 \hline
@@ -178,6 +181,19 @@ None&\\
 {\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename XType, template$<$ typename, size\+\_\+t $>$ typename YType, typename T , size\+\_\+t Rank$>$ \\
 auto axpby (\begin{DoxyParamCaption}\item[{T}]{alpha,  }\item[{const XType$<$ T, Rank $>$ \&}]{X,  }\item[{T}]{beta,  }\item[{YType$<$ T, Rank $>$ $\ast$}]{Y }\end{DoxyParamCaption}) -\/$>$ std\+::enable\+\_\+if\+\_\+t$<$is\+\_\+incore\+\_\+rank\+\_\+tensor\+\_\+v$<$XType$<$T, Rank$>$, Rank, T$>$ \&\& is\+\_\+incore\+\_\+rank\+\_\+tensor\+\_\+v$<$YType$<$T, Rank$>$, Rank, T$>$$>$ }
 
+Computes a linear combination of tensors.
+
+
+\begin{DoxyParams}{Parameters}
+{\em alpha} & The scalar to multiply the first tensor by. \\
+\hline
+{\em X} & The first tensor. \\
+\hline
+{\em beta} & The scalar to multiply the second tensor by. \\
+\hline
+{\em Y} & The second tensor. \\
+\hline
+\end{DoxyParams}
 \mbox{\Hypertarget{LinearAlgebra_8hpp_a653bcb75725cb147a7d43490677a7846}\label{LinearAlgebra_8hpp_a653bcb75725cb147a7d43490677a7846}} 
 \index{LinearAlgebra.hpp@{LinearAlgebra.hpp}!axpy@{axpy}}
 \index{axpy@{axpy}!LinearAlgebra.hpp@{LinearAlgebra.hpp}}
@@ -185,6 +201,17 @@ auto axpby (\begin{DoxyParamCaption}\item[{T}]{alpha,  }\item[{const XType$<$ T,
 {\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename XType, template$<$ typename, size\+\_\+t $>$ typename YType, typename T , size\+\_\+t Rank$>$ \\
 auto axpy (\begin{DoxyParamCaption}\item[{T}]{alpha,  }\item[{const XType$<$ T, Rank $>$ \&}]{X,  }\item[{YType$<$ T, Rank $>$ $\ast$}]{Y }\end{DoxyParamCaption}) -\/$>$ std\+::enable\+\_\+if\+\_\+t$<$is\+\_\+incore\+\_\+rank\+\_\+tensor\+\_\+v$<$XType$<$T, Rank$>$, Rank, T$>$ \&\& is\+\_\+incore\+\_\+rank\+\_\+tensor\+\_\+v$<$YType$<$T, Rank$>$, Rank, T$>$$>$ }
 
+Computes a linear combination of vectors.
+
+
+\begin{DoxyParams}{Parameters}
+{\em alpha} & The scalar to multiply to the first tensor. \\
+\hline
+{\em X} & The first tensor. \\
+\hline
+{\em Y} & The second tensor. \\
+\hline
+\end{DoxyParams}
 \mbox{\Hypertarget{LinearAlgebra_8hpp_a64a3399f5b68f430677cf81a772aa556}\label{LinearAlgebra_8hpp_a64a3399f5b68f430677cf81a772aa556}} 
 \index{LinearAlgebra.hpp@{LinearAlgebra.hpp}!dot@{dot}}
 \index{dot@{dot}!LinearAlgebra.hpp@{LinearAlgebra.hpp}}
@@ -192,6 +219,18 @@ auto axpy (\begin{DoxyParamCaption}\item[{T}]{alpha,  }\item[{const XType$<$ T, 
 {\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename Type, typename T $>$ \\
 auto dot (\begin{DoxyParamCaption}\item[{const Type$<$ T, 1 $>$ \&}]{A,  }\item[{const Type$<$ T, 1 $>$ \&}]{B }\end{DoxyParamCaption}) -\/$>$ typename std\+::enable\+\_\+if\+\_\+t$<$std\+::is\+\_\+base\+\_\+of\+\_\+v$<$\+::\mbox{\hyperlink{structeinsums_1_1detail_1_1TensorBase}{einsums\+::detail\+::\+Tensor\+Base}}$<$T, 1$>$, Type$<$T, 1$>$$>$, T$>$ }
 
+Computes the dot product between two vectors.
+
+
+\begin{DoxyParams}{Parameters}
+{\em A} & The first vector. \\
+\hline
+{\em B} & The second vector.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The dot product. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{LinearAlgebra_8hpp_a127157fe50307a1608212c621ec8c657}\label{LinearAlgebra_8hpp_a127157fe50307a1608212c621ec8c657}} 
 \index{LinearAlgebra.hpp@{LinearAlgebra.hpp}!dot@{dot}}
 \index{dot@{dot}!LinearAlgebra.hpp@{LinearAlgebra.hpp}}
@@ -199,6 +238,20 @@ auto dot (\begin{DoxyParamCaption}\item[{const Type$<$ T, 1 $>$ \&}]{A,  }\item[
 {\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename Type, typename T , size\+\_\+t Rank$>$ \\
 auto dot (\begin{DoxyParamCaption}\item[{const Type$<$ T, Rank $>$ \&}]{A,  }\item[{const Type$<$ T, Rank $>$ \&}]{B }\end{DoxyParamCaption}) -\/$>$ typename std\+::enable\+\_\+if\+\_\+t$<$std\+::is\+\_\+base\+\_\+of\+\_\+v$<$\+::\mbox{\hyperlink{structeinsums_1_1detail_1_1TensorBase}{einsums\+::detail\+::\+Tensor\+Base}}$<$T, Rank$>$, Type$<$T, Rank$>$$>$, T$>$ }
 
+Computes the multi-\/dimensional dot product. \begin{DoxyRefDesc}{Todo}
+\item[\mbox{\hyperlink{todo__todo000011}{Todo}}]Double check this.\end{DoxyRefDesc}
+
+
+
+\begin{DoxyParams}{Parameters}
+{\em A} & The first tensor. \\
+\hline
+{\em B} & The second tensor.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The dot product. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{LinearAlgebra_8hpp_af13f452af55930da471a2d5ad3c38b6d}\label{LinearAlgebra_8hpp_af13f452af55930da471a2d5ad3c38b6d}} 
 \index{LinearAlgebra.hpp@{LinearAlgebra.hpp}!dot@{dot}}
 \index{dot@{dot}!LinearAlgebra.hpp@{LinearAlgebra.hpp}}
@@ -206,6 +259,22 @@ auto dot (\begin{DoxyParamCaption}\item[{const Type$<$ T, Rank $>$ \&}]{A,  }\it
 {\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename Type, typename T , size\+\_\+t Rank$>$ \\
 auto dot (\begin{DoxyParamCaption}\item[{const Type$<$ T, Rank $>$ \&}]{A,  }\item[{const Type$<$ T, Rank $>$ \&}]{B,  }\item[{const Type$<$ T, Rank $>$ \&}]{C }\end{DoxyParamCaption}) -\/$>$      typename std\+::enable\+\_\+if\+\_\+t$<$std\+::is\+\_\+base\+\_\+of\+\_\+v$<$\+::\mbox{\hyperlink{structeinsums_1_1detail_1_1TensorBase}{einsums\+::detail\+::\+Tensor\+Base}}$<$T, Rank$>$, Type$<$T, Rank$>$$>$, T$>$ }
 
+Returns the trinary dot product. \begin{DoxyRefDesc}{Todo}
+\item[\mbox{\hyperlink{todo__todo000012}{Todo}}]Double check this description.\end{DoxyRefDesc}
+
+
+
+\begin{DoxyParams}{Parameters}
+{\em A} & The first tensor. \\
+\hline
+{\em B} & The second tensor. \\
+\hline
+{\em C} & The third tensor.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The trinary dot product. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{LinearAlgebra_8hpp_a97a7726fc835d2070c4ca1d505e031c0}\label{LinearAlgebra_8hpp_a97a7726fc835d2070c4ca1d505e031c0}} 
 \index{LinearAlgebra.hpp@{LinearAlgebra.hpp}!gemm@{gemm}}
 \index{gemm@{gemm}!LinearAlgebra.hpp@{LinearAlgebra.hpp}}
@@ -249,6 +318,21 @@ std\+::enable\+\_\+if\+\_\+t$<$std\+::is\+\_\+base\+\_\+of\+\_\+v$<$Detail\+::\+
 {\footnotesize\ttfamily template$<$bool TransA, bool TransB, template$<$ typename, size\+\_\+t $>$ typename AType, template$<$ typename, size\+\_\+t $>$ typename BType, template$<$ typename, size\+\_\+t $>$ typename CType, size\+\_\+t Rank, typename T $>$ \\
 auto gemm (\begin{DoxyParamCaption}\item[{const T}]{alpha,  }\item[{const AType$<$ T, Rank $>$ \&}]{A,  }\item[{const BType$<$ T, Rank $>$ \&}]{B,  }\item[{const T}]{beta,  }\item[{CType$<$ T, Rank $>$ $\ast$}]{C }\end{DoxyParamCaption}) -\/$>$ typename std\+::enable\+\_\+if\+\_\+t$<$is\+\_\+incore\+\_\+rank\+\_\+tensor\+\_\+v$<$AType$<$T, Rank$>$, 2, T$>$ \&\& is\+\_\+incore\+\_\+rank\+\_\+tensor\+\_\+v$<$BType$<$T, Rank$>$, 2, T$>$ \&\&                               is\+\_\+incore\+\_\+rank\+\_\+tensor\+\_\+v$<$CType$<$T, Rank$>$, 2, T$>$$>$ }
 
+Wrapper around Blas\textquotesingle{}s gemm.
+
+
+\begin{DoxyParams}{Parameters}
+{\em alpha} & Scale constant. \\
+\hline
+{\em A} & The left tensor. \\
+\hline
+{\em B} & The right tensor. \\
+\hline
+{\em beta} & Another scale constant. \\
+\hline
+{\em C} & The third tensor that is added on to the end. Also the result. \\
+\hline
+\end{DoxyParams}
 \mbox{\Hypertarget{LinearAlgebra_8hpp_a8adfcf70d432c42844f1247d62b0f094}\label{LinearAlgebra_8hpp_a8adfcf70d432c42844f1247d62b0f094}} 
 \index{LinearAlgebra.hpp@{LinearAlgebra.hpp}!gemv@{gemv}}
 \index{gemv@{gemv}!LinearAlgebra.hpp@{LinearAlgebra.hpp}}
@@ -256,6 +340,21 @@ auto gemm (\begin{DoxyParamCaption}\item[{const T}]{alpha,  }\item[{const AType$
 {\footnotesize\ttfamily template$<$bool TransA, template$<$ typename, size\+\_\+t $>$ typename AType, template$<$ typename, size\+\_\+t $>$ typename XType, template$<$ typename, size\+\_\+t $>$ typename YType, size\+\_\+t ARank, size\+\_\+t XYRank, typename T $>$ \\
 auto gemv (\begin{DoxyParamCaption}\item[{const double}]{alpha,  }\item[{const AType$<$ T, ARank $>$ \&}]{A,  }\item[{const XType$<$ T, XYRank $>$ \&}]{x,  }\item[{const double}]{beta,  }\item[{YType$<$ T, XYRank $>$ $\ast$}]{y }\end{DoxyParamCaption}) -\/$>$ std\+::enable\+\_\+if\+\_\+t$<$is\+\_\+incore\+\_\+rank\+\_\+tensor\+\_\+v$<$AType$<$T, ARank$>$, 2, T$>$ \&\& is\+\_\+incore\+\_\+rank\+\_\+tensor\+\_\+v$<$XType$<$T, XYRank$>$, 1, T$>$ \&\&                         is\+\_\+incore\+\_\+rank\+\_\+tensor\+\_\+v$<$YType$<$T, XYRank$>$, 1, T$>$$>$ }
 
+Wrapper around Blas\textquotesingle{}s gemv.
+
+
+\begin{DoxyParams}{Parameters}
+{\em alpha} & The first scale constant. \\
+\hline
+{\em A} & The array. \\
+\hline
+{\em x} & The first vector. \\
+\hline
+{\em beta} & The second scale constant. \\
+\hline
+{\em y} & The vector to add. Also the output vector. \\
+\hline
+\end{DoxyParams}
 \mbox{\Hypertarget{LinearAlgebra_8hpp_a53dd71dcf59b51fb01e386faa4c32bf4}\label{LinearAlgebra_8hpp_a53dd71dcf59b51fb01e386faa4c32bf4}} 
 \index{LinearAlgebra.hpp@{LinearAlgebra.hpp}!ger@{ger}}
 \index{ger@{ger}!LinearAlgebra.hpp@{LinearAlgebra.hpp}}
@@ -263,6 +362,19 @@ auto gemv (\begin{DoxyParamCaption}\item[{const double}]{alpha,  }\item[{const A
 {\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename XYType, size\+\_\+t XYRank, template$<$ typename, size\+\_\+t $>$ typename AType, typename T , size\+\_\+t ARank$>$ \\
 auto ger (\begin{DoxyParamCaption}\item[{T}]{alpha,  }\item[{const XYType$<$ T, XYRank $>$ \&}]{X,  }\item[{const XYType$<$ T, XYRank $>$ \&}]{Y,  }\item[{AType$<$ T, ARank $>$ $\ast$}]{A }\end{DoxyParamCaption}) -\/$>$ std\+::enable\+\_\+if\+\_\+t$<$is\+\_\+incore\+\_\+rank\+\_\+tensor\+\_\+v$<$XYType$<$T, XYRank$>$, 1, T$>$ \&\& is\+\_\+incore\+\_\+rank\+\_\+tensor\+\_\+v$<$AType$<$T, ARank$>$, 2, T$>$$>$ }
 
+Wraps Blas\textquotesingle{}s ger function, which is a bit complicated to describe.
+
+
+\begin{DoxyParams}{Parameters}
+{\em alpha} & The scalar to multiply the first product by. \\
+\hline
+{\em X} & The first tensor. \\
+\hline
+{\em Y} & The second tensor. \\
+\hline
+{\em A} & The matrix to add to. Also the result. \\
+\hline
+\end{DoxyParams}
 \mbox{\Hypertarget{LinearAlgebra_8hpp_a212d5d56683c5e0c72a13abb80edc294}\label{LinearAlgebra_8hpp_a212d5d56683c5e0c72a13abb80edc294}} 
 \index{LinearAlgebra.hpp@{LinearAlgebra.hpp}!gesv@{gesv}}
 \index{gesv@{gesv}!LinearAlgebra.hpp@{LinearAlgebra.hpp}}
@@ -270,6 +382,18 @@ auto ger (\begin{DoxyParamCaption}\item[{T}]{alpha,  }\item[{const XYType$<$ T, 
 {\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename AType, size\+\_\+t ARank, template$<$ typename, size\+\_\+t $>$ typename BType, size\+\_\+t BRank, typename T $>$ \\
 auto gesv (\begin{DoxyParamCaption}\item[{AType$<$ T, ARank $>$ $\ast$}]{A,  }\item[{BType$<$ T, BRank $>$ $\ast$}]{B }\end{DoxyParamCaption}) -\/$>$ std\+::enable\+\_\+if\+\_\+t$<$is\+\_\+incore\+\_\+rank\+\_\+tensor\+\_\+v$<$AType$<$T, ARank$>$, 2, T$>$ \&\& is\+\_\+incore\+\_\+rank\+\_\+tensor\+\_\+v$<$BType$<$T, BRank$>$, 2, T$>$, int$>$ }
 
+Compute the solution to a linear system.
+
+
+\begin{DoxyParams}{Parameters}
+{\em A} & The input array. \\
+\hline
+{\em B} & The constants array. On exit, it contains the solutions.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+An informational flag from LAPACK. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{LinearAlgebra_8hpp_aacc05ef93db7065128af612b4ea11143}\label{LinearAlgebra_8hpp_aacc05ef93db7065128af612b4ea11143}} 
 \index{LinearAlgebra.hpp@{LinearAlgebra.hpp}!getrf@{getrf}}
 \index{getrf@{getrf}!LinearAlgebra.hpp@{LinearAlgebra.hpp}}
@@ -277,6 +401,15 @@ auto gesv (\begin{DoxyParamCaption}\item[{AType$<$ T, ARank $>$ $\ast$}]{A,  }\i
 {\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename Tensor\+Type, typename T , size\+\_\+t Tensor\+Rank$>$ \\
 auto getrf (\begin{DoxyParamCaption}\item[{Tensor\+Type$<$ T, Tensor\+Rank $>$ $\ast$}]{A,  }\item[{std\+::vector$<$ eint $>$ $\ast$}]{pivot }\end{DoxyParamCaption}) -\/$>$ std\+::enable\+\_\+if\+\_\+t$<$is\+\_\+incore\+\_\+rank\+\_\+tensor\+\_\+v$<$Tensor\+Type$<$T, Tensor\+Rank$>$, 2, T$>$, int$>$ }
 
+Computes LU decomposition.
+
+
+\begin{DoxyParams}{Parameters}
+{\em A} & The matrix to decompose. On output, it contains L and U. \\
+\hline
+{\em pivot} & The pivots used. \\
+\hline
+\end{DoxyParams}
 \mbox{\Hypertarget{LinearAlgebra_8hpp_a5c49b631972414569a8174a4083055e2}\label{LinearAlgebra_8hpp_a5c49b631972414569a8174a4083055e2}} 
 \index{LinearAlgebra.hpp@{LinearAlgebra.hpp}!getri@{getri}}
 \index{getri@{getri}!LinearAlgebra.hpp@{LinearAlgebra.hpp}}
@@ -284,6 +417,18 @@ auto getrf (\begin{DoxyParamCaption}\item[{Tensor\+Type$<$ T, Tensor\+Rank $>$ $
 {\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename Tensor\+Type, typename T , size\+\_\+t Tensor\+Rank$>$ \\
 auto getri (\begin{DoxyParamCaption}\item[{Tensor\+Type$<$ T, Tensor\+Rank $>$ $\ast$}]{A,  }\item[{const std\+::vector$<$ eint $>$ \&}]{pivot }\end{DoxyParamCaption}) -\/$>$ std\+::enable\+\_\+if\+\_\+t$<$is\+\_\+incore\+\_\+rank\+\_\+tensor\+\_\+v$<$Tensor\+Type$<$T, Tensor\+Rank$>$, 2, T$>$, int$>$ }
 
+Computes the inverse of an LU decomposed matrix.
+
+
+\begin{DoxyParams}{Parameters}
+{\em A} & The LU decomposed matrix as returned by getrf. At exit, contains the inverse of A. \\
+\hline
+{\em pivot} & The pivots used in getrf.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A return value from Blas. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{LinearAlgebra_8hpp_a156b77844d496f970175942302ad24d0}\label{LinearAlgebra_8hpp_a156b77844d496f970175942302ad24d0}} 
 \index{LinearAlgebra.hpp@{LinearAlgebra.hpp}!heev@{heev}}
 \index{heev@{heev}!LinearAlgebra.hpp@{LinearAlgebra.hpp}}
@@ -291,6 +436,15 @@ auto getri (\begin{DoxyParamCaption}\item[{Tensor\+Type$<$ T, Tensor\+Rank $>$ $
 {\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename AType, size\+\_\+t ARank, template$<$ typename, size\+\_\+t $>$ typename WType, size\+\_\+t WRank, typename T , bool Compute\+Eigenvectors = true$>$ \\
 auto heev (\begin{DoxyParamCaption}\item[{AType$<$ T, ARank $>$ $\ast$}]{A,  }\item[{WType$<$ remove\+\_\+complex\+\_\+t$<$ T $>$, WRank $>$ $\ast$}]{W }\end{DoxyParamCaption}) -\/$>$ std\+::enable\+\_\+if\+\_\+t$<$is\+\_\+incore\+\_\+rank\+\_\+tensor\+\_\+v$<$AType$<$T, ARank$>$, 2, T$>$ \&\& is\+\_\+incore\+\_\+rank\+\_\+tensor\+\_\+v$<$WType$<$T, WRank$>$, 1, T$>$ \&\&                         is\+\_\+complex\+\_\+v$<$T$>$$>$ }
 
+Computes the eigenvalues and eigenvectors of a hermitian matrix.
+
+
+\begin{DoxyParams}{Parameters}
+{\em A} & The input matrix. At the end, it will contain the eigenvectors. \\
+\hline
+{\em W} & The eigenvalue output. \\
+\hline
+\end{DoxyParams}
 \mbox{\Hypertarget{LinearAlgebra_8hpp_a8239b4e706b58492ab22ac436d442eee}\label{LinearAlgebra_8hpp_a8239b4e706b58492ab22ac436d442eee}} 
 \index{LinearAlgebra.hpp@{LinearAlgebra.hpp}!invert@{invert}}
 \index{invert@{invert}!LinearAlgebra.hpp@{LinearAlgebra.hpp}}
@@ -298,6 +452,13 @@ auto heev (\begin{DoxyParamCaption}\item[{AType$<$ T, ARank $>$ $\ast$}]{A,  }\i
 {\footnotesize\ttfamily template$<$typename Smart\+Ptr $>$ \\
 auto invert (\begin{DoxyParamCaption}\item[{Smart\+Ptr $\ast$}]{A }\end{DoxyParamCaption}) -\/$>$ std\+::enable\+\_\+if\+\_\+t$<$is\+\_\+smart\+\_\+pointer\+\_\+v$<$Smart\+Ptr$>$$>$ }
 
+Computes the inverse of a matrix.
+
+
+\begin{DoxyParams}{Parameters}
+{\em A} & The matrix to invert. \\
+\hline
+\end{DoxyParams}
 \mbox{\Hypertarget{LinearAlgebra_8hpp_aa000c2cbd63691c5e8e30c120fea276b}\label{LinearAlgebra_8hpp_aa000c2cbd63691c5e8e30c120fea276b}} 
 \index{LinearAlgebra.hpp@{LinearAlgebra.hpp}!invert@{invert}}
 \index{invert@{invert}!LinearAlgebra.hpp@{LinearAlgebra.hpp}}
@@ -305,6 +466,13 @@ auto invert (\begin{DoxyParamCaption}\item[{Smart\+Ptr $\ast$}]{A }\end{DoxyPara
 {\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename Tensor\+Type, typename T , size\+\_\+t Tensor\+Rank$>$ \\
 auto invert (\begin{DoxyParamCaption}\item[{Tensor\+Type$<$ T, Tensor\+Rank $>$ $\ast$}]{A }\end{DoxyParamCaption}) -\/$>$ std\+::enable\+\_\+if\+\_\+t$<$is\+\_\+incore\+\_\+rank\+\_\+tensor\+\_\+v$<$Tensor\+Type$<$T, Tensor\+Rank$>$, 2, T$>$$>$ }
 
+Computes the inverse of a matrix.
+
+
+\begin{DoxyParams}{Parameters}
+{\em A} & The matrix to invert. At exit, contains the inverse. \\
+\hline
+\end{DoxyParams}
 \mbox{\Hypertarget{LinearAlgebra_8hpp_ae15ceaf2de2c0e3569b35c322792b2b5}\label{LinearAlgebra_8hpp_ae15ceaf2de2c0e3569b35c322792b2b5}} 
 \index{LinearAlgebra.hpp@{LinearAlgebra.hpp}!norm@{norm}}
 \index{norm@{norm}!LinearAlgebra.hpp@{LinearAlgebra.hpp}}
@@ -312,6 +480,15 @@ auto invert (\begin{DoxyParamCaption}\item[{Tensor\+Type$<$ T, Tensor\+Rank $>$ 
 {\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename AType, typename AData\+Type , size\+\_\+t ARank$>$ \\
 auto norm (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{LinearAlgebra_8hpp_aaed1a2b8619f32e31ea9510326d86e3a}{Norm}}}]{norm\+\_\+type,  }\item[{const AType$<$ AData\+Type, ARank $>$ \&}]{a }\end{DoxyParamCaption}) -\/$>$ typename std\+::enable\+\_\+if\+\_\+t$<$is\+\_\+incore\+\_\+rank\+\_\+tensor\+\_\+v$<$AType$<$AData\+Type, ARank$>$, 2, AData\+Type$>$, remove\+\_\+complex\+\_\+t$<$AData\+Type$>$$>$ }
 
+Compute a norm of a matrix.
+
+
+\begin{DoxyParams}{Parameters}
+{\em norm\+\_\+type} & The kind of norm to compute. \\
+\hline
+{\em a} & The matrix to find the norm of. \\
+\hline
+\end{DoxyParams}
 \mbox{\Hypertarget{LinearAlgebra_8hpp_a61857532ef42bbfe8d817b9306d4cfb4}\label{LinearAlgebra_8hpp_a61857532ef42bbfe8d817b9306d4cfb4}} 
 \index{LinearAlgebra.hpp@{LinearAlgebra.hpp}!pow@{pow}}
 \index{pow@{pow}!LinearAlgebra.hpp@{LinearAlgebra.hpp}}
@@ -347,6 +524,18 @@ std\+::enable\+\_\+if\+\_\+t$<$std\+::is\+\_\+base\+\_\+of\+\_\+v$<$Detail\+::\+
 {\footnotesize\ttfamily template$<$typename T $>$ \\
 auto pseudoinverse (\begin{DoxyParamCaption}\item[{const Tensor$<$ T, 2 $>$ \&}]{A,  }\item[{double}]{tol }\end{DoxyParamCaption}) -\/$>$ Tensor$<$T, 2$>$ \hspace{0.3cm}{\ttfamily [inline]}}
 
+Computes a pseudoinverse of a non-\/square matrix.
+
+
+\begin{DoxyParams}{Parameters}
+{\em The} & matrix to invert. \\
+\hline
+{\em tol} & The tolerance.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The pseudoinverse. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{LinearAlgebra_8hpp_a9d11f83f55e39a6b13352f8122990435}\label{LinearAlgebra_8hpp_a9d11f83f55e39a6b13352f8122990435}} 
 \index{LinearAlgebra.hpp@{LinearAlgebra.hpp}!q@{q}}
 \index{q@{q}!LinearAlgebra.hpp@{LinearAlgebra.hpp}}
@@ -354,6 +543,18 @@ auto pseudoinverse (\begin{DoxyParamCaption}\item[{const Tensor$<$ T, 2 $>$ \&}]
 {\footnotesize\ttfamily template$<$typename T $>$ \\
 auto q (\begin{DoxyParamCaption}\item[{const Tensor$<$ T, 2 $>$ \&}]{qr,  }\item[{const Tensor$<$ T, 1 $>$ \&}]{tau }\end{DoxyParamCaption}) -\/$>$ Tensor$<$T, 2$>$ }
 
+Compute the QR decomposition of a matrix.
+
+
+\begin{DoxyParams}{Parameters}
+{\em qr} & The first part of the tuple from calling qr. \\
+\hline
+{\em tau} & The second part of the tuple from calling qr.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The Q matrix. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{LinearAlgebra_8hpp_a36e42bb8a4a14c30edeaeb389e32ef89}\label{LinearAlgebra_8hpp_a36e42bb8a4a14c30edeaeb389e32ef89}} 
 \index{LinearAlgebra.hpp@{LinearAlgebra.hpp}!qr@{qr}}
 \index{qr@{qr}!LinearAlgebra.hpp@{LinearAlgebra.hpp}}
@@ -361,6 +562,16 @@ auto q (\begin{DoxyParamCaption}\item[{const Tensor$<$ T, 2 $>$ \&}]{qr,  }\item
 {\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename AType, size\+\_\+t ARank, typename T $>$ \\
 auto qr (\begin{DoxyParamCaption}\item[{const AType$<$ T, ARank $>$ \&}]{\+\_\+A }\end{DoxyParamCaption}) -\/$>$ typename std\+::enable\+\_\+if\+\_\+t$<$is\+\_\+incore\+\_\+rank\+\_\+tensor\+\_\+v$<$AType$<$T, ARank$>$, 2, T$>$, std\+::tuple$<$Tensor$<$T, 2$>$, Tensor$<$T, 1$>$$>$$>$ }
 
+Computes the QR decomposition of a matrix.
+
+
+\begin{DoxyParams}{Parameters}
+{\em A} & The matrix to decompose.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A tuple containing information for the final step of QR decomposition. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{LinearAlgebra_8hpp_ac43f9e453517798c74cae9402a9ffd2b}\label{LinearAlgebra_8hpp_ac43f9e453517798c74cae9402a9ffd2b}} 
 \index{LinearAlgebra.hpp@{LinearAlgebra.hpp}!scale@{scale}}
 \index{scale@{scale}!LinearAlgebra.hpp@{LinearAlgebra.hpp}}
@@ -368,6 +579,15 @@ auto qr (\begin{DoxyParamCaption}\item[{const AType$<$ T, ARank $>$ \&}]{\+\_\+A
 {\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename AType, size\+\_\+t ARank, typename T $>$ \\
 auto scale (\begin{DoxyParamCaption}\item[{T}]{scale,  }\item[{AType$<$ T, ARank $>$ $\ast$}]{A }\end{DoxyParamCaption}) -\/$>$ typename std\+::enable\+\_\+if\+\_\+t$<$is\+\_\+incore\+\_\+rank\+\_\+tensor\+\_\+v$<$AType$<$T, ARank$>$, ARank, T$>$$>$ }
 
+Performs scalar multiplication on a matrix.
+
+
+\begin{DoxyParams}{Parameters}
+{\em scale} & The scalar value. \\
+\hline
+{\em A} & The matrix. \\
+\hline
+\end{DoxyParams}
 \mbox{\Hypertarget{LinearAlgebra_8hpp_ac9d1440df46d83ec9aa6f3da4edbf64b}\label{LinearAlgebra_8hpp_ac9d1440df46d83ec9aa6f3da4edbf64b}} 
 \index{LinearAlgebra.hpp@{LinearAlgebra.hpp}!scale\_column@{scale\_column}}
 \index{scale\_column@{scale\_column}!LinearAlgebra.hpp@{LinearAlgebra.hpp}}
@@ -375,6 +595,17 @@ auto scale (\begin{DoxyParamCaption}\item[{T}]{scale,  }\item[{AType$<$ T, ARank
 {\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename AType, size\+\_\+t ARank, typename T $>$ \\
 auto scale\+\_\+column (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{col,  }\item[{T}]{scale,  }\item[{AType$<$ T, ARank $>$ $\ast$}]{A }\end{DoxyParamCaption}) -\/$>$ typename std\+::enable\+\_\+if\+\_\+t$<$is\+\_\+incore\+\_\+rank\+\_\+tensor\+\_\+v$<$AType$<$T, ARank$>$, 2, double$>$$>$ }
 
+Scales a column in a matrix.
+
+
+\begin{DoxyParams}{Parameters}
+{\em col} & The column to scale. \\
+\hline
+{\em scale} & The scalar. \\
+\hline
+{\em A} & The matrix. \\
+\hline
+\end{DoxyParams}
 \mbox{\Hypertarget{LinearAlgebra_8hpp_ad041f87f0ea345b28f98d9e2de78832f}\label{LinearAlgebra_8hpp_ad041f87f0ea345b28f98d9e2de78832f}} 
 \index{LinearAlgebra.hpp@{LinearAlgebra.hpp}!scale\_row@{scale\_row}}
 \index{scale\_row@{scale\_row}!LinearAlgebra.hpp@{LinearAlgebra.hpp}}
@@ -382,6 +613,17 @@ auto scale\+\_\+column (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{col,  }\ite
 {\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename AType, size\+\_\+t ARank, typename T $>$ \\
 auto scale\+\_\+row (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{row,  }\item[{T}]{scale,  }\item[{AType$<$ T, ARank $>$ $\ast$}]{A }\end{DoxyParamCaption}) -\/$>$ typename std\+::enable\+\_\+if\+\_\+t$<$is\+\_\+incore\+\_\+rank\+\_\+tensor\+\_\+v$<$AType$<$T, ARank$>$, 2, T$>$$>$ }
 
+Scales a row within a matrix.
+
+
+\begin{DoxyParams}{Parameters}
+{\em row} & The row to scale. \\
+\hline
+{\em scale} & The scalar. \\
+\hline
+{\em A} & The matrix to scale. \\
+\hline
+\end{DoxyParams}
 \mbox{\Hypertarget{LinearAlgebra_8hpp_a24cb3a5296cff6c2f8daf5713380c8c2}\label{LinearAlgebra_8hpp_a24cb3a5296cff6c2f8daf5713380c8c2}} 
 \index{LinearAlgebra.hpp@{LinearAlgebra.hpp}!solve\_continuous\_lyapunov@{solve\_continuous\_lyapunov}}
 \index{solve\_continuous\_lyapunov@{solve\_continuous\_lyapunov}!LinearAlgebra.hpp@{LinearAlgebra.hpp}}
@@ -389,6 +631,20 @@ auto scale\+\_\+row (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{row,  }\item[{
 {\footnotesize\ttfamily template$<$typename T $>$ \\
 auto solve\+\_\+continuous\+\_\+lyapunov (\begin{DoxyParamCaption}\item[{const Tensor$<$ T, 2 $>$ \&}]{A,  }\item[{const Tensor$<$ T, 2 $>$ \&}]{Q }\end{DoxyParamCaption}) -\/$>$ Tensor$<$T, 2$>$ \hspace{0.3cm}{\ttfamily [inline]}}
 
+Solves a continuous Lyapunov. \begin{DoxyRefDesc}{Todo}
+\item[\mbox{\hyperlink{todo__todo000015}{Todo}}]What does this mean?\end{DoxyRefDesc}
+
+
+
+\begin{DoxyParams}{Parameters}
+{\em A} & The matrix to solve. \\
+\hline
+{\em Q} & The other parameters.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The solution. 
+\end{DoxyReturn}
 TODO\+: Break this off into a separate schur function\mbox{\Hypertarget{LinearAlgebra_8hpp_a3bd6567b3a485bda3b402c549077b8d0}\label{LinearAlgebra_8hpp_a3bd6567b3a485bda3b402c549077b8d0}} 
 \index{LinearAlgebra.hpp@{LinearAlgebra.hpp}!sum\_square@{sum\_square}}
 \index{sum\_square@{sum\_square}!LinearAlgebra.hpp@{LinearAlgebra.hpp}}
@@ -396,6 +652,22 @@ TODO\+: Break this off into a separate schur function\mbox{\Hypertarget{LinearAl
 {\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename AType, typename AData\+Type , size\+\_\+t ARank$>$ \\
 auto sum\+\_\+square (\begin{DoxyParamCaption}\item[{const AType$<$ AData\+Type, ARank $>$ \&}]{a,  }\item[{remove\+\_\+complex\+\_\+t$<$ AData\+Type $>$ $\ast$}]{scale,  }\item[{remove\+\_\+complex\+\_\+t$<$ AData\+Type $>$ $\ast$}]{sumsq }\end{DoxyParamCaption}) -\/$>$ typename std\+::enable\+\_\+if\+\_\+t$<$is\+\_\+incore\+\_\+rank\+\_\+tensor\+\_\+v$<$AType$<$AData\+Type, ARank$>$, 1, AData\+Type$>$$>$ }
 
+\begin{DoxyRefDesc}{Todo}
+\item[\mbox{\hyperlink{todo__todo000010}{Todo}}]What does this do?\end{DoxyRefDesc}
+
+
+
+\begin{DoxyParams}{Parameters}
+{\em a} & The tensor. \\
+\hline
+{\em scale} & The scalar. \\
+\hline
+{\em The} & output.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The sum squared? 
+\end{DoxyReturn}
 \mbox{\Hypertarget{LinearAlgebra_8hpp_a48208d671a6e413b4be20a64efcd4cde}\label{LinearAlgebra_8hpp_a48208d671a6e413b4be20a64efcd4cde}} 
 \index{LinearAlgebra.hpp@{LinearAlgebra.hpp}!svd@{svd}}
 \index{svd@{svd}!LinearAlgebra.hpp@{LinearAlgebra.hpp}}
@@ -403,6 +675,16 @@ auto sum\+\_\+square (\begin{DoxyParamCaption}\item[{const AType$<$ AData\+Type,
 {\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename AType, typename T , size\+\_\+t ARank$>$ \\
 auto svd (\begin{DoxyParamCaption}\item[{const AType$<$ T, ARank $>$ \&}]{\+\_\+A }\end{DoxyParamCaption}) -\/$>$ typename std\+::enable\+\_\+if\+\_\+t$<$is\+\_\+incore\+\_\+rank\+\_\+tensor\+\_\+v$<$AType$<$T, ARank$>$, 2, T$>$,                                                                  std\+::tuple$<$Tensor$<$T, 2$>$, Tensor$<$remove\+\_\+complex\+\_\+t$<$T$>$, 1$>$, Tensor$<$T, 2$>$$>$$>$ }
 
+Compute the singular value decomposition.
+
+
+\begin{DoxyParams}{Parameters}
+{\em A} & The matrix to decomopse.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A tuple containing the singular values and the singular vectors. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{LinearAlgebra_8hpp_abd5de6c9a9942d7d043e1827f72d29d5}\label{LinearAlgebra_8hpp_abd5de6c9a9942d7d043e1827f72d29d5}} 
 \index{LinearAlgebra.hpp@{LinearAlgebra.hpp}!svd\_dd@{svd\_dd}}
 \index{svd\_dd@{svd\_dd}!LinearAlgebra.hpp@{LinearAlgebra.hpp}}
@@ -410,6 +692,18 @@ auto svd (\begin{DoxyParamCaption}\item[{const AType$<$ T, ARank $>$ \&}]{\+\_\+
 {\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename AType, typename T , size\+\_\+t ARank$>$ \\
 auto svd\+\_\+dd (\begin{DoxyParamCaption}\item[{const AType$<$ T, ARank $>$ \&}]{\+\_\+A,  }\item[{\mbox{\hyperlink{LinearAlgebra_8hpp_a909aff8e078eb49362bcd4b25326ef38}{Vectors}}}]{job = {\ttfamily \mbox{\hyperlink{LinearAlgebra_8hpp_a909aff8e078eb49362bcd4b25326ef38ab1c94ca2fbc3e78fc30069c8d0f01680}{Vectors\+::\+All}}} }\end{DoxyParamCaption}) -\/$>$ typename std\+::enable\+\_\+if\+\_\+t$<$is\+\_\+incore\+\_\+rank\+\_\+tensor\+\_\+v$<$AType$<$T, ARank$>$, 2, T$>$,                               std\+::tuple$<$Tensor$<$T, 2$>$, Tensor$<$remove\+\_\+complex\+\_\+t$<$T$>$, 1$>$, Tensor$<$T, 2$>$$>$$>$ }
 
+Perform singular value decomposition.
+
+
+\begin{DoxyParams}{Parameters}
+{\em A} & The array to decompose. \\
+\hline
+{\em job} & Which vectors to compute.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A tuple containing the singular values and the singular vectors. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{LinearAlgebra_8hpp_a4fecab87fa114ec8095fb678ff36dbed}\label{LinearAlgebra_8hpp_a4fecab87fa114ec8095fb678ff36dbed}} 
 \index{LinearAlgebra.hpp@{LinearAlgebra.hpp}!svd\_nullspace@{svd\_nullspace}}
 \index{svd\_nullspace@{svd\_nullspace}!LinearAlgebra.hpp@{LinearAlgebra.hpp}}
@@ -417,6 +711,16 @@ auto svd\+\_\+dd (\begin{DoxyParamCaption}\item[{const AType$<$ T, ARank $>$ \&}
 {\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename AType, typename T , size\+\_\+t Rank$>$ \\
 auto svd\+\_\+nullspace (\begin{DoxyParamCaption}\item[{const AType$<$ T, Rank $>$ \&}]{\+\_\+A }\end{DoxyParamCaption}) -\/$>$ typename std\+::enable\+\_\+if\+\_\+t$<$is\+\_\+incore\+\_\+rank\+\_\+tensor\+\_\+v$<$AType$<$T, Rank$>$, 2, T$>$, Tensor$<$T, 2$>$$>$ }
 
+Compute the nullspace of a matrix.
+
+
+\begin{DoxyParams}{Parameters}
+{\em A} & The matrix to find the nullspace of.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The matrix representation of the nullspace. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{LinearAlgebra_8hpp_aaf0bf7bf1528150eb80ebd581cfb511d}\label{LinearAlgebra_8hpp_aaf0bf7bf1528150eb80ebd581cfb511d}} 
 \index{LinearAlgebra.hpp@{LinearAlgebra.hpp}!syev@{syev}}
 \index{syev@{syev}!LinearAlgebra.hpp@{LinearAlgebra.hpp}}
@@ -424,6 +728,15 @@ auto svd\+\_\+nullspace (\begin{DoxyParamCaption}\item[{const AType$<$ T, Rank $
 {\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename AType, size\+\_\+t ARank, template$<$ typename, size\+\_\+t $>$ typename WType, size\+\_\+t WRank, typename T , bool Compute\+Eigenvectors = true$>$ \\
 auto syev (\begin{DoxyParamCaption}\item[{AType$<$ T, ARank $>$ $\ast$}]{A,  }\item[{WType$<$ T, WRank $>$ $\ast$}]{W }\end{DoxyParamCaption}) -\/$>$ std\+::enable\+\_\+if\+\_\+t$<$is\+\_\+incore\+\_\+rank\+\_\+tensor\+\_\+v$<$AType$<$T, ARank$>$, 2, T$>$ \&\&                                                                       is\+\_\+incore\+\_\+rank\+\_\+tensor\+\_\+v$<$WType$<$T, WRank$>$, 1, T$>$ \&\& !is\+\_\+complex\+\_\+v$<$T$>$$>$ }
 
+Computes eigenvalues of symmetric matrices.
+
+
+\begin{DoxyParams}{Parameters}
+{\em A} & The tensor to decompose. Will contain the eigenvectors at the end. \\
+\hline
+{\em W} & The output for eigenvalues. \\
+\hline
+\end{DoxyParams}
 \mbox{\Hypertarget{LinearAlgebra_8hpp_a55d410dbad4bdac48baf50413b940d6f}\label{LinearAlgebra_8hpp_a55d410dbad4bdac48baf50413b940d6f}} 
 \index{LinearAlgebra.hpp@{LinearAlgebra.hpp}!syev@{syev}}
 \index{syev@{syev}!LinearAlgebra.hpp@{LinearAlgebra.hpp}}
@@ -431,6 +744,16 @@ auto syev (\begin{DoxyParamCaption}\item[{AType$<$ T, ARank $>$ $\ast$}]{A,  }\i
 {\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename AType, size\+\_\+t ARank, typename T , bool Compute\+Eigenvectors = true$>$ \\
 auto syev (\begin{DoxyParamCaption}\item[{const AType$<$ T, ARank $>$ \&}]{A }\end{DoxyParamCaption}) -\/$>$ typename std\+::enable\+\_\+if\+\_\+t$<$is\+\_\+incore\+\_\+rank\+\_\+tensor\+\_\+v$<$AType$<$T, ARank$>$, 2, T$>$, std\+::tuple$<$Tensor$<$T, 2$>$, Tensor$<$T, 1$>$$>$$>$ }
 
+Computes eigenvalues and eigenvectors of a symmetric matrix.
+
+
+\begin{DoxyParams}{Parameters}
+{\em A} & The matrix to decompose.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A tuple containing the eigenvalues and eigenvectors. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{LinearAlgebra_8hpp_af6c13f401a077c0e9c9876e115b2df44}\label{LinearAlgebra_8hpp_af6c13f401a077c0e9c9876e115b2df44}} 
 \index{LinearAlgebra.hpp@{LinearAlgebra.hpp}!truncated\_svd@{truncated\_svd}}
 \index{truncated\_svd@{truncated\_svd}!LinearAlgebra.hpp@{LinearAlgebra.hpp}}
@@ -438,6 +761,20 @@ auto syev (\begin{DoxyParamCaption}\item[{const AType$<$ T, ARank $>$ \&}]{A }\e
 {\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename AType, typename T , size\+\_\+t ARank$>$ \\
 auto truncated\+\_\+svd (\begin{DoxyParamCaption}\item[{const AType$<$ T, ARank $>$ \&}]{\+\_\+A,  }\item[{size\+\_\+t}]{k }\end{DoxyParamCaption}) -\/$>$ typename std\+::enable\+\_\+if\+\_\+t$<$is\+\_\+incore\+\_\+rank\+\_\+tensor\+\_\+v$<$AType$<$T, ARank$>$, 2, T$>$,                               std\+::tuple$<$Tensor$<$T, 2$>$, Tensor$<$remove\+\_\+complex\+\_\+t$<$T$>$, 1$>$, Tensor$<$T, 2$>$$>$$>$ }
 
+Compute the truncated singular value. \begin{DoxyRefDesc}{Todo}
+\item[\mbox{\hyperlink{todo__todo000013}{Todo}}]How is this different?\end{DoxyRefDesc}
+
+
+
+\begin{DoxyParams}{Parameters}
+{\em \+\_\+A} & The matrix to decompose. \\
+\hline
+{\em k} & The truncation parameter.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A tuple containing the singular values and singular vectors. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{LinearAlgebra_8hpp_ad5af38d1c8bdeaa3121c37a033ea061b}\label{LinearAlgebra_8hpp_ad5af38d1c8bdeaa3121c37a033ea061b}} 
 \index{LinearAlgebra.hpp@{LinearAlgebra.hpp}!truncated\_syev@{truncated\_syev}}
 \index{truncated\_syev@{truncated\_syev}!LinearAlgebra.hpp@{LinearAlgebra.hpp}}
@@ -445,3 +782,17 @@ auto truncated\+\_\+svd (\begin{DoxyParamCaption}\item[{const AType$<$ T, ARank 
 {\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename AType, size\+\_\+t ARank, typename T $>$ \\
 auto truncated\+\_\+syev (\begin{DoxyParamCaption}\item[{const AType$<$ T, ARank $>$ \&}]{A,  }\item[{size\+\_\+t}]{k }\end{DoxyParamCaption}) -\/$>$ typename std\+::enable\+\_\+if\+\_\+t$<$is\+\_\+incore\+\_\+rank\+\_\+tensor\+\_\+v$<$AType$<$T, ARank$>$, 2, T$>$, std\+::tuple$<$Tensor$<$T, 2$>$, Tensor$<$T, 1$>$$>$$>$ }
 
+Computes a truncated eigendecomposition of a symmetric matrix. \begin{DoxyRefDesc}{Todo}
+\item[\mbox{\hyperlink{todo__todo000014}{Todo}}]How is this different?\end{DoxyRefDesc}
+
+
+
+\begin{DoxyParams}{Parameters}
+{\em A} & The matrix to decompose. \\
+\hline
+{\em k} & The truncation parameter.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A tuple containing the eigenvalues and eigenvectors. 
+\end{DoxyReturn}

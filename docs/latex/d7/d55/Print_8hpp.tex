@@ -106,6 +106,9 @@ void \mbox{\hyperlink{Print_8hpp_a09924d963d1af8ede9841230001c31ab}{println}} ()
 \end{DoxyCompactItemize}
 
 
+\doxysubsection{Detailed Description}
+Contains printing functions. 
+
 \doxysubsection{Function Documentation}
 \mbox{\Hypertarget{Print_8hpp_aff28897755c49cbfee79eb5d5bb8a66b}\label{Print_8hpp_aff28897755c49cbfee79eb5d5bb8a66b}} 
 \index{Print.hpp@{Print.hpp}!CexprTypeName@{CexprTypeName}}
@@ -114,6 +117,11 @@ void \mbox{\hyperlink{Print_8hpp_a09924d963d1af8ede9841230001c31ab}{println}} ()
 {\footnotesize\ttfamily template$<$typename T $>$ \\
 constexpr auto Cexpr\+Type\+Name (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [constexpr]}}
 
+Returns the type name of the value type in an array.
+
+\begin{DoxyReturn}{Returns}
+Type name of the value type in an array. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{Print_8hpp_a2b7e74179d31b8eef932f818db474b11}\label{Print_8hpp_a2b7e74179d31b8eef932f818db474b11}} 
 \index{Print.hpp@{Print.hpp}!print\_tuple@{print\_tuple}}
 \index{print\_tuple@{print\_tuple}!Print.hpp@{Print.hpp}}
@@ -121,6 +129,16 @@ constexpr auto Cexpr\+Type\+Name (\begin{DoxyParamCaption}{ }\end{DoxyParamCapti
 {\footnotesize\ttfamily template$<$typename... Args, std\+::enable\+\_\+if\+\_\+t$<$ sizeof...(\+Args) !=0, int $>$  = 0$>$ \\
 auto print\+\_\+tuple (\begin{DoxyParamCaption}\item[{const std\+::tuple$<$ Args... $>$ \&}]{t }\end{DoxyParamCaption}) -\/$>$ std\+::string }
 
+Print a tuple.
+
+
+\begin{DoxyParams}{Parameters}
+{\em t} & The tuple to print.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A string representing the tuple. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{Print_8hpp_a72f8c27d042c40283472599d0cb4319c}\label{Print_8hpp_a72f8c27d042c40283472599d0cb4319c}} 
 \index{Print.hpp@{Print.hpp}!print\_tuple\_no\_type@{print\_tuple\_no\_type}}
 \index{print\_tuple\_no\_type@{print\_tuple\_no\_type}!Print.hpp@{Print.hpp}}
@@ -128,24 +146,53 @@ auto print\+\_\+tuple (\begin{DoxyParamCaption}\item[{const std\+::tuple$<$ Args
 {\footnotesize\ttfamily template$<$typename... Args, std\+::enable\+\_\+if\+\_\+t$<$ sizeof...(\+Args) !=0, int $>$  = 0$>$ \\
 auto print\+\_\+tuple\+\_\+no\+\_\+type (\begin{DoxyParamCaption}\item[{const std\+::tuple$<$ Args... $>$ \&}]{t }\end{DoxyParamCaption}) -\/$>$ std\+::string }
 
+Print a tuple without type.
+
+
+\begin{DoxyParams}{Parameters}
+{\em t} & The tuple to print.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A string representing the tuple. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{Print_8hpp_aadfd6036ed79f8a7f742d75ddff40710}\label{Print_8hpp_aadfd6036ed79f8a7f742d75ddff40710}} 
 \index{Print.hpp@{Print.hpp}!print\_tuple\_no\_type@{print\_tuple\_no\_type}}
 \index{print\_tuple\_no\_type@{print\_tuple\_no\_type}!Print.hpp@{Print.hpp}}
 \doxysubsubsection{\texorpdfstring{print\_tuple\_no\_type()}{print\_tuple\_no\_type()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
 {\footnotesize\ttfamily auto print\+\_\+tuple\+\_\+no\+\_\+type (\begin{DoxyParamCaption}\item[{const std\+::tuple$<$$>$ \&}]{ }\end{DoxyParamCaption}) -\/$>$ std\+::string \hspace{0.3cm}{\ttfamily [inline]}}
 
+Print an empty tuple without type.
+
+
+\begin{DoxyParams}{Parameters}
+{\em The} & tuple to print.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A string representing the tuple. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{Print_8hpp_a09924d963d1af8ede9841230001c31ab}\label{Print_8hpp_a09924d963d1af8ede9841230001c31ab}} 
 \index{Print.hpp@{Print.hpp}!println@{println}}
 \index{println@{println}!Print.hpp@{Print.hpp}}
 \doxysubsubsection{\texorpdfstring{println()}{println()}\hspace{0.1cm}{\footnotesize\ttfamily [1/5]}}
 {\footnotesize\ttfamily void println (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
-\mbox{\Hypertarget{Print_8hpp_a1a342a865a2b4662da2dd0785cdd1a66}\label{Print_8hpp_a1a342a865a2b4662da2dd0785cdd1a66}} 
+Print an empty line. \mbox{\Hypertarget{Print_8hpp_a1a342a865a2b4662da2dd0785cdd1a66}\label{Print_8hpp_a1a342a865a2b4662da2dd0785cdd1a66}} 
 \index{Print.hpp@{Print.hpp}!println@{println}}
 \index{println@{println}!Print.hpp@{Print.hpp}}
 \doxysubsubsection{\texorpdfstring{println()}{println()}\hspace{0.1cm}{\footnotesize\ttfamily [2/5]}}
 {\footnotesize\ttfamily void println (\begin{DoxyParamCaption}\item[{const fmt\+::text\+\_\+style \&}]{style,  }\item[{const std\+::string\+\_\+view \&}]{format }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
+Print a format string with no formatted arguments in the given style.
+
+
+\begin{DoxyParams}{Parameters}
+{\em style} & The style to print with. \\
+\hline
+{\em format} & The format string to print. \\
+\hline
+\end{DoxyParams}
 \mbox{\Hypertarget{Print_8hpp_a3c1d541c0ef7fb1065926cb6eced299e}\label{Print_8hpp_a3c1d541c0ef7fb1065926cb6eced299e}} 
 \index{Print.hpp@{Print.hpp}!println@{println}}
 \index{println@{println}!Print.hpp@{Print.hpp}}
@@ -153,12 +200,30 @@ auto print\+\_\+tuple\+\_\+no\+\_\+type (\begin{DoxyParamCaption}\item[{const st
 {\footnotesize\ttfamily template$<$typename... Ts$>$ \\
 void println (\begin{DoxyParamCaption}\item[{const fmt\+::text\+\_\+style \&}]{style,  }\item[{const std\+::string\+\_\+view \&}]{format,  }\item[{const Ts...}]{ts }\end{DoxyParamCaption})}
 
+Print a series of objects using the given format string and style.
+
+
+\begin{DoxyParams}{Parameters}
+{\em style} & The style to use when printing. \\
+\hline
+{\em format} & The format string. \\
+\hline
+{\em ts} & The objects to print. \\
+\hline
+\end{DoxyParams}
 \mbox{\Hypertarget{Print_8hpp_afcd23ca5ac0c1e652c17a79bc29910d6}\label{Print_8hpp_afcd23ca5ac0c1e652c17a79bc29910d6}} 
 \index{Print.hpp@{Print.hpp}!println@{println}}
 \index{println@{println}!Print.hpp@{Print.hpp}}
 \doxysubsubsection{\texorpdfstring{println()}{println()}\hspace{0.1cm}{\footnotesize\ttfamily [4/5]}}
 {\footnotesize\ttfamily void println (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{format }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
+Print a format string with no formatted arguments.
+
+
+\begin{DoxyParams}{Parameters}
+{\em format} & The string to print. \\
+\hline
+\end{DoxyParams}
 \mbox{\Hypertarget{Print_8hpp_a2202e0155da7a0f73d04e158cd7d616a}\label{Print_8hpp_a2202e0155da7a0f73d04e158cd7d616a}} 
 \index{Print.hpp@{Print.hpp}!println@{println}}
 \index{println@{println}!Print.hpp@{Print.hpp}}
@@ -166,6 +231,15 @@ void println (\begin{DoxyParamCaption}\item[{const fmt\+::text\+\_\+style \&}]{s
 {\footnotesize\ttfamily template$<$typename... Ts$>$ \\
 void println (\begin{DoxyParamCaption}\item[{const std\+::string\+\_\+view \&}]{f,  }\item[{const Ts...}]{ts }\end{DoxyParamCaption})}
 
+Print a series of objects using the given format string.
+
+
+\begin{DoxyParams}{Parameters}
+{\em f} & The format string. \\
+\hline
+{\em ts} & The objects to print. \\
+\hline
+\end{DoxyParams}
 \mbox{\Hypertarget{Print_8hpp_a49579bbdc6a99a5ee0e6ab6c1c3c82df}\label{Print_8hpp_a49579bbdc6a99a5ee0e6ab6c1c3c82df}} 
 \index{Print.hpp@{Print.hpp}!println\_abort@{println\_abort}}
 \index{println\_abort@{println\_abort}!Print.hpp@{Print.hpp}}
@@ -173,6 +247,15 @@ void println (\begin{DoxyParamCaption}\item[{const std\+::string\+\_\+view \&}]{
 {\footnotesize\ttfamily template$<$typename... Ts$>$ \\
 void println\+\_\+abort (\begin{DoxyParamCaption}\item[{const std\+::string\+\_\+view \&}]{format,  }\item[{const Ts...}]{ts }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
+Print a line then abort. Contains an error message.
+
+
+\begin{DoxyParams}{Parameters}
+{\em format} & The format string. \\
+\hline
+{\em ts} & A list of objects to use for the format string. \\
+\hline
+\end{DoxyParams}
 \mbox{\Hypertarget{Print_8hpp_ae65c3e68454714bbbdcb662c540dbbbb}\label{Print_8hpp_ae65c3e68454714bbbdcb662c540dbbbb}} 
 \index{Print.hpp@{Print.hpp}!println\_warn@{println\_warn}}
 \index{println\_warn@{println\_warn}!Print.hpp@{Print.hpp}}
@@ -180,6 +263,15 @@ void println\+\_\+abort (\begin{DoxyParamCaption}\item[{const std\+::string\+\_\
 {\footnotesize\ttfamily template$<$typename... Ts$>$ \\
 void println\+\_\+warn (\begin{DoxyParamCaption}\item[{const std\+::string\+\_\+view \&}]{format,  }\item[{const Ts...}]{ts }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
+Print a warning.
+
+
+\begin{DoxyParams}{Parameters}
+{\em format} & The format string. \\
+\hline
+{\em ts} & The objects to use for the format string. \\
+\hline
+\end{DoxyParams}
 \mbox{\Hypertarget{Print_8hpp_a67cbd9ec04b7ee08db592a3677929e9a}\label{Print_8hpp_a67cbd9ec04b7ee08db592a3677929e9a}} 
 \index{Print.hpp@{Print.hpp}!type\_name@{type\_name}}
 \index{type\_name@{type\_name}!Print.hpp@{Print.hpp}}
@@ -187,6 +279,11 @@ void println\+\_\+warn (\begin{DoxyParamCaption}\item[{const std\+::string\+\_\+
 {\footnotesize\ttfamily template$<$typename T $>$ \\
 auto type\+\_\+name (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) -\/$>$ const char $\ast$ }
 
+Returns the type name of an array as a string.
+
+\begin{DoxyReturn}{Returns}
+A string representing the name of the type. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{Print_8hpp_a91f3e098aba7debe86515236bf9ca671}\label{Print_8hpp_a91f3e098aba7debe86515236bf9ca671}} 
 \index{Print.hpp@{Print.hpp}!type\_name@{type\_name}}
 \index{type\_name@{type\_name}!Print.hpp@{Print.hpp}}
@@ -194,3 +291,13 @@ auto type\+\_\+name (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) -\/$>$ c
 {\footnotesize\ttfamily template$<$typename T $>$ \\
 auto type\+\_\+name (\begin{DoxyParamCaption}\item[{const T \&}]{ }\end{DoxyParamCaption}) -\/$>$ const char $\ast$ }
 
+returns the type name of the input as a string.
+
+
+\begin{DoxyParams}{Parameters}
+{\em The} & object whose type is to be returned.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A string representing the name of the type of the parameter. 
+\end{DoxyReturn}

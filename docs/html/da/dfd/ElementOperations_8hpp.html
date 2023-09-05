@@ -159,7 +159,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a1be82ac2bb2e4f1e1b0257c14065335d"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../da/dfd/ElementOperations_8hpp.html#a1be82ac2bb2e4f1e1b0257c14065335d">scale</a> (const T &amp;scale, const TensorType&lt; T, Rank &gt; &amp;tensor) -&gt; Tensor&lt; T, Rank &gt;</td></tr>
 <tr class="separator:a1be82ac2bb2e4f1e1b0257c14065335d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Function Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p class="DocNodeLTR">Contains functions for performing element operations. </p>
+</div><h2 class="groupheader">Function Documentation</h2>
 <a id="ad8049c4f49d86fce3cd0875a6d8bb4f5"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad8049c4f49d86fce3cd0875a6d8bb4f5">&#9670;&nbsp;</a></span>abs()</h2>
 
@@ -177,6 +179,14 @@ template&lt;template&lt; typename, size_t &gt; typename TensorType, typename T ,
         </tr>
       </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Compute the absolute value of each element in the tensor.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">tensor</td><td>&#x202A;The tensor to absolute value.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;A new tensor whose elements are the absolute value of the input. </dd></dl>
 
 </div>
 </div>
@@ -197,6 +207,14 @@ template&lt;template&lt; typename, size_t &gt; typename TensorType, typename T ,
         </tr>
       </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Exponentiate the elements of the input tensor.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">tensor</td><td>&#x202A;The tensor to exponentiate.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;A tensor whose elements are the exponetial of the input's. </dd></dl>
 
 </div>
 </div>
@@ -217,6 +235,14 @@ template&lt;template&lt; typename, size_t &gt; typename TensorType, typename T ,
         </tr>
       </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Finds the reciprocal of each element in the tensor.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">tensor</td><td>&#x202A;The tensor to invert.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;A tensor whose elements are the reciprocal of the input's. </dd></dl>
 
 </div>
 </div>
@@ -237,6 +263,14 @@ template&lt;template&lt; typename, size_t &gt; typename TensorType, typename T ,
         </tr>
       </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Finds the max element in the tensor.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">tensor</td><td>&#x202A;The tensor to evaulate.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;The max element in the tensor. </dd></dl>
 
 </div>
 </div>
@@ -267,6 +301,14 @@ template&lt;typename vector , typename Functor &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
+<dl class="todo DocNodeLTR"><dt><b><a class="el" href="../../dd/da0/todo.html#_todo000032">Todo:</a></b></dt><dd>&#x202A;Omp-a Loop-a doopity doo. What in the world could this do?</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">data</td><td>&#x202A;Vector of data. </td></tr>
+    <tr><td class="paramname">functor</td><td>&#x202A;A functor??? </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -297,6 +339,15 @@ template&lt;template&lt; typename, size_t &gt; typename TensorType, typename T ,
         </tr>
       </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Perform scalar multiplication on a tensor.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">scale</td><td>&#x202A;The value to scale by. </td></tr>
+    <tr><td class="paramname">tensor</td><td>&#x202A;The tensor to scale.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;A new tensor whose elements have been scaled. </dd></dl>
 
 </div>
 </div>
@@ -317,6 +368,14 @@ template&lt;template&lt; typename, size_t &gt; typename TensorType, typename T ,
         </tr>
       </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Computes a sum. </p><dl class="todo DocNodeLTR"><dt><b><a class="el" href="../../dd/da0/todo.html#_todo000033">Todo:</a></b></dt><dd>&#x202A;Needs more information.</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">tensor</td><td>&#x202A;A tensor to sum.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;A sum??? </dd></dl>
 
 </div>
 </div>

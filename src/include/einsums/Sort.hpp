@@ -1,3 +1,12 @@
+
+/**
+ * @file Sort.hpp
+ *
+ * Contains sorting functions.
+ * @todo Dig through these functions to separate those with the same names and
+ * what they do.
+ */
+
 #pragma once
 
 #include "einsums/LinearAlgebra.hpp"
@@ -14,7 +23,7 @@ BEGIN_EINSUMS_NAMESPACE_HPP(einsums::tensor_algebra)
 #if defined(EINSUMS_USE_HPTT)
 
 namespace detail {
-
+  
 void EINSUMS_EXPORT sort(const int *perm, const int dim, const float alpha, const float *A, const int *sizeA, const float beta, float *B);
 void EINSUMS_EXPORT sort(const int *perm, const int dim, const double alpha, const double *A, const int *sizeA, const double beta,
                          double *B);

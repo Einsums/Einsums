@@ -197,7 +197,13 @@ Friends</h2></td></tr>
 <tr class="memitem:aae75ac1aa3cc1a9eeabae60902a63994"><td class="memTemplItemLeft" align="right" valign="top">struct&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d4/d52/structeinsums_1_1TensorView.html#aae75ac1aa3cc1a9eeabae60902a63994">TensorView</a></td></tr>
 <tr class="separator:aae75ac1aa3cc1a9eeabae60902a63994"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><h3>template&lt;typename T, size_t Rank&gt;<br />
+struct einsums::TensorView&lt; T, Rank &gt;</h3>
+
+<dl class="todo DocNodeLTR"><dt><b><a class="el" href="../../dd/da0/todo.html#_todo000024">Todo:</a></b></dt><dd>&#x202A;What is this? </dd></dl>
+<p class="DocNodeLTR">Represents a way of viewing a tensor. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a74c711551108a87a8ec184808f8d6566"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a74c711551108a87a8ec184808f8d6566">&#9670;&nbsp;</a></span>TensorView() <span class="overload">[1/7]</span></h2>
 
@@ -323,6 +329,15 @@ template&lt;size_t OtherRank, typename... Args&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Copy a tensor into a different view.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">other</td><td>&#x202A;The tensor to copy. </td></tr>
+    <tr><td class="paramname">dim</td><td>&#x202A;The new dimensions. </td></tr>
+    <tr><td class="paramname">args</td><td>&#x202A;Other arguments. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -369,6 +384,15 @@ template&lt;size_t OtherRank, typename... Args&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Copy a tensor into a different view.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">other</td><td>&#x202A;The tensor to copy. </td></tr>
+    <tr><td class="paramname">dim</td><td>&#x202A;The new dimensions. </td></tr>
+    <tr><td class="paramname">args</td><td>&#x202A;Other arguments. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -415,6 +439,15 @@ template&lt;size_t OtherRank, typename... Args&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Copy a tensor view into a different view.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">other</td><td>&#x202A;The tensor view to copy. </td></tr>
+    <tr><td class="paramname">dim</td><td>&#x202A;The new dimensions. </td></tr>
+    <tr><td class="paramname">args</td><td>&#x202A;Other arguments. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -461,6 +494,15 @@ template&lt;size_t OtherRank, typename... Args&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Copy a tensor view into a different view.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">other</td><td>&#x202A;The tensor view to copy. </td></tr>
+    <tr><td class="paramname">dim</td><td>&#x202A;The new dimensions. </td></tr>
+    <tr><td class="paramname">args</td><td>&#x202A;Other arguments. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -513,6 +555,16 @@ template&lt;size_t OtherRank, typename... Args&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Copy a tensor into a different view.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td>&#x202A;The name of the view. </td></tr>
+    <tr><td class="paramname">other</td><td>&#x202A;The tensor to copy. </td></tr>
+    <tr><td class="paramname">dim</td><td>&#x202A;The new dimensions. </td></tr>
+    <tr><td class="paramname">args</td><td>&#x202A;Other arguments. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -609,6 +661,8 @@ template&lt;typename T , size_t Rank&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Returns the underlying data.</p>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;A pointer to the data. </dd></dl>
 
 </div>
 </div>
@@ -636,6 +690,8 @@ template&lt;typename T , size_t Rank&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Returns the underlying data.</p>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;A pointer to the data. </dd></dl>
 
 </div>
 </div>
@@ -666,6 +722,14 @@ template&lt;typename... MultiIndex&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Return the value at a given index.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">index</td><td>&#x202A;The index to look at.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;A pointer to the value at the given index. </dd></dl>
 
 </div>
 </div>
@@ -694,6 +758,7 @@ template&lt;typename T , size_t Rank&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<dl class="todo DocNodeLTR"><dt><b><a class="el" href="../../dd/da0/todo.html#_todo000030">Todo:</a></b></dt><dd>&#x202A;Figure this out. </dd></dl>
 
 </div>
 </div>
@@ -722,6 +787,14 @@ template&lt;typename T , size_t Rank&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Get the dimension along the given axis.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">d</td><td>&#x202A;The axis to query.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;The dimension along the requested axis. </dd></dl>
 
 <p>Implements <a class="el" href="../../dc/d54/structeinsums_1_1detail_1_1TensorBase.html#a217c12e3cc502b0b642f1fa2e81fc1fd">einsums::detail::TensorBase&lt; T, Rank &gt;</a>.</p>
 
@@ -751,6 +824,8 @@ template&lt;typename T , size_t Rank&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Return a list of the dimensions.</p>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;A list of the dimensions. </dd></dl>
 
 </div>
 </div>
@@ -778,6 +853,7 @@ template&lt;typename T , size_t Rank&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<dl class="todo DocNodeLTR"><dt><b><a class="el" href="../../dd/da0/todo.html#_todo000031">Todo:</a></b></dt><dd>&#x202A;I don't know what this does. </dd></dl>
 
 </div>
 </div>
@@ -805,6 +881,8 @@ template&lt;typename T , size_t Rank&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Get the name of the tensor.</p>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;A string with the name of the tensor. </dd></dl>
 
 </div>
 </div>
@@ -835,6 +913,14 @@ template&lt;typename... MultiIndex&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Subscript the tensor.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">index</td><td>&#x202A;The index to pull.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;The value at the given index. </dd></dl>
 
 </div>
 </div>
@@ -865,6 +951,14 @@ template&lt;typename... MultiIndex&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Subscript the tensor.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">index</td><td>&#x202A;The index to pull.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;The value at the given index. </dd></dl>
 
 </div>
 </div>
@@ -895,6 +989,15 @@ template&lt;template&lt; typename, size_t &gt; typename AType&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Move assignment.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">other</td><td>&#x202A;The object to move. May not be valid after return. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="todo DocNodeLTR"><dt><b><a class="el" href="../../dd/da0/todo.html#_todo000029">Todo:</a></b></dt><dd>&#x202A;verify</dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;A reference to this. </dd></dl>
 
 </div>
 </div>
@@ -925,6 +1028,14 @@ template&lt;template&lt; typename, size_t &gt; typename AType&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Copy assignment.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">other</td><td>&#x202A;The item to copy.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;A reference to this. </dd></dl>
 
 </div>
 </div>
@@ -953,6 +1064,14 @@ template&lt;typename T , size_t Rank&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Fill assignment. Fill the view with the given value.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">fill_value</td><td>&#x202A;The value to fill.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;A reference to this. </dd></dl>
 
 </div>
 </div>
@@ -981,6 +1100,14 @@ template&lt;typename T , size_t Rank&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Copy assignment? </p><dl class="todo DocNodeLTR"><dt><b><a class="el" href="../../dd/da0/todo.html#_todo000028">Todo:</a></b></dt><dd>&#x202A;Why is this a pointer?</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">other</td><td>&#x202A;The value to copy?</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;A reference to this. </dd></dl>
 
 </div>
 </div>
@@ -1036,6 +1163,8 @@ template&lt;typename T , size_t Rank&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Return the size of the tensor.</p>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;The total number of elements in the tensor. </dd></dl>
 
 </div>
 </div>
@@ -1064,6 +1193,14 @@ template&lt;typename T , size_t Rank&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Get the stride along a given axis.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">d</td><td>&#x202A;The axis for the stride.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;The stride along the requested axis. </dd></dl>
 
 </div>
 </div>
@@ -1091,6 +1228,8 @@ template&lt;typename T , size_t Rank&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Return a list of strides.</p>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;A list of strides. </dd></dl>
 
 </div>
 </div>
@@ -1118,6 +1257,8 @@ template&lt;typename T , size_t Rank&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Returns the view of the tensor as if it were a single block of data.</p>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;A flattened view of the tensor. </dd></dl>
 
 </div>
 </div>

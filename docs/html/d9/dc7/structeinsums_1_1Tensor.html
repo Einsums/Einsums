@@ -228,7 +228,13 @@ Friends</h2></td></tr>
 <tr class="memitem:a590dacb85b9bccb010f0f68c40b723b8"><td class="memTemplItemLeft" align="right" valign="top">struct&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d9/dc7/structeinsums_1_1Tensor.html#a590dacb85b9bccb010f0f68c40b723b8">Tensor</a></td></tr>
 <tr class="separator:a590dacb85b9bccb010f0f68c40b723b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Typedef Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><h3>template&lt;typename T, size_t Rank&gt;<br />
+struct einsums::Tensor&lt; T, Rank &gt;</h3>
+
+<p class="DocNodeLTR">Represents a general tensor.</p>
+<p class="DocNodeLTR">An empty tensor. </p>
+</div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="a8994bc2cfc973d189ce2f4b15f44348e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a8994bc2cfc973d189ce2f4b15f44348e">&#9670;&nbsp;</a></span>vector</h2>
 
@@ -270,6 +276,7 @@ template&lt;typename T , size_t Rank&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Default constructor. </p>
 
 </div>
 </div>
@@ -298,6 +305,13 @@ template&lt;typename T , size_t Rank&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Default copy constructor.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">tensor</td><td>&#x202A;The tensor to copy. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -325,6 +339,7 @@ template&lt;typename T , size_t Rank&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">The default tensor destructor. </p>
 
 </div>
 </div>
@@ -365,6 +380,14 @@ template&lt;typename... Dims&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Construct an empty tensor with the given name and dimensions.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td>&#x202A;The new name. </td></tr>
+    <tr><td class="paramname">dims</td><td>&#x202A;The dimensions of the tensor. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -411,6 +434,15 @@ template&lt;size_t OtherRank, typename... Dims&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Move constructor that changes name and dimensions.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">existingTensor</td><td>&#x202A;The tensor to move. At exit, this is no longer a valid tensor. </td></tr>
+    <tr><td class="paramname">name</td><td>&#x202A;The new name. </td></tr>
+    <tr><td class="paramname">dims</td><td>&#x202A;The new dimensions. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -439,6 +471,13 @@ template&lt;typename T , size_t Rank&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Construct a new tensor with the given dimensions.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dims</td><td>&#x202A;The dimensions of the new tensor. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -467,6 +506,13 @@ template&lt;typename T , size_t Rank&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Copies a tensor view.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">other</td><td>&#x202A;The tensor to copy. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -495,6 +541,8 @@ template&lt;typename T , size_t Rank&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Returns a pointer to the data.</p>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;A pointer to the data of the tensor. </dd></dl>
 
 </div>
 </div>
@@ -522,6 +570,8 @@ template&lt;typename T , size_t Rank&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Returns a constant pointer to the data.</p>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;An immutable pointer to the data. </dd></dl>
 
 </div>
 </div>
@@ -552,6 +602,14 @@ template&lt;typename... MultiIndex&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Returns multiple data entries.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">index</td><td>&#x202A;The index of the data to retrieve.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;The value at the given index. </dd></dl>
 
 </div>
 </div>
@@ -580,6 +638,14 @@ template&lt;typename T , size_t Rank&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Return the dimension on a given axis.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">d</td><td>&#x202A;The axis.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;The dimension on the given axis. </dd></dl>
 
 <p>Implements <a class="el" href="../../dc/d54/structeinsums_1_1detail_1_1TensorBase.html#a217c12e3cc502b0b642f1fa2e81fc1fd">einsums::detail::TensorBase&lt; T, Rank &gt;</a>.</p>
 
@@ -609,6 +675,8 @@ template&lt;typename T , size_t Rank&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Returns the dimensions of the tensor.</p>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;The dimensions of the tensor. </dd></dl>
 
 </div>
 </div>
@@ -720,6 +788,7 @@ template&lt;typename T , size_t Rank&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<dl class="todo DocNodeLTR"><dt><b><a class="el" href="../../dd/da0/todo.html#_todo000027">Todo:</a></b></dt><dd>&#x202A;I don't know what this does. </dd></dl>
 
 </div>
 </div>
@@ -804,6 +873,8 @@ template&lt;typename T , size_t Rank&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Returns the name of the tensor.</p>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;A string with the name of the tensor. </dd></dl>
 
 </div>
 </div>
@@ -835,6 +906,14 @@ template&lt;typename... MultiIndex&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Subscripts the tensor.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">index</td><td>&#x202A;The index to retrieve.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;The data at the given index. </dd></dl>
 
 </div>
 </div>
@@ -865,6 +944,14 @@ template&lt;typename... MultiIndex&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Subscripts the tensor.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">index</td><td>&#x202A;The index to retrieve.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;The data at the given index. </dd></dl>
 
 </div>
 </div>
@@ -895,6 +982,14 @@ template&lt;typename... MultiIndex&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Subscripts the tensor.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">index</td><td>&#x202A;The index to retrieve.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;The data at the given index. </dd></dl>
 
 </div>
 </div>
@@ -925,6 +1020,14 @@ template&lt;typename... MultiIndex&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Subscripts the tensor.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">index</td><td>&#x202A;The index to retrieve.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;The data at the given index. </dd></dl>
 
 </div>
 </div>
@@ -953,6 +1056,14 @@ template&lt;typename T , size_t Rank&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Fill assignment. Sets each entry to the fill value.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">fill_value</td><td>&#x202A;The value to set.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;A reference to this. </dd></dl>
 
 </div>
 </div>
@@ -981,6 +1092,14 @@ template&lt;typename T , size_t Rank&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Copy assignment.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">other</td><td>&#x202A;The tensor to copy.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;A reference to this. </dd></dl>
 
 </div>
 </div>
@@ -1011,6 +1130,14 @@ template&lt;typename TOther &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Copy assignment with entry casting.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">other</td><td>&#x202A;The tensor to copy.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;A reference to this. </dd></dl>
 
 </div>
 </div>
@@ -1041,6 +1168,14 @@ template&lt;typename TOther &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Copy assignment with entry casting.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">other</td><td>&#x202A;The tensor to copy.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;A reference to this. </dd></dl>
 
 </div>
 </div>
@@ -1069,6 +1204,13 @@ template&lt;typename T , size_t Rank&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Sets all entries to the given value.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">value</td><td>&#x202A;The value to set. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1097,6 +1239,13 @@ template&lt;typename T , size_t Rank&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Sets the name of the tensor.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td>&#x202A;The new name of the tensor. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1124,6 +1273,8 @@ template&lt;typename T , size_t Rank&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Returns the linear size of the tensor.</p>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;The linear size of the tensor. </dd></dl>
 
 </div>
 </div>
@@ -1152,6 +1303,14 @@ template&lt;typename T , size_t Rank&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Returns the stride of the tensor along a given axis.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">d</td><td>&#x202A;The axis for the stride.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;The stride along a given axis. </dd></dl>
 
 </div>
 </div>
@@ -1179,6 +1338,8 @@ template&lt;typename T , size_t Rank&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Returns the strides of the tensor.</p>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;The strides of the tensor. </dd></dl>
 
 </div>
 </div>
@@ -1206,6 +1367,8 @@ template&lt;typename T , size_t Rank&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Morphs the tensor into a rank-1 tensor, or a single long strip of data.</p>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;A view of the tensor as a single array. </dd></dl>
 
 </div>
 </div>
@@ -1233,6 +1396,8 @@ template&lt;typename T , size_t Rank&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Returns the data as a vector.</p>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;A vector reference to the data. </dd></dl>
 
 </div>
 </div>
@@ -1260,6 +1425,8 @@ template&lt;typename T , size_t Rank&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Returns the data as a vector.</p>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;A vector reference to the data. </dd></dl>
 
 </div>
 </div>
@@ -1287,6 +1454,7 @@ template&lt;typename T , size_t Rank&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Clears the tensor data. </p>
 
 </div>
 </div>

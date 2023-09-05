@@ -168,7 +168,7 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d2e/structeinsums_1_1Empty.html">Empty</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d48/structeinsums_1_1ErrorOr.html">ErrorOr</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d48/structeinsums_1_1ErrorOr.html">ErrorOr</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d49/structeinsums_1_1ErrorOr_3_01void_00_01ErrorType_01_4.html">ErrorOr&lt; void, ErrorType &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1384,6 +1384,14 @@ template&lt;int N, template&lt; typename, size_t &gt; typename TensorType, size_
         </tr>
       </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Finds the ranges of each dimension of the tensor.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">tensor</td><td>&#x202A;The tensor to query.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;A tuple containing the ranges of each dimension. </dd></dl>
 
 </div>
 </div>
@@ -1602,6 +1610,15 @@ template&lt;typename T &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Read an empty tensor from a file.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">fd</td><td>&#x202A;The file descriptor to read from. </td></tr>
+    <tr><td class="paramname">name</td><td>&#x202A;The name of the new tensor.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;The new tensor. </dd></dl>
 
 </div>
 </div>
@@ -1632,6 +1649,15 @@ template&lt;typename T , size_t Rank&gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Read a tensor from a file.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">fd</td><td>&#x202A;The file descriptor to read from. </td></tr>
+    <tr><td class="paramname">name</td><td>&#x202A;The name of the new tensor.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>&#x202A;A new tensor with the given data. </dd></dl>
 
 </div>
 </div>
@@ -1662,6 +1688,14 @@ template&lt;typename T &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Write an empty tensor to a file.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">fd</td><td>&#x202A;The file descriptor. </td></tr>
+    <tr><td class="paramname">ref</td><td>&#x202A;The tensor to write. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1698,6 +1732,15 @@ template&lt;size_t Rank, typename T , class... Args&gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Write the tensor data to a file.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">fd</td><td>&#x202A;A file descriptor. </td></tr>
+    <tr><td class="paramname">ref</td><td>&#x202A;The tensor to write. </td></tr>
+    <tr><td class="paramname">args</td><td>&#x202A;Extra arguments. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1734,6 +1777,15 @@ template&lt;size_t Rank, typename T , class... Args&gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Write a tensor view to a file.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">fd</td><td>&#x202A;The file descriptor. </td></tr>
+    <tr><td class="paramname">ref</td><td>&#x202A;The tensor view to write. </td></tr>
+    <tr><td class="paramname">args</td><td>&#x202A;Extra arguments. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1754,6 +1806,13 @@ template&lt;typename T , size_t Rank&gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
+<p class="DocNodeLTR">Clear a tensor.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">A</td><td>&#x202A;The tensor to clear. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
