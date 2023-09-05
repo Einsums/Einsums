@@ -1,0 +1,152 @@
+\hypertarget{structeinsums_1_1CircularBuffer}{}\doxysection{einsums\+::Circular\+Buffer$<$ T $>$ Struct Template Reference}
+\label{structeinsums_1_1CircularBuffer}\index{einsums::CircularBuffer$<$ T $>$@{einsums::CircularBuffer$<$ T $>$}}
+
+
+{\ttfamily \#include $<$STL.\+hpp$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structeinsums_1_1CircularBuffer_a9e5a075f56e4b3881698149460babddc}{Circular\+Buffer}} (size\+\_\+t \mbox{\hyperlink{structeinsums_1_1CircularBuffer_a2a0f04408edb789c954942d25d1e015e}{size}})
+\item 
+void \mbox{\hyperlink{structeinsums_1_1CircularBuffer_ade74064b3c91996bab6d7c01f7deed22}{put}} (T item)
+\item 
+void \mbox{\hyperlink{structeinsums_1_1CircularBuffer_a2a8a382d339437e6491caffda914817f}{reset}} ()
+\item 
+auto \mbox{\hyperlink{structeinsums_1_1CircularBuffer_aa40c96b12d4bde0ff20e91d0b952d9d5}{empty}} () const -\/$>$ bool
+\item 
+auto \mbox{\hyperlink{structeinsums_1_1CircularBuffer_a5ee77d1b61b40559b76905aad7f0b42a}{full}} () const -\/$>$ bool
+\item 
+auto \mbox{\hyperlink{structeinsums_1_1CircularBuffer_ab042df3deb9c66d265f359f7f295a3c9}{capacity}} () const -\/$>$ size\+\_\+t
+\item 
+auto \mbox{\hyperlink{structeinsums_1_1CircularBuffer_a2a0f04408edb789c954942d25d1e015e}{size}} () const -\/$>$ size\+\_\+t
+\item 
+auto \mbox{\hyperlink{structeinsums_1_1CircularBuffer_a3904c7e8f38a4493d3957cd7b74749ab}{operator\mbox{[}$\,$\mbox{]}}} (int \mbox{\hyperlink{TensorAlgebra_8hpp_a3cb2c61d561f0adb90793e8157c8c782}{element}}) const -\/$>$ const T \&
+\end{DoxyCompactItemize}
+\doxysubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+std\+::unique\+\_\+ptr$<$ T\mbox{[}$\,$\mbox{]}$>$ \mbox{\hyperlink{structeinsums_1_1CircularBuffer_a1a13a04bf35e953ff5b9654f6976e836}{\+\_\+buffer}}
+\item 
+const size\+\_\+t \mbox{\hyperlink{structeinsums_1_1CircularBuffer_a1e33733a2d0cfc519c15009a458f2843}{\+\_\+max\+\_\+size}}
+\item 
+std\+::mutex \mbox{\hyperlink{structeinsums_1_1CircularBuffer_a3d9c9681410ae659f0cff3c20b100036}{\+\_\+mutex}}
+\item 
+size\+\_\+t \mbox{\hyperlink{structeinsums_1_1CircularBuffer_af53cb4cde800ebcd5024577784ed4441}{\+\_\+head}} \{0\}
+\item 
+size\+\_\+t \mbox{\hyperlink{structeinsums_1_1CircularBuffer_a5f4e1710ee3b975cac65f0c06f3cb941}{\+\_\+tail}} \{0\}
+\item 
+bool \mbox{\hyperlink{structeinsums_1_1CircularBuffer_a108a0c31f6c2b86ce4fc46f392d1ae56}{\+\_\+full}} \{false\}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{structeinsums_1_1CircularBuffer_a9e5a075f56e4b3881698149460babddc}\label{structeinsums_1_1CircularBuffer_a9e5a075f56e4b3881698149460babddc}} 
+\index{einsums::CircularBuffer$<$ T $>$@{einsums::CircularBuffer$<$ T $>$}!CircularBuffer@{CircularBuffer}}
+\index{CircularBuffer@{CircularBuffer}!einsums::CircularBuffer$<$ T $>$@{einsums::CircularBuffer$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{CircularBuffer()}{CircularBuffer()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+\mbox{\hyperlink{structeinsums_1_1CircularBuffer}{einsums\+::\+Circular\+Buffer}}$<$ T $>$\+::\mbox{\hyperlink{structeinsums_1_1CircularBuffer}{Circular\+Buffer}} (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{size }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [explicit]}}
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{structeinsums_1_1CircularBuffer_ab042df3deb9c66d265f359f7f295a3c9}\label{structeinsums_1_1CircularBuffer_ab042df3deb9c66d265f359f7f295a3c9}} 
+\index{einsums::CircularBuffer$<$ T $>$@{einsums::CircularBuffer$<$ T $>$}!capacity@{capacity}}
+\index{capacity@{capacity}!einsums::CircularBuffer$<$ T $>$@{einsums::CircularBuffer$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{capacity()}{capacity()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+auto \mbox{\hyperlink{structeinsums_1_1CircularBuffer}{einsums\+::\+Circular\+Buffer}}$<$ T $>$\+::capacity (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const -\/$>$ size\+\_\+t \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{structeinsums_1_1CircularBuffer_aa40c96b12d4bde0ff20e91d0b952d9d5}\label{structeinsums_1_1CircularBuffer_aa40c96b12d4bde0ff20e91d0b952d9d5}} 
+\index{einsums::CircularBuffer$<$ T $>$@{einsums::CircularBuffer$<$ T $>$}!empty@{empty}}
+\index{empty@{empty}!einsums::CircularBuffer$<$ T $>$@{einsums::CircularBuffer$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{empty()}{empty()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+auto \mbox{\hyperlink{structeinsums_1_1CircularBuffer}{einsums\+::\+Circular\+Buffer}}$<$ T $>$\+::empty (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const -\/$>$ bool \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{structeinsums_1_1CircularBuffer_a5ee77d1b61b40559b76905aad7f0b42a}\label{structeinsums_1_1CircularBuffer_a5ee77d1b61b40559b76905aad7f0b42a}} 
+\index{einsums::CircularBuffer$<$ T $>$@{einsums::CircularBuffer$<$ T $>$}!full@{full}}
+\index{full@{full}!einsums::CircularBuffer$<$ T $>$@{einsums::CircularBuffer$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{full()}{full()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+auto \mbox{\hyperlink{structeinsums_1_1CircularBuffer}{einsums\+::\+Circular\+Buffer}}$<$ T $>$\+::full (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const -\/$>$ bool \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{structeinsums_1_1CircularBuffer_a3904c7e8f38a4493d3957cd7b74749ab}\label{structeinsums_1_1CircularBuffer_a3904c7e8f38a4493d3957cd7b74749ab}} 
+\index{einsums::CircularBuffer$<$ T $>$@{einsums::CircularBuffer$<$ T $>$}!operator\mbox{[}\mbox{]}@{operator[]}}
+\index{operator\mbox{[}\mbox{]}@{operator[]}!einsums::CircularBuffer$<$ T $>$@{einsums::CircularBuffer$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{operator[]()}{operator[]()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+auto \mbox{\hyperlink{structeinsums_1_1CircularBuffer}{einsums\+::\+Circular\+Buffer}}$<$ T $>$\+::operator\mbox{[}$\,$\mbox{]} (\begin{DoxyParamCaption}\item[{int}]{element }\end{DoxyParamCaption}) const -\/$>$ const T \& \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{structeinsums_1_1CircularBuffer_ade74064b3c91996bab6d7c01f7deed22}\label{structeinsums_1_1CircularBuffer_ade74064b3c91996bab6d7c01f7deed22}} 
+\index{einsums::CircularBuffer$<$ T $>$@{einsums::CircularBuffer$<$ T $>$}!put@{put}}
+\index{put@{put}!einsums::CircularBuffer$<$ T $>$@{einsums::CircularBuffer$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{put()}{put()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+void \mbox{\hyperlink{structeinsums_1_1CircularBuffer}{einsums\+::\+Circular\+Buffer}}$<$ T $>$\+::put (\begin{DoxyParamCaption}\item[{T}]{item }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{structeinsums_1_1CircularBuffer_a2a8a382d339437e6491caffda914817f}\label{structeinsums_1_1CircularBuffer_a2a8a382d339437e6491caffda914817f}} 
+\index{einsums::CircularBuffer$<$ T $>$@{einsums::CircularBuffer$<$ T $>$}!reset@{reset}}
+\index{reset@{reset}!einsums::CircularBuffer$<$ T $>$@{einsums::CircularBuffer$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{reset()}{reset()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+void \mbox{\hyperlink{structeinsums_1_1CircularBuffer}{einsums\+::\+Circular\+Buffer}}$<$ T $>$\+::reset (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{structeinsums_1_1CircularBuffer_a2a0f04408edb789c954942d25d1e015e}\label{structeinsums_1_1CircularBuffer_a2a0f04408edb789c954942d25d1e015e}} 
+\index{einsums::CircularBuffer$<$ T $>$@{einsums::CircularBuffer$<$ T $>$}!size@{size}}
+\index{size@{size}!einsums::CircularBuffer$<$ T $>$@{einsums::CircularBuffer$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{size()}{size()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+auto \mbox{\hyperlink{structeinsums_1_1CircularBuffer}{einsums\+::\+Circular\+Buffer}}$<$ T $>$\+::size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const -\/$>$ size\+\_\+t \hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{structeinsums_1_1CircularBuffer_a1a13a04bf35e953ff5b9654f6976e836}\label{structeinsums_1_1CircularBuffer_a1a13a04bf35e953ff5b9654f6976e836}} 
+\index{einsums::CircularBuffer$<$ T $>$@{einsums::CircularBuffer$<$ T $>$}!\_buffer@{\_buffer}}
+\index{\_buffer@{\_buffer}!einsums::CircularBuffer$<$ T $>$@{einsums::CircularBuffer$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{\_buffer}{\_buffer}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+std\+::unique\+\_\+ptr$<$T\mbox{[}$\,$\mbox{]}$>$ \mbox{\hyperlink{structeinsums_1_1CircularBuffer}{einsums\+::\+Circular\+Buffer}}$<$ T $>$\+::\+\_\+buffer\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{structeinsums_1_1CircularBuffer_a108a0c31f6c2b86ce4fc46f392d1ae56}\label{structeinsums_1_1CircularBuffer_a108a0c31f6c2b86ce4fc46f392d1ae56}} 
+\index{einsums::CircularBuffer$<$ T $>$@{einsums::CircularBuffer$<$ T $>$}!\_full@{\_full}}
+\index{\_full@{\_full}!einsums::CircularBuffer$<$ T $>$@{einsums::CircularBuffer$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{\_full}{\_full}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+bool \mbox{\hyperlink{structeinsums_1_1CircularBuffer}{einsums\+::\+Circular\+Buffer}}$<$ T $>$\+::\+\_\+full \{false\}\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{structeinsums_1_1CircularBuffer_af53cb4cde800ebcd5024577784ed4441}\label{structeinsums_1_1CircularBuffer_af53cb4cde800ebcd5024577784ed4441}} 
+\index{einsums::CircularBuffer$<$ T $>$@{einsums::CircularBuffer$<$ T $>$}!\_head@{\_head}}
+\index{\_head@{\_head}!einsums::CircularBuffer$<$ T $>$@{einsums::CircularBuffer$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{\_head}{\_head}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+size\+\_\+t \mbox{\hyperlink{structeinsums_1_1CircularBuffer}{einsums\+::\+Circular\+Buffer}}$<$ T $>$\+::\+\_\+head \{0\}\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{structeinsums_1_1CircularBuffer_a1e33733a2d0cfc519c15009a458f2843}\label{structeinsums_1_1CircularBuffer_a1e33733a2d0cfc519c15009a458f2843}} 
+\index{einsums::CircularBuffer$<$ T $>$@{einsums::CircularBuffer$<$ T $>$}!\_max\_size@{\_max\_size}}
+\index{\_max\_size@{\_max\_size}!einsums::CircularBuffer$<$ T $>$@{einsums::CircularBuffer$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{\_max\_size}{\_max\_size}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+const size\+\_\+t \mbox{\hyperlink{structeinsums_1_1CircularBuffer}{einsums\+::\+Circular\+Buffer}}$<$ T $>$\+::\+\_\+max\+\_\+size\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{structeinsums_1_1CircularBuffer_a3d9c9681410ae659f0cff3c20b100036}\label{structeinsums_1_1CircularBuffer_a3d9c9681410ae659f0cff3c20b100036}} 
+\index{einsums::CircularBuffer$<$ T $>$@{einsums::CircularBuffer$<$ T $>$}!\_mutex@{\_mutex}}
+\index{\_mutex@{\_mutex}!einsums::CircularBuffer$<$ T $>$@{einsums::CircularBuffer$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{\_mutex}{\_mutex}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+std\+::mutex \mbox{\hyperlink{structeinsums_1_1CircularBuffer}{einsums\+::\+Circular\+Buffer}}$<$ T $>$\+::\+\_\+mutex\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{structeinsums_1_1CircularBuffer_a5f4e1710ee3b975cac65f0c06f3cb941}\label{structeinsums_1_1CircularBuffer_a5f4e1710ee3b975cac65f0c06f3cb941}} 
+\index{einsums::CircularBuffer$<$ T $>$@{einsums::CircularBuffer$<$ T $>$}!\_tail@{\_tail}}
+\index{\_tail@{\_tail}!einsums::CircularBuffer$<$ T $>$@{einsums::CircularBuffer$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{\_tail}{\_tail}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+size\+\_\+t \mbox{\hyperlink{structeinsums_1_1CircularBuffer}{einsums\+::\+Circular\+Buffer}}$<$ T $>$\+::\+\_\+tail \{0\}\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{STL_8hpp}{STL.\+hpp}}\end{DoxyCompactItemize}

@@ -1,0 +1,147 @@
+\hypertarget{classbackward_1_1SourceFile}{}\doxysection{backward\+::Source\+File Class Reference}
+\label{classbackward_1_1SourceFile}\index{backward::SourceFile@{backward::SourceFile}}
+
+
+{\ttfamily \#include $<$Backtrace.\+hpp$>$}
+
+
+
+Collaboration diagram for backward\+::Source\+File\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{d3/d20/classbackward_1_1SourceFile__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structbackward_1_1SourceFile_1_1not__isempty}{not\+\_\+isempty}}
+\item 
+struct \mbox{\hyperlink{structbackward_1_1SourceFile_1_1not__isspace}{not\+\_\+isspace}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+typedef std\+::vector$<$ std\+::pair$<$ unsigned, std\+::string $>$ $>$ \mbox{\hyperlink{classbackward_1_1SourceFile_a249ad26d824e683f42d1b93f3eafb973}{lines\+\_\+t}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classbackward_1_1SourceFile_afdd430b249b41427bc9168a702f78ff2}{Source\+File}} ()
+\item 
+\mbox{\hyperlink{classbackward_1_1SourceFile_ade72c54d448be5e420e18ea3326fe7e8}{Source\+File}} (const std\+::string \&path)
+\item 
+bool \mbox{\hyperlink{classbackward_1_1SourceFile_a86f98eb88a4b694aef54946549200842}{is\+\_\+open}} () const
+\item 
+\mbox{\hyperlink{classbackward_1_1SourceFile_a249ad26d824e683f42d1b93f3eafb973}{lines\+\_\+t}} \& \mbox{\hyperlink{classbackward_1_1SourceFile_ae6835e99c593a5a2df9ac4bf36685bad}{get\+\_\+lines}} (unsigned line\+\_\+start, unsigned line\+\_\+count, \mbox{\hyperlink{classbackward_1_1SourceFile_a249ad26d824e683f42d1b93f3eafb973}{lines\+\_\+t}} \&lines)
+\item 
+\mbox{\hyperlink{classbackward_1_1SourceFile_a249ad26d824e683f42d1b93f3eafb973}{lines\+\_\+t}} \mbox{\hyperlink{classbackward_1_1SourceFile_a0e99a27e60f7bc8d45438c749d6fa18a}{get\+\_\+lines}} (unsigned line\+\_\+start, unsigned line\+\_\+count)
+\item 
+void \mbox{\hyperlink{classbackward_1_1SourceFile_ac366364cbae9bb0edc23269e71a19364}{swap}} (\mbox{\hyperlink{classbackward_1_1SourceFile}{Source\+File}} \&b)
+\item 
+\mbox{\hyperlink{classbackward_1_1SourceFile_aa32237a72e4175a9cfc3772bcd0c204e}{Source\+File}} (const \mbox{\hyperlink{classbackward_1_1SourceFile}{Source\+File}} \&from)
+\item 
+\mbox{\hyperlink{classbackward_1_1SourceFile}{Source\+File}} \& \mbox{\hyperlink{classbackward_1_1SourceFile_adc174c36d2866c7d4176ac71a310d47b}{operator=}} (const \mbox{\hyperlink{classbackward_1_1SourceFile}{Source\+File}} \&from)
+\end{DoxyCompactItemize}
+\doxysubsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+std\+::vector$<$ std\+::string $>$ \mbox{\hyperlink{classbackward_1_1SourceFile_ad6f523d9e891b68ebc89a6f50060957a}{get\+\_\+paths\+\_\+from\+\_\+env\+\_\+variable\+\_\+impl}} ()
+\item 
+const std\+::vector$<$ std\+::string $>$ \& \mbox{\hyperlink{classbackward_1_1SourceFile_a9dfcab2d0144c47ef10866799371cf07}{get\+\_\+paths\+\_\+from\+\_\+env\+\_\+variable}} ()
+\end{DoxyCompactItemize}
+\doxysubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classbackward_1_1details_1_1handle}{details\+::handle}}$<$ std\+::ifstream $\ast$, \mbox{\hyperlink{structbackward_1_1details_1_1default__delete}{details\+::default\+\_\+delete}}$<$ std\+::ifstream $\ast$ $>$ $>$ \mbox{\hyperlink{classbackward_1_1SourceFile_a51983659f9007727423542f3eb1fa231}{\+\_\+file}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Typedef Documentation}
+\mbox{\Hypertarget{classbackward_1_1SourceFile_a249ad26d824e683f42d1b93f3eafb973}\label{classbackward_1_1SourceFile_a249ad26d824e683f42d1b93f3eafb973}} 
+\index{backward::SourceFile@{backward::SourceFile}!lines\_t@{lines\_t}}
+\index{lines\_t@{lines\_t}!backward::SourceFile@{backward::SourceFile}}
+\doxysubsubsection{\texorpdfstring{lines\_t}{lines\_t}}
+{\footnotesize\ttfamily typedef std\+::vector$<$std\+::pair$<$unsigned, std\+::string$>$ $>$ \mbox{\hyperlink{classbackward_1_1SourceFile_a249ad26d824e683f42d1b93f3eafb973}{backward\+::\+Source\+File\+::lines\+\_\+t}}}
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classbackward_1_1SourceFile_afdd430b249b41427bc9168a702f78ff2}\label{classbackward_1_1SourceFile_afdd430b249b41427bc9168a702f78ff2}} 
+\index{backward::SourceFile@{backward::SourceFile}!SourceFile@{SourceFile}}
+\index{SourceFile@{SourceFile}!backward::SourceFile@{backward::SourceFile}}
+\doxysubsubsection{\texorpdfstring{SourceFile()}{SourceFile()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily backward\+::\+Source\+File\+::\+Source\+File (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classbackward_1_1SourceFile_ade72c54d448be5e420e18ea3326fe7e8}\label{classbackward_1_1SourceFile_ade72c54d448be5e420e18ea3326fe7e8}} 
+\index{backward::SourceFile@{backward::SourceFile}!SourceFile@{SourceFile}}
+\index{SourceFile@{SourceFile}!backward::SourceFile@{backward::SourceFile}}
+\doxysubsubsection{\texorpdfstring{SourceFile()}{SourceFile()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily backward\+::\+Source\+File\+::\+Source\+File (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{path }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classbackward_1_1SourceFile_aa32237a72e4175a9cfc3772bcd0c204e}\label{classbackward_1_1SourceFile_aa32237a72e4175a9cfc3772bcd0c204e}} 
+\index{backward::SourceFile@{backward::SourceFile}!SourceFile@{SourceFile}}
+\index{SourceFile@{SourceFile}!backward::SourceFile@{backward::SourceFile}}
+\doxysubsubsection{\texorpdfstring{SourceFile()}{SourceFile()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily backward\+::\+Source\+File\+::\+Source\+File (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classbackward_1_1SourceFile}{Source\+File}} \&}]{from }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [explicit]}}
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classbackward_1_1SourceFile_a0e99a27e60f7bc8d45438c749d6fa18a}\label{classbackward_1_1SourceFile_a0e99a27e60f7bc8d45438c749d6fa18a}} 
+\index{backward::SourceFile@{backward::SourceFile}!get\_lines@{get\_lines}}
+\index{get\_lines@{get\_lines}!backward::SourceFile@{backward::SourceFile}}
+\doxysubsubsection{\texorpdfstring{get\_lines()}{get\_lines()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classbackward_1_1SourceFile_a249ad26d824e683f42d1b93f3eafb973}{lines\+\_\+t}} backward\+::\+Source\+File\+::get\+\_\+lines (\begin{DoxyParamCaption}\item[{unsigned}]{line\+\_\+start,  }\item[{unsigned}]{line\+\_\+count }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classbackward_1_1SourceFile_ae6835e99c593a5a2df9ac4bf36685bad}\label{classbackward_1_1SourceFile_ae6835e99c593a5a2df9ac4bf36685bad}} 
+\index{backward::SourceFile@{backward::SourceFile}!get\_lines@{get\_lines}}
+\index{get\_lines@{get\_lines}!backward::SourceFile@{backward::SourceFile}}
+\doxysubsubsection{\texorpdfstring{get\_lines()}{get\_lines()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classbackward_1_1SourceFile_a249ad26d824e683f42d1b93f3eafb973}{lines\+\_\+t}}\& backward\+::\+Source\+File\+::get\+\_\+lines (\begin{DoxyParamCaption}\item[{unsigned}]{line\+\_\+start,  }\item[{unsigned}]{line\+\_\+count,  }\item[{\mbox{\hyperlink{classbackward_1_1SourceFile_a249ad26d824e683f42d1b93f3eafb973}{lines\+\_\+t}} \&}]{lines }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classbackward_1_1SourceFile_a9dfcab2d0144c47ef10866799371cf07}\label{classbackward_1_1SourceFile_a9dfcab2d0144c47ef10866799371cf07}} 
+\index{backward::SourceFile@{backward::SourceFile}!get\_paths\_from\_env\_variable@{get\_paths\_from\_env\_variable}}
+\index{get\_paths\_from\_env\_variable@{get\_paths\_from\_env\_variable}!backward::SourceFile@{backward::SourceFile}}
+\doxysubsubsection{\texorpdfstring{get\_paths\_from\_env\_variable()}{get\_paths\_from\_env\_variable()}}
+{\footnotesize\ttfamily const std\+::vector$<$std\+::string$>$\& backward\+::\+Source\+File\+::get\+\_\+paths\+\_\+from\+\_\+env\+\_\+variable (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [private]}}
+
+\mbox{\Hypertarget{classbackward_1_1SourceFile_ad6f523d9e891b68ebc89a6f50060957a}\label{classbackward_1_1SourceFile_ad6f523d9e891b68ebc89a6f50060957a}} 
+\index{backward::SourceFile@{backward::SourceFile}!get\_paths\_from\_env\_variable\_impl@{get\_paths\_from\_env\_variable\_impl}}
+\index{get\_paths\_from\_env\_variable\_impl@{get\_paths\_from\_env\_variable\_impl}!backward::SourceFile@{backward::SourceFile}}
+\doxysubsubsection{\texorpdfstring{get\_paths\_from\_env\_variable\_impl()}{get\_paths\_from\_env\_variable\_impl()}}
+{\footnotesize\ttfamily std\+::vector$<$std\+::string$>$ backward\+::\+Source\+File\+::get\+\_\+paths\+\_\+from\+\_\+env\+\_\+variable\+\_\+impl (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [private]}}
+
+\mbox{\Hypertarget{classbackward_1_1SourceFile_a86f98eb88a4b694aef54946549200842}\label{classbackward_1_1SourceFile_a86f98eb88a4b694aef54946549200842}} 
+\index{backward::SourceFile@{backward::SourceFile}!is\_open@{is\_open}}
+\index{is\_open@{is\_open}!backward::SourceFile@{backward::SourceFile}}
+\doxysubsubsection{\texorpdfstring{is\_open()}{is\_open()}}
+{\footnotesize\ttfamily bool backward\+::\+Source\+File\+::is\+\_\+open (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classbackward_1_1SourceFile_adc174c36d2866c7d4176ac71a310d47b}\label{classbackward_1_1SourceFile_adc174c36d2866c7d4176ac71a310d47b}} 
+\index{backward::SourceFile@{backward::SourceFile}!operator=@{operator=}}
+\index{operator=@{operator=}!backward::SourceFile@{backward::SourceFile}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classbackward_1_1SourceFile}{Source\+File}}\& backward\+::\+Source\+File\+::operator= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classbackward_1_1SourceFile}{Source\+File}} \&}]{from }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classbackward_1_1SourceFile_ac366364cbae9bb0edc23269e71a19364}\label{classbackward_1_1SourceFile_ac366364cbae9bb0edc23269e71a19364}} 
+\index{backward::SourceFile@{backward::SourceFile}!swap@{swap}}
+\index{swap@{swap}!backward::SourceFile@{backward::SourceFile}}
+\doxysubsubsection{\texorpdfstring{swap()}{swap()}}
+{\footnotesize\ttfamily void backward\+::\+Source\+File\+::swap (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classbackward_1_1SourceFile}{Source\+File}} \&}]{b }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{classbackward_1_1SourceFile_a51983659f9007727423542f3eb1fa231}\label{classbackward_1_1SourceFile_a51983659f9007727423542f3eb1fa231}} 
+\index{backward::SourceFile@{backward::SourceFile}!\_file@{\_file}}
+\index{\_file@{\_file}!backward::SourceFile@{backward::SourceFile}}
+\doxysubsubsection{\texorpdfstring{\_file}{\_file}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classbackward_1_1details_1_1handle}{details\+::handle}}$<$std\+::ifstream $\ast$, \mbox{\hyperlink{structbackward_1_1details_1_1default__delete}{details\+::default\+\_\+delete}}$<$std\+::ifstream $\ast$$>$ $>$ backward\+::\+Source\+File\+::\+\_\+file\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{Backtrace_8hpp}{Backtrace.\+hpp}}\end{DoxyCompactItemize}

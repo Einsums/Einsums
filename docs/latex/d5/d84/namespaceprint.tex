@@ -1,0 +1,87 @@
+\hypertarget{namespaceprint}{}\doxysection{print Namespace Reference}
+\label{namespaceprint}\index{print@{print}}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structprint_1_1Indent}{Indent}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{__Export_8hpp_ad5ec33d87b554501185251a886ebf557}{EINSUMS\+\_\+\+EXPORT}} \mbox{\hyperlink{namespaceprint_a90b4188f5f5b15f32410555747fe5533}{indent}} ()
+\item 
+void \mbox{\hyperlink{__Export_8hpp_ad5ec33d87b554501185251a886ebf557}{EINSUMS\+\_\+\+EXPORT}} \mbox{\hyperlink{namespaceprint_afdf5078059a306efa27d341fcdf411cc}{deindent}} ()
+\item 
+auto \mbox{\hyperlink{__Export_8hpp_ad5ec33d87b554501185251a886ebf557}{EINSUMS\+\_\+\+EXPORT}} \mbox{\hyperlink{namespaceprint_a5668930379ed66a8b3a338df7af5fbc7}{current\+\_\+indent\+\_\+level}} () -\/$>$ int
+\item 
+void \mbox{\hyperlink{__Export_8hpp_ad5ec33d87b554501185251a886ebf557}{EINSUMS\+\_\+\+EXPORT}} \mbox{\hyperlink{namespaceprint_a33ebd2131b91026bc10f143fe19745f7}{always\+\_\+print\+\_\+thread\+\_\+id}} (bool onoff)
+\begin{DoxyCompactList}\small\item\em Controls whether a line header is printed for the main thread or not. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{__Export_8hpp_ad5ec33d87b554501185251a886ebf557}{EINSUMS\+\_\+\+EXPORT}} \mbox{\hyperlink{namespaceprint_a11e6b52db385aeaedb6a2a52668eb4e3}{suppress\+\_\+output}} (bool onoff)
+\begin{DoxyCompactList}\small\item\em Silences all output. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{__Export_8hpp_ad5ec33d87b554501185251a886ebf557}{EINSUMS\+\_\+\+EXPORT}} \mbox{\hyperlink{namespaceprint_a06b242948a7b85000ab9fe1b2d0f7de9}{stacktrace}} ()
+\item 
+void \mbox{\hyperlink{namespaceprint_a37261bc35015db643b4348fb12bd10ae}{update\+\_\+indent\+\_\+string}} ()
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{namespaceprint_a33ebd2131b91026bc10f143fe19745f7}\label{namespaceprint_a33ebd2131b91026bc10f143fe19745f7}} 
+\index{print@{print}!always\_print\_thread\_id@{always\_print\_thread\_id}}
+\index{always\_print\_thread\_id@{always\_print\_thread\_id}!print@{print}}
+\doxysubsubsection{\texorpdfstring{always\_print\_thread\_id()}{always\_print\_thread\_id()}}
+{\footnotesize\ttfamily void print\+::always\+\_\+print\+\_\+thread\+\_\+id (\begin{DoxyParamCaption}\item[{bool}]{onoff }\end{DoxyParamCaption})}
+
+
+
+Controls whether a line header is printed for the main thread or not. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em onoff} & If true, print thread id for main and child threads, otherwise just print for child threads. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{namespaceprint_a5668930379ed66a8b3a338df7af5fbc7}\label{namespaceprint_a5668930379ed66a8b3a338df7af5fbc7}} 
+\index{print@{print}!current\_indent\_level@{current\_indent\_level}}
+\index{current\_indent\_level@{current\_indent\_level}!print@{print}}
+\doxysubsubsection{\texorpdfstring{current\_indent\_level()}{current\_indent\_level()}}
+{\footnotesize\ttfamily auto print\+::current\+\_\+indent\+\_\+level (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) -\/$>$ int}
+
+Returns the current indentation level. \mbox{\Hypertarget{namespaceprint_afdf5078059a306efa27d341fcdf411cc}\label{namespaceprint_afdf5078059a306efa27d341fcdf411cc}} 
+\index{print@{print}!deindent@{deindent}}
+\index{deindent@{deindent}!print@{print}}
+\doxysubsubsection{\texorpdfstring{deindent()}{deindent()}}
+{\footnotesize\ttfamily void print\+::deindent (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Removes spaces from the global indentation counter. \mbox{\Hypertarget{namespaceprint_a90b4188f5f5b15f32410555747fe5533}\label{namespaceprint_a90b4188f5f5b15f32410555747fe5533}} 
+\index{print@{print}!indent@{indent}}
+\index{indent@{indent}!print@{print}}
+\doxysubsubsection{\texorpdfstring{indent()}{indent()}}
+{\footnotesize\ttfamily void print\+::indent (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Adds spaces to the global indentation counter. \mbox{\Hypertarget{namespaceprint_a06b242948a7b85000ab9fe1b2d0f7de9}\label{namespaceprint_a06b242948a7b85000ab9fe1b2d0f7de9}} 
+\index{print@{print}!stacktrace@{stacktrace}}
+\index{stacktrace@{stacktrace}!print@{print}}
+\doxysubsubsection{\texorpdfstring{stacktrace()}{stacktrace()}}
+{\footnotesize\ttfamily void print\+::stacktrace (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespaceprint_a11e6b52db385aeaedb6a2a52668eb4e3}\label{namespaceprint_a11e6b52db385aeaedb6a2a52668eb4e3}} 
+\index{print@{print}!suppress\_output@{suppress\_output}}
+\index{suppress\_output@{suppress\_output}!print@{print}}
+\doxysubsubsection{\texorpdfstring{suppress\_output()}{suppress\_output()}}
+{\footnotesize\ttfamily void print\+::suppress\+\_\+output (\begin{DoxyParamCaption}\item[{bool}]{onoff }\end{DoxyParamCaption})}
+
+
+
+Silences all output. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em onoff} & If true, output is suppressed, otherwise printing is allowed. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{namespaceprint_a37261bc35015db643b4348fb12bd10ae}\label{namespaceprint_a37261bc35015db643b4348fb12bd10ae}} 
+\index{print@{print}!update\_indent\_string@{update\_indent\_string}}
+\index{update\_indent\_string@{update\_indent\_string}!print@{print}}
+\doxysubsubsection{\texorpdfstring{update\_indent\_string()}{update\_indent\_string()}}
+{\footnotesize\ttfamily void print\+::update\+\_\+indent\+\_\+string (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+

@@ -1,0 +1,395 @@
+\hypertarget{structeinsums_1_1TensorView}{}\doxysection{einsums\+::Tensor\+View$<$ T, Rank $>$ Struct Template Reference}
+\label{structeinsums_1_1TensorView}\index{einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}}
+
+
+{\ttfamily \#include $<$Tensor.\+hpp$>$}
+
+
+
+Inheritance diagram for einsums\+::Tensor\+View$<$ T, Rank $>$\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=233pt]{df/d96/structeinsums_1_1TensorView__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for einsums\+::Tensor\+View$<$ T, Rank $>$\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{de/d24/structeinsums_1_1TensorView__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structeinsums_1_1TensorView_a74c711551108a87a8ec184808f8d6566}{Tensor\+View}} ()=delete
+\item 
+\mbox{\hyperlink{structeinsums_1_1TensorView_a801d2df0b0c0ad9479c7acfe2ef3777a}{Tensor\+View}} (const \mbox{\hyperlink{structeinsums_1_1TensorView}{Tensor\+View}} \&)=default
+\item 
+\mbox{\hyperlink{structeinsums_1_1TensorView_a4d2ffe47a46888eb790c311089652491}{$\sim$\+Tensor\+View}} ()=default
+\item 
+{\footnotesize template$<$size\+\_\+t Other\+Rank, typename... Args$>$ }\\\mbox{\hyperlink{structeinsums_1_1TensorView_a92001e1e8067c0581c21eb4494480eda}{Tensor\+View}} (const \mbox{\hyperlink{structeinsums_1_1Tensor}{Tensor}}$<$ T, Other\+Rank $>$ \&other, const \mbox{\hyperlink{namespaceeinsums_a8c1a58f7bcdc7d0bab4c5df086098d3d}{Dim}}$<$ Rank $>$ \&\mbox{\hyperlink{structeinsums_1_1TensorView_a5be48ea8d047713bb0fcc78e86099f75}{dim}}, Args \&\&...args)
+\item 
+{\footnotesize template$<$size\+\_\+t Other\+Rank, typename... Args$>$ }\\\mbox{\hyperlink{structeinsums_1_1TensorView_aeff7be44df72d87edebf3d59a52ac276}{Tensor\+View}} (\mbox{\hyperlink{structeinsums_1_1Tensor}{Tensor}}$<$ T, Other\+Rank $>$ \&other, const \mbox{\hyperlink{namespaceeinsums_a8c1a58f7bcdc7d0bab4c5df086098d3d}{Dim}}$<$ Rank $>$ \&\mbox{\hyperlink{structeinsums_1_1TensorView_a5be48ea8d047713bb0fcc78e86099f75}{dim}}, Args \&\&...args)
+\item 
+{\footnotesize template$<$size\+\_\+t Other\+Rank, typename... Args$>$ }\\\mbox{\hyperlink{structeinsums_1_1TensorView_a4665236c60092f790f299bd0dd0e5a8a}{Tensor\+View}} (\mbox{\hyperlink{structeinsums_1_1TensorView}{Tensor\+View}}$<$ T, Other\+Rank $>$ \&other, const \mbox{\hyperlink{namespaceeinsums_a8c1a58f7bcdc7d0bab4c5df086098d3d}{Dim}}$<$ Rank $>$ \&\mbox{\hyperlink{structeinsums_1_1TensorView_a5be48ea8d047713bb0fcc78e86099f75}{dim}}, Args \&\&...args)
+\item 
+{\footnotesize template$<$size\+\_\+t Other\+Rank, typename... Args$>$ }\\\mbox{\hyperlink{structeinsums_1_1TensorView_a9d5b56012040e6b276deee7425f3aab4}{Tensor\+View}} (const \mbox{\hyperlink{structeinsums_1_1TensorView}{Tensor\+View}}$<$ T, Other\+Rank $>$ \&other, const \mbox{\hyperlink{namespaceeinsums_a8c1a58f7bcdc7d0bab4c5df086098d3d}{Dim}}$<$ Rank $>$ \&\mbox{\hyperlink{structeinsums_1_1TensorView_a5be48ea8d047713bb0fcc78e86099f75}{dim}}, Args \&\&...args)
+\item 
+{\footnotesize template$<$size\+\_\+t Other\+Rank, typename... Args$>$ }\\\mbox{\hyperlink{structeinsums_1_1TensorView_ab2140a2e0701dc06a7ed677c7ee1d371}{Tensor\+View}} (std\+::string \mbox{\hyperlink{structeinsums_1_1TensorView_a1c08830c0d96b4c824f91d78ef8333a7}{name}}, \mbox{\hyperlink{structeinsums_1_1Tensor}{Tensor}}$<$ T, Other\+Rank $>$ \&other, const \mbox{\hyperlink{namespaceeinsums_a8c1a58f7bcdc7d0bab4c5df086098d3d}{Dim}}$<$ Rank $>$ \&\mbox{\hyperlink{structeinsums_1_1TensorView_a5be48ea8d047713bb0fcc78e86099f75}{dim}}, Args \&\&...args)
+\item 
+auto \mbox{\hyperlink{structeinsums_1_1TensorView_a662a20c9ab08756ed276b16ddcf78bdc}{operator=}} (const T $\ast$other) -\/$>$ \mbox{\hyperlink{structeinsums_1_1TensorView}{Tensor\+View}} \&
+\item 
+{\footnotesize template$<$template$<$ typename, size\+\_\+t $>$ typename AType$>$ }\\auto \mbox{\hyperlink{structeinsums_1_1TensorView_a5b0043b43cec28873901164e44904570}{operator=}} (const AType$<$ T, Rank $>$ \&other) -\/$>$ typename std\+::enable\+\_\+if\+\_\+t$<$ \mbox{\hyperlink{namespaceeinsums_a236361d3881b84362529be9118d38b6e}{is\+\_\+incore\+\_\+rank\+\_\+tensor\+\_\+v}}$<$ AType$<$ T, Rank $>$, Rank, T $>$, \mbox{\hyperlink{structeinsums_1_1TensorView}{Tensor\+View}} \& $>$
+\item 
+{\footnotesize template$<$template$<$ typename, size\+\_\+t $>$ typename AType$>$ }\\auto \mbox{\hyperlink{structeinsums_1_1TensorView_ac8b62e9e9d5808ca70799c0198ee6a5d}{operator=}} (const AType$<$ T, Rank $>$ \&\&other) -\/$>$ typename std\+::enable\+\_\+if\+\_\+t$<$ \mbox{\hyperlink{namespaceeinsums_a236361d3881b84362529be9118d38b6e}{is\+\_\+incore\+\_\+rank\+\_\+tensor\+\_\+v}}$<$ AType$<$ T, Rank $>$, Rank, T $>$, \mbox{\hyperlink{structeinsums_1_1TensorView}{Tensor\+View}} \& $>$
+\item 
+auto \mbox{\hyperlink{structeinsums_1_1TensorView_ad8d4e0207e1d1fe95626044e0036b42c}{operator=}} (const T \&fill\+\_\+value) -\/$>$ \mbox{\hyperlink{structeinsums_1_1TensorView}{Tensor\+View}} \&
+\item 
+auto \mbox{\hyperlink{structeinsums_1_1TensorView_a21a1c3486131f3480d8a50463749c569}{data}} () -\/$>$ T $\ast$
+\item 
+auto \mbox{\hyperlink{structeinsums_1_1TensorView_ae7452960ad10fe92a151ad51650d59e1}{data}} () const -\/$>$ const T $\ast$
+\item 
+{\footnotesize template$<$typename... Multi\+Index$>$ }\\auto \mbox{\hyperlink{structeinsums_1_1TensorView_a02d688592336b0a4412d6d8852725665}{data}} (Multi\+Index... index) const -\/$>$ T $\ast$
+\item 
+auto \mbox{\hyperlink{structeinsums_1_1TensorView_a5b52626208311c86c5700789f20f13b0}{data\+\_\+array}} (const std\+::array$<$ size\+\_\+t, Rank $>$ \&index\+\_\+list) const -\/$>$ T $\ast$
+\item 
+{\footnotesize template$<$typename... Multi\+Index$>$ }\\auto \mbox{\hyperlink{structeinsums_1_1TensorView_acec0bfd09a4275c871ba16d25ee7346e}{operator()}} (Multi\+Index... index) const -\/$>$ const T \&
+\item 
+{\footnotesize template$<$typename... Multi\+Index$>$ }\\auto \mbox{\hyperlink{structeinsums_1_1TensorView_a00f59b2c8e3bd910c31749962aebaa7f}{operator()}} (Multi\+Index... index) -\/$>$ T \&
+\item 
+auto \mbox{\hyperlink{structeinsums_1_1TensorView_a5be48ea8d047713bb0fcc78e86099f75}{dim}} (int d) const -\/$>$ size\+\_\+t
+\item 
+auto \mbox{\hyperlink{structeinsums_1_1TensorView_a9068e9a415f6714fcdd7ceeb8d91c0a8}{dims}} () const -\/$>$ \mbox{\hyperlink{namespaceeinsums_a8c1a58f7bcdc7d0bab4c5df086098d3d}{Dim}}$<$ Rank $>$
+\item 
+auto \mbox{\hyperlink{structeinsums_1_1TensorView_a1c08830c0d96b4c824f91d78ef8333a7}{name}} () const -\/$>$ const std\+::string \&
+\item 
+void \mbox{\hyperlink{structeinsums_1_1TensorView_af655f67bdaf58f957423c8362c03e5ca}{set\+\_\+name}} (const std\+::string \&\mbox{\hyperlink{structeinsums_1_1TensorView_a1c08830c0d96b4c824f91d78ef8333a7}{name}})
+\item 
+auto \mbox{\hyperlink{structeinsums_1_1TensorView_aa22e99fb834c483e65fc1bd6780c6bb1}{stride}} (int d) const noexcept -\/$>$ size\+\_\+t
+\item 
+auto \mbox{\hyperlink{structeinsums_1_1TensorView_afaa2c259174c557483ef7296fe937de9}{strides}} () const noexcept -\/$>$ const auto \&
+\item 
+auto \mbox{\hyperlink{structeinsums_1_1TensorView_a367b7a31e7fffe0e9c4664993733a415}{to\+\_\+rank\+\_\+1\+\_\+view}} () const -\/$>$ \mbox{\hyperlink{structeinsums_1_1TensorView}{Tensor\+View}}$<$ T, 1 $>$
+\item 
+auto \mbox{\hyperlink{structeinsums_1_1TensorView_aa4a1a78725e5f33f057bdf1276335406}{full\+\_\+view\+\_\+of\+\_\+underlying}} () const noexcept -\/$>$ bool
+\item 
+auto \mbox{\hyperlink{structeinsums_1_1TensorView_ad9006744a3222e99a75c5fff1c54de51}{size}} () const
+\end{DoxyCompactItemize}
+\doxysubsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+auto \mbox{\hyperlink{structeinsums_1_1TensorView_ab691be579e8854cd5a41a4fb89eb24d5}{common\+\_\+initialization}} (const T $\ast$other)
+\item 
+{\footnotesize template$<$template$<$ typename, size\+\_\+t $>$ typename Tensor\+Type, size\+\_\+t Other\+Rank, typename... Args$>$ }\\auto \mbox{\hyperlink{structeinsums_1_1TensorView_a6944dc73b0a177589273b496b82d6316}{common\+\_\+initialization}} (Tensor\+Type$<$ T, Other\+Rank $>$ \&other, Args \&\&...args) -\/$>$ std\+::enable\+\_\+if\+\_\+t$<$ std\+::is\+\_\+base\+\_\+of\+\_\+v$<$ \mbox{\hyperlink{structeinsums_1_1detail_1_1TensorBase}{detail\+::\+Tensor\+Base}}$<$ T, Other\+Rank $>$, Tensor\+Type$<$ T, Other\+Rank $>$$>$$>$
+\end{DoxyCompactItemize}
+\doxysubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+std\+::string \mbox{\hyperlink{structeinsums_1_1TensorView_a8aaedd1eb4d66ed3e982f219ad7597e6}{\+\_\+name}} \{\char`\"{}(Unnamed View)\char`\"{}\}
+\item 
+\mbox{\hyperlink{namespaceeinsums_a8c1a58f7bcdc7d0bab4c5df086098d3d}{Dim}}$<$ Rank $>$ \mbox{\hyperlink{structeinsums_1_1TensorView_ae419171e4f309c35a83fa0884e2d54fe}{\+\_\+dims}}
+\item 
+\mbox{\hyperlink{namespaceeinsums_a6138835e2652eaae61b1d977dd17d29c}{Stride}}$<$ Rank $>$ \mbox{\hyperlink{structeinsums_1_1TensorView_a9da632a4b2ffb1e0d56dba8b90080b05}{\+\_\+strides}}
+\item 
+bool \mbox{\hyperlink{structeinsums_1_1TensorView_aa27ac08b48b870f2a0704a9d2302d378}{\+\_\+full\+\_\+view\+\_\+of\+\_\+underlying}} \{false\}
+\item 
+T $\ast$ \mbox{\hyperlink{structeinsums_1_1TensorView_a7e90f2fab045375ca353df3deeb45e6c}{\+\_\+data}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$typename T\+\_\+ , size\+\_\+t Rank\+\_\+$>$ }\\struct \mbox{\hyperlink{structeinsums_1_1TensorView_a590dacb85b9bccb010f0f68c40b723b8}{Tensor}}
+\item 
+{\footnotesize template$<$typename T\+\_\+ , size\+\_\+t Other\+Rank\+\_\+$>$ }\\struct \mbox{\hyperlink{structeinsums_1_1TensorView_aae75ac1aa3cc1a9eeabae60902a63994}{Tensor\+View}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{structeinsums_1_1TensorView_a74c711551108a87a8ec184808f8d6566}\label{structeinsums_1_1TensorView_a74c711551108a87a8ec184808f8d6566}} 
+\index{einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}!TensorView@{TensorView}}
+\index{TensorView@{TensorView}!einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{TensorView()}{TensorView()}\hspace{0.1cm}{\footnotesize\ttfamily [1/7]}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+\mbox{\hyperlink{structeinsums_1_1TensorView}{einsums\+::\+Tensor\+View}}$<$ T, Rank $>$\+::\mbox{\hyperlink{structeinsums_1_1TensorView}{Tensor\+View}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\mbox{\Hypertarget{structeinsums_1_1TensorView_a801d2df0b0c0ad9479c7acfe2ef3777a}\label{structeinsums_1_1TensorView_a801d2df0b0c0ad9479c7acfe2ef3777a}} 
+\index{einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}!TensorView@{TensorView}}
+\index{TensorView@{TensorView}!einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{TensorView()}{TensorView()}\hspace{0.1cm}{\footnotesize\ttfamily [2/7]}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+\mbox{\hyperlink{structeinsums_1_1TensorView}{einsums\+::\+Tensor\+View}}$<$ T, Rank $>$\+::\mbox{\hyperlink{structeinsums_1_1TensorView}{Tensor\+View}} (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{structeinsums_1_1TensorView}{Tensor\+View}}$<$ T, Rank $>$ \&}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+\mbox{\Hypertarget{structeinsums_1_1TensorView_a4d2ffe47a46888eb790c311089652491}\label{structeinsums_1_1TensorView_a4d2ffe47a46888eb790c311089652491}} 
+\index{einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}!````~TensorView@{$\sim$TensorView}}
+\index{````~TensorView@{$\sim$TensorView}!einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{$\sim$TensorView()}{~TensorView()}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+\mbox{\hyperlink{structeinsums_1_1TensorView}{einsums\+::\+Tensor\+View}}$<$ T, Rank $>$\+::$\sim$\mbox{\hyperlink{structeinsums_1_1TensorView}{Tensor\+View}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+\mbox{\Hypertarget{structeinsums_1_1TensorView_a92001e1e8067c0581c21eb4494480eda}\label{structeinsums_1_1TensorView_a92001e1e8067c0581c21eb4494480eda}} 
+\index{einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}!TensorView@{TensorView}}
+\index{TensorView@{TensorView}!einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{TensorView()}{TensorView()}\hspace{0.1cm}{\footnotesize\ttfamily [3/7]}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+template$<$size\+\_\+t Other\+Rank, typename... Args$>$ \\
+\mbox{\hyperlink{structeinsums_1_1TensorView}{einsums\+::\+Tensor\+View}}$<$ T, Rank $>$\+::\mbox{\hyperlink{structeinsums_1_1TensorView}{Tensor\+View}} (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{structeinsums_1_1Tensor}{Tensor}}$<$ T, Other\+Rank $>$ \&}]{other,  }\item[{const \mbox{\hyperlink{namespaceeinsums_a8c1a58f7bcdc7d0bab4c5df086098d3d}{Dim}}$<$ Rank $>$ \&}]{dim,  }\item[{Args \&\&...}]{args }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [explicit]}}
+
+\mbox{\Hypertarget{structeinsums_1_1TensorView_aeff7be44df72d87edebf3d59a52ac276}\label{structeinsums_1_1TensorView_aeff7be44df72d87edebf3d59a52ac276}} 
+\index{einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}!TensorView@{TensorView}}
+\index{TensorView@{TensorView}!einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{TensorView()}{TensorView()}\hspace{0.1cm}{\footnotesize\ttfamily [4/7]}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+template$<$size\+\_\+t Other\+Rank, typename... Args$>$ \\
+\mbox{\hyperlink{structeinsums_1_1TensorView}{einsums\+::\+Tensor\+View}}$<$ T, Rank $>$\+::\mbox{\hyperlink{structeinsums_1_1TensorView}{Tensor\+View}} (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structeinsums_1_1Tensor}{Tensor}}$<$ T, Other\+Rank $>$ \&}]{other,  }\item[{const \mbox{\hyperlink{namespaceeinsums_a8c1a58f7bcdc7d0bab4c5df086098d3d}{Dim}}$<$ Rank $>$ \&}]{dim,  }\item[{Args \&\&...}]{args }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [explicit]}}
+
+\mbox{\Hypertarget{structeinsums_1_1TensorView_a4665236c60092f790f299bd0dd0e5a8a}\label{structeinsums_1_1TensorView_a4665236c60092f790f299bd0dd0e5a8a}} 
+\index{einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}!TensorView@{TensorView}}
+\index{TensorView@{TensorView}!einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{TensorView()}{TensorView()}\hspace{0.1cm}{\footnotesize\ttfamily [5/7]}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+template$<$size\+\_\+t Other\+Rank, typename... Args$>$ \\
+\mbox{\hyperlink{structeinsums_1_1TensorView}{einsums\+::\+Tensor\+View}}$<$ T, Rank $>$\+::\mbox{\hyperlink{structeinsums_1_1TensorView}{Tensor\+View}} (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structeinsums_1_1TensorView}{Tensor\+View}}$<$ T, Other\+Rank $>$ \&}]{other,  }\item[{const \mbox{\hyperlink{namespaceeinsums_a8c1a58f7bcdc7d0bab4c5df086098d3d}{Dim}}$<$ Rank $>$ \&}]{dim,  }\item[{Args \&\&...}]{args }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [explicit]}}
+
+\mbox{\Hypertarget{structeinsums_1_1TensorView_a9d5b56012040e6b276deee7425f3aab4}\label{structeinsums_1_1TensorView_a9d5b56012040e6b276deee7425f3aab4}} 
+\index{einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}!TensorView@{TensorView}}
+\index{TensorView@{TensorView}!einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{TensorView()}{TensorView()}\hspace{0.1cm}{\footnotesize\ttfamily [6/7]}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+template$<$size\+\_\+t Other\+Rank, typename... Args$>$ \\
+\mbox{\hyperlink{structeinsums_1_1TensorView}{einsums\+::\+Tensor\+View}}$<$ T, Rank $>$\+::\mbox{\hyperlink{structeinsums_1_1TensorView}{Tensor\+View}} (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{structeinsums_1_1TensorView}{Tensor\+View}}$<$ T, Other\+Rank $>$ \&}]{other,  }\item[{const \mbox{\hyperlink{namespaceeinsums_a8c1a58f7bcdc7d0bab4c5df086098d3d}{Dim}}$<$ Rank $>$ \&}]{dim,  }\item[{Args \&\&...}]{args }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [explicit]}}
+
+\mbox{\Hypertarget{structeinsums_1_1TensorView_ab2140a2e0701dc06a7ed677c7ee1d371}\label{structeinsums_1_1TensorView_ab2140a2e0701dc06a7ed677c7ee1d371}} 
+\index{einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}!TensorView@{TensorView}}
+\index{TensorView@{TensorView}!einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{TensorView()}{TensorView()}\hspace{0.1cm}{\footnotesize\ttfamily [7/7]}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+template$<$size\+\_\+t Other\+Rank, typename... Args$>$ \\
+\mbox{\hyperlink{structeinsums_1_1TensorView}{einsums\+::\+Tensor\+View}}$<$ T, Rank $>$\+::\mbox{\hyperlink{structeinsums_1_1TensorView}{Tensor\+View}} (\begin{DoxyParamCaption}\item[{std\+::string}]{name,  }\item[{\mbox{\hyperlink{structeinsums_1_1Tensor}{Tensor}}$<$ T, Other\+Rank $>$ \&}]{other,  }\item[{const \mbox{\hyperlink{namespaceeinsums_a8c1a58f7bcdc7d0bab4c5df086098d3d}{Dim}}$<$ Rank $>$ \&}]{dim,  }\item[{Args \&\&...}]{args }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [explicit]}}
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{structeinsums_1_1TensorView_ab691be579e8854cd5a41a4fb89eb24d5}\label{structeinsums_1_1TensorView_ab691be579e8854cd5a41a4fb89eb24d5}} 
+\index{einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}!common\_initialization@{common\_initialization}}
+\index{common\_initialization@{common\_initialization}!einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{common\_initialization()}{common\_initialization()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+auto \mbox{\hyperlink{structeinsums_1_1TensorView}{einsums\+::\+Tensor\+View}}$<$ T, Rank $>$\+::common\+\_\+initialization (\begin{DoxyParamCaption}\item[{const T $\ast$}]{other }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [private]}}
+
+\mbox{\Hypertarget{structeinsums_1_1TensorView_a6944dc73b0a177589273b496b82d6316}\label{structeinsums_1_1TensorView_a6944dc73b0a177589273b496b82d6316}} 
+\index{einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}!common\_initialization@{common\_initialization}}
+\index{common\_initialization@{common\_initialization}!einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{common\_initialization()}{common\_initialization()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+template$<$template$<$ typename, size\+\_\+t $>$ typename Tensor\+Type, size\+\_\+t Other\+Rank, typename... Args$>$ \\
+auto \mbox{\hyperlink{structeinsums_1_1TensorView}{einsums\+::\+Tensor\+View}}$<$ T, Rank $>$\+::common\+\_\+initialization (\begin{DoxyParamCaption}\item[{Tensor\+Type$<$ T, Other\+Rank $>$ \&}]{other,  }\item[{Args \&\&...}]{args }\end{DoxyParamCaption}) -\/$>$ std\+::enable\+\_\+if\+\_\+t$<$std\+::is\+\_\+base\+\_\+of\+\_\+v$<$\mbox{\hyperlink{structeinsums_1_1detail_1_1TensorBase}{detail\+::\+Tensor\+Base}}$<$T, Other\+Rank$>$, Tensor\+Type$<$T, Other\+Rank$>$$>$$>$ \hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [private]}}
+
+\mbox{\Hypertarget{structeinsums_1_1TensorView_a21a1c3486131f3480d8a50463749c569}\label{structeinsums_1_1TensorView_a21a1c3486131f3480d8a50463749c569}} 
+\index{einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}!data@{data}}
+\index{data@{data}!einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{data()}{data()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+auto \mbox{\hyperlink{structeinsums_1_1TensorView}{einsums\+::\+Tensor\+View}}$<$ T, Rank $>$\+::data (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) -\/$>$ T $\ast$ \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{structeinsums_1_1TensorView_ae7452960ad10fe92a151ad51650d59e1}\label{structeinsums_1_1TensorView_ae7452960ad10fe92a151ad51650d59e1}} 
+\index{einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}!data@{data}}
+\index{data@{data}!einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{data()}{data()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+auto \mbox{\hyperlink{structeinsums_1_1TensorView}{einsums\+::\+Tensor\+View}}$<$ T, Rank $>$\+::data (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const -\/$>$ const T $\ast$ \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{structeinsums_1_1TensorView_a02d688592336b0a4412d6d8852725665}\label{structeinsums_1_1TensorView_a02d688592336b0a4412d6d8852725665}} 
+\index{einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}!data@{data}}
+\index{data@{data}!einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{data()}{data()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+template$<$typename... Multi\+Index$>$ \\
+auto \mbox{\hyperlink{structeinsums_1_1TensorView}{einsums\+::\+Tensor\+View}}$<$ T, Rank $>$\+::data (\begin{DoxyParamCaption}\item[{Multi\+Index...}]{index }\end{DoxyParamCaption}) const -\/$>$ T $\ast$ \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{structeinsums_1_1TensorView_a5b52626208311c86c5700789f20f13b0}\label{structeinsums_1_1TensorView_a5b52626208311c86c5700789f20f13b0}} 
+\index{einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}!data\_array@{data\_array}}
+\index{data\_array@{data\_array}!einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{data\_array()}{data\_array()}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+auto \mbox{\hyperlink{structeinsums_1_1TensorView}{einsums\+::\+Tensor\+View}}$<$ T, Rank $>$\+::data\+\_\+array (\begin{DoxyParamCaption}\item[{const std\+::array$<$ size\+\_\+t, Rank $>$ \&}]{index\+\_\+list }\end{DoxyParamCaption}) const -\/$>$ T $\ast$ \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{structeinsums_1_1TensorView_a5be48ea8d047713bb0fcc78e86099f75}\label{structeinsums_1_1TensorView_a5be48ea8d047713bb0fcc78e86099f75}} 
+\index{einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}!dim@{dim}}
+\index{dim@{dim}!einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{dim()}{dim()}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+auto \mbox{\hyperlink{structeinsums_1_1TensorView}{einsums\+::\+Tensor\+View}}$<$ T, Rank $>$\+::dim (\begin{DoxyParamCaption}\item[{int}]{d }\end{DoxyParamCaption}) const -\/$>$ size\+\_\+t \hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{structeinsums_1_1detail_1_1TensorBase_a217c12e3cc502b0b642f1fa2e81fc1fd}{einsums\+::detail\+::\+Tensor\+Base$<$ T, Rank $>$}}.
+
+\mbox{\Hypertarget{structeinsums_1_1TensorView_a9068e9a415f6714fcdd7ceeb8d91c0a8}\label{structeinsums_1_1TensorView_a9068e9a415f6714fcdd7ceeb8d91c0a8}} 
+\index{einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}!dims@{dims}}
+\index{dims@{dims}!einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{dims()}{dims()}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+auto \mbox{\hyperlink{structeinsums_1_1TensorView}{einsums\+::\+Tensor\+View}}$<$ T, Rank $>$\+::dims (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const -\/$>$ \mbox{\hyperlink{namespaceeinsums_a8c1a58f7bcdc7d0bab4c5df086098d3d}{Dim}}$<$Rank$>$ \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{structeinsums_1_1TensorView_aa4a1a78725e5f33f057bdf1276335406}\label{structeinsums_1_1TensorView_aa4a1a78725e5f33f057bdf1276335406}} 
+\index{einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}!full\_view\_of\_underlying@{full\_view\_of\_underlying}}
+\index{full\_view\_of\_underlying@{full\_view\_of\_underlying}!einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{full\_view\_of\_underlying()}{full\_view\_of\_underlying()}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+auto \mbox{\hyperlink{structeinsums_1_1TensorView}{einsums\+::\+Tensor\+View}}$<$ T, Rank $>$\+::full\+\_\+view\+\_\+of\+\_\+underlying (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const -\/$>$ bool \hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\mbox{\Hypertarget{structeinsums_1_1TensorView_a1c08830c0d96b4c824f91d78ef8333a7}\label{structeinsums_1_1TensorView_a1c08830c0d96b4c824f91d78ef8333a7}} 
+\index{einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}!name@{name}}
+\index{name@{name}!einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{name()}{name()}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+auto \mbox{\hyperlink{structeinsums_1_1TensorView}{einsums\+::\+Tensor\+View}}$<$ T, Rank $>$\+::name (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const -\/$>$ const std\+::string \& \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{structeinsums_1_1TensorView_a00f59b2c8e3bd910c31749962aebaa7f}\label{structeinsums_1_1TensorView_a00f59b2c8e3bd910c31749962aebaa7f}} 
+\index{einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}!operator()@{operator()}}
+\index{operator()@{operator()}!einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{operator()()}{operator()()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+template$<$typename... Multi\+Index$>$ \\
+auto \mbox{\hyperlink{structeinsums_1_1TensorView}{einsums\+::\+Tensor\+View}}$<$ T, Rank $>$\+::operator() (\begin{DoxyParamCaption}\item[{Multi\+Index...}]{index }\end{DoxyParamCaption}) -\/$>$ T \& \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{structeinsums_1_1TensorView_acec0bfd09a4275c871ba16d25ee7346e}\label{structeinsums_1_1TensorView_acec0bfd09a4275c871ba16d25ee7346e}} 
+\index{einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}!operator()@{operator()}}
+\index{operator()@{operator()}!einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{operator()()}{operator()()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+template$<$typename... Multi\+Index$>$ \\
+auto \mbox{\hyperlink{structeinsums_1_1TensorView}{einsums\+::\+Tensor\+View}}$<$ T, Rank $>$\+::operator() (\begin{DoxyParamCaption}\item[{Multi\+Index...}]{index }\end{DoxyParamCaption}) const -\/$>$ const T \& \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{structeinsums_1_1TensorView_ac8b62e9e9d5808ca70799c0198ee6a5d}\label{structeinsums_1_1TensorView_ac8b62e9e9d5808ca70799c0198ee6a5d}} 
+\index{einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}!operator=@{operator=}}
+\index{operator=@{operator=}!einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+template$<$template$<$ typename, size\+\_\+t $>$ typename AType$>$ \\
+auto \mbox{\hyperlink{structeinsums_1_1TensorView}{einsums\+::\+Tensor\+View}}$<$ T, Rank $>$\+::operator= (\begin{DoxyParamCaption}\item[{const AType$<$ T, Rank $>$ \&\&}]{other }\end{DoxyParamCaption}) -\/$>$ typename std\+::enable\+\_\+if\+\_\+t$<$\mbox{\hyperlink{namespaceeinsums_a236361d3881b84362529be9118d38b6e}{is\+\_\+incore\+\_\+rank\+\_\+tensor\+\_\+v}}$<$AType$<$T, Rank$>$, Rank, T$>$, \mbox{\hyperlink{structeinsums_1_1TensorView}{Tensor\+View}} \&$>$ \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{structeinsums_1_1TensorView_a5b0043b43cec28873901164e44904570}\label{structeinsums_1_1TensorView_a5b0043b43cec28873901164e44904570}} 
+\index{einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}!operator=@{operator=}}
+\index{operator=@{operator=}!einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+template$<$template$<$ typename, size\+\_\+t $>$ typename AType$>$ \\
+auto \mbox{\hyperlink{structeinsums_1_1TensorView}{einsums\+::\+Tensor\+View}}$<$ T, Rank $>$\+::operator= (\begin{DoxyParamCaption}\item[{const AType$<$ T, Rank $>$ \&}]{other }\end{DoxyParamCaption}) -\/$>$ typename std\+::enable\+\_\+if\+\_\+t$<$\mbox{\hyperlink{namespaceeinsums_a236361d3881b84362529be9118d38b6e}{is\+\_\+incore\+\_\+rank\+\_\+tensor\+\_\+v}}$<$AType$<$T, Rank$>$, Rank, T$>$, \mbox{\hyperlink{structeinsums_1_1TensorView}{Tensor\+View}} \&$>$ \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{structeinsums_1_1TensorView_ad8d4e0207e1d1fe95626044e0036b42c}\label{structeinsums_1_1TensorView_ad8d4e0207e1d1fe95626044e0036b42c}} 
+\index{einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}!operator=@{operator=}}
+\index{operator=@{operator=}!einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+auto \mbox{\hyperlink{structeinsums_1_1TensorView}{einsums\+::\+Tensor\+View}}$<$ T, Rank $>$\+::operator= (\begin{DoxyParamCaption}\item[{const T \&}]{fill\+\_\+value }\end{DoxyParamCaption}) -\/$>$ \mbox{\hyperlink{structeinsums_1_1TensorView}{Tensor\+View}} \& \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{structeinsums_1_1TensorView_a662a20c9ab08756ed276b16ddcf78bdc}\label{structeinsums_1_1TensorView_a662a20c9ab08756ed276b16ddcf78bdc}} 
+\index{einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}!operator=@{operator=}}
+\index{operator=@{operator=}!einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+auto \mbox{\hyperlink{structeinsums_1_1TensorView}{einsums\+::\+Tensor\+View}}$<$ T, Rank $>$\+::operator= (\begin{DoxyParamCaption}\item[{const T $\ast$}]{other }\end{DoxyParamCaption}) -\/$>$ \mbox{\hyperlink{structeinsums_1_1TensorView}{Tensor\+View}} \& \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{structeinsums_1_1TensorView_af655f67bdaf58f957423c8362c03e5ca}\label{structeinsums_1_1TensorView_af655f67bdaf58f957423c8362c03e5ca}} 
+\index{einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}!set\_name@{set\_name}}
+\index{set\_name@{set\_name}!einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{set\_name()}{set\_name()}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+void \mbox{\hyperlink{structeinsums_1_1TensorView}{einsums\+::\+Tensor\+View}}$<$ T, Rank $>$\+::set\+\_\+name (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{name }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{structeinsums_1_1TensorView_ad9006744a3222e99a75c5fff1c54de51}\label{structeinsums_1_1TensorView_ad9006744a3222e99a75c5fff1c54de51}} 
+\index{einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}!size@{size}}
+\index{size@{size}!einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{size()}{size()}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+auto \mbox{\hyperlink{structeinsums_1_1TensorView}{einsums\+::\+Tensor\+View}}$<$ T, Rank $>$\+::size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{structeinsums_1_1TensorView_aa22e99fb834c483e65fc1bd6780c6bb1}\label{structeinsums_1_1TensorView_aa22e99fb834c483e65fc1bd6780c6bb1}} 
+\index{einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}!stride@{stride}}
+\index{stride@{stride}!einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{stride()}{stride()}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+auto \mbox{\hyperlink{structeinsums_1_1TensorView}{einsums\+::\+Tensor\+View}}$<$ T, Rank $>$\+::stride (\begin{DoxyParamCaption}\item[{int}]{d }\end{DoxyParamCaption}) const -\/$>$ size\+\_\+t \hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\mbox{\Hypertarget{structeinsums_1_1TensorView_afaa2c259174c557483ef7296fe937de9}\label{structeinsums_1_1TensorView_afaa2c259174c557483ef7296fe937de9}} 
+\index{einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}!strides@{strides}}
+\index{strides@{strides}!einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{strides()}{strides()}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+auto \mbox{\hyperlink{structeinsums_1_1TensorView}{einsums\+::\+Tensor\+View}}$<$ T, Rank $>$\+::strides (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const -\/$>$ const auto \& \hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\mbox{\Hypertarget{structeinsums_1_1TensorView_a367b7a31e7fffe0e9c4664993733a415}\label{structeinsums_1_1TensorView_a367b7a31e7fffe0e9c4664993733a415}} 
+\index{einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}!to\_rank\_1\_view@{to\_rank\_1\_view}}
+\index{to\_rank\_1\_view@{to\_rank\_1\_view}!einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{to\_rank\_1\_view()}{to\_rank\_1\_view()}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+auto \mbox{\hyperlink{structeinsums_1_1TensorView}{einsums\+::\+Tensor\+View}}$<$ T, Rank $>$\+::to\+\_\+rank\+\_\+1\+\_\+view (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const -\/$>$ \mbox{\hyperlink{structeinsums_1_1TensorView}{Tensor\+View}}$<$T, 1$>$ \hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\doxysubsection{Friends And Related Function Documentation}
+\mbox{\Hypertarget{structeinsums_1_1TensorView_a590dacb85b9bccb010f0f68c40b723b8}\label{structeinsums_1_1TensorView_a590dacb85b9bccb010f0f68c40b723b8}} 
+\index{einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}!Tensor@{Tensor}}
+\index{Tensor@{Tensor}!einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{Tensor}{Tensor}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+template$<$typename T\+\_\+ , size\+\_\+t Rank\+\_\+$>$ \\
+friend struct \mbox{\hyperlink{structeinsums_1_1Tensor}{Tensor}}\hspace{0.3cm}{\ttfamily [friend]}}
+
+\mbox{\Hypertarget{structeinsums_1_1TensorView_aae75ac1aa3cc1a9eeabae60902a63994}\label{structeinsums_1_1TensorView_aae75ac1aa3cc1a9eeabae60902a63994}} 
+\index{einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}!TensorView@{TensorView}}
+\index{TensorView@{TensorView}!einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{TensorView}{TensorView}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+template$<$typename T\+\_\+ , size\+\_\+t Other\+Rank\+\_\+$>$ \\
+friend struct \mbox{\hyperlink{structeinsums_1_1TensorView}{Tensor\+View}}\hspace{0.3cm}{\ttfamily [friend]}}
+
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{structeinsums_1_1TensorView_a7e90f2fab045375ca353df3deeb45e6c}\label{structeinsums_1_1TensorView_a7e90f2fab045375ca353df3deeb45e6c}} 
+\index{einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}!\_data@{\_data}}
+\index{\_data@{\_data}!einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{\_data}{\_data}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+T$\ast$ \mbox{\hyperlink{structeinsums_1_1TensorView}{einsums\+::\+Tensor\+View}}$<$ T, Rank $>$\+::\+\_\+data\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{structeinsums_1_1TensorView_ae419171e4f309c35a83fa0884e2d54fe}\label{structeinsums_1_1TensorView_ae419171e4f309c35a83fa0884e2d54fe}} 
+\index{einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}!\_dims@{\_dims}}
+\index{\_dims@{\_dims}!einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{\_dims}{\_dims}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+\mbox{\hyperlink{namespaceeinsums_a8c1a58f7bcdc7d0bab4c5df086098d3d}{Dim}}$<$Rank$>$ \mbox{\hyperlink{structeinsums_1_1TensorView}{einsums\+::\+Tensor\+View}}$<$ T, Rank $>$\+::\+\_\+dims\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{structeinsums_1_1TensorView_aa27ac08b48b870f2a0704a9d2302d378}\label{structeinsums_1_1TensorView_aa27ac08b48b870f2a0704a9d2302d378}} 
+\index{einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}!\_full\_view\_of\_underlying@{\_full\_view\_of\_underlying}}
+\index{\_full\_view\_of\_underlying@{\_full\_view\_of\_underlying}!einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{\_full\_view\_of\_underlying}{\_full\_view\_of\_underlying}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+bool \mbox{\hyperlink{structeinsums_1_1TensorView}{einsums\+::\+Tensor\+View}}$<$ T, Rank $>$\+::\+\_\+full\+\_\+view\+\_\+of\+\_\+underlying \{false\}\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{structeinsums_1_1TensorView_a8aaedd1eb4d66ed3e982f219ad7597e6}\label{structeinsums_1_1TensorView_a8aaedd1eb4d66ed3e982f219ad7597e6}} 
+\index{einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}!\_name@{\_name}}
+\index{\_name@{\_name}!einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{\_name}{\_name}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+std\+::string \mbox{\hyperlink{structeinsums_1_1TensorView}{einsums\+::\+Tensor\+View}}$<$ T, Rank $>$\+::\+\_\+name \{\char`\"{}(Unnamed View)\char`\"{}\}\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{structeinsums_1_1TensorView_a9da632a4b2ffb1e0d56dba8b90080b05}\label{structeinsums_1_1TensorView_a9da632a4b2ffb1e0d56dba8b90080b05}} 
+\index{einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}!\_strides@{\_strides}}
+\index{\_strides@{\_strides}!einsums::TensorView$<$ T, Rank $>$@{einsums::TensorView$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{\_strides}{\_strides}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+\mbox{\hyperlink{namespaceeinsums_a6138835e2652eaae61b1d977dd17d29c}{Stride}}$<$Rank$>$ \mbox{\hyperlink{structeinsums_1_1TensorView}{einsums\+::\+Tensor\+View}}$<$ T, Rank $>$\+::\+\_\+strides\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+The documentation for this struct was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{STL_8hpp}{STL.\+hpp}}\item 
+\mbox{\hyperlink{Tensor_8hpp}{Tensor.\+hpp}}\end{DoxyCompactItemize}

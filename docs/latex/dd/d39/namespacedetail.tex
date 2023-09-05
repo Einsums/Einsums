@@ -1,0 +1,670 @@
+\hypertarget{namespacedetail}{}\doxysection{detail Namespace Reference}
+\label{namespacedetail}\index{detail@{detail}}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structdetail_1_1RawTypeNameFormat}{Raw\+Type\+Name\+Format}}
+\item 
+struct \mbox{\hyperlink{structdetail_1_1TuplePrinter}{Tuple\+Printer}}
+\item 
+struct \mbox{\hyperlink{structdetail_1_1TuplePrinter_3_01Tuple_00_011_01_4}{Tuple\+Printer$<$ Tuple, 1 $>$}}
+\item 
+struct \mbox{\hyperlink{structdetail_1_1TuplePrinterNoType}{Tuple\+Printer\+No\+Type}}
+\item 
+struct \mbox{\hyperlink{structdetail_1_1TuplePrinterNoType_3_01Tuple_00_011_01_4}{Tuple\+Printer\+No\+Type$<$ Tuple, 1 $>$}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{__Export_8hpp_ad5ec33d87b554501185251a886ebf557}{EINSUMS\+\_\+\+EXPORT}} \mbox{\hyperlink{namespacedetail_a9390305128025d48ebf4e9deff34ee55}{println}} (const std\+::string \&oss)
+\item 
+{\footnotesize template$<$typename T $>$ }\\constexpr auto \mbox{\hyperlink{namespacedetail_a67129e31d4cf91e581b7bbf2c65835d2}{Raw\+Type\+Name}} () -\/$>$ const auto \&
+\item 
+constexpr auto \mbox{\hyperlink{namespacedetail_a52bb0c665589668e1ae3cbd4759ea58f}{Get\+Raw\+Type\+Name\+Format}} (\mbox{\hyperlink{structdetail_1_1RawTypeNameFormat}{Raw\+Type\+Name\+Format}} $\ast$format) -\/$>$ bool
+\item 
+{\footnotesize template$<$typename... Args, std\+::enable\+\_\+if\+\_\+t$<$ sizeof...(\+Args)==0, int $>$  = 0$>$ }\\auto \mbox{\hyperlink{namespacedetail_a8ebfd632ef4e5957b21e6e5d10805d66}{print\+\_\+tuple}} (const std\+::tuple$<$ Args... $>$ \&) -\/$>$ std\+::string
+\item 
+{\footnotesize template$<$typename... Args, std\+::enable\+\_\+if\+\_\+t$<$ sizeof...(\+Args)==0, int $>$  = 0$>$ }\\auto \mbox{\hyperlink{namespacedetail_ab2c057d120d5d10135494c272624071e}{print\+\_\+tuple\+\_\+no\+\_\+type}} (const std\+::tuple$<$ Args... $>$ \&) -\/$>$ std\+::string
+\item 
+{\footnotesize template$<$typename... CUnique\+Indices, typename... AUnique\+Indices, typename... BUnique\+Indices, typename... Link\+Unique\+Indices, typename... CIndices, typename... AIndices, typename... BIndices, typename... Target\+Dims, typename... Link\+Dims, typename... Target\+Position\+InC, typename... Link\+Position\+In\+Link, template$<$ typename, size\+\_\+t $>$ typename CType, typename CData\+Type , size\+\_\+t CRank, template$<$ typename, size\+\_\+t $>$ typename AType, typename AData\+Type , size\+\_\+t ARank, template$<$ typename, size\+\_\+t $>$ typename BType, typename BData\+Type , size\+\_\+t BRank$>$ }\\void \mbox{\hyperlink{namespacedetail_aa0d565ff8069e75cb77e86ba6d5c8cd1}{einsum\+\_\+generic\+\_\+algorithm}} (const std\+::tuple$<$ CUnique\+Indices... $>$ \&C\+\_\+unique, const std\+::tuple$<$ AUnique\+Indices... $>$ \&, const std\+::tuple$<$ BUnique\+Indices... $>$ \&, const std\+::tuple$<$ Link\+Unique\+Indices... $>$ \&link\+\_\+unique, const std\+::tuple$<$ CIndices... $>$ \&, const std\+::tuple$<$ AIndices... $>$ \&, const std\+::tuple$<$ BIndices... $>$ \&, const std\+::tuple$<$ Target\+Dims... $>$ \&target\+\_\+dims, const std\+::tuple$<$ Link\+Dims... $>$ \&link\+\_\+dims, const std\+::tuple$<$ Target\+Position\+In\+C... $>$ \&target\+\_\+position\+\_\+in\+\_\+C, const std\+::tuple$<$ Link\+Position\+In\+Link... $>$ \&link\+\_\+position\+\_\+in\+\_\+link, const CData\+Type C\+\_\+prefactor, CType$<$ CData\+Type, CRank $>$ $\ast$C, const std\+::conditional\+\_\+t$<$(sizeof(AData\+Type) $>$ sizeof(BData\+Type)), AData\+Type, BData\+Type $>$ AB\+\_\+prefactor, const AType$<$ AData\+Type, ARank $>$ \&A, const BType$<$ BData\+Type, BRank $>$ \&B)
+\item 
+{\footnotesize template$<$bool Only\+Use\+Generic\+Algorithm, template$<$ typename, size\+\_\+t $>$ typename AType, typename AData\+Type , size\+\_\+t ARank, template$<$ typename, size\+\_\+t $>$ typename BType, typename BData\+Type , size\+\_\+t BRank, template$<$ typename, size\+\_\+t $>$ typename CType, typename CData\+Type , size\+\_\+t CRank, typename... CIndices, typename... AIndices, typename... BIndices$>$ }\\auto \mbox{\hyperlink{namespacedetail_a80957664d68225d5200bdf9700687344}{einsum}} (const CData\+Type C\+\_\+prefactor, const std\+::tuple$<$ CIndices... $>$ \&, CType$<$ CData\+Type, CRank $>$ $\ast$C, const std\+::conditional\+\_\+t$<$(sizeof(AData\+Type) $>$ sizeof(BData\+Type)), AData\+Type, BData\+Type $>$ AB\+\_\+prefactor, const std\+::tuple$<$ AIndices... $>$ \&, const AType$<$ AData\+Type, ARank $>$ \&A, const std\+::tuple$<$ BIndices... $>$ \&, const BType$<$ BData\+Type, BRank $>$ \&B) -\/$>$ std\+::enable\+\_\+if\+\_\+t$<$ std\+::is\+\_\+base\+\_\+of\+\_\+v$<$\+::\mbox{\hyperlink{structeinsums_1_1detail_1_1TensorBase}{einsums\+::detail\+::\+Tensor\+Base}}$<$ AData\+Type, ARank $>$, AType$<$ AData\+Type, ARank $>$$>$ \&\&std\+::is\+\_\+base\+\_\+of\+\_\+v$<$\+::\mbox{\hyperlink{structeinsums_1_1detail_1_1TensorBase}{einsums\+::detail\+::\+Tensor\+Base}}$<$ BData\+Type, BRank $>$, BType$<$ BData\+Type, BRank $>$$>$ \&\&std\+::is\+\_\+base\+\_\+of\+\_\+v$<$\+::\mbox{\hyperlink{structeinsums_1_1detail_1_1TensorBase}{einsums\+::detail\+::\+Tensor\+Base}}$<$ CData\+Type, CRank $>$, CType$<$ CData\+Type, CRank $>$$>$$>$
+\item 
+{\footnotesize template$<$size\+\_\+t Rank, typename... Args, std\+::size\+\_\+t... I$>$ }\\auto \mbox{\hyperlink{namespacedetail_a02bb954f9b027adc9b12c79b075a1f1c}{order\+\_\+indices}} (const std\+::tuple$<$ Args... $>$ \&combination, const std\+::array$<$ size\+\_\+t, Rank $>$ \&\mbox{\hyperlink{Timer_8cpp_a377aed406d9f5138df4526b90a56c3c0}{order}}, std\+::index\+\_\+sequence$<$ I... $>$)
+\item 
+{\footnotesize template$<$typename T , int Position$>$ }\\constexpr auto \mbox{\hyperlink{namespacedetail_a2181cab26043c6978555a80718cc709c}{\+\_\+find\+\_\+type\+\_\+with\+\_\+position}} ()
+\item 
+{\footnotesize template$<$typename T , int Position, typename Head , typename... Args$>$ }\\constexpr auto \mbox{\hyperlink{namespacedetail_a23b128bcc082df54dc2888c5dc527d40}{\+\_\+find\+\_\+type\+\_\+with\+\_\+position}} ()
+\item 
+{\footnotesize template$<$typename T , int Position$>$ }\\constexpr auto \mbox{\hyperlink{namespacedetail_a4203647b6573d42d26e26a35e2b24831}{\+\_\+unique\+\_\+type\+\_\+with\+\_\+position}} ()
+\item 
+{\footnotesize template$<$typename T , int Position, typename Head , typename... Args$>$ }\\constexpr auto \mbox{\hyperlink{namespacedetail_adb3f091d099cab8688d8ea3d54e332ce}{\+\_\+unique\+\_\+find\+\_\+type\+\_\+with\+\_\+position}} ()
+\item 
+{\footnotesize template$<$template$<$ typename, size\+\_\+t $>$ typename Tensor\+Type, size\+\_\+t Rank, typename... Args, std\+::size\+\_\+t... I, typename T  = double$>$ }\\auto \mbox{\hyperlink{namespacedetail_a2c30587b1504f4c29cb55364739a7bca}{get\+\_\+dim\+\_\+ranges\+\_\+for}} (const Tensor\+Type$<$ T, Rank $>$ \&tensor, const std\+::tuple$<$ Args... $>$ \&args, std\+::index\+\_\+sequence$<$ I... $>$)
+\item 
+{\footnotesize template$<$template$<$ typename, size\+\_\+t $>$ typename Tensor\+Type, size\+\_\+t Rank, typename... Args, std\+::size\+\_\+t... I, typename T  = double$>$ }\\auto \mbox{\hyperlink{namespacedetail_a9fb55071e5fa458999d25fb6e90b2c1a}{get\+\_\+dim\+\_\+for}} (const Tensor\+Type$<$ T, Rank $>$ \&tensor, const std\+::tuple$<$ Args... $>$ \&args, std\+::index\+\_\+sequence$<$ I... $>$)
+\item 
+{\footnotesize template$<$typename T , int Position$>$ }\\constexpr auto \mbox{\hyperlink{namespacedetail_a2ed6f9682afc4e1c3b82479b07ae2d2c}{find\+\_\+position}} ()
+\item 
+{\footnotesize template$<$typename T , int Position, typename Head , typename... Args$>$ }\\constexpr auto \mbox{\hyperlink{namespacedetail_abbbd6c7703304aa85ad162040d4ee99f}{find\+\_\+position}} ()
+\item 
+{\footnotesize template$<$typename AIndex , typename... Target\+Combination$>$ }\\constexpr auto \mbox{\hyperlink{namespacedetail_a818685db517502f809a9e3ddd9dbb13d}{find\+\_\+position}} (const std\+::tuple$<$ Target\+Combination... $>$ \&)
+\item 
+{\footnotesize template$<$typename S1 , typename... S2, std\+::size\+\_\+t... Is$>$ }\\constexpr auto \mbox{\hyperlink{namespacedetail_a2eef0db4d750e7277ffe34948146ef5c}{\+\_\+find\+\_\+type\+\_\+with\+\_\+position}} (std\+::index\+\_\+sequence$<$ Is... $>$)
+\item 
+{\footnotesize template$<$typename... Ts, typename... Us$>$ }\\constexpr auto \mbox{\hyperlink{namespacedetail_add6456dae98c2d2927cf4b934be33b77}{find\+\_\+type\+\_\+with\+\_\+position}} (const std\+::tuple$<$ Ts... $>$ \&, const std\+::tuple$<$ Us... $>$ \&)
+\item 
+{\footnotesize template$<$typename S1 , typename... S2, std\+::size\+\_\+t... Is$>$ }\\constexpr auto \mbox{\hyperlink{namespacedetail_a069c522a1c60104fdc8283000c5b884d}{\+\_\+unique\+\_\+find\+\_\+type\+\_\+with\+\_\+position}} (std\+::index\+\_\+sequence$<$ Is... $>$)
+\item 
+{\footnotesize template$<$typename... Ts, typename... Us$>$ }\\constexpr auto \mbox{\hyperlink{namespacedetail_a9192433d0e039f86b1b7047d14a6c888}{unique\+\_\+find\+\_\+type\+\_\+with\+\_\+position}} (const std\+::tuple$<$ Ts... $>$ \&, const std\+::tuple$<$ Us... $>$ \&)
+\item 
+{\footnotesize template$<$template$<$ typename, size\+\_\+t $>$ typename Tensor\+Type, size\+\_\+t Rank, typename... Args, typename T  = double$>$ }\\auto \mbox{\hyperlink{namespacedetail_a1c5698aad21880783b3c6cc89d8d39bb}{get\+\_\+dim\+\_\+ranges\+\_\+for}} (const Tensor\+Type$<$ T, Rank $>$ \&tensor, const std\+::tuple$<$ Args... $>$ \&args)
+\item 
+{\footnotesize template$<$template$<$ typename, size\+\_\+t $>$ typename Tensor\+Type, size\+\_\+t Rank, typename... Args, typename T  = double$>$ }\\auto \mbox{\hyperlink{namespacedetail_ae49b674e36499efee23caeb9e16e874e}{get\+\_\+dim\+\_\+for}} (const Tensor\+Type$<$ T, Rank $>$ \&tensor, const std\+::tuple$<$ Args... $>$ \&args)
+\item 
+{\footnotesize template$<$typename AIndex , typename... Target\+Combination, typename... Target\+Position\+InC, typename... Link\+Combination, typename... Link\+Position\+In\+Link$>$ }\\auto \mbox{\hyperlink{namespacedetail_a557184d77c11ff038cd358ae1df42def}{construct\+\_\+index}} (const std\+::tuple$<$ Target\+Combination... $>$ \&target\+\_\+combination, const std\+::tuple$<$ Target\+Position\+In\+C... $>$ \&, const std\+::tuple$<$ Link\+Combination... $>$ \&link\+\_\+combination, const std\+::tuple$<$ Link\+Position\+In\+Link... $>$ \&)
+\item 
+{\footnotesize template$<$typename... AIndices, typename... Target\+Combination, typename... Target\+Position\+InC, typename... Link\+Combination, typename... Link\+Position\+In\+Link$>$ }\\constexpr auto \mbox{\hyperlink{namespacedetail_a7902b8dd1401710957073154edd5c0c4}{construct\+\_\+indices}} (const std\+::tuple$<$ Target\+Combination... $>$ \&target\+\_\+combination, const std\+::tuple$<$ Target\+Position\+In\+C... $>$ \&target\+\_\+position\+\_\+in\+\_\+C, const std\+::tuple$<$ Link\+Combination... $>$ \&link\+\_\+combination, const std\+::tuple$<$ Link\+Position\+In\+Link... $>$ \&link\+\_\+position\+\_\+in\+\_\+link)
+\item 
+{\footnotesize template$<$typename AIndex , typename... Unique\+Target\+Indices, typename... Unique\+Target\+Combination, typename... Target\+Position\+InC, typename... Unique\+Link\+Indices, typename... Unique\+Link\+Combination, typename... Link\+Position\+In\+Link$>$ }\\auto \mbox{\hyperlink{namespacedetail_aeea70e4d4fc1de21a57595da796da2de}{construct\+\_\+index\+\_\+from\+\_\+unique\+\_\+target\+\_\+combination}} (const std\+::tuple$<$ Unique\+Target\+Indices... $>$ \&, const std\+::tuple$<$ Unique\+Target\+Combination... $>$ \&unique\+\_\+target\+\_\+combination, const std\+::tuple$<$ Target\+Position\+In\+C... $>$ \&, const std\+::tuple$<$ Unique\+Link\+Indices... $>$ \&, const std\+::tuple$<$ Unique\+Link\+Combination... $>$ \&unique\+\_\+link\+\_\+combination, const std\+::tuple$<$ Link\+Position\+In\+Link... $>$ \&)
+\item 
+{\footnotesize template$<$typename... AIndices, typename... Unique\+Target\+Indices, typename... Unique\+Target\+Combination, typename... Target\+Position\+InC, typename... Unique\+Link\+Indices, typename... Unique\+Link\+Combination, typename... Link\+Position\+In\+Link$>$ }\\constexpr auto \mbox{\hyperlink{namespacedetail_aa74c969192b6cdf72632698aececa299}{construct\+\_\+indices\+\_\+from\+\_\+unique\+\_\+combination}} (const std\+::tuple$<$ Unique\+Target\+Indices... $>$ \&unique\+\_\+target\+\_\+indices, const std\+::tuple$<$ Unique\+Target\+Combination... $>$ \&unique\+\_\+target\+\_\+combination, const std\+::tuple$<$ Target\+Position\+In\+C... $>$ \&target\+\_\+position\+\_\+in\+\_\+C, const std\+::tuple$<$ Unique\+Link\+Indices... $>$ \&unique\+\_\+link\+\_\+indices, const std\+::tuple$<$ Unique\+Link\+Combination... $>$ \&unique\+\_\+link\+\_\+combination, const std\+::tuple$<$ Link\+Position\+In\+Link... $>$ \&link\+\_\+position\+\_\+in\+\_\+link)
+\item 
+{\footnotesize template$<$typename... AIndices, typename... Target\+Combination, typename... Target\+Position\+InC, typename... Link\+Combination, typename... Link\+Position\+In\+Link$>$ }\\constexpr auto \mbox{\hyperlink{namespacedetail_ad8eb278fdfa97b8ed62c0f948908535f}{construct\+\_\+indices}} (const std\+::tuple$<$ AIndices... $>$ \&, const std\+::tuple$<$ Target\+Combination... $>$ \&target\+\_\+combination, const std\+::tuple$<$ Target\+Position\+In\+C... $>$ \&target\+\_\+position\+\_\+in\+\_\+C, const std\+::tuple$<$ Link\+Combination... $>$ \&link\+\_\+combination, const std\+::tuple$<$ Link\+Position\+In\+Link... $>$ \&link\+\_\+position\+\_\+in\+\_\+link)
+\item 
+{\footnotesize template$<$typename... Positions\+InX, std\+::size\+\_\+t... I$>$ }\\constexpr auto \mbox{\hyperlink{namespacedetail_aa4c9b8120f099554bc8852181814ef74}{\+\_\+contiguous\+\_\+positions}} (const std\+::tuple$<$ Positions\+In\+X... $>$ \&x, std\+::index\+\_\+sequence$<$ I... $>$) -\/$>$ bool
+\item 
+{\footnotesize template$<$typename... Positions\+InX$>$ }\\constexpr auto \mbox{\hyperlink{namespacedetail_aa211e80d407238d3eac38aa82a2f1cbd}{contiguous\+\_\+positions}} (const std\+::tuple$<$ Positions\+In\+X... $>$ \&x) -\/$>$ bool
+\item 
+{\footnotesize template$<$typename... Positions\+InX, typename... Positions\+InY, std\+::size\+\_\+t... I$>$ }\\constexpr auto \mbox{\hyperlink{namespacedetail_a593e4464a2cc91d65e2dd97f270c622e}{\+\_\+is\+\_\+same\+\_\+ordering}} (const std\+::tuple$<$ Positions\+In\+X... $>$ \&positions\+\_\+in\+\_\+x, const std\+::tuple$<$ Positions\+In\+Y... $>$ \&positions\+\_\+in\+\_\+y, std\+::index\+\_\+sequence$<$ I... $>$)
+\item 
+{\footnotesize template$<$typename... Positions\+InX, typename... Positions\+InY$>$ }\\constexpr auto \mbox{\hyperlink{namespacedetail_ad75ec242d11add90a844d11e02b8bb2c}{is\+\_\+same\+\_\+ordering}} (const std\+::tuple$<$ Positions\+In\+X... $>$ \&positions\+\_\+in\+\_\+x, const std\+::tuple$<$ Positions\+In\+Y... $>$ \&positions\+\_\+in\+\_\+y)
+\item 
+{\footnotesize template$<$template$<$ typename, size\+\_\+t $>$ typename XType, size\+\_\+t XRank, typename... Positions\+InX, std\+::size\+\_\+t... I, typename T  = double$>$ }\\constexpr auto \mbox{\hyperlink{namespacedetail_a9365c30aa5fe9277b3703e98c78c7326}{product\+\_\+dims}} (const std\+::tuple$<$ Positions\+In\+X... $>$ \&indices, const XType$<$ T, XRank $>$ \&X, std\+::index\+\_\+sequence$<$ I... $>$) -\/$>$ size\+\_\+t
+\item 
+{\footnotesize template$<$template$<$ typename, size\+\_\+t $>$ typename XType, size\+\_\+t XRank, typename... Positions\+InX, std\+::size\+\_\+t... I, typename T  = double$>$ }\\constexpr auto \mbox{\hyperlink{namespacedetail_a6c8d3e11edef9592c375c1f42a585dbc}{is\+\_\+same\+\_\+dims}} (const std\+::tuple$<$ Positions\+In\+X... $>$ \&indices, const XType$<$ T, XRank $>$ \&X, std\+::index\+\_\+sequence$<$ I... $>$) -\/$>$ bool
+\item 
+{\footnotesize template$<$typename LHS , typename RHS , std\+::size\+\_\+t... I$>$ }\\constexpr auto \mbox{\hyperlink{namespacedetail_afa3adabc53d8375e4d68e8f3d4c30b54}{same\+\_\+indices}} (std\+::index\+\_\+sequence$<$ I... $>$)
+\item 
+{\footnotesize template$<$template$<$ typename, size\+\_\+t $>$ typename XType, size\+\_\+t XRank, typename... Positions\+InX, typename T  = double$>$ }\\constexpr auto \mbox{\hyperlink{namespacedetail_a82dd4454a930a9aec5647cd54dbd2724}{product\+\_\+dims}} (const std\+::tuple$<$ Positions\+In\+X... $>$ \&indices, const XType$<$ T, XRank $>$ \&X) -\/$>$ size\+\_\+t
+\item 
+{\footnotesize template$<$template$<$ typename, size\+\_\+t $>$ typename XType, size\+\_\+t XRank, typename... Positions\+InX, typename T  = double$>$ }\\constexpr auto \mbox{\hyperlink{namespacedetail_a63af0fcdbcb86c0b2f2034ec09267d37}{is\+\_\+same\+\_\+dims}} (const std\+::tuple$<$ Positions\+In\+X... $>$ \&indices, const XType$<$ T, XRank $>$ \&X) -\/$>$ size\+\_\+t
+\item 
+{\footnotesize template$<$template$<$ typename, size\+\_\+t $>$ typename XType, size\+\_\+t XRank, typename... Positions\+InX, typename T  = double$>$ }\\constexpr auto \mbox{\hyperlink{namespacedetail_a8f9a0c41df2b339ec9d5736053984091}{last\+\_\+stride}} (const std\+::tuple$<$ Positions\+In\+X... $>$ \&indices, const XType$<$ T, XRank $>$ \&X) -\/$>$ size\+\_\+t
+\item 
+{\footnotesize template$<$typename LHS , typename RHS $>$ }\\constexpr auto \mbox{\hyperlink{namespacedetail_ac7ba79dcdbf7fb9d7864834cd8793523}{same\+\_\+indices}} ()
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{namespacedetail_aa4c9b8120f099554bc8852181814ef74}\label{namespacedetail_aa4c9b8120f099554bc8852181814ef74}} 
+\index{detail@{detail}!\_contiguous\_positions@{\_contiguous\_positions}}
+\index{\_contiguous\_positions@{\_contiguous\_positions}!detail@{detail}}
+\doxysubsubsection{\texorpdfstring{\_contiguous\_positions()}{\_contiguous\_positions()}}
+{\footnotesize\ttfamily template$<$typename... Positions\+InX, std\+::size\+\_\+t... I$>$ \\
+constexpr auto detail\+::\+\_\+contiguous\+\_\+positions (\begin{DoxyParamCaption}\item[{const std\+::tuple$<$ Positions\+In\+X... $>$ \&}]{x,  }\item[{std\+::index\+\_\+sequence$<$ I... $>$}]{ }\end{DoxyParamCaption}) -\/$>$ bool \hspace{0.3cm}{\ttfamily [constexpr]}}
+
+\begin{DoxyRefDesc}{Todo}
+\item[\mbox{\hyperlink{todo__todo000032}{Todo}}]This means nothing to me. What is it for?\end{DoxyRefDesc}
+
+
+\begin{DoxyReturn}{Returns}
+Some sort of boolean value. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{namespacedetail_a2181cab26043c6978555a80718cc709c}\label{namespacedetail_a2181cab26043c6978555a80718cc709c}} 
+\index{detail@{detail}!\_find\_type\_with\_position@{\_find\_type\_with\_position}}
+\index{\_find\_type\_with\_position@{\_find\_type\_with\_position}!detail@{detail}}
+\doxysubsubsection{\texorpdfstring{\_find\_type\_with\_position()}{\_find\_type\_with\_position()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily template$<$typename T , int Position$>$ \\
+constexpr auto detail\+::\+\_\+find\+\_\+type\+\_\+with\+\_\+position (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+Base case for einsums\+::tensor\+\_\+algebra\+::\+\_\+find\+\_\+type\+\_\+with\+\_\+position.
+
+\begin{DoxyReturn}{Returns}
+An empty tuple. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{namespacedetail_a23b128bcc082df54dc2888c5dc527d40}\label{namespacedetail_a23b128bcc082df54dc2888c5dc527d40}} 
+\index{detail@{detail}!\_find\_type\_with\_position@{\_find\_type\_with\_position}}
+\index{\_find\_type\_with\_position@{\_find\_type\_with\_position}!detail@{detail}}
+\doxysubsubsection{\texorpdfstring{\_find\_type\_with\_position()}{\_find\_type\_with\_position()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily template$<$typename T , int Position, typename Head , typename... Args$>$ \\
+constexpr auto detail\+::\+\_\+find\+\_\+type\+\_\+with\+\_\+position (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+Finds all positions where the type in the argument matches T.
+
+\begin{DoxyRefDesc}{Todo}
+\item[\mbox{\hyperlink{todo__todo000010}{Todo}}]Find what this may do.\end{DoxyRefDesc}
+
+
+\begin{DoxyReturn}{Returns}
+A tuple of pairs which contain the matching type and the position. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{namespacedetail_a2eef0db4d750e7277ffe34948146ef5c}\label{namespacedetail_a2eef0db4d750e7277ffe34948146ef5c}} 
+\index{detail@{detail}!\_find\_type\_with\_position@{\_find\_type\_with\_position}}
+\index{\_find\_type\_with\_position@{\_find\_type\_with\_position}!detail@{detail}}
+\doxysubsubsection{\texorpdfstring{\_find\_type\_with\_position()}{\_find\_type\_with\_position()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily template$<$typename S1 , typename... S2, std\+::size\+\_\+t... Is$>$ \\
+constexpr auto detail\+::\+\_\+find\+\_\+type\+\_\+with\+\_\+position (\begin{DoxyParamCaption}\item[{std\+::index\+\_\+sequence$<$ Is... $>$}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+\begin{DoxyRefDesc}{Todo}
+\item[\mbox{\hyperlink{todo__todo000016}{Todo}}]This makes no sense.\end{DoxyRefDesc}
+
+
+\begin{DoxyReturn}{Returns}
+Some sort of tuple. 
+\end{DoxyReturn}
+\begin{DoxyRefDesc}{Todo}
+\item[\mbox{\hyperlink{todo__todo000017}{Todo}}]Not much to go on here. \end{DoxyRefDesc}
+\mbox{\Hypertarget{namespacedetail_a593e4464a2cc91d65e2dd97f270c622e}\label{namespacedetail_a593e4464a2cc91d65e2dd97f270c622e}} 
+\index{detail@{detail}!\_is\_same\_ordering@{\_is\_same\_ordering}}
+\index{\_is\_same\_ordering@{\_is\_same\_ordering}!detail@{detail}}
+\doxysubsubsection{\texorpdfstring{\_is\_same\_ordering()}{\_is\_same\_ordering()}}
+{\footnotesize\ttfamily template$<$typename... Positions\+InX, typename... Positions\+InY, std\+::size\+\_\+t... I$>$ \\
+constexpr auto detail\+::\+\_\+is\+\_\+same\+\_\+ordering (\begin{DoxyParamCaption}\item[{const std\+::tuple$<$ Positions\+In\+X... $>$ \&}]{positions\+\_\+in\+\_\+x,  }\item[{const std\+::tuple$<$ Positions\+In\+Y... $>$ \&}]{positions\+\_\+in\+\_\+y,  }\item[{std\+::index\+\_\+sequence$<$ I... $>$}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+Worker that determines if two tuples have the same ordering. \begin{DoxyRefDesc}{Todo}
+\item[\mbox{\hyperlink{todo__todo000034}{Todo}}]Write a better argument description.\end{DoxyRefDesc}
+
+
+
+\begin{DoxyParams}{Parameters}
+{\em positions\+\_\+in\+\_\+x} & the values in the x positions. \\
+\hline
+{\em positions\+\_\+in\+\_\+y} & The values in the y positions.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Whether or not the ordering is the same. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{namespacedetail_adb3f091d099cab8688d8ea3d54e332ce}\label{namespacedetail_adb3f091d099cab8688d8ea3d54e332ce}} 
+\index{detail@{detail}!\_unique\_find\_type\_with\_position@{\_unique\_find\_type\_with\_position}}
+\index{\_unique\_find\_type\_with\_position@{\_unique\_find\_type\_with\_position}!detail@{detail}}
+\doxysubsubsection{\texorpdfstring{\_unique\_find\_type\_with\_position()}{\_unique\_find\_type\_with\_position()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename T , int Position, typename Head , typename... Args$>$ \\
+constexpr auto detail\+::\+\_\+unique\+\_\+find\+\_\+type\+\_\+with\+\_\+position (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+Finds the first position where the value in the list matches T.
+
+\begin{DoxyRefDesc}{Todo}
+\item[\mbox{\hyperlink{todo__todo000011}{Todo}}]Find what this may do.\end{DoxyRefDesc}
+
+
+\begin{DoxyReturn}{Returns}
+A tuple containing a pair containing the type and the position. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{namespacedetail_a069c522a1c60104fdc8283000c5b884d}\label{namespacedetail_a069c522a1c60104fdc8283000c5b884d}} 
+\index{detail@{detail}!\_unique\_find\_type\_with\_position@{\_unique\_find\_type\_with\_position}}
+\index{\_unique\_find\_type\_with\_position@{\_unique\_find\_type\_with\_position}!detail@{detail}}
+\doxysubsubsection{\texorpdfstring{\_unique\_find\_type\_with\_position()}{\_unique\_find\_type\_with\_position()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename S1 , typename... S2, std\+::size\+\_\+t... Is$>$ \\
+constexpr auto detail\+::\+\_\+unique\+\_\+find\+\_\+type\+\_\+with\+\_\+position (\begin{DoxyParamCaption}\item[{std\+::index\+\_\+sequence$<$ Is... $>$}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+\begin{DoxyRefDesc}{Todo}
+\item[\mbox{\hyperlink{todo__todo000020}{Todo}}]No idea what this is supposed to do.\end{DoxyRefDesc}
+
+
+\begin{DoxyReturn}{Returns}
+A tuple. 
+\end{DoxyReturn}
+\begin{DoxyRefDesc}{Todo}
+\item[\mbox{\hyperlink{todo__todo000021}{Todo}}]Man, there are a whole bunch of these tuples. \end{DoxyRefDesc}
+\mbox{\Hypertarget{namespacedetail_a4203647b6573d42d26e26a35e2b24831}\label{namespacedetail_a4203647b6573d42d26e26a35e2b24831}} 
+\index{detail@{detail}!\_unique\_type\_with\_position@{\_unique\_type\_with\_position}}
+\index{\_unique\_type\_with\_position@{\_unique\_type\_with\_position}!detail@{detail}}
+\doxysubsubsection{\texorpdfstring{\_unique\_type\_with\_position()}{\_unique\_type\_with\_position()}}
+{\footnotesize\ttfamily template$<$typename T , int Position$>$ \\
+constexpr auto detail\+::\+\_\+unique\+\_\+type\+\_\+with\+\_\+position (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+Base case for the more compicated version.
+
+\begin{DoxyReturn}{Returns}
+An empty tuple. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{namespacedetail_a557184d77c11ff038cd358ae1df42def}\label{namespacedetail_a557184d77c11ff038cd358ae1df42def}} 
+\index{detail@{detail}!construct\_index@{construct\_index}}
+\index{construct\_index@{construct\_index}!detail@{detail}}
+\doxysubsubsection{\texorpdfstring{construct\_index()}{construct\_index()}}
+{\footnotesize\ttfamily template$<$typename AIndex , typename... Target\+Combination, typename... Target\+Position\+InC, typename... Link\+Combination, typename... Link\+Position\+In\+Link$>$ \\
+auto detail\+::construct\+\_\+index (\begin{DoxyParamCaption}\item[{const std\+::tuple$<$ Target\+Combination... $>$ \&}]{target\+\_\+combination,  }\item[{const std\+::tuple$<$ Target\+Position\+In\+C... $>$ \&}]{,  }\item[{const std\+::tuple$<$ Link\+Combination... $>$ \&}]{link\+\_\+combination,  }\item[{const std\+::tuple$<$ Link\+Position\+In\+Link... $>$ \&}]{ }\end{DoxyParamCaption})}
+
+\begin{DoxyRefDesc}{Todo}
+\item[\mbox{\hyperlink{todo__todo000026}{Todo}}]This looks important. It would help if I knew what it did.\end{DoxyRefDesc}
+
+
+\begin{DoxyReturn}{Returns}
+-\/1 on error. No clue what it does normally. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{namespacedetail_aeea70e4d4fc1de21a57595da796da2de}\label{namespacedetail_aeea70e4d4fc1de21a57595da796da2de}} 
+\index{detail@{detail}!construct\_index\_from\_unique\_target\_combination@{construct\_index\_from\_unique\_target\_combination}}
+\index{construct\_index\_from\_unique\_target\_combination@{construct\_index\_from\_unique\_target\_combination}!detail@{detail}}
+\doxysubsubsection{\texorpdfstring{construct\_index\_from\_unique\_target\_combination()}{construct\_index\_from\_unique\_target\_combination()}}
+{\footnotesize\ttfamily template$<$typename AIndex , typename... Unique\+Target\+Indices, typename... Unique\+Target\+Combination, typename... Target\+Position\+InC, typename... Unique\+Link\+Indices, typename... Unique\+Link\+Combination, typename... Link\+Position\+In\+Link$>$ \\
+auto detail\+::construct\+\_\+index\+\_\+from\+\_\+unique\+\_\+target\+\_\+combination (\begin{DoxyParamCaption}\item[{const std\+::tuple$<$ Unique\+Target\+Indices... $>$ \&}]{,  }\item[{const std\+::tuple$<$ Unique\+Target\+Combination... $>$ \&}]{unique\+\_\+target\+\_\+combination,  }\item[{const std\+::tuple$<$ Target\+Position\+In\+C... $>$ \&}]{,  }\item[{const std\+::tuple$<$ Unique\+Link\+Indices... $>$ \&}]{,  }\item[{const std\+::tuple$<$ Unique\+Link\+Combination... $>$ \&}]{unique\+\_\+link\+\_\+combination,  }\item[{const std\+::tuple$<$ Link\+Position\+In\+Link... $>$ \&}]{ }\end{DoxyParamCaption})}
+
+\begin{DoxyRefDesc}{Todo}
+\item[\mbox{\hyperlink{todo__todo000028}{Todo}}]This seems like a descriptive name of some sort. Unfortunately, I don\textquotesingle{}t speak self-\/documenting code.\end{DoxyRefDesc}
+
+
+\begin{DoxyReturn}{Returns}
+-\/1 on error. No idea otherwise. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{namespacedetail_ad8eb278fdfa97b8ed62c0f948908535f}\label{namespacedetail_ad8eb278fdfa97b8ed62c0f948908535f}} 
+\index{detail@{detail}!construct\_indices@{construct\_indices}}
+\index{construct\_indices@{construct\_indices}!detail@{detail}}
+\doxysubsubsection{\texorpdfstring{construct\_indices()}{construct\_indices()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename... AIndices, typename... Target\+Combination, typename... Target\+Position\+InC, typename... Link\+Combination, typename... Link\+Position\+In\+Link$>$ \\
+constexpr auto detail\+::construct\+\_\+indices (\begin{DoxyParamCaption}\item[{const std\+::tuple$<$ AIndices... $>$ \&}]{,  }\item[{const std\+::tuple$<$ Target\+Combination... $>$ \&}]{target\+\_\+combination,  }\item[{const std\+::tuple$<$ Target\+Position\+In\+C... $>$ \&}]{target\+\_\+position\+\_\+in\+\_\+C,  }\item[{const std\+::tuple$<$ Link\+Combination... $>$ \&}]{link\+\_\+combination,  }\item[{const std\+::tuple$<$ Link\+Position\+In\+Link... $>$ \&}]{link\+\_\+position\+\_\+in\+\_\+link }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+\begin{DoxyRefDesc}{Todo}
+\item[\mbox{\hyperlink{todo__todo000031}{Todo}}]This constructs indices. But what does it actually do?\end{DoxyRefDesc}
+
+
+\begin{DoxyReturn}{Returns}
+Probably a tuple. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{namespacedetail_a7902b8dd1401710957073154edd5c0c4}\label{namespacedetail_a7902b8dd1401710957073154edd5c0c4}} 
+\index{detail@{detail}!construct\_indices@{construct\_indices}}
+\index{construct\_indices@{construct\_indices}!detail@{detail}}
+\doxysubsubsection{\texorpdfstring{construct\_indices()}{construct\_indices()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename... AIndices, typename... Target\+Combination, typename... Target\+Position\+InC, typename... Link\+Combination, typename... Link\+Position\+In\+Link$>$ \\
+constexpr auto detail\+::construct\+\_\+indices (\begin{DoxyParamCaption}\item[{const std\+::tuple$<$ Target\+Combination... $>$ \&}]{target\+\_\+combination,  }\item[{const std\+::tuple$<$ Target\+Position\+In\+C... $>$ \&}]{target\+\_\+position\+\_\+in\+\_\+C,  }\item[{const std\+::tuple$<$ Link\+Combination... $>$ \&}]{link\+\_\+combination,  }\item[{const std\+::tuple$<$ Link\+Position\+In\+Link... $>$ \&}]{link\+\_\+position\+\_\+in\+\_\+link }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+\begin{DoxyRefDesc}{Todo}
+\item[\mbox{\hyperlink{todo__todo000027}{Todo}}]This looks important. It would be a shame if its purpose was lost to the blowing winds of time.\end{DoxyRefDesc}
+
+
+\begin{DoxyReturn}{Returns}
+Some sort of tuple. I\textquotesingle{}ve been writing this a lot. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{namespacedetail_aa74c969192b6cdf72632698aececa299}\label{namespacedetail_aa74c969192b6cdf72632698aececa299}} 
+\index{detail@{detail}!construct\_indices\_from\_unique\_combination@{construct\_indices\_from\_unique\_combination}}
+\index{construct\_indices\_from\_unique\_combination@{construct\_indices\_from\_unique\_combination}!detail@{detail}}
+\doxysubsubsection{\texorpdfstring{construct\_indices\_from\_unique\_combination()}{construct\_indices\_from\_unique\_combination()}}
+{\footnotesize\ttfamily template$<$typename... AIndices, typename... Unique\+Target\+Indices, typename... Unique\+Target\+Combination, typename... Target\+Position\+InC, typename... Unique\+Link\+Indices, typename... Unique\+Link\+Combination, typename... Link\+Position\+In\+Link$>$ \\
+constexpr auto detail\+::construct\+\_\+indices\+\_\+from\+\_\+unique\+\_\+combination (\begin{DoxyParamCaption}\item[{const std\+::tuple$<$ Unique\+Target\+Indices... $>$ \&}]{unique\+\_\+target\+\_\+indices,  }\item[{const std\+::tuple$<$ Unique\+Target\+Combination... $>$ \&}]{unique\+\_\+target\+\_\+combination,  }\item[{const std\+::tuple$<$ Target\+Position\+In\+C... $>$ \&}]{target\+\_\+position\+\_\+in\+\_\+C,  }\item[{const std\+::tuple$<$ Unique\+Link\+Indices... $>$ \&}]{unique\+\_\+link\+\_\+indices,  }\item[{const std\+::tuple$<$ Unique\+Link\+Combination... $>$ \&}]{unique\+\_\+link\+\_\+combination,  }\item[{const std\+::tuple$<$ Link\+Position\+In\+Link... $>$ \&}]{link\+\_\+position\+\_\+in\+\_\+link }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+\begin{DoxyRefDesc}{Todo}
+\item[\mbox{\hyperlink{todo__todo000029}{Todo}}]Looks similar to the last one.\end{DoxyRefDesc}
+
+
+\begin{DoxyReturn}{Returns}
+Some sort of tuple. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{namespacedetail_aa211e80d407238d3eac38aa82a2f1cbd}\label{namespacedetail_aa211e80d407238d3eac38aa82a2f1cbd}} 
+\index{detail@{detail}!contiguous\_positions@{contiguous\_positions}}
+\index{contiguous\_positions@{contiguous\_positions}!detail@{detail}}
+\doxysubsubsection{\texorpdfstring{contiguous\_positions()}{contiguous\_positions()}}
+{\footnotesize\ttfamily template$<$typename... Positions\+InX$>$ \\
+constexpr auto detail\+::contiguous\+\_\+positions (\begin{DoxyParamCaption}\item[{const std\+::tuple$<$ Positions\+In\+X... $>$ \&}]{x }\end{DoxyParamCaption}) -\/$>$ bool \hspace{0.3cm}{\ttfamily [constexpr]}}
+
+\begin{DoxyRefDesc}{Todo}
+\item[\mbox{\hyperlink{todo__todo000033}{Todo}}]What does it do???\end{DoxyRefDesc}
+
+
+\begin{DoxyReturn}{Returns}
+A boolean. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{namespacedetail_a80957664d68225d5200bdf9700687344}\label{namespacedetail_a80957664d68225d5200bdf9700687344}} 
+\index{detail@{detail}!einsum@{einsum}}
+\index{einsum@{einsum}!detail@{detail}}
+\doxysubsubsection{\texorpdfstring{einsum()}{einsum()}}
+{\footnotesize\ttfamily template$<$bool Only\+Use\+Generic\+Algorithm, template$<$ typename, size\+\_\+t $>$ typename AType, typename AData\+Type , size\+\_\+t ARank, template$<$ typename, size\+\_\+t $>$ typename BType, typename BData\+Type , size\+\_\+t BRank, template$<$ typename, size\+\_\+t $>$ typename CType, typename CData\+Type , size\+\_\+t CRank, typename... CIndices, typename... AIndices, typename... BIndices$>$ \\
+auto detail\+::einsum (\begin{DoxyParamCaption}\item[{const CData\+Type}]{C\+\_\+prefactor,  }\item[{const std\+::tuple$<$ CIndices... $>$ \&}]{,  }\item[{CType$<$ CData\+Type, CRank $>$ $\ast$}]{C,  }\item[{const std\+::conditional\+\_\+t$<$(sizeof(AData\+Type) $>$ sizeof(BData\+Type)), AData\+Type, BData\+Type $>$}]{AB\+\_\+prefactor,  }\item[{const std\+::tuple$<$ AIndices... $>$ \&}]{,  }\item[{const AType$<$ AData\+Type, ARank $>$ \&}]{A,  }\item[{const std\+::tuple$<$ BIndices... $>$ \&}]{,  }\item[{const BType$<$ BData\+Type, BRank $>$ \&}]{B }\end{DoxyParamCaption}) -\/$>$ std\+::enable\+\_\+if\+\_\+t$<$std\+::is\+\_\+base\+\_\+of\+\_\+v$<$\+::\mbox{\hyperlink{structeinsums_1_1detail_1_1TensorBase}{einsums\+::detail\+::\+Tensor\+Base}}$<$AData\+Type, ARank$>$, AType$<$AData\+Type, ARank$>$$>$ \&\&                         std\+::is\+\_\+base\+\_\+of\+\_\+v$<$\+::\mbox{\hyperlink{structeinsums_1_1detail_1_1TensorBase}{einsums\+::detail\+::\+Tensor\+Base}}$<$BData\+Type, BRank$>$, BType$<$BData\+Type, BRank$>$$>$ \&\&                         std\+::is\+\_\+base\+\_\+of\+\_\+v$<$\+::\mbox{\hyperlink{structeinsums_1_1detail_1_1TensorBase}{einsums\+::detail\+::\+Tensor\+Base}}$<$CData\+Type, CRank$>$, CType$<$CData\+Type, CRank$>$$>$$>$ }
+
+\mbox{\Hypertarget{namespacedetail_aa0d565ff8069e75cb77e86ba6d5c8cd1}\label{namespacedetail_aa0d565ff8069e75cb77e86ba6d5c8cd1}} 
+\index{detail@{detail}!einsum\_generic\_algorithm@{einsum\_generic\_algorithm}}
+\index{einsum\_generic\_algorithm@{einsum\_generic\_algorithm}!detail@{detail}}
+\doxysubsubsection{\texorpdfstring{einsum\_generic\_algorithm()}{einsum\_generic\_algorithm()}}
+{\footnotesize\ttfamily template$<$typename... CUnique\+Indices, typename... AUnique\+Indices, typename... BUnique\+Indices, typename... Link\+Unique\+Indices, typename... CIndices, typename... AIndices, typename... BIndices, typename... Target\+Dims, typename... Link\+Dims, typename... Target\+Position\+InC, typename... Link\+Position\+In\+Link, template$<$ typename, size\+\_\+t $>$ typename CType, typename CData\+Type , size\+\_\+t CRank, template$<$ typename, size\+\_\+t $>$ typename AType, typename AData\+Type , size\+\_\+t ARank, template$<$ typename, size\+\_\+t $>$ typename BType, typename BData\+Type , size\+\_\+t BRank$>$ \\
+void detail\+::einsum\+\_\+generic\+\_\+algorithm (\begin{DoxyParamCaption}\item[{const std\+::tuple$<$ CUnique\+Indices... $>$ \&}]{C\+\_\+unique,  }\item[{const std\+::tuple$<$ AUnique\+Indices... $>$ \&}]{,  }\item[{const std\+::tuple$<$ BUnique\+Indices... $>$ \&}]{,  }\item[{const std\+::tuple$<$ Link\+Unique\+Indices... $>$ \&}]{link\+\_\+unique,  }\item[{const std\+::tuple$<$ CIndices... $>$ \&}]{,  }\item[{const std\+::tuple$<$ AIndices... $>$ \&}]{,  }\item[{const std\+::tuple$<$ BIndices... $>$ \&}]{,  }\item[{const std\+::tuple$<$ Target\+Dims... $>$ \&}]{target\+\_\+dims,  }\item[{const std\+::tuple$<$ Link\+Dims... $>$ \&}]{link\+\_\+dims,  }\item[{const std\+::tuple$<$ Target\+Position\+In\+C... $>$ \&}]{target\+\_\+position\+\_\+in\+\_\+C,  }\item[{const std\+::tuple$<$ Link\+Position\+In\+Link... $>$ \&}]{link\+\_\+position\+\_\+in\+\_\+link,  }\item[{const CData\+Type}]{C\+\_\+prefactor,  }\item[{CType$<$ CData\+Type, CRank $>$ $\ast$}]{C,  }\item[{const std\+::conditional\+\_\+t$<$(sizeof(AData\+Type) $>$ sizeof(BData\+Type)), AData\+Type, BData\+Type $>$}]{AB\+\_\+prefactor,  }\item[{const AType$<$ AData\+Type, ARank $>$ \&}]{A,  }\item[{const BType$<$ BData\+Type, BRank $>$ \&}]{B }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespacedetail_a2ed6f9682afc4e1c3b82479b07ae2d2c}\label{namespacedetail_a2ed6f9682afc4e1c3b82479b07ae2d2c}} 
+\index{detail@{detail}!find\_position@{find\_position}}
+\index{find\_position@{find\_position}!detail@{detail}}
+\doxysubsubsection{\texorpdfstring{find\_position()}{find\_position()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily template$<$typename T , int Position$>$ \\
+constexpr auto detail\+::find\+\_\+position (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+Base case for the find\+\_\+position function indicating that the item was not found.
+
+\begin{DoxyReturn}{Returns}
+-\/1 because it could not find what it was looking for.
+\end{DoxyReturn}
+Finds the position of the type AIndex within the argument list.
+
+\begin{DoxyReturn}{Returns}
+The position of the argument, or -\/1 if not found. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{namespacedetail_abbbd6c7703304aa85ad162040d4ee99f}\label{namespacedetail_abbbd6c7703304aa85ad162040d4ee99f}} 
+\index{detail@{detail}!find\_position@{find\_position}}
+\index{find\_position@{find\_position}!detail@{detail}}
+\doxysubsubsection{\texorpdfstring{find\_position()}{find\_position()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily template$<$typename T , int Position, typename Head , typename... Args$>$ \\
+constexpr auto detail\+::find\+\_\+position (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+Finds the position of type T in the argument list. Do not call. Should be called using the simpler find\+\_\+position.
+
+\begin{DoxyReturn}{Returns}
+The position of the argument, or -\/1 if not found. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{namespacedetail_a818685db517502f809a9e3ddd9dbb13d}\label{namespacedetail_a818685db517502f809a9e3ddd9dbb13d}} 
+\index{detail@{detail}!find\_position@{find\_position}}
+\index{find\_position@{find\_position}!detail@{detail}}
+\doxysubsubsection{\texorpdfstring{find\_position()}{find\_position()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily template$<$typename AIndex , typename... Target\+Combination$>$ \\
+constexpr auto detail\+::find\+\_\+position (\begin{DoxyParamCaption}\item[{const std\+::tuple$<$ Target\+Combination... $>$ \&}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+Findthe position of the element with type AIndex within the tuple.
+
+
+\begin{DoxyParams}{Parameters}
+{\em The} & tuple to search.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The index of the item, or -\/1 if not found. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{namespacedetail_add6456dae98c2d2927cf4b934be33b77}\label{namespacedetail_add6456dae98c2d2927cf4b934be33b77}} 
+\index{detail@{detail}!find\_type\_with\_position@{find\_type\_with\_position}}
+\index{find\_type\_with\_position@{find\_type\_with\_position}!detail@{detail}}
+\doxysubsubsection{\texorpdfstring{find\_type\_with\_position()}{find\_type\_with\_position()}}
+{\footnotesize\ttfamily template$<$typename... Ts, typename... Us$>$ \\
+constexpr auto detail\+::find\+\_\+type\+\_\+with\+\_\+position (\begin{DoxyParamCaption}\item[{const std\+::tuple$<$ Ts... $>$ \&}]{,  }\item[{const std\+::tuple$<$ Us... $>$ \&}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+\begin{DoxyRefDesc}{Todo}
+\item[\mbox{\hyperlink{todo__todo000018}{Todo}}]This does something. I think only God knows now.\end{DoxyRefDesc}
+
+
+\begin{DoxyReturn}{Returns}
+Some sort of tuple. 
+\end{DoxyReturn}
+\begin{DoxyRefDesc}{Todo}
+\item[\mbox{\hyperlink{todo__todo000019}{Todo}}]What does this mean? \end{DoxyRefDesc}
+\mbox{\Hypertarget{namespacedetail_ae49b674e36499efee23caeb9e16e874e}\label{namespacedetail_ae49b674e36499efee23caeb9e16e874e}} 
+\index{detail@{detail}!get\_dim\_for@{get\_dim\_for}}
+\index{get\_dim\_for@{get\_dim\_for}!detail@{detail}}
+\doxysubsubsection{\texorpdfstring{get\_dim\_for()}{get\_dim\_for()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename Tensor\+Type, size\+\_\+t Rank, typename... Args, typename T  = double$>$ \\
+auto detail\+::get\+\_\+dim\+\_\+for (\begin{DoxyParamCaption}\item[{const Tensor\+Type$<$ T, Rank $>$ \&}]{tensor,  }\item[{const std\+::tuple$<$ Args... $>$ \&}]{args }\end{DoxyParamCaption})}
+
+This does something related to other get\+\_\+dim\+\_\+for functions. \begin{DoxyRefDesc}{Todo}
+\item[\mbox{\hyperlink{todo__todo000025}{Todo}}]Get a description of this function.\end{DoxyRefDesc}
+
+
+\begin{DoxyReturn}{Returns}
+Something. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{namespacedetail_a9fb55071e5fa458999d25fb6e90b2c1a}\label{namespacedetail_a9fb55071e5fa458999d25fb6e90b2c1a}} 
+\index{detail@{detail}!get\_dim\_for@{get\_dim\_for}}
+\index{get\_dim\_for@{get\_dim\_for}!detail@{detail}}
+\doxysubsubsection{\texorpdfstring{get\_dim\_for()}{get\_dim\_for()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename Tensor\+Type, size\+\_\+t Rank, typename... Args, std\+::size\+\_\+t... I, typename T  = double$>$ \\
+auto detail\+::get\+\_\+dim\+\_\+for (\begin{DoxyParamCaption}\item[{const Tensor\+Type$<$ T, Rank $>$ \&}]{tensor,  }\item[{const std\+::tuple$<$ Args... $>$ \&}]{args,  }\item[{std\+::index\+\_\+sequence$<$ I... $>$}]{ }\end{DoxyParamCaption})}
+
+Does something with dimensions. \begin{DoxyRefDesc}{Todo}
+\item[\mbox{\hyperlink{todo__todo000014}{Todo}}]I have no clue what this does.\end{DoxyRefDesc}
+
+
+\begin{DoxyReturn}{Returns}
+A tuple of some sort. 
+\end{DoxyReturn}
+\begin{DoxyRefDesc}{Todo}
+\item[\mbox{\hyperlink{todo__todo000015}{Todo}}]C++ is too opaque for this. \end{DoxyRefDesc}
+\mbox{\Hypertarget{namespacedetail_a1c5698aad21880783b3c6cc89d8d39bb}\label{namespacedetail_a1c5698aad21880783b3c6cc89d8d39bb}} 
+\index{detail@{detail}!get\_dim\_ranges\_for@{get\_dim\_ranges\_for}}
+\index{get\_dim\_ranges\_for@{get\_dim\_ranges\_for}!detail@{detail}}
+\doxysubsubsection{\texorpdfstring{get\_dim\_ranges\_for()}{get\_dim\_ranges\_for()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename Tensor\+Type, size\+\_\+t Rank, typename... Args, typename T  = double$>$ \\
+auto detail\+::get\+\_\+dim\+\_\+ranges\+\_\+for (\begin{DoxyParamCaption}\item[{const Tensor\+Type$<$ T, Rank $>$ \&}]{tensor,  }\item[{const std\+::tuple$<$ Args... $>$ \&}]{args }\end{DoxyParamCaption})}
+
+This does something related to other get\+\_\+dim\+\_\+ranges\+\_\+for. \begin{DoxyRefDesc}{Todo}
+\item[\mbox{\hyperlink{todo__todo000024}{Todo}}]This might do something, or it might not. No clue.\end{DoxyRefDesc}
+
+
+\begin{DoxyReturn}{Returns}
+Something. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{namespacedetail_a2c30587b1504f4c29cb55364739a7bca}\label{namespacedetail_a2c30587b1504f4c29cb55364739a7bca}} 
+\index{detail@{detail}!get\_dim\_ranges\_for@{get\_dim\_ranges\_for}}
+\index{get\_dim\_ranges\_for@{get\_dim\_ranges\_for}!detail@{detail}}
+\doxysubsubsection{\texorpdfstring{get\_dim\_ranges\_for()}{get\_dim\_ranges\_for()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename Tensor\+Type, size\+\_\+t Rank, typename... Args, std\+::size\+\_\+t... I, typename T  = double$>$ \\
+auto detail\+::get\+\_\+dim\+\_\+ranges\+\_\+for (\begin{DoxyParamCaption}\item[{const Tensor\+Type$<$ T, Rank $>$ \&}]{tensor,  }\item[{const std\+::tuple$<$ Args... $>$ \&}]{args,  }\item[{std\+::index\+\_\+sequence$<$ I... $>$}]{ }\end{DoxyParamCaption})}
+
+\begin{DoxyRefDesc}{Todo}
+\item[\mbox{\hyperlink{todo__todo000012}{Todo}}]I have no idea what this does.\end{DoxyRefDesc}
+
+
+\begin{DoxyReturn}{Returns}
+A tuple of some sort. 
+\end{DoxyReturn}
+\begin{DoxyRefDesc}{Todo}
+\item[\mbox{\hyperlink{todo__todo000013}{Todo}}]WTF does this return? \end{DoxyRefDesc}
+\mbox{\Hypertarget{namespacedetail_a52bb0c665589668e1ae3cbd4759ea58f}\label{namespacedetail_a52bb0c665589668e1ae3cbd4759ea58f}} 
+\index{detail@{detail}!GetRawTypeNameFormat@{GetRawTypeNameFormat}}
+\index{GetRawTypeNameFormat@{GetRawTypeNameFormat}!detail@{detail}}
+\doxysubsubsection{\texorpdfstring{GetRawTypeNameFormat()}{GetRawTypeNameFormat()}}
+{\footnotesize\ttfamily constexpr auto detail\+::\+Get\+Raw\+Type\+Name\+Format (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structdetail_1_1RawTypeNameFormat}{Raw\+Type\+Name\+Format}} $\ast$}]{format }\end{DoxyParamCaption}) -\/$>$ bool \hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [constexpr]}}
+
+\mbox{\Hypertarget{namespacedetail_a63af0fcdbcb86c0b2f2034ec09267d37}\label{namespacedetail_a63af0fcdbcb86c0b2f2034ec09267d37}} 
+\index{detail@{detail}!is\_same\_dims@{is\_same\_dims}}
+\index{is\_same\_dims@{is\_same\_dims}!detail@{detail}}
+\doxysubsubsection{\texorpdfstring{is\_same\_dims()}{is\_same\_dims()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename XType, size\+\_\+t XRank, typename... Positions\+InX, typename T  = double$>$ \\
+constexpr auto detail\+::is\+\_\+same\+\_\+dims (\begin{DoxyParamCaption}\item[{const std\+::tuple$<$ Positions\+In\+X... $>$ \&}]{indices,  }\item[{const XType$<$ T, XRank $>$ \&}]{X }\end{DoxyParamCaption}) -\/$>$ size\+\_\+t \hspace{0.3cm}{\ttfamily [constexpr]}}
+
+Checks whether the dimensions are the same as in the tensor. \begin{DoxyRefDesc}{Todo}
+\item[\mbox{\hyperlink{todo__todo000040}{Todo}}]Double check this behavior.\end{DoxyRefDesc}
+
+
+
+\begin{DoxyParams}{Parameters}
+{\em indices} & Indices of some sort. \\
+\hline
+{\em X} & A tensor.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Whether the dimensions are the same. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{namespacedetail_a6c8d3e11edef9592c375c1f42a585dbc}\label{namespacedetail_a6c8d3e11edef9592c375c1f42a585dbc}} 
+\index{detail@{detail}!is\_same\_dims@{is\_same\_dims}}
+\index{is\_same\_dims@{is\_same\_dims}!detail@{detail}}
+\doxysubsubsection{\texorpdfstring{is\_same\_dims()}{is\_same\_dims()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename XType, size\+\_\+t XRank, typename... Positions\+InX, std\+::size\+\_\+t... I, typename T  = double$>$ \\
+constexpr auto detail\+::is\+\_\+same\+\_\+dims (\begin{DoxyParamCaption}\item[{const std\+::tuple$<$ Positions\+In\+X... $>$ \&}]{indices,  }\item[{const XType$<$ T, XRank $>$ \&}]{X,  }\item[{std\+::index\+\_\+sequence$<$ I... $>$}]{ }\end{DoxyParamCaption}) -\/$>$ bool \hspace{0.3cm}{\ttfamily [constexpr]}}
+
+Checks to see if the indices match the dimensions of the tensor. \begin{DoxyRefDesc}{Todo}
+\item[\mbox{\hyperlink{todo__todo000037}{Todo}}]Verify this description.\end{DoxyRefDesc}
+
+
+
+\begin{DoxyParams}{Parameters}
+{\em indices} & The indices. \\
+\hline
+{\em X} & The tensor to compare to.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Whether the dimensions are the same. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{namespacedetail_ad75ec242d11add90a844d11e02b8bb2c}\label{namespacedetail_ad75ec242d11add90a844d11e02b8bb2c}} 
+\index{detail@{detail}!is\_same\_ordering@{is\_same\_ordering}}
+\index{is\_same\_ordering@{is\_same\_ordering}!detail@{detail}}
+\doxysubsubsection{\texorpdfstring{is\_same\_ordering()}{is\_same\_ordering()}}
+{\footnotesize\ttfamily template$<$typename... Positions\+InX, typename... Positions\+InY$>$ \\
+constexpr auto detail\+::is\+\_\+same\+\_\+ordering (\begin{DoxyParamCaption}\item[{const std\+::tuple$<$ Positions\+In\+X... $>$ \&}]{positions\+\_\+in\+\_\+x,  }\item[{const std\+::tuple$<$ Positions\+In\+Y... $>$ \&}]{positions\+\_\+in\+\_\+y }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+Checks to see if two lists have the same ordering. \begin{DoxyRefDesc}{Todo}
+\item[\mbox{\hyperlink{todo__todo000035}{Todo}}]Find out what this means.\end{DoxyRefDesc}
+
+
+
+\begin{DoxyParams}{Parameters}
+{\em positions\+\_\+in\+\_\+x} & Positions in the x array. \\
+\hline
+{\em positions\+\_\+in\+\_\+y} & Positions in the y array.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A boolean. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{namespacedetail_a8f9a0c41df2b339ec9d5736053984091}\label{namespacedetail_a8f9a0c41df2b339ec9d5736053984091}} 
+\index{detail@{detail}!last\_stride@{last\_stride}}
+\index{last\_stride@{last\_stride}!detail@{detail}}
+\doxysubsubsection{\texorpdfstring{last\_stride()}{last\_stride()}}
+{\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename XType, size\+\_\+t XRank, typename... Positions\+InX, typename T  = double$>$ \\
+constexpr auto detail\+::last\+\_\+stride (\begin{DoxyParamCaption}\item[{const std\+::tuple$<$ Positions\+In\+X... $>$ \&}]{indices,  }\item[{const XType$<$ T, XRank $>$ \&}]{X }\end{DoxyParamCaption}) -\/$>$ size\+\_\+t \hspace{0.3cm}{\ttfamily [constexpr]}}
+
+Returns the last stride of X. \begin{DoxyRefDesc}{Todo}
+\item[\mbox{\hyperlink{todo__todo000041}{Todo}}]What could it all mean?\end{DoxyRefDesc}
+
+
+
+\begin{DoxyParams}{Parameters}
+{\em indices} & Indices of some sort. \\
+\hline
+{\em X} & A tensor.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The last stride of X? 
+\end{DoxyReturn}
+\mbox{\Hypertarget{namespacedetail_a02bb954f9b027adc9b12c79b075a1f1c}\label{namespacedetail_a02bb954f9b027adc9b12c79b075a1f1c}} 
+\index{detail@{detail}!order\_indices@{order\_indices}}
+\index{order\_indices@{order\_indices}!detail@{detail}}
+\doxysubsubsection{\texorpdfstring{order\_indices()}{order\_indices()}}
+{\footnotesize\ttfamily template$<$size\+\_\+t Rank, typename... Args, std\+::size\+\_\+t... I$>$ \\
+auto detail\+::order\+\_\+indices (\begin{DoxyParamCaption}\item[{const std\+::tuple$<$ Args... $>$ \&}]{combination,  }\item[{const std\+::array$<$ size\+\_\+t, Rank $>$ \&}]{order,  }\item[{std\+::index\+\_\+sequence$<$ I... $>$}]{ }\end{DoxyParamCaption})}
+
+Reorders a set of objects with the given new ordering. Should not be called on its own. Rather, it is the worker for another definition of order\+\_\+indices.
+
+
+\begin{DoxyParams}{Parameters}
+{\em combination} & The current set of objects. \\
+\hline
+{\em order} & The new order for the objects. \\
+\hline
+{\em A} & list of indices.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A tuple with the same objects as was passed in, but in a different order. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{namespacedetail_a8ebfd632ef4e5957b21e6e5d10805d66}\label{namespacedetail_a8ebfd632ef4e5957b21e6e5d10805d66}} 
+\index{detail@{detail}!print\_tuple@{print\_tuple}}
+\index{print\_tuple@{print\_tuple}!detail@{detail}}
+\doxysubsubsection{\texorpdfstring{print\_tuple()}{print\_tuple()}}
+{\footnotesize\ttfamily template$<$typename... Args, std\+::enable\+\_\+if\+\_\+t$<$ sizeof...(\+Args)==0, int $>$  = 0$>$ \\
+auto detail\+::print\+\_\+tuple (\begin{DoxyParamCaption}\item[{const std\+::tuple$<$ Args... $>$ \&}]{ }\end{DoxyParamCaption}) -\/$>$ std\+::string }
+
+\mbox{\Hypertarget{namespacedetail_ab2c057d120d5d10135494c272624071e}\label{namespacedetail_ab2c057d120d5d10135494c272624071e}} 
+\index{detail@{detail}!print\_tuple\_no\_type@{print\_tuple\_no\_type}}
+\index{print\_tuple\_no\_type@{print\_tuple\_no\_type}!detail@{detail}}
+\doxysubsubsection{\texorpdfstring{print\_tuple\_no\_type()}{print\_tuple\_no\_type()}}
+{\footnotesize\ttfamily template$<$typename... Args, std\+::enable\+\_\+if\+\_\+t$<$ sizeof...(\+Args)==0, int $>$  = 0$>$ \\
+auto detail\+::print\+\_\+tuple\+\_\+no\+\_\+type (\begin{DoxyParamCaption}\item[{const std\+::tuple$<$ Args... $>$ \&}]{ }\end{DoxyParamCaption}) -\/$>$ std\+::string }
+
+\mbox{\Hypertarget{namespacedetail_a9390305128025d48ebf4e9deff34ee55}\label{namespacedetail_a9390305128025d48ebf4e9deff34ee55}} 
+\index{detail@{detail}!println@{println}}
+\index{println@{println}!detail@{detail}}
+\doxysubsubsection{\texorpdfstring{println()}{println()}}
+{\footnotesize\ttfamily void detail\+::println (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{oss }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespacedetail_a82dd4454a930a9aec5647cd54dbd2724}\label{namespacedetail_a82dd4454a930a9aec5647cd54dbd2724}} 
+\index{detail@{detail}!product\_dims@{product\_dims}}
+\index{product\_dims@{product\_dims}!detail@{detail}}
+\doxysubsubsection{\texorpdfstring{product\_dims()}{product\_dims()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename XType, size\+\_\+t XRank, typename... Positions\+InX, typename T  = double$>$ \\
+constexpr auto detail\+::product\+\_\+dims (\begin{DoxyParamCaption}\item[{const std\+::tuple$<$ Positions\+In\+X... $>$ \&}]{indices,  }\item[{const XType$<$ T, XRank $>$ \&}]{X }\end{DoxyParamCaption}) -\/$>$ size\+\_\+t \hspace{0.3cm}{\ttfamily [constexpr]}}
+
+\begin{DoxyRefDesc}{Todo}
+\item[\mbox{\hyperlink{todo__todo000039}{Todo}}]This does something. That\textquotesingle{}s a fact.\end{DoxyRefDesc}
+
+
+
+\begin{DoxyParams}{Parameters}
+{\em indices} & Indices of some sort. \\
+\hline
+{\em X} & A tensor. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{namespacedetail_a9365c30aa5fe9277b3703e98c78c7326}\label{namespacedetail_a9365c30aa5fe9277b3703e98c78c7326}} 
+\index{detail@{detail}!product\_dims@{product\_dims}}
+\index{product\_dims@{product\_dims}!detail@{detail}}
+\doxysubsubsection{\texorpdfstring{product\_dims()}{product\_dims()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename XType, size\+\_\+t XRank, typename... Positions\+InX, std\+::size\+\_\+t... I, typename T  = double$>$ \\
+constexpr auto detail\+::product\+\_\+dims (\begin{DoxyParamCaption}\item[{const std\+::tuple$<$ Positions\+In\+X... $>$ \&}]{indices,  }\item[{const XType$<$ T, XRank $>$ \&}]{X,  }\item[{std\+::index\+\_\+sequence$<$ I... $>$}]{ }\end{DoxyParamCaption}) -\/$>$ size\+\_\+t \hspace{0.3cm}{\ttfamily [constexpr]}}
+
+Finds the product of the dimensions. Worker function. Do not call.
+
+
+\begin{DoxyParams}{Parameters}
+{\em indices} & The list of indices. \\
+\hline
+{\em X} & The tensor? \\
+\hline
+\end{DoxyParams}
+\begin{DoxyRefDesc}{Todo}
+\item[\mbox{\hyperlink{todo__todo000036}{Todo}}]What is this?\end{DoxyRefDesc}
+
+
+\begin{DoxyReturn}{Returns}
+A product? Idk. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{namespacedetail_a67129e31d4cf91e581b7bbf2c65835d2}\label{namespacedetail_a67129e31d4cf91e581b7bbf2c65835d2}} 
+\index{detail@{detail}!RawTypeName@{RawTypeName}}
+\index{RawTypeName@{RawTypeName}!detail@{detail}}
+\doxysubsubsection{\texorpdfstring{RawTypeName()}{RawTypeName()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+constexpr auto detail\+::\+Raw\+Type\+Name (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) -\/$>$ const auto \& \hspace{0.3cm}{\ttfamily [constexpr]}}
+
+\mbox{\Hypertarget{namespacedetail_ac7ba79dcdbf7fb9d7864834cd8793523}\label{namespacedetail_ac7ba79dcdbf7fb9d7864834cd8793523}} 
+\index{detail@{detail}!same\_indices@{same\_indices}}
+\index{same\_indices@{same\_indices}!detail@{detail}}
+\doxysubsubsection{\texorpdfstring{same\_indices()}{same\_indices()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename LHS , typename RHS $>$ \\
+constexpr auto detail\+::same\+\_\+indices (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+Checks to see if two indices are the same? \begin{DoxyRefDesc}{Todo}
+\item[\mbox{\hyperlink{todo__todo000042}{Todo}}]This has meaning to someone.\end{DoxyRefDesc}
+
+
+\begin{DoxyReturn}{Returns}
+A boolean. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{namespacedetail_afa3adabc53d8375e4d68e8f3d4c30b54}\label{namespacedetail_afa3adabc53d8375e4d68e8f3d4c30b54}} 
+\index{detail@{detail}!same\_indices@{same\_indices}}
+\index{same\_indices@{same\_indices}!detail@{detail}}
+\doxysubsubsection{\texorpdfstring{same\_indices()}{same\_indices()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename LHS , typename RHS , std\+::size\+\_\+t... I$>$ \\
+constexpr auto detail\+::same\+\_\+indices (\begin{DoxyParamCaption}\item[{std\+::index\+\_\+sequence$<$ I... $>$}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+Checks to see if the arguments have the same indices. Worker function? \begin{DoxyRefDesc}{Todo}
+\item[\mbox{\hyperlink{todo__todo000038}{Todo}}]Figure out the usage of this function.\end{DoxyRefDesc}
+
+
+
+\begin{DoxyParams}{Parameters}
+{\em An} & index sequence.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Boolean? 
+\end{DoxyReturn}
+\mbox{\Hypertarget{namespacedetail_a9192433d0e039f86b1b7047d14a6c888}\label{namespacedetail_a9192433d0e039f86b1b7047d14a6c888}} 
+\index{detail@{detail}!unique\_find\_type\_with\_position@{unique\_find\_type\_with\_position}}
+\index{unique\_find\_type\_with\_position@{unique\_find\_type\_with\_position}!detail@{detail}}
+\doxysubsubsection{\texorpdfstring{unique\_find\_type\_with\_position()}{unique\_find\_type\_with\_position()}}
+{\footnotesize\ttfamily template$<$typename... Ts, typename... Us$>$ \\
+constexpr auto detail\+::unique\+\_\+find\+\_\+type\+\_\+with\+\_\+position (\begin{DoxyParamCaption}\item[{const std\+::tuple$<$ Ts... $>$ \&}]{,  }\item[{const std\+::tuple$<$ Us... $>$ \&}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+\begin{DoxyRefDesc}{Todo}
+\item[\mbox{\hyperlink{todo__todo000022}{Todo}}]Still no idea.\end{DoxyRefDesc}
+
+
+\begin{DoxyReturn}{Returns}
+Probably some sort of tuple. 
+\end{DoxyReturn}
+\begin{DoxyRefDesc}{Todo}
+\item[\mbox{\hyperlink{todo__todo000023}{Todo}}]Another tuple? Really? \end{DoxyRefDesc}

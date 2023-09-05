@@ -1,0 +1,80 @@
+\hypertarget{classbackward_1_1StackTraceImpl}{}\doxysection{backward\+::Stack\+Trace\+Impl$<$ TAG $>$ Class Template Reference}
+\label{classbackward_1_1StackTraceImpl}\index{backward::StackTraceImpl$<$ TAG $>$@{backward::StackTraceImpl$<$ TAG $>$}}
+
+
+{\ttfamily \#include $<$Backtrace.\+hpp$>$}
+
+
+
+Inheritance diagram for backward\+::Stack\+Trace\+Impl$<$ TAG $>$\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=271pt]{df/d20/classbackward_1_1StackTraceImpl__inherit__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+size\+\_\+t \mbox{\hyperlink{classbackward_1_1StackTraceImpl_abfa5b720721a2b7c6951dd9841a5ec77}{size}} () const
+\item 
+\mbox{\hyperlink{structbackward_1_1Trace}{Trace}} \mbox{\hyperlink{classbackward_1_1StackTraceImpl_a722efc939b63d042260149e29628f2d6}{operator\mbox{[}$\,$\mbox{]}}} (size\+\_\+t) const
+\item 
+size\+\_\+t \mbox{\hyperlink{classbackward_1_1StackTraceImpl_a65b1def36181512a179dbbf4d79c6276}{load\+\_\+here}} (size\+\_\+t=0)
+\item 
+size\+\_\+t \mbox{\hyperlink{classbackward_1_1StackTraceImpl_aadb134bacb477d87cc05e13acf736145}{load\+\_\+from}} (void $\ast$, size\+\_\+t=0, void $\ast$=\mbox{\hyperlink{Backtrace_8hpp_ab979d9d4b4923f7c54d6caa6e1a61936}{nullptr}}, void $\ast$=\mbox{\hyperlink{Backtrace_8hpp_ab979d9d4b4923f7c54d6caa6e1a61936}{nullptr}})
+\item 
+size\+\_\+t \mbox{\hyperlink{classbackward_1_1StackTraceImpl_a773dcaff268029472a0c0451dd5e134e}{thread\+\_\+id}} () const
+\item 
+void \mbox{\hyperlink{classbackward_1_1StackTraceImpl_aa5743dcbbb880d0aab5e769860d19b23}{skip\+\_\+n\+\_\+firsts}} (size\+\_\+t)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classbackward_1_1StackTraceImpl_aadb134bacb477d87cc05e13acf736145}\label{classbackward_1_1StackTraceImpl_aadb134bacb477d87cc05e13acf736145}} 
+\index{backward::StackTraceImpl$<$ TAG $>$@{backward::StackTraceImpl$<$ TAG $>$}!load\_from@{load\_from}}
+\index{load\_from@{load\_from}!backward::StackTraceImpl$<$ TAG $>$@{backward::StackTraceImpl$<$ TAG $>$}}
+\doxysubsubsection{\texorpdfstring{load\_from()}{load\_from()}}
+{\footnotesize\ttfamily template$<$typename TAG $>$ \\
+size\+\_\+t \mbox{\hyperlink{classbackward_1_1StackTraceImpl}{backward\+::\+Stack\+Trace\+Impl}}$<$ TAG $>$\+::load\+\_\+from (\begin{DoxyParamCaption}\item[{void $\ast$}]{,  }\item[{size\+\_\+t}]{ = {\ttfamily 0},  }\item[{void $\ast$}]{ = {\ttfamily \mbox{\hyperlink{Backtrace_8hpp_ab979d9d4b4923f7c54d6caa6e1a61936}{nullptr}}},  }\item[{void $\ast$}]{ = {\ttfamily \mbox{\hyperlink{Backtrace_8hpp_ab979d9d4b4923f7c54d6caa6e1a61936}{nullptr}}} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classbackward_1_1StackTraceImpl_a65b1def36181512a179dbbf4d79c6276}\label{classbackward_1_1StackTraceImpl_a65b1def36181512a179dbbf4d79c6276}} 
+\index{backward::StackTraceImpl$<$ TAG $>$@{backward::StackTraceImpl$<$ TAG $>$}!load\_here@{load\_here}}
+\index{load\_here@{load\_here}!backward::StackTraceImpl$<$ TAG $>$@{backward::StackTraceImpl$<$ TAG $>$}}
+\doxysubsubsection{\texorpdfstring{load\_here()}{load\_here()}}
+{\footnotesize\ttfamily template$<$typename TAG $>$ \\
+size\+\_\+t \mbox{\hyperlink{classbackward_1_1StackTraceImpl}{backward\+::\+Stack\+Trace\+Impl}}$<$ TAG $>$\+::load\+\_\+here (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{ = {\ttfamily 0} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classbackward_1_1StackTraceImpl_a722efc939b63d042260149e29628f2d6}\label{classbackward_1_1StackTraceImpl_a722efc939b63d042260149e29628f2d6}} 
+\index{backward::StackTraceImpl$<$ TAG $>$@{backward::StackTraceImpl$<$ TAG $>$}!operator\mbox{[}\mbox{]}@{operator[]}}
+\index{operator\mbox{[}\mbox{]}@{operator[]}!backward::StackTraceImpl$<$ TAG $>$@{backward::StackTraceImpl$<$ TAG $>$}}
+\doxysubsubsection{\texorpdfstring{operator[]()}{operator[]()}}
+{\footnotesize\ttfamily template$<$typename TAG $>$ \\
+\mbox{\hyperlink{structbackward_1_1Trace}{Trace}} \mbox{\hyperlink{classbackward_1_1StackTraceImpl}{backward\+::\+Stack\+Trace\+Impl}}$<$ TAG $>$\+::operator\mbox{[}$\,$\mbox{]} (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classbackward_1_1StackTraceImpl_abfa5b720721a2b7c6951dd9841a5ec77}\label{classbackward_1_1StackTraceImpl_abfa5b720721a2b7c6951dd9841a5ec77}} 
+\index{backward::StackTraceImpl$<$ TAG $>$@{backward::StackTraceImpl$<$ TAG $>$}!size@{size}}
+\index{size@{size}!backward::StackTraceImpl$<$ TAG $>$@{backward::StackTraceImpl$<$ TAG $>$}}
+\doxysubsubsection{\texorpdfstring{size()}{size()}}
+{\footnotesize\ttfamily template$<$typename TAG $>$ \\
+size\+\_\+t \mbox{\hyperlink{classbackward_1_1StackTraceImpl}{backward\+::\+Stack\+Trace\+Impl}}$<$ TAG $>$\+::size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classbackward_1_1StackTraceImpl_aa5743dcbbb880d0aab5e769860d19b23}\label{classbackward_1_1StackTraceImpl_aa5743dcbbb880d0aab5e769860d19b23}} 
+\index{backward::StackTraceImpl$<$ TAG $>$@{backward::StackTraceImpl$<$ TAG $>$}!skip\_n\_firsts@{skip\_n\_firsts}}
+\index{skip\_n\_firsts@{skip\_n\_firsts}!backward::StackTraceImpl$<$ TAG $>$@{backward::StackTraceImpl$<$ TAG $>$}}
+\doxysubsubsection{\texorpdfstring{skip\_n\_firsts()}{skip\_n\_firsts()}}
+{\footnotesize\ttfamily template$<$typename TAG $>$ \\
+void \mbox{\hyperlink{classbackward_1_1StackTraceImpl}{backward\+::\+Stack\+Trace\+Impl}}$<$ TAG $>$\+::skip\+\_\+n\+\_\+firsts (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classbackward_1_1StackTraceImpl_a773dcaff268029472a0c0451dd5e134e}\label{classbackward_1_1StackTraceImpl_a773dcaff268029472a0c0451dd5e134e}} 
+\index{backward::StackTraceImpl$<$ TAG $>$@{backward::StackTraceImpl$<$ TAG $>$}!thread\_id@{thread\_id}}
+\index{thread\_id@{thread\_id}!backward::StackTraceImpl$<$ TAG $>$@{backward::StackTraceImpl$<$ TAG $>$}}
+\doxysubsubsection{\texorpdfstring{thread\_id()}{thread\_id()}}
+{\footnotesize\ttfamily template$<$typename TAG $>$ \\
+size\+\_\+t \mbox{\hyperlink{classbackward_1_1StackTraceImpl}{backward\+::\+Stack\+Trace\+Impl}}$<$ TAG $>$\+::thread\+\_\+id (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{Backtrace_8hpp}{Backtrace.\+hpp}}\end{DoxyCompactItemize}

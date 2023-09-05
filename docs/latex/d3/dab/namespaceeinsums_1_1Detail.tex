@@ -1,0 +1,64 @@
+\hypertarget{namespaceeinsums_1_1Detail}{}\doxysection{einsums\+::Detail Namespace Reference}
+\label{namespaceeinsums_1_1Detail}\index{einsums::Detail@{einsums::Detail}}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1Detail_1_1HasType}{Has\+Type}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1Detail_1_1HasType_3_01T_00_01std_1_1tuple_3_4_01_4}{Has\+Type$<$ T, std\+::tuple$<$$>$ $>$}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1Detail_1_1HasType_3_01T_00_01std_1_1tuple_3_01U_00_01Ts_8_8_8_01_4_01_4}{Has\+Type$<$ T, std\+::tuple$<$ U, Ts... $>$ $>$}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1Detail_1_1HasType_3_01T_00_01std_1_1tuple_3_01T_00_01Ts_8_8_8_01_4_01_4}{Has\+Type$<$ T, std\+::tuple$<$ T, Ts... $>$ $>$}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$typename T , std\+::size\+\_\+t... Is$>$ }\\constexpr auto \mbox{\hyperlink{namespaceeinsums_1_1Detail_af6879128df4e286f3d32bbd5e7145571}{create\+\_\+array}} (T value, std\+::index\+\_\+sequence$<$ Is... $>$) -\/$>$ std\+::array$<$ T, sizeof...(Is)$>$
+\item 
+{\footnotesize template$<$typename T , std\+::size\+\_\+t... Is$>$ }\\constexpr auto \mbox{\hyperlink{namespaceeinsums_1_1Detail_ab76d24140b7de36bb07e30a124b54f81}{create\+\_\+tuple}} (T value, std\+::index\+\_\+sequence$<$ Is... $>$)
+\item 
+{\footnotesize template$<$typename T , std\+::size\+\_\+t... Is$>$ }\\constexpr auto \mbox{\hyperlink{namespaceeinsums_1_1Detail_a5e53eed71e83dd82fdf169fcfe636f07}{create\+\_\+tuple\+\_\+from\+\_\+array}} (const T \&arr, std\+::index\+\_\+sequence$<$ Is... $>$)
+\item 
+{\footnotesize template$<$typename T , int Position$>$ }\\constexpr auto \mbox{\hyperlink{namespaceeinsums_1_1Detail_aa3190ce3f1e91909cc16e8f3a51d096f}{positions\+\_\+of\+\_\+type}} ()
+\item 
+{\footnotesize template$<$typename T , int Position, typename Head , typename... Args$>$ }\\constexpr auto \mbox{\hyperlink{namespaceeinsums_1_1Detail_a3d39f2359d6ea583088c35781ac51191}{positions\+\_\+of\+\_\+type}} ()
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{namespaceeinsums_1_1Detail_af6879128df4e286f3d32bbd5e7145571}\label{namespaceeinsums_1_1Detail_af6879128df4e286f3d32bbd5e7145571}} 
+\index{einsums::Detail@{einsums::Detail}!create\_array@{create\_array}}
+\index{create\_array@{create\_array}!einsums::Detail@{einsums::Detail}}
+\doxysubsubsection{\texorpdfstring{create\_array()}{create\_array()}}
+{\footnotesize\ttfamily template$<$typename T , std\+::size\+\_\+t... Is$>$ \\
+constexpr auto einsums\+::\+Detail\+::create\+\_\+array (\begin{DoxyParamCaption}\item[{T}]{value,  }\item[{std\+::index\+\_\+sequence$<$ Is... $>$}]{ }\end{DoxyParamCaption}) -\/$>$ std\+::array$<$T, sizeof...(Is)$>$ \hspace{0.3cm}{\ttfamily [constexpr]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1Detail_ab76d24140b7de36bb07e30a124b54f81}\label{namespaceeinsums_1_1Detail_ab76d24140b7de36bb07e30a124b54f81}} 
+\index{einsums::Detail@{einsums::Detail}!create\_tuple@{create\_tuple}}
+\index{create\_tuple@{create\_tuple}!einsums::Detail@{einsums::Detail}}
+\doxysubsubsection{\texorpdfstring{create\_tuple()}{create\_tuple()}}
+{\footnotesize\ttfamily template$<$typename T , std\+::size\+\_\+t... Is$>$ \\
+constexpr auto einsums\+::\+Detail\+::create\+\_\+tuple (\begin{DoxyParamCaption}\item[{T}]{value,  }\item[{std\+::index\+\_\+sequence$<$ Is... $>$}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1Detail_a5e53eed71e83dd82fdf169fcfe636f07}\label{namespaceeinsums_1_1Detail_a5e53eed71e83dd82fdf169fcfe636f07}} 
+\index{einsums::Detail@{einsums::Detail}!create\_tuple\_from\_array@{create\_tuple\_from\_array}}
+\index{create\_tuple\_from\_array@{create\_tuple\_from\_array}!einsums::Detail@{einsums::Detail}}
+\doxysubsubsection{\texorpdfstring{create\_tuple\_from\_array()}{create\_tuple\_from\_array()}}
+{\footnotesize\ttfamily template$<$typename T , std\+::size\+\_\+t... Is$>$ \\
+constexpr auto einsums\+::\+Detail\+::create\+\_\+tuple\+\_\+from\+\_\+array (\begin{DoxyParamCaption}\item[{const T \&}]{arr,  }\item[{std\+::index\+\_\+sequence$<$ Is... $>$}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1Detail_aa3190ce3f1e91909cc16e8f3a51d096f}\label{namespaceeinsums_1_1Detail_aa3190ce3f1e91909cc16e8f3a51d096f}} 
+\index{einsums::Detail@{einsums::Detail}!positions\_of\_type@{positions\_of\_type}}
+\index{positions\_of\_type@{positions\_of\_type}!einsums::Detail@{einsums::Detail}}
+\doxysubsubsection{\texorpdfstring{positions\_of\_type()}{positions\_of\_type()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename T , int Position$>$ \\
+constexpr auto einsums\+::\+Detail\+::positions\+\_\+of\+\_\+type (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1Detail_a3d39f2359d6ea583088c35781ac51191}\label{namespaceeinsums_1_1Detail_a3d39f2359d6ea583088c35781ac51191}} 
+\index{einsums::Detail@{einsums::Detail}!positions\_of\_type@{positions\_of\_type}}
+\index{positions\_of\_type@{positions\_of\_type}!einsums::Detail@{einsums::Detail}}
+\doxysubsubsection{\texorpdfstring{positions\_of\_type()}{positions\_of\_type()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename T , int Position, typename Head , typename... Args$>$ \\
+constexpr auto einsums\+::\+Detail\+::positions\+\_\+of\+\_\+type (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [constexpr]}}
+

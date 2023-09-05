@@ -1,0 +1,111 @@
+\hypertarget{classbackward_1_1cfile__streambuf}{}\doxysection{backward\+::cfile\+\_\+streambuf Class Reference}
+\label{classbackward_1_1cfile__streambuf}\index{backward::cfile\_streambuf@{backward::cfile\_streambuf}}
+
+
+{\ttfamily \#include $<$Backtrace.\+hpp$>$}
+
+
+
+Inheritance diagram for backward\+::cfile\+\_\+streambuf\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=226pt]{d4/dad/classbackward_1_1cfile__streambuf__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for backward\+::cfile\+\_\+streambuf\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=226pt]{d5/d3a/classbackward_1_1cfile__streambuf__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classbackward_1_1cfile__streambuf_a798d4b7e1e05f3cce444421ba456f766}{cfile\+\_\+streambuf}} (FILE $\ast$\+\_\+sink)
+\item 
+int\+\_\+type \mbox{\hyperlink{classbackward_1_1cfile__streambuf_a67f3b98cf16576290f422a3ef22ee22e}{underflow}} () \mbox{\hyperlink{Backtrace_8hpp_a421c2a84099be332814e021bcf72c6cf}{override}}
+\item 
+int\+\_\+type \mbox{\hyperlink{classbackward_1_1cfile__streambuf_a6928e10675b021aff45f08ac0bdfe939}{overflow}} (int\+\_\+type ch) \mbox{\hyperlink{Backtrace_8hpp_a421c2a84099be332814e021bcf72c6cf}{override}}
+\item 
+std\+::streamsize \mbox{\hyperlink{classbackward_1_1cfile__streambuf_a88cdae98971a07423b607b04b8fe2122}{xsputn}} (const char\+\_\+type $\ast$s, std\+::streamsize count) \mbox{\hyperlink{Backtrace_8hpp_a421c2a84099be332814e021bcf72c6cf}{override}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classbackward_1_1cfile__streambuf_ae46509153ea23bdc22eebc95b8852013}{cfile\+\_\+streambuf}} (const \mbox{\hyperlink{classbackward_1_1cfile__streambuf}{cfile\+\_\+streambuf}} \&)
+\item 
+\mbox{\hyperlink{classbackward_1_1cfile__streambuf}{cfile\+\_\+streambuf}} \& \mbox{\hyperlink{classbackward_1_1cfile__streambuf_a838087c3c7c1f54187934e0798cb1ba8}{operator=}} (const \mbox{\hyperlink{classbackward_1_1cfile__streambuf}{cfile\+\_\+streambuf}} \&)
+\end{DoxyCompactItemize}
+\doxysubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+FILE $\ast$ \mbox{\hyperlink{classbackward_1_1cfile__streambuf_acb101ee63ffc7413c176af83abf9ea77}{sink}}
+\item 
+std\+::vector$<$ char $>$ \mbox{\hyperlink{classbackward_1_1cfile__streambuf_a1d86eea6c8bb41882e7d6cd2a1b28350}{buffer}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classbackward_1_1cfile__streambuf_a798d4b7e1e05f3cce444421ba456f766}\label{classbackward_1_1cfile__streambuf_a798d4b7e1e05f3cce444421ba456f766}} 
+\index{backward::cfile\_streambuf@{backward::cfile\_streambuf}!cfile\_streambuf@{cfile\_streambuf}}
+\index{cfile\_streambuf@{cfile\_streambuf}!backward::cfile\_streambuf@{backward::cfile\_streambuf}}
+\doxysubsubsection{\texorpdfstring{cfile\_streambuf()}{cfile\_streambuf()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily backward\+::cfile\+\_\+streambuf\+::cfile\+\_\+streambuf (\begin{DoxyParamCaption}\item[{FILE $\ast$}]{\+\_\+sink }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classbackward_1_1cfile__streambuf_ae46509153ea23bdc22eebc95b8852013}\label{classbackward_1_1cfile__streambuf_ae46509153ea23bdc22eebc95b8852013}} 
+\index{backward::cfile\_streambuf@{backward::cfile\_streambuf}!cfile\_streambuf@{cfile\_streambuf}}
+\index{cfile\_streambuf@{cfile\_streambuf}!backward::cfile\_streambuf@{backward::cfile\_streambuf}}
+\doxysubsubsection{\texorpdfstring{cfile\_streambuf()}{cfile\_streambuf()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily backward\+::cfile\+\_\+streambuf\+::cfile\+\_\+streambuf (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classbackward_1_1cfile__streambuf}{cfile\+\_\+streambuf}} \&}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classbackward_1_1cfile__streambuf_a838087c3c7c1f54187934e0798cb1ba8}\label{classbackward_1_1cfile__streambuf_a838087c3c7c1f54187934e0798cb1ba8}} 
+\index{backward::cfile\_streambuf@{backward::cfile\_streambuf}!operator=@{operator=}}
+\index{operator=@{operator=}!backward::cfile\_streambuf@{backward::cfile\_streambuf}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classbackward_1_1cfile__streambuf}{cfile\+\_\+streambuf}}\& backward\+::cfile\+\_\+streambuf\+::operator= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classbackward_1_1cfile__streambuf}{cfile\+\_\+streambuf}} \&}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classbackward_1_1cfile__streambuf_a6928e10675b021aff45f08ac0bdfe939}\label{classbackward_1_1cfile__streambuf_a6928e10675b021aff45f08ac0bdfe939}} 
+\index{backward::cfile\_streambuf@{backward::cfile\_streambuf}!overflow@{overflow}}
+\index{overflow@{overflow}!backward::cfile\_streambuf@{backward::cfile\_streambuf}}
+\doxysubsubsection{\texorpdfstring{overflow()}{overflow()}}
+{\footnotesize\ttfamily int\+\_\+type backward\+::cfile\+\_\+streambuf\+::overflow (\begin{DoxyParamCaption}\item[{int\+\_\+type}]{ch }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}}
+
+\mbox{\Hypertarget{classbackward_1_1cfile__streambuf_a67f3b98cf16576290f422a3ef22ee22e}\label{classbackward_1_1cfile__streambuf_a67f3b98cf16576290f422a3ef22ee22e}} 
+\index{backward::cfile\_streambuf@{backward::cfile\_streambuf}!underflow@{underflow}}
+\index{underflow@{underflow}!backward::cfile\_streambuf@{backward::cfile\_streambuf}}
+\doxysubsubsection{\texorpdfstring{underflow()}{underflow()}}
+{\footnotesize\ttfamily int\+\_\+type backward\+::cfile\+\_\+streambuf\+::underflow (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}}
+
+\mbox{\Hypertarget{classbackward_1_1cfile__streambuf_a88cdae98971a07423b607b04b8fe2122}\label{classbackward_1_1cfile__streambuf_a88cdae98971a07423b607b04b8fe2122}} 
+\index{backward::cfile\_streambuf@{backward::cfile\_streambuf}!xsputn@{xsputn}}
+\index{xsputn@{xsputn}!backward::cfile\_streambuf@{backward::cfile\_streambuf}}
+\doxysubsubsection{\texorpdfstring{xsputn()}{xsputn()}}
+{\footnotesize\ttfamily std\+::streamsize backward\+::cfile\+\_\+streambuf\+::xsputn (\begin{DoxyParamCaption}\item[{const char\+\_\+type $\ast$}]{s,  }\item[{std\+::streamsize}]{count }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}}
+
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{classbackward_1_1cfile__streambuf_a1d86eea6c8bb41882e7d6cd2a1b28350}\label{classbackward_1_1cfile__streambuf_a1d86eea6c8bb41882e7d6cd2a1b28350}} 
+\index{backward::cfile\_streambuf@{backward::cfile\_streambuf}!buffer@{buffer}}
+\index{buffer@{buffer}!backward::cfile\_streambuf@{backward::cfile\_streambuf}}
+\doxysubsubsection{\texorpdfstring{buffer}{buffer}}
+{\footnotesize\ttfamily std\+::vector$<$char$>$ backward\+::cfile\+\_\+streambuf\+::buffer\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classbackward_1_1cfile__streambuf_acb101ee63ffc7413c176af83abf9ea77}\label{classbackward_1_1cfile__streambuf_acb101ee63ffc7413c176af83abf9ea77}} 
+\index{backward::cfile\_streambuf@{backward::cfile\_streambuf}!sink@{sink}}
+\index{sink@{sink}!backward::cfile\_streambuf@{backward::cfile\_streambuf}}
+\doxysubsubsection{\texorpdfstring{sink}{sink}}
+{\footnotesize\ttfamily FILE$\ast$ backward\+::cfile\+\_\+streambuf\+::sink\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{Backtrace_8hpp}{Backtrace.\+hpp}}\end{DoxyCompactItemize}

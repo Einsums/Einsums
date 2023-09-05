@@ -20,6 +20,12 @@
  * SOFTWARE.
  */
 
+/**
+ * @file _TensorAlgebraUtilities.hpp
+ *
+ * Contains utilities for tensor algebra.
+ */
+
 #pragma once
 
 #include <tuple>
@@ -32,7 +38,17 @@ BEGIN_EINSUMS_NAMESPACE_HPP(einsums::tensor_algebra)
 
 namespace detail {
 
-// Finds the order of the indices.
+/**
+ * Reorders a set of objects with the given new ordering. Should not be called
+ * on its own. Rather, it is the worker for another definition of order_indices.
+ *
+ * @param combination The current set of objects.
+ * @param order The new order for the objects.
+ * @param A list of indices.
+ * 
+ * @return A tuple with the same objects as was passed in, but in a different
+ * order.
+ */
 template <size_t Rank, typename... Args, std::size_t... I>
 auto order_indices(const std::tuple<Args...> &combination,
                    const std::array<size_t, Rank> &order,
@@ -42,7 +58,14 @@ auto order_indices(const std::tuple<Args...> &combination,
 
 }  // namespace detail
 
-// Finds the order of the indices.
+/**
+ * Reorders a set of objects with the given new ordering.
+ *
+ * @param combination A tuple containing objects to reorder.
+ * @param order A list of new indices for the new ordering.
+ *
+ * @return The tuple of objects in a new order.
+ */
 template <size_t Rank, typename... Args>
 auto order_indices(const std::tuple<Args...> &combination,
                    const std::array<size_t, Rank> &order) {
@@ -52,12 +75,23 @@ auto order_indices(const std::tuple<Args...> &combination,
 
 namespace detail {
 
+/**
+ * Base case for einsums::tensor_algebra::_find_type_with_position.
+ *
+ * @return An empty tuple.
+ */
 template <typename T, int Position>
 constexpr auto _find_type_with_position() {
     return std::make_tuple();
 }
 
-// TODO: find what this does.
+/**
+ * Finds all positions where the type in the argument matches T.
+ *
+ * @todo Find what this may do.
+ * 
+ * @return A tuple of pairs which contain the matching type and the position.
+ */
 template <typename T, int Position, typename Head, typename... Args>
 constexpr auto _find_type_with_position() {
     if constexpr (std::is_same_v<std::decay_t<Head>, std::decay_t<T>>) {
@@ -68,13 +102,23 @@ constexpr auto _find_type_with_position() {
     }
 }
 
-// TODO: find what this does.
+/**
+ * Base case for the more compicated version.
+ *
+ * @return An empty tuple.
+ */
 template <typename T, int Position>
 constexpr auto _unique_type_with_position() {
     return std::make_tuple();
 }
 
-// TODO: find what this does.
+/**
+ * Finds the first position where the value in the list matches T.
+ *
+ * @todo Find what this may do.
+ *
+ * @return A tuple containing a pair containing the type and the position.
+ */
 template <typename T, int Position, typename Head, typename... Args>
 constexpr auto _unique_find_type_with_position() {
     if constexpr (std::is_same_v<std::decay_t<Head>, std::decay_t<T>>) {
@@ -84,7 +128,11 @@ constexpr auto _unique_find_type_with_position() {
     }
 }
 
-// TODO: find what this does.
+/**
+ * @todo I have no idea what this does.
+ *
+ * @return A tuple of some sort. @todo WTF does this return?
+ */
 template <template <typename, size_t> typename TensorType,
           size_t Rank, typename... Args, std::size_t... I, typename T = double>
 auto get_dim_ranges_for(const TensorType<T, Rank> &tensor,
@@ -94,7 +142,12 @@ auto get_dim_ranges_for(const TensorType<T, Rank> &tensor,
                    static_cast<int>(tensor.dim(std::get<2 * I + 1>(args))))...};
 }
 
-// TODO: find what this does.
+/**
+ * Does something with dimensions.
+ * @todo I have no clue what this does.
+ *
+ * @return A tuple of some sort. @todo C++ is too opaque for this.
+ */
 template <template <typename, size_t> typename TensorType,
           size_t Rank, typename... Args,
           std::size_t... I, typename T = double>
@@ -103,13 +156,23 @@ auto get_dim_for(const TensorType<T, Rank> &tensor,
     return std::tuple{tensor.dim(std::get<2 * I + 1>(args))...};
 }
 
-// Base case for the recursive function.
+/**
+ * Base case for the find_position function indicating that the item was
+ * not found.
+ *
+ * @return -1 because it could not find what it was looking for.
+ */
 template <typename T, int Position>
 constexpr auto find_position() {
     return -1;
 }
 
-// Finds the position of the type T in the argument list.
+/**
+ * Finds the position of type T in the argument list. Do not call. Should
+ * be called using the simpler find_position.
+ *
+ * @return The position of the argument, or -1 if not found.
+ */
 template <typename T, int Position, typename Head, typename... Args>
 constexpr auto find_position() {
     if constexpr (std::is_same_v<std::decay_t<Head>, std::decay_t<T>>) {
@@ -120,26 +183,44 @@ constexpr auto find_position() {
     }
 }
 
-// Finds the position of the type AIndex in the argument list.
+/**
+ * Finds the position of the type AIndex within the argument list.
+ *
+ * @return The position of the argument, or -1 if not found.
+ */
 template <typename AIndex, typename... Args>
 constexpr auto find_position() {
     return find_position<AIndex, 0, Args...>();
 }
 
-// TODO: find what makes this different.
+/**
+ * Findthe position of the element with type AIndex within the tuple.
+ *
+ * @param The tuple to search.
+ *
+ * @return The index of the item, or -1 if not found.
+ */
 template <typename AIndex, typename... TargetCombination>
 constexpr auto find_position(const std::tuple<TargetCombination...> &) {
     return detail::find_position<AIndex, TargetCombination...>();
 }
 
-// TODO: find what this does.
+/**
+ * @todo This makes no sense.
+ *
+ * @return Some sort of tuple. @todo Not much to go on here.
+ */
 template <typename S1, typename... S2, std::size_t... Is>
 constexpr auto _find_type_with_position(std::index_sequence<Is...>) {
     return std::tuple_cat(detail::_find_type_with_position<
                           std::tuple_element_t<Is, S1>, 0, S2...>()...);
 }
 
-// TODO: find what this does.
+/**
+ * @todo This does something. I think only God knows now.
+ *
+ * @return Some sort of tuple. @todo What does this mean?
+ */
 template <typename... Ts, typename... Us>
 constexpr auto find_type_with_position(const std::tuple<Ts...> &,
                                        const std::tuple<Us...> &) {
@@ -147,14 +228,22 @@ constexpr auto find_type_with_position(const std::tuple<Ts...> &,
                                 std::make_index_sequence<sizeof...(Ts)>{});
 }
 
-// TODO: find what this does.
+/**
+ * @todo No idea what this is supposed to do.
+ * 
+ * @return A tuple. @todo Man, there are a whole bunch of these tuples.
+ */
 template <typename S1, typename... S2, std::size_t... Is>
 constexpr auto _unique_find_type_with_position(std::index_sequence<Is...>) {
     return std::tuple_cat(detail::_unique_find_type_with_position<
                              std::tuple_element_t<Is, S1>, 0, S2...>()...);
 }
 
-// TODO: find what this does.
+/**
+ * @todo Still no idea.
+ *
+ * @return Probably some sort of tuple. @todo Another tuple? Really?
+ */
 template <typename... Ts, typename... Us>
 constexpr auto unique_find_type_with_position(const std::tuple<Ts...> &,
                                               const std::tuple<Us...> &) {
@@ -162,7 +251,12 @@ constexpr auto unique_find_type_with_position(const std::tuple<Ts...> &,
                         std::make_index_sequence<sizeof...(Ts)>{});
 }
 
-// TODO: find what this does.
+/**
+ * This does something related to other get_dim_ranges_for.
+ * @todo This might do something, or it might not. No clue.
+ *
+ * @return Something.
+ */
 template <template <typename, size_t> typename TensorType,
           size_t Rank, typename... Args, typename T = double>
 auto get_dim_ranges_for(const TensorType<T, Rank> &tensor,
@@ -171,7 +265,12 @@ auto get_dim_ranges_for(const TensorType<T, Rank> &tensor,
                 std::make_index_sequence<sizeof...(Args) / 2>{});
 }
 
-// TODO: find what this does.
+/**
+ * This does something related to other get_dim_for functions.
+ * @todo Get a description of this function.
+ *
+ * @return Something.
+ */
 template <template <typename, size_t> typename TensorType,
           size_t Rank, typename... Args, typename T = double>
 auto get_dim_for(const TensorType<T, Rank> &tensor,
@@ -180,7 +279,11 @@ auto get_dim_for(const TensorType<T, Rank> &tensor,
                     std::make_index_sequence<sizeof...(Args) / 2>{});
 }
 
-// TODO: find what this does.
+/**
+ * @todo This looks important. It would help if I knew what it did.
+ *
+ * @return -1 on error. No clue what it does normally.
+ */
 template <typename AIndex, typename... TargetCombination,
           typename... TargetPositionInC, typename... LinkCombination,
           typename... LinkPositionInLink>
@@ -205,7 +308,12 @@ auto construct_index(const std::tuple<TargetCombination...> &target_combination,
     }
 }
 
-// TODO: find what this does.
+/**
+ * @todo This looks important. It would be a shame if its purpose was lost to
+ * the blowing winds of time.
+ *
+ * @return Some sort of tuple. I've been writing this a lot.
+ */
 template <typename... AIndices, typename... TargetCombination,
           typename... TargetPositionInC, typename... LinkCombination,
           typename... LinkPositionInLink>
@@ -220,7 +328,12 @@ construct_indices(const std::tuple<TargetCombination...> &target_combination,
                 link_position_in_link)...);
 }
 
-// TODO: find what this does.
+/**
+ * @todo This seems like a descriptive name of some sort. Unfortunately,
+ * I don't speak self-documenting code.
+ *
+ * @return -1 on error. No idea otherwise.
+ */
 template <typename AIndex, typename... UniqueTargetIndices,
           typename... UniqueTargetCombination, typename... TargetPositionInC,
           typename... UniqueLinkIndices, typename... UniqueLinkCombination,
@@ -249,7 +362,11 @@ auto construct_index_from_unique_target_combination(
     }
 }
 
-// TODO: find what this does.
+/**
+ * @todo Looks similar to the last one.
+ * 
+ * @return Some sort of tuple.
+ */
 template <typename... AIndices, typename... UniqueTargetIndices,
           typename... UniqueTargetCombination, typename... TargetPositionInC,
           typename... UniqueLinkIndices, typename... UniqueLinkCombination,
@@ -268,7 +385,11 @@ constexpr auto construct_indices_from_unique_combination(
                 unique_link_combination, link_position_in_link)...);
 }
 
-// TODO: find what this does.
+/**
+ * @todo This constructs indices. But what does it actually do?
+ *
+ * @return Probably a tuple.
+ */
 template <typename... AIndices, typename... TargetCombination,
           typename... TargetPositionInC, typename... LinkCombination,
           typename... LinkPositionInLink>
@@ -283,7 +404,11 @@ constexpr auto construct_indices(const std::tuple<AIndices...> &,
                                           link_position_in_link);
 }
 
-// TODO: find what this does.
+/**
+ * @todo This means nothing to me. What is it for?
+ *
+ * @return Some sort of boolean value.
+ */
 template <typename... PositionsInX, std::size_t... I>
 constexpr auto _contiguous_positions(const std::tuple<PositionsInX...> &x,
                                      std::index_sequence<I...>) -> bool {
@@ -291,7 +416,11 @@ constexpr auto _contiguous_positions(const std::tuple<PositionsInX...> &x,
                                                                    && true);
 }
 
-// TODO: find what this does.
+/**
+ * @todo What does it do???
+ *
+ * @return A boolean.
+ */
 template <typename... PositionsInX>
 constexpr auto contiguous_positions(const std::tuple<PositionsInX...> &x)
 -> bool {
@@ -303,7 +432,15 @@ constexpr auto contiguous_positions(const std::tuple<PositionsInX...> &x)
     }
 }
 
-// Checks to see if the two lists have the same ordering.
+/**
+ * Worker that determines if two tuples have the same ordering.
+ * @todo Write a better argument description.
+ * 
+ * @param positions_in_x the values in the x positions.
+ * @param positions_in_y The values in the y positions.
+ *
+ * @return Whether or not the ordering is the same.
+ */
 template <typename... PositionsInX, typename... PositionsInY, std::size_t... I>
 constexpr auto _is_same_ordering(
                 const std::tuple<PositionsInX...> &positions_in_x,
@@ -313,7 +450,15 @@ constexpr auto _is_same_ordering(
                             decltype(std::get<2 * I>(positions_in_y))> && ...);
 }
 
-// Checks to see if the two lists have the same ordering.
+/**
+ * Checks to see if two lists have the same ordering.
+ * @todo Find out what this means.
+ *
+ * @param positions_in_x Positions in the x array.
+ * @param positions_in_y Positions in the y array.
+ *
+ * @return A boolean.
+ */
 template <typename... PositionsInX, typename... PositionsInY>
 constexpr auto is_same_ordering(
                         const std::tuple<PositionsInX...> &positions_in_x,
@@ -327,7 +472,14 @@ constexpr auto is_same_ordering(
                     std::make_index_sequence<sizeof...(PositionsInX) / 2>{});
 }
 
-// TODO: find what this does.
+/**
+ * Finds the product of the dimensions. Worker function. Do not call.
+ *
+ * @param indices The list of indices.
+ * @param X The tensor? @todo What is this?
+ * 
+ * @return A product? Idk.
+ */
 template <template <typename, size_t> typename XType,
           size_t XRank, typename... PositionsInX,
           std::size_t... I, typename T = double>
@@ -337,7 +489,15 @@ constexpr auto product_dims(const std::tuple<PositionsInX...> &indices,
     return (X.dim(std::get<2 * I + 1>(indices)) * ... * 1);
 }
 
-// TODO: find what this does.
+/**
+ * Checks to see if the indices match the dimensions of the tensor.
+ * @todo Verify this description.
+ *
+ * @param indices The indices.
+ * @param X The tensor to compare to.
+ *
+ * @return Whether the dimensions are the same.
+ */
 template <template <typename, size_t> typename XType, size_t XRank,
           typename... PositionsInX, std::size_t... I, typename T = double>
 constexpr auto is_same_dims(const std::tuple<PositionsInX...> &indices,
@@ -347,14 +507,26 @@ constexpr auto is_same_dims(const std::tuple<PositionsInX...> &indices,
              X.dim(std::get<2 * I + 1>(indices))) && ... && 1);
 }
 
-// Checks to see if the two arguments have the same indices.
+/**
+ * Checks to see if the arguments have the same indices. Worker function?
+ * @todo Figure out the usage of this function.
+ *
+ * @param An index sequence.
+ *
+ * @return Boolean?
+ */
 template <typename LHS, typename RHS, std::size_t... I>
 constexpr auto same_indices(std::index_sequence<I...>) {
     return (std::is_same_v<std::tuple_element_t<I, LHS>,
                            std::tuple_element_t<I, RHS>> && ...);
 }
 
-// TODO: find what this does.
+/**
+ * @todo This does something. That's a fact.
+ *
+ * @param indices Indices of some sort.
+ * @param X A tensor.
+ */
 template <template <typename, size_t> typename XType, size_t XRank,
           typename... PositionsInX, typename T = double>
 constexpr auto product_dims(const std::tuple<PositionsInX...> &indices,
@@ -363,7 +535,15 @@ constexpr auto product_dims(const std::tuple<PositionsInX...> &indices,
                     std::make_index_sequence<sizeof...(PositionsInX) / 2>());
 }
 
-// TODO: find what this does.
+/**
+ * Checks whether the dimensions are the same as in the tensor.
+ * @todo Double check this behavior.
+ *
+ * @param indices Indices of some sort.
+ * @param X A tensor.
+ *
+ * @return Whether the dimensions are the same.
+ */
 template <template <typename, size_t> typename XType, size_t XRank,
           typename... PositionsInX, typename T = double>
 constexpr auto is_same_dims(const std::tuple<PositionsInX...> &indices,
@@ -372,7 +552,14 @@ constexpr auto is_same_dims(const std::tuple<PositionsInX...> &indices,
                      std::make_index_sequence<sizeof...(PositionsInX) / 2>());
 }
 
-// Returns the last stride of X.
+/**
+ * Returns the last stride of X. @todo What could it all mean?
+ *
+ * @param indices Indices of some sort.
+ * @param X A tensor.
+ *
+ * @return The last stride of X?
+ */
 template <template <typename, size_t> typename XType, size_t XRank,
           typename... PositionsInX, typename T = double>
 constexpr auto last_stride(const std::tuple<PositionsInX...> &indices,
@@ -380,7 +567,12 @@ constexpr auto last_stride(const std::tuple<PositionsInX...> &indices,
     return X.stride(std::get<sizeof...(PositionsInX) - 1>(indices));
 }
 
-// Checks to see if the two arguments have the same indices.
+/**
+ * Checks to see if two indices are the same?
+ * @todo This has meaning to someone.
+ *
+ * @return A boolean.
+ */
 template <typename LHS, typename RHS>
 constexpr auto same_indices() {
     if constexpr (std::tuple_size_v<LHS> != std::tuple_size_v<RHS>)

@@ -20,6 +20,12 @@
  * SOFTWARE.
  */
 
+/**
+ * @file _Index.hpp
+ *
+ * Contains index definitions for use in tensor algebra.
+ */
+
 #pragma once
 
 #include <ostream>
@@ -33,11 +39,20 @@
 
 namespace einsums::tensor_algebra::index {
 
-// Empty base class for labels.
+/**
+ * @struct LabelBase
+ *
+ * Empty base class for index labels.
+ */
 struct LabelBase {};
 }  // namespace einsums::tensor_algebra::index
 
-// Create a new index with the given name.
+/**
+ * @def MAKE_INDEX(x)
+ *
+ * Creates a new index type with the given name.
+ *
+ */
 #define MAKE_INDEX(x)                                                          \
     namespace einsums::tensor_algebra::index {                                 \
     struct x : public LabelBase {                                              \
@@ -124,13 +139,23 @@ namespace einsums::tensor_algebra {
 
 namespace index {
 
-// This provides a list of all indices made in this file.
+/**
+ * @var list
+ * 
+ * Contains a tuple of index names.
+ */
 constexpr auto list = std::make_tuple(i, j, k, l, m, n, a, b, c, d, e, f,
                                       p, q, r, s);
 
 }  // namespace index
 
-// TODO: find out what this does.
+/**
+ * @struct Indices
+ *
+ * Represents a list of indices?
+ *
+ * @todo Find out what this does.
+ */
 template <typename... Args>
 struct EINSUMS_EXPORT Indices : public std::tuple<Args...> {
     explicit Indices(Args... args) : std::tuple<Args...>(args...){}

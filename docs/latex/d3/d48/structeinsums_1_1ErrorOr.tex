@@ -1,0 +1,194 @@
+\hypertarget{structeinsums_1_1ErrorOr}{}\doxysection{einsums\+::Error\+Or$<$ T, E $>$ Struct Template Reference}
+\label{structeinsums_1_1ErrorOr}\index{einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}}
+
+
+{\ttfamily \#include $<$Error.\+hpp$>$}
+
+
+
+Inheritance diagram for einsums\+::Error\+Or$<$ T, E $>$\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=261pt]{db/d5a/structeinsums_1_1ErrorOr__inherit__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+using \mbox{\hyperlink{structeinsums_1_1ErrorOr_a76fac62b37315816e1e67289b47ed3f0}{Result\+Type}} = T
+\item 
+using \mbox{\hyperlink{structeinsums_1_1ErrorOr_ae1c037df7a89b5dddae2faed291f41c6}{Error\+Type}} = E
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structeinsums_1_1ErrorOr_ac3d88f25532612f9c8991af029dcb659}{Error\+Or}} ()=default
+\item 
+\mbox{\hyperlink{structeinsums_1_1ErrorOr_a22e41e4cf06c60e0d37ec224a9f1e829}{Error\+Or}} (\mbox{\hyperlink{structeinsums_1_1ErrorOr}{Error\+Or}} \&\&) noexcept=default
+\item 
+auto \mbox{\hyperlink{structeinsums_1_1ErrorOr_ad1cb87d4b055a73c98751abcd170aac2}{operator=}} (\mbox{\hyperlink{structeinsums_1_1ErrorOr}{Error\+Or}} \&\&) noexcept -\/$>$ \mbox{\hyperlink{structeinsums_1_1ErrorOr}{Error\+Or}} \&=default
+\item 
+\mbox{\hyperlink{structeinsums_1_1ErrorOr_aaa9b6564cff8556bbb7eb54690989b89}{Error\+Or}} (\mbox{\hyperlink{structeinsums_1_1ErrorOr}{Error\+Or}} const \&)=delete
+\item 
+auto \mbox{\hyperlink{structeinsums_1_1ErrorOr_a62eea83dac24a1d17eb610cf4eecce7c}{operator=}} (\mbox{\hyperlink{structeinsums_1_1ErrorOr}{Error\+Or}} const \&) -\/$>$ \mbox{\hyperlink{structeinsums_1_1ErrorOr}{Error\+Or}} \&=delete
+\item 
+{\footnotesize template$<$typename U $>$ }\\\mbox{\hyperlink{structeinsums_1_1ErrorOr_a009d95ecb723c4d821fff31013079257}{Error\+Or}} (\mbox{\hyperlink{structeinsums_1_1ErrorOr}{Error\+Or}}$<$ U, \mbox{\hyperlink{structeinsums_1_1ErrorOr_ae1c037df7a89b5dddae2faed291f41c6}{Error\+Type}} $>$ \&\&\mbox{\hyperlink{structeinsums_1_1ErrorOr_a3935925120f78e5c7896e7ce3b75c37a}{value}})
+\item 
+{\footnotesize template$<$typename U $>$ }\\\mbox{\hyperlink{structeinsums_1_1ErrorOr_af0195cb1342f5960067bfa113a8eb50b}{Error\+Or}} (U \&\&\mbox{\hyperlink{structeinsums_1_1ErrorOr_a3935925120f78e5c7896e7ce3b75c37a}{value}})
+\item 
+auto \mbox{\hyperlink{structeinsums_1_1ErrorOr_a3935925120f78e5c7896e7ce3b75c37a}{value}} () -\/$>$ \mbox{\hyperlink{structeinsums_1_1ErrorOr_a76fac62b37315816e1e67289b47ed3f0}{Result\+Type}} \&
+\item 
+auto \mbox{\hyperlink{structeinsums_1_1ErrorOr_ab097765e1b53b98668fe41ae8bb8bed4}{value}} () const -\/$>$ \mbox{\hyperlink{structeinsums_1_1ErrorOr_a76fac62b37315816e1e67289b47ed3f0}{Result\+Type}} const \&
+\item 
+auto \mbox{\hyperlink{structeinsums_1_1ErrorOr_a92c759c65e8062281ceda8f683f638cc}{error}} () -\/$>$ \mbox{\hyperlink{structeinsums_1_1ErrorOr_ae1c037df7a89b5dddae2faed291f41c6}{Error\+Type}} \&
+\item 
+auto \mbox{\hyperlink{structeinsums_1_1ErrorOr_adfe323385531dc5a0221dfc7e489ebe3}{error}} () const -\/$>$ \mbox{\hyperlink{structeinsums_1_1ErrorOr_ae1c037df7a89b5dddae2faed291f41c6}{Error\+Type}} const \&
+\item 
+auto \mbox{\hyperlink{structeinsums_1_1ErrorOr_a055fc6d30d04811f5a78008e997cdeea}{is\+\_\+error}} () const -\/$>$ bool
+\end{DoxyCompactItemize}
+\doxysubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+std\+::variant$<$ \mbox{\hyperlink{structeinsums_1_1ErrorOr_a76fac62b37315816e1e67289b47ed3f0}{Result\+Type}}, \mbox{\hyperlink{structeinsums_1_1ErrorOr_ae1c037df7a89b5dddae2faed291f41c6}{Error\+Type}} $>$ \mbox{\hyperlink{structeinsums_1_1ErrorOr_a803b686e145cdd0c4617b7449a15a5de}{\+\_\+value\+\_\+or\+\_\+error}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$typename U , typename F $>$ }\\class \mbox{\hyperlink{structeinsums_1_1ErrorOr_a7418440fe9f1181a8e17de11e3077e57}{Error\+Or}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Typedef Documentation}
+\mbox{\Hypertarget{structeinsums_1_1ErrorOr_ae1c037df7a89b5dddae2faed291f41c6}\label{structeinsums_1_1ErrorOr_ae1c037df7a89b5dddae2faed291f41c6}} 
+\index{einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}!ErrorType@{ErrorType}}
+\index{ErrorType@{ErrorType}!einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}}
+\doxysubsubsection{\texorpdfstring{ErrorType}{ErrorType}}
+{\footnotesize\ttfamily template$<$typename T , typename E $>$ \\
+using \mbox{\hyperlink{structeinsums_1_1ErrorOr}{einsums\+::\+Error\+Or}}$<$ T, E $>$\+::\mbox{\hyperlink{structeinsums_1_1ErrorOr_ae1c037df7a89b5dddae2faed291f41c6}{Error\+Type}} =  E}
+
+\mbox{\Hypertarget{structeinsums_1_1ErrorOr_a76fac62b37315816e1e67289b47ed3f0}\label{structeinsums_1_1ErrorOr_a76fac62b37315816e1e67289b47ed3f0}} 
+\index{einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}!ResultType@{ResultType}}
+\index{ResultType@{ResultType}!einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}}
+\doxysubsubsection{\texorpdfstring{ResultType}{ResultType}}
+{\footnotesize\ttfamily template$<$typename T , typename E $>$ \\
+using \mbox{\hyperlink{structeinsums_1_1ErrorOr}{einsums\+::\+Error\+Or}}$<$ T, E $>$\+::\mbox{\hyperlink{structeinsums_1_1ErrorOr_a76fac62b37315816e1e67289b47ed3f0}{Result\+Type}} =  T}
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{structeinsums_1_1ErrorOr_ac3d88f25532612f9c8991af029dcb659}\label{structeinsums_1_1ErrorOr_ac3d88f25532612f9c8991af029dcb659}} 
+\index{einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}!ErrorOr@{ErrorOr}}
+\index{ErrorOr@{ErrorOr}!einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}}
+\doxysubsubsection{\texorpdfstring{ErrorOr()}{ErrorOr()}\hspace{0.1cm}{\footnotesize\ttfamily [1/5]}}
+{\footnotesize\ttfamily template$<$typename T , typename E $>$ \\
+\mbox{\hyperlink{structeinsums_1_1ErrorOr}{einsums\+::\+Error\+Or}}$<$ T, E $>$\+::\mbox{\hyperlink{structeinsums_1_1ErrorOr}{Error\+Or}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+\mbox{\Hypertarget{structeinsums_1_1ErrorOr_a22e41e4cf06c60e0d37ec224a9f1e829}\label{structeinsums_1_1ErrorOr_a22e41e4cf06c60e0d37ec224a9f1e829}} 
+\index{einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}!ErrorOr@{ErrorOr}}
+\index{ErrorOr@{ErrorOr}!einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}}
+\doxysubsubsection{\texorpdfstring{ErrorOr()}{ErrorOr()}\hspace{0.1cm}{\footnotesize\ttfamily [2/5]}}
+{\footnotesize\ttfamily template$<$typename T , typename E $>$ \\
+\mbox{\hyperlink{structeinsums_1_1ErrorOr}{einsums\+::\+Error\+Or}}$<$ T, E $>$\+::\mbox{\hyperlink{structeinsums_1_1ErrorOr}{Error\+Or}} (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structeinsums_1_1ErrorOr}{Error\+Or}}$<$ T, E $>$ \&\&}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}, {\ttfamily [noexcept]}}
+
+\mbox{\Hypertarget{structeinsums_1_1ErrorOr_aaa9b6564cff8556bbb7eb54690989b89}\label{structeinsums_1_1ErrorOr_aaa9b6564cff8556bbb7eb54690989b89}} 
+\index{einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}!ErrorOr@{ErrorOr}}
+\index{ErrorOr@{ErrorOr}!einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}}
+\doxysubsubsection{\texorpdfstring{ErrorOr()}{ErrorOr()}\hspace{0.1cm}{\footnotesize\ttfamily [3/5]}}
+{\footnotesize\ttfamily template$<$typename T , typename E $>$ \\
+\mbox{\hyperlink{structeinsums_1_1ErrorOr}{einsums\+::\+Error\+Or}}$<$ T, E $>$\+::\mbox{\hyperlink{structeinsums_1_1ErrorOr}{Error\+Or}} (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structeinsums_1_1ErrorOr}{Error\+Or}}$<$ T, E $>$ const \&}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\mbox{\Hypertarget{structeinsums_1_1ErrorOr_a009d95ecb723c4d821fff31013079257}\label{structeinsums_1_1ErrorOr_a009d95ecb723c4d821fff31013079257}} 
+\index{einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}!ErrorOr@{ErrorOr}}
+\index{ErrorOr@{ErrorOr}!einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}}
+\doxysubsubsection{\texorpdfstring{ErrorOr()}{ErrorOr()}\hspace{0.1cm}{\footnotesize\ttfamily [4/5]}}
+{\footnotesize\ttfamily template$<$typename T , typename E $>$ \\
+template$<$typename U $>$ \\
+\mbox{\hyperlink{structeinsums_1_1ErrorOr}{einsums\+::\+Error\+Or}}$<$ T, E $>$\+::\mbox{\hyperlink{structeinsums_1_1ErrorOr}{Error\+Or}} (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structeinsums_1_1ErrorOr}{Error\+Or}}$<$ U, \mbox{\hyperlink{structeinsums_1_1ErrorOr_ae1c037df7a89b5dddae2faed291f41c6}{Error\+Type}} $>$ \&\&}]{value }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{structeinsums_1_1ErrorOr_af0195cb1342f5960067bfa113a8eb50b}\label{structeinsums_1_1ErrorOr_af0195cb1342f5960067bfa113a8eb50b}} 
+\index{einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}!ErrorOr@{ErrorOr}}
+\index{ErrorOr@{ErrorOr}!einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}}
+\doxysubsubsection{\texorpdfstring{ErrorOr()}{ErrorOr()}\hspace{0.1cm}{\footnotesize\ttfamily [5/5]}}
+{\footnotesize\ttfamily template$<$typename T , typename E $>$ \\
+template$<$typename U $>$ \\
+\mbox{\hyperlink{structeinsums_1_1ErrorOr}{einsums\+::\+Error\+Or}}$<$ T, E $>$\+::\mbox{\hyperlink{structeinsums_1_1ErrorOr}{Error\+Or}} (\begin{DoxyParamCaption}\item[{U \&\&}]{value }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{structeinsums_1_1ErrorOr_a92c759c65e8062281ceda8f683f638cc}\label{structeinsums_1_1ErrorOr_a92c759c65e8062281ceda8f683f638cc}} 
+\index{einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}!error@{error}}
+\index{error@{error}!einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}}
+\doxysubsubsection{\texorpdfstring{error()}{error()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename T , typename E $>$ \\
+auto \mbox{\hyperlink{structeinsums_1_1ErrorOr}{einsums\+::\+Error\+Or}}$<$ T, E $>$\+::error (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) -\/$>$ \mbox{\hyperlink{structeinsums_1_1ErrorOr_ae1c037df7a89b5dddae2faed291f41c6}{Error\+Type}} \& \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{structeinsums_1_1ErrorOr_adfe323385531dc5a0221dfc7e489ebe3}\label{structeinsums_1_1ErrorOr_adfe323385531dc5a0221dfc7e489ebe3}} 
+\index{einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}!error@{error}}
+\index{error@{error}!einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}}
+\doxysubsubsection{\texorpdfstring{error()}{error()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename T , typename E $>$ \\
+auto \mbox{\hyperlink{structeinsums_1_1ErrorOr}{einsums\+::\+Error\+Or}}$<$ T, E $>$\+::error (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const -\/$>$ \mbox{\hyperlink{structeinsums_1_1ErrorOr_ae1c037df7a89b5dddae2faed291f41c6}{Error\+Type}} const \& \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{structeinsums_1_1ErrorOr_a055fc6d30d04811f5a78008e997cdeea}\label{structeinsums_1_1ErrorOr_a055fc6d30d04811f5a78008e997cdeea}} 
+\index{einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}!is\_error@{is\_error}}
+\index{is\_error@{is\_error}!einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}}
+\doxysubsubsection{\texorpdfstring{is\_error()}{is\_error()}}
+{\footnotesize\ttfamily template$<$typename T , typename E $>$ \\
+auto \mbox{\hyperlink{structeinsums_1_1ErrorOr}{einsums\+::\+Error\+Or}}$<$ T, E $>$\+::is\+\_\+error (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const -\/$>$ bool \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{structeinsums_1_1ErrorOr_ad1cb87d4b055a73c98751abcd170aac2}\label{structeinsums_1_1ErrorOr_ad1cb87d4b055a73c98751abcd170aac2}} 
+\index{einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}!operator=@{operator=}}
+\index{operator=@{operator=}!einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename T , typename E $>$ \\
+auto \mbox{\hyperlink{structeinsums_1_1ErrorOr}{einsums\+::\+Error\+Or}}$<$ T, E $>$\+::operator= (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structeinsums_1_1ErrorOr}{Error\+Or}}$<$ T, E $>$ \&\&}]{ }\end{DoxyParamCaption}) -\/$>$  \mbox{\hyperlink{structeinsums_1_1ErrorOr}{Error\+Or}} \&=default\hspace{0.3cm}{\ttfamily [default]}, {\ttfamily [noexcept]}}
+
+\mbox{\Hypertarget{structeinsums_1_1ErrorOr_a62eea83dac24a1d17eb610cf4eecce7c}\label{structeinsums_1_1ErrorOr_a62eea83dac24a1d17eb610cf4eecce7c}} 
+\index{einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}!operator=@{operator=}}
+\index{operator=@{operator=}!einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename T , typename E $>$ \\
+auto \mbox{\hyperlink{structeinsums_1_1ErrorOr}{einsums\+::\+Error\+Or}}$<$ T, E $>$\+::operator= (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structeinsums_1_1ErrorOr}{Error\+Or}}$<$ T, E $>$ const \&}]{ }\end{DoxyParamCaption}) -\/$>$  \mbox{\hyperlink{structeinsums_1_1ErrorOr}{Error\+Or}} \&=delete\hspace{0.3cm}{\ttfamily [delete]}}
+
+\mbox{\Hypertarget{structeinsums_1_1ErrorOr_a3935925120f78e5c7896e7ce3b75c37a}\label{structeinsums_1_1ErrorOr_a3935925120f78e5c7896e7ce3b75c37a}} 
+\index{einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}!value@{value}}
+\index{value@{value}!einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}}
+\doxysubsubsection{\texorpdfstring{value()}{value()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename T , typename E $>$ \\
+auto \mbox{\hyperlink{structeinsums_1_1ErrorOr}{einsums\+::\+Error\+Or}}$<$ T, E $>$\+::value (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) -\/$>$ \mbox{\hyperlink{structeinsums_1_1ErrorOr_a76fac62b37315816e1e67289b47ed3f0}{Result\+Type}} \& \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{structeinsums_1_1ErrorOr_ab097765e1b53b98668fe41ae8bb8bed4}\label{structeinsums_1_1ErrorOr_ab097765e1b53b98668fe41ae8bb8bed4}} 
+\index{einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}!value@{value}}
+\index{value@{value}!einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}}
+\doxysubsubsection{\texorpdfstring{value()}{value()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename T , typename E $>$ \\
+auto \mbox{\hyperlink{structeinsums_1_1ErrorOr}{einsums\+::\+Error\+Or}}$<$ T, E $>$\+::value (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const -\/$>$ \mbox{\hyperlink{structeinsums_1_1ErrorOr_a76fac62b37315816e1e67289b47ed3f0}{Result\+Type}} const \& \hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\doxysubsection{Friends And Related Function Documentation}
+\mbox{\Hypertarget{structeinsums_1_1ErrorOr_a7418440fe9f1181a8e17de11e3077e57}\label{structeinsums_1_1ErrorOr_a7418440fe9f1181a8e17de11e3077e57}} 
+\index{einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}!ErrorOr@{ErrorOr}}
+\index{ErrorOr@{ErrorOr}!einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}}
+\doxysubsubsection{\texorpdfstring{ErrorOr}{ErrorOr}}
+{\footnotesize\ttfamily template$<$typename T , typename E $>$ \\
+template$<$typename U , typename F $>$ \\
+friend class \mbox{\hyperlink{structeinsums_1_1ErrorOr}{Error\+Or}}\hspace{0.3cm}{\ttfamily [friend]}}
+
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{structeinsums_1_1ErrorOr_a803b686e145cdd0c4617b7449a15a5de}\label{structeinsums_1_1ErrorOr_a803b686e145cdd0c4617b7449a15a5de}} 
+\index{einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}!\_value\_or\_error@{\_value\_or\_error}}
+\index{\_value\_or\_error@{\_value\_or\_error}!einsums::ErrorOr$<$ T, E $>$@{einsums::ErrorOr$<$ T, E $>$}}
+\doxysubsubsection{\texorpdfstring{\_value\_or\_error}{\_value\_or\_error}}
+{\footnotesize\ttfamily template$<$typename T , typename E $>$ \\
+std\+::variant$<$\mbox{\hyperlink{structeinsums_1_1ErrorOr_a76fac62b37315816e1e67289b47ed3f0}{Result\+Type}}, \mbox{\hyperlink{structeinsums_1_1ErrorOr_ae1c037df7a89b5dddae2faed291f41c6}{Error\+Type}}$>$ \mbox{\hyperlink{structeinsums_1_1ErrorOr}{einsums\+::\+Error\+Or}}$<$ T, E $>$\+::\+\_\+value\+\_\+or\+\_\+error\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{Error_8hpp}{Error.\+hpp}}\end{DoxyCompactItemize}

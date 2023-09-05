@@ -1,0 +1,100 @@
+\hypertarget{classbackward_1_1SnippetFactory}{}\doxysection{backward\+::Snippet\+Factory Class Reference}
+\label{classbackward_1_1SnippetFactory}\index{backward::SnippetFactory@{backward::SnippetFactory}}
+
+
+{\ttfamily \#include $<$Backtrace.\+hpp$>$}
+
+
+
+Collaboration diagram for backward\+::Snippet\+Factory\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=282pt]{d9/d63/classbackward_1_1SnippetFactory__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+typedef \mbox{\hyperlink{classbackward_1_1SourceFile_a249ad26d824e683f42d1b93f3eafb973}{Source\+File\+::lines\+\_\+t}} \mbox{\hyperlink{classbackward_1_1SnippetFactory_a2bfbaa900acb0d4fdea885cf9c2ef93c}{lines\+\_\+t}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classbackward_1_1SnippetFactory_a2bfbaa900acb0d4fdea885cf9c2ef93c}{lines\+\_\+t}} \mbox{\hyperlink{classbackward_1_1SnippetFactory_a97300d912624d23fffab2f1583293284}{get\+\_\+snippet}} (const std\+::string \&filename, unsigned line\+\_\+start, unsigned context\+\_\+size)
+\item 
+\mbox{\hyperlink{classbackward_1_1SnippetFactory_a2bfbaa900acb0d4fdea885cf9c2ef93c}{lines\+\_\+t}} \mbox{\hyperlink{classbackward_1_1SnippetFactory_af06c8b01a7404863cbab8e65ed05d956}{get\+\_\+combined\+\_\+snippet}} (const std\+::string \&filename\+\_\+a, unsigned line\+\_\+a, const std\+::string \&filename\+\_\+b, unsigned line\+\_\+b, unsigned context\+\_\+size)
+\item 
+\mbox{\hyperlink{classbackward_1_1SnippetFactory_a2bfbaa900acb0d4fdea885cf9c2ef93c}{lines\+\_\+t}} \mbox{\hyperlink{classbackward_1_1SnippetFactory_a635aad3afd35531d61f2745473a96a62}{get\+\_\+coalesced\+\_\+snippet}} (const std\+::string \&filename, unsigned line\+\_\+a, unsigned line\+\_\+b, unsigned context\+\_\+size)
+\end{DoxyCompactItemize}
+\doxysubsection*{Private Types}
+\begin{DoxyCompactItemize}
+\item 
+typedef \mbox{\hyperlink{structbackward_1_1details_1_1hashtable}{details\+::hashtable}}$<$ std\+::string, \mbox{\hyperlink{classbackward_1_1SourceFile}{Source\+File}} $>$\+::type \mbox{\hyperlink{classbackward_1_1SnippetFactory_a1d8d49efa2d27dad468e9ecfc1a8b54a}{src\+\_\+files\+\_\+t}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classbackward_1_1SourceFile}{Source\+File}} \& \mbox{\hyperlink{classbackward_1_1SnippetFactory_ac6b7ce4c77ff33293ffe49c135f761ec}{get\+\_\+src\+\_\+file}} (const std\+::string \&filename)
+\end{DoxyCompactItemize}
+\doxysubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classbackward_1_1SnippetFactory_a1d8d49efa2d27dad468e9ecfc1a8b54a}{src\+\_\+files\+\_\+t}} \mbox{\hyperlink{classbackward_1_1SnippetFactory_a64a38fe8ea446660b774be38b48ae178}{\+\_\+src\+\_\+files}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Typedef Documentation}
+\mbox{\Hypertarget{classbackward_1_1SnippetFactory_a2bfbaa900acb0d4fdea885cf9c2ef93c}\label{classbackward_1_1SnippetFactory_a2bfbaa900acb0d4fdea885cf9c2ef93c}} 
+\index{backward::SnippetFactory@{backward::SnippetFactory}!lines\_t@{lines\_t}}
+\index{lines\_t@{lines\_t}!backward::SnippetFactory@{backward::SnippetFactory}}
+\doxysubsubsection{\texorpdfstring{lines\_t}{lines\_t}}
+{\footnotesize\ttfamily typedef \mbox{\hyperlink{classbackward_1_1SourceFile_a249ad26d824e683f42d1b93f3eafb973}{Source\+File\+::lines\+\_\+t}} \mbox{\hyperlink{classbackward_1_1SnippetFactory_a2bfbaa900acb0d4fdea885cf9c2ef93c}{backward\+::\+Snippet\+Factory\+::lines\+\_\+t}}}
+
+\mbox{\Hypertarget{classbackward_1_1SnippetFactory_a1d8d49efa2d27dad468e9ecfc1a8b54a}\label{classbackward_1_1SnippetFactory_a1d8d49efa2d27dad468e9ecfc1a8b54a}} 
+\index{backward::SnippetFactory@{backward::SnippetFactory}!src\_files\_t@{src\_files\_t}}
+\index{src\_files\_t@{src\_files\_t}!backward::SnippetFactory@{backward::SnippetFactory}}
+\doxysubsubsection{\texorpdfstring{src\_files\_t}{src\_files\_t}}
+{\footnotesize\ttfamily typedef \mbox{\hyperlink{structbackward_1_1details_1_1hashtable}{details\+::hashtable}}$<$std\+::string, \mbox{\hyperlink{classbackward_1_1SourceFile}{Source\+File}}$>$\+::type \mbox{\hyperlink{classbackward_1_1SnippetFactory_a1d8d49efa2d27dad468e9ecfc1a8b54a}{backward\+::\+Snippet\+Factory\+::src\+\_\+files\+\_\+t}}\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classbackward_1_1SnippetFactory_a635aad3afd35531d61f2745473a96a62}\label{classbackward_1_1SnippetFactory_a635aad3afd35531d61f2745473a96a62}} 
+\index{backward::SnippetFactory@{backward::SnippetFactory}!get\_coalesced\_snippet@{get\_coalesced\_snippet}}
+\index{get\_coalesced\_snippet@{get\_coalesced\_snippet}!backward::SnippetFactory@{backward::SnippetFactory}}
+\doxysubsubsection{\texorpdfstring{get\_coalesced\_snippet()}{get\_coalesced\_snippet()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classbackward_1_1SnippetFactory_a2bfbaa900acb0d4fdea885cf9c2ef93c}{lines\+\_\+t}} backward\+::\+Snippet\+Factory\+::get\+\_\+coalesced\+\_\+snippet (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{filename,  }\item[{unsigned}]{line\+\_\+a,  }\item[{unsigned}]{line\+\_\+b,  }\item[{unsigned}]{context\+\_\+size }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classbackward_1_1SnippetFactory_af06c8b01a7404863cbab8e65ed05d956}\label{classbackward_1_1SnippetFactory_af06c8b01a7404863cbab8e65ed05d956}} 
+\index{backward::SnippetFactory@{backward::SnippetFactory}!get\_combined\_snippet@{get\_combined\_snippet}}
+\index{get\_combined\_snippet@{get\_combined\_snippet}!backward::SnippetFactory@{backward::SnippetFactory}}
+\doxysubsubsection{\texorpdfstring{get\_combined\_snippet()}{get\_combined\_snippet()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classbackward_1_1SnippetFactory_a2bfbaa900acb0d4fdea885cf9c2ef93c}{lines\+\_\+t}} backward\+::\+Snippet\+Factory\+::get\+\_\+combined\+\_\+snippet (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{filename\+\_\+a,  }\item[{unsigned}]{line\+\_\+a,  }\item[{const std\+::string \&}]{filename\+\_\+b,  }\item[{unsigned}]{line\+\_\+b,  }\item[{unsigned}]{context\+\_\+size }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classbackward_1_1SnippetFactory_a97300d912624d23fffab2f1583293284}\label{classbackward_1_1SnippetFactory_a97300d912624d23fffab2f1583293284}} 
+\index{backward::SnippetFactory@{backward::SnippetFactory}!get\_snippet@{get\_snippet}}
+\index{get\_snippet@{get\_snippet}!backward::SnippetFactory@{backward::SnippetFactory}}
+\doxysubsubsection{\texorpdfstring{get\_snippet()}{get\_snippet()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classbackward_1_1SnippetFactory_a2bfbaa900acb0d4fdea885cf9c2ef93c}{lines\+\_\+t}} backward\+::\+Snippet\+Factory\+::get\+\_\+snippet (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{filename,  }\item[{unsigned}]{line\+\_\+start,  }\item[{unsigned}]{context\+\_\+size }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classbackward_1_1SnippetFactory_ac6b7ce4c77ff33293ffe49c135f761ec}\label{classbackward_1_1SnippetFactory_ac6b7ce4c77ff33293ffe49c135f761ec}} 
+\index{backward::SnippetFactory@{backward::SnippetFactory}!get\_src\_file@{get\_src\_file}}
+\index{get\_src\_file@{get\_src\_file}!backward::SnippetFactory@{backward::SnippetFactory}}
+\doxysubsubsection{\texorpdfstring{get\_src\_file()}{get\_src\_file()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classbackward_1_1SourceFile}{Source\+File}}\& backward\+::\+Snippet\+Factory\+::get\+\_\+src\+\_\+file (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{filename }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [private]}}
+
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{classbackward_1_1SnippetFactory_a64a38fe8ea446660b774be38b48ae178}\label{classbackward_1_1SnippetFactory_a64a38fe8ea446660b774be38b48ae178}} 
+\index{backward::SnippetFactory@{backward::SnippetFactory}!\_src\_files@{\_src\_files}}
+\index{\_src\_files@{\_src\_files}!backward::SnippetFactory@{backward::SnippetFactory}}
+\doxysubsubsection{\texorpdfstring{\_src\_files}{\_src\_files}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classbackward_1_1SnippetFactory_a1d8d49efa2d27dad468e9ecfc1a8b54a}{src\+\_\+files\+\_\+t}} backward\+::\+Snippet\+Factory\+::\+\_\+src\+\_\+files\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{Backtrace_8hpp}{Backtrace.\+hpp}}\end{DoxyCompactItemize}

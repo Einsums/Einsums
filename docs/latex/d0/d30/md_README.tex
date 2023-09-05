@@ -1,0 +1,99 @@
+Provides compile-\/time contraction pattern analysis to determine optimal operation to perform.\hypertarget{md_README_autotoc_md1}{}\doxysection{Requirements}\label{md_README_autotoc_md1}
+A C++ compiler with C++17 support.
+
+The following libraries are required to build Einsums\+In\+Cpp\+:
+
+
+\begin{DoxyItemize}
+\item BLAS and LAPACK.
+\end{DoxyItemize}
+
+On my personal development machine, I use MKL for the above requirements. On Git\+Hub Actions, stock BLAS, LAPACK, and FFTW3 are used.
+
+Optional requirements\+:
+
+
+\begin{DoxyItemize}
+\item A Fast Fourier Transform library, either FFTW3 or DFT from MKL.
+\item For call stack backtracing, refer to the requirements listed \href{https://github.com/bombela/backward-cpp}{\texttt{ here}}.
+\end{DoxyItemize}\hypertarget{md_README_autotoc_md2}{}\doxysection{Examples}\label{md_README_autotoc_md2}
+This will optimize at compile-\/time to a BLAS dgemm call. 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{ \{C++\}}
+\DoxyCodeLine{\#include "{}einsums/TensorAlgebra.hpp"{}}
+\DoxyCodeLine{}
+\DoxyCodeLine{using einsums;  // Provides Tensor and create\_random\_tensor}
+\DoxyCodeLine{using einsums::TensorAlgebra;  // Provides einsum and Indices}
+\DoxyCodeLine{using einsums::TensorAlgrebra::Index;  // Provides i, j, k}
+\DoxyCodeLine{}
+\DoxyCodeLine{Tensor<2> A = create\_random\_tensor("{}A"{}, 7, 7);}
+\DoxyCodeLine{Tensor<2> B = create\_random\_tensor("{}B"{}, 7, 7);}
+\DoxyCodeLine{Tensor<2> C\{"{}C"{}, 7, 7\};}
+\DoxyCodeLine{}
+\DoxyCodeLine{einsum(Indices\{i, j\}, \&C, Indices\{i, k\}, A, Indices\{k, j\}, B);}
+
+\end{DoxyCode}
+
+
+Two-\/\+Electron Contribution to the Fock Matrix 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{ \{C++\}}
+\DoxyCodeLine{\#include "{}einsums/TensorAlgebra.hpp"{}}
+\DoxyCodeLine{}
+\DoxyCodeLine{using namespace einsums;}
+\DoxyCodeLine{}
+\DoxyCodeLine{void build\_Fock\_2e\_einsum(Tensor<2> *F,}
+\DoxyCodeLine{                          const Tensor<4> \&g,}
+\DoxyCodeLine{                          const Tensor<2> \&D) \{}
+\DoxyCodeLine{    using namespace einsums::TensorAlgebra;}
+\DoxyCodeLine{    using namespace einsums::TensorAlgebra::Index;}
+\DoxyCodeLine{}
+\DoxyCodeLine{    // Will compile-\/time optimize to BLAS gemv}
+\DoxyCodeLine{    einsum(1.0, Indices\{p, q\}, F,}
+\DoxyCodeLine{           2.0, Indices\{p, q, r, s\}, g, Indices\{r, s\}, D);}
+\DoxyCodeLine{}
+\DoxyCodeLine{    // As written cannot be optimized.}
+\DoxyCodeLine{    // A generic arbitrary contraction function will be used.}
+\DoxyCodeLine{    einsum(1.0, Indices\{p, q\}, F,}
+\DoxyCodeLine{          -\/1.0, Indices\{p, r, q, s\}, g, Indices\{r, s\}, D);}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+
+
+
+
+W Intermediates in CCD 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{ \{C++\}}
+\DoxyCodeLine{Wmnij = g\_oooo;}
+\DoxyCodeLine{// Compile-\/time optimizes to gemm}
+\DoxyCodeLine{einsum(1.0,  Indices\{m, n, i, j\}, \&Wmnij,}
+\DoxyCodeLine{       0.25, Indices\{i, j, e, f\}, t\_oovv,}
+\DoxyCodeLine{             Indices\{m, n, e, f\}, g\_oovv);}
+\DoxyCodeLine{}
+\DoxyCodeLine{Wabef = g\_vvvv;}
+\DoxyCodeLine{// Compile-\/time optimizes to gemm}
+\DoxyCodeLine{einsum(1.0,  Indices\{a, b, e, f\}, \&Wabef,}
+\DoxyCodeLine{       0.25, Indices\{m, n, e, f\}, g\_oovv,}
+\DoxyCodeLine{             Indices\{m, n, a, b\}, t\_oovv);}
+\DoxyCodeLine{}
+\DoxyCodeLine{Wmbej = g\_ovvo;}
+\DoxyCodeLine{// As written uses generic arbitrary contraction function}
+\DoxyCodeLine{einsum(1.0, Indices\{m, b, e, j\}, \&Wmbej,}
+\DoxyCodeLine{      -\/0.5, Indices\{j, n, f, b\}, t\_oovv,}
+\DoxyCodeLine{            Indices\{m, n, e, f\}, g\_oovv);}
+
+\end{DoxyCode}
+
+
+CCD Energy 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{ \{C++\}}
+\DoxyCodeLine{/// Compile-\/time optimizes to a dot product}
+\DoxyCodeLine{einsum(0.0,  Indices\{\}, \&e\_ccd,}
+\DoxyCodeLine{       0.25, Indices\{i, j, a, b\}, new\_t\_oovv,}
+\DoxyCodeLine{             Indices\{i, j, a, b\}, g\_oovv);}
+
+\end{DoxyCode}
+ 

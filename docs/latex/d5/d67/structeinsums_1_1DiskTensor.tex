@@ -1,0 +1,462 @@
+\hypertarget{structeinsums_1_1DiskTensor}{}\doxysection{einsums\+::Disk\+Tensor$<$ T, Rank $>$ Struct Template Reference}
+\label{structeinsums_1_1DiskTensor}\index{einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}}
+
+
+{\ttfamily \#include $<$Tensor.\+hpp$>$}
+
+
+
+Inheritance diagram for einsums\+::Disk\+Tensor$<$ T, Rank $>$\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=233pt]{d1/dbc/structeinsums_1_1DiskTensor__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for einsums\+::Disk\+Tensor$<$ T, Rank $>$\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{d9/da8/structeinsums_1_1DiskTensor__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structeinsums_1_1DiskTensor_ae8e8ccf2b6dbe268a40bd892718d9008}{Disk\+Tensor}} ()=default
+\item 
+\mbox{\hyperlink{structeinsums_1_1DiskTensor_a6102f00e93c4e2f525ea1ef002c4e2be}{Disk\+Tensor}} (const \mbox{\hyperlink{structeinsums_1_1DiskTensor}{Disk\+Tensor}} \&)=default
+\item 
+\mbox{\hyperlink{structeinsums_1_1DiskTensor_ad0b3ebc4689aea4e4d8b64f666c2d897}{Disk\+Tensor}} (\mbox{\hyperlink{structeinsums_1_1DiskTensor}{Disk\+Tensor}} \&\&) noexcept=default
+\item 
+\mbox{\hyperlink{structeinsums_1_1DiskTensor_ae379099351decdc1484096ff189a8181}{$\sim$\+Disk\+Tensor}} ()=default
+\item 
+{\footnotesize template$<$typename... Dims$>$ }\\\mbox{\hyperlink{structeinsums_1_1DiskTensor_a619364f62567c5d5af6559266808e6b6}{Disk\+Tensor}} (h5\+::fd\+\_\+t \&file, std\+::string \mbox{\hyperlink{structeinsums_1_1DiskTensor_a14f3c671073afeb0b9dfe14a8d3e62c6}{name}}, \mbox{\hyperlink{namespaceeinsums_aa3bb8068c5ea647bc44ee4221a3379b3}{Chunk}}$<$ sizeof...(Dims)$>$ chunk, Dims... \mbox{\hyperlink{structeinsums_1_1DiskTensor_af6c3faa40864d75efbe40000368ecbdd}{dims}})
+\item 
+{\footnotesize template$<$typename... Dims, typename  = typename std\+::enable\+\_\+if$<$are\+\_\+all\+\_\+convertible$<$size\+\_\+t, Dims...$>$\+::value$>$\+::type$>$ }\\\mbox{\hyperlink{structeinsums_1_1DiskTensor_a4f88bde061c2f5ad96305a3f874df3da}{Disk\+Tensor}} (h5\+::fd\+\_\+t \&file, std\+::string \mbox{\hyperlink{structeinsums_1_1DiskTensor_a14f3c671073afeb0b9dfe14a8d3e62c6}{name}}, Dims... \mbox{\hyperlink{structeinsums_1_1DiskTensor_af6c3faa40864d75efbe40000368ecbdd}{dims}})
+\item 
+\mbox{\hyperlink{structeinsums_1_1DiskTensor_ab39b535f7b7476545c1806b776f97864}{Disk\+Tensor}} (h5\+::fd\+\_\+t \&file, const \mbox{\hyperlink{structeinsums_1_1Tensor}{Tensor}}$<$ T, Rank $>$ \&tensor)
+\item 
+auto \mbox{\hyperlink{structeinsums_1_1DiskTensor_a7662e2dd4ad8ec1642ddb14baf8d149c}{dim}} (int d) const -\/$>$ size\+\_\+t
+\item 
+auto \mbox{\hyperlink{structeinsums_1_1DiskTensor_af6c3faa40864d75efbe40000368ecbdd}{dims}} () const -\/$>$ \mbox{\hyperlink{namespaceeinsums_a8c1a58f7bcdc7d0bab4c5df086098d3d}{Dim}}$<$ Rank $>$
+\item 
+auto \mbox{\hyperlink{structeinsums_1_1DiskTensor_a56b04a16cb1dc1c0624af53c5941b7f8}{existed}} () const -\/$>$ bool
+\item 
+auto \mbox{\hyperlink{structeinsums_1_1DiskTensor_adf7b84aa969ba699bcbb481ade7537fd}{disk}} () -\/$>$ h5\+::ds\+\_\+t \&
+\item 
+auto \mbox{\hyperlink{structeinsums_1_1DiskTensor_a14f3c671073afeb0b9dfe14a8d3e62c6}{name}} () const -\/$>$ const std\+::string \&
+\item 
+auto \mbox{\hyperlink{structeinsums_1_1DiskTensor_ad33fb79b83459e47d08fd37527eddc1e}{stride}} (int d) const noexcept -\/$>$ size\+\_\+t
+\item 
+{\footnotesize template$<$typename... Multi\+Index$>$ }\\auto \mbox{\hyperlink{structeinsums_1_1DiskTensor_ad68ece8746fdfa750d6f99e754d5453d}{operator()}} (Multi\+Index... index) -\/$>$ std\+::enable\+\_\+if\+\_\+t$<$ \mbox{\hyperlink{namespaceeinsums_aaf7903a19c8a79a368737d29bcc6774c}{count\+\_\+of\+\_\+type}}$<$ \mbox{\hyperlink{structeinsums_1_1All__t}{All\+\_\+t}}, Multi\+Index... $>$()+\mbox{\hyperlink{namespaceeinsums_aaf7903a19c8a79a368737d29bcc6774c}{count\+\_\+of\+\_\+type}}$<$ \mbox{\hyperlink{namespaceeinsums_a09cb83e4ce99aafb4305bc16c03dc054}{Range}}, Multi\+Index... $>$() !=0
+\item 
+\mbox{\hyperlink{structeinsums_1_1DiskTensor_a55da1d43c276b36b04a55c6f9ebe9098}{std\+::fill}} (counts.\+begin(), counts.\+end(), 1.\+0)
+\item 
+\mbox{\hyperlink{structeinsums_1_1DiskTensor_acbc52c6c6ed1da9d44bc5cb804f1e824}{for}} (auto\mbox{[}i, value\mbox{]} \+:\mbox{\hyperlink{namespaceeinsums_aa4b66ad77ee363ab93eb41532bdffb26}{enumerate}}(\mbox{\hyperlink{structeinsums_1_1DiskTensor_a49e70f5af79dce4d165a42b6e77f0e60}{index\+\_\+positions}}))
+\item 
+\mbox{\hyperlink{structeinsums_1_1DiskTensor_a8ca3efdc2fe21cd58422ed8c34b06fb5}{for}} (auto\mbox{[}i, value\mbox{]} \+:\mbox{\hyperlink{namespaceeinsums_aa4b66ad77ee363ab93eb41532bdffb26}{enumerate}}(all\+\_\+positions))
+\item 
+\mbox{\hyperlink{structeinsums_1_1DiskTensor_a6bafa460884a3a2fe57908f30cceda53}{for}} (auto\mbox{[}i, value\mbox{]} \+:\mbox{\hyperlink{namespaceeinsums_aa4b66ad77ee363ab93eb41532bdffb26}{enumerate}}(\mbox{\hyperlink{structeinsums_1_1DiskTensor_aff31040fcc0513d7cac5761c97d43712}{range\+\_\+positions}}))
+\item 
+\mbox{\hyperlink{structeinsums_1_1DiskTensor_a3f6bc52d047281b9732ce7d987fea588}{for}} (auto cnt \+:\mbox{\hyperlink{structeinsums_1_1DiskTensor_a772530a5d4fe95e7a01d6885a7d178a5}{counts}})
+\item 
+{\footnotesize template$<$typename... Multi\+Index$>$ }\\auto \mbox{\hyperlink{structeinsums_1_1DiskTensor_af9796c432e91344410de883da3fdfd54}{operator()}} (Multi\+Index... index) const -\/$>$ std\+::enable\+\_\+if\+\_\+t$<$ \mbox{\hyperlink{namespaceeinsums_aaf7903a19c8a79a368737d29bcc6774c}{count\+\_\+of\+\_\+type}}$<$ \mbox{\hyperlink{structeinsums_1_1All__t}{All\+\_\+t}}, Multi\+Index... $>$()+\mbox{\hyperlink{namespaceeinsums_aaf7903a19c8a79a368737d29bcc6774c}{count\+\_\+of\+\_\+type}}$<$ \mbox{\hyperlink{namespaceeinsums_a09cb83e4ce99aafb4305bc16c03dc054}{Range}}, Multi\+Index... $>$() !=0
+\item 
+\mbox{\hyperlink{structeinsums_1_1DiskTensor_a55da1d43c276b36b04a55c6f9ebe9098}{std\+::fill}} (counts.\+begin(), counts.\+end(), 1.\+0)
+\item 
+\mbox{\hyperlink{structeinsums_1_1DiskTensor_acbc52c6c6ed1da9d44bc5cb804f1e824}{for}} (auto\mbox{[}i, value\mbox{]} \+:\mbox{\hyperlink{namespaceeinsums_aa4b66ad77ee363ab93eb41532bdffb26}{enumerate}}(\mbox{\hyperlink{structeinsums_1_1DiskTensor_a49e70f5af79dce4d165a42b6e77f0e60}{index\+\_\+positions}}))
+\item 
+\mbox{\hyperlink{structeinsums_1_1DiskTensor_a8ca3efdc2fe21cd58422ed8c34b06fb5}{for}} (auto\mbox{[}i, value\mbox{]} \+:\mbox{\hyperlink{namespaceeinsums_aa4b66ad77ee363ab93eb41532bdffb26}{enumerate}}(all\+\_\+positions))
+\item 
+\mbox{\hyperlink{structeinsums_1_1DiskTensor_a6bafa460884a3a2fe57908f30cceda53}{for}} (auto\mbox{[}i, value\mbox{]} \+:\mbox{\hyperlink{namespaceeinsums_aa4b66ad77ee363ab93eb41532bdffb26}{enumerate}}(\mbox{\hyperlink{structeinsums_1_1DiskTensor_aff31040fcc0513d7cac5761c97d43712}{range\+\_\+positions}}))
+\item 
+\mbox{\hyperlink{structeinsums_1_1DiskTensor_a3f6bc52d047281b9732ce7d987fea588}{for}} (auto cnt \+:\mbox{\hyperlink{structeinsums_1_1DiskTensor_a772530a5d4fe95e7a01d6885a7d178a5}{counts}})
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+auto \mbox{\hyperlink{structeinsums_1_1DiskTensor_a322a7694387ee69c277f1b112f330520}{Disk\+View$<$ T, count\+\_\+of\+\_\+type$<$ All\+\_\+t, Multi\+Index... $>$)+count\+\_\+of\+\_\+type$<$ Range, Multi\+Index... $>$), Rank $>$}}
+\item 
+auto \mbox{\hyperlink{structeinsums_1_1DiskTensor_a49e70f5af79dce4d165a42b6e77f0e60}{index\+\_\+positions}}
+\item 
+auto \mbox{\hyperlink{structeinsums_1_1DiskTensor_aff31040fcc0513d7cac5761c97d43712}{range\+\_\+positions}}
+\item 
+const auto \& \mbox{\hyperlink{structeinsums_1_1DiskTensor_acd76bbe204ad439df99f7d995fcb9587}{indices}} = std\+::forward\+\_\+as\+\_\+tuple(index...)
+\item 
+\mbox{\hyperlink{namespaceeinsums_ac5b603e07b867507d5830186cb2ceaaf}{Offset}}$<$ Rank $>$ \mbox{\hyperlink{structeinsums_1_1DiskTensor_ac852d7b7dc3316b9d3d9fb93589b9b36}{offsets}} \{\}
+\item 
+\mbox{\hyperlink{namespaceeinsums_a6138835e2652eaae61b1d977dd17d29c}{Stride}}$<$ Rank $>$ \mbox{\hyperlink{structeinsums_1_1DiskTensor_a0314ea12657e4b04ebb1d93daf3ced4d}{strides}} \{\}
+\item 
+\mbox{\hyperlink{namespaceeinsums_a450f97c210c704df47ec3d7013fcff47}{Count}}$<$ Rank $>$ \mbox{\hyperlink{structeinsums_1_1DiskTensor_a772530a5d4fe95e7a01d6885a7d178a5}{counts}} \{\}
+\item 
+\mbox{\hyperlink{namespaceeinsums_a8c1a58f7bcdc7d0bab4c5df086098d3d}{Dim}}$<$ \mbox{\hyperlink{namespaceeinsums_aaf7903a19c8a79a368737d29bcc6774c}{count\+\_\+of\+\_\+type}}$<$ \mbox{\hyperlink{structeinsums_1_1All__t}{All\+\_\+t}}, Multi\+Index... $>$)+\mbox{\hyperlink{namespaceeinsums_aaf7903a19c8a79a368737d29bcc6774c}{count\+\_\+of\+\_\+type}}$<$ \mbox{\hyperlink{namespaceeinsums_a09cb83e4ce99aafb4305bc16c03dc054}{Range}}, Multi\+Index... $>$)$>$ \mbox{\hyperlink{structeinsums_1_1DiskTensor_a92412735bfda511759254796d58f3413}{dims\+\_\+all}} \{\}
+\item 
+int \mbox{\hyperlink{structeinsums_1_1DiskTensor_a4afd586a6b01d6df64cf086982caf300}{dims\+\_\+index}} = 0
+\item 
+return \mbox{\hyperlink{structeinsums_1_1DiskView}{Disk\+View}}$<$ T, \mbox{\hyperlink{namespaceeinsums_aaf7903a19c8a79a368737d29bcc6774c}{count\+\_\+of\+\_\+type}}$<$ \mbox{\hyperlink{structeinsums_1_1All__t}{All\+\_\+t}}, Multi\+Index... $>$)+\mbox{\hyperlink{namespaceeinsums_aaf7903a19c8a79a368737d29bcc6774c}{count\+\_\+of\+\_\+type}}$<$ \mbox{\hyperlink{namespaceeinsums_a09cb83e4ce99aafb4305bc16c03dc054}{Range}}, Multi\+Index... $>$), Rank $>$ $\ast$ \mbox{\hyperlink{structeinsums_1_1DiskTensor_a5fcd9a2f007c57d746a65ad3bfa16a34}{this}}
+\item 
+auto const \mbox{\hyperlink{structeinsums_1_1DiskTensor_a6b5fa448b90d5e9a23aef88a7f62574a}{Disk\+View$<$ T, count\+\_\+of\+\_\+type$<$ All\+\_\+t, Multi\+Index... $>$)+count\+\_\+of\+\_\+type$<$ Range, Multi\+Index... $>$), Rank $>$}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+h5\+::fd\+\_\+t \& \mbox{\hyperlink{structeinsums_1_1DiskTensor_a06b466e83e613131c79059eaef20650e}{\+\_\+file}}
+\item 
+std\+::string \mbox{\hyperlink{structeinsums_1_1DiskTensor_ace495291c72ceb5fe4b1a8c02167f945}{\+\_\+name}}
+\item 
+\mbox{\hyperlink{namespaceeinsums_a8c1a58f7bcdc7d0bab4c5df086098d3d}{Dim}}$<$ Rank $>$ \mbox{\hyperlink{structeinsums_1_1DiskTensor_a0c15c0aa80af60dd81c90e2d0094aa7c}{\+\_\+dims}}
+\item 
+\mbox{\hyperlink{namespaceeinsums_a6138835e2652eaae61b1d977dd17d29c}{Stride}}$<$ Rank $>$ \mbox{\hyperlink{structeinsums_1_1DiskTensor_a5d3859a5ace24df7a894c5d1659853f9}{\+\_\+strides}}
+\item 
+h5\+::ds\+\_\+t \mbox{\hyperlink{structeinsums_1_1DiskTensor_a6ce661b20aa9f30d2216d84fae961447}{\+\_\+disk}}
+\item 
+bool \mbox{\hyperlink{structeinsums_1_1DiskTensor_a0e6a4428d5a4aaaf116171c7cf2b5d21}{\+\_\+existed}} \{false\}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{structeinsums_1_1DiskTensor_ae8e8ccf2b6dbe268a40bd892718d9008}\label{structeinsums_1_1DiskTensor_ae8e8ccf2b6dbe268a40bd892718d9008}} 
+\index{einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}!DiskTensor@{DiskTensor}}
+\index{DiskTensor@{DiskTensor}!einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{DiskTensor()}{DiskTensor()}\hspace{0.1cm}{\footnotesize\ttfamily [1/6]}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+\mbox{\hyperlink{structeinsums_1_1DiskTensor}{einsums\+::\+Disk\+Tensor}}$<$ T, Rank $>$\+::\mbox{\hyperlink{structeinsums_1_1DiskTensor}{Disk\+Tensor}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+\mbox{\Hypertarget{structeinsums_1_1DiskTensor_a6102f00e93c4e2f525ea1ef002c4e2be}\label{structeinsums_1_1DiskTensor_a6102f00e93c4e2f525ea1ef002c4e2be}} 
+\index{einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}!DiskTensor@{DiskTensor}}
+\index{DiskTensor@{DiskTensor}!einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{DiskTensor()}{DiskTensor()}\hspace{0.1cm}{\footnotesize\ttfamily [2/6]}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+\mbox{\hyperlink{structeinsums_1_1DiskTensor}{einsums\+::\+Disk\+Tensor}}$<$ T, Rank $>$\+::\mbox{\hyperlink{structeinsums_1_1DiskTensor}{Disk\+Tensor}} (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{structeinsums_1_1DiskTensor}{Disk\+Tensor}}$<$ T, Rank $>$ \&}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+\mbox{\Hypertarget{structeinsums_1_1DiskTensor_ad0b3ebc4689aea4e4d8b64f666c2d897}\label{structeinsums_1_1DiskTensor_ad0b3ebc4689aea4e4d8b64f666c2d897}} 
+\index{einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}!DiskTensor@{DiskTensor}}
+\index{DiskTensor@{DiskTensor}!einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{DiskTensor()}{DiskTensor()}\hspace{0.1cm}{\footnotesize\ttfamily [3/6]}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+\mbox{\hyperlink{structeinsums_1_1DiskTensor}{einsums\+::\+Disk\+Tensor}}$<$ T, Rank $>$\+::\mbox{\hyperlink{structeinsums_1_1DiskTensor}{Disk\+Tensor}} (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structeinsums_1_1DiskTensor}{Disk\+Tensor}}$<$ T, Rank $>$ \&\&}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}, {\ttfamily [noexcept]}}
+
+\mbox{\Hypertarget{structeinsums_1_1DiskTensor_ae379099351decdc1484096ff189a8181}\label{structeinsums_1_1DiskTensor_ae379099351decdc1484096ff189a8181}} 
+\index{einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}!````~DiskTensor@{$\sim$DiskTensor}}
+\index{````~DiskTensor@{$\sim$DiskTensor}!einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{$\sim$DiskTensor()}{~DiskTensor()}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+\mbox{\hyperlink{structeinsums_1_1DiskTensor}{einsums\+::\+Disk\+Tensor}}$<$ T, Rank $>$\+::$\sim$\mbox{\hyperlink{structeinsums_1_1DiskTensor}{Disk\+Tensor}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+\mbox{\Hypertarget{structeinsums_1_1DiskTensor_a619364f62567c5d5af6559266808e6b6}\label{structeinsums_1_1DiskTensor_a619364f62567c5d5af6559266808e6b6}} 
+\index{einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}!DiskTensor@{DiskTensor}}
+\index{DiskTensor@{DiskTensor}!einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{DiskTensor()}{DiskTensor()}\hspace{0.1cm}{\footnotesize\ttfamily [4/6]}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+template$<$typename... Dims$>$ \\
+\mbox{\hyperlink{structeinsums_1_1DiskTensor}{einsums\+::\+Disk\+Tensor}}$<$ T, Rank $>$\+::\mbox{\hyperlink{structeinsums_1_1DiskTensor}{Disk\+Tensor}} (\begin{DoxyParamCaption}\item[{h5\+::fd\+\_\+t \&}]{file,  }\item[{std\+::string}]{name,  }\item[{\mbox{\hyperlink{namespaceeinsums_aa3bb8068c5ea647bc44ee4221a3379b3}{Chunk}}$<$ sizeof...(Dims)$>$}]{chunk,  }\item[{Dims...}]{dims }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [explicit]}}
+
+\mbox{\Hypertarget{structeinsums_1_1DiskTensor_a4f88bde061c2f5ad96305a3f874df3da}\label{structeinsums_1_1DiskTensor_a4f88bde061c2f5ad96305a3f874df3da}} 
+\index{einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}!DiskTensor@{DiskTensor}}
+\index{DiskTensor@{DiskTensor}!einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{DiskTensor()}{DiskTensor()}\hspace{0.1cm}{\footnotesize\ttfamily [5/6]}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+template$<$typename... Dims, typename  = typename std\+::enable\+\_\+if$<$are\+\_\+all\+\_\+convertible$<$size\+\_\+t, Dims...$>$\+::value$>$\+::type$>$ \\
+\mbox{\hyperlink{structeinsums_1_1DiskTensor}{einsums\+::\+Disk\+Tensor}}$<$ T, Rank $>$\+::\mbox{\hyperlink{structeinsums_1_1DiskTensor}{Disk\+Tensor}} (\begin{DoxyParamCaption}\item[{h5\+::fd\+\_\+t \&}]{file,  }\item[{std\+::string}]{name,  }\item[{Dims...}]{dims }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [explicit]}}
+
+\mbox{\Hypertarget{structeinsums_1_1DiskTensor_ab39b535f7b7476545c1806b776f97864}\label{structeinsums_1_1DiskTensor_ab39b535f7b7476545c1806b776f97864}} 
+\index{einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}!DiskTensor@{DiskTensor}}
+\index{DiskTensor@{DiskTensor}!einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{DiskTensor()}{DiskTensor()}\hspace{0.1cm}{\footnotesize\ttfamily [6/6]}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+\mbox{\hyperlink{structeinsums_1_1DiskTensor}{einsums\+::\+Disk\+Tensor}}$<$ T, Rank $>$\+::\mbox{\hyperlink{structeinsums_1_1DiskTensor}{Disk\+Tensor}} (\begin{DoxyParamCaption}\item[{h5\+::fd\+\_\+t \&}]{file,  }\item[{const \mbox{\hyperlink{structeinsums_1_1Tensor}{Tensor}}$<$ T, Rank $>$ \&}]{tensor }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [explicit]}}
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{structeinsums_1_1DiskTensor_a7662e2dd4ad8ec1642ddb14baf8d149c}\label{structeinsums_1_1DiskTensor_a7662e2dd4ad8ec1642ddb14baf8d149c}} 
+\index{einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}!dim@{dim}}
+\index{dim@{dim}!einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{dim()}{dim()}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+auto \mbox{\hyperlink{structeinsums_1_1DiskTensor}{einsums\+::\+Disk\+Tensor}}$<$ T, Rank $>$\+::dim (\begin{DoxyParamCaption}\item[{int}]{d }\end{DoxyParamCaption}) const -\/$>$ size\+\_\+t \hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{structeinsums_1_1detail_1_1TensorBase_a217c12e3cc502b0b642f1fa2e81fc1fd}{einsums\+::detail\+::\+Tensor\+Base$<$ T, Rank $>$}}.
+
+\mbox{\Hypertarget{structeinsums_1_1DiskTensor_af6c3faa40864d75efbe40000368ecbdd}\label{structeinsums_1_1DiskTensor_af6c3faa40864d75efbe40000368ecbdd}} 
+\index{einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}!dims@{dims}}
+\index{dims@{dims}!einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{dims()}{dims()}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+auto \mbox{\hyperlink{structeinsums_1_1DiskTensor}{einsums\+::\+Disk\+Tensor}}$<$ T, Rank $>$\+::dims (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const -\/$>$ \mbox{\hyperlink{namespaceeinsums_a8c1a58f7bcdc7d0bab4c5df086098d3d}{Dim}}$<$Rank$>$ \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{structeinsums_1_1DiskTensor_adf7b84aa969ba699bcbb481ade7537fd}\label{structeinsums_1_1DiskTensor_adf7b84aa969ba699bcbb481ade7537fd}} 
+\index{einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}!disk@{disk}}
+\index{disk@{disk}!einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{disk()}{disk()}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+auto \mbox{\hyperlink{structeinsums_1_1DiskTensor}{einsums\+::\+Disk\+Tensor}}$<$ T, Rank $>$\+::disk (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) -\/$>$ h5\+::ds\+\_\+t \& \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{structeinsums_1_1DiskTensor_a56b04a16cb1dc1c0624af53c5941b7f8}\label{structeinsums_1_1DiskTensor_a56b04a16cb1dc1c0624af53c5941b7f8}} 
+\index{einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}!existed@{existed}}
+\index{existed@{existed}!einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{existed()}{existed()}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+auto \mbox{\hyperlink{structeinsums_1_1DiskTensor}{einsums\+::\+Disk\+Tensor}}$<$ T, Rank $>$\+::existed (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const -\/$>$ bool \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{structeinsums_1_1DiskTensor_a3f6bc52d047281b9732ce7d987fea588}\label{structeinsums_1_1DiskTensor_a3f6bc52d047281b9732ce7d987fea588}} 
+\index{einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}!for@{for}}
+\index{for@{for}!einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{for()}{for()}\hspace{0.1cm}{\footnotesize\ttfamily [1/8]}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+\mbox{\hyperlink{structeinsums_1_1DiskTensor}{einsums\+::\+Disk\+Tensor}}$<$ T, Rank $>$\+::for (\begin{DoxyParamCaption}\item[{auto cnt \+:\mbox{\hyperlink{structeinsums_1_1DiskTensor_a772530a5d4fe95e7a01d6885a7d178a5}{counts}}}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{structeinsums_1_1DiskTensor_a3f6bc52d047281b9732ce7d987fea588}\label{structeinsums_1_1DiskTensor_a3f6bc52d047281b9732ce7d987fea588}} 
+\index{einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}!for@{for}}
+\index{for@{for}!einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{for()}{for()}\hspace{0.1cm}{\footnotesize\ttfamily [2/8]}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+\mbox{\hyperlink{structeinsums_1_1DiskTensor}{einsums\+::\+Disk\+Tensor}}$<$ T, Rank $>$\+::for (\begin{DoxyParamCaption}\item[{auto cnt \+:\mbox{\hyperlink{structeinsums_1_1DiskTensor_a772530a5d4fe95e7a01d6885a7d178a5}{counts}}}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{structeinsums_1_1DiskTensor_a8ca3efdc2fe21cd58422ed8c34b06fb5}\label{structeinsums_1_1DiskTensor_a8ca3efdc2fe21cd58422ed8c34b06fb5}} 
+\index{einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}!for@{for}}
+\index{for@{for}!einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{for()}{for()}\hspace{0.1cm}{\footnotesize\ttfamily [3/8]}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+\mbox{\hyperlink{structeinsums_1_1DiskTensor}{einsums\+::\+Disk\+Tensor}}$<$ T, Rank $>$\+::for (\begin{DoxyParamCaption}\item[{auto }]{\+:enumerate(all\+\_\+positions)\mbox{[}i, value\mbox{]} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{structeinsums_1_1DiskTensor_a8ca3efdc2fe21cd58422ed8c34b06fb5}\label{structeinsums_1_1DiskTensor_a8ca3efdc2fe21cd58422ed8c34b06fb5}} 
+\index{einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}!for@{for}}
+\index{for@{for}!einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{for()}{for()}\hspace{0.1cm}{\footnotesize\ttfamily [4/8]}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+\mbox{\hyperlink{structeinsums_1_1DiskTensor}{einsums\+::\+Disk\+Tensor}}$<$ T, Rank $>$\+::for (\begin{DoxyParamCaption}\item[{auto }]{\+:enumerate(all\+\_\+positions)\mbox{[}i, value\mbox{]} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{structeinsums_1_1DiskTensor_acbc52c6c6ed1da9d44bc5cb804f1e824}\label{structeinsums_1_1DiskTensor_acbc52c6c6ed1da9d44bc5cb804f1e824}} 
+\index{einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}!for@{for}}
+\index{for@{for}!einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{for()}{for()}\hspace{0.1cm}{\footnotesize\ttfamily [5/8]}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+\mbox{\hyperlink{structeinsums_1_1DiskTensor}{einsums\+::\+Disk\+Tensor}}$<$ T, Rank $>$\+::for (\begin{DoxyParamCaption}\item[{auto }]{\+:enumerate(index\+\_\+positions)\mbox{[}i, value\mbox{]} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{structeinsums_1_1DiskTensor_acbc52c6c6ed1da9d44bc5cb804f1e824}\label{structeinsums_1_1DiskTensor_acbc52c6c6ed1da9d44bc5cb804f1e824}} 
+\index{einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}!for@{for}}
+\index{for@{for}!einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{for()}{for()}\hspace{0.1cm}{\footnotesize\ttfamily [6/8]}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+\mbox{\hyperlink{structeinsums_1_1DiskTensor}{einsums\+::\+Disk\+Tensor}}$<$ T, Rank $>$\+::for (\begin{DoxyParamCaption}\item[{auto }]{\+:enumerate(index\+\_\+positions)\mbox{[}i, value\mbox{]} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{structeinsums_1_1DiskTensor_a6bafa460884a3a2fe57908f30cceda53}\label{structeinsums_1_1DiskTensor_a6bafa460884a3a2fe57908f30cceda53}} 
+\index{einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}!for@{for}}
+\index{for@{for}!einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{for()}{for()}\hspace{0.1cm}{\footnotesize\ttfamily [7/8]}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+\mbox{\hyperlink{structeinsums_1_1DiskTensor}{einsums\+::\+Disk\+Tensor}}$<$ T, Rank $>$\+::for (\begin{DoxyParamCaption}\item[{auto }]{\+:enumerate(range\+\_\+positions)\mbox{[}i, value\mbox{]} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{structeinsums_1_1DiskTensor_a6bafa460884a3a2fe57908f30cceda53}\label{structeinsums_1_1DiskTensor_a6bafa460884a3a2fe57908f30cceda53}} 
+\index{einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}!for@{for}}
+\index{for@{for}!einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{for()}{for()}\hspace{0.1cm}{\footnotesize\ttfamily [8/8]}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+\mbox{\hyperlink{structeinsums_1_1DiskTensor}{einsums\+::\+Disk\+Tensor}}$<$ T, Rank $>$\+::for (\begin{DoxyParamCaption}\item[{auto }]{\+:enumerate(range\+\_\+positions)\mbox{[}i, value\mbox{]} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{structeinsums_1_1DiskTensor_a14f3c671073afeb0b9dfe14a8d3e62c6}\label{structeinsums_1_1DiskTensor_a14f3c671073afeb0b9dfe14a8d3e62c6}} 
+\index{einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}!name@{name}}
+\index{name@{name}!einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{name()}{name()}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+auto \mbox{\hyperlink{structeinsums_1_1DiskTensor}{einsums\+::\+Disk\+Tensor}}$<$ T, Rank $>$\+::name (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const -\/$>$ const std\+::string \& \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{structeinsums_1_1DiskTensor_ad68ece8746fdfa750d6f99e754d5453d}\label{structeinsums_1_1DiskTensor_ad68ece8746fdfa750d6f99e754d5453d}} 
+\index{einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}!operator()@{operator()}}
+\index{operator()@{operator()}!einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{operator()()}{operator()()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+template$<$typename... Multi\+Index$>$ \\
+auto \mbox{\hyperlink{structeinsums_1_1DiskTensor}{einsums\+::\+Disk\+Tensor}}$<$ T, Rank $>$\+::operator() (\begin{DoxyParamCaption}\item[{Multi\+Index...}]{index }\end{DoxyParamCaption}) -\/$>$ std\+::enable\+\_\+if\+\_\+t$<$\mbox{\hyperlink{namespaceeinsums_aaf7903a19c8a79a368737d29bcc6774c}{count\+\_\+of\+\_\+type}}$<$\mbox{\hyperlink{structeinsums_1_1All__t}{All\+\_\+t}}, Multi\+Index...$>$() + \mbox{\hyperlink{namespaceeinsums_aaf7903a19c8a79a368737d29bcc6774c}{count\+\_\+of\+\_\+type}}$<$\mbox{\hyperlink{namespaceeinsums_a09cb83e4ce99aafb4305bc16c03dc054}{Range}}, Multi\+Index...$>$() !\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+\mbox{\Hypertarget{structeinsums_1_1DiskTensor_af9796c432e91344410de883da3fdfd54}\label{structeinsums_1_1DiskTensor_af9796c432e91344410de883da3fdfd54}} 
+\index{einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}!operator()@{operator()}}
+\index{operator()@{operator()}!einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{operator()()}{operator()()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+template$<$typename... Multi\+Index$>$ \\
+auto \mbox{\hyperlink{structeinsums_1_1DiskTensor}{einsums\+::\+Disk\+Tensor}}$<$ T, Rank $>$\+::operator() (\begin{DoxyParamCaption}\item[{Multi\+Index...}]{index }\end{DoxyParamCaption}) const -\/$>$ std\+::enable\+\_\+if\+\_\+t$<$\mbox{\hyperlink{namespaceeinsums_aaf7903a19c8a79a368737d29bcc6774c}{count\+\_\+of\+\_\+type}}$<$\mbox{\hyperlink{structeinsums_1_1All__t}{All\+\_\+t}}, Multi\+Index...$>$() + \mbox{\hyperlink{namespaceeinsums_aaf7903a19c8a79a368737d29bcc6774c}{count\+\_\+of\+\_\+type}}$<$\mbox{\hyperlink{namespaceeinsums_a09cb83e4ce99aafb4305bc16c03dc054}{Range}}, Multi\+Index...$>$() !\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+\mbox{\Hypertarget{structeinsums_1_1DiskTensor_a55da1d43c276b36b04a55c6f9ebe9098}\label{structeinsums_1_1DiskTensor_a55da1d43c276b36b04a55c6f9ebe9098}} 
+\index{einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}!std::fill@{std::fill}}
+\index{std::fill@{std::fill}!einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{std::fill()}{std::fill()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+\mbox{\hyperlink{structeinsums_1_1DiskTensor}{einsums\+::\+Disk\+Tensor}}$<$ T, Rank $>$\+::std\+::fill (\begin{DoxyParamCaption}\item[{counts.}]{begin(),  }\item[{counts.}]{end(),  }\item[{1.}]{0 }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{structeinsums_1_1DiskTensor_a55da1d43c276b36b04a55c6f9ebe9098}\label{structeinsums_1_1DiskTensor_a55da1d43c276b36b04a55c6f9ebe9098}} 
+\index{einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}!std::fill@{std::fill}}
+\index{std::fill@{std::fill}!einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{std::fill()}{std::fill()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+\mbox{\hyperlink{structeinsums_1_1DiskTensor}{einsums\+::\+Disk\+Tensor}}$<$ T, Rank $>$\+::std\+::fill (\begin{DoxyParamCaption}\item[{counts.}]{begin(),  }\item[{counts.}]{end(),  }\item[{1.}]{0 }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{structeinsums_1_1DiskTensor_ad33fb79b83459e47d08fd37527eddc1e}\label{structeinsums_1_1DiskTensor_ad33fb79b83459e47d08fd37527eddc1e}} 
+\index{einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}!stride@{stride}}
+\index{stride@{stride}!einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{stride()}{stride()}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+auto \mbox{\hyperlink{structeinsums_1_1DiskTensor}{einsums\+::\+Disk\+Tensor}}$<$ T, Rank $>$\+::stride (\begin{DoxyParamCaption}\item[{int}]{d }\end{DoxyParamCaption}) const -\/$>$ size\+\_\+t \hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{structeinsums_1_1DiskTensor_a0c15c0aa80af60dd81c90e2d0094aa7c}\label{structeinsums_1_1DiskTensor_a0c15c0aa80af60dd81c90e2d0094aa7c}} 
+\index{einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}!\_dims@{\_dims}}
+\index{\_dims@{\_dims}!einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{\_dims}{\_dims}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+\mbox{\hyperlink{namespaceeinsums_a8c1a58f7bcdc7d0bab4c5df086098d3d}{Dim}}$<$Rank$>$ \mbox{\hyperlink{structeinsums_1_1DiskTensor}{einsums\+::\+Disk\+Tensor}}$<$ T, Rank $>$\+::\+\_\+dims\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{structeinsums_1_1DiskTensor_a6ce661b20aa9f30d2216d84fae961447}\label{structeinsums_1_1DiskTensor_a6ce661b20aa9f30d2216d84fae961447}} 
+\index{einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}!\_disk@{\_disk}}
+\index{\_disk@{\_disk}!einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{\_disk}{\_disk}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+h5\+::ds\+\_\+t \mbox{\hyperlink{structeinsums_1_1DiskTensor}{einsums\+::\+Disk\+Tensor}}$<$ T, Rank $>$\+::\+\_\+disk\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{structeinsums_1_1DiskTensor_a0e6a4428d5a4aaaf116171c7cf2b5d21}\label{structeinsums_1_1DiskTensor_a0e6a4428d5a4aaaf116171c7cf2b5d21}} 
+\index{einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}!\_existed@{\_existed}}
+\index{\_existed@{\_existed}!einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{\_existed}{\_existed}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+bool \mbox{\hyperlink{structeinsums_1_1DiskTensor}{einsums\+::\+Disk\+Tensor}}$<$ T, Rank $>$\+::\+\_\+existed \{false\}\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{structeinsums_1_1DiskTensor_a06b466e83e613131c79059eaef20650e}\label{structeinsums_1_1DiskTensor_a06b466e83e613131c79059eaef20650e}} 
+\index{einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}!\_file@{\_file}}
+\index{\_file@{\_file}!einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{\_file}{\_file}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+h5\+::fd\+\_\+t\& \mbox{\hyperlink{structeinsums_1_1DiskTensor}{einsums\+::\+Disk\+Tensor}}$<$ T, Rank $>$\+::\+\_\+file\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{structeinsums_1_1DiskTensor_ace495291c72ceb5fe4b1a8c02167f945}\label{structeinsums_1_1DiskTensor_ace495291c72ceb5fe4b1a8c02167f945}} 
+\index{einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}!\_name@{\_name}}
+\index{\_name@{\_name}!einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{\_name}{\_name}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+std\+::string \mbox{\hyperlink{structeinsums_1_1DiskTensor}{einsums\+::\+Disk\+Tensor}}$<$ T, Rank $>$\+::\+\_\+name\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{structeinsums_1_1DiskTensor_a5d3859a5ace24df7a894c5d1659853f9}\label{structeinsums_1_1DiskTensor_a5d3859a5ace24df7a894c5d1659853f9}} 
+\index{einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}!\_strides@{\_strides}}
+\index{\_strides@{\_strides}!einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{\_strides}{\_strides}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+\mbox{\hyperlink{namespaceeinsums_a6138835e2652eaae61b1d977dd17d29c}{Stride}}$<$Rank$>$ \mbox{\hyperlink{structeinsums_1_1DiskTensor}{einsums\+::\+Disk\+Tensor}}$<$ T, Rank $>$\+::\+\_\+strides\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{structeinsums_1_1DiskTensor_a772530a5d4fe95e7a01d6885a7d178a5}\label{structeinsums_1_1DiskTensor_a772530a5d4fe95e7a01d6885a7d178a5}} 
+\index{einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}!counts@{counts}}
+\index{counts@{counts}!einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{counts}{counts}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+\mbox{\hyperlink{namespaceeinsums_a450f97c210c704df47ec3d7013fcff47}{Count}}$<$ Rank $>$ \mbox{\hyperlink{structeinsums_1_1DiskTensor}{einsums\+::\+Disk\+Tensor}}$<$ T, Rank $>$\+::counts \{\}}
+
+\mbox{\Hypertarget{structeinsums_1_1DiskTensor_a92412735bfda511759254796d58f3413}\label{structeinsums_1_1DiskTensor_a92412735bfda511759254796d58f3413}} 
+\index{einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}!dims\_all@{dims\_all}}
+\index{dims\_all@{dims\_all}!einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{dims\_all}{dims\_all}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+\mbox{\hyperlink{namespaceeinsums_a8c1a58f7bcdc7d0bab4c5df086098d3d}{Dim}}$<$ \mbox{\hyperlink{namespaceeinsums_aaf7903a19c8a79a368737d29bcc6774c}{count\+\_\+of\+\_\+type}}$<$ \mbox{\hyperlink{structeinsums_1_1All__t}{All\+\_\+t}}, Multi\+Index... $>$)+\mbox{\hyperlink{namespaceeinsums_aaf7903a19c8a79a368737d29bcc6774c}{count\+\_\+of\+\_\+type}}$<$ \mbox{\hyperlink{namespaceeinsums_a09cb83e4ce99aafb4305bc16c03dc054}{Range}}, Multi\+Index... $>$)$>$ \mbox{\hyperlink{structeinsums_1_1DiskTensor}{einsums\+::\+Disk\+Tensor}}$<$ T, Rank $>$\+::dims\+\_\+all \{\}}
+
+\mbox{\Hypertarget{structeinsums_1_1DiskTensor_a4afd586a6b01d6df64cf086982caf300}\label{structeinsums_1_1DiskTensor_a4afd586a6b01d6df64cf086982caf300}} 
+\index{einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}!dims\_index@{dims\_index}}
+\index{dims\_index@{dims\_index}!einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{dims\_index}{dims\_index}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+int \mbox{\hyperlink{structeinsums_1_1DiskTensor}{einsums\+::\+Disk\+Tensor}}$<$ T, Rank $>$\+::dims\+\_\+index = 0}
+
+\mbox{\Hypertarget{structeinsums_1_1DiskTensor_a322a7694387ee69c277f1b112f330520}\label{structeinsums_1_1DiskTensor_a322a7694387ee69c277f1b112f330520}} 
+\index{einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}!DiskView$<$ T, count\_of\_type$<$ All\_t, MultiIndex... $>$)+count\_of\_type$<$ Range, MultiIndex... $>$), Rank $>$@{DiskView$<$ T, count\_of\_type$<$ All\_t, MultiIndex... $>$)+count\_of\_type$<$ Range, MultiIndex... $>$), Rank $>$}}
+\index{DiskView$<$ T, count\_of\_type$<$ All\_t, MultiIndex... $>$)+count\_of\_type$<$ Range, MultiIndex... $>$), Rank $>$@{DiskView$<$ T, count\_of\_type$<$ All\_t, MultiIndex... $>$)+count\_of\_type$<$ Range, MultiIndex... $>$), Rank $>$}!einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{DiskView$<$ T, count\_of\_type$<$ All\_t, MultiIndex... $>$)+count\_of\_type$<$ Range, MultiIndex... $>$), Rank $>$}{DiskView< T, count\_of\_type< All\_t, MultiIndex... >)+count\_of\_type< Range, MultiIndex... >), Rank >}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+auto \mbox{\hyperlink{structeinsums_1_1DiskTensor}{einsums\+::\+Disk\+Tensor}}$<$ T, Rank $>$\+::\mbox{\hyperlink{structeinsums_1_1DiskView}{Disk\+View}}$<$ T, \mbox{\hyperlink{namespaceeinsums_aaf7903a19c8a79a368737d29bcc6774c}{count\+\_\+of\+\_\+type}}$<$ \mbox{\hyperlink{structeinsums_1_1All__t}{All\+\_\+t}}, Multi\+Index... $>$)+\mbox{\hyperlink{namespaceeinsums_aaf7903a19c8a79a368737d29bcc6774c}{count\+\_\+of\+\_\+type}}$<$ \mbox{\hyperlink{namespaceeinsums_a09cb83e4ce99aafb4305bc16c03dc054}{Range}}, Multi\+Index... $>$), Rank $>$}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\{}
+\DoxyCodeLine{        }
+\DoxyCodeLine{        \textcolor{keyword}{auto} all\_positions =}
+\DoxyCodeLine{            \mbox{\hyperlink{namespaceeinsums_a8f98b0188912397bf2396461fafb7712}{get\_array\_from\_tuple}}<std::array<int, \mbox{\hyperlink{namespaceeinsums_aaf7903a19c8a79a368737d29bcc6774c}{count\_of\_type}}<All\_t, MultiIndex...>()>>(positions\_of\_type<All\_t, MultiIndex...>())}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{structeinsums_1_1DiskTensor_a6b5fa448b90d5e9a23aef88a7f62574a}\label{structeinsums_1_1DiskTensor_a6b5fa448b90d5e9a23aef88a7f62574a}} 
+\index{einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}!DiskView$<$ T, count\_of\_type$<$ All\_t, MultiIndex... $>$)+count\_of\_type$<$ Range, MultiIndex... $>$), Rank $>$@{DiskView$<$ T, count\_of\_type$<$ All\_t, MultiIndex... $>$)+count\_of\_type$<$ Range, MultiIndex... $>$), Rank $>$}}
+\index{DiskView$<$ T, count\_of\_type$<$ All\_t, MultiIndex... $>$)+count\_of\_type$<$ Range, MultiIndex... $>$), Rank $>$@{DiskView$<$ T, count\_of\_type$<$ All\_t, MultiIndex... $>$)+count\_of\_type$<$ Range, MultiIndex... $>$), Rank $>$}!einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{DiskView$<$ T, count\_of\_type$<$ All\_t, MultiIndex... $>$)+count\_of\_type$<$ Range, MultiIndex... $>$), Rank $>$}{DiskView< T, count\_of\_type< All\_t, MultiIndex... >)+count\_of\_type< Range, MultiIndex... >), Rank >}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+auto const \mbox{\hyperlink{structeinsums_1_1DiskTensor}{einsums\+::\+Disk\+Tensor}}$<$ T, Rank $>$\+::\mbox{\hyperlink{structeinsums_1_1DiskView}{Disk\+View}}$<$ T, \mbox{\hyperlink{namespaceeinsums_aaf7903a19c8a79a368737d29bcc6774c}{count\+\_\+of\+\_\+type}}$<$ \mbox{\hyperlink{structeinsums_1_1All__t}{All\+\_\+t}}, Multi\+Index... $>$)+\mbox{\hyperlink{namespaceeinsums_aaf7903a19c8a79a368737d29bcc6774c}{count\+\_\+of\+\_\+type}}$<$ \mbox{\hyperlink{namespaceeinsums_a09cb83e4ce99aafb4305bc16c03dc054}{Range}}, Multi\+Index... $>$), Rank $>$}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\{}
+\DoxyCodeLine{        }
+\DoxyCodeLine{        \textcolor{keyword}{auto} all\_positions =}
+\DoxyCodeLine{            \mbox{\hyperlink{namespaceeinsums_a8f98b0188912397bf2396461fafb7712}{get\_array\_from\_tuple}}<std::array<int, \mbox{\hyperlink{namespaceeinsums_aaf7903a19c8a79a368737d29bcc6774c}{count\_of\_type}}<All\_t, MultiIndex...>()>>(positions\_of\_type<All\_t, MultiIndex...>())}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{structeinsums_1_1DiskTensor_a49e70f5af79dce4d165a42b6e77f0e60}\label{structeinsums_1_1DiskTensor_a49e70f5af79dce4d165a42b6e77f0e60}} 
+\index{einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}!index\_positions@{index\_positions}}
+\index{index\_positions@{index\_positions}!einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{index\_positions}{index\_positions}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+auto \mbox{\hyperlink{structeinsums_1_1DiskTensor}{einsums\+::\+Disk\+Tensor}}$<$ T, Rank $>$\+::index\+\_\+positions}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{=}
+\DoxyCodeLine{            \mbox{\hyperlink{namespaceeinsums_a8f98b0188912397bf2396461fafb7712}{get\_array\_from\_tuple}}<std::array<int, \mbox{\hyperlink{namespaceeinsums_aaf7903a19c8a79a368737d29bcc6774c}{count\_of\_type}}<size\_t, MultiIndex...>()>>(positions\_of\_type<size\_t, MultiIndex...>())}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{structeinsums_1_1DiskTensor_acd76bbe204ad439df99f7d995fcb9587}\label{structeinsums_1_1DiskTensor_acd76bbe204ad439df99f7d995fcb9587}} 
+\index{einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}!indices@{indices}}
+\index{indices@{indices}!einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{indices}{indices}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+const auto \& \mbox{\hyperlink{structeinsums_1_1DiskTensor}{einsums\+::\+Disk\+Tensor}}$<$ T, Rank $>$\+::indices = std\+::forward\+\_\+as\+\_\+tuple(index...)}
+
+\mbox{\Hypertarget{structeinsums_1_1DiskTensor_ac852d7b7dc3316b9d3d9fb93589b9b36}\label{structeinsums_1_1DiskTensor_ac852d7b7dc3316b9d3d9fb93589b9b36}} 
+\index{einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}!offsets@{offsets}}
+\index{offsets@{offsets}!einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{offsets}{offsets}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+\mbox{\hyperlink{namespaceeinsums_ac5b603e07b867507d5830186cb2ceaaf}{Offset}}$<$ Rank $>$ \mbox{\hyperlink{structeinsums_1_1DiskTensor}{einsums\+::\+Disk\+Tensor}}$<$ T, Rank $>$\+::offsets \{\}}
+
+\mbox{\Hypertarget{structeinsums_1_1DiskTensor_aff31040fcc0513d7cac5761c97d43712}\label{structeinsums_1_1DiskTensor_aff31040fcc0513d7cac5761c97d43712}} 
+\index{einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}!range\_positions@{range\_positions}}
+\index{range\_positions@{range\_positions}!einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{range\_positions}{range\_positions}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+auto \mbox{\hyperlink{structeinsums_1_1DiskTensor}{einsums\+::\+Disk\+Tensor}}$<$ T, Rank $>$\+::range\+\_\+positions}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{=}
+\DoxyCodeLine{            \mbox{\hyperlink{namespaceeinsums_a8f98b0188912397bf2396461fafb7712}{get\_array\_from\_tuple}}<std::array<int, \mbox{\hyperlink{namespaceeinsums_aaf7903a19c8a79a368737d29bcc6774c}{count\_of\_type}}<\mbox{\hyperlink{namespaceeinsums_a09cb83e4ce99aafb4305bc16c03dc054}{Range}}, MultiIndex...>()>>(positions\_of\_type<Range, MultiIndex...>())}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{structeinsums_1_1DiskTensor_a0314ea12657e4b04ebb1d93daf3ced4d}\label{structeinsums_1_1DiskTensor_a0314ea12657e4b04ebb1d93daf3ced4d}} 
+\index{einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}!strides@{strides}}
+\index{strides@{strides}!einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{strides}{strides}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+\mbox{\hyperlink{namespaceeinsums_a6138835e2652eaae61b1d977dd17d29c}{Stride}}$<$ Rank $>$ \mbox{\hyperlink{structeinsums_1_1DiskTensor}{einsums\+::\+Disk\+Tensor}}$<$ T, Rank $>$\+::strides \{\}}
+
+\mbox{\Hypertarget{structeinsums_1_1DiskTensor_a5fcd9a2f007c57d746a65ad3bfa16a34}\label{structeinsums_1_1DiskTensor_a5fcd9a2f007c57d746a65ad3bfa16a34}} 
+\index{einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}!this@{this}}
+\index{this@{this}!einsums::DiskTensor$<$ T, Rank $>$@{einsums::DiskTensor$<$ T, Rank $>$}}
+\doxysubsubsection{\texorpdfstring{this}{this}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Rank$>$ \\
+return \mbox{\hyperlink{structeinsums_1_1DiskView}{Disk\+View}}$<$ T, \mbox{\hyperlink{namespaceeinsums_aaf7903a19c8a79a368737d29bcc6774c}{count\+\_\+of\+\_\+type}}$<$ \mbox{\hyperlink{structeinsums_1_1All__t}{All\+\_\+t}}, Multi\+Index... $>$)+\mbox{\hyperlink{namespaceeinsums_aaf7903a19c8a79a368737d29bcc6774c}{count\+\_\+of\+\_\+type}}$<$ \mbox{\hyperlink{namespaceeinsums_a09cb83e4ce99aafb4305bc16c03dc054}{Range}}, Multi\+Index... $>$), Rank $>$ $\ast$ \mbox{\hyperlink{structeinsums_1_1DiskTensor}{einsums\+::\+Disk\+Tensor}}$<$ T, Rank $>$\+::this}
+
+
+
+The documentation for this struct was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{STL_8hpp}{STL.\+hpp}}\item 
+\mbox{\hyperlink{Tensor_8hpp}{Tensor.\+hpp}}\end{DoxyCompactItemize}

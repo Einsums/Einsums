@@ -20,6 +20,12 @@
  * SOFTWARE.
  */
 
+/**
+ * @file ElementOperations.hpp
+ * 
+ * Contains functions for performing element operations.
+ */
+
 #pragma once
 
 #include <algorithm>

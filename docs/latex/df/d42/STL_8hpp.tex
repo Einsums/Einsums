@@ -1,0 +1,203 @@
+\hypertarget{STL_8hpp}{}\doxysection{STL.\+hpp File Reference}
+\label{STL_8hpp}\index{STL.hpp@{STL.hpp}}
+{\ttfamily \#include \char`\"{}einsums/\+Print.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}einsums/\+\_\+\+Export.\+hpp\char`\"{}}\newline
+{\ttfamily \#include $<$functional$>$}\newline
+{\ttfamily \#include $<$iterator$>$}\newline
+{\ttfamily \#include $<$memory$>$}\newline
+{\ttfamily \#include $<$mutex$>$}\newline
+{\ttfamily \#include $<$tuple$>$}\newline
+{\ttfamily \#include $<$type\+\_\+traits$>$}\newline
+{\ttfamily \#include $<$utility$>$}\newline
+Include dependency graph for STL.\+hpp\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{d4/d94/STL_8hpp__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{d5/da4/STL_8hpp__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1Arguments_1_1Detail_1_1TuplePosition_3_01S_00_01P_00_01C_00_01B_00_01not__used_35dd43ada63a7972cbf9d27bab5328f7}{einsums\+::\+Arguments\+::\+Detail\+::\+Tuple\+Position$<$ S, P, C, B, not\+\_\+used, std\+::tuple$<$ Tail... $>$ $>$}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1Arguments_1_1Detail_1_1TuplePosition_3_01S_00_01P_00_01C_00_01false_00_01not__u73b9a019c3868a3a3941d8b7d0aec2dc}{einsums\+::\+Arguments\+::\+Detail\+::\+Tuple\+Position$<$ S, P, C, false, not\+\_\+used, std\+::tuple$<$ Head, Tail... $>$ $>$}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1Arguments_1_1Detail_1_1TuplePosition_3_01S_00_01P_00_01C_00_01true_00_01Type_0026c9ecbc6288b1b638ecae4b9f425d09}{einsums\+::\+Arguments\+::\+Detail\+::\+Tuple\+Position$<$ S, P, C, true, Type, std\+::tuple$<$ Tail... $>$ $>$}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1Arguments_1_1Detail_1_1TuplePosition_3_01S_00_01P_00_01C_00_01false_00_01H_00_01std_1_1tuple_3_4_01_4}{einsums\+::\+Arguments\+::\+Detail\+::\+Tuple\+Position$<$ S, P, C, false, H, std\+::tuple$<$$>$ $>$}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1Arguments_1_1TuplePosition}{einsums\+::\+Arguments\+::\+Tuple\+Position$<$ Search\+Pattern, Args $>$}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1Arguments_1_1Contains}{einsums\+::\+Arguments\+::\+Contains$<$ T, List $>$}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1Arguments_1_1Contains_3_01T_00_01Head_00_01Remaining_8_8_8_01_4}{einsums\+::\+Arguments\+::\+Contains$<$ T, Head, Remaining... $>$}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1Arguments_1_1Contains_3_01T_01_4}{einsums\+::\+Arguments\+::\+Contains$<$ T $>$}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1Detail_1_1HasType_3_01T_00_01std_1_1tuple_3_4_01_4}{einsums\+::\+Detail\+::\+Has\+Type$<$ T, std\+::tuple$<$$>$ $>$}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1Detail_1_1HasType_3_01T_00_01std_1_1tuple_3_01U_00_01Ts_8_8_8_01_4_01_4}{einsums\+::\+Detail\+::\+Has\+Type$<$ T, std\+::tuple$<$ U, Ts... $>$ $>$}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1Detail_1_1HasType_3_01T_00_01std_1_1tuple_3_01T_00_01Ts_8_8_8_01_4_01_4}{einsums\+::\+Detail\+::\+Has\+Type$<$ T, std\+::tuple$<$ T, Ts... $>$ $>$}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1intersect}{einsums\+::intersect$<$ S1, S2 $>$}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1difference}{einsums\+::difference$<$ S1, S2 $>$}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1contains_3_01std_1_1tuple_3_01Car_00_01Cdr_8_8_8_01_4_00_01Needle_01_4}{einsums\+::contains$<$ std\+::tuple$<$ Car, Cdr... $>$, Needle $>$}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1contains_3_01std_1_1tuple_3_01Needle_00_01Cdr_8_8_8_01_4_00_01Needle_01_4}{einsums\+::contains$<$ std\+::tuple$<$ Needle, Cdr... $>$, Needle $>$}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1contains_3_01std_1_1tuple_3_4_00_01Needle_01_4}{einsums\+::contains$<$ std\+::tuple$<$$>$, Needle $>$}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1filter_3_01std_1_1tuple_3_01Out_8_8_8_01_4_00_01std_1_1tuple_3_01InCar_00_01InCdr_8_8_8_01_4_01_4}{einsums\+::filter$<$ std\+::tuple$<$ Out... $>$, std\+::tuple$<$ In\+Car, In\+Cdr... $>$ $>$}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1filter_3_01Out_00_01std_1_1tuple_3_4_01_4}{einsums\+::filter$<$ Out, std\+::tuple$<$$>$ $>$}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1c__unique}{einsums\+::c\+\_\+unique$<$ T $>$}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1is__incore__rank__tensor}{einsums\+::is\+\_\+incore\+\_\+rank\+\_\+tensor$<$ D, Rank, T $>$}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1is__ondisk__tensor}{einsums\+::is\+\_\+ondisk\+\_\+tensor$<$ D, Rank, View\+Rank, T $>$}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1is__smart__pointer__helper}{einsums\+::is\+\_\+smart\+\_\+pointer\+\_\+helper$<$ T $>$}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1is__smart__pointer__helper_3_01std_1_1shared__ptr_3_01T_01_4_01_4}{einsums\+::is\+\_\+smart\+\_\+pointer\+\_\+helper$<$ std\+::shared\+\_\+ptr$<$ T $>$ $>$}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1is__smart__pointer__helper_3_01std_1_1unique__ptr_3_01T_01_4_01_4}{einsums\+::is\+\_\+smart\+\_\+pointer\+\_\+helper$<$ std\+::unique\+\_\+ptr$<$ T $>$ $>$}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1is__smart__pointer__helper_3_01std_1_1weak__ptr_3_01T_01_4_01_4}{einsums\+::is\+\_\+smart\+\_\+pointer\+\_\+helper$<$ std\+::weak\+\_\+ptr$<$ T $>$ $>$}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1is__smart__pointer}{einsums\+::is\+\_\+smart\+\_\+pointer$<$ T $>$}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1is__complex__t}{einsums\+::is\+\_\+complex\+\_\+t$<$ T $>$}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1is__complex__t_3_01std_1_1complex_3_01T_01_4_01_4}{einsums\+::is\+\_\+complex\+\_\+t$<$ std\+::complex$<$ T $>$ $>$}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1complex__type}{einsums\+::complex\+\_\+type$<$ T $>$}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1complex__type_3_01std_1_1complex_3_01T_01_4_01_4}{einsums\+::complex\+\_\+type$<$ std\+::complex$<$ T $>$ $>$}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1add__complex}{einsums\+::add\+\_\+complex$<$ T $>$}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1add__complex_3_01std_1_1complex_3_01T_01_4_01_4}{einsums\+::add\+\_\+complex$<$ std\+::complex$<$ T $>$ $>$}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1CircularBuffer}{einsums\+::\+Circular\+Buffer$<$ T $>$}}
+\item 
+class \mbox{\hyperlink{classeinsums_1_1AlignedAllocator_3_01void_00_01Align_01_4}{einsums\+::\+Aligned\+Allocator$<$ void, Align $>$}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1AlignedAllocator_3_01void_00_01Align_01_4_1_1rebind}{einsums\+::\+Aligned\+Allocator$<$ void, Align $>$\+::rebind$<$ U $>$}}
+\item 
+class \mbox{\hyperlink{classeinsums_1_1AlignedAllocator}{einsums\+::\+Aligned\+Allocator$<$ T, Align $>$}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1AlignedAllocator_1_1rebind}{einsums\+::\+Aligned\+Allocator$<$ T, Align $>$\+::rebind$<$ U $>$}}
+\item 
+class \mbox{\hyperlink{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4}{einsums\+::\+Aligned\+Allocator$<$ const T, Align $>$}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_1_1rebind}{einsums\+::\+Aligned\+Allocator$<$ const T, Align $>$\+::rebind$<$ U $>$}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+ \mbox{\hyperlink{namespaceeinsums}{einsums}}
+\item 
+ \mbox{\hyperlink{namespaceeinsums_1_1Arguments}{einsums\+::\+Arguments}}
+\item 
+ \mbox{\hyperlink{namespaceeinsums_1_1Arguments_1_1Detail}{einsums\+::\+Arguments\+::\+Detail}}
+\item 
+ \mbox{\hyperlink{namespaceeinsums_1_1Detail}{einsums\+::\+Detail}}
+\item 
+ \mbox{\hyperlink{namespaceeinsums_1_1detail}{einsums\+::detail}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$typename S1 , typename S2 $>$ }\\using \mbox{\hyperlink{namespaceeinsums_a78d6ca93ceb8d653c62158e06b9d5a01}{einsums\+::intersect\+\_\+t}} = typename intersect$<$ S1, S2 $>$\+::type
+\item 
+{\footnotesize template$<$typename S1 , typename S2 $>$ }\\using \mbox{\hyperlink{namespaceeinsums_ae5f4fd81bef3ea98e2b10e7f5ebb494a}{einsums\+::difference\+\_\+t}} = typename difference$<$ S1, S2 $>$\+::type
+\item 
+{\footnotesize template$<$class T $>$ }\\using \mbox{\hyperlink{namespaceeinsums_a6554852bc4eb7ae0e8b116db40393639}{einsums\+::unique\+\_\+t}} = typename filter$<$ std\+::tuple$<$$>$, T $>$\+::type
+\item 
+{\footnotesize template$<$class T $>$ }\\using \mbox{\hyperlink{namespaceeinsums_a90e9de65fbba494c1dc9b1759ed4125b}{einsums\+::c\+\_\+unique\+\_\+t}} = typename c\+\_\+unique$<$ T $>$\+::type
+\item 
+{\footnotesize template$<$typename T $>$ }\\using \mbox{\hyperlink{namespaceeinsums_a2e68ee514bee331da472f8a544b36a51}{einsums\+::remove\+\_\+complex\+\_\+t}} = typename complex\+\_\+type$<$ T $>$\+::type
+\begin{DoxyCompactList}\small\item\em Returns the inner type of a std\+::complex$<$$>$. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename T $>$ }\\using \mbox{\hyperlink{namespaceeinsums_a2fe155a24965c156e65967297446aaac}{einsums\+::add\+\_\+complex\+\_\+t}} = typename add\+\_\+complex$<$ T $>$\+::type
+\item 
+{\footnotesize template$<$bool... bs$>$ }\\using \mbox{\hyperlink{namespaceeinsums_a482458f66a007214fc1c9e3a87f94a1e}{einsums\+::all\+\_\+true}} = std\+::is\+\_\+same$<$ bool\+\_\+pack$<$ bs..., true $>$, bool\+\_\+pack$<$ true, bs... $>$ $>$
+\item 
+{\footnotesize template$<$class R , class... Ts$>$ }\\using \mbox{\hyperlink{namespaceeinsums_a8220194368e7b438aceea8614c187c6f}{einsums\+::are\+\_\+all\+\_\+convertible}} = all\+\_\+true$<$ std\+::is\+\_\+convertible\+\_\+v$<$ Ts, R $>$... $>$
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$typename Search\+Pattern , typename... Args, typename Idx  = Tuple\+Position$<$const Search\+Pattern \&, const Args \&..., const Search\+Pattern \&$>$$>$ }\\auto \mbox{\hyperlink{namespaceeinsums_1_1Arguments_a4a1315f21677a36601adab5b46dd16e0}{einsums\+::\+Arguments\+::get}} (const Search\+Pattern \&definition, Args \&\&...args) -\/$>$ typename Idx\+::type \&
+\item 
+{\footnotesize template$<$typename Search\+Pattern , typename... Args$>$ }\\auto \mbox{\hyperlink{namespaceeinsums_1_1Arguments_a7788c5ac32ba7f55f09ad47e6d8caab5}{einsums\+::\+Arguments\+::get}} (Args \&\&...args) -\/$>$ Search\+Pattern \&
+\item 
+{\footnotesize template$<$int Idx, typename... Args$>$ }\\auto \mbox{\hyperlink{namespaceeinsums_1_1Arguments_a80b2ff9afd1a4d249bec7ba941480370}{einsums\+::\+Arguments\+::getn}} (Args \&\&...args) -\/$>$ typename std\+::tuple\+\_\+element$<$ Idx, std\+::tuple$<$ Args... $>$$>$\+::type \&
+\item 
+{\footnotesize template$<$typename T , typename Iter  = decltype(std\+::begin(std\+::declval$<$\+T$>$())), typename  = decltype(std\+::end(std\+::declval$<$\+T$>$()))$>$ }\\constexpr auto \mbox{\hyperlink{namespaceeinsums_aa4b66ad77ee363ab93eb41532bdffb26}{einsums\+::enumerate}} (T \&\&iterable)
+\begin{DoxyCompactList}\small\item\em Mimic Python\textquotesingle{}s enumerate. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename T , std\+::size\+\_\+t... Is$>$ }\\constexpr auto \mbox{\hyperlink{namespaceeinsums_1_1Detail_af6879128df4e286f3d32bbd5e7145571}{einsums\+::\+Detail\+::create\+\_\+array}} (T value, std\+::index\+\_\+sequence$<$ Is... $>$) -\/$>$ std\+::array$<$ T, sizeof...(Is)$>$
+\item 
+{\footnotesize template$<$typename T , std\+::size\+\_\+t... Is$>$ }\\constexpr auto \mbox{\hyperlink{namespaceeinsums_1_1Detail_ab76d24140b7de36bb07e30a124b54f81}{einsums\+::\+Detail\+::create\+\_\+tuple}} (T value, std\+::index\+\_\+sequence$<$ Is... $>$)
+\item 
+{\footnotesize template$<$typename T , std\+::size\+\_\+t... Is$>$ }\\constexpr auto \mbox{\hyperlink{namespaceeinsums_1_1Detail_a5e53eed71e83dd82fdf169fcfe636f07}{einsums\+::\+Detail\+::create\+\_\+tuple\+\_\+from\+\_\+array}} (const T \&arr, std\+::index\+\_\+sequence$<$ Is... $>$)
+\item 
+{\footnotesize template$<$typename T , int Position$>$ }\\constexpr auto \mbox{\hyperlink{namespaceeinsums_1_1Detail_aa3190ce3f1e91909cc16e8f3a51d096f}{einsums\+::\+Detail\+::positions\+\_\+of\+\_\+type}} ()
+\item 
+{\footnotesize template$<$typename T , int Position, typename Head , typename... Args$>$ }\\constexpr auto \mbox{\hyperlink{namespaceeinsums_1_1Detail_a3d39f2359d6ea583088c35781ac51191}{einsums\+::\+Detail\+::positions\+\_\+of\+\_\+type}} ()
+\item 
+{\footnotesize template$<$typename T , typename... Args$>$ }\\constexpr auto \mbox{\hyperlink{namespaceeinsums_a8f1c05882a6e5d79b05ebcd04b2aee1c}{einsums\+::positions\+\_\+of\+\_\+type}} ()
+\item 
+{\footnotesize template$<$typename T , typename... Args$>$ }\\constexpr auto \mbox{\hyperlink{namespaceeinsums_aaf7903a19c8a79a368737d29bcc6774c}{einsums\+::count\+\_\+of\+\_\+type}} ()
+\item 
+{\footnotesize template$<$size\+\_\+t N, typename T $>$ }\\constexpr auto \mbox{\hyperlink{namespaceeinsums_afb04a9b8942def26e2f24cb0a474c86f}{einsums\+::create\+\_\+array}} (const T \&value) -\/$>$ std\+::array$<$ T, N $>$
+\item 
+{\footnotesize template$<$size\+\_\+t N, typename T $>$ }\\constexpr auto \mbox{\hyperlink{namespaceeinsums_a125853eb57b4c417874a1521edcda8e5}{einsums\+::create\+\_\+tuple}} (const T \&value)
+\item 
+{\footnotesize template$<$size\+\_\+t N, typename T $>$ }\\constexpr auto \mbox{\hyperlink{namespaceeinsums_a467beca440a6a455d031487a19f01d6f}{einsums\+::create\+\_\+tuple\+\_\+from\+\_\+array}} (const T \&arr)
+\item 
+{\footnotesize template$<$typename Result , typename Tuple $>$ }\\constexpr auto \mbox{\hyperlink{namespaceeinsums_a8f98b0188912397bf2396461fafb7712}{einsums\+::get\+\_\+array\+\_\+from\+\_\+tuple}} (Tuple \&\&tuple) -\/$>$ Result
+\item 
+{\footnotesize template$<$class Tuple , class F , std\+::size\+\_\+t... I$>$ }\\constexpr auto \mbox{\hyperlink{namespaceeinsums_af1a83390a8e808084c2e6127d37cf9ea}{einsums\+::for\+\_\+each\+\_\+impl}} (Tuple \&\&t, F \&\&f, std\+::index\+\_\+sequence$<$ I... $>$) -\/$>$ F
+\item 
+{\footnotesize template$<$class Tuple , class F $>$ }\\constexpr auto \mbox{\hyperlink{namespaceeinsums_a8ed453234db2c3c9b305467b9c5937af}{einsums\+::for\+\_\+each}} (Tuple \&\&t, F \&\&f) -\/$>$ F
+\item 
+{\footnotesize template$<$typename Return\+Type , typename Tuple $>$ }\\auto \mbox{\hyperlink{namespaceeinsums_ad24da978e4fbddf56d625782645a2f17}{einsums\+::get\+\_\+from\+\_\+tuple}} (Tuple \&\&tuple, size\+\_\+t index) -\/$>$ Return\+Type
+\item 
+{\footnotesize template$<$typename T , T... S, typename F $>$ }\\constexpr void \mbox{\hyperlink{namespaceeinsums_a1ae3ea0d36fcdfe6a8b37f24beb56502}{einsums\+::for\+\_\+sequence}} (std\+::integer\+\_\+sequence$<$ T, S... $>$, F f)
+\item 
+{\footnotesize template$<$auto n, typename F $>$ }\\constexpr void \mbox{\hyperlink{namespaceeinsums_a46100824581c3c5823243189ce4ef41d}{einsums\+::for\+\_\+sequence}} (F f)
+\item 
+auto \mbox{\hyperlink{__Export_8hpp_ad5ec33d87b554501185251a886ebf557}{EINSUMS\+\_\+\+EXPORT}} \mbox{\hyperlink{namespaceeinsums_1_1detail_aff0084c5eed7e31bef33df18fa6cff3c}{einsums\+::detail\+::allocate\+\_\+aligned\+\_\+memory}} (size\+\_\+t align, size\+\_\+t size) -\/$>$ void $\ast$
+\item 
+void \mbox{\hyperlink{__Export_8hpp_ad5ec33d87b554501185251a886ebf557}{EINSUMS\+\_\+\+EXPORT}} \mbox{\hyperlink{namespaceeinsums_1_1detail_a1fdc73286adbf0fcdc794d24b01632ed}{einsums\+::detail\+::deallocate\+\_\+aligned\+\_\+memory}} (void $\ast$ptr) noexcept
+\item 
+{\footnotesize template$<$typename T , size\+\_\+t TAlign, typename U , size\+\_\+t UAlign$>$ }\\auto \mbox{\hyperlink{namespaceeinsums_a41f46baf5fc46d85f3937d55235fce2d}{einsums\+::operator==}} (const Aligned\+Allocator$<$ T, TAlign $>$ \&, const Aligned\+Allocator$<$ U, UAlign $>$ \&) noexcept -\/$>$ bool
+\item 
+{\footnotesize template$<$typename T , size\+\_\+t TAlign, typename U , size\+\_\+t UAlign$>$ }\\auto \mbox{\hyperlink{namespaceeinsums_a1fe99228ceba1058bbb7c025da64637d}{einsums\+::operator!=}} (const Aligned\+Allocator$<$ T, TAlign $>$ \&, const Aligned\+Allocator$<$ U, UAlign $>$ \&) noexcept -\/$>$ bool
+\item 
+{\footnotesize template$<$typename T $>$ }\\auto \mbox{\hyperlink{namespaceeinsums_a3a4beeeafc31851d6d8d0d68f4b2d980}{einsums\+::ndigits}} (T number) -\/$>$ int
+\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$typename D , size\+\_\+t Rank, typename T $>$ }\\constexpr bool \mbox{\hyperlink{namespaceeinsums_a236361d3881b84362529be9118d38b6e}{einsums\+::is\+\_\+incore\+\_\+rank\+\_\+tensor\+\_\+v}} = is\+\_\+incore\+\_\+rank\+\_\+tensor$<$D, Rank, T$>$\+::value
+\item 
+{\footnotesize template$<$typename D , size\+\_\+t Rank, size\+\_\+t View\+Rank = Rank, typename T  = double$>$ }\\constexpr bool \mbox{\hyperlink{namespaceeinsums_a91c5836941ae4dfd8929ead416423770}{einsums\+::is\+\_\+ondisk\+\_\+tensor\+\_\+v}} = is\+\_\+ondisk\+\_\+tensor$<$D, Rank, View\+Rank, T$>$\+::value
+\item 
+{\footnotesize template$<$typename T $>$ }\\constexpr bool \mbox{\hyperlink{namespaceeinsums_a3c613f0610abcb92849fae81a447129d}{einsums\+::is\+\_\+smart\+\_\+pointer\+\_\+v}} = is\+\_\+smart\+\_\+pointer$<$T$>$\+::value
+\item 
+{\footnotesize template$<$typename T $>$ }\\constexpr bool \mbox{\hyperlink{namespaceeinsums_ab83342940554d9c7bd5fe82875096e65}{einsums\+::is\+\_\+complex\+\_\+v}} = is\+\_\+complex\+\_\+t$<$T$>$\+::value
+\end{DoxyCompactItemize}

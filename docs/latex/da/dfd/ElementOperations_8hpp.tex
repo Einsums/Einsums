@@ -1,0 +1,83 @@
+\hypertarget{ElementOperations_8hpp}{}\doxysection{Element\+Operations.\+hpp File Reference}
+\label{ElementOperations_8hpp}\index{ElementOperations.hpp@{ElementOperations.hpp}}
+{\ttfamily \#include $<$algorithm$>$}\newline
+{\ttfamily \#include \char`\"{}einsums/\+Section.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}einsums/\+Tensor.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}einsums/\+\_\+\+Common.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}einsums/\+\_\+\+Compiler.\+hpp\char`\"{}}\newline
+Include dependency graph for Element\+Operations.\+hpp\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{d9/d15/ElementOperations_8hpp__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$typename vector , typename Functor $>$ }\\void \mbox{\hyperlink{ElementOperations_8hpp_af5439ec02d3ba3ef1f7657b499012567}{omp\+\_\+loop}} (vector \&data, Functor functor)
+\item 
+{\footnotesize template$<$template$<$ typename, size\+\_\+t $>$ typename Tensor\+Type, typename T , size\+\_\+t Rank$>$ }\\auto \mbox{\hyperlink{ElementOperations_8hpp_a79f00e3042f622a53a576bd1ad0c5d88}{sum}} (const Tensor\+Type$<$ T, Rank $>$ \&tensor) -\/$>$ T
+\item 
+{\footnotesize template$<$template$<$ typename, size\+\_\+t $>$ typename Tensor\+Type, typename T , size\+\_\+t Rank$>$ }\\auto \mbox{\hyperlink{ElementOperations_8hpp_a03b31e12aba0a8c38f2a0d1599dd3551}{max}} (const Tensor\+Type$<$ T, Rank $>$ \&tensor) -\/$>$ T
+\item 
+{\footnotesize template$<$template$<$ typename, size\+\_\+t $>$ typename Tensor\+Type, typename T , size\+\_\+t Rank$>$ }\\auto \mbox{\hyperlink{ElementOperations_8hpp_ad8049c4f49d86fce3cd0875a6d8bb4f5}{abs}} (const Tensor\+Type$<$ T, Rank $>$ \&tensor) -\/$>$ Tensor$<$ T, Rank $>$
+\item 
+{\footnotesize template$<$template$<$ typename, size\+\_\+t $>$ typename Tensor\+Type, typename T , size\+\_\+t Rank$>$ }\\auto \mbox{\hyperlink{ElementOperations_8hpp_a001b78bf85f85ef2eda23e135484d90f}{invert}} (const Tensor\+Type$<$ T, Rank $>$ \&tensor) -\/$>$ Tensor$<$ T, Rank $>$
+\item 
+{\footnotesize template$<$template$<$ typename, size\+\_\+t $>$ typename Tensor\+Type, typename T , size\+\_\+t Rank$>$ }\\auto \mbox{\hyperlink{ElementOperations_8hpp_ac769b8e869ec5ad89f832168c171d90a}{exp}} (const Tensor\+Type$<$ T, Rank $>$ \&tensor) -\/$>$ Tensor$<$ T, Rank $>$
+\item 
+{\footnotesize template$<$template$<$ typename, size\+\_\+t $>$ typename Tensor\+Type, typename T , size\+\_\+t Rank$>$ }\\auto \mbox{\hyperlink{ElementOperations_8hpp_a1be82ac2bb2e4f1e1b0257c14065335d}{scale}} (const T \&scale, const Tensor\+Type$<$ T, Rank $>$ \&tensor) -\/$>$ Tensor$<$ T, Rank $>$
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{ElementOperations_8hpp_ad8049c4f49d86fce3cd0875a6d8bb4f5}\label{ElementOperations_8hpp_ad8049c4f49d86fce3cd0875a6d8bb4f5}} 
+\index{ElementOperations.hpp@{ElementOperations.hpp}!abs@{abs}}
+\index{abs@{abs}!ElementOperations.hpp@{ElementOperations.hpp}}
+\doxysubsubsection{\texorpdfstring{abs()}{abs()}}
+{\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename Tensor\+Type, typename T , size\+\_\+t Rank$>$ \\
+auto abs (\begin{DoxyParamCaption}\item[{const Tensor\+Type$<$ T, Rank $>$ \&}]{tensor }\end{DoxyParamCaption}) -\/$>$ Tensor$<$T, Rank$>$ }
+
+\mbox{\Hypertarget{ElementOperations_8hpp_ac769b8e869ec5ad89f832168c171d90a}\label{ElementOperations_8hpp_ac769b8e869ec5ad89f832168c171d90a}} 
+\index{ElementOperations.hpp@{ElementOperations.hpp}!exp@{exp}}
+\index{exp@{exp}!ElementOperations.hpp@{ElementOperations.hpp}}
+\doxysubsubsection{\texorpdfstring{exp()}{exp()}}
+{\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename Tensor\+Type, typename T , size\+\_\+t Rank$>$ \\
+auto exp (\begin{DoxyParamCaption}\item[{const Tensor\+Type$<$ T, Rank $>$ \&}]{tensor }\end{DoxyParamCaption}) -\/$>$ Tensor$<$T, Rank$>$ }
+
+\mbox{\Hypertarget{ElementOperations_8hpp_a001b78bf85f85ef2eda23e135484d90f}\label{ElementOperations_8hpp_a001b78bf85f85ef2eda23e135484d90f}} 
+\index{ElementOperations.hpp@{ElementOperations.hpp}!invert@{invert}}
+\index{invert@{invert}!ElementOperations.hpp@{ElementOperations.hpp}}
+\doxysubsubsection{\texorpdfstring{invert()}{invert()}}
+{\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename Tensor\+Type, typename T , size\+\_\+t Rank$>$ \\
+auto invert (\begin{DoxyParamCaption}\item[{const Tensor\+Type$<$ T, Rank $>$ \&}]{tensor }\end{DoxyParamCaption}) -\/$>$ Tensor$<$T, Rank$>$ }
+
+\mbox{\Hypertarget{ElementOperations_8hpp_a03b31e12aba0a8c38f2a0d1599dd3551}\label{ElementOperations_8hpp_a03b31e12aba0a8c38f2a0d1599dd3551}} 
+\index{ElementOperations.hpp@{ElementOperations.hpp}!max@{max}}
+\index{max@{max}!ElementOperations.hpp@{ElementOperations.hpp}}
+\doxysubsubsection{\texorpdfstring{max()}{max()}}
+{\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename Tensor\+Type, typename T , size\+\_\+t Rank$>$ \\
+auto max (\begin{DoxyParamCaption}\item[{const Tensor\+Type$<$ T, Rank $>$ \&}]{tensor }\end{DoxyParamCaption}) -\/$>$ T }
+
+\mbox{\Hypertarget{ElementOperations_8hpp_af5439ec02d3ba3ef1f7657b499012567}\label{ElementOperations_8hpp_af5439ec02d3ba3ef1f7657b499012567}} 
+\index{ElementOperations.hpp@{ElementOperations.hpp}!omp\_loop@{omp\_loop}}
+\index{omp\_loop@{omp\_loop}!ElementOperations.hpp@{ElementOperations.hpp}}
+\doxysubsubsection{\texorpdfstring{omp\_loop()}{omp\_loop()}}
+{\footnotesize\ttfamily template$<$typename vector , typename Functor $>$ \\
+void omp\+\_\+loop (\begin{DoxyParamCaption}\item[{vector \&}]{data,  }\item[{Functor}]{functor }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{ElementOperations_8hpp_a1be82ac2bb2e4f1e1b0257c14065335d}\label{ElementOperations_8hpp_a1be82ac2bb2e4f1e1b0257c14065335d}} 
+\index{ElementOperations.hpp@{ElementOperations.hpp}!scale@{scale}}
+\index{scale@{scale}!ElementOperations.hpp@{ElementOperations.hpp}}
+\doxysubsubsection{\texorpdfstring{scale()}{scale()}}
+{\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename Tensor\+Type, typename T , size\+\_\+t Rank$>$ \\
+auto scale (\begin{DoxyParamCaption}\item[{const T \&}]{scale,  }\item[{const Tensor\+Type$<$ T, Rank $>$ \&}]{tensor }\end{DoxyParamCaption}) -\/$>$ Tensor$<$T, Rank$>$ }
+
+\mbox{\Hypertarget{ElementOperations_8hpp_a79f00e3042f622a53a576bd1ad0c5d88}\label{ElementOperations_8hpp_a79f00e3042f622a53a576bd1ad0c5d88}} 
+\index{ElementOperations.hpp@{ElementOperations.hpp}!sum@{sum}}
+\index{sum@{sum}!ElementOperations.hpp@{ElementOperations.hpp}}
+\doxysubsubsection{\texorpdfstring{sum()}{sum()}}
+{\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename Tensor\+Type, typename T , size\+\_\+t Rank$>$ \\
+auto sum (\begin{DoxyParamCaption}\item[{const Tensor\+Type$<$ T, Rank $>$ \&}]{tensor }\end{DoxyParamCaption}) -\/$>$ T }
+

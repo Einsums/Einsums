@@ -1,0 +1,207 @@
+\hypertarget{classbackward_1_1Printer}{}\doxysection{backward\+::Printer Class Reference}
+\label{classbackward_1_1Printer}\index{backward::Printer@{backward::Printer}}
+
+
+{\ttfamily \#include $<$Backtrace.\+hpp$>$}
+
+
+
+Collaboration diagram for backward\+::Printer\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{d5/d86/classbackward_1_1Printer__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classbackward_1_1Printer_a5dd393c25901418af03b87809daeb279}{Printer}} ()
+\item 
+{\footnotesize template$<$typename ST $>$ }\\FILE $\ast$ \mbox{\hyperlink{classbackward_1_1Printer_acf760efb8ed0cbbaeefe6c3e2e67408f}{print}} (ST \&st, FILE $\ast$fp=stderr)
+\item 
+{\footnotesize template$<$typename ST $>$ }\\std\+::ostream \& \mbox{\hyperlink{classbackward_1_1Printer_a0b8a226c708625feaa57509f763b091a}{print}} (ST \&st, std\+::ostream \&os)
+\item 
+{\footnotesize template$<$typename IT $>$ }\\FILE $\ast$ \mbox{\hyperlink{classbackward_1_1Printer_a0c3901fa5647c29b72f92376f32a631c}{print}} (IT begin, IT end, FILE $\ast$fp=stderr, size\+\_\+t thread\+\_\+id=0)
+\item 
+{\footnotesize template$<$typename IT $>$ }\\std\+::ostream \& \mbox{\hyperlink{classbackward_1_1Printer_a7af9bc8d53ef45606372273d67e0ba32}{print}} (IT begin, IT end, std\+::ostream \&os, size\+\_\+t thread\+\_\+id=0)
+\item 
+\mbox{\hyperlink{classbackward_1_1TraceResolver}{Trace\+Resolver}} const  \& \mbox{\hyperlink{classbackward_1_1Printer_ab64df4810d4c56606b7690ea2c0d8a18}{resolver}} () const
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+bool \mbox{\hyperlink{classbackward_1_1Printer_af5916965c8e12c840a1a4798a90b6161}{snippet}}
+\item 
+\mbox{\hyperlink{namespacebackward_1_1ColorMode_aec82452ed7333b210e205aaf6da2d090}{Color\+Mode\+::type}} \mbox{\hyperlink{classbackward_1_1Printer_a27013eaa6906241678769603c29f576f}{color\+\_\+mode}}
+\item 
+bool \mbox{\hyperlink{classbackward_1_1Printer_a0fd722ce3517aa67f179c33a3e841769}{address}}
+\item 
+bool \mbox{\hyperlink{classbackward_1_1Printer_a1af82e423f32058ba425d706c4f4c033}{object}}
+\item 
+int \mbox{\hyperlink{classbackward_1_1Printer_a3fb390d205a00a630587fc793a5f09a6}{inliner\+\_\+context\+\_\+size}}
+\item 
+int \mbox{\hyperlink{classbackward_1_1Printer_ad0785ce1f397d943a00093364f4c66b8}{trace\+\_\+context\+\_\+size}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$typename ST $>$ }\\void \mbox{\hyperlink{classbackward_1_1Printer_a274aa2ab415421684b59e98ebe10ed38}{print\+\_\+stacktrace}} (ST \&st, std\+::ostream \&os, \mbox{\hyperlink{classbackward_1_1Colorize}{Colorize}} \&colorize)
+\item 
+{\footnotesize template$<$typename IT $>$ }\\void \mbox{\hyperlink{classbackward_1_1Printer_a2250517ae18d9d168b2e83c96b223b76}{print\+\_\+stacktrace}} (IT begin, IT end, std\+::ostream \&os, size\+\_\+t thread\+\_\+id, \mbox{\hyperlink{classbackward_1_1Colorize}{Colorize}} \&colorize)
+\item 
+void \mbox{\hyperlink{classbackward_1_1Printer_a56aeef5f2d0e8e4f03a6268d724661ea}{print\+\_\+header}} (std\+::ostream \&os, size\+\_\+t thread\+\_\+id)
+\item 
+void \mbox{\hyperlink{classbackward_1_1Printer_aef11c4322fa24875b265ce75269d5363}{print\+\_\+trace}} (std\+::ostream \&os, const \mbox{\hyperlink{structbackward_1_1ResolvedTrace}{Resolved\+Trace}} \&trace, \mbox{\hyperlink{classbackward_1_1Colorize}{Colorize}} \&colorize)
+\item 
+void \mbox{\hyperlink{classbackward_1_1Printer_affc0f56b7fecc8a76a047c122a01087d}{print\+\_\+snippet}} (std\+::ostream \&os, const char $\ast$indent, const \mbox{\hyperlink{structbackward_1_1ResolvedTrace_1_1SourceLoc}{Resolved\+Trace\+::\+Source\+Loc}} \&source\+\_\+loc, \mbox{\hyperlink{classbackward_1_1Colorize}{Colorize}} \&colorize, \mbox{\hyperlink{namespacebackward_1_1Color_a6292269f4da43517b3fe825563efee5c}{Color\+::type}} color\+\_\+code, int context\+\_\+size)
+\item 
+void \mbox{\hyperlink{classbackward_1_1Printer_ad21765fc77d16e0e3c145c751f40af4b}{print\+\_\+source\+\_\+loc}} (std\+::ostream \&os, const char $\ast$indent, const \mbox{\hyperlink{structbackward_1_1ResolvedTrace_1_1SourceLoc}{Resolved\+Trace\+::\+Source\+Loc}} \&source\+\_\+loc, void $\ast$addr=\mbox{\hyperlink{Backtrace_8hpp_ab979d9d4b4923f7c54d6caa6e1a61936}{nullptr}})
+\end{DoxyCompactItemize}
+\doxysubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classbackward_1_1TraceResolver}{Trace\+Resolver}} \mbox{\hyperlink{classbackward_1_1Printer_a5093972ea2f35088385edccc881b4c56}{\+\_\+resolver}}
+\item 
+\mbox{\hyperlink{classbackward_1_1SnippetFactory}{Snippet\+Factory}} \mbox{\hyperlink{classbackward_1_1Printer_ac0ea80d2f8de213d2b96f35e30f70d0d}{\+\_\+snippets}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classbackward_1_1Printer_a5dd393c25901418af03b87809daeb279}\label{classbackward_1_1Printer_a5dd393c25901418af03b87809daeb279}} 
+\index{backward::Printer@{backward::Printer}!Printer@{Printer}}
+\index{Printer@{Printer}!backward::Printer@{backward::Printer}}
+\doxysubsubsection{\texorpdfstring{Printer()}{Printer()}}
+{\footnotesize\ttfamily backward\+::\+Printer\+::\+Printer (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classbackward_1_1Printer_a0c3901fa5647c29b72f92376f32a631c}\label{classbackward_1_1Printer_a0c3901fa5647c29b72f92376f32a631c}} 
+\index{backward::Printer@{backward::Printer}!print@{print}}
+\index{print@{print}!backward::Printer@{backward::Printer}}
+\doxysubsubsection{\texorpdfstring{print()}{print()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
+{\footnotesize\ttfamily template$<$typename IT $>$ \\
+FILE$\ast$ backward\+::\+Printer\+::print (\begin{DoxyParamCaption}\item[{IT}]{begin,  }\item[{IT}]{end,  }\item[{FILE $\ast$}]{fp = {\ttfamily stderr},  }\item[{size\+\_\+t}]{thread\+\_\+id = {\ttfamily 0} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classbackward_1_1Printer_a7af9bc8d53ef45606372273d67e0ba32}\label{classbackward_1_1Printer_a7af9bc8d53ef45606372273d67e0ba32}} 
+\index{backward::Printer@{backward::Printer}!print@{print}}
+\index{print@{print}!backward::Printer@{backward::Printer}}
+\doxysubsubsection{\texorpdfstring{print()}{print()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
+{\footnotesize\ttfamily template$<$typename IT $>$ \\
+std\+::ostream\& backward\+::\+Printer\+::print (\begin{DoxyParamCaption}\item[{IT}]{begin,  }\item[{IT}]{end,  }\item[{std\+::ostream \&}]{os,  }\item[{size\+\_\+t}]{thread\+\_\+id = {\ttfamily 0} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classbackward_1_1Printer_acf760efb8ed0cbbaeefe6c3e2e67408f}\label{classbackward_1_1Printer_acf760efb8ed0cbbaeefe6c3e2e67408f}} 
+\index{backward::Printer@{backward::Printer}!print@{print}}
+\index{print@{print}!backward::Printer@{backward::Printer}}
+\doxysubsubsection{\texorpdfstring{print()}{print()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
+{\footnotesize\ttfamily template$<$typename ST $>$ \\
+FILE$\ast$ backward\+::\+Printer\+::print (\begin{DoxyParamCaption}\item[{ST \&}]{st,  }\item[{FILE $\ast$}]{fp = {\ttfamily stderr} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classbackward_1_1Printer_a0b8a226c708625feaa57509f763b091a}\label{classbackward_1_1Printer_a0b8a226c708625feaa57509f763b091a}} 
+\index{backward::Printer@{backward::Printer}!print@{print}}
+\index{print@{print}!backward::Printer@{backward::Printer}}
+\doxysubsubsection{\texorpdfstring{print()}{print()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
+{\footnotesize\ttfamily template$<$typename ST $>$ \\
+std\+::ostream\& backward\+::\+Printer\+::print (\begin{DoxyParamCaption}\item[{ST \&}]{st,  }\item[{std\+::ostream \&}]{os }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classbackward_1_1Printer_a56aeef5f2d0e8e4f03a6268d724661ea}\label{classbackward_1_1Printer_a56aeef5f2d0e8e4f03a6268d724661ea}} 
+\index{backward::Printer@{backward::Printer}!print\_header@{print\_header}}
+\index{print\_header@{print\_header}!backward::Printer@{backward::Printer}}
+\doxysubsubsection{\texorpdfstring{print\_header()}{print\_header()}}
+{\footnotesize\ttfamily void backward\+::\+Printer\+::print\+\_\+header (\begin{DoxyParamCaption}\item[{std\+::ostream \&}]{os,  }\item[{size\+\_\+t}]{thread\+\_\+id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [private]}}
+
+\mbox{\Hypertarget{classbackward_1_1Printer_affc0f56b7fecc8a76a047c122a01087d}\label{classbackward_1_1Printer_affc0f56b7fecc8a76a047c122a01087d}} 
+\index{backward::Printer@{backward::Printer}!print\_snippet@{print\_snippet}}
+\index{print\_snippet@{print\_snippet}!backward::Printer@{backward::Printer}}
+\doxysubsubsection{\texorpdfstring{print\_snippet()}{print\_snippet()}}
+{\footnotesize\ttfamily void backward\+::\+Printer\+::print\+\_\+snippet (\begin{DoxyParamCaption}\item[{std\+::ostream \&}]{os,  }\item[{const char $\ast$}]{indent,  }\item[{const \mbox{\hyperlink{structbackward_1_1ResolvedTrace_1_1SourceLoc}{Resolved\+Trace\+::\+Source\+Loc}} \&}]{source\+\_\+loc,  }\item[{\mbox{\hyperlink{classbackward_1_1Colorize}{Colorize}} \&}]{colorize,  }\item[{\mbox{\hyperlink{namespacebackward_1_1Color_a6292269f4da43517b3fe825563efee5c}{Color\+::type}}}]{color\+\_\+code,  }\item[{int}]{context\+\_\+size }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [private]}}
+
+\mbox{\Hypertarget{classbackward_1_1Printer_ad21765fc77d16e0e3c145c751f40af4b}\label{classbackward_1_1Printer_ad21765fc77d16e0e3c145c751f40af4b}} 
+\index{backward::Printer@{backward::Printer}!print\_source\_loc@{print\_source\_loc}}
+\index{print\_source\_loc@{print\_source\_loc}!backward::Printer@{backward::Printer}}
+\doxysubsubsection{\texorpdfstring{print\_source\_loc()}{print\_source\_loc()}}
+{\footnotesize\ttfamily void backward\+::\+Printer\+::print\+\_\+source\+\_\+loc (\begin{DoxyParamCaption}\item[{std\+::ostream \&}]{os,  }\item[{const char $\ast$}]{indent,  }\item[{const \mbox{\hyperlink{structbackward_1_1ResolvedTrace_1_1SourceLoc}{Resolved\+Trace\+::\+Source\+Loc}} \&}]{source\+\_\+loc,  }\item[{void $\ast$}]{addr = {\ttfamily \mbox{\hyperlink{Backtrace_8hpp_ab979d9d4b4923f7c54d6caa6e1a61936}{nullptr}}} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [private]}}
+
+\mbox{\Hypertarget{classbackward_1_1Printer_a2250517ae18d9d168b2e83c96b223b76}\label{classbackward_1_1Printer_a2250517ae18d9d168b2e83c96b223b76}} 
+\index{backward::Printer@{backward::Printer}!print\_stacktrace@{print\_stacktrace}}
+\index{print\_stacktrace@{print\_stacktrace}!backward::Printer@{backward::Printer}}
+\doxysubsubsection{\texorpdfstring{print\_stacktrace()}{print\_stacktrace()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename IT $>$ \\
+void backward\+::\+Printer\+::print\+\_\+stacktrace (\begin{DoxyParamCaption}\item[{IT}]{begin,  }\item[{IT}]{end,  }\item[{std\+::ostream \&}]{os,  }\item[{size\+\_\+t}]{thread\+\_\+id,  }\item[{\mbox{\hyperlink{classbackward_1_1Colorize}{Colorize}} \&}]{colorize }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [private]}}
+
+\mbox{\Hypertarget{classbackward_1_1Printer_a274aa2ab415421684b59e98ebe10ed38}\label{classbackward_1_1Printer_a274aa2ab415421684b59e98ebe10ed38}} 
+\index{backward::Printer@{backward::Printer}!print\_stacktrace@{print\_stacktrace}}
+\index{print\_stacktrace@{print\_stacktrace}!backward::Printer@{backward::Printer}}
+\doxysubsubsection{\texorpdfstring{print\_stacktrace()}{print\_stacktrace()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename ST $>$ \\
+void backward\+::\+Printer\+::print\+\_\+stacktrace (\begin{DoxyParamCaption}\item[{ST \&}]{st,  }\item[{std\+::ostream \&}]{os,  }\item[{\mbox{\hyperlink{classbackward_1_1Colorize}{Colorize}} \&}]{colorize }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [private]}}
+
+\mbox{\Hypertarget{classbackward_1_1Printer_aef11c4322fa24875b265ce75269d5363}\label{classbackward_1_1Printer_aef11c4322fa24875b265ce75269d5363}} 
+\index{backward::Printer@{backward::Printer}!print\_trace@{print\_trace}}
+\index{print\_trace@{print\_trace}!backward::Printer@{backward::Printer}}
+\doxysubsubsection{\texorpdfstring{print\_trace()}{print\_trace()}}
+{\footnotesize\ttfamily void backward\+::\+Printer\+::print\+\_\+trace (\begin{DoxyParamCaption}\item[{std\+::ostream \&}]{os,  }\item[{const \mbox{\hyperlink{structbackward_1_1ResolvedTrace}{Resolved\+Trace}} \&}]{trace,  }\item[{\mbox{\hyperlink{classbackward_1_1Colorize}{Colorize}} \&}]{colorize }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [private]}}
+
+\mbox{\Hypertarget{classbackward_1_1Printer_ab64df4810d4c56606b7690ea2c0d8a18}\label{classbackward_1_1Printer_ab64df4810d4c56606b7690ea2c0d8a18}} 
+\index{backward::Printer@{backward::Printer}!resolver@{resolver}}
+\index{resolver@{resolver}!backward::Printer@{backward::Printer}}
+\doxysubsubsection{\texorpdfstring{resolver()}{resolver()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classbackward_1_1TraceResolver}{Trace\+Resolver}} const\& backward\+::\+Printer\+::resolver (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{classbackward_1_1Printer_a5093972ea2f35088385edccc881b4c56}\label{classbackward_1_1Printer_a5093972ea2f35088385edccc881b4c56}} 
+\index{backward::Printer@{backward::Printer}!\_resolver@{\_resolver}}
+\index{\_resolver@{\_resolver}!backward::Printer@{backward::Printer}}
+\doxysubsubsection{\texorpdfstring{\_resolver}{\_resolver}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classbackward_1_1TraceResolver}{Trace\+Resolver}} backward\+::\+Printer\+::\+\_\+resolver\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classbackward_1_1Printer_ac0ea80d2f8de213d2b96f35e30f70d0d}\label{classbackward_1_1Printer_ac0ea80d2f8de213d2b96f35e30f70d0d}} 
+\index{backward::Printer@{backward::Printer}!\_snippets@{\_snippets}}
+\index{\_snippets@{\_snippets}!backward::Printer@{backward::Printer}}
+\doxysubsubsection{\texorpdfstring{\_snippets}{\_snippets}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classbackward_1_1SnippetFactory}{Snippet\+Factory}} backward\+::\+Printer\+::\+\_\+snippets\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classbackward_1_1Printer_a0fd722ce3517aa67f179c33a3e841769}\label{classbackward_1_1Printer_a0fd722ce3517aa67f179c33a3e841769}} 
+\index{backward::Printer@{backward::Printer}!address@{address}}
+\index{address@{address}!backward::Printer@{backward::Printer}}
+\doxysubsubsection{\texorpdfstring{address}{address}}
+{\footnotesize\ttfamily bool backward\+::\+Printer\+::address}
+
+\mbox{\Hypertarget{classbackward_1_1Printer_a27013eaa6906241678769603c29f576f}\label{classbackward_1_1Printer_a27013eaa6906241678769603c29f576f}} 
+\index{backward::Printer@{backward::Printer}!color\_mode@{color\_mode}}
+\index{color\_mode@{color\_mode}!backward::Printer@{backward::Printer}}
+\doxysubsubsection{\texorpdfstring{color\_mode}{color\_mode}}
+{\footnotesize\ttfamily \mbox{\hyperlink{namespacebackward_1_1ColorMode_aec82452ed7333b210e205aaf6da2d090}{Color\+Mode\+::type}} backward\+::\+Printer\+::color\+\_\+mode}
+
+\mbox{\Hypertarget{classbackward_1_1Printer_a3fb390d205a00a630587fc793a5f09a6}\label{classbackward_1_1Printer_a3fb390d205a00a630587fc793a5f09a6}} 
+\index{backward::Printer@{backward::Printer}!inliner\_context\_size@{inliner\_context\_size}}
+\index{inliner\_context\_size@{inliner\_context\_size}!backward::Printer@{backward::Printer}}
+\doxysubsubsection{\texorpdfstring{inliner\_context\_size}{inliner\_context\_size}}
+{\footnotesize\ttfamily int backward\+::\+Printer\+::inliner\+\_\+context\+\_\+size}
+
+\mbox{\Hypertarget{classbackward_1_1Printer_a1af82e423f32058ba425d706c4f4c033}\label{classbackward_1_1Printer_a1af82e423f32058ba425d706c4f4c033}} 
+\index{backward::Printer@{backward::Printer}!object@{object}}
+\index{object@{object}!backward::Printer@{backward::Printer}}
+\doxysubsubsection{\texorpdfstring{object}{object}}
+{\footnotesize\ttfamily bool backward\+::\+Printer\+::object}
+
+\mbox{\Hypertarget{classbackward_1_1Printer_af5916965c8e12c840a1a4798a90b6161}\label{classbackward_1_1Printer_af5916965c8e12c840a1a4798a90b6161}} 
+\index{backward::Printer@{backward::Printer}!snippet@{snippet}}
+\index{snippet@{snippet}!backward::Printer@{backward::Printer}}
+\doxysubsubsection{\texorpdfstring{snippet}{snippet}}
+{\footnotesize\ttfamily bool backward\+::\+Printer\+::snippet}
+
+\mbox{\Hypertarget{classbackward_1_1Printer_ad0785ce1f397d943a00093364f4c66b8}\label{classbackward_1_1Printer_ad0785ce1f397d943a00093364f4c66b8}} 
+\index{backward::Printer@{backward::Printer}!trace\_context\_size@{trace\_context\_size}}
+\index{trace\_context\_size@{trace\_context\_size}!backward::Printer@{backward::Printer}}
+\doxysubsubsection{\texorpdfstring{trace\_context\_size}{trace\_context\_size}}
+{\footnotesize\ttfamily int backward\+::\+Printer\+::trace\+\_\+context\+\_\+size}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{Backtrace_8hpp}{Backtrace.\+hpp}}\end{DoxyCompactItemize}

@@ -1,0 +1,243 @@
+\hypertarget{__Common_8hpp}{}\doxysection{\+\_\+\+Common.\+hpp File Reference}
+\label{__Common_8hpp}\index{\_Common.hpp@{\_Common.hpp}}
+{\ttfamily \#include $<$array$>$}\newline
+{\ttfamily \#include $<$cstdint$>$}\newline
+{\ttfamily \#include $<$ostream$>$}\newline
+{\ttfamily \#include $<$string$>$}\newline
+{\ttfamily \#include $<$utility$>$}\newline
+{\ttfamily \#include \char`\"{}einsums/\+Error.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}einsums/\+Print.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}einsums/\+\_\+\+Compiler.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}einsums/\+\_\+\+Export.\+hpp\char`\"{}}\newline
+Include dependency graph for \+\_\+\+Common.\+hpp\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{da/df2/__Common_8hpp__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{de/d71/__Common_8hpp__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1detail_1_1DimType}{einsums\+::detail\+::\+Dim\+Type}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1detail_1_1StrideType}{einsums\+::detail\+::\+Stride\+Type}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1detail_1_1OffsetType}{einsums\+::detail\+::\+Offset\+Type}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1detail_1_1CountType}{einsums\+::detail\+::\+Count\+Type}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1detail_1_1RangeType}{einsums\+::detail\+::\+Range\+Type}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1detail_1_1ChunkType}{einsums\+::detail\+::\+Chunk\+Type}}
+\item 
+class \mbox{\hyperlink{structeinsums_1_1detail_1_1Array}{einsums\+::detail\+::\+Array$<$ T, Rank, Underlying\+Type $>$}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1All__t}{einsums\+::\+All\+\_\+t}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+ \mbox{\hyperlink{namespaceeinsums}{einsums}}
+\item 
+ \mbox{\hyperlink{namespaceeinsums_1_1detail}{einsums\+::detail}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{__Common_8hpp_ab655bd9006ad4f421022fa3e07eccb9c}{EINSUMS\+\_\+\+STRINGIFY}}(a)~\mbox{\hyperlink{__Common_8hpp_ab2f7deccf78fa7bbab2c5d1b8c3b7d0a}{EINSUMS\+\_\+\+STRINGIFY2}}(a)
+\item 
+\#define \mbox{\hyperlink{__Common_8hpp_ab2f7deccf78fa7bbab2c5d1b8c3b7d0a}{EINSUMS\+\_\+\+STRINGIFY2}}(a)~\#a
+\item 
+\#define \mbox{\hyperlink{__Common_8hpp_a91f57cc280e5804e12d80bc0fb755f3f}{BEGIN\+\_\+\+EINSUMS\+\_\+\+NAMESPACE\+\_\+\+HPP}}(x)
+\item 
+\#define \mbox{\hyperlink{__Common_8hpp_aeac8da061d194906124914851ff33325}{END\+\_\+\+EINSUMS\+\_\+\+NAMESPACE\+\_\+\+HPP}}(x)~\}
+\item 
+\#define \mbox{\hyperlink{__Common_8hpp_a1f5be6f3b156f8edf0af4b4e8e6b4dbe}{BEGIN\+\_\+\+EINSUMS\+\_\+\+NAMESPACE\+\_\+\+CPP}}(x)
+\item 
+\#define \mbox{\hyperlink{__Common_8hpp_a1000637bdd27942f011e034327869346}{END\+\_\+\+EINSUMS\+\_\+\+NAMESPACE\+\_\+\+CPP}}(x)~\}
+\item 
+\#define \mbox{\hyperlink{__Common_8hpp_abd6aa9e0347829c281c16b045fd4e32f}{ALIAS\+\_\+\+TEMPLATE\+\_\+\+FUNCTION}}(high\+Level\+Function,  low\+Level\+Function)
+\end{DoxyCompactItemize}
+\doxysubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+using \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{einsums\+::eint}} = int
+\item 
+using \mbox{\hyperlink{namespaceeinsums_aa3f13ab28c541d9d9127de05aec1e345}{einsums\+::euint}} = unsigned int
+\item 
+using \mbox{\hyperlink{namespaceeinsums_a7cf84144823551453ef25d128fedb56d}{einsums\+::elong}} = int64\+\_\+t
+\item 
+{\footnotesize template$<$std\+::size\+\_\+t Rank$>$ }\\using \mbox{\hyperlink{namespaceeinsums_a8c1a58f7bcdc7d0bab4c5df086098d3d}{einsums\+::\+Dim}} = detail\+::\+Array$<$ detail\+::\+Dim\+Type, Rank, std\+::int64\+\_\+t $>$
+\item 
+{\footnotesize template$<$std\+::size\+\_\+t Rank$>$ }\\using \mbox{\hyperlink{namespaceeinsums_a6138835e2652eaae61b1d977dd17d29c}{einsums\+::\+Stride}} = detail\+::\+Array$<$ detail\+::\+Stride\+Type, Rank $>$
+\item 
+{\footnotesize template$<$std\+::size\+\_\+t Rank$>$ }\\using \mbox{\hyperlink{namespaceeinsums_ac5b603e07b867507d5830186cb2ceaaf}{einsums\+::\+Offset}} = detail\+::\+Array$<$ detail\+::\+Offset\+Type, Rank $>$
+\item 
+{\footnotesize template$<$std\+::size\+\_\+t Rank$>$ }\\using \mbox{\hyperlink{namespaceeinsums_a450f97c210c704df47ec3d7013fcff47}{einsums\+::\+Count}} = detail\+::\+Array$<$ detail\+::\+Count\+Type, Rank $>$
+\item 
+using \mbox{\hyperlink{namespaceeinsums_a09cb83e4ce99aafb4305bc16c03dc054}{einsums\+::\+Range}} = detail\+::\+Array$<$ detail\+::\+Range\+Type, 2, std\+::int64\+\_\+t $>$
+\item 
+{\footnotesize template$<$std\+::size\+\_\+t Rank$>$ }\\using \mbox{\hyperlink{namespaceeinsums_aa3bb8068c5ea647bc44ee4221a3379b3}{einsums\+::\+Chunk}} = detail\+::\+Array$<$ detail\+::\+Chunk\+Type, Rank, std\+::int64\+\_\+t $>$
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+auto \mbox{\hyperlink{__Export_8hpp_ad5ec33d87b554501185251a886ebf557}{EINSUMS\+\_\+\+EXPORT}} \mbox{\hyperlink{namespaceeinsums_a854db456f89f04ed386ab68a1fdf7450}{einsums\+::initialize}} () -\/$>$ int
+\item 
+void \mbox{\hyperlink{__Export_8hpp_ad5ec33d87b554501185251a886ebf557}{EINSUMS\+\_\+\+EXPORT}} \mbox{\hyperlink{namespaceeinsums_a3e9b44513554a298c39ff98eb9129f96}{einsums\+::finalize}} (bool timer\+Report=false)
+\item 
+{\footnotesize template$<$size\+\_\+t Rank$>$ }\\void \mbox{\hyperlink{__Common_8hpp_a52198b5a8c76fef65cb1b964d9e07bdb}{println}} (const \mbox{\hyperlink{namespaceeinsums_a8c1a58f7bcdc7d0bab4c5df086098d3d}{einsums\+::\+Dim}}$<$ Rank $>$ \&dim)
+\item 
+void \mbox{\hyperlink{__Common_8hpp_a11de673875f64ae0797b25f6ec64e395}{println}} (const \mbox{\hyperlink{namespaceeinsums_a09cb83e4ce99aafb4305bc16c03dc054}{einsums\+::\+Range}} \&range)
+\item 
+{\footnotesize template$<$size\+\_\+t Rank, typename T $>$ }\\void \mbox{\hyperlink{__Common_8hpp_a84f21c2651a0491697436c9f011058ba}{println}} (const std\+::array$<$ T, Rank $>$ \&array)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Contains definitions that are common across Einsums. 
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{__Common_8hpp_abd6aa9e0347829c281c16b045fd4e32f}\label{__Common_8hpp_abd6aa9e0347829c281c16b045fd4e32f}} 
+\index{\_Common.hpp@{\_Common.hpp}!ALIAS\_TEMPLATE\_FUNCTION@{ALIAS\_TEMPLATE\_FUNCTION}}
+\index{ALIAS\_TEMPLATE\_FUNCTION@{ALIAS\_TEMPLATE\_FUNCTION}!\_Common.hpp@{\_Common.hpp}}
+\doxysubsubsection{\texorpdfstring{ALIAS\_TEMPLATE\_FUNCTION}{ALIAS\_TEMPLATE\_FUNCTION}}
+{\footnotesize\ttfamily \#define ALIAS\+\_\+\+TEMPLATE\+\_\+\+FUNCTION(\begin{DoxyParamCaption}\item[{}]{high\+Level\+Function,  }\item[{}]{low\+Level\+Function }\end{DoxyParamCaption})}
+
+{\bfseries Value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{    \textcolor{keyword}{template} <\textcolor{keyword}{typename}... Args>                                                \(\backslash\)}
+\DoxyCodeLine{    inline \textcolor{keyword}{auto} highLevelFunction(Args \&\&...args)-\/>decltype(                   \(\backslash\)}
+\DoxyCodeLine{            lowLevelFunction(std::forward<Args>(args)...)) \{                   \(\backslash\)}
+\DoxyCodeLine{        return lowLevelFunction(std::forward<Args>(args)...);                  \(\backslash\)}
+\DoxyCodeLine{    \}}
+
+\end{DoxyCode}
+Taken from \href{https://www.fluentcpp.com/2017/10/27/function-aliases-cpp/}{\texttt{ https\+://www.\+fluentcpp.\+com/2017/10/27/function-\/aliases-\/cpp/}}
+
+Creates an alias for the given low-\/level function as an inline function. \mbox{\Hypertarget{__Common_8hpp_a1f5be6f3b156f8edf0af4b4e8e6b4dbe}\label{__Common_8hpp_a1f5be6f3b156f8edf0af4b4e8e6b4dbe}} 
+\index{\_Common.hpp@{\_Common.hpp}!BEGIN\_EINSUMS\_NAMESPACE\_CPP@{BEGIN\_EINSUMS\_NAMESPACE\_CPP}}
+\index{BEGIN\_EINSUMS\_NAMESPACE\_CPP@{BEGIN\_EINSUMS\_NAMESPACE\_CPP}!\_Common.hpp@{\_Common.hpp}}
+\doxysubsubsection{\texorpdfstring{BEGIN\_EINSUMS\_NAMESPACE\_CPP}{BEGIN\_EINSUMS\_NAMESPACE\_CPP}}
+{\footnotesize\ttfamily \#define BEGIN\+\_\+\+EINSUMS\+\_\+\+NAMESPACE\+\_\+\+CPP(\begin{DoxyParamCaption}\item[{}]{x }\end{DoxyParamCaption})}
+
+{\bfseries Value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{    \textcolor{keyword}{namespace }x \{                                                              \(\backslash\)}
+\DoxyCodeLine{    namespace \mbox{\hyperlink{namespacedetail}{detail}} \{                                                         \(\backslash\)}
+\DoxyCodeLine{    EINSUMS\_EXPORT std::string s\_Namespace = \#x;                               \(\backslash\)}
+\DoxyCodeLine{    \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{__Common_8hpp_a91f57cc280e5804e12d80bc0fb755f3f}\label{__Common_8hpp_a91f57cc280e5804e12d80bc0fb755f3f}} 
+\index{\_Common.hpp@{\_Common.hpp}!BEGIN\_EINSUMS\_NAMESPACE\_HPP@{BEGIN\_EINSUMS\_NAMESPACE\_HPP}}
+\index{BEGIN\_EINSUMS\_NAMESPACE\_HPP@{BEGIN\_EINSUMS\_NAMESPACE\_HPP}!\_Common.hpp@{\_Common.hpp}}
+\doxysubsubsection{\texorpdfstring{BEGIN\_EINSUMS\_NAMESPACE\_HPP}{BEGIN\_EINSUMS\_NAMESPACE\_HPP}}
+{\footnotesize\ttfamily \#define BEGIN\+\_\+\+EINSUMS\+\_\+\+NAMESPACE\+\_\+\+HPP(\begin{DoxyParamCaption}\item[{}]{x }\end{DoxyParamCaption})}
+
+{\bfseries Value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{    \textcolor{keyword}{namespace }x \{                                                              \(\backslash\)}
+\DoxyCodeLine{    namespace \mbox{\hyperlink{namespacedetail}{detail}} \{                                                         \(\backslash\)}
+\DoxyCodeLine{    extern \mbox{\hyperlink{__Export_8hpp_ad5ec33d87b554501185251a886ebf557}{EINSUMS\_EXPORT}} std::string s\_Namespace;                             \(\backslash\)}
+\DoxyCodeLine{    \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{__Common_8hpp_ab655bd9006ad4f421022fa3e07eccb9c}\label{__Common_8hpp_ab655bd9006ad4f421022fa3e07eccb9c}} 
+\index{\_Common.hpp@{\_Common.hpp}!EINSUMS\_STRINGIFY@{EINSUMS\_STRINGIFY}}
+\index{EINSUMS\_STRINGIFY@{EINSUMS\_STRINGIFY}!\_Common.hpp@{\_Common.hpp}}
+\doxysubsubsection{\texorpdfstring{EINSUMS\_STRINGIFY}{EINSUMS\_STRINGIFY}}
+{\footnotesize\ttfamily \#define EINSUMS\+\_\+\+STRINGIFY(\begin{DoxyParamCaption}\item[{}]{a }\end{DoxyParamCaption})~\mbox{\hyperlink{__Common_8hpp_ab2f7deccf78fa7bbab2c5d1b8c3b7d0a}{EINSUMS\+\_\+\+STRINGIFY2}}(a)}
+
+\mbox{\Hypertarget{__Common_8hpp_ab2f7deccf78fa7bbab2c5d1b8c3b7d0a}\label{__Common_8hpp_ab2f7deccf78fa7bbab2c5d1b8c3b7d0a}} 
+\index{\_Common.hpp@{\_Common.hpp}!EINSUMS\_STRINGIFY2@{EINSUMS\_STRINGIFY2}}
+\index{EINSUMS\_STRINGIFY2@{EINSUMS\_STRINGIFY2}!\_Common.hpp@{\_Common.hpp}}
+\doxysubsubsection{\texorpdfstring{EINSUMS\_STRINGIFY2}{EINSUMS\_STRINGIFY2}}
+{\footnotesize\ttfamily \#define EINSUMS\+\_\+\+STRINGIFY2(\begin{DoxyParamCaption}\item[{}]{a }\end{DoxyParamCaption})~\#a}
+
+\mbox{\Hypertarget{__Common_8hpp_a1000637bdd27942f011e034327869346}\label{__Common_8hpp_a1000637bdd27942f011e034327869346}} 
+\index{\_Common.hpp@{\_Common.hpp}!END\_EINSUMS\_NAMESPACE\_CPP@{END\_EINSUMS\_NAMESPACE\_CPP}}
+\index{END\_EINSUMS\_NAMESPACE\_CPP@{END\_EINSUMS\_NAMESPACE\_CPP}!\_Common.hpp@{\_Common.hpp}}
+\doxysubsubsection{\texorpdfstring{END\_EINSUMS\_NAMESPACE\_CPP}{END\_EINSUMS\_NAMESPACE\_CPP}}
+{\footnotesize\ttfamily \#define END\+\_\+\+EINSUMS\+\_\+\+NAMESPACE\+\_\+\+CPP(\begin{DoxyParamCaption}\item[{}]{x }\end{DoxyParamCaption})~\}}
+
+\mbox{\Hypertarget{__Common_8hpp_aeac8da061d194906124914851ff33325}\label{__Common_8hpp_aeac8da061d194906124914851ff33325}} 
+\index{\_Common.hpp@{\_Common.hpp}!END\_EINSUMS\_NAMESPACE\_HPP@{END\_EINSUMS\_NAMESPACE\_HPP}}
+\index{END\_EINSUMS\_NAMESPACE\_HPP@{END\_EINSUMS\_NAMESPACE\_HPP}!\_Common.hpp@{\_Common.hpp}}
+\doxysubsubsection{\texorpdfstring{END\_EINSUMS\_NAMESPACE\_HPP}{END\_EINSUMS\_NAMESPACE\_HPP}}
+{\footnotesize\ttfamily \#define END\+\_\+\+EINSUMS\+\_\+\+NAMESPACE\+\_\+\+HPP(\begin{DoxyParamCaption}\item[{}]{x }\end{DoxyParamCaption})~\}}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{__Common_8hpp_a52198b5a8c76fef65cb1b964d9e07bdb}\label{__Common_8hpp_a52198b5a8c76fef65cb1b964d9e07bdb}} 
+\index{\_Common.hpp@{\_Common.hpp}!println@{println}}
+\index{println@{println}!\_Common.hpp@{\_Common.hpp}}
+\doxysubsubsection{\texorpdfstring{println()}{println()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily template$<$size\+\_\+t Rank$>$ \\
+void println (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceeinsums_a8c1a58f7bcdc7d0bab4c5df086098d3d}{einsums\+::\+Dim}}$<$ Rank $>$ \&}]{dim }\end{DoxyParamCaption})}
+
+Prints the dimensions passed in.
+
+
+\begin{DoxyParams}{Parameters}
+{\em dim} & The dimensions to print.\\
+\hline
+\end{DoxyParams}
+Prints the strides passed in.
+
+
+\begin{DoxyParams}{Parameters}
+{\em stride} & The strides to print.\\
+\hline
+\end{DoxyParams}
+Prints the counts passed in.
+
+
+\begin{DoxyParams}{Parameters}
+{\em count} & The counts to print.\\
+\hline
+\end{DoxyParams}
+Prints the offsets passed in.
+
+
+\begin{DoxyParams}{Parameters}
+{\em offset} & The offset to print. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{__Common_8hpp_a11de673875f64ae0797b25f6ec64e395}\label{__Common_8hpp_a11de673875f64ae0797b25f6ec64e395}} 
+\index{\_Common.hpp@{\_Common.hpp}!println@{println}}
+\index{println@{println}!\_Common.hpp@{\_Common.hpp}}
+\doxysubsubsection{\texorpdfstring{println()}{println()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily void println (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespaceeinsums_a09cb83e4ce99aafb4305bc16c03dc054}{einsums\+::\+Range}} \&}]{range }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Prints the ranges passed in.
+
+
+\begin{DoxyParams}{Parameters}
+{\em range} & The ranges to print. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{__Common_8hpp_a84f21c2651a0491697436c9f011058ba}\label{__Common_8hpp_a84f21c2651a0491697436c9f011058ba}} 
+\index{\_Common.hpp@{\_Common.hpp}!println@{println}}
+\index{println@{println}!\_Common.hpp@{\_Common.hpp}}
+\doxysubsubsection{\texorpdfstring{println()}{println()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily template$<$size\+\_\+t Rank, typename T $>$ \\
+void println (\begin{DoxyParamCaption}\item[{const std\+::array$<$ T, Rank $>$ \&}]{array }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Prints the values in an array.
+
+
+\begin{DoxyParams}{Parameters}
+{\em array} & The array to print. \\
+\hline
+\end{DoxyParams}

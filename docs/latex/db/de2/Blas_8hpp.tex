@@ -1,0 +1,377 @@
+\hypertarget{Blas_8hpp}{}\doxysection{Blas.\+hpp File Reference}
+\label{Blas_8hpp}\index{Blas.hpp@{Blas.hpp}}
+{\ttfamily \#include \char`\"{}einsums/\+STL.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}einsums/\+\_\+\+Common.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}einsums/\+\_\+\+Export.\+hpp\char`\"{}}\newline
+{\ttfamily \#include $<$complex$>$}\newline
+{\ttfamily \#include $<$vector$>$}\newline
+Include dependency graph for Blas.\+hpp\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{d1/d6d/Blas_8hpp__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{d1/de0/Blas_8hpp__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+ \mbox{\hyperlink{namespaceeinsums}{einsums}}
+\item 
+ \mbox{\hyperlink{namespaceeinsums_1_1blas}{einsums\+::blas}}
+\item 
+ \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail}{einsums\+::blas\+::detail}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_a0f42ab149c20c98fd3d2d8a23c76e858}{einsums\+::blas\+::initialize}} ()
+\item 
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_af9f978c9480acef44d04f82136c49df3}{einsums\+::blas\+::finalize}} ()
+\item 
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_a02e7255e23c3b06de65a548a49d6271a}{einsums\+::blas\+::detail\+::sgemm}} (char transa, char transb, eint m, eint n, eint k, float alpha, const float $\ast$a, eint lda, const float $\ast$b, eint ldb, float beta, float $\ast$c, eint ldc)
+\item 
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_aa4a830e1c3063b19586271b7a41393ed}{einsums\+::blas\+::detail\+::dgemm}} (char transa, char transb, eint m, eint n, eint k, double alpha, const double $\ast$a, eint lda, const double $\ast$b, eint ldb, double beta, double $\ast$c, eint ldc)
+\item 
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_a1a786cfbab3774a828a3e8f317555d55}{einsums\+::blas\+::detail\+::cgemm}} (char transa, char transb, eint m, eint n, eint k, std\+::complex$<$ float $>$ alpha, const std\+::complex$<$ float $>$ $\ast$a, eint lda, const std\+::complex$<$ float $>$ $\ast$b, eint ldb, std\+::complex$<$ float $>$ beta, std\+::complex$<$ float $>$ $\ast$c, eint ldc)
+\item 
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_aef8fa74e87cf5ef96feadc1da79ea0a8}{einsums\+::blas\+::detail\+::zgemm}} (char transa, char transb, eint m, eint n, eint k, std\+::complex$<$ double $>$ alpha, const std\+::complex$<$ double $>$ $\ast$a, eint lda, const std\+::complex$<$ double $>$ $\ast$b, eint ldb, std\+::complex$<$ double $>$ beta, std\+::complex$<$ double $>$ $\ast$c, eint ldc)
+\item 
+{\footnotesize template$<$typename T $>$ }\\void \mbox{\hyperlink{namespaceeinsums_1_1blas_adc2ca3a9dc3ec7e2aae1f0cf8b8c12b1}{einsums\+::blas\+::gemm}} (char transa, char transb, eint m, eint n, eint k, T alpha, const T $\ast$a, eint lda, const T $\ast$b, eint ldb, T beta, T $\ast$c, eint ldc)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_a18ee1b1fbabd682ab5c8333e19155d4e}{einsums\+::blas\+::gemm$<$ float $>$}} (char transa, char transb, eint m, eint n, eint k, float alpha, const float $\ast$a, eint lda, const float $\ast$b, eint ldb, float beta, float $\ast$c, eint ldc)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_a40e29b30b52fa22b43a95f33926b8e32}{einsums\+::blas\+::gemm$<$ double $>$}} (char transa, char transb, eint m, eint n, eint k, double alpha, const double $\ast$a, eint lda, const double $\ast$b, eint ldb, double beta, double $\ast$c, eint ldc)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_a59eecb566826ff0c0ec6923f2a0fd5ad}{einsums\+::blas\+::gemm$<$ std\+::complex$<$ float $>$ $>$}} (char transa, char transb, eint m, eint n, eint k, std\+::complex$<$ float $>$ alpha, const std\+::complex$<$ float $>$ $\ast$a, eint lda, const std\+::complex$<$ float $>$ $\ast$b, eint ldb, std\+::complex$<$ float $>$ beta, std\+::complex$<$ float $>$ $\ast$c, eint ldc)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_a563bde6f79f7da451c21408f81433d34}{einsums\+::blas\+::gemm$<$ std\+::complex$<$ double $>$ $>$}} (char transa, char transb, eint m, eint n, eint k, std\+::complex$<$ double $>$ alpha, const std\+::complex$<$ double $>$ $\ast$a, eint lda, const std\+::complex$<$ double $>$ $\ast$b, eint ldb, std\+::complex$<$ double $>$ beta, std\+::complex$<$ double $>$ $\ast$c, eint ldc)
+\item 
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_a9da821f26633e99ddf2c00ca1e33617d}{einsums\+::blas\+::detail\+::sgemv}} (char transa, eint m, eint n, float alpha, const float $\ast$a, eint lda, const float $\ast$x, eint incx, float beta, float $\ast$y, eint incy)
+\item 
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_a7abf1d995ab0d946d421fd52fe3901e4}{einsums\+::blas\+::detail\+::dgemv}} (char transa, eint m, eint n, double alpha, const double $\ast$a, eint lda, const double $\ast$x, eint incx, double beta, double $\ast$y, eint incy)
+\item 
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_abba6ca81601a610c304b2acc1848589b}{einsums\+::blas\+::detail\+::cgemv}} (char transa, eint m, eint n, std\+::complex$<$ float $>$ alpha, const std\+::complex$<$ float $>$ $\ast$a, eint lda, const std\+::complex$<$ float $>$ $\ast$x, eint incx, std\+::complex$<$ float $>$ beta, std\+::complex$<$ float $>$ $\ast$y, eint incy)
+\item 
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_a09af0ea6fbcc2de0149f23a2273f2a29}{einsums\+::blas\+::detail\+::zgemv}} (char transa, eint m, eint n, std\+::complex$<$ double $>$ alpha, const std\+::complex$<$ double $>$ $\ast$a, eint lda, const std\+::complex$<$ double $>$ $\ast$x, eint incx, std\+::complex$<$ double $>$ beta, std\+::complex$<$ double $>$ $\ast$y, eint incy)
+\item 
+{\footnotesize template$<$typename T $>$ }\\void \mbox{\hyperlink{namespaceeinsums_1_1blas_aedbb1533405c52a950a423211dc6f3ca}{einsums\+::blas\+::gemv}} (char transa, eint m, eint n, T alpha, const T $\ast$a, eint lda, const T $\ast$x, eint incx, T beta, T $\ast$y, eint incy)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_a8674933e8fe484a44e4dfcad365f9329}{einsums\+::blas\+::gemv$<$ float $>$}} (char transa, eint m, eint n, float alpha, const float $\ast$a, eint lda, const float $\ast$x, eint incx, float beta, float $\ast$y, eint incy)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_a392ab89a7a236fef8211c6ff7be9d0ad}{einsums\+::blas\+::gemv$<$ double $>$}} (char transa, eint m, eint n, double alpha, const double $\ast$a, eint lda, const double $\ast$x, eint incx, double beta, double $\ast$y, eint incy)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_a11c08f7915ab4dcc9b67eef8a9aff7df}{einsums\+::blas\+::gemv$<$ std\+::complex$<$ float $>$ $>$}} (char transa, eint m, eint n, std\+::complex$<$ float $>$ alpha, const std\+::complex$<$ float $>$ $\ast$a, eint lda, const std\+::complex$<$ float $>$ $\ast$x, eint incx, std\+::complex$<$ float $>$ beta, std\+::complex$<$ float $>$ $\ast$y, eint incy)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_a63ea64041030ea7bb3f9636c3fce53aa}{einsums\+::blas\+::gemv$<$ std\+::complex$<$ double $>$ $>$}} (char transa, eint m, eint n, std\+::complex$<$ double $>$ alpha, const std\+::complex$<$ double $>$ $\ast$a, eint lda, const std\+::complex$<$ double $>$ $\ast$x, eint incx, std\+::complex$<$ double $>$ beta, std\+::complex$<$ double $>$ $\ast$y, eint incy)
+\item 
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_a952fdfcaf54b20a2ad7356b35873c5ab}{einsums\+::blas\+::detail\+::ssyev}} (char job, char uplo, eint n, float $\ast$a, eint lda, float $\ast$w, float $\ast$work, eint lwork) -\/$>$ eint
+\item 
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_ae010d57c2e312f560465acc0c023300a}{einsums\+::blas\+::detail\+::dsyev}} (char job, char uplo, eint n, double $\ast$a, eint lda, double $\ast$w, double $\ast$work, eint lwork) -\/$>$ eint
+\item 
+{\footnotesize template$<$typename T $>$ }\\auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a4a5c9e98a5327778537a475b1eb4306b}{einsums\+::blas\+::syev}} (char job, char uplo, eint n, T $\ast$a, eint lda, T $\ast$w, T $\ast$work, eint lwork) -\/$>$ eint
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_ae11d6a1facf87f66ccdea90e018b2795}{einsums\+::blas\+::syev$<$ float $>$}} (char job, char uplo, eint n, float $\ast$a, eint lda, float $\ast$w, float $\ast$work, eint lwork) -\/$>$ eint
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_af91b5adfd80f18ee030c76e70bc56dd8}{einsums\+::blas\+::syev$<$ double $>$}} (char job, char uplo, eint n, double $\ast$a, eint lda, double $\ast$w, double $\ast$work, eint lwork) -\/$>$ eint
+\item 
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_a7da3378e472fcc920abebb537d75059b}{einsums\+::blas\+::detail\+::cheev}} (char job, char uplo, eint n, std\+::complex$<$ float $>$ $\ast$a, eint lda, float $\ast$w, std\+::complex$<$ float $>$ $\ast$work, eint lwork, float $\ast$rwork) -\/$>$ eint
+\item 
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_a7c661780325809db8269c661037c9e04}{einsums\+::blas\+::detail\+::zheev}} (char job, char uplo, eint n, std\+::complex$<$ double $>$ $\ast$a, eint lda, double $\ast$w, std\+::complex$<$ double $>$ $\ast$work, eint lwork, double $\ast$rwork) -\/$>$ eint
+\item 
+{\footnotesize template$<$typename T $>$ }\\auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a64556c47eb5d47cb6a2b7aed25a47da9}{einsums\+::blas\+::heev}} (char job, char uplo, eint n, std\+::complex$<$ T $>$ $\ast$a, eint lda, T $\ast$w, std\+::complex$<$ T $>$ $\ast$work, eint lwork, T $\ast$rwork) -\/$>$ eint
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_abff3d6046b943a67e6e118b15467abd0}{einsums\+::blas\+::heev$<$ float $>$}} (char job, char uplo, eint n, std\+::complex$<$ float $>$ $\ast$a, eint lda, float $\ast$w, std\+::complex$<$ float $>$ $\ast$work, eint lwork, float $\ast$rwork) -\/$>$ eint
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_ae315d24569409c1b8bd3410cf4e9fbb1}{einsums\+::blas\+::heev$<$ double $>$}} (char job, char uplo, eint n, std\+::complex$<$ double $>$ $\ast$a, eint lda, double $\ast$w, std\+::complex$<$ double $>$ $\ast$work, eint lwork, double $\ast$rwork) -\/$>$ eint
+\item 
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_aa07fa5ffbd4afe6ed284c04a8f8a7fa4}{einsums\+::blas\+::detail\+::sgesv}} (eint n, eint nrhs, float $\ast$a, eint lda, eint $\ast$ipiv, float $\ast$b, eint ldb) -\/$>$ eint
+\item 
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_ababfdbfa833210ad9f69f975c1d107ea}{einsums\+::blas\+::detail\+::dgesv}} (eint n, eint nrhs, double $\ast$a, eint lda, eint $\ast$ipiv, double $\ast$b, eint ldb) -\/$>$ eint
+\item 
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_a16991d6c38bdba45e345a418d162f4ab}{einsums\+::blas\+::detail\+::cgesv}} (eint n, eint nrhs, std\+::complex$<$ float $>$ $\ast$a, eint lda, eint $\ast$ipiv, std\+::complex$<$ float $>$ $\ast$b, eint ldb) -\/$>$ eint
+\item 
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_acff22e804d2ab2d94d734477bc4ffed1}{einsums\+::blas\+::detail\+::zgesv}} (eint n, eint nrhs, std\+::complex$<$ double $>$ $\ast$a, eint lda, eint $\ast$ipiv, std\+::complex$<$ double $>$ $\ast$b, eint ldb) -\/$>$ eint
+\item 
+{\footnotesize template$<$typename T $>$ }\\auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a8caa0ed28129b2ddb5806f7c1b0b04d9}{einsums\+::blas\+::gesv}} (eint n, eint nrhs, T $\ast$a, eint lda, eint $\ast$ipiv, T $\ast$b, eint ldb) -\/$>$ eint
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a21fce165b6c8f6fadc964eab411d3bab}{einsums\+::blas\+::gesv$<$ float $>$}} (eint n, eint nrhs, float $\ast$a, eint lda, eint $\ast$ipiv, float $\ast$b, eint ldb) -\/$>$ eint
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a11658c79bb2b83ca7f1fb2252029cd96}{einsums\+::blas\+::gesv$<$ double $>$}} (eint n, eint nrhs, double $\ast$a, eint lda, eint $\ast$ipiv, double $\ast$b, eint ldb) -\/$>$ eint
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a320a97f1fc408607f95d02fca05d0e37}{einsums\+::blas\+::gesv$<$ std\+::complex$<$ float $>$ $>$}} (eint n, eint nrhs, std\+::complex$<$ float $>$ $\ast$a, eint lda, eint $\ast$ipiv, std\+::complex$<$ float $>$ $\ast$b, eint ldb) -\/$>$ eint
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a71834fe2325c23cba6e2b58ecd0a62d4}{einsums\+::blas\+::gesv$<$ std\+::complex$<$ double $>$ $>$}} (eint n, eint nrhs, std\+::complex$<$ double $>$ $\ast$a, eint lda, eint $\ast$ipiv, std\+::complex$<$ double $>$ $\ast$b, eint ldb) -\/$>$ eint
+\item 
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_aa8240bec49f83e0578e6ba833c965dab}{einsums\+::blas\+::detail\+::sscal}} (eint n, float alpha, float $\ast$vec, eint inc)
+\item 
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_a46e6f6b9e7d8a89cda8e539379d39237}{einsums\+::blas\+::detail\+::dscal}} (eint n, double alpha, double $\ast$vec, eint inc)
+\item 
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_a4a54819f3ac6a73aabfbd72f927a876e}{einsums\+::blas\+::detail\+::cscal}} (eint n, std\+::complex$<$ float $>$ alpha, std\+::complex$<$ float $>$ $\ast$vec, eint inc)
+\item 
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_a71770c5be161bec0187ebda18ac2a8cd}{einsums\+::blas\+::detail\+::zscal}} (eint n, std\+::complex$<$ double $>$ alpha, std\+::complex$<$ double $>$ $\ast$vec, eint inc)
+\item 
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_a2ec0322ace43cc24e76403367784758e}{einsums\+::blas\+::detail\+::csscal}} (eint n, float alpha, std\+::complex$<$ float $>$ $\ast$vec, eint inc)
+\item 
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_a2250c152c57862c9728f3b5d548d2d31}{einsums\+::blas\+::detail\+::zdscal}} (eint n, double alpha, std\+::complex$<$ double $>$ $\ast$vec, eint inc)
+\item 
+{\footnotesize template$<$typename T $>$ }\\void \mbox{\hyperlink{namespaceeinsums_1_1blas_ad992c2f082054c95eb623a2a31f829b7}{einsums\+::blas\+::scal}} (eint n, const T alpha, T $\ast$vec, eint inc)
+\item 
+{\footnotesize template$<$typename T $>$ }\\auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a0154c8224b3be3d327aade114294ef02}{einsums\+::blas\+::scal}} (eint n, const remove\+\_\+complex\+\_\+t$<$ T $>$ alpha, T $\ast$vec, eint inc) -\/$>$ std\+::enable\+\_\+if\+\_\+t$<$ is\+\_\+complex\+\_\+v$<$ T $>$$>$
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_ac98205c32c726b1a7069a11ed7290e35}{einsums\+::blas\+::scal$<$ float $>$}} (eint n, const float alpha, float $\ast$vec, eint inc)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_a0880393d78d8b9acdd9fd3685a16e438}{einsums\+::blas\+::scal$<$ double $>$}} (eint n, const double alpha, double $\ast$vec, eint inc)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_aedbd71937b4631cd828e3d82bd5d6e83}{einsums\+::blas\+::scal$<$ std\+::complex$<$ float $>$ $>$}} (eint n, const std\+::complex$<$ float $>$ alpha, std\+::complex$<$ float $>$ $\ast$vec, eint inc)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_a435f964301c202f78ac3d831799cb32f}{einsums\+::blas\+::scal$<$ std\+::complex$<$ double $>$ $>$}} (eint n, const std\+::complex$<$ double $>$ alpha, std\+::complex$<$ double $>$ $\ast$vec, eint inc)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_af203fe3f69a787b928e9fd0b6a355f8d}{einsums\+::blas\+::scal$<$ std\+::complex$<$ float $>$ $>$}} (eint n, const float alpha, std\+::complex$<$ float $>$ $\ast$vec, eint inc)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_ad1db06ada4b3b1e5ea271b0b1d52719f}{einsums\+::blas\+::scal$<$ std\+::complex$<$ double $>$ $>$}} (eint n, const double alpha, std\+::complex$<$ double $>$ $\ast$vec, eint inc)
+\item 
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_a8e7f89af8474ac1205e9224a6dce32b3}{einsums\+::blas\+::detail\+::sdot}} (eint n, const float $\ast$x, eint incx, const float $\ast$y, eint incy) -\/$>$ float
+\item 
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_a7cf7cbd165844928b13079cb8a31a6a2}{einsums\+::blas\+::detail\+::ddot}} (eint n, const double $\ast$x, eint incx, const double $\ast$y, eint incy) -\/$>$ double
+\item 
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_aed4732f7ee5641bf5dd5eec8f216e7c1}{einsums\+::blas\+::detail\+::cdot}} (eint n, const std\+::complex$<$ float $>$ $\ast$x, eint incx, const std\+::complex$<$ float $>$ $\ast$y, eint incy) -\/$>$ std\+::complex$<$ float $>$
+\item 
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_acac8f109b2829f1b0f24a61249f974ce}{einsums\+::blas\+::detail\+::zdot}} (eint n, const std\+::complex$<$ double $>$ $\ast$x, eint incx, const std\+::complex$<$ double $>$ $\ast$y, eint incy) -\/$>$ std\+::complex$<$ double $>$
+\item 
+{\footnotesize template$<$typename T $>$ }\\auto \mbox{\hyperlink{namespaceeinsums_1_1blas_ab6b9a0af69505efea085e73e4114447c}{einsums\+::blas\+::dot}} (eint n, const T $\ast$x, eint incx, const T $\ast$y, eint incy) -\/$>$ T
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a138072e0ee0cbade37165a8e2aef28b0}{einsums\+::blas\+::dot$<$ float $>$}} (eint n, const float $\ast$x, eint incx, const float $\ast$y, eint incy) -\/$>$ float
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a288e7be62d836cc494d48605e1d6f2b1}{einsums\+::blas\+::dot$<$ double $>$}} (eint n, const double $\ast$x, eint incx, const double $\ast$y, eint incy) -\/$>$ double
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_ade32b466088f7b61fb2cc62369c2c36c}{einsums\+::blas\+::dot$<$ std\+::complex$<$ float $>$ $>$}} (eint n, const std\+::complex$<$ float $>$ $\ast$x, eint incx, const std\+::complex$<$ float $>$ $\ast$y, eint incy) -\/$>$ std\+::complex$<$ float $>$
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_aedfb41d2eb2cfcdc1b5ccf43c2fdb7e2}{einsums\+::blas\+::dot$<$ std\+::complex$<$ double $>$ $>$}} (eint n, const std\+::complex$<$ double $>$ $\ast$x, eint incx, const std\+::complex$<$ double $>$ $\ast$y, eint incy) -\/$>$ std\+::complex$<$ double $>$
+\item 
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_af9a95a7f5e94b8e8c4e775ae4871034c}{einsums\+::blas\+::detail\+::saxpy}} (eint n, float alpha\+\_\+x, const float $\ast$x, eint inc\+\_\+x, float $\ast$y, eint inc\+\_\+y)
+\item 
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_ae26dd961839da9c5b6deb18ad1a79675}{einsums\+::blas\+::detail\+::daxpy}} (eint n, double alpha\+\_\+x, const double $\ast$x, eint inc\+\_\+x, double $\ast$y, eint inc\+\_\+y)
+\item 
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_ada35de59d3558fdf162c32983ec7f16b}{einsums\+::blas\+::detail\+::caxpy}} (eint n, std\+::complex$<$ float $>$ alpha\+\_\+x, const std\+::complex$<$ float $>$ $\ast$x, eint inc\+\_\+x, std\+::complex$<$ float $>$ $\ast$y, eint inc\+\_\+y)
+\item 
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_aa1b5fc26961a14e61fe2cc7de2bfaca7}{einsums\+::blas\+::detail\+::zaxpy}} (eint n, std\+::complex$<$ double $>$ alpha\+\_\+x, const std\+::complex$<$ double $>$ $\ast$x, eint inc\+\_\+x, std\+::complex$<$ double $>$ $\ast$y, eint inc\+\_\+y)
+\item 
+{\footnotesize template$<$typename T $>$ }\\void \mbox{\hyperlink{namespaceeinsums_1_1blas_a9772171021c01e9f465ff28e5cd60fe7}{einsums\+::blas\+::axpy}} (eint n, T alpha\+\_\+x, const T $\ast$x, eint inc\+\_\+x, T $\ast$y, eint inc\+\_\+y)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_a6e72e154b820ab590d65a1879c30be3e}{einsums\+::blas\+::axpy$<$ float $>$}} (eint n, float alpha\+\_\+x, const float $\ast$x, eint inc\+\_\+x, float $\ast$y, eint inc\+\_\+y)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_a8b0b2f675f24a6694ba73749b065b5d7}{einsums\+::blas\+::axpy$<$ double $>$}} (eint n, double alpha\+\_\+x, const double $\ast$x, eint inc\+\_\+x, double $\ast$y, eint inc\+\_\+y)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_a37ba026715a66c6652ab0e39e8524b9d}{einsums\+::blas\+::axpy$<$ std\+::complex$<$ float $>$ $>$}} (eint n, std\+::complex$<$ float $>$ alpha\+\_\+x, const std\+::complex$<$ float $>$ $\ast$x, eint inc\+\_\+x, std\+::complex$<$ float $>$ $\ast$y, eint inc\+\_\+y)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_ae5a0c8f3125dd16d8c3d476555c9d858}{einsums\+::blas\+::axpy$<$ std\+::complex$<$ double $>$ $>$}} (eint n, std\+::complex$<$ double $>$ alpha\+\_\+x, const std\+::complex$<$ double $>$ $\ast$x, eint inc\+\_\+x, std\+::complex$<$ double $>$ $\ast$y, eint inc\+\_\+y)
+\item 
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_abf68c278dea92b7a4924b027c3fe4f43}{einsums\+::blas\+::detail\+::saxpby}} (eint n, float alpha\+\_\+x, const float $\ast$x, eint inc\+\_\+x, float b, float $\ast$y, eint inc\+\_\+y)
+\item 
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_ade289ac8c5463a3eeb006e01514c8262}{einsums\+::blas\+::detail\+::daxpby}} (eint n, double alpha\+\_\+x, const double $\ast$x, eint inc\+\_\+x, double b, double $\ast$y, eint inc\+\_\+y)
+\item 
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_a61b7b761e3b94d30aa4567005a3c929c}{einsums\+::blas\+::detail\+::caxpby}} (eint n, std\+::complex$<$ float $>$ alpha\+\_\+x, const std\+::complex$<$ float $>$ $\ast$x, eint inc\+\_\+x, std\+::complex$<$ float $>$ b, std\+::complex$<$ float $>$ $\ast$y, eint inc\+\_\+y)
+\item 
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_a160758e7c7958ea8cbb3e23ebedefcbe}{einsums\+::blas\+::detail\+::zaxpby}} (eint n, std\+::complex$<$ double $>$ alpha\+\_\+x, const std\+::complex$<$ double $>$ $\ast$x, eint inc\+\_\+x, std\+::complex$<$ double $>$ b, std\+::complex$<$ double $>$ $\ast$y, eint inc\+\_\+y)
+\item 
+{\footnotesize template$<$typename T $>$ }\\void \mbox{\hyperlink{namespaceeinsums_1_1blas_ab0a3e7d1a82f076eaef032dc9f4b9228}{einsums\+::blas\+::axpby}} (eint n, T alpha\+\_\+x, const T $\ast$x, eint inc\+\_\+x, T b, T $\ast$y, eint inc\+\_\+y)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_afbf872cd185c4a4cdea924308fd02085}{einsums\+::blas\+::axpby$<$ float $>$}} (eint n, float alpha\+\_\+x, const float $\ast$x, eint inc\+\_\+x, float b, float $\ast$y, eint inc\+\_\+y)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_ac28b9eecae4807ac480511b607fd205e}{einsums\+::blas\+::axpby$<$ double $>$}} (eint n, double alpha\+\_\+x, const double $\ast$x, eint inc\+\_\+x, double b, double $\ast$y, eint inc\+\_\+y)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_af03695ecd2d6cbf6806d71e9bee9ce52}{einsums\+::blas\+::axpby$<$ std\+::complex$<$ float $>$ $>$}} (eint n, std\+::complex$<$ float $>$ alpha\+\_\+x, const std\+::complex$<$ float $>$ $\ast$x, eint inc\+\_\+x, std\+::complex$<$ float $>$ b, std\+::complex$<$ float $>$ $\ast$y, eint inc\+\_\+y)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_a2273f8bc7a68906e0105f99b6332488c}{einsums\+::blas\+::axpby$<$ std\+::complex$<$ double $>$ $>$}} (eint n, std\+::complex$<$ double $>$ alpha\+\_\+x, const std\+::complex$<$ double $>$ $\ast$x, eint inc\+\_\+x, std\+::complex$<$ double $>$ b, std\+::complex$<$ double $>$ $\ast$y, eint inc\+\_\+y)
+\item 
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_a68550f3c10444c85954334082124f5ad}{einsums\+::blas\+::detail\+::sger}} (eint m, eint n, float alpha, const float $\ast$x, eint inc\+\_\+x, const float $\ast$y, eint inc\+\_\+y, float $\ast$a, eint lda)
+\item 
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_acfa997db03cde8ec6c24c76c108bf83e}{einsums\+::blas\+::detail\+::dger}} (eint m, eint n, double alpha, const double $\ast$x, eint inc\+\_\+x, const double $\ast$y, eint inc\+\_\+y, double $\ast$a, eint lda)
+\item 
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_a7b041152e98acc1894fbeff4e13492cc}{einsums\+::blas\+::detail\+::cger}} (eint m, eint n, std\+::complex$<$ float $>$ alpha, const std\+::complex$<$ float $>$ $\ast$x, eint inc\+\_\+x, const std\+::complex$<$ float $>$ $\ast$y, eint inc\+\_\+y, std\+::complex$<$ float $>$ $\ast$a, eint lda)
+\item 
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_abe6a4ea4b3dda02409fcc92f92836920}{einsums\+::blas\+::detail\+::zger}} (eint m, eint n, std\+::complex$<$ double $>$ alpha, const std\+::complex$<$ double $>$ $\ast$x, eint inc\+\_\+x, const std\+::complex$<$ double $>$ $\ast$y, eint inc\+\_\+y, std\+::complex$<$ double $>$ $\ast$a, eint lda)
+\item 
+{\footnotesize template$<$typename T $>$ }\\void \mbox{\hyperlink{namespaceeinsums_1_1blas_a8af56f82d93073c6bb9f5c5b273f27f8}{einsums\+::blas\+::ger}} (eint m, eint n, T alpha, const T $\ast$x, eint inc\+\_\+x, const T $\ast$y, eint inc\+\_\+y, T $\ast$a, eint lda)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_a80b147251e2a0cf2e2c033977864f696}{einsums\+::blas\+::ger$<$ float $>$}} (eint m, eint n, float alpha, const float $\ast$x, eint inc\+\_\+x, const float $\ast$y, eint inc\+\_\+y, float $\ast$a, eint lda)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_afc506f56a62c2e6cbcf8ed0dca05b464}{einsums\+::blas\+::ger$<$ double $>$}} (eint m, eint n, double alpha, const double $\ast$x, eint inc\+\_\+x, const double $\ast$y, eint inc\+\_\+y, double $\ast$a, eint lda)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_a3d3a90cb1fc15c4da2f949f360a1569d}{einsums\+::blas\+::ger$<$ std\+::complex$<$ float $>$ $>$}} (eint m, eint n, std\+::complex$<$ float $>$ alpha, const std\+::complex$<$ float $>$ $\ast$x, eint inc\+\_\+x, const std\+::complex$<$ float $>$ $\ast$y, eint inc\+\_\+y, std\+::complex$<$ float $>$ $\ast$a, eint lda)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_ac08eb6a696d53284494b96a901e77259}{einsums\+::blas\+::ger$<$ std\+::complex$<$ double $>$ $>$}} (eint m, eint n, std\+::complex$<$ double $>$ alpha, const std\+::complex$<$ double $>$ $\ast$x, eint inc\+\_\+x, const std\+::complex$<$ double $>$ $\ast$y, eint inc\+\_\+y, std\+::complex$<$ double $>$ $\ast$a, eint lda)
+\item 
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_af096178191fc34c48b36f0920303efc1}{einsums\+::blas\+::detail\+::sgetrf}} (eint m, eint n, float $\ast$a, eint lda, eint $\ast$ipiv) -\/$>$ eint
+\item 
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_a26915b8f8fd76b0be380d0bfe857c5a5}{einsums\+::blas\+::detail\+::dgetrf}} (eint m, eint n, double $\ast$a, eint lda, eint $\ast$ipiv) -\/$>$ eint
+\item 
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_a6a6ab0bc1d1a7725fc06606ee7b259f8}{einsums\+::blas\+::detail\+::cgetrf}} (eint m, eint n, std\+::complex$<$ float $>$ $\ast$a, eint lda, eint $\ast$ipiv) -\/$>$ eint
+\item 
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_a973e468a5ca87c1f6d7c51fd39ffd1f1}{einsums\+::blas\+::detail\+::zgetrf}} (eint m, eint n, std\+::complex$<$ double $>$ $\ast$a, eint lda, eint $\ast$ipiv) -\/$>$ eint
+\item 
+{\footnotesize template$<$typename T $>$ }\\auto \mbox{\hyperlink{namespaceeinsums_1_1blas_ada1c449050738511bf96ca7b29d6bbb3}{einsums\+::blas\+::getrf}} (eint, eint, T $\ast$, eint, eint $\ast$) -\/$>$ eint
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_ad7ba9b35a6fb28217f0ac82a024666b7}{einsums\+::blas\+::getrf$<$ float $>$}} (eint m, eint n, float $\ast$a, eint lda, eint $\ast$ipiv) -\/$>$ eint
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a6440fafb840b1179078fbb5b8ec298cc}{einsums\+::blas\+::getrf$<$ double $>$}} (eint m, eint n, double $\ast$a, eint lda, eint $\ast$ipiv) -\/$>$ eint
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a9c44ea820eb96aa0bad78219648fc3c7}{einsums\+::blas\+::getrf$<$ std\+::complex$<$ float $>$ $>$}} (eint m, eint n, std\+::complex$<$ float $>$ $\ast$a, eint lda, eint $\ast$ipiv) -\/$>$ eint
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_aba9606fa413ddfa15c0bd188f5968e0b}{einsums\+::blas\+::getrf$<$ std\+::complex$<$ double $>$ $>$}} (eint m, eint n, std\+::complex$<$ double $>$ $\ast$a, eint lda, eint $\ast$ipiv) -\/$>$ eint
+\item 
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_a1f69f69b4a6c6845e8b3b86e6ec5abe4}{einsums\+::blas\+::detail\+::sgetri}} (eint n, float $\ast$a, eint lda, const eint $\ast$ipiv) -\/$>$ eint
+\item 
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_a545f56fef2d7287d33570a4b835b2bd8}{einsums\+::blas\+::detail\+::dgetri}} (eint n, double $\ast$a, eint lda, const eint $\ast$ipiv) -\/$>$ eint
+\item 
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_ab07582979bd90d869eb88901ceaa60c2}{einsums\+::blas\+::detail\+::cgetri}} (eint n, std\+::complex$<$ float $>$ $\ast$a, eint lda, const eint $\ast$ipiv) -\/$>$ eint
+\item 
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_ae04c465a3a0ce5db0d344a6dbea0b86b}{einsums\+::blas\+::detail\+::zgetri}} (eint n, std\+::complex$<$ double $>$ $\ast$a, eint lda, const eint $\ast$ipiv) -\/$>$ eint
+\item 
+{\footnotesize template$<$typename T $>$ }\\auto \mbox{\hyperlink{namespaceeinsums_1_1blas_afb29e043876b3b2fa17fda652df8fae6}{einsums\+::blas\+::getri}} (eint n, T $\ast$a, eint lda, const eint $\ast$ipiv) -\/$>$ eint
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_ab0836e7e61ebb4e4a87b67bb581504ae}{einsums\+::blas\+::getri$<$ float $>$}} (eint n, float $\ast$a, eint lda, const eint $\ast$ipiv) -\/$>$ eint
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a23392760c5aed675dcb573a33bed7ff0}{einsums\+::blas\+::getri$<$ double $>$}} (eint n, double $\ast$a, eint lda, const eint $\ast$ipiv) -\/$>$ eint
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a82e932297b8a14e33a32238f9261691f}{einsums\+::blas\+::getri$<$ std\+::complex$<$ float $>$ $>$}} (eint n, std\+::complex$<$ float $>$ $\ast$a, eint lda, const eint $\ast$ipiv) -\/$>$ eint
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a1d666271c9cbbaadd1bc626bc5c891d7}{einsums\+::blas\+::getri$<$ std\+::complex$<$ double $>$ $>$}} (eint n, std\+::complex$<$ double $>$ $\ast$a, eint lda, const eint $\ast$ipiv) -\/$>$ eint
+\item 
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_a370eac65e24f865eeef22f9b2abc61f1}{einsums\+::blas\+::detail\+::slange}} (char norm\+\_\+type, eint m, eint n, const float $\ast$A, eint lda, float $\ast$work) -\/$>$ float
+\item 
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_ad202db94fb02dc0dc31344599eeb446f}{einsums\+::blas\+::detail\+::dlange}} (char norm\+\_\+type, eint m, eint n, const double $\ast$A, eint lda, double $\ast$work) -\/$>$ double
+\item 
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_a7816355516878c7a08492e148b254b0c}{einsums\+::blas\+::detail\+::clange}} (char norm\+\_\+type, eint m, eint n, const std\+::complex$<$ float $>$ $\ast$A, eint lda, float $\ast$work) -\/$>$ float
+\item 
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_a52924938b38da1cd51c2970f77127943}{einsums\+::blas\+::detail\+::zlange}} (char norm\+\_\+type, eint m, eint n, const std\+::complex$<$ double $>$ $\ast$A, eint lda, double $\ast$work) -\/$>$ double
+\item 
+{\footnotesize template$<$typename T $>$ }\\auto \mbox{\hyperlink{namespaceeinsums_1_1blas_adb3232e92ae5679ea7d2d87ca6808b1d}{einsums\+::blas\+::lange}} (char norm\+\_\+type, eint m, eint n, const T $\ast$A, eint lda, remove\+\_\+complex\+\_\+t$<$ T $>$ $\ast$work) -\/$>$ remove\+\_\+complex\+\_\+t$<$ T $>$
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a2efbe5837edc657ed721c752647605a6}{einsums\+::blas\+::lange$<$ float $>$}} (char norm\+\_\+type, eint m, eint n, const float $\ast$A, eint lda, float $\ast$work) -\/$>$ float
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_af32ecfe26b90a1097a18367c81061f6c}{einsums\+::blas\+::lange$<$ double $>$}} (char norm\+\_\+type, eint m, eint n, const double $\ast$A, eint lda, double $\ast$work) -\/$>$ double
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a3390b4345c4a64a812780e778e249091}{einsums\+::blas\+::lange$<$ std\+::complex$<$ float $>$ $>$}} (char norm\+\_\+type, eint m, eint n, const std\+::complex$<$ float $>$ $\ast$A, eint lda, float $\ast$work) -\/$>$ float
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_af36ba326fcd6b7acaedff50624317227}{einsums\+::blas\+::lange$<$ std\+::complex$<$ double $>$ $>$}} (char norm\+\_\+type, eint m, eint n, const std\+::complex$<$ double $>$ $\ast$A, eint lda, double $\ast$work) -\/$>$ double
+\item 
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_a03e2b1cdba656312d5f9b60d61f84d59}{einsums\+::blas\+::detail\+::slassq}} (eint n, const float $\ast$x, eint incx, float $\ast$\mbox{\hyperlink{ElementOperations_8hpp_a1be82ac2bb2e4f1e1b0257c14065335d}{scale}}, float $\ast$sumsq)
+\item 
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_af7f90807b4e5a5c489f2230c262aa62e}{einsums\+::blas\+::detail\+::dlassq}} (eint n, const double $\ast$x, eint incx, double $\ast$\mbox{\hyperlink{ElementOperations_8hpp_a1be82ac2bb2e4f1e1b0257c14065335d}{scale}}, double $\ast$sumsq)
+\item 
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_a0ea6738f24cee00b0d1a3590d2892e2d}{einsums\+::blas\+::detail\+::classq}} (eint n, const std\+::complex$<$ float $>$ $\ast$x, eint incx, float $\ast$\mbox{\hyperlink{ElementOperations_8hpp_a1be82ac2bb2e4f1e1b0257c14065335d}{scale}}, float $\ast$sumsq)
+\item 
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_a2cb8ba6d37b48186700c9fa5a29ba0fb}{einsums\+::blas\+::detail\+::zlassq}} (eint n, const std\+::complex$<$ double $>$ $\ast$x, eint incx, double $\ast$\mbox{\hyperlink{ElementOperations_8hpp_a1be82ac2bb2e4f1e1b0257c14065335d}{scale}}, double $\ast$sumsq)
+\item 
+{\footnotesize template$<$typename T $>$ }\\void \mbox{\hyperlink{namespaceeinsums_1_1blas_a3ae5dd4528a84fdf3cb8e070c37ba4a8}{einsums\+::blas\+::lassq}} (eint n, const T $\ast$x, eint incx, remove\+\_\+complex\+\_\+t$<$ T $>$ $\ast$\mbox{\hyperlink{ElementOperations_8hpp_a1be82ac2bb2e4f1e1b0257c14065335d}{scale}}, remove\+\_\+complex\+\_\+t$<$ T $>$ $\ast$sumsq)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_a66faaf0b9163cbeb87a117cf4b3ffe3b}{einsums\+::blas\+::lassq$<$ float $>$}} (eint n, const float $\ast$x, eint incx, float $\ast$\mbox{\hyperlink{ElementOperations_8hpp_a1be82ac2bb2e4f1e1b0257c14065335d}{scale}}, float $\ast$sumsq)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_ace90e62c60e557ca398e8d4aec3a0715}{einsums\+::blas\+::lassq$<$ double $>$}} (eint n, const double $\ast$x, eint incx, double $\ast$\mbox{\hyperlink{ElementOperations_8hpp_a1be82ac2bb2e4f1e1b0257c14065335d}{scale}}, double $\ast$sumsq)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_a0f9a0ca1359c7c322d536836d56a3750}{einsums\+::blas\+::lassq$<$ std\+::complex$<$ float $>$ $>$}} (eint n, const std\+::complex$<$ float $>$ $\ast$x, eint incx, float $\ast$\mbox{\hyperlink{ElementOperations_8hpp_a1be82ac2bb2e4f1e1b0257c14065335d}{scale}}, float $\ast$sumsq)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_a445926df973763316634cd32c6a1accb}{einsums\+::blas\+::lassq$<$ std\+::complex$<$ double $>$ $>$}} (eint n, const std\+::complex$<$ double $>$ $\ast$x, eint incx, double $\ast$\mbox{\hyperlink{ElementOperations_8hpp_a1be82ac2bb2e4f1e1b0257c14065335d}{scale}}, double $\ast$sumsq)
+\item 
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_ad3c2e91cbd92c4162afe95c185aa3a64}{einsums\+::blas\+::detail\+::sgesdd}} (char jobz, eint m, eint n, float $\ast$a, eint lda, float $\ast$s, float $\ast$u, eint ldu, float $\ast$vt, eint ldvt) -\/$>$ eint
+\item 
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_a8af4f1194c69a8a6b917d399625f5912}{einsums\+::blas\+::detail\+::dgesdd}} (char jobz, eint m, eint n, double $\ast$a, eint lda, double $\ast$s, double $\ast$u, eint ldu, double $\ast$vt, eint ldvt) -\/$>$ eint
+\item 
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_aca7c3527a83799d80fa6471e971da032}{einsums\+::blas\+::detail\+::cgesdd}} (char jobz, eint m, eint n, std\+::complex$<$ float $>$ $\ast$a, eint lda, float $\ast$s, std\+::complex$<$ float $>$ $\ast$u, eint ldu, std\+::complex$<$ float $>$ $\ast$vt, eint ldvt) -\/$>$ eint
+\item 
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_a0e7e7892fbf95b9c7f2e22c75f17d9b2}{einsums\+::blas\+::detail\+::zgesdd}} (char jobz, eint m, eint n, std\+::complex$<$ double $>$ $\ast$a, eint lda, double $\ast$s, std\+::complex$<$ double $>$ $\ast$u, eint ldu, std\+::complex$<$ double $>$ $\ast$vt, eint ldvt) -\/$>$ eint
+\item 
+{\footnotesize template$<$typename T $>$ }\\auto \mbox{\hyperlink{namespaceeinsums_1_1blas_aa14f1256e8b5836fcd580aa717ee76c5}{einsums\+::blas\+::gesdd}} (char jobz, eint m, eint n, T $\ast$a, eint lda, remove\+\_\+complex\+\_\+t$<$ T $>$ $\ast$s, T $\ast$u, eint ldu, T $\ast$vt, eint ldvt) -\/$>$ eint
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a076c1f7cce413ef91831bdd43529a7ba}{einsums\+::blas\+::gesdd$<$ float $>$}} (char jobz, eint m, eint n, float $\ast$a, eint lda, float $\ast$s, float $\ast$u, eint ldu, float $\ast$vt, eint ldvt) -\/$>$ eint
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a1ac94acdd2e5732053235b48a9f978ad}{einsums\+::blas\+::gesdd$<$ double $>$}} (char jobz, eint m, eint n, double $\ast$a, eint lda, double $\ast$s, double $\ast$u, eint ldu, double $\ast$vt, eint ldvt) -\/$>$ eint
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_aa7126ce15772294702e2d6edee5d4bca}{einsums\+::blas\+::gesdd$<$ std\+::complex$<$ float $>$ $>$}} (char jobz, eint m, eint n, std\+::complex$<$ float $>$ $\ast$a, eint lda, float $\ast$s, std\+::complex$<$ float $>$ $\ast$u, eint ldu, std\+::complex$<$ float $>$ $\ast$vt, eint ldvt) -\/$>$ eint
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a5de0ccc86521ce330df032ca93299d1b}{einsums\+::blas\+::gesdd$<$ std\+::complex$<$ double $>$ $>$}} (char jobz, eint m, eint n, std\+::complex$<$ double $>$ $\ast$a, eint lda, double $\ast$s, std\+::complex$<$ double $>$ $\ast$u, eint ldu, std\+::complex$<$ double $>$ $\ast$vt, eint ldvt) -\/$>$ eint
+\item 
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_a0625bca25275e9101094e0372f7b15f2}{einsums\+::blas\+::detail\+::sgesvd}} (char jobu, char jobvt, eint m, eint n, float $\ast$a, eint lda, float $\ast$s, float $\ast$u, eint ldu, float $\ast$vt, eint ldvt, float $\ast$superb) -\/$>$ eint
+\item 
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_a7b764b6e3da5389d9f0aaaeb1a0fdd12}{einsums\+::blas\+::detail\+::dgesvd}} (char jobu, char jobvt, eint m, eint n, double $\ast$a, eint lda, double $\ast$s, double $\ast$u, eint ldu, double $\ast$vt, eint ldvt, double $\ast$superb) -\/$>$ eint
+\item 
+{\footnotesize template$<$typename T $>$ }\\auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a5ed09dcb656699616e1a2b98bebcfcf7}{einsums\+::blas\+::gesvd}} (char jobu, char jobvt, eint m, eint n, T $\ast$a, eint lda, T $\ast$s, T $\ast$u, eint ldu, T $\ast$vt, eint ldvt, T $\ast$superb)
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a57a5989d8728d24992a91c54495761d8}{einsums\+::blas\+::gesvd$<$ float $>$}} (char jobu, char jobvt, eint m, eint n, float $\ast$a, eint lda, float $\ast$s, float $\ast$u, eint ldu, float $\ast$vt, eint ldvt, float $\ast$superb)
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a6faccf911d46c6510dc2439df41c2a5e}{einsums\+::blas\+::gesvd$<$ double $>$}} (char jobu, char jobvt, eint m, eint n, double $\ast$a, eint lda, double $\ast$s, double $\ast$u, eint ldu, double $\ast$vt, eint ldvt, double $\ast$superb)
+\item 
+auto \mbox{\hyperlink{__Export_8hpp_ad5ec33d87b554501185251a886ebf557}{EINSUMS\+\_\+\+EXPORT}} \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_a761270eabfa0a3e2431b1098cd510ba5}{einsums\+::blas\+::detail\+::sgees}} (char jobvs, eint n, float $\ast$a, eint lda, eint $\ast$sdim, float $\ast$wr, float $\ast$wi, float $\ast$vs, eint ldvs) -\/$>$ eint
+\item 
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_a651b0b2632d8536283aa4e24b3ace4a6}{einsums\+::blas\+::detail\+::dgees}} (char jobvs, eint n, double $\ast$a, eint lda, eint $\ast$sdim, double $\ast$wr, double $\ast$wi, double $\ast$vs, eint ldvs) -\/$>$ eint
+\item 
+{\footnotesize template$<$typename T $>$ }\\auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a15571822d03e6098b398cb486946041d}{einsums\+::blas\+::gees}} (char jobvs, eint n, T $\ast$a, eint lda, eint $\ast$sdim, T $\ast$wr, T $\ast$wi, T $\ast$vs, eint ldvs) -\/$>$ eint
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a4fb39371935688a8462cc96506b0118c}{einsums\+::blas\+::gees$<$ float $>$}} (char jobvs, eint n, float $\ast$a, eint lda, eint $\ast$sdim, float $\ast$wr, float $\ast$wi, float $\ast$vs, eint ldvs) -\/$>$ eint
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a5819e41a799cf83671f6e4b243da33c0}{einsums\+::blas\+::gees$<$ double $>$}} (char jobvs, eint n, double $\ast$a, eint lda, eint $\ast$sdim, double $\ast$wr, double $\ast$wi, double $\ast$vs, eint ldvs) -\/$>$ eint
+\item 
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_a7956aedcf80730815d04848ab3cfb4d2}{einsums\+::blas\+::detail\+::strsyl}} (char trana, char tranb, eint isgn, eint m, eint n, const float $\ast$a, eint lda, const float $\ast$b, eint ldb, float $\ast$c, eint ldc, float $\ast$\mbox{\hyperlink{ElementOperations_8hpp_a1be82ac2bb2e4f1e1b0257c14065335d}{scale}}) -\/$>$ eint
+\item 
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_a8a79cda8decc4b411fc083281cce2dfe}{einsums\+::blas\+::detail\+::dtrsyl}} (char trana, char tranb, eint isgn, eint m, eint n, const double $\ast$a, eint lda, const double $\ast$b, eint ldb, double $\ast$c, eint ldc, double $\ast$\mbox{\hyperlink{ElementOperations_8hpp_a1be82ac2bb2e4f1e1b0257c14065335d}{scale}}) -\/$>$ eint
+\item 
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_a60e154ab95a5e8b0ea5585c1241ce47f}{einsums\+::blas\+::detail\+::ctrsyl}} (char trana, char tranb, eint isgn, eint m, eint n, const std\+::complex$<$ float $>$ $\ast$a, eint lda, const std\+::complex$<$ float $>$ $\ast$b, eint ldb, std\+::complex$<$ float $>$ $\ast$c, eint ldc, float $\ast$\mbox{\hyperlink{ElementOperations_8hpp_a1be82ac2bb2e4f1e1b0257c14065335d}{scale}}) -\/$>$ eint
+\item 
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_ae5831d7c49decf12fe7683a3f492bdb4}{einsums\+::blas\+::detail\+::ztrsyl}} (char trana, char tranb, eint isgn, eint m, eint n, const std\+::complex$<$ double $>$ $\ast$a, eint lda, const std\+::complex$<$ double $>$ $\ast$b, eint ldb, std\+::complex$<$ double $>$ $\ast$c, eint ldc, double $\ast$\mbox{\hyperlink{ElementOperations_8hpp_a1be82ac2bb2e4f1e1b0257c14065335d}{scale}}) -\/$>$ eint
+\item 
+{\footnotesize template$<$typename T $>$ }\\auto \mbox{\hyperlink{namespaceeinsums_1_1blas_af0467c0a0796866ff61dda18cb3c31ca}{einsums\+::blas\+::trsyl}} (char trana, char tranb, eint isgn, eint m, eint n, const T $\ast$a, eint lda, const T $\ast$b, eint ldb, T $\ast$c, eint ldc, remove\+\_\+complex\+\_\+t$<$ T $>$ $\ast$\mbox{\hyperlink{ElementOperations_8hpp_a1be82ac2bb2e4f1e1b0257c14065335d}{scale}}) -\/$>$ eint
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_ac588a15a992ddc4a1d690f7cfcebdf3f}{einsums\+::blas\+::trsyl$<$ float $>$}} (char trana, char tranb, eint isgn, eint m, eint n, const float $\ast$a, eint lda, const float $\ast$b, eint ldb, float $\ast$c, eint ldc, float $\ast$\mbox{\hyperlink{ElementOperations_8hpp_a1be82ac2bb2e4f1e1b0257c14065335d}{scale}}) -\/$>$ eint
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a4fba13b741a3d6115a5a07e8922e8396}{einsums\+::blas\+::trsyl$<$ double $>$}} (char trana, char tranb, eint isgn, eint m, eint n, const double $\ast$a, eint lda, const double $\ast$b, eint ldb, double $\ast$c, eint ldc, double $\ast$\mbox{\hyperlink{ElementOperations_8hpp_a1be82ac2bb2e4f1e1b0257c14065335d}{scale}}) -\/$>$ eint
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a6effe41cb2bfadb49d55451d71af9e95}{einsums\+::blas\+::trsyl$<$ std\+::complex$<$ float $>$ $>$}} (char trana, char tranb, eint isgn, eint m, eint n, const std\+::complex$<$ float $>$ $\ast$a, eint lda, const std\+::complex$<$ float $>$ $\ast$b, eint ldb, std\+::complex$<$ float $>$ $\ast$c, eint ldc, float $\ast$\mbox{\hyperlink{ElementOperations_8hpp_a1be82ac2bb2e4f1e1b0257c14065335d}{scale}}) -\/$>$ eint
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a431ca012fb5b97d45e77dabd0e3b78ba}{einsums\+::blas\+::trsyl$<$ std\+::complex$<$ double $>$ $>$}} (char trana, char tranb, eint isgn, eint m, eint n, const std\+::complex$<$ double $>$ $\ast$a, eint lda, const std\+::complex$<$ double $>$ $\ast$b, eint ldb, std\+::complex$<$ double $>$ $\ast$c, eint ldc, double $\ast$\mbox{\hyperlink{ElementOperations_8hpp_a1be82ac2bb2e4f1e1b0257c14065335d}{scale}}) -\/$>$ eint
+\item 
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_a658624e9cd59b6e17488b8b9dd8eed5e}{einsums\+::blas\+::detail\+::sgeqrf}} (eint m, eint n, float $\ast$a, eint lda, float $\ast$tau) -\/$>$ eint
+\item 
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_ab8df233cbb09da970dec1855a6bfc2cb}{einsums\+::blas\+::detail\+::dgeqrf}} (eint m, eint n, double $\ast$a, eint lda, double $\ast$tau) -\/$>$ eint
+\item 
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_a2c573f9ff39a362f5a61b5d3962c484a}{einsums\+::blas\+::detail\+::cgeqrf}} (eint m, eint n, std\+::complex$<$ float $>$ $\ast$a, eint lda, std\+::complex$<$ float $>$ $\ast$tau) -\/$>$ eint
+\item 
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_a0bbb2fe940d030659f52a660f1cd003d}{einsums\+::blas\+::detail\+::zgeqrf}} (eint m, eint n, std\+::complex$<$ double $>$ $\ast$a, eint lda, std\+::complex$<$ double $>$ $\ast$tau) -\/$>$ eint
+\item 
+{\footnotesize template$<$typename T $>$ }\\auto \mbox{\hyperlink{namespaceeinsums_1_1blas_ade590cfe1bfdbe7c822aeafad6c17527}{einsums\+::blas\+::geqrf}} (eint m, eint n, T $\ast$a, eint lda, T $\ast$tau) -\/$>$ eint
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a54ec1622d726de46d6196107eae6da90}{einsums\+::blas\+::geqrf$<$ float $>$}} (eint m, eint n, float $\ast$a, eint lda, float $\ast$tau) -\/$>$ eint
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_add297e000b0dfd758017452402a8a385}{einsums\+::blas\+::geqrf$<$ double $>$}} (eint m, eint n, double $\ast$a, eint lda, double $\ast$tau) -\/$>$ eint
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a55ae79323a299a825dccbc49f3032203}{einsums\+::blas\+::geqrf$<$ std\+::complex$<$ float $>$ $>$}} (eint m, eint n, std\+::complex$<$ float $>$ $\ast$a, eint lda, std\+::complex$<$ float $>$ $\ast$tau) -\/$>$ eint
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a05ca06f586e7f889a3c2d8abc2ab6c93}{einsums\+::blas\+::geqrf$<$ std\+::complex$<$ double $>$ $>$}} (eint m, eint n, std\+::complex$<$ double $>$ $\ast$a, eint lda, std\+::complex$<$ double $>$ $\ast$tau) -\/$>$ eint
+\item 
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_a7e2189e01d6541a1a0cbadbb349fa4cb}{einsums\+::blas\+::detail\+::sorgqr}} (eint m, eint n, eint k, float $\ast$a, eint lda, const float $\ast$tau) -\/$>$ eint
+\item 
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_ab9b2f15133805073c63f9819f441b47c}{einsums\+::blas\+::detail\+::dorgqr}} (eint m, eint n, eint k, double $\ast$a, eint lda, const double $\ast$tau) -\/$>$ eint
+\item 
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_a6b8dff722fe3f6d1d448f58d16d0a006}{einsums\+::blas\+::detail\+::cungqr}} (eint m, eint n, eint k, std\+::complex$<$ float $>$ $\ast$a, eint lda, const std\+::complex$<$ float $>$ $\ast$tau) -\/$>$ eint
+\item 
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail_a3292fda3a98fbd2eac4b1d4b0e26a321}{einsums\+::blas\+::detail\+::zungqr}} (eint m, eint n, eint k, std\+::complex$<$ double $>$ $\ast$a, eint lda, const std\+::complex$<$ double $>$ $\ast$tau) -\/$>$ eint
+\item 
+{\footnotesize template$<$typename T $>$ }\\auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a2f0296b1f3857914680715b3b9678728}{einsums\+::blas\+::orgqr}} (eint m, eint n, eint k, T $\ast$a, eint lda, const T $\ast$tau) -\/$>$ eint
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a99f0577c34bd31856e68f88eccc22903}{einsums\+::blas\+::orgqr$<$ float $>$}} (eint m, eint n, eint k, float $\ast$a, eint lda, const float $\ast$tau) -\/$>$ eint
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a35327bd98f967e4365b81ba21db2fead}{einsums\+::blas\+::orgqr$<$ double $>$}} (eint m, eint n, eint k, double $\ast$a, eint lda, const double $\ast$tau) -\/$>$ eint
+\item 
+{\footnotesize template$<$typename T $>$ }\\auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a3a5fe471bab6b7a58d1f104b450e1218}{einsums\+::blas\+::ungqr}} (eint m, eint n, eint k, T $\ast$a, eint lda, const T $\ast$tau) -\/$>$ eint
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a673b50813cb9b129b2786d22d5ea01c8}{einsums\+::blas\+::ungqr$<$ std\+::complex$<$ float $>$ $>$}} (eint m, eint n, eint k, std\+::complex$<$ float $>$ $\ast$a, eint lda, const std\+::complex$<$ float $>$ $\ast$tau) -\/$>$ eint
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a747d25d2799ade9feec64266f8c22804}{einsums\+::blas\+::ungqr$<$ std\+::complex$<$ double $>$ $>$}} (eint m, eint n, eint k, std\+::complex$<$ double $>$ $\ast$a, eint lda, const std\+::complex$<$ double $>$ $\ast$tau) -\/$>$ eint
+\end{DoxyCompactItemize}

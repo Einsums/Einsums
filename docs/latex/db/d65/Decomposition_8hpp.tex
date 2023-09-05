@@ -1,0 +1,151 @@
+\hypertarget{Decomposition_8hpp}{}\doxysection{Decomposition.\+hpp File Reference}
+\label{Decomposition_8hpp}\index{Decomposition.hpp@{Decomposition.hpp}}
+{\ttfamily \#include \char`\"{}einsums/\+Linear\+Algebra.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}einsums/\+Open\+MP.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}einsums/\+Section.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}einsums/\+Sort.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}einsums/\+Tensor.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}einsums/\+Tensor\+Algebra.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}einsums/\+Utilities.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}einsums/\+\_\+\+Common.\+hpp\char`\"{}}\newline
+{\ttfamily \#include $<$cmath$>$}\newline
+{\ttfamily \#include $<$functional$>$}\newline
+Include dependency graph for Decomposition.\+hpp\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{d4/de5/Decomposition_8hpp__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=191pt]{d4/d9b/Decomposition_8hpp__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$size\+\_\+t TRank$>$ }\\auto \mbox{\hyperlink{Decomposition_8hpp_acf78334ed873724fc776c073f2ced636}{validate\+\_\+cp\+\_\+rank}} (const \mbox{\hyperlink{classDim}{Dim}}$<$ TRank $>$ shape, const std\+::string \&rounding=\char`\"{}round\char`\"{}) -\/$>$ size\+\_\+t
+\item 
+{\footnotesize template$<$template$<$ typename, size\+\_\+t $>$ typename TTensor, size\+\_\+t TRank, typename TType  = double$>$ }\\auto \mbox{\hyperlink{Decomposition_8hpp_a05ebc815273f1c000bae585893249d94}{norm}} (const TTensor$<$ TType, TRank $>$ \&tensor) -\/$>$ TType
+\item 
+{\footnotesize template$<$template$<$ typename, size\+\_\+t $>$ typename TTensor, size\+\_\+t TRank, typename TType  = double$>$ }\\auto \mbox{\hyperlink{Decomposition_8hpp_a6bad31c66e7c5353a9da8c598323d882}{rmsd}} (const TTensor$<$ TType, TRank $>$ \&tensor1, const TTensor$<$ TType, TRank $>$ \&tensor2) -\/$>$ TType
+\item 
+{\footnotesize template$<$template$<$ typename, size\+\_\+t $>$ typename TTensor, size\+\_\+t TRank, typename TType  = double$>$ }\\auto \mbox{\hyperlink{Decomposition_8hpp_a8f2df2720712fed9ba49546c38fd82dd}{weight\+\_\+tensor}} (const TTensor$<$ TType, TRank $>$ \&tensor, const TTensor$<$ TType, 1 $>$ \&weights) -\/$>$ Tensor$<$ TType, TRank $>$
+\item 
+{\footnotesize template$<$size\+\_\+t TRank, typename TType $>$ }\\auto \mbox{\hyperlink{Decomposition_8hpp_ae78a6401c700e08898127aeadca38570}{parafac\+\_\+reconstruct}} (const std\+::vector$<$ Tensor$<$ TType, 2 $>$$>$ \&factors) -\/$>$ Tensor$<$ TType, TRank $>$
+\item 
+{\footnotesize template$<$size\+\_\+t TRank, typename TType $>$ }\\auto \mbox{\hyperlink{Decomposition_8hpp_ac4faf97b72b7b7da373c3167b6b2f94b}{initialize\+\_\+cp}} (std\+::vector$<$ Tensor$<$ TType, 2 $>$$>$ \&folds, size\+\_\+t rank) -\/$>$ std\+::vector$<$ Tensor$<$ TType, 2 $>$$>$
+\item 
+{\footnotesize template$<$template$<$ typename, size\+\_\+t $>$ typename TTensor, size\+\_\+t TRank, typename TType  = double$>$ }\\auto \mbox{\hyperlink{Decomposition_8hpp_aa783b6e60cd6e791b9b98878efa9d67d}{parafac}} (const TTensor$<$ TType, TRank $>$ \&tensor, size\+\_\+t rank, int n\+\_\+iter\+\_\+max=100, double tolerance=1.e-\/8) -\/$>$ std\+::vector$<$ Tensor$<$ TType, 2 $>$$>$
+\item 
+{\footnotesize template$<$template$<$ typename, size\+\_\+t $>$ typename TTensor, size\+\_\+t TRank, typename TType  = double$>$ }\\auto \mbox{\hyperlink{Decomposition_8hpp_aa54839f5f3f8eae793ac48a67b7ac032}{weighted\+\_\+parafac}} (const TTensor$<$ TType, TRank $>$ \&tensor, const TTensor$<$ TType, 1 $>$ \&weights, size\+\_\+t rank, int n\+\_\+iter\+\_\+max=100, double tolerance=1.e-\/8) -\/$>$ std\+::vector$<$ Tensor$<$ TType, 2 $>$$>$
+\item 
+{\footnotesize template$<$template$<$ typename, size\+\_\+t $>$ typename TTensor, size\+\_\+t TRank, typename TType  = double$>$ }\\auto \mbox{\hyperlink{Decomposition_8hpp_a12ccb329d25442d4286f077ce5301b68}{tucker\+\_\+reconstruct}} (const TTensor$<$ TType, TRank $>$ \&g\+\_\+tensor, const std\+::vector$<$ TTensor$<$ TType, 2 $>$$>$ \&factors)
+\item 
+{\footnotesize template$<$size\+\_\+t TRank, typename TType  = double$>$ }\\auto \mbox{\hyperlink{Decomposition_8hpp_a26e21a7055511208b383136791c76ef5}{initialize\+\_\+tucker}} (std\+::vector$<$ Tensor$<$ TType, 2 $>$$>$ \&folds, std\+::vector$<$ size\+\_\+t $>$ \&ranks) -\/$>$ std\+::vector$<$ Tensor$<$ TType, 2 $>$$>$
+\item 
+{\footnotesize template$<$template$<$ typename, size\+\_\+t $>$ typename TTensor, size\+\_\+t TRank, typename TType  = double$>$ }\\auto \mbox{\hyperlink{Decomposition_8hpp_a6c4621cfa9dfa368ef8260524144e924}{tucker\+\_\+ho\+\_\+svd}} (const TTensor$<$ TType, TRank $>$ \&tensor, std\+::vector$<$ size\+\_\+t $>$ \&ranks, const std\+::vector$<$ Tensor$<$ TType, 2 $>$$>$ \&folds=std\+::vector$<$ Tensor$<$ TType, 2 $>$$>$()) -\/$>$ std\+::tuple$<$ Tensor$<$ TType, TRank $>$, std\+::vector$<$ Tensor$<$ TType, 2 $>$$>$$>$
+\item 
+{\footnotesize template$<$template$<$ typename, size\+\_\+t $>$ typename TTensor, size\+\_\+t TRank, typename TType  = double$>$ }\\auto \mbox{\hyperlink{Decomposition_8hpp_a3449de655bee016aba9e241112d4cae1}{tucker\+\_\+ho\+\_\+oi}} (const TTensor$<$ TType, TRank $>$ \&tensor, std\+::vector$<$ size\+\_\+t $>$ \&ranks, int n\+\_\+iter\+\_\+max=100, double tolerance=1.e-\/8) -\/$>$ std\+::tuple$<$ TTensor$<$ TType, TRank $>$, std\+::vector$<$ Tensor$<$ TType, 2 $>$$>$$>$
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{Decomposition_8hpp_ac4faf97b72b7b7da373c3167b6b2f94b}\label{Decomposition_8hpp_ac4faf97b72b7b7da373c3167b6b2f94b}} 
+\index{Decomposition.hpp@{Decomposition.hpp}!initialize\_cp@{initialize\_cp}}
+\index{initialize\_cp@{initialize\_cp}!Decomposition.hpp@{Decomposition.hpp}}
+\doxysubsubsection{\texorpdfstring{initialize\_cp()}{initialize\_cp()}}
+{\footnotesize\ttfamily template$<$size\+\_\+t TRank, typename TType $>$ \\
+auto initialize\+\_\+cp (\begin{DoxyParamCaption}\item[{std\+::vector$<$ Tensor$<$ TType, 2 $>$$>$ \&}]{folds,  }\item[{size\+\_\+t}]{rank }\end{DoxyParamCaption}) -\/$>$ std\+::vector$<$Tensor$<$TType, 2$>$$>$ }
+
+\mbox{\Hypertarget{Decomposition_8hpp_a26e21a7055511208b383136791c76ef5}\label{Decomposition_8hpp_a26e21a7055511208b383136791c76ef5}} 
+\index{Decomposition.hpp@{Decomposition.hpp}!initialize\_tucker@{initialize\_tucker}}
+\index{initialize\_tucker@{initialize\_tucker}!Decomposition.hpp@{Decomposition.hpp}}
+\doxysubsubsection{\texorpdfstring{initialize\_tucker()}{initialize\_tucker()}}
+{\footnotesize\ttfamily template$<$size\+\_\+t TRank, typename TType  = double$>$ \\
+auto initialize\+\_\+tucker (\begin{DoxyParamCaption}\item[{std\+::vector$<$ Tensor$<$ TType, 2 $>$$>$ \&}]{folds,  }\item[{std\+::vector$<$ size\+\_\+t $>$ \&}]{ranks }\end{DoxyParamCaption}) -\/$>$ std\+::vector$<$Tensor$<$TType, 2$>$$>$ }
+
+\mbox{\Hypertarget{Decomposition_8hpp_a05ebc815273f1c000bae585893249d94}\label{Decomposition_8hpp_a05ebc815273f1c000bae585893249d94}} 
+\index{Decomposition.hpp@{Decomposition.hpp}!norm@{norm}}
+\index{norm@{norm}!Decomposition.hpp@{Decomposition.hpp}}
+\doxysubsubsection{\texorpdfstring{norm()}{norm()}}
+{\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename TTensor, size\+\_\+t TRank, typename TType  = double$>$ \\
+auto norm (\begin{DoxyParamCaption}\item[{const TTensor$<$ TType, TRank $>$ \&}]{tensor }\end{DoxyParamCaption}) -\/$>$ TType }
+
+Computes the 2-\/norm of a tensor \mbox{\Hypertarget{Decomposition_8hpp_aa783b6e60cd6e791b9b98878efa9d67d}\label{Decomposition_8hpp_aa783b6e60cd6e791b9b98878efa9d67d}} 
+\index{Decomposition.hpp@{Decomposition.hpp}!parafac@{parafac}}
+\index{parafac@{parafac}!Decomposition.hpp@{Decomposition.hpp}}
+\doxysubsubsection{\texorpdfstring{parafac()}{parafac()}}
+{\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename TTensor, size\+\_\+t TRank, typename TType  = double$>$ \\
+auto parafac (\begin{DoxyParamCaption}\item[{const TTensor$<$ TType, TRank $>$ \&}]{tensor,  }\item[{size\+\_\+t}]{rank,  }\item[{int}]{n\+\_\+iter\+\_\+max = {\ttfamily 100},  }\item[{double}]{tolerance = {\ttfamily 1.e-\/8} }\end{DoxyParamCaption}) -\/$>$ std\+::vector$<$Tensor$<$TType, 2$>$$>$ }
+
+CANDECOMP/\+PARAFAC decomposition via alternating least squares (ALS). Computes a rank-\/{\ttfamily rank} decomposition of {\ttfamily tensor} such that\+:
+
+tensor = \mbox{[}$\vert$weights; factor\mbox{[}0\mbox{]}, ..., factors\mbox{[}-\/1\mbox{]} $\vert$\mbox{]}. \mbox{\Hypertarget{Decomposition_8hpp_ae78a6401c700e08898127aeadca38570}\label{Decomposition_8hpp_ae78a6401c700e08898127aeadca38570}} 
+\index{Decomposition.hpp@{Decomposition.hpp}!parafac\_reconstruct@{parafac\_reconstruct}}
+\index{parafac\_reconstruct@{parafac\_reconstruct}!Decomposition.hpp@{Decomposition.hpp}}
+\doxysubsubsection{\texorpdfstring{parafac\_reconstruct()}{parafac\_reconstruct()}}
+{\footnotesize\ttfamily template$<$size\+\_\+t TRank, typename TType $>$ \\
+auto parafac\+\_\+reconstruct (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ Tensor$<$ TType, 2 $>$$>$ \&}]{factors }\end{DoxyParamCaption}) -\/$>$ Tensor$<$TType, TRank$>$ }
+
+Reconstructs a tensor given a CANDECOMP/\+PARAFAC decomposition
+
+factors = The decomposed CANDECOMP matrices (dimension\+: \mbox{[}dim\mbox{[}i\mbox{]}, rank\mbox{]}) \mbox{\Hypertarget{Decomposition_8hpp_a6bad31c66e7c5353a9da8c598323d882}\label{Decomposition_8hpp_a6bad31c66e7c5353a9da8c598323d882}} 
+\index{Decomposition.hpp@{Decomposition.hpp}!rmsd@{rmsd}}
+\index{rmsd@{rmsd}!Decomposition.hpp@{Decomposition.hpp}}
+\doxysubsubsection{\texorpdfstring{rmsd()}{rmsd()}}
+{\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename TTensor, size\+\_\+t TRank, typename TType  = double$>$ \\
+auto rmsd (\begin{DoxyParamCaption}\item[{const TTensor$<$ TType, TRank $>$ \&}]{tensor1,  }\item[{const TTensor$<$ TType, TRank $>$ \&}]{tensor2 }\end{DoxyParamCaption}) -\/$>$ TType }
+
+Computes the RMSD between two tensors of arbitrary dimension \mbox{\Hypertarget{Decomposition_8hpp_a3449de655bee016aba9e241112d4cae1}\label{Decomposition_8hpp_a3449de655bee016aba9e241112d4cae1}} 
+\index{Decomposition.hpp@{Decomposition.hpp}!tucker\_ho\_oi@{tucker\_ho\_oi}}
+\index{tucker\_ho\_oi@{tucker\_ho\_oi}!Decomposition.hpp@{Decomposition.hpp}}
+\doxysubsubsection{\texorpdfstring{tucker\_ho\_oi()}{tucker\_ho\_oi()}}
+{\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename TTensor, size\+\_\+t TRank, typename TType  = double$>$ \\
+auto tucker\+\_\+ho\+\_\+oi (\begin{DoxyParamCaption}\item[{const TTensor$<$ TType, TRank $>$ \&}]{tensor,  }\item[{std\+::vector$<$ size\+\_\+t $>$ \&}]{ranks,  }\item[{int}]{n\+\_\+iter\+\_\+max = {\ttfamily 100},  }\item[{double}]{tolerance = {\ttfamily 1.e-\/8} }\end{DoxyParamCaption}) -\/$>$ std\+::tuple$<$TTensor$<$TType, TRank$>$, std\+::vector$<$Tensor$<$TType, 2$>$$>$$>$ }
+
+Tucker decomposition via Higher-\/\+Order Orthogonal Inversion (HO-\/\+OI). Computes a rank-\/{\ttfamily rank} decomposition of {\ttfamily tensor} such that\+:
+
+tensor = \mbox{[}$\vert$weights\mbox{[}r0\mbox{]}\mbox{[}r1\mbox{]}...; factor\mbox{[}0\mbox{]}\mbox{[}r1\mbox{]}, ..., factors\mbox{[}-\/1\mbox{]}\mbox{[}rn\mbox{]} $\vert$\mbox{]}. \mbox{\Hypertarget{Decomposition_8hpp_a6c4621cfa9dfa368ef8260524144e924}\label{Decomposition_8hpp_a6c4621cfa9dfa368ef8260524144e924}} 
+\index{Decomposition.hpp@{Decomposition.hpp}!tucker\_ho\_svd@{tucker\_ho\_svd}}
+\index{tucker\_ho\_svd@{tucker\_ho\_svd}!Decomposition.hpp@{Decomposition.hpp}}
+\doxysubsubsection{\texorpdfstring{tucker\_ho\_svd()}{tucker\_ho\_svd()}}
+{\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename TTensor, size\+\_\+t TRank, typename TType  = double$>$ \\
+auto tucker\+\_\+ho\+\_\+svd (\begin{DoxyParamCaption}\item[{const TTensor$<$ TType, TRank $>$ \&}]{tensor,  }\item[{std\+::vector$<$ size\+\_\+t $>$ \&}]{ranks,  }\item[{const std\+::vector$<$ Tensor$<$ TType, 2 $>$$>$ \&}]{folds = {\ttfamily std\+:\+:vector$<$Tensor$<$TType,~2$>$$>$()} }\end{DoxyParamCaption}) -\/$>$ std\+::tuple$<$Tensor$<$TType, TRank$>$, std\+::vector$<$Tensor$<$TType, 2$>$$>$$>$ }
+
+Tucker decomposition of a tensor via Higher-\/\+Order SVD (HO-\/\+SVD). Computes a rank-\/{\ttfamily rank} decomposition of {\ttfamily tensor} such that\+:
+
+tensor = \mbox{[}$\vert$weights\mbox{[}r0\mbox{]}\mbox{[}r1\mbox{]}...; factor\mbox{[}0\mbox{]}\mbox{[}r0\mbox{]}, ..., factors\mbox{[}-\/1\mbox{]}\mbox{[}rn\mbox{]} $\vert$\mbox{]} \mbox{\Hypertarget{Decomposition_8hpp_a12ccb329d25442d4286f077ce5301b68}\label{Decomposition_8hpp_a12ccb329d25442d4286f077ce5301b68}} 
+\index{Decomposition.hpp@{Decomposition.hpp}!tucker\_reconstruct@{tucker\_reconstruct}}
+\index{tucker\_reconstruct@{tucker\_reconstruct}!Decomposition.hpp@{Decomposition.hpp}}
+\doxysubsubsection{\texorpdfstring{tucker\_reconstruct()}{tucker\_reconstruct()}}
+{\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename TTensor, size\+\_\+t TRank, typename TType  = double$>$ \\
+auto tucker\+\_\+reconstruct (\begin{DoxyParamCaption}\item[{const TTensor$<$ TType, TRank $>$ \&}]{g\+\_\+tensor,  }\item[{const std\+::vector$<$ TTensor$<$ TType, 2 $>$$>$ \&}]{factors }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{Decomposition_8hpp_acf78334ed873724fc776c073f2ced636}\label{Decomposition_8hpp_acf78334ed873724fc776c073f2ced636}} 
+\index{Decomposition.hpp@{Decomposition.hpp}!validate\_cp\_rank@{validate\_cp\_rank}}
+\index{validate\_cp\_rank@{validate\_cp\_rank}!Decomposition.hpp@{Decomposition.hpp}}
+\doxysubsubsection{\texorpdfstring{validate\_cp\_rank()}{validate\_cp\_rank()}}
+{\footnotesize\ttfamily template$<$size\+\_\+t TRank$>$ \\
+auto validate\+\_\+cp\+\_\+rank (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classDim}{Dim}}$<$ TRank $>$}]{shape,  }\item[{const std\+::string \&}]{rounding = {\ttfamily \char`\"{}round\char`\"{}} }\end{DoxyParamCaption}) -\/$>$ size\+\_\+t }
+
+\mbox{\Hypertarget{Decomposition_8hpp_a8f2df2720712fed9ba49546c38fd82dd}\label{Decomposition_8hpp_a8f2df2720712fed9ba49546c38fd82dd}} 
+\index{Decomposition.hpp@{Decomposition.hpp}!weight\_tensor@{weight\_tensor}}
+\index{weight\_tensor@{weight\_tensor}!Decomposition.hpp@{Decomposition.hpp}}
+\doxysubsubsection{\texorpdfstring{weight\_tensor()}{weight\_tensor()}}
+{\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename TTensor, size\+\_\+t TRank, typename TType  = double$>$ \\
+auto weight\+\_\+tensor (\begin{DoxyParamCaption}\item[{const TTensor$<$ TType, TRank $>$ \&}]{tensor,  }\item[{const TTensor$<$ TType, 1 $>$ \&}]{weights }\end{DoxyParamCaption}) -\/$>$ Tensor$<$TType, TRank$>$ }
+
+\char`\"{}\+Weight\char`\"{} a tensor for weighted CANDECOMP/\+PARAFAC decompositions (returns a copy) by input weights \mbox{\Hypertarget{Decomposition_8hpp_aa54839f5f3f8eae793ac48a67b7ac032}\label{Decomposition_8hpp_aa54839f5f3f8eae793ac48a67b7ac032}} 
+\index{Decomposition.hpp@{Decomposition.hpp}!weighted\_parafac@{weighted\_parafac}}
+\index{weighted\_parafac@{weighted\_parafac}!Decomposition.hpp@{Decomposition.hpp}}
+\doxysubsubsection{\texorpdfstring{weighted\_parafac()}{weighted\_parafac()}}
+{\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename TTensor, size\+\_\+t TRank, typename TType  = double$>$ \\
+auto weighted\+\_\+parafac (\begin{DoxyParamCaption}\item[{const TTensor$<$ TType, TRank $>$ \&}]{tensor,  }\item[{const TTensor$<$ TType, 1 $>$ \&}]{weights,  }\item[{size\+\_\+t}]{rank,  }\item[{int}]{n\+\_\+iter\+\_\+max = {\ttfamily 100},  }\item[{double}]{tolerance = {\ttfamily 1.e-\/8} }\end{DoxyParamCaption}) -\/$>$ std\+::vector$<$Tensor$<$TType, 2$>$$>$ }
+
+Weighted CANDECOMP/\+PARAFAC decomposition via alternating least squares (ALS). Computes a rank-\/{\ttfamily rank} decomposition of {\ttfamily tensor} such that\+:
+
+tensor = \mbox{[}$\vert$ factor\mbox{[}0\mbox{]}, ..., factors\mbox{[}-\/1\mbox{]} $\vert$\mbox{]}. weights = The weights to multiply the tensor by 

@@ -1,0 +1,59 @@
+\hypertarget{Utilities_8hpp}{}\doxysection{Utilities.\+hpp File Reference}
+\label{Utilities_8hpp}\index{Utilities.hpp@{Utilities.hpp}}
+{\ttfamily \#include \char`\"{}einsums/\+Open\+MP.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}einsums/\+Section.\+hpp\char`\"{}}\newline
+Include dependency graph for Utilities.\+hpp\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{d2/df1/Utilities_8hpp__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{de/dac/Utilities_8hpp__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1DisableOMPNestedScope}{einsums\+::\+Disable\+OMPNested\+Scope}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1DisableOMPThreads}{einsums\+::\+Disable\+OMPThreads}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+ \mbox{\hyperlink{namespaceeinsums}{einsums}}
+\item 
+ \mbox{\hyperlink{namespaceeinsums_1_1detail}{einsums\+::detail}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$typename T  = double, typename... Multi\+Index$>$ }\\auto \mbox{\hyperlink{namespaceeinsums_a7db0ea7c6012d620d3a12f125ce526d6}{einsums\+::create\+\_\+incremented\+\_\+tensor}} (const std\+::string \&\mbox{\hyperlink{Timer_8cpp_a9b45b3e13bd9167aab02e17e08916231}{name}}, Multi\+Index... index) -\/$>$ Tensor$<$ T, sizeof...(Multi\+Index)$>$
+\item 
+{\footnotesize template$<$typename T  = double, bool Normalize = false, typename... Multi\+Index$>$ }\\auto \mbox{\hyperlink{namespaceeinsums_a12fd2b0340d9b97bce4df08ec6646385}{einsums\+::create\+\_\+random\+\_\+tensor}} (const std\+::string \&\mbox{\hyperlink{Timer_8cpp_a9b45b3e13bd9167aab02e17e08916231}{name}}, Multi\+Index... index) -\/$>$ Tensor$<$ T, sizeof...(Multi\+Index)$>$
+\item 
+{\footnotesize template$<$template$<$ typename, size\+\_\+t $>$ typename Tensor\+Type, typename Data\+Type , size\+\_\+t Rank, typename Tuple , std\+::size\+\_\+t... I$>$ }\\void \mbox{\hyperlink{namespaceeinsums_1_1detail_ac2262e9c8086c8d665dbeaaf1a48de0e}{einsums\+::detail\+::set\+\_\+to}} (Tensor\+Type$<$ Data\+Type, Rank $>$ \&tensor, Data\+Type value, Tuple const \&tuple, std\+::index\+\_\+sequence$<$ I... $>$)
+\item 
+{\footnotesize template$<$typename T $>$ }\\auto \mbox{\hyperlink{namespaceeinsums_a52d722ab4180dcce7d68c9bad2955c21}{einsums\+::diagonal}} (const Tensor$<$ T, 1 $>$ \&v) -\/$>$ Tensor$<$ T, 2 $>$
+\item 
+{\footnotesize template$<$typename T $>$ }\\auto \mbox{\hyperlink{namespaceeinsums_aa53cbaebf7260b5384609df184066188}{einsums\+::diagonal\+\_\+like}} (const Tensor$<$ T, 1 $>$ \&v, const Tensor$<$ T, 2 $>$ \&like) -\/$>$ Tensor$<$ T, 2 $>$
+\item 
+{\footnotesize template$<$typename T  = double, typename... Multi\+Index$>$ }\\auto \mbox{\hyperlink{namespaceeinsums_afe42538de80e0b3b729b8a71218d2c26}{einsums\+::create\+\_\+identity\+\_\+tensor}} (const std\+::string \&\mbox{\hyperlink{Timer_8cpp_a9b45b3e13bd9167aab02e17e08916231}{name}}, Multi\+Index... index) -\/$>$ Tensor$<$ T, sizeof...(Multi\+Index)$>$
+\item 
+{\footnotesize template$<$typename T  = double, typename... Multi\+Index$>$ }\\auto \mbox{\hyperlink{namespaceeinsums_aac63a20aeed69833a429f7bc70345cc1}{einsums\+::create\+\_\+ones\+\_\+tensor}} (const std\+::string \&\mbox{\hyperlink{Timer_8cpp_a9b45b3e13bd9167aab02e17e08916231}{name}}, Multi\+Index... index) -\/$>$ Tensor$<$ T, sizeof...(Multi\+Index)$>$
+\item 
+{\footnotesize template$<$template$<$ typename, size\+\_\+t $>$ typename Tensor\+Type, typename Data\+Type , size\+\_\+t Rank$>$ }\\auto \mbox{\hyperlink{namespaceeinsums_ab286161aa9626912f0d504d5da2b86db}{einsums\+::create\+\_\+tensor\+\_\+like}} (const Tensor\+Type$<$ Data\+Type, Rank $>$ \&tensor) -\/$>$ Tensor$<$ Data\+Type, Rank $>$
+\item 
+{\footnotesize template$<$template$<$ typename, size\+\_\+t $>$ typename Tensor\+Type, typename Data\+Type , size\+\_\+t Rank$>$ }\\auto \mbox{\hyperlink{namespaceeinsums_af9d509b6e326b5fbb88d89b9bd558a63}{einsums\+::create\+\_\+tensor\+\_\+like}} (const std\+::string \mbox{\hyperlink{Timer_8cpp_a9b45b3e13bd9167aab02e17e08916231}{name}}, const Tensor\+Type$<$ Data\+Type, Rank $>$ \&tensor) -\/$>$ Tensor$<$ Data\+Type, Rank $>$
+\item 
+{\footnotesize template$<$typename T $>$ }\\auto \mbox{\hyperlink{namespaceeinsums_ab4ee342b546717f2ecd37d78e9117053}{einsums\+::arange}} (T start, T stop, T step=T\{1\}) -\/$>$ Tensor$<$ T, 1 $>$
+\item 
+{\footnotesize template$<$typename T $>$ }\\auto \mbox{\hyperlink{namespaceeinsums_a2d4b148fff3374c3003cc17b4732212c}{einsums\+::arange}} (T stop) -\/$>$ Tensor$<$ T, 1 $>$
+\item 
+{\footnotesize template$<$typename T $>$ }\\auto \mbox{\hyperlink{namespaceeinsums_a592520f1db4e9deadee47744a4e6caac}{einsums\+::divmod}} (T n, T d) -\/$>$ std\+::tuple$<$ T, T $>$
+\end{DoxyCompactItemize}

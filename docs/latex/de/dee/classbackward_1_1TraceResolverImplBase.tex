@@ -1,0 +1,96 @@
+\hypertarget{classbackward_1_1TraceResolverImplBase}{}\doxysection{backward\+::Trace\+Resolver\+Impl\+Base Class Reference}
+\label{classbackward_1_1TraceResolverImplBase}\index{backward::TraceResolverImplBase@{backward::TraceResolverImplBase}}
+
+
+{\ttfamily \#include $<$Backtrace.\+hpp$>$}
+
+
+
+Inheritance diagram for backward\+::Trace\+Resolver\+Impl\+Base\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=264pt]{dd/dcf/classbackward_1_1TraceResolverImplBase__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for backward\+::Trace\+Resolver\+Impl\+Base\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=284pt]{d1/d53/classbackward_1_1TraceResolverImplBase__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+virtual \mbox{\hyperlink{classbackward_1_1TraceResolverImplBase_af1587310ed5452ee770616a97ed9835d}{$\sim$\+Trace\+Resolver\+Impl\+Base}} ()
+\item 
+virtual void \mbox{\hyperlink{classbackward_1_1TraceResolverImplBase_a679f58edfadce698e6c4645c9c4e56fc}{load\+\_\+addresses}} (void $\ast$const $\ast$addresses, int address\+\_\+count)
+\item 
+{\footnotesize template$<$class ST $>$ }\\void \mbox{\hyperlink{classbackward_1_1TraceResolverImplBase_ade920e932addec8a22a7fa380c285256}{load\+\_\+stacktrace}} (ST \&st)
+\item 
+virtual \mbox{\hyperlink{structbackward_1_1ResolvedTrace}{Resolved\+Trace}} \mbox{\hyperlink{classbackward_1_1TraceResolverImplBase_acc250b0629f45128de0da54d79e04e1f}{resolve}} (\mbox{\hyperlink{structbackward_1_1ResolvedTrace}{Resolved\+Trace}} t)
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+std\+::string \mbox{\hyperlink{classbackward_1_1TraceResolverImplBase_a406d77349b64e212c6ad74439b2ec9bf}{demangle}} (const char $\ast$funcname)
+\end{DoxyCompactItemize}
+\doxysubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structbackward_1_1details_1_1demangler}{details\+::demangler}} \mbox{\hyperlink{classbackward_1_1TraceResolverImplBase_acd2336631d0ce112a3d60c6a7a8cbbc0}{\+\_\+demangler}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classbackward_1_1TraceResolverImplBase_af1587310ed5452ee770616a97ed9835d}\label{classbackward_1_1TraceResolverImplBase_af1587310ed5452ee770616a97ed9835d}} 
+\index{backward::TraceResolverImplBase@{backward::TraceResolverImplBase}!````~TraceResolverImplBase@{$\sim$TraceResolverImplBase}}
+\index{````~TraceResolverImplBase@{$\sim$TraceResolverImplBase}!backward::TraceResolverImplBase@{backward::TraceResolverImplBase}}
+\doxysubsubsection{\texorpdfstring{$\sim$TraceResolverImplBase()}{~TraceResolverImplBase()}}
+{\footnotesize\ttfamily virtual backward\+::\+Trace\+Resolver\+Impl\+Base\+::$\sim$\+Trace\+Resolver\+Impl\+Base (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classbackward_1_1TraceResolverImplBase_a406d77349b64e212c6ad74439b2ec9bf}\label{classbackward_1_1TraceResolverImplBase_a406d77349b64e212c6ad74439b2ec9bf}} 
+\index{backward::TraceResolverImplBase@{backward::TraceResolverImplBase}!demangle@{demangle}}
+\index{demangle@{demangle}!backward::TraceResolverImplBase@{backward::TraceResolverImplBase}}
+\doxysubsubsection{\texorpdfstring{demangle()}{demangle()}}
+{\footnotesize\ttfamily std\+::string backward\+::\+Trace\+Resolver\+Impl\+Base\+::demangle (\begin{DoxyParamCaption}\item[{const char $\ast$}]{funcname }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+\mbox{\Hypertarget{classbackward_1_1TraceResolverImplBase_a679f58edfadce698e6c4645c9c4e56fc}\label{classbackward_1_1TraceResolverImplBase_a679f58edfadce698e6c4645c9c4e56fc}} 
+\index{backward::TraceResolverImplBase@{backward::TraceResolverImplBase}!load\_addresses@{load\_addresses}}
+\index{load\_addresses@{load\_addresses}!backward::TraceResolverImplBase@{backward::TraceResolverImplBase}}
+\doxysubsubsection{\texorpdfstring{load\_addresses()}{load\_addresses()}}
+{\footnotesize\ttfamily virtual void backward\+::\+Trace\+Resolver\+Impl\+Base\+::load\+\_\+addresses (\begin{DoxyParamCaption}\item[{void $\ast$const $\ast$}]{addresses,  }\item[{int}]{address\+\_\+count }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
+
+\mbox{\Hypertarget{classbackward_1_1TraceResolverImplBase_ade920e932addec8a22a7fa380c285256}\label{classbackward_1_1TraceResolverImplBase_ade920e932addec8a22a7fa380c285256}} 
+\index{backward::TraceResolverImplBase@{backward::TraceResolverImplBase}!load\_stacktrace@{load\_stacktrace}}
+\index{load\_stacktrace@{load\_stacktrace}!backward::TraceResolverImplBase@{backward::TraceResolverImplBase}}
+\doxysubsubsection{\texorpdfstring{load\_stacktrace()}{load\_stacktrace()}}
+{\footnotesize\ttfamily template$<$class ST $>$ \\
+void backward\+::\+Trace\+Resolver\+Impl\+Base\+::load\+\_\+stacktrace (\begin{DoxyParamCaption}\item[{ST \&}]{st }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classbackward_1_1TraceResolverImplBase_acc250b0629f45128de0da54d79e04e1f}\label{classbackward_1_1TraceResolverImplBase_acc250b0629f45128de0da54d79e04e1f}} 
+\index{backward::TraceResolverImplBase@{backward::TraceResolverImplBase}!resolve@{resolve}}
+\index{resolve@{resolve}!backward::TraceResolverImplBase@{backward::TraceResolverImplBase}}
+\doxysubsubsection{\texorpdfstring{resolve()}{resolve()}}
+{\footnotesize\ttfamily virtual \mbox{\hyperlink{structbackward_1_1ResolvedTrace}{Resolved\+Trace}} backward\+::\+Trace\+Resolver\+Impl\+Base\+::resolve (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structbackward_1_1ResolvedTrace}{Resolved\+Trace}}}]{t }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
+
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{classbackward_1_1TraceResolverImplBase_acd2336631d0ce112a3d60c6a7a8cbbc0}\label{classbackward_1_1TraceResolverImplBase_acd2336631d0ce112a3d60c6a7a8cbbc0}} 
+\index{backward::TraceResolverImplBase@{backward::TraceResolverImplBase}!\_demangler@{\_demangler}}
+\index{\_demangler@{\_demangler}!backward::TraceResolverImplBase@{backward::TraceResolverImplBase}}
+\doxysubsubsection{\texorpdfstring{\_demangler}{\_demangler}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structbackward_1_1details_1_1demangler}{details\+::demangler}} backward\+::\+Trace\+Resolver\+Impl\+Base\+::\+\_\+demangler\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{Backtrace_8hpp}{Backtrace.\+hpp}}\end{DoxyCompactItemize}

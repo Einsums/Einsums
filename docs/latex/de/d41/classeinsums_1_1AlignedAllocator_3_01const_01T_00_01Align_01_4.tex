@@ -1,0 +1,177 @@
+\hypertarget{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4}{}\doxysection{einsums\+::Aligned\+Allocator$<$ const T, Align $>$ Class Template Reference}
+\label{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4}\index{einsums::AlignedAllocator$<$ const T, Align $>$@{einsums::AlignedAllocator$<$ const T, Align $>$}}
+
+
+{\ttfamily \#include $<$STL.\+hpp$>$}
+
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_1_1rebind}{rebind}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+using \mbox{\hyperlink{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_a16b3b3df213ac11f9c48ac299133633b}{value\+\_\+type}} = T
+\item 
+using \mbox{\hyperlink{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_aa6b0110b7e752cde4bf8fa22b75be723}{pointer}} = const T $\ast$
+\item 
+using \mbox{\hyperlink{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_a7f91b040a66a72ff2101d0c285219767}{const\+\_\+pointer}} = const T $\ast$
+\item 
+using \mbox{\hyperlink{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_aee388cf49fce4c1ff365a7ecd84164de}{reference}} = const T \&
+\item 
+using \mbox{\hyperlink{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_ace334d65aa1929c8d5bb8fe4fac800f8}{const\+\_\+reference}} = const T \&
+\item 
+using \mbox{\hyperlink{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_a3da0e47a2dc67839ff130dddf3a5e311}{size\+\_\+type}} = size\+\_\+t
+\item 
+using \mbox{\hyperlink{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_a464134a8beb063b3bc4fdad4d62c69b8}{difference\+\_\+type}} = ptrdiff\+\_\+t
+\item 
+using \mbox{\hyperlink{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_a194ed9081e93535999b8e85da8c90f70}{propagate\+\_\+on\+\_\+container\+\_\+move\+\_\+assignment}} = std\+::true\+\_\+type
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_a4bc00b1d2fe4acf00f91551414beecca}{Aligned\+Allocator}} () noexcept=default
+\item 
+{\footnotesize template$<$class U $>$ }\\\mbox{\hyperlink{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_a7d17b39c72fd44384ef49ea5a82a869a}{Aligned\+Allocator}} (const \mbox{\hyperlink{classeinsums_1_1AlignedAllocator}{Aligned\+Allocator}}$<$ U, Align $>$ \&) noexcept
+\item 
+auto \mbox{\hyperlink{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_ae918bfb550d520ceb43e78ef724e0c66}{max\+\_\+size}} () const noexcept -\/$>$ \mbox{\hyperlink{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_a3da0e47a2dc67839ff130dddf3a5e311}{size\+\_\+type}}
+\item 
+auto \mbox{\hyperlink{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_abea709289df9c33c2b9a428ea4ed7c4a}{address}} (\mbox{\hyperlink{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_ace334d65aa1929c8d5bb8fe4fac800f8}{const\+\_\+reference}} x) const noexcept -\/$>$ \mbox{\hyperlink{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_a7f91b040a66a72ff2101d0c285219767}{const\+\_\+pointer}}
+\item 
+auto \mbox{\hyperlink{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_a505e9cefd8ca03873ba288a1a0b46676}{allocate}} (\mbox{\hyperlink{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_a3da0e47a2dc67839ff130dddf3a5e311}{size\+\_\+type}} n, typename \mbox{\hyperlink{classeinsums_1_1AlignedAllocator}{Aligned\+Allocator}}$<$ void, Align $>$\+::\mbox{\hyperlink{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_a7f91b040a66a72ff2101d0c285219767}{const\+\_\+pointer}}=0) -\/$>$ \mbox{\hyperlink{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_aa6b0110b7e752cde4bf8fa22b75be723}{pointer}}
+\item 
+void \mbox{\hyperlink{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_aada39d67d97dd2daf0e8fc1c4818181b}{deallocate}} (\mbox{\hyperlink{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_aa6b0110b7e752cde4bf8fa22b75be723}{pointer}} p, \mbox{\hyperlink{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_a3da0e47a2dc67839ff130dddf3a5e311}{size\+\_\+type}}) noexcept
+\item 
+{\footnotesize template$<$class U , class... Args$>$ }\\void \mbox{\hyperlink{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_a85708d032732f2c3451e722f4b9ac854}{construct}} (U $\ast$p, Args \&\&...args)
+\item 
+void \mbox{\hyperlink{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_a5a241c26d8c6506f5dd4040f544b907a}{destroy}} (\mbox{\hyperlink{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_aa6b0110b7e752cde4bf8fa22b75be723}{pointer}} p)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Typedef Documentation}
+\mbox{\Hypertarget{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_a7f91b040a66a72ff2101d0c285219767}\label{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_a7f91b040a66a72ff2101d0c285219767}} 
+\index{einsums::AlignedAllocator$<$ const T, Align $>$@{einsums::AlignedAllocator$<$ const T, Align $>$}!const\_pointer@{const\_pointer}}
+\index{const\_pointer@{const\_pointer}!einsums::AlignedAllocator$<$ const T, Align $>$@{einsums::AlignedAllocator$<$ const T, Align $>$}}
+\doxysubsubsection{\texorpdfstring{const\_pointer}{const\_pointer}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Align$>$ \\
+using \mbox{\hyperlink{classeinsums_1_1AlignedAllocator}{einsums\+::\+Aligned\+Allocator}}$<$ const T, Align $>$\+::\mbox{\hyperlink{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_a7f91b040a66a72ff2101d0c285219767}{const\+\_\+pointer}} =  const T $\ast$}
+
+\mbox{\Hypertarget{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_ace334d65aa1929c8d5bb8fe4fac800f8}\label{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_ace334d65aa1929c8d5bb8fe4fac800f8}} 
+\index{einsums::AlignedAllocator$<$ const T, Align $>$@{einsums::AlignedAllocator$<$ const T, Align $>$}!const\_reference@{const\_reference}}
+\index{const\_reference@{const\_reference}!einsums::AlignedAllocator$<$ const T, Align $>$@{einsums::AlignedAllocator$<$ const T, Align $>$}}
+\doxysubsubsection{\texorpdfstring{const\_reference}{const\_reference}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Align$>$ \\
+using \mbox{\hyperlink{classeinsums_1_1AlignedAllocator}{einsums\+::\+Aligned\+Allocator}}$<$ const T, Align $>$\+::\mbox{\hyperlink{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_ace334d65aa1929c8d5bb8fe4fac800f8}{const\+\_\+reference}} =  const T \&}
+
+\mbox{\Hypertarget{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_a464134a8beb063b3bc4fdad4d62c69b8}\label{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_a464134a8beb063b3bc4fdad4d62c69b8}} 
+\index{einsums::AlignedAllocator$<$ const T, Align $>$@{einsums::AlignedAllocator$<$ const T, Align $>$}!difference\_type@{difference\_type}}
+\index{difference\_type@{difference\_type}!einsums::AlignedAllocator$<$ const T, Align $>$@{einsums::AlignedAllocator$<$ const T, Align $>$}}
+\doxysubsubsection{\texorpdfstring{difference\_type}{difference\_type}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Align$>$ \\
+using \mbox{\hyperlink{classeinsums_1_1AlignedAllocator}{einsums\+::\+Aligned\+Allocator}}$<$ const T, Align $>$\+::\mbox{\hyperlink{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_a464134a8beb063b3bc4fdad4d62c69b8}{difference\+\_\+type}} =  ptrdiff\+\_\+t}
+
+\mbox{\Hypertarget{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_aa6b0110b7e752cde4bf8fa22b75be723}\label{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_aa6b0110b7e752cde4bf8fa22b75be723}} 
+\index{einsums::AlignedAllocator$<$ const T, Align $>$@{einsums::AlignedAllocator$<$ const T, Align $>$}!pointer@{pointer}}
+\index{pointer@{pointer}!einsums::AlignedAllocator$<$ const T, Align $>$@{einsums::AlignedAllocator$<$ const T, Align $>$}}
+\doxysubsubsection{\texorpdfstring{pointer}{pointer}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Align$>$ \\
+using \mbox{\hyperlink{classeinsums_1_1AlignedAllocator}{einsums\+::\+Aligned\+Allocator}}$<$ const T, Align $>$\+::\mbox{\hyperlink{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_aa6b0110b7e752cde4bf8fa22b75be723}{pointer}} =  const T $\ast$}
+
+\mbox{\Hypertarget{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_a194ed9081e93535999b8e85da8c90f70}\label{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_a194ed9081e93535999b8e85da8c90f70}} 
+\index{einsums::AlignedAllocator$<$ const T, Align $>$@{einsums::AlignedAllocator$<$ const T, Align $>$}!propagate\_on\_container\_move\_assignment@{propagate\_on\_container\_move\_assignment}}
+\index{propagate\_on\_container\_move\_assignment@{propagate\_on\_container\_move\_assignment}!einsums::AlignedAllocator$<$ const T, Align $>$@{einsums::AlignedAllocator$<$ const T, Align $>$}}
+\doxysubsubsection{\texorpdfstring{propagate\_on\_container\_move\_assignment}{propagate\_on\_container\_move\_assignment}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Align$>$ \\
+using \mbox{\hyperlink{classeinsums_1_1AlignedAllocator}{einsums\+::\+Aligned\+Allocator}}$<$ const T, Align $>$\+::\mbox{\hyperlink{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_a194ed9081e93535999b8e85da8c90f70}{propagate\+\_\+on\+\_\+container\+\_\+move\+\_\+assignment}} =  std\+::true\+\_\+type}
+
+\mbox{\Hypertarget{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_aee388cf49fce4c1ff365a7ecd84164de}\label{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_aee388cf49fce4c1ff365a7ecd84164de}} 
+\index{einsums::AlignedAllocator$<$ const T, Align $>$@{einsums::AlignedAllocator$<$ const T, Align $>$}!reference@{reference}}
+\index{reference@{reference}!einsums::AlignedAllocator$<$ const T, Align $>$@{einsums::AlignedAllocator$<$ const T, Align $>$}}
+\doxysubsubsection{\texorpdfstring{reference}{reference}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Align$>$ \\
+using \mbox{\hyperlink{classeinsums_1_1AlignedAllocator}{einsums\+::\+Aligned\+Allocator}}$<$ const T, Align $>$\+::\mbox{\hyperlink{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_aee388cf49fce4c1ff365a7ecd84164de}{reference}} =  const T \&}
+
+\mbox{\Hypertarget{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_a3da0e47a2dc67839ff130dddf3a5e311}\label{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_a3da0e47a2dc67839ff130dddf3a5e311}} 
+\index{einsums::AlignedAllocator$<$ const T, Align $>$@{einsums::AlignedAllocator$<$ const T, Align $>$}!size\_type@{size\_type}}
+\index{size\_type@{size\_type}!einsums::AlignedAllocator$<$ const T, Align $>$@{einsums::AlignedAllocator$<$ const T, Align $>$}}
+\doxysubsubsection{\texorpdfstring{size\_type}{size\_type}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Align$>$ \\
+using \mbox{\hyperlink{classeinsums_1_1AlignedAllocator}{einsums\+::\+Aligned\+Allocator}}$<$ const T, Align $>$\+::\mbox{\hyperlink{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_a3da0e47a2dc67839ff130dddf3a5e311}{size\+\_\+type}} =  size\+\_\+t}
+
+\mbox{\Hypertarget{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_a16b3b3df213ac11f9c48ac299133633b}\label{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_a16b3b3df213ac11f9c48ac299133633b}} 
+\index{einsums::AlignedAllocator$<$ const T, Align $>$@{einsums::AlignedAllocator$<$ const T, Align $>$}!value\_type@{value\_type}}
+\index{value\_type@{value\_type}!einsums::AlignedAllocator$<$ const T, Align $>$@{einsums::AlignedAllocator$<$ const T, Align $>$}}
+\doxysubsubsection{\texorpdfstring{value\_type}{value\_type}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Align$>$ \\
+using \mbox{\hyperlink{classeinsums_1_1AlignedAllocator}{einsums\+::\+Aligned\+Allocator}}$<$ const T, Align $>$\+::\mbox{\hyperlink{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_a16b3b3df213ac11f9c48ac299133633b}{value\+\_\+type}} =  T}
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_a4bc00b1d2fe4acf00f91551414beecca}\label{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_a4bc00b1d2fe4acf00f91551414beecca}} 
+\index{einsums::AlignedAllocator$<$ const T, Align $>$@{einsums::AlignedAllocator$<$ const T, Align $>$}!AlignedAllocator@{AlignedAllocator}}
+\index{AlignedAllocator@{AlignedAllocator}!einsums::AlignedAllocator$<$ const T, Align $>$@{einsums::AlignedAllocator$<$ const T, Align $>$}}
+\doxysubsubsection{\texorpdfstring{AlignedAllocator()}{AlignedAllocator()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Align$>$ \\
+\mbox{\hyperlink{classeinsums_1_1AlignedAllocator}{einsums\+::\+Aligned\+Allocator}}$<$ const T, Align $>$\+::\mbox{\hyperlink{classeinsums_1_1AlignedAllocator}{Aligned\+Allocator}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}, {\ttfamily [noexcept]}}
+
+\mbox{\Hypertarget{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_a7d17b39c72fd44384ef49ea5a82a869a}\label{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_a7d17b39c72fd44384ef49ea5a82a869a}} 
+\index{einsums::AlignedAllocator$<$ const T, Align $>$@{einsums::AlignedAllocator$<$ const T, Align $>$}!AlignedAllocator@{AlignedAllocator}}
+\index{AlignedAllocator@{AlignedAllocator}!einsums::AlignedAllocator$<$ const T, Align $>$@{einsums::AlignedAllocator$<$ const T, Align $>$}}
+\doxysubsubsection{\texorpdfstring{AlignedAllocator()}{AlignedAllocator()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Align$>$ \\
+template$<$class U $>$ \\
+\mbox{\hyperlink{classeinsums_1_1AlignedAllocator}{einsums\+::\+Aligned\+Allocator}}$<$ const T, Align $>$\+::\mbox{\hyperlink{classeinsums_1_1AlignedAllocator}{Aligned\+Allocator}} (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classeinsums_1_1AlignedAllocator}{Aligned\+Allocator}}$<$ U, Align $>$ \&}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_abea709289df9c33c2b9a428ea4ed7c4a}\label{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_abea709289df9c33c2b9a428ea4ed7c4a}} 
+\index{einsums::AlignedAllocator$<$ const T, Align $>$@{einsums::AlignedAllocator$<$ const T, Align $>$}!address@{address}}
+\index{address@{address}!einsums::AlignedAllocator$<$ const T, Align $>$@{einsums::AlignedAllocator$<$ const T, Align $>$}}
+\doxysubsubsection{\texorpdfstring{address()}{address()}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Align$>$ \\
+auto \mbox{\hyperlink{classeinsums_1_1AlignedAllocator}{einsums\+::\+Aligned\+Allocator}}$<$ const T, Align $>$\+::address (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_ace334d65aa1929c8d5bb8fe4fac800f8}{const\+\_\+reference}}}]{x }\end{DoxyParamCaption}) const -\/$>$ \mbox{\hyperlink{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_a7f91b040a66a72ff2101d0c285219767}{const\+\_\+pointer}} \hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\mbox{\Hypertarget{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_a505e9cefd8ca03873ba288a1a0b46676}\label{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_a505e9cefd8ca03873ba288a1a0b46676}} 
+\index{einsums::AlignedAllocator$<$ const T, Align $>$@{einsums::AlignedAllocator$<$ const T, Align $>$}!allocate@{allocate}}
+\index{allocate@{allocate}!einsums::AlignedAllocator$<$ const T, Align $>$@{einsums::AlignedAllocator$<$ const T, Align $>$}}
+\doxysubsubsection{\texorpdfstring{allocate()}{allocate()}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Align$>$ \\
+auto \mbox{\hyperlink{classeinsums_1_1AlignedAllocator}{einsums\+::\+Aligned\+Allocator}}$<$ const T, Align $>$\+::allocate (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_a3da0e47a2dc67839ff130dddf3a5e311}{size\+\_\+type}}}]{n,  }\item[{typename \mbox{\hyperlink{classeinsums_1_1AlignedAllocator}{Aligned\+Allocator}}$<$ void, Align $>$\+::\mbox{\hyperlink{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_a7f91b040a66a72ff2101d0c285219767}{const\+\_\+pointer}}}]{ = {\ttfamily 0} }\end{DoxyParamCaption}) -\/$>$ \mbox{\hyperlink{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_aa6b0110b7e752cde4bf8fa22b75be723}{pointer}} \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_a85708d032732f2c3451e722f4b9ac854}\label{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_a85708d032732f2c3451e722f4b9ac854}} 
+\index{einsums::AlignedAllocator$<$ const T, Align $>$@{einsums::AlignedAllocator$<$ const T, Align $>$}!construct@{construct}}
+\index{construct@{construct}!einsums::AlignedAllocator$<$ const T, Align $>$@{einsums::AlignedAllocator$<$ const T, Align $>$}}
+\doxysubsubsection{\texorpdfstring{construct()}{construct()}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Align$>$ \\
+template$<$class U , class... Args$>$ \\
+void \mbox{\hyperlink{classeinsums_1_1AlignedAllocator}{einsums\+::\+Aligned\+Allocator}}$<$ const T, Align $>$\+::construct (\begin{DoxyParamCaption}\item[{U $\ast$}]{p,  }\item[{Args \&\&...}]{args }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_aada39d67d97dd2daf0e8fc1c4818181b}\label{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_aada39d67d97dd2daf0e8fc1c4818181b}} 
+\index{einsums::AlignedAllocator$<$ const T, Align $>$@{einsums::AlignedAllocator$<$ const T, Align $>$}!deallocate@{deallocate}}
+\index{deallocate@{deallocate}!einsums::AlignedAllocator$<$ const T, Align $>$@{einsums::AlignedAllocator$<$ const T, Align $>$}}
+\doxysubsubsection{\texorpdfstring{deallocate()}{deallocate()}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Align$>$ \\
+void \mbox{\hyperlink{classeinsums_1_1AlignedAllocator}{einsums\+::\+Aligned\+Allocator}}$<$ const T, Align $>$\+::deallocate (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_aa6b0110b7e752cde4bf8fa22b75be723}{pointer}}}]{p,  }\item[{\mbox{\hyperlink{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_a3da0e47a2dc67839ff130dddf3a5e311}{size\+\_\+type}}}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\mbox{\Hypertarget{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_a5a241c26d8c6506f5dd4040f544b907a}\label{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_a5a241c26d8c6506f5dd4040f544b907a}} 
+\index{einsums::AlignedAllocator$<$ const T, Align $>$@{einsums::AlignedAllocator$<$ const T, Align $>$}!destroy@{destroy}}
+\index{destroy@{destroy}!einsums::AlignedAllocator$<$ const T, Align $>$@{einsums::AlignedAllocator$<$ const T, Align $>$}}
+\doxysubsubsection{\texorpdfstring{destroy()}{destroy()}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Align$>$ \\
+void \mbox{\hyperlink{classeinsums_1_1AlignedAllocator}{einsums\+::\+Aligned\+Allocator}}$<$ const T, Align $>$\+::destroy (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_aa6b0110b7e752cde4bf8fa22b75be723}{pointer}}}]{p }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_ae918bfb550d520ceb43e78ef724e0c66}\label{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_ae918bfb550d520ceb43e78ef724e0c66}} 
+\index{einsums::AlignedAllocator$<$ const T, Align $>$@{einsums::AlignedAllocator$<$ const T, Align $>$}!max\_size@{max\_size}}
+\index{max\_size@{max\_size}!einsums::AlignedAllocator$<$ const T, Align $>$@{einsums::AlignedAllocator$<$ const T, Align $>$}}
+\doxysubsubsection{\texorpdfstring{max\_size()}{max\_size()}}
+{\footnotesize\ttfamily template$<$typename T , size\+\_\+t Align$>$ \\
+auto \mbox{\hyperlink{classeinsums_1_1AlignedAllocator}{einsums\+::\+Aligned\+Allocator}}$<$ const T, Align $>$\+::max\+\_\+size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const -\/$>$ \mbox{\hyperlink{classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_a3da0e47a2dc67839ff130dddf3a5e311}{size\+\_\+type}} \hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{STL_8hpp}{STL.\+hpp}}\end{DoxyCompactItemize}

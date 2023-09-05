@@ -1,0 +1,190 @@
+\hypertarget{Tensor_8hpp}{}\doxysection{Tensor.\+hpp File Reference}
+\label{Tensor_8hpp}\index{Tensor.hpp@{Tensor.hpp}}
+{\ttfamily \#include \char`\"{}Open\+MP.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}einsums/\+Print.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}einsums/\+STL.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}einsums/\+Section.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}einsums/\+State.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}einsums/\+\_\+\+Common.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}range/v3/range\+\_\+fwd.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}range/v3/view/cartesian\+\_\+product.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}range/v3/view/iota.\+hpp\char`\"{}}\newline
+{\ttfamily \#include $<$algorithm$>$}\newline
+{\ttfamily \#include $<$array$>$}\newline
+{\ttfamily \#include $<$cassert$>$}\newline
+{\ttfamily \#include $<$chrono$>$}\newline
+{\ttfamily \#include $<$complex$>$}\newline
+{\ttfamily \#include $<$exception$>$}\newline
+{\ttfamily \#include $<$functional$>$}\newline
+{\ttfamily \#include $<$iomanip$>$}\newline
+{\ttfamily \#include $<$limits$>$}\newline
+{\ttfamily \#include $<$memory$>$}\newline
+{\ttfamily \#include $<$numeric$>$}\newline
+{\ttfamily \#include $<$random$>$}\newline
+{\ttfamily \#include $<$sstream$>$}\newline
+{\ttfamily \#include $<$stdexcept$>$}\newline
+{\ttfamily \#include $<$string$>$}\newline
+{\ttfamily \#include $<$tuple$>$}\newline
+{\ttfamily \#include $<$type\+\_\+traits$>$}\newline
+{\ttfamily \#include $<$utility$>$}\newline
+{\ttfamily \#include $<$vector$>$}\newline
+{\ttfamily \#include \char`\"{}H5.\+hpp\char`\"{}}\newline
+Include dependency graph for Tensor.\+hpp\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{d5/d4c/Tensor_8hpp__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{d8/db8/Tensor_8hpp__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1detail_1_1TensorBase}{einsums\+::detail\+::\+Tensor\+Base$<$ T, Rank $>$}}
+\item 
+struct \mbox{\hyperlink{structTensorPrintOptions}{Tensor\+Print\+Options}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor$<$ T, Rank $>$}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1Tensor_3_01T_00_010_01_4}{einsums\+::\+Tensor$<$ T, 0 $>$}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1TensorView}{einsums\+::\+Tensor\+View$<$ T, Rank $>$}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1DiskTensor}{einsums\+::\+Disk\+Tensor$<$ T, Rank $>$}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1DiskView}{einsums\+::\+Disk\+View$<$ T, View\+Rank, Rank $>$}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+ \mbox{\hyperlink{namespaceeinsums}{einsums}}
+\item 
+ \mbox{\hyperlink{namespaceeinsums_1_1detail}{einsums\+::detail}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{Tensor_8hpp_a1924df7bf703a9ef0954984687b20748}{OPERATOR}}(OP)
+\item 
+\#define \mbox{\hyperlink{Tensor_8hpp_a1924df7bf703a9ef0954984687b20748}{OPERATOR}}(OP)
+\item 
+\#define \mbox{\hyperlink{Tensor_8hpp_a1924df7bf703a9ef0954984687b20748}{OPERATOR}}(OP)
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$template$<$ typename, size\+\_\+t $>$ typename AType, size\+\_\+t Rank, typename T $>$ }\\auto \mbox{\hyperlink{Tensor_8hpp_a61a99b15a0fd8900b896e4077e43c096}{println}} (const AType$<$ T, Rank $>$ \&A, \mbox{\hyperlink{structTensorPrintOptions}{Tensor\+Print\+Options}} options=\{\}) -\/$>$ typename std\+::enable\+\_\+if\+\_\+t$<$ std\+::is\+\_\+base\+\_\+of\+\_\+v$<$ \mbox{\hyperlink{structeinsums_1_1detail_1_1TensorBase}{einsums\+::detail\+::\+Tensor\+Base}}$<$ T, Rank $>$, AType$<$ T, Rank $>$$>$$>$
+\item 
+{\footnotesize template$<$template$<$ typename, size\+\_\+t $>$ typename Tensor\+Type, size\+\_\+t Rank, std\+::size\+\_\+t... I, typename T $>$ }\\auto \mbox{\hyperlink{namespaceeinsums_1_1detail_a2a5b6de485574aacfae1bbea1c2abc36}{einsums\+::detail\+::get\+\_\+dim\+\_\+ranges}} (const Tensor\+Type$<$ T, Rank $>$ \&tensor, std\+::index\+\_\+sequence$<$ I... $>$)
+\item 
+{\footnotesize template$<$size\+\_\+t N, typename Target , typename Source1 , typename Source2 $>$ }\\void \mbox{\hyperlink{namespaceeinsums_1_1detail_a0341bb4972826183467a56ea1005074a}{einsums\+::detail\+::add\+\_\+elements}} (Target \&target, const Source1 \&source1, const Source2 \&source2)
+\item 
+{\footnotesize template$<$int N, template$<$ typename, size\+\_\+t $>$ typename Tensor\+Type, size\+\_\+t Rank, typename T $>$ }\\auto \mbox{\hyperlink{namespaceeinsums_a64d283f84989678bc73b1af464c17ad3}{einsums\+::get\+\_\+dim\+\_\+ranges}} (const Tensor\+Type$<$ T, Rank $>$ \&tensor)
+\item 
+{\footnotesize template$<$size\+\_\+t Rank, typename T , class... Args$>$ }\\void \mbox{\hyperlink{namespaceeinsums_ad4b8e06472ea9229e80fb20d1e99cb15}{einsums\+::write}} (const h5\+::fd\+\_\+t \&fd, const Tensor$<$ T, Rank $>$ \&ref, Args \&\&...args)
+\item 
+{\footnotesize template$<$typename T $>$ }\\void \mbox{\hyperlink{namespaceeinsums_a7d6be2c45506b693c6b512e232318fd6}{einsums\+::write}} (const h5\+::fd\+\_\+t \&fd, const Tensor$<$ T, 0 $>$ \&ref)
+\item 
+{\footnotesize template$<$size\+\_\+t Rank, typename T , class... Args$>$ }\\void \mbox{\hyperlink{namespaceeinsums_a7bc3393b66dec35525cff395c5ae447b}{einsums\+::write}} (const h5\+::fd\+\_\+t \&fd, const Tensor\+View$<$ T, Rank $>$ \&ref, Args \&\&...args)
+\item 
+{\footnotesize template$<$typename T , size\+\_\+t Rank$>$ }\\auto \mbox{\hyperlink{namespaceeinsums_ae15bc2f581377beb9da08fc8d0a7e928}{einsums\+::read}} (const h5\+::fd\+\_\+t \&fd, const std\+::string \&\mbox{\hyperlink{Timer_8cpp_a9b45b3e13bd9167aab02e17e08916231}{name}}) -\/$>$ Tensor$<$ T, Rank $>$
+\item 
+{\footnotesize template$<$typename T $>$ }\\auto \mbox{\hyperlink{namespaceeinsums_a8a2c7ab8f41f9c47c76bd23885d4a710}{einsums\+::read}} (const h5\+::fd\+\_\+t \&fd, const std\+::string \&\mbox{\hyperlink{Timer_8cpp_a9b45b3e13bd9167aab02e17e08916231}{name}}) -\/$>$ Tensor$<$ T, 0 $>$
+\item 
+{\footnotesize template$<$typename T , size\+\_\+t Rank$>$ }\\void \mbox{\hyperlink{namespaceeinsums_a3a0b2c04fe72ddbc7eb54ece078ef9e1}{einsums\+::zero}} (Tensor$<$ T, Rank $>$ \&A)
+\item 
+{\footnotesize template$<$typename Type  = double, typename... Args$>$ }\\auto \mbox{\hyperlink{namespaceeinsums_aacae9adfebd17ccc3adb7f2cf8dba27d}{einsums\+::create\+\_\+tensor}} (const std\+::string \mbox{\hyperlink{Timer_8cpp_a9b45b3e13bd9167aab02e17e08916231}{name}}, Args... args) -\/$>$ Tensor$<$ Type, sizeof...(Args)$>$
+\item 
+{\footnotesize template$<$typename Type  = double, typename... Args$>$ }\\auto \mbox{\hyperlink{namespaceeinsums_a0da45c93e1e370c62628e89291965f50}{einsums\+::create\+\_\+disk\+\_\+tensor}} (h5\+::fd\+\_\+t \&file, const std\+::string \mbox{\hyperlink{Timer_8cpp_a9b45b3e13bd9167aab02e17e08916231}{name}}, Args... args) -\/$>$ Disk\+Tensor$<$ Type, sizeof...(Args)$>$
+\item 
+{\footnotesize template$<$typename T , size\+\_\+t Rank$>$ }\\auto \mbox{\hyperlink{namespaceeinsums_a2cb71e6acd999c8ca849258fa725349c}{einsums\+::create\+\_\+disk\+\_\+tensor\+\_\+like}} (h5\+::fd\+\_\+t \&file, const Tensor$<$ T, Rank $>$ \&tensor) -\/$>$ Disk\+Tensor$<$ T, Rank $>$
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{Tensor_8hpp_a1924df7bf703a9ef0954984687b20748}\label{Tensor_8hpp_a1924df7bf703a9ef0954984687b20748}} 
+\index{Tensor.hpp@{Tensor.hpp}!OPERATOR@{OPERATOR}}
+\index{OPERATOR@{OPERATOR}!Tensor.hpp@{Tensor.hpp}}
+\doxysubsubsection{\texorpdfstring{OPERATOR}{OPERATOR}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily \#define OPERATOR(\begin{DoxyParamCaption}\item[{}]{OP }\end{DoxyParamCaption})}
+
+{\bfseries Value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{    \textcolor{keyword}{auto} \textcolor{keyword}{operator} OP(\textcolor{keyword}{const} T \&b)-\/>Tensor<T, Rank> \& \{                                                                                      \(\backslash\)}
+\DoxyCodeLine{        EINSUMS\_OMP\_PARALLEL \{                                                                                                             \(\backslash\)}
+\DoxyCodeLine{            auto tid       = \mbox{\hyperlink{OpenMP_8c_aba06990768c6b572ca3f69029334a9df}{omp\_get\_thread\_num}}();                                                                                         \(\backslash\)}
+\DoxyCodeLine{            auto chunksize = \_data.size() / \mbox{\hyperlink{OpenMP_8c_ab628587850957d925be0c2157f5f6823}{omp\_get\_num\_threads}}();                                                                         \(\backslash\)}
+\DoxyCodeLine{            auto begin     = \_data.begin() + chunksize * tid;                                                                              \(\backslash\)}
+\DoxyCodeLine{            auto end       = (tid == \mbox{\hyperlink{OpenMP_8c_ab628587850957d925be0c2157f5f6823}{omp\_get\_num\_threads}}() -\/ 1) ? \_data.end() : begin + chunksize;                                         \(\backslash\)}
+\DoxyCodeLine{            EINSUMS\_OMP\_SIMD \textcolor{keywordflow}{for} (\textcolor{keyword}{auto} i = begin; i < end; i++) \{ (*i) OP b; \}                                                             \(\backslash\)}
+\DoxyCodeLine{        \}                                                                                                                                  \(\backslash\)}
+\DoxyCodeLine{        return *\textcolor{keyword}{this};                                                                                                                      \(\backslash\)}
+\DoxyCodeLine{    \}                                                                                                                                      \(\backslash\)}
+\DoxyCodeLine{                                                                                                                                           \(\backslash\)}
+\DoxyCodeLine{    auto \textcolor{keyword}{operator} OP(\textcolor{keyword}{const} Tensor<T, Rank> \&b)-\/>Tensor<T, Rank> \& \{                                                                        \(\backslash\)}
+\DoxyCodeLine{        if (\mbox{\hyperlink{namespaceh5_1_1impl_a91375d61a46f57a14bb5f8249928cc53}{size}}() != b.size()) \{                                                                                                          \(\backslash\)}
+\DoxyCodeLine{            throw std::runtime\_error(fmt::format(\textcolor{stringliteral}{"{}operator"{}} \mbox{\hyperlink{__Common_8hpp_ab655bd9006ad4f421022fa3e07eccb9c}{EINSUMS\_STRINGIFY}}(OP) \textcolor{stringliteral}{"{} : tensors differ in size : \{\} \{\}"{}}, \mbox{\hyperlink{namespaceh5_1_1impl_a91375d61a46f57a14bb5f8249928cc53}{size}}(), b.size())); \(\backslash\)}
+\DoxyCodeLine{        \}                                                                                                                                  \(\backslash\)}
+\DoxyCodeLine{        EINSUMS\_OMP\_PARALLEL \{                                                                                                             \(\backslash\)}
+\DoxyCodeLine{            auto tid       = \mbox{\hyperlink{OpenMP_8c_aba06990768c6b572ca3f69029334a9df}{omp\_get\_thread\_num}}();                                                                                         \(\backslash\)}
+\DoxyCodeLine{            auto chunksize = \_data.size() / \mbox{\hyperlink{OpenMP_8c_ab628587850957d925be0c2157f5f6823}{omp\_get\_num\_threads}}();                                                                         \(\backslash\)}
+\DoxyCodeLine{            auto abegin    = \_data.begin() + chunksize * tid;                                                                              \(\backslash\)}
+\DoxyCodeLine{            auto bbegin    = b.\_data.begin() + chunksize * tid;                                                                            \(\backslash\)}
+\DoxyCodeLine{            auto aend      = (tid == \mbox{\hyperlink{OpenMP_8c_ab628587850957d925be0c2157f5f6823}{omp\_get\_num\_threads}}() -\/ 1) ? \_data.end() : abegin + chunksize;                                        \(\backslash\)}
+\DoxyCodeLine{            auto j         = bbegin;                                                                                                       \(\backslash\)}
+\DoxyCodeLine{            EINSUMS\_OMP\_SIMD \textcolor{keywordflow}{for} (\textcolor{keyword}{auto} i = abegin; i < aend; i++) \{ (*i) OP(*j++); \}                                                       \(\backslash\)}
+\DoxyCodeLine{        \}                                                                                                                                  \(\backslash\)}
+\DoxyCodeLine{        return *\textcolor{keyword}{this};                                                                                                                      \(\backslash\)}
+\DoxyCodeLine{    \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{Tensor_8hpp_a1924df7bf703a9ef0954984687b20748}\label{Tensor_8hpp_a1924df7bf703a9ef0954984687b20748}} 
+\index{Tensor.hpp@{Tensor.hpp}!OPERATOR@{OPERATOR}}
+\index{OPERATOR@{OPERATOR}!Tensor.hpp@{Tensor.hpp}}
+\doxysubsubsection{\texorpdfstring{OPERATOR}{OPERATOR}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily \#define OPERATOR(\begin{DoxyParamCaption}\item[{}]{OP }\end{DoxyParamCaption})}
+
+{\bfseries Value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{    \textcolor{keyword}{auto} \textcolor{keyword}{operator} OP(\textcolor{keyword}{const} T \&other)-\/>Tensor<T, 0> \& \{                                                                                     \(\backslash\)}
+\DoxyCodeLine{        \_data OP other;                                                                                                                    \(\backslash\)}
+\DoxyCodeLine{        return *\textcolor{keyword}{this};                                                                                                                      \(\backslash\)}
+\DoxyCodeLine{    \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{Tensor_8hpp_a1924df7bf703a9ef0954984687b20748}\label{Tensor_8hpp_a1924df7bf703a9ef0954984687b20748}} 
+\index{Tensor.hpp@{Tensor.hpp}!OPERATOR@{OPERATOR}}
+\index{OPERATOR@{OPERATOR}!Tensor.hpp@{Tensor.hpp}}
+\doxysubsubsection{\texorpdfstring{OPERATOR}{OPERATOR}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily \#define OPERATOR(\begin{DoxyParamCaption}\item[{}]{OP }\end{DoxyParamCaption})}
+
+{\bfseries Value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{    \textcolor{keyword}{auto} \textcolor{keyword}{operator} OP(\textcolor{keyword}{const} T \&value)-\/>TensorView \& \{                                                                                       \(\backslash\)}
+\DoxyCodeLine{        auto target\_dims = get\_dim\_ranges<Rank>(*\textcolor{keyword}{this});                                                                                    \(\backslash\)}
+\DoxyCodeLine{        auto view        = std::apply(ranges::views::cartesian\_product, target\_dims);                                                      \(\backslash\)}
+\DoxyCodeLine{        \_Pragma(\textcolor{stringliteral}{"{}omp parallel for"{}}) for (auto target\_combination = view.begin(); target\_combination != view.end(); target\_combination++) \{ \(\backslash\)}
+\DoxyCodeLine{            T        \&target = std::apply(*\textcolor{keyword}{this}, *target\_combination);                                                                     \(\backslash\)}
+\DoxyCodeLine{            target OP value;                                                                                                               \(\backslash\)}
+\DoxyCodeLine{        \}                                                                                                                                  \(\backslash\)}
+\DoxyCodeLine{                                                                                                                                           \(\backslash\)}
+\DoxyCodeLine{        return *\textcolor{keyword}{this};                                                                                                                      \(\backslash\)}
+\DoxyCodeLine{    \}}
+
+\end{DoxyCode}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{Tensor_8hpp_a61a99b15a0fd8900b896e4077e43c096}\label{Tensor_8hpp_a61a99b15a0fd8900b896e4077e43c096}} 
+\index{Tensor.hpp@{Tensor.hpp}!println@{println}}
+\index{println@{println}!Tensor.hpp@{Tensor.hpp}}
+\doxysubsubsection{\texorpdfstring{println()}{println()}}
+{\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename AType, size\+\_\+t Rank, typename T $>$ \\
+auto println (\begin{DoxyParamCaption}\item[{const AType$<$ T, Rank $>$ \&}]{A,  }\item[{\mbox{\hyperlink{structTensorPrintOptions}{Tensor\+Print\+Options}}}]{options = {\ttfamily \{\}} }\end{DoxyParamCaption}) -\/$>$ typename std\+::enable\+\_\+if\+\_\+t$<$std\+::is\+\_\+base\+\_\+of\+\_\+v$<$\mbox{\hyperlink{structeinsums_1_1detail_1_1TensorBase}{einsums\+::detail\+::\+Tensor\+Base}}$<$T, Rank$>$, AType$<$T, Rank$>$$>$$>$}
+

@@ -1,0 +1,104 @@
+\hypertarget{OpenMP_8h}{}\doxysection{Open\+MP.\+h File Reference}
+\label{OpenMP_8h}\index{OpenMP.h@{OpenMP.h}}
+{\ttfamily \#include \char`\"{}einsums/\+\_\+\+Export.\+hpp\char`\"{}}\newline
+Include dependency graph for Open\+MP.\+h\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=199pt]{df/da6/OpenMP_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{df/dc5/OpenMP_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{__Export_8hpp_ad5ec33d87b554501185251a886ebf557}{EINSUMS\+\_\+\+EXPORT}} \mbox{\hyperlink{OpenMP_8h_a3dd902124f2659a89915fbebf407a51e}{omp\+\_\+get\+\_\+max\+\_\+threads}} ()
+\item 
+int \mbox{\hyperlink{__Export_8hpp_ad5ec33d87b554501185251a886ebf557}{EINSUMS\+\_\+\+EXPORT}} \mbox{\hyperlink{OpenMP_8h_ad8ac5dff49cf240749894d18c5acb7f9}{omp\+\_\+get\+\_\+num\+\_\+threads}} ()
+\item 
+void \mbox{\hyperlink{__Export_8hpp_ad5ec33d87b554501185251a886ebf557}{EINSUMS\+\_\+\+EXPORT}} \mbox{\hyperlink{OpenMP_8h_a30053ae1377b86dcecaaac8202e18239}{omp\+\_\+set\+\_\+num\+\_\+threads}} (int)
+\item 
+int \mbox{\hyperlink{__Export_8hpp_ad5ec33d87b554501185251a886ebf557}{EINSUMS\+\_\+\+EXPORT}} \mbox{\hyperlink{OpenMP_8h_a33c0f0a473ee5f557970ff63d2e1f7a0}{omp\+\_\+get\+\_\+thread\+\_\+num}} ()
+\item 
+int \mbox{\hyperlink{__Export_8hpp_ad5ec33d87b554501185251a886ebf557}{EINSUMS\+\_\+\+EXPORT}} \mbox{\hyperlink{OpenMP_8h_ab8ae8a84d7ec19491d6e26862ce6c2b2}{omp\+\_\+in\+\_\+parallel}} ()
+\item 
+void \mbox{\hyperlink{__Export_8hpp_ad5ec33d87b554501185251a886ebf557}{EINSUMS\+\_\+\+EXPORT}} \mbox{\hyperlink{OpenMP_8h_a3cc6de533b0719c217308c7e5f2b6e23}{omp\+\_\+set\+\_\+nested}} (int val)
+\begin{DoxyCompactList}\small\item\em A nonzero value enables nested parallelism, while zero disables nested parallelism. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{__Export_8hpp_ad5ec33d87b554501185251a886ebf557}{EINSUMS\+\_\+\+EXPORT}} \mbox{\hyperlink{OpenMP_8h_a1f7edf853cc90929d11f014c2ebf7eca}{omp\+\_\+get\+\_\+nested}} ()
+\begin{DoxyCompactList}\small\item\em A nonzero value means nested parallelism is enabled. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{__Export_8hpp_ad5ec33d87b554501185251a886ebf557}{EINSUMS\+\_\+\+EXPORT}} \mbox{\hyperlink{OpenMP_8h_a3936751c358e4419d45c1c184f9760ef}{omp\+\_\+set\+\_\+max\+\_\+active\+\_\+levels}} (int max\+\_\+levels)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{OpenMP_8h_a3dd902124f2659a89915fbebf407a51e}\label{OpenMP_8h_a3dd902124f2659a89915fbebf407a51e}} 
+\index{OpenMP.h@{OpenMP.h}!omp\_get\_max\_threads@{omp\_get\_max\_threads}}
+\index{omp\_get\_max\_threads@{omp\_get\_max\_threads}!OpenMP.h@{OpenMP.h}}
+\doxysubsubsection{\texorpdfstring{omp\_get\_max\_threads()}{omp\_get\_max\_threads()}}
+{\footnotesize\ttfamily int \mbox{\hyperlink{__Export_8hpp_ad5ec33d87b554501185251a886ebf557}{EINSUMS\+\_\+\+EXPORT}} omp\+\_\+get\+\_\+max\+\_\+threads (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{OpenMP_8h_a1f7edf853cc90929d11f014c2ebf7eca}\label{OpenMP_8h_a1f7edf853cc90929d11f014c2ebf7eca}} 
+\index{OpenMP.h@{OpenMP.h}!omp\_get\_nested@{omp\_get\_nested}}
+\index{omp\_get\_nested@{omp\_get\_nested}!OpenMP.h@{OpenMP.h}}
+\doxysubsubsection{\texorpdfstring{omp\_get\_nested()}{omp\_get\_nested()}}
+{\footnotesize\ttfamily int \mbox{\hyperlink{__Export_8hpp_ad5ec33d87b554501185251a886ebf557}{EINSUMS\+\_\+\+EXPORT}} omp\+\_\+get\+\_\+nested (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+A nonzero value means nested parallelism is enabled. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{OpenMP_8h_ad8ac5dff49cf240749894d18c5acb7f9}\label{OpenMP_8h_ad8ac5dff49cf240749894d18c5acb7f9}} 
+\index{OpenMP.h@{OpenMP.h}!omp\_get\_num\_threads@{omp\_get\_num\_threads}}
+\index{omp\_get\_num\_threads@{omp\_get\_num\_threads}!OpenMP.h@{OpenMP.h}}
+\doxysubsubsection{\texorpdfstring{omp\_get\_num\_threads()}{omp\_get\_num\_threads()}}
+{\footnotesize\ttfamily int \mbox{\hyperlink{__Export_8hpp_ad5ec33d87b554501185251a886ebf557}{EINSUMS\+\_\+\+EXPORT}} omp\+\_\+get\+\_\+num\+\_\+threads (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{OpenMP_8h_a33c0f0a473ee5f557970ff63d2e1f7a0}\label{OpenMP_8h_a33c0f0a473ee5f557970ff63d2e1f7a0}} 
+\index{OpenMP.h@{OpenMP.h}!omp\_get\_thread\_num@{omp\_get\_thread\_num}}
+\index{omp\_get\_thread\_num@{omp\_get\_thread\_num}!OpenMP.h@{OpenMP.h}}
+\doxysubsubsection{\texorpdfstring{omp\_get\_thread\_num()}{omp\_get\_thread\_num()}}
+{\footnotesize\ttfamily int \mbox{\hyperlink{__Export_8hpp_ad5ec33d87b554501185251a886ebf557}{EINSUMS\+\_\+\+EXPORT}} omp\+\_\+get\+\_\+thread\+\_\+num (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{OpenMP_8h_ab8ae8a84d7ec19491d6e26862ce6c2b2}\label{OpenMP_8h_ab8ae8a84d7ec19491d6e26862ce6c2b2}} 
+\index{OpenMP.h@{OpenMP.h}!omp\_in\_parallel@{omp\_in\_parallel}}
+\index{omp\_in\_parallel@{omp\_in\_parallel}!OpenMP.h@{OpenMP.h}}
+\doxysubsubsection{\texorpdfstring{omp\_in\_parallel()}{omp\_in\_parallel()}}
+{\footnotesize\ttfamily int \mbox{\hyperlink{__Export_8hpp_ad5ec33d87b554501185251a886ebf557}{EINSUMS\+\_\+\+EXPORT}} omp\+\_\+in\+\_\+parallel (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{OpenMP_8h_a3936751c358e4419d45c1c184f9760ef}\label{OpenMP_8h_a3936751c358e4419d45c1c184f9760ef}} 
+\index{OpenMP.h@{OpenMP.h}!omp\_set\_max\_active\_levels@{omp\_set\_max\_active\_levels}}
+\index{omp\_set\_max\_active\_levels@{omp\_set\_max\_active\_levels}!OpenMP.h@{OpenMP.h}}
+\doxysubsubsection{\texorpdfstring{omp\_set\_max\_active\_levels()}{omp\_set\_max\_active\_levels()}}
+{\footnotesize\ttfamily void \mbox{\hyperlink{__Export_8hpp_ad5ec33d87b554501185251a886ebf557}{EINSUMS\+\_\+\+EXPORT}} omp\+\_\+set\+\_\+max\+\_\+active\+\_\+levels (\begin{DoxyParamCaption}\item[{int}]{max\+\_\+levels }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{OpenMP_8h_a3cc6de533b0719c217308c7e5f2b6e23}\label{OpenMP_8h_a3cc6de533b0719c217308c7e5f2b6e23}} 
+\index{OpenMP.h@{OpenMP.h}!omp\_set\_nested@{omp\_set\_nested}}
+\index{omp\_set\_nested@{omp\_set\_nested}!OpenMP.h@{OpenMP.h}}
+\doxysubsubsection{\texorpdfstring{omp\_set\_nested()}{omp\_set\_nested()}}
+{\footnotesize\ttfamily void \mbox{\hyperlink{__Export_8hpp_ad5ec33d87b554501185251a886ebf557}{EINSUMS\+\_\+\+EXPORT}} omp\+\_\+set\+\_\+nested (\begin{DoxyParamCaption}\item[{int}]{val }\end{DoxyParamCaption})}
+
+
+
+A nonzero value enables nested parallelism, while zero disables nested parallelism. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em val} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{OpenMP_8h_a30053ae1377b86dcecaaac8202e18239}\label{OpenMP_8h_a30053ae1377b86dcecaaac8202e18239}} 
+\index{OpenMP.h@{OpenMP.h}!omp\_set\_num\_threads@{omp\_set\_num\_threads}}
+\index{omp\_set\_num\_threads@{omp\_set\_num\_threads}!OpenMP.h@{OpenMP.h}}
+\doxysubsubsection{\texorpdfstring{omp\_set\_num\_threads()}{omp\_set\_num\_threads()}}
+{\footnotesize\ttfamily void \mbox{\hyperlink{__Export_8hpp_ad5ec33d87b554501185251a886ebf557}{EINSUMS\+\_\+\+EXPORT}} omp\+\_\+set\+\_\+num\+\_\+threads (\begin{DoxyParamCaption}\item[{int}]{nthread }\end{DoxyParamCaption})}
+

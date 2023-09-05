@@ -1,0 +1,142 @@
+\hypertarget{classbackward_1_1StackTraceImplBase}{}\doxysection{backward\+::Stack\+Trace\+Impl\+Base Class Reference}
+\label{classbackward_1_1StackTraceImplBase}\index{backward::StackTraceImplBase@{backward::StackTraceImplBase}}
+
+
+{\ttfamily \#include $<$Backtrace.\+hpp$>$}
+
+
+
+Inheritance diagram for backward\+::Stack\+Trace\+Impl\+Base\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=248pt]{dd/d6b/classbackward_1_1StackTraceImplBase__inherit__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classbackward_1_1StackTraceImplBase_a7b4b4343ee1b5c8f2379d03a2eb34df8}{Stack\+Trace\+Impl\+Base}} ()
+\item 
+size\+\_\+t \mbox{\hyperlink{classbackward_1_1StackTraceImplBase_abc67fa1aab36327df39313f6f44d6e91}{thread\+\_\+id}} () const
+\item 
+void \mbox{\hyperlink{classbackward_1_1StackTraceImplBase_ad4b3e30762ac984cde17d50cb267f160}{skip\+\_\+n\+\_\+firsts}} (size\+\_\+t n)
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{classbackward_1_1StackTraceImplBase_a9ba6ec536b2c070b41a5b2e760b1378a}{load\+\_\+thread\+\_\+info}} ()
+\item 
+void \mbox{\hyperlink{classbackward_1_1StackTraceImplBase_a7c8e4a0bccdb4c7816a917abe6d9cfe1}{set\+\_\+context}} (void $\ast$\mbox{\hyperlink{classbackward_1_1StackTraceImplBase_ab93b04fc6d57a7764dfb5ea08d2aee11}{context}})
+\item 
+void $\ast$ \mbox{\hyperlink{classbackward_1_1StackTraceImplBase_ab93b04fc6d57a7764dfb5ea08d2aee11}{context}} () const
+\item 
+void \mbox{\hyperlink{classbackward_1_1StackTraceImplBase_a2560188cfbd0750d761cb00e82a1d069}{set\+\_\+error\+\_\+addr}} (void $\ast$\mbox{\hyperlink{classbackward_1_1StackTraceImplBase_a59ccf3f7633c8981813a1a7981d59b90}{error\+\_\+addr}})
+\item 
+void $\ast$ \mbox{\hyperlink{classbackward_1_1StackTraceImplBase_a59ccf3f7633c8981813a1a7981d59b90}{error\+\_\+addr}} () const
+\item 
+size\+\_\+t \mbox{\hyperlink{classbackward_1_1StackTraceImplBase_abc44940ce714894477e43df6d3639ca5}{skip\+\_\+n\+\_\+firsts}} () const
+\end{DoxyCompactItemize}
+\doxysubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+size\+\_\+t \mbox{\hyperlink{classbackward_1_1StackTraceImplBase_a02519c0d3ef7fc1e2a0019a83861e153}{\+\_\+thread\+\_\+id}}
+\item 
+size\+\_\+t \mbox{\hyperlink{classbackward_1_1StackTraceImplBase_ab818a9dc2ec44e79bcb8b07c760272f2}{\+\_\+skip}}
+\item 
+void $\ast$ \mbox{\hyperlink{classbackward_1_1StackTraceImplBase_a7aa62c90724bbf29ff4918feddfce506}{\+\_\+context}}
+\item 
+void $\ast$ \mbox{\hyperlink{classbackward_1_1StackTraceImplBase_a2e2c2d4593672248abff1075780d0930}{\+\_\+error\+\_\+addr}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classbackward_1_1StackTraceImplBase_a7b4b4343ee1b5c8f2379d03a2eb34df8}\label{classbackward_1_1StackTraceImplBase_a7b4b4343ee1b5c8f2379d03a2eb34df8}} 
+\index{backward::StackTraceImplBase@{backward::StackTraceImplBase}!StackTraceImplBase@{StackTraceImplBase}}
+\index{StackTraceImplBase@{StackTraceImplBase}!backward::StackTraceImplBase@{backward::StackTraceImplBase}}
+\doxysubsubsection{\texorpdfstring{StackTraceImplBase()}{StackTraceImplBase()}}
+{\footnotesize\ttfamily backward\+::\+Stack\+Trace\+Impl\+Base\+::\+Stack\+Trace\+Impl\+Base (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classbackward_1_1StackTraceImplBase_ab93b04fc6d57a7764dfb5ea08d2aee11}\label{classbackward_1_1StackTraceImplBase_ab93b04fc6d57a7764dfb5ea08d2aee11}} 
+\index{backward::StackTraceImplBase@{backward::StackTraceImplBase}!context@{context}}
+\index{context@{context}!backward::StackTraceImplBase@{backward::StackTraceImplBase}}
+\doxysubsubsection{\texorpdfstring{context()}{context()}}
+{\footnotesize\ttfamily void$\ast$ backward\+::\+Stack\+Trace\+Impl\+Base\+::context (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+\mbox{\Hypertarget{classbackward_1_1StackTraceImplBase_a59ccf3f7633c8981813a1a7981d59b90}\label{classbackward_1_1StackTraceImplBase_a59ccf3f7633c8981813a1a7981d59b90}} 
+\index{backward::StackTraceImplBase@{backward::StackTraceImplBase}!error\_addr@{error\_addr}}
+\index{error\_addr@{error\_addr}!backward::StackTraceImplBase@{backward::StackTraceImplBase}}
+\doxysubsubsection{\texorpdfstring{error\_addr()}{error\_addr()}}
+{\footnotesize\ttfamily void$\ast$ backward\+::\+Stack\+Trace\+Impl\+Base\+::error\+\_\+addr (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+\mbox{\Hypertarget{classbackward_1_1StackTraceImplBase_a9ba6ec536b2c070b41a5b2e760b1378a}\label{classbackward_1_1StackTraceImplBase_a9ba6ec536b2c070b41a5b2e760b1378a}} 
+\index{backward::StackTraceImplBase@{backward::StackTraceImplBase}!load\_thread\_info@{load\_thread\_info}}
+\index{load\_thread\_info@{load\_thread\_info}!backward::StackTraceImplBase@{backward::StackTraceImplBase}}
+\doxysubsubsection{\texorpdfstring{load\_thread\_info()}{load\_thread\_info()}}
+{\footnotesize\ttfamily void backward\+::\+Stack\+Trace\+Impl\+Base\+::load\+\_\+thread\+\_\+info (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+\mbox{\Hypertarget{classbackward_1_1StackTraceImplBase_a7c8e4a0bccdb4c7816a917abe6d9cfe1}\label{classbackward_1_1StackTraceImplBase_a7c8e4a0bccdb4c7816a917abe6d9cfe1}} 
+\index{backward::StackTraceImplBase@{backward::StackTraceImplBase}!set\_context@{set\_context}}
+\index{set\_context@{set\_context}!backward::StackTraceImplBase@{backward::StackTraceImplBase}}
+\doxysubsubsection{\texorpdfstring{set\_context()}{set\_context()}}
+{\footnotesize\ttfamily void backward\+::\+Stack\+Trace\+Impl\+Base\+::set\+\_\+context (\begin{DoxyParamCaption}\item[{void $\ast$}]{context }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+\mbox{\Hypertarget{classbackward_1_1StackTraceImplBase_a2560188cfbd0750d761cb00e82a1d069}\label{classbackward_1_1StackTraceImplBase_a2560188cfbd0750d761cb00e82a1d069}} 
+\index{backward::StackTraceImplBase@{backward::StackTraceImplBase}!set\_error\_addr@{set\_error\_addr}}
+\index{set\_error\_addr@{set\_error\_addr}!backward::StackTraceImplBase@{backward::StackTraceImplBase}}
+\doxysubsubsection{\texorpdfstring{set\_error\_addr()}{set\_error\_addr()}}
+{\footnotesize\ttfamily void backward\+::\+Stack\+Trace\+Impl\+Base\+::set\+\_\+error\+\_\+addr (\begin{DoxyParamCaption}\item[{void $\ast$}]{error\+\_\+addr }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+\mbox{\Hypertarget{classbackward_1_1StackTraceImplBase_abc44940ce714894477e43df6d3639ca5}\label{classbackward_1_1StackTraceImplBase_abc44940ce714894477e43df6d3639ca5}} 
+\index{backward::StackTraceImplBase@{backward::StackTraceImplBase}!skip\_n\_firsts@{skip\_n\_firsts}}
+\index{skip\_n\_firsts@{skip\_n\_firsts}!backward::StackTraceImplBase@{backward::StackTraceImplBase}}
+\doxysubsubsection{\texorpdfstring{skip\_n\_firsts()}{skip\_n\_firsts()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily size\+\_\+t backward\+::\+Stack\+Trace\+Impl\+Base\+::skip\+\_\+n\+\_\+firsts (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+\mbox{\Hypertarget{classbackward_1_1StackTraceImplBase_ad4b3e30762ac984cde17d50cb267f160}\label{classbackward_1_1StackTraceImplBase_ad4b3e30762ac984cde17d50cb267f160}} 
+\index{backward::StackTraceImplBase@{backward::StackTraceImplBase}!skip\_n\_firsts@{skip\_n\_firsts}}
+\index{skip\_n\_firsts@{skip\_n\_firsts}!backward::StackTraceImplBase@{backward::StackTraceImplBase}}
+\doxysubsubsection{\texorpdfstring{skip\_n\_firsts()}{skip\_n\_firsts()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void backward\+::\+Stack\+Trace\+Impl\+Base\+::skip\+\_\+n\+\_\+firsts (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{n }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classbackward_1_1StackTraceImplBase_abc67fa1aab36327df39313f6f44d6e91}\label{classbackward_1_1StackTraceImplBase_abc67fa1aab36327df39313f6f44d6e91}} 
+\index{backward::StackTraceImplBase@{backward::StackTraceImplBase}!thread\_id@{thread\_id}}
+\index{thread\_id@{thread\_id}!backward::StackTraceImplBase@{backward::StackTraceImplBase}}
+\doxysubsubsection{\texorpdfstring{thread\_id()}{thread\_id()}}
+{\footnotesize\ttfamily size\+\_\+t backward\+::\+Stack\+Trace\+Impl\+Base\+::thread\+\_\+id (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{classbackward_1_1StackTraceImplBase_a7aa62c90724bbf29ff4918feddfce506}\label{classbackward_1_1StackTraceImplBase_a7aa62c90724bbf29ff4918feddfce506}} 
+\index{backward::StackTraceImplBase@{backward::StackTraceImplBase}!\_context@{\_context}}
+\index{\_context@{\_context}!backward::StackTraceImplBase@{backward::StackTraceImplBase}}
+\doxysubsubsection{\texorpdfstring{\_context}{\_context}}
+{\footnotesize\ttfamily void$\ast$ backward\+::\+Stack\+Trace\+Impl\+Base\+::\+\_\+context\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classbackward_1_1StackTraceImplBase_a2e2c2d4593672248abff1075780d0930}\label{classbackward_1_1StackTraceImplBase_a2e2c2d4593672248abff1075780d0930}} 
+\index{backward::StackTraceImplBase@{backward::StackTraceImplBase}!\_error\_addr@{\_error\_addr}}
+\index{\_error\_addr@{\_error\_addr}!backward::StackTraceImplBase@{backward::StackTraceImplBase}}
+\doxysubsubsection{\texorpdfstring{\_error\_addr}{\_error\_addr}}
+{\footnotesize\ttfamily void$\ast$ backward\+::\+Stack\+Trace\+Impl\+Base\+::\+\_\+error\+\_\+addr\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classbackward_1_1StackTraceImplBase_ab818a9dc2ec44e79bcb8b07c760272f2}\label{classbackward_1_1StackTraceImplBase_ab818a9dc2ec44e79bcb8b07c760272f2}} 
+\index{backward::StackTraceImplBase@{backward::StackTraceImplBase}!\_skip@{\_skip}}
+\index{\_skip@{\_skip}!backward::StackTraceImplBase@{backward::StackTraceImplBase}}
+\doxysubsubsection{\texorpdfstring{\_skip}{\_skip}}
+{\footnotesize\ttfamily size\+\_\+t backward\+::\+Stack\+Trace\+Impl\+Base\+::\+\_\+skip\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classbackward_1_1StackTraceImplBase_a02519c0d3ef7fc1e2a0019a83861e153}\label{classbackward_1_1StackTraceImplBase_a02519c0d3ef7fc1e2a0019a83861e153}} 
+\index{backward::StackTraceImplBase@{backward::StackTraceImplBase}!\_thread\_id@{\_thread\_id}}
+\index{\_thread\_id@{\_thread\_id}!backward::StackTraceImplBase@{backward::StackTraceImplBase}}
+\doxysubsubsection{\texorpdfstring{\_thread\_id}{\_thread\_id}}
+{\footnotesize\ttfamily size\+\_\+t backward\+::\+Stack\+Trace\+Impl\+Base\+::\+\_\+thread\+\_\+id\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{Backtrace_8hpp}{Backtrace.\+hpp}}\end{DoxyCompactItemize}

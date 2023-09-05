@@ -1,0 +1,70 @@
+\hypertarget{namespaceeinsums_1_1detail}{}\doxysection{einsums\+::detail Namespace Reference}
+\label{namespaceeinsums_1_1detail}\index{einsums::detail@{einsums::detail}}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1detail_1_1DimType}{Dim\+Type}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1detail_1_1StrideType}{Stride\+Type}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1detail_1_1OffsetType}{Offset\+Type}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1detail_1_1CountType}{Count\+Type}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1detail_1_1RangeType}{Range\+Type}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1detail_1_1ChunkType}{Chunk\+Type}}
+\item 
+class \mbox{\hyperlink{structeinsums_1_1detail_1_1Array}{Array}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1detail_1_1TensorBase}{Tensor\+Base}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+auto \mbox{\hyperlink{__Export_8hpp_ad5ec33d87b554501185251a886ebf557}{EINSUMS\+\_\+\+EXPORT}} \mbox{\hyperlink{namespaceeinsums_1_1detail_aff0084c5eed7e31bef33df18fa6cff3c}{allocate\+\_\+aligned\+\_\+memory}} (size\+\_\+t align, size\+\_\+t size) -\/$>$ void $\ast$
+\item 
+void \mbox{\hyperlink{__Export_8hpp_ad5ec33d87b554501185251a886ebf557}{EINSUMS\+\_\+\+EXPORT}} \mbox{\hyperlink{namespaceeinsums_1_1detail_a1fdc73286adbf0fcdc794d24b01632ed}{deallocate\+\_\+aligned\+\_\+memory}} (void $\ast$ptr) noexcept
+\item 
+{\footnotesize template$<$template$<$ typename, size\+\_\+t $>$ typename Tensor\+Type, size\+\_\+t Rank, std\+::size\+\_\+t... I, typename T $>$ }\\auto \mbox{\hyperlink{namespaceeinsums_1_1detail_a2a5b6de485574aacfae1bbea1c2abc36}{get\+\_\+dim\+\_\+ranges}} (const Tensor\+Type$<$ T, Rank $>$ \&tensor, std\+::index\+\_\+sequence$<$ I... $>$)
+\item 
+{\footnotesize template$<$size\+\_\+t N, typename Target , typename Source1 , typename Source2 $>$ }\\void \mbox{\hyperlink{namespaceeinsums_1_1detail_a0341bb4972826183467a56ea1005074a}{add\+\_\+elements}} (Target \&target, const Source1 \&source1, const Source2 \&source2)
+\item 
+{\footnotesize template$<$template$<$ typename, size\+\_\+t $>$ typename Tensor\+Type, typename Data\+Type , size\+\_\+t Rank, typename Tuple , std\+::size\+\_\+t... I$>$ }\\void \mbox{\hyperlink{namespaceeinsums_1_1detail_ac2262e9c8086c8d665dbeaaf1a48de0e}{set\+\_\+to}} (Tensor\+Type$<$ Data\+Type, Rank $>$ \&tensor, Data\+Type value, Tuple const \&tuple, std\+::index\+\_\+sequence$<$ I... $>$)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{namespaceeinsums_1_1detail_a0341bb4972826183467a56ea1005074a}\label{namespaceeinsums_1_1detail_a0341bb4972826183467a56ea1005074a}} 
+\index{einsums::detail@{einsums::detail}!add\_elements@{add\_elements}}
+\index{add\_elements@{add\_elements}!einsums::detail@{einsums::detail}}
+\doxysubsubsection{\texorpdfstring{add\_elements()}{add\_elements()}}
+{\footnotesize\ttfamily template$<$size\+\_\+t N, typename Target , typename Source1 , typename Source2 $>$ \\
+void einsums\+::detail\+::add\+\_\+elements (\begin{DoxyParamCaption}\item[{Target \&}]{target,  }\item[{const Source1 \&}]{source1,  }\item[{const Source2 \&}]{source2 }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1detail_aff0084c5eed7e31bef33df18fa6cff3c}\label{namespaceeinsums_1_1detail_aff0084c5eed7e31bef33df18fa6cff3c}} 
+\index{einsums::detail@{einsums::detail}!allocate\_aligned\_memory@{allocate\_aligned\_memory}}
+\index{allocate\_aligned\_memory@{allocate\_aligned\_memory}!einsums::detail@{einsums::detail}}
+\doxysubsubsection{\texorpdfstring{allocate\_aligned\_memory()}{allocate\_aligned\_memory()}}
+{\footnotesize\ttfamily auto einsums\+::detail\+::allocate\+\_\+aligned\+\_\+memory (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{align,  }\item[{size\+\_\+t}]{size }\end{DoxyParamCaption}) -\/$>$ void $\ast$}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1detail_a1fdc73286adbf0fcdc794d24b01632ed}\label{namespaceeinsums_1_1detail_a1fdc73286adbf0fcdc794d24b01632ed}} 
+\index{einsums::detail@{einsums::detail}!deallocate\_aligned\_memory@{deallocate\_aligned\_memory}}
+\index{deallocate\_aligned\_memory@{deallocate\_aligned\_memory}!einsums::detail@{einsums::detail}}
+\doxysubsubsection{\texorpdfstring{deallocate\_aligned\_memory()}{deallocate\_aligned\_memory()}}
+{\footnotesize\ttfamily void einsums\+::detail\+::deallocate\+\_\+aligned\+\_\+memory (\begin{DoxyParamCaption}\item[{void $\ast$}]{ptr }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1detail_a2a5b6de485574aacfae1bbea1c2abc36}\label{namespaceeinsums_1_1detail_a2a5b6de485574aacfae1bbea1c2abc36}} 
+\index{einsums::detail@{einsums::detail}!get\_dim\_ranges@{get\_dim\_ranges}}
+\index{get\_dim\_ranges@{get\_dim\_ranges}!einsums::detail@{einsums::detail}}
+\doxysubsubsection{\texorpdfstring{get\_dim\_ranges()}{get\_dim\_ranges()}}
+{\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename Tensor\+Type, size\+\_\+t Rank, std\+::size\+\_\+t... I, typename T $>$ \\
+auto einsums\+::detail\+::get\+\_\+dim\+\_\+ranges (\begin{DoxyParamCaption}\item[{const Tensor\+Type$<$ T, Rank $>$ \&}]{tensor,  }\item[{std\+::index\+\_\+sequence$<$ I... $>$}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1detail_ac2262e9c8086c8d665dbeaaf1a48de0e}\label{namespaceeinsums_1_1detail_ac2262e9c8086c8d665dbeaaf1a48de0e}} 
+\index{einsums::detail@{einsums::detail}!set\_to@{set\_to}}
+\index{set\_to@{set\_to}!einsums::detail@{einsums::detail}}
+\doxysubsubsection{\texorpdfstring{set\_to()}{set\_to()}}
+{\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename Tensor\+Type, typename Data\+Type , size\+\_\+t Rank, typename Tuple , std\+::size\+\_\+t... I$>$ \\
+void einsums\+::detail\+::set\+\_\+to (\begin{DoxyParamCaption}\item[{Tensor\+Type$<$ Data\+Type, Rank $>$ \&}]{tensor,  }\item[{Data\+Type}]{value,  }\item[{Tuple const \&}]{tuple,  }\item[{std\+::index\+\_\+sequence$<$ I... $>$}]{ }\end{DoxyParamCaption})}
+

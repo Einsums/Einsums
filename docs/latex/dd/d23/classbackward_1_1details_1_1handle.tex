@@ -1,0 +1,230 @@
+\hypertarget{classbackward_1_1details_1_1handle}{}\doxysection{backward\+::details\+::handle$<$ T, Deleter $>$ Class Template Reference}
+\label{classbackward_1_1details_1_1handle}\index{backward::details::handle$<$ T, Deleter $>$@{backward::details::handle$<$ T, Deleter $>$}}
+
+
+{\ttfamily \#include $<$Backtrace.\+hpp$>$}
+
+
+
+Inheritance diagram for backward\+::details\+::handle$<$ T, Deleter $>$\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{d0/d99/classbackward_1_1details_1_1handle__inherit__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+typedef \mbox{\hyperlink{structbackward_1_1details_1_1rm__ptr}{rm\+\_\+ptr}}$<$ T $>$\+::type \& \mbox{\hyperlink{classbackward_1_1details_1_1handle_afc2bea511758f29e998a4770433b4229}{ref\+\_\+t}}
+\item 
+typedef const \mbox{\hyperlink{structbackward_1_1details_1_1rm__ptr}{rm\+\_\+ptr}}$<$ T $>$\+::type \& \mbox{\hyperlink{classbackward_1_1details_1_1handle_a513e1728b4c7c2c8c1ef8a3f87ed9236}{const\+\_\+ref\+\_\+t}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classbackward_1_1details_1_1handle_a14d70e04abaab25ffaa33bdb5f9152aa}{$\sim$handle}} ()
+\item 
+\mbox{\hyperlink{classbackward_1_1details_1_1handle_a78c6097b852985ab7a2d065502751da7}{handle}} ()
+\item 
+\mbox{\hyperlink{classbackward_1_1details_1_1handle_ad30fd9cee50f44cf088b3e84ebfba2e5}{handle}} (T val)
+\item 
+\mbox{\hyperlink{classbackward_1_1details_1_1handle_a24a0552c5b80dad5993ed45efd920879}{handle}} (const \mbox{\hyperlink{classbackward_1_1details_1_1handle}{handle}} \&from)
+\item 
+\mbox{\hyperlink{classbackward_1_1details_1_1handle}{handle}} \& \mbox{\hyperlink{classbackward_1_1details_1_1handle_ab473d1e23f64d28a61540366eb7104ce}{operator=}} (const \mbox{\hyperlink{classbackward_1_1details_1_1handle}{handle}} \&from)
+\item 
+void \mbox{\hyperlink{classbackward_1_1details_1_1handle_a8fea5935a3972beb6ab5fc457d8f3236}{reset}} (T new\+\_\+val)
+\item 
+void \mbox{\hyperlink{classbackward_1_1details_1_1handle_acb0c16caba4ff1ba8a6cce5ca3745071}{update}} (T new\+\_\+val)
+\item 
+\mbox{\hyperlink{classbackward_1_1details_1_1handle_a0bc884690c83806ac149e14e963fa1e8}{operator const dummy $\ast$}} () const
+\item 
+T \mbox{\hyperlink{classbackward_1_1details_1_1handle_ad283eef0a321faef1b2014d22453d2aa}{get}} ()
+\item 
+T \mbox{\hyperlink{classbackward_1_1details_1_1handle_a97288bfea18438a8ce07c2018b18d978}{release}} ()
+\item 
+void \mbox{\hyperlink{classbackward_1_1details_1_1handle_adf744eade5fcb454324d4fa45cfa2a38}{swap}} (\mbox{\hyperlink{classbackward_1_1details_1_1handle}{handle}} \&b)
+\item 
+T \& \mbox{\hyperlink{classbackward_1_1details_1_1handle_a4190de3e5855724077d57d151458704c}{operator-\/$>$}} ()
+\item 
+const T \& \mbox{\hyperlink{classbackward_1_1details_1_1handle_a7833b93d4a5581475555c765876db418}{operator-\/$>$}} () const
+\item 
+\mbox{\hyperlink{classbackward_1_1details_1_1handle_afc2bea511758f29e998a4770433b4229}{ref\+\_\+t}} \mbox{\hyperlink{classbackward_1_1details_1_1handle_a1efea59630b355764c377774692f6696}{operator$\ast$}} ()
+\item 
+\mbox{\hyperlink{classbackward_1_1details_1_1handle_a513e1728b4c7c2c8c1ef8a3f87ed9236}{const\+\_\+ref\+\_\+t}} \mbox{\hyperlink{classbackward_1_1details_1_1handle_a6ba69ee75e670123684d11263b963125}{operator$\ast$}} () const
+\item 
+\mbox{\hyperlink{classbackward_1_1details_1_1handle_afc2bea511758f29e998a4770433b4229}{ref\+\_\+t}} \mbox{\hyperlink{classbackward_1_1details_1_1handle_a59556f3effb574212931fdc9db949cfe}{operator\mbox{[}$\,$\mbox{]}}} (size\+\_\+t idx)
+\item 
+T $\ast$ \mbox{\hyperlink{classbackward_1_1details_1_1handle_a619702abaac70c05e3367879b0b3edd1}{operator\&}} ()
+\end{DoxyCompactItemize}
+\doxysubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+T \mbox{\hyperlink{classbackward_1_1details_1_1handle_a1d523299d15b726db3988da92e783096}{\+\_\+val}}
+\item 
+bool \mbox{\hyperlink{classbackward_1_1details_1_1handle_a4a0a24a127c7ce01429f63dcb488e098}{\+\_\+empty}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Typedef Documentation}
+\mbox{\Hypertarget{classbackward_1_1details_1_1handle_a513e1728b4c7c2c8c1ef8a3f87ed9236}\label{classbackward_1_1details_1_1handle_a513e1728b4c7c2c8c1ef8a3f87ed9236}} 
+\index{backward::details::handle$<$ T, Deleter $>$@{backward::details::handle$<$ T, Deleter $>$}!const\_ref\_t@{const\_ref\_t}}
+\index{const\_ref\_t@{const\_ref\_t}!backward::details::handle$<$ T, Deleter $>$@{backward::details::handle$<$ T, Deleter $>$}}
+\doxysubsubsection{\texorpdfstring{const\_ref\_t}{const\_ref\_t}}
+{\footnotesize\ttfamily template$<$typename T , typename Deleter  = deleter$<$void, void $\ast$, \&\+::free$>$$>$ \\
+typedef const \mbox{\hyperlink{structbackward_1_1details_1_1rm__ptr}{rm\+\_\+ptr}}$<$T$>$\+::type\& \mbox{\hyperlink{classbackward_1_1details_1_1handle}{backward\+::details\+::handle}}$<$ T, Deleter $>$\+::\mbox{\hyperlink{classbackward_1_1details_1_1handle_a513e1728b4c7c2c8c1ef8a3f87ed9236}{const\+\_\+ref\+\_\+t}}}
+
+\mbox{\Hypertarget{classbackward_1_1details_1_1handle_afc2bea511758f29e998a4770433b4229}\label{classbackward_1_1details_1_1handle_afc2bea511758f29e998a4770433b4229}} 
+\index{backward::details::handle$<$ T, Deleter $>$@{backward::details::handle$<$ T, Deleter $>$}!ref\_t@{ref\_t}}
+\index{ref\_t@{ref\_t}!backward::details::handle$<$ T, Deleter $>$@{backward::details::handle$<$ T, Deleter $>$}}
+\doxysubsubsection{\texorpdfstring{ref\_t}{ref\_t}}
+{\footnotesize\ttfamily template$<$typename T , typename Deleter  = deleter$<$void, void $\ast$, \&\+::free$>$$>$ \\
+typedef \mbox{\hyperlink{structbackward_1_1details_1_1rm__ptr}{rm\+\_\+ptr}}$<$T$>$\+::type\& \mbox{\hyperlink{classbackward_1_1details_1_1handle}{backward\+::details\+::handle}}$<$ T, Deleter $>$\+::\mbox{\hyperlink{classbackward_1_1details_1_1handle_afc2bea511758f29e998a4770433b4229}{ref\+\_\+t}}}
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classbackward_1_1details_1_1handle_a14d70e04abaab25ffaa33bdb5f9152aa}\label{classbackward_1_1details_1_1handle_a14d70e04abaab25ffaa33bdb5f9152aa}} 
+\index{backward::details::handle$<$ T, Deleter $>$@{backward::details::handle$<$ T, Deleter $>$}!````~handle@{$\sim$handle}}
+\index{````~handle@{$\sim$handle}!backward::details::handle$<$ T, Deleter $>$@{backward::details::handle$<$ T, Deleter $>$}}
+\doxysubsubsection{\texorpdfstring{$\sim$handle()}{~handle()}}
+{\footnotesize\ttfamily template$<$typename T , typename Deleter  = deleter$<$void, void $\ast$, \&\+::free$>$$>$ \\
+\mbox{\hyperlink{classbackward_1_1details_1_1handle}{backward\+::details\+::handle}}$<$ T, Deleter $>$\+::$\sim$\mbox{\hyperlink{classbackward_1_1details_1_1handle}{handle}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classbackward_1_1details_1_1handle_a78c6097b852985ab7a2d065502751da7}\label{classbackward_1_1details_1_1handle_a78c6097b852985ab7a2d065502751da7}} 
+\index{backward::details::handle$<$ T, Deleter $>$@{backward::details::handle$<$ T, Deleter $>$}!handle@{handle}}
+\index{handle@{handle}!backward::details::handle$<$ T, Deleter $>$@{backward::details::handle$<$ T, Deleter $>$}}
+\doxysubsubsection{\texorpdfstring{handle()}{handle()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily template$<$typename T , typename Deleter  = deleter$<$void, void $\ast$, \&\+::free$>$$>$ \\
+\mbox{\hyperlink{classbackward_1_1details_1_1handle}{backward\+::details\+::handle}}$<$ T, Deleter $>$\+::\mbox{\hyperlink{classbackward_1_1details_1_1handle}{handle}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [explicit]}}
+
+\mbox{\Hypertarget{classbackward_1_1details_1_1handle_ad30fd9cee50f44cf088b3e84ebfba2e5}\label{classbackward_1_1details_1_1handle_ad30fd9cee50f44cf088b3e84ebfba2e5}} 
+\index{backward::details::handle$<$ T, Deleter $>$@{backward::details::handle$<$ T, Deleter $>$}!handle@{handle}}
+\index{handle@{handle}!backward::details::handle$<$ T, Deleter $>$@{backward::details::handle$<$ T, Deleter $>$}}
+\doxysubsubsection{\texorpdfstring{handle()}{handle()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily template$<$typename T , typename Deleter  = deleter$<$void, void $\ast$, \&\+::free$>$$>$ \\
+\mbox{\hyperlink{classbackward_1_1details_1_1handle}{backward\+::details\+::handle}}$<$ T, Deleter $>$\+::\mbox{\hyperlink{classbackward_1_1details_1_1handle}{handle}} (\begin{DoxyParamCaption}\item[{T}]{val }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [explicit]}}
+
+\mbox{\Hypertarget{classbackward_1_1details_1_1handle_a24a0552c5b80dad5993ed45efd920879}\label{classbackward_1_1details_1_1handle_a24a0552c5b80dad5993ed45efd920879}} 
+\index{backward::details::handle$<$ T, Deleter $>$@{backward::details::handle$<$ T, Deleter $>$}!handle@{handle}}
+\index{handle@{handle}!backward::details::handle$<$ T, Deleter $>$@{backward::details::handle$<$ T, Deleter $>$}}
+\doxysubsubsection{\texorpdfstring{handle()}{handle()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily template$<$typename T , typename Deleter  = deleter$<$void, void $\ast$, \&\+::free$>$$>$ \\
+\mbox{\hyperlink{classbackward_1_1details_1_1handle}{backward\+::details\+::handle}}$<$ T, Deleter $>$\+::\mbox{\hyperlink{classbackward_1_1details_1_1handle}{handle}} (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classbackward_1_1details_1_1handle}{handle}}$<$ T, Deleter $>$ \&}]{from }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [explicit]}}
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classbackward_1_1details_1_1handle_ad283eef0a321faef1b2014d22453d2aa}\label{classbackward_1_1details_1_1handle_ad283eef0a321faef1b2014d22453d2aa}} 
+\index{backward::details::handle$<$ T, Deleter $>$@{backward::details::handle$<$ T, Deleter $>$}!get@{get}}
+\index{get@{get}!backward::details::handle$<$ T, Deleter $>$@{backward::details::handle$<$ T, Deleter $>$}}
+\doxysubsubsection{\texorpdfstring{get()}{get()}}
+{\footnotesize\ttfamily template$<$typename T , typename Deleter  = deleter$<$void, void $\ast$, \&\+::free$>$$>$ \\
+T \mbox{\hyperlink{classbackward_1_1details_1_1handle}{backward\+::details\+::handle}}$<$ T, Deleter $>$\+::get (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classbackward_1_1details_1_1handle_a0bc884690c83806ac149e14e963fa1e8}\label{classbackward_1_1details_1_1handle_a0bc884690c83806ac149e14e963fa1e8}} 
+\index{backward::details::handle$<$ T, Deleter $>$@{backward::details::handle$<$ T, Deleter $>$}!operator const dummy $\ast$@{operator const dummy $\ast$}}
+\index{operator const dummy $\ast$@{operator const dummy $\ast$}!backward::details::handle$<$ T, Deleter $>$@{backward::details::handle$<$ T, Deleter $>$}}
+\doxysubsubsection{\texorpdfstring{operator const dummy $\ast$()}{operator const dummy *()}}
+{\footnotesize\ttfamily template$<$typename T , typename Deleter  = deleter$<$void, void $\ast$, \&\+::free$>$$>$ \\
+\mbox{\hyperlink{classbackward_1_1details_1_1handle}{backward\+::details\+::handle}}$<$ T, Deleter $>$\+::operator const dummy $\ast$ (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classbackward_1_1details_1_1handle_a619702abaac70c05e3367879b0b3edd1}\label{classbackward_1_1details_1_1handle_a619702abaac70c05e3367879b0b3edd1}} 
+\index{backward::details::handle$<$ T, Deleter $>$@{backward::details::handle$<$ T, Deleter $>$}!operator\&@{operator\&}}
+\index{operator\&@{operator\&}!backward::details::handle$<$ T, Deleter $>$@{backward::details::handle$<$ T, Deleter $>$}}
+\doxysubsubsection{\texorpdfstring{operator\&()}{operator\&()}}
+{\footnotesize\ttfamily template$<$typename T , typename Deleter  = deleter$<$void, void $\ast$, \&\+::free$>$$>$ \\
+T$\ast$ \mbox{\hyperlink{classbackward_1_1details_1_1handle}{backward\+::details\+::handle}}$<$ T, Deleter $>$\+::operator\& (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classbackward_1_1details_1_1handle_a1efea59630b355764c377774692f6696}\label{classbackward_1_1details_1_1handle_a1efea59630b355764c377774692f6696}} 
+\index{backward::details::handle$<$ T, Deleter $>$@{backward::details::handle$<$ T, Deleter $>$}!operator$\ast$@{operator$\ast$}}
+\index{operator$\ast$@{operator$\ast$}!backward::details::handle$<$ T, Deleter $>$@{backward::details::handle$<$ T, Deleter $>$}}
+\doxysubsubsection{\texorpdfstring{operator$\ast$()}{operator*()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename T , typename Deleter  = deleter$<$void, void $\ast$, \&\+::free$>$$>$ \\
+\mbox{\hyperlink{classbackward_1_1details_1_1handle_afc2bea511758f29e998a4770433b4229}{ref\+\_\+t}} \mbox{\hyperlink{classbackward_1_1details_1_1handle}{backward\+::details\+::handle}}$<$ T, Deleter $>$\+::operator$\ast$ (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classbackward_1_1details_1_1handle_a6ba69ee75e670123684d11263b963125}\label{classbackward_1_1details_1_1handle_a6ba69ee75e670123684d11263b963125}} 
+\index{backward::details::handle$<$ T, Deleter $>$@{backward::details::handle$<$ T, Deleter $>$}!operator$\ast$@{operator$\ast$}}
+\index{operator$\ast$@{operator$\ast$}!backward::details::handle$<$ T, Deleter $>$@{backward::details::handle$<$ T, Deleter $>$}}
+\doxysubsubsection{\texorpdfstring{operator$\ast$()}{operator*()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename T , typename Deleter  = deleter$<$void, void $\ast$, \&\+::free$>$$>$ \\
+\mbox{\hyperlink{classbackward_1_1details_1_1handle_a513e1728b4c7c2c8c1ef8a3f87ed9236}{const\+\_\+ref\+\_\+t}} \mbox{\hyperlink{classbackward_1_1details_1_1handle}{backward\+::details\+::handle}}$<$ T, Deleter $>$\+::operator$\ast$ (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classbackward_1_1details_1_1handle_a4190de3e5855724077d57d151458704c}\label{classbackward_1_1details_1_1handle_a4190de3e5855724077d57d151458704c}} 
+\index{backward::details::handle$<$ T, Deleter $>$@{backward::details::handle$<$ T, Deleter $>$}!operator-\/$>$@{operator-\/$>$}}
+\index{operator-\/$>$@{operator-\/$>$}!backward::details::handle$<$ T, Deleter $>$@{backward::details::handle$<$ T, Deleter $>$}}
+\doxysubsubsection{\texorpdfstring{operator-\/$>$()}{operator->()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename T , typename Deleter  = deleter$<$void, void $\ast$, \&\+::free$>$$>$ \\
+T\& \mbox{\hyperlink{classbackward_1_1details_1_1handle}{backward\+::details\+::handle}}$<$ T, Deleter $>$\+::operator-\/$>$ (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classbackward_1_1details_1_1handle_a7833b93d4a5581475555c765876db418}\label{classbackward_1_1details_1_1handle_a7833b93d4a5581475555c765876db418}} 
+\index{backward::details::handle$<$ T, Deleter $>$@{backward::details::handle$<$ T, Deleter $>$}!operator-\/$>$@{operator-\/$>$}}
+\index{operator-\/$>$@{operator-\/$>$}!backward::details::handle$<$ T, Deleter $>$@{backward::details::handle$<$ T, Deleter $>$}}
+\doxysubsubsection{\texorpdfstring{operator-\/$>$()}{operator->()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename T , typename Deleter  = deleter$<$void, void $\ast$, \&\+::free$>$$>$ \\
+const T\& \mbox{\hyperlink{classbackward_1_1details_1_1handle}{backward\+::details\+::handle}}$<$ T, Deleter $>$\+::operator-\/$>$ (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classbackward_1_1details_1_1handle_ab473d1e23f64d28a61540366eb7104ce}\label{classbackward_1_1details_1_1handle_ab473d1e23f64d28a61540366eb7104ce}} 
+\index{backward::details::handle$<$ T, Deleter $>$@{backward::details::handle$<$ T, Deleter $>$}!operator=@{operator=}}
+\index{operator=@{operator=}!backward::details::handle$<$ T, Deleter $>$@{backward::details::handle$<$ T, Deleter $>$}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}}
+{\footnotesize\ttfamily template$<$typename T , typename Deleter  = deleter$<$void, void $\ast$, \&\+::free$>$$>$ \\
+\mbox{\hyperlink{classbackward_1_1details_1_1handle}{handle}}\& \mbox{\hyperlink{classbackward_1_1details_1_1handle}{backward\+::details\+::handle}}$<$ T, Deleter $>$\+::operator= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classbackward_1_1details_1_1handle}{handle}}$<$ T, Deleter $>$ \&}]{from }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classbackward_1_1details_1_1handle_a59556f3effb574212931fdc9db949cfe}\label{classbackward_1_1details_1_1handle_a59556f3effb574212931fdc9db949cfe}} 
+\index{backward::details::handle$<$ T, Deleter $>$@{backward::details::handle$<$ T, Deleter $>$}!operator\mbox{[}\mbox{]}@{operator[]}}
+\index{operator\mbox{[}\mbox{]}@{operator[]}!backward::details::handle$<$ T, Deleter $>$@{backward::details::handle$<$ T, Deleter $>$}}
+\doxysubsubsection{\texorpdfstring{operator[]()}{operator[]()}}
+{\footnotesize\ttfamily template$<$typename T , typename Deleter  = deleter$<$void, void $\ast$, \&\+::free$>$$>$ \\
+\mbox{\hyperlink{classbackward_1_1details_1_1handle_afc2bea511758f29e998a4770433b4229}{ref\+\_\+t}} \mbox{\hyperlink{classbackward_1_1details_1_1handle}{backward\+::details\+::handle}}$<$ T, Deleter $>$\+::operator\mbox{[}$\,$\mbox{]} (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{idx }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classbackward_1_1details_1_1handle_a97288bfea18438a8ce07c2018b18d978}\label{classbackward_1_1details_1_1handle_a97288bfea18438a8ce07c2018b18d978}} 
+\index{backward::details::handle$<$ T, Deleter $>$@{backward::details::handle$<$ T, Deleter $>$}!release@{release}}
+\index{release@{release}!backward::details::handle$<$ T, Deleter $>$@{backward::details::handle$<$ T, Deleter $>$}}
+\doxysubsubsection{\texorpdfstring{release()}{release()}}
+{\footnotesize\ttfamily template$<$typename T , typename Deleter  = deleter$<$void, void $\ast$, \&\+::free$>$$>$ \\
+T \mbox{\hyperlink{classbackward_1_1details_1_1handle}{backward\+::details\+::handle}}$<$ T, Deleter $>$\+::release (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classbackward_1_1details_1_1handle_a8fea5935a3972beb6ab5fc457d8f3236}\label{classbackward_1_1details_1_1handle_a8fea5935a3972beb6ab5fc457d8f3236}} 
+\index{backward::details::handle$<$ T, Deleter $>$@{backward::details::handle$<$ T, Deleter $>$}!reset@{reset}}
+\index{reset@{reset}!backward::details::handle$<$ T, Deleter $>$@{backward::details::handle$<$ T, Deleter $>$}}
+\doxysubsubsection{\texorpdfstring{reset()}{reset()}}
+{\footnotesize\ttfamily template$<$typename T , typename Deleter  = deleter$<$void, void $\ast$, \&\+::free$>$$>$ \\
+void \mbox{\hyperlink{classbackward_1_1details_1_1handle}{backward\+::details\+::handle}}$<$ T, Deleter $>$\+::reset (\begin{DoxyParamCaption}\item[{T}]{new\+\_\+val }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classbackward_1_1details_1_1handle_adf744eade5fcb454324d4fa45cfa2a38}\label{classbackward_1_1details_1_1handle_adf744eade5fcb454324d4fa45cfa2a38}} 
+\index{backward::details::handle$<$ T, Deleter $>$@{backward::details::handle$<$ T, Deleter $>$}!swap@{swap}}
+\index{swap@{swap}!backward::details::handle$<$ T, Deleter $>$@{backward::details::handle$<$ T, Deleter $>$}}
+\doxysubsubsection{\texorpdfstring{swap()}{swap()}}
+{\footnotesize\ttfamily template$<$typename T , typename Deleter  = deleter$<$void, void $\ast$, \&\+::free$>$$>$ \\
+void \mbox{\hyperlink{classbackward_1_1details_1_1handle}{backward\+::details\+::handle}}$<$ T, Deleter $>$\+::swap (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classbackward_1_1details_1_1handle}{handle}}$<$ T, Deleter $>$ \&}]{b }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classbackward_1_1details_1_1handle_acb0c16caba4ff1ba8a6cce5ca3745071}\label{classbackward_1_1details_1_1handle_acb0c16caba4ff1ba8a6cce5ca3745071}} 
+\index{backward::details::handle$<$ T, Deleter $>$@{backward::details::handle$<$ T, Deleter $>$}!update@{update}}
+\index{update@{update}!backward::details::handle$<$ T, Deleter $>$@{backward::details::handle$<$ T, Deleter $>$}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily template$<$typename T , typename Deleter  = deleter$<$void, void $\ast$, \&\+::free$>$$>$ \\
+void \mbox{\hyperlink{classbackward_1_1details_1_1handle}{backward\+::details\+::handle}}$<$ T, Deleter $>$\+::update (\begin{DoxyParamCaption}\item[{T}]{new\+\_\+val }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{classbackward_1_1details_1_1handle_a4a0a24a127c7ce01429f63dcb488e098}\label{classbackward_1_1details_1_1handle_a4a0a24a127c7ce01429f63dcb488e098}} 
+\index{backward::details::handle$<$ T, Deleter $>$@{backward::details::handle$<$ T, Deleter $>$}!\_empty@{\_empty}}
+\index{\_empty@{\_empty}!backward::details::handle$<$ T, Deleter $>$@{backward::details::handle$<$ T, Deleter $>$}}
+\doxysubsubsection{\texorpdfstring{\_empty}{\_empty}}
+{\footnotesize\ttfamily template$<$typename T , typename Deleter  = deleter$<$void, void $\ast$, \&\+::free$>$$>$ \\
+bool \mbox{\hyperlink{classbackward_1_1details_1_1handle}{backward\+::details\+::handle}}$<$ T, Deleter $>$\+::\+\_\+empty\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classbackward_1_1details_1_1handle_a1d523299d15b726db3988da92e783096}\label{classbackward_1_1details_1_1handle_a1d523299d15b726db3988da92e783096}} 
+\index{backward::details::handle$<$ T, Deleter $>$@{backward::details::handle$<$ T, Deleter $>$}!\_val@{\_val}}
+\index{\_val@{\_val}!backward::details::handle$<$ T, Deleter $>$@{backward::details::handle$<$ T, Deleter $>$}}
+\doxysubsubsection{\texorpdfstring{\_val}{\_val}}
+{\footnotesize\ttfamily template$<$typename T , typename Deleter  = deleter$<$void, void $\ast$, \&\+::free$>$$>$ \\
+T \mbox{\hyperlink{classbackward_1_1details_1_1handle}{backward\+::details\+::handle}}$<$ T, Deleter $>$\+::\+\_\+val\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{Backtrace_8hpp}{Backtrace.\+hpp}}\end{DoxyCompactItemize}

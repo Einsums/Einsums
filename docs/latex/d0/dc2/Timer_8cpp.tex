@@ -1,0 +1,93 @@
+\hypertarget{Timer_8cpp}{}\doxysection{Timer.\+cpp File Reference}
+\label{Timer_8cpp}\index{Timer.cpp@{Timer.cpp}}
+{\ttfamily \#include \char`\"{}einsums/\+Timer.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}einsums/\+Open\+MP.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}einsums/\+Print.\+hpp\char`\"{}}\newline
+{\ttfamily \#include $<$array$>$}\newline
+{\ttfamily \#include $<$cassert$>$}\newline
+{\ttfamily \#include $<$chrono$>$}\newline
+{\ttfamily \#include $<$cstring$>$}\newline
+{\ttfamily \#include $<$fmt/chrono.\+h$>$}\newline
+{\ttfamily \#include $<$map$>$}\newline
+{\ttfamily \#include $<$memory$>$}\newline
+{\ttfamily \#include $<$mutex$>$}\newline
+{\ttfamily \#include $<$vector$>$}\newline
+Include dependency graph for Timer.\+cpp\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{d5/d08/Timer_8cpp__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+ \mbox{\hyperlink{namespaceeinsums}{einsums}}
+\item 
+ \mbox{\hyperlink{namespaceeinsums_1_1timer}{einsums\+::timer}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+using \mbox{\hyperlink{namespaceeinsums_1_1timer_a358e89446796c078989e9252d040ecb4}{einsums\+::timer\+::clock}} = std\+::chrono\+::high\+\_\+resolution\+\_\+clock
+\item 
+using \mbox{\hyperlink{namespaceeinsums_1_1timer_a1664744a2a1747422d790abe2d817631}{einsums\+::timer\+::time\+\_\+point}} = std\+::chrono\+::time\+\_\+point$<$ clock $>$
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{__Export_8hpp_ad5ec33d87b554501185251a886ebf557}{EINSUMS\+\_\+\+EXPORT}} \mbox{\hyperlink{namespaceeinsums_1_1timer_a81e73d57ba47248f7c2049820aff08ed}{einsums\+::timer\+::initialize}} ()
+\item 
+void \mbox{\hyperlink{__Export_8hpp_ad5ec33d87b554501185251a886ebf557}{EINSUMS\+\_\+\+EXPORT}} \mbox{\hyperlink{namespaceeinsums_1_1timer_afcff91a99b50b6b0258bda6a59628ea2}{einsums\+::timer\+::finalize}} ()
+\item 
+void \mbox{\hyperlink{__Export_8hpp_ad5ec33d87b554501185251a886ebf557}{EINSUMS\+\_\+\+EXPORT}} \mbox{\hyperlink{namespaceeinsums_1_1timer_af7b27ed8f1b958ad78194526326352bf}{einsums\+::timer\+::report}} ()
+\item 
+void \mbox{\hyperlink{__Export_8hpp_ad5ec33d87b554501185251a886ebf557}{EINSUMS\+\_\+\+EXPORT}} \mbox{\hyperlink{namespaceeinsums_1_1timer_aec4c3fd0eb6cd1a436316eaba35cf7dd}{einsums\+::timer\+::push}} (std\+::string \mbox{\hyperlink{Timer_8cpp_a9b45b3e13bd9167aab02e17e08916231}{name}})
+\item 
+void \mbox{\hyperlink{__Export_8hpp_ad5ec33d87b554501185251a886ebf557}{EINSUMS\+\_\+\+EXPORT}} \mbox{\hyperlink{namespaceeinsums_1_1timer_ad04291df9f50480fa126cbc561d41a1f}{einsums\+::timer\+::pop}} ()
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{Timer_8cpp_a5f123d6e56422a29c38ba8ce78e31b94}\label{Timer_8cpp_a5f123d6e56422a29c38ba8ce78e31b94}} 
+\index{Timer.cpp@{Timer.cpp}!children@{children}}
+\index{children@{children}!Timer.cpp@{Timer.cpp}}
+\doxysubsubsection{\texorpdfstring{children}{children}}
+{\footnotesize\ttfamily std\+::map$<$std\+::string, Timer\+Detail$>$ children}
+
+\mbox{\Hypertarget{Timer_8cpp_a9b45b3e13bd9167aab02e17e08916231}\label{Timer_8cpp_a9b45b3e13bd9167aab02e17e08916231}} 
+\index{Timer.cpp@{Timer.cpp}!name@{name}}
+\index{name@{name}!Timer.cpp@{Timer.cpp}}
+\doxysubsubsection{\texorpdfstring{name}{name}}
+{\footnotesize\ttfamily std\+::string name \{\char`\"{}(no name)\char`\"{}\}}
+
+\mbox{\Hypertarget{Timer_8cpp_a377aed406d9f5138df4526b90a56c3c0}\label{Timer_8cpp_a377aed406d9f5138df4526b90a56c3c0}} 
+\index{Timer.cpp@{Timer.cpp}!order@{order}}
+\index{order@{order}!Timer.cpp@{Timer.cpp}}
+\doxysubsubsection{\texorpdfstring{order}{order}}
+{\footnotesize\ttfamily std\+::vector$<$std\+::string$>$ order}
+
+\mbox{\Hypertarget{Timer_8cpp_af45e840817e386a0877a80a3bad3162c}\label{Timer_8cpp_af45e840817e386a0877a80a3bad3162c}} 
+\index{Timer.cpp@{Timer.cpp}!parent@{parent}}
+\index{parent@{parent}!Timer.cpp@{Timer.cpp}}
+\doxysubsubsection{\texorpdfstring{parent}{parent}}
+{\footnotesize\ttfamily Timer\+Detail$\ast$ parent}
+
+\mbox{\Hypertarget{Timer_8cpp_a86a7a04d08fbff5ee2ab6ec67cc0c807}\label{Timer_8cpp_a86a7a04d08fbff5ee2ab6ec67cc0c807}} 
+\index{Timer.cpp@{Timer.cpp}!start\_time@{start\_time}}
+\index{start\_time@{start\_time}!Timer.cpp@{Timer.cpp}}
+\doxysubsubsection{\texorpdfstring{start\_time}{start\_time}}
+{\footnotesize\ttfamily time\+\_\+point start\+\_\+time}
+
+\mbox{\Hypertarget{Timer_8cpp_a9bac4755c963a6face3a4a32a3b9f232}\label{Timer_8cpp_a9bac4755c963a6face3a4a32a3b9f232}} 
+\index{Timer.cpp@{Timer.cpp}!total\_calls@{total\_calls}}
+\index{total\_calls@{total\_calls}!Timer.cpp@{Timer.cpp}}
+\doxysubsubsection{\texorpdfstring{total\_calls}{total\_calls}}
+{\footnotesize\ttfamily size\+\_\+t total\+\_\+calls \{0\}}
+
+\mbox{\Hypertarget{Timer_8cpp_a86e2026cc3d8462470355d17484f653b}\label{Timer_8cpp_a86e2026cc3d8462470355d17484f653b}} 
+\index{Timer.cpp@{Timer.cpp}!total\_time@{total\_time}}
+\index{total\_time@{total\_time}!Timer.cpp@{Timer.cpp}}
+\doxysubsubsection{\texorpdfstring{total\_time}{total\_time}}
+{\footnotesize\ttfamily clock\+::duration total\+\_\+time \{0\}}
+

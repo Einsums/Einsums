@@ -1,0 +1,61 @@
+\hypertarget{H5_8hpp}{}\doxysection{H5.\+hpp File Reference}
+\label{H5_8hpp}\index{H5.hpp@{H5.hpp}}
+{\ttfamily \#include $<$h5cpp/core$>$}\newline
+{\ttfamily \#include $<$h5cpp/io$>$}\newline
+{\ttfamily \#include $<$type\+\_\+traits$>$}\newline
+{\ttfamily \#include $<$string$>$}\newline
+Include dependency graph for H5.\+hpp\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{d1/d5b/H5_8hpp__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{d5/dce/H5_8hpp__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structh5_1_1impl_1_1decay_3_1_1einsums_1_1Tensor_3_01T_00_01Rank_01_4_01_4}{h5\+::impl\+::decay$<$\+::einsums\+::\+Tensor$<$ T, Rank $>$ $>$}}
+\item 
+struct \mbox{\hyperlink{structh5_1_1impl_1_1decay_3_1_1einsums_1_1TensorView_3_01T_00_01Rank_01_4_01_4}{h5\+::impl\+::decay$<$\+::einsums\+::\+Tensor\+View$<$ T, Rank $>$ $>$}}
+\item 
+struct \mbox{\hyperlink{structh5_1_1impl_1_1rank_3_1_1einsums_1_1Tensor_3_01T_00_01Rank_01_4_01_4}{h5\+::impl\+::rank$<$\+::einsums\+::\+Tensor$<$ T, Rank $>$ $>$}}
+\item 
+struct \mbox{\hyperlink{structh5_1_1impl_1_1rank_3_1_1einsums_1_1TensorView_3_01T_00_01Rank_01_4_01_4}{h5\+::impl\+::rank$<$\+::einsums\+::\+Tensor\+View$<$ T, Rank $>$ $>$}}
+\item 
+struct \mbox{\hyperlink{structh5_1_1impl_1_1get_3_1_1einsums_1_1Tensor_3_01T_00_011_01_4_01_4}{h5\+::impl\+::get$<$\+::einsums\+::\+Tensor$<$ T, 1 $>$ $>$}}
+\item 
+struct \mbox{\hyperlink{structh5_1_1impl_1_1get_3_1_1einsums_1_1Tensor_3_01T_00_012_01_4_01_4}{h5\+::impl\+::get$<$\+::einsums\+::\+Tensor$<$ T, 2 $>$ $>$}}
+\item 
+struct \mbox{\hyperlink{structh5_1_1impl_1_1get_3_1_1einsums_1_1Tensor_3_01T_00_013_01_4_01_4}{h5\+::impl\+::get$<$\+::einsums\+::\+Tensor$<$ T, 3 $>$ $>$}}
+\item 
+struct \mbox{\hyperlink{structh5_1_1impl_1_1get_3_1_1einsums_1_1Tensor_3_01T_00_014_01_4_01_4}{h5\+::impl\+::get$<$\+::einsums\+::\+Tensor$<$ T, 4 $>$ $>$}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+ \mbox{\hyperlink{namespaceh5}{h5}}
+\item 
+ \mbox{\hyperlink{namespaceh5_1_1impl}{h5\+::impl}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$typename T , size\+\_\+t Rank$>$ }\\auto \mbox{\hyperlink{namespaceh5_1_1impl_abc359663057215e04fe642d399f08d0b}{h5\+::impl\+::data}} (const \+::\mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank $>$ \&ref) -\/$>$ const T $\ast$
+\item 
+{\footnotesize template$<$typename T , size\+\_\+t Rank$>$ }\\auto \mbox{\hyperlink{namespaceh5_1_1impl_a9b10b6ed74b478c449025cba5ffa2b67}{h5\+::impl\+::data}} (const \+::\mbox{\hyperlink{structeinsums_1_1TensorView}{einsums\+::\+Tensor\+View}}$<$ T, Rank $>$ \&ref) -\/$>$ const T $\ast$
+\item 
+{\footnotesize template$<$typename T , size\+\_\+t Rank$>$ }\\auto \mbox{\hyperlink{namespaceh5_1_1impl_aaef030d9687092833523a341a362c5bc}{h5\+::impl\+::data}} (\+::\mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank $>$ \&ref) -\/$>$ T $\ast$
+\item 
+{\footnotesize template$<$typename T , size\+\_\+t Rank$>$ }\\auto \mbox{\hyperlink{namespaceh5_1_1impl_a91375d61a46f57a14bb5f8249928cc53}{h5\+::impl\+::size}} (const \+::\mbox{\hyperlink{structeinsums_1_1Tensor}{einsums\+::\+Tensor}}$<$ T, Rank $>$ \&ref) -\/$>$ std\+::array$<$ std\+::int64\+\_\+t, Rank $>$
+\item 
+{\footnotesize template$<$typename T , size\+\_\+t Rank$>$ }\\auto \mbox{\hyperlink{namespaceh5_1_1impl_a5bce8eefd0706aa85d978cceaebe6fde}{h5\+::impl\+::size}} (const \+::\mbox{\hyperlink{structeinsums_1_1TensorView}{einsums\+::\+Tensor\+View}}$<$ T, Rank $>$ \&ref) -\/$>$ std\+::array$<$ std\+::int64\+\_\+t, Rank $>$
+\item 
+bool \mbox{\hyperlink{namespaceh5_a4a7c7b9b741ade88054b6ff2125a9569}{h5\+::exists}} (hid\+\_\+t hid, const std\+::string \&\mbox{\hyperlink{Timer_8cpp_a9b45b3e13bd9167aab02e17e08916231}{name}})
+\end{DoxyCompactItemize}

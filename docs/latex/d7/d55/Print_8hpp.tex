@@ -1,0 +1,196 @@
+\hypertarget{Print_8hpp}{}\doxysection{Print.\+hpp File Reference}
+\label{Print_8hpp}\index{Print.hpp@{Print.hpp}}
+{\ttfamily \#include $<$algorithm$>$}\newline
+{\ttfamily \#include $<$cassert$>$}\newline
+{\ttfamily \#include $<$complex$>$}\newline
+{\ttfamily \#include $<$cstring$>$}\newline
+{\ttfamily \#include $<$iomanip$>$}\newline
+{\ttfamily \#include $<$iostream$>$}\newline
+{\ttfamily \#include $<$sstream$>$}\newline
+{\ttfamily \#include $<$stdexcept$>$}\newline
+{\ttfamily \#include $<$string\+\_\+view$>$}\newline
+{\ttfamily \#include $<$string$>$}\newline
+{\ttfamily \#include $<$tuple$>$}\newline
+{\ttfamily \#include \char`\"{}einsums/\+\_\+\+Export.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}fmt/color.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}fmt/core.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}fmt/format.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}fmt/ranges.\+h\char`\"{}}\newline
+Include dependency graph for Print.\+hpp\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{df/de1/Print_8hpp__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{d3/dab/Print_8hpp__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structprint_1_1Indent}{print\+::\+Indent}}
+\item 
+struct \mbox{\hyperlink{structdetail_1_1RawTypeNameFormat}{detail\+::\+Raw\+Type\+Name\+Format}}
+\item 
+struct \mbox{\hyperlink{structdetail_1_1TuplePrinter}{detail\+::\+Tuple\+Printer$<$ Tuple, N $>$}}
+\item 
+struct \mbox{\hyperlink{structdetail_1_1TuplePrinter_3_01Tuple_00_011_01_4}{detail\+::\+Tuple\+Printer$<$ Tuple, 1 $>$}}
+\item 
+struct \mbox{\hyperlink{structdetail_1_1TuplePrinterNoType}{detail\+::\+Tuple\+Printer\+No\+Type$<$ Tuple, N $>$}}
+\item 
+struct \mbox{\hyperlink{structdetail_1_1TuplePrinterNoType_3_01Tuple_00_011_01_4}{detail\+::\+Tuple\+Printer\+No\+Type$<$ Tuple, 1 $>$}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+ \mbox{\hyperlink{namespaceprint}{print}}
+\item 
+ \mbox{\hyperlink{namespacedetail}{detail}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{__Export_8hpp_ad5ec33d87b554501185251a886ebf557}{EINSUMS\+\_\+\+EXPORT}} \mbox{\hyperlink{namespaceprint_a90b4188f5f5b15f32410555747fe5533}{print\+::indent}} ()
+\item 
+void \mbox{\hyperlink{__Export_8hpp_ad5ec33d87b554501185251a886ebf557}{EINSUMS\+\_\+\+EXPORT}} \mbox{\hyperlink{namespaceprint_afdf5078059a306efa27d341fcdf411cc}{print\+::deindent}} ()
+\item 
+auto \mbox{\hyperlink{__Export_8hpp_ad5ec33d87b554501185251a886ebf557}{EINSUMS\+\_\+\+EXPORT}} \mbox{\hyperlink{namespaceprint_a5668930379ed66a8b3a338df7af5fbc7}{print\+::current\+\_\+indent\+\_\+level}} () -\/$>$ int
+\item 
+void \mbox{\hyperlink{__Export_8hpp_ad5ec33d87b554501185251a886ebf557}{EINSUMS\+\_\+\+EXPORT}} \mbox{\hyperlink{namespaceprint_a33ebd2131b91026bc10f143fe19745f7}{print\+::always\+\_\+print\+\_\+thread\+\_\+id}} (bool onoff)
+\begin{DoxyCompactList}\small\item\em Controls whether a line header is printed for the main thread or not. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{__Export_8hpp_ad5ec33d87b554501185251a886ebf557}{EINSUMS\+\_\+\+EXPORT}} \mbox{\hyperlink{namespaceprint_a11e6b52db385aeaedb6a2a52668eb4e3}{print\+::suppress\+\_\+output}} (bool onoff)
+\begin{DoxyCompactList}\small\item\em Silences all output. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{__Export_8hpp_ad5ec33d87b554501185251a886ebf557}{EINSUMS\+\_\+\+EXPORT}} \mbox{\hyperlink{namespaceprint_a06b242948a7b85000ab9fe1b2d0f7de9}{print\+::stacktrace}} ()
+\item 
+void \mbox{\hyperlink{__Export_8hpp_ad5ec33d87b554501185251a886ebf557}{EINSUMS\+\_\+\+EXPORT}} \mbox{\hyperlink{namespacedetail_a9390305128025d48ebf4e9deff34ee55}{detail\+::println}} (const std\+::string \&oss)
+\item 
+{\footnotesize template$<$typename T $>$ }\\constexpr auto \mbox{\hyperlink{namespacedetail_a67129e31d4cf91e581b7bbf2c65835d2}{detail\+::\+Raw\+Type\+Name}} () -\/$>$ const auto \&
+\item 
+constexpr auto \mbox{\hyperlink{namespacedetail_a52bb0c665589668e1ae3cbd4759ea58f}{detail\+::\+Get\+Raw\+Type\+Name\+Format}} (Raw\+Type\+Name\+Format $\ast$format) -\/$>$ bool
+\item 
+{\footnotesize template$<$typename T $>$ }\\constexpr auto \mbox{\hyperlink{Print_8hpp_aff28897755c49cbfee79eb5d5bb8a66b}{Cexpr\+Type\+Name}} ()
+\item 
+{\footnotesize template$<$typename T $>$ }\\auto \mbox{\hyperlink{Print_8hpp_a67cbd9ec04b7ee08db592a3677929e9a}{type\+\_\+name}} () -\/$>$ const char $\ast$
+\item 
+{\footnotesize template$<$typename T $>$ }\\auto \mbox{\hyperlink{Print_8hpp_a91f3e098aba7debe86515236bf9ca671}{type\+\_\+name}} (const T \&) -\/$>$ const char $\ast$
+\item 
+{\footnotesize template$<$typename... Args, std\+::enable\+\_\+if\+\_\+t$<$ sizeof...(\+Args)==0, int $>$  = 0$>$ }\\auto \mbox{\hyperlink{namespacedetail_a8ebfd632ef4e5957b21e6e5d10805d66}{detail\+::print\+\_\+tuple}} (const std\+::tuple$<$ Args... $>$ \&) -\/$>$ std\+::string
+\item 
+{\footnotesize template$<$typename... Args, std\+::enable\+\_\+if\+\_\+t$<$ sizeof...(\+Args)==0, int $>$  = 0$>$ }\\auto \mbox{\hyperlink{namespacedetail_ab2c057d120d5d10135494c272624071e}{detail\+::print\+\_\+tuple\+\_\+no\+\_\+type}} (const std\+::tuple$<$ Args... $>$ \&) -\/$>$ std\+::string
+\item 
+{\footnotesize template$<$typename... Args, std\+::enable\+\_\+if\+\_\+t$<$ sizeof...(\+Args) !=0, int $>$  = 0$>$ }\\auto \mbox{\hyperlink{Print_8hpp_a2b7e74179d31b8eef932f818db474b11}{print\+\_\+tuple}} (const std\+::tuple$<$ Args... $>$ \&t) -\/$>$ std\+::string
+\item 
+{\footnotesize template$<$typename... Args, std\+::enable\+\_\+if\+\_\+t$<$ sizeof...(\+Args) !=0, int $>$  = 0$>$ }\\auto \mbox{\hyperlink{Print_8hpp_a72f8c27d042c40283472599d0cb4319c}{print\+\_\+tuple\+\_\+no\+\_\+type}} (const std\+::tuple$<$ Args... $>$ \&t) -\/$>$ std\+::string
+\item 
+auto \mbox{\hyperlink{Print_8hpp_aadfd6036ed79f8a7f742d75ddff40710}{print\+\_\+tuple\+\_\+no\+\_\+type}} (const std\+::tuple$<$$>$ \&) -\/$>$ std\+::string
+\item 
+{\footnotesize template$<$typename... Ts$>$ }\\void \mbox{\hyperlink{Print_8hpp_a2202e0155da7a0f73d04e158cd7d616a}{println}} (const std\+::string\+\_\+view \&f, const Ts... ts)
+\item 
+{\footnotesize template$<$typename... Ts$>$ }\\void \mbox{\hyperlink{Print_8hpp_a3c1d541c0ef7fb1065926cb6eced299e}{println}} (const fmt\+::text\+\_\+style \&style, const std\+::string\+\_\+view \&format, const Ts... ts)
+\item 
+void \mbox{\hyperlink{Print_8hpp_afcd23ca5ac0c1e652c17a79bc29910d6}{println}} (const std\+::string \&format)
+\item 
+void \mbox{\hyperlink{Print_8hpp_a1a342a865a2b4662da2dd0785cdd1a66}{println}} (const fmt\+::text\+\_\+style \&style, const std\+::string\+\_\+view \&format)
+\item 
+void \mbox{\hyperlink{Print_8hpp_a09924d963d1af8ede9841230001c31ab}{println}} ()
+\item 
+{\footnotesize template$<$typename... Ts$>$ }\\void \mbox{\hyperlink{Print_8hpp_a49579bbdc6a99a5ee0e6ab6c1c3c82df}{println\+\_\+abort}} (const std\+::string\+\_\+view \&format, const Ts... ts)
+\item 
+{\footnotesize template$<$typename... Ts$>$ }\\void \mbox{\hyperlink{Print_8hpp_ae65c3e68454714bbbdcb662c540dbbbb}{println\+\_\+warn}} (const std\+::string\+\_\+view \&format, const Ts... ts)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{Print_8hpp_aff28897755c49cbfee79eb5d5bb8a66b}\label{Print_8hpp_aff28897755c49cbfee79eb5d5bb8a66b}} 
+\index{Print.hpp@{Print.hpp}!CexprTypeName@{CexprTypeName}}
+\index{CexprTypeName@{CexprTypeName}!Print.hpp@{Print.hpp}}
+\doxysubsubsection{\texorpdfstring{CexprTypeName()}{CexprTypeName()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+constexpr auto Cexpr\+Type\+Name (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+\mbox{\Hypertarget{Print_8hpp_a2b7e74179d31b8eef932f818db474b11}\label{Print_8hpp_a2b7e74179d31b8eef932f818db474b11}} 
+\index{Print.hpp@{Print.hpp}!print\_tuple@{print\_tuple}}
+\index{print\_tuple@{print\_tuple}!Print.hpp@{Print.hpp}}
+\doxysubsubsection{\texorpdfstring{print\_tuple()}{print\_tuple()}}
+{\footnotesize\ttfamily template$<$typename... Args, std\+::enable\+\_\+if\+\_\+t$<$ sizeof...(\+Args) !=0, int $>$  = 0$>$ \\
+auto print\+\_\+tuple (\begin{DoxyParamCaption}\item[{const std\+::tuple$<$ Args... $>$ \&}]{t }\end{DoxyParamCaption}) -\/$>$ std\+::string }
+
+\mbox{\Hypertarget{Print_8hpp_a72f8c27d042c40283472599d0cb4319c}\label{Print_8hpp_a72f8c27d042c40283472599d0cb4319c}} 
+\index{Print.hpp@{Print.hpp}!print\_tuple\_no\_type@{print\_tuple\_no\_type}}
+\index{print\_tuple\_no\_type@{print\_tuple\_no\_type}!Print.hpp@{Print.hpp}}
+\doxysubsubsection{\texorpdfstring{print\_tuple\_no\_type()}{print\_tuple\_no\_type()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename... Args, std\+::enable\+\_\+if\+\_\+t$<$ sizeof...(\+Args) !=0, int $>$  = 0$>$ \\
+auto print\+\_\+tuple\+\_\+no\+\_\+type (\begin{DoxyParamCaption}\item[{const std\+::tuple$<$ Args... $>$ \&}]{t }\end{DoxyParamCaption}) -\/$>$ std\+::string }
+
+\mbox{\Hypertarget{Print_8hpp_aadfd6036ed79f8a7f742d75ddff40710}\label{Print_8hpp_aadfd6036ed79f8a7f742d75ddff40710}} 
+\index{Print.hpp@{Print.hpp}!print\_tuple\_no\_type@{print\_tuple\_no\_type}}
+\index{print\_tuple\_no\_type@{print\_tuple\_no\_type}!Print.hpp@{Print.hpp}}
+\doxysubsubsection{\texorpdfstring{print\_tuple\_no\_type()}{print\_tuple\_no\_type()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily auto print\+\_\+tuple\+\_\+no\+\_\+type (\begin{DoxyParamCaption}\item[{const std\+::tuple$<$$>$ \&}]{ }\end{DoxyParamCaption}) -\/$>$ std\+::string \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{Print_8hpp_a09924d963d1af8ede9841230001c31ab}\label{Print_8hpp_a09924d963d1af8ede9841230001c31ab}} 
+\index{Print.hpp@{Print.hpp}!println@{println}}
+\index{println@{println}!Print.hpp@{Print.hpp}}
+\doxysubsubsection{\texorpdfstring{println()}{println()}\hspace{0.1cm}{\footnotesize\ttfamily [1/5]}}
+{\footnotesize\ttfamily void println (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{Print_8hpp_a1a342a865a2b4662da2dd0785cdd1a66}\label{Print_8hpp_a1a342a865a2b4662da2dd0785cdd1a66}} 
+\index{Print.hpp@{Print.hpp}!println@{println}}
+\index{println@{println}!Print.hpp@{Print.hpp}}
+\doxysubsubsection{\texorpdfstring{println()}{println()}\hspace{0.1cm}{\footnotesize\ttfamily [2/5]}}
+{\footnotesize\ttfamily void println (\begin{DoxyParamCaption}\item[{const fmt\+::text\+\_\+style \&}]{style,  }\item[{const std\+::string\+\_\+view \&}]{format }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{Print_8hpp_a3c1d541c0ef7fb1065926cb6eced299e}\label{Print_8hpp_a3c1d541c0ef7fb1065926cb6eced299e}} 
+\index{Print.hpp@{Print.hpp}!println@{println}}
+\index{println@{println}!Print.hpp@{Print.hpp}}
+\doxysubsubsection{\texorpdfstring{println()}{println()}\hspace{0.1cm}{\footnotesize\ttfamily [3/5]}}
+{\footnotesize\ttfamily template$<$typename... Ts$>$ \\
+void println (\begin{DoxyParamCaption}\item[{const fmt\+::text\+\_\+style \&}]{style,  }\item[{const std\+::string\+\_\+view \&}]{format,  }\item[{const Ts...}]{ts }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{Print_8hpp_afcd23ca5ac0c1e652c17a79bc29910d6}\label{Print_8hpp_afcd23ca5ac0c1e652c17a79bc29910d6}} 
+\index{Print.hpp@{Print.hpp}!println@{println}}
+\index{println@{println}!Print.hpp@{Print.hpp}}
+\doxysubsubsection{\texorpdfstring{println()}{println()}\hspace{0.1cm}{\footnotesize\ttfamily [4/5]}}
+{\footnotesize\ttfamily void println (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{format }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{Print_8hpp_a2202e0155da7a0f73d04e158cd7d616a}\label{Print_8hpp_a2202e0155da7a0f73d04e158cd7d616a}} 
+\index{Print.hpp@{Print.hpp}!println@{println}}
+\index{println@{println}!Print.hpp@{Print.hpp}}
+\doxysubsubsection{\texorpdfstring{println()}{println()}\hspace{0.1cm}{\footnotesize\ttfamily [5/5]}}
+{\footnotesize\ttfamily template$<$typename... Ts$>$ \\
+void println (\begin{DoxyParamCaption}\item[{const std\+::string\+\_\+view \&}]{f,  }\item[{const Ts...}]{ts }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{Print_8hpp_a49579bbdc6a99a5ee0e6ab6c1c3c82df}\label{Print_8hpp_a49579bbdc6a99a5ee0e6ab6c1c3c82df}} 
+\index{Print.hpp@{Print.hpp}!println\_abort@{println\_abort}}
+\index{println\_abort@{println\_abort}!Print.hpp@{Print.hpp}}
+\doxysubsubsection{\texorpdfstring{println\_abort()}{println\_abort()}}
+{\footnotesize\ttfamily template$<$typename... Ts$>$ \\
+void println\+\_\+abort (\begin{DoxyParamCaption}\item[{const std\+::string\+\_\+view \&}]{format,  }\item[{const Ts...}]{ts }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{Print_8hpp_ae65c3e68454714bbbdcb662c540dbbbb}\label{Print_8hpp_ae65c3e68454714bbbdcb662c540dbbbb}} 
+\index{Print.hpp@{Print.hpp}!println\_warn@{println\_warn}}
+\index{println\_warn@{println\_warn}!Print.hpp@{Print.hpp}}
+\doxysubsubsection{\texorpdfstring{println\_warn()}{println\_warn()}}
+{\footnotesize\ttfamily template$<$typename... Ts$>$ \\
+void println\+\_\+warn (\begin{DoxyParamCaption}\item[{const std\+::string\+\_\+view \&}]{format,  }\item[{const Ts...}]{ts }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{Print_8hpp_a67cbd9ec04b7ee08db592a3677929e9a}\label{Print_8hpp_a67cbd9ec04b7ee08db592a3677929e9a}} 
+\index{Print.hpp@{Print.hpp}!type\_name@{type\_name}}
+\index{type\_name@{type\_name}!Print.hpp@{Print.hpp}}
+\doxysubsubsection{\texorpdfstring{type\_name()}{type\_name()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+auto type\+\_\+name (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) -\/$>$ const char $\ast$ }
+
+\mbox{\Hypertarget{Print_8hpp_a91f3e098aba7debe86515236bf9ca671}\label{Print_8hpp_a91f3e098aba7debe86515236bf9ca671}} 
+\index{Print.hpp@{Print.hpp}!type\_name@{type\_name}}
+\index{type\_name@{type\_name}!Print.hpp@{Print.hpp}}
+\doxysubsubsection{\texorpdfstring{type\_name()}{type\_name()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+auto type\+\_\+name (\begin{DoxyParamCaption}\item[{const T \&}]{ }\end{DoxyParamCaption}) -\/$>$ const char $\ast$ }
+

@@ -1,0 +1,51 @@
+\hypertarget{namespaceeinsums_1_1Arguments}{}\doxysection{einsums\+::Arguments Namespace Reference}
+\label{namespaceeinsums_1_1Arguments}\index{einsums::Arguments@{einsums::Arguments}}
+\doxysubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+ \mbox{\hyperlink{namespaceeinsums_1_1Arguments_1_1Detail}{Detail}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1Arguments_1_1TuplePosition}{Tuple\+Position}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1Arguments_1_1Contains}{Contains}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1Arguments_1_1Contains_3_01T_00_01Head_00_01Remaining_8_8_8_01_4}{Contains$<$ T, Head, Remaining... $>$}}
+\item 
+struct \mbox{\hyperlink{structeinsums_1_1Arguments_1_1Contains_3_01T_01_4}{Contains$<$ T $>$}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$typename Search\+Pattern , typename... Args, typename Idx  = Tuple\+Position$<$const Search\+Pattern \&, const Args \&..., const Search\+Pattern \&$>$$>$ }\\auto \mbox{\hyperlink{namespaceeinsums_1_1Arguments_a4a1315f21677a36601adab5b46dd16e0}{get}} (const Search\+Pattern \&definition, Args \&\&...args) -\/$>$ typename Idx\+::type \&
+\item 
+{\footnotesize template$<$typename Search\+Pattern , typename... Args$>$ }\\auto \mbox{\hyperlink{namespaceeinsums_1_1Arguments_a7788c5ac32ba7f55f09ad47e6d8caab5}{get}} (Args \&\&...args) -\/$>$ Search\+Pattern \&
+\item 
+{\footnotesize template$<$int Idx, typename... Args$>$ }\\auto \mbox{\hyperlink{namespaceeinsums_1_1Arguments_a80b2ff9afd1a4d249bec7ba941480370}{getn}} (Args \&\&...args) -\/$>$ typename std\+::tuple\+\_\+element$<$ Idx, std\+::tuple$<$ Args... $>$$>$\+::type \&
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{namespaceeinsums_1_1Arguments_a7788c5ac32ba7f55f09ad47e6d8caab5}\label{namespaceeinsums_1_1Arguments_a7788c5ac32ba7f55f09ad47e6d8caab5}} 
+\index{einsums::Arguments@{einsums::Arguments}!get@{get}}
+\index{get@{get}!einsums::Arguments@{einsums::Arguments}}
+\doxysubsubsection{\texorpdfstring{get()}{get()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename Search\+Pattern , typename... Args$>$ \\
+auto einsums\+::\+Arguments\+::get (\begin{DoxyParamCaption}\item[{Args \&\&...}]{args }\end{DoxyParamCaption}) -\/$>$ Search\+Pattern \& }
+
+\mbox{\Hypertarget{namespaceeinsums_1_1Arguments_a4a1315f21677a36601adab5b46dd16e0}\label{namespaceeinsums_1_1Arguments_a4a1315f21677a36601adab5b46dd16e0}} 
+\index{einsums::Arguments@{einsums::Arguments}!get@{get}}
+\index{get@{get}!einsums::Arguments@{einsums::Arguments}}
+\doxysubsubsection{\texorpdfstring{get()}{get()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename Search\+Pattern , typename... Args, typename Idx  = Tuple\+Position$<$const Search\+Pattern \&, const Args \&..., const Search\+Pattern \&$>$$>$ \\
+auto einsums\+::\+Arguments\+::get (\begin{DoxyParamCaption}\item[{const Search\+Pattern \&}]{definition,  }\item[{Args \&\&...}]{args }\end{DoxyParamCaption}) -\/$>$ typename Idx\+::type \& }
+
+\mbox{\Hypertarget{namespaceeinsums_1_1Arguments_a80b2ff9afd1a4d249bec7ba941480370}\label{namespaceeinsums_1_1Arguments_a80b2ff9afd1a4d249bec7ba941480370}} 
+\index{einsums::Arguments@{einsums::Arguments}!getn@{getn}}
+\index{getn@{getn}!einsums::Arguments@{einsums::Arguments}}
+\doxysubsubsection{\texorpdfstring{getn()}{getn()}}
+{\footnotesize\ttfamily template$<$int Idx, typename... Args$>$ \\
+auto einsums\+::\+Arguments\+::getn (\begin{DoxyParamCaption}\item[{Args \&\&...}]{args }\end{DoxyParamCaption}) -\/$>$ typename std\+::tuple\+\_\+element$<$Idx, std\+::tuple$<$Args...$>$$>$\+::type \& }
+

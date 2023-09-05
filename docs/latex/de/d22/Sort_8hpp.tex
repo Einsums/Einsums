@@ -1,0 +1,75 @@
+\hypertarget{Sort_8hpp}{}\doxysection{Sort.\+hpp File Reference}
+\label{Sort_8hpp}\index{Sort.hpp@{Sort.hpp}}
+{\ttfamily \#include \char`\"{}einsums/\+Linear\+Algebra.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}einsums/\+STL.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}einsums/\+Section.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}einsums/\+Tensor.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}einsums/\+\_\+\+Common.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}einsums/\+\_\+\+Compiler.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}einsums/\+\_\+\+Index.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}einsums/\+\_\+\+Tensor\+Algebra\+Utilities.\+hpp\char`\"{}}\newline
+Include dependency graph for Sort.\+hpp\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{d3/d0f/Sort_8hpp__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=266pt]{da/d4a/Sort_8hpp__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$template$<$ typename, size\+\_\+t $>$ typename AType, size\+\_\+t ARank, template$<$ typename, size\+\_\+t $>$ typename CType, size\+\_\+t CRank, typename... CIndices, typename... AIndices, typename U , typename T  = double$>$ }\\auto \mbox{\hyperlink{Sort_8hpp_af11e846023dd11e951b9eb1f96f0d010}{sort}} (const U UC\+\_\+prefactor, const std\+::tuple$<$ CIndices... $>$ \&C\+\_\+indices, CType$<$ T, CRank $>$ $\ast$C, const U UA\+\_\+prefactor, const std\+::tuple$<$ AIndices... $>$ \&A\+\_\+indices, const AType$<$ T, ARank $>$ \&A) -\/$>$ std\+::enable\+\_\+if\+\_\+t$<$ std\+::is\+\_\+base\+\_\+of\+\_\+v$<$\+::\mbox{\hyperlink{structeinsums_1_1detail_1_1TensorBase}{einsums\+::detail\+::\+Tensor\+Base}}$<$ T, CRank $>$, CType$<$ T, CRank $>$$>$ \&\&std\+::is\+\_\+base\+\_\+of\+\_\+v$<$\+::\mbox{\hyperlink{structeinsums_1_1detail_1_1TensorBase}{einsums\+::detail\+::\+Tensor\+Base}}$<$ T, ARank $>$, AType$<$ T, ARank $>$$>$ \&\&sizeof...(CIndices)==sizeof...(AIndices) \&\&sizeof...(CIndices)==CRank \&\&sizeof...(AIndices)==ARank \&\&std\+::is\+\_\+arithmetic\+\_\+v$<$ U $>$$>$
+\item 
+{\footnotesize template$<$typename ObjectA , typename ObjectC , typename... CIndices, typename... AIndices$>$ }\\auto \mbox{\hyperlink{Sort_8hpp_a2e24d3df1cfe1fe7f19add52659ccc6c}{sort}} (const std\+::tuple$<$ CIndices... $>$ \&C\+\_\+indices, ObjectC $\ast$C, const std\+::tuple$<$ AIndices... $>$ \&A\+\_\+indices, const ObjectA \&A) -\/$>$ std\+::enable\+\_\+if\+\_\+t$<$!is\+\_\+smart\+\_\+pointer\+\_\+v$<$ ObjectA $>$ \&\&!is\+\_\+smart\+\_\+pointer\+\_\+v$<$ ObjectC $>$$>$
+\item 
+{\footnotesize template$<$typename Smart\+PointerA , typename Smart\+PointerC , typename... CIndices, typename... AIndices$>$ }\\auto \mbox{\hyperlink{Sort_8hpp_a087693ef41451d413c524a7efe10af53}{sort}} (const std\+::tuple$<$ CIndices... $>$ \&C\+\_\+indices, Smart\+PointerC $\ast$C, const std\+::tuple$<$ AIndices... $>$ \&A\+\_\+indices, const Smart\+PointerA \&A) -\/$>$ std\+::enable\+\_\+if\+\_\+t$<$ is\+\_\+smart\+\_\+pointer\+\_\+v$<$ Smart\+PointerA $>$ \&\&is\+\_\+smart\+\_\+pointer\+\_\+v$<$ Smart\+PointerC $>$$>$
+\item 
+{\footnotesize template$<$typename Smart\+PointerA , typename PointerC , typename... CIndices, typename... AIndices$>$ }\\auto \mbox{\hyperlink{Sort_8hpp_a9c58cd4a018f6d74994f17e3cc73b16d}{sort}} (const std\+::tuple$<$ CIndices... $>$ \&C\+\_\+indices, PointerC $\ast$C, const std\+::tuple$<$ AIndices... $>$ \&A\+\_\+indices, const Smart\+PointerA \&A) -\/$>$ std\+::enable\+\_\+if\+\_\+t$<$ is\+\_\+smart\+\_\+pointer\+\_\+v$<$ Smart\+PointerA $>$ \&\&!is\+\_\+smart\+\_\+pointer\+\_\+v$<$ PointerC $>$$>$
+\item 
+{\footnotesize template$<$typename ObjectA , typename Smart\+PointerC , typename... CIndices, typename... AIndices$>$ }\\auto \mbox{\hyperlink{Sort_8hpp_a84ae5c87126c65a8235adacdf585db95}{sort}} (const std\+::tuple$<$ CIndices... $>$ \&C\+\_\+indices, Smart\+PointerC $\ast$C, const std\+::tuple$<$ AIndices... $>$ \&A\+\_\+indices, const ObjectA \&A) -\/$>$ std\+::enable\+\_\+if\+\_\+t$<$!is\+\_\+smart\+\_\+pointer\+\_\+v$<$ ObjectA $>$ \&\&is\+\_\+smart\+\_\+pointer\+\_\+v$<$ Smart\+PointerC $>$$>$
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{Sort_8hpp_a2e24d3df1cfe1fe7f19add52659ccc6c}\label{Sort_8hpp_a2e24d3df1cfe1fe7f19add52659ccc6c}} 
+\index{Sort.hpp@{Sort.hpp}!sort@{sort}}
+\index{sort@{sort}!Sort.hpp@{Sort.hpp}}
+\doxysubsubsection{\texorpdfstring{sort()}{sort()}\hspace{0.1cm}{\footnotesize\ttfamily [1/5]}}
+{\footnotesize\ttfamily template$<$typename ObjectA , typename ObjectC , typename... CIndices, typename... AIndices$>$ \\
+auto sort (\begin{DoxyParamCaption}\item[{const std\+::tuple$<$ CIndices... $>$ \&}]{C\+\_\+indices,  }\item[{ObjectC $\ast$}]{C,  }\item[{const std\+::tuple$<$ AIndices... $>$ \&}]{A\+\_\+indices,  }\item[{const ObjectA \&}]{A }\end{DoxyParamCaption}) -\/$>$ std\+::enable\+\_\+if\+\_\+t$<$!is\+\_\+smart\+\_\+pointer\+\_\+v$<$ObjectA$>$ \&\& !is\+\_\+smart\+\_\+pointer\+\_\+v$<$ObjectC$>$$>$ }
+
+\mbox{\Hypertarget{Sort_8hpp_a9c58cd4a018f6d74994f17e3cc73b16d}\label{Sort_8hpp_a9c58cd4a018f6d74994f17e3cc73b16d}} 
+\index{Sort.hpp@{Sort.hpp}!sort@{sort}}
+\index{sort@{sort}!Sort.hpp@{Sort.hpp}}
+\doxysubsubsection{\texorpdfstring{sort()}{sort()}\hspace{0.1cm}{\footnotesize\ttfamily [2/5]}}
+{\footnotesize\ttfamily template$<$typename Smart\+PointerA , typename PointerC , typename... CIndices, typename... AIndices$>$ \\
+auto sort (\begin{DoxyParamCaption}\item[{const std\+::tuple$<$ CIndices... $>$ \&}]{C\+\_\+indices,  }\item[{PointerC $\ast$}]{C,  }\item[{const std\+::tuple$<$ AIndices... $>$ \&}]{A\+\_\+indices,  }\item[{const Smart\+PointerA \&}]{A }\end{DoxyParamCaption}) -\/$>$ std\+::enable\+\_\+if\+\_\+t$<$is\+\_\+smart\+\_\+pointer\+\_\+v$<$Smart\+PointerA$>$ \&\& !is\+\_\+smart\+\_\+pointer\+\_\+v$<$PointerC$>$$>$ }
+
+\mbox{\Hypertarget{Sort_8hpp_a84ae5c87126c65a8235adacdf585db95}\label{Sort_8hpp_a84ae5c87126c65a8235adacdf585db95}} 
+\index{Sort.hpp@{Sort.hpp}!sort@{sort}}
+\index{sort@{sort}!Sort.hpp@{Sort.hpp}}
+\doxysubsubsection{\texorpdfstring{sort()}{sort()}\hspace{0.1cm}{\footnotesize\ttfamily [3/5]}}
+{\footnotesize\ttfamily template$<$typename ObjectA , typename Smart\+PointerC , typename... CIndices, typename... AIndices$>$ \\
+auto sort (\begin{DoxyParamCaption}\item[{const std\+::tuple$<$ CIndices... $>$ \&}]{C\+\_\+indices,  }\item[{Smart\+PointerC $\ast$}]{C,  }\item[{const std\+::tuple$<$ AIndices... $>$ \&}]{A\+\_\+indices,  }\item[{const ObjectA \&}]{A }\end{DoxyParamCaption}) -\/$>$ std\+::enable\+\_\+if\+\_\+t$<$!is\+\_\+smart\+\_\+pointer\+\_\+v$<$ObjectA$>$ \&\& is\+\_\+smart\+\_\+pointer\+\_\+v$<$Smart\+PointerC$>$$>$ }
+
+\mbox{\Hypertarget{Sort_8hpp_a087693ef41451d413c524a7efe10af53}\label{Sort_8hpp_a087693ef41451d413c524a7efe10af53}} 
+\index{Sort.hpp@{Sort.hpp}!sort@{sort}}
+\index{sort@{sort}!Sort.hpp@{Sort.hpp}}
+\doxysubsubsection{\texorpdfstring{sort()}{sort()}\hspace{0.1cm}{\footnotesize\ttfamily [4/5]}}
+{\footnotesize\ttfamily template$<$typename Smart\+PointerA , typename Smart\+PointerC , typename... CIndices, typename... AIndices$>$ \\
+auto sort (\begin{DoxyParamCaption}\item[{const std\+::tuple$<$ CIndices... $>$ \&}]{C\+\_\+indices,  }\item[{Smart\+PointerC $\ast$}]{C,  }\item[{const std\+::tuple$<$ AIndices... $>$ \&}]{A\+\_\+indices,  }\item[{const Smart\+PointerA \&}]{A }\end{DoxyParamCaption}) -\/$>$ std\+::enable\+\_\+if\+\_\+t$<$is\+\_\+smart\+\_\+pointer\+\_\+v$<$Smart\+PointerA$>$ \&\& is\+\_\+smart\+\_\+pointer\+\_\+v$<$Smart\+PointerC$>$$>$ }
+
+\mbox{\Hypertarget{Sort_8hpp_af11e846023dd11e951b9eb1f96f0d010}\label{Sort_8hpp_af11e846023dd11e951b9eb1f96f0d010}} 
+\index{Sort.hpp@{Sort.hpp}!sort@{sort}}
+\index{sort@{sort}!Sort.hpp@{Sort.hpp}}
+\doxysubsubsection{\texorpdfstring{sort()}{sort()}\hspace{0.1cm}{\footnotesize\ttfamily [5/5]}}
+{\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename AType, size\+\_\+t ARank, template$<$ typename, size\+\_\+t $>$ typename CType, size\+\_\+t CRank, typename... CIndices, typename... AIndices, typename U , typename T  = double$>$ \\
+auto sort (\begin{DoxyParamCaption}\item[{const U}]{UC\+\_\+prefactor,  }\item[{const std\+::tuple$<$ CIndices... $>$ \&}]{C\+\_\+indices,  }\item[{CType$<$ T, CRank $>$ $\ast$}]{C,  }\item[{const U}]{UA\+\_\+prefactor,  }\item[{const std\+::tuple$<$ AIndices... $>$ \&}]{A\+\_\+indices,  }\item[{const AType$<$ T, ARank $>$ \&}]{A }\end{DoxyParamCaption}) -\/$>$ std\+::enable\+\_\+if\+\_\+t$<$std\+::is\+\_\+base\+\_\+of\+\_\+v$<$\+::\mbox{\hyperlink{structeinsums_1_1detail_1_1TensorBase}{einsums\+::detail\+::\+Tensor\+Base}}$<$T, CRank$>$, CType$<$T, CRank$>$$>$ \&\&                         std\+::is\+\_\+base\+\_\+of\+\_\+v$<$\+::\mbox{\hyperlink{structeinsums_1_1detail_1_1TensorBase}{einsums\+::detail\+::\+Tensor\+Base}}$<$T, ARank$>$, AType$<$T, ARank$>$$>$ \&\&                         sizeof...(CIndices) == sizeof...(AIndices) \&\& sizeof...(CIndices) == CRank \&\& sizeof...(AIndices) == ARank \&\&                         std\+::is\+\_\+arithmetic\+\_\+v$<$U$>$$>$ }
+

@@ -1,0 +1,5 @@
+/**
+ * @mainpage Einsums Documentation
+ *
+ * Einsums provides the ability to perform Einstein summation in C++.
+ */

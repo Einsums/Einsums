@@ -1,0 +1,899 @@
+\hypertarget{namespaceeinsums_1_1blas}{}\doxysection{einsums\+::blas Namespace Reference}
+\label{namespaceeinsums_1_1blas}\index{einsums::blas@{einsums::blas}}
+\doxysubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+ \mbox{\hyperlink{namespaceeinsums_1_1blas_1_1detail}{detail}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_a0f42ab149c20c98fd3d2d8a23c76e858}{initialize}} ()
+\item 
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_af9f978c9480acef44d04f82136c49df3}{finalize}} ()
+\item 
+{\footnotesize template$<$typename T $>$ }\\void \mbox{\hyperlink{namespaceeinsums_1_1blas_adc2ca3a9dc3ec7e2aae1f0cf8b8c12b1}{gemm}} (char transa, char transb, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} m, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} k, T alpha, const T $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, const T $\ast$b, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} ldb, T beta, T $\ast$c, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} ldc)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_a18ee1b1fbabd682ab5c8333e19155d4e}{gemm$<$ float $>$}} (char transa, char transb, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} m, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} k, float alpha, const float $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, const float $\ast$b, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} ldb, float beta, float $\ast$c, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} ldc)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_a40e29b30b52fa22b43a95f33926b8e32}{gemm$<$ double $>$}} (char transa, char transb, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} m, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} k, double alpha, const double $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, const double $\ast$b, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} ldb, double beta, double $\ast$c, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} ldc)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_a59eecb566826ff0c0ec6923f2a0fd5ad}{gemm$<$ std\+::complex$<$ float $>$ $>$}} (char transa, char transb, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} m, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} k, std\+::complex$<$ float $>$ alpha, const std\+::complex$<$ float $>$ $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, const std\+::complex$<$ float $>$ $\ast$b, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} ldb, std\+::complex$<$ float $>$ beta, std\+::complex$<$ float $>$ $\ast$c, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} ldc)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_a563bde6f79f7da451c21408f81433d34}{gemm$<$ std\+::complex$<$ double $>$ $>$}} (char transa, char transb, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} m, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} k, std\+::complex$<$ double $>$ alpha, const std\+::complex$<$ double $>$ $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, const std\+::complex$<$ double $>$ $\ast$b, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} ldb, std\+::complex$<$ double $>$ beta, std\+::complex$<$ double $>$ $\ast$c, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} ldc)
+\item 
+{\footnotesize template$<$typename T $>$ }\\void \mbox{\hyperlink{namespaceeinsums_1_1blas_aedbb1533405c52a950a423211dc6f3ca}{gemv}} (char transa, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} m, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, T alpha, const T $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, const T $\ast$x, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} incx, T beta, T $\ast$y, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} incy)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_a8674933e8fe484a44e4dfcad365f9329}{gemv$<$ float $>$}} (char transa, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} m, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, float alpha, const float $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, const float $\ast$x, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} incx, float beta, float $\ast$y, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} incy)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_a392ab89a7a236fef8211c6ff7be9d0ad}{gemv$<$ double $>$}} (char transa, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} m, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, double alpha, const double $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, const double $\ast$x, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} incx, double beta, double $\ast$y, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} incy)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_a11c08f7915ab4dcc9b67eef8a9aff7df}{gemv$<$ std\+::complex$<$ float $>$ $>$}} (char transa, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} m, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, std\+::complex$<$ float $>$ alpha, const std\+::complex$<$ float $>$ $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, const std\+::complex$<$ float $>$ $\ast$x, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} incx, std\+::complex$<$ float $>$ beta, std\+::complex$<$ float $>$ $\ast$y, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} incy)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_a63ea64041030ea7bb3f9636c3fce53aa}{gemv$<$ std\+::complex$<$ double $>$ $>$}} (char transa, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} m, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, std\+::complex$<$ double $>$ alpha, const std\+::complex$<$ double $>$ $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, const std\+::complex$<$ double $>$ $\ast$x, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} incx, std\+::complex$<$ double $>$ beta, std\+::complex$<$ double $>$ $\ast$y, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} incy)
+\item 
+{\footnotesize template$<$typename T $>$ }\\auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a4a5c9e98a5327778537a475b1eb4306b}{syev}} (char job, char uplo, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, T $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, T $\ast$w, T $\ast$work, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lwork) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_ae11d6a1facf87f66ccdea90e018b2795}{syev$<$ float $>$}} (char job, char uplo, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, float $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, float $\ast$w, float $\ast$work, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lwork) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_af91b5adfd80f18ee030c76e70bc56dd8}{syev$<$ double $>$}} (char job, char uplo, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, double $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, double $\ast$w, double $\ast$work, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lwork) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}
+\item 
+{\footnotesize template$<$typename T $>$ }\\auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a64556c47eb5d47cb6a2b7aed25a47da9}{heev}} (char job, char uplo, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, std\+::complex$<$ T $>$ $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, T $\ast$w, std\+::complex$<$ T $>$ $\ast$work, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lwork, T $\ast$rwork) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_abff3d6046b943a67e6e118b15467abd0}{heev$<$ float $>$}} (char job, char uplo, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, std\+::complex$<$ float $>$ $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, float $\ast$w, std\+::complex$<$ float $>$ $\ast$work, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lwork, float $\ast$rwork) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_ae315d24569409c1b8bd3410cf4e9fbb1}{heev$<$ double $>$}} (char job, char uplo, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, std\+::complex$<$ double $>$ $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, double $\ast$w, std\+::complex$<$ double $>$ $\ast$work, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lwork, double $\ast$rwork) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}
+\item 
+{\footnotesize template$<$typename T $>$ }\\auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a8caa0ed28129b2ddb5806f7c1b0b04d9}{gesv}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} nrhs, T $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} $\ast$ipiv, T $\ast$b, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} ldb) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a21fce165b6c8f6fadc964eab411d3bab}{gesv$<$ float $>$}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} nrhs, float $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} $\ast$ipiv, float $\ast$b, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} ldb) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a11658c79bb2b83ca7f1fb2252029cd96}{gesv$<$ double $>$}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} nrhs, double $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} $\ast$ipiv, double $\ast$b, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} ldb) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a320a97f1fc408607f95d02fca05d0e37}{gesv$<$ std\+::complex$<$ float $>$ $>$}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} nrhs, std\+::complex$<$ float $>$ $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} $\ast$ipiv, std\+::complex$<$ float $>$ $\ast$b, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} ldb) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a71834fe2325c23cba6e2b58ecd0a62d4}{gesv$<$ std\+::complex$<$ double $>$ $>$}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} nrhs, std\+::complex$<$ double $>$ $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} $\ast$ipiv, std\+::complex$<$ double $>$ $\ast$b, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} ldb) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}
+\item 
+{\footnotesize template$<$typename T $>$ }\\void \mbox{\hyperlink{namespaceeinsums_1_1blas_ad992c2f082054c95eb623a2a31f829b7}{scal}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, const T alpha, T $\ast$vec, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} inc)
+\item 
+{\footnotesize template$<$typename T $>$ }\\auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a0154c8224b3be3d327aade114294ef02}{scal}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, const \mbox{\hyperlink{namespaceeinsums_a2e68ee514bee331da472f8a544b36a51}{remove\+\_\+complex\+\_\+t}}$<$ T $>$ alpha, T $\ast$vec, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} inc) -\/$>$ std\+::enable\+\_\+if\+\_\+t$<$ \mbox{\hyperlink{namespaceeinsums_ab83342940554d9c7bd5fe82875096e65}{is\+\_\+complex\+\_\+v}}$<$ T $>$$>$
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_ac98205c32c726b1a7069a11ed7290e35}{scal$<$ float $>$}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, const float alpha, float $\ast$vec, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} inc)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_a0880393d78d8b9acdd9fd3685a16e438}{scal$<$ double $>$}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, const double alpha, double $\ast$vec, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} inc)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_aedbd71937b4631cd828e3d82bd5d6e83}{scal$<$ std\+::complex$<$ float $>$ $>$}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, const std\+::complex$<$ float $>$ alpha, std\+::complex$<$ float $>$ $\ast$vec, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} inc)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_a435f964301c202f78ac3d831799cb32f}{scal$<$ std\+::complex$<$ double $>$ $>$}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, const std\+::complex$<$ double $>$ alpha, std\+::complex$<$ double $>$ $\ast$vec, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} inc)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_af203fe3f69a787b928e9fd0b6a355f8d}{scal$<$ std\+::complex$<$ float $>$ $>$}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, const float alpha, std\+::complex$<$ float $>$ $\ast$vec, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} inc)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_ad1db06ada4b3b1e5ea271b0b1d52719f}{scal$<$ std\+::complex$<$ double $>$ $>$}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, const double alpha, std\+::complex$<$ double $>$ $\ast$vec, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} inc)
+\item 
+{\footnotesize template$<$typename T $>$ }\\auto \mbox{\hyperlink{namespaceeinsums_1_1blas_ab6b9a0af69505efea085e73e4114447c}{dot}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, const T $\ast$x, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} incx, const T $\ast$y, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} incy) -\/$>$ T
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a138072e0ee0cbade37165a8e2aef28b0}{dot$<$ float $>$}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, const float $\ast$x, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} incx, const float $\ast$y, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} incy) -\/$>$ float
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a288e7be62d836cc494d48605e1d6f2b1}{dot$<$ double $>$}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, const double $\ast$x, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} incx, const double $\ast$y, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} incy) -\/$>$ double
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_ade32b466088f7b61fb2cc62369c2c36c}{dot$<$ std\+::complex$<$ float $>$ $>$}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, const std\+::complex$<$ float $>$ $\ast$x, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} incx, const std\+::complex$<$ float $>$ $\ast$y, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} incy) -\/$>$ std\+::complex$<$ float $>$
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_aedfb41d2eb2cfcdc1b5ccf43c2fdb7e2}{dot$<$ std\+::complex$<$ double $>$ $>$}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, const std\+::complex$<$ double $>$ $\ast$x, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} incx, const std\+::complex$<$ double $>$ $\ast$y, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} incy) -\/$>$ std\+::complex$<$ double $>$
+\item 
+{\footnotesize template$<$typename T $>$ }\\void \mbox{\hyperlink{namespaceeinsums_1_1blas_a9772171021c01e9f465ff28e5cd60fe7}{axpy}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, T alpha\+\_\+x, const T $\ast$x, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} inc\+\_\+x, T $\ast$y, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} inc\+\_\+y)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_a6e72e154b820ab590d65a1879c30be3e}{axpy$<$ float $>$}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, float alpha\+\_\+x, const float $\ast$x, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} inc\+\_\+x, float $\ast$y, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} inc\+\_\+y)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_a8b0b2f675f24a6694ba73749b065b5d7}{axpy$<$ double $>$}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, double alpha\+\_\+x, const double $\ast$x, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} inc\+\_\+x, double $\ast$y, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} inc\+\_\+y)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_a37ba026715a66c6652ab0e39e8524b9d}{axpy$<$ std\+::complex$<$ float $>$ $>$}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, std\+::complex$<$ float $>$ alpha\+\_\+x, const std\+::complex$<$ float $>$ $\ast$x, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} inc\+\_\+x, std\+::complex$<$ float $>$ $\ast$y, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} inc\+\_\+y)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_ae5a0c8f3125dd16d8c3d476555c9d858}{axpy$<$ std\+::complex$<$ double $>$ $>$}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, std\+::complex$<$ double $>$ alpha\+\_\+x, const std\+::complex$<$ double $>$ $\ast$x, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} inc\+\_\+x, std\+::complex$<$ double $>$ $\ast$y, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} inc\+\_\+y)
+\item 
+{\footnotesize template$<$typename T $>$ }\\void \mbox{\hyperlink{namespaceeinsums_1_1blas_ab0a3e7d1a82f076eaef032dc9f4b9228}{axpby}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, T alpha\+\_\+x, const T $\ast$x, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} inc\+\_\+x, T b, T $\ast$y, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} inc\+\_\+y)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_afbf872cd185c4a4cdea924308fd02085}{axpby$<$ float $>$}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, float alpha\+\_\+x, const float $\ast$x, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} inc\+\_\+x, float b, float $\ast$y, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} inc\+\_\+y)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_ac28b9eecae4807ac480511b607fd205e}{axpby$<$ double $>$}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, double alpha\+\_\+x, const double $\ast$x, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} inc\+\_\+x, double b, double $\ast$y, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} inc\+\_\+y)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_af03695ecd2d6cbf6806d71e9bee9ce52}{axpby$<$ std\+::complex$<$ float $>$ $>$}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, std\+::complex$<$ float $>$ alpha\+\_\+x, const std\+::complex$<$ float $>$ $\ast$x, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} inc\+\_\+x, std\+::complex$<$ float $>$ b, std\+::complex$<$ float $>$ $\ast$y, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} inc\+\_\+y)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_a2273f8bc7a68906e0105f99b6332488c}{axpby$<$ std\+::complex$<$ double $>$ $>$}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, std\+::complex$<$ double $>$ alpha\+\_\+x, const std\+::complex$<$ double $>$ $\ast$x, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} inc\+\_\+x, std\+::complex$<$ double $>$ b, std\+::complex$<$ double $>$ $\ast$y, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} inc\+\_\+y)
+\item 
+{\footnotesize template$<$typename T $>$ }\\void \mbox{\hyperlink{namespaceeinsums_1_1blas_a8af56f82d93073c6bb9f5c5b273f27f8}{ger}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} m, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, T alpha, const T $\ast$x, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} inc\+\_\+x, const T $\ast$y, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} inc\+\_\+y, T $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_a80b147251e2a0cf2e2c033977864f696}{ger$<$ float $>$}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} m, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, float alpha, const float $\ast$x, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} inc\+\_\+x, const float $\ast$y, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} inc\+\_\+y, float $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_afc506f56a62c2e6cbcf8ed0dca05b464}{ger$<$ double $>$}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} m, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, double alpha, const double $\ast$x, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} inc\+\_\+x, const double $\ast$y, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} inc\+\_\+y, double $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_a3d3a90cb1fc15c4da2f949f360a1569d}{ger$<$ std\+::complex$<$ float $>$ $>$}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} m, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, std\+::complex$<$ float $>$ alpha, const std\+::complex$<$ float $>$ $\ast$x, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} inc\+\_\+x, const std\+::complex$<$ float $>$ $\ast$y, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} inc\+\_\+y, std\+::complex$<$ float $>$ $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_ac08eb6a696d53284494b96a901e77259}{ger$<$ std\+::complex$<$ double $>$ $>$}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} m, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, std\+::complex$<$ double $>$ alpha, const std\+::complex$<$ double $>$ $\ast$x, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} inc\+\_\+x, const std\+::complex$<$ double $>$ $\ast$y, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} inc\+\_\+y, std\+::complex$<$ double $>$ $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda)
+\item 
+{\footnotesize template$<$typename T $>$ }\\auto \mbox{\hyperlink{namespaceeinsums_1_1blas_ada1c449050738511bf96ca7b29d6bbb3}{getrf}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}, T $\ast$, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} $\ast$) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_ad7ba9b35a6fb28217f0ac82a024666b7}{getrf$<$ float $>$}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} m, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, float $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} $\ast$ipiv) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a6440fafb840b1179078fbb5b8ec298cc}{getrf$<$ double $>$}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} m, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, double $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} $\ast$ipiv) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a9c44ea820eb96aa0bad78219648fc3c7}{getrf$<$ std\+::complex$<$ float $>$ $>$}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} m, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, std\+::complex$<$ float $>$ $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} $\ast$ipiv) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_aba9606fa413ddfa15c0bd188f5968e0b}{getrf$<$ std\+::complex$<$ double $>$ $>$}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} m, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, std\+::complex$<$ double $>$ $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} $\ast$ipiv) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}
+\item 
+{\footnotesize template$<$typename T $>$ }\\auto \mbox{\hyperlink{namespaceeinsums_1_1blas_afb29e043876b3b2fa17fda652df8fae6}{getri}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, T $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, const \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} $\ast$ipiv) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_ab0836e7e61ebb4e4a87b67bb581504ae}{getri$<$ float $>$}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, float $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, const \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} $\ast$ipiv) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a23392760c5aed675dcb573a33bed7ff0}{getri$<$ double $>$}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, double $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, const \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} $\ast$ipiv) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a82e932297b8a14e33a32238f9261691f}{getri$<$ std\+::complex$<$ float $>$ $>$}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, std\+::complex$<$ float $>$ $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, const \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} $\ast$ipiv) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a1d666271c9cbbaadd1bc626bc5c891d7}{getri$<$ std\+::complex$<$ double $>$ $>$}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, std\+::complex$<$ double $>$ $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, const \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} $\ast$ipiv) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}
+\item 
+{\footnotesize template$<$typename T $>$ }\\auto \mbox{\hyperlink{namespaceeinsums_1_1blas_adb3232e92ae5679ea7d2d87ca6808b1d}{lange}} (char norm\+\_\+type, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} m, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, const T $\ast$A, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, \mbox{\hyperlink{namespaceeinsums_a2e68ee514bee331da472f8a544b36a51}{remove\+\_\+complex\+\_\+t}}$<$ T $>$ $\ast$work) -\/$>$ \mbox{\hyperlink{namespaceeinsums_a2e68ee514bee331da472f8a544b36a51}{remove\+\_\+complex\+\_\+t}}$<$ T $>$
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a2efbe5837edc657ed721c752647605a6}{lange$<$ float $>$}} (char norm\+\_\+type, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} m, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, const float $\ast$A, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, float $\ast$work) -\/$>$ float
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_af32ecfe26b90a1097a18367c81061f6c}{lange$<$ double $>$}} (char norm\+\_\+type, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} m, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, const double $\ast$A, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, double $\ast$work) -\/$>$ double
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a3390b4345c4a64a812780e778e249091}{lange$<$ std\+::complex$<$ float $>$ $>$}} (char norm\+\_\+type, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} m, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, const std\+::complex$<$ float $>$ $\ast$A, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, float $\ast$work) -\/$>$ float
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_af36ba326fcd6b7acaedff50624317227}{lange$<$ std\+::complex$<$ double $>$ $>$}} (char norm\+\_\+type, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} m, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, const std\+::complex$<$ double $>$ $\ast$A, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, double $\ast$work) -\/$>$ double
+\item 
+{\footnotesize template$<$typename T $>$ }\\void \mbox{\hyperlink{namespaceeinsums_1_1blas_a3ae5dd4528a84fdf3cb8e070c37ba4a8}{lassq}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, const T $\ast$x, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} incx, \mbox{\hyperlink{namespaceeinsums_a2e68ee514bee331da472f8a544b36a51}{remove\+\_\+complex\+\_\+t}}$<$ T $>$ $\ast$\mbox{\hyperlink{ElementOperations_8hpp_a1be82ac2bb2e4f1e1b0257c14065335d}{scale}}, \mbox{\hyperlink{namespaceeinsums_a2e68ee514bee331da472f8a544b36a51}{remove\+\_\+complex\+\_\+t}}$<$ T $>$ $\ast$sumsq)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_a66faaf0b9163cbeb87a117cf4b3ffe3b}{lassq$<$ float $>$}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, const float $\ast$x, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} incx, float $\ast$\mbox{\hyperlink{ElementOperations_8hpp_a1be82ac2bb2e4f1e1b0257c14065335d}{scale}}, float $\ast$sumsq)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_ace90e62c60e557ca398e8d4aec3a0715}{lassq$<$ double $>$}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, const double $\ast$x, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} incx, double $\ast$\mbox{\hyperlink{ElementOperations_8hpp_a1be82ac2bb2e4f1e1b0257c14065335d}{scale}}, double $\ast$sumsq)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_a0f9a0ca1359c7c322d536836d56a3750}{lassq$<$ std\+::complex$<$ float $>$ $>$}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, const std\+::complex$<$ float $>$ $\ast$x, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} incx, float $\ast$\mbox{\hyperlink{ElementOperations_8hpp_a1be82ac2bb2e4f1e1b0257c14065335d}{scale}}, float $\ast$sumsq)
+\item 
+template$<$$>$ void \mbox{\hyperlink{namespaceeinsums_1_1blas_a445926df973763316634cd32c6a1accb}{lassq$<$ std\+::complex$<$ double $>$ $>$}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, const std\+::complex$<$ double $>$ $\ast$x, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} incx, double $\ast$\mbox{\hyperlink{ElementOperations_8hpp_a1be82ac2bb2e4f1e1b0257c14065335d}{scale}}, double $\ast$sumsq)
+\item 
+{\footnotesize template$<$typename T $>$ }\\auto \mbox{\hyperlink{namespaceeinsums_1_1blas_aa14f1256e8b5836fcd580aa717ee76c5}{gesdd}} (char jobz, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} m, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, T $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, \mbox{\hyperlink{namespaceeinsums_a2e68ee514bee331da472f8a544b36a51}{remove\+\_\+complex\+\_\+t}}$<$ T $>$ $\ast$s, T $\ast$u, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} ldu, T $\ast$vt, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} ldvt) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a076c1f7cce413ef91831bdd43529a7ba}{gesdd$<$ float $>$}} (char jobz, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} m, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, float $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, float $\ast$s, float $\ast$u, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} ldu, float $\ast$vt, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} ldvt) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a1ac94acdd2e5732053235b48a9f978ad}{gesdd$<$ double $>$}} (char jobz, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} m, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, double $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, double $\ast$s, double $\ast$u, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} ldu, double $\ast$vt, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} ldvt) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_aa7126ce15772294702e2d6edee5d4bca}{gesdd$<$ std\+::complex$<$ float $>$ $>$}} (char jobz, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} m, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, std\+::complex$<$ float $>$ $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, float $\ast$s, std\+::complex$<$ float $>$ $\ast$u, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} ldu, std\+::complex$<$ float $>$ $\ast$vt, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} ldvt) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a5de0ccc86521ce330df032ca93299d1b}{gesdd$<$ std\+::complex$<$ double $>$ $>$}} (char jobz, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} m, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, std\+::complex$<$ double $>$ $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, double $\ast$s, std\+::complex$<$ double $>$ $\ast$u, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} ldu, std\+::complex$<$ double $>$ $\ast$vt, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} ldvt) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}
+\item 
+{\footnotesize template$<$typename T $>$ }\\auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a5ed09dcb656699616e1a2b98bebcfcf7}{gesvd}} (char jobu, char jobvt, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} m, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, T $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, T $\ast$s, T $\ast$u, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} ldu, T $\ast$vt, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} ldvt, T $\ast$superb)
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a57a5989d8728d24992a91c54495761d8}{gesvd$<$ float $>$}} (char jobu, char jobvt, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} m, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, float $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, float $\ast$s, float $\ast$u, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} ldu, float $\ast$vt, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} ldvt, float $\ast$superb)
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a6faccf911d46c6510dc2439df41c2a5e}{gesvd$<$ double $>$}} (char jobu, char jobvt, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} m, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, double $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, double $\ast$s, double $\ast$u, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} ldu, double $\ast$vt, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} ldvt, double $\ast$superb)
+\item 
+{\footnotesize template$<$typename T $>$ }\\auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a15571822d03e6098b398cb486946041d}{gees}} (char jobvs, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, T $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} $\ast$sdim, T $\ast$wr, T $\ast$wi, T $\ast$vs, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} ldvs) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a4fb39371935688a8462cc96506b0118c}{gees$<$ float $>$}} (char jobvs, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, float $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} $\ast$sdim, float $\ast$wr, float $\ast$wi, float $\ast$vs, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} ldvs) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a5819e41a799cf83671f6e4b243da33c0}{gees$<$ double $>$}} (char jobvs, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, double $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} $\ast$sdim, double $\ast$wr, double $\ast$wi, double $\ast$vs, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} ldvs) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}
+\item 
+{\footnotesize template$<$typename T $>$ }\\auto \mbox{\hyperlink{namespaceeinsums_1_1blas_af0467c0a0796866ff61dda18cb3c31ca}{trsyl}} (char trana, char tranb, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} isgn, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} m, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, const T $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, const T $\ast$b, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} ldb, T $\ast$c, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} ldc, \mbox{\hyperlink{namespaceeinsums_a2e68ee514bee331da472f8a544b36a51}{remove\+\_\+complex\+\_\+t}}$<$ T $>$ $\ast$\mbox{\hyperlink{ElementOperations_8hpp_a1be82ac2bb2e4f1e1b0257c14065335d}{scale}}) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_ac588a15a992ddc4a1d690f7cfcebdf3f}{trsyl$<$ float $>$}} (char trana, char tranb, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} isgn, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} m, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, const float $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, const float $\ast$b, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} ldb, float $\ast$c, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} ldc, float $\ast$\mbox{\hyperlink{ElementOperations_8hpp_a1be82ac2bb2e4f1e1b0257c14065335d}{scale}}) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a4fba13b741a3d6115a5a07e8922e8396}{trsyl$<$ double $>$}} (char trana, char tranb, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} isgn, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} m, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, const double $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, const double $\ast$b, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} ldb, double $\ast$c, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} ldc, double $\ast$\mbox{\hyperlink{ElementOperations_8hpp_a1be82ac2bb2e4f1e1b0257c14065335d}{scale}}) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a6effe41cb2bfadb49d55451d71af9e95}{trsyl$<$ std\+::complex$<$ float $>$ $>$}} (char trana, char tranb, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} isgn, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} m, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, const std\+::complex$<$ float $>$ $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, const std\+::complex$<$ float $>$ $\ast$b, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} ldb, std\+::complex$<$ float $>$ $\ast$c, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} ldc, float $\ast$\mbox{\hyperlink{ElementOperations_8hpp_a1be82ac2bb2e4f1e1b0257c14065335d}{scale}}) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a431ca012fb5b97d45e77dabd0e3b78ba}{trsyl$<$ std\+::complex$<$ double $>$ $>$}} (char trana, char tranb, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} isgn, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} m, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, const std\+::complex$<$ double $>$ $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, const std\+::complex$<$ double $>$ $\ast$b, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} ldb, std\+::complex$<$ double $>$ $\ast$c, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} ldc, double $\ast$\mbox{\hyperlink{ElementOperations_8hpp_a1be82ac2bb2e4f1e1b0257c14065335d}{scale}}) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}
+\item 
+{\footnotesize template$<$typename T $>$ }\\auto \mbox{\hyperlink{namespaceeinsums_1_1blas_ade590cfe1bfdbe7c822aeafad6c17527}{geqrf}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} m, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, T $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, T $\ast$tau) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a54ec1622d726de46d6196107eae6da90}{geqrf$<$ float $>$}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} m, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, float $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, float $\ast$tau) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_add297e000b0dfd758017452402a8a385}{geqrf$<$ double $>$}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} m, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, double $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, double $\ast$tau) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a55ae79323a299a825dccbc49f3032203}{geqrf$<$ std\+::complex$<$ float $>$ $>$}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} m, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, std\+::complex$<$ float $>$ $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, std\+::complex$<$ float $>$ $\ast$tau) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a05ca06f586e7f889a3c2d8abc2ab6c93}{geqrf$<$ std\+::complex$<$ double $>$ $>$}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} m, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, std\+::complex$<$ double $>$ $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, std\+::complex$<$ double $>$ $\ast$tau) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}
+\item 
+{\footnotesize template$<$typename T $>$ }\\auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a2f0296b1f3857914680715b3b9678728}{orgqr}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} m, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} k, T $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, const T $\ast$tau) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a99f0577c34bd31856e68f88eccc22903}{orgqr$<$ float $>$}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} m, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} k, float $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, const float $\ast$tau) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a35327bd98f967e4365b81ba21db2fead}{orgqr$<$ double $>$}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} m, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} k, double $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, const double $\ast$tau) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}
+\item 
+{\footnotesize template$<$typename T $>$ }\\auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a3a5fe471bab6b7a58d1f104b450e1218}{ungqr}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} m, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} k, T $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, const T $\ast$tau) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a673b50813cb9b129b2786d22d5ea01c8}{ungqr$<$ std\+::complex$<$ float $>$ $>$}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} m, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} k, std\+::complex$<$ float $>$ $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, const std\+::complex$<$ float $>$ $\ast$tau) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}
+\item 
+template$<$$>$ auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a747d25d2799ade9feec64266f8c22804}{ungqr$<$ std\+::complex$<$ double $>$ $>$}} (\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} m, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} n, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} k, std\+::complex$<$ double $>$ $\ast$a, \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} lda, const std\+::complex$<$ double $>$ $\ast$tau) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_ab0a3e7d1a82f076eaef032dc9f4b9228}\label{namespaceeinsums_1_1blas_ab0a3e7d1a82f076eaef032dc9f4b9228}} 
+\index{einsums::blas@{einsums::blas}!axpby@{axpby}}
+\index{axpby@{axpby}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{axpby()}{axpby()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+void einsums\+::blas\+::axpby (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{T}]{alpha\+\_\+x,  }\item[{const T $\ast$}]{x,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{inc\+\_\+x,  }\item[{T}]{b,  }\item[{T $\ast$}]{y,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{inc\+\_\+y }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_ac28b9eecae4807ac480511b607fd205e}\label{namespaceeinsums_1_1blas_ac28b9eecae4807ac480511b607fd205e}} 
+\index{einsums::blas@{einsums::blas}!axpby$<$ double $>$@{axpby$<$ double $>$}}
+\index{axpby$<$ double $>$@{axpby$<$ double $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{axpby$<$ double $>$()}{axpby< double >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_ab0a3e7d1a82f076eaef032dc9f4b9228}{einsums\+::blas\+::axpby}}$<$ double $>$ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{double}]{alpha\+\_\+x,  }\item[{const double $\ast$}]{x,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{inc\+\_\+x,  }\item[{double}]{b,  }\item[{double $\ast$}]{y,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{inc\+\_\+y }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_afbf872cd185c4a4cdea924308fd02085}\label{namespaceeinsums_1_1blas_afbf872cd185c4a4cdea924308fd02085}} 
+\index{einsums::blas@{einsums::blas}!axpby$<$ float $>$@{axpby$<$ float $>$}}
+\index{axpby$<$ float $>$@{axpby$<$ float $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{axpby$<$ float $>$()}{axpby< float >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_ab0a3e7d1a82f076eaef032dc9f4b9228}{einsums\+::blas\+::axpby}}$<$ float $>$ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{float}]{alpha\+\_\+x,  }\item[{const float $\ast$}]{x,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{inc\+\_\+x,  }\item[{float}]{b,  }\item[{float $\ast$}]{y,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{inc\+\_\+y }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a2273f8bc7a68906e0105f99b6332488c}\label{namespaceeinsums_1_1blas_a2273f8bc7a68906e0105f99b6332488c}} 
+\index{einsums::blas@{einsums::blas}!axpby$<$ std::complex$<$ double $>$ $>$@{axpby$<$ std::complex$<$ double $>$ $>$}}
+\index{axpby$<$ std::complex$<$ double $>$ $>$@{axpby$<$ std::complex$<$ double $>$ $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{axpby$<$ std::complex$<$ double $>$ $>$()}{axpby< std::complex< double > >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_ab0a3e7d1a82f076eaef032dc9f4b9228}{einsums\+::blas\+::axpby}}$<$ std\+::complex$<$ double $>$ $>$ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{std\+::complex$<$ double $>$}]{alpha\+\_\+x,  }\item[{const std\+::complex$<$ double $>$ $\ast$}]{x,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{inc\+\_\+x,  }\item[{std\+::complex$<$ double $>$}]{b,  }\item[{std\+::complex$<$ double $>$ $\ast$}]{y,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{inc\+\_\+y }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_af03695ecd2d6cbf6806d71e9bee9ce52}\label{namespaceeinsums_1_1blas_af03695ecd2d6cbf6806d71e9bee9ce52}} 
+\index{einsums::blas@{einsums::blas}!axpby$<$ std::complex$<$ float $>$ $>$@{axpby$<$ std::complex$<$ float $>$ $>$}}
+\index{axpby$<$ std::complex$<$ float $>$ $>$@{axpby$<$ std::complex$<$ float $>$ $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{axpby$<$ std::complex$<$ float $>$ $>$()}{axpby< std::complex< float > >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_ab0a3e7d1a82f076eaef032dc9f4b9228}{einsums\+::blas\+::axpby}}$<$ std\+::complex$<$ float $>$ $>$ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{std\+::complex$<$ float $>$}]{alpha\+\_\+x,  }\item[{const std\+::complex$<$ float $>$ $\ast$}]{x,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{inc\+\_\+x,  }\item[{std\+::complex$<$ float $>$}]{b,  }\item[{std\+::complex$<$ float $>$ $\ast$}]{y,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{inc\+\_\+y }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a9772171021c01e9f465ff28e5cd60fe7}\label{namespaceeinsums_1_1blas_a9772171021c01e9f465ff28e5cd60fe7}} 
+\index{einsums::blas@{einsums::blas}!axpy@{axpy}}
+\index{axpy@{axpy}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{axpy()}{axpy()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+void einsums\+::blas\+::axpy (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{T}]{alpha\+\_\+x,  }\item[{const T $\ast$}]{x,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{inc\+\_\+x,  }\item[{T $\ast$}]{y,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{inc\+\_\+y }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a8b0b2f675f24a6694ba73749b065b5d7}\label{namespaceeinsums_1_1blas_a8b0b2f675f24a6694ba73749b065b5d7}} 
+\index{einsums::blas@{einsums::blas}!axpy$<$ double $>$@{axpy$<$ double $>$}}
+\index{axpy$<$ double $>$@{axpy$<$ double $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{axpy$<$ double $>$()}{axpy< double >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_a9772171021c01e9f465ff28e5cd60fe7}{einsums\+::blas\+::axpy}}$<$ double $>$ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{double}]{alpha\+\_\+x,  }\item[{const double $\ast$}]{x,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{inc\+\_\+x,  }\item[{double $\ast$}]{y,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{inc\+\_\+y }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a6e72e154b820ab590d65a1879c30be3e}\label{namespaceeinsums_1_1blas_a6e72e154b820ab590d65a1879c30be3e}} 
+\index{einsums::blas@{einsums::blas}!axpy$<$ float $>$@{axpy$<$ float $>$}}
+\index{axpy$<$ float $>$@{axpy$<$ float $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{axpy$<$ float $>$()}{axpy< float >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_a9772171021c01e9f465ff28e5cd60fe7}{einsums\+::blas\+::axpy}}$<$ float $>$ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{float}]{alpha\+\_\+x,  }\item[{const float $\ast$}]{x,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{inc\+\_\+x,  }\item[{float $\ast$}]{y,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{inc\+\_\+y }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_ae5a0c8f3125dd16d8c3d476555c9d858}\label{namespaceeinsums_1_1blas_ae5a0c8f3125dd16d8c3d476555c9d858}} 
+\index{einsums::blas@{einsums::blas}!axpy$<$ std::complex$<$ double $>$ $>$@{axpy$<$ std::complex$<$ double $>$ $>$}}
+\index{axpy$<$ std::complex$<$ double $>$ $>$@{axpy$<$ std::complex$<$ double $>$ $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{axpy$<$ std::complex$<$ double $>$ $>$()}{axpy< std::complex< double > >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_a9772171021c01e9f465ff28e5cd60fe7}{einsums\+::blas\+::axpy}}$<$ std\+::complex$<$ double $>$ $>$ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{std\+::complex$<$ double $>$}]{alpha\+\_\+x,  }\item[{const std\+::complex$<$ double $>$ $\ast$}]{x,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{inc\+\_\+x,  }\item[{std\+::complex$<$ double $>$ $\ast$}]{y,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{inc\+\_\+y }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a37ba026715a66c6652ab0e39e8524b9d}\label{namespaceeinsums_1_1blas_a37ba026715a66c6652ab0e39e8524b9d}} 
+\index{einsums::blas@{einsums::blas}!axpy$<$ std::complex$<$ float $>$ $>$@{axpy$<$ std::complex$<$ float $>$ $>$}}
+\index{axpy$<$ std::complex$<$ float $>$ $>$@{axpy$<$ std::complex$<$ float $>$ $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{axpy$<$ std::complex$<$ float $>$ $>$()}{axpy< std::complex< float > >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_a9772171021c01e9f465ff28e5cd60fe7}{einsums\+::blas\+::axpy}}$<$ std\+::complex$<$ float $>$ $>$ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{std\+::complex$<$ float $>$}]{alpha\+\_\+x,  }\item[{const std\+::complex$<$ float $>$ $\ast$}]{x,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{inc\+\_\+x,  }\item[{std\+::complex$<$ float $>$ $\ast$}]{y,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{inc\+\_\+y }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_ab6b9a0af69505efea085e73e4114447c}\label{namespaceeinsums_1_1blas_ab6b9a0af69505efea085e73e4114447c}} 
+\index{einsums::blas@{einsums::blas}!dot@{dot}}
+\index{dot@{dot}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{dot()}{dot()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+auto einsums\+::blas\+::dot (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{const T $\ast$}]{x,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{incx,  }\item[{const T $\ast$}]{y,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{incy }\end{DoxyParamCaption}) -\/$>$  T}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a288e7be62d836cc494d48605e1d6f2b1}\label{namespaceeinsums_1_1blas_a288e7be62d836cc494d48605e1d6f2b1}} 
+\index{einsums::blas@{einsums::blas}!dot$<$ double $>$@{dot$<$ double $>$}}
+\index{dot$<$ double $>$@{dot$<$ double $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{dot$<$ double $>$()}{dot< double >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_ab6b9a0af69505efea085e73e4114447c}{einsums\+::blas\+::dot}}$<$ double $>$ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{const double $\ast$}]{x,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{incx,  }\item[{const double $\ast$}]{y,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{incy }\end{DoxyParamCaption}) -\/$>$ double \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a138072e0ee0cbade37165a8e2aef28b0}\label{namespaceeinsums_1_1blas_a138072e0ee0cbade37165a8e2aef28b0}} 
+\index{einsums::blas@{einsums::blas}!dot$<$ float $>$@{dot$<$ float $>$}}
+\index{dot$<$ float $>$@{dot$<$ float $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{dot$<$ float $>$()}{dot< float >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_ab6b9a0af69505efea085e73e4114447c}{einsums\+::blas\+::dot}}$<$ float $>$ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{const float $\ast$}]{x,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{incx,  }\item[{const float $\ast$}]{y,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{incy }\end{DoxyParamCaption}) -\/$>$ float \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_aedfb41d2eb2cfcdc1b5ccf43c2fdb7e2}\label{namespaceeinsums_1_1blas_aedfb41d2eb2cfcdc1b5ccf43c2fdb7e2}} 
+\index{einsums::blas@{einsums::blas}!dot$<$ std::complex$<$ double $>$ $>$@{dot$<$ std::complex$<$ double $>$ $>$}}
+\index{dot$<$ std::complex$<$ double $>$ $>$@{dot$<$ std::complex$<$ double $>$ $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{dot$<$ std::complex$<$ double $>$ $>$()}{dot< std::complex< double > >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_ab6b9a0af69505efea085e73e4114447c}{einsums\+::blas\+::dot}}$<$ std\+::complex$<$ double $>$ $>$ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{const std\+::complex$<$ double $>$ $\ast$}]{x,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{incx,  }\item[{const std\+::complex$<$ double $>$ $\ast$}]{y,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{incy }\end{DoxyParamCaption}) -\/$>$ std\+::complex$<$double$>$ \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_ade32b466088f7b61fb2cc62369c2c36c}\label{namespaceeinsums_1_1blas_ade32b466088f7b61fb2cc62369c2c36c}} 
+\index{einsums::blas@{einsums::blas}!dot$<$ std::complex$<$ float $>$ $>$@{dot$<$ std::complex$<$ float $>$ $>$}}
+\index{dot$<$ std::complex$<$ float $>$ $>$@{dot$<$ std::complex$<$ float $>$ $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{dot$<$ std::complex$<$ float $>$ $>$()}{dot< std::complex< float > >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_ab6b9a0af69505efea085e73e4114447c}{einsums\+::blas\+::dot}}$<$ std\+::complex$<$ float $>$ $>$ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{const std\+::complex$<$ float $>$ $\ast$}]{x,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{incx,  }\item[{const std\+::complex$<$ float $>$ $\ast$}]{y,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{incy }\end{DoxyParamCaption}) -\/$>$ std\+::complex$<$float$>$ \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_af9f978c9480acef44d04f82136c49df3}\label{namespaceeinsums_1_1blas_af9f978c9480acef44d04f82136c49df3}} 
+\index{einsums::blas@{einsums::blas}!finalize@{finalize}}
+\index{finalize@{finalize}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{finalize()}{finalize()}}
+{\footnotesize\ttfamily void einsums\+::blas\+::finalize (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a15571822d03e6098b398cb486946041d}\label{namespaceeinsums_1_1blas_a15571822d03e6098b398cb486946041d}} 
+\index{einsums::blas@{einsums::blas}!gees@{gees}}
+\index{gees@{gees}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{gees()}{gees()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+auto einsums\+::blas\+::gees (\begin{DoxyParamCaption}\item[{char}]{jobvs,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{T $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} $\ast$}]{sdim,  }\item[{T $\ast$}]{wr,  }\item[{T $\ast$}]{wi,  }\item[{T $\ast$}]{vs,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{ldvs }\end{DoxyParamCaption}) -\/$>$  \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}
+
+Computes the Schur Decomposition of a Matrix (Used in Lyapunov Solves) \mbox{\Hypertarget{namespaceeinsums_1_1blas_a5819e41a799cf83671f6e4b243da33c0}\label{namespaceeinsums_1_1blas_a5819e41a799cf83671f6e4b243da33c0}} 
+\index{einsums::blas@{einsums::blas}!gees$<$ double $>$@{gees$<$ double $>$}}
+\index{gees$<$ double $>$@{gees$<$ double $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{gees$<$ double $>$()}{gees< double >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a15571822d03e6098b398cb486946041d}{einsums\+::blas\+::gees}}$<$ double $>$ (\begin{DoxyParamCaption}\item[{char}]{jobvs,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{double $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} $\ast$}]{sdim,  }\item[{double $\ast$}]{wr,  }\item[{double $\ast$}]{wi,  }\item[{double $\ast$}]{vs,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{ldvs }\end{DoxyParamCaption}) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a4fb39371935688a8462cc96506b0118c}\label{namespaceeinsums_1_1blas_a4fb39371935688a8462cc96506b0118c}} 
+\index{einsums::blas@{einsums::blas}!gees$<$ float $>$@{gees$<$ float $>$}}
+\index{gees$<$ float $>$@{gees$<$ float $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{gees$<$ float $>$()}{gees< float >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a15571822d03e6098b398cb486946041d}{einsums\+::blas\+::gees}}$<$ float $>$ (\begin{DoxyParamCaption}\item[{char}]{jobvs,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{float $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} $\ast$}]{sdim,  }\item[{float $\ast$}]{wr,  }\item[{float $\ast$}]{wi,  }\item[{float $\ast$}]{vs,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{ldvs }\end{DoxyParamCaption}) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_adc2ca3a9dc3ec7e2aae1f0cf8b8c12b1}\label{namespaceeinsums_1_1blas_adc2ca3a9dc3ec7e2aae1f0cf8b8c12b1}} 
+\index{einsums::blas@{einsums::blas}!gemm@{gemm}}
+\index{gemm@{gemm}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{gemm()}{gemm()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+void einsums\+::blas\+::gemm (\begin{DoxyParamCaption}\item[{char}]{transa,  }\item[{char}]{transb,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{m,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{k,  }\item[{T}]{alpha,  }\item[{const T $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{const T $\ast$}]{b,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{ldb,  }\item[{T}]{beta,  }\item[{T $\ast$}]{c,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{ldc }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a40e29b30b52fa22b43a95f33926b8e32}\label{namespaceeinsums_1_1blas_a40e29b30b52fa22b43a95f33926b8e32}} 
+\index{einsums::blas@{einsums::blas}!gemm$<$ double $>$@{gemm$<$ double $>$}}
+\index{gemm$<$ double $>$@{gemm$<$ double $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{gemm$<$ double $>$()}{gemm< double >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_adc2ca3a9dc3ec7e2aae1f0cf8b8c12b1}{einsums\+::blas\+::gemm}}$<$ double $>$ (\begin{DoxyParamCaption}\item[{char}]{transa,  }\item[{char}]{transb,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{m,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{k,  }\item[{double}]{alpha,  }\item[{const double $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{const double $\ast$}]{b,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{ldb,  }\item[{double}]{beta,  }\item[{double $\ast$}]{c,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{ldc }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a18ee1b1fbabd682ab5c8333e19155d4e}\label{namespaceeinsums_1_1blas_a18ee1b1fbabd682ab5c8333e19155d4e}} 
+\index{einsums::blas@{einsums::blas}!gemm$<$ float $>$@{gemm$<$ float $>$}}
+\index{gemm$<$ float $>$@{gemm$<$ float $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{gemm$<$ float $>$()}{gemm< float >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_adc2ca3a9dc3ec7e2aae1f0cf8b8c12b1}{einsums\+::blas\+::gemm}}$<$ float $>$ (\begin{DoxyParamCaption}\item[{char}]{transa,  }\item[{char}]{transb,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{m,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{k,  }\item[{float}]{alpha,  }\item[{const float $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{const float $\ast$}]{b,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{ldb,  }\item[{float}]{beta,  }\item[{float $\ast$}]{c,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{ldc }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a563bde6f79f7da451c21408f81433d34}\label{namespaceeinsums_1_1blas_a563bde6f79f7da451c21408f81433d34}} 
+\index{einsums::blas@{einsums::blas}!gemm$<$ std::complex$<$ double $>$ $>$@{gemm$<$ std::complex$<$ double $>$ $>$}}
+\index{gemm$<$ std::complex$<$ double $>$ $>$@{gemm$<$ std::complex$<$ double $>$ $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{gemm$<$ std::complex$<$ double $>$ $>$()}{gemm< std::complex< double > >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_adc2ca3a9dc3ec7e2aae1f0cf8b8c12b1}{einsums\+::blas\+::gemm}}$<$ std\+::complex$<$ double $>$ $>$ (\begin{DoxyParamCaption}\item[{char}]{transa,  }\item[{char}]{transb,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{m,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{k,  }\item[{std\+::complex$<$ double $>$}]{alpha,  }\item[{const std\+::complex$<$ double $>$ $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{const std\+::complex$<$ double $>$ $\ast$}]{b,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{ldb,  }\item[{std\+::complex$<$ double $>$}]{beta,  }\item[{std\+::complex$<$ double $>$ $\ast$}]{c,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{ldc }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a59eecb566826ff0c0ec6923f2a0fd5ad}\label{namespaceeinsums_1_1blas_a59eecb566826ff0c0ec6923f2a0fd5ad}} 
+\index{einsums::blas@{einsums::blas}!gemm$<$ std::complex$<$ float $>$ $>$@{gemm$<$ std::complex$<$ float $>$ $>$}}
+\index{gemm$<$ std::complex$<$ float $>$ $>$@{gemm$<$ std::complex$<$ float $>$ $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{gemm$<$ std::complex$<$ float $>$ $>$()}{gemm< std::complex< float > >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_adc2ca3a9dc3ec7e2aae1f0cf8b8c12b1}{einsums\+::blas\+::gemm}}$<$ std\+::complex$<$ float $>$ $>$ (\begin{DoxyParamCaption}\item[{char}]{transa,  }\item[{char}]{transb,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{m,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{k,  }\item[{std\+::complex$<$ float $>$}]{alpha,  }\item[{const std\+::complex$<$ float $>$ $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{const std\+::complex$<$ float $>$ $\ast$}]{b,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{ldb,  }\item[{std\+::complex$<$ float $>$}]{beta,  }\item[{std\+::complex$<$ float $>$ $\ast$}]{c,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{ldc }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_aedbb1533405c52a950a423211dc6f3ca}\label{namespaceeinsums_1_1blas_aedbb1533405c52a950a423211dc6f3ca}} 
+\index{einsums::blas@{einsums::blas}!gemv@{gemv}}
+\index{gemv@{gemv}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{gemv()}{gemv()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+void einsums\+::blas\+::gemv (\begin{DoxyParamCaption}\item[{char}]{transa,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{m,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{T}]{alpha,  }\item[{const T $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{const T $\ast$}]{x,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{incx,  }\item[{T}]{beta,  }\item[{T $\ast$}]{y,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{incy }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a392ab89a7a236fef8211c6ff7be9d0ad}\label{namespaceeinsums_1_1blas_a392ab89a7a236fef8211c6ff7be9d0ad}} 
+\index{einsums::blas@{einsums::blas}!gemv$<$ double $>$@{gemv$<$ double $>$}}
+\index{gemv$<$ double $>$@{gemv$<$ double $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{gemv$<$ double $>$()}{gemv< double >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_aedbb1533405c52a950a423211dc6f3ca}{einsums\+::blas\+::gemv}}$<$ double $>$ (\begin{DoxyParamCaption}\item[{char}]{transa,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{m,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{double}]{alpha,  }\item[{const double $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{const double $\ast$}]{x,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{incx,  }\item[{double}]{beta,  }\item[{double $\ast$}]{y,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{incy }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a8674933e8fe484a44e4dfcad365f9329}\label{namespaceeinsums_1_1blas_a8674933e8fe484a44e4dfcad365f9329}} 
+\index{einsums::blas@{einsums::blas}!gemv$<$ float $>$@{gemv$<$ float $>$}}
+\index{gemv$<$ float $>$@{gemv$<$ float $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{gemv$<$ float $>$()}{gemv< float >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_aedbb1533405c52a950a423211dc6f3ca}{einsums\+::blas\+::gemv}}$<$ float $>$ (\begin{DoxyParamCaption}\item[{char}]{transa,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{m,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{float}]{alpha,  }\item[{const float $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{const float $\ast$}]{x,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{incx,  }\item[{float}]{beta,  }\item[{float $\ast$}]{y,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{incy }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a63ea64041030ea7bb3f9636c3fce53aa}\label{namespaceeinsums_1_1blas_a63ea64041030ea7bb3f9636c3fce53aa}} 
+\index{einsums::blas@{einsums::blas}!gemv$<$ std::complex$<$ double $>$ $>$@{gemv$<$ std::complex$<$ double $>$ $>$}}
+\index{gemv$<$ std::complex$<$ double $>$ $>$@{gemv$<$ std::complex$<$ double $>$ $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{gemv$<$ std::complex$<$ double $>$ $>$()}{gemv< std::complex< double > >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_aedbb1533405c52a950a423211dc6f3ca}{einsums\+::blas\+::gemv}}$<$ std\+::complex$<$ double $>$ $>$ (\begin{DoxyParamCaption}\item[{char}]{transa,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{m,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{std\+::complex$<$ double $>$}]{alpha,  }\item[{const std\+::complex$<$ double $>$ $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{const std\+::complex$<$ double $>$ $\ast$}]{x,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{incx,  }\item[{std\+::complex$<$ double $>$}]{beta,  }\item[{std\+::complex$<$ double $>$ $\ast$}]{y,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{incy }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a11c08f7915ab4dcc9b67eef8a9aff7df}\label{namespaceeinsums_1_1blas_a11c08f7915ab4dcc9b67eef8a9aff7df}} 
+\index{einsums::blas@{einsums::blas}!gemv$<$ std::complex$<$ float $>$ $>$@{gemv$<$ std::complex$<$ float $>$ $>$}}
+\index{gemv$<$ std::complex$<$ float $>$ $>$@{gemv$<$ std::complex$<$ float $>$ $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{gemv$<$ std::complex$<$ float $>$ $>$()}{gemv< std::complex< float > >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_aedbb1533405c52a950a423211dc6f3ca}{einsums\+::blas\+::gemv}}$<$ std\+::complex$<$ float $>$ $>$ (\begin{DoxyParamCaption}\item[{char}]{transa,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{m,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{std\+::complex$<$ float $>$}]{alpha,  }\item[{const std\+::complex$<$ float $>$ $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{const std\+::complex$<$ float $>$ $\ast$}]{x,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{incx,  }\item[{std\+::complex$<$ float $>$}]{beta,  }\item[{std\+::complex$<$ float $>$ $\ast$}]{y,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{incy }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_ade590cfe1bfdbe7c822aeafad6c17527}\label{namespaceeinsums_1_1blas_ade590cfe1bfdbe7c822aeafad6c17527}} 
+\index{einsums::blas@{einsums::blas}!geqrf@{geqrf}}
+\index{geqrf@{geqrf}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{geqrf()}{geqrf()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+auto einsums\+::blas\+::geqrf (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{m,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{T $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{T $\ast$}]{tau }\end{DoxyParamCaption}) -\/$>$  \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_add297e000b0dfd758017452402a8a385}\label{namespaceeinsums_1_1blas_add297e000b0dfd758017452402a8a385}} 
+\index{einsums::blas@{einsums::blas}!geqrf$<$ double $>$@{geqrf$<$ double $>$}}
+\index{geqrf$<$ double $>$@{geqrf$<$ double $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{geqrf$<$ double $>$()}{geqrf< double >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_ade590cfe1bfdbe7c822aeafad6c17527}{einsums\+::blas\+::geqrf}}$<$ double $>$ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{m,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{double $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{double $\ast$}]{tau }\end{DoxyParamCaption}) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a54ec1622d726de46d6196107eae6da90}\label{namespaceeinsums_1_1blas_a54ec1622d726de46d6196107eae6da90}} 
+\index{einsums::blas@{einsums::blas}!geqrf$<$ float $>$@{geqrf$<$ float $>$}}
+\index{geqrf$<$ float $>$@{geqrf$<$ float $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{geqrf$<$ float $>$()}{geqrf< float >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_ade590cfe1bfdbe7c822aeafad6c17527}{einsums\+::blas\+::geqrf}}$<$ float $>$ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{m,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{float $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{float $\ast$}]{tau }\end{DoxyParamCaption}) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a05ca06f586e7f889a3c2d8abc2ab6c93}\label{namespaceeinsums_1_1blas_a05ca06f586e7f889a3c2d8abc2ab6c93}} 
+\index{einsums::blas@{einsums::blas}!geqrf$<$ std::complex$<$ double $>$ $>$@{geqrf$<$ std::complex$<$ double $>$ $>$}}
+\index{geqrf$<$ std::complex$<$ double $>$ $>$@{geqrf$<$ std::complex$<$ double $>$ $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{geqrf$<$ std::complex$<$ double $>$ $>$()}{geqrf< std::complex< double > >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_ade590cfe1bfdbe7c822aeafad6c17527}{einsums\+::blas\+::geqrf}}$<$ std\+::complex$<$ double $>$ $>$ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{m,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{std\+::complex$<$ double $>$ $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{std\+::complex$<$ double $>$ $\ast$}]{tau }\end{DoxyParamCaption}) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a55ae79323a299a825dccbc49f3032203}\label{namespaceeinsums_1_1blas_a55ae79323a299a825dccbc49f3032203}} 
+\index{einsums::blas@{einsums::blas}!geqrf$<$ std::complex$<$ float $>$ $>$@{geqrf$<$ std::complex$<$ float $>$ $>$}}
+\index{geqrf$<$ std::complex$<$ float $>$ $>$@{geqrf$<$ std::complex$<$ float $>$ $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{geqrf$<$ std::complex$<$ float $>$ $>$()}{geqrf< std::complex< float > >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_ade590cfe1bfdbe7c822aeafad6c17527}{einsums\+::blas\+::geqrf}}$<$ std\+::complex$<$ float $>$ $>$ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{m,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{std\+::complex$<$ float $>$ $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{std\+::complex$<$ float $>$ $\ast$}]{tau }\end{DoxyParamCaption}) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a8af56f82d93073c6bb9f5c5b273f27f8}\label{namespaceeinsums_1_1blas_a8af56f82d93073c6bb9f5c5b273f27f8}} 
+\index{einsums::blas@{einsums::blas}!ger@{ger}}
+\index{ger@{ger}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{ger()}{ger()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+void einsums\+::blas\+::ger (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{m,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{T}]{alpha,  }\item[{const T $\ast$}]{x,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{inc\+\_\+x,  }\item[{const T $\ast$}]{y,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{inc\+\_\+y,  }\item[{T $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda }\end{DoxyParamCaption})}
+
+Performs a rank-\/1 update of a general matrix.
+
+The ?ger routines perform a matrix-\/vector operator defined as A \+:= alpha$\ast$x$\ast$y\textquotesingle{} + A, where\+: alpha is a scalar x is an m-\/element vector, y is an n-\/element vector, A is an m-\/by-\/n general matrix \mbox{\Hypertarget{namespaceeinsums_1_1blas_afc506f56a62c2e6cbcf8ed0dca05b464}\label{namespaceeinsums_1_1blas_afc506f56a62c2e6cbcf8ed0dca05b464}} 
+\index{einsums::blas@{einsums::blas}!ger$<$ double $>$@{ger$<$ double $>$}}
+\index{ger$<$ double $>$@{ger$<$ double $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{ger$<$ double $>$()}{ger< double >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_a8af56f82d93073c6bb9f5c5b273f27f8}{einsums\+::blas\+::ger}}$<$ double $>$ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{m,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{double}]{alpha,  }\item[{const double $\ast$}]{x,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{inc\+\_\+x,  }\item[{const double $\ast$}]{y,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{inc\+\_\+y,  }\item[{double $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a80b147251e2a0cf2e2c033977864f696}\label{namespaceeinsums_1_1blas_a80b147251e2a0cf2e2c033977864f696}} 
+\index{einsums::blas@{einsums::blas}!ger$<$ float $>$@{ger$<$ float $>$}}
+\index{ger$<$ float $>$@{ger$<$ float $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{ger$<$ float $>$()}{ger< float >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_a8af56f82d93073c6bb9f5c5b273f27f8}{einsums\+::blas\+::ger}}$<$ float $>$ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{m,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{float}]{alpha,  }\item[{const float $\ast$}]{x,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{inc\+\_\+x,  }\item[{const float $\ast$}]{y,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{inc\+\_\+y,  }\item[{float $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_ac08eb6a696d53284494b96a901e77259}\label{namespaceeinsums_1_1blas_ac08eb6a696d53284494b96a901e77259}} 
+\index{einsums::blas@{einsums::blas}!ger$<$ std::complex$<$ double $>$ $>$@{ger$<$ std::complex$<$ double $>$ $>$}}
+\index{ger$<$ std::complex$<$ double $>$ $>$@{ger$<$ std::complex$<$ double $>$ $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{ger$<$ std::complex$<$ double $>$ $>$()}{ger< std::complex< double > >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_a8af56f82d93073c6bb9f5c5b273f27f8}{einsums\+::blas\+::ger}}$<$ std\+::complex$<$ double $>$ $>$ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{m,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{std\+::complex$<$ double $>$}]{alpha,  }\item[{const std\+::complex$<$ double $>$ $\ast$}]{x,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{inc\+\_\+x,  }\item[{const std\+::complex$<$ double $>$ $\ast$}]{y,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{inc\+\_\+y,  }\item[{std\+::complex$<$ double $>$ $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a3d3a90cb1fc15c4da2f949f360a1569d}\label{namespaceeinsums_1_1blas_a3d3a90cb1fc15c4da2f949f360a1569d}} 
+\index{einsums::blas@{einsums::blas}!ger$<$ std::complex$<$ float $>$ $>$@{ger$<$ std::complex$<$ float $>$ $>$}}
+\index{ger$<$ std::complex$<$ float $>$ $>$@{ger$<$ std::complex$<$ float $>$ $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{ger$<$ std::complex$<$ float $>$ $>$()}{ger< std::complex< float > >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_a8af56f82d93073c6bb9f5c5b273f27f8}{einsums\+::blas\+::ger}}$<$ std\+::complex$<$ float $>$ $>$ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{m,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{std\+::complex$<$ float $>$}]{alpha,  }\item[{const std\+::complex$<$ float $>$ $\ast$}]{x,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{inc\+\_\+x,  }\item[{const std\+::complex$<$ float $>$ $\ast$}]{y,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{inc\+\_\+y,  }\item[{std\+::complex$<$ float $>$ $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_aa14f1256e8b5836fcd580aa717ee76c5}\label{namespaceeinsums_1_1blas_aa14f1256e8b5836fcd580aa717ee76c5}} 
+\index{einsums::blas@{einsums::blas}!gesdd@{gesdd}}
+\index{gesdd@{gesdd}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{gesdd()}{gesdd()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+auto einsums\+::blas\+::gesdd (\begin{DoxyParamCaption}\item[{char}]{jobz,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{m,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{T $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{\mbox{\hyperlink{namespaceeinsums_a2e68ee514bee331da472f8a544b36a51}{remove\+\_\+complex\+\_\+t}}$<$ T $>$ $\ast$}]{s,  }\item[{T $\ast$}]{u,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{ldu,  }\item[{T $\ast$}]{vt,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{ldvt }\end{DoxyParamCaption}) -\/$>$  \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a1ac94acdd2e5732053235b48a9f978ad}\label{namespaceeinsums_1_1blas_a1ac94acdd2e5732053235b48a9f978ad}} 
+\index{einsums::blas@{einsums::blas}!gesdd$<$ double $>$@{gesdd$<$ double $>$}}
+\index{gesdd$<$ double $>$@{gesdd$<$ double $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{gesdd$<$ double $>$()}{gesdd< double >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_aa14f1256e8b5836fcd580aa717ee76c5}{einsums\+::blas\+::gesdd}}$<$ double $>$ (\begin{DoxyParamCaption}\item[{char}]{jobz,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{m,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{double $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{double $\ast$}]{s,  }\item[{double $\ast$}]{u,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{ldu,  }\item[{double $\ast$}]{vt,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{ldvt }\end{DoxyParamCaption}) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a076c1f7cce413ef91831bdd43529a7ba}\label{namespaceeinsums_1_1blas_a076c1f7cce413ef91831bdd43529a7ba}} 
+\index{einsums::blas@{einsums::blas}!gesdd$<$ float $>$@{gesdd$<$ float $>$}}
+\index{gesdd$<$ float $>$@{gesdd$<$ float $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{gesdd$<$ float $>$()}{gesdd< float >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_aa14f1256e8b5836fcd580aa717ee76c5}{einsums\+::blas\+::gesdd}}$<$ float $>$ (\begin{DoxyParamCaption}\item[{char}]{jobz,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{m,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{float $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{float $\ast$}]{s,  }\item[{float $\ast$}]{u,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{ldu,  }\item[{float $\ast$}]{vt,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{ldvt }\end{DoxyParamCaption}) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a5de0ccc86521ce330df032ca93299d1b}\label{namespaceeinsums_1_1blas_a5de0ccc86521ce330df032ca93299d1b}} 
+\index{einsums::blas@{einsums::blas}!gesdd$<$ std::complex$<$ double $>$ $>$@{gesdd$<$ std::complex$<$ double $>$ $>$}}
+\index{gesdd$<$ std::complex$<$ double $>$ $>$@{gesdd$<$ std::complex$<$ double $>$ $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{gesdd$<$ std::complex$<$ double $>$ $>$()}{gesdd< std::complex< double > >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_aa14f1256e8b5836fcd580aa717ee76c5}{einsums\+::blas\+::gesdd}}$<$ std\+::complex$<$ double $>$ $>$ (\begin{DoxyParamCaption}\item[{char}]{jobz,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{m,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{std\+::complex$<$ double $>$ $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{double $\ast$}]{s,  }\item[{std\+::complex$<$ double $>$ $\ast$}]{u,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{ldu,  }\item[{std\+::complex$<$ double $>$ $\ast$}]{vt,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{ldvt }\end{DoxyParamCaption}) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_aa7126ce15772294702e2d6edee5d4bca}\label{namespaceeinsums_1_1blas_aa7126ce15772294702e2d6edee5d4bca}} 
+\index{einsums::blas@{einsums::blas}!gesdd$<$ std::complex$<$ float $>$ $>$@{gesdd$<$ std::complex$<$ float $>$ $>$}}
+\index{gesdd$<$ std::complex$<$ float $>$ $>$@{gesdd$<$ std::complex$<$ float $>$ $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{gesdd$<$ std::complex$<$ float $>$ $>$()}{gesdd< std::complex< float > >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_aa14f1256e8b5836fcd580aa717ee76c5}{einsums\+::blas\+::gesdd}}$<$ std\+::complex$<$ float $>$ $>$ (\begin{DoxyParamCaption}\item[{char}]{jobz,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{m,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{std\+::complex$<$ float $>$ $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{float $\ast$}]{s,  }\item[{std\+::complex$<$ float $>$ $\ast$}]{u,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{ldu,  }\item[{std\+::complex$<$ float $>$ $\ast$}]{vt,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{ldvt }\end{DoxyParamCaption}) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a8caa0ed28129b2ddb5806f7c1b0b04d9}\label{namespaceeinsums_1_1blas_a8caa0ed28129b2ddb5806f7c1b0b04d9}} 
+\index{einsums::blas@{einsums::blas}!gesv@{gesv}}
+\index{gesv@{gesv}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{gesv()}{gesv()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+auto einsums\+::blas\+::gesv (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{nrhs,  }\item[{T $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} $\ast$}]{ipiv,  }\item[{T $\ast$}]{b,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{ldb }\end{DoxyParamCaption}) -\/$>$  \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a11658c79bb2b83ca7f1fb2252029cd96}\label{namespaceeinsums_1_1blas_a11658c79bb2b83ca7f1fb2252029cd96}} 
+\index{einsums::blas@{einsums::blas}!gesv$<$ double $>$@{gesv$<$ double $>$}}
+\index{gesv$<$ double $>$@{gesv$<$ double $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{gesv$<$ double $>$()}{gesv< double >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a8caa0ed28129b2ddb5806f7c1b0b04d9}{einsums\+::blas\+::gesv}}$<$ double $>$ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{nrhs,  }\item[{double $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} $\ast$}]{ipiv,  }\item[{double $\ast$}]{b,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{ldb }\end{DoxyParamCaption}) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a21fce165b6c8f6fadc964eab411d3bab}\label{namespaceeinsums_1_1blas_a21fce165b6c8f6fadc964eab411d3bab}} 
+\index{einsums::blas@{einsums::blas}!gesv$<$ float $>$@{gesv$<$ float $>$}}
+\index{gesv$<$ float $>$@{gesv$<$ float $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{gesv$<$ float $>$()}{gesv< float >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a8caa0ed28129b2ddb5806f7c1b0b04d9}{einsums\+::blas\+::gesv}}$<$ float $>$ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{nrhs,  }\item[{float $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} $\ast$}]{ipiv,  }\item[{float $\ast$}]{b,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{ldb }\end{DoxyParamCaption}) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a71834fe2325c23cba6e2b58ecd0a62d4}\label{namespaceeinsums_1_1blas_a71834fe2325c23cba6e2b58ecd0a62d4}} 
+\index{einsums::blas@{einsums::blas}!gesv$<$ std::complex$<$ double $>$ $>$@{gesv$<$ std::complex$<$ double $>$ $>$}}
+\index{gesv$<$ std::complex$<$ double $>$ $>$@{gesv$<$ std::complex$<$ double $>$ $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{gesv$<$ std::complex$<$ double $>$ $>$()}{gesv< std::complex< double > >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a8caa0ed28129b2ddb5806f7c1b0b04d9}{einsums\+::blas\+::gesv}}$<$ std\+::complex$<$ double $>$ $>$ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{nrhs,  }\item[{std\+::complex$<$ double $>$ $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} $\ast$}]{ipiv,  }\item[{std\+::complex$<$ double $>$ $\ast$}]{b,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{ldb }\end{DoxyParamCaption}) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a320a97f1fc408607f95d02fca05d0e37}\label{namespaceeinsums_1_1blas_a320a97f1fc408607f95d02fca05d0e37}} 
+\index{einsums::blas@{einsums::blas}!gesv$<$ std::complex$<$ float $>$ $>$@{gesv$<$ std::complex$<$ float $>$ $>$}}
+\index{gesv$<$ std::complex$<$ float $>$ $>$@{gesv$<$ std::complex$<$ float $>$ $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{gesv$<$ std::complex$<$ float $>$ $>$()}{gesv< std::complex< float > >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a8caa0ed28129b2ddb5806f7c1b0b04d9}{einsums\+::blas\+::gesv}}$<$ std\+::complex$<$ float $>$ $>$ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{nrhs,  }\item[{std\+::complex$<$ float $>$ $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} $\ast$}]{ipiv,  }\item[{std\+::complex$<$ float $>$ $\ast$}]{b,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{ldb }\end{DoxyParamCaption}) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a5ed09dcb656699616e1a2b98bebcfcf7}\label{namespaceeinsums_1_1blas_a5ed09dcb656699616e1a2b98bebcfcf7}} 
+\index{einsums::blas@{einsums::blas}!gesvd@{gesvd}}
+\index{gesvd@{gesvd}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{gesvd()}{gesvd()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+auto einsums\+::blas\+::gesvd (\begin{DoxyParamCaption}\item[{char}]{jobu,  }\item[{char}]{jobvt,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{m,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{T $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{T $\ast$}]{s,  }\item[{T $\ast$}]{u,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{ldu,  }\item[{T $\ast$}]{vt,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{ldvt,  }\item[{T $\ast$}]{superb }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a6faccf911d46c6510dc2439df41c2a5e}\label{namespaceeinsums_1_1blas_a6faccf911d46c6510dc2439df41c2a5e}} 
+\index{einsums::blas@{einsums::blas}!gesvd$<$ double $>$@{gesvd$<$ double $>$}}
+\index{gesvd$<$ double $>$@{gesvd$<$ double $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{gesvd$<$ double $>$()}{gesvd< double >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a5ed09dcb656699616e1a2b98bebcfcf7}{einsums\+::blas\+::gesvd}}$<$ double $>$ (\begin{DoxyParamCaption}\item[{char}]{jobu,  }\item[{char}]{jobvt,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{m,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{double $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{double $\ast$}]{s,  }\item[{double $\ast$}]{u,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{ldu,  }\item[{double $\ast$}]{vt,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{ldvt,  }\item[{double $\ast$}]{superb }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a57a5989d8728d24992a91c54495761d8}\label{namespaceeinsums_1_1blas_a57a5989d8728d24992a91c54495761d8}} 
+\index{einsums::blas@{einsums::blas}!gesvd$<$ float $>$@{gesvd$<$ float $>$}}
+\index{gesvd$<$ float $>$@{gesvd$<$ float $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{gesvd$<$ float $>$()}{gesvd< float >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a5ed09dcb656699616e1a2b98bebcfcf7}{einsums\+::blas\+::gesvd}}$<$ float $>$ (\begin{DoxyParamCaption}\item[{char}]{jobu,  }\item[{char}]{jobvt,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{m,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{float $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{float $\ast$}]{s,  }\item[{float $\ast$}]{u,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{ldu,  }\item[{float $\ast$}]{vt,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{ldvt,  }\item[{float $\ast$}]{superb }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_ada1c449050738511bf96ca7b29d6bbb3}\label{namespaceeinsums_1_1blas_ada1c449050738511bf96ca7b29d6bbb3}} 
+\index{einsums::blas@{einsums::blas}!getrf@{getrf}}
+\index{getrf@{getrf}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{getrf()}{getrf()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+auto einsums\+::blas\+::getrf (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{,  }\item[{T $\ast$}]{,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} $\ast$}]{ }\end{DoxyParamCaption}) -\/$>$  \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}
+
+Computes the LU factorization of a general M-\/by-\/N matrix A using partial pivoting with row einterchanges.
+
+The factorization has the form A = P $\ast$ L $\ast$ U where P is a permutation matri, L is lower triangular with unit diagonal elements (lower trapezoidal if m $>$ n) and U is upper triangular (upper trapezoidal if m $<$ n). \mbox{\Hypertarget{namespaceeinsums_1_1blas_a6440fafb840b1179078fbb5b8ec298cc}\label{namespaceeinsums_1_1blas_a6440fafb840b1179078fbb5b8ec298cc}} 
+\index{einsums::blas@{einsums::blas}!getrf$<$ double $>$@{getrf$<$ double $>$}}
+\index{getrf$<$ double $>$@{getrf$<$ double $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{getrf$<$ double $>$()}{getrf< double >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_ada1c449050738511bf96ca7b29d6bbb3}{einsums\+::blas\+::getrf}}$<$ double $>$ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{m,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{double $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} $\ast$}]{ipiv }\end{DoxyParamCaption}) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_ad7ba9b35a6fb28217f0ac82a024666b7}\label{namespaceeinsums_1_1blas_ad7ba9b35a6fb28217f0ac82a024666b7}} 
+\index{einsums::blas@{einsums::blas}!getrf$<$ float $>$@{getrf$<$ float $>$}}
+\index{getrf$<$ float $>$@{getrf$<$ float $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{getrf$<$ float $>$()}{getrf< float >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_ada1c449050738511bf96ca7b29d6bbb3}{einsums\+::blas\+::getrf}}$<$ float $>$ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{m,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{float $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} $\ast$}]{ipiv }\end{DoxyParamCaption}) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_aba9606fa413ddfa15c0bd188f5968e0b}\label{namespaceeinsums_1_1blas_aba9606fa413ddfa15c0bd188f5968e0b}} 
+\index{einsums::blas@{einsums::blas}!getrf$<$ std::complex$<$ double $>$ $>$@{getrf$<$ std::complex$<$ double $>$ $>$}}
+\index{getrf$<$ std::complex$<$ double $>$ $>$@{getrf$<$ std::complex$<$ double $>$ $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{getrf$<$ std::complex$<$ double $>$ $>$()}{getrf< std::complex< double > >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_ada1c449050738511bf96ca7b29d6bbb3}{einsums\+::blas\+::getrf}}$<$ std\+::complex$<$ double $>$ $>$ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{m,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{std\+::complex$<$ double $>$ $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} $\ast$}]{ipiv }\end{DoxyParamCaption}) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a9c44ea820eb96aa0bad78219648fc3c7}\label{namespaceeinsums_1_1blas_a9c44ea820eb96aa0bad78219648fc3c7}} 
+\index{einsums::blas@{einsums::blas}!getrf$<$ std::complex$<$ float $>$ $>$@{getrf$<$ std::complex$<$ float $>$ $>$}}
+\index{getrf$<$ std::complex$<$ float $>$ $>$@{getrf$<$ std::complex$<$ float $>$ $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{getrf$<$ std::complex$<$ float $>$ $>$()}{getrf< std::complex< float > >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_ada1c449050738511bf96ca7b29d6bbb3}{einsums\+::blas\+::getrf}}$<$ std\+::complex$<$ float $>$ $>$ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{m,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{std\+::complex$<$ float $>$ $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} $\ast$}]{ipiv }\end{DoxyParamCaption}) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_afb29e043876b3b2fa17fda652df8fae6}\label{namespaceeinsums_1_1blas_afb29e043876b3b2fa17fda652df8fae6}} 
+\index{einsums::blas@{einsums::blas}!getri@{getri}}
+\index{getri@{getri}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{getri()}{getri()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+auto einsums\+::blas\+::getri (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{T $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{const \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} $\ast$}]{ipiv }\end{DoxyParamCaption}) -\/$>$  \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}
+
+Computes the inverse of a matrix using the LU factorization computed by getrf
+
+Returns INFO 0 if successful $<$0 the (-\/INFO)-\/th argument has an illegal value $>$0 U(\+INFO, INFO) is exactly zero; the matrix is singular \mbox{\Hypertarget{namespaceeinsums_1_1blas_a23392760c5aed675dcb573a33bed7ff0}\label{namespaceeinsums_1_1blas_a23392760c5aed675dcb573a33bed7ff0}} 
+\index{einsums::blas@{einsums::blas}!getri$<$ double $>$@{getri$<$ double $>$}}
+\index{getri$<$ double $>$@{getri$<$ double $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{getri$<$ double $>$()}{getri< double >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_afb29e043876b3b2fa17fda652df8fae6}{einsums\+::blas\+::getri}}$<$ double $>$ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{double $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{const \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} $\ast$}]{ipiv }\end{DoxyParamCaption}) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_ab0836e7e61ebb4e4a87b67bb581504ae}\label{namespaceeinsums_1_1blas_ab0836e7e61ebb4e4a87b67bb581504ae}} 
+\index{einsums::blas@{einsums::blas}!getri$<$ float $>$@{getri$<$ float $>$}}
+\index{getri$<$ float $>$@{getri$<$ float $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{getri$<$ float $>$()}{getri< float >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_afb29e043876b3b2fa17fda652df8fae6}{einsums\+::blas\+::getri}}$<$ float $>$ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{float $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{const \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} $\ast$}]{ipiv }\end{DoxyParamCaption}) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a1d666271c9cbbaadd1bc626bc5c891d7}\label{namespaceeinsums_1_1blas_a1d666271c9cbbaadd1bc626bc5c891d7}} 
+\index{einsums::blas@{einsums::blas}!getri$<$ std::complex$<$ double $>$ $>$@{getri$<$ std::complex$<$ double $>$ $>$}}
+\index{getri$<$ std::complex$<$ double $>$ $>$@{getri$<$ std::complex$<$ double $>$ $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{getri$<$ std::complex$<$ double $>$ $>$()}{getri< std::complex< double > >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_afb29e043876b3b2fa17fda652df8fae6}{einsums\+::blas\+::getri}}$<$ std\+::complex$<$ double $>$ $>$ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{std\+::complex$<$ double $>$ $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{const \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} $\ast$}]{ipiv }\end{DoxyParamCaption}) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a82e932297b8a14e33a32238f9261691f}\label{namespaceeinsums_1_1blas_a82e932297b8a14e33a32238f9261691f}} 
+\index{einsums::blas@{einsums::blas}!getri$<$ std::complex$<$ float $>$ $>$@{getri$<$ std::complex$<$ float $>$ $>$}}
+\index{getri$<$ std::complex$<$ float $>$ $>$@{getri$<$ std::complex$<$ float $>$ $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{getri$<$ std::complex$<$ float $>$ $>$()}{getri< std::complex< float > >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_afb29e043876b3b2fa17fda652df8fae6}{einsums\+::blas\+::getri}}$<$ std\+::complex$<$ float $>$ $>$ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{std\+::complex$<$ float $>$ $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{const \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} $\ast$}]{ipiv }\end{DoxyParamCaption}) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a64556c47eb5d47cb6a2b7aed25a47da9}\label{namespaceeinsums_1_1blas_a64556c47eb5d47cb6a2b7aed25a47da9}} 
+\index{einsums::blas@{einsums::blas}!heev@{heev}}
+\index{heev@{heev}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{heev()}{heev()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+auto einsums\+::blas\+::heev (\begin{DoxyParamCaption}\item[{char}]{job,  }\item[{char}]{uplo,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{std\+::complex$<$ T $>$ $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{T $\ast$}]{w,  }\item[{std\+::complex$<$ T $>$ $\ast$}]{work,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lwork,  }\item[{T $\ast$}]{rwork }\end{DoxyParamCaption}) -\/$>$  \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_ae315d24569409c1b8bd3410cf4e9fbb1}\label{namespaceeinsums_1_1blas_ae315d24569409c1b8bd3410cf4e9fbb1}} 
+\index{einsums::blas@{einsums::blas}!heev$<$ double $>$@{heev$<$ double $>$}}
+\index{heev$<$ double $>$@{heev$<$ double $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{heev$<$ double $>$()}{heev< double >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a64556c47eb5d47cb6a2b7aed25a47da9}{einsums\+::blas\+::heev}}$<$ double $>$ (\begin{DoxyParamCaption}\item[{char}]{job,  }\item[{char}]{uplo,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{std\+::complex$<$ double $>$ $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{double $\ast$}]{w,  }\item[{std\+::complex$<$ double $>$ $\ast$}]{work,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lwork,  }\item[{double $\ast$}]{rwork }\end{DoxyParamCaption}) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_abff3d6046b943a67e6e118b15467abd0}\label{namespaceeinsums_1_1blas_abff3d6046b943a67e6e118b15467abd0}} 
+\index{einsums::blas@{einsums::blas}!heev$<$ float $>$@{heev$<$ float $>$}}
+\index{heev$<$ float $>$@{heev$<$ float $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{heev$<$ float $>$()}{heev< float >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a64556c47eb5d47cb6a2b7aed25a47da9}{einsums\+::blas\+::heev}}$<$ float $>$ (\begin{DoxyParamCaption}\item[{char}]{job,  }\item[{char}]{uplo,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{std\+::complex$<$ float $>$ $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{float $\ast$}]{w,  }\item[{std\+::complex$<$ float $>$ $\ast$}]{work,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lwork,  }\item[{float $\ast$}]{rwork }\end{DoxyParamCaption}) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a0f42ab149c20c98fd3d2d8a23c76e858}\label{namespaceeinsums_1_1blas_a0f42ab149c20c98fd3d2d8a23c76e858}} 
+\index{einsums::blas@{einsums::blas}!initialize@{initialize}}
+\index{initialize@{initialize}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{initialize()}{initialize()}}
+{\footnotesize\ttfamily void einsums\+::blas\+::initialize (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_adb3232e92ae5679ea7d2d87ca6808b1d}\label{namespaceeinsums_1_1blas_adb3232e92ae5679ea7d2d87ca6808b1d}} 
+\index{einsums::blas@{einsums::blas}!lange@{lange}}
+\index{lange@{lange}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{lange()}{lange()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+auto einsums\+::blas\+::lange (\begin{DoxyParamCaption}\item[{char}]{norm\+\_\+type,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{m,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{const T $\ast$}]{A,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{\mbox{\hyperlink{namespaceeinsums_a2e68ee514bee331da472f8a544b36a51}{remove\+\_\+complex\+\_\+t}}$<$ T $>$ $\ast$}]{work }\end{DoxyParamCaption}) -\/$>$  \mbox{\hyperlink{namespaceeinsums_a2e68ee514bee331da472f8a544b36a51}{remove\+\_\+complex\+\_\+t}}$<$ T $>$}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_af32ecfe26b90a1097a18367c81061f6c}\label{namespaceeinsums_1_1blas_af32ecfe26b90a1097a18367c81061f6c}} 
+\index{einsums::blas@{einsums::blas}!lange$<$ double $>$@{lange$<$ double $>$}}
+\index{lange$<$ double $>$@{lange$<$ double $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{lange$<$ double $>$()}{lange< double >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_adb3232e92ae5679ea7d2d87ca6808b1d}{einsums\+::blas\+::lange}}$<$ double $>$ (\begin{DoxyParamCaption}\item[{char}]{norm\+\_\+type,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{m,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{const double $\ast$}]{A,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{double $\ast$}]{work }\end{DoxyParamCaption}) -\/$>$ double \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a2efbe5837edc657ed721c752647605a6}\label{namespaceeinsums_1_1blas_a2efbe5837edc657ed721c752647605a6}} 
+\index{einsums::blas@{einsums::blas}!lange$<$ float $>$@{lange$<$ float $>$}}
+\index{lange$<$ float $>$@{lange$<$ float $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{lange$<$ float $>$()}{lange< float >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_adb3232e92ae5679ea7d2d87ca6808b1d}{einsums\+::blas\+::lange}}$<$ float $>$ (\begin{DoxyParamCaption}\item[{char}]{norm\+\_\+type,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{m,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{const float $\ast$}]{A,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{float $\ast$}]{work }\end{DoxyParamCaption}) -\/$>$ float \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_af36ba326fcd6b7acaedff50624317227}\label{namespaceeinsums_1_1blas_af36ba326fcd6b7acaedff50624317227}} 
+\index{einsums::blas@{einsums::blas}!lange$<$ std::complex$<$ double $>$ $>$@{lange$<$ std::complex$<$ double $>$ $>$}}
+\index{lange$<$ std::complex$<$ double $>$ $>$@{lange$<$ std::complex$<$ double $>$ $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{lange$<$ std::complex$<$ double $>$ $>$()}{lange< std::complex< double > >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_adb3232e92ae5679ea7d2d87ca6808b1d}{einsums\+::blas\+::lange}}$<$ std\+::complex$<$ double $>$ $>$ (\begin{DoxyParamCaption}\item[{char}]{norm\+\_\+type,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{m,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{const std\+::complex$<$ double $>$ $\ast$}]{A,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{double $\ast$}]{work }\end{DoxyParamCaption}) -\/$>$ double \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a3390b4345c4a64a812780e778e249091}\label{namespaceeinsums_1_1blas_a3390b4345c4a64a812780e778e249091}} 
+\index{einsums::blas@{einsums::blas}!lange$<$ std::complex$<$ float $>$ $>$@{lange$<$ std::complex$<$ float $>$ $>$}}
+\index{lange$<$ std::complex$<$ float $>$ $>$@{lange$<$ std::complex$<$ float $>$ $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{lange$<$ std::complex$<$ float $>$ $>$()}{lange< std::complex< float > >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_adb3232e92ae5679ea7d2d87ca6808b1d}{einsums\+::blas\+::lange}}$<$ std\+::complex$<$ float $>$ $>$ (\begin{DoxyParamCaption}\item[{char}]{norm\+\_\+type,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{m,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{const std\+::complex$<$ float $>$ $\ast$}]{A,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{float $\ast$}]{work }\end{DoxyParamCaption}) -\/$>$ float \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a3ae5dd4528a84fdf3cb8e070c37ba4a8}\label{namespaceeinsums_1_1blas_a3ae5dd4528a84fdf3cb8e070c37ba4a8}} 
+\index{einsums::blas@{einsums::blas}!lassq@{lassq}}
+\index{lassq@{lassq}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{lassq()}{lassq()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+void einsums\+::blas\+::lassq (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{const T $\ast$}]{x,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{incx,  }\item[{\mbox{\hyperlink{namespaceeinsums_a2e68ee514bee331da472f8a544b36a51}{remove\+\_\+complex\+\_\+t}}$<$ T $>$ $\ast$}]{scale,  }\item[{\mbox{\hyperlink{namespaceeinsums_a2e68ee514bee331da472f8a544b36a51}{remove\+\_\+complex\+\_\+t}}$<$ T $>$ $\ast$}]{sumsq }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_ace90e62c60e557ca398e8d4aec3a0715}\label{namespaceeinsums_1_1blas_ace90e62c60e557ca398e8d4aec3a0715}} 
+\index{einsums::blas@{einsums::blas}!lassq$<$ double $>$@{lassq$<$ double $>$}}
+\index{lassq$<$ double $>$@{lassq$<$ double $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{lassq$<$ double $>$()}{lassq< double >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_a3ae5dd4528a84fdf3cb8e070c37ba4a8}{einsums\+::blas\+::lassq}}$<$ double $>$ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{const double $\ast$}]{x,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{incx,  }\item[{double $\ast$}]{scale,  }\item[{double $\ast$}]{sumsq }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a66faaf0b9163cbeb87a117cf4b3ffe3b}\label{namespaceeinsums_1_1blas_a66faaf0b9163cbeb87a117cf4b3ffe3b}} 
+\index{einsums::blas@{einsums::blas}!lassq$<$ float $>$@{lassq$<$ float $>$}}
+\index{lassq$<$ float $>$@{lassq$<$ float $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{lassq$<$ float $>$()}{lassq< float >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_a3ae5dd4528a84fdf3cb8e070c37ba4a8}{einsums\+::blas\+::lassq}}$<$ float $>$ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{const float $\ast$}]{x,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{incx,  }\item[{float $\ast$}]{scale,  }\item[{float $\ast$}]{sumsq }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a445926df973763316634cd32c6a1accb}\label{namespaceeinsums_1_1blas_a445926df973763316634cd32c6a1accb}} 
+\index{einsums::blas@{einsums::blas}!lassq$<$ std::complex$<$ double $>$ $>$@{lassq$<$ std::complex$<$ double $>$ $>$}}
+\index{lassq$<$ std::complex$<$ double $>$ $>$@{lassq$<$ std::complex$<$ double $>$ $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{lassq$<$ std::complex$<$ double $>$ $>$()}{lassq< std::complex< double > >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_a3ae5dd4528a84fdf3cb8e070c37ba4a8}{einsums\+::blas\+::lassq}}$<$ std\+::complex$<$ double $>$ $>$ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{const std\+::complex$<$ double $>$ $\ast$}]{x,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{incx,  }\item[{double $\ast$}]{scale,  }\item[{double $\ast$}]{sumsq }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a0f9a0ca1359c7c322d536836d56a3750}\label{namespaceeinsums_1_1blas_a0f9a0ca1359c7c322d536836d56a3750}} 
+\index{einsums::blas@{einsums::blas}!lassq$<$ std::complex$<$ float $>$ $>$@{lassq$<$ std::complex$<$ float $>$ $>$}}
+\index{lassq$<$ std::complex$<$ float $>$ $>$@{lassq$<$ std::complex$<$ float $>$ $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{lassq$<$ std::complex$<$ float $>$ $>$()}{lassq< std::complex< float > >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_a3ae5dd4528a84fdf3cb8e070c37ba4a8}{einsums\+::blas\+::lassq}}$<$ std\+::complex$<$ float $>$ $>$ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{const std\+::complex$<$ float $>$ $\ast$}]{x,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{incx,  }\item[{float $\ast$}]{scale,  }\item[{float $\ast$}]{sumsq }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a2f0296b1f3857914680715b3b9678728}\label{namespaceeinsums_1_1blas_a2f0296b1f3857914680715b3b9678728}} 
+\index{einsums::blas@{einsums::blas}!orgqr@{orgqr}}
+\index{orgqr@{orgqr}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{orgqr()}{orgqr()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+auto einsums\+::blas\+::orgqr (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{m,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{k,  }\item[{T $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{const T $\ast$}]{tau }\end{DoxyParamCaption}) -\/$>$  \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a35327bd98f967e4365b81ba21db2fead}\label{namespaceeinsums_1_1blas_a35327bd98f967e4365b81ba21db2fead}} 
+\index{einsums::blas@{einsums::blas}!orgqr$<$ double $>$@{orgqr$<$ double $>$}}
+\index{orgqr$<$ double $>$@{orgqr$<$ double $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{orgqr$<$ double $>$()}{orgqr< double >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a2f0296b1f3857914680715b3b9678728}{einsums\+::blas\+::orgqr}}$<$ double $>$ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{m,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{k,  }\item[{double $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{const double $\ast$}]{tau }\end{DoxyParamCaption}) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a99f0577c34bd31856e68f88eccc22903}\label{namespaceeinsums_1_1blas_a99f0577c34bd31856e68f88eccc22903}} 
+\index{einsums::blas@{einsums::blas}!orgqr$<$ float $>$@{orgqr$<$ float $>$}}
+\index{orgqr$<$ float $>$@{orgqr$<$ float $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{orgqr$<$ float $>$()}{orgqr< float >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a2f0296b1f3857914680715b3b9678728}{einsums\+::blas\+::orgqr}}$<$ float $>$ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{m,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{k,  }\item[{float $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{const float $\ast$}]{tau }\end{DoxyParamCaption}) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a0154c8224b3be3d327aade114294ef02}\label{namespaceeinsums_1_1blas_a0154c8224b3be3d327aade114294ef02}} 
+\index{einsums::blas@{einsums::blas}!scal@{scal}}
+\index{scal@{scal}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{scal()}{scal()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+auto einsums\+::blas\+::scal (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{const \mbox{\hyperlink{namespaceeinsums_a2e68ee514bee331da472f8a544b36a51}{remove\+\_\+complex\+\_\+t}}$<$ T $>$}]{alpha,  }\item[{T $\ast$}]{vec,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{inc }\end{DoxyParamCaption}) -\/$>$  std\+::enable\+\_\+if\+\_\+t$<$ \mbox{\hyperlink{namespaceeinsums_ab83342940554d9c7bd5fe82875096e65}{is\+\_\+complex\+\_\+v}}$<$ T $>$$>$}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_ad992c2f082054c95eb623a2a31f829b7}\label{namespaceeinsums_1_1blas_ad992c2f082054c95eb623a2a31f829b7}} 
+\index{einsums::blas@{einsums::blas}!scal@{scal}}
+\index{scal@{scal}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{scal()}{scal()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+void einsums\+::blas\+::scal (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{const T}]{alpha,  }\item[{T $\ast$}]{vec,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{inc }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a0880393d78d8b9acdd9fd3685a16e438}\label{namespaceeinsums_1_1blas_a0880393d78d8b9acdd9fd3685a16e438}} 
+\index{einsums::blas@{einsums::blas}!scal$<$ double $>$@{scal$<$ double $>$}}
+\index{scal$<$ double $>$@{scal$<$ double $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{scal$<$ double $>$()}{scal< double >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_ad992c2f082054c95eb623a2a31f829b7}{einsums\+::blas\+::scal}}$<$ double $>$ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{const double}]{alpha,  }\item[{double $\ast$}]{vec,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{inc }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_ac98205c32c726b1a7069a11ed7290e35}\label{namespaceeinsums_1_1blas_ac98205c32c726b1a7069a11ed7290e35}} 
+\index{einsums::blas@{einsums::blas}!scal$<$ float $>$@{scal$<$ float $>$}}
+\index{scal$<$ float $>$@{scal$<$ float $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{scal$<$ float $>$()}{scal< float >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_ad992c2f082054c95eb623a2a31f829b7}{einsums\+::blas\+::scal}}$<$ float $>$ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{const float}]{alpha,  }\item[{float $\ast$}]{vec,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{inc }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_ad1db06ada4b3b1e5ea271b0b1d52719f}\label{namespaceeinsums_1_1blas_ad1db06ada4b3b1e5ea271b0b1d52719f}} 
+\index{einsums::blas@{einsums::blas}!scal$<$ std::complex$<$ double $>$ $>$@{scal$<$ std::complex$<$ double $>$ $>$}}
+\index{scal$<$ std::complex$<$ double $>$ $>$@{scal$<$ std::complex$<$ double $>$ $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{scal$<$ std::complex$<$ double $>$ $>$()}{scal< std::complex< double > >()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$$>$ \\
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_ad992c2f082054c95eb623a2a31f829b7}{einsums\+::blas\+::scal}}$<$ std\+::complex$<$ double $>$ $>$ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{const double}]{alpha,  }\item[{std\+::complex$<$ double $>$ $\ast$}]{vec,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{inc }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a435f964301c202f78ac3d831799cb32f}\label{namespaceeinsums_1_1blas_a435f964301c202f78ac3d831799cb32f}} 
+\index{einsums::blas@{einsums::blas}!scal$<$ std::complex$<$ double $>$ $>$@{scal$<$ std::complex$<$ double $>$ $>$}}
+\index{scal$<$ std::complex$<$ double $>$ $>$@{scal$<$ std::complex$<$ double $>$ $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{scal$<$ std::complex$<$ double $>$ $>$()}{scal< std::complex< double > >()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$$>$ \\
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_ad992c2f082054c95eb623a2a31f829b7}{einsums\+::blas\+::scal}}$<$ std\+::complex$<$ double $>$ $>$ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{const std\+::complex$<$ double $>$}]{alpha,  }\item[{std\+::complex$<$ double $>$ $\ast$}]{vec,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{inc }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_af203fe3f69a787b928e9fd0b6a355f8d}\label{namespaceeinsums_1_1blas_af203fe3f69a787b928e9fd0b6a355f8d}} 
+\index{einsums::blas@{einsums::blas}!scal$<$ std::complex$<$ float $>$ $>$@{scal$<$ std::complex$<$ float $>$ $>$}}
+\index{scal$<$ std::complex$<$ float $>$ $>$@{scal$<$ std::complex$<$ float $>$ $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{scal$<$ std::complex$<$ float $>$ $>$()}{scal< std::complex< float > >()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$$>$ \\
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_ad992c2f082054c95eb623a2a31f829b7}{einsums\+::blas\+::scal}}$<$ std\+::complex$<$ float $>$ $>$ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{const float}]{alpha,  }\item[{std\+::complex$<$ float $>$ $\ast$}]{vec,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{inc }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_aedbd71937b4631cd828e3d82bd5d6e83}\label{namespaceeinsums_1_1blas_aedbd71937b4631cd828e3d82bd5d6e83}} 
+\index{einsums::blas@{einsums::blas}!scal$<$ std::complex$<$ float $>$ $>$@{scal$<$ std::complex$<$ float $>$ $>$}}
+\index{scal$<$ std::complex$<$ float $>$ $>$@{scal$<$ std::complex$<$ float $>$ $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{scal$<$ std::complex$<$ float $>$ $>$()}{scal< std::complex< float > >()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$$>$ \\
+void \mbox{\hyperlink{namespaceeinsums_1_1blas_ad992c2f082054c95eb623a2a31f829b7}{einsums\+::blas\+::scal}}$<$ std\+::complex$<$ float $>$ $>$ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{const std\+::complex$<$ float $>$}]{alpha,  }\item[{std\+::complex$<$ float $>$ $\ast$}]{vec,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{inc }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a4a5c9e98a5327778537a475b1eb4306b}\label{namespaceeinsums_1_1blas_a4a5c9e98a5327778537a475b1eb4306b}} 
+\index{einsums::blas@{einsums::blas}!syev@{syev}}
+\index{syev@{syev}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{syev()}{syev()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+auto einsums\+::blas\+::syev (\begin{DoxyParamCaption}\item[{char}]{job,  }\item[{char}]{uplo,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{T $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{T $\ast$}]{w,  }\item[{T $\ast$}]{work,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lwork }\end{DoxyParamCaption}) -\/$>$  \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_af91b5adfd80f18ee030c76e70bc56dd8}\label{namespaceeinsums_1_1blas_af91b5adfd80f18ee030c76e70bc56dd8}} 
+\index{einsums::blas@{einsums::blas}!syev$<$ double $>$@{syev$<$ double $>$}}
+\index{syev$<$ double $>$@{syev$<$ double $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{syev$<$ double $>$()}{syev< double >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a4a5c9e98a5327778537a475b1eb4306b}{einsums\+::blas\+::syev}}$<$ double $>$ (\begin{DoxyParamCaption}\item[{char}]{job,  }\item[{char}]{uplo,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{double $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{double $\ast$}]{w,  }\item[{double $\ast$}]{work,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lwork }\end{DoxyParamCaption}) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_ae11d6a1facf87f66ccdea90e018b2795}\label{namespaceeinsums_1_1blas_ae11d6a1facf87f66ccdea90e018b2795}} 
+\index{einsums::blas@{einsums::blas}!syev$<$ float $>$@{syev$<$ float $>$}}
+\index{syev$<$ float $>$@{syev$<$ float $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{syev$<$ float $>$()}{syev< float >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a4a5c9e98a5327778537a475b1eb4306b}{einsums\+::blas\+::syev}}$<$ float $>$ (\begin{DoxyParamCaption}\item[{char}]{job,  }\item[{char}]{uplo,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{float $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{float $\ast$}]{w,  }\item[{float $\ast$}]{work,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lwork }\end{DoxyParamCaption}) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_af0467c0a0796866ff61dda18cb3c31ca}\label{namespaceeinsums_1_1blas_af0467c0a0796866ff61dda18cb3c31ca}} 
+\index{einsums::blas@{einsums::blas}!trsyl@{trsyl}}
+\index{trsyl@{trsyl}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{trsyl()}{trsyl()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+auto einsums\+::blas\+::trsyl (\begin{DoxyParamCaption}\item[{char}]{trana,  }\item[{char}]{tranb,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{isgn,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{m,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{const T $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{const T $\ast$}]{b,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{ldb,  }\item[{T $\ast$}]{c,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{ldc,  }\item[{\mbox{\hyperlink{namespaceeinsums_a2e68ee514bee331da472f8a544b36a51}{remove\+\_\+complex\+\_\+t}}$<$ T $>$ $\ast$}]{scale }\end{DoxyParamCaption}) -\/$>$  \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}
+
+Sylvester Solve (Used in Lyapunov Solves) \mbox{\Hypertarget{namespaceeinsums_1_1blas_a4fba13b741a3d6115a5a07e8922e8396}\label{namespaceeinsums_1_1blas_a4fba13b741a3d6115a5a07e8922e8396}} 
+\index{einsums::blas@{einsums::blas}!trsyl$<$ double $>$@{trsyl$<$ double $>$}}
+\index{trsyl$<$ double $>$@{trsyl$<$ double $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{trsyl$<$ double $>$()}{trsyl< double >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_af0467c0a0796866ff61dda18cb3c31ca}{einsums\+::blas\+::trsyl}}$<$ double $>$ (\begin{DoxyParamCaption}\item[{char}]{trana,  }\item[{char}]{tranb,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{isgn,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{m,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{const double $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{const double $\ast$}]{b,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{ldb,  }\item[{double $\ast$}]{c,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{ldc,  }\item[{double $\ast$}]{scale }\end{DoxyParamCaption}) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_ac588a15a992ddc4a1d690f7cfcebdf3f}\label{namespaceeinsums_1_1blas_ac588a15a992ddc4a1d690f7cfcebdf3f}} 
+\index{einsums::blas@{einsums::blas}!trsyl$<$ float $>$@{trsyl$<$ float $>$}}
+\index{trsyl$<$ float $>$@{trsyl$<$ float $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{trsyl$<$ float $>$()}{trsyl< float >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_af0467c0a0796866ff61dda18cb3c31ca}{einsums\+::blas\+::trsyl}}$<$ float $>$ (\begin{DoxyParamCaption}\item[{char}]{trana,  }\item[{char}]{tranb,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{isgn,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{m,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{const float $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{const float $\ast$}]{b,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{ldb,  }\item[{float $\ast$}]{c,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{ldc,  }\item[{float $\ast$}]{scale }\end{DoxyParamCaption}) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a431ca012fb5b97d45e77dabd0e3b78ba}\label{namespaceeinsums_1_1blas_a431ca012fb5b97d45e77dabd0e3b78ba}} 
+\index{einsums::blas@{einsums::blas}!trsyl$<$ std::complex$<$ double $>$ $>$@{trsyl$<$ std::complex$<$ double $>$ $>$}}
+\index{trsyl$<$ std::complex$<$ double $>$ $>$@{trsyl$<$ std::complex$<$ double $>$ $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{trsyl$<$ std::complex$<$ double $>$ $>$()}{trsyl< std::complex< double > >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_af0467c0a0796866ff61dda18cb3c31ca}{einsums\+::blas\+::trsyl}}$<$ std\+::complex$<$ double $>$ $>$ (\begin{DoxyParamCaption}\item[{char}]{trana,  }\item[{char}]{tranb,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{isgn,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{m,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{const std\+::complex$<$ double $>$ $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{const std\+::complex$<$ double $>$ $\ast$}]{b,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{ldb,  }\item[{std\+::complex$<$ double $>$ $\ast$}]{c,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{ldc,  }\item[{double $\ast$}]{scale }\end{DoxyParamCaption}) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a6effe41cb2bfadb49d55451d71af9e95}\label{namespaceeinsums_1_1blas_a6effe41cb2bfadb49d55451d71af9e95}} 
+\index{einsums::blas@{einsums::blas}!trsyl$<$ std::complex$<$ float $>$ $>$@{trsyl$<$ std::complex$<$ float $>$ $>$}}
+\index{trsyl$<$ std::complex$<$ float $>$ $>$@{trsyl$<$ std::complex$<$ float $>$ $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{trsyl$<$ std::complex$<$ float $>$ $>$()}{trsyl< std::complex< float > >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_af0467c0a0796866ff61dda18cb3c31ca}{einsums\+::blas\+::trsyl}}$<$ std\+::complex$<$ float $>$ $>$ (\begin{DoxyParamCaption}\item[{char}]{trana,  }\item[{char}]{tranb,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{isgn,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{m,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{const std\+::complex$<$ float $>$ $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{const std\+::complex$<$ float $>$ $\ast$}]{b,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{ldb,  }\item[{std\+::complex$<$ float $>$ $\ast$}]{c,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{ldc,  }\item[{float $\ast$}]{scale }\end{DoxyParamCaption}) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a3a5fe471bab6b7a58d1f104b450e1218}\label{namespaceeinsums_1_1blas_a3a5fe471bab6b7a58d1f104b450e1218}} 
+\index{einsums::blas@{einsums::blas}!ungqr@{ungqr}}
+\index{ungqr@{ungqr}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{ungqr()}{ungqr()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+auto einsums\+::blas\+::ungqr (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{m,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{k,  }\item[{T $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{const T $\ast$}]{tau }\end{DoxyParamCaption}) -\/$>$  \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a747d25d2799ade9feec64266f8c22804}\label{namespaceeinsums_1_1blas_a747d25d2799ade9feec64266f8c22804}} 
+\index{einsums::blas@{einsums::blas}!ungqr$<$ std::complex$<$ double $>$ $>$@{ungqr$<$ std::complex$<$ double $>$ $>$}}
+\index{ungqr$<$ std::complex$<$ double $>$ $>$@{ungqr$<$ std::complex$<$ double $>$ $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{ungqr$<$ std::complex$<$ double $>$ $>$()}{ungqr< std::complex< double > >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a3a5fe471bab6b7a58d1f104b450e1218}{einsums\+::blas\+::ungqr}}$<$ std\+::complex$<$ double $>$ $>$ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{m,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{k,  }\item[{std\+::complex$<$ double $>$ $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{const std\+::complex$<$ double $>$ $\ast$}]{tau }\end{DoxyParamCaption}) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} \hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{namespaceeinsums_1_1blas_a673b50813cb9b129b2786d22d5ea01c8}\label{namespaceeinsums_1_1blas_a673b50813cb9b129b2786d22d5ea01c8}} 
+\index{einsums::blas@{einsums::blas}!ungqr$<$ std::complex$<$ float $>$ $>$@{ungqr$<$ std::complex$<$ float $>$ $>$}}
+\index{ungqr$<$ std::complex$<$ float $>$ $>$@{ungqr$<$ std::complex$<$ float $>$ $>$}!einsums::blas@{einsums::blas}}
+\doxysubsubsection{\texorpdfstring{ungqr$<$ std::complex$<$ float $>$ $>$()}{ungqr< std::complex< float > >()}}
+{\footnotesize\ttfamily template$<$$>$ \\
+auto \mbox{\hyperlink{namespaceeinsums_1_1blas_a3a5fe471bab6b7a58d1f104b450e1218}{einsums\+::blas\+::ungqr}}$<$ std\+::complex$<$ float $>$ $>$ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{m,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{n,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{k,  }\item[{std\+::complex$<$ float $>$ $\ast$}]{a,  }\item[{\mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}}}]{lda,  }\item[{const std\+::complex$<$ float $>$ $\ast$}]{tau }\end{DoxyParamCaption}) -\/$>$ \mbox{\hyperlink{namespaceeinsums_aff88c923bdbe8f08af6cd24ba6004746}{eint}} \hspace{0.3cm}{\ttfamily [inline]}}
+

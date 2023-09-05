@@ -1,0 +1,170 @@
+\hypertarget{TensorAlgebra_8hpp}{}\doxysection{Tensor\+Algebra.\+hpp File Reference}
+\label{TensorAlgebra_8hpp}\index{TensorAlgebra.hpp@{TensorAlgebra.hpp}}
+{\ttfamily \#include \char`\"{}einsums/\+Linear\+Algebra.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}einsums/\+Open\+MP.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}einsums/\+Print.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}einsums/\+STL.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}einsums/\+Section.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}einsums/\+Tensor.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}einsums/\+\_\+\+Common.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}einsums/\+\_\+\+Compiler.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}einsums/\+\_\+\+Index.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}einsums/\+\_\+\+Tensor\+Algebra\+Utilities.\+hpp\char`\"{}}\newline
+{\ttfamily \#include $<$algorithm$>$}\newline
+{\ttfamily \#include $<$cmath$>$}\newline
+{\ttfamily \#include $<$complex$>$}\newline
+{\ttfamily \#include $<$cstddef$>$}\newline
+{\ttfamily \#include $<$functional$>$}\newline
+{\ttfamily \#include $<$numeric$>$}\newline
+{\ttfamily \#include $<$sstream$>$}\newline
+{\ttfamily \#include $<$stdexcept$>$}\newline
+{\ttfamily \#include $<$string$>$}\newline
+{\ttfamily \#include $<$tuple$>$}\newline
+{\ttfamily \#include $<$type\+\_\+traits$>$}\newline
+{\ttfamily \#include $<$utility$>$}\newline
+Include dependency graph for Tensor\+Algebra.\+hpp\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{d7/d74/TensorAlgebra_8hpp__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=316pt]{d3/dcf/TensorAlgebra_8hpp__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+ \mbox{\hyperlink{namespacedetail}{detail}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$typename... CUnique\+Indices, typename... AUnique\+Indices, typename... BUnique\+Indices, typename... Link\+Unique\+Indices, typename... CIndices, typename... AIndices, typename... BIndices, typename... Target\+Dims, typename... Link\+Dims, typename... Target\+Position\+InC, typename... Link\+Position\+In\+Link, template$<$ typename, size\+\_\+t $>$ typename CType, typename CData\+Type , size\+\_\+t CRank, template$<$ typename, size\+\_\+t $>$ typename AType, typename AData\+Type , size\+\_\+t ARank, template$<$ typename, size\+\_\+t $>$ typename BType, typename BData\+Type , size\+\_\+t BRank$>$ }\\void \mbox{\hyperlink{namespacedetail_aa0d565ff8069e75cb77e86ba6d5c8cd1}{detail\+::einsum\+\_\+generic\+\_\+algorithm}} (const std\+::tuple$<$ CUnique\+Indices... $>$ \&C\+\_\+unique, const std\+::tuple$<$ AUnique\+Indices... $>$ \&, const std\+::tuple$<$ BUnique\+Indices... $>$ \&, const std\+::tuple$<$ Link\+Unique\+Indices... $>$ \&link\+\_\+unique, const std\+::tuple$<$ CIndices... $>$ \&, const std\+::tuple$<$ AIndices... $>$ \&, const std\+::tuple$<$ BIndices... $>$ \&, const std\+::tuple$<$ Target\+Dims... $>$ \&target\+\_\+dims, const std\+::tuple$<$ Link\+Dims... $>$ \&link\+\_\+dims, const std\+::tuple$<$ Target\+Position\+In\+C... $>$ \&target\+\_\+position\+\_\+in\+\_\+C, const std\+::tuple$<$ Link\+Position\+In\+Link... $>$ \&link\+\_\+position\+\_\+in\+\_\+link, const CData\+Type C\+\_\+prefactor, CType$<$ CData\+Type, CRank $>$ $\ast$C, const std\+::conditional\+\_\+t$<$(sizeof(AData\+Type) $>$ sizeof(BData\+Type)), AData\+Type, BData\+Type $>$ AB\+\_\+prefactor, const AType$<$ AData\+Type, ARank $>$ \&A, const BType$<$ BData\+Type, BRank $>$ \&B)
+\item 
+{\footnotesize template$<$bool Only\+Use\+Generic\+Algorithm, template$<$ typename, size\+\_\+t $>$ typename AType, typename AData\+Type , size\+\_\+t ARank, template$<$ typename, size\+\_\+t $>$ typename BType, typename BData\+Type , size\+\_\+t BRank, template$<$ typename, size\+\_\+t $>$ typename CType, typename CData\+Type , size\+\_\+t CRank, typename... CIndices, typename... AIndices, typename... BIndices$>$ }\\auto \mbox{\hyperlink{namespacedetail_a80957664d68225d5200bdf9700687344}{detail\+::einsum}} (const CData\+Type C\+\_\+prefactor, const std\+::tuple$<$ CIndices... $>$ \&, CType$<$ CData\+Type, CRank $>$ $\ast$C, const std\+::conditional\+\_\+t$<$(sizeof(AData\+Type) $>$ sizeof(BData\+Type)), AData\+Type, BData\+Type $>$ AB\+\_\+prefactor, const std\+::tuple$<$ AIndices... $>$ \&, const AType$<$ AData\+Type, ARank $>$ \&A, const std\+::tuple$<$ BIndices... $>$ \&, const BType$<$ BData\+Type, BRank $>$ \&B) -\/$>$ std\+::enable\+\_\+if\+\_\+t$<$ std\+::is\+\_\+base\+\_\+of\+\_\+v$<$\+::\mbox{\hyperlink{structeinsums_1_1detail_1_1TensorBase}{einsums\+::detail\+::\+Tensor\+Base}}$<$ AData\+Type, ARank $>$, AType$<$ AData\+Type, ARank $>$$>$ \&\&std\+::is\+\_\+base\+\_\+of\+\_\+v$<$\+::\mbox{\hyperlink{structeinsums_1_1detail_1_1TensorBase}{einsums\+::detail\+::\+Tensor\+Base}}$<$ BData\+Type, BRank $>$, BType$<$ BData\+Type, BRank $>$$>$ \&\&std\+::is\+\_\+base\+\_\+of\+\_\+v$<$\+::\mbox{\hyperlink{structeinsums_1_1detail_1_1TensorBase}{einsums\+::detail\+::\+Tensor\+Base}}$<$ CData\+Type, CRank $>$, CType$<$ CData\+Type, CRank $>$$>$$>$
+\item 
+{\footnotesize template$<$template$<$ typename, size\+\_\+t $>$ typename AType, typename AData\+Type , size\+\_\+t ARank, template$<$ typename, size\+\_\+t $>$ typename BType, typename BData\+Type , size\+\_\+t BRank, template$<$ typename, size\+\_\+t $>$ typename CType, typename CData\+Type , size\+\_\+t CRank, typename... CIndices, typename... AIndices, typename... BIndices, typename U $>$ }\\auto \mbox{\hyperlink{TensorAlgebra_8hpp_a032d68d130374f395115e4c9c48c6185}{einsum}} (const U UC\+\_\+prefactor, const std\+::tuple$<$ CIndices... $>$ \&C\+\_\+indices, CType$<$ CData\+Type, CRank $>$ $\ast$C, const U UAB\+\_\+prefactor, const std\+::tuple$<$ AIndices... $>$ \&A\+\_\+indices, const AType$<$ AData\+Type, ARank $>$ \&A, const std\+::tuple$<$ BIndices... $>$ \&B\+\_\+indices, const BType$<$ BData\+Type, BRank $>$ \&B) -\/$>$ std\+::enable\+\_\+if\+\_\+t$<$ std\+::is\+\_\+base\+\_\+of\+\_\+v$<$\+::\mbox{\hyperlink{structeinsums_1_1detail_1_1TensorBase}{einsums\+::detail\+::\+Tensor\+Base}}$<$ AData\+Type, ARank $>$, AType$<$ AData\+Type, ARank $>$$>$ \&\&std\+::is\+\_\+base\+\_\+of\+\_\+v$<$\+::\mbox{\hyperlink{structeinsums_1_1detail_1_1TensorBase}{einsums\+::detail\+::\+Tensor\+Base}}$<$ BData\+Type, BRank $>$, BType$<$ BData\+Type, BRank $>$$>$ \&\&std\+::is\+\_\+base\+\_\+of\+\_\+v$<$\+::\mbox{\hyperlink{structeinsums_1_1detail_1_1TensorBase}{einsums\+::detail\+::\+Tensor\+Base}}$<$ CData\+Type, CRank $>$, CType$<$ CData\+Type, CRank $>$$>$ \&\&std\+::is\+\_\+arithmetic\+\_\+v$<$ U $>$$>$
+\item 
+{\footnotesize template$<$typename AType , typename BType , typename CType , typename... CIndices, typename... AIndices, typename... BIndices, typename T $>$ }\\auto \mbox{\hyperlink{TensorAlgebra_8hpp_a1d3fa154a11ecafe49c2b595b96b088e}{einsum}} (const T C\+\_\+prefactor, const std\+::tuple$<$ CIndices... $>$ \&C\+\_\+indices, CType $\ast$C, const T AB\+\_\+prefactor, const std\+::tuple$<$ AIndices... $>$ \&A\+\_\+indices, const AType \&A, const std\+::tuple$<$ BIndices... $>$ \&B\+\_\+indices, const BType \&B) -\/$>$ std\+::enable\+\_\+if\+\_\+t$<$!is\+\_\+smart\+\_\+pointer\+\_\+v$<$ CType $>$ \&\&!is\+\_\+smart\+\_\+pointer\+\_\+v$<$ AType $>$ \&\&is\+\_\+smart\+\_\+pointer\+\_\+v$<$ BType $>$$>$
+\item 
+{\footnotesize template$<$typename AType , typename BType , typename CType , typename... CIndices, typename... AIndices, typename... BIndices$>$ }\\auto \mbox{\hyperlink{TensorAlgebra_8hpp_a7bc44b09acf939cb90ce8dd1db322033}{einsum}} (const std\+::tuple$<$ CIndices... $>$ \&C\+\_\+indices, CType $\ast$C, const std\+::tuple$<$ AIndices... $>$ \&A\+\_\+indices, const AType \&A, const std\+::tuple$<$ BIndices... $>$ \&B\+\_\+indices, const BType \&B) -\/$>$ std\+::enable\+\_\+if\+\_\+t$<$!is\+\_\+smart\+\_\+pointer\+\_\+v$<$ CType $>$ \&\&!is\+\_\+smart\+\_\+pointer\+\_\+v$<$ AType $>$ \&\&!is\+\_\+smart\+\_\+pointer\+\_\+v$<$ BType $>$$>$
+\item 
+{\footnotesize template$<$template$<$ typename, size\+\_\+t $>$ typename CType, size\+\_\+t CRank, typename Unary\+Operator , typename T  = double$>$ }\\auto \mbox{\hyperlink{TensorAlgebra_8hpp_a39c4e4c3141477cf5a94e64670ff5a8e}{element\+\_\+transform}} (CType$<$ T, CRank $>$ $\ast$C, Unary\+Operator unary\+\_\+opt) -\/$>$ std\+::enable\+\_\+if\+\_\+t$<$ std\+::is\+\_\+base\+\_\+of\+\_\+v$<$\+::\mbox{\hyperlink{structeinsums_1_1detail_1_1TensorBase}{einsums\+::detail\+::\+Tensor\+Base}}$<$ T, CRank $>$, CType$<$ T, CRank $>$$>$$>$
+\item 
+{\footnotesize template$<$typename Smart\+Ptr , typename Unary\+Operator $>$ }\\auto \mbox{\hyperlink{TensorAlgebra_8hpp_aeb37a0b46bc7a297df5328587d041b0f}{element\+\_\+transform}} (Smart\+Ptr $\ast$C, Unary\+Operator unary\+\_\+opt) -\/$>$ std\+::enable\+\_\+if\+\_\+t$<$ is\+\_\+smart\+\_\+pointer\+\_\+v$<$ Smart\+Ptr $>$$>$
+\item 
+{\footnotesize template$<$template$<$ typename, size\+\_\+t $>$ typename CType, template$<$ typename, size\+\_\+t $>$ typename... Multi\+Tensors, size\+\_\+t Rank, typename Multi\+Operator , typename T  = double$>$ }\\auto \mbox{\hyperlink{TensorAlgebra_8hpp_a3cb2c61d561f0adb90793e8157c8c782}{element}} (Multi\+Operator multi\+\_\+opt, CType$<$ T, Rank $>$ $\ast$C, Multi\+Tensors$<$ T, Rank $>$ \&...tensors)
+\item 
+{\footnotesize template$<$int Remaining, typename Skip , typename Head , typename... Args$>$ }\\constexpr auto \mbox{\hyperlink{TensorAlgebra_8hpp_aae553c228b456f2927cd5db07228d552}{\+\_\+get\+\_\+n\+\_\+skip}} ()
+\item 
+{\footnotesize template$<$unsigned int N, typename Skip , typename... List$>$ }\\constexpr auto \mbox{\hyperlink{TensorAlgebra_8hpp_a25194158b9426924b60d31ea3de048d6}{get\+\_\+n\+\_\+skip}} (const Skip \&, const std\+::tuple$<$ List... $>$ \&)
+\item 
+{\footnotesize template$<$int Remaining, typename Head , typename... Args$>$ }\\constexpr auto \mbox{\hyperlink{TensorAlgebra_8hpp_a5f861c0de88cdcc76dc96a496da67e42}{\+\_\+get\+\_\+n}} ()
+\item 
+{\footnotesize template$<$unsigned int N, typename... List$>$ }\\constexpr auto \mbox{\hyperlink{TensorAlgebra_8hpp_a2606a5c3b67efe679232d1834e647c91}{get\+\_\+n}} (const std\+::tuple$<$ List... $>$ \&)
+\item 
+{\footnotesize template$<$unsigned int mode, template$<$ typename, size\+\_\+t $>$ typename CType, size\+\_\+t CRank, typename T  = double$>$ }\\auto \mbox{\hyperlink{TensorAlgebra_8hpp_ae10e6810505b86d8d0adc40db4014a04}{unfold}} (const CType$<$ T, CRank $>$ \&source) -\/$>$ std\+::enable\+\_\+if\+\_\+t$<$ std\+::is\+\_\+same\+\_\+v$<$ Tensor$<$ T, CRank $>$, CType$<$ T, CRank $>$$>$, Tensor$<$ T, 2 $>$$>$
+\item 
+{\footnotesize template$<$template$<$ typename, size\+\_\+t $>$ typename AType, size\+\_\+t ARank, template$<$ typename, size\+\_\+t $>$ typename BType, size\+\_\+t BRank, typename... AIndices, typename... BIndices, typename T  = double$>$ }\\auto \mbox{\hyperlink{TensorAlgebra_8hpp_a99dc0a17a614f451cd088b29105ea8f0}{khatri\+\_\+rao}} (const std\+::tuple$<$ AIndices... $>$ \&, const AType$<$ T, ARank $>$ \&A, const std\+::tuple$<$ BIndices... $>$ \&, const BType$<$ T, BRank $>$ \&B) -\/$>$ std\+::enable\+\_\+if\+\_\+t$<$ std\+::is\+\_\+base\+\_\+of\+\_\+v$<$\+::\mbox{\hyperlink{structeinsums_1_1detail_1_1TensorBase}{einsums\+::detail\+::\+Tensor\+Base}}$<$ T, ARank $>$, AType$<$ T, ARank $>$$>$ \&\&std\+::is\+\_\+base\+\_\+of\+\_\+v$<$\+::\mbox{\hyperlink{structeinsums_1_1detail_1_1TensorBase}{einsums\+::detail\+::\+Tensor\+Base}}$<$ T, BRank $>$, BType$<$ T, BRank $>$$>$, Tensor$<$ T, 2 $>$$>$
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{TensorAlgebra_8hpp_a5f861c0de88cdcc76dc96a496da67e42}\label{TensorAlgebra_8hpp_a5f861c0de88cdcc76dc96a496da67e42}} 
+\index{TensorAlgebra.hpp@{TensorAlgebra.hpp}!\_get\_n@{\_get\_n}}
+\index{\_get\_n@{\_get\_n}!TensorAlgebra.hpp@{TensorAlgebra.hpp}}
+\doxysubsubsection{\texorpdfstring{\_get\_n()}{\_get\_n()}}
+{\footnotesize\ttfamily template$<$int Remaining, typename Head , typename... Args$>$ \\
+constexpr auto \+\_\+get\+\_\+n (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+\mbox{\Hypertarget{TensorAlgebra_8hpp_aae553c228b456f2927cd5db07228d552}\label{TensorAlgebra_8hpp_aae553c228b456f2927cd5db07228d552}} 
+\index{TensorAlgebra.hpp@{TensorAlgebra.hpp}!\_get\_n\_skip@{\_get\_n\_skip}}
+\index{\_get\_n\_skip@{\_get\_n\_skip}!TensorAlgebra.hpp@{TensorAlgebra.hpp}}
+\doxysubsubsection{\texorpdfstring{\_get\_n\_skip()}{\_get\_n\_skip()}}
+{\footnotesize\ttfamily template$<$int Remaining, typename Skip , typename Head , typename... Args$>$ \\
+constexpr auto \+\_\+get\+\_\+n\+\_\+skip (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+\mbox{\Hypertarget{TensorAlgebra_8hpp_a7bc44b09acf939cb90ce8dd1db322033}\label{TensorAlgebra_8hpp_a7bc44b09acf939cb90ce8dd1db322033}} 
+\index{TensorAlgebra.hpp@{TensorAlgebra.hpp}!einsum@{einsum}}
+\index{einsum@{einsum}!TensorAlgebra.hpp@{TensorAlgebra.hpp}}
+\doxysubsubsection{\texorpdfstring{einsum()}{einsum()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily template$<$typename AType , typename BType , typename CType , typename... CIndices, typename... AIndices, typename... BIndices$>$ \\
+auto einsum (\begin{DoxyParamCaption}\item[{const std\+::tuple$<$ CIndices... $>$ \&}]{C\+\_\+indices,  }\item[{CType $\ast$}]{C,  }\item[{const std\+::tuple$<$ AIndices... $>$ \&}]{A\+\_\+indices,  }\item[{const AType \&}]{A,  }\item[{const std\+::tuple$<$ BIndices... $>$ \&}]{B\+\_\+indices,  }\item[{const BType \&}]{B }\end{DoxyParamCaption}) -\/$>$ std\+::enable\+\_\+if\+\_\+t$<$!is\+\_\+smart\+\_\+pointer\+\_\+v$<$CType$>$ \&\& !is\+\_\+smart\+\_\+pointer\+\_\+v$<$AType$>$ \&\& !is\+\_\+smart\+\_\+pointer\+\_\+v$<$BType$>$$>$ }
+
+\mbox{\Hypertarget{TensorAlgebra_8hpp_a1d3fa154a11ecafe49c2b595b96b088e}\label{TensorAlgebra_8hpp_a1d3fa154a11ecafe49c2b595b96b088e}} 
+\index{TensorAlgebra.hpp@{TensorAlgebra.hpp}!einsum@{einsum}}
+\index{einsum@{einsum}!TensorAlgebra.hpp@{TensorAlgebra.hpp}}
+\doxysubsubsection{\texorpdfstring{einsum()}{einsum()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily template$<$typename AType , typename BType , typename CType , typename... CIndices, typename... AIndices, typename... BIndices, typename T $>$ \\
+auto einsum (\begin{DoxyParamCaption}\item[{const T}]{C\+\_\+prefactor,  }\item[{const std\+::tuple$<$ CIndices... $>$ \&}]{C\+\_\+indices,  }\item[{CType $\ast$}]{C,  }\item[{const T}]{AB\+\_\+prefactor,  }\item[{const std\+::tuple$<$ AIndices... $>$ \&}]{A\+\_\+indices,  }\item[{const AType \&}]{A,  }\item[{const std\+::tuple$<$ BIndices... $>$ \&}]{B\+\_\+indices,  }\item[{const BType \&}]{B }\end{DoxyParamCaption}) -\/$>$ std\+::enable\+\_\+if\+\_\+t$<$!is\+\_\+smart\+\_\+pointer\+\_\+v$<$CType$>$ \&\& !is\+\_\+smart\+\_\+pointer\+\_\+v$<$AType$>$ \&\& is\+\_\+smart\+\_\+pointer\+\_\+v$<$BType$>$$>$ }
+
+\mbox{\Hypertarget{TensorAlgebra_8hpp_a032d68d130374f395115e4c9c48c6185}\label{TensorAlgebra_8hpp_a032d68d130374f395115e4c9c48c6185}} 
+\index{TensorAlgebra.hpp@{TensorAlgebra.hpp}!einsum@{einsum}}
+\index{einsum@{einsum}!TensorAlgebra.hpp@{TensorAlgebra.hpp}}
+\doxysubsubsection{\texorpdfstring{einsum()}{einsum()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename AType, typename AData\+Type , size\+\_\+t ARank, template$<$ typename, size\+\_\+t $>$ typename BType, typename BData\+Type , size\+\_\+t BRank, template$<$ typename, size\+\_\+t $>$ typename CType, typename CData\+Type , size\+\_\+t CRank, typename... CIndices, typename... AIndices, typename... BIndices, typename U $>$ \\
+auto einsum (\begin{DoxyParamCaption}\item[{const U}]{UC\+\_\+prefactor,  }\item[{const std\+::tuple$<$ CIndices... $>$ \&}]{C\+\_\+indices,  }\item[{CType$<$ CData\+Type, CRank $>$ $\ast$}]{C,  }\item[{const U}]{UAB\+\_\+prefactor,  }\item[{const std\+::tuple$<$ AIndices... $>$ \&}]{A\+\_\+indices,  }\item[{const AType$<$ AData\+Type, ARank $>$ \&}]{A,  }\item[{const std\+::tuple$<$ BIndices... $>$ \&}]{B\+\_\+indices,  }\item[{const BType$<$ BData\+Type, BRank $>$ \&}]{B }\end{DoxyParamCaption}) -\/$>$ std\+::enable\+\_\+if\+\_\+t$<$std\+::is\+\_\+base\+\_\+of\+\_\+v$<$\+::\mbox{\hyperlink{structeinsums_1_1detail_1_1TensorBase}{einsums\+::detail\+::\+Tensor\+Base}}$<$AData\+Type, ARank$>$, AType$<$AData\+Type, ARank$>$$>$ \&\&                         std\+::is\+\_\+base\+\_\+of\+\_\+v$<$\+::\mbox{\hyperlink{structeinsums_1_1detail_1_1TensorBase}{einsums\+::detail\+::\+Tensor\+Base}}$<$BData\+Type, BRank$>$, BType$<$BData\+Type, BRank$>$$>$ \&\&                         std\+::is\+\_\+base\+\_\+of\+\_\+v$<$\+::\mbox{\hyperlink{structeinsums_1_1detail_1_1TensorBase}{einsums\+::detail\+::\+Tensor\+Base}}$<$CData\+Type, CRank$>$, CType$<$CData\+Type, CRank$>$$>$ \&\&                         std\+::is\+\_\+arithmetic\+\_\+v$<$U$>$$>$ }
+
+\mbox{\Hypertarget{TensorAlgebra_8hpp_a3cb2c61d561f0adb90793e8157c8c782}\label{TensorAlgebra_8hpp_a3cb2c61d561f0adb90793e8157c8c782}} 
+\index{TensorAlgebra.hpp@{TensorAlgebra.hpp}!element@{element}}
+\index{element@{element}!TensorAlgebra.hpp@{TensorAlgebra.hpp}}
+\doxysubsubsection{\texorpdfstring{element()}{element()}}
+{\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename CType, template$<$ typename, size\+\_\+t $>$ typename... Multi\+Tensors, size\+\_\+t Rank, typename Multi\+Operator , typename T  = double$>$ \\
+auto element (\begin{DoxyParamCaption}\item[{Multi\+Operator}]{multi\+\_\+opt,  }\item[{CType$<$ T, Rank $>$ $\ast$}]{C,  }\item[{Multi\+Tensors$<$ T, Rank $>$ \&...}]{tensors }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{TensorAlgebra_8hpp_a39c4e4c3141477cf5a94e64670ff5a8e}\label{TensorAlgebra_8hpp_a39c4e4c3141477cf5a94e64670ff5a8e}} 
+\index{TensorAlgebra.hpp@{TensorAlgebra.hpp}!element\_transform@{element\_transform}}
+\index{element\_transform@{element\_transform}!TensorAlgebra.hpp@{TensorAlgebra.hpp}}
+\doxysubsubsection{\texorpdfstring{element\_transform()}{element\_transform()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename CType, size\+\_\+t CRank, typename Unary\+Operator , typename T  = double$>$ \\
+auto element\+\_\+transform (\begin{DoxyParamCaption}\item[{CType$<$ T, CRank $>$ $\ast$}]{C,  }\item[{Unary\+Operator}]{unary\+\_\+opt }\end{DoxyParamCaption}) -\/$>$ std\+::enable\+\_\+if\+\_\+t$<$std\+::is\+\_\+base\+\_\+of\+\_\+v$<$\+::\mbox{\hyperlink{structeinsums_1_1detail_1_1TensorBase}{einsums\+::detail\+::\+Tensor\+Base}}$<$T, CRank$>$, CType$<$T, CRank$>$$>$$>$ }
+
+\mbox{\Hypertarget{TensorAlgebra_8hpp_aeb37a0b46bc7a297df5328587d041b0f}\label{TensorAlgebra_8hpp_aeb37a0b46bc7a297df5328587d041b0f}} 
+\index{TensorAlgebra.hpp@{TensorAlgebra.hpp}!element\_transform@{element\_transform}}
+\index{element\_transform@{element\_transform}!TensorAlgebra.hpp@{TensorAlgebra.hpp}}
+\doxysubsubsection{\texorpdfstring{element\_transform()}{element\_transform()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename Smart\+Ptr , typename Unary\+Operator $>$ \\
+auto element\+\_\+transform (\begin{DoxyParamCaption}\item[{Smart\+Ptr $\ast$}]{C,  }\item[{Unary\+Operator}]{unary\+\_\+opt }\end{DoxyParamCaption}) -\/$>$ std\+::enable\+\_\+if\+\_\+t$<$is\+\_\+smart\+\_\+pointer\+\_\+v$<$Smart\+Ptr$>$$>$ }
+
+\mbox{\Hypertarget{TensorAlgebra_8hpp_a2606a5c3b67efe679232d1834e647c91}\label{TensorAlgebra_8hpp_a2606a5c3b67efe679232d1834e647c91}} 
+\index{TensorAlgebra.hpp@{TensorAlgebra.hpp}!get\_n@{get\_n}}
+\index{get\_n@{get\_n}!TensorAlgebra.hpp@{TensorAlgebra.hpp}}
+\doxysubsubsection{\texorpdfstring{get\_n()}{get\_n()}}
+{\footnotesize\ttfamily template$<$unsigned int N, typename... List$>$ \\
+constexpr auto get\+\_\+n (\begin{DoxyParamCaption}\item[{const std\+::tuple$<$ List... $>$ \&}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+\mbox{\Hypertarget{TensorAlgebra_8hpp_a25194158b9426924b60d31ea3de048d6}\label{TensorAlgebra_8hpp_a25194158b9426924b60d31ea3de048d6}} 
+\index{TensorAlgebra.hpp@{TensorAlgebra.hpp}!get\_n\_skip@{get\_n\_skip}}
+\index{get\_n\_skip@{get\_n\_skip}!TensorAlgebra.hpp@{TensorAlgebra.hpp}}
+\doxysubsubsection{\texorpdfstring{get\_n\_skip()}{get\_n\_skip()}}
+{\footnotesize\ttfamily template$<$unsigned int N, typename Skip , typename... List$>$ \\
+constexpr auto get\+\_\+n\+\_\+skip (\begin{DoxyParamCaption}\item[{const Skip \&}]{,  }\item[{const std\+::tuple$<$ List... $>$ \&}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+\mbox{\Hypertarget{TensorAlgebra_8hpp_a99dc0a17a614f451cd088b29105ea8f0}\label{TensorAlgebra_8hpp_a99dc0a17a614f451cd088b29105ea8f0}} 
+\index{TensorAlgebra.hpp@{TensorAlgebra.hpp}!khatri\_rao@{khatri\_rao}}
+\index{khatri\_rao@{khatri\_rao}!TensorAlgebra.hpp@{TensorAlgebra.hpp}}
+\doxysubsubsection{\texorpdfstring{khatri\_rao()}{khatri\_rao()}}
+{\footnotesize\ttfamily template$<$template$<$ typename, size\+\_\+t $>$ typename AType, size\+\_\+t ARank, template$<$ typename, size\+\_\+t $>$ typename BType, size\+\_\+t BRank, typename... AIndices, typename... BIndices, typename T  = double$>$ \\
+auto khatri\+\_\+rao (\begin{DoxyParamCaption}\item[{const std\+::tuple$<$ AIndices... $>$ \&}]{,  }\item[{const AType$<$ T, ARank $>$ \&}]{A,  }\item[{const std\+::tuple$<$ BIndices... $>$ \&}]{,  }\item[{const BType$<$ T, BRank $>$ \&}]{B }\end{DoxyParamCaption}) -\/$>$ std\+::enable\+\_\+if\+\_\+t$<$std\+::is\+\_\+base\+\_\+of\+\_\+v$<$\+::\mbox{\hyperlink{structeinsums_1_1detail_1_1TensorBase}{einsums\+::detail\+::\+Tensor\+Base}}$<$T, ARank$>$, AType$<$T, ARank$>$$>$ \&\&                             std\+::is\+\_\+base\+\_\+of\+\_\+v$<$\+::\mbox{\hyperlink{structeinsums_1_1detail_1_1TensorBase}{einsums\+::detail\+::\+Tensor\+Base}}$<$T, BRank$>$, BType$<$T, BRank$>$$>$,                         Tensor$<$T, 2$>$$>$ }
+
+Computes the Khatri-\/\+Rao product of tensors A and B.
+
+Example\+: Tensor$<$2$>$ result = khatri\+\_\+rao(Indices\{I, r\}, A, Indices\{J, r\}, B);
+
+Result is described as \{(I,J), r\}. If multiple common indices are provided they will be collapsed into a single index in the result. \mbox{\Hypertarget{TensorAlgebra_8hpp_ae10e6810505b86d8d0adc40db4014a04}\label{TensorAlgebra_8hpp_ae10e6810505b86d8d0adc40db4014a04}} 
+\index{TensorAlgebra.hpp@{TensorAlgebra.hpp}!unfold@{unfold}}
+\index{unfold@{unfold}!TensorAlgebra.hpp@{TensorAlgebra.hpp}}
+\doxysubsubsection{\texorpdfstring{unfold()}{unfold()}}
+{\footnotesize\ttfamily template$<$unsigned int mode, template$<$ typename, size\+\_\+t $>$ typename CType, size\+\_\+t CRank, typename T  = double$>$ \\
+auto unfold (\begin{DoxyParamCaption}\item[{const CType$<$ T, CRank $>$ \&}]{source }\end{DoxyParamCaption}) -\/$>$ std\+::enable\+\_\+if\+\_\+t$<$std\+::is\+\_\+same\+\_\+v$<$Tensor$<$T, CRank$>$, CType$<$T, CRank$>$$>$, Tensor$<$T, 2$>$$>$ }
+
+Returns the mode-\/{\ttfamily mode} unfolding of {\ttfamily tensor} with modes startng at {\ttfamily 0}
+
+\begin{DoxyReturn}{Returns}
+unfolded\+\_\+tensor of shape {\ttfamily (tensor.\+dim(mode), -\/1)} 
+\end{DoxyReturn}
