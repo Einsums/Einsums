@@ -46,8 +46,6 @@ einsums_option(EINSUMS_USE_HPTT BOOL
                "Use the HPTT package for tensor transpositions" ON)
 einsums_option(EINSUMS_ENABLE_TESTING BOOL "Build testing (requires Catch2)"
                ${PROJECT_IS_TOP_LEVEL})
-einsums_option(EINSUMS_BUILD_HIP BOOL
-	       "Build HIP backend for graphics card acceleration." OFF)
 
 add_feature_info(
   EINSUMS_CONTINUOUSLY_TEST_EINSUM ${EINSUMS_CONTINUOUSLY_TEST_EINSUM}
@@ -107,10 +105,6 @@ if(OpenMP_FOUND)
   message(
     STATUS
       "OpenMP Version ${OpenMP_CXX_VERSION_MAJOR}.${OpenMP_CXX_VERSION_MINOR}")
-endif()
-
-if(EINSUMS_BUILD_HIP)
-  find_package(HIP REQUIRED)
 endif()
 
 include(cmake/BackwardConfig.cmake)

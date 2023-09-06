@@ -28,6 +28,12 @@
 
 #pragma once
 
+#include "einsums/_Export.hpp"
+#include "fmt/color.h"
+#include "fmt/core.h"
+#include "fmt/format.h"
+#include "fmt/ranges.h"
+
 #include <algorithm>
 #include <cassert>
 #include <complex>
@@ -37,14 +43,6 @@
 #include <sstream>
 #include <stdexcept>
 #include <string_view>
-#include <string>
-#include <tuple>
-
-#include "einsums/_Export.hpp"
-#include "fmt/color.h"
-#include "fmt/core.h"
-#include "fmt/format.h"
-#include "fmt/ranges.h"
 
 namespace print {
 

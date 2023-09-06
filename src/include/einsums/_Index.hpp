@@ -28,12 +28,11 @@
 
 #pragma once
 
-#include <ostream>
-#include <tuple>
-
 #include "_Export.hpp"
 
-#ifdef I
+#include <ostream>
+
+#if defined(I)
 #    undef I
 #endif
 
@@ -45,7 +44,7 @@ namespace einsums::tensor_algebra::index {
  * Empty base class for index labels.
  */
 struct LabelBase {};
-}  // namespace einsums::tensor_algebra::index
+} // namespace einsums::tensor_algebra::index
 
 /**
  * @def MAKE_INDEX(x)
@@ -53,29 +52,24 @@ struct LabelBase {};
  * Creates a new index type with the given name.
  *
  */
-#define MAKE_INDEX(x)                                                          \
-    namespace einsums::tensor_algebra::index {                                 \
-    struct x : public LabelBase {                                              \
-        static constexpr char letter = static_cast<const char (&)[2]>(#x)[0];  \
-        constexpr x()                = default;                                \
-    };                                                                         \
-    static struct x x;                                                         \
-    inline auto operator<<(std::ostream &os, const struct x &) ->              \
-                std::ostream & {                                               \
-            os << x::letter;                                                   \
-            return os;                                                         \
-    }                                                                          \
-    }  /* namespace einsums::tensor_algebra::index */                          \
-    template <>                                                                \
-    struct EINSUMS_EXPORT fmt::formatter<                                      \
-            struct ::einsums::tensor_algebra::index::x> :                      \
-            fmt::formatter<char> {                                             \
-        template <typename FormatContext>                                      \
-        auto format(const struct ::einsums::tensor_algebra::index::x &,        \
-                    FormatContext &ctx) {                                      \
-            return formatter<char>::format(::einsums::tensor_algebra::         \
-                                           index::x::letter, ctx);             \
-        }                                                                      \
+#define MAKE_INDEX(x)                                                                                                                      \
+    namespace einsums::tensor_algebra::index {                                                                                             \
+    struct x : public LabelBase {                                                                                                          \
+        static constexpr char letter = static_cast<const char (&)[2]>(#x)[0];                                                              \
+        constexpr x()                = default;                                                                                            \
+    };                                                                                                                                     \
+    static struct x x;                                                                                                                     \
+    inline auto     operator<<(std::ostream &os, const struct x &) -> std::ostream     &{                                                     \
+            os << x::letter;                                                                                                               \
+            return os;                                                                                                                     \
+    }                                                                                                                                      \
+    }                                                                                                                                      \
+    template <>                                                                                                                            \
+    struct EINSUMS_EXPORT fmt::formatter<struct ::einsums::tensor_algebra::index::x> : fmt::formatter<char> {                              \
+        template <typename FormatContext>                                                                                                  \
+        auto format(const struct ::einsums::tensor_algebra::index::x &, FormatContext &ctx) {                                              \
+            return formatter<char>::format(::einsums::tensor_algebra::index::x::letter, ctx);                                              \
+        }                                                                                                                                  \
     };
 
 MAKE_INDEX(A); // NOLINT
@@ -144,10 +138,9 @@ namespace index {
  * 
  * Contains a tuple of index names.
  */
-constexpr auto list = std::make_tuple(i, j, k, l, m, n, a, b, c, d, e, f,
-                                      p, q, r, s);
+constexpr auto list = std::make_tuple(i, j, k, l, m, n, a, b, c, d, e, f, p, q, r, s);
 
-}  // namespace index
+} // namespace index
 
 /**
  * @struct Indices
@@ -158,7 +151,7 @@ constexpr auto list = std::make_tuple(i, j, k, l, m, n, a, b, c, d, e, f,
  */
 template <typename... Args>
 struct EINSUMS_EXPORT Indices : public std::tuple<Args...> {
-    explicit Indices(Args... args) : std::tuple<Args...>(args...){}
+    Indices(Args... args) : std::tuple<Args...>(args...){};
 };
 
-}  // namespace einsums::tensor_algebra
+} // namespace einsums::tensor_algebra
