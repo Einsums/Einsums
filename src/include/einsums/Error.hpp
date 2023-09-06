@@ -28,11 +28,10 @@
 
 #pragma once
 
+#include "einsums/_Common.hpp"
+
 #include <iterator>
 #include <variant>
-#include <utility>
-
-#include "einsums/_Common.hpp"
 
 namespace einsums {
 
@@ -106,8 +105,7 @@ struct [[nodiscard]] ErrorOr {
      * @param value The value to convert.
      */
     template <typename U>
-    ErrorOr(ErrorOr<U, ErrorType> &&value) :
-        _value_or_error(std::move(value._value_or_error)) {}
+    ErrorOr(ErrorOr<U, ErrorType> &&value) : _value_or_error(std::move(value._value_or_error)) {}
 
     /**
      * Converts a value into an ErrorOr object.
@@ -131,8 +129,7 @@ struct [[nodiscard]] ErrorOr {
      * @return The error part of the struct.
      */
     auto error() -> ErrorType & { return std::get<ErrorType>(_value_or_error); }
-    auto error() const -> ErrorType const & {
-        return std::get<ErrorType>(_value_or_error); }
+    auto error() const -> ErrorType const & { return std::get<ErrorType>(_value_or_error); }
 
     /**
      * Returns whether this object represents an error or not.
@@ -158,12 +155,11 @@ struct [[nodiscard]] ErrorOr {
  * Specialization of the ErrorOr type where the value type is void.
  */
 template <typename ErrorType>
-struct [[nodiscard]] ErrorOr<void, ErrorType> :
-        public ErrorOr<Empty, ErrorType> {
+struct [[nodiscard]] ErrorOr<void, ErrorType> : public ErrorOr<Empty, ErrorType> {
     using ResultType = void;
     using ErrorOr<Empty, ErrorType>::ErrorOr;
 };
 
-}  // namespace einsums
+} // namespace einsums
 
 // using einsums::ErrorOr;

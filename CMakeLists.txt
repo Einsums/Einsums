@@ -61,9 +61,9 @@ einsums_option(EINSUMS_USE_HPTT BOOL
                "Use the HPTT package for tensor transpositions" ON)
 einsums_option(EINSUMS_ENABLE_TESTING BOOL "Build testing (requires Catch2)"
                ${PROJECT_IS_TOP_LEVEL})
-
 einsums_option(EINSUMS_BUILD_HIP BOOL
 	       "Build HIP backend for graphics card acceleration." OFF)
+
 
 add_feature_info(
   EINSUMS_CONTINUOUSLY_TEST_EINSUM ${EINSUMS_CONTINUOUSLY_TEST_EINSUM}
@@ -120,11 +120,14 @@ if(OpenMP_FOUND)
 endif()
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 if(EINSUMS_BUILD_HIP)
   find_package(HIP REQUIRED)
 endif()
 
+=======
+>>>>>>> 79ccdfa (Revert "Linted and fixed several files.")
 include(cmake/BackwardConfig.cmake)
 
 >>>>>>> d7eaf33 (Linted and fixed several files.)

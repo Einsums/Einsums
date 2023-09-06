@@ -28,6 +28,8 @@
 
 #pragma once
 
+#include "einsums/_Export.hpp"
+
 #include <memory>
 #include <string>
 
@@ -56,9 +58,8 @@ struct EINSUMS_EXPORT Section {
      * @param domain The domain of the section.
      * @param pushTimer Whether to start a new timer for this section.
      */
-    Section(const std::string &name, const std::string &domain,
-            bool pushTimer = true);
-
+    Section(const std::string &name, const std::string &domain, bool pushTimer = true);
+    
     /**
      * Deconstruct this section.
      */
@@ -69,7 +70,7 @@ struct EINSUMS_EXPORT Section {
      */
     void end();
 
-private :
+  private:
     /**
      * Begin this section.
      */

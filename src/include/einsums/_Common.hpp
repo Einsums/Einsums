@@ -29,52 +29,44 @@
 
 #pragma once
 
-#include <array>
-#include <cstdint>
-#include <ostream>
-#include <string>
-#include <utility>
-
 #include "einsums/Error.hpp"
 #include "einsums/Print.hpp"
 #include "einsums/_Compiler.hpp"
 #include "einsums/_Export.hpp"
 
-// Macro definitions
+#include <array>
+#include <cstdint>
+#include <ostream>
+
 #define EINSUMS_STRINGIFY(a)  EINSUMS_STRINGIFY2(a)
 #define EINSUMS_STRINGIFY2(a) #a
 
-// Begin the namespace and include details.
-#define BEGIN_EINSUMS_NAMESPACE_HPP(x)                                         \
-    namespace x {                                                              \
-    namespace detail {                                                         \
-    extern EINSUMS_EXPORT std::string s_Namespace;                             \
+#define BEGIN_EINSUMS_NAMESPACE_HPP(x)                                                                                                     \
+    namespace x {                                                                                                                          \
+    namespace detail {                                                                                                                     \
+    extern EINSUMS_EXPORT std::string s_Namespace;                                                                                         \
     }
 
-// End the namespace.
 #define END_EINSUMS_NAMESPACE_HPP(x) }
 
-// Begin the namespace and include details.
-#define BEGIN_EINSUMS_NAMESPACE_CPP(x)                                         \
-    namespace x {                                                              \
-    namespace detail {                                                         \
-    EINSUMS_EXPORT std::string s_Namespace = #x;                               \
+#define BEGIN_EINSUMS_NAMESPACE_CPP(x)                                                                                                     \
+    namespace x {                                                                                                                          \
+    namespace detail {                                                                                                                     \
+    EINSUMS_EXPORT std::string s_Namespace = #x;                                                                                           \
     }
 
-// End the namespace.
 #define END_EINSUMS_NAMESPACE_CPP(x) }
 
 namespace einsums {
 
-// Define types for later use.
 #if defined(MKL_ILP64)
-using eint  = int128_t;   // long long int;
-using euint = uint128_t;  // unsigned long long int;
-using elong = int128_t;   // long long int;
+using eint  = long long int;
+using euint = unsigned long long int;
+using elong = long long int;
 #else
 using eint  = int;
 using euint = unsigned int;
-using elong = int64_t;    // long int;
+using elong = long int;
 #endif
 
 // Functions to start and end processing of tensor operations.
@@ -97,9 +89,7 @@ auto EINSUMS_EXPORT initialize() -> int;
  */
 void EINSUMS_EXPORT finalize(bool timerReport = false);
 
-/* The following detail and "using" statements below are needed to ensure Dims,
- * Strides, and Offsets are strong-types in C++
- */
+// The following detail and "using" statements below are needed to ensure Dims, Strides, and Offsets are strong-types in C++
 namespace detail {
 
 struct DimType {};
@@ -124,12 +114,10 @@ struct Array : public std::array<UnderlyingType, Rank> {
      * @callergraph
      */
     template <typename... Args>
-    constexpr explicit Array(Args... args) :
-            std::array<UnderlyingType, Rank>{
-                static_cast<UnderlyingType>(args)...} {}
+    constexpr explicit Array(Args... args) : std::array<UnderlyingType, Rank>{static_cast<UnderlyingType>(args)...} {}
     using type = T;
 };
-}  // namespace detail
+} // namespace detail
 
 /**
  * @class Dim
@@ -184,7 +172,7 @@ struct All_t {};
  */
 static struct All_t All;
 
-}  // namespace einsums
+} // namespace einsums
 
 /**
  * Prints the dimensions passed in.

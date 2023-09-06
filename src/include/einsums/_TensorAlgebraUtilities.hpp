@@ -28,11 +28,10 @@
 
 #pragma once
 
-#include <tuple>
-#include <utility>
-
 #include "einsums/STL.hpp"
 #include "einsums/_Common.hpp"
+
+#include <tuple>
 
 BEGIN_EINSUMS_NAMESPACE_HPP(einsums::tensor_algebra)
 
@@ -50,13 +49,11 @@ namespace detail {
  * order.
  */
 template <size_t Rank, typename... Args, std::size_t... I>
-auto order_indices(const std::tuple<Args...> &combination,
-                   const std::array<size_t, Rank> &order,
-                   std::index_sequence<I...>) {
+auto order_indices(const std::tuple<Args...> &combination, const std::array<size_t, Rank> &order, std::index_sequence<I...>) {
     return std::tuple{get_from_tuple<size_t>(combination, order[I])...};
 }
 
-}  // namespace detail
+} // namespace detail
 
 /**
  * Reorders a set of objects with the given new ordering.
@@ -67,10 +64,8 @@ auto order_indices(const std::tuple<Args...> &combination,
  * @return The tuple of objects in a new order.
  */
 template <size_t Rank, typename... Args>
-auto order_indices(const std::tuple<Args...> &combination,
-                   const std::array<size_t, Rank> &order) {
-    return detail::order_indices(combination, order,
-                                 std::make_index_sequence<Rank>{});
+auto order_indices(const std::tuple<Args...> &combination, const std::array<size_t, Rank> &order) {
+    return detail::order_indices(combination, order, std::make_index_sequence<Rank>{});
 }
 
 namespace detail {
@@ -95,8 +90,7 @@ constexpr auto _find_type_with_position() {
 template <typename T, int Position, typename Head, typename... Args>
 constexpr auto _find_type_with_position() {
     if constexpr (std::is_same_v<std::decay_t<Head>, std::decay_t<T>>) {
-        return std::tuple_cat(std::make_pair(std::decay_t<T>(), Position),
-                        _find_type_with_position<T, Position + 1, Args...>());
+        return std::tuple_cat(std::make_pair(std::decay_t<T>(), Position), _find_type_with_position<T, Position + 1, Args...>());
     } else {
         return _find_type_with_position<T, Position + 1, Args...>();
     }
@@ -205,8 +199,7 @@ constexpr auto find_position(const std::tuple<TargetCombination...> &) {
  */
 template <typename S1, typename... S2, std::size_t... Is>
 constexpr auto _find_type_with_position(std::index_sequence<Is...>) {
-    return std::tuple_cat(detail::_find_type_with_position<
-                          std::tuple_element_t<Is, S1>, 0, S2...>()...);
+    return std::tuple_cat(detail::_find_type_with_position<std::tuple_element_t<Is, S1>, 0, S2...>()...);
 }
 
 /**
@@ -215,10 +208,8 @@ constexpr auto _find_type_with_position(std::index_sequence<Is...>) {
  * @return Some sort of tuple. @todo What does this mean?
  */
 template <typename... Ts, typename... Us>
-constexpr auto find_type_with_position(const std::tuple<Ts...> &,
-                                       const std::tuple<Us...> &) {
-    return _find_type_with_position<std::tuple<Ts...>, Us...>(
-                                std::make_index_sequence<sizeof...(Ts)>{});
+constexpr auto find_type_with_position(const std::tuple<Ts...> &, const std::tuple<Us...> &) {
+    return _find_type_with_position<std::tuple<Ts...>, Us...>(std::make_index_sequence<sizeof...(Ts)>{});
 }
 
 /**
@@ -228,8 +219,7 @@ constexpr auto find_type_with_position(const std::tuple<Ts...> &,
  */
 template <typename S1, typename... S2, std::size_t... Is>
 constexpr auto _unique_find_type_with_position(std::index_sequence<Is...>) {
-    return std::tuple_cat(detail::_unique_find_type_with_position<
-                             std::tuple_element_t<Is, S1>, 0, S2...>()...);
+    return std::tuple_cat(detail::_unique_find_type_with_position<std::tuple_element_t<Is, S1>, 0, S2...>()...);
 }
 
 /**
@@ -238,10 +228,8 @@ constexpr auto _unique_find_type_with_position(std::index_sequence<Is...>) {
  * @return Probably some sort of tuple.
  */
 template <typename... Ts, typename... Us>
-constexpr auto unique_find_type_with_position(const std::tuple<Ts...> &,
-                                              const std::tuple<Us...> &) {
-    return _unique_find_type_with_position<std::tuple<Ts...>, Us...>(
-                        std::make_index_sequence<sizeof...(Ts)>{});
+constexpr auto unique_find_type_with_position(const std::tuple<Ts...> &, const std::tuple<Us...> &) {
+    return _unique_find_type_with_position<std::tuple<Ts...>, Us...>(std::make_index_sequence<sizeof...(Ts)>{});
 }
 
 /**
@@ -273,17 +261,13 @@ auto get_dim_for(const TensorType<T, Rank> &tensor, const std::tuple<Args...> &a
  */
 template <typename AIndex, typename... TargetCombination, typename... TargetPositionInC, typename... LinkCombination,
           typename... LinkPositionInLink>
-auto construct_index(const std::tuple<TargetCombination...> &target_combination,
-                     const std::tuple<TargetPositionInC...> &,
-                     const std::tuple<LinkCombination...>   &link_combination,
-                     const std::tuple<LinkPositionInLink...> &) {
-    constexpr auto IsAIndexInC    = detail::find_position<AIndex,
-                                                        TargetPositionInC...>();
-    constexpr auto IsAIndexInLink = detail::find_position<AIndex,
-                                                       LinkPositionInLink...>();
+auto construct_index(const std::tuple<TargetCombination...> &target_combination, const std::tuple<TargetPositionInC...> &,
+                     const std::tuple<LinkCombination...>   &link_combination, const std::tuple<LinkPositionInLink...> &) {
 
-    static_assert(IsAIndexInC != -1 || IsAIndexInLink != -1,
-            "Looks like the indices in your einsum are not quite right! :(");
+    constexpr auto IsAIndexInC    = detail::find_position<AIndex, TargetPositionInC...>();
+    constexpr auto IsAIndexInLink = detail::find_position<AIndex, LinkPositionInLink...>();
+
+    static_assert(IsAIndexInC != -1 || IsAIndexInLink != -1, "Looks like the indices in your einsum are not quite right! :(");
 
     if constexpr (IsAIndexInC != -1) {
         return std::get<IsAIndexInC / 2>(target_combination);
@@ -302,14 +286,9 @@ auto construct_index(const std::tuple<TargetCombination...> &target_combination,
 template <typename... AIndices, typename... TargetCombination, typename... TargetPositionInC, typename... LinkCombination,
           typename... LinkPositionInLink>
 constexpr auto
-construct_indices(const std::tuple<TargetCombination...> &target_combination,
-                  const std::tuple<TargetPositionInC...> &target_position_in_C,
-                  const std::tuple<LinkCombination...> &link_combination,
-                  const std::tuple<LinkPositionInLink...> &link_position_in_link
-                 ) {
-    return std::make_tuple(construct_index<AIndices>(target_combination,
-                target_position_in_C, link_combination,
-                link_position_in_link)...);
+construct_indices(const std::tuple<TargetCombination...> &target_combination, const std::tuple<TargetPositionInC...> &target_position_in_C,
+                  const std::tuple<LinkCombination...> &link_combination, const std::tuple<LinkPositionInLink...> &link_position_in_link) {
+    return std::make_tuple(construct_index<AIndices>(target_combination, target_position_in_C, link_combination, link_position_in_link)...);
 }
 
 /**
@@ -365,18 +344,11 @@ constexpr auto construct_indices_from_unique_combination(const std::tuple<Unique
  */
 template <typename... AIndices, typename... TargetCombination, typename... TargetPositionInC, typename... LinkCombination,
           typename... LinkPositionInLink>
-constexpr auto construct_indices_from_unique_combination(
-        const std::tuple<UniqueTargetIndices...>     &unique_target_indices,
-        const std::tuple<UniqueTargetCombination...> &unique_target_combination,
-        const std::tuple<TargetPositionInC...>       &target_position_in_C,
-        const std::tuple<UniqueLinkIndices...>       &unique_link_indices,
-        const std::tuple<UniqueLinkCombination...>   &unique_link_combination,
-        const std::tuple<LinkPositionInLink...>      &link_position_in_link) {
-    return std::make_tuple(
-            construct_index_from_unique_target_combination<AIndices>(
-                unique_target_indices, unique_target_combination,
-                target_position_in_C, unique_link_indices,
-                unique_link_combination, link_position_in_link)...);
+constexpr auto construct_indices(const std::tuple<AIndices...> &, const std::tuple<TargetCombination...> &target_combination,
+                                 const std::tuple<TargetPositionInC...>  &target_position_in_C,
+                                 const std::tuple<LinkCombination...>    &link_combination,
+                                 const std::tuple<LinkPositionInLink...> &link_position_in_link) {
+    return construct_indices<AIndices...>(target_combination, target_position_in_C, link_combination, link_position_in_link);
 }
 
 /**
@@ -385,10 +357,8 @@ constexpr auto construct_indices_from_unique_combination(
  * @return Some sort of boolean value.
  */
 template <typename... PositionsInX, std::size_t... I>
-constexpr auto _contiguous_positions(const std::tuple<PositionsInX...> &x,
-                                     std::index_sequence<I...>) -> bool {
-    return ((std::get<2 * I + 1>(x) == std::get<2 * I + 3>(x) - 1) && ...
-                                                                   && true);
+constexpr auto _contiguous_positions(const std::tuple<PositionsInX...> &x, std::index_sequence<I...>) -> bool {
+    return ((std::get<2 * I + 1>(x) == std::get<2 * I + 3>(x) - 1) && ... && true);
 }
 
 /**
@@ -397,13 +367,11 @@ constexpr auto _contiguous_positions(const std::tuple<PositionsInX...> &x,
  * @return A boolean.
  */
 template <typename... PositionsInX>
-constexpr auto contiguous_positions(const std::tuple<PositionsInX...> &x)
--> bool {
+constexpr auto contiguous_positions(const std::tuple<PositionsInX...> &x) -> bool {
     if constexpr (sizeof...(PositionsInX) <= 2) {
         return true;
     } else {
-        return _contiguous_positions(x, std::make_index_sequence<
-                                        sizeof...(PositionsInX) / 2 - 1>{});
+        return _contiguous_positions(x, std::make_index_sequence<sizeof...(PositionsInX) / 2 - 1>{});
     }
 }
 
@@ -417,12 +385,9 @@ constexpr auto contiguous_positions(const std::tuple<PositionsInX...> &x)
  * @return Whether or not the ordering is the same.
  */
 template <typename... PositionsInX, typename... PositionsInY, std::size_t... I>
-constexpr auto _is_same_ordering(
-                const std::tuple<PositionsInX...> &positions_in_x,
-                const std::tuple<PositionsInY...> &positions_in_y,
-                std::index_sequence<I...>) {
-    return (std::is_same_v<decltype(std::get<2 * I>(positions_in_x)),
-                            decltype(std::get<2 * I>(positions_in_y))> && ...);
+constexpr auto _is_same_ordering(const std::tuple<PositionsInX...> &positions_in_x, const std::tuple<PositionsInY...> &positions_in_y,
+                                 std::index_sequence<I...>) {
+    return (std::is_same_v<decltype(std::get<2 * I>(positions_in_x)), decltype(std::get<2 * I>(positions_in_y))> && ...);
 }
 
 /**
@@ -435,16 +400,14 @@ constexpr auto _is_same_ordering(
  * @return A boolean.
  */
 template <typename... PositionsInX, typename... PositionsInY>
-constexpr auto is_same_ordering(
-                        const std::tuple<PositionsInX...> &positions_in_x,
-                        const std::tuple<PositionsInY...> &positions_in_y) {
+constexpr auto is_same_ordering(const std::tuple<PositionsInX...> &positions_in_x, const std::tuple<PositionsInY...> &positions_in_y) {
+    // static_assert(sizeof...(PositionsInX) == sizeof...(PositionsInY) && sizeof...(PositionsInX) > 0);
     if constexpr (sizeof...(PositionsInX) == 0 || sizeof...(PositionsInY) == 0)
         return false; // NOLINT
     else if constexpr (sizeof...(PositionsInX) != sizeof...(PositionsInY))
         return false;
     else
-        return _is_same_ordering(positions_in_x, positions_in_y,
-                    std::make_index_sequence<sizeof...(PositionsInX) / 2>{});
+        return _is_same_ordering(positions_in_x, positions_in_y, std::make_index_sequence<sizeof...(PositionsInX) / 2>{});
 }
 
 /**
@@ -484,8 +447,7 @@ constexpr auto is_same_dims(const std::tuple<PositionsInX...> &indices, const XT
  */
 template <typename LHS, typename RHS, std::size_t... I>
 constexpr auto same_indices(std::index_sequence<I...>) {
-    return (std::is_same_v<std::tuple_element_t<I, LHS>,
-                           std::tuple_element_t<I, RHS>> && ...);
+    return (std::is_same_v<std::tuple_element_t<I, LHS>, std::tuple_element_t<I, RHS>> && ...);
 }
 
 /**
@@ -537,10 +499,9 @@ constexpr auto same_indices() {
     if constexpr (std::tuple_size_v<LHS> != std::tuple_size_v<RHS>)
         return false;
     else
-        return detail::same_indices<LHS, RHS>(
-                    std::make_index_sequence<std::tuple_size_v<LHS>>());
+        return detail::same_indices<LHS, RHS>(std::make_index_sequence<std::tuple_size_v<LHS>>());
 }
 
-}  // namespace detail
+} // namespace detail
 
 END_EINSUMS_NAMESPACE_HPP(einsums::tensor_algebra)
