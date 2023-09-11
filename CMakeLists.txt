@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.24)
+cmake_minimum_required(VERSION 3.24)  # 3.24 for FetchContent_Declare(FIND_PACKAGE_ARGS
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 include(EinsumsBranding)
@@ -25,7 +25,7 @@ include(EinsumsBuildTypeMSAN)
 include(EinsumsBuildTypeUBSAN)
 
 # ##############################################################################
-# User input options                                   #
+# User input options                                                           #
 # ##############################################################################
 include(einsums_option)
 
