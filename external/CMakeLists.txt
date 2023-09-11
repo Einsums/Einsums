@@ -6,7 +6,7 @@ if(EINSUMS_ENABLE_TESTING)
     catch2
     GIT_REPOSITORY https://github.com/catchorg/Catch2.git
     GIT_TAG v3.4.0
-    FIND_PACKAGE_ARGS 3 GLOBAL)
+    FIND_PACKAGE_ARGS 3 NAMES Catch2 GLOBAL)
 
   FetchContent_MakeAvailable(catch2)
 endif()
@@ -15,8 +15,8 @@ endif()
 FetchContent_Declare(
   rangev3
   GIT_REPOSITORY https://github.com/ericniebler/range-v3.git
-  GIT_TAG 0.11.0
-  FIND_PACKAGE_ARGS 0.11 GLOBAL)
+  GIT_TAG 0.12.0
+  FIND_PACKAGE_ARGS 0.12.0 NAMES range-v3 GLOBAL)
 
 FetchContent_MakeAvailable(rangev3)
 
