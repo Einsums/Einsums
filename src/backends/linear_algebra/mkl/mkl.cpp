@@ -9,6 +9,7 @@
 #include <mkl_lapack.h>
 #include <mkl_lapacke.h>
 #include <stdexcept>
+#include <vector>
 
 BEGIN_EINSUMS_NAMESPACE_CPP(einsums::backend::linear_algebra::mkl)
 
