@@ -1,14 +1,18 @@
 include(FindPackageHandleStandardArgs)
 include(CheckIncludeFile)
+include(CMakePushCheckState)
 
 # Check for mkl_cblas.h only if we are using MKL.
 if (TARGET MKL::MKL)
+    cmake_push_check_state()
     # MKL include cblas by default. If we find the mkl_cblas.h
     # header then assume we have cblas.
+    set(CMAKE_REQUIRED_LIBRARIES MKL::MKL)
     check_include_file(mkl_cblas.h HAVE_MKL_CBLAS_H)
     if (HAVE_MKL_CBLAS_H)
         set(CBLAS_FOUND TRUE)
     endif()
+    cmake_pop_check_state()
 else()
     check_include_file(cblas.h HAVE_CBLAS_H)
     if (HAVE_CBLAS_H)

@@ -1,11 +1,15 @@
 include(FindPackageHandleStandardArgs)
+include(CMakePushCheckState)
 
 # Only check for mkl_lapacke.h if we are using MKL
 if (TARGET MKL::MKL)
+    cmake_push_check_state()
+    set(CMAKE_REQUIRED_LIBRARIES MKL::MKL)
     check_include_file(mkl_lapacke.h HAVE_MKL_LAPACKE_H)
     if (HAVE_MKL_LAPACKE_H)
         set(LAPACKE_FOUND TRUE)
     endif()
+    cmake_pop_check_state()
 else()
     check_include_file(lapacke.h HAVE_LAPACKE_H)
     if (HAVE_LAPACKE_H)
