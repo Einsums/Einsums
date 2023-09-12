@@ -17,6 +17,8 @@ FetchContent_Declare(
   GIT_REPOSITORY https://github.com/ericniebler/range-v3.git
   GIT_TAG 0.12.0
   FIND_PACKAGE_ARGS 0.12.0 NAMES range-v3 GLOBAL)
+  # note that upstream uses `write_basic_package_version_file(... COMPATIBILITY ExactVersion)`
+  #   so no version range of compatibilty can be expressed here.
 
 FetchContent_MakeAvailable(rangev3)
 
@@ -35,8 +37,8 @@ add_subdirectory(h5cpp-1.10.4-6-EAT)
 
 # <<< hptt >> Not using hptt is just asking for slow sorts.
 if(EINSUMS_USE_HPTT)
-  if(CMAKE_SYSTEM_PROCESSOR STREQUAL "arm64" OR CMAKE_SYSTEM_PROCESSOR STREQUAL
-                                                "ARM64")
+  string(TOLOWER CMAKE_SYSTEM_PROCESSOR cm_sys_processor)
+  if(cm_sys_processor STREQUAL "arm64")
     set(ENABLE_ARM ON)
     set(ENABLE_AVX OFF)
   endif()
