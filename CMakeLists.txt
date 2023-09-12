@@ -86,9 +86,6 @@ else()
   find_package(LAPACK REQUIRED)
 endif()
 
-find_package(CBLAS REQUIRED)
-find_package(LAPACKE REQUIRED)
-
 # Set default FFT library to mkl, if mkl was found, otherwise FFTW3
 set(EINSUMS_FFT_LIBRARY_DEFAULT "fftw3")
 if(TARGET MKL::MKL)
