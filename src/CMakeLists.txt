@@ -2969,3 +2969,21 @@ extend_einsums_target(einsums
         lapacke_z_nancheck.c
         lapacke_ztr_trans.c
 )
+
+install(TARGETS einsums
+    EXPORT einsumsTargets
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/include" 
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+
+install(EXPORT einsumsTargets
+    FILE einsumsTargets.cmake
+    NAMESPACE einsums::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/einsums
+)

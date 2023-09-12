@@ -26,3 +26,18 @@ if (TARGET MPI::MPI_CXX)
 	target_link_libraries(h5cpp INTERFACE MPI::MPI_CXX)
 endif()
 add_library(h5cpp::h5cpp ALIAS h5cpp)
+
+install(TARGETS h5cpp
+	EXPORT h5cppTargets
+	INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+
+install(DIRECTORY h5cpp 
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+
+install(EXPORT h5cppTargets
+	FILE h5cppTargets.cmake
+	NAMESPACE h5cpp::
+	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/h5cpp
+)
