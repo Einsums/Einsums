@@ -1,4 +1,5 @@
 include(FindPackageHandleStandardArgs)
+include(CheckIncludeFile)
 include(CMakePushCheckState)
 
 # Only check for mkl_lapacke.h if we are using MKL
