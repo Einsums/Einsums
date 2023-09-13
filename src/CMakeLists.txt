@@ -2978,9 +2978,11 @@ install(TARGETS einsums
     INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
-install(DIRECTORY "${CMAKE_SOURCE_DIR}/include" 
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-)
+install(
+  DIRECTORY
+    "${CMAKE_CURRENT_SOURCE_DIR}/include"
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+  )
 
 install(EXPORT einsumsTargets
     FILE einsumsTargets.cmake

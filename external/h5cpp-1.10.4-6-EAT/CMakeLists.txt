@@ -2,7 +2,13 @@
 # https://github.com/jturney/h5cpp/releases/tag/v1.10.4-EAT
 
 add_library(h5cpp INTERFACE)
-target_include_directories(h5cpp SYSTEM INTERFACE .)
+target_include_directories(
+  h5cpp
+  SYSTEM
+  INTERFACE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+  )
 
 if (WIN32)
 	find_package(HDF5 REQUIRED COMPONENTS CXX NAMES hdf5)
