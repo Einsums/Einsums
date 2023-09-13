@@ -22,6 +22,7 @@ jobs:
         shell: bash -el {0}
     steps:
       - uses: actions/checkout@v3
+
       - name: Install dependencies
         uses: conda-incubator/setup-miniconda@v2
         with:
@@ -30,10 +31,19 @@ jobs:
           miniforge-variant: Mambaforge
           use-mamba: true
           channels: conda-forge
+
+      # Step is unnecessary; remove step for debugging.
+      - name: Confound Environment - test fetched cblas/lapacke
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.build_type == 'Debug' && matrix.hptt == 'HPTT=OFF' }}
+        run: |
+          conda remove liblapacke libcblas
+
       - name: Configure CMake
         run: cmake -G Ninja -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DEINSUMS_SHOW_WARNING=OFF -DEINSUMS_USE_${{matrix.hptt}}
+
       - name: Build
         run: cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
+
       - name: Test
         working-directory: ${{github.workspace}}/build/tests
         run: ./test-all

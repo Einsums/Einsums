@@ -24,7 +24,8 @@ else()
         )
 
         find_library(CBLAS_LIBRARIES
-            NAMES cblas blas
+            NAMES cblas
+            # formerly NAMES included blas, but this was "finding" CBLAS pkg when BLAS installation (headers and lib) and CBLAS headers were present
             HINTS ${CBLAS_DIR}
             PATHS /usr /usr/local
             PATH_SUFFIXES lib64 lib
