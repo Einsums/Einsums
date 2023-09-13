@@ -222,10 +222,10 @@ foreach(define IN LISTS defines)
     )
 endforeach()
 
-# Include our copy of cblas if it wasn't found. We require a
+# Include downloaded cblas if it wasn't found installed. We require a
 # Fortran compiler for it.
 if (NOT CBLAS_FOUND)
-enable_language(Fortran)
+    enable_language(Fortran)
 endif()
 
 extend_einsums_target(einsums
