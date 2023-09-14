@@ -14,13 +14,13 @@ add_einsums_library(einsums
     PUBLIC_INCLUDES
         include
     DEPENDS
-        LAPACK::LAPACK
-        BLAS::BLAS
         Backward::Backward
     PUBLIC_DEPENDS
         range-v3::range-v3
         fmt::fmt
         h5cpp::h5cpp
+        LAPACK::LAPACK
+        BLAS::BLAS
 )
 
 # extend_einsums_target(einsums
