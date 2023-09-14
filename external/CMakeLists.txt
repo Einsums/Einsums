@@ -55,8 +55,7 @@ add_subdirectory(h5cpp-1.10.4-6-EAT)
 
 # <<< hptt >> Not using hptt is just asking for slow sorts.
 if(EINSUMS_USE_HPTT)
-  string(TOLOWER CMAKE_SYSTEM_PROCESSOR cm_sys_processor)
-  if(cm_sys_processor STREQUAL "arm64")
+  if(CMAKE_SYSTEM_PROCESSOR MATCHES "(arm64|ARM64)")
     set(ENABLE_ARM ON)
     set(ENABLE_AVX OFF)
   endif()

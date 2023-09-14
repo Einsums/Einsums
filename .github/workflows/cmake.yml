@@ -23,11 +23,61 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Write a Conda Env File
+        run: |
+          cat > export.yaml <<EOF
+          name: einsums-dev
+          channels:
+            - conda-forge
+            - nodefaults
+          dependencies:
+            - cmake
+            - ninja
+            - cxx-compiler
+            - catch2
+            - fftw
+            - fmt
+            - range-v3
+            - blas-devel
+            #MKL- libblas=*=*mkl
+            #OB- libblas=*=*openblas
+            #OB- openblas=*=*openmp*
+            #OB- liblapacke
+            - hdf5
+            - zlib
+            - elfutils
+          EOF
+          if [[ "${{ runner.os }}" == "Linux" ]]; then
+            # :
+            # sed -i "s;;;g" export.yaml
+            if [[ "${{ matrix.build_type }}" == "Release" ]]; then
+              sed -i "s;#MKL;;g" export.yaml
+            else
+              sed -i "s;#OB;;g" export.yaml
+            fi
+          fi
+          if [[ "${{ runner.os }}" == "macOS" ]]; then
+            # :
+            # sed -E -i.bak "s;;;g" export.yaml
+            if [[ "${{ matrix.build_type }}" == "Release" ]]; then
+              sed -E -i.bak "s;#MKL;;g" export.yaml
+            else
+              sed -E -i.bak "s;#OB;;g" export.yaml
+            fi
+            sed -E -i.bak "s;- elfutils;;g" export.yaml
+          fi
+          if [[ "${{ runner.os }}" == "Windows" ]]; then
+            :
+            # sed -i "s;;;g" export.yaml
+          fi
+          cat export.yaml
+
       - name: Install dependencies
         uses: conda-incubator/setup-miniconda@v2
         with:
           activate-environment: einsums-dev
-          environment-file: devtools/conda-envs/${{matrix.environment}}
+          #environment-file: devtools/conda-envs/${{matrix.environment}}
+          environment-file: export.yaml
           miniforge-variant: Mambaforge
           use-mamba: true
           channels: conda-forge
@@ -36,7 +86,7 @@ jobs:
       - name: Confound Environment - test fetched cblas/lapacke
         if: ${{ matrix.os == 'ubuntu-latest' && matrix.build_type == 'Debug' && matrix.hptt == 'HPTT=OFF' }}
         run: |
-          conda remove liblapacke libcblas
+          conda remove liblapacke libcblas --solver=libmamba
 
       - name: Configure CMake
         run: cmake -G Ninja -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DEINSUMS_SHOW_WARNING=OFF -DEINSUMS_USE_${{matrix.hptt}}
