@@ -40,9 +40,10 @@ jobs:
             - range-v3
             - blas-devel
             #MKL- libblas=*=*mkl
-            #OB- libblas=*=*openblas
-            #OB- openblas=*=*openmp*
-            #OB- liblapacke
+            #ACC- libblas=*=*accelerate
+            #OBL- libblas=*=*openblas
+            #OBL- openblas=*=*openmp*
+            #OBL- liblapacke
             - hdf5
             - zlib
             - elfutils
@@ -53,16 +54,16 @@ jobs:
             if [[ "${{ matrix.build_type }}" == "Release" ]]; then
               sed -i "s;#MKL;;g" export.yaml
             else
-              sed -i "s;#OB;;g" export.yaml
+              sed -i "s;#OBL;;g" export.yaml
             fi
           fi
           if [[ "${{ runner.os }}" == "macOS" ]]; then
             # :
             # sed -E -i.bak "s;;;g" export.yaml
             if [[ "${{ matrix.build_type }}" == "Release" ]]; then
-              sed -E -i.bak "s;#MKL;;g" export.yaml
+              sed -E -i.bak "s;#ACC;;g" export.yaml
             else
-              sed -E -i.bak "s;#OB;;g" export.yaml
+              sed -E -i.bak "s;#OBL;;g" export.yaml
             fi
             sed -E -i.bak "s;- elfutils;;g" export.yaml
           fi
