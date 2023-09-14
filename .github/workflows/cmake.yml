@@ -88,6 +88,11 @@ jobs:
         run: |
           conda remove liblapacke libcblas --solver=libmamba
 
+      - name: Conda environment
+        run: |
+          mamba info
+          mamba list
+
       - name: Configure CMake
         run: cmake -G Ninja -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DEINSUMS_SHOW_WARNING=OFF -DEINSUMS_USE_${{matrix.hptt}}
 
