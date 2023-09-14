@@ -7,7 +7,7 @@ dependencies:
 
   # OpenBLAS
   - libblas=*=*openblas
-  - openblas=*=*openmp*
+  - openblas=*=openmp*
 
   # Prebuilts to save einsums the work
   - catch2
