@@ -15,12 +15,12 @@ add_einsums_library(einsums
         include
     DEPENDS
         Backward::Backward
+        LAPACK::LAPACK
+        BLAS::BLAS
     PUBLIC_DEPENDS
         range-v3::range-v3
         fmt::fmt
         h5cpp::h5cpp
-        LAPACK::LAPACK
-        BLAS::BLAS
 )
 
 # extend_einsums_target(einsums
