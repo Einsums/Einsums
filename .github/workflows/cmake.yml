@@ -43,7 +43,7 @@ jobs:
             #ACC- libblas=*=*accelerate
             #OBL- libblas=*=*openblas
             #OBL- openblas=*=*openmp*
-            #OBL- liblapacke
+            - liblapacke
             - hdf5
             - zlib
             - elfutils
