@@ -49,9 +49,43 @@ set(netlib_SOURCE_DIR "${netlib_SOURCE_DIR}" PARENT_SCOPE)
 set(CBLAS_FOUND "${CBLAS_FOUND}" PARENT_SCOPE)
 set(LAPACKE_FOUND "${LAPACKE_FOUND}" PARENT_SCOPE)
 
+
+# <<<  HDF5  >>>
+
+find_package(ZLIB REQUIRED)
+find_package(HDF5 REQUIRED COMPONENTS CXX)
+
+
 # <<< h5cpp >>>
+
 # This version is modified to support higher rank tensors.
-add_subdirectory(h5cpp-1.10.4-6-EAT)
+#add_subdirectory(h5cpp-1.10.4-6-EAT)
+
+
+FetchContent_Declare(
+  h5cpp
+  URL https://github.com/loriab/h5cpp/archive/d906487e.tar.gz
+  URL_HASH SHA256=bd3df6ac779b1819fd8ee854a42da6ab9afafadfd3745f367525725f258dacbe
+  SOURCE_SUBDIR fake
+  OVERRIDE_FIND_PACKAGE
+  )
+FetchContent_MakeAvailable(h5cpp)
+message("h5cpp_SOURCE_DIR ${h5cpp_SOURCE_DIR}")
+
+add_library(Einsums_h5cpp INTERFACE)
+target_include_directories(
+  Einsums_h5cpp
+  SYSTEM  # for supressing warnings
+  INTERFACE
+    $<BUILD_INTERFACE:${h5cpp_SOURCE_DIR}>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+  )
+target_link_libraries(
+  Einsums_h5cpp
+  INTERFACE
+    HDF5::HDF5
+    ZLIB::ZLIB
+  )
 
 # <<< hptt >> Not using hptt is just asking for slow sorts.
 if(EINSUMS_USE_HPTT)
