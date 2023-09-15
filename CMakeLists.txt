@@ -4,9 +4,12 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(EinsumsBranding)
 
 project(
-  einsums
+  Einsums
   VERSION ${EINSUMS_VERSION}
-  LANGUAGES C CXX)
+  LANGUAGES C CXX
+  DESCRIPTION "C++ library for compile-time contraction pattern analysis optimizing tensor operations"
+  HOMEPAGE_URL https://github.com/jturney/einsums
+  )
 
 include(FeatureSummary)
 include(EinsumsAPI)

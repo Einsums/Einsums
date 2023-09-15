@@ -14,9 +14,9 @@ add_einsums_library(einsums
     PUBLIC_INCLUDES
         include
     DEPENDS
-        Backward::Backward
         LAPACK::LAPACK
         BLAS::BLAS
+        Backward::Backward
     PUBLIC_DEPENDS
         range-v3::range-v3
         fmt::fmt
