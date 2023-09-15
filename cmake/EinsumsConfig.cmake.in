@@ -1,0 +1,167 @@
+# EinsumsConfig.cmake
+# -------------------
+#
+# Einsums cmake module.
+# This module sets the following variables in your project::
+#
+##   ambit_FOUND - true if ambit and all required components found on the system
+##   ambit_VERSION - ambit version in format Major.Minor.Release. Prefer target variable.
+##   ambit_INCLUDE_DIRS - Directory where ambit/tensor.h header is located and dependent headers. Prefer targets.
+##   ambit_INCLUDE_DIR - same as DIRS. Prefer targets.
+##   ambit_DEFINITIONS - Definitions necessary to use ambit, namely USING_ambit. Prefer targets.
+##   ambit_LIBRARIES - ambit library to link against plus any dependent libraries. Prefer targets.
+##   ambit_LIBRARY - ambit library to link against. Prefer targets
+##   ambit_PYMOD - path to pyambit python module (suitable for appending PYTHONPATH). Only present
+##                 with Python component. Prefer pyambit target variable.
+##
+##
+## Target variables::
+##
+## It is preferred to use properties set on the base target rather than using the above variables. ::
+##
+##   ambit_VERSION - ambit version in format Major.Minor.Release
+##   ambit_PYMOD - path to ambit python module (suitable for appending PYTHONPATH). Only on pyambit target.
+##
+##   get_property(_ver TARGET ambit::ambit PROPERTY ambit_VERSION)
+##
+##
+## Available components: shared static Python ::
+##
+##   shared - search for only shared library
+##   static - search for only static library
+##   Python - search for Python bindings library
+##
+##
+## Exported targets::
+##
+## If ambit is found, this module defines at least the first following
+## :prop_tgt:`IMPORTED` target. Depending on components available, it may define::
+##
+##   ambit::ambit - the main ambit library with header & defs attached.
+##   ambit::pyambit - the Python pybind11 library.
+#
+#
+# Suggested usage::
+#
+#   find_package(Einsums)
+##   find_package(ambit 0.6 CONFIG REQUIRED COMPONENTS shared)
+##
+##
+## The following variables can be set to guide the search for this package::
+##
+##   ambit_DIR - CMake variable, set to directory containing this Config file
+##   CMAKE_PREFIX_PATH - CMake variable, set to root directory of this package
+##   PATH - environment variable, set to bin directory of this package
+##   CMAKE_DISABLE_FIND_PACKAGE_ambit - CMake variable, disables
+##       find_package(ambit) perhaps to force internal build
+
+@PACKAGE_INIT@
+
+set(ein Einsums)  # NameSpace
+
+## check library style component
+## * using EXISTS Targets-shared instead of SHARED_ONLY so packages can
+##   truncate their builds (e.g., build static for tests but only ship shared)
+#if (EXISTS "${CMAKE_CURRENT_LIST_DIR}/${amb}Targets-shared.cmake")
+#    set(${amb}_shared_FOUND 1)
+#endif()
+#if (EXISTS "${CMAKE_CURRENT_LIST_DIR}/${amb}Targets-static.cmake")
+#    set(${amb}_static_FOUND 1)
+#endif()
+#list(FIND ${amb}_FIND_COMPONENTS "shared" _seek_shared)
+#list(FIND ${amb}_FIND_COMPONENTS "static" _seek_static)
+#
+## check Python interface component
+#if (EXISTS "${CMAKE_CURRENT_LIST_DIR}/${amb}Targets-Python.cmake")
+#    set(${amb}_Python_FOUND 1)
+#endif()
+#list(FIND ${amb}_FIND_COMPONENTS "Python" _seek_Python)
+#
+## make detectable the FindTarget*.cmake modules
+#list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR})
+
+# check library dependency available
+include(CMakeFindDependencyMacro)
+if(@CBLAS_FOUND@)  # CBLAS_FOUND
+    find_dependency(CBLAS REQUIRED)
+else()
+    if(NOT CMAKE_REQUIRED_QUIET)
+        message(STATUS "CBLAS satisfied by source compiled into ${ein} distribution")
+    endif()
+endif()
+if(@LAPACKE_FOUND@)  # LAPACKE_FOUND
+    find_dependency(LAPACKE REQUIRED)
+else()
+    if(NOT CMAKE_REQUIRED_QUIET)
+        message(STATUS "LAPACKE satisfied by source compiled into ${ein} distribution")
+    endif()
+endif()
+#if(NOT TARGET tgt::hdf5)
+#    find_dependency(TargetHDF5 @TargetHDF5_VERSION_Mm@)
+#endif()
+#if(NOT TARGET tgt::lapack)
+#    find_dependency(TargetLAPACK)
+#endif()
+
+# Check all required components are available before trying to load any
+check_required_components(${ein})
+
+#-----------------------------------------------------------------------------
+# Don't include targets if this file is being picked up by another
+# project which has already built this as a subproject
+#-----------------------------------------------------------------------------
+if(NOT TARGET ${ein}::einsums)
+#    if(_seek_static GREATER -1)
+#        include("${CMAKE_CURRENT_LIST_DIR}/${amb}Targets-static.cmake")
+#    elseif(_seek_shared GREATER -1)
+#        include("${CMAKE_CURRENT_LIST_DIR}/${amb}Targets-shared.cmake")
+#    elseif(NOT @STATIC_ONLY@)  # STATIC_ONLY
+#        include("${CMAKE_CURRENT_LIST_DIR}/${amb}Targets-shared.cmake")
+#    elseif(NOT @SHARED_ONLY@)  # SHARED_ONLY
+#        include("${CMAKE_CURRENT_LIST_DIR}/${amb}Targets-static.cmake")
+#    endif()
+#
+#    get_property(_loc TARGET ${amb}::ambit PROPERTY LOCATION)
+#    get_property(_ill TARGET ${amb}::ambit PROPERTY INTERFACE_LINK_LIBRARIES)
+#    get_property(_iid TARGET ${amb}::ambit PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
+#    get_property(_icd TARGET ${amb}::ambit PROPERTY INTERFACE_COMPILE_DEFINITIONS)
+#    set(${amb}_LIBRARY ${_loc})
+#    set(${amb}_LIBRARIES ${_loc};${_ill})
+#    set(${amb}_INCLUDE_DIR ${_iid})
+#    set(${amb}_INCLUDE_DIRS ${_iid})
+#    set(${amb}_DEFINITIONS ${_icd})
+#
+#    if(${amb}_Python_FOUND)
+#        include("${CMAKE_CURRENT_LIST_DIR}/${amb}Targets-Python.cmake")
+#        get_property(${amb}_PYMOD TARGET ${amb}::pyambit PROPERTY ambit_PYMOD)
+#    endif()
+
+    if (CMAKE_VERSION VERSION_GREATER 3.15)
+#        message(VERBOSE "ambit::ambit")
+#
+#        get_property(_ver TARGET ${amb}::ambit PROPERTY ambit_VERSION)
+#        message(VERBOSE "${amb}::ambit.${amb}_VERSION   ${_ver}")
+#
+#        message(VERBOSE "${amb}_FOUND                  ${${amb}_FOUND}")
+#        message(VERBOSE "${amb}_VERSION                ${${amb}_VERSION}")
+#        message(VERBOSE "${amb}_DEFINITIONS            ${${amb}_DEFINITIONS}")
+#
+#        message(VERBOSE "${amb}_LIBRARY                ${${amb}_LIBRARY}")
+#        message(VERBOSE "${amb}_LIBRARIES              ${${amb}_LIBRARIES}")
+#        message(VERBOSE "${amb}_INCLUDE_DIR            ${${amb}_INCLUDE_DIR}")
+#        message(VERBOSE "${amb}_INCLUDE_DIRS           ${${amb}_INCLUDE_DIRS}")
+#
+#        if (TARGET ${amb}::pyambit)
+#            message(VERBOSE "ambit::pyambit")
+#
+#            get_property(_ver TARGET ${amb}::pyambit PROPERTY ambit_VERSION)
+#            get_property(_pym TARGET ${amb}::pyambit PROPERTY ambit_PYMOD)
+#            message(VERBOSE "${amb}::pyambit.${amb}_VERSION ${_ver}")
+#            message(VERBOSE "${amb}::pyambit.${amb}_PYMOD   ${_pym}")
+#
+#            message(VERBOSE "${amb}_VERSION                ${${amb}_VERSION}")
+#            message(VERBOSE "${amb}_PYMOD                  ${${amb}_PYMOD}")
+#        endif()
+    endif()
+
+endif()
