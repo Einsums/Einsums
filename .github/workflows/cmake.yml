@@ -49,8 +49,6 @@ jobs:
             - elfutils
           EOF
           if [[ "${{ runner.os }}" == "Linux" ]]; then
-            # :
-            # sed -i "s;;;g" export.yaml
             if [[ "${{ matrix.build_type }}" == "Release" ]]; then
               sed -i "s;#MKL;;g" export.yaml
             else
@@ -58,19 +56,18 @@ jobs:
             fi
           fi
           if [[ "${{ runner.os }}" == "macOS" ]]; then
-            # :
-            # sed -E -i.bak "s;;;g" export.yaml
-            if [[ "${{ matrix.build_type }}" == "Release" ]]; then
-              sed -E -i.bak "s;#ACC;;g" export.yaml
-            else
-              sed -E -i.bak "s;#OBL;;g" export.yaml
-            fi
+            sed -E -i.bak "s;#OBL;;g" export.yaml
             sed -E -i.bak "s;- elfutils;;g" export.yaml
           fi
           if [[ "${{ runner.os }}" == "Windows" ]]; then
             :
-            # sed -i "s;;;g" export.yaml
           fi
+          # for empty bash block
+          #   :
+          # model sed for L/W
+          #   sed -i "s;;;g" export.yaml
+          # model sed for M
+          #   sed -E -i.bak "s;;;g" export.yaml
           cat export.yaml
 
       - name: Install dependencies
@@ -100,6 +97,11 @@ jobs:
       - name: Build
         run: cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
 
-      - name: Test
+      - name: Test (CTest)
         working-directory: ${{github.workspace}}/build
         run: ctest
+
+      - name: Test (Catch2)
+        if: false
+        working-directory: ${{github.workspace}}/build/tests
+        run: ./test-all
