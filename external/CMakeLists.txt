@@ -1,5 +1,13 @@
 include(FetchContent)
 
+# <<<  general notes  >>>
+
+# * URL preferred over GIT_REPOSITORY
+# * commit or permanent tag preferred over branch name for traceability
+# * to get the URL_HASH, run `curl -sL <URL> | openssl sha256`
+# * to use local source, put path in URL: `URL "/psi/gits/h5cpp"`
+
+
 # <<< Catch2 >>>
 if(EINSUMS_ENABLE_TESTING)
   FetchContent_Declare(
@@ -58,24 +66,26 @@ find_package(HDF5 REQUIRED COMPONENTS CXX)
 
 # <<< h5cpp >>>
 
-# This version is modified to support higher rank tensors.
-#add_subdirectory(h5cpp-1.10.4-6-EAT)
-
+# * v1.10.4-6-EAT6 on EAT branch is upstream v1.10.4-6 tag +2, so last upstream tag
+#   plus extended array dimensions to support higher rank tensors plus deleter stuff.
+# * find_package() is disabled since we need patched source
+# * upstream CMakeLists.txt isn't useable and project is header-only, so to keep code
+#   changes and build changes separate, we won't let FetchContent build (`SOURCE_SUBDIR
+#   fake`) and will create the interface Einsums_h5cpp target after download.
 
 FetchContent_Declare(
   h5cpp
-  URL https://github.com/loriab/h5cpp/archive/d906487e.tar.gz
-  URL_HASH SHA256=bd3df6ac779b1819fd8ee854a42da6ab9afafadfd3745f367525725f258dacbe
+  URL https://github.com/Einsums/h5cpp/archive/v1.10.4-6-EAT6.tar.gz
+  URL_HASH SHA256=bc6370d2a2b11d9208c53d7815c2fbcfefc09f509f3a9f4d9cbd76a8c442feac
   SOURCE_SUBDIR fake
   OVERRIDE_FIND_PACKAGE
   )
 FetchContent_MakeAvailable(h5cpp)
-message("h5cpp_SOURCE_DIR ${h5cpp_SOURCE_DIR}")
 
 add_library(Einsums_h5cpp INTERFACE)
 target_include_directories(
   Einsums_h5cpp
-  SYSTEM  # for supressing warnings
+  SYSTEM  # supress warnings
   INTERFACE
     $<BUILD_INTERFACE:${h5cpp_SOURCE_DIR}>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
