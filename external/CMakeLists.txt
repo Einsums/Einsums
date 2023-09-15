@@ -18,8 +18,7 @@ FetchContent_Declare(
   GIT_TAG 0.12.0
   FIND_PACKAGE_ARGS 0.12.0 NAMES range-v3 GLOBAL)
 # note that upstream uses `write_basic_package_version_file(... COMPATIBILITY
-# ExactVersion)`
-# so no version range of compatibilty can be expressed here.
+# ExactVersion)` so no version range of compatibilty can be expressed here.
 
 FetchContent_MakeAvailable(rangev3)
 
@@ -65,6 +64,6 @@ if(EINSUMS_USE_HPTT)
   FetchContent_Declare(
     hptt
     GIT_REPOSITORY https://github.com/Einsums/hptt.git
-    GIT_TAG master)
+    GIT_TAG v1.0.5+22)
   FetchContent_MakeAvailable(hptt)
 endif()
