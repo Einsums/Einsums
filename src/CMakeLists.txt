@@ -20,7 +20,7 @@ add_einsums_library(einsums
     PUBLIC_DEPENDS
         range-v3::range-v3
         fmt::fmt
-        h5cpp::h5cpp
+        Einsums_h5cpp
 )
 
 # extend_einsums_target(einsums
