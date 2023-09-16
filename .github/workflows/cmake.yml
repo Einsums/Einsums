@@ -26,8 +26,8 @@ jobs:
             cxx: icpx
             cmargs: >
               -DCMAKE_CXX_COMPILER=icpx
-              -DCMAKE_CXX_FLAGS="--gcc-toolchain=/usr/share/mambaforge/envs/test --sysroot=/usr/share/mambaforge/envs/test/x86_64-conda-linux-gnu/sysroot -target x86_64
-    name: Build and Test
+              -DCMAKE_CXX_FLAGS="--gcc-toolchain=/usr/share/miniconda3/envs/test --sysroot=/usr/share/miniconda3/envs/test/x86_64-conda-linux-gnu/sysroot -target x86_64
+    name: "Build • ${{ matrix.os }} ${{ matrix.cxx }} ${{ matrix.build_type }} HPTT=${{ matrix.hptt }}"
     runs-on: ${{matrix.os}}
     defaults:
       run:
