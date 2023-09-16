@@ -19,13 +19,15 @@ jobs:
               -GNinja
           - os: ubuntu-latest
             cxx: g++
+            cmargs: >
+              -G"Unix Makefiles"
           - os: macos-latest
             cxx: clang++
           - os: ubuntu-latest
             cxx: icpx
             cmargs: >
               -DCMAKE_CXX_COMPILER=icpx
-              -DCMAKE_CXX_FLAGS="--gcc-toolchain=/usr/share/miniconda3/envs/test --sysroot=/usr/share/miniconda3/envs/test/x86_64-conda-linux-gnu/sysroot -target x86_64-conda-linux-gnu"
+              -DCMAKE_CXX_FLAGS="--gcc-toolchain=/usr/share/miniconda3/envs/einsums-dev --sysroot=/usr/share/miniconda3/envs/einsums-dev/x86_64-conda-linux-gnu/sysroot -target x86_64-conda-linux-gnu"
     name: "Build • ${{ matrix.os }} ${{ matrix.cxx }} ${{ matrix.build_type }} HPTT=${{ matrix.hptt }}"
     runs-on: ${{matrix.os}}
     defaults:
