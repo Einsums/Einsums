@@ -1,7 +1,7 @@
 #include "einsums/Sort.hpp"
 
 #if defined(EINSUMS_USE_HPTT)
-#    include "hptt.h"
+#    include "hptt/hptt.h"
 
 // HPTT includes <complex> which defined I as a shorthand for complex values.
 // This causes issues with einsums since we define I to be a useable index
