@@ -1,6 +1,10 @@
 name: CMake
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
 
 jobs:
   build:
@@ -9,12 +13,20 @@ jobs:
       matrix:
         build_type: [ Release, Debug ]
         os: [ ubuntu-latest, macos-latest ]
-        hptt: [ HPTT=ON, HPTT=OFF ]
+        hptt: [ ON, OFF ]
         include:
+          - cmargs: >
+              -GNinja
           - os: ubuntu-latest
-            environment: linux-dev.yml
+            cxx: g++
           - os: macos-latest
-            environment: macos-dev.yml
+            cxx: clang++
+          - os: ubuntu-latest
+            build_type: Release
+            cxx: icpx
+            cmargs: >
+              -DCMAKE_CXX_COMPILER=icpx
+              -DCMAKE_CXX_FLAGS="--gcc-toolchain=/usr/share/mambaforge/envs/test --sysroot=/usr/share/mambaforge/envs/test/x86_64-conda-linux-gnu/sysroot -target x86_64
     name: Build and Test
     runs-on: ${{matrix.os}}
     defaults:
@@ -47,12 +59,16 @@ jobs:
             - hdf5
             - zlib
             - elfutils
+            #- dpcpp_linux-64
           EOF
           if [[ "${{ runner.os }}" == "Linux" ]]; then
             if [[ "${{ matrix.build_type }}" == "Release" ]]; then
               sed -i "s;#MKL;;g" export.yaml
             else
               sed -i "s;#OBL;;g" export.yaml
+            fi
+            if [[ "${{ matrix.cxx }}" == "icpx" ]]; then
+              sed -i "s/#- dpcpp_linux-64/- dpcpp_linux-64/g" export.yaml
             fi
           fi
           if [[ "${{ runner.os }}" == "macOS" ]]; then
@@ -82,7 +98,7 @@ jobs:
 
       # Step is unnecessary; remove step for debugging.
       - name: Confound Environment - test fetched cblas/lapacke
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.build_type == 'Debug' && matrix.hptt == 'HPTT=OFF' }}
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.build_type == 'Debug' && matrix.hptt == 'OFF' }}
         run: |
           conda remove liblapacke libcblas --solver=libmamba
 
@@ -92,7 +108,17 @@ jobs:
           mamba list
 
       - name: Configure CMake
-        run: cmake -G Ninja -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DEINSUMS_SHOW_WARNING=OFF -DEINSUMS_USE_${{matrix.hptt}}
+        run: |
+          cmake \
+            -S . \
+            -B ${{github.workspace}}/build \
+            -D CMAKE_BUILD_TYPE=${{matrix.build_type}} \
+            -D EINSUMS_SHOW_WARNING=OFF \
+            -D EINSUMS_USE_HPTT=${{matrix.hptt}} \
+            -D EINSUMS_STATIC_BUILD=${{matrix.hptt}} \
+            -D CMAKE_INSTALL_PREFIX="${{github.workspace}}/installed" \
+            -DCMAKE_PREFIX_PATH="${CONDA_PREFIX}" \
+            ${{ matrix.cmargs }}
 
       - name: Build
         run: cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}

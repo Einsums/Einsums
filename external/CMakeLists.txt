@@ -12,8 +12,8 @@ include(FetchContent)
 if(EINSUMS_ENABLE_TESTING)
   FetchContent_Declare(
     catch2
-    GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-    GIT_TAG v3.4.0
+    URL https://github.com/catchorg/Catch2/archive/v3.4.0.tar.gz
+    URL_HASH SHA256=122928b814b75717316c71af69bd2b43387643ba076a6ec16e7882bfb2dfacbb
     FIND_PACKAGE_ARGS 3 NAMES Catch2 GLOBAL)
 
   FetchContent_MakeAvailable(catch2)
@@ -22,8 +22,8 @@ endif()
 # <<< range-v3 >>>
 FetchContent_Declare(
   rangev3
-  GIT_REPOSITORY https://github.com/ericniebler/range-v3.git
-  GIT_TAG 0.12.0
+  URL https://github.com/ericniebler/range-v3/archive/0.12.0.tar.gz
+  URL_HASH SHA256=015adb2300a98edfceaf0725beec3337f542af4915cec4d0b89fa0886f4ba9cb
   FIND_PACKAGE_ARGS 0.12.0 NAMES range-v3 GLOBAL)
 # note that upstream uses `write_basic_package_version_file(... COMPATIBILITY
 # ExactVersion)` so no version range of compatibilty can be expressed here.
@@ -33,8 +33,8 @@ FetchContent_MakeAvailable(rangev3)
 # <<< fmt >>>
 FetchContent_Declare(
   fmt
-  GIT_REPOSITORY https://github.com/fmtlib/fmt.git
-  GIT_TAG 10.1.0
+  URL https://github.com/fmtlib/fmt/archive/10.1.0.tar.gz
+  URL_HASH SHA256=deb0a3ad2f5126658f2eefac7bf56a042488292de3d7a313526d667f3240ca0a
   FIND_PACKAGE_ARGS 10.1 GLOBAL)
 
 FetchContent_MakeAvailable(fmt)
