@@ -11,26 +11,30 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        cxx: [ L-Gnu, M-Clang, L-Intel ]
         build_type: [ Release, Debug ]
-        cxx: [ g++, clang++, icpx]
         hptt: [ ON, OFF ]
         include:
           - cmargs: ""
-          - cxx: g++
+          - cxx: L-Gnu
             os: ubuntu-latest
-            #cmargs: >
-            #  -G"Unix Makefiles"
-          - cxx: clang++
+          - cxx: M-Clang
             os: macos-latest
-          - cxx: icpx
+          - cxx: L-Intel
             os: ubuntu-latest
             cmargs: >
               -DCMAKE_CXX_COMPILER=icpx
               -DCMAKE_CXX_FLAGS="--gcc-toolchain=/usr/share/miniconda3/envs/einsums-dev --sysroot=/usr/share/miniconda3/envs/einsums-dev/x86_64-conda-linux-gnu/sysroot -target x86_64-conda-linux-gnu"
-        exclude:
-          - cxx: icpx
+          - cxx: L-src
+            os: ubuntu-latest
             build_type: Debug
-    name: "Build • ${{ matrix.os }} ${{ matrix.cxx }} ${{ matrix.build_type }} HPTT=${{ matrix.hptt }}"
+            hptt: ON
+            cmargs: >
+              -DFETCHCONTENT_TRY_FIND_PACKAGE_MODE=NEVER
+        exclude:
+          - cxx: L-Intel
+            build_type: Debug
+    name: "Build • ${{ matrix.cxx }} • ${{ matrix.build_type }} • HPTT=${{ matrix.hptt }}"
     runs-on: ${{matrix.os}}
     defaults:
       run:
@@ -70,7 +74,7 @@ jobs:
             else
               sed -i "s;#OBL;;g" export.yaml
             fi
-            if [[ "${{ matrix.cxx }}" == "icpx" ]]; then
+            if [[ "${{ matrix.cxx }}" == "L-Intel" ]]; then
               sed -i "s/#- dpcpp_linux-64/- dpcpp_linux-64/g" export.yaml
             fi
           fi
