@@ -12,22 +12,24 @@ jobs:
       fail-fast: false
       matrix:
         build_type: [ Release, Debug ]
-        os: [ ubuntu-latest, macos-latest ]
+        cxx: [ g++, clang++, icpx]
         hptt: [ ON, OFF ]
         include:
-          - cmargs: >
-              -GNinja
-          - os: ubuntu-latest
-            cxx: g++
-            cmargs: >
-              -G"Unix Makefiles"
-          - os: macos-latest
-            cxx: clang++
-          - os: ubuntu-latest
-            cxx: icpx
+          - cmargs: ""
+          - cxx: g++
+            os: ubuntu-latest
+            #cmargs: >
+            #  -G"Unix Makefiles"
+          - cxx: clang++
+            os: macos-latest
+          - cxx: icpx
+            os: ubuntu-latest
             cmargs: >
               -DCMAKE_CXX_COMPILER=icpx
               -DCMAKE_CXX_FLAGS="--gcc-toolchain=/usr/share/miniconda3/envs/einsums-dev --sysroot=/usr/share/miniconda3/envs/einsums-dev/x86_64-conda-linux-gnu/sysroot -target x86_64-conda-linux-gnu"
+        exclude:
+          - cxx: icpx
+            build_type: Debug
     name: "Build • ${{ matrix.os }} ${{ matrix.cxx }} ${{ matrix.build_type }} HPTT=${{ matrix.hptt }}"
     runs-on: ${{matrix.os}}
     defaults:
@@ -113,6 +115,7 @@ jobs:
           cmake \
             -S . \
             -B ${{github.workspace}}/build \
+            -G Ninja \
             -D CMAKE_BUILD_TYPE=${{matrix.build_type}} \
             -D EINSUMS_SHOW_WARNING=OFF \
             -D EINSUMS_USE_HPTT=${{matrix.hptt}} \
