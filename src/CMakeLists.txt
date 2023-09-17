@@ -2977,3 +2977,72 @@ extend_einsums_target(einsums
         ../utils/lapacke_z_nancheck.c
         ../utils/lapacke_ztr_trans.c
 )
+
+# <<<  Install & Export  >>>
+
+include(CMakePackageConfigHelpers)
+
+install(
+  DIRECTORY
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/
+  TYPE INCLUDE
+  COMPONENT ${ein}_Development
+  FILES_MATCHING
+    PATTERN "*.h"
+    PATTERN "*.hpp"
+  )
+
+install(
+  TARGETS
+    einsums
+    Einsums_h5cpp
+  EXPORT primary_set
+  RUNTIME
+    COMPONENT ${ein}_Runtime
+  LIBRARY
+    COMPONENT ${ein}_Runtime
+    NAMELINK_COMPONENT ${ein}_Development
+  ARCHIVE
+    COMPONENT ${ein}_Development
+  PUBLIC_HEADER
+    COMPONENT ${ein}_Development
+  INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+  )
+
+install(
+  EXPORT primary_set
+  FILE "${ein}Targets-CXX.cmake"
+  NAMESPACE "${ein}::"
+  DESTINATION ${EINSUMS_INSTALL_CMAKEDIR}
+  COMPONENT ${ein}_Development
+  )
+
+configure_package_config_file(
+  ../cmake/${ein}Config.cmake.in
+  "${CMAKE_CURRENT_BINARY_DIR}/${ein}Config.cmake"
+  INSTALL_DESTINATION ${EINSUMS_INSTALL_CMAKEDIR}
+  NO_SET_AND_CHECK_MACRO
+  )
+write_basic_package_version_file(
+  ${CMAKE_CURRENT_BINARY_DIR}/${ein}ConfigVersion.cmake
+  VERSION ${Einsums_VERSION}
+  COMPATIBILITY SameMinorVersion
+  )
+install(
+  FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/${ein}Config.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/${ein}ConfigVersion.cmake
+  DESTINATION ${EINSUMS_INSTALL_CMAKEDIR}
+  COMPONENT ${ein}_Development
+  )
+
+#include(JoinPaths)
+#join_paths(libdir_for_pc_file "\${exec_prefix}" "${CMAKE_INSTALL_LIBDIR}")
+#join_paths(includedir_for_pc_file "\${prefix}" "${CMAKE_INSTALL_INCLUDEDIR}")
+#
+#configure_file(cmake/libint2.pc.cmake.in libint2.pc @ONLY)
+#install(
+#  FILES ${CMAKE_CURRENT_BINARY_DIR}/libint2.pc
+#  DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig/
+#  COMPONENT ${L2}_Development
+#  )

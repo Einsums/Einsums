@@ -156,37 +156,37 @@ function(add_einsums_library name)
         set(COMPONENT_OPTION "COMPONENT" "${_arg_COMPONENT}")
     endif()
 
-    if (NOT EINSUMS_STATIC_BUILD OR _arg_SHARED)
-        install(TARGETS ${name}
-            EXPORT Einsums
-            RUNTIME
-                DESTINATION "${_DESTINATION}"
-                ${COMPONENT_OPTION}
-                OPTIONAL
-            LIBRARY
-                DESTINATION "${EINSUMS_LIBRARY_PATH}"
-                ${NAMELINK_OPTION}
-                ${COMPONENT_OPTION}
-                OPTIONAL
-            OBJECTS
-                DESTINATION "${EINSUMS_LIBRARY_PATH}"
-                COMPONENT Devel EXCLUDE_FROM_ALL
-            ARCHIVE
-                DESTINATION "${EINSUMS_LIBRARY_ARCHIVE_PATH}"
-                COMPONENT Devel EXCLUDE_FROM_ALL
-                OPTIONAL
-        )
-    endif()
-
-    if (NAMELINK_OPTION AND NOT EINSUMS_STATIC_BUILD)
-        install(TARGETS ${name}
-            LIBRARY
-                DESTINATION "${EINSUMS_LIBRARY_PATH}"
-                NAMELINK_ONLY
-                COMPONENT Devel EXCLUDE_FROM_ALL
-                OPTIONAL
-        )
-    endif()
+#    if (NOT EINSUMS_STATIC_BUILD OR _arg_SHARED)
+#        install(TARGETS ${name}
+#            EXPORT Einsums
+#            RUNTIME
+#                DESTINATION "${_DESTINATION}"
+#                ${COMPONENT_OPTION}
+#                OPTIONAL
+#            LIBRARY
+#                DESTINATION "${EINSUMS_LIBRARY_PATH}"
+#                ${NAMELINK_OPTION}
+#                ${COMPONENT_OPTION}
+#                OPTIONAL
+#            OBJECTS
+#                DESTINATION "${EINSUMS_LIBRARY_PATH}"
+#                COMPONENT Devel EXCLUDE_FROM_ALL
+#            ARCHIVE
+#                DESTINATION "${EINSUMS_LIBRARY_ARCHIVE_PATH}"
+#                COMPONENT Devel EXCLUDE_FROM_ALL
+#                OPTIONAL
+#        )
+#    endif()
+#
+#    if (NAMELINK_OPTION AND NOT EINSUMS_STATIC_BUILD)
+#        install(TARGETS ${name}
+#            LIBRARY
+#                DESTINATION "${EINSUMS_LIBRARY_PATH}"
+#                NAMELINK_ONLY
+#                COMPONENT Devel EXCLUDE_FROM_ALL
+#                OPTIONAL
+#        )
+#    endif()
 endfunction(add_einsums_library)
 
 function(einsums_add_public_header header)
@@ -198,9 +198,9 @@ function(einsums_add_public_header header)
     get_filename_component(source_dir ${header} DIRECTORY)
     file(RELATIVE_PATH include_dir_relative_path ${_einsums_source_dir} ${source_dir})
 
-    install(
-        FILES ${header}
-        DESTINATION "${EINSUMS_HEADER_INSTALL_PATH}/${include_dir_relative_path}"
-        COMPONENT Devel EXCLUDE_FROM_ALL
-    )
+    #install(
+    #    FILES ${header}
+    #    DESTINATION "${EINSUMS_HEADER_INSTALL_PATH}/${include_dir_relative_path}"
+    #    COMPONENT Devel EXCLUDE_FROM_ALL
+    #)
 endfunction()

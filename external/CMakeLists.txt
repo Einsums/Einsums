@@ -103,6 +103,14 @@ target_link_libraries(
     ZLIB::ZLIB
   )
 
+install(
+  DIRECTORY
+    ${h5cpp_SOURCE_DIR}/h5cpp
+  COMPONENT ${ein}_Development
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/einsums
+  )
+
+
 # <<< hptt >> Not using hptt is just asking for slow sorts.
 if(EINSUMS_USE_HPTT)
   FetchContent_Declare(

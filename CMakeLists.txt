@@ -27,10 +27,22 @@ include(EinsumsBuildTypeASAN)
 include(EinsumsBuildTypeMSAN)
 include(EinsumsBuildTypeUBSAN)
 
+set(ein Einsums)  # Namespace
+
 # ##############################################################################
 # User input options                                                           #
 # ##############################################################################
 include(einsums_option)
+
+# borrowed from pybind11 since einsums_option doesn't work
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+  message(STATUS "Setting tests build type to Release as none was specified")
+  set(CMAKE_BUILD_TYPE
+      Release
+      CACHE STRING "Choose the type of build." FORCE)
+  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel"
+                                               "RelWithDebInfo")
+endif()
 
 einsums_option(EINSUMS_CONTINUOUSLY_TEST_EINSUM BOOL
                "Every call to TensorAlgebra::einsum is tested" OFF)
@@ -49,6 +61,9 @@ einsums_option(EINSUMS_USE_HPTT BOOL
                "Use the HPTT package for tensor transpositions" ON)
 einsums_option(EINSUMS_ENABLE_TESTING BOOL "Build testing (requires Catch2)"
                ${PROJECT_IS_TOP_LEVEL})
+einsums_option(EINSUMS_INSTALL_CMAKEDIR STRING
+               "Directory to which Einsums CMake config files installed."
+               share/cmake/Einsums)
 
 add_feature_info(
   EINSUMS_CONTINUOUSLY_TEST_EINSUM ${EINSUMS_CONTINUOUSLY_TEST_EINSUM}
@@ -66,6 +81,8 @@ add_feature_info(EINSUMS_RUNTIME_INDICES_CHECK ${EINSUMS_RUNTIME_INDICES_CHECK}
                  "Check the sizes of corresponding indices at runtime")
 add_feature_info(EINSUMS_USE_HPTT ${EINSUMS_USE_HPTT}
                  "Build with internal HPTT version")
+
+include(autocmake_safeguards)
 
 include(cmake/DetectHostArch.cmake)
 detect_host_arch()

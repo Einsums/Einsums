@@ -25,9 +25,6 @@ jobs:
             cmargs: >
               -DCMAKE_CXX_COMPILER=icpx
               -DCMAKE_CXX_FLAGS="--gcc-toolchain=${CONDA_PREFIX} --sysroot=${CONDA_PREFIX}/${HOST}/sysroot -target ${HOST}"
-              # flags are long-form of below (envvars not available at spinup)
-              # -DCMAKE_CXX_FLAGS="--gcc-toolchain=${CONDA_PREFIX} --sysroot=${CONDA_PREFIX}/${HOST}/sysroot -target ${HOST}"
-              # -DCMAKE_CXX_FLAGS="--gcc-toolchain=/usr/share/miniconda3/envs/einsums-dev --sysroot=/usr/share/miniconda3/envs/einsums-dev/x86_64-conda-linux-gnu/sysroot -target x86_64-conda-linux-gnu"
           - cxx: L-src
             os: ubuntu-latest
             build_type: Debug
