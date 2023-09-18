@@ -20,7 +20,7 @@ add_einsums_library(einsums
     PUBLIC_DEPENDS
         range-v3::range-v3
         fmt::fmt
-        Einsums_h5cpp
+        Einsums::h5cpp
 )
 
 # extend_einsums_target(einsums
@@ -241,6 +241,8 @@ if (NOT LAPACKE_FOUND)
     message(WARNING "Reverting to pre-defined include/cblas_mangling.h")
     configure_file(${netlib_SOURCE_DIR}/CBLAS/include/cblas_mangling_with_flags.h.in
                    ${netlib_SOURCE_DIR}/CBLAS/include/cblas_mangling.h)
+    configure_file(${netlib_SOURCE_DIR}/LAPACKE/include/lapacke_mangling_with_flags.h.in
+                   ${netlib_SOURCE_DIR}/LAPACKE/include/lapacke_mangling.h)
 endif()
 
 extend_einsums_target(einsums
@@ -2977,3 +2979,82 @@ extend_einsums_target(einsums
         ../utils/lapacke_z_nancheck.c
         ../utils/lapacke_ztr_trans.c
 )
+
+# <<<  Install & Export  >>>
+
+include(CMakePackageConfigHelpers)
+
+install(
+  DIRECTORY
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/
+  TYPE INCLUDE
+  COMPONENT ${ein}_Development
+  FILES_MATCHING
+    PATTERN "*.h"
+    PATTERN "*.hpp"
+  )
+
+set(tgts einsums Einsums_h5cpp)
+if (TARGET hptt::hptt)
+    list(APPEND tgts hptt)
+endif()
+if(TARGET cblas)
+    list(APPEND tgts cblas)
+endif()
+if(TARGET lapacke)
+    list(APPEND tgts lapacke)
+endif()
+
+install(
+  TARGETS
+    ${tgts}
+  EXPORT primary_set
+  RUNTIME
+    COMPONENT ${ein}_Runtime
+  LIBRARY
+    COMPONENT ${ein}_Runtime
+    NAMELINK_COMPONENT ${ein}_Development
+  ARCHIVE
+    COMPONENT ${ein}_Development
+  PUBLIC_HEADER
+    COMPONENT ${ein}_Development
+  INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+  )
+
+install(
+  EXPORT primary_set
+  FILE "${ein}Targets-CXX.cmake"
+  NAMESPACE "${ein}::"
+  DESTINATION ${EINSUMS_INSTALL_CMAKEDIR}
+  COMPONENT ${ein}_Development
+  )
+
+configure_package_config_file(
+  ../cmake/${ein}Config.cmake.in
+  "${CMAKE_CURRENT_BINARY_DIR}/${ein}Config.cmake"
+  INSTALL_DESTINATION ${EINSUMS_INSTALL_CMAKEDIR}
+  NO_SET_AND_CHECK_MACRO
+  )
+write_basic_package_version_file(
+  ${CMAKE_CURRENT_BINARY_DIR}/${ein}ConfigVersion.cmake
+  VERSION ${Einsums_VERSION}
+  COMPATIBILITY SameMinorVersion
+  )
+install(
+  FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/${ein}Config.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/${ein}ConfigVersion.cmake
+  DESTINATION ${EINSUMS_INSTALL_CMAKEDIR}
+  COMPONENT ${ein}_Development
+  )
+
+#include(JoinPaths)
+#join_paths(libdir_for_pc_file "\${exec_prefix}" "${CMAKE_INSTALL_LIBDIR}")
+#join_paths(includedir_for_pc_file "\${prefix}" "${CMAKE_INSTALL_INCLUDEDIR}")
+#
+#configure_file(cmake/libint2.pc.cmake.in libint2.pc @ONLY)
+#install(
+#  FILES ${CMAKE_CURRENT_BINARY_DIR}/libint2.pc
+#  DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig/
+#  COMPONENT ${L2}_Development
+#  )
