@@ -111,11 +111,21 @@ install(
   )
 
 
-# <<< hptt >> Not using hptt is just asking for slow sorts.
+# <<< hptt >>>
+
+# * Not using hptt is just asking for slow sorts.
+
 if(EINSUMS_USE_HPTT)
   FetchContent_Declare(
     hptt
     GIT_REPOSITORY https://github.com/Einsums/hptt.git
-    GIT_TAG v1.0.5+22)
-  FetchContent_MakeAvailable(hptt)
+    GIT_TAG v1.0.5+22
+    OVERRIDE_FIND_PACKAGE
+    )
+  #FetchContent_MakeAvailable(hptt)  # alternative to below is to add_subdirectory(hptt EXCLUDE_FROM_ALL)
+  FetchContent_GetProperties(hptt)
+  if(NOT hptt_POPULATED)
+    FetchContent_Populate(hptt)
+    add_subdirectory(${hptt_SOURCE_DIR} ${hptt_BINARY_DIR} EXCLUDE_FROM_ALL)
+  endif()
 endif()

@@ -241,6 +241,8 @@ if (NOT LAPACKE_FOUND)
     message(WARNING "Reverting to pre-defined include/cblas_mangling.h")
     configure_file(${netlib_SOURCE_DIR}/CBLAS/include/cblas_mangling_with_flags.h.in
                    ${netlib_SOURCE_DIR}/CBLAS/include/cblas_mangling.h)
+    configure_file(${netlib_SOURCE_DIR}/LAPACKE/include/lapacke_mangling_with_flags.h.in
+                   ${netlib_SOURCE_DIR}/LAPACKE/include/lapacke_mangling.h)
 endif()
 
 extend_einsums_target(einsums
