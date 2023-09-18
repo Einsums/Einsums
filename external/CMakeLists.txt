@@ -125,7 +125,7 @@ if(EINSUMS_USE_HPTT)
   FetchContent_Declare(
     hptt
     GIT_REPOSITORY https://github.com/Einsums/hptt.git
-    GIT_TAG v1.0.5+22
+    GIT_TAG v1.0.5+23
     OVERRIDE_FIND_PACKAGE
     )
   #FetchContent_MakeAvailable(hptt)  # alternative to below is to add_subdirectory(hptt EXCLUDE_FROM_ALL)
