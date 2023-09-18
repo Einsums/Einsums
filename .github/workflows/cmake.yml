@@ -110,6 +110,12 @@ jobs:
         run: |
           conda remove liblapacke libcblas --solver=libmamba
 
+      # Step is unnecessary; remove step for debugging.
+      - name: Confound Environment - test fetched everything
+        if: matrix.cxx == 'L-src'
+        run: |
+          conda remove catch2 fmt range-v3 liblapacke libcblas --solver=libmamba
+
       - name: Conda environment
         run: |
           mamba info

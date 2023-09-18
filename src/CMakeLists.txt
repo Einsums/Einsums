@@ -2994,10 +2994,15 @@ install(
     PATTERN "*.hpp"
   )
 
+set(tgts einsums Einsums_h5cpp)
 if (TARGET hptt::hptt)
-    set(tgts einsums Einsums_h5cpp hptt)
-else()
-    set(tgts einsums Einsums_h5cpp)
+    list(APPEND tgts hptt)
+endif()
+if(TARGET cblas)
+    list(APPEND tgts cblas)
+endif()
+if(TARGET lapacke)
+    list(APPEND tgts lapacke)
 endif()
 
 install(
