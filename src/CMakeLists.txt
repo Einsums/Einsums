@@ -20,7 +20,7 @@ add_einsums_library(einsums
     PUBLIC_DEPENDS
         range-v3::range-v3
         fmt::fmt
-        Einsums_h5cpp
+        Einsums::h5cpp
 )
 
 # extend_einsums_target(einsums
@@ -2994,10 +2994,15 @@ install(
     PATTERN "*.hpp"
   )
 
+if (TARGET hptt::hptt)
+    set(tgts einsums Einsums_h5cpp hptt)
+else()
+    set(tgts einsums Einsums_h5cpp)
+endif()
+
 install(
   TARGETS
-    einsums
-    Einsums_h5cpp
+    ${tgts}
   EXPORT primary_set
   RUNTIME
     COMPONENT ${ein}_Runtime

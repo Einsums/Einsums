@@ -89,6 +89,12 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(h5cpp)
 
 add_library(Einsums_h5cpp INTERFACE)
+add_library("${ein}::h5cpp" ALIAS Einsums_h5cpp)
+set_target_properties(
+  Einsums_h5cpp
+  PROPERTIES
+    EXPORT_NAME h5cpp
+  )
 target_include_directories(
   Einsums_h5cpp
   SYSTEM  # supress warnings
