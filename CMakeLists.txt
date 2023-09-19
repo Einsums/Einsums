@@ -97,14 +97,7 @@ if(TARGET MPI::MPI_CXX)
 endif()
 
 # Prefer to use MKL
-find_package(MKL CONFIG)
-if(TARGET MKL::MKL)
-  add_library(BLAS::BLAS ALIAS MKL::MKL)
-  add_library(LAPACK::LAPACK ALIAS MKL::MKL)
-else()
-  find_package(BLAS REQUIRED)
-  find_package(LAPACK REQUIRED)
-endif()
+find_package (TargetLAPACK REQUIRED)
 
 # Set default FFT library to mkl, if mkl was found, otherwise FFTW3
 set(EINSUMS_FFT_LIBRARY_DEFAULT "fftw3")
@@ -124,7 +117,7 @@ if(OpenMP_FOUND)
       "OpenMP Version ${OpenMP_CXX_VERSION_MAJOR}.${OpenMP_CXX_VERSION_MINOR}")
 endif()
 
-include(cmake/BackwardConfig.cmake)
+find_package(Backward REQUIRED)
 
 add_subdirectory(external)
 add_subdirectory(src)

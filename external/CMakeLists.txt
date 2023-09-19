@@ -100,7 +100,7 @@ target_include_directories(
   SYSTEM  # supress warnings
   INTERFACE
     $<BUILD_INTERFACE:${h5cpp_SOURCE_DIR}>
-    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/einsums>
   )
 target_link_libraries(
   Einsums_h5cpp

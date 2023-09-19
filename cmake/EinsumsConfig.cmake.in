@@ -30,14 +30,14 @@
 ##   shared - search for only shared library
 ##   static - search for only static library
 ##   Python - search for Python bindings library
-##
-##
-## Exported targets::
-##
-## If ambit is found, this module defines at least the first following
-## :prop_tgt:`IMPORTED` target. Depending on components available, it may define::
-##
-##   ambit::ambit - the main ambit library with header & defs attached.
+#
+#
+# Exported targets::
+#
+# If Einsums is found, this module defines at least the first following
+# :prop_tgt:`IMPORTED` target. Depending on components available, it may define::
+#
+#   Einsums::einsums - the main Einsums library with header & defs attached.
 ##   ambit::pyambit - the Python pybind11 library.
 #
 #
@@ -45,15 +45,15 @@
 #
 #   find_package(Einsums)
 ##   find_package(ambit 0.6 CONFIG REQUIRED COMPONENTS shared)
-##
-##
-## The following variables can be set to guide the search for this package::
-##
-##   ambit_DIR - CMake variable, set to directory containing this Config file
-##   CMAKE_PREFIX_PATH - CMake variable, set to root directory of this package
-##   PATH - environment variable, set to bin directory of this package
-##   CMAKE_DISABLE_FIND_PACKAGE_ambit - CMake variable, disables
-##       find_package(ambit) perhaps to force internal build
+#
+#
+# The following variables can be set to guide the search for this package::
+#
+#   Einsums_DIR - CMake variable, set to directory containing this Config file
+#   CMAKE_PREFIX_PATH - CMake variable, set to root directory of this package
+#   PATH - environment variable, set to bin directory of this package
+#   CMAKE_DISABLE_FIND_PACKAGE_Einsums - CMake variable, disables
+#       find_package(Einsums) perhaps to force internal build
 
 @PACKAGE_INIT@
 
@@ -80,8 +80,19 @@ set(ein Einsums)  # NameSpace
 ## make detectable the FindTarget*.cmake modules
 #list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR})
 
-# check library dependency available
+# check library dependencies available
 include(CMakeFindDependencyMacro)
+unset(extraArgs)
+if(${CMAKE_FIND_PACKAGE_NAME}_FIND_QUIETLY)
+    list(APPEND extraArgs QUIET)
+endif()
+if(${CMAKE_FIND_PACKAGE_NAME}_FIND_REQUIRED)
+    list(APPEND extraArgs REQUIRED)
+endif()
+
+if(NOT TARGET tgt::lapack)
+    find_dependency(TargetLAPACK)
+endif()
 if(@CBLAS_FOUND@)  # CBLAS_FOUND
     find_dependency(CBLAS REQUIRED)
 else()
@@ -96,12 +107,33 @@ else()
         message(STATUS "LAPACKE satisfied by source compiled into ${ein} distribution")
     endif()
 endif()
-#if(NOT TARGET tgt::hdf5)
-#    find_dependency(TargetHDF5 @TargetHDF5_VERSION_Mm@)
-#endif()
-#if(NOT TARGET tgt::lapack)
-#    find_dependency(TargetLAPACK)
-#endif()
+if(@EINSUMS_FFT_LIBRARY@ STREQUAL mkl)  # EINSUMS_FFT_LIBRARY
+    if (TARGET MKL::MKL)
+        add_library(FFT::FFT ALIAS MKL::MKL)
+    endif()
+elseif(@EINSUMS_FFT_LIBRARY@ STREQUAL fftw3)  # EINSUMS_FFT_LIBRARY
+    find_package(FFTW MODULE COMPONENTS FLOAT_LIB DOUBLE_LIB ${extraArgs})
+    add_library(FFT::FFT INTERFACE IMPORTED)
+    target_link_libraries(FFT::FFT INTERFACE FFTW::Float FFTW::Double)
+endif()
+if(NOT TARGET ZLIB::ZLIB)
+    find_dependency(ZLIB)
+endif()
+if(NOT TARGET tgt::hdf5)
+    find_dependency(TargetHDF5 @TargetHDF5_VERSION_Mm@)
+endif()
+if(NOT TARGET OpenMP::OpenMP_CXX)
+    find_package(OpenMP MODULE COMPONENTS CXX ${extraArgs})
+endif()
+if(NOT TARGET Backward::Backward)
+    find_dependency(Backward)
+endif()
+if(NOT TARGET range-v3::range-v3)
+    find_dependency(range-v3 0.12.0)
+endif()
+if(NOT TARGET fmt::fmt)
+    find_dependency(fmt) #10.1)
+endif()
 
 # Check all required components are available before trying to load any
 check_required_components(${ein})
@@ -120,6 +152,8 @@ if(NOT TARGET ${ein}::einsums)
 #    elseif(NOT @SHARED_ONLY@)  # SHARED_ONLY
 #        include("${CMAKE_CURRENT_LIST_DIR}/${amb}Targets-static.cmake")
 #    endif()
+# TODO REDO
+        include("${CMAKE_CURRENT_LIST_DIR}/${ein}Targets-CXX.cmake")
 #
 #    get_property(_loc TARGET ${amb}::ambit PROPERTY LOCATION)
 #    get_property(_ill TARGET ${amb}::ambit PROPERTY INTERFACE_LINK_LIBRARIES)

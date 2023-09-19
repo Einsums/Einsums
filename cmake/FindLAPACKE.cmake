@@ -1,3 +1,6 @@
+cmake_policy(PUSH)
+cmake_policy(SET CMP0075 NEW)  # support CMAKE_REQUIRED_LIBRARIES
+
 include(FindPackageHandleStandardArgs)
 include(CheckIncludeFile)
 include(CMakePushCheckState)
@@ -46,3 +49,5 @@ else()
         endif()
     endif()
 endif()
+
+cmake_policy(POP)

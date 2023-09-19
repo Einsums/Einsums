@@ -14,8 +14,7 @@ add_einsums_library(einsums
     PUBLIC_INCLUDES
         include
     DEPENDS
-        LAPACK::LAPACK
-        BLAS::BLAS
+        tgt::lapack
         Backward::Backward
     PUBLIC_DEPENDS
         range-v3::range-v3
@@ -3044,6 +3043,11 @@ install(
   FILES
     ${CMAKE_CURRENT_BINARY_DIR}/${ein}Config.cmake
     ${CMAKE_CURRENT_BINARY_DIR}/${ein}ConfigVersion.cmake
+    ${CMAKE_CURRENT_SOURCE_DIR}/../cmake/FindTargetLAPACK.cmake
+    ${CMAKE_CURRENT_SOURCE_DIR}/../cmake/FindCBLAS.cmake
+    ${CMAKE_CURRENT_SOURCE_DIR}/../cmake/FindLAPACKE.cmake
+    ${CMAKE_CURRENT_SOURCE_DIR}/../cmake/FindTargetHDF5.cmake
+    ${CMAKE_CURRENT_SOURCE_DIR}/../cmake/FindFFTW.cmake
   DESTINATION ${EINSUMS_INSTALL_CMAKEDIR}
   COMPONENT ${ein}_Development
   )
