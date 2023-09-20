@@ -1,7 +1,7 @@
 include_guard()
 
 # If MKL is found then we must use it.
-if (NOT EINSUMS_FFT_LIBRARY MATCHES off AND TARGET MKL::MKL)
+if (NOT EINSUMS_FFT_LIBRARY MATCHES off AND EINSUMS_LINALG_VENDOR STREQUAL MKL)
     if (NOT EINSUMS_FFT_LIBRARY MATCHES mkl)
         # Do this atleast until we can ensure we link to FFTW3 for FFT and not MKL.
         message(FATAL_ERROR "MKL was detected. You must use MKL's FFT library")
@@ -9,8 +9,8 @@ if (NOT EINSUMS_FFT_LIBRARY MATCHES off AND TARGET MKL::MKL)
 endif()
 
 function(fft_mkl)
-    if (TARGET MKL::MKL)
-        add_library(FFT::FFT ALIAS MKL::MKL)
+    if(EINSUMS_LINALG_VENDOR STREQUAL MKL)
+        add_library(FFT::FFT ALIAS tgt::lapack)
     else()
         message(FATAL_ERROR "MKL FFT library requested but MKL was not found.")
     endif()

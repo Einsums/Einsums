@@ -6,11 +6,11 @@ include(CheckIncludeFile)
 include(CMakePushCheckState)
 
 # Check for mkl_cblas.h only if we are using MKL.
-if (TARGET MKL::MKL)
+if (EINSUMS_LINALG_VENDOR STREQUAL MKL)
     cmake_push_check_state()
     # MKL include cblas by default. If we find the mkl_cblas.h
     # header then assume we have cblas.
-    set(CMAKE_REQUIRED_LIBRARIES MKL::MKL)
+    set(CMAKE_REQUIRED_LIBRARIES tgt::lapack)
     check_include_file(mkl_cblas.h HAVE_MKL_CBLAS_H)
     if (HAVE_MKL_CBLAS_H)
         set(CBLAS_FOUND TRUE)

@@ -122,7 +122,7 @@ extend_einsums_target(einsums
         EINSUMS_HAVE_LAPACKE
         EINSUMS_LINEAR_ALGEBRA_NAMESPACE=mkl
     CONDITION
-        TARGET MKL::MKL
+        EINSUMS_LINALG_VENDOR STREQUAL MKL
     FEATURE_INFO
         "MKL backend"
 )
@@ -133,7 +133,7 @@ extend_einsums_target(einsums
     DEFINES
         MKL_INTERFACE=ILP64
     CONDITION
-        (TARGET MKL::MKL AND MKL_INTERFACE STREQUAL ilp64)
+        (EINSUMS_LINALG_VENDOR STREQUAL MKL AND EINSUMS_LINALG_INT_INTERFACE STREQUAL ilp64)
     FEATURE_INFO
         "MKL ILP64 (64-bit integers)"
 )
@@ -144,14 +144,14 @@ extend_einsums_target(einsums
     DEFINES
         MKL_INTERFACE=LP64
     CONDITION
-        (TARGET MKL::MKL AND MKL_INTERFACE STREQUAL lp64)
+        (EINSUMS_LINALG_VENDOR STREQUAL MKL AND EINSUMS_LINALG_INT_INTERFACE STREQUAL lp64)
     FEATURE_INFO
         "MKL LP64 (32-bit integers)"
 )
 
 extend_einsums_target(einsums
     CONDITION
-        (TARGET MKL::MKL AND TARGET FFT::FFT AND EINSUMS_FFT_LIBRARY STREQUAL mkl)
+        (EINSUMS_LINALG_VENDOR STREQUAL MKL AND TARGET FFT::FFT AND EINSUMS_FFT_LIBRARY STREQUAL mkl)
     DEFINES
         EINSUMS_HAVE_FFT_LIBRARY_MKL
     SOURCES
@@ -167,7 +167,7 @@ extend_einsums_target(einsums
     DEFINES
         EINSUMS_LINEAR_ALGEBRA_NAMESPACE=vendor
     CONDITION
-        NOT TARGET MKL::MKL
+        NOT EINSUMS_LINALG_VENDOR STREQUAL MKL
     FEATURE_INFO
         "Generic vendor backend"
 )
@@ -3043,11 +3043,16 @@ install(
   FILES
     ${CMAKE_CURRENT_BINARY_DIR}/${ein}Config.cmake
     ${CMAKE_CURRENT_BINARY_DIR}/${ein}ConfigVersion.cmake
-    ${CMAKE_CURRENT_SOURCE_DIR}/../cmake/FindTargetLAPACK.cmake
-    ${CMAKE_CURRENT_SOURCE_DIR}/../cmake/FindCBLAS.cmake
-    ${CMAKE_CURRENT_SOURCE_DIR}/../cmake/FindLAPACKE.cmake
-    ${CMAKE_CURRENT_SOURCE_DIR}/../cmake/FindTargetHDF5.cmake
-    ${CMAKE_CURRENT_SOURCE_DIR}/../cmake/FindFFTW.cmake
+  DESTINATION ${EINSUMS_INSTALL_CMAKEDIR}
+  COMPONENT ${ein}_Development
+  )
+
+install(
+  FILES
+    ../cmake/FindCBLAS.cmake
+    ../cmake/FindLAPACKE.cmake
+    ../cmake/FindFFTW.cmake
+    ../cmake/FindTargetHDF5.cmake
   DESTINATION ${EINSUMS_INSTALL_CMAKEDIR}
   COMPONENT ${ein}_Development
   )
@@ -3056,9 +3061,9 @@ install(
 #join_paths(libdir_for_pc_file "\${exec_prefix}" "${CMAKE_INSTALL_LIBDIR}")
 #join_paths(includedir_for_pc_file "\${prefix}" "${CMAKE_INSTALL_INCLUDEDIR}")
 #
-#configure_file(cmake/libint2.pc.cmake.in libint2.pc @ONLY)
+#configure_file(cmake/einsums.pc.cmake.in einsums.pc @ONLY)
 #install(
-#  FILES ${CMAKE_CURRENT_BINARY_DIR}/libint2.pc
+#  FILES ${CMAKE_CURRENT_BINARY_DIR}/einsums.pc
 #  DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig/
-#  COMPONENT ${L2}_Development
+#  COMPONENT ${ein}_Development
 #  )

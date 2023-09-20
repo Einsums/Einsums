@@ -23,13 +23,15 @@
 ##   ambit_PYMOD - path to ambit python module (suitable for appending PYTHONPATH). Only on pyambit target.
 ##
 ##   get_property(_ver TARGET ambit::ambit PROPERTY ambit_VERSION)
-##
-##
-## Available components: shared static Python ::
-##
-##   shared - search for only shared library
-##   static - search for only static library
+#
+#
+# Available components: shared static lp64 ilp64 ::
+#
+#   shared - search for only shared library
+#   static - search for only static library
 ##   Python - search for Python bindings library
+#   lp64 - search for library linked to 32-bit integer linear algebra libraries
+#   ilp64 - search for library linked to 64-bit integer linear algebra libraries
 #
 #
 # Exported targets::
@@ -44,7 +46,7 @@
 # Suggested usage::
 #
 #   find_package(Einsums)
-##   find_package(ambit 0.6 CONFIG REQUIRED COMPONENTS shared)
+#   find_package(Einsums 0.1 CONFIG REQUIRED COMPONENTS shared)
 #
 #
 # The following variables can be set to guide the search for this package::
@@ -59,26 +61,17 @@
 
 set(ein Einsums)  # NameSpace
 
-## check library style component
-## * using EXISTS Targets-shared instead of SHARED_ONLY so packages can
-##   truncate their builds (e.g., build static for tests but only ship shared)
-#if (EXISTS "${CMAKE_CURRENT_LIST_DIR}/${amb}Targets-shared.cmake")
-#    set(${amb}_shared_FOUND 1)
-#endif()
-#if (EXISTS "${CMAKE_CURRENT_LIST_DIR}/${amb}Targets-static.cmake")
-#    set(${amb}_static_FOUND 1)
-#endif()
-#list(FIND ${amb}_FIND_COMPONENTS "shared" _seek_shared)
-#list(FIND ${amb}_FIND_COMPONENTS "static" _seek_static)
-#
-## check Python interface component
-#if (EXISTS "${CMAKE_CURRENT_LIST_DIR}/${amb}Targets-Python.cmake")
-#    set(${amb}_Python_FOUND 1)
-#endif()
-#list(FIND ${amb}_FIND_COMPONENTS "Python" _seek_Python)
-#
-## make detectable the FindTarget*.cmake modules
-#list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR})
+# check library style component
+if (@EINSUMS_STATIC_BUILD@)  # EINSUMS_STATIC_BUILD
+    set(${ein}_static_FOUND 1)
+else()
+    set(${ein}_shared_FOUND 1)
+endif()
+list(FIND ${ein}_FIND_COMPONENTS "shared" _seek_shared)
+list(FIND ${ein}_FIND_COMPONENTS "static" _seek_static)
+
+# make detectable the FindTarget*.cmake modules
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR})
 
 # check library dependencies available
 include(CMakeFindDependencyMacro)
@@ -91,8 +84,25 @@ if(${CMAKE_FIND_PACKAGE_NAME}_FIND_REQUIRED)
 endif()
 
 if(NOT TARGET tgt::lapack)
-    find_dependency(TargetLAPACK)
+    add_library (tgt::lapack INTERFACE IMPORTED)
+    if(@EINSUMS_LINALG_VENDOR@ STREQUAL MKL)  # EINSUMS_LINALG_VENDOR
+        set(MKL_INTERFACE @EINSUMS_LINALG_INT_INTERFACE@)  # EINSUMS_LINALG_INT_INTERFACE
+        find_package(MKL CONFIG ${extraArgs})
+        set_property (TARGET tgt::lapack PROPERTY INTERFACE_LINK_LIBRARIES MKL::MKL)
+    else()
+        set(BLA_VENDOR @EINSUMS_LINALG_VENDOR@)  # EINSUMS_LINALG_VENDOR
+        if(@EINSUMS_LINALG_INT_INTERFACE@ STREQUAL lp64)  # EINSUMS_LINALG_INT_INTERFACE
+            set(BLA_SIZEOF_INTEGER 4)
+        else()
+            set(BLA_SIZEOF_INTEGER 8)
+        endif()
+        find_package(BLAS MODULE ${extraArgs})
+        find_package(LAPACK MODULE ${extraArgs})
+        set_property (TARGET tgt::lapack PROPERTY INTERFACE_LINK_LIBRARIES LAPACK::LAPACK BLAS::BLAS)
+    endif()
+    set(${ein}_@EINSUMS_LINALG_INT_INTERFACE@_FOUND 1)
 endif()
+
 if(@CBLAS_FOUND@)  # CBLAS_FOUND
     find_dependency(CBLAS REQUIRED)
 else()
@@ -107,15 +117,17 @@ else()
         message(STATUS "LAPACKE satisfied by source compiled into ${ein} distribution")
     endif()
 endif()
+
 if(@EINSUMS_FFT_LIBRARY@ STREQUAL mkl)  # EINSUMS_FFT_LIBRARY
-    if (TARGET MKL::MKL)
-        add_library(FFT::FFT ALIAS MKL::MKL)
+    if(@EINSUMS_LINALG_VENDOR@ STREQUAL MKL)  # EINSUMS_LINALG_VENDOR
+        add_library(FFT::FFT ALIAS tgt::lapack)
     endif()
 elseif(@EINSUMS_FFT_LIBRARY@ STREQUAL fftw3)  # EINSUMS_FFT_LIBRARY
     find_package(FFTW MODULE COMPONENTS FLOAT_LIB DOUBLE_LIB ${extraArgs})
     add_library(FFT::FFT INTERFACE IMPORTED)
     target_link_libraries(FFT::FFT INTERFACE FFTW::Float FFTW::Double)
 endif()
+
 if(NOT TARGET ZLIB::ZLIB)
     find_dependency(ZLIB)
 endif()
@@ -143,18 +155,8 @@ check_required_components(${ein})
 # project which has already built this as a subproject
 #-----------------------------------------------------------------------------
 if(NOT TARGET ${ein}::einsums)
-#    if(_seek_static GREATER -1)
-#        include("${CMAKE_CURRENT_LIST_DIR}/${amb}Targets-static.cmake")
-#    elseif(_seek_shared GREATER -1)
-#        include("${CMAKE_CURRENT_LIST_DIR}/${amb}Targets-shared.cmake")
-#    elseif(NOT @STATIC_ONLY@)  # STATIC_ONLY
-#        include("${CMAKE_CURRENT_LIST_DIR}/${amb}Targets-shared.cmake")
-#    elseif(NOT @SHARED_ONLY@)  # SHARED_ONLY
-#        include("${CMAKE_CURRENT_LIST_DIR}/${amb}Targets-static.cmake")
-#    endif()
-# TODO REDO
         include("${CMAKE_CURRENT_LIST_DIR}/${ein}Targets-CXX.cmake")
-#
+
 #    get_property(_loc TARGET ${amb}::ambit PROPERTY LOCATION)
 #    get_property(_ill TARGET ${amb}::ambit PROPERTY INTERFACE_LINK_LIBRARIES)
 #    get_property(_iid TARGET ${amb}::ambit PROPERTY INTERFACE_INCLUDE_DIRECTORIES)

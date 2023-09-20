@@ -98,10 +98,12 @@ endif()
 
 # Prefer to use MKL
 find_package (TargetLAPACK REQUIRED)
+get_property(EINSUMS_LINALG_VENDOR TARGET tgt::lapack PROPERTY VENDOR)
+get_property(EINSUMS_LINALG_INT_INTERFACE TARGET tgt::lapack PROPERTY INT_INTERFACE)
 
 # Set default FFT library to mkl, if mkl was found, otherwise FFTW3
 set(EINSUMS_FFT_LIBRARY_DEFAULT "fftw3")
-if(TARGET MKL::MKL)
+if(EINSUMS_LINALG_VENDOR STREQUAL "MKL")
   set(EINSUMS_FFT_LIBRARY_DEFAULT "mkl")
 endif()
 
