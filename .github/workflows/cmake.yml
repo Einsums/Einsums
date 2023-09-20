@@ -177,7 +177,7 @@ jobs:
           add_executable(timings EXCLUDE_FROM_ALL "../timing/main.cpp")
           target_link_libraries(timings Einsums::einsums)
           EOF
-          cmake -S . -B build -DCMAKE_PREFIX_PATH="${{github.workspace}}/installed" ${{ matrix.cfg.testargs }}
+          cmake -S . -B build -DCMAKE_PREFIX_PATH="${{github.workspace}}/installed" ${{ matrix.testargs }}
           cmake --build build
           ./build/timings
 
