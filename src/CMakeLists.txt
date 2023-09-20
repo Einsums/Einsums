@@ -21,6 +21,7 @@ add_einsums_library(einsums
         fmt::fmt
         Einsums::h5cpp
 )
+target_compile_features(einsums PUBLIC cxx_std_17)
 
 # extend_einsums_target(einsums
 #     PUBLIC_DEFINES
