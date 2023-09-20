@@ -175,11 +175,10 @@ jobs:
               INTERFACE_SYSTEM_INCLUDE_DIRECTORIES
             )
           add_executable(timings "../timing/main.cpp")
+          target_compile_features(timings PRIVATE "cxx_std_17")
           target_link_libraries(timings Einsums::einsums)
           EOF
           cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="${CONDA_PREFIX};${{github.workspace}}/installed"
-          cat CMakeLists.txt
-          ls -l
           cmake --build build
           ./build/timings
 
