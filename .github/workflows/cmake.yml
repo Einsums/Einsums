@@ -16,6 +16,7 @@ jobs:
         hptt: [ ON, OFF ]
         include:
           - cmargs: ""
+          - testargs: ""
           - cxx: L-Gnu
             os: ubuntu-latest
           - cxx: M-Clang
@@ -137,7 +138,9 @@ jobs:
             ${{ matrix.cmargs }}
 
       - name: Build & Install
-        run: cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}} --target install
+        run: |
+          cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}} --target install
+          cat ${{github.workspace}}/installed/share/cmake/Einsums/EinsumsConfig.cmake
 
       - name: Test (CTest) - unit tests
         working-directory: ${{github.workspace}}/build
@@ -156,10 +159,25 @@ jobs:
           cmake_minimum_required(VERSION 3.8)
           project(sample)
           find_package(Einsums REQUIRED)
+          include(CMakePrintHelpers)
+          cmake_print_properties(
+            TARGETS
+              Einsums::einsums
+              HDF5::HDF5
+              tgt::lapack
+            PROPERTIES
+              IMPORTED_LINK_DEPENDENT_LIBRARIES
+              INTERFACE_LOCATION
+              INTERFACE_LINK_LIBRARIES
+              INTERFACE_INCLUDE_DIRECTORIES
+              INTERFACE_COMPILE_DEFINITIONS
+              INTERFACE_COMPILE_OPTIONS
+              INTERFACE_SYSTEM_INCLUDE_DIRECTORIES
+            )
           add_executable(timings EXCLUDE_FROM_ALL "../timing/main.cpp")
           target_link_libraries(timings Einsums::einsums)
           EOF
-          cmake -S . -B build -DCMAKE_PREFIX_PATH="${{github.workspace}}/installed" #${{ matrix.cfg.testargs }}
+          cmake -S . -B build -DCMAKE_PREFIX_PATH="${{github.workspace}}/installed" ${{ matrix.cfg.testargs }}
           cmake --build build
           ./build/timings
 
