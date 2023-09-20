@@ -26,7 +26,7 @@ jobs:
             cmargs: >
               -DCMAKE_CXX_COMPILER=icpx
               -DCMAKE_CXX_FLAGS="--gcc-toolchain=${CONDA_PREFIX} --sysroot=${CONDA_PREFIX}/${HOST}/sysroot -target ${HOST}"
-              -DOpenMP_CXX_INCLUDE_DIR="${CONDA_PREFIX}/include
+              -DOpenMP_CXX_INCLUDE_DIR="${CONDA_PREFIX}/include"
             # OpenMP search dir needed b/c setting CMAKE_CXX_FLAGS overrides conda's CXXFLAGS that passes same dir as -isystem
           - cxx: L-src
             os: ubuntu-latest
