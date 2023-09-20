@@ -26,6 +26,8 @@ jobs:
             cmargs: >
               -DCMAKE_CXX_COMPILER=icpx
               -DCMAKE_CXX_FLAGS="--gcc-toolchain=${CONDA_PREFIX} --sysroot=${CONDA_PREFIX}/${HOST}/sysroot -target ${HOST}"
+              -DOpenMP_CXX_INCLUDE_DIR="${CONDA_PREFIX}/include
+            # OpenMP search dir needed b/c setting CMAKE_CXX_FLAGS overrides conda's CXXFLAGS that passes same dir as -isystem
           - cxx: L-src
             os: ubuntu-latest
             build_type: Debug
@@ -72,6 +74,7 @@ jobs:
             #- dpcpp_linux-64
           EOF
           if [[ "${{ runner.os }}" == "Linux" ]]; then
+            :
             if [[ "${{ matrix.build_type }}" == "Release" ]]; then
               sed -i "s;#MKL;;g" export.yaml
             else
@@ -82,14 +85,13 @@ jobs:
             fi
           fi
           if [[ "${{ runner.os }}" == "macOS" ]]; then
+            :
             sed -E -i.bak "s;#OBL;;g" export.yaml
             sed -E -i.bak "s;- elfutils;;g" export.yaml
           fi
           if [[ "${{ runner.os }}" == "Windows" ]]; then
             :
           fi
-          # for empty bash block
-          #   :
           # model sed for L/W
           #   sed -i "s;;;g" export.yaml
           # model sed for M
@@ -176,7 +178,6 @@ jobs:
               INTERFACE_SYSTEM_INCLUDE_DIRECTORIES
             )
           add_executable(timings "../timing/main.cpp")
-          #target_compile_features(timings PRIVATE "cxx_std_17")
           target_link_libraries(timings Einsums::einsums)
           EOF
           cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="${CONDA_PREFIX};${{github.workspace}}/installed"
