@@ -136,8 +136,8 @@ jobs:
             -DCMAKE_PREFIX_PATH="${CONDA_PREFIX}" \
             ${{ matrix.cmargs }}
 
-      - name: Build
-        run: cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
+      - name: Build & Install
+        run: cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}} --target install
 
       - name: Test (CTest) - unit tests
         working-directory: ${{github.workspace}}/build
