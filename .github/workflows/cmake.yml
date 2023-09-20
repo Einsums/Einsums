@@ -174,7 +174,7 @@ jobs:
               INTERFACE_COMPILE_OPTIONS
               INTERFACE_SYSTEM_INCLUDE_DIRECTORIES
             )
-          add_executable(timings EXCLUDE_FROM_ALL "../timing/main.cpp")
+          add_executable(timings "../timing/main.cpp")
           target_link_libraries(timings Einsums::einsums)
           EOF
           cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="${CONDA_PREFIX};${{github.workspace}}/installed"
