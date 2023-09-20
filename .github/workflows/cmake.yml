@@ -54,6 +54,7 @@ jobs:
             - cmake
             - ninja
             - cxx-compiler
+            - backward-cpp
             - catch2
             - fftw
             - fmt
@@ -138,11 +139,27 @@ jobs:
       - name: Build
         run: cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
 
-      - name: Test (CTest)
+      - name: Test (CTest) - unit tests
         working-directory: ${{github.workspace}}/build
         run: ctest
 
-      - name: Test (Catch2)
+      - name: Test (Catch2) - unit tests
         if: false
         working-directory: ${{github.workspace}}/build/tests
         run: ./test-all
+
+      - name: Test - consume installation
+        shell: bash -l {0}
+        run: |
+          mkdir test_installed_library && cd test_installed_library
+          cat > CMakeLists.txt <<EOF
+          cmake_minimum_required(VERSION 3.8)
+          project(sample)
+          find_package(Einsums REQUIRED)
+          add_executable(timings EXCLUDE_FROM_ALL "../timing/main.cpp")
+          target_link_libraries(timings Einsums::einsums)
+          EOF
+          cmake -S . -B build -DCMAKE_PREFIX_PATH="${{github.workspace}}/installed" #${{ matrix.cfg.testargs }}
+          cmake --build build
+          ./build/timings
+
