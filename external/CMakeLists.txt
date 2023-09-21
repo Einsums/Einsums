@@ -66,8 +66,11 @@ set(LAPACKE_FOUND
 
 # <<<  HDF5  >>>
 
+# * promote Mm version's scope so that it can be baked into EinsumsConfig
+
 find_package(ZLIB REQUIRED)
-find_package(HDF5 REQUIRED COMPONENTS CXX)
+find_package(TargetHDF5 REQUIRED)
+set(TargetHDF5_VERSION_Mm ${TargetHDF5_VERSION_Mm} PARENT_SCOPE)
 
 
 # <<< h5cpp >>>
@@ -100,12 +103,13 @@ target_include_directories(
   SYSTEM  # supress warnings
   INTERFACE
     $<BUILD_INTERFACE:${h5cpp_SOURCE_DIR}>
+    # TODO return to this when build headers adjusted   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/einsums>
   )
 target_link_libraries(
   Einsums_h5cpp
   INTERFACE
-    HDF5::HDF5
+    tgt::hdf5
     ZLIB::ZLIB
   )
 

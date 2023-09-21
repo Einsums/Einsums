@@ -2984,6 +2984,14 @@ extend_einsums_target(einsums
 
 include(CMakePackageConfigHelpers)
 
+set_target_properties(
+  einsums
+  PROPERTIES
+    ${ein}_VERSION ${Einsums_VERSION}
+  )
+set(export_properties "Einsums_VERSION")
+set_property(TARGET einsums APPEND PROPERTY EXPORT_PROPERTIES "${export_properties}")
+
 install(
   DIRECTORY
     ${CMAKE_CURRENT_SOURCE_DIR}/include/

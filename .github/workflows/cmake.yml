@@ -25,6 +25,7 @@ jobs:
             os: ubuntu-latest
             cmargs: >
               -DCMAKE_CXX_COMPILER=icpx
+              -DMKL_INTERFACE=lp64
               -DCMAKE_CXX_FLAGS="--gcc-toolchain=${CONDA_PREFIX} --sysroot=${CONDA_PREFIX}/${HOST}/sysroot -target ${HOST}"
               -DOpenMP_CXX_INCLUDE_DIR="${CONDA_PREFIX}/include"
             # OpenMP search dir needed b/c setting CMAKE_CXX_FLAGS overrides conda's CXXFLAGS that passes same dir as -isystem
@@ -153,7 +154,7 @@ jobs:
         working-directory: ${{github.workspace}}/build/tests
         run: ./test-all
 
-      - name: Test - consume installation
+      - name: Test (find_package) - consume installation
         shell: bash -l {0}
         run: |
           mkdir test_installed_library && cd test_installed_library
@@ -180,7 +181,7 @@ jobs:
           add_executable(timings "../timing/main.cpp")
           target_link_libraries(timings Einsums::einsums)
           EOF
-          cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="${CONDA_PREFIX};${{github.workspace}}/installed"
+          cmake -S . -B build -G Ninja --log-level verbose -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="${CONDA_PREFIX};${{github.workspace}}/installed"
           cmake --build build
           ./build/timings
 
