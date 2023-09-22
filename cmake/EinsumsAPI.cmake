@@ -115,7 +115,7 @@ function(add_einsums_library name)
                 "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
             PUBLIC
                 "$<BUILD_INTERFACE:${public_build_interface_dir}>"
-                "$<INSTALL_INTERFACE:${EINSUMS_HEADER_INSTALL_PATH}/${include_dir_relative_path}>"
+                #"$<INSTALL_INTERFACE:${EINSUMS_HEADER_INSTALL_PATH}/${include_dir_relative_path}>"
         )
     endif()
 

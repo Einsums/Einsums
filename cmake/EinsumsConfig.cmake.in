@@ -2,106 +2,159 @@
 # -------------------
 #
 # Einsums cmake module.
+# Variables like Einsums_LIBRARIES and Einsums_INCLUDE_DIRS *are not set* as targets are preferred.
 # This module sets the following variables in your project::
 #
-##   ambit_FOUND - true if ambit and all required components found on the system
-##   ambit_VERSION - ambit version in format Major.Minor.Release. Prefer target variable.
-##   ambit_INCLUDE_DIRS - Directory where ambit/tensor.h header is located and dependent headers. Prefer targets.
-##   ambit_INCLUDE_DIR - same as DIRS. Prefer targets.
-##   ambit_DEFINITIONS - Definitions necessary to use ambit, namely USING_ambit. Prefer targets.
-##   ambit_LIBRARIES - ambit library to link against plus any dependent libraries. Prefer targets.
-##   ambit_LIBRARY - ambit library to link against. Prefer targets
-##   ambit_PYMOD - path to pyambit python module (suitable for appending PYTHONPATH). Only present
-##                 with Python component. Prefer pyambit target variable.
-##
-##
-## Target variables::
-##
-## It is preferred to use properties set on the base target rather than using the above variables. ::
-##
+#   Einsums_FOUND - true if ambit and all required components found on the system
+#   Einsums_VERSION - Einsums version in format Major.Minor.Release. Prefer target variable.
+#
+#
+# Target variables::
+#
+# It is preferred to use properties set on the base target rather than using the above variables. ::
+#
 ##   ambit_VERSION - ambit version in format Major.Minor.Release
 ##   ambit_PYMOD - path to ambit python module (suitable for appending PYTHONPATH). Only on pyambit target.
 ##
 ##   get_property(_ver TARGET ambit::ambit PROPERTY ambit_VERSION)
-##
-##
-## Available components: shared static Python ::
-##
-##   shared - search for only shared library
-##   static - search for only static library
-##   Python - search for Python bindings library
-##
-##
-## Exported targets::
-##
-## If ambit is found, this module defines at least the first following
-## :prop_tgt:`IMPORTED` target. Depending on components available, it may define::
-##
-##   ambit::ambit - the main ambit library with header & defs attached.
-##   ambit::pyambit - the Python pybind11 library.
+#
+#
+# Available components: shared static hptt lp64 ilp64 ::
+#
+#   shared - search for only shared library
+#   static - search for only static library
+#   hptt - search for library with high-performance tensor transpose enabled
+#   lp64 - search for library linked to 32-bit integer linear algebra libraries
+#   ilp64 - search for library linked to 64-bit integer linear algebra libraries
+#
+#
+# Exported targets::
+#
+# If Einsums is found, this module defines at least the first following
+# :prop_tgt:`IMPORTED` target. Depending on components available, it may define::
+#
+#   Einsums::einsums - the main Einsums library with header & defs attached.
 #
 #
 # Suggested usage::
 #
 #   find_package(Einsums)
-##   find_package(ambit 0.6 CONFIG REQUIRED COMPONENTS shared)
-##
-##
-## The following variables can be set to guide the search for this package::
-##
-##   ambit_DIR - CMake variable, set to directory containing this Config file
-##   CMAKE_PREFIX_PATH - CMake variable, set to root directory of this package
-##   PATH - environment variable, set to bin directory of this package
-##   CMAKE_DISABLE_FIND_PACKAGE_ambit - CMake variable, disables
-##       find_package(ambit) perhaps to force internal build
+#   find_package(Einsums 0.1 CONFIG REQUIRED COMPONENTS shared)
+#
+#
+# The following variables can be set to guide the search for this package::
+#
+#   Einsums_DIR - CMake variable, set to directory containing this Config file
+#   CMAKE_PREFIX_PATH - CMake variable, set to root directory of this package
+#   PATH - environment variable, set to bin directory of this package
+#   CMAKE_DISABLE_FIND_PACKAGE_Einsums - CMake variable, disables
+#       find_package(Einsums) perhaps to force internal build
 
 @PACKAGE_INIT@
 
 set(ein Einsums)  # NameSpace
 
-## check library style component
-## * using EXISTS Targets-shared instead of SHARED_ONLY so packages can
-##   truncate their builds (e.g., build static for tests but only ship shared)
-#if (EXISTS "${CMAKE_CURRENT_LIST_DIR}/${amb}Targets-shared.cmake")
-#    set(${amb}_shared_FOUND 1)
-#endif()
-#if (EXISTS "${CMAKE_CURRENT_LIST_DIR}/${amb}Targets-static.cmake")
-#    set(${amb}_static_FOUND 1)
-#endif()
-#list(FIND ${amb}_FIND_COMPONENTS "shared" _seek_shared)
-#list(FIND ${amb}_FIND_COMPONENTS "static" _seek_static)
-#
-## check Python interface component
-#if (EXISTS "${CMAKE_CURRENT_LIST_DIR}/${amb}Targets-Python.cmake")
-#    set(${amb}_Python_FOUND 1)
-#endif()
-#list(FIND ${amb}_FIND_COMPONENTS "Python" _seek_Python)
-#
-## make detectable the FindTarget*.cmake modules
-#list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR})
+# check library style component
+if (@EINSUMS_STATIC_BUILD@)  # EINSUMS_STATIC_BUILD
+    set(${ein}_static_FOUND 1)
+else()
+    set(${ein}_shared_FOUND 1)
+endif()
+list(FIND ${ein}_FIND_COMPONENTS "shared" _seek_shared)
+list(FIND ${ein}_FIND_COMPONENTS "static" _seek_static)
 
-# check library dependency available
+if(@EINSUMS_USE_HPTT@)  # EINSUMS_USE_HPTT
+    set(${ein}_hptt_FOUND 1)
+endif()
+
+# make detectable the FindTarget*.cmake modules
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR})
+
+# check library dependencies available
 include(CMakeFindDependencyMacro)
+unset(extraArgs)
+if(${CMAKE_FIND_PACKAGE_NAME}_FIND_QUIETLY)
+    list(APPEND extraArgs QUIET)
+endif()
+if(${CMAKE_FIND_PACKAGE_NAME}_FIND_REQUIRED)
+    list(APPEND extraArgs REQUIRED)
+endif()
+
+if(NOT TARGET tgt::lapack)
+    add_library (tgt::lapack INTERFACE IMPORTED)
+    if(@EINSUMS_LINALG_VENDOR@ STREQUAL MKL)  # EINSUMS_LINALG_VENDOR
+        set(MKL_INTERFACE @EINSUMS_LINALG_INT_INTERFACE@)  # EINSUMS_LINALG_INT_INTERFACE
+        find_package(MKL CONFIG ${extraArgs})
+        set_property (TARGET tgt::lapack PROPERTY INTERFACE_LINK_LIBRARIES MKL::MKL)
+    else()
+        set(BLA_VENDOR @EINSUMS_LINALG_VENDOR@)  # EINSUMS_LINALG_VENDOR
+        if(@EINSUMS_LINALG_INT_INTERFACE@ STREQUAL lp64)  # EINSUMS_LINALG_INT_INTERFACE
+            set(BLA_SIZEOF_INTEGER 4)
+        else()
+            set(BLA_SIZEOF_INTEGER 8)
+        endif()
+        find_package(BLAS MODULE ${extraArgs})
+        find_package(LAPACK MODULE ${extraArgs})
+        set_property (TARGET tgt::lapack PROPERTY INTERFACE_LINK_LIBRARIES LAPACK::LAPACK BLAS::BLAS)
+    endif()
+    set(${ein}_@EINSUMS_LINALG_INT_INTERFACE@_FOUND 1)
+endif()
+
 if(@CBLAS_FOUND@)  # CBLAS_FOUND
-    find_dependency(CBLAS REQUIRED)
+    if(@EINSUMS_LINALG_VENDOR@ STREQUAL MKL)
+        if(NOT CMAKE_REQUIRED_QUIET)
+            message(STATUS "CBLAS satisfied by MKL")
+        endif()
+    else()
+        find_dependency(CBLAS REQUIRED)
+    endif()
 else()
     if(NOT CMAKE_REQUIRED_QUIET)
         message(STATUS "CBLAS satisfied by source compiled into ${ein} distribution")
     endif()
 endif()
 if(@LAPACKE_FOUND@)  # LAPACKE_FOUND
-    find_dependency(LAPACKE REQUIRED)
+    if(@EINSUMS_LINALG_VENDOR@ STREQUAL MKL)
+        if(NOT CMAKE_REQUIRED_QUIET)
+            message(STATUS "LAPACKE satisfied by MKL")
+        endif()
+    else()
+        find_dependency(LAPACKE REQUIRED)
+    endif()
 else()
     if(NOT CMAKE_REQUIRED_QUIET)
         message(STATUS "LAPACKE satisfied by source compiled into ${ein} distribution")
     endif()
 endif()
-#if(NOT TARGET tgt::hdf5)
-#    find_dependency(TargetHDF5 @TargetHDF5_VERSION_Mm@)
-#endif()
-#if(NOT TARGET tgt::lapack)
-#    find_dependency(TargetLAPACK)
-#endif()
+
+if(@EINSUMS_FFT_LIBRARY@ STREQUAL mkl)  # EINSUMS_FFT_LIBRARY
+    if(@EINSUMS_LINALG_VENDOR@ STREQUAL MKL)  # EINSUMS_LINALG_VENDOR
+        add_library(FFT::FFT ALIAS tgt::lapack)
+    endif()
+elseif(@EINSUMS_FFT_LIBRARY@ STREQUAL fftw3)  # EINSUMS_FFT_LIBRARY
+    find_package(FFTW MODULE COMPONENTS FLOAT_LIB DOUBLE_LIB ${extraArgs})
+    add_library(FFT::FFT INTERFACE IMPORTED)
+    target_link_libraries(FFT::FFT INTERFACE FFTW::Float FFTW::Double)
+endif()
+
+if(NOT TARGET ZLIB::ZLIB)
+    find_dependency(ZLIB)
+endif()
+if(NOT TARGET tgt::hdf5)
+    find_dependency(TargetHDF5 @TargetHDF5_VERSION_Mm@)
+endif()
+if(NOT TARGET OpenMP::OpenMP_CXX)
+    find_package(OpenMP MODULE COMPONENTS CXX ${extraArgs})
+endif()
+if(NOT TARGET Backward::Backward)
+    find_dependency(Backward)
+endif()
+if(NOT TARGET range-v3::range-v3)
+    find_dependency(range-v3)
+endif()
+if(NOT TARGET fmt::fmt)
+    find_dependency(fmt)
+endif()
 
 # Check all required components are available before trying to load any
 check_required_components(${ein})
@@ -111,57 +164,27 @@ check_required_components(${ein})
 # project which has already built this as a subproject
 #-----------------------------------------------------------------------------
 if(NOT TARGET ${ein}::einsums)
-#    if(_seek_static GREATER -1)
-#        include("${CMAKE_CURRENT_LIST_DIR}/${amb}Targets-static.cmake")
-#    elseif(_seek_shared GREATER -1)
-#        include("${CMAKE_CURRENT_LIST_DIR}/${amb}Targets-shared.cmake")
-#    elseif(NOT @STATIC_ONLY@)  # STATIC_ONLY
-#        include("${CMAKE_CURRENT_LIST_DIR}/${amb}Targets-shared.cmake")
-#    elseif(NOT @SHARED_ONLY@)  # SHARED_ONLY
-#        include("${CMAKE_CURRENT_LIST_DIR}/${amb}Targets-static.cmake")
-#    endif()
-#
-#    get_property(_loc TARGET ${amb}::ambit PROPERTY LOCATION)
-#    get_property(_ill TARGET ${amb}::ambit PROPERTY INTERFACE_LINK_LIBRARIES)
-#    get_property(_iid TARGET ${amb}::ambit PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
-#    get_property(_icd TARGET ${amb}::ambit PROPERTY INTERFACE_COMPILE_DEFINITIONS)
-#    set(${amb}_LIBRARY ${_loc})
-#    set(${amb}_LIBRARIES ${_loc};${_ill})
-#    set(${amb}_INCLUDE_DIR ${_iid})
-#    set(${amb}_INCLUDE_DIRS ${_iid})
-#    set(${amb}_DEFINITIONS ${_icd})
-#
-#    if(${amb}_Python_FOUND)
-#        include("${CMAKE_CURRENT_LIST_DIR}/${amb}Targets-Python.cmake")
-#        get_property(${amb}_PYMOD TARGET ${amb}::pyambit PROPERTY ambit_PYMOD)
-#    endif()
+        include("${CMAKE_CURRENT_LIST_DIR}/${ein}Targets-CXX.cmake")
+
+    get_property(_loc TARGET ${ein}::einsums PROPERTY LOCATION)
+    get_property(_ill TARGET ${ein}::einsums PROPERTY INTERFACE_LINK_LIBRARIES)
+    get_property(_iid TARGET ${ein}::einsums PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
+    get_property(_icd TARGET ${ein}::einsums PROPERTY INTERFACE_COMPILE_DEFINITIONS)
 
     if (CMAKE_VERSION VERSION_GREATER 3.15)
-#        message(VERBOSE "ambit::ambit")
-#
-#        get_property(_ver TARGET ${amb}::ambit PROPERTY ambit_VERSION)
-#        message(VERBOSE "${amb}::ambit.${amb}_VERSION   ${_ver}")
-#
-#        message(VERBOSE "${amb}_FOUND                  ${${amb}_FOUND}")
-#        message(VERBOSE "${amb}_VERSION                ${${amb}_VERSION}")
-#        message(VERBOSE "${amb}_DEFINITIONS            ${${amb}_DEFINITIONS}")
-#
-#        message(VERBOSE "${amb}_LIBRARY                ${${amb}_LIBRARY}")
-#        message(VERBOSE "${amb}_LIBRARIES              ${${amb}_LIBRARIES}")
-#        message(VERBOSE "${amb}_INCLUDE_DIR            ${${amb}_INCLUDE_DIR}")
-#        message(VERBOSE "${amb}_INCLUDE_DIRS           ${${amb}_INCLUDE_DIRS}")
-#
-#        if (TARGET ${amb}::pyambit)
-#            message(VERBOSE "ambit::pyambit")
-#
-#            get_property(_ver TARGET ${amb}::pyambit PROPERTY ambit_VERSION)
-#            get_property(_pym TARGET ${amb}::pyambit PROPERTY ambit_PYMOD)
-#            message(VERBOSE "${amb}::pyambit.${amb}_VERSION ${_ver}")
-#            message(VERBOSE "${amb}::pyambit.${amb}_PYMOD   ${_pym}")
-#
-#            message(VERBOSE "${amb}_VERSION                ${${amb}_VERSION}")
-#            message(VERBOSE "${amb}_PYMOD                  ${${amb}_PYMOD}")
-#        endif()
+        message(VERBOSE "Einsums::einsums")
+
+        get_property(_ver TARGET ${ein}::einsums PROPERTY Einsums_VERSION)
+        message(VERBOSE "${ein}::einsums.${ein}_VERSION   ${_ver}")
+
+        message(VERBOSE "${ein}_FOUND                  ${${ein}_FOUND}")
+        message(VERBOSE "${ein}_VERSION                ${${ein}_VERSION}")
+        message(VERBOSE "${ein}_DEFINITIONS (no var)   ${_icd}")
+
+        message(VERBOSE "${ein}_LIBRARY (no var)       ${_loc}")
+        message(VERBOSE "${ein}_LIBRARIES (no var)     ${_loc};${_ill}")
+        message(VERBOSE "${ein}_INCLUDE_DIR (no var)   ${_iid}")
+        message(VERBOSE "${ein}_INCLUDE_DIRS (no var)  ${_iid}")
     endif()
 
 endif()
