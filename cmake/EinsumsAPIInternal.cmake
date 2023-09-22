@@ -65,7 +65,7 @@ function(set_public_includes target includes)
         file(RELATIVE_PATH include_dir_relative_path ${PROJECT_SOURCE_DIR} ${inc_dir})
         target_include_directories(${target} PUBLIC
             $<BUILD_INTERFACE:${inc_dir}>
-            $<INSTALL_INTERFACE:${_EINSUMS_HEADER_INSTALL_PATH}/${include_dir_relative_path}>
+            #$<INSTALL_INTERFACE:${_EINSUMS_HEADER_INSTALL_PATH}/${include_dir_relative_path}>
         )
     endforeach()
 endfunction()

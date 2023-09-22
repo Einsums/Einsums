@@ -16,6 +16,7 @@ jobs:
         hptt: [ ON, OFF ]
         include:
           - cmargs: ""
+          - testargs: ""
           - cxx: L-Gnu
             os: ubuntu-latest
           - cxx: M-Clang
@@ -24,7 +25,10 @@ jobs:
             os: ubuntu-latest
             cmargs: >
               -DCMAKE_CXX_COMPILER=icpx
+              -DMKL_INTERFACE=lp64
               -DCMAKE_CXX_FLAGS="--gcc-toolchain=${CONDA_PREFIX} --sysroot=${CONDA_PREFIX}/${HOST}/sysroot -target ${HOST}"
+              -DOpenMP_CXX_INCLUDE_DIR="${CONDA_PREFIX}/include"
+            # OpenMP search dir needed b/c setting CMAKE_CXX_FLAGS overrides conda's CXXFLAGS that passes same dir as -isystem
           - cxx: L-src
             os: ubuntu-latest
             build_type: Debug
@@ -54,6 +58,7 @@ jobs:
             - cmake
             - ninja
             - cxx-compiler
+            - backward-cpp
             - catch2
             - fftw
             - fmt
@@ -70,6 +75,7 @@ jobs:
             #- dpcpp_linux-64
           EOF
           if [[ "${{ runner.os }}" == "Linux" ]]; then
+            :
             if [[ "${{ matrix.build_type }}" == "Release" ]]; then
               sed -i "s;#MKL;;g" export.yaml
             else
@@ -80,14 +86,13 @@ jobs:
             fi
           fi
           if [[ "${{ runner.os }}" == "macOS" ]]; then
+            :
             sed -E -i.bak "s;#OBL;;g" export.yaml
             sed -E -i.bak "s;- elfutils;;g" export.yaml
           fi
           if [[ "${{ runner.os }}" == "Windows" ]]; then
             :
           fi
-          # for empty bash block
-          #   :
           # model sed for L/W
           #   sed -i "s;;;g" export.yaml
           # model sed for M
@@ -135,14 +140,48 @@ jobs:
             -DCMAKE_PREFIX_PATH="${CONDA_PREFIX}" \
             ${{ matrix.cmargs }}
 
-      - name: Build
-        run: cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
+      - name: Build & Install
+        run: |
+          cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}} --target install
+          cat ${{github.workspace}}/installed/share/cmake/Einsums/EinsumsConfig.cmake
 
-      - name: Test (CTest)
+      - name: Test (CTest) - unit tests
         working-directory: ${{github.workspace}}/build
         run: ctest
 
-      - name: Test (Catch2)
+      - name: Test (Catch2) - unit tests
         if: false
         working-directory: ${{github.workspace}}/build/tests
         run: ./test-all
+
+      - name: Test (find_package) - consume installation
+        shell: bash -l {0}
+        run: |
+          mkdir test_installed_library && cd test_installed_library
+          cat > CMakeLists.txt <<EOF
+          cmake_minimum_required(VERSION 3.8)
+          project(sample)
+          find_package(Einsums REQUIRED)
+          include(CMakePrintHelpers)
+          cmake_print_properties(
+            TARGETS
+              Einsums::einsums
+              HDF5::HDF5
+              tgt::lapack
+              OpenMP::OpenMP_CXX
+            PROPERTIES
+              IMPORTED_LINK_DEPENDENT_LIBRARIES
+              INTERFACE_LOCATION
+              INTERFACE_LINK_LIBRARIES
+              INTERFACE_INCLUDE_DIRECTORIES
+              INTERFACE_COMPILE_DEFINITIONS
+              INTERFACE_COMPILE_OPTIONS
+              INTERFACE_SYSTEM_INCLUDE_DIRECTORIES
+            )
+          add_executable(timings "../timing/main.cpp")
+          target_link_libraries(timings Einsums::einsums)
+          EOF
+          cmake -S . -B build -G Ninja --log-level verbose -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="${CONDA_PREFIX};${{github.workspace}}/installed"
+          cmake --build build
+          ./build/timings
+

@@ -1,11 +1,14 @@
+cmake_policy(PUSH)
+cmake_policy(SET CMP0075 NEW)  # support CMAKE_REQUIRED_LIBRARIES
+
 include(FindPackageHandleStandardArgs)
 include(CheckIncludeFile)
 include(CMakePushCheckState)
 
 # Only check for mkl_lapacke.h if we are using MKL
-if (TARGET MKL::MKL)
+if (EINSUMS_LINALG_VENDOR STREQUAL MKL)
     cmake_push_check_state()
-    set(CMAKE_REQUIRED_LIBRARIES MKL::MKL)
+    set(CMAKE_REQUIRED_LIBRARIES tgt::lapack)
     check_include_file(mkl_lapacke.h HAVE_MKL_LAPACKE_H)
     if (HAVE_MKL_LAPACKE_H)
         set(LAPACKE_FOUND TRUE)
@@ -46,3 +49,5 @@ else()
         endif()
     endif()
 endif()
+
+cmake_policy(POP)

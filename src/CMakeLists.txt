@@ -14,14 +14,14 @@ add_einsums_library(einsums
     PUBLIC_INCLUDES
         include
     DEPENDS
-        LAPACK::LAPACK
-        BLAS::BLAS
+        tgt::lapack
         Backward::Backward
     PUBLIC_DEPENDS
         range-v3::range-v3
         fmt::fmt
         Einsums::h5cpp
 )
+target_compile_features(einsums PUBLIC cxx_std_17)
 
 # extend_einsums_target(einsums
 #     PUBLIC_DEFINES
@@ -123,7 +123,7 @@ extend_einsums_target(einsums
         EINSUMS_HAVE_LAPACKE
         EINSUMS_LINEAR_ALGEBRA_NAMESPACE=mkl
     CONDITION
-        TARGET MKL::MKL
+        EINSUMS_LINALG_VENDOR STREQUAL MKL
     FEATURE_INFO
         "MKL backend"
 )
@@ -134,7 +134,7 @@ extend_einsums_target(einsums
     DEFINES
         MKL_INTERFACE=ILP64
     CONDITION
-        (TARGET MKL::MKL AND MKL_INTERFACE STREQUAL ilp64)
+        (EINSUMS_LINALG_VENDOR STREQUAL MKL AND EINSUMS_LINALG_INT_INTERFACE STREQUAL ilp64)
     FEATURE_INFO
         "MKL ILP64 (64-bit integers)"
 )
@@ -145,14 +145,14 @@ extend_einsums_target(einsums
     DEFINES
         MKL_INTERFACE=LP64
     CONDITION
-        (TARGET MKL::MKL AND MKL_INTERFACE STREQUAL lp64)
+        (EINSUMS_LINALG_VENDOR STREQUAL MKL AND EINSUMS_LINALG_INT_INTERFACE STREQUAL lp64)
     FEATURE_INFO
         "MKL LP64 (32-bit integers)"
 )
 
 extend_einsums_target(einsums
     CONDITION
-        (TARGET MKL::MKL AND TARGET FFT::FFT AND EINSUMS_FFT_LIBRARY STREQUAL mkl)
+        (EINSUMS_LINALG_VENDOR STREQUAL MKL AND TARGET FFT::FFT AND EINSUMS_FFT_LIBRARY STREQUAL mkl)
     DEFINES
         EINSUMS_HAVE_FFT_LIBRARY_MKL
     SOURCES
@@ -168,7 +168,7 @@ extend_einsums_target(einsums
     DEFINES
         EINSUMS_LINEAR_ALGEBRA_NAMESPACE=vendor
     CONDITION
-        NOT TARGET MKL::MKL
+        NOT EINSUMS_LINALG_VENDOR STREQUAL MKL
     FEATURE_INFO
         "Generic vendor backend"
 )
@@ -2984,6 +2984,14 @@ extend_einsums_target(einsums
 
 include(CMakePackageConfigHelpers)
 
+set_target_properties(
+  einsums
+  PROPERTIES
+    ${ein}_VERSION ${Einsums_VERSION}
+  )
+set(export_properties "Einsums_VERSION")
+set_property(TARGET einsums APPEND PROPERTY EXPORT_PROPERTIES "${export_properties}")
+
 install(
   DIRECTORY
     ${CMAKE_CURRENT_SOURCE_DIR}/include/
@@ -3048,13 +3056,23 @@ install(
   COMPONENT ${ein}_Development
   )
 
+install(
+  FILES
+    ../cmake/FindCBLAS.cmake
+    ../cmake/FindLAPACKE.cmake
+    ../cmake/FindFFTW.cmake
+    ../cmake/FindTargetHDF5.cmake
+  DESTINATION ${EINSUMS_INSTALL_CMAKEDIR}
+  COMPONENT ${ein}_Development
+  )
+
 #include(JoinPaths)
 #join_paths(libdir_for_pc_file "\${exec_prefix}" "${CMAKE_INSTALL_LIBDIR}")
 #join_paths(includedir_for_pc_file "\${prefix}" "${CMAKE_INSTALL_INCLUDEDIR}")
 #
-#configure_file(cmake/libint2.pc.cmake.in libint2.pc @ONLY)
+#configure_file(cmake/einsums.pc.cmake.in einsums.pc @ONLY)
 #install(
-#  FILES ${CMAKE_CURRENT_BINARY_DIR}/libint2.pc
+#  FILES ${CMAKE_CURRENT_BINARY_DIR}/einsums.pc
 #  DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig/
-#  COMPONENT ${L2}_Development
+#  COMPONENT ${ein}_Development
 #  )
