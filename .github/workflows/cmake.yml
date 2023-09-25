@@ -58,7 +58,6 @@ jobs:
             - cmake
             - ninja
             - cxx-compiler
-            - backward-cpp
             - catch2
             - fftw
             - fmt

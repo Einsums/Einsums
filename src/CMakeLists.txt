@@ -15,7 +15,6 @@ add_einsums_library(einsums
         include
     DEPENDS
         tgt::lapack
-        Backward::Backward
     PUBLIC_DEPENDS
         range-v3::range-v3
         fmt::fmt
