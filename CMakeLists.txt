@@ -119,8 +119,6 @@ if(OpenMP_FOUND)
       "OpenMP Version ${OpenMP_CXX_VERSION_MAJOR}.${OpenMP_CXX_VERSION_MINOR}")
 endif()
 
-find_package(Backward REQUIRED)
-
 add_subdirectory(external)
 add_subdirectory(src)
 

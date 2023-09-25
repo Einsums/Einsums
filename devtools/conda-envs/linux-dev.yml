@@ -21,6 +21,5 @@ dependencies:
   - hdf5
   - zlib
 
-  # backward-cpp
   - libdwarf-dev
   - elfutils

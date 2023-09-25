@@ -47,8 +47,6 @@ struct Indent {
     ~Indent() { deindent(); }
 };
 
-void EINSUMS_EXPORT stacktrace();
-
 } // namespace print
 
 namespace detail {
@@ -212,8 +210,6 @@ template <typename... Ts>
 inline void println_abort(const std::string_view &format, const Ts... ts) {
     std::string message = std::string("ERROR: ") + format.data();
     println(bg(fmt::color::red) | fg(fmt::color::white), message, ts...);
-
-    print::stacktrace();
 
     std::abort();
 }
