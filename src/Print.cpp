@@ -1,6 +1,5 @@
 #include "einsums/Print.hpp"
 
-#include "einsums/Backtrace.hpp"
 #include "einsums/OpenMP.h"
 #include "einsums/Timer.hpp"
 #include "einsums/parallel/MPI.hpp"
@@ -76,19 +75,6 @@ void suppress_output(bool onoff) {
     suppress = onoff;
 }
 
-void stacktrace() {
-    using namespace backward;
-    StackTrace st;
-    st.load_here(32);
-
-    TraceResolver tr;
-    tr.load_stacktrace(st);
-    for (size_t i = 0; i < st.size(); ++i) {
-        ResolvedTrace trace = tr.resolve(st[i]);
-        println("# {} {} {} {}:{} [{}]", i, trace.object_filename, trace.object_function, trace.source.function, trace.source.line,
-                trace.addr);
-    }
-}
 } // namespace print
 
 namespace {
