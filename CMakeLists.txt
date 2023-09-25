@@ -1,4 +1,5 @@
-cmake_minimum_required(VERSION 3.24)  # 3.24 for FetchContent_Declare(FIND_PACKAGE_ARGS
+cmake_minimum_required(VERSION 3.24) # 3.24 for
+                                     # FetchContent_Declare(FIND_PACKAGE_ARGS
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 include(EinsumsBranding)
@@ -7,9 +8,9 @@ project(
   Einsums
   VERSION ${EINSUMS_VERSION}
   LANGUAGES C CXX
-  DESCRIPTION "C++ library for compile-time contraction pattern analysis optimizing tensor operations"
-  HOMEPAGE_URL https://github.com/jturney/einsums
-  )
+  DESCRIPTION
+    "C++ library for compile-time contraction pattern analysis optimizing tensor operations"
+  HOMEPAGE_URL https://github.com/jturney/einsums)
 
 include(FeatureSummary)
 include(EinsumsAPI)
@@ -27,7 +28,7 @@ include(EinsumsBuildTypeASAN)
 include(EinsumsBuildTypeMSAN)
 include(EinsumsBuildTypeUBSAN)
 
-set(ein Einsums)  # Namespace
+set(ein Einsums) # Namespace
 
 # ##############################################################################
 # User input options                                                           #
@@ -40,8 +41,8 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   set(CMAKE_BUILD_TYPE
       Release
       CACHE STRING "Choose the type of build." FORCE)
-  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel"
-                                               "RelWithDebInfo")
+  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release"
+                                               "MinSizeRel" "RelWithDebInfo")
 endif()
 
 einsums_option(EINSUMS_CONTINUOUSLY_TEST_EINSUM BOOL
@@ -61,9 +62,10 @@ einsums_option(EINSUMS_USE_HPTT BOOL
                "Use the HPTT package for tensor transpositions" ON)
 einsums_option(EINSUMS_ENABLE_TESTING BOOL "Build testing (requires Catch2)"
                ${PROJECT_IS_TOP_LEVEL})
-einsums_option(EINSUMS_INSTALL_CMAKEDIR STRING
-               "Directory to which Einsums CMake config files installed."
-               share/cmake/Einsums)
+einsums_option(
+  EINSUMS_INSTALL_CMAKEDIR STRING
+  "Directory to which Einsums CMake config files installed."
+  share/cmake/Einsums)
 
 add_feature_info(
   EINSUMS_CONTINUOUSLY_TEST_EINSUM ${EINSUMS_CONTINUOUSLY_TEST_EINSUM}
@@ -97,9 +99,15 @@ if(TARGET MPI::MPI_CXX)
 endif()
 
 # Prefer to use MKL
-find_package (TargetLAPACK REQUIRED)
-get_property(EINSUMS_LINALG_VENDOR TARGET tgt::lapack PROPERTY VENDOR)
-get_property(EINSUMS_LINALG_INT_INTERFACE TARGET tgt::lapack PROPERTY INT_INTERFACE)
+find_package(TargetLAPACK REQUIRED)
+get_property(
+  EINSUMS_LINALG_VENDOR
+  TARGET tgt::lapack
+  PROPERTY VENDOR)
+get_property(
+  EINSUMS_LINALG_INT_INTERFACE
+  TARGET tgt::lapack
+  PROPERTY INT_INTERFACE)
 
 # Set default FFT library to mkl, if mkl was found, otherwise FFTW3
 set(EINSUMS_FFT_LIBRARY_DEFAULT "fftw3")
@@ -119,14 +127,12 @@ if(OpenMP_FOUND)
       "OpenMP Version ${OpenMP_CXX_VERSION_MAJOR}.${OpenMP_CXX_VERSION_MINOR}")
 endif()
 
-find_package(Backward REQUIRED)
-
 add_subdirectory(external)
 add_subdirectory(src)
 
-if (EINSUMS_ENABLE_TESTING)
-    enable_testing()
-    add_subdirectory(tests)
+if(EINSUMS_ENABLE_TESTING)
+  enable_testing()
+  add_subdirectory(tests)
 endif()
 
 add_subdirectory(timing)
