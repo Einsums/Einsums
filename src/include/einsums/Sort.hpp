@@ -6,7 +6,6 @@
 #include "einsums/Tensor.hpp"
 #include "einsums/_Common.hpp"
 #include "einsums/_Compiler.hpp"
-#include "einsums/_Index.hpp"
 #include "einsums/_TensorAlgebraUtilities.hpp"
 
 BEGIN_EINSUMS_NAMESPACE_HPP(einsums::tensor_algebra)

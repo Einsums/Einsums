@@ -1,6 +1,5 @@
 #pragma once
 
-#include "OpenMP.h"
 #include "einsums/OpenMP.h"
 #include "einsums/Print.hpp"
 #include "einsums/STL.hpp"
@@ -459,7 +458,9 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
             auto chunksize = _data.size() / omp_get_num_threads();                                                                         \
             auto begin     = _data.begin() + chunksize * tid;                                                                              \
             auto end       = (tid == omp_get_num_threads() - 1) ? _data.end() : begin + chunksize;                                         \
-            EINSUMS_OMP_SIMD for (auto i = begin; i < end; i++) { (*i) OP b; }                                                             \
+            EINSUMS_OMP_SIMD for (auto i = begin; i < end; i++) {                                                                          \
+                (*i) OP b;                                                                                                                 \
+            }                                                                                                                              \
         }                                                                                                                                  \
         return *this;                                                                                                                      \
     }                                                                                                                                      \
@@ -475,7 +476,9 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
             auto bbegin    = b._data.begin() + chunksize * tid;                                                                            \
             auto aend      = (tid == omp_get_num_threads() - 1) ? _data.end() : abegin + chunksize;                                        \
             auto j         = bbegin;                                                                                                       \
-            EINSUMS_OMP_SIMD for (auto i = abegin; i < aend; i++) { (*i) OP(*j++); }                                                       \
+            EINSUMS_OMP_SIMD for (auto i = abegin; i < aend; i++) {                                                                        \
+                (*i) OP(*j++);                                                                                                             \
+            }                                                                                                                              \
         }                                                                                                                                  \
         return *this;                                                                                                                      \
     }

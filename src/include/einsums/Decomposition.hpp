@@ -1,7 +1,6 @@
 #pragma once
 
 #include "einsums/LinearAlgebra.hpp"
-#include "einsums/OpenMP.h"
 #include "einsums/Section.hpp"
 #include "einsums/Sort.hpp"
 #include "einsums/Tensor.hpp"
@@ -180,7 +179,7 @@ auto initialize_cp(std::vector<Tensor<TType, 2>> &folds, size_t rank) -> std::ve
         // If (i == 0), Scale U by the singular values
         if (i == 0) {
             for (size_t v = 0; v < S.dim(0); v++) {
-                double scaling_factor = std::sqrt(S(v));
+                double const scaling_factor = std::sqrt(S(v));
                 if (std::abs(scaling_factor) > 1.0e-14)
                     linear_algebra::scale_column(v, scaling_factor, &U);
             }
@@ -285,9 +284,9 @@ auto parafac(const TTensor<TType, TRank> &tensor, size_t rank, int n_iter_max = 
         // Reconstruct Tensor based on the factors
         Tensor<TType, TRank> rec_tensor = parafac_reconstruct<TRank>(factors);
 
-        double unnormalized_error = rmsd(rec_tensor, tensor);
-        double curr_error         = unnormalized_error / tensor_norm;
-        double delta              = std::abs(curr_error - prev_error);
+        double const unnormalized_error = rmsd(rec_tensor, tensor);
+        double const curr_error         = unnormalized_error / tensor_norm;
+        double const delta              = std::abs(curr_error - prev_error);
 
         // printf("    @CP Iteration %d, ERROR: %8.8f, DELTA: %8.8f\n", iter, curr_error, delta);
 
@@ -401,9 +400,9 @@ auto weighted_parafac(const TTensor<TType, TRank> &tensor, const TTensor<TType, 
         // Reconstruct Tensor based on the factors
         Tensor<TType, TRank> rec_tensor = parafac_reconstruct<TRank>(factors);
 
-        double unnormalized_error = rmsd(rec_tensor, tensor);
-        double curr_error         = unnormalized_error / tensor_norm;
-        double delta              = std::abs(curr_error - prev_error);
+        double const unnormalized_error = rmsd(rec_tensor, tensor);
+        double const curr_error         = unnormalized_error / tensor_norm;
+        double const delta              = std::abs(curr_error - prev_error);
 
         // printf("    @CP Iteration %d, ERROR: %8.8f, DELTA: %8.8f\n", iter, curr_error, delta);
 

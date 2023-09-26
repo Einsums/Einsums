@@ -4,7 +4,7 @@
 #include "einsums/STL.hpp"
 #include "einsums/Section.hpp"
 #include "einsums/Tensor.hpp"
-#include "einsums/Timer.hpp"
+// #include "einsums/Timer.hpp"
 #include "einsums/Utilities.hpp"
 #include "einsums/_Common.hpp"
 
@@ -421,7 +421,7 @@ auto svd(const AType<T, ARank> &_A) -> typename std::enable_if_t<is_incore_rank_
                                                                  std::tuple<Tensor<T, 2>, Tensor<remove_complex_t<T>, 1>, Tensor<T, 2>>> {
     LabeledSection0();
 
-    DisableOMPThreads nothreads;
+    DisableOMPThreads const nothreads;
 
     // Calling svd will destroy the original data. Make a copy of it.
     Tensor<T, 2> A = _A;
@@ -517,7 +517,7 @@ auto svd_dd(const AType<T, ARank> &_A, Vectors job = Vectors::All) ->
                               std::tuple<Tensor<T, 2>, Tensor<remove_complex_t<T>, 1>, Tensor<T, 2>>> {
     LabeledSection0();
 
-    DisableOMPThreads nothreads;
+    DisableOMPThreads const nothreads;
 
     // Calling svd will destroy the original data. Make a copy of it.
     Tensor<T, 2> A = _A;
@@ -608,9 +608,9 @@ auto truncated_syev(const AType<T, ARank> &A, size_t k) ->
 
     Tensor<double, 1> tau("tau", std::min(n, k + 5));
     // Compute QR factorization of Y
-    eint info1 = blas::geqrf(n, k + 5, Y.data(), k + 5, tau.data());
+    eint const info1 = blas::geqrf(n, k + 5, Y.data(), k + 5, tau.data());
     // Extract Matrix Q out of QR factorization
-    eint info2 = blas::orgqr(n, k + 5, tau.dim(0), Y.data(), k + 5, const_cast<const double *>(tau.data()));
+    eint const info2 = blas::orgqr(n, k + 5, tau.dim(0), Y.data(), k + 5, const_cast<const double *>(tau.data()));
 
     Tensor<double, 2> &Q1 = Y;
 

@@ -2,6 +2,7 @@
 
 #include "einsums/OpenMP.h"
 #include "einsums/Section.hpp"
+#include "einsums/Tensor.hpp"
 
 namespace einsums {
 
@@ -27,18 +28,18 @@ auto create_incremented_tensor(const std::string &name, MultiIndex... index) -> 
 
 template <typename T = double, bool Normalize = false, typename... MultiIndex>
 auto create_random_tensor(const std::string &name, MultiIndex... index) -> Tensor<T, sizeof...(MultiIndex)> {
-    Section section{fmt::format("create_random_tensor {}", name)};
+    Section const section{fmt::format("create_random_tensor {}", name)};
 
     Tensor<T, sizeof...(MultiIndex)> A(name, std::forward<MultiIndex>(index)...);
 
-    double lower_bound = -1.0;
-    double upper_bound = 1.0;
+    double const lower_bound = -1.0;
+    double const upper_bound = 1.0;
 
     std::uniform_real_distribution<double> unif(lower_bound, upper_bound);
     std::default_random_engine             re;
 
     {
-        static std::chrono::high_resolution_clock::time_point beginning = std::chrono::high_resolution_clock::now();
+        static std::chrono::high_resolution_clock::time_point const beginning = std::chrono::high_resolution_clock::now();
 
         // std::chrono::high_resolution_clock::duration d = std::chrono::high_resolution_clock::now() - beginning;
 
