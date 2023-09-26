@@ -99,7 +99,7 @@ function(add_einsums_depends target_name)
     else()
         list(APPEND object_lib_depends ${depends})
         list(APPEND object_public_depends ${public_depends})
-     endif()
+    endif()
 
     foreach(obj_lib IN LISTS object_lib_depends)
         target_compile_options(${target_name} PRIVATE $<TARGET_PROPERTY:${obj_lib},INTERFACE_COMPILE_OPTIONS>)

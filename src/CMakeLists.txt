@@ -1,3 +1,6 @@
+find_package(range-v3)
+find_package(fmt)
+
 add_einsums_library(einsums
     SOURCES
         Blas.cpp
