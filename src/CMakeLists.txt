@@ -226,6 +226,7 @@ endforeach()
 
 # Include downloaded cblas if it wasn't found installed. We require a
 # Fortran compiler for it.
+find_package(netlib)
 if (NOT CBLAS_FOUND)
     enable_language(Fortran)
 endif()

@@ -4,7 +4,7 @@
 FetchContent_Declare(
   hptt
   GIT_REPOSITORY https://github.com/Einsums/hptt.git
-  GIT_TAG v1.0.5+23
+  GIT_TAG v1.0.5+24
   SYSTEM
   OVERRIDE_FIND_PACKAGE
   )
