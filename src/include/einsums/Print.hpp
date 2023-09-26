@@ -4,7 +4,7 @@
 #include "fmt/color.h"
 #include "fmt/core.h"
 #include "fmt/format.h"
-#include "fmt/ranges.h"
+// #include "fmt/ranges.h"
 
 #include <algorithm>
 #include <cassert>
@@ -198,7 +198,7 @@ inline void println(const std::string &format) {
 }
 
 inline void println(const fmt::text_style &style, const std::string_view &format) {
-    std::string s = fmt::format(style, format);
+    std::string const s = fmt::format(style, format);
     detail::println(s);
 }
 

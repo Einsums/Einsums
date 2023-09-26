@@ -6,6 +6,7 @@
 #include "einsums/STL.hpp"
 #include "einsums/Section.hpp"
 #include "einsums/Tensor.hpp"
+#include "einsums/Timer.hpp"
 #include "einsums/_Common.hpp"
 #include "einsums/_Compiler.hpp"
 #include "einsums/_Index.hpp"
@@ -153,7 +154,7 @@ auto einsum(const CDataType C_prefactor, const std::tuple<CIndices...> & /*Cs*/,
     -> std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<ADataType, ARank>, AType<ADataType, ARank>> &&
                         std::is_base_of_v<::einsums::detail::TensorBase<BDataType, BRank>, BType<BDataType, BRank>> &&
                         std::is_base_of_v<::einsums::detail::TensorBase<CDataType, CRank>, CType<CDataType, CRank>>> {
-    print::Indent _indent;
+    print::Indent const _indent;
 
     constexpr auto A_indices = std::tuple<AIndices...>();
     constexpr auto B_indices = std::tuple<BIndices...>();
@@ -333,7 +334,7 @@ auto einsum(const CDataType C_prefactor, const std::tuple<CIndices...> & /*Cs*/,
 
         return;
     } else if constexpr (element_wise_multiplication) {
-        timer::Timer element_wise_multiplication{"element-wise multiplication"};
+        timer::Timer const element_wise_multiplication{"element-wise multiplication"};
 
         auto target_dims = get_dim_ranges<CRank>(*C);
         auto view        = std::apply(ranges::views::cartesian_product, target_dims);

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "einsums/Print.hpp"
 #include "einsums/_Export.hpp"
 
+#include <complex>
 #include <functional>
 #include <iterator>
 #include <memory>
@@ -30,7 +30,7 @@ struct TuplePosition<S, P, C, false, not_used, std::tuple<Head, Tail...>>
 // match case
 template <class S, int P, int C, class Type, class... Tail>
 struct TuplePosition<S, P, C, true, Type, std::tuple<Tail...>> : std::integral_constant<int, P> {
-    using type = Type;
+    using type                    = Type;
     static constexpr bool present = true;
 };
 // default case
@@ -82,7 +82,7 @@ template <typename T, typename Iter = decltype(std::begin(std::declval<T>())),
 constexpr auto enumerate(T &&iterable) {
     struct Iterator {
         std::size_t i;
-        Iter iter;
+        Iter        iter;
 
         auto operator!=(const Iterator &other) const -> bool { return iter != other.iter; }
         void operator++() {
@@ -92,7 +92,7 @@ constexpr auto enumerate(T &&iterable) {
         auto operator*() const { return std::tie(i, *iter); }
     };
     struct IterableWrapper {
-        T iterable;
+        T    iterable;
         auto begin() { return Iterator{0, std::begin(iterable)}; }
         auto end() { return Iterator{0, std::end(iterable)}; }
     };
@@ -178,7 +178,7 @@ constexpr auto for_each(Tuple &&t, F &&f) -> F {
 
 template <typename ReturnType, typename Tuple>
 inline auto get_from_tuple(Tuple &&tuple, size_t index) -> ReturnType {
-    size_t currentIndex = 0;
+    size_t     currentIndex = 0;
     ReturnType returnValue{-1ul};
 
     for_each(tuple, [index, &currentIndex, &returnValue](auto &&value) {
@@ -422,13 +422,13 @@ struct CircularBuffer {
 
   private:
     std::unique_ptr<T[]> _buffer; // NOLINT
-    const size_t _max_size;
+    const size_t         _max_size;
 
     std::mutex _mutex;
 
     size_t _head{0};
     size_t _tail{0};
-    bool _full{false};
+    bool   _full{false};
 };
 
 namespace detail {
@@ -442,9 +442,9 @@ class AlignedAllocator;
 template <size_t Align>
 class AlignedAllocator<void, Align> {
   public:
-    using pointer = void *;
+    using pointer       = void *;
     using const_pointer = const void *;
-    using value_type = void;
+    using value_type    = void;
 
     template <class U>
     struct rebind {
@@ -455,12 +455,12 @@ class AlignedAllocator<void, Align> {
 template <typename T, size_t Align>
 class AlignedAllocator {
   public:
-    using value_type = T;
-    using pointer = T *;
-    using const_pointer = const T *;
-    using reference = T &;
+    using value_type      = T;
+    using pointer         = T *;
+    using const_pointer   = const T *;
+    using reference       = T &;
     using const_reference = const T &;
-    using size_type = size_t;
+    using size_type       = size_t;
     using difference_type = ptrdiff_t;
 
     using propagate_on_container_move_assignment = std::true_type;
@@ -484,7 +484,7 @@ class AlignedAllocator {
 
     auto allocate(size_type n, typename AlignedAllocator<void, Align>::const_pointer = 0) -> pointer {
         const auto alignment = static_cast<size_type>(Align);
-        void *ptr = detail::allocate_aligned_memory(alignment, n * sizeof(T));
+        void      *ptr       = detail::allocate_aligned_memory(alignment, n * sizeof(T));
         if (ptr == nullptr) {
             throw std::bad_alloc();
         }
@@ -507,12 +507,12 @@ class AlignedAllocator {
 template <typename T, size_t Align>
 class AlignedAllocator<const T, Align> {
   public:
-    using value_type = T;
-    using pointer = const T *;
-    using const_pointer = const T *;
-    using reference = const T &;
+    using value_type      = T;
+    using pointer         = const T *;
+    using const_pointer   = const T *;
+    using reference       = const T &;
     using const_reference = const T &;
-    using size_type = size_t;
+    using size_type       = size_t;
     using difference_type = ptrdiff_t;
 
     using propagate_on_container_move_assignment = std::true_type;
@@ -534,7 +534,7 @@ class AlignedAllocator<const T, Align> {
 
     auto allocate(size_type n, typename AlignedAllocator<void, Align>::const_pointer = 0) -> pointer {
         const auto alignment = static_cast<size_type>(Align);
-        void *ptr = detail::allocate_aligned_memory(alignment, n * sizeof(T));
+        void      *ptr       = detail::allocate_aligned_memory(alignment, n * sizeof(T));
         if (ptr == nullptr) {
             throw std::bad_alloc();
         }
