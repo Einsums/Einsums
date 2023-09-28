@@ -5,7 +5,7 @@
 # Variables like Einsums_LIBRARIES and Einsums_INCLUDE_DIRS *are not set* as targets are preferred.
 # This module sets the following variables in your project::
 #
-#   Einsums_FOUND - true if ambit and all required components found on the system
+#   Einsums_FOUND - true if Einsums and all required components found on the system
 #   Einsums_VERSION - Einsums version in format Major.Minor.Release. Prefer target variable.
 #
 #
@@ -13,10 +13,9 @@
 #
 # It is preferred to use properties set on the base target rather than using the above variables. ::
 #
-##   ambit_VERSION - ambit version in format Major.Minor.Release
-##   ambit_PYMOD - path to ambit python module (suitable for appending PYTHONPATH). Only on pyambit target.
-##
-##   get_property(_ver TARGET ambit::ambit PROPERTY ambit_VERSION)
+#   Einsums_VERSION - Einsums version in format Major.Minor.Release
+#
+#   get_property(_ver TARGET Einsums::einsums PROPERTY Einsums_VERSION)
 #
 #
 # Available components: shared static hptt lp64 ilp64 ::
