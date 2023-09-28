@@ -4,6 +4,8 @@
 # * upstream CMakeLists.txt isn't useable and project is header-only, so to keep code
 #   changes and build changes separate, we won't let FetchContent build (`SOURCE_SUBDIR
 #   fake`) and will create the interface Einsums_h5cpp target after download.
+# * MakeAvailable called here so that install (of vendored headers into einsums namespace)
+#   can be localized into this file.
 
 FetchContent_Declare(
   h5cpp

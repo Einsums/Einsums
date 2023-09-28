@@ -2,16 +2,24 @@ include(FetchContent)
 
 # <<<  general notes  >>>
 
-# * URL preferred over GIT_REPOSITORY
+# * URL preferred over GIT_REPOSITORY+GIT_TAG
 # * commit or permanent tag preferred over branch name for traceability
 # * to get the URL_HASH, run `curl -sL <URL> | openssl sha256`
 # * to use local source, put path in URL: `URL "/psi/gits/h5cpp"`
+# * generally, do all FetchContent_Declare before any FetchContent_MakeAvailable
+#   to allow for negotiation for any shared deps-of-deps. in practice,
+#   we MakeAvailable hptt in its own dir to suppress install and h5cpp in its
+#   own dir to collect build and install commands.
 
 if(EINSUMS_ENABLE_TESTING)
     add_subdirectory(catch2)
 endif()
+
 add_subdirectory(fmt)
+
 add_subdirectory(rangev3)
+
+add_subdirectory(netlib)
 
 find_package(ZLIB REQUIRED)
 find_package(TargetHDF5 REQUIRED)
@@ -19,14 +27,6 @@ find_package(TargetHDF5 REQUIRED)
 set(TargetHDF5_VERSION_Mm ${TargetHDF5_VERSION_Mm} PARENT_SCOPE)
 
 add_subdirectory(h5cpp)
-
-add_subdirectory(netlib)
-
-FetchContent_MakeAvailable(netlib)
-set(netlib_SOURCE_DIR
-    "${netlib_SOURCE_DIR}"
-    PARENT_SCOPE)
-
 
 if(EINSUMS_USE_HPTT)
     # EXCLUDE_FROM_ALL to suppress install
@@ -36,6 +36,11 @@ endif()
 if(EINSUMS_ENABLE_TESTING)
     FetchContent_MakeAvailable(Catch2)
 endif()
-FetchContent_MakeAvailable(range-v3)
+
 FetchContent_MakeAvailable(fmt)
 
+FetchContent_MakeAvailable(range-v3)
+
+FetchContent_MakeAvailable(netlib)
+# promote netlib src scope so that src/CM can build it
+set(netlib_SOURCE_DIR "${netlib_SOURCE_DIR}" PARENT_SCOPE)
