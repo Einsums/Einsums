@@ -32,7 +32,7 @@ else()
 
         find_package_handle_standard_args(LAPACKE DEFAULT_MSG LAPACKE_LIBRARIES LAPACKE_INCLUDE_DIRS)
 
-        if (LAPACKE_FOUND)
+        if (LAPACKE_FOUND AND NOT (TARGET lapacke))
             set(HAVE_LAPACKE_H TRUE)
 
             message(STATUS "Found components for LAPACKE.")

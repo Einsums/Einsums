@@ -34,8 +34,8 @@ if(EINSUMS_USE_HPTT)
 endif()
 
 if(EINSUMS_ENABLE_TESTING)
-    FetchContent_MakeAvailable(catch2)
+    FetchContent_MakeAvailable(Catch2)
 endif()
-FetchContent_MakeAvailable(rangev3)
+FetchContent_MakeAvailable(range-v3)
 FetchContent_MakeAvailable(fmt)
 

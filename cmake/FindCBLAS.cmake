@@ -36,7 +36,7 @@ else()
 
         find_package_handle_standard_args(CBLAS DEFAULT_MSG CBLAS_LIBRARIES CBLAS_INCLUDE_DIRS)
 
-        if (CBLAS_FOUND)
+        if (CBLAS_FOUND AND NOT (TARGET cblas))
             message(STATUS "Found components for CBLAS.")
 
             add_library(cblas INTERFACE)
