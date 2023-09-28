@@ -18,7 +18,7 @@ FetchContent_MakeAvailable(h5cpp)
 
 add_library(Einsums_h5cpp INTERFACE)
 add_library("${ein}::h5cpp" ALIAS Einsums_h5cpp)
-target_compile_features(Einsums_h5cpp PUBLIC cxx_std_17)
+target_compile_features(Einsums_h5cpp INTERFACE cxx_std_17)
 set_target_properties(
   Einsums_h5cpp
   PROPERTIES
