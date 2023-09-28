@@ -28,7 +28,6 @@ set_target_properties(
   )
 target_include_directories(
   Einsums_h5cpp
-  SYSTEM  # suppress warnings
   INTERFACE
     $<BUILD_INTERFACE:${h5cpp_SOURCE_DIR}>
     # TODO return to this when build headers adjusted   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
