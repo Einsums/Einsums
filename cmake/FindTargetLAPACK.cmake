@@ -93,7 +93,7 @@ else()
 
                 else()
                     set(BLA_VENDOR Generic)
-                    set(BLA_SIZEOF_INTEGER Any)
+                    set(BLA_SIZEOF_INTEGER ANY)
                     find_package(BLAS MODULE)
                     find_package(LAPACK MODULE)
 

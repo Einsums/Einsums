@@ -1,3 +1,6 @@
+find_package(range-v3)
+find_package(fmt)
+
 add_einsums_library(einsums
     SOURCES
         Blas.cpp
@@ -212,6 +215,7 @@ endforeach()
 
 # Include downloaded cblas if it wasn't found installed. We require a
 # Fortran compiler for it.
+find_package(netlib)
 if (NOT CBLAS_FOUND)
     enable_language(Fortran)
 endif()

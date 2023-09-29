@@ -30,6 +30,7 @@ target_compile_definitions(test-all
         EINSUMS_CONTINUOUSLY_TEST_EINSUM
         TEST_PATH="${CMAKE_CURRENT_LIST_DIR}"    
 )
+find_package(Catch2)
 target_link_libraries(test-all Catch2::Catch2 einsums)
 
 include(CTest)
