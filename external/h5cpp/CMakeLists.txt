@@ -10,7 +10,7 @@
 FetchContent_Declare(
   h5cpp
   URL https://github.com/loriab/h5cpp/archive/EAT_align.tar.gz
-  URL_HASH SHA256=72fa8338384223e2fc261b7700b8192010648fa38dc98f31bee3c03ae82a5cd8
+  URL_HASH SHA256=afdc47d62482643c26100be0902595010444af7ee478cc6fba87552ae3db5ea8
   SOURCE_SUBDIR fake
   SYSTEM
   OVERRIDE_FIND_PACKAGE
