@@ -9,8 +9,8 @@
 
 FetchContent_Declare(
   h5cpp
-  URL https://github.com/Einsums/h5cpp/archive/v1.10.4-6-EAT6.tar.gz
-  URL_HASH SHA256=bc6370d2a2b11d9208c53d7815c2fbcfefc09f509f3a9f4d9cbd76a8c442feac
+  URL https://github.com/loriab/h5cpp/archive/EAT_align.tar.gz
+  URL_HASH SHA256=72fa8338384223e2fc261b7700b8192010648fa38dc98f31bee3c03ae82a5cd8
   SOURCE_SUBDIR fake
   SYSTEM
   OVERRIDE_FIND_PACKAGE
