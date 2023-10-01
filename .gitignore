@@ -53,3 +53,9 @@ _deps
 # Visual Studio files
 .vs
 CMakeSettings.json
+
+# Documentation
+docs/_doxygen
+docs/api
+docs/_build
+
