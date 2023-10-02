@@ -111,11 +111,11 @@ Functions
 
 - :ref:`exhale_function___Common_8hpp_1af8ca3d76e617a2058e2c67b67b712554`
 
+- :ref:`exhale_function___Common_8hpp_1a52198b5a8c76fef65cb1b964d9e07bdb`
+
 - :ref:`exhale_function___Common_8hpp_1a11de673875f64ae0797b25f6ec64e395`
 
 - :ref:`exhale_function___Common_8hpp_1a84f21c2651a0491697436c9f011058ba`
-
-- :ref:`exhale_function___Common_8hpp_1a52198b5a8c76fef65cb1b964d9e07bdb`
 
 
 Defines

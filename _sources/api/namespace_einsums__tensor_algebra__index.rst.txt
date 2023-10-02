@@ -21,13 +21,13 @@ Classes
 
 - :ref:`exhale_struct_structeinsums_1_1tensor__algebra_1_1index_1_1a`
 
-- :ref:`exhale_struct_structeinsums_1_1tensor__algebra_1_1index_1_1b`
-
 - :ref:`exhale_struct_structeinsums_1_1tensor__algebra_1_1index_1_1B`
 
-- :ref:`exhale_struct_structeinsums_1_1tensor__algebra_1_1index_1_1c`
+- :ref:`exhale_struct_structeinsums_1_1tensor__algebra_1_1index_1_1b`
 
 - :ref:`exhale_struct_structeinsums_1_1tensor__algebra_1_1index_1_1C`
+
+- :ref:`exhale_struct_structeinsums_1_1tensor__algebra_1_1index_1_1c`
 
 - :ref:`exhale_struct_structeinsums_1_1tensor__algebra_1_1index_1_1D`
 
@@ -49,17 +49,17 @@ Classes
 
 - :ref:`exhale_struct_structeinsums_1_1tensor__algebra_1_1index_1_1h`
 
-- :ref:`exhale_struct_structeinsums_1_1tensor__algebra_1_1index_1_1i`
-
 - :ref:`exhale_struct_structeinsums_1_1tensor__algebra_1_1index_1_1I`
 
-- :ref:`exhale_struct_structeinsums_1_1tensor__algebra_1_1index_1_1j`
+- :ref:`exhale_struct_structeinsums_1_1tensor__algebra_1_1index_1_1i`
 
 - :ref:`exhale_struct_structeinsums_1_1tensor__algebra_1_1index_1_1J`
 
-- :ref:`exhale_struct_structeinsums_1_1tensor__algebra_1_1index_1_1K`
+- :ref:`exhale_struct_structeinsums_1_1tensor__algebra_1_1index_1_1j`
 
 - :ref:`exhale_struct_structeinsums_1_1tensor__algebra_1_1index_1_1k`
+
+- :ref:`exhale_struct_structeinsums_1_1tensor__algebra_1_1index_1_1K`
 
 - :ref:`exhale_struct_structeinsums_1_1tensor__algebra_1_1index_1_1L`
 
@@ -71,9 +71,9 @@ Classes
 
 - :ref:`exhale_struct_structeinsums_1_1tensor__algebra_1_1index_1_1m`
 
-- :ref:`exhale_struct_structeinsums_1_1tensor__algebra_1_1index_1_1n`
-
 - :ref:`exhale_struct_structeinsums_1_1tensor__algebra_1_1index_1_1N`
+
+- :ref:`exhale_struct_structeinsums_1_1tensor__algebra_1_1index_1_1n`
 
 - :ref:`exhale_struct_structeinsums_1_1tensor__algebra_1_1index_1_1O`
 
@@ -99,9 +99,9 @@ Classes
 
 - :ref:`exhale_struct_structeinsums_1_1tensor__algebra_1_1index_1_1t`
 
-- :ref:`exhale_struct_structeinsums_1_1tensor__algebra_1_1index_1_1U`
-
 - :ref:`exhale_struct_structeinsums_1_1tensor__algebra_1_1index_1_1u`
+
+- :ref:`exhale_struct_structeinsums_1_1tensor__algebra_1_1index_1_1U`
 
 - :ref:`exhale_struct_structeinsums_1_1tensor__algebra_1_1index_1_1v`
 
@@ -128,25 +128,11 @@ Functions
 ---------
 
 
-- :ref:`exhale_function___Index_8hpp_1a496480813d4551acef0dc3c50679130e`
-
-- :ref:`exhale_function___Index_8hpp_1a0b93a727615f03d79a298139770e9a95`
-
-- :ref:`exhale_function___Index_8hpp_1a707d7bee547125a36a775ce515020a62`
-
-- :ref:`exhale_function___Index_8hpp_1af4e477b5fde3d1d7bb2fe7f333789aa8`
-
-- :ref:`exhale_function___Index_8hpp_1ab085f5ac0e6242cf23ca4278638cf867`
-
-- :ref:`exhale_function___Index_8hpp_1aa3b81be7476457517bd55ada426903a0`
-
 - :ref:`exhale_function___Index_8hpp_1aa6f50778ae3a177a6cd44aad04b55725`
 
 - :ref:`exhale_function___Index_8hpp_1a5816b32c185eef086dbbc3ca3c9e9464`
 
 - :ref:`exhale_function___Index_8hpp_1a91267ea66f5be12469d278eb19cac4bd`
-
-- :ref:`exhale_function___Index_8hpp_1ac5c7602772001d68bae2980699a38d9d`
 
 - :ref:`exhale_function___Index_8hpp_1a17eaaa458bfa2ea519b95dc758b253e4`
 
@@ -154,17 +140,23 @@ Functions
 
 - :ref:`exhale_function___Index_8hpp_1a9fe50b07991344578e7058c1ea4dcbed`
 
-- :ref:`exhale_function___Index_8hpp_1a5bdb81b1aa287d314d1b9ce26d416e19`
+- :ref:`exhale_function___Index_8hpp_1a185d42e312fc9899c949c2a5cb6d853d`
 
-- :ref:`exhale_function___Index_8hpp_1aa73cb2a819aab2b472906672751dc6ca`
+- :ref:`exhale_function___Index_8hpp_1ac5c7602772001d68bae2980699a38d9d`
 
-- :ref:`exhale_function___Index_8hpp_1a9098181ce43267b1dff8126202ea8d6c`
+- :ref:`exhale_function___Index_8hpp_1a51543bbb145c6ecfc7bf6f3a183217dc`
 
-- :ref:`exhale_function___Index_8hpp_1ae1af209c5327ff6fe2d39692bfe2b325`
+- :ref:`exhale_function___Index_8hpp_1a89b7de454fe5155ce1adf7de0fe47289`
 
-- :ref:`exhale_function___Index_8hpp_1a110a265968bd0a4ad6c5e90c62d3f3fc`
+- :ref:`exhale_function___Index_8hpp_1af88a703709041a7aaaba99f396456f12`
 
-- :ref:`exhale_function___Index_8hpp_1ab0e850eadbb25a08fb8eed14a8ad681b`
+- :ref:`exhale_function___Index_8hpp_1adf41a2be72eb5b832f46c2798c200516`
+
+- :ref:`exhale_function___Index_8hpp_1aaaa5b7ca864e23cbc8074291eb1a4044`
+
+- :ref:`exhale_function___Index_8hpp_1af411c989c9fe9b0ec2e6d975b01d1f30`
+
+- :ref:`exhale_function___Index_8hpp_1af576db2540fec25a766d839404fdea11`
 
 - :ref:`exhale_function___Index_8hpp_1a8708eb571d7283fec36f7f461a8b3c9e`
 
@@ -178,27 +170,23 @@ Functions
 
 - :ref:`exhale_function___Index_8hpp_1a70be46483de0488d913a23e50e7243bb`
 
-- :ref:`exhale_function___Index_8hpp_1a51543bbb145c6ecfc7bf6f3a183217dc`
+- :ref:`exhale_function___Index_8hpp_1a496480813d4551acef0dc3c50679130e`
 
-- :ref:`exhale_function___Index_8hpp_1a185d42e312fc9899c949c2a5cb6d853d`
+- :ref:`exhale_function___Index_8hpp_1a0b93a727615f03d79a298139770e9a95`
 
-- :ref:`exhale_function___Index_8hpp_1a89b7de454fe5155ce1adf7de0fe47289`
+- :ref:`exhale_function___Index_8hpp_1a707d7bee547125a36a775ce515020a62`
 
-- :ref:`exhale_function___Index_8hpp_1adf41a2be72eb5b832f46c2798c200516`
+- :ref:`exhale_function___Index_8hpp_1af4e477b5fde3d1d7bb2fe7f333789aa8`
 
-- :ref:`exhale_function___Index_8hpp_1aaaa5b7ca864e23cbc8074291eb1a4044`
+- :ref:`exhale_function___Index_8hpp_1ab085f5ac0e6242cf23ca4278638cf867`
 
-- :ref:`exhale_function___Index_8hpp_1af576db2540fec25a766d839404fdea11`
-
-- :ref:`exhale_function___Index_8hpp_1af411c989c9fe9b0ec2e6d975b01d1f30`
+- :ref:`exhale_function___Index_8hpp_1aa3b81be7476457517bd55ada426903a0`
 
 - :ref:`exhale_function___Index_8hpp_1a2f961c0a56aa16179fa09d2b6065aaff`
 
-- :ref:`exhale_function___Index_8hpp_1a9acf7742a28c12c4d096f96956b955f7`
-
-- :ref:`exhale_function___Index_8hpp_1af88a703709041a7aaaba99f396456f12`
-
 - :ref:`exhale_function___Index_8hpp_1a7f4216366c9c1f27aad7af84f0fb4c10`
+
+- :ref:`exhale_function___Index_8hpp_1a9acf7742a28c12c4d096f96956b955f7`
 
 - :ref:`exhale_function___Index_8hpp_1a5911fbbfdf421271c1791a213eb00d32`
 
@@ -232,6 +220,18 @@ Functions
 
 - :ref:`exhale_function___Index_8hpp_1a14cd2f67e17f969dc5c16a3e02a18c63`
 
+- :ref:`exhale_function___Index_8hpp_1a5bdb81b1aa287d314d1b9ce26d416e19`
+
+- :ref:`exhale_function___Index_8hpp_1aa73cb2a819aab2b472906672751dc6ca`
+
+- :ref:`exhale_function___Index_8hpp_1a9098181ce43267b1dff8126202ea8d6c`
+
+- :ref:`exhale_function___Index_8hpp_1ae1af209c5327ff6fe2d39692bfe2b325`
+
+- :ref:`exhale_function___Index_8hpp_1a110a265968bd0a4ad6c5e90c62d3f3fc`
+
+- :ref:`exhale_function___Index_8hpp_1ab0e850eadbb25a08fb8eed14a8ad681b`
+
 
 Variables
 ---------
@@ -257,13 +257,13 @@ Variables
 
 - :ref:`exhale_variable___Index_8hpp_1a6379693ea43fd27633c5a1aa557237e0`
 
-- :ref:`exhale_variable___Index_8hpp_1aa65c2e80f78211098bfcd97473b75681`
-
 - :ref:`exhale_variable___Index_8hpp_1af7d9bf26e0bf0f43c35e037724246e41`
 
-- :ref:`exhale_variable___Index_8hpp_1acb17a9985c5be3c7f2f56b7904d81b7b`
+- :ref:`exhale_variable___Index_8hpp_1aa65c2e80f78211098bfcd97473b75681`
 
 - :ref:`exhale_variable___Index_8hpp_1a1dd341ad1e20b402c7ec4a71e5c573a8`
+
+- :ref:`exhale_variable___Index_8hpp_1acb17a9985c5be3c7f2f56b7904d81b7b`
 
 - :ref:`exhale_variable___Index_8hpp_1a46b1904fb1a07077afe053c142ab6979`
 
@@ -299,9 +299,9 @@ Variables
 
 - :ref:`exhale_variable___Index_8hpp_1acce89ac48eb7a383c6c9127ae449334b`
 
-- :ref:`exhale_variable___Index_8hpp_1ab976aad96e63f4ac4dc9f22e22b0c47c`
-
 - :ref:`exhale_variable___Index_8hpp_1ab36c891052deccc29de6f2d17e6ff9f4`
+
+- :ref:`exhale_variable___Index_8hpp_1ab976aad96e63f4ac4dc9f22e22b0c47c`
 
 - :ref:`exhale_variable___Index_8hpp_1a41eba7b016b10f7bff2fb5cdfac0918a`
 

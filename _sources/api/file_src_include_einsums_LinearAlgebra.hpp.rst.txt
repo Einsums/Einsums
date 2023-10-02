@@ -94,15 +94,15 @@ Functions
 
 - :ref:`exhale_function_LinearAlgebra_8hpp_1abbdb3a9daa75b1a8aa14f4d56488e419`
 
-- :ref:`exhale_function_LinearAlgebra_8hpp_1a8ac97176a246135cf736b5502a8c8ca6`
-
 - :ref:`exhale_function_LinearAlgebra_8hpp_1a1d606cb80aea6be2fa4b8dc4db11889a`
 
 - :ref:`exhale_function_LinearAlgebra_8hpp_1a908d3feb51b0f3ed3cd3c35a9bc3c595`
 
-- :ref:`exhale_function_LinearAlgebra_8hpp_1aebad2748c2df2ff14433a9b230fc01e2`
+- :ref:`exhale_function_LinearAlgebra_8hpp_1a8ac97176a246135cf736b5502a8c8ca6`
 
 - :ref:`exhale_function_LinearAlgebra_8hpp_1af7807c54c6de76c7083209c8b6912ae8`
+
+- :ref:`exhale_function_LinearAlgebra_8hpp_1aebad2748c2df2ff14433a9b230fc01e2`
 
 - :ref:`exhale_function_LinearAlgebra_8hpp_1a3b37a3e6e4691d28f5628dc9ad195be5`
 
