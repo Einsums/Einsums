@@ -1,5 +1,6 @@
 # * v1.10.4-6-EAT6 on EAT branch is upstream v1.10.4-6 tag +2, so last upstream tag
 #   plus extended array dimensions to support higher rank tensors plus deleter stuff.
+#   * v1.10.4-6+3 Oct 2023 redirect aligned_alloc to omp_aligned_alloc
 # * find_package() is disabled since we need patched source
 # * upstream CMakeLists.txt isn't useable and project is header-only, so to keep code
 #   changes and build changes separate, we won't let FetchContent build (`SOURCE_SUBDIR
@@ -9,8 +10,8 @@
 
 FetchContent_Declare(
   h5cpp
-  URL https://github.com/loriab/h5cpp/archive/EAT_align.tar.gz
-  URL_HASH SHA256=12fc71709d01ee7e9d04d3c3de75696f3695b68ee63fd0f32734058e52dd5a7c
+  URL https://github.com/Einsums/h5cpp/archive/v1.10.4-6+3.tar.gz
+  URL_HASH SHA256=c790e38b3251fc2114c452858c85c86659aacb6037f24901bed55b72f6e2af03
   SOURCE_SUBDIR fake
   SYSTEM
   OVERRIDE_FIND_PACKAGE
