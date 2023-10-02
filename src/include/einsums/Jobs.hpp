@@ -42,6 +42,11 @@ public:
 
 template<typename T> class Resource;
 
+/**
+ * @class ReadLock
+ *
+ * A read-only lock on a resource. Allows for multiple read access.
+ */
 template<typename T>
 class ReadLock {
 protected:
@@ -152,14 +157,23 @@ public:
     return this->data->release(*this);
   }
 
+  /**
+   * Get the data contained in the resource.
+   */
   explicit operator const T&(void) {
     return this->get();
   }
 
+  /**
+   * Compare two locks to see if they are the same.
+   */
   bool operator==(ReadLock<T> &other) {
     return this->id == other.id && this->data == other.data;
   }
 
+  /**
+   * Whether a lock is exclusive or not.
+   */
   virtual bool is_exclusive() {
     return false;
   }
@@ -168,7 +182,7 @@ public:
 /**
  * @class WriteLock<T>
  *
- * Represents an exclusive lock.
+ * Represents an exclusive read-write lock.
  */
 template<T>
 class WriteLock : public ReadLock<T> {
@@ -244,11 +258,20 @@ private:
 
 public:
 
+  /**
+   * Constructor.
+   */
   Resource(T *data) : locks{}, id(0), data(data), is_locked(false) {}
 
+  /**
+   * Don't allow copy or move.
+   */
   Resource(const Resource<T> &) = delete;
   Resource(const Resource<T> &&) = delete;
 
+  /**
+   * Destructor.
+   */
   virtual ~Resource() {
     for(auto state : this->locks) {
       for(auto lock : *state) {
@@ -265,25 +288,35 @@ public:
    * @return A pointer to the shared lock.
    */
   std::shared_ptr<ReadLock<T>> lock_shared() {
+    // wait to be allowed to edit the resource.
     while(this->is_locked.load()) {
       std::this_thread::yield();
     }
     this->is_locked = true;
+
+    // Make sure there is somewhere to put the locks.
     if(this->locks.size() == 0) {
       this->locks.push_back(new std::vector<std::shared_ptr<ReadLock<T>>());
     } else if((this->locks.end())->size() == 1 && (this->locks.end())->at(0)->is_exclusive()) {
       this->locks.push_back(new std::vector<std::shared_ptr<ReadLock<T>>());
     }
 
+    // Make the lock.
     std::shared_ptr<ReadLock<T>> out = std::make_shared<ReadLock<T>>(this->id, this);
 
+    // Increment the serial tracker.
     this->id++;
 
+    // Add the lock.
     (this->locks.end())->push_back(out);
+    // Release the resource.
     this->is_locked = false;
     return out;
   }
 
+  /**
+   * Obtain an exclusive lock.
+   */
   std::shared_ptr<WriteLock<T>> lock() {
     while(this->is_locked.load()) {
       std::this_thread::yield();
@@ -350,10 +383,16 @@ public:
 
     this->is_locked = true;
 
-    bool ret = this->locks.empty();
-
+    if(this->locks.empty()) {
+      this->is_locked = false;
+      return true;
+    }
+    if(this->locks.size() == 1 && this->locks[0].empty()) {
+      this->is_locked = false;
+      return true;
+    }
     this->is_locked = false;
-    return ret;
+    return false;
   }
   
   /**
