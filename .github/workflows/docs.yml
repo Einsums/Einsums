@@ -8,6 +8,9 @@ on:
 jobs:
   # Build job
   build:
+    defaults:
+      run:
+        shell: bash -el {0}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
