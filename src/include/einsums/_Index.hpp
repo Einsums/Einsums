@@ -4,14 +4,22 @@
 
 #include <ostream>
 
+// Including complex header defines "I" to be used with complex numbers. If we allow that then
+// we cannot use "I" as an indexing tab to einsum.
 #if defined(I)
 #    undef I
 #endif
 
 namespace einsums::tensor_algebra::index {
+/// Base struct for index tags. It might not be technically needed but it will
+/// compile-time checks to be performed.
 struct LabelBase {};
 } // namespace einsums::tensor_algebra::index
 
+/*! \def MAKE_INDEX(x)
+    Macro that defines new index tags that can be used with einsums. Also includes code
+    for easy printing using fmtlib.
+*/
 #define MAKE_INDEX(x)                                                                                                                      \
     namespace einsums::tensor_algebra::index {                                                                                             \
     struct x : public LabelBase {                                                                                                          \
@@ -20,8 +28,8 @@ struct LabelBase {};
     };                                                                                                                                     \
     static struct x x;                                                                                                                     \
     inline auto     operator<<(std::ostream &os, const struct x &) -> std::ostream     &{                                                     \
-            os << x::letter;                                                                                                               \
-            return os;                                                                                                                     \
+        os << x::letter;                                                                                                               \
+        return os;                                                                                                                     \
     }                                                                                                                                      \
     }                                                                                                                                      \
     template <>                                                                                                                            \

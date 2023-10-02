@@ -57,5 +57,8 @@ CMakeSettings.json
 # Emacs backups.
 *~
 
-# Compiled docs
-docs/*
+# Documentation
+docs/_doxygen
+docs/api
+docs/_build
+
