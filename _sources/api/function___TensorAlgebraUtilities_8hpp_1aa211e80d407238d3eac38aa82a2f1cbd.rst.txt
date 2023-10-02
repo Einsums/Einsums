@@ -1,0 +1,14 @@
+.. _exhale_function___TensorAlgebraUtilities_8hpp_1aa211e80d407238d3eac38aa82a2f1cbd:
+
+Template Function detail::contiguous_positions
+==============================================
+
+- Defined in :ref:`file_src_include_einsums__TensorAlgebraUtilities.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: detail::contiguous_positions(const std::tuple<PositionsInX...>&)
+   :project: Einsums

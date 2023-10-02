@@ -1,0 +1,14 @@
+.. _exhale_function_LinearAlgebra_8hpp_1a0d6d6c9cd2b97c5c703b86db7e95b80e:
+
+Template Function axpy
+======================
+
+- Defined in :ref:`file_src_include_einsums_LinearAlgebra.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: axpy(T, const XType<T, Rank>&, YType<T, Rank> *)
+   :project: Einsums

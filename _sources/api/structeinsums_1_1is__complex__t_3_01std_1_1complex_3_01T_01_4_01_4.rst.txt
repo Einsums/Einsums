@@ -1,0 +1,26 @@
+.. _exhale_struct_structeinsums_1_1is__complex__t_3_01std_1_1complex_3_01T_01_4_01_4:
+
+Template Struct is_complex_t< std::complex< T > >
+=================================================
+
+- Defined in :ref:`file_src_include_einsums_STL.hpp`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public std::true_type``
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: einsums::is_complex_t< std::complex< T > >
+   :project: Einsums
+   :members:
+   :protected-members:
+   :undoc-members:

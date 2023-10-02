@@ -1,0 +1,14 @@
+.. _exhale_variable_LinearAlgebra_8hpp_1a3000c30f7a9da32f7edf112dce7c4d33:
+
+Variable ADataType
+==================
+
+- Defined in :ref:`file_src_include_einsums_LinearAlgebra.hpp`
+
+
+Variable Documentation
+----------------------
+
+
+.. doxygenvariable:: ADataType
+   :project: Einsums

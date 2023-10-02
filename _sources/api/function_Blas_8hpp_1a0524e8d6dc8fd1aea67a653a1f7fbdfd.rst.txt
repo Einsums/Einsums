@@ -1,0 +1,14 @@
+.. _exhale_function_Blas_8hpp_1a0524e8d6dc8fd1aea67a653a1f7fbdfd:
+
+Function einsums::blas::finalize
+================================
+
+- Defined in :ref:`file_src_include_einsums_Blas.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: einsums::blas::finalize()
+   :project: Einsums

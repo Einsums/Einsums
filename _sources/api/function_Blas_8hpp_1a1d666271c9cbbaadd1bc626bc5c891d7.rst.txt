@@ -1,0 +1,14 @@
+.. _exhale_function_Blas_8hpp_1a1d666271c9cbbaadd1bc626bc5c891d7:
+
+Specialized Template Function einsums::blas::getri< std::complex< double > >
+============================================================================
+
+- Defined in :ref:`file_src_include_einsums_Blas.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: einsums::blas::getri< std::complex< double > >(eint, std::complex<double> *, eint, const eint *)
+   :project: Einsums

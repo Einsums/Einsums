@@ -1,0 +1,14 @@
+.. _exhale_function_Decomposition_8hpp_1a8ed91406cdaee1e7c8f7de40673dab2e:
+
+Template Function initialize_tucker
+===================================
+
+- Defined in :ref:`file_src_include_einsums_Decomposition.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: initialize_tucker(std::vector<Tensor<TType, 2>>&, std::vector<size_t>&)
+   :project: Einsums

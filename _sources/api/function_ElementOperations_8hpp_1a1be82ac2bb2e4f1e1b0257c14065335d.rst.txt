@@ -1,0 +1,14 @@
+.. _exhale_function_ElementOperations_8hpp_1a1be82ac2bb2e4f1e1b0257c14065335d:
+
+Template Function scale(const T&, const TensorType<T, Rank>&)
+=============================================================
+
+- Defined in :ref:`file_src_include_einsums_ElementOperations.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: scale(const T&, const TensorType<T, Rank>&)
+   :project: Einsums

@@ -1,0 +1,44 @@
+
+.. _namespace_einsums__Arguments:
+
+Namespace einsums::Arguments
+============================
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_einsums__Arguments__Detail`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structeinsums_1_1Arguments_1_1Contains`
+
+- :ref:`exhale_struct_structeinsums_1_1Arguments_1_1Contains_3_01T_01_4`
+
+- :ref:`exhale_struct_structeinsums_1_1Arguments_1_1Contains_3_01T_00_01Head_00_01Remaining_8_8_8_01_4`
+
+- :ref:`exhale_struct_structeinsums_1_1Arguments_1_1TuplePosition`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_STL_8hpp_1a7788c5ac32ba7f55f09ad47e6d8caab5`
+
+- :ref:`exhale_function_STL_8hpp_1a4a1315f21677a36601adab5b46dd16e0`
+
+- :ref:`exhale_function_STL_8hpp_1a5c5a676fc703a06fab40109ca17225d2`

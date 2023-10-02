@@ -1,0 +1,14 @@
+.. _exhale_function_Decomposition_8hpp_1a4da417357602d49888c061c9b8989f12:
+
+Template Function tucker_reconstruct
+====================================
+
+- Defined in :ref:`file_src_include_einsums_Decomposition.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: tucker_reconstruct(const TTensor<TType, TRank>&, const std::vector<TTensor<TType, 2>>&)
+   :project: Einsums

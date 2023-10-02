@@ -1,0 +1,14 @@
+.. _exhale_function_polynomial_2Utilities_8hpp_1a6b946433c2fad6ac9a869911d755a857:
+
+Template Function einsums::polynomial::detail::from_roots
+=========================================================
+
+- Defined in :ref:`file_src_include_einsums_polynomial_Utilities.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: einsums::polynomial::detail::from_roots(LineFunction, MultiplyFunction, const Tensor<T, 1>&)
+   :project: Einsums

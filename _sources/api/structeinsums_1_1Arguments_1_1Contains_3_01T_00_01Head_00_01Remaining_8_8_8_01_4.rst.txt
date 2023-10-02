@@ -1,0 +1,26 @@
+.. _exhale_struct_structeinsums_1_1Arguments_1_1Contains_3_01T_00_01Head_00_01Remaining_8_8_8_01_4:
+
+Template Struct Contains< T, Head, Remaining... >
+=================================================
+
+- Defined in :ref:`file_src_include_einsums_STL.hpp`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public std::conditional::type``
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: einsums::Arguments::Contains< T, Head, Remaining... >
+   :project: Einsums
+   :members:
+   :protected-members:
+   :undoc-members:

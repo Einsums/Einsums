@@ -1,0 +1,14 @@
+.. _exhale_function_Blas_8hpp_1a431ca012fb5b97d45e77dabd0e3b78ba:
+
+Specialized Template Function einsums::blas::trsyl< std::complex< double > >
+============================================================================
+
+- Defined in :ref:`file_src_include_einsums_Blas.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: einsums::blas::trsyl< std::complex< double > >(char, char, eint, eint, eint, const std::complex<double> *, eint, const std::complex<double> *, eint, std::complex<double> *, eint, double *)
+   :project: Einsums

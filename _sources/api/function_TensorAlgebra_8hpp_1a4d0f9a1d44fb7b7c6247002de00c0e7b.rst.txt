@@ -1,0 +1,14 @@
+.. _exhale_function_TensorAlgebra_8hpp_1a4d0f9a1d44fb7b7c6247002de00c0e7b:
+
+Template Function element_transform(SmartPtr \*, UnaryOperator)
+===============================================================
+
+- Defined in :ref:`file_src_include_einsums_TensorAlgebra.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: element_transform(SmartPtr *, UnaryOperator)
+   :project: Einsums

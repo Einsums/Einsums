@@ -1,0 +1,27 @@
+
+.. _namespace_h5:
+
+Namespace h5
+============
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_h5__impl`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_H5_8hpp_1a4a7c7b9b741ade88054b6ff2125a9569`

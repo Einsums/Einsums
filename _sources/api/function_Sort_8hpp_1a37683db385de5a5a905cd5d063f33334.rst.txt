@@ -1,0 +1,14 @@
+.. _exhale_function_Sort_8hpp_1a37683db385de5a5a905cd5d063f33334:
+
+Function BEGIN_EINSUMS_NAMESPACE_HPP(einsums::tensor_algebra)
+=============================================================
+
+- Defined in :ref:`file_src_include_einsums_Sort.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: BEGIN_EINSUMS_NAMESPACE_HPP(einsums::tensor_algebra)
+   :project: Einsums

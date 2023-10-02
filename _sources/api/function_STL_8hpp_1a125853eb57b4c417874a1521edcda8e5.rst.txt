@@ -1,0 +1,14 @@
+.. _exhale_function_STL_8hpp_1a125853eb57b4c417874a1521edcda8e5:
+
+Template Function einsums::create_tuple
+=======================================
+
+- Defined in :ref:`file_src_include_einsums_STL.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: einsums::create_tuple(const T&)
+   :project: Einsums

@@ -1,0 +1,14 @@
+.. _exhale_function_Decomposition_8hpp_1afb24fa2303ff1e82bbe7f1e973ad22c0:
+
+Template Function tucker_ho_svd
+===============================
+
+- Defined in :ref:`file_src_include_einsums_Decomposition.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: tucker_ho_svd(const TTensor<TType, TRank>&, std::vector<size_t>&, const std::vector<Tensor<TType, 2>>&)
+   :project: Einsums

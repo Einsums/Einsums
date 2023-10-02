@@ -1,0 +1,14 @@
+.. _exhale_function_Blas_8hpp_1aa14f1256e8b5836fcd580aa717ee76c5:
+
+Template Function einsums::blas::gesdd
+======================================
+
+- Defined in :ref:`file_src_include_einsums_Blas.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: einsums::blas::gesdd(char, eint, eint, T *, eint, remove_complex_t<T> *, T *, eint, T *, eint)
+   :project: Einsums

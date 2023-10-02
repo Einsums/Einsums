@@ -1,0 +1,14 @@
+.. _exhale_function_H5_8hpp_1aaef030d9687092833523a341a362c5bc:
+
+Template Function h5::impl::data(::einsums::Tensor<T, Rank>&)
+=============================================================
+
+- Defined in :ref:`file_src_include_einsums_H5.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: h5::impl::data(::einsums::Tensor<T, Rank>&)
+   :project: Einsums

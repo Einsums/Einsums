@@ -1,0 +1,14 @@
+.. _exhale_function_LinearAlgebra_8hpp_1a0a21abe41ae38dc8d0d1364176d2ed81:
+
+Template Function scale(T, AType<T, ARank> \*)
+==============================================
+
+- Defined in :ref:`file_src_include_einsums_LinearAlgebra.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: scale(T, AType<T, ARank> *)
+   :project: Einsums

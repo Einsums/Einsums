@@ -1,0 +1,17 @@
+.. _exhale_struct_structdetail_1_1RawTypeNameFormat:
+
+Struct RawTypeNameFormat
+========================
+
+- Defined in :ref:`file_src_include_einsums_Print.hpp`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: detail::RawTypeNameFormat
+   :project: Einsums
+   :members:
+   :protected-members:
+   :undoc-members:

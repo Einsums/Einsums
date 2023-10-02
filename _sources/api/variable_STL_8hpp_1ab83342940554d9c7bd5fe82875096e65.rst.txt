@@ -1,0 +1,14 @@
+.. _exhale_variable_STL_8hpp_1ab83342940554d9c7bd5fe82875096e65:
+
+Variable einsums::is_complex_v
+==============================
+
+- Defined in :ref:`file_src_include_einsums_STL.hpp`
+
+
+Variable Documentation
+----------------------
+
+
+.. doxygenvariable:: einsums::is_complex_v
+   :project: Einsums

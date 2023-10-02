@@ -1,0 +1,14 @@
+.. _exhale_function_Timer_8hpp_1ae618a61016ec45594bf29ebae44f877c:
+
+Function einsums::timer::push
+=============================
+
+- Defined in :ref:`file_src_include_einsums_Timer.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: einsums::timer::push(std::string)
+   :project: Einsums

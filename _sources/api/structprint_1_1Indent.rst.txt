@@ -1,0 +1,17 @@
+.. _exhale_struct_structprint_1_1Indent:
+
+Struct Indent
+=============
+
+- Defined in :ref:`file_src_include_einsums_Print.hpp`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: print::Indent
+   :project: Einsums
+   :members:
+   :protected-members:
+   :undoc-members:

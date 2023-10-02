@@ -1,0 +1,90 @@
+
+.. _file_src_include_einsums_polynomial_Laguerre.hpp:
+
+File Laguerre.hpp
+=================
+
+|exhale_lsh| :ref:`Parent directory <dir_src_include_einsums_polynomial>` (``src/include/einsums/polynomial``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/include/einsums/polynomial/Laguerre.hpp``)
+------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_include_einsums_polynomial_Laguerre.hpp.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``einsums/ElementOperations.hpp`` (:ref:`file_src_include_einsums_ElementOperations.hpp`)
+
+- ``einsums/LinearAlgebra.hpp`` (:ref:`file_src_include_einsums_LinearAlgebra.hpp`)
+
+- ``einsums/Section.hpp`` (:ref:`file_src_include_einsums_Section.hpp`)
+
+- ``einsums/Tensor.hpp`` (:ref:`file_src_include_einsums_Tensor.hpp`)
+
+- ``einsums/Utilities.hpp`` (:ref:`file_src_include_einsums_Utilities.hpp`)
+
+- ``einsums/_Common.hpp`` (:ref:`file_src_include_einsums__Common.hpp`)
+
+
+
+
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_Laguerre_8hpp_1a8897e2cd6ee6c3471be2aa5fd71afdaa`
+
+- :ref:`exhale_function_Laguerre_8hpp_1a14c384fcf8fe7478dc2d2f88b107c86d`
+
+- :ref:`exhale_function_Laguerre_8hpp_1a4e4083c5af8a4b09746be8ab4f192625`
+
+- :ref:`exhale_function_Laguerre_8hpp_1ad02c8e5eb802cda60b3847b0609f7395`
+
+- :ref:`exhale_function_Laguerre_8hpp_1a0feccbd78975057126dfdbadf1a8fb98`
+
+- :ref:`exhale_function_Laguerre_8hpp_1a486350b7197ab7a3fbe1c88005a37e0c`
+
+- :ref:`exhale_function_Laguerre_8hpp_1ac147273190064cbc6b348203e42d11c9`
+
+- :ref:`exhale_function_Laguerre_8hpp_1a94af4520a5d8de45dadfed025e510d5d`
+
+
+Variables
+---------
+
+
+- :ref:`exhale_variable_Laguerre_8hpp_1a63afbe8ca6c6cef9d777272fccaefc69`
+
+- :ref:`exhale_variable_Laguerre_8hpp_1aa86735386e3bc7eb9c4e31a30c1c3f84`
+
+- :ref:`exhale_variable_Laguerre_8hpp_1acebb89f6ced7f2f96298dbb3e997291b`
+
+- :ref:`exhale_variable_Laguerre_8hpp_1a74f4e549d0db1631d80dc44cd00bc186`
+
+- :ref:`exhale_variable_Laguerre_8hpp_1a21f77208d6bc667560ff8aaf8f943b6a`
+
+- :ref:`exhale_variable_Laguerre_8hpp_1a0e7af7b982be9a95a50231c5d9a483c7`
+
+- :ref:`exhale_variable_Laguerre_8hpp_1ab01dba1e46ab83efd21829fbb8068b7a`
+
+- :ref:`exhale_variable_Laguerre_8hpp_1a07dfa7195b5744bf8df8f31b83ec4d89`
+

@@ -1,0 +1,14 @@
+.. _exhale_define___Common_8hpp_1a1f5be6f3b156f8edf0af4b4e8e6b4dbe:
+
+Define BEGIN_EINSUMS_NAMESPACE_CPP
+==================================
+
+- Defined in :ref:`file_src_include_einsums__Common.hpp`
+
+
+Define Documentation
+--------------------
+
+
+.. doxygendefine:: BEGIN_EINSUMS_NAMESPACE_CPP
+   :project: Einsums

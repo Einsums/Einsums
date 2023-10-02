@@ -1,0 +1,82 @@
+
+.. _file_src_include_einsums_Sort.hpp:
+
+File Sort.hpp
+=============
+
+|exhale_lsh| :ref:`Parent directory <dir_src_include_einsums>` (``src/include/einsums``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/include/einsums/Sort.hpp``)
+---------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_include_einsums_Sort.hpp.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``einsums/LinearAlgebra.hpp`` (:ref:`file_src_include_einsums_LinearAlgebra.hpp`)
+
+- ``einsums/STL.hpp`` (:ref:`file_src_include_einsums_STL.hpp`)
+
+- ``einsums/Section.hpp`` (:ref:`file_src_include_einsums_Section.hpp`)
+
+- ``einsums/Tensor.hpp`` (:ref:`file_src_include_einsums_Tensor.hpp`)
+
+- ``einsums/_Common.hpp`` (:ref:`file_src_include_einsums__Common.hpp`)
+
+- ``einsums/_Compiler.hpp`` (:ref:`file_src_include_einsums__Compiler.hpp`)
+
+- ``einsums/_TensorAlgebraUtilities.hpp`` (:ref:`file_src_include_einsums__TensorAlgebraUtilities.hpp`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_src_include_einsums_Decomposition.hpp`
+
+
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_Sort_8hpp_1a37683db385de5a5a905cd5d063f33334`
+
+
+Variables
+---------
+
+
+- :ref:`exhale_variable_Sort_8hpp_1a08bfb97ade1986ad5cf4dcde6961cf1a`
+
+- :ref:`exhale_variable_Sort_8hpp_1a045c9546311cd7e2c36baccfeb44cca6`
+
+- :ref:`exhale_variable_Sort_8hpp_1a12308d7e0914a2f2d497d8f9ac88b670`
+
+- :ref:`exhale_variable_Sort_8hpp_1adfed79c5a0895d3d78854965e8909d9f`
+
+- :ref:`exhale_variable_Sort_8hpp_1ab2db16efbab258f79d5c44a5954492b6`
+
+- :ref:`exhale_variable_Sort_8hpp_1a6af813b90dff1a7a6767997c8fcc5bfb`
+
+- :ref:`exhale_variable_Sort_8hpp_1a7a8d9841259eaa553dc5ae5b6734affe`
+

@@ -1,0 +1,14 @@
+.. _exhale_function_Blas_8hpp_1ab0836e7e61ebb4e4a87b67bb581504ae:
+
+Specialized Template Function einsums::blas::getri< float >
+===========================================================
+
+- Defined in :ref:`file_src_include_einsums_Blas.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: einsums::blas::getri< float >(eint, float *, eint, const eint *)
+   :project: Einsums

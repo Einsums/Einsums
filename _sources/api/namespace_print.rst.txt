@@ -1,0 +1,35 @@
+
+.. _namespace_print:
+
+Namespace print
+===============
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+
+
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structprint_1_1Indent`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_Print_8hpp_1a218387712681647b45e07de04b0648bd`
+
+- :ref:`exhale_function_Print_8hpp_1a6eb458070cbcc1b3fe8b9cbfd6d44123`
+
+- :ref:`exhale_function_Print_8hpp_1a560d97fad27ef7ba7e800b12491748cc`
+
+- :ref:`exhale_function_Print_8hpp_1aca353098488f755f3c84a7d2ab802dbc`
+
+- :ref:`exhale_function_Print_8hpp_1a6cfc5e64bf93d3e324b16c0cbaaee263`

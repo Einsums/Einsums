@@ -1,0 +1,14 @@
+.. _exhale_function_LinearAlgebra_8hpp_1a68c1544a8625fcd2a67ff71e233debc6:
+
+Template Function ger
+=====================
+
+- Defined in :ref:`file_src_include_einsums_LinearAlgebra.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: ger(T, const XYType<T, XYRank>&, const XYType<T, XYRank>&, AType<T, ARank> *)
+   :project: Einsums

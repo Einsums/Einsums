@@ -1,0 +1,14 @@
+.. _exhale_variable_Decomposition_8hpp_1a22dcafd4adafc3ce76e6d932ac8f5e8a:
+
+Variable TType
+==============
+
+- Defined in :ref:`file_src_include_einsums_Decomposition.hpp`
+
+
+Variable Documentation
+----------------------
+
+
+.. doxygenvariable:: TType
+   :project: Einsums

@@ -1,0 +1,190 @@
+
+.. _namespace_einsums__blas__detail:
+
+Namespace einsums::blas::detail
+===============================
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+
+
+
+Detailed Description
+--------------------
+
+Performs matrix multiplication for general square matices of type double.
+
+Performs matrix vector multiplication.
+
+Performs symmetric matrix diagonalization.
+
+Computes all eigenvalues and, optionally, eigenvectors of a Hermitian matrix.
+
+Computes the solution to system of linear equations A * x = B for general matrices.
+
+Return the value of the 1-norm, Frobenius norm, infinity-norm, or the largest absolute value of any element of a general rectangular matrix
+
+Computes the singular value decomposition of a general rectangular matrix using a divide and conquer method.
+
+Computes a QR factorizaton (Useful for orthonormalizing matrices)
+
+Returns the orthogonal/unitary matrix Q from the output of dgeqrf 
+
+
+
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1ae48cf55d5a6287e88f90c0f33528db0d`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a7d8ba54b5148fa8df65ebe59595d1590`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a900c1ac210a874d9927facaf9f6316e7`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a742fec30619c818b05771fff850e3c9c`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a4e1544381fa03e0e910accc4caabf0d7`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1ab4d24cf06496cace303b6321f3e033d9`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1abd9f68568c12f97b61fc04ab674a238b`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a9764b86a8d5ca6808c1bee0f1701650e`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a65ab55a04ac95152945d08a7e508d29d`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1aaccb411d2cd89c43e4844373eabd2d84`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a6d1e615b0566eafba187d00beaee8f83`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a4f2a5d01b4d7570c9d23793f887a5334`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a8dbcfc2fae5f0888e48d519936a06e20`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1ab8d833d74430135f80f501517ef8db8d`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a8ec3890b94d6a24bbf8a5b5158db5e13`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a2139d9625e9b0679a7723391b7749f97`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a5bcd535f084c11e9dc178c3c5160bace`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a163dfd0ef29a45fceb83a6aefa35c7c9`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a100291196e8a507676666b957e6cd7d9`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a410ebf08875885f2e190230112ea5bdf`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a0f6466ecf110fabe41e35ebb74bc3127`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a62b644b6a055cc8a2bee8b99506fe729`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a34dfe2ffeed5ce7848c011e533b934c7`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a06f76c557450cb9cf98c0ab0be9550fa`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a8f54f04e7aac71408c02ab35532c1fbb`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1afe7ff8a473f278fd20ee969218d9056a`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a4ce1d5a604c356c8d0c2274f12c5923a`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1af028279ab1a202bed67569e7fced8fdf`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a58288f736f23d8e0fc8ab2f87e446164`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a8e8e6b89a09d1c801169947a30623b84`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a98e8ed5855f34156b552cdc113e3c074`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a58f14087ba238c304c197f7170c2c6af`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a8480b4ab8b36e38771e20c1f268c7c57`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a1719896c98052dafd6fbdfbe6828cb66`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1ad75a53174b2d3bbc9db86159f77e70bc`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a6520be382f926a904e0d1561e97c0216`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a3a8a94e262d01c12fdac89f3d72c95b6`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a9ede82fb100d72c4f965df103059d25e`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1ad98b0703a46f3ba33c956796e4783c6c`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1ac2ee5c68b37a6582991f1a7d9e32f10d`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a761270eabfa0a3e2431b1098cd510ba5`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a0456bda907412ec58b8ea03c12e715fd`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1af9e4d8820e6bc5ab837be638d70d9769`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1ad0140740c1fd9d632039525b084ebb0d`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a615786230b63e1309ee3e109474db7ee`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a4d0c3d38d25177730e3cfde07de98ee7`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a1bced07f43ed3a576a6c6357743abd25`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1ab60b982892ecce035d0794b867ee9ed6`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a52e113c760617d71ebeab54fca6fb3ff`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1af4253f73acba528522c5169146aa843b`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1aed5cc5c17dd8b95923edb97bc668359d`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a164689273ce367d9fc7d1c97ec2ff385`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a7150cf17aa5e541685b4cefa555ec4b6`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a38410e4ed48571e4538856e7228d0d3f`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1af142b09ad819ec4a6573e9f13b56e7f8`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a149f4c3da524eab0e3748b469131a08d`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1aaee21e6604aba68b1df6593e68f4fd3c`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1ab717f231b7ffa95dfa2c665ba3387256`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a3ee38c06483b62d003e39c8e573efedd`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1ae369fb0e6b0cb17e3e22f0467505a4eb`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a035d1623f58cff835aa5175d56f4fd08`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1ad91dd28fa3049500d757b8d61a418257`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a8b7daaa96a156edefe566975986c4870`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1affdc6a9f8d3cf4f72bbf03a50417e833`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a38d8beae64f0e7f10de3f4fee5dbb4d2`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a021b2cdd54be3dc86b8dbc409ab151ed`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a61a3e49b48c5e696616c6a6dac95ec57`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a2ce7330bbe632a000f38d18b32db161e`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a49228af8ce28f00da2f8e74b399c6db4`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1ad7c46ed84bcfd99a44d69657af766ec4`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1af88d89c82bf144eabd4b2f88c2ba9e37`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1af66715faadf72de8748f465f117e0c7a`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a6429dbdb03d2135a0e8d1a6c9551168c`
+
+- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a14cd6011fd9fe84027e25bc4c52471cb`

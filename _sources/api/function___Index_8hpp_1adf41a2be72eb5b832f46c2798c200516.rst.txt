@@ -1,0 +1,14 @@
+.. _exhale_function___Index_8hpp_1adf41a2be72eb5b832f46c2798c200516:
+
+Function einsums::tensor_algebra::index::operator<<(std::ostream&, const struct i&)
+===================================================================================
+
+- Defined in :ref:`file_src_include_einsums__Index.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: einsums::tensor_algebra::index::operator<<(std::ostream&, const struct i&)
+   :project: Einsums

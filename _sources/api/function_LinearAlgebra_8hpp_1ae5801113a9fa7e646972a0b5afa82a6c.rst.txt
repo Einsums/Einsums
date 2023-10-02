@@ -1,0 +1,14 @@
+.. _exhale_function_LinearAlgebra_8hpp_1ae5801113a9fa7e646972a0b5afa82a6c:
+
+Template Function pseudoinverse
+===============================
+
+- Defined in :ref:`file_src_include_einsums_LinearAlgebra.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: pseudoinverse(const Tensor<T, 2>&, double)
+   :project: Einsums

@@ -1,0 +1,14 @@
+.. _exhale_function_Laguerre_8hpp_1a0feccbd78975057126dfdbadf1a8fb98:
+
+Function if(c.)
+===============
+
+- Defined in :ref:`file_src_include_einsums_polynomial_Laguerre.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: if(c.)
+   :project: Einsums

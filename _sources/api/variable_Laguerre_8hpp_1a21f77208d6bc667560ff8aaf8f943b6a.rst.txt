@@ -1,0 +1,14 @@
+.. _exhale_variable_Laguerre_8hpp_1a21f77208d6bc667560ff8aaf8f943b6a:
+
+Variable n
+==========
+
+- Defined in :ref:`file_src_include_einsums_polynomial_Laguerre.hpp`
+
+
+Variable Documentation
+----------------------
+
+
+.. doxygenvariable:: n
+   :project: Einsums

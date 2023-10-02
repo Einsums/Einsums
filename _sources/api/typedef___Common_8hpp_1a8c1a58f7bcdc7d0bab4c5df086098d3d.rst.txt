@@ -1,0 +1,14 @@
+.. _exhale_typedef___Common_8hpp_1a8c1a58f7bcdc7d0bab4c5df086098d3d:
+
+Typedef einsums::Dim
+====================
+
+- Defined in :ref:`file_src_include_einsums__Common.hpp`
+
+
+Typedef Documentation
+---------------------
+
+
+.. doxygentypedef:: einsums::Dim
+   :project: Einsums

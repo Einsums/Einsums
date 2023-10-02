@@ -1,0 +1,14 @@
+.. _exhale_function_LinearAlgebra_8hpp_1abbdb3a9daa75b1a8aa14f4d56488e419:
+
+Function BEGIN_EINSUMS_NAMESPACE_HPP(einsums::linear_algebra)
+=============================================================
+
+- Defined in :ref:`file_src_include_einsums_LinearAlgebra.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: BEGIN_EINSUMS_NAMESPACE_HPP(einsums::linear_algebra)
+   :project: Einsums

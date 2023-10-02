@@ -1,0 +1,26 @@
+.. _exhale_struct_structeinsums_1_1contains_3_01std_1_1tuple_3_01Needle_00_01Cdr_8_8_8_01_4_00_01Needle_01_4:
+
+Template Struct contains< std::tuple< Needle, Cdr... >, Needle >
+================================================================
+
+- Defined in :ref:`file_src_include_einsums_STL.hpp`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public std::true_type``
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: einsums::contains< std::tuple< Needle, Cdr... >, Needle >
+   :project: Einsums
+   :members:
+   :protected-members:
+   :undoc-members:

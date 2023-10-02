@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Template Struct DiskTensor &mdash; Einsums 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/collapsible-lists/css/tree_view.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js"></script>
+        <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Template Struct DiskView" href="structeinsums_1_1DiskView.html" />
+    <link rel="prev" title="Struct DisableOMPThreads" href="structeinsums_1_1DisableOMPThreads.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Einsums
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="library_root.html">Library API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="library_root.html#file-hierarchy">File Hierarchy</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="library_root.html#full-api">Full API</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="library_root.html#namespaces">Namespaces</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="library_root.html#classes-and-structs">Classes and Structs</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="structdetail_1_1RawTypeNameFormat.html">Struct RawTypeNameFormat</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structdetail_1_1TuplePrinter.html">Template Struct TuplePrinter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structdetail_1_1TuplePrinter_3_01Tuple_00_011_01_4.html">Template Struct TuplePrinter&lt; Tuple, 1 &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structdetail_1_1TuplePrinterNoType.html">Template Struct TuplePrinterNoType</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structdetail_1_1TuplePrinterNoType_3_01Tuple_00_011_01_4.html">Template Struct TuplePrinterNoType&lt; Tuple, 1 &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1add__complex.html">Template Struct add_complex</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1add__complex_3_01std_1_1complex_3_01T_01_4_01_4.html">Template Struct add_complex&lt; std::complex&lt; T &gt; &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1AlignedAllocator_1_1rebind.html">Template Struct AlignedAllocator::rebind</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_1_1rebind.html">Template Struct AlignedAllocator&lt; const T, Align &gt;::rebind</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1AlignedAllocator_3_01void_00_01Align_01_4_1_1rebind.html">Template Struct AlignedAllocator&lt; void, Align &gt;::rebind</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1All__t.html">Struct All_t</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1Arguments_1_1Contains.html">Template Struct Contains</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1Arguments_1_1Contains_3_01T_01_4.html">Template Struct Contains&lt; T &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1Arguments_1_1Contains_3_01T_00_01Head_00_01Remaining_8_8_8_01_4.html">Template Struct Contains&lt; T, Head, Remaining… &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1Arguments_1_1Detail_1_1TuplePosition.html">Template Struct TuplePosition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1Arguments_1_1Detail_1_1TuplePosition_3_01S_00_01P_00_01C_00_01B_00_01not__used_35dd43ada63a7972cbf9d27bab5328f7.html">Template Struct TuplePosition&lt; S, P, C, B, not_used, std::tuple&lt; Tail… &gt; &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1Arguments_1_1Detail_1_1TuplePosition_3_01S_00_01P_00_01C_00_01false_00_01H_00_01std_1_1tuple_3_4_01_4.html">Template Struct TuplePosition&lt; S, P, C, false, H, std::tuple&lt;  &gt; &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1Arguments_1_1Detail_1_1TuplePosition_3_01S_00_01P_00_01C_00_01false_00_01not__u73b9a019c3868a3a3941d8b7d0aec2dc.html">Template Struct TuplePosition&lt; S, P, C, false, not_used, std::tuple&lt; Head, Tail… &gt; &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1Arguments_1_1Detail_1_1TuplePosition_3_01S_00_01P_00_01C_00_01true_00_01Type_0026c9ecbc6288b1b638ecae4b9f425d09.html">Template Struct TuplePosition&lt; S, P, C, true, Type, std::tuple&lt; Tail… &gt; &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1Arguments_1_1TuplePosition.html">Template Struct TuplePosition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1bool__pack.html">Template Struct bool_pack</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1c__unique.html">Template Struct c_unique</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1CircularBuffer.html">Template Struct CircularBuffer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1complex__type.html">Template Struct complex_type</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1complex__type_3_01std_1_1complex_3_01T_01_4_01_4.html">Template Struct complex_type&lt; std::complex&lt; T &gt; &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1contains.html">Template Struct contains</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1contains_3_01std_1_1tuple_3_01Car_00_01Cdr_8_8_8_01_4_00_01Needle_01_4.html">Template Struct contains&lt; std::tuple&lt; Car, Cdr… &gt;, Needle &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1contains_3_01std_1_1tuple_3_01Needle_00_01Cdr_8_8_8_01_4_00_01Needle_01_4.html">Template Struct contains&lt; std::tuple&lt; Needle, Cdr… &gt;, Needle &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1contains_3_01std_1_1tuple_3_4_00_01Needle_01_4.html">Template Struct contains&lt; std::tuple&lt;  &gt;, Needle &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1detail_1_1Array.html">Template Struct Array</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1detail_1_1ChunkType.html">Struct ChunkType</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1detail_1_1CountType.html">Struct CountType</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1detail_1_1DimType.html">Struct DimType</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1Detail_1_1HasType.html">Template Struct HasType</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1Detail_1_1HasType_3_01T_00_01std_1_1tuple_3_01T_00_01Ts_8_8_8_01_4_01_4.html">Template Struct HasType&lt; T, std::tuple&lt; T, Ts… &gt; &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1Detail_1_1HasType_3_01T_00_01std_1_1tuple_3_01U_00_01Ts_8_8_8_01_4_01_4.html">Template Struct HasType&lt; T, std::tuple&lt; U, Ts… &gt; &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1Detail_1_1HasType_3_01T_00_01std_1_1tuple_3_4_01_4.html">Template Struct HasType&lt; T, std::tuple&lt;  &gt; &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1detail_1_1OffsetType.html">Struct OffsetType</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1detail_1_1RangeType.html">Struct RangeType</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1detail_1_1StrideType.html">Struct StrideType</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1detail_1_1TensorBase.html">Template Struct TensorBase</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1difference.html">Template Struct difference</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1DisableOMPNestedScope.html">Struct DisableOMPNestedScope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1DisableOMPThreads.html">Struct DisableOMPThreads</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Template Struct DiskTensor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1DiskView.html">Template Struct DiskView</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1Empty.html">Struct Empty</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1ErrorOr.html">Template Struct ErrorOr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1ErrorOr_3_01void_00_01ErrorType_01_4.html">Template Struct ErrorOr&lt; void, ErrorType &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1filter.html">Template Struct filter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1filter_3_01Out_00_01std_1_1tuple_3_4_01_4.html">Template Struct filter&lt; Out, std::tuple&lt;  &gt; &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1filter_3_01std_1_1tuple_3_01Out_8_8_8_01_4_00_01std_1_1tuple_3_01InCar_00_01InCdr_8_8_8_01_4_01_4.html">Template Struct filter&lt; std::tuple&lt; Out… &gt;, std::tuple&lt; InCar, InCdr… &gt; &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1intersect.html">Template Struct intersect</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1is__complex__t.html">Template Struct is_complex_t</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1is__complex__t_3_01std_1_1complex_3_01T_01_4_01_4.html">Template Struct is_complex_t&lt; std::complex&lt; T &gt; &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1is__incore__rank__tensor.html">Template Struct is_incore_rank_tensor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1is__ondisk__tensor.html">Template Struct is_ondisk_tensor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1is__smart__pointer.html">Template Struct is_smart_pointer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1is__smart__pointer__helper.html">Template Struct is_smart_pointer_helper</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1is__smart__pointer__helper_3_01std_1_1shared__ptr_3_01T_01_4_01_4.html">Template Struct is_smart_pointer_helper&lt; std::shared_ptr&lt; T &gt; &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1is__smart__pointer__helper_3_01std_1_1unique__ptr_3_01T_01_4_01_4.html">Template Struct is_smart_pointer_helper&lt; std::unique_ptr&lt; T &gt; &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1is__smart__pointer__helper_3_01std_1_1weak__ptr_3_01T_01_4_01_4.html">Template Struct is_smart_pointer_helper&lt; std::weak_ptr&lt; T &gt; &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1Tensor.html">Template Struct Tensor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1Tensor_3_01T_00_010_01_4.html">Template Struct Tensor&lt; T, 0 &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1a.html">Struct a</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1A.html">Struct A</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1B.html">Struct B</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1b.html">Struct b</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1C.html">Struct C</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1c.html">Struct c</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1D.html">Struct D</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1d.html">Struct d</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1E.html">Struct E</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1e.html">Struct e</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1F.html">Struct F</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1f.html">Struct f</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1g.html">Struct g</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1G.html">Struct G</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1H.html">Struct H</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1h.html">Struct h</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1i.html">Struct i</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1I.html">Struct I</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1j.html">Struct j</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1J.html">Struct J</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1K.html">Struct K</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1k.html">Struct k</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1L.html">Struct L</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1l.html">Struct l</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1LabelBase.html">Struct LabelBase</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1M.html">Struct M</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1m.html">Struct m</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1N.html">Struct N</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1n.html">Struct n</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1O.html">Struct O</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1o.html">Struct o</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1p.html">Struct p</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1P.html">Struct P</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1Q.html">Struct Q</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1q.html">Struct q</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1R.html">Struct R</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1r.html">Struct r</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1S.html">Struct S</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1s.html">Struct s</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1T.html">Struct T</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1t.html">Struct t</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1U.html">Struct U</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1u.html">Struct u</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1v.html">Struct v</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1V.html">Struct V</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1W.html">Struct W</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1w.html">Struct w</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1x.html">Struct x</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1X.html">Struct X</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1y.html">Struct y</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1Y.html">Struct Y</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1z.html">Struct z</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1Z.html">Struct Z</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1TensorView.html">Template Struct TensorView</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1timer_1_1Timer.html">Struct Timer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structh5_1_1impl_1_1decay_3_1_1einsums_1_1Tensor_3_01T_00_01Rank_01_4_01_4.html">Template Struct decay&lt; ::einsums::Tensor&lt; T, Rank &gt; &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structh5_1_1impl_1_1decay_3_1_1einsums_1_1TensorView_3_01T_00_01Rank_01_4_01_4.html">Template Struct decay&lt; ::einsums::TensorView&lt; T, Rank &gt; &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structh5_1_1impl_1_1get_3_1_1einsums_1_1Tensor_3_01T_00_011_01_4_01_4.html">Template Struct get&lt; ::einsums::Tensor&lt; T, 1 &gt; &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structh5_1_1impl_1_1get_3_1_1einsums_1_1Tensor_3_01T_00_012_01_4_01_4.html">Template Struct get&lt; ::einsums::Tensor&lt; T, 2 &gt; &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structh5_1_1impl_1_1get_3_1_1einsums_1_1Tensor_3_01T_00_013_01_4_01_4.html">Template Struct get&lt; ::einsums::Tensor&lt; T, 3 &gt; &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structh5_1_1impl_1_1get_3_1_1einsums_1_1Tensor_3_01T_00_014_01_4_01_4.html">Template Struct get&lt; ::einsums::Tensor&lt; T, 4 &gt; &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structh5_1_1impl_1_1rank_3_1_1einsums_1_1Tensor_3_01T_00_01Rank_01_4_01_4.html">Template Struct rank&lt; ::einsums::Tensor&lt; T, Rank &gt; &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structh5_1_1impl_1_1rank_3_1_1einsums_1_1TensorView_3_01T_00_01Rank_01_4_01_4.html">Template Struct rank&lt; ::einsums::TensorView&lt; T, Rank &gt; &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structprint_1_1Indent.html">Struct Indent</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structSection.html">Struct Section</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structTensorPrintOptions.html">Struct TensorPrintOptions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="classeinsums_1_1AlignedAllocator.html">Template Class AlignedAllocator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4.html">Template Class AlignedAllocator&lt; const T, Align &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="classeinsums_1_1AlignedAllocator_3_01void_00_01Align_01_4.html">Template Class AlignedAllocator&lt; void, Align &gt;</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="library_root.html#enums">Enums</a></li>
+<li class="toctree-l3"><a class="reference internal" href="library_root.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="library_root.html#variables">Variables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="library_root.html#defines">Defines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="library_root.html#typedefs">Typedefs</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Einsums</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="library_root.html">Library API</a></li>
+      <li class="breadcrumb-item active">Template Struct DiskTensor</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/structeinsums_1_1DiskTensor.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="template-struct-disktensor">
+<span id="exhale-struct-structeinsums-1-1disktensor"></span><h1>Template Struct DiskTensor<a class="headerlink" href="#template-struct-disktensor" title="Permalink to this headline"></a></h1>
+<ul class="simple">
+<li><p>Defined in <a class="reference internal" href="file_src_include_einsums_Tensor.hpp.html#file-src-include-einsums-tensor-hpp"><span class="std std-ref">File Tensor.hpp</span></a></p></li>
+</ul>
+<section id="inheritance-relationships">
+<h2>Inheritance Relationships<a class="headerlink" href="#inheritance-relationships" title="Permalink to this headline"></a></h2>
+<section id="base-type">
+<h3>Base Type<a class="headerlink" href="#base-type" title="Permalink to this headline"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">einsums::detail::TensorBase&lt;</span> <span class="pre">T,</span> <span class="pre">Rank</span> <span class="pre">&gt;</span></code> (<a class="reference internal" href="structeinsums_1_1detail_1_1TensorBase.html#exhale-struct-structeinsums-1-1detail-1-1tensorbase"><span class="std std-ref">Template Struct TensorBase</span></a>)</p></li>
+</ul>
+</section>
+</section>
+<section id="struct-documentation">
+<h2>Struct Documentation<a class="headerlink" href="#struct-documentation" title="Permalink to this headline"></a></h2>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4I0_6size_tEN7einsums10DiskTensorE">
+<span id="_CPPv3I0_6size_tEN7einsums10DiskTensorE"></span><span id="_CPPv2I0_6size_tEN7einsums10DiskTensorE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Rank</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1DiskTensor"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DiskTensor</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">einsums</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">detail</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="structeinsums_1_1detail_1_1TensorBase.html#_CPPv4I0_6size_tEN7einsums6detail10TensorBaseE" title="einsums::detail::TensorBase"><span class="n"><span class="pre">TensorBase</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums10DiskTensorE" title="einsums::DiskTensor::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums10DiskTensorE" title="einsums::DiskTensor::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I0_6size_tEN7einsums10DiskTensorE" title="Permalink to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums10DiskTensor10DiskTensorEv">
+<span id="_CPPv3N7einsums10DiskTensor10DiskTensorEv"></span><span id="_CPPv2N7einsums10DiskTensor10DiskTensorEv"></span><span id="einsums::DiskTensor::DiskTensor"></span><span class="target" id="structeinsums_1_1DiskTensor_1ae8e8ccf2b6dbe268a40bd892718d9008"></span><span class="sig-name descname"><span class="n"><span class="pre">DiskTensor</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N7einsums10DiskTensor10DiskTensorEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums10DiskTensor10DiskTensorERK10DiskTensor">
+<span id="_CPPv3N7einsums10DiskTensor10DiskTensorERK10DiskTensor"></span><span id="_CPPv2N7einsums10DiskTensor10DiskTensorERK10DiskTensor"></span><span id="einsums::DiskTensor::DiskTensor__DiskTensorCR"></span><span class="target" id="structeinsums_1_1DiskTensor_1a6102f00e93c4e2f525ea1ef002c4e2be"></span><span class="sig-name descname"><span class="n"><span class="pre">DiskTensor</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums10DiskTensor10DiskTensorERK10DiskTensor" title="einsums::DiskTensor::DiskTensor"><span class="n"><span class="pre">DiskTensor</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N7einsums10DiskTensor10DiskTensorERK10DiskTensor" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums10DiskTensor10DiskTensorERR10DiskTensor">
+<span id="_CPPv3N7einsums10DiskTensor10DiskTensorERR10DiskTensor"></span><span id="_CPPv2N7einsums10DiskTensor10DiskTensorERR10DiskTensor"></span><span id="einsums::DiskTensor::DiskTensor__DiskTensorRR"></span><span class="target" id="structeinsums_1_1DiskTensor_1ad0b3ebc4689aea4e4d8b64f666c2d897"></span><span class="sig-name descname"><span class="n"><span class="pre">DiskTensor</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums10DiskTensor10DiskTensorERR10DiskTensor" title="einsums::DiskTensor::DiskTensor"><span class="n"><span class="pre">DiskTensor</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N7einsums10DiskTensor10DiskTensorERR10DiskTensor" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums10DiskTensorD0Ev">
+<span id="_CPPv3N7einsums10DiskTensorD0Ev"></span><span id="_CPPv2N7einsums10DiskTensorD0Ev"></span><span id="einsums::DiskTensor::~DiskTensor"></span><span class="target" id="structeinsums_1_1DiskTensor_1ae379099351decdc1484096ff189a8181"></span><span class="sig-name descname"><span class="n"><span class="pre">~DiskTensor</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N7einsums10DiskTensorD0Ev" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4IDpEN7einsums10DiskTensor10DiskTensorERN2h54fd_tENSt6stringE5ChunkIXsZ4DimsEEDp4Dims">
+<span id="_CPPv3IDpEN7einsums10DiskTensor10DiskTensorERN2h54fd_tENSt6stringE5ChunkIXsZ4DimsEEDp4Dims"></span><span id="_CPPv2IDpEN7einsums10DiskTensor10DiskTensorERN2h54fd_tENSt6stringE5ChunkIXsizeof...(Dims)EEDp4Dims"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Dims</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1DiskTensor_1a619364f62567c5d5af6559266808e6b6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DiskTensor</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">h5</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">fd_t</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">file</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <a class="reference internal" href="typedef___Common_8hpp_1aa3bb8068c5ea647bc44ee4221a3379b3.html#_CPPv4I_NSt6size_tEEN7einsums5ChunkE" title="einsums::Chunk"><span class="n"><span class="pre">Chunk</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">sizeof</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">(</span></span><a class="reference internal" href="#_CPPv4IDpEN7einsums10DiskTensor10DiskTensorERN2h54fd_tENSt6stringE5ChunkIXsZ4DimsEEDp4Dims" title="einsums::DiskTensor::DiskTensor::Dims"><span class="n"><span class="pre">Dims</span></span></a><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">chunk</span></span>, <a class="reference internal" href="#_CPPv4IDpEN7einsums10DiskTensor10DiskTensorERN2h54fd_tENSt6stringE5ChunkIXsZ4DimsEEDp4Dims" title="einsums::DiskTensor::DiskTensor::Dims"><span class="n"><span class="pre">Dims</span></span></a><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dims</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4IDpEN7einsums10DiskTensor10DiskTensorERN2h54fd_tENSt6stringE5ChunkIXsZ4DimsEEDp4Dims" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4IDp0EN7einsums10DiskTensor10DiskTensorERN2h54fd_tENSt6stringEDp4Dims">
+<span id="_CPPv3IDp0EN7einsums10DiskTensor10DiskTensorERN2h54fd_tENSt6stringEDp4Dims"></span><span id="_CPPv2IDp0EN7einsums10DiskTensor10DiskTensorERN2h54fd_tENSt6stringEDp4Dims"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Dims</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">enable_if</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="typedef_STL_8hpp_1a8220194368e7b438aceea8614c187c6f.html#_CPPv4I0DpEN7einsums19are_all_convertibleE" title="einsums::are_all_convertible"><span class="n"><span class="pre">are_all_convertible</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4IDp0EN7einsums10DiskTensor10DiskTensorERN2h54fd_tENSt6stringEDp4Dims" title="einsums::DiskTensor::DiskTensor::Dims"><span class="n"><span class="pre">Dims</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">type</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1DiskTensor_1a4f88bde061c2f5ad96305a3f874df3da"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DiskTensor</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">h5</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">fd_t</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">file</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <a class="reference internal" href="#_CPPv4IDp0EN7einsums10DiskTensor10DiskTensorERN2h54fd_tENSt6stringEDp4Dims" title="einsums::DiskTensor::DiskTensor::Dims"><span class="n"><span class="pre">Dims</span></span></a><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dims</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4IDp0EN7einsums10DiskTensor10DiskTensorERN2h54fd_tENSt6stringEDp4Dims" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums10DiskTensor10DiskTensorERN2h54fd_tERK6TensorI1T4RankE">
+<span id="_CPPv3N7einsums10DiskTensor10DiskTensorERN2h54fd_tERK6TensorI1T4RankE"></span><span id="_CPPv2N7einsums10DiskTensor10DiskTensorERN2h54fd_tERK6TensorI1T4RankE"></span><span id="einsums::DiskTensor::DiskTensor__h5::fd_tR.Tensor:T.Rank:CR"></span><span class="target" id="structeinsums_1_1DiskTensor_1ab39b535f7b7476545c1806b776f97864"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DiskTensor</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">h5</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">fd_t</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">file</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="structeinsums_1_1Tensor.html#_CPPv4I0_6size_tEN7einsums6TensorE" title="einsums::Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums10DiskTensorE" title="einsums::DiskTensor::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums10DiskTensorE" title="einsums::DiskTensor::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">tensor</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums10DiskTensor10DiskTensorERN2h54fd_tERK6TensorI1T4RankE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums10DiskTensor3dimEi">
+<span id="_CPPv3NK7einsums10DiskTensor3dimEi"></span><span id="_CPPv2NK7einsums10DiskTensor3dimEi"></span><span id="einsums::DiskTensor::dim__iC"></span><span class="target" id="structeinsums_1_1DiskTensor_1a7662e2dd4ad8ec1642ddb14baf8d149c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dim</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">d</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><a class="headerlink" href="#_CPPv4NK7einsums10DiskTensor3dimEi" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums10DiskTensor4dimsEv">
+<span id="_CPPv3NK7einsums10DiskTensor4dimsEv"></span><span id="_CPPv2NK7einsums10DiskTensor4dimsEv"></span><span id="einsums::DiskTensor::dimsC"></span><span class="target" id="structeinsums_1_1DiskTensor_1af6c3faa40864d75efbe40000368ecbdd"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dims</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><a class="reference internal" href="typedef___Common_8hpp_1a8c1a58f7bcdc7d0bab4c5df086098d3d.html#_CPPv4I_NSt6size_tEEN7einsums3DimE" title="einsums::Dim"><span class="n"><span class="pre">Dim</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums10DiskTensorE" title="einsums::DiskTensor::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4NK7einsums10DiskTensor4dimsEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums10DiskTensor7existedEv">
+<span id="_CPPv3NK7einsums10DiskTensor7existedEv"></span><span id="_CPPv2NK7einsums10DiskTensor7existedEv"></span><span id="einsums::DiskTensor::existedC"></span><span class="target" id="structeinsums_1_1DiskTensor_1a56b04a16cb1dc1c0624af53c5941b7f8"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">existed</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><a class="headerlink" href="#_CPPv4NK7einsums10DiskTensor7existedEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums10DiskTensor4diskEv">
+<span id="_CPPv3N7einsums10DiskTensor4diskEv"></span><span id="_CPPv2N7einsums10DiskTensor4diskEv"></span><span id="einsums::DiskTensor::disk"></span><span class="target" id="structeinsums_1_1DiskTensor_1adf7b84aa969ba699bcbb481ade7537fd"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">disk</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><span class="n"><span class="pre">h5</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ds_t</span></span><span class="p"><span class="pre">&amp;</span></span><a class="headerlink" href="#_CPPv4N7einsums10DiskTensor4diskEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums10DiskTensor4nameEv">
+<span id="_CPPv3NK7einsums10DiskTensor4nameEv"></span><span id="_CPPv2NK7einsums10DiskTensor4nameEv"></span><span id="einsums::DiskTensor::nameC"></span><span class="target" id="structeinsums_1_1DiskTensor_1a14f3c671073afeb0b9dfe14a8d3e62c6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">name</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&amp;</span></span><a class="headerlink" href="#_CPPv4NK7einsums10DiskTensor4nameEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums10DiskTensor6strideEi">
+<span id="_CPPv3NK7einsums10DiskTensor6strideEi"></span><span id="_CPPv2NK7einsums10DiskTensor6strideEi"></span><span id="einsums::DiskTensor::stride__iC"></span><span class="target" id="structeinsums_1_1DiskTensor_1ad33fb79b83459e47d08fd37527eddc1e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">stride</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">d</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><a class="headerlink" href="#_CPPv4NK7einsums10DiskTensor6strideEi" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp">
+<span class="target" id="structeinsums_1_1DiskTensor_1ad68ece8746fdfa750d6f99e754d5453d"></span><span class="sig-name descname"><span class="pre">template&lt;typename...</span> <span class="pre">MultiIndex&gt;</span> <span class="pre">virtual</span> <span class="pre">auto</span> <span class="pre">operator()</span> <span class="pre">(MultiIndex...</span> <span class="pre">index)</span> <span class="pre">-&gt;</span> <span class="pre">std::enable_if_t&lt;</span> <span class="pre">count_of_type&lt;</span> <span class="pre">All_t,</span> <span class="pre">MultiIndex...</span> <span class="pre">&gt;()+count_of_type&lt;</span> <span class="pre">Range,</span> <span class="pre">MultiIndex...</span> <span class="pre">&gt;()</span> <span class="pre">!=0</span></span></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp">
+<span class="target" id="structeinsums_1_1DiskTensor_1a55da1d43c276b36b04a55c6f9ebe9098"></span><span class="sig-name descname"><span class="pre">std::fill</span> <span class="pre">(counts.begin(),</span> <span class="pre">counts.end(),</span> <span class="pre">1.0)</span></span></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp">
+<span class="target" id="structeinsums_1_1DiskTensor_1acbc52c6c6ed1da9d44bc5cb804f1e824"></span><span class="sig-name descname"><span class="pre">inline</span>&#160; <span class="pre">for</span> <span class="pre">(auto[i,</span> <span class="pre">value]</span> <span class="pre">:enumerate(index_positions))</span></span></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp">
+<span class="target" id="structeinsums_1_1DiskTensor_1a8ca3efdc2fe21cd58422ed8c34b06fb5"></span><span class="sig-name descname"><span class="pre">inline</span>&#160; <span class="pre">for</span> <span class="pre">(auto[i,</span> <span class="pre">value]</span> <span class="pre">:enumerate(all_positions))</span></span></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp">
+<span class="target" id="structeinsums_1_1DiskTensor_1a6bafa460884a3a2fe57908f30cceda53"></span><span class="sig-name descname"><span class="pre">inline</span>&#160; <span class="pre">for</span> <span class="pre">(auto[i,</span> <span class="pre">value]</span> <span class="pre">:enumerate(range_positions))</span></span></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp">
+<span class="target" id="structeinsums_1_1DiskTensor_1a3f6bc52d047281b9732ce7d987fea588"></span><span class="sig-name descname"><span class="pre">inline</span>&#160; <span class="pre">for</span> <span class="pre">(auto</span> <span class="pre">cnt</span> <span class="pre">:counts)</span></span></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp">
+<span class="target" id="structeinsums_1_1DiskTensor_1af9796c432e91344410de883da3fdfd54"></span><span class="sig-name descname"><span class="pre">template&lt;typename...</span> <span class="pre">MultiIndex&gt;</span> <span class="pre">virtual</span> <span class="pre">auto</span> <span class="pre">operator()</span> <span class="pre">(MultiIndex...</span> <span class="pre">index)</span> <span class="pre">const</span> <span class="pre">-&gt;</span> <span class="pre">std::enable_if_t&lt;</span> <span class="pre">count_of_type&lt;</span> <span class="pre">All_t,</span> <span class="pre">MultiIndex...</span> <span class="pre">&gt;()+count_of_type&lt;</span> <span class="pre">Range,</span> <span class="pre">MultiIndex...</span> <span class="pre">&gt;()</span> <span class="pre">!=0</span></span></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp">
+<span class="target" id="structeinsums_1_1DiskTensor_1a55da1d43c276b36b04a55c6f9ebe9098"></span><span class="sig-name descname"><span class="pre">std::fill</span> <span class="pre">(counts.begin(),</span> <span class="pre">counts.end(),</span> <span class="pre">1.0)</span></span></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp">
+<span class="target" id="structeinsums_1_1DiskTensor_1acbc52c6c6ed1da9d44bc5cb804f1e824"></span><span class="sig-name descname"><span class="pre">inline</span>&#160; <span class="pre">for</span> <span class="pre">(auto[i,</span> <span class="pre">value]</span> <span class="pre">:enumerate(index_positions))</span></span></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp">
+<span class="target" id="structeinsums_1_1DiskTensor_1a8ca3efdc2fe21cd58422ed8c34b06fb5"></span><span class="sig-name descname"><span class="pre">inline</span>&#160; <span class="pre">for</span> <span class="pre">(auto[i,</span> <span class="pre">value]</span> <span class="pre">:enumerate(all_positions))</span></span></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp">
+<span class="target" id="structeinsums_1_1DiskTensor_1a6bafa460884a3a2fe57908f30cceda53"></span><span class="sig-name descname"><span class="pre">inline</span>&#160; <span class="pre">for</span> <span class="pre">(auto[i,</span> <span class="pre">value]</span> <span class="pre">:enumerate(range_positions))</span></span></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp">
+<span class="target" id="structeinsums_1_1DiskTensor_1a3f6bc52d047281b9732ce7d987fea588"></span><span class="sig-name descname"><span class="pre">inline</span>&#160; <span class="pre">for</span> <span class="pre">(auto</span> <span class="pre">cnt</span> <span class="pre">:counts)</span></span></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp">
+<span class="target" id="structeinsums_1_1DiskTensor_1a12496f9528732d7f4cb378772c96aade"></span><span class="sig-name descname"><span class="pre">auto</span> <span class="pre">DiskView&lt;</span> <span class="pre">T,</span> <span class="pre">count_of_type&lt;</span> <span class="pre">All_t,</span> <span class="pre">MultiIndex...</span> <span class="pre">&gt;()+count_of_type&lt;</span> <span class="pre">Range,</span> <span class="pre">MultiIndex...</span> <span class="pre">&gt;(),</span> <span class="pre">Rank</span> <span class="pre">&gt;</span>&#160; <span class="pre">{auto</span> <span class="pre">all_positions</span> <span class="pre">=get_array_from_tuple&lt;std::array&lt;int,</span> <span class="pre">count_of_type&lt;All_t,</span> <span class="pre">MultiIndex...&gt;()&gt;&gt;(positions_of_type&lt;All_t,</span> <span class="pre">MultiIndex...&gt;())</span></span></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums10DiskTensor15index_positionsE">
+<span id="_CPPv3N7einsums10DiskTensor15index_positionsE"></span><span id="_CPPv2N7einsums10DiskTensor15index_positionsE"></span><span id="einsums::DiskTensor::index_positions__auto"></span><span class="target" id="structeinsums_1_1DiskTensor_1a49e70f5af79dce4d165a42b6e77f0e60"></span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">index_positions</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="function_STL_8hpp_1a8f98b0188912397bf2396461fafb7712.html#_CPPv4I00EN7einsums20get_array_from_tupleE6ResultRR5Tuple" title="einsums::get_array_from_tuple"><span class="n"><span class="pre">get_array_from_tuple</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="function_STL_8hpp_1aaf7903a19c8a79a368737d29bcc6774c.html#_CPPv4I0DpEN7einsums13count_of_typeEDav" title="einsums::count_of_type"><span class="n"><span class="pre">count_of_type</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">MultiIndex</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">(</span></span><a class="reference internal" href="function_STL_8hpp_1a8f1c05882a6e5d79b05ebcd04b2aee1c.html#_CPPv4I0DpEN7einsums17positions_of_typeEDav" title="einsums::positions_of_type"><span class="n"><span class="pre">positions_of_type</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">MultiIndex</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">)</span></span><a class="headerlink" href="#_CPPv4N7einsums10DiskTensor15index_positionsE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums10DiskTensor15range_positionsE">
+<span id="_CPPv3N7einsums10DiskTensor15range_positionsE"></span><span id="_CPPv2N7einsums10DiskTensor15range_positionsE"></span><span id="einsums::DiskTensor::range_positions__auto"></span><span class="target" id="structeinsums_1_1DiskTensor_1aff31040fcc0513d7cac5761c97d43712"></span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">range_positions</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="function_STL_8hpp_1a8f98b0188912397bf2396461fafb7712.html#_CPPv4I00EN7einsums20get_array_from_tupleE6ResultRR5Tuple" title="einsums::get_array_from_tuple"><span class="n"><span class="pre">get_array_from_tuple</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="function_STL_8hpp_1aaf7903a19c8a79a368737d29bcc6774c.html#_CPPv4I0DpEN7einsums13count_of_typeEDav" title="einsums::count_of_type"><span class="n"><span class="pre">count_of_type</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="typedef___Common_8hpp_1a09cb83e4ce99aafb4305bc16c03dc054.html#_CPPv4N7einsums5RangeE" title="einsums::Range"><span class="n"><span class="pre">Range</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">MultiIndex</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">(</span></span><a class="reference internal" href="function_STL_8hpp_1a8f1c05882a6e5d79b05ebcd04b2aee1c.html#_CPPv4I0DpEN7einsums17positions_of_typeEDav" title="einsums::positions_of_type"><span class="n"><span class="pre">positions_of_type</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="typedef___Common_8hpp_1a09cb83e4ce99aafb4305bc16c03dc054.html#_CPPv4N7einsums5RangeE" title="einsums::Range"><span class="n"><span class="pre">Range</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">MultiIndex</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">)</span></span><a class="headerlink" href="#_CPPv4N7einsums10DiskTensor15range_positionsE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums10DiskTensor7indicesE">
+<span id="_CPPv3N7einsums10DiskTensor7indicesE"></span><span id="_CPPv2N7einsums10DiskTensor7indicesE"></span><span id="einsums::DiskTensor::indices__autoCR"></span><span class="target" id="structeinsums_1_1DiskTensor_1acd76bbe204ad439df99f7d995fcb9587"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">indices</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">forward_as_tuple</span></span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">)</span></span><a class="headerlink" href="#_CPPv4N7einsums10DiskTensor7indicesE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums10DiskTensor7offsetsE">
+<span id="_CPPv3N7einsums10DiskTensor7offsetsE"></span><span id="_CPPv2N7einsums10DiskTensor7offsetsE"></span><span id="einsums::DiskTensor::offsets__Offset:Rank:"></span><span class="target" id="structeinsums_1_1DiskTensor_1ac852d7b7dc3316b9d3d9fb93589b9b36"></span><a class="reference internal" href="typedef___Common_8hpp_1ac5b603e07b867507d5830186cb2ceaaf.html#_CPPv4I_NSt6size_tEEN7einsums6OffsetE" title="einsums::Offset"><span class="n"><span class="pre">Offset</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums10DiskTensorE" title="einsums::DiskTensor::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">offsets</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N7einsums10DiskTensor7offsetsE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums10DiskTensor7stridesE">
+<span id="_CPPv3N7einsums10DiskTensor7stridesE"></span><span id="_CPPv2N7einsums10DiskTensor7stridesE"></span><span id="einsums::DiskTensor::strides__Stride:Rank:"></span><span class="target" id="structeinsums_1_1DiskTensor_1a0314ea12657e4b04ebb1d93daf3ced4d"></span><a class="reference internal" href="typedef___Common_8hpp_1a6138835e2652eaae61b1d977dd17d29c.html#_CPPv4I_NSt6size_tEEN7einsums6StrideE" title="einsums::Stride"><span class="n"><span class="pre">Stride</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums10DiskTensorE" title="einsums::DiskTensor::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">strides</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N7einsums10DiskTensor7stridesE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums10DiskTensor6countsE">
+<span id="_CPPv3N7einsums10DiskTensor6countsE"></span><span id="_CPPv2N7einsums10DiskTensor6countsE"></span><span id="einsums::DiskTensor::counts__Count:Rank:"></span><span class="target" id="structeinsums_1_1DiskTensor_1a772530a5d4fe95e7a01d6885a7d178a5"></span><a class="reference internal" href="typedef___Common_8hpp_1a450f97c210c704df47ec3d7013fcff47.html#_CPPv4I_NSt6size_tEEN7einsums5CountE" title="einsums::Count"><span class="n"><span class="pre">Count</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums10DiskTensorE" title="einsums::DiskTensor::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">counts</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N7einsums10DiskTensor6countsE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums10DiskTensor8dims_allE">
+<span id="_CPPv3N7einsums10DiskTensor8dims_allE"></span><span id="_CPPv2N7einsums10DiskTensor8dims_allE"></span><span id="einsums::DiskTensor::dims_all__Dim:count_of_type<All_t,-MultiIndex...>()-+-count_of_type<Range,-MultiIndex...>():"></span><span class="target" id="structeinsums_1_1DiskTensor_1a4325a3b2f4dab202b9d61756909d1c32"></span><a class="reference internal" href="typedef___Common_8hpp_1a8c1a58f7bcdc7d0bab4c5df086098d3d.html#_CPPv4I_NSt6size_tEEN7einsums3DimE" title="einsums::Dim"><span class="n"><span class="pre">Dim</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="function_STL_8hpp_1aaf7903a19c8a79a368737d29bcc6774c.html#_CPPv4I0DpEN7einsums13count_of_typeEDav" title="einsums::count_of_type"><span class="n"><span class="pre">count_of_type</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="structeinsums_1_1All__t.html#_CPPv4N7einsums5All_tE" title="einsums::All_t"><span class="n"><span class="pre">All_t</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">MultiIndex</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="o"><span class="pre">+</span></span><span class="w"> </span><a class="reference internal" href="function_STL_8hpp_1aaf7903a19c8a79a368737d29bcc6774c.html#_CPPv4I0DpEN7einsums13count_of_typeEDav" title="einsums::count_of_type"><span class="n"><span class="pre">count_of_type</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="typedef___Common_8hpp_1a09cb83e4ce99aafb4305bc16c03dc054.html#_CPPv4N7einsums5RangeE" title="einsums::Range"><span class="n"><span class="pre">Range</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">MultiIndex</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dims_all</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N7einsums10DiskTensor8dims_allE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums10DiskTensor10dims_indexE">
+<span id="_CPPv3N7einsums10DiskTensor10dims_indexE"></span><span id="_CPPv2N7einsums10DiskTensor10dims_indexE"></span><span id="einsums::DiskTensor::dims_index__i"></span><span class="target" id="structeinsums_1_1DiskTensor_1a4afd586a6b01d6df64cf086982caf300"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dims_index</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N7einsums10DiskTensor10dims_indexE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp">
+<span class="target" id="structeinsums_1_1DiskTensor_1adb3e9a1a66990f26dbe43521ad93f661"></span><span class="sig-name descname"><span class="pre">return</span> <span class="pre">DiskView&lt;</span> <span class="pre">T,</span> <span class="pre">count_of_type&lt;</span> <span class="pre">All_t,</span> <span class="pre">MultiIndex...</span> <span class="pre">&gt;()+count_of_type&lt;</span> <span class="pre">Range,</span> <span class="pre">MultiIndex...</span> <span class="pre">&gt;(),</span> <span class="pre">Rank</span> <span class="pre">&gt;</span> <span class="pre">*</span> <span class="pre">this</span></span></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp">
+<span class="target" id="structeinsums_1_1DiskTensor_1a58e14f981a5ea69ceaa728d4dc02dc5d"></span><span class="sig-name descname"><span class="pre">auto</span> <span class="pre">const</span> <span class="pre">DiskView&lt;</span> <span class="pre">T,</span> <span class="pre">count_of_type&lt;</span> <span class="pre">All_t,</span> <span class="pre">MultiIndex...</span> <span class="pre">&gt;()+count_of_type&lt;</span> <span class="pre">Range,</span> <span class="pre">MultiIndex...</span> <span class="pre">&gt;(),</span> <span class="pre">Rank</span> <span class="pre">&gt;</span>&#160; <span class="pre">{auto</span> <span class="pre">all_positions</span> <span class="pre">=get_array_from_tuple&lt;std::array&lt;int,</span> <span class="pre">count_of_type&lt;All_t,</span> <span class="pre">MultiIndex...&gt;()&gt;&gt;(positions_of_type&lt;All_t,</span> <span class="pre">MultiIndex...&gt;())</span></span></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="structeinsums_1_1DisableOMPThreads.html" class="btn btn-neutral float-left" title="Struct DisableOMPThreads" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="structeinsums_1_1DiskView.html" class="btn btn-neutral float-right" title="Template Struct DiskView" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Einsums Developers.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

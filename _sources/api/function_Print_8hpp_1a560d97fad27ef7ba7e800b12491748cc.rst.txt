@@ -1,0 +1,14 @@
+.. _exhale_function_Print_8hpp_1a560d97fad27ef7ba7e800b12491748cc:
+
+Function print::deindent
+========================
+
+- Defined in :ref:`file_src_include_einsums_Print.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: print::deindent()
+   :project: Einsums

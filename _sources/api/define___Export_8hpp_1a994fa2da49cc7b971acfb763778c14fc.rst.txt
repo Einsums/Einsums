@@ -1,0 +1,14 @@
+.. _exhale_define___Export_8hpp_1a994fa2da49cc7b971acfb763778c14fc:
+
+Define _EXPORT
+==============
+
+- Defined in :ref:`file_src_include_einsums__Export.hpp`
+
+
+Define Documentation
+--------------------
+
+
+.. doxygendefine:: _EXPORT
+   :project: Einsums

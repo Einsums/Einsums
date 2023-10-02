@@ -1,0 +1,14 @@
+.. _exhale_variable_Sort_8hpp_1a6af813b90dff1a7a6767997c8fcc5bfb:
+
+Variable CType
+==============
+
+- Defined in :ref:`file_src_include_einsums_Sort.hpp`
+
+
+Variable Documentation
+----------------------
+
+
+.. doxygenvariable:: CType
+   :project: Einsums

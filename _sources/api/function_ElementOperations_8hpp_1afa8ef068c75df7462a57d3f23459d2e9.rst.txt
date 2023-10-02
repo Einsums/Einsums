@@ -1,0 +1,14 @@
+.. _exhale_function_ElementOperations_8hpp_1afa8ef068c75df7462a57d3f23459d2e9:
+
+Function omp_loop
+=================
+
+- Defined in :ref:`file_src_include_einsums_ElementOperations.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: omp_loop(vector&, Functor)
+   :project: Einsums

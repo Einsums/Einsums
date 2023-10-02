@@ -1,0 +1,14 @@
+.. _exhale_variable_Sort_8hpp_1a7a8d9841259eaa553dc5ae5b6734affe:
+
+Variable U
+==========
+
+- Defined in :ref:`file_src_include_einsums_Sort.hpp`
+
+
+Variable Documentation
+----------------------
+
+
+.. doxygenvariable:: U
+   :project: Einsums

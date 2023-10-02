@@ -1,0 +1,14 @@
+.. _exhale_function_TensorAlgebra_8hpp_1a5f861c0de88cdcc76dc96a496da67e42:
+
+Template Function _get_n
+========================
+
+- Defined in :ref:`file_src_include_einsums_TensorAlgebra.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: _get_n()
+   :project: Einsums

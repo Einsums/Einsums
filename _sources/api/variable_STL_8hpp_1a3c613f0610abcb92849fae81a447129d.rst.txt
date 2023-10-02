@@ -1,0 +1,14 @@
+.. _exhale_variable_STL_8hpp_1a3c613f0610abcb92849fae81a447129d:
+
+Variable einsums::is_smart_pointer_v
+====================================
+
+- Defined in :ref:`file_src_include_einsums_STL.hpp`
+
+
+Variable Documentation
+----------------------
+
+
+.. doxygenvariable:: einsums::is_smart_pointer_v
+   :project: Einsums

@@ -1,0 +1,14 @@
+.. _exhale_function___TensorAlgebraUtilities_8hpp_1ad75ec242d11add90a844d11e02b8bb2c:
+
+Template Function detail::is_same_ordering
+==========================================
+
+- Defined in :ref:`file_src_include_einsums__TensorAlgebraUtilities.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: detail::is_same_ordering(const std::tuple<PositionsInX...>&, const std::tuple<PositionsInY...>&)
+   :project: Einsums

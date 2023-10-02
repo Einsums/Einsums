@@ -1,0 +1,29 @@
+.. _exhale_struct_structeinsums_1_1detail_1_1TensorBase:
+
+Template Struct TensorBase
+==========================
+
+- Defined in :ref:`file_src_include_einsums_Tensor.hpp`
+
+
+Inheritance Relationships
+-------------------------
+
+Derived Types
+*************
+
+- ``public einsums::Tensor< T, ViewRank >`` (:ref:`exhale_struct_structeinsums_1_1Tensor`)
+- ``public einsums::DiskTensor< T, Rank >`` (:ref:`exhale_struct_structeinsums_1_1DiskTensor`)
+- ``public einsums::Tensor< T, Rank >`` (:ref:`exhale_struct_structeinsums_1_1Tensor`)
+- ``public einsums::TensorView< T, Rank >`` (:ref:`exhale_struct_structeinsums_1_1TensorView`)
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: einsums::detail::TensorBase
+   :project: Einsums
+   :members:
+   :protected-members:
+   :undoc-members:

@@ -1,0 +1,14 @@
+.. _exhale_function_STL_8hpp_1aab23ab81a5f1dc2f0e39d0eb88a234bc:
+
+Function einsums::rtrim_copy
+============================
+
+- Defined in :ref:`file_src_include_einsums_STL.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: einsums::rtrim_copy(std::string)
+   :project: Einsums

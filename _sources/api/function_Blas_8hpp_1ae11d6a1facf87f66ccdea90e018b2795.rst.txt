@@ -1,0 +1,14 @@
+.. _exhale_function_Blas_8hpp_1ae11d6a1facf87f66ccdea90e018b2795:
+
+Specialized Template Function einsums::blas::syev< float >
+==========================================================
+
+- Defined in :ref:`file_src_include_einsums_Blas.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: einsums::blas::syev< float >(char, char, eint, float *, eint, float *, float *, eint)
+   :project: Einsums

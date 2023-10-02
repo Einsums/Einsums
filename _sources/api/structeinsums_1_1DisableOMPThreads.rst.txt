@@ -1,0 +1,17 @@
+.. _exhale_struct_structeinsums_1_1DisableOMPThreads:
+
+Struct DisableOMPThreads
+========================
+
+- Defined in :ref:`file_src_include_einsums_Utilities.hpp`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: einsums::DisableOMPThreads
+   :project: Einsums
+   :members:
+   :protected-members:
+   :undoc-members:

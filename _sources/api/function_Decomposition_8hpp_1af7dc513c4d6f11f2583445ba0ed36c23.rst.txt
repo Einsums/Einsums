@@ -1,0 +1,14 @@
+.. _exhale_function_Decomposition_8hpp_1af7dc513c4d6f11f2583445ba0ed36c23:
+
+Template Function parafac_reconstruct
+=====================================
+
+- Defined in :ref:`file_src_include_einsums_Decomposition.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: parafac_reconstruct(const std::vector<Tensor<TType, 2>>&)
+   :project: Einsums

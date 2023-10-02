@@ -1,0 +1,14 @@
+.. _exhale_function_Utilities_8hpp_1af9d509b6e326b5fbb88d89b9bd558a63:
+
+Template Function einsums::create_tensor_like(const std::string, const TensorType<DataType, Rank>&)
+===================================================================================================
+
+- Defined in :ref:`file_src_include_einsums_Utilities.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: einsums::create_tensor_like(const std::string, const TensorType<DataType, Rank>&)
+   :project: Einsums

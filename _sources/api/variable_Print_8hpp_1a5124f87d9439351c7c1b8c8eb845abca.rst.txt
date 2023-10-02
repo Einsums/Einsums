@@ -1,0 +1,14 @@
+.. _exhale_variable_Print_8hpp_1a5124f87d9439351c7c1b8c8eb845abca:
+
+Variable detail::format
+=======================
+
+- Defined in :ref:`file_src_include_einsums_Print.hpp`
+
+
+Variable Documentation
+----------------------
+
+
+.. doxygenvariable:: detail::format
+   :project: Einsums

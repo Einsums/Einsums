@@ -1,0 +1,14 @@
+.. _exhale_function_Tensor_8hpp_1a0da45c93e1e370c62628e89291965f50:
+
+Template Function einsums::create_disk_tensor
+=============================================
+
+- Defined in :ref:`file_src_include_einsums_Tensor.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: einsums::create_disk_tensor(h5::fd_t&, const std::string, Args...)
+   :project: Einsums

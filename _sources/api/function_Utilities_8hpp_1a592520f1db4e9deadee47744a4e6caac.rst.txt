@@ -1,0 +1,14 @@
+.. _exhale_function_Utilities_8hpp_1a592520f1db4e9deadee47744a4e6caac:
+
+Template Function einsums::divmod
+=================================
+
+- Defined in :ref:`file_src_include_einsums_Utilities.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: einsums::divmod(T, T)
+   :project: Einsums

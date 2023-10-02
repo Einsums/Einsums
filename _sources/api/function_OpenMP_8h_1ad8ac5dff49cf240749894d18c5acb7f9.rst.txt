@@ -1,0 +1,14 @@
+.. _exhale_function_OpenMP_8h_1ad8ac5dff49cf240749894d18c5acb7f9:
+
+Function omp_get_num_threads
+============================
+
+- Defined in :ref:`file_src_include_einsums_OpenMP.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: omp_get_num_threads()
+   :project: Einsums

@@ -1,0 +1,14 @@
+.. _exhale_function___TensorAlgebraUtilities_8hpp_1a9192433d0e039f86b1b7047d14a6c888:
+
+Template Function detail::unique_find_type_with_position
+========================================================
+
+- Defined in :ref:`file_src_include_einsums__TensorAlgebraUtilities.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: detail::unique_find_type_with_position(const std::tuple<Ts...>&, const std::tuple<Us...>&)
+   :project: Einsums

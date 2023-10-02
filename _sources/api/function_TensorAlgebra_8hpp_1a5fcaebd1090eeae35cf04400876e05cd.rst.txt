@@ -1,0 +1,14 @@
+.. _exhale_function_TensorAlgebra_8hpp_1a5fcaebd1090eeae35cf04400876e05cd:
+
+Template Function khatri_rao
+============================
+
+- Defined in :ref:`file_src_include_einsums_TensorAlgebra.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: khatri_rao(const std::tuple<AIndices...>&, const AType<T, ARank>&, const std::tuple<BIndices...>&, const BType<T, BRank>&)
+   :project: Einsums

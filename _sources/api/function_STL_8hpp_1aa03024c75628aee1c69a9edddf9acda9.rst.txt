@@ -1,0 +1,14 @@
+.. _exhale_function_STL_8hpp_1aa03024c75628aee1c69a9edddf9acda9:
+
+Function einsums::rtrim
+=======================
+
+- Defined in :ref:`file_src_include_einsums_STL.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: einsums::rtrim(std::string&)
+   :project: Einsums

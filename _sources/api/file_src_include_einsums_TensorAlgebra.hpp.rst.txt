@@ -1,0 +1,119 @@
+
+.. _file_src_include_einsums_TensorAlgebra.hpp:
+
+File TensorAlgebra.hpp
+======================
+
+|exhale_lsh| :ref:`Parent directory <dir_src_include_einsums>` (``src/include/einsums``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/include/einsums/TensorAlgebra.hpp``)
+------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_include_einsums_TensorAlgebra.hpp.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``algorithm``
+
+- ``cmath``
+
+- ``complex``
+
+- ``cstddef``
+
+- ``einsums/LinearAlgebra.hpp`` (:ref:`file_src_include_einsums_LinearAlgebra.hpp`)
+
+- ``einsums/OpenMP.h`` (:ref:`file_src_include_einsums_OpenMP.h`)
+
+- ``einsums/Print.hpp`` (:ref:`file_src_include_einsums_Print.hpp`)
+
+- ``einsums/STL.hpp`` (:ref:`file_src_include_einsums_STL.hpp`)
+
+- ``einsums/Section.hpp`` (:ref:`file_src_include_einsums_Section.hpp`)
+
+- ``einsums/Tensor.hpp`` (:ref:`file_src_include_einsums_Tensor.hpp`)
+
+- ``einsums/Timer.hpp`` (:ref:`file_src_include_einsums_Timer.hpp`)
+
+- ``einsums/_Common.hpp`` (:ref:`file_src_include_einsums__Common.hpp`)
+
+- ``einsums/_Compiler.hpp`` (:ref:`file_src_include_einsums__Compiler.hpp`)
+
+- ``einsums/_Index.hpp`` (:ref:`file_src_include_einsums__Index.hpp`)
+
+- ``einsums/_TensorAlgebraUtilities.hpp`` (:ref:`file_src_include_einsums__TensorAlgebraUtilities.hpp`)
+
+- ``functional``
+
+- ``numeric``
+
+- ``sstream``
+
+- ``stdexcept``
+
+- ``string``
+
+- ``tuple``
+
+- ``type_traits``
+
+- ``utility``
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_src_include_einsums_Decomposition.hpp`
+
+
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_TensorAlgebra_8hpp_1a5f861c0de88cdcc76dc96a496da67e42`
+
+- :ref:`exhale_function_TensorAlgebra_8hpp_1aae553c228b456f2927cd5db07228d552`
+
+- :ref:`exhale_function_TensorAlgebra_8hpp_1a58484bb3eb6f77b203d3a8a44e0df290`
+
+- :ref:`exhale_function_TensorAlgebra_8hpp_1aeb8838553327473b2a2318504a7cd172`
+
+- :ref:`exhale_function_TensorAlgebra_8hpp_1a2ed28c8691d905dfe2114ac48ff4e8b6`
+
+- :ref:`exhale_function_TensorAlgebra_8hpp_1a246d59e4e7593ef40351842aa56607e4`
+
+- :ref:`exhale_function_TensorAlgebra_8hpp_1a3cb2c61d561f0adb90793e8157c8c782`
+
+- :ref:`exhale_function_TensorAlgebra_8hpp_1ae7fe839200a6f4a80762ce2a6e9cd4dc`
+
+- :ref:`exhale_function_TensorAlgebra_8hpp_1a4d0f9a1d44fb7b7c6247002de00c0e7b`
+
+- :ref:`exhale_function_TensorAlgebra_8hpp_1a2606a5c3b67efe679232d1834e647c91`
+
+- :ref:`exhale_function_TensorAlgebra_8hpp_1a25194158b9426924b60d31ea3de048d6`
+
+- :ref:`exhale_function_TensorAlgebra_8hpp_1a5fcaebd1090eeae35cf04400876e05cd`
+
+- :ref:`exhale_function_TensorAlgebra_8hpp_1af7145520381d665a1b763872aca52b0d`
+

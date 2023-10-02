@@ -1,0 +1,14 @@
+.. _exhale_function_Utilities_8hpp_1aac63a20aeed69833a429f7bc70345cc1:
+
+Template Function einsums::create_ones_tensor
+=============================================
+
+- Defined in :ref:`file_src_include_einsums_Utilities.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: einsums::create_ones_tensor(const std::string&, MultiIndex...)
+   :project: Einsums

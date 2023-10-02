@@ -1,0 +1,14 @@
+.. _exhale_function_ElementOperations_8hpp_1ac769b8e869ec5ad89f832168c171d90a:
+
+Template Function exp
+=====================
+
+- Defined in :ref:`file_src_include_einsums_ElementOperations.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: exp(const TensorType<T, Rank>&)
+   :project: Einsums

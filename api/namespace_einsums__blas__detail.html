@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Namespace einsums::blas::detail &mdash; Einsums 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/collapsible-lists/css/tree_view.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js"></script>
+        <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Namespace einsums::detail" href="namespace_einsums__detail.html" />
+    <link rel="prev" title="Namespace einsums::blas" href="namespace_einsums__blas.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Einsums
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="library_root.html">Library API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="library_root.html#file-hierarchy">File Hierarchy</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="library_root.html#full-api">Full API</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="library_root.html#namespaces">Namespaces</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="namespace_detail.html">Namespace detail</a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace_einsums.html">Namespace einsums</a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace_einsums__Arguments.html">Namespace einsums::Arguments</a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace_einsums__Arguments__Detail.html">Namespace einsums::Arguments::Detail</a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace_einsums__blas.html">Namespace einsums::blas</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Namespace einsums::blas::detail</a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace_einsums__detail.html">Namespace einsums::detail</a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace_einsums__Detail.html">Namespace einsums::Detail</a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace_einsums__fft.html">Namespace einsums::fft</a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace_einsums__fft__detail.html">Namespace einsums::fft::detail</a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace_einsums__polynomial.html">Namespace einsums::polynomial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace_einsums__polynomial__detail.html">Namespace einsums::polynomial::detail</a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace_einsums__state.html">Namespace einsums::state</a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace_einsums__tensor_algebra.html">Namespace einsums::tensor_algebra</a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace_einsums__tensor_algebra__index.html">Namespace einsums::tensor_algebra::index</a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace_einsums__timer.html">Namespace einsums::timer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace_h5.html">Namespace h5</a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace_h5__impl.html">Namespace h5::impl</a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace_print.html">Namespace print</a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace_std.html">Namespace std</a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace_std__conditional.html">Namespace std::conditional</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="library_root.html#classes-and-structs">Classes and Structs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="library_root.html#enums">Enums</a></li>
+<li class="toctree-l3"><a class="reference internal" href="library_root.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="library_root.html#variables">Variables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="library_root.html#defines">Defines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="library_root.html#typedefs">Typedefs</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Einsums</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="library_root.html">Library API</a></li>
+      <li class="breadcrumb-item active">Namespace einsums::blas::detail</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/namespace_einsums__blas__detail.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="namespace-einsums-blas-detail">
+<span id="id1"></span><h1>Namespace einsums::blas::detail<a class="headerlink" href="#namespace-einsums-blas-detail" title="Permalink to this headline"></a></h1>
+<div class="contents local topic" id="contents">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#detailed-description" id="id2">Detailed Description</a></p></li>
+<li><p><a class="reference internal" href="#functions" id="id3">Functions</a></p></li>
+</ul>
+</div>
+<section id="detailed-description">
+<h2>Detailed Description<a class="headerlink" href="#detailed-description" title="Permalink to this headline"></a></h2>
+<p>Performs matrix multiplication for general square matices of type double.</p>
+<p>Performs matrix vector multiplication.</p>
+<p>Performs symmetric matrix diagonalization.</p>
+<p>Computes all eigenvalues and, optionally, eigenvectors of a Hermitian matrix.</p>
+<p>Computes the solution to system of linear equations A * x = B for general matrices.</p>
+<p>Return the value of the 1-norm, Frobenius norm, infinity-norm, or the largest absolute value of any element of a general rectangular matrix</p>
+<p>Computes the singular value decomposition of a general rectangular matrix using a divide and conquer method.</p>
+<p>Computes a QR factorizaton (Useful for orthonormalizing matrices)</p>
+<p>Returns the orthogonal/unitary matrix Q from the output of dgeqrf</p>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ae48cf55d5a6287e88f90c0f33528db0d.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1ae48cf55d5a6287e88f90c0f33528db0d"><span class="std std-ref">Function einsums::blas::detail::caxpby</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a7d8ba54b5148fa8df65ebe59595d1590.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a7d8ba54b5148fa8df65ebe59595d1590"><span class="std std-ref">Function einsums::blas::detail::caxpy</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a900c1ac210a874d9927facaf9f6316e7.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a900c1ac210a874d9927facaf9f6316e7"><span class="std std-ref">Function einsums::blas::detail::cdot</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a742fec30619c818b05771fff850e3c9c.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a742fec30619c818b05771fff850e3c9c"><span class="std std-ref">Function einsums::blas::detail::cgemm</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a4e1544381fa03e0e910accc4caabf0d7.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a4e1544381fa03e0e910accc4caabf0d7"><span class="std std-ref">Function einsums::blas::detail::cgemv</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ab4d24cf06496cace303b6321f3e033d9.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1ab4d24cf06496cace303b6321f3e033d9"><span class="std std-ref">Function einsums::blas::detail::cgeqrf</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1abd9f68568c12f97b61fc04ab674a238b.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1abd9f68568c12f97b61fc04ab674a238b"><span class="std std-ref">Function einsums::blas::detail::cger</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a9764b86a8d5ca6808c1bee0f1701650e.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a9764b86a8d5ca6808c1bee0f1701650e"><span class="std std-ref">Function einsums::blas::detail::cgesdd</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a65ab55a04ac95152945d08a7e508d29d.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a65ab55a04ac95152945d08a7e508d29d"><span class="std std-ref">Function einsums::blas::detail::cgesv</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1aaccb411d2cd89c43e4844373eabd2d84.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1aaccb411d2cd89c43e4844373eabd2d84"><span class="std std-ref">Function einsums::blas::detail::cgetrf</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a6d1e615b0566eafba187d00beaee8f83.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a6d1e615b0566eafba187d00beaee8f83"><span class="std std-ref">Function einsums::blas::detail::cgetri</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a4f2a5d01b4d7570c9d23793f887a5334.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a4f2a5d01b4d7570c9d23793f887a5334"><span class="std std-ref">Function einsums::blas::detail::cheev</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a8dbcfc2fae5f0888e48d519936a06e20.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a8dbcfc2fae5f0888e48d519936a06e20"><span class="std std-ref">Function einsums::blas::detail::clange</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ab8d833d74430135f80f501517ef8db8d.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1ab8d833d74430135f80f501517ef8db8d"><span class="std std-ref">Function einsums::blas::detail::classq</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a8ec3890b94d6a24bbf8a5b5158db5e13.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a8ec3890b94d6a24bbf8a5b5158db5e13"><span class="std std-ref">Function einsums::blas::detail::cscal</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a2139d9625e9b0679a7723391b7749f97.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a2139d9625e9b0679a7723391b7749f97"><span class="std std-ref">Function einsums::blas::detail::csscal</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a5bcd535f084c11e9dc178c3c5160bace.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a5bcd535f084c11e9dc178c3c5160bace"><span class="std std-ref">Function einsums::blas::detail::ctrsyl</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a163dfd0ef29a45fceb83a6aefa35c7c9.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a163dfd0ef29a45fceb83a6aefa35c7c9"><span class="std std-ref">Function einsums::blas::detail::cungqr</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a100291196e8a507676666b957e6cd7d9.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a100291196e8a507676666b957e6cd7d9"><span class="std std-ref">Function einsums::blas::detail::daxpby</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a410ebf08875885f2e190230112ea5bdf.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a410ebf08875885f2e190230112ea5bdf"><span class="std std-ref">Function einsums::blas::detail::daxpy</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a0f6466ecf110fabe41e35ebb74bc3127.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a0f6466ecf110fabe41e35ebb74bc3127"><span class="std std-ref">Function einsums::blas::detail::ddot</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a62b644b6a055cc8a2bee8b99506fe729.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a62b644b6a055cc8a2bee8b99506fe729"><span class="std std-ref">Function einsums::blas::detail::dgees</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a34dfe2ffeed5ce7848c011e533b934c7.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a34dfe2ffeed5ce7848c011e533b934c7"><span class="std std-ref">Function einsums::blas::detail::dgemm</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a06f76c557450cb9cf98c0ab0be9550fa.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a06f76c557450cb9cf98c0ab0be9550fa"><span class="std std-ref">Function einsums::blas::detail::dgemv</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a8f54f04e7aac71408c02ab35532c1fbb.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a8f54f04e7aac71408c02ab35532c1fbb"><span class="std std-ref">Function einsums::blas::detail::dgeqrf</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1afe7ff8a473f278fd20ee969218d9056a.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1afe7ff8a473f278fd20ee969218d9056a"><span class="std std-ref">Function einsums::blas::detail::dger</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a4ce1d5a604c356c8d0c2274f12c5923a.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a4ce1d5a604c356c8d0c2274f12c5923a"><span class="std std-ref">Function einsums::blas::detail::dgesdd</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1af028279ab1a202bed67569e7fced8fdf.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1af028279ab1a202bed67569e7fced8fdf"><span class="std std-ref">Function einsums::blas::detail::dgesv</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a58288f736f23d8e0fc8ab2f87e446164.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a58288f736f23d8e0fc8ab2f87e446164"><span class="std std-ref">Function einsums::blas::detail::dgesvd</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a8e8e6b89a09d1c801169947a30623b84.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a8e8e6b89a09d1c801169947a30623b84"><span class="std std-ref">Function einsums::blas::detail::dgetrf</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a98e8ed5855f34156b552cdc113e3c074.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a98e8ed5855f34156b552cdc113e3c074"><span class="std std-ref">Function einsums::blas::detail::dgetri</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a58f14087ba238c304c197f7170c2c6af.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a58f14087ba238c304c197f7170c2c6af"><span class="std std-ref">Function einsums::blas::detail::dlange</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a8480b4ab8b36e38771e20c1f268c7c57.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a8480b4ab8b36e38771e20c1f268c7c57"><span class="std std-ref">Function einsums::blas::detail::dlassq</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a1719896c98052dafd6fbdfbe6828cb66.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a1719896c98052dafd6fbdfbe6828cb66"><span class="std std-ref">Function einsums::blas::detail::dorgqr</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ad75a53174b2d3bbc9db86159f77e70bc.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1ad75a53174b2d3bbc9db86159f77e70bc"><span class="std std-ref">Function einsums::blas::detail::dscal</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a6520be382f926a904e0d1561e97c0216.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a6520be382f926a904e0d1561e97c0216"><span class="std std-ref">Function einsums::blas::detail::dsyev</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a3a8a94e262d01c12fdac89f3d72c95b6.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a3a8a94e262d01c12fdac89f3d72c95b6"><span class="std std-ref">Function einsums::blas::detail::dtrsyl</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a9ede82fb100d72c4f965df103059d25e.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a9ede82fb100d72c4f965df103059d25e"><span class="std std-ref">Function einsums::blas::detail::saxpby</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ad98b0703a46f3ba33c956796e4783c6c.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1ad98b0703a46f3ba33c956796e4783c6c"><span class="std std-ref">Function einsums::blas::detail::saxpy</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ac2ee5c68b37a6582991f1a7d9e32f10d.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1ac2ee5c68b37a6582991f1a7d9e32f10d"><span class="std std-ref">Function einsums::blas::detail::sdot</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a761270eabfa0a3e2431b1098cd510ba5.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a761270eabfa0a3e2431b1098cd510ba5"><span class="std std-ref">Function einsums::blas::detail::sgees</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a0456bda907412ec58b8ea03c12e715fd.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a0456bda907412ec58b8ea03c12e715fd"><span class="std std-ref">Function einsums::blas::detail::sgemm</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1af9e4d8820e6bc5ab837be638d70d9769.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1af9e4d8820e6bc5ab837be638d70d9769"><span class="std std-ref">Function einsums::blas::detail::sgemv</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ad0140740c1fd9d632039525b084ebb0d.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1ad0140740c1fd9d632039525b084ebb0d"><span class="std std-ref">Function einsums::blas::detail::sgeqrf</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a615786230b63e1309ee3e109474db7ee.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a615786230b63e1309ee3e109474db7ee"><span class="std std-ref">Function einsums::blas::detail::sger</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a4d0c3d38d25177730e3cfde07de98ee7.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a4d0c3d38d25177730e3cfde07de98ee7"><span class="std std-ref">Function einsums::blas::detail::sgesdd</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a1bced07f43ed3a576a6c6357743abd25.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a1bced07f43ed3a576a6c6357743abd25"><span class="std std-ref">Function einsums::blas::detail::sgesv</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ab60b982892ecce035d0794b867ee9ed6.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1ab60b982892ecce035d0794b867ee9ed6"><span class="std std-ref">Function einsums::blas::detail::sgesvd</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a52e113c760617d71ebeab54fca6fb3ff.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a52e113c760617d71ebeab54fca6fb3ff"><span class="std std-ref">Function einsums::blas::detail::sgetrf</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1af4253f73acba528522c5169146aa843b.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1af4253f73acba528522c5169146aa843b"><span class="std std-ref">Function einsums::blas::detail::sgetri</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1aed5cc5c17dd8b95923edb97bc668359d.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1aed5cc5c17dd8b95923edb97bc668359d"><span class="std std-ref">Function einsums::blas::detail::slange</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a164689273ce367d9fc7d1c97ec2ff385.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a164689273ce367d9fc7d1c97ec2ff385"><span class="std std-ref">Function einsums::blas::detail::slassq</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a7150cf17aa5e541685b4cefa555ec4b6.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a7150cf17aa5e541685b4cefa555ec4b6"><span class="std std-ref">Function einsums::blas::detail::sorgqr</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a38410e4ed48571e4538856e7228d0d3f.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a38410e4ed48571e4538856e7228d0d3f"><span class="std std-ref">Function einsums::blas::detail::sscal</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1af142b09ad819ec4a6573e9f13b56e7f8.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1af142b09ad819ec4a6573e9f13b56e7f8"><span class="std std-ref">Function einsums::blas::detail::ssyev</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a149f4c3da524eab0e3748b469131a08d.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a149f4c3da524eab0e3748b469131a08d"><span class="std std-ref">Function einsums::blas::detail::strsyl</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1aaee21e6604aba68b1df6593e68f4fd3c.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1aaee21e6604aba68b1df6593e68f4fd3c"><span class="std std-ref">Function einsums::blas::detail::zaxpby</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ab717f231b7ffa95dfa2c665ba3387256.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1ab717f231b7ffa95dfa2c665ba3387256"><span class="std std-ref">Function einsums::blas::detail::zaxpy</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a3ee38c06483b62d003e39c8e573efedd.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a3ee38c06483b62d003e39c8e573efedd"><span class="std std-ref">Function einsums::blas::detail::zdot</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ae369fb0e6b0cb17e3e22f0467505a4eb.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1ae369fb0e6b0cb17e3e22f0467505a4eb"><span class="std std-ref">Function einsums::blas::detail::zdscal</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a035d1623f58cff835aa5175d56f4fd08.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a035d1623f58cff835aa5175d56f4fd08"><span class="std std-ref">Function einsums::blas::detail::zgemm</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ad91dd28fa3049500d757b8d61a418257.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1ad91dd28fa3049500d757b8d61a418257"><span class="std std-ref">Function einsums::blas::detail::zgemv</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a8b7daaa96a156edefe566975986c4870.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a8b7daaa96a156edefe566975986c4870"><span class="std std-ref">Function einsums::blas::detail::zgeqrf</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1affdc6a9f8d3cf4f72bbf03a50417e833.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1affdc6a9f8d3cf4f72bbf03a50417e833"><span class="std std-ref">Function einsums::blas::detail::zger</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a38d8beae64f0e7f10de3f4fee5dbb4d2.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a38d8beae64f0e7f10de3f4fee5dbb4d2"><span class="std std-ref">Function einsums::blas::detail::zgesdd</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a021b2cdd54be3dc86b8dbc409ab151ed.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a021b2cdd54be3dc86b8dbc409ab151ed"><span class="std std-ref">Function einsums::blas::detail::zgesv</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a61a3e49b48c5e696616c6a6dac95ec57.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a61a3e49b48c5e696616c6a6dac95ec57"><span class="std std-ref">Function einsums::blas::detail::zgetrf</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a2ce7330bbe632a000f38d18b32db161e.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a2ce7330bbe632a000f38d18b32db161e"><span class="std std-ref">Function einsums::blas::detail::zgetri</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a49228af8ce28f00da2f8e74b399c6db4.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a49228af8ce28f00da2f8e74b399c6db4"><span class="std std-ref">Function einsums::blas::detail::zheev</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ad7c46ed84bcfd99a44d69657af766ec4.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1ad7c46ed84bcfd99a44d69657af766ec4"><span class="std std-ref">Function einsums::blas::detail::zlange</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1af88d89c82bf144eabd4b2f88c2ba9e37.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1af88d89c82bf144eabd4b2f88c2ba9e37"><span class="std std-ref">Function einsums::blas::detail::zlassq</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1af66715faadf72de8748f465f117e0c7a.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1af66715faadf72de8748f465f117e0c7a"><span class="std std-ref">Function einsums::blas::detail::zscal</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a6429dbdb03d2135a0e8d1a6c9551168c.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a6429dbdb03d2135a0e8d1a6c9551168c"><span class="std std-ref">Function einsums::blas::detail::ztrsyl</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a14cd6011fd9fe84027e25bc4c52471cb.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a14cd6011fd9fe84027e25bc4c52471cb"><span class="std std-ref">Function einsums::blas::detail::zungqr</span></a></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="namespace_einsums__blas.html" class="btn btn-neutral float-left" title="Namespace einsums::blas" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="namespace_einsums__detail.html" class="btn btn-neutral float-right" title="Namespace einsums::detail" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Einsums Developers.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

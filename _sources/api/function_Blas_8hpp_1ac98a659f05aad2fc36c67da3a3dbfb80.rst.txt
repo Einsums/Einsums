@@ -1,0 +1,14 @@
+.. _exhale_function_Blas_8hpp_1ac98a659f05aad2fc36c67da3a3dbfb80:
+
+Function einsums::blas::initialize
+==================================
+
+- Defined in :ref:`file_src_include_einsums_Blas.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: einsums::blas::initialize()
+   :project: Einsums

@@ -1,0 +1,14 @@
+.. _exhale_variable_Decomposition_8hpp_1a2eaadb274d4c09df8777bb0c87b6fd66:
+
+Variable rounding
+=================
+
+- Defined in :ref:`file_src_include_einsums_Decomposition.hpp`
+
+
+Variable Documentation
+----------------------
+
+
+.. doxygenvariable:: rounding
+   :project: Einsums

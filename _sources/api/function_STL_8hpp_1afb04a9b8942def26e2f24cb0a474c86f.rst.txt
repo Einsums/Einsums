@@ -1,0 +1,14 @@
+.. _exhale_function_STL_8hpp_1afb04a9b8942def26e2f24cb0a474c86f:
+
+Template Function einsums::create_array
+=======================================
+
+- Defined in :ref:`file_src_include_einsums_STL.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: einsums::create_array(const T&)
+   :project: Einsums

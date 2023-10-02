@@ -1,0 +1,14 @@
+.. _exhale_define___Compiler_8hpp_1ae4f0162b19a7aa3a28eb79cebf1580af:
+
+Define EINSUMS_OMP_SIMD
+=======================
+
+- Defined in :ref:`file_src_include_einsums__Compiler.hpp`
+
+
+Define Documentation
+--------------------
+
+
+.. doxygendefine:: EINSUMS_OMP_SIMD
+   :project: Einsums

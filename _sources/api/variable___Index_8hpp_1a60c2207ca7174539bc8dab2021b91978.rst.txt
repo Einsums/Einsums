@@ -1,0 +1,14 @@
+.. _exhale_variable___Index_8hpp_1a60c2207ca7174539bc8dab2021b91978:
+
+Variable einsums::tensor_algebra::index::D
+==========================================
+
+- Defined in :ref:`file_src_include_einsums__Index.hpp`
+
+
+Variable Documentation
+----------------------
+
+
+.. doxygenvariable:: einsums::tensor_algebra::index::D
+   :project: Einsums

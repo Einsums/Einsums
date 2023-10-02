@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceeinsums_1_1blas_1_1detail_1aaee21e6604aba68b1df6593e68f4fd3c:
+
+Function einsums::blas::detail::zaxpby
+======================================
+
+- Defined in :ref:`file_src_include_einsums_Blas.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: einsums::blas::detail::zaxpby(eint, std::complex<double>, const std::complex<double> *, eint, std::complex<double>, std::complex<double> *, eint)
+   :project: Einsums

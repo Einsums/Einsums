@@ -1,0 +1,14 @@
+.. _exhale_function_Utilities_8hpp_1afe42538de80e0b3b729b8a71218d2c26:
+
+Template Function einsums::create_identity_tensor
+=================================================
+
+- Defined in :ref:`file_src_include_einsums_Utilities.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: einsums::create_identity_tensor(const std::string&, MultiIndex...)
+   :project: Einsums

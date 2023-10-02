@@ -1,0 +1,17 @@
+.. _exhale_struct_structeinsums_1_1intersect:
+
+Template Struct intersect
+=========================
+
+- Defined in :ref:`file_src_include_einsums_STL.hpp`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: einsums::intersect
+   :project: Einsums
+   :members:
+   :protected-members:
+   :undoc-members:

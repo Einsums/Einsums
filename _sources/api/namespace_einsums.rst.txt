@@ -1,0 +1,272 @@
+
+.. _namespace_einsums:
+
+Namespace einsums
+=================
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_einsums__Arguments`
+
+- :ref:`namespace_einsums__blas`
+
+- :ref:`namespace_einsums__Detail`
+
+- :ref:`namespace_einsums__detail`
+
+- :ref:`namespace_einsums__fft`
+
+- :ref:`namespace_einsums__polynomial`
+
+- :ref:`namespace_einsums__state`
+
+- :ref:`namespace_einsums__tensor_algebra`
+
+- :ref:`namespace_einsums__timer`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structeinsums_1_1add__complex`
+
+- :ref:`exhale_struct_structeinsums_1_1add__complex_3_01std_1_1complex_3_01T_01_4_01_4`
+
+- :ref:`exhale_struct_structeinsums_1_1AlignedAllocator_1_1rebind`
+
+- :ref:`exhale_struct_structeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_1_1rebind`
+
+- :ref:`exhale_struct_structeinsums_1_1AlignedAllocator_3_01void_00_01Align_01_4_1_1rebind`
+
+- :ref:`exhale_struct_structeinsums_1_1All__t`
+
+- :ref:`exhale_struct_structeinsums_1_1bool__pack`
+
+- :ref:`exhale_struct_structeinsums_1_1c__unique`
+
+- :ref:`exhale_struct_structeinsums_1_1CircularBuffer`
+
+- :ref:`exhale_struct_structeinsums_1_1complex__type`
+
+- :ref:`exhale_struct_structeinsums_1_1complex__type_3_01std_1_1complex_3_01T_01_4_01_4`
+
+- :ref:`exhale_struct_structeinsums_1_1contains`
+
+- :ref:`exhale_struct_structeinsums_1_1contains_3_01std_1_1tuple_3_01Car_00_01Cdr_8_8_8_01_4_00_01Needle_01_4`
+
+- :ref:`exhale_struct_structeinsums_1_1contains_3_01std_1_1tuple_3_01Needle_00_01Cdr_8_8_8_01_4_00_01Needle_01_4`
+
+- :ref:`exhale_struct_structeinsums_1_1contains_3_01std_1_1tuple_3_4_00_01Needle_01_4`
+
+- :ref:`exhale_struct_structeinsums_1_1difference`
+
+- :ref:`exhale_struct_structeinsums_1_1DisableOMPNestedScope`
+
+- :ref:`exhale_struct_structeinsums_1_1DisableOMPThreads`
+
+- :ref:`exhale_struct_structeinsums_1_1DiskTensor`
+
+- :ref:`exhale_struct_structeinsums_1_1DiskView`
+
+- :ref:`exhale_struct_structeinsums_1_1Empty`
+
+- :ref:`exhale_struct_structeinsums_1_1ErrorOr`
+
+- :ref:`exhale_struct_structeinsums_1_1ErrorOr_3_01void_00_01ErrorType_01_4`
+
+- :ref:`exhale_struct_structeinsums_1_1filter`
+
+- :ref:`exhale_struct_structeinsums_1_1filter_3_01Out_00_01std_1_1tuple_3_4_01_4`
+
+- :ref:`exhale_struct_structeinsums_1_1filter_3_01std_1_1tuple_3_01Out_8_8_8_01_4_00_01std_1_1tuple_3_01InCar_00_01InCdr_8_8_8_01_4_01_4`
+
+- :ref:`exhale_struct_structeinsums_1_1intersect`
+
+- :ref:`exhale_struct_structeinsums_1_1is__complex__t`
+
+- :ref:`exhale_struct_structeinsums_1_1is__complex__t_3_01std_1_1complex_3_01T_01_4_01_4`
+
+- :ref:`exhale_struct_structeinsums_1_1is__incore__rank__tensor`
+
+- :ref:`exhale_struct_structeinsums_1_1is__ondisk__tensor`
+
+- :ref:`exhale_struct_structeinsums_1_1is__smart__pointer`
+
+- :ref:`exhale_struct_structeinsums_1_1is__smart__pointer__helper`
+
+- :ref:`exhale_struct_structeinsums_1_1is__smart__pointer__helper_3_01std_1_1shared__ptr_3_01T_01_4_01_4`
+
+- :ref:`exhale_struct_structeinsums_1_1is__smart__pointer__helper_3_01std_1_1unique__ptr_3_01T_01_4_01_4`
+
+- :ref:`exhale_struct_structeinsums_1_1is__smart__pointer__helper_3_01std_1_1weak__ptr_3_01T_01_4_01_4`
+
+- :ref:`exhale_struct_structeinsums_1_1Tensor`
+
+- :ref:`exhale_struct_structeinsums_1_1Tensor_3_01T_00_010_01_4`
+
+- :ref:`exhale_struct_structeinsums_1_1TensorView`
+
+- :ref:`exhale_class_classeinsums_1_1AlignedAllocator`
+
+- :ref:`exhale_class_classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4`
+
+- :ref:`exhale_class_classeinsums_1_1AlignedAllocator_3_01void_00_01Align_01_4`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_Utilities_8hpp_1ab4ee342b546717f2ecd37d78e9117053`
+
+- :ref:`exhale_function_Utilities_8hpp_1a2d4b148fff3374c3003cc17b4732212c`
+
+- :ref:`exhale_function_STL_8hpp_1aaf7903a19c8a79a368737d29bcc6774c`
+
+- :ref:`exhale_function_STL_8hpp_1afb04a9b8942def26e2f24cb0a474c86f`
+
+- :ref:`exhale_function_Tensor_8hpp_1a0da45c93e1e370c62628e89291965f50`
+
+- :ref:`exhale_function_Tensor_8hpp_1a2cb71e6acd999c8ca849258fa725349c`
+
+- :ref:`exhale_function_Utilities_8hpp_1afe42538de80e0b3b729b8a71218d2c26`
+
+- :ref:`exhale_function_Utilities_8hpp_1a7db0ea7c6012d620d3a12f125ce526d6`
+
+- :ref:`exhale_function_Utilities_8hpp_1aac63a20aeed69833a429f7bc70345cc1`
+
+- :ref:`exhale_function_Utilities_8hpp_1a12fd2b0340d9b97bce4df08ec6646385`
+
+- :ref:`exhale_function_Tensor_8hpp_1aacae9adfebd17ccc3adb7f2cf8dba27d`
+
+- :ref:`exhale_function_Utilities_8hpp_1af9d509b6e326b5fbb88d89b9bd558a63`
+
+- :ref:`exhale_function_Utilities_8hpp_1ab286161aa9626912f0d504d5da2b86db`
+
+- :ref:`exhale_function_STL_8hpp_1a125853eb57b4c417874a1521edcda8e5`
+
+- :ref:`exhale_function_STL_8hpp_1a467beca440a6a455d031487a19f01d6f`
+
+- :ref:`exhale_function_Utilities_8hpp_1a52d722ab4180dcce7d68c9bad2955c21`
+
+- :ref:`exhale_function_Utilities_8hpp_1aa53cbaebf7260b5384609df184066188`
+
+- :ref:`exhale_function_Utilities_8hpp_1a592520f1db4e9deadee47744a4e6caac`
+
+- :ref:`exhale_function_STL_8hpp_1aa4b66ad77ee363ab93eb41532bdffb26`
+
+- :ref:`exhale_function___Common_8hpp_1ab6b23ef4e71aac675c8dcbc1765fd33c`
+
+- :ref:`exhale_function_STL_8hpp_1a8ed453234db2c3c9b305467b9c5937af`
+
+- :ref:`exhale_function_STL_8hpp_1af1a83390a8e808084c2e6127d37cf9ea`
+
+- :ref:`exhale_function_STL_8hpp_1a1ae3ea0d36fcdfe6a8b37f24beb56502`
+
+- :ref:`exhale_function_STL_8hpp_1a46100824581c3c5823243189ce4ef41d`
+
+- :ref:`exhale_function_STL_8hpp_1a8f98b0188912397bf2396461fafb7712`
+
+- :ref:`exhale_function_Tensor_8hpp_1a64d283f84989678bc73b1af464c17ad3`
+
+- :ref:`exhale_function_STL_8hpp_1ad24da978e4fbddf56d625782645a2f17`
+
+- :ref:`exhale_function___Common_8hpp_1af8ca3d76e617a2058e2c67b67b712554`
+
+- :ref:`exhale_function_STL_8hpp_1ae6655c25633dbd707fb7b10d7826fd28`
+
+- :ref:`exhale_function_STL_8hpp_1ab48e19de37f90af3b21dd16afeb2b9fb`
+
+- :ref:`exhale_function_STL_8hpp_1a3a4beeeafc31851d6d8d0d68f4b2d980`
+
+- :ref:`exhale_function_STL_8hpp_1a1fe99228ceba1058bbb7c025da64637d`
+
+- :ref:`exhale_function_STL_8hpp_1a41f46baf5fc46d85f3937d55235fce2d`
+
+- :ref:`exhale_function_STL_8hpp_1a8f1c05882a6e5d79b05ebcd04b2aee1c`
+
+- :ref:`exhale_function_Tensor_8hpp_1ae15bc2f581377beb9da08fc8d0a7e928`
+
+- :ref:`exhale_function_Tensor_8hpp_1a8a2c7ab8f41f9c47c76bd23885d4a710`
+
+- :ref:`exhale_function_STL_8hpp_1aa03024c75628aee1c69a9edddf9acda9`
+
+- :ref:`exhale_function_STL_8hpp_1aab23ab81a5f1dc2f0e39d0eb88a234bc`
+
+- :ref:`exhale_function_STL_8hpp_1a381b41d8bcafa614456662b14104e54c`
+
+- :ref:`exhale_function_STL_8hpp_1a455770b2289c6ba485d402ee8b448512`
+
+- :ref:`exhale_function_Tensor_8hpp_1ad4b8e06472ea9229e80fb20d1e99cb15`
+
+- :ref:`exhale_function_Tensor_8hpp_1a7d6be2c45506b693c6b512e232318fd6`
+
+- :ref:`exhale_function_Tensor_8hpp_1a7bc3393b66dec35525cff395c5ae447b`
+
+- :ref:`exhale_function_Tensor_8hpp_1a3a0b2c04fe72ddbc7eb54ece078ef9e1`
+
+
+Typedefs
+--------
+
+
+- :ref:`exhale_typedef_STL_8hpp_1a2fe155a24965c156e65967297446aaac`
+
+- :ref:`exhale_typedef_STL_8hpp_1a482458f66a007214fc1c9e3a87f94a1e`
+
+- :ref:`exhale_typedef_STL_8hpp_1a8220194368e7b438aceea8614c187c6f`
+
+- :ref:`exhale_typedef_STL_8hpp_1a90e9de65fbba494c1dc9b1759ed4125b`
+
+- :ref:`exhale_typedef___Common_8hpp_1aa3bb8068c5ea647bc44ee4221a3379b3`
+
+- :ref:`exhale_typedef___Common_8hpp_1a450f97c210c704df47ec3d7013fcff47`
+
+- :ref:`exhale_typedef_STL_8hpp_1ae5f4fd81bef3ea98e2b10e7f5ebb494a`
+
+- :ref:`exhale_typedef___Common_8hpp_1a8c1a58f7bcdc7d0bab4c5df086098d3d`
+
+- :ref:`exhale_typedef___Common_8hpp_1aff88c923bdbe8f08af6cd24ba6004746`
+
+- :ref:`exhale_typedef___Common_8hpp_1aad3e81160afe0bd5149dceed90147f0a`
+
+- :ref:`exhale_typedef___Common_8hpp_1aa3f13ab28c541d9d9127de05aec1e345`
+
+- :ref:`exhale_typedef_STL_8hpp_1a78d6ca93ceb8d653c62158e06b9d5a01`
+
+- :ref:`exhale_typedef___Common_8hpp_1ac5b603e07b867507d5830186cb2ceaaf`
+
+- :ref:`exhale_typedef___Common_8hpp_1a09cb83e4ce99aafb4305bc16c03dc054`
+
+- :ref:`exhale_typedef_STL_8hpp_1a2e68ee514bee331da472f8a544b36a51`
+
+- :ref:`exhale_typedef___Common_8hpp_1a6138835e2652eaae61b1d977dd17d29c`
+
+- :ref:`exhale_typedef_STL_8hpp_1a6554852bc4eb7ae0e8b116db40393639`
+
+
+Variables
+---------
+
+
+- :ref:`exhale_variable___Common_8hpp_1a2f9e0d0a5114d52339f53d8e0b4e4c65`
+
+- :ref:`exhale_variable_STL_8hpp_1ab83342940554d9c7bd5fe82875096e65`
+
+- :ref:`exhale_variable_STL_8hpp_1a236361d3881b84362529be9118d38b6e`
+
+- :ref:`exhale_variable_STL_8hpp_1a91c5836941ae4dfd8929ead416423770`
+
+- :ref:`exhale_variable_STL_8hpp_1a3c613f0610abcb92849fae81a447129d`

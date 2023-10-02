@@ -1,0 +1,23 @@
+.. _exhale_struct_structeinsums_1_1AlignedAllocator_1_1rebind:
+
+Template Struct AlignedAllocator::rebind
+========================================
+
+- Defined in :ref:`file_src_include_einsums_STL.hpp`
+
+
+Nested Relationships
+--------------------
+
+This struct is a nested type of :ref:`exhale_class_classeinsums_1_1AlignedAllocator`.
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: einsums::AlignedAllocator::rebind
+   :project: Einsums
+   :members:
+   :protected-members:
+   :undoc-members:

@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceeinsums_1_1blas_1_1detail_1a3a8a94e262d01c12fdac89f3d72c95b6:
+
+Function einsums::blas::detail::dtrsyl
+======================================
+
+- Defined in :ref:`file_src_include_einsums_Blas.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: einsums::blas::detail::dtrsyl(char, char, eint, eint, eint, const double *, eint, const double *, eint, double *, eint, double *)
+   :project: Einsums

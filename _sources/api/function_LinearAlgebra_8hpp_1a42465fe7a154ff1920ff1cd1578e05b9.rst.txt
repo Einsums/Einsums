@@ -1,0 +1,14 @@
+.. _exhale_function_LinearAlgebra_8hpp_1a42465fe7a154ff1920ff1cd1578e05b9:
+
+Function ALIAS_TEMPLATE_FUNCTION
+================================
+
+- Defined in :ref:`file_src_include_einsums_LinearAlgebra.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: ALIAS_TEMPLATE_FUNCTION(solve_lyapunov, solve_continuous_lyapunov)
+   :project: Einsums

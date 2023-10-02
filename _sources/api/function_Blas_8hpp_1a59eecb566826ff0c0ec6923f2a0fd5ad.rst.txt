@@ -1,0 +1,14 @@
+.. _exhale_function_Blas_8hpp_1a59eecb566826ff0c0ec6923f2a0fd5ad:
+
+Specialized Template Function einsums::blas::gemm< std::complex< float > >
+==========================================================================
+
+- Defined in :ref:`file_src_include_einsums_Blas.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: einsums::blas::gemm< std::complex< float > >(char, char, eint, eint, eint, std::complex<float>, const std::complex<float> *, eint, const std::complex<float> *, eint, std::complex<float>, std::complex<float> *, eint)
+   :project: Einsums

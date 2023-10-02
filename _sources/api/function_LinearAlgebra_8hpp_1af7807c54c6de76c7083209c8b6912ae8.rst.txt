@@ -1,0 +1,14 @@
+.. _exhale_function_LinearAlgebra_8hpp_1af7807c54c6de76c7083209c8b6912ae8:
+
+Template Function gemm(const T, const AType<T, Rank>&, const BType<T, Rank>&)
+=============================================================================
+
+- Defined in :ref:`file_src_include_einsums_LinearAlgebra.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: gemm(const T, const AType<T, Rank>&, const BType<T, Rank>&)
+   :project: Einsums

@@ -1,0 +1,14 @@
+.. _exhale_function_Utilities_8hpp_1a52d722ab4180dcce7d68c9bad2955c21:
+
+Template Function einsums::diagonal
+===================================
+
+- Defined in :ref:`file_src_include_einsums_Utilities.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: einsums::diagonal(const Tensor<T, 1>&)
+   :project: Einsums

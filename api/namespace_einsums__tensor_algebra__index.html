@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Namespace einsums::tensor_algebra::index &mdash; Einsums 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/collapsible-lists/css/tree_view.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js"></script>
+        <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Namespace einsums::timer" href="namespace_einsums__timer.html" />
+    <link rel="prev" title="Namespace einsums::tensor_algebra" href="namespace_einsums__tensor_algebra.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Einsums
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="library_root.html">Library API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="library_root.html#file-hierarchy">File Hierarchy</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="library_root.html#full-api">Full API</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="library_root.html#namespaces">Namespaces</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="namespace_detail.html">Namespace detail</a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace_einsums.html">Namespace einsums</a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace_einsums__Arguments.html">Namespace einsums::Arguments</a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace_einsums__Arguments__Detail.html">Namespace einsums::Arguments::Detail</a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace_einsums__blas.html">Namespace einsums::blas</a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace_einsums__blas__detail.html">Namespace einsums::blas::detail</a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace_einsums__detail.html">Namespace einsums::detail</a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace_einsums__Detail.html">Namespace einsums::Detail</a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace_einsums__fft.html">Namespace einsums::fft</a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace_einsums__fft__detail.html">Namespace einsums::fft::detail</a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace_einsums__polynomial.html">Namespace einsums::polynomial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace_einsums__polynomial__detail.html">Namespace einsums::polynomial::detail</a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace_einsums__state.html">Namespace einsums::state</a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace_einsums__tensor_algebra.html">Namespace einsums::tensor_algebra</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Namespace einsums::tensor_algebra::index</a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace_einsums__timer.html">Namespace einsums::timer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace_h5.html">Namespace h5</a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace_h5__impl.html">Namespace h5::impl</a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace_print.html">Namespace print</a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace_std.html">Namespace std</a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace_std__conditional.html">Namespace std::conditional</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="library_root.html#classes-and-structs">Classes and Structs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="library_root.html#enums">Enums</a></li>
+<li class="toctree-l3"><a class="reference internal" href="library_root.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="library_root.html#variables">Variables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="library_root.html#defines">Defines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="library_root.html#typedefs">Typedefs</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Einsums</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="library_root.html">Library API</a></li>
+      <li class="breadcrumb-item active">Namespace einsums::tensor_algebra::index</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/namespace_einsums__tensor_algebra__index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="namespace-einsums-tensor-algebra-index">
+<span id="id1"></span><h1>Namespace einsums::tensor_algebra::index<a class="headerlink" href="#namespace-einsums-tensor-algebra-index" title="Permalink to this headline"></a></h1>
+<div class="contents local topic" id="contents">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#classes" id="id2">Classes</a></p></li>
+<li><p><a class="reference internal" href="#functions" id="id3">Functions</a></p></li>
+<li><p><a class="reference internal" href="#variables" id="id4">Variables</a></p></li>
+</ul>
+</div>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1a.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1a"><span class="std std-ref">Struct a</span></a></p></li>
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1a.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1a"><span class="std std-ref">Struct a</span></a></p></li>
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1b.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1b"><span class="std std-ref">Struct b</span></a></p></li>
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1b.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1b"><span class="std std-ref">Struct b</span></a></p></li>
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1c.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1c"><span class="std std-ref">Struct c</span></a></p></li>
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1c.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1c"><span class="std std-ref">Struct c</span></a></p></li>
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1d.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1d"><span class="std std-ref">Struct d</span></a></p></li>
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1d.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1d"><span class="std std-ref">Struct d</span></a></p></li>
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1e.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1e"><span class="std std-ref">Struct e</span></a></p></li>
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1e.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1e"><span class="std std-ref">Struct e</span></a></p></li>
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1f.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1f"><span class="std std-ref">Struct f</span></a></p></li>
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1f.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1f"><span class="std std-ref">Struct f</span></a></p></li>
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1g.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1g"><span class="std std-ref">Struct g</span></a></p></li>
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1g.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1g"><span class="std std-ref">Struct g</span></a></p></li>
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1h.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1h"><span class="std std-ref">Struct h</span></a></p></li>
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1h.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1h"><span class="std std-ref">Struct h</span></a></p></li>
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1i.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1i"><span class="std std-ref">Struct i</span></a></p></li>
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1i.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1i"><span class="std std-ref">Struct i</span></a></p></li>
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1j.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1j"><span class="std std-ref">Struct j</span></a></p></li>
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1j.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1j"><span class="std std-ref">Struct j</span></a></p></li>
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1k.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1k"><span class="std std-ref">Struct k</span></a></p></li>
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1k.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1k"><span class="std std-ref">Struct k</span></a></p></li>
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1l.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1l"><span class="std std-ref">Struct l</span></a></p></li>
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1l.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1l"><span class="std std-ref">Struct l</span></a></p></li>
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1LabelBase.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1labelbase"><span class="std std-ref">Struct LabelBase</span></a></p></li>
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1m.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1m"><span class="std std-ref">Struct m</span></a></p></li>
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1m.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1m"><span class="std std-ref">Struct m</span></a></p></li>
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1n.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1n"><span class="std std-ref">Struct n</span></a></p></li>
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1n.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1n"><span class="std std-ref">Struct n</span></a></p></li>
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1o.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1o"><span class="std std-ref">Struct o</span></a></p></li>
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1o.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1o"><span class="std std-ref">Struct o</span></a></p></li>
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1p.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1p"><span class="std std-ref">Struct p</span></a></p></li>
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1p.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1p"><span class="std std-ref">Struct p</span></a></p></li>
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1q.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1q"><span class="std std-ref">Struct q</span></a></p></li>
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1q.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1q"><span class="std std-ref">Struct q</span></a></p></li>
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1r.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1r"><span class="std std-ref">Struct r</span></a></p></li>
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1r.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1r"><span class="std std-ref">Struct r</span></a></p></li>
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1s.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1s"><span class="std std-ref">Struct s</span></a></p></li>
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1s.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1s"><span class="std std-ref">Struct s</span></a></p></li>
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1t.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1t"><span class="std std-ref">Struct t</span></a></p></li>
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1t.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1t"><span class="std std-ref">Struct t</span></a></p></li>
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1u.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1u"><span class="std std-ref">Struct u</span></a></p></li>
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1u.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1u"><span class="std std-ref">Struct u</span></a></p></li>
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1v.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1v"><span class="std std-ref">Struct v</span></a></p></li>
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1v.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1v"><span class="std std-ref">Struct v</span></a></p></li>
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1w.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1w"><span class="std std-ref">Struct w</span></a></p></li>
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1w.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1w"><span class="std std-ref">Struct w</span></a></p></li>
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1x.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1x"><span class="std std-ref">Struct x</span></a></p></li>
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1x.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1x"><span class="std std-ref">Struct x</span></a></p></li>
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1y.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1y"><span class="std std-ref">Struct y</span></a></p></li>
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1y.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1y"><span class="std std-ref">Struct y</span></a></p></li>
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1z.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1z"><span class="std std-ref">Struct z</span></a></p></li>
+<li><p><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1z.html#exhale-struct-structeinsums-1-1tensor-algebra-1-1index-1-1z"><span class="std std-ref">Struct z</span></a></p></li>
+</ul>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="function___Index_8hpp_1a496480813d4551acef0dc3c50679130e.html#exhale-function-index-8hpp-1a496480813d4551acef0dc3c50679130e"><span class="std std-ref">Function einsums::tensor_algebra::index::operator&lt;&lt;(std::ostream&amp;, const struct G&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function___Index_8hpp_1a0b93a727615f03d79a298139770e9a95.html#exhale-function-index-8hpp-1a0b93a727615f03d79a298139770e9a95"><span class="std std-ref">Function einsums::tensor_algebra::index::operator&lt;&lt;(std::ostream&amp;, const struct O&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function___Index_8hpp_1a707d7bee547125a36a775ce515020a62.html#exhale-function-index-8hpp-1a707d7bee547125a36a775ce515020a62"><span class="std std-ref">Function einsums::tensor_algebra::index::operator&lt;&lt;(std::ostream&amp;, const struct w&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function___Index_8hpp_1af4e477b5fde3d1d7bb2fe7f333789aa8.html#exhale-function-index-8hpp-1af4e477b5fde3d1d7bb2fe7f333789aa8"><span class="std std-ref">Function einsums::tensor_algebra::index::operator&lt;&lt;(std::ostream&amp;, const struct g&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function___Index_8hpp_1ab085f5ac0e6242cf23ca4278638cf867.html#exhale-function-index-8hpp-1ab085f5ac0e6242cf23ca4278638cf867"><span class="std std-ref">Function einsums::tensor_algebra::index::operator&lt;&lt;(std::ostream&amp;, const struct o&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function___Index_8hpp_1aa3b81be7476457517bd55ada426903a0.html#exhale-function-index-8hpp-1aa3b81be7476457517bd55ada426903a0"><span class="std std-ref">Function einsums::tensor_algebra::index::operator&lt;&lt;(std::ostream&amp;, const struct W&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function___Index_8hpp_1aa6f50778ae3a177a6cd44aad04b55725.html#exhale-function-index-8hpp-1aa6f50778ae3a177a6cd44aad04b55725"><span class="std std-ref">Function einsums::tensor_algebra::index::operator&lt;&lt;(std::ostream&amp;, const struct H&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function___Index_8hpp_1a5816b32c185eef086dbbc3ca3c9e9464.html#exhale-function-index-8hpp-1a5816b32c185eef086dbbc3ca3c9e9464"><span class="std std-ref">Function einsums::tensor_algebra::index::operator&lt;&lt;(std::ostream&amp;, const struct P&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function___Index_8hpp_1a91267ea66f5be12469d278eb19cac4bd.html#exhale-function-index-8hpp-1a91267ea66f5be12469d278eb19cac4bd"><span class="std std-ref">Function einsums::tensor_algebra::index::operator&lt;&lt;(std::ostream&amp;, const struct x&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function___Index_8hpp_1ac5c7602772001d68bae2980699a38d9d.html#exhale-function-index-8hpp-1ac5c7602772001d68bae2980699a38d9d"><span class="std std-ref">Function einsums::tensor_algebra::index::operator&lt;&lt;(std::ostream&amp;, const struct Q&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function___Index_8hpp_1a17eaaa458bfa2ea519b95dc758b253e4.html#exhale-function-index-8hpp-1a17eaaa458bfa2ea519b95dc758b253e4"><span class="std std-ref">Function einsums::tensor_algebra::index::operator&lt;&lt;(std::ostream&amp;, const struct h&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function___Index_8hpp_1a8b9d233919502ab170c47d77a3fe2c35.html#exhale-function-index-8hpp-1a8b9d233919502ab170c47d77a3fe2c35"><span class="std std-ref">Function einsums::tensor_algebra::index::operator&lt;&lt;(std::ostream&amp;, const struct p&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function___Index_8hpp_1a9fe50b07991344578e7058c1ea4dcbed.html#exhale-function-index-8hpp-1a9fe50b07991344578e7058c1ea4dcbed"><span class="std std-ref">Function einsums::tensor_algebra::index::operator&lt;&lt;(std::ostream&amp;, const struct X&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function___Index_8hpp_1a5bdb81b1aa287d314d1b9ce26d416e19.html#exhale-function-index-8hpp-1a5bdb81b1aa287d314d1b9ce26d416e19"><span class="std std-ref">Function einsums::tensor_algebra::index::operator&lt;&lt;(std::ostream&amp;, const struct E&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function___Index_8hpp_1aa73cb2a819aab2b472906672751dc6ca.html#exhale-function-index-8hpp-1aa73cb2a819aab2b472906672751dc6ca"><span class="std std-ref">Function einsums::tensor_algebra::index::operator&lt;&lt;(std::ostream&amp;, const struct M&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function___Index_8hpp_1a9098181ce43267b1dff8126202ea8d6c.html#exhale-function-index-8hpp-1a9098181ce43267b1dff8126202ea8d6c"><span class="std std-ref">Function einsums::tensor_algebra::index::operator&lt;&lt;(std::ostream&amp;, const struct U&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function___Index_8hpp_1ae1af209c5327ff6fe2d39692bfe2b325.html#exhale-function-index-8hpp-1ae1af209c5327ff6fe2d39692bfe2b325"><span class="std std-ref">Function einsums::tensor_algebra::index::operator&lt;&lt;(std::ostream&amp;, const struct e&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function___Index_8hpp_1a110a265968bd0a4ad6c5e90c62d3f3fc.html#exhale-function-index-8hpp-1a110a265968bd0a4ad6c5e90c62d3f3fc"><span class="std std-ref">Function einsums::tensor_algebra::index::operator&lt;&lt;(std::ostream&amp;, const struct m&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function___Index_8hpp_1ab0e850eadbb25a08fb8eed14a8ad681b.html#exhale-function-index-8hpp-1ab0e850eadbb25a08fb8eed14a8ad681b"><span class="std std-ref">Function einsums::tensor_algebra::index::operator&lt;&lt;(std::ostream&amp;, const struct u&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function___Index_8hpp_1a8708eb571d7283fec36f7f461a8b3c9e.html#exhale-function-index-8hpp-1a8708eb571d7283fec36f7f461a8b3c9e"><span class="std std-ref">Function einsums::tensor_algebra::index::operator&lt;&lt;(std::ostream&amp;, const struct F&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function___Index_8hpp_1af1af9b8c6869ed131ee1088786dffcc3.html#exhale-function-index-8hpp-1af1af9b8c6869ed131ee1088786dffcc3"><span class="std std-ref">Function einsums::tensor_algebra::index::operator&lt;&lt;(std::ostream&amp;, const struct N&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function___Index_8hpp_1aed1a41f0295f88c4b2fc08cb2b284b72.html#exhale-function-index-8hpp-1aed1a41f0295f88c4b2fc08cb2b284b72"><span class="std std-ref">Function einsums::tensor_algebra::index::operator&lt;&lt;(std::ostream&amp;, const struct V&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function___Index_8hpp_1a31a31fdd2954368fa8467d3d8d8b935f.html#exhale-function-index-8hpp-1a31a31fdd2954368fa8467d3d8d8b935f"><span class="std std-ref">Function einsums::tensor_algebra::index::operator&lt;&lt;(std::ostream&amp;, const struct f&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function___Index_8hpp_1ad664d963cb6b1ca6ac501cb7f38283da.html#exhale-function-index-8hpp-1ad664d963cb6b1ca6ac501cb7f38283da"><span class="std std-ref">Function einsums::tensor_algebra::index::operator&lt;&lt;(std::ostream&amp;, const struct n&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function___Index_8hpp_1a70be46483de0488d913a23e50e7243bb.html#exhale-function-index-8hpp-1a70be46483de0488d913a23e50e7243bb"><span class="std std-ref">Function einsums::tensor_algebra::index::operator&lt;&lt;(std::ostream&amp;, const struct v&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function___Index_8hpp_1a51543bbb145c6ecfc7bf6f3a183217dc.html#exhale-function-index-8hpp-1a51543bbb145c6ecfc7bf6f3a183217dc"><span class="std std-ref">Function einsums::tensor_algebra::index::operator&lt;&lt;(std::ostream&amp;, const struct y&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function___Index_8hpp_1a185d42e312fc9899c949c2a5cb6d853d.html#exhale-function-index-8hpp-1a185d42e312fc9899c949c2a5cb6d853d"><span class="std std-ref">Function einsums::tensor_algebra::index::operator&lt;&lt;(std::ostream&amp;, const struct I&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function___Index_8hpp_1a89b7de454fe5155ce1adf7de0fe47289.html#exhale-function-index-8hpp-1a89b7de454fe5155ce1adf7de0fe47289"><span class="std std-ref">Function einsums::tensor_algebra::index::operator&lt;&lt;(std::ostream&amp;, const struct A&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function___Index_8hpp_1adf41a2be72eb5b832f46c2798c200516.html#exhale-function-index-8hpp-1adf41a2be72eb5b832f46c2798c200516"><span class="std std-ref">Function einsums::tensor_algebra::index::operator&lt;&lt;(std::ostream&amp;, const struct i&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function___Index_8hpp_1aaaa5b7ca864e23cbc8074291eb1a4044.html#exhale-function-index-8hpp-1aaaa5b7ca864e23cbc8074291eb1a4044"><span class="std std-ref">Function einsums::tensor_algebra::index::operator&lt;&lt;(std::ostream&amp;, const struct q&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function___Index_8hpp_1af576db2540fec25a766d839404fdea11.html#exhale-function-index-8hpp-1af576db2540fec25a766d839404fdea11"><span class="std std-ref">Function einsums::tensor_algebra::index::operator&lt;&lt;(std::ostream&amp;, const struct Y&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function___Index_8hpp_1af411c989c9fe9b0ec2e6d975b01d1f30.html#exhale-function-index-8hpp-1af411c989c9fe9b0ec2e6d975b01d1f30"><span class="std std-ref">Function einsums::tensor_algebra::index::operator&lt;&lt;(std::ostream&amp;, const struct a&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function___Index_8hpp_1a2f961c0a56aa16179fa09d2b6065aaff.html#exhale-function-index-8hpp-1a2f961c0a56aa16179fa09d2b6065aaff"><span class="std std-ref">Function einsums::tensor_algebra::index::operator&lt;&lt;(std::ostream&amp;, const struct J&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function___Index_8hpp_1a9acf7742a28c12c4d096f96956b955f7.html#exhale-function-index-8hpp-1a9acf7742a28c12c4d096f96956b955f7"><span class="std std-ref">Function einsums::tensor_algebra::index::operator&lt;&lt;(std::ostream&amp;, const struct B&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function___Index_8hpp_1af88a703709041a7aaaba99f396456f12.html#exhale-function-index-8hpp-1af88a703709041a7aaaba99f396456f12"><span class="std std-ref">Function einsums::tensor_algebra::index::operator&lt;&lt;(std::ostream&amp;, const struct R&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function___Index_8hpp_1a7f4216366c9c1f27aad7af84f0fb4c10.html#exhale-function-index-8hpp-1a7f4216366c9c1f27aad7af84f0fb4c10"><span class="std std-ref">Function einsums::tensor_algebra::index::operator&lt;&lt;(std::ostream&amp;, const struct z&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function___Index_8hpp_1a5911fbbfdf421271c1791a213eb00d32.html#exhale-function-index-8hpp-1a5911fbbfdf421271c1791a213eb00d32"><span class="std std-ref">Function einsums::tensor_algebra::index::operator&lt;&lt;(std::ostream&amp;, const struct b&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function___Index_8hpp_1a457ba4c33261d2e073c520ebe4c270f2.html#exhale-function-index-8hpp-1a457ba4c33261d2e073c520ebe4c270f2"><span class="std std-ref">Function einsums::tensor_algebra::index::operator&lt;&lt;(std::ostream&amp;, const struct j&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function___Index_8hpp_1ad2db1b51110aa98e0145069a4f3c196d.html#exhale-function-index-8hpp-1ad2db1b51110aa98e0145069a4f3c196d"><span class="std std-ref">Function einsums::tensor_algebra::index::operator&lt;&lt;(std::ostream&amp;, const struct r&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function___Index_8hpp_1a82a21cbffdf360ad37676e35473192be.html#exhale-function-index-8hpp-1a82a21cbffdf360ad37676e35473192be"><span class="std std-ref">Function einsums::tensor_algebra::index::operator&lt;&lt;(std::ostream&amp;, const struct Z&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function___Index_8hpp_1a59396f0273a2b65cea77387ba2fbf737.html#exhale-function-index-8hpp-1a59396f0273a2b65cea77387ba2fbf737"><span class="std std-ref">Function einsums::tensor_algebra::index::operator&lt;&lt;(std::ostream&amp;, const struct C&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function___Index_8hpp_1ad74c7c60c378394bcb5bf9a390f04f1e.html#exhale-function-index-8hpp-1ad74c7c60c378394bcb5bf9a390f04f1e"><span class="std std-ref">Function einsums::tensor_algebra::index::operator&lt;&lt;(std::ostream&amp;, const struct K&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function___Index_8hpp_1a886418be1b75ea207b843b5d5ef39721.html#exhale-function-index-8hpp-1a886418be1b75ea207b843b5d5ef39721"><span class="std std-ref">Function einsums::tensor_algebra::index::operator&lt;&lt;(std::ostream&amp;, const struct S&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function___Index_8hpp_1aab16babcc69cd79ba2bc346cbbef8fa0.html#exhale-function-index-8hpp-1aab16babcc69cd79ba2bc346cbbef8fa0"><span class="std std-ref">Function einsums::tensor_algebra::index::operator&lt;&lt;(std::ostream&amp;, const struct c&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function___Index_8hpp_1a472e4705ec1672a30ba4225b49afbed8.html#exhale-function-index-8hpp-1a472e4705ec1672a30ba4225b49afbed8"><span class="std std-ref">Function einsums::tensor_algebra::index::operator&lt;&lt;(std::ostream&amp;, const struct k&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function___Index_8hpp_1a5fdf1251b50b4438d33a09bccf2c2711.html#exhale-function-index-8hpp-1a5fdf1251b50b4438d33a09bccf2c2711"><span class="std std-ref">Function einsums::tensor_algebra::index::operator&lt;&lt;(std::ostream&amp;, const struct s&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function___Index_8hpp_1a5f48cd3c54913a6749e01f066160aef0.html#exhale-function-index-8hpp-1a5f48cd3c54913a6749e01f066160aef0"><span class="std std-ref">Function einsums::tensor_algebra::index::operator&lt;&lt;(std::ostream&amp;, const struct D&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function___Index_8hpp_1aeb187a3828ee226714e803c77d5374d0.html#exhale-function-index-8hpp-1aeb187a3828ee226714e803c77d5374d0"><span class="std std-ref">Function einsums::tensor_algebra::index::operator&lt;&lt;(std::ostream&amp;, const struct L&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function___Index_8hpp_1ae96f0131cabe5c214b8ec3f51b36ed8a.html#exhale-function-index-8hpp-1ae96f0131cabe5c214b8ec3f51b36ed8a"><span class="std std-ref">Function einsums::tensor_algebra::index::operator&lt;&lt;(std::ostream&amp;, const struct T&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function___Index_8hpp_1adfbc3d94d3f4a5cfff9420fb71d5c0ff.html#exhale-function-index-8hpp-1adfbc3d94d3f4a5cfff9420fb71d5c0ff"><span class="std std-ref">Function einsums::tensor_algebra::index::operator&lt;&lt;(std::ostream&amp;, const struct d&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function___Index_8hpp_1a7f7842dfc295257756f8d2e52fc96e3f.html#exhale-function-index-8hpp-1a7f7842dfc295257756f8d2e52fc96e3f"><span class="std std-ref">Function einsums::tensor_algebra::index::operator&lt;&lt;(std::ostream&amp;, const struct l&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function___Index_8hpp_1a14cd2f67e17f969dc5c16a3e02a18c63.html#exhale-function-index-8hpp-1a14cd2f67e17f969dc5c16a3e02a18c63"><span class="std std-ref">Function einsums::tensor_algebra::index::operator&lt;&lt;(std::ostream&amp;, const struct t&amp;)</span></a></p></li>
+</ul>
+</section>
+<section id="variables">
+<h2>Variables<a class="headerlink" href="#variables" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="variable___Index_8hpp_1a51b66bf9b642c541ebbef061635d78b1.html#exhale-variable-index-8hpp-1a51b66bf9b642c541ebbef061635d78b1"><span class="std std-ref">Variable einsums::tensor_algebra::index::a</span></a></p></li>
+<li><p><a class="reference internal" href="variable___Index_8hpp_1a7f8fad7478d3210e7607f3fe7e5268b2.html#exhale-variable-index-8hpp-1a7f8fad7478d3210e7607f3fe7e5268b2"><span class="std std-ref">Variable einsums::tensor_algebra::index::A</span></a></p></li>
+<li><p><a class="reference internal" href="variable___Index_8hpp_1a5b1855c590428e1e0642bffc5c449393.html#exhale-variable-index-8hpp-1a5b1855c590428e1e0642bffc5c449393"><span class="std std-ref">Variable einsums::tensor_algebra::index::B</span></a></p></li>
+<li><p><a class="reference internal" href="variable___Index_8hpp_1a790b524689c9a745a0b026452c9d15b5.html#exhale-variable-index-8hpp-1a790b524689c9a745a0b026452c9d15b5"><span class="std std-ref">Variable einsums::tensor_algebra::index::b</span></a></p></li>
+<li><p><a class="reference internal" href="variable___Index_8hpp_1a4204bf3a171d7b88d51b1e6f59f7578e.html#exhale-variable-index-8hpp-1a4204bf3a171d7b88d51b1e6f59f7578e"><span class="std std-ref">Variable einsums::tensor_algebra::index::C</span></a></p></li>
+<li><p><a class="reference internal" href="variable___Index_8hpp_1a1cf1e2fc21588938d9f936e1c25be29e.html#exhale-variable-index-8hpp-1a1cf1e2fc21588938d9f936e1c25be29e"><span class="std std-ref">Variable einsums::tensor_algebra::index::c</span></a></p></li>
+<li><p><a class="reference internal" href="variable___Index_8hpp_1a60c2207ca7174539bc8dab2021b91978.html#exhale-variable-index-8hpp-1a60c2207ca7174539bc8dab2021b91978"><span class="std std-ref">Variable einsums::tensor_algebra::index::D</span></a></p></li>
+<li><p><a class="reference internal" href="variable___Index_8hpp_1a2555796d9b00f9de6447e0663a32a134.html#exhale-variable-index-8hpp-1a2555796d9b00f9de6447e0663a32a134"><span class="std std-ref">Variable einsums::tensor_algebra::index::d</span></a></p></li>
+<li><p><a class="reference internal" href="variable___Index_8hpp_1aee10075cd6a23beb36f5bf11347bf33b.html#exhale-variable-index-8hpp-1aee10075cd6a23beb36f5bf11347bf33b"><span class="std std-ref">Variable einsums::tensor_algebra::index::E</span></a></p></li>
+<li><p><a class="reference internal" href="variable___Index_8hpp_1a6379693ea43fd27633c5a1aa557237e0.html#exhale-variable-index-8hpp-1a6379693ea43fd27633c5a1aa557237e0"><span class="std std-ref">Variable einsums::tensor_algebra::index::e</span></a></p></li>
+<li><p><a class="reference internal" href="variable___Index_8hpp_1aa65c2e80f78211098bfcd97473b75681.html#exhale-variable-index-8hpp-1aa65c2e80f78211098bfcd97473b75681"><span class="std std-ref">Variable einsums::tensor_algebra::index::f</span></a></p></li>
+<li><p><a class="reference internal" href="variable___Index_8hpp_1af7d9bf26e0bf0f43c35e037724246e41.html#exhale-variable-index-8hpp-1af7d9bf26e0bf0f43c35e037724246e41"><span class="std std-ref">Variable einsums::tensor_algebra::index::F</span></a></p></li>
+<li><p><a class="reference internal" href="variable___Index_8hpp_1acb17a9985c5be3c7f2f56b7904d81b7b.html#exhale-variable-index-8hpp-1acb17a9985c5be3c7f2f56b7904d81b7b"><span class="std std-ref">Variable einsums::tensor_algebra::index::G</span></a></p></li>
+<li><p><a class="reference internal" href="variable___Index_8hpp_1a1dd341ad1e20b402c7ec4a71e5c573a8.html#exhale-variable-index-8hpp-1a1dd341ad1e20b402c7ec4a71e5c573a8"><span class="std std-ref">Variable einsums::tensor_algebra::index::g</span></a></p></li>
+<li><p><a class="reference internal" href="variable___Index_8hpp_1a46b1904fb1a07077afe053c142ab6979.html#exhale-variable-index-8hpp-1a46b1904fb1a07077afe053c142ab6979"><span class="std std-ref">Variable einsums::tensor_algebra::index::H</span></a></p></li>
+<li><p><a class="reference internal" href="variable___Index_8hpp_1ab162efec29bac27fdcc5ec5cb32d02c1.html#exhale-variable-index-8hpp-1ab162efec29bac27fdcc5ec5cb32d02c1"><span class="std std-ref">Variable einsums::tensor_algebra::index::h</span></a></p></li>
+<li><p><a class="reference internal" href="variable___Index_8hpp_1a8d382bc3214162ca9ccd13abc36220ae.html#exhale-variable-index-8hpp-1a8d382bc3214162ca9ccd13abc36220ae"><span class="std std-ref">Variable einsums::tensor_algebra::index::I</span></a></p></li>
+<li><p><a class="reference internal" href="variable___Index_8hpp_1a0d96945084386461de380ca9ad29751c.html#exhale-variable-index-8hpp-1a0d96945084386461de380ca9ad29751c"><span class="std std-ref">Variable einsums::tensor_algebra::index::i</span></a></p></li>
+<li><p><a class="reference internal" href="variable___Index_8hpp_1a3536ca7aee351d07901ef40ccff7cacd.html#exhale-variable-index-8hpp-1a3536ca7aee351d07901ef40ccff7cacd"><span class="std std-ref">Variable einsums::tensor_algebra::index::J</span></a></p></li>
+<li><p><a class="reference internal" href="variable___Index_8hpp_1a1d1cfd5c2ad920d80121b660f2170bbe.html#exhale-variable-index-8hpp-1a1d1cfd5c2ad920d80121b660f2170bbe"><span class="std std-ref">Variable einsums::tensor_algebra::index::j</span></a></p></li>
+<li><p><a class="reference internal" href="variable___Index_8hpp_1a9e2f9b4d9fa37e9a3cdba5d68110670b.html#exhale-variable-index-8hpp-1a9e2f9b4d9fa37e9a3cdba5d68110670b"><span class="std std-ref">Variable einsums::tensor_algebra::index::K</span></a></p></li>
+<li><p><a class="reference internal" href="variable___Index_8hpp_1a9887157edf4d4b4946072560de4f35b6.html#exhale-variable-index-8hpp-1a9887157edf4d4b4946072560de4f35b6"><span class="std std-ref">Variable einsums::tensor_algebra::index::k</span></a></p></li>
+<li><p><a class="reference internal" href="variable___Index_8hpp_1a4e4df689efbd0b961814f291da1b027d.html#exhale-variable-index-8hpp-1a4e4df689efbd0b961814f291da1b027d"><span class="std std-ref">Variable einsums::tensor_algebra::index::L</span></a></p></li>
+<li><p><a class="reference internal" href="variable___Index_8hpp_1a402f7eca1cc0365841577628680a1d15.html#exhale-variable-index-8hpp-1a402f7eca1cc0365841577628680a1d15"><span class="std std-ref">Variable einsums::tensor_algebra::index::l</span></a></p></li>
+<li><p><a class="reference internal" href="variable___Index_8hpp_1acb68fd637cdae6f6e1b728d6f84c66f1.html#exhale-variable-index-8hpp-1acb68fd637cdae6f6e1b728d6f84c66f1"><span class="std std-ref">Variable einsums::tensor_algebra::index::list</span></a></p></li>
+<li><p><a class="reference internal" href="variable___Index_8hpp_1a7e1c957dfb810de956f1528342cea12f.html#exhale-variable-index-8hpp-1a7e1c957dfb810de956f1528342cea12f"><span class="std std-ref">Variable einsums::tensor_algebra::index::M</span></a></p></li>
+<li><p><a class="reference internal" href="variable___Index_8hpp_1a0590cce60f24d61dc2649362a2610915.html#exhale-variable-index-8hpp-1a0590cce60f24d61dc2649362a2610915"><span class="std std-ref">Variable einsums::tensor_algebra::index::m</span></a></p></li>
+<li><p><a class="reference internal" href="variable___Index_8hpp_1ac27516beca8c4a1ec85e8992747e084a.html#exhale-variable-index-8hpp-1ac27516beca8c4a1ec85e8992747e084a"><span class="std std-ref">Variable einsums::tensor_algebra::index::N</span></a></p></li>
+<li><p><a class="reference internal" href="variable___Index_8hpp_1a2893f4713b400a20acfb47a0f15e3ce9.html#exhale-variable-index-8hpp-1a2893f4713b400a20acfb47a0f15e3ce9"><span class="std std-ref">Variable einsums::tensor_algebra::index::n</span></a></p></li>
+<li><p><a class="reference internal" href="variable___Index_8hpp_1a95771bc3e0848623e111bdc88a84baae.html#exhale-variable-index-8hpp-1a95771bc3e0848623e111bdc88a84baae"><span class="std std-ref">Variable einsums::tensor_algebra::index::O</span></a></p></li>
+<li><p><a class="reference internal" href="variable___Index_8hpp_1acce89ac48eb7a383c6c9127ae449334b.html#exhale-variable-index-8hpp-1acce89ac48eb7a383c6c9127ae449334b"><span class="std std-ref">Variable einsums::tensor_algebra::index::o</span></a></p></li>
+<li><p><a class="reference internal" href="variable___Index_8hpp_1ab976aad96e63f4ac4dc9f22e22b0c47c.html#exhale-variable-index-8hpp-1ab976aad96e63f4ac4dc9f22e22b0c47c"><span class="std std-ref">Variable einsums::tensor_algebra::index::p</span></a></p></li>
+<li><p><a class="reference internal" href="variable___Index_8hpp_1ab36c891052deccc29de6f2d17e6ff9f4.html#exhale-variable-index-8hpp-1ab36c891052deccc29de6f2d17e6ff9f4"><span class="std std-ref">Variable einsums::tensor_algebra::index::P</span></a></p></li>
+<li><p><a class="reference internal" href="variable___Index_8hpp_1a41eba7b016b10f7bff2fb5cdfac0918a.html#exhale-variable-index-8hpp-1a41eba7b016b10f7bff2fb5cdfac0918a"><span class="std std-ref">Variable einsums::tensor_algebra::index::Q</span></a></p></li>
+<li><p><a class="reference internal" href="variable___Index_8hpp_1acf4b84bbbb0a9ed3e0fa4ecc1c3b6e0a.html#exhale-variable-index-8hpp-1acf4b84bbbb0a9ed3e0fa4ecc1c3b6e0a"><span class="std std-ref">Variable einsums::tensor_algebra::index::q</span></a></p></li>
+<li><p><a class="reference internal" href="variable___Index_8hpp_1a26b01653b434ffea16865561ae2242b3.html#exhale-variable-index-8hpp-1a26b01653b434ffea16865561ae2242b3"><span class="std std-ref">Variable einsums::tensor_algebra::index::R</span></a></p></li>
+<li><p><a class="reference internal" href="variable___Index_8hpp_1a7e9ae00c457a3e37f2e85814cdca1cfb.html#exhale-variable-index-8hpp-1a7e9ae00c457a3e37f2e85814cdca1cfb"><span class="std std-ref">Variable einsums::tensor_algebra::index::r</span></a></p></li>
+<li><p><a class="reference internal" href="variable___Index_8hpp_1a6d255323eff16fd01ad6a4bec47617c7.html#exhale-variable-index-8hpp-1a6d255323eff16fd01ad6a4bec47617c7"><span class="std std-ref">Variable einsums::tensor_algebra::index::S</span></a></p></li>
+<li><p><a class="reference internal" href="variable___Index_8hpp_1aa71aac302bd21efa1f00c88c281e5d06.html#exhale-variable-index-8hpp-1aa71aac302bd21efa1f00c88c281e5d06"><span class="std std-ref">Variable einsums::tensor_algebra::index::s</span></a></p></li>
+<li><p><a class="reference internal" href="variable___Index_8hpp_1acce4a555bdbcf8d70c09f8b8f2c55168.html#exhale-variable-index-8hpp-1acce4a555bdbcf8d70c09f8b8f2c55168"><span class="std std-ref">Variable einsums::tensor_algebra::index::T</span></a></p></li>
+<li><p><a class="reference internal" href="variable___Index_8hpp_1a2bdf598d3d1676f69317d38b9763c35d.html#exhale-variable-index-8hpp-1a2bdf598d3d1676f69317d38b9763c35d"><span class="std std-ref">Variable einsums::tensor_algebra::index::t</span></a></p></li>
+<li><p><a class="reference internal" href="variable___Index_8hpp_1ac7441f61fca94d0aec26f18a8dacce8d.html#exhale-variable-index-8hpp-1ac7441f61fca94d0aec26f18a8dacce8d"><span class="std std-ref">Variable einsums::tensor_algebra::index::U</span></a></p></li>
+<li><p><a class="reference internal" href="variable___Index_8hpp_1abfdbe5fafc736c1734bc015da6121b72.html#exhale-variable-index-8hpp-1abfdbe5fafc736c1734bc015da6121b72"><span class="std std-ref">Variable einsums::tensor_algebra::index::u</span></a></p></li>
+<li><p><a class="reference internal" href="variable___Index_8hpp_1a85e2281c0dc75c5fa357fbebfb836711.html#exhale-variable-index-8hpp-1a85e2281c0dc75c5fa357fbebfb836711"><span class="std std-ref">Variable einsums::tensor_algebra::index::V</span></a></p></li>
+<li><p><a class="reference internal" href="variable___Index_8hpp_1a6ff71f2e219f0b7bb6c892e9cf21c45e.html#exhale-variable-index-8hpp-1a6ff71f2e219f0b7bb6c892e9cf21c45e"><span class="std std-ref">Variable einsums::tensor_algebra::index::v</span></a></p></li>
+<li><p><a class="reference internal" href="variable___Index_8hpp_1a00e85fc11be3f30ccd8635a62f1351f3.html#exhale-variable-index-8hpp-1a00e85fc11be3f30ccd8635a62f1351f3"><span class="std std-ref">Variable einsums::tensor_algebra::index::w</span></a></p></li>
+<li><p><a class="reference internal" href="variable___Index_8hpp_1ae851bd11a1c4b0ae929106a29bd18849.html#exhale-variable-index-8hpp-1ae851bd11a1c4b0ae929106a29bd18849"><span class="std std-ref">Variable einsums::tensor_algebra::index::W</span></a></p></li>
+<li><p><a class="reference internal" href="variable___Index_8hpp_1af262a8eb7a3579d603cc6d4f76bc9836.html#exhale-variable-index-8hpp-1af262a8eb7a3579d603cc6d4f76bc9836"><span class="std std-ref">Variable einsums::tensor_algebra::index::x</span></a></p></li>
+<li><p><a class="reference internal" href="variable___Index_8hpp_1a4129a8e60977283eba6e51dbe1175a85.html#exhale-variable-index-8hpp-1a4129a8e60977283eba6e51dbe1175a85"><span class="std std-ref">Variable einsums::tensor_algebra::index::X</span></a></p></li>
+<li><p><a class="reference internal" href="variable___Index_8hpp_1a49aafd80094728e104567306c9674ed0.html#exhale-variable-index-8hpp-1a49aafd80094728e104567306c9674ed0"><span class="std std-ref">Variable einsums::tensor_algebra::index::y</span></a></p></li>
+<li><p><a class="reference internal" href="variable___Index_8hpp_1ae13ef89120fb0ffaf0eb3015d3f32782.html#exhale-variable-index-8hpp-1ae13ef89120fb0ffaf0eb3015d3f32782"><span class="std std-ref">Variable einsums::tensor_algebra::index::Y</span></a></p></li>
+<li><p><a class="reference internal" href="variable___Index_8hpp_1a73811b2150e072e90bb18712fb11b215.html#exhale-variable-index-8hpp-1a73811b2150e072e90bb18712fb11b215"><span class="std std-ref">Variable einsums::tensor_algebra::index::z</span></a></p></li>
+<li><p><a class="reference internal" href="variable___Index_8hpp_1ab535b53ed5a74ed30242d01b63b1971a.html#exhale-variable-index-8hpp-1ab535b53ed5a74ed30242d01b63b1971a"><span class="std std-ref">Variable einsums::tensor_algebra::index::Z</span></a></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="namespace_einsums__tensor_algebra.html" class="btn btn-neutral float-left" title="Namespace einsums::tensor_algebra" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="namespace_einsums__timer.html" class="btn btn-neutral float-right" title="Namespace einsums::timer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Einsums Developers.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

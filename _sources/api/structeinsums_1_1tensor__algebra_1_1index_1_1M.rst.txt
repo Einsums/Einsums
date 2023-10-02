@@ -1,0 +1,26 @@
+.. _exhale_struct_structeinsums_1_1tensor__algebra_1_1index_1_1M:
+
+Struct M
+========
+
+- Defined in :ref:`file_src_include_einsums__Index.hpp`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public einsums::tensor_algebra::index::LabelBase`` (:ref:`exhale_struct_structeinsums_1_1tensor__algebra_1_1index_1_1LabelBase`)
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: einsums::tensor_algebra::index::M
+   :project: Einsums
+   :members:
+   :protected-members:
+   :undoc-members:

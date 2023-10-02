@@ -1,0 +1,14 @@
+.. _exhale_variable_Sort_8hpp_1a08bfb97ade1986ad5cf4dcde6961cf1a:
+
+Variable AIndices
+=================
+
+- Defined in :ref:`file_src_include_einsums_Sort.hpp`
+
+
+Variable Documentation
+----------------------
+
+
+.. doxygenvariable:: AIndices
+   :project: Einsums

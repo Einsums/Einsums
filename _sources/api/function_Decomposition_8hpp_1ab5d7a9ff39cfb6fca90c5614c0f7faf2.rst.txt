@@ -1,0 +1,14 @@
+.. _exhale_function_Decomposition_8hpp_1ab5d7a9ff39cfb6fca90c5614c0f7faf2:
+
+Function weighted_tensor
+========================
+
+- Defined in :ref:`file_src_include_einsums_Decomposition.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: weighted_tensor(tensor.)
+   :project: Einsums

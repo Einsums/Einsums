@@ -1,0 +1,17 @@
+.. _exhale_struct_structh5_1_1impl_1_1decay_3_1_1einsums_1_1Tensor_3_01T_00_01Rank_01_4_01_4:
+
+Template Struct decay< ::einsums::Tensor< T, Rank > >
+=====================================================
+
+- Defined in :ref:`file_src_include_einsums_H5.hpp`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: h5::impl::decay<::einsums::Tensor< T, Rank > >
+   :project: Einsums
+   :members:
+   :protected-members:
+   :undoc-members:

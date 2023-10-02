@@ -1,0 +1,14 @@
+.. _exhale_function_Laguerre_8hpp_1a94af4520a5d8de45dadfed025e510d5d:
+
+Function zero
+=============
+
+- Defined in :ref:`file_src_include_einsums_polynomial_Laguerre.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: zero(mat)
+   :project: Einsums

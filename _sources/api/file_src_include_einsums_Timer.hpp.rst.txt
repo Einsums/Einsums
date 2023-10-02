@@ -1,0 +1,77 @@
+
+.. _file_src_include_einsums_Timer.hpp:
+
+File Timer.hpp
+==============
+
+|exhale_lsh| :ref:`Parent directory <dir_src_include_einsums>` (``src/include/einsums``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/include/einsums/Timer.hpp``)
+----------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_include_einsums_Timer.hpp.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``einsums/_Export.hpp`` (:ref:`file_src_include_einsums__Export.hpp`)
+
+- ``string``
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_src_include_einsums_TensorAlgebra.hpp`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_einsums`
+
+- :ref:`namespace_einsums__timer`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structeinsums_1_1timer_1_1Timer`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_Timer_8hpp_1a9926ce8df0fae7b8feee200fbb3cef27`
+
+- :ref:`exhale_function_Timer_8hpp_1ae0336c734df558b703c14db8e4574e89`
+
+- :ref:`exhale_function_Timer_8hpp_1a9c66337791b6f889a496faf4c274935b`
+
+- :ref:`exhale_function_Timer_8hpp_1ae618a61016ec45594bf29ebae44f877c`
+
+- :ref:`exhale_function_Timer_8hpp_1ab92eb482ca8da63761d7556f8193a205`
+

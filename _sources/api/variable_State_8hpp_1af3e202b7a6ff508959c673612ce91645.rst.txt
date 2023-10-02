@@ -1,0 +1,14 @@
+.. _exhale_variable_State_8hpp_1af3e202b7a6ff508959c673612ce91645:
+
+Variable einsums::state::data
+=============================
+
+- Defined in :ref:`file_src_include_einsums_State.hpp`
+
+
+Variable Documentation
+----------------------
+
+
+.. doxygenvariable:: einsums::state::data
+   :project: Einsums

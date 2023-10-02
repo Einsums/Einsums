@@ -1,0 +1,14 @@
+.. _exhale_function_TensorAlgebra_8hpp_1aeb8838553327473b2a2318504a7cd172:
+
+Template Function einsum(const T, const std::tuple<CIndices...>&, CType \*, const T, const std::tuple<AIndices...>&, const AType&, const std::tuple<BIndices...>&, const BType&)
+================================================================================================================================================================================
+
+- Defined in :ref:`file_src_include_einsums_TensorAlgebra.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: einsum(const T, const std::tuple<CIndices...>&, CType *, const T, const std::tuple<AIndices...>&, const AType&, const std::tuple<BIndices...>&, const BType&)
+   :project: Einsums

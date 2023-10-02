@@ -1,0 +1,14 @@
+.. _exhale_function_Blas_8hpp_1af0467c0a0796866ff61dda18cb3c31ca:
+
+Template Function einsums::blas::trsyl
+======================================
+
+- Defined in :ref:`file_src_include_einsums_Blas.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: einsums::blas::trsyl(char, char, eint, eint, eint, const T *, eint, const T *, eint, T *, eint, remove_complex_t<T> *)
+   :project: Einsums

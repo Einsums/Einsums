@@ -1,0 +1,14 @@
+.. _exhale_function_Decomposition_8hpp_1a36358d7e9269a4f8b0b6e10cdb0bc410:
+
+Template Function parafac
+=========================
+
+- Defined in :ref:`file_src_include_einsums_Decomposition.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: parafac(const TTensor<TType, TRank>&, size_t, int, double)
+   :project: Einsums

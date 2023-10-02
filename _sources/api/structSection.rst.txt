@@ -1,0 +1,17 @@
+.. _exhale_struct_structSection:
+
+Struct Section
+==============
+
+- Defined in :ref:`file_src_include_einsums_Section.hpp`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: Section
+   :project: Einsums
+   :members:
+   :protected-members:
+   :undoc-members:

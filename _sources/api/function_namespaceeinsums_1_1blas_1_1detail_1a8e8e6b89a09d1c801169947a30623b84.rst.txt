@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceeinsums_1_1blas_1_1detail_1a8e8e6b89a09d1c801169947a30623b84:
+
+Function einsums::blas::detail::dgetrf
+======================================
+
+- Defined in :ref:`file_src_include_einsums_Blas.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: einsums::blas::detail::dgetrf(eint, eint, double *, eint, eint *)
+   :project: Einsums

@@ -1,0 +1,84 @@
+
+.. _file_src_include_einsums_ElementOperations.hpp:
+
+File ElementOperations.hpp
+==========================
+
+|exhale_lsh| :ref:`Parent directory <dir_src_include_einsums>` (``src/include/einsums``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/include/einsums/ElementOperations.hpp``)
+----------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_include_einsums_ElementOperations.hpp.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``algorithm``
+
+- ``einsums/Section.hpp`` (:ref:`file_src_include_einsums_Section.hpp`)
+
+- ``einsums/Tensor.hpp`` (:ref:`file_src_include_einsums_Tensor.hpp`)
+
+- ``einsums/_Common.hpp`` (:ref:`file_src_include_einsums__Common.hpp`)
+
+- ``einsums/_Compiler.hpp`` (:ref:`file_src_include_einsums__Compiler.hpp`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_src_include_einsums_polynomial_Laguerre.hpp`
+
+
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_ElementOperations_8hpp_1ad8049c4f49d86fce3cd0875a6d8bb4f5`
+
+- :ref:`exhale_function_ElementOperations_8hpp_1a6afcc10425583c85ba4a83e6272e084a`
+
+- :ref:`exhale_function_ElementOperations_8hpp_1a0493333358df13248aaae26b9334b813`
+
+- :ref:`exhale_function_ElementOperations_8hpp_1ac769b8e869ec5ad89f832168c171d90a`
+
+- :ref:`exhale_function_ElementOperations_8hpp_1a001b78bf85f85ef2eda23e135484d90f`
+
+- :ref:`exhale_function_ElementOperations_8hpp_1a03b31e12aba0a8c38f2a0d1599dd3551`
+
+- :ref:`exhale_function_ElementOperations_8hpp_1afa8ef068c75df7462a57d3f23459d2e9`
+
+- :ref:`exhale_function_ElementOperations_8hpp_1a1be82ac2bb2e4f1e1b0257c14065335d`
+
+- :ref:`exhale_function_ElementOperations_8hpp_1a20b408b90328580b43e32353cd766059`
+
+
+Variables
+---------
+
+
+- :ref:`exhale_variable_ElementOperations_8hpp_1a78ba5ec7907bf60b19ad5864fc093419`
+
+- :ref:`exhale_variable_ElementOperations_8hpp_1a3f1fb386738e125449512997e7c87363`
+

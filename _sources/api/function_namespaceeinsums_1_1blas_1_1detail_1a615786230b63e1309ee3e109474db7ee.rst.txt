@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceeinsums_1_1blas_1_1detail_1a615786230b63e1309ee3e109474db7ee:
+
+Function einsums::blas::detail::sger
+====================================
+
+- Defined in :ref:`file_src_include_einsums_Blas.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: einsums::blas::detail::sger(eint, eint, float, const float *, eint, const float *, eint, float *, eint)
+   :project: Einsums

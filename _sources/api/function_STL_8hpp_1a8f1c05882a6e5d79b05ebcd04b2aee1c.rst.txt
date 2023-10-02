@@ -1,0 +1,14 @@
+.. _exhale_function_STL_8hpp_1a8f1c05882a6e5d79b05ebcd04b2aee1c:
+
+Template Function einsums::positions_of_type
+============================================
+
+- Defined in :ref:`file_src_include_einsums_STL.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: einsums::positions_of_type()
+   :project: Einsums

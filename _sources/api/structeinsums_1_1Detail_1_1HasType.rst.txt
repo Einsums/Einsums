@@ -1,0 +1,17 @@
+.. _exhale_struct_structeinsums_1_1Detail_1_1HasType:
+
+Template Struct HasType
+=======================
+
+- Defined in :ref:`file_src_include_einsums_STL.hpp`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: einsums::Detail::HasType
+   :project: Einsums
+   :members:
+   :protected-members:
+   :undoc-members:

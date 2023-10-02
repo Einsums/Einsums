@@ -1,0 +1,14 @@
+.. _exhale_variable_Laguerre_8hpp_1a63afbe8ca6c6cef9d777272fccaefc69:
+
+Variable bot
+============
+
+- Defined in :ref:`file_src_include_einsums_polynomial_Laguerre.hpp`
+
+
+Variable Documentation
+----------------------
+
+
+.. doxygenvariable:: bot
+   :project: Einsums

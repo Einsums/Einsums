@@ -1,0 +1,14 @@
+.. _exhale_function___Common_8hpp_1af8ca3d76e617a2058e2c67b67b712554:
+
+Function einsums::initialize
+============================
+
+- Defined in :ref:`file_src_include_einsums__Common.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: einsums::initialize()
+   :project: Einsums

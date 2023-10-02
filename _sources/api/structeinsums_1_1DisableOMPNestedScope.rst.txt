@@ -1,0 +1,17 @@
+.. _exhale_struct_structeinsums_1_1DisableOMPNestedScope:
+
+Struct DisableOMPNestedScope
+============================
+
+- Defined in :ref:`file_src_include_einsums_Utilities.hpp`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: einsums::DisableOMPNestedScope
+   :project: Einsums
+   :members:
+   :protected-members:
+   :undoc-members:

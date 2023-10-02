@@ -1,0 +1,14 @@
+.. _exhale_variable_Sort_8hpp_1ab2db16efbab258f79d5c44a5954492b6:
+
+Variable CRank
+==============
+
+- Defined in :ref:`file_src_include_einsums_Sort.hpp`
+
+
+Variable Documentation
+----------------------
+
+
+.. doxygenvariable:: CRank
+   :project: Einsums

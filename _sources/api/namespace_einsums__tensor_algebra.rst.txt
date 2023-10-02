@@ -1,0 +1,20 @@
+
+.. _namespace_einsums__tensor_algebra:
+
+Namespace einsums::tensor_algebra
+=================================
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_einsums__tensor_algebra__index`

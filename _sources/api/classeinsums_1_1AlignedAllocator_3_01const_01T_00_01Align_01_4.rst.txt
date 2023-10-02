@@ -1,0 +1,27 @@
+.. _exhale_class_classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4:
+
+Template Class AlignedAllocator< const T, Align >
+=================================================
+
+- Defined in :ref:`file_src_include_einsums_STL.hpp`
+
+
+Nested Relationships
+--------------------
+
+
+Nested Types
+************
+
+- :ref:`exhale_struct_structeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_1_1rebind`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: einsums::AlignedAllocator< const T, Align >
+   :project: Einsums
+   :members:
+   :protected-members:
+   :undoc-members:

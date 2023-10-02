@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Template Class AlignedAllocator&lt; const T, Align &gt; &mdash; Einsums 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/collapsible-lists/css/tree_view.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js"></script>
+        <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Template Class AlignedAllocator&lt; void, Align &gt;" href="classeinsums_1_1AlignedAllocator_3_01void_00_01Align_01_4.html" />
+    <link rel="prev" title="Template Class AlignedAllocator" href="classeinsums_1_1AlignedAllocator.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Einsums
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="library_root.html">Library API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="library_root.html#file-hierarchy">File Hierarchy</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="library_root.html#full-api">Full API</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="library_root.html#namespaces">Namespaces</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="library_root.html#classes-and-structs">Classes and Structs</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="structdetail_1_1RawTypeNameFormat.html">Struct RawTypeNameFormat</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structdetail_1_1TuplePrinter.html">Template Struct TuplePrinter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structdetail_1_1TuplePrinter_3_01Tuple_00_011_01_4.html">Template Struct TuplePrinter&lt; Tuple, 1 &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structdetail_1_1TuplePrinterNoType.html">Template Struct TuplePrinterNoType</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structdetail_1_1TuplePrinterNoType_3_01Tuple_00_011_01_4.html">Template Struct TuplePrinterNoType&lt; Tuple, 1 &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1add__complex.html">Template Struct add_complex</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1add__complex_3_01std_1_1complex_3_01T_01_4_01_4.html">Template Struct add_complex&lt; std::complex&lt; T &gt; &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1AlignedAllocator_1_1rebind.html">Template Struct AlignedAllocator::rebind</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_1_1rebind.html">Template Struct AlignedAllocator&lt; const T, Align &gt;::rebind</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1AlignedAllocator_3_01void_00_01Align_01_4_1_1rebind.html">Template Struct AlignedAllocator&lt; void, Align &gt;::rebind</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1All__t.html">Struct All_t</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1Arguments_1_1Contains.html">Template Struct Contains</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1Arguments_1_1Contains_3_01T_01_4.html">Template Struct Contains&lt; T &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1Arguments_1_1Contains_3_01T_00_01Head_00_01Remaining_8_8_8_01_4.html">Template Struct Contains&lt; T, Head, Remaining… &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1Arguments_1_1Detail_1_1TuplePosition.html">Template Struct TuplePosition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1Arguments_1_1Detail_1_1TuplePosition_3_01S_00_01P_00_01C_00_01B_00_01not__used_35dd43ada63a7972cbf9d27bab5328f7.html">Template Struct TuplePosition&lt; S, P, C, B, not_used, std::tuple&lt; Tail… &gt; &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1Arguments_1_1Detail_1_1TuplePosition_3_01S_00_01P_00_01C_00_01false_00_01H_00_01std_1_1tuple_3_4_01_4.html">Template Struct TuplePosition&lt; S, P, C, false, H, std::tuple&lt;  &gt; &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1Arguments_1_1Detail_1_1TuplePosition_3_01S_00_01P_00_01C_00_01false_00_01not__u73b9a019c3868a3a3941d8b7d0aec2dc.html">Template Struct TuplePosition&lt; S, P, C, false, not_used, std::tuple&lt; Head, Tail… &gt; &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1Arguments_1_1Detail_1_1TuplePosition_3_01S_00_01P_00_01C_00_01true_00_01Type_0026c9ecbc6288b1b638ecae4b9f425d09.html">Template Struct TuplePosition&lt; S, P, C, true, Type, std::tuple&lt; Tail… &gt; &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1Arguments_1_1TuplePosition.html">Template Struct TuplePosition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1bool__pack.html">Template Struct bool_pack</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1c__unique.html">Template Struct c_unique</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1CircularBuffer.html">Template Struct CircularBuffer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1complex__type.html">Template Struct complex_type</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1complex__type_3_01std_1_1complex_3_01T_01_4_01_4.html">Template Struct complex_type&lt; std::complex&lt; T &gt; &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1contains.html">Template Struct contains</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1contains_3_01std_1_1tuple_3_01Car_00_01Cdr_8_8_8_01_4_00_01Needle_01_4.html">Template Struct contains&lt; std::tuple&lt; Car, Cdr… &gt;, Needle &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1contains_3_01std_1_1tuple_3_01Needle_00_01Cdr_8_8_8_01_4_00_01Needle_01_4.html">Template Struct contains&lt; std::tuple&lt; Needle, Cdr… &gt;, Needle &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1contains_3_01std_1_1tuple_3_4_00_01Needle_01_4.html">Template Struct contains&lt; std::tuple&lt;  &gt;, Needle &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1detail_1_1Array.html">Template Struct Array</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1detail_1_1ChunkType.html">Struct ChunkType</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1detail_1_1CountType.html">Struct CountType</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1detail_1_1DimType.html">Struct DimType</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1Detail_1_1HasType.html">Template Struct HasType</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1Detail_1_1HasType_3_01T_00_01std_1_1tuple_3_01T_00_01Ts_8_8_8_01_4_01_4.html">Template Struct HasType&lt; T, std::tuple&lt; T, Ts… &gt; &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1Detail_1_1HasType_3_01T_00_01std_1_1tuple_3_01U_00_01Ts_8_8_8_01_4_01_4.html">Template Struct HasType&lt; T, std::tuple&lt; U, Ts… &gt; &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1Detail_1_1HasType_3_01T_00_01std_1_1tuple_3_4_01_4.html">Template Struct HasType&lt; T, std::tuple&lt;  &gt; &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1detail_1_1OffsetType.html">Struct OffsetType</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1detail_1_1RangeType.html">Struct RangeType</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1detail_1_1StrideType.html">Struct StrideType</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1detail_1_1TensorBase.html">Template Struct TensorBase</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1difference.html">Template Struct difference</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1DisableOMPNestedScope.html">Struct DisableOMPNestedScope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1DisableOMPThreads.html">Struct DisableOMPThreads</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1DiskTensor.html">Template Struct DiskTensor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1DiskView.html">Template Struct DiskView</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1Empty.html">Struct Empty</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1ErrorOr.html">Template Struct ErrorOr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1ErrorOr_3_01void_00_01ErrorType_01_4.html">Template Struct ErrorOr&lt; void, ErrorType &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1filter.html">Template Struct filter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1filter_3_01Out_00_01std_1_1tuple_3_4_01_4.html">Template Struct filter&lt; Out, std::tuple&lt;  &gt; &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1filter_3_01std_1_1tuple_3_01Out_8_8_8_01_4_00_01std_1_1tuple_3_01InCar_00_01InCdr_8_8_8_01_4_01_4.html">Template Struct filter&lt; std::tuple&lt; Out… &gt;, std::tuple&lt; InCar, InCdr… &gt; &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1intersect.html">Template Struct intersect</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1is__complex__t.html">Template Struct is_complex_t</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1is__complex__t_3_01std_1_1complex_3_01T_01_4_01_4.html">Template Struct is_complex_t&lt; std::complex&lt; T &gt; &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1is__incore__rank__tensor.html">Template Struct is_incore_rank_tensor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1is__ondisk__tensor.html">Template Struct is_ondisk_tensor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1is__smart__pointer.html">Template Struct is_smart_pointer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1is__smart__pointer__helper.html">Template Struct is_smart_pointer_helper</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1is__smart__pointer__helper_3_01std_1_1shared__ptr_3_01T_01_4_01_4.html">Template Struct is_smart_pointer_helper&lt; std::shared_ptr&lt; T &gt; &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1is__smart__pointer__helper_3_01std_1_1unique__ptr_3_01T_01_4_01_4.html">Template Struct is_smart_pointer_helper&lt; std::unique_ptr&lt; T &gt; &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1is__smart__pointer__helper_3_01std_1_1weak__ptr_3_01T_01_4_01_4.html">Template Struct is_smart_pointer_helper&lt; std::weak_ptr&lt; T &gt; &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1Tensor.html">Template Struct Tensor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1Tensor_3_01T_00_010_01_4.html">Template Struct Tensor&lt; T, 0 &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1a.html">Struct a</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1A.html">Struct A</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1B.html">Struct B</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1b.html">Struct b</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1C.html">Struct C</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1c.html">Struct c</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1D.html">Struct D</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1d.html">Struct d</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1E.html">Struct E</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1e.html">Struct e</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1F.html">Struct F</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1f.html">Struct f</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1g.html">Struct g</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1G.html">Struct G</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1H.html">Struct H</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1h.html">Struct h</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1i.html">Struct i</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1I.html">Struct I</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1j.html">Struct j</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1J.html">Struct J</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1K.html">Struct K</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1k.html">Struct k</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1L.html">Struct L</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1l.html">Struct l</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1LabelBase.html">Struct LabelBase</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1M.html">Struct M</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1m.html">Struct m</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1N.html">Struct N</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1n.html">Struct n</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1O.html">Struct O</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1o.html">Struct o</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1p.html">Struct p</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1P.html">Struct P</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1Q.html">Struct Q</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1q.html">Struct q</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1R.html">Struct R</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1r.html">Struct r</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1S.html">Struct S</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1s.html">Struct s</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1T.html">Struct T</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1t.html">Struct t</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1U.html">Struct U</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1u.html">Struct u</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1v.html">Struct v</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1V.html">Struct V</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1W.html">Struct W</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1w.html">Struct w</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1x.html">Struct x</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1X.html">Struct X</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1y.html">Struct y</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1Y.html">Struct Y</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1z.html">Struct z</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1Z.html">Struct Z</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1TensorView.html">Template Struct TensorView</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structeinsums_1_1timer_1_1Timer.html">Struct Timer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structh5_1_1impl_1_1decay_3_1_1einsums_1_1Tensor_3_01T_00_01Rank_01_4_01_4.html">Template Struct decay&lt; ::einsums::Tensor&lt; T, Rank &gt; &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structh5_1_1impl_1_1decay_3_1_1einsums_1_1TensorView_3_01T_00_01Rank_01_4_01_4.html">Template Struct decay&lt; ::einsums::TensorView&lt; T, Rank &gt; &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structh5_1_1impl_1_1get_3_1_1einsums_1_1Tensor_3_01T_00_011_01_4_01_4.html">Template Struct get&lt; ::einsums::Tensor&lt; T, 1 &gt; &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structh5_1_1impl_1_1get_3_1_1einsums_1_1Tensor_3_01T_00_012_01_4_01_4.html">Template Struct get&lt; ::einsums::Tensor&lt; T, 2 &gt; &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structh5_1_1impl_1_1get_3_1_1einsums_1_1Tensor_3_01T_00_013_01_4_01_4.html">Template Struct get&lt; ::einsums::Tensor&lt; T, 3 &gt; &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structh5_1_1impl_1_1get_3_1_1einsums_1_1Tensor_3_01T_00_014_01_4_01_4.html">Template Struct get&lt; ::einsums::Tensor&lt; T, 4 &gt; &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structh5_1_1impl_1_1rank_3_1_1einsums_1_1Tensor_3_01T_00_01Rank_01_4_01_4.html">Template Struct rank&lt; ::einsums::Tensor&lt; T, Rank &gt; &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structh5_1_1impl_1_1rank_3_1_1einsums_1_1TensorView_3_01T_00_01Rank_01_4_01_4.html">Template Struct rank&lt; ::einsums::TensorView&lt; T, Rank &gt; &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structprint_1_1Indent.html">Struct Indent</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structSection.html">Struct Section</a></li>
+<li class="toctree-l4"><a class="reference internal" href="structTensorPrintOptions.html">Struct TensorPrintOptions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="classeinsums_1_1AlignedAllocator.html">Template Class AlignedAllocator</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Template Class AlignedAllocator&lt; const T, Align &gt;</a></li>
+<li class="toctree-l4"><a class="reference internal" href="classeinsums_1_1AlignedAllocator_3_01void_00_01Align_01_4.html">Template Class AlignedAllocator&lt; void, Align &gt;</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="library_root.html#enums">Enums</a></li>
+<li class="toctree-l3"><a class="reference internal" href="library_root.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="library_root.html#variables">Variables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="library_root.html#defines">Defines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="library_root.html#typedefs">Typedefs</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Einsums</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="library_root.html">Library API</a></li>
+      <li class="breadcrumb-item active">Template Class AlignedAllocator&lt; const T, Align &gt;</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="template-class-alignedallocator-const-t-align">
+<span id="exhale-class-classeinsums-1-1alignedallocator-3-01const-01t-00-01align-01-4"></span><h1>Template Class AlignedAllocator&lt; const T, Align &gt;<a class="headerlink" href="#template-class-alignedallocator-const-t-align" title="Permalink to this headline"></a></h1>
+<ul class="simple">
+<li><p>Defined in <a class="reference internal" href="file_src_include_einsums_STL.hpp.html#file-src-include-einsums-stl-hpp"><span class="std std-ref">File STL.hpp</span></a></p></li>
+</ul>
+<section id="nested-relationships">
+<h2>Nested Relationships<a class="headerlink" href="#nested-relationships" title="Permalink to this headline"></a></h2>
+<section id="nested-types">
+<h3>Nested Types<a class="headerlink" href="#nested-types" title="Permalink to this headline"></a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="structeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_1_1rebind.html#exhale-struct-structeinsums-1-1alignedallocator-3-01const-01t-00-01align-01-4-1-1rebind"><span class="std std-ref">Template Struct AlignedAllocator&lt; const T, Align &gt;::rebind</span></a></p></li>
+</ul>
+</section>
+</section>
+<section id="class-documentation">
+<h2>Class Documentation<a class="headerlink" href="#class-documentation" title="Permalink to this headline"></a></h2>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4I0_6size_tEN7einsums16AlignedAllocatorIK1T5AlignEE">
+<span id="_CPPv3I0_6size_tEN7einsums16AlignedAllocatorIK1T5AlignEE"></span><span id="_CPPv2I0_6size_tEN7einsums16AlignedAllocatorIK1T5AlignEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Align</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AlignedAllocator</span></span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums16AlignedAllocatorIK1T5AlignEE" title="einsums::AlignedAllocator&lt;const T, Align&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums16AlignedAllocatorIK1T5AlignEE" title="einsums::AlignedAllocator&lt;const T, Align&gt;::Align"><span class="n"><span class="pre">Align</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I0_6size_tEN7einsums16AlignedAllocatorIK1T5AlignEE" title="Permalink to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums16AlignedAllocatorIK1T5AlignE10value_typeE">
+<span id="_CPPv3N7einsums16AlignedAllocatorIK1T5AlignE10value_typeE"></span><span id="_CPPv2N7einsums16AlignedAllocatorIK1T5AlignE10value_typeE"></span><span class="target" id="classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_1a16b3b3df213ac11f9c48ac299133633b"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">value_type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums16AlignedAllocatorIK1T5AlignEE" title="einsums::AlignedAllocator&lt;const T, Align&gt;::T"><span class="n"><span class="pre">T</span></span></a><a class="headerlink" href="#_CPPv4N7einsums16AlignedAllocatorIK1T5AlignE10value_typeE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums16AlignedAllocatorIK1T5AlignE7pointerE">
+<span id="_CPPv3N7einsums16AlignedAllocatorIK1T5AlignE7pointerE"></span><span id="_CPPv2N7einsums16AlignedAllocatorIK1T5AlignE7pointerE"></span><span class="target" id="classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_1aa6b0110b7e752cde4bf8fa22b75be723"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">pointer</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums16AlignedAllocatorIK1T5AlignEE" title="einsums::AlignedAllocator&lt;const T, Align&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">*</span></span><a class="headerlink" href="#_CPPv4N7einsums16AlignedAllocatorIK1T5AlignE7pointerE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums16AlignedAllocatorIK1T5AlignE13const_pointerE">
+<span id="_CPPv3N7einsums16AlignedAllocatorIK1T5AlignE13const_pointerE"></span><span id="_CPPv2N7einsums16AlignedAllocatorIK1T5AlignE13const_pointerE"></span><span class="target" id="classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_1a7f91b040a66a72ff2101d0c285219767"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">const_pointer</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums16AlignedAllocatorIK1T5AlignEE" title="einsums::AlignedAllocator&lt;const T, Align&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">*</span></span><a class="headerlink" href="#_CPPv4N7einsums16AlignedAllocatorIK1T5AlignE13const_pointerE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums16AlignedAllocatorIK1T5AlignE9referenceE">
+<span id="_CPPv3N7einsums16AlignedAllocatorIK1T5AlignE9referenceE"></span><span id="_CPPv2N7einsums16AlignedAllocatorIK1T5AlignE9referenceE"></span><span class="target" id="classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_1aee388cf49fce4c1ff365a7ecd84164de"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reference</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums16AlignedAllocatorIK1T5AlignEE" title="einsums::AlignedAllocator&lt;const T, Align&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&amp;</span></span><a class="headerlink" href="#_CPPv4N7einsums16AlignedAllocatorIK1T5AlignE9referenceE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums16AlignedAllocatorIK1T5AlignE15const_referenceE">
+<span id="_CPPv3N7einsums16AlignedAllocatorIK1T5AlignE15const_referenceE"></span><span id="_CPPv2N7einsums16AlignedAllocatorIK1T5AlignE15const_referenceE"></span><span class="target" id="classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_1ace334d65aa1929c8d5bb8fe4fac800f8"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">const_reference</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums16AlignedAllocatorIK1T5AlignEE" title="einsums::AlignedAllocator&lt;const T, Align&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&amp;</span></span><a class="headerlink" href="#_CPPv4N7einsums16AlignedAllocatorIK1T5AlignE15const_referenceE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums16AlignedAllocatorIK1T5AlignE9size_typeE">
+<span id="_CPPv3N7einsums16AlignedAllocatorIK1T5AlignE9size_typeE"></span><span id="_CPPv2N7einsums16AlignedAllocatorIK1T5AlignE9size_typeE"></span><span class="target" id="classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_1a3da0e47a2dc67839ff130dddf3a5e311"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">size_type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><a class="headerlink" href="#_CPPv4N7einsums16AlignedAllocatorIK1T5AlignE9size_typeE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums16AlignedAllocatorIK1T5AlignE15difference_typeE">
+<span id="_CPPv3N7einsums16AlignedAllocatorIK1T5AlignE15difference_typeE"></span><span id="_CPPv2N7einsums16AlignedAllocatorIK1T5AlignE15difference_typeE"></span><span class="target" id="classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_1a464134a8beb063b3bc4fdad4d62c69b8"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">difference_type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">ptrdiff_t</span></span><a class="headerlink" href="#_CPPv4N7einsums16AlignedAllocatorIK1T5AlignE15difference_typeE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums16AlignedAllocatorIK1T5AlignE38propagate_on_container_move_assignmentE">
+<span id="_CPPv3N7einsums16AlignedAllocatorIK1T5AlignE38propagate_on_container_move_assignmentE"></span><span id="_CPPv2N7einsums16AlignedAllocatorIK1T5AlignE38propagate_on_container_move_assignmentE"></span><span class="target" id="classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_1a194ed9081e93535999b8e85da8c90f70"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">propagate_on_container_move_assignment</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">true_type</span></span><a class="headerlink" href="#_CPPv4N7einsums16AlignedAllocatorIK1T5AlignE38propagate_on_container_move_assignmentE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums16AlignedAllocatorIK1T5AlignE16AlignedAllocatorEv">
+<span id="_CPPv3N7einsums16AlignedAllocatorIK1T5AlignE16AlignedAllocatorEv"></span><span id="_CPPv2N7einsums16AlignedAllocatorIK1T5AlignE16AlignedAllocatorEv"></span><span id="einsums::AlignedAllocator:TC.Align:::AlignedAllocator"></span><span class="target" id="classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_1a4bc00b1d2fe4acf00f91551414beecca"></span><span class="sig-name descname"><span class="n"><span class="pre">AlignedAllocator</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N7einsums16AlignedAllocatorIK1T5AlignE16AlignedAllocatorEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums16AlignedAllocatorIK1T5AlignE16AlignedAllocatorERK16AlignedAllocatorI1U5AlignE">
+<span id="_CPPv3I0EN7einsums16AlignedAllocatorIK1T5AlignE16AlignedAllocatorERK16AlignedAllocatorI1U5AlignE"></span><span id="_CPPv2I0EN7einsums16AlignedAllocatorIK1T5AlignE16AlignedAllocatorERK16AlignedAllocatorI1U5AlignE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">U</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_1a7d17b39c72fd44384ef49ea5a82a869a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AlignedAllocator</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7einsums16AlignedAllocatorIK1T5AlignE16AlignedAllocatorERK16AlignedAllocatorI1U5AlignE" title="einsums::AlignedAllocator&lt;const T, Align&gt;::AlignedAllocator"><span class="n"><span class="pre">AlignedAllocator</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums16AlignedAllocatorIK1T5AlignE16AlignedAllocatorERK16AlignedAllocatorI1U5AlignE" title="einsums::AlignedAllocator&lt;const T, Align&gt;::AlignedAllocator::U"><span class="n"><span class="pre">U</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums16AlignedAllocatorIK1T5AlignEE" title="einsums::AlignedAllocator&lt;const T, Align&gt;::Align"><span class="n"><span class="pre">Align</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4I0EN7einsums16AlignedAllocatorIK1T5AlignE16AlignedAllocatorERK16AlignedAllocatorI1U5AlignE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums16AlignedAllocatorIK1T5AlignE8max_sizeEv">
+<span id="_CPPv3NK7einsums16AlignedAllocatorIK1T5AlignE8max_sizeEv"></span><span id="_CPPv2NK7einsums16AlignedAllocatorIK1T5AlignE8max_sizeEv"></span><span id="einsums::AlignedAllocator:TC.Align:::max_sizeC"></span><span class="target" id="classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_1ae918bfb550d520ceb43e78ef724e0c66"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">max_size</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums16AlignedAllocatorIK1T5AlignE9size_typeE" title="einsums::AlignedAllocator&lt;const T, Align&gt;::size_type"><span class="n"><span class="pre">size_type</span></span></a><a class="headerlink" href="#_CPPv4NK7einsums16AlignedAllocatorIK1T5AlignE8max_sizeEv" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7einsums16AlignedAllocatorIK1T5AlignE7addressE15const_reference">
+<span id="_CPPv3NK7einsums16AlignedAllocatorIK1T5AlignE7addressE15const_reference"></span><span id="_CPPv2NK7einsums16AlignedAllocatorIK1T5AlignE7addressE15const_reference"></span><span id="einsums::AlignedAllocator:TC.Align:::address__const_referenceC"></span><span class="target" id="classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_1abea709289df9c33c2b9a428ea4ed7c4a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">address</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums16AlignedAllocatorIK1T5AlignE15const_referenceE" title="einsums::AlignedAllocator&lt;const T, Align&gt;::const_reference"><span class="n"><span class="pre">const_reference</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums16AlignedAllocatorIK1T5AlignE13const_pointerE" title="einsums::AlignedAllocator&lt;const T, Align&gt;::const_pointer"><span class="n"><span class="pre">const_pointer</span></span></a><a class="headerlink" href="#_CPPv4NK7einsums16AlignedAllocatorIK1T5AlignE7addressE15const_reference" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums16AlignedAllocatorIK1T5AlignE8allocateE9size_typeN16AlignedAllocatorIv5AlignE13const_pointerE">
+<span id="_CPPv3N7einsums16AlignedAllocatorIK1T5AlignE8allocateE9size_typeN16AlignedAllocatorIv5AlignE13const_pointerE"></span><span id="_CPPv2N7einsums16AlignedAllocatorIK1T5AlignE8allocateE9size_typeN16AlignedAllocatorIv5AlignE13const_pointerE"></span><span id="einsums::AlignedAllocator:TC.Align:::allocate__size_type.AlignedAllocator:void.Align:::const_pointer"></span><span class="target" id="classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_1a505e9cefd8ca03873ba288a1a0b46676"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">allocate</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums16AlignedAllocatorIK1T5AlignE9size_typeE" title="einsums::AlignedAllocator&lt;const T, Align&gt;::size_type"><span class="n"><span class="pre">size_type</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">typename</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums16AlignedAllocatorIK1T5AlignE16AlignedAllocatorEv" title="einsums::AlignedAllocator&lt;const T, Align&gt;::AlignedAllocator"><span class="n"><span class="pre">AlignedAllocator</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">void</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums16AlignedAllocatorIK1T5AlignEE" title="einsums::AlignedAllocator&lt;const T, Align&gt;::Align"><span class="n"><span class="pre">Align</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">const_pointer</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums16AlignedAllocatorIK1T5AlignE7pointerE" title="einsums::AlignedAllocator&lt;const T, Align&gt;::pointer"><span class="n"><span class="pre">pointer</span></span></a><a class="headerlink" href="#_CPPv4N7einsums16AlignedAllocatorIK1T5AlignE8allocateE9size_typeN16AlignedAllocatorIv5AlignE13const_pointerE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums16AlignedAllocatorIK1T5AlignE10deallocateE7pointer9size_type">
+<span id="_CPPv3N7einsums16AlignedAllocatorIK1T5AlignE10deallocateE7pointer9size_type"></span><span id="_CPPv2N7einsums16AlignedAllocatorIK1T5AlignE10deallocateE7pointer9size_type"></span><span id="einsums::AlignedAllocator:TC.Align:::deallocate__pointer.size_type"></span><span class="target" id="classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_1aada39d67d97dd2daf0e8fc1c4818181b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">deallocate</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums16AlignedAllocatorIK1T5AlignE7pointerE" title="einsums::AlignedAllocator&lt;const T, Align&gt;::pointer"><span class="n"><span class="pre">pointer</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">p</span></span>, <a class="reference internal" href="#_CPPv4N7einsums16AlignedAllocatorIK1T5AlignE9size_typeE" title="einsums::AlignedAllocator&lt;const T, Align&gt;::size_type"><span class="n"><span class="pre">size_type</span></span></a><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N7einsums16AlignedAllocatorIK1T5AlignE10deallocateE7pointer9size_type" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0DpEN7einsums16AlignedAllocatorIK1T5AlignE9constructEvP1UDpRR4Args">
+<span id="_CPPv3I0DpEN7einsums16AlignedAllocatorIK1T5AlignE9constructEP1UDpRR4Args"></span><span id="_CPPv2I0DpEN7einsums16AlignedAllocatorIK1T5AlignE9constructEP1UDpRR4Args"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">U</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Args</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_1a85708d032732f2c3451e722f4b9ac854"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">construct</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0DpEN7einsums16AlignedAllocatorIK1T5AlignE9constructEvP1UDpRR4Args" title="einsums::AlignedAllocator&lt;const T, Align&gt;::construct::U"><span class="n"><span class="pre">U</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">p</span></span>, <a class="reference internal" href="#_CPPv4I0DpEN7einsums16AlignedAllocatorIK1T5AlignE9constructEvP1UDpRR4Args" title="einsums::AlignedAllocator&lt;const T, Align&gt;::construct::Args"><span class="n"><span class="pre">Args</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">args</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0DpEN7einsums16AlignedAllocatorIK1T5AlignE9constructEvP1UDpRR4Args" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums16AlignedAllocatorIK1T5AlignE7destroyE7pointer">
+<span id="_CPPv3N7einsums16AlignedAllocatorIK1T5AlignE7destroyE7pointer"></span><span id="_CPPv2N7einsums16AlignedAllocatorIK1T5AlignE7destroyE7pointer"></span><span id="einsums::AlignedAllocator:TC.Align:::destroy__pointer"></span><span class="target" id="classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_1a5a241c26d8c6506f5dd4040f544b907a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">destroy</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums16AlignedAllocatorIK1T5AlignE7pointerE" title="einsums::AlignedAllocator&lt;const T, Align&gt;::pointer"><span class="n"><span class="pre">pointer</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">p</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7einsums16AlignedAllocatorIK1T5AlignE7destroyE7pointer" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7einsums16AlignedAllocatorIK1T5AlignE6rebindE">
+<span id="_CPPv3I0EN7einsums16AlignedAllocatorIK1T5AlignE6rebindE"></span><span id="_CPPv2I0EN7einsums16AlignedAllocatorIK1T5AlignE6rebindE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">U</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_1_1rebind"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">rebind</span></span></span><a class="headerlink" href="#_CPPv4I0EN7einsums16AlignedAllocatorIK1T5AlignE6rebindE" title="Permalink to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums16AlignedAllocatorIK1T5AlignE6rebind5otherE">
+<span id="_CPPv3N7einsums16AlignedAllocatorIK1T5AlignE6rebind5otherE"></span><span id="_CPPv2N7einsums16AlignedAllocatorIK1T5AlignE6rebind5otherE"></span><span class="target" id="structeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_1_1rebind_1a99c0fecd8e9ffa2cdb33490e2f322c3c"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">other</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7einsums16AlignedAllocatorIK1T5AlignE16AlignedAllocatorEv" title="einsums::AlignedAllocator&lt;const T, Align&gt;::AlignedAllocator"><span class="n"><span class="pre">AlignedAllocator</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7einsums16AlignedAllocatorIK1T5AlignE6rebindE" title="einsums::AlignedAllocator&lt;const T, Align&gt;::rebind::U"><span class="n"><span class="pre">U</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums16AlignedAllocatorIK1T5AlignEE" title="einsums::AlignedAllocator&lt;const T, Align&gt;::Align"><span class="n"><span class="pre">Align</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N7einsums16AlignedAllocatorIK1T5AlignE6rebind5otherE" title="Permalink to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="classeinsums_1_1AlignedAllocator.html" class="btn btn-neutral float-left" title="Template Class AlignedAllocator" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="classeinsums_1_1AlignedAllocator_3_01void_00_01Align_01_4.html" class="btn btn-neutral float-right" title="Template Class AlignedAllocator&lt; void, Align &gt;" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Einsums Developers.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

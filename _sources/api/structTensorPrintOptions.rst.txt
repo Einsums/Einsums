@@ -1,0 +1,17 @@
+.. _exhale_struct_structTensorPrintOptions:
+
+Struct TensorPrintOptions
+=========================
+
+- Defined in :ref:`file_src_include_einsums_Tensor.hpp`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: TensorPrintOptions
+   :project: Einsums
+   :members:
+   :protected-members:
+   :undoc-members:

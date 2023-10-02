@@ -1,0 +1,14 @@
+.. _exhale_function_TensorAlgebra_8hpp_1af7145520381d665a1b763872aca52b0d:
+
+Template Function unfold
+========================
+
+- Defined in :ref:`file_src_include_einsums_TensorAlgebra.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: unfold(const CType<T, CRank>&)
+   :project: Einsums

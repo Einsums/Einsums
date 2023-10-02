@@ -1,0 +1,14 @@
+.. _exhale_variable_Laguerre_8hpp_1aa86735386e3bc7eb9c4e31a30c1c3f84:
+
+Variable mat
+============
+
+- Defined in :ref:`file_src_include_einsums_polynomial_Laguerre.hpp`
+
+
+Variable Documentation
+----------------------
+
+
+.. doxygenvariable:: mat
+   :project: Einsums

@@ -1,0 +1,17 @@
+.. _exhale_struct_structh5_1_1impl_1_1get_3_1_1einsums_1_1Tensor_3_01T_00_011_01_4_01_4:
+
+Template Struct get< ::einsums::Tensor< T, 1 > >
+================================================
+
+- Defined in :ref:`file_src_include_einsums_H5.hpp`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: h5::impl::get<::einsums::Tensor< T, 1 > >
+   :project: Einsums
+   :members:
+   :protected-members:
+   :undoc-members:

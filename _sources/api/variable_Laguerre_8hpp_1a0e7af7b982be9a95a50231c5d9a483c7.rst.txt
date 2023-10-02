@@ -1,0 +1,14 @@
+.. _exhale_variable_Laguerre_8hpp_1a0e7af7b982be9a95a50231c5d9a483c7:
+
+Variable top
+============
+
+- Defined in :ref:`file_src_include_einsums_polynomial_Laguerre.hpp`
+
+
+Variable Documentation
+----------------------
+
+
+.. doxygenvariable:: top
+   :project: Einsums

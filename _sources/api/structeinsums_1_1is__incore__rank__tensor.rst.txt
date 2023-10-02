@@ -1,0 +1,26 @@
+.. _exhale_struct_structeinsums_1_1is__incore__rank__tensor:
+
+Template Struct is_incore_rank_tensor
+=====================================
+
+- Defined in :ref:`file_src_include_einsums_STL.hpp`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public std::bool_constant< std::is_same_v< std::decay_t< D >, Tensor< T, Rank > >||std::is_same_v< std::decay_t< D >, TensorView< T, Rank > > >``
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: einsums::is_incore_rank_tensor
+   :project: Einsums
+   :members:
+   :protected-members:
+   :undoc-members:

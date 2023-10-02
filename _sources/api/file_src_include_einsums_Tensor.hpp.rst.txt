@@ -1,0 +1,186 @@
+
+.. _file_src_include_einsums_Tensor.hpp:
+
+File Tensor.hpp
+===============
+
+|exhale_lsh| :ref:`Parent directory <dir_src_include_einsums>` (``src/include/einsums``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/include/einsums/Tensor.hpp``)
+-----------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_include_einsums_Tensor.hpp.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``H5.hpp`` (:ref:`file_src_include_einsums_H5.hpp`)
+
+- ``algorithm``
+
+- ``array``
+
+- ``cassert``
+
+- ``chrono``
+
+- ``complex``
+
+- ``einsums/OpenMP.h`` (:ref:`file_src_include_einsums_OpenMP.h`)
+
+- ``einsums/Print.hpp`` (:ref:`file_src_include_einsums_Print.hpp`)
+
+- ``einsums/STL.hpp`` (:ref:`file_src_include_einsums_STL.hpp`)
+
+- ``einsums/Section.hpp`` (:ref:`file_src_include_einsums_Section.hpp`)
+
+- ``einsums/State.hpp`` (:ref:`file_src_include_einsums_State.hpp`)
+
+- ``einsums/_Common.hpp`` (:ref:`file_src_include_einsums__Common.hpp`)
+
+- ``exception``
+
+- ``functional``
+
+- ``iomanip``
+
+- ``limits``
+
+- ``memory``
+
+- ``numeric``
+
+- ``random``
+
+- ``range/v3/range_fwd.hpp``
+
+- ``range/v3/view/cartesian_product.hpp``
+
+- ``range/v3/view/iota.hpp``
+
+- ``sstream``
+
+- ``stdexcept``
+
+- ``string``
+
+- ``tuple``
+
+- ``type_traits``
+
+- ``utility``
+
+- ``vector``
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_src_include_einsums_Decomposition.hpp`
+
+- :ref:`file_src_include_einsums_ElementOperations.hpp`
+
+- :ref:`file_src_include_einsums_FFT.hpp`
+
+- :ref:`file_src_include_einsums_LinearAlgebra.hpp`
+
+- :ref:`file_src_include_einsums_Sort.hpp`
+
+- :ref:`file_src_include_einsums_TensorAlgebra.hpp`
+
+- :ref:`file_src_include_einsums_Utilities.hpp`
+
+- :ref:`file_src_include_einsums_polynomial_Laguerre.hpp`
+
+- :ref:`file_src_include_einsums_polynomial_Utilities.hpp`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_einsums`
+
+- :ref:`namespace_einsums__detail`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structeinsums_1_1detail_1_1TensorBase`
+
+- :ref:`exhale_struct_structeinsums_1_1DiskTensor`
+
+- :ref:`exhale_struct_structeinsums_1_1DiskView`
+
+- :ref:`exhale_struct_structeinsums_1_1Tensor`
+
+- :ref:`exhale_struct_structeinsums_1_1Tensor_3_01T_00_010_01_4`
+
+- :ref:`exhale_struct_structeinsums_1_1TensorView`
+
+- :ref:`exhale_struct_structTensorPrintOptions`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_Tensor_8hpp_1a0da45c93e1e370c62628e89291965f50`
+
+- :ref:`exhale_function_Tensor_8hpp_1a2cb71e6acd999c8ca849258fa725349c`
+
+- :ref:`exhale_function_Tensor_8hpp_1aacae9adfebd17ccc3adb7f2cf8dba27d`
+
+- :ref:`exhale_function_Tensor_8hpp_1a0341bb4972826183467a56ea1005074a`
+
+- :ref:`exhale_function_Tensor_8hpp_1a2a5b6de485574aacfae1bbea1c2abc36`
+
+- :ref:`exhale_function_Tensor_8hpp_1a64d283f84989678bc73b1af464c17ad3`
+
+- :ref:`exhale_function_Tensor_8hpp_1ae15bc2f581377beb9da08fc8d0a7e928`
+
+- :ref:`exhale_function_Tensor_8hpp_1a8a2c7ab8f41f9c47c76bd23885d4a710`
+
+- :ref:`exhale_function_Tensor_8hpp_1ad4b8e06472ea9229e80fb20d1e99cb15`
+
+- :ref:`exhale_function_Tensor_8hpp_1a7d6be2c45506b693c6b512e232318fd6`
+
+- :ref:`exhale_function_Tensor_8hpp_1a7bc3393b66dec35525cff395c5ae447b`
+
+- :ref:`exhale_function_Tensor_8hpp_1a3a0b2c04fe72ddbc7eb54ece078ef9e1`
+
+- :ref:`exhale_function_Tensor_8hpp_1a5883935c185899ddeabe9e795020a94d`
+
+
+Defines
+-------
+
+
+- :ref:`exhale_define_Tensor_8hpp_1a1924df7bf703a9ef0954984687b20748`
+
+- :ref:`exhale_define_Tensor_8hpp_1a1924df7bf703a9ef0954984687b20748`
+
+- :ref:`exhale_define_Tensor_8hpp_1a1924df7bf703a9ef0954984687b20748`
+

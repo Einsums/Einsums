@@ -1,0 +1,14 @@
+.. _exhale_function_LinearAlgebra_8hpp_1a8ac97176a246135cf736b5502a8c8ca6:
+
+Template Function dot(const Type<T, 1>&, const Type<T, 1>&)
+===========================================================
+
+- Defined in :ref:`file_src_include_einsums_LinearAlgebra.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: dot(const Type<T, 1>&, const Type<T, 1>&)
+   :project: Einsums

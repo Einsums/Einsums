@@ -1,0 +1,14 @@
+.. _exhale_function_STL_8hpp_1a4a1315f21677a36601adab5b46dd16e0:
+
+Template Function einsums::Arguments::get(const SearchPattern&, Args&&...)
+==========================================================================
+
+- Defined in :ref:`file_src_include_einsums_STL.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: einsums::Arguments::get(const SearchPattern&, Args&&...)
+   :project: Einsums

@@ -1,0 +1,14 @@
+.. _exhale_function___TensorAlgebraUtilities_8hpp_1ac7ba79dcdbf7fb9d7864834cd8793523:
+
+Template Function detail::same_indices()
+========================================
+
+- Defined in :ref:`file_src_include_einsums__TensorAlgebraUtilities.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: detail::same_indices()
+   :project: Einsums

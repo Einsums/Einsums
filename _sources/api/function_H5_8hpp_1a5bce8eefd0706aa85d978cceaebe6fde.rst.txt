@@ -1,0 +1,14 @@
+.. _exhale_function_H5_8hpp_1a5bce8eefd0706aa85d978cceaebe6fde:
+
+Template Function h5::impl::size(const ::einsums::TensorView<T, Rank>&)
+=======================================================================
+
+- Defined in :ref:`file_src_include_einsums_H5.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: h5::impl::size(const ::einsums::TensorView<T, Rank>&)
+   :project: Einsums

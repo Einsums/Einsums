@@ -1,0 +1,17 @@
+.. _exhale_struct_structeinsums_1_1add__complex:
+
+Template Struct add_complex
+===========================
+
+- Defined in :ref:`file_src_include_einsums_STL.hpp`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: einsums::add_complex
+   :project: Einsums
+   :members:
+   :protected-members:
+   :undoc-members:
