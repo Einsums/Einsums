@@ -24,7 +24,7 @@ add_library("${ein}::h5cpp" ALIAS Einsums_h5cpp)
 if (EINSUMS_H5CPP_USE_OMP_ALIGNED_ALLOC)
     target_compile_definitions(
       Einsums_h5cpp
-      PRIVATE
+      INTERFACE
         $<BUILD_INTERFACE:H5CPP_USE_OMP_ALIGNED_ALLOC>
       )
 endif()
