@@ -16,7 +16,7 @@ jobs:
       - name: Write Conda Environment File
         run: |
           cat > export.yaml <<EOF
-          name: docs
+          name: docs-env
           channels:
             - conda-forge
             - nodefaults
@@ -30,7 +30,7 @@ jobs:
       - name: Create Environment
         uses: conda-incubator/setup-miniconda@v2
         with:
-          activate-environment: docs
+          activate-environment: docs-env
           environment-file: export.yaml
           miniforge-variant: Mambaforge
           use-mamba: true
