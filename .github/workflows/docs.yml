@@ -46,12 +46,6 @@ jobs:
           cd docs
           make html
 
-
-  # Deployment job
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
       - name: GitHub Pages Deploy
         uses: JamesIves/github-pages-deploy-action@v4.4.3
         with:
