@@ -50,21 +50,15 @@ struct EINSUMS_EXPORT Section {
     explicit Section(const std::string &name, bool pushTimer = true);
 
     /**
-     * Construct a new section.
-     * @todo Document
-     */
-    Section(const std::string &name, const std::string &domain,
-            bool pushTimer = true);
-
-    /**
      * Construct a new section in the given domain.
      *
      * @param name The name of the section.
      * @param domain The domain of the section.
      * @param pushTimer Whether to start a new timer for this section.
      */
-    Section(const std::string &name, const std::string &domain, bool pushTimer = true);
-    
+    Section(const std::string &name, const std::string &domain,
+            bool pushTimer = true);
+
     /**
      * Deconstruct this section.
      */
@@ -100,5 +94,3 @@ private :
  * Creates a new section with a default name.
  */
 #define LabeledSection0()  Section _section(fmt::format("{}::{}", detail::s_Namespace, __func__))
-
-
