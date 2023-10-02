@@ -10,7 +10,7 @@
 FetchContent_Declare(
   h5cpp
   URL https://github.com/loriab/h5cpp/archive/EAT_align.tar.gz
-  URL_HASH SHA256=afdc47d62482643c26100be0902595010444af7ee478cc6fba87552ae3db5ea8
+  URL_HASH SHA256=12fc71709d01ee7e9d04d3c3de75696f3695b68ee63fd0f32734058e52dd5a7c
   SOURCE_SUBDIR fake
   SYSTEM
   OVERRIDE_FIND_PACKAGE
@@ -21,6 +21,13 @@ FetchContent_MakeAvailable(h5cpp)
 add_library(Einsums_h5cpp INTERFACE)
 add_library("${ein}::h5cpp" ALIAS Einsums_h5cpp)
 
+if (EINSUMS_H5CPP_USE_OMP_ALIGNED_ALLOC)
+    target_compile_definitions(
+      Einsums_h5cpp
+      PRIVATE
+        $<BUILD_INTERFACE:H5CPP_USE_OMP_ALIGNED_ALLOC>
+      )
+endif()
 set_target_properties(
   Einsums_h5cpp
   PROPERTIES
