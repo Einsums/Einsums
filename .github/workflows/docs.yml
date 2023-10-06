@@ -25,7 +25,7 @@ jobs:
             - nodefaults
           dependencies:
             - sphinx
-            - sphinx_rtd_theme
+            - pydata-sphinx-theme
             - exhale
             - doxygen
           EOF

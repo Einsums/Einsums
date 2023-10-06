@@ -4,6 +4,9 @@
 # list see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
+# Other packages
+import datetime
+
 # -- Path setup --------------------------------------------------------------
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -18,7 +21,7 @@
 # -- Project information -----------------------------------------------------
 
 project = 'Einsums'
-copyright = '2023, Einsums Developers'
+copyright = f'2022-{datetime.datetime.today().year}, Einsums Developers'
 author = 'Einsums Developers'
 
 # The full version, including alpha/beta/rc tags
@@ -33,7 +36,8 @@ release = '0.1.0'
 extensions = [
   'sphinx.ext.mathjax',
   'breathe',
-  'exhale'
+  'exhale',
+  'sphinx_design'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -50,12 +54,28 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'alabaster'
+html_theme = 'pydata_sphinx_theme'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+html_theme_options = {
+    "github_url": "https://github.com/Einsums/Einsums",
+
+    "logo": {
+        "image_light": "einsums-logo.png",
+        "text": "Einsums",
+    },
+
+    "show_toc_level": 2,
+    "header_links_before_dropdown": 4,
+
+    "secondary_sidebar_items": ["page-toc", "sourcelink"]
+}
+
+html_css_files = ['css/custom.css']
 
 # -- Setup the breathe extension ---------------------------------------------
 
@@ -86,8 +106,3 @@ primary_domain = "cpp"
 
 # Tell sphinx what the pygems highlight language should be
 highlight_language = "cpp"
-
-# -- Options for HTML output -------------------------------------------------
-
-html_theme = "sphinx_rtd_theme"
-
