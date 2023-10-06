@@ -54,6 +54,8 @@ Included By
 -----------
 
 
+- :ref:`file_src_include_einsums.hpp`
+
 - :ref:`file_src_include_einsums_Blas.hpp`
 
 - :ref:`file_src_include_einsums_LinearAlgebra.hpp`
@@ -183,9 +185,9 @@ Functions
 ---------
 
 
-- :ref:`exhale_function_STL_8hpp_1a4a1315f21677a36601adab5b46dd16e0`
-
 - :ref:`exhale_function_STL_8hpp_1a7788c5ac32ba7f55f09ad47e6d8caab5`
+
+- :ref:`exhale_function_STL_8hpp_1a4a1315f21677a36601adab5b46dd16e0`
 
 - :ref:`exhale_function_STL_8hpp_1a5c5a676fc703a06fab40109ca17225d2`
 

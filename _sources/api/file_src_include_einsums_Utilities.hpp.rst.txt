@@ -42,6 +42,8 @@ Included By
 -----------
 
 
+- :ref:`file_src_include_einsums.hpp`
+
 - :ref:`file_src_include_einsums_Decomposition.hpp`
 
 - :ref:`file_src_include_einsums_LinearAlgebra.hpp`
@@ -87,9 +89,9 @@ Functions
 
 - :ref:`exhale_function_Utilities_8hpp_1a12fd2b0340d9b97bce4df08ec6646385`
 
-- :ref:`exhale_function_Utilities_8hpp_1af9d509b6e326b5fbb88d89b9bd558a63`
-
 - :ref:`exhale_function_Utilities_8hpp_1ab286161aa9626912f0d504d5da2b86db`
+
+- :ref:`exhale_function_Utilities_8hpp_1af9d509b6e326b5fbb88d89b9bd558a63`
 
 - :ref:`exhale_function_Utilities_8hpp_1ac2262e9c8086c8d665dbeaaf1a48de0e`
 

@@ -1,0 +1,14 @@
+.. _exhale_function_Laguerre_8hpp_1aa42d5173797fab256920da796a80e323:
+
+Function BEGIN_EINSUMS_NAMESPACE_HPP(einsums::polynomial::laguerre)
+===================================================================
+
+- Defined in :ref:`file_src_include_einsums_polynomial_Laguerre.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: BEGIN_EINSUMS_NAMESPACE_HPP(einsums::polynomial::laguerre)
+   :project: Einsums

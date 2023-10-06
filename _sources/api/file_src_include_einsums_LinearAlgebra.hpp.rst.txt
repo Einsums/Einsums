@@ -62,6 +62,8 @@ Included By
 -----------
 
 
+- :ref:`file_src_include_einsums.hpp`
+
 - :ref:`file_src_include_einsums_Decomposition.hpp`
 
 - :ref:`file_src_include_einsums_Sort.hpp`
@@ -94,9 +96,9 @@ Functions
 
 - :ref:`exhale_function_LinearAlgebra_8hpp_1abbdb3a9daa75b1a8aa14f4d56488e419`
 
-- :ref:`exhale_function_LinearAlgebra_8hpp_1a8ac97176a246135cf736b5502a8c8ca6`
-
 - :ref:`exhale_function_LinearAlgebra_8hpp_1a1d606cb80aea6be2fa4b8dc4db11889a`
+
+- :ref:`exhale_function_LinearAlgebra_8hpp_1a8ac97176a246135cf736b5502a8c8ca6`
 
 - :ref:`exhale_function_LinearAlgebra_8hpp_1a908d3feb51b0f3ed3cd3c35a9bc3c595`
 
@@ -116,9 +118,9 @@ Functions
 
 - :ref:`exhale_function_LinearAlgebra_8hpp_1a14e7f3b9adde1b0aa23ed499ee0bf79d`
 
-- :ref:`exhale_function_LinearAlgebra_8hpp_1a045aa436eb92559ff7b5478fe881ff30`
-
 - :ref:`exhale_function_LinearAlgebra_8hpp_1a4af9b21cb271b064c9f336a22a5290c5`
+
+- :ref:`exhale_function_LinearAlgebra_8hpp_1a045aa436eb92559ff7b5478fe881ff30`
 
 - :ref:`exhale_function_LinearAlgebra_8hpp_1ab15a8f8fa9c4b2a7b1addd787fd5fb9f`
 

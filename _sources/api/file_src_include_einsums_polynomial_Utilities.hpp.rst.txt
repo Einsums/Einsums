@@ -40,6 +40,12 @@ Includes
 
 
 
+Included By
+-----------
+
+
+- :ref:`file_src_include_einsums.hpp`
+
 
 
 

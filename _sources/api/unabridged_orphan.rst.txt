@@ -75,6 +75,11 @@ Files
 .. toctree::
    :maxdepth: 5
 
+   file_src_include_einsums.hpp.rst
+
+.. toctree::
+   :maxdepth: 5
+
    file_src_include_einsums_ElementOperations.hpp.rst
 
 .. toctree::

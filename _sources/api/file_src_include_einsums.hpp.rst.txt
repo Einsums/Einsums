@@ -1,0 +1,74 @@
+
+.. _file_src_include_einsums.hpp:
+
+File einsums.hpp
+================
+
+|exhale_lsh| :ref:`Parent directory <dir_src_include>` (``src/include``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/include/einsums.hpp``)
+----------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_include_einsums.hpp.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``einsums/Blas.hpp`` (:ref:`file_src_include_einsums_Blas.hpp`)
+
+- ``einsums/Decomposition.hpp`` (:ref:`file_src_include_einsums_Decomposition.hpp`)
+
+- ``einsums/ElementOperations.hpp`` (:ref:`file_src_include_einsums_ElementOperations.hpp`)
+
+- ``einsums/Error.hpp`` (:ref:`file_src_include_einsums_Error.hpp`)
+
+- ``einsums/FFT.hpp`` (:ref:`file_src_include_einsums_FFT.hpp`)
+
+- ``einsums/H5.hpp`` (:ref:`file_src_include_einsums_H5.hpp`)
+
+- ``einsums/LinearAlgebra.hpp`` (:ref:`file_src_include_einsums_LinearAlgebra.hpp`)
+
+- ``einsums/OpenMP.h`` (:ref:`file_src_include_einsums_OpenMP.h`)
+
+- ``einsums/Print.hpp`` (:ref:`file_src_include_einsums_Print.hpp`)
+
+- ``einsums/STL.hpp`` (:ref:`file_src_include_einsums_STL.hpp`)
+
+- ``einsums/Section.hpp`` (:ref:`file_src_include_einsums_Section.hpp`)
+
+- ``einsums/Sort.hpp`` (:ref:`file_src_include_einsums_Sort.hpp`)
+
+- ``einsums/State.hpp`` (:ref:`file_src_include_einsums_State.hpp`)
+
+- ``einsums/Tensor.hpp`` (:ref:`file_src_include_einsums_Tensor.hpp`)
+
+- ``einsums/TensorAlgebra.hpp`` (:ref:`file_src_include_einsums_TensorAlgebra.hpp`)
+
+- ``einsums/Timer.hpp`` (:ref:`file_src_include_einsums_Timer.hpp`)
+
+- ``einsums/Utilities.hpp`` (:ref:`file_src_include_einsums_Utilities.hpp`)
+
+- ``einsums/polynomial/Laguerre.hpp`` (:ref:`file_src_include_einsums_polynomial_Laguerre.hpp`)
+
+- ``einsums/polynomial/Utilities.hpp`` (:ref:`file_src_include_einsums_polynomial_Utilities.hpp`)
+
+
+
+
+

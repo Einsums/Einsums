@@ -38,6 +38,8 @@ Included By
 -----------
 
 
+- :ref:`file_src_include_einsums.hpp`
+
 - :ref:`file_src_include_einsums_Tensor.hpp`
 
 - :ref:`file_src_include_einsums_TensorAlgebra.hpp`

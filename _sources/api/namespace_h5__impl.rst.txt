@@ -38,11 +38,11 @@ Functions
 ---------
 
 
+- :ref:`exhale_function_H5_8hpp_1abc359663057215e04fe642d399f08d0b`
+
 - :ref:`exhale_function_H5_8hpp_1a9b10b6ed74b478c449025cba5ffa2b67`
 
 - :ref:`exhale_function_H5_8hpp_1aaef030d9687092833523a341a362c5bc`
-
-- :ref:`exhale_function_H5_8hpp_1abc359663057215e04fe642d399f08d0b`
 
 - :ref:`exhale_function_H5_8hpp_1a91375d61a46f57a14bb5f8249928cc53`
 

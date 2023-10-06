@@ -64,11 +64,11 @@ Functions
 
 - :ref:`exhale_function___TensorAlgebraUtilities_8hpp_1aa4c9b8120f099554bc8852181814ef74`
 
+- :ref:`exhale_function___TensorAlgebraUtilities_8hpp_1a23b128bcc082df54dc2888c5dc527d40`
+
 - :ref:`exhale_function___TensorAlgebraUtilities_8hpp_1a2181cab26043c6978555a80718cc709c`
 
 - :ref:`exhale_function___TensorAlgebraUtilities_8hpp_1a2eef0db4d750e7277ffe34948146ef5c`
-
-- :ref:`exhale_function___TensorAlgebraUtilities_8hpp_1a23b128bcc082df54dc2888c5dc527d40`
 
 - :ref:`exhale_function___TensorAlgebraUtilities_8hpp_1a593e4464a2cc91d65e2dd97f270c622e`
 
@@ -114,13 +114,13 @@ Functions
 
 - :ref:`exhale_function___TensorAlgebraUtilities_8hpp_1a8f9a0c41df2b339ec9d5736053984091`
 
-- :ref:`exhale_function___TensorAlgebraUtilities_8hpp_1a82dd4454a930a9aec5647cd54dbd2724`
-
 - :ref:`exhale_function___TensorAlgebraUtilities_8hpp_1a9365c30aa5fe9277b3703e98c78c7326`
 
-- :ref:`exhale_function___TensorAlgebraUtilities_8hpp_1ac7ba79dcdbf7fb9d7864834cd8793523`
+- :ref:`exhale_function___TensorAlgebraUtilities_8hpp_1a82dd4454a930a9aec5647cd54dbd2724`
 
 - :ref:`exhale_function___TensorAlgebraUtilities_8hpp_1afa3adabc53d8375e4d68e8f3d4c30b54`
+
+- :ref:`exhale_function___TensorAlgebraUtilities_8hpp_1ac7ba79dcdbf7fb9d7864834cd8793523`
 
 - :ref:`exhale_function___TensorAlgebraUtilities_8hpp_1a9192433d0e039f86b1b7047d14a6c888`
 

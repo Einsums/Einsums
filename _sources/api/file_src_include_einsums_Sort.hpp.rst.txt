@@ -50,6 +50,8 @@ Included By
 -----------
 
 
+- :ref:`file_src_include_einsums.hpp`
+
 - :ref:`file_src_include_einsums_Decomposition.hpp`
 
 
