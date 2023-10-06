@@ -1,9 +1,4 @@
-#include "einsums/Tensor.hpp"
-
-#include "einsums/LinearAlgebra.hpp"
-#include "einsums/Print.hpp"
-#include "einsums/STL.hpp"
-#include "einsums/Utilities.hpp"
+#include "einsums.hpp"
 
 #include <H5Fpublic.h>
 #include <catch2/catch_all.hpp>
