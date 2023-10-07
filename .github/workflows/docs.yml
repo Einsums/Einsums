@@ -26,7 +26,6 @@ jobs:
           dependencies:
             - sphinx
             - pydata-sphinx-theme
-            - exhale
             - doxygen
           EOF
 

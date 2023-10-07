@@ -55,6 +55,7 @@ _deps
 CMakeSettings.json
 
 # Documentation
+__pycache__
 docs/_doxygen
 docs/api
 docs/_build
