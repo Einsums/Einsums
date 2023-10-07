@@ -43,6 +43,7 @@ struct TensorBase {
 
 } // namespace detail
 
+// Forward declarations
 template <typename T, size_t Rank>
 struct TensorView;
 
@@ -53,11 +54,16 @@ template <typename T, size_t Rank>
 struct DiskTensor;
 } // namespace einsums
 
+/**
+ * @brief Represents options and default options for printing tensors.
+ *
+ */
 struct TensorPrintOptions {
-    int  width{5};
-    bool full_output{true};
+    int  width{5};          /// How many columns of tensor data are printed per line.
+    bool full_output{true}; /// Print the tensor data (true) or just name and data span information (false).
 };
 
+// Forward declaration of the Tensor printing function.
 template <template <typename, size_t> typename AType, size_t Rank, typename T>
 auto println(const AType<T, Rank> &A, TensorPrintOptions options = {}) ->
     typename std::enable_if_t<std::is_base_of_v<einsums::detail::TensorBase<T, Rank>, AType<T, Rank>>>;
@@ -65,11 +71,34 @@ auto println(const AType<T, Rank> &A, TensorPrintOptions options = {}) ->
 namespace einsums {
 namespace detail {
 
+/**
+ * @brief Get the dim ranges object
+ *
+ * @tparam TensorType
+ * @tparam Rank
+ * @tparam I
+ * @tparam T
+ * @param tensor The tensor object to query
+ * @return A tuple containing the dimension ranges compatible with range-v3 cartesian_product function.
+ */
 template <template <typename, size_t> typename TensorType, size_t Rank, std::size_t... I, typename T>
 auto get_dim_ranges(const TensorType<T, Rank> &tensor, std::index_sequence<I...>) {
     return std::tuple{ranges::views::ints(0, (int)tensor.dim(I))...};
 }
 
+/**
+ * @brief Adds elements from two sources into the target.
+ *
+ * Useful in adding offsets to a set of indices.
+ *
+ * @tparam N The rank of the data.
+ * @tparam Target
+ * @tparam Source1
+ * @tparam Source2
+ * @param target The output
+ * @param source1 The first source
+ * @param source2 The second source
+ */
 template <size_t N, typename Target, typename Source1, typename Source2>
 void add_elements(Target &target, const Source1 &source1, const Source2 &source2) {
     if constexpr (N > 1) {
@@ -80,11 +109,29 @@ void add_elements(Target &target, const Source1 &source1, const Source2 &source2
 
 } // namespace detail
 
+/**
+ * @brief Find the ranges for each dimension of a tensor.
+ *
+ * The returned tuple is compatible with ranges-v3 cartesian_product function.
+ *
+ * @tparam N
+ * @tparam TensorType
+ * @tparam Rank
+ * @tparam T
+ * @param tensor Tensor to query
+ * @return Tuple containing the range for each dimension of the tensor.
+ */
 template <int N, template <typename, size_t> typename TensorType, size_t Rank, typename T>
 auto get_dim_ranges(const TensorType<T, Rank> &tensor) {
     return detail::get_dim_ranges(tensor, std::make_index_sequence<N>{});
 }
 
+/**
+ * @brief Represents a general tensor
+ *
+ * @tparam T data type of the underlying tensor data
+ * @tparam Rank the rank of the tensor
+ */
 template <typename T, size_t Rank>
 struct Tensor final : public detail::TensorBase<T, Rank> {
 
