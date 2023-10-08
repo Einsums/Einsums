@@ -135,7 +135,7 @@ auto get_dim_ranges(const TensorType<T, Rank> &tensor) {
 template <typename T, size_t Rank>
 struct Tensor final : public detail::TensorBase<T, Rank> {
 
-    using vector = std::vector<T, AlignedAllocator<T, 64>>;
+    using Vector = std::vector<T, AlignedAllocator<T, 64>>;
 
     Tensor()               = default;
     Tensor(const Tensor &) = default;
@@ -146,9 +146,9 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
     explicit Tensor(std::string name, Dims... dims) : _name{std::move(name)}, _dims{static_cast<size_t>(dims)...} {
         static_assert(Rank == sizeof...(dims), "Declared Rank does not match provided dims");
 
-        struct stride {
+        struct Stride {
             size_t value{1};
-            stride() = default;
+            Stride() = default;
             auto operator()(size_t dim) -> size_t {
                 auto old_value = value;
                 value *= dim;
@@ -157,7 +157,7 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
         };
 
         // Row-major order of dimensions
-        std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), stride());
+        std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
         size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
 
         // Resize the data structure
@@ -171,9 +171,9 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
         : _data(std::move(existingTensor._data)), _name{std::move(name)}, _dims{static_cast<size_t>(dims)...} {
         static_assert(Rank == sizeof...(dims), "Declared rank does not match provided dims");
 
-        struct stride {
+        struct Stride {
             size_t value{1};
-            stride() = default;
+            Stride() = default;
             auto operator()(size_t dim) -> size_t {
                 auto old_value = value;
                 value *= dim;
@@ -209,7 +209,7 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
         }
 
         // Row-major order of dimensions
-        std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), stride());
+        std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
         size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
 
         // Check size
@@ -219,9 +219,9 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
     }
 
     Tensor(Dim<Rank> dims) : _dims{std::move(dims)} {
-        struct stride {
+        struct Stride {
             size_t value{1};
-            stride() = default;
+            Stride() = default;
             auto operator()(size_t dim) -> size_t {
                 auto old_value = value;
                 value *= dim;
@@ -230,7 +230,7 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
         };
 
         // Row-major order of dimensions
-        std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), stride());
+        std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
         size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
 
         // Resize the data structure
@@ -239,9 +239,9 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
     }
 
     Tensor(const TensorView<T, Rank> &other) : _name{other._name}, _dims{other._dims} {
-        struct stride {
+        struct Stride {
             size_t value{1};
-            stride() = default;
+            Stride() = default;
             auto operator()(size_t dim) -> size_t {
                 auto old_value = value;
                 value *= dim;
@@ -250,7 +250,7 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
         };
 
         // Row-major order of dimensions
-        std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), stride());
+        std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
         size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
 
         // Resize the data structure
@@ -410,9 +410,9 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
         }
 
         if (realloc) {
-            struct stride {
+            struct Stride {
                 size_t value{1};
-                stride() = default;
+                Stride() = default;
                 auto operator()(size_t dim) -> size_t {
                     auto old_value = value;
                     value *= dim;
@@ -423,7 +423,7 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
             _dims = other._dims;
 
             // Row-major order of dimensions
-            std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), stride());
+            std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
             size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
 
             // Resize the data structure
@@ -545,8 +545,8 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
     }
     auto dims() const -> Dim<Rank> { return _dims; }
 
-    auto vector_data() const -> const vector & { return _data; }
-    auto vector_data() -> vector & { return _data; }
+    auto vector_data() const -> const Vector & { return _data; }
+    auto vector_data() -> Vector & { return _data; }
 
     [[nodiscard]] auto name() const -> const std::string & { return _name; }
     void               set_name(const std::string &name) { _name = name; }
@@ -575,7 +575,7 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
     std::string  _name{"(Unnamed)"};
     Dim<Rank>    _dims;
     Stride<Rank> _strides;
-    vector       _data;
+    Vector       _data;
 
     template <typename T_, size_t Rank_>
     friend struct TensorView;
@@ -869,9 +869,9 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
     auto common_initialization(const T *other) {
         _data = const_cast<T *>(other);
 
-        struct stride {
+        struct Stride {
             size_t value{1};
-            stride() = default;
+            Stride() = default;
             auto operator()(size_t dim) -> size_t {
                 auto old_value = value;
                 value *= dim;
@@ -880,7 +880,7 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
         };
 
         // Row-major order of dimensions
-        std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), stride());
+        std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
 
         // At this time we'll assume we have full view of the underlying tensor since we were only provided
         // pointer.
@@ -1136,9 +1136,9 @@ struct DiskTensor final : public detail::TensorBase<T, Rank> {
     template <typename... Dims>
     explicit DiskTensor(h5::fd_t &file, std::string name, Chunk<sizeof...(Dims)> chunk, Dims... dims)
         : _file{file}, _name{std::move(name)}, _dims{static_cast<size_t>(dims)...} {
-        struct stride {
+        struct Stride {
             size_t value{1};
-            stride() = default;
+            Stride() = default;
             auto operator()(size_t dim) -> size_t {
                 auto old_value = value;
                 value *= dim;
@@ -1147,7 +1147,7 @@ struct DiskTensor final : public detail::TensorBase<T, Rank> {
         };
 
         // Row-major order of dimensions
-        std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), stride());
+        std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
 
         // Check to see if the data set exists
         if (H5Lexists(_file, _name.c_str(), H5P_DEFAULT) > 0) {
@@ -1231,9 +1231,9 @@ struct DiskTensor final : public detail::TensorBase<T, Rank> {
             cdims[i] = _dims[i];
         }
 
-        struct stride {
+        struct Stride {
             size_t value{1};
-            stride() = default;
+            Stride() = default;
             auto operator()(size_t dim) -> size_t {
                 auto old_value = value;
                 value *= dim;
@@ -1242,7 +1242,7 @@ struct DiskTensor final : public detail::TensorBase<T, Rank> {
         };
 
         // Row-major order of dimensions
-        std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), stride());
+        std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
 
         std::array<size_t, Rank> chunk_temp{};
         chunk_temp[0] = 1;
@@ -1418,7 +1418,7 @@ struct DiskView final : public detail::TensorBase<T, ViewRank> {
              const Stride<Rank> &strides)
         : _parent(const_cast<DiskTensor<T, Rank> &>(parent)), _dims(dims), _counts(counts), _offsets(offsets),
           _strides(strides), _tensor{_dims} {
-        Section section("DiskView constructor");
+        Section const section("DiskView constructor");
         h5::read<T>(_parent.disk(), _tensor.data(), h5::count{_counts}, h5::offset{_offsets});
         set_read_only(true);
     };
@@ -1461,12 +1461,6 @@ struct DiskView final : public detail::TensorBase<T, ViewRank> {
         _tensor = other;
 
         return *this;
-    }
-
-    void _create_tensor() {
-        if (!_tensor) {
-            _tensor = std::make_unique<Tensor<T, ViewRank>>(_dims);
-        }
     }
 
     // Does not perform a disk read. That was handled by the constructor.
@@ -1559,7 +1553,7 @@ auto println(const AType<T, Rank> &A, TensorPrintOptions options) ->
     typename std::enable_if_t<std::is_base_of_v<einsums::detail::TensorBase<T, Rank>, AType<T, Rank>>> {
     println("Name: {}", A.name());
     {
-        print::Indent indent{};
+        print::Indent const indent{};
 
         if constexpr (einsums::is_incore_rank_tensor_v<AType<T, Rank>, Rank, T>) {
             if constexpr (std::is_same_v<AType<T, Rank>, einsums::Tensor<T, Rank>>)
