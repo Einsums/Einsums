@@ -65,6 +65,7 @@ html_theme_options = {
 
     "logo": {
         "image_light": "einsums-logo.png",
+        "image_dark": "einsums-logo.png",
         "text": "Einsums",
     },
 
