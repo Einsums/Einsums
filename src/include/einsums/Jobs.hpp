@@ -743,8 +743,119 @@ public:
    */
   void release(unsigned int count) override;
 };
+
+/**
+ * @struct EinsumJob
+ *
+ * Holds information for running einsum as a job.
+ */
+template <bool OnlyUseGenericAlgorithm, template <typename, size_t> typename AType, typename ADataType, size_t ARank,
+          template <typename, size_t> typename BType, typename BDataType, size_t BRank, template <typename, size_t> typename CType,
+          typename CDataType, size_t CRank, typename... CIndices, typename... AIndices, typename... BIndices>
+struct EinsumJob : public Job {
+protected :
+
+    std::shared_pointer<ReadLock<AType<ADataType, ARank>>> _A;
+    std::shared_pointer<ReadLock<BType<BDataType, BRank>>> _B;
+    std::shared_pointer<WriteLock<CType<CDataType, CRank>>> _C;
+
+    const CDataType _C_prefactor;
+    const std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> _AB_prefactor;
+
+    const std::tuple<CIndices...> &_Cs;
+    const std::tuple<AIndices...> &_As;
+    const std::tuple<BIndices...> &_Bs;
+
+    bool _running, _done;
+
+public :
+
+    /**
+     * Constructor.
+     */
+    EinsumJob(unsigned char compute_resources, CDataType C_prefactor, const std::tuple<CIndices...> & Cs,
+            std::shared_ptr<WriteLock<CType<CDataType, CRank>>> &C,
+            const std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> AB_prefactor,
+            const std::tuple<AIndices...> & As, std::shared_ptr<ReadLock<AType<ADataType, ARank>>> &A, const std::tuple<BIndices...> & Bs,
+            std::shared_ptr<ReadLock<BType<BDataType, BRank>>> &B) :
+	    Job(compute_resources), _A(A), _B(B), _C(C), _C_prefactor(C_prefactor), _AB_prefactor(AB_prefactor),
+	    _Cs(Cs), _As(As), _Bs(Bs), _running(false), _done(false) {}
+
+    virtual ~EinsumJob() {
+        delete this->_A;
+	delete this->_B;
+	delete this->_C;
+    }
+
+    /*
+     * Overrides for the base class.
+     */
+
+    /**
+     * The function to run when the job is called.
+     */
+    virtual void run(void) override {
+        _running = true;
+        einsums::tensor_algebra::einsum<OnlyUseGenericAlgorithm>(_C_prefactor, _Cs, &(_C->get()),
+	    _AB_prefactor, _As, _A->get(), _Bs, _B->get());
+
+	_C->release();
+	_A->release();
+	_B->release();
+	_running = false;
+	_done = true;
+    }
+
+    /**
+     * Whether the job is currently able to run.
+     */
+    virtual bool is_runnable() override {
+        return _A->ready() && _B->ready() && _C->ready() && !_running && !_done;
+    }
+
+    /**
+     * Whether a job is running.
+     */
+    virtual bool is_running() override {
+        return this->_running;
+    }
+
+    /**
+     * Whether the job is finished.
+     */
+    virtual bool is_finished() override {
+        return this->_done;
+    }
+};
+
   
-  
-  
+template <bool OnlyUseGenericAlgorithm, template <typename, size_t> typename AType, typename ADataType, size_t ARank,
+          template <typename, size_t> typename BType, typename BDataType, size_t BRank, template <typename, size_t> typename CType,
+          typename CDataType, size_t CRank, typename... CIndices, typename... AIndices, typename... BIndices>
+std::shared_ptr<EinsumJob<OnlyUseGenericAlgorithm, AType<ADataType, ARank>, ADataType, ARank,
+                              BType<BDataType, BRank>, BDataType, BRank, CType<CDataType, CRank>, CDataType, CRank,
+			      CIndices..., AIndices..., BIndices...>>
+einsum(CDataType C_prefactor, const std::tuple<CIndices...> & Cs,
+            std::shared_ptr<Resource<CType<CDataType, CRank>>> &C,
+            const std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> AB_prefactor,
+            const std::tuple<AIndices...> & As, std::shared_ptr<Resource<AType<ADataType, ARank>>> &A,
+	    const std::tuple<BIndices...> & Bs, std::shared_ptr<Resource<BType<BDataType, BRank>>> &B) {
+    using outtype = typename EinsumJob<OnlyUseGenericAlgorithm, AType<ADataType, ARank>, ADataType, ARank,
+                              BType<BDataType, BRank>, BDataType, BRank, CType<CDataType, CRank>, CDataType, CRank,
+			      CIndices..., AIndices..., BIndices...>;
+
+    std::shared_ptr<WriteLock<CType<CDataType, CRank>>> C_lock = C->lock();
+    std::shared_ptr<ReadLock<AType<ADataType, ARank>>> A_lock = A->lock_shared();
+    std::shared_ptr<ReadLock<BType<BDataType, BRank>>> B_lock = B->lock_shared();
+    std::shared_ptr<outtype> out = std::make_shared<outtype>(C_prefactor, Cs, C_lock, AB_prefactor, As, A_lock, Bs, B_lock);
+
+    // Queue the job.
+    JobManager::get_singleton().queue_job(out);
+
+    return out;
+}
+    
+
+}
 
 EINSUMS_END_NAMESPACE_HPP(einsums::jobs)
