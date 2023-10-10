@@ -26,6 +26,14 @@ add_einsums_library(einsums
 target_compile_features(einsums PUBLIC cxx_std_17)
 
 extend_einsums_target(einsums
+  SOURCES
+      JobManager.cpp
+  CONDITION
+      EINSUMS_JOB_QUEUES
+)
+  
+
+extend_einsums_target(einsums
     SOURCES
         parallel/MPI.cpp
     PUBLIC_DEPENDS

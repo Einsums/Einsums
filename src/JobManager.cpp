@@ -8,10 +8,6 @@ static JobManager *instance = nullptr;
 
 static ThreadPool *thread_instance = nullptr;
 
-// Use greater-than for priority ordering.
-bool JobManager::compare(std::shared_ptr<Job> first, std::shared_ptr<Job> second) {
-  return *first > *second;
-}
 
 JobManager::~JobManager() {
   this->jobs.clear();
@@ -27,11 +23,16 @@ void JobManager::cleanup() {
 
 void JobManager::manager_loop() {
   // Infinite loop.
-  this->is_running = true;
-  while(this->is_running) {
-    manager_event(); // Process an event.
+  JobManager &inst = JobManager::get_singleton();
+  inst.is_running = true;
+  while(inst.is_running) {
+    inst.manager_event(); // Process an event.
     std::this_thread::yield(); // Yield for another thread;
   }
+}
+
+static void run_job(Job *job) {
+  job->run();
 }
 
 #define JOB_THREADS 8
@@ -61,7 +62,7 @@ void JobManager::manager_event() {
       if(res & MULTI_THREAD) {
         if(ThreadPool::get_singleton().request(1)) {
 	  this->running.push_back(std::pair<std::shared_ptr<Job>, std::thread *>
-				  (std::shared_ptr<Job>(*job), new std::thread((*job)->run)));
+				  (std::shared_ptr<Job>(*job), new std::thread(run_job, job->get())));
 	  this->jobs.erase(job);
 	  job--;
 	  continue;
@@ -78,11 +79,11 @@ JobManager &JobManager::get_singleton() {
   if(instance == nullptr) {
     instance = new JobManager();
   }
-  return instance;
+  return *instance;
 }
 
 void JobManager::queue_job(std::shared_ptr<Job> job) {
-  this->jobs.insert(job, this->jobs.end()); // Hint to the end of the list.
+  this->jobs.insert(this->jobs.end(), job); // Hint to the end of the list.
 }
 
 void JobManager::start_manager() {
@@ -139,7 +140,8 @@ void ThreadPool::unlock() {
 
 void ThreadPool::init(int threads) {
   if(thread_instance != nullptr) {
-    thread_instance->threads = threads;
+    thread_instance->max_threads = threads;
+    thread_instance->avail = threads;
   } else {
     thread_instance = new ThreadPool(threads);
   }
@@ -147,9 +149,9 @@ void ThreadPool::init(int threads) {
 
 ThreadPool &ThreadPool::get_singleton() {
   if(thread_instance == nullptr) {
-    throw(*new std::runtime_error("Thread pool needs to be initialized!"));
+    throw std::runtime_error("Thread pool needs to be initialized!");
   }
-  return thread_instance;
+  return *thread_instance;
 }
 
 bool ThreadPool::request(unsigned int count) {
