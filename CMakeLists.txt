@@ -65,6 +65,8 @@ einsums_option(EINSUMS_INSTALL_CMAKEDIR STRING
                "Directory to which Einsums CMake config files installed."
                share/cmake/Einsums)
 einsums_option(EINSUMS_JOB_QUEUES BOOL "Build job queue system." OFF)
+einsums_option(EINSUMS_H5CPP_USE_OMP_ALIGNED_ALLOC BOOL
+               "On Mac, use omp_aligned_alloc instead of aligned_alloc. Helpful for old SDK." OFF)
 
 add_feature_info(
   EINSUMS_CONTINUOUSLY_TEST_EINSUM ${EINSUMS_CONTINUOUSLY_TEST_EINSUM}
