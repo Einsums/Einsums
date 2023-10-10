@@ -12,7 +12,7 @@
 #endif
 
 namespace einsums::tensor_algebra::index {
-/// Base struct for index tags. It might not be technically needed but it will
+/// Base struct for index tags. It might not be technically needed but it will allow
 /// compile-time checks to be performed.
 struct LabelBase {};
 } // namespace einsums::tensor_algebra::index
@@ -106,10 +106,17 @@ namespace einsums::tensor_algebra {
 
 namespace index {
 
+#ifndef DOXYGEN
 constexpr auto list = std::make_tuple(i, j, k, l, m, n, a, b, c, d, e, f, p, q, r, s);
+#endif
 
 } // namespace index
 
+/**
+ * @brief Identifier for providing index labels to the the einsum function.
+ *
+ * @tparam Args
+ */
 template <typename... Args>
 struct EINSUMS_EXPORT Indices : public std::tuple<Args...> {
     Indices(Args... args) : std::tuple<Args...>(args...){};
