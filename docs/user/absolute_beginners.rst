@@ -29,7 +29,7 @@ If you have Python, you can install Einsums with::
 How to create a Tensor
 ----------------------
 
-To create an Einsums Tensor, you can use the function ``einsums::create_tensor()``.
+To create an Einsums Tensor, you can use the function :cpp:func:`einsums::create_tensor`.
 
 All you need to do to create a simple tensor is pass a name for the tensor and the
 dimensionality of each index.::
@@ -54,5 +54,7 @@ write the data type explicitly if we want to.::
         // The default underlying type of a tensor is `double`
         einsums::Tensor<2> B = einsums::create_tensor("B", 2, 2);
 
+        // Allow the compiler to determine things.
+        auto C = einsums::create_tensor("C", 2, 2);
         return 0;
     }

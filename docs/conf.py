@@ -98,7 +98,16 @@ exhale_args = {
   # If using the sphinx-bootstrape-theme, you need this next one
   # "treeViewIsBootstrap": True,
   "exhaleExecutesDoxygen": True,
-  "exhaleDoxygenStdin": "INPUT = ../src/include"
+  # Use of CLANG_* requires a Doxygen compiled with clang support
+  # Use of CLAND_DATA_PATH requires a configuration of einsums to be completed.
+  "exhaleDoxygenStdin": """INPUT = ../src/include
+  PREDEFINED += EINSUMS_EXPORT=
+  PREDEFINED += DOXYGEN=1
+  PREDEFINED += BEGIN_EINSUMS_NAMESPACE_HPP(x)=namespace x {
+  PREDEFINED += END_EINSUMS_NAMESPACE_HPP(x)=}
+  CLANG_ASSISTED_PARSING = YES
+  CLANG_DATABASE_PATH = ../build
+  """
 }
 
 # Tell sphinx what the primary language being documented is

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "_Export.hpp"
+#include "einsums/Print.hpp"
 
 #include <ostream>
 
@@ -40,6 +41,9 @@ struct LabelBase {};
         }                                                                                                                                  \
     };
 
+#if DOXYGEN
+
+#else
 MAKE_INDEX(A); // NOLINT
 MAKE_INDEX(a); // NOLINT
 MAKE_INDEX(B); // NOLINT
@@ -94,6 +98,7 @@ MAKE_INDEX(z); // NOLINT
 
 // Z is a special index used internally. DO NOT USE.
 MAKE_INDEX(Z); // NOLINT
+#endif
 
 #undef MAKE_INDEX
 
