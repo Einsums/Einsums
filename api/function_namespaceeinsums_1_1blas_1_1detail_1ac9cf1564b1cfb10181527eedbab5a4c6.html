@@ -1,0 +1,2194 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Function einsums::blas::detail::dger &#8212; Einsums 0.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js"></script>
+    <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js"></script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/function_namespaceeinsums_1_1blas_1_1detail_1ac9cf1564b1cfb10181527eedbab5a4c6';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Function einsums::blas::detail::dgesdd" href="function_namespaceeinsums_1_1blas_1_1detail_1a8af4f1194c69a8a6b917d399625f5912.html" />
+    <link rel="prev" title="Function einsums::blas::detail::dgeqrf" href="function_namespaceeinsums_1_1blas_1_1detail_1ab8df233cbb09da970dec1855a6bfc2cb.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/einsums-logo.png" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../_static/einsums-logo.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+    <p class="title logo__title">Einsums</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user/absolute_beginners.html">
+                        Getting Started
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="library_root.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user/absolute_beginners.html">
+                        Getting Started
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="library_root.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item"><nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="namespace_detail.html">Namespace detail</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="namespace_einsums.html">Namespace einsums</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="namespace_einsums__Arguments.html">Namespace einsums::Arguments</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="namespace_einsums__Arguments__Detail.html">Namespace einsums::Arguments::Detail</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="namespace_einsums__blas.html">Namespace einsums::blas</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="namespace_einsums__blas__detail.html">Namespace einsums::blas::detail</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="namespace_einsums__detail.html">Namespace einsums::detail</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="namespace_einsums__Detail.html">Namespace einsums::Detail</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="namespace_einsums__fft.html">Namespace einsums::fft</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="namespace_einsums__fft__detail.html">Namespace einsums::fft::detail</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="namespace_einsums__polynomial.html">Namespace einsums::polynomial</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="namespace_einsums__polynomial__detail.html">Namespace einsums::polynomial::detail</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="namespace_einsums__state.html">Namespace einsums::state</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="namespace_einsums__tensor_algebra.html">Namespace einsums::tensor_algebra</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="namespace_einsums__tensor_algebra__index.html">Namespace einsums::tensor_algebra::index</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="namespace_einsums__timer.html">Namespace einsums::timer</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="namespace_fmt.html">Namespace fmt</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="namespace_h5.html">Namespace h5</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="namespace_h5__impl.html">Namespace h5::impl</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="namespace_print.html">Namespace print</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="namespace_std.html">Namespace std</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="namespace_std__conditional.html">Namespace std::conditional</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structdetail_1_1RawTypeNameFormat.html">Struct RawTypeNameFormat</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structdetail_1_1TuplePrinter.html">Template Struct TuplePrinter</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structdetail_1_1TuplePrinter_3_01Tuple_00_011_01_4.html">Template Struct TuplePrinter&lt; Tuple, 1 &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structdetail_1_1TuplePrinterNoType.html">Template Struct TuplePrinterNoType</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structdetail_1_1TuplePrinterNoType_3_01Tuple_00_011_01_4.html">Template Struct TuplePrinterNoType&lt; Tuple, 1 &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1add__complex.html">Template Struct add_complex</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1add__complex_3_01std_1_1complex_3_01T_01_4_01_4.html">Template Struct add_complex&lt; std::complex&lt; T &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1AlignedAllocator_1_1rebind.html">Template Struct AlignedAllocator::rebind</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_1_1rebind.html">Template Struct AlignedAllocator&lt; const T, Align &gt;::rebind</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1AlignedAllocator_3_01void_00_01Align_01_4_1_1rebind.html">Template Struct AlignedAllocator&lt; void, Align &gt;::rebind</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1All__t.html">Struct All_t</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1Arguments_1_1Contains.html">Template Struct Contains</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1Arguments_1_1Contains_3_01T_01_4.html">Template Struct Contains&lt; T &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1Arguments_1_1Contains_3_01T_00_01Head_00_01Remaining_8_8_8_01_4.html">Template Struct Contains&lt; T, Head, Remaining… &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1Arguments_1_1Detail_1_1TuplePosition.html">Template Struct TuplePosition</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1Arguments_1_1Detail_1_1TuplePosition_3_01S_00_01P_00_01C_00_01B_00_01not__used_35dd43ada63a7972cbf9d27bab5328f7.html">Template Struct TuplePosition&lt; S, P, C, B, not_used, std::tuple&lt; Tail… &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1Arguments_1_1Detail_1_1TuplePosition_3_01S_00_01P_00_01C_00_01false_00_01H_00_01std_1_1tuple_3_4_01_4.html">Template Struct TuplePosition&lt; S, P, C, false, H, std::tuple&lt;  &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1Arguments_1_1Detail_1_1TuplePosition_3_01S_00_01P_00_01C_00_01false_00_01not__u73b9a019c3868a3a3941d8b7d0aec2dc.html">Template Struct TuplePosition&lt; S, P, C, false, not_used, std::tuple&lt; Head, Tail… &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1Arguments_1_1Detail_1_1TuplePosition_3_01S_00_01P_00_01C_00_01true_00_01Type_0026c9ecbc6288b1b638ecae4b9f425d09.html">Template Struct TuplePosition&lt; S, P, C, true, Type, std::tuple&lt; Tail… &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1Arguments_1_1TuplePosition.html">Template Struct TuplePosition</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1bool__pack.html">Template Struct bool_pack</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1c__unique.html">Template Struct c_unique</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1CircularBuffer.html">Template Struct CircularBuffer</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1complex__type.html">Template Struct complex_type</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1complex__type_3_01std_1_1complex_3_01T_01_4_01_4.html">Template Struct complex_type&lt; std::complex&lt; T &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1contains.html">Template Struct contains</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1contains_3_01std_1_1tuple_3_01Car_00_01Cdr_8_8_8_01_4_00_01Needle_01_4.html">Template Struct contains&lt; std::tuple&lt; Car, Cdr… &gt;, Needle &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1contains_3_01std_1_1tuple_3_01Needle_00_01Cdr_8_8_8_01_4_00_01Needle_01_4.html">Template Struct contains&lt; std::tuple&lt; Needle, Cdr… &gt;, Needle &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1contains_3_01std_1_1tuple_3_4_00_01Needle_01_4.html">Template Struct contains&lt; std::tuple&lt;  &gt;, Needle &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1detail_1_1Array.html">Template Struct Array</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1detail_1_1ChunkType.html">Struct ChunkType</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1detail_1_1CountType.html">Struct CountType</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1detail_1_1DimType.html">Struct DimType</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1Detail_1_1HasType.html">Template Struct HasType</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1Detail_1_1HasType_3_01T_00_01std_1_1tuple_3_01T_00_01Ts_8_8_8_01_4_01_4.html">Template Struct HasType&lt; T, std::tuple&lt; T, Ts… &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1Detail_1_1HasType_3_01T_00_01std_1_1tuple_3_01U_00_01Ts_8_8_8_01_4_01_4.html">Template Struct HasType&lt; T, std::tuple&lt; U, Ts… &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1Detail_1_1HasType_3_01T_00_01std_1_1tuple_3_4_01_4.html">Template Struct HasType&lt; T, std::tuple&lt;  &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1detail_1_1OffsetType.html">Struct OffsetType</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1detail_1_1RangeType.html">Struct RangeType</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1detail_1_1StrideType.html">Struct StrideType</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1detail_1_1TensorBase.html">Template Struct TensorBase</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1difference.html">Template Struct difference</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1DisableOMPNestedScope.html">Struct DisableOMPNestedScope</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1DisableOMPThreads.html">Struct DisableOMPThreads</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1DiskTensor.html">Template Struct DiskTensor</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1DiskView.html">Template Struct DiskView</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1Empty.html">Struct Empty</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1ErrorOr.html">Template Struct ErrorOr</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1ErrorOr_3_01void_00_01ErrorType_01_4.html">Template Struct ErrorOr&lt; void, ErrorType &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1filter.html">Template Struct filter</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1filter_3_01Out_00_01std_1_1tuple_3_4_01_4.html">Template Struct filter&lt; Out, std::tuple&lt;  &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1filter_3_01std_1_1tuple_3_01Out_8_8_8_01_4_00_01std_1_1tuple_3_01InCar_00_01InCdr_8_8_8_01_4_01_4.html">Template Struct filter&lt; std::tuple&lt; Out… &gt;, std::tuple&lt; InCar, InCdr… &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1intersect.html">Template Struct intersect</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1is__complex__t.html">Template Struct is_complex_t</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1is__complex__t_3_01std_1_1complex_3_01T_01_4_01_4.html">Template Struct is_complex_t&lt; std::complex&lt; T &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1is__incore__rank__tensor.html">Template Struct is_incore_rank_tensor</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1is__ondisk__tensor.html">Template Struct is_ondisk_tensor</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1is__smart__pointer.html">Template Struct is_smart_pointer</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1is__smart__pointer__helper.html">Template Struct is_smart_pointer_helper</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1is__smart__pointer__helper_3_01std_1_1shared__ptr_3_01T_01_4_01_4.html">Template Struct is_smart_pointer_helper&lt; std::shared_ptr&lt; T &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1is__smart__pointer__helper_3_01std_1_1unique__ptr_3_01T_01_4_01_4.html">Template Struct is_smart_pointer_helper&lt; std::unique_ptr&lt; T &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1is__smart__pointer__helper_3_01std_1_1weak__ptr_3_01T_01_4_01_4.html">Template Struct is_smart_pointer_helper&lt; std::weak_ptr&lt; T &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1Tensor.html">Template Struct Tensor</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1Tensor_3_01T_00_010_01_4.html">Template Struct Tensor&lt; T, 0 &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1index_1_1LabelBase.html">Struct LabelBase</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1tensor__algebra_1_1Indices.html">Template Struct Indices</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1TensorView.html">Template Struct TensorView</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structeinsums_1_1timer_1_1Timer.html">Struct Timer</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structfmt_1_1formatter_3_01einsums_1_1Count_3_01Rank_01_4_01_4.html">Template Struct formatter&lt; einsums::Count&lt; Rank &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structfmt_1_1formatter_3_01einsums_1_1Dim_3_01Rank_01_4_01_4.html">Template Struct formatter&lt; einsums::Dim&lt; Rank &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structfmt_1_1formatter_3_01einsums_1_1Offset_3_01Rank_01_4_01_4.html">Template Struct formatter&lt; einsums::Offset&lt; Rank &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structfmt_1_1formatter_3_01einsums_1_1Range_01_4.html">Template Struct formatter&lt; einsums::Range &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structfmt_1_1formatter_3_01einsums_1_1Stride_3_01Rank_01_4_01_4.html">Template Struct formatter&lt; einsums::Stride&lt; Rank &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structh5_1_1impl_1_1decay_3_1_1einsums_1_1Tensor_3_01T_00_01Rank_01_4_01_4.html">Template Struct decay&lt; ::einsums::Tensor&lt; T, Rank &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structh5_1_1impl_1_1decay_3_1_1einsums_1_1TensorView_3_01T_00_01Rank_01_4_01_4.html">Template Struct decay&lt; ::einsums::TensorView&lt; T, Rank &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structh5_1_1impl_1_1get_3_1_1einsums_1_1Tensor_3_01T_00_011_01_4_01_4.html">Template Struct get&lt; ::einsums::Tensor&lt; T, 1 &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structh5_1_1impl_1_1get_3_1_1einsums_1_1Tensor_3_01T_00_012_01_4_01_4.html">Template Struct get&lt; ::einsums::Tensor&lt; T, 2 &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structh5_1_1impl_1_1get_3_1_1einsums_1_1Tensor_3_01T_00_013_01_4_01_4.html">Template Struct get&lt; ::einsums::Tensor&lt; T, 3 &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structh5_1_1impl_1_1get_3_1_1einsums_1_1Tensor_3_01T_00_014_01_4_01_4.html">Template Struct get&lt; ::einsums::Tensor&lt; T, 4 &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structh5_1_1impl_1_1rank_3_1_1einsums_1_1Tensor_3_01T_00_01Rank_01_4_01_4.html">Template Struct rank&lt; ::einsums::Tensor&lt; T, Rank &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structh5_1_1impl_1_1rank_3_1_1einsums_1_1TensorView_3_01T_00_01Rank_01_4_01_4.html">Template Struct rank&lt; ::einsums::TensorView&lt; T, Rank &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structprint_1_1Indent.html">Struct Indent</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structSection.html">Struct Section</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="structTensorPrintOptions.html">Struct TensorPrintOptions</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="classeinsums_1_1AlignedAllocator.html">Template Class AlignedAllocator</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="classeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4.html">Template Class AlignedAllocator&lt; const T, Align &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="classeinsums_1_1AlignedAllocator_3_01void_00_01Align_01_4.html">Template Class AlignedAllocator&lt; void, Align &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="enum_LinearAlgebra_8hpp_1aaed1a2b8619f32e31ea9510326d86e3a.html">Enum Norm</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="enum_LinearAlgebra_8hpp_1a909aff8e078eb49362bcd4b25326ef38.html">Enum Vectors</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_TensorAlgebra_8hpp_1a5f861c0de88cdcc76dc96a496da67e42.html">Template Function _get_n</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_TensorAlgebra_8hpp_1aae553c228b456f2927cd5db07228d552.html">Template Function _get_n_skip</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_ElementOperations_8hpp_1ad8049c4f49d86fce3cd0875a6d8bb4f5.html">Template Function abs</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_LinearAlgebra_8hpp_1a42465fe7a154ff1920ff1cd1578e05b9.html">Function ALIAS_TEMPLATE_FUNCTION</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_LinearAlgebra_8hpp_1a7b0a563b4eeef629b3042979aab0be1d.html">Template Function axpby</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_LinearAlgebra_8hpp_1a0d6d6c9cd2b97c5c703b86db7e95b80e.html">Template Function axpy</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Print_8hpp_1aff28897755c49cbfee79eb5d5bb8a66b.html">Template Function CexprTypeName</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Laguerre_8hpp_1aafd581b29951c9abd7d64cde9728fe21.html">Function companion</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Laguerre_8hpp_1a14c384fcf8fe7478dc2d2f88b107c86d.html">Template Function derivative</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function___TensorAlgebraUtilities_8hpp_1aaf5f1163086e9efc5ecc0397aec66c0f.html">Template Function detail::_contiguous_positions</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function___TensorAlgebraUtilities_8hpp_1a2181cab26043c6978555a80718cc709c.html">Template Function detail::_find_type_with_position()</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function___TensorAlgebraUtilities_8hpp_1a23b128bcc082df54dc2888c5dc527d40.html">Template Function detail::_find_type_with_position()</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function___TensorAlgebraUtilities_8hpp_1a2eef0db4d750e7277ffe34948146ef5c.html">Template Function detail::_find_type_with_position(std::index_sequence&lt;Is…&gt;)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function___TensorAlgebraUtilities_8hpp_1a593e4464a2cc91d65e2dd97f270c622e.html">Template Function detail::_is_same_ordering</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function___TensorAlgebraUtilities_8hpp_1adb3f091d099cab8688d8ea3d54e332ce.html">Template Function detail::_unique_find_type_with_position()</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function___TensorAlgebraUtilities_8hpp_1a069c522a1c60104fdc8283000c5b884d.html">Template Function detail::_unique_find_type_with_position(std::index_sequence&lt;Is…&gt;)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function___TensorAlgebraUtilities_8hpp_1a4203647b6573d42d26e26a35e2b24831.html">Template Function detail::_unique_type_with_position</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function___TensorAlgebraUtilities_8hpp_1a557184d77c11ff038cd358ae1df42def.html">Template Function detail::construct_index</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function___TensorAlgebraUtilities_8hpp_1aeea70e4d4fc1de21a57595da796da2de.html">Template Function detail::construct_index_from_unique_target_combination</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function___TensorAlgebraUtilities_8hpp_1a7902b8dd1401710957073154edd5c0c4.html">Template Function detail::construct_indices(const std::tuple&lt;TargetCombination…&gt;&amp;, const std::tuple&lt;TargetPositionInC…&gt;&amp;, const std::tuple&lt;LinkCombination…&gt;&amp;, const std::tuple&lt;LinkPositionInLink…&gt;&amp;)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function___TensorAlgebraUtilities_8hpp_1ad8eb278fdfa97b8ed62c0f948908535f.html">Template Function detail::construct_indices(const std::tuple&lt;AIndices…&gt;&amp;, const std::tuple&lt;TargetCombination…&gt;&amp;, const std::tuple&lt;TargetPositionInC…&gt;&amp;, const std::tuple&lt;LinkCombination…&gt;&amp;, const std::tuple&lt;LinkPositionInLink…&gt;&amp;)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function___TensorAlgebraUtilities_8hpp_1aa74c969192b6cdf72632698aececa299.html">Template Function detail::construct_indices_from_unique_combination</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function___TensorAlgebraUtilities_8hpp_1af7b16e5cc6ce951cb379328db26783df.html">Template Function detail::contiguous_positions</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_TensorAlgebra_8hpp_1ad51c53b254d5681e76d3e6ac68d04200.html">Template Function detail::einsum</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_TensorAlgebra_8hpp_1aa0d565ff8069e75cb77e86ba6d5c8cd1.html">Template Function detail::einsum_generic_algorithm</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function___TensorAlgebraUtilities_8hpp_1a2ed6f9682afc4e1c3b82479b07ae2d2c.html">Template Function detail::find_position()</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function___TensorAlgebraUtilities_8hpp_1abbbd6c7703304aa85ad162040d4ee99f.html">Template Function detail::find_position()</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function___TensorAlgebraUtilities_8hpp_1a818685db517502f809a9e3ddd9dbb13d.html">Template Function detail::find_position(const std::tuple&lt;TargetCombination…&gt;&amp;)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function___TensorAlgebraUtilities_8hpp_1add6456dae98c2d2927cf4b934be33b77.html">Template Function detail::find_type_with_position</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function___TensorAlgebraUtilities_8hpp_1a9fb55071e5fa458999d25fb6e90b2c1a.html">Template Function detail::get_dim_for(const TensorType&lt;T, Rank&gt;&amp;, const std::tuple&lt;Args…&gt;&amp;, std::index_sequence&lt;I…&gt;)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function___TensorAlgebraUtilities_8hpp_1ae49b674e36499efee23caeb9e16e874e.html">Template Function detail::get_dim_for(const TensorType&lt;T, Rank&gt;&amp;, const std::tuple&lt;Args…&gt;&amp;)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function___TensorAlgebraUtilities_8hpp_1a2c30587b1504f4c29cb55364739a7bca.html">Template Function detail::get_dim_ranges_for(const TensorType&lt;T, Rank&gt;&amp;, const std::tuple&lt;Args…&gt;&amp;, std::index_sequence&lt;I…&gt;)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function___TensorAlgebraUtilities_8hpp_1a1c5698aad21880783b3c6cc89d8d39bb.html">Template Function detail::get_dim_ranges_for(const TensorType&lt;T, Rank&gt;&amp;, const std::tuple&lt;Args…&gt;&amp;)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Print_8hpp_1a52bb0c665589668e1ae3cbd4759ea58f.html">Function detail::GetRawTypeNameFormat</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function___TensorAlgebraUtilities_8hpp_1a6c8d3e11edef9592c375c1f42a585dbc.html">Template Function detail::is_same_dims(const std::tuple&lt;PositionsInX…&gt;&amp;, const XType&lt;T, XRank&gt;&amp;, std::index_sequence&lt;I…&gt;)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function___TensorAlgebraUtilities_8hpp_1a63af0fcdbcb86c0b2f2034ec09267d37.html">Template Function detail::is_same_dims(const std::tuple&lt;PositionsInX…&gt;&amp;, const XType&lt;T, XRank&gt;&amp;)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function___TensorAlgebraUtilities_8hpp_1ad75ec242d11add90a844d11e02b8bb2c.html">Template Function detail::is_same_ordering</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function___TensorAlgebraUtilities_8hpp_1a8f9a0c41df2b339ec9d5736053984091.html">Template Function detail::last_stride</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function___TensorAlgebraUtilities_8hpp_1a02bb954f9b027adc9b12c79b075a1f1c.html">Template Function detail::order_indices</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Print_8hpp_1a8ebfd632ef4e5957b21e6e5d10805d66.html">Template Function detail::print_tuple</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Print_8hpp_1ab2c057d120d5d10135494c272624071e.html">Template Function detail::print_tuple_no_type</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Print_8hpp_1a9390305128025d48ebf4e9deff34ee55.html">Function detail::println</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function___TensorAlgebraUtilities_8hpp_1a9365c30aa5fe9277b3703e98c78c7326.html">Template Function detail::product_dims(const std::tuple&lt;PositionsInX…&gt;&amp;, const XType&lt;T, XRank&gt;&amp;, std::index_sequence&lt;I…&gt;)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function___TensorAlgebraUtilities_8hpp_1a82dd4454a930a9aec5647cd54dbd2724.html">Template Function detail::product_dims(const std::tuple&lt;PositionsInX…&gt;&amp;, const XType&lt;T, XRank&gt;&amp;)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Print_8hpp_1a67129e31d4cf91e581b7bbf2c65835d2.html">Template Function detail::RawTypeName</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function___TensorAlgebraUtilities_8hpp_1afa3adabc53d8375e4d68e8f3d4c30b54.html">Template Function detail::same_indices(std::index_sequence&lt;I…&gt;)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function___TensorAlgebraUtilities_8hpp_1ac7ba79dcdbf7fb9d7864834cd8793523.html">Template Function detail::same_indices()</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function___TensorAlgebraUtilities_8hpp_1a9192433d0e039f86b1b7047d14a6c888.html">Template Function detail::unique_find_type_with_position</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_LinearAlgebra_8hpp_1a8ac97176a246135cf736b5502a8c8ca6.html">Template Function dot(const Type&lt;T, 1&gt;&amp;, const Type&lt;T, 1&gt;&amp;)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_LinearAlgebra_8hpp_1a1d606cb80aea6be2fa4b8dc4db11889a.html">Template Function dot(const Type&lt;T, Rank&gt;&amp;, const Type&lt;T, Rank&gt;&amp;)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_LinearAlgebra_8hpp_1a908d3feb51b0f3ed3cd3c35a9bc3c595.html">Template Function dot(const Type&lt;T, Rank&gt;&amp;, const Type&lt;T, Rank&gt;&amp;, const Type&lt;T, Rank&gt;&amp;)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_TensorAlgebra_8hpp_1a246d59e4e7593ef40351842aa56607e4.html">Template Function einsum(const U, const std::tuple&lt;CIndices…&gt;&amp;, CType&lt;CDataType, CRank&gt; *, const U, const std::tuple&lt;AIndices…&gt;&amp;, const AType&lt;ADataType, ARank&gt;&amp;, const std::tuple&lt;BIndices…&gt;&amp;, const BType&lt;BDataType, BRank&gt;&amp;)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_TensorAlgebra_8hpp_1aeb8838553327473b2a2318504a7cd172.html">Template Function einsum(const T, const std::tuple&lt;CIndices…&gt;&amp;, CType *, const T, const std::tuple&lt;AIndices…&gt;&amp;, const AType&amp;, const std::tuple&lt;BIndices…&gt;&amp;, const BType&amp;)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_TensorAlgebra_8hpp_1a2ed28c8691d905dfe2114ac48ff4e8b6.html">Template Function einsum(const std::tuple&lt;CIndices…&gt;&amp;, CType *, const std::tuple&lt;AIndices…&gt;&amp;, const AType&amp;, const std::tuple&lt;BIndices…&gt;&amp;, const BType&amp;)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Utilities_8hpp_1ab4ee342b546717f2ecd37d78e9117053.html">Template Function einsums::arange(T, T, T)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Utilities_8hpp_1a2d4b148fff3374c3003cc17b4732212c.html">Template Function einsums::arange(T)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_STL_8hpp_1a4a1315f21677a36601adab5b46dd16e0.html">Template Function einsums::Arguments::get(const SearchPattern&amp;, Args&amp;&amp;…)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_STL_8hpp_1a7788c5ac32ba7f55f09ad47e6d8caab5.html">Template Function einsums::Arguments::get(Args&amp;&amp;…)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_STL_8hpp_1a5c5a676fc703a06fab40109ca17225d2.html">Template Function einsums::Arguments::getn</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1aca1f41c8e44a8bb9e480fa1c5884effc.html">Template Function einsums::blas::axpby</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1ad066053be430c7edead893b007107c7b.html">Specialized Template Function einsums::blas::axpby&lt; double &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a4b6a3701a7ca3006f96d492db687010e.html">Specialized Template Function einsums::blas::axpby&lt; float &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a9a91f77b30daec1e20a0d0e4fc3f51f5.html">Specialized Template Function einsums::blas::axpby&lt; std::complex&lt; double &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a215f870c30ef90260752bc5fdd83af38.html">Specialized Template Function einsums::blas::axpby&lt; std::complex&lt; float &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1ab983c81ffe37b47390b815fc59aa47da.html">Template Function einsums::blas::axpy</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a1c942b0a763666b191d1b17bd9b6107a.html">Specialized Template Function einsums::blas::axpy&lt; double &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1ae7db600f15a02c21414d322fc18d4657.html">Specialized Template Function einsums::blas::axpy&lt; float &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1ab7c15f24d7e15deea0366c45c331eba0.html">Specialized Template Function einsums::blas::axpy&lt; std::complex&lt; double &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1abac21ff10ff6a9a1967e5c2821bbe9f2.html">Specialized Template Function einsums::blas::axpy&lt; std::complex&lt; float &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ad21995d7be59905a218151fc2f2e595f.html">Function einsums::blas::detail::caxpby</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a64f3a199a81c32df7cd00cd02ea4f955.html">Function einsums::blas::detail::caxpy</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a99be215f348c316dc6ac262fcd1e13c7.html">Function einsums::blas::detail::cdot</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a1a786cfbab3774a828a3e8f317555d55.html">Function einsums::blas::detail::cgemm</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a196bc8b907603b671aa2b0607a7d69da.html">Function einsums::blas::detail::cgemv</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a2c573f9ff39a362f5a61b5d3962c484a.html">Function einsums::blas::detail::cgeqrf</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a3147a4a519374c7bb1710820b842cfbb.html">Function einsums::blas::detail::cger</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1aca7c3527a83799d80fa6471e971da032.html">Function einsums::blas::detail::cgesdd</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a16991d6c38bdba45e345a418d162f4ab.html">Function einsums::blas::detail::cgesv</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a3ec8675e4246411c3a8cd1a119ca4a67.html">Function einsums::blas::detail::cgetrf</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ab07582979bd90d869eb88901ceaa60c2.html">Function einsums::blas::detail::cgetri</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a7da3378e472fcc920abebb537d75059b.html">Function einsums::blas::detail::cheev</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a7816355516878c7a08492e148b254b0c.html">Function einsums::blas::detail::clange</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a3ed931ee1d087e20ad67333e2bce0076.html">Function einsums::blas::detail::classq</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1afb73d0d9aa0f9fbe921a827cc5f8299f.html">Function einsums::blas::detail::cscal</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a3430a8813c05305651235f8f522e4d3d.html">Function einsums::blas::detail::csscal</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a60e154ab95a5e8b0ea5585c1241ce47f.html">Function einsums::blas::detail::ctrsyl</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a6b8dff722fe3f6d1d448f58d16d0a006.html">Function einsums::blas::detail::cungqr</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ae8d5849725ffc69912a3e42ab31d535e.html">Function einsums::blas::detail::daxpby</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ae3dd15629873f207eabbf8aefad82084.html">Function einsums::blas::detail::daxpy</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a9c21e210f57abd579fcfb86eaeb48994.html">Function einsums::blas::detail::ddot</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a651b0b2632d8536283aa4e24b3ace4a6.html">Function einsums::blas::detail::dgees</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1aa4a830e1c3063b19586271b7a41393ed.html">Function einsums::blas::detail::dgemm</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ad73c0744a608eb92eef431f35ec63e61.html">Function einsums::blas::detail::dgemv</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ab8df233cbb09da970dec1855a6bfc2cb.html">Function einsums::blas::detail::dgeqrf</a></li>
+</ul>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Function einsums::blas::detail::dger</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a8af4f1194c69a8a6b917d399625f5912.html">Function einsums::blas::detail::dgesdd</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ababfdbfa833210ad9f69f975c1d107ea.html">Function einsums::blas::detail::dgesv</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a7b764b6e3da5389d9f0aaaeb1a0fdd12.html">Function einsums::blas::detail::dgesvd</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a658916b3f359141562940bad2333c642.html">Function einsums::blas::detail::dgetrf</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a545f56fef2d7287d33570a4b835b2bd8.html">Function einsums::blas::detail::dgetri</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ad202db94fb02dc0dc31344599eeb446f.html">Function einsums::blas::detail::dlange</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ab41df02da595086be28eebc08ee77c9a.html">Function einsums::blas::detail::dlassq</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ab9b2f15133805073c63f9819f441b47c.html">Function einsums::blas::detail::dorgqr</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a549af3f176987b78335cd49d228697f9.html">Function einsums::blas::detail::dscal</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ae010d57c2e312f560465acc0c023300a.html">Function einsums::blas::detail::dsyev</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a8a79cda8decc4b411fc083281cce2dfe.html">Function einsums::blas::detail::dtrsyl</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1aa45e7605381a66f8cd7e94de3184bed6.html">Function einsums::blas::detail::saxpby</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1aa9261073ae5f529a46ebaf87d48d0960.html">Function einsums::blas::detail::saxpy</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1acf303cc0e6dc32d267ad414ebdf96277.html">Function einsums::blas::detail::sdot</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a357778ead9227f722ef732c5fdd35b3d.html">Function einsums::blas::detail::sgees</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a02e7255e23c3b06de65a548a49d6271a.html">Function einsums::blas::detail::sgemm</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1adcd5b0ad95f756ed897e2d4c40f66dbf.html">Function einsums::blas::detail::sgemv</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a658624e9cd59b6e17488b8b9dd8eed5e.html">Function einsums::blas::detail::sgeqrf</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1abb843a0db180c162869d9381617856ef.html">Function einsums::blas::detail::sger</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ad3c2e91cbd92c4162afe95c185aa3a64.html">Function einsums::blas::detail::sgesdd</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1aa07fa5ffbd4afe6ed284c04a8f8a7fa4.html">Function einsums::blas::detail::sgesv</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a0625bca25275e9101094e0372f7b15f2.html">Function einsums::blas::detail::sgesvd</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a5f11c9bdbe497ec137c7c05ff7b1fc10.html">Function einsums::blas::detail::sgetrf</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a1f69f69b4a6c6845e8b3b86e6ec5abe4.html">Function einsums::blas::detail::sgetri</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a370eac65e24f865eeef22f9b2abc61f1.html">Function einsums::blas::detail::slange</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a3ca7e5a725aab6e0898194a075fae7d6.html">Function einsums::blas::detail::slassq</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a7e2189e01d6541a1a0cbadbb349fa4cb.html">Function einsums::blas::detail::sorgqr</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a97d6e046bbad515687654487fe823e63.html">Function einsums::blas::detail::sscal</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a952fdfcaf54b20a2ad7356b35873c5ab.html">Function einsums::blas::detail::ssyev</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a7956aedcf80730815d04848ab3cfb4d2.html">Function einsums::blas::detail::strsyl</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ae69bb5874bae06622a38f77d893e2c99.html">Function einsums::blas::detail::zaxpby</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a01a7f0386154c5474d4016436524f752.html">Function einsums::blas::detail::zaxpy</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ae4f957c806fd709319615e92414db811.html">Function einsums::blas::detail::zdot</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ab68c57792213548e20693d5b440e5fb3.html">Function einsums::blas::detail::zdscal</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1aef8fa74e87cf5ef96feadc1da79ea0a8.html">Function einsums::blas::detail::zgemm</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1adbace79e0b9adc17462e38eff3548878.html">Function einsums::blas::detail::zgemv</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a0bbb2fe940d030659f52a660f1cd003d.html">Function einsums::blas::detail::zgeqrf</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a367ca5c44587be276802de13a14872d7.html">Function einsums::blas::detail::zger</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a0e7e7892fbf95b9c7f2e22c75f17d9b2.html">Function einsums::blas::detail::zgesdd</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1acff22e804d2ab2d94d734477bc4ffed1.html">Function einsums::blas::detail::zgesv</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a7d5502074fb9ff65e4dc810b1d982d9e.html">Function einsums::blas::detail::zgetrf</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ae04c465a3a0ce5db0d344a6dbea0b86b.html">Function einsums::blas::detail::zgetri</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a6482a3c3caba67acdc40bfbd981a48ad.html">Function einsums::blas::detail::zheev</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a52924938b38da1cd51c2970f77127943.html">Function einsums::blas::detail::zlange</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1afcef0bf3ad64cd6e798329c4e7391276.html">Function einsums::blas::detail::zlassq</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a8285a749efed578d9271d6a8c685e2f7.html">Function einsums::blas::detail::zscal</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ae5831d7c49decf12fe7683a3f492bdb4.html">Function einsums::blas::detail::ztrsyl</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a3292fda3a98fbd2eac4b1d4b0e26a321.html">Function einsums::blas::detail::zungqr</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a8a9910a09f8e6402adfb746ca663b035.html">Template Function einsums::blas::dot</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1aaa9bf7891c312f2c0feeca3feef359eb.html">Specialized Template Function einsums::blas::dot&lt; double &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a0e9f3f229ca23cb4fb364efe477c75de.html">Specialized Template Function einsums::blas::dot&lt; float &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a0f688ac411edf67b14a9d13aff156571.html">Specialized Template Function einsums::blas::dot&lt; std::complex&lt; double &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a7f933e07dc8e8cc12ef9beeaa92d61d4.html">Specialized Template Function einsums::blas::dot&lt; std::complex&lt; float &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1af9f978c9480acef44d04f82136c49df3.html">Function einsums::blas::finalize</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a15571822d03e6098b398cb486946041d.html">Template Function einsums::blas::gees</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a5819e41a799cf83671f6e4b243da33c0.html">Specialized Template Function einsums::blas::gees&lt; double &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a4fb39371935688a8462cc96506b0118c.html">Specialized Template Function einsums::blas::gees&lt; float &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1adc2ca3a9dc3ec7e2aae1f0cf8b8c12b1.html">Template Function einsums::blas::gemm</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a40e29b30b52fa22b43a95f33926b8e32.html">Specialized Template Function einsums::blas::gemm&lt; double &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a18ee1b1fbabd682ab5c8333e19155d4e.html">Specialized Template Function einsums::blas::gemm&lt; float &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a563bde6f79f7da451c21408f81433d34.html">Specialized Template Function einsums::blas::gemm&lt; std::complex&lt; double &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a59eecb566826ff0c0ec6923f2a0fd5ad.html">Specialized Template Function einsums::blas::gemm&lt; std::complex&lt; float &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a2a81cb8368ed8ab10777454325c49e92.html">Template Function einsums::blas::gemv</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1ac2aed2c81c16cc6a92360b44933da962.html">Specialized Template Function einsums::blas::gemv&lt; double &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a36eb61e0e58e10b62fe6ee4611f516d3.html">Specialized Template Function einsums::blas::gemv&lt; float &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a2c6685c39f9c2ad41687447d1684117a.html">Specialized Template Function einsums::blas::gemv&lt; std::complex&lt; double &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a287c01770280061e1d0b000861de8ad1.html">Specialized Template Function einsums::blas::gemv&lt; std::complex&lt; float &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1ade590cfe1bfdbe7c822aeafad6c17527.html">Template Function einsums::blas::geqrf</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1add297e000b0dfd758017452402a8a385.html">Specialized Template Function einsums::blas::geqrf&lt; double &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a54ec1622d726de46d6196107eae6da90.html">Specialized Template Function einsums::blas::geqrf&lt; float &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a05ca06f586e7f889a3c2d8abc2ab6c93.html">Specialized Template Function einsums::blas::geqrf&lt; std::complex&lt; double &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a55ae79323a299a825dccbc49f3032203.html">Specialized Template Function einsums::blas::geqrf&lt; std::complex&lt; float &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a8bc08b31d3927ba8881da36b4f815f19.html">Template Function einsums::blas::ger</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a5217df7825e55aff6a59079eb8e961ed.html">Specialized Template Function einsums::blas::ger&lt; double &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1acc18fc90c4b0f6769b03fa3e75ec9e9b.html">Specialized Template Function einsums::blas::ger&lt; float &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a99bc56e0e7f7a46e6e8a1d7219530b81.html">Specialized Template Function einsums::blas::ger&lt; std::complex&lt; double &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a29cb740cb98044e74f98ddfce722d29b.html">Specialized Template Function einsums::blas::ger&lt; std::complex&lt; float &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1aa14f1256e8b5836fcd580aa717ee76c5.html">Template Function einsums::blas::gesdd</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a1ac94acdd2e5732053235b48a9f978ad.html">Specialized Template Function einsums::blas::gesdd&lt; double &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a076c1f7cce413ef91831bdd43529a7ba.html">Specialized Template Function einsums::blas::gesdd&lt; float &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a5de0ccc86521ce330df032ca93299d1b.html">Specialized Template Function einsums::blas::gesdd&lt; std::complex&lt; double &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1aa7126ce15772294702e2d6edee5d4bca.html">Specialized Template Function einsums::blas::gesdd&lt; std::complex&lt; float &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a8caa0ed28129b2ddb5806f7c1b0b04d9.html">Template Function einsums::blas::gesv</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a11658c79bb2b83ca7f1fb2252029cd96.html">Specialized Template Function einsums::blas::gesv&lt; double &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a21fce165b6c8f6fadc964eab411d3bab.html">Specialized Template Function einsums::blas::gesv&lt; float &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a71834fe2325c23cba6e2b58ecd0a62d4.html">Specialized Template Function einsums::blas::gesv&lt; std::complex&lt; double &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a320a97f1fc408607f95d02fca05d0e37.html">Specialized Template Function einsums::blas::gesv&lt; std::complex&lt; float &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a5ed09dcb656699616e1a2b98bebcfcf7.html">Template Function einsums::blas::gesvd</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a6faccf911d46c6510dc2439df41c2a5e.html">Specialized Template Function einsums::blas::gesvd&lt; double &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a57a5989d8728d24992a91c54495761d8.html">Specialized Template Function einsums::blas::gesvd&lt; float &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1ada1c449050738511bf96ca7b29d6bbb3.html">Template Function einsums::blas::getrf</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a6440fafb840b1179078fbb5b8ec298cc.html">Specialized Template Function einsums::blas::getrf&lt; double &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1ad7ba9b35a6fb28217f0ac82a024666b7.html">Specialized Template Function einsums::blas::getrf&lt; float &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1aba9606fa413ddfa15c0bd188f5968e0b.html">Specialized Template Function einsums::blas::getrf&lt; std::complex&lt; double &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a9c44ea820eb96aa0bad78219648fc3c7.html">Specialized Template Function einsums::blas::getrf&lt; std::complex&lt; float &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1afb29e043876b3b2fa17fda652df8fae6.html">Template Function einsums::blas::getri</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a23392760c5aed675dcb573a33bed7ff0.html">Specialized Template Function einsums::blas::getri&lt; double &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1ab0836e7e61ebb4e4a87b67bb581504ae.html">Specialized Template Function einsums::blas::getri&lt; float &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a1d666271c9cbbaadd1bc626bc5c891d7.html">Specialized Template Function einsums::blas::getri&lt; std::complex&lt; double &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a82e932297b8a14e33a32238f9261691f.html">Specialized Template Function einsums::blas::getri&lt; std::complex&lt; float &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a64556c47eb5d47cb6a2b7aed25a47da9.html">Template Function einsums::blas::heev</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1ae315d24569409c1b8bd3410cf4e9fbb1.html">Specialized Template Function einsums::blas::heev&lt; double &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1abff3d6046b943a67e6e118b15467abd0.html">Specialized Template Function einsums::blas::heev&lt; float &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a0f42ab149c20c98fd3d2d8a23c76e858.html">Function einsums::blas::initialize</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1adb3232e92ae5679ea7d2d87ca6808b1d.html">Template Function einsums::blas::lange</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1af32ecfe26b90a1097a18367c81061f6c.html">Specialized Template Function einsums::blas::lange&lt; double &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a2efbe5837edc657ed721c752647605a6.html">Specialized Template Function einsums::blas::lange&lt; float &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1af36ba326fcd6b7acaedff50624317227.html">Specialized Template Function einsums::blas::lange&lt; std::complex&lt; double &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a3390b4345c4a64a812780e778e249091.html">Specialized Template Function einsums::blas::lange&lt; std::complex&lt; float &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1aaa48b789dca66f6a22310a4afe9d9e6c.html">Template Function einsums::blas::lassq</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a315a95a1ce6c74cbc9ad4fab59c6cce4.html">Specialized Template Function einsums::blas::lassq&lt; double &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1ab58184b5c6dfed9b2164b5c2853658dd.html">Specialized Template Function einsums::blas::lassq&lt; float &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a57b7fdc1c6aaa810403dae61bd215585.html">Specialized Template Function einsums::blas::lassq&lt; std::complex&lt; double &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a3f71491ad3d07e4336e2214d53c7a1a6.html">Specialized Template Function einsums::blas::lassq&lt; std::complex&lt; float &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a2f0296b1f3857914680715b3b9678728.html">Template Function einsums::blas::orgqr</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a35327bd98f967e4365b81ba21db2fead.html">Specialized Template Function einsums::blas::orgqr&lt; double &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a99f0577c34bd31856e68f88eccc22903.html">Specialized Template Function einsums::blas::orgqr&lt; float &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1ad992c2f082054c95eb623a2a31f829b7.html">Template Function einsums::blas::scal(eint, const T, T *, eint)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1ac3355dced59d857752d38ef49fde2f06.html">Template Function einsums::blas::scal(eint, const remove_complex_t&lt;T&gt;, T *, eint)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a0880393d78d8b9acdd9fd3685a16e438.html">Specialized Template Function einsums::blas::scal&lt; double &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1ac98205c32c726b1a7069a11ed7290e35.html">Specialized Template Function einsums::blas::scal&lt; float &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a435f964301c202f78ac3d831799cb32f.html">Specialized Template Function einsums::blas::scal&lt; std::complex&lt; double &gt; &gt;(eint, const std::complex&lt;double&gt;, std::complex&lt;double&gt; *, eint)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1ad1db06ada4b3b1e5ea271b0b1d52719f.html">Specialized Template Function einsums::blas::scal&lt; std::complex&lt; double &gt; &gt;(eint, const double, std::complex&lt;double&gt; *, eint)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1aedbd71937b4631cd828e3d82bd5d6e83.html">Specialized Template Function einsums::blas::scal&lt; std::complex&lt; float &gt; &gt;(eint, const std::complex&lt;float&gt;, std::complex&lt;float&gt; *, eint)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1af203fe3f69a787b928e9fd0b6a355f8d.html">Specialized Template Function einsums::blas::scal&lt; std::complex&lt; float &gt; &gt;(eint, const float, std::complex&lt;float&gt; *, eint)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a4a5c9e98a5327778537a475b1eb4306b.html">Template Function einsums::blas::syev</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1af91b5adfd80f18ee030c76e70bc56dd8.html">Specialized Template Function einsums::blas::syev&lt; double &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1ae11d6a1facf87f66ccdea90e018b2795.html">Specialized Template Function einsums::blas::syev&lt; float &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1af0467c0a0796866ff61dda18cb3c31ca.html">Template Function einsums::blas::trsyl</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a4fba13b741a3d6115a5a07e8922e8396.html">Specialized Template Function einsums::blas::trsyl&lt; double &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1ac588a15a992ddc4a1d690f7cfcebdf3f.html">Specialized Template Function einsums::blas::trsyl&lt; float &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a431ca012fb5b97d45e77dabd0e3b78ba.html">Specialized Template Function einsums::blas::trsyl&lt; std::complex&lt; double &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a6effe41cb2bfadb49d55451d71af9e95.html">Specialized Template Function einsums::blas::trsyl&lt; std::complex&lt; float &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a3a5fe471bab6b7a58d1f104b450e1218.html">Template Function einsums::blas::ungqr</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a747d25d2799ade9feec64266f8c22804.html">Specialized Template Function einsums::blas::ungqr&lt; std::complex&lt; double &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Blas_8hpp_1a673b50813cb9b129b2786d22d5ea01c8.html">Specialized Template Function einsums::blas::ungqr&lt; std::complex&lt; float &gt; &gt;</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_STL_8hpp_1aaf7903a19c8a79a368737d29bcc6774c.html">Template Function einsums::count_of_type</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_STL_8hpp_1afb04a9b8942def26e2f24cb0a474c86f.html">Template Function einsums::create_array</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Tensor_8hpp_1a0da45c93e1e370c62628e89291965f50.html">Template Function einsums::create_disk_tensor</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Tensor_8hpp_1a2cb71e6acd999c8ca849258fa725349c.html">Template Function einsums::create_disk_tensor_like</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Utilities_8hpp_1afe42538de80e0b3b729b8a71218d2c26.html">Template Function einsums::create_identity_tensor</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Utilities_8hpp_1a7db0ea7c6012d620d3a12f125ce526d6.html">Template Function einsums::create_incremented_tensor</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Utilities_8hpp_1aac63a20aeed69833a429f7bc70345cc1.html">Template Function einsums::create_ones_tensor</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Utilities_8hpp_1a12fd2b0340d9b97bce4df08ec6646385.html">Template Function einsums::create_random_tensor</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Tensor_8hpp_1aacae9adfebd17ccc3adb7f2cf8dba27d.html">Template Function einsums::create_tensor</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Utilities_8hpp_1ab286161aa9626912f0d504d5da2b86db.html">Template Function einsums::create_tensor_like(const TensorType&lt;DataType, Rank&gt;&amp;)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Utilities_8hpp_1af9d509b6e326b5fbb88d89b9bd558a63.html">Template Function einsums::create_tensor_like(const std::string, const TensorType&lt;DataType, Rank&gt;&amp;)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_STL_8hpp_1a125853eb57b4c417874a1521edcda8e5.html">Template Function einsums::create_tuple</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_STL_8hpp_1a467beca440a6a455d031487a19f01d6f.html">Template Function einsums::create_tuple_from_array</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Tensor_8hpp_1a0341bb4972826183467a56ea1005074a.html">Template Function einsums::detail::add_elements</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_STL_8hpp_1aff0084c5eed7e31bef33df18fa6cff3c.html">Function einsums::detail::allocate_aligned_memory</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_STL_8hpp_1af6879128df4e286f3d32bbd5e7145571.html">Template Function einsums::Detail::create_array</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_STL_8hpp_1ab76d24140b7de36bb07e30a124b54f81.html">Template Function einsums::Detail::create_tuple</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_STL_8hpp_1a5e53eed71e83dd82fdf169fcfe636f07.html">Template Function einsums::Detail::create_tuple_from_array</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_STL_8hpp_1a1fdc73286adbf0fcdc794d24b01632ed.html">Function einsums::detail::deallocate_aligned_memory</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Tensor_8hpp_1a2a5b6de485574aacfae1bbea1c2abc36.html">Template Function einsums::detail::get_dim_ranges</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_STL_8hpp_1aa3190ce3f1e91909cc16e8f3a51d096f.html">Template Function einsums::Detail::positions_of_type()</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_STL_8hpp_1a3d39f2359d6ea583088c35781ac51191.html">Template Function einsums::Detail::positions_of_type()</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Utilities_8hpp_1ac2262e9c8086c8d665dbeaaf1a48de0e.html">Template Function einsums::detail::set_to</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Utilities_8hpp_1a52d722ab4180dcce7d68c9bad2955c21.html">Template Function einsums::diagonal</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Utilities_8hpp_1aa53cbaebf7260b5384609df184066188.html">Template Function einsums::diagonal_like</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Utilities_8hpp_1a592520f1db4e9deadee47744a4e6caac.html">Template Function einsums::divmod</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_STL_8hpp_1aa4b66ad77ee363ab93eb41532bdffb26.html">Template Function einsums::enumerate</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_FFT_8hpp_1a0dc5569462474fe4c3580dbec6ae530b.html">Function einsums::fft::detail::ccfft</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_FFT_8hpp_1a7b56fb90711cf2cddaf14b0cfd5d5887.html">Function einsums::fft::detail::ccifft</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_FFT_8hpp_1a68db78b6f651c3bc00b4933c6f814841.html">Function einsums::fft::detail::csifft</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_FFT_8hpp_1a26c5e20fe295de570b2df6e574ea513d.html">Function einsums::fft::detail::dzfft</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_FFT_8hpp_1ae956c7df17f4ea8b0c6f41fb14ecf059.html">Function einsums::fft::detail::scfft</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_FFT_8hpp_1a6e0a1db14c9ebc268e21d514d8770478.html">Function einsums::fft::detail::zdifft</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_FFT_8hpp_1abbbc60401a3a8e09cfa0c961cb5f9a5c.html">Function einsums::fft::detail::zzfft</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_FFT_8hpp_1a6c1f2d745afb7d789bff6f5bb7eedc0f.html">Function einsums::fft::detail::zzifft</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_FFT_8hpp_1a41f42ba8e635474ae402c79e8bdcecd9.html">Function einsums::fft::fft(const Tensor&lt;float, 1&gt;&amp;, Tensor&lt;std::complex&lt;float&gt;, 1&gt; *)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_FFT_8hpp_1aab8c390a782512af655eebe132c21c50.html">Function einsums::fft::fft(const Tensor&lt;std::complex&lt;float&gt;, 1&gt;&amp;, Tensor&lt;std::complex&lt;float&gt;, 1&gt; *)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_FFT_8hpp_1a18ca5bd1c1a87c6a3435dedf82882950.html">Function einsums::fft::fft(const Tensor&lt;double, 1&gt;&amp;, Tensor&lt;std::complex&lt;double&gt;, 1&gt; *)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_FFT_8hpp_1a433c4a3d33fefb1435818be8fcb70771.html">Function einsums::fft::fft(const Tensor&lt;std::complex&lt;double&gt;, 1&gt;&amp;, Tensor&lt;std::complex&lt;double&gt;, 1&gt; *)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_FFT_8hpp_1a5b9173f73bba5d54d5955bc96ac861dc.html">Function einsums::fft::fftfreq</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_FFT_8hpp_1a84704ad62079267e0f76d0a1034e0ba1.html">Function einsums::fft::ifft(const Tensor&lt;std::complex&lt;float&gt;, 1&gt;&amp;, Tensor&lt;float, 1&gt; *)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_FFT_8hpp_1a0b3db2139149b3c32af47433d937bff6.html">Function einsums::fft::ifft(const Tensor&lt;std::complex&lt;double&gt;, 1&gt;&amp;, Tensor&lt;double, 1&gt; *)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_FFT_8hpp_1ab54fa70f2c9e082b71035df811e70585.html">Function einsums::fft::ifft(const Tensor&lt;std::complex&lt;float&gt;, 1&gt;&amp;, Tensor&lt;std::complex&lt;float&gt;, 1&gt; *)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_FFT_8hpp_1a098972e393512be9a3d7ef3a038a4ad5.html">Function einsums::fft::ifft(const Tensor&lt;std::complex&lt;double&gt;, 1&gt;&amp;, Tensor&lt;std::complex&lt;double&gt;, 1&gt; *)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function___Common_8hpp_1a3e9b44513554a298c39ff98eb9129f96.html">Function einsums::finalize</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_STL_8hpp_1a8ed453234db2c3c9b305467b9c5937af.html">Template Function einsums::for_each</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_STL_8hpp_1af1a83390a8e808084c2e6127d37cf9ea.html">Template Function einsums::for_each_impl</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_STL_8hpp_1a1ae3ea0d36fcdfe6a8b37f24beb56502.html">Template Function einsums::for_sequence(std::integer_sequence&lt;T, S…&gt;, F)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_STL_8hpp_1a46100824581c3c5823243189ce4ef41d.html">Template Function einsums::for_sequence(F)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_STL_8hpp_1a8f98b0188912397bf2396461fafb7712.html">Template Function einsums::get_array_from_tuple</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Tensor_8hpp_1a64d283f84989678bc73b1af464c17ad3.html">Template Function einsums::get_dim_ranges</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_STL_8hpp_1ad24da978e4fbddf56d625782645a2f17.html">Template Function einsums::get_from_tuple</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function___Common_8hpp_1a854db456f89f04ed386ab68a1fdf7450.html">Function einsums::initialize</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_STL_8hpp_1ae6655c25633dbd707fb7b10d7826fd28.html">Function einsums::ltrim</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_STL_8hpp_1ab48e19de37f90af3b21dd16afeb2b9fb.html">Function einsums::ltrim_copy</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_STL_8hpp_1a3a4beeeafc31851d6d8d0d68f4b2d980.html">Template Function einsums::ndigits</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_STL_8hpp_1a1fe99228ceba1058bbb7c025da64637d.html">Template Function einsums::operator!=</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_STL_8hpp_1a41f46baf5fc46d85f3937d55235fce2d.html">Template Function einsums::operator==</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_polynomial_2Utilities_8hpp_1a6b946433c2fad6ac9a869911d755a857.html">Template Function einsums::polynomial::detail::from_roots</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_polynomial_2Utilities_8hpp_1a9873e40e3f036e4029576784aa4af53e.html">Template Function einsums::polynomial::get_domain</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_STL_8hpp_1a8f1c05882a6e5d79b05ebcd04b2aee1c.html">Template Function einsums::positions_of_type</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Tensor_8hpp_1ae15bc2f581377beb9da08fc8d0a7e928.html">Template Function einsums::read(const h5::fd_t&amp;, const std::string&amp;)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Tensor_8hpp_1a8a2c7ab8f41f9c47c76bd23885d4a710.html">Template Function einsums::read(const h5::fd_t&amp;, const std::string&amp;)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_STL_8hpp_1aa03024c75628aee1c69a9edddf9acda9.html">Function einsums::rtrim</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_STL_8hpp_1aab23ab81a5f1dc2f0e39d0eb88a234bc.html">Function einsums::rtrim_copy</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Timer_8hpp_1afcff91a99b50b6b0258bda6a59628ea2.html">Function einsums::timer::finalize</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Timer_8hpp_1a81e73d57ba47248f7c2049820aff08ed.html">Function einsums::timer::initialize</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Timer_8hpp_1ad04291df9f50480fa126cbc561d41a1f.html">Function einsums::timer::pop</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Timer_8hpp_1aec4c3fd0eb6cd1a436316eaba35cf7dd.html">Function einsums::timer::push</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Timer_8hpp_1af7b27ed8f1b958ad78194526326352bf.html">Function einsums::timer::report</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_STL_8hpp_1a381b41d8bcafa614456662b14104e54c.html">Function einsums::trim</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_STL_8hpp_1a455770b2289c6ba485d402ee8b448512.html">Function einsums::trim_copy</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Tensor_8hpp_1ad4b8e06472ea9229e80fb20d1e99cb15.html">Template Function einsums::write(const h5::fd_t&amp;, const Tensor&lt;T, Rank&gt;&amp;, Args&amp;&amp;…)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Tensor_8hpp_1a7d6be2c45506b693c6b512e232318fd6.html">Template Function einsums::write(const h5::fd_t&amp;, const Tensor&lt;T, 0&gt;&amp;)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Tensor_8hpp_1a7bc3393b66dec35525cff395c5ae447b.html">Template Function einsums::write(const h5::fd_t&amp;, const TensorView&lt;T, Rank&gt;&amp;, Args&amp;&amp;…)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Tensor_8hpp_1a3a0b2c04fe72ddbc7eb54ece078ef9e1.html">Template Function einsums::zero</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_TensorAlgebra_8hpp_1a3cb2c61d561f0adb90793e8157c8c782.html">Template Function element</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_TensorAlgebra_8hpp_1ae7fe839200a6f4a80762ce2a6e9cd4dc.html">Template Function element_transform(CType&lt;T, CRank&gt; *, UnaryOperator)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_TensorAlgebra_8hpp_1a4d0f9a1d44fb7b7c6247002de00c0e7b.html">Template Function element_transform(SmartPtr *, UnaryOperator)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_ElementOperations_8hpp_1ac769b8e869ec5ad89f832168c171d90a.html">Template Function exp</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Laguerre_8hpp_1a4e4083c5af8a4b09746be8ab4f192625.html">Template Function gauss_laguerre</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_LinearAlgebra_8hpp_1aebad2748c2df2ff14433a9b230fc01e2.html">Template Function gemm(const T, const AType&lt;T, Rank&gt;&amp;, const BType&lt;T, Rank&gt;&amp;, const T, CType&lt;T, Rank&gt; *)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_LinearAlgebra_8hpp_1af7807c54c6de76c7083209c8b6912ae8.html">Template Function gemm(const T, const AType&lt;T, Rank&gt;&amp;, const BType&lt;T, Rank&gt;&amp;)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_LinearAlgebra_8hpp_1a1c30c46d93b3f618fe9e2ac12387a69c.html">Template Function gemv</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_LinearAlgebra_8hpp_1a68c1544a8625fcd2a67ff71e233debc6.html">Template Function ger</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_LinearAlgebra_8hpp_1a212d5d56683c5e0c72a13abb80edc294.html">Template Function gesv</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_TensorAlgebra_8hpp_1a2606a5c3b67efe679232d1834e647c91.html">Template Function get_n</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_TensorAlgebra_8hpp_1a25194158b9426924b60d31ea3de048d6.html">Template Function get_n_skip</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_LinearAlgebra_8hpp_1aacc05ef93db7065128af612b4ea11143.html">Template Function getrf</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_LinearAlgebra_8hpp_1a5c49b631972414569a8174a4083055e2.html">Template Function getri</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_H5_8hpp_1a4a7c7b9b741ade88054b6ff2125a9569.html">Function h5::exists</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_H5_8hpp_1abc359663057215e04fe642d399f08d0b.html">Template Function h5::impl::data(const ::einsums::Tensor&lt;T, Rank&gt;&amp;)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_H5_8hpp_1a9b10b6ed74b478c449025cba5ffa2b67.html">Template Function h5::impl::data(const ::einsums::TensorView&lt;T, Rank&gt;&amp;)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_H5_8hpp_1aaef030d9687092833523a341a362c5bc.html">Template Function h5::impl::data(::einsums::Tensor&lt;T, Rank&gt;&amp;)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_H5_8hpp_1a91375d61a46f57a14bb5f8249928cc53.html">Template Function h5::impl::size(const ::einsums::Tensor&lt;T, Rank&gt;&amp;)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_H5_8hpp_1a5bce8eefd0706aa85d978cceaebe6fde.html">Template Function h5::impl::size(const ::einsums::TensorView&lt;T, Rank&gt;&amp;)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_LinearAlgebra_8hpp_1a14e7f3b9adde1b0aa23ed499ee0bf79d.html">Template Function heev</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Decomposition_8hpp_1a76bd13271153fe8b29d40fd72e5c7a1e.html">Template Function initialize_cp</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Decomposition_8hpp_1a8ed91406cdaee1e7c8f7de40673dab2e.html">Template Function initialize_tucker</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_ElementOperations_8hpp_1a001b78bf85f85ef2eda23e135484d90f.html">Template Function invert(const TensorType&lt;T, Rank&gt;&amp;)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_LinearAlgebra_8hpp_1a4af9b21cb271b064c9f336a22a5290c5.html">Template Function invert(TensorType&lt;T, TensorRank&gt; *)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_LinearAlgebra_8hpp_1a045aa436eb92559ff7b5478fe881ff30.html">Template Function invert(SmartPtr *)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_TensorAlgebra_8hpp_1a5fcaebd1090eeae35cf04400876e05cd.html">Template Function khatri_rao</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_ElementOperations_8hpp_1a03b31e12aba0a8c38f2a0d1599dd3551.html">Template Function max</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Decomposition_8hpp_1a05ebc815273f1c000bae585893249d94.html">Template Function norm(const TTensor&lt;TType, TRank&gt;&amp;)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_LinearAlgebra_8hpp_1ab15a8f8fa9c4b2a7b1addd787fd5fb9f.html">Template Function norm(Norm, const AType&lt;ADataType, ARank&gt;&amp;)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_OpenMP_8h_1a84e35f14fe6cb1b6648be757446483e2.html">Function omp_get_max_threads</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_OpenMP_8h_1a96c1e878caa6224d5ba0494c06929da8.html">Function omp_get_nested</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_OpenMP_8h_1ab628587850957d925be0c2157f5f6823.html">Function omp_get_num_threads</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_OpenMP_8h_1aba06990768c6b572ca3f69029334a9df.html">Function omp_get_thread_num</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_OpenMP_8h_1ac2256f68ed2a829fd221080fc3a7c019.html">Function omp_in_parallel</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_ElementOperations_8hpp_1abcd81071baed87ec8b4169ee077dac1e.html">Function omp_loop</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_OpenMP_8h_1aea01357d963ef9a92549dd6c89af8c5a.html">Function omp_set_max_active_levels</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_OpenMP_8h_1a1eb73384d7c2ec67e0d37e7e5070f533.html">Function omp_set_nested</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_OpenMP_8h_1a26c2db9c501cff462039397e97ee2c79.html">Function omp_set_num_threads</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function___TensorAlgebraUtilities_8hpp_1a5b4a83dff8a7610ee21377c73b0ebe63.html">Template Function order_indices</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Decomposition_8hpp_1a36358d7e9269a4f8b0b6e10cdb0bc410.html">Template Function parafac</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Decomposition_8hpp_1af7dc513c4d6f11f2583445ba0ed36c23.html">Template Function parafac_reconstruct</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_LinearAlgebra_8hpp_1aec6cf37288e05f5236b7b8722756a93f.html">Template Function pow</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Print_8hpp_1a33ebd2131b91026bc10f143fe19745f7.html">Function print::always_print_thread_id</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Print_8hpp_1a5668930379ed66a8b3a338df7af5fbc7.html">Function print::current_indent_level</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Print_8hpp_1afdf5078059a306efa27d341fcdf411cc.html">Function print::deindent</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Print_8hpp_1a90b4188f5f5b15f32410555747fe5533.html">Function print::indent</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Print_8hpp_1a11e6b52db385aeaedb6a2a52668eb4e3.html">Function print::suppress_output</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Print_8hpp_1a2b7e74179d31b8eef932f818db474b11.html">Template Function print_tuple</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Print_8hpp_1a72f8c27d042c40283472599d0cb4319c.html">Template Function print_tuple_no_type(const std::tuple&lt;Args…&gt;&amp;)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Print_8hpp_1aadfd6036ed79f8a7f742d75ddff40710.html">Function print_tuple_no_type(const std::tuple&lt;&gt;&amp;)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function___Common_8hpp_1a52198b5a8c76fef65cb1b964d9e07bdb.html">Template Function println(const einsums::Dim&lt;Rank&gt;&amp;)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function___Common_8hpp_1a11de673875f64ae0797b25f6ec64e395.html">Function println(const einsums::Range&amp;)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function___Common_8hpp_1a84f21c2651a0491697436c9f011058ba.html">Template Function println(const std::array&lt;T, Rank&gt;&amp;)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Print_8hpp_1a2202e0155da7a0f73d04e158cd7d616a.html">Template Function println(const std::string_view&amp;, const Ts…)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Print_8hpp_1a3c1d541c0ef7fb1065926cb6eced299e.html">Template Function println(const fmt::text_style&amp;, const std::string_view&amp;, const Ts…)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Print_8hpp_1afcd23ca5ac0c1e652c17a79bc29910d6.html">Function println(const std::string&amp;)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Print_8hpp_1a1a342a865a2b4662da2dd0785cdd1a66.html">Function println(const fmt::text_style&amp;, const std::string_view&amp;)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Print_8hpp_1a09924d963d1af8ede9841230001c31ab.html">Function println()</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Tensor_8hpp_1a5883935c185899ddeabe9e795020a94d.html">Template Function println(const AType&lt;T, Rank&gt;&amp;, TensorPrintOptions)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Print_8hpp_1a49579bbdc6a99a5ee0e6ab6c1c3c82df.html">Template Function println_abort</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Print_8hpp_1ae65c3e68454714bbbdcb662c540dbbbb.html">Template Function println_warn</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_LinearAlgebra_8hpp_1ae5801113a9fa7e646972a0b5afa82a6c.html">Template Function pseudoinverse</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_LinearAlgebra_8hpp_1a9d11f83f55e39a6b13352f8122990435.html">Template Function q</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_LinearAlgebra_8hpp_1a9d8e25ac367cadbeb4f0a19df097b216.html">Function qr</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Decomposition_8hpp_1a6bad31c66e7c5353a9da8c598323d882.html">Template Function rmsd</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_ElementOperations_8hpp_1a1be82ac2bb2e4f1e1b0257c14065335d.html">Template Function scale(const T&amp;, const TensorType&lt;T, Rank&gt;&amp;)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_LinearAlgebra_8hpp_1a0a21abe41ae38dc8d0d1364176d2ed81.html">Template Function scale(T, AType&lt;T, ARank&gt; *)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_LinearAlgebra_8hpp_1a140f3ab9e84066a1a443a3a0064de260.html">Template Function scale_column</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_LinearAlgebra_8hpp_1a4a55cda22b7a4d0372d738c70d82756d.html">Template Function scale_row</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_LinearAlgebra_8hpp_1a24cb3a5296cff6c2f8daf5713380c8c2.html">Template Function solve_continuous_lyapunov</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Sort_8hpp_1a30a48eab31ad8db688d30273a6e00296.html">Function sort(const U, const std::tuple&lt;CIndices…&gt;&amp;, CType&lt;T, CRank&gt; *, const U, const std::tuple&lt;AIndices…&gt;&amp;, const AType&lt;T, ARank&gt;&amp;)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Sort_8hpp_1a5b575fa0879ed3cc8a9b1a02a6daec82.html">Template Function sort(const std::tuple&lt;CIndices…&gt;&amp;, ObjectC *, const std::tuple&lt;AIndices…&gt;&amp;, const ObjectA&amp;)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Sort_8hpp_1a7276cf0d417ebeb24831a1d8996ee490.html">Template Function sort(const std::tuple&lt;CIndices…&gt;&amp;, SmartPointerC *, const std::tuple&lt;AIndices…&gt;&amp;, const SmartPointerA&amp;)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Sort_8hpp_1a7edd4a104ad629ca8fdcfc7a73bf11a9.html">Template Function sort(const std::tuple&lt;CIndices…&gt;&amp;, PointerC *, const std::tuple&lt;AIndices…&gt;&amp;, const SmartPointerA&amp;)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Sort_8hpp_1abaf5c8ae06aca8a3a1abb1f06b7e4f20.html">Template Function sort(const std::tuple&lt;CIndices…&gt;&amp;, SmartPointerC *, const std::tuple&lt;AIndices…&gt;&amp;, const ObjectA&amp;)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_ElementOperations_8hpp_1a79f00e3042f622a53a576bd1ad0c5d88.html">Template Function sum</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_LinearAlgebra_8hpp_1a82b853db2c9bee161c82d88dd78401c5.html">Function sum_square</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_LinearAlgebra_8hpp_1ad90c92059f14779ae628a8b0c9982b52.html">Template Function svd</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_LinearAlgebra_8hpp_1ad3f52321404f3f01dc717dfd84f6b33e.html">Template Function svd_dd</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_LinearAlgebra_8hpp_1ad8a10db06f8483bf880be7a2ff51fb77.html">Template Function svd_nullspace</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_LinearAlgebra_8hpp_1ad45544fa80dea66e229a4db514e15d99.html">Template Function syev(AType&lt;T, ARank&gt; *, WType&lt;T, WRank&gt; *)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_LinearAlgebra_8hpp_1a5eb7cfd65b82dd00726d082b48d81e1b.html">Template Function syev(const AType&lt;T, ARank&gt;&amp;)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_LinearAlgebra_8hpp_1ad3efc5482c3888e57660a3e2b5008da4.html">Template Function truncated_svd</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_LinearAlgebra_8hpp_1a1b56179bbcf42eb1a3d59d5ca957661f.html">Template Function truncated_syev</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Decomposition_8hpp_1aa822da9bc96ece0e6cb6e64deb958d1a.html">Template Function tucker_ho_oi</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Decomposition_8hpp_1afb24fa2303ff1e82bbe7f1e973ad22c0.html">Template Function tucker_ho_svd</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Decomposition_8hpp_1a4da417357602d49888c061c9b8989f12.html">Template Function tucker_reconstruct</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Print_8hpp_1a67cbd9ec04b7ee08db592a3677929e9a.html">Template Function type_name()</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Print_8hpp_1a91f3e098aba7debe86515236bf9ca671.html">Template Function type_name(const T&amp;)</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_TensorAlgebra_8hpp_1af7145520381d665a1b763872aca52b0d.html">Template Function unfold</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Decomposition_8hpp_1a420dd6df2685c5eb885df118a713f56b.html">Function validate_cp_rank</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Laguerre_8hpp_1a39766361bc9bacd9419ab29d417b420d.html">Template Function value</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Laguerre_8hpp_1ac147273190064cbc6b348203e42d11c9.html">Template Function weight</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Decomposition_8hpp_1a8f2df2720712fed9ba49546c38fd82dd.html">Template Function weight_tensor</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="function_Decomposition_8hpp_1ab7f68e7f57fda0e77752053cecc54979.html">Template Function weighted_parafac</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="variable_LinearAlgebra_8hpp_1a045c9546311cd7e2c36baccfeb44cca6.html">Variable ARank</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="variable_LinearAlgebra_8hpp_1a12308d7e0914a2f2d497d8f9ac88b670.html">Variable AType</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="variable_Print_8hpp_1a5124f87d9439351c7c1b8c8eb845abca.html">Variable detail::format</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="variable___Common_8hpp_1a2f9e0d0a5114d52339f53d8e0b4e4c65.html">Variable einsums::All</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="variable_STL_8hpp_1ab83342940554d9c7bd5fe82875096e65.html">Variable einsums::is_complex_v</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="variable_STL_8hpp_1a236361d3881b84362529be9118d38b6e.html">Variable einsums::is_incore_rank_tensor_v</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="variable_STL_8hpp_1a91c5836941ae4dfd8929ead416423770.html">Variable einsums::is_ondisk_tensor_v</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="variable_STL_8hpp_1a3c613f0610abcb92849fae81a447129d.html">Variable einsums::is_smart_pointer_v</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="variable_State_8hpp_1a51ad4e9f4399c03606d0f0babbccd5a9.html">Variable einsums::state::checkpoint_file</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="variable_State_8hpp_1a75e5d4b9037daeec67e019f395227f9b.html">Variable einsums::state::data</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="define___Export_8hpp_1a994fa2da49cc7b971acfb763778c14fc.html">Define _EXPORT</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="define___Common_8hpp_1abd6aa9e0347829c281c16b045fd4e32f.html">Define ALIAS_TEMPLATE_FUNCTION</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="define___Common_8hpp_1a1f5be6f3b156f8edf0af4b4e8e6b4dbe.html">Define BEGIN_EINSUMS_NAMESPACE_CPP</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="define___Common_8hpp_1a91f57cc280e5804e12d80bc0fb755f3f.html">Define BEGIN_EINSUMS_NAMESPACE_HPP</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="define___Compiler_8hpp_1a0865b90841c3847ffb7a7e64bb9966bb.html">Define EINSUMS_ALWAYS_INLINE</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="define___Export_8hpp_1ad5ec33d87b554501185251a886ebf557.html">Define EINSUMS_EXPORT</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="define___Compiler_8hpp_1ad4adb9b58ced747d3b8a1f2d21460fa7.html">Define EINSUMS_OMP_PARALLEL</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="define___Compiler_8hpp_1a03631ed0b4d36783d2b87b7beed96fda.html">Define EINSUMS_OMP_PARALLEL_FOR</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="define___Compiler_8hpp_1ae4f0162b19a7aa3a28eb79cebf1580af.html">Define EINSUMS_OMP_SIMD</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="define___Common_8hpp_1ab655bd9006ad4f421022fa3e07eccb9c.html">Define EINSUMS_STRINGIFY</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="define___Common_8hpp_1ab2f7deccf78fa7bbab2c5d1b8c3b7d0a.html">Define EINSUMS_STRINGIFY2</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="define___Common_8hpp_1a1000637bdd27942f011e034327869346.html">Define END_EINSUMS_NAMESPACE_CPP</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="define___Common_8hpp_1aeac8da061d194906124914851ff33325.html">Define END_EINSUMS_NAMESPACE_HPP</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="define_Section_8hpp_1a01dc7db71adabea4fbde97ad4b20d13f.html">Define LabeledSection0</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="define_Section_8hpp_1acd187760f0cc4b1c175f98005c387ee0.html">Define LabeledSection1</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="define___Index_8hpp_1a55fd487c372559dac0bc9c365c561ab4.html">Define MAKE_INDEX</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="define_Tensor_8hpp_1a1924df7bf703a9ef0954984687b20748.html">Define OPERATOR</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="define_Tensor_8hpp_1a1924df7bf703a9ef0954984687b20748.html">Define OPERATOR</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="define_Tensor_8hpp_1a1924df7bf703a9ef0954984687b20748.html">Define OPERATOR</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="typedef_STL_8hpp_1a2fe155a24965c156e65967297446aaac.html">Typedef einsums::add_complex_t</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="typedef_STL_8hpp_1a482458f66a007214fc1c9e3a87f94a1e.html">Typedef einsums::all_true</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="typedef_STL_8hpp_1a8220194368e7b438aceea8614c187c6f.html">Typedef einsums::are_all_convertible</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="typedef_STL_8hpp_1a90e9de65fbba494c1dc9b1759ed4125b.html">Typedef einsums::c_unique_t</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="typedef___Common_8hpp_1aa3bb8068c5ea647bc44ee4221a3379b3.html">Typedef einsums::Chunk</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="typedef___Common_8hpp_1a450f97c210c704df47ec3d7013fcff47.html">Typedef einsums::Count</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="typedef_STL_8hpp_1ae5f4fd81bef3ea98e2b10e7f5ebb494a.html">Typedef einsums::difference_t</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="typedef___Common_8hpp_1a8c1a58f7bcdc7d0bab4c5df086098d3d.html">Typedef einsums::Dim</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="typedef___Common_8hpp_1aff88c923bdbe8f08af6cd24ba6004746.html">Typedef einsums::eint</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="typedef___Common_8hpp_1aad3e81160afe0bd5149dceed90147f0a.html">Typedef einsums::elong</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="typedef___Common_8hpp_1aa3f13ab28c541d9d9127de05aec1e345.html">Typedef einsums::euint</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="typedef_STL_8hpp_1a78d6ca93ceb8d653c62158e06b9d5a01.html">Typedef einsums::intersect_t</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="typedef___Common_8hpp_1ac5b603e07b867507d5830186cb2ceaaf.html">Typedef einsums::Offset</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="typedef___Common_8hpp_1a09cb83e4ce99aafb4305bc16c03dc054.html">Typedef einsums::Range</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="typedef_STL_8hpp_1a2e68ee514bee331da472f8a544b36a51.html">Typedef einsums::remove_complex_t</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="typedef___Common_8hpp_1a6138835e2652eaae61b1d977dd17d29c.html">Typedef einsums::Stride</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="typedef_STL_8hpp_1a6554852bc4eb7ae0e8b116db40393639.html">Typedef einsums::unique_t</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="library_root.html" class="nav-link">Library API</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">Function...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section id="function-einsums-blas-detail-dger">
+<span id="exhale-function-namespaceeinsums-1-1blas-1-1detail-1ac9cf1564b1cfb10181527eedbab5a4c6"></span><h1>Function einsums::blas::detail::dger<a class="headerlink" href="#function-einsums-blas-detail-dger" title="Permalink to this heading">#</a></h1>
+<ul class="simple">
+<li><p>Defined in <a class="reference internal" href="file_src_include_einsums_Blas.hpp.html#file-src-include-einsums-blas-hpp"><span class="std std-ref">File Blas.hpp</span></a></p></li>
+</ul>
+<section id="function-documentation">
+<h2>Function Documentation<a class="headerlink" href="#function-documentation" title="Permalink to this heading">#</a></h2>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve function “einsums::blas::detail::dger” with arguments “(eint, eint, double, const double*, eint, const double*, eint, double*, eint)”.
+Candidate function could not be parsed. Parsing error is
+Error when parsing function declaration.
+If the function has no return type:
+  Error in declarator or parameters-and-qualifiers
+  Invalid C++ declaration: Expected identifier in nested name, got keyword: void [error at 4]
+    void dger (eint m, eint n, double alpha, const double *1, eint inc_x, const double *y, eint inc_y, double *a, eint lda)
+    —-^
+If the function has a return type:
+  Error in declarator or parameters-and-qualifiers
+  If pointer to member declarator:
+    Invalid C++ declaration: Expected ‘::’ in pointer to member (function). [error at 10]
+      void dger (eint m, eint n, double alpha, const double *1, eint inc_x, const double *y, eint inc_y, double *a, eint lda)
+      ———-^
+  If declarator-id:
+    Invalid C++ declaration: Expecting “,” or “)” in parameters-and-qualifiers, got “1”. [error at 55]
+      void dger (eint m, eint n, double alpha, const double *1, eint inc_x, const double *y, eint inc_y, double *a, eint lda)
+      ——————————————————-^
+</p>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="function_namespaceeinsums_1_1blas_1_1detail_1ab8df233cbb09da970dec1855a6bfc2cb.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Function einsums::blas::detail::dgeqrf</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="function_namespaceeinsums_1_1blas_1_1detail_1a8af4f1194c69a8a6b917d399625f5912.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Function einsums::blas::detail::dgesdd</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#function-documentation">Function Documentation</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div class="tocsection sourcelink">
+    <a href="../_sources/api/function_namespaceeinsums_1_1blas_1_1detail_1ac9cf1564b1cfb10181527eedbab5a4c6.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+  <p class="copyright">
+    
+      © Copyright 2022-2023, Einsums Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.2.1.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

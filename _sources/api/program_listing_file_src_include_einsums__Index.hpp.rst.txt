@@ -13,6 +13,7 @@ Program Listing for File _Index.hpp
    #pragma once
    
    #include "_Export.hpp"
+   #include "einsums/Print.hpp"
    
    #include <ostream>
    
@@ -46,6 +47,7 @@ Program Listing for File _Index.hpp
            }                                                                                                                                  \
        };
    
+   #if !defined(DOXYGEN_SHOULD_SKIP_THIS)
    MAKE_INDEX(A); // NOLINT
    MAKE_INDEX(a); // NOLINT
    MAKE_INDEX(B); // NOLINT
@@ -100,6 +102,7 @@ Program Listing for File _Index.hpp
    
    // Z is a special index used internally. DO NOT USE.
    MAKE_INDEX(Z); // NOLINT
+   #endif
    
    #undef MAKE_INDEX
    
@@ -107,7 +110,9 @@ Program Listing for File _Index.hpp
    
    namespace index {
    
+   #if !defined(DOXYGEN_SHOULD_SKIP_THIS)
    constexpr auto list = std::make_tuple(i, j, k, l, m, n, a, b, c, d, e, f, p, q, r, s);
+   #endif
    
    } // namespace index
    

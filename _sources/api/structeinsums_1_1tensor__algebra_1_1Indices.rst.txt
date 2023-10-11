@@ -1,0 +1,26 @@
+.. _exhale_struct_structeinsums_1_1tensor__algebra_1_1Indices:
+
+Template Struct Indices
+=======================
+
+- Defined in :ref:`file_src_include_einsums__Index.hpp`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public std::tuple< Args... >``
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: einsums::tensor_algebra::Indices
+   :project: Einsums
+   :members:
+   :protected-members:
+   :undoc-members:

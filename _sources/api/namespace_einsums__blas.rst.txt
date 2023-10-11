@@ -24,37 +24,37 @@ Functions
 ---------
 
 
-- :ref:`exhale_function_Blas_8hpp_1ab0a3e7d1a82f076eaef032dc9f4b9228`
+- :ref:`exhale_function_Blas_8hpp_1aca1f41c8e44a8bb9e480fa1c5884effc`
 
-- :ref:`exhale_function_Blas_8hpp_1ac28b9eecae4807ac480511b607fd205e`
+- :ref:`exhale_function_Blas_8hpp_1ad066053be430c7edead893b007107c7b`
 
-- :ref:`exhale_function_Blas_8hpp_1afbf872cd185c4a4cdea924308fd02085`
+- :ref:`exhale_function_Blas_8hpp_1a4b6a3701a7ca3006f96d492db687010e`
 
-- :ref:`exhale_function_Blas_8hpp_1a2273f8bc7a68906e0105f99b6332488c`
+- :ref:`exhale_function_Blas_8hpp_1a9a91f77b30daec1e20a0d0e4fc3f51f5`
 
-- :ref:`exhale_function_Blas_8hpp_1af03695ecd2d6cbf6806d71e9bee9ce52`
+- :ref:`exhale_function_Blas_8hpp_1a215f870c30ef90260752bc5fdd83af38`
 
-- :ref:`exhale_function_Blas_8hpp_1a9772171021c01e9f465ff28e5cd60fe7`
+- :ref:`exhale_function_Blas_8hpp_1ab983c81ffe37b47390b815fc59aa47da`
 
-- :ref:`exhale_function_Blas_8hpp_1a8b0b2f675f24a6694ba73749b065b5d7`
+- :ref:`exhale_function_Blas_8hpp_1a1c942b0a763666b191d1b17bd9b6107a`
 
-- :ref:`exhale_function_Blas_8hpp_1a6e72e154b820ab590d65a1879c30be3e`
+- :ref:`exhale_function_Blas_8hpp_1ae7db600f15a02c21414d322fc18d4657`
 
-- :ref:`exhale_function_Blas_8hpp_1ae5a0c8f3125dd16d8c3d476555c9d858`
+- :ref:`exhale_function_Blas_8hpp_1ab7c15f24d7e15deea0366c45c331eba0`
 
-- :ref:`exhale_function_Blas_8hpp_1a37ba026715a66c6652ab0e39e8524b9d`
+- :ref:`exhale_function_Blas_8hpp_1abac21ff10ff6a9a1967e5c2821bbe9f2`
 
-- :ref:`exhale_function_Blas_8hpp_1ab6b9a0af69505efea085e73e4114447c`
+- :ref:`exhale_function_Blas_8hpp_1a8a9910a09f8e6402adfb746ca663b035`
 
-- :ref:`exhale_function_Blas_8hpp_1a288e7be62d836cc494d48605e1d6f2b1`
+- :ref:`exhale_function_Blas_8hpp_1aaa9bf7891c312f2c0feeca3feef359eb`
 
-- :ref:`exhale_function_Blas_8hpp_1a138072e0ee0cbade37165a8e2aef28b0`
+- :ref:`exhale_function_Blas_8hpp_1a0e9f3f229ca23cb4fb364efe477c75de`
 
-- :ref:`exhale_function_Blas_8hpp_1aedfb41d2eb2cfcdc1b5ccf43c2fdb7e2`
+- :ref:`exhale_function_Blas_8hpp_1a0f688ac411edf67b14a9d13aff156571`
 
-- :ref:`exhale_function_Blas_8hpp_1ade32b466088f7b61fb2cc62369c2c36c`
+- :ref:`exhale_function_Blas_8hpp_1a7f933e07dc8e8cc12ef9beeaa92d61d4`
 
-- :ref:`exhale_function_Blas_8hpp_1a0524e8d6dc8fd1aea67a653a1f7fbdfd`
+- :ref:`exhale_function_Blas_8hpp_1af9f978c9480acef44d04f82136c49df3`
 
 - :ref:`exhale_function_Blas_8hpp_1a15571822d03e6098b398cb486946041d`
 
@@ -72,15 +72,15 @@ Functions
 
 - :ref:`exhale_function_Blas_8hpp_1a59eecb566826ff0c0ec6923f2a0fd5ad`
 
-- :ref:`exhale_function_Blas_8hpp_1aedbb1533405c52a950a423211dc6f3ca`
+- :ref:`exhale_function_Blas_8hpp_1a2a81cb8368ed8ab10777454325c49e92`
 
-- :ref:`exhale_function_Blas_8hpp_1a392ab89a7a236fef8211c6ff7be9d0ad`
+- :ref:`exhale_function_Blas_8hpp_1ac2aed2c81c16cc6a92360b44933da962`
 
-- :ref:`exhale_function_Blas_8hpp_1a8674933e8fe484a44e4dfcad365f9329`
+- :ref:`exhale_function_Blas_8hpp_1a36eb61e0e58e10b62fe6ee4611f516d3`
 
-- :ref:`exhale_function_Blas_8hpp_1a63ea64041030ea7bb3f9636c3fce53aa`
+- :ref:`exhale_function_Blas_8hpp_1a2c6685c39f9c2ad41687447d1684117a`
 
-- :ref:`exhale_function_Blas_8hpp_1a11c08f7915ab4dcc9b67eef8a9aff7df`
+- :ref:`exhale_function_Blas_8hpp_1a287c01770280061e1d0b000861de8ad1`
 
 - :ref:`exhale_function_Blas_8hpp_1ade590cfe1bfdbe7c822aeafad6c17527`
 
@@ -92,15 +92,15 @@ Functions
 
 - :ref:`exhale_function_Blas_8hpp_1a55ae79323a299a825dccbc49f3032203`
 
-- :ref:`exhale_function_Blas_8hpp_1a8af56f82d93073c6bb9f5c5b273f27f8`
+- :ref:`exhale_function_Blas_8hpp_1a8bc08b31d3927ba8881da36b4f815f19`
 
-- :ref:`exhale_function_Blas_8hpp_1afc506f56a62c2e6cbcf8ed0dca05b464`
+- :ref:`exhale_function_Blas_8hpp_1a5217df7825e55aff6a59079eb8e961ed`
 
-- :ref:`exhale_function_Blas_8hpp_1a80b147251e2a0cf2e2c033977864f696`
+- :ref:`exhale_function_Blas_8hpp_1acc18fc90c4b0f6769b03fa3e75ec9e9b`
 
-- :ref:`exhale_function_Blas_8hpp_1ac08eb6a696d53284494b96a901e77259`
+- :ref:`exhale_function_Blas_8hpp_1a99bc56e0e7f7a46e6e8a1d7219530b81`
 
-- :ref:`exhale_function_Blas_8hpp_1a3d3a90cb1fc15c4da2f949f360a1569d`
+- :ref:`exhale_function_Blas_8hpp_1a29cb740cb98044e74f98ddfce722d29b`
 
 - :ref:`exhale_function_Blas_8hpp_1aa14f1256e8b5836fcd580aa717ee76c5`
 
@@ -154,7 +154,7 @@ Functions
 
 - :ref:`exhale_function_Blas_8hpp_1abff3d6046b943a67e6e118b15467abd0`
 
-- :ref:`exhale_function_Blas_8hpp_1ac98a659f05aad2fc36c67da3a3dbfb80`
+- :ref:`exhale_function_Blas_8hpp_1a0f42ab149c20c98fd3d2d8a23c76e858`
 
 - :ref:`exhale_function_Blas_8hpp_1adb3232e92ae5679ea7d2d87ca6808b1d`
 
@@ -166,15 +166,15 @@ Functions
 
 - :ref:`exhale_function_Blas_8hpp_1a3390b4345c4a64a812780e778e249091`
 
-- :ref:`exhale_function_Blas_8hpp_1a3ae5dd4528a84fdf3cb8e070c37ba4a8`
+- :ref:`exhale_function_Blas_8hpp_1aaa48b789dca66f6a22310a4afe9d9e6c`
 
-- :ref:`exhale_function_Blas_8hpp_1ace90e62c60e557ca398e8d4aec3a0715`
+- :ref:`exhale_function_Blas_8hpp_1a315a95a1ce6c74cbc9ad4fab59c6cce4`
 
-- :ref:`exhale_function_Blas_8hpp_1a66faaf0b9163cbeb87a117cf4b3ffe3b`
+- :ref:`exhale_function_Blas_8hpp_1ab58184b5c6dfed9b2164b5c2853658dd`
 
-- :ref:`exhale_function_Blas_8hpp_1a445926df973763316634cd32c6a1accb`
+- :ref:`exhale_function_Blas_8hpp_1a57b7fdc1c6aaa810403dae61bd215585`
 
-- :ref:`exhale_function_Blas_8hpp_1a0f9a0ca1359c7c322d536836d56a3750`
+- :ref:`exhale_function_Blas_8hpp_1a3f71491ad3d07e4336e2214d53c7a1a6`
 
 - :ref:`exhale_function_Blas_8hpp_1a2f0296b1f3857914680715b3b9678728`
 

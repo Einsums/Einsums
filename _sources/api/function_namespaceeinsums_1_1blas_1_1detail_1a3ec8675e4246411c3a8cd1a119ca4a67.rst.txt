@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceeinsums_1_1blas_1_1detail_1a3ec8675e4246411c3a8cd1a119ca4a67:
+
+Function einsums::blas::detail::cgetrf
+======================================
+
+- Defined in :ref:`file_src_include_einsums_Blas.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: einsums::blas::detail::cgetrf(eint, eint, std::complex<float> *, eint, eint *)
+   :project: Einsums

@@ -1,0 +1,14 @@
+.. _exhale_function_STL_8hpp_1a1fdc73286adbf0fcdc794d24b01632ed:
+
+Function einsums::detail::deallocate_aligned_memory
+===================================================
+
+- Defined in :ref:`file_src_include_einsums_STL.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: einsums::detail::deallocate_aligned_memory(void *)
+   :project: Einsums

@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceeinsums_1_1blas_1_1detail_1aef8fa74e87cf5ef96feadc1da79ea0a8:
+
+Function einsums::blas::detail::zgemm
+=====================================
+
+- Defined in :ref:`file_src_include_einsums_Blas.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: einsums::blas::detail::zgemm(char, char, eint, eint, eint, std::complex<double>, const std::complex<double> *, eint, const std::complex<double> *, eint, std::complex<double>, std::complex<double> *, eint)
+   :project: Einsums

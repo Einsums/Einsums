@@ -1,0 +1,14 @@
+.. _exhale_function_Blas_8hpp_1a5217df7825e55aff6a59079eb8e961ed:
+
+Specialized Template Function einsums::blas::ger< double >
+==========================================================
+
+- Defined in :ref:`file_src_include_einsums_Blas.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: einsums::blas::ger< double >(eint, eint, double, const double *, eint, const double *, eint, double *, eint)
+   :project: Einsums

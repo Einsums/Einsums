@@ -1,0 +1,14 @@
+.. _exhale_function_Blas_8hpp_1ab983c81ffe37b47390b815fc59aa47da:
+
+Template Function einsums::blas::axpy
+=====================================
+
+- Defined in :ref:`file_src_include_einsums_Blas.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: einsums::blas::axpy(eint, T, const T *, eint, T *, eint)
+   :project: Einsums

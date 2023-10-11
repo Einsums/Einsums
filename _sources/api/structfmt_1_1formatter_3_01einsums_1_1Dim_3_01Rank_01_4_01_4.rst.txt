@@ -1,0 +1,17 @@
+.. _exhale_struct_structfmt_1_1formatter_3_01einsums_1_1Dim_3_01Rank_01_4_01_4:
+
+Template Struct formatter< einsums::Dim< Rank > >
+=================================================
+
+- Defined in :ref:`file_src_include_einsums__Common.hpp`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: fmt::formatter< einsums::Dim< Rank > >
+   :project: Einsums
+   :members:
+   :protected-members:
+   :undoc-members:

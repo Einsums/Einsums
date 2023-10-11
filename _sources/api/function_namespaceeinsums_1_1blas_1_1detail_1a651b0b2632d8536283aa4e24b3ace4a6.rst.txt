@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceeinsums_1_1blas_1_1detail_1a651b0b2632d8536283aa4e24b3ace4a6:
+
+Function einsums::blas::detail::dgees
+=====================================
+
+- Defined in :ref:`file_src_include_einsums_Blas.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: einsums::blas::detail::dgees(char, eint, double *, eint, eint *, double *, double *, double *, eint)
+   :project: Einsums

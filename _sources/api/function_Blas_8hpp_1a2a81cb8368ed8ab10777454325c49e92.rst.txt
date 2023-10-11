@@ -1,0 +1,14 @@
+.. _exhale_function_Blas_8hpp_1a2a81cb8368ed8ab10777454325c49e92:
+
+Template Function einsums::blas::gemv
+=====================================
+
+- Defined in :ref:`file_src_include_einsums_Blas.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: einsums::blas::gemv(char, eint, eint, T, const T *, eint, const T *, eint, T, T *, eint)
+   :project: Einsums

@@ -1,0 +1,14 @@
+.. _exhale_function_LinearAlgebra_8hpp_1a1c30c46d93b3f618fe9e2ac12387a69c:
+
+Template Function gemv
+======================
+
+- Defined in :ref:`file_src_include_einsums_LinearAlgebra.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: gemv(const double, const AType<T, ARank>&, const XType<T, XYRank>&, const double, YType<T, XYRank> *)
+   :project: Einsums

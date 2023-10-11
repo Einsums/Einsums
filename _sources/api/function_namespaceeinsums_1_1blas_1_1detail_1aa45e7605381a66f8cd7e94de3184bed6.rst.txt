@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceeinsums_1_1blas_1_1detail_1aa45e7605381a66f8cd7e94de3184bed6:
+
+Function einsums::blas::detail::saxpby
+======================================
+
+- Defined in :ref:`file_src_include_einsums_Blas.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: einsums::blas::detail::saxpby(eint, float, const float *, eint, float, float *, eint)
+   :project: Einsums

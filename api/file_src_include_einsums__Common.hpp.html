@@ -1,80 +1,378 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
-<head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>File _Common.hpp &mdash; Einsums 0.1.0 documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/collapsible-lists/css/tree_view.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>File _Common.hpp &#8212; Einsums 0.1.0 documentation</title>
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js"></script>
-        <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js"></script>
-    <script src="../_static/js/theme.js"></script>
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js"></script>
+    <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js"></script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/file_src_include_einsums__Common.hpp';</script>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
-</head>
+    <link rel="search" title="Search" href="../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
 
-<body class="wy-body-for-nav"> 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
 
-          
-          
-          <a href="../index.html" class="icon icon-home">
-            Einsums
-          </a>
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="library_root.html">Library API</a></li>
-</ul>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
 
-        </div>
-      </div>
-    </nav>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+  
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">Einsums</a>
-      </nav>
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/einsums-logo.png" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../_static/einsums-logo.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+    <p class="title logo__title">Einsums</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user/absolute_beginners.html">
+                        Getting Started
+                      </a>
+                    </li>
+                
 
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
-  <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">File _Common.hpp</li>
-      <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/api/file_src_include_einsums__Common.hpp.rst.txt" rel="nofollow"> View page source</a>
-      </li>
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="library_root.html">
+                        API Reference
+                      </a>
+                    </li>
+                
   </ul>
-  <hr/>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-             
+
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user/absolute_beginners.html">
+                        Getting Started
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="library_root.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item"><nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="program_listing_file_src_include_einsums__Common.hpp.html">Program Listing for File _Common.hpp</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">File _Common.hpp</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
   <section id="file-common-hpp">
-<span id="file-src-include-einsums-common-hpp"></span><h1>File _Common.hpp<a class="headerlink" href="#file-common-hpp" title="Permalink to this headline"></a></h1>
+<span id="file-src-include-einsums-common-hpp"></span><h1>File _Common.hpp<a class="headerlink" href="#file-common-hpp" title="Permalink to this heading">#</a></h1>
 <p>↰ <a class="reference internal" href="dir_src_include_einsums.html#dir-src-include-einsums"><span class="std std-ref">Parent directory</span></a> (<code class="docutils literal notranslate"><span class="pre">src/include/einsums</span></code>)</p>
-<div class="contents local topic" id="contents">
+<nav class="contents local" id="contents">
 <p class="topic-title">Contents</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="#definition-src-include-einsums-common-hpp" id="id1">Definition (<code class="docutils literal notranslate"><span class="pre">src/include/einsums/_Common.hpp</span></code>)</a></p></li>
@@ -87,9 +385,9 @@
 <li><p><a class="reference internal" href="#typedefs" id="id8">Typedefs</a></p></li>
 <li><p><a class="reference internal" href="#variables" id="id9">Variables</a></p></li>
 </ul>
-</div>
+</nav>
 <section id="definition-src-include-einsums-common-hpp">
-<h2>Definition (<code class="docutils literal notranslate"><span class="pre">src/include/einsums/_Common.hpp</span></code>)<a class="headerlink" href="#definition-src-include-einsums-common-hpp" title="Permalink to this headline"></a></h2>
+<h2>Definition (<code class="docutils literal notranslate"><span class="pre">src/include/einsums/_Common.hpp</span></code>)<a class="headerlink" href="#definition-src-include-einsums-common-hpp" title="Permalink to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="program_listing_file_src_include_einsums__Common.hpp.html">Program Listing for File _Common.hpp</a></li>
@@ -97,19 +395,20 @@
 </div>
 </section>
 <section id="includes">
-<h2>Includes<a class="headerlink" href="#includes" title="Permalink to this headline"></a></h2>
+<h2>Includes<a class="headerlink" href="#includes" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">array</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">cstdint</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">einsums/Error.hpp</span></code> (<a class="reference internal" href="file_src_include_einsums_Error.hpp.html#file-src-include-einsums-error-hpp"><span class="std std-ref">File Error.hpp</span></a>)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">einsums/Print.hpp</span></code> (<a class="reference internal" href="file_src_include_einsums_Print.hpp.html#file-src-include-einsums-print-hpp"><span class="std std-ref">File Print.hpp</span></a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">einsums/STL.hpp</span></code> (<a class="reference internal" href="file_src_include_einsums_STL.hpp.html#file-src-include-einsums-stl-hpp"><span class="std std-ref">File STL.hpp</span></a>)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">einsums/_Compiler.hpp</span></code> (<a class="reference internal" href="file_src_include_einsums__Compiler.hpp.html#file-src-include-einsums-compiler-hpp"><span class="std std-ref">File _Compiler.hpp</span></a>)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">einsums/_Export.hpp</span></code> (<a class="reference internal" href="file_src_include_einsums__Export.hpp.html#file-src-include-einsums-export-hpp"><span class="std std-ref">File _Export.hpp</span></a>)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">ostream</span></code></p></li>
 </ul>
 </section>
 <section id="included-by">
-<h2>Included By<a class="headerlink" href="#included-by" title="Permalink to this headline"></a></h2>
+<h2>Included By<a class="headerlink" href="#included-by" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="file_src_include_einsums_Blas.hpp.html#file-src-include-einsums-blas-hpp"><span class="std std-ref">File Blas.hpp</span></a></p></li>
 <li><p><a class="reference internal" href="file_src_include_einsums_Decomposition.hpp.html#file-src-include-einsums-decomposition-hpp"><span class="std std-ref">File Decomposition.hpp</span></a></p></li>
@@ -124,14 +423,14 @@
 </ul>
 </section>
 <section id="namespaces">
-<h2>Namespaces<a class="headerlink" href="#namespaces" title="Permalink to this headline"></a></h2>
+<h2>Namespaces<a class="headerlink" href="#namespaces" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="namespace_einsums.html#namespace-einsums"><span class="std std-ref">Namespace einsums</span></a></p></li>
 <li><p><a class="reference internal" href="namespace_einsums__detail.html#namespace-einsums-detail"><span class="std std-ref">Namespace einsums::detail</span></a></p></li>
 </ul>
 </section>
 <section id="classes">
-<h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline"></a></h2>
+<h2>Classes<a class="headerlink" href="#classes" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="structeinsums_1_1All__t.html#exhale-struct-structeinsums-1-1all-t"><span class="std std-ref">Struct All_t</span></a></p></li>
 <li><p><a class="reference internal" href="structeinsums_1_1detail_1_1Array.html#exhale-struct-structeinsums-1-1detail-1-1array"><span class="std std-ref">Template Struct Array</span></a></p></li>
@@ -141,20 +440,25 @@
 <li><p><a class="reference internal" href="structeinsums_1_1detail_1_1OffsetType.html#exhale-struct-structeinsums-1-1detail-1-1offsettype"><span class="std std-ref">Struct OffsetType</span></a></p></li>
 <li><p><a class="reference internal" href="structeinsums_1_1detail_1_1RangeType.html#exhale-struct-structeinsums-1-1detail-1-1rangetype"><span class="std std-ref">Struct RangeType</span></a></p></li>
 <li><p><a class="reference internal" href="structeinsums_1_1detail_1_1StrideType.html#exhale-struct-structeinsums-1-1detail-1-1stridetype"><span class="std std-ref">Struct StrideType</span></a></p></li>
+<li><p><a class="reference internal" href="structfmt_1_1formatter_3_01einsums_1_1Count_3_01Rank_01_4_01_4.html#exhale-struct-structfmt-1-1formatter-3-01einsums-1-1count-3-01rank-01-4-01-4"><span class="std std-ref">Template Struct formatter&lt; einsums::Count&lt; Rank &gt; &gt;</span></a></p></li>
+<li><p><a class="reference internal" href="structfmt_1_1formatter_3_01einsums_1_1Dim_3_01Rank_01_4_01_4.html#exhale-struct-structfmt-1-1formatter-3-01einsums-1-1dim-3-01rank-01-4-01-4"><span class="std std-ref">Template Struct formatter&lt; einsums::Dim&lt; Rank &gt; &gt;</span></a></p></li>
+<li><p><a class="reference internal" href="structfmt_1_1formatter_3_01einsums_1_1Offset_3_01Rank_01_4_01_4.html#exhale-struct-structfmt-1-1formatter-3-01einsums-1-1offset-3-01rank-01-4-01-4"><span class="std std-ref">Template Struct formatter&lt; einsums::Offset&lt; Rank &gt; &gt;</span></a></p></li>
+<li><p><a class="reference internal" href="structfmt_1_1formatter_3_01einsums_1_1Range_01_4.html#exhale-struct-structfmt-1-1formatter-3-01einsums-1-1range-01-4"><span class="std std-ref">Template Struct formatter&lt; einsums::Range &gt;</span></a></p></li>
+<li><p><a class="reference internal" href="structfmt_1_1formatter_3_01einsums_1_1Stride_3_01Rank_01_4_01_4.html#exhale-struct-structfmt-1-1formatter-3-01einsums-1-1stride-3-01rank-01-4-01-4"><span class="std std-ref">Template Struct formatter&lt; einsums::Stride&lt; Rank &gt; &gt;</span></a></p></li>
 </ul>
 </section>
 <section id="functions">
-<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline"></a></h2>
+<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="function___Common_8hpp_1ab6b23ef4e71aac675c8dcbc1765fd33c.html#exhale-function-common-8hpp-1ab6b23ef4e71aac675c8dcbc1765fd33c"><span class="std std-ref">Function einsums::finalize</span></a></p></li>
-<li><p><a class="reference internal" href="function___Common_8hpp_1af8ca3d76e617a2058e2c67b67b712554.html#exhale-function-common-8hpp-1af8ca3d76e617a2058e2c67b67b712554"><span class="std std-ref">Function einsums::initialize</span></a></p></li>
+<li><p><a class="reference internal" href="function___Common_8hpp_1a3e9b44513554a298c39ff98eb9129f96.html#exhale-function-common-8hpp-1a3e9b44513554a298c39ff98eb9129f96"><span class="std std-ref">Function einsums::finalize</span></a></p></li>
+<li><p><a class="reference internal" href="function___Common_8hpp_1a854db456f89f04ed386ab68a1fdf7450.html#exhale-function-common-8hpp-1a854db456f89f04ed386ab68a1fdf7450"><span class="std std-ref">Function einsums::initialize</span></a></p></li>
 <li><p><a class="reference internal" href="function___Common_8hpp_1a52198b5a8c76fef65cb1b964d9e07bdb.html#exhale-function-common-8hpp-1a52198b5a8c76fef65cb1b964d9e07bdb"><span class="std std-ref">Template Function println(const einsums::Dim&lt;Rank&gt;&amp;)</span></a></p></li>
-<li><p><a class="reference internal" href="function___Common_8hpp_1a84f21c2651a0491697436c9f011058ba.html#exhale-function-common-8hpp-1a84f21c2651a0491697436c9f011058ba"><span class="std std-ref">Template Function println(const std::array&lt;T, Rank&gt;&amp;)</span></a></p></li>
 <li><p><a class="reference internal" href="function___Common_8hpp_1a11de673875f64ae0797b25f6ec64e395.html#exhale-function-common-8hpp-1a11de673875f64ae0797b25f6ec64e395"><span class="std std-ref">Function println(const einsums::Range&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function___Common_8hpp_1a84f21c2651a0491697436c9f011058ba.html#exhale-function-common-8hpp-1a84f21c2651a0491697436c9f011058ba"><span class="std std-ref">Template Function println(const std::array&lt;T, Rank&gt;&amp;)</span></a></p></li>
 </ul>
 </section>
 <section id="defines">
-<h2>Defines<a class="headerlink" href="#defines" title="Permalink to this headline"></a></h2>
+<h2>Defines<a class="headerlink" href="#defines" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="define___Common_8hpp_1abd6aa9e0347829c281c16b045fd4e32f.html#exhale-define-common-8hpp-1abd6aa9e0347829c281c16b045fd4e32f"><span class="std std-ref">Define ALIAS_TEMPLATE_FUNCTION</span></a></p></li>
 <li><p><a class="reference internal" href="define___Common_8hpp_1a1f5be6f3b156f8edf0af4b4e8e6b4dbe.html#exhale-define-common-8hpp-1a1f5be6f3b156f8edf0af4b4e8e6b4dbe"><span class="std std-ref">Define BEGIN_EINSUMS_NAMESPACE_CPP</span></a></p></li>
@@ -166,7 +470,7 @@
 </ul>
 </section>
 <section id="typedefs">
-<h2>Typedefs<a class="headerlink" href="#typedefs" title="Permalink to this headline"></a></h2>
+<h2>Typedefs<a class="headerlink" href="#typedefs" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="typedef___Common_8hpp_1aa3bb8068c5ea647bc44ee4221a3379b3.html#exhale-typedef-common-8hpp-1aa3bb8068c5ea647bc44ee4221a3379b3"><span class="std std-ref">Typedef einsums::Chunk</span></a></p></li>
 <li><p><a class="reference internal" href="typedef___Common_8hpp_1a450f97c210c704df47ec3d7013fcff47.html#exhale-typedef-common-8hpp-1a450f97c210c704df47ec3d7013fcff47"><span class="std std-ref">Typedef einsums::Count</span></a></p></li>
@@ -180,7 +484,7 @@
 </ul>
 </section>
 <section id="variables">
-<h2>Variables<a class="headerlink" href="#variables" title="Permalink to this headline"></a></h2>
+<h2>Variables<a class="headerlink" href="#variables" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="variable___Common_8hpp_1a2f9e0d0a5114d52339f53d8e0b4e4c65.html#exhale-variable-common-8hpp-1a2f9e0d0a5114d52339f53d8e0b4e4c65"><span class="std std-ref">Variable einsums::All</span></a></p></li>
 </ul>
@@ -188,31 +492,101 @@
 </section>
 
 
-           </div>
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#definition-src-include-einsums-common-hpp">Definition (<code class="docutils literal notranslate"><span class="pre">src/include/einsums/_Common.hpp</span></code>)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#includes">Includes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#included-by">Included By</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#namespaces">Namespaces</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#classes">Classes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#functions">Functions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#defines">Defines</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#typedefs">Typedefs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#variables">Variables</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div class="tocsection sourcelink">
+    <a href="../_sources/api/file_src_include_einsums__Common.hpp.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
           </div>
-          <footer>
-
-  <hr/>
-
-  <div role="contentinfo">
-    <p>&#169; Copyright 2023, Einsums Developers.</p>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
   </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
 
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+  <p class="copyright">
+    
+      © Copyright 2022-2023, Einsums Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.2.1.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.1.
+</p></div>
+      
+    </div>
+  
+</div>
 
-</footer>
-        </div>
-      </div>
-    </section>
-  </div>
-  <script>
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script> 
-
-</body>
+  </footer>
+  </body>
 </html>

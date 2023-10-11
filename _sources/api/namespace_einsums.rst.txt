@@ -21,9 +21,9 @@ Namespaces
 
 - :ref:`namespace_einsums__blas`
 
-- :ref:`namespace_einsums__detail`
-
 - :ref:`namespace_einsums__Detail`
+
+- :ref:`namespace_einsums__detail`
 
 - :ref:`namespace_einsums__fft`
 
@@ -167,7 +167,7 @@ Functions
 
 - :ref:`exhale_function_STL_8hpp_1aa4b66ad77ee363ab93eb41532bdffb26`
 
-- :ref:`exhale_function___Common_8hpp_1ab6b23ef4e71aac675c8dcbc1765fd33c`
+- :ref:`exhale_function___Common_8hpp_1a3e9b44513554a298c39ff98eb9129f96`
 
 - :ref:`exhale_function_STL_8hpp_1a8ed453234db2c3c9b305467b9c5937af`
 
@@ -183,7 +183,7 @@ Functions
 
 - :ref:`exhale_function_STL_8hpp_1ad24da978e4fbddf56d625782645a2f17`
 
-- :ref:`exhale_function___Common_8hpp_1af8ca3d76e617a2058e2c67b67b712554`
+- :ref:`exhale_function___Common_8hpp_1a854db456f89f04ed386ab68a1fdf7450`
 
 - :ref:`exhale_function_STL_8hpp_1ae6655c25633dbd707fb7b10d7826fd28`
 

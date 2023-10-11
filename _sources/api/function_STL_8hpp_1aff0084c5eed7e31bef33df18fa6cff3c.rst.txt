@@ -1,0 +1,14 @@
+.. _exhale_function_STL_8hpp_1aff0084c5eed7e31bef33df18fa6cff3c:
+
+Function einsums::detail::allocate_aligned_memory
+=================================================
+
+- Defined in :ref:`file_src_include_einsums_STL.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: einsums::detail::allocate_aligned_memory(size_t, size_t)
+   :project: Einsums

@@ -1,0 +1,14 @@
+.. _exhale_function_Timer_8hpp_1afcff91a99b50b6b0258bda6a59628ea2:
+
+Function einsums::timer::finalize
+=================================
+
+- Defined in :ref:`file_src_include_einsums_Timer.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: einsums::timer::finalize()
+   :project: Einsums

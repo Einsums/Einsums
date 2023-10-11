@@ -89,6 +89,13 @@ Included By
 
 
 
+Namespaces
+----------
+
+
+- :ref:`namespace_detail`
+
+
 Functions
 ---------
 
@@ -97,19 +104,21 @@ Functions
 
 - :ref:`exhale_function_TensorAlgebra_8hpp_1aae553c228b456f2927cd5db07228d552`
 
-- :ref:`exhale_function_TensorAlgebra_8hpp_1a58484bb3eb6f77b203d3a8a44e0df290`
+- :ref:`exhale_function_TensorAlgebra_8hpp_1ad51c53b254d5681e76d3e6ac68d04200`
 
-- :ref:`exhale_function_TensorAlgebra_8hpp_1a2ed28c8691d905dfe2114ac48ff4e8b6`
-
-- :ref:`exhale_function_TensorAlgebra_8hpp_1aeb8838553327473b2a2318504a7cd172`
+- :ref:`exhale_function_TensorAlgebra_8hpp_1aa0d565ff8069e75cb77e86ba6d5c8cd1`
 
 - :ref:`exhale_function_TensorAlgebra_8hpp_1a246d59e4e7593ef40351842aa56607e4`
 
+- :ref:`exhale_function_TensorAlgebra_8hpp_1aeb8838553327473b2a2318504a7cd172`
+
+- :ref:`exhale_function_TensorAlgebra_8hpp_1a2ed28c8691d905dfe2114ac48ff4e8b6`
+
 - :ref:`exhale_function_TensorAlgebra_8hpp_1a3cb2c61d561f0adb90793e8157c8c782`
 
-- :ref:`exhale_function_TensorAlgebra_8hpp_1ae7fe839200a6f4a80762ce2a6e9cd4dc`
-
 - :ref:`exhale_function_TensorAlgebra_8hpp_1a4d0f9a1d44fb7b7c6247002de00c0e7b`
+
+- :ref:`exhale_function_TensorAlgebra_8hpp_1ae7fe839200a6f4a80762ce2a6e9cd4dc`
 
 - :ref:`exhale_function_TensorAlgebra_8hpp_1a2606a5c3b67efe679232d1834e647c91`
 

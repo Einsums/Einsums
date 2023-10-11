@@ -1,0 +1,14 @@
+.. _exhale_function_Sort_8hpp_1a30a48eab31ad8db688d30273a6e00296:
+
+Function sort(const U, const std::tuple<CIndices...>&, CType<T, CRank> \*, const U, const std::tuple<AIndices...>&, const AType<T, ARank>&)
+===========================================================================================================================================
+
+- Defined in :ref:`file_src_include_einsums_Sort.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: sort(const U, const std::tuple<CIndices...>&, CType<T, CRank> *, const U, const std::tuple<AIndices...>&, const AType<T, ARank>&)
+   :project: Einsums

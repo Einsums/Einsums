@@ -1,0 +1,14 @@
+.. _exhale_function_Blas_8hpp_1abac21ff10ff6a9a1967e5c2821bbe9f2:
+
+Specialized Template Function einsums::blas::axpy< std::complex< float > >
+==========================================================================
+
+- Defined in :ref:`file_src_include_einsums_Blas.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: einsums::blas::axpy< std::complex< float > >(eint, std::complex<float>, const std::complex<float> *, eint, std::complex<float> *, eint)
+   :project: Einsums

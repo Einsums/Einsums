@@ -55,6 +55,7 @@ Program Listing for File Tensor.hpp
    
    } // namespace detail
    
+   // Forward declarations
    template <typename T, size_t Rank>
    struct TensorView;
    
@@ -66,10 +67,11 @@ Program Listing for File Tensor.hpp
    } // namespace einsums
    
    struct TensorPrintOptions {
-       int  width{5};
-       bool full_output{true};
+       int  width{5};          
+       bool full_output{true}; 
    };
    
+   // Forward declaration of the Tensor printing function.
    template <template <typename, size_t> typename AType, size_t Rank, typename T>
    auto println(const AType<T, Rank> &A, TensorPrintOptions options = {}) ->
        typename std::enable_if_t<std::is_base_of_v<einsums::detail::TensorBase<T, Rank>, AType<T, Rank>>>;
@@ -100,20 +102,21 @@ Program Listing for File Tensor.hpp
    template <typename T, size_t Rank>
    struct Tensor final : public detail::TensorBase<T, Rank> {
    
-       using vector = std::vector<T, AlignedAllocator<T, 64>>;
+       using Vector = std::vector<T, AlignedAllocator<T, 64>>;
    
-       Tensor()               = default;
+       Tensor() = default;
+   
        Tensor(const Tensor &) = default;
-       // Tensor(Tensor &&) noexcept = default;
+   
        ~Tensor() = default;
    
        template <typename... Dims>
        explicit Tensor(std::string name, Dims... dims) : _name{std::move(name)}, _dims{static_cast<size_t>(dims)...} {
            static_assert(Rank == sizeof...(dims), "Declared Rank does not match provided dims");
    
-           struct stride {
+           struct Stride {
                size_t value{1};
-               stride() = default;
+               Stride() = default;
                auto operator()(size_t dim) -> size_t {
                    auto old_value = value;
                    value *= dim;
@@ -122,7 +125,7 @@ Program Listing for File Tensor.hpp
            };
    
            // Row-major order of dimensions
-           std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), stride());
+           std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
            size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
    
            // Resize the data structure
@@ -136,9 +139,9 @@ Program Listing for File Tensor.hpp
            : _data(std::move(existingTensor._data)), _name{std::move(name)}, _dims{static_cast<size_t>(dims)...} {
            static_assert(Rank == sizeof...(dims), "Declared rank does not match provided dims");
    
-           struct stride {
+           struct Stride {
                size_t value{1};
-               stride() = default;
+               Stride() = default;
                auto operator()(size_t dim) -> size_t {
                    auto old_value = value;
                    value *= dim;
@@ -174,7 +177,7 @@ Program Listing for File Tensor.hpp
            }
    
            // Row-major order of dimensions
-           std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), stride());
+           std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
            size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
    
            // Check size
@@ -184,9 +187,9 @@ Program Listing for File Tensor.hpp
        }
    
        Tensor(Dim<Rank> dims) : _dims{std::move(dims)} {
-           struct stride {
+           struct Stride {
                size_t value{1};
-               stride() = default;
+               Stride() = default;
                auto operator()(size_t dim) -> size_t {
                    auto old_value = value;
                    value *= dim;
@@ -195,7 +198,7 @@ Program Listing for File Tensor.hpp
            };
    
            // Row-major order of dimensions
-           std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), stride());
+           std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
            size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
    
            // Resize the data structure
@@ -204,9 +207,9 @@ Program Listing for File Tensor.hpp
        }
    
        Tensor(const TensorView<T, Rank> &other) : _name{other._name}, _dims{other._dims} {
-           struct stride {
+           struct Stride {
                size_t value{1};
-               stride() = default;
+               Stride() = default;
                auto operator()(size_t dim) -> size_t {
                    auto old_value = value;
                    value *= dim;
@@ -215,12 +218,13 @@ Program Listing for File Tensor.hpp
            };
    
            // Row-major order of dimensions
-           std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), stride());
+           std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
            size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
    
            // Resize the data structure
            _data.resize(size);
    
+           // TODO: Attempt to thread this.
            auto target_dims = get_dim_ranges<Rank>(*this);
            for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
                T &target_value = std::apply(*this, target_combination);
@@ -275,7 +279,9 @@ Program Listing for File Tensor.hpp
        template <typename... MultiIndex>
        auto operator()(MultiIndex... index) const
            -> std::enable_if_t<count_of_type<All_t, MultiIndex...>() == 0 && count_of_type<Range, MultiIndex...>() == 0, const T &> {
+   
            assert(sizeof...(MultiIndex) == _dims.size());
+   
            auto index_list = std::array{static_cast<std::int64_t>(index)...};
            for (auto [i, index] : enumerate(index_list)) {
                if (index < 0) {
@@ -289,7 +295,9 @@ Program Listing for File Tensor.hpp
        template <typename... MultiIndex>
        auto operator()(MultiIndex... index)
            -> std::enable_if_t<count_of_type<All_t, MultiIndex...>() == 0 && count_of_type<Range, MultiIndex...>() == 0, T &> {
+   
            assert(sizeof...(MultiIndex) == _dims.size());
+   
            auto index_list = std::array{static_cast<std::int64_t>(index)...};
            for (auto [i, index] : enumerate(index_list)) {
                if (index < 0) {
@@ -375,9 +383,9 @@ Program Listing for File Tensor.hpp
            }
    
            if (realloc) {
-               struct stride {
+               struct Stride {
                    size_t value{1};
-                   stride() = default;
+                   Stride() = default;
                    auto operator()(size_t dim) -> size_t {
                        auto old_value = value;
                        value *= dim;
@@ -388,7 +396,7 @@ Program Listing for File Tensor.hpp
                _dims = other._dims;
    
                // Row-major order of dimensions
-               std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), stride());
+               std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
                size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
    
                // Resize the data structure
@@ -510,8 +518,10 @@ Program Listing for File Tensor.hpp
        }
        auto dims() const -> Dim<Rank> { return _dims; }
    
-       auto vector_data() const -> const vector & { return _data; }
-       auto vector_data() -> vector & { return _data; }
+       ALIAS_TEMPLATE_FUNCTION(shape, dims);
+   
+       auto vector_data() const -> const Vector & { return _data; }
+       auto vector_data() -> Vector & { return _data; }
    
        [[nodiscard]] auto name() const -> const std::string & { return _name; }
        void               set_name(const std::string &name) { _name = name; }
@@ -540,7 +550,7 @@ Program Listing for File Tensor.hpp
        std::string  _name{"(Unnamed)"};
        Dim<Rank>    _dims;
        Stride<Rank> _strides;
-       vector       _data;
+       Vector       _data;
    
        template <typename T_, size_t Rank_>
        friend struct TensorView;
@@ -834,9 +844,9 @@ Program Listing for File Tensor.hpp
        auto common_initialization(const T *other) {
            _data = const_cast<T *>(other);
    
-           struct stride {
+           struct Stride {
                size_t value{1};
-               stride() = default;
+               Stride() = default;
                auto operator()(size_t dim) -> size_t {
                    auto old_value = value;
                    value *= dim;
@@ -845,7 +855,7 @@ Program Listing for File Tensor.hpp
            };
    
            // Row-major order of dimensions
-           std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), stride());
+           std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
    
            // At this time we'll assume we have full view of the underlying tensor since we were only provided
            // pointer.
@@ -1101,9 +1111,9 @@ Program Listing for File Tensor.hpp
        template <typename... Dims>
        explicit DiskTensor(h5::fd_t &file, std::string name, Chunk<sizeof...(Dims)> chunk, Dims... dims)
            : _file{file}, _name{std::move(name)}, _dims{static_cast<size_t>(dims)...} {
-           struct stride {
+           struct Stride {
                size_t value{1};
-               stride() = default;
+               Stride() = default;
                auto operator()(size_t dim) -> size_t {
                    auto old_value = value;
                    value *= dim;
@@ -1112,7 +1122,7 @@ Program Listing for File Tensor.hpp
            };
    
            // Row-major order of dimensions
-           std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), stride());
+           std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
    
            // Check to see if the data set exists
            if (H5Lexists(_file, _name.c_str(), H5P_DEFAULT) > 0) {
@@ -1196,9 +1206,9 @@ Program Listing for File Tensor.hpp
                cdims[i] = _dims[i];
            }
    
-           struct stride {
+           struct Stride {
                size_t value{1};
-               stride() = default;
+               Stride() = default;
                auto operator()(size_t dim) -> size_t {
                    auto old_value = value;
                    value *= dim;
@@ -1207,7 +1217,7 @@ Program Listing for File Tensor.hpp
            };
    
            // Row-major order of dimensions
-           std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), stride());
+           std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
    
            std::array<size_t, Rank> chunk_temp{};
            chunk_temp[0] = 1;
@@ -1383,7 +1393,7 @@ Program Listing for File Tensor.hpp
                 const Stride<Rank> &strides)
            : _parent(const_cast<DiskTensor<T, Rank> &>(parent)), _dims(dims), _counts(counts), _offsets(offsets),
              _strides(strides), _tensor{_dims} {
-           Section section("DiskView constructor");
+           Section const section("DiskView constructor");
            h5::read<T>(_parent.disk(), _tensor.data(), h5::count{_counts}, h5::offset{_offsets});
            set_read_only(true);
        };
@@ -1426,12 +1436,6 @@ Program Listing for File Tensor.hpp
            _tensor = other;
    
            return *this;
-       }
-   
-       void _create_tensor() {
-           if (!_tensor) {
-               _tensor = std::make_unique<Tensor<T, ViewRank>>(_dims);
-           }
        }
    
        // Does not perform a disk read. That was handled by the constructor.
@@ -1502,6 +1506,7 @@ Program Listing for File Tensor.hpp
    #endif
    
    // Useful factories
+   
    template <typename Type = double, typename... Args>
    auto create_tensor(const std::string name, Args... args) -> Tensor<Type, sizeof...(Args)> {
        return Tensor<Type, sizeof...(Args)>{name, args...};
@@ -1524,7 +1529,7 @@ Program Listing for File Tensor.hpp
        typename std::enable_if_t<std::is_base_of_v<einsums::detail::TensorBase<T, Rank>, AType<T, Rank>>> {
        println("Name: {}", A.name());
        {
-           print::Indent indent{};
+           print::Indent const indent{};
    
            if constexpr (einsums::is_incore_rank_tensor_v<AType<T, Rank>, Rank, T>) {
                if constexpr (std::is_same_v<AType<T, Rank>, einsums::Tensor<T, Rank>>)

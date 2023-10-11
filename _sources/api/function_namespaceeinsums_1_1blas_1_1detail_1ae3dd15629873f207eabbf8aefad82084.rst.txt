@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceeinsums_1_1blas_1_1detail_1ae3dd15629873f207eabbf8aefad82084:
+
+Function einsums::blas::detail::daxpy
+=====================================
+
+- Defined in :ref:`file_src_include_einsums_Blas.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: einsums::blas::detail::daxpy(eint, double, const double *, eint, double *, eint)
+   :project: Einsums

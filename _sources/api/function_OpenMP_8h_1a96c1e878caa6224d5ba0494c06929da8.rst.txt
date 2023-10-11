@@ -1,0 +1,14 @@
+.. _exhale_function_OpenMP_8h_1a96c1e878caa6224d5ba0494c06929da8:
+
+Function omp_get_nested
+=======================
+
+- Defined in :ref:`file_src_include_einsums_OpenMP.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: omp_get_nested()
+   :project: Einsums

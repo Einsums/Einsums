@@ -24,4 +24,4 @@ Functions
 ---------
 
 
-- :ref:`exhale_function_polynomial_2Utilities_8hpp_1a16ea01b5892067b95375a243ef159f8f`
+- :ref:`exhale_function_polynomial_2Utilities_8hpp_1a9873e40e3f036e4029576784aa4af53e`

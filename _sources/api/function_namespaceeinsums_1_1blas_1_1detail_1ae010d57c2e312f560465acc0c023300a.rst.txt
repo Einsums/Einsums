@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceeinsums_1_1blas_1_1detail_1ae010d57c2e312f560465acc0c023300a:
+
+Function einsums::blas::detail::dsyev
+=====================================
+
+- Defined in :ref:`file_src_include_einsums_Blas.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: einsums::blas::detail::dsyev(char, char, eint, double *, eint, double *, double *, eint)
+   :project: Einsums

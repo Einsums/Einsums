@@ -14,6 +14,7 @@ Program Listing for File _Common.hpp
    
    #include "einsums/Error.hpp"
    #include "einsums/Print.hpp"
+   #include "einsums/STL.hpp"
    #include "einsums/_Compiler.hpp"
    #include "einsums/_Export.hpp"
    
@@ -53,6 +54,7 @@ Program Listing for File _Common.hpp
    #endif
    
    auto EINSUMS_EXPORT initialize() -> int;
+   
    void EINSUMS_EXPORT finalize(bool timerReport = false);
    
    // The following detail and "using" statements below are needed to ensure Dims, Strides, and Offsets are strong-types in C++
@@ -69,7 +71,7 @@ Program Listing for File _Common.hpp
    struct Array : public std::array<UnderlyingType, Rank> {
        template <typename... Args>
        constexpr explicit Array(Args... args) : std::array<UnderlyingType, Rank>{static_cast<UnderlyingType>(args)...} {}
-       using type = T;
+       using Type = T;
    };
    } // namespace detail
    
@@ -105,6 +107,33 @@ Program Listing for File _Common.hpp
    }
    
    template <size_t Rank>
+   struct fmt::formatter<einsums::Dim<Rank>> {
+       constexpr auto parse(format_parse_context &ctx) -> format_parse_context::iterator {
+           // Parse the presentation format and store it in the formatter:
+   
+           auto it = ctx.begin(), end = ctx.end();
+   
+           // Check if reached the end of the range:
+           if (it != end && *it != '}')
+               throw_format_error("invalid format");
+   
+           // Return an iterator past the end of the parsed range:
+           return it;
+       }
+   
+       // Formats the point p using the parsed format specification (presentation)
+       // stored in this formatter.
+       auto format(const einsums::Dim<Rank> &dim, format_context &ctx) const -> format_context::iterator {
+           std::ostringstream oss;
+           for (size_t i = 0; i < Rank; i++) {
+               oss << dim[i] << " ";
+           }
+           // ctx.out() is an output iterator to write to.
+           return fmt::format_to(ctx.out(), "Dim{{{}}}", einsums::rtrim_copy(oss.str()));
+       }
+   };
+   
+   template <size_t Rank>
    void println(const einsums::Stride<Rank> &stride) {
        std::ostringstream oss;
        for (size_t i = 0; i < Rank; i++) {
@@ -112,6 +141,33 @@ Program Listing for File _Common.hpp
        }
        println("Stride{{{}}}", oss.str().c_str());
    }
+   
+   template <size_t Rank>
+   struct fmt::formatter<einsums::Stride<Rank>> {
+       constexpr auto parse(format_parse_context &ctx) -> format_parse_context::iterator {
+           // Parse the presentation format and store it in the formatter:
+   
+           auto it = ctx.begin(), end = ctx.end();
+   
+           // Check if reached the end of the range:
+           if (it != end && *it != '}')
+               throw_format_error("invalid format");
+   
+           // Return an iterator past the end of the parsed range:
+           return it;
+       }
+   
+       // Formats the point p using the parsed format specification (presentation)
+       // stored in this formatter.
+       auto format(const einsums::Stride<Rank> &dim, format_context &ctx) const -> format_context::iterator {
+           std::ostringstream oss;
+           for (size_t i = 0; i < Rank; i++) {
+               oss << dim[i] << " ";
+           }
+           // ctx.out() is an output iterator to write to.
+           return fmt::format_to(ctx.out(), "Stride{{{}}}", einsums::rtrim_copy(oss.str()));
+       }
+   };
    
    template <size_t Rank>
    void println(const einsums::Count<Rank> &count) {
@@ -123,6 +179,33 @@ Program Listing for File _Common.hpp
    }
    
    template <size_t Rank>
+   struct fmt::formatter<einsums::Count<Rank>> {
+       constexpr auto parse(format_parse_context &ctx) -> format_parse_context::iterator {
+           // Parse the presentation format and store it in the formatter:
+   
+           auto it = ctx.begin(), end = ctx.end();
+   
+           // Check if reached the end of the range:
+           if (it != end && *it != '}')
+               throw_format_error("invalid format");
+   
+           // Return an iterator past the end of the parsed range:
+           return it;
+       }
+   
+       // Formats the point p using the parsed format specification (presentation)
+       // stored in this formatter.
+       auto format(const einsums::Count<Rank> &dim, format_context &ctx) const -> format_context::iterator {
+           std::ostringstream oss;
+           for (size_t i = 0; i < Rank; i++) {
+               oss << dim[i] << " ";
+           }
+           // ctx.out() is an output iterator to write to.
+           return fmt::format_to(ctx.out(), "Count{{{}}}", einsums::rtrim_copy(oss.str()));
+       }
+   };
+   
+   template <size_t Rank>
    void println(const einsums::Offset<Rank> &offset) {
        std::ostringstream oss;
        for (size_t i = 0; i < Rank; i++) {
@@ -131,11 +214,61 @@ Program Listing for File _Common.hpp
        println("Offset{{{}}}", oss.str().c_str());
    }
    
+   template <size_t Rank>
+   struct fmt::formatter<einsums::Offset<Rank>> {
+       constexpr auto parse(format_parse_context &ctx) -> format_parse_context::iterator {
+           // Parse the presentation format and store it in the formatter:
+   
+           auto it = ctx.begin(), end = ctx.end();
+   
+           // Check if reached the end of the range:
+           if (it != end && *it != '}')
+               throw_format_error("invalid format");
+   
+           // Return an iterator past the end of the parsed range:
+           return it;
+       }
+   
+       // Formats the point p using the parsed format specification (presentation)
+       // stored in this formatter.
+       auto format(const einsums::Offset<Rank> &dim, format_context &ctx) const -> format_context::iterator {
+           std::ostringstream oss;
+           for (size_t i = 0; i < Rank; i++) {
+               oss << dim[i] << " ";
+           }
+           // ctx.out() is an output iterator to write to.
+           return fmt::format_to(ctx.out(), "Offset{{{}}}", einsums::rtrim_copy(oss.str()));
+       }
+   };
+   
    inline void println(const einsums::Range &range) {
        std::ostringstream oss;
        oss << range[0] << " " << range[1];
        println("Range{{{}}}", oss.str().c_str());
    }
+   
+   template <>
+   struct fmt::formatter<einsums::Range> {
+       constexpr auto parse(format_parse_context &ctx) -> format_parse_context::iterator {
+           // Parse the presentation format and store it in the formatter:
+   
+           auto it = ctx.begin(), end = ctx.end();
+   
+           // Check if reached the end of the range:
+           if (it != end && *it != '}')
+               throw_format_error("invalid format");
+   
+           // Return an iterator past the end of the parsed range:
+           return it;
+       }
+   
+       // Formats the point p using the parsed format specification (presentation)
+       // stored in this formatter.
+       auto format(const einsums::Range &dim, format_context &ctx) const -> format_context::iterator {
+           // ctx.out() is an output iterator to write to.
+           return fmt::format_to(ctx.out(), "Range{{{}, {}}}", dim[0], dim[1]);
+       }
+   };
    
    template <size_t Rank, typename T>
    inline void println(const std::array<T, Rank> &array) {
@@ -143,7 +276,7 @@ Program Listing for File _Common.hpp
        for (size_t i = 0; i < Rank; i++) {
            oss << array[i] << " ";
        }
-       println("std::array{{{}}}", oss.str().c_str());
+       println("std::array{{{}}}", einsums::rtrim_copy(oss.str().c_str()));
    }
    
    // Taken from https://www.fluentcpp.com/2017/10/27/function-aliases-cpp/

@@ -1,0 +1,14 @@
+.. _exhale_function_Decomposition_8hpp_1a420dd6df2685c5eb885df118a713f56b:
+
+Function validate_cp_rank
+=========================
+
+- Defined in :ref:`file_src_include_einsums_Decomposition.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: validate_cp_rank(const Dim<TRank>, const std::string&)
+   :project: Einsums

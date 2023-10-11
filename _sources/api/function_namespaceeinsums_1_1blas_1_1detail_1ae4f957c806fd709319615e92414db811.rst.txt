@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceeinsums_1_1blas_1_1detail_1ae4f957c806fd709319615e92414db811:
+
+Function einsums::blas::detail::zdot
+====================================
+
+- Defined in :ref:`file_src_include_einsums_Blas.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: einsums::blas::detail::zdot(eint, const std::complex<double> *, eint, const std::complex<double> *, eint)
+   :project: Einsums

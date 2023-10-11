@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceeinsums_1_1blas_1_1detail_1aa07fa5ffbd4afe6ed284c04a8f8a7fa4:
+
+Function einsums::blas::detail::sgesv
+=====================================
+
+- Defined in :ref:`file_src_include_einsums_Blas.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: einsums::blas::detail::sgesv(eint, eint, float *, eint, eint *, float *, eint)
+   :project: Einsums

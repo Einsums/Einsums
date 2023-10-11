@@ -1,0 +1,14 @@
+.. _exhale_function_OpenMP_8h_1ac2256f68ed2a829fd221080fc3a7c019:
+
+Function omp_in_parallel
+========================
+
+- Defined in :ref:`file_src_include_einsums_OpenMP.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: omp_in_parallel()
+   :project: Einsums

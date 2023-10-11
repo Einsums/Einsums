@@ -17,6 +17,6 @@ Variables
 ---------
 
 
-- :ref:`exhale_variable_State_8hpp_1a7251bc079cc634ab46d74f1c5c6ba624`
+- :ref:`exhale_variable_State_8hpp_1a51ad4e9f4399c03606d0f0babbccd5a9`
 
-- :ref:`exhale_variable_State_8hpp_1af3e202b7a6ff508959c673612ce91645`
+- :ref:`exhale_variable_State_8hpp_1a75e5d4b9037daeec67e019f395227f9b`

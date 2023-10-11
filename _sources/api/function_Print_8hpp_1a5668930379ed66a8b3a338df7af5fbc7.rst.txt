@@ -1,0 +1,14 @@
+.. _exhale_function_Print_8hpp_1a5668930379ed66a8b3a338df7af5fbc7:
+
+Function print::current_indent_level
+====================================
+
+- Defined in :ref:`file_src_include_einsums_Print.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: print::current_indent_level()
+   :project: Einsums

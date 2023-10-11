@@ -38,6 +38,8 @@ Includes
 
 - ``einsums/Print.hpp`` (:ref:`file_src_include_einsums_Print.hpp`)
 
+- ``einsums/STL.hpp`` (:ref:`file_src_include_einsums_STL.hpp`)
+
 - ``einsums/_Compiler.hpp`` (:ref:`file_src_include_einsums__Compiler.hpp`)
 
 - ``einsums/_Export.hpp`` (:ref:`file_src_include_einsums__Export.hpp`)
@@ -102,20 +104,30 @@ Classes
 
 - :ref:`exhale_struct_structeinsums_1_1detail_1_1StrideType`
 
+- :ref:`exhale_struct_structfmt_1_1formatter_3_01einsums_1_1Count_3_01Rank_01_4_01_4`
+
+- :ref:`exhale_struct_structfmt_1_1formatter_3_01einsums_1_1Dim_3_01Rank_01_4_01_4`
+
+- :ref:`exhale_struct_structfmt_1_1formatter_3_01einsums_1_1Offset_3_01Rank_01_4_01_4`
+
+- :ref:`exhale_struct_structfmt_1_1formatter_3_01einsums_1_1Range_01_4`
+
+- :ref:`exhale_struct_structfmt_1_1formatter_3_01einsums_1_1Stride_3_01Rank_01_4_01_4`
+
 
 Functions
 ---------
 
 
-- :ref:`exhale_function___Common_8hpp_1ab6b23ef4e71aac675c8dcbc1765fd33c`
+- :ref:`exhale_function___Common_8hpp_1a3e9b44513554a298c39ff98eb9129f96`
 
-- :ref:`exhale_function___Common_8hpp_1af8ca3d76e617a2058e2c67b67b712554`
+- :ref:`exhale_function___Common_8hpp_1a854db456f89f04ed386ab68a1fdf7450`
 
 - :ref:`exhale_function___Common_8hpp_1a52198b5a8c76fef65cb1b964d9e07bdb`
 
-- :ref:`exhale_function___Common_8hpp_1a84f21c2651a0491697436c9f011058ba`
-
 - :ref:`exhale_function___Common_8hpp_1a11de673875f64ae0797b25f6ec64e395`
+
+- :ref:`exhale_function___Common_8hpp_1a84f21c2651a0491697436c9f011058ba`
 
 
 Defines

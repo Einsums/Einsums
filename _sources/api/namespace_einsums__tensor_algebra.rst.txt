@@ -18,3 +18,10 @@ Namespaces
 
 
 - :ref:`namespace_einsums__tensor_algebra__index`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structeinsums_1_1tensor__algebra_1_1Indices`

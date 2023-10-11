@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceeinsums_1_1blas_1_1detail_1a9c21e210f57abd579fcfb86eaeb48994:
+
+Function einsums::blas::detail::ddot
+====================================
+
+- Defined in :ref:`file_src_include_einsums_Blas.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: einsums::blas::detail::ddot(eint, const double *, eint, const double *, eint)
+   :project: Einsums

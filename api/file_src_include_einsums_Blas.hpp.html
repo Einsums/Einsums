@@ -1,80 +1,378 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
-<head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>File Blas.hpp &mdash; Einsums 0.1.0 documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/collapsible-lists/css/tree_view.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>File Blas.hpp &#8212; Einsums 0.1.0 documentation</title>
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js"></script>
-        <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js"></script>
-    <script src="../_static/js/theme.js"></script>
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js"></script>
+    <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js"></script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/file_src_include_einsums_Blas.hpp';</script>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
-</head>
+    <link rel="search" title="Search" href="../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
 
-<body class="wy-body-for-nav"> 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
 
-          
-          
-          <a href="../index.html" class="icon icon-home">
-            Einsums
-          </a>
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="library_root.html">Library API</a></li>
-</ul>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
 
-        </div>
-      </div>
-    </nav>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+  
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">Einsums</a>
-      </nav>
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/einsums-logo.png" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../_static/einsums-logo.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+    <p class="title logo__title">Einsums</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user/absolute_beginners.html">
+                        Getting Started
+                      </a>
+                    </li>
+                
 
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
-  <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">File Blas.hpp</li>
-      <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/api/file_src_include_einsums_Blas.hpp.rst.txt" rel="nofollow"> View page source</a>
-      </li>
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="library_root.html">
+                        API Reference
+                      </a>
+                    </li>
+                
   </ul>
-  <hr/>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-             
+
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user/absolute_beginners.html">
+                        Getting Started
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="library_root.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item"><nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="program_listing_file_src_include_einsums_Blas.hpp.html">Program Listing for File Blas.hpp</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">File Blas.hpp</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
   <section id="file-blas-hpp">
-<span id="file-src-include-einsums-blas-hpp"></span><h1>File Blas.hpp<a class="headerlink" href="#file-blas-hpp" title="Permalink to this headline"></a></h1>
+<span id="file-src-include-einsums-blas-hpp"></span><h1>File Blas.hpp<a class="headerlink" href="#file-blas-hpp" title="Permalink to this heading">#</a></h1>
 <p>↰ <a class="reference internal" href="dir_src_include_einsums.html#dir-src-include-einsums"><span class="std std-ref">Parent directory</span></a> (<code class="docutils literal notranslate"><span class="pre">src/include/einsums</span></code>)</p>
-<div class="contents local topic" id="contents">
+<nav class="contents local" id="contents">
 <p class="topic-title">Contents</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="#definition-src-include-einsums-blas-hpp" id="id1">Definition (<code class="docutils literal notranslate"><span class="pre">src/include/einsums/Blas.hpp</span></code>)</a></p></li>
@@ -83,9 +381,9 @@
 <li><p><a class="reference internal" href="#namespaces" id="id4">Namespaces</a></p></li>
 <li><p><a class="reference internal" href="#functions" id="id5">Functions</a></p></li>
 </ul>
-</div>
+</nav>
 <section id="definition-src-include-einsums-blas-hpp">
-<h2>Definition (<code class="docutils literal notranslate"><span class="pre">src/include/einsums/Blas.hpp</span></code>)<a class="headerlink" href="#definition-src-include-einsums-blas-hpp" title="Permalink to this headline"></a></h2>
+<h2>Definition (<code class="docutils literal notranslate"><span class="pre">src/include/einsums/Blas.hpp</span></code>)<a class="headerlink" href="#definition-src-include-einsums-blas-hpp" title="Permalink to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="program_listing_file_src_include_einsums_Blas.hpp.html">Program Listing for File Blas.hpp</a></li>
@@ -93,7 +391,7 @@
 </div>
 </section>
 <section id="includes">
-<h2>Includes<a class="headerlink" href="#includes" title="Permalink to this headline"></a></h2>
+<h2>Includes<a class="headerlink" href="#includes" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">complex</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">einsums/STL.hpp</span></code> (<a class="reference internal" href="file_src_include_einsums_STL.hpp.html#file-src-include-einsums-stl-hpp"><span class="std std-ref">File STL.hpp</span></a>)</p></li>
@@ -103,14 +401,14 @@
 </ul>
 </section>
 <section id="included-by">
-<h2>Included By<a class="headerlink" href="#included-by" title="Permalink to this headline"></a></h2>
+<h2>Included By<a class="headerlink" href="#included-by" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="file_src_include_einsums.hpp.html#file-src-include-einsums-hpp"><span class="std std-ref">File einsums.hpp</span></a></p></li>
 <li><p><a class="reference internal" href="file_src_include_einsums_LinearAlgebra.hpp.html#file-src-include-einsums-linearalgebra-hpp"><span class="std std-ref">File LinearAlgebra.hpp</span></a></p></li>
 </ul>
 </section>
 <section id="namespaces">
-<h2>Namespaces<a class="headerlink" href="#namespaces" title="Permalink to this headline"></a></h2>
+<h2>Namespaces<a class="headerlink" href="#namespaces" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="namespace_einsums.html#namespace-einsums"><span class="std std-ref">Namespace einsums</span></a></p></li>
 <li><p><a class="reference internal" href="namespace_einsums__blas.html#namespace-einsums-blas"><span class="std std-ref">Namespace einsums::blas</span></a></p></li>
@@ -118,98 +416,98 @@
 </ul>
 </section>
 <section id="functions">
-<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline"></a></h2>
+<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="function_Blas_8hpp_1ab0a3e7d1a82f076eaef032dc9f4b9228.html#exhale-function-blas-8hpp-1ab0a3e7d1a82f076eaef032dc9f4b9228"><span class="std std-ref">Template Function einsums::blas::axpby</span></a></p></li>
-<li><p><a class="reference internal" href="function_Blas_8hpp_1ac28b9eecae4807ac480511b607fd205e.html#exhale-function-blas-8hpp-1ac28b9eecae4807ac480511b607fd205e"><span class="std std-ref">Specialized Template Function einsums::blas::axpby&lt; double &gt;</span></a></p></li>
-<li><p><a class="reference internal" href="function_Blas_8hpp_1afbf872cd185c4a4cdea924308fd02085.html#exhale-function-blas-8hpp-1afbf872cd185c4a4cdea924308fd02085"><span class="std std-ref">Specialized Template Function einsums::blas::axpby&lt; float &gt;</span></a></p></li>
-<li><p><a class="reference internal" href="function_Blas_8hpp_1a2273f8bc7a68906e0105f99b6332488c.html#exhale-function-blas-8hpp-1a2273f8bc7a68906e0105f99b6332488c"><span class="std std-ref">Specialized Template Function einsums::blas::axpby&lt; std::complex&lt; double &gt; &gt;</span></a></p></li>
-<li><p><a class="reference internal" href="function_Blas_8hpp_1af03695ecd2d6cbf6806d71e9bee9ce52.html#exhale-function-blas-8hpp-1af03695ecd2d6cbf6806d71e9bee9ce52"><span class="std std-ref">Specialized Template Function einsums::blas::axpby&lt; std::complex&lt; float &gt; &gt;</span></a></p></li>
-<li><p><a class="reference internal" href="function_Blas_8hpp_1a9772171021c01e9f465ff28e5cd60fe7.html#exhale-function-blas-8hpp-1a9772171021c01e9f465ff28e5cd60fe7"><span class="std std-ref">Template Function einsums::blas::axpy</span></a></p></li>
-<li><p><a class="reference internal" href="function_Blas_8hpp_1a8b0b2f675f24a6694ba73749b065b5d7.html#exhale-function-blas-8hpp-1a8b0b2f675f24a6694ba73749b065b5d7"><span class="std std-ref">Specialized Template Function einsums::blas::axpy&lt; double &gt;</span></a></p></li>
-<li><p><a class="reference internal" href="function_Blas_8hpp_1a6e72e154b820ab590d65a1879c30be3e.html#exhale-function-blas-8hpp-1a6e72e154b820ab590d65a1879c30be3e"><span class="std std-ref">Specialized Template Function einsums::blas::axpy&lt; float &gt;</span></a></p></li>
-<li><p><a class="reference internal" href="function_Blas_8hpp_1ae5a0c8f3125dd16d8c3d476555c9d858.html#exhale-function-blas-8hpp-1ae5a0c8f3125dd16d8c3d476555c9d858"><span class="std std-ref">Specialized Template Function einsums::blas::axpy&lt; std::complex&lt; double &gt; &gt;</span></a></p></li>
-<li><p><a class="reference internal" href="function_Blas_8hpp_1a37ba026715a66c6652ab0e39e8524b9d.html#exhale-function-blas-8hpp-1a37ba026715a66c6652ab0e39e8524b9d"><span class="std std-ref">Specialized Template Function einsums::blas::axpy&lt; std::complex&lt; float &gt; &gt;</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ae48cf55d5a6287e88f90c0f33528db0d.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1ae48cf55d5a6287e88f90c0f33528db0d"><span class="std std-ref">Function einsums::blas::detail::caxpby</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a7d8ba54b5148fa8df65ebe59595d1590.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a7d8ba54b5148fa8df65ebe59595d1590"><span class="std std-ref">Function einsums::blas::detail::caxpy</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a900c1ac210a874d9927facaf9f6316e7.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a900c1ac210a874d9927facaf9f6316e7"><span class="std std-ref">Function einsums::blas::detail::cdot</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a742fec30619c818b05771fff850e3c9c.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a742fec30619c818b05771fff850e3c9c"><span class="std std-ref">Function einsums::blas::detail::cgemm</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a4e1544381fa03e0e910accc4caabf0d7.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a4e1544381fa03e0e910accc4caabf0d7"><span class="std std-ref">Function einsums::blas::detail::cgemv</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ab4d24cf06496cace303b6321f3e033d9.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1ab4d24cf06496cace303b6321f3e033d9"><span class="std std-ref">Function einsums::blas::detail::cgeqrf</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1abd9f68568c12f97b61fc04ab674a238b.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1abd9f68568c12f97b61fc04ab674a238b"><span class="std std-ref">Function einsums::blas::detail::cger</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a9764b86a8d5ca6808c1bee0f1701650e.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a9764b86a8d5ca6808c1bee0f1701650e"><span class="std std-ref">Function einsums::blas::detail::cgesdd</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a65ab55a04ac95152945d08a7e508d29d.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a65ab55a04ac95152945d08a7e508d29d"><span class="std std-ref">Function einsums::blas::detail::cgesv</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1aaccb411d2cd89c43e4844373eabd2d84.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1aaccb411d2cd89c43e4844373eabd2d84"><span class="std std-ref">Function einsums::blas::detail::cgetrf</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a6d1e615b0566eafba187d00beaee8f83.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a6d1e615b0566eafba187d00beaee8f83"><span class="std std-ref">Function einsums::blas::detail::cgetri</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a4f2a5d01b4d7570c9d23793f887a5334.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a4f2a5d01b4d7570c9d23793f887a5334"><span class="std std-ref">Function einsums::blas::detail::cheev</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a8dbcfc2fae5f0888e48d519936a06e20.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a8dbcfc2fae5f0888e48d519936a06e20"><span class="std std-ref">Function einsums::blas::detail::clange</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ab8d833d74430135f80f501517ef8db8d.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1ab8d833d74430135f80f501517ef8db8d"><span class="std std-ref">Function einsums::blas::detail::classq</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a8ec3890b94d6a24bbf8a5b5158db5e13.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a8ec3890b94d6a24bbf8a5b5158db5e13"><span class="std std-ref">Function einsums::blas::detail::cscal</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a2139d9625e9b0679a7723391b7749f97.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a2139d9625e9b0679a7723391b7749f97"><span class="std std-ref">Function einsums::blas::detail::csscal</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a5bcd535f084c11e9dc178c3c5160bace.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a5bcd535f084c11e9dc178c3c5160bace"><span class="std std-ref">Function einsums::blas::detail::ctrsyl</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a163dfd0ef29a45fceb83a6aefa35c7c9.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a163dfd0ef29a45fceb83a6aefa35c7c9"><span class="std std-ref">Function einsums::blas::detail::cungqr</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a100291196e8a507676666b957e6cd7d9.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a100291196e8a507676666b957e6cd7d9"><span class="std std-ref">Function einsums::blas::detail::daxpby</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a410ebf08875885f2e190230112ea5bdf.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a410ebf08875885f2e190230112ea5bdf"><span class="std std-ref">Function einsums::blas::detail::daxpy</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a0f6466ecf110fabe41e35ebb74bc3127.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a0f6466ecf110fabe41e35ebb74bc3127"><span class="std std-ref">Function einsums::blas::detail::ddot</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a62b644b6a055cc8a2bee8b99506fe729.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a62b644b6a055cc8a2bee8b99506fe729"><span class="std std-ref">Function einsums::blas::detail::dgees</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a34dfe2ffeed5ce7848c011e533b934c7.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a34dfe2ffeed5ce7848c011e533b934c7"><span class="std std-ref">Function einsums::blas::detail::dgemm</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a06f76c557450cb9cf98c0ab0be9550fa.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a06f76c557450cb9cf98c0ab0be9550fa"><span class="std std-ref">Function einsums::blas::detail::dgemv</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a8f54f04e7aac71408c02ab35532c1fbb.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a8f54f04e7aac71408c02ab35532c1fbb"><span class="std std-ref">Function einsums::blas::detail::dgeqrf</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1afe7ff8a473f278fd20ee969218d9056a.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1afe7ff8a473f278fd20ee969218d9056a"><span class="std std-ref">Function einsums::blas::detail::dger</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a4ce1d5a604c356c8d0c2274f12c5923a.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a4ce1d5a604c356c8d0c2274f12c5923a"><span class="std std-ref">Function einsums::blas::detail::dgesdd</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1af028279ab1a202bed67569e7fced8fdf.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1af028279ab1a202bed67569e7fced8fdf"><span class="std std-ref">Function einsums::blas::detail::dgesv</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a58288f736f23d8e0fc8ab2f87e446164.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a58288f736f23d8e0fc8ab2f87e446164"><span class="std std-ref">Function einsums::blas::detail::dgesvd</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a8e8e6b89a09d1c801169947a30623b84.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a8e8e6b89a09d1c801169947a30623b84"><span class="std std-ref">Function einsums::blas::detail::dgetrf</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a98e8ed5855f34156b552cdc113e3c074.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a98e8ed5855f34156b552cdc113e3c074"><span class="std std-ref">Function einsums::blas::detail::dgetri</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a58f14087ba238c304c197f7170c2c6af.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a58f14087ba238c304c197f7170c2c6af"><span class="std std-ref">Function einsums::blas::detail::dlange</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a8480b4ab8b36e38771e20c1f268c7c57.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a8480b4ab8b36e38771e20c1f268c7c57"><span class="std std-ref">Function einsums::blas::detail::dlassq</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a1719896c98052dafd6fbdfbe6828cb66.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a1719896c98052dafd6fbdfbe6828cb66"><span class="std std-ref">Function einsums::blas::detail::dorgqr</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ad75a53174b2d3bbc9db86159f77e70bc.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1ad75a53174b2d3bbc9db86159f77e70bc"><span class="std std-ref">Function einsums::blas::detail::dscal</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a6520be382f926a904e0d1561e97c0216.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a6520be382f926a904e0d1561e97c0216"><span class="std std-ref">Function einsums::blas::detail::dsyev</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a3a8a94e262d01c12fdac89f3d72c95b6.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a3a8a94e262d01c12fdac89f3d72c95b6"><span class="std std-ref">Function einsums::blas::detail::dtrsyl</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a9ede82fb100d72c4f965df103059d25e.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a9ede82fb100d72c4f965df103059d25e"><span class="std std-ref">Function einsums::blas::detail::saxpby</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ad98b0703a46f3ba33c956796e4783c6c.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1ad98b0703a46f3ba33c956796e4783c6c"><span class="std std-ref">Function einsums::blas::detail::saxpy</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ac2ee5c68b37a6582991f1a7d9e32f10d.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1ac2ee5c68b37a6582991f1a7d9e32f10d"><span class="std std-ref">Function einsums::blas::detail::sdot</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a761270eabfa0a3e2431b1098cd510ba5.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a761270eabfa0a3e2431b1098cd510ba5"><span class="std std-ref">Function einsums::blas::detail::sgees</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a0456bda907412ec58b8ea03c12e715fd.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a0456bda907412ec58b8ea03c12e715fd"><span class="std std-ref">Function einsums::blas::detail::sgemm</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1af9e4d8820e6bc5ab837be638d70d9769.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1af9e4d8820e6bc5ab837be638d70d9769"><span class="std std-ref">Function einsums::blas::detail::sgemv</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ad0140740c1fd9d632039525b084ebb0d.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1ad0140740c1fd9d632039525b084ebb0d"><span class="std std-ref">Function einsums::blas::detail::sgeqrf</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a615786230b63e1309ee3e109474db7ee.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a615786230b63e1309ee3e109474db7ee"><span class="std std-ref">Function einsums::blas::detail::sger</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a4d0c3d38d25177730e3cfde07de98ee7.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a4d0c3d38d25177730e3cfde07de98ee7"><span class="std std-ref">Function einsums::blas::detail::sgesdd</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a1bced07f43ed3a576a6c6357743abd25.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a1bced07f43ed3a576a6c6357743abd25"><span class="std std-ref">Function einsums::blas::detail::sgesv</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ab60b982892ecce035d0794b867ee9ed6.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1ab60b982892ecce035d0794b867ee9ed6"><span class="std std-ref">Function einsums::blas::detail::sgesvd</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a52e113c760617d71ebeab54fca6fb3ff.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a52e113c760617d71ebeab54fca6fb3ff"><span class="std std-ref">Function einsums::blas::detail::sgetrf</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1af4253f73acba528522c5169146aa843b.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1af4253f73acba528522c5169146aa843b"><span class="std std-ref">Function einsums::blas::detail::sgetri</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1aed5cc5c17dd8b95923edb97bc668359d.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1aed5cc5c17dd8b95923edb97bc668359d"><span class="std std-ref">Function einsums::blas::detail::slange</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a164689273ce367d9fc7d1c97ec2ff385.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a164689273ce367d9fc7d1c97ec2ff385"><span class="std std-ref">Function einsums::blas::detail::slassq</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a7150cf17aa5e541685b4cefa555ec4b6.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a7150cf17aa5e541685b4cefa555ec4b6"><span class="std std-ref">Function einsums::blas::detail::sorgqr</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a38410e4ed48571e4538856e7228d0d3f.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a38410e4ed48571e4538856e7228d0d3f"><span class="std std-ref">Function einsums::blas::detail::sscal</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1af142b09ad819ec4a6573e9f13b56e7f8.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1af142b09ad819ec4a6573e9f13b56e7f8"><span class="std std-ref">Function einsums::blas::detail::ssyev</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a149f4c3da524eab0e3748b469131a08d.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a149f4c3da524eab0e3748b469131a08d"><span class="std std-ref">Function einsums::blas::detail::strsyl</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1aaee21e6604aba68b1df6593e68f4fd3c.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1aaee21e6604aba68b1df6593e68f4fd3c"><span class="std std-ref">Function einsums::blas::detail::zaxpby</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ab717f231b7ffa95dfa2c665ba3387256.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1ab717f231b7ffa95dfa2c665ba3387256"><span class="std std-ref">Function einsums::blas::detail::zaxpy</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a3ee38c06483b62d003e39c8e573efedd.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a3ee38c06483b62d003e39c8e573efedd"><span class="std std-ref">Function einsums::blas::detail::zdot</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ae369fb0e6b0cb17e3e22f0467505a4eb.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1ae369fb0e6b0cb17e3e22f0467505a4eb"><span class="std std-ref">Function einsums::blas::detail::zdscal</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a035d1623f58cff835aa5175d56f4fd08.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a035d1623f58cff835aa5175d56f4fd08"><span class="std std-ref">Function einsums::blas::detail::zgemm</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ad91dd28fa3049500d757b8d61a418257.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1ad91dd28fa3049500d757b8d61a418257"><span class="std std-ref">Function einsums::blas::detail::zgemv</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a8b7daaa96a156edefe566975986c4870.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a8b7daaa96a156edefe566975986c4870"><span class="std std-ref">Function einsums::blas::detail::zgeqrf</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1affdc6a9f8d3cf4f72bbf03a50417e833.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1affdc6a9f8d3cf4f72bbf03a50417e833"><span class="std std-ref">Function einsums::blas::detail::zger</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a38d8beae64f0e7f10de3f4fee5dbb4d2.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a38d8beae64f0e7f10de3f4fee5dbb4d2"><span class="std std-ref">Function einsums::blas::detail::zgesdd</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a021b2cdd54be3dc86b8dbc409ab151ed.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a021b2cdd54be3dc86b8dbc409ab151ed"><span class="std std-ref">Function einsums::blas::detail::zgesv</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a61a3e49b48c5e696616c6a6dac95ec57.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a61a3e49b48c5e696616c6a6dac95ec57"><span class="std std-ref">Function einsums::blas::detail::zgetrf</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a2ce7330bbe632a000f38d18b32db161e.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a2ce7330bbe632a000f38d18b32db161e"><span class="std std-ref">Function einsums::blas::detail::zgetri</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a49228af8ce28f00da2f8e74b399c6db4.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a49228af8ce28f00da2f8e74b399c6db4"><span class="std std-ref">Function einsums::blas::detail::zheev</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ad7c46ed84bcfd99a44d69657af766ec4.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1ad7c46ed84bcfd99a44d69657af766ec4"><span class="std std-ref">Function einsums::blas::detail::zlange</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1af88d89c82bf144eabd4b2f88c2ba9e37.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1af88d89c82bf144eabd4b2f88c2ba9e37"><span class="std std-ref">Function einsums::blas::detail::zlassq</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1af66715faadf72de8748f465f117e0c7a.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1af66715faadf72de8748f465f117e0c7a"><span class="std std-ref">Function einsums::blas::detail::zscal</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a6429dbdb03d2135a0e8d1a6c9551168c.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a6429dbdb03d2135a0e8d1a6c9551168c"><span class="std std-ref">Function einsums::blas::detail::ztrsyl</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a14cd6011fd9fe84027e25bc4c52471cb.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a14cd6011fd9fe84027e25bc4c52471cb"><span class="std std-ref">Function einsums::blas::detail::zungqr</span></a></p></li>
-<li><p><a class="reference internal" href="function_Blas_8hpp_1ab6b9a0af69505efea085e73e4114447c.html#exhale-function-blas-8hpp-1ab6b9a0af69505efea085e73e4114447c"><span class="std std-ref">Template Function einsums::blas::dot</span></a></p></li>
-<li><p><a class="reference internal" href="function_Blas_8hpp_1a288e7be62d836cc494d48605e1d6f2b1.html#exhale-function-blas-8hpp-1a288e7be62d836cc494d48605e1d6f2b1"><span class="std std-ref">Specialized Template Function einsums::blas::dot&lt; double &gt;</span></a></p></li>
-<li><p><a class="reference internal" href="function_Blas_8hpp_1a138072e0ee0cbade37165a8e2aef28b0.html#exhale-function-blas-8hpp-1a138072e0ee0cbade37165a8e2aef28b0"><span class="std std-ref">Specialized Template Function einsums::blas::dot&lt; float &gt;</span></a></p></li>
-<li><p><a class="reference internal" href="function_Blas_8hpp_1aedfb41d2eb2cfcdc1b5ccf43c2fdb7e2.html#exhale-function-blas-8hpp-1aedfb41d2eb2cfcdc1b5ccf43c2fdb7e2"><span class="std std-ref">Specialized Template Function einsums::blas::dot&lt; std::complex&lt; double &gt; &gt;</span></a></p></li>
-<li><p><a class="reference internal" href="function_Blas_8hpp_1ade32b466088f7b61fb2cc62369c2c36c.html#exhale-function-blas-8hpp-1ade32b466088f7b61fb2cc62369c2c36c"><span class="std std-ref">Specialized Template Function einsums::blas::dot&lt; std::complex&lt; float &gt; &gt;</span></a></p></li>
-<li><p><a class="reference internal" href="function_Blas_8hpp_1a0524e8d6dc8fd1aea67a653a1f7fbdfd.html#exhale-function-blas-8hpp-1a0524e8d6dc8fd1aea67a653a1f7fbdfd"><span class="std std-ref">Function einsums::blas::finalize</span></a></p></li>
+<li><p><a class="reference internal" href="function_Blas_8hpp_1aca1f41c8e44a8bb9e480fa1c5884effc.html#exhale-function-blas-8hpp-1aca1f41c8e44a8bb9e480fa1c5884effc"><span class="std std-ref">Template Function einsums::blas::axpby</span></a></p></li>
+<li><p><a class="reference internal" href="function_Blas_8hpp_1ad066053be430c7edead893b007107c7b.html#exhale-function-blas-8hpp-1ad066053be430c7edead893b007107c7b"><span class="std std-ref">Specialized Template Function einsums::blas::axpby&lt; double &gt;</span></a></p></li>
+<li><p><a class="reference internal" href="function_Blas_8hpp_1a4b6a3701a7ca3006f96d492db687010e.html#exhale-function-blas-8hpp-1a4b6a3701a7ca3006f96d492db687010e"><span class="std std-ref">Specialized Template Function einsums::blas::axpby&lt; float &gt;</span></a></p></li>
+<li><p><a class="reference internal" href="function_Blas_8hpp_1a9a91f77b30daec1e20a0d0e4fc3f51f5.html#exhale-function-blas-8hpp-1a9a91f77b30daec1e20a0d0e4fc3f51f5"><span class="std std-ref">Specialized Template Function einsums::blas::axpby&lt; std::complex&lt; double &gt; &gt;</span></a></p></li>
+<li><p><a class="reference internal" href="function_Blas_8hpp_1a215f870c30ef90260752bc5fdd83af38.html#exhale-function-blas-8hpp-1a215f870c30ef90260752bc5fdd83af38"><span class="std std-ref">Specialized Template Function einsums::blas::axpby&lt; std::complex&lt; float &gt; &gt;</span></a></p></li>
+<li><p><a class="reference internal" href="function_Blas_8hpp_1ab983c81ffe37b47390b815fc59aa47da.html#exhale-function-blas-8hpp-1ab983c81ffe37b47390b815fc59aa47da"><span class="std std-ref">Template Function einsums::blas::axpy</span></a></p></li>
+<li><p><a class="reference internal" href="function_Blas_8hpp_1a1c942b0a763666b191d1b17bd9b6107a.html#exhale-function-blas-8hpp-1a1c942b0a763666b191d1b17bd9b6107a"><span class="std std-ref">Specialized Template Function einsums::blas::axpy&lt; double &gt;</span></a></p></li>
+<li><p><a class="reference internal" href="function_Blas_8hpp_1ae7db600f15a02c21414d322fc18d4657.html#exhale-function-blas-8hpp-1ae7db600f15a02c21414d322fc18d4657"><span class="std std-ref">Specialized Template Function einsums::blas::axpy&lt; float &gt;</span></a></p></li>
+<li><p><a class="reference internal" href="function_Blas_8hpp_1ab7c15f24d7e15deea0366c45c331eba0.html#exhale-function-blas-8hpp-1ab7c15f24d7e15deea0366c45c331eba0"><span class="std std-ref">Specialized Template Function einsums::blas::axpy&lt; std::complex&lt; double &gt; &gt;</span></a></p></li>
+<li><p><a class="reference internal" href="function_Blas_8hpp_1abac21ff10ff6a9a1967e5c2821bbe9f2.html#exhale-function-blas-8hpp-1abac21ff10ff6a9a1967e5c2821bbe9f2"><span class="std std-ref">Specialized Template Function einsums::blas::axpy&lt; std::complex&lt; float &gt; &gt;</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ad21995d7be59905a218151fc2f2e595f.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1ad21995d7be59905a218151fc2f2e595f"><span class="std std-ref">Function einsums::blas::detail::caxpby</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a64f3a199a81c32df7cd00cd02ea4f955.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a64f3a199a81c32df7cd00cd02ea4f955"><span class="std std-ref">Function einsums::blas::detail::caxpy</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a99be215f348c316dc6ac262fcd1e13c7.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a99be215f348c316dc6ac262fcd1e13c7"><span class="std std-ref">Function einsums::blas::detail::cdot</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a1a786cfbab3774a828a3e8f317555d55.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a1a786cfbab3774a828a3e8f317555d55"><span class="std std-ref">Function einsums::blas::detail::cgemm</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a196bc8b907603b671aa2b0607a7d69da.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a196bc8b907603b671aa2b0607a7d69da"><span class="std std-ref">Function einsums::blas::detail::cgemv</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a2c573f9ff39a362f5a61b5d3962c484a.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a2c573f9ff39a362f5a61b5d3962c484a"><span class="std std-ref">Function einsums::blas::detail::cgeqrf</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a3147a4a519374c7bb1710820b842cfbb.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a3147a4a519374c7bb1710820b842cfbb"><span class="std std-ref">Function einsums::blas::detail::cger</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1aca7c3527a83799d80fa6471e971da032.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1aca7c3527a83799d80fa6471e971da032"><span class="std std-ref">Function einsums::blas::detail::cgesdd</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a16991d6c38bdba45e345a418d162f4ab.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a16991d6c38bdba45e345a418d162f4ab"><span class="std std-ref">Function einsums::blas::detail::cgesv</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a3ec8675e4246411c3a8cd1a119ca4a67.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a3ec8675e4246411c3a8cd1a119ca4a67"><span class="std std-ref">Function einsums::blas::detail::cgetrf</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ab07582979bd90d869eb88901ceaa60c2.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1ab07582979bd90d869eb88901ceaa60c2"><span class="std std-ref">Function einsums::blas::detail::cgetri</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a7da3378e472fcc920abebb537d75059b.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a7da3378e472fcc920abebb537d75059b"><span class="std std-ref">Function einsums::blas::detail::cheev</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a7816355516878c7a08492e148b254b0c.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a7816355516878c7a08492e148b254b0c"><span class="std std-ref">Function einsums::blas::detail::clange</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a3ed931ee1d087e20ad67333e2bce0076.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a3ed931ee1d087e20ad67333e2bce0076"><span class="std std-ref">Function einsums::blas::detail::classq</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1afb73d0d9aa0f9fbe921a827cc5f8299f.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1afb73d0d9aa0f9fbe921a827cc5f8299f"><span class="std std-ref">Function einsums::blas::detail::cscal</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a3430a8813c05305651235f8f522e4d3d.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a3430a8813c05305651235f8f522e4d3d"><span class="std std-ref">Function einsums::blas::detail::csscal</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a60e154ab95a5e8b0ea5585c1241ce47f.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a60e154ab95a5e8b0ea5585c1241ce47f"><span class="std std-ref">Function einsums::blas::detail::ctrsyl</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a6b8dff722fe3f6d1d448f58d16d0a006.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a6b8dff722fe3f6d1d448f58d16d0a006"><span class="std std-ref">Function einsums::blas::detail::cungqr</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ae8d5849725ffc69912a3e42ab31d535e.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1ae8d5849725ffc69912a3e42ab31d535e"><span class="std std-ref">Function einsums::blas::detail::daxpby</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ae3dd15629873f207eabbf8aefad82084.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1ae3dd15629873f207eabbf8aefad82084"><span class="std std-ref">Function einsums::blas::detail::daxpy</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a9c21e210f57abd579fcfb86eaeb48994.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a9c21e210f57abd579fcfb86eaeb48994"><span class="std std-ref">Function einsums::blas::detail::ddot</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a651b0b2632d8536283aa4e24b3ace4a6.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a651b0b2632d8536283aa4e24b3ace4a6"><span class="std std-ref">Function einsums::blas::detail::dgees</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1aa4a830e1c3063b19586271b7a41393ed.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1aa4a830e1c3063b19586271b7a41393ed"><span class="std std-ref">Function einsums::blas::detail::dgemm</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ad73c0744a608eb92eef431f35ec63e61.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1ad73c0744a608eb92eef431f35ec63e61"><span class="std std-ref">Function einsums::blas::detail::dgemv</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ab8df233cbb09da970dec1855a6bfc2cb.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1ab8df233cbb09da970dec1855a6bfc2cb"><span class="std std-ref">Function einsums::blas::detail::dgeqrf</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ac9cf1564b1cfb10181527eedbab5a4c6.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1ac9cf1564b1cfb10181527eedbab5a4c6"><span class="std std-ref">Function einsums::blas::detail::dger</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a8af4f1194c69a8a6b917d399625f5912.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a8af4f1194c69a8a6b917d399625f5912"><span class="std std-ref">Function einsums::blas::detail::dgesdd</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ababfdbfa833210ad9f69f975c1d107ea.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1ababfdbfa833210ad9f69f975c1d107ea"><span class="std std-ref">Function einsums::blas::detail::dgesv</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a7b764b6e3da5389d9f0aaaeb1a0fdd12.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a7b764b6e3da5389d9f0aaaeb1a0fdd12"><span class="std std-ref">Function einsums::blas::detail::dgesvd</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a658916b3f359141562940bad2333c642.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a658916b3f359141562940bad2333c642"><span class="std std-ref">Function einsums::blas::detail::dgetrf</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a545f56fef2d7287d33570a4b835b2bd8.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a545f56fef2d7287d33570a4b835b2bd8"><span class="std std-ref">Function einsums::blas::detail::dgetri</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ad202db94fb02dc0dc31344599eeb446f.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1ad202db94fb02dc0dc31344599eeb446f"><span class="std std-ref">Function einsums::blas::detail::dlange</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ab41df02da595086be28eebc08ee77c9a.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1ab41df02da595086be28eebc08ee77c9a"><span class="std std-ref">Function einsums::blas::detail::dlassq</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ab9b2f15133805073c63f9819f441b47c.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1ab9b2f15133805073c63f9819f441b47c"><span class="std std-ref">Function einsums::blas::detail::dorgqr</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a549af3f176987b78335cd49d228697f9.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a549af3f176987b78335cd49d228697f9"><span class="std std-ref">Function einsums::blas::detail::dscal</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ae010d57c2e312f560465acc0c023300a.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1ae010d57c2e312f560465acc0c023300a"><span class="std std-ref">Function einsums::blas::detail::dsyev</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a8a79cda8decc4b411fc083281cce2dfe.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a8a79cda8decc4b411fc083281cce2dfe"><span class="std std-ref">Function einsums::blas::detail::dtrsyl</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1aa45e7605381a66f8cd7e94de3184bed6.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1aa45e7605381a66f8cd7e94de3184bed6"><span class="std std-ref">Function einsums::blas::detail::saxpby</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1aa9261073ae5f529a46ebaf87d48d0960.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1aa9261073ae5f529a46ebaf87d48d0960"><span class="std std-ref">Function einsums::blas::detail::saxpy</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1acf303cc0e6dc32d267ad414ebdf96277.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1acf303cc0e6dc32d267ad414ebdf96277"><span class="std std-ref">Function einsums::blas::detail::sdot</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a357778ead9227f722ef732c5fdd35b3d.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a357778ead9227f722ef732c5fdd35b3d"><span class="std std-ref">Function einsums::blas::detail::sgees</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a02e7255e23c3b06de65a548a49d6271a.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a02e7255e23c3b06de65a548a49d6271a"><span class="std std-ref">Function einsums::blas::detail::sgemm</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1adcd5b0ad95f756ed897e2d4c40f66dbf.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1adcd5b0ad95f756ed897e2d4c40f66dbf"><span class="std std-ref">Function einsums::blas::detail::sgemv</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a658624e9cd59b6e17488b8b9dd8eed5e.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a658624e9cd59b6e17488b8b9dd8eed5e"><span class="std std-ref">Function einsums::blas::detail::sgeqrf</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1abb843a0db180c162869d9381617856ef.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1abb843a0db180c162869d9381617856ef"><span class="std std-ref">Function einsums::blas::detail::sger</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ad3c2e91cbd92c4162afe95c185aa3a64.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1ad3c2e91cbd92c4162afe95c185aa3a64"><span class="std std-ref">Function einsums::blas::detail::sgesdd</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1aa07fa5ffbd4afe6ed284c04a8f8a7fa4.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1aa07fa5ffbd4afe6ed284c04a8f8a7fa4"><span class="std std-ref">Function einsums::blas::detail::sgesv</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a0625bca25275e9101094e0372f7b15f2.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a0625bca25275e9101094e0372f7b15f2"><span class="std std-ref">Function einsums::blas::detail::sgesvd</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a5f11c9bdbe497ec137c7c05ff7b1fc10.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a5f11c9bdbe497ec137c7c05ff7b1fc10"><span class="std std-ref">Function einsums::blas::detail::sgetrf</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a1f69f69b4a6c6845e8b3b86e6ec5abe4.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a1f69f69b4a6c6845e8b3b86e6ec5abe4"><span class="std std-ref">Function einsums::blas::detail::sgetri</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a370eac65e24f865eeef22f9b2abc61f1.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a370eac65e24f865eeef22f9b2abc61f1"><span class="std std-ref">Function einsums::blas::detail::slange</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a3ca7e5a725aab6e0898194a075fae7d6.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a3ca7e5a725aab6e0898194a075fae7d6"><span class="std std-ref">Function einsums::blas::detail::slassq</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a7e2189e01d6541a1a0cbadbb349fa4cb.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a7e2189e01d6541a1a0cbadbb349fa4cb"><span class="std std-ref">Function einsums::blas::detail::sorgqr</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a97d6e046bbad515687654487fe823e63.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a97d6e046bbad515687654487fe823e63"><span class="std std-ref">Function einsums::blas::detail::sscal</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a952fdfcaf54b20a2ad7356b35873c5ab.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a952fdfcaf54b20a2ad7356b35873c5ab"><span class="std std-ref">Function einsums::blas::detail::ssyev</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a7956aedcf80730815d04848ab3cfb4d2.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a7956aedcf80730815d04848ab3cfb4d2"><span class="std std-ref">Function einsums::blas::detail::strsyl</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ae69bb5874bae06622a38f77d893e2c99.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1ae69bb5874bae06622a38f77d893e2c99"><span class="std std-ref">Function einsums::blas::detail::zaxpby</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a01a7f0386154c5474d4016436524f752.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a01a7f0386154c5474d4016436524f752"><span class="std std-ref">Function einsums::blas::detail::zaxpy</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ae4f957c806fd709319615e92414db811.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1ae4f957c806fd709319615e92414db811"><span class="std std-ref">Function einsums::blas::detail::zdot</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ab68c57792213548e20693d5b440e5fb3.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1ab68c57792213548e20693d5b440e5fb3"><span class="std std-ref">Function einsums::blas::detail::zdscal</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1aef8fa74e87cf5ef96feadc1da79ea0a8.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1aef8fa74e87cf5ef96feadc1da79ea0a8"><span class="std std-ref">Function einsums::blas::detail::zgemm</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1adbace79e0b9adc17462e38eff3548878.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1adbace79e0b9adc17462e38eff3548878"><span class="std std-ref">Function einsums::blas::detail::zgemv</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a0bbb2fe940d030659f52a660f1cd003d.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a0bbb2fe940d030659f52a660f1cd003d"><span class="std std-ref">Function einsums::blas::detail::zgeqrf</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a367ca5c44587be276802de13a14872d7.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a367ca5c44587be276802de13a14872d7"><span class="std std-ref">Function einsums::blas::detail::zger</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a0e7e7892fbf95b9c7f2e22c75f17d9b2.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a0e7e7892fbf95b9c7f2e22c75f17d9b2"><span class="std std-ref">Function einsums::blas::detail::zgesdd</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1acff22e804d2ab2d94d734477bc4ffed1.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1acff22e804d2ab2d94d734477bc4ffed1"><span class="std std-ref">Function einsums::blas::detail::zgesv</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a7d5502074fb9ff65e4dc810b1d982d9e.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a7d5502074fb9ff65e4dc810b1d982d9e"><span class="std std-ref">Function einsums::blas::detail::zgetrf</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ae04c465a3a0ce5db0d344a6dbea0b86b.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1ae04c465a3a0ce5db0d344a6dbea0b86b"><span class="std std-ref">Function einsums::blas::detail::zgetri</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a6482a3c3caba67acdc40bfbd981a48ad.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a6482a3c3caba67acdc40bfbd981a48ad"><span class="std std-ref">Function einsums::blas::detail::zheev</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a52924938b38da1cd51c2970f77127943.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a52924938b38da1cd51c2970f77127943"><span class="std std-ref">Function einsums::blas::detail::zlange</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1afcef0bf3ad64cd6e798329c4e7391276.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1afcef0bf3ad64cd6e798329c4e7391276"><span class="std std-ref">Function einsums::blas::detail::zlassq</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a8285a749efed578d9271d6a8c685e2f7.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a8285a749efed578d9271d6a8c685e2f7"><span class="std std-ref">Function einsums::blas::detail::zscal</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1ae5831d7c49decf12fe7683a3f492bdb4.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1ae5831d7c49decf12fe7683a3f492bdb4"><span class="std std-ref">Function einsums::blas::detail::ztrsyl</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceeinsums_1_1blas_1_1detail_1a3292fda3a98fbd2eac4b1d4b0e26a321.html#exhale-function-namespaceeinsums-1-1blas-1-1detail-1a3292fda3a98fbd2eac4b1d4b0e26a321"><span class="std std-ref">Function einsums::blas::detail::zungqr</span></a></p></li>
+<li><p><a class="reference internal" href="function_Blas_8hpp_1a8a9910a09f8e6402adfb746ca663b035.html#exhale-function-blas-8hpp-1a8a9910a09f8e6402adfb746ca663b035"><span class="std std-ref">Template Function einsums::blas::dot</span></a></p></li>
+<li><p><a class="reference internal" href="function_Blas_8hpp_1aaa9bf7891c312f2c0feeca3feef359eb.html#exhale-function-blas-8hpp-1aaa9bf7891c312f2c0feeca3feef359eb"><span class="std std-ref">Specialized Template Function einsums::blas::dot&lt; double &gt;</span></a></p></li>
+<li><p><a class="reference internal" href="function_Blas_8hpp_1a0e9f3f229ca23cb4fb364efe477c75de.html#exhale-function-blas-8hpp-1a0e9f3f229ca23cb4fb364efe477c75de"><span class="std std-ref">Specialized Template Function einsums::blas::dot&lt; float &gt;</span></a></p></li>
+<li><p><a class="reference internal" href="function_Blas_8hpp_1a0f688ac411edf67b14a9d13aff156571.html#exhale-function-blas-8hpp-1a0f688ac411edf67b14a9d13aff156571"><span class="std std-ref">Specialized Template Function einsums::blas::dot&lt; std::complex&lt; double &gt; &gt;</span></a></p></li>
+<li><p><a class="reference internal" href="function_Blas_8hpp_1a7f933e07dc8e8cc12ef9beeaa92d61d4.html#exhale-function-blas-8hpp-1a7f933e07dc8e8cc12ef9beeaa92d61d4"><span class="std std-ref">Specialized Template Function einsums::blas::dot&lt; std::complex&lt; float &gt; &gt;</span></a></p></li>
+<li><p><a class="reference internal" href="function_Blas_8hpp_1af9f978c9480acef44d04f82136c49df3.html#exhale-function-blas-8hpp-1af9f978c9480acef44d04f82136c49df3"><span class="std std-ref">Function einsums::blas::finalize</span></a></p></li>
 <li><p><a class="reference internal" href="function_Blas_8hpp_1a15571822d03e6098b398cb486946041d.html#exhale-function-blas-8hpp-1a15571822d03e6098b398cb486946041d"><span class="std std-ref">Template Function einsums::blas::gees</span></a></p></li>
 <li><p><a class="reference internal" href="function_Blas_8hpp_1a5819e41a799cf83671f6e4b243da33c0.html#exhale-function-blas-8hpp-1a5819e41a799cf83671f6e4b243da33c0"><span class="std std-ref">Specialized Template Function einsums::blas::gees&lt; double &gt;</span></a></p></li>
 <li><p><a class="reference internal" href="function_Blas_8hpp_1a4fb39371935688a8462cc96506b0118c.html#exhale-function-blas-8hpp-1a4fb39371935688a8462cc96506b0118c"><span class="std std-ref">Specialized Template Function einsums::blas::gees&lt; float &gt;</span></a></p></li>
@@ -218,21 +516,21 @@
 <li><p><a class="reference internal" href="function_Blas_8hpp_1a18ee1b1fbabd682ab5c8333e19155d4e.html#exhale-function-blas-8hpp-1a18ee1b1fbabd682ab5c8333e19155d4e"><span class="std std-ref">Specialized Template Function einsums::blas::gemm&lt; float &gt;</span></a></p></li>
 <li><p><a class="reference internal" href="function_Blas_8hpp_1a563bde6f79f7da451c21408f81433d34.html#exhale-function-blas-8hpp-1a563bde6f79f7da451c21408f81433d34"><span class="std std-ref">Specialized Template Function einsums::blas::gemm&lt; std::complex&lt; double &gt; &gt;</span></a></p></li>
 <li><p><a class="reference internal" href="function_Blas_8hpp_1a59eecb566826ff0c0ec6923f2a0fd5ad.html#exhale-function-blas-8hpp-1a59eecb566826ff0c0ec6923f2a0fd5ad"><span class="std std-ref">Specialized Template Function einsums::blas::gemm&lt; std::complex&lt; float &gt; &gt;</span></a></p></li>
-<li><p><a class="reference internal" href="function_Blas_8hpp_1aedbb1533405c52a950a423211dc6f3ca.html#exhale-function-blas-8hpp-1aedbb1533405c52a950a423211dc6f3ca"><span class="std std-ref">Template Function einsums::blas::gemv</span></a></p></li>
-<li><p><a class="reference internal" href="function_Blas_8hpp_1a392ab89a7a236fef8211c6ff7be9d0ad.html#exhale-function-blas-8hpp-1a392ab89a7a236fef8211c6ff7be9d0ad"><span class="std std-ref">Specialized Template Function einsums::blas::gemv&lt; double &gt;</span></a></p></li>
-<li><p><a class="reference internal" href="function_Blas_8hpp_1a8674933e8fe484a44e4dfcad365f9329.html#exhale-function-blas-8hpp-1a8674933e8fe484a44e4dfcad365f9329"><span class="std std-ref">Specialized Template Function einsums::blas::gemv&lt; float &gt;</span></a></p></li>
-<li><p><a class="reference internal" href="function_Blas_8hpp_1a63ea64041030ea7bb3f9636c3fce53aa.html#exhale-function-blas-8hpp-1a63ea64041030ea7bb3f9636c3fce53aa"><span class="std std-ref">Specialized Template Function einsums::blas::gemv&lt; std::complex&lt; double &gt; &gt;</span></a></p></li>
-<li><p><a class="reference internal" href="function_Blas_8hpp_1a11c08f7915ab4dcc9b67eef8a9aff7df.html#exhale-function-blas-8hpp-1a11c08f7915ab4dcc9b67eef8a9aff7df"><span class="std std-ref">Specialized Template Function einsums::blas::gemv&lt; std::complex&lt; float &gt; &gt;</span></a></p></li>
+<li><p><a class="reference internal" href="function_Blas_8hpp_1a2a81cb8368ed8ab10777454325c49e92.html#exhale-function-blas-8hpp-1a2a81cb8368ed8ab10777454325c49e92"><span class="std std-ref">Template Function einsums::blas::gemv</span></a></p></li>
+<li><p><a class="reference internal" href="function_Blas_8hpp_1ac2aed2c81c16cc6a92360b44933da962.html#exhale-function-blas-8hpp-1ac2aed2c81c16cc6a92360b44933da962"><span class="std std-ref">Specialized Template Function einsums::blas::gemv&lt; double &gt;</span></a></p></li>
+<li><p><a class="reference internal" href="function_Blas_8hpp_1a36eb61e0e58e10b62fe6ee4611f516d3.html#exhale-function-blas-8hpp-1a36eb61e0e58e10b62fe6ee4611f516d3"><span class="std std-ref">Specialized Template Function einsums::blas::gemv&lt; float &gt;</span></a></p></li>
+<li><p><a class="reference internal" href="function_Blas_8hpp_1a2c6685c39f9c2ad41687447d1684117a.html#exhale-function-blas-8hpp-1a2c6685c39f9c2ad41687447d1684117a"><span class="std std-ref">Specialized Template Function einsums::blas::gemv&lt; std::complex&lt; double &gt; &gt;</span></a></p></li>
+<li><p><a class="reference internal" href="function_Blas_8hpp_1a287c01770280061e1d0b000861de8ad1.html#exhale-function-blas-8hpp-1a287c01770280061e1d0b000861de8ad1"><span class="std std-ref">Specialized Template Function einsums::blas::gemv&lt; std::complex&lt; float &gt; &gt;</span></a></p></li>
 <li><p><a class="reference internal" href="function_Blas_8hpp_1ade590cfe1bfdbe7c822aeafad6c17527.html#exhale-function-blas-8hpp-1ade590cfe1bfdbe7c822aeafad6c17527"><span class="std std-ref">Template Function einsums::blas::geqrf</span></a></p></li>
 <li><p><a class="reference internal" href="function_Blas_8hpp_1add297e000b0dfd758017452402a8a385.html#exhale-function-blas-8hpp-1add297e000b0dfd758017452402a8a385"><span class="std std-ref">Specialized Template Function einsums::blas::geqrf&lt; double &gt;</span></a></p></li>
 <li><p><a class="reference internal" href="function_Blas_8hpp_1a54ec1622d726de46d6196107eae6da90.html#exhale-function-blas-8hpp-1a54ec1622d726de46d6196107eae6da90"><span class="std std-ref">Specialized Template Function einsums::blas::geqrf&lt; float &gt;</span></a></p></li>
 <li><p><a class="reference internal" href="function_Blas_8hpp_1a05ca06f586e7f889a3c2d8abc2ab6c93.html#exhale-function-blas-8hpp-1a05ca06f586e7f889a3c2d8abc2ab6c93"><span class="std std-ref">Specialized Template Function einsums::blas::geqrf&lt; std::complex&lt; double &gt; &gt;</span></a></p></li>
 <li><p><a class="reference internal" href="function_Blas_8hpp_1a55ae79323a299a825dccbc49f3032203.html#exhale-function-blas-8hpp-1a55ae79323a299a825dccbc49f3032203"><span class="std std-ref">Specialized Template Function einsums::blas::geqrf&lt; std::complex&lt; float &gt; &gt;</span></a></p></li>
-<li><p><a class="reference internal" href="function_Blas_8hpp_1a8af56f82d93073c6bb9f5c5b273f27f8.html#exhale-function-blas-8hpp-1a8af56f82d93073c6bb9f5c5b273f27f8"><span class="std std-ref">Template Function einsums::blas::ger</span></a></p></li>
-<li><p><a class="reference internal" href="function_Blas_8hpp_1afc506f56a62c2e6cbcf8ed0dca05b464.html#exhale-function-blas-8hpp-1afc506f56a62c2e6cbcf8ed0dca05b464"><span class="std std-ref">Specialized Template Function einsums::blas::ger&lt; double &gt;</span></a></p></li>
-<li><p><a class="reference internal" href="function_Blas_8hpp_1a80b147251e2a0cf2e2c033977864f696.html#exhale-function-blas-8hpp-1a80b147251e2a0cf2e2c033977864f696"><span class="std std-ref">Specialized Template Function einsums::blas::ger&lt; float &gt;</span></a></p></li>
-<li><p><a class="reference internal" href="function_Blas_8hpp_1ac08eb6a696d53284494b96a901e77259.html#exhale-function-blas-8hpp-1ac08eb6a696d53284494b96a901e77259"><span class="std std-ref">Specialized Template Function einsums::blas::ger&lt; std::complex&lt; double &gt; &gt;</span></a></p></li>
-<li><p><a class="reference internal" href="function_Blas_8hpp_1a3d3a90cb1fc15c4da2f949f360a1569d.html#exhale-function-blas-8hpp-1a3d3a90cb1fc15c4da2f949f360a1569d"><span class="std std-ref">Specialized Template Function einsums::blas::ger&lt; std::complex&lt; float &gt; &gt;</span></a></p></li>
+<li><p><a class="reference internal" href="function_Blas_8hpp_1a8bc08b31d3927ba8881da36b4f815f19.html#exhale-function-blas-8hpp-1a8bc08b31d3927ba8881da36b4f815f19"><span class="std std-ref">Template Function einsums::blas::ger</span></a></p></li>
+<li><p><a class="reference internal" href="function_Blas_8hpp_1a5217df7825e55aff6a59079eb8e961ed.html#exhale-function-blas-8hpp-1a5217df7825e55aff6a59079eb8e961ed"><span class="std std-ref">Specialized Template Function einsums::blas::ger&lt; double &gt;</span></a></p></li>
+<li><p><a class="reference internal" href="function_Blas_8hpp_1acc18fc90c4b0f6769b03fa3e75ec9e9b.html#exhale-function-blas-8hpp-1acc18fc90c4b0f6769b03fa3e75ec9e9b"><span class="std std-ref">Specialized Template Function einsums::blas::ger&lt; float &gt;</span></a></p></li>
+<li><p><a class="reference internal" href="function_Blas_8hpp_1a99bc56e0e7f7a46e6e8a1d7219530b81.html#exhale-function-blas-8hpp-1a99bc56e0e7f7a46e6e8a1d7219530b81"><span class="std std-ref">Specialized Template Function einsums::blas::ger&lt; std::complex&lt; double &gt; &gt;</span></a></p></li>
+<li><p><a class="reference internal" href="function_Blas_8hpp_1a29cb740cb98044e74f98ddfce722d29b.html#exhale-function-blas-8hpp-1a29cb740cb98044e74f98ddfce722d29b"><span class="std std-ref">Specialized Template Function einsums::blas::ger&lt; std::complex&lt; float &gt; &gt;</span></a></p></li>
 <li><p><a class="reference internal" href="function_Blas_8hpp_1aa14f1256e8b5836fcd580aa717ee76c5.html#exhale-function-blas-8hpp-1aa14f1256e8b5836fcd580aa717ee76c5"><span class="std std-ref">Template Function einsums::blas::gesdd</span></a></p></li>
 <li><p><a class="reference internal" href="function_Blas_8hpp_1a1ac94acdd2e5732053235b48a9f978ad.html#exhale-function-blas-8hpp-1a1ac94acdd2e5732053235b48a9f978ad"><span class="std std-ref">Specialized Template Function einsums::blas::gesdd&lt; double &gt;</span></a></p></li>
 <li><p><a class="reference internal" href="function_Blas_8hpp_1a076c1f7cce413ef91831bdd43529a7ba.html#exhale-function-blas-8hpp-1a076c1f7cce413ef91831bdd43529a7ba"><span class="std std-ref">Specialized Template Function einsums::blas::gesdd&lt; float &gt;</span></a></p></li>
@@ -259,17 +557,17 @@
 <li><p><a class="reference internal" href="function_Blas_8hpp_1a64556c47eb5d47cb6a2b7aed25a47da9.html#exhale-function-blas-8hpp-1a64556c47eb5d47cb6a2b7aed25a47da9"><span class="std std-ref">Template Function einsums::blas::heev</span></a></p></li>
 <li><p><a class="reference internal" href="function_Blas_8hpp_1ae315d24569409c1b8bd3410cf4e9fbb1.html#exhale-function-blas-8hpp-1ae315d24569409c1b8bd3410cf4e9fbb1"><span class="std std-ref">Specialized Template Function einsums::blas::heev&lt; double &gt;</span></a></p></li>
 <li><p><a class="reference internal" href="function_Blas_8hpp_1abff3d6046b943a67e6e118b15467abd0.html#exhale-function-blas-8hpp-1abff3d6046b943a67e6e118b15467abd0"><span class="std std-ref">Specialized Template Function einsums::blas::heev&lt; float &gt;</span></a></p></li>
-<li><p><a class="reference internal" href="function_Blas_8hpp_1ac98a659f05aad2fc36c67da3a3dbfb80.html#exhale-function-blas-8hpp-1ac98a659f05aad2fc36c67da3a3dbfb80"><span class="std std-ref">Function einsums::blas::initialize</span></a></p></li>
+<li><p><a class="reference internal" href="function_Blas_8hpp_1a0f42ab149c20c98fd3d2d8a23c76e858.html#exhale-function-blas-8hpp-1a0f42ab149c20c98fd3d2d8a23c76e858"><span class="std std-ref">Function einsums::blas::initialize</span></a></p></li>
 <li><p><a class="reference internal" href="function_Blas_8hpp_1adb3232e92ae5679ea7d2d87ca6808b1d.html#exhale-function-blas-8hpp-1adb3232e92ae5679ea7d2d87ca6808b1d"><span class="std std-ref">Template Function einsums::blas::lange</span></a></p></li>
 <li><p><a class="reference internal" href="function_Blas_8hpp_1af32ecfe26b90a1097a18367c81061f6c.html#exhale-function-blas-8hpp-1af32ecfe26b90a1097a18367c81061f6c"><span class="std std-ref">Specialized Template Function einsums::blas::lange&lt; double &gt;</span></a></p></li>
 <li><p><a class="reference internal" href="function_Blas_8hpp_1a2efbe5837edc657ed721c752647605a6.html#exhale-function-blas-8hpp-1a2efbe5837edc657ed721c752647605a6"><span class="std std-ref">Specialized Template Function einsums::blas::lange&lt; float &gt;</span></a></p></li>
 <li><p><a class="reference internal" href="function_Blas_8hpp_1af36ba326fcd6b7acaedff50624317227.html#exhale-function-blas-8hpp-1af36ba326fcd6b7acaedff50624317227"><span class="std std-ref">Specialized Template Function einsums::blas::lange&lt; std::complex&lt; double &gt; &gt;</span></a></p></li>
 <li><p><a class="reference internal" href="function_Blas_8hpp_1a3390b4345c4a64a812780e778e249091.html#exhale-function-blas-8hpp-1a3390b4345c4a64a812780e778e249091"><span class="std std-ref">Specialized Template Function einsums::blas::lange&lt; std::complex&lt; float &gt; &gt;</span></a></p></li>
-<li><p><a class="reference internal" href="function_Blas_8hpp_1a3ae5dd4528a84fdf3cb8e070c37ba4a8.html#exhale-function-blas-8hpp-1a3ae5dd4528a84fdf3cb8e070c37ba4a8"><span class="std std-ref">Template Function einsums::blas::lassq</span></a></p></li>
-<li><p><a class="reference internal" href="function_Blas_8hpp_1ace90e62c60e557ca398e8d4aec3a0715.html#exhale-function-blas-8hpp-1ace90e62c60e557ca398e8d4aec3a0715"><span class="std std-ref">Specialized Template Function einsums::blas::lassq&lt; double &gt;</span></a></p></li>
-<li><p><a class="reference internal" href="function_Blas_8hpp_1a66faaf0b9163cbeb87a117cf4b3ffe3b.html#exhale-function-blas-8hpp-1a66faaf0b9163cbeb87a117cf4b3ffe3b"><span class="std std-ref">Specialized Template Function einsums::blas::lassq&lt; float &gt;</span></a></p></li>
-<li><p><a class="reference internal" href="function_Blas_8hpp_1a445926df973763316634cd32c6a1accb.html#exhale-function-blas-8hpp-1a445926df973763316634cd32c6a1accb"><span class="std std-ref">Specialized Template Function einsums::blas::lassq&lt; std::complex&lt; double &gt; &gt;</span></a></p></li>
-<li><p><a class="reference internal" href="function_Blas_8hpp_1a0f9a0ca1359c7c322d536836d56a3750.html#exhale-function-blas-8hpp-1a0f9a0ca1359c7c322d536836d56a3750"><span class="std std-ref">Specialized Template Function einsums::blas::lassq&lt; std::complex&lt; float &gt; &gt;</span></a></p></li>
+<li><p><a class="reference internal" href="function_Blas_8hpp_1aaa48b789dca66f6a22310a4afe9d9e6c.html#exhale-function-blas-8hpp-1aaa48b789dca66f6a22310a4afe9d9e6c"><span class="std std-ref">Template Function einsums::blas::lassq</span></a></p></li>
+<li><p><a class="reference internal" href="function_Blas_8hpp_1a315a95a1ce6c74cbc9ad4fab59c6cce4.html#exhale-function-blas-8hpp-1a315a95a1ce6c74cbc9ad4fab59c6cce4"><span class="std std-ref">Specialized Template Function einsums::blas::lassq&lt; double &gt;</span></a></p></li>
+<li><p><a class="reference internal" href="function_Blas_8hpp_1ab58184b5c6dfed9b2164b5c2853658dd.html#exhale-function-blas-8hpp-1ab58184b5c6dfed9b2164b5c2853658dd"><span class="std std-ref">Specialized Template Function einsums::blas::lassq&lt; float &gt;</span></a></p></li>
+<li><p><a class="reference internal" href="function_Blas_8hpp_1a57b7fdc1c6aaa810403dae61bd215585.html#exhale-function-blas-8hpp-1a57b7fdc1c6aaa810403dae61bd215585"><span class="std std-ref">Specialized Template Function einsums::blas::lassq&lt; std::complex&lt; double &gt; &gt;</span></a></p></li>
+<li><p><a class="reference internal" href="function_Blas_8hpp_1a3f71491ad3d07e4336e2214d53c7a1a6.html#exhale-function-blas-8hpp-1a3f71491ad3d07e4336e2214d53c7a1a6"><span class="std std-ref">Specialized Template Function einsums::blas::lassq&lt; std::complex&lt; float &gt; &gt;</span></a></p></li>
 <li><p><a class="reference internal" href="function_Blas_8hpp_1a2f0296b1f3857914680715b3b9678728.html#exhale-function-blas-8hpp-1a2f0296b1f3857914680715b3b9678728"><span class="std std-ref">Template Function einsums::blas::orgqr</span></a></p></li>
 <li><p><a class="reference internal" href="function_Blas_8hpp_1a35327bd98f967e4365b81ba21db2fead.html#exhale-function-blas-8hpp-1a35327bd98f967e4365b81ba21db2fead"><span class="std std-ref">Specialized Template Function einsums::blas::orgqr&lt; double &gt;</span></a></p></li>
 <li><p><a class="reference internal" href="function_Blas_8hpp_1a99f0577c34bd31856e68f88eccc22903.html#exhale-function-blas-8hpp-1a99f0577c34bd31856e68f88eccc22903"><span class="std std-ref">Specialized Template Function einsums::blas::orgqr&lt; float &gt;</span></a></p></li>
@@ -297,31 +595,97 @@
 </section>
 
 
-           </div>
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#definition-src-include-einsums-blas-hpp">Definition (<code class="docutils literal notranslate"><span class="pre">src/include/einsums/Blas.hpp</span></code>)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#includes">Includes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#included-by">Included By</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#namespaces">Namespaces</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#functions">Functions</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div class="tocsection sourcelink">
+    <a href="../_sources/api/file_src_include_einsums_Blas.hpp.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
           </div>
-          <footer>
-
-  <hr/>
-
-  <div role="contentinfo">
-    <p>&#169; Copyright 2023, Einsums Developers.</p>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
   </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
 
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+  <p class="copyright">
+    
+      © Copyright 2022-2023, Einsums Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.2.1.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.1.
+</p></div>
+      
+    </div>
+  
+</div>
 
-</footer>
-        </div>
-      </div>
-    </section>
-  </div>
-  <script>
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script> 
-
-</body>
+  </footer>
+  </body>
 </html>

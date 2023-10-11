@@ -40,9 +40,9 @@ Functions
 
 - :ref:`exhale_function_Tensor_8hpp_1a0341bb4972826183467a56ea1005074a`
 
-- :ref:`exhale_function_STL_8hpp_1a66e293ebf4eab3abffa7853ab77595cc`
+- :ref:`exhale_function_STL_8hpp_1aff0084c5eed7e31bef33df18fa6cff3c`
 
-- :ref:`exhale_function_STL_8hpp_1a41a76c20a49b1db92cd61903c447d51c`
+- :ref:`exhale_function_STL_8hpp_1a1fdc73286adbf0fcdc794d24b01632ed`
 
 - :ref:`exhale_function_Tensor_8hpp_1a2a5b6de485574aacfae1bbea1c2abc36`
 
