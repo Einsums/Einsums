@@ -25,6 +25,7 @@ jobs:
             - nodefaults
           dependencies:
             - sphinx=6.2.1
+            - sphinx-design
             - pydata-sphinx-theme
             - doxygen
             - breathe
