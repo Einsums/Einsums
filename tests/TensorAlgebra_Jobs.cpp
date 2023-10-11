@@ -12,58 +12,67 @@
 #include <catch2/catch_all.hpp>
 #include <complex>
 #include <type_traits>
-#include <threads>
+#include <thread>
+#include <cstdio>
+#include <chrono>
 
-TEST_CASE("Identity Tensor", "[tensor]") {
+TEST_CASE("Identity Tensor Locks", "[jobs]") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::jobs;
+    
+    Tensor<double, 2> *_I = new Tensor<double, 2>(create_identity_tensor("I", 3, 3));
 
-    Tensor _I = create_identity_tensor("I", 3, 3);
-
-    Resource<Tensor> I_res(&_I);
+    Resource<std::remove_pointer_t<decltype(_I)>> I_res(_I);
 
     auto lock = I_res.lock_shared();
+    
+    lock->wait();
 
-    while(!lock.ready()) {
-      std::this_thread::yield();
-    }
+    auto I = lock->get();
 
-    REQUIRE(I(0, 0) == 1.0);
-    REQUIRE(I(0, 1) == 0.0);
-    REQUIRE(I(0, 2) == 0.0);
-    REQUIRE(I(1, 0) == 0.0);
-    REQUIRE(I(1, 1) == 1.0);
-    REQUIRE(I(1, 2) == 0.0);
-    REQUIRE(I(2, 0) == 0.0);
-    REQUIRE(I(2, 1) == 0.0);
-    REQUIRE(I(2, 2) == 1.0);
-
-    lock.release();
+    REQUIRE((*I)(0, 0) == 1.0);
+    REQUIRE((*I)(0, 1) == 0.0);
+    REQUIRE((*I)(0, 2) == 0.0);
+    REQUIRE((*I)(1, 0) == 0.0);
+    REQUIRE((*I)(1, 1) == 1.0);
+    REQUIRE((*I)(1, 2) == 0.0);
+    REQUIRE((*I)(2, 0) == 0.0);
+    REQUIRE((*I)(2, 1) == 0.0);
+    REQUIRE((*I)(2, 2) == 1.0);
+    
+    lock->release();
 }
 
-TEST_CASE("Scale Row", "[tensor]") {
+TEST_CASE("Scale Row Locks", "[jobs]") {
     using namespace einsums;
     using namespace einsums::linear_algebra;
     using namespace einsums::jobs;
 
-    Tensor I_original = create_random_tensor("I", 3, 3);
-    Tensor I_copy     = I_original;
+    Tensor<double, 2> *_I_original = new Tensor<double, 2>();
+    Tensor<double, 2> *_I_copy     = new Tensor<double, 2>();
 
-    Resource<Tensor> res(&I_original), res_copy(&I_copy);
+    *_I_original = create_random_tensor("I", 3, 3);
+    *_I_copy = *_I_original;
+
+    Resource<std::remove_pointer_t<decltype(_I_original)>> res(_I_original);
+    Resource<std::remove_pointer_t<decltype(_I_copy)>> res_copy(_I_copy);
 
     auto lock = res.lock_shared();
     auto lock_copy = res_copy.lock();
 
-    while(!lock_copy.ready()) {
+    while(!lock_copy->ready()) {
       std::this_thread::yield();
     }
 
-    scale_row(1, 2.0, &I_copy);
+    scale_row(1, 2.0, lock_copy->get().get());
 
-    while(!lock.ready()) {
+    while(!lock->ready()) {
       std::this_thread::yield();
     }
+
+    auto I_copy = *(lock_copy->get());
+    auto I_original = *(lock->get());
 
     REQUIRE(I_copy(0, 0) == I_original(0, 0));
     REQUIRE(I_copy(0, 1) == I_original(0, 1));
@@ -75,18 +84,39 @@ TEST_CASE("Scale Row", "[tensor]") {
     REQUIRE(I_copy(2, 1) == I_original(2, 1));
     REQUIRE(I_copy(2, 2) == I_original(2, 2));
 
-    lock_copy.release();
-    lock.release();
+    lock_copy->release();
+    lock->release();
 }
 
-TEST_CASE("Scale Column", "[tensor]") {
+TEST_CASE("Scale Column Locks", "[jobs]") {
     using namespace einsums;
     using namespace einsums::linear_algebra;
+    using namespace einsums::jobs;
 
-    Tensor I_original = create_random_tensor("I", 3, 3);
-    Tensor I_copy     = I_original;
+    Tensor<double, 2> *_I_original = new Tensor<double, 2>();
+    Tensor<double, 2> *_I_copy     = new Tensor<double, 2>();
+    
+    *_I_original = create_random_tensor("I", 3, 3);
+    *_I_copy = *_I_original;
 
-    scale_column(1, 2.0, &I_copy);
+    Resource<std::remove_pointer_t<decltype(_I_original)>> res(_I_original);
+    Resource<std::remove_pointer_t<decltype(_I_copy)>> res_copy(_I_copy);
+
+    auto lock = res.lock_shared();
+    auto lock_copy = res_copy.lock();
+
+    while(!lock_copy->ready()) {
+      std::this_thread::yield();
+    }
+
+    scale_column(1, 2.0, lock_copy->get().get());
+
+    while(!lock->ready()) {
+      std::this_thread::yield();
+    }
+
+    auto I_copy = *(lock_copy->get());
+    auto I_original = *(lock->get());
 
     REQUIRE(I_copy(0, 0) == I_original(0, 0));
     REQUIRE(I_copy(0, 1) == 2.0 * I_original(0, 1));
@@ -97,389 +127,72 @@ TEST_CASE("Scale Column", "[tensor]") {
     REQUIRE(I_copy(2, 0) == I_original(2, 0));
     REQUIRE(I_copy(2, 1) == 2.0 * I_original(2, 1));
     REQUIRE(I_copy(2, 2) == I_original(2, 2));
+
+    lock->release();
+    lock_copy->release();
 }
 
-TEST_CASE("Scale Row TensorView", "[tensor]") {
-    using namespace einsums;
-    using namespace einsums::linear_algebra;
-
-    Tensor     I_original = create_random_tensor("I", 3, 3);
-    Tensor     I_copy     = I_original;
-    TensorView I_view{I_copy, Dim<2>{2, 2}, Offset<2>{1, 1}};
-
-    scale_row(1, 2.0, &I_view);
-
-    REQUIRE(I_copy(0, 0) == I_original(0, 0));
-    REQUIRE(I_copy(0, 1) == I_original(0, 1));
-    REQUIRE(I_copy(0, 2) == I_original(0, 2));
-    REQUIRE(I_copy(1, 0) == I_original(1, 0));
-    REQUIRE(I_copy(1, 1) == I_original(1, 1));
-    REQUIRE(I_copy(1, 2) == I_original(1, 2));
-    REQUIRE(I_copy(2, 0) == I_original(2, 0));
-    REQUIRE(I_copy(2, 1) == 2.0 * I_original(2, 1));
-    REQUIRE(I_copy(2, 2) == 2.0 * I_original(2, 2));
-
-    REQUIRE(I_view(0, 0) == I_original(1, 1));
-    REQUIRE(I_view(0, 1) == I_original(1, 2));
-    REQUIRE(I_view(1, 0) == 2.0 * I_original(2, 1));
-    REQUIRE(I_view(1, 1) == 2.0 * I_original(2, 2));
-}
-
-TEST_CASE("Scale Column TensorView", "[tensor]") {
-    using namespace einsums;
-    using namespace einsums::linear_algebra;
-
-    Tensor     I_original = create_random_tensor("I", 3, 3);
-    Tensor     I_copy     = I_original;
-    TensorView I_view{I_copy, Dim<2>{2, 2}, Offset<2>{1, 1}};
-
-    scale_column(1, 2.0, &I_view);
-
-    REQUIRE(I_copy(0, 0) == I_original(0, 0));
-    REQUIRE(I_copy(0, 1) == I_original(0, 1));
-    REQUIRE(I_copy(0, 2) == I_original(0, 2));
-    REQUIRE(I_copy(1, 0) == I_original(1, 0));
-    REQUIRE(I_copy(1, 1) == I_original(1, 1));
-    REQUIRE(I_copy(1, 2) == 2.0 * I_original(1, 2));
-    REQUIRE(I_copy(2, 0) == I_original(2, 0));
-    REQUIRE(I_copy(2, 1) == I_original(2, 1));
-    REQUIRE(I_copy(2, 2) == 2.0 * I_original(2, 2));
-
-    REQUIRE(I_view(0, 0) == I_original(1, 1));
-    REQUIRE(I_view(0, 1) == 2.0 * I_original(1, 2));
-    REQUIRE(I_view(1, 0) == I_original(2, 1));
-    REQUIRE(I_view(1, 1) == 2.0 * I_original(2, 2));
-}
-
-TEST_CASE("GEMM TensorView", "[tensor]") {
-    using namespace einsums;
-    using namespace einsums::linear_algebra;
-
-    Tensor I_original{"I", 3, 3};
-
-    for (int i = 0, ij = 1; i < 3; i++)
-        for (int j = 0; j < 3; j++, ij++)
-            I_original(i, j) = ij;
-
-    Tensor     I_copy = I_original;
-    TensorView I_view{I_copy, Dim<2>{2, 2}, Offset<2>{1, 1}};
-
-    SECTION("Result into 2x2 matrix") {
-        Tensor result{"result", 2, 2};
-
-        gemm<false, false>(1.0, I_view, I_view, 0.0, &result);
-
-        REQUIRE(result(0, 0) == 73.0);
-        REQUIRE(result(0, 1) == 84.0);
-        REQUIRE(result(1, 0) == 112.0);
-        REQUIRE(result(1, 1) == 129.0);
-    }
-
-    SECTION("Result into 2x2 view of matrix") {
-        Tensor result{"result", 5, 5};
-        result.zero();
-        TensorView result_view{result, Dim<2>{2, 2}, Offset<2>{3, 2}};
-
-        gemm<false, false>(1.0, I_view, I_view, 0.0, &result_view);
-
-        // Check view
-        REQUIRE(result_view(0, 0) == 73.0);
-        REQUIRE(result_view(0, 1) == 84.0);
-        REQUIRE(result_view(1, 0) == 112.0);
-        REQUIRE(result_view(1, 1) == 129.0);
-
-        // Check full
-        REQUIRE(result(3, 2) == 73.0);
-        REQUIRE(result(3, 3) == 84.0);
-        REQUIRE(result(4, 2) == 112.0);
-        REQUIRE(result(4, 3) == 129.0);
-    }
-
-    SECTION("Transpose") {
-        Tensor result{"result", 2, 2};
-
-        gemm<false, true>(1.0, I_view, I_view, 0.0, &result);
-        REQUIRE(result(0, 0) == 61.0);
-        REQUIRE(result(0, 1) == 94.0);
-        REQUIRE(result(1, 0) == 94.0);
-        REQUIRE(result(1, 1) == 145.0);
-
-        gemm<true, false>(1.0, I_view, I_view, 0.0, &result);
-        REQUIRE(result(0, 0) == 89.0);
-        REQUIRE(result(0, 1) == 102.0);
-        REQUIRE(result(1, 0) == 102.0);
-        REQUIRE(result(1, 1) == 117.0);
-
-        gemm<true, true>(1.0, I_view, I_view, 0.0, &result);
-        REQUIRE(result(0, 0) == 73.0);
-        REQUIRE(result(0, 1) == 112.0);
-        REQUIRE(result(1, 0) == 84.0);
-        REQUIRE(result(1, 1) == 129.0);
-    }
-}
-
-TEST_CASE("Subset TensorView", "[tensor]") {
-    using namespace einsums;
-    using namespace einsums::linear_algebra;
-
-    SECTION("Subset View 7x7[1,:] -> 1x7") {
-        const size_t size = 7;
-        const size_t row  = 1;
-
-        Tensor     I_original = create_random_tensor("Original", size, size);
-        TensorView I_view     = I_original(row, All);
-
-        for (size_t i = 0; i < size; i++) {
-            REQUIRE(I_original(row, i) == I_view(i));
-        }
-    }
-
-    SECTION("Subset View 7x7x7[4,:,:] -> 7x7") {
-        const size_t size = 7;
-        const size_t d1   = 4;
-
-        Tensor     I_original = create_random_tensor("Original", size, size, size);
-        TensorView I_view     = I_original(d1, All, All);
-
-        for (size_t i = 0; i < size; i++) {
-            for (size_t j = 0; j < size; j++) {
-                REQUIRE(I_original(d1, i, j) == I_view(i, j));
-            }
-        }
-    }
-
-    SECTION("Subset View 7x7x7[4,3,:] -> 7") {
-        const size_t size = 7;
-        const size_t d1   = 4;
-        const size_t d2   = 3;
-
-        Tensor     I_original = create_random_tensor("Original", size, size, size);
-        TensorView I_view     = I_original(d1, d2, All);
-
-        for (size_t i = 0; i < size; i++) {
-            REQUIRE(I_original(d1, d2, i) == I_view(i));
-        }
-    }
-
-    SECTION("Subset View GEMM 7x3x3[4,:,:] -> 3x3") {
-        const size_t d1_size = 7, d2_size = 3, d3_size = 3;
-        const size_t d1 = 4;
-
-        Tensor original = create_random_tensor("Original", d1_size, d2_size, d3_size);
-
-        // Set submatrix to a set of known values
-        for (size_t i = 0, ij = 1; i < 3; i++) {
-            for (size_t j = 0; j < 3; j++, ij++) {
-                original(d1, i, j) = ij;
-            }
-        }
-
-        // Obtain a 3x3 view of original[4,:,:]
-        TensorView view = original(d1, All, All);
-        Tensor     result{"result", d2_size, d3_size};
-
-        // false, false
-        {
-            gemm<false, false>(1.0, view, view, 0.0, &result);
-
-            REQUIRE(result(0, 0) == 30.0);
-            REQUIRE(result(0, 1) == 36.0);
-            REQUIRE(result(0, 2) == 42.0);
-            REQUIRE(result(1, 0) == 66.0);
-            REQUIRE(result(1, 1) == 81.0);
-            REQUIRE(result(1, 2) == 96.0);
-            REQUIRE(result(2, 0) == 102.0);
-            REQUIRE(result(2, 1) == 126.0);
-            REQUIRE(result(2, 2) == 150.0);
-        }
-        // false, true
-        {
-            gemm<false, true>(1.0, view, view, 0.0, &result);
-
-            REQUIRE(result(0, 0) == 14.0);
-            REQUIRE(result(0, 1) == 32.0);
-            REQUIRE(result(0, 2) == 50.0);
-            REQUIRE(result(1, 0) == 32.0);
-            REQUIRE(result(1, 1) == 77.0);
-            REQUIRE(result(1, 2) == 122.0);
-            REQUIRE(result(2, 0) == 50.0);
-            REQUIRE(result(2, 1) == 122.0);
-            REQUIRE(result(2, 2) == 194.0);
-        }
-        // true, false
-        {
-            gemm<true, false>(1.0, view, view, 0.0, &result);
-
-            REQUIRE(result(0, 0) == 66.0);
-            REQUIRE(result(0, 1) == 78.0);
-            REQUIRE(result(0, 2) == 90.0);
-            REQUIRE(result(1, 0) == 78.0);
-            REQUIRE(result(1, 1) == 93.0);
-            REQUIRE(result(1, 2) == 108.0);
-            REQUIRE(result(2, 0) == 90.0);
-            REQUIRE(result(2, 1) == 108.0);
-            REQUIRE(result(2, 2) == 126.0);
-        }
-        // true, true
-        {
-            gemm<true, true>(1.0, view, view, 0.0, &result);
-
-            REQUIRE(result(0, 0) == 30.0);
-            REQUIRE(result(0, 1) == 66.0);
-            REQUIRE(result(0, 2) == 102.0);
-            REQUIRE(result(1, 0) == 36.0);
-            REQUIRE(result(1, 1) == 81.0);
-            REQUIRE(result(1, 2) == 126.0);
-            REQUIRE(result(2, 0) == 42.0);
-            REQUIRE(result(2, 1) == 96.0);
-            REQUIRE(result(2, 2) == 150.0);
-        }
-    }
-
-    SECTION("Subset View GEMM 7x3x3[4,:,:] -> [2,:,:]") {
-        // Description:
-        // 1. Allocate tensor [7, 3, 3]
-        // 2. Obtain view [4,:,:] (3x3 view) of tensor
-        // 3. Perform GEMM and store result into view [2,:,:] (3x3 view) of tensor
-        // 4. Test correctness of the GEMM result and of the data
-        //    elements that should not have been touched.
-        const size_t                d1_size = 7, d2_size = 3, d3_size = 3;
-        const size_t                d1 = 4;
-        const size_t                e1 = 2;
-        const std::array<size_t, 6> untouched_d1{0, 1, 3, 4, 5, 6};
-
-        Tensor original = create_random_tensor("Original", d1_size, d2_size, d3_size);
-
-        // Set submatrix to a set of known values
-        for (size_t i = 0, ij = 1; i < 3; i++) {
-            for (size_t j = 0; j < 3; j++, ij++) {
-                original(d1, i, j) = static_cast<double>(ij);
-            }
-        }
-
-        Tensor copy = original;
-
-        // Obtain a 3x3 view of original[4,:,:]
-        //   A view does not copy data it is just an offset pointer into the original with necessary striding information.
-        TensorView view = original(d1, All, All);
-
-        // Obtain a 3x3 view of original[2,:,:] to store the result
-        TensorView result = original(e1, All, All);
-
-        // false, false
-        {
-            // Call BLAS routine passing necessary offset pointer, dimension, and stride information.
-            gemm<false, false>(1.0, view, view, 0.0, &result);
-
-            // Test against the view
-            REQUIRE(result(0, 0) == 30.0);
-            REQUIRE(result(0, 1) == 36.0);
-            REQUIRE(result(0, 2) == 42.0);
-            REQUIRE(result(1, 0) == 66.0);
-            REQUIRE(result(1, 1) == 81.0);
-            REQUIRE(result(1, 2) == 96.0);
-            REQUIRE(result(2, 0) == 102.0);
-            REQUIRE(result(2, 1) == 126.0);
-            REQUIRE(result(2, 2) == 150.0);
-
-            // Test that the elements that shouldn't have been touched:
-            for (size_t i : untouched_d1) {
-                for (size_t j = 0; j < d2_size; j++) {
-                    for (size_t k = 0; k < d3_size; k++) {
-                        REQUIRE(original(i, j, k) == copy(i, j, k));
-                    }
-                }
-            }
-        }
-        // false, true
-        {
-            gemm<false, true>(1.0, view, view, 0.0, &result);
-
-            REQUIRE(result(0, 0) == 14.0);
-            REQUIRE(result(0, 1) == 32.0);
-            REQUIRE(result(0, 2) == 50.0);
-            REQUIRE(result(1, 0) == 32.0);
-            REQUIRE(result(1, 1) == 77.0);
-            REQUIRE(result(1, 2) == 122.0);
-            REQUIRE(result(2, 0) == 50.0);
-            REQUIRE(result(2, 1) == 122.0);
-            REQUIRE(result(2, 2) == 194.0);
-
-            // Test that the elements that shouldn't have been touched:
-            for (size_t i : untouched_d1) {
-                for (size_t j = 0; j < d2_size; j++) {
-                    for (size_t k = 0; k < d3_size; k++) {
-                        REQUIRE(original(i, j, k) == copy(i, j, k));
-                    }
-                }
-            }
-        }
-        // true, false
-        {
-            gemm<true, false>(1.0, view, view, 0.0, &result);
-
-            REQUIRE(result(0, 0) == 66.0);
-            REQUIRE(result(0, 1) == 78.0);
-            REQUIRE(result(0, 2) == 90.0);
-            REQUIRE(result(1, 0) == 78.0);
-            REQUIRE(result(1, 1) == 93.0);
-            REQUIRE(result(1, 2) == 108.0);
-            REQUIRE(result(2, 0) == 90.0);
-            REQUIRE(result(2, 1) == 108.0);
-            REQUIRE(result(2, 2) == 126.0);
-
-            // Test that the elements that shouldn't have been touched:
-            for (size_t i : untouched_d1) {
-                for (size_t j = 0; j < d2_size; j++) {
-                    for (size_t k = 0; k < d3_size; k++) {
-                        REQUIRE(original(i, j, k) == copy(i, j, k));
-                    }
-                }
-            }
-        }
-        // true, true
-        {
-            gemm<true, true>(1.0, view, view, 0.0, &result);
-
-            REQUIRE(result(0, 0) == 30.0);
-            REQUIRE(result(0, 1) == 66.0);
-            REQUIRE(result(0, 2) == 102.0);
-            REQUIRE(result(1, 0) == 36.0);
-            REQUIRE(result(1, 1) == 81.0);
-            REQUIRE(result(1, 2) == 126.0);
-            REQUIRE(result(2, 0) == 42.0);
-            REQUIRE(result(2, 1) == 96.0);
-            REQUIRE(result(2, 2) == 150.0);
-
-            // Test that the elements that shouldn't have been touched:
-            for (size_t i : untouched_d1) {
-                for (size_t j = 0; j < d2_size; j++) {
-                    for (size_t k = 0; k < d3_size; k++) {
-                        REQUIRE(original(i, j, k) == copy(i, j, k));
-                    }
-                }
-            }
-        }
-    }
-}
-
-TEST_CASE("einsum1", "[tensor]") {
+TEST_CASE("einsum1 job", "[jobs]") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
 
     SECTION("ik=ij,jk") {
-        Tensor A{"A", 3, 3};
-        Tensor B{"B", 3, 3};
-        Tensor C{"C", 3, 3};
+        Tensor<double, 2> *_A = new Tensor<double, 2>("A", 3, 3),
+	  *_B = new Tensor<double, 2>("B", 3, 3),
+	  *_C = new Tensor<double, 2>("C", 3, 3);
 
+	INFO("Creating resources");
+	auto A_res = std::make_shared<jobs::Resource<std::remove_pointer_t<decltype(_A)>>>(_A);
+	auto B_res = std::make_shared<jobs::Resource<std::remove_pointer_t<decltype(_B)>>>(_B);
+	auto C_res = std::make_shared<jobs::Resource<std::remove_pointer_t<decltype(_C)>>>(_C);
+
+	// Initialize thread pool.
+	INFO("Initialize the thread pool");
+	jobs::ThreadPool::init(8);
+	jobs::ThreadPool::get_singleton();
+
+	// Start the job manager.
+	INFO("Start the job manager");
+	jobs::JobManager::get_singleton().start_manager();
+
+	// Obtain locks for modification.
+	INFO("Obtain locks for modification.");
+	auto A_lock = A_res->lock();
+	auto B_lock = B_res->lock();
+
+	// Make and queue the job.
+	INFO("Make a job and add it to the queue.");
+	auto job = jobs::einsum(Indices{index::i, index::j}, C_res,
+				Indices{index::i, index::k}, A_res,
+				Indices{index::k, index::j}, B_res);
+
+	// Wait for the modification locks to resolve.
+	A_lock->wait();
+	B_lock->wait();
+
+	auto A = A_lock->get();
+	auto B = B_lock->get();
+	
         for (int i = 0, ij = 1; i < 3; i++) {
             for (int j = 0; j < 3; j++, ij++) {
-                A(i, j) = ij;
-                B(i, j) = ij;
+	      (*A)(i, j) = ij;
+	      (*B)(i, j) = ij;
             }
         }
+	std::this_thread::sleep_for(std::chrono::seconds(1));
 
-        REQUIRE_NOTHROW(einsum(Indices{index::i, index::j}, &C, Indices{index::i, index::k}, A, Indices{index::k, index::j}, B));
+	A_lock->release();
+	B_lock->release();
+
+	while(!job->is_finished()) {
+	  std::this_thread::yield();
+	}
+
+	auto C_lock = C_res->lock_shared();
+
+	C_lock->wait();
+
+	auto C = C_lock->get();
 
         // println(A);
         // println(B);
@@ -488,15 +201,24 @@ TEST_CASE("einsum1", "[tensor]") {
         /*[[ 30,  36,  42],
            [ 66,  81,  96],
            [102, 126, 150]]*/
-        REQUIRE(C(0, 0) == 30.0);
-        REQUIRE(C(0, 1) == 36.0);
-        REQUIRE(C(0, 2) == 42.0);
-        REQUIRE(C(1, 0) == 66.0);
-        REQUIRE(C(1, 1) == 81.0);
-        REQUIRE(C(1, 2) == 96.0);
-        REQUIRE(C(2, 0) == 102.0);
-        REQUIRE(C(2, 1) == 126.0);
-        REQUIRE(C(2, 2) == 150.0);
+        REQUIRE((*C)(0, 0) == 30.0);
+        REQUIRE((*C)(0, 1) == 36.0);
+        REQUIRE((*C)(0, 2) == 42.0);
+        REQUIRE((*C)(1, 0) == 66.0);
+        REQUIRE((*C)(1, 1) == 81.0);
+        REQUIRE((*C)(1, 2) == 96.0);
+        REQUIRE((*C)(2, 0) == 102.0);
+        REQUIRE((*C)(2, 1) == 126.0);
+        REQUIRE((*C)(2, 2) == 150.0);
+	INFO("Releasing memory");
+	C_lock->release();
+
+	INFO("Killing the manager");
+	jobs::JobManager::get_singleton().stop_manager();
+	INFO("Destroying the thread pool.");
+	jobs::ThreadPool::destroy();
+
+	INFO("Deleting tensors.");
     }
 
     SECTION("il=ijk,jkl") {
@@ -538,316 +260,7 @@ TEST_CASE("einsum1", "[tensor]") {
     }
 }
 
-TEST_CASE("einsum TensorView", "[tensor]") {
-    using namespace einsums;
-    using namespace einsums::tensor_algebra;
-
-    SECTION("Subset View GEMM 7x3x3[4,:,:] -> [2,:,:]") {
-        // Description: Obtain view [4,:,:] (3x3 view) perform GEMM and store result into
-        // view [2,:,:] (3x3 view)
-        const size_t                d1_size = 7, d2_size = 3, d3_size = 3;
-        const size_t                d1 = 4;
-        const size_t                e1 = 2;
-        const std::array<size_t, 6> untouched1{0, 1, 3, 4, 5, 6};
-
-        Tensor original = create_random_tensor("Original", d1_size, d2_size, d3_size);
-
-        // Set submatrix to a set of known values
-        for (size_t i = 0, ij = 1; i < 3; i++) {
-            for (size_t j = 0; j < 3; j++, ij++) {
-                original(d1, i, j) = static_cast<double>(ij);
-            }
-        }
-
-        Tensor copy = original;
-
-        // Obtain a 3x3 view of original[4,:,:]
-        TensorView view = original(d1, All, All);
-
-        // Obtain a 3x3 view of original[2,:,:] to store the result
-        TensorView result = original(e1, All, All);
-
-        // false, false
-        {
-            // einsum("ik=ij,jk", &result, view, view);
-            REQUIRE_NOTHROW(
-                einsum(Indices{index::i, index::k}, &result, Indices{index::i, index::j}, view, Indices{index::j, index::k}, view));
-            // gemm<false, false>(1.0, view, view, 0.0, &result);
-
-            // Test against the view
-            REQUIRE(result(0, 0) == 30.0);
-            REQUIRE(result(0, 1) == 36.0);
-            REQUIRE(result(0, 2) == 42.0);
-            REQUIRE(result(1, 0) == 66.0);
-            REQUIRE(result(1, 1) == 81.0);
-            REQUIRE(result(1, 2) == 96.0);
-            REQUIRE(result(2, 0) == 102.0);
-            REQUIRE(result(2, 1) == 126.0);
-            REQUIRE(result(2, 2) == 150.0);
-
-            // Test the position in the original
-            REQUIRE(original(2, 0, 0) == 30.0);
-            REQUIRE(original(2, 0, 1) == 36.0);
-            REQUIRE(original(2, 0, 2) == 42.0);
-            REQUIRE(original(2, 1, 0) == 66.0);
-            REQUIRE(original(2, 1, 1) == 81.0);
-            REQUIRE(original(2, 1, 2) == 96.0);
-            REQUIRE(original(2, 2, 0) == 102.0);
-            REQUIRE(original(2, 2, 1) == 126.0);
-            REQUIRE(original(2, 2, 2) == 150.0);
-
-            // Test that the elements that shouldn't have been touched:
-            for (size_t i : untouched1) {
-                for (size_t j = 0; j < d2_size; j++) {
-                    for (size_t k = 0; k < d3_size; k++) {
-                        REQUIRE(original(i, j, k) == copy(i, j, k));
-                    }
-                }
-            }
-        }
-    }
-}
-
-TEST_CASE("sort2") {
-    using namespace einsums;
-    using namespace einsums::tensor_algebra;
-    using namespace einsums::tensor_algebra::index;
-
-    SECTION("Rank 2 - axpy") {
-        Tensor A{"A", 3, 3};
-        Tensor C{"C", 3, 3};
-
-        for (int i = 0, ij = 1; i < 3; i++) {
-            for (int j = 0; j < 3; j++, ij++) {
-                A(i, j) = ij;
-            }
-        }
-
-        sort(Indices{i, j}, &C, Indices{i, j}, A);
-
-        for (int i = 0, ij = 1; i < 3; i++) {
-            for (int j = 0; j < 3; j++, ij++) {
-                REQUIRE(C(i, j) == A(i, j));
-            }
-        }
-
-        TensorView A_view{A, Dim<2>{2, 2}, Offset<2>{1, 1}};
-        TensorView C_view{C, Dim<2>{2, 2}, Offset<2>{1, 1}};
-
-        sort(Indices{j, i}, &C_view, Indices{i, j}, A_view);
-
-        for (int i = 0, ij = 1; i < 3; i++) {
-            for (int j = 0; j < 3; j++, ij++) {
-                if (i == 0 || j == 0)
-                    REQUIRE(C(i, j) == A(i, j));
-                else
-                    REQUIRE(C(j, i) == A(i, j));
-            }
-        }
-    }
-
-    SECTION("Rank 2 - axpy (2)") {
-        Tensor A = create_random_tensor("A", 3, 3);
-        Tensor C0{"C", 3, 3};
-        Tensor C1{"C", 3, 3};
-
-        for (int i = 0, ij = 1; i < 3; i++) {
-            for (int j = 0; j < 3; j++, ij++) {
-                C0(i, j) = ij;
-                C1(i, j) = ij + A(i, j);
-            }
-        }
-
-        sort(1.0, Indices{i, j}, &C0, 1.0, Indices{i, j}, A);
-
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                REQUIRE(C0(i, j) == C1(i, j));
-            }
-        }
-
-        for (int i = 0, ij = 1; i < 3; i++) {
-            for (int j = 0; j < 3; j++, ij++) {
-                C0(i, j) = ij;
-                C1(i, j) = 2.0 * ij + 0.5 * A(i, j);
-            }
-        }
-
-        sort(2.0, Indices{i, j}, &C0, 0.5, Indices{i, j}, A);
-
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                REQUIRE(C0(i, j) == C1(i, j));
-            }
-        }
-    }
-
-    SECTION("Rank 2") {
-        Tensor A{"A", 3, 3};
-        Tensor C{"C", 3, 3};
-
-        for (int i = 0, ij = 1; i < 3; i++) {
-            for (int j = 0; j < 3; j++, ij++) {
-                A(i, j) = ij;
-            }
-        }
-
-        sort(Indices{j, i}, &C, Indices{i, j}, A);
-
-        for (int i = 0, ij = 1; i < 3; i++) {
-            for (int j = 0; j < 3; j++, ij++) {
-                REQUIRE(C(j, i) == A(i, j));
-            }
-        }
-    }
-
-    SECTION("Rank 3") {
-        Tensor A{"A", 3, 3, 3};
-        Tensor B{"B", 3, 3, 3};
-
-        for (int i = 0, ij = 1; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                for (int k = 0; k < 3; k++, ij++) {
-                    A(i, j, k) = ij;
-                }
-            }
-        }
-
-        sort(Indices{k, j, i}, &B, Indices{i, j, k}, A);
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                for (int k = 0; k < 3; k++) {
-                    REQUIRE(B(k, j, i) == A(i, j, k));
-                }
-            }
-        }
-
-        sort(Indices{i, k, j}, &B, Indices{i, j, k}, A);
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                for (int k = 0; k < 3; k++) {
-                    REQUIRE(B(i, k, j) == A(i, j, k));
-                }
-            }
-        }
-
-        sort(Indices{j, k, i}, &B, Indices{i, j, k}, A);
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                for (int k = 0; k < 3; k++) {
-                    REQUIRE(B(j, k, i) == A(i, j, k));
-                }
-            }
-        }
-
-        sort(Indices{i, j, k}, &B, Indices{k, j, i}, A);
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                for (int k = 0; k < 3; k++) {
-                    REQUIRE(B(i, j, k) == A(k, j, i));
-                }
-            }
-        }
-    }
-
-    SECTION("Rank 4") {
-        Tensor A{"A", 3, 3, 3, 3};
-        Tensor B{"B", 3, 3, 3, 3};
-
-        for (int i = 0, ij = 1; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                for (int k = 0; k < 3; k++) {
-                    for (int l = 0; l < 3; l++, ij++) {
-                        A(i, j, k, l) = ij;
-                    }
-                }
-            }
-        }
-
-        sort(0.0, Indices{i, l, k, j}, &B, 0.5, Indices{k, j, l, i}, A);
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                for (int k = 0; k < 3; k++) {
-                    for (int l = 0; l < 3; l++) {
-                        REQUIRE(B(i, l, k, j) == 0.5 * A(k, j, l, i));
-                    }
-                }
-            }
-        }
-    }
-
-    // SECTION("Rank 5") {
-    //     Tensor<float, 5> A{"A", 3, 3, 3, 3, 3};
-    //     Tensor<float, 5> B{"B", 3, 3, 3, 3, 3};
-
-    //     for (short i = 0, ij = 1; i < 3; i++) {
-    //         for (int j = 0; j < 3; j++) {
-    //             for (int k = 0; k < 3; k++) {
-    //                 for (int l = 0; l < 3; l++) {
-    //                     for (int m = 0; m < 3; m++, ij++) {
-    //                         A(i, j, k, l, m) = ij;
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     }
-
-    //     sort(Indices{i, k, l, m, j}, &B, Indices{j, k, l, m, i}, A);
-    //     for (int i = 0; i < 3; i++) {
-    //         for (int j = 0; j < 3; j++) {
-    //             for (int k = 0; k < 3; k++) {
-    //                 for (int l = 0; l < 3; l++) {
-    //                     for (int m = 0; m < 3; m++) {
-    //                         REQUIRE(B(i, k, l, m, j) == A(j, k, l, m, i));
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
-
-    SECTION("Rank 2 - Different Sizes") {
-        Tensor A{"A", 3, 9};
-        Tensor B{"B", 9, 3};
-
-        for (int i = 0, ij = 0; i < A.dim(0); i++) {
-            for (int j = 0; j < A.dim(1); j++, ij++) {
-                A(i, j) = ij;
-            }
-        }
-
-        sort(Indices{j, i}, &B, Indices{i, j}, A);
-        for (int i = 0; i < A.dim(0); i++) {
-            for (int j = 0; j < A.dim(1); j++) {
-                REQUIRE(B(j, i) == A(i, j));
-            }
-        }
-    }
-
-    SECTION("Rank 3 - Different Sizes") {
-        Tensor A{"A", 2, 3, 4};
-        Tensor B{"B", 3, 4, 2};
-
-        for (int i = 0, ij = 1; i < A.dim(0); i++) {
-            for (int j = 0; j < A.dim(1); j++) {
-                for (int k = 0; k < A.dim(2); k++, ij++) {
-                    A(i, j, k) = ij;
-                }
-            }
-        }
-
-        sort(Indices{j, k, i}, &B, Indices{i, j, k}, A);
-        for (int i = 0, ij = 1; i < A.dim(0); i++) {
-            for (int j = 0; j < A.dim(1); j++) {
-                for (int k = 0; k < A.dim(2); k++, ij++) {
-                    REQUIRE(B(j, k, i) == A(i, j, k));
-                }
-            }
-        }
-    }
-}
-
-TEST_CASE("einsum2") {
+TEST_CASE("einsum2 jobs", "[jobs]") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
@@ -998,7 +411,7 @@ TEST_CASE("einsum2") {
     // timer::finalize();
 }
 
-TEST_CASE("einsum3") {
+TEST_CASE("einsum3 jobs", "[jobs]") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
@@ -1102,7 +515,7 @@ TEST_CASE("einsum3") {
     // timer::finalize();
 }
 
-TEST_CASE("einsum4") {
+TEST_CASE("einsum4 jobs", "[jobs]") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
@@ -1192,7 +605,7 @@ TEST_CASE("einsum4") {
     // timer::finalize();
 }
 
-TEST_CASE("IntegralTransformation") {
+TEST_CASE("IntegralTransformation jobs", "[jobs]") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
@@ -1291,7 +704,7 @@ TEST_CASE("IntegralTransformation") {
     }
 }
 
-TEST_CASE("Hadamard") {
+TEST_CASE("Hadamard jobs", "[jobs]") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
@@ -1455,7 +868,7 @@ TEST_CASE("Hadamard") {
     }
 }
 
-TEST_CASE("unique_ptr") {
+TEST_CASE("unique_ptr jobs", "[jobs]") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
@@ -1580,7 +993,7 @@ TEST_CASE("unique_ptr") {
     }
 }
 
-TEST_CASE("Transpose C", "[einsum]") {
+TEST_CASE("Transpose C jobs", "[jobs]") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
@@ -1734,7 +1147,7 @@ TEST_CASE("Transpose C", "[einsum]") {
     }
 }
 
-TEST_CASE("gemv") {
+TEST_CASE("gemv jobs", "[jobs]") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
@@ -1764,49 +1177,7 @@ TEST_CASE("gemv") {
     }
 }
 
-TEST_CASE("TensorView einsum") {
-    using namespace einsums;
-    using namespace einsums::tensor_algebra;
-    using namespace einsums::tensor_algebra::index;
-
-    // Test if everything passed to einsum is a TensorView.
-    Tensor     A = create_random_tensor("A", 3, 5);
-    Tensor     B = create_random_tensor("B", 3, 5);
-    TensorView A_view{A, Dim<2>{3, 3}};
-    TensorView B_view{B, Dim<2>{3, 3}, Offset<2>{0, 2}};
-
-    Tensor C{"C2", 10, 10};
-    C.zero();
-    TensorView C_view{C, Dim<2>{3, 3}, Offset<2>{5, 5}};
-
-    // To perform the test we make an explicit copy of the TensorViews into their own Tensors
-    Tensor A_copy{"A copy", 3, 3};
-    Tensor B_copy{"B copy", 3, 3};
-
-    for (int x = 0; x < 3; x++) {
-        for (int y = 0; y < 3; y++) {
-            A_copy(x, y) = A_view(x, y);
-            B_copy(x, y) = B_view(x, y);
-        }
-    }
-
-    // The target solution is determined from not using views
-    Tensor C_solution{"C solution", 3, 3};
-    C_solution.zero();
-    REQUIRE_NOTHROW(einsum(Indices{i, j}, &C_solution, Indices{i, k}, A_copy, Indices{j, k}, B_copy));
-
-    // einsum where everything is a TensorView
-    REQUIRE_NOTHROW(einsum(Indices{i, j}, &C_view, Indices{i, k}, A_view, Indices{j, k}, B_view));
-
-    for (int x = 0; x < 3; x++) {
-        for (int y = 0; y < 3; y++) {
-            REQUIRE_THAT(C_view(x, y), Catch::Matchers::WithinAbs(C_solution(x, y), 0.001));
-            REQUIRE_THAT(C(x + 5, y + 5), Catch::Matchers::WithinAbs(C_solution(x, y), 0.001));
-        }
-    }
-}
-
-TEST_CASE("outer product") {
+TEST_CASE("outer product jobs", "[jobs]") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
@@ -1927,92 +1298,7 @@ TEST_CASE("outer product") {
     }
 }
 
-TEST_CASE("view outer product") {
-    using namespace einsums;
-    using namespace einsums::tensor_algebra;
-    using namespace einsums::tensor_algebra::index;
-
-    SECTION("1 * 1 -> 2") {
-        Tensor A = create_random_tensor("A", 6);
-        Tensor B = create_random_tensor("B", 6);
-
-        auto   vA = TensorView(A, Dim<1>{3}, Offset<1>{3});
-        auto   vB = TensorView(B, Dim<1>{3});
-        Tensor C{"C", 3, 3};
-        C.set_all(0.0);
-
-        REQUIRE_NOTHROW(einsum(Indices{i, j}, &C, Indices{i}, vA, Indices{j}, vB));
-
-        for (int x = 0; x < 3; x++) {
-            for (int y = 0; y < 3; y++) {
-                REQUIRE_THAT(C(x, y), Catch::Matchers::WithinAbs(vA(x) * vB(y), 0.001));
-            }
-        }
-
-        C.set_all(0.0);
-        REQUIRE_NOTHROW(einsum(Indices{i, j}, &C, Indices{j}, vA, Indices{i}, vB));
-
-        for (int x = 0; x < 3; x++) {
-            for (int y = 0; y < 3; y++) {
-                REQUIRE_THAT(C(x, y), Catch::Matchers::WithinAbs(vA(y) * vB(x), 0.001));
-            }
-        }
-
-        C.set_all(0.0);
-        REQUIRE_NOTHROW(einsum(Indices{j, i}, &C, Indices{j}, vA, Indices{i}, vB));
-
-        for (int x = 0; x < 3; x++) {
-            for (int y = 0; y < 3; y++) {
-                REQUIRE_THAT(C(y, x), Catch::Matchers::WithinAbs(vA(y) * vB(x), 0.001));
-            }
-        }
-
-        C.set_all(0.0);
-        REQUIRE_NOTHROW(einsum(Indices{j, i}, &C, Indices{i}, vA, Indices{j}, vB));
-
-        for (int x = 0; x < 3; x++) {
-            for (int y = 0; y < 3; y++) {
-                REQUIRE_THAT(C(y, x), Catch::Matchers::WithinAbs(vA(x) * vB(y), 0.001));
-            }
-        }
-    }
-
-    SECTION("2 * 2 -> 4") {
-        Tensor A  = create_random_tensor("A", 9, 9);
-        Tensor B  = create_random_tensor("B", 12, 12);
-        auto   vA = TensorView{A, Dim<2>{3, 3}, Offset<2>{6, 3}};
-        auto   vB = TensorView{B, Dim<2>{3, 3}, Offset<2>{5, 7}};
-        Tensor C{"C", 3, 3, 3, 3};
-
-        C.set_all(0.0);
-        REQUIRE_NOTHROW(einsum(Indices{i, j, k, l}, &C, Indices{i, j}, vA, Indices{k, l}, vB));
-
-        for (int w = 0; w < 3; w++) {
-            for (int x = 0; x < 3; x++) {
-                for (int y = 0; y < 3; y++) {
-                    for (int z = 0; z < 3; z++) {
-                        REQUIRE_THAT(C(w, x, y, z), Catch::Matchers::WithinAbs(vA(w, x) * vB(y, z), 0.001));
-                    }
-                }
-            }
-        }
-
-        C.set_all(0.0);
-        REQUIRE_NOTHROW(einsum(Indices{i, j, k, l}, &C, Indices{k, l}, vA, Indices{i, j}, vB));
-
-        for (int w = 0; w < 3; w++) {
-            for (int x = 0; x < 3; x++) {
-                for (int y = 0; y < 3; y++) {
-                    for (int z = 0; z < 3; z++) {
-                        REQUIRE_THAT(C(w, x, y, z), Catch::Matchers::WithinAbs(vA(y, z) * vB(w, x), 0.001));
-                    }
-                }
-            }
-        }
-    }
-}
-
-TEST_CASE("element transform") {
+TEST_CASE("element transform jobs", "[jobs]") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
@@ -2041,64 +1327,7 @@ TEST_CASE("element transform") {
     }
 }
 
-TEST_CASE("element") {
-    using namespace einsums;
-    using namespace einsums::tensor_algebra;
-    using namespace einsums::tensor_algebra::index;
-
-    SECTION("1") {
-        Tensor A     = create_random_tensor("A", 10, 10, 10, 10);
-        Tensor Acopy = A;
-
-        Tensor B = create_random_tensor("B", 10, 10, 10, 10);
-
-        element([](double const &Aval, double const &Bval) -> double { return Aval + Bval; }, &A, B);
-
-        for (int w = 0; w < 10; w++) {
-            for (int x = 0; x < 10; x++) {
-                for (int y = 0; y < 10; y++) {
-                    for (int z = 0; z < 10; z++) {
-                        REQUIRE_THAT(A(w, x, y, z), Catch::Matchers::WithinAbs(Acopy(w, x, y, z) + B(w, x, y, z), 0.001));
-                    }
-                }
-            }
-        }
-    }
-
-    SECTION("2") {
-        Tensor A     = create_random_tensor("A", 10, 10, 10, 10);
-        Tensor Acopy = A;
-
-        Tensor B = create_random_tensor("B", 10, 10, 10, 10);
-        Tensor C = create_random_tensor("C", 10, 10, 10, 10);
-
-        element([](double const &Aval, double const &Bval, double const &Cval) -> double { return Aval + Bval + Cval; }, &A, B, C);
-
-        for (int w = 0; w < 10; w++) {
-            for (int x = 0; x < 10; x++) {
-                for (int y = 0; y < 10; y++) {
-                    for (int z = 0; z < 10; z++) {
-                        REQUIRE_THAT(A(w, x, y, z), Catch::Matchers::WithinAbs(Acopy(w, x, y, z) + B(w, x, y, z) + C(w, x, y, z), 0.001));
-                    }
-                }
-            }
-        }
-    }
-
-    // SECTION("2 - error") {
-
-    //     Tensor A = create_random_tensor("A", 10, 10, 10, 10);
-    //     Tensor Acopy = A;
-
-    //     Tensor B = create_random_tensor("B", 10, 10, 10, 9);
-    //     Tensor C = create_random_tensor("C", 10, 10, 10, 10);
-
-    //     element(
-    //         &A, [](double const &Aval, double const &Bval, double const &Cval) -> double { return Aval + Bval + Cval; }, B, C);
-    // }
-}
-
-TEST_CASE("einsum element") {
+TEST_CASE("einsum element jobs", "[jobs]") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
@@ -2171,7 +1400,7 @@ TEST_CASE("einsum element") {
     }
 }
 
-TEST_CASE("F12 - V term") {
+TEST_CASE("F12 - V term jobs", "[jobs]") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
@@ -2254,7 +1483,7 @@ TEST_CASE("F12 - V term") {
     }
 }
 
-TEST_CASE("B_tilde") {
+TEST_CASE("B_tilde jobs", "[jobs]") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
@@ -2295,7 +1524,7 @@ TEST_CASE("B_tilde") {
     }
 }
 
-TEST_CASE("Khatri-Rao") {
+TEST_CASE("Khatri-Rao jobs", "[jobs]") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
@@ -2390,7 +1619,7 @@ void einsum_mixed_test() {
     }
 }
 
-TEST_CASE("einsum-mixed") {
+TEST_CASE("einsum-mixed jobs", "[jobs]") {
     SECTION("d-f-d") {
         einsum_mixed_test<double, float, double>();
     }
@@ -2490,7 +1719,7 @@ void dot_test() {
     }
 }
 
-TEST_CASE("dot") {
+TEST_CASE("dot jobs", "[jobs]") {
     SECTION("float") {
         dot_test<float>();
     }
@@ -2505,7 +1734,7 @@ TEST_CASE("dot") {
     }
 }
 
-TEST_CASE("andy") {
+TEST_CASE("andy jobs", "[jobs]") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
 

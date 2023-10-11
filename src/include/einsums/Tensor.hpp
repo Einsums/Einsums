@@ -89,6 +89,7 @@ template <typename T, size_t Rank>
 struct Tensor final : public detail::TensorBase<T, Rank> {
 
     using vector = std::vector<T, AlignedAllocator<T, 64>>;
+    using datatype = T;
 
     Tensor()               = default;
     Tensor(const Tensor &) = default;

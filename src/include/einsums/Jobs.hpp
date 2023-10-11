@@ -13,10 +13,14 @@
 #include <atomic>
 #include <stdexcept>
 #include <set>
+#include <cstdio>
+#include <tuple>
+#include <type_traits>
 
 #include "einsums/_Common.hpp"
 #include "einsums/_Export.hpp"
 #include "einsums/TensorAlgebra.hpp"
+#include "einsums/_Export.hpp"
 
 BEGIN_EINSUMS_NAMESPACE_HPP(einsums::jobs)
 
@@ -62,7 +66,9 @@ public:
   /**
    * Constructor.
    */
-  ReadLock(unsigned long id, Resource<T> *data) : id(id), data(data) {}
+  ReadLock(unsigned long id, Resource<T> *data) : id(id) {
+    this->data = data;
+  }
 
   /**
    * Delete the copy and move constructors.
@@ -80,8 +86,8 @@ public:
   /**
    * Check if the lock has been resolved and can be used.
    */
-  bool ready(void) {
-    return this->data->ready(*this);
+  virtual bool ready(void) {
+    return this->data->is_readable(*this);
   }
 
   /**
@@ -90,7 +96,7 @@ public:
    * @param timeout How long to wait. Throws an exception on time-out.
    * @return A reference to the data protected by this lock.
    */
-  const T &get(std::chrono::duration<size_t> timeout) {
+  const std::shared_ptr<T> get(std::chrono::duration<size_t> timeout) {
     std::chrono::system_clock::time_point start = std::chrono::system_clock::now();
 
     while(!this->ready()) {
@@ -102,6 +108,8 @@ public:
       }
     }
 
+    std::atomic_thread_fence(std::memory_order_acquire);
+
     return this->data->get_data();
   }
 
@@ -110,10 +118,12 @@ public:
    *
    * @return A reference to the data protected by this lock.
    */
-  const T &get(void) {
+  const std::shared_ptr<T> get(void) {
     while(!this->ready()) {
       std::this_thread::yield();
     }
+
+    std::atomic_thread_fence(std::memory_order_acquire);
     return this->data->get_data();
   }
 
@@ -155,6 +165,7 @@ public:
    * Release this lock.
    */
   bool release(void) {
+    std::atomic_thread_fence(std::memory_order_release);
     return this->data->release(*this);
   }
 
@@ -162,20 +173,21 @@ public:
    * Get the data contained in the resource.
    */
   explicit operator const T&(void) {
-    return this->get();
+    std::atomic_thread_fence(std::memory_order_acquire);
+    return *(this->get());
   }
 
   /**
    * Compare two locks to see if they are the same.
    */
-  bool operator==(ReadLock<T> &other) {
+  bool operator==(const ReadLock<T> &other) const {
     return this->id == other.id && this->data == other.data;
   }
 
   /**
    * Whether a lock is exclusive or not.
    */
-  virtual bool is_exclusive() {
+  virtual bool is_exclusive() const {
     return false;
   }
 };
@@ -204,9 +216,9 @@ public:
    * @param timeout How long to wait. Throws an exception on time-out.
    * @return A reference to the data protected by this lock.
    */
-  T &get(std::chrono::duration<size_t> timeout) {
+  std::shared_ptr<T> get(std::chrono::duration<size_t> timeout) {
     std::chrono::system_clock::time_point start = std::chrono::system_clock::now();
-
+    
     while(!this->ready()) {
       std::this_thread::yield();
 
@@ -216,6 +228,8 @@ public:
       }
     }
 
+    std::atomic_thread_fence(std::memory_order_acquire);
+    
     return this->data->get_data();
   }
 
@@ -224,19 +238,25 @@ public:
    *
    * @return A reference to the data protected by this lock.
    */
-  T &get(void) {
+  std::shared_ptr<T> get(void) {
     while(!this->ready()) {
       std::this_thread::yield();
     }
+
+    std::atomic_thread_fence(std::memory_order_acquire);
     return this->data->get_data();
   }
 
   explicit operator T&(void) {
-    return this->get();
+    return *(this->get());
   }
 
-  bool is_exclusive() override {
+  bool is_exclusive() const override {
     return true;
+  }
+
+  bool ready(void) override {
+    return this->data->is_writable(*this);
   }
 };
 
@@ -249,7 +269,7 @@ public:
 template<typename T>
 class Resource {
 private:
-  std::vector<std::vector<std::shared_ptr<ReadLock<T> >> *> locks;
+  std::vector<std::vector<std::shared_ptr<ReadLock<T> > > *> locks;
 
   unsigned long id;
 
@@ -263,7 +283,6 @@ public:
    * Constructor.
    */
   Resource(T *data) : locks{}, id(0), data(std::shared_ptr<T>(data)), is_locked(false) {}
-  Resource(std::shared_ptr<T> data) : locks{}, id(0), data(data), is_locked(false) {}
 
   /**
    * Don't allow copy or move.
@@ -276,16 +295,13 @@ public:
    */
   virtual ~Resource() {
     for(auto state : this->locks) {
-      for(auto lock : *state) {
-	delete lock;
-      }
       state->clear();
     }
     this->locks.clear();
   }
 
-  T &get_data() {
-    return *(this->data);
+  std::shared_ptr<T> get_data() {
+    return std::shared_ptr<T>(this->data);
   }
 
   /**
@@ -293,28 +309,30 @@ public:
    *
    * @return A pointer to the shared lock.
    */
-  std::shared_ptr<ReadLock<T>> lock_shared() {
+  std::shared_ptr<ReadLock<T> > lock_shared() {
     // wait to be allowed to edit the resource.
-    while(this->is_locked.load()) {
+    while(this->is_locked) {
       std::this_thread::yield();
     }
+
     this->is_locked = true;
 
     // Make sure there is somewhere to put the locks.
     if(this->locks.size() == 0) {
-      this->locks.push_back(new std::vector<std::shared_ptr<ReadLock<T>>>());
-    } else if((this->locks.end())->size() == 1 && (this->locks.end())->at(0)->is_exclusive()) {
-      this->locks.push_back(new std::vector<std::shared_ptr<ReadLock<T>>>());
+      this->locks.push_back(new std::vector<std::shared_ptr<ReadLock<T> > >());
+    } else if(this->locks.back()->size() == 1 && this->locks.back()->at(0)->is_exclusive()) {
+      this->locks.push_back(new std::vector<std::shared_ptr<ReadLock<T> > >());
     }
 
     // Make the lock.
-    std::shared_ptr<ReadLock<T>> out = std::make_shared<ReadLock<T>>(this->id, this);
+    std::shared_ptr<ReadLock<T> > out = std::make_shared<ReadLock<T> >(this->id, this);
 
     // Increment the serial tracker.
     this->id++;
 
     // Add the lock.
-    (this->locks.end())->push_back(out);
+    this->locks.back()->push_back(out);
+    
     // Release the resource.
     this->is_locked = false;
     return out;
@@ -323,17 +341,17 @@ public:
   /**
    * Obtain an exclusive lock.
    */
-  std::shared_ptr<WriteLock<T>> lock() {
+  std::shared_ptr<WriteLock<T> > lock() {
     while(this->is_locked.load()) {
       std::this_thread::yield();
     }
     this->is_locked = true;
-    this->locks.push_back(new std::vector<std::shared_ptr<ReadLock<T>>>());
+    this->locks.push_back(new std::vector<std::shared_ptr<ReadLock<T> > >());
 
-    std::shared_ptr<WriteLock<T>> out = std::make_shared<WriteLock<T>>(this->id, this);
+    std::shared_ptr<WriteLock<T> > out = std::make_shared<WriteLock<T> >(this->id, this);
     this->id++;
 
-    (this->locks.end())->push_back(out);
+    this->locks.back()->push_back(out);
     this->is_locked = false;
     return out;
   }
@@ -352,8 +370,7 @@ public:
     this->is_locked = true;
     for(auto state : this->locks) {
       for(auto curr_lock = state->begin(); curr_lock != state->end(); curr_lock++) {
-	if(*curr_lock == lock) {
-	  delete *curr_lock;
+	if(**curr_lock == lock) {
 	  state->erase(curr_lock);
 	  curr_lock--; // Need to put back to the right place.
 	  ret = true;
@@ -445,7 +462,7 @@ public:
       return false;
     }
 
-    for(auto curr_lock : this->locks[0]) {
+    for(auto curr_lock : *(this->locks[0])) {
       if(*curr_lock == lock) {
 	this->is_locked = false;
 	return true;
@@ -484,7 +501,7 @@ public:
       return false; // The state is a read-only state.
     }
 
-    if(this->locks[0]->at(0) == lock) {
+    if(*(this->locks[0]->at(0)) == lock) {
       this->is_locked = false;
       return true; // This lock has sole ownership.
     }
@@ -492,19 +509,6 @@ public:
     this->is_locked = false;
     return false;
   }
-};
-    
-
-/**
- * @enum ComputeResource
- *
- * Flags for the different kinds of compute resources a job can request. Can be or'ed together to request multiple.
- */
-enum ComputeResource {
-  SYNCHRONOUS = 0, /// Wait for this job to come up, then run it in place.
-  MULTI_THREAD = 0x1, /// Run this job with multiple threads.
-  GPU = 0x2, /// Run this job on the GPU.
-  MPI = 0x4 /// Run this job through MPI.
 };
 
 /**
@@ -514,13 +518,11 @@ enum ComputeResource {
  */
 class Job {
 protected:
-  /// Compute resource flags or'ed together.
-  unsigned char compute_res;
 
   int priority; /// Priority of the job. Will run before other jobs when it can.
   
 public:
-  Job(unsigned char compute_resources, int priority = 0) : compute_res(compute_resources), priority(priority) {};
+  Job(int priority = 0) : priority(priority) {};
   virtual ~Job() = default;
 
   /**
@@ -531,24 +533,17 @@ public:
   /**
    * Whether the job is currently able to run.
    */
-  virtual bool is_runnable() = 0;
+  virtual bool is_runnable() const = 0;
 
   /**
    * Whether a job is running.
    */
-  virtual bool is_running() = 0;
+  virtual bool is_running() const = 0;
 
   /**
    * Whether the job is finished.
    */
-  virtual bool is_finished() = 0;
-
-  /**
-   * Get the requested compute resources.
-   */
-  virtual unsigned char compute_resources() const {
-    return this->compute_res;
-  }
+  virtual bool is_finished() const = 0;
 
   /**
    * Return the priority.
@@ -594,9 +589,9 @@ class JobManager final {
 private:
   
   /// Lists of running and waiting jobs.
-  std::multiset<std::shared_ptr<Job>> jobs;
+  std::vector<std::shared_ptr<Job>> jobs;
 
-  std::vector<std::pair<std::shared_ptr<Job>, std::thread *>> running;
+  std::vector<std::pair<std::shared_ptr<Job>, std::vector<std::shared_ptr<std::thread>>>> running;
 
   /// Whether the job manager is running or not.
   std::atomic_bool is_running;
@@ -616,9 +611,9 @@ private:
 
   ~JobManager();
 
-  static void cleanup();
+  EINSUMS_EXPORT static void cleanup();
 
-  friend class std::multiset<std::shared_ptr<Job>>;
+  friend class std::multiset<std::shared_ptr<Job> >;
   friend class std::thread;
 
 protected: // I know protecting this is useless, but future-proofing never hurt anyone.
@@ -626,12 +621,12 @@ protected: // I know protecting this is useless, but future-proofing never hurt 
   /**
    * Main loop of the manager.
    */
-  static void manager_loop();
+  EINSUMS_EXPORT static void manager_loop();
 
   /**
    * One loop through the manager.
    */
-  void manager_event();
+  EINSUMS_EXPORT void manager_event();
 
 public:
 
@@ -640,71 +635,29 @@ public:
    *
    * @return A reference to the single job manager.
    */
-  static JobManager &get_singleton();
+  EINSUMS_EXPORT static JobManager &get_singleton();
 
   /**
    * Queue a job.
    *
    * @param The job to queue.
    */
-  void queue_job(std::shared_ptr<Job> job);
+  EINSUMS_EXPORT void queue_job(std::shared_ptr<Job> job);
 
   /**
    * Start the job manager in a different thread. Raises an exception if it is already running.
    */
-  void start_manager();
+  EINSUMS_EXPORT void start_manager();
 
   /**
    * Stop the manager.
    */
-  void stop_manager();
+  EINSUMS_EXPORT void stop_manager();
 
   /**
    * Check whether the manager is running or not.
    */
-  bool isrunning();
-};
-
-/**
- * @class ComputePool
- * 
- * Represents a pool of computing resources.
- */
-class ComputePool {
-public:
-  /**
-   * Create a new compute pool.
-   */
-  ComputePool() = default;
-
-  // Can't copy or move a pool.
-  ComputePool(const ComputePool &) = delete;
-  ComputePool(const ComputePool &&) = delete;
-
-  virtual ~ComputePool() = default;
-
-  /**
-   * Request a set number of resources.
-   *
-   * @param count The number of resource (cores, stream processors, etc.) to request.
-   * @return Whether the resources have been allocated.
-   */
-  virtual bool request(unsigned int count) = 0;
-
-  /**
-   * Request up to a set number of resources.
-   * 
-   * @param count The maximum number of resources to request.
-   * @return The number of resources that have been requested.
-   */
-  virtual int request_upto(unsigned int count) = 0;
-
-  /**
-   * Release a number of compute resources.
-   *
-   * @param count The number of resources to release.
-   */
-  virtual void release(unsigned int count) = 0;
+  EINSUMS_EXPORT bool isrunning();
 };
 
 /**
@@ -712,37 +665,54 @@ public:
  *
  * Pools threads together for running computations.
  */
-class ThreadPool : public ComputePool {
+class ThreadPool {
+
+public:
+  /**
+   * @type The type for a function to be run.
+   */
+  using function_type = void (*)(std::shared_ptr<Job>&&);
+  
 private:
   
-  std::atomic_bool is_locked;
+  std::atomic_bool is_locked, stop;
 
-  int max_threads, avail;
+  int max_threads;
+
+  std::vector<std::shared_ptr<std::thread>> avail, running;
+
+  std::map<std::thread::id, std::tuple<int, int, function_type, std::shared_ptr<Job>>> thread_info;
 
   /// Lock and unlock the pool for editing.
   void lock();
 
   void unlock();
 
-  ThreadPool(int threads) : max_threads(threads), avail(threads), is_locked(false) {}
+  EINSUMS_EXPORT ThreadPool(int threads);
 
   ThreadPool(const ThreadPool &) = delete;
   ThreadPool(const ThreadPool &&) = delete;
 
-  ~ThreadPool() = default;
+  EINSUMS_EXPORT ~ThreadPool();
 
 public:
+  
   /**
    * Initialize the thread pool.
    *
    * @param threads The number of threads to hold.
    */
-  static void init(int threads);
+  EINSUMS_EXPORT static void init(int threads);
+
+  /**
+   * Destroy the thread pool.
+   */
+  EINSUMS_EXPORT static void destroy();
 
   /**
    * Return the singleton instance.
    */
-  static ThreadPool &get_singleton();
+  EINSUMS_EXPORT static ThreadPool &get_singleton();
 
   /**
    * Request a set number of resources.
@@ -750,7 +720,8 @@ public:
    * @param count The number of resource (cores, stream processors, etc.) to request.
    * @return Whether the resources have been allocated.
    */
-  bool request(unsigned int count) override;
+  EINSUMS_EXPORT std::vector<std::shared_ptr<std::thread> > request(unsigned int count,
+      function_type func, std::shared_ptr<Job> job);
 
   /**
    * Request up to a set number of resources.
@@ -758,14 +729,59 @@ public:
    * @param count The maximum number of resources to request.
    * @return The number of resources that have been requested.
    */
-  int request_upto(unsigned int count) override;
+  EINSUMS_EXPORT std::vector<std::shared_ptr<std::thread> > request_upto(unsigned int count,
+      function_type func, std::shared_ptr<Job> job);
 
   /**
    * Release a number of compute resources.
    *
    * @param count The number of resources to release.
    */
-  void release(unsigned int count) override;
+  EINSUMS_EXPORT void release(std::vector<std::shared_ptr<std::thread> > &threads);
+
+  /**
+   * Get the index of a thread in a compute kernel.
+   *
+   * @param id A thread id.
+   * @return The index of the thread in the calculation.
+   */
+  EINSUMS_EXPORT int index(std::thread::id id);
+
+  /**
+   * Get the kernel size for a computation.
+   *
+   * @param id A thread id.
+   * @return The number of threads in a computation.
+   */
+  EINSUMS_EXPORT int compute_threads(std::thread::id id);
+
+  /**
+   * Get the function that a thread should run.
+   *
+   * @param id A thread id.
+   * @return The function a thread should run.
+   */
+  EINSUMS_EXPORT function_type compute_function(std::thread::id id);
+
+  /**
+   * Get the job associated with a thread.
+   *
+   * @param id A thread id.
+   * @return A pointer to the job.
+   */
+  EINSUMS_EXPORT std::shared_ptr<Job> thread_job(std::thread::id id);
+
+  /**
+   * Signal that a thread has finished.
+   *
+   * @param id A thread id.
+   */
+  EINSUMS_EXPORT void thread_finished(std::thread::id id);
+
+  /**
+   * Returns true when the threads are supposed to stop.
+   */
+  EINSUMS_EXPORT bool stop_condition();
 };
 
 /**
@@ -773,18 +789,19 @@ public:
  *
  * Holds information for running einsum as a job.
  */
-template <bool OnlyUseGenericAlgorithm, template <typename, size_t> typename AType, typename ADataType, size_t ARank,
-          template <typename, size_t> typename BType, typename BDataType, size_t BRank, template <typename, size_t> typename CType,
-          typename CDataType, size_t CRank, typename CIndices, typename AIndices, typename BIndices>
+template <typename AType, typename ABDataType,
+	  typename BType,
+	  typename CType, typename CDataType,
+          typename CIndices, typename AIndices, typename BIndices>
 struct EinsumJob : public Job {
 protected :
 
-    std::shared_ptr<ReadLock<AType<ADataType, ARank>>> _A;
-    std::shared_ptr<ReadLock<BType<BDataType, BRank>>> _B;
-    std::shared_ptr<WriteLock<CType<CDataType, CRank>>> _C;
+  std::shared_ptr<ReadLock<AType> > _A;
+  std::shared_ptr<ReadLock<BType> > _B;
+  std::shared_ptr<WriteLock<CType> > _C;
 
     const CDataType _C_prefactor;
-    const std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> _AB_prefactor;
+    const ABDataType  _AB_prefactor;
 
     const CIndices &_Cs;
     const AIndices &_As;
@@ -797,19 +814,19 @@ public :
     /**
      * Constructor.
      */
-    EinsumJob(unsigned char compute_resources, CDataType C_prefactor, const CIndices & Cs,
-            std::shared_ptr<WriteLock<CType<CDataType, CRank>>> &C,
-            const std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> AB_prefactor,
-            const AIndices & As, std::shared_ptr<ReadLock<AType<ADataType, ARank>>> &A, const BIndices & Bs,
-            std::shared_ptr<ReadLock<BType<BDataType, BRank>>> &B) :
-	    Job(compute_resources), _A(A), _B(B), _C(C), _C_prefactor(C_prefactor), _AB_prefactor(AB_prefactor),
-	    _Cs(Cs), _As(As), _Bs(Bs), _running(false), _done(false) {}
-
-    virtual ~EinsumJob() {
-        delete this->_A;
-	delete this->_B;
-	delete this->_C;
+    EinsumJob(CDataType C_prefactor, const CIndices & Cs,
+	      std::shared_ptr<WriteLock<CType> > C,
+            const ABDataType AB_prefactor,
+	      const AIndices & As, std::shared_ptr<ReadLock<AType> > A, const BIndices & Bs,
+	      std::shared_ptr<ReadLock<BType> > B) :
+	    Job(), _C_prefactor(C_prefactor), _AB_prefactor(AB_prefactor),
+	    _Cs(Cs), _As(As), _Bs(Bs), _running(false), _done(false) {
+        _A = A;
+	_B = B;
+	_C = C;
     }
+
+    virtual ~EinsumJob() = default;
 
     /*
      * Overrides for the base class.
@@ -820,8 +837,12 @@ public :
      */
     virtual void run(void) override {
         _running = true;
-        einsums::tensor_algebra::einsum<OnlyUseGenericAlgorithm>(_C_prefactor, _Cs, &(_C->get()),
-	    _AB_prefactor, _As, _A->get(), _Bs, _B->get());
+        auto A = _A->get();
+	auto B = _B->get();
+	auto C = _C->get();
+	
+        einsums::tensor_algebra::einsum(_C_prefactor, _Cs, C.get(),
+	    _AB_prefactor, _As, *A, _Bs, *B);
 
 	_C->release();
 	_A->release();
@@ -833,44 +854,58 @@ public :
     /**
      * Whether the job is currently able to run.
      */
-    virtual bool is_runnable() override {
+    virtual bool is_runnable() const override {
         return _A->ready() && _B->ready() && _C->ready() && !_running && !_done;
     }
 
     /**
      * Whether a job is running.
      */
-    virtual bool is_running() override {
+    virtual bool is_running() const override {
         return this->_running;
     }
 
     /**
      * Whether the job is finished.
      */
-    virtual bool is_finished() override {
+    virtual bool is_finished() const override {
         return this->_done;
     }
 };
 
+/**
+ * Creates an einsum job and adds it to the job queue.
+ *
+ * @tparam OnlyUseGenericAlgorithm This is passed to the einsum function being run. Defaults to false in the wrappers.
+ * @param C_prefactor The prefactor for the C tensor.
+ * @param Cs The C indices.
+ * @param C The C tensor.
+ * @param AB_prefactor The prefactor for A and B.
+ * @param As The A indices.
+ * @param A The A tensor.
+ * @param Bs The B indices.
+ * @param B The B tensor.
+ * @return A shared pointer to the job created and queued by this function.
+ */
+template <typename AType, typename ABDataType,
+          typename BType, typename CType,
+          typename CDataType, typename... CIndices, typename... AIndices, typename... BIndices>
+auto einsum(CDataType C_prefactor, const std::tuple<CIndices...> & Cs,
+       std::shared_ptr<Resource<CType> > &C,
+       const ABDataType AB_prefactor,
+       const std::tuple<AIndices...> & As, std::shared_ptr<Resource<AType> > &A,
+       const std::tuple<BIndices...> & Bs, std::shared_ptr<Resource<BType> > &B)
+-> std::shared_ptr<EinsumJob<AType, ABDataType,
+			  BType, CType, CDataType,
+			  std::tuple<CIndices...>, std::tuple<AIndices...>, std::tuple<BIndices...> > > {
+  // Start of function 
+  using outtype = EinsumJob<AType, ABDataType,
+			    BType, CType, CDataType,
+			    std::tuple<CIndices...>, std::tuple<AIndices...>, std::tuple<BIndices...> >;
   
-template <bool OnlyUseGenericAlgorithm, template <typename, size_t> typename AType, typename ADataType, size_t ARank,
-          template <typename, size_t> typename BType, typename BDataType, size_t BRank, template <typename, size_t> typename CType,
-          typename CDataType, size_t CRank, typename... CIndices, typename... AIndices, typename... BIndices>
-std::shared_ptr<EinsumJob<OnlyUseGenericAlgorithm, AType, ADataType, ARank,
-                              BType, BDataType, BRank, CType, CDataType, CRank,
-			  std::tuple<CIndices...>, std::tuple<AIndices...>, std::tuple<BIndices...>>>
-einsum(CDataType C_prefactor, const std::tuple<CIndices...> & Cs,
-            std::shared_ptr<Resource<CType<CDataType, CRank>>> &C,
-            const std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> AB_prefactor,
-            const std::tuple<AIndices...> & As, std::shared_ptr<Resource<AType<ADataType, ARank>>> &A,
-	    const std::tuple<BIndices...> & Bs, std::shared_ptr<Resource<BType<BDataType, BRank>>> &B) {
-    using outtype = EinsumJob<OnlyUseGenericAlgorithm, AType, ADataType, ARank,
-                              BType, BDataType, BRank, CType, CDataType, CRank,
-				       std::tuple<CIndices...>, std::tuple<AIndices...>, std::tuple<BIndices...>>;
-
-    std::shared_ptr<WriteLock<CType<CDataType, CRank>>> C_lock = C->lock();
-    std::shared_ptr<ReadLock<AType<ADataType, ARank>>> A_lock = A->lock_shared();
-    std::shared_ptr<ReadLock<BType<BDataType, BRank>>> B_lock = B->lock_shared();
+    std::shared_ptr<WriteLock<CType> > C_lock = C->lock();
+    std::shared_ptr<ReadLock<AType> > A_lock = A->lock_shared();
+    std::shared_ptr<ReadLock<BType> > B_lock = B->lock_shared();
     std::shared_ptr<outtype> out = std::make_shared<outtype>(C_prefactor, Cs, C_lock, AB_prefactor, As, A_lock, Bs, B_lock);
 
     // Queue the job.
@@ -878,6 +913,33 @@ einsum(CDataType C_prefactor, const std::tuple<CIndices...> & Cs,
 
     return out;
 }
-    
+
+/**
+ * Creates an einsum job and adds it to the job queue. Has default prefactors.
+ *
+ * @param Cs The C indices.
+ * @param C The C tensor.
+ * @param As The A indices.
+ * @param A The A tensor.
+ * @param Bs The B indices.
+ * @param B The B tensor.
+ * @return A shared pointer to the job created and queued by this function.
+ */
+template <typename AType,
+	  typename BType,
+	  typename CType,
+	  typename... CIndices, typename... AIndices, typename... BIndices>
+auto einsum(const std::tuple<CIndices...> &C_indices, std::shared_ptr<Resource<CType> > &C,
+	    const std::tuple<AIndices...> &A_indices, std::shared_ptr<Resource<AType> > &A,
+            const std::tuple<BIndices...> &B_indices, std::shared_ptr<Resource<BType> > &B)
+  -> std::shared_ptr<EinsumJob<AType, std::conditional_t<sizeof(typename AType::datatype) < sizeof(typename BType::datatype),
+										   typename BType::datatype, typename AType::datatype>,
+			       BType, CType, typename CType::datatype,
+			     std::tuple<CIndices...>, std::tuple<AIndices...>, std::tuple<BIndices...> > > {
+  return einsum((typename CType::datatype) 0, C_indices, C,
+		(std::conditional_t<sizeof(typename AType::datatype) < sizeof(typename BType::datatype),
+		 typename BType::datatype, typename AType::datatype>) 1,
+		A_indices, A, B_indices, B);
+}
 
 END_EINSUMS_NAMESPACE_HPP(einsums::jobs)
