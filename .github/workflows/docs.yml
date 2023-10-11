@@ -24,7 +24,7 @@ jobs:
             - conda-forge
             - nodefaults
           dependencies:
-            - sphinx
+            - sphinx=6.2.1
             - pydata-sphinx-theme
             - doxygen
             - breathe
