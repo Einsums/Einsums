@@ -1,0 +1,14 @@
+name: docs-env
+channels:
+  - conda-forge
+dependencies:
+  - sphinx=6.2.1
+  - sphinx-design
+  - six
+  - pydata-sphinx-theme
+  - doxygen
+  - breathe
+  - docutils>=0.12
+  - breathe>=4.32.0
+  - beautifulsoup4
+  - lxml

@@ -16,25 +16,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Write Conda Environment File
-        run: |
-          cat > export.yaml <<EOF
-          name: docs-env
-          channels:
-            - conda-forge
-            - nodefaults
-          dependencies:
-            - sphinx
-            - sphinx_rtd_theme
-            - exhale
-            - doxygen
-          EOF
-
       - name: Create Environment
         uses: conda-incubator/setup-miniconda@v2
         with:
           activate-environment: docs-env
-          environment-file: export.yaml
+          environment-file: devtools/conda-envs/docs.yml
           miniforge-variant: Mambaforge
           use-mamba: true
           channels: conda-forge

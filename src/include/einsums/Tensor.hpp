@@ -43,6 +43,7 @@ struct TensorBase {
 
 } // namespace detail
 
+// Forward declarations
 template <typename T, size_t Rank>
 struct TensorView;
 
@@ -53,11 +54,16 @@ template <typename T, size_t Rank>
 struct DiskTensor;
 } // namespace einsums
 
+/**
+ * @brief Represents options and default options for printing tensors.
+ *
+ */
 struct TensorPrintOptions {
-    int  width{5};
-    bool full_output{true};
+    int  width{5};          /// How many columns of tensor data are printed per line.
+    bool full_output{true}; /// Print the tensor data (true) or just name and data span information (false).
 };
 
+// Forward declaration of the Tensor printing function.
 template <template <typename, size_t> typename AType, size_t Rank, typename T>
 auto println(const AType<T, Rank> &A, TensorPrintOptions options = {}) ->
     typename std::enable_if_t<std::is_base_of_v<einsums::detail::TensorBase<T, Rank>, AType<T, Rank>>>;
@@ -65,11 +71,34 @@ auto println(const AType<T, Rank> &A, TensorPrintOptions options = {}) ->
 namespace einsums {
 namespace detail {
 
+/**
+ * @brief Get the dim ranges object
+ *
+ * @tparam TensorType
+ * @tparam Rank
+ * @tparam I
+ * @tparam T
+ * @param tensor The tensor object to query
+ * @return A tuple containing the dimension ranges compatible with range-v3 cartesian_product function.
+ */
 template <template <typename, size_t> typename TensorType, size_t Rank, std::size_t... I, typename T>
 auto get_dim_ranges(const TensorType<T, Rank> &tensor, std::index_sequence<I...>) {
     return std::tuple{ranges::views::ints(0, (int)tensor.dim(I))...};
 }
 
+/**
+ * @brief Adds elements from two sources into the target.
+ *
+ * Useful in adding offsets to a set of indices.
+ *
+ * @tparam N The rank of the data.
+ * @tparam Target
+ * @tparam Source1
+ * @tparam Source2
+ * @param target The output
+ * @param source1 The first source
+ * @param source2 The second source
+ */
 template <size_t N, typename Target, typename Source1, typename Source2>
 void add_elements(Target &target, const Source1 &source1, const Source2 &source2) {
     if constexpr (N > 1) {
@@ -80,29 +109,73 @@ void add_elements(Target &target, const Source1 &source1, const Source2 &source2
 
 } // namespace detail
 
+/**
+ * @brief Find the ranges for each dimension of a tensor.
+ *
+ * The returned tuple is compatible with ranges-v3 cartesian_product function.
+ *
+ * @tparam N
+ * @tparam TensorType
+ * @tparam Rank
+ * @tparam T
+ * @param tensor Tensor to query
+ * @return Tuple containing the range for each dimension of the tensor.
+ */
 template <int N, template <typename, size_t> typename TensorType, size_t Rank, typename T>
 auto get_dim_ranges(const TensorType<T, Rank> &tensor) {
     return detail::get_dim_ranges(tensor, std::make_index_sequence<N>{});
 }
 
+/**
+ * @brief Represents a general tensor
+ *
+ * @tparam T data type of the underlying tensor data
+ * @tparam Rank the rank of the tensor
+ */
 template <typename T, size_t Rank>
 struct Tensor final : public detail::TensorBase<T, Rank> {
 
-    using vector = std::vector<T, AlignedAllocator<T, 64>>;
     using datatype = T;
+    using Vector = std::vector<T, AlignedAllocator<T, 64>>;
 
-    Tensor()               = default;
+    /**
+     * @brief Construct a new Tensor object. Default constructor.
+     */
+    Tensor() = default;
+
+    /**
+     * @brief Construct a new Tensor object. Default copy constructor
+     */
     Tensor(const Tensor &) = default;
-    // Tensor(Tensor &&) noexcept = default;
+
+    /**
+     * @brief Destroy the Tensor object.
+     */
     ~Tensor() = default;
 
+    /**
+     * @brief Construct a new Tensor object with the given name and dimensions.
+     *
+     * Constructs a new Tensor object using the information provided in \p name and \p dims .
+     *
+     * @code
+     * auto A = Tensor("A", 3, 3);
+     * @endcode
+     *
+     * The newly constructed Tensor is NOT zeroed out for you. If you start having NaN issues
+     * in your code try calling Tensor.zero() or zero(Tensor) to see if that resolves it.
+     *
+     * @tparam Dims Variadic template arguments for the dimensions. Must be castable to size_t.
+     * @param name Name of the new tensor.
+     * @param dims The dimensions of each rank of the tensor.
+     */
     template <typename... Dims>
     explicit Tensor(std::string name, Dims... dims) : _name{std::move(name)}, _dims{static_cast<size_t>(dims)...} {
         static_assert(Rank == sizeof...(dims), "Declared Rank does not match provided dims");
 
-        struct stride {
+        struct Stride {
             size_t value{1};
-            stride() = default;
+            Stride() = default;
             auto operator()(size_t dim) -> size_t {
                 auto old_value = value;
                 value *= dim;
@@ -111,7 +184,7 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
         };
 
         // Row-major order of dimensions
-        std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), stride());
+        std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
         size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
 
         // Resize the data structure
@@ -120,14 +193,39 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
     }
 
     // Once this is called "otherTensor" is no longer a valid tensor.
+    /**
+     * @brief Construct a new Tensor object. Moving \p existingTensor data to the new tensor.
+     *
+     * This constructor is useful for reshaping a tensor. It does not modify the underlying
+     * tensor data. It only creates new mapping arrays for how the data is viewed.
+     *
+     * @code
+     * auto A = Tensor("A", 27); // Creates a rank-1 tensor of 27 elements
+     * auto B = Tensor(std::move(A), "B", 3, 3, 3); // Creates a rank-3 tensor of 27 elements
+     * // At this point A is no longer valid.
+     * @endcode
+     *
+     * Supports using -1 for one of the ranks to automatically compute the dimensional of it.
+     *
+     * @code
+     * auto A = Tensor("A", 27);
+     * auto B = Tensor(std::move(A), "B", 3, -1, 3); // Automatically determines that -1 should be 3.
+     * @endcode
+     *
+     * @tparam OtherRank The rank of \p existingTensor can be different than the rank of the new tensor
+     * @tparam Dims Variadic template arguments for the dimensions. Must be castable to size_t.
+     * @param existingTensor The existing tensor that holds the tensor data.
+     * @param name The name of the new tensor
+     * @param dims The dimensionality of each rank of the new tensor.
+     */
     template <size_t OtherRank, typename... Dims>
     explicit Tensor(Tensor<T, OtherRank> &&existingTensor, std::string name, Dims... dims)
         : _data(std::move(existingTensor._data)), _name{std::move(name)}, _dims{static_cast<size_t>(dims)...} {
         static_assert(Rank == sizeof...(dims), "Declared rank does not match provided dims");
 
-        struct stride {
+        struct Stride {
             size_t value{1};
-            stride() = default;
+            Stride() = default;
             auto operator()(size_t dim) -> size_t {
                 auto old_value = value;
                 value *= dim;
@@ -163,7 +261,7 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
         }
 
         // Row-major order of dimensions
-        std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), stride());
+        std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
         size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
 
         // Check size
@@ -172,10 +270,15 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
         }
     }
 
+    /**
+     * @brief Construct a new Tensor object using the dimensions given by Dim object.
+     *
+     * @param dims The dimensions of the new tensor in Dim form.
+     */
     Tensor(Dim<Rank> dims) : _dims{std::move(dims)} {
-        struct stride {
+        struct Stride {
             size_t value{1};
-            stride() = default;
+            Stride() = default;
             auto operator()(size_t dim) -> size_t {
                 auto old_value = value;
                 value *= dim;
@@ -184,7 +287,7 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
         };
 
         // Row-major order of dimensions
-        std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), stride());
+        std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
         size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
 
         // Resize the data structure
@@ -192,10 +295,17 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
         _data.resize(size);
     }
 
+    /**
+     * @brief Construct a new Tensor object from a TensorView.
+     *
+     * Data is explicitly copied from the view to the new tensor.
+     *
+     * @param other The tensor view to copy.
+     */
     Tensor(const TensorView<T, Rank> &other) : _name{other._name}, _dims{other._dims} {
-        struct stride {
+        struct Stride {
             size_t value{1};
-            stride() = default;
+            Stride() = default;
             auto operator()(size_t dim) -> size_t {
                 auto old_value = value;
                 value *= dim;
@@ -204,12 +314,13 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
         };
 
         // Row-major order of dimensions
-        std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), stride());
+        std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
         size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
 
         // Resize the data structure
         _data.resize(size);
 
+        // TODO: Attempt to thread this.
         auto target_dims = get_dim_ranges<Rank>(*this);
         for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
             T &target_value = std::apply(*this, target_combination);
@@ -218,6 +329,9 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
         }
     }
 
+    /**
+     * @brief Zeroes out the tensor data.
+     */
     void zero() {
         // #pragma omp parallel
         //         {
@@ -230,6 +344,11 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
         memset(_data.data(), 0, sizeof(T) * _data.size());
     }
 
+    /**
+     * @brief Set the all entires to the given value.
+     *
+     * @param value Value to set the elements to.
+     */
     void set_all(T value) {
         // #pragma omp parallel
         //         {
@@ -242,10 +361,42 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
         std::fill(_data.begin(), _data.end(), value);
     }
 
+    /**
+     * @brief Returns a pointer to the data.
+     *
+     * Try very hard to not use this function. Current data may or may not exist
+     * on the host device at the time of the call if using GPU backend.
+     *
+     * @return T* A pointer to the data.
+     */
     auto data() -> T * { return _data.data(); }
 
+    /**
+     * @brief Returns a constant pointer to the data.
+     *
+     * Try very hard to not use this function. Current data may or may not exist
+     * on the host device at the time of the call if using GPU backend.
+     *
+     * @return const T* An immutable pointer to the data.
+     */
     auto data() const -> const T * { return _data.data(); }
 
+    /**
+     * @brief Returns a pointer into the tensor at the given location.
+     *
+     * Returns a pointer into the tensor at the given location.
+     *
+     * @code
+     * auto A = Tensor("A", 3, 3, 3); // Creates a rank-3 tensor of 27 elements
+     *
+     * double* A_pointer = A.data(1, 2, 3); // Returns the pointer to element (1, 2, 3) in A.
+     * @endcode
+     *
+     *
+     * @tparam MultiIndex The datatypes of the passed parameters. Must be castable to
+     * @param index The explicit desired index into the tensor. Must be castable to std::int64_t.
+     * @return A pointer into the tensor at the requested location.
+     */
     template <typename... MultiIndex>
     auto data(MultiIndex... index)
         -> std::enable_if_t<count_of_type<All_t, MultiIndex...>() == 0 && count_of_type<Range, MultiIndex...>() == 0, T *> {
@@ -261,10 +412,22 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
         return &_data[ordinal];
     }
 
+    /**
+     * @brief Subscripts into the tensor.
+     *
+     * This version works when all elements are explicit values into the tensor.
+     * It does not work with the All or Range tags.
+     *
+     * @tparam MultiIndex Datatype of the indices. Must be castable to std::int64_t.
+     * @param index The explicit desired index into the tensor. Elements must be castable to std::int64_t.
+     * @return const T&
+     */
     template <typename... MultiIndex>
     auto operator()(MultiIndex... index) const
         -> std::enable_if_t<count_of_type<All_t, MultiIndex...>() == 0 && count_of_type<Range, MultiIndex...>() == 0, const T &> {
+
         assert(sizeof...(MultiIndex) == _dims.size());
+
         auto index_list = std::array{static_cast<std::int64_t>(index)...};
         for (auto [i, index] : enumerate(index_list)) {
             if (index < 0) {
@@ -275,10 +438,22 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
         return _data[ordinal];
     }
 
+    /**
+     * @brief Subscripts into the tensor.
+     *
+     * This version works when all elements are explicit values into the tensor.
+     * It does not work with the All or Range tags.
+     *
+     * @tparam MultiIndex Datatype of the indices. Must be castable to std::int64_t.
+     * @param index The explicit desired index into the tensor. Elements must be castable to std::int64_t.
+     * @return T&
+     */
     template <typename... MultiIndex>
     auto operator()(MultiIndex... index)
         -> std::enable_if_t<count_of_type<All_t, MultiIndex...>() == 0 && count_of_type<Range, MultiIndex...>() == 0, T &> {
+
         assert(sizeof...(MultiIndex) == _dims.size());
+
         auto index_list = std::array{static_cast<std::int64_t>(index)...};
         for (auto [i, index] : enumerate(index_list)) {
             if (index < 0) {
@@ -364,9 +539,9 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
         }
 
         if (realloc) {
-            struct stride {
+            struct Stride {
                 size_t value{1};
-                stride() = default;
+                Stride() = default;
                 auto operator()(size_t dim) -> size_t {
                     auto old_value = value;
                     value *= dim;
@@ -377,7 +552,7 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
             _dims = other._dims;
 
             // Row-major order of dimensions
-            std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), stride());
+            std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
             size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
 
             // Resize the data structure
@@ -499,8 +674,10 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
     }
     auto dims() const -> Dim<Rank> { return _dims; }
 
-    auto vector_data() const -> const vector & { return _data; }
-    auto vector_data() -> vector & { return _data; }
+    ALIAS_TEMPLATE_FUNCTION(shape, dims);
+
+    auto vector_data() const -> const Vector & { return _data; }
+    auto vector_data() -> Vector & { return _data; }
 
     [[nodiscard]] auto name() const -> const std::string & { return _name; }
     void               set_name(const std::string &name) { _name = name; }
@@ -529,7 +706,7 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
     std::string  _name{"(Unnamed)"};
     Dim<Rank>    _dims;
     Stride<Rank> _strides;
-    vector       _data;
+    Vector       _data;
 
     template <typename T_, size_t Rank_>
     friend struct TensorView;
@@ -823,9 +1000,9 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
     auto common_initialization(const T *other) {
         _data = const_cast<T *>(other);
 
-        struct stride {
+        struct Stride {
             size_t value{1};
-            stride() = default;
+            Stride() = default;
             auto operator()(size_t dim) -> size_t {
                 auto old_value = value;
                 value *= dim;
@@ -834,7 +1011,7 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
         };
 
         // Row-major order of dimensions
-        std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), stride());
+        std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
 
         // At this time we'll assume we have full view of the underlying tensor since we were only provided
         // pointer.
@@ -1090,9 +1267,9 @@ struct DiskTensor final : public detail::TensorBase<T, Rank> {
     template <typename... Dims>
     explicit DiskTensor(h5::fd_t &file, std::string name, Chunk<sizeof...(Dims)> chunk, Dims... dims)
         : _file{file}, _name{std::move(name)}, _dims{static_cast<size_t>(dims)...} {
-        struct stride {
+        struct Stride {
             size_t value{1};
-            stride() = default;
+            Stride() = default;
             auto operator()(size_t dim) -> size_t {
                 auto old_value = value;
                 value *= dim;
@@ -1101,7 +1278,7 @@ struct DiskTensor final : public detail::TensorBase<T, Rank> {
         };
 
         // Row-major order of dimensions
-        std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), stride());
+        std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
 
         // Check to see if the data set exists
         if (H5Lexists(_file, _name.c_str(), H5P_DEFAULT) > 0) {
@@ -1185,9 +1362,9 @@ struct DiskTensor final : public detail::TensorBase<T, Rank> {
             cdims[i] = _dims[i];
         }
 
-        struct stride {
+        struct Stride {
             size_t value{1};
-            stride() = default;
+            Stride() = default;
             auto operator()(size_t dim) -> size_t {
                 auto old_value = value;
                 value *= dim;
@@ -1196,7 +1373,7 @@ struct DiskTensor final : public detail::TensorBase<T, Rank> {
         };
 
         // Row-major order of dimensions
-        std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), stride());
+        std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
 
         std::array<size_t, Rank> chunk_temp{};
         chunk_temp[0] = 1;
@@ -1372,7 +1549,7 @@ struct DiskView final : public detail::TensorBase<T, ViewRank> {
              const Stride<Rank> &strides)
         : _parent(const_cast<DiskTensor<T, Rank> &>(parent)), _dims(dims), _counts(counts), _offsets(offsets),
           _strides(strides), _tensor{_dims} {
-        Section section("DiskView constructor");
+        Section const section("DiskView constructor");
         h5::read<T>(_parent.disk(), _tensor.data(), h5::count{_counts}, h5::offset{_offsets});
         set_read_only(true);
     };
@@ -1415,12 +1592,6 @@ struct DiskView final : public detail::TensorBase<T, ViewRank> {
         _tensor = other;
 
         return *this;
-    }
-
-    void _create_tensor() {
-        if (!_tensor) {
-            _tensor = std::make_unique<Tensor<T, ViewRank>>(_dims);
-        }
     }
 
     // Does not perform a disk read. That was handled by the constructor.
@@ -1491,6 +1662,19 @@ DiskTensor(h5::fd_t &file, std::string name, Chunk<sizeof...(Dims)> chunk, Dims.
 #endif
 
 // Useful factories
+
+/**
+ * @brief Create a new tensor with \p name and \p args .
+ *
+ * Just a simple factory for creating new tensors. Defaults to using double for the
+ * underlying data and automatically determines rank of the tensor from args.
+ *
+ * @tparam Type The datatype of the underlying tensor. Defaults to double.
+ * @tparam Args The datatype of the calling parameters.
+ * @param name The name of the new tensor.
+ * @param args The arguments needed to construct the tensor.
+ * @return A new tensor.
+ */
 template <typename Type = double, typename... Args>
 auto create_tensor(const std::string name, Args... args) -> Tensor<Type, sizeof...(Args)> {
     return Tensor<Type, sizeof...(Args)>{name, args...};
@@ -1513,7 +1697,7 @@ auto println(const AType<T, Rank> &A, TensorPrintOptions options) ->
     typename std::enable_if_t<std::is_base_of_v<einsums::detail::TensorBase<T, Rank>, AType<T, Rank>>> {
     println("Name: {}", A.name());
     {
-        print::Indent indent{};
+        print::Indent const indent{};
 
         if constexpr (einsums::is_incore_rank_tensor_v<AType<T, Rank>, Rank, T>) {
             if constexpr (std::is_same_v<AType<T, Rank>, einsums::Tensor<T, Rank>>)
