@@ -27,6 +27,7 @@ jobs:
             - sphinx
             - pydata-sphinx-theme
             - doxygen
+            - breathe
           EOF
 
       - name: Create Environment
