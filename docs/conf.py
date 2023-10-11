@@ -13,6 +13,7 @@ import datetime
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
+import re
 import os
 import sys
 sys.path.insert(0, os.path.abspath('sphinxext'))
@@ -24,8 +25,12 @@ copyright = f'2022-{datetime.datetime.today().year}, Einsums Developers'
 author = 'Einsums Developers'
 
 # The full version, including alpha/beta/rc tags
-release = '0.1.0'
-
+branding = open('../cmake/EinsumsBranding.cmake', 'r').read()
+p = re.compile('set\(EINSUMS_VERSION\s+"(\d+\.\d+\.\d+)')
+m = p.match(branding)
+release = 'unknown-version'
+if m:
+    release = m.group(1)
 
 # -- General configuration ---------------------------------------------------
 
