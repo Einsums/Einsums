@@ -1,6 +1,7 @@
 #pragma once
 
 #include "_Export.hpp"
+#include "einsums/Print.hpp"
 
 #include <ostream>
 
@@ -11,7 +12,7 @@
 #endif
 
 namespace einsums::tensor_algebra::index {
-/// Base struct for index tags. It might not be technically needed but it will
+/// Base struct for index tags. It might not be technically needed but it will allow
 /// compile-time checks to be performed.
 struct LabelBase {};
 } // namespace einsums::tensor_algebra::index
@@ -40,6 +41,7 @@ struct LabelBase {};
         }                                                                                                                                  \
     };
 
+#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
 MAKE_INDEX(A); // NOLINT
 MAKE_INDEX(a); // NOLINT
 MAKE_INDEX(B); // NOLINT
@@ -94,6 +96,7 @@ MAKE_INDEX(z); // NOLINT
 
 // Z is a special index used internally. DO NOT USE.
 MAKE_INDEX(Z); // NOLINT
+#endif
 
 #undef MAKE_INDEX
 
@@ -101,10 +104,17 @@ namespace einsums::tensor_algebra {
 
 namespace index {
 
+#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
 constexpr auto list = std::make_tuple(i, j, k, l, m, n, a, b, c, d, e, f, p, q, r, s);
+#endif
 
 } // namespace index
 
+/**
+ * @brief Identifier for providing index labels to the the einsum function.
+ *
+ * @tparam Args
+ */
 template <typename... Args>
 struct EINSUMS_EXPORT Indices : public std::tuple<Args...> {
     Indices(Args... args) : std::tuple<Args...>(args...){};
