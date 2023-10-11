@@ -7,7 +7,7 @@
 #include "einsums/Utilities.hpp"
 #include "einsums/_Common.hpp"
 
-BEGIN_EINSUMS_NAMESPACE_CPP(einsums::polynomial::laguerre)
+BEGIN_EINSUMS_NAMESPACE_HPP(einsums::polynomial::laguerre)
 
 template <typename T>
 auto companion(const Tensor<T, 1> &c) -> std::enable_if_t<std::is_signed_v<T>, Tensor<T, 2>> {
@@ -18,19 +18,19 @@ auto companion(const Tensor<T, 1> &c) -> std::enable_if_t<std::is_signed_v<T>, T
     }
 
     if (c.dim(0) == 2) {
-        auto result = create_tensor<T>("Laguerre companion matrix", 1, 1);
+        auto result  = create_tensor<T>("Laguerre companion matrix", 1, 1);
         result(0, 0) = T{1} + (c(0) / c(1));
         return result;
     }
 
-    auto n = c.dim(0) - 1;
+    auto n   = c.dim(0) - 1;
     auto mat = create_tensor<T>("Laguerre companion matrix", n, n);
     zero(mat);
 
     auto mat1 = TensorView{mat, Dim<1>{-1}};
-    auto top = TensorView{mat1, Dim<1>{-1}, Offset<1>{1}, Stride<1>{n + 1}};
-    auto mid = TensorView{mat1, Dim<1>{-1}, Offset<1>{0}, Stride<1>{n + 1}};
-    auto bot = TensorView{mat1, Dim<1>{-1}, Offset<1>{n}, Stride<1>{n + 1}};
+    auto top  = TensorView{mat1, Dim<1>{-1}, Offset<1>{1}, Stride<1>{n + 1}};
+    auto mid  = TensorView{mat1, Dim<1>{-1}, Offset<1>{0}, Stride<1>{n + 1}};
+    auto bot  = TensorView{mat1, Dim<1>{-1}, Offset<1>{n}, Stride<1>{n + 1}};
 
     auto U = arange<T>(1, n);
     U *= T{-1.0};
@@ -76,7 +76,7 @@ auto derivative(const Tensor<T, 1> &_c, unsigned int m = 1, T scale = T{1}) -> T
             c(j - 1) += c(j);
         }
         der(0) = -c(1);
-        c = der;
+        c      = der;
     }
 
     return c;
@@ -103,11 +103,11 @@ auto value(const XType<T, 1> &x, const CType<T, 1> &c)
         c0 = c(-2);
         c1 = c(-1);
 
-        auto tmp = create_tensor_like("tmp", x);
+        auto tmp  = create_tensor_like("tmp", x);
         auto tmp1 = create_tensor_like("tmp1", x);
         for (int i = 3; i < c.dim(0) + 1; i++) {
             tmp = c0;
-            nd = nd - 1;
+            nd  = nd - 1;
 
             c0 = c1;
             c0 *= (nd - 1);
@@ -125,7 +125,7 @@ auto value(const XType<T, 1> &x, const CType<T, 1> &c)
     }
 
     auto result = create_tensor_like("laguerre_value", x);
-    result = T{1};
+    result      = T{1};
     result -= x;
     result *= c1;
     result += c0;
@@ -140,7 +140,7 @@ auto gauss_laguerre(unsigned int degree) -> std::tuple<Tensor<T, 1>, Tensor<T, 1
     // First approximation of roots. We use the fact that the companion matrix is symmetric in this case in order to obtain better zeros.
     auto c = create_tensor<double>("c", degree + 1);
     zero(c);
-    c(-1) = 1.0;
+    c(-1)  = 1.0;
     auto m = companion(c);
     auto x = create_tensor<double>("x", degree);
     zero(x);
@@ -178,12 +178,12 @@ auto weight(const TensorType<T, Rank> &tensor) -> Tensor<T, Rank> {
     LabeledSection0();
 
     auto result = create_tensor_like(tensor);
-    result = tensor;
-    auto &data = result.vector_data();
+    result      = tensor;
+    auto &data  = result.vector_data();
 
     element_operations::detail::omp_loop(data, [&](T &value) { return std::exp(-value); });
 
     return result;
 }
 
-END_EINSUMS_NAMESPACE_CPP(einsums::polynomial::laguerre)
+END_EINSUMS_NAMESPACE_HPP(einsums::polynomial::laguerre)

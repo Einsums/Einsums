@@ -14,6 +14,9 @@ add_einsums_library(einsums
         State.cpp
         TensorAlgebra.cpp
         Timer.cpp
+
+        polynomial/Laguerre.cpp
+
     PUBLIC_INCLUDES
         include
     DEPENDS
