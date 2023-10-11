@@ -673,6 +673,8 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
     }
     auto dims() const -> Dim<Rank> { return _dims; }
 
+    ALIAS_TEMPLATE_FUNCTION(shape, dims);
+
     auto vector_data() const -> const Vector & { return _data; }
     auto vector_data() -> Vector & { return _data; }
 

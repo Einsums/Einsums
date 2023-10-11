@@ -41,9 +41,7 @@ struct LabelBase {};
         }                                                                                                                                  \
     };
 
-#if DOXYGEN
-
-#else
+#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
 MAKE_INDEX(A); // NOLINT
 MAKE_INDEX(a); // NOLINT
 MAKE_INDEX(B); // NOLINT
@@ -106,7 +104,7 @@ namespace einsums::tensor_algebra {
 
 namespace index {
 
-#ifndef DOXYGEN
+#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
 constexpr auto list = std::make_tuple(i, j, k, l, m, n, a, b, c, d, e, f, p, q, r, s);
 #endif
 

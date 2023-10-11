@@ -2,6 +2,7 @@
 
 #include "einsums/Error.hpp"
 #include "einsums/Print.hpp"
+#include "einsums/STL.hpp"
 #include "einsums/_Compiler.hpp"
 #include "einsums/_Export.hpp"
 
@@ -146,7 +147,7 @@ struct fmt::formatter<einsums::Dim<Rank>> {
             oss << dim[i] << " ";
         }
         // ctx.out() is an output iterator to write to.
-        return fmt::format_to(ctx.out(), "Dim{{{}}}", oss.str());
+        return fmt::format_to(ctx.out(), "Dim{{{}}}", einsums::rtrim_copy(oss.str()));
     }
 };
 
@@ -185,7 +186,7 @@ struct fmt::formatter<einsums::Stride<Rank>> {
             oss << dim[i] << " ";
         }
         // ctx.out() is an output iterator to write to.
-        return fmt::format_to(ctx.out(), "Stride{{{}}}", oss.str());
+        return fmt::format_to(ctx.out(), "Stride{{{}}}", einsums::rtrim_copy(oss.str()));
     }
 };
 
@@ -224,7 +225,7 @@ struct fmt::formatter<einsums::Count<Rank>> {
             oss << dim[i] << " ";
         }
         // ctx.out() is an output iterator to write to.
-        return fmt::format_to(ctx.out(), "Count{{{}}}", oss.str());
+        return fmt::format_to(ctx.out(), "Count{{{}}}", einsums::rtrim_copy(oss.str()));
     }
 };
 
@@ -263,7 +264,7 @@ struct fmt::formatter<einsums::Offset<Rank>> {
             oss << dim[i] << " ";
         }
         // ctx.out() is an output iterator to write to.
-        return fmt::format_to(ctx.out(), "Offset{{{}}}", oss.str());
+        return fmt::format_to(ctx.out(), "Offset{{{}}}", einsums::rtrim_copy(oss.str()));
     }
 };
 
@@ -308,7 +309,7 @@ inline void println(const std::array<T, Rank> &array) {
     for (size_t i = 0; i < Rank; i++) {
         oss << array[i] << " ";
     }
-    println("std::array{{{}}}", oss.str().c_str());
+    println("std::array{{{}}}", einsums::rtrim_copy(oss.str().c_str()));
 }
 
 // Taken from https://www.fluentcpp.com/2017/10/27/function-aliases-cpp/
