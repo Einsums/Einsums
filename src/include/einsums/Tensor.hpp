@@ -1655,6 +1655,7 @@ template <typename... Dims>
 DiskTensor(h5::fd_t &file, std::string name, Chunk<sizeof...(Dims)> chunk, Dims... dims) -> DiskTensor<double, sizeof...(Dims)>;
 
 // Supposedly C++20 will allow template deduction guides for template aliases. i.e. Dim, Stride, Offset, Count, Range.
+// Clang has no support for class template argument deduction for alias templates. P1814R0
 #endif
 
 // Useful factories
