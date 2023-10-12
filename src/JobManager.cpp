@@ -16,8 +16,13 @@ static JobManager *instance = nullptr;
 static ThreadPool *thread_instance = nullptr;
 
 JobManager::~JobManager() {
-    this->jobs.clear();
-    this->running.clear();
+  this->is_running = false;
+  if(this->thread != nullptr) {
+    this->thread->join();
+    delete this->thread;
+  }
+  this->jobs.clear();
+  this->running.clear();
 }
 
 void JobManager::cleanup() {
@@ -33,8 +38,10 @@ void JobManager::manager_loop() {
     inst.is_running  = true;
     while (inst.is_running) {
         inst.manager_event();      // Process an event.
+	std::atomic_thread_fence(std::memory_order_acq_rel);
         std::this_thread::yield(); // Yield for another thread;
     }
+    return;
 }
 
 static void run_job(std::shared_ptr<Job> &&job) {
@@ -123,6 +130,7 @@ void JobManager::stop_manager() {
     this->thread->join();
 
     delete this->thread;
+    this->thread = nullptr;
 
     this->is_locked = false;
 }
@@ -133,6 +141,19 @@ bool JobManager::isrunning() {
     }
 
     return this->is_running;
+}
+
+void JobManager::clear() {
+  while(this->is_locked) {
+    std::this_thread::yield();
+  }
+
+  this->is_locked = true;
+
+  this->jobs.clear();
+  this->running.clear();
+
+  this->is_locked = false;
 }
 
 /**

@@ -86,18 +86,19 @@ class ReadLock {
     /**
      * Get the data that this lock protects. Only gets the data when it is ready.
      *
-     * @param timeout How long to wait. Throws an exception on time-out.
+     * @param time_out How long to wait. Throws an exception on time-out.
      * @return A reference to the data protected by this lock.
      */
-    const std::shared_ptr<T> get(std::chrono::duration<size_t> timeout) {
+    template<typename Inttype, typename Ratio>
+    const std::shared_ptr<T> get(std::chrono::duration<Inttype, Ratio> time_out) {
         std::chrono::system_clock::time_point start = std::chrono::system_clock::now();
 
         while (!this->ready()) {
             std::this_thread::yield();
 
             std::chrono::system_clock::time_point curr = std::chrono::system_clock::now();
-            if (curr - start >= timeout) {
-                throw timeout;
+            if (curr - start >= time_out) {
+                throw timeout();
             }
         }
 
@@ -123,17 +124,18 @@ class ReadLock {
     /**
      * Wait until the data is ready.
      *
-     * @param timeout How long to wait. Throws an exception on time-out.
+     * @param time_out How long to wait. Throws an exception on time-out.
      */
-    void wait(std::chrono::duration<size_t> timeout) {
+    template<typename Inttype, typename Ratio>
+    void wait(std::chrono::duration<Inttype, Ratio> time_out) {
         std::chrono::system_clock::time_point start = std::chrono::system_clock::now();
 
         while (!this->ready()) {
             std::this_thread::yield();
 
             std::chrono::system_clock::time_point curr = std::chrono::system_clock::now();
-            if (curr - start >= timeout) {
-                throw timeout;
+            if (curr - start >= time_out) {
+                throw jobs::timeout();
             }
         }
     }
@@ -200,18 +202,19 @@ class WriteLock : public ReadLock<T> {
     /**
      * Get the data that this lock protects. Only gets the data when it is ready.
      *
-     * @param timeout How long to wait. Throws an exception on time-out.
+     * @param time_out How long to wait. Throws an exception on time-out.
      * @return A reference to the data protected by this lock.
      */
-    std::shared_ptr<T> get(std::chrono::duration<size_t> timeout) {
+    template<typename Inttype, typename Ratio>
+    std::shared_ptr<T> get(std::chrono::duration<Inttype, Ratio> time_out) {
         std::chrono::system_clock::time_point start = std::chrono::system_clock::now();
 
         while (!this->ready()) {
             std::this_thread::yield();
 
             std::chrono::system_clock::time_point curr = std::chrono::system_clock::now();
-            if (curr - start >= timeout) {
-                throw timeout;
+            if (curr - start >= time_out) {
+                throw timeout();
             }
         }
 
@@ -262,6 +265,14 @@ class Resource {
      * Constructor.
      */
     Resource(T *data) : locks{}, id(0), data(std::shared_ptr<T>(data)), is_locked(false) {}
+
+    /** 
+     * Make a new resource constructed with the given arguments.
+     */
+    template<typename... Args>
+    Resource(Args&&... args) : locks{}, id(0), is_locked(false) {
+        this->data = std::make_shared<T>(args...);
+    }
 
     /**
      * Don't allow copy or move.
@@ -571,9 +582,6 @@ class JobManager final {
 
     EINSUMS_EXPORT static void cleanup();
 
-    friend class std::multiset<std::shared_ptr<Job>>;
-    friend class std::thread;
-
   protected: // I know protecting this is useless, but future-proofing never hurt anyone.
     /**
      * Main loop of the manager.
@@ -614,6 +622,11 @@ class JobManager final {
      * Check whether the manager is running or not.
      */
     EINSUMS_EXPORT bool isrunning();
+
+    /**
+     * Clear the job queue.
+     */
+    EINSUMS_EXPORT void clear();
 };
 
 /**

@@ -14,6 +14,8 @@
 #include <cstdio>
 #include <thread>
 #include <type_traits>
+#include <stdexcept>
+#include <exception>
 
 TEST_CASE("Identity Tensor Locks", "[jobs]") {
     using namespace einsums;
@@ -213,50 +215,66 @@ TEST_CASE("einsum1 job", "[jobs]") {
         jobs::JobManager::get_singleton().stop_manager();
         INFO("Destroying the thread pool.");
         jobs::ThreadPool::destroy();
+        jobs::JobManager::get_singleton().clear();
 
         INFO("Deleting tensors.");
     }
 
     SECTION("il=ijk,jkl") {
-        Tensor A{"A", 3, 3, 3};
-        Tensor B{"B", 3, 3, 3};
-        Tensor C{"C", 3, 3};
+        std::shared_ptr<jobs::Resource<Tensor<double, 3>>> A_res = std::make_shared<jobs::Resource<Tensor<double, 3>>>("A", 3, 3, 3),
+	    B_res = std::make_shared<jobs::Resource<Tensor<double, 3>>>("B", 3, 3, 3);
+	std::shared_ptr<jobs::Resource<Tensor<double, 2>>> C_res = std::make_shared<jobs::Resource<Tensor<double, 2>>>("C", 3, 3);
 
+	auto A_lock = A_res->lock();
+	auto B_lock = B_res->lock();
+
+	jobs::ThreadPool::init(8);
+	jobs::JobManager::get_singleton().start_manager();
+
+	auto ein_job = jobs::einsum(Indices{index::i, index::l}, C_res, Indices{index::i, index::j, index::k}, A_res,
+	    Indices{index::j, index::k, index::l}, B_res);
+
+	auto A = A_lock->get();
+	auto B = B_lock->get();
+	
         for (int i = 0, ij = 1; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 for (int k = 0; k < 3; k++, ij++) {
-                    A(i, j, k) = ij;
-                    B(i, j, k) = ij;
+                    (*A)(i, j, k) = ij;
+                    (*B)(i, j, k) = ij;
                 }
             }
         }
 
-        // println(A);
-        // println(B);
-        // println(C);
+        auto C_lock = C_res->lock_shared();
+	
+	A_lock->release();
+	B_lock->release();
 
-        // einsum("il=ijk,jkl", &C, A, B);
-        REQUIRE_NOTHROW(
-            einsum(Indices{index::i, index::l}, &C, Indices{index::i, index::j, index::k}, A, Indices{index::j, index::k, index::l}, B));
-
-        // println(C);
+        auto C = C_lock->get();
 
         // array([[ 765.,  810.,  855.],
         //        [1818., 1944., 2070.],
         //        [2871., 3078., 3285.]])
-        REQUIRE(C(0, 0) == 765.0);
-        REQUIRE(C(0, 1) == 810.0);
-        REQUIRE(C(0, 2) == 855.0);
-        REQUIRE(C(1, 0) == 1818.0);
-        REQUIRE(C(1, 1) == 1944.0);
-        REQUIRE(C(1, 2) == 2070.0);
-        REQUIRE(C(2, 0) == 2871.0);
-        REQUIRE(C(2, 1) == 3078.0);
-        REQUIRE(C(2, 2) == 3285.0);
+        REQUIRE((*C)(0, 0) == 765.0);
+        REQUIRE((*C)(0, 1) == 810.0);
+        REQUIRE((*C)(0, 2) == 855.0);
+        REQUIRE((*C)(1, 0) == 1818.0);
+        REQUIRE((*C)(1, 1) == 1944.0);
+        REQUIRE((*C)(1, 2) == 2070.0);
+        REQUIRE((*C)(2, 0) == 2871.0);
+        REQUIRE((*C)(2, 1) == 3078.0);
+        REQUIRE((*C)(2, 2) == 3285.0);
+
+	C_lock->release();
+
+	jobs::JobManager::get_singleton().stop_manager();
+	jobs::ThreadPool::destroy();
+	jobs::JobManager::get_singleton().clear();
     }
 }
 
-TEST_CASE("einsum2 jobs", "[jobs]") {
+TEST_CASE("einsum2 jobs", "[unfinished-jobs]") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
@@ -407,7 +425,7 @@ TEST_CASE("einsum2 jobs", "[jobs]") {
     // timer::finalize();
 }
 
-TEST_CASE("einsum3 jobs", "[jobs]") {
+TEST_CASE("einsum3 jobs", "[unfinished-jobs]") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
@@ -511,7 +529,7 @@ TEST_CASE("einsum3 jobs", "[jobs]") {
     // timer::finalize();
 }
 
-TEST_CASE("einsum4 jobs", "[jobs]") {
+TEST_CASE("einsum4 jobs", "[unfinished-jobs]") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
@@ -601,7 +619,7 @@ TEST_CASE("einsum4 jobs", "[jobs]") {
     // timer::finalize();
 }
 
-TEST_CASE("IntegralTransformation jobs", "[jobs]") {
+TEST_CASE("IntegralTransformation jobs", "[unfinished-jobs]") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
@@ -700,7 +718,7 @@ TEST_CASE("IntegralTransformation jobs", "[jobs]") {
     }
 }
 
-TEST_CASE("Hadamard jobs", "[jobs]") {
+TEST_CASE("Hadamard jobs", "[unfinished-jobs]") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
@@ -864,7 +882,7 @@ TEST_CASE("Hadamard jobs", "[jobs]") {
     }
 }
 
-TEST_CASE("unique_ptr jobs", "[jobs]") {
+TEST_CASE("unique_ptr jobs", "[unfinished-jobs]") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
@@ -989,7 +1007,7 @@ TEST_CASE("unique_ptr jobs", "[jobs]") {
     }
 }
 
-TEST_CASE("Transpose C jobs", "[jobs]") {
+TEST_CASE("Transpose C jobs", "[unfinished-jobs]") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
@@ -1143,7 +1161,7 @@ TEST_CASE("Transpose C jobs", "[jobs]") {
     }
 }
 
-TEST_CASE("gemv jobs", "[jobs]") {
+TEST_CASE("gemv jobs", "[unfinished-jobs]") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
@@ -1173,7 +1191,7 @@ TEST_CASE("gemv jobs", "[jobs]") {
     }
 }
 
-TEST_CASE("outer product jobs", "[jobs]") {
+TEST_CASE("outer product jobs", "[unfinished-jobs]") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
@@ -1323,7 +1341,7 @@ TEST_CASE("element transform jobs", "[jobs]") {
     }
 }
 
-TEST_CASE("einsum element jobs", "[jobs]") {
+TEST_CASE("einsum element jobs", "[unfinished-jobs]") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
@@ -1396,7 +1414,7 @@ TEST_CASE("einsum element jobs", "[jobs]") {
     }
 }
 
-TEST_CASE("F12 - V term jobs", "[jobs]") {
+TEST_CASE("F12 - V term jobs", "[unfinished-jobs]") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
@@ -1479,7 +1497,7 @@ TEST_CASE("F12 - V term jobs", "[jobs]") {
     }
 }
 
-TEST_CASE("B_tilde jobs", "[jobs]") {
+TEST_CASE("B_tilde jobs", "[unfinished-jobs]") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
@@ -1520,7 +1538,7 @@ TEST_CASE("B_tilde jobs", "[jobs]") {
     }
 }
 
-TEST_CASE("Khatri-Rao jobs", "[jobs]") {
+TEST_CASE("Khatri-Rao jobs", "[unfinished-jobs]") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
@@ -1615,7 +1633,7 @@ void einsum_mixed_test() {
     }
 }
 
-TEST_CASE("einsum-mixed jobs", "[jobs]") {
+TEST_CASE("einsum-mixed jobs", "[unfinished-jobs]") {
     SECTION("d-f-d") {
         einsum_mixed_test<double, float, double>();
     }
@@ -1715,7 +1733,7 @@ void dot_test() {
     }
 }
 
-TEST_CASE("dot jobs", "[jobs]") {
+TEST_CASE("dot jobs", "[unfinished-jobs]") {
     SECTION("float") {
         dot_test<float>();
     }
@@ -1730,7 +1748,7 @@ TEST_CASE("dot jobs", "[jobs]") {
     }
 }
 
-TEST_CASE("andy jobs", "[jobs]") {
+TEST_CASE("andy jobs", "[unfinished-jobs]") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
 
@@ -1910,4 +1928,111 @@ TEST_CASE("andy jobs", "[jobs]") {
 
         einsum(Indices{index::Q, index::X}, &N_QX, Indices{index::Q, index::i, index::a}, Qov, Indices{index::i, index::a, index::X}, ia_X);
     }
+}
+
+
+TEST_CASE("Complicated Jobs", "[jobs]") {
+    using namespace einsums;
+    using namespace einsums::tensor_algebra;
+    using namespace einsums::jobs;
+
+    // Start the job manager.
+    ThreadPool::init(8);
+    JobManager::get_singleton().start_manager();
+    
+    // Create several tensor resources.
+    std::shared_ptr<jobs::Resource<Tensor<double, 2>>> A_res = std::make_shared<jobs::Resource<Tensor<double, 2>>>("A", 3, 3),
+        B_res = std::make_shared<jobs::Resource<Tensor<double, 2>>>("B", 3, 3),
+	C_res = std::make_shared<jobs::Resource<Tensor<double, 2>>>("C", 3, 3),
+	D_res = std::make_shared<jobs::Resource<Tensor<double, 2>>>("D", 3, 3);
+
+    // Get locks for writing A and B.
+    auto A_lock1 = A_res->lock();
+    auto B_lock1 = B_res->lock();
+
+    // Queue up a second layer to test resolution.
+    auto A_lock2 = A_res->lock();
+    auto B_lock2 = B_res->lock();
+
+    // Make sure the second locks don't resolve.
+    INFO("Try to find out what exception is being thrown.");
+    REQUIRE_THROWS_AS(A_lock2->wait(std::chrono::milliseconds(10)), jobs::timeout);
+    REQUIRE_THROWS_AS(B_lock2->wait(std::chrono::milliseconds(10)), jobs::timeout);
+
+    // Resolve the first locks for zeroing the tensors.
+    auto A = A_lock1->get();
+    auto B = B_lock1->get();
+
+    // Zero the matrices.
+    A->zero();
+    B->zero();
+
+    A_lock1->release();
+    B_lock1->release();
+
+    // Queue up jobs for the other tensors.
+    jobs::einsum(Indices{index::i, index::j}, C_res, Indices{index::i, index::l}, A_res, Indices{index::l, index::j}, B_res);
+    jobs::einsum(Indices{index::i, index::j}, D_res, Indices{index::i, index::l}, B_res, Indices{index::l, index::j}, A_res);
+    jobs::einsum(Indices{index::i, index::j}, A_res, Indices{index::i, index::j}, B_res, Indices{index::j, index::i}, B_res);
+
+    // Set A and B.
+    A = A_lock2->get();
+    B = B_lock2->get();
+
+    for(int i = 0; i < 3; i++) {
+        for(int j = 0; j < 3; j++) {
+	    (*A)(i, j) = i * 3 + j + 1;
+	    (*B)(i, j) = i * 3 + j + 1;
+	}
+    }
+
+    A_lock2->release();
+    B_lock2->release();
+
+    auto A_lock = A_res->lock_shared();
+    auto C_lock = C_res->lock_shared();
+    auto D_lock = D_res->lock_shared();
+
+    A = A_lock->get();
+    auto C = C_lock->get();
+    auto D = D_lock->get();
+
+    REQUIRE((*A)(0, 0) == 1);
+    REQUIRE((*A)(0, 1) == 8);
+    REQUIRE((*A)(0, 2) == 21);
+    REQUIRE((*A)(1, 0) == 8);
+    REQUIRE((*A)(1, 1) == 25);
+    REQUIRE((*A)(1, 2) == 48);
+    REQUIRE((*A)(2, 0) == 21);
+    REQUIRE((*A)(2, 1) == 48);
+    REQUIRE((*A)(2, 2) == 81);
+
+    REQUIRE((*C)(0, 0) == 30);
+    REQUIRE((*C)(0, 1) == 36);
+    REQUIRE((*C)(0, 2) == 42);
+    REQUIRE((*C)(1, 0) == 66);
+    REQUIRE((*C)(1, 1) == 81);
+    REQUIRE((*C)(1, 2) == 96);
+    REQUIRE((*C)(2, 0) == 102);
+    REQUIRE((*C)(2, 1) == 126);
+    REQUIRE((*C)(2, 2) == 150);
+
+    REQUIRE((*D)(0, 0) == 30);
+    REQUIRE((*D)(0, 1) == 36);
+    REQUIRE((*D)(0, 2) == 42);
+    REQUIRE((*D)(1, 0) == 66);
+    REQUIRE((*D)(1, 1) == 81);
+    REQUIRE((*D)(1, 2) == 96);
+    REQUIRE((*D)(2, 0) == 102);
+    REQUIRE((*D)(2, 1) == 126);
+    REQUIRE((*D)(2, 2) == 150);
+
+    A_lock->release();
+    C_lock->release();
+    D_lock->release();
+
+    JobManager::get_singleton().stop_manager();
+    JobManager::get_singleton().clear();
+    ThreadPool::destroy();
+
 }
