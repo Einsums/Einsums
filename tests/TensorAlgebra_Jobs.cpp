@@ -1,32 +1,31 @@
-#include "einsums/TensorAlgebra.hpp"
-
+#include "einsums/Jobs.hpp"
 #include "einsums/LinearAlgebra.hpp"
 #include "einsums/STL.hpp"
 #include "einsums/Sort.hpp"
 #include "einsums/State.hpp"
 #include "einsums/Tensor.hpp"
+#include "einsums/TensorAlgebra.hpp"
 #include "einsums/Utilities.hpp"
-#include "einsums/Jobs.hpp"
 
 #include <H5Fpublic.h>
 #include <catch2/catch_all.hpp>
-#include <complex>
-#include <type_traits>
-#include <thread>
-#include <cstdio>
 #include <chrono>
+#include <complex>
+#include <cstdio>
+#include <thread>
+#include <type_traits>
 
 TEST_CASE("Identity Tensor Locks", "[jobs]") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::jobs;
-    
+
     Tensor<double, 2> *_I = new Tensor<double, 2>(create_identity_tensor("I", 3, 3));
 
     Resource<std::remove_pointer_t<decltype(_I)>> I_res(_I);
 
     auto lock = I_res.lock_shared();
-    
+
     lock->wait();
 
     auto I = lock->get();
@@ -40,7 +39,7 @@ TEST_CASE("Identity Tensor Locks", "[jobs]") {
     REQUIRE((*I)(2, 0) == 0.0);
     REQUIRE((*I)(2, 1) == 0.0);
     REQUIRE((*I)(2, 2) == 1.0);
-    
+
     lock->release();
 }
 
@@ -53,25 +52,25 @@ TEST_CASE("Scale Row Locks", "[jobs]") {
     Tensor<double, 2> *_I_copy     = new Tensor<double, 2>();
 
     *_I_original = create_random_tensor("I", 3, 3);
-    *_I_copy = *_I_original;
+    *_I_copy     = *_I_original;
 
     Resource<std::remove_pointer_t<decltype(_I_original)>> res(_I_original);
-    Resource<std::remove_pointer_t<decltype(_I_copy)>> res_copy(_I_copy);
+    Resource<std::remove_pointer_t<decltype(_I_copy)>>     res_copy(_I_copy);
 
-    auto lock = res.lock_shared();
+    auto lock      = res.lock_shared();
     auto lock_copy = res_copy.lock();
 
-    while(!lock_copy->ready()) {
-      std::this_thread::yield();
+    while (!lock_copy->ready()) {
+        std::this_thread::yield();
     }
 
     scale_row(1, 2.0, lock_copy->get().get());
 
-    while(!lock->ready()) {
-      std::this_thread::yield();
+    while (!lock->ready()) {
+        std::this_thread::yield();
     }
 
-    auto I_copy = *(lock_copy->get());
+    auto I_copy     = *(lock_copy->get());
     auto I_original = *(lock->get());
 
     REQUIRE(I_copy(0, 0) == I_original(0, 0));
@@ -95,27 +94,27 @@ TEST_CASE("Scale Column Locks", "[jobs]") {
 
     Tensor<double, 2> *_I_original = new Tensor<double, 2>();
     Tensor<double, 2> *_I_copy     = new Tensor<double, 2>();
-    
+
     *_I_original = create_random_tensor("I", 3, 3);
-    *_I_copy = *_I_original;
+    *_I_copy     = *_I_original;
 
     Resource<std::remove_pointer_t<decltype(_I_original)>> res(_I_original);
-    Resource<std::remove_pointer_t<decltype(_I_copy)>> res_copy(_I_copy);
+    Resource<std::remove_pointer_t<decltype(_I_copy)>>     res_copy(_I_copy);
 
-    auto lock = res.lock_shared();
+    auto lock      = res.lock_shared();
     auto lock_copy = res_copy.lock();
 
-    while(!lock_copy->ready()) {
-      std::this_thread::yield();
+    while (!lock_copy->ready()) {
+        std::this_thread::yield();
     }
 
     scale_column(1, 2.0, lock_copy->get().get());
 
-    while(!lock->ready()) {
-      std::this_thread::yield();
+    while (!lock->ready()) {
+        std::this_thread::yield();
     }
 
-    auto I_copy = *(lock_copy->get());
+    auto I_copy     = *(lock_copy->get());
     auto I_original = *(lock->get());
 
     REQUIRE(I_copy(0, 0) == I_original(0, 0));
@@ -137,62 +136,59 @@ TEST_CASE("einsum1 job", "[jobs]") {
     using namespace einsums::tensor_algebra;
 
     SECTION("ik=ij,jk") {
-        Tensor<double, 2> *_A = new Tensor<double, 2>("A", 3, 3),
-	  *_B = new Tensor<double, 2>("B", 3, 3),
-	  *_C = new Tensor<double, 2>("C", 3, 3);
+        Tensor<double, 2> *_A = new Tensor<double, 2>("A", 3, 3), *_B = new Tensor<double, 2>("B", 3, 3),
+                          *_C = new Tensor<double, 2>("C", 3, 3);
 
-	INFO("Creating resources");
-	auto A_res = std::make_shared<jobs::Resource<std::remove_pointer_t<decltype(_A)>>>(_A);
-	auto B_res = std::make_shared<jobs::Resource<std::remove_pointer_t<decltype(_B)>>>(_B);
-	auto C_res = std::make_shared<jobs::Resource<std::remove_pointer_t<decltype(_C)>>>(_C);
+        INFO("Creating resources");
+        auto A_res = std::make_shared<jobs::Resource<std::remove_pointer_t<decltype(_A)>>>(_A);
+        auto B_res = std::make_shared<jobs::Resource<std::remove_pointer_t<decltype(_B)>>>(_B);
+        auto C_res = std::make_shared<jobs::Resource<std::remove_pointer_t<decltype(_C)>>>(_C);
 
-	// Initialize thread pool.
-	INFO("Initialize the thread pool");
-	jobs::ThreadPool::init(8);
-	jobs::ThreadPool::get_singleton();
+        // Initialize thread pool.
+        INFO("Initialize the thread pool");
+        jobs::ThreadPool::init(8);
+        jobs::ThreadPool::get_singleton();
 
-	// Start the job manager.
-	INFO("Start the job manager");
-	jobs::JobManager::get_singleton().start_manager();
+        // Start the job manager.
+        INFO("Start the job manager");
+        jobs::JobManager::get_singleton().start_manager();
 
-	// Obtain locks for modification.
-	INFO("Obtain locks for modification.");
-	auto A_lock = A_res->lock();
-	auto B_lock = B_res->lock();
+        // Obtain locks for modification.
+        INFO("Obtain locks for modification.");
+        auto A_lock = A_res->lock();
+        auto B_lock = B_res->lock();
 
-	// Make and queue the job.
-	INFO("Make a job and add it to the queue.");
-	auto job = jobs::einsum(Indices{index::i, index::j}, C_res,
-				Indices{index::i, index::k}, A_res,
-				Indices{index::k, index::j}, B_res);
+        // Make and queue the job.
+        INFO("Make a job and add it to the queue.");
+        auto job = jobs::einsum(Indices{index::i, index::j}, C_res, Indices{index::i, index::k}, A_res, Indices{index::k, index::j}, B_res);
 
-	// Wait for the modification locks to resolve.
-	A_lock->wait();
-	B_lock->wait();
+        // Wait for the modification locks to resolve.
+        A_lock->wait();
+        B_lock->wait();
 
-	auto A = A_lock->get();
-	auto B = B_lock->get();
-	
+        auto A = A_lock->get();
+        auto B = B_lock->get();
+
         for (int i = 0, ij = 1; i < 3; i++) {
             for (int j = 0; j < 3; j++, ij++) {
-	      (*A)(i, j) = ij;
-	      (*B)(i, j) = ij;
+                (*A)(i, j) = ij;
+                (*B)(i, j) = ij;
             }
         }
-	std::this_thread::sleep_for(std::chrono::seconds(1));
+        std::this_thread::sleep_for(std::chrono::seconds(1));
 
-	A_lock->release();
-	B_lock->release();
+        A_lock->release();
+        B_lock->release();
 
-	while(!job->is_finished()) {
-	  std::this_thread::yield();
-	}
+        while (!job->is_finished()) {
+            std::this_thread::yield();
+        }
 
-	auto C_lock = C_res->lock_shared();
+        auto C_lock = C_res->lock_shared();
 
-	C_lock->wait();
+        C_lock->wait();
 
-	auto C = C_lock->get();
+        auto C = C_lock->get();
 
         // println(A);
         // println(B);
@@ -210,15 +206,15 @@ TEST_CASE("einsum1 job", "[jobs]") {
         REQUIRE((*C)(2, 0) == 102.0);
         REQUIRE((*C)(2, 1) == 126.0);
         REQUIRE((*C)(2, 2) == 150.0);
-	INFO("Releasing memory");
-	C_lock->release();
+        INFO("Releasing memory");
+        C_lock->release();
 
-	INFO("Killing the manager");
-	jobs::JobManager::get_singleton().stop_manager();
-	INFO("Destroying the thread pool.");
-	jobs::ThreadPool::destroy();
+        INFO("Killing the manager");
+        jobs::JobManager::get_singleton().stop_manager();
+        INFO("Destroying the thread pool.");
+        jobs::ThreadPool::destroy();
 
-	INFO("Deleting tensors.");
+        INFO("Deleting tensors.");
     }
 
     SECTION("il=ijk,jkl") {
