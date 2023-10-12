@@ -264,7 +264,7 @@ class Resource {
     /**
      * Constructor.
      */
-    Resource(T *data) : locks{}, id(0), data(std::shared_ptr<T>(data)), is_locked(false) {}
+    //Resource(T *data) : locks{}, id(0), data(std::shared_ptr<T>(data)), is_locked(false) {}
 
     /** 
      * Make a new resource constructed with the given arguments.
@@ -288,6 +288,7 @@ class Resource {
             state->clear();
         }
         this->locks.clear();
+	this->data.reset();
     }
 
     std::shared_ptr<T> get_data() { return std::shared_ptr<T>(this->data); }
@@ -357,21 +358,21 @@ class Resource {
         }
         this->is_locked = true;
         for (auto state : this->locks) {
-            for (auto curr_lock = state->begin(); curr_lock != state->end(); curr_lock++) {
-                if (**curr_lock == lock) {
-                    state->erase(curr_lock);
-                    curr_lock--; // Need to put back to the right place.
-                    ret = true;
-                }
-            }
+	  for(size_t i = 0; i < state->size(); i++) {
+	    if (*(state->at(i)) == lock) {
+	      state->erase(std::next(state->begin(), i));
+	      i--;
+	      ret = true;
+	    }
+	  }
         }
 
         // Remove empty states.
-        for (auto state = this->locks.begin(); state != this->locks.end(); state++) {
-            if ((*state)->empty()) {
-                delete *state;
-                this->locks.erase(state);
-                state--;
+	for(size_t i = 0; i < this->locks.size(); i++) {
+            if (this->locks[i]->empty()) {
+	      //delete this->locks[i];
+                this->locks.erase(std::next(this->locks.begin(), i));
+                i--;
             }
         }
 
@@ -496,6 +497,19 @@ class Resource {
         this->is_locked = false;
         return false;
     }
+
+  /**
+   * Clear the memory. Useful if the memory is owned by another scope.
+   */
+  void clear() {
+    while(this->is_locked) {
+      std::this_thread::yield();
+    }
+    this->is_locked = true;
+    this->data = nullptr;
+
+    this->is_locked = false;
+  }
 };
 
 /**
@@ -572,14 +586,17 @@ class JobManager final {
 
     std::thread *thread;
 
-    JobManager() : jobs{}, running{}, is_locked(false), is_running(false), thread(nullptr) { std::atexit(JobManager::cleanup); }
+    EINSUMS_EXPORT JobManager();
 
     // No copy or move.
     JobManager(const JobManager &)  = delete;
     JobManager(const JobManager &&) = delete;
 
-    ~JobManager();
+    EINSUMS_EXPORT ~JobManager();
 
+    /**
+     * Clean up the job manager on exit from program.
+     */
     EINSUMS_EXPORT static void cleanup();
 
   protected: // I know protecting this is useless, but future-proofing never hurt anyone.
@@ -627,6 +644,11 @@ class JobManager final {
      * Clear the job queue.
      */
     EINSUMS_EXPORT void clear();
+
+  /**
+   * Destroy the job queue.
+   */
+  EINSUMS_EXPORT static void destroy();
 };
 
 /**
@@ -848,13 +870,17 @@ auto einsum(CDataType C_prefactor, const std::tuple<CIndices...> &Cs, std::share
     using outtype =
         EinsumJob<AType, ABDataType, BType, CType, CDataType, std::tuple<CIndices...>, std::tuple<AIndices...>, std::tuple<BIndices...>>;
 
+    std::fprintf(stderr, "Obtain locks.\n");
     std::shared_ptr<WriteLock<CType>> C_lock = C->lock();
     std::shared_ptr<ReadLock<AType>>  A_lock = A->lock_shared();
     std::shared_ptr<ReadLock<BType>>  B_lock = B->lock_shared();
+    std::fprintf(stderr, "Make the job.\n");
     std::shared_ptr<outtype>          out    = std::make_shared<outtype>(C_prefactor, Cs, C_lock, AB_prefactor, As, A_lock, Bs, B_lock);
 
     // Queue the job.
+    std::fprintf(stderr, "Queue the job.\n");
     JobManager::get_singleton().queue_job(out);
+    std::fprintf(stderr, "Job queued.\n");
 
     return out;
 }

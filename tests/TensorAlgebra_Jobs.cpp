@@ -22,9 +22,7 @@ TEST_CASE("Identity Tensor Locks", "[jobs]") {
     using namespace einsums::tensor_algebra;
     using namespace einsums::jobs;
 
-    Tensor<double, 2> *_I = new Tensor<double, 2>(create_identity_tensor("I", 3, 3));
-
-    Resource<std::remove_pointer_t<decltype(_I)>> I_res(_I);
+    Resource<Tensor<double, 2>> I_res(create_identity_tensor("I", 3, 3));
 
     auto lock = I_res.lock_shared();
 
@@ -50,14 +48,8 @@ TEST_CASE("Scale Row Locks", "[jobs]") {
     using namespace einsums::linear_algebra;
     using namespace einsums::jobs;
 
-    Tensor<double, 2> *_I_original = new Tensor<double, 2>();
-    Tensor<double, 2> *_I_copy     = new Tensor<double, 2>();
-
-    *_I_original = create_random_tensor("I", 3, 3);
-    *_I_copy     = *_I_original;
-
-    Resource<std::remove_pointer_t<decltype(_I_original)>> res(_I_original);
-    Resource<std::remove_pointer_t<decltype(_I_copy)>>     res_copy(_I_copy);
+    Resource<Tensor<double, 2>> res(create_random_tensor("I", 3, 3));
+    Resource<Tensor<double, 2>>     res_copy(*(res.get_data()));
 
     auto lock      = res.lock_shared();
     auto lock_copy = res_copy.lock();
@@ -94,14 +86,8 @@ TEST_CASE("Scale Column Locks", "[jobs]") {
     using namespace einsums::linear_algebra;
     using namespace einsums::jobs;
 
-    Tensor<double, 2> *_I_original = new Tensor<double, 2>();
-    Tensor<double, 2> *_I_copy     = new Tensor<double, 2>();
-
-    *_I_original = create_random_tensor("I", 3, 3);
-    *_I_copy     = *_I_original;
-
-    Resource<std::remove_pointer_t<decltype(_I_original)>> res(_I_original);
-    Resource<std::remove_pointer_t<decltype(_I_copy)>>     res_copy(_I_copy);
+    Resource<Tensor<double, 2>> res(create_random_tensor("I", 3, 3));
+    Resource<Tensor<double, 2>>     res_copy(*(res.get_data()));
 
     auto lock      = res.lock_shared();
     auto lock_copy = res_copy.lock();
@@ -138,13 +124,9 @@ TEST_CASE("einsum1 job", "[jobs]") {
     using namespace einsums::tensor_algebra;
 
     SECTION("ik=ij,jk") {
-        Tensor<double, 2> *_A = new Tensor<double, 2>("A", 3, 3), *_B = new Tensor<double, 2>("B", 3, 3),
-                          *_C = new Tensor<double, 2>("C", 3, 3);
-
-        INFO("Creating resources");
-        auto A_res = std::make_shared<jobs::Resource<std::remove_pointer_t<decltype(_A)>>>(_A);
-        auto B_res = std::make_shared<jobs::Resource<std::remove_pointer_t<decltype(_B)>>>(_B);
-        auto C_res = std::make_shared<jobs::Resource<std::remove_pointer_t<decltype(_C)>>>(_C);
+	std::shared_ptr<jobs::Resource<Tensor<double, 2>>> A_res = std::make_shared<jobs::Resource<Tensor<double, 2>>>("A", 3, 3),
+	  B_res = std::make_shared<jobs::Resource<Tensor<double, 2>>>("B", 3, 3),
+	  C_res = std::make_shared<jobs::Resource<Tensor<double, 2>>>("C", 3, 3);
 
         // Initialize thread pool.
         INFO("Initialize the thread pool");
@@ -215,7 +197,7 @@ TEST_CASE("einsum1 job", "[jobs]") {
         jobs::JobManager::get_singleton().stop_manager();
         INFO("Destroying the thread pool.");
         jobs::ThreadPool::destroy();
-        jobs::JobManager::get_singleton().clear();
+        jobs::JobManager::destroy();
 
         INFO("Deleting tensors.");
     }
@@ -270,7 +252,7 @@ TEST_CASE("einsum1 job", "[jobs]") {
 
 	jobs::JobManager::get_singleton().stop_manager();
 	jobs::ThreadPool::destroy();
-	jobs::JobManager::get_singleton().clear();
+	jobs::JobManager::destroy();
     }
 }
 
@@ -1955,7 +1937,6 @@ TEST_CASE("Complicated Jobs", "[jobs]") {
     auto B_lock2 = B_res->lock();
 
     // Make sure the second locks don't resolve.
-    INFO("Try to find out what exception is being thrown.");
     REQUIRE_THROWS_AS(A_lock2->wait(std::chrono::milliseconds(10)), jobs::timeout);
     REQUIRE_THROWS_AS(B_lock2->wait(std::chrono::milliseconds(10)), jobs::timeout);
 
@@ -2032,7 +2013,7 @@ TEST_CASE("Complicated Jobs", "[jobs]") {
     D_lock->release();
 
     JobManager::get_singleton().stop_manager();
-    JobManager::get_singleton().clear();
     ThreadPool::destroy();
+    JobManager::destroy();
 
 }

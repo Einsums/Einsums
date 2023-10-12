@@ -15,7 +15,17 @@ static JobManager *instance = nullptr;
 
 static ThreadPool *thread_instance = nullptr;
 
+static bool added_job_exit_handler = false, added_thread_exit_handler = false;
+
+JobManager::JobManager() : jobs{}, running{}, is_locked(false), is_running(false), thread(nullptr) {
+  if(!added_job_exit_handler) {
+    std::atexit(JobManager::cleanup);
+    added_job_exit_handler = true;
+  }
+}
+
 JobManager::~JobManager() {
+  std::fprintf(stderr, "Deleting job manager.\n");
   this->is_running = false;
   if(this->thread != nullptr) {
     this->thread->join();
@@ -58,6 +68,7 @@ static void run_job(std::shared_ptr<Job> &&job) {
 
 void JobManager::manager_event() {
     // Obtain a lock on the manager.
+
     while (this->is_locked) {
         std::this_thread::yield();
     }
@@ -65,11 +76,11 @@ void JobManager::manager_event() {
     this->is_locked = true;
 
     // Go through each of the running jobs and remove finished jobs.
-    for (auto job = this->running.begin(); job != this->running.end(); job++) {
-        if (std::get<0>(*job)->is_finished()) {
-            ThreadPool::get_singleton().release(std::get<1>(*job));
-            this->running.erase(job);
-            job--;
+    for (size_t i = 0; i < this->running.size(); i++) {
+        if (std::get<0>(this->running[i])->is_finished()) {
+	  ThreadPool::get_singleton().release(std::get<1>(this->running[i]));
+	  this->running.erase(std::next(this->running.begin(), i));
+            i--;
         }
     }
 
@@ -114,7 +125,9 @@ void JobManager::start_manager() {
     this->is_running = true;
 
     // Start the thread.
-    this->thread = new std::thread(this->manager_loop);
+    if(this->thread == nullptr) {
+      this->thread = new std::thread(this->manager_loop);
+    }
 
     this->is_locked = false;
 }
@@ -127,7 +140,12 @@ void JobManager::stop_manager() {
     this->is_locked = true;
 
     this->is_running = false;
+    this->is_locked = false;
     this->thread->join();
+
+    while (this->is_locked) {
+        std::this_thread::yield();
+    }
 
     delete this->thread;
     this->thread = nullptr;
@@ -154,6 +172,13 @@ void JobManager::clear() {
   this->running.clear();
 
   this->is_locked = false;
+}
+
+void JobManager::destroy() {
+  if(instance != nullptr) {
+    delete instance;
+    instance = nullptr;
+  }
 }
 
 /**
@@ -195,11 +220,15 @@ static void thread_loop() {
 }
 
 ThreadPool::ThreadPool(int threads) : max_threads(threads), avail{}, running{}, thread_info{} {
-    this->is_locked = true;
-    this->stop      = false;
-    for (int i = 0; i < threads; i++) {
-        std::shared_ptr<std::thread> thread = std::make_shared<std::thread>(thread_loop);
-        this->avail.push_back(thread);
+  if(!added_thread_exit_handler) {
+    std::atexit(ThreadPool::destroy);
+    added_thread_exit_handler = true;
+  }
+  this->is_locked = true;
+  this->stop      = false;
+  for (int i = 0; i < threads; i++) {
+    std::shared_ptr<std::thread> thread = std::make_shared<std::thread>(thread_loop);
+    this->avail.push_back(thread);
 
         this->thread_info[thread->get_id()] = std::tuple<int, int, ThreadPool::function_type, std::shared_ptr<Job>>{0, 0, nullptr, nullptr};
     }
@@ -207,6 +236,7 @@ ThreadPool::ThreadPool(int threads) : max_threads(threads), avail{}, running{}, 
 }
 
 ThreadPool::~ThreadPool() {
+  std::fprintf(stderr, "Deleting thread pool.\n");
 
     lock();
     stop = true;
@@ -261,8 +291,10 @@ void ThreadPool::init(int threads) {
 }
 
 void ThreadPool::destroy() {
+  if(thread_instance != nullptr) {
     delete thread_instance;
     thread_instance = nullptr;
+  }
 }
 
 ThreadPool &ThreadPool::get_singleton() {
@@ -337,12 +369,16 @@ void ThreadPool::release(std::vector<std::shared_ptr<std::thread>> &threads) {
     this->lock();
 
     // Move running threads back to the waiting pool.
-    for (auto thread = this->running.begin(); thread != this->running.end(); thread++) {
-        this->avail.push_back(*thread);
-        this->running.erase(thread);
-
-        this->thread_info[(*thread)->get_id()] =
-            std::tuple<int, int, ThreadPool::function_type, std::shared_ptr<Job>>{0, 0, nullptr, nullptr};
+    for(auto thread : threads) {
+      for(size_t i = 0; i < this->running.size(); i++) {
+	if(this->running[i]->get_id() == thread->get_id()) {
+	  this->avail.push_back(this->running[i]);
+	  this->thread_info[this->running[i]->get_id()] =
+	    std::tuple<int, int, ThreadPool::function_type, std::shared_ptr<Job>>{0, 0, nullptr, nullptr};
+	  this->running.erase(std::next(this->running.begin(), i));
+	  i--;
+	}
+      }
     }
 
     this->unlock();
