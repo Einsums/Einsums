@@ -136,7 +136,7 @@ jobs:
             -D EINSUMS_SHOW_WARNING=OFF \
             -D EINSUMS_USE_HPTT=${{matrix.hptt}} \
             -D EINSUMS_STATIC_BUILD=${{matrix.hptt}} \
-	    -D EINSUMS_JOB_QUEUES=${{matrix.build_job_queue}} \
+            -D EINSUMS_JOB_QUEUES=${{matrix.build_job_queue}} \
             -D CMAKE_INSTALL_PREFIX="${{github.workspace}}/installed" \
             -DCMAKE_PREFIX_PATH="${CONDA_PREFIX}" \
             ${{ matrix.cmargs }}
