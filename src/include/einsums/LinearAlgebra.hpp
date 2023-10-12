@@ -8,6 +8,7 @@
 #include "einsums/Utilities.hpp"
 #include "einsums/_Common.hpp"
 #include "einsums/utility/ComplexTraits.hpp"
+#include "einsums/utility/SmartPointerTraits.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -359,8 +360,8 @@ auto invert(TensorType<T, TensorRank> *A) -> std::enable_if_t<is_incore_rank_ten
     }
 }
 
-template <typename SmartPtr>
-auto invert(SmartPtr *A) -> std::enable_if_t<is_smart_pointer_v<SmartPtr>> {
+template <SmartPointer SmartPtr>
+void invert(SmartPtr *A) {
     LabeledSection0();
 
     return invert(A->get());

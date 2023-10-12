@@ -7,6 +7,7 @@
 #include "einsums/_Common.hpp"
 #include "einsums/_Compiler.hpp"
 #include "einsums/_TensorAlgebraUtilities.hpp"
+#include "einsums/utility/SmartPointerTraits.hpp"
 
 BEGIN_EINSUMS_NAMESPACE_HPP(einsums::tensor_algebra)
 
@@ -88,30 +89,26 @@ auto sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<
 } // namespace einsums::TensorAlgebra
 
 // Sort with default values, no smart pointers
-template <typename ObjectA, typename ObjectC, typename... CIndices, typename... AIndices>
-auto sort(const std::tuple<CIndices...> &C_indices, ObjectC *C, const std::tuple<AIndices...> &A_indices, const ObjectA &A)
-    -> std::enable_if_t<!is_smart_pointer_v<ObjectA> && !is_smart_pointer_v<ObjectC>> {
+template <NotASmartPointer ObjectA, NotASmartPointer ObjectC, typename... CIndices, typename... AIndices>
+void sort(const std::tuple<CIndices...> &C_indices, ObjectC *C, const std::tuple<AIndices...> &A_indices, const ObjectA &A) {
     sort(0, C_indices, C, 1, A_indices, A);
 }
 
 // Sort with default values, two smart pointers
-template <typename SmartPointerA, typename SmartPointerC, typename... CIndices, typename... AIndices>
-auto sort(const std::tuple<CIndices...> &C_indices, SmartPointerC *C, const std::tuple<AIndices...> &A_indices, const SmartPointerA &A)
-    -> std::enable_if_t<is_smart_pointer_v<SmartPointerA> && is_smart_pointer_v<SmartPointerC>> {
+template <SmartPointer SmartPointerA, SmartPointer SmartPointerC, typename... CIndices, typename... AIndices>
+void sort(const std::tuple<CIndices...> &C_indices, SmartPointerC *C, const std::tuple<AIndices...> &A_indices, const SmartPointerA &A) {
     sort(0, C_indices, C->get(), 1, A_indices, *A);
 }
 
 // Sort with default values, one smart pointer (A)
-template <typename SmartPointerA, typename PointerC, typename... CIndices, typename... AIndices>
-auto sort(const std::tuple<CIndices...> &C_indices, PointerC *C, const std::tuple<AIndices...> &A_indices, const SmartPointerA &A)
-    -> std::enable_if_t<is_smart_pointer_v<SmartPointerA> && !is_smart_pointer_v<PointerC>> {
+template <SmartPointer SmartPointerA, NotASmartPointer PointerC, typename... CIndices, typename... AIndices>
+void sort(const std::tuple<CIndices...> &C_indices, PointerC *C, const std::tuple<AIndices...> &A_indices, const SmartPointerA &A) {
     sort(0, C_indices, C, 1, A_indices, *A);
 }
 
 // Sort with default values, one smart pointer (C)
-template <typename ObjectA, typename SmartPointerC, typename... CIndices, typename... AIndices>
-auto sort(const std::tuple<CIndices...> &C_indices, SmartPointerC *C, const std::tuple<AIndices...> &A_indices, const ObjectA &A)
-    -> std::enable_if_t<!is_smart_pointer_v<ObjectA> && is_smart_pointer_v<SmartPointerC>> {
+template <NotASmartPointer ObjectA, SmartPointer SmartPointerC, typename... CIndices, typename... AIndices>
+void sort(const std::tuple<CIndices...> &C_indices, SmartPointerC *C, const std::tuple<AIndices...> &A_indices, const ObjectA &A) {
     sort(0, C_indices, C->get(), 1, A_indices, A);
 }
 
