@@ -40,7 +40,7 @@ jobs:
         exclude:
           - cxx: L-Intel
             build_type: Debug
-    name: "Build • ${{ matrix.cxx }} • ${{ matrix.build_type }} • HPTT=${{ matrix.hptt }}"
+    name: "Build • ${{ matrix.cxx }} • ${{ matrix.build_type }} • HPTT=${{ matrix.hptt }} • Job Queue=${{ matrix.build_job_queues }}"
     runs-on: ${{matrix.os}}
     defaults:
       run:
