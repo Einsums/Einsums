@@ -3,6 +3,7 @@
 #include "einsums/OpenMP.h"
 #include "einsums/Section.hpp"
 #include "einsums/Tensor.hpp"
+#include "einsums/utility/ComplexTraits.hpp"
 
 namespace einsums {
 
@@ -81,7 +82,7 @@ auto create_random_tensor(const std::string &name, MultiIndex... index) -> Tenso
 
     if constexpr (Normalize == true && sizeof...(MultiIndex) == 2) {
         for (int col = 0; col < A.dim(-1); col++) {
-            remove_complex_t<T> scale{1}, sumsq{0};
+            RemoveComplexT<T> scale{1}, sumsq{0};
 
             auto column = A(All, col);
             // auto collapsed = TensorView{A, Dim<2>{-1, A.dim(-1)}};

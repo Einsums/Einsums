@@ -593,7 +593,7 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
         auto target_dims = get_dim_ranges<CRank>(*C);
         for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
             CDataType Cvalue{std::apply(*C, target_combination)};
-            if constexpr (!is_complex_v<CDataType>) {
+            if constexpr (!IsComplexV<CDataType>) {
                 if (std::isnan(Cvalue)) {
                     println(bg(fmt::color::red) | fg(fmt::color::white), "NaN DETECTED!");
                     println(bg(fmt::color::red) | fg(fmt::color::white), "    {:f} {}({:}) += {:f} {}({:}) * {}({:})", C_prefactor,
@@ -647,7 +647,7 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
             CDataType Cvalue{std::apply(*C, target_combination)};
             CDataType Ctest{std::apply(testC, target_combination)};
 
-            if constexpr (!is_complex_v<CDataType>) {
+            if constexpr (!IsComplexV<CDataType>) {
                 if (std::isnan(Cvalue) || std::isnan(Ctest)) {
                     println(bg(fmt::color::red) | fg(fmt::color::white), "NAN DETECTED!");
                     println("Source tensors");
@@ -669,7 +669,7 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
             }
 
 #    if defined(EINSUMS_USE_CATCH2)
-            if constexpr (!is_complex_v<CDataType>) {
+            if constexpr (!IsComplexV<CDataType>) {
                 REQUIRE_THAT(Cvalue,
                              Catch::Matchers::WithinRel(Ctest, static_cast<CDataType>(0.001)) || Catch::Matchers::WithinAbs(0, 0.0001));
                 CHECK(print_info_and_abort == false);
@@ -682,7 +682,7 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
 
             if (print_info_and_abort) {
                 println(emphasis::bold | bg(fmt::color::red) | fg(fmt::color::white), "    !!! EINSUM ERROR !!!");
-                if constexpr (is_complex_v<CDataType>) {
+                if constexpr (IsComplexV<CDataType>) {
                     println(bg(fmt::color::red) | fg(fmt::color::white), "    Expected {:20.14f} + {:20.14f}i", Ctest.real(), Ctest.imag());
                     println(bg(fmt::color::red) | fg(fmt::color::white), "    Obtained {:20.14f} + {:20.14f}i", Cvalue.real(),
                             Cvalue.imag());
@@ -692,13 +692,13 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
                 }
                 println(bg(fmt::color::red) | fg(fmt::color::white), "    tensor element ({:})", print_tuple_no_type(target_combination));
                 std::string C_prefactor_string;
-                if constexpr (is_complex_v<CDataType>) {
+                if constexpr (IsComplexV<CDataType>) {
                     C_prefactor_string = fmt::format("({:f} + {:f}i)", C_prefactor.real(), C_prefactor.imag());
                 } else {
                     C_prefactor_string = fmt::format("{:f}", C_prefactor);
                 }
                 std::string AB_prefactor_string;
-                if constexpr (is_complex_v<ABDataType>) {
+                if constexpr (IsComplexV<ABDataType>) {
                     AB_prefactor_string = fmt::format("({:f} + {:f}i)", AB_prefactor.real(), AB_prefactor.imag());
                 } else {
                     AB_prefactor_string = fmt::format("{:f}", AB_prefactor);
@@ -725,7 +725,7 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
         // testC could be a Tensor<CDataType, 0> type. Cast it to the underlying data type.
         if (std::abs(Cvalue - (CDataType)testC) > 1.0E-6) {
             println(emphasis::bold | bg(fmt::color::red) | fg(fmt::color::white), "!!! EINSUM ERROR !!!");
-            if constexpr (is_complex_v<CDataType>) {
+            if constexpr (IsComplexV<CDataType>) {
                 println(bg(fmt::color::red) | fg(fmt::color::white), "    Expected {:20.14f} + {:20.14f}i", Ctest.real(), Ctest.imag());
                 println(bg(fmt::color::red) | fg(fmt::color::white), "    Obtained {:20.14f} + {:20.14f}i", Cvalue.real(), Cvalue.imag());
             } else {
@@ -735,13 +735,13 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
 
             println(bg(fmt::color::red) | fg(fmt::color::white), "    tensor element ()");
             std::string C_prefactor_string;
-            if constexpr (is_complex_v<CDataType>) {
+            if constexpr (IsComplexV<CDataType>) {
                 C_prefactor_string = fmt::format("({:f} + {:f}i)", C_prefactor.real(), C_prefactor.imag());
             } else {
                 C_prefactor_string = fmt::format("{:f}", C_prefactor);
             }
             std::string AB_prefactor_string;
-            if constexpr (is_complex_v<ABDataType>) {
+            if constexpr (IsComplexV<ABDataType>) {
                 AB_prefactor_string = fmt::format("({:f} + {:f}i)", AB_prefactor.real(), AB_prefactor.imag());
             } else {
                 AB_prefactor_string = fmt::format("{:f}", AB_prefactor);

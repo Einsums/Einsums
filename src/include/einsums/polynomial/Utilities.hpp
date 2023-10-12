@@ -13,7 +13,7 @@ auto get_domain(const TensorType<T, 1> &x) -> Tensor<T, 1> {
     T min{0}, max{0};
     T imin{0}, imax{0};
 
-    if constexpr (is_complex_v<T>) {
+    if constexpr (IsComplexV<T>) {
         min = max = x(0).real();
         imin = imax = x(0).imag();
     } else {
@@ -22,11 +22,11 @@ auto get_domain(const TensorType<T, 1> &x) -> Tensor<T, 1> {
 
 #pragma omp parallel
     {
-        T local_min{0}, local_max{0};
-        T local_imin{0}, local_imax{0};
+        T    local_min{0}, local_max{0};
+        T    local_imin{0}, local_imax{0};
         auto size = x.size();
 
-        if constexpr (is_complex_v<T>) {
+        if constexpr (IsComplexV<T>) {
             local_min = local_max = x(0).real();
             local_imin = local_imax = x(0).imag();
         } else {
@@ -35,7 +35,7 @@ auto get_domain(const TensorType<T, 1> &x) -> Tensor<T, 1> {
 
 #pragma omp for nowait
         for (size_t i = 1; i < size; i++) {
-            if constexpr (is_complex_v<T>) {
+            if constexpr (IsComplexV<T>) {
                 if (x(i).real() < local_min)
                     local_min = x(i).real();
                 if (x(i).imag() < local_imin)
@@ -66,7 +66,7 @@ auto get_domain(const TensorType<T, 1> &x) -> Tensor<T, 1> {
     }
 
     auto result = create_tensor<T>("domain", 2);
-    if constexpr (is_complex_v<T>) {
+    if constexpr (IsComplexV<T>) {
         result(0) = T{min, imin};
         result(1) = T{max, imax};
     } else {
@@ -85,12 +85,12 @@ auto from_roots(LineFunction line, MultiplyFunction mult, const Tensor<T, 1> &ro
         auto r = create_tensor_like(roots);
         auto p = create_tensor_like(roots);
 
-        r = roots;
+        r       = roots;
         auto rd = r.vector_data();
         std::sort(rd.begin(), rd.end(), std::greater<T>());
 
         auto pd = p.vector_data();
-        auto n = pd.size();
+        auto n  = pd.size();
         for (auto [i, val] : enumerate(rd)) {
             pd[i] = line(-val, 1);
         }

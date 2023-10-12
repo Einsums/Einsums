@@ -6,6 +6,7 @@
 #include "einsums/Section.hpp"
 #include "einsums/State.hpp"
 #include "einsums/_Common.hpp"
+#include "einsums/utility/ComplexTraits.hpp"
 
 // Include headers from the ranges library that we need to handle cartesian_products
 #include "range/v3/range_fwd.hpp"
@@ -633,9 +634,7 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
             auto chunksize = _data.size() / omp_get_num_threads();                                                                         \
             auto begin     = _data.begin() + chunksize * tid;                                                                              \
             auto end       = (tid == omp_get_num_threads() - 1) ? _data.end() : begin + chunksize;                                         \
-            EINSUMS_OMP_SIMD for (auto i = begin; i < end; i++) {                                                                          \
-                (*i) OP b;                                                                                                                 \
-            }                                                                                                                              \
+            EINSUMS_OMP_SIMD for (auto i = begin; i < end; i++) { (*i) OP b; }                                                             \
         }                                                                                                                                  \
         return *this;                                                                                                                      \
     }                                                                                                                                      \
@@ -651,9 +650,7 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
             auto bbegin    = b._data.begin() + chunksize * tid;                                                                            \
             auto aend      = (tid == omp_get_num_threads() - 1) ? _data.end() : abegin + chunksize;                                        \
             auto j         = bbegin;                                                                                                       \
-            EINSUMS_OMP_SIMD for (auto i = abegin; i < aend; i++) {                                                                        \
-                (*i) OP(*j++);                                                                                                             \
-            }                                                                                                                              \
+            EINSUMS_OMP_SIMD for (auto i = abegin; i < aend; i++) { (*i) OP(*j++); }                                                       \
         }                                                                                                                                  \
         return *this;                                                                                                                      \
     }
@@ -1738,7 +1735,7 @@ auto println(const AType<T, Rank> &A, TensorPrintOptions options) ->
                     } else {
                         oss << fmt::format("{:14.8f} ", value);
                     }
-                } else if constexpr (einsums::is_complex_v<T>) {
+                } else if constexpr (einsums::IsComplexV<T>) {
                     oss << fmt::format("{:14.8f} ", value.real()) << " + " << fmt::format("{:14.8f}i)", value.imag());
                 } else
                     oss << fmt::format("{:14} ", value);
@@ -1768,7 +1765,7 @@ auto println(const AType<T, Rank> &A, TensorPrintOptions options) ->
                         if (std::abs(value) > 1.0E+10) {
                             if constexpr (std::is_floating_point_v<T>)
                                 oss << "\x1b[0;37;41m" << fmt::format("{:14.8f} ", value) << "\x1b[0m";
-                            else if constexpr (einsums::is_complex_v<T>)
+                            else if constexpr (einsums::IsComplexV<T>)
                                 oss << "\x1b[0;37;41m(" << fmt::format("{:14.8f} ", value.real()) << " + "
                                     << fmt::format("{:14.8f}i)", value.imag()) << "\x1b[0m";
                             else
@@ -1780,7 +1777,7 @@ auto println(const AType<T, Rank> &A, TensorPrintOptions options) ->
                                 } else {
                                     oss << fmt::format("{:14.8f} ", value);
                                 }
-                            } else if constexpr (einsums::is_complex_v<T>) {
+                            } else if constexpr (einsums::IsComplexV<T>) {
                                 oss << fmt::format("{:14.8f} ", value.real()) << " + " << fmt::format("{:14.8f}i)", value.imag());
                             } else
                                 oss << fmt::format("{:14} ", value);
@@ -1805,7 +1802,7 @@ auto println(const AType<T, Rank> &A, TensorPrintOptions options) ->
                     if (std::abs(value) > 1.0E+5) {
                         if constexpr (std::is_floating_point_v<T>)
                             oss << "\x1b[0;37;41m" << fmt::format("{:14.8f} ", value) << "\x1b[0m";
-                        else if constexpr (einsums::is_complex_v<T>) {
+                        else if constexpr (einsums::IsComplexV<T>) {
                             oss << "\x1b[0;37;41m(" << fmt::format("{:14.8f} ", value.real()) << " + "
                                 << fmt::format("{:14.8f}i)", value.imag()) << "\x1b[0m";
                         } else
@@ -1817,7 +1814,7 @@ auto println(const AType<T, Rank> &A, TensorPrintOptions options) ->
                             } else {
                                 oss << fmt::format("{:14.8f} ", value);
                             }
-                        else if constexpr (einsums::is_complex_v<T>) {
+                        else if constexpr (einsums::IsComplexV<T>) {
                             oss << fmt::format("{:14.8f} ", value.real()) << " + " << fmt::format("{:14.8f}i)", value.imag());
                         } else
                             oss << fmt::format("{:14} ", value);

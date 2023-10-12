@@ -7,6 +7,7 @@
 // #include "einsums/Timer.hpp"
 #include "einsums/Utilities.hpp"
 #include "einsums/_Common.hpp"
+#include "einsums/utility/ComplexTraits.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -30,7 +31,7 @@ using RowMatrixXd = RowMatrix<double>;
 BEGIN_EINSUMS_NAMESPACE_HPP(einsums::linear_algebra)
 
 template <template <typename, size_t> typename AType, typename ADataType, size_t ARank>
-auto sum_square(const AType<ADataType, ARank> &a, remove_complex_t<ADataType> *scale, remove_complex_t<ADataType> *sumsq) ->
+auto sum_square(const AType<ADataType, ARank> &a, RemoveComplexT<ADataType> *scale, RemoveComplexT<ADataType> *sumsq) ->
     typename std::enable_if_t<is_incore_rank_tensor_v<AType<ADataType, ARank>, 1, ADataType>> {
     LabeledSection0();
 
@@ -99,7 +100,7 @@ auto gemv(const double alpha, const AType<T, ARank> &A, const XType<T, XYRank> &
 template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename WType, size_t WRank, typename T,
           bool ComputeEigenvectors = true>
 auto syev(AType<T, ARank> *A, WType<T, WRank> *W) -> std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, 2, T> &&
-                                                                      is_incore_rank_tensor_v<WType<T, WRank>, 1, T> && !is_complex_v<T>> {
+                                                                      is_incore_rank_tensor_v<WType<T, WRank>, 1, T> && !IsComplexV<T>> {
     LabeledSection1(fmt::format("<ComputeEigenvectors={}>", ComputeEigenvectors));
 
     assert(A->dim(0) == A->dim(1));
@@ -114,17 +115,16 @@ auto syev(AType<T, ARank> *A, WType<T, WRank> *W) -> std::enable_if_t<is_incore_
 
 template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename WType, size_t WRank, typename T,
           bool ComputeEigenvectors = true>
-auto heev(AType<T, ARank> *A, WType<remove_complex_t<T>, WRank> *W)
-    -> std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, 2, T> && is_incore_rank_tensor_v<WType<T, WRank>, 1, T> &&
-                        is_complex_v<T>> {
+auto heev(AType<T, ARank> *A, WType<RemoveComplexT<T>, WRank> *W)
+    -> std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, 2, T> && is_incore_rank_tensor_v<WType<T, WRank>, 1, T> && IsComplexV<T>> {
     LabeledSection1(fmt::format("<ComputeEigenvectors={}>", ComputeEigenvectors));
     assert(A->dim(0) == A->dim(1));
 
-    auto                             n     = A->dim(0);
-    auto                             lda   = A->stride(0);
-    int                              lwork = 2 * n;
-    std::vector<T>                   work(lwork);
-    std::vector<remove_complex_t<T>> rwork(3 * n);
+    auto                           n     = A->dim(0);
+    auto                           lda   = A->stride(0);
+    int                            lwork = 2 * n;
+    std::vector<T>                 work(lwork);
+    std::vector<RemoveComplexT<T>> rwork(3 * n);
 
     blas::heev(ComputeEigenvectors ? 'v' : 'n', 'u', n, A->data(), lda, W->data(), work.data(), lwork, rwork.data());
 }
@@ -370,55 +370,21 @@ enum class Norm : char { MaxAbs = 'M', One = 'O', Infinity = 'I', Frobenius = 'F
 
 template <template <typename, size_t> typename AType, typename ADataType, size_t ARank>
 auto norm(Norm norm_type, const AType<ADataType, ARank> &a) ->
-    typename std::enable_if_t<is_incore_rank_tensor_v<AType<ADataType, ARank>, 2, ADataType>, remove_complex_t<ADataType>> {
+    typename std::enable_if_t<is_incore_rank_tensor_v<AType<ADataType, ARank>, 2, ADataType>, RemoveComplexT<ADataType>> {
     LabeledSection0();
 
     if (norm_type != Norm::Infinity) {
         return blas::lange(norm_type, a->dim(0), a->dim(1), a->data(), a->stride(0), nullptr);
     } else {
-        std::vector<remove_complex_t<ADataType>> work(a->dim(0), 0.0);
+        std::vector<RemoveComplexT<ADataType>> work(a->dim(0), 0.0);
         return blas::lange(norm_type, a->dim(0), a->dim(1), a->data(), a->stride(0), work.data());
     }
 }
 
-#if defined(EINSUMS_HAVE_EIGEN3)
-template <template <typename, size_t> typename AType, typename T, size_t ARank>
-auto svd_eigen(const AType<T, ARank> &_A) ->
-    typename std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, 2, T>,
-                              std::tuple<Tensor<T, 2>, Tensor<remove_complex_t<T>, 1>, Tensor<T, 2>>> {
-    LabeledSection0();
-
-    // using namespace einsums::tensor_algebra;
-
-    // Calling svd will destroy the original data. Make a copy of it.
-    Tensor<T, 2> eA = _A;
-    // auto eA = create_tensor("tmpA", _A.dim(1), _A.dim(2));
-    // sort(Indices{index::i, index::j}, &eA, Indices{index::j, index::i}, _A);
-
-    Eigen::Map<RowMatrixXd>       A(eA.vector_data().data(), _A.dim(0), _A.dim(1));
-    Eigen::JacobiSVD<RowMatrixXd> svd(A, Eigen::ComputeFullV | Eigen::ComputeFullU);
-
-    auto U = svd.matrixU();
-    auto S = svd.singularValues();
-    auto V = svd.matrixV();
-
-    auto eU = create_tensor("U", U.rows(), U.cols());
-    auto eS = create_tensor("S", S.size());
-    auto eV = create_tensor("V", V.rows(), V.cols());
-
-    // Eigen::Map<Eigen::MatrixX2d>
-    RowMatrixXd::Map(eU.vector_data().data(), eU.dim(0), eU.dim(1)) = U;
-    Eigen::VectorXd::Map(eS.vector_data().data(), eS.dim(0))        = S;
-    RowMatrixXd::Map(eV.vector_data().data(), eV.dim(0), eV.dim(1)) = V;
-
-    return std::make_tuple(eU, eS, eV);
-}
-#endif
-
 // Uses the original svd function found in lapack, gesvd, request all left and right vectors.
 template <template <typename, size_t> typename AType, typename T, size_t ARank>
 auto svd(const AType<T, ARank> &_A) -> typename std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, 2, T>,
-                                                                 std::tuple<Tensor<T, 2>, Tensor<remove_complex_t<T>, 1>, Tensor<T, 2>>> {
+                                                                 std::tuple<Tensor<T, 2>, Tensor<RemoveComplexT<T>, 1>, Tensor<T, 2>>> {
     LabeledSection0();
 
     DisableOMPThreads const nothreads;
@@ -433,7 +399,7 @@ auto svd(const AType<T, ARank> &_A) -> typename std::enable_if_t<is_incore_rank_
     // Test if it absolutely necessary to zero out these tensors first.
     auto U = create_tensor<T>("U (stored columnwise)", m, m);
     U.zero();
-    auto S = create_tensor<remove_complex_t<T>>("S", std::min(m, n));
+    auto S = create_tensor<RemoveComplexT<T>>("S", std::min(m, n));
     S.zero();
     auto Vt = create_tensor<T>("Vt (stored rowwise)", n, n);
     Vt.zero();
@@ -514,7 +480,7 @@ enum class Vectors : char { All = 'A', Some = 'S', Overwrite = 'O', None = 'N' }
 template <template <typename, size_t> typename AType, typename T, size_t ARank>
 auto svd_dd(const AType<T, ARank> &_A, Vectors job = Vectors::All) ->
     typename std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, 2, T>,
-                              std::tuple<Tensor<T, 2>, Tensor<remove_complex_t<T>, 1>, Tensor<T, 2>>> {
+                              std::tuple<Tensor<T, 2>, Tensor<RemoveComplexT<T>, 1>, Tensor<T, 2>>> {
     LabeledSection0();
 
     DisableOMPThreads const nothreads;
@@ -528,7 +494,7 @@ auto svd_dd(const AType<T, ARank> &_A, Vectors job = Vectors::All) ->
     // Test if it absolutely necessary to zero out these tensors first.
     auto U = create_tensor<T>("U (stored columnwise)", m, m);
     zero(U);
-    auto S = create_tensor<remove_complex_t<T>>("S", std::min(m, n));
+    auto S = create_tensor<RemoveComplexT<T>>("S", std::min(m, n));
     zero(S);
     auto Vt = create_tensor<T>("Vt (stored rowwise)", n, n);
     zero(Vt);
@@ -551,7 +517,7 @@ auto svd_dd(const AType<T, ARank> &_A, Vectors job = Vectors::All) ->
 template <template <typename, size_t> typename AType, typename T, size_t ARank>
 auto truncated_svd(const AType<T, ARank> &_A, size_t k) ->
     typename std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, 2, T>,
-                              std::tuple<Tensor<T, 2>, Tensor<remove_complex_t<T>, 1>, Tensor<T, 2>>> {
+                              std::tuple<Tensor<T, 2>, Tensor<RemoveComplexT<T>, 1>, Tensor<T, 2>>> {
     LabeledSection0();
 
     size_t m = _A.dim(0);
@@ -568,7 +534,7 @@ auto truncated_svd(const AType<T, ARank> &_A, size_t k) ->
     // Compute QR factorization of Y
     int info1 = blas::geqrf(m, k + 5, Y.data(), k + 5, tau.data());
     // Extract Matrix Q out of QR factorization
-    if constexpr (!is_complex_v<T>) {
+    if constexpr (!IsComplexV<T>) {
         int info2 = blas::orgqr(m, k + 5, tau.dim(0), Y.data(), k + 5, const_cast<const T *>(tau.data()));
     } else {
         int info2 = blas::ungqr(m, k + 5, tau.dim(0), Y.data(), k + 5, const_cast<const T *>(tau.data()));

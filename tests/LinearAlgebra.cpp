@@ -6,6 +6,7 @@
 #include "einsums/Tensor.hpp"
 #include "einsums/TensorAlgebra.hpp"
 #include "einsums/Utilities.hpp"
+#include "einsums/utility/ComplexTraits.hpp"
 
 #include <catch2/catch_all.hpp>
 #include <filesystem>
@@ -425,7 +426,7 @@ void heev_test() {
     using namespace einsums::linear_algebra;
 
     auto A = create_tensor<T>("a", 3, 3);
-    auto b = create_tensor<typename complex_type<T>::type>("b", 3);
+    auto b = create_tensor<typename ComplexType<T>::Type>("b", 3);
 
     A.vector_data() = std::vector<T, einsums::AlignedAllocator<T, 64>>{
         {0.199889, 0.0},       {-0.330816, -0.127778},  {-0.0546237, 0.176589}, {-0.330816, 0.127778}, {0.629179, 0.0},

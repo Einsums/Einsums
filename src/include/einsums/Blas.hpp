@@ -1,10 +1,9 @@
 #pragma once
 
-#include "einsums/STL.hpp"
 #include "einsums/_Common.hpp"
 #include "einsums/_Export.hpp"
+#include "einsums/utility/ComplexTraits.hpp"
 
-#include <complex>
 #include <vector>
 
 // Namespace for BLAS and LAPACK routines.
@@ -115,6 +114,7 @@ template <>
 inline auto syev<float>(char job, char uplo, eint n, float *a, eint lda, float *w, float *work, eint lwork) -> eint {
     return detail::ssyev(job, uplo, n, a, lda, w, work, lwork);
 }
+
 template <>
 inline auto syev<double>(char job, char uplo, eint n, double *a, eint lda, double *w, double *work, eint lwork) -> eint {
     return detail::dsyev(job, uplo, n, a, lda, w, work, lwork);
@@ -193,8 +193,8 @@ void EINSUMS_EXPORT zdscal(eint n, const double alpha, std::complex<double> *vec
 template <typename T>
 void scal(eint n, const T alpha, T *vec, eint inc);
 
-template <typename T>
-auto scal(eint n, const remove_complex_t<T> alpha, T *vec, eint inc) -> std::enable_if_t<is_complex_v<T>>;
+template <Complex T>
+void scal(eint n, const RemoveComplexT<T> alpha, T *vec, eint inc);
 
 template <>
 inline void scal<float>(eint n, const float alpha, float *vec, eint inc) {
@@ -464,7 +464,7 @@ auto EINSUMS_EXPORT zlange(char norm_type, eint m, eint n, const std::complex<do
 } // namespace detail
 
 template <typename T>
-auto lange(char norm_type, eint m, eint n, const T *A, eint lda, remove_complex_t<T> *work) -> remove_complex_t<T>;
+auto lange(char norm_type, eint m, eint n, const T *A, eint lda, RemoveComplexT<T> *work) -> RemoveComplexT<T>;
 
 template <>
 inline auto lange<float>(char norm_type, eint m, eint n, const float *A, eint lda, float *work) -> float {
@@ -494,7 +494,7 @@ void EINSUMS_EXPORT zlassq(eint n, const std::complex<double> *x, eint incx, dou
 } // namespace detail
 
 template <typename T>
-void lassq(eint n, const T *x, eint incx, remove_complex_t<T> *scale, remove_complex_t<T> *sumsq);
+void lassq(eint n, const T *x, eint incx, RemoveComplexT<T> *scale, RemoveComplexT<T> *sumsq);
 
 template <>
 inline void lassq<float>(eint n, const float *x, eint incx, float *scale, float *sumsq) {
@@ -530,7 +530,7 @@ auto EINSUMS_EXPORT zgesdd(char jobz, eint m, eint n, std::complex<double> *a, e
 } // namespace detail
 
 template <typename T>
-auto gesdd(char jobz, eint m, eint n, T *a, eint lda, remove_complex_t<T> *s, T *u, eint ldu, T *vt, eint ldvt) -> eint;
+auto gesdd(char jobz, eint m, eint n, T *a, eint lda, RemoveComplexT<T> *s, T *u, eint ldu, T *vt, eint ldvt) -> eint;
 
 template <>
 inline auto gesdd<float>(char jobz, eint m, eint n, float *a, eint lda, float *s, float *u, eint ldu, float *vt, eint ldvt) -> eint {
@@ -615,7 +615,7 @@ auto EINSUMS_EXPORT ztrsyl(char trana, char tranb, eint isgn, eint m, eint n, co
  */
 template <typename T>
 auto trsyl(char trana, char tranb, eint isgn, eint m, eint n, const T *a, eint lda, const T *b, eint ldb, T *c, eint ldc,
-           remove_complex_t<T> *scale) -> eint;
+           RemoveComplexT<T> *scale) -> eint;
 
 template <>
 inline auto trsyl<float>(char trana, char tranb, eint isgn, eint m, eint n, const float *a, eint lda, const float *b, eint ldb, float *c,
