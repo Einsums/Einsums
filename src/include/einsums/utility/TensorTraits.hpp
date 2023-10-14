@@ -35,7 +35,7 @@ inline constexpr bool IsOndiskTensorV = IsOndiskTensor<D, Rank, ViewRank, T>::va
 } // namespace detail
 
 /**
- * @brief Concept that requires a tensor to be in core and not a view.
+ * @brief Concept that requires a tensor to be in core.
  *
  * Example usage:
  *
