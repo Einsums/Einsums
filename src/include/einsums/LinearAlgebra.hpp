@@ -9,6 +9,7 @@
 #include "einsums/_Common.hpp"
 #include "einsums/utility/ComplexTraits.hpp"
 #include "einsums/utility/SmartPointerTraits.hpp"
+#include "einsums/utility/TensorTraits.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -18,22 +19,11 @@
 #include <tuple>
 #include <type_traits>
 
-#if defined(EINSUMS_HAVE_EIGEN3)
-#    include <Eigen/Core>
-#    include <Eigen/SVD>
-
-template <typename T>
-using RowMatrix = ::Eigen::Matrix<T, ::Eigen::Dynamic, ::Eigen::Dynamic, ::Eigen::RowMajor>;
-
-using RowMatrixXd = RowMatrix<double>;
-
-#endif
-
 BEGIN_EINSUMS_NAMESPACE_HPP(einsums::linear_algebra)
 
 template <template <typename, size_t> typename AType, typename ADataType, size_t ARank>
-auto sum_square(const AType<ADataType, ARank> &a, RemoveComplexT<ADataType> *scale, RemoveComplexT<ADataType> *sumsq) ->
-    typename std::enable_if_t<is_incore_rank_tensor_v<AType<ADataType, ARank>, 1, ADataType>> {
+    requires CoreRankTensor<AType<ADataType, ARank>, 1, ADataType>
+void sum_square(const AType<ADataType, ARank> &a, RemoveComplexT<ADataType> *scale, RemoveComplexT<ADataType> *sumsq) {
     LabeledSection0();
 
     int n    = a.dim(0);

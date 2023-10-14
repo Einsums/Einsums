@@ -448,3 +448,41 @@ TEST_CASE("heev") {
         heev_test<std::complex<double>>();
     }
 }
+
+template <typename T>
+void lassq_test() {
+    using namespace einsums;
+    using namespace einsums::linear_algebra;
+
+    auto A       = create_random_tensor<T>("a", 10);
+    auto scale   = RemoveComplexT<T>{1.0};
+    auto result  = RemoveComplexT<T>{0.0};
+    auto result0 = RemoveComplexT<T>{0.0};
+
+    einsums::linear_algebra::sum_square(A, &scale, &result);
+
+    for (int i = 0; i < 10; i++) {
+        if constexpr (IsComplexV<T>) {
+            result0 += A(i).real() * A(i).real() + A(i).imag() * A(i).imag();
+        } else {
+            result0 += A(i) * A(i);
+        }
+    }
+
+    CHECK_THAT(result, Catch::Matchers::WithinAbs(result0, 0.00001));
+}
+
+TEST_CASE("sum_square") {
+    SECTION("float") {
+        lassq_test<float>();
+    }
+    SECTION("double") {
+        lassq_test<double>();
+    }
+    SECTION("complex_float") {
+        lassq_test<std::complex<float>>();
+    }
+    SECTION("complex_double") {
+        lassq_test<std::complex<double>>();
+    }
+}
