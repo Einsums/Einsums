@@ -33,9 +33,12 @@ void sum_square(const AType<ADataType, ARank> &a, RemoveComplexT<ADataType> *sca
 
 template <bool TransA, bool TransB, template <typename, size_t> typename AType, template <typename, size_t> typename BType,
           template <typename, size_t> typename CType, size_t Rank, typename T>
-auto gemm(const T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const T beta, CType<T, Rank> *C) ->
-    typename std::enable_if_t<is_incore_rank_tensor_v<AType<T, Rank>, 2, T> && is_incore_rank_tensor_v<BType<T, Rank>, 2, T> &&
-                              is_incore_rank_tensor_v<CType<T, Rank>, 2, T>> {
+    requires requires {
+                 CoreRankTensor<AType<T, Rank>, 2, T>;
+                 CoreRankTensor<BType<T, Rank>, 2, T>;
+                 CoreRankTensor<CType<T, Rank>, 2, T>;
+             }
+void gemm(const T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const T beta, CType<T, Rank> *C) {
     LabeledSection0();
 
     auto m = C->dim(0), n = C->dim(1), k = TransA ? A.dim(0) : A.dim(1);
