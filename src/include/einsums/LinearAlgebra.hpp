@@ -31,6 +31,27 @@ void sum_square(const AType<ADataType, ARank> &a, RemoveComplexT<ADataType> *sca
     blas::lassq(n, a.data(), incx, scale, sumsq);
 }
 
+/**
+ * @brief General matrix multipilication.
+ *
+ * Takes two rank-2 tensors performs the multiplication and stores the result in to another
+ * rank-2 tensor that is passed in.
+ *
+ * @code
+ * auto A = einsums::create_random_tensor("A", 3, 3);
+ * auto B = einsums::create_random_tensor("B", 3, 3);
+ * auto C = einsums::create_tensor("C", 3, 3);
+ *
+ * einsums::linear_algebra::gemm<false, false>(1.0, A, B, 0.0, &C);
+ * @endcode
+ *
+ * @tparam TransA Tranpose A?
+ * @tparam TransB Tranpose B?
+ * @param A First input tensor
+ * @param B Second input tensor
+ * @param C Output tensor
+ * @tparam T the underlying data type
+ */
 template <bool TransA, bool TransB, template <typename, size_t> typename AType, template <typename, size_t> typename BType,
           template <typename, size_t> typename CType, size_t Rank, typename T>
     requires requires {
@@ -48,26 +69,32 @@ void gemm(const T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const
 }
 
 /**
- * @brief Version of gemm that returns a new tensor object.
+ * @brief General matrix multipilication. Returns new tensor.
  *
- * @tparam TransA
- * @tparam TransB
- * @tparam AType
- * @tparam BType
- * @param alpha
- * @param A
- * @param B
- * @param beta
+ * Takes two rank-2 tensors performs the multiplication and returns the result
  *
- * @return std::enable_if_t<std::is_base_of_v<Detail::TensorBase<double, 2>, AType> &&
- * std::is_base_of_v<Detail::TensorBase<double, 2>, BType>,
- * Tensor<double, 2>>
+ * @code
+ * auto A = einsums::create_random_tensor("A", 3, 3);
+ * auto B = einsums::create_random_tensor("B", 3, 3);
+ * auto C = einsums::create_tensor("C", 3, 3);
  *
+ * einsums::linear_algebra::gemm<false, false>(1.0, A, B, 0.0, &C);
+ * @endcode
+ *
+ * @tparam TransA Tranpose A?
+ * @tparam TransB Tranpose B?
+ * @param A First input tensor
+ * @param B Second input tensor
+ * @returns resulting tensor
+ * @tparam T the underlying data type
  */
 template <bool TransA, bool TransB, template <typename, size_t> typename AType, template <typename, size_t> typename BType, size_t Rank,
           typename T>
-auto gemm(const T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B)
-    -> std::enable_if_t<is_incore_rank_tensor_v<AType<T, Rank>, 2, T> && is_incore_rank_tensor_v<BType<T, Rank>, 2, T>, Tensor<T, 2>> {
+    requires requires {
+                 CoreRankTensor<AType<T, Rank>, 2, T>;
+                 CoreRankTensor<BType<T, Rank>, 2, T>;
+             }
+auto gemm(const T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B) -> Tensor<T, 2> {
     LabeledSection0();
 
     Tensor<T, 2> C{"gemm result", TransA ? A.dim(1) : A.dim(0), TransB ? B.dim(0) : B.dim(1)};
@@ -79,9 +106,12 @@ auto gemm(const T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B)
 
 template <bool TransA, template <typename, size_t> typename AType, template <typename, size_t> typename XType,
           template <typename, size_t> typename YType, size_t ARank, size_t XYRank, typename T>
-auto gemv(const double alpha, const AType<T, ARank> &A, const XType<T, XYRank> &x, const double beta, YType<T, XYRank> *y)
-    -> std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, 2, T> && is_incore_rank_tensor_v<XType<T, XYRank>, 1, T> &&
-                        is_incore_rank_tensor_v<YType<T, XYRank>, 1, T>> {
+    requires requires {
+                 CoreRankTensor<AType<T, ARank>, 2, T>;
+                 CoreRankTensor<XType<T, XYRank>, 1, T>;
+                 CoreRankTensor<YType<T, XYRank>, 1, T>;
+             }
+void gemv(const double alpha, const AType<T, ARank> &A, const XType<T, XYRank> &x, const double beta, YType<T, XYRank> *y) {
     LabeledSection1(fmt::format("<TransA={}>", TransA));
     auto m = A.dim(0), n = A.dim(1);
     auto lda  = A.stride(0);
@@ -93,8 +123,12 @@ auto gemv(const double alpha, const AType<T, ARank> &A, const XType<T, XYRank> &
 
 template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename WType, size_t WRank, typename T,
           bool ComputeEigenvectors = true>
-auto syev(AType<T, ARank> *A, WType<T, WRank> *W) -> std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, 2, T> &&
-                                                                      is_incore_rank_tensor_v<WType<T, WRank>, 1, T> && !IsComplexV<T>> {
+    requires requires {
+                 CoreRankTensor<AType<T, ARank>, 2, T>;
+                 CoreRankTensor<WType<T, WRank>, 1, T>;
+                 !Complex<T>;
+             }
+void syev(AType<T, ARank> *A, WType<T, WRank> *W) {
     LabeledSection1(fmt::format("<ComputeEigenvectors={}>", ComputeEigenvectors));
 
     assert(A->dim(0) == A->dim(1));
@@ -109,8 +143,12 @@ auto syev(AType<T, ARank> *A, WType<T, WRank> *W) -> std::enable_if_t<is_incore_
 
 template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename WType, size_t WRank, typename T,
           bool ComputeEigenvectors = true>
-auto heev(AType<T, ARank> *A, WType<RemoveComplexT<T>, WRank> *W)
-    -> std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, 2, T> && is_incore_rank_tensor_v<WType<T, WRank>, 1, T> && IsComplexV<T>> {
+    requires requires {
+                 CoreRankTensor<AType<T, ARank>, 2, T>;
+                 CoreRankTensor<WType<T, WRank>, 1, T>;
+                 Complex<T>;
+             }
+void heev(AType<T, ARank> *A, WType<RemoveComplexT<T>, WRank> *W) {
     LabeledSection1(fmt::format("<ComputeEigenvectors={}>", ComputeEigenvectors));
     assert(A->dim(0) == A->dim(1));
 
