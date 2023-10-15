@@ -55,9 +55,9 @@ void sum_square(const AType<ADataType, ARank> &a, RemoveComplexT<ADataType> *sca
 template <bool TransA, bool TransB, template <typename, size_t> typename AType, template <typename, size_t> typename BType,
           template <typename, size_t> typename CType, size_t Rank, typename T>
     requires requires {
-                 CoreRankTensor<AType<T, Rank>, 2, T>;
-                 CoreRankTensor<BType<T, Rank>, 2, T>;
-                 CoreRankTensor<CType<T, Rank>, 2, T>;
+                 requires CoreRankTensor<AType<T, Rank>, 2, T>;
+                 requires CoreRankTensor<BType<T, Rank>, 2, T>;
+                 requires CoreRankTensor<CType<T, Rank>, 2, T>;
              }
 void gemm(const T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const T beta, CType<T, Rank> *C) {
     LabeledSection0();
@@ -91,8 +91,8 @@ void gemm(const T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const
 template <bool TransA, bool TransB, template <typename, size_t> typename AType, template <typename, size_t> typename BType, size_t Rank,
           typename T>
     requires requires {
-                 CoreRankTensor<AType<T, Rank>, 2, T>;
-                 CoreRankTensor<BType<T, Rank>, 2, T>;
+                 requires CoreRankTensor<AType<T, Rank>, 2, T>;
+                 requires CoreRankTensor<BType<T, Rank>, 2, T>;
              }
 auto gemm(const T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B) -> Tensor<T, 2> {
     LabeledSection0();
@@ -107,9 +107,9 @@ auto gemm(const T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B) -> Te
 template <bool TransA, template <typename, size_t> typename AType, template <typename, size_t> typename XType,
           template <typename, size_t> typename YType, size_t ARank, size_t XYRank, typename T>
     requires requires {
-                 CoreRankTensor<AType<T, ARank>, 2, T>;
-                 CoreRankTensor<XType<T, XYRank>, 1, T>;
-                 CoreRankTensor<YType<T, XYRank>, 1, T>;
+                 requires CoreRankTensor<AType<T, ARank>, 2, T>;
+                 requires CoreRankTensor<XType<T, XYRank>, 1, T>;
+                 requires CoreRankTensor<YType<T, XYRank>, 1, T>;
              }
 void gemv(const double alpha, const AType<T, ARank> &A, const XType<T, XYRank> &x, const double beta, YType<T, XYRank> *y) {
     LabeledSection1(fmt::format("<TransA={}>", TransA));
@@ -124,9 +124,9 @@ void gemv(const double alpha, const AType<T, ARank> &A, const XType<T, XYRank> &
 template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename WType, size_t WRank, typename T,
           bool ComputeEigenvectors = true>
     requires requires {
-                 CoreRankTensor<AType<T, ARank>, 2, T>;
-                 CoreRankTensor<WType<T, WRank>, 1, T>;
-                 !Complex<T>;
+                 requires CoreRankTensor<AType<T, ARank>, 2, T>;
+                 requires CoreRankTensor<WType<T, WRank>, 1, T>;
+                 requires !Complex<T>;
              }
 void syev(AType<T, ARank> *A, WType<T, WRank> *W) {
     LabeledSection1(fmt::format("<ComputeEigenvectors={}>", ComputeEigenvectors));
@@ -144,9 +144,9 @@ void syev(AType<T, ARank> *A, WType<T, WRank> *W) {
 template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename WType, size_t WRank, typename T,
           bool ComputeEigenvectors = true>
     requires requires {
-                 CoreRankTensor<AType<T, ARank>, 2, T>;
-                 CoreRankTensor<WType<T, WRank>, 1, T>;
-                 Complex<T>;
+                 requires CoreRankTensor<AType<T, ARank>, 2, T>;
+                 requires CoreRankTensor<WType<T, WRank>, 1, T>;
+                 requires Complex<T>;
              }
 void heev(AType<T, ARank> *A, WType<RemoveComplexT<T>, WRank> *W) {
     LabeledSection1(fmt::format("<ComputeEigenvectors={}>", ComputeEigenvectors));
