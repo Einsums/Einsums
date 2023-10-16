@@ -4,7 +4,6 @@
 #include "einsums/STL.hpp"
 #include "einsums/Section.hpp"
 #include "einsums/Tensor.hpp"
-// #include "einsums/Timer.hpp"
 #include "einsums/Utilities.hpp"
 #include "einsums/_Common.hpp"
 #include "einsums/utility/ComplexTraits.hpp"
@@ -34,8 +33,13 @@ void sum_square(const AType<ADataType, ARank> &a, RemoveComplexT<ADataType> *sca
 /**
  * @brief General matrix multipilication.
  *
- * Takes two rank-2 tensors performs the multiplication and stores the result in to another
- * rank-2 tensor that is passed in.
+ * Takes two rank-2 tensors ( \p A and \p B ) performs the multiplication and stores the result in to another
+ * rank-2 tensor that is passed in ( \p C ).
+ *
+ * In this equation, \p TransA is op(A) and \p TransB is op(B).
+ * @f[
+ * C = \alpha \;op(A) \;op(B) + \beta C
+ * @f]
  *
  * @code
  * auto A = einsums::create_random_tensor("A", 3, 3);
