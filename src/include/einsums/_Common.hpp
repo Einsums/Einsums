@@ -59,7 +59,16 @@ using elong = long int;
 #endif
 
 /**
- * Handles initializing the internals of Einsums.
+ * @brief Handles initializing the internals of Einsums.
+ *
+ * The current implementation initializes the timer system, calls
+ * on the blas subsystem to initialize itself (for example, gpu variant would
+ * obtain global device handle), prevents OpenMP from allowing nested
+ * OpenMP regions (leading to oversubscription), and disables HDF5
+ * diagnostic reporting.
+ *
+ * In a future parallel variant of Einsums, this would also initialize
+ * the MPI runtime.
  *
  * @return int on success returns 0, on failure anything else.
  */
