@@ -49,13 +49,13 @@
 namespace einsums {
 
 #if defined(MKL_ILP64)
-using eint  = long long int;
-using euint = unsigned long long int;
-using elong = long long int;
+using eint  = long long int;          // NOLINT
+using euint = unsigned long long int; // NOLINT
+using elong = long long int;          // NOLINT
 #else
-using eint  = int;
-using euint = unsigned int;
-using elong = long int;
+using eint  = int;          // NOLINT
+using euint = unsigned int; // NOLINT
+using elong = long int;     // NOLINT
 #endif
 
 /**
