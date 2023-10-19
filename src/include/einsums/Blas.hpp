@@ -9,13 +9,26 @@
 // Namespace for BLAS and LAPACK routines.
 namespace einsums::blas {
 
-// Some of the backends may require additional initialization before their use.
+/**
+ * @brief Initializes the underlying BLAS library.
+ *
+ * Handles any initialization that the underlying BLAS implementation requires.
+ * For example, a GPU implementation would likely need to obtain a device handle to
+ * run. That would be handled by this function.
+ *
+ * You typically will not need to call this function manually. \ref einsums::initialize()
+ * will handle calling this function for you.
+ *
+ */
 void EINSUMS_EXPORT initialize();
+
+/**
+ * @brief Handles any shutdown procedure needed by the BLAS implementation.
+ *
+ */
 void EINSUMS_EXPORT finalize();
 
-/*!
- * Performs matrix multiplication for general square matices of type double.
- */
+#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
 namespace detail {
 void EINSUMS_EXPORT sgemm(char transa, char transb, eint m, eint n, eint k, float alpha, const float *a, eint lda, const float *b, eint ldb,
                           float beta, float *c, eint ldc);
@@ -26,10 +39,48 @@ void EINSUMS_EXPORT cgemm(char transa, char transb, eint m, eint n, eint k, std:
 void EINSUMS_EXPORT zgemm(char transa, char transb, eint m, eint n, eint k, std::complex<double> alpha, const std::complex<double> *a,
                           eint lda, const std::complex<double> *b, eint ldb, std::complex<double> beta, std::complex<double> *c, eint ldc);
 } // namespace detail
+#endif
 
+/**
+ * @brief Perform a General Matrix Multiply (GEMM) operation.
+ *
+ * This function computes the product of two double-precision matrices, C = alpha * A * B + beta * C, where A, B, and C are matrices, and
+ * alpha and beta are scalar values.
+ *
+ * @tparam T The datatype of the GEMM.
+ * @param[in] transa Whether to transpose matrix \param a:
+ *   - 'N' or 'n' for no transpose,
+ *   - 'T' or 't' for transpose,
+ *   - 'C' or 'c' for conjugate transpose.
+ * @param[in] transb Whether to transpose matrix \param b.
+ * @param[in] m The number of rows in matrix A and C.
+ * @param[in] n The number of columns in matrix B and C.
+ * @param[in] k The number of columns in matrix A and rows in matrix B.
+ * @param[in] alpha The scalar alpha.
+ * @param[in] a A pointer to the matrix A with dimensions ( \param lda , \param k ) when transa is 'N' or 'n', and ( \param lda , \param m )
+ * otherwise.
+ * @param[in] lda Leading dimension of A, specifying the distance between two consecutive columns.
+ * @param[in] b A pointer to the matrix B with dimensions ( \param ldb , \param n) when transB is 'N' or 'n', and ( \param ldb , \param k)
+ * otherwise.
+ * @param[in] ldb Leading dimension of B, specifying the distance between two consecutive columns.
+ * @param[in] beta The scalar beta.
+ * @param[in,out] c A pointer to the matrix C with dimensions ( \param ldc , \param n ).
+ * @param[in] ldc Leading dimension of C, specifying the distance between two consecutive columns.
+ *
+ * @note The function performs one of the following matrix operations:
+ * - If transA is 'N' or 'n' and transB is 'N' or 'n': C = alpha * A * B + beta * C
+ * - If transA is 'N' or 'n' and transB is 'T' or 't': C = alpha * A * B^T + beta * C
+ * - If transA is 'T' or 't' and transB is 'N' or 'n': C = alpha * A^T * B + beta * C
+ * - If transA is 'T' or 't' and transB is 'T' or 't': C = alpha * A^T * B^T + beta * C
+ * - If transA is 'C' or 'c' and transB is 'N' or 'n': C = alpha * A^H * B + beta * C
+ * - If transA is 'C' or 'c' and transB is 'T' or 't': C = alpha * A^H * B^T + beta * C
+ *
+ * @return None.
+ */
 template <typename T>
 void gemm(char transa, char transb, eint m, eint n, eint k, T alpha, const T *a, eint lda, const T *b, eint ldb, T beta, T *c, eint ldc);
 
+#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
 template <>
 inline void gemm<float>(char transa, char transb, eint m, eint n, eint k, float alpha, const float *a, eint lda, const float *b, eint ldb,
                         float beta, float *c, eint ldc) {
@@ -55,6 +106,7 @@ inline void gemm<std::complex<double>>(char transa, char transb, eint m, eint n,
                                        std::complex<double> beta, std::complex<double> *c, eint ldc) {
     detail::zgemm(transa, transb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc);
 }
+#endif
 
 /*!
  * Performs matrix vector multiplication.
