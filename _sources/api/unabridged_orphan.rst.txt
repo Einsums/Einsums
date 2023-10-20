@@ -33,6 +33,11 @@ Directories
 
    dir_src_include_einsums_polynomial.rst
 
+.. toctree::
+   :maxdepth: 5
+
+   dir_src_include_einsums_utility.rst
+
 Files
 *****
 
@@ -65,7 +70,17 @@ Files
 .. toctree::
    :maxdepth: 5
 
+   file_src_include_einsums_utility_BitsetEnum.hpp.rst
+
+.. toctree::
+   :maxdepth: 5
+
    file_src_include_einsums_Blas.hpp.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_include_einsums_utility_ComplexTraits.hpp.rst
 
 .. toctree::
    :maxdepth: 5
@@ -130,6 +145,11 @@ Files
 .. toctree::
    :maxdepth: 5
 
+   file_src_include_einsums_utility_SmartPointerTraits.hpp.rst
+
+.. toctree::
+   :maxdepth: 5
+
    file_src_include_einsums_Sort.hpp.rst
 
 .. toctree::
@@ -151,6 +171,11 @@ Files
    :maxdepth: 5
 
    file_src_include_einsums_TensorAlgebra.hpp.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_src_include_einsums_utility_TensorTraits.hpp.rst
 
 .. toctree::
    :maxdepth: 5

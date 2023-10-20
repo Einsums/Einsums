@@ -1,0 +1,78 @@
+
+.. _file_src_include_einsums_utility_BitsetEnum.hpp:
+
+File BitsetEnum.hpp
+===================
+
+|exhale_lsh| :ref:`Parent directory <dir_src_include_einsums_utility>` (``src/include/einsums/utility``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``src/include/einsums/utility/BitsetEnum.hpp``)
+-----------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_src_include_einsums_utility_BitsetEnum.hpp.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``type_traits``
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_einsums`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structeinsums_1_1IsBitsetEnum`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_BitsetEnum_8hpp_1a74acf8ba7407a3ee46f9805e11233c44`
+
+- :ref:`exhale_function_BitsetEnum_8hpp_1a36bb902abfea117d7fe92600436d3698`
+
+- :ref:`exhale_function_BitsetEnum_8hpp_1a53aec2c616c33b73e3aa13eb208cde34`
+
+- :ref:`exhale_function_BitsetEnum_8hpp_1a5be727df5a27cb120790bd01525bded1`
+
+- :ref:`exhale_function_BitsetEnum_8hpp_1ad8d4557289711a5695298c3967995cc9`
+
+- :ref:`exhale_function_BitsetEnum_8hpp_1ab01df078c0186db231a38bee14817611`
+
+- :ref:`exhale_function_BitsetEnum_8hpp_1a3112ddc21cd00cdff0ba6233e8f794f9`
+
+
+Variables
+---------
+
+
+- :ref:`exhale_variable_BitsetEnum_8hpp_1ade323e772a250615047cde8d209efa2a`
+

@@ -60,6 +60,8 @@ Includes
 
 - ``einsums/_TensorAlgebraUtilities.hpp`` (:ref:`file_src_include_einsums__TensorAlgebraUtilities.hpp`)
 
+- ``einsums/utility/SmartPointerTraits.hpp`` (:ref:`file_src_include_einsums_utility_SmartPointerTraits.hpp`)
+
 - ``functional``
 
 - ``numeric``
@@ -74,7 +76,7 @@ Includes
 
 - ``type_traits``
 
-- ``utility``
+- ``utility`` (:ref:`file_src_include_einsums_utility_BitsetEnum.hpp`)
 
 
 
@@ -110,13 +112,15 @@ Functions
 
 - :ref:`exhale_function_TensorAlgebra_8hpp_1a246d59e4e7593ef40351842aa56607e4`
 
-- :ref:`exhale_function_TensorAlgebra_8hpp_1aeb8838553327473b2a2318504a7cd172`
+- :ref:`exhale_function_TensorAlgebra_8hpp_1a0814727ec838629f4509421edd4d4120`
 
-- :ref:`exhale_function_TensorAlgebra_8hpp_1a2ed28c8691d905dfe2114ac48ff4e8b6`
+- :ref:`exhale_function_TensorAlgebra_8hpp_1a952472bec0d11b81dfdee215abf105a4`
+
+- :ref:`exhale_function_TensorAlgebra_8hpp_1af0e997d4037dc0ccaffb43d32cf3a087`
 
 - :ref:`exhale_function_TensorAlgebra_8hpp_1a3cb2c61d561f0adb90793e8157c8c782`
 
-- :ref:`exhale_function_TensorAlgebra_8hpp_1a4d0f9a1d44fb7b7c6247002de00c0e7b`
+- :ref:`exhale_function_TensorAlgebra_8hpp_1a6d3c9616cad10fb4f24cb9f571a6362e`
 
 - :ref:`exhale_function_TensorAlgebra_8hpp_1ae7fe839200a6f4a80762ce2a6e9cd4dc`
 

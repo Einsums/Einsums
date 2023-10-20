@@ -15,10 +15,6 @@ Namespace einsums::blas::detail
 Detailed Description
 --------------------
 
-Performs matrix multiplication for general square matices of type double.
-
-Performs matrix vector multiplication.
-
 Performs symmetric matrix diagonalization.
 
 Computes all eigenvalues and, optionally, eigenvectors of a Hermitian matrix.
@@ -46,10 +42,6 @@ Functions
 - :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a64f3a199a81c32df7cd00cd02ea4f955`
 
 - :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a99be215f348c316dc6ac262fcd1e13c7`
-
-- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a1a786cfbab3774a828a3e8f317555d55`
-
-- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a196bc8b907603b671aa2b0607a7d69da`
 
 - :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a2c573f9ff39a362f5a61b5d3962c484a`
 
@@ -85,10 +77,6 @@ Functions
 
 - :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a651b0b2632d8536283aa4e24b3ace4a6`
 
-- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1aa4a830e1c3063b19586271b7a41393ed`
-
-- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1ad73c0744a608eb92eef431f35ec63e61`
-
 - :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1ab8df233cbb09da970dec1855a6bfc2cb`
 
 - :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1ac9cf1564b1cfb10181527eedbab5a4c6`
@@ -123,10 +111,6 @@ Functions
 
 - :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a357778ead9227f722ef732c5fdd35b3d`
 
-- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a02e7255e23c3b06de65a548a49d6271a`
-
-- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1adcd5b0ad95f756ed897e2d4c40f66dbf`
-
 - :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a658624e9cd59b6e17488b8b9dd8eed5e`
 
 - :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1abb843a0db180c162869d9381617856ef`
@@ -160,10 +144,6 @@ Functions
 - :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1ae4f957c806fd709319615e92414db811`
 
 - :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1ab68c57792213548e20693d5b440e5fb3`
-
-- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1aef8fa74e87cf5ef96feadc1da79ea0a8`
-
-- :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1adbace79e0b9adc17462e38eff3548878`
 
 - :ref:`exhale_function_namespaceeinsums_1_1blas_1_1detail_1a0bbb2fe940d030659f52a660f1cd003d`
 

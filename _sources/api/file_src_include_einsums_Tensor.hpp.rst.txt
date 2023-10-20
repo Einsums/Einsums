@@ -54,6 +54,8 @@ Includes
 
 - ``einsums/_Common.hpp`` (:ref:`file_src_include_einsums__Common.hpp`)
 
+- ``einsums/utility/ComplexTraits.hpp`` (:ref:`file_src_include_einsums_utility_ComplexTraits.hpp`)
+
 - ``exception``
 
 - ``functional``
@@ -84,7 +86,7 @@ Includes
 
 - ``type_traits``
 
-- ``utility``
+- ``utility`` (:ref:`file_src_include_einsums_utility_BitsetEnum.hpp`)
 
 - ``vector``
 
@@ -161,15 +163,15 @@ Functions
 
 - :ref:`exhale_function_Tensor_8hpp_1a64d283f84989678bc73b1af464c17ad3`
 
-- :ref:`exhale_function_Tensor_8hpp_1ae15bc2f581377beb9da08fc8d0a7e928`
-
 - :ref:`exhale_function_Tensor_8hpp_1a8a2c7ab8f41f9c47c76bd23885d4a710`
 
-- :ref:`exhale_function_Tensor_8hpp_1a7bc3393b66dec35525cff395c5ae447b`
+- :ref:`exhale_function_Tensor_8hpp_1ae15bc2f581377beb9da08fc8d0a7e928`
 
 - :ref:`exhale_function_Tensor_8hpp_1ad4b8e06472ea9229e80fb20d1e99cb15`
 
 - :ref:`exhale_function_Tensor_8hpp_1a7d6be2c45506b693c6b512e232318fd6`
+
+- :ref:`exhale_function_Tensor_8hpp_1a7bc3393b66dec35525cff395c5ae447b`
 
 - :ref:`exhale_function_Tensor_8hpp_1a3a0b2c04fe72ddbc7eb54ece078ef9e1`
 

@@ -1,0 +1,24 @@
+.. _dir_src_include_einsums_utility:
+
+
+Directory utility
+=================
+
+
+|exhale_lsh| :ref:`Parent directory <dir_src_include_einsums>` (``src/include/einsums``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+*Directory path:* ``src/include/einsums/utility``
+
+
+Files
+-----
+
+- :ref:`file_src_include_einsums_utility_BitsetEnum.hpp`
+- :ref:`file_src_include_einsums_utility_ComplexTraits.hpp`
+- :ref:`file_src_include_einsums_utility_SmartPointerTraits.hpp`
+- :ref:`file_src_include_einsums_utility_TensorTraits.hpp`
+
+

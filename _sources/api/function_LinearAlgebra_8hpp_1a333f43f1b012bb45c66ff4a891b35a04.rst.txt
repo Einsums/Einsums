@@ -1,0 +1,14 @@
+.. _exhale_function_LinearAlgebra_8hpp_1a333f43f1b012bb45c66ff4a891b35a04:
+
+Template Function gesv
+======================
+
+- Defined in :ref:`file_src_include_einsums_LinearAlgebra.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: gesv(AType<T, ARank> *, BType<T, BRank> *)
+   :project: Einsums

@@ -1,0 +1,73 @@
+
+.. _program_listing_file_src_include_einsums_utility_BitsetEnum.hpp:
+
+Program Listing for File BitsetEnum.hpp
+=======================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_src_include_einsums_utility_BitsetEnum.hpp>` (``src/include/einsums/utility/BitsetEnum.hpp``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   #pragma once
+   
+   #include <type_traits>
+   
+   namespace einsums {
+   
+   template <typename type>
+   struct IsBitsetEnum : std::false_type {};
+   
+   template <typename type>
+   inline constexpr bool IsBitsetEnumV = IsBitsetEnum<type>::value;
+   
+   template <typename type>
+   concept BitsetEnum = IsBitsetEnumV<type>;
+   
+   } // namespace einsums
+   
+   template <einsums::BitsetEnum type>
+   auto operator&(const type &lhs, const type &rhs) -> type {
+       using Underlying = std::underlying_type_t<type>;
+       return static_cast<type>(static_cast<Underlying>(lhs) & static_cast<Underlying>(rhs));
+   }
+   
+   template <einsums::BitsetEnum type>
+   auto operator^(const type &lhs, const type &rhs) -> type {
+       using Underlying = std::underlying_type_t<type>;
+       return static_cast<type>(static_cast<Underlying>(lhs) ^ static_cast<Underlying>(rhs));
+   }
+   
+   template <einsums::BitsetEnum type>
+   auto operator|(const type &lhs, const type &rhs) -> type {
+       using Underlying = std::underlying_type_t<type>;
+       return static_cast<type>(static_cast<Underlying>(lhs) | static_cast<Underlying>(rhs));
+   }
+   
+   template <einsums::BitsetEnum type>
+   auto operator~(const type &lhs) -> type {
+       using Underlying = std::underlying_type_t<type>;
+       return static_cast<type>(~static_cast<Underlying>(lhs));
+   }
+   
+   template <einsums::BitsetEnum type>
+   auto operator&=(type &lhs, const type &rhs) -> type & {
+       using Underlying = std::underlying_type_t<type>;
+       lhs              = static_cast<type>(static_cast<Underlying>(lhs) & static_cast<Underlying>(rhs));
+       return lhs;
+   }
+   
+   template <einsums::BitsetEnum type>
+   auto operator^=(type &lhs, const type &rhs) -> type & {
+       using Underlying = std::underlying_type_t<type>;
+       lhs              = static_cast<type>(static_cast<Underlying>(lhs) ^ static_cast<Underlying>(rhs));
+       return lhs;
+   }
+   
+   template <einsums::BitsetEnum type>
+   auto operator|=(type &lhs, const type &rhs) -> type & {
+       using Underlying = std::underlying_type_t<type>;
+       lhs              = static_cast<type>(static_cast<Underlying>(lhs) | static_cast<Underlying>(rhs));
+       return lhs;
+   }

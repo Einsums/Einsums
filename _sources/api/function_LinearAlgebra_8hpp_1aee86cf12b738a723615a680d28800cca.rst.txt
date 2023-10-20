@@ -1,0 +1,14 @@
+.. _exhale_function_LinearAlgebra_8hpp_1aee86cf12b738a723615a680d28800cca:
+
+Template Function pow
+=====================
+
+- Defined in :ref:`file_src_include_einsums_LinearAlgebra.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: pow(const AType<T, ARank>&, T, T)
+   :project: Einsums

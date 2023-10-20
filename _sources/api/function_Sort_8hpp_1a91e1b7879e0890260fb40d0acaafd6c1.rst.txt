@@ -1,0 +1,14 @@
+.. _exhale_function_Sort_8hpp_1a91e1b7879e0890260fb40d0acaafd6c1:
+
+Template Function sort(const std::tuple<CIndices...>&, SmartPointerC \*, const std::tuple<AIndices...>&, const SmartPointerA&)
+==============================================================================================================================
+
+- Defined in :ref:`file_src_include_einsums_Sort.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: sort(const std::tuple<CIndices...>&, SmartPointerC *, const std::tuple<AIndices...>&, const SmartPointerA&)
+   :project: Einsums

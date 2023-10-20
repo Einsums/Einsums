@@ -1,0 +1,14 @@
+.. _exhale_typedef_ComplexTraits_8hpp_1af092209fb7889f7a801aa783ebf60bd2:
+
+Typedef einsums::AddComplexT
+============================
+
+- Defined in :ref:`file_src_include_einsums_utility_ComplexTraits.hpp`
+
+
+Typedef Documentation
+---------------------
+
+
+.. doxygentypedef:: einsums::AddComplexT
+   :project: Einsums

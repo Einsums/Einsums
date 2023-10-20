@@ -1,0 +1,14 @@
+.. _exhale_function_LinearAlgebra_8hpp_1acd064ca0e4841f8899033f78a2a05509:
+
+Template Function truncated_svd
+===============================
+
+- Defined in :ref:`file_src_include_einsums_LinearAlgebra.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: truncated_svd(const AType<T, ARank>&, size_t)
+   :project: Einsums

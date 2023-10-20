@@ -1,0 +1,14 @@
+.. _exhale_function_LinearAlgebra_8hpp_1a486b35be61958dea735e3b0cf42ceb7b:
+
+Template Function svd
+=====================
+
+- Defined in :ref:`file_src_include_einsums_LinearAlgebra.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: svd(const AType<T, ARank>&)
+   :project: Einsums

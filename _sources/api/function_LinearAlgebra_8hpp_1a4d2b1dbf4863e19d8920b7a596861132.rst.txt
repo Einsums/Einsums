@@ -1,0 +1,14 @@
+.. _exhale_function_LinearAlgebra_8hpp_1a4d2b1dbf4863e19d8920b7a596861132:
+
+Template Function norm(Norm, const AType<ADataType, ARank>&)
+============================================================
+
+- Defined in :ref:`file_src_include_einsums_LinearAlgebra.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: norm(Norm, const AType<ADataType, ARank>&)
+   :project: Einsums

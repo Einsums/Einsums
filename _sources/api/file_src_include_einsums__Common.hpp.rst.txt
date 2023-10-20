@@ -88,7 +88,7 @@ Classes
 -------
 
 
-- :ref:`exhale_struct_structeinsums_1_1All__t`
+- :ref:`exhale_struct_structeinsums_1_1AllT`
 
 - :ref:`exhale_struct_structeinsums_1_1detail_1_1Array`
 
@@ -122,12 +122,6 @@ Functions
 - :ref:`exhale_function___Common_8hpp_1a3e9b44513554a298c39ff98eb9129f96`
 
 - :ref:`exhale_function___Common_8hpp_1a854db456f89f04ed386ab68a1fdf7450`
-
-- :ref:`exhale_function___Common_8hpp_1a52198b5a8c76fef65cb1b964d9e07bdb`
-
-- :ref:`exhale_function___Common_8hpp_1a11de673875f64ae0797b25f6ec64e395`
-
-- :ref:`exhale_function___Common_8hpp_1a84f21c2651a0491697436c9f011058ba`
 
 
 Defines
@@ -176,5 +170,5 @@ Variables
 ---------
 
 
-- :ref:`exhale_variable___Common_8hpp_1a2f9e0d0a5114d52339f53d8e0b4e4c65`
+- :ref:`exhale_variable___Common_8hpp_1a595ffa036774625ab9599ce803bf9486`
 

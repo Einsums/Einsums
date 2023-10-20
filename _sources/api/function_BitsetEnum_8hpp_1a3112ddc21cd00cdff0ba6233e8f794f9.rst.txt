@@ -1,0 +1,14 @@
+.. _exhale_function_BitsetEnum_8hpp_1a3112ddc21cd00cdff0ba6233e8f794f9:
+
+Template Function operator~
+===========================
+
+- Defined in :ref:`file_src_include_einsums_utility_BitsetEnum.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: operator~(const type&)
+   :project: Einsums

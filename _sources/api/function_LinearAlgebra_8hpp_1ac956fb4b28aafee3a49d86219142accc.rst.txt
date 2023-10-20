@@ -1,0 +1,14 @@
+.. _exhale_function_LinearAlgebra_8hpp_1ac956fb4b28aafee3a49d86219142accc:
+
+Template Function invert(SmartPtr \*)
+=====================================
+
+- Defined in :ref:`file_src_include_einsums_LinearAlgebra.hpp`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: invert(SmartPtr *)
+   :project: Einsums

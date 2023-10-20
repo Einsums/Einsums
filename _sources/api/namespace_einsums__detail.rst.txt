@@ -25,6 +25,10 @@ Classes
 
 - :ref:`exhale_struct_structeinsums_1_1detail_1_1DimType`
 
+- :ref:`exhale_struct_structeinsums_1_1detail_1_1IsIncoreRankTensor`
+
+- :ref:`exhale_struct_structeinsums_1_1detail_1_1IsOndiskTensor`
+
 - :ref:`exhale_struct_structeinsums_1_1detail_1_1OffsetType`
 
 - :ref:`exhale_struct_structeinsums_1_1detail_1_1RangeType`
@@ -47,3 +51,12 @@ Functions
 - :ref:`exhale_function_Tensor_8hpp_1a2a5b6de485574aacfae1bbea1c2abc36`
 
 - :ref:`exhale_function_Utilities_8hpp_1ac2262e9c8086c8d665dbeaaf1a48de0e`
+
+
+Variables
+---------
+
+
+- :ref:`exhale_variable_TensorTraits_8hpp_1a4b2c335134ad3ae163c7d93e0a7c132a`
+
+- :ref:`exhale_variable_TensorTraits_8hpp_1ad15a1e3388ce0c30cde444d0c20c21eb`

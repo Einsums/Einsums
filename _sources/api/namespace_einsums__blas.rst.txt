@@ -64,23 +64,7 @@ Functions
 
 - :ref:`exhale_function_Blas_8hpp_1adc2ca3a9dc3ec7e2aae1f0cf8b8c12b1`
 
-- :ref:`exhale_function_Blas_8hpp_1a40e29b30b52fa22b43a95f33926b8e32`
-
-- :ref:`exhale_function_Blas_8hpp_1a18ee1b1fbabd682ab5c8333e19155d4e`
-
-- :ref:`exhale_function_Blas_8hpp_1a563bde6f79f7da451c21408f81433d34`
-
-- :ref:`exhale_function_Blas_8hpp_1a59eecb566826ff0c0ec6923f2a0fd5ad`
-
 - :ref:`exhale_function_Blas_8hpp_1a2a81cb8368ed8ab10777454325c49e92`
-
-- :ref:`exhale_function_Blas_8hpp_1ac2aed2c81c16cc6a92360b44933da962`
-
-- :ref:`exhale_function_Blas_8hpp_1a36eb61e0e58e10b62fe6ee4611f516d3`
-
-- :ref:`exhale_function_Blas_8hpp_1a2c6685c39f9c2ad41687447d1684117a`
-
-- :ref:`exhale_function_Blas_8hpp_1a287c01770280061e1d0b000861de8ad1`
 
 - :ref:`exhale_function_Blas_8hpp_1ade590cfe1bfdbe7c822aeafad6c17527`
 
@@ -102,7 +86,7 @@ Functions
 
 - :ref:`exhale_function_Blas_8hpp_1a29cb740cb98044e74f98ddfce722d29b`
 
-- :ref:`exhale_function_Blas_8hpp_1aa14f1256e8b5836fcd580aa717ee76c5`
+- :ref:`exhale_function_Blas_8hpp_1ac5ea3d92d71e82d0f1f14b9e6061eed1`
 
 - :ref:`exhale_function_Blas_8hpp_1a1ac94acdd2e5732053235b48a9f978ad`
 
@@ -156,7 +140,7 @@ Functions
 
 - :ref:`exhale_function_Blas_8hpp_1a0f42ab149c20c98fd3d2d8a23c76e858`
 
-- :ref:`exhale_function_Blas_8hpp_1adb3232e92ae5679ea7d2d87ca6808b1d`
+- :ref:`exhale_function_Blas_8hpp_1a74f5d929baa35806986ad48317a6b9af`
 
 - :ref:`exhale_function_Blas_8hpp_1af32ecfe26b90a1097a18367c81061f6c`
 
@@ -166,7 +150,7 @@ Functions
 
 - :ref:`exhale_function_Blas_8hpp_1a3390b4345c4a64a812780e778e249091`
 
-- :ref:`exhale_function_Blas_8hpp_1aaa48b789dca66f6a22310a4afe9d9e6c`
+- :ref:`exhale_function_Blas_8hpp_1ab450a98f85a96a695bb7f9e5b70c13df`
 
 - :ref:`exhale_function_Blas_8hpp_1a315a95a1ce6c74cbc9ad4fab59c6cce4`
 
@@ -184,7 +168,7 @@ Functions
 
 - :ref:`exhale_function_Blas_8hpp_1ad992c2f082054c95eb623a2a31f829b7`
 
-- :ref:`exhale_function_Blas_8hpp_1ac3355dced59d857752d38ef49fde2f06`
+- :ref:`exhale_function_Blas_8hpp_1a808ebb915cc8005df78c9e29da083aea`
 
 - :ref:`exhale_function_Blas_8hpp_1a0880393d78d8b9acdd9fd3685a16e438`
 
@@ -204,7 +188,7 @@ Functions
 
 - :ref:`exhale_function_Blas_8hpp_1ae11d6a1facf87f66ccdea90e018b2795`
 
-- :ref:`exhale_function_Blas_8hpp_1af0467c0a0796866ff61dda18cb3c31ca`
+- :ref:`exhale_function_Blas_8hpp_1a8a6e5d169c421b871f4fffa2bc54df15`
 
 - :ref:`exhale_function_Blas_8hpp_1a4fba13b741a3d6115a5a07e8922e8396`
 

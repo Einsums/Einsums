@@ -48,6 +48,12 @@ Includes
 
 - ``einsums/_Common.hpp`` (:ref:`file_src_include_einsums__Common.hpp`)
 
+- ``einsums/utility/ComplexTraits.hpp`` (:ref:`file_src_include_einsums_utility_ComplexTraits.hpp`)
+
+- ``einsums/utility/SmartPointerTraits.hpp`` (:ref:`file_src_include_einsums_utility_SmartPointerTraits.hpp`)
+
+- ``einsums/utility/TensorTraits.hpp`` (:ref:`file_src_include_einsums_utility_TensorTraits.hpp`)
+
 - ``limits``
 
 - ``stdexcept``
@@ -90,69 +96,69 @@ Functions
 
 - :ref:`exhale_function_LinearAlgebra_8hpp_1a42465fe7a154ff1920ff1cd1578e05b9`
 
-- :ref:`exhale_function_LinearAlgebra_8hpp_1a7b0a563b4eeef629b3042979aab0be1d`
+- :ref:`exhale_function_LinearAlgebra_8hpp_1a793b5393277e592149838abd5ad53b7a`
 
-- :ref:`exhale_function_LinearAlgebra_8hpp_1a0d6d6c9cd2b97c5c703b86db7e95b80e`
+- :ref:`exhale_function_LinearAlgebra_8hpp_1a9fd0a9f485e546b19def7e0cf32b39c9`
 
-- :ref:`exhale_function_LinearAlgebra_8hpp_1a1d606cb80aea6be2fa4b8dc4db11889a`
+- :ref:`exhale_function_LinearAlgebra_8hpp_1ae97110cfb9084dcd0425a2bf382eb283`
 
-- :ref:`exhale_function_LinearAlgebra_8hpp_1a908d3feb51b0f3ed3cd3c35a9bc3c595`
+- :ref:`exhale_function_LinearAlgebra_8hpp_1a0540ed9133d9c1e70debfbffdaa51a34`
 
-- :ref:`exhale_function_LinearAlgebra_8hpp_1a8ac97176a246135cf736b5502a8c8ca6`
+- :ref:`exhale_function_LinearAlgebra_8hpp_1a7a98e129865f0fe100bd59533f281fcd`
 
-- :ref:`exhale_function_LinearAlgebra_8hpp_1aebad2748c2df2ff14433a9b230fc01e2`
+- :ref:`exhale_function_LinearAlgebra_8hpp_1a09b6cac0f426dd89cad854fbb4dfe690`
 
-- :ref:`exhale_function_LinearAlgebra_8hpp_1af7807c54c6de76c7083209c8b6912ae8`
+- :ref:`exhale_function_LinearAlgebra_8hpp_1af5bfc256ca1ccf2bdd2539fb4731b9c6`
 
-- :ref:`exhale_function_LinearAlgebra_8hpp_1a1c30c46d93b3f618fe9e2ac12387a69c`
+- :ref:`exhale_function_LinearAlgebra_8hpp_1a32a249f5caae155bd58e8099d2c7b742`
 
-- :ref:`exhale_function_LinearAlgebra_8hpp_1a68c1544a8625fcd2a67ff71e233debc6`
+- :ref:`exhale_function_LinearAlgebra_8hpp_1a705e5c3f3b8fb2567b819eeaf27a014b`
 
-- :ref:`exhale_function_LinearAlgebra_8hpp_1a212d5d56683c5e0c72a13abb80edc294`
+- :ref:`exhale_function_LinearAlgebra_8hpp_1a333f43f1b012bb45c66ff4a891b35a04`
 
-- :ref:`exhale_function_LinearAlgebra_8hpp_1aacc05ef93db7065128af612b4ea11143`
+- :ref:`exhale_function_LinearAlgebra_8hpp_1a81d8d0e6378f867bdc9b36815f4f2c64`
 
-- :ref:`exhale_function_LinearAlgebra_8hpp_1a5c49b631972414569a8174a4083055e2`
+- :ref:`exhale_function_LinearAlgebra_8hpp_1a4583691c6412a639ea3432ca6a530291`
 
-- :ref:`exhale_function_LinearAlgebra_8hpp_1a14e7f3b9adde1b0aa23ed499ee0bf79d`
+- :ref:`exhale_function_LinearAlgebra_8hpp_1a3ab0d870495fdfc443a52f288cc38987`
 
-- :ref:`exhale_function_LinearAlgebra_8hpp_1a4af9b21cb271b064c9f336a22a5290c5`
+- :ref:`exhale_function_LinearAlgebra_8hpp_1ac956fb4b28aafee3a49d86219142accc`
 
-- :ref:`exhale_function_LinearAlgebra_8hpp_1a045aa436eb92559ff7b5478fe881ff30`
+- :ref:`exhale_function_LinearAlgebra_8hpp_1a25762be44a8025c8d149df41170f4f95`
 
-- :ref:`exhale_function_LinearAlgebra_8hpp_1ab15a8f8fa9c4b2a7b1addd787fd5fb9f`
+- :ref:`exhale_function_LinearAlgebra_8hpp_1a4d2b1dbf4863e19d8920b7a596861132`
 
-- :ref:`exhale_function_LinearAlgebra_8hpp_1aec6cf37288e05f5236b7b8722756a93f`
+- :ref:`exhale_function_LinearAlgebra_8hpp_1aee86cf12b738a723615a680d28800cca`
 
 - :ref:`exhale_function_LinearAlgebra_8hpp_1ae5801113a9fa7e646972a0b5afa82a6c`
 
 - :ref:`exhale_function_LinearAlgebra_8hpp_1a9d11f83f55e39a6b13352f8122990435`
 
-- :ref:`exhale_function_LinearAlgebra_8hpp_1a9d8e25ac367cadbeb4f0a19df097b216`
+- :ref:`exhale_function_LinearAlgebra_8hpp_1a95c735a298027734ca198d029012f31c`
 
-- :ref:`exhale_function_LinearAlgebra_8hpp_1a0a21abe41ae38dc8d0d1364176d2ed81`
+- :ref:`exhale_function_LinearAlgebra_8hpp_1aae6c344218bb4c39b34ccaf7b349794d`
 
-- :ref:`exhale_function_LinearAlgebra_8hpp_1a140f3ab9e84066a1a443a3a0064de260`
+- :ref:`exhale_function_LinearAlgebra_8hpp_1a1d3d39f9b3c5f1cad951a3381cd07831`
 
-- :ref:`exhale_function_LinearAlgebra_8hpp_1a4a55cda22b7a4d0372d738c70d82756d`
+- :ref:`exhale_function_LinearAlgebra_8hpp_1ab5e5c379be5c0262d1f2c4eaec2bdc2f`
 
 - :ref:`exhale_function_LinearAlgebra_8hpp_1a24cb3a5296cff6c2f8daf5713380c8c2`
 
-- :ref:`exhale_function_LinearAlgebra_8hpp_1a82b853db2c9bee161c82d88dd78401c5`
+- :ref:`exhale_function_LinearAlgebra_8hpp_1a168cf5fb428f4d8d71b8e6623b90d616`
 
-- :ref:`exhale_function_LinearAlgebra_8hpp_1ad90c92059f14779ae628a8b0c9982b52`
+- :ref:`exhale_function_LinearAlgebra_8hpp_1a486b35be61958dea735e3b0cf42ceb7b`
 
-- :ref:`exhale_function_LinearAlgebra_8hpp_1ad3f52321404f3f01dc717dfd84f6b33e`
+- :ref:`exhale_function_LinearAlgebra_8hpp_1a101400866e9fecfd317df169ad2874a7`
 
-- :ref:`exhale_function_LinearAlgebra_8hpp_1ad8a10db06f8483bf880be7a2ff51fb77`
+- :ref:`exhale_function_LinearAlgebra_8hpp_1a30ffb9ec1761fbda527cb22d105a095e`
 
-- :ref:`exhale_function_LinearAlgebra_8hpp_1ad45544fa80dea66e229a4db514e15d99`
+- :ref:`exhale_function_LinearAlgebra_8hpp_1acb14706f53a2bbbdfe7cd20d5241b922`
 
-- :ref:`exhale_function_LinearAlgebra_8hpp_1a5eb7cfd65b82dd00726d082b48d81e1b`
+- :ref:`exhale_function_LinearAlgebra_8hpp_1a60ae275daeade97fa82b9e86d2401f7f`
 
-- :ref:`exhale_function_LinearAlgebra_8hpp_1ad3efc5482c3888e57660a3e2b5008da4`
+- :ref:`exhale_function_LinearAlgebra_8hpp_1acd064ca0e4841f8899033f78a2a05509`
 
-- :ref:`exhale_function_LinearAlgebra_8hpp_1a1b56179bbcf42eb1a3d59d5ca957661f`
+- :ref:`exhale_function_LinearAlgebra_8hpp_1a6e225db56e39feeb81151aaf317ab9db`
 
 
 Variables

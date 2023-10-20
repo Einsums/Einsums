@@ -1,0 +1,26 @@
+.. _exhale_struct_structeinsums_1_1IsSmartPointerHelper:
+
+Template Struct IsSmartPointerHelper
+====================================
+
+- Defined in :ref:`file_src_include_einsums_utility_SmartPointerTraits.hpp`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public einsums::details::IsSmartPointerHelper< std::remove_cv< T >::type >`` (:ref:`exhale_struct_structeinsums_1_1details_1_1IsSmartPointerHelper`)
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: einsums::IsSmartPointerHelper
+   :project: Einsums
+   :members:
+   :protected-members:
+   :undoc-members:

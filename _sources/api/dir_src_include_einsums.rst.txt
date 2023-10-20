@@ -17,6 +17,7 @@ Subdirectories
 
 - :ref:`dir_src_include_einsums_parallel`
 - :ref:`dir_src_include_einsums_polynomial`
+- :ref:`dir_src_include_einsums_utility`
 
 
 Files

@@ -1,0 +1,14 @@
+.. _exhale_variable_BitsetEnum_8hpp_1ade323e772a250615047cde8d209efa2a:
+
+Variable einsums::IsBitsetEnumV
+===============================
+
+- Defined in :ref:`file_src_include_einsums_utility_BitsetEnum.hpp`
+
+
+Variable Documentation
+----------------------
+
+
+.. doxygenvariable:: einsums::IsBitsetEnumV
+   :project: Einsums

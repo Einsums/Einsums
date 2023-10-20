@@ -25,6 +25,8 @@ Namespaces
 
 - :ref:`namespace_einsums__detail`
 
+- :ref:`namespace_einsums__details`
+
 - :ref:`namespace_einsums__fft`
 
 - :ref:`namespace_einsums__polynomial`
@@ -40,9 +42,9 @@ Classes
 -------
 
 
-- :ref:`exhale_struct_structeinsums_1_1add__complex`
+- :ref:`exhale_struct_structeinsums_1_1AddComplex`
 
-- :ref:`exhale_struct_structeinsums_1_1add__complex_3_01std_1_1complex_3_01T_01_4_01_4`
+- :ref:`exhale_struct_structeinsums_1_1AddComplex_3_01std_1_1complex_3_01T_01_4_01_4`
 
 - :ref:`exhale_struct_structeinsums_1_1AlignedAllocator_1_1rebind`
 
@@ -50,7 +52,7 @@ Classes
 
 - :ref:`exhale_struct_structeinsums_1_1AlignedAllocator_3_01void_00_01Align_01_4_1_1rebind`
 
-- :ref:`exhale_struct_structeinsums_1_1All__t`
+- :ref:`exhale_struct_structeinsums_1_1AllT`
 
 - :ref:`exhale_struct_structeinsums_1_1bool__pack`
 
@@ -58,9 +60,9 @@ Classes
 
 - :ref:`exhale_struct_structeinsums_1_1CircularBuffer`
 
-- :ref:`exhale_struct_structeinsums_1_1complex__type`
+- :ref:`exhale_struct_structeinsums_1_1ComplexType`
 
-- :ref:`exhale_struct_structeinsums_1_1complex__type_3_01std_1_1complex_3_01T_01_4_01_4`
+- :ref:`exhale_struct_structeinsums_1_1ComplexType_3_01std_1_1complex_3_01T_01_4_01_4`
 
 - :ref:`exhale_struct_structeinsums_1_1contains`
 
@@ -94,23 +96,15 @@ Classes
 
 - :ref:`exhale_struct_structeinsums_1_1intersect`
 
-- :ref:`exhale_struct_structeinsums_1_1is__complex__t`
-
-- :ref:`exhale_struct_structeinsums_1_1is__complex__t_3_01std_1_1complex_3_01T_01_4_01_4`
-
 - :ref:`exhale_struct_structeinsums_1_1is__incore__rank__tensor`
 
 - :ref:`exhale_struct_structeinsums_1_1is__ondisk__tensor`
 
-- :ref:`exhale_struct_structeinsums_1_1is__smart__pointer`
+- :ref:`exhale_struct_structeinsums_1_1IsBitsetEnum`
 
-- :ref:`exhale_struct_structeinsums_1_1is__smart__pointer__helper`
+- :ref:`exhale_struct_structeinsums_1_1IsComplex`
 
-- :ref:`exhale_struct_structeinsums_1_1is__smart__pointer__helper_3_01std_1_1shared__ptr_3_01T_01_4_01_4`
-
-- :ref:`exhale_struct_structeinsums_1_1is__smart__pointer__helper_3_01std_1_1unique__ptr_3_01T_01_4_01_4`
-
-- :ref:`exhale_struct_structeinsums_1_1is__smart__pointer__helper_3_01std_1_1weak__ptr_3_01T_01_4_01_4`
+- :ref:`exhale_struct_structeinsums_1_1IsSmartPointerHelper`
 
 - :ref:`exhale_struct_structeinsums_1_1Tensor`
 
@@ -211,9 +205,9 @@ Functions
 
 - :ref:`exhale_function_Tensor_8hpp_1ad4b8e06472ea9229e80fb20d1e99cb15`
 
-- :ref:`exhale_function_Tensor_8hpp_1a7bc3393b66dec35525cff395c5ae447b`
-
 - :ref:`exhale_function_Tensor_8hpp_1a7d6be2c45506b693c6b512e232318fd6`
+
+- :ref:`exhale_function_Tensor_8hpp_1a7bc3393b66dec35525cff395c5ae447b`
 
 - :ref:`exhale_function_Tensor_8hpp_1a3a0b2c04fe72ddbc7eb54ece078ef9e1`
 
@@ -222,7 +216,7 @@ Typedefs
 --------
 
 
-- :ref:`exhale_typedef_STL_8hpp_1a2fe155a24965c156e65967297446aaac`
+- :ref:`exhale_typedef_ComplexTraits_8hpp_1af092209fb7889f7a801aa783ebf60bd2`
 
 - :ref:`exhale_typedef_STL_8hpp_1a482458f66a007214fc1c9e3a87f94a1e`
 
@@ -250,7 +244,7 @@ Typedefs
 
 - :ref:`exhale_typedef___Common_8hpp_1a09cb83e4ce99aafb4305bc16c03dc054`
 
-- :ref:`exhale_typedef_STL_8hpp_1a2e68ee514bee331da472f8a544b36a51`
+- :ref:`exhale_typedef_ComplexTraits_8hpp_1a69a3a4769b3e2b1d42416c088b88cf7c`
 
 - :ref:`exhale_typedef___Common_8hpp_1a6138835e2652eaae61b1d977dd17d29c`
 
@@ -261,12 +255,14 @@ Variables
 ---------
 
 
-- :ref:`exhale_variable___Common_8hpp_1a2f9e0d0a5114d52339f53d8e0b4e4c65`
-
-- :ref:`exhale_variable_STL_8hpp_1ab83342940554d9c7bd5fe82875096e65`
+- :ref:`exhale_variable___Common_8hpp_1a595ffa036774625ab9599ce803bf9486`
 
 - :ref:`exhale_variable_STL_8hpp_1a236361d3881b84362529be9118d38b6e`
 
 - :ref:`exhale_variable_STL_8hpp_1a91c5836941ae4dfd8929ead416423770`
 
-- :ref:`exhale_variable_STL_8hpp_1a3c613f0610abcb92849fae81a447129d`
+- :ref:`exhale_variable_BitsetEnum_8hpp_1ade323e772a250615047cde8d209efa2a`
+
+- :ref:`exhale_variable_ComplexTraits_8hpp_1aab3b4188c7faea2d0af4774de4733b03`
+
+- :ref:`exhale_variable_SmartPointerTraits_8hpp_1a8d7516de18d0e7fefa5f6f9eae420f42`

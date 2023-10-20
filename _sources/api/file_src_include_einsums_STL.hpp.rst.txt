@@ -46,7 +46,7 @@ Includes
 
 - ``type_traits``
 
-- ``utility``
+- ``utility`` (:ref:`file_src_include_einsums_utility_BitsetEnum.hpp`)
 
 
 
@@ -55,8 +55,6 @@ Included By
 
 
 - :ref:`file_src_include_einsums.hpp`
-
-- :ref:`file_src_include_einsums_Blas.hpp`
 
 - :ref:`file_src_include_einsums_LinearAlgebra.hpp`
 
@@ -94,10 +92,6 @@ Classes
 -------
 
 
-- :ref:`exhale_struct_structeinsums_1_1add__complex`
-
-- :ref:`exhale_struct_structeinsums_1_1add__complex_3_01std_1_1complex_3_01T_01_4_01_4`
-
 - :ref:`exhale_struct_structeinsums_1_1AlignedAllocator_1_1rebind`
 
 - :ref:`exhale_struct_structeinsums_1_1AlignedAllocator_3_01const_01T_00_01Align_01_4_1_1rebind`
@@ -128,10 +122,6 @@ Classes
 
 - :ref:`exhale_struct_structeinsums_1_1CircularBuffer`
 
-- :ref:`exhale_struct_structeinsums_1_1complex__type`
-
-- :ref:`exhale_struct_structeinsums_1_1complex__type_3_01std_1_1complex_3_01T_01_4_01_4`
-
 - :ref:`exhale_struct_structeinsums_1_1contains`
 
 - :ref:`exhale_struct_structeinsums_1_1contains_3_01std_1_1tuple_3_01Car_00_01Cdr_8_8_8_01_4_00_01Needle_01_4`
@@ -158,23 +148,9 @@ Classes
 
 - :ref:`exhale_struct_structeinsums_1_1intersect`
 
-- :ref:`exhale_struct_structeinsums_1_1is__complex__t`
-
-- :ref:`exhale_struct_structeinsums_1_1is__complex__t_3_01std_1_1complex_3_01T_01_4_01_4`
-
 - :ref:`exhale_struct_structeinsums_1_1is__incore__rank__tensor`
 
 - :ref:`exhale_struct_structeinsums_1_1is__ondisk__tensor`
-
-- :ref:`exhale_struct_structeinsums_1_1is__smart__pointer`
-
-- :ref:`exhale_struct_structeinsums_1_1is__smart__pointer__helper`
-
-- :ref:`exhale_struct_structeinsums_1_1is__smart__pointer__helper_3_01std_1_1shared__ptr_3_01T_01_4_01_4`
-
-- :ref:`exhale_struct_structeinsums_1_1is__smart__pointer__helper_3_01std_1_1unique__ptr_3_01T_01_4_01_4`
-
-- :ref:`exhale_struct_structeinsums_1_1is__smart__pointer__helper_3_01std_1_1weak__ptr_3_01T_01_4_01_4`
 
 - :ref:`exhale_class_classeinsums_1_1AlignedAllocator`
 
@@ -221,9 +197,9 @@ Functions
 
 - :ref:`exhale_function_STL_8hpp_1af1a83390a8e808084c2e6127d37cf9ea`
 
-- :ref:`exhale_function_STL_8hpp_1a46100824581c3c5823243189ce4ef41d`
-
 - :ref:`exhale_function_STL_8hpp_1a1ae3ea0d36fcdfe6a8b37f24beb56502`
+
+- :ref:`exhale_function_STL_8hpp_1a46100824581c3c5823243189ce4ef41d`
 
 - :ref:`exhale_function_STL_8hpp_1a8f98b0188912397bf2396461fafb7712`
 
@@ -254,8 +230,6 @@ Typedefs
 --------
 
 
-- :ref:`exhale_typedef_STL_8hpp_1a2fe155a24965c156e65967297446aaac`
-
 - :ref:`exhale_typedef_STL_8hpp_1a482458f66a007214fc1c9e3a87f94a1e`
 
 - :ref:`exhale_typedef_STL_8hpp_1a8220194368e7b438aceea8614c187c6f`
@@ -266,8 +240,6 @@ Typedefs
 
 - :ref:`exhale_typedef_STL_8hpp_1a78d6ca93ceb8d653c62158e06b9d5a01`
 
-- :ref:`exhale_typedef_STL_8hpp_1a2e68ee514bee331da472f8a544b36a51`
-
 - :ref:`exhale_typedef_STL_8hpp_1a6554852bc4eb7ae0e8b116db40393639`
 
 
@@ -275,11 +247,7 @@ Variables
 ---------
 
 
-- :ref:`exhale_variable_STL_8hpp_1ab83342940554d9c7bd5fe82875096e65`
-
 - :ref:`exhale_variable_STL_8hpp_1a236361d3881b84362529be9118d38b6e`
 
 - :ref:`exhale_variable_STL_8hpp_1a91c5836941ae4dfd8929ead416423770`
-
-- :ref:`exhale_variable_STL_8hpp_1a3c613f0610abcb92849fae81a447129d`
 
