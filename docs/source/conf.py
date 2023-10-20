@@ -16,7 +16,7 @@ import datetime
 import re
 import os
 import sys
-sys.path.insert(0, os.path.abspath('sphinxext'))
+sys.path.insert(0, os.path.abspath('../sphinxext'))
 
 # -- Project information -----------------------------------------------------
 
@@ -25,7 +25,7 @@ copyright = f'2022-{datetime.datetime.today().year}, Einsums Developers'
 author = 'Einsums Developers'
 
 # The full version, including alpha/beta/rc tags
-branding = open('../cmake/EinsumsBranding.cmake', 'r').read()
+branding = open('../../cmake/EinsumsBranding.cmake', 'r').read()
 p = re.compile('set\(EINSUMS_VERSION\s+"(\d+\.\d+\.\d+)')
 m = p.match(branding)
 release = 'unknown-version'
@@ -39,8 +39,8 @@ if m:
 # ones.
 extensions = [
   'sphinx.ext.mathjax',
+  'sphinx.ext.ifconfig',
   'breathe',
-  'exhale',
   'sphinx_design'
 ]
 
@@ -50,7 +50,7 @@ templates_path = ['_templates']
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', 'sphinxext']
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -67,6 +67,7 @@ html_static_path = ['_static']
 
 html_theme_options = {
     "github_url": "https://github.com/Einsums/Einsums",
+    "collapse_navigation": True,
 
     "logo": {
         "image_light": "einsums-logo.png",
@@ -85,35 +86,10 @@ html_css_files = ['css/custom.css']
 # -- Setup the breathe extension ---------------------------------------------
 
 breathe_projects = {
-  "Einsums": "./_doxygen/xml"
+  "Einsums": os.path.join('..', 'build', 'doxygen', 'xml')
 }
 breathe_default_project = "Einsums"
-
-# -- Setup the exhale extension ----------------------------------------------
-
-exhale_args = {
-  # These are required
-  "containmentFolder": "./api",
-  "rootFileName": "library_root.rst",
-  "doxygenStripFromPath": "..",
-  # Heavily encouraged optional arguments
-  "rootFileTitle": "Library API",
-  # Suggested optional arguments
-  "createTreeView": True,
-  # If using the sphinx-bootstrape-theme, you need this next one
-  # "treeViewIsBootstrap": True,
-  "exhaleExecutesDoxygen": True,
-  # Use of CLANG_* requires a Doxygen compiled with clang support
-  # Use of CLAND_DATA_PATH requires a configuration of einsums to be completed.
-  "exhaleDoxygenStdin": """INPUT = ../src/include
-  PREDEFINED += EINSUMS_EXPORT=
-  PREDEFINED += DOXYGEN_SHOULD_SKIP_THIS
-  PREDEFINED += BEGIN_EINSUMS_NAMESPACE_HPP(x)=namespace x {
-  PREDEFINED += END_EINSUMS_NAMESPACE_HPP(x)=}
-  """
-  # CLANG_ASSISTED_PARSING = YES
-  # CLANG_DATABASE_PATH = ../build
-}
+breathe_default_members = ("members", "undoc-members", "protected-members")
 
 # Tell sphinx what the primary language being documented is
 primary_domain = "cpp"

@@ -14,7 +14,7 @@ Einsums's documentation
    :hidden:
 
    Getting Started <user/absolute_beginners>
-   API Reference <api/library_root>
+.. API Reference <api/library_root>
 
 **Version**: |release|
 
