@@ -308,63 +308,6 @@ struct is_ondisk_tensor
 template <typename D, size_t Rank, size_t ViewRank = Rank, typename T = double>
 inline constexpr bool is_ondisk_tensor_v = is_ondisk_tensor<D, Rank, ViewRank, T>::value;
 
-template <typename T>
-struct is_smart_pointer_helper : public std::false_type {};
-
-template <typename T>
-struct is_smart_pointer_helper<std::shared_ptr<T>> : public std::true_type {};
-
-template <typename T>
-struct is_smart_pointer_helper<std::unique_ptr<T>> : public std::true_type {};
-
-template <typename T>
-struct is_smart_pointer_helper<std::weak_ptr<T>> : public std::true_type {};
-
-template <typename T>
-struct is_smart_pointer : public is_smart_pointer_helper<typename std::remove_cv<T>::type> {};
-
-template <typename T>
-inline constexpr bool is_smart_pointer_v = is_smart_pointer<T>::value;
-
-template <typename T>
-struct is_complex_t : public std::false_type {};
-
-template <typename T>
-struct is_complex_t<std::complex<T>> : public std::true_type {};
-
-template <typename T>
-inline constexpr bool is_complex_v = is_complex_t<T>::value;
-
-template <typename T>
-struct complex_type {
-    using type = T;
-};
-
-template <typename T>
-struct complex_type<std::complex<T>> {
-    using type = T;
-};
-
-/**
- * @brief Returns the inner type of a std::complex<>.
- *
- * @tparam T type to
- */
-template <typename T>
-using remove_complex_t = typename complex_type<T>::type;
-
-template <typename T>
-struct add_complex {
-    using type = std::complex<T>;
-};
-template <typename T>
-struct add_complex<std::complex<T>> {
-    using type = std::complex<T>;
-};
-
-template <typename T>
-using add_complex_t = typename add_complex<T>::type;
-
 // From: https://stackoverflow.com/questions/29671643/checking-type-of-parameter-pack-using-enable-if
 template <bool...>
 struct bool_pack;

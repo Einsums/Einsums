@@ -28,9 +28,10 @@ struct LabelBase {};
         constexpr x()                = default;                                                                                            \
     };                                                                                                                                     \
     static struct x x;                                                                                                                     \
-    inline auto     operator<<(std::ostream &os, const struct x &) -> std::ostream     &{                                                     \
-        os << x::letter;                                                                                                               \
-        return os;                                                                                                                     \
+                                                                                                                                           \
+    inline auto operator<<(std::ostream &os, const struct x &) -> std::ostream & {                                                         \
+        os << x::letter;                                                                                                                   \
+        return os;                                                                                                                         \
     }                                                                                                                                      \
     }                                                                                                                                      \
     template <>                                                                                                                            \
@@ -94,7 +95,7 @@ MAKE_INDEX(y); // NOLINT
 MAKE_INDEX(Y); // NOLINT
 MAKE_INDEX(z); // NOLINT
 
-// Z is a special index used internally. DO NOT USE.
+// Z is a special index used internally. Unless you know what you're doing, DO NOT USE.
 MAKE_INDEX(Z); // NOLINT
 #endif
 

@@ -49,17 +49,26 @@
 namespace einsums {
 
 #if defined(MKL_ILP64)
-using eint  = long long int;
-using euint = unsigned long long int;
-using elong = long long int;
+using eint  = long long int;          // NOLINT
+using euint = unsigned long long int; // NOLINT
+using elong = long long int;          // NOLINT
 #else
-using eint  = int;
-using euint = unsigned int;
-using elong = long int;
+using eint  = int;          // NOLINT
+using euint = unsigned int; // NOLINT
+using elong = long int;     // NOLINT
 #endif
 
 /**
- * Handles initializing the internals of Einsums.
+ * @brief Handles initializing the internals of Einsums.
+ *
+ * The current implementation initializes the timer system, calls
+ * on the blas subsystem to initialize itself (for example, gpu variant would
+ * obtain global device handle), prevents OpenMP from allowing nested
+ * OpenMP regions (leading to oversubscription), and disables HDF5
+ * diagnostic reporting.
+ *
+ * In a future parallel variant of Einsums, this would also initialize
+ * the MPI runtime.
  *
  * @return int on success returns 0, on failure anything else.
  */
@@ -107,22 +116,10 @@ using Range = detail::Array<detail::RangeType, 2, std::int64_t>;
 template <std::size_t Rank>
 using Chunk = detail::Array<detail::ChunkType, Rank, std::int64_t>;
 
-struct All_t {};
-static struct All_t All;
+struct AllT {};
+static struct AllT All; // NOLINT
 
 } // namespace einsums
-
-/**
- * Function for printing Dim object.
- */
-template <size_t Rank>
-void println(const einsums::Dim<Rank> &dim) {
-    std::ostringstream oss;
-    for (size_t i = 0; i < Rank; i++) {
-        oss << dim[i] << " ";
-    }
-    println("Dim{{{}}}", oss.str());
-}
 
 template <size_t Rank>
 struct fmt::formatter<einsums::Dim<Rank>> {
@@ -151,18 +148,6 @@ struct fmt::formatter<einsums::Dim<Rank>> {
     }
 };
 
-/**
- * Function for printing Stride object.
- */
-template <size_t Rank>
-void println(const einsums::Stride<Rank> &stride) {
-    std::ostringstream oss;
-    for (size_t i = 0; i < Rank; i++) {
-        oss << stride[i] << " ";
-    }
-    println("Stride{{{}}}", oss.str().c_str());
-}
-
 template <size_t Rank>
 struct fmt::formatter<einsums::Stride<Rank>> {
     constexpr auto parse(format_parse_context &ctx) -> format_parse_context::iterator {
@@ -189,18 +174,6 @@ struct fmt::formatter<einsums::Stride<Rank>> {
         return fmt::format_to(ctx.out(), "Stride{{{}}}", einsums::rtrim_copy(oss.str()));
     }
 };
-
-/**
- * Function for printing Count object.
- */
-template <size_t Rank>
-void println(const einsums::Count<Rank> &count) {
-    std::ostringstream oss;
-    for (size_t i = 0; i < Rank; i++) {
-        oss << count[i] << " ";
-    }
-    println("Count{{{}}}", oss.str().c_str());
-}
 
 template <size_t Rank>
 struct fmt::formatter<einsums::Count<Rank>> {
@@ -229,18 +202,6 @@ struct fmt::formatter<einsums::Count<Rank>> {
     }
 };
 
-/**
- * Function for printing Offset object.
- */
-template <size_t Rank>
-void println(const einsums::Offset<Rank> &offset) {
-    std::ostringstream oss;
-    for (size_t i = 0; i < Rank; i++) {
-        oss << offset[i] << " ";
-    }
-    println("Offset{{{}}}", oss.str().c_str());
-}
-
 template <size_t Rank>
 struct fmt::formatter<einsums::Offset<Rank>> {
     constexpr auto parse(format_parse_context &ctx) -> format_parse_context::iterator {
@@ -268,15 +229,6 @@ struct fmt::formatter<einsums::Offset<Rank>> {
     }
 };
 
-/**
- * Function for printing Range object.
- */
-inline void println(const einsums::Range &range) {
-    std::ostringstream oss;
-    oss << range[0] << " " << range[1];
-    println("Range{{{}}}", oss.str().c_str());
-}
-
 template <>
 struct fmt::formatter<einsums::Range> {
     constexpr auto parse(format_parse_context &ctx) -> format_parse_context::iterator {
@@ -299,18 +251,6 @@ struct fmt::formatter<einsums::Range> {
         return fmt::format_to(ctx.out(), "Range{{{}, {}}}", dim[0], dim[1]);
     }
 };
-
-/**
- * Function for printing std::array object.
- */
-template <size_t Rank, typename T>
-inline void println(const std::array<T, Rank> &array) {
-    std::ostringstream oss;
-    for (size_t i = 0; i < Rank; i++) {
-        oss << array[i] << " ";
-    }
-    println("std::array{{{}}}", einsums::rtrim_copy(oss.str().c_str()));
-}
 
 // Taken from https://www.fluentcpp.com/2017/10/27/function-aliases-cpp/
 #define ALIAS_TEMPLATE_FUNCTION(highLevelFunction, lowLevelFunction)                                                                       \

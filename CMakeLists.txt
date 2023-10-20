@@ -15,10 +15,10 @@ include(FeatureSummary)
 include(EinsumsAPI)
 
 # Force C++ standard globally, do not fall back, do not use compiler extensions
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
-set(RANGES_CXX_STD 17)
+set(RANGES_CXX_STD 20)
 
 # Force position independent code globally.
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)

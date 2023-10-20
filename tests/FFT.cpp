@@ -1,6 +1,6 @@
 #include "einsums/FFT.hpp"
 
-#include "einsums/STL.hpp"
+#include "einsums/utility/ComplexTraits.hpp"
 
 #include <catch2/catch_all.hpp>
 #include <limits>
@@ -40,7 +40,7 @@ void init_data(einsums::Tensor<std::complex<T>, 1> &data, int N, int H) {
 }
 
 template <typename T, int N = 6, int H = -1>
-auto verify_r(einsums::Tensor<T, 1> &x) -> std::enable_if_t<!einsums::is_complex_v<T>> {
+auto verify_r(einsums::Tensor<T, 1> &x) -> std::enable_if_t<!einsums::IsComplexV<T>> {
     T   err, errthr, maxerr;
     int n;
 
@@ -62,10 +62,10 @@ auto verify_r(einsums::Tensor<T, 1> &x) -> std::enable_if_t<!einsums::is_complex
 }
 
 template <typename Source, typename Result, int N = 6, int H = -1>
-auto ifft1d_1() -> std::enable_if_t<!einsums::is_complex_v<Result>> {
+auto ifft1d_1() -> std::enable_if_t<!einsums::IsComplexV<Result>> {
     using namespace einsums;
 
-    auto x_data   = create_tensor<Source>("sample data", einsums::is_complex_v<Source> ? N / 2 + 1 : N);
+    auto x_data   = create_tensor<Source>("sample data", einsums::IsComplexV<Source> ? N / 2 + 1 : N);
     auto x_result = create_tensor<Result>("FFT result", N);
 
     init_data(x_data, N, H);
@@ -80,10 +80,10 @@ auto ifft1d_1() -> std::enable_if_t<!einsums::is_complex_v<Result>> {
 }
 
 template <typename Source, typename Result, int N = 7, int H = -N / 2>
-auto ifft1d_1() -> std::enable_if_t<einsums::is_complex_v<Source> && einsums::is_complex_v<Result>> {
+auto ifft1d_1() -> std::enable_if_t<einsums::IsComplexV<Source> && einsums::IsComplexV<Result>> {
     using namespace einsums;
-    using SourceBase = einsums::remove_complex_t<Source>;
-    using ResultBase = einsums::remove_complex_t<Result>;
+    using SourceBase = einsums::RemoveComplexT<Source>;
+    using ResultBase = einsums::RemoveComplexT<Result>;
 
     auto x_data   = create_tensor<Source>("Sample data", N);
     auto x_result = create_tensor<Result>("FFT result", N);
@@ -132,11 +132,11 @@ auto ifft1d_1() -> std::enable_if_t<einsums::is_complex_v<Source> && einsums::is
 }
 
 template <typename Source, typename Result, int N = 6, int H = -1>
-auto fft1d_1() -> std::enable_if_t<!einsums::is_complex_v<Source>> {
+auto fft1d_1() -> std::enable_if_t<!einsums::IsComplexV<Source>> {
     using namespace einsums;
 
     auto x_data   = create_tensor<Source>("sample data", N);
-    auto x_result = create_tensor<Result>("FFT result", einsums::is_complex_v<Source> ? N : N / 2 + 1);
+    auto x_result = create_tensor<Result>("FFT result", einsums::IsComplexV<Source> ? N : N / 2 + 1);
 
     init_data(x_data, N, H);
 
@@ -149,10 +149,10 @@ auto fft1d_1() -> std::enable_if_t<!einsums::is_complex_v<Source>> {
     // The result of each forward transformation is a tensor with
     // exactly one 1.0 and everything else is 0.0.
     for (int n = 0; n < x_result.dim(0); n++) {
-        einsums::remove_complex_t<Result> re_exp = 0.0, im_exp = 0.0;
+        einsums::RemoveComplexT<Result> re_exp = 0.0, im_exp = 0.0;
 
         // The position of the expected 1.0 is dependent on the Source data type.
-        if constexpr (!einsums::is_complex_v<Source>) {
+        if constexpr (!einsums::IsComplexV<Source>) {
             if ((n - H) % N == 0 || (-n - H) % N == 0)
                 re_exp = 1.0;
         } else {
@@ -160,16 +160,16 @@ auto fft1d_1() -> std::enable_if_t<!einsums::is_complex_v<Source>> {
                 re_exp = 1.0;
         }
 
-        REQUIRE_THAT(x_result(n).real(), Catch::Matchers::WithinAbsMatcher(einsums::remove_complex_t<Result>(re_exp), 0.0001));
-        REQUIRE_THAT(x_result(n).imag(), Catch::Matchers::WithinAbsMatcher(einsums::remove_complex_t<Result>(im_exp), 0.0001));
+        REQUIRE_THAT(x_result(n).real(), Catch::Matchers::WithinAbsMatcher(einsums::RemoveComplexT<Result>(re_exp), 0.0001));
+        REQUIRE_THAT(x_result(n).imag(), Catch::Matchers::WithinAbsMatcher(einsums::RemoveComplexT<Result>(im_exp), 0.0001));
     }
 }
 
 template <typename Source, typename Result, int N = 7, int H = -N / 2>
-auto fft1d_1() -> std::enable_if_t<einsums::is_complex_v<Source> && einsums::is_complex_v<Result>> {
+auto fft1d_1() -> std::enable_if_t<einsums::IsComplexV<Source> && einsums::IsComplexV<Result>> {
     using namespace einsums;
-    using SourceBase = einsums::remove_complex_t<Source>;
-    using ResultBase = einsums::remove_complex_t<Result>;
+    using SourceBase = einsums::RemoveComplexT<Source>;
+    using ResultBase = einsums::RemoveComplexT<Result>;
 
     auto x_data   = create_tensor<Source>("Sample Data", N);
     auto x_result = create_tensor<Result>("Result", N);

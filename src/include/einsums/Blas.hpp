@@ -1,23 +1,36 @@
 #pragma once
 
-#include "einsums/STL.hpp"
 #include "einsums/_Common.hpp"
 #include "einsums/_Export.hpp"
+#include "einsums/utility/ComplexTraits.hpp"
 
-#include <complex>
 #include <vector>
 
 // Namespace for BLAS and LAPACK routines.
 namespace einsums::blas {
 
-// Some of the backends may require additional initialization before their use.
+/**
+ * @brief Initializes the underlying BLAS library.
+ *
+ * Handles any initialization that the underlying BLAS implementation requires.
+ * For example, a GPU implementation would likely need to obtain a device handle to
+ * run. That would be handled by this function.
+ *
+ * You typically will not need to call this function manually. \ref einsums::initialize()
+ * will handle calling this function for you.
+ *
+ */
 void EINSUMS_EXPORT initialize();
+
+/**
+ * @brief Handles any shutdown procedure needed by the BLAS implementation.
+ *
+ */
 void EINSUMS_EXPORT finalize();
 
-/*!
- * Performs matrix multiplication for general square matices of type double.
- */
+#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
 namespace detail {
+// These routines take care of actually making the call to the BLAS equivalent.
 void EINSUMS_EXPORT sgemm(char transa, char transb, eint m, eint n, eint k, float alpha, const float *a, eint lda, const float *b, eint ldb,
                           float beta, float *c, eint ldc);
 void EINSUMS_EXPORT dgemm(char transa, char transb, eint m, eint n, eint k, double alpha, const double *a, eint lda, const double *b,
@@ -27,10 +40,50 @@ void EINSUMS_EXPORT cgemm(char transa, char transb, eint m, eint n, eint k, std:
 void EINSUMS_EXPORT zgemm(char transa, char transb, eint m, eint n, eint k, std::complex<double> alpha, const std::complex<double> *a,
                           eint lda, const std::complex<double> *b, eint ldb, std::complex<double> beta, std::complex<double> *c, eint ldc);
 } // namespace detail
+#endif
 
+/**
+ * @brief Perform a General Matrix Multiply (GEMM) operation.
+ *
+ * This function computes the product of two double-precision matrices, C = alpha * A * B + beta * C, where A, B, and C are matrices, and
+ * alpha and beta are scalar values.
+ *
+ * @tparam T The datatype of the GEMM.
+ * @param[in] transa Whether to transpose matrix \param a:
+ *   - 'N' or 'n' for no transpose,
+ *   - 'T' or 't' for transpose,
+ *   - 'C' or 'c' for conjugate transpose.
+ * @param[in] transb Whether to transpose matrix \param b.
+ * @param[in] m The number of rows in matrix A and C.
+ * @param[in] n The number of columns in matrix B and C.
+ * @param[in] k The number of columns in matrix A and rows in matrix B.
+ * @param[in] alpha The scalar alpha.
+ * @param[in] a A pointer to the matrix A with dimensions ( \param lda , \param k ) when transa is 'N' or 'n', and ( \param lda , \param m )
+ * otherwise.
+ * @param[in] lda Leading dimension of A, specifying the distance between two consecutive columns.
+ * @param[in] b A pointer to the matrix B with dimensions ( \param ldb , \param n) when transB is 'N' or 'n', and ( \param ldb , \param k)
+ * otherwise.
+ * @param[in] ldb Leading dimension of B, specifying the distance between two consecutive columns.
+ * @param[in] beta The scalar beta.
+ * @param[in,out] c A pointer to the matrix C with dimensions ( \param ldc , \param n ).
+ * @param[in] ldc Leading dimension of C, specifying the distance between two consecutive columns.
+ *
+ * @note The function performs one of the following matrix operations:
+ * - If transA is 'N' or 'n' and transB is 'N' or 'n': C = alpha * A * B + beta * C
+ * - If transA is 'N' or 'n' and transB is 'T' or 't': C = alpha * A * B^T + beta * C
+ * - If transA is 'T' or 't' and transB is 'N' or 'n': C = alpha * A^T * B + beta * C
+ * - If transA is 'T' or 't' and transB is 'T' or 't': C = alpha * A^T * B^T + beta * C
+ * - If transA is 'C' or 'c' and transB is 'N' or 'n': C = alpha * A^H * B + beta * C
+ * - If transA is 'C' or 'c' and transB is 'T' or 't': C = alpha * A^H * B^T + beta * C
+ *
+ * @return None.
+ */
 template <typename T>
 void gemm(char transa, char transb, eint m, eint n, eint k, T alpha, const T *a, eint lda, const T *b, eint ldb, T beta, T *c, eint ldc);
 
+#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
+// These are the template specialization for the data types we support. If a unsupported data type
+// is attempted a compiler error will occur.
 template <>
 inline void gemm<float>(char transa, char transb, eint m, eint n, eint k, float alpha, const float *a, eint lda, const float *b, eint ldb,
                         float beta, float *c, eint ldc) {
@@ -56,10 +109,9 @@ inline void gemm<std::complex<double>>(char transa, char transb, eint m, eint n,
                                        std::complex<double> beta, std::complex<double> *c, eint ldc) {
     detail::zgemm(transa, transb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc);
 }
+#endif
 
-/*!
- * Performs matrix vector multiplication.
- */
+#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
 namespace detail {
 void EINSUMS_EXPORT sgemv(char transa, eint m, eint n, float alpha, const float *a, eint lda, const float *x, eint incx, float beta,
                           float *y, eint incy);
@@ -70,10 +122,41 @@ void EINSUMS_EXPORT cgemv(char transa, eint m, eint n, std::complex<float> alpha
 void EINSUMS_EXPORT zgemv(char transa, eint m, eint n, std::complex<double> alpha, const std::complex<double> *a, eint lda,
                           const std::complex<double> *x, eint incx, std::complex<double> beta, std::complex<double> *y, eint incy);
 } // namespace detail
+#endif
 
+/**
+ * @brief Computes a matrix-vector product using a general matrix.
+ *
+ * The gemv routine performs a matrix-vector operation defined as:
+ * @f[
+ * y := \alpha * A * x + \beta * y
+ * @f]
+ * or
+ * @f[
+ * y := \alpha * A' * x + beta * y
+ * @f]
+ * or
+ * @f[
+ * y := \alpha * conjg(A') * x + beta * y
+ * @f]
+ *
+ * @tparam T the underlying data type of the matrix and vector
+ * @param transa what to do with \p a - no trans, trans, conjg
+ * @param m specifies the number of rows of \p a
+ * @param n specifies the number of columns of \p a
+ * @param alpha Specifies the scaler alpha
+ * @param a Array, size lda * m
+ * @param lda Specifies the leading dimension of \p a as declared in the calling function
+ * @param x array, vector x
+ * @param incx Specifies the increment for the elements of \p x
+ * @param beta Specifies the scalar beta. When beta is set to zero, then \p y need not be set on input.
+ * @param y array, vector y
+ * @param incy Specifies the increment for the elements of \p y .
+ */
 template <typename T>
 void gemv(char transa, eint m, eint n, T alpha, const T *a, eint lda, const T *x, eint incx, T beta, T *y, eint incy);
 
+#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
 template <>
 inline void gemv<float>(char transa, eint m, eint n, float alpha, const float *a, eint lda, const float *x, eint incx, float beta, float *y,
                         eint incy) {
@@ -99,6 +182,7 @@ inline void gemv<std::complex<double>>(char transa, eint m, eint n, std::complex
                                        eint incy) {
     detail::zgemv(transa, m, n, alpha, a, lda, x, incx, beta, y, incy);
 }
+#endif
 
 /*!
  * Performs symmetric matrix diagonalization.
@@ -115,6 +199,7 @@ template <>
 inline auto syev<float>(char job, char uplo, eint n, float *a, eint lda, float *w, float *work, eint lwork) -> eint {
     return detail::ssyev(job, uplo, n, a, lda, w, work, lwork);
 }
+
 template <>
 inline auto syev<double>(char job, char uplo, eint n, double *a, eint lda, double *w, double *work, eint lwork) -> eint {
     return detail::dsyev(job, uplo, n, a, lda, w, work, lwork);
@@ -193,8 +278,8 @@ void EINSUMS_EXPORT zdscal(eint n, const double alpha, std::complex<double> *vec
 template <typename T>
 void scal(eint n, const T alpha, T *vec, eint inc);
 
-template <typename T>
-auto scal(eint n, const remove_complex_t<T> alpha, T *vec, eint inc) -> std::enable_if_t<is_complex_v<T>>;
+template <Complex T>
+void scal(eint n, const RemoveComplexT<T> alpha, T *vec, eint inc);
 
 template <>
 inline void scal<float>(eint n, const float alpha, float *vec, eint inc) {
@@ -464,7 +549,7 @@ auto EINSUMS_EXPORT zlange(char norm_type, eint m, eint n, const std::complex<do
 } // namespace detail
 
 template <typename T>
-auto lange(char norm_type, eint m, eint n, const T *A, eint lda, remove_complex_t<T> *work) -> remove_complex_t<T>;
+auto lange(char norm_type, eint m, eint n, const T *A, eint lda, RemoveComplexT<T> *work) -> RemoveComplexT<T>;
 
 template <>
 inline auto lange<float>(char norm_type, eint m, eint n, const float *A, eint lda, float *work) -> float {
@@ -494,7 +579,7 @@ void EINSUMS_EXPORT zlassq(eint n, const std::complex<double> *x, eint incx, dou
 } // namespace detail
 
 template <typename T>
-void lassq(eint n, const T *x, eint incx, remove_complex_t<T> *scale, remove_complex_t<T> *sumsq);
+void lassq(eint n, const T *x, eint incx, RemoveComplexT<T> *scale, RemoveComplexT<T> *sumsq);
 
 template <>
 inline void lassq<float>(eint n, const float *x, eint incx, float *scale, float *sumsq) {
@@ -530,7 +615,7 @@ auto EINSUMS_EXPORT zgesdd(char jobz, eint m, eint n, std::complex<double> *a, e
 } // namespace detail
 
 template <typename T>
-auto gesdd(char jobz, eint m, eint n, T *a, eint lda, remove_complex_t<T> *s, T *u, eint ldu, T *vt, eint ldvt) -> eint;
+auto gesdd(char jobz, eint m, eint n, T *a, eint lda, RemoveComplexT<T> *s, T *u, eint ldu, T *vt, eint ldvt) -> eint;
 
 template <>
 inline auto gesdd<float>(char jobz, eint m, eint n, float *a, eint lda, float *s, float *u, eint ldu, float *vt, eint ldvt) -> eint {
@@ -615,7 +700,7 @@ auto EINSUMS_EXPORT ztrsyl(char trana, char tranb, eint isgn, eint m, eint n, co
  */
 template <typename T>
 auto trsyl(char trana, char tranb, eint isgn, eint m, eint n, const T *a, eint lda, const T *b, eint ldb, T *c, eint ldc,
-           remove_complex_t<T> *scale) -> eint;
+           RemoveComplexT<T> *scale) -> eint;
 
 template <>
 inline auto trsyl<float>(char trana, char tranb, eint isgn, eint m, eint n, const float *a, eint lda, const float *b, eint ldb, float *c,

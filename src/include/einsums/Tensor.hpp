@@ -6,6 +6,7 @@
 #include "einsums/Section.hpp"
 #include "einsums/State.hpp"
 #include "einsums/_Common.hpp"
+#include "einsums/utility/ComplexTraits.hpp"
 
 // Include headers from the ranges library that we need to handle cartesian_products
 #include "range/v3/range_fwd.hpp"
@@ -398,7 +399,7 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
      */
     template <typename... MultiIndex>
     auto data(MultiIndex... index)
-        -> std::enable_if_t<count_of_type<All_t, MultiIndex...>() == 0 && count_of_type<Range, MultiIndex...>() == 0, T *> {
+        -> std::enable_if_t<count_of_type<AllT, MultiIndex...>() == 0 && count_of_type<Range, MultiIndex...>() == 0, T *> {
         assert(sizeof...(MultiIndex) <= _dims.size());
 
         auto index_list = std::array{static_cast<std::int64_t>(index)...};
@@ -423,7 +424,7 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
      */
     template <typename... MultiIndex>
     auto operator()(MultiIndex... index) const
-        -> std::enable_if_t<count_of_type<All_t, MultiIndex...>() == 0 && count_of_type<Range, MultiIndex...>() == 0, const T &> {
+        -> std::enable_if_t<count_of_type<AllT, MultiIndex...>() == 0 && count_of_type<Range, MultiIndex...>() == 0, const T &> {
 
         assert(sizeof...(MultiIndex) == _dims.size());
 
@@ -449,7 +450,7 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
      */
     template <typename... MultiIndex>
     auto operator()(MultiIndex... index)
-        -> std::enable_if_t<count_of_type<All_t, MultiIndex...>() == 0 && count_of_type<Range, MultiIndex...>() == 0, T &> {
+        -> std::enable_if_t<count_of_type<AllT, MultiIndex...>() == 0 && count_of_type<Range, MultiIndex...>() == 0, T &> {
 
         assert(sizeof...(MultiIndex) == _dims.size());
 
@@ -466,8 +467,8 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
     // WARNING: Chances are this function will not work if you mix All{}, Range{} and explicit indexes.
     template <typename... MultiIndex>
     auto operator()(MultiIndex... index)
-        -> std::enable_if_t<count_of_type<All_t, MultiIndex...>() >= 1,
-                            TensorView<T, count_of_type<All_t, MultiIndex...>() + count_of_type<Range, MultiIndex...>()>> {
+        -> std::enable_if_t<count_of_type<AllT, MultiIndex...>() >= 1,
+                            TensorView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()>> {
         // Construct a TensorView using the indices provided as the starting point for the view.
         // e.g.:
         //    Tensor T{"Big Tensor", 7, 7, 7, 7};
@@ -475,9 +476,9 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
         // println("Here");
         const auto &indices = std::forward_as_tuple(index...);
 
-        Offset<Rank>                                                                          offsets;
-        Stride<count_of_type<All_t, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> strides{};
-        Dim<count_of_type<All_t, MultiIndex...>() + count_of_type<Range, MultiIndex...>()>    dims{};
+        Offset<Rank>                                                                         offsets;
+        Stride<count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> strides{};
+        Dim<count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()>    dims{};
 
         int counter{0};
         for_sequence<sizeof...(MultiIndex)>([&](auto i) {
@@ -487,7 +488,7 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
                 if (tmp < 0)
                     tmp = _dims[i] + tmp;
                 offsets[i] = tmp;
-            } else if constexpr (std::is_same_v<All_t, std::tuple_element_t<i, std::tuple<MultiIndex...>>>) {
+            } else if constexpr (std::is_same_v<AllT, std::tuple_element_t<i, std::tuple<MultiIndex...>>>) {
                 strides[counter] = _strides[i];
                 dims[counter]    = _dims[i];
                 counter++;
@@ -505,8 +506,8 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
             }
         });
 
-        return TensorView<T, count_of_type<All_t, MultiIndex...>() + count_of_type<Range, MultiIndex...>()>{*this, std::move(dims), offsets,
-                                                                                                            strides};
+        return TensorView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()>{*this, std::move(dims), offsets,
+                                                                                                           strides};
     }
 
     template <typename... MultiIndex>
@@ -633,9 +634,7 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
             auto chunksize = _data.size() / omp_get_num_threads();                                                                         \
             auto begin     = _data.begin() + chunksize * tid;                                                                              \
             auto end       = (tid == omp_get_num_threads() - 1) ? _data.end() : begin + chunksize;                                         \
-            EINSUMS_OMP_SIMD for (auto i = begin; i < end; i++) {                                                                          \
-                (*i) OP b;                                                                                                                 \
-            }                                                                                                                              \
+            EINSUMS_OMP_SIMD for (auto i = begin; i < end; i++) { (*i) OP b; }                                                             \
         }                                                                                                                                  \
         return *this;                                                                                                                      \
     }                                                                                                                                      \
@@ -651,9 +650,7 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
             auto bbegin    = b._data.begin() + chunksize * tid;                                                                            \
             auto aend      = (tid == omp_get_num_threads() - 1) ? _data.end() : abegin + chunksize;                                        \
             auto j         = bbegin;                                                                                                       \
-            EINSUMS_OMP_SIMD for (auto i = abegin; i < aend; i++) {                                                                        \
-                (*i) OP(*j++);                                                                                                             \
-            }                                                                                                                              \
+            EINSUMS_OMP_SIMD for (auto i = abegin; i < aend; i++) { (*i) OP(*j++); }                                                       \
         }                                                                                                                                  \
         return *this;                                                                                                                      \
     }
@@ -1424,11 +1421,11 @@ struct DiskTensor final : public detail::TensorBase<T, Rank> {
     // Range is not inclusive. Range{10, 11} === size of 1
     template <typename... MultiIndex>
     auto operator()(MultiIndex... index)
-        -> std::enable_if_t<count_of_type<All_t, MultiIndex...>() + count_of_type<Range, MultiIndex...>() != 0,
-                            DiskView<T, count_of_type<All_t, MultiIndex...>() + count_of_type<Range, MultiIndex...>(), Rank>> {
+        -> std::enable_if_t<count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>() != 0,
+                            DiskView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>(), Rank>> {
         // Get positions of All
         auto all_positions =
-            get_array_from_tuple<std::array<int, count_of_type<All_t, MultiIndex...>()>>(positions_of_type<All_t, MultiIndex...>());
+            get_array_from_tuple<std::array<int, count_of_type<AllT, MultiIndex...>()>>(positions_of_type<AllT, MultiIndex...>());
         auto index_positions =
             get_array_from_tuple<std::array<int, count_of_type<size_t, MultiIndex...>()>>(positions_of_type<size_t, MultiIndex...>());
         auto range_positions =
@@ -1444,7 +1441,7 @@ struct DiskTensor final : public detail::TensorBase<T, Rank> {
         std::fill(counts.begin(), counts.end(), 1.0);
 
         // Need the dim of the smaller tensor
-        Dim<count_of_type<All_t, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> dims_all{};
+        Dim<count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> dims_all{};
 
         for (auto [i, value] : enumerate(index_positions)) {
             // printf("i, value: %d %d\n", i, value);
@@ -1469,17 +1466,17 @@ struct DiskTensor final : public detail::TensorBase<T, Rank> {
             }
         }
 
-        return DiskView<T, count_of_type<All_t, MultiIndex...>() + count_of_type<Range, MultiIndex...>(), Rank>(*this, dims_all, counts,
-                                                                                                                offsets, strides);
+        return DiskView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>(), Rank>(*this, dims_all, counts,
+                                                                                                               offsets, strides);
     }
 
     template <typename... MultiIndex>
     auto operator()(MultiIndex... index) const
-        -> std::enable_if_t<count_of_type<All_t, MultiIndex...>() + count_of_type<Range, MultiIndex...>() != 0,
-                            const DiskView<T, count_of_type<All_t, MultiIndex...>() + count_of_type<Range, MultiIndex...>(), Rank>> {
+        -> std::enable_if_t<count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>() != 0,
+                            const DiskView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>(), Rank>> {
         // Get positions of All
         auto all_positions =
-            get_array_from_tuple<std::array<int, count_of_type<All_t, MultiIndex...>()>>(positions_of_type<All_t, MultiIndex...>());
+            get_array_from_tuple<std::array<int, count_of_type<AllT, MultiIndex...>()>>(positions_of_type<AllT, MultiIndex...>());
         auto index_positions =
             get_array_from_tuple<std::array<int, count_of_type<size_t, MultiIndex...>()>>(positions_of_type<size_t, MultiIndex...>());
         auto range_positions =
@@ -1495,7 +1492,7 @@ struct DiskTensor final : public detail::TensorBase<T, Rank> {
         std::fill(counts.begin(), counts.end(), 1.0);
 
         // Need the dim of the smaller tensor
-        Dim<count_of_type<All_t, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> dims_all{};
+        Dim<count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> dims_all{};
 
         for (auto [i, value] : enumerate(index_positions)) {
             // printf("i, value: %d %d\n", i, value);
@@ -1520,8 +1517,8 @@ struct DiskTensor final : public detail::TensorBase<T, Rank> {
             }
         }
 
-        return DiskView<T, count_of_type<All_t, MultiIndex...>() + count_of_type<Range, MultiIndex...>(), Rank>(*this, dims_all, counts,
-                                                                                                                offsets, strides);
+        return DiskView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>(), Rank>(*this, dims_all, counts,
+                                                                                                               offsets, strides);
     }
 
   private:
@@ -1658,6 +1655,7 @@ template <typename... Dims>
 DiskTensor(h5::fd_t &file, std::string name, Chunk<sizeof...(Dims)> chunk, Dims... dims) -> DiskTensor<double, sizeof...(Dims)>;
 
 // Supposedly C++20 will allow template deduction guides for template aliases. i.e. Dim, Stride, Offset, Count, Range.
+// Clang has no support for class template argument deduction for alias templates. P1814R0
 #endif
 
 // Useful factories
@@ -1738,7 +1736,7 @@ auto println(const AType<T, Rank> &A, TensorPrintOptions options) ->
                     } else {
                         oss << fmt::format("{:14.8f} ", value);
                     }
-                } else if constexpr (einsums::is_complex_v<T>) {
+                } else if constexpr (einsums::IsComplexV<T>) {
                     oss << fmt::format("{:14.8f} ", value.real()) << " + " << fmt::format("{:14.8f}i)", value.imag());
                 } else
                     oss << fmt::format("{:14} ", value);
@@ -1768,7 +1766,7 @@ auto println(const AType<T, Rank> &A, TensorPrintOptions options) ->
                         if (std::abs(value) > 1.0E+10) {
                             if constexpr (std::is_floating_point_v<T>)
                                 oss << "\x1b[0;37;41m" << fmt::format("{:14.8f} ", value) << "\x1b[0m";
-                            else if constexpr (einsums::is_complex_v<T>)
+                            else if constexpr (einsums::IsComplexV<T>)
                                 oss << "\x1b[0;37;41m(" << fmt::format("{:14.8f} ", value.real()) << " + "
                                     << fmt::format("{:14.8f}i)", value.imag()) << "\x1b[0m";
                             else
@@ -1780,7 +1778,7 @@ auto println(const AType<T, Rank> &A, TensorPrintOptions options) ->
                                 } else {
                                     oss << fmt::format("{:14.8f} ", value);
                                 }
-                            } else if constexpr (einsums::is_complex_v<T>) {
+                            } else if constexpr (einsums::IsComplexV<T>) {
                                 oss << fmt::format("{:14.8f} ", value.real()) << " + " << fmt::format("{:14.8f}i)", value.imag());
                             } else
                                 oss << fmt::format("{:14} ", value);
@@ -1805,7 +1803,7 @@ auto println(const AType<T, Rank> &A, TensorPrintOptions options) ->
                     if (std::abs(value) > 1.0E+5) {
                         if constexpr (std::is_floating_point_v<T>)
                             oss << "\x1b[0;37;41m" << fmt::format("{:14.8f} ", value) << "\x1b[0m";
-                        else if constexpr (einsums::is_complex_v<T>) {
+                        else if constexpr (einsums::IsComplexV<T>) {
                             oss << "\x1b[0;37;41m(" << fmt::format("{:14.8f} ", value.real()) << " + "
                                 << fmt::format("{:14.8f}i)", value.imag()) << "\x1b[0m";
                         } else
@@ -1817,7 +1815,7 @@ auto println(const AType<T, Rank> &A, TensorPrintOptions options) ->
                             } else {
                                 oss << fmt::format("{:14.8f} ", value);
                             }
-                        else if constexpr (einsums::is_complex_v<T>) {
+                        else if constexpr (einsums::IsComplexV<T>) {
                             oss << fmt::format("{:14.8f} ", value.real()) << " + " << fmt::format("{:14.8f}i)", value.imag());
                         } else
                             oss << fmt::format("{:14} ", value);
