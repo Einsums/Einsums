@@ -30,6 +30,7 @@ void EINSUMS_EXPORT finalize();
 
 #if !defined(DOXYGEN_SHOULD_SKIP_THIS)
 namespace detail {
+// These routines take care of actually making the call to the BLAS equivalent.
 void EINSUMS_EXPORT sgemm(char transa, char transb, eint m, eint n, eint k, float alpha, const float *a, eint lda, const float *b, eint ldb,
                           float beta, float *c, eint ldc);
 void EINSUMS_EXPORT dgemm(char transa, char transb, eint m, eint n, eint k, double alpha, const double *a, eint lda, const double *b,
@@ -81,6 +82,8 @@ template <typename T>
 void gemm(char transa, char transb, eint m, eint n, eint k, T alpha, const T *a, eint lda, const T *b, eint ldb, T beta, T *c, eint ldc);
 
 #if !defined(DOXYGEN_SHOULD_SKIP_THIS)
+// These are the template specialization for the data types we support. If a unsupported data type
+// is attempted a compiler error will occur.
 template <>
 inline void gemm<float>(char transa, char transb, eint m, eint n, eint k, float alpha, const float *a, eint lda, const float *b, eint ldb,
                         float beta, float *c, eint ldc) {
@@ -108,9 +111,7 @@ inline void gemm<std::complex<double>>(char transa, char transb, eint m, eint n,
 }
 #endif
 
-/*!
- * Performs matrix vector multiplication.
- */
+#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
 namespace detail {
 void EINSUMS_EXPORT sgemv(char transa, eint m, eint n, float alpha, const float *a, eint lda, const float *x, eint incx, float beta,
                           float *y, eint incy);
@@ -121,10 +122,41 @@ void EINSUMS_EXPORT cgemv(char transa, eint m, eint n, std::complex<float> alpha
 void EINSUMS_EXPORT zgemv(char transa, eint m, eint n, std::complex<double> alpha, const std::complex<double> *a, eint lda,
                           const std::complex<double> *x, eint incx, std::complex<double> beta, std::complex<double> *y, eint incy);
 } // namespace detail
+#endif
 
+/**
+ * @brief Computes a matrix-vector product using a general matrix.
+ *
+ * The gemv routine performs a matrix-vector operation defined as:
+ * @f[
+ * y := \alpha * A * x + \beta * y
+ * @f]
+ * or
+ * @f[
+ * y := \alpha * A' * x + beta * y
+ * @f]
+ * or
+ * @f[
+ * y := \alpha * conjg(A') * x + beta * y
+ * @f]
+ *
+ * @tparam T the underlying data type of the matrix and vector
+ * @param transa what to do with \p a - no trans, trans, conjg
+ * @param m specifies the number of rows of \p a
+ * @param n specifies the number of columns of \p a
+ * @param alpha Specifies the scaler alpha
+ * @param a Array, size lda * m
+ * @param lda Specifies the leading dimension of \p a as declared in the calling function
+ * @param x array, vector x
+ * @param incx Specifies the increment for the elements of \p x
+ * @param beta Specifies the scalar beta. When beta is set to zero, then \p y need not be set on input.
+ * @param y array, vector y
+ * @param incy Specifies the increment for the elements of \p y .
+ */
 template <typename T>
 void gemv(char transa, eint m, eint n, T alpha, const T *a, eint lda, const T *x, eint incx, T beta, T *y, eint incy);
 
+#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
 template <>
 inline void gemv<float>(char transa, eint m, eint n, float alpha, const float *a, eint lda, const float *x, eint incx, float beta, float *y,
                         eint incy) {
@@ -150,6 +182,7 @@ inline void gemv<std::complex<double>>(char transa, eint m, eint n, std::complex
                                        eint incy) {
     detail::zgemv(transa, m, n, alpha, a, lda, x, incx, beta, y, incy);
 }
+#endif
 
 /*!
  * Performs symmetric matrix diagonalization.
