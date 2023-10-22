@@ -1663,14 +1663,14 @@ DiskTensor(h5::fd_t &file, std::string name, Chunk<sizeof...(Dims)> chunk, Dims.
 /**
  * @brief Create a new tensor with \p name and \p args .
  *
- * Just a simple factory for creating new tensors. Defaults to using double for the
+ * Just a simple factory function for creating new tensors. Defaults to using double for the
  * underlying data and automatically determines rank of the tensor from args.
  *
  * @tparam Type The datatype of the underlying tensor. Defaults to double.
  * @tparam Args The datatype of the calling parameters.
  * @param name The name of the new tensor.
  * @param args The arguments needed to construct the tensor.
- * @return A new tensor.
+ * @return A new tensor. By default memory is not initialized to anything. It may be filled with garbage.
  */
 template <typename Type = double, typename... Args>
 auto create_tensor(const std::string name, Args... args) -> Tensor<Type, sizeof...(Args)> {

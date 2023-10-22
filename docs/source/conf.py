@@ -67,7 +67,7 @@ html_static_path = ['_static']
 
 html_theme_options = {
     "github_url": "https://github.com/Einsums/Einsums",
-    "collapse_navigation": True,
+    # "collapse_navigation": True,
 
     "logo": {
         "image_light": "einsums-logo.png",
@@ -76,12 +76,15 @@ html_theme_options = {
     },
 
     "show_toc_level": 2,
-    "header_links_before_dropdown": 4,
-
+    "header_links_before_dropdown": 6,
+    "navbar_end": ["theme-switcher", "navbar-icon-links"],
     "secondary_sidebar_items": ["page-toc", "sourcelink"]
 }
 
-html_css_files = ['css/custom.css']
+html_css_files = ['css/einsums.css']
+html_use_modindex = True
+html_copy_source = False
+html_domain_indices = False
 
 # -- Setup the breathe extension ---------------------------------------------
 

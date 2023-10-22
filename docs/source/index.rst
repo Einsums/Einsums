@@ -13,8 +13,8 @@ Einsums's documentation
    :maxdepth: 2
    :hidden:
 
-   Getting Started <user/absolute_beginners>
-.. API Reference <api/library_root>
+   User Guide <user/index>
+   API Reference <reference/index>
 
 **Version**: |release|
 
@@ -34,7 +34,7 @@ dgemm call:
 
 .. code-block::
 
-   using einsums;                        // Provides Tensor and create_random_tensor
+   using einsums;                        // Provides Tensor, create_tensor, and create_random_tensor
    using einsums::tensor_algebra;        // Provides einsum and Indices
    using einsums::tensor_algebra::index; // Provides i, j, k
 
@@ -61,10 +61,10 @@ dgemm call:
 
       .. button-ref:: user/absolute_beginners
          :expand:
-         :color: secondary
+         :color: primary
          :click-parent:
 
-         To the absolute beginner's guide
+         To the beginner's guide
 
    .. grid-item-card::
       :img-top: _static/index-images/user_guide.svg
@@ -76,6 +76,13 @@ dgemm call:
       Einsums with useful background information and explanation.
 
       +++
+
+      .. button-ref:: user/index
+         :expand:
+         :color: primary
+         :click-parent:
+
+         To the user's guide
 
    .. grid-item-card::
       :img-top: _static/index-images/api.svg
@@ -89,6 +96,13 @@ dgemm call:
       understanding of key concepts.
 
       +++
+
+      .. button-ref:: reference/index
+         :expand:
+         :color: primary
+         :click-parent:
+
+         To the API reference guide
 
    .. grid-item-card::
       :img-top: _static/index-images/contributor.svg
