@@ -35,7 +35,7 @@ struct timeout : public std::exception {
   public:
     timeout() noexcept : std::exception() {}
 
-    timeout(const timeout &other) noexcept : std::exception(other) {}
+    timeout(const timeout &other) noexcept = default;
 
     ~timeout() = default;
 
@@ -81,7 +81,7 @@ class ReadLock {
     /**
      * Check if the lock has been resolved and can be used.
      */
-    virtual bool ready(void) { return this->data->is_readable(*this); }
+    virtual bool ready() { return this->data->is_readable(*this); }
 
     /**
      * Get the data that this lock protects. Only gets the data when it is ready.
@@ -112,7 +112,7 @@ class ReadLock {
      *
      * @return A reference to the data protected by this lock.
      */
-    const std::shared_ptr<T> get(void) {
+    const std::shared_ptr<T> get() {
         while (!this->ready()) {
             std::this_thread::yield();
         }
@@ -143,7 +143,7 @@ class ReadLock {
     /**
      * Wait until the data is ready.
      */
-    void wait(void) {
+    void wait() {
         while (!this->ready()) {
             std::this_thread::yield();
         }
@@ -152,12 +152,12 @@ class ReadLock {
     /**
      * Get a pointer to the resource that produced this lock.
      */
-    Resource<T> *get_resource(void) { return this->data; }
+    Resource<T> *get_resource() { return this->data; }
 
     /**
      * Release this lock.
      */
-    bool release(void) {
+    bool release() {
         std::atomic_thread_fence(std::memory_order_release);
         return this->data->release(*this);
     }
@@ -165,7 +165,7 @@ class ReadLock {
     /**
      * Get the data contained in the resource.
      */
-    explicit operator const T &(void) {
+    explicit operator const T &() {
         std::atomic_thread_fence(std::memory_order_acquire);
         return *(this->get());
     }
@@ -178,7 +178,7 @@ class ReadLock {
     /**
      * Whether a lock is exclusive or not.
      */
-    virtual bool is_exclusive() const { return false; }
+    [[nodiscard]] virtual bool is_exclusive() const { return false; }
 };
 
 /**
@@ -228,7 +228,7 @@ class WriteLock : public ReadLock<T> {
      *
      * @return A reference to the data protected by this lock.
      */
-    std::shared_ptr<T> get(void) {
+    std::shared_ptr<T> get() {
         while (!this->ready()) {
             std::this_thread::yield();
         }
@@ -237,11 +237,11 @@ class WriteLock : public ReadLock<T> {
         return this->data->get_data();
     }
 
-    explicit operator T &(void) { return *(this->get()); }
+    explicit operator T &() { return *(this->get()); }
 
-    bool is_exclusive() const override { return true; }
+    [[nodiscard]] bool is_exclusive() const override { return true; }
 
-    bool ready(void) override { return this->data->is_writable(*this); }
+    bool ready() override { return this->data->is_writable(*this); }
 };
 
 /**
@@ -623,7 +623,7 @@ class JobManager final {
      *
      * @param The job to queue.
      */
-    EINSUMS_EXPORT void queue_job(std::shared_ptr<Job> job);
+    EINSUMS_EXPORT void queue_job(const std::shared_ptr<Job> &job);
 
     /**
      * Start the job manager in a different thread. Raises an exception if it is already running.
@@ -709,7 +709,7 @@ class ThreadPool {
      * @param count The number of resource (cores, stream processors, etc.) to request.
      * @return Whether the resources have been allocated.
      */
-    EINSUMS_EXPORT std::vector<std::shared_ptr<std::thread>> request(unsigned int count, function_type func, std::shared_ptr<Job> job);
+    EINSUMS_EXPORT std::vector<std::shared_ptr<std::thread>> &request(unsigned int count, function_type func, std::shared_ptr<Job> &job);
 
     /**
      * Request up to a set number of resources.
@@ -717,7 +717,7 @@ class ThreadPool {
      * @param count The maximum number of resources to request.
      * @return The number of resources that have been requested.
      */
-    EINSUMS_EXPORT std::vector<std::shared_ptr<std::thread>> request_upto(unsigned int count, function_type func, std::shared_ptr<Job> job);
+    EINSUMS_EXPORT std::vector<std::shared_ptr<std::thread>> &request_upto(unsigned int count, function_type func, std::shared_ptr<Job> &job);
 
     /**
      * Release a number of compute resources.
@@ -814,7 +814,7 @@ struct EinsumJob : public Job {
     /**
      * The function to run when the job is called.
      */
-    virtual void run(void) override {
+    void run() override {
         _running = true;
         auto A   = _A->get();
         auto B   = _B->get();
@@ -832,17 +832,17 @@ struct EinsumJob : public Job {
     /**
      * Whether the job is currently able to run.
      */
-    virtual bool is_runnable() const override { return _A->ready() && _B->ready() && _C->ready() && !_running && !_done; }
+    [[nodiscard]] bool is_runnable() const override { return _A->ready() && _B->ready() && _C->ready() && !_running && !_done; }
 
     /**
      * Whether a job is running.
      */
-    virtual bool is_running() const override { return this->_running; }
+    [[nodiscard]] bool is_running() const override { return this->_running; }
 
     /**
      * Whether the job is finished.
      */
-    virtual bool is_finished() const override { return this->_done; }
+    [[nodiscard]] bool is_finished() const override { return this->_done; }
 };
 
 /**

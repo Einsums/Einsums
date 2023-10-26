@@ -85,11 +85,12 @@ void JobManager::manager_event() {
     }
 
     // Go through each of the waiting jobs and try to queue them up.
+    std::atomic_thread_fence(std::memory_order_acquire);
     for (size_t i = 0; i < this->jobs.size(); i++) {
         if (this->jobs[i]->is_runnable()) {
             auto threads = ThreadPool::get_singleton().request(1, run_job, this->jobs[i]);
             if (threads.size() != 0) {
-
+                this->running.emplace(this->running.cend(), this->jobs[i], threads);
                 this->jobs.erase(std::next(this->jobs.begin(), i));
                 i--;
 
@@ -108,7 +109,7 @@ JobManager &JobManager::get_singleton() {
     return *instance;
 }
 
-void JobManager::queue_job(std::shared_ptr<Job> job) {
+void JobManager::queue_job(const std::shared_ptr<Job> &job) {
     this->jobs.insert(this->jobs.cend(), job); // Hint to the end of the list.
 }
 
@@ -254,10 +255,16 @@ ThreadPool::~ThreadPool() {
     std::atomic_thread_fence(std::memory_order_release);
 
     for (auto thr : avail) {
+        while(!thr->joinable()) {
+            std::this_thread::yield();
+        }
         thr->join();
     }
 
     for (auto thr : running) {
+        while(!thr->joinable()) {
+            std::this_thread::yield();
+        }
         thr->join();
     }
 
@@ -279,6 +286,7 @@ void ThreadPool::lock() {
 }
 
 void ThreadPool::unlock() {
+    std::atomic_thread_fence(std::memory_order_release);
     this->is_locked = false;
 }
 
@@ -304,8 +312,8 @@ ThreadPool &ThreadPool::get_singleton() {
     return *thread_instance;
 }
 
-std::vector<std::shared_ptr<std::thread>> ThreadPool::request(unsigned int count, ThreadPool::function_type func,
-                                                              std::shared_ptr<Job> job) {
+std::vector<std::shared_ptr<std::thread>> &ThreadPool::request(unsigned int count, ThreadPool::function_type func,
+                                                              std::shared_ptr<Job> &job) {
     this->lock();
 
     // Check that the number of threads can reasonably be allocated.
@@ -314,32 +322,32 @@ std::vector<std::shared_ptr<std::thread>> ThreadPool::request(unsigned int count
         throw std::runtime_error("Could not allocate threads! Requested too many.");
     }
 
-    std::vector<std::shared_ptr<std::thread>> out = std::vector<std::shared_ptr<std::thread>>();
+    auto *out = new std::vector<std::shared_ptr<std::thread>>();
 
     for (int i = 0; i < count; i++) {
         // Check that there are available threads to take.
         if (this->avail.size() == 0) {
             this->unlock();
-            return out;
+            return *out;
         }
         // Get the new thread.
         std::shared_ptr<std::thread> thread = this->avail.back();
-        this->avail.pop_back();
-        out.push_back(thread);
         this->running.push_back(thread);
+        out->push_back(thread); 
+        this->avail.pop_back();               
 
         // Push the thread info.
         this->thread_info[thread->get_id()] = std::tuple<int, int, ThreadPool::function_type, std::shared_ptr<Job>>{i, count, func, job};
     }
 
     this->unlock();
-    return out;
+    return *out;
 }
 
-std::vector<std::shared_ptr<std::thread>> ThreadPool::request_upto(unsigned int count, ThreadPool::function_type func,
-                                                                   std::shared_ptr<Job> job) {
+std::vector<std::shared_ptr<std::thread>> &ThreadPool::request_upto(unsigned int count, ThreadPool::function_type func,
+                                                                   std::shared_ptr<Job> &job) {
     this->lock();
-    std::vector<std::shared_ptr<std::thread>> out = std::vector<std::shared_ptr<std::thread>>();
+    auto *out = new std::vector<std::shared_ptr<std::thread>>();
 
     int total = 0;
 
@@ -350,19 +358,19 @@ std::vector<std::shared_ptr<std::thread>> ThreadPool::request_upto(unsigned int 
         }
         // Get the new thread.
         std::shared_ptr<std::thread> thread = this->avail.back();
-        this->avail.pop_back();
-        out.push_back(thread);
         this->running.push_back(thread);
+        out->push_back(thread); 
+        this->avail.pop_back(); 
         total++;
     }
 
     // Push the thread info.
     for (int i = 0; i < total; i++) {
-        this->thread_info[out[i]->get_id()] = std::tuple<int, int, ThreadPool::function_type, std::shared_ptr<Job>>{i, total, func, job};
+        this->thread_info[out->at(i)->get_id()] = std::tuple<int, int, ThreadPool::function_type, std::shared_ptr<Job>>{i, total, func, job};
     }
 
     this->unlock();
-    return out;
+    return *out;
 }
 
 void ThreadPool::release(std::vector<std::shared_ptr<std::thread>> &threads) {
