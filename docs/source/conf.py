@@ -75,6 +75,7 @@ html_theme_options = {
         "text": "Einsums",
     },
 
+    "navigation_with_keys": False,
     "show_toc_level": 2,
     "header_links_before_dropdown": 6,
     "navbar_end": ["theme-switcher", "navbar-icon-links"],

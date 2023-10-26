@@ -24,8 +24,10 @@ def main():
         with open(fn, 'w', encoding="utf-8") as f:
             f.write("".join(lines))
 
+
 def process_html(fn, lines):
     return lines
+
 
 def process_tex(lines):
     """
@@ -35,15 +37,16 @@ def process_tex(lines):
     new_lines = []
     for line in lines:
         if (line.startswith(r'\section{einsums.')
-            or line.startswith(r'\subsection{einsums.')
-            or line.startswith(r'\subsubsection{einsums.')
-            or line.startswith(r'\paragraph{einsums.')
-            or line.startswith(r'\subparagraph{einsums.')
-            ):
-            pass # skip!
+                or line.startswith(r'\subsection{einsums.')
+                or line.startswith(r'\subsubsection{einsums.')
+                or line.startswith(r'\paragraph{einsums.')
+                or line.startswith(r'\subparagraph{einsums.')
+        ):
+            pass  # skip!
         else:
             new_lines.append(line)
     return new_lines
+
 
 if __name__ == "__main__":
     main()

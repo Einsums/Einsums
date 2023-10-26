@@ -15,4 +15,5 @@ For learning how to use Einsums, see the .
 .. toctree::
    :maxdepth: 2
 
-   einsums.create.tensors
+   classes
+   functions
