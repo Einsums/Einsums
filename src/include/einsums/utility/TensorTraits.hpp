@@ -55,4 +55,23 @@ concept CoreRankTensor = detail::IsIncoreRankTensorV<Input, Rank, DataType>;
 template <typename Input, size_t Rank, size_t ViewRank = Rank, typename DataType = double>
 concept DiskRankTensor = detail::IsOndiskTensorV<Input, Rank, ViewRank, DataType>;
 
+namespace detail {
+
+template <typename T, typename... Args>
+constexpr auto count_of_type(/*Args... args*/) {
+    // return (std::is_same_v<Args, T> + ... + 0);
+    return (std::is_convertible_v<Args, T> + ... + 0);
+}
+
+} // namespace detail
+
+template <typename T, typename... Args>
+concept NoneOfType = detail::count_of_type<T, Args...>() == 0;
+
+template <typename T, typename... Args>
+concept AtLeastOneOfType = detail::count_of_type<T, Args...>() >= 1;
+
+template <typename T, size_t Num, typename... Args>
+concept NumOfType = detail::count_of_type<T, Args...>() == Num;
+
 } // namespace einsums
