@@ -4,20 +4,21 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+        
         {
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/tests/test-all",
-            // "args": [
-            //     "\"Matrix->View\""
-            // ],
+            "args": [
+                "\"[jobs]\""
+            ],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],
             "externalConsole": false,
-            "MIMode": "lldb",
-            // "miDebuggerPath": "/opt/intel/oneapi/debugger/2021.6.0/gdb/intel64/bin/gdb-oneapi",
+            "MIMode": "gdb",
+            "miDebuggerPath": "gdb",
             "setupCommands": [
                 {
                     "description": "Enable pretty-printing for gdb",
