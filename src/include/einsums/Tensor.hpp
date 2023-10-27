@@ -1,18 +1,14 @@
 #pragma once
 
+#include "einsums/_Common.hpp"
+
 #include "einsums/OpenMP.h"
 #include "einsums/Print.hpp"
 #include "einsums/STL.hpp"
 #include "einsums/Section.hpp"
 #include "einsums/State.hpp"
-#include "einsums/_Common.hpp"
 #include "einsums/utility/ComplexTraits.hpp"
 #include "einsums/utility/TensorTraits.hpp"
-
-// Include headers from the ranges library that we need to handle cartesian_products
-#include "range/v3/range_fwd.hpp"
-#include "range/v3/view/cartesian_product.hpp"
-#include "range/v3/view/iota.hpp"
 
 #include <algorithm>
 #include <array>
@@ -34,6 +30,10 @@
 #include <type_traits>
 #include <utility>
 #include <vector>
+
+#include "range/v3/range_fwd.hpp"
+#include "range/v3/view/cartesian_product.hpp"
+#include "range/v3/view/iota.hpp"
 
 namespace einsums {
 
@@ -640,18 +640,20 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
     }
 
 #define OPERATOR(OP)                                                                                                                       \
-    auto operator OP(const T &b)->Tensor<T, Rank> & {                                                                                      \
+    auto operator OP(const T &b) -> Tensor<T, Rank> & {                                                                                    \
         EINSUMS_OMP_PARALLEL {                                                                                                             \
             auto tid       = omp_get_thread_num();                                                                                         \
             auto chunksize = _data.size() / omp_get_num_threads();                                                                         \
             auto begin     = _data.begin() + chunksize * tid;                                                                              \
             auto end       = (tid == omp_get_num_threads() - 1) ? _data.end() : begin + chunksize;                                         \
-            EINSUMS_OMP_SIMD for (auto i = begin; i < end; i++) { (*i) OP b; }                                                             \
+            EINSUMS_OMP_SIMD for (auto i = begin; i < end; i++) {                                                                          \
+                (*i) OP b;                                                                                                                 \
+            }                                                                                                                              \
         }                                                                                                                                  \
         return *this;                                                                                                                      \
     }                                                                                                                                      \
                                                                                                                                            \
-    auto operator OP(const Tensor<T, Rank> &b)->Tensor<T, Rank> & {                                                                        \
+    auto operator OP(const Tensor<T, Rank> &b) -> Tensor<T, Rank> & {                                                                      \
         if (size() != b.size()) {                                                                                                          \
             throw std::runtime_error(fmt::format("operator" EINSUMS_STRINGIFY(OP) " : tensors differ in size : {} {}", size(), b.size())); \
         }                                                                                                                                  \
@@ -662,7 +664,9 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
             auto bbegin    = b._data.begin() + chunksize * tid;                                                                            \
             auto aend      = (tid == omp_get_num_threads() - 1) ? _data.end() : abegin + chunksize;                                        \
             auto j         = bbegin;                                                                                                       \
-            EINSUMS_OMP_SIMD for (auto i = abegin; i < aend; i++) { (*i) OP(*j++); }                                                       \
+            EINSUMS_OMP_SIMD for (auto i = abegin; i < aend; i++) {                                                                        \
+                (*i) OP(*j++);                                                                                                             \
+            }                                                                                                                              \
         }                                                                                                                                  \
         return *this;                                                                                                                      \
     }
@@ -752,7 +756,7 @@ struct Tensor<T, 0> : public detail::TensorBase<T, 0> {
 #    undef OPERATOR
 #endif
 #define OPERATOR(OP)                                                                                                                       \
-    auto operator OP(const T &other)->Tensor<T, 0> & {                                                                                     \
+    auto operator OP(const T &other) -> Tensor<T, 0> & {                                                                                   \
         _data OP other;                                                                                                                    \
         return *this;                                                                                                                      \
     }
@@ -900,7 +904,7 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
 #    undef OPERATOR)
 #endif
 #define OPERATOR(OP)                                                                                                                       \
-    auto operator OP(const T &value)->TensorView & {                                                                                       \
+    auto operator OP(const T &value) -> TensorView & {                                                                                     \
         auto target_dims = get_dim_ranges<Rank>(*this);                                                                                    \
         auto view        = std::apply(ranges::views::cartesian_product, target_dims);                                                      \
         _Pragma("omp parallel for") for (auto target_combination = view.begin(); target_combination != view.end(); target_combination++) { \
@@ -1056,8 +1060,8 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
             default_offsets.fill(0);
             default_strides.fill(1);
 
-            auto offsets = Arguments::get(default_offsets, args...);
-            auto strides = Arguments::get(default_strides, args...);
+            auto offsets = arguments::get(default_offsets, args...);
+            auto strides = arguments::get(default_strides, args...);
 
             _dims[location] = static_cast<std::int64_t>(std::ceil((other.size() - offsets[0]) / static_cast<float>(strides[0])));
         }
@@ -1089,7 +1093,7 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
                 size_t size = default_strides.size() == 0 ? 0 : default_strides[0] * _dims[0];
             } else {
                 // Stride information cannot be automatically deduced.  It must be provided.
-                default_strides = Arguments::get(error_strides, args...);
+                default_strides = arguments::get(error_strides, args...);
                 if (default_strides[0] == static_cast<size_t>(-1)) {
                     throw std::runtime_error("Unable to automatically deduce stride information. Stride must be passed in.");
                 }
@@ -1099,8 +1103,8 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
         default_offsets.fill(0);
 
         // Use default_* unless the caller provides one to use.
-        _strides                         = Arguments::get(default_strides, args...);
-        const Offset<OtherRank> &offsets = Arguments::get(default_offsets, args...);
+        _strides                         = arguments::get(default_strides, args...);
+        const Offset<OtherRank> &offsets = arguments::get(default_offsets, args...);
 
         // Determine the ordinal using the offsets provided (if any) and the strides of the parent
         size_t ordinal = std::inner_product(offsets.begin(), offsets.end(), other._strides.begin(), size_t{0});
@@ -1555,8 +1559,8 @@ struct DiskView final : public detail::TensorBase<T, ViewRank> {
     };
     DiskView(const DiskTensor<T, Rank> &parent, const Dim<ViewRank> &dims, const Count<Rank> &counts, const Offset<Rank> &offsets,
              const Stride<Rank> &strides)
-        : _parent(const_cast<DiskTensor<T, Rank> &>(parent)), _dims(dims), _counts(counts), _offsets(offsets),
-          _strides(strides), _tensor{_dims} {
+        : _parent(const_cast<DiskTensor<T, Rank> &>(parent)), _dims(dims), _counts(counts), _offsets(offsets), _strides(strides),
+          _tensor{_dims} {
         Section const section("DiskView constructor");
         h5::read<T>(_parent.disk(), _tensor.data(), h5::count{_counts}, h5::offset{_offsets});
         set_read_only(true);
@@ -1756,7 +1760,7 @@ auto println(const AType<T, Rank> &A, TensorPrintOptions options) ->
     {
         print::Indent const indent{};
 
-        if constexpr (einsums::is_incore_rank_tensor_v<AType<T, Rank>, Rank, T>) {
+        if constexpr (einsums::CoreRankTensor<AType<T, Rank>, Rank, T>) {
             if constexpr (std::is_same_v<AType<T, Rank>, einsums::Tensor<T, Rank>>)
                 println("Type: In Core Tensor");
             else
@@ -1803,7 +1807,7 @@ auto println(const AType<T, Rank> &A, TensorPrintOptions options) ->
 
                 println("{}", oss.str());
                 println();
-            } else if constexpr (Rank > 1 && einsums::is_incore_rank_tensor_v<AType<T, Rank>, Rank, T>) {
+            } else if constexpr (Rank > 1 && einsums::CoreRankTensor<AType<T, Rank>, Rank, T>) {
                 auto target_dims = einsums::get_dim_ranges<Rank - 1>(A);
                 auto final_dim   = A.dim(Rank - 1);
                 auto ndigits     = einsums::ndigits(final_dim);
@@ -1850,7 +1854,7 @@ auto println(const AType<T, Rank> &A, TensorPrintOptions options) ->
                     println("{}", oss.str());
                     println();
                 }
-            } else if constexpr (Rank == 1 && einsums::is_incore_rank_tensor_v<AType<T, Rank>, Rank, T>) {
+            } else if constexpr (Rank == 1 && einsums::CoreRankTensor<AType<T, Rank>, Rank, T>) {
                 auto target_dims = einsums::get_dim_ranges<Rank>(A);
 
                 for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {

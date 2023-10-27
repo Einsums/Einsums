@@ -1,12 +1,13 @@
 #pragma once
 
+#include "einsums/_Common.hpp"
+#include "einsums/_Compiler.hpp"
+#include "einsums/_TensorAlgebraUtilities.hpp"
+
 #include "einsums/LinearAlgebra.hpp"
 #include "einsums/STL.hpp"
 #include "einsums/Section.hpp"
 #include "einsums/Tensor.hpp"
-#include "einsums/_Common.hpp"
-#include "einsums/_Compiler.hpp"
-#include "einsums/_TensorAlgebraUtilities.hpp"
 #include "einsums/utility/SmartPointerTraits.hpp"
 
 BEGIN_EINSUMS_NAMESPACE_HPP(einsums::tensor_algebra)
