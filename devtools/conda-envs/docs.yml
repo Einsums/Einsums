@@ -2,10 +2,10 @@ name: docs-env
 channels:
   - conda-forge
 dependencies:
-  - sphinx
+  - sphinx=6.2.1
   - sphinx-design
   - six
   - pydata-sphinx-theme
   - doxygen
-  - breathe
+  - breathe=4.35.0
   - docutils>=0.12
