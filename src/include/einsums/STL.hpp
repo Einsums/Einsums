@@ -13,9 +13,9 @@
 
 namespace einsums {
 
-namespace Arguments {
+namespace arguments {
 
-namespace Detail {
+namespace detail {
 
 // declaration
 template <class SearchPattern, int Position, int Count, bool Branch, class PrevHead, class Arguments>
@@ -26,7 +26,7 @@ struct TuplePosition<S, P, C, B, not_used, std::tuple<Tail...>> : TuplePosition<
 // recursive case
 template <class S, int P, int C, class not_used, class Head, class... Tail>
 struct TuplePosition<S, P, C, false, not_used, std::tuple<Head, Tail...>>
-    : TuplePosition<S, P + 1, C, std::is_convertible<Head, S>::value, Head, std::tuple<Tail...>> {};
+    : TuplePosition<S, P + 1, C, std::is_convertible_v<Head, S>, Head, std::tuple<Tail...>> {};
 // match case
 template <class S, int P, int C, class Type, class... Tail>
 struct TuplePosition<S, P, C, true, Type, std::tuple<Tail...>> : std::integral_constant<int, P> {
@@ -39,10 +39,10 @@ struct TuplePosition<S, P, C, false, H, std::tuple<>> : std::integral_constant<i
     static constexpr bool present = false;
 };
 
-} // namespace Detail
+} // namespace detail
 
 template <typename SearchPattern, typename... Args>
-struct TuplePosition : Detail::TuplePosition<const SearchPattern &, -1, 0, false, void, std::tuple<Args...>> {};
+struct TuplePosition : detail::TuplePosition<const SearchPattern &, -1, 0, false, void, std::tuple<Args...>> {};
 
 template <typename SearchPattern, typename... Args,
           typename Idx = TuplePosition<const SearchPattern &, const Args &..., const SearchPattern &>>
@@ -68,12 +68,12 @@ template <typename T, typename... List>
 struct Contains : std::true_type {};
 
 template <typename T, typename Head, typename... Remaining>
-struct Contains<T, Head, Remaining...> : std::conditional<std::is_same_v<T, Head>, std::true_type, Contains<T, Remaining...>>::type {};
+struct Contains<T, Head, Remaining...> : std::conditional_t<std::is_same_v<T, Head>, std::true_type, Contains<T, Remaining...>> {};
 
 template <typename T>
 struct Contains<T> : std::false_type {};
 
-} // namespace Arguments
+} // namespace arguments
 
 /// Mimic Python's enumerate.
 template <typename T, typename Iter = decltype(std::begin(std::declval<T>())),
@@ -100,7 +100,7 @@ constexpr auto enumerate(T &&iterable) {
     return IterableWrapper{std::forward<T>(iterable)};
 }
 
-namespace Detail {
+namespace detail {
 
 template <typename T, std::size_t... Is>
 constexpr auto create_array(T value, std::index_sequence<Is...>) -> std::array<T, sizeof...(Is)> {
@@ -131,11 +131,11 @@ constexpr auto positions_of_type() {
         return positions_of_type<T, Position + 1, Args...>();
     }
 }
-} // namespace Detail
+} // namespace detail
 
 template <typename T, typename... Args>
 constexpr auto positions_of_type() {
-    return Detail::positions_of_type<T, 0, Args...>();
+    return detail::positions_of_type<T, 0, Args...>();
 }
 
 template <typename T, typename... Args>
@@ -146,17 +146,17 @@ constexpr auto count_of_type(/*Args... args*/) {
 
 template <size_t N, typename T>
 constexpr auto create_array(const T &value) -> std::array<T, N> {
-    return Detail::create_array(value, std::make_index_sequence<N>());
+    return detail::create_array(value, std::make_index_sequence<N>());
 }
 
 template <size_t N, typename T>
 constexpr auto create_tuple(const T &value) {
-    return Detail::create_tuple(value, std::make_index_sequence<N>());
+    return detail::create_tuple(value, std::make_index_sequence<N>());
 }
 
 template <size_t N, typename T>
 constexpr auto create_tuple_from_array(const T &arr) {
-    return Detail::create_tuple_from_array(arr, std::make_index_sequence<N>());
+    return detail::create_tuple_from_array(arr, std::make_index_sequence<N>());
 }
 
 template <typename Result, typename Tuple>
@@ -202,7 +202,7 @@ constexpr void for_sequence(F f) {
     for_sequence(std::make_integer_sequence<decltype(n), n>{}, f);
 }
 
-namespace Detail {
+namespace detail {
 template <typename T, typename Tuple>
 struct HasType;
 
@@ -214,35 +214,35 @@ struct HasType<T, std::tuple<U, Ts...>> : HasType<T, std::tuple<Ts...>> {};
 
 template <typename T, typename... Ts>
 struct HasType<T, std::tuple<T, Ts...>> : std::true_type {};
-} // namespace Detail
+} // namespace detail
 
 template <typename S1, typename S2>
-struct intersect {
+struct Intersect {
     template <std::size_t... Indices>
     static auto make_intersection(std::index_sequence<Indices...>) {
 
-        return std::tuple_cat(std::conditional_t<Detail::HasType<std::decay_t<std::tuple_element_t<Indices, S1>>, std::decay_t<S2>>::value,
+        return std::tuple_cat(std::conditional_t<detail::HasType<std::decay_t<std::tuple_element_t<Indices, S1>>, std::decay_t<S2>>::value,
                                                  std::tuple<std::tuple_element_t<Indices, S1>>, std::tuple<>>{}...);
     }
     using type = decltype(make_intersection(std::make_index_sequence<std::tuple_size<S1>::value>{}));
 };
 
 template <typename S1, typename S2>
-using intersect_t = typename intersect<S1, S2>::type;
+using intersect_t = typename Intersect<S1, S2>::type;
 
 template <typename S1, typename S2>
-struct difference {
+struct Difference {
     template <std::size_t... Indices>
     static auto make_difference(std::index_sequence<Indices...>) {
 
-        return std::tuple_cat(std::conditional_t<Detail::HasType<std::decay_t<std::tuple_element_t<Indices, S1>>, std::decay_t<S2>>::value,
+        return std::tuple_cat(std::conditional_t<detail::HasType<std::decay_t<std::tuple_element_t<Indices, S1>>, std::decay_t<S2>>::value,
                                                  std::tuple<>, std::tuple<std::tuple_element_t<Indices, S1>>>{}...);
     }
     using type = decltype(make_difference(std::make_index_sequence<std::tuple_size<S1>::value>{}));
 };
 
 template <typename S1, typename S2>
-using difference_t = typename difference<S1, S2>::type;
+using difference_t = typename Difference<S1, S2>::type;
 
 template <class Haystack, class Needle>
 struct contains;
@@ -261,9 +261,9 @@ struct filter;
 
 template <class... Out, class InCar, class... InCdr>
 struct filter<std::tuple<Out...>, std::tuple<InCar, InCdr...>> {
-    using type = typename std::conditional<contains<std::tuple<Out...>, InCar>::value,
-                                           typename filter<std::tuple<Out...>, std::tuple<InCdr...>>::type,
-                                           typename filter<std::tuple<Out..., InCar>, std::tuple<InCdr...>>::type>::type;
+    using type =
+        std::conditional_t<contains<std::tuple<Out...>, InCar>::value, typename filter<std::tuple<Out...>, std::tuple<InCdr...>>::type,
+                           typename filter<std::tuple<Out..., InCar>, std::tuple<InCdr...>>::type>;
 };
 
 template <class Out>
@@ -294,19 +294,6 @@ struct DiskTensor;
 
 template <typename T, size_t ViewRank, size_t Rank>
 struct DiskView;
-
-template <typename D, size_t Rank, typename T>
-struct is_incore_rank_tensor
-    : public std::bool_constant<std::is_same_v<std::decay_t<D>, Tensor<T, Rank>> || std::is_same_v<std::decay_t<D>, TensorView<T, Rank>>> {
-};
-template <typename D, size_t Rank, typename T>
-inline constexpr bool is_incore_rank_tensor_v = is_incore_rank_tensor<D, Rank, T>::value;
-
-template <typename D, size_t Rank, size_t ViewRank = Rank, typename T = double>
-struct is_ondisk_tensor
-    : public std::bool_constant<std::is_same_v<D, DiskTensor<T, Rank>> || std::is_same_v<D, DiskView<T, ViewRank, Rank>>> {};
-template <typename D, size_t Rank, size_t ViewRank = Rank, typename T = double>
-inline constexpr bool is_ondisk_tensor_v = is_ondisk_tensor<D, Rank, ViewRank, T>::value;
 
 // From: https://stackoverflow.com/questions/29671643/checking-type-of-parameter-pack-using-enable-if
 template <bool...>
