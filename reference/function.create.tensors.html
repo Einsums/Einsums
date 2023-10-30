@@ -1,0 +1,606 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Tensor creation functions &#8212; Einsums 0.2.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=c5ced968eda925caa686" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=c5ced968eda925caa686" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=c5ced968eda925caa686" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=c5ced968eda925caa686" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/einsums.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=c5ced968eda925caa686" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=c5ced968eda925caa686" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=c5ced968eda925caa686"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'reference/function.create.tensors';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Functions" href="functions.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/einsums-logo.png" class="logo__image only-light" alt=""/>
+    <script>document.write(`<img src="../_static/einsums-logo.png" class="logo__image only-dark" alt=""/>`);</script>
+  
+  
+    <p class="title logo__title">Einsums</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user/index.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="index.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user/index.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="index.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item"><nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="classes.html">Classes/Structs</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="class.tensor.html">Tensor</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="functions.html">Functions</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Tensor creation functions</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Einsums reference</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="functions.html" class="nav-link">Functions</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">Tensor...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section id="tensor-creation-functions">
+<span id="functions-tensor-creation"></span><h1>Tensor creation functions<a class="headerlink" href="#tensor-creation-functions" title="Permalink to this heading">#</a></h1>
+<section id="functions-for-creating-standard-tensors">
+<h2>Functions for creating standard tensors<a class="headerlink" href="#functions-for-creating-standard-tensors" title="Permalink to this heading">#</a></h2>
+<p>In Einsums, there are two-basic types of tensors: <a class="reference internal" href="class.tensor.html#_CPPv4I0_6size_tEN7einsums6TensorE" title="einsums::Tensor"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::Tensor</span></code></a> and <code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">einsums::DiskTensor</span></code>.
+Tensor is an in-memory variant of a tensor and DiskTensor is an on-disk variant of a tensor. DiskTensor
+can and will use Tensors.</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0DpEN7einsums13create_tensorE6TensorI4TypeXsZ4ArgsEEKNSt6stringEDp4Args">
+<span id="_CPPv3I0DpEN7einsums13create_tensorEKNSt6stringEDp4Args"></span><span id="_CPPv2I0DpEN7einsums13create_tensorEKNSt6stringEDp4Args"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Args</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1aacae9adfebd17ccc3adb7f2cf8dba27d"></span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">einsums</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">create_tensor</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <a class="reference internal" href="#_CPPv4I0DpEN7einsums13create_tensorE6TensorI4TypeXsZ4ArgsEEKNSt6stringEDp4Args" title="einsums::create_tensor::Args"><span class="n"><span class="pre">Args</span></span></a><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">args</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><a class="reference internal" href="class.tensor.html#_CPPv4I0_6size_tEN7einsums6TensorE" title="einsums::Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0DpEN7einsums13create_tensorE6TensorI4TypeXsZ4ArgsEEKNSt6stringEDp4Args" title="einsums::create_tensor::Type"><span class="n"><span class="pre">Type</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">sizeof</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">(</span></span><a class="reference internal" href="#_CPPv4I0DpEN7einsums13create_tensorE6TensorI4TypeXsZ4ArgsEEKNSt6stringEDp4Args" title="einsums::create_tensor::Args"><span class="n"><span class="pre">Args</span></span></a><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I0DpEN7einsums13create_tensorE6TensorI4TypeXsZ4ArgsEEKNSt6stringEDp4Args" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Create a new tensor with <code class="docutils literal notranslate"><span class="pre">name</span></code> and <code class="docutils literal notranslate"><span class="pre">args</span></code> . </p>
+<p>Just a simple factory function for creating new tensors. Defaults to using double for the underlying data and automatically determines rank of the tensor from args.</p>
+<p>A <code class="docutils literal notranslate"><span class="pre">name</span></code> for the tensor is required. <code class="docutils literal notranslate"><span class="pre">name</span></code> is used when printing and performing disk I/O.</p>
+<p>By default, the allocated tensor data is not initialized to zero. This was a performance decision. In many cases the next step after creating a tensor is to load or store data into it…why waste the CPU cycles zeroing something that will immediately get set to something else. If you wish to explicitly zero the contents of your tensor use the zero function.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_tensor</span><span class="p">(</span><span class="s">&quot;a&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span><span class="w">           </span><span class="c1">// auto -&gt; Tensor&lt;double, 2&gt;</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_tensor</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;b&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">);</span><span class="w"> </span><span class="c1">// auto -&gt; Tensor&lt;float, 3&gt;</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Type</strong> – The datatype of the underlying tensor. Defaults to double. </p></li>
+<li><p><strong>Args</strong> – The datatype of the calling parameters. In almost all cases you should not need to worry about this parameter. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>name</strong> – The name of the new tensor. </p></li>
+<li><p><strong>args</strong> – The arguments needed to construct the tensor. </p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A new tensor. By default memory is not initialized to anything. It may be filled with garbage. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0DpEN7einsums18create_disk_tensorE10DiskTensorI4TypeXsZ4ArgsEERN2h54fd_tEKNSt6stringEDp4Args">
+<span id="_CPPv3I0DpEN7einsums18create_disk_tensorERN2h54fd_tEKNSt6stringEDp4Args"></span><span id="_CPPv2I0DpEN7einsums18create_disk_tensorERN2h54fd_tEKNSt6stringEDp4Args"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Args</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1a0da45c93e1e370c62628e89291965f50"></span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">einsums</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">create_disk_tensor</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">h5</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">fd_t</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">file</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <a class="reference internal" href="#_CPPv4I0DpEN7einsums18create_disk_tensorE10DiskTensorI4TypeXsZ4ArgsEERN2h54fd_tEKNSt6stringEDp4Args" title="einsums::create_disk_tensor::Args"><span class="n"><span class="pre">Args</span></span></a><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">args</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><span class="n"><span class="pre">DiskTensor</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0DpEN7einsums18create_disk_tensorE10DiskTensorI4TypeXsZ4ArgsEERN2h54fd_tEKNSt6stringEDp4Args" title="einsums::create_disk_tensor::Type"><span class="n"><span class="pre">Type</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">sizeof</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">(</span></span><a class="reference internal" href="#_CPPv4I0DpEN7einsums18create_disk_tensorE10DiskTensorI4TypeXsZ4ArgsEERN2h54fd_tEKNSt6stringEDp4Args" title="einsums::create_disk_tensor::Args"><span class="n"><span class="pre">Args</span></span></a><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I0DpEN7einsums18create_disk_tensorE10DiskTensorI4TypeXsZ4ArgsEERN2h54fd_tEKNSt6stringEDp4Args" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Create a disk tensor object. </p>
+<p>Creates a new tensor that lives on disk. This function does not create any tensor in memory but the tensor is “created” on the HDF5 <code class="docutils literal notranslate"><span class="pre">file</span></code> handle.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_disk_tensor</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;a&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span><span class="w">           </span><span class="c1">// auto -&gt; DiskTensor&lt;double, 2&gt;</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_disk_tensor</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;b&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">);</span><span class="w"> </span><span class="c1">// auto -&gt; DiskTensor&lt;float, 3&gt;</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Type</strong> – The datatype of the underlying disk tensor. Defaults to double. </p></li>
+<li><p><strong>Args</strong> – The datatypes of the calling parameters. In almost all cases you should not need to worry about this parameter. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>file</strong> – The HDF5 file descriptor </p></li>
+<li><p><strong>name</strong> – The name of the tensor. Stored in the file under this name. </p></li>
+<li><p><strong>args</strong> – The arguments needed to constructor the tensor </p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A new disk tensor. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0_6size_tEN7einsums23create_disk_tensor_likeE10DiskTensorI1T4RankERN2h54fd_tERK6TensorI1T4RankE">
+<span id="_CPPv3I0_6size_tEN7einsums23create_disk_tensor_likeERN2h54fd_tERK6TensorI1T4RankE"></span><span id="_CPPv2I0_6size_tEN7einsums23create_disk_tensor_likeERN2h54fd_tERK6TensorI1T4RankE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Rank</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1a2cb71e6acd999c8ca849258fa725349c"></span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">einsums</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">create_disk_tensor_like</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">h5</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">fd_t</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">file</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="class.tensor.html#_CPPv4I0_6size_tEN7einsums6TensorE" title="einsums::Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums23create_disk_tensor_likeE10DiskTensorI1T4RankERN2h54fd_tERK6TensorI1T4RankE" title="einsums::create_disk_tensor_like::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums23create_disk_tensor_likeE10DiskTensorI1T4RankERN2h54fd_tERK6TensorI1T4RankE" title="einsums::create_disk_tensor_like::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">tensor</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><span class="n"><span class="pre">DiskTensor</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums23create_disk_tensor_likeE10DiskTensorI1T4RankERN2h54fd_tERK6TensorI1T4RankE" title="einsums::create_disk_tensor_like::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_6size_tEN7einsums23create_disk_tensor_likeE10DiskTensorI1T4RankERN2h54fd_tERK6TensorI1T4RankE" title="einsums::create_disk_tensor_like::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I0_6size_tEN7einsums23create_disk_tensor_likeE10DiskTensorI1T4RankERN2h54fd_tERK6TensorI1T4RankE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Create a disk tensor object. </p>
+<p>Creates a new tensor that lives on disk. This function does not create any tensor in memory but the tensor is “created” on the HDF5 <code class="docutils literal notranslate"><span class="pre">file</span></code> handle. Data from the provided tensor is NOT saved.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">mem_a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_tensor</span><span class="p">(</span><span class="s">&quot;a&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="s">&quot;);           // auto -&gt; Tensor&lt;double, 2&gt;</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_disk_tensor_like</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span><span class="w"> </span><span class="n">mem_a</span><span class="p">);</span><span class="w">  </span><span class="c1">// auto -&gt; DiskTensor&lt;double, 2&gt;</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Type</strong> – The datatype of the underlying disk tensor. </p></li>
+<li><p><strong>Rank</strong> – The datatypes of the calling parameters. In almost all cases you should not need to worry about this parameter. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>file</strong> – The HDF5 file descriptor </p></li>
+<li><p><strong>tensor</strong> – The tensor to reference for size and name. </p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A new disk tensor. </p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="functions-for-creating-pre-filled-tensors">
+<h2>Functions for creating pre-filled tensors<a class="headerlink" href="#functions-for-creating-pre-filled-tensors" title="Permalink to this heading">#</a></h2>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0DpEN7einsums25create_incremented_tensorE6TensorI1TXsZ10MultiIndexEERKNSt6stringEDp10MultiIndex">
+<span id="_CPPv3I0DpEN7einsums25create_incremented_tensorERKNSt6stringEDp10MultiIndex"></span><span id="_CPPv2I0DpEN7einsums25create_incremented_tensorERKNSt6stringEDp10MultiIndex"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">MultiIndex</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1a7db0ea7c6012d620d3a12f125ce526d6"></span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">einsums</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">create_incremented_tensor</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span>, <a class="reference internal" href="#_CPPv4I0DpEN7einsums25create_incremented_tensorE6TensorI1TXsZ10MultiIndexEERKNSt6stringEDp10MultiIndex" title="einsums::create_incremented_tensor::MultiIndex"><span class="n"><span class="pre">MultiIndex</span></span></a><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><a class="reference internal" href="class.tensor.html#_CPPv4I0_6size_tEN7einsums6TensorE" title="einsums::Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0DpEN7einsums25create_incremented_tensorE6TensorI1TXsZ10MultiIndexEERKNSt6stringEDp10MultiIndex" title="einsums::create_incremented_tensor::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">sizeof</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">(</span></span><a class="reference internal" href="#_CPPv4I0DpEN7einsums25create_incremented_tensorE6TensorI1TXsZ10MultiIndexEERKNSt6stringEDp10MultiIndex" title="einsums::create_incremented_tensor::MultiIndex"><span class="n"><span class="pre">MultiIndex</span></span></a><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I0DpEN7einsums25create_incremented_tensorE6TensorI1TXsZ10MultiIndexEERKNSt6stringEDp10MultiIndex" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0_bDpEN7einsums20create_random_tensorE6TensorI1TXsZ10MultiIndexEERKNSt6stringEDp10MultiIndex">
+<span id="_CPPv3I0_bDpEN7einsums20create_random_tensorERKNSt6stringEDp10MultiIndex"></span><span id="_CPPv2I0_bDpEN7einsums20create_random_tensorERKNSt6stringEDp10MultiIndex"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Normalize</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">MultiIndex</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1a12fd2b0340d9b97bce4df08ec6646385"></span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">einsums</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">create_random_tensor</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span>, <a class="reference internal" href="#_CPPv4I0_bDpEN7einsums20create_random_tensorE6TensorI1TXsZ10MultiIndexEERKNSt6stringEDp10MultiIndex" title="einsums::create_random_tensor::MultiIndex"><span class="n"><span class="pre">MultiIndex</span></span></a><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><a class="reference internal" href="class.tensor.html#_CPPv4I0_6size_tEN7einsums6TensorE" title="einsums::Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_bDpEN7einsums20create_random_tensorE6TensorI1TXsZ10MultiIndexEERKNSt6stringEDp10MultiIndex" title="einsums::create_random_tensor::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">sizeof</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">(</span></span><a class="reference internal" href="#_CPPv4I0_bDpEN7einsums20create_random_tensorE6TensorI1TXsZ10MultiIndexEERKNSt6stringEDp10MultiIndex" title="einsums::create_random_tensor::MultiIndex"><span class="n"><span class="pre">MultiIndex</span></span></a><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I0_bDpEN7einsums20create_random_tensorE6TensorI1TXsZ10MultiIndexEERKNSt6stringEDp10MultiIndex" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0DpEN7einsums22create_identity_tensorE6TensorI1TXsZ10MultiIndexEERKNSt6stringEDp10MultiIndex">
+<span id="_CPPv3I0DpEN7einsums22create_identity_tensorERKNSt6stringEDp10MultiIndex"></span><span id="_CPPv2I0DpEN7einsums22create_identity_tensorERKNSt6stringEDp10MultiIndex"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">MultiIndex</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1afe42538de80e0b3b729b8a71218d2c26"></span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">einsums</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">create_identity_tensor</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span>, <a class="reference internal" href="#_CPPv4I0DpEN7einsums22create_identity_tensorE6TensorI1TXsZ10MultiIndexEERKNSt6stringEDp10MultiIndex" title="einsums::create_identity_tensor::MultiIndex"><span class="n"><span class="pre">MultiIndex</span></span></a><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><a class="reference internal" href="class.tensor.html#_CPPv4I0_6size_tEN7einsums6TensorE" title="einsums::Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0DpEN7einsums22create_identity_tensorE6TensorI1TXsZ10MultiIndexEERKNSt6stringEDp10MultiIndex" title="einsums::create_identity_tensor::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">sizeof</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">(</span></span><a class="reference internal" href="#_CPPv4I0DpEN7einsums22create_identity_tensorE6TensorI1TXsZ10MultiIndexEERKNSt6stringEDp10MultiIndex" title="einsums::create_identity_tensor::MultiIndex"><span class="n"><span class="pre">MultiIndex</span></span></a><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I0DpEN7einsums22create_identity_tensorE6TensorI1TXsZ10MultiIndexEERKNSt6stringEDp10MultiIndex" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0DpEN7einsums18create_ones_tensorE6TensorI1TXsZ10MultiIndexEERKNSt6stringEDp10MultiIndex">
+<span id="_CPPv3I0DpEN7einsums18create_ones_tensorERKNSt6stringEDp10MultiIndex"></span><span id="_CPPv2I0DpEN7einsums18create_ones_tensorERKNSt6stringEDp10MultiIndex"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">MultiIndex</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1aac63a20aeed69833a429f7bc70345cc1"></span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">einsums</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">create_ones_tensor</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span>, <a class="reference internal" href="#_CPPv4I0DpEN7einsums18create_ones_tensorE6TensorI1TXsZ10MultiIndexEERKNSt6stringEDp10MultiIndex" title="einsums::create_ones_tensor::MultiIndex"><span class="n"><span class="pre">MultiIndex</span></span></a><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><a class="reference internal" href="class.tensor.html#_CPPv4I0_6size_tEN7einsums6TensorE" title="einsums::Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0DpEN7einsums18create_ones_tensorE6TensorI1TXsZ10MultiIndexEERKNSt6stringEDp10MultiIndex" title="einsums::create_ones_tensor::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">sizeof</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">(</span></span><a class="reference internal" href="#_CPPv4I0DpEN7einsums18create_ones_tensorE6TensorI1TXsZ10MultiIndexEERKNSt6stringEDp10MultiIndex" title="einsums::create_ones_tensor::MultiIndex"><span class="n"><span class="pre">MultiIndex</span></span></a><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I0DpEN7einsums18create_ones_tensorE6TensorI1TXsZ10MultiIndexEERKNSt6stringEDp10MultiIndex" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4II0_6size_tE00_6size_tEN7einsums18create_tensor_likeE6TensorI8DataType4RankERK10TensorTypeI8DataType4RankE">
+<span id="_CPPv3II0_6size_tE00_6size_tEN7einsums18create_tensor_likeERK10TensorTypeI8DataType4RankE"></span><span id="_CPPv2II0_6size_tE00_6size_tEN7einsums18create_tensor_likeERK10TensorTypeI8DataType4RankE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TensorType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DataType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Rank</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1ab286161aa9626912f0d504d5da2b86db"></span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">einsums</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">create_tensor_like</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums18create_tensor_likeE6TensorI8DataType4RankERK10TensorTypeI8DataType4RankE" title="einsums::create_tensor_like::TensorType"><span class="n"><span class="pre">TensorType</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums18create_tensor_likeE6TensorI8DataType4RankERK10TensorTypeI8DataType4RankE" title="einsums::create_tensor_like::DataType"><span class="n"><span class="pre">DataType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums18create_tensor_likeE6TensorI8DataType4RankERK10TensorTypeI8DataType4RankE" title="einsums::create_tensor_like::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">tensor</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><a class="reference internal" href="class.tensor.html#_CPPv4I0_6size_tEN7einsums6TensorE" title="einsums::Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums18create_tensor_likeE6TensorI8DataType4RankERK10TensorTypeI8DataType4RankE" title="einsums::create_tensor_like::DataType"><span class="n"><span class="pre">DataType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums18create_tensor_likeE6TensorI8DataType4RankERK10TensorTypeI8DataType4RankE" title="einsums::create_tensor_like::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums18create_tensor_likeE6TensorI8DataType4RankERK10TensorTypeI8DataType4RankE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4II0_6size_tE00_6size_tEN7einsums18create_tensor_likeE6TensorI8DataType4RankEKNSt6stringERK10TensorTypeI8DataType4RankE">
+<span id="_CPPv3II0_6size_tE00_6size_tEN7einsums18create_tensor_likeEKNSt6stringERK10TensorTypeI8DataType4RankE"></span><span id="_CPPv2II0_6size_tE00_6size_tEN7einsums18create_tensor_likeEKNSt6stringERK10TensorTypeI8DataType4RankE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TensorType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DataType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Rank</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1af9d509b6e326b5fbb88d89b9bd558a63"></span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">einsums</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">create_tensor_like</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums18create_tensor_likeE6TensorI8DataType4RankEKNSt6stringERK10TensorTypeI8DataType4RankE" title="einsums::create_tensor_like::TensorType"><span class="n"><span class="pre">TensorType</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums18create_tensor_likeE6TensorI8DataType4RankEKNSt6stringERK10TensorTypeI8DataType4RankE" title="einsums::create_tensor_like::DataType"><span class="n"><span class="pre">DataType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums18create_tensor_likeE6TensorI8DataType4RankEKNSt6stringERK10TensorTypeI8DataType4RankE" title="einsums::create_tensor_like::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">tensor</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><a class="reference internal" href="class.tensor.html#_CPPv4I0_6size_tEN7einsums6TensorE" title="einsums::Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums18create_tensor_likeE6TensorI8DataType4RankEKNSt6stringERK10TensorTypeI8DataType4RankE" title="einsums::create_tensor_like::DataType"><span class="n"><span class="pre">DataType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums18create_tensor_likeE6TensorI8DataType4RankEKNSt6stringERK10TensorTypeI8DataType4RankE" title="einsums::create_tensor_like::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums18create_tensor_likeE6TensorI8DataType4RankEKNSt6stringERK10TensorTypeI8DataType4RankE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="functions.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Functions</p>
+      </div>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#functions-for-creating-standard-tensors">Functions for creating standard tensors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#functions-for-creating-pre-filled-tensors">Functions for creating pre-filled tensors</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=c5ced968eda925caa686"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=c5ced968eda925caa686"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+  <p class="copyright">
+    
+      © Copyright 2022-2023, Einsums Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.2.1.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.2.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

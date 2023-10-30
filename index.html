@@ -30,9 +30,8 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/collapsible-lists/css/tree_view.css" />
     <link rel="stylesheet" type="text/css" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
-    <link rel="stylesheet" type="text/css" href="_static/css/custom.css" />
+    <link rel="stylesheet" type="text/css" href="_static/css/einsums.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=c5ced968eda925caa686" />
@@ -42,13 +41,11 @@
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/sphinx_highlight.js"></script>
-    <script src="_static/collapsible-lists/js/CollapsibleLists.compressed.js"></script>
-    <script src="_static/collapsible-lists/js/apply-collapsible-lists.js"></script>
     <script src="_static/design-tabs.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'index';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Einsums: the absolute basics for beginners" href="user/absolute_beginners.html" />
+    <link rel="next" title="Einsums user guide" href="user/index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -149,14 +146,14 @@
   <ul class="bd-navbar-elements navbar-nav">
     
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="user/absolute_beginners.html">
-                        Getting Started
+                      <a class="nav-link nav-internal" href="user/index.html">
+                        User Guide
                       </a>
                     </li>
                 
 
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="api/library_root.html">
+                      <a class="nav-link nav-internal" href="reference/index.html">
                         API Reference
                       </a>
                     </li>
@@ -259,14 +256,14 @@ document.write(`
   <ul class="bd-navbar-elements navbar-nav">
     
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="user/absolute_beginners.html">
-                        Getting Started
+                      <a class="nav-link nav-internal" href="user/index.html">
+                        User Guide
                       </a>
                     </li>
                 
 
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="api/library_root.html">
+                      <a class="nav-link nav-internal" href="reference/index.html">
                         API Reference
                       </a>
                     </li>
@@ -349,7 +346,7 @@ for fast operations on tensors, including mathematical, shape manipulation, sort
 I/O, discrete Fourier transforms, basic linear algebra, and tensor algebra.</p>
 <p>As a short example, the following call to <code class="code docutils literal notranslate"><span class="pre">einsum</span></code> will optimize at compile-time to a BLAS
 dgemm call:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="n">einsums</span><span class="p">;</span><span class="w">                        </span><span class="c1">// Provides Tensor and create_random_tensor</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="n">einsums</span><span class="p">;</span><span class="w">                        </span><span class="c1">// Provides Tensor, create_tensor, and create_random_tensor</span>
 <span class="k">using</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">tensor_algebra</span><span class="p">;</span><span class="w">        </span><span class="c1">// Provides einsum and Indices</span>
 <span class="k">using</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">tensor_algebra</span><span class="o">::</span><span class="n">index</span><span class="p">;</span><span class="w"> </span><span class="c1">// Provides i, j, k</span>
 
@@ -373,7 +370,7 @@ an introduction to Einsums’ main concepts and links to additional
 tutorials.</p>
 </div>
 <div class="sd-card-footer docutils">
-<p class="sd-card-text"><span class="sd-d-grid"><a class="sd-sphinx-override sd-btn sd-text-wrap sd-btn-secondary sd-stretched-link reference internal" href="user/absolute_beginners.html"><span class="doc">To the absolute beginner’s guide</span></a></span></p>
+<p class="sd-card-text"><span class="sd-d-grid"><a class="sd-sphinx-override sd-btn sd-text-wrap sd-btn-primary sd-stretched-link reference internal" href="user/absolute_beginners.html"><span class="doc">To the beginner’s guide</span></a></span></p>
 </div>
 </div>
 </div>
@@ -387,6 +384,7 @@ tutorials.</p>
 Einsums with useful background information and explanation.</p>
 </div>
 <div class="sd-card-footer docutils">
+<p class="sd-card-text"><span class="sd-d-grid"><a class="sd-sphinx-override sd-btn sd-text-wrap sd-btn-primary sd-stretched-link reference internal" href="user/index.html"><span class="doc">To the user’s guide</span></a></span></p>
 </div>
 </div>
 </div>
@@ -402,6 +400,7 @@ methods work and how to use the parameters. It assumes you have an
 understanding of key concepts.</p>
 </div>
 <div class="sd-card-footer docutils">
+<p class="sd-card-text"><span class="sd-d-grid"><a class="sd-sphinx-override sd-btn sd-text-wrap sd-btn-primary sd-stretched-link reference internal" href="reference/index.html"><span class="doc">To the API reference guide</span></a></span></p>
 </div>
 </div>
 </div>
@@ -441,11 +440,11 @@ through the process of improving Einsums.</p>
                   <!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="right-next"
-       href="user/absolute_beginners.html"
+       href="user/index.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Einsums: the absolute basics for beginners</p>
+        <p class="prev-next-title">Einsums user guide</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -467,14 +466,6 @@ through the process of improving Einsums.</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#indices-and-tables">Indices and tables</a></li>
 </ul>
   </nav></div>
-
-  <div class="sidebar-secondary-item">
-  <div class="tocsection sourcelink">
-    <a href="_sources/index.rst.txt">
-      <i class="fa-solid fa-file-lines"></i> Show Source
-    </a>
-  </div>
-</div>
 
 </div></div>
               
