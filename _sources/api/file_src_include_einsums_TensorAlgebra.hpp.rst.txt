@@ -110,9 +110,9 @@ Functions
 
 - :ref:`exhale_function_TensorAlgebra_8hpp_1aa0d565ff8069e75cb77e86ba6d5c8cd1`
 
-- :ref:`exhale_function_TensorAlgebra_8hpp_1a246d59e4e7593ef40351842aa56607e4`
-
 - :ref:`exhale_function_TensorAlgebra_8hpp_1a0814727ec838629f4509421edd4d4120`
+
+- :ref:`exhale_function_TensorAlgebra_8hpp_1a246d59e4e7593ef40351842aa56607e4`
 
 - :ref:`exhale_function_TensorAlgebra_8hpp_1a952472bec0d11b81dfdee215abf105a4`
 

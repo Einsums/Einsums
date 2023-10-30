@@ -100,15 +100,15 @@ Functions
 
 - :ref:`exhale_function_LinearAlgebra_8hpp_1a9fd0a9f485e546b19def7e0cf32b39c9`
 
-- :ref:`exhale_function_LinearAlgebra_8hpp_1ae97110cfb9084dcd0425a2bf382eb283`
-
 - :ref:`exhale_function_LinearAlgebra_8hpp_1a0540ed9133d9c1e70debfbffdaa51a34`
+
+- :ref:`exhale_function_LinearAlgebra_8hpp_1ae97110cfb9084dcd0425a2bf382eb283`
 
 - :ref:`exhale_function_LinearAlgebra_8hpp_1a7a98e129865f0fe100bd59533f281fcd`
 
-- :ref:`exhale_function_LinearAlgebra_8hpp_1a09b6cac0f426dd89cad854fbb4dfe690`
-
 - :ref:`exhale_function_LinearAlgebra_8hpp_1af5bfc256ca1ccf2bdd2539fb4731b9c6`
+
+- :ref:`exhale_function_LinearAlgebra_8hpp_1a09b6cac0f426dd89cad854fbb4dfe690`
 
 - :ref:`exhale_function_LinearAlgebra_8hpp_1a32a249f5caae155bd58e8099d2c7b742`
 

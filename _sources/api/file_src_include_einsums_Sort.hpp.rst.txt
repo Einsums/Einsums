@@ -63,13 +63,13 @@ Functions
 ---------
 
 
-- :ref:`exhale_function_Sort_8hpp_1affdcd337eaa6c3e47aaed3f2e77b8f73`
-
-- :ref:`exhale_function_Sort_8hpp_1a30a48eab31ad8db688d30273a6e00296`
-
 - :ref:`exhale_function_Sort_8hpp_1a2dc739b459650f2104b8bd1f08bf8c32`
 
 - :ref:`exhale_function_Sort_8hpp_1a2e7801bf6d874f45d4617e9846d8376e`
 
+- :ref:`exhale_function_Sort_8hpp_1affdcd337eaa6c3e47aaed3f2e77b8f73`
+
 - :ref:`exhale_function_Sort_8hpp_1a91e1b7879e0890260fb40d0acaafd6c1`
+
+- :ref:`exhale_function_Sort_8hpp_1a30a48eab31ad8db688d30273a6e00296`
 
