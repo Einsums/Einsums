@@ -450,7 +450,7 @@ class Resource {
             return false;
         }
 
-        for (auto curr_lock : *(this->locks[0])) {
+        for (auto &curr_lock : *(this->locks[0])) {
             if (*curr_lock == lock) {
                 this->is_locked = false;
                 return true;
@@ -576,7 +576,7 @@ class JobManager final {
     /// Lists of running and waiting jobs.
     std::vector<std::shared_ptr<Job>> jobs;
 
-    std::vector<std::pair<std::shared_ptr<Job>, std::vector<std::shared_ptr<std::thread>>>> running;
+    std::vector<std::pair<std::shared_ptr<Job>, std::vector<std::weak_ptr<std::thread>>>> running;
 
     /// Whether the job manager is running or not.
     std::atomic_bool is_running;
@@ -669,7 +669,9 @@ class ThreadPool {
 
     int max_threads;
 
-    std::vector<std::shared_ptr<std::thread>> avail, running;
+    std::vector<std::shared_ptr<std::thread>> threads;
+
+    std::vector<std::weak_ptr<std::thread>> avail, running;
 
     std::map<std::thread::id, std::tuple<int, int, function_type, std::shared_ptr<Job>>> thread_info;
 
@@ -709,7 +711,7 @@ class ThreadPool {
      * @param count The number of resource (cores, stream processors, etc.) to request.
      * @return Whether the resources have been allocated.
      */
-    EINSUMS_EXPORT std::vector<std::shared_ptr<std::thread>> &request(unsigned int count, function_type func, std::shared_ptr<Job> &job);
+    EINSUMS_EXPORT std::vector<std::weak_ptr<std::thread>> &request(unsigned int count, function_type func, std::shared_ptr<Job> &job);
 
     /**
      * Request up to a set number of resources.
@@ -717,14 +719,14 @@ class ThreadPool {
      * @param count The maximum number of resources to request.
      * @return The number of resources that have been requested.
      */
-    EINSUMS_EXPORT std::vector<std::shared_ptr<std::thread>> &request_upto(unsigned int count, function_type func, std::shared_ptr<Job> &job);
+    EINSUMS_EXPORT std::vector<std::weak_ptr<std::thread>> &request_upto(unsigned int count, function_type func, std::shared_ptr<Job> &job);
 
     /**
      * Release a number of compute resources.
      *
      * @param count The number of resources to release.
      */
-    EINSUMS_EXPORT void release(std::vector<std::shared_ptr<std::thread>> &threads);
+    EINSUMS_EXPORT void release(std::vector<std::weak_ptr<std::thread>> &threads);
 
     /**
      * Get the index of a thread in a compute kernel.
@@ -865,7 +867,7 @@ auto einsum(CDataType C_prefactor, const std::tuple<CIndices...> &Cs, std::share
             const std::tuple<AIndices...> &As, std::shared_ptr<Resource<AType>> &A, const std::tuple<BIndices...> &Bs,
             std::shared_ptr<Resource<BType>> &B)
     -> std::shared_ptr<
-        EinsumJob<AType, ABDataType, BType, CType, CDataType, std::tuple<CIndices...>, std::tuple<AIndices...>, std::tuple<BIndices...>>> {
+        EinsumJob<AType, ABDataType, BType, CType, CDataType, std::tuple<CIndices...>, std::tuple<AIndices...>, std::tuple<BIndices...>>> &{
     // Start of function
     using outtype =
         EinsumJob<AType, ABDataType, BType, CType, CDataType, std::tuple<CIndices...>, std::tuple<AIndices...>, std::tuple<BIndices...>>;
@@ -875,14 +877,14 @@ auto einsum(CDataType C_prefactor, const std::tuple<CIndices...> &Cs, std::share
     std::shared_ptr<ReadLock<AType>>  A_lock = A->lock_shared();
     std::shared_ptr<ReadLock<BType>>  B_lock = B->lock_shared();
     std::fprintf(stderr, "Make the job.\n");
-    std::shared_ptr<outtype>          out    = std::make_shared<outtype>(C_prefactor, Cs, C_lock, AB_prefactor, As, A_lock, Bs, B_lock);
+    std::shared_ptr<outtype>          *out    = new std::shared_ptr<outtype>(std::make_shared<outtype>(C_prefactor, Cs, C_lock, AB_prefactor, As, A_lock, Bs, B_lock));
 
     // Queue the job.
     std::fprintf(stderr, "Queue the job.\n");
-    JobManager::get_singleton().queue_job(out);
+    JobManager::get_singleton().queue_job(*out);
     std::fprintf(stderr, "Job queued.\n");
 
-    return out;
+    return *out;
 }
 
 /**
@@ -903,7 +905,7 @@ auto einsum(const std::tuple<CIndices...> &C_indices, std::shared_ptr<Resource<C
         EinsumJob<AType,
                   std::conditional_t<sizeof(typename AType::datatype) < sizeof(typename BType::datatype), typename BType::datatype,
                                      typename AType::datatype>,
-                  BType, CType, typename CType::datatype, std::tuple<CIndices...>, std::tuple<AIndices...>, std::tuple<BIndices...>>> {
+                  BType, CType, typename CType::datatype, std::tuple<CIndices...>, std::tuple<AIndices...>, std::tuple<BIndices...>>> &{
     return einsum((typename CType::datatype)0, C_indices, C,
                   (std::conditional_t<sizeof(typename AType::datatype) < sizeof(typename BType::datatype), typename BType::datatype,
                                       typename AType::datatype>)1,
