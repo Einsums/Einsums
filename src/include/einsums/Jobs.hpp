@@ -358,9 +358,11 @@ class Resource {
         }
         this->is_locked = true;
         for (auto state : this->locks) {
-	  for(size_t i = 0; i < state->size(); i++) {
+            size_t size = state->size();
+	  for(size_t i = 0; i < size; i++) {
 	    if (*(state->at(i)) == lock) {
 	      state->erase(std::next(state->begin(), i));
+          size = state->size();
 	      i--;
 	      ret = true;
 	    }
@@ -368,10 +370,12 @@ class Resource {
         }
 
         // Remove empty states.
-	for(size_t i = 0; i < this->locks.size(); i++) {
+        size_t size = this->locks.size();
+	for(size_t i = 0; i < size; i++) {
             if (this->locks[i]->empty()) {
 	      //delete this->locks[i];
                 this->locks.erase(std::next(this->locks.begin(), i));
+                size = this->locks.size();
                 i--;
             }
         }
@@ -582,7 +586,9 @@ class JobManager final {
     std::atomic_bool is_running;
 
     /// Whether the manager is locked for modification.
-    std::atomic_bool is_locked;
+    std::atomic<std::thread::id> locked;
+
+    static const std::thread::id null_thread;
 
     std::thread *thread;
 
@@ -593,6 +599,10 @@ class JobManager final {
     JobManager(const JobManager &&) = delete;
 
     EINSUMS_EXPORT ~JobManager();
+
+    EINSUMS_EXPORT void lock();
+
+    EINSUMS_EXPORT void unlock();
 
     /**
      * Clean up the job manager on exit from program.
@@ -665,7 +675,10 @@ class ThreadPool {
     using function_type = void (*)(std::shared_ptr<Job> &&);
 
   private:
-    std::atomic_bool is_locked, stop;
+    std::atomic_bool stop, exists;
+    std::atomic<std::thread::id> locked;
+
+    static const std::thread::id null_thread;
 
     int max_threads;
 
@@ -687,6 +700,8 @@ class ThreadPool {
 
     EINSUMS_EXPORT ~ThreadPool();
 
+    EINSUMS_EXPORT void init_pool(int threads);
+
   public:
     /**
      * Initialize the thread pool.
@@ -704,6 +719,11 @@ class ThreadPool {
      * Return the singleton instance.
      */
     EINSUMS_EXPORT static ThreadPool &get_singleton();
+
+    /**
+     * Return whether the singleton instance is constructed.
+     */
+    EINSUMS_EXPORT static bool singleton_exists();
 
     /**
      * Request a set number of resources.
@@ -771,6 +791,11 @@ class ThreadPool {
      * Returns true when the threads are supposed to stop.
      */
     EINSUMS_EXPORT bool stop_condition();
+
+    /**
+     * Returns whether or not there are running jobs.
+     */
+    EINSUMS_EXPORT int has_running();
 };
 
 /**
@@ -793,7 +818,7 @@ struct EinsumJob : public Job {
     const AIndices &_As;
     const BIndices &_Bs;
 
-    bool _running, _done;
+    std::atomic_bool _running, _done;
 
   public:
     /**
@@ -817,6 +842,7 @@ struct EinsumJob : public Job {
      * The function to run when the job is called.
      */
     void run() override {
+        std::atomic_thread_fence(std::memory_order_acq_rel);
         _running = true;
         auto A   = _A->get();
         auto B   = _B->get();
@@ -829,6 +855,7 @@ struct EinsumJob : public Job {
         _B->release();
         _running = false;
         _done    = true;
+        std::atomic_thread_fence(std::memory_order_acq_rel);
     }
 
     /**
@@ -872,18 +899,14 @@ auto einsum(CDataType C_prefactor, const std::tuple<CIndices...> &Cs, std::share
     using outtype =
         EinsumJob<AType, ABDataType, BType, CType, CDataType, std::tuple<CIndices...>, std::tuple<AIndices...>, std::tuple<BIndices...>>;
 
-    std::fprintf(stderr, "Obtain locks.\n");
     std::shared_ptr<WriteLock<CType>> C_lock = C->lock();
     std::shared_ptr<ReadLock<AType>>  A_lock = A->lock_shared();
     std::shared_ptr<ReadLock<BType>>  B_lock = B->lock_shared();
-    std::fprintf(stderr, "Make the job.\n");
     std::shared_ptr<outtype>          *out    = new std::shared_ptr<outtype>(std::make_shared<outtype>(C_prefactor, Cs, C_lock, AB_prefactor, As, A_lock, Bs, B_lock));
 
     // Queue the job.
-    std::fprintf(stderr, "Queue the job.\n");
     JobManager::get_singleton().queue_job(*out);
-    std::fprintf(stderr, "Job queued.\n");
-
+    
     return *out;
 }
 

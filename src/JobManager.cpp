@@ -1,15 +1,18 @@
 #include "einsums/Jobs.hpp"
 
+#include <atomic>
 #include <cstdio>
 #include <thread>
 
-using namespace einsums::jobs;
-
 template <typename... T>
-static void debug(const char *fmt, T... args) {
-    std::fprintf(stderr, fmt, args...);
-    std::fflush(stderr);
+static inline void debug(const char *fmt, T... args) {
+#ifndef NDEBUG
+        std::fprintf(stderr, fmt, args...);
+        std::fflush(stderr);
+#endif
 }
+
+using namespace einsums::jobs;
 
 static JobManager *instance = nullptr;
 
@@ -17,7 +20,9 @@ static ThreadPool *thread_instance = nullptr;
 
 static bool added_job_exit_handler = false, added_thread_exit_handler = false;
 
-JobManager::JobManager() : jobs{}, running{}, is_locked(false), is_running(false), thread(nullptr) {
+const std::thread::id JobManager::null_thread = std::thread::id(0);
+
+JobManager::JobManager() : jobs{}, running{}, locked(std::thread::id(0)), is_running(false), thread(nullptr) {
   if(!added_job_exit_handler) {
     std::atexit(JobManager::cleanup);
     added_job_exit_handler = true;
@@ -25,7 +30,7 @@ JobManager::JobManager() : jobs{}, running{}, is_locked(false), is_running(false
 }
 
 JobManager::~JobManager() {
-  std::fprintf(stderr, "Deleting job manager.\n");
+  debug("Deleting job manager.\n");
   this->is_running = false;
   if(this->thread != nullptr) {
     this->thread->join();
@@ -54,44 +59,74 @@ void JobManager::manager_loop() {
     return;
 }
 
+void JobManager::lock() {
+    std::atomic_thread_fence(std::memory_order_acq_rel);
+    
+    if(this->locked == std::this_thread::get_id()) {
+        return;
+    }
+
+    auto hold = std::thread::id(0);
+
+    while(this->locked != null_thread || !this->locked.compare_exchange_weak(hold, std::this_thread::get_id(), std::memory_order_acq_rel)) {
+        // Reset.
+        hold = std::thread::id(0);
+        std::this_thread::yield();
+    }
+}
+
+void JobManager::unlock() {
+    std::atomic_thread_fence(std::memory_order_acq_rel);
+    assert(this->locked == std::this_thread::get_id());
+    this->locked = null_thread;
+}
+
 static void run_job(std::shared_ptr<Job> &&job) {
-    std::atomic_thread_fence(std::memory_order_acquire);
+    std::atomic_thread_fence(std::memory_order_acq_rel);
     job->run();
 
-    std::atomic_thread_fence(std::memory_order_release);
+    std::atomic_thread_fence(std::memory_order_acq_rel);
 
     // Job finished.
-    ThreadPool::get_singleton().thread_finished(std::this_thread::get_id());
+    if(ThreadPool::singleton_exists()) {
+        ThreadPool::get_singleton().thread_finished(std::this_thread::get_id());
+    }
 }
 
 #define JOB_THREADS 8
 
 void JobManager::manager_event() {
     // Obtain a lock on the manager.
-
-    while (this->is_locked) {
-        std::this_thread::yield();
-    }
-
-    this->is_locked = true;
+    this->lock();
 
     // Go through each of the running jobs and remove finished jobs.
-    for (size_t i = 0; i < this->running.size(); i++) {
-        if (std::get<0>(this->running[i])->is_finished()) {
-	  ThreadPool::get_singleton().release(std::get<1>(this->running[i]));
+    size_t size = this->running.size();
+    for (ssize_t i = 0; i < size; i++) {
+        if (std::get<0>(this->running.at(i))->is_finished()) {
+            if(ThreadPool::singleton_exists()) {
+        	  ThreadPool::get_singleton().release(std::get<1>(this->running[i]));
+            }
 	  this->running.erase(std::next(this->running.begin(), i));
+      size = this->running.size();
             i--;
         }
     }
 
+    if(!ThreadPool::singleton_exists()) {
+        this->unlock();
+        return;
+    }
+
     // Go through each of the waiting jobs and try to queue them up.
     std::atomic_thread_fence(std::memory_order_acquire);
-    for (size_t i = 0; i < this->jobs.size(); i++) {
+    size = this->jobs.size();
+    for (ssize_t i = 0; i < size; i++) {
         if (this->jobs[i]->is_runnable()) {
             auto threads = ThreadPool::get_singleton().request(1, run_job, this->jobs[i]);
             if (threads.size() != 0) {
                 this->running.emplace(this->running.cend(), this->jobs[i], threads);
                 this->jobs.erase(std::next(this->jobs.begin(), i));
+                size = this->jobs.size();
                 i--;
 
                 continue;
@@ -99,10 +134,11 @@ void JobManager::manager_event() {
         }
     }
 
-    this->is_locked = false;
+    this->unlock();
 }
 
 JobManager &JobManager::get_singleton() {
+    std::atomic_thread_fence(std::memory_order_acq_rel);
     if (instance == nullptr) {
         instance = new JobManager();
     }
@@ -110,15 +146,14 @@ JobManager &JobManager::get_singleton() {
 }
 
 void JobManager::queue_job(const std::shared_ptr<Job> &job) {
-    std::printf("Address of job: %p\n", &job);
+    debug("Address of job: %p\n", &job);
+    this->lock();
     this->jobs.insert(this->jobs.cend(), *new std::shared_ptr<Job>(job)); // Hint to the end of the list.
+    this->unlock();
 }
 
 void JobManager::start_manager() {
-    while (this->is_locked) {
-        std::this_thread::yield();
-    }
-    this->is_locked = true;
+    this->lock();
 
     if (this->is_running) {
         throw std::runtime_error("Job manager already running!");
@@ -131,49 +166,37 @@ void JobManager::start_manager() {
       this->thread = new std::thread(this->manager_loop);
     }
 
-    this->is_locked = false;
+    this->unlock();
 }
 
 void JobManager::stop_manager() {
-    while (this->is_locked) {
-        std::this_thread::yield();
-    }
-
-    this->is_locked = true;
+    this->lock();
 
     this->is_running = false;
-    this->is_locked = false;
+    this->unlock();
+
     this->thread->join();
 
-    while (this->is_locked) {
-        std::this_thread::yield();
-    }
+    this->lock();
 
     delete this->thread;
     this->thread = nullptr;
 
-    this->is_locked = false;
+    this->unlock();
 }
 
 bool JobManager::isrunning() {
-    while (this->is_locked) {
-        std::this_thread::yield();
-    }
 
     return this->is_running;
 }
 
 void JobManager::clear() {
-  while(this->is_locked) {
-    std::this_thread::yield();
-  }
-
-  this->is_locked = true;
+  this->lock();
 
   this->jobs.clear();
   this->running.clear();
 
-  this->is_locked = false;
+    this->unlock();
 }
 
 void JobManager::destroy() {
@@ -200,73 +223,46 @@ static void thread_loop() {
     }
 
     // -1 is the stop condition.
-    while (!ThreadPool::get_singleton().stop_condition()) {
+    ThreadPool &instance = ThreadPool::get_singleton();
+    while (ThreadPool::singleton_exists() && !instance.stop_condition()) {
         // Check for a job.
-        auto func = ThreadPool::get_singleton().compute_function(std::this_thread::get_id());
+        auto func = instance.compute_function(std::this_thread::get_id());
 
         if (func == nullptr) {
             // No job. Wait for a bit and check again.
             std::this_thread::yield();
-            std::atomic_thread_fence(std::memory_order_acquire);
+            std::atomic_thread_fence(std::memory_order_acq_rel);
             continue;
         }
 
         // Found a job. Run it.
-        func(ThreadPool::get_singleton().thread_job(std::this_thread::get_id()));
+        func(instance.thread_job(std::this_thread::get_id()));
 
         // Job is finished. Tell the pool.
-        ThreadPool::get_singleton().thread_finished(std::this_thread::get_id());
-        std::atomic_thread_fence(std::memory_order_release);
-        std::atomic_thread_fence(std::memory_order_acquire);
+        if(ThreadPool::singleton_exists()) {
+            instance.thread_finished(std::this_thread::get_id());
+        }
+        std::atomic_thread_fence(std::memory_order_acq_rel);
     }
 }
 
-ThreadPool::ThreadPool(int threads) : max_threads(threads), avail{}, running{}, thread_info{}, threads{} {
+// Represents a thread with no ownership.
+const std::thread::id ThreadPool::null_thread = std::thread::id(0);
+
+ThreadPool::ThreadPool(int threads) : max_threads(threads), avail{}, running{}, thread_info{}, threads{}, exists(true) {
   if(!added_thread_exit_handler) {
     std::atexit(ThreadPool::destroy);
     added_thread_exit_handler = true;
   }
 
-
-
-  this->is_locked = true;
   this->stop      = false;
 
-  for (int i = 0; i < threads; i++) {
-    this->threads.push_back(std::make_shared<std::thread>(thread_loop));
-    this->avail.push_back(this->threads[this->threads.size() - 1]);
-
-        this->thread_info[this->threads[this->threads.size() - 1]->get_id()] = std::tuple<int, int, ThreadPool::function_type, std::shared_ptr<Job>>{0, 0, nullptr, nullptr};
-    }
-    this->is_locked = false;
+  
+    this->locked = null_thread;
 }
 
 ThreadPool::~ThreadPool() {
-  std::fprintf(stderr, "Deleting thread pool.\n");
-
-    lock();
-    stop = true;
-
-    for (auto kv : thread_info) {
-        auto val = std::get<1>(kv);
-
-        std::get<0>(val) = -1;
-        std::get<1>(val) = -1;
-        std::get<2>(val) = nullptr;
-        std::get<3>(val) = nullptr;
-    }
-
-    unlock();
-    std::atomic_thread_fence(std::memory_order_release);
-
-    for(auto thr : threads) {
-        while(!thr->joinable()) {
-            std::this_thread::yield();
-        }
-        thr->join();
-    }
-
-    lock();
+  debug("Deleting thread pool.\n");
 
     thread_info.clear();
     avail.clear();
@@ -275,18 +271,29 @@ ThreadPool::~ThreadPool() {
     max_threads = 0;
 
     unlock();
+    debug("Finished deleting thread pool.\n");
 }
 
 void ThreadPool::lock() {
-    while (this->is_locked) {
+    std::atomic_thread_fence(std::memory_order_acq_rel);
+    
+    if(this->locked == std::this_thread::get_id()) {
+        return;
+    }
+
+    auto hold = std::thread::id(0);
+
+    while(this->locked != null_thread || !this->locked.compare_exchange_weak(hold, std::this_thread::get_id(), std::memory_order_acq_rel)) {
+        // Reset.
+        hold = std::thread::id(0);
         std::this_thread::yield();
     }
-    this->is_locked = true;
 }
 
 void ThreadPool::unlock() {
-    std::atomic_thread_fence(std::memory_order_release);
-    this->is_locked = false;
+    std::atomic_thread_fence(std::memory_order_acq_rel);
+    assert(this->locked == std::this_thread::get_id());
+    this->locked = null_thread;
 }
 
 void ThreadPool::init(int threads) {
@@ -294,11 +301,56 @@ void ThreadPool::init(int threads) {
         throw std::runtime_error("Double initialization of the thread pool!");
     } else {
         thread_instance = new ThreadPool(threads);
+        thread_instance->init_pool(threads);
     }
 }
 
+void ThreadPool::init_pool(int thread) {
+    this->lock();
+    for (int i = 0; i < thread; i++) {
+        this->threads.push_back(std::make_shared<std::thread>(thread_loop));
+        this->avail.push_back(this->threads[this->threads.size() - 1]);
+
+        this->thread_info[this->threads[this->threads.size() - 1]->get_id()] = std::tuple<int, int, ThreadPool::function_type, std::shared_ptr<Job>>{0, 0, nullptr, nullptr};
+    }
+    this->unlock();
+}
+
 void ThreadPool::destroy() {
+    debug("Destroying thread pool.\n");
+
   if(thread_instance != nullptr) {
+    // Send the stop signal.
+    thread_instance->lock();
+    thread_instance->stop = true;
+    thread_instance->unlock();
+
+    // Wait for all threads to stop.
+    while(thread_instance->has_running()) {
+        std::this_thread::yield();
+    }
+    thread_instance->lock();
+    thread_instance->exists = false;
+    
+
+    for (auto kv : thread_instance->thread_info) {
+        auto val = std::get<1>(kv);
+
+        std::get<0>(val) = -1;
+        std::get<1>(val) = -1;
+        std::get<2>(val) = nullptr;
+        std::get<3>(val) = nullptr;
+    }
+
+    thread_instance->unlock();
+
+    for(auto &thr : thread_instance->threads) {
+        while(!thr->joinable()) {
+            std::this_thread::yield();
+        }
+        thr->join();
+    }
+    thread_instance->lock();
     delete thread_instance;
     thread_instance = nullptr;
   }
@@ -309,6 +361,10 @@ ThreadPool &ThreadPool::get_singleton() {
         throw std::runtime_error("Thread pool needs to be initialized!");
     }
     return *thread_instance;
+}
+
+bool ThreadPool::singleton_exists() {
+    return thread_instance != nullptr && thread_instance->exists;
 }
 
 std::vector<std::weak_ptr<std::thread>> &ThreadPool::request(unsigned int count, ThreadPool::function_type func,
@@ -324,6 +380,7 @@ std::vector<std::weak_ptr<std::thread>> &ThreadPool::request(unsigned int count,
     auto *out = new std::vector<std::weak_ptr<std::thread>>();
 
     for (int i = 0; i < count; i++) {
+        debug("7: Running size: %ld\n", this->running.size());
         // Check that there are available threads to take.
         if (this->avail.size() == 0) {
             this->unlock();
@@ -331,17 +388,24 @@ std::vector<std::weak_ptr<std::thread>> &ThreadPool::request(unsigned int count,
         }
         // Get the new thread.
         std::weak_ptr<std::thread> thread = this->avail.back();
-        this->running.push_back(thread);
-        out->push_back(thread); 
-        this->avail.pop_back();               
+        for(auto &thr : this->threads) {
+            if(thr->get_id() == thread.lock()->get_id()) {
+                this->running.push_back(thr);
+                out->push_back(thr);
+                this->avail.pop_back();
+                break;
+            }
+        }
 
         // Push the thread info.
         (this->thread_info)[thread.lock()->get_id()] = std::tuple<int, int, ThreadPool::function_type, std::shared_ptr<Job>>{i, count, func, job};
     }
 
-    this->unlock();
+
     assert(this->threads.size() == this->max_threads);
     assert(this->avail.size() + this->running.size() == this->threads.size());
+    this->unlock();
+    
     return *out;
 }
 
@@ -353,15 +417,21 @@ std::vector<std::weak_ptr<std::thread>> &ThreadPool::request_upto(unsigned int c
     int total = 0;
 
     for (int i = 0; i < count; i++) {
+        debug("6: Running size: %ld\n", this->running.size());
         // Check that there are threads available.
         if (this->avail.size() == 0) {
             break;
         }
         // Get the new thread.
         std::weak_ptr<std::thread> thread = this->avail.back();
-        this->running.push_back(thread);
-        out->push_back(thread); 
-        this->avail.pop_back(); 
+        for(auto &thr : this->threads) {
+            if(thr->get_id() == thread.lock()->get_id()) {
+                this->running.push_back(thr);
+                out->push_back(thr);
+                this->avail.pop_back();
+                break;
+            }
+        } 
         total++;
     }
 
@@ -370,9 +440,9 @@ std::vector<std::weak_ptr<std::thread>> &ThreadPool::request_upto(unsigned int c
         (this->thread_info)[out->at(i).lock()->get_id()] = std::tuple<int, int, ThreadPool::function_type, std::shared_ptr<Job>>{i, total, func, job};
     }
 
-    this->unlock();
     assert(this->threads.size() == this->max_threads);
     assert(this->avail.size() + this->running.size() == this->threads.size());
+    this->unlock();
     return *out;
 }
 
@@ -381,14 +451,27 @@ void ThreadPool::release(std::vector<std::weak_ptr<std::thread>> &threads) {
 
     // Move running threads back to the waiting pool.
     for(const auto &thread : threads) {
-      for(ssize_t i = 0; i < this->running.size(); i++) {
-	if((this->running)[i].lock()->get_id() == thread.lock()->get_id()) {
-	  this->avail.push_back((this->running)[i]);
-	  (this->thread_info)[(this->running)[i].lock()->get_id()] =
-	    std::tuple<int, int, ThreadPool::function_type, std::shared_ptr<Job>>{0, 0, nullptr, nullptr};
-	  this->running.erase(std::next(this->running.begin(), i));
-	  i--;
-	}
+        ssize_t i = 0;
+      while(this->running.size() < this->max_threads && i < this->running.size()) {
+        debug("4: Size of running: %ld\n", this->running.size());
+	    if(this->running.at(i).lock()->get_id() == thread.lock()->get_id()) {
+            for(ssize_t j = 0; j < this->threads.size(); j++) {
+                if(this->running[i].lock()->get_id() == this->threads[j]->get_id()) {
+                    this->avail.push_back(this->threads[j]);
+                    break;
+                }
+            }
+	        (this->thread_info)[(this->running)[i].lock()->get_id()] =
+	        std::tuple<int, int, ThreadPool::function_type, std::shared_ptr<Job>>{0, 0, nullptr, nullptr};
+            size_t before = this->running.size();
+            if(before <= 0 || std::next(this->running.begin(), i) == this->running.end()) {
+                debug("5: Out of bounds oopsie.\n");
+            }
+	        this->running.erase(this->running.begin() + i);
+            assert(before - 1 == this->running.size());
+	    } else {
+            i++;
+        }
       }
     }
 
@@ -438,19 +521,49 @@ void ThreadPool::thread_finished(std::thread::id id) {
 
     (this->thread_info)[id] = std::tuple<int, int, ThreadPool::function_type, std::shared_ptr<Job>>{0, 0, nullptr, nullptr};
 
-    for (ssize_t i = 0; i < this->running.size(); i++) {
-        if ((this->running)[i].lock()->get_id() == id) {
-            this->avail.push_back(std::move((this->running)[i]));
-            this->running.erase(std::next(this->running.begin(), i));
+    ssize_t i = 0;
+    while(this->running.size() > 0 && i < this->running.size()) {
+        debug("1: Running size: %ld\n", this->running.size());
+        assert(this->avail.size() + this->running.size() == this->threads.size());
+        if (this->running.at(i).lock()->get_id() == id) {
+            for(ssize_t j = 0; j < this->threads.size(); j++) {
+                if(this->threads[j]->get_id() == id) {
+                    size_t before = this->avail.size();
+                    this->avail.push_back(this->threads[j]);
+                    assert(before + 1 == this->avail.size());
+                    break;
+                }
+            }
+//            this->avail.push_back(std::move((this->running)[i]));
+            size_t before = this->running.size();
+            this->running.erase(this->running.begin() + i);
+            if(before - 1 != this->running.size()) {
+                debug("2: Running size: %ld\n", this->running.size());
+            }
+            assert(before - 1 == this->running.size());
+            assert(this->avail.size() + this->running.size() == this->threads.size());
             break;
         }
+        i++;
     }
 
-    this->unlock();
     assert(this->threads.size() == this->max_threads);
+#ifndef NDEBUG
+    if(this->avail.size() + this->running.size() != this->threads.size()) {
+        debug("3: Size of avail: %ld\n", this->avail.size());
+        debug("3: Address of avail: %p\n", &(this->avail));
+        debug("3: Size of running: %ld\n", this->running.size());
+        debug("3: Address of running: %p\n", &(this->running));
+    }
+#endif
     assert(this->avail.size() + this->running.size() == this->threads.size());
+    this->unlock();
 }
 
 bool ThreadPool::stop_condition() {
     return this->stop;
+}
+
+EINSUMS_EXPORT int ThreadPool::has_running() {
+    return this->running.size();
 }
