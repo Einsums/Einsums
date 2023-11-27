@@ -1,12 +1,15 @@
 #pragma once
 
+#include "einsums/_Common.hpp"
+
 #include "einsums/Blas.hpp"
 #include "einsums/STL.hpp"
 #include "einsums/Section.hpp"
 #include "einsums/Tensor.hpp"
-// #include "einsums/Timer.hpp"
 #include "einsums/Utilities.hpp"
-#include "einsums/_Common.hpp"
+#include "einsums/utility/ComplexTraits.hpp"
+#include "einsums/utility/SmartPointerTraits.hpp"
+#include "einsums/utility/TensorTraits.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -16,22 +19,11 @@
 #include <tuple>
 #include <type_traits>
 
-#if defined(EINSUMS_HAVE_EIGEN3)
-#    include <Eigen/Core>
-#    include <Eigen/SVD>
-
-template <typename T>
-using RowMatrix = ::Eigen::Matrix<T, ::Eigen::Dynamic, ::Eigen::Dynamic, ::Eigen::RowMajor>;
-
-using RowMatrixXd = RowMatrix<double>;
-
-#endif
-
 BEGIN_EINSUMS_NAMESPACE_HPP(einsums::linear_algebra)
 
 template <template <typename, size_t> typename AType, typename ADataType, size_t ARank>
-auto sum_square(const AType<ADataType, ARank> &a, remove_complex_t<ADataType> *scale, remove_complex_t<ADataType> *sumsq) ->
-    typename std::enable_if_t<is_incore_rank_tensor_v<AType<ADataType, ARank>, 1, ADataType>> {
+    requires CoreRankTensor<AType<ADataType, ARank>, 1, ADataType>
+void sum_square(const AType<ADataType, ARank> &a, RemoveComplexT<ADataType> *scale, RemoveComplexT<ADataType> *sumsq) {
     LabeledSection0();
 
     int n    = a.dim(0);
@@ -39,11 +31,40 @@ auto sum_square(const AType<ADataType, ARank> &a, remove_complex_t<ADataType> *s
     blas::lassq(n, a.data(), incx, scale, sumsq);
 }
 
+/**
+ * @brief General matrix multipilication.
+ *
+ * Takes two rank-2 tensors ( \p A and \p B ) performs the multiplication and stores the result in to another
+ * rank-2 tensor that is passed in ( \p C ).
+ *
+ * In this equation, \p TransA is op(A) and \p TransB is op(B).
+ * @f[
+ * C = \alpha \;op(A) \;op(B) + \beta C
+ * @f]
+ *
+ * @code
+ * auto A = einsums::create_random_tensor("A", 3, 3);
+ * auto B = einsums::create_random_tensor("B", 3, 3);
+ * auto C = einsums::create_tensor("C", 3, 3);
+ *
+ * einsums::linear_algebra::gemm<false, false>(1.0, A, B, 0.0, &C);
+ * @endcode
+ *
+ * @tparam TransA Tranpose A?
+ * @tparam TransB Tranpose B?
+ * @param A First input tensor
+ * @param B Second input tensor
+ * @param C Output tensor
+ * @tparam T the underlying data type
+ */
 template <bool TransA, bool TransB, template <typename, size_t> typename AType, template <typename, size_t> typename BType,
           template <typename, size_t> typename CType, size_t Rank, typename T>
-auto gemm(const T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const T beta, CType<T, Rank> *C) ->
-    typename std::enable_if_t<is_incore_rank_tensor_v<AType<T, Rank>, 2, T> && is_incore_rank_tensor_v<BType<T, Rank>, 2, T> &&
-                              is_incore_rank_tensor_v<CType<T, Rank>, 2, T>> {
+    requires requires {
+        requires CoreRankTensor<AType<T, Rank>, 2, T>;
+        requires CoreRankTensor<BType<T, Rank>, 2, T>;
+        requires CoreRankTensor<CType<T, Rank>, 2, T>;
+    }
+void gemm(const T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const T beta, CType<T, Rank> *C) {
     LabeledSection0();
 
     auto m = C->dim(0), n = C->dim(1), k = TransA ? A.dim(0) : A.dim(1);
@@ -53,26 +74,32 @@ auto gemm(const T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const
 }
 
 /**
- * @brief Version of gemm that returns a new tensor object.
+ * @brief General matrix multipilication. Returns new tensor.
  *
- * @tparam TransA
- * @tparam TransB
- * @tparam AType
- * @tparam BType
- * @param alpha
- * @param A
- * @param B
- * @param beta
+ * Takes two rank-2 tensors performs the multiplication and returns the result
  *
- * @return std::enable_if_t<std::is_base_of_v<Detail::TensorBase<double, 2>, AType> &&
- * std::is_base_of_v<Detail::TensorBase<double, 2>, BType>,
- * Tensor<double, 2>>
+ * @code
+ * auto A = einsums::create_random_tensor("A", 3, 3);
+ * auto B = einsums::create_random_tensor("B", 3, 3);
+ * auto C = einsums::create_tensor("C", 3, 3);
  *
+ * einsums::linear_algebra::gemm<false, false>(1.0, A, B, 0.0, &C);
+ * @endcode
+ *
+ * @tparam TransA Tranpose A?
+ * @tparam TransB Tranpose B?
+ * @param A First input tensor
+ * @param B Second input tensor
+ * @returns resulting tensor
+ * @tparam T the underlying data type
  */
 template <bool TransA, bool TransB, template <typename, size_t> typename AType, template <typename, size_t> typename BType, size_t Rank,
           typename T>
-auto gemm(const T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B)
-    -> std::enable_if_t<is_incore_rank_tensor_v<AType<T, Rank>, 2, T> && is_incore_rank_tensor_v<BType<T, Rank>, 2, T>, Tensor<T, 2>> {
+    requires requires {
+        requires CoreRankTensor<AType<T, Rank>, 2, T>;
+        requires CoreRankTensor<BType<T, Rank>, 2, T>;
+    }
+auto gemm(const T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B) -> Tensor<T, 2> {
     LabeledSection0();
 
     Tensor<T, 2> C{"gemm result", TransA ? A.dim(1) : A.dim(0), TransB ? B.dim(0) : B.dim(1)};
@@ -84,9 +111,12 @@ auto gemm(const T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B)
 
 template <bool TransA, template <typename, size_t> typename AType, template <typename, size_t> typename XType,
           template <typename, size_t> typename YType, size_t ARank, size_t XYRank, typename T>
-auto gemv(const double alpha, const AType<T, ARank> &A, const XType<T, XYRank> &x, const double beta, YType<T, XYRank> *y)
-    -> std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, 2, T> && is_incore_rank_tensor_v<XType<T, XYRank>, 1, T> &&
-                        is_incore_rank_tensor_v<YType<T, XYRank>, 1, T>> {
+    requires requires {
+        requires CoreRankTensor<AType<T, ARank>, 2, T>;
+        requires CoreRankTensor<XType<T, XYRank>, 1, T>;
+        requires CoreRankTensor<YType<T, XYRank>, 1, T>;
+    }
+void gemv(const double alpha, const AType<T, ARank> &A, const XType<T, XYRank> &x, const double beta, YType<T, XYRank> *y) {
     LabeledSection1(fmt::format("<TransA={}>", TransA));
     auto m = A.dim(0), n = A.dim(1);
     auto lda  = A.stride(0);
@@ -98,8 +128,12 @@ auto gemv(const double alpha, const AType<T, ARank> &A, const XType<T, XYRank> &
 
 template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename WType, size_t WRank, typename T,
           bool ComputeEigenvectors = true>
-auto syev(AType<T, ARank> *A, WType<T, WRank> *W) -> std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, 2, T> &&
-                                                                      is_incore_rank_tensor_v<WType<T, WRank>, 1, T> && !is_complex_v<T>> {
+    requires requires {
+        requires CoreRankTensor<AType<T, ARank>, 2, T>;
+        requires CoreRankTensor<WType<T, WRank>, 1, T>;
+        requires !Complex<T>;
+    }
+void syev(AType<T, ARank> *A, WType<T, WRank> *W) {
     LabeledSection1(fmt::format("<ComputeEigenvectors={}>", ComputeEigenvectors));
 
     assert(A->dim(0) == A->dim(1));
@@ -114,25 +148,31 @@ auto syev(AType<T, ARank> *A, WType<T, WRank> *W) -> std::enable_if_t<is_incore_
 
 template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename WType, size_t WRank, typename T,
           bool ComputeEigenvectors = true>
-auto heev(AType<T, ARank> *A, WType<remove_complex_t<T>, WRank> *W)
-    -> std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, 2, T> && is_incore_rank_tensor_v<WType<T, WRank>, 1, T> &&
-                        is_complex_v<T>> {
+    requires requires {
+        requires CoreRankTensor<AType<T, ARank>, 2, T>;
+        requires CoreRankTensor<WType<T, WRank>, 1, T>;
+        requires Complex<T>;
+    }
+void heev(AType<T, ARank> *A, WType<RemoveComplexT<T>, WRank> *W) {
     LabeledSection1(fmt::format("<ComputeEigenvectors={}>", ComputeEigenvectors));
     assert(A->dim(0) == A->dim(1));
 
-    auto                             n     = A->dim(0);
-    auto                             lda   = A->stride(0);
-    int                              lwork = 2 * n;
-    std::vector<T>                   work(lwork);
-    std::vector<remove_complex_t<T>> rwork(3 * n);
+    auto                           n     = A->dim(0);
+    auto                           lda   = A->stride(0);
+    int                            lwork = 2 * n;
+    std::vector<T>                 work(lwork);
+    std::vector<RemoveComplexT<T>> rwork(3 * n);
 
     blas::heev(ComputeEigenvectors ? 'v' : 'n', 'u', n, A->data(), lda, W->data(), work.data(), lwork, rwork.data());
 }
 
 // This assumes column-major ordering!!
 template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename BType, size_t BRank, typename T>
-auto gesv(AType<T, ARank> *A, BType<T, BRank> *B)
-    -> std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, 2, T> && is_incore_rank_tensor_v<BType<T, BRank>, 2, T>, int> {
+    requires requires {
+        requires CoreRankTensor<AType<T, ARank>, 2, T>;
+        requires CoreRankTensor<BType<T, BRank>, 2, T>;
+    }
+auto gesv(AType<T, ARank> *A, BType<T, BRank> *B) -> int {
     LabeledSection0();
 
     auto n   = A->dim(0);
@@ -149,8 +189,8 @@ auto gesv(AType<T, ARank> *A, BType<T, BRank> *B)
 }
 
 template <template <typename, size_t> typename AType, size_t ARank, typename T, bool ComputeEigenvectors = true>
-auto syev(const AType<T, ARank> &A) ->
-    typename std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, 2, T>, std::tuple<Tensor<T, 2>, Tensor<T, 1>>> {
+    requires CoreRankTensor<AType<T, ARank>, 2, T>
+auto syev(const AType<T, ARank> &A) -> std::tuple<Tensor<T, 2>, Tensor<T, 1>> {
     LabeledSection0();
 
     assert(A.dim(0) == A.dim(1));
@@ -164,22 +204,24 @@ auto syev(const AType<T, ARank> &A) ->
 }
 
 template <template <typename, size_t> typename AType, size_t ARank, typename T>
-auto scale(T scale, AType<T, ARank> *A) -> typename std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, ARank, T>> {
+    requires CoreRankTensor<AType<T, ARank>, ARank, T>
+void scale(T scale, AType<T, ARank> *A) {
     LabeledSection0();
 
     blas::scal(A->dim(0) * A->stride(0), scale, A->data(), 1);
 }
 
 template <template <typename, size_t> typename AType, size_t ARank, typename T>
-auto scale_row(size_t row, T scale, AType<T, ARank> *A) -> typename std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, 2, T>> {
+    requires CoreRankTensor<AType<T, ARank>, 2, T>
+void scale_row(size_t row, T scale, AType<T, ARank> *A) {
     LabeledSection0();
 
     blas::scal(A->dim(1), scale, A->data(row, 0ul), A->stride(1));
 }
 
 template <template <typename, size_t> typename AType, size_t ARank, typename T>
-auto scale_column(size_t col, T scale, AType<T, ARank> *A) ->
-    typename std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, 2, double>> {
+    requires CoreRankTensor<AType<T, ARank>, 2, T>
+void scale_column(size_t col, T scale, AType<T, ARank> *A) {
     LabeledSection0();
 
     blas::scal(A->dim(0), scale, A->data(0ul, col), A->stride(0));
@@ -195,10 +237,11 @@ auto scale_column(size_t col, T scale, AType<T, ARank> *A) ->
  *
  * @return std::enable_if_t<std::is_base_of_v<Detail::TensorBase<double, 2>, AType>, AType>
  *
+ * TODO This function needs to have a test case implemented.
  */
 template <template <typename, size_t> typename AType, size_t ARank, typename T>
-auto pow(const AType<T, ARank> &a, T alpha, T cutoff = std::numeric_limits<T>::epsilon()) ->
-    typename std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, 2, T>, AType<T, ARank>> {
+    requires CoreRankTensor<AType<T, ARank>, 2, T>
+auto pow(const AType<T, ARank> &a, T alpha, T cutoff = std::numeric_limits<T>::epsilon()) -> AType<T, ARank> {
     LabeledSection0();
 
     assert(a.dim(0) == a.dim(1));
@@ -235,8 +278,8 @@ auto pow(const AType<T, ARank> &a, T alpha, T cutoff = std::numeric_limits<T>::e
 }
 
 template <template <typename, size_t> typename Type, typename T>
-auto dot(const Type<T, 1> &A, const Type<T, 1> &B) ->
-    typename std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<T, 1>, Type<T, 1>>, T> {
+    requires CoreRankTensor<Type<T, 1>, 1, T>
+auto dot(const Type<T, 1> &A, const Type<T, 1> &B) -> T {
     LabeledSection0();
 
     assert(A.dim(0) == B.dim(0));
@@ -246,8 +289,8 @@ auto dot(const Type<T, 1> &A, const Type<T, 1> &B) ->
 }
 
 template <template <typename, size_t> typename Type, typename T, size_t Rank>
-auto dot(const Type<T, Rank> &A, const Type<T, Rank> &B) ->
-    typename std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<T, Rank>, Type<T, Rank>>, T> {
+    requires CoreRankTensor<Type<T, Rank>, Rank, T>
+auto dot(const Type<T, Rank> &A, const Type<T, Rank> &B) -> T {
     LabeledSection0();
 
     Dim<1> dim{1};
@@ -261,8 +304,8 @@ auto dot(const Type<T, Rank> &A, const Type<T, Rank> &B) ->
 }
 
 template <template <typename, size_t> typename Type, typename T, size_t Rank>
-auto dot(const Type<T, Rank> &A, const Type<T, Rank> &B, const Type<T, Rank> &C) -> // NOLINT
-    typename std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<T, Rank>, Type<T, Rank>>, T> {
+    requires CoreRankTensor<Type<T, Rank>, Rank, T>
+auto dot(const Type<T, Rank> &A, const Type<T, Rank> &B, const Type<T, Rank> &C) -> T {
     LabeledSection0();
 
     Dim<1> dim{1};
@@ -285,32 +328,41 @@ auto dot(const Type<T, Rank> &A, const Type<T, Rank> &B, const Type<T, Rank> &C)
 }
 
 template <template <typename, size_t> typename XType, template <typename, size_t> typename YType, typename T, size_t Rank>
-auto axpy(T alpha, const XType<T, Rank> &X, YType<T, Rank> *Y)
-    -> std::enable_if_t<is_incore_rank_tensor_v<XType<T, Rank>, Rank, T> && is_incore_rank_tensor_v<YType<T, Rank>, Rank, T>> {
+    requires requires {
+        requires CoreRankTensor<XType<T, Rank>, Rank, T>;
+        requires CoreRankTensor<YType<T, Rank>, Rank, T>;
+    }
+void axpy(T alpha, const XType<T, Rank> &X, YType<T, Rank> *Y) {
     LabeledSection0();
 
     blas::axpy(X.dim(0) * X.stride(0), alpha, X.data(), 1, Y->data(), 1);
 }
 
 template <template <typename, size_t> typename XType, template <typename, size_t> typename YType, typename T, size_t Rank>
-auto axpby(T alpha, const XType<T, Rank> &X, T beta, YType<T, Rank> *Y)
-    -> std::enable_if_t<is_incore_rank_tensor_v<XType<T, Rank>, Rank, T> && is_incore_rank_tensor_v<YType<T, Rank>, Rank, T>> {
+    requires requires {
+        requires CoreRankTensor<XType<T, Rank>, Rank, T>;
+        requires CoreRankTensor<YType<T, Rank>, Rank, T>;
+    }
+void axpby(T alpha, const XType<T, Rank> &X, T beta, YType<T, Rank> *Y) {
     LabeledSection0();
 
     blas::axpby(X.dim(0) * X.stride(0), alpha, X.data(), 1, beta, Y->data(), 1);
 }
 
 template <template <typename, size_t> typename XYType, size_t XYRank, template <typename, size_t> typename AType, typename T, size_t ARank>
-auto ger(T alpha, const XYType<T, XYRank> &X, const XYType<T, XYRank> &Y, AType<T, ARank> *A)
-    -> std::enable_if_t<is_incore_rank_tensor_v<XYType<T, XYRank>, 1, T> && is_incore_rank_tensor_v<AType<T, ARank>, 2, T>> {
+    requires requires {
+        requires CoreRankTensor<XYType<T, XYRank>, 1, T>;
+        requires CoreRankTensor<AType<T, ARank>, 2, T>;
+    }
+void ger(T alpha, const XYType<T, XYRank> &X, const XYType<T, XYRank> &Y, AType<T, ARank> *A) {
     LabeledSection0();
 
     blas::ger(X.dim(0), Y.dim(0), alpha, X.data(), X.stride(0), Y.data(), Y.stride(0), A->data(), A->stride(0));
 }
 
 template <template <typename, size_t> typename TensorType, typename T, size_t TensorRank>
-auto getrf(TensorType<T, TensorRank> *A, std::vector<eint> *pivot)
-    -> std::enable_if_t<is_incore_rank_tensor_v<TensorType<T, TensorRank>, 2, T>, int> {
+    requires CoreRankTensor<TensorType<T, TensorRank>, 2, T>
+auto getrf(TensorType<T, TensorRank> *A, std::vector<eint> *pivot) -> int {
     LabeledSection0();
 
     if (pivot->size() < std::min(A->dim(0), A->dim(1))) {
@@ -329,8 +381,8 @@ auto getrf(TensorType<T, TensorRank> *A, std::vector<eint> *pivot)
 }
 
 template <template <typename, size_t> typename TensorType, typename T, size_t TensorRank>
-auto getri(TensorType<T, TensorRank> *A, const std::vector<eint> &pivot)
-    -> std::enable_if_t<is_incore_rank_tensor_v<TensorType<T, TensorRank>, 2, T>, int> {
+    requires CoreRankTensor<TensorType<T, TensorRank>, 2, T>
+auto getri(TensorType<T, TensorRank> *A, const std::vector<eint> &pivot) -> int {
     LabeledSection0();
 
     int result = blas::getri(A->dim(0), A->data(), A->stride(0), pivot.data());
@@ -342,7 +394,8 @@ auto getri(TensorType<T, TensorRank> *A, const std::vector<eint> &pivot)
 }
 
 template <template <typename, size_t> typename TensorType, typename T, size_t TensorRank>
-auto invert(TensorType<T, TensorRank> *A) -> std::enable_if_t<is_incore_rank_tensor_v<TensorType<T, TensorRank>, 2, T>> {
+    requires CoreRankTensor<TensorType<T, TensorRank>, 2, T>
+void invert(TensorType<T, TensorRank> *A) {
     LabeledSection0();
 
     std::vector<eint> pivot(A->dim(0));
@@ -359,8 +412,8 @@ auto invert(TensorType<T, TensorRank> *A) -> std::enable_if_t<is_incore_rank_ten
     }
 }
 
-template <typename SmartPtr>
-auto invert(SmartPtr *A) -> std::enable_if_t<is_smart_pointer_v<SmartPtr>> {
+template <SmartPointer SmartPtr>
+void invert(SmartPtr *A) {
     LabeledSection0();
 
     return invert(A->get());
@@ -369,56 +422,22 @@ auto invert(SmartPtr *A) -> std::enable_if_t<is_smart_pointer_v<SmartPtr>> {
 enum class Norm : char { MaxAbs = 'M', One = 'O', Infinity = 'I', Frobenius = 'F', Two = 'F' };
 
 template <template <typename, size_t> typename AType, typename ADataType, size_t ARank>
-auto norm(Norm norm_type, const AType<ADataType, ARank> &a) ->
-    typename std::enable_if_t<is_incore_rank_tensor_v<AType<ADataType, ARank>, 2, ADataType>, remove_complex_t<ADataType>> {
+    requires CoreRankTensor<AType<ADataType, ARank>, 2, ADataType>
+auto norm(Norm norm_type, const AType<ADataType, ARank> &a) -> RemoveComplexT<ADataType> {
     LabeledSection0();
 
     if (norm_type != Norm::Infinity) {
         return blas::lange(norm_type, a->dim(0), a->dim(1), a->data(), a->stride(0), nullptr);
     } else {
-        std::vector<remove_complex_t<ADataType>> work(a->dim(0), 0.0);
+        std::vector<RemoveComplexT<ADataType>> work(a->dim(0), 0.0);
         return blas::lange(norm_type, a->dim(0), a->dim(1), a->data(), a->stride(0), work.data());
     }
 }
 
-#if defined(EINSUMS_HAVE_EIGEN3)
-template <template <typename, size_t> typename AType, typename T, size_t ARank>
-auto svd_eigen(const AType<T, ARank> &_A) ->
-    typename std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, 2, T>,
-                              std::tuple<Tensor<T, 2>, Tensor<remove_complex_t<T>, 1>, Tensor<T, 2>>> {
-    LabeledSection0();
-
-    // using namespace einsums::tensor_algebra;
-
-    // Calling svd will destroy the original data. Make a copy of it.
-    Tensor<T, 2> eA = _A;
-    // auto eA = create_tensor("tmpA", _A.dim(1), _A.dim(2));
-    // sort(Indices{index::i, index::j}, &eA, Indices{index::j, index::i}, _A);
-
-    Eigen::Map<RowMatrixXd>       A(eA.vector_data().data(), _A.dim(0), _A.dim(1));
-    Eigen::JacobiSVD<RowMatrixXd> svd(A, Eigen::ComputeFullV | Eigen::ComputeFullU);
-
-    auto U = svd.matrixU();
-    auto S = svd.singularValues();
-    auto V = svd.matrixV();
-
-    auto eU = create_tensor("U", U.rows(), U.cols());
-    auto eS = create_tensor("S", S.size());
-    auto eV = create_tensor("V", V.rows(), V.cols());
-
-    // Eigen::Map<Eigen::MatrixX2d>
-    RowMatrixXd::Map(eU.vector_data().data(), eU.dim(0), eU.dim(1)) = U;
-    Eigen::VectorXd::Map(eS.vector_data().data(), eS.dim(0))        = S;
-    RowMatrixXd::Map(eV.vector_data().data(), eV.dim(0), eV.dim(1)) = V;
-
-    return std::make_tuple(eU, eS, eV);
-}
-#endif
-
 // Uses the original svd function found in lapack, gesvd, request all left and right vectors.
 template <template <typename, size_t> typename AType, typename T, size_t ARank>
-auto svd(const AType<T, ARank> &_A) -> typename std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, 2, T>,
-                                                                 std::tuple<Tensor<T, 2>, Tensor<remove_complex_t<T>, 1>, Tensor<T, 2>>> {
+    requires CoreRankTensor<AType<T, ARank>, 2, T>
+auto svd(const AType<T, ARank> &_A) -> std::tuple<Tensor<T, 2>, Tensor<RemoveComplexT<T>, 1>, Tensor<T, 2>> {
     LabeledSection0();
 
     DisableOMPThreads const nothreads;
@@ -433,7 +452,7 @@ auto svd(const AType<T, ARank> &_A) -> typename std::enable_if_t<is_incore_rank_
     // Test if it absolutely necessary to zero out these tensors first.
     auto U = create_tensor<T>("U (stored columnwise)", m, m);
     U.zero();
-    auto S = create_tensor<remove_complex_t<T>>("S", std::min(m, n));
+    auto S = create_tensor<RemoveComplexT<T>>("S", std::min(m, n));
     S.zero();
     auto Vt = create_tensor<T>("Vt (stored rowwise)", n, n);
     Vt.zero();
@@ -455,7 +474,8 @@ auto svd(const AType<T, ARank> &_A) -> typename std::enable_if_t<is_incore_rank_
 }
 
 template <template <typename, size_t> typename AType, typename T, size_t Rank>
-auto svd_nullspace(const AType<T, Rank> &_A) -> typename std::enable_if_t<is_incore_rank_tensor_v<AType<T, Rank>, 2, T>, Tensor<T, 2>> {
+    requires CoreRankTensor<AType<T, Rank>, 2, T>
+auto svd_nullspace(const AType<T, Rank> &_A) -> Tensor<T, 2> {
     LabeledSection0();
 
     // Calling svd will destroy the original data. Make a copy of it.
@@ -512,9 +532,8 @@ auto svd_nullspace(const AType<T, Rank> &_A) -> typename std::enable_if_t<is_inc
 enum class Vectors : char { All = 'A', Some = 'S', Overwrite = 'O', None = 'N' };
 
 template <template <typename, size_t> typename AType, typename T, size_t ARank>
-auto svd_dd(const AType<T, ARank> &_A, Vectors job = Vectors::All) ->
-    typename std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, 2, T>,
-                              std::tuple<Tensor<T, 2>, Tensor<remove_complex_t<T>, 1>, Tensor<T, 2>>> {
+    requires CoreRankTensor<AType<T, ARank>, 2, T>
+auto svd_dd(const AType<T, ARank> &_A, Vectors job = Vectors::All) -> std::tuple<Tensor<T, 2>, Tensor<RemoveComplexT<T>, 1>, Tensor<T, 2>> {
     LabeledSection0();
 
     DisableOMPThreads const nothreads;
@@ -528,7 +547,7 @@ auto svd_dd(const AType<T, ARank> &_A, Vectors job = Vectors::All) ->
     // Test if it absolutely necessary to zero out these tensors first.
     auto U = create_tensor<T>("U (stored columnwise)", m, m);
     zero(U);
-    auto S = create_tensor<remove_complex_t<T>>("S", std::min(m, n));
+    auto S = create_tensor<RemoveComplexT<T>>("S", std::min(m, n));
     zero(S);
     auto Vt = create_tensor<T>("Vt (stored rowwise)", n, n);
     zero(Vt);
@@ -549,9 +568,8 @@ auto svd_dd(const AType<T, ARank> &_A, Vectors job = Vectors::All) ->
 }
 
 template <template <typename, size_t> typename AType, typename T, size_t ARank>
-auto truncated_svd(const AType<T, ARank> &_A, size_t k) ->
-    typename std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, 2, T>,
-                              std::tuple<Tensor<T, 2>, Tensor<remove_complex_t<T>, 1>, Tensor<T, 2>>> {
+    requires CoreRankTensor<AType<T, ARank>, 2, T>
+auto truncated_svd(const AType<T, ARank> &_A, size_t k) -> std::tuple<Tensor<T, 2>, Tensor<RemoveComplexT<T>, 1>, Tensor<T, 2>> {
     LabeledSection0();
 
     size_t m = _A.dim(0);
@@ -568,7 +586,7 @@ auto truncated_svd(const AType<T, ARank> &_A, size_t k) ->
     // Compute QR factorization of Y
     int info1 = blas::geqrf(m, k + 5, Y.data(), k + 5, tau.data());
     // Extract Matrix Q out of QR factorization
-    if constexpr (!is_complex_v<T>) {
+    if constexpr (!IsComplexV<T>) {
         int info2 = blas::orgqr(m, k + 5, tau.dim(0), Y.data(), k + 5, const_cast<const T *>(tau.data()));
     } else {
         int info2 = blas::ungqr(m, k + 5, tau.dim(0), Y.data(), k + 5, const_cast<const T *>(tau.data()));
@@ -589,8 +607,8 @@ auto truncated_svd(const AType<T, ARank> &_A, size_t k) ->
 }
 
 template <template <typename, size_t> typename AType, size_t ARank, typename T>
-auto truncated_syev(const AType<T, ARank> &A, size_t k) ->
-    typename std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, 2, T>, std::tuple<Tensor<T, 2>, Tensor<T, 1>>> {
+    requires CoreRankTensor<AType<T, ARank>, 2, T>
+auto truncated_syev(const AType<T, ARank> &A, size_t k) -> std::tuple<Tensor<T, 2>, Tensor<T, 1>> {
     LabeledSection0();
 
     if (A.dim(0) != A.dim(1)) {
@@ -703,8 +721,8 @@ inline auto solve_continuous_lyapunov(const Tensor<T, 2> &A, const Tensor<T, 2> 
 ALIAS_TEMPLATE_FUNCTION(solve_lyapunov, solve_continuous_lyapunov)
 
 template <template <typename, size_t> typename AType, size_t ARank, typename T>
-auto qr(const AType<T, ARank> &_A) ->
-    typename std::enable_if_t<is_incore_rank_tensor_v<AType<T, ARank>, 2, T>, std::tuple<Tensor<T, 2>, Tensor<T, 1>>> {
+    requires CoreRankTensor<AType<T, ARank>, 2, T>
+auto qr(const AType<T, ARank> &_A) -> std::tuple<Tensor<T, 2>, Tensor<T, 1>> {
     LabeledSection0();
 
     // Copy A because it will be overwritten by the QR call.

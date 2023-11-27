@@ -2354,8 +2354,8 @@ void einsum_mixed_test() {
     for (size_t i = 0; i < i_; i++) {
         for (size_t j = 0; j < j_; j++) {
             // println("{:20.14f} {:20.14f} {:20.14f}", C(i, j), C0(i, j), std::abs(C(i, j) - C0(i, j)));
-            CHECK(std::abs(C(i, j) - C0(i, j)) < remove_complex_t<TC>{1.0E-4});
-            // REQUIRE_THAT(C(i, j), Catch::Matchers::WithinAbs(C0(i, j), remove_complex_t<TC>{1.0E-16}));
+            CHECK(std::abs(C(i, j) - C0(i, j)) < RemoveComplexT<TC>{1.0E-4});
+            // REQUIRE_THAT(C(i, j), Catch::Matchers::WithinAbs(C0(i, j), RemoveComplexT<TC>{1.0E-16}));
         }
     }
 }
@@ -2400,7 +2400,7 @@ void dot_test() {
 
         einsum(Indices{}, &C_obtained, Indices{i}, A, Indices{i}, B);
 
-        if constexpr (!einsums::is_complex_v<T>) {
+        if constexpr (!einsums::IsComplexV<T>) {
             REQUIRE_THAT(C_obtained, Catch::Matchers::WithinAbsMatcher(C_expected, 0.0001));
         } else {
             REQUIRE_THAT(((T)C_obtained).real(), Catch::Matchers::WithinAbsMatcher(C_expected.real(), 0.0001));
@@ -2417,7 +2417,7 @@ void dot_test() {
 
         einsum(Indices{}, &C_obtained, Indices{i, j}, A, Indices{i, j}, B);
 
-        if constexpr (!einsums::is_complex_v<T>) {
+        if constexpr (!einsums::IsComplexV<T>) {
             REQUIRE_THAT(C_obtained, Catch::Matchers::WithinAbsMatcher(C_expected, 0.0001));
         } else {
             REQUIRE_THAT(((T)C_obtained).real(), Catch::Matchers::WithinAbsMatcher(C_expected.real(), 0.0001));
@@ -2434,7 +2434,7 @@ void dot_test() {
 
         einsum(Indices{}, &C_obtained, Indices{i, j, a}, A, Indices{i, j, a}, B);
 
-        if constexpr (!einsums::is_complex_v<T>) {
+        if constexpr (!einsums::IsComplexV<T>) {
             REQUIRE_THAT(C_obtained, Catch::Matchers::WithinAbsMatcher(C_expected, 0.0001));
         } else {
             REQUIRE_THAT(((T)C_obtained).real(), Catch::Matchers::WithinAbsMatcher(C_expected.real(), 0.0001));
@@ -2451,7 +2451,7 @@ void dot_test() {
 
         einsum(Indices{}, &C_obtained, Indices{i, j, a, b}, A, Indices{i, j, a, b}, B);
 
-        if constexpr (!einsums::is_complex_v<T>) {
+        if constexpr (!einsums::IsComplexV<T>) {
             REQUIRE_THAT(C_obtained, Catch::Matchers::WithinAbsMatcher(C_expected, 0.0001));
         } else {
             REQUIRE_THAT(((T)C_obtained).real(), Catch::Matchers::WithinAbsMatcher(C_expected.real(), 0.0001));

@@ -1,12 +1,15 @@
 #pragma once
 
-#include "einsums/STL.hpp"
 #include "einsums/_Common.hpp"
+
+#include "einsums/STL.hpp"
+#include "range/v3/view/iota.hpp"
 
 #include <tuple>
 
 BEGIN_EINSUMS_NAMESPACE_HPP(einsums::tensor_algebra)
 
+#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
 namespace detail {
 
 template <size_t Rank, typename... Args, std::size_t... I>
@@ -15,6 +18,7 @@ auto order_indices(const std::tuple<Args...> &combination, const std::array<size
 }
 
 } // namespace detail
+#endif
 
 template <size_t Rank, typename... Args>
 auto order_indices(const std::tuple<Args...> &combination, const std::array<size_t, Rank> &order) {
@@ -23,6 +27,7 @@ auto order_indices(const std::tuple<Args...> &combination, const std::array<size
 
 namespace detail {
 
+#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
 template <typename T, int Position>
 constexpr auto _find_type_with_position() {
     return std::make_tuple();
@@ -50,6 +55,7 @@ constexpr auto _unique_find_type_with_position() {
         return _unique_find_type_with_position<T, Position + 1, Args...>();
     }
 }
+#endif
 
 template <template <typename, size_t> typename TensorType, size_t Rank, typename... Args, std::size_t... I, typename T = double>
 auto get_dim_ranges_for(const TensorType<T, Rank> &tensor, const std::tuple<Args...> &args, std::index_sequence<I...>) {
@@ -187,11 +193,37 @@ constexpr auto construct_indices(const std::tuple<AIndices...> &, const std::tup
     return construct_indices<AIndices...>(target_combination, target_position_in_C, link_combination, link_position_in_link);
 }
 
+#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
 template <typename... PositionsInX, std::size_t... I>
 constexpr auto _contiguous_positions(const std::tuple<PositionsInX...> &x, std::index_sequence<I...>) -> bool {
     return ((std::get<2 * I + 1>(x) == std::get<2 * I + 3>(x) - 1) && ... && true);
 }
+#endif
 
+/**
+ * @brief Determines in the indices are contiguous.
+ *
+ * The tuple that is passed in resembles the following:
+ *
+ * @verbatim
+ * {i, 0, j, 1, k, 2}
+ * @verbatim
+ *
+ * or
+ *
+ * @verbatim
+ * {i, 0, j, 2, k 1}
+ * @verbatim
+ *
+ * In the first case, the function will return true because the indices of the labels are contiguous.
+ * And in the second case, the function will return false because the indices of the labels are not contiguous.
+ *
+ * @tparam PositionsInX
+ * @tparam I
+ * @param x
+ * @return true
+ * @return false
+ */
 template <typename... PositionsInX>
 constexpr auto contiguous_positions(const std::tuple<PositionsInX...> &x) -> bool {
     if constexpr (sizeof...(PositionsInX) <= 2) {

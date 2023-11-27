@@ -11,6 +11,7 @@
 #include "einsums/_Compiler.hpp"
 #include "einsums/_Index.hpp"
 #include "einsums/_TensorAlgebraUtilities.hpp"
+#include "einsums/utility/SmartPointerTraits.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -593,7 +594,7 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
         auto target_dims = get_dim_ranges<CRank>(*C);
         for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
             CDataType Cvalue{std::apply(*C, target_combination)};
-            if constexpr (!is_complex_v<CDataType>) {
+            if constexpr (!IsComplexV<CDataType>) {
                 if (std::isnan(Cvalue)) {
                     println(bg(fmt::color::red) | fg(fmt::color::white), "NaN DETECTED!");
                     println(bg(fmt::color::red) | fg(fmt::color::white), "    {:f} {}({:}) += {:f} {}({:}) * {}({:})", C_prefactor,
@@ -647,7 +648,7 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
             CDataType Cvalue{std::apply(*C, target_combination)};
             CDataType Ctest{std::apply(testC, target_combination)};
 
-            if constexpr (!is_complex_v<CDataType>) {
+            if constexpr (!IsComplexV<CDataType>) {
                 if (std::isnan(Cvalue) || std::isnan(Ctest)) {
                     println(bg(fmt::color::red) | fg(fmt::color::white), "NAN DETECTED!");
                     println("Source tensors");
@@ -669,7 +670,7 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
             }
 
 #    if defined(EINSUMS_USE_CATCH2)
-            if constexpr (!is_complex_v<CDataType>) {
+            if constexpr (!IsComplexV<CDataType>) {
                 REQUIRE_THAT(Cvalue,
                              Catch::Matchers::WithinRel(Ctest, static_cast<CDataType>(0.001)) || Catch::Matchers::WithinAbs(0, 0.0001));
                 CHECK(print_info_and_abort == false);
@@ -682,7 +683,7 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
 
             if (print_info_and_abort) {
                 println(emphasis::bold | bg(fmt::color::red) | fg(fmt::color::white), "    !!! EINSUM ERROR !!!");
-                if constexpr (is_complex_v<CDataType>) {
+                if constexpr (IsComplexV<CDataType>) {
                     println(bg(fmt::color::red) | fg(fmt::color::white), "    Expected {:20.14f} + {:20.14f}i", Ctest.real(), Ctest.imag());
                     println(bg(fmt::color::red) | fg(fmt::color::white), "    Obtained {:20.14f} + {:20.14f}i", Cvalue.real(),
                             Cvalue.imag());
@@ -692,13 +693,13 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
                 }
                 println(bg(fmt::color::red) | fg(fmt::color::white), "    tensor element ({:})", print_tuple_no_type(target_combination));
                 std::string C_prefactor_string;
-                if constexpr (is_complex_v<CDataType>) {
+                if constexpr (IsComplexV<CDataType>) {
                     C_prefactor_string = fmt::format("({:f} + {:f}i)", C_prefactor.real(), C_prefactor.imag());
                 } else {
                     C_prefactor_string = fmt::format("{:f}", C_prefactor);
                 }
                 std::string AB_prefactor_string;
-                if constexpr (is_complex_v<ABDataType>) {
+                if constexpr (IsComplexV<ABDataType>) {
                     AB_prefactor_string = fmt::format("({:f} + {:f}i)", AB_prefactor.real(), AB_prefactor.imag());
                 } else {
                     AB_prefactor_string = fmt::format("{:f}", AB_prefactor);
@@ -725,7 +726,7 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
         // testC could be a Tensor<CDataType, 0> type. Cast it to the underlying data type.
         if (std::abs(Cvalue - (CDataType)testC) > 1.0E-6) {
             println(emphasis::bold | bg(fmt::color::red) | fg(fmt::color::white), "!!! EINSUM ERROR !!!");
-            if constexpr (is_complex_v<CDataType>) {
+            if constexpr (IsComplexV<CDataType>) {
                 println(bg(fmt::color::red) | fg(fmt::color::white), "    Expected {:20.14f} + {:20.14f}i", Ctest.real(), Ctest.imag());
                 println(bg(fmt::color::red) | fg(fmt::color::white), "    Obtained {:20.14f} + {:20.14f}i", Cvalue.real(), Cvalue.imag());
             } else {
@@ -735,13 +736,13 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
 
             println(bg(fmt::color::red) | fg(fmt::color::white), "    tensor element ()");
             std::string C_prefactor_string;
-            if constexpr (is_complex_v<CDataType>) {
+            if constexpr (IsComplexV<CDataType>) {
                 C_prefactor_string = fmt::format("({:f} + {:f}i)", C_prefactor.real(), C_prefactor.imag());
             } else {
                 C_prefactor_string = fmt::format("{:f}", C_prefactor);
             }
             std::string AB_prefactor_string;
-            if constexpr (is_complex_v<ABDataType>) {
+            if constexpr (IsComplexV<ABDataType>) {
                 AB_prefactor_string = fmt::format("({:f} + {:f}i)", AB_prefactor.real(), AB_prefactor.imag());
             } else {
                 AB_prefactor_string = fmt::format("{:f}", AB_prefactor);
@@ -768,58 +769,58 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
 // 1. C n A n B n is defined above as the base implementation.
 
 // 2. C n A n B y
-template <typename AType, typename BType, typename CType, typename... CIndices, typename... AIndices, typename... BIndices, typename T>
-auto einsum(const T C_prefactor, const std::tuple<CIndices...> &C_indices, CType *C, const T AB_prefactor,
-            const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices, const BType &B)
-    -> std::enable_if_t<!is_smart_pointer_v<CType> && !is_smart_pointer_v<AType> && is_smart_pointer_v<BType>> {
+template <NotASmartPointer AType, SmartPointer BType, NotASmartPointer CType, typename... CIndices, typename... AIndices,
+          typename... BIndices, typename T>
+void einsum(const T C_prefactor, const std::tuple<CIndices...> &C_indices, CType *C, const T AB_prefactor,
+            const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices, const BType &B) {
     einsum(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, *B);
 }
 
 // 3. C n A y B n
-template <typename AType, typename BType, typename CType, typename... CIndices, typename... AIndices, typename... BIndices, typename T>
+template <SmartPointer AType, NotASmartPointer BType, NotASmartPointer CType, typename... CIndices, typename... AIndices,
+          typename... BIndices, typename T>
 auto einsum(const T C_prefactor, const std::tuple<CIndices...> &C_indices, CType *C, const T AB_prefactor,
-            const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices, const BType &B)
-    -> std::enable_if_t<!is_smart_pointer_v<CType> && is_smart_pointer_v<AType> && ~is_smart_pointer_v<BType>> {
+            const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices, const BType &B) {
     einsum(C_prefactor, C_indices, C, AB_prefactor, A_indices, *A, B_indices, B);
 }
 
 // 4. C n A y B y
-template <typename AType, typename BType, typename CType, typename... CIndices, typename... AIndices, typename... BIndices, typename T>
+template <SmartPointer AType, SmartPointer BType, NotASmartPointer CType, typename... CIndices, typename... AIndices, typename... BIndices,
+          typename T>
 auto einsum(const T C_prefactor, const std::tuple<CIndices...> &C_indices, CType *C, const T AB_prefactor,
-            const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices, const BType &B)
-    -> std::enable_if_t<!is_smart_pointer_v<CType> && is_smart_pointer_v<AType> && is_smart_pointer_v<BType>> {
+            const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices, const BType &B) {
     einsum(C_prefactor, C_indices, C, AB_prefactor, A_indices, *A, B_indices, *B);
 }
 
 // 5. C y A n B n
-template <typename AType, typename BType, typename CType, typename... CIndices, typename... AIndices, typename... BIndices, typename T>
+template <NotASmartPointer AType, NotASmartPointer BType, SmartPointer CType, typename... CIndices, typename... AIndices,
+          typename... BIndices, typename T>
 auto einsum(const T C_prefactor, const std::tuple<CIndices...> &C_indices, CType *C, const T AB_prefactor,
-            const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices, const BType &B)
-    -> std::enable_if_t<is_smart_pointer_v<CType> && !is_smart_pointer_v<AType> && !is_smart_pointer_v<BType>> {
+            const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices, const BType &B) {
     einsum(C_prefactor, C_indices, C->get(), AB_prefactor, A_indices, A, B_indices, B);
 }
 
 // 6. C y A n B y
-template <typename AType, typename BType, typename CType, typename... CIndices, typename... AIndices, typename... BIndices, typename T>
+template <NotASmartPointer AType, SmartPointer BType, SmartPointer CType, typename... CIndices, typename... AIndices, typename... BIndices,
+          typename T>
 auto einsum(const T C_prefactor, const std::tuple<CIndices...> &C_indices, CType *C, const T AB_prefactor,
-            const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices, const BType &B)
-    -> std::enable_if_t<is_smart_pointer_v<CType> && !is_smart_pointer_v<AType> && is_smart_pointer_v<BType>> {
+            const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices, const BType &B) {
     einsum(C_prefactor, C_indices, C->get(), AB_prefactor, A_indices, A, B_indices, *B);
 }
 
 // 7. C y A y B n
-template <typename AType, typename BType, typename CType, typename... CIndices, typename... AIndices, typename... BIndices, typename T>
+template <SmartPointer AType, NotASmartPointer BType, SmartPointer CType, typename... CIndices, typename... AIndices, typename... BIndices,
+          typename T>
 auto einsum(const T C_prefactor, const std::tuple<CIndices...> &C_indices, CType *C, const T AB_prefactor,
-            const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices, const BType &B)
-    -> std::enable_if_t<is_smart_pointer_v<CType> && is_smart_pointer_v<AType> && !is_smart_pointer_v<BType>> {
+            const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices, const BType &B) {
     einsum(C_prefactor, C_indices, C->get(), AB_prefactor, A_indices, *A, B_indices, B);
 }
 
 // 8. C y A y B y
-template <typename AType, typename BType, typename CType, typename... CIndices, typename... AIndices, typename... BIndices, typename T>
+template <SmartPointer AType, SmartPointer BType, SmartPointer CType, typename... CIndices, typename... AIndices, typename... BIndices,
+          typename T>
 auto einsum(const T C_prefactor, const std::tuple<CIndices...> &C_indices, CType *C, const T AB_prefactor,
-            const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices, const BType &B)
-    -> std::enable_if_t<is_smart_pointer_v<CType> && is_smart_pointer_v<AType> && is_smart_pointer_v<BType>> {
+            const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices, const BType &B) {
     einsum(C_prefactor, C_indices, C->get(), AB_prefactor, A_indices, *A, B_indices, *B);
 }
 
@@ -828,66 +829,62 @@ auto einsum(const T C_prefactor, const std::tuple<CIndices...> &C_indices, CType
 //
 
 // 1. C n A n B n
-template <typename AType, typename BType, typename CType, typename... CIndices, typename... AIndices, typename... BIndices>
-auto einsum(const std::tuple<CIndices...> &C_indices, CType *C, const std::tuple<AIndices...> &A_indices, const AType &A,
-            const std::tuple<BIndices...> &B_indices, const BType &B)
-    -> std::enable_if_t<!is_smart_pointer_v<CType> && !is_smart_pointer_v<AType> && !is_smart_pointer_v<BType>> {
+template <NotASmartPointer AType, NotASmartPointer BType, NotASmartPointer CType, typename... CIndices, typename... AIndices,
+          typename... BIndices>
+void einsum(const std::tuple<CIndices...> &C_indices, CType *C, const std::tuple<AIndices...> &A_indices, const AType &A,
+            const std::tuple<BIndices...> &B_indices, const BType &B) {
     einsum(0, C_indices, C, 1, A_indices, A, B_indices, B);
 }
 
 // 2. C n A n B y
-template <typename AType, typename BType, typename CType, typename... CIndices, typename... AIndices, typename... BIndices>
-auto einsum(const std::tuple<CIndices...> &C_indices, CType *C, const std::tuple<AIndices...> &A_indices, const AType &A,
-            const std::tuple<BIndices...> &B_indices, const BType &B)
-    -> std::enable_if_t<!is_smart_pointer_v<CType> && !is_smart_pointer_v<AType> && is_smart_pointer_v<BType>> {
+template <NotASmartPointer AType, SmartPointer BType, NotASmartPointer CType, typename... CIndices, typename... AIndices,
+          typename... BIndices>
+void einsum(const std::tuple<CIndices...> &C_indices, CType *C, const std::tuple<AIndices...> &A_indices, const AType &A,
+            const std::tuple<BIndices...> &B_indices, const BType &B) {
     einsum(0, C_indices, C, 1, A_indices, A, B_indices, *B);
 }
 
 // 3. C n A y B n
-template <typename AType, typename BType, typename CType, typename... CIndices, typename... AIndices, typename... BIndices>
-auto einsum(const std::tuple<CIndices...> &C_indices, CType *C, const std::tuple<AIndices...> &A_indices, const AType &A,
-            const std::tuple<BIndices...> &B_indices, const BType &B)
-    -> std::enable_if_t<!is_smart_pointer_v<CType> && is_smart_pointer_v<AType> && !is_smart_pointer_v<BType>> {
+template <SmartPointer AType, NotASmartPointer BType, NotASmartPointer CType, typename... CIndices, typename... AIndices,
+          typename... BIndices>
+void einsum(const std::tuple<CIndices...> &C_indices, CType *C, const std::tuple<AIndices...> &A_indices, const AType &A,
+            const std::tuple<BIndices...> &B_indices, const BType &B) {
     einsum(0, C_indices, C, 1, A_indices, *A, B_indices, B);
 }
 
 // 4. C n A y B y
-template <typename AType, typename BType, typename CType, typename... CIndices, typename... AIndices, typename... BIndices>
-auto einsum(const std::tuple<CIndices...> &C_indices, CType *C, const std::tuple<AIndices...> &A_indices, const AType &A,
-            const std::tuple<BIndices...> &B_indices, const BType &B)
-    -> std::enable_if_t<!is_smart_pointer_v<CType> && is_smart_pointer_v<AType> && is_smart_pointer_v<BType>> {
+template <SmartPointer AType, SmartPointer BType, NotASmartPointer CType, typename... CIndices, typename... AIndices, typename... BIndices>
+void einsum(const std::tuple<CIndices...> &C_indices, CType *C, const std::tuple<AIndices...> &A_indices, const AType &A,
+            const std::tuple<BIndices...> &B_indices, const BType &B) {
     einsum(0, C_indices, C, 1, A_indices, *A, B_indices, *B);
 }
 
 // 5. C y A n B n
-template <typename AType, typename BType, typename CType, typename... CIndices, typename... AIndices, typename... BIndices>
-auto einsum(const std::tuple<CIndices...> &C_indices, CType *C, const std::tuple<AIndices...> &A_indices, const AType &A,
-            const std::tuple<BIndices...> &B_indices, const BType &B)
-    -> std::enable_if_t<is_smart_pointer_v<CType> && !is_smart_pointer_v<AType> && !is_smart_pointer_v<BType>> {
+template <NotASmartPointer AType, NotASmartPointer BType, SmartPointer CType, typename... CIndices, typename... AIndices,
+          typename... BIndices>
+void einsum(const std::tuple<CIndices...> &C_indices, CType *C, const std::tuple<AIndices...> &A_indices, const AType &A,
+            const std::tuple<BIndices...> &B_indices, const BType &B) {
     einsum(0, C_indices, C->get(), 1, A_indices, A, B_indices, B);
 }
 
 // 6. C y A n B y
-template <typename AType, typename BType, typename CType, typename... CIndices, typename... AIndices, typename... BIndices>
-auto einsum(const std::tuple<CIndices...> &C_indices, CType *C, const std::tuple<AIndices...> &A_indices, const AType &A,
-            const std::tuple<BIndices...> &B_indices, const BType &B)
-    -> std::enable_if_t<is_smart_pointer_v<CType> && !is_smart_pointer_v<AType> && is_smart_pointer_v<BType>> {
+template <NotASmartPointer AType, SmartPointer BType, SmartPointer CType, typename... CIndices, typename... AIndices, typename... BIndices>
+void einsum(const std::tuple<CIndices...> &C_indices, CType *C, const std::tuple<AIndices...> &A_indices, const AType &A,
+            const std::tuple<BIndices...> &B_indices, const BType &B) {
     einsum(0, C_indices, C->get(), 1, A_indices, A, B_indices, *B);
 }
 
 // 7. C y A y B n
-template <typename AType, typename BType, typename CType, typename... CIndices, typename... AIndices, typename... BIndices>
-auto einsum(const std::tuple<CIndices...> &C_indices, CType *C, const std::tuple<AIndices...> &A_indices, const AType &A,
-            const std::tuple<BIndices...> &B_indices, const BType &B)
-    -> std::enable_if_t<is_smart_pointer_v<CType> && is_smart_pointer_v<AType> && !is_smart_pointer_v<BType>> {
+template <SmartPointer AType, NotASmartPointer BType, SmartPointer CType, typename... CIndices, typename... AIndices, typename... BIndices>
+void einsum(const std::tuple<CIndices...> &C_indices, CType *C, const std::tuple<AIndices...> &A_indices, const AType &A,
+            const std::tuple<BIndices...> &B_indices, const BType &B) {
     einsum(0, C_indices, C->get(), 1, A_indices, *A, B_indices, B);
 }
 
 // 8. C y A y B y
-template <typename AType, typename BType, typename CType, typename... CIndices, typename... AIndices, typename... BIndices>
-auto einsum(const std::tuple<CIndices...> &C_indices, CType *C, const std::tuple<AIndices...> &A_indices, const AType &A,
-            const std::tuple<BIndices...> &B_indices, const BType &B)
-    -> std::enable_if_t<is_smart_pointer_v<CType> && is_smart_pointer_v<AType> && is_smart_pointer_v<BType>> {
+template <SmartPointer AType, SmartPointer BType, SmartPointer CType, typename... CIndices, typename... AIndices, typename... BIndices>
+void einsum(const std::tuple<CIndices...> &C_indices, CType *C, const std::tuple<AIndices...> &A_indices, const AType &A,
+            const std::tuple<BIndices...> &B_indices, const BType &B) {
     einsum(0, C_indices, C->get(), 1, A_indices, *A, B_indices, *B);
 }
 
@@ -910,8 +907,8 @@ auto element_transform(CType<T, CRank> *C, UnaryOperator unary_opt)
     }
 }
 
-template <typename SmartPtr, typename UnaryOperator>
-auto element_transform(SmartPtr *C, UnaryOperator unary_opt) -> std::enable_if_t<is_smart_pointer_v<SmartPtr>> {
+template <SmartPointer SmartPtr, typename UnaryOperator>
+void element_transform(SmartPtr *C, UnaryOperator unary_opt) {
     element_transform(C->get(), unary_opt);
 }
 

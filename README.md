@@ -3,11 +3,12 @@
 Provides compile-time contraction pattern analysis to determine optimal operation to perform.
 
 ## Requirements
-A C++ compiler with C++17 support.
+A C++ compiler with C++20 support.
 
 The following libraries are required to build EinsumsInCpp:
 
-* BLAS and LAPACK.
+* BLAS and LAPACK
+* HDF5
 
 On my personal development machine, I use MKL for the above requirements. On GitHub Actions, stock BLAS, LAPACK, and FFTW3 are used.
 

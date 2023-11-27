@@ -1,11 +1,13 @@
 #pragma once
 
+#include "einsums/_Common.hpp"
+
 #include "einsums/ElementOperations.hpp"
 #include "einsums/LinearAlgebra.hpp"
 #include "einsums/Section.hpp"
 #include "einsums/Tensor.hpp"
 #include "einsums/Utilities.hpp"
-#include "einsums/_Common.hpp"
+#include "einsums/utility/TensorTraits.hpp"
 
 BEGIN_EINSUMS_NAMESPACE_HPP(einsums::polynomial::laguerre)
 
@@ -83,8 +85,11 @@ auto derivative(const Tensor<T, 1> &_c, unsigned int m = 1, T scale = T{1}) -> T
 }
 
 template <template <typename, size_t> typename XType, template <typename, size_t> typename CType, typename T>
-auto value(const XType<T, 1> &x, const CType<T, 1> &c)
-    -> std::enable_if_t<is_incore_rank_tensor_v<XType<T, 1>, 1, T> && is_incore_rank_tensor_v<CType<T, 1>, 1, T>, Tensor<T, 1>> {
+    requires requires {
+        requires CoreRankTensor<XType<T, 1>, 1, T>;
+        requires CoreRankTensor<CType<T, 1>, 1, T>;
+    }
+auto value(const XType<T, 1> &x, const CType<T, 1> &c) -> Tensor<T, 1> {
     LabeledSection0();
 
     auto c0 = create_tensor_like("c0", x), c1 = create_tensor_like("c1", x);
