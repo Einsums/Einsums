@@ -2,5 +2,5 @@
 Einsums license
 ***************
 
-.. include:: ../LICENSE
+.. include:: ../../LICENSE
    :literal:

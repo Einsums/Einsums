@@ -6,6 +6,7 @@
 #include "einsums/Tensor.hpp"
 #include "einsums/TensorAlgebra.hpp"
 #include "einsums/Utilities.hpp"
+#include "einsums/utility/ComplexTraits.hpp"
 
 #include <catch2/catch_all.hpp>
 #include <filesystem>
@@ -425,7 +426,7 @@ void heev_test() {
     using namespace einsums::linear_algebra;
 
     auto A = create_tensor<T>("a", 3, 3);
-    auto b = create_tensor<typename complex_type<T>::type>("b", 3);
+    auto b = create_tensor<typename ComplexType<T>::Type>("b", 3);
 
     A.vector_data() = std::vector<T, einsums::AlignedAllocator<T, 64>>{
         {0.199889, 0.0},       {-0.330816, -0.127778},  {-0.0546237, 0.176589}, {-0.330816, 0.127778}, {0.629179, 0.0},
@@ -445,5 +446,43 @@ TEST_CASE("heev") {
     }
     SECTION("double") {
         heev_test<std::complex<double>>();
+    }
+}
+
+template <typename T>
+void lassq_test() {
+    using namespace einsums;
+    using namespace einsums::linear_algebra;
+
+    auto A       = create_random_tensor<T>("a", 10);
+    auto scale   = RemoveComplexT<T>{1.0};
+    auto result  = RemoveComplexT<T>{0.0};
+    auto result0 = RemoveComplexT<T>{0.0};
+
+    einsums::linear_algebra::sum_square(A, &scale, &result);
+
+    for (int i = 0; i < 10; i++) {
+        if constexpr (IsComplexV<T>) {
+            result0 += A(i).real() * A(i).real() + A(i).imag() * A(i).imag();
+        } else {
+            result0 += A(i) * A(i);
+        }
+    }
+
+    CHECK_THAT(result, Catch::Matchers::WithinAbs(result0, 0.00001));
+}
+
+TEST_CASE("sum_square") {
+    SECTION("float") {
+        lassq_test<float>();
+    }
+    SECTION("double") {
+        lassq_test<double>();
+    }
+    SECTION("complex_float") {
+        lassq_test<std::complex<float>>();
+    }
+    SECTION("complex_double") {
+        lassq_test<std::complex<double>>();
     }
 }

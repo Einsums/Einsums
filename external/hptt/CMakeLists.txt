@@ -4,8 +4,8 @@
 
 FetchContent_Declare(
   hptt
-  URL https://github.com/Einsums/hptt/archive/v1.0.5+24.tar.gz
-  URL_HASH SHA256=6cfe70bbd026005e059d0a4031c21eb6ac7c2d14f6e1914cc2b8c9ce2a8b616d
+  URL https://github.com/Einsums/hptt/archive/v1.0.5+25.tar.gz
+  URL_HASH SHA256=a93f3de8bc187e93a49c46d4a2f4a79541a5f2fb84532ed93654ab9d8f490712
   SYSTEM
   OVERRIDE_FIND_PACKAGE
   )

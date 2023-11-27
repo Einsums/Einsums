@@ -65,3 +65,6 @@ docs/_build
 
 # Random Apple stuff
 .DS_Store
+
+# JetBrains project files
+.idea
