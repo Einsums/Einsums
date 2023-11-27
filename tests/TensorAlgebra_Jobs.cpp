@@ -1,11 +1,4 @@
-#include "einsums/Jobs.hpp"
-#include "einsums/LinearAlgebra.hpp"
-#include "einsums/STL.hpp"
-#include "einsums/Sort.hpp"
-#include "einsums/State.hpp"
-#include "einsums/Tensor.hpp"
-#include "einsums/TensorAlgebra.hpp"
-#include "einsums/Utilities.hpp"
+#include "einsums.hpp"
 
 #include <H5Fpublic.h>
 #include <catch2/catch_all.hpp>
