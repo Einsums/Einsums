@@ -252,13 +252,36 @@ class WriteLock : public ReadLock<T> {
 template <typename T>
 class Resource {
   private:
+
     std::vector<std::vector<std::shared_ptr<ReadLock<T>>> *> locks;
 
     unsigned long id;
 
     std::shared_ptr<T> data;
 
-    std::atomic_bool is_locked;
+    std::atomic<std::thread::id> locked;
+
+    void mod_lock() {
+        std::atomic_thread_fence(std::memory_order_acq_rel);
+    
+        if(this->locked == std::this_thread::get_id()) {
+            return;
+        }
+
+        auto hold = std::thread::id(0);
+
+        while(this->locked != std::thread::id(0) || !this->locked.compare_exchange_weak(hold, std::this_thread::get_id(), std::memory_order_acq_rel)) {
+            // Reset.
+            hold = std::thread::id(0);
+            std::this_thread::yield();
+        }
+    }
+
+    void mod_unlock() {
+        std::atomic_thread_fence(std::memory_order_acq_rel);
+        assert(this->locked == std::this_thread::get_id());
+        this->locked = std::thread::id(0);
+    }
 
   public:
     /**
@@ -270,8 +293,9 @@ class Resource {
      * Make a new resource constructed with the given arguments.
      */
     template<typename... Args>
-    Resource(Args&&... args) : locks{}, id(0), is_locked(false) {
+    Resource(Args&&... args) : locks{}, id(0) {
         this->data = std::make_shared<T>(args...);
+        this->locked = std::thread::id(0);
     }
 
     /**
@@ -300,11 +324,7 @@ class Resource {
      */
     std::shared_ptr<ReadLock<T>> lock_shared() {
         // wait to be allowed to edit the resource.
-        while (this->is_locked) {
-            std::this_thread::yield();
-        }
-
-        this->is_locked = true;
+        mod_lock();
 
         // Make sure there is somewhere to put the locks.
         if (this->locks.size() == 0) {
@@ -323,7 +343,7 @@ class Resource {
         this->locks.back()->push_back(out);
 
         // Release the resource.
-        this->is_locked = false;
+        mod_unlock();
         return out;
     }
 
@@ -331,17 +351,16 @@ class Resource {
      * Obtain an exclusive lock.
      */
     std::shared_ptr<WriteLock<T>> lock() {
-        while (this->is_locked.load()) {
-            std::this_thread::yield();
-        }
-        this->is_locked = true;
+        mod_lock();
+
         this->locks.push_back(new std::vector<std::shared_ptr<ReadLock<T>>>());
 
         std::shared_ptr<WriteLock<T>> out = std::make_shared<WriteLock<T>>(this->id, this);
         this->id++;
 
         this->locks.back()->push_back(out);
-        this->is_locked = false;
+        
+        mod_unlock();
         return out;
     }
 
@@ -353,10 +372,8 @@ class Resource {
      */
     bool release(const ReadLock<T> &lock) {
         bool ret = false;
-        while (this->is_locked.load()) {
-            std::this_thread::yield();
-        }
-        this->is_locked = true;
+        mod_lock();
+
         for (auto state : this->locks) {
             size_t size = state->size();
 	  for(size_t i = 0; i < size; i++) {
@@ -381,7 +398,7 @@ class Resource {
         }
 
         // Release the lock on the lock.
-        this->is_locked = false;
+        mod_unlock();
 
         return ret;
     }
@@ -392,11 +409,7 @@ class Resource {
      * @return True if no locks are held, false if some locks are held.
      */
     bool is_open(void) {
-        while (this->is_locked.load()) {
-            std::this_thread::yield();
-        }
-
-        this->is_locked = true;
+        mod_lock();
 
         if (this->locks.empty()) {
             this->is_locked = false;
@@ -406,7 +419,7 @@ class Resource {
             this->is_locked = false;
             return true;
         }
-        this->is_locked = false;
+        mod_unlock();
         return false;
     }
 
@@ -417,22 +430,18 @@ class Resource {
      * @return True if a lock is held. False if a lock is not held.
      */
     bool is_promised(const ReadLock<T> &lock) {
-        while (this->is_locked.load()) {
-            std::this_thread::yield();
-        }
-
-        this->is_locked = true;
+        mod_lock();
 
         for (auto state : this->locks) {
             for (auto curr_lock : *state) {
                 if (curr_lock == lock) {
-                    this->is_locked = false;
+                    mod_unlock();
                     return true;
                 }
             }
         }
 
-        this->is_locked = false;
+        mod_unlock();
         return false;
     }
 
@@ -443,25 +452,21 @@ class Resource {
      * @return True if a lock is held and currently allows reading. False if the lock does not allow reading, or is not held.
      */
     bool is_readable(const ReadLock<T> &lock) {
-        while (this->is_locked.load()) {
-            std::this_thread::yield();
-        }
-
-        this->is_locked = true;
+        mod_lock();
 
         if (this->locks.size() == 0) {
-            this->is_locked = false;
+            mod_unlock();
             return false;
         }
 
         for (auto &curr_lock : *(this->locks[0])) {
             if (*curr_lock == lock) {
-                this->is_locked = false;
+                mod_unlock();
                 return true;
             }
         }
 
-        this->is_locked = false;
+        mod_unlock();
         return false;
     }
 
@@ -477,28 +482,24 @@ class Resource {
             return false; // The lock is not a writable lock. It will never be a writable lock.
         }
 
-        while (this->is_locked.load()) {
-            std::this_thread::yield();
-        }
-
-        this->is_locked = true;
+        mod_lock();
 
         if (this->locks.size() == 0) {
-            this->is_locked = false;
+            mod_unlock();
             return false; // No locks given.
         }
 
         if (this->locks[0]->size() != 1) {
-            this->is_locked = false;
+            mod_unlock();
             return false; // The state is a read-only state.
         }
 
         if (*(this->locks[0]->at(0)) == lock) {
-            this->is_locked = false;
+            mod_unlock();
             return true; // This lock has sole ownership.
         }
 
-        this->is_locked = false;
+        mod_unlock();
         return false;
     }
 
@@ -506,13 +507,10 @@ class Resource {
    * Clear the memory. Useful if the memory is owned by another scope.
    */
   void clear() {
-    while(this->is_locked) {
-      std::this_thread::yield();
-    }
-    this->is_locked = true;
+    mod_lock();
     this->data = nullptr;
 
-    this->is_locked = false;
+    mod_unlock();
   }
 };
 

@@ -11,7 +11,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/build/tests/test-all",
             "args": [
-                "\"[jobs]\""
+
             ],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
