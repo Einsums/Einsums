@@ -23,6 +23,38 @@
 
 BEGIN_EINSUMS_NAMESPACE_HPP(einsums::jobs)
 
+namespace detail {
+    /**
+     * Returns the hash value of the current thread.
+     *
+     * @return The hash of the current thread.
+     */
+    inline size_t thread_hash() {
+        return std::hash<std::thread::id>{}(std::this_thread::get_id());
+    }
+
+    /**
+     * Returns the hash value of a given thread id.
+     *
+     * @param id The thread id to hash.
+     * @return The hash of the given thread ID.
+     */
+    inline size_t thread_hash(const std::thread::id &id) {
+        return std::hash<std::thread::id>{}(id);
+    }
+
+    /**
+     * Returns the hash value of a given thread.
+     *
+     * @param thread The thread to hash.
+     * @return The hash value of the given thread.
+     */
+    inline size_t thread_hash(const std::thread &thread) {
+        return std::hash<std::thread::id>{}(thread.get_id());
+    }
+
+}
+
 /**
  * @struct timeout
  *
@@ -259,29 +291,9 @@ class Resource {
 
     std::shared_ptr<T> data;
 
-    std::atomic<std::thread::id> locked;
+  protected: 
 
-    void mod_lock() {
-        std::atomic_thread_fence(std::memory_order_acq_rel);
-    
-        if(this->locked == std::this_thread::get_id()) {
-            return;
-        }
-
-        auto hold = std::thread::id(0);
-
-        while(this->locked != std::thread::id(0) || !this->locked.compare_exchange_weak(hold, std::this_thread::get_id(), std::memory_order_acq_rel)) {
-            // Reset.
-            hold = std::thread::id(0);
-            std::this_thread::yield();
-        }
-    }
-
-    void mod_unlock() {
-        std::atomic_thread_fence(std::memory_order_acq_rel);
-        assert(this->locked == std::this_thread::get_id());
-        this->locked = std::thread::id(0);
-    }
+    std::mutex mutex;
 
   public:
     /**
@@ -293,9 +305,8 @@ class Resource {
      * Make a new resource constructed with the given arguments.
      */
     template<typename... Args>
-    Resource(Args&&... args) : locks{}, id(0) {
+    Resource(Args&&... args) : locks{}, id(0), mutex() {
         this->data = std::make_shared<T>(args...);
-        this->locked = std::thread::id(0);
     }
 
     /**
@@ -308,11 +319,12 @@ class Resource {
      * Destructor.
      */
     virtual ~Resource() {
+        mutex.lock();
         for (auto state : this->locks) {
             state->clear();
         }
         this->locks.clear();
-	this->data.reset();
+	    this->data.reset();
     }
 
     std::shared_ptr<T> get_data() { return std::shared_ptr<T>(this->data); }
@@ -324,7 +336,7 @@ class Resource {
      */
     std::shared_ptr<ReadLock<T>> lock_shared() {
         // wait to be allowed to edit the resource.
-        mod_lock();
+        this->mutex.lock();
 
         // Make sure there is somewhere to put the locks.
         if (this->locks.size() == 0) {
@@ -343,7 +355,7 @@ class Resource {
         this->locks.back()->push_back(out);
 
         // Release the resource.
-        mod_unlock();
+        this->mutex.unlock();
         return out;
     }
 
@@ -351,7 +363,7 @@ class Resource {
      * Obtain an exclusive lock.
      */
     std::shared_ptr<WriteLock<T>> lock() {
-        mod_lock();
+        this->mutex.lock();
 
         this->locks.push_back(new std::vector<std::shared_ptr<ReadLock<T>>>());
 
@@ -360,7 +372,7 @@ class Resource {
 
         this->locks.back()->push_back(out);
         
-        mod_unlock();
+        this->mutex.unlock();
         return out;
     }
 
@@ -372,7 +384,7 @@ class Resource {
      */
     bool release(const ReadLock<T> &lock) {
         bool ret = false;
-        mod_lock();
+        this->mutex.lock();
 
         for (auto state : this->locks) {
             size_t size = state->size();
@@ -398,7 +410,7 @@ class Resource {
         }
 
         // Release the lock on the lock.
-        mod_unlock();
+        this->mutex.unlock();
 
         return ret;
     }
@@ -409,7 +421,7 @@ class Resource {
      * @return True if no locks are held, false if some locks are held.
      */
     bool is_open(void) {
-        mod_lock();
+        this->mutex.lock();
 
         if (this->locks.empty()) {
             this->is_locked = false;
@@ -419,7 +431,7 @@ class Resource {
             this->is_locked = false;
             return true;
         }
-        mod_unlock();
+        this->mutex.unlock();
         return false;
     }
 
@@ -430,18 +442,18 @@ class Resource {
      * @return True if a lock is held. False if a lock is not held.
      */
     bool is_promised(const ReadLock<T> &lock) {
-        mod_lock();
+        this->mutex.lock();
 
         for (auto state : this->locks) {
             for (auto curr_lock : *state) {
                 if (curr_lock == lock) {
-                    mod_unlock();
+                    this->mutex.unlock();
                     return true;
                 }
             }
         }
 
-        mod_unlock();
+        this->mutex.unlock();
         return false;
     }
 
@@ -452,21 +464,21 @@ class Resource {
      * @return True if a lock is held and currently allows reading. False if the lock does not allow reading, or is not held.
      */
     bool is_readable(const ReadLock<T> &lock) {
-        mod_lock();
+        this->mutex.lock();
 
         if (this->locks.size() == 0) {
-            mod_unlock();
+            this->mutex.unlock();
             return false;
         }
 
         for (auto &curr_lock : *(this->locks[0])) {
             if (*curr_lock == lock) {
-                mod_unlock();
+                this->mutex.unlock();
                 return true;
             }
         }
 
-        mod_unlock();
+        this->mutex.unlock();
         return false;
     }
 
@@ -482,24 +494,24 @@ class Resource {
             return false; // The lock is not a writable lock. It will never be a writable lock.
         }
 
-        mod_lock();
+        this->mutex.lock();
 
         if (this->locks.size() == 0) {
-            mod_unlock();
+            this->mutex.unlock();
             return false; // No locks given.
         }
 
         if (this->locks[0]->size() != 1) {
-            mod_unlock();
+            this->mutex.unlock();
             return false; // The state is a read-only state.
         }
 
         if (*(this->locks[0]->at(0)) == lock) {
-            mod_unlock();
+            this->mutex.unlock();
             return true; // This lock has sole ownership.
         }
 
-        mod_unlock();
+        this->mutex.unlock();
         return false;
     }
 
@@ -507,10 +519,10 @@ class Resource {
    * Clear the memory. Useful if the memory is owned by another scope.
    */
   void clear() {
-    mod_lock();
-    this->data = nullptr;
+    this->mutex.lock();
+    this->data.reset();
 
-    mod_unlock();
+    this->mutex.unlock();
   }
 };
 
@@ -583,10 +595,8 @@ class JobManager final {
     /// Whether the job manager is running or not.
     std::atomic_bool is_running;
 
-    /// Whether the manager is locked for modification.
-    std::atomic<std::thread::id> locked;
-
-    static const std::thread::id null_thread;
+    /// Mutex for the job manager.
+    std::mutex mutex;
 
     std::thread *thread;
 
@@ -597,10 +607,6 @@ class JobManager final {
     JobManager(const JobManager &&) = delete;
 
     EINSUMS_EXPORT ~JobManager();
-
-    EINSUMS_EXPORT void lock();
-
-    EINSUMS_EXPORT void unlock();
 
     /**
      * Clean up the job manager on exit from program.
@@ -674,9 +680,7 @@ class ThreadPool {
 
   private:
     std::atomic_bool stop, exists;
-    std::atomic<std::thread::id> locked;
-
-    static const std::thread::id null_thread;
+    std::mutex mutex;
 
     int max_threads;
 
@@ -685,11 +689,6 @@ class ThreadPool {
     std::vector<std::weak_ptr<std::thread>> avail, running;
 
     std::map<std::thread::id, std::tuple<int, int, function_type, std::shared_ptr<Job>>> thread_info;
-
-    /// Lock and unlock the pool for editing.
-    void lock();
-
-    void unlock();
 
     EINSUMS_EXPORT ThreadPool(int threads);
 
