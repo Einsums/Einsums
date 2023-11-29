@@ -238,7 +238,7 @@ static void thread_loop() {
     ThreadPool &instance = ThreadPool::get_singleton();
     while (ThreadPool::singleton_exists() && !instance.stop_condition()) {
         // Check for a job.
-        auto func = instance.compute_function(std::this_thread::get_id());
+        volatile  auto func = instance.compute_function(std::this_thread::get_id());
 
         if (func == nullptr) {
             // No job. Wait for a bit and check again.
