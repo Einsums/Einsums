@@ -26,7 +26,7 @@ TEST_CASE("Identity Tensor Locks", "[jobs]") {
 
     Resource<Tensor<double, 2>> I_res(create_identity_tensor("I", 3, 3));
 
-    auto lock = I_res.lock_shared();
+    auto lock = I_res.read_promise();
 
     lock->wait();
 
@@ -53,8 +53,8 @@ TEST_CASE("Scale Row Locks", "[jobs]") {
     Resource<Tensor<double, 2>> res(create_random_tensor("I", 3, 3));
     Resource<Tensor<double, 2>>     res_copy(*(res.get_data()));
 
-    auto lock      = res.lock_shared();
-    auto lock_copy = res_copy.lock();
+    auto lock      = res.read_promise();
+    auto lock_copy = res_copy.write_promise();
 
     while (!lock_copy->ready()) {
         std::this_thread::yield();
@@ -91,8 +91,8 @@ TEST_CASE("Scale Column Locks", "[jobs]") {
     Resource<Tensor<double, 2>> res(create_random_tensor("I", 3, 3));
     Resource<Tensor<double, 2>>     res_copy(*(res.get_data()));
 
-    auto lock      = res.lock_shared();
-    auto lock_copy = res_copy.lock();
+    auto lock      = res.read_promise();
+    auto lock_copy = res_copy.write_promise();
 
     while (!lock_copy->ready()) {
         std::this_thread::yield();
@@ -141,8 +141,8 @@ TEST_CASE("einsum1 job", "[jobs]") {
 
         // Obtain locks for modification.
         INFO("Obtain locks for modification.");
-        auto A_lock = A_res->lock();
-        auto B_lock = B_res->lock();
+        auto A_lock = A_res->write_promise();
+        auto B_lock = B_res->write_promise();
 
         // Make and queue the job.
         INFO("Make a job and add it to the queue.");
@@ -170,7 +170,7 @@ TEST_CASE("einsum1 job", "[jobs]") {
             std::this_thread::yield();
         }
 
-        auto C_lock = C_res->lock_shared();
+        auto C_lock = C_res->read_promise();
 
         C_lock->wait();
 
@@ -209,8 +209,8 @@ TEST_CASE("einsum1 job", "[jobs]") {
 	    B_res = std::make_shared<jobs::Resource<Tensor<double, 3>>>("B", 3, 3, 3);
 	std::shared_ptr<jobs::Resource<Tensor<double, 2>>> C_res = std::make_shared<jobs::Resource<Tensor<double, 2>>>("C", 3, 3);
 
-	auto A_lock = A_res->lock();
-	auto B_lock = B_res->lock();
+	auto A_lock = A_res->write_promise();
+	auto B_lock = B_res->write_promise();
 
 	jobs::ThreadPool::init(8);
 	jobs::JobManager::get_singleton().start_manager();
@@ -230,7 +230,7 @@ TEST_CASE("einsum1 job", "[jobs]") {
             }
         }
 
-        auto C_lock = C_res->lock_shared();
+        auto C_lock = C_res->read_promise();
 	
 	A_lock->release();
 	B_lock->release();
@@ -1782,12 +1782,12 @@ TEST_CASE("Complicated Jobs", "[jobs]") {
 	D_res = std::make_shared<jobs::Resource<Tensor<double, 2>>>("D", 3, 3);
 
     // Get locks for writing A and B.
-    auto A_lock1 = A_res->lock();
-    auto B_lock1 = B_res->lock();
+    auto A_lock1 = A_res->write_promise();
+    auto B_lock1 = B_res->write_promise();
 
     // Queue up a second layer to test resolution.
-    auto A_lock2 = A_res->lock();
-    auto B_lock2 = B_res->lock();
+    auto A_lock2 = A_res->write_promise();
+    auto B_lock2 = B_res->write_promise();
 
     // Make sure the second locks don't resolve.
     REQUIRE_THROWS_AS(A_lock2->wait(std::chrono::milliseconds(10)), jobs::timeout);
@@ -1823,9 +1823,9 @@ TEST_CASE("Complicated Jobs", "[jobs]") {
     A_lock2->release();
     B_lock2->release();
 
-    auto A_lock = A_res->lock_shared();
-    auto C_lock = C_res->lock_shared();
-    auto D_lock = D_res->lock_shared();
+    auto A_lock = A_res->read_promise();
+    auto C_lock = C_res->read_promise();
+    auto D_lock = D_res->read_promise();
 
     A = A_lock->get();
     auto C = C_lock->get();
