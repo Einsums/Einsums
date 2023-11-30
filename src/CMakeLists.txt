@@ -31,6 +31,7 @@ target_compile_features(einsums PUBLIC cxx_std_20)
 extend_einsums_target(einsums
   SOURCES
       JobManager.cpp
+      ThreadPool.cpp
   CONDITION
       EINSUMS_JOB_QUEUES
 )
