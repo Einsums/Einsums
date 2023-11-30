@@ -195,6 +195,8 @@ TEST_CASE("einsum1 job", "[jobs]") {
         INFO("Releasing memory");
         C_lock->release();
 
+        jobs::JobManager::get_singleton().wait_on_jobs();
+        jobs::ThreadPool::get_singleton().wait_on_running();
         INFO("Killing the manager");
         jobs::JobManager::get_singleton().stop_manager();
         INFO("Destroying the thread pool.");
@@ -252,6 +254,8 @@ TEST_CASE("einsum1 job", "[jobs]") {
 
 	C_lock->release();
 
+    jobs::JobManager::get_singleton().wait_on_jobs();
+    jobs::ThreadPool::get_singleton().wait_on_running();
 	jobs::JobManager::get_singleton().stop_manager();
 	jobs::ThreadPool::destroy();
 	jobs::JobManager::destroy();
@@ -1865,6 +1869,8 @@ TEST_CASE("Complicated Jobs", "[jobs]") {
     C_lock->release();
     D_lock->release();
 
+    JobManager::get_singleton().wait_on_jobs();
+    ThreadPool::get_singleton().wait_on_running();
     JobManager::get_singleton().stop_manager();
     ThreadPool::destroy();
     JobManager::destroy();

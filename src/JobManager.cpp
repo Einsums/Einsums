@@ -206,3 +206,33 @@ void JobManager::destroy() {
         mgr_instance = nullptr;
     }
 }
+
+void JobManager::wait_on_jobs() {
+    while(!this->jobs.empty() && !this->running.empty()) {
+        std::this_thread::yield();
+    }
+}
+
+int JobManager::running_jobs() {
+    this->mutex.lock();
+
+    int ret = this->running.size();
+    this->mutex.unlock();
+    return ret;
+}
+
+int JobManager::queued_jobs() {
+    this->mutex.lock();
+
+    int ret = this->jobs.size();
+    this->mutex.unlock();
+    return ret;
+}
+
+int JobManager::total_jobs() {
+    this->mutex.lock();
+
+    int ret = this->jobs.size() + this->running.size();
+    this->mutex.unlock();
+    return ret;
+}

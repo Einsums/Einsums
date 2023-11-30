@@ -169,15 +169,6 @@ ThreadPool &ThreadPool::get_singleton() {
 }
 
 bool ThreadPool::singleton_exists() {
-    if (thread_instance != nullptr && thread_instance->exists) {
-        debug("Singleton exists!\n");
-    } else if (thread_instance == nullptr) {
-        debug("Singleton does not exist.\n");
-    } else if (thread_instance != nullptr && !thread_instance->exists) {
-        debug("Singleton is being deleted.\n");
-    } else {
-        debug("Singleton may be in an invalid state!\n");
-    }
     return thread_instance != nullptr && thread_instance->exists;
 }
 
