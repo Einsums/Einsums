@@ -1,0 +1,38 @@
+{
+    "psi-header.config": {
+        "forceToTop": true
+    },
+    "psi-header.lang-config": [
+        {
+            "language": "cpp",
+            "begin": "",
+            "end": "",
+            "prefix": "//",
+            "blankLinesAfter": 1
+        },
+        {
+            "language": "c",
+            "begin": "",
+            "end": "",
+            "prefix": "//",
+            "blankLinesAfter": 1
+        },
+        {
+            "language": "reStructuredText",
+            "begin": "..",
+            "end": "",
+            "prefix": "    ",
+            "blankLinesAfter": 0
+        }
+    ],
+    "psi-header.templates": [
+        {
+            "language": "*",
+            "template": [
+                "----------------------------------------------------------------------------------------------",
+                " Copyright (c) The Einsums Developers. All rights reserved.",
+                " Licensed under the MIT License. See LICENSE.txt in the project root for license information.",
+                "----------------------------------------------------------------------------------------------"
+            ],
+        }    ]
+}
