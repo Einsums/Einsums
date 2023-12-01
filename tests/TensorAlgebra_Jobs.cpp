@@ -167,7 +167,7 @@ TEST_CASE("einsum1 job", "[jobs]") {
         A_lock->release();
         B_lock->release();
 
-        while (!job.lock()->get_state() == einsums::jobs::detail::FINISHED) {
+        while (job.lock()->get_state() != einsums::jobs::detail::FINISHED) {
             std::this_thread::yield();
         }
 
