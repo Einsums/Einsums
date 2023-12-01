@@ -8,7 +8,63 @@
 
 #include "einsums/_Common.hpp"
 
+#include <atomic>
+#include <functional>
+
 BEGIN_EINSUMS_NAMESPACE_HPP(einsums::jobs)
+
+BEGIN_EINSUMS_NAMESPACE_HPP(detail)
+
+/**
+ * @enum JobState
+ *
+ * Represents the possible job states.
+ */
+enum JobState {
+    /**
+     * @var CREATED
+     *
+     * The job has been created only. This is the first state.
+     */
+    CREATED,
+
+    /**
+     * @var QUEUED
+     *
+     * The job has been added to the queue and is waiting to run.
+     */
+    QUEUED,
+
+    /**
+     * @var STARTING
+     *
+     * The job has had resources allocated for it and is waiting to be picked up by its threads.
+     */
+    STARTING,
+
+    /**
+     * @var RUNNING
+     *
+     * The job is now actively running.
+     */
+    RUNNING,
+
+    /**
+     * @var FINISHED
+     *
+     * The job has finished running.
+     */
+    FINISHED,
+
+    /**
+     * @var ERROR
+     *
+     * The job has encountered an error and has stopped.
+     */
+    ERROR
+};
+
+END_EINSUMS_NAMESPACE_HPP(detail)
 
 /**
  * @class Job
@@ -17,10 +73,37 @@ BEGIN_EINSUMS_NAMESPACE_HPP(einsums::jobs)
  */
 class Job {
   protected:
+    /**
+     * @var curr_serial
+     *
+     * This holds a counter so that jobs have a serial identifier. It is instantiated in JobManager.cpp since there is no C++ file for this
+     * empty virtual class.
+     */
+    EINSUMS_EXPORT static size_t curr_serial;
+
+    /**
+     * @var serialized_mutex
+     *
+     * This is a mutex that protects Job::curr_serial.
+     */
+    EINSUMS_EXPORT static std::mutex serialized_mutex;
+
     int priority; /// Priority of the job. Will run before other jobs when it can.
 
+    size_t serial;
+
+    detail::JobState curr_state;
+
+    friend struct std::hash<Job>;
+
   public:
-    Job(int priority = 0) : priority(priority){};
+    Job(int priority = 0) : priority(priority), curr_state(detail::CREATED) {
+        Job::serialized_mutex.lock();
+        serial = Job::curr_serial;
+        Job::curr_serial++;
+        Job::serialized_mutex.unlock();
+    };
+
     virtual ~Job() = default;
 
     /**
@@ -29,19 +112,27 @@ class Job {
     virtual void run(void) { ; }
 
     /**
-     * Whether the job is currently able to run.
+     * Get the current state of the job.
      */
-    virtual bool is_runnable() const { return false; }
+    virtual detail::JobState get_state() const { return this->curr_state; }
 
     /**
-     * Whether a job is running.
+     * Set the current job state.
+     *
+     * @param new_state The new state of the job.
+     *
+     * @return The new state of the job.
      */
-    virtual bool is_running() const { return false; }
+    virtual detail::JobState set_state(detail::JobState new_state) {
+        this->curr_state = new_state;
+
+        return this->curr_state;
+    }
 
     /**
-     * Whether the job is finished.
+     * Return any error that the job may have encountered.
      */
-    virtual bool is_finished() const { return true; }
+    virtual const std::exception &get_error() const { return *new std::exception(); }
 
     /**
      * Return the priority.
@@ -49,19 +140,28 @@ class Job {
     virtual int get_priority() const { return this->priority; }
 
     /**
-     * Compare priorities.
+     * Return the serial idenitfier.
      */
-    virtual bool operator<(const Job &other) const { return this->get_priority() < other.get_priority(); }
+    virtual int get_serial() const { return this->serial; }
 
-    virtual bool operator<=(const Job &other) const { return this->get_priority() <= other.get_priority(); }
-
-    virtual bool operator>(const Job &other) const { return this->get_priority() > other.get_priority(); }
-
-    virtual bool operator>=(const Job &other) const { return this->get_priority() >= other.get_priority(); }
-
-    virtual bool operator==(const Job &other) const { return this->get_priority() == other.get_priority(); }
-
-    virtual bool operator!=(const Job &other) const { return this->get_priority() != other.get_priority(); }
+    /**
+     * Use an id number to compare for equality.
+     */
+    virtual bool operator==(const Job &second) const { return this->serial == second.serial; }
 };
 
 END_EINSUMS_NAMESPACE_HPP(einsums::jobs)
+
+/**
+ * @type std::hash<Job>
+ *
+ * Implementation of std::hash for the Job class. Note that this will be inserted into the std namespace, not the einsums::jobs namespace.
+ */
+template <>
+struct std::hash<einsums::jobs::Job> {
+
+    /**
+     * Hash function operator for the job.
+     */
+    std::size_t operator()(const einsums::jobs::Job &job) { return job.serial; }
+};

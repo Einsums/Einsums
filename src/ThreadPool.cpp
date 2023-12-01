@@ -5,6 +5,7 @@
  */
 
 #include "einsums/Jobs.hpp"
+#include "einsums/jobs/Job.hpp"
 
 #include <atomic>
 #include <cstdio>
@@ -144,7 +145,7 @@ void ThreadPool::destroy() {
             std::get<0>(val) = -1;
             std::get<1>(val) = -1;
             std::get<2>(val) = nullptr;
-            std::get<3>(val) = nullptr;
+            std::get<3>(val) = std::weak_ptr<Job>();
         }
 
         thread_instance->mutex.unlock();
@@ -172,8 +173,8 @@ bool ThreadPool::singleton_exists() {
     return thread_instance != nullptr && thread_instance->exists;
 }
 
-std::vector<std::weak_ptr<std::thread>> &ThreadPool::request(unsigned int count, ThreadPool::function_type func,
-                                                             std::shared_ptr<Job> &job) {
+int ThreadPool::request(unsigned int count, ThreadPool::function_type func,
+                                                             std::weak_ptr<Job> &job) {
     this->mutex.lock();
 
     // Check that the number of threads can reasonably be allocated.
@@ -182,21 +183,19 @@ std::vector<std::weak_ptr<std::thread>> &ThreadPool::request(unsigned int count,
         throw std::runtime_error("Could not allocate threads! Requested too many.");
     }
 
-    auto *out = new std::vector<std::weak_ptr<std::thread>>();
+    // Check that there are enough threads to satisfy the request.
+    if(count >= this->avail.size()) {
+        this->mutex.unlock();
+        return 0;
+    }
 
     for (int i = 0; i < count; i++) {
         debug("7: Running size: %ld\n", this->running.size());
-        // Check that there are available threads to take.
-        if (this->avail.size() == 0) {
-            this->mutex.unlock();
-            return *out;
-        }
         // Get the new thread.
         std::weak_ptr<std::thread> thread = this->avail.back();
         for (auto &thr : this->threads) {
             if (thr->get_id() == thread.lock()->get_id()) {
                 this->running.push_back(thr);
-                out->push_back(thr);
                 this->avail.pop_back();
                 break;
             }
@@ -204,20 +203,23 @@ std::vector<std::weak_ptr<std::thread>> &ThreadPool::request(unsigned int count,
 
         // Push the thread info.
         (this->thread_info)[thread.lock()->get_id()] =
-            std::tuple<int, int, ThreadPool::function_type, std::shared_ptr<Job>>{i, count, func, job};
+            std::tuple<int, int, ThreadPool::function_type, std::weak_ptr<Job>>{i, count, func, job};
     }
 
     assert(this->threads.size() == this->max_threads);
     assert(this->avail.size() + this->running.size() == this->threads.size());
+
+    job.lock()->set_state(detail::STARTING);
+
     this->mutex.unlock();
 
-    return *out;
+    return count;
 }
 
-std::vector<std::weak_ptr<std::thread>> &ThreadPool::request_upto(unsigned int count, ThreadPool::function_type func,
-                                                                  std::shared_ptr<Job> &job) {
+int ThreadPool::request_upto(unsigned int count, ThreadPool::function_type func,
+                                                                  std::weak_ptr<Job> &job) {
     this->mutex.lock();
-    auto *out = new std::vector<std::weak_ptr<std::thread>>();
+    auto out_threads = std::vector<std::weak_ptr<std::thread>>();
 
     int total = 0;
 
@@ -232,7 +234,7 @@ std::vector<std::weak_ptr<std::thread>> &ThreadPool::request_upto(unsigned int c
         for (auto &thr : this->threads) {
             if (thr->get_id() == thread.lock()->get_id()) {
                 this->running.push_back(thr);
-                out->push_back(thr);
+                out_threads.push_back(thr);
                 this->avail.pop_back();
                 break;
             }
@@ -242,14 +244,18 @@ std::vector<std::weak_ptr<std::thread>> &ThreadPool::request_upto(unsigned int c
 
     // Push the thread info.
     for (int i = 0; i < total; i++) {
-        (this->thread_info)[out->at(i).lock()->get_id()] =
-            std::tuple<int, int, ThreadPool::function_type, std::shared_ptr<Job>>{i, total, func, job};
+        (this->thread_info)[out_threads[i].lock()->get_id()] =
+            std::tuple<int, int, ThreadPool::function_type, std::weak_ptr<Job>>{i, total, func, job};
     }
 
     assert(this->threads.size() == this->max_threads);
     assert(this->avail.size() + this->running.size() == this->threads.size());
+
+    job.lock()->set_state(detail::STARTING);
+
     this->mutex.unlock();
-    return *out;
+    
+    return total;
 }
 
 void ThreadPool::release(std::vector<std::weak_ptr<std::thread>> &threads) {
@@ -313,10 +319,10 @@ ThreadPool::function_type ThreadPool::compute_function(std::thread::id id) {
     return out;
 }
 
-std::shared_ptr<Job> ThreadPool::thread_job(std::thread::id id) {
+std::weak_ptr<Job> &ThreadPool::thread_job(std::thread::id id) {
     this->mutex.lock();
 
-    std::shared_ptr<Job> out = std::get<3>((this->thread_info)[id]);
+    std::weak_ptr<Job> &out = std::get<3>((this->thread_info)[id]);
 
     this->mutex.unlock();
     return out;
@@ -349,10 +355,10 @@ ThreadPool::function_type ThreadPool::compute_function(const std::thread &thread
     return out;
 }
 
-std::shared_ptr<Job> ThreadPool::thread_job(const std::thread &thread) {
+std::weak_ptr<Job> &ThreadPool::thread_job(const std::thread &thread) {
     this->mutex.lock();
 
-    std::shared_ptr<Job> out = std::get<3>((this->thread_info)[thread.get_id()]);
+    std::weak_ptr<Job> &out = std::get<3>((this->thread_info)[thread.get_id()]);
 
     this->mutex.unlock();
     return out;

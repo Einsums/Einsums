@@ -10,8 +10,8 @@
 #include "einsums/_Export.hpp"
 
 #include "einsums/TensorAlgebra.hpp"
-#include "einsums/jobs/EinsumJob.hpp"
 #include "einsums/jobs/Job.hpp"
+#include "einsums/jobs/EinsumJob.hpp"
 #include "einsums/jobs/JobManager.hpp"
 #include "einsums/jobs/ReadPromise.hpp"
 #include "einsums/jobs/Resource.hpp"
@@ -41,7 +41,7 @@ template <typename AType, typename ABDataType, typename BType, typename CType, t
 auto einsum(CDataType C_prefactor, const std::tuple<CIndices...> &Cs, std::shared_ptr<Resource<CType>> &C, const ABDataType AB_prefactor,
             const std::tuple<AIndices...> &As, std::shared_ptr<Resource<AType>> &A, const std::tuple<BIndices...> &Bs,
             std::shared_ptr<Resource<BType>> &B)
-    -> std::shared_ptr<EinsumJob<AType, ABDataType, BType, CType, CDataType, std::tuple<CIndices...>, std::tuple<AIndices...>,
+    -> std::weak_ptr<EinsumJob<AType, ABDataType, BType, CType, CDataType, std::tuple<CIndices...>, std::tuple<AIndices...>,
                                  std::tuple<BIndices...>>> & {
     // Start of function
     using outtype =
@@ -50,13 +50,13 @@ auto einsum(CDataType C_prefactor, const std::tuple<CIndices...> &Cs, std::share
     std::shared_ptr<WritePromise<CType>> C_lock = C->write_promise();
     std::shared_ptr<ReadPromise<AType>>  A_lock = A->read_promise();
     std::shared_ptr<ReadPromise<BType>>  B_lock = B->read_promise();
-    std::shared_ptr<outtype>            *out =
-        new std::shared_ptr<outtype>(std::make_shared<outtype>(C_prefactor, Cs, C_lock, AB_prefactor, As, A_lock, Bs, B_lock));
+    outtype           *out =
+        new outtype(C_prefactor, Cs, C_lock, AB_prefactor, As, A_lock, Bs, B_lock);
 
     // Queue the job.
-    JobManager::get_singleton().queue_job(*out);
+    std::weak_ptr<outtype> &out_weak = JobManager::get_singleton().queue_job(out);
 
-    return *out;
+    return out_weak;
 }
 
 /**
@@ -73,7 +73,7 @@ auto einsum(CDataType C_prefactor, const std::tuple<CIndices...> &Cs, std::share
 template <typename AType, typename BType, typename CType, typename... CIndices, typename... AIndices, typename... BIndices>
 auto einsum(const std::tuple<CIndices...> &C_indices, std::shared_ptr<Resource<CType>> &C, const std::tuple<AIndices...> &A_indices,
             std::shared_ptr<Resource<AType>> &A, const std::tuple<BIndices...> &B_indices, std::shared_ptr<Resource<BType>> &B)
-    -> std::shared_ptr<
+    -> std::weak_ptr<
         EinsumJob<AType,
                   std::conditional_t<sizeof(typename AType::datatype) < sizeof(typename BType::datatype), typename BType::datatype,
                                      typename AType::datatype>,

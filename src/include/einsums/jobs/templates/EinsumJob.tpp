@@ -6,13 +6,14 @@
 
 #pragma once
 
-#include <atomic>
-#include <type_traits>
-
-#include "einsums/jobs/EinsumJob.hpp"
+#include "einsums/_Common.hpp"
 
 #include "einsums/TensorAlgebra.hpp"
-#include "einsums/_Common.hpp"
+#include "einsums/jobs/EinsumJob.hpp"
+#include "einsums/jobs/Job.hpp"
+
+#include <atomic>
+#include <type_traits>
 
 BEGIN_EINSUMS_NAMESPACE_HPP(einsums::jobs)
 
@@ -34,43 +35,33 @@ BEGIN_EINSUMS_NAMESPACE_HPP(einsums::jobs)
  */
 #define einsum_job EinsumJob<AType, ABDataType, BType, CType, CDataType, CIndices, AIndices, BIndices>
 
-template_def
-einsum_job::EinsumJob(CDataType C_prefactor, const CIndices &Cs, std::shared_ptr<WritePromise<CType>> C, const ABDataType AB_prefactor,
-              const AIndices &As, std::shared_ptr<ReadPromise<AType>> A, const BIndices &Bs, std::shared_ptr<ReadPromise<BType>> B)
-        : Job(), _C_prefactor(C_prefactor), _AB_prefactor(AB_prefactor), _Cs(Cs), _As(As), _Bs(Bs), _running(false), _done(false) {
-        _A = A;
-        _B = B;
-        _C = C;
-    }
+template_def einsum_job::EinsumJob(CDataType C_prefactor, const CIndices &Cs, std::shared_ptr<WritePromise<CType>> C,
+                                   const ABDataType AB_prefactor, const AIndices &As, std::shared_ptr<ReadPromise<AType>> A,
+                                   const BIndices &Bs, std::shared_ptr<ReadPromise<BType>> B)
+    : Job(), _C_prefactor(C_prefactor), _AB_prefactor(AB_prefactor), _Cs(Cs), _As(As), _Bs(Bs) {
+    _A = A;
+    _B = B;
+    _C = C;
+}
 
-template_def
-void einsum_job::run() {
-        std::atomic_thread_fence(std::memory_order_acq_rel);
-        _running = true;
-        auto A   = _A->get();
-        auto B   = _B->get();
-        auto C   = _C->get();
+template_def void einsum_job::run() {
+    std::atomic_thread_fence(std::memory_order_acq_rel);
+    auto A   = _A->get();
+    auto B   = _B->get();
+    auto C   = _C->get();
 
-        einsums::tensor_algebra::einsum(_C_prefactor, _Cs, C.get(), _AB_prefactor, _As, *A, _Bs, *B);
+    this->set_state(detail::RUNNING);
 
-        _C->release();
-        _A->release();
-        _B->release();
-        _running = false;
-        _done    = true;
-        std::atomic_thread_fence(std::memory_order_acq_rel);
-    }
+    einsums::tensor_algebra::einsum(_C_prefactor, _Cs, C.get(), _AB_prefactor, _As, *A, _Bs, *B);
 
-template_def
-bool einsum_job::is_runnable() const { return _A->ready() && _B->ready() && _C->ready() && !_running && !_done; }
+    _C->release();
+    _A->release();
+    _B->release();
 
-template_def
-bool einsum_job::is_running() const { return this->_running; }
-
-
-template_def
-bool einsum_job::is_finished() const { return this->_done; }
-
+    this->set_state(detail::FINISHED);
+    
+    std::atomic_thread_fence(std::memory_order_acq_rel);
+}
 
 #undef einsum_job
 #undef template_def

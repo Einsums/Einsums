@@ -8,6 +8,7 @@
 #include "einsums/Tensor.hpp"
 #include "einsums/Utilities.hpp"
 #include "einsums/Jobs.hpp"
+#include "einsums/jobs/Job.hpp"
 
 #include <H5Fpublic.h>
 #include <catch2/catch_all.hpp>
@@ -166,7 +167,7 @@ TEST_CASE("einsum1 job", "[jobs]") {
         A_lock->release();
         B_lock->release();
 
-        while (!job->is_finished()) {
+        while (!job.lock()->get_state() == einsums::jobs::detail::FINISHED) {
             std::this_thread::yield();
         }
 

@@ -29,7 +29,7 @@ class ThreadPool {
     /**
      * @type The type for a function to be run.
      */
-    using function_type = void (*)(std::shared_ptr<Job> &&);
+    using function_type = void (*)(std::weak_ptr<Job> &);
 
   private:
     /**
@@ -83,7 +83,7 @@ class ThreadPool {
      * Information to pass to each of the threads. There are special values for stopping a thread and indicating that the thread should be
      * idle.
      */
-    std::map<std::thread::id, std::tuple<int, int, function_type, std::shared_ptr<Job>>> thread_info;
+    std::map<std::thread::id, std::tuple<int, int, function_type, std::weak_ptr<Job>>> thread_info;
 
     /**
      * Constructor. Just sets the maximum number of threads.
@@ -133,17 +133,17 @@ class ThreadPool {
      * Request a set number of threads. Gives an empty list if there are not enough threads available.
      *
      * @param count The number of threads to request.
-     * @return A vector containing pointers to the threads requested.
+     * @return The number of threads requested, or zero if the request could not be fulfilled.
      */
-    EINSUMS_EXPORT std::vector<std::weak_ptr<std::thread>> &request(unsigned int count, function_type func, std::shared_ptr<Job> &job);
+    EINSUMS_EXPORT int request(unsigned int count, function_type func, std::weak_ptr<Job> &job);
 
     /**
      * Request up to a set number of resources. May give fewer than the requested.
      *
      * @param count The maximum number of resources to request.
-     * @return A vector containing pointers to threads that are being used.
+     * @return The number of threads obtained.
      */
-    EINSUMS_EXPORT std::vector<std::weak_ptr<std::thread>> &request_upto(unsigned int count, function_type func, std::shared_ptr<Job> &job);
+    EINSUMS_EXPORT int request_upto(unsigned int count, function_type func, std::weak_ptr<Job> &job);
 
     /**
      * Release certain threads.
@@ -206,7 +206,7 @@ class ThreadPool {
      * @param id A thread id.
      * @return A pointer to the job.
      */
-    EINSUMS_EXPORT std::shared_ptr<Job> thread_job(std::thread::id id);
+    EINSUMS_EXPORT std::weak_ptr<Job> &thread_job(std::thread::id id);
 
     /**
      * Get the job associated with a thread.
@@ -214,7 +214,7 @@ class ThreadPool {
      * @param thread The thread to check.
      * @return A pointer to the job.
      */
-    EINSUMS_EXPORT std::shared_ptr<Job> thread_job(const std::thread &thread);
+    EINSUMS_EXPORT std::weak_ptr<Job> &thread_job(const std::thread &thread);
 
     /**
      * Signal that a thread has finished.

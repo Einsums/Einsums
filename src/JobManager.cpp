@@ -5,6 +5,7 @@
  */
 
 #include "einsums/Jobs.hpp"
+#include "einsums/jobs/Job.hpp"
 
 #include <atomic>
 #include <cstdio>
@@ -25,6 +26,10 @@
 
 using namespace einsums::jobs;
 
+// Putting this here since it is needed here.
+size_t Job::curr_serial = 0;
+std::mutex Job::serialized_mutex = std::mutex();
+
 /**
  * @var instance
  *
@@ -40,7 +45,7 @@ static JobManager *mgr_instance = nullptr;
 
 static bool added_job_exit_handler = false;
 
-JobManager::JobManager() : jobs{}, running{}, mutex(), _is_running(false), thread(nullptr) {
+JobManager::JobManager() : jobs{}, mutex(), _is_running(false), thread(nullptr) {
     if (!added_job_exit_handler) {
         std::atexit(JobManager::cleanup);
         added_job_exit_handler = true;
@@ -55,7 +60,6 @@ JobManager::~JobManager() {
         delete this->thread;
     }
     this->jobs.clear();
-    this->running.clear();
 }
 
 void JobManager::cleanup() {
@@ -82,9 +86,9 @@ void JobManager::manager_loop() {
  *
  * @param job The job to run.
  */
-static void run_job(std::shared_ptr<Job> &&job) {
+static void run_job(std::weak_ptr<Job> &job) {
     std::atomic_thread_fence(std::memory_order_acq_rel);
-    job->run();
+    job.lock()->run();
 
     std::atomic_thread_fence(std::memory_order_acq_rel);
 
@@ -100,19 +104,6 @@ void JobManager::manager_event() {
     // Obtain a lock on the manager.
     this->mutex.lock();
 
-    // Go through each of the running jobs and remove finished jobs.
-    size_t size = this->running.size();
-    for (ssize_t i = 0; i < size; i++) {
-        if (std::get<0>(this->running.at(i))->is_finished()) {
-            if (ThreadPool::singleton_exists()) {
-                ThreadPool::get_singleton().release(std::get<1>(this->running[i]));
-            }
-            this->running.erase(std::next(this->running.begin(), i));
-            size = this->running.size();
-            i--;
-        }
-    }
-
     if (!ThreadPool::singleton_exists()) {
         this->mutex.unlock();
         return;
@@ -120,18 +111,21 @@ void JobManager::manager_event() {
 
     // Go through each of the waiting jobs and try to queue them up.
     std::atomic_thread_fence(std::memory_order_acquire);
-    size = this->jobs.size();
-    for (ssize_t i = 0; i < size; i++) {
-        if (this->jobs[i]->is_runnable()) {
-            auto threads = ThreadPool::get_singleton().request(1, run_job, this->jobs[i]);
-            if (threads.size() != 0) {
-                this->running.emplace(this->running.cend(), this->jobs[i], threads);
-                this->jobs.erase(std::next(this->jobs.begin(), i));
-                size = this->jobs.size();
-                i--;
 
-                continue;
-            }
+    for(ssize_t i = 0; i < this->jobs.size(); i++) {
+        if(this->jobs[i]->get_state() == detail::QUEUED) {
+            auto job_ptr = std::weak_ptr<Job>(this->jobs[i]);
+            ThreadPool::get_singleton().request(1, run_job, job_ptr);
+        }
+    }
+
+    // Go through jobs and remove finished ones.
+    ssize_t i = 0;
+    while(i < this->jobs.size()) {
+        if(this->jobs[i]->get_state() == detail::FINISHED || this->jobs[i]->get_state() == detail::ERROR) {
+            this->jobs.erase(std::next(this->jobs.begin(), i));
+        } else {
+            i++;
         }
     }
 
@@ -146,12 +140,7 @@ JobManager &JobManager::get_singleton() {
     return *mgr_instance;
 }
 
-void JobManager::queue_job(const std::shared_ptr<Job> &job) {
-    debug("Address of job: %p\n", &job);
-    this->mutex.lock();
-    this->jobs.insert(this->jobs.cend(), *new std::shared_ptr<Job>(job)); // Hint to the end of the list.
-    this->mutex.unlock();
-}
+
 
 void JobManager::start_manager() {
     this->mutex.lock();
@@ -194,8 +183,14 @@ bool JobManager::is_running() {
 void JobManager::clear_waiting() {
     this->mutex.lock();
 
-    this->jobs.clear();
-    this->running.clear();
+    ssize_t i = 0;
+    while(i < this->jobs.size()) {
+        if(this->jobs[i]->get_state() == detail::QUEUED) {
+            this->jobs.erase(std::next(this->jobs.begin(), i));
+        } else {
+            i++;
+        }
+    }
 
     this->mutex.unlock();
 }
@@ -208,7 +203,7 @@ void JobManager::destroy() {
 }
 
 void JobManager::wait_on_jobs() {
-    while(!this->jobs.empty() && !this->running.empty()) {
+    while(!this->jobs.empty()) {
         std::this_thread::yield();
     }
 }
@@ -216,7 +211,14 @@ void JobManager::wait_on_jobs() {
 int JobManager::running_jobs() {
     this->mutex.lock();
 
-    int ret = this->running.size();
+    int ret = 0;
+    
+    for(ssize_t i = 0; i < this->jobs.size(); i++) {
+        if(this->jobs[i]->get_state() == detail::STARTING || this->jobs[i]->get_state() == detail::RUNNING) {
+            ret++;
+        }
+    }
+
     this->mutex.unlock();
     return ret;
 }
@@ -224,7 +226,14 @@ int JobManager::running_jobs() {
 int JobManager::queued_jobs() {
     this->mutex.lock();
 
-    int ret = this->jobs.size();
+    int ret = 0;
+    
+    for(ssize_t i = 0; i < this->jobs.size(); i++) {
+        if(this->jobs[i]->get_state() == detail::QUEUED) {
+            ret++;
+        }
+    }
+
     this->mutex.unlock();
     return ret;
 }
@@ -232,7 +241,8 @@ int JobManager::queued_jobs() {
 int JobManager::total_jobs() {
     this->mutex.lock();
 
-    int ret = this->jobs.size() + this->running.size();
+    int ret = this->jobs.size();
+    
     this->mutex.unlock();
     return ret;
 }

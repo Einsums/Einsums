@@ -83,24 +83,24 @@ bool Resource<T>::release(const ReadPromise<T> &lock) {
     this->mutex.lock();
 
     for (auto state : this->locks) {
-        size_t size = state->size();
-        for (size_t i = 0; i < size; i++) {
+        size_t i = 0;
+        while(i < state->size()) {
             if (*(state->at(i)) == lock) {
                 state->erase(std::next(state->begin(), i));
-                size = state->size();
-                i--;
                 ret = true;
+            } else {
+                i++;
             }
         }
     }
 
     // Remove empty states.
-    size_t size = this->locks.size();
-    for (size_t i = 0; i < size; i++) {
+    size_t i = 0;
+    while(i < this->locks.size()) {
         if (this->locks[i]->empty()) {
             this->locks.erase(std::next(this->locks.begin(), i));
-            size = this->locks.size();
-            i--;
+        } else {
+            i++;
         }
     }
 
@@ -131,7 +131,7 @@ bool Resource<T>::is_promised(const ReadPromise<T> &lock) {
     this->mutex.lock();
 
     for (auto state : this->locks) {
-        for (auto curr_lock : *state) {
+        for (const auto &curr_lock : *state) {
             if (curr_lock == lock) {
                 this->mutex.unlock();
                 return true;
@@ -152,7 +152,7 @@ bool Resource<T>::is_readable(const ReadPromise<T> &promise) {
         return false;
     }
 
-    for (auto &curr_lock : *(this->locks[0])) {
+    for (const auto &curr_lock : *(this->locks[0])) {
         if (*curr_lock == promise) {
             this->mutex.unlock();
             return true;

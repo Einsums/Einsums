@@ -81,18 +81,6 @@ class EinsumJob : public Job {
      */
     const BIndices &_Bs;
 
-    /**
-     * @var _running
-     *
-     * Whether the job has been picked up by a thread and is working.
-     */
-    /**
-     * @var _done
-     *
-     * Whether the job is finished or not.
-     */
-    std::atomic_bool _running, _done;
-
   public:
     /**
      * Constructor.
@@ -113,21 +101,6 @@ class EinsumJob : public Job {
      * The function to run when the job is called.
      */
     void run() override;
-
-    /**
-     * Whether the job is currently able to run.
-     */
-    [[nodiscard]] bool is_runnable() const override;
-
-    /**
-     * Whether a job is running.
-     */
-    [[nodiscard]] bool is_running() const override;
-
-    /**
-     * Whether the job is finished.
-     */
-    [[nodiscard]] bool is_finished() const override;
 };
 
 END_EINSUMS_NAMESPACE_HPP(einsums::jobs)

@@ -11,6 +11,7 @@
 #include "einsums/jobs/Job.hpp"
 
 #include <atomic>
+#include <memory>
 #include <mutex>
 #include <thread>
 #include <tuple>
@@ -27,8 +28,6 @@ class JobManager final {
   private:
     /// Lists of running and waiting jobs.
     std::vector<std::shared_ptr<Job>> jobs;
-
-    std::vector<std::pair<std::shared_ptr<Job>, std::vector<std::weak_ptr<std::thread>>>> running;
 
     /// Whether the job manager is running or not.
     std::atomic_bool _is_running;
@@ -73,11 +72,20 @@ class JobManager final {
     EINSUMS_EXPORT static JobManager &get_singleton();
 
     /**
-     * Queue a job.
+     * Queue a job. The job manager will take ownership of the job.
      *
      * @param The job to queue.
+     * @return A weak pointer to the job. The job is now managed by the job manager and can no longer be destroyed safely by the caller.
      */
-    EINSUMS_EXPORT void queue_job(const std::shared_ptr<Job> &job);
+    template <typename U>
+    std::weak_ptr<U> &queue_job(U *__restrict__ job) {
+        this->mutex.lock();
+        job->set_state(detail::QUEUED);
+        std::shared_ptr<U> &out = (std::shared_ptr<U> &) this->jobs.emplace_back(job); // Hint to the end of the list.
+        this->mutex.unlock();
+
+        return *new std::weak_ptr<U>(out);
+    }
 
     /**
      * Start the job manager in a different thread. Raises an exception if it is already running.
