@@ -98,7 +98,6 @@ static void run_job(std::weak_ptr<Job> &job) {
     }
 }
 
-#define JOB_THREADS 8
 
 void JobManager::manager_event() {
     // Obtain a lock on the manager.

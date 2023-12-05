@@ -1,13 +1,12 @@
 
-#include "einsums/TensorAlgebra.hpp"
-
+#include "einsums/Jobs.hpp"
 #include "einsums/LinearAlgebra.hpp"
 #include "einsums/STL.hpp"
 #include "einsums/Sort.hpp"
 #include "einsums/State.hpp"
 #include "einsums/Tensor.hpp"
+#include "einsums/TensorAlgebra.hpp"
 #include "einsums/Utilities.hpp"
-#include "einsums/Jobs.hpp"
 #include "einsums/jobs/Job.hpp"
 
 #include <H5Fpublic.h>
@@ -15,10 +14,10 @@
 #include <chrono>
 #include <complex>
 #include <cstdio>
+#include <exception>
+#include <stdexcept>
 #include <thread>
 #include <type_traits>
-#include <stdexcept>
-#include <exception>
 
 TEST_CASE("Identity Tensor Locks", "[jobs]") {
     using namespace einsums;
@@ -29,9 +28,15 @@ TEST_CASE("Identity Tensor Locks", "[jobs]") {
 
     auto lock = I_res.read_promise();
 
+    REQUIRE(lock.use_count() == 2);
+
     lock->wait();
 
+    REQUIRE(lock.use_count() == 2);
+
     auto I = lock->get();
+
+    REQUIRE(lock.use_count() == 2);
 
     REQUIRE((*I)(0, 0) == 1.0);
     REQUIRE((*I)(0, 1) == 0.0);
@@ -43,7 +48,11 @@ TEST_CASE("Identity Tensor Locks", "[jobs]") {
     REQUIRE((*I)(2, 1) == 0.0);
     REQUIRE((*I)(2, 2) == 1.0);
 
+    REQUIRE(lock.use_count() == 2);
+
     lock->release();
+
+    REQUIRE(lock.use_count() == 1);
 }
 
 TEST_CASE("Scale Row Locks", "[jobs]") {
@@ -52,7 +61,7 @@ TEST_CASE("Scale Row Locks", "[jobs]") {
     using namespace einsums::jobs;
 
     Resource<Tensor<double, 2>> res(create_random_tensor("I", 3, 3));
-    Resource<Tensor<double, 2>>     res_copy(*(res.get_data()));
+    Resource<Tensor<double, 2>> res_copy(*(res.get_data()));
 
     auto lock      = res.read_promise();
     auto lock_copy = res_copy.write_promise();
@@ -90,7 +99,7 @@ TEST_CASE("Scale Column Locks", "[jobs]") {
     using namespace einsums::jobs;
 
     Resource<Tensor<double, 2>> res(create_random_tensor("I", 3, 3));
-    Resource<Tensor<double, 2>>     res_copy(*(res.get_data()));
+    Resource<Tensor<double, 2>> res_copy(*(res.get_data()));
 
     auto lock      = res.read_promise();
     auto lock_copy = res_copy.write_promise();
@@ -127,9 +136,9 @@ TEST_CASE("einsum1 job", "[jobs]") {
     using namespace einsums::tensor_algebra;
 
     SECTION("ik=ij,jk") {
-	std::shared_ptr<jobs::Resource<Tensor<double, 2>>> A_res = std::make_shared<jobs::Resource<Tensor<double, 2>>>("A", 3, 3),
-	  B_res = std::make_shared<jobs::Resource<Tensor<double, 2>>>("B", 3, 3),
-	  C_res = std::make_shared<jobs::Resource<Tensor<double, 2>>>("C", 3, 3);
+        std::shared_ptr<jobs::Resource<Tensor<double, 2>>> A_res = std::make_shared<jobs::Resource<Tensor<double, 2>>>("A", 3, 3),
+                                                           B_res = std::make_shared<jobs::Resource<Tensor<double, 2>>>("B", 3, 3),
+                                                           C_res = std::make_shared<jobs::Resource<Tensor<double, 2>>>("C", 3, 3);
 
         // Initialize thread pool.
         INFO("Initialize the thread pool");
@@ -167,7 +176,7 @@ TEST_CASE("einsum1 job", "[jobs]") {
         A_lock->release();
         B_lock->release();
 
-        while (job.lock()->get_state() != einsums::jobs::detail::FINISHED) {
+        while (job->get_state() != einsums::jobs::detail::FINISHED) {
             std::this_thread::yield();
         }
 
@@ -209,21 +218,21 @@ TEST_CASE("einsum1 job", "[jobs]") {
 
     SECTION("il=ijk,jkl") {
         std::shared_ptr<jobs::Resource<Tensor<double, 3>>> A_res = std::make_shared<jobs::Resource<Tensor<double, 3>>>("A", 3, 3, 3),
-	    B_res = std::make_shared<jobs::Resource<Tensor<double, 3>>>("B", 3, 3, 3);
-	std::shared_ptr<jobs::Resource<Tensor<double, 2>>> C_res = std::make_shared<jobs::Resource<Tensor<double, 2>>>("C", 3, 3);
+                                                           B_res = std::make_shared<jobs::Resource<Tensor<double, 3>>>("B", 3, 3, 3);
+        std::shared_ptr<jobs::Resource<Tensor<double, 2>>> C_res = std::make_shared<jobs::Resource<Tensor<double, 2>>>("C", 3, 3);
 
-	auto A_lock = A_res->write_promise();
-	auto B_lock = B_res->write_promise();
+        auto A_lock = A_res->write_promise();
+        auto B_lock = B_res->write_promise();
 
-	jobs::ThreadPool::init(8);
-	jobs::JobManager::get_singleton().start_manager();
+        jobs::ThreadPool::init(8);
+        jobs::JobManager::get_singleton().start_manager();
 
-	auto ein_job = jobs::einsum(Indices{index::i, index::l}, C_res, Indices{index::i, index::j, index::k}, A_res,
-	    Indices{index::j, index::k, index::l}, B_res);
+        auto ein_job = jobs::einsum(Indices{index::i, index::l}, C_res, Indices{index::i, index::j, index::k}, A_res,
+                                    Indices{index::j, index::k, index::l}, B_res);
 
-	auto A = A_lock->get();
-	auto B = B_lock->get();
-	
+        auto A = A_lock->get();
+        auto B = B_lock->get();
+
         for (int i = 0, ij = 1; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 for (int k = 0; k < 3; k++, ij++) {
@@ -234,9 +243,9 @@ TEST_CASE("einsum1 job", "[jobs]") {
         }
 
         auto C_lock = C_res->read_promise();
-	
-	A_lock->release();
-	B_lock->release();
+
+        A_lock->release();
+        B_lock->release();
 
         auto C = C_lock->get();
 
@@ -253,13 +262,13 @@ TEST_CASE("einsum1 job", "[jobs]") {
         REQUIRE((*C)(2, 1) == 3078.0);
         REQUIRE((*C)(2, 2) == 3285.0);
 
-	C_lock->release();
+        C_lock->release();
 
-    jobs::JobManager::get_singleton().wait_on_jobs();
-    jobs::ThreadPool::get_singleton().wait_on_running();
-	jobs::JobManager::get_singleton().stop_manager();
-	jobs::ThreadPool::destroy();
-	jobs::JobManager::destroy();
+        jobs::JobManager::get_singleton().wait_on_jobs();
+        jobs::ThreadPool::get_singleton().wait_on_running();
+        jobs::JobManager::get_singleton().stop_manager();
+        jobs::ThreadPool::destroy();
+        jobs::JobManager::destroy();
     }
 }
 
@@ -1195,8 +1204,8 @@ TEST_CASE("outer product jobs", "[unfinished-jobs]") {
 
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C, Indices{i}, A, Indices{j}, B));
 
-        for (int x = 0; x < _x; x++) {
-            for (int y = 0; y < _y; y++) {
+        for (size_t x = 0; x < _x; x++) {
+            for (size_t y = 0; y < _y; y++) {
                 REQUIRE_THAT(C(x, y), Catch::Matchers::WithinAbs(A(x) * B(y), 0.001));
             }
         }
@@ -1204,8 +1213,8 @@ TEST_CASE("outer product jobs", "[unfinished-jobs]") {
         // C.set_all(0.0);
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C, Indices{j}, A, Indices{i}, B));
 
-        for (int x = 0; x < _x; x++) {
-            for (int y = 0; y < _y; y++) {
+        for (size_t x = 0; x < _x; x++) {
+            for (size_t y = 0; y < _y; y++) {
                 REQUIRE_THAT(C(x, y), Catch::Matchers::WithinAbs(A(y) * B(x), 0.001));
             }
         }
@@ -1213,8 +1222,8 @@ TEST_CASE("outer product jobs", "[unfinished-jobs]") {
         // C.set_all(0.0);
         REQUIRE_NOTHROW(einsum(Indices{j, i}, &C, Indices{j}, A, Indices{i}, B));
 
-        for (int x = 0; x < _x; x++) {
-            for (int y = 0; y < _y; y++) {
+        for (size_t x = 0; x < _x; x++) {
+            for (size_t y = 0; y < _y; y++) {
                 REQUIRE_THAT(C(y, x), Catch::Matchers::WithinAbs(A(y) * B(x), 0.001));
             }
         }
@@ -1222,8 +1231,8 @@ TEST_CASE("outer product jobs", "[unfinished-jobs]") {
         // C.set_all(0.0);
         REQUIRE_NOTHROW(einsum(Indices{j, i}, &C, Indices{i}, A, Indices{j}, B));
 
-        for (int x = 0; x < _x; x++) {
-            for (int y = 0; y < _y; y++) {
+        for (size_t x = 0; x < _x; x++) {
+            for (size_t y = 0; y < _y; y++) {
                 REQUIRE_THAT(C(y, x), Catch::Matchers::WithinAbs(A(x) * B(y), 0.001));
             }
         }
@@ -1770,7 +1779,6 @@ TEST_CASE("andy jobs", "[unfinished-jobs]") {
     }
 }
 
-
 TEST_CASE("Complicated Jobs", "[jobs]") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
@@ -1779,12 +1787,12 @@ TEST_CASE("Complicated Jobs", "[jobs]") {
     // Start the job manager.
     ThreadPool::init(8);
     JobManager::get_singleton().start_manager();
-    
+
     // Create several tensor resources.
     std::shared_ptr<jobs::Resource<Tensor<double, 2>>> A_res = std::make_shared<jobs::Resource<Tensor<double, 2>>>("A", 3, 3),
-        B_res = std::make_shared<jobs::Resource<Tensor<double, 2>>>("B", 3, 3),
-	C_res = std::make_shared<jobs::Resource<Tensor<double, 2>>>("C", 3, 3),
-	D_res = std::make_shared<jobs::Resource<Tensor<double, 2>>>("D", 3, 3);
+                                                       B_res = std::make_shared<jobs::Resource<Tensor<double, 2>>>("B", 3, 3),
+                                                       C_res = std::make_shared<jobs::Resource<Tensor<double, 2>>>("C", 3, 3),
+                                                       D_res = std::make_shared<jobs::Resource<Tensor<double, 2>>>("D", 3, 3);
 
     // Get locks for writing A and B.
     auto A_lock1 = A_res->write_promise();
@@ -1818,11 +1826,11 @@ TEST_CASE("Complicated Jobs", "[jobs]") {
     A = A_lock2->get();
     B = B_lock2->get();
 
-    for(int i = 0; i < 3; i++) {
-        for(int j = 0; j < 3; j++) {
-	    (*A)(i, j) = i * 3 + j + 1;
-	    (*B)(i, j) = i * 3 + j + 1;
-	}
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            (*A)(i, j) = i * 3 + j + 1;
+            (*B)(i, j) = i * 3 + j + 1;
+        }
     }
 
     A_lock2->release();
@@ -1832,7 +1840,7 @@ TEST_CASE("Complicated Jobs", "[jobs]") {
     auto C_lock = C_res->read_promise();
     auto D_lock = D_res->read_promise();
 
-    A = A_lock->get();
+    A      = A_lock->get();
     auto C = C_lock->get();
     auto D = D_lock->get();
 
@@ -1875,5 +1883,4 @@ TEST_CASE("Complicated Jobs", "[jobs]") {
     JobManager::get_singleton().stop_manager();
     ThreadPool::destroy();
     JobManager::destroy();
-
 }

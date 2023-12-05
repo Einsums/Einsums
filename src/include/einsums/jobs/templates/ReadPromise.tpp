@@ -23,7 +23,7 @@ ReadPromise<T>::ReadPromise(unsigned long id, Resource<T> *data) : id(id) {
 
 template <typename T>
 ReadPromise<T>::~ReadPromise() {
-    this->release();      // Tell the resource to release this lock.
+    // this->release();      // Tell the resource to release this lock.
     this->data = nullptr; // Data is owned by someone else, so ignore it.
 }
 

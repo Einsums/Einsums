@@ -139,8 +139,8 @@ void ThreadPool::destroy() {
         thread_instance->mutex.lock();
         thread_instance->exists = false;
 
-        for (auto kv : thread_instance->thread_info) {
-            auto val = std::get<1>(kv);
+        for (auto &kv : thread_instance->thread_info) {
+            auto &val = std::get<1>(kv);
 
             std::get<0>(val) = -1;
             std::get<1>(val) = -1;

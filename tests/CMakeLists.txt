@@ -30,6 +30,8 @@ extend_einsums_target(test-all
         EINSUMS_JOB_QUEUES
 )
 
+set_source_files_properties(TensorAlgebra_Jobs.cpp PROPERTIES COMPILE_OPTIONS "-Werror")
+
 # Enable einsum auto test capabilities
 target_compile_definitions(test-all 
     PRIVATE 

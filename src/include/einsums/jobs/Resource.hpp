@@ -33,7 +33,7 @@ class Resource {
     /**
      * A list of states. Each state is a list of locks that can read or write each state.
      */
-    std::vector<std::vector<std::shared_ptr<ReadPromise<T>>> *> locks;
+    std::vector<std::vector<std::shared_ptr<ReadPromise<T>>>> locks;
 
     /**
      * Internal counter. It ensures that each promies produced will have a unique identifier.
@@ -46,6 +46,11 @@ class Resource {
   protected:
     /// A mutex to help eliminate data races.
     std::mutex mutex;
+
+    /**
+     * Check each of the locks held to make sure that they are still viable, and remove the ones that are not.
+     */
+    void update_locks();
 
   public:
     /**

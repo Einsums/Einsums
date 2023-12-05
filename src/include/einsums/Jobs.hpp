@@ -41,8 +41,8 @@ template <typename AType, typename ABDataType, typename BType, typename CType, t
 auto einsum(CDataType C_prefactor, const std::tuple<CIndices...> &Cs, std::shared_ptr<Resource<CType>> &C, const ABDataType AB_prefactor,
             const std::tuple<AIndices...> &As, std::shared_ptr<Resource<AType>> &A, const std::tuple<BIndices...> &Bs,
             std::shared_ptr<Resource<BType>> &B)
-    -> std::weak_ptr<EinsumJob<AType, ABDataType, BType, CType, CDataType, std::tuple<CIndices...>, std::tuple<AIndices...>,
-                                 std::tuple<BIndices...>>> & {
+    -> std::shared_ptr<EinsumJob<AType, ABDataType, BType, CType, CDataType, std::tuple<CIndices...>, std::tuple<AIndices...>,
+                                 std::tuple<BIndices...>>> {
     // Start of function
     using outtype =
         EinsumJob<AType, ABDataType, BType, CType, CDataType, std::tuple<CIndices...>, std::tuple<AIndices...>, std::tuple<BIndices...>>;
@@ -54,7 +54,7 @@ auto einsum(CDataType C_prefactor, const std::tuple<CIndices...> &Cs, std::share
         new outtype(C_prefactor, Cs, C_lock, AB_prefactor, As, A_lock, Bs, B_lock);
 
     // Queue the job.
-    std::weak_ptr<outtype> &out_weak = JobManager::get_singleton().queue_job(out);
+    std::shared_ptr<outtype> out_weak = JobManager::get_singleton().queue_job(out);
 
     return out_weak;
 }
@@ -73,11 +73,11 @@ auto einsum(CDataType C_prefactor, const std::tuple<CIndices...> &Cs, std::share
 template <typename AType, typename BType, typename CType, typename... CIndices, typename... AIndices, typename... BIndices>
 auto einsum(const std::tuple<CIndices...> &C_indices, std::shared_ptr<Resource<CType>> &C, const std::tuple<AIndices...> &A_indices,
             std::shared_ptr<Resource<AType>> &A, const std::tuple<BIndices...> &B_indices, std::shared_ptr<Resource<BType>> &B)
-    -> std::weak_ptr<
+    -> std::shared_ptr<
         EinsumJob<AType,
                   std::conditional_t<sizeof(typename AType::datatype) < sizeof(typename BType::datatype), typename BType::datatype,
                                      typename AType::datatype>,
-                  BType, CType, typename CType::datatype, std::tuple<CIndices...>, std::tuple<AIndices...>, std::tuple<BIndices...>>> & {
+                  BType, CType, typename CType::datatype, std::tuple<CIndices...>, std::tuple<AIndices...>, std::tuple<BIndices...>>> {
     return einsum((typename CType::datatype)0, C_indices, C,
                   (std::conditional_t<sizeof(typename AType::datatype) < sizeof(typename BType::datatype), typename BType::datatype,
                                       typename AType::datatype>)1,

@@ -78,13 +78,13 @@ class JobManager final {
      * @return A weak pointer to the job. The job is now managed by the job manager and can no longer be destroyed safely by the caller.
      */
     template <typename U>
-    std::weak_ptr<U> &queue_job(U *__restrict__ job) {
+    std::shared_ptr<U> queue_job(U *__restrict__ job) {
         this->mutex.lock();
         job->set_state(detail::QUEUED);
         std::shared_ptr<U> &out = (std::shared_ptr<U> &) this->jobs.emplace_back(job); // Hint to the end of the list.
         this->mutex.unlock();
 
-        return *new std::weak_ptr<U>(out);
+        return out;
     }
 
     /**
