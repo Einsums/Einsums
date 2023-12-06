@@ -7,8 +7,5 @@ dependencies:
   - six
   - pydata-sphinx-theme
   - doxygen
-  - breathe
+  - breathe=4.35.0
   - docutils>=0.12
-  - breathe>=4.32.0
-  - beautifulsoup4
-  - lxml
