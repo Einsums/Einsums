@@ -114,7 +114,11 @@ void JobManager::manager_event() {
     for(ssize_t i = 0; i < this->jobs.size(); i++) {
         if(this->jobs[i]->get_state() == detail::QUEUED) {
             auto job_ptr = std::weak_ptr<Job>(this->jobs[i]);
-            ThreadPool::get_singleton().request(1, run_job, job_ptr);
+            if(job_ptr.lock()->can_have_fewer()) {
+                ThreadPool::get_singleton().request_upto(job_ptr.lock()->num_threads(), run_job, job_ptr);
+            } else {
+                ThreadPool::get_singleton().request(job_ptr.lock()->num_threads(), run_job, job_ptr);
+            }
         }
     }
 

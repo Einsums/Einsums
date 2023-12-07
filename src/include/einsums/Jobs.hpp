@@ -72,7 +72,8 @@ auto einsum(CDataType C_prefactor, const std::tuple<CIndices...> &Cs, std::share
  */
 template <typename AType, typename BType, typename CType, typename... CIndices, typename... AIndices, typename... BIndices>
 auto einsum(const std::tuple<CIndices...> &C_indices, std::shared_ptr<Resource<CType>> &C, const std::tuple<AIndices...> &A_indices,
-            std::shared_ptr<Resource<AType>> &A, const std::tuple<BIndices...> &B_indices, std::shared_ptr<Resource<BType>> &B)
+            std::shared_ptr<Resource<AType>> &A, const std::tuple<BIndices...> &B_indices, std::shared_ptr<Resource<BType>> &B,
+            int num_threads = 1, bool is_limit_hard = true)
     -> std::shared_ptr<
         EinsumJob<AType,
                   std::conditional_t<sizeof(typename AType::datatype) < sizeof(typename BType::datatype), typename BType::datatype,

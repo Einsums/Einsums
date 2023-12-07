@@ -148,6 +148,16 @@ class Job {
      * Use an id number to compare for equality.
      */
     virtual bool operator==(const Job &second) const { return this->serial == second.serial; }
+
+    /**
+     * Get number of threads requested.
+     */
+    virtual int num_threads() { return 1; }
+
+    /**
+     * Check whether the number of threads is a hard limit, or if fewer can be requested.
+     */
+    virtual bool can_have_fewer() { return false; }
 };
 
 END_EINSUMS_NAMESPACE_HPP(einsums::jobs)

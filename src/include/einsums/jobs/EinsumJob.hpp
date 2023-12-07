@@ -81,17 +81,44 @@ class EinsumJob : public Job {
      */
     const BIndices &_Bs;
 
+    /**
+     * @var work
+     *
+     * A work array.
+     */
+    ABDataType *work;
+
+    /**
+     * Synchronization value.
+     */
+    std::atomic_int synch;
+
+    /**
+     * @var num_threads
+     *
+     * The number of threads that the job requests.
+     */
+    int __num_threads;
+
+    /**
+     * @var hard_limit
+     *
+     * True if the job can only run on num_threads threads. False if the job can run on fewer.
+     */
+    bool __hard_limit;
+
   public:
     /**
      * Constructor.
      */
     EinsumJob(CDataType C_prefactor, const CIndices &Cs, std::shared_ptr<WritePromise<CType>> C, const ABDataType AB_prefactor,
-              const AIndices &As, std::shared_ptr<ReadPromise<AType>> A, const BIndices &Bs, std::shared_ptr<ReadPromise<BType>> B);
+              const AIndices &As, std::shared_ptr<ReadPromise<AType>> A, const BIndices &Bs, std::shared_ptr<ReadPromise<BType>> B,
+              int num_threads_param = 1, bool is_limit_hard = true);
 
     /**
      * Destructor.
      */
-    virtual ~EinsumJob() = default;
+    virtual ~EinsumJob();
 
     /*
      * Overrides for the base class.
@@ -101,6 +128,16 @@ class EinsumJob : public Job {
      * The function to run when the job is called.
      */
     void run() override;
+
+    /**
+     * Get number of threads requested.
+     */
+    int num_threads() override { return __num_threads; }
+
+    /**
+     * Check whether the number of threads is a hard limit, or if fewer can be requested.
+     */
+    bool can_have_fewer() override { return __hard_limit; }
 };
 
 END_EINSUMS_NAMESPACE_HPP(einsums::jobs)

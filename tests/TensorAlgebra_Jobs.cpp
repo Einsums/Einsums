@@ -1818,9 +1818,9 @@ TEST_CASE("Complicated Jobs", "[jobs]") {
     B_lock1->release();
 
     // Queue up jobs for the other tensors.
-    jobs::einsum(Indices{index::i, index::j}, C_res, Indices{index::i, index::l}, A_res, Indices{index::l, index::j}, B_res);
-    jobs::einsum(Indices{index::i, index::j}, D_res, Indices{index::i, index::l}, B_res, Indices{index::l, index::j}, A_res);
-    jobs::einsum(Indices{index::i, index::j}, A_res, Indices{index::i, index::j}, B_res, Indices{index::j, index::i}, B_res);
+    jobs::einsum(Indices{index::i, index::j}, C_res, Indices{index::i, index::l}, A_res, Indices{index::l, index::j}, B_res, 8);
+    jobs::einsum(Indices{index::i, index::j}, D_res, Indices{index::i, index::l}, B_res, Indices{index::l, index::j}, A_res, 8);
+    jobs::einsum(Indices{index::i, index::j}, A_res, Indices{index::i, index::j}, B_res, Indices{index::j, index::i}, B_res, 4);
 
     // Set A and B.
     A = A_lock2->get();

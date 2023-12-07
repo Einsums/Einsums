@@ -32,6 +32,7 @@ extend_einsums_target(einsums
   SOURCES
       JobManager.cpp
       ThreadPool.cpp
+      TensorAlgebraThreads.cpp
   CONDITION
       EINSUMS_JOB_QUEUES
 )
