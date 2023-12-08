@@ -53,9 +53,6 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
                               const AType<ADataType, ARank> &A, const BType<BDataType, BRank> &B, int num_threads, int thread_id,
                               std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> *work,
                               std::atomic_int                                                                   &synch) {
-    if (thread_id == 0) {
-        LabeledSection0();
-    }
 
     auto view = std::apply(ranges::views::cartesian_product, target_dims);
 
@@ -194,9 +191,6 @@ template <template <typename, size_t> typename Type, typename T, size_t Rank>
     requires CoreRankTensor<Type<T, Rank>, Rank, T>
 void dot(const Type<T, Rank> &A, const Type<T, Rank> &B, const Type<T, Rank> &C, int num_threads, int thread_id, T *work,
          std::atomic_int &synch) {
-    if (thread_id == 0) {
-        LabeledSection0();
-    }
 
     Dim<1> dim{1};
 
@@ -664,16 +658,6 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
                         std::is_arithmetic_v<U>> {
     using ABDataType = std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType>;
 
-    if (thread_id == 0) {
-        LabeledSection1(FP_ZERO != std::fpclassify(UC_prefactor)
-                            ? fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{} + {} "{}"{})", C->name(), print_tuple_no_type(C_indices),
-                                          UAB_prefactor, A.name(), print_tuple_no_type(A_indices), B.name(), print_tuple_no_type(B_indices),
-                                          UC_prefactor, C->name(), print_tuple_no_type(C_indices))
-                            : fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{})", C->name(), print_tuple_no_type(C_indices),
-                                          UAB_prefactor, A.name(), print_tuple_no_type(A_indices), B.name(),
-                                          print_tuple_no_type(B_indices)));
-    }
-
     const CDataType  C_prefactor  = UC_prefactor;
     const ABDataType AB_prefactor = UAB_prefactor;
 
@@ -1008,9 +992,6 @@ void einsum(const std::tuple<CIndices...> &C_indices, CType *C, const std::tuple
 template <template <typename, size_t> typename CType, size_t CRank, typename UnaryOperator, typename T = double>
 auto element_transform(CType<T, CRank> *C, UnaryOperator unary_opt, int num_threads, int thread_id, T *work, std::atomic_int &synch)
     -> std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<T, CRank>, CType<T, CRank>>> {
-    if (thread_id == 0) {
-        LabeledSection0();
-    }
 
     auto target_dims = get_dim_ranges<CRank>(*C);
     auto view        = std::apply(ranges::views::cartesian_product, target_dims);
@@ -1030,9 +1011,6 @@ template <template <typename, size_t> typename CType, template <typename, size_t
           typename MultiOperator, typename T = double>
 auto element(MultiOperator multi_opt, CType<T, Rank> *C, int num_threads, int thread_id, T *work, std::atomic_int &synch,
              MultiTensors<T, Rank> &...tensors) {
-    if (thread_id == 0) {
-        LabeledSection0();
-    }
 
     auto target_dims = get_dim_ranges<Rank>(*C);
     auto view        = std::apply(ranges::views::cartesian_product, target_dims);
@@ -1089,9 +1067,6 @@ constexpr auto get_n(const std::tuple<List...> &) {
 template <unsigned int mode, template <typename, size_t> typename CType, size_t CRank, typename T = double>
 auto unfold(const CType<T, CRank> &source, int num_threads, int thread_id)
     -> std::enable_if_t<std::is_same_v<Tensor<T, CRank>, CType<T, CRank>>, Tensor<T, 2>> {
-    if (thread_id == 0) {
-        LabeledSection1(fmt::format("mode-{} unfold on {} threads", mode, num_threads));
-    }
 
     Dim<2> target_dims;
     target_dims[0] = source.dim(mode);
@@ -1157,9 +1132,6 @@ auto khatri_rao(const std::tuple<AIndices...> &, const AType<T, ARank> &A, const
     -> std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<T, ARank>, AType<T, ARank>> &&
                             std::is_base_of_v<::einsums::detail::TensorBase<T, BRank>, BType<T, BRank>>,
                         void> {
-    if (thread_id == 0) {
-        LabeledSection0();
-    }
 
     constexpr auto A_indices = std::tuple<AIndices...>();
     constexpr auto B_indices = std::tuple<BIndices...>();
