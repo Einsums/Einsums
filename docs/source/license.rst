@@ -8,5 +8,5 @@
 Einsums license
 ***************
 
-.. include:: ../../LICENSE
+.. include:: ../../LICENSE.txt
     :literal:
