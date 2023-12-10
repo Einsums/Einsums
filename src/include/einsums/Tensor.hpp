@@ -138,6 +138,7 @@ auto get_dim_ranges(const TensorType<T, Rank> &tensor) {
 template <typename T, size_t Rank>
 struct Tensor final : public detail::TensorBase<T, Rank> {
 
+    using datatype = T;
     using Vector = std::vector<T, AlignedAllocator<T, 64>>;
 
     /**

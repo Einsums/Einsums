@@ -23,6 +23,15 @@ extend_einsums_target(test-all
         TARGET MPI::MPI_CXX
 )
 
+extend_einsums_target(test-all
+    SOURCES
+        TensorAlgebra_Jobs.cpp
+    CONDITION
+        EINSUMS_JOB_QUEUES
+)
+
+set_source_files_properties(TensorAlgebra_Jobs.cpp PROPERTIES COMPILE_OPTIONS "-Werror")
+
 # Enable einsum auto test capabilities
 target_compile_definitions(test-all 
     PRIVATE 

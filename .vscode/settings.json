@@ -1,0 +1,5 @@
+{
+    "cmake.configureArgs": [
+        "-DEINSUMS_JOB_QUEUES=ON"
+    ]
+}
