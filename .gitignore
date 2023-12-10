@@ -54,6 +54,9 @@ _deps
 .vs
 CMakeSettings.json
 
+# Emacs backups.
+*~
+
 # Documentation
 __pycache__
 docs/_doxygen

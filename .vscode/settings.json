@@ -34,5 +34,9 @@
                 " Licensed under the MIT License. See LICENSE.txt in the project root for license information.",
                 "----------------------------------------------------------------------------------------------"
             ],
-        }    ]
+        }    
+    ],
+    "cmake.configureArgs": [
+        "-DEINSUMS_JOB_QUEUES=ON"
+    ]
 }
