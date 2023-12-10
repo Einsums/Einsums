@@ -1,3 +1,8 @@
+//----------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//----------------------------------------------------------------------------------------------
+
 #undef EINSUMS_USE_CATCH2
 #undef EINSUMS_CONTINUOUSLY_TEST_EINSUM
 #undef EINSUMS_TEST_NANS

@@ -1,7 +1,8 @@
-.. Einsums documentation master file, created by
-   sphinx-quickstart on Sat Sep 30 06:26:14 2023.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+.. 
+    ----------------------------------------------------------------------------------------------
+     Copyright (c) The Einsums Developers. All rights reserved.
+     Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+    ----------------------------------------------------------------------------------------------
 
 .. _einsums_docs_mainpage:
 

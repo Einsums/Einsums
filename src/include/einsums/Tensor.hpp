@@ -1,3 +1,8 @@
+//----------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//----------------------------------------------------------------------------------------------
+
 #pragma once
 
 #include "einsums/_Common.hpp"
@@ -9,6 +14,9 @@
 #include "einsums/State.hpp"
 #include "einsums/utility/ComplexTraits.hpp"
 #include "einsums/utility/TensorTraits.hpp"
+#include "range/v3/range_fwd.hpp"
+#include "range/v3/view/cartesian_product.hpp"
+#include "range/v3/view/iota.hpp"
 
 #include <algorithm>
 #include <array>
@@ -30,10 +38,6 @@
 #include <type_traits>
 #include <utility>
 #include <vector>
-
-#include "range/v3/range_fwd.hpp"
-#include "range/v3/view/cartesian_product.hpp"
-#include "range/v3/view/iota.hpp"
 
 namespace einsums {
 
@@ -1802,7 +1806,7 @@ auto println(const AType<T, Rank> &A, TensorPrintOptions options) ->
                         oss << fmt::format("{:14.8f} ", value);
                     }
                 } else if constexpr (einsums::IsComplexV<T>) {
-                    oss << fmt::format("{:14.8f} ", value.real()) << " + " << fmt::format("{:14.8f}i)", value.imag());
+                    oss << fmt::format("({:14.8f} ", value.real()) << " + " << fmt::format("{:14.8f}i)", value.imag());
                 } else
                     oss << fmt::format("{:14} ", value);
 
@@ -1844,7 +1848,7 @@ auto println(const AType<T, Rank> &A, TensorPrintOptions options) ->
                                     oss << fmt::format("{:14.8f} ", value);
                                 }
                             } else if constexpr (einsums::IsComplexV<T>) {
-                                oss << fmt::format("{:14.8f} ", value.real()) << " + " << fmt::format("{:14.8f}i)", value.imag());
+                                oss << fmt::format("({:14.8f} ", value.real()) << " + " << fmt::format("{:14.8f}i)", value.imag());
                             } else
                                 oss << fmt::format("{:14} ", value);
                         }
@@ -1881,7 +1885,7 @@ auto println(const AType<T, Rank> &A, TensorPrintOptions options) ->
                                 oss << fmt::format("{:14.8f} ", value);
                             }
                         else if constexpr (einsums::IsComplexV<T>) {
-                            oss << fmt::format("{:14.8f} ", value.real()) << " + " << fmt::format("{:14.8f}i)", value.imag());
+                            oss << fmt::format("({:14.8f} ", value.real()) << " + " << fmt::format("{:14.8f}i)", value.imag());
                         } else
                             oss << fmt::format("{:14} ", value);
                     }
