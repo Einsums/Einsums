@@ -36,6 +36,13 @@ extend_einsums_target(einsums
   CONDITION
       EINSUMS_JOB_QUEUES
 )
+
+extend_einsums_target(einsums
+    SOURCES
+        _GPUUtils.hip
+    CONDITION
+        EINSUMS_BUILD_HIP
+)
   
 
 extend_einsums_target(einsums
@@ -168,11 +175,23 @@ extend_einsums_target(einsums
 
 extend_einsums_target(einsums
     SOURCES
+        backends/linear_algebra/hipblas/hipblas.hip
+    CONDITION
+        EINSUMS_BUILD_HIP
+    PUBLIC_DEPENDS
+        ${hipblas_LIBRARIES}
+
+    FEATURE_INFO
+        "HIP GPU linear algebra backend"
+)
+
+extend_einsums_target(einsums
+    SOURCES
         backends/linear_algebra/vendor/Vendor.cpp
     DEFINES
         EINSUMS_LINEAR_ALGEBRA_NAMESPACE=vendor
     CONDITION
-        NOT EINSUMS_LINALG_VENDOR STREQUAL MKL
+        NOT EINSUMS_LINALG_VENDOR STREQUAL MKL AND NOT EINSUMS_LINALG_VENDOR STREQUAL HIP
     FEATURE_INFO
         "Generic vendor backend"
 )

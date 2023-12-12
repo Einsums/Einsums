@@ -67,6 +67,7 @@ einsums_option(EINSUMS_INSTALL_CMAKEDIR STRING
 einsums_option(EINSUMS_JOB_QUEUES BOOL "Build job queue system." OFF)
 einsums_option(EINSUMS_H5CPP_USE_OMP_ALIGNED_ALLOC BOOL
         "On Mac, use omp_aligned_alloc instead of aligned_alloc. Helpful for old SDK." OFF)
+einsums_option(EINSUMS_BUILD_HIP BOOL "Build HIP GPU code." OFF)
 
 add_feature_info(
         EINSUMS_CONTINUOUSLY_TEST_EINSUM ${EINSUMS_CONTINUOUSLY_TEST_EINSUM}
@@ -84,6 +85,11 @@ add_feature_info(EINSUMS_RUNTIME_INDICES_CHECK ${EINSUMS_RUNTIME_INDICES_CHECK}
         "Check the sizes of corresponding indices at runtime")
 add_feature_info(EINSUMS_USE_HPTT ${EINSUMS_USE_HPTT}
         "Build with internal HPTT version")
+
+if(${EINSUMS_BUILD_HIP})
+        enable_language(HIP)
+        find_package(hipblas)
+endif()
 
 include(autocmake_safeguards)
 

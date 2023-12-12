@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //----------------------------------------------------------------------------------------------
 
+#include <hip/hip_common.h>
+#include <hip/hip_runtime.h>
+#include <hip/hip_runtime_api.h>
+
 #include "einsums/_Common.hpp"
 #include "einsums/_GPUUtils.hpp"
 
@@ -24,14 +28,8 @@ __host__ void hip_catch(hipError_t condition, bool throw_success) {
     case hipErrorOutOfMemory:
         throw detail::ErrorOutOfMemory();
         break;
-    case hipErrorMemoryAllocation:
-        throw detail::ErrorMemoryAllocation();
-        break;
     case hipErrorNotInitialized:
         throw detail::ErrorNotInitialized();
-        break;
-    case hipErrorInitializationError:
-        throw detail::ErrorInitializationError();
         break;
     case hipErrorDeinitialized:
         throw detail::ErrorDeinitialized();
@@ -93,9 +91,6 @@ __host__ void hip_catch(hipError_t condition, bool throw_success) {
     case hipErrorMapFailed:
         throw detail::ErrorMapFailed();
         break;
-    case hipErrorMapBufferObjectFailed:
-        throw detail::ErrorMapBufferObjectFailed();
-        break;
     case hipErrorUnmapFailed:
         throw detail::ErrorUnmapFailed();
         break;
@@ -155,9 +150,6 @@ __host__ void hip_catch(hipError_t condition, bool throw_success) {
         break;
     case hipErrorInvalidHandle:
         throw detail::ErrorInvalidHandle();
-        break;
-    case hipErrorInvalidResourceHandle:
-        throw detail::ErrorInvalidResourceHandle();
         break;
     case hipErrorIllegalState:
         throw detail::ErrorIllegalState();

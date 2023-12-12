@@ -19,8 +19,8 @@ namespace detail {
  *
  * Wraps an hipError_t value as an exception object to be handled by C++'s exception system.
  */
-__host__ template <hipError_t error>
-struct hip_exception : std::exception {
+template <hipError_t error>
+struct hip_exception : public std::exception {
   public:
     /**
      * Construct an empty exception which represents a success.
@@ -30,7 +30,7 @@ struct hip_exception : std::exception {
     /**
      * Return the error string.
      */
-    const char *what() override { return hipGetErrorString(error); }
+    const char *what() const _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW override { return hipGetErrorString(error); }
 
     /**
      * Equality operators.
@@ -49,19 +49,17 @@ struct hip_exception : std::exception {
 
     bool operator!=(hipError_t other) const { return error != other; }
 
-    template <hipError_t error>
     friend bool operator==(hipError_t, const hip_exception<error> &);
-    template <hipError_t error>
     friend bool operator!=(hipError_t, const hip_exception<error> &);
 };
 
-__host__ template <hipError_t error>
+template <hipError_t error>
 bool operator==(hipError_t first, const hip_exception<error> &second) {
     return first == error;
 }
 
-__host__ template <hipError_t error>
-EINSUMS_EXPORT bool operator!=(hipError_t first, const hip_exception<error> &second) {
+template <hipError_t error>
+bool operator!=(hipError_t first, const hip_exception<error> &second) {
     return first != error;
 }
 

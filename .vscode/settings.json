@@ -37,6 +37,12 @@
         }    
     ],
     "cmake.configureArgs": [
-        "-DEINSUMS_JOB_QUEUES=ON"
+        "-DEINSUMS_BUILD_HIP=ON",
+        "-DEINSUMS_LINALG_VENDOR=HIP",
+        "-Dhipblas_DIR=/opt/rocm/lib/cmake/hipblas",
+        "-Dhip_DIR=/opt/rocm/lib/cmake/hip",
+        "-DAMDDeviceLibs_DIR=/opt/rocm/lib/cmake/AMDDeviceLibs",
+        "-Damd_comgr_DIR=/opt/rocm/lib/cmake/amd_comgr",
+        "-Dhsa-runtime64_DIR=/opt/rocm/lib/cmake/hsa-runtime64"
     ]
 }
