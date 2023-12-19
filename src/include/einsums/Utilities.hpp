@@ -12,6 +12,26 @@
 
 namespace einsums {
 
+/**
+ * @brief Create a new tensor with \p name and \p index filled with incremental data.
+ *
+ * Just a simple factory function for creating new tensor with initial data. The first element of the tensor is 0 and then each subsequent
+ * entry is +1.0 of the prior element. Defaults to using double for the underlying data and automatically determines the rank of the tensor
+ * from \p index .
+ *
+ * A \p name is required for the tensor. \p name is used when printing and performing disk operations.
+ *
+ * @code
+ * auto a = create_incremented_tensor("a", 3, 3);          // auto -> Tensor<double, 2> with data ranging from 0.0 to 8.0
+ * auto b = create_incremented_tensor<float>("b" 4, 5, 6); // auto -> Tensor<float, 3> with dat ranging from 0.0f to 119.0f
+ * @endcode
+ *
+ * @tparam T The datatype of the underlying tensor. Defaults to double.
+ * @tparam MultiIndex The datatype of the calling parameters. In almost all cases you should just ignore this parameter.
+ * @param name The name of the new tensor.
+ * @param index The arguments needed to construct the tensor.
+ * @return A new tensor filled with incremented data
+ */
 template <typename T = double, typename... MultiIndex>
 auto create_incremented_tensor(const std::string &name, MultiIndex... index) -> Tensor<T, sizeof...(MultiIndex)> {
     Tensor<T, sizeof...(MultiIndex)> A(name, std::forward<MultiIndex>(index)...);
@@ -32,6 +52,26 @@ auto create_incremented_tensor(const std::string &name, MultiIndex... index) -> 
     return A;
 }
 
+/**
+ * @brief Create a new tensor with \p name and \p index filled with random data.
+ *
+ * Just a simple factory function for creating new tensor with initial data. Defaults to using double for the underlying data and
+ * automatically determines the rank of the tensor from \p index .
+ *
+ * A \p name is required for the tensor. \p name is used when printing and performing disk operations.
+ *
+ * @code
+ * auto a = create_incremented_tensor("a", 3, 3);          // auto -> Tensor<double, 2>
+ * auto b = create_incremented_tensor<float>("b" 4, 5, 6); // auto -> Tensor<float, 3>
+ * @endcode
+ *
+ * @tparam T The datatype of the underlying tensor. Defaults to double.
+ * @tparam Normalize Should the resulting random data be normalized. Defaults to false.
+ * @tparam MultiIndex The datatype of the calling parameters. In almost all cases you should just ignore this parameter.
+ * @param name The name of the new tensor.
+ * @param index The arguments needed to construct the tensor.
+ * @return A new tensor filled with random data
+ */
 template <typename T = double, bool Normalize = false, typename... MultiIndex>
 auto create_random_tensor(const std::string &name, MultiIndex... index) -> Tensor<T, sizeof...(MultiIndex)> {
     Section const section{fmt::format("create_random_tensor {}", name)};
@@ -110,6 +150,13 @@ void set_to(TensorType<DataType, Rank> &tensor, DataType value, Tuple const &tup
 
 } // namespace detail
 
+/**
+ * @brief Creates a diagonal matrix from a vector.
+ *
+ * @tparam T The datatype of the underlying data.
+ * @param v The input vector.
+ * @return A new rank-2 tensor with the diagonal elements set to \p v .
+ */
 template <typename T>
 auto diagonal(const Tensor<T, 1> &v) -> Tensor<T, 2> {
     auto result = create_tensor(v.name(), v.dim(0), v.dim(0));
