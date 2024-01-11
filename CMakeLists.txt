@@ -88,7 +88,10 @@ add_feature_info(EINSUMS_USE_HPTT ${EINSUMS_USE_HPTT}
 
 if(${EINSUMS_BUILD_HIP})
         enable_language(HIP)
-        find_package(hipblas)
+        find_package(hipblas REQUIRED)
+        find_package(hipsolver REQUIRED)
+        set(CURSES_NEED_NCURSES True)
+        find_package(Curses)
 endif()
 
 include(autocmake_safeguards)

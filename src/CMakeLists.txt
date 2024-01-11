@@ -40,9 +40,29 @@ extend_einsums_target(einsums
 extend_einsums_target(einsums
     SOURCES
         _GPUUtils.hip
+        backends/linear_algebra/hipblas/hipblas.hip
+        backends/linear_algebra/hipblas/hipsolver.hip
     CONDITION
         EINSUMS_BUILD_HIP
+    DEPENDS
+        roc::hipblas
+        roc::hipsolver
+        hip::host
+        hip::device
 )
+
+# HIP's amd_comgr needs ncurses. Ncurses needs tinfo. Neither target adds the appropriate dependencies or paths.
+# If this gets fixed, this can be removed.
+if(EINSUMS_BUILD_HIP)
+    target_compile_options(einsums PUBLIC ${CURSES_CFLAGS})
+    target_include_directories(einsums PUBLIC ${CURSES_INCLUDE_DIR})
+    list(GET CURSES_LIBRARIES 0 __first)
+    cmake_path(GET __first PARENT_PATH CURSES_LIB_DIR)
+    message(STATUS "Curses directory: ${CURSES_LIB_DIR}")
+    target_link_directories(einsums BEFORE PUBLIC ${CURSES_LIB_DIR})
+    target_link_libraries(einsums PUBLIC ${CURSES_LIBRARIES})
+endif()
+
   
 
 extend_einsums_target(einsums

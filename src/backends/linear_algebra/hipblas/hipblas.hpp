@@ -13,8 +13,10 @@
  */
 #pragma once
 
+#include "einsums.hpp"
 #include <complex>
 #include <hipblas/hipblas.h>
+#include <hipsolver/hipsolver.h>
 
 namespace einsums::backend::linear_algebra::hipblas {
 
@@ -64,24 +66,95 @@ bool operator!=(hipblasStatus_t first, const hipblas_exception<error> &second) {
     return first != error;
 }
 
-using Success         = hipblas_exception<HIPBLAS_STATUS_SUCCESS>;
-using NotInitialized  = hipblas_exception<HIPBLAS_STATUS_NOT_INITIALIZED>;
-using AllocFailed     = hipblas_exception<HIPBLAS_STATUS_ALLOC_FAILED>;
-using InvalidValue    = hipblas_exception<HIPBLAS_STATUS_INVALID_VALUE>;
-using MappingError    = hipblas_exception<HIPBLAS_STATUS_MAPPING_ERROR>;
-using ExecutionFailed = hipblas_exception<HIPBLAS_STATUS_EXECUTION_FAILED>;
-using InternalError   = hipblas_exception<HIPBLAS_STATUS_INTERNAL_ERROR>;
-using NotSupported    = hipblas_exception<HIPBLAS_STATUS_NOT_SUPPORTED>;
-using ArchMismatch    = hipblas_exception<HIPBLAS_STATUS_ARCH_MISMATCH>;
-using HandleIsNullptr = hipblas_exception<HIPBLAS_STATUS_HANDLE_IS_NULLPTR>;
-using InvalidEnum     = hipblas_exception<HIPBLAS_STATUS_INVALID_ENUM>;
-using Unknown         = hipblas_exception<HIPBLAS_STATUS_UNKNOWN>;
+using blasSuccess         = hipblas_exception<HIPBLAS_STATUS_SUCCESS>;
+using blasNotInitialized  = hipblas_exception<HIPBLAS_STATUS_NOT_INITIALIZED>;
+using blasAllocFailed     = hipblas_exception<HIPBLAS_STATUS_ALLOC_FAILED>;
+using blasInvalidValue    = hipblas_exception<HIPBLAS_STATUS_INVALID_VALUE>;
+using blasMappingError    = hipblas_exception<HIPBLAS_STATUS_MAPPING_ERROR>;
+using blasExecutionFailed = hipblas_exception<HIPBLAS_STATUS_EXECUTION_FAILED>;
+using blasInternalError   = hipblas_exception<HIPBLAS_STATUS_INTERNAL_ERROR>;
+using blasNotSupported    = hipblas_exception<HIPBLAS_STATUS_NOT_SUPPORTED>;
+using blasArchMismatch    = hipblas_exception<HIPBLAS_STATUS_ARCH_MISMATCH>;
+using blasHandleIsNullptr = hipblas_exception<HIPBLAS_STATUS_HANDLE_IS_NULLPTR>;
+using blasInvalidEnum     = hipblas_exception<HIPBLAS_STATUS_INVALID_ENUM>;
+using blasUnknown         = hipblas_exception<HIPBLAS_STATUS_UNKNOWN>;
 
-EINSUMS_EXPORT hipblasHandle_t handle;
+EINSUMS_EXPORT const char *hipsolverStatusToString(hipsolverStatus_t status);
 
-__host__ __device__ EINSUMS_EXPORT hipblasOperation_t char_to_op(char trans);
+template <hipsolverStatus_t error>
+struct hipsolver_exception : public std::exception {
+  public:
+    /**
+     * Construct an empty exception which represents a success.
+     */
+    hipsolver_exception() = default;
+
+    /**
+     * Return the error string.
+     */
+    const char *what() const _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW override { return hipsolverStatusToString(error); }
+
+    /**
+     * Equality operators.
+     */
+    template <hipsolverStatus_t other_error>
+    bool operator==(const hipsolver_exception<other_error> &other) const {
+        return error == other_error;
+    }
+
+    bool operator==(hipsolverStatus_t other) const { return error == other; }
+
+    template <hipsolverStatus_t other_error>
+    bool operator!=(const hipsolver_exception<other_error> &other) const {
+        return error != other_error;
+    }
+
+    bool operator!=(hipsolverStatus_t other) const { return error != other; }
+
+    friend bool operator==(hipsolverStatus_t, const hipsolver_exception<error> &);
+    friend bool operator!=(hipsolverStatus_t, const hipsolver_exception<error> &);
+};
+
+template <hipsolverStatus_t error>
+bool operator==(hipsolverStatus_t first, const hipsolver_exception<error> &second) {
+    return first == error;
+}
+
+template <hipsolverStatus_t error>
+bool operator!=(hipsolverStatus_t first, const hipsolver_exception<error> &second) {
+    return first != error;
+}
+
+using solverSuccess = hipsolver_exception<HIPSOLVER_STATUS_SUCCESS>;
+using solverNotInitialized = hipsolver_exception<HIPSOLVER_STATUS_NOT_INITIALIZED>;
+using solverAllocFailed = hipsolver_exception<HIPSOLVER_STATUS_ALLOC_FAILED>;
+using solverInvalidValue = hipsolver_exception<HIPSOLVER_STATUS_INVALID_VALUE>;
+using solverMappingError = hipsolver_exception<HIPSOLVER_STATUS_MAPPING_ERROR>;
+using solverExecutionFailed = hipsolver_exception<HIPSOLVER_STATUS_EXECUTION_FAILED>;
+using solverInternalError = hipsolver_exception<HIPSOLVER_STATUS_INTERNAL_ERROR>;
+using solverFuncNotSupported = hipsolver_exception<HIPSOLVER_STATUS_NOT_SUPPORTED>;
+using solverArchMismatch = hipsolver_exception<HIPSOLVER_STATUS_ARCH_MISMATCH>;
+using solverHandleIsNullptr = hipsolver_exception<HIPSOLVER_STATUS_HANDLE_IS_NULLPTR>;
+using solverInvalidEnum = hipsolver_exception<HIPSOLVER_STATUS_INVALID_ENUM>;
+using solverUnknown = hipsolver_exception<HIPSOLVER_STATUS_UNKNOWN>;
+using solverZeroPivot = hipsolver_exception<HIPSOLVER_STATUS_ZERO_PIVOT>;
+
+// Get the handles used internally. Can be used by other blas and solver processes.
+EINSUMS_EXPORT hipblasHandle_t get_blas_handle();
+EINSUMS_EXPORT hipsolverHandle_t get_solver_handle();
+
+// Set the handles used internally. Useful to avoid creating multiple contexts.
+EINSUMS_EXPORT hipblasHandle_t set_blas_handle(hipblasHandle_t value);
+EINSUMS_EXPORT hipsolverHandle_t set_solver_handle(hipsolverHandle_t value);
+
+
+__host__ __device__ EINSUMS_EXPORT hipblasOperation_t hipblas_char_to_op(char trans);
+
+__host__ __device__ EINSUMS_EXPORT hipsolverEigMode_t hipsolver_job(char job);
+__host__ __device__ EINSUMS_EXPORT hipsolverFillMode_t hipsolver_fill(char fill);
 
 __host__ EINSUMS_EXPORT void hipblas_catch(hipblasStatus_t, bool throw_success = false);
+__host__ EINSUMS_EXPORT void hipsolver_catch(hipsolverStatus_t, bool throw_success = false);
 } // namespace detail
 
 void initialize();
@@ -118,9 +191,9 @@ auto dsyev(char job, char uplo, int n, double *a, int lda, double *w, double *wo
 /*!
  * Computes all eigenvalues and, optionally, eigenvectors of a Hermitian matrix.
  */
-auto cheev(char job, char uplo, int n, std::complex<float> *a, int lda, float *w, std::complex<float> *work, int lwork, float *rwork)
+auto cheev(char job, char uplo, int n, std::complex<float> *a, int lda, float *w, std::complex<float> *work, int lwork, float *ignored)
     -> int;
-auto zheev(char job, char uplo, int n, std::complex<double> *a, int lda, double *w, std::complex<double> *work, int lwork, double *rwork)
+auto zheev(char job, char uplo, int n, std::complex<double> *a, int lda, double *w, std::complex<double> *work, int lwork, double *ignored)
     -> int;
 
 /*!
