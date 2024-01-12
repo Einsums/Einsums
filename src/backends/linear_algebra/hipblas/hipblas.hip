@@ -73,40 +73,6 @@ __host__ void hipblas_catch(hipblasStatus_t status, bool throw_success) {
     }
 }
 
-const char *hipsolverStatusToString(hipsolverStatus_t status) {
-    switch (status) {
-    case HIPSOLVER_STATUS_SUCCESS:
-        return "HIPSOLVER_STATUS_SUCCESS: Success.";
-    case HIPSOLVER_STATUS_NOT_INITIALIZED:
-        return "HIPSOLVER_STATUS_NOT_INITIALIZED: Handle has not been initialized. Make sure to call hipsolverCreate().";
-    case HIPSOLVER_STATUS_ALLOC_FAILED:
-        return "HIPSOLVER_STATUS_ALLOC_FAILED: Could not allocate resources.";
-    case HIPSOLVER_STATUS_INVALID_VALUE:
-        return "HIPSOLVER_STATUS_INVALID_VALUE: An unsupported numerical value was passed to a function.";
-    case HIPSOLVER_STATUS_MAPPING_ERROR:
-        return "HIPSOLVER_STATUS_MAPPING_ERROR: Could not access GPU memory space.";
-    case HIPSOLVER_STATUS_EXECUTION_FAILED:
-        return "HIPSOLVER_STATUS_EXECUTION_FAILED: Failed to execute the program or function.";
-    case HIPSOLVER_STATUS_INTERNAL_ERROR:
-        return "HIPSOLVER_STATUS_INTERNAL_ERROR: An unspecified internal error has occurred.";
-    case HIPSOLVER_STATUS_NOT_SUPPORTED:
-        return "HIPSOLVER_STATUS_NOT_SUPPORTED: The function requested is not supported.";
-    case HIPSOLVER_STATUS_ARCH_MISMATCH:
-        return "HIPSOLVER_STATUS_ARCH_MISMATCH: The code was compiled for a different device than it is being run on.";
-    case HIPSOLVER_STATUS_HANDLE_IS_NULLPTR:
-        return "HIPSOLVER_STATUS_HANDLE_IS_NULLPTR: The handle that was passed to the function was the null pointer. Make sure it is "
-               "initialized properly.";
-    case HIPSOLVER_STATUS_INVALID_ENUM:
-        return "HIPSOLVER_STATUS_INVALID_ENUM: An unsupported enum value was passed to the function.";
-    case HIPSOLVER_STATUS_UNKNOWN:
-        return "HIPSOLVER_STATUS_UNKNOWN: The backend returned an unsupported status code.";
-    case HIPSOLVER_STATUS_ZERO_PIVOT:
-        return "HIPSOLVER_STATUS_ZERO_PIVOT: A pivot of zero was chosen, leading to a zero-division.";
-    default:
-        return "Unrecognized status code from HIPSolver was passed to the stringifier. Assuming HIPSOLVER_STATUS_UNKNOWN.";
-    }
-}
-
 hipblasHandle_t get_blas_handle() {
     return blas_handle;
 }
@@ -670,10 +636,129 @@ std::complex<double> zdot(int n, const std::complex<double> *x, int incx, const 
     return std::complex<double>(result.real(), result.imag());
 }
 
-void saxpy(int n, float alpha_x, const float *x, int inc_x, float *y, int inc_y);
-void daxpy(int n, double alpha_x, const double *x, int inc_x, double *y, int inc_y);
-void caxpy(int n, std::complex<float> alpha_x, const std::complex<float> *x, int inc_x, std::complex<float> *y, int inc_y);
-void zaxpy(int n, std::complex<double> alpha_x, const std::complex<double> *x, int inc_x, std::complex<double> *y, int inc_y);
+void saxpy(int n, float alpha_x, const float *x, int inc_x, float *y, int inc_y) {
+    using math_type = float;
+
+    math_type *x_gpu, *y_gpu, *alpha_gpu;
+
+    size_t x_size = n * inc_x, y_size = n * inc_y;
+
+    // Skip all the data transfer if not needed.
+    if(alpha_x == 0) {
+        return;
+    }
+
+    hip_catch(hipMalloc(&x_gpu, x_size * sizeof(math_type)));
+    hip_catch(hipMalloc(&y_gpu, y_size * sizeof(math_type)));
+    hip_catch(hipMalloc(&alpha_gpu, sizeof(math_type)));
+
+    hip_catch(hipMemcpy(x_gpu, x, x_size * sizeof(math_type), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy(y_gpu, y, y_size * sizeof(math_type), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy(alpha_gpu, &alpha_x, sizeof(math_type), hipMemcpyHostToDevice));
+
+    hipblas_catch(hipblasSaxpy(blas_handle, n, alpha_gpu, x_gpu, inc_x, y_gpu, inc_y));
+
+    hip_catch(hipDeviceSynchronize());
+
+    hip_catch(hipMemcpy(y, y_gpu, y_size * sizeof(math_type), hipMemcpyDeviceToHost));
+
+    hip_catch(hipFree(x_gpu));
+    hip_catch(hipFree(y_gpu));
+    hip_catch(hipFree(alpha_gpu));
+}
+
+void daxpy(int n, double alpha_x, const double *x, int inc_x, double *y, int inc_y) {
+    using math_type = double;
+
+    math_type *x_gpu, *y_gpu, *alpha_gpu;
+
+    size_t x_size = n * inc_x, y_size = n * inc_y;
+
+    // Skip all the data transfer if not needed.
+    if(alpha_x == 0) {
+        return;
+    }
+
+    hip_catch(hipMalloc(&x_gpu, x_size * sizeof(math_type)));
+    hip_catch(hipMalloc(&y_gpu, y_size * sizeof(math_type)));
+    hip_catch(hipMalloc(&alpha_gpu, sizeof(math_type)));
+
+    hip_catch(hipMemcpy(x_gpu, x, x_size * sizeof(math_type), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy(y_gpu, y, y_size * sizeof(math_type), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy(alpha_gpu, &alpha_x, sizeof(math_type), hipMemcpyHostToDevice));
+
+    hipblas_catch(hipblasDaxpy(blas_handle, n, alpha_gpu, x_gpu, inc_x, y_gpu, inc_y));
+
+    hip_catch(hipDeviceSynchronize());
+
+    hip_catch(hipMemcpy(y, y_gpu, y_size * sizeof(math_type), hipMemcpyDeviceToHost));
+
+    hip_catch(hipFree(x_gpu));
+    hip_catch(hipFree(y_gpu));
+    hip_catch(hipFree(alpha_gpu));
+}
+
+void caxpy(int n, std::complex<float> alpha_x, const std::complex<float> *x, int inc_x, std::complex<float> *y, int inc_y) {
+    using math_type = hipblasComplex;
+
+    math_type *x_gpu, *y_gpu, *alpha_gpu;
+
+    size_t x_size = n * inc_x, y_size = n * inc_y;
+
+    // Skip all the data transfer if not needed.
+    if(alpha_x == 0.0f) {
+        return;
+    }
+
+    hip_catch(hipMalloc(&x_gpu, x_size * sizeof(math_type)));
+    hip_catch(hipMalloc(&y_gpu, y_size * sizeof(math_type)));
+    hip_catch(hipMalloc(&alpha_gpu, sizeof(math_type)));
+
+    hip_catch(hipMemcpy(x_gpu, x, x_size * sizeof(math_type), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy(y_gpu, y, y_size * sizeof(math_type), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy(alpha_gpu, &alpha_x, sizeof(math_type), hipMemcpyHostToDevice));
+
+    hipblas_catch(hipblasCaxpy(blas_handle, n, alpha_gpu, x_gpu, inc_x, y_gpu, inc_y));
+
+    hip_catch(hipDeviceSynchronize());
+
+    hip_catch(hipMemcpy(y, y_gpu, y_size * sizeof(math_type), hipMemcpyDeviceToHost));
+
+    hip_catch(hipFree(x_gpu));
+    hip_catch(hipFree(y_gpu));
+    hip_catch(hipFree(alpha_gpu));
+}
+
+void zaxpy(int n, std::complex<double> alpha_x, const std::complex<double> *x, int inc_x, std::complex<double> *y, int inc_y) {
+    using math_type = hipblasDoubleComplex;
+
+    math_type *x_gpu, *y_gpu, *alpha_gpu;
+
+    size_t x_size = n * inc_x, y_size = n * inc_y;
+
+    // Skip all the data transfer if not needed.
+    if(alpha_x == 0.0) {
+        return;
+    }
+
+    hip_catch(hipMalloc(&x_gpu, x_size * sizeof(math_type)));
+    hip_catch(hipMalloc(&y_gpu, y_size * sizeof(math_type)));
+    hip_catch(hipMalloc(&alpha_gpu, sizeof(math_type)));
+
+    hip_catch(hipMemcpy(x_gpu, x, x_size * sizeof(math_type), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy(y_gpu, y, y_size * sizeof(math_type), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy(alpha_gpu, &alpha_x, sizeof(math_type), hipMemcpyHostToDevice));
+
+    hipblas_catch(hipblasZaxpy(blas_handle, n, alpha_gpu, x_gpu, inc_x, y_gpu, inc_y));
+
+    hip_catch(hipDeviceSynchronize());
+
+    hip_catch(hipMemcpy(y, y_gpu, y_size * sizeof(math_type), hipMemcpyDeviceToHost));
+
+    hip_catch(hipFree(x_gpu));
+    hip_catch(hipFree(y_gpu));
+    hip_catch(hipFree(alpha_gpu));
+}
 
 /*!
  * Performs a rank-1 update of a general matrix.
@@ -686,20 +771,137 @@ void zaxpy(int n, std::complex<double> alpha_x, const std::complex<double> *x, i
  *   y is an n-element vector,
  *   A is an m-by-n general matrix
  */
-void dger(int m, int n, double alpha, const double *x, int inc_x, const double *y, int inc_y, double *a, int lda);
+void sger(int m, int n, float alpha, const float *x, int inc_x, const float *y, int inc_y, float *a, int lda) {
+    using math_type = float;
 
-/*!
- * Computes the LU factorization of a general M-by-N matrix A
- * using partial pivoting with row interchanges.
- *
- * The factorization has the form
- *   A = P * L * U
- * where P is a permutation matri, L is lower triangular with
- * unit diagonal elements (lower trapezoidal if m > n) and U is upper
- * triangular (upper trapezoidal if m < n).
- *
- */
-auto dgetrf(int, int, double *, int, int *) -> int;
+    math_type *x_gpu, *y_gpu, *a_gpu, *alpha_gpu;
+
+    size_t x_size = m * inc_x, y_size = n * inc_y, a_size = m * lda;
+
+    if(alpha == 0) {
+        return;
+    }
+
+    hip_catch(hipMalloc(&x_gpu, x_size * sizeof(math_type)));
+    hip_catch(hipMalloc(&y_gpu, y_size * sizeof(math_type)));
+    hip_catch(hipMalloc(&a_gpu, a_size * sizeof(math_type)));
+    hip_catch(hipMalloc(&alpha_gpu, sizeof(math_type)));
+
+    hip_catch(hipMemcpy(x_gpu, x, x_size * sizeof(math_type), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy(y_gpu, y, y_size * sizeof(math_type), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy(a_gpu, a, a_size * sizeof(math_type), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy(alpha_gpu, &alpha, sizeof(math_type), hipMemcpyHostToDevice));
+
+    hipblas_catch(hipblasSger(blas_handle, m, n, alpha_gpu, x_gpu, inc_x, y_gpu, inc_y, a_gpu, lda));
+
+    hip_catch(hipDeviceSynchronize());
+
+    hip_catch(hipMemcpy(a, a_gpu, a_size * sizeof(math_type), hipMemcpyDeviceToHost));
+
+    hip_catch(hipFree(x_gpu));
+    hip_catch(hipFree(y_gpu));
+    hip_catch(hipFree(a_gpu));
+    hip_catch(hipFree(alpha_gpu));
+}
+
+void dger(int m, int n, double alpha, const double *x, int inc_x, const double *y, int inc_y, double *a, int lda) {
+    using math_type = double;
+
+    math_type *x_gpu, *y_gpu, *a_gpu, *alpha_gpu;
+
+    size_t x_size = m * inc_x, y_size = n * inc_y, a_size = m * lda;
+
+    if(alpha == 0) {
+        return;
+    }
+
+    hip_catch(hipMalloc(&x_gpu, x_size * sizeof(math_type)));
+    hip_catch(hipMalloc(&y_gpu, y_size * sizeof(math_type)));
+    hip_catch(hipMalloc(&a_gpu, a_size * sizeof(math_type)));
+    hip_catch(hipMalloc(&alpha_gpu, sizeof(math_type)));
+
+    hip_catch(hipMemcpy(x_gpu, x, x_size * sizeof(math_type), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy(y_gpu, y, y_size * sizeof(math_type), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy(a_gpu, a, a_size * sizeof(math_type), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy(alpha_gpu, &alpha, sizeof(math_type), hipMemcpyHostToDevice));
+
+    hipblas_catch(hipblasDger(blas_handle, m, n, alpha_gpu, x_gpu, inc_x, y_gpu, inc_y, a_gpu, lda));
+
+    hip_catch(hipDeviceSynchronize());
+
+    hip_catch(hipMemcpy(a, a_gpu, a_size * sizeof(math_type), hipMemcpyDeviceToHost));
+
+    hip_catch(hipFree(x_gpu));
+    hip_catch(hipFree(y_gpu));
+    hip_catch(hipFree(a_gpu));
+    hip_catch(hipFree(alpha_gpu));
+}
+
+void cger(int m, int n, std::complex<float> alpha, const std::complex<float> *x, int inc_x, const std::complex<float> *y, int inc_y, std::complex<float> *a, int lda) {
+    using math_type = hipblasComplex;
+
+    math_type *x_gpu, *y_gpu, *a_gpu, *alpha_gpu;
+
+    size_t x_size = m * inc_x, y_size = n * inc_y, a_size = m * lda;
+
+    if(alpha == 0.0f) {
+        return;
+    }
+
+    hip_catch(hipMalloc(&x_gpu, x_size * sizeof(math_type)));
+    hip_catch(hipMalloc(&y_gpu, y_size * sizeof(math_type)));
+    hip_catch(hipMalloc(&a_gpu, a_size * sizeof(math_type)));
+    hip_catch(hipMalloc(&alpha_gpu, sizeof(math_type)));
+
+    hip_catch(hipMemcpy(x_gpu, x, x_size * sizeof(math_type), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy(y_gpu, y, y_size * sizeof(math_type), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy(a_gpu, a, a_size * sizeof(math_type), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy(alpha_gpu, &alpha, sizeof(math_type), hipMemcpyHostToDevice));
+
+    hipblas_catch(hipblasCgerc(blas_handle, m, n, alpha_gpu, x_gpu, inc_x, y_gpu, inc_y, a_gpu, lda));
+
+    hip_catch(hipDeviceSynchronize());
+
+    hip_catch(hipMemcpy(a, a_gpu, a_size * sizeof(math_type), hipMemcpyDeviceToHost));
+
+    hip_catch(hipFree(x_gpu));
+    hip_catch(hipFree(y_gpu));
+    hip_catch(hipFree(a_gpu));
+    hip_catch(hipFree(alpha_gpu));
+}
+
+void zger(int m, int n, std::complex<double> alpha, const std::complex<double> *x, int inc_x, const std::complex<double> *y, int inc_y, std::complex<double> *a, int lda) {
+    using math_type = hipblasDoubleComplex;
+
+    math_type *x_gpu, *y_gpu, *a_gpu, *alpha_gpu;
+
+    size_t x_size = m * inc_x, y_size = n * inc_y, a_size = m * lda;
+
+    if(alpha == 0.0) {
+        return;
+    }
+
+    hip_catch(hipMalloc(&x_gpu, x_size * sizeof(math_type)));
+    hip_catch(hipMalloc(&y_gpu, y_size * sizeof(math_type)));
+    hip_catch(hipMalloc(&a_gpu, a_size * sizeof(math_type)));
+    hip_catch(hipMalloc(&alpha_gpu, sizeof(math_type)));
+
+    hip_catch(hipMemcpy(x_gpu, x, x_size * sizeof(math_type), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy(y_gpu, y, y_size * sizeof(math_type), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy(a_gpu, a, a_size * sizeof(math_type), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy(alpha_gpu, &alpha, sizeof(math_type), hipMemcpyHostToDevice));
+
+    hipblas_catch(hipblasZgerc(blas_handle, m, n, alpha_gpu, x_gpu, inc_x, y_gpu, inc_y, a_gpu, lda));
+
+    hip_catch(hipDeviceSynchronize());
+
+    hip_catch(hipMemcpy(a, a_gpu, a_size * sizeof(math_type), hipMemcpyDeviceToHost));
+
+    hip_catch(hipFree(x_gpu));
+    hip_catch(hipFree(y_gpu));
+    hip_catch(hipFree(a_gpu));
+    hip_catch(hipFree(alpha_gpu));
+}
 
 /*!
  * Computes the inverse of a matrix using the LU factorization computed

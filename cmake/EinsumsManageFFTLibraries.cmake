@@ -1,7 +1,7 @@
 include_guard()
 
 # If MKL is found then we must use it.
-if (NOT EINSUMS_FFT_LIBRARY MATCHES off AND EINSUMS_LINALG_VENDOR STREQUAL MKL)
+if (NOT EINSUMS_FFT_LIBRARY MATCHES off AND EINSUMS_LINALG_VENDOR STREQUAL "MKL")
     if (NOT EINSUMS_FFT_LIBRARY MATCHES mkl)
         # Do this at least until we can ensure we link to FFTW3 for FFT and not MKL.
         message(FATAL_ERROR "MKL was detected. You must use MKL's FFT library")

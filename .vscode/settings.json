@@ -51,11 +51,6 @@
     "cmake.configureArgs": [
         "-DEINSUMS_BUILD_HIP=ON",
         "-DCMAKE_HIP_ARCHITECTURES=gfx906",
-        "-Dhipblas_DIR=/opt/rocm/lib/cmake/hipblas",
-        "-Dhip_DIR=/opt/rocm/lib/cmake/hip",
-        "-DAMDDeviceLibs_DIR=/opt/rocm/lib/cmake/AMDDeviceLibs",
-        "-Damd_comgr_DIR=/opt/rocm/lib/cmake/amd_comgr",
-        "-Dhsa-runtime64_DIR=/opt/rocm/lib/cmake/hsa-runtime64",
-        "-Dhipsolver_DIR=/opt/rocm/lib/cmake/hipsolver"
+        "-DHIP_INSTALL_DIR=/opt/rocm"
     ]
 }

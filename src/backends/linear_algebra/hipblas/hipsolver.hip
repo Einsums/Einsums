@@ -84,11 +84,45 @@ __host__ void hipsolver_catch(hipsolverStatus_t condition, bool throw_success) {
     case HIPSOLVER_STATUS_UNKNOWN:
         throw detail::solverUnknown();
         break;
-    case HIPSOLVER_STATUS_ZERO_PIVOT:
-        throw detail::solverZeroPivot();
-        break;
+    // case HIPSOLVER_STATUS_ZERO_PIVOT:
+    //     throw detail::solverZeroPivot();
+    //     break;
     default:
         throw detail::solverUnknown();
+    }
+}
+
+const char *hipsolverStatusToString(hipsolverStatus_t status) {
+    switch (status) {
+    case HIPSOLVER_STATUS_SUCCESS:
+        return "HIPSOLVER_STATUS_SUCCESS: Success.";
+    case HIPSOLVER_STATUS_NOT_INITIALIZED:
+        return "HIPSOLVER_STATUS_NOT_INITIALIZED: Handle has not been initialized. Make sure to call hipsolverCreate().";
+    case HIPSOLVER_STATUS_ALLOC_FAILED:
+        return "HIPSOLVER_STATUS_ALLOC_FAILED: Could not allocate resources.";
+    case HIPSOLVER_STATUS_INVALID_VALUE:
+        return "HIPSOLVER_STATUS_INVALID_VALUE: An unsupported numerical value was passed to a function.";
+    case HIPSOLVER_STATUS_MAPPING_ERROR:
+        return "HIPSOLVER_STATUS_MAPPING_ERROR: Could not access GPU memory space.";
+    case HIPSOLVER_STATUS_EXECUTION_FAILED:
+        return "HIPSOLVER_STATUS_EXECUTION_FAILED: Failed to execute the program or function.";
+    case HIPSOLVER_STATUS_INTERNAL_ERROR:
+        return "HIPSOLVER_STATUS_INTERNAL_ERROR: An unspecified internal error has occurred.";
+    case HIPSOLVER_STATUS_NOT_SUPPORTED:
+        return "HIPSOLVER_STATUS_NOT_SUPPORTED: The function requested is not supported.";
+    case HIPSOLVER_STATUS_ARCH_MISMATCH:
+        return "HIPSOLVER_STATUS_ARCH_MISMATCH: The code was compiled for a different device than it is being run on.";
+    case HIPSOLVER_STATUS_HANDLE_IS_NULLPTR:
+        return "HIPSOLVER_STATUS_HANDLE_IS_NULLPTR: The handle that was passed to the function was the null pointer. Make sure it is "
+               "initialized properly.";
+    case HIPSOLVER_STATUS_INVALID_ENUM:
+        return "HIPSOLVER_STATUS_INVALID_ENUM: An unsupported enum value was passed to the function.";
+    case HIPSOLVER_STATUS_UNKNOWN:
+        return "HIPSOLVER_STATUS_UNKNOWN: The backend returned an unsupported status code.";
+    // case HIPSOLVER_STATUS_ZERO_PIVOT:
+    //     return "HIPSOLVER_STATUS_ZERO_PIVOT: A pivot of zero was chosen, leading to a zero-division.";
+    default:
+        return "Unrecognized status code from HIPSolver was passed to the stringifier. Assuming HIPSOLVER_STATUS_UNKNOWN.";
     }
 }
 
@@ -125,7 +159,7 @@ int ssyev(char job, char uplo, int n, float *a, int lda, float *w, float *work, 
         hipPointerAttribute_t attribs;
         hipError_t status = hipPointerGetAttributes(&attribs, work);
 
-        if(status == hipErrorInvalidValue || attribs.type == hipMemoryTypeUnregistered) { 
+        if(status == hipErrorInvalidValue) { 
             hip_catch(hipHostRegister(work, lwork * sizeof(math_type), hipHostRegisterDefault));
             work_registered = true;
         } else if(status != hipSuccess) {
@@ -179,7 +213,7 @@ int dsyev(char job, char uplo, int n, double *a, int lda, double *w, double *wor
         hipPointerAttribute_t attribs;
         hipError_t status = hipPointerGetAttributes(&attribs, work);
 
-        if(status == hipErrorInvalidValue || attribs.type == hipMemoryTypeUnregistered) { 
+        if(status == hipErrorInvalidValue) { 
             hip_catch(hipHostRegister(work, lwork * sizeof(math_type), hipHostRegisterDefault));
             work_registered = true;
         } else if(status != hipSuccess) {
@@ -237,7 +271,7 @@ int cheev(char job, char uplo, int n, std::complex<float> *a, int lda, float *w,
         hipPointerAttribute_t attribs;
         hipError_t status = hipPointerGetAttributes(&attribs, work);
 
-        if(status == hipErrorInvalidValue || attribs.type == hipMemoryTypeUnregistered) { 
+        if(status == hipErrorInvalidValue) { 
             hip_catch(hipHostRegister(work, lwork * sizeof(math_type), hipHostRegisterDefault));
             work_registered = true;
         } else if(status != hipSuccess) {
@@ -292,7 +326,7 @@ int zheev(char job, char uplo, int n, std::complex<double> *a, int lda, double *
         hipPointerAttribute_t attribs;
         hipError_t status = hipPointerGetAttributes(&attribs, work);
 
-        if(status == hipErrorInvalidValue || attribs.type == hipMemoryTypeUnregistered) { 
+        if(status == hipErrorInvalidValue) { 
             hip_catch(hipHostRegister(work, lwork * sizeof(math_type), hipHostRegisterDefault));
             work_registered = true;
         } else if(status != hipSuccess) {
@@ -567,6 +601,234 @@ int zgesv(int n, int nrhs, std::complex<double> *a, int lda, int *ipiv, std::com
     hip_catch(hipFree(ipiv_gpu));
 
     hip_catch(hipHostUnregister(info));
+
+    delete info;
+
+    return out;
+}
+
+int sgetrf(int m, int n, float *a, int lda, int *ipiv) {
+    using math_type = float;
+
+    math_type *a_gpu, *ipiv_gpu, *work;
+
+    int lwork, *info = new int{0};
+
+    size_t a_size = m * lda;
+
+    hip_catch(hipMalloc(&a_gpu, a_size * sizeof(math_type)));
+
+    if(ipiv != nullptr) {
+        hip_catch(hipMalloc(&ipiv_gpu, n * sizeof(int)));
+    } else {
+        ipiv_gpu = nullptr;
+    }
+
+    hip_catch(hipHostRegister(&info, sizeof(int), hipHostRegisterDefault));
+
+    hip_catch(hipMemcpy(a_gpu, a, a_size * sizeof(math_type), hipMemcpyHostToDevice));
+
+    /*
+     * Cuda does not require a work array, and the argument is ignored. AMD requires a work array.
+     */
+#ifdef HIP_PLATFORM_AMD
+    hipsolver_catch(hipsolverSgetrf_bufferSize(handle, m, n, a_gpu, lda, &lwork));
+
+    hip_catch(hipMalloc(&work, lwork * sizeof(math_type)));
+
+    hipsolver_catch(hipsolverSgetrf(handle, m, n, a_gpu, lda, work, lwork, ipiv_gpu, info));
+
+    hip_catch(hipDeviceSynchronize());
+
+    hip_catch(hipFree(work));
+#elif defined(HIP_PLATFORM_NVIDIA)
+    hipsolver_catch(hipsolverSgetrf(handle, m, n, a_gpu, lda, nullptr, 0, ipiv_gpu, info));
+
+    hip_catch(hipDeviceSynchronize());
+#endif
+
+    hip_catch(hipMemcpy(a, a_gpu, a_size * sizeof(math_type), hipMemcpyDeviceToHost));
+    hip_catch(hipFree(a_gpu));
+
+    if(ipiv != nullptr) {
+        hip_catch(hipMemcpy(ipiv, ipiv_gpu, n * sizeof(int), hipMemcpyDeviceToHost));
+        hip_catch(hipFree(ipiv_gpu));
+    }
+
+    hip_catch(hipHostUnregister(info));
+
+    int out = *info;
+
+    delete info;
+
+    return out;
+}
+
+int dgetrf(int m, int n, double *a, int lda, int *ipiv) {
+    using math_type = double;
+
+    math_type *a_gpu, *ipiv_gpu, *work;
+
+    int lwork, *info = new int{0};
+
+    size_t a_size = m * lda;
+
+    hip_catch(hipMalloc(&a_gpu, a_size * sizeof(math_type)));
+
+    if(ipiv != nullptr) {
+        hip_catch(hipMalloc(&ipiv_gpu, n * sizeof(int)));
+    } else {
+        ipiv_gpu = nullptr;
+    }
+
+    hip_catch(hipHostRegister(&info, sizeof(int), hipHostRegisterDefault));
+
+    hip_catch(hipMemcpy(a_gpu, a, a_size * sizeof(math_type), hipMemcpyHostToDevice));
+
+    /*
+     * Cuda does not require a work array, and the argument is ignored. AMD requires a work array.
+     */
+#ifdef HIP_PLATFORM_AMD
+    hipsolver_catch(hipsolverDgetrf_bufferSize(handle, m, n, a_gpu, lda, &lwork));
+
+    hip_catch(hipMalloc(&work, lwork * sizeof(math_type)));
+
+    hipsolver_catch(hipsolverDgetrf(handle, m, n, a_gpu, lda, work, lwork, ipiv_gpu, info));
+
+    hip_catch(hipDeviceSynchronize());
+
+    hip_catch(hipFree(work));
+#elif defined(HIP_PLATFORM_NVIDIA)
+    hipsolver_catch(hipsolverDgetrf(handle, m, n, a_gpu, lda, nullptr, 0, ipiv_gpu, info));
+
+    hip_catch(hipDeviceSynchronize());
+#endif
+
+    hip_catch(hipMemcpy(a, a_gpu, a_size * sizeof(math_type), hipMemcpyDeviceToHost));
+    hip_catch(hipFree(a_gpu));
+
+    if(ipiv != nullptr) {
+        hip_catch(hipMemcpy(ipiv, ipiv_gpu, n * sizeof(int), hipMemcpyDeviceToHost));
+        hip_catch(hipFree(ipiv_gpu));
+    }
+
+    hip_catch(hipHostUnregister(info));
+
+    int out = *info;
+
+    delete info;
+
+    return out;
+}
+
+int cgetrf(int m, int n, std::complex<float> *a, int lda, int *ipiv) {
+    using math_type = hipblasComplex;
+
+    math_type *a_gpu, *ipiv_gpu, *work;
+
+    int lwork, *info = new int{0};
+
+    size_t a_size = m * lda;
+
+    hip_catch(hipMalloc(&a_gpu, a_size * sizeof(math_type)));
+
+    if(ipiv != nullptr) {
+        hip_catch(hipMalloc(&ipiv_gpu, n * sizeof(int)));
+    } else {
+        ipiv_gpu = nullptr;
+    }
+
+    hip_catch(hipHostRegister(&info, sizeof(int), hipHostRegisterDefault));
+
+    hip_catch(hipMemcpy(a_gpu, a, a_size * sizeof(math_type), hipMemcpyHostToDevice));
+
+    /*
+     * Cuda does not require a work array, and the argument is ignored. AMD requires a work array.
+     */
+#ifdef HIP_PLATFORM_AMD
+    hipsolver_catch(hipsolverCgetrf_bufferSize(handle, m, n, a_gpu, lda, &lwork));
+
+    hip_catch(hipMalloc(&work, lwork * sizeof(math_type)));
+
+    hipsolver_catch(hipsolverCgetrf(handle, m, n, a_gpu, lda, work, lwork, ipiv_gpu, info));
+
+    hip_catch(hipDeviceSynchronize());
+
+    hip_catch(hipFree(work));
+#elif defined(HIP_PLATFORM_NVIDIA)
+    hipsolver_catch(hipsolverSCetrf(handle, m, n, a_gpu, lda, nullptr, 0, ipiv_gpu, info));
+
+    hip_catch(hipDeviceSynchronize());
+#endif
+
+    hip_catch(hipMemcpy(a, a_gpu, a_size * sizeof(math_type), hipMemcpyDeviceToHost));
+    hip_catch(hipFree(a_gpu));
+
+    if(ipiv != nullptr) {
+        hip_catch(hipMemcpy(ipiv, ipiv_gpu, n * sizeof(int), hipMemcpyDeviceToHost));
+        hip_catch(hipFree(ipiv_gpu));
+    }
+
+    hip_catch(hipHostUnregister(info));
+
+    int out = *info;
+
+    delete info;
+
+    return out;
+}
+
+int zgetrf(int m, int n, std::complex<double> *a, int lda, int *ipiv) {
+    using math_type = hipblasDoubleComplex;
+
+    math_type *a_gpu, *ipiv_gpu, *work;
+
+    int lwork, *info = new int{0};
+
+    size_t a_size = m * lda;
+
+    hip_catch(hipMalloc(&a_gpu, a_size * sizeof(math_type)));
+
+    if(ipiv != nullptr) {
+        hip_catch(hipMalloc(&ipiv_gpu, n * sizeof(int)));
+    } else {
+        ipiv_gpu = nullptr;
+    }
+
+    hip_catch(hipHostRegister(&info, sizeof(int), hipHostRegisterDefault));
+
+    hip_catch(hipMemcpy(a_gpu, a, a_size * sizeof(math_type), hipMemcpyHostToDevice));
+
+    /*
+     * Cuda does not require a work array, and the argument is ignored. AMD requires a work array.
+     */
+#ifdef HIP_PLATFORM_AMD
+    hipsolver_catch(hipsolverZgetrf_bufferSize(handle, m, n, a_gpu, lda, &lwork));
+
+    hip_catch(hipMalloc(&work, lwork * sizeof(math_type)));
+
+    hipsolver_catch(hipsolverZgetrf(handle, m, n, a_gpu, lda, work, lwork, ipiv_gpu, info));
+
+    hip_catch(hipDeviceSynchronize());
+
+    hip_catch(hipFree(work));
+#elif defined(HIP_PLATFORM_NVIDIA)
+    hipsolver_catch(hipsolverZgetrf(handle, m, n, a_gpu, lda, nullptr, 0, ipiv_gpu, info));
+
+    hip_catch(hipDeviceSynchronize());
+#endif
+
+    hip_catch(hipMemcpy(a, a_gpu, a_size * sizeof(math_type), hipMemcpyDeviceToHost));
+    hip_catch(hipFree(a_gpu));
+
+    if(ipiv != nullptr) {
+        hip_catch(hipMemcpy(ipiv, ipiv_gpu, n * sizeof(int), hipMemcpyDeviceToHost));
+        hip_catch(hipFree(ipiv_gpu));
+    }
+
+    hip_catch(hipHostUnregister(info));
+
+    int out = *info;
 
     delete info;
 

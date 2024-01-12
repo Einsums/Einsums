@@ -137,7 +137,7 @@ using solverArchMismatch = hipsolver_exception<HIPSOLVER_STATUS_ARCH_MISMATCH>;
 using solverHandleIsNullptr = hipsolver_exception<HIPSOLVER_STATUS_HANDLE_IS_NULLPTR>;
 using solverInvalidEnum = hipsolver_exception<HIPSOLVER_STATUS_INVALID_ENUM>;
 using solverUnknown = hipsolver_exception<HIPSOLVER_STATUS_UNKNOWN>;
-using solverZeroPivot = hipsolver_exception<HIPSOLVER_STATUS_ZERO_PIVOT>;
+//using solverZeroPivot = hipsolver_exception<HIPSOLVER_STATUS_ZERO_PIVOT>;
 
 // Get the handles used internally. Can be used by other blas and solver processes.
 EINSUMS_EXPORT hipblasHandle_t get_blas_handle();
@@ -231,7 +231,10 @@ void zaxpy(int n, std::complex<double> alpha_x, const std::complex<double> *x, i
  *   y is an n-element vector,
  *   A is an m-by-n general matrix
  */
+void sger(int m, int n, float alpha, const float *x, int inc_x, const float *y, int inc_y, float *a, int lda);
 void dger(int m, int n, double alpha, const double *x, int inc_x, const double *y, int inc_y, double *a, int lda);
+void cger(int m, int n, std::complex<float> alpha, const std::complex<float> *x, int inc_x, const std::complex<float> *y, int inc_y, std::complex<float> *a, int lda);
+void zger(int m, int n, std::complex<double> alpha, const std::complex<double> *x, int inc_x, const std::complex<double> *y, int inc_y, std::complex<double> *a, int lda);
 
 /*!
  * Computes the LU factorization of a general M-by-N matrix A
@@ -244,7 +247,10 @@ void dger(int m, int n, double alpha, const double *x, int inc_x, const double *
  * triangular (upper trapezoidal if m < n).
  *
  */
-auto dgetrf(int, int, double *, int, int *) -> int;
+int sgetrf(int m, int n, float *a, int lda, int *ipiv);
+int dgetrf(int m, int n, double *a, int lda, int *ipiv);
+int cgetrf(int m, int n, std::complex<float> *a, int lda, int *ipiv);
+int zgetrf(int m, int n, std::complex<double> *a, int lda, int *ipiv);
 
 /*!
  * Computes the inverse of a matrix using the LU factorization computed
