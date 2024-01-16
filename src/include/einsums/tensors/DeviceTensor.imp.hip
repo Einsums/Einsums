@@ -1133,5 +1133,16 @@ DeviceTensor<T, Rank>::DeviceTensor(const Tensor<T, Rank> &copy, detail::HostToD
     hip_catch(hipMemcpy(this->_gpu_strides, this->_strides, sizeof(Stride<Rank>), hipMemcpyHostToDevice));
 }
 
+template<typename T, size_t Rank>
+DeviceTensor<T, Rank>::operator Tensor<T, Rank>() {
+    Tensor<T, Rank> out(this->_dims);
+
+    out.set_name(this->_name);
+    
+    hip_catch(hipMemcpy(out.data(), this->_data, this->size() * sizeof(T), hipMemcpyDeviceToHost));
+
+    return out;
+}
+
 } // namespace gpu
 } // namespace einsums

@@ -12,6 +12,13 @@
 
 BEGIN_EINSUMS_NAMESPACE_HPP(einsums::gpu)
 
+
+template <typename T, size_t Rank>
+struct DeviceTensorView;
+
+template<typename T, size_t Rank>
+struct DeviceTensor;
+
 namespace detail {
 
 enum HostToDeviceMode { DEV_ONLY, MAPPED, PINNED };
@@ -86,10 +93,7 @@ class HostDevReference {
             hip_catch(hipMemcpy(_ptr, &(other.get()), sizeof(T), hipMemcpyHostToDevice));
         }
     }
-}
-
-template <typename T, size_t Rank>
-struct DeviceTensorView;
+};
 
 template <typename T, size_t Rank>
 struct DeviceTensor : public einsums::detail::TensorBase<T, Rank> {
@@ -104,6 +108,15 @@ struct DeviceTensor : public einsums::detail::TensorBase<T, Rank> {
     device_ptr T            *_data;
     host_ptr T              *_host_data;
     detail::HostToDeviceMode _mode;
+
+
+    friend struct DeviceTensorView<T, Rank>;
+
+    template<typename TOther, size_t RankOther>
+    friend struct DeviceTensorView;
+
+    template<typename TOther, size_t RankOther>
+    friend struct DeviceTensor;
 
   public:
     /**
@@ -369,6 +382,11 @@ struct DeviceTensor : public einsums::detail::TensorBase<T, Rank> {
      * Copy a host tensor to the device.
      */
     explicit DeviceTensor(const Tensor<T, Rank> &, detail::HostToDeviceMode mode = detail::MAPPED);
+
+    /**
+     * Copy a device tensor to the host.
+     */
+    explicit operator Tensor<T, Rank>();
 };
 
 template <typename T, size_t Rank>
@@ -385,8 +403,8 @@ struct DeviceTensorView : public TensorBase<T, Rank> {
 
   public:
     DeviceTensorView()                   = delete;
-    DeviceTensorView(const TensorView &) = default;
-    ~DeviceTensorView()                  = default;
+    DeviceTensorView(const DeviceTensorView &);
+    ~DeviceTensorView();
 
     // std::enable_if doesn't work with constructors.  So we explicitly create individual
     // constructors for the types of tensors we support (Tensor and TensorView).  The
@@ -420,7 +438,7 @@ struct DeviceTensorView : public TensorBase<T, Rank> {
         common_initialization(other, args...);
     }
 
-    auto operator=(const device_ptr T *other) -> DeviceTensorView &;
+    auto operator=(const host_ptr T *other) -> DeviceTensorView &;
 
     template <template <typename, size_t> typename AType>
         requires DeviceRankTensor<AType<T, Rank>, Rank, T>
@@ -445,42 +463,40 @@ struct DeviceTensorView : public TensorBase<T, Rank> {
     auto data_array(const std::array<size_t, Rank> &index_list) const -> device_ptr T *;
 
     template <typename... MultiIndex>
-    auto operator()(MultiIndex... index) const -> const T &;
+    auto operator()(MultiIndex... index) const -> T;
 
-    [[nodiscard]] auto dim(int d) const -> size_t;
+    [[nodiscard]] auto dim(int d) const -> size_t {
+        if (d < 0)
+            d += Rank;
+        return _dims[d];
+    }
 
     auto dims() const -> Dim<Rank> { return _dims; }
 
     [[nodiscard]] auto name() const -> const std::string & { return _name; }
     void               set_name(const std::string &name) { _name = name; }
 
-    [[nodiscard]] auto stride(int d) const noexcept -> size_t;
+    [[nodiscard]] auto stride(int d) const noexcept -> size_t {
+        if (d < 0)
+            d += Rank;
+        return _strides[d];
+    }
 
     auto strides() const noexcept -> const auto & { return _strides; }
 
     auto to_rank_1_view() const -> DeviceTensorView<T, 1>;
 
-  private:
-    void common_initialization(const T *other);
+    [[nodiscard]] auto full_view_of_underlying() const noexcept -> bool { return _full_view_of_underlying; }
 
+    [[nodiscard]] auto size() const { return std::accumulate(std::begin(_dims), std::begin(_dims) + Rank, 1, std::multiplies<>{}); }
+
+  private:
     template <template <typename, size_t> typename TensorType, size_t OtherRank, typename... Args>
     auto common_initialization(TensorType<T, OtherRank> &other, Args &&...args)
         -> std::enable_if_t<std::is_base_of_v<detail::TensorBase<T, OtherRank>, TensorType<T, OtherRank>>>;
 };
 
 END_EINSUMS_NAMESPACE_HPP(einsums::gpu)
-
-/**
- * Additional copy constructor to copy GPU data onto the host.
- */
-template <typename T, size_t Rank>
-einsums::Tensor<T, Rank>::Tensor(const gpu::DeviceTensor<T, Rank> &);
-
-/**
- * Additional move constructor to move GPU data onto the host.
- */
-template <typename T, size_t Rank>
-einsums::Tensor<T, Rank>::Tensor(gpu::DeviceTensor<T, Rank> &&);
 
 #include "einsums/tensors/DeviceTensor.imp.hip"
 #include "einsums/tensors/DeviceTensorView.imp.hip"
