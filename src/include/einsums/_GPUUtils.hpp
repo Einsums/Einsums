@@ -7,11 +7,28 @@
 
 #include "einsums/_Common.hpp"
 
+#include <__clang_hip_runtime_wrapper.h>
 #include <hip/hip_common.h>
 #include <hip/hip_runtime.h>
 #include <hip/hip_runtime_api.h>
+#include <omp.h>
 
 BEGIN_EINSUMS_NAMESPACE_HPP(einsums::gpu)
+
+/**
+ * @def host_ptr
+ *
+ * This is a macro for decorating pointers to tell the user that a pointer is accessible from the host.
+ */
+#define host_ptr
+
+/**
+ * @def device_ptr
+ *
+ * This is a macro for decorating pointers to tell the user that a pointer should be accessible from the device.
+ * The pointer can be located anywhere, it just needs to be accessible.
+ */
+#define device_ptr
 
 namespace detail {
 /**
@@ -150,5 +167,14 @@ using ErrorTbd                         = hip_exception<hipErrorTbd>;
  * hipSuccess, then an exception will be thrown
  */
 __host__ EINSUMS_EXPORT void hip_catch(hipError_t condition, bool throw_success = false);
+
+/**
+ * Get the worker thread launch parameters on the GPU.
+ */
+__device__
+void get_worker_info(int &thread_id, int &num_threads) {
+    num_threads = gridDim.x * gridDim.y * gridDim.z * blockDim.x * blockDim.y * blockDim.z;
+    thread_id = threadIdx.x + blockDim.x * (threadIdx.y + blockDim.y * (threadIdx.z + blockDim.z * (blockIdx.x + gridDim.x * (blockIdx.y + gridDim.y * blockIdx.z))));
+}
 
 END_EINSUMS_NAMESPACE_HPP(einsums::gpu)
