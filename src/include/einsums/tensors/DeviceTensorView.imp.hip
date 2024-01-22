@@ -11,10 +11,10 @@ namespace gpu {
 template <typename T, size_t Rank>
 DeviceTensorView<T, Rank>::DeviceTensorView(const DeviceTensorView<T, Rank> &copy) {
 
-    this->_dims = copy.dims();
-    this->_strides = copy.strides();
-    this->_name = copy.name();
-    this->_data = copy.data();
+    this->_dims                    = copy.dims();
+    this->_strides                 = copy.strides();
+    this->_name                    = copy.name();
+    this->_data                    = copy.data();
     this->_full_view_of_underlying = copy.full_view_of_underlying();
 
     hip_catch(hipMalloc(&(this->_gpu_dims), sizeof(Dim<Rank>)));
@@ -24,16 +24,16 @@ DeviceTensorView<T, Rank>::DeviceTensorView(const DeviceTensorView<T, Rank> &cop
     hip_catch(hipMemcpy(this->_gpu_strides, this->_strides, sizeof(Stride<Rank>), hipMemcpyHostToDevice));
 }
 
-
-template<typename T, size_t Rank>
+template <typename T, size_t Rank>
 DeviceTensorView<T, Rank>::~DeviceTensorView() {
     hip_catch(hipFree(this->_gpu_dims));
     hip_catch(hipFree(this->_gpu_strides));
 }
 
 namespace detail {
-__global__ template <typename T, size_t Rank>
-void copy_to_tensor_array(T *to_data, const Dim<Rank> *to_dims, const Stride<Rank> *to_strides, const T *from_data, size_t elements) {
+template <typename T, size_t Rank>
+__global__ void copy_to_tensor_array(T *to_data, const Dim<Rank> *to_dims, const Stride<Rank> *to_strides, const T *from_data,
+                                     size_t elements) {
 
     int worker, kernel_size;
 
@@ -78,8 +78,8 @@ DeviceTensorView<T, Rank> &DeviceTensorView<T, Rank>::operator=(const host_ptr T
     hip_catch(hipHostRegister(data, this->size() * sizeof(T), hipHostRegisterDefault));
     hip_catch(hipHostGetDevicePointer(&gpu_ptr, data, 0));
 
-    hipLaunchKernelGGL(detail::copy_to_tensor_array<T, Rank>, detail::constructor_threads, detail::constructor_blocks, 0, 0, this->_data,
-                       this->_gpu_dims, this->_gpu_strides, gpu_ptr, this->size());
+    detail::copy_to_tensor_array<T, Rank><<<detail::constructor_threads, detail::constructor_blocks>>>(
+        this->_data, this->_gpu_dims, this->_gpu_strides, gpu_ptr, this->size());
 
     hip_catch(hipDeviceSynchronize());
 
@@ -88,24 +88,26 @@ DeviceTensorView<T, Rank> &DeviceTensorView<T, Rank>::operator=(const host_ptr T
     return *this;
 }
 
-template <typename T, size_t Rank, template <typename, size_t> typename AType>
-    requires DeviceRankTensor<AType<T, Rank>, Rank, T>
+template <typename T, size_t Rank>
+template <template <typename, size_t> typename AType>
+    requires detail::DeviceRankTensor<AType<T, Rank>, Rank, T>
 auto DeviceTensorView<T, Rank>::operator=(const AType<T, Rank> &other) -> DeviceTensorView<T, Rank> & {
 
-    hipLaunchKernelGGL(detail::copy_to_tensor<T, Rank>, detail::constructor_threads, detail::constructor_blocks, 0, 0, this->_data,
-                       this->_gpu_dims, this->_gpu_strides, other.data(), other.gpu_dims(), other.gpu_strides(), this->size());
+    detail::copy_to_tensor<T, Rank><<<detail::constructor_threads, detail::constructor_blocks>>>(
+        this->_data, this->_gpu_dims, this->_gpu_strides, other.data(), other.gpu_dims(), other.gpu_strides(), this->size());
 
     hip_catch(hipDeviceSynchronize());
 
     return *this;
 }
 
-template <typename T, size_t Rank, template <typename, size_t> typename AType>
-    requires DeviceRankTensor<AType<T, Rank>, Rank, T>
+template <typename T, size_t Rank>
+template <template <typename, size_t> typename AType>
+    requires detail::DeviceRankTensor<AType<T, Rank>, Rank, T>
 auto DeviceTensorView<T, Rank>::operator=(const AType<T, Rank> &&other) -> DeviceTensorView<T, Rank> & {
 
-    hipLaunchKernelGGL(detail::copy_to_tensor<T, Rank>, detail::constructor_threads, detail::constructor_blocks, 0, 0, this->_data,
-                       this->_gpu_dims, this->_gpu_strides, other.data(), other.gpu_dims(), other.gpu_strides(), this->size());
+    detail::copy_to_tensor<T, Rank><<<detail::constructor_threads, detail::constructor_blocks>>>(
+        this->_data, this->_gpu_dims, this->_gpu_strides, other.data(), other.gpu_dims(), other.gpu_strides(), this->size());
 
     hip_catch(hipDeviceSynchronize());
 
@@ -114,40 +116,41 @@ auto DeviceTensorView<T, Rank>::operator=(const AType<T, Rank> &&other) -> Devic
 
 template <typename T, size_t Rank>
 auto DeviceTensorView<T, Rank>::operator=(const T &fill_value) -> DeviceTensorView<T, Rank> & {
-    hipLaunchKernelGGL(detail::set_all<T, Rank>, detail::constructor_threads, detail::constructor_blocks, 0, 0, this->_data,
-                       this->_gpu_dims, this->_gpu_strides, fill_value, this->size());
+    detail::set_all<T, Rank><<<detail::constructor_threads, detail::constructor_blocks>>>(this->_data, this->_gpu_dims, this->_gpu_strides,
+                                                                                          fill_value, this->size());
 
     hip_catch(hipDeviceSynchronize());
 }
 template <typename T, size_t Rank>
 DeviceTensorView<T, Rank> &DeviceTensorView<T, Rank>::operator+=(const T &other) {
-    hipLaunchKernelGGL(detail::add_and_assign_scalar<T, Rank>, detail::constructor_threads, detail::constructor_blocks, 0, 0, this->_data,
-                       this->_gpu_dims, this->_gpu_strides, other, _strides[0] * _dims[0]);
+    detail::add_and_assign_scal<T, Rank><<<detail::constructor_threads, detail::constructor_blocks>>>(
+        this->_data, this->_gpu_dims, this->_gpu_strides, other, _strides[0] * _dims[0]);
     return *this;
 }
 
 template <typename T, size_t Rank>
 DeviceTensorView<T, Rank> &DeviceTensorView<T, Rank>::operator-=(const T &other) {
-    hipLaunchKernelGGL(detail::sub_and_assign_scalar<T, Rank>, detail::constructor_threads, detail::constructor_blocks, 0, 0, this->_data,
-                       this->_gpu_dims, this->_gpu_strides, other, _strides[0] * _dims[0]);
+    detail::sub_and_assign_scal<T, Rank><<<detail::constructor_threads, detail::constructor_blocks>>>(
+        this->_data, this->_gpu_dims, this->_gpu_strides, other, _strides[0] * _dims[0]);
     return *this;
 }
 
 template <typename T, size_t Rank>
 DeviceTensorView<T, Rank> &DeviceTensorView<T, Rank>::operator*=(const T &other) {
-    hipLaunchKernelGGL(detail::mul_and_assign_scalar<T, Rank>, detail::constructor_threads, detail::constructor_blocks, 0, 0, this->_data,
-                       this->_gpu_dims, this->_gpu_strides, other, _strides[0] * _dims[0]);
+    detail::mul_and_assign_scal<T, Rank><<<detail::constructor_threads, detail::constructor_blocks>>>(
+        this->_data, this->_gpu_dims, this->_gpu_strides, other, _strides[0] * _dims[0]);
     return *this;
 }
 
 template <typename T, size_t Rank>
 DeviceTensorView<T, Rank> &DeviceTensorView<T, Rank>::operator/=(const T &other) {
-    hipLaunchKernelGGL(detail::div_and_assign_scalar<T, Rank>, detail::constructor_threads, detail::constructor_blocks, 0, 0, this->_data,
-                       this->_gpu_dims, this->_gpu_strides, other, _strides[0] * _dims[0]);
+    detail::div_and_assign_scal<T, Rank><<<detail::constructor_threads, detail::constructor_blocks>>>(
+        this->_data, this->_gpu_dims, this->_gpu_strides, other, _strides[0] * _dims[0]);
     return *this;
 }
 
-template <typename T, size_t Rank, typename... MultiIndex>
+template <typename T, size_t Rank>
+template <typename... MultiIndex>
 auto DeviceTensorView<T, Rank>::data(MultiIndex... index) const -> device_ptr T * {
     assert(sizeof...(MultiIndex) <= _dims.size());
 
@@ -167,7 +170,8 @@ auto DeviceTensorView<T, Rank>::data_array(const std::array<size_t, Rank> &index
     return _data + ordinal;
 }
 
-template <typename T, size_t Rank, typename... MultiIndex>
+template <typename T, size_t Rank>
+template <typename... MultiIndex>
 auto DeviceTensorView<T, Rank>::operator()(MultiIndex... index) const -> T {
     T out;
     hip_catch(hipMemcpy(&out, this->data(index...), sizeof(T), hipMemcpyDeviceToHost));
@@ -194,9 +198,10 @@ auto DeviceTensorView<T, Rank>::to_rank_1_view() const -> DeviceTensorView<T, 1>
     }
 }
 
-template <typename T, size_t Rank, template <typename, size_t> typename TensorType, size_t OtherRank, typename... Args>
+template <typename T, size_t Rank>
+template <template <typename, size_t> typename TensorType, size_t OtherRank, typename... Args>
 auto DeviceTensorView<T, Rank>::common_initialization(TensorType<T, OtherRank> &other, Args &&...args)
-    -> std::enable_if_t<std::is_base_of_v<detail::TensorBase<T, OtherRank>, TensorType<T, OtherRank>>> {
+    -> std::enable_if_t<std::is_base_of_v<einsums::detail::TensorBase<T, OtherRank>, TensorType<T, OtherRank>>> {
 
     static_assert(Rank <= OtherRank, "A TensorView must be the same Rank or smaller that the Tensor being viewed.");
 

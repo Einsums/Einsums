@@ -172,7 +172,7 @@ __host__ EINSUMS_EXPORT void hip_catch(hipError_t condition, bool throw_success 
  * Get the worker thread launch parameters on the GPU.
  */
 __device__
-void get_worker_info(int &thread_id, int &num_threads) {
+inline void get_worker_info(int &thread_id, int &num_threads) {
     num_threads = gridDim.x * gridDim.y * gridDim.z * blockDim.x * blockDim.y * blockDim.z;
     thread_id = threadIdx.x + blockDim.x * (threadIdx.y + blockDim.y * (threadIdx.z + blockDim.z * (blockIdx.x + gridDim.x * (blockIdx.y + gridDim.y * blockIdx.z))));
 }

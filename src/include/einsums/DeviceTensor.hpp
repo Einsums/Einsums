@@ -40,14 +40,14 @@ concept DeviceRankTensor = detail::IsDeviceRankTensorV<Input, Rank, DataType>;
  * @param dims The dimensions of the tensor along each axis.
  * @param out The output array.
  */
-__host__ __device__ template <typename T, size_t Rank>
-void     index_to_combination(size_t index, const Dim<Rank> &dims, std::array<int, Rank> &out);
+template <typename T, size_t Rank> __host__ __device__ 
+void     index_to_combination(size_t index, const einsums::Dim<Rank> &dims, std::array<int, Rank> &out);
 
 /**
  * Turns a combination of indices into a single sentinel value that can be used to index into an array.
  */
-__host__ __device__ template <typename T, size_t Rank>
-size_t   combination_to_index(const std::array<int, Rank> &inds, const Dim<Rank> &dims, const Stride<Rank> &strides);
+template <typename T, size_t Rank> __host__ __device__ 
+size_t   combination_to_index(const std::array<int, Rank> &inds, const einsums::Dim<Rank> &dims, const einsums::Stride<Rank> &strides);
 
 } // namespace detail
 
@@ -96,14 +96,14 @@ class HostDevReference {
 };
 
 template <typename T, size_t Rank>
-struct DeviceTensor : public einsums::detail::TensorBase<T, Rank> {
+struct DeviceTensor : public ::einsums::detail::TensorBase<T, Rank> {
   public:
     using datatype = T;
 
   private:
     std::string  _name{"(Unnamed)"};
-    Dim<Rank>    _dims, *_gpu_dims;
-    Stride<Rank> _strides, *_gpu_strides;
+    ::einsums::Dim<Rank>    _dims, *_gpu_dims;
+    ::einsums::Stride<Rank> _strides, *_gpu_strides;
 
     device_ptr T            *_data;
     host_ptr T              *_host_data;
@@ -360,7 +360,7 @@ struct DeviceTensor : public einsums::detail::TensorBase<T, Rank> {
 
     auto strides() const noexcept -> const auto & { return _strides; }
 
-    device_ptr Strides<Rank> *gpu_strides() { return _gpu_strides; }
+    device_ptr Stride<Rank> *gpu_strides() { return _gpu_strides; }
 
     auto to_rank_1_view() const -> DeviceTensorView<T, 1> {
         size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
@@ -390,11 +390,11 @@ struct DeviceTensor : public einsums::detail::TensorBase<T, Rank> {
 };
 
 template <typename T, size_t Rank>
-struct DeviceTensorView : public TensorBase<T, Rank> {
+struct DeviceTensorView : public ::einsums::detail::TensorBase<T, Rank> {
   private:
     std::string  _name{"(Unnamed View)"};
-    Dim<Rank>    _dims, *_gpu_dims;
-    Stride<Rank> _strides, *_gpu_strides;
+    einsums::Dim<Rank>    _dims, *_gpu_dims;
+    einsums::Stride<Rank> _strides, *_gpu_strides;
     // Offsets<Rank> _offsets;
 
     bool _full_view_of_underlying{false};
@@ -441,11 +441,11 @@ struct DeviceTensorView : public TensorBase<T, Rank> {
     auto operator=(const host_ptr T *other) -> DeviceTensorView &;
 
     template <template <typename, size_t> typename AType>
-        requires DeviceRankTensor<AType<T, Rank>, Rank, T>
+        requires detail::DeviceRankTensor<AType<T, Rank>, Rank, T>
     auto operator=(const AType<T, Rank> &other) -> DeviceTensorView &;
 
     template <template <typename, size_t> typename AType>
-        requires DeviceRankTensor<AType<T, Rank>, Rank, T>
+        requires detail::DeviceRankTensor<AType<T, Rank>, Rank, T>
     auto operator=(const AType<T, Rank> &&other) -> DeviceTensorView &;
 
     auto operator=(const T &fill_value) -> DeviceTensorView &;
@@ -493,7 +493,7 @@ struct DeviceTensorView : public TensorBase<T, Rank> {
   private:
     template <template <typename, size_t> typename TensorType, size_t OtherRank, typename... Args>
     auto common_initialization(TensorType<T, OtherRank> &other, Args &&...args)
-        -> std::enable_if_t<std::is_base_of_v<detail::TensorBase<T, OtherRank>, TensorType<T, OtherRank>>>;
+        -> std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<T, OtherRank>, TensorType<T, OtherRank>>>;
 };
 
 END_EINSUMS_NAMESPACE_HPP(einsums::gpu)

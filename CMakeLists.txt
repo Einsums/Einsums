@@ -68,6 +68,7 @@ einsums_option(EINSUMS_JOB_QUEUES BOOL "Build job queue system." OFF)
 einsums_option(EINSUMS_H5CPP_USE_OMP_ALIGNED_ALLOC BOOL
         "On Mac, use omp_aligned_alloc instead of aligned_alloc. Helpful for old SDK." OFF)
 einsums_option(EINSUMS_BUILD_HIP BOOL "Build HIP GPU code." OFF)
+einsums_option(EINSUMS_COVERAGE BOOL "Enable code coverage checking" OFF)
 
 add_feature_info(
         EINSUMS_CONTINUOUSLY_TEST_EINSUM ${EINSUMS_CONTINUOUSLY_TEST_EINSUM}
@@ -158,6 +159,12 @@ endif ()
 
 add_subdirectory(external)
 add_subdirectory(src)
+
+if(EINSUMS_COVERAGE)
+    target_compile_options(einsums PUBLIC $<$<COMPILE_LANG_AND_ID:CXX,Clang>:-fprofile-instr-generate -fcoverage-mapping>)
+    target_compile_options(einsums PUBLIC $<$<COMPILE_LANGUAGE:HIP>:-fprofile-instr-generate -fcoverage-mapping>)
+    target_compile_options(einsums PUBLIC $<$<COMPILE_LANG_AND_ID:CXX,GNU>:--coverage>)
+endif()
 
 if (EINSUMS_ENABLE_TESTING)
     enable_testing()

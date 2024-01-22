@@ -30,6 +30,13 @@ extend_einsums_target(test-all
         EINSUMS_JOB_QUEUES
 )
 
+extend_einsums_target(test-all
+    SOURCES
+        GPU.hip
+    CONDITION
+        EINSUMS_BUILD_HIP
+)
+
 set_source_files_properties(TensorAlgebra_Jobs.cpp PROPERTIES COMPILE_OPTIONS "-Werror")
 
 # Enable einsum auto test capabilities

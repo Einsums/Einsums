@@ -50,7 +50,7 @@
     },
     "cmake.configureArgs": [
         "-DEINSUMS_BUILD_HIP=ON",
-        "-DCMAKE_HIP_ARCHITECTURES=gfx906",
-        "-DHIP_INSTALL_DIR=/opt/rocm"
+        "-DHIP_INSTALL_DIR=/opt/rocm",
+        "-DEINSUMS_COVERAGE=ON"
     ]
 }

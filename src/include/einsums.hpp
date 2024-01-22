@@ -7,6 +7,11 @@
 
 #include "einsums/Blas.hpp"
 #include "einsums/Decomposition.hpp"
+
+#ifdef __HIP__
+#include "einsums/DeviceTensor.hpp"
+#endif
+
 #include "einsums/ElementOperations.hpp"
 #include "einsums/Error.hpp"
 #include "einsums/FFT.hpp"

@@ -11,6 +11,8 @@
 namespace einsums {
 namespace gpu {
 
+using namespace einsums;
+
 template <typename T, size_t Rank>
 DeviceTensor<T, Rank>::DeviceTensor(const DeviceTensor<T, Rank> &copy) {
     this->_name    = copy._name;
@@ -41,30 +43,25 @@ DeviceTensor<T, Rank>::~DeviceTensor() {
         if (this->_host_data == nullptr) {
             return;
         }
-        hip_catch(hipHostUnregister(this->_host_data));
+        hip_catch(hipHostUnregister((void *) this->_host_data));
         delete[] this->_host_data;
-    } else if (this->mode == detail::DEV_ONLY) {
-        if (this->_data == nullptr) {
-            return;
-        }
-        hip_catch(hipFree(this->_data));
-    } else if (this->mode == detail::PINNED) {
-        if (this->_host_data == nullptr) {
-            return;
-        }
-        hip_catch(hipHostFree(this->_host_data));
+    } else if (this->_mode == detail::PINNED) {
+        hip_catch(hipHostFree((void *) this->_host_data));
+    } else if (this->_mode == detail::DEV_ONLY) {
+        hip_catch(hipFree((void *) this->_data));
     }
 
     if (this->_gpu_dims != nullptr) {
-        hip_catch(hipFree(this->_gpu_dims));
+        hip_catch(hipFree((void *) this->_gpu_dims));
     }
 
     if (this->_gpu_strides != nullptr) {
-        hip_catch(hipFree(this->_gpu_strides));
+        hip_catch(hipFree((void *) this->_gpu_strides));
     }
 }
 
-template <typename T, size_t Rank, typename... Dims>
+template <typename T, size_t Rank>
+template <typename... Dims>
 DeviceTensor<T, Rank>::DeviceTensor(std::string name, detail::HostToDeviceMode mode, Dims... dims)
     : _name{std::move(name)}, _dims{static_cast<size_t>(dims)...} {
     static_assert(Rank == sizeof...(dims), "Declared Rank does not match provided dims");
@@ -85,24 +82,25 @@ DeviceTensor<T, Rank>::DeviceTensor(std::string name, detail::HostToDeviceMode m
 
     if (mode == detail::MAPPED) {
         this->_host_data = new T[size];
-        hip_catch(hipHostRegister(this->_host_data, size * sizeof(T), hipHostRegisterDefault));
-        hip_catch(hipHostGetDevicePointer(&(this->_data), this->_host_data, 0));
+        hip_catch(hipHostRegister((void *) this->_host_data, size * sizeof(T), hipHostRegisterDefault));
+        hip_catch(hipHostGetDevicePointer((void **) &(this->_data), (void *) this->_host_data, 0));
     } else if (mode == detail::PINNED) {
         hip_catch(hipHostMalloc(&(this->_host_data), size * sizeof(T), 0));
-        hip_catch(hipHostGetDevicePointer(&(this->_data), this->_host_data, 0));
+        hip_catch(hipHostGetDevicePointer((void **) &(this->_data), (void *) this->_host_data, 0));
     } else if (mode == detail::DEV_ONLY) {
         this->_host_data = nullptr;
         hip_catch(hipMalloc(&(this->_data), size * sizeof(T)));
     }
 
-    hip_catch(hipMalloc(&(this->_gpu_dims), sizeof(<Rank>)));
-    hip_catch(hipMalloc(&(this->_gpu_strides), sizeof(Stride<Rank>)));
+    hip_catch(hipMalloc(&(this->_gpu_dims), sizeof(einsums::Dim<Rank>)));
+    hip_catch(hipMalloc(&(this->_gpu_strides), sizeof(einsums::Stride<Rank>)));
 
-    hip_catch(hipMemcpy(this->_gpu_dims, this->_dims, sizeof(Dim<Rank>), hipMemcpyHostToDevice));
-    hip_catch(hipMemcpy(this->_gpu_strides, this->_strides, sizeof(Stride<Rank>), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy((void *) this->_gpu_dims, (void *) &(this->_dims), sizeof(einsums::Dim<Rank>), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy((void *) this->_gpu_strides, (void *) &(this->_strides), sizeof(einsums::Stride<Rank>), hipMemcpyHostToDevice));
 }
 
-template <typename T, size_t Rank, size_t OtherRank, typename... Dims>
+template <typename T, size_t Rank>
+template <size_t OtherRank, typename... Dims>
 DeviceTensor<T, Rank>::DeviceTensor(DeviceTensor<T, OtherRank> &&existingTensor, std::string name, Dims... dims)
     : _name{std::move(name)}, _dims{static_cast<size_t>(dims)...} {
     this->_host_data   = existingTensor._host_data;
@@ -155,15 +153,6 @@ DeviceTensor<T, Rank>::DeviceTensor(DeviceTensor<T, OtherRank> &&existingTensor,
         }
         _dims[location] = existingTensor.size() / size;
     }
-
-    // Row-major order of dimensions
-    std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
-    size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
-
-    // Check size
-    if (_data.size() != size) {
-        throw std::runtime_error("Provided dims to not match size of parent tensor");
-    }
 }
 
 template <typename T, size_t Rank>
@@ -194,11 +183,11 @@ DeviceTensor<T, Rank>::DeviceTensor(Dim<Rank> dims, detail::HostToDeviceMode mod
         hip_catch(hipMalloc(&(this->_data), size * sizeof(T)));
     }
 
-    hip_catch(hipMalloc(&(this->_gpu_dims), sizeof(Dim<Rank>)));
-    hip_catch(hipMalloc(&(this->_gpu_strides), sizeof(Stride<Rank>)));
+    hip_catch(hipMalloc(&(this->_gpu_dims), sizeof(einsums::Dim<Rank>)));
+    hip_catch(hipMalloc(&(this->_gpu_strides), sizeof(einsums::Stride<Rank>)));
 
-    hip_catch(hipMemcpy(this->_gpu_dims, this->_dims, sizeof(Dim<Rank>), hipMemcpyHostToDevice));
-    hip_catch(hipMemcpy(this->_gpu_strides, this->_strides, sizeof(Stride<Rank>), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy(this->_gpu_dims, this->_dims, sizeof(einsums::Dim<Rank>), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy(this->_gpu_strides, this->_strides, sizeof(einsums::Stride<Rank>), hipMemcpyHostToDevice));
 }
 
 namespace detail {
@@ -206,8 +195,8 @@ namespace detail {
 /**
  * Turns a single numerical index into a list of indices into the tensor.
  */
-__host__ __device__ template <size_t Rank>
-void     index_to_combination(size_t index, const Dim<Rank> &dims, std::array<int, Rank> &out) {
+template <size_t Rank>
+__host__ __device__ void index_to_combination(size_t index, const einsums::Dim<Rank> &dims, std::array<int, Rank> &out) {
     size_t quot = index;
 
     for (ssize_t i = Rank - 1; i >= 0; i--) {
@@ -219,8 +208,9 @@ void     index_to_combination(size_t index, const Dim<Rank> &dims, std::array<in
 /**
  * Turns a list of indices into a single numerical index.
  */
-__host__ __device__ template <size_t Rank>
-size_t   combination_to_index(const std::array<int, Rank> &inds, const Dim<Rank> &dims, const Stride<Rank> &strides) {
+template <size_t Rank>
+__host__ __device__ size_t combination_to_index(const std::array<int, Rank> &inds, const einsums::Dim<Rank> &dims,
+                                                const einsums::Stride<Rank> &strides) {
     size_t out = 0;
     for (ssize_t i = 0; i < Rank; i++) {
         int ind = inds[i];
@@ -238,9 +228,9 @@ size_t   combination_to_index(const std::array<int, Rank> &inds, const Dim<Rank>
 /**
  * Kernel to copy a DeviceTensorView into a DeviceTensor object.
  */
-__global__ template <typename T, size_t Rank>
-void copy_to_tensor(T *to_data, const Dim<Rank> *to_dims, const Stride<Rank> *to_strides, const T *from_data, const Dim<Rank> *from_dims,
-                    const Stride<Rank> *from_strides, size_t elements) {
+template <typename T, size_t Rank>
+__global__ void copy_to_tensor(T *to_data, const einsums::Dim<Rank> *to_dims, const einsums::Stride<Rank> *to_strides, const T *from_data,
+                               const einsums::Dim<Rank> *from_dims, const einsums::Stride<Rank> *from_strides, size_t elements) {
 
     int worker, kernel_size;
 
@@ -283,9 +273,10 @@ void copy_to_tensor(T *to_data, const Dim<Rank> *to_dims, const Stride<Rank> *to
 /**
  * Kernel to copy a DeviceTensorView into a DeviceTensor object. Converts as well.
  */
-__global__ template <typename T, size_t Rank, typename TOther>
-void copy_to_tensor_conv(T *to_data, const Dim<Rank> *to_dims, const Stride<Rank> *to_strides, const TOther *from_data,
-                         const Dim<Rank> *from_dims, const Stride<Rank> *from_strides, size_t elements) {
+template <typename T, size_t Rank, typename TOther>
+__global__ void copy_to_tensor_conv(T *to_data, const einsums::Dim<Rank> *to_dims, const einsums::Stride<Rank> *to_strides,
+                                    const TOther *from_data, const einsums::Dim<Rank> *from_dims, const einsums::Stride<Rank> *from_strides,
+                                    size_t elements) {
 
     int worker, kernel_size;
 
@@ -325,7 +316,7 @@ void copy_to_tensor_conv(T *to_data, const Dim<Rank> *to_dims, const Stride<Rank
     __threadfence();
 }
 
-consteval dim3 constructor_blocks = dim3(32), constructor_threads = dim3(32);
+constexpr dim3 constructor_blocks = dim3(32), constructor_threads = dim3(32);
 
 } // namespace detail
 
@@ -345,26 +336,18 @@ DeviceTensor<T, Rank>::DeviceTensor(const DeviceTensorView<T, Rank> &other) : _n
     std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
     size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
 
-    if (mode == detail::MAPPED) {
-        this->_host_data = new T[size];
-        hip_catch(hipHostRegister(this->_host_data, size * sizeof(T), hipHostRegisterDefault));
-        hip_catch(hipHostGetDevicePointer(&(this->_data), this->_host_data, 0));
-    } else if (mode == detail::PINNED) {
-        hip_catch(hipHostMalloc(&(this->_host_data), size * sizeof(T), 0));
-        hip_catch(hipHostGetDevicePointer(&(this->_data), this->_host_data, 0));
-    } else if (mode == detail::DEV_ONLY) {
-        this->_host_data = nullptr;
-        hip_catch(hipMalloc(&(this->_data), size * sizeof(T)));
-    }
+    this->_mode      = detail::DEV_ONLY;
+    this->_host_data = nullptr;
+    hip_catch(hipMalloc(&(this->_data), size * sizeof(T)));
 
-    hip_catch(hipMalloc(&(this->_gpu_dims), sizeof(Dim<Rank>)));
-    hip_catch(hipMalloc(&(this->_gpu_strides), sizeof(Stride<Rank>)));
+    hip_catch(hipMalloc(&(this->_gpu_dims), sizeof(einsums::Dim<Rank>)));
+    hip_catch(hipMalloc(&(this->_gpu_strides), sizeof(einsums::Stride<Rank>)));
 
-    hip_catch(hipMemcpy(this->_gpu_dims, this->_dims, sizeof(Dim<Rank>), hipMemcpyHostToDevice));
-    hip_catch(hipMemcpy(this->_gpu_strides, this->_strides, sizeof(Stride<Rank>), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy(this->_gpu_dims, this->_dims, sizeof(einsums::Dim<Rank>), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy(this->_gpu_strides, this->_strides, sizeof(einsums::Stride<Rank>), hipMemcpyHostToDevice));
 
-    hipLaunchKernelGGL(deta<T, Rank>, constructor_threads, constructor_blocks, 0, 0, this->_data, this->_gpu_dims, this->_gpu_strides,
-                       other.data(), other.gpu_dims(), other.gpu_strides(), size);
+    detail::copy_to_tensor<T, Rank><<<detail::constructor_threads, detail::constructor_blocks>>>(
+        this->_data, this->_gpu_dims, this->_gpu_strides, other.data(), other.gpu_dims(), other.gpu_strides(), size);
 
     hip_catch(hipDeviceSynchronize());
 }
@@ -372,8 +355,8 @@ DeviceTensor<T, Rank>::DeviceTensor(const DeviceTensorView<T, Rank> &other) : _n
 namespace detail {
 
 // Set every entry in a tensor to an element.
-__global__ template <typename T, size_t Rank>
-void set_all(T *data, const Dim<Rank> *dims, const Stride<Rank> *strides, T value) {
+template <typename T, size_t Rank>
+__global__ void set_all(T *data, const einsums::Dim<Rank> *dims, const einsums::Stride<Rank> *strides, T value) {
     int worker, kernel_size;
 
     get_worker_info(worker, kernel_size);
@@ -396,10 +379,10 @@ void set_all(T *data, const Dim<Rank> *dims, const Stride<Rank> *strides, T valu
         std::array<int, Rank> inds;
 
         // Convert index into index combination.
-        index_to_combination(curr_element % elements, *to_dims, inds);
+        index_to_combination(curr_element % elements, *dims, inds);
 
         // Map index combination onto the tensor.
-        size_t ind = combination_to_index(inds, *to_dims, *to_strides);
+        size_t ind = combination_to_index(inds, *dims, *strides);
 
         // Do the copy.
         data[ind] = value;
@@ -415,21 +398,22 @@ void set_all(T *data, const Dim<Rank> *dims, const Stride<Rank> *strides, T valu
 
 template <typename T, size_t Rank>
 void DeviceTensor<T, Rank>::zero() {
-    hipLaunchKernelGGL(detail::set_all<T, Rank>, constructor_threads, constructor_blocks, 0, 0, this->_data, this->_gpu_dims,
-                       this->_gpu_strides, (T)0);
+    detail::set_all<T, Rank>
+        <<<detail::constructor_threads, detail::constructor_blocks>>>(this->_data, this->_gpu_dims, this->_gpu_strides, (T)0);
 
     hip_catch(hipDeviceSynchronize());
 }
 
 template <typename T, size_t Rank>
 void DeviceTensor<T, Rank>::set_all(T value) {
-    hipLaunchKernelGGL(detail::set_all<T, Rank>, constructor_threads, constructor_blocks, 0, 0, this->_data, this->_gpu_dims,
-                       this->_gpu_strides, value);
+    detail::set_all<T, Rank>
+        <<<detail::constructor_threads, detail::constructor_blocks>>>(this->_data, this->_gpu_dims, this->_gpu_strides, value);
 
     hip_catch(hipDeviceSynchronize());
 }
 
-template <typename T, size_t Rank, typename... MultiIndex>
+template <typename T, size_t Rank>
+template <typename... MultiIndex>
     requires requires {
         requires NoneOfType<AllT, MultiIndex...>;
         requires NoneOfType<Range, MultiIndex...>;
@@ -449,7 +433,8 @@ device_ptr T *DeviceTensor<T, Rank>::data(MultiIndex... index) {
 #endif
 }
 
-template <typename T, size_t Rank, typename... MultiIndex>
+template <typename T, size_t Rank>
+template <typename... MultiIndex>
     requires requires {
         requires NoneOfType<AllT, MultiIndex...>;
         requires NoneOfType<Range, MultiIndex...>;
@@ -474,7 +459,8 @@ T DeviceTensor<T, Rank>::operator()(MultiIndex... index) const {
     }
 }
 
-template <typename T, size_t Rank, typename... MultiIndex>
+template <typename T, size_t Rank>
+template <typename... MultiIndex>
     requires requires {
         requires NoneOfType<AllT, MultiIndex...>;
         requires NoneOfType<Range, MultiIndex...>;
@@ -497,7 +483,8 @@ HostDevReference<T> &DeviceTensor<T, Rank>::operator()(MultiIndex... index) {
     }
 }
 
-template <typename T, size_t Rank, typename... MultiIndex>
+template <typename T, size_t Rank>
+template <typename... MultiIndex>
     requires requires { requires AtLeastOneOfType<AllT, MultiIndex...>; }
 auto DeviceTensor<T, Rank>::operator()(MultiIndex... index)
     -> DeviceTensorView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> {
@@ -542,7 +529,8 @@ auto DeviceTensor<T, Rank>::operator()(MultiIndex... index)
                                                                                                              offsets, strides};
 }
 
-template <typename T, size_t Rank, typename... MultiIndex>
+template <typename T, size_t Rank>
+template <typename... MultiIndex>
     requires NumOfType<Range, Rank, MultiIndex...>
 auto DeviceTensor<T, Rank>::operator()(MultiIndex... index) const -> DeviceTensorView<T, Rank> {
     Dim<Rank>    dims{};
@@ -610,14 +598,14 @@ DeviceTensor<T, Rank> &DeviceTensor<T, Rank>::operator=(const DeviceTensor<T, Ra
             hip_catch(hipMalloc(&(this->_data), size * sizeof(T)));
         }
 
-        hip_catch(hipMemcpy(this->_gpu_dims, this->_dims, sizeof(Dim<Rank>), hipMemcpyHostToDevice));
-        hip_catch(hipMemcpy(this->_gpu_strides, this->_strides, sizeof(Stride<Rank>), hipMemcpyHostToDevice));
+        hip_catch(hipMemcpy(this->_gpu_dims, this->_dims, sizeof(einsums::Dim<Rank>), hipMemcpyHostToDevice));
+        hip_catch(hipMemcpy(this->_gpu_strides, this->_strides, sizeof(einsums::Stride<Rank>), hipMemcpyHostToDevice));
 
-        hipLaunchKernelGGL(detail::copy_to_tensor<T, Rank>, detail::constructor_threads, detail::constructor_blocks, 0, 0, this->_data,
-                           this->_gpu_dims, this->_gpu_strides, other._data, other._gpu_dims, other._gpu_strides, size);
+        detail::copy_to_tensor<T, Rank><<<detail::constructor_threads, detail::constructor_blocks>>>(
+            this->_data, this->_gpu_dims, this->_gpu_strides, other._data, other._gpu_dims, other._gpu_strides, size);
     } else {
-        hipLaunchKernelGGL(detail::copy_to_tensor<T, Rank>, detail::constructor_threads, detail::constructor_blocks, 0, 0, this->_data,
-                           this->_gpu_dims, this->_gpu_strides, other._data, other._gpu_dims, other._gpu_strides, _strides[0] * _dims[0]);
+        detail::copy_to_tensor<T, Rank><<<detail::constructor_threads, detail::constructor_blocks>>>(
+            this->_data, this->_gpu_dims, this->_gpu_strides, other._data, other._gpu_dims, other._gpu_strides, _strides[0] * _dims[0]);
     }
 
     hip_catch(hipDeviceSynchronize());
@@ -625,7 +613,8 @@ DeviceTensor<T, Rank> &DeviceTensor<T, Rank>::operator=(const DeviceTensor<T, Ra
     return *this;
 }
 
-template <typename T, size_t Rank, typename TOther>
+template <typename T, size_t Rank>
+template <typename TOther>
     requires(!std::same_as<T, TOther>)
 auto DeviceTensor<T, Rank>::operator=(const DeviceTensor<TOther, Rank> &other) -> DeviceTensor<T, Rank> & {
     bool realloc{false};
@@ -672,15 +661,14 @@ auto DeviceTensor<T, Rank>::operator=(const DeviceTensor<TOther, Rank> &other) -
             hip_catch(hipMalloc(&(this->_data), size * sizeof(T)));
         }
 
-        hip_catch(hipMemcpy(this->_gpu_dims, this->_dims, sizeof(Dim<Rank>), hipMemcpyHostToDevice));
-        hip_catch(hipMemcpy(this->_gpu_strides, this->_strides, sizeof(Stride<Rank>), hipMemcpyHostToDevice));
+        hip_catch(hipMemcpy(this->_gpu_dims, this->_dims, sizeof(einsums::Dim<Rank>), hipMemcpyHostToDevice));
+        hip_catch(hipMemcpy(this->_gpu_strides, this->_strides, sizeof(einsums::Stride<Rank>), hipMemcpyHostToDevice));
 
-        hipLaunchKernelGGL(detail::copy_to_tensor_conv<T, Rank, TOther>, detail::constructor_threads, detail::constructor_blocks, 0, 0,
-                           this->_data, this->_gpu_dims, this->_gpu_strides, other._data, other._gpu_dims, other._gpu_strides, size);
+        detail::copy_to_tensor_conv<T, Rank, TOther><<<detail::constructor_threads, detail::constructor_blocks>>>(
+            this->_data, this->_gpu_dims, this->_gpu_strides, other._data, other._gpu_dims, other._gpu_strides, size);
     } else {
-        hipLaunchKernelGGL(detail::copy_to_tensor_conv<T, Rank, TOther>, detail::constructor_threads, detail::constructor_blocks, 0, 0,
-                           this->_data, this->_gpu_dims, this->_gpu_strides, other._data, other._gpu_dims, other._gpu_strides,
-                           _strides[0] * _dims[0]);
+        detail::copy_to_tensor_conv<T, Rank, TOther><<<detail::constructor_threads, detail::constructor_blocks>>>(
+            this->_data, this->_gpu_dims, this->_gpu_strides, other._data, other._gpu_dims, other._gpu_strides, _strides[0] * _dims[0]);
     }
 
     hip_catch(hipDeviceSynchronize());
@@ -688,11 +676,11 @@ auto DeviceTensor<T, Rank>::operator=(const DeviceTensor<TOther, Rank> &other) -
     return *this;
 }
 
-template <typename T, size_t Rank, typename TOther>
+template <typename T, size_t Rank>
+template <typename TOther>
 auto DeviceTensor<T, Rank>::operator=(const DeviceTensorView<TOther, Rank> &other) -> DeviceTensor<T, Rank> & {
-    hipLaunchKernelGGL(detail::copy_to_tensor_conv<T, Rank, TOther>, detail::constructor_threads, detail::constructor_blocks, 0, 0,
-                       this->_data, this->_gpu_dims, this->_gpu_strides, other.data(), other.gpu_dims(), other.gpu_strides(),
-                       _strides[0] * _dims[0]);
+    detail::copy_to_tensor_conv<T, Rank, TOther><<<detail::constructor_threads, detail::constructor_blocks>>>(
+        this->_data, this->_gpu_dims, this->_gpu_strides, other.data(), other.gpu_dims(), other.gpu_strides(), _strides[0] * _dims[0]);
     return *this;
 }
 
@@ -706,9 +694,9 @@ namespace detail {
 /**
  * Kernel to do assignment and operation. This is addition.
  */
-__global__ template <typename T, size_t Rank>
-void add_and_assign(T *to_data, const Dim<Rank> *to_dims, const Stride<Rank> *to_strides, const T *from_data, const Dim<Rank> *from_dims,
-                    const Stride<Rank> *from_strides, size_t elements) {
+template <typename T, size_t Rank>
+__global__ void add_and_assign(T *to_data, const Dim<Rank> *to_dims, const Stride<Rank> *to_strides, const T *from_data,
+                               const Dim<Rank> *from_dims, const Stride<Rank> *from_strides, size_t elements) {
 
     int worker, kernel_size;
 
@@ -751,9 +739,9 @@ void add_and_assign(T *to_data, const Dim<Rank> *to_dims, const Stride<Rank> *to
 /**
  * Kernel to do assignment and operation. This is subtraction.
  */
-__global__ template <typename T, size_t Rank>
-void sub_and_assign(T *to_data, const Dim<Rank> *to_dims, const Stride<Rank> *to_strides, const T *from_data, const Dim<Rank> *from_dims,
-                    const Stride<Rank> *from_strides, size_t elements) {
+template <typename T, size_t Rank>
+__global__ void sub_and_assign(T *to_data, const Dim<Rank> *to_dims, const Stride<Rank> *to_strides, const T *from_data,
+                               const Dim<Rank> *from_dims, const Stride<Rank> *from_strides, size_t elements) {
 
     int worker, kernel_size;
 
@@ -796,9 +784,9 @@ void sub_and_assign(T *to_data, const Dim<Rank> *to_dims, const Stride<Rank> *to
 /**
  * Kernel to do assignment and operation. This is multiplication.
  */
-__global__ template <typename T, size_t Rank>
-void mul_and_assign(T *to_data, const Dim<Rank> *to_dims, const Stride<Rank> *to_strides, const T *from_data, const Dim<Rank> *from_dims,
-                    const Stride<Rank> *from_strides, size_t elements) {
+template <typename T, size_t Rank>
+__global__ void mul_and_assign(T *to_data, const Dim<Rank> *to_dims, const Stride<Rank> *to_strides, const T *from_data,
+                               const Dim<Rank> *from_dims, const Stride<Rank> *from_strides, size_t elements) {
 
     int worker, kernel_size;
 
@@ -841,9 +829,9 @@ void mul_and_assign(T *to_data, const Dim<Rank> *to_dims, const Stride<Rank> *to
 /**
  * Kernel to do assignment and operation. This is division.
  */
-__global__ template <typename T, size_t Rank>
-void div_and_assign(T *to_data, const Dim<Rank> *to_dims, const Stride<Rank> *to_strides, const T *from_data, const Dim<Rank> *from_dims,
-                    const Stride<Rank> *from_strides, size_t elements) {
+template <typename T, size_t Rank>
+__global__ void div_and_assign(T *to_data, const Dim<Rank> *to_dims, const Stride<Rank> *to_strides, const T *from_data,
+                               const Dim<Rank> *from_dims, const Stride<Rank> *from_strides, size_t elements) {
 
     int worker, kernel_size;
 
@@ -886,8 +874,8 @@ void div_and_assign(T *to_data, const Dim<Rank> *to_dims, const Stride<Rank> *to
 /**
  * Kernel to do assignment and scalar operation. This is addition.
  */
-__global__ template <typename T, size_t Rank>
-void add_and_assign_scal(T *to_data, const Dim<Rank> *to_dims, const Stride<Rank> *to_strides, T scalar, size_t elements) {
+template <typename T, size_t Rank>
+__global__ void add_and_assign_scal(T *to_data, const Dim<Rank> *to_dims, const Stride<Rank> *to_strides, T scalar, size_t elements) {
 
     int worker, kernel_size;
 
@@ -927,8 +915,8 @@ void add_and_assign_scal(T *to_data, const Dim<Rank> *to_dims, const Stride<Rank
 /**
  * Kernel to do assignment and scalar operation. This is subtraction.
  */
-__global__ template <typename T, size_t Rank>
-void sub_and_assign_scal(T *to_data, const Dim<Rank> *to_dims, const Stride<Rank> *to_strides, T scalar, size_t elements) {
+template <typename T, size_t Rank>
+__global__ void sub_and_assign_scal(T *to_data, const Dim<Rank> *to_dims, const Stride<Rank> *to_strides, T scalar, size_t elements) {
 
     int worker, kernel_size;
 
@@ -968,8 +956,8 @@ void sub_and_assign_scal(T *to_data, const Dim<Rank> *to_dims, const Stride<Rank
 /**
  * Kernel to do assignment and scalar operation. This is multiplication.
  */
-__global__ template <typename T, size_t Rank>
-void mul_and_assign_scal(T *to_data, const Dim<Rank> *to_dims, const Stride<Rank> *to_strides, T scalar, size_t elements) {
+template <typename T, size_t Rank>
+__global__ void mul_and_assign_scal(T *to_data, const Dim<Rank> *to_dims, const Stride<Rank> *to_strides, T scalar, size_t elements) {
 
     int worker, kernel_size;
 
@@ -1009,8 +997,8 @@ void mul_and_assign_scal(T *to_data, const Dim<Rank> *to_dims, const Stride<Rank
 /**
  * Kernel to do assignment and scalar operation. This is division.
  */
-__global__ template <typename T, size_t Rank>
-void div_and_assign_scal(T *to_data, const Dim<Rank> *to_dims, const Stride<Rank> *to_strides, T scalar, size_t elements) {
+template <typename T, size_t Rank>
+__global__ void div_and_assign_scal(T *to_data, const Dim<Rank> *to_dims, const Stride<Rank> *to_strides, T scalar, size_t elements) {
 
     int worker, kernel_size;
 
@@ -1051,94 +1039,94 @@ void div_and_assign_scal(T *to_data, const Dim<Rank> *to_dims, const Stride<Rank
 
 template <typename T, size_t Rank>
 DeviceTensor<T, Rank> &DeviceTensor<T, Rank>::operator+=(const T &other) {
-    hipLaunchKernelGGL(detail::add_and_assign_scalar<T, Rank>, detail::constructor_threads, detail::constructor_blocks, 0, 0, this->_data,
-                       this->_gpu_dims, this->_gpu_strides, other, _strides[0] * _dims[0]);
+    detail::add_and_assign_scal<T, Rank><<<detail::constructor_threads, detail::constructor_blocks>>>(
+        this->_data, this->_gpu_dims, this->_gpu_strides, other, _strides[0] * _dims[0]);
     return *this;
 }
 
 template <typename T, size_t Rank>
 DeviceTensor<T, Rank> &DeviceTensor<T, Rank>::operator-=(const T &other) {
-    hipLaunchKernelGGL(detail::sub_and_assign_scalar<T, Rank>, detail::constructor_threads, detail::constructor_blocks, 0, 0, this->_data,
-                       this->_gpu_dims, this->_gpu_strides, other, _strides[0] * _dims[0]);
+    detail::sub_and_assign_scal<T, Rank><<<detail::constructor_threads, detail::constructor_blocks>>>(
+        this->_data, this->_gpu_dims, this->_gpu_strides, other, _strides[0] * _dims[0]);
     return *this;
 }
 
 template <typename T, size_t Rank>
 DeviceTensor<T, Rank> &DeviceTensor<T, Rank>::operator*=(const T &other) {
-    hipLaunchKernelGGL(detail::mul_and_assign_scalar<T, Rank>, detail::constructor_threads, detail::constructor_blocks, 0, 0, this->_data,
-                       this->_gpu_dims, this->_gpu_strides, other, _strides[0] * _dims[0]);
+    detail::mul_and_assign_scal<T, Rank><<<detail::constructor_threads, detail::constructor_blocks>>>(
+        this->_data, this->_gpu_dims, this->_gpu_strides, other, _strides[0] * _dims[0]);
     return *this;
 }
 
 template <typename T, size_t Rank>
 DeviceTensor<T, Rank> &DeviceTensor<T, Rank>::operator/=(const T &other) {
-    hipLaunchKernelGGL(detail::div_and_assign_scalar<T, Rank>, detail::constructor_threads, detail::constructor_blocks, 0, 0, this->_data,
-                       this->_gpu_dims, this->_gpu_strides, other, _strides[0] * _dims[0]);
+    detail::div_and_assign_scal<T, Rank><<<detail::constructor_threads, detail::constructor_blocks>>>(
+        this->_data, this->_gpu_dims, this->_gpu_strides, other, _strides[0] * _dims[0]);
     return *this;
 }
 
 template <typename T, size_t Rank>
 DeviceTensor<T, Rank> &DeviceTensor<T, Rank>::operator+=(const DeviceTensor<T, Rank> &other) {
-    hipLaunchKernelGGL(detail::add_and_assign<T, Rank>, detail::constructor_threads, detail::constructor_blocks, 0, 0, this->_data,
-                       this->_gpu_dims, this->_gpu_strides, other.data(), other.gpu_dims(), other.gpu_strides(), _strides[0] * _dims[0]);
+    detail::add_and_assign<T, Rank><<<detail::constructor_threads, detail::constructor_blocks>>>(
+        this->_data, this->_gpu_dims, this->_gpu_strides, other.data(), other.gpu_dims(), other.gpu_strides(), _strides[0] * _dims[0]);
     return *this;
 }
 
 template <typename T, size_t Rank>
 DeviceTensor<T, Rank> &DeviceTensor<T, Rank>::operator-=(const DeviceTensor<T, Rank> &other) {
-    hipLaunchKernelGGL(detail::sub_and_assign<T, Rank>, detail::constructor_threads, detail::constructor_blocks, 0, 0, this->_data,
-                       this->_gpu_dims, this->_gpu_strides, other.data(), other.gpu_dims(), other.gpu_strides(), _strides[0] * _dims[0]);
+    detail::sub_and_assign<T, Rank><<<detail::constructor_threads, detail::constructor_blocks>>>(
+        this->_data, this->_gpu_dims, this->_gpu_strides, other.data(), other.gpu_dims(), other.gpu_strides(), _strides[0] * _dims[0]);
     return *this;
 }
 
 template <typename T, size_t Rank>
 DeviceTensor<T, Rank> &DeviceTensor<T, Rank>::operator*=(const DeviceTensor<T, Rank> &other) {
-    hipLaunchKernelGGL(detail::mul_and_assign<T, Rank>, detail::constructor_threads, detail::constructor_blocks, 0, 0, this->_data,
-                       this->_gpu_dims, this->_gpu_strides, other.data(), other.gpu_dims(), other.gpu_strides(), _strides[0] * _dims[0]);
+    detail::mul_and_assign<T, Rank><<<detail::constructor_threads, detail::constructor_blocks>>>(
+        this->_data, this->_gpu_dims, this->_gpu_strides, other.data(), other.gpu_dims(), other.gpu_strides(), _strides[0] * _dims[0]);
     return *this;
 }
 
 template <typename T, size_t Rank>
 DeviceTensor<T, Rank> &DeviceTensor<T, Rank>::operator/=(const DeviceTensor<T, Rank> &other) {
-    hipLaunchKernelGGL(detail::div_and_assign<T, Rank>, detail::constructor_threads, detail::constructor_blocks, 0, 0, this->_data,
-                       this->_gpu_dims, this->_gpu_strides, other.data(), other.gpu_dims(), other.gpu_strides(), _strides[0] * _dims[0]);
+    detail::div_and_assign<T, Rank><<<detail::constructor_threads, detail::constructor_blocks>>>(
+        this->_data, this->_gpu_dims, this->_gpu_strides, other.data(), other.gpu_dims(), other.gpu_strides(), _strides[0] * _dims[0]);
     return *this;
 }
 
-template<typename T, size_t Rank>
+template <typename T, size_t Rank>
 DeviceTensor<T, Rank>::DeviceTensor(const Tensor<T, Rank> &copy, detail::HostToDeviceMode mode) {
     this->_name    = copy._name;
     this->_dims    = copy._dims;
     this->_strides = copy._strides;
-    this->_mode = mode;
+    this->_mode    = mode;
 
     if (mode == detail::MAPPED) {
-        this->_host_data = new T[size];
-        hip_catch(hipHostRegister(this->_host_data, size * sizeof(T), hipHostRegisterDefault));
+        this->_host_data = new T[copy.size()];
+        hip_catch(hipHostRegister(this->_host_data, copy.size() * sizeof(T), hipHostRegisterDefault));
         hip_catch(hipHostGetDevicePointer(&(this->_data), this->_host_data, 0));
     } else if (mode == detail::PINNED) {
-        hip_catch(hipHostMalloc(&(this->_host_data), size * sizeof(T), 0));
+        hip_catch(hipHostMalloc(&(this->_host_data), copy.size() * sizeof(T), 0));
         hip_catch(hipHostGetDevicePointer(&(this->_data), this->_host_data, 0));
     } else if (mode == detail::DEV_ONLY) {
         this->_host_data = nullptr;
-        hip_catch(hipMalloc(&(this->_data), size * sizeof(T)));
+        hip_catch(hipMalloc(&(this->_data), copy.size() * sizeof(T)));
     }
 
     hip_catch(hipMemcpy(this->_data, copy.data(), copy.size() * sizeof(T), hipMemcpyHostToDevice));
 
-    hip_catch(hipMalloc(&(this->_gpu_dims), sizeof(<Rank>)));
-    hip_catch(hipMalloc(&(this->_gpu_strides), sizeof(Stride<Rank>)));
+    hip_catch(hipMalloc(&(this->_gpu_dims), sizeof(einsums::Dim<Rank>)));
+    hip_catch(hipMalloc(&(this->_gpu_strides), sizeof(einsums::Stride<Rank>)));
 
-    hip_catch(hipMemcpy(this->_gpu_dims, this->_dims, sizeof(Dim<Rank>), hipMemcpyHostToDevice));
-    hip_catch(hipMemcpy(this->_gpu_strides, this->_strides, sizeof(Stride<Rank>), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy(this->_gpu_dims, this->_dims, sizeof(einsums::Dim<Rank>), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy(this->_gpu_strides, this->_strides, sizeof(einsums::Stride<Rank>), hipMemcpyHostToDevice));
 }
 
-template<typename T, size_t Rank>
+template <typename T, size_t Rank>
 DeviceTensor<T, Rank>::operator Tensor<T, Rank>() {
     Tensor<T, Rank> out(this->_dims);
 
     out.set_name(this->_name);
-    
+
     hip_catch(hipMemcpy(out.data(), this->_data, this->size() * sizeof(T), hipMemcpyDeviceToHost));
 
     return out;
