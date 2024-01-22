@@ -17,23 +17,22 @@ DeviceTensorView<T, Rank>::DeviceTensorView(const DeviceTensorView<T, Rank> &cop
     this->_data                    = copy.data();
     this->_full_view_of_underlying = copy.full_view_of_underlying();
 
-    hip_catch(hipMalloc(&(this->_gpu_dims), sizeof(Dim<Rank>)));
-    hip_catch(hipMalloc(&(this->_gpu_strides), sizeof(Stride<Rank>)));
+    hip_catch(hipMalloc((void **)&(this->_gpu_dims), sizeof(size_t) * Rank));
+    hip_catch(hipMalloc((void **)&(this->_gpu_strides), sizeof(size_t) * Rank));
 
-    hip_catch(hipMemcpy(this->_gpu_dims, this->_dims, sizeof(Dim<Rank>), hipMemcpyHostToDevice));
-    hip_catch(hipMemcpy(this->_gpu_strides, this->_strides, sizeof(Stride<Rank>), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy((void *)this->_gpu_dims, (const void *)this->_dims.cbegin(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy((void *)this->_gpu_strides, (const void *)this->_strides.cbegin(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
 }
 
 template <typename T, size_t Rank>
 DeviceTensorView<T, Rank>::~DeviceTensorView() {
-    hip_catch(hipFree(this->_gpu_dims));
-    hip_catch(hipFree(this->_gpu_strides));
+    hip_catch(hipFree((void *)this->_gpu_dims));
+    hip_catch(hipFree((void *)this->_gpu_strides));
 }
 
 namespace detail {
 template <typename T, size_t Rank>
-__global__ void copy_to_tensor_array(T *to_data, const Dim<Rank> *to_dims, const Stride<Rank> *to_strides, const T *from_data,
-                                     size_t elements) {
+__global__ void copy_to_tensor_array(T *to_data, const size_t *to_dims, const size_t *to_strides, const T *from_data, size_t elements) {
 
     int worker, kernel_size;
 
@@ -51,14 +50,15 @@ __global__ void copy_to_tensor_array(T *to_data, const Dim<Rank> *to_dims, const
         elements_adjusted = elements + (block_size - (elements % block_size));
     }
 
+    size_t inds[Rank];
+
     while (curr_element < elements_adjusted) {
-        std::array<int, Rank> inds;
 
         // Convert index into index combination.
-        index_to_combination(curr_element % elements, *to_dims, inds);
+        index_to_combination<Rank>(curr_element % elements, to_dims, inds);
 
         // Map index combination onto the tensor.
-        size_t to_ind = combination_to_index(inds, *to_dims, *to_strides);
+        size_t to_ind = combination_to_index<Rank>(inds, to_dims, to_strides);
 
         // Do the copy.
         to_data[to_ind] = from_data[curr_element % elements];
@@ -75,15 +75,15 @@ template <typename T, size_t Rank>
 DeviceTensorView<T, Rank> &DeviceTensorView<T, Rank>::operator=(const host_ptr T *data) {
     T *gpu_ptr;
 
-    hip_catch(hipHostRegister(data, this->size() * sizeof(T), hipHostRegisterDefault));
-    hip_catch(hipHostGetDevicePointer(&gpu_ptr, data, 0));
+    hip_catch(hipHostRegister((void *)data, this->size() * sizeof(T), hipHostRegisterDefault));
+    hip_catch(hipHostGetDevicePointer((void **)&gpu_ptr, (void *)data, 0));
 
     detail::copy_to_tensor_array<T, Rank><<<detail::constructor_threads, detail::constructor_blocks>>>(
         this->_data, this->_gpu_dims, this->_gpu_strides, gpu_ptr, this->size());
 
     hip_catch(hipDeviceSynchronize());
 
-    hip_catch(hipHostUnregister(data));
+    hip_catch(hipHostUnregister((void *)data));
 
     return *this;
 }
@@ -279,11 +279,11 @@ auto DeviceTensorView<T, Rank>::common_initialization(TensorType<T, OtherRank> &
     size_t ordinal = std::inner_product(offsets.begin(), offsets.end(), other._strides.begin(), size_t{0});
     _data          = other._data + ordinal;
 
-    hip_catch(hipMalloc(&(this->_gpu_dims), sizeof(Dim<Rank>)));
-    hip_catch(hipMalloc(&(this->_gpu_strides), sizeof(Stride<Rank>)));
+    hip_catch(hipMalloc((void **)&(this->_gpu_dims), sizeof(size_t) * Rank));
+    hip_catch(hipMalloc((void **)&(this->_gpu_strides), sizeof(size_t) * Rank));
 
-    hip_catch(hipMemcpy(this->_gpu_dims, this->_dims, sizeof(Dim<Rank>), hipMemcpyHostToDevice));
-    hip_catch(hipMemcpy(this->_gpu_strides, this->_strides, sizeof(Stride<Rank>), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy((void *)this->_gpu_dims, (const void *)this->_dims.cbegin(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy((void *)this->_gpu_strides, (const void *)this->_strides.cbegin(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
 }
 
 } // namespace gpu

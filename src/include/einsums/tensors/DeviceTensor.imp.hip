@@ -20,21 +20,21 @@ DeviceTensor<T, Rank>::DeviceTensor(const DeviceTensor<T, Rank> &copy) {
     this->_strides = copy._strides;
     this->mode     = detail::DEV_ONLY;
 
-    hip_catch(hipMalloc(&(this->_data, copy.size() * sizeof(T))));
+    hip_catch(hipMalloc((void **)&(this->_data), copy.size() * sizeof(T)));
 
     if (copy._mode == detail::DEV_ONLY) {
-        hip_catch(hipMemcpy(this->_data, copy._data, copy.size() * sizeof(T), hipMemcpyDeviceToDevice));
+        hip_catch(hipMemcpy((void *)this->_data, (const void *)copy._data, copy.size() * sizeof(T), hipMemcpyDeviceToDevice));
     } else {
-        hip_catch(hipMemcpy(this->_data, copy._host_data, copy.size() * sizeof(T), hipMemcpyHostToDevice));
+        hip_catch(hipMemcpy((void *)this->_data, (const void *)copy._host_data, copy.size() * sizeof(T), hipMemcpyHostToDevice));
     }
 
     this->_host_data = nullptr;
 
-    hip_catch(hipMalloc(&(this->_gpu_dims), sizeof(Dim<Rank>)));
-    hip_catch(hipMalloc(&(this->_gpu_strides), sizeof(Stride<Rank>)));
+    hip_catch(hipMalloc((void **)&(this->_gpu_dims), sizeof(size_t) * Rank));
+    hip_catch(hipMalloc((void **)&(this->_gpu_strides), sizeof(size_t) * Rank));
 
-    hip_catch(hipMemcpy(this->_gpu_dims, this->_dims, sizeof(Dim<Rank>), hipMemcpyHostToDevice));
-    hip_catch(hipMemcpy(this->_gpu_strides, this->_strides, sizeof(Stride<Rank>), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy((void *)this->_gpu_dims, (const void *)this->_dims.cbegin(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy((void *)this->_gpu_strides, (const void *)this->_strides.cbegin(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
 }
 
 template <typename T, size_t Rank>
@@ -43,20 +43,20 @@ DeviceTensor<T, Rank>::~DeviceTensor() {
         if (this->_host_data == nullptr) {
             return;
         }
-        hip_catch(hipHostUnregister((void *) this->_host_data));
+        hip_catch(hipHostUnregister((void *)this->_host_data));
         delete[] this->_host_data;
     } else if (this->_mode == detail::PINNED) {
-        hip_catch(hipHostFree((void *) this->_host_data));
+        hip_catch(hipHostFree((void *)this->_host_data));
     } else if (this->_mode == detail::DEV_ONLY) {
-        hip_catch(hipFree((void *) this->_data));
+        hip_catch(hipFree((void *)this->_data));
     }
 
     if (this->_gpu_dims != nullptr) {
-        hip_catch(hipFree((void *) this->_gpu_dims));
+        hip_catch(hipFree((void *)this->_gpu_dims));
     }
 
     if (this->_gpu_strides != nullptr) {
-        hip_catch(hipFree((void *) this->_gpu_strides));
+        hip_catch(hipFree((void *)this->_gpu_strides));
     }
 }
 
@@ -82,21 +82,21 @@ DeviceTensor<T, Rank>::DeviceTensor(std::string name, detail::HostToDeviceMode m
 
     if (mode == detail::MAPPED) {
         this->_host_data = new T[size];
-        hip_catch(hipHostRegister((void *) this->_host_data, size * sizeof(T), hipHostRegisterDefault));
-        hip_catch(hipHostGetDevicePointer((void **) &(this->_data), (void *) this->_host_data, 0));
+        hip_catch(hipHostRegister((void *)this->_host_data, size * sizeof(T), hipHostRegisterDefault));
+        hip_catch(hipHostGetDevicePointer((void **)&(this->_data), (void *)this->_host_data, 0));
     } else if (mode == detail::PINNED) {
-        hip_catch(hipHostMalloc(&(this->_host_data), size * sizeof(T), 0));
-        hip_catch(hipHostGetDevicePointer((void **) &(this->_data), (void *) this->_host_data, 0));
+        hip_catch(hipHostMalloc((void **)&(this->_host_data), size * sizeof(T), 0));
+        hip_catch(hipHostGetDevicePointer((void **)&(this->_data), (void *)this->_host_data, 0));
     } else if (mode == detail::DEV_ONLY) {
         this->_host_data = nullptr;
-        hip_catch(hipMalloc(&(this->_data), size * sizeof(T)));
+        hip_catch(hipMalloc((void **)&(this->_data), size * sizeof(T)));
     }
 
-    hip_catch(hipMalloc(&(this->_gpu_dims), sizeof(einsums::Dim<Rank>)));
-    hip_catch(hipMalloc(&(this->_gpu_strides), sizeof(einsums::Stride<Rank>)));
+    hip_catch(hipMalloc((void **)&(this->_gpu_dims), sizeof(size_t) * Rank));
+    hip_catch(hipMalloc((void **)&(this->_gpu_strides), sizeof(size_t) * Rank));
 
-    hip_catch(hipMemcpy((void *) this->_gpu_dims, (void *) &(this->_dims), sizeof(einsums::Dim<Rank>), hipMemcpyHostToDevice));
-    hip_catch(hipMemcpy((void *) this->_gpu_strides, (void *) &(this->_strides), sizeof(einsums::Stride<Rank>), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy((void *)this->_gpu_dims, (const void *)this->_dims.cbegin(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy((void *)this->_gpu_strides, (const void *)this->_strides.cbegin(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
 }
 
 template <typename T, size_t Rank>
@@ -107,6 +107,7 @@ DeviceTensor<T, Rank>::DeviceTensor(DeviceTensor<T, OtherRank> &&existingTensor,
     this->_data        = existingTensor._data;
     this->_gpu_dims    = existingTensor._gpu_dims;
     this->_gpu_strides = existingTensor._gpu_strides;
+    this->_strides     = existingTensor._strides;
 
     this->_mode = existingTensor._mode;
 
@@ -173,21 +174,21 @@ DeviceTensor<T, Rank>::DeviceTensor(Dim<Rank> dims, detail::HostToDeviceMode mod
 
     if (mode == detail::MAPPED) {
         this->_host_data = new T[size];
-        hip_catch(hipHostRegister(this->_host_data, size * sizeof(T), hipHostRegisterDefault));
-        hip_catch(hipHostGetDevicePointer(&(this->_data), this->_host_data, 0));
+        hip_catch(hipHostRegister((void *)this->_host_data, size * sizeof(T), hipHostRegisterDefault));
+        hip_catch(hipHostGetDevicePointer((void **)&(this->_data), (void *)this->_host_data, 0));
     } else if (mode == detail::PINNED) {
-        hip_catch(hipHostMalloc(&(this->_host_data), size * sizeof(T), 0));
-        hip_catch(hipHostGetDevicePointer(&(this->_data), this->_host_data, 0));
+        hip_catch(hipHostMalloc((void **)&(this->_host_data), size * sizeof(T), 0));
+        hip_catch(hipHostGetDevicePointer((void **)&(this->_data), (void *)this->_host_data, 0));
     } else if (mode == detail::DEV_ONLY) {
         this->_host_data = nullptr;
-        hip_catch(hipMalloc(&(this->_data), size * sizeof(T)));
+        hip_catch(hipMalloc((void **)&(this->_data), size * sizeof(T)));
     }
 
-    hip_catch(hipMalloc(&(this->_gpu_dims), sizeof(einsums::Dim<Rank>)));
-    hip_catch(hipMalloc(&(this->_gpu_strides), sizeof(einsums::Stride<Rank>)));
+    hip_catch(hipMalloc((void **)&(this->_gpu_dims), sizeof(size_t) * Rank));
+    hip_catch(hipMalloc((void **)&(this->_gpu_strides), sizeof(size_t) * Rank));
 
-    hip_catch(hipMemcpy(this->_gpu_dims, this->_dims, sizeof(einsums::Dim<Rank>), hipMemcpyHostToDevice));
-    hip_catch(hipMemcpy(this->_gpu_strides, this->_strides, sizeof(einsums::Stride<Rank>), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy((void *)this->_gpu_dims, (const void *)this->_dims.cbegin(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy((void *)this->_gpu_strides, (const void *)this->_strides.cbegin(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
 }
 
 namespace detail {
@@ -196,7 +197,7 @@ namespace detail {
  * Turns a single numerical index into a list of indices into the tensor.
  */
 template <size_t Rank>
-__host__ __device__ void index_to_combination(size_t index, const einsums::Dim<Rank> &dims, std::array<int, Rank> &out) {
+__host__ __device__ void index_to_combination(size_t index, const size_t *dims, size_t *out) {
     size_t quot = index;
 
     for (ssize_t i = Rank - 1; i >= 0; i--) {
@@ -209,8 +210,7 @@ __host__ __device__ void index_to_combination(size_t index, const einsums::Dim<R
  * Turns a list of indices into a single numerical index.
  */
 template <size_t Rank>
-__host__ __device__ size_t combination_to_index(const std::array<int, Rank> &inds, const einsums::Dim<Rank> &dims,
-                                                const einsums::Stride<Rank> &strides) {
+__host__ __device__ size_t combination_to_index(const size_t *inds, const size_t *dims, const size_t *strides) {
     size_t out = 0;
     for (ssize_t i = 0; i < Rank; i++) {
         int ind = inds[i];
@@ -229,8 +229,8 @@ __host__ __device__ size_t combination_to_index(const std::array<int, Rank> &ind
  * Kernel to copy a DeviceTensorView into a DeviceTensor object.
  */
 template <typename T, size_t Rank>
-__global__ void copy_to_tensor(T *to_data, const einsums::Dim<Rank> *to_dims, const einsums::Stride<Rank> *to_strides, const T *from_data,
-                               const einsums::Dim<Rank> *from_dims, const einsums::Stride<Rank> *from_strides, size_t elements) {
+__global__ void copy_to_tensor(T *to_data, const size_t *to_dims, const size_t *to_strides, const T *from_data, const size_t *from_dims,
+                               size_t *from_strides, size_t elements) {
 
     int worker, kernel_size;
 
@@ -248,17 +248,18 @@ __global__ void copy_to_tensor(T *to_data, const einsums::Dim<Rank> *to_dims, co
         elements_adjusted = elements + (block_size - (elements % block_size));
     }
 
+    size_t inds[Rank];
+
     while (curr_element < elements_adjusted) {
-        std::array<int, Rank> inds;
 
         // Convert index into index combination.
-        index_to_combination(curr_element % elements, *to_dims, inds);
+        index_to_combination<Rank>(curr_element % elements, to_dims, inds);
 
         // Map index combination onto the view.
-        size_t from_ind = combination_to_index(inds, *from_dims, *from_strides);
+        size_t from_ind = combination_to_index<Rank>(inds, from_dims, from_strides);
 
         // Map index combination onto the tensor.
-        size_t to_ind = combination_to_index(inds, *to_dims, *to_strides);
+        size_t to_ind = combination_to_index<Rank>(inds, to_dims, to_strides);
 
         // Do the copy.
         to_data[to_ind] = from_data[from_ind];
@@ -274,9 +275,8 @@ __global__ void copy_to_tensor(T *to_data, const einsums::Dim<Rank> *to_dims, co
  * Kernel to copy a DeviceTensorView into a DeviceTensor object. Converts as well.
  */
 template <typename T, size_t Rank, typename TOther>
-__global__ void copy_to_tensor_conv(T *to_data, const einsums::Dim<Rank> *to_dims, const einsums::Stride<Rank> *to_strides,
-                                    const TOther *from_data, const einsums::Dim<Rank> *from_dims, const einsums::Stride<Rank> *from_strides,
-                                    size_t elements) {
+__global__ void copy_to_tensor_conv(T *to_data, const size_t *to_dims, const size_t *to_strides, const TOther *from_data,
+                                    const size_t *from_dims, const size_t *from_strides, size_t elements) {
 
     int worker, kernel_size;
 
@@ -294,17 +294,18 @@ __global__ void copy_to_tensor_conv(T *to_data, const einsums::Dim<Rank> *to_dim
         elements_adjusted = elements + (block_size - (elements % block_size));
     }
 
+    size_t inds[Rank];
+
     while (curr_element < elements_adjusted) {
-        std::array<int, Rank> inds;
 
         // Convert index into index combination.
-        index_to_combination(curr_element % elements, *to_dims, inds);
+        index_to_combination<Rank>(curr_element % elements, to_dims, inds);
 
         // Map index combination onto the view.
-        size_t from_ind = combination_to_index(inds, *from_dims, *from_strides);
+        size_t from_ind = combination_to_index<Rank>(inds, from_dims, from_strides);
 
         // Map index combination onto the tensor.
-        size_t to_ind = combination_to_index(inds, *to_dims, *to_strides);
+        size_t to_ind = combination_to_index<Rank>(inds, to_dims, to_strides);
 
         // Do the copy.
         to_data[to_ind] = (T)from_data[from_ind];
@@ -338,13 +339,13 @@ DeviceTensor<T, Rank>::DeviceTensor(const DeviceTensorView<T, Rank> &other) : _n
 
     this->_mode      = detail::DEV_ONLY;
     this->_host_data = nullptr;
-    hip_catch(hipMalloc(&(this->_data), size * sizeof(T)));
+    hip_catch(hipMalloc((void **)&(this->_data), size * sizeof(T)));
 
-    hip_catch(hipMalloc(&(this->_gpu_dims), sizeof(einsums::Dim<Rank>)));
-    hip_catch(hipMalloc(&(this->_gpu_strides), sizeof(einsums::Stride<Rank>)));
+    hip_catch(hipMalloc((void **)&(this->_gpu_dims), sizeof(size_t) * Rank));
+    hip_catch(hipMalloc((void **)&(this->_gpu_strides), sizeof(size_t) * Rank));
 
-    hip_catch(hipMemcpy(this->_gpu_dims, this->_dims, sizeof(einsums::Dim<Rank>), hipMemcpyHostToDevice));
-    hip_catch(hipMemcpy(this->_gpu_strides, this->_strides, sizeof(einsums::Stride<Rank>), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy((void *)this->_gpu_dims, (const void *)this->_dims.cbegin(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy((void *)this->_gpu_strides, (const void *)this->_strides.cbegin(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
 
     detail::copy_to_tensor<T, Rank><<<detail::constructor_threads, detail::constructor_blocks>>>(
         this->_data, this->_gpu_dims, this->_gpu_strides, other.data(), other.gpu_dims(), other.gpu_strides(), size);
@@ -356,7 +357,7 @@ namespace detail {
 
 // Set every entry in a tensor to an element.
 template <typename T, size_t Rank>
-__global__ void set_all(T *data, const einsums::Dim<Rank> *dims, const einsums::Stride<Rank> *strides, T value) {
+__global__ void set_all(T *data, const size_t *dims, const size_t *strides, T value) {
     int worker, kernel_size;
 
     get_worker_info(worker, kernel_size);
@@ -366,7 +367,7 @@ __global__ void set_all(T *data, const einsums::Dim<Rank> *dims, const einsums::
     // Wrap around to help save work load.
     size_t block_size = blockDim.x * blockDim.y * blockDim.z;
 
-    size_t elements = strides->size() == 0 ? 0 : (*strides)[0] * (*dims)[0];
+    size_t elements = strides[0] * dims[0];
     size_t elements_adjusted;
 
     if (elements % block_size == 0) {
@@ -375,14 +376,15 @@ __global__ void set_all(T *data, const einsums::Dim<Rank> *dims, const einsums::
         elements_adjusted = elements + (block_size - (elements % block_size));
     }
 
+    size_t inds[Rank];
+
     while (curr_element < elements_adjusted) {
-        std::array<int, Rank> inds;
 
         // Convert index into index combination.
-        index_to_combination(curr_element % elements, *dims, inds);
+        index_to_combination(curr_element % elements, dims, inds);
 
         // Map index combination onto the tensor.
-        size_t ind = combination_to_index(inds, *dims, *strides);
+        size_t ind = combination_to_index(inds, dims, strides);
 
         // Do the copy.
         data[ind] = value;
@@ -454,7 +456,7 @@ T DeviceTensor<T, Rank>::operator()(MultiIndex... index) const {
         return this->_host_data[ordinal];
     } else if (this->_mode == detail::DEV_ONLY) {
         T out;
-        hip_catch(hipMemcpy(&out, this->data(index...), sizeof(T), hipMemcpyHostToDevice));
+        hip_catch(hipMemcpy((void *)&out, (const void *)this->data(index...), sizeof(T), hipMemcpyHostToDevice));
         return out;
     }
 }
@@ -578,28 +580,29 @@ DeviceTensor<T, Rank> &DeviceTensor<T, Rank>::operator=(const DeviceTensor<T, Ra
         size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
 
         if (this->_mode == detail::MAPPED) {
-            hip_catch(hipHostUnregister(this->_host_data));
+            hip_catch(hipHostUnregister((void *)this->_host_data));
 
             delete[] this->_host_data;
             this->_host_data = new T[size];
 
-            hip_catch(hipHostRegister(this->_host_data, size * sizeof(T), hipHostRegisterDefault));
+            hip_catch(hipHostRegister((void *)this->_host_data, size * sizeof(T), hipHostRegisterDefault));
 
-            hip_catch(hipHostGetDevicePointer(&(this->_data), this->_host_data, 0));
+            hip_catch(hipHostGetDevicePointer((void **)&(this->_data), (void *)this->_host_data, 0));
         } else if (this->_mode == detail::PINNED) {
-            hip_catch(hipHostFree(this->_host_data));
+            hip_catch(hipHostFree((void *)this->_host_data));
 
-            hip_catch(hipHostMalloc(&(this->_host_data), size * sizeof(T), 0));
+            hip_catch(hipHostMalloc((void **)&(this->_host_data), size * sizeof(T), 0));
 
-            hip_catch(hipHostGetDevicePointer(&(this->_data), this->_host_data, 0));
+            hip_catch(hipHostGetDevicePointer((void **)&(this->_data), (void *)this->_host_data, 0));
         } else if (this->_mode == detail::DEV_ONLY) {
-            hip_catch(hipFree(this->_data));
+            hip_catch(hipFree((void *)this->_data));
 
-            hip_catch(hipMalloc(&(this->_data), size * sizeof(T)));
+            hip_catch(hipMalloc((void **)&(this->_data), size * sizeof(T)));
         }
 
-        hip_catch(hipMemcpy(this->_gpu_dims, this->_dims, sizeof(einsums::Dim<Rank>), hipMemcpyHostToDevice));
-        hip_catch(hipMemcpy(this->_gpu_strides, this->_strides, sizeof(einsums::Stride<Rank>), hipMemcpyHostToDevice));
+        hip_catch(hipMemcpy((void *)this->_gpu_dims, (const void *)this->_dims.cbegin(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
+        hip_catch(
+            hipMemcpy((void *)this->_gpu_strides, (const void *)this->_strides.cbegin(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
 
         detail::copy_to_tensor<T, Rank><<<detail::constructor_threads, detail::constructor_blocks>>>(
             this->_data, this->_gpu_dims, this->_gpu_strides, other._data, other._gpu_dims, other._gpu_strides, size);
@@ -641,28 +644,29 @@ auto DeviceTensor<T, Rank>::operator=(const DeviceTensor<TOther, Rank> &other) -
         size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
 
         if (this->_mode == detail::MAPPED) {
-            hip_catch(hipHostUnregister(this->_host_data));
+            hip_catch(hipHostUnregister((void *)this->_host_data));
 
             delete[] this->_host_data;
             this->_host_data = new T[size];
 
-            hip_catch(hipHostRegister(this->_host_data, size * sizeof(T), hipHostRegisterDefault));
+            hip_catch(hipHostRegister((void *)this->_host_data, size * sizeof(T), hipHostRegisterDefault));
 
-            hip_catch(hipHostGetDevicePointer(&(this->_data), this->_host_data, 0));
+            hip_catch(hipHostGetDevicePointer((void **)&(this->_data), (void *)this->_host_data, 0));
         } else if (this->_mode == detail::PINNED) {
-            hip_catch(hipHostFree(this->_host_data));
+            hip_catch(hipHostFree((void *)this->_host_data));
 
-            hip_catch(hipHostMalloc(&(this->_host_data), size * sizeof(T), 0));
+            hip_catch(hipHostMalloc((void **)&(this->_host_data), size * sizeof(T), 0));
 
-            hip_catch(hipHostGetDevicePointer(&(this->_data), this->_host_data, 0));
+            hip_catch(hipHostGetDevicePointer((void **)&(this->_data), (void *)this->_host_data, 0));
         } else if (this->_mode == detail::DEV_ONLY) {
-            hip_catch(hipFree(this->_data));
+            hip_catch(hipFree((void *)this->_data));
 
-            hip_catch(hipMalloc(&(this->_data), size * sizeof(T)));
+            hip_catch(hipMalloc((void **)&(this->_data), size * sizeof(T)));
         }
 
-        hip_catch(hipMemcpy(this->_gpu_dims, this->_dims, sizeof(einsums::Dim<Rank>), hipMemcpyHostToDevice));
-        hip_catch(hipMemcpy(this->_gpu_strides, this->_strides, sizeof(einsums::Stride<Rank>), hipMemcpyHostToDevice));
+        hip_catch(hipMemcpy((void *)this->_gpu_dims, (const void *)this->_dims.cbegin(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
+        hip_catch(
+            hipMemcpy((void *)this->_gpu_strides, (const void *)this->_strides.cbegin(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
 
         detail::copy_to_tensor_conv<T, Rank, TOther><<<detail::constructor_threads, detail::constructor_blocks>>>(
             this->_data, this->_gpu_dims, this->_gpu_strides, other._data, other._gpu_dims, other._gpu_strides, size);
@@ -695,8 +699,8 @@ namespace detail {
  * Kernel to do assignment and operation. This is addition.
  */
 template <typename T, size_t Rank>
-__global__ void add_and_assign(T *to_data, const Dim<Rank> *to_dims, const Stride<Rank> *to_strides, const T *from_data,
-                               const Dim<Rank> *from_dims, const Stride<Rank> *from_strides, size_t elements) {
+__global__ void add_and_assign(T *to_data, const size_t *to_dims, const size_t *to_strides, const T *from_data, const size_t *from_dims,
+                               const size_t *from_strides, size_t elements) {
 
     int worker, kernel_size;
 
@@ -714,17 +718,17 @@ __global__ void add_and_assign(T *to_data, const Dim<Rank> *to_dims, const Strid
         elements_adjusted = elements + (block_size - (elements % block_size));
     }
 
+    size_t inds[Rank];
     while (curr_element < elements_adjusted) {
-        std::array<int, Rank> inds;
 
         // Convert index into index combination.
-        index_to_combination(curr_element % elements, *to_dims, inds);
+        index_to_combination<Rank>(curr_element % elements, to_dims, inds);
 
         // Map index combination onto the view.
-        size_t from_ind = combination_to_index(inds, *from_dims, *from_strides);
+        size_t from_ind = combination_to_index<Rank>(inds, from_dims, from_strides);
 
         // Map index combination onto the tensor.
-        size_t to_ind = combination_to_index(inds, *to_dims, *to_strides);
+        size_t to_ind = combination_to_index<Rank>(inds, to_dims, to_strides);
 
         // Do the copy.
         to_data[to_ind] += from_data[from_ind];
@@ -740,8 +744,8 @@ __global__ void add_and_assign(T *to_data, const Dim<Rank> *to_dims, const Strid
  * Kernel to do assignment and operation. This is subtraction.
  */
 template <typename T, size_t Rank>
-__global__ void sub_and_assign(T *to_data, const Dim<Rank> *to_dims, const Stride<Rank> *to_strides, const T *from_data,
-                               const Dim<Rank> *from_dims, const Stride<Rank> *from_strides, size_t elements) {
+__global__ void sub_and_assign(T *to_data, const size_t *to_dims, const size_t *to_strides, const T *from_data, const size_t *from_dims,
+                               const size_t *from_strides, size_t elements) {
 
     int worker, kernel_size;
 
@@ -759,17 +763,18 @@ __global__ void sub_and_assign(T *to_data, const Dim<Rank> *to_dims, const Strid
         elements_adjusted = elements + (block_size - (elements % block_size));
     }
 
+    size_t inds[Rank];
+
     while (curr_element < elements_adjusted) {
-        std::array<int, Rank> inds;
 
         // Convert index into index combination.
-        index_to_combination(curr_element % elements, *to_dims, inds);
+        index_to_combination<Rank>(curr_element % elements, to_dims, inds);
 
         // Map index combination onto the view.
-        size_t from_ind = combination_to_index(inds, *from_dims, *from_strides);
+        size_t from_ind = combination_to_index<Rank>(inds, from_dims, from_strides);
 
         // Map index combination onto the tensor.
-        size_t to_ind = combination_to_index(inds, *to_dims, *to_strides);
+        size_t to_ind = combination_to_index<Rank>(inds, to_dims, to_strides);
 
         // Do the copy.
         to_data[to_ind] -= from_data[from_ind];
@@ -785,8 +790,8 @@ __global__ void sub_and_assign(T *to_data, const Dim<Rank> *to_dims, const Strid
  * Kernel to do assignment and operation. This is multiplication.
  */
 template <typename T, size_t Rank>
-__global__ void mul_and_assign(T *to_data, const Dim<Rank> *to_dims, const Stride<Rank> *to_strides, const T *from_data,
-                               const Dim<Rank> *from_dims, const Stride<Rank> *from_strides, size_t elements) {
+__global__ void mul_and_assign(T *to_data, const size_t *to_dims, const size_t *to_strides, const T *from_data, const size_t *from_dims,
+                               const size_t *from_strides, size_t elements) {
 
     int worker, kernel_size;
 
@@ -804,17 +809,18 @@ __global__ void mul_and_assign(T *to_data, const Dim<Rank> *to_dims, const Strid
         elements_adjusted = elements + (block_size - (elements % block_size));
     }
 
+    size_t inds[Rank];
+
     while (curr_element < elements_adjusted) {
-        std::array<int, Rank> inds;
 
         // Convert index into index combination.
-        index_to_combination(curr_element % elements, *to_dims, inds);
+        index_to_combination<Rank>(curr_element % elements, to_dims, inds);
 
         // Map index combination onto the view.
-        size_t from_ind = combination_to_index(inds, *from_dims, *from_strides);
+        size_t from_ind = combination_to_index<Rank>(inds, from_dims, from_strides);
 
         // Map index combination onto the tensor.
-        size_t to_ind = combination_to_index(inds, *to_dims, *to_strides);
+        size_t to_ind = combination_to_index<Rank>(inds, to_dims, to_strides);
 
         // Do the copy.
         to_data[to_ind] *= from_data[from_ind];
@@ -830,8 +836,8 @@ __global__ void mul_and_assign(T *to_data, const Dim<Rank> *to_dims, const Strid
  * Kernel to do assignment and operation. This is division.
  */
 template <typename T, size_t Rank>
-__global__ void div_and_assign(T *to_data, const Dim<Rank> *to_dims, const Stride<Rank> *to_strides, const T *from_data,
-                               const Dim<Rank> *from_dims, const Stride<Rank> *from_strides, size_t elements) {
+__global__ void div_and_assign(T *to_data, const size_t *to_dims, const size_t *to_strides, const T *from_data, const size_t *from_dims,
+                               const size_t *from_strides, size_t elements) {
 
     int worker, kernel_size;
 
@@ -849,17 +855,18 @@ __global__ void div_and_assign(T *to_data, const Dim<Rank> *to_dims, const Strid
         elements_adjusted = elements + (block_size - (elements % block_size));
     }
 
+    size_t inds[Rank];
+
     while (curr_element < elements_adjusted) {
-        std::array<int, Rank> inds;
 
         // Convert index into index combination.
-        index_to_combination(curr_element % elements, *to_dims, inds);
+        index_to_combination<Rank>(curr_element % elements, to_dims, inds);
 
         // Map index combination onto the view.
-        size_t from_ind = combination_to_index(inds, *from_dims, *from_strides);
+        size_t from_ind = combination_to_index<Rank>(inds, from_dims, from_strides);
 
         // Map index combination onto the tensor.
-        size_t to_ind = combination_to_index(inds, *to_dims, *to_strides);
+        size_t to_ind = combination_to_index<Rank>(inds, to_dims, to_strides);
 
         // Do the copy.
         to_data[to_ind] /= from_data[from_ind];
@@ -875,7 +882,7 @@ __global__ void div_and_assign(T *to_data, const Dim<Rank> *to_dims, const Strid
  * Kernel to do assignment and scalar operation. This is addition.
  */
 template <typename T, size_t Rank>
-__global__ void add_and_assign_scal(T *to_data, const Dim<Rank> *to_dims, const Stride<Rank> *to_strides, T scalar, size_t elements) {
+__global__ void add_and_assign_scal(T *to_data, const size_t *to_dims, const size_t *to_strides, T scalar, size_t elements) {
 
     int worker, kernel_size;
 
@@ -893,14 +900,15 @@ __global__ void add_and_assign_scal(T *to_data, const Dim<Rank> *to_dims, const 
         elements_adjusted = elements + (block_size - (elements % block_size));
     }
 
+    size_t inds[Rank];
+
     while (curr_element < elements_adjusted) {
-        std::array<int, Rank> inds;
 
         // Convert index into index combination.
-        index_to_combination(curr_element % elements, *to_dims, inds);
+        index_to_combination(curr_element % elements, to_dims, inds);
 
         // Map index combination onto the tensor.
-        size_t to_ind = combination_to_index(inds, *to_dims, *to_strides);
+        size_t to_ind = combination_to_index(inds, to_dims, to_strides);
 
         // Do the copy.
         to_data[to_ind] += scalar;
@@ -916,7 +924,7 @@ __global__ void add_and_assign_scal(T *to_data, const Dim<Rank> *to_dims, const 
  * Kernel to do assignment and scalar operation. This is subtraction.
  */
 template <typename T, size_t Rank>
-__global__ void sub_and_assign_scal(T *to_data, const Dim<Rank> *to_dims, const Stride<Rank> *to_strides, T scalar, size_t elements) {
+__global__ void sub_and_assign_scal(T *to_data, const size_t *to_dims, const size_t *to_strides, T scalar, size_t elements) {
 
     int worker, kernel_size;
 
@@ -934,14 +942,15 @@ __global__ void sub_and_assign_scal(T *to_data, const Dim<Rank> *to_dims, const 
         elements_adjusted = elements + (block_size - (elements % block_size));
     }
 
+    size_t inds[Rank];
+
     while (curr_element < elements_adjusted) {
-        std::array<int, Rank> inds;
 
         // Convert index into index combination.
-        index_to_combination(curr_element % elements, *to_dims, inds);
+        index_to_combination(curr_element % elements, to_dims, inds);
 
         // Map index combination onto the tensor.
-        size_t to_ind = combination_to_index(inds, *to_dims, *to_strides);
+        size_t to_ind = combination_to_index(inds, to_dims, to_strides);
 
         // Do the copy.
         to_data[to_ind] -= scalar;
@@ -957,7 +966,7 @@ __global__ void sub_and_assign_scal(T *to_data, const Dim<Rank> *to_dims, const 
  * Kernel to do assignment and scalar operation. This is multiplication.
  */
 template <typename T, size_t Rank>
-__global__ void mul_and_assign_scal(T *to_data, const Dim<Rank> *to_dims, const Stride<Rank> *to_strides, T scalar, size_t elements) {
+__global__ void mul_and_assign_scal(T *to_data, const size_t *to_dims, const size_t *to_strides, T scalar, size_t elements) {
 
     int worker, kernel_size;
 
@@ -975,14 +984,15 @@ __global__ void mul_and_assign_scal(T *to_data, const Dim<Rank> *to_dims, const 
         elements_adjusted = elements + (block_size - (elements % block_size));
     }
 
+    size_t inds[Rank];
+
     while (curr_element < elements_adjusted) {
-        std::array<int, Rank> inds;
 
         // Convert index into index combination.
-        index_to_combination(curr_element % elements, *to_dims, inds);
+        index_to_combination(curr_element % elements, to_dims, inds);
 
         // Map index combination onto the tensor.
-        size_t to_ind = combination_to_index(inds, *to_dims, *to_strides);
+        size_t to_ind = combination_to_index(inds, to_dims, to_strides);
 
         // Do the copy.
         to_data[to_ind] *= scalar;
@@ -993,12 +1003,11 @@ __global__ void mul_and_assign_scal(T *to_data, const Dim<Rank> *to_dims, const 
 
     __threadfence();
 }
-
 /**
  * Kernel to do assignment and scalar operation. This is division.
  */
 template <typename T, size_t Rank>
-__global__ void div_and_assign_scal(T *to_data, const Dim<Rank> *to_dims, const Stride<Rank> *to_strides, T scalar, size_t elements) {
+__global__ void div_and_assign_scal(T *to_data, const size_t *to_dims, const size_t *to_strides, T scalar, size_t elements) {
 
     int worker, kernel_size;
 
@@ -1016,14 +1025,15 @@ __global__ void div_and_assign_scal(T *to_data, const Dim<Rank> *to_dims, const 
         elements_adjusted = elements + (block_size - (elements % block_size));
     }
 
+    size_t inds[Rank];
+
     while (curr_element < elements_adjusted) {
-        std::array<int, Rank> inds;
 
         // Convert index into index combination.
-        index_to_combination(curr_element % elements, *to_dims, inds);
+        index_to_combination(curr_element % elements, to_dims, inds);
 
         // Map index combination onto the tensor.
-        size_t to_ind = combination_to_index(inds, *to_dims, *to_strides);
+        size_t to_ind = combination_to_index(inds, to_dims, to_strides);
 
         // Do the copy.
         to_data[to_ind] /= scalar;
@@ -1102,23 +1112,23 @@ DeviceTensor<T, Rank>::DeviceTensor(const Tensor<T, Rank> &copy, detail::HostToD
 
     if (mode == detail::MAPPED) {
         this->_host_data = new T[copy.size()];
-        hip_catch(hipHostRegister(this->_host_data, copy.size() * sizeof(T), hipHostRegisterDefault));
-        hip_catch(hipHostGetDevicePointer(&(this->_data), this->_host_data, 0));
+        hip_catch(hipHostRegister((void *)this->_host_data, copy.size() * sizeof(T), hipHostRegisterDefault));
+        hip_catch(hipHostGetDevicePointer((void **)&(this->_data), (void *)this->_host_data, 0));
     } else if (mode == detail::PINNED) {
-        hip_catch(hipHostMalloc(&(this->_host_data), copy.size() * sizeof(T), 0));
-        hip_catch(hipHostGetDevicePointer(&(this->_data), this->_host_data, 0));
+        hip_catch(hipHostMalloc((void **)&(this->_host_data), copy.size() * sizeof(T), 0));
+        hip_catch(hipHostGetDevicePointer((void **)&(this->_data), (void *)this->_host_data, 0));
     } else if (mode == detail::DEV_ONLY) {
         this->_host_data = nullptr;
-        hip_catch(hipMalloc(&(this->_data), copy.size() * sizeof(T)));
+        hip_catch(hipMalloc((void **)&(this->_data), copy.size() * sizeof(T)));
     }
 
-    hip_catch(hipMemcpy(this->_data, copy.data(), copy.size() * sizeof(T), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy((void *)this->_data, (const void *)copy.data(), copy.size() * sizeof(T), hipMemcpyHostToDevice));
 
-    hip_catch(hipMalloc(&(this->_gpu_dims), sizeof(einsums::Dim<Rank>)));
-    hip_catch(hipMalloc(&(this->_gpu_strides), sizeof(einsums::Stride<Rank>)));
+    hip_catch(hipMalloc((void **)&(this->_gpu_dims), sizeof(size_t) * Rank));
+    hip_catch(hipMalloc((void **)&(this->_gpu_strides), sizeof(size_t) * Rank));
 
-    hip_catch(hipMemcpy(this->_gpu_dims, this->_dims, sizeof(einsums::Dim<Rank>), hipMemcpyHostToDevice));
-    hip_catch(hipMemcpy(this->_gpu_strides, this->_strides, sizeof(einsums::Stride<Rank>), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy((void *)this->_gpu_dims, (const void *)this->_dims.cbegin(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy((void *)this->_gpu_strides, (const void *)this->_strides.cbegin(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
 }
 
 template <typename T, size_t Rank>
@@ -1127,7 +1137,7 @@ DeviceTensor<T, Rank>::operator Tensor<T, Rank>() {
 
     out.set_name(this->_name);
 
-    hip_catch(hipMemcpy(out.data(), this->_data, this->size() * sizeof(T), hipMemcpyDeviceToHost));
+    hip_catch(hipMemcpy((void *)out.data(), (const void *)this->_data, this->size() * sizeof(T), hipMemcpyDeviceToHost));
 
     return out;
 }

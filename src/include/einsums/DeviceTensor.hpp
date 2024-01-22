@@ -12,11 +12,10 @@
 
 BEGIN_EINSUMS_NAMESPACE_HPP(einsums::gpu)
 
-
 template <typename T, size_t Rank>
 struct DeviceTensorView;
 
-template<typename T, size_t Rank>
+template <typename T, size_t Rank>
 struct DeviceTensor;
 
 namespace detail {
@@ -40,14 +39,15 @@ concept DeviceRankTensor = detail::IsDeviceRankTensorV<Input, Rank, DataType>;
  * @param dims The dimensions of the tensor along each axis.
  * @param out The output array.
  */
-template <typename T, size_t Rank> __host__ __device__ 
-void     index_to_combination(size_t index, const einsums::Dim<Rank> &dims, std::array<int, Rank> &out);
+template <typename T, size_t Rank>
+__host__ __device__ void index_to_combination(size_t index, const einsums::Dim<Rank> &dims, std::array<int, Rank> &out);
 
 /**
  * Turns a combination of indices into a single sentinel value that can be used to index into an array.
  */
-template <typename T, size_t Rank> __host__ __device__ 
-size_t   combination_to_index(const std::array<int, Rank> &inds, const einsums::Dim<Rank> &dims, const einsums::Stride<Rank> &strides);
+template <typename T, size_t Rank>
+__host__ __device__ size_t combination_to_index(const std::array<int, Rank> &inds, const einsums::Dim<Rank> &dims,
+                                                const einsums::Stride<Rank> &strides);
 
 } // namespace detail
 
@@ -73,7 +73,7 @@ class HostDevReference {
             return *_ptr;
         } else {
             T out;
-            hip_catch(hipMemcpy(&out, _ptr, sizeof(T), hipMemcpyDeviceToHost));
+            hip_catch(hipMemcpy((void *) &out, (const void *) _ptr, sizeof(T), hipMemcpyDeviceToHost));
             return out;
         }
     }
@@ -82,7 +82,7 @@ class HostDevReference {
         if (is_on_host) {
             *_ptr = other;
         } else {
-            hip_catch(hipMemcpy(_ptr, &other, sizeof(T), hipMemcpyHostToDevice));
+            hip_catch(hipMemcpy((void *) _ptr, (const void *) &other, sizeof(T), hipMemcpyHostToDevice));
         }
     }
 
@@ -90,7 +90,7 @@ class HostDevReference {
         if (is_on_host) {
             *_ptr = other.get();
         } else {
-            hip_catch(hipMemcpy(_ptr, &(other.get()), sizeof(T), hipMemcpyHostToDevice));
+            hip_catch(hipMemcpy((void *) _ptr, (const void *) &(other.get()), sizeof(T), hipMemcpyHostToDevice));
         }
     }
 };
@@ -101,21 +101,22 @@ struct DeviceTensor : public ::einsums::detail::TensorBase<T, Rank> {
     using datatype = T;
 
   private:
-    std::string  _name{"(Unnamed)"};
-    ::einsums::Dim<Rank>    _dims, *_gpu_dims;
-    ::einsums::Stride<Rank> _strides, *_gpu_strides;
+    std::string             _name{"(Unnamed)"};
+    ::einsums::Dim<Rank>    _dims;
+    size_t                 *_gpu_dims;
+    ::einsums::Stride<Rank> _strides;
+    size_t                 *_gpu_strides;
 
     device_ptr T            *_data;
     host_ptr T              *_host_data;
     detail::HostToDeviceMode _mode;
 
-
     friend struct DeviceTensorView<T, Rank>;
 
-    template<typename TOther, size_t RankOther>
+    template <typename TOther, size_t RankOther>
     friend struct DeviceTensorView;
 
-    template<typename TOther, size_t RankOther>
+    template <typename TOther, size_t RankOther>
     friend struct DeviceTensor;
 
   public:
@@ -345,7 +346,7 @@ struct DeviceTensor : public ::einsums::detail::TensorBase<T, Rank> {
 
     auto dims() const -> Dim<Rank> { return _dims; }
 
-    device_ptr Dim<Rank> *gpu_dims() { return _gpu_dims; }
+    device_ptr size_t *gpu_dims() { return _gpu_dims; }
 
     ALIAS_TEMPLATE_FUNCTION(shape, dims);
 
@@ -360,7 +361,7 @@ struct DeviceTensor : public ::einsums::detail::TensorBase<T, Rank> {
 
     auto strides() const noexcept -> const auto & { return _strides; }
 
-    device_ptr Stride<Rank> *gpu_strides() { return _gpu_strides; }
+    device_ptr size_t *gpu_strides() { return _gpu_strides; }
 
     auto to_rank_1_view() const -> DeviceTensorView<T, 1> {
         size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
@@ -392,9 +393,11 @@ struct DeviceTensor : public ::einsums::detail::TensorBase<T, Rank> {
 template <typename T, size_t Rank>
 struct DeviceTensorView : public ::einsums::detail::TensorBase<T, Rank> {
   private:
-    std::string  _name{"(Unnamed View)"};
-    einsums::Dim<Rank>    _dims, *_gpu_dims;
-    einsums::Stride<Rank> _strides, *_gpu_strides;
+    std::string           _name{"(Unnamed View)"};
+    einsums::Dim<Rank>    _dims;
+    size_t               *_gpu_dims;
+    einsums::Stride<Rank> _strides;
+    size_t               *_gpu_strides;
     // Offsets<Rank> _offsets;
 
     bool _full_view_of_underlying{false};
@@ -402,7 +405,7 @@ struct DeviceTensorView : public ::einsums::detail::TensorBase<T, Rank> {
     device_ptr T *_data;
 
   public:
-    DeviceTensorView()                   = delete;
+    DeviceTensorView() = delete;
     DeviceTensorView(const DeviceTensorView &);
     ~DeviceTensorView();
 
@@ -473,6 +476,8 @@ struct DeviceTensorView : public ::einsums::detail::TensorBase<T, Rank> {
 
     auto dims() const -> Dim<Rank> { return _dims; }
 
+    device_ptr size_t *gpu_dims() const { return _gpu_dims; }
+
     [[nodiscard]] auto name() const -> const std::string & { return _name; }
     void               set_name(const std::string &name) { _name = name; }
 
@@ -483,6 +488,8 @@ struct DeviceTensorView : public ::einsums::detail::TensorBase<T, Rank> {
     }
 
     auto strides() const noexcept -> const auto & { return _strides; }
+
+    device_ptr size_t *gpu_strides() const { return _gpu_strides; }
 
     auto to_rank_1_view() const -> DeviceTensorView<T, 1>;
 
