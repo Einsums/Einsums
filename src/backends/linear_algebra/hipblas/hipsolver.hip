@@ -16,6 +16,19 @@ namespace detail {
 
 hipsolverHandle_t solver_handle = nullptr;
 
+__host__ __device__ hipsolverOperation_t hipsolver_char_to_op(char trans) {
+    switch (trans) {
+    case 't':
+    case 'T':
+        return HIPSOLVER_OP_T;
+    case 'c':
+    case 'C':
+        return HIPSOLVER_OP_C;
+    default:
+        return HIPSOLVER_OP_N;
+    }
+}
+
 __host__ __device__ hipsolverEigMode_t hipsolver_job(char job) {
     switch (job) {
     case 'n':

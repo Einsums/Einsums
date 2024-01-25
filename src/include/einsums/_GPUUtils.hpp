@@ -35,47 +35,62 @@ namespace detail {
 /**
  * @struct hip_exception
  *
- * Wraps an hipError_t value as an exception object to be handled by C++'s exception system.
+ * @brief Wraps an hipError_t value as an exception object to be handled by C++'s exception system.
  */
 template <hipError_t error>
 struct hip_exception : public std::exception {
   public:
     /**
-     * Construct an empty exception which represents a success.
+     * @brief Construct a new HIP exception.
      */
     hip_exception() = default;
 
     /**
-     * Return the error string.
+     * @brief Return the error string.
      */
     const char *what() const _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW override { return hipGetErrorString(error); }
 
     /**
-     * Equality operators.
+     * @brief Equality operator.
      */
     template <hipError_t other_error>
     bool operator==(const hip_exception<other_error> &other) const {
         return error == other_error;
     }
 
+    /**
+     * @brief Equality operator.
+     */
     bool operator==(hipError_t other) const { return error == other; }
 
+    /**
+     * @brief Inequality operator.
+     */
     template <hipError_t other_error>
     bool operator!=(const hip_exception<other_error> &other) const {
         return error != other_error;
     }
 
+    /**
+     * @brief Inequality operator.
+     */
     bool operator!=(hipError_t other) const { return error != other; }
 
     friend bool operator==(hipError_t, const hip_exception<error> &);
     friend bool operator!=(hipError_t, const hip_exception<error> &);
 };
 
+/**
+ * @brief Reverse equality operator.
+ */
 template <hipError_t error>
 bool operator==(hipError_t first, const hip_exception<error> &second) {
     return first == error;
 }
 
+/**
+ * @brief Reverse inequality operator.
+ */
 template <hipError_t error>
 bool operator!=(hipError_t first, const hip_exception<error> &second) {
     return first != error;
@@ -170,7 +185,7 @@ using ErrorTbd                         = hip_exception<hipErrorTbd>;
 __host__ EINSUMS_EXPORT void hip_catch(hipError_t condition, bool throw_success = false);
 
 /**
- * Get the worker thread launch parameters on the GPU.
+ * @brief Get the worker thread launch parameters on the GPU.
  */
 __device__
 inline void get_worker_info(int &thread_id, int &num_threads) {
