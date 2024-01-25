@@ -756,7 +756,7 @@ int cgetrf(int m, int n, std::complex<float> *a, int lda, int *ipiv) {
 
     hip_catch(hipFree(work));
 #elif defined(HIP_PLATFORM_NVIDIA)
-    hipsolver_catch(hipsolverSCetrf(handle, m, n, a_gpu, lda, nullptr, 0, ipiv_gpu, info));
+    hipsolver_catch(hipsolverCgetrf(handle, m, n, a_gpu, lda, nullptr, 0, ipiv_gpu, info));
 
     hip_catch(hipDeviceSynchronize());
 #endif

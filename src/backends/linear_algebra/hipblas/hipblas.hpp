@@ -13,7 +13,9 @@
  */
 #pragma once
 
-#include "einsums.hpp"
+// #include "einsums.hpp"
+#include "einsums/_Export.hpp"
+
 #include <complex>
 #include <hipblas/hipblas.h>
 #include <hipsolver/hipsolver.h>
@@ -125,32 +127,31 @@ bool operator!=(hipsolverStatus_t first, const hipsolver_exception<error> &secon
     return first != error;
 }
 
-using solverSuccess = hipsolver_exception<HIPSOLVER_STATUS_SUCCESS>;
-using solverNotInitialized = hipsolver_exception<HIPSOLVER_STATUS_NOT_INITIALIZED>;
-using solverAllocFailed = hipsolver_exception<HIPSOLVER_STATUS_ALLOC_FAILED>;
-using solverInvalidValue = hipsolver_exception<HIPSOLVER_STATUS_INVALID_VALUE>;
-using solverMappingError = hipsolver_exception<HIPSOLVER_STATUS_MAPPING_ERROR>;
-using solverExecutionFailed = hipsolver_exception<HIPSOLVER_STATUS_EXECUTION_FAILED>;
-using solverInternalError = hipsolver_exception<HIPSOLVER_STATUS_INTERNAL_ERROR>;
+using solverSuccess          = hipsolver_exception<HIPSOLVER_STATUS_SUCCESS>;
+using solverNotInitialized   = hipsolver_exception<HIPSOLVER_STATUS_NOT_INITIALIZED>;
+using solverAllocFailed      = hipsolver_exception<HIPSOLVER_STATUS_ALLOC_FAILED>;
+using solverInvalidValue     = hipsolver_exception<HIPSOLVER_STATUS_INVALID_VALUE>;
+using solverMappingError     = hipsolver_exception<HIPSOLVER_STATUS_MAPPING_ERROR>;
+using solverExecutionFailed  = hipsolver_exception<HIPSOLVER_STATUS_EXECUTION_FAILED>;
+using solverInternalError    = hipsolver_exception<HIPSOLVER_STATUS_INTERNAL_ERROR>;
 using solverFuncNotSupported = hipsolver_exception<HIPSOLVER_STATUS_NOT_SUPPORTED>;
-using solverArchMismatch = hipsolver_exception<HIPSOLVER_STATUS_ARCH_MISMATCH>;
-using solverHandleIsNullptr = hipsolver_exception<HIPSOLVER_STATUS_HANDLE_IS_NULLPTR>;
-using solverInvalidEnum = hipsolver_exception<HIPSOLVER_STATUS_INVALID_ENUM>;
-using solverUnknown = hipsolver_exception<HIPSOLVER_STATUS_UNKNOWN>;
-//using solverZeroPivot = hipsolver_exception<HIPSOLVER_STATUS_ZERO_PIVOT>;
+using solverArchMismatch     = hipsolver_exception<HIPSOLVER_STATUS_ARCH_MISMATCH>;
+using solverHandleIsNullptr  = hipsolver_exception<HIPSOLVER_STATUS_HANDLE_IS_NULLPTR>;
+using solverInvalidEnum      = hipsolver_exception<HIPSOLVER_STATUS_INVALID_ENUM>;
+using solverUnknown          = hipsolver_exception<HIPSOLVER_STATUS_UNKNOWN>;
+// using solverZeroPivot = hipsolver_exception<HIPSOLVER_STATUS_ZERO_PIVOT>;
 
 // Get the handles used internally. Can be used by other blas and solver processes.
-EINSUMS_EXPORT hipblasHandle_t get_blas_handle();
+EINSUMS_EXPORT hipblasHandle_t   get_blas_handle();
 EINSUMS_EXPORT hipsolverHandle_t get_solver_handle();
 
 // Set the handles used internally. Useful to avoid creating multiple contexts.
-EINSUMS_EXPORT hipblasHandle_t set_blas_handle(hipblasHandle_t value);
+EINSUMS_EXPORT hipblasHandle_t   set_blas_handle(hipblasHandle_t value);
 EINSUMS_EXPORT hipsolverHandle_t set_solver_handle(hipsolverHandle_t value);
-
 
 __host__ __device__ EINSUMS_EXPORT hipblasOperation_t hipblas_char_to_op(char trans);
 
-__host__ __device__ EINSUMS_EXPORT hipsolverEigMode_t hipsolver_job(char job);
+__host__ __device__ EINSUMS_EXPORT hipsolverEigMode_t  hipsolver_job(char job);
 __host__ __device__ EINSUMS_EXPORT hipsolverFillMode_t hipsolver_fill(char fill);
 
 __host__ EINSUMS_EXPORT void hipblas_catch(hipblasStatus_t, bool throw_success = false);
@@ -233,8 +234,10 @@ void zaxpy(int n, std::complex<double> alpha_x, const std::complex<double> *x, i
  */
 void sger(int m, int n, float alpha, const float *x, int inc_x, const float *y, int inc_y, float *a, int lda);
 void dger(int m, int n, double alpha, const double *x, int inc_x, const double *y, int inc_y, double *a, int lda);
-void cger(int m, int n, std::complex<float> alpha, const std::complex<float> *x, int inc_x, const std::complex<float> *y, int inc_y, std::complex<float> *a, int lda);
-void zger(int m, int n, std::complex<double> alpha, const std::complex<double> *x, int inc_x, const std::complex<double> *y, int inc_y, std::complex<double> *a, int lda);
+void cger(int m, int n, std::complex<float> alpha, const std::complex<float> *x, int inc_x, const std::complex<float> *y, int inc_y,
+          std::complex<float> *a, int lda);
+void zger(int m, int n, std::complex<double> alpha, const std::complex<double> *x, int inc_x, const std::complex<double> *y, int inc_y,
+          std::complex<double> *a, int lda);
 
 /*!
  * Computes the LU factorization of a general M-by-N matrix A

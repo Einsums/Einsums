@@ -51,6 +51,6 @@
     "cmake.configureArgs": [
         "-DEINSUMS_BUILD_HIP=ON",
         "-DHIP_INSTALL_DIR=/opt/rocm",
-        "-DEINSUMS_COVERAGE=ON"
+        "-DEINSUMS_COVERAGE=OFF"
     ]
 }

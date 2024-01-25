@@ -8,6 +8,7 @@
 #include "einsums/_Common.hpp"
 
 #include <__clang_hip_runtime_wrapper.h>
+#include <hip/amd_detail/amd_hip_complex.h>
 #include <hip/hip_common.h>
 #include <hip/hip_runtime.h>
 #include <hip/hip_runtime_api.h>

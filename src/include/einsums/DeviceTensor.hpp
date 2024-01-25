@@ -5,9 +5,9 @@
 
 #include "einsums/Tensor.hpp"
 
-#include <__clang_hip_runtime_wrapper.h>
 #include <hip/driver_types.h>
 #include <hip/hip_common.h>
+#include <hip/hip_complex.h>
 #include <hip/hip_runtime_api.h>
 
 BEGIN_EINSUMS_NAMESPACE_HPP(einsums::gpu)
@@ -73,7 +73,7 @@ class HostDevReference {
             return *_ptr;
         } else {
             T out;
-            hip_catch(hipMemcpy((void *) &out, (const void *) _ptr, sizeof(T), hipMemcpyDeviceToHost));
+            hip_catch(hipMemcpy((void *)&out, (const void *)_ptr, sizeof(T), hipMemcpyDeviceToHost));
             return out;
         }
     }
@@ -82,7 +82,7 @@ class HostDevReference {
         if (is_on_host) {
             *_ptr = other;
         } else {
-            hip_catch(hipMemcpy((void *) _ptr, (const void *) &other, sizeof(T), hipMemcpyHostToDevice));
+            hip_catch(hipMemcpy((void *)_ptr, (const void *)&other, sizeof(T), hipMemcpyHostToDevice));
         }
     }
 
@@ -90,7 +90,7 @@ class HostDevReference {
         if (is_on_host) {
             *_ptr = other.get();
         } else {
-            hip_catch(hipMemcpy((void *) _ptr, (const void *) &(other.get()), sizeof(T), hipMemcpyHostToDevice));
+            hip_catch(hipMemcpy((void *)_ptr, (const void *)&(other.get()), sizeof(T), hipMemcpyHostToDevice));
         }
     }
 };
@@ -98,7 +98,9 @@ class HostDevReference {
 template <typename T, size_t Rank>
 struct DeviceTensor : public ::einsums::detail::TensorBase<T, Rank> {
   public:
-    using datatype = T;
+    using dev_datatype  = std::conditional_t<std::is_same_v<T, std::complex<float>>, hipComplex,
+                                            std::conditional_t<std::is_same_v<T, std::complex<double>>, hipDoubleComplex, T>>;
+    using host_datatype = T;
 
   private:
     std::string             _name{"(Unnamed)"};
@@ -107,8 +109,8 @@ struct DeviceTensor : public ::einsums::detail::TensorBase<T, Rank> {
     ::einsums::Stride<Rank> _strides;
     size_t                 *_gpu_strides;
 
-    device_ptr T            *_data;
-    host_ptr T              *_host_data;
+    device_ptr dev_datatype *_data;
+    host_ptr host_datatype  *_host_data;
     detail::HostToDeviceMode _mode;
 
     friend struct DeviceTensorView<T, Rank>;
@@ -219,7 +221,7 @@ struct DeviceTensor : public ::einsums::detail::TensorBase<T, Rank> {
      *
      * @return T* A pointer to the data.
      */
-    auto data() -> device_ptr T * { return _data; }
+    auto data() -> dev_datatype * { return _data; }
 
     /**
      * @brief Returns a constant pointer to the data.
@@ -229,7 +231,7 @@ struct DeviceTensor : public ::einsums::detail::TensorBase<T, Rank> {
      *
      * @return const T* An immutable pointer to the data.
      */
-    auto data() const -> const device_ptr T * { return _data; }
+    auto data() const -> const dev_datatype * { return _data; }
 
     /**
      * @brief Returns a pointer to the data.
@@ -239,7 +241,7 @@ struct DeviceTensor : public ::einsums::detail::TensorBase<T, Rank> {
      *
      * @return T* A pointer to the data.
      */
-    auto host_data() -> host_ptr T * { return _host_data; }
+    auto host_data() -> host_datatype * { return _host_data; }
 
     /**
      * @brief Returns a constant pointer to the data.
@@ -249,7 +251,7 @@ struct DeviceTensor : public ::einsums::detail::TensorBase<T, Rank> {
      *
      * @return const T* An immutable pointer to the data.
      */
-    auto host_data() const -> const host_ptr T * { return _host_data; }
+    auto host_data() const -> const host_datatype * { return _host_data; }
 
     /**
      * Returns a pointer into the tensor at the given location.
@@ -270,7 +272,7 @@ struct DeviceTensor : public ::einsums::detail::TensorBase<T, Rank> {
             requires NoneOfType<AllT, MultiIndex...>;
             requires NoneOfType<Range, MultiIndex...>;
         }
-    auto data(MultiIndex... index) -> device_ptr T *;
+    auto data(MultiIndex... index) -> dev_datatype *;
 
     /**
      * @brief Subscripts into the tensor.
@@ -392,6 +394,11 @@ struct DeviceTensor : public ::einsums::detail::TensorBase<T, Rank> {
 
 template <typename T, size_t Rank>
 struct DeviceTensorView : public ::einsums::detail::TensorBase<T, Rank> {
+  public:
+    using dev_datatype  = std::conditional_t<std::is_same_v<T, std::complex<float>>, hipComplex,
+                                            std::conditional_t<std::is_same_v<T, std::complex<double>>, hipDoubleComplex, T>>;
+    using host_datatype = T;
+
   private:
     std::string           _name{"(Unnamed View)"};
     einsums::Dim<Rank>    _dims;
@@ -402,7 +409,7 @@ struct DeviceTensorView : public ::einsums::detail::TensorBase<T, Rank> {
 
     bool _full_view_of_underlying{false};
 
-    device_ptr T *_data;
+    dev_datatype *_data;
 
   public:
     DeviceTensorView() = delete;
@@ -458,10 +465,10 @@ struct DeviceTensorView : public ::einsums::detail::TensorBase<T, Rank> {
     DeviceTensorView &operator+=(const T &value);
     DeviceTensorView &operator-=(const T &value);
 
-    auto data() -> device_ptr T * { return _data; }
-    auto data() const -> const device_ptr T * { return static_cast<const T *>(_data); }
+    auto data() -> dev_datatype * { return _data; }
+    auto data() const -> const dev_datatype * { return static_cast<const T *>(_data); }
     template <typename... MultiIndex>
-    auto data(MultiIndex... index) const -> device_ptr T *;
+    auto data(MultiIndex... index) const -> dev_datatype *;
 
     auto data_array(const std::array<size_t, Rank> &index_list) const -> device_ptr T *;
 
@@ -505,5 +512,5 @@ struct DeviceTensorView : public ::einsums::detail::TensorBase<T, Rank> {
 
 END_EINSUMS_NAMESPACE_HPP(einsums::gpu)
 
-#include "einsums/tensors/DeviceTensor.imp.hip"
-#include "einsums/tensors/DeviceTensorView.imp.hip"
+#include "einsums/gpu/DeviceTensor.imp.hip"
+#include "einsums/gpu/DeviceTensorView.imp.hip"

@@ -151,7 +151,7 @@ DeviceTensorView<T, Rank> &DeviceTensorView<T, Rank>::operator/=(const T &other)
 
 template <typename T, size_t Rank>
 template <typename... MultiIndex>
-auto DeviceTensorView<T, Rank>::data(MultiIndex... index) const -> device_ptr T * {
+auto DeviceTensorView<T, Rank>::data(MultiIndex... index) const -> DeviceTensorView<T, Rank>::dev_datatype * {
     assert(sizeof...(MultiIndex) <= _dims.size());
 
     auto index_list = std::array{static_cast<std::int64_t>(index)...};

@@ -420,7 +420,7 @@ template <typename... MultiIndex>
         requires NoneOfType<AllT, MultiIndex...>;
         requires NoneOfType<Range, MultiIndex...>;
     }
-device_ptr T *DeviceTensor<T, Rank>::data(MultiIndex... index) {
+DeviceTensor<T, Rank>::dev_datatype *DeviceTensor<T, Rank>::data(MultiIndex... index) {
 #if !defined(DOXYGEN_SHOULD_SKIP_THIS)
     assert(sizeof...(MultiIndex) <= _dims.size());
 
