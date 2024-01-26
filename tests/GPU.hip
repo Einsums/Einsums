@@ -12,5 +12,8 @@ TEST_CASE("GPU Tensor Creation", "[gpu]") {
     using namespace einsums;
     using namespace einsums::gpu;
 
+    hip_catch(hipFree(nullptr));
+
+
     DeviceTensor<double, 2> A("A", einsums::gpu::detail::DEV_ONLY, 3, 3);
 }

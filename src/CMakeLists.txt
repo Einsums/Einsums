@@ -45,7 +45,7 @@ extend_einsums_target(einsums
         GPULinearAlgebra.hip
     CONDITION
         EINSUMS_BUILD_HIP
-    DEPENDS
+    PUBLIC_DEPENDS
         roc::hipblas
         roc::hipsolver
         hip::host

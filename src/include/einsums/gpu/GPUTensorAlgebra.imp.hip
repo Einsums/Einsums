@@ -131,7 +131,7 @@ __device__ inline void make_zero(hipDoubleComplex &value) {
     value.y = 0.0;
 }
 
-__host__ __device__ void sentinel_to_indices(size_t sentinel, const size_t *unique_strides, size_t num_unique_inds, size_t *out_inds) {
+__host__ __device__ inline void sentinel_to_indices(size_t sentinel, const size_t *unique_strides, size_t num_unique_inds, size_t *out_inds) {
     size_t hold = sentinel;
     for (ssize_t i = 0; i < num_unique_inds; i++) {
         if (unique_strides[i] != 0) {

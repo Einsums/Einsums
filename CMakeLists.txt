@@ -161,9 +161,9 @@ add_subdirectory(external)
 add_subdirectory(src)
 
 if(EINSUMS_COVERAGE)
-    target_compile_options(einsums PUBLIC $<$<COMPILE_LANG_AND_ID:CXX,Clang>:-fprofile-instr-generate -fcoverage-mapping>)
-    target_compile_options(einsums PUBLIC $<$<COMPILE_LANGUAGE:HIP>:-fprofile-instr-generate -fcoverage-mapping>)
-    target_compile_options(einsums PUBLIC $<$<COMPILE_LANG_AND_ID:CXX,GNU>:--coverage>)
+    target_compile_options(einsums PUBLIC $<$<COMPILE_LANG_AND_ID:CXX,Clang>:-fprofile-instr-generate -fcoverage-mapping -Og -g3 -ggdb>)
+    target_compile_options(einsums PUBLIC $<$<COMPILE_LANGUAGE:HIP>:-fprofile-instr-generate -fcoverage-mapping -Og -g3 -ggdb>)
+    target_compile_options(einsums PUBLIC $<$<COMPILE_LANG_AND_ID:CXX,GNU>:--coverage -Og -g3 -ggdb>)
 endif()
 
 if (EINSUMS_ENABLE_TESTING)
