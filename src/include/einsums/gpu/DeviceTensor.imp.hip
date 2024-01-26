@@ -58,12 +58,14 @@ DeviceTensor<T, Rank>::~DeviceTensor() {
     if (this->_gpu_strides != nullptr) {
         hip_catch(hipFree((void *)this->_gpu_strides));
     }
+
+    hip_catch(hipDeviceSynchronize());
 }
 
 template <typename T, size_t Rank>
 template <typename... Dims>
 DeviceTensor<T, Rank>::DeviceTensor(std::string name, detail::HostToDeviceMode mode, Dims... dims)
-    : _name{std::move(name)}, _dims{static_cast<size_t>(dims)...} {
+    : _name{std::move(name)}, _dims{static_cast<size_t>(dims)...}, _mode{mode} {
     static_assert(Rank == sizeof...(dims), "Declared Rank does not match provided dims");
 
     struct Stride {
@@ -96,7 +98,7 @@ DeviceTensor<T, Rank>::DeviceTensor(std::string name, detail::HostToDeviceMode m
     hip_catch(hipMalloc((void **)&(this->_gpu_strides), sizeof(size_t) * Rank));
 
     hip_catch(hipMemcpy((void *)this->_gpu_dims, (const void *)this->_dims.cbegin(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
-    hip_catch(hipMemcpy((void *)this->_gpu_strides, (const void *)this->_strides.cbegin(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy((void *)this->_gpu_strides, (const void *)this->_strides.cbegin(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));   
 }
 
 template <typename T, size_t Rank>
@@ -157,7 +159,7 @@ DeviceTensor<T, Rank>::DeviceTensor(DeviceTensor<T, OtherRank> &&existingTensor,
 }
 
 template <typename T, size_t Rank>
-DeviceTensor<T, Rank>::DeviceTensor(Dim<Rank> dims, detail::HostToDeviceMode mode) : _dims{std::move(dims)} {
+DeviceTensor<T, Rank>::DeviceTensor(Dim<Rank> dims, detail::HostToDeviceMode mode) : _dims{std::move(dims)}, _mode{mode} {
     struct Stride {
         size_t value{1};
         Stride() = default;
