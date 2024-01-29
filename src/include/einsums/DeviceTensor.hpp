@@ -20,6 +20,9 @@ struct DeviceTensor;
 
 namespace detail {
 
+template <size_t Rank>
+__host__ __device__ void index_to_combination(size_t index, const size_t *dims, size_t *out);
+
 /**
  * @enum HostToDeviceMode
  *
@@ -89,13 +92,12 @@ __host__ __device__ size_t combination_to_index(const std::array<int, Rank> &ind
 template <typename T>
 class HostDevReference {
   private:
-
     /**
      * @property _ptr
      *
      * @brief The pointer held by this object.
      */
-    T   *_ptr;
+    T *_ptr;
 
     /**
      * @property is_on_host
@@ -105,23 +107,20 @@ class HostDevReference {
     bool is_on_host;
 
   public:
-
     /**
      * Construct an empty reference.
      */
-    HostDevReference() : _ptr(nullptr), is_on_host(true) {}
+    HostDevReference() : _ptr{nullptr}, is_on_host{true} {}
 
     /**
      * Construct a reference wrapping the specified pointer.
      */
-    HostDevReference(T *ptr, bool is_host) : _ptr(*ptr), is_on_host(is_host) {}
+    HostDevReference(T *ptr, bool is_host) : _ptr{ptr}, is_on_host{is_host} {}
 
     /**
      * Delete the reference. Because the data is managed by something else, don't acutally free the pointer.
      */
-    ~HostDevReference() {
-        _ptr = nullptr;
-    }
+    ~HostDevReference() { _ptr = nullptr; }
 
     /**
      * Get the value of the reference.
@@ -145,6 +144,7 @@ class HostDevReference {
         } else {
             hip_catch(hipMemcpy((void *)_ptr, (const void *)&other, sizeof(T), hipMemcpyHostToDevice));
         }
+        return *this;
     }
 
     /**
@@ -156,14 +156,13 @@ class HostDevReference {
         } else {
             hip_catch(hipMemcpy((void *)_ptr, (const void *)&(other.get()), sizeof(T), hipMemcpyHostToDevice));
         }
+        return *this;
     }
 
     /**
      * Get the address handled by the reference.
      */
-    T *operator &() {
-        return _ptr;
-    }
+    T *operator&() { return _ptr; }
 };
 
 /**
@@ -182,9 +181,9 @@ struct DeviceTensor : public ::einsums::detail::TensorBase<T, Rank> {
      *
      * @brief The data type stored on the device. This is only different if T is complex.
      */
-    using dev_datatype  = std::conditional_t<std::is_same_v<T, std::complex<float>>, hipComplex,
+    using dev_datatype = std::conditional_t<std::is_same_v<T, std::complex<float>>, hipComplex,
                                             std::conditional_t<std::is_same_v<T, std::complex<double>>, hipDoubleComplex, T>>;
-    
+
     /**
      * @typedef host_datatype
      *
@@ -198,21 +197,21 @@ struct DeviceTensor : public ::einsums::detail::TensorBase<T, Rank> {
      *
      * @brief The name of the tensor.
      */
-    std::string             _name{"(Unnamed)"};
+    std::string _name{"(Unnamed)"};
 
     /**
      * @property _dims
      *
      * @brief The dimensions of the tensor.
      */
-    einsums::Dim<Rank>    _dims;
+    einsums::Dim<Rank> _dims;
 
     /**
      * @property _gpu_dims
      *
      * @brief The dimensions of the tensor made available to the GPU.
      */
-    size_t                 *_gpu_dims;
+    size_t *_gpu_dims;
 
     /**
      * @property _strides
@@ -226,7 +225,7 @@ struct DeviceTensor : public ::einsums::detail::TensorBase<T, Rank> {
      *
      * @brief The strides of the tensor made available to the GPU.
      */
-    size_t                 *_gpu_strides;
+    size_t *_gpu_strides;
 
     /**
      * @property _data
@@ -240,12 +239,12 @@ struct DeviceTensor : public ::einsums::detail::TensorBase<T, Rank> {
      *
      * @brief If the tensor is mapped or pinned, this is the data on the host.
      */
-    host_ptr host_datatype  *_host_data;
+    host_ptr host_datatype *_host_data;
 
     /**
      * @property _mode
      *
-     * @brief The storage mode of the tensor. 
+     * @brief The storage mode of the tensor.
      */
     detail::HostToDeviceMode _mode;
 
@@ -529,7 +528,7 @@ struct DeviceTensor : public ::einsums::detail::TensorBase<T, Rank> {
     /**
      * @brief Set the name of the tensor.
      */
-    void               set_name(const std::string &name) { _name = name; }
+    void set_name(const std::string &name) { _name = name; }
 
     /**
      * @brief Get the stride of the given rank.
@@ -591,7 +590,7 @@ struct DeviceTensorView : public ::einsums::detail::TensorBase<T, Rank> {
      *
      * @brief The data type stored on the device. This is only different if T is complex.
      */
-    using dev_datatype  = std::conditional_t<std::is_same_v<T, std::complex<float>>, hipComplex,
+    using dev_datatype = std::conditional_t<std::is_same_v<T, std::complex<float>>, hipComplex,
                                             std::conditional_t<std::is_same_v<T, std::complex<double>>, hipDoubleComplex, T>>;
 
     /**
@@ -607,21 +606,21 @@ struct DeviceTensorView : public ::einsums::detail::TensorBase<T, Rank> {
      *
      * @brief The name of the view.
      */
-    std::string           _name{"(Unnamed View)"};
+    std::string _name{"(Unnamed View)"};
 
     /**
      * @property _dims
      *
      * @brief The dimensions of the view.
      */
-    einsums::Dim<Rank>    _dims;
+    einsums::Dim<Rank> _dims;
 
     /**
      * @property _gpu_dims
      *
      * @brief The dimensions of the view made available to the GPU.
      */
-    size_t               *_gpu_dims;
+    size_t *_gpu_dims;
 
     /**
      * @property _strides
@@ -635,7 +634,7 @@ struct DeviceTensorView : public ::einsums::detail::TensorBase<T, Rank> {
      *
      * @brief The strides of the view made available to the GPU.
      */
-    size_t               *_gpu_strides;
+    size_t *_gpu_strides;
     // Offsets<Rank> _offsets;
 
     /**
@@ -725,7 +724,7 @@ struct DeviceTensorView : public ::einsums::detail::TensorBase<T, Rank> {
     auto operator=(const AType<T, Rank> &other) -> DeviceTensorView &;
 
     /**
-     * @brief Copy data from a tensor. 
+     * @brief Copy data from a tensor.
      */
     template <template <typename, size_t> typename AType>
         requires detail::DeviceRankTensor<AType<T, Rank>, Rank, T>
@@ -810,7 +809,7 @@ struct DeviceTensorView : public ::einsums::detail::TensorBase<T, Rank> {
     /**
      * @brief Set the name of the view.
      */
-    void               set_name(const std::string &name) { _name = name; }
+    void set_name(const std::string &name) { _name = name; }
 
     /**
      * @brief Get the stride of the given rank.

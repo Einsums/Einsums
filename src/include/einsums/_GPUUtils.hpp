@@ -193,4 +193,10 @@ inline void get_worker_info(int &thread_id, int &num_threads) {
     thread_id = threadIdx.x + blockDim.x * (threadIdx.y + blockDim.y * (threadIdx.z + blockDim.z * (blockIdx.x + gridDim.x * (blockIdx.y + gridDim.y * blockIdx.z))));
 }
 
+__host__
+EINSUMS_EXPORT void initialize();
+
+__host__
+EINSUMS_EXPORT void finalize();
+
 END_EINSUMS_NAMESPACE_HPP(einsums::gpu)

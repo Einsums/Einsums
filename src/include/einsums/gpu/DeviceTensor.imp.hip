@@ -383,10 +383,10 @@ __global__ void set_all(T *data, const size_t *dims, const size_t *strides, T va
     while (curr_element < elements_adjusted) {
 
         // Convert index into index combination.
-        index_to_combination(curr_element % elements, dims, inds);
+        index_to_combination<Rank>(curr_element % elements, dims, inds);
 
         // Map index combination onto the tensor.
-        size_t ind = combination_to_index(inds, dims, strides);
+        size_t ind = combination_to_index<Rank>(inds, dims, strides);
 
         // Do the copy.
         data[ind] = value;
@@ -484,6 +484,8 @@ HostDevReference<T> &DeviceTensor<T, Rank>::operator()(MultiIndex... index) {
         return *new HostDevReference<T>(this->_host_data + ordinal, true);
     } else if (this->_mode == detail::DEV_ONLY) {
         return *new HostDevReference<T>(this->_data + ordinal, false);
+    } else {
+        throw std::exception();
     }
 }
 
@@ -907,10 +909,10 @@ __global__ void add_and_assign_scal(T *to_data, const size_t *to_dims, const siz
     while (curr_element < elements_adjusted) {
 
         // Convert index into index combination.
-        index_to_combination(curr_element % elements, to_dims, inds);
+        index_to_combination<Rank>(curr_element % elements, to_dims, inds);
 
         // Map index combination onto the tensor.
-        size_t to_ind = combination_to_index(inds, to_dims, to_strides);
+        size_t to_ind = combination_to_index<Rank>(inds, to_dims, to_strides);
 
         // Do the copy.
         to_data[to_ind] += scalar;
@@ -949,10 +951,10 @@ __global__ void sub_and_assign_scal(T *to_data, const size_t *to_dims, const siz
     while (curr_element < elements_adjusted) {
 
         // Convert index into index combination.
-        index_to_combination(curr_element % elements, to_dims, inds);
+        index_to_combination<Rank>(curr_element % elements, to_dims, inds);
 
         // Map index combination onto the tensor.
-        size_t to_ind = combination_to_index(inds, to_dims, to_strides);
+        size_t to_ind = combination_to_index<Rank>(inds, to_dims, to_strides);
 
         // Do the copy.
         to_data[to_ind] -= scalar;
@@ -991,10 +993,10 @@ __global__ void mul_and_assign_scal(T *to_data, const size_t *to_dims, const siz
     while (curr_element < elements_adjusted) {
 
         // Convert index into index combination.
-        index_to_combination(curr_element % elements, to_dims, inds);
+        index_to_combination<Rank>(curr_element % elements, to_dims, inds);
 
         // Map index combination onto the tensor.
-        size_t to_ind = combination_to_index(inds, to_dims, to_strides);
+        size_t to_ind = combination_to_index<Rank>(inds, to_dims, to_strides);
 
         // Do the copy.
         to_data[to_ind] *= scalar;
@@ -1032,10 +1034,10 @@ __global__ void div_and_assign_scal(T *to_data, const size_t *to_dims, const siz
     while (curr_element < elements_adjusted) {
 
         // Convert index into index combination.
-        index_to_combination(curr_element % elements, to_dims, inds);
+        index_to_combination<Rank>(curr_element % elements, to_dims, inds);
 
         // Map index combination onto the tensor.
-        size_t to_ind = combination_to_index(inds, to_dims, to_strides);
+        size_t to_ind = combination_to_index<Rank>(inds, to_dims, to_strides);
 
         // Do the copy.
         to_data[to_ind] /= scalar;

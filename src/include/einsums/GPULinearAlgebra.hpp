@@ -88,7 +88,7 @@ template <bool TransA, bool TransB, template <typename, size_t> typename AType, 
         requires DeviceRankTensor<BType<T, Rank>, 2, T>;
         requires DeviceRankTensor<CType<T, Rank>, 2, T>;
     }
-void gemm(const T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const T beta, CType<T, Rank> *C);
+void gemm(T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, T beta, CType<T, Rank> *C);
 
 template <template <typename, size_t> typename CType, typename CDataType, template <typename, size_t> typename AType, typename ADataType,
           size_t ARank, template <typename, size_t> typename BType, typename BDataType, size_t BRank>

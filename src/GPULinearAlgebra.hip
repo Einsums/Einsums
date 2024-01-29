@@ -16,7 +16,7 @@ using namespace einsums::gpu::detail;
 using namespace einsums::backend::linear_algebra::hipblas;
 using namespace einsums::backend::linear_algebra::hipblas::detail;
 
-BEGIN_EINSUMS_NAMESPACE_CPP(einsusm::gpu::linear_algebra)
+BEGIN_EINSUMS_NAMESPACE_CPP(einsums::gpu::linear_algebra)
 
 namespace detail {
 

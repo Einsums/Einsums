@@ -246,4 +246,14 @@ __host__ void hip_catch(hipError_t condition, bool throw_success) {
     }
 }
 
+void initialize() {
+    hip_catch(hipFree(nullptr));
+
+    std::atexit(finalize);
+}
+
+void finalize() {
+    hip_catch(hipDeviceReset());
+}
+
 END_EINSUMS_NAMESPACE_CPP(einsums::gpu)

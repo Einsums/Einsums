@@ -46,7 +46,7 @@ template <bool TransA, bool TransB, template <typename, size_t> typename AType, 
         requires DeviceRankTensor<BType<T, Rank>, 2, T>;
         requires DeviceRankTensor<CType<T, Rank>, 2, T>;
     }
-void gemm(const T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const T beta, CType<T, Rank> *C) {
+void gemm(T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, T beta, CType<T, Rank> *C) {
     using dev_datatype = std::conditional_t<std::is_same_v<T, std::complex<float>>, hipComplex,
                                             std::conditional_t<std::is_same_v<T, std::complex<double>>, hipDoubleComplex, T>>;
     dev_datatype *alpha_gpu, *beta_gpu;

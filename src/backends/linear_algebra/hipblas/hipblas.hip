@@ -87,7 +87,6 @@ hipblasHandle_t set_blas_handle(hipblasHandle_t value) {
 using namespace detail;
 
 __host__ void initialize() {
-    hip_catch(hipFree(nullptr));
 
     if (detail::blas_handle == nullptr) {
         hipblas_catch(hipblasCreate(&detail::blas_handle));
