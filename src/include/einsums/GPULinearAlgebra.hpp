@@ -25,11 +25,7 @@
 #include <tuple>
 #include <type_traits>
 
-BEGIN_EINSUMS_NAMESPACE_HPP(einsums::gpu::linear_algebra)
-
-using namespace einsums::gpu::detail;
-using namespace einsums::backend::linear_algebra::hipblas;
-using namespace einsums::backend::linear_algebra::hipblas::detail;
+BEGIN_EINSUMS_NAMESPACE_HPP(einsums::linear_algebra::gpu)
 
 namespace detail {
 
@@ -79,14 +75,26 @@ EINSUMS_EXPORT void scal(int size, const hipComplex *alpha, hipComplex *x, int i
 
 EINSUMS_EXPORT void scal(int size, const hipDoubleComplex *alpha, hipDoubleComplex *x, int incx);
 
+__global__
+EINSUMS_EXPORT void symm_gemm(int size, const float *A, int lda, const float *B, int ldb, float *C, int ldc);
+
+__global__
+EINSUMS_EXPORT void symm_gemm(int size, const double *A, int lda, const double *B, int ldb, double *C, int ldc);
+
+__global__
+EINSUMS_EXPORT void symm_gemm(int size, const hipComplex *A, int lda, const hipComplex *B, int ldb, hipComplex *C, int ldc);
+
+__global__
+EINSUMS_EXPORT void symm_gemm(int size, const hipDoubleComplex *A, int lda, const hipDoubleComplex *B, int ldb, hipDoubleComplex *C, int ldc);
+
 } // namespace detail
 
 template <bool TransA, bool TransB, template <typename, size_t> typename AType, template <typename, size_t> typename BType,
           template <typename, size_t> typename CType, size_t Rank, typename T>
     requires requires {
-        requires DeviceRankTensor<AType<T, Rank>, 2, T>;
-        requires DeviceRankTensor<BType<T, Rank>, 2, T>;
-        requires DeviceRankTensor<CType<T, Rank>, 2, T>;
+        requires ::einsums::detail::DeviceRankTensor<AType<T, Rank>, 2, T>;
+        requires ::einsums::detail::DeviceRankTensor<BType<T, Rank>, 2, T>;
+        requires ::einsums::detail::DeviceRankTensor<CType<T, Rank>, 2, T>;
     }
 void gemm(T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, T beta, CType<T, Rank> *C);
 
@@ -98,24 +106,36 @@ void dot(CDataType C_prefactor, CType<CDataType, 0> &C,
 
 template <template <typename, size_t> typename XYType, size_t XYRank, template <typename, size_t> typename AType, typename T, size_t ARank>
     requires requires {
-        requires DeviceRankTensor<XYType<T, XYRank>, 1, T>;
-        requires DeviceRankTensor<AType<T, ARank>, 2, T>;
+        requires ::einsums::detail::DeviceRankTensor<XYType<T, XYRank>, 1, T>;
+        requires ::einsums::detail::DeviceRankTensor<AType<T, ARank>, 2, T>;
     }
 void ger(T alpha, const XYType<T, XYRank> &X, const XYType<T, XYRank> &Y, AType<T, ARank> *A);
 
 template <bool TransA, template <typename, size_t> typename AType, template <typename, size_t> typename XType,
           template <typename, size_t> typename YType, size_t ARank, size_t XYRank, typename T>
     requires requires {
-        requires DeviceRankTensor<AType<T, ARank>, 2, T>;
-        requires DeviceRankTensor<XType<T, XYRank>, 1, T>;
-        requires DeviceRankTensor<YType<T, XYRank>, 1, T>;
+        requires ::einsums::detail::DeviceRankTensor<AType<T, ARank>, 2, T>;
+        requires ::einsums::detail::DeviceRankTensor<XType<T, XYRank>, 1, T>;
+        requires ::einsums::detail::DeviceRankTensor<YType<T, XYRank>, 1, T>;
     }
 void gemv(T alpha, const AType<T, ARank> &A, const XType<T, XYRank> &x, T beta, YType<T, XYRank> *y);
 
 template <template <typename, size_t> typename AType, size_t ARank, typename T>
-    requires DeviceRankTensor<AType<T, ARank>, ARank, T>
+    requires ::einsums::detail::DeviceRankTensor<AType<T, ARank>, ARank, T>
 void scale(T scale, AType<T, ARank> *A);
 
-END_EINSUMS_NAMESPACE_HPP(einsums::gpu::linear_algebra)
+/**
+ * Computes C = B^T A B
+ */
+template <template <typename, size_t> typename AType, template <typename, size_t> typename BType,
+          template <typename, size_t> typename CType, size_t Rank, typename T>
+    requires requires {
+        requires ::einsums::detail::DeviceRankTensor<AType<T, Rank>, 2, T>;
+        requires ::einsums::detail::DeviceRankTensor<BType<T, Rank>, 2, T>;
+        requires ::einsums::detail::DeviceRankTensor<CType<T, Rank>, 2, T>;
+    }
+void gemmm(const AType<T, Rank> &A, const BType<T, Rank> &B, CType<T, Rank> *C);
+
+END_EINSUMS_NAMESPACE_HPP(einsums::linear_algebra::gpu)
 
 #include "einsums/gpu/GPULinearAlgebra.imp.hip"

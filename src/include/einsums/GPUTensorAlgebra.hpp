@@ -37,7 +37,7 @@
 #    include <catch2/catch_all.hpp>
 #endif
 
-BEGIN_EINSUMS_NAMESPACE_HPP(einsums::gpu::tensor_algebra)
+BEGIN_EINSUMS_NAMESPACE_HPP(einsums::tensor_algebra::gpu)
 
 namespace detail {
 
@@ -197,6 +197,6 @@ void einsum(const std::tuple<CIndices...> &C_indices, CType *C, const std::tuple
     einsum(0, C_indices, C->get(), 1, A_indices, *A, B_indices, *B);
 }
 
-END_EINSUMS_NAMESPACE_HPP(einsums::gpu::tensor_algebra)
+END_EINSUMS_NAMESPACE_HPP(einsums::tensor_algebra::gpu)
 
 #include "einsums/gpu/GPUTensorAlgebra.imp.hip"

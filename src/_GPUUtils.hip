@@ -247,9 +247,13 @@ __host__ void hip_catch(hipError_t condition, bool throw_success) {
 }
 
 void initialize() {
+    static bool set_at_exit = false;
     hip_catch(hipFree(nullptr));
 
-    std::atexit(finalize);
+    if(set_at_exit) {
+        std::atexit(finalize);
+        set_at_exit = true;
+    }
 }
 
 void finalize() {

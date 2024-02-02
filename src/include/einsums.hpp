@@ -11,7 +11,6 @@
 #ifdef __HIP__
 #include "einsums/DeviceTensor.hpp"
 #include "einsums/GPUTensorAlgebra.hpp"
-#include "einsums/_GPUTensorAlgebraUtilities.hpp"
 #include "einsums/_GPUUtils.hpp"
 #include "einsums/GPULinearAlgebra.hpp"
 #endif

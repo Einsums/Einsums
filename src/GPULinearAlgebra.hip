@@ -16,7 +16,7 @@ using namespace einsums::gpu::detail;
 using namespace einsums::backend::linear_algebra::hipblas;
 using namespace einsums::backend::linear_algebra::hipblas::detail;
 
-BEGIN_EINSUMS_NAMESPACE_CPP(einsums::gpu::linear_algebra)
+BEGIN_EINSUMS_NAMESPACE_CPP(einsums::linear_algebra::gpu)
 
 namespace detail {
 
@@ -165,6 +165,116 @@ void scal(int size, const hipDoubleComplex *alpha, hipDoubleComplex *x, int incx
     hip_catch(hipDeviceSynchronize());
 }
 
+__global__
+EINSUMS_EXPORT void symm_gemm(int size, const float *A, int lda, const float *B, int ldb, float *C, int ldc) {
+    int thread, kernel_size;
+
+    get_worker_info(thread, kernel_size);
+
+    size_t curr_index = thread, max_size = size * size * size * size;
+
+    while(curr_index < max_size) {
+        size_t a, b, i, j;
+
+        size_t quotient = curr_index;
+
+        a = quotient % size;
+        quotient /= size;
+        b = quotient % size;
+        quotient /= size;
+        i = quotient % size;
+        quotient /= size;
+        j = quotient;
+
+        curr_index += kernel_size;
+
+        atomicAdd(C + (a * size + b), B[i * size + a] * A[i * size + j] * B[j * size + b]);
+    }
 }
 
-END_EINSUMS_NAMESPACE_CPP(einsums::gpu::linear_algebra)
+__global__
+EINSUMS_EXPORT void symm_gemm(int size, const double *A, int lda, const double *B, int ldb, double *C, int ldc) {
+    int thread, kernel_size;
+
+    get_worker_info(thread, kernel_size);
+
+    size_t curr_index = thread, max_size = size * size * size * size;
+
+    while(curr_index < max_size) {
+        size_t a, b, i, j;
+
+        size_t quotient = curr_index;
+
+        a = quotient % size;
+        quotient /= size;
+        b = quotient % size;
+        quotient /= size;
+        i = quotient % size;
+        quotient /= size;
+        j = quotient;
+
+        curr_index += kernel_size;
+
+        atomicAdd(C + (a * size + b), B[i * size + a] * A[i * size + j] * B[j * size + b]);
+    }
+}
+
+__global__
+EINSUMS_EXPORT void symm_gemm(int size, const hipComplex *A, int lda, const hipComplex *B, int ldb, hipComplex *C, int ldc) {
+    int thread, kernel_size;
+
+    get_worker_info(thread, kernel_size);
+
+    size_t curr_index = thread, max_size = size * size * size * size;
+
+    while(curr_index < max_size) {
+        size_t a, b, i, j;
+
+        size_t quotient = curr_index;
+
+        a = quotient % size;
+        quotient /= size;
+        b = quotient % size;
+        quotient /= size;
+        i = quotient % size;
+        quotient /= size;
+        j = quotient;
+
+        curr_index += kernel_size;
+        hipComplex res = hipConjf(B[i * size + a]) * A[i * size + j] * B[j * size + b];
+        atomicAdd(&(C[a * size + b].x), res.x);
+        atomicAdd(&(C[a * size + b].y), res.y);
+    }
+}
+
+__global__
+EINSUMS_EXPORT void symm_gemm(int size, const hipDoubleComplex *A, int lda, const hipDoubleComplex *B, int ldb, hipDoubleComplex *C, int ldc) {
+    int thread, kernel_size;
+
+    get_worker_info(thread, kernel_size);
+
+    size_t curr_index = thread, max_size = size * size * size * size;
+
+    while(curr_index < max_size) {
+        size_t a, b, i, j;
+
+        size_t quotient = curr_index;
+
+        a = quotient % size;
+        quotient /= size;
+        b = quotient % size;
+        quotient /= size;
+        i = quotient % size;
+        quotient /= size;
+        j = quotient;
+
+        curr_index += kernel_size;
+        hipDoubleComplex res = hipConj(B[i * size + a]) * A[i * size + j] * B[j * size + b];
+        atomicAdd(&(C[a * size + b].x), res.x);
+        atomicAdd(&(C[a * size + b].y), res.y);
+    }
+}
+
+}
+
+END_EINSUMS_NAMESPACE_CPP(einsums::linear_algebra::gpu)

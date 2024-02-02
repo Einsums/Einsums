@@ -10,7 +10,7 @@
 #include <hip/hip_complex.h>
 #include <hip/hip_runtime_api.h>
 
-BEGIN_EINSUMS_NAMESPACE_HPP(einsums::gpu)
+namespace einsums {
 
 template <typename T, size_t Rank>
 struct DeviceTensorView;
@@ -36,8 +36,8 @@ enum HostToDeviceMode { DEV_ONLY, MAPPED, PINNED };
  * @brief Struct for specifying that a tensor is device compatible.
  */
 template <typename D, size_t Rank, typename T>
-struct IsDeviceRankTensor : public std::bool_constant<std::is_same_v<std::decay_t<D>, gpu::DeviceTensor<T, Rank>> ||
-                                                      std::is_same_v<std::decay_t<D>, gpu::DeviceTensorView<T, Rank>>> {};
+struct IsDeviceRankTensor : public std::bool_constant<std::is_same_v<std::decay_t<D>, DeviceTensor<T, Rank>> ||
+                                                      std::is_same_v<std::decay_t<D>, DeviceTensorView<T, Rank>>> {};
 
 /**
  * @property IsDeviceRankTensorV
@@ -130,7 +130,7 @@ class HostDevReference {
             return *_ptr;
         } else {
             T out;
-            hip_catch(hipMemcpy((void *)&out, (const void *)_ptr, sizeof(T), hipMemcpyDeviceToHost));
+            gpu::hip_catch(hipMemcpy((void *)&out, (const void *)_ptr, sizeof(T), hipMemcpyDeviceToHost));
             return out;
         }
     }
@@ -142,7 +142,7 @@ class HostDevReference {
         if (is_on_host) {
             *_ptr = other;
         } else {
-            hip_catch(hipMemcpy((void *)_ptr, (const void *)&other, sizeof(T), hipMemcpyHostToDevice));
+            gpu::hip_catch(hipMemcpy((void *)_ptr, (const void *)&other, sizeof(T), hipMemcpyHostToDevice));
         }
         return *this;
     }
@@ -154,7 +154,7 @@ class HostDevReference {
         if (is_on_host) {
             *_ptr = other.get();
         } else {
-            hip_catch(hipMemcpy((void *)_ptr, (const void *)&(other.get()), sizeof(T), hipMemcpyHostToDevice));
+            gpu::hip_catch(hipMemcpy((void *)_ptr, (const void *)&(other.get()), sizeof(T), hipMemcpyHostToDevice));
         }
         return *this;
     }
@@ -410,6 +410,20 @@ struct DeviceTensor : public ::einsums::detail::TensorBase<T, Rank> {
     auto data(MultiIndex... index) -> dev_datatype *;
 
     /**
+     * Sends data from the host to the device.
+     *
+     * @param data The vector data.
+     */
+    void read(const std::vector<T> &data);
+
+    /**
+     * Sends data from the device to the host.
+     *
+     * @param data The vector that will be filled.
+     */
+    void write(std::vector<T> &data);
+
+    /**
      * @brief Subscripts into the tensor.
      *
      * This version works when all elements are explicit values into the tensor.
@@ -518,6 +532,11 @@ struct DeviceTensor : public ::einsums::detail::TensorBase<T, Rank> {
      */
     device_ptr size_t *gpu_dims() { return _gpu_dims; }
 
+    /**
+     * @brief Get the dimensions available to the GPU.
+     */
+    const device_ptr size_t *gpu_dims() const { return _gpu_dims; }
+
     ALIAS_TEMPLATE_FUNCTION(shape, dims);
 
     /**
@@ -550,6 +569,11 @@ struct DeviceTensor : public ::einsums::detail::TensorBase<T, Rank> {
     device_ptr size_t *gpu_strides() { return _gpu_strides; }
 
     /**
+     * @brief Get the strides available to the GPU.
+     */
+    const device_ptr size_t *gpu_strides() const { return _gpu_strides; }
+
+    /**
      * Convert to a rank 1 tensor view.
      */
     auto to_rank_1_view() const -> DeviceTensorView<T, 1> {
@@ -580,6 +604,242 @@ struct DeviceTensor : public ::einsums::detail::TensorBase<T, Rank> {
      * @brief Copy a device tensor to the host.
      */
     explicit operator Tensor<T, Rank>();
+};
+
+/**
+ * @struct DeviceTensor<T, 0>
+ *
+ * Implementation for a zero-rank tensor.
+ */
+template<typename T>
+struct DeviceTensor<T, 0> : public einsums::detail::TensorBase<T, 0> {
+  public:
+    /**
+     * @typedef dev_datatype
+     *
+     * @brief The data type stored on the device. This is only different if T is complex.
+     */
+    using dev_datatype = std::conditional_t<std::is_same_v<T, std::complex<float>>, hipComplex,
+                                            std::conditional_t<std::is_same_v<T, std::complex<double>>, hipDoubleComplex, T>>;
+
+    /**
+     * @typedef host_datatype
+     *
+     * @brief The data type stored on the host. It is an alias of T.
+     */
+    using host_datatype = T;
+
+  private:
+    /**
+     * @property _name
+     *
+     * @brief The name of the tensor.
+     */
+    std::string _name{"(Unnamed)"};
+
+    /**
+     * @property _data
+     *
+     * @brief A device pointer to the data on the device.
+     */
+    device_ptr dev_datatype *_data{nullptr};
+
+    /**
+     * @property _host_data
+     *
+     * @brief If the tensor is mapped or pinned, this is the data on the host.
+     */
+    host_ptr host_datatype *_host_data{nullptr};
+
+    /**
+     * @property _mode
+     *
+     * @brief The storage mode of the tensor.
+     */
+    detail::HostToDeviceMode _mode;
+
+    template <typename TOther, size_t RankOther>
+    friend struct DeviceTensorView;
+
+    template <typename TOther, size_t RankOther>
+    friend struct DeviceTensor;
+
+  public:
+
+    /**
+     * @brief Construct a new tensor on the GPU.
+     */
+    DeviceTensor() = default;
+
+    /**
+     * @brief Copy construct a new GPU tensor.
+     */
+    DeviceTensor(const DeviceTensor<T, 0> &other) : _mode{detail::DEV_ONLY} {
+        gpu::hip_catch(hipMalloc((void **) &_data, sizeof(T)));
+        gpu::hip_catch(hipMemcpy((void *) _data, (const void *) other.data(), sizeof(T), hipMemcpyDeviceToDevice));
+    }
+
+    /**
+     * @brief Destructor.
+     */
+    ~DeviceTensor() {
+        if (this->_mode == detail::MAPPED) {
+        if (this->_host_data == nullptr) {
+            return;
+        }
+        gpu::hip_catch(hipHostUnregister((void *)this->_host_data));
+        delete this->_host_data;
+    } else if (this->_mode == detail::PINNED) {
+        gpu::hip_catch(hipHostFree((void *)this->_host_data));
+    } else if (this->_mode == detail::DEV_ONLY) {
+        gpu::hip_catch(hipFree((void *)this->_data));
+    }
+    }
+
+    /**
+     * @brief Construct a new named zero-rank tensor on the GPU.
+     */
+    DeviceTensor(std::string name, detail::HostToDeviceMode mode) : _name{std::move(name)}, _mode{mode} {
+        switch(mode) {
+        case detail::MAPPED :
+            this->_host_data = new T();
+            gpu::hip_catch(hipHostRegister((void *)this->_host_data, sizeof(T), hipHostRegisterDefault));
+            gpu::hip_catch(hipHostGetDevicePointer((void **)&(this->_data), (void *)this->_host_data, 0));
+            break;
+        case detail::PINNED :
+            gpu::hip_catch(hipHostMalloc((void **)&(this->_host_data), sizeof(T), 0));
+            gpu::hip_catch(hipHostGetDevicePointer((void **)&(this->_data), (void *)this->_host_data, 0));
+            break;
+        case detail::DEV_ONLY :
+            this->_host_data = nullptr;
+            gpu::hip_catch(hipMalloc((void **)&(this->_data), sizeof(T)));
+            break;
+        }
+    }
+
+    auto               data() -> T               *{ return _data; }
+    [[nodiscard]] auto data() const -> const T * { return _data; }
+
+    auto               host_data() -> T               *{ return _host_data; }
+    [[nodiscard]] auto host_data() const -> const T * { return _host_data; }
+
+    auto operator=(const DeviceTensor<T, 0> &other) -> DeviceTensor<T, 0> & {
+        gpu::hip_catch(hipMemcpy((void *) _data, (const void *) other.data(), sizeof(T), hipMemcpyDeviceToDevice));
+        return *this;
+    }
+
+    auto operator=(const T &other) -> DeviceTensor<T, 0> & {
+        if(_mode == detail::MAPPED || _mode == detail::PINNED) {
+            *_host_data = other;
+        } else {
+            gpu::hip_catch(hipMemcpy((void *) _data, (const void *) &other, sizeof(T), hipMemcpyHostToDevice));
+        }
+        return *this;
+    }
+
+    auto operator+=(const T &other) -> DeviceTensor<T, 0> & {
+        if(_mode == detail::MAPPED || _mode == detail::PINNED) {
+            *_host_data += other;
+        } else {
+            T temp;
+            gpu::hip_catch(hipMemcpy((void *) &temp, (const void *) _data, sizeof(T), hipMemcpyDeviceToHost));
+            temp += other;
+            gpu::hip_catch(hipMemcpy((void *) _data, (const void *) &temp, sizeof(T), hipMemcpyHostToDevice));
+        }
+        return *this;
+    }
+
+    auto operator-=(const T &other) -> DeviceTensor<T, 0> & {
+        if(_mode == detail::MAPPED || _mode == detail::PINNED) {
+            *_host_data -= other;
+        } else {
+            T temp;
+            gpu::hip_catch(hipMemcpy((void *) &temp, (const void *) _data, sizeof(T), hipMemcpyDeviceToHost));
+            temp -= other;
+            gpu::hip_catch(hipMemcpy((void *) _data, (const void *) &temp, sizeof(T), hipMemcpyHostToDevice));
+        }
+        return *this;
+    }
+
+    auto operator*=(const T &other) -> DeviceTensor<T, 0> & {
+        if(_mode == detail::MAPPED || _mode == detail::PINNED) {
+            *_host_data *= other;
+        } else {
+            T temp;
+            gpu::hip_catch(hipMemcpy((void *) &temp, (const void *) _data, sizeof(T), hipMemcpyDeviceToHost));
+            temp *= other;
+            gpu::hip_catch(hipMemcpy((void *) _data, (const void *) &temp, sizeof(T), hipMemcpyHostToDevice));
+        }
+        return *this;
+    }
+
+    auto operator/=(const T &other) -> DeviceTensor<T, 0> & {
+        if(_mode == detail::MAPPED || _mode == detail::PINNED) {
+            *_host_data /= other;
+        } else {
+            T temp;
+            gpu::hip_catch(hipMemcpy((void *) &temp, (const void *) _data, sizeof(T), hipMemcpyDeviceToHost));
+            temp /= other;
+            gpu::hip_catch(hipMemcpy((void *) _data, (const void *) &temp, sizeof(T), hipMemcpyHostToDevice));
+        }
+        return *this;
+    }
+
+    operator T() const { 
+        T out;
+        if(_mode == detail::MAPPED || _mode == detail::PINNED) {
+            return *_host_data;
+        } else {
+            gpu::hip_catch(hipMemcpy((void *) &out, (const void *) _data, sizeof(T), hipMemcpyDeviceToHost));
+            return out;
+        }
+    }
+
+    [[nodiscard]] auto name() const -> const std::string & { return _name; }
+    void               set_name(const std::string &name) { _name = name; }
+
+    [[nodiscard]] auto dim(int) const -> size_t override { return 1; }
+
+    [[nodiscard]] auto dims() const -> Dim<0> { return Dim<0>{}; }
+
+    [[nodiscard]] auto full_view_of_underlying() const noexcept -> bool { return true; }
+
+    /**********************************************
+     * Interface between device and host tensors. *
+     **********************************************/
+
+    /**
+     * @brief Copy a host tensor to the device.
+     */
+    explicit DeviceTensor(const Tensor<T, 0> &other, detail::HostToDeviceMode mode = detail::MAPPED) {
+        switch(mode) {
+        case detail::MAPPED :
+            this->_host_data = new T();
+            *_host_data = (T) other;
+            gpu::hip_catch(hipHostRegister((void *)this->_host_data, sizeof(T), hipHostRegisterDefault));
+            gpu::hip_catch(hipHostGetDevicePointer((void **)&(this->_data), (void *)this->_host_data, 0));
+            break;
+        case detail::PINNED :
+            gpu::hip_catch(hipHostMalloc((void **)&(this->_host_data), sizeof(T), 0));
+            gpu::hip_catch(hipHostGetDevicePointer((void **)&(this->_data), (void *)this->_host_data, 0));
+            break;
+        case detail::DEV_ONLY :
+            this->_host_data = nullptr;
+            gpu::hip_catch(hipMalloc((void **)&(this->_data), sizeof(T)));
+            break;
+        }
+    }
+
+    /**
+     * @brief Copy a device tensor to the host.
+     */
+    explicit operator Tensor<T, 0>() {
+        Tensor<T, 0> out(std::move(_name));
+
+        out = (T) *this;
+        return out;
+    }
+
 };
 
 template <typename T, size_t Rank>
@@ -799,7 +1059,12 @@ struct DeviceTensorView : public ::einsums::detail::TensorBase<T, Rank> {
     /**
      * @brief Get the dimensions of the view made available to the GPU.
      */
-    device_ptr size_t *gpu_dims() const { return _gpu_dims; }
+    device_ptr size_t *gpu_dims() { return _gpu_dims; }
+
+    /**
+     * @brief Get the dimensions of the view made available to the GPU.
+     */
+    const device_ptr size_t *gpu_dims() const { return _gpu_dims; }
 
     /**
      * @brief Get the name of the view.
@@ -828,7 +1093,12 @@ struct DeviceTensorView : public ::einsums::detail::TensorBase<T, Rank> {
     /**
      * @brief Get the strides of the view made available to the GPU.
      */
-    device_ptr size_t *gpu_strides() const { return _gpu_strides; }
+    device_ptr size_t *gpu_strides() { return _gpu_strides; }
+
+    /**
+     * @brief Get the strides of the view made available to the GPU.
+     */
+    const device_ptr size_t *gpu_strides() const { return _gpu_strides; }
 
     /**
      * @brief Convert the view to a one-dimensional array.
@@ -854,7 +1124,7 @@ struct DeviceTensorView : public ::einsums::detail::TensorBase<T, Rank> {
         -> std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<T, OtherRank>, TensorType<T, OtherRank>>>;
 };
 
-END_EINSUMS_NAMESPACE_HPP(einsums::gpu)
+}
 
 #include "einsums/gpu/DeviceTensor.imp.hip"
 #include "einsums/gpu/DeviceTensorView.imp.hip"

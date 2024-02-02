@@ -43,6 +43,7 @@ extend_einsums_target(einsums
         backends/linear_algebra/hipblas/hipblas.hip
         backends/linear_algebra/hipblas/hipsolver.hip
         GPULinearAlgebra.hip
+        GPUTensorAlgebra.hip
     CONDITION
         EINSUMS_BUILD_HIP
     PUBLIC_DEPENDS
