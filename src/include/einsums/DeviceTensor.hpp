@@ -866,10 +866,12 @@ struct DeviceTensor<T, 0> : public einsums::detail::TensorBase<T, 0> {
         case detail::PINNED :
             gpu::hip_catch(hipHostMalloc((void **)&(this->_host_data), sizeof(T), 0));
             gpu::hip_catch(hipHostGetDevicePointer((void **)&(this->_data), (void *)this->_host_data, 0));
+            *_host_data = (T) other;
             break;
         case detail::DEV_ONLY :
             this->_host_data = nullptr;
             gpu::hip_catch(hipMalloc((void **)&(this->_data), sizeof(T)));
+            gpu::hip_catch(hipMemcpy((void *) this->_data, (const void *) other.data(), sizeof(T), hipMemcpyHostToDevice));
             break;
         }
     }

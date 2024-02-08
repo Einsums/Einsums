@@ -949,3 +949,113 @@ TEST_CASE("Test device-host interfacing", "[gpu][tensor]") {
         }
     }
 }
+
+TEST_CASE("Zero-rank GPU tensors", "[gpu][tensor]") {
+    using namespace einsums;
+    using namespace einsums::detail;
+    using namespace einsums::gpu;
+    using namespace einsums::gpu::detail;
+
+    gpu::initialize();
+
+    DeviceTensor<double, 0> A("A", DEV_ONLY);
+    DeviceTensor<double, 0> B("B", PINNED);
+    DeviceTensor<double, 0> C("C", MAPPED);
+
+    DeviceTensor<double, 0> A_copy(A);
+    DeviceTensor<double, 0> B_copy(B);
+    DeviceTensor<double, 0> C_copy(C);
+
+    hipError_t status;
+    hipPointerAttribute_t attribs;
+
+    status = hipPointerGetAttributes(&attribs, A.data());
+
+    CHECK((status != hipErrorInvalidValue));
+    CHECK((attribs.type == hipMemoryTypeDevice));
+
+    CHECK((A.host_data() == nullptr));
+
+    status = hipPointerGetAttributes(&attribs, B.data());
+
+    CHECK((status != hipErrorInvalidValue));
+    CHECK((attribs.type == hipMemoryTypeHost));
+
+    status = hipPointerGetAttributes(&attribs, B.host_data());
+
+    CHECK((status != hipErrorInvalidValue));
+    CHECK((attribs.type == hipMemoryTypeHost));
+
+    status = hipPointerGetAttributes(&attribs, C.data());
+
+    CHECK((status != hipErrorInvalidValue));
+    CHECK((attribs.type == hipMemoryTypeHost));
+
+    status = hipPointerGetAttributes(&attribs, C.host_data());
+
+    CHECK((status != hipErrorInvalidValue));
+    CHECK((attribs.type == hipMemoryTypeHost));
+
+    A = 1.0;
+    B = 2.0;
+    C = 3.0;
+
+    CHECK(((double) A == 1.0));
+    CHECK(((double) B == 2.0));
+    CHECK(((double) C == 3.0));
+
+    A = B;
+    B = C;
+
+    CHECK(((double) A == 2.0));
+    CHECK(((double) B == 3.0));
+
+    A *= 2.0;
+    B *= 2.0;
+    C *= 2.0;
+
+    CHECK(((double) A == 4.0));
+    CHECK(((double) B == 6.0));
+    CHECK(((double) C == 6.0));
+
+    A += 2.0;
+    B += 2.0;
+    C += 2.0;
+
+    CHECK(((double) A == 6.0));
+    CHECK(((double) B == 8.0));
+    CHECK(((double) C == 8.0));
+
+    A /= 2.0;
+    B /= 2.0;
+    C /= 2.0;
+
+    CHECK(((double) A == 3.0));
+    CHECK(((double) B == 4.0));
+    CHECK(((double) C == 4.0));
+
+    A -= 2.0;
+    B -= 2.0;
+    C -= 2.0;
+
+    CHECK(((double) A == 1.0));
+    CHECK(((double) B == 2.0));
+    CHECK(((double) C == 2.0));
+
+
+    Tensor<double, 0> D("D");
+
+    D = 10.0;
+
+    DeviceTensor<double, 0> E(D, DEV_ONLY);
+    DeviceTensor<double, 0> F(D, MAPPED);
+    DeviceTensor<double, 0> G(D, PINNED);
+
+    CHECK(((double) E == 10.0));
+    CHECK(((double) F == 10.0));
+    CHECK(((double) G == 10.0));
+
+    CHECK(((double) (Tensor<double, 0>) E == 10.0));
+    CHECK(((double) (Tensor<double, 0>) F == 10.0));
+    CHECK(((double) (Tensor<double, 0>) G == 10.0));
+}
