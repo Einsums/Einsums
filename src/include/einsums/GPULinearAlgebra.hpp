@@ -134,7 +134,7 @@ template <template <typename, size_t> typename AType, template <typename, size_t
         requires ::einsums::detail::DeviceRankTensor<BType<T, Rank>, 2, T>;
         requires ::einsums::detail::DeviceRankTensor<CType<T, Rank>, 2, T>;
     }
-void gemmm(const AType<T, Rank> &A, const BType<T, Rank> &B, CType<T, Rank> *C);
+void sym_gemm(const AType<T, Rank> &A, const BType<T, Rank> &B, CType<T, Rank> *C);
 
 END_EINSUMS_NAMESPACE_HPP(einsums::linear_algebra::gpu)
 

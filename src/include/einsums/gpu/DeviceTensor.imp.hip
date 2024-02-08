@@ -32,8 +32,8 @@ DeviceTensor<T, Rank>::DeviceTensor(const DeviceTensor<T, Rank> &copy) {
     hip_catch(hipMalloc((void **)&(this->_gpu_dims), sizeof(size_t) * Rank));
     hip_catch(hipMalloc((void **)&(this->_gpu_strides), sizeof(size_t) * Rank));
 
-    hip_catch(hipMemcpy((void *)this->_gpu_dims, (const void *)this->_dims.cbegin(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
-    hip_catch(hipMemcpy((void *)this->_gpu_strides, (const void *)this->_strides.cbegin(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy((void *)this->_gpu_dims, (const void *)this->_dims.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy((void *)this->_gpu_strides, (const void *)this->_strides.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
 }
 
 template <typename T, size_t Rank>
@@ -98,8 +98,10 @@ DeviceTensor<T, Rank>::DeviceTensor(::std::string name, einsums::detail::HostToD
     hip_catch(hipMalloc((void **)&(this->_gpu_dims), sizeof(size_t) * Rank));
     hip_catch(hipMalloc((void **)&(this->_gpu_strides), sizeof(size_t) * Rank));
 
-    hip_catch(hipMemcpy((void *)this->_gpu_dims, (const void *)this->_dims.cbegin(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
-    hip_catch(hipMemcpy((void *)this->_gpu_strides, (const void *)this->_strides.cbegin(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));   
+    assert(this->_gpu_dims != nullptr && this->_dims.data() != nullptr);
+
+    hip_catch(hipMemcpy((void *)this->_gpu_dims, (const void *)this->_dims.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy((void *)this->_gpu_strides, (const void *)this->_strides.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
 }
 
 template <typename T, size_t Rank>
@@ -169,8 +171,8 @@ DeviceTensor<T, Rank>::DeviceTensor(DeviceTensor<T, OtherRank> &&existingTensor,
         hip_catch(hipMalloc((void **)&(this->_gpu_dims), sizeof(size_t) * Rank));
     hip_catch(hipMalloc((void **)&(this->_gpu_strides), sizeof(size_t) * Rank));
 
-    hip_catch(hipMemcpy((void *)this->_gpu_dims, (const void *)this->_dims.cbegin(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
-    hip_catch(hipMemcpy((void *)this->_gpu_strides, (const void *)this->_strides.cbegin(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));   
+    hip_catch(hipMemcpy((void *)this->_gpu_dims, (const void *)this->_dims.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy((void *)this->_gpu_strides, (const void *)this->_strides.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));   
 }
 
 template <typename T, size_t Rank>
@@ -205,8 +207,8 @@ DeviceTensor<T, Rank>::DeviceTensor(Dim<Rank> dims, einsums::detail::HostToDevic
     hip_catch(hipMalloc((void **)&(this->_gpu_dims), sizeof(size_t) * Rank));
     hip_catch(hipMalloc((void **)&(this->_gpu_strides), sizeof(size_t) * Rank));
 
-    hip_catch(hipMemcpy((void *)this->_gpu_dims, (const void *)this->_dims.cbegin(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
-    hip_catch(hipMemcpy((void *)this->_gpu_strides, (const void *)this->_strides.cbegin(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy((void *)this->_gpu_dims, (const void *)this->_dims.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy((void *)this->_gpu_strides, (const void *)this->_strides.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
 }
 
 namespace detail {
@@ -229,6 +231,38 @@ __host__ __device__ void index_to_combination(size_t index, const size_t *dims, 
  */
 template <size_t Rank>
 __host__ __device__ size_t combination_to_index(const size_t *inds, const size_t *dims, const size_t *strides) {
+    size_t out = 0;
+    for (ssize_t i = 0; i < Rank; i++) {
+        int ind = inds[i];
+
+        if (ind < 0) {
+            ind += dims[i];
+        }
+
+        out += strides[i] * ind;
+    }
+
+    return out;
+}
+
+/**
+ * Turns a single numerical index into a list of indices into the tensor.
+ */
+template <size_t Rank>
+__host__ __device__ void index_to_combination(size_t index, const einsums::Dim<Rank> &dims, std::array<size_t, Rank> &out) {
+    size_t quot = index;
+
+    for (ssize_t i = Rank - 1; i >= 0; i--) {
+        out[i] = quot % dims[i];
+        quot /= dims[i];
+    }
+}
+
+/**
+ * Turns a list of indices into a single numerical index.
+ */
+template <size_t Rank>
+__host__ __device__ size_t combination_to_index(const std::array<size_t, Rank> &inds, const einsums::Dim<Rank> &dims, const einsums::Stride<Rank> &strides) {
     size_t out = 0;
     for (ssize_t i = 0; i < Rank; i++) {
         int ind = inds[i];
@@ -365,8 +399,8 @@ DeviceTensor<T, Rank>::DeviceTensor(const DeviceTensorView<T, Rank> &other) : _n
     hip_catch(hipMalloc((void **)&(this->_gpu_dims), sizeof(size_t) * Rank));
     hip_catch(hipMalloc((void **)&(this->_gpu_strides), sizeof(size_t) * Rank));
 
-    hip_catch(hipMemcpy((void *)this->_gpu_dims, (const void *)this->_dims.cbegin(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
-    hip_catch(hipMemcpy((void *)this->_gpu_strides, (const void *)this->_strides.cbegin(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy((void *)this->_gpu_dims, (const void *)this->_dims.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy((void *)this->_gpu_strides, (const void *)this->_strides.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
 
     einsums::detail::copy_to_tensor<T, Rank><<<einsums::detail::constructor_threads, einsums::detail::constructor_blocks>>>(
         this->_data, this->_gpu_dims, this->_gpu_strides, other.data(), other.gpu_dims(), other.gpu_strides(), size);
@@ -486,6 +520,28 @@ void DeviceTensor<T, Rank>::write(::std::vector<T> &data) {
     }
 }
 
+template<typename T, size_t Rank>
+void DeviceTensor<T, Rank>::read(const T *data) {
+    using namespace einsums::gpu;
+
+    if(this->_mode == einsums::detail::MAPPED || this->_mode == einsums::detail::PINNED) {
+        ::std::memcpy((void *) this->_host_data, (const void *) data, this->size() * sizeof(T));
+    } else {
+        hip_catch(hipMemcpy((void *) this->_data, (const void *) data, this->size() * sizeof(T), hipMemcpyHostToDevice));
+    }
+}
+
+template<typename T, size_t Rank>
+void DeviceTensor<T, Rank>::write(T *data) {
+    using namespace einsums::gpu;
+
+    if(this->_mode == einsums::detail::MAPPED || this->_mode == einsums::detail::PINNED) {
+        ::std::memcpy((void *) data, (const void *) this->_host_data, this->size() * sizeof(T));
+    } else {
+        hip_catch(hipMemcpy((void *) data, (const void *) this->_data, this->size() * sizeof(T), hipMemcpyDeviceToHost));
+    }
+}
+
 template <typename T, size_t Rank>
 template <typename... MultiIndex>
     requires requires {
@@ -531,12 +587,14 @@ HostDevReference<T> &DeviceTensor<T, Rank>::operator()(MultiIndex... index) {
     }
     size_t ordinal = ::std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
 
+    if(ordinal > this->size()) {
+        throw std::out_of_range("Array index out of range!");
+    }
+
     if (this->_mode == einsums::detail::MAPPED || this->_mode == einsums::detail::PINNED) {
         return *new HostDevReference<T>(this->_host_data + ordinal, true);
-    } else if (this->_mode == einsums::detail::DEV_ONLY) {
-        return *new HostDevReference<T>(this->_data + ordinal, false);
     } else {
-        throw ::std::exception();
+        return *new HostDevReference<T>(this->_data + ordinal, false);
     }
 }
 
@@ -658,9 +716,9 @@ DeviceTensor<T, Rank> &DeviceTensor<T, Rank>::operator=(const DeviceTensor<T, Ra
             hip_catch(hipMalloc((void **)&(this->_data), size * sizeof(T)));
         }
 
-        hip_catch(hipMemcpy((void *)this->_gpu_dims, (const void *)this->_dims.cbegin(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
+        hip_catch(hipMemcpy((void *)this->_gpu_dims, (const void *)this->_dims.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
         hip_catch(
-            hipMemcpy((void *)this->_gpu_strides, (const void *)this->_strides.cbegin(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
+            hipMemcpy((void *)this->_gpu_strides, (const void *)this->_strides.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
 
         einsums::detail::copy_to_tensor<T, Rank><<<einsums::detail::constructor_threads, einsums::detail::constructor_blocks>>>(
             this->_data, this->_gpu_dims, this->_gpu_strides, other._data, other._gpu_dims, other._gpu_strides, size);
@@ -723,9 +781,9 @@ auto DeviceTensor<T, Rank>::operator=(const DeviceTensor<TOther, Rank> &other) -
             hip_catch(hipMalloc((void **)&(this->_data), size * sizeof(T)));
         }
 
-        hip_catch(hipMemcpy((void *)this->_gpu_dims, (const void *)this->_dims.cbegin(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
+        hip_catch(hipMemcpy((void *)this->_gpu_dims, (const void *)this->_dims.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
         hip_catch(
-            hipMemcpy((void *)this->_gpu_strides, (const void *)this->_strides.cbegin(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
+            hipMemcpy((void *)this->_gpu_strides, (const void *)this->_strides.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
 
         einsums::detail::copy_to_tensor_conv<T, Rank, TOther><<<einsums::detail::constructor_threads, einsums::detail::constructor_blocks>>>(
             this->_data, this->_gpu_dims, this->_gpu_strides, other._data, other._gpu_dims, other._gpu_strides, size);
@@ -1214,8 +1272,8 @@ DeviceTensor<T, Rank>::DeviceTensor(const Tensor<T, Rank> &copy, einsums::detail
     hip_catch(hipMalloc((void **)&(this->_gpu_dims), sizeof(size_t) * Rank));
     hip_catch(hipMalloc((void **)&(this->_gpu_strides), sizeof(size_t) * Rank));
 
-    hip_catch(hipMemcpy((void *)this->_gpu_dims, (const void *)this->_dims.cbegin(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
-    hip_catch(hipMemcpy((void *)this->_gpu_strides, (const void *)this->_strides.cbegin(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy((void *)this->_gpu_dims, (const void *)this->_dims.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy((void *)this->_gpu_strides, (const void *)this->_strides.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
 }
 
 template <typename T, size_t Rank>

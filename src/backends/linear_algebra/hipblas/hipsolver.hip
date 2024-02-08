@@ -55,53 +55,53 @@ __host__ __device__ hipsolverFillMode_t hipsolver_fill(char fill) {
     }
 }
 
-__host__ void hipsolver_catch(hipsolverStatus_t condition, bool throw_success) {
+__host__ void __hipsolver_catch__(hipsolverStatus_t condition, const char *diagnostic, bool throw_success) {
     switch (condition) {
     case HIPSOLVER_STATUS_SUCCESS:
         if (throw_success) {
-            throw detail::solverSuccess();
+            throw detail::solverSuccess(diagnostic);
         } else {
             return;
         }
         break;
     case HIPSOLVER_STATUS_NOT_INITIALIZED:
-        throw detail::solverNotInitialized();
+        throw detail::solverNotInitialized(diagnostic);
         break;
     case HIPSOLVER_STATUS_ALLOC_FAILED:
-        throw detail::solverAllocFailed();
+        throw detail::solverAllocFailed(diagnostic);
         break;
     case HIPSOLVER_STATUS_INVALID_VALUE:
-        throw detail::solverInvalidValue();
+        throw detail::solverInvalidValue(diagnostic);
         break;
     case HIPSOLVER_STATUS_MAPPING_ERROR:
-        throw detail::solverMappingError();
+        throw detail::solverMappingError(diagnostic);
         break;
     case HIPSOLVER_STATUS_EXECUTION_FAILED:
-        throw detail::solverExecutionFailed();
+        throw detail::solverExecutionFailed(diagnostic);
         break;
     case HIPSOLVER_STATUS_INTERNAL_ERROR:
-        throw detail::solverInternalError();
+        throw detail::solverInternalError(diagnostic);
         break;
     case HIPSOLVER_STATUS_NOT_SUPPORTED:
-        throw detail::solverFuncNotSupported();
+        throw detail::solverFuncNotSupported(diagnostic);
         break;
     case HIPSOLVER_STATUS_ARCH_MISMATCH:
-        throw detail::solverArchMismatch();
+        throw detail::solverArchMismatch(diagnostic);
         break;
     case HIPSOLVER_STATUS_HANDLE_IS_NULLPTR:
-        throw detail::solverHandleIsNullptr();
+        throw detail::solverHandleIsNullptr(diagnostic);
         break;
     case HIPSOLVER_STATUS_INVALID_ENUM:
-        throw detail::solverInvalidEnum();
+        throw detail::solverInvalidEnum(diagnostic);
         break;
     case HIPSOLVER_STATUS_UNKNOWN:
-        throw detail::solverUnknown();
+        throw detail::solverUnknown(diagnostic);
         break;
     // case HIPSOLVER_STATUS_ZERO_PIVOT:
     //     throw detail::solverZeroPivot();
     //     break;
     default:
-        throw detail::solverUnknown();
+        throw detail::solverUnknown(diagnostic);
     }
 }
 

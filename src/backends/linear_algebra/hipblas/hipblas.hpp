@@ -34,16 +34,21 @@ namespace detail {
  */
 template <hipblasStatus_t error>
 struct hipblas_exception : public std::exception {
+  private:
+    ::std::string message;
   public:
     /**
      * @brief Construct a new hipblas_exception.
      */
-    hipblas_exception() = default;
+    hipblas_exception(const char *diagnostic) : message{""}{
+        message += diagnostic;
+        message += hipblasStatusToString(error);
+    }
 
     /**
      * @brief Return the error string corresponding to the status code.
      */
-    const char *what() const _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW override { return hipblasStatusToString(error); }
+    const char *what() const _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW override { return message.c_str(); }
 
     /**
      * @brief Equality operator.
@@ -130,16 +135,21 @@ EINSUMS_EXPORT const char *hipsolverStatusToString(hipsolverStatus_t status);
  */
 template <hipsolverStatus_t error>
 struct hipsolver_exception : public std::exception {
+  private:
+    ::std::string message;
   public:
     /**
      * Construct a new exception.
      */
-    hipsolver_exception() = default;
+    hipsolver_exception(const char *diagnostic) : message{""}{
+        message += diagnostic;
+        message += hipsolverStatusToString(error);
+    }
 
     /**
      * Return the error string.
      */
-    const char *what() const _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW override { return hipsolverStatusToString(error); }
+    const char *what() const _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW override { return message.c_str(); }
 
     /**
      * Equality operator.
@@ -277,7 +287,7 @@ __host__ __device__ EINSUMS_EXPORT hipsolverFillMode_t hipsolver_fill(char fill)
  * @param status The status to convert.
  * @param throw_success If true, then an exception will be thrown if a success status is passed. If false, then a success will cause the function to exit quietly.
  */
-__host__ EINSUMS_EXPORT void hipblas_catch(hipblasStatus_t status, bool throw_success = false);
+__host__ EINSUMS_EXPORT void __hipblas_catch__(hipblasStatus_t status, const char *diagnostic, bool throw_success = false);
 
 /**
  * @brief Takes a status code as an argument and throws the appropriate exception.
@@ -285,7 +295,15 @@ __host__ EINSUMS_EXPORT void hipblas_catch(hipblasStatus_t status, bool throw_su
  * @param status The status to convert.
  * @param throw_success If true, then an exception will be thrown if a success status is passed. If false, then a success will cause the function to exit quietly.
  */
-__host__ EINSUMS_EXPORT void hipsolver_catch(hipsolverStatus_t status, bool throw_success = false);
+__host__ EINSUMS_EXPORT void __hipsolver_catch__(hipsolverStatus_t status, const char *diagnostic, bool throw_success = false);
+
+#define hipblas_catch_STR1(x) #x
+#define hipblas_catch_STR(x) hipblas_catch_STR1(x)
+#define hipblas_catch(condition, ...) __hipblas_catch__((condition), __FILE__ ":" hipblas_catch_STR(__LINE__) ": " __VA_OPT__(,) __VA_ARGS__)
+
+#define hipsolver_catch_STR1(x) #x
+#define hipsolver_catch_STR(x) hipblas_catch_STR1(x)
+#define hipsolver_catch(condition, ...) __hipsolver_catch__((condition), __FILE__ ":" hipsolver_catch_STR(__LINE__) ": " __VA_OPT__(,) __VA_ARGS__)
 } // namespace detail
 
 /**

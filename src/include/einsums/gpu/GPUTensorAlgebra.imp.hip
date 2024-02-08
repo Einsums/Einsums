@@ -346,8 +346,8 @@ void einsum_generic_algorithm(const ::std::tuple<UniqueIndices...> &unique_indic
 
     int A_index_table[sizeof...(AIndices)], B_index_table[sizeof...(BIndices)], C_index_table[sizeof...(CIndices)];
 
-    device_ptr int    *A_index_table_gpu, *B_index_table_gpu, *C_index_table_gpu;
-    device_ptr size_t *unique_strides_gpu;
+    __device_ptr__ int    *A_index_table_gpu, *B_index_table_gpu, *C_index_table_gpu;
+    __device_ptr__ size_t *unique_strides_gpu;
 
     compile_index_table(unique_indices, A_indices, A_index_table);
     compile_index_table(unique_indices, B_indices, B_index_table);
@@ -583,7 +583,7 @@ auto einsum(const CDataType C_prefactor, const ::std::tuple<CIndices...> & /*Cs*
 
     if constexpr (!::std::is_same_v<CDataType, ADataType> || !::std::is_same_v<CDataType, BDataType>) {
         // Mixed datatypes go directly to the generic algorithm.
-        einsum_generic_algorithm(All_unique, C_indices, A_indices, B_indices, unique_all_dims, C_prefactor, C, AB_prefactor, A, B, threads, blocks);
+        ::einsums::tensor_algebra::gpu::detail::einsum_generic_algorithm(All_unique, C_indices, A_indices, B_indices, unique_all_dims, C_prefactor, C, AB_prefactor, A, B, threads, blocks);
         return;
     } else if constexpr (dot_product) {
         linear_algebra::gpu::dot(C_prefactor, *C, AB_prefactor, A, B, threads, blocks);
@@ -601,7 +601,7 @@ auto einsum(const CDataType C_prefactor, const ::std::tuple<CIndices...> & /*Cs*
         }
 
         // The generic algorithm should work fine.
-        einsums_generic_algorithm(All_unique, C_indices, A_indices, B_indices, unique_all_dims, C_prefactor, C, AB_prefactor, A, B, threads, blocks);
+        ::einsums::tensor_algebra::gpu::detail::einsum_generic_algorithm(All_unique, C_indices, A_indices, B_indices, unique_all_dims, C_prefactor, C, AB_prefactor, A, B, threads, blocks);
 
         return;
     } else if constexpr (outer_product) {
@@ -792,7 +792,7 @@ auto einsum(const CDataType C_prefactor, const ::std::tuple<CIndices...> & /*Cs*
 
     // If we somehow make it here, then none of our algorithms above could be used. Attempt to use
     // the generic algorithm instead.
-    einsum_generic_algorithm(All_unique, C_indices, A_indices, B_indices, unique_all_dims, C_prefactor, C, AB_prefactor, A, B, threads, blocks);
+    ::einsums::tensor_algebra::gpu::detail::einsum_generic_algorithm(All_unique, C_indices, A_indices, B_indices, unique_all_dims, C_prefactor, C, AB_prefactor, A, B, threads, blocks);
 }
 
 } // namespace detail
@@ -826,12 +826,12 @@ auto einsum(const U UC_prefactor, const ::std::tuple<CIndices...> &C_indices, CT
 
     // Perform the einsum using only the generic algorithm
     timer::push("testing");
-    detail::einsum<true>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, A, B_indices, B);
+    ::einsums::tensor_algebra::gpu::detail::einsum<true>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, A, B_indices, B);
     timer::pop();
 #endif
 
     // Perform the actual einsum
-    detail::einsum<false>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
+    ::einsums::tensor_algebra::gpu::detail::einsum<false>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
 
 #if 0 //defined(EINSUMS_TEST_NANS)
     if constexpr (CRank != 0) {
@@ -1060,7 +1060,7 @@ auto khatri_rao(const ::std::tuple<AIndices...> &, const AType<T, ARank> &A, con
     auto result = ::std::make_from_tuple<DeviceTensor<T, ::std::tuple_size_v<decltype(result_dims)> - 1>>(result_dims);
 
     // Perform the actual Khatri-Rao product using our einsum routine.
-    einsum(::std::tuple_cat(A_only, B_only, common), &result, ::std::tuple_cat(A_only, common), A, ::std::tuple_cat(B_only, common), B);
+    ::einsums::tensor_algebra::gpu::einsum(::std::tuple_cat(A_only, B_only, common), &result, ::std::tuple_cat(A_only, common), A, ::std::tuple_cat(B_only, common), B);
 
     // Return a reconstruction of the result tensor ... this can be considered as a simple reshape of the tensor.
     return DeviceTensor<T, 2>{::std::move(result), "KR product", -1, ::einsums::tensor_algebra::detail::product_dims(A_common_position, A)};

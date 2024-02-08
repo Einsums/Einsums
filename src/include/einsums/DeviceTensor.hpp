@@ -20,9 +20,6 @@ struct DeviceTensor;
 
 namespace detail {
 
-template <size_t Rank>
-__host__ __device__ void index_to_combination(size_t index, const size_t *dims, size_t *out);
-
 /**
  * @enum HostToDeviceMode
  *
@@ -62,7 +59,17 @@ concept DeviceRankTensor = detail::IsDeviceRankTensorV<Input, Rank, DataType>;
  * @param dims The dimensions of the tensor along each axis.
  * @param out The output array.
  */
-template <typename T, size_t Rank>
+template <size_t Rank>
+__host__ __device__ void index_to_combination(size_t index, const size_t *dims, size_t *out);
+
+/**
+ * Turns a single sentinel value into an index combination.
+ *
+ * @param index The sentinel value.
+ * @param dims The dimensions of the tensor along each axis.
+ * @param out The output array.
+ */
+template <size_t Rank>
 __host__ __device__ void index_to_combination(size_t index, const einsums::Dim<Rank> &dims, std::array<int, Rank> &out);
 
 /**
@@ -74,9 +81,20 @@ __host__ __device__ void index_to_combination(size_t index, const einsums::Dim<R
  *
  * @return A one-dimensional index for a tensor's data array.
  */
-template <typename T, size_t Rank>
-__host__ __device__ size_t combination_to_index(const std::array<int, Rank> &inds, const einsums::Dim<Rank> &dims,
+template <size_t Rank>
+__host__ __device__ size_t combination_to_index(const std::array<size_t, Rank> &inds, const einsums::Dim<Rank> &dims,
                                                 const einsums::Stride<Rank> &strides);
+/**
+ * @brief Turns a combination of indices into a single sentinel value that can be used to index into an array.
+ *
+ * @param inds The indices for each dimension.
+ * @param dims The dimensions of the tensor.
+ * @param strides The strides for each dimension.
+ *
+ * @return A one-dimensional index for a tensor's data array.
+ */
+template <size_t Rank>
+__host__ __device__ size_t combination_to_index(const size_t *inds, const size_t *dims, const size_t *strides);
 
 } // namespace detail
 
@@ -125,7 +143,7 @@ class HostDevReference {
     /**
      * Get the value of the reference.
      */
-    T get() {
+    T get() const {
         if (is_on_host) {
             return *_ptr;
         } else {
@@ -139,10 +157,12 @@ class HostDevReference {
      * Copy some data to the reference.
      */
     HostDevReference<T> &operator=(const T &other) {
+        assert(_ptr != nullptr);
         if (is_on_host) {
             *_ptr = other;
         } else {
-            gpu::hip_catch(hipMemcpy((void *)_ptr, (const void *)&other, sizeof(T), hipMemcpyHostToDevice));
+            T temp = other;
+            gpu::hip_catch(hipMemcpy((void *)_ptr, (const void *)&temp, sizeof(T), hipMemcpyHostToDevice));
         }
         return *this;
     }
@@ -154,7 +174,12 @@ class HostDevReference {
         if (is_on_host) {
             *_ptr = other.get();
         } else {
-            gpu::hip_catch(hipMemcpy((void *)_ptr, (const void *)&(other.get()), sizeof(T), hipMemcpyHostToDevice));
+            if(other.is_on_host) {
+                T temp = other.get();
+                gpu::hip_catch(hipMemcpy((void *)_ptr, (const void *)&temp, sizeof(T), hipMemcpyHostToDevice));
+            } else if(this->_ptr != other._ptr) {
+                gpu::hip_catch(hipMemcpy((void *) _ptr, (const void *) other._ptr, sizeof(T), hipMemcpyDeviceToDevice));
+            }
         }
         return *this;
     }
@@ -163,6 +188,11 @@ class HostDevReference {
      * Get the address handled by the reference.
      */
     T *operator&() { return _ptr; }
+
+    /**
+     * Convert to the underlying type.
+     */
+    operator T() { return this->get(); }
 };
 
 /**
@@ -232,14 +262,14 @@ struct DeviceTensor : public ::einsums::detail::TensorBase<T, Rank> {
      *
      * @brief A device pointer to the data on the device.
      */
-    device_ptr dev_datatype *_data;
+    __device_ptr__ dev_datatype *_data;
 
     /**
      * @property _host_data
      *
      * @brief If the tensor is mapped or pinned, this is the data on the host.
      */
-    host_ptr host_datatype *_host_data;
+    __host_ptr__ host_datatype *_host_data;
 
     /**
      * @property _mode
@@ -424,6 +454,20 @@ struct DeviceTensor : public ::einsums::detail::TensorBase<T, Rank> {
     void write(std::vector<T> &data);
 
     /**
+     * Sends data from the host to the device.
+     *
+     * @param data The vector data.
+     */
+    void read(const T *data);
+
+    /**
+     * Sends data from the device to the host.
+     *
+     * @param data The vector that will be filled.
+     */
+    void write(T *data);
+
+    /**
      * @brief Subscripts into the tensor.
      *
      * This version works when all elements are explicit values into the tensor.
@@ -530,12 +574,12 @@ struct DeviceTensor : public ::einsums::detail::TensorBase<T, Rank> {
     /**
      * @brief Get the dimensions available to the GPU.
      */
-    device_ptr size_t *gpu_dims() { return _gpu_dims; }
+    __device_ptr__ size_t *gpu_dims() { return _gpu_dims; }
 
     /**
      * @brief Get the dimensions available to the GPU.
      */
-    const device_ptr size_t *gpu_dims() const { return _gpu_dims; }
+    const __device_ptr__ size_t *gpu_dims() const { return _gpu_dims; }
 
     ALIAS_TEMPLATE_FUNCTION(shape, dims);
 
@@ -566,12 +610,12 @@ struct DeviceTensor : public ::einsums::detail::TensorBase<T, Rank> {
     /**
      * @brief Get the strides available to the GPU.
      */
-    device_ptr size_t *gpu_strides() { return _gpu_strides; }
+    __device_ptr__ size_t *gpu_strides() { return _gpu_strides; }
 
     /**
      * @brief Get the strides available to the GPU.
      */
-    const device_ptr size_t *gpu_strides() const { return _gpu_strides; }
+    const __device_ptr__ size_t *gpu_strides() const { return _gpu_strides; }
 
     /**
      * Convert to a rank 1 tensor view.
@@ -642,14 +686,14 @@ struct DeviceTensor<T, 0> : public einsums::detail::TensorBase<T, 0> {
      *
      * @brief A device pointer to the data on the device.
      */
-    device_ptr dev_datatype *_data{nullptr};
+    __device_ptr__ dev_datatype *_data{nullptr};
 
     /**
      * @property _host_data
      *
      * @brief If the tensor is mapped or pinned, this is the data on the host.
      */
-    host_ptr host_datatype *_host_data{nullptr};
+    __host_ptr__ host_datatype *_host_data{nullptr};
 
     /**
      * @property _mode
@@ -974,7 +1018,7 @@ struct DeviceTensorView : public ::einsums::detail::TensorBase<T, Rank> {
     /**
      * @brief Copy as much data as is needed from the host pointer to the device.
      */
-    auto operator=(const host_ptr T *other) -> DeviceTensorView &;
+    auto operator=(const __host_ptr__ T *other) -> DeviceTensorView &;
 
     /**
      * @brief Copy data from another tensor.
@@ -1034,7 +1078,7 @@ struct DeviceTensorView : public ::einsums::detail::TensorBase<T, Rank> {
     /**
      * @brief Get a pointer to an element in the view.
      */
-    auto data_array(const std::array<size_t, Rank> &index_list) const -> device_ptr T *;
+    auto data_array(const std::array<size_t, Rank> &index_list) const -> __device_ptr__ T *;
 
     /**
      * @brief Get a value from the view.
@@ -1059,12 +1103,12 @@ struct DeviceTensorView : public ::einsums::detail::TensorBase<T, Rank> {
     /**
      * @brief Get the dimensions of the view made available to the GPU.
      */
-    device_ptr size_t *gpu_dims() { return _gpu_dims; }
+    __device_ptr__ size_t *gpu_dims() { return _gpu_dims; }
 
     /**
      * @brief Get the dimensions of the view made available to the GPU.
      */
-    const device_ptr size_t *gpu_dims() const { return _gpu_dims; }
+    const __device_ptr__ size_t *gpu_dims() const { return _gpu_dims; }
 
     /**
      * @brief Get the name of the view.
@@ -1093,12 +1137,12 @@ struct DeviceTensorView : public ::einsums::detail::TensorBase<T, Rank> {
     /**
      * @brief Get the strides of the view made available to the GPU.
      */
-    device_ptr size_t *gpu_strides() { return _gpu_strides; }
+    __device_ptr__ size_t *gpu_strides() { return _gpu_strides; }
 
     /**
      * @brief Get the strides of the view made available to the GPU.
      */
-    const device_ptr size_t *gpu_strides() const { return _gpu_strides; }
+    const __device_ptr__ size_t *gpu_strides() const { return _gpu_strides; }
 
     /**
      * @brief Convert the view to a one-dimensional array.

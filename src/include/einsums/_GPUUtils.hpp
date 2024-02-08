@@ -7,7 +7,7 @@
 
 #include "einsums/_Common.hpp"
 
-#include <__clang_hip_runtime_wrapper.h>
+#include <cstring>
 #include <hip/amd_detail/amd_hip_complex.h>
 #include <hip/hip_common.h>
 #include <hip/hip_runtime.h>
@@ -17,19 +17,19 @@
 BEGIN_EINSUMS_NAMESPACE_HPP(einsums::gpu)
 
 /**
- * @def host_ptr
+ * @def __host_ptr__
  *
  * This is a macro for decorating pointers to tell the user that a pointer is accessible from the host.
  */
-#define host_ptr
+#define __host_ptr__
 
 /**
- * @def device_ptr
+ * @def __device_ptr__
  *
  * This is a macro for decorating pointers to tell the user that a pointer should be accessible from the device.
  * The pointer can be located anywhere, it just needs to be accessible.
  */
-#define device_ptr
+#define __device_ptr__
 
 namespace detail {
 /**
@@ -39,16 +39,22 @@ namespace detail {
  */
 template <hipError_t error>
 struct hip_exception : public std::exception {
+  private :
+    ::std::string message;
+
   public:
     /**
      * @brief Construct a new HIP exception.
      */
-    hip_exception() = default;
+    hip_exception(const char *diagnostic) : message{""} {
+        message += diagnostic;
+        message += hipGetErrorString(error);
+    }
 
     /**
      * @brief Return the error string.
      */
-    const char *what() const _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW override { return hipGetErrorString(error); }
+    const char *what() const _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW override { return message.c_str(); }
 
     /**
      * @brief Equality operator.
@@ -182,7 +188,11 @@ using ErrorTbd                         = hip_exception<hipErrorTbd>;
  * Wraps up an HIP function to catch any error codes. If the function does not return
  * hipSuccess, then an exception will be thrown
  */
-__host__ EINSUMS_EXPORT void hip_catch(hipError_t condition, bool throw_success = false);
+__host__ EINSUMS_EXPORT void __hip_catch__(hipError_t condition, const char *diagnostic, bool throw_success = false);
+
+#define hip_catch_STR1(x) #x
+#define hip_catch_STR(x) hip_catch_STR1(x)
+#define hip_catch(condition, ...) __hip_catch__((condition), __FILE__ ":" hip_catch_STR(__LINE__) ": " __VA_OPT__(,) __VA_ARGS__)
 
 /**
  * @brief Get the worker thread launch parameters on the GPU.
@@ -198,5 +208,7 @@ EINSUMS_EXPORT void initialize();
 
 __host__
 EINSUMS_EXPORT void finalize();
+
+#define KERNEL(bound) __global__ __launch_bounds__((bound))
 
 END_EINSUMS_NAMESPACE_HPP(einsums::gpu)

@@ -59,21 +59,8 @@ void gemm(T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, T beta, CTy
     hip_catch(hipMemcpy((void *)alpha_gpu, &alpha, sizeof(dev_datatype), hipMemcpyHostToDevice));
     hip_catch(hipMemcpy((void *)beta_gpu, &beta, sizeof(dev_datatype), hipMemcpyHostToDevice));
 
-    if constexpr (TransA && TransB && (::std::is_same_v<T, float> || ::std::is_same_v<T, double>)) {
-        detail::gemm(HIPBLAS_OP_T, HIPBLAS_OP_T, m, n, k, alpha_gpu, A.data(), lda, B.data(), ldb, beta_gpu, C->data(), ldc);
-    } else if constexpr (TransA && TransB) {
-        detail::gemm(HIPBLAS_OP_C, HIPBLAS_OP_C, m, n, k, alpha_gpu, A.data(), lda, B.data(), ldb, beta_gpu, C->data(), ldc);
-    } else if constexpr (TransA && !TransB && (::std::is_same_v<T, float> || ::std::is_same_v<T, double>)) {
-        detail::gemm(HIPBLAS_OP_T, HIPBLAS_OP_N, m, n, k, alpha_gpu, A.data(), lda, B.data(), ldb, beta_gpu, C->data(), ldc);
-    } else if constexpr (TransA && !TransB) {
-        detail::gemm(HIPBLAS_OP_C, HIPBLAS_OP_N, m, n, k, alpha_gpu, A.data(), lda, B.data(), ldb, beta_gpu, C->data(), ldc);
-    } else if constexpr (!TransA && TransB && (::std::is_same_v<T, float> || ::std::is_same_v<T, double>)) {
-        detail::gemm(HIPBLAS_OP_N, HIPBLAS_OP_T, m, n, k, alpha_gpu, A.data(), lda, B.data(), ldb, beta_gpu, C->data(), ldc);
-    } else if constexpr (!TransA && TransB) {
-        detail::gemm(HIPBLAS_OP_N, HIPBLAS_OP_C, m, n, k, alpha_gpu, A.data(), lda, B.data(), ldb, beta_gpu, C->data(), ldc);
-    } else {
-        detail::gemm(HIPBLAS_OP_N, HIPBLAS_OP_N, m, n, k, alpha_gpu, A.data(), lda, B.data(), ldb, beta_gpu, C->data(), ldc);
-    }
+    // Flip the A and B matrices. Row-major vs column major.
+    detail::gemm(TransB? HIPBLAS_OP_T: HIPBLAS_OP_N, TransA? HIPBLAS_OP_T: HIPBLAS_OP_N, n, m, k, alpha_gpu, B.data(), ldb, A.data(), lda, beta_gpu, C->data(), ldc);
 
     hip_catch(hipFree(alpha_gpu));
     hip_catch(hipFree(beta_gpu));
@@ -181,7 +168,7 @@ template <template <typename, size_t> typename AType, template <typename, size_t
         requires ::einsums::detail::DeviceRankTensor<BType<T, Rank>, 2, T>;
         requires ::einsums::detail::DeviceRankTensor<CType<T, Rank>, 2, T>;
     }
-void gemmm(const AType<T, Rank> &A, const BType<T, Rank> &B, CType<T, Rank> *C) {
+void symm_gemm(const AType<T, Rank> &A, const BType<T, Rank> &B, CType<T, Rank> *C) {
     using namespace einsums::gpu;
     assert(A.dim(0) == A.dim(1) && B.dim(0) == B.dim(1) && C->dim(0) == C->dim(1) && A.dim(0) == B.dim(0) && A.dim(0) == C->dim(0));
 

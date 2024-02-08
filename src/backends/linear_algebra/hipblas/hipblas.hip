@@ -29,47 +29,47 @@ __host__ __device__ hipblasOperation_t hipblas_char_to_op(char trans) {
     }
 }
 
-__host__ void hipblas_catch(hipblasStatus_t status, bool throw_success) {
+__host__ void __hipblas_catch__(hipblasStatus_t status, const char *diagnostic, bool throw_success) {
     switch (status) {
     case HIPBLAS_STATUS_SUCCESS:
         if (throw_success) {
-            throw detail::blasSuccess();
+            throw detail::blasSuccess(diagnostic);
         } else {
             return;
         }
         break;
     case HIPBLAS_STATUS_NOT_INITIALIZED:
-        throw einsums::backend::linear_algebra::hipblas::detail::blasNotInitialized();
+        throw einsums::backend::linear_algebra::hipblas::detail::blasNotInitialized(diagnostic);
         break;
     case HIPBLAS_STATUS_ALLOC_FAILED:
-        throw detail::blasAllocFailed();
+        throw detail::blasAllocFailed(diagnostic);
         break;
     case HIPBLAS_STATUS_INVALID_VALUE:
-        throw detail::blasInvalidValue();
+        throw detail::blasInvalidValue(diagnostic);
         break;
     case HIPBLAS_STATUS_MAPPING_ERROR:
-        throw detail::blasMappingError();
+        throw detail::blasMappingError(diagnostic);
         break;
     case HIPBLAS_STATUS_EXECUTION_FAILED:
-        throw detail::blasExecutionFailed();
+        throw detail::blasExecutionFailed(diagnostic);
         break;
     case HIPBLAS_STATUS_INTERNAL_ERROR:
-        throw detail::blasInternalError();
+        throw detail::blasInternalError(diagnostic);
         break;
     case HIPBLAS_STATUS_NOT_SUPPORTED:
-        throw detail::blasNotSupported();
+        throw detail::blasNotSupported(diagnostic);
         break;
     case HIPBLAS_STATUS_ARCH_MISMATCH:
-        throw detail::blasArchMismatch();
+        throw detail::blasArchMismatch(diagnostic);
         break;
     case HIPBLAS_STATUS_HANDLE_IS_NULLPTR:
-        throw detail::blasHandleIsNullptr();
+        throw detail::blasHandleIsNullptr(diagnostic);
         break;
     case HIPBLAS_STATUS_INVALID_ENUM:
-        throw detail::blasInvalidEnum();
+        throw detail::blasInvalidEnum(diagnostic);
         break;
     default:
-        throw detail::blasUnknown();
+        throw detail::blasUnknown(diagnostic);
     }
 }
 

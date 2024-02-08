@@ -23,17 +23,9 @@ TEST_CASE("GPU Tensor Creation", "[gpu]") {
     DeviceTensor<double, 2> B("B", einsums::detail::MAPPED, 3, 3);
     DeviceTensor<double, 2> C("C", einsums::detail::PINNED, 3, 3);
 
-    REQUIRE((A.dim(0) == 3 && A.dim(1) == 3));
-    REQUIRE((B.dim(0) == 3 && B.dim(1) == 3));
-    REQUIRE((C.dim(0) == 3 && C.dim(1) == 3));
-
-    for (size_t i = 0; i < 3; i++) {
-        for (size_t j = 0; j < 3; j++) {
-            std::fprintf(stderr, "%f ", A(i, j).get());
-        }
-    }
-
-    std::fprintf(stderr, "\n");
+    CHECK((A.dim(0) == 3 && A.dim(1) == 3));
+    CHECK((B.dim(0) == 3 && B.dim(1) == 3));
+    CHECK((C.dim(0) == 3 && C.dim(1) == 3));
 
     A.zero();
     B.zero();
@@ -41,15 +33,9 @@ TEST_CASE("GPU Tensor Creation", "[gpu]") {
 
     for (size_t i = 0; i < 3; i++) {
         for (size_t j = 0; j < 3; j++) {
-            std::fprintf(stderr, "%f ", A(i, j).get());
-        }
-    }
-
-    for (size_t i = 0; i < 3; i++) {
-        for (size_t j = 0; j < 3; j++) {
-            REQUIRE(A(i, j).get() == 0);
-            REQUIRE(B(i, j).get() == 0);
-            REQUIRE(C(i, j).get() == 0);
+            CHECK(A(i, j).get() == 0);
+            CHECK(B(i, j).get() == 0);
+            CHECK(C(i, j).get() == 0);
         }
     }
 
@@ -62,13 +48,13 @@ TEST_CASE("GPU Tensor Creation", "[gpu]") {
     B(2, 2) = 1.0;
 
     for (size_t i = 0; i < 3; i++) {
-        REQUIRE(A(i, i).get() == 1.0);
-        REQUIRE(B(i, i).get() == 1.0);
+        CHECK(A(i, i).get() == 1.0);
+        CHECK(B(i, i).get() == 1.0);
         for (size_t j = 0; j < i; j++) {
-            REQUIRE(A(i, j).get() == 0);
-            REQUIRE(B(i, j).get() == 0);
-            REQUIRE(A(j, i).get() == 0);
-            REQUIRE(B(j, i).get() == 0);
+            CHECK(A(i, j).get() == 0);
+            CHECK(B(i, j).get() == 0);
+            CHECK(A(j, i).get() == 0);
+            CHECK(B(j, i).get() == 0);
         }
     }
 
@@ -77,10 +63,10 @@ TEST_CASE("GPU Tensor Creation", "[gpu]") {
     einsums::linear_algebra::gpu::gemm<false, false>(1.0, A, B, 1.0, &C);
 
     for (size_t i = 0; i < 3; i++) {
-        REQUIRE(C(i, i).get() == 1.0);
+        CHECK(C(i, i).get() == 1.0);
         for (size_t j = 0; j < i; j++) {
-            REQUIRE(C(i, j).get() == 0);
-            REQUIRE(C(j, i).get() == 0);
+            CHECK(C(i, j).get() == 0);
+            CHECK(C(j, i).get() == 0);
         }
     }
 
@@ -109,11 +95,12 @@ TEST_CASE("GPU Tensor GEMMs", "[gpu]") {
 
     einsums::linear_algebra::gpu::gemm<false, false>(1.0, A, B, 0.0, &C);
 
+    // Issue here
     comp_data = {330.0, 396.0, 462.0, 726.0, 891.0, 1056.0, 1122.0, 1386.0, 1650.0};
     hip_catch(hipMemcpy((void *) C_data, (const void *) C.data(), 9 * sizeof(double), hipMemcpyDeviceToHost));
 
     for(int i = 0; i < 9; i++) {
-        REQUIRE(C_data[i] == comp_data[i]);
+        CHECK(C_data[i] == comp_data[i]);
     }
 
     einsums::linear_algebra::gpu::gemm<true, false>(1.0, A, B, 0.0, &C);
@@ -122,7 +109,7 @@ TEST_CASE("GPU Tensor GEMMs", "[gpu]") {
     hip_catch(hipMemcpy((void *) C_data, (const void *) C.data(), 9 * sizeof(double), hipMemcpyDeviceToHost));
 
     for(int i = 0; i < 9; i++) {
-        REQUIRE(C_data[i] == comp_data[i]);
+        CHECK(C_data[i] == comp_data[i]);
     }
 
     einsums::linear_algebra::gpu::gemm<false, true>(1.0, A, B, 0.0, &C);
@@ -131,7 +118,7 @@ TEST_CASE("GPU Tensor GEMMs", "[gpu]") {
     hip_catch(hipMemcpy((void *) C_data, (const void *) C.data(), 9 * sizeof(double), hipMemcpyDeviceToHost));
 
     for(int i = 0; i < 9; i++) {
-        REQUIRE(C_data[i] == comp_data[i]);
+        CHECK(C_data[i] == comp_data[i]);
     }
 
     einsums::linear_algebra::gpu::gemm<true, true>(1.0, A, B, 0.0, &C);
@@ -140,13 +127,46 @@ TEST_CASE("GPU Tensor GEMMs", "[gpu]") {
     hip_catch(hipMemcpy((void *) C_data, (const void *) C.data(), 9 * sizeof(double), hipMemcpyDeviceToHost));
 
     for(int i = 0; i < 9; i++) {
-        REQUIRE(C_data[i] == comp_data[i]);
+        CHECK(C_data[i] == comp_data[i]);
     }
 
     delete[] C_data;
 
     einsums::backend::linear_algebra::hipblas::finalize();
 
+}
+
+TEST_CASE("Test Symmetric Multiplication", "[gpu]") {
+    using namespace einsums;
+    using namespace einsums::detail;
+    using namespace einsums::gpu;
+    using namespace einsums::gpu::detail;
+
+    gpu::initialize();
+    einsums::backend::linear_algebra::hipblas::initialize();
+
+    DeviceTensor<double, 2> A("A", DEV_ONLY, 3, 3), B("B", DEV_ONLY, 3, 3), C("C", DEV_ONLY, 3, 3);
+
+    // Input data.
+    std::vector<double> A_data{1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0}, B_data{11.0, 22.0, 33.0, 44.0, 55.0, 66.0, 77.0, 88.0, 99.0};
+    // Host vector for comparisons.
+    std::vector<double> comp_data{4851.0, 13782.0, 16236.0, 13266.0, 16335.0, 19404.0, 15444.0, 19008.0, 28512.0};
+    double *C_data = new double[9];
+
+    A.read(A_data);
+    B.read(B_data);
+
+    einsums::linear_algebra::gpu::symm_gemm(A, B, &C);
+
+    C.write(C_data);
+
+    for(int i = 0; i < 9; i++) {
+        CHECK(C_data[i] == comp_data[i]);
+    }
+
+    delete[] C_data;
+
+    einsums::backend::linear_algebra::hipblas::finalize();
 }
 
 TEST_CASE("GPU Energy Calculation", "[gpu]") {
@@ -438,14 +458,15 @@ TEST_CASE("GPU Energy Calculation", "[gpu]") {
     hipblasHandle_t blas_handle = hipblas::detail::get_blas_handle();
     hipsolverHandle_t solver_handle = hipblas::detail::get_solver_handle();
 
-    int lwork, dev_info;
+    int lwork, *dev_info;
+    hip_catch(hipMalloc((void **) &dev_info, sizeof(int)));
 
     hipsolver_catch(hipsolverDsyevd_bufferSize(solver_handle, HIPSOLVER_EIG_MODE_VECTOR, HIPSOLVER_FILL_MODE_UPPER, 7, work.data(), work.stride(0), eig_real.data(), &lwork));
 
     double *gpu_work;
     hip_catch(hipMalloc((void **) &gpu_work, lwork * sizeof(double)));
 
-    hipsolver_catch(hipsolverDsyevd(solver_handle, HIPSOLVER_EIG_MODE_VECTOR, HIPSOLVER_FILL_MODE_UPPER, 7, work.data(), work.stride(0), eig_real.data(), gpu_work, lwork, &dev_info));
+    hipsolver_catch(hipsolverDsyevd(solver_handle, HIPSOLVER_EIG_MODE_VECTOR, HIPSOLVER_FILL_MODE_UPPER, 7, work.data(), work.stride(0), eig_real.data(), gpu_work, lwork, dev_info));
 
     hip_catch(hipDeviceSynchronize());
 
@@ -479,10 +500,10 @@ TEST_CASE("GPU Energy Calculation", "[gpu]") {
     while(count < 100 && (count < 2 || fabs(energy1 - energy2) > 1e-6)) {
 
         // Find F'
-        linear_algebra::gpu::gemmm(F, X, &work);
+        linear_algebra::gpu::symm_gemm(F, X, &work);
 
         // Find C' and the eigenvalues. They should be in increasing order already.
-        hipsolver_catch(hipsolverDsyevd(solver_handle, HIPSOLVER_EIG_MODE_VECTOR, HIPSOLVER_FILL_MODE_UPPER, 7, work.data(), work.stride(0), eig_real.data(), gpu_work, lwork, &dev_info));
+        hipsolver_catch(hipsolverDsyevd(solver_handle, HIPSOLVER_EIG_MODE_VECTOR, HIPSOLVER_FILL_MODE_UPPER, 7, work.data(), work.stride(0), eig_real.data(), gpu_work, lwork, dev_info));
 
         hip_catch(hipDeviceSynchronize());
 
@@ -514,8 +535,8 @@ TEST_CASE("GPU Energy Calculation", "[gpu]") {
         count++;
     }
 
-    REQUIRE(fabs(energy1 - energy2) <= 1e-6);
-    REQUIRE(fabs(energy1 - -76.02629117630596) <= 1e-6);
+    CHECK(fabs(energy1 - energy2) <= 1e-6);
+    CHECK(fabs(energy1 - -76.02629117630596) <= 1e-6);
 
     hipblas::finalize();
 

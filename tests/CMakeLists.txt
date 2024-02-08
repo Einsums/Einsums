@@ -40,6 +40,9 @@ extend_einsums_target(test-all
 
 extend_einsums_target(test-all
     SOURCES
+        DeviceTensor_extras.hip
+        DeviceTensor.hip
+        DeviceTensorView.hip
         GPU.hip
     CONDITION
         EINSUMS_BUILD_HIP
