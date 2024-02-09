@@ -1,6 +1,7 @@
 #pragma once
 
 #include "einsums/_GPUUtils.hpp"
+#include "einsums/_GPUCast.hpp"
 
 #include "einsums/../../backends/linear_algebra/hipblas/hipblas.hpp"
 #include "einsums/GPULinearAlgebra.hpp"
@@ -29,7 +30,13 @@ __global__ void dot_kernel(CDataType *C, ::std::conditional_t<sizeof(ADataType) 
     size_t curr_index = thread_id;
 
     while (curr_index < elements) {
-        atomicAdd(C, (CDataType)(AB_prefactor * A[curr_index] * B[curr_index]));
+        if constexpr (std::is_same_v<CDataType, hipComplex> || std::is_same_v<CDataType, hipDoubleComplex>) {
+            CDataType term = HipCast<CDataType, decltype(AB_prefactor)>::cast(AB_prefactor * A[curr_index] * B[curr_index]);
+            atomicAdd(&(C->x), term.x);
+            atomicAdd(&(C->y), term.y);
+        } else {
+            atomicAdd(C, HipCast<CDataType, decltype(AB_prefactor)>::cast(AB_prefactor * A[curr_index] * B[curr_index]));
+        }
         curr_index += kernel_size;
     }
 }
@@ -76,14 +83,13 @@ void dot(CDataType C_prefactor, CType<CDataType, 0> &C,
     if (C_prefactor == CDataType{0}) {
         C = CDataType{0};
     } else {
-        CDataType c;
-        hip_catch(hipMemcpy(&c, C.data(), sizeof(CDataType), hipMemcpyDeviceToHost));
-
-        c *= C_prefactor;
-        hip_catch(hipMemcpy(C.data(), &c, sizeof(CDataType), hipMemcpyHostToDevice));
+        C *= C_prefactor;
     }
 
-    detail::dot_kernel<<<threads, blocks>>>(C.data(), AB_prefactor, A.data(), B.data(), A.size());
+    using dev_datatype = std::conditional_t<std::is_same_v<decltype(AB_prefactor), std::complex<float>>, hipComplex,
+                                            std::conditional_t<std::is_same_v<decltype(AB_prefactor), std::complex<double>>, hipDoubleComplex, decltype(AB_prefactor)>>;
+
+    detail::dot_kernel<<<threads, blocks>>>(C.data(), HipCast<dev_datatype, decltype(AB_prefactor)>::cast(AB_prefactor), A.data(), B.data(), A.size());
 
     hip_catch(hipDeviceSynchronize());
 }
@@ -126,17 +132,15 @@ void gemv(T alpha, const AType<T, ARank> &A, const XType<T, XYRank> &x, T beta, 
     hip_catch(hipMalloc((void **)&alpha_gpu, sizeof(dev_datatype)));
     hip_catch(hipMalloc((void **)&beta_gpu, sizeof(dev_datatype)));
 
-    hip_catch(hipMemcpy((void *)alpha_gpu, &alpha, sizeof(dev_datatype), hipMemcpyHostToDevice));
-    hip_catch(hipMemcpy((void *)beta_gpu, &beta, sizeof(dev_datatype), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy((void *)alpha_gpu, (const void *) &alpha, sizeof(dev_datatype), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy((void *)beta_gpu, (const void *) &beta, sizeof(dev_datatype), hipMemcpyHostToDevice));
 
-    int m = A.dims(0), n = A.dims(1);
+    int m = A.dim(1), n = A.dim(0);
 
-    if constexpr (TransA && (::std::is_same_v<T, float> || ::std::is_same_v<T, double>)) {
-        detail::gemv(HIPBLAS_OP_T, m, n, alpha_gpu, A.data(), A.strides(0), x.data(), x.strides(0), beta_gpu, y->data(), y->strides(0));
-    } else if constexpr (TransA) {
-        detail::gemv(HIPBLAS_OP_C, m, n, alpha_gpu, A.data(), A.strides(0), x.data(), x.strides(0), beta_gpu, y->data(), y->strides(0));
+    if constexpr (!TransA) {
+        detail::gemv(HIPBLAS_OP_T, m, n, alpha_gpu, A.data(), A.stride(0), x.data(), x.stride(0), beta_gpu, y->data(), y->stride(0));
     } else {
-        detail::gemv(HIPBLAS_OP_N, m, n, alpha_gpu, A.data(), A.strides(0), x.data(), x.strides(0), beta_gpu, y->data(), y->strides(0));
+        detail::gemv(HIPBLAS_OP_N, m, n, alpha_gpu, A.data(), A.stride(0), x.data(), x.stride(0), beta_gpu, y->data(), y->stride(0));
     }
 
     hip_catch(hipFree(alpha_gpu));

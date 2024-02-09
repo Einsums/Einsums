@@ -761,11 +761,11 @@ struct DeviceTensor<T, 0> : public einsums::detail::TensorBase<T, 0> {
         }
     }
 
-    auto               data() -> T               *{ return _data; }
-    [[nodiscard]] auto data() const -> const T * { return _data; }
+    auto               data() -> dev_datatype               *{ return _data; }
+    [[nodiscard]] auto data() const -> const dev_datatype * { return _data; }
 
-    auto               host_data() -> T               *{ return _host_data; }
-    [[nodiscard]] auto host_data() const -> const T * { return _host_data; }
+    auto               host_data() -> host_datatype               *{ return _host_data; }
+    [[nodiscard]] auto host_data() const -> const host_datatype * { return _host_data; }
 
     auto operator=(const DeviceTensor<T, 0> &other) -> DeviceTensor<T, 0> & {
         gpu::hip_catch(hipMemcpy((void *) _data, (const void *) other.data(), sizeof(T), hipMemcpyDeviceToDevice));

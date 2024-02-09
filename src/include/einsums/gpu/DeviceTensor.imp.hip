@@ -457,8 +457,8 @@ __global__ void set_all(T *data, const size_t *dims, const size_t *strides, T va
 template <typename T, size_t Rank>
 void DeviceTensor<T, Rank>::zero() {
     using namespace einsums::gpu;
-    einsums::detail::set_all<T, Rank>
-        <<<einsums::detail::constructor_threads, einsums::detail::constructor_blocks>>>(this->_data, this->_gpu_dims, this->_gpu_strides, (T)0);
+    einsums::detail::set_all<dev_datatype, Rank>
+        <<<einsums::detail::constructor_threads, einsums::detail::constructor_blocks>>>(this->_data, this->_gpu_dims, this->_gpu_strides, (dev_datatype)0);
 
     hip_catch(hipDeviceSynchronize());
 }
@@ -594,7 +594,7 @@ HostDevReference<T> &DeviceTensor<T, Rank>::operator()(MultiIndex... index) {
     if (this->_mode == einsums::detail::MAPPED || this->_mode == einsums::detail::PINNED) {
         return *new HostDevReference<T>(this->_host_data + ordinal, true);
     } else {
-        return *new HostDevReference<T>(this->_data + ordinal, false);
+        return *new HostDevReference<host_datatype>((host_datatype *) _data + ordinal, false);
     }
 }
 

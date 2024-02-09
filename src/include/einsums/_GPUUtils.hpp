@@ -8,10 +8,10 @@
 #include "einsums/_Common.hpp"
 
 #include <cstring>
-#include <hip/amd_detail/amd_hip_complex.h>
 #include <hip/hip_common.h>
 #include <hip/hip_runtime.h>
 #include <hip/hip_runtime_api.h>
+#include <hip/hip_complex.h>
 #include <omp.h>
 
 BEGIN_EINSUMS_NAMESPACE_HPP(einsums::gpu)

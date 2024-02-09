@@ -43,6 +43,7 @@ extend_einsums_target(test-all
         DeviceTensor_extras.hip
         DeviceTensor.hip
         DeviceTensorView.hip
+        GPULinearAlgebra.hip
         GPU.hip
     CONDITION
         EINSUMS_BUILD_HIP
