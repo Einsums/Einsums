@@ -279,7 +279,7 @@ TEST_CASE("GPU Energy Calculation", "[gpu]") {
 0.096752175289782,0,0.302537910673863,0.091353706761488,0.018641085379951,0.235420950941441,-0.20669004248856,0.161483959338374,0,0.091353706761488,
 0.774605943919898};
 
-    double enuc = 9.132741421965944;
+    double enuc = 8.002367061810450;
 
     // Transfer the data to the GPU.
 
@@ -301,7 +301,6 @@ TEST_CASE("GPU Energy Calculation", "[gpu]") {
     // Calculate the unitary matrix.
     hipblasHandle_t blas_handle = hipblas::detail::get_blas_handle();
     hipsolverHandle_t solver_handle = hipblas::detail::get_solver_handle();
-
     int lwork, *dev_info;
     hip_catch(hipMalloc((void **) &dev_info, sizeof(int)));
 
@@ -325,16 +324,7 @@ TEST_CASE("GPU Energy Calculation", "[gpu]") {
         work2(i, i) = eig_host[i];
     }
 
-    double *alpha_gpu, *beta_gpu, alpha = 1, beta = 0;
-
-    hip_catch(hipMalloc((void **) &alpha_gpu, sizeof(double)));
-    hip_catch(hipMalloc((void **) &beta_gpu, sizeof(double)));
-    
-    hip_catch(hipMemcpy((void *) alpha_gpu, (const void *) &alpha, sizeof(double), hipMemcpyHostToDevice));
-    hip_catch(hipMemcpy((void *) beta_gpu, (const void *) &beta, sizeof(double), hipMemcpyHostToDevice));
-
-    hipblas_catch(hipblasDgemm(blas_handle, HIPBLAS_OP_N, HIPBLAS_OP_N, 7, 7, 7, alpha_gpu, work.data(), work.stride(0), work2.data(), work2.stride(0), beta_gpu, X.data(), X.stride(0)));
-    hip_catch(hipDeviceSynchronize());
+    einsums::linear_algebra::gpu::symm_gemm<false, false>(work2, work, &X);
 
     // while loop.
     DeviceTensor<double, 0> energy("Energy", DEV_ONLY);
@@ -344,7 +334,7 @@ TEST_CASE("GPU Energy Calculation", "[gpu]") {
     while(count < 100 && (count < 2 || fabs(energy1 - energy2) > 1e-6)) {
 
         // Find F'
-        linear_algebra::gpu::symm_gemm(F, X, &work);
+        linear_algebra::gpu::symm_gemm<false, false>(F, X, &work);
 
         // Find C' and the eigenvalues. They should be in increasing order already.
         hipsolver_catch(hipsolverDsyevd(solver_handle, HIPSOLVER_EIG_MODE_VECTOR, HIPSOLVER_FILL_MODE_UPPER, 7, work.data(), work.stride(0), eig_real.data(), gpu_work, lwork, dev_info));
@@ -352,35 +342,35 @@ TEST_CASE("GPU Energy Calculation", "[gpu]") {
         hip_catch(hipDeviceSynchronize());
 
         // Find C.
-        hipblas_catch(hipblasDgemm(blas_handle, HIPBLAS_OP_N, HIPBLAS_OP_N, 7, 7, 7, alpha_gpu, X.data(), X.stride(0), work.data(), work.stride(0), beta_gpu, C.data(), C.stride(0)));
-
-        hip_catch(hipDeviceSynchronize());
+        einsums::linear_algebra::gpu::gemm<false, true>(1.0, X, work, 0.0, &C);
 
         // Find D.
         auto C_view = C(Range{0, 7}, Range{0, 5});
 
-        hipblas_catch(hipblasDgemm(blas_handle, HIPBLAS_OP_T, HIPBLAS_OP_N, 7, 5, 7, alpha_gpu, C_view.data(), C_view.stride(0), C_view.data(), C_view.stride(0), beta_gpu, D.data(), D.stride(0)));
-        hip_catch(hipDeviceSynchronize());
+        einsums::linear_algebra::gpu::gemm<false, true>(1.0, C_view, C_view, 0.0, &D);
+
+        // Find the energy.
+        work = F;
+        work += H;
+        
+        tensor_algebra::gpu::einsum(0.0, Indices{}, &energy, 1.0, Indices{index::r, index::s}, D, Indices{index::r, index::s}, work);
+
+        energy2 = energy1;
+        energy1 = (double) energy;
 
         // Create new F.
         F = H;
         tensor_algebra::gpu::einsum(1.0, Indices{index::r, index::s}, &F, 2.0, Indices{index::t, index::u}, D, Indices{index::r, index::s, index::t, index::u}, TEI);
         tensor_algebra::gpu::einsum(1.0, Indices{index::r, index::s}, &F, -1.0, Indices{index::t, index::u}, D, Indices{index::r, index::t, index::s, index::u}, TEI);
 
-        // Find the energy.
-        hipblas_catch(hipblasDgeam(blas_handle, HIPBLAS_OP_N, HIPBLAS_OP_N, 7, 7, alpha_gpu, H.data(), H.stride(0), alpha_gpu, F.data(), F.stride(0), work.data(), work.stride(0)));
-        hip_catch(hipDeviceSynchronize());
-        tensor_algebra::gpu::einsum(0.0, Indices{}, &energy, 1.0, Indices{index::r, index::s}, D, Indices{index::r, index::s}, work);
-
-        energy2 = energy1;
-        energy1 = (double) energy;
-
         // Increase the count.
         count++;
     }
 
-    CHECK(fabs(energy1 - energy2) <= 1e-6);
-    CHECK(fabs(energy1 - -76.02629117630596) <= 1e-6);
+    hip_catch(hipFree((void *) gpu_work));
+
+    CHECK_THAT(energy1, Catch::Matchers::WithinAbs(energy2, 1e-6));
+    CHECK_THAT(energy1 + enuc, Catch::Matchers::WithinAbs(-74.942079928192, 1e-6));
 
     hipblas::finalize();
 

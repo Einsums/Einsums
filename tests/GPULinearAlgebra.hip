@@ -216,7 +216,37 @@ TEMPLATE_TEST_CASE("Test Symmetric Multiplication", "[gpu][linear-algebra]", flo
     A.read(A_data);
     B.read(B_data);
 
-    einsums::linear_algebra::gpu::symm_gemm(A, B, &C);
+    einsums::linear_algebra::gpu::symm_gemm<false, false>(A, B, &C);
+
+    C.write(C_data);
+
+    for(int i = 0; i < 9; i++) {
+        CHECK(C_data[i] == comp_data[i]);
+    }
+
+    einsums::linear_algebra::gpu::symm_gemm<true, false>(A, B, &C);
+
+    comp_data = {121968.0, 145926.0, 169884.0, 150282.0, 179685.0, 209088.0, 178596.0, 213444.0, 248292.0};
+
+    C.write(C_data);
+
+    for(int i = 0; i < 9; i++) {
+        CHECK(C_data[i] == comp_data[i]);
+    }
+
+    einsums::linear_algebra::gpu::symm_gemm<false, true>(A, B, &C);
+
+    comp_data = {27588.0, 66792.0, 105996.0, 62436.0, 150645.0, 238854.0, 97284.0, 234498.0, 371712.0};
+
+    C.write(C_data);
+
+    for(int i = 0; i < 9; i++) {
+        CHECK(C_data[i] == comp_data[i]);
+    }
+
+    einsums::linear_algebra::gpu::symm_gemm<true, true>(A, B, &C);
+    
+    comp_data = {27588.0, 62436.0, 97284.0, 66792.0, 150645.0, 234498.0, 105996.0, 238854.0, 371712.0};
 
     C.write(C_data);
 

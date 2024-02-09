@@ -166,112 +166,164 @@ void scal(int size, const hipDoubleComplex *alpha, hipDoubleComplex *x, int incx
 }
 
 __global__
-EINSUMS_EXPORT void symm_gemm(int size, const float *A, int lda, const float *B, int ldb, float *C, int ldc) {
+EINSUMS_EXPORT void symm_gemm(bool TransA, bool TransB, int m, int n, const float *A, int lda, const float *B, int ldb, float *C, int ldc) {
     int thread, kernel_size;
 
     get_worker_info(thread, kernel_size);
 
-    size_t curr_index = thread, max_size = size * size * size * size;
+    size_t curr_index = thread, max_size = m * m * n * n;
 
     while(curr_index < max_size) {
         size_t a, b, i, j;
 
         size_t quotient = curr_index;
 
-        a = quotient % size;
-        quotient /= size;
-        b = quotient % size;
-        quotient /= size;
-        i = quotient % size;
-        quotient /= size;
+        a = quotient % n;
+        quotient /= n;
+        b = quotient % n;
+        quotient /= n;
+        i = quotient % m;
+        quotient /= m;
         j = quotient;
 
         curr_index += kernel_size;
+        float term;
 
-        atomicAdd(C + (a * size + b), B[i * size + a] * A[i * size + j] * B[j * size + b]);
+        if(!TransA) {
+            term = A[i * lda + j];
+        } else {
+            term = A[j * lda + i];
+        }
+
+        if(!TransB) {
+            term *= B[i * ldb + a] * B[j * ldb + b];
+        } else {
+            term *= B[a * ldb + i] * B[b * ldb + j];
+        }
+
+        atomicAdd(C + (a * ldc + b), term);
     }
 }
 
 __global__
-EINSUMS_EXPORT void symm_gemm(int size, const double *A, int lda, const double *B, int ldb, double *C, int ldc) {
+EINSUMS_EXPORT void symm_gemm(bool TransA, bool TransB, int m, int n, const double *A, int lda, const double *B, int ldb, double *C, int ldc) {
     int thread, kernel_size;
 
     get_worker_info(thread, kernel_size);
 
-    size_t curr_index = thread, max_size = size * size * size * size;
+    size_t curr_index = thread, max_size = m * m * n * n;
 
     while(curr_index < max_size) {
         size_t a, b, i, j;
 
         size_t quotient = curr_index;
 
-        a = quotient % size;
-        quotient /= size;
-        b = quotient % size;
-        quotient /= size;
-        i = quotient % size;
-        quotient /= size;
+        a = quotient % n;
+        quotient /= n;
+        b = quotient % n;
+        quotient /= n;
+        i = quotient % m;
+        quotient /= m;
         j = quotient;
 
         curr_index += kernel_size;
+        double term;
 
-        atomicAdd(C + (a * size + b), B[i * size + a] * A[i * size + j] * B[j * size + b]);
+        if(!TransA) {
+            term = A[i * lda + j];
+        } else {
+            term = A[j * lda + i];
+        }
+
+        if(!TransB) {
+            term *= B[i * ldb + a] * B[j * ldb + b];
+        } else {
+            term *= B[a * ldb + i] * B[b * ldb + j];
+        }
+
+        atomicAdd(C + (a * ldc + b), term);
     }
 }
 
 __global__
-EINSUMS_EXPORT void symm_gemm(int size, const hipComplex *A, int lda, const hipComplex *B, int ldb, hipComplex *C, int ldc) {
+EINSUMS_EXPORT void symm_gemm(bool TransA, bool TransB, int m, int n, const hipComplex *A, int lda, const hipComplex *B, int ldb, hipComplex *C, int ldc) {
     int thread, kernel_size;
 
     get_worker_info(thread, kernel_size);
 
-    size_t curr_index = thread, max_size = size * size * size * size;
+    size_t curr_index = thread, max_size = m * m * n * n;
 
     while(curr_index < max_size) {
         size_t a, b, i, j;
 
         size_t quotient = curr_index;
 
-        a = quotient % size;
-        quotient /= size;
-        b = quotient % size;
-        quotient /= size;
-        i = quotient % size;
-        quotient /= size;
+        a = quotient % n;
+        quotient /= n;
+        b = quotient % n;
+        quotient /= n;
+        i = quotient % m;
+        quotient /= m;
         j = quotient;
 
         curr_index += kernel_size;
-        hipComplex res = hipConjf(B[i * size + a]) * A[i * size + j] * B[j * size + b];
-        atomicAdd(&(C[a * size + b].x), res.x);
-        atomicAdd(&(C[a * size + b].y), res.y);
+        hipComplex term;
+
+        if(!TransA) {
+            term = A[i * lda + j];
+        } else {
+            term = A[j * lda + i];
+        }
+
+        if(!TransB) {
+            term = term * B[i * ldb + a] * B[j * ldb + b];
+        } else {
+            term = term * B[a * ldb + i] * B[b * ldb + j];
+        }
+
+        atomicAdd(&(C[a * ldc + b].x), term.x);
+        atomicAdd(&(C[a * ldc + b].y), term.y);
     }
 }
 
 __global__
-EINSUMS_EXPORT void symm_gemm(int size, const hipDoubleComplex *A, int lda, const hipDoubleComplex *B, int ldb, hipDoubleComplex *C, int ldc) {
+EINSUMS_EXPORT void symm_gemm(bool TransA, bool TransB, int m, int n, const hipDoubleComplex *A, int lda, const hipDoubleComplex *B, int ldb, hipDoubleComplex *C, int ldc) {
     int thread, kernel_size;
 
     get_worker_info(thread, kernel_size);
 
-    size_t curr_index = thread, max_size = size * size * size * size;
+    size_t curr_index = thread, max_size = m * m * n * n;
 
     while(curr_index < max_size) {
         size_t a, b, i, j;
 
         size_t quotient = curr_index;
 
-        a = quotient % size;
-        quotient /= size;
-        b = quotient % size;
-        quotient /= size;
-        i = quotient % size;
-        quotient /= size;
+        a = quotient % n;
+        quotient /= n;
+        b = quotient % n;
+        quotient /= n;
+        i = quotient % m;
+        quotient /= m;
         j = quotient;
 
         curr_index += kernel_size;
-        hipDoubleComplex res = hipConj(B[i * size + a]) * A[i * size + j] * B[j * size + b];
-        atomicAdd(&(C[a * size + b].x), res.x);
-        atomicAdd(&(C[a * size + b].y), res.y);
+        hipDoubleComplex term;
+
+        if(!TransA) {
+            term = A[i * lda + j];
+        } else {
+            term = A[j * lda + i];
+        }
+
+        if(!TransB) {
+            term = term * B[i * ldb + a] * B[j * ldb + b];
+        } else {
+            term = term * B[a * ldb + i] * B[b * ldb + j];
+        }
+
+        atomicAdd(&(C[a * ldc + b].x), term.x);
+        atomicAdd(&(C[a * ldc + b].y), term.y);
     }
 }
 

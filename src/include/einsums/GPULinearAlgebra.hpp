@@ -76,16 +76,16 @@ EINSUMS_EXPORT void scal(int size, const hipComplex *alpha, hipComplex *x, int i
 EINSUMS_EXPORT void scal(int size, const hipDoubleComplex *alpha, hipDoubleComplex *x, int incx);
 
 __global__
-EINSUMS_EXPORT void symm_gemm(int size, const float *A, int lda, const float *B, int ldb, float *C, int ldc);
+EINSUMS_EXPORT void symm_gemm(bool TransA, bool TransB, int m, int n, const float *A, int lda, const float *B, int ldb, float *C, int ldc);
 
 __global__
-EINSUMS_EXPORT void symm_gemm(int size, const double *A, int lda, const double *B, int ldb, double *C, int ldc);
+EINSUMS_EXPORT void symm_gemm(bool TransA, bool TransB, int m, int n, const double *A, int lda, const double *B, int ldb, double *C, int ldc);
 
 __global__
-EINSUMS_EXPORT void symm_gemm(int size, const hipComplex *A, int lda, const hipComplex *B, int ldb, hipComplex *C, int ldc);
+EINSUMS_EXPORT void symm_gemm(bool TransA, bool TransB, int m, int n, const hipComplex *A, int lda, const hipComplex *B, int ldb, hipComplex *C, int ldc);
 
 __global__
-EINSUMS_EXPORT void symm_gemm(int size, const hipDoubleComplex *A, int lda, const hipDoubleComplex *B, int ldb, hipDoubleComplex *C, int ldc);
+EINSUMS_EXPORT void symm_gemm(bool TransA, bool TransB, int m, int n, const hipDoubleComplex *A, int lda, const hipDoubleComplex *B, int ldb, hipDoubleComplex *C, int ldc);
 
 } // namespace detail
 
@@ -125,16 +125,16 @@ template <template <typename, size_t> typename AType, size_t ARank, typename T>
 void scale(T scale, AType<T, ARank> *A);
 
 /**
- * Computes C = B^T A B
+ * Computes C = OP(B)^T OP(A) OP(B)
  */
-template <template <typename, size_t> typename AType, template <typename, size_t> typename BType,
+template <bool TransA, bool TransB, template <typename, size_t> typename AType, template <typename, size_t> typename BType,
           template <typename, size_t> typename CType, size_t Rank, typename T>
     requires requires {
         requires ::einsums::detail::DeviceRankTensor<AType<T, Rank>, 2, T>;
         requires ::einsums::detail::DeviceRankTensor<BType<T, Rank>, 2, T>;
         requires ::einsums::detail::DeviceRankTensor<CType<T, Rank>, 2, T>;
     }
-void sym_gemm(const AType<T, Rank> &A, const BType<T, Rank> &B, CType<T, Rank> *C);
+void symm_gemm(const AType<T, Rank> &A, const BType<T, Rank> &B, CType<T, Rank> *C);
 
 END_EINSUMS_NAMESPACE_HPP(einsums::linear_algebra::gpu)
 

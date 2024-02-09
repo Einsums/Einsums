@@ -211,4 +211,24 @@ EINSUMS_EXPORT void finalize();
 
 #define KERNEL(bound) __global__ __launch_bounds__((bound))
 
+__host__ inline dim3 grid_size(size_t compute_size) {
+    if(compute_size < 32) {
+        return dim3(32);
+    } else if(compute_size < 256) {
+        return dim3(compute_size & 0xf0);
+    } else {
+        return dim3(256);
+    }
+}
+
+__host__ inline dim3 blocks(size_t compute_size) {
+    if(compute_size < 256) {
+        return dim3(1);
+    } else if(compute_size <= 4096) {
+        return dim3(compute_size / 256);
+    } else {
+        return dim3(16);
+    }
+}
+
 END_EINSUMS_NAMESPACE_HPP(einsums::gpu)

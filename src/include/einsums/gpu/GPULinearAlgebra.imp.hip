@@ -165,7 +165,7 @@ void scale(T scale, AType<T, ARank> *A) {
     hip_catch(hipFree(scale_gpu));
 }
 
-template <template <typename, size_t> typename AType, template <typename, size_t> typename BType,
+template <bool TransA, bool TransB, template <typename, size_t> typename AType, template <typename, size_t> typename BType,
           template <typename, size_t> typename CType, size_t Rank, typename T>
     requires requires {
         requires ::einsums::detail::DeviceRankTensor<AType<T, Rank>, 2, T>;
@@ -174,11 +174,19 @@ template <template <typename, size_t> typename AType, template <typename, size_t
     }
 void symm_gemm(const AType<T, Rank> &A, const BType<T, Rank> &B, CType<T, Rank> *C) {
     using namespace einsums::gpu;
-    assert(A.dim(0) == A.dim(1) && B.dim(0) == B.dim(1) && C->dim(0) == C->dim(1) && A.dim(0) == B.dim(0) && A.dim(0) == C->dim(0));
+    if constexpr (TransA && TransB) {
+        assert(B.dim(0) == A.dim(0) && A.dim(1) == B.dim(0) && C->dim(0) == B.dim(1) && C->dim(1) == B.dim(1));
+    } else if constexpr (TransA && !TransB) {
+        assert(B.dim(1) == A.dim(0) && A.dim(1) == B.dim(1) && C->dim(0) == B.dim(0) && C->dim(1) == B.dim(0));
+    } else if constexpr (!TransA && TransB) {
+        assert(B.dim(0) == A.dim(1) && A.dim(0) == B.dim(0) && C->dim(0) == B.dim(1) && C->dim(1) == B.dim(1));
+    } else {
+        assert(B.dim(1) == A.dim(1) && A.dim(0) == B.dim(1) && C->dim(0) == B.dim(0) && C->dim(1) == B.dim(0));
+    }
 
     C->zero();
 
-    einsums::linear_algebra::gpu::detail::symm_gemm<<<dim3(64), dim3(64)>>>(A.dim(0), A.data(), A.stride(0), B.data(), B.stride(0), C->data(), C->stride(0));
+    einsums::linear_algebra::gpu::detail::symm_gemm<<<grid_size(A.dim(0) * A.dim(0) * C->dim(0) * C->dim(0)), blocks(A.dim(0) * A.dim(0) * C->dim(0) * C->dim(0))>>>(TransA, TransB, A.dim(0), C->dim(0), A.data(), A.stride(0), B.data(), B.stride(0), C->data(), C->stride(0));
 
     hip_catch(hipDeviceSynchronize());
 }
