@@ -122,9 +122,11 @@ template <typename T, size_t Rank>
 auto DeviceTensorView<T, Rank>::operator=(const T &fill_value) -> DeviceTensorView<T, Rank> & {
     using namespace einsums::gpu;
     einsums::detail::set_all<T, Rank><<<einsums::detail::constructor_threads, einsums::detail::constructor_blocks>>>(this->_data, this->_gpu_dims, this->_gpu_strides,
-                                                                                          fill_value, this->size());
+                                                                                          fill_value);
 
     hip_catch(hipDeviceSynchronize());
+
+    return *this;
 }
 template <typename T, size_t Rank>
 DeviceTensorView<T, Rank> &DeviceTensorView<T, Rank>::operator+=(const T &other) {
@@ -190,6 +192,9 @@ template <typename... MultiIndex>
 auto DeviceTensorView<T, Rank>::operator()(MultiIndex... index) const -> T {
     using namespace einsums::gpu;
     T out;
+
+
+
     hip_catch(hipMemcpy(&out, this->data(index...), sizeof(T), hipMemcpyDeviceToHost));
 
     return out;

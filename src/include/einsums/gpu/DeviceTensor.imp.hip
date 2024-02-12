@@ -282,7 +282,7 @@ __host__ __device__ size_t combination_to_index(const std::array<size_t, Rank> &
  */
 template <typename T, size_t Rank>
 __global__ void copy_to_tensor(T *to_data, const size_t *to_dims, const size_t *to_strides, const T *from_data, const size_t *from_dims,
-                               size_t *from_strides, size_t elements) {
+                               const size_t *from_strides, size_t elements) {
                                 using namespace einsums::gpu;
 
     int worker, kernel_size;
