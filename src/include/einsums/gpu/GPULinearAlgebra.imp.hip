@@ -186,7 +186,7 @@ void symm_gemm(const AType<T, Rank> &A, const BType<T, Rank> &B, CType<T, Rank> 
 
     C->zero();
 
-    einsums::linear_algebra::gpu::detail::symm_gemm<<<grid_size(A.dim(0) * A.dim(0) * C->dim(0) * C->dim(0)), blocks(A.dim(0) * A.dim(0) * C->dim(0) * C->dim(0))>>>(TransA, TransB, A.dim(0), C->dim(0), A.data(), A.stride(0), B.data(), B.stride(0), C->data(), C->stride(0));
+    einsums::linear_algebra::gpu::detail::symm_gemm<<<block_size(A.dim(0) * A.dim(0) * C->dim(0) * C->dim(0)), blocks(A.dim(0) * A.dim(0) * C->dim(0) * C->dim(0))>>>(TransA, TransB, A.dim(0), C->dim(0), A.data(), A.stride(0), B.data(), B.stride(0), C->data(), C->stride(0));
 
     hip_catch(hipDeviceSynchronize());
 }

@@ -94,6 +94,17 @@ inline auto get_dim_ranges_for_many_c(const CType &C, const ::std::tuple<CHead, 
     }
 }
 
+/**
+ * @brief Finds the dimensions for the requested indices.
+ *
+ * @param C The C tensor.
+ * @param C_indices The indices for the C tensor.
+ * @param A The A tensor.
+ * @param A_indices The indices for the A tensor.
+ * @param B The B tensor.
+ * @param B_indices The indices for the B tensor.
+ * @param All_unique_indices The list of all indices with duplicates removed.
+ */
 template <typename CType, typename AType, typename BType, typename... CIndices, typename... AIndices, typename... BIndices,
           typename... AllUniqueIndices>
 inline auto get_dim_ranges_for_many(const CType &C, const ::std::tuple<CIndices...> &C_indices, const AType &A,
@@ -136,6 +147,9 @@ __device__ inline void make_zero(hipDoubleComplex &value) {
     value.y = 0.0;
 }
 
+/**
+ * @brief Converts a single sentinel value into a list of indices.
+ */
 template<size_t num_unique_inds>
 __host__ __device__ inline void sentinel_to_indices(size_t sentinel, const size_t *unique_strides, size_t *out_inds) {
     size_t hold = sentinel;
@@ -151,19 +165,31 @@ __host__ __device__ inline void sentinel_to_indices(size_t sentinel, const size_
     }
 }
 
+/**
+ * @brief Wrap the atomicAdd operation to allow polymorphism on complex arguments.
+ */
 __device__ inline void atomicAdd_wrap(float *address, float value) {
     atomicAdd(address, value);
 }
 
+/**
+ * @brief Wrap the atomicAdd operation to allow polymorphism on complex arguments.
+ */
 __device__ inline void atomicAdd_wrap(double *address, double value) {
     atomicAdd(address, value);
 }
 
+/**
+ * @brief Wrap the atomicAdd operation to allow polymorphism on complex arguments.
+ */
 __device__ inline void atomicAdd_wrap(hipComplex *address, hipComplex value) {
     atomicAdd(&(address->x), value.x);
     atomicAdd(&(address->y), value.y);
 }
 
+/**
+ * @brief Wrap the atomicAdd operation to allow polymorphism on complex arguments.
+ */
 __device__ inline void atomicAdd_wrap(hipDoubleComplex *address, hipDoubleComplex value) {
     atomicAdd(&(address->x), value.x);
     atomicAdd(&(address->y), value.y);
@@ -294,6 +320,9 @@ void dims_to_strides(const ::std::tuple<UniqueDims...> &dims, size_t *out, ::std
     }
 }
 
+/**
+ * @brief Compute the strides for turning a sentinel into a list of indices.
+ */
 template <typename... UniqueDims>
 void dims_to_strides(const ::std::tuple<UniqueDims...> &dims, size_t *out) {
     dims_to_strides(dims, out, ::std::make_index_sequence<sizeof...(UniqueDims)>());
@@ -325,6 +354,11 @@ void compile_index_table(const ::std::tuple<UniqueIndices...> &from_inds, const 
     ::std::array<int, sizeof...(Indices)> arr{compile_index_table<0>(from_inds, ::std::get<I>(to_inds), out[I])...};
 }
 
+/**
+ * @brief Turn a list of indices into a link table.
+ *
+ * Takes a list of indices and creates a mapping so that an index list for a tensor can reference the unique index list.
+ */
 template <typename... UniqueIndices, typename... Indices>
 void compile_index_table(const ::std::tuple<UniqueIndices...> &from_inds, const ::std::tuple<Indices...> &to_inds, int *out) {
     compile_index_table(from_inds, to_inds, out, ::std::make_index_sequence<sizeof...(Indices)>());

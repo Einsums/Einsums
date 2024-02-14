@@ -41,6 +41,24 @@ BEGIN_EINSUMS_NAMESPACE_HPP(einsums::tensor_algebra::gpu)
 
 namespace detail {
 
+/**
+ * @brief The generic einsum algorithm performed on the GPU.
+ *
+ * This is the host call to access the GPU algorithms.
+ *
+ * @param unique_indices A list of all the indices with all duplicates removed.
+ * @param C_indices The indices of the C tensor.
+ * @param A_indices The indices of the A tensor.
+ * @param B_indices The indices of the B tensor.
+ * @param unique_dims The sizes of each of the indices involved in the computation.
+ * @param C_prefactor The prefactor for the C tensor.
+ * @param C The C tensor.
+ * @param AB_prefactor The prefactor for the contraction between the A tensor and the B tensor.
+ * @param A The A tensor.
+ * @param B The B tensor.
+ * @param threads The number of threads per block to call. Defaults to 32.
+ * @param blocks The number of blocks to call. Defaults to 32.
+ */
 template <typename... UniqueIndices, typename... CIndices, typename... AIndices, typename... BIndices, typename... UniqueDims,
           template <typename, size_t> typename CType, typename CDataType, size_t CRank, template <typename, size_t> typename AType,
           typename ADataType, size_t ARank, template <typename, size_t> typename BType, typename BDataType, size_t BRank>
@@ -51,18 +69,48 @@ void einsum_generic_algorithm(const std::tuple<UniqueIndices...> &unique_indices
                               const AType<ADataType, ARank> &A, const BType<BDataType, BRank> &B, dim3 threads = dim3(32),
                               dim3 blocks = dim3(32));
 
+/**
+ * @brief Selector for the einsum algorithm.
+ * 
+ * This function chooses between the various different algorithms.
+ *
+ * @param C_prefactor The prefactor for C.
+ * @param C_indices The indices for the C tensor.
+ * @param C The C tensor. Must be accesible by the device.
+ * @param AB_prefactor The prefactor for the contraction between the A tensor and the B tensor.
+ * @param A_indices The indices for the A tensor.
+ * @param A The A tensor.
+ * @param B_indices The indice for the B tensor.
+ * @param B The B tensor.
+ * @param threads The number of threads per block to call. Defaults to 32.
+ * @param blocks The number of blocks to call. Defaults to 32.
+ */
 template <bool OnlyUseGenericAlgorithm, template <typename, size_t> typename AType, typename ADataType, size_t ARank,
           template <typename, size_t> typename BType, typename BDataType, size_t BRank, template <typename, size_t> typename CType,
           typename CDataType, size_t CRank, typename... CIndices, typename... AIndices, typename... BIndices>
-auto einsum(const CDataType C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<CDataType, CRank> *C,
+auto einsum(const CDataType C_prefactor, const std::tuple<CIndices...> &C_indices, CType<CDataType, CRank> *C,
             const std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> AB_prefactor,
-            const std::tuple<AIndices...> & /*As*/, const AType<ADataType, ARank> &A, const std::tuple<BIndices...> & /*Bs*/,
+            const std::tuple<AIndices...> &A_indices, const AType<ADataType, ARank> &A, const std::tuple<BIndices...> &B_indices,
             const BType<BDataType, BRank> &B, dim3 threads = dim3(32), dim3 blocks = dim3(32))
     -> std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<ADataType, ARank>, AType<ADataType, ARank>> &&
                         std::is_base_of_v<::einsums::detail::TensorBase<BDataType, BRank>, BType<BDataType, BRank>> &&
                         std::is_base_of_v<::einsums::detail::TensorBase<CDataType, CRank>, CType<CDataType, CRank>>>;
 } // namespace detail
 
+/**
+ * @brief Base call for einsums.
+ * 
+ * This function wraps the call to @ref detail::einsum.
+ *
+ * @param UC_prefactor The prefactor for C.
+ * @param C_indices The indices for the C tensor.
+ * @param C The C tensor. Must be accesible by the device.
+ * @param UAB_prefactor The prefactor for the contraction between the A tensor and the B tensor.
+ * @param A_indices The indices for the A tensor.
+ * @param A The A tensor.
+ * @param B_indices The indice for the B tensor.
+ * @param B The B tensor.
+ */
 template <template <typename, size_t> typename AType, typename ADataType, size_t ARank, template <typename, size_t> typename BType,
           typename BDataType, size_t BRank, template <typename, size_t> typename CType, typename CDataType, size_t CRank,
           typename... CIndices, typename... AIndices, typename... BIndices, typename U>

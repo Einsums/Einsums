@@ -203,15 +203,24 @@ inline void get_worker_info(int &thread_id, int &num_threads) {
     thread_id = threadIdx.x + blockDim.x * (threadIdx.y + blockDim.y * (threadIdx.z + blockDim.z * (blockIdx.x + gridDim.x * (blockIdx.y + gridDim.y * blockIdx.z))));
 }
 
+/**
+ * Initialize the GPU and HIP.
+ */
 __host__
 EINSUMS_EXPORT void initialize();
 
+/**
+ * Finalize HIP.
+ */
 __host__
 EINSUMS_EXPORT void finalize();
 
 #define KERNEL(bound) __global__ __launch_bounds__((bound))
 
-__host__ inline dim3 grid_size(size_t compute_size) {
+/**
+ * Get an appropriate block size for a kernel.
+ */
+__host__ inline dim3 block_size(size_t compute_size) {
     if(compute_size < 32) {
         return dim3(32);
     } else if(compute_size < 256) {
@@ -221,6 +230,9 @@ __host__ inline dim3 grid_size(size_t compute_size) {
     }
 }
 
+/**
+ * Get an appropriate number of blocks for a kernel.
+ */
 __host__ inline dim3 blocks(size_t compute_size) {
     if(compute_size < 256) {
         return dim3(1);

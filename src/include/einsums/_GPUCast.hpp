@@ -9,12 +9,27 @@
 
 BEGIN_EINSUMS_NAMESPACE_HPP(einsums::gpu)
 
+/**
+ * @struct HipCast<To, From>
+ *
+ * @brief Allows casting between host types and device types.
+ *
+ * To cast between types, use <tt>HipCast<To, From>::cast(param)</tt>.
+ *
+ * Valid types are @c float , @c double , @c complex<float> , @c complex<double> , @c hipComplex , and @c hipDoubleComplex .
+ * 
+ * @tparam To The type to cast to.
+ * @tparam From The type to cast from.
+ */
 template<typename To, typename From>
 struct HipCast {
 };
 
 template<>
 struct HipCast<float, float> {
+    /**
+     * Cast between types.
+     */
     __host__ __device__
     static inline float cast(float from) {
         return from;
