@@ -71,7 +71,7 @@ void einsum_generic_algorithm(const std::tuple<UniqueIndices...> &unique_indices
 
 /**
  * @brief Selector for the einsum algorithm.
- * 
+ *
  * This function chooses between the various different algorithms.
  *
  * @param C_prefactor The prefactor for C.
@@ -99,7 +99,7 @@ auto einsum(const CDataType C_prefactor, const std::tuple<CIndices...> &C_indice
 
 /**
  * @brief Base call for einsums.
- * 
+ *
  * This function wraps the call to @ref detail::einsum.
  *
  * @param UC_prefactor The prefactor for C.

@@ -53,8 +53,8 @@ TEST_CASE("Constructing Views", "[gpu][tensor]") {
     DeviceTensor<double, 2> B7(B6);
     DeviceTensor<double, 2> C7(C6);
 
-    for(int i = 0; i < 3; i++) {
-        for(int j = 0; j < 3; j++) {
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
             CHECK(A1(i, j) == 0.0);
             CHECK(B1(i, j) == 1.0);
             CHECK(C1(i, j) == 2.0);
@@ -62,7 +62,7 @@ TEST_CASE("Constructing Views", "[gpu][tensor]") {
             CHECK(B5(i, j) == 1.0);
             CHECK(C5(i, j) == 2.0);
 
-            if(i != 2 && j != 2) {
+            if (i != 2 && j != 2) {
                 CHECK(A6(i, j) == 0.0);
                 CHECK(B6(i, j) == 1.0);
                 CHECK(C6(i, j) == 2.0);
@@ -73,7 +73,7 @@ TEST_CASE("Constructing Views", "[gpu][tensor]") {
         }
     }
 
-    for(int i = 0; i < 9; i++) {
+    for (int i = 0; i < 9; i++) {
         CHECK(A2(i) == 0.0);
         CHECK(B2(i) == 1.0);
         CHECK(C2(i) == 2.0);

@@ -14,7 +14,7 @@ using namespace einsums::gpu;
 
 namespace detail {
 
-hipblasHandle_t   blas_handle = nullptr;
+hipblasHandle_t blas_handle = nullptr;
 
 __host__ __device__ hipblasOperation_t hipblas_char_to_op(char trans) {
     switch (trans) {
@@ -643,7 +643,7 @@ void saxpy(int n, float alpha_x, const float *x, int inc_x, float *y, int inc_y)
     size_t x_size = n * inc_x, y_size = n * inc_y;
 
     // Skip all the data transfer if not needed.
-    if(alpha_x == 0) {
+    if (alpha_x == 0) {
         return;
     }
 
@@ -674,7 +674,7 @@ void daxpy(int n, double alpha_x, const double *x, int inc_x, double *y, int inc
     size_t x_size = n * inc_x, y_size = n * inc_y;
 
     // Skip all the data transfer if not needed.
-    if(alpha_x == 0) {
+    if (alpha_x == 0) {
         return;
     }
 
@@ -705,7 +705,7 @@ void caxpy(int n, std::complex<float> alpha_x, const std::complex<float> *x, int
     size_t x_size = n * inc_x, y_size = n * inc_y;
 
     // Skip all the data transfer if not needed.
-    if(alpha_x == 0.0f) {
+    if (alpha_x == 0.0f) {
         return;
     }
 
@@ -736,7 +736,7 @@ void zaxpy(int n, std::complex<double> alpha_x, const std::complex<double> *x, i
     size_t x_size = n * inc_x, y_size = n * inc_y;
 
     // Skip all the data transfer if not needed.
-    if(alpha_x == 0.0) {
+    if (alpha_x == 0.0) {
         return;
     }
 
@@ -777,7 +777,7 @@ void sger(int m, int n, float alpha, const float *x, int inc_x, const float *y, 
 
     size_t x_size = m * inc_x, y_size = n * inc_y, a_size = m * lda;
 
-    if(alpha == 0) {
+    if (alpha == 0) {
         return;
     }
 
@@ -810,7 +810,7 @@ void dger(int m, int n, double alpha, const double *x, int inc_x, const double *
 
     size_t x_size = m * inc_x, y_size = n * inc_y, a_size = m * lda;
 
-    if(alpha == 0) {
+    if (alpha == 0) {
         return;
     }
 
@@ -836,14 +836,15 @@ void dger(int m, int n, double alpha, const double *x, int inc_x, const double *
     hip_catch(hipFree(alpha_gpu));
 }
 
-void cger(int m, int n, std::complex<float> alpha, const std::complex<float> *x, int inc_x, const std::complex<float> *y, int inc_y, std::complex<float> *a, int lda) {
+void cger(int m, int n, std::complex<float> alpha, const std::complex<float> *x, int inc_x, const std::complex<float> *y, int inc_y,
+          std::complex<float> *a, int lda) {
     using math_type = hipblasComplex;
 
     math_type *x_gpu, *y_gpu, *a_gpu, *alpha_gpu;
 
     size_t x_size = m * inc_x, y_size = n * inc_y, a_size = m * lda;
 
-    if(alpha == 0.0f) {
+    if (alpha == 0.0f) {
         return;
     }
 
@@ -869,14 +870,15 @@ void cger(int m, int n, std::complex<float> alpha, const std::complex<float> *x,
     hip_catch(hipFree(alpha_gpu));
 }
 
-void zger(int m, int n, std::complex<double> alpha, const std::complex<double> *x, int inc_x, const std::complex<double> *y, int inc_y, std::complex<double> *a, int lda) {
+void zger(int m, int n, std::complex<double> alpha, const std::complex<double> *x, int inc_x, const std::complex<double> *y, int inc_y,
+          std::complex<double> *a, int lda) {
     using math_type = hipblasDoubleComplex;
 
     math_type *x_gpu, *y_gpu, *a_gpu, *alpha_gpu;
 
     size_t x_size = m * inc_x, y_size = n * inc_y, a_size = m * lda;
 
-    if(alpha == 0.0) {
+    if (alpha == 0.0) {
         return;
     }
 

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "einsums/_GPUUtils.hpp"
 #include "einsums/_GPUCast.hpp"
+#include "einsums/_GPUUtils.hpp"
 
 #include "einsums/../../backends/linear_algebra/hipblas/hipblas.hpp"
 #include "einsums/GPULinearAlgebra.hpp"
@@ -52,9 +52,9 @@ template <bool TransA, bool TransB, template <typename, size_t> typename AType, 
     }
 void gemm(T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, T beta, CType<T, Rank> *C) {
     using namespace einsums::gpu;
-    
+
     using dev_datatype = ::std::conditional_t<::std::is_same_v<T, ::std::complex<float>>, hipComplex,
-                                            ::std::conditional_t<::std::is_same_v<T, ::std::complex<double>>, hipDoubleComplex, T>>;
+                                              ::std::conditional_t<::std::is_same_v<T, ::std::complex<double>>, hipDoubleComplex, T>>;
     dev_datatype *alpha_gpu, *beta_gpu;
 
     int m = C->dim(0), n = C->dim(1), k = TransA ? A.dim(0) : A.dim(1);
@@ -67,7 +67,8 @@ void gemm(T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, T beta, CTy
     hip_catch(hipMemcpy((void *)beta_gpu, &beta, sizeof(dev_datatype), hipMemcpyHostToDevice));
 
     // Flip the A and B matrices. Row-major vs column major.
-    detail::gemm(TransB? HIPBLAS_OP_T: HIPBLAS_OP_N, TransA? HIPBLAS_OP_T: HIPBLAS_OP_N, n, m, k, alpha_gpu, B.data(), ldb, A.data(), lda, beta_gpu, C->data(), ldc);
+    detail::gemm(TransB ? HIPBLAS_OP_T : HIPBLAS_OP_N, TransA ? HIPBLAS_OP_T : HIPBLAS_OP_N, n, m, k, alpha_gpu, B.data(), ldb, A.data(),
+                 lda, beta_gpu, C->data(), ldc);
 
     hip_catch(hipFree(alpha_gpu));
     hip_catch(hipFree(beta_gpu));
@@ -78,7 +79,7 @@ template <template <typename, size_t> typename CType, typename CDataType, templa
 void dot(CDataType C_prefactor, CType<CDataType, 0> &C,
          ::std::conditional_t<sizeof(ADataType) < sizeof(BDataType), BDataType, ADataType> AB_prefactor, const AType<ADataType, ARank> &A,
          const BType<BDataType, BRank> &B, dim3 threads, dim3 blocks) {
-            using namespace einsums::gpu;
+    using namespace einsums::gpu;
 
     if (C_prefactor == CDataType{0}) {
         C = CDataType{0};
@@ -86,10 +87,12 @@ void dot(CDataType C_prefactor, CType<CDataType, 0> &C,
         C *= C_prefactor;
     }
 
-    using dev_datatype = std::conditional_t<std::is_same_v<decltype(AB_prefactor), std::complex<float>>, hipComplex,
-                                            std::conditional_t<std::is_same_v<decltype(AB_prefactor), std::complex<double>>, hipDoubleComplex, decltype(AB_prefactor)>>;
+    using dev_datatype = std::conditional_t<
+        std::is_same_v<decltype(AB_prefactor), std::complex<float>>, hipComplex,
+        std::conditional_t<std::is_same_v<decltype(AB_prefactor), std::complex<double>>, hipDoubleComplex, decltype(AB_prefactor)>>;
 
-    detail::dot_kernel<<<threads, blocks>>>(C.data(), HipCast<dev_datatype, decltype(AB_prefactor)>::cast(AB_prefactor), A.data(), B.data(), A.size());
+    detail::dot_kernel<<<threads, blocks>>>(C.data(), HipCast<dev_datatype, decltype(AB_prefactor)>::cast(AB_prefactor), A.data(), B.data(),
+                                            A.size());
 
     hip_catch(hipDeviceSynchronize());
 }
@@ -102,7 +105,7 @@ template <template <typename, size_t> typename XYType, size_t XYRank, template <
 void ger(T alpha, const XYType<T, XYRank> &X, const XYType<T, XYRank> &Y, AType<T, ARank> *A) {
     using namespace einsums::gpu;
     using dev_datatype = ::std::conditional_t<::std::is_same_v<T, ::std::complex<float>>, hipComplex,
-                                            ::std::conditional_t<::std::is_same_v<T, ::std::complex<double>>, hipDoubleComplex, T>>;
+                                              ::std::conditional_t<::std::is_same_v<T, ::std::complex<double>>, hipDoubleComplex, T>>;
 
     dev_datatype *alpha_gpu;
 
@@ -125,15 +128,15 @@ template <bool TransA, template <typename, size_t> typename AType, template <typ
 void gemv(T alpha, const AType<T, ARank> &A, const XType<T, XYRank> &x, T beta, YType<T, XYRank> *y) {
     using namespace einsums::gpu;
     using dev_datatype = ::std::conditional_t<::std::is_same_v<T, ::std::complex<float>>, hipComplex,
-                                            ::std::conditional_t<::std::is_same_v<T, ::std::complex<double>>, hipDoubleComplex, T>>;
+                                              ::std::conditional_t<::std::is_same_v<T, ::std::complex<double>>, hipDoubleComplex, T>>;
 
     dev_datatype *alpha_gpu, *beta_gpu;
 
     hip_catch(hipMalloc((void **)&alpha_gpu, sizeof(dev_datatype)));
     hip_catch(hipMalloc((void **)&beta_gpu, sizeof(dev_datatype)));
 
-    hip_catch(hipMemcpy((void *)alpha_gpu, (const void *) &alpha, sizeof(dev_datatype), hipMemcpyHostToDevice));
-    hip_catch(hipMemcpy((void *)beta_gpu, (const void *) &beta, sizeof(dev_datatype), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy((void *)alpha_gpu, (const void *)&alpha, sizeof(dev_datatype), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy((void *)beta_gpu, (const void *)&beta, sizeof(dev_datatype), hipMemcpyHostToDevice));
 
     int m = A.dim(1), n = A.dim(0);
 
@@ -152,7 +155,7 @@ template <template <typename, size_t> typename AType, size_t ARank, typename T>
 void scale(T scale, AType<T, ARank> *A) {
     using namespace einsums::gpu;
     using dev_datatype = ::std::conditional_t<::std::is_same_v<T, ::std::complex<float>>, hipComplex,
-                                            ::std::conditional_t<::std::is_same_v<T, ::std::complex<double>>, hipDoubleComplex, T>>;
+                                              ::std::conditional_t<::std::is_same_v<T, ::std::complex<double>>, hipDoubleComplex, T>>;
 
     dev_datatype *scale_gpu;
 
@@ -186,11 +189,13 @@ void symm_gemm(const AType<T, Rank> &A, const BType<T, Rank> &B, CType<T, Rank> 
 
     C->zero();
 
-    einsums::linear_algebra::gpu::detail::symm_gemm<<<block_size(A.dim(0) * A.dim(0) * C->dim(0) * C->dim(0)), blocks(A.dim(0) * A.dim(0) * C->dim(0) * C->dim(0))>>>(TransA, TransB, A.dim(0), C->dim(0), A.data(), A.stride(0), B.data(), B.stride(0), C->data(), C->stride(0));
+    einsums::linear_algebra::gpu::detail::
+        symm_gemm<<<block_size(A.dim(0) * A.dim(0) * C->dim(0) * C->dim(0)), blocks(A.dim(0) * A.dim(0) * C->dim(0) * C->dim(0))>>>(
+            TransA, TransB, A.dim(0), C->dim(0), A.data(), A.stride(0), B.data(), B.stride(0), C->data(), C->stride(0));
 
     hip_catch(hipDeviceSynchronize());
 }
 
-} // namespace linear_algebra
 } // namespace gpu
+} // namespace linear_algebra
 } // namespace einsums

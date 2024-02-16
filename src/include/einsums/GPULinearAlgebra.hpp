@@ -40,17 +40,18 @@ __global__ void dot_kernel(CDataType C_prefactor, CDataType *C,
 /**
  * Internal gemm functions.
  */
-EINSUMS_EXPORT void gemm(hipblasOperation_t transa, hipblasOperation_t transb, int m, int n, int k, const float *alpha, const float *a, int lda, const float *b,
-          int ldb, const float *beta, float *c, int ldc);
+EINSUMS_EXPORT void gemm(hipblasOperation_t transa, hipblasOperation_t transb, int m, int n, int k, const float *alpha, const float *a,
+                         int lda, const float *b, int ldb, const float *beta, float *c, int ldc);
 
-EINSUMS_EXPORT void gemm(hipblasOperation_t transa, hipblasOperation_t transb, int m, int n, int k, const double *alpha, const double *a, int lda, const double *b,
-          int ldb, const double *beta, double *c, int ldc);
+EINSUMS_EXPORT void gemm(hipblasOperation_t transa, hipblasOperation_t transb, int m, int n, int k, const double *alpha, const double *a,
+                         int lda, const double *b, int ldb, const double *beta, double *c, int ldc);
 
-EINSUMS_EXPORT void gemm(hipblasOperation_t transa, hipblasOperation_t transb, int m, int n, int k, const hipComplex *alpha, const hipComplex *a, int lda, const hipComplex *b,
-          int ldb, const hipComplex *beta, hipComplex *c, int ldc);
+EINSUMS_EXPORT void gemm(hipblasOperation_t transa, hipblasOperation_t transb, int m, int n, int k, const hipComplex *alpha,
+                         const hipComplex *a, int lda, const hipComplex *b, int ldb, const hipComplex *beta, hipComplex *c, int ldc);
 
-EINSUMS_EXPORT void gemm(hipblasOperation_t transa, hipblasOperation_t transb, int m, int n, int k, const hipDoubleComplex *alpha, const hipDoubleComplex *a, int lda, const hipDoubleComplex *b,
-          int ldb, const hipDoubleComplex *beta, hipDoubleComplex *c, int ldc);
+EINSUMS_EXPORT void gemm(hipblasOperation_t transa, hipblasOperation_t transb, int m, int n, int k, const hipDoubleComplex *alpha,
+                         const hipDoubleComplex *a, int lda, const hipDoubleComplex *b, int ldb, const hipDoubleComplex *beta,
+                         hipDoubleComplex *c, int ldc);
 
 /**
  * Internal ger functions.
@@ -59,24 +60,26 @@ EINSUMS_EXPORT void ger(int m, int n, const float *alpha, const float *x, int in
 
 EINSUMS_EXPORT void ger(int m, int n, const double *alpha, const double *x, int incx, const double *y, int incy, double *A, int lda);
 
-EINSUMS_EXPORT void ger(int m, int n, const hipComplex *alpha, const hipComplex *x, int incx, const hipComplex *y, int incy, hipComplex *A, int lda);
+EINSUMS_EXPORT void ger(int m, int n, const hipComplex *alpha, const hipComplex *x, int incx, const hipComplex *y, int incy, hipComplex *A,
+                        int lda);
 
-EINSUMS_EXPORT void ger(int m, int n, const hipDoubleComplex *alpha, const hipDoubleComplex *x, int incx, const hipDoubleComplex *y, int incy, hipDoubleComplex *A, int lda);
+EINSUMS_EXPORT void ger(int m, int n, const hipDoubleComplex *alpha, const hipDoubleComplex *x, int incx, const hipDoubleComplex *y,
+                        int incy, hipDoubleComplex *A, int lda);
 
 /**
  * Internal gemv functions.
  */
-EINSUMS_EXPORT void gemv(hipblasOperation_t transa, int m, int n, const float *alpha, const float *a, int lda, const float *x, int incx, const float *beta, float *y,
-          int incy);
+EINSUMS_EXPORT void gemv(hipblasOperation_t transa, int m, int n, const float *alpha, const float *a, int lda, const float *x, int incx,
+                         const float *beta, float *y, int incy);
 
-EINSUMS_EXPORT void gemv(hipblasOperation_t transa, int m, int n, const double *alpha, const double *a, int lda, const double *x, int incx, const double *beta, double *y,
-          int incy);
+EINSUMS_EXPORT void gemv(hipblasOperation_t transa, int m, int n, const double *alpha, const double *a, int lda, const double *x, int incx,
+                         const double *beta, double *y, int incy);
 
-EINSUMS_EXPORT void gemv(hipblasOperation_t transa, int m, int n, const hipComplex *alpha, const hipComplex *a, int lda, const hipComplex *x, int incx, const hipComplex *beta, hipComplex *y,
-          int incy);
+EINSUMS_EXPORT void gemv(hipblasOperation_t transa, int m, int n, const hipComplex *alpha, const hipComplex *a, int lda,
+                         const hipComplex *x, int incx, const hipComplex *beta, hipComplex *y, int incy);
 
-EINSUMS_EXPORT void gemv(hipblasOperation_t transa, int m, int n, const hipDoubleComplex *alpha, const hipDoubleComplex *a, int lda, const hipDoubleComplex *x, int incx, const hipDoubleComplex *beta, hipDoubleComplex *y,
-          int incy);
+EINSUMS_EXPORT void gemv(hipblasOperation_t transa, int m, int n, const hipDoubleComplex *alpha, const hipDoubleComplex *a, int lda,
+                         const hipDoubleComplex *x, int incx, const hipDoubleComplex *beta, hipDoubleComplex *y, int incy);
 
 /**
  * Internal scale functions.
@@ -92,17 +95,17 @@ EINSUMS_EXPORT void scal(int size, const hipDoubleComplex *alpha, hipDoubleCompl
 /**
  * Symmetric multiplication kernels.
  */
-__global__
-EINSUMS_EXPORT void symm_gemm(bool TransA, bool TransB, int m, int n, const float *A, int lda, const float *B, int ldb, float *C, int ldc);
+__global__ EINSUMS_EXPORT void symm_gemm(bool TransA, bool TransB, int m, int n, const float *A, int lda, const float *B, int ldb, float *C,
+                                         int ldc);
 
-__global__
-EINSUMS_EXPORT void symm_gemm(bool TransA, bool TransB, int m, int n, const double *A, int lda, const double *B, int ldb, double *C, int ldc);
+__global__ EINSUMS_EXPORT void symm_gemm(bool TransA, bool TransB, int m, int n, const double *A, int lda, const double *B, int ldb,
+                                         double *C, int ldc);
 
-__global__
-EINSUMS_EXPORT void symm_gemm(bool TransA, bool TransB, int m, int n, const hipComplex *A, int lda, const hipComplex *B, int ldb, hipComplex *C, int ldc);
+__global__ EINSUMS_EXPORT void symm_gemm(bool TransA, bool TransB, int m, int n, const hipComplex *A, int lda, const hipComplex *B, int ldb,
+                                         hipComplex *C, int ldc);
 
-__global__
-EINSUMS_EXPORT void symm_gemm(bool TransA, bool TransB, int m, int n, const hipDoubleComplex *A, int lda, const hipDoubleComplex *B, int ldb, hipDoubleComplex *C, int ldc);
+__global__ EINSUMS_EXPORT void symm_gemm(bool TransA, bool TransB, int m, int n, const hipDoubleComplex *A, int lda,
+                                         const hipDoubleComplex *B, int ldb, hipDoubleComplex *C, int ldc);
 
 } // namespace detail
 

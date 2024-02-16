@@ -148,7 +148,7 @@ hipsolverHandle_t set_solver_handle(hipsolverHandle_t value) {
     return solver_handle;
 }
 
-}
+} // namespace detail
 
 using namespace detail;
 
@@ -168,14 +168,14 @@ int ssyev(char job, char uplo, int n, float *a, int lda, float *w, float *work, 
     bool work_registered = false;
 
     // Check for work properties.
-    if(lwork != 0 && work != nullptr) {
+    if (lwork != 0 && work != nullptr) {
         hipPointerAttribute_t attribs;
-        hipError_t status = hipPointerGetAttributes(&attribs, work);
+        hipError_t            status = hipPointerGetAttributes(&attribs, work);
 
-        if(status == hipErrorInvalidValue) { 
+        if (status == hipErrorInvalidValue) {
             hip_catch(hipHostRegister(work, lwork * sizeof(math_type), hipHostRegisterDefault));
             work_registered = true;
-        } else if(status != hipSuccess) {
+        } else if (status != hipSuccess) {
             hip_catch(status);
         }
     }
@@ -186,11 +186,12 @@ int ssyev(char job, char uplo, int n, float *a, int lda, float *w, float *work, 
     hip_catch(hipMemcpy(a_gpu, a, a_size * sizeof(math_type), hipMemcpyHostToDevice));
     hip_catch(hipHostRegister(info, sizeof(int), hipHostRegisterDefault));
 
-
-    if(lwork == 0 || work == nullptr) {
-        hipsolver_catch(hipsolverSsyevd(detail::solver_handle, detail::hipsolver_job(job), detail::hipsolver_fill(uplo), n, a_gpu, lda, w_gpu, nullptr, 0, info));
+    if (lwork == 0 || work == nullptr) {
+        hipsolver_catch(hipsolverSsyevd(detail::solver_handle, detail::hipsolver_job(job), detail::hipsolver_fill(uplo), n, a_gpu, lda,
+                                        w_gpu, nullptr, 0, info));
     } else {
-        hipsolver_catch(hipsolverSsyevd(detail::solver_handle, detail::hipsolver_job(job), detail::hipsolver_fill(uplo), n, a_gpu, lda, w_gpu, work, lwork, info));
+        hipsolver_catch(hipsolverSsyevd(detail::solver_handle, detail::hipsolver_job(job), detail::hipsolver_fill(uplo), n, a_gpu, lda,
+                                        w_gpu, work, lwork, info));
     }
 
     hip_catch(hipDeviceSynchronize());
@@ -199,8 +200,8 @@ int ssyev(char job, char uplo, int n, float *a, int lda, float *w, float *work, 
 
     hip_catch(hipMemcpy(a, a_gpu, a_size * sizeof(math_type), hipMemcpyDeviceToHost));
     hip_catch(hipMemcpy(w, w_gpu, w_size * sizeof(math_type), hipMemcpyDeviceToHost));
-    
-    if(work_registered) {
+
+    if (work_registered) {
         hip_catch(hipHostUnregister(work));
     }
 
@@ -211,7 +212,7 @@ int ssyev(char job, char uplo, int n, float *a, int lda, float *w, float *work, 
 }
 
 int dsyev(char job, char uplo, int n, double *a, int lda, double *w, double *work, int lwork) {
-    
+
     using math_type = double;
 
     int *info = new int();
@@ -222,14 +223,14 @@ int dsyev(char job, char uplo, int n, double *a, int lda, double *w, double *wor
 
     bool work_registered = false;
     // Check for work properties.
-    if(lwork != 0 && work != nullptr) {
+    if (lwork != 0 && work != nullptr) {
         hipPointerAttribute_t attribs;
-        hipError_t status = hipPointerGetAttributes(&attribs, work);
+        hipError_t            status = hipPointerGetAttributes(&attribs, work);
 
-        if(status == hipErrorInvalidValue) { 
+        if (status == hipErrorInvalidValue) {
             hip_catch(hipHostRegister(work, lwork * sizeof(math_type), hipHostRegisterDefault));
             work_registered = true;
-        } else if(status != hipSuccess) {
+        } else if (status != hipSuccess) {
             hip_catch(status);
         }
     }
@@ -240,10 +241,12 @@ int dsyev(char job, char uplo, int n, double *a, int lda, double *w, double *wor
     hip_catch(hipMemcpy(a_gpu, a, a_size * sizeof(math_type), hipMemcpyHostToDevice));
     hip_catch(hipHostRegister(info, sizeof(int), hipHostRegisterDefault));
 
-    if(lwork == 0 || work == nullptr) {
-        hipsolver_catch(hipsolverDsyevd(detail::solver_handle, detail::hipsolver_job(job), detail::hipsolver_fill(uplo), n, a_gpu, lda, w_gpu, nullptr, 0, info));
+    if (lwork == 0 || work == nullptr) {
+        hipsolver_catch(hipsolverDsyevd(detail::solver_handle, detail::hipsolver_job(job), detail::hipsolver_fill(uplo), n, a_gpu, lda,
+                                        w_gpu, nullptr, 0, info));
     } else {
-        hipsolver_catch(hipsolverDsyevd(detail::solver_handle, detail::hipsolver_job(job), detail::hipsolver_fill(uplo), n, a_gpu, lda, w_gpu, work, lwork, info));
+        hipsolver_catch(hipsolverDsyevd(detail::solver_handle, detail::hipsolver_job(job), detail::hipsolver_fill(uplo), n, a_gpu, lda,
+                                        w_gpu, work, lwork, info));
     }
 
     hip_catch(hipDeviceSynchronize());
@@ -252,8 +255,8 @@ int dsyev(char job, char uplo, int n, double *a, int lda, double *w, double *wor
 
     hip_catch(hipMemcpy(a, a_gpu, a_size * sizeof(math_type), hipMemcpyDeviceToHost));
     hip_catch(hipMemcpy(w, w_gpu, w_size * sizeof(math_type), hipMemcpyDeviceToHost));
-    
-    if(work_registered) {
+
+    if (work_registered) {
         hip_catch(hipHostUnregister(work));
     }
 
@@ -280,14 +283,14 @@ int cheev(char job, char uplo, int n, std::complex<float> *a, int lda, float *w,
     bool work_registered = false;
 
     // Check for work properties.
-    if(lwork != 0 && work != nullptr) {
+    if (lwork != 0 && work != nullptr) {
         hipPointerAttribute_t attribs;
-        hipError_t status = hipPointerGetAttributes(&attribs, work);
+        hipError_t            status = hipPointerGetAttributes(&attribs, work);
 
-        if(status == hipErrorInvalidValue) { 
+        if (status == hipErrorInvalidValue) {
             hip_catch(hipHostRegister(work, lwork * sizeof(math_type), hipHostRegisterDefault));
             work_registered = true;
-        } else if(status != hipSuccess) {
+        } else if (status != hipSuccess) {
             hip_catch(status);
         }
     }
@@ -298,10 +301,12 @@ int cheev(char job, char uplo, int n, std::complex<float> *a, int lda, float *w,
     hip_catch(hipMemcpy(a_gpu, a, a_size * sizeof(math_type), hipMemcpyHostToDevice));
     hip_catch(hipHostRegister(info, sizeof(int), hipHostRegisterDefault));
 
-    if(lwork == 0 || work == nullptr) {
-        hipsolver_catch(hipsolverCheevd(detail::solver_handle, detail::hipsolver_job(job), detail::hipsolver_fill(uplo), n, (math_type *) a_gpu, lda, w_gpu, nullptr, 0, info));
+    if (lwork == 0 || work == nullptr) {
+        hipsolver_catch(hipsolverCheevd(detail::solver_handle, detail::hipsolver_job(job), detail::hipsolver_fill(uplo), n,
+                                        (math_type *)a_gpu, lda, w_gpu, nullptr, 0, info));
     } else {
-        hipsolver_catch(hipsolverCheevd(detail::solver_handle, detail::hipsolver_job(job), detail::hipsolver_fill(uplo), n, (math_type *) a_gpu, lda, w_gpu, (math_type *) work, lwork, info));
+        hipsolver_catch(hipsolverCheevd(detail::solver_handle, detail::hipsolver_job(job), detail::hipsolver_fill(uplo), n,
+                                        (math_type *)a_gpu, lda, w_gpu, (math_type *)work, lwork, info));
     }
 
     hip_catch(hipDeviceSynchronize());
@@ -310,8 +315,8 @@ int cheev(char job, char uplo, int n, std::complex<float> *a, int lda, float *w,
 
     hip_catch(hipMemcpy(a, a_gpu, a_size * sizeof(math_type), hipMemcpyDeviceToHost));
     hip_catch(hipMemcpy(w, w_gpu, w_size * sizeof(scal_type), hipMemcpyDeviceToHost));
-    
-    if(work_registered) {
+
+    if (work_registered) {
         hip_catch(hipHostUnregister(work));
     }
 
@@ -335,14 +340,14 @@ int zheev(char job, char uplo, int n, std::complex<double> *a, int lda, double *
     bool work_registered = false;
 
     // Check for work properties.
-    if(lwork != 0 && work != nullptr) {
+    if (lwork != 0 && work != nullptr) {
         hipPointerAttribute_t attribs;
-        hipError_t status = hipPointerGetAttributes(&attribs, work);
+        hipError_t            status = hipPointerGetAttributes(&attribs, work);
 
-        if(status == hipErrorInvalidValue) { 
+        if (status == hipErrorInvalidValue) {
             hip_catch(hipHostRegister(work, lwork * sizeof(math_type), hipHostRegisterDefault));
             work_registered = true;
-        } else if(status != hipSuccess) {
+        } else if (status != hipSuccess) {
             hip_catch(status);
         }
     }
@@ -353,10 +358,12 @@ int zheev(char job, char uplo, int n, std::complex<double> *a, int lda, double *
     hip_catch(hipMemcpy(a_gpu, a, a_size * sizeof(math_type), hipMemcpyHostToDevice));
     hip_catch(hipHostRegister(info, sizeof(int), hipHostRegisterDefault));
 
-    if(lwork == 0 || work == nullptr) {
-        hipsolver_catch(hipsolverZheevd(detail::solver_handle, detail::hipsolver_job(job), detail::hipsolver_fill(uplo), n, (math_type *) a_gpu, lda, w_gpu, nullptr, 0, info));
+    if (lwork == 0 || work == nullptr) {
+        hipsolver_catch(hipsolverZheevd(detail::solver_handle, detail::hipsolver_job(job), detail::hipsolver_fill(uplo), n,
+                                        (math_type *)a_gpu, lda, w_gpu, nullptr, 0, info));
     } else {
-        hipsolver_catch(hipsolverZheevd(detail::solver_handle, detail::hipsolver_job(job), detail::hipsolver_fill(uplo), n, (math_type *) a_gpu, lda, w_gpu, (math_type *) work, lwork, info));
+        hipsolver_catch(hipsolverZheevd(detail::solver_handle, detail::hipsolver_job(job), detail::hipsolver_fill(uplo), n,
+                                        (math_type *)a_gpu, lda, w_gpu, (math_type *)work, lwork, info));
     }
 
     hip_catch(hipDeviceSynchronize());
@@ -365,8 +372,8 @@ int zheev(char job, char uplo, int n, std::complex<double> *a, int lda, double *
 
     hip_catch(hipMemcpy(a, a_gpu, a_size * sizeof(math_type), hipMemcpyDeviceToHost));
     hip_catch(hipMemcpy(w, w_gpu, w_size * sizeof(scal_type), hipMemcpyDeviceToHost));
-    
-    if(work_registered) {
+
+    if (work_registered) {
         hip_catch(hipHostUnregister(work));
     }
 
@@ -382,7 +389,7 @@ int zheev(char job, char uplo, int n, std::complex<double> *a, int lda, double *
  */
 int sgesv(int n, int nrhs, float *a, int lda, int *ipiv, float *b, int ldb) {
     using math_type = float;
-    
+
     int *info = new int(), *ipiv_gpu;
 
     math_type *a_gpu, *b_gpu, *x_gpu;
@@ -441,8 +448,8 @@ int sgesv(int n, int nrhs, float *a, int lda, int *ipiv, float *b, int ldb) {
 }
 
 int dgesv(int n, int nrhs, double *a, int lda, int *ipiv, double *b, int ldb) {
-        using math_type = double;
-    
+    using math_type = double;
+
     int *info = new int(), *ipiv_gpu;
 
     math_type *a_gpu, *b_gpu, *x_gpu;
@@ -502,7 +509,7 @@ int dgesv(int n, int nrhs, double *a, int lda, int *ipiv, double *b, int ldb) {
 
 int cgesv(int n, int nrhs, std::complex<float> *a, int lda, int *ipiv, std::complex<float> *b, int ldb) {
     using math_type = hipFloatComplex;
-    
+
     int *info = new int(), *ipiv_gpu;
 
     math_type *a_gpu, *b_gpu, *x_gpu;
@@ -562,7 +569,7 @@ int cgesv(int n, int nrhs, std::complex<float> *a, int lda, int *ipiv, std::comp
 
 int zgesv(int n, int nrhs, std::complex<double> *a, int lda, int *ipiv, std::complex<double> *b, int ldb) {
     using math_type = hipDoubleComplex;
-    
+
     int *info = new int(), *ipiv_gpu;
 
     math_type *a_gpu, *b_gpu, *x_gpu;
@@ -631,7 +638,7 @@ int sgetrf(int m, int n, float *a, int lda, int *ipiv) {
 
     hip_catch(hipMalloc(&a_gpu, a_size * sizeof(math_type)));
 
-    if(ipiv != nullptr) {
+    if (ipiv != nullptr) {
         hip_catch(hipMalloc(&ipiv_gpu, n * sizeof(int)));
     } else {
         ipiv_gpu = nullptr;
@@ -663,7 +670,7 @@ int sgetrf(int m, int n, float *a, int lda, int *ipiv) {
     hip_catch(hipMemcpy(a, a_gpu, a_size * sizeof(math_type), hipMemcpyDeviceToHost));
     hip_catch(hipFree(a_gpu));
 
-    if(ipiv != nullptr) {
+    if (ipiv != nullptr) {
         hip_catch(hipMemcpy(ipiv, ipiv_gpu, n * sizeof(int), hipMemcpyDeviceToHost));
         hip_catch(hipFree(ipiv_gpu));
     }
@@ -688,7 +695,7 @@ int dgetrf(int m, int n, double *a, int lda, int *ipiv) {
 
     hip_catch(hipMalloc(&a_gpu, a_size * sizeof(math_type)));
 
-    if(ipiv != nullptr) {
+    if (ipiv != nullptr) {
         hip_catch(hipMalloc(&ipiv_gpu, n * sizeof(int)));
     } else {
         ipiv_gpu = nullptr;
@@ -720,7 +727,7 @@ int dgetrf(int m, int n, double *a, int lda, int *ipiv) {
     hip_catch(hipMemcpy(a, a_gpu, a_size * sizeof(math_type), hipMemcpyDeviceToHost));
     hip_catch(hipFree(a_gpu));
 
-    if(ipiv != nullptr) {
+    if (ipiv != nullptr) {
         hip_catch(hipMemcpy(ipiv, ipiv_gpu, n * sizeof(int), hipMemcpyDeviceToHost));
         hip_catch(hipFree(ipiv_gpu));
     }
@@ -745,7 +752,7 @@ int cgetrf(int m, int n, std::complex<float> *a, int lda, int *ipiv) {
 
     hip_catch(hipMalloc(&a_gpu, a_size * sizeof(math_type)));
 
-    if(ipiv != nullptr) {
+    if (ipiv != nullptr) {
         hip_catch(hipMalloc(&ipiv_gpu, n * sizeof(int)));
     } else {
         ipiv_gpu = nullptr;
@@ -777,7 +784,7 @@ int cgetrf(int m, int n, std::complex<float> *a, int lda, int *ipiv) {
     hip_catch(hipMemcpy(a, a_gpu, a_size * sizeof(math_type), hipMemcpyDeviceToHost));
     hip_catch(hipFree(a_gpu));
 
-    if(ipiv != nullptr) {
+    if (ipiv != nullptr) {
         hip_catch(hipMemcpy(ipiv, ipiv_gpu, n * sizeof(int), hipMemcpyDeviceToHost));
         hip_catch(hipFree(ipiv_gpu));
     }
@@ -802,7 +809,7 @@ int zgetrf(int m, int n, std::complex<double> *a, int lda, int *ipiv) {
 
     hip_catch(hipMalloc(&a_gpu, a_size * sizeof(math_type)));
 
-    if(ipiv != nullptr) {
+    if (ipiv != nullptr) {
         hip_catch(hipMalloc(&ipiv_gpu, n * sizeof(int)));
     } else {
         ipiv_gpu = nullptr;
@@ -834,7 +841,7 @@ int zgetrf(int m, int n, std::complex<double> *a, int lda, int *ipiv) {
     hip_catch(hipMemcpy(a, a_gpu, a_size * sizeof(math_type), hipMemcpyDeviceToHost));
     hip_catch(hipFree(a_gpu));
 
-    if(ipiv != nullptr) {
+    if (ipiv != nullptr) {
         hip_catch(hipMemcpy(ipiv, ipiv_gpu, n * sizeof(int), hipMemcpyDeviceToHost));
         hip_catch(hipFree(ipiv_gpu));
     }
@@ -848,4 +855,4 @@ int zgetrf(int m, int n, std::complex<double> *a, int lda, int *ipiv) {
     return out;
 }
 
-}
+} // namespace einsums::backend::linear_algebra::hipblas

@@ -3,13 +3,12 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //----------------------------------------------------------------------------------------------
 
-#include <hip/hip_common.h>
-#include <hip/hip_runtime.h>
-#include <hip/hip_runtime_api.h>
-
 #include "einsums/_Common.hpp"
 #include "einsums/_GPUUtils.hpp"
 
+#include <hip/hip_common.h>
+#include <hip/hip_runtime.h>
+#include <hip/hip_runtime_api.h>
 
 BEGIN_EINSUMS_NAMESPACE_CPP(einsums::gpu)
 
@@ -17,7 +16,7 @@ __host__ void __hip_catch__(hipError_t condition, const char *diagnostic, bool t
     // Auto-generated code.
     switch (condition) {
     case hipSuccess:
-        if(throw_success) {
+        if (throw_success) {
             throw detail::Success(diagnostic);
         } else {
             return;
@@ -242,7 +241,7 @@ __host__ void __hip_catch__(hipError_t condition, const char *diagnostic, bool t
     case hipErrorTbd:
         throw detail::ErrorTbd(diagnostic);
         break;
-    default :
+    default:
         throw detail::ErrorUnknown(diagnostic);
     }
 }
@@ -251,11 +250,10 @@ void initialize() {
     hip_catch(hipFree(nullptr));
 
     hip_catch(hipSetDevice(0));
-
 }
 
 void finalize() {
-    //hip_catch(hipDeviceReset());
+    // hip_catch(hipDeviceReset());
 }
 
 END_EINSUMS_NAMESPACE_CPP(einsums::gpu)

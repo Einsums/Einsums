@@ -9,9 +9,9 @@
 
 #include <cstring>
 #include <hip/hip_common.h>
+#include <hip/hip_complex.h>
 #include <hip/hip_runtime.h>
 #include <hip/hip_runtime_api.h>
-#include <hip/hip_complex.h>
 #include <omp.h>
 
 BEGIN_EINSUMS_NAMESPACE_HPP(einsums::gpu)
@@ -39,7 +39,7 @@ namespace detail {
  */
 template <hipError_t error>
 struct hip_exception : public std::exception {
-  private :
+  private:
     ::std::string message;
 
   public:
@@ -190,30 +190,29 @@ using ErrorTbd                         = hip_exception<hipErrorTbd>;
  */
 __host__ EINSUMS_EXPORT void __hip_catch__(hipError_t condition, const char *diagnostic, bool throw_success = false);
 
-#define hip_catch_STR1(x) #x
-#define hip_catch_STR(x) hip_catch_STR1(x)
-#define hip_catch(condition, ...) __hip_catch__((condition), __FILE__ ":" hip_catch_STR(__LINE__) ": " __VA_OPT__(,) __VA_ARGS__)
+#define hip_catch_STR1(x)         #x
+#define hip_catch_STR(x)          hip_catch_STR1(x)
+#define hip_catch(condition, ...) __hip_catch__((condition), __FILE__ ":" hip_catch_STR(__LINE__) ": " __VA_OPT__(, ) __VA_ARGS__)
 
 /**
  * @brief Get the worker thread launch parameters on the GPU.
  */
-__device__
-inline void get_worker_info(int &thread_id, int &num_threads) {
+__device__ inline void get_worker_info(int &thread_id, int &num_threads) {
     num_threads = gridDim.x * gridDim.y * gridDim.z * blockDim.x * blockDim.y * blockDim.z;
-    thread_id = threadIdx.x + blockDim.x * (threadIdx.y + blockDim.y * (threadIdx.z + blockDim.z * (blockIdx.x + gridDim.x * (blockIdx.y + gridDim.y * blockIdx.z))));
+    thread_id   = threadIdx.x +
+                blockDim.x * (threadIdx.y +
+                              blockDim.y * (threadIdx.z + blockDim.z * (blockIdx.x + gridDim.x * (blockIdx.y + gridDim.y * blockIdx.z))));
 }
 
 /**
  * Initialize the GPU and HIP.
  */
-__host__
-EINSUMS_EXPORT void initialize();
+__host__ EINSUMS_EXPORT void initialize();
 
 /**
  * Finalize HIP.
  */
-__host__
-EINSUMS_EXPORT void finalize();
+__host__ EINSUMS_EXPORT void finalize();
 
 #define KERNEL(bound) __global__ __launch_bounds__((bound))
 
@@ -221,9 +220,9 @@ EINSUMS_EXPORT void finalize();
  * Get an appropriate block size for a kernel.
  */
 __host__ inline dim3 block_size(size_t compute_size) {
-    if(compute_size < 32) {
+    if (compute_size < 32) {
         return dim3(32);
-    } else if(compute_size < 256) {
+    } else if (compute_size < 256) {
         return dim3(compute_size & 0xf0);
     } else {
         return dim3(256);
@@ -234,9 +233,9 @@ __host__ inline dim3 block_size(size_t compute_size) {
  * Get an appropriate number of blocks for a kernel.
  */
 __host__ inline dim3 blocks(size_t compute_size) {
-    if(compute_size < 256) {
+    if (compute_size < 256) {
         return dim3(1);
-    } else if(compute_size <= 4096) {
+    } else if (compute_size <= 4096) {
         return dim3(compute_size / 256);
     } else {
         return dim3(16);

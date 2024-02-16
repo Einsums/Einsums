@@ -2,9 +2,9 @@
 
 #include "einsums/_Common.hpp"
 #include "einsums/_GPUUtils.hpp"
+#include "einsums/_TensorAlgebraUtilities.hpp"
 
 #include "einsums/GPUTensorAlgebra.hpp"
-#include "einsums/_TensorAlgebraUtilities.hpp"
 
 #include <bits/utility.h>
 #include <hip/hip_common.h>
@@ -18,13 +18,13 @@ namespace gpu {
 
 namespace detail {
 
-template<typename UniqueIndex, int BDim, typename BType>
+template <typename UniqueIndex, int BDim, typename BType>
 inline size_t get_dim_ranges_for_many_b(const BType &B, const ::std::tuple<> &B_indices) {
     return 1;
 }
 
 template <typename UniqueIndex, int BDim, typename BType, typename BHead>
-inline auto get_dim_ranges_for_many_b(const BType &B, const ::std::tuple<BHead> &B_indices) 
+inline auto get_dim_ranges_for_many_b(const BType &B, const ::std::tuple<BHead> &B_indices)
     -> ::std::enable_if<::std::is_same_v<BHead, UniqueIndex>, size_t> {
     return B.dim(BDim);
 }
@@ -56,7 +56,7 @@ inline size_t get_dim_ranges_for_many_a(const AType &A, const ::std::tuple<AHead
 
 template <typename UniqueIndex, int ADim, typename AType, typename BType, typename AHead, typename... AIndices, typename... BIndices>
 inline auto get_dim_ranges_for_many_a(const AType &A, const ::std::tuple<AHead, AIndices...> &A_indices, const BType &B,
-                                        const ::std::tuple<BIndices...> &B_indices) -> ::std::enable_if_t<sizeof...(AIndices) != 0, size_t> {
+                                      const ::std::tuple<BIndices...> &B_indices) -> ::std::enable_if_t<sizeof...(AIndices) != 0, size_t> {
     if constexpr (::std::is_same_v<AHead, UniqueIndex>) {
         return A.dim(ADim);
     } else {
@@ -71,8 +71,8 @@ inline size_t get_dim_ranges_for_many_c(const CType &C, const ::std::tuple<> &C_
     return get_dim_ranges_for_many_a<UniqueIndex, 0>(A, A_indices, B, B_indices);
 }
 
-template <typename UniqueIndex,
-          int CDim, typename CType, typename AType, typename BType, typename CHead, typename... AIndices, typename... BIndices>
+template <typename UniqueIndex, int CDim, typename CType, typename AType, typename BType, typename CHead, typename... AIndices,
+          typename... BIndices>
 inline size_t get_dim_ranges_for_many_c(const CType &C, const ::std::tuple<CHead> &C_indices, const AType &A,
                                         const ::std::tuple<AIndices...> &A_indices, const BType &B,
                                         const ::std::tuple<BIndices...> &B_indices) {
@@ -83,10 +83,11 @@ inline size_t get_dim_ranges_for_many_c(const CType &C, const ::std::tuple<CHead
     }
 }
 
-template <typename UniqueIndex, int CDim, typename CType, typename AType, typename BType, typename CHead, typename... CIndices, typename... AIndices, typename... BIndices>
+template <typename UniqueIndex, int CDim, typename CType, typename AType, typename BType, typename CHead, typename... CIndices,
+          typename... AIndices, typename... BIndices>
 inline auto get_dim_ranges_for_many_c(const CType &C, const ::std::tuple<CHead, CIndices...> &C_indices, const AType &A,
-                                        const ::std::tuple<AIndices...> &A_indices, const BType &B,
-                                        const ::std::tuple<BIndices...> &B_indices) -> ::std::enable_if_t<sizeof...(CIndices) != 0, size_t> {
+                                      const ::std::tuple<AIndices...> &A_indices, const BType &B,
+                                      const ::std::tuple<BIndices...> &B_indices) -> ::std::enable_if_t<sizeof...(CIndices) != 0, size_t> {
     if constexpr (::std::is_same_v<CHead, UniqueIndex>) {
         return C.dim(CDim);
     } else {
@@ -150,11 +151,11 @@ __device__ inline void make_zero(hipDoubleComplex &value) {
 /**
  * @brief Converts a single sentinel value into a list of indices.
  */
-template<size_t num_unique_inds>
+template <size_t num_unique_inds>
 __host__ __device__ inline void sentinel_to_indices(size_t sentinel, const size_t *unique_strides, size_t *out_inds) {
     size_t hold = sentinel;
 
-#   pragma unroll
+#pragma unroll
     for (ssize_t i = 0; i < num_unique_inds; i++) {
         if (unique_strides[i] != 0) {
             out_inds[i] = hold / unique_strides[i];
@@ -198,10 +199,10 @@ __device__ inline void atomicAdd_wrap(hipDoubleComplex *address, hipDoubleComple
 template <typename CDataType, typename ADataType, typename BDataType, size_t UniqueRank, size_t CRank, size_t ARank, size_t BRank>
 __global__ void
 einsum_generic_algorithm_gpu(const size_t *unique_strides, const int *C_index_table, const int *A_index_table, const int *B_index_table,
-                              const CDataType C_prefactor, CDataType *C, const size_t *C_dims, const size_t *C_stride,
-                              const ::std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> AB_prefactor,
-                              const ADataType *A, const size_t *A_dims, const size_t *A_stride, const BDataType *B, const size_t *B_dims,
-                              const size_t *B_stride, size_t max_index) {
+                             const CDataType C_prefactor, CDataType *C, const size_t *C_dims, const size_t *C_stride,
+                             const ::std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> AB_prefactor,
+                             const ADataType *A, const size_t *A_dims, const size_t *A_stride, const BDataType *B, const size_t *B_dims,
+                             const size_t *B_stride, size_t max_index) {
     using namespace einsums::gpu;
 
     int thread_id, kernel_size;
@@ -240,17 +241,17 @@ einsum_generic_algorithm_gpu(const size_t *unique_strides, const int *C_index_ta
         C_sentinel = 0;
 
         // Unroll these loops since they are known.
-#       pragma unroll
+#pragma unroll
         for (ssize_t i = 0; i < CRank; i++) {
             C_sentinel += C_stride[i] * Unique_index[C_index_table[i]];
         }
 
-#       pragma unroll
+#pragma unroll
         for (ssize_t i = 0; i < ARank; i++) {
             A_sentinel += A_stride[i] * Unique_index[A_index_table[i]];
         }
 
-#       pragma unroll
+#pragma unroll
         for (ssize_t i = 0; i < BRank; i++) {
             B_sentinel += B_stride[i] * Unique_index[B_index_table[i]];
         }
@@ -265,12 +266,10 @@ einsum_generic_algorithm_gpu(const size_t *unique_strides, const int *C_index_ta
  * Compute kernel that runs when C has a rank of zero. There are some optimizations that can be made in this case.
  */
 template <typename CDataType, typename ADataType, typename BDataType, size_t UniqueRank, size_t ARank, size_t BRank>
-__global__ void
-einsum_generic_zero_rank_gpu(const size_t *unique_strides, const int *A_index_table, const int *B_index_table,
-                              CDataType *C, CDataType *work,
-                              const ::std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> AB_prefactor,
-                              const ADataType *A, const size_t *A_dims, const size_t *A_stride, const BDataType *B, const size_t *B_dims,
-                              const size_t *B_stride, size_t max_index) {
+__global__ void einsum_generic_zero_rank_gpu(
+    const size_t *unique_strides, const int *A_index_table, const int *B_index_table, CDataType *C, CDataType *work,
+    const ::std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> AB_prefactor, const ADataType *A,
+    const size_t *A_dims, const size_t *A_stride, const BDataType *B, const size_t *B_dims, const size_t *B_stride, size_t max_index) {
 
     using namespace einsums::gpu;
     int thread_id, kernel_size;
@@ -287,17 +286,17 @@ einsum_generic_zero_rank_gpu(const size_t *unique_strides, const int *A_index_ta
 
     curr_index = thread_id;
 
-    while(curr_index < max_index) {
+    while (curr_index < max_index) {
         sentinel_to_indices<UniqueRank>(curr_index, unique_strides, Unique_index);
         A_sentinel = 0;
         B_sentinel = 0;
 
-#       pragma unroll
+#pragma unroll
         for (ssize_t i = 0; i < ARank; i++) {
             A_sentinel += A_stride[i] * Unique_index[A_index_table[i]];
         }
 
-#       pragma unroll
+#pragma unroll
         for (ssize_t i = 0; i < BRank; i++) {
             B_sentinel += B_stride[i] * Unique_index[B_index_table[i]];
         }
@@ -339,7 +338,8 @@ int compile_index_table(const ::std::tuple<Head> &, const Index &, int &out) {
 }
 
 template <int I, typename Head, typename... UniqueIndices, typename Index>
-auto compile_index_table(const ::std::tuple<Head, UniqueIndices...> &, const Index &index, int &out) -> ::std::enable_if_t<sizeof...(UniqueIndices) != 0, int> {
+auto compile_index_table(const ::std::tuple<Head, UniqueIndices...> &, const Index &index, int &out)
+    -> ::std::enable_if_t<sizeof...(UniqueIndices) != 0, int> {
     if constexpr (::std::is_same_v<Head, Index>) {
         out = I;
     } else {
@@ -397,33 +397,33 @@ void einsum_generic_algorithm(const ::std::tuple<UniqueIndices...> &unique_indic
     hip_catch(hipMemcpy((void *)A_index_table_gpu, (const void *)A_index_table, sizeof...(AIndices) * sizeof(int), hipMemcpyHostToDevice));
     hip_catch(hipMemcpy((void *)B_index_table_gpu, (const void *)B_index_table, sizeof...(BIndices) * sizeof(int), hipMemcpyHostToDevice));
     if constexpr (sizeof...(CIndices) != 0) {
-        hip_catch(hipMemcpy((void *)C_index_table_gpu, (const void *)C_index_table, sizeof...(CIndices) * sizeof(int), hipMemcpyHostToDevice));
+        hip_catch(
+            hipMemcpy((void *)C_index_table_gpu, (const void *)C_index_table, sizeof...(CIndices) * sizeof(int), hipMemcpyHostToDevice));
     }
     hip_catch(hipMemcpy((void *)unique_strides_gpu, (const void *)unique_strides, sizeof...(UniqueIndices) * sizeof(size_t),
-                     hipMemcpyHostToDevice));
+                        hipMemcpyHostToDevice));
 
     // TODO: what if one of the ranks is zero?
     // Answer: Only C can have zero rank. Otherwise, it is just a scaling.
     if constexpr (sizeof...(CIndices) != 0) {
-        einsum_generic_algorithm_gpu<CDataType, ADataType, BDataType, sizeof...(UniqueIndices), CRank, ARank, BRank><<<threads, blocks>>>(unique_strides_gpu, C_index_table_gpu, A_index_table_gpu, B_index_table_gpu,
-                                                           C_prefactor, C->data(), C->gpu_dims(), C->gpu_strides(), AB_prefactor, A.data(),
-                                                           A.gpu_dims(), A.gpu_strides(), B.data(), B.gpu_dims(), B.gpu_strides(),
-                                                           ::std::get<0>(unique_dims) * unique_strides[0]);
+        einsum_generic_algorithm_gpu<CDataType, ADataType, BDataType, sizeof...(UniqueIndices), CRank, ARank, BRank>
+            <<<threads, blocks>>>(unique_strides_gpu, C_index_table_gpu, A_index_table_gpu, B_index_table_gpu, C_prefactor, C->data(),
+                                  C->gpu_dims(), C->gpu_strides(), AB_prefactor, A.data(), A.gpu_dims(), A.gpu_strides(), B.data(),
+                                  B.gpu_dims(), B.gpu_strides(), ::std::get<0>(unique_dims) * unique_strides[0]);
         hip_catch(hipDeviceSynchronize());
     } else {
         CDataType *work;
-        hip_catch(hipMalloc((void **) &work, threads.x * threads.y * threads.z * blocks.x * blocks.y * blocks.z * sizeof(CDataType)));
-        if(C_prefactor == CDataType{0}) {
+        hip_catch(hipMalloc((void **)&work, threads.x * threads.y * threads.z * blocks.x * blocks.y * blocks.z * sizeof(CDataType)));
+        if (C_prefactor == CDataType{0}) {
             *C = CDataType{0};
         } else {
             *C *= C_prefactor;
         }
-        einsum_generic_zero_rank_gpu<CDataType, ADataType, BDataType, sizeof...(UniqueIndices), ARank, BRank><<<threads, blocks>>>(unique_strides_gpu, A_index_table_gpu, B_index_table_gpu,
-                                                           C->data(), work, AB_prefactor, A.data(),
-                                                           A.gpu_dims(), A.gpu_strides(), B.data(), B.gpu_dims(), B.gpu_strides(),
-                                                           ::std::get<0>(unique_dims) * unique_strides[0]);
+        einsum_generic_zero_rank_gpu<CDataType, ADataType, BDataType, sizeof...(UniqueIndices), ARank, BRank><<<threads, blocks>>>(
+            unique_strides_gpu, A_index_table_gpu, B_index_table_gpu, C->data(), work, AB_prefactor, A.data(), A.gpu_dims(),
+            A.gpu_strides(), B.data(), B.gpu_dims(), B.gpu_strides(), ::std::get<0>(unique_dims) * unique_strides[0]);
         hip_catch(hipDeviceSynchronize());
-        hip_catch(hipFree((void *) work));
+        hip_catch(hipFree((void *)work));
     }
 
     hip_catch(hipFree((void *)A_index_table_gpu));
@@ -441,9 +441,9 @@ auto einsum(const CDataType C_prefactor, const ::std::tuple<CIndices...> & /*Cs*
             const ::std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> AB_prefactor,
             const ::std::tuple<AIndices...> & /*As*/, const AType<ADataType, ARank> &A, const ::std::tuple<BIndices...> & /*Bs*/,
             const BType<BDataType, BRank> &B, dim3 threads, dim3 blocks)
-    -> ::std::enable_if_t<::std::is_base_of_v<::einsums::detail::TensorBase<ADataType, ARank>, AType<ADataType, ARank>> &&
-                        ::std::is_base_of_v<::einsums::detail::TensorBase<BDataType, BRank>, BType<BDataType, BRank>> &&
-                        ::std::is_base_of_v<::einsums::detail::TensorBase<CDataType, CRank>, CType<CDataType, CRank>>> {
+    -> ::std::enable_if_t<::std::is_base_of_v<::einsums::detail::TensorBase<ADataType, ARank>, AType<ADataType, ARank>>
+                              && ::std::is_base_of_v<::einsums::detail::TensorBase<BDataType, BRank>, BType<BDataType, BRank>>
+                                  && ::std::is_base_of_v<::einsums::detail::TensorBase<CDataType, CRank>, CType<CDataType, CRank>>> {
     using namespace einsums::gpu;
     print::Indent const _indent;
 
@@ -500,9 +500,10 @@ auto einsum(const CDataType C_prefactor, const ::std::tuple<CIndices...> & /*Cs*
     constexpr auto A_target_position_in_C = ::einsums::tensor_algebra::detail::find_type_with_position(A_indices, C_indices);
     constexpr auto B_target_position_in_C = ::einsums::tensor_algebra::detail::find_type_with_position(B_indices, C_indices);
 
-    auto unique_target_dims = ::einsums::tensor_algebra::detail::get_dim_ranges_for(*C, ::einsums::tensor_algebra::detail::unique_find_type_with_position(C_unique, C_indices));
-    auto unique_link_dims   = ::einsums::tensor_algebra::detail::get_dim_ranges_for(A, link_position_in_A);
-    auto unique_all_dims    = get_dim_ranges_for_many(*C, C_indices, A, A_indices, B, B_indices, All_unique);
+    auto unique_target_dims = ::einsums::tensor_algebra::detail::get_dim_ranges_for(
+        *C, ::einsums::tensor_algebra::detail::unique_find_type_with_position(C_unique, C_indices));
+    auto unique_link_dims = ::einsums::tensor_algebra::detail::get_dim_ranges_for(A, link_position_in_A);
+    auto unique_all_dims  = get_dim_ranges_for_many(*C, C_indices, A, A_indices, B, B_indices, All_unique);
 
     constexpr auto contiguous_link_position_in_A = ::einsums::tensor_algebra::detail::contiguous_positions(link_position_in_A);
     constexpr auto contiguous_link_position_in_B = ::einsums::tensor_algebra::detail::contiguous_positions(link_position_in_B);
@@ -513,15 +514,21 @@ auto einsum(const CDataType C_prefactor, const ::std::tuple<CIndices...> & /*Cs*
     constexpr auto contiguous_A_targets_in_C = ::einsums::tensor_algebra::detail::contiguous_positions(A_target_position_in_C);
     constexpr auto contiguous_B_targets_in_C = ::einsums::tensor_algebra::detail::contiguous_positions(B_target_position_in_C);
 
-    constexpr auto same_ordering_link_position_in_AB   = ::einsums::tensor_algebra::detail::is_same_ordering(link_position_in_A, link_position_in_B);
-    constexpr auto same_ordering_target_position_in_CA = ::einsums::tensor_algebra::detail::is_same_ordering(target_position_in_A, A_target_position_in_C);
-    constexpr auto same_ordering_target_position_in_CB = ::einsums::tensor_algebra::detail::is_same_ordering(target_position_in_B, B_target_position_in_C);
+    constexpr auto same_ordering_link_position_in_AB =
+        ::einsums::tensor_algebra::detail::is_same_ordering(link_position_in_A, link_position_in_B);
+    constexpr auto same_ordering_target_position_in_CA =
+        ::einsums::tensor_algebra::detail::is_same_ordering(target_position_in_A, A_target_position_in_C);
+    constexpr auto same_ordering_target_position_in_CB =
+        ::einsums::tensor_algebra::detail::is_same_ordering(target_position_in_B, B_target_position_in_C);
 
     constexpr auto C_exactly_matches_A =
-        sizeof...(CIndices) == sizeof...(AIndices) && ::einsums::tensor_algebra::detail::same_indices<::std::tuple<CIndices...>, ::std::tuple<AIndices...>>();
+        sizeof...(CIndices) == sizeof...(AIndices) &&
+        ::einsums::tensor_algebra::detail::same_indices<::std::tuple<CIndices...>, ::std::tuple<AIndices...>>();
     constexpr auto C_exactly_matches_B =
-        sizeof...(CIndices) == sizeof...(BIndices) && ::einsums::tensor_algebra::detail::same_indices<::std::tuple<CIndices...>, ::std::tuple<BIndices...>>();
-    constexpr auto A_exactly_matches_B = ::einsums::tensor_algebra::detail::same_indices<::std::tuple<AIndices...>, ::std::tuple<BIndices...>>();
+        sizeof...(CIndices) == sizeof...(BIndices) &&
+        ::einsums::tensor_algebra::detail::same_indices<::std::tuple<CIndices...>, ::std::tuple<BIndices...>>();
+    constexpr auto A_exactly_matches_B =
+        ::einsums::tensor_algebra::detail::same_indices<::std::tuple<AIndices...>, ::std::tuple<BIndices...>>();
 
     constexpr auto is_gemm_possible = have_remaining_indices_in_CminusA && have_remaining_indices_in_CminusB &&
                                       contiguous_link_position_in_A && contiguous_link_position_in_B && contiguous_target_position_in_A &&
@@ -617,7 +624,8 @@ auto einsum(const CDataType C_prefactor, const ::std::tuple<CIndices...> & /*Cs*
 
     if constexpr (!::std::is_same_v<CDataType, ADataType> || !::std::is_same_v<CDataType, BDataType>) {
         // Mixed datatypes go directly to the generic algorithm.
-        ::einsums::tensor_algebra::gpu::detail::einsum_generic_algorithm(All_unique, C_indices, A_indices, B_indices, unique_all_dims, C_prefactor, C, AB_prefactor, A, B, threads, blocks);
+        ::einsums::tensor_algebra::gpu::detail::einsum_generic_algorithm(All_unique, C_indices, A_indices, B_indices, unique_all_dims,
+                                                                         C_prefactor, C, AB_prefactor, A, B, threads, blocks);
         return;
     } else if constexpr (dot_product) {
         linear_algebra::gpu::dot(C_prefactor, *C, AB_prefactor, A, B, threads, blocks);
@@ -635,7 +643,8 @@ auto einsum(const CDataType C_prefactor, const ::std::tuple<CIndices...> & /*Cs*
         }
 
         // The generic algorithm should work fine.
-        ::einsums::tensor_algebra::gpu::detail::einsum_generic_algorithm(All_unique, C_indices, A_indices, B_indices, unique_all_dims, C_prefactor, C, AB_prefactor, A, B, threads, blocks);
+        ::einsums::tensor_algebra::gpu::detail::einsum_generic_algorithm(All_unique, C_indices, A_indices, B_indices, unique_all_dims,
+                                                                         C_prefactor, C, AB_prefactor, A, B, threads, blocks);
 
         return;
     } else if constexpr (outer_product) {
@@ -826,7 +835,8 @@ auto einsum(const CDataType C_prefactor, const ::std::tuple<CIndices...> & /*Cs*
 
     // If we somehow make it here, then none of our algorithms above could be used. Attempt to use
     // the generic algorithm instead.
-    ::einsums::tensor_algebra::gpu::detail::einsum_generic_algorithm(All_unique, C_indices, A_indices, B_indices, unique_all_dims, C_prefactor, C, AB_prefactor, A, B, threads, blocks);
+    ::einsums::tensor_algebra::gpu::detail::einsum_generic_algorithm(All_unique, C_indices, A_indices, B_indices, unique_all_dims,
+                                                                     C_prefactor, C, AB_prefactor, A, B, threads, blocks);
 }
 
 } // namespace detail
@@ -837,10 +847,10 @@ template <template <typename, size_t> typename AType, typename ADataType, size_t
 auto einsum(const U UC_prefactor, const ::std::tuple<CIndices...> &C_indices, CType<CDataType, CRank> *C, const U UAB_prefactor,
             const ::std::tuple<AIndices...> &A_indices, const AType<ADataType, ARank> &A, const ::std::tuple<BIndices...> &B_indices,
             const BType<BDataType, BRank> &B)
-    -> ::std::enable_if_t<::std::is_base_of_v<::einsums::detail::TensorBase<ADataType, ARank>, AType<ADataType, ARank>> &&
-                        ::std::is_base_of_v<::einsums::detail::TensorBase<BDataType, BRank>, BType<BDataType, BRank>> &&
-                        ::std::is_base_of_v<::einsums::detail::TensorBase<CDataType, CRank>, CType<CDataType, CRank>> &&
-                        ::std::is_arithmetic_v<U>> {
+    -> ::std::enable_if_t<::std::is_base_of_v<::einsums::detail::TensorBase<ADataType, ARank>, AType<ADataType, ARank>>
+                              && ::std::is_base_of_v<::einsums::detail::TensorBase<BDataType, BRank>, BType<BDataType, BRank>>
+                                  && ::std::is_base_of_v<::einsums::detail::TensorBase<CDataType, CRank>, CType<CDataType, CRank>>
+                                      && ::std::is_arithmetic_v<U>> {
     using ABDataType = ::std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType>;
 
     LabeledSection1(FP_ZERO != ::std::fpclassify(UC_prefactor)
@@ -856,7 +866,7 @@ auto einsum(const U UC_prefactor, const ::std::tuple<CIndices...> &C_indices, CT
 #if defined(EINSUMS_CONTINUOUSLY_TEST_EINSUM)
     // Clone C into a new tensor
     DeviceTensor<CDataType, CRank> testC{C->dims()};
-    testC = (DeviceTensor<CDataType, CRank>) *C;
+    testC = (DeviceTensor<CDataType, CRank>)*C;
 
     // Perform the einsum using only the generic algorithm
     timer::push("testing");
@@ -867,7 +877,7 @@ auto einsum(const U UC_prefactor, const ::std::tuple<CIndices...> &C_indices, CT
     // Perform the actual einsum
     ::einsums::tensor_algebra::gpu::detail::einsum<false>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
 
-#if 0 //defined(EINSUMS_TEST_NANS)
+#if 0 // defined(EINSUMS_TEST_NANS)
     if constexpr (CRank != 0) {
         auto target_dims = get_dim_ranges<CRank>(*C);
         for (auto target_combination : ::std::apply(ranges::views::cartesian_product, target_dims)) {
@@ -1043,7 +1053,6 @@ auto einsum(const U UC_prefactor, const ::std::tuple<CIndices...> &C_indices, CT
 #endif
 }
 
-
 /** Computes the Khatri-Rao product of tensors A and B.
  *
  * Example:
@@ -1054,9 +1063,9 @@ auto einsum(const U UC_prefactor, const ::std::tuple<CIndices...> &C_indices, CT
 template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename BType, size_t BRank,
           typename... AIndices, typename... BIndices, typename T = double>
 auto khatri_rao(const ::std::tuple<AIndices...> &, const AType<T, ARank> &A, const ::std::tuple<BIndices...> &, const BType<T, BRank> &B)
-    -> ::std::enable_if_t<::std::is_base_of_v<::einsums::detail::TensorBase<T, ARank>, AType<T, ARank>> &&
-                            ::std::is_base_of_v<::einsums::detail::TensorBase<T, BRank>, BType<T, BRank>>,
-                        DeviceTensor<T, 2>> {
+    -> ::std::enable_if_t<::std::is_base_of_v<::einsums::detail::TensorBase<T, ARank>, AType<T, ARank>>
+                              && ::std::is_base_of_v<::einsums::detail::TensorBase<T, BRank>, BType<T, BRank>>,
+                          DeviceTensor<T, 2>> {
     LabeledSection0();
 
     constexpr auto A_indices = ::std::tuple<AIndices...>();
@@ -1094,12 +1103,13 @@ auto khatri_rao(const ::std::tuple<AIndices...> &, const AType<T, ARank> &A, con
     auto result = ::std::make_from_tuple<DeviceTensor<T, ::std::tuple_size_v<decltype(result_dims)> - 1>>(result_dims);
 
     // Perform the actual Khatri-Rao product using our einsum routine.
-    ::einsums::tensor_algebra::gpu::einsum(::std::tuple_cat(A_only, B_only, common), &result, ::std::tuple_cat(A_only, common), A, ::std::tuple_cat(B_only, common), B);
+    ::einsums::tensor_algebra::gpu::einsum(::std::tuple_cat(A_only, B_only, common), &result, ::std::tuple_cat(A_only, common), A,
+                                           ::std::tuple_cat(B_only, common), B);
 
     // Return a reconstruction of the result tensor ... this can be considered as a simple reshape of the tensor.
     return DeviceTensor<T, 2>{::std::move(result), "KR product", -1, ::einsums::tensor_algebra::detail::product_dims(A_common_position, A)};
 }
 
-} // namespace tensor_algebra
 } // namespace gpu
+} // namespace tensor_algebra
 } // namespace einsums

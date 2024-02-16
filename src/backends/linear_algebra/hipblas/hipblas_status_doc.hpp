@@ -69,7 +69,7 @@
  * your device to fix this.
  */
 
- /**
+/**
  * @typedef blasHandleIsNullptr
  *
  * @brief Indicates that the handle passed is a null pointer.
@@ -95,7 +95,6 @@
  * Indicates an unsupported status code was thrown by the backend. It is also thrown if an unsupported
  * status code is passed to @ref einsums::backend::linear_algebra::hipblas::hipblas_catch.
  */
-
 
 /**
  * @typedef solverSuccess
@@ -166,7 +165,7 @@
  * your device to fix this.
  */
 
- /**
+/**
  * @typedef solverHandleIsNullptr
  *
  * @brief Indicates that the handle passed is a null pointer.

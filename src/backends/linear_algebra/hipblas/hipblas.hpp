@@ -36,11 +36,12 @@ template <hipblasStatus_t error>
 struct hipblas_exception : public std::exception {
   private:
     ::std::string message;
+
   public:
     /**
      * @brief Construct a new hipblas_exception.
      */
-    hipblas_exception(const char *diagnostic) : message{""}{
+    hipblas_exception(const char *diagnostic) : message{""} {
         message += diagnostic;
         message += hipblasStatusToString(error);
     }
@@ -137,11 +138,12 @@ template <hipsolverStatus_t error>
 struct hipsolver_exception : public std::exception {
   private:
     ::std::string message;
+
   public:
     /**
      * Construct a new exception.
      */
-    hipsolver_exception(const char *diagnostic) : message{""}{
+    hipsolver_exception(const char *diagnostic) : message{""} {
         message += diagnostic;
         message += hipsolverStatusToString(error);
     }
@@ -217,7 +219,7 @@ using solverUnknown          = hipsolver_exception<HIPSOLVER_STATUS_UNKNOWN>;
  *
  * @return The current internal hipBLAS handle.
  */
-EINSUMS_EXPORT hipblasHandle_t   get_blas_handle();
+EINSUMS_EXPORT hipblasHandle_t get_blas_handle();
 
 /**
  * @brief Get the internal hipSolver handle.
@@ -234,7 +236,7 @@ EINSUMS_EXPORT hipsolverHandle_t get_solver_handle();
  *
  * @return The new handle.
  */
-EINSUMS_EXPORT hipblasHandle_t   set_blas_handle(hipblasHandle_t value);
+EINSUMS_EXPORT hipblasHandle_t set_blas_handle(hipblasHandle_t value);
 
 /**
  * @brief Set the internal hipSolver handle.
@@ -270,7 +272,7 @@ __host__ __device__ EINSUMS_EXPORT hipsolverOperation_t hipsolver_char_to_op(cha
  *
  * @return The converted enum value. Defaults to HIPSOLVER_EIG_MODE_NOVECTOR if an invalid character is passed.
  */
-__host__ __device__ EINSUMS_EXPORT hipsolverEigMode_t  hipsolver_job(char job);
+__host__ __device__ EINSUMS_EXPORT hipsolverEigMode_t hipsolver_job(char job);
 
 /**
  * @brief Convert a fill character to an hipSolver fill mode enum value.
@@ -285,7 +287,8 @@ __host__ __device__ EINSUMS_EXPORT hipsolverFillMode_t hipsolver_fill(char fill)
  * @brief Takes a status code as an argument and throws the appropriate exception.
  *
  * @param status The status to convert.
- * @param throw_success If true, then an exception will be thrown if a success status is passed. If false, then a success will cause the function to exit quietly.
+ * @param throw_success If true, then an exception will be thrown if a success status is passed. If false, then a success will cause the
+ * function to exit quietly.
  */
 __host__ EINSUMS_EXPORT void __hipblas_catch__(hipblasStatus_t status, const char *diagnostic, bool throw_success = false);
 
@@ -293,17 +296,20 @@ __host__ EINSUMS_EXPORT void __hipblas_catch__(hipblasStatus_t status, const cha
  * @brief Takes a status code as an argument and throws the appropriate exception.
  *
  * @param status The status to convert.
- * @param throw_success If true, then an exception will be thrown if a success status is passed. If false, then a success will cause the function to exit quietly.
+ * @param throw_success If true, then an exception will be thrown if a success status is passed. If false, then a success will cause the
+ * function to exit quietly.
  */
 __host__ EINSUMS_EXPORT void __hipsolver_catch__(hipsolverStatus_t status, const char *diagnostic, bool throw_success = false);
 
 #define hipblas_catch_STR1(x) #x
-#define hipblas_catch_STR(x) hipblas_catch_STR1(x)
-#define hipblas_catch(condition, ...) __hipblas_catch__((condition), __FILE__ ":" hipblas_catch_STR(__LINE__) ": " __VA_OPT__(,) __VA_ARGS__)
+#define hipblas_catch_STR(x)  hipblas_catch_STR1(x)
+#define hipblas_catch(condition, ...)                                                                                                      \
+    __hipblas_catch__((condition), __FILE__ ":" hipblas_catch_STR(__LINE__) ": " __VA_OPT__(, ) __VA_ARGS__)
 
 #define hipsolver_catch_STR1(x) #x
-#define hipsolver_catch_STR(x) hipblas_catch_STR1(x)
-#define hipsolver_catch(condition, ...) __hipsolver_catch__((condition), __FILE__ ":" hipsolver_catch_STR(__LINE__) ": " __VA_OPT__(,) __VA_ARGS__)
+#define hipsolver_catch_STR(x)  hipblas_catch_STR1(x)
+#define hipsolver_catch(condition, ...)                                                                                                    \
+    __hipsolver_catch__((condition), __FILE__ ":" hipsolver_catch_STR(__LINE__) ": " __VA_OPT__(, ) __VA_ARGS__)
 } // namespace detail
 
 /**
@@ -437,8 +443,10 @@ auto zgetri(int, std::complex<double> *, int, const int *, std::complex<double> 
  */
 auto sgesvd(char, char, int, int, float *, int, float *, float *, int, float *, int, float *) -> int;
 auto dgesvd(char, char, int, int, double *, int, double *, double *, int, double *, int, double *) -> int;
-auto cgesvd(char, char, int, int, std::complex<float> *, int, std::complex<float> *, std::complex<float> *, int, std::complex<float> *, int, std::complex<float> *) -> int;
-auto zgesvd(char, char, int, int, std::complex<double> *, int, std::complex<double> *, std::complex<double> *, int, std::complex<double> *, int, std::complex<double> *) -> int;
+auto cgesvd(char, char, int, int, std::complex<float> *, int, std::complex<float> *, std::complex<float> *, int, std::complex<float> *, int,
+            std::complex<float> *) -> int;
+auto zgesvd(char, char, int, int, std::complex<double> *, int, std::complex<double> *, std::complex<double> *, int, std::complex<double> *,
+            int, std::complex<double> *) -> int;
 
 /**
  * Computes the QR factorization.

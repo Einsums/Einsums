@@ -40,7 +40,6 @@ TEST_CASE("Tensor Construction", "[gpu][tensor]") {
     CHECK((B_dim.size() == 9));
     CHECK((C_dim.size() == 9));
 
-
     A.zero();
     B.zero();
     C.zero();
@@ -209,7 +208,7 @@ TEST_CASE("Check memory", "[gpu][tensor]") {
     DeviceTensor<double, 2> B("B", einsums::detail::MAPPED, 3, 3);
     DeviceTensor<double, 2> C("C", einsums::detail::PINNED, 3, 3);
 
-    hipError_t status;
+    hipError_t            status;
     hipPointerAttribute_t attribs;
 
     status = hipPointerGetAttributes(&attribs, A.data());
@@ -268,7 +267,6 @@ TEST_CASE("Check memory", "[gpu][tensor]") {
 
     CHECK((status != hipErrorInvalidValue));
     CHECK((attribs.type == hipMemoryTypeDevice));
-    
 }
 
 TEST_CASE("Test reading and writing vectors", "[gpu][tensor]") {
@@ -288,31 +286,31 @@ TEST_CASE("Test reading and writing vectors", "[gpu][tensor]") {
     B.read(data);
     C.read(data);
 
-    for(int i = 0; i < 3; i++) {
-        for(int j = 0; j < 3; j++) {
-            CHECK((A(i, j) == (double) (i * 3 + j + 1)));
-            CHECK((B(i, j) == (double) (i * 3 + j + 1)));
-            CHECK((C(i, j) == (double) (i * 3 + j + 1)));
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            CHECK((A(i, j) == (double)(i * 3 + j + 1)));
+            CHECK((B(i, j) == (double)(i * 3 + j + 1)));
+            CHECK((C(i, j) == (double)(i * 3 + j + 1)));
         }
     }
-    
+
     A.zero();
     A.write(data);
 
-    for(int i = 0; i < 9; i++) {
+    for (int i = 0; i < 9; i++) {
         CHECK((data[i] == 0));
     }
 
     B.write(data);
 
-    for(int i = 0; i < 9; i++) {
+    for (int i = 0; i < 9; i++) {
         CHECK((data[i] == i + 1));
     }
 
     C.zero();
     C.write(data);
 
-    for(int i = 0; i < 9; i++) {
+    for (int i = 0; i < 9; i++) {
         CHECK((data[i] == 0));
     }
 }
@@ -334,31 +332,31 @@ TEST_CASE("Test reading and writing arrays", "[gpu][tensor]") {
     B.read(data);
     C.read(data);
 
-    for(int i = 0; i < 3; i++) {
-        for(int j = 0; j < 3; j++) {
-            CHECK((A(i, j) == (double) (i * 3 + j + 1)));
-            CHECK((B(i, j) == (double) (i * 3 + j + 1)));
-            CHECK((C(i, j) == (double) (i * 3 + j + 1)));
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            CHECK((A(i, j) == (double)(i * 3 + j + 1)));
+            CHECK((B(i, j) == (double)(i * 3 + j + 1)));
+            CHECK((C(i, j) == (double)(i * 3 + j + 1)));
         }
     }
-    
+
     A.zero();
     A.write(data);
 
-    for(int i = 0; i < 9; i++) {
+    for (int i = 0; i < 9; i++) {
         CHECK((data[i] == 0));
     }
 
     B.write(data);
 
-    for(int i = 0; i < 9; i++) {
+    for (int i = 0; i < 9; i++) {
         CHECK((data[i] == i + 1));
     }
 
     C.zero();
     C.write(data);
 
-    for(int i = 0; i < 9; i++) {
+    for (int i = 0; i < 9; i++) {
         CHECK((data[i] == 0));
     }
 }
@@ -379,31 +377,31 @@ TEST_CASE("Test tensor assignments", "[gpu][tensor]") {
     DeviceTensor<double, 2> A2("A2", einsums::detail::DEV_ONLY, 5, 5);
     DeviceTensor<double, 2> B2("B2", einsums::detail::MAPPED, 5, 5);
     DeviceTensor<double, 2> C2("C2", einsums::detail::PINNED, 5, 5);
-    DeviceTensor<float, 2> A3("A3", einsums::detail::DEV_ONLY, 3, 3);
-    DeviceTensor<float, 2> B3("B3", einsums::detail::MAPPED, 3, 3);
-    DeviceTensor<float, 2> C3("C3", einsums::detail::PINNED, 3, 3);
-    DeviceTensor<float, 2> A4("A4", einsums::detail::DEV_ONLY, 5, 5);
-    DeviceTensor<float, 2> B4("B4", einsums::detail::MAPPED, 5, 5);
-    DeviceTensor<float, 2> C4("C4", einsums::detail::PINNED, 5, 5);
+    DeviceTensor<float, 2>  A3("A3", einsums::detail::DEV_ONLY, 3, 3);
+    DeviceTensor<float, 2>  B3("B3", einsums::detail::MAPPED, 3, 3);
+    DeviceTensor<float, 2>  C3("C3", einsums::detail::PINNED, 3, 3);
+    DeviceTensor<float, 2>  A4("A4", einsums::detail::DEV_ONLY, 5, 5);
+    DeviceTensor<float, 2>  B4("B4", einsums::detail::MAPPED, 5, 5);
+    DeviceTensor<float, 2>  C4("C4", einsums::detail::PINNED, 5, 5);
 
-    for(int i = 0; i < 3; i++) {
-        for(int j = 0; j < 3; j++) {
-            A1(i, j) = (double) (3 * i + j + 1) ;
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            A1(i, j) = (double)(3 * i + j + 1);
             B1(i, j) = 10.0 * (3 * i + j + 1);
             C1(i, j) = 20.0 * (3 * i + j + 1);
             A3(i, j) = 60.0f * (3 * i + j + 1);
-            B3(i, j) = 70.0f* (3 * i + j + 1);
+            B3(i, j) = 70.0f * (3 * i + j + 1);
             C3(i, j) = 80.0f * (3 * i + j + 1);
         }
     }
 
-    for(int i = 0; i < 5; i++) {
-        for(int j = 0; j < 5; j++) {
+    for (int i = 0; i < 5; i++) {
+        for (int j = 0; j < 5; j++) {
             A2(i, j) = 30.0 * (5 * i + j + 1);
             B2(i, j) = 40.0 * (5 * i + j + 1);
             C2(i, j) = 50.0 * (5 * i + j + 1);
             A4(i, j) = 90.0f * (5 * i + j + 1);
-            B4(i, j) = 100.0f* (5 * i + j + 1);
+            B4(i, j) = 100.0f * (5 * i + j + 1);
             C4(i, j) = 110.0f * (5 * i + j + 1);
         }
     }
@@ -413,8 +411,8 @@ TEST_CASE("Test tensor assignments", "[gpu][tensor]") {
     B0 = B1;
     C0 = C1;
 
-    for(int i = 0; i < 3; i++) {
-        for(int j = 0; j < 3; j++) {
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
             CHECK((A0(i, j) == A1(i, j)));
             CHECK((B0(i, j) == B1(i, j)));
             CHECK((C0(i, j) == C1(i, j)));
@@ -425,8 +423,8 @@ TEST_CASE("Test tensor assignments", "[gpu][tensor]") {
     B0 = C1;
     C0 = A1;
 
-    for(int i = 0; i < 3; i++) {
-        for(int j = 0; j < 3; j++) {
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
             CHECK((A0(i, j) == B1(i, j)));
             CHECK((B0(i, j) == C1(i, j)));
             CHECK((C0(i, j) == A1(i, j)));
@@ -437,8 +435,8 @@ TEST_CASE("Test tensor assignments", "[gpu][tensor]") {
     B0 = A1;
     C0 = B1;
 
-    for(int i = 0; i < 3; i++) {
-        for(int j = 0; j < 3; j++) {
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
             CHECK((A0(i, j) == C1(i, j)));
             CHECK((B0(i, j) == A1(i, j)));
             CHECK((C0(i, j) == B1(i, j)));
@@ -454,8 +452,8 @@ TEST_CASE("Test tensor assignments", "[gpu][tensor]") {
     CHECK((B0.dim(0) == 5 && B0.dim(1) == 5));
     CHECK((C0.dim(0) == 5 && C0.dim(1) == 5));
 
-    for(int i = 0; i < 5; i++) {
-        for(int j = 0; j < 5; j++) {
+    for (int i = 0; i < 5; i++) {
+        for (int j = 0; j < 5; j++) {
             CHECK((A0(i, j) == A2(i, j)));
             CHECK((B0(i, j) == B2(i, j)));
             CHECK((C0(i, j) == C2(i, j)));
@@ -475,8 +473,8 @@ TEST_CASE("Test tensor assignments", "[gpu][tensor]") {
     CHECK((B0.dim(0) == 5 && B0.dim(1) == 5));
     CHECK((C0.dim(0) == 5 && C0.dim(1) == 5));
 
-    for(int i = 0; i < 5; i++) {
-        for(int j = 0; j < 5; j++) {
+    for (int i = 0; i < 5; i++) {
+        for (int j = 0; j < 5; j++) {
             CHECK((A0(i, j) == B2(i, j)));
             CHECK((B0(i, j) == C2(i, j)));
             CHECK((C0(i, j) == A2(i, j)));
@@ -496,8 +494,8 @@ TEST_CASE("Test tensor assignments", "[gpu][tensor]") {
     CHECK((B0.dim(0) == 5 && B0.dim(1) == 5));
     CHECK((C0.dim(0) == 5 && C0.dim(1) == 5));
 
-    for(int i = 0; i < 5; i++) {
-        for(int j = 0; j < 5; j++) {
+    for (int i = 0; i < 5; i++) {
+        for (int j = 0; j < 5; j++) {
             CHECK((A0(i, j) == C2(i, j)));
             CHECK((B0(i, j) == A2(i, j)));
             CHECK((C0(i, j) == B2(i, j)));
@@ -514,8 +512,8 @@ TEST_CASE("Test tensor assignments", "[gpu][tensor]") {
     B0 = B3;
     C0 = C3;
 
-    for(int i = 0; i < 3; i++) {
-        for(int j = 0; j < 3; j++) {
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
             CHECK((A0(i, j) == A3(i, j)));
             CHECK((B0(i, j) == B3(i, j)));
             CHECK((C0(i, j) == C3(i, j)));
@@ -526,8 +524,8 @@ TEST_CASE("Test tensor assignments", "[gpu][tensor]") {
     B0 = C3;
     C0 = A3;
 
-    for(int i = 0; i < 3; i++) {
-        for(int j = 0; j < 3; j++) {
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
             CHECK((A0(i, j) == B3(i, j)));
             CHECK((B0(i, j) == C3(i, j)));
             CHECK((C0(i, j) == A3(i, j)));
@@ -538,8 +536,8 @@ TEST_CASE("Test tensor assignments", "[gpu][tensor]") {
     B0 = A3;
     C0 = B3;
 
-    for(int i = 0; i < 3; i++) {
-        for(int j = 0; j < 3; j++) {
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
             CHECK((A0(i, j) == C3(i, j)));
             CHECK((B0(i, j) == A3(i, j)));
             CHECK((C0(i, j) == B3(i, j)));
@@ -555,8 +553,8 @@ TEST_CASE("Test tensor assignments", "[gpu][tensor]") {
     CHECK((B0.dim(0) == 5 && B0.dim(1) == 5));
     CHECK((C0.dim(0) == 5 && C0.dim(1) == 5));
 
-    for(int i = 0; i < 5; i++) {
-        for(int j = 0; j < 5; j++) {
+    for (int i = 0; i < 5; i++) {
+        for (int j = 0; j < 5; j++) {
             CHECK((A0(i, j) == A4(i, j)));
             CHECK((B0(i, j) == B4(i, j)));
             CHECK((C0(i, j) == C4(i, j)));
@@ -576,8 +574,8 @@ TEST_CASE("Test tensor assignments", "[gpu][tensor]") {
     CHECK((B0.dim(0) == 5 && B0.dim(1) == 5));
     CHECK((C0.dim(0) == 5 && C0.dim(1) == 5));
 
-    for(int i = 0; i < 5; i++) {
-        for(int j = 0; j < 5; j++) {
+    for (int i = 0; i < 5; i++) {
+        for (int j = 0; j < 5; j++) {
             CHECK((A0(i, j) == B4(i, j)));
             CHECK((B0(i, j) == C4(i, j)));
             CHECK((C0(i, j) == A4(i, j)));
@@ -597,8 +595,8 @@ TEST_CASE("Test tensor assignments", "[gpu][tensor]") {
     CHECK((B0.dim(0) == 5 && B0.dim(1) == 5));
     CHECK((C0.dim(0) == 5 && C0.dim(1) == 5));
 
-    for(int i = 0; i < 5; i++) {
-        for(int j = 0; j < 5; j++) {
+    for (int i = 0; i < 5; i++) {
+        for (int j = 0; j < 5; j++) {
             CHECK((A0(i, j) == C4(i, j)));
             CHECK((B0(i, j) == A4(i, j)));
             CHECK((C0(i, j) == B4(i, j)));
@@ -623,17 +621,17 @@ TEST_CASE("Test tensor arithmetic assignments", "[gpu][tensor]") {
     DeviceTensor<double, 2> B0_orig("B0", einsums::detail::MAPPED, 3, 3);
     DeviceTensor<double, 2> C0_orig("C0", einsums::detail::PINNED, 3, 3);
 
-    for(int i = 0; i < 3; i++) {
-        for(int j = 0; j < 3; j++) {
-            A0(i, j) = (double) (3 * i + j + 1) ;
-            B0(i, j) = 10.0 * (3 * i + j + 1);
-            C0(i, j) = 20.0 * (3 * i + j + 1);
-            A0_orig(i, j) = (double) (3 * i + j + 1) ;
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            A0(i, j)      = (double)(3 * i + j + 1);
+            B0(i, j)      = 10.0 * (3 * i + j + 1);
+            C0(i, j)      = 20.0 * (3 * i + j + 1);
+            A0_orig(i, j) = (double)(3 * i + j + 1);
             B0_orig(i, j) = 10.0 * (3 * i + j + 1);
             C0_orig(i, j) = 20.0 * (3 * i + j + 1);
-            A1(i, j) = 60.0f * (3 * i + j + 1);
-            B1(i, j) = 70.0f* (3 * i + j + 1);
-            C1(i, j) = 80.0f * (3 * i + j + 1);
+            A1(i, j)      = 60.0f * (3 * i + j + 1);
+            B1(i, j)      = 70.0f * (3 * i + j + 1);
+            C1(i, j)      = 80.0f * (3 * i + j + 1);
         }
     }
 
@@ -642,8 +640,8 @@ TEST_CASE("Test tensor arithmetic assignments", "[gpu][tensor]") {
         B0 *= B1;
         C0 *= C1;
 
-        for(int i = 0; i < 3; i++) {
-            for(int j = 0; j < 3; j++) {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
                 CHECK((A0(i, j) == A1(i, j) * A0_orig(i, j)));
                 CHECK((B0(i, j) == B1(i, j) * B0_orig(i, j)));
                 CHECK((C0(i, j) == C1(i, j) * C0_orig(i, j)));
@@ -658,8 +656,8 @@ TEST_CASE("Test tensor arithmetic assignments", "[gpu][tensor]") {
         B0 *= C1;
         C0 *= A1;
 
-        for(int i = 0; i < 3; i++) {
-            for(int j = 0; j < 3; j++) {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
                 CHECK((A0(i, j) == B1(i, j) * A0_orig(i, j)));
                 CHECK((B0(i, j) == C1(i, j) * B0_orig(i, j)));
                 CHECK((C0(i, j) == A1(i, j) * C0_orig(i, j)));
@@ -674,8 +672,8 @@ TEST_CASE("Test tensor arithmetic assignments", "[gpu][tensor]") {
         B0 *= A1;
         C0 *= B1;
 
-        for(int i = 0; i < 3; i++) {
-            for(int j = 0; j < 3; j++) {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
                 CHECK((A0(i, j) == C1(i, j) * A0_orig(i, j)));
                 CHECK((B0(i, j) == A1(i, j) * B0_orig(i, j)));
                 CHECK((C0(i, j) == B1(i, j) * C0_orig(i, j)));
@@ -692,8 +690,8 @@ TEST_CASE("Test tensor arithmetic assignments", "[gpu][tensor]") {
         B0 += B1;
         C0 += C1;
 
-        for(int i = 0; i < 3; i++) {
-            for(int j = 0; j < 3; j++) {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
                 CHECK((A0(i, j) == A1(i, j) + A0_orig(i, j)));
                 CHECK((B0(i, j) == B1(i, j) + B0_orig(i, j)));
                 CHECK((C0(i, j) == C1(i, j) + C0_orig(i, j)));
@@ -708,8 +706,8 @@ TEST_CASE("Test tensor arithmetic assignments", "[gpu][tensor]") {
         B0 += C1;
         C0 += A1;
 
-        for(int i = 0; i < 3; i++) {
-            for(int j = 0; j < 3; j++) {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
                 CHECK((A0(i, j) == B1(i, j) + A0_orig(i, j)));
                 CHECK((B0(i, j) == C1(i, j) + B0_orig(i, j)));
                 CHECK((C0(i, j) == A1(i, j) + C0_orig(i, j)));
@@ -724,8 +722,8 @@ TEST_CASE("Test tensor arithmetic assignments", "[gpu][tensor]") {
         B0 += A1;
         C0 += B1;
 
-        for(int i = 0; i < 3; i++) {
-            for(int j = 0; j < 3; j++) {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
                 CHECK((A0(i, j) == C1(i, j) + A0_orig(i, j)));
                 CHECK((B0(i, j) == A1(i, j) + B0_orig(i, j)));
                 CHECK((C0(i, j) == B1(i, j) + C0_orig(i, j)));
@@ -742,8 +740,8 @@ TEST_CASE("Test tensor arithmetic assignments", "[gpu][tensor]") {
         B0 /= B1;
         C0 /= C1;
 
-        for(int i = 0; i < 3; i++) {
-            for(int j = 0; j < 3; j++) {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
                 CHECK((A0(i, j) == A0_orig(i, j) / A1(i, j)));
                 CHECK((B0(i, j) == B0_orig(i, j) / B1(i, j)));
                 CHECK((C0(i, j) == C0_orig(i, j) / C1(i, j)));
@@ -758,8 +756,8 @@ TEST_CASE("Test tensor arithmetic assignments", "[gpu][tensor]") {
         B0 /= C1;
         C0 /= A1;
 
-        for(int i = 0; i < 3; i++) {
-            for(int j = 0; j < 3; j++) {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
                 CHECK((A0(i, j) == A0_orig(i, j) / B1(i, j)));
                 CHECK((B0(i, j) == B0_orig(i, j) / C1(i, j)));
                 CHECK((C0(i, j) == C0_orig(i, j) / A1(i, j)));
@@ -774,8 +772,8 @@ TEST_CASE("Test tensor arithmetic assignments", "[gpu][tensor]") {
         B0 /= A1;
         C0 /= B1;
 
-        for(int i = 0; i < 3; i++) {
-            for(int j = 0; j < 3; j++) {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
                 CHECK((A0(i, j) == A0_orig(i, j) / C1(i, j)));
                 CHECK((B0(i, j) == B0_orig(i, j) / A1(i, j)));
                 CHECK((C0(i, j) == C0_orig(i, j) / B1(i, j)));
@@ -792,8 +790,8 @@ TEST_CASE("Test tensor arithmetic assignments", "[gpu][tensor]") {
         B0 -= B1;
         C0 -= C1;
 
-        for(int i = 0; i < 3; i++) {
-            for(int j = 0; j < 3; j++) {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
                 CHECK((A0(i, j) == A0_orig(i, j) - A1(i, j)));
                 CHECK((B0(i, j) == B0_orig(i, j) - B1(i, j)));
                 CHECK((C0(i, j) == C0_orig(i, j) - C1(i, j)));
@@ -808,8 +806,8 @@ TEST_CASE("Test tensor arithmetic assignments", "[gpu][tensor]") {
         B0 -= C1;
         C0 -= A1;
 
-        for(int i = 0; i < 3; i++) {
-            for(int j = 0; j < 3; j++) {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
                 CHECK((A0(i, j) == A0_orig(i, j) - B1(i, j)));
                 CHECK((B0(i, j) == B0_orig(i, j) - C1(i, j)));
                 CHECK((C0(i, j) == C0_orig(i, j) - A1(i, j)));
@@ -824,8 +822,8 @@ TEST_CASE("Test tensor arithmetic assignments", "[gpu][tensor]") {
         B0 -= A1;
         C0 -= B1;
 
-        for(int i = 0; i < 3; i++) {
-            for(int j = 0; j < 3; j++) {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
                 CHECK((A0(i, j) == A0_orig(i, j) - C1(i, j)));
                 CHECK((B0(i, j) == B0_orig(i, j) - A1(i, j)));
                 CHECK((C0(i, j) == C0_orig(i, j) - B1(i, j)));
@@ -842,8 +840,8 @@ TEST_CASE("Test tensor arithmetic assignments", "[gpu][tensor]") {
         B0 *= 3.0;
         C0 *= 4.0;
 
-        for(int i = 0; i < 3; i++) {
-            for(int j = 0; j < 3; j++) {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
                 CHECK((A0(i, j) == A0_orig(i, j) * 2.0));
                 CHECK((B0(i, j) == B0_orig(i, j) * 3.0));
                 CHECK((C0(i, j) == C0_orig(i, j) * 4.0));
@@ -858,8 +856,8 @@ TEST_CASE("Test tensor arithmetic assignments", "[gpu][tensor]") {
         B0 += 3.0;
         C0 += 4.0;
 
-        for(int i = 0; i < 3; i++) {
-            for(int j = 0; j < 3; j++) {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
                 CHECK((A0(i, j) == A0_orig(i, j) + 2.0));
                 CHECK((B0(i, j) == B0_orig(i, j) + 3.0));
                 CHECK((C0(i, j) == C0_orig(i, j) + 4.0));
@@ -874,8 +872,8 @@ TEST_CASE("Test tensor arithmetic assignments", "[gpu][tensor]") {
         B0 /= 3.0;
         C0 /= 4.0;
 
-        for(int i = 0; i < 3; i++) {
-            for(int j = 0; j < 3; j++) {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
                 CHECK((A0(i, j) == A0_orig(i, j) / 2.0));
                 CHECK((B0(i, j) == B0_orig(i, j) / 3.0));
                 CHECK((C0(i, j) == C0_orig(i, j) / 4.0));
@@ -890,8 +888,8 @@ TEST_CASE("Test tensor arithmetic assignments", "[gpu][tensor]") {
         B0 -= 3.0;
         C0 -= 4.0;
 
-        for(int i = 0; i < 3; i++) {
-            for(int j = 0; j < 3; j++) {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
                 CHECK((A0(i, j) == A0_orig(i, j) - 2.0));
                 CHECK((B0(i, j) == B0_orig(i, j) - 3.0));
                 CHECK((C0(i, j) == C0_orig(i, j) - 4.0));
@@ -913,8 +911,8 @@ TEST_CASE("Test device-host interfacing", "[gpu][tensor]") {
 
     Tensor<double, 2> host_tensor("Host", 3, 3);
 
-    for(int i = 0; i < 3; i++) {
-        for(int j = 0; j < 3; j++) {
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
             host_tensor(i, j) = 3 * i + j + 1;
         }
     }
@@ -929,20 +927,20 @@ TEST_CASE("Test device-host interfacing", "[gpu][tensor]") {
 
     DeviceTensor<double, 2> C(host_tensor, einsums::detail::MAPPED);
 
-    for(int i = 0; i < 3; i++) {
-        for(int j = 0; j < 3; j++) {
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
             CHECK((A(i, j) == 3 * i + j + 1));
             CHECK((B(i, j) == 10 * (3 * i + j + 1)));
             CHECK((C(i, j) == 20 * (3 * i + j + 1)));
         }
     }
 
-    auto A_host = (Tensor<double, 2>) A;
-    auto B_host = (Tensor<double, 2>) B;
-    auto C_host = (Tensor<double, 2>) C;
+    auto A_host = (Tensor<double, 2>)A;
+    auto B_host = (Tensor<double, 2>)B;
+    auto C_host = (Tensor<double, 2>)C;
 
-    for(int i = 0; i < 3; i++) {
-        for(int j = 0; j < 3; j++) {
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
             CHECK((A_host(i, j) == 3 * i + j + 1));
             CHECK((B_host(i, j) == 10 * (3 * i + j + 1)));
             CHECK((C_host(i, j) == 20 * (3 * i + j + 1)));
@@ -966,7 +964,7 @@ TEST_CASE("Zero-rank GPU tensors", "[gpu][tensor]") {
     DeviceTensor<double, 0> B_copy(B);
     DeviceTensor<double, 0> C_copy(C);
 
-    hipError_t status;
+    hipError_t            status;
     hipPointerAttribute_t attribs;
 
     status = hipPointerGetAttributes(&attribs, A.data());
@@ -1000,48 +998,47 @@ TEST_CASE("Zero-rank GPU tensors", "[gpu][tensor]") {
     B = 2.0;
     C = 3.0;
 
-    CHECK(((double) A == 1.0));
-    CHECK(((double) B == 2.0));
-    CHECK(((double) C == 3.0));
+    CHECK(((double)A == 1.0));
+    CHECK(((double)B == 2.0));
+    CHECK(((double)C == 3.0));
 
     A = B;
     B = C;
 
-    CHECK(((double) A == 2.0));
-    CHECK(((double) B == 3.0));
+    CHECK(((double)A == 2.0));
+    CHECK(((double)B == 3.0));
 
     A *= 2.0;
     B *= 2.0;
     C *= 2.0;
 
-    CHECK(((double) A == 4.0));
-    CHECK(((double) B == 6.0));
-    CHECK(((double) C == 6.0));
+    CHECK(((double)A == 4.0));
+    CHECK(((double)B == 6.0));
+    CHECK(((double)C == 6.0));
 
     A += 2.0;
     B += 2.0;
     C += 2.0;
 
-    CHECK(((double) A == 6.0));
-    CHECK(((double) B == 8.0));
-    CHECK(((double) C == 8.0));
+    CHECK(((double)A == 6.0));
+    CHECK(((double)B == 8.0));
+    CHECK(((double)C == 8.0));
 
     A /= 2.0;
     B /= 2.0;
     C /= 2.0;
 
-    CHECK(((double) A == 3.0));
-    CHECK(((double) B == 4.0));
-    CHECK(((double) C == 4.0));
+    CHECK(((double)A == 3.0));
+    CHECK(((double)B == 4.0));
+    CHECK(((double)C == 4.0));
 
     A -= 2.0;
     B -= 2.0;
     C -= 2.0;
 
-    CHECK(((double) A == 1.0));
-    CHECK(((double) B == 2.0));
-    CHECK(((double) C == 2.0));
-
+    CHECK(((double)A == 1.0));
+    CHECK(((double)B == 2.0));
+    CHECK(((double)C == 2.0));
 
     Tensor<double, 0> D("D");
 
@@ -1051,11 +1048,11 @@ TEST_CASE("Zero-rank GPU tensors", "[gpu][tensor]") {
     DeviceTensor<double, 0> F(D, MAPPED);
     DeviceTensor<double, 0> G(D, PINNED);
 
-    CHECK(((double) E == 10.0));
-    CHECK(((double) F == 10.0));
-    CHECK(((double) G == 10.0));
+    CHECK(((double)E == 10.0));
+    CHECK(((double)F == 10.0));
+    CHECK(((double)G == 10.0));
 
-    CHECK(((double) (Tensor<double, 0>) E == 10.0));
-    CHECK(((double) (Tensor<double, 0>) F == 10.0));
-    CHECK(((double) (Tensor<double, 0>) G == 10.0));
+    CHECK(((double)(Tensor<double, 0>)E == 10.0));
+    CHECK(((double)(Tensor<double, 0>)F == 10.0));
+    CHECK(((double)(Tensor<double, 0>)G == 10.0));
 }
