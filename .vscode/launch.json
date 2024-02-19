@@ -10,7 +10,6 @@
             "request": "launch",
             "program": "${workspaceFolder}/build/tests/test-all",
             "args": [
-                "[gpu]"
             ],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
