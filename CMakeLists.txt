@@ -42,6 +42,7 @@ if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
             CACHE STRING "Choose the type of build." FORCE)
     set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel"
             "RelWithDebInfo")
+
 endif ()
 
 einsums_option(EINSUMS_CONTINUOUSLY_TEST_EINSUM BOOL
@@ -67,6 +68,8 @@ einsums_option(EINSUMS_INSTALL_CMAKEDIR STRING
 einsums_option(EINSUMS_JOB_QUEUES BOOL "Build job queue system." OFF)
 einsums_option(EINSUMS_H5CPP_USE_OMP_ALIGNED_ALLOC BOOL
         "On Mac, use omp_aligned_alloc instead of aligned_alloc. Helpful for old SDK." OFF)
+einsums_option(EINSUMS_BUILD_HIP BOOL "Build HIP GPU code." OFF)
+einsums_option(EINSUMS_COVERAGE BOOL "Enable code coverage checking" OFF)
 
 add_feature_info(
         EINSUMS_CONTINUOUSLY_TEST_EINSUM ${EINSUMS_CONTINUOUSLY_TEST_EINSUM}
@@ -84,6 +87,38 @@ add_feature_info(EINSUMS_RUNTIME_INDICES_CHECK ${EINSUMS_RUNTIME_INDICES_CHECK}
         "Check the sizes of corresponding indices at runtime")
 add_feature_info(EINSUMS_USE_HPTT ${EINSUMS_USE_HPTT}
         "Build with internal HPTT version")
+
+if(EINSUMS_BUILD_HIP)
+        if(NOT HIP_INSTALL_DIR)
+                message(FATAL_ERROR "Please set HIP_INSTALL_DIR.")
+        endif()
+
+        cmake_path(APPEND HIP_INSTALL_DIR "lib" "cmake" OUTPUT_VARIABLE __hip_cmake_dir)
+
+        cmake_path(APPEND __hip_cmake_dir "AMDDeviceLibs" OUTPUT_VARIABLE AMDDeviceLibs_DIR)
+        set(ENV{AMDDeviceLibs_DIR} ${AMDDeviceLibs_DIR})
+
+        cmake_path(APPEND __hip_cmake_dir "amd_comgr" OUTPUT_VARIABLE amd_comgr_DIR)
+        set(ENV{amd_comgr_DIR} ${amd_comgr_DIR})
+
+        cmake_path(APPEND __hip_cmake_dir "hipblas" OUTPUT_VARIABLE hipblas_DIR)
+        set(ENV{hipblas_DIR} ${hipblas_DIR})
+
+        cmake_path(APPEND __hip_cmake_dir "hip" OUTPUT_VARIABLE hip_DIR)
+        set(ENV{hip_DIR} ${hipblas_DIR})
+
+        cmake_path(APPEND __hip_cmake_dir "hsa-runtime64" OUTPUT_VARIABLE hsa-runtime64_DIR)
+        set(ENV{hsa-runtime64_DIR} ${hsa-runtime64_DIR})
+
+        cmake_path(APPEND __hip_cmake_dir "hipsolver" OUTPUT_VARIABLE hipsolver_DIR)
+        set(ENV{hipsolver_DIR} ${hipsolver_DIR})
+
+        enable_language(HIP)
+        find_package(hipblas REQUIRED)
+        find_package(hipsolver REQUIRED)
+        set(CURSES_NEED_NCURSES True)
+        find_package(Curses)
+endif()
 
 include(autocmake_safeguards)
 
@@ -107,7 +142,7 @@ get_property(EINSUMS_LINALG_INT_INTERFACE TARGET tgt::lapack PROPERTY INT_INTERF
 
 # Set default FFT library to mkl, if mkl was found, otherwise FFTW3
 set(EINSUMS_FFT_LIBRARY_DEFAULT "fftw3")
-if (EINSUMS_LINALG_VENDOR STREQUAL "MKL")
+if (${EINSUMS_LINALG_VENDOR} MATCHES "[mM][kK][lL]")
     set(EINSUMS_FFT_LIBRARY_DEFAULT "mkl")
 endif ()
 
@@ -125,6 +160,14 @@ endif ()
 
 add_subdirectory(external)
 add_subdirectory(src)
+
+if(EINSUMS_COVERAGE)
+    target_compile_options(einsums PUBLIC $<$<COMPILE_LANG_AND_ID:CXX,Clang>:-fprofile-instr-generate -fcoverage-mapping>)
+    target_compile_options(einsums PUBLIC $<$<COMPILE_LANGUAGE:HIP>:-fprofile-instr-generate -fcoverage-mapping>)
+    target_compile_options(einsums PUBLIC $<$<COMPILE_LANG_AND_ID:CXX,GNU>:--coverage>)
+endif()
+
+target_compile_options(einsums BEFORE PUBLIC $<$<CONFIG:Debug>:-gdwarf-2 -Og -g3 -ggdb>)
 
 if (EINSUMS_ENABLE_TESTING)
     enable_testing()

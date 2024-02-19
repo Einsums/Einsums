@@ -7,8 +7,8 @@
             ],
             "defines": [],
             "compilerPath": "/usr/bin/clang-16",
-            "cStandard": "c17",
-            "cppStandard": "c++17",
+            "cStandard": "c23",
+            "cppStandard": "c++23",
             "intelliSenseMode": "linux-clang-x64"
         }
     ],

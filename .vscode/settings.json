@@ -36,6 +36,18 @@
             ],
         }    
     ],
+    "[cuda-cpp]": {
+        "editor.wordBasedSuggestions": "matchingDocuments",
+        "editor.suggest.insertMode": "replace",
+        "editor.semanticHighlighting.enabled": true,
+        "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd"
+    },
+    "[hip]": {
+        "editor.wordBasedSuggestions": "matchingDocuments",
+        "editor.suggest.insertMode": "replace",
+        "editor.semanticHighlighting.enabled": true,
+        "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd"
+    },
     "cmake.configureArgs": [
         "-DEINSUMS_JOB_QUEUES=ON"
     ]

@@ -121,7 +121,7 @@ template <bool TransA, template <typename, size_t> typename AType, template <typ
         requires CoreRankTensor<XType<T, XYRank>, 1, T>;
         requires CoreRankTensor<YType<T, XYRank>, 1, T>;
     }
-void gemv(const double alpha, const AType<T, ARank> &A, const XType<T, XYRank> &x, const double beta, YType<T, XYRank> *y) {
+void gemv(const T alpha, const AType<T, ARank> &A, const XType<T, XYRank> &x, const T beta, YType<T, XYRank> *y) {
     LabeledSection1(fmt::format("<TransA={}>", TransA));
     auto m = A.dim(0), n = A.dim(1);
     auto lda  = A.stride(0);

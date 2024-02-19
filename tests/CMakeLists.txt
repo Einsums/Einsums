@@ -9,6 +9,14 @@ add_executable(test-all
     TensorAlgebra.cpp
 )
 
+if(EINSUMS_COVERAGE)
+    target_compile_options(test-all PUBLIC $<$<COMPILE_LANG_AND_ID:CXX,Clang>:-fprofile-instr-generate -fcoverage-mapping>)
+    target_compile_options(test-all PUBLIC $<$<COMPILE_LANGUAGE:HIP>:-fprofile-instr-generate -fcoverage-mapping>)
+    target_compile_options(test-all PUBLIC $<$<COMPILE_LANG_AND_ID:CXX,GNU>:--coverage>)
+endif()
+
+target_compile_options(einsums BEFORE PUBLIC $<$<CONFIG:Debug>:-gdwarf-2>)
+
 extend_einsums_target(test-all
     SOURCES
         FFT.cpp
@@ -30,6 +38,22 @@ extend_einsums_target(test-all
         EINSUMS_JOB_QUEUES
 )
 
+extend_einsums_target(test-all
+    SOURCES
+        DeviceTensor_extras.hip
+        DeviceTensor.hip
+        DeviceTensorView.hip
+        GPULinearAlgebra.hip
+        GPU.hip
+    CONDITION
+        EINSUMS_BUILD_HIP
+    PUBLIC_DEPENDS
+        roc::hipblas
+        roc::hipsolver
+        hip::host
+        hip::device
+)
+
 set_source_files_properties(TensorAlgebra_Jobs.cpp PROPERTIES COMPILE_OPTIONS "-Werror")
 
 # Enable einsum auto test capabilities
@@ -40,7 +64,8 @@ target_compile_definitions(test-all
         TEST_PATH="${CMAKE_CURRENT_LIST_DIR}"    
 )
 find_package(Catch2)
-target_link_libraries(test-all Catch2::Catch2 einsums)
+
+target_link_libraries(test-all PUBLIC Catch2::Catch2 einsums)
 
 include(CTest)
 include(Catch)

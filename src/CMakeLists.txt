@@ -36,6 +36,35 @@ extend_einsums_target(einsums
   CONDITION
       EINSUMS_JOB_QUEUES
 )
+
+extend_einsums_target(einsums
+    SOURCES
+        _GPUUtils.hip
+        backends/linear_algebra/hipblas/hipblas.hip
+        backends/linear_algebra/hipblas/hipsolver.hip
+        GPULinearAlgebra.hip
+        GPUTensorAlgebra.hip
+    CONDITION
+        EINSUMS_BUILD_HIP
+    PUBLIC_DEPENDS
+        roc::hipblas
+        roc::hipsolver
+        hip::host
+        hip::device
+)
+
+# HIP's amd_comgr needs ncurses. Ncurses needs tinfo. Neither target adds the appropriate dependencies or paths.
+# If this gets fixed, this can be removed.
+if(EINSUMS_BUILD_HIP)
+    target_compile_options(einsums PUBLIC ${CURSES_CFLAGS})
+    target_include_directories(einsums PUBLIC ${CURSES_INCLUDE_DIR})
+    list(GET CURSES_LIBRARIES 0 __first)
+    cmake_path(GET __first PARENT_PATH CURSES_LIB_DIR)
+    message(STATUS "Curses directory: ${CURSES_LIB_DIR}")
+    target_link_directories(einsums BEFORE PUBLIC ${CURSES_LIB_DIR})
+    target_link_libraries(einsums PUBLIC ${CURSES_LIBRARIES})
+endif()
+
   
 
 extend_einsums_target(einsums
@@ -168,11 +197,23 @@ extend_einsums_target(einsums
 
 extend_einsums_target(einsums
     SOURCES
+        backends/linear_algebra/hipblas/hipblas.hip
+    CONDITION
+        EINSUMS_BUILD_HIP
+    PUBLIC_DEPENDS
+        ${hipblas_LIBRARIES}
+
+    FEATURE_INFO
+        "HIP GPU linear algebra backend"
+)
+
+extend_einsums_target(einsums
+    SOURCES
         backends/linear_algebra/vendor/Vendor.cpp
     DEFINES
         EINSUMS_LINEAR_ALGEBRA_NAMESPACE=vendor
     CONDITION
-        NOT EINSUMS_LINALG_VENDOR STREQUAL MKL
+        NOT EINSUMS_LINALG_VENDOR STREQUAL MKL AND NOT EINSUMS_LINALG_VENDOR STREQUAL HIP
     FEATURE_INFO
         "Generic vendor backend"
 )

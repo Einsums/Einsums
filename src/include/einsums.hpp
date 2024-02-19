@@ -7,6 +7,15 @@
 
 #include "einsums/Blas.hpp"
 #include "einsums/Decomposition.hpp"
+
+#ifdef __HIP__
+#include "einsums/DeviceTensor.hpp"
+#include "einsums/_GPUCast.hpp"
+#include "einsums/GPUTensorAlgebra.hpp"
+#include "einsums/_GPUUtils.hpp"
+#include "einsums/GPULinearAlgebra.hpp"
+#endif
+
 #include "einsums/ElementOperations.hpp"
 #include "einsums/Error.hpp"
 #include "einsums/FFT.hpp"
