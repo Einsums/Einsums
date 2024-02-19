@@ -88,7 +88,7 @@ add_feature_info(EINSUMS_RUNTIME_INDICES_CHECK ${EINSUMS_RUNTIME_INDICES_CHECK}
 add_feature_info(EINSUMS_USE_HPTT ${EINSUMS_USE_HPTT}
         "Build with internal HPTT version")
 
-if(${EINSUMS_BUILD_HIP})
+if(EINSUMS_BUILD_HIP)
         if(NOT HIP_INSTALL_DIR)
                 message(FATAL_ERROR "Please set HIP_INSTALL_DIR.")
         endif()
