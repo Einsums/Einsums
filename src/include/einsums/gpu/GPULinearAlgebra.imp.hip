@@ -50,7 +50,7 @@ template <bool TransA, bool TransB, template <typename, size_t> typename AType, 
         requires ::einsums::detail::DeviceRankTensor<BType<T, Rank>, 2, T>;
         requires ::einsums::detail::DeviceRankTensor<CType<T, Rank>, 2, T>;
     }
-void gemm(T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, T beta, CType<T, Rank> *C) {
+void gemm(T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, T beta, CType<T, Rank> *C, hipStream_t stream) {
     using namespace einsums::gpu;
 
     using dev_datatype = ::std::conditional_t<::std::is_same_v<T, ::std::complex<float>>, hipComplex,
@@ -78,7 +78,7 @@ template <template <typename, size_t> typename CType, typename CDataType, templa
           size_t ARank, template <typename, size_t> typename BType, typename BDataType, size_t BRank>
 void dot(CDataType C_prefactor, CType<CDataType, 0> &C,
          ::std::conditional_t<sizeof(ADataType) < sizeof(BDataType), BDataType, ADataType> AB_prefactor, const AType<ADataType, ARank> &A,
-         const BType<BDataType, BRank> &B, dim3 threads, dim3 blocks) {
+         const BType<BDataType, BRank> &B, hipStream_t stream) {
     using namespace einsums::gpu;
 
     if (C_prefactor == CDataType{0}) {
@@ -91,7 +91,7 @@ void dot(CDataType C_prefactor, CType<CDataType, 0> &C,
         std::is_same_v<decltype(AB_prefactor), std::complex<float>>, hipComplex,
         std::conditional_t<std::is_same_v<decltype(AB_prefactor), std::complex<double>>, hipDoubleComplex, decltype(AB_prefactor)>>;
 
-    detail::dot_kernel<<<threads, blocks>>>(C.data(), HipCast<dev_datatype, decltype(AB_prefactor)>::cast(AB_prefactor), A.data(), B.data(),
+    detail::dot_kernel<<<block_size(A.size()), blocks(A.size())>>>(C.data(), HipCast<dev_datatype, decltype(AB_prefactor)>::cast(AB_prefactor), A.data(), B.data(),
                                             A.size());
 
     hip_catch(hipDeviceSynchronize());
@@ -102,7 +102,7 @@ template <template <typename, size_t> typename XYType, size_t XYRank, template <
         requires ::einsums::detail::DeviceRankTensor<XYType<T, XYRank>, 1, T>;
         requires ::einsums::detail::DeviceRankTensor<AType<T, ARank>, 2, T>;
     }
-void ger(T alpha, const XYType<T, XYRank> &X, const XYType<T, XYRank> &Y, AType<T, ARank> *A) {
+void ger(T alpha, const XYType<T, XYRank> &X, const XYType<T, XYRank> &Y, AType<T, ARank> *A, hipStream_t stream) {
     using namespace einsums::gpu;
     using dev_datatype = ::std::conditional_t<::std::is_same_v<T, ::std::complex<float>>, hipComplex,
                                               ::std::conditional_t<::std::is_same_v<T, ::std::complex<double>>, hipDoubleComplex, T>>;
@@ -125,7 +125,7 @@ template <bool TransA, template <typename, size_t> typename AType, template <typ
         requires ::einsums::detail::DeviceRankTensor<XType<T, XYRank>, 1, T>;
         requires ::einsums::detail::DeviceRankTensor<YType<T, XYRank>, 1, T>;
     }
-void gemv(T alpha, const AType<T, ARank> &A, const XType<T, XYRank> &x, T beta, YType<T, XYRank> *y) {
+void gemv(T alpha, const AType<T, ARank> &A, const XType<T, XYRank> &x, T beta, YType<T, XYRank> *y, hipStream_t stream) {
     using namespace einsums::gpu;
     using dev_datatype = ::std::conditional_t<::std::is_same_v<T, ::std::complex<float>>, hipComplex,
                                               ::std::conditional_t<::std::is_same_v<T, ::std::complex<double>>, hipDoubleComplex, T>>;
@@ -152,7 +152,7 @@ void gemv(T alpha, const AType<T, ARank> &A, const XType<T, XYRank> &x, T beta, 
 
 template <template <typename, size_t> typename AType, size_t ARank, typename T>
     requires ::einsums::detail::DeviceRankTensor<AType<T, ARank>, ARank, T>
-void scale(T scale, AType<T, ARank> *A) {
+void scale(T scale, AType<T, ARank> *A, hipStream_t stream) {
     using namespace einsums::gpu;
     using dev_datatype = ::std::conditional_t<::std::is_same_v<T, ::std::complex<float>>, hipComplex,
                                               ::std::conditional_t<::std::is_same_v<T, ::std::complex<double>>, hipDoubleComplex, T>>;
@@ -175,7 +175,7 @@ template <bool TransA, bool TransB, template <typename, size_t> typename AType, 
         requires ::einsums::detail::DeviceRankTensor<BType<T, Rank>, 2, T>;
         requires ::einsums::detail::DeviceRankTensor<CType<T, Rank>, 2, T>;
     }
-void symm_gemm(const AType<T, Rank> &A, const BType<T, Rank> &B, CType<T, Rank> *C) {
+void symm_gemm(const AType<T, Rank> &A, const BType<T, Rank> &B, CType<T, Rank> *C, hipStream_t stream) {
     using namespace einsums::gpu;
     if constexpr (TransA && TransB) {
         assert(B.dim(0) == A.dim(0) && A.dim(1) == B.dim(0) && C->dim(0) == B.dim(1) && C->dim(1) == B.dim(1));

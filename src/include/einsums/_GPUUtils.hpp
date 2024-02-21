@@ -242,4 +242,6 @@ __host__ inline dim3 blocks(size_t compute_size) {
     }
 }
 
+void hip_free_callback(hipStream_t stream, hipError_t status, void *data);
+
 END_EINSUMS_NAMESPACE_HPP(einsums::gpu)

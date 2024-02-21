@@ -12,6 +12,8 @@
 
 BEGIN_EINSUMS_NAMESPACE_CPP(einsums::gpu)
 
+
+
 __host__ void __hip_catch__(hipError_t condition, const char *diagnostic, bool throw_success) {
     // Auto-generated code.
     switch (condition) {
@@ -254,6 +256,10 @@ void initialize() {
 
 void finalize() {
     // hip_catch(hipDeviceReset());
+}
+
+void hip_free_callback(hipStream_t stream, hipError_t status, void *data) {
+    hip_catch(hipFree(data));
 }
 
 END_EINSUMS_NAMESPACE_CPP(einsums::gpu)

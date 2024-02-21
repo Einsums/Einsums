@@ -267,9 +267,12 @@ einsum_generic_algorithm_gpu(const size_t *unique_strides, const int *C_index_ta
  */
 template <typename CDataType, typename ADataType, typename BDataType, size_t UniqueRank, size_t ARank, size_t BRank>
 __global__ void einsum_generic_zero_rank_gpu(
-    const size_t *unique_strides, const int *A_index_table, const int *B_index_table, CDataType *C, CDataType *work,
+    const size_t *unique_strides, const int *A_index_table, const int *B_index_table, CDataType *C,
     const ::std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> AB_prefactor, const ADataType *A,
     const size_t *A_dims, const size_t *A_stride, const BDataType *B, const size_t *B_dims, const size_t *B_stride, size_t max_index) {
+
+        // Allocated by caller.
+        extern __shared__ CDataType work[];
 
     using namespace einsums::gpu;
     int thread_id, kernel_size;
@@ -371,7 +374,7 @@ void einsum_generic_algorithm(const ::std::tuple<UniqueIndices...> &unique_indic
                               const ::std::tuple<AIndices...> &A_indices, const ::std::tuple<BIndices...> &B_indices,
                               const ::std::tuple<UniqueDims...> &unique_dims, const CDataType C_prefactor, CType<CDataType, CRank> *C,
                               const ::std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> AB_prefactor,
-                              const AType<ADataType, ARank> &A, const BType<BDataType, BRank> &B, dim3 threads, dim3 blocks) {
+                              const AType<ADataType, ARank> &A, const BType<BDataType, BRank> &B, dim3 threads, dim3 blocks, hipStream_t stream) {
     using namespace einsums::gpu;
 
     size_t unique_strides[sizeof...(UniqueIndices)];
@@ -406,32 +409,53 @@ void einsum_generic_algorithm(const ::std::tuple<UniqueIndices...> &unique_indic
     // TODO: what if one of the ranks is zero?
     // Answer: Only C can have zero rank. Otherwise, it is just a scaling.
     if constexpr (sizeof...(CIndices) != 0) {
-        einsum_generic_algorithm_gpu<CDataType, ADataType, BDataType, sizeof...(UniqueIndices), CRank, ARank, BRank>
-            <<<threads, blocks>>>(unique_strides_gpu, C_index_table_gpu, A_index_table_gpu, B_index_table_gpu, C_prefactor, C->data(),
+        if(stream != (hipStream_t) -1) {
+            einsum_generic_algorithm_gpu<CDataType, ADataType, BDataType, sizeof...(UniqueIndices), CRank, ARank, BRank>
+                <<<threads, blocks, 0, stream>>>(unique_strides_gpu, C_index_table_gpu, A_index_table_gpu, B_index_table_gpu, C_prefactor, C->data(),
                                   C->gpu_dims(), C->gpu_strides(), AB_prefactor, A.data(), A.gpu_dims(), A.gpu_strides(), B.data(),
                                   B.gpu_dims(), B.gpu_strides(), ::std::get<0>(unique_dims) * unique_strides[0]);
-        hip_catch(hipDeviceSynchronize());
+        } else {
+        einsum_generic_algorithm_gpu<CDataType, ADataType, BDataType, sizeof...(UniqueIndices), CRank, ARank, BRank>
+                <<<threads, blocks>>>(unique_strides_gpu, C_index_table_gpu, A_index_table_gpu, B_index_table_gpu, C_prefactor, C->data(),
+                                  C->gpu_dims(), C->gpu_strides(), AB_prefactor, A.data(), A.gpu_dims(), A.gpu_strides(), B.data(),
+                                  B.gpu_dims(), B.gpu_strides(), ::std::get<0>(unique_dims) * unique_strides[0]);
+            hip_catch(hipDeviceSynchronize());
+        }
     } else {
-        CDataType *work;
-        hip_catch(hipMalloc((void **)&work, threads.x * threads.y * threads.z * blocks.x * blocks.y * blocks.z * sizeof(CDataType)));
+        //CDataType *work;
+        //hip_catch(hipMalloc((void **)&work, threads.x * threads.y * threads.z * blocks.x * blocks.y * blocks.z * sizeof(CDataType)));
         if (C_prefactor == CDataType{0}) {
             *C = CDataType{0};
         } else {
             *C *= C_prefactor;
         }
-        einsum_generic_zero_rank_gpu<CDataType, ADataType, BDataType, sizeof...(UniqueIndices), ARank, BRank><<<threads, blocks>>>(
-            unique_strides_gpu, A_index_table_gpu, B_index_table_gpu, C->data(), work, AB_prefactor, A.data(), A.gpu_dims(),
+        if(stream != (hipStream_t) -1) {
+            einsum_generic_zero_rank_gpu<CDataType, ADataType, BDataType, sizeof...(UniqueIndices), ARank, BRank><<<threads, blocks, threads.x * threads.y * threads.z * blocks.x * blocks.y * blocks.z, stream>>>(
+            unique_strides_gpu, A_index_table_gpu, B_index_table_gpu, C->data(), AB_prefactor, A.data(), A.gpu_dims(),
             A.gpu_strides(), B.data(), B.gpu_dims(), B.gpu_strides(), ::std::get<0>(unique_dims) * unique_strides[0]);
-        hip_catch(hipDeviceSynchronize());
-        hip_catch(hipFree((void *)work));
+        } else {
+            einsum_generic_zero_rank_gpu<CDataType, ADataType, BDataType, sizeof...(UniqueIndices), ARank, BRank><<<threads, blocks, threads.x * threads.y * threads.z * blocks.x * blocks.y * blocks.z>>>(
+                unique_strides_gpu, A_index_table_gpu, B_index_table_gpu, C->data(), AB_prefactor, A.data(), A.gpu_dims(),
+                A.gpu_strides(), B.data(), B.gpu_dims(), B.gpu_strides(), ::std::get<0>(unique_dims) * unique_strides[0]);
+                hip_catch(hipDeviceSynchronize());
+        }
     }
 
-    hip_catch(hipFree((void *)A_index_table_gpu));
-    hip_catch(hipFree((void *)B_index_table_gpu));
-    if constexpr (sizeof...(CIndices) != 0) {
-        hip_catch(hipFree((void *)C_index_table_gpu));
+    if(stream != (hipStream_t) -1) {
+        hip_catch(hipStreamAddCallBack(stream, hip_free_callback, (void *) A_index_table_gpu, 0));
+        hip_catch(hipStreamAddCallBack(stream, hip_free_callback, (void *) B_index_table_gpu, 0));
+        if constexpr (sizeof...(CIndices) != 0) {
+            hip_catch(hipStreamAddCallBack(stream, hip_free_callback, (void *) C_index_table_gpu, 0));
+        }
+        hip_catch(hipStreamAddCallBack(stream, hip_free_callback, (void *) unique_strides_gpu, 0));
+    } else {
+        hip_catch(hipFree((void *)A_index_table_gpu));
+        hip_catch(hipFree((void *)B_index_table_gpu));
+        if constexpr (sizeof...(CIndices) != 0) {
+            hip_catch(hipFree((void *)C_index_table_gpu));
+        }
+        hip_catch(hipFree((void *)unique_strides_gpu));
     }
-    hip_catch(hipFree((void *)unique_strides_gpu));
 }
 
 template <bool OnlyUseGenericAlgorithm, template <typename, size_t> typename AType, typename ADataType, size_t ARank,
@@ -440,7 +464,7 @@ template <bool OnlyUseGenericAlgorithm, template <typename, size_t> typename ATy
 auto einsum(const CDataType C_prefactor, const ::std::tuple<CIndices...> & /*Cs*/, CType<CDataType, CRank> *C,
             const ::std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> AB_prefactor,
             const ::std::tuple<AIndices...> & /*As*/, const AType<ADataType, ARank> &A, const ::std::tuple<BIndices...> & /*Bs*/,
-            const BType<BDataType, BRank> &B, dim3 threads, dim3 blocks)
+            const BType<BDataType, BRank> &B, dim3 threads, dim3 blocks, hipStream_t stream)
     -> ::std::enable_if_t<::std::is_base_of_v<::einsums::detail::TensorBase<ADataType, ARank>, AType<ADataType, ARank>>
                               && ::std::is_base_of_v<::einsums::detail::TensorBase<BDataType, BRank>, BType<BDataType, BRank>>
                                   && ::std::is_base_of_v<::einsums::detail::TensorBase<CDataType, CRank>, CType<CDataType, CRank>>> {
@@ -625,10 +649,10 @@ auto einsum(const CDataType C_prefactor, const ::std::tuple<CIndices...> & /*Cs*
     if constexpr (!::std::is_same_v<CDataType, ADataType> || !::std::is_same_v<CDataType, BDataType>) {
         // Mixed datatypes go directly to the generic algorithm.
         ::einsums::tensor_algebra::gpu::detail::einsum_generic_algorithm(All_unique, C_indices, A_indices, B_indices, unique_all_dims,
-                                                                         C_prefactor, C, AB_prefactor, A, B, threads, blocks);
+                                                                         C_prefactor, C, AB_prefactor, A, B, threads, blocks, stream);
         return;
     } else if constexpr (dot_product) {
-        linear_algebra::gpu::dot(C_prefactor, *C, AB_prefactor, A, B, threads, blocks);
+        linear_algebra::gpu::dot(C_prefactor, *C, AB_prefactor, A, B, threads, blocks, stream);
 
         return;
     } else if constexpr (element_wise_multiplication) {
@@ -644,7 +668,7 @@ auto einsum(const CDataType C_prefactor, const ::std::tuple<CIndices...> & /*Cs*
 
         // The generic algorithm should work fine.
         ::einsums::tensor_algebra::gpu::detail::einsum_generic_algorithm(All_unique, C_indices, A_indices, B_indices, unique_all_dims,
-                                                                         C_prefactor, C, AB_prefactor, A, B, threads, blocks);
+                                                                         C_prefactor, C, AB_prefactor, A, B, threads, blocks, stream);
 
         return;
     } else if constexpr (outer_product) {
@@ -660,13 +684,13 @@ auto einsum(const CDataType C_prefactor, const ::std::tuple<CIndices...> & /*Cs*
             DeviceTensorView<CDataType, 2> tC{*C, dC};
 
             if (C_prefactor != CDataType{1.0})
-                linear_algebra::gpu::scale(C_prefactor, C);
+                linear_algebra::gpu::scale(C_prefactor, C, stream);
 
             try {
                 if constexpr (swap_AB) {
-                    linear_algebra::gpu::ger(AB_prefactor, B.to_rank_1_view(), A.to_rank_1_view(), &tC);
+                    linear_algebra::gpu::ger(AB_prefactor, B.to_rank_1_view(), A.to_rank_1_view(), &tC, stream);
                 } else {
-                    linear_algebra::gpu::ger(AB_prefactor, A.to_rank_1_view(), B.to_rank_1_view(), &tC);
+                    linear_algebra::gpu::ger(AB_prefactor, A.to_rank_1_view(), B.to_rank_1_view(), &tC, stream);
                 }
             } catch (std::runtime_error &e) {
 #if defined(EINSUMS_SHOW_WARNING)
@@ -680,7 +704,7 @@ auto einsum(const CDataType C_prefactor, const ::std::tuple<CIndices...> & /*Cs*
                             "WARNING!! Unable to undo C_prefactor ({}) on C ({}) tensor. Check your results!!!", C_prefactor, C->name());
 #endif
                 } else {
-                    linear_algebra::gpu::scale(1.0 / C_prefactor, C);
+                    linear_algebra::gpu::scale(1.0 / C_prefactor, C, stream);
                 }
                 break; // out of the do {} while(false) loop.
             }
@@ -730,9 +754,9 @@ auto einsum(const CDataType C_prefactor, const ::std::tuple<CIndices...> & /*Cs*
                 // println(tB);
 
                 if constexpr (transpose_A) {
-                    linear_algebra::gpu::gemv<true>(AB_prefactor, tA, tB, C_prefactor, &tC);
+                    linear_algebra::gpu::gemv<true>(AB_prefactor, tA, tB, C_prefactor, &tC, stream);
                 } else {
-                    linear_algebra::gpu::gemv<false>(AB_prefactor, tA, tB, C_prefactor, &tC);
+                    linear_algebra::gpu::gemv<false>(AB_prefactor, tA, tB, C_prefactor, &tC, stream);
                 }
 
                 return;
@@ -797,28 +821,28 @@ auto einsum(const CDataType C_prefactor, const ::std::tuple<CIndices...> & /*Cs*
                         // println("--------------------");
 
                         if constexpr (!transpose_C && !transpose_A && !transpose_B) {
-                            linear_algebra::gpu::gemm<false, false>(AB_prefactor, tA, tB, C_prefactor, &tC);
+                            linear_algebra::gpu::gemm<false, false>(AB_prefactor, tA, tB, C_prefactor, &tC, stream);
                             return;
                         } else if constexpr (!transpose_C && !transpose_A && transpose_B) {
-                            linear_algebra::gpu::gemm<false, true>(AB_prefactor, tA, tB, C_prefactor, &tC);
+                            linear_algebra::gpu::gemm<false, true>(AB_prefactor, tA, tB, C_prefactor, &tC, stream);
                             return;
                         } else if constexpr (!transpose_C && transpose_A && !transpose_B) {
-                            linear_algebra::gpu::gemm<true, false>(AB_prefactor, tA, tB, C_prefactor, &tC);
+                            linear_algebra::gpu::gemm<true, false>(AB_prefactor, tA, tB, C_prefactor, &tC, stream);
                             return;
                         } else if constexpr (!transpose_C && transpose_A && transpose_B) {
-                            linear_algebra::gpu::gemm<true, true>(AB_prefactor, tA, tB, C_prefactor, &tC);
+                            linear_algebra::gpu::gemm<true, true>(AB_prefactor, tA, tB, C_prefactor, &tC, stream);
                             return;
                         } else if constexpr (transpose_C && !transpose_A && !transpose_B) {
-                            linear_algebra::gpu::gemm<true, true>(AB_prefactor, tB, tA, C_prefactor, &tC);
+                            linear_algebra::gpu::gemm<true, true>(AB_prefactor, tB, tA, C_prefactor, &tC, stream);
                             return;
                         } else if constexpr (transpose_C && !transpose_A && transpose_B) {
-                            linear_algebra::gpu::gemm<false, true>(AB_prefactor, tB, tA, C_prefactor, &tC);
+                            linear_algebra::gpu::gemm<false, true>(AB_prefactor, tB, tA, C_prefactor, &tC, stream);
                             return;
                         } else if constexpr (transpose_C && transpose_A && !transpose_B) {
-                            linear_algebra::gpu::gemm<true, false>(AB_prefactor, tB, tA, C_prefactor, &tC);
+                            linear_algebra::gpu::gemm<true, false>(AB_prefactor, tB, tA, C_prefactor, &tC, stream);
                             return;
                         } else if constexpr (transpose_C && transpose_A && transpose_B) {
-                            linear_algebra::gpu::gemm<false, false>(AB_prefactor, tB, tA, C_prefactor, &tC);
+                            linear_algebra::gpu::gemm<false, false>(AB_prefactor, tB, tA, C_prefactor, &tC, stream);
                             return;
                         } else {
                             println("This GEMM case is not programmed: transpose_C {}, transpose_A {}, transpose_B {}", transpose_C,
@@ -836,7 +860,7 @@ auto einsum(const CDataType C_prefactor, const ::std::tuple<CIndices...> & /*Cs*
     // If we somehow make it here, then none of our algorithms above could be used. Attempt to use
     // the generic algorithm instead.
     ::einsums::tensor_algebra::gpu::detail::einsum_generic_algorithm(All_unique, C_indices, A_indices, B_indices, unique_all_dims,
-                                                                     C_prefactor, C, AB_prefactor, A, B, threads, blocks);
+                                                                     C_prefactor, C, AB_prefactor, A, B, threads, blocks, stream);
 }
 
 } // namespace detail
@@ -846,7 +870,7 @@ template <template <typename, size_t> typename AType, typename ADataType, size_t
           typename... CIndices, typename... AIndices, typename... BIndices, typename U>
 auto einsum(const U UC_prefactor, const ::std::tuple<CIndices...> &C_indices, CType<CDataType, CRank> *C, const U UAB_prefactor,
             const ::std::tuple<AIndices...> &A_indices, const AType<ADataType, ARank> &A, const ::std::tuple<BIndices...> &B_indices,
-            const BType<BDataType, BRank> &B)
+            const BType<BDataType, BRank> &B, hipStream_t stream)
     -> ::std::enable_if_t<::std::is_base_of_v<::einsums::detail::TensorBase<ADataType, ARank>, AType<ADataType, ARank>>
                               && ::std::is_base_of_v<::einsums::detail::TensorBase<BDataType, BRank>, BType<BDataType, BRank>>
                                   && ::std::is_base_of_v<::einsums::detail::TensorBase<CDataType, CRank>, CType<CDataType, CRank>>
@@ -870,12 +894,12 @@ auto einsum(const U UC_prefactor, const ::std::tuple<CIndices...> &C_indices, CT
 
     // Perform the einsum using only the generic algorithm
     timer::push("testing");
-    ::einsums::tensor_algebra::gpu::detail::einsum<true>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, A, B_indices, B);
+    ::einsums::tensor_algebra::gpu::detail::einsum<true>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, A, B_indices, B, stream);
     timer::pop();
 #endif
 
     // Perform the actual einsum
-    ::einsums::tensor_algebra::gpu::detail::einsum<false>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
+    ::einsums::tensor_algebra::gpu::detail::einsum<false>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B, stream);
 
 #if 0 // defined(EINSUMS_TEST_NANS)
     if constexpr (CRank != 0) {
