@@ -13,6 +13,47 @@
 #include "einsums.hpp"
 #include "src/backends/linear_algebra/hipblas/hipblas.hpp"
 
+__global__
+void time_waster(unsigned int max) {
+    volatile float value;
+    for(unsigned int i = 0; i < max; i++) {
+        value = __sinf(i);
+    }
+}
+
+TEST_CASE("GPU Timer", "[gpu]") {
+    einsums::gpu::hip_catch(hipFree(nullptr));
+
+    SECTION("Stream 0") {
+        einsums::timer::GPUTimer *timer = new einsums::timer::GPUTimer("Stream 0");
+
+        time_waster<<<dim3(256), dim3(4)>>>(0xffffU);
+
+        delete timer;
+
+        einsums::timer::report();
+    }
+
+    SECTION("Other stream") {
+        hipStream_t stream;
+
+        einsums::gpu::hip_catch(hipStreamCreate(&stream));
+
+        std::fprintf(stderr, "Stream: %p\n", stream);
+
+        einsums::timer::GPUTimer *timer = new einsums::timer::GPUTimer("Arbitrary stream", stream);
+
+        time_waster<<<dim3(256), dim3(4), 0, stream>>>(0xffffU);
+
+        delete timer;
+
+        einsums::timer::report();
+
+        einsums::gpu::hip_catch(hipStreamDestroy(stream));
+
+    }
+}
+
 TEST_CASE("GPU Energy Calculation", "[gpu]") {
 
     using namespace einsums;
