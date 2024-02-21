@@ -7,9 +7,18 @@
 
 #include "einsums/_Export.hpp"
 
+#include <chrono>
 #include <string>
 
 namespace einsums::timer {
+
+using clock      = std::chrono::high_resolution_clock;
+using time_point = std::chrono::time_point<clock>;
+using duration = std::chrono::high_resolution_clock::duration;
+
+namespace detail {
+struct TimerDetail;
+}
 
 void EINSUMS_EXPORT initialize();
 void EINSUMS_EXPORT finalize();
@@ -18,10 +27,19 @@ void EINSUMS_EXPORT report();
 
 void EINSUMS_EXPORT push(std::string name);
 void EINSUMS_EXPORT pop();
+void EINSUMS_EXPORT pop(duration elapsed);
 
 struct Timer {
-    Timer(const std::string &name) { push(name); }
-    ~Timer() { pop(); }
+  private:
+    time_point start;
+
+  public:
+    Timer(const std::string &name) {
+        start = clock::now();
+        push(name);
+    }
+
+    ~Timer() { pop(clock::now() - start); }
 };
 
 } // namespace einsums::timer

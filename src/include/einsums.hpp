@@ -14,6 +14,7 @@
 #include "einsums/GPUTensorAlgebra.hpp"
 #include "einsums/_GPUUtils.hpp"
 #include "einsums/GPULinearAlgebra.hpp"
+#include "einsums/GPUTimer.hpp"
 #endif
 
 #include "einsums/ElementOperations.hpp"
