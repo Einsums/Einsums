@@ -21,7 +21,7 @@ void time_waster(unsigned int max) {
     }
 }
 
-TEST_CASE("GPU Timer", "[gpu]") {
+TEST_CASE("GPU Timer", "[gpu][timer]") {
     einsums::gpu::hip_catch(hipFree(nullptr));
 
     SECTION("Stream 0") {
