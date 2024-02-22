@@ -632,7 +632,7 @@ auto einsum(const CDataType C_prefactor, const ::std::tuple<CIndices...> & /*Cs*
 
         return;
     } else if constexpr (element_wise_multiplication) {
-        timer::Timer const element_wise_multiplication{"element-wise multiplication"};
+        timer::GPUTimer const element_wise_multiplication{"element-wise multiplication"};
 
         auto target_dims = get_dim_ranges<CRank>(*C);
         auto view        = ::std::apply(ranges::views::cartesian_product, target_dims);
@@ -869,9 +869,9 @@ auto einsum(const U UC_prefactor, const ::std::tuple<CIndices...> &C_indices, CT
     testC = (DeviceTensor<CDataType, CRank>)*C;
 
     // Perform the einsum using only the generic algorithm
-    timer::push("testing");
+    timer::GPUTimer *testing = new timer::GPUTimer("testing");
     ::einsums::tensor_algebra::gpu::detail::einsum<true>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, A, B_indices, B);
-    timer::pop();
+    delete testing;
 #endif
 
     // Perform the actual einsum

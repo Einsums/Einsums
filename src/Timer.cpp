@@ -20,10 +20,7 @@
 
 namespace einsums::timer {
 
-using clock      = std::chrono::high_resolution_clock;
-using time_point = std::chrono::time_point<clock>;
-
-namespace {
+namespace detail {
 
 std::mutex lock;
 
@@ -50,6 +47,7 @@ TimerDetail *root;
 } // namespace
 
 void initialize() {
+    using namespace detail;
     root              = new TimerDetail();
     root->name        = "Total Run Time";
     root->total_calls = 1;
@@ -64,12 +62,13 @@ void initialize() {
 }
 
 void finalize() {
+    using namespace detail;
     assert(root == current_timer);
     delete root;
     root = current_timer = nullptr;
 }
 
-namespace {
+namespace detail {
 using std::chrono::duration_cast;
 using std::chrono::milliseconds;
 
@@ -104,10 +103,11 @@ void print_timer_info(TimerDetail *timer) { // NOLINT
 } // namespace
 
 void report() {
-    print_timer_info(root);
+    detail::print_timer_info(detail::root);
 }
 
 void push(std::string name) {
+    using namespace detail;
     // assert(current_timer != nullptr);
     static bool already_warned{false};
 
@@ -138,6 +138,7 @@ void push(std::string name) {
 }
 
 void pop() {
+    using namespace detail;
     static bool already_warned{false};
 
     std::lock_guard<std::mutex> guard(lock);
@@ -153,6 +154,28 @@ void pop() {
         }
 
         current_timer->total_time += clock::now() - current_timer->start_time;
+        current_timer->total_calls++;
+        current_timer = current_timer->parent;
+    }
+}
+
+void pop(duration elapsed) {
+    using namespace detail;
+    static bool already_warned{false};
+
+    std::lock_guard<std::mutex> guard(lock);
+
+    if (omp_get_thread_num() == 0) {
+        if (current_timer == nullptr) {
+            if (already_warned == false) {
+                println(
+                    "Timer::pop: current_timer is already nullptr; something might be wrong. This is the only warning you will receive.");
+                already_warned = true;
+            }
+            return;
+        }
+
+        current_timer->total_time += elapsed;
         current_timer->total_calls++;
         current_timer = current_timer->parent;
     }

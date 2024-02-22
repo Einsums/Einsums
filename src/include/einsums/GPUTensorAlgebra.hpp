@@ -14,7 +14,7 @@
 #include "einsums/Print.hpp"
 #include "einsums/STL.hpp"
 #include "einsums/Section.hpp"
-#include "einsums/Timer.hpp"
+#include "einsums/GPUTimer.hpp"
 #include "einsums/utility/SmartPointerTraits.hpp"
 
 #include <algorithm>
