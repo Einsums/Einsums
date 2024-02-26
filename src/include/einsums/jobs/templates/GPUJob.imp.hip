@@ -9,8 +9,8 @@
 #include "einsums/_Common.hpp"
 
 #include "einsums/GPUTensorAlgebra.hpp"
-#include "einsums/jobs/GPUEinsumJob.hpp"
-#include "einsums/jobs/Job.hpp"
+#include "einsums/jobs/GPUJob.hpp"
+#include "einsums/jobs/GPUJob.hpp"
 #include "einsums/jobs/ThreadPool.hpp"
 
 #include <atomic>
@@ -37,7 +37,7 @@ BEGIN_EINSUMS_NAMESPACE_HPP(einsums::jobs::gpu)
  */
 #define einsum_job GPUEinsumJob<AType, ABDataType, BType, CType, CDataType, CIndices, AIndices, BIndices>
 
-template_def einsum_job::gpu::GPUEinsumJob(CDataType C_prefactor, const CIndices &Cs, std::shared_ptr<WritePromise<CType>> C,
+template_def einsum_job::GPUEinsumJob(CDataType C_prefactor, const CIndices &Cs, std::shared_ptr<WritePromise<CType>> C,
                                    const ABDataType AB_prefactor, const AIndices &As, std::shared_ptr<ReadPromise<AType>> A,
                                    const BIndices &Bs, std::shared_ptr<ReadPromise<BType>> B, int num_threads_param, bool is_limit_hard)
     : Job(), _C_prefactor(C_prefactor), _AB_prefactor(AB_prefactor), _Cs(Cs), _As(As), _Bs(Bs), __num_threads(num_threads_param),
@@ -49,10 +49,10 @@ template_def einsum_job::gpu::GPUEinsumJob(CDataType C_prefactor, const CIndices
     synch = 0;
 
     __default_stream = true;
-    stream = 0;
+    __stream = 0;
 }
 
-template_def einsum_job::gpu::GPUEinsumJob(CDataType C_prefactor, const CIndices &Cs, std::shared_ptr<WritePromise<CType>> C,
+template_def einsum_job::GPUEinsumJob(CDataType C_prefactor, const CIndices &Cs, std::shared_ptr<WritePromise<CType>> C,
                                    const ABDataType AB_prefactor, const AIndices &As, std::shared_ptr<ReadPromise<AType>> A,
                                    const BIndices &Bs, std::shared_ptr<ReadPromise<BType>> B, hipStream_t stream, int num_threads_param, bool is_limit_hard)
     : Job(), _C_prefactor(C_prefactor), _AB_prefactor(AB_prefactor), _Cs(Cs), _As(As), _Bs(Bs), __num_threads(num_threads_param),
@@ -64,10 +64,10 @@ template_def einsum_job::gpu::GPUEinsumJob(CDataType C_prefactor, const CIndices
     synch = 0;
 
     __default_stream = false;
-    stream = stream;
+    __stream = stream;
 }
 
-template_def einsum_job::~EinsumJob() {
+template_def einsum_job::~GPUEinsumJob() {
     delete[] work;
 }
 
@@ -77,12 +77,23 @@ template_def void einsum_job::run() {
     auto B = _B->get();
     auto C = _C->get();
 
-    this->set_state(detail::RUNNING);
+    this->set_state(einsums::jobs::detail::RUNNING);
 
     if(this->__default_stream) {
-        einsums::tensor_algebra::gpu::einsum();
+        einsums::tensor_algebra::gpu::einsum(_C_prefactor, _Cs, &C, _AB_prefactor, _As, A, _Bs, B);
 
-        hip_catch(hipDeviceSynchronize());
+        einsums::gpu::hip_catch(hipDeviceSynchronize());
+    } else {
+        einsums::tensor_algebra::gpu::einsum(_C_prefactor, _Cs, &C, _AB_prefactor, _As, A, _Bs, B, __stream);
+        hipEvent_t wait_event;
+
+        einsums::gpu::hip_catch(hipEventCreate(&wait_event));
+
+        einsums::gpu::hip_catch(hipEventRecord(wait_event, __stream));
+
+        while(hipEventQuery(wait_event) == hipErrorNotReady) {
+            std::this_thread::yield();
+        }
     }
 
 
@@ -90,7 +101,7 @@ template_def void einsum_job::run() {
     _A->release();
     _B->release();
 
-    this->set_state(detail::FINISHED);
+    this->set_state(einsums::jobs::detail::FINISHED);
 
     std::atomic_thread_fence(std::memory_order_acq_rel);
 }

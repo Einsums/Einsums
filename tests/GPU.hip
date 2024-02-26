@@ -2548,6 +2548,7 @@ TEST_CASE("GPU Energy Calculation", "[gpu]") {
     H.read(H_host);
     F.read(H_host);
     TEI.read(ERI_host);
+    hip_catch(hipDeviceSynchronize());
 
     // Calculate the unitary matrix.
     hipblasHandle_t   blas_handle   = hipblas::detail::get_blas_handle();
@@ -2578,6 +2579,7 @@ TEST_CASE("GPU Energy Calculation", "[gpu]") {
     }
 
     einsums::linear_algebra::gpu::symm_gemm<false, false>(work2, work, &X);
+    hip_catch(hipDeviceSynchronize());
 
     // while loop.
     DeviceTensor<double, 0> energy("Energy", DEV_ONLY);
@@ -2593,8 +2595,6 @@ TEST_CASE("GPU Energy Calculation", "[gpu]") {
         hipsolver_catch(hipsolverDsyevd(solver_handle, HIPSOLVER_EIG_MODE_VECTOR, HIPSOLVER_FILL_MODE_UPPER, 7, work.data(), work.stride(0),
                                         eig_real.data(), gpu_work, lwork, dev_info));
 
-        hip_catch(hipDeviceSynchronize());
-
         // Find C.
         einsums::linear_algebra::gpu::gemm<false, true>(1.0, X, work, 0.0, &C);
 
@@ -2609,6 +2609,8 @@ TEST_CASE("GPU Energy Calculation", "[gpu]") {
 
         tensor_algebra::gpu::einsum(0.0, Indices{}, &energy, 1.0, Indices{index::r, index::s}, D, Indices{index::r, index::s}, work);
 
+        hip_catch(hipDeviceSynchronize());
+
         energy2 = energy1;
         energy1 = (double)energy;
 
@@ -2618,6 +2620,8 @@ TEST_CASE("GPU Energy Calculation", "[gpu]") {
                                     Indices{index::r, index::s, index::t, index::u}, TEI);
         tensor_algebra::gpu::einsum(1.0, Indices{index::r, index::s}, &F, -1.0, Indices{index::t, index::u}, D,
                                     Indices{index::r, index::t, index::s, index::u}, TEI);
+
+        hip_catch(hipDeviceSynchronize());
 
         // Increase the count.
         count++;

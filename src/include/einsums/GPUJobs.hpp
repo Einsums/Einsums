@@ -5,7 +5,7 @@
 
 #include "einsums/TensorAlgebra.hpp"
 #include "einsums/jobs/Job.hpp"
-#include "einsums/jobs/EinsumJob.hpp"
+#include "einsums/jobs/GPUJob.hpp"
 #include "einsums/jobs/JobManager.hpp"
 #include "einsums/jobs/ReadPromise.hpp"
 #include "einsums/jobs/Resource.hpp"
@@ -34,7 +34,7 @@ template <typename AType, typename ABDataType, typename BType, typename CType, t
           typename... AIndices, typename... BIndices>
 auto einsum(CDataType C_prefactor, const std::tuple<CIndices...> &Cs, std::shared_ptr<Resource<CType>> &C, const ABDataType AB_prefactor,
             const std::tuple<AIndices...> &As, std::shared_ptr<Resource<AType>> &A, const std::tuple<BIndices...> &Bs,
-            std::shared_ptr<Resource<BType>> &B)
+            std::shared_ptr<Resource<BType>> &B, hipStream_t stream = nullptr, int num_threads = 1, bool is_limit_hard = true)
     -> std::shared_ptr<GPUEinsumJob<AType, ABDataType, BType, CType, CDataType, std::tuple<CIndices...>, std::tuple<AIndices...>,
                                  std::tuple<BIndices...>>> {
     // Start of function
@@ -45,7 +45,7 @@ auto einsum(CDataType C_prefactor, const std::tuple<CIndices...> &Cs, std::share
     std::shared_ptr<ReadPromise<AType>>  A_lock = A->read_promise();
     std::shared_ptr<ReadPromise<BType>>  B_lock = B->read_promise();
     outtype           *out =
-        new outtype(C_prefactor, Cs, C_lock, AB_prefactor, As, A_lock, Bs, B_lock);
+        new outtype(C_prefactor, Cs, C_lock, AB_prefactor, As, A_lock, Bs, B_lock, stream, num_threads, is_limit_hard);
 
     // Queue the job.
     std::shared_ptr<outtype> out_weak = JobManager::get_singleton().queue_job(out);
@@ -67,16 +67,16 @@ auto einsum(CDataType C_prefactor, const std::tuple<CIndices...> &Cs, std::share
 template <typename AType, typename BType, typename CType, typename... CIndices, typename... AIndices, typename... BIndices>
 auto einsum(const std::tuple<CIndices...> &C_indices, std::shared_ptr<Resource<CType>> &C, const std::tuple<AIndices...> &A_indices,
             std::shared_ptr<Resource<AType>> &A, const std::tuple<BIndices...> &B_indices, std::shared_ptr<Resource<BType>> &B,
-            int num_threads = 1, bool is_limit_hard = true)
+            hipStream_t stream = nullptr, int num_threads = 1, bool is_limit_hard = true)
     -> std::shared_ptr<
         GPUEinsumJob<AType,
-                  std::conditional_t<sizeof(typename AType::datatype) < sizeof(typename BType::datatype), typename BType::datatype,
-                                     typename AType::datatype>,
-                  BType, CType, typename CType::datatype, std::tuple<CIndices...>, std::tuple<AIndices...>, std::tuple<BIndices...>>> {
-    return einsum((typename CType::datatype)0, C_indices, C,
-                  (std::conditional_t<sizeof(typename AType::datatype) < sizeof(typename BType::datatype), typename BType::datatype,
-                                      typename AType::datatype>)1,
-                  A_indices, A, B_indices, B);
+                  std::conditional_t<sizeof(typename AType::host_datatype) < sizeof(typename BType::host_datatype), typename BType::host_datatype,
+                                     typename AType::host_datatype>,
+                  BType, CType, typename CType::host_datatype, std::tuple<CIndices...>, std::tuple<AIndices...>, std::tuple<BIndices...>>> {
+    return einsum((typename CType::host_datatype)0, C_indices, C,
+                  (std::conditional_t<sizeof(typename AType::host_datatype) < sizeof(typename BType::host_datatype), typename BType::host_datatype,
+                                      typename AType::host_datatype>)1,
+                  A_indices, A, B_indices, B, stream, num_threads, is_limit_hard);
 }
 
 END_EINSUMS_NAMESPACE_HPP(einsums::jobs::gpu)

@@ -40,7 +40,7 @@ template <typename AType, typename ABDataType, typename BType, typename CType, t
           typename... AIndices, typename... BIndices>
 auto einsum(CDataType C_prefactor, const std::tuple<CIndices...> &Cs, std::shared_ptr<Resource<CType>> &C, const ABDataType AB_prefactor,
             const std::tuple<AIndices...> &As, std::shared_ptr<Resource<AType>> &A, const std::tuple<BIndices...> &Bs,
-            std::shared_ptr<Resource<BType>> &B)
+            std::shared_ptr<Resource<BType>> &B, int num_threads = 1, bool is_limit_hard = true)
     -> std::shared_ptr<EinsumJob<AType, ABDataType, BType, CType, CDataType, std::tuple<CIndices...>, std::tuple<AIndices...>,
                                  std::tuple<BIndices...>>> {
     // Start of function
@@ -51,7 +51,7 @@ auto einsum(CDataType C_prefactor, const std::tuple<CIndices...> &Cs, std::share
     std::shared_ptr<ReadPromise<AType>>  A_lock = A->read_promise();
     std::shared_ptr<ReadPromise<BType>>  B_lock = B->read_promise();
     outtype           *out =
-        new outtype(C_prefactor, Cs, C_lock, AB_prefactor, As, A_lock, Bs, B_lock);
+        new outtype(C_prefactor, Cs, C_lock, AB_prefactor, As, A_lock, Bs, B_lock, num_threads, is_limit_hard);
 
     // Queue the job.
     std::shared_ptr<outtype> out_weak = JobManager::get_singleton().queue_job(out);
@@ -82,7 +82,7 @@ auto einsum(const std::tuple<CIndices...> &C_indices, std::shared_ptr<Resource<C
     return einsum((typename CType::datatype)0, C_indices, C,
                   (std::conditional_t<sizeof(typename AType::datatype) < sizeof(typename BType::datatype), typename BType::datatype,
                                       typename AType::datatype>)1,
-                  A_indices, A, B_indices, B);
+                  A_indices, A, B_indices, B, num_threads, is_limit_hard);
 }
 
 END_EINSUMS_NAMESPACE_HPP(einsums::jobs)

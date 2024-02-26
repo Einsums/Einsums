@@ -248,18 +248,30 @@ __host__ void __hip_catch__(hipError_t condition, const char *diagnostic, bool t
     }
 }
 
+static hipMemPool_t pool;
+
 void initialize() {
     hip_catch(hipFree(nullptr));
 
     hip_catch(hipSetDevice(0));
+
+    hipMemPoolProps props;
+
+    props.allocType = hipMemAllocationTypePinned;
+    props.handleTypes = (hipMemAllocationHandleType) (hipMemHandleTypePosixFileDescriptor | hipMemHandleTypeWin32Kmt);
+    props.location = {hipMemLocationTypeDevice, 0};
+
+
+    hip_catch(hipMemPoolCreate(&pool, &props));
 }
 
 void finalize() {
     // hip_catch(hipDeviceReset());
+    hip_catch(hipMemPoolDestroy(pool));
 }
 
-void hip_free_callback(hipStream_t stream, hipError_t status, void *data) {
-    hip_catch(hipFree(data));
+__host__ hipMemPool_t &get_scale_pool() {
+    return pool;
 }
 
 END_EINSUMS_NAMESPACE_CPP(einsums::gpu)

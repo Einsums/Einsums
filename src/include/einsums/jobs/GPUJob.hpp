@@ -8,6 +8,9 @@
 
 #include <atomic>
 
+#include <hip/hip_common.h>
+#include <hip/hip_runtime_api.h>
+
 BEGIN_EINSUMS_NAMESPACE_HPP(einsums::jobs::gpu)
 
 /**
@@ -106,14 +109,14 @@ class GPUEinsumJob : public Job {
      *
      * True if the job should be placed on the default stream. False if a stream has been specified.
      */
-    bool __default_stream
+    bool __default_stream;
 
     /**
      * @var stream
      *
      * The stream to run the job. Ignored if __default_stream is true.
      */
-    hipStream_t stream;
+    hipStream_t __stream;
 
   public:
     /**

@@ -18,8 +18,8 @@
  */
 #ifndef NDEBUG
 #    define debug(fmt, ...)                                                                                                                \
-        std::fprintf(stderr, fmt __VA_OPT__(, ) __VA_ARGS__);                                                                              \
-        std::fflush(stderr)
+        std::fprintf(stdout, fmt __VA_OPT__(, ) __VA_ARGS__);                                                                              \
+        std::fflush(stdout)
 #else
 #    define debug(fmt, args...)
 #endif

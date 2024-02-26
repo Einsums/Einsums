@@ -54,6 +54,13 @@ extend_einsums_target(test-all
         hip::device
 )
 
+extend_einsums_target(test-all
+    SOURCES
+        GPUTensorAlgebra_Jobs.hip
+    CONDITION
+        EINSUMS_BUILD_HIP AND EINSUMS_JOB_QUEUES
+)
+
 set_source_files_properties(TensorAlgebra_Jobs.cpp PROPERTIES COMPILE_OPTIONS "-Werror")
 
 # Enable einsum auto test capabilities
