@@ -909,7 +909,7 @@ auto einsum(const U UC_prefactor, const ::std::tuple<CIndices...> &C_indices, CT
 
     // Perform the einsum using only the generic algorithm
     timer::GPUTimer *testing = new timer::GPUTimer("testing");
-    ::einsums::tensor_algebra::gpu::detail::einsum<true>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, A, B_indices, B);
+    ::einsums::tensor_algebra::gpu::detail::einsum<true>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, A, B_indices, B, stream);
     delete testing;
 #endif
 
