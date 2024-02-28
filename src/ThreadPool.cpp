@@ -425,3 +425,22 @@ void ThreadPool::wait_on_running() {
         std::this_thread::yield();
     }
 }
+
+void einsums::jobs::sync() {
+    Job *job = ThreadPool::get_singleton().thread_job(std::this_thread::get_id()).lock().get();
+    job->set_state(einsums::jobs::detail::SYNC);
+    job->inc_sync();
+
+    std::atomic_thread_fence(std::memory_order_acq_rel);
+
+    while(job->get_state() == einsums::jobs::detail::SYNC) {
+        std::this_thread::yield();
+
+        if(ThreadPool::get_singleton().index(std::this_thread::get_id()) == 0 && job->get_sync() == ThreadPool::get_singleton().compute_threads(std::this_thread::get_id())) {
+            job->set_sync(0);
+            job->set_state(einsums::jobs::detail::RUNNING);
+        }
+
+        std::atomic_thread_fence(std::memory_order_acq_rel);
+    }
+}

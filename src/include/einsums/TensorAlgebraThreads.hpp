@@ -5,6 +5,9 @@
 #include "einsums/_Index.hpp"
 #include "einsums/_TensorAlgebraUtilities.hpp"
 
+#include "einsums/jobs/Job.hpp"
+#include "einsums/jobs/ThreadPool.hpp"
+
 #include "einsums/LinearAlgebra.hpp"
 #include "einsums/OpenMP.h"
 #include "einsums/Print.hpp"
@@ -84,7 +87,7 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
         target_value *= C_prefactor;
         target_value += sum;
     } else if constexpr (sizeof...(LinkDims) != 0) {
-        for (auto it = std::next(view.begin(), thread_id); it < view.end(); it = std::next(it, num_threads)) {
+        for (auto it = std::next(view.begin(), thread_id); it < view.end(); it = (std::distance(it, view.end()) >= num_threads)? std::next(it, num_threads): view.end()) {
             // println("target_combination: {}", print_tuple_no_type(target_combination));
             auto C_order = einsums::tensor_algebra::detail::construct_indices_from_unique_combination<CIndices...>(
                 C_unique, *it, target_position_in_C, std::tuple<>(), std::tuple<>(), target_position_in_C);
@@ -126,7 +129,7 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
         // println("BIndices... {}", print_tuple_no_type(B_indices));
         // println("CIndices... {}", print_tuple_no_type(C_indices));
 
-        for (auto it = std::next(view.begin(), thread_id); it < view.end(); it = std::next(it, num_threads)) {
+        for (auto it = std::next(view.begin(), thread_id); it < view.end(); it = (std::distance(it, view.end()) >= num_threads)? std::next(it, num_threads): view.end()) {
 
             // Construct the tuples that will be used to access the tensor elements of A and B
             auto A_order = einsums::tensor_algebra::detail::construct_indices_from_unique_combination<AIndices...>(
@@ -674,6 +677,12 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
 
     // Perform the actual einsum
     detail::einsum<false>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B, num_threads, thread_id, work, synch);
+
+    // einsums::jobs::sync();
+
+    if(einsums::jobs::ThreadPool::get_singleton().index(std::this_thread::get_id()) != 0) {
+        return;
+    }
 
 #if defined(EINSUMS_TEST_NANS)
     if constexpr (CRank != 0) {

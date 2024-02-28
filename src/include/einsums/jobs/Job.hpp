@@ -50,6 +50,13 @@ enum JobState {
     RUNNING,
 
     /**
+     * @var SYNC
+     *
+     * The job is waiting for the other threads to synchronize.
+     */
+    SYNC,
+
+    /**
      * @var FINISHED
      *
      * The job has finished running.
@@ -94,10 +101,12 @@ class Job {
 
     detail::JobState curr_state;
 
+    unsigned int synced;
+
     friend struct std::hash<Job>;
 
   public:
-    Job(int priority = 0) : priority(priority), curr_state(detail::CREATED) {
+    Job(int priority = 0) : priority(priority), curr_state(detail::CREATED), synced(0) {
         Job::serialized_mutex.lock();
         serial = Job::curr_serial;
         Job::curr_serial++;
@@ -130,6 +139,27 @@ class Job {
     }
 
     /**
+     * Increment the number of syncing threads.
+     */
+    virtual void inc_sync() {
+        this->synced++;
+    }
+
+    /**
+     * Set the number of synced threads.
+     */
+    virtual void set_sync(unsigned int value) {
+        this->synced = value;
+    }
+
+    /**
+     * Get the number of synced threads.
+     */
+    virtual unsigned int get_sync() {
+        return this->synced;
+    }
+
+    /**
      * Return any error that the job may have encountered.
      */
     virtual const std::exception &get_error() const { return *new std::exception(); }
@@ -159,6 +189,8 @@ class Job {
      */
     virtual bool can_have_fewer() { return false; }
 };
+
+EINSUMS_EXPORT void sync();
 
 END_EINSUMS_NAMESPACE_HPP(einsums::jobs)
 

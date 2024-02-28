@@ -249,3 +249,4 @@ int JobManager::total_jobs() {
     this->mutex.unlock();
     return ret;
 }
+
