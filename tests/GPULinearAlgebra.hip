@@ -18,9 +18,6 @@ TEMPLATE_TEST_CASE("GPU Tensor GEMMs", "[gpu][linear-algebra]", float, double, s
     using namespace einsums::gpu;
     using namespace einsums::gpu::detail;
 
-    gpu::initialize();
-    einsums::backend::linear_algebra::hipblas::initialize();
-
     DeviceTensor<TestType, 2> A("A", DEV_ONLY, 3, 3), B("B", DEV_ONLY, 3, 3), C("C", DEV_ONLY, 3, 3);
 
     // Input data.
@@ -74,8 +71,6 @@ TEMPLATE_TEST_CASE("GPU Tensor GEMMs", "[gpu][linear-algebra]", float, double, s
     }
 
     delete[] C_data;
-
-    einsums::backend::linear_algebra::hipblas::finalize();
 }
 
 TEMPLATE_TEST_CASE("GPU dot products", "[gpu][linear-algebra]", float, double, std::complex<float>, std::complex<double>) {
@@ -83,9 +78,6 @@ TEMPLATE_TEST_CASE("GPU dot products", "[gpu][linear-algebra]", float, double, s
     using namespace einsums::detail;
     using namespace einsums::gpu;
     using namespace einsums::gpu::detail;
-
-    gpu::initialize();
-    einsums::backend::linear_algebra::hipblas::initialize();
 
     DeviceTensor<TestType, 2> A("A", DEV_ONLY, 3, 3), B("B", DEV_ONLY, 3, 3);
     DeviceTensor<TestType, 0> C("C", DEV_ONLY);
@@ -100,8 +92,6 @@ TEMPLATE_TEST_CASE("GPU dot products", "[gpu][linear-algebra]", float, double, s
     hip_catch(hipDeviceSynchronize());
 
     REQUIRE((TestType)C == (TestType)3135.0);
-
-    einsums::backend::linear_algebra::hipblas::finalize();
 }
 
 TEMPLATE_TEST_CASE("GPU outer products", "[gpu][linear-algebra]", float, double, std::complex<float>, std::complex<double>) {
@@ -109,9 +99,6 @@ TEMPLATE_TEST_CASE("GPU outer products", "[gpu][linear-algebra]", float, double,
     using namespace einsums::detail;
     using namespace einsums::gpu;
     using namespace einsums::gpu::detail;
-
-    gpu::initialize();
-    einsums::backend::linear_algebra::hipblas::initialize();
 
     DeviceTensor<TestType, 1> A("A", DEV_ONLY, 3), B("B", DEV_ONLY, 3);
     DeviceTensor<TestType, 2> C("C", DEV_ONLY, 3, 3);
@@ -131,8 +118,6 @@ TEMPLATE_TEST_CASE("GPU outer products", "[gpu][linear-algebra]", float, double,
     for (int i = 0; i < 9; i++) {
         CHECK(C(i / 3, i % 3).get() == comp_data[i]);
     }
-
-    einsums::backend::linear_algebra::hipblas::finalize();
 }
 
 TEMPLATE_TEST_CASE("GPU Matrix vector products", "[gpu][linear-algebra]", float, double, std::complex<float>, std::complex<double>) {
@@ -140,9 +125,6 @@ TEMPLATE_TEST_CASE("GPU Matrix vector products", "[gpu][linear-algebra]", float,
     using namespace einsums::detail;
     using namespace einsums::gpu;
     using namespace einsums::gpu::detail;
-
-    gpu::initialize();
-    einsums::backend::linear_algebra::hipblas::initialize();
 
     DeviceTensor<TestType, 2> A("A", DEV_ONLY, 3, 3);
     DeviceTensor<TestType, 1> B("B", DEV_ONLY, 3);
@@ -172,8 +154,6 @@ TEMPLATE_TEST_CASE("GPU Matrix vector products", "[gpu][linear-algebra]", float,
     for (int i = 0; i < 3; i++) {
         CHECK(C(i).get() == comp_data[i]);
     }
-
-    einsums::backend::linear_algebra::hipblas::finalize();
 }
 
 TEMPLATE_TEST_CASE("GPU scale", "[gpu][linear-algebra]", float, double, std::complex<float>, std::complex<double>) {
@@ -181,9 +161,6 @@ TEMPLATE_TEST_CASE("GPU scale", "[gpu][linear-algebra]", float, double, std::com
     using namespace einsums::detail;
     using namespace einsums::gpu;
     using namespace einsums::gpu::detail;
-
-    gpu::initialize();
-    einsums::backend::linear_algebra::hipblas::initialize();
 
     DeviceTensor<TestType, 2> A("A", DEV_ONLY, 3, 3);
 
@@ -208,9 +185,6 @@ TEMPLATE_TEST_CASE("Test Symmetric Multiplication", "[gpu][linear-algebra]", flo
     using namespace einsums::detail;
     using namespace einsums::gpu;
     using namespace einsums::gpu::detail;
-
-    gpu::initialize();
-    einsums::backend::linear_algebra::hipblas::initialize();
 
     DeviceTensor<double, 2> A("A", DEV_ONLY, 3, 3), B("B", DEV_ONLY, 3, 3), C("C", DEV_ONLY, 3, 3);
 
@@ -267,6 +241,4 @@ TEMPLATE_TEST_CASE("Test Symmetric Multiplication", "[gpu][linear-algebra]", flo
     }
 
     delete[] C_data;
-
-    einsums::backend::linear_algebra::hipblas::finalize();
 }

@@ -7,6 +7,7 @@ add_executable(test-all
     Polynomial.cpp
     Tensor.cpp
     TensorAlgebra.cpp
+    TensorAlgebraTasks.cpp
 )
 
 if(EINSUMS_COVERAGE)
@@ -33,18 +34,12 @@ extend_einsums_target(test-all
 
 extend_einsums_target(test-all
     SOURCES
-        TensorAlgebra_Jobs.cpp
-    CONDITION
-        EINSUMS_JOB_QUEUES
-)
-
-extend_einsums_target(test-all
-    SOURCES
         DeviceTensor_extras.hip
         DeviceTensor.hip
         DeviceTensorView.hip
         GPULinearAlgebra.hip
         GPU.hip
+        GPUTensorAlgebraTasks.hip
     CONDITION
         EINSUMS_BUILD_HIP
     PUBLIC_DEPENDS
@@ -52,13 +47,6 @@ extend_einsums_target(test-all
         roc::hipsolver
         hip::host
         hip::device
-)
-
-extend_einsums_target(test-all
-    SOURCES
-        GPUTensorAlgebra_Jobs.hip
-    CONDITION
-        EINSUMS_BUILD_HIP AND EINSUMS_JOB_QUEUES
 )
 
 set_source_files_properties(TensorAlgebra_Jobs.cpp PROPERTIES COMPILE_OPTIONS "-Werror")

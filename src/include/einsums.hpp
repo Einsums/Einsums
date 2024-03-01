@@ -26,7 +26,7 @@
 #include "einsums/polynomial/Laguerre.hpp"
 #include "einsums/polynomial/Utilities.hpp"
 
-#include "einsums/Jobs.hpp"
+//#include "einsums/Jobs.hpp"
 
 #ifdef __HIP__
 #include "einsums/DeviceTensor.hpp"
@@ -34,5 +34,5 @@
 #include "einsums/GPUTensorAlgebra.hpp"
 #include "einsums/_GPUUtils.hpp"
 #include "einsums/GPULinearAlgebra.hpp"
-#include "einsums/GPUJobs.hpp"
+//#include "einsums/GPUJobs.hpp"
 #endif

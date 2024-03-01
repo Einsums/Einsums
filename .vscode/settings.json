@@ -49,6 +49,5 @@
         "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd"
     },
     "cmake.configureArgs": [
-        "-DEINSUMS_JOB_QUEUES=ON"
     ]
 }

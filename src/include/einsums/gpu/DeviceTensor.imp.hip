@@ -783,6 +783,62 @@ auto DeviceTensor<T, Rank>::assign(const DeviceTensor<TOther, Rank> &other, hipS
 }
 
 template <typename T, size_t Rank>
+DeviceTensor<T, Rank> &DeviceTensor<T, Rank>::assign(const Tensor<T, Rank> &other) {
+    using namespace einsums::gpu;
+    bool realloc{false};
+    for (int i = 0; i < Rank; i++) {
+        if (dim(i) == 0 || (dim(i) != other.dim(i)))
+            realloc = true;
+    }
+
+    if (realloc) {
+        struct Stride {
+            size_t value{1};
+            Stride() = default;
+            auto operator()(size_t dim) -> size_t {
+                auto old_value = value;
+                value *= dim;
+                return old_value;
+            }
+        };
+
+        _dims = other.dims();
+
+        // Row-major order of dimensions
+        ::std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
+        size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
+
+        if (this->_mode == einsums::detail::MAPPED) {
+            hip_catch(hipHostUnregister((void *)this->_host_data));
+
+            delete[] this->_host_data;
+            this->_host_data = new T[size];
+
+            hip_catch(hipHostRegister((void *)this->_host_data, size * sizeof(T), hipHostRegisterDefault));
+
+            hip_catch(hipHostGetDevicePointer((void **)&(this->_data), (void *)this->_host_data, 0));
+        } else if (this->_mode == einsums::detail::PINNED) {
+            hip_catch(hipHostFree((void *)this->_host_data));
+
+            hip_catch(hipHostMalloc((void **)&(this->_host_data), size * sizeof(T), 0));
+
+            hip_catch(hipHostGetDevicePointer((void **)&(this->_data), (void *)this->_host_data, 0));
+        } else if (this->_mode == einsums::detail::DEV_ONLY) {
+            hip_catch(hipFree((void *)this->_data));
+
+            hip_catch(hipMalloc((void **)&(this->_data), size * sizeof(T)));
+        }
+
+        hip_catch(hipMemcpy((void *)this->_gpu_dims, (const void *)this->_dims.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
+        hip_catch(hipMemcpy((void *)this->_gpu_strides, (const void *)this->_strides.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
+    }
+
+    hip_catch(hipMemcpy((void *) this->_data, (const void *) other.data(), this->size(), hipMemcpyHostToDevice));
+
+    return *this;
+}
+
+template <typename T, size_t Rank>
 template <typename TOther>
 requires(!std::same_as<T, TOther>)
 auto DeviceTensor<T, Rank>::assign(const DeviceTensorView<TOther, Rank> &other, hipStream_t stream) -> DeviceTensor<T, Rank> & {
@@ -807,6 +863,12 @@ template <typename T, size_t Rank>
  template <typename T, size_t Rank>
     template <typename TOther>
     auto DeviceTensor<T, Rank>::operator=(const DeviceTensorView<TOther, Rank> &other) -> DeviceTensor<T, Rank> & {
+        return this->assign(other);
+    }
+
+
+template <typename T, size_t Rank>
+    auto DeviceTensor<T, Rank>::operator=(const Tensor<T, Rank> &other) -> DeviceTensor<T, Rank> & {
         return this->assign(other);
     }
 

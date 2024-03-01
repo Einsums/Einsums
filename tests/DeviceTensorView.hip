@@ -15,8 +15,6 @@ TEST_CASE("Constructing Views", "[gpu][tensor]") {
     using namespace einsums::gpu;
     using namespace einsums::gpu::detail;
 
-    einsums::gpu::initialize();
-
     // Create tensors for testing.
     DeviceTensor<double, 2> A("A", einsums::detail::DEV_ONLY, 3, 3);
     DeviceTensor<double, 2> B("B", einsums::detail::MAPPED, 3, 3);
@@ -93,8 +91,6 @@ TEST_CASE("GPU View Set all", "[gpu][tensor]") {
     using namespace einsums;
     using namespace einsums::gpu;
     using namespace einsums::gpu::detail;
-
-    gpu::initialize();
 
     DeviceTensor<double, 2> A("A", einsums::detail::DEV_ONLY, 3, 3);
     DeviceTensor<double, 2> B("B", einsums::detail::MAPPED, 3, 3);

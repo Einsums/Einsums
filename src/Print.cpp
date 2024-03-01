@@ -110,8 +110,66 @@ void print_line(const std::string &line) {
 
         std::lock_guard<std::mutex> guard(print::lock);
         std::printf("%s", line_header.c_str());
-        std::printf("%s", line.c_str());
-        std::printf("\n");
+        std::printf("%s\n", line.c_str());
+    }
+}
+
+void fprint_line(std::FILE *fp, const std::string &line) {
+#if defined(EINSUMS_IN_PARALLEL)
+    einsums::mpi::ErrorOr<int> size = einsums::mpi::rank();
+    int                        rank = size.value();
+#else
+    constexpr int rank = 0;
+#endif
+
+    if (rank == 0) {
+        std::string line_header;
+
+        if (omp_in_parallel()) {
+            if (omp_get_thread_num() == 0) {
+                std::ostringstream oss;
+                oss << "[ main #" << std::setw(6) << 0 << " ] ";
+                line_header = oss.str();
+            } else {
+                std::ostringstream oss;
+                oss << "[ tid  #" << std::setw(6) << omp_get_thread_num() << " ] ";
+                line_header = oss.str();
+            }
+        }
+        line_header.append(print::indent_string);
+
+        std::lock_guard<std::mutex> guard(print::lock);
+        std::fprintf(fp, "%s", line_header.c_str());
+        std::fprintf(fp, "%s\n", line.c_str());
+    }
+}
+
+void fprint_line(std::ostream &os, const std::string &line) {
+#if defined(EINSUMS_IN_PARALLEL)
+    einsums::mpi::ErrorOr<int> size = einsums::mpi::rank();
+    int                        rank = size.value();
+#else
+    constexpr int rank = 0;
+#endif
+
+    if (rank == 0) {
+        std::string line_header;
+
+        if (omp_in_parallel()) {
+            if (omp_get_thread_num() == 0) {
+                std::ostringstream oss;
+                oss << "[ main #" << std::setw(6) << 0 << " ] ";
+                line_header = oss.str();
+            } else {
+                std::ostringstream oss;
+                oss << "[ tid  #" << std::setw(6) << omp_get_thread_num() << " ] ";
+                line_header = oss.str();
+            }
+        }
+        line_header.append(print::indent_string);
+
+        std::lock_guard<std::mutex> guard(print::lock);
+        os << line_header << line << std::endl;
     }
 }
 
@@ -124,6 +182,26 @@ void println(const std::string &str) {
 
         for (std::string line; std::getline(iss, line);) {
             print_line(line);
+        }
+    }
+}
+
+void fprintln(std::FILE *fp, const std::string &str) {
+    if (print::suppress == false) {
+        std::istringstream iss(str);
+
+        for (std::string line; std::getline(iss, line);) {
+            fprint_line(fp, line);
+        }
+    }
+}
+
+void fprintln(std::ostream &os, const std::string &str) {
+    if (print::suppress == false) {
+        std::istringstream iss(str);
+
+        for (std::string line; std::getline(iss, line);) {
+            fprint_line(os, line);
         }
     }
 }

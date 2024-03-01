@@ -24,6 +24,10 @@ void EINSUMS_EXPORT initialize();
 void EINSUMS_EXPORT finalize();
 
 void EINSUMS_EXPORT report();
+void EINSUMS_EXPORT report(const std::string &fname);
+void EINSUMS_EXPORT report(const char *fname);
+void EINSUMS_EXPORT report(std::FILE *fp);
+void EINSUMS_EXPORT report(std::ostream &os);
 
 void EINSUMS_EXPORT push(std::string name);
 void EINSUMS_EXPORT pop();

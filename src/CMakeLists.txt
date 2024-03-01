@@ -28,14 +28,14 @@ add_einsums_library(einsums
 )
 target_compile_features(einsums PUBLIC cxx_std_20)
 
-extend_einsums_target(einsums
-  SOURCES
-      JobManager.cpp
-      ThreadPool.cpp
-      TensorAlgebraThreads.cpp
-  CONDITION
-      EINSUMS_JOB_QUEUES
-)
+#extend_einsums_target(einsums
+#  SOURCES
+#      JobManager.cpp
+#      ThreadPool.cpp
+#      TensorAlgebraThreads.cpp
+#  CONDITION
+#      EINSUMS_JOB_QUEUES
+#)
 
 extend_einsums_target(einsums
     SOURCES
