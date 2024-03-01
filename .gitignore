@@ -49,6 +49,7 @@ _deps
 # Items specific to einsums
 *.h5
 .cache
+*timings.txt*
 
 # Visual Studio files
 .vs
