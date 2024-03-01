@@ -59,7 +59,6 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
 
     if constexpr (sizeof...(CIndices) == 0 && sizeof...(LinkDims) != 0) {
         CDataType sum{0};
-#pragma omp parallel for simd reduction(+: sum)
         for (auto link_combination : std::apply(ranges::views::cartesian_product, link_dims)) {
             // Print::Indent _indent;
 
