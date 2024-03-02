@@ -214,6 +214,12 @@ __host__ EINSUMS_EXPORT void initialize();
  */
 __host__ EINSUMS_EXPORT void finalize();
 
+/**
+ * Returns the memory pool used for allocating scale values in linear algebra calls.
+ * This should hopefully fix the issue of allocating a whole page of memory for a single float.
+ */
+__host__ EINSUMS_EXPORT hipMemPool_t &get_scale_pool();
+
 #define KERNEL(bound) __global__ __launch_bounds__((bound))
 
 /**

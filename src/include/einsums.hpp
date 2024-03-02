@@ -8,15 +8,6 @@
 #include "einsums/Blas.hpp"
 #include "einsums/Decomposition.hpp"
 
-#ifdef __HIP__
-#include "einsums/DeviceTensor.hpp"
-#include "einsums/_GPUCast.hpp"
-#include "einsums/GPUTensorAlgebra.hpp"
-#include "einsums/_GPUUtils.hpp"
-#include "einsums/GPULinearAlgebra.hpp"
-#include "einsums/GPUTimer.hpp"
-#endif
-
 #include "einsums/ElementOperations.hpp"
 #include "einsums/Error.hpp"
 #include "einsums/FFT.hpp"
@@ -35,4 +26,13 @@
 #include "einsums/polynomial/Laguerre.hpp"
 #include "einsums/polynomial/Utilities.hpp"
 
-#include "einsums/Jobs.hpp"
+//#include "einsums/Jobs.hpp"
+
+#ifdef __HIP__
+#include "einsums/DeviceTensor.hpp"
+#include "einsums/_GPUCast.hpp"
+#include "einsums/GPUTensorAlgebra.hpp"
+#include "einsums/_GPUUtils.hpp"
+#include "einsums/GPULinearAlgebra.hpp"
+//#include "einsums/GPUJobs.hpp"
+#endif

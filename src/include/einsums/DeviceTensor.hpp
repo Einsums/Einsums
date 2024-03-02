@@ -355,7 +355,7 @@ struct DeviceTensor : public ::einsums::detail::TensorBase<T, Rank> {
      *
      * @param dims The dimensions of the new tensor in Dim form.
      */
-    DeviceTensor(Dim<Rank> dims, detail::HostToDeviceMode mode);
+    explicit DeviceTensor(Dim<Rank> dims, detail::HostToDeviceMode mode = detail::DEV_ONLY);
 
     /**
      * @brief Construct a new Tensor object from a TensorView.
@@ -364,19 +364,19 @@ struct DeviceTensor : public ::einsums::detail::TensorBase<T, Rank> {
      *
      * @param other The tensor view to copy.
      */
-    DeviceTensor(const DeviceTensorView<T, Rank> &other);
+    DeviceTensor(const DeviceTensorView<T, Rank> &other, hipStream_t stream = 0);
 
     /**
      * @brief Zeroes out the tensor data.
      */
-    void zero();
+    void zero(hipStream_t stream = 0);
 
     /**
      * @brief Set the all entries to the given value.
      *
      * @param value Value to set the elements to.
      */
-    void set_all(T value);
+    void set_all(T value, hipStream_t stream = 0);
 
     /**
      * @brief Returns a pointer to the data.
@@ -468,6 +468,22 @@ struct DeviceTensor : public ::einsums::detail::TensorBase<T, Rank> {
     void write(T *data);
 
     /**
+     * Assignments with a stream.
+     */
+    DeviceTensor<T, Rank> &assign(const DeviceTensor<T, Rank> &other, hipStream_t stream = 0);
+    DeviceTensor<T, Rank> &assign(const Tensor<T, Rank> &other);
+
+    template <typename TOther>
+        requires(!std::same_as<T, TOther>)
+    DeviceTensor<T, Rank> &assign(const DeviceTensor<TOther, Rank> &other, hipStream_t stream = 0);
+
+    DeviceTensor<T, Rank> &assign(const DeviceTensorView<T, Rank> &other, hipStream_t stream = 0);
+
+    template <typename TOther>
+        requires(!std::same_as<T, TOther>)
+    DeviceTensor<T, Rank> &assign(const DeviceTensorView<TOther, Rank> &other, hipStream_t stream = 0);
+
+    /**
      * @brief Subscripts into the tensor.
      *
      * This version works when all elements are explicit values into the tensor.
@@ -536,6 +552,11 @@ struct DeviceTensor : public ::einsums::detail::TensorBase<T, Rank> {
     auto operator=(const DeviceTensorView<TOther, Rank> &other) -> DeviceTensor<T, Rank> &;
 
     /**
+     * @brief Copy data from one tensor to another.
+     */
+    auto operator=(const Tensor<T, Rank> &other) -> DeviceTensor<T, Rank> &;
+
+    /**
      * Fill a tensor with a value.
      */
     auto operator=(const T &fill_value) -> DeviceTensor<T, Rank> &;
@@ -543,18 +564,44 @@ struct DeviceTensor : public ::einsums::detail::TensorBase<T, Rank> {
     /**
      * @brief Operate and assign every element with a scalar.
      */
-    DeviceTensor<T, Rank> &operator*=(const T &other);
-    DeviceTensor<T, Rank> &operator+=(const T &other);
-    DeviceTensor<T, Rank> &operator-=(const T &other);
-    DeviceTensor<T, Rank> &operator/=(const T &other);
+    DeviceTensor<T, Rank> &add_assign(const T &other, hipStream_t stream = 0);
+    DeviceTensor<T, Rank> &mult_assign(const T &other, hipStream_t stream = 0);
+    DeviceTensor<T, Rank> &sub_assign(const T &other, hipStream_t stream = 0);
+    DeviceTensor<T, Rank> &div_assign(const T &other, hipStream_t stream = 0);
+
+    DeviceTensor<T, Rank> &operator*=(const T &other) {
+        return this->mult_assign(other);
+    }
+    DeviceTensor<T, Rank> &operator+=(const T &other) {
+        return this->add_assign(other);
+    }
+    DeviceTensor<T, Rank> &operator-=(const T &other) {
+        return this->sub_assign(other);
+    }
+    DeviceTensor<T, Rank> &operator/=(const T &other) {
+        return this->div_assign(other);
+    }
 
     /**
      * @brief Operate and assign two tensors element-wise.
      */
-    DeviceTensor<T, Rank> &operator*=(const DeviceTensor<T, Rank> &other);
-    DeviceTensor<T, Rank> &operator+=(const DeviceTensor<T, Rank> &other);
-    DeviceTensor<T, Rank> &operator-=(const DeviceTensor<T, Rank> &other);
-    DeviceTensor<T, Rank> &operator/=(const DeviceTensor<T, Rank> &other);
+    DeviceTensor<T, Rank> &add_assign(const DeviceTensor<T, Rank> &other, hipStream_t stream = 0);
+    DeviceTensor<T, Rank> &mult_assign(const DeviceTensor<T, Rank> &other, hipStream_t stream = 0);
+    DeviceTensor<T, Rank> &sub_assign(const DeviceTensor<T, Rank> &other, hipStream_t stream = 0);
+    DeviceTensor<T, Rank> &div_assign(const DeviceTensor<T, Rank> &other, hipStream_t stream = 0);
+
+    DeviceTensor<T, Rank> &operator*=(const DeviceTensor<T, Rank> &other) {
+        return this->mult_assign(other);
+    }
+    DeviceTensor<T, Rank> &operator+=(const DeviceTensor<T, Rank> &other) {
+        return this->add_assign(other);
+    }
+    DeviceTensor<T, Rank> &operator-=(const DeviceTensor<T, Rank> &other) {
+        return this->sub_assign(other);
+    }
+    DeviceTensor<T, Rank> &operator/=(const DeviceTensor<T, Rank> &other) {
+        return this->div_assign(other);
+    }
 
     /**
      * @brief Get the dimension for the given rank.
@@ -717,9 +764,19 @@ struct DeviceTensor<T, 0> : public einsums::detail::TensorBase<T, 0> {
     /**
      * @brief Copy construct a new GPU tensor.
      */
-    DeviceTensor(const DeviceTensor<T, 0> &other) : _mode{detail::DEV_ONLY} {
-        gpu::hip_catch(hipMalloc((void **)&_data, sizeof(T)));
-        gpu::hip_catch(hipMemcpy((void *)_data, (const void *)other.data(), sizeof(T), hipMemcpyDeviceToDevice));
+    DeviceTensor(const DeviceTensor<T, 0> &other, detail::HostToDeviceMode mode = detail::DEV_ONLY) : _mode{mode} {
+        if(mode == detail::DEV_ONLY) {
+            gpu::hip_catch(hipMalloc((void **)&_data, sizeof(T)));
+            gpu::hip_catch(hipMemcpy((void *)_data, (const void *)other.data(), sizeof(T), hipMemcpyDeviceToDevice));
+        } else if(mode == detail::MAPPED) {
+            _host_data = new T((T) other);
+            gpu::hip_catch(hipHostRegister((void *) _host_data, sizeof(T), hipHostRegisterDefault));
+            gpu::hip_catch(hipHostGetDevicePointer((void **) &_data, (void *) _host_data, 0));
+        } else {
+            gpu::hip_catch(hipHostMalloc((void **) &_host_data, sizeof(T), 0));
+            *_host_data = (T) other;
+            gpu::hip_catch(hipHostGetDevicePointer((void **) &_data, (void *) _host_data, 0));
+        }
     }
 
     /**
@@ -740,9 +797,25 @@ struct DeviceTensor<T, 0> : public einsums::detail::TensorBase<T, 0> {
     }
 
     /**
+     * @brief Construct a new tensor by dims.
+     */
+    DeviceTensor(Dim<0> dims, detail::HostToDeviceMode mode = detail::DEV_ONLY) : _mode{mode} {
+        if(mode == detail::DEV_ONLY) {
+            gpu::hip_catch(hipMalloc((void **)&_data, sizeof(T)));
+        } else if(mode == detail::MAPPED) {
+            _host_data = new T();
+            gpu::hip_catch(hipHostRegister((void *) _host_data, sizeof(T), hipHostRegisterDefault));
+            gpu::hip_catch(hipHostGetDevicePointer((void **) &_data, (void *) _host_data, 0));
+        } else {
+            gpu::hip_catch(hipHostMalloc((void **) &_host_data, sizeof(T), 0));
+            gpu::hip_catch(hipHostGetDevicePointer((void **) &_data, (void *) _host_data, 0));
+        }
+    }
+
+    /**
      * @brief Construct a new named zero-rank tensor on the GPU.
      */
-    DeviceTensor(std::string name, detail::HostToDeviceMode mode) : _name{std::move(name)}, _mode{mode} {
+    explicit DeviceTensor(std::string name, detail::HostToDeviceMode mode = detail::DEV_ONLY) : _name{std::move(name)}, _mode{mode} {
         switch (mode) {
         case detail::MAPPED:
             this->_host_data = new T();
@@ -1015,6 +1088,14 @@ struct DeviceTensorView : public ::einsums::detail::TensorBase<T, Rank> {
         common_initialization(other, args...);
     }
 
+    DeviceTensorView<T, Rank> &assign(const __host_ptr__ T *other, hipStream_t stream = 0);
+
+    template <template <typename, size_t> typename AType>
+        requires detail::DeviceRankTensor<AType<T, Rank>, Rank, T>
+    DeviceTensorView<T, Rank> &assign(const AType<T, Rank> &other, hipStream_t stream = 0);
+
+    void set_all(const T &value, hipStream_t stream = 0);
+
     /**
      * @brief Copy as much data as is needed from the host pointer to the device.
      */
@@ -1037,27 +1118,44 @@ struct DeviceTensorView : public ::einsums::detail::TensorBase<T, Rank> {
     /**
      * @brief Fill the view with a value.
      */
-    auto operator=(const T &fill_value) -> DeviceTensorView &;
+    auto operator=(const T &fill_value) -> DeviceTensorView & {
+        this->set_all(fill_value);
+        return *this;
+    }
+
+
+    DeviceTensorView<T, Rank> &mult_assign(const T &value, hipStream_t stream = 0);
+    DeviceTensorView<T, Rank> &div_assign(const T &value, hipStream_t stream = 0);
+    DeviceTensorView<T, Rank> &add_assign(const T &value, hipStream_t stream = 0);
+    DeviceTensorView<T, Rank> &sub_assign(const T &value, hipStream_t stream = 0);
 
     /**
      * @brief Operate each element in the view with a scalar.
      */
-    DeviceTensorView &operator*=(const T &value);
+    DeviceTensorView &operator*=(const T &value) {
+        return this->mult_assign(value);
+    }
 
     /**
      * @brief Operate each element in the view with a scalar.
      */
-    DeviceTensorView &operator/=(const T &value);
+    DeviceTensorView &operator/=(const T &value) {
+        return this->div_assign(value);
+    }
 
     /**
      * @brief Operate each element in the view with a scalar.
      */
-    DeviceTensorView &operator+=(const T &value);
+    DeviceTensorView &operator+=(const T &value) {
+        return this->add_assign(value);
+    }
 
     /**
      * @brief Operate each element in the view with a scalar.
      */
-    DeviceTensorView &operator-=(const T &value);
+    DeviceTensorView &operator-=(const T &value) {
+        return this->sub_assign(value);
+    }
 
     /**
      * @brief Get a pointer to the GPU data.

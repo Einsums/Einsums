@@ -568,6 +568,7 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
                         std::is_base_of_v<::einsums::detail::TensorBase<BDataType, BRank>, BType<BDataType, BRank>> &&
                         std::is_base_of_v<::einsums::detail::TensorBase<CDataType, CRank>, CType<CDataType, CRank>> &&
                         std::is_arithmetic_v<U>> {
+    
     using ABDataType = std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType>;
 
     LabeledSection1(FP_ZERO != std::fpclassify(UC_prefactor)
@@ -582,19 +583,27 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
 
 #if defined(EINSUMS_CONTINUOUSLY_TEST_EINSUM)
     // Clone C into a new tensor
-    Tensor<CDataType, CRank> testC{C->dims()};
+    Tensor<CDataType, CRank> testC = Tensor<CDataType, CRank>{C->dims()};
     testC = *C;
 
     // Perform the einsum using only the generic algorithm
     timer::push("testing");
+//#pragma omp task depend(in: A, B) depend(inout: testC)
+{
     detail::einsum<true>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, A, B_indices, B);
+}
+//#pragma omp taskwait depend(in: testC)
     timer::pop();
 #endif
 
     // Perform the actual einsum
-    detail::einsum<false>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
-
+//#pragma omp task depend(in: A, B) depend(inout: *C)
+{
+    detail::einsum<true>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
+}
 #if defined(EINSUMS_TEST_NANS)
+// The tests need a wait.
+//#pragma omp taskwait depend(in: *C, testC)
     if constexpr (CRank != 0) {
         auto target_dims = get_dim_ranges<CRank>(*C);
         for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {

@@ -15,16 +15,18 @@ TEST_CASE("Constructing Views", "[gpu][tensor]") {
     using namespace einsums::gpu;
     using namespace einsums::gpu::detail;
 
-    einsums::gpu::initialize();
-
     // Create tensors for testing.
     DeviceTensor<double, 2> A("A", einsums::detail::DEV_ONLY, 3, 3);
     DeviceTensor<double, 2> B("B", einsums::detail::MAPPED, 3, 3);
     DeviceTensor<double, 2> C("C", einsums::detail::PINNED, 3, 3);
 
+    hip_catch(hipDeviceSynchronize());
+
     A = 0.0;
     B = 1.0;
     C = 2.0;
+
+    hip_catch(hipDeviceSynchronize());
 
     // Test a constructor. They all call the same method, so we should only need to test one.
     DeviceTensorView<double, 2> A1(A, Dim<2>{3, 3});
@@ -52,6 +54,8 @@ TEST_CASE("Constructing Views", "[gpu][tensor]") {
     DeviceTensor<double, 2> A7(A6);
     DeviceTensor<double, 2> B7(B6);
     DeviceTensor<double, 2> C7(C6);
+
+    hip_catch(hipDeviceSynchronize());
 
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
@@ -88,23 +92,29 @@ TEST_CASE("GPU View Set all", "[gpu][tensor]") {
     using namespace einsums::gpu;
     using namespace einsums::gpu::detail;
 
-    gpu::initialize();
-
     DeviceTensor<double, 2> A("A", einsums::detail::DEV_ONLY, 3, 3);
     DeviceTensor<double, 2> B("B", einsums::detail::MAPPED, 3, 3);
     DeviceTensor<double, 2> C("C", einsums::detail::PINNED, 3, 3);
+
+    hip_catch(hipDeviceSynchronize());
 
     A.set_all(1.0);
     B.set_all(2.0);
     C.set_all(3.0);
 
+    hip_catch(hipDeviceSynchronize());
+
     DeviceTensorView<double, 2> A1(A, Dim<2>{3, 3});
     DeviceTensorView<double, 2> B1(B, Dim<2>{3, 3});
     DeviceTensorView<double, 2> C1(C, Dim<2>{3, 3});
 
+    hip_catch(hipDeviceSynchronize());
+
     A1 = 4.0;
     B1 = 5.0;
     C1 = 6.0;
+
+    hip_catch(hipDeviceSynchronize());
 
     for (size_t i = 0; i < 3; i++) {
         for (size_t j = 0; j < 3; j++) {
@@ -121,9 +131,13 @@ TEST_CASE("GPU View Set all", "[gpu][tensor]") {
     B = 2.0;
     C = 3.0;
 
+    hip_catch(hipDeviceSynchronize());
+
     A1 = A;
     B1 = B;
     C1 = C;
+
+    hip_catch(hipDeviceSynchronize());
 
     for (size_t i = 0; i < 3; i++) {
         for (size_t j = 0; j < 3; j++) {

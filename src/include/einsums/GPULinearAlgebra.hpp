@@ -121,7 +121,7 @@ template <bool TransA, bool TransB, template <typename, size_t> typename AType, 
         requires ::einsums::detail::DeviceRankTensor<BType<T, Rank>, 2, T>;
         requires ::einsums::detail::DeviceRankTensor<CType<T, Rank>, 2, T>;
     }
-void gemm(T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, T beta, CType<T, Rank> *C);
+void gemm(T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, T beta, CType<T, Rank> *C, hipStream_t stream = 0);
 
 /**
  * @brief Performs the dot product.
@@ -130,7 +130,7 @@ template <template <typename, size_t> typename CType, typename CDataType, templa
           size_t ARank, template <typename, size_t> typename BType, typename BDataType, size_t BRank>
 void dot(CDataType C_prefactor, CType<CDataType, 0> &C,
          std::conditional_t<sizeof(ADataType) < sizeof(BDataType), BDataType, ADataType> AB_prefactor, const AType<ADataType, ARank> &A,
-         const BType<BDataType, BRank> &B, dim3 threads = dim3(32), dim3 blocks = dim3(32));
+         const BType<BDataType, BRank> &B, hipStream_t stream = 0);
 
 /**
  * @brief Wrapper for vector outer product.
@@ -142,7 +142,7 @@ template <template <typename, size_t> typename XYType, size_t XYRank, template <
         requires ::einsums::detail::DeviceRankTensor<XYType<T, XYRank>, 1, T>;
         requires ::einsums::detail::DeviceRankTensor<AType<T, ARank>, 2, T>;
     }
-void ger(T alpha, const XYType<T, XYRank> &X, const XYType<T, XYRank> &Y, AType<T, ARank> *A);
+void ger(T alpha, const XYType<T, XYRank> &X, const XYType<T, XYRank> &Y, AType<T, ARank> *A, hipStream_t stream = 0);
 
 /**
  * @brief Wrapper for matrix-vector mulitplication.
@@ -156,14 +156,14 @@ template <bool TransA, template <typename, size_t> typename AType, template <typ
         requires ::einsums::detail::DeviceRankTensor<XType<T, XYRank>, 1, T>;
         requires ::einsums::detail::DeviceRankTensor<YType<T, XYRank>, 1, T>;
     }
-void gemv(T alpha, const AType<T, ARank> &A, const XType<T, XYRank> &x, T beta, YType<T, XYRank> *y);
+void gemv(T alpha, const AType<T, ARank> &A, const XType<T, XYRank> &x, T beta, YType<T, XYRank> *y, hipStream_t stream = 0);
 
 /**
  * @brief Scales all the elements in a tensor by a scalar.
  */
 template <template <typename, size_t> typename AType, size_t ARank, typename T>
     requires ::einsums::detail::DeviceRankTensor<AType<T, ARank>, ARank, T>
-void scale(T scale, AType<T, ARank> *A);
+void scale(T scale, AType<T, ARank> *A, hipStream_t stream = 0);
 
 /**
  * @brief Computes a common double multiplication between two matrices.
@@ -177,7 +177,7 @@ template <bool TransA, bool TransB, template <typename, size_t> typename AType, 
         requires ::einsums::detail::DeviceRankTensor<BType<T, Rank>, 2, T>;
         requires ::einsums::detail::DeviceRankTensor<CType<T, Rank>, 2, T>;
     }
-void symm_gemm(const AType<T, Rank> &A, const BType<T, Rank> &B, CType<T, Rank> *C);
+void symm_gemm(const AType<T, Rank> &A, const BType<T, Rank> &B, CType<T, Rank> *C, hipStream_t stream = 0);
 
 END_EINSUMS_NAMESPACE_HPP(einsums::linear_algebra::gpu)
 

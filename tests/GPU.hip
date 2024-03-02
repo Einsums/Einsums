@@ -13,6 +13,7 @@
 #include "einsums.hpp"
 #include "src/backends/linear_algebra/hipblas/hipblas.hpp"
 
+// Waste time for timing.
 __global__
 void time_waster(unsigned int max) {
     volatile float value;
@@ -21,40 +22,97 @@ void time_waster(unsigned int max) {
     }
 }
 
+#define KERNELS 20
+#define CYCLES 0xffffU
+
 TEST_CASE("GPU Timer", "[gpu][timer]") {
-    einsums::gpu::hip_catch(hipFree(nullptr));
-
     SECTION("Stream 0") {
+
         einsums::timer::GPUTimer *timer = new einsums::timer::GPUTimer("Stream 0");
-
-        time_waster<<<dim3(256), dim3(4)>>>(0xffffU);
-
+        for(int i = 0; i < KERNELS; i++) {
+            time_waster<<<dim3(256), dim3(2)>>>(CYCLES);
+        }
         delete timer;
-
-        einsums::timer::report();
     }
 
     SECTION("Other stream") {
         hipStream_t stream;
 
-        einsums::gpu::hip_catch(hipStreamCreate(&stream));
-
-        std::fprintf(stderr, "Stream: %p\n", stream);
+        einsums::gpu::hip_catch(hipStreamCreateWithFlags(&stream, hipStreamNonBlocking));
 
         einsums::timer::GPUTimer *timer = new einsums::timer::GPUTimer("Arbitrary stream", stream);
 
-        time_waster<<<dim3(256), dim3(4), 0, stream>>>(0xffffU);
+        for(int i = 0; i < KERNELS; i++) {
+            time_waster<<<dim3(256), dim3(2), 0, stream>>>(CYCLES);
 
+        }
         delete timer;
 
-        einsums::timer::report();
-
         einsums::gpu::hip_catch(hipStreamDestroy(stream));
+    }
 
+    SECTION("Tasks and two streams") {
+#pragma omp parallel
+#pragma omp single
+    {
+        hipStream_t stream1, stream2;
+
+        einsums::gpu::hip_catch(hipStreamCreateWithFlags(&stream1, hipStreamNonBlocking));
+        einsums::gpu::hip_catch(hipStreamCreateWithFlags(&stream2, hipStreamNonBlocking));
+
+        einsums::timer::push("Tasks and two streams");
+
+        einsums::timer::GPUTimer *timer1 = new einsums::timer::GPUTimer("Task stream 1", stream1);
+        einsums::timer::GPUTimer *timer2 = new einsums::timer::GPUTimer("Task stream 2", stream2);
+
+#pragma omp parallel for
+        for(int i = 0; i < KERNELS / 2; i++) {
+            time_waster<<<dim3(256), dim3(2), 0, stream1>>>(CYCLES);
+            time_waster<<<dim3(256), dim3(2), 0, stream2>>>(CYCLES);
+        }
+
+        delete timer1;
+        delete timer2;
+
+        einsums::gpu::hip_catch(hipStreamDestroy(stream1));
+        einsums::gpu::hip_catch(hipStreamDestroy(stream2));
+
+        einsums::timer::pop();
+    }
+    }
+
+    SECTION("Several streams") {
+        constexpr int size = 4;
+
+        std::array<hipStream_t, size> streams;
+        std::array<einsums::timer::GPUTimer *, size> timers;
+        einsums::timer::push("Several streams");
+        for(int i = 0; i < size; i++) {
+            einsums::gpu::hip_catch(hipStreamCreateWithFlags(&(streams[i]), hipStreamNonBlocking));
+            timers[i] = new einsums::timer::GPUTimer("Stream " + std::to_string(i), streams[i]);   
+        }
+
+#pragma omp parallel for
+        for(int i = 0; i < KERNELS; i++) {
+            time_waster<<<dim3(256), dim3(2), 0, streams[i % size]>>>(CYCLES);
+        }
+        
+        for(int i = 0; i < size; i++) {
+            delete timers[i];
+            timers[i] = nullptr;
+        }
+        einsums::timer::pop();
+
+        for(int i = 0; i < size; i++) {
+            einsums::gpu::hip_catch(hipStreamDestroy(streams[i]));
+        }
     }
 }
 
 TEST_CASE("GPU Energy Calculation", "[gpu]") {
+#pragma omp parallel
+#pragma omp single
+{
 
     using namespace einsums;
     using namespace einsums::detail;
@@ -2572,10 +2630,11 @@ TEST_CASE("GPU Energy Calculation", "[gpu]") {
 
     double enuc = 8.002367061810450;
 
-    // Transfer the data to the GPU.
+    hipStream_t stream;
 
-    einsums::gpu::initialize();
-    einsums::backend::linear_algebra::hipblas::initialize();
+    hip_catch(hipStreamCreateWithFlags(&stream, hipStreamNonBlocking));
+
+    // Transfer the data to the GPU.
 
     DeviceTensor<double, 2> S("Overlap", DEV_ONLY, 7, 7), H("Hamiltonian", DEV_ONLY, 7, 7), X("Transformation Matrix", DEV_ONLY, 7, 7),
         C("Coefficients", DEV_ONLY, 7, 7), F("Fock Matrix", DEV_ONLY, 7, 7), D("Density matrix", DEV_ONLY, 7, 7),
@@ -2584,17 +2643,32 @@ TEST_CASE("GPU Energy Calculation", "[gpu]") {
     DeviceTensor<double, 1> eig_real("Real energy eigenvalues", DEV_ONLY, 7), eig_imag("Imaginary energy eigenvalues", DEV_ONLY, 7);
     DeviceTensor<double, 4> TEI("Two-electron integrals", DEV_ONLY, 7, 7, 7, 7);
 
+#pragma omp task depend(out: S)
     S.read(S_host);
+
+#pragma omp task depend(out: work)
     work.read(S_host);
+
+#pragma omp task depend(out: H)
     H.read(H_host);
+
+#pragma omp task depend(out: F)
     F.read(H_host);
+
+#pragma omp task depend(out: TEI)
     TEI.read(ERI_host);
+
+#pragma omp taskgroup
+    hip_catch(hipDeviceSynchronize());
 
     // Calculate the unitary matrix.
     hipblasHandle_t   blas_handle   = hipblas::detail::get_blas_handle();
     hipsolverHandle_t solver_handle = hipblas::detail::get_solver_handle();
     int               lwork, *dev_info;
     hip_catch(hipMalloc((void **)&dev_info, sizeof(int)));
+
+    hipblas_catch(hipblasSetStream(blas_handle, stream));
+    hipsolver_catch(hipsolverSetStream(solver_handle, stream));
 
     hipsolver_catch(hipsolverDsyevd_bufferSize(solver_handle, HIPSOLVER_EIG_MODE_VECTOR, HIPSOLVER_FILL_MODE_UPPER, 7, work.data(),
                                                work.stride(0), eig_real.data(), &lwork));
@@ -2605,20 +2679,29 @@ TEST_CASE("GPU Energy Calculation", "[gpu]") {
     hipsolver_catch(hipsolverDsyevd(solver_handle, HIPSOLVER_EIG_MODE_VECTOR, HIPSOLVER_FILL_MODE_UPPER, 7, work.data(), work.stride(0),
                                     eig_real.data(), gpu_work, lwork, dev_info));
 
-    hip_catch(hipDeviceSynchronize());
-
     std::vector<double> eig_host(7);
 
     eig_real.write(eig_host);
 
-    work2.zero();
+    work2.zero(stream);
 
+    hip_catch(hipStreamSynchronize(stream));
+
+#pragma omp parallel for
     for (int i = 0; i < 7; i++) {
         eig_host[i] = 1 / sqrt(eig_host[i]);
         work2(i, i) = eig_host[i];
     }
 
-    einsums::linear_algebra::gpu::symm_gemm<false, false>(work2, work, &X);
+#pragma omp task depend(in: work, work2) depend(out: X)
+{
+    einsums::linear_algebra::gpu::symm_gemm<false, false>(work2, work, &X, stream);
+    hipEvent_t event;
+    hip_catch(hipEventCreate(&event));
+    hip_catch(hipEventRecord(event, stream));
+
+    hip_catch(hipEventSynchronize(event));
+}
 
     // while loop.
     DeviceTensor<double, 0> energy("Energy", DEV_ONLY);
@@ -2628,46 +2711,129 @@ TEST_CASE("GPU Energy Calculation", "[gpu]") {
     while (count < 100 && (count < 2 || fabs(energy1 - energy2) > 1e-6)) {
 
         // Find F'
-        linear_algebra::gpu::symm_gemm<false, false>(F, X, &work);
+#pragma omp task depend(in: F, X) depend(out: work)
+{
+        linear_algebra::gpu::symm_gemm<false, false>(F, X, &work, stream);
+        hipEvent_t event;
+        hip_catch(hipEventCreate(&event));
+        hip_catch(hipEventRecord(event, stream));
 
+        hip_catch(hipEventSynchronize(event));
+}
+
+#pragma omp task depend(inout: work) depend(out: eig_real) 
+{
         // Find C' and the eigenvalues. They should be in increasing order already.
         hipsolver_catch(hipsolverDsyevd(solver_handle, HIPSOLVER_EIG_MODE_VECTOR, HIPSOLVER_FILL_MODE_UPPER, 7, work.data(), work.stride(0),
                                         eig_real.data(), gpu_work, lwork, dev_info));
+        hipEvent_t event;
+        hip_catch(hipEventCreate(&event));
+        hip_catch(hipEventRecord(event, stream));
 
-        hip_catch(hipDeviceSynchronize());
+        hip_catch(hipEventSynchronize(event));
+}
 
         // Find C.
-        einsums::linear_algebra::gpu::gemm<false, true>(1.0, X, work, 0.0, &C);
+#pragma omp task depend(in: X, work) depend(out: C)
+{
+        einsums::linear_algebra::gpu::gemm<false, true>(1.0, X, work, 0.0, &C, stream);
+        hipEvent_t event;
+        hip_catch(hipEventCreate(&event));
+        hip_catch(hipEventRecord(event, stream));
+
+        hip_catch(hipEventSynchronize(event));
+}
 
         // Find D.
         auto C_view = C(Range{0, 7}, Range{0, 5});
 
-        einsums::linear_algebra::gpu::gemm<false, true>(1.0, C_view, C_view, 0.0, &D);
+#pragma omp task depend(in: C) depend(out: D)
+{
+        einsums::linear_algebra::gpu::gemm<false, true>(1.0, C_view, C_view, 0.0, &D, stream);
+        hipEvent_t event;
+        hip_catch(hipEventCreate(&event));
+        hip_catch(hipEventRecord(event, stream));
+
+        hip_catch(hipEventSynchronize(event));
+}
 
         // Find the energy.
-        work = F;
-        work += H;
+#pragma omp task depend(in: F) depend(out: work)
+{
+        work.assign(F, stream);
+        hipEvent_t event;
+        hip_catch(hipEventCreate(&event));
+        hip_catch(hipEventRecord(event, stream));
 
-        tensor_algebra::gpu::einsum(0.0, Indices{}, &energy, 1.0, Indices{index::r, index::s}, D, Indices{index::r, index::s}, work);
+        hip_catch(hipEventSynchronize(event));
+}
+
+#pragma omp task depend(in: H) depend(inout: work)
+{
+        work.add_assign(H, stream);
+        hipEvent_t event;
+        hip_catch(hipEventCreate(&event));
+        hip_catch(hipEventRecord(event, stream));
+
+        hip_catch(hipEventSynchronize(event));
+}
+
+#pragma omp task depend(in: D, work) depend(out: energy)
+{
+        tensor_algebra::gpu::einsum(0.0, Indices{}, &energy, 1.0, Indices{index::r, index::s}, D, Indices{index::r, index::s}, work, stream);
+        hipEvent_t event;
+        hip_catch(hipEventCreate(&event));
+        hip_catch(hipEventRecord(event, stream));
+
+        hip_catch(hipEventSynchronize(event));
+}
+
+#pragma omp taskwait depend(in: energy)
 
         energy2 = energy1;
         energy1 = (double)energy;
 
         // Create new F.
-        F = H;
+#pragma omp task depend(in: H) depend(out: F)
+{
+        F.assign(H, stream);
+        hipEvent_t event;
+        hip_catch(hipEventCreate(&event));
+        hip_catch(hipEventRecord(event, stream));
+
+        hip_catch(hipEventSynchronize(event));
+}
+
+#pragma omp task depend(in: D, TEI) depend(out: F)
+{
         tensor_algebra::gpu::einsum(1.0, Indices{index::r, index::s}, &F, 2.0, Indices{index::t, index::u}, D,
                                     Indices{index::r, index::s, index::t, index::u}, TEI);
+        hipEvent_t event;
+        hip_catch(hipEventCreate(&event));
+        hip_catch(hipEventRecord(event, stream));
+
+        hip_catch(hipEventSynchronize(event));
+}
+#pragma omp task depend(in: D, TEI) depend(out: F)
+{
         tensor_algebra::gpu::einsum(1.0, Indices{index::r, index::s}, &F, -1.0, Indices{index::t, index::u}, D,
                                     Indices{index::r, index::t, index::s, index::u}, TEI);
+        hipEvent_t event;
+        hip_catch(hipEventCreate(&event));
+        hip_catch(hipEventRecord(event, stream));
+
+        hip_catch(hipEventSynchronize(event));
+}
 
         // Increase the count.
         count++;
     }
 
+#pragma taskwait depend(in: energy1) depend(inout: gpu_work)
+
     hip_catch(hipFree((void *)gpu_work));
 
     CHECK_THAT(energy1, Catch::Matchers::WithinAbs(energy2, 1e-6));
     CHECK_THAT(energy1 + enuc, Catch::Matchers::WithinAbs(-74.942079928192, 1e-6));
-
-    hipblas::finalize();
+}
 }

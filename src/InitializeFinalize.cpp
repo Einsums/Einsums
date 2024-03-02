@@ -9,6 +9,11 @@
 #include "einsums/_Common.hpp"
 #include "einsums/parallel/MPI.hpp"
 
+#ifdef __HIP__
+#include "einsums/_GPUUtils.hpp"
+#include "backends/linear_algebra/hipblas/hipblas.hpp"
+#endif
+
 #include <h5cpp/all>
 
 namespace einsums {
@@ -18,6 +23,11 @@ auto initialize() -> int {
     ErrorOr<void, mpi::Error> result = mpi::initialize(0, nullptr);
     if (result.is_error())
         return 1;
+#endif
+
+#ifdef __HIP__
+    einsums::gpu::initialize();
+    einsums::backend::linear_algebra::hipblas::initialize();
 #endif
 
     timer::initialize();
@@ -33,7 +43,13 @@ auto initialize() -> int {
 }
 
 void finalize(bool timerReport) {
+
     blas::finalize();
+
+#ifdef __HIP__    
+    einsums::backend::linear_algebra::hipblas::finalize();
+    einsums::gpu::finalize();
+#endif
 
 #if defined(EINSUMS_IN_PARALLEL)
     ErrorOr<void, mpi::Error> result = mpi::finalize();

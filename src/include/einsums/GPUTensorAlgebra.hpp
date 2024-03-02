@@ -56,8 +56,7 @@ namespace detail {
  * @param AB_prefactor The prefactor for the contraction between the A tensor and the B tensor.
  * @param A The A tensor.
  * @param B The B tensor.
- * @param threads The number of threads per block to call. Defaults to 32.
- * @param blocks The number of blocks to call. Defaults to 32.
+ * @param stream The stream to use for the calculation.
  */
 template <typename... UniqueIndices, typename... CIndices, typename... AIndices, typename... BIndices, typename... UniqueDims,
           template <typename, size_t> typename CType, typename CDataType, size_t CRank, template <typename, size_t> typename AType,
@@ -66,8 +65,7 @@ void einsum_generic_algorithm(const std::tuple<UniqueIndices...> &unique_indices
                               const std::tuple<AIndices...> &A_indices, const std::tuple<BIndices...> &B_indices,
                               const std::tuple<UniqueDims...> &unique_dims, const CDataType C_prefactor, CType<CDataType, CRank> *C,
                               const std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> AB_prefactor,
-                              const AType<ADataType, ARank> &A, const BType<BDataType, BRank> &B, dim3 threads = dim3(32),
-                              dim3 blocks = dim3(32));
+                              const AType<ADataType, ARank> &A, const BType<BDataType, BRank> &B, hipStream_t stream);
 
 /**
  * @brief Selector for the einsum algorithm.
@@ -82,8 +80,7 @@ void einsum_generic_algorithm(const std::tuple<UniqueIndices...> &unique_indices
  * @param A The A tensor.
  * @param B_indices The indice for the B tensor.
  * @param B The B tensor.
- * @param threads The number of threads per block to call. Defaults to 32.
- * @param blocks The number of blocks to call. Defaults to 32.
+ * @param stream The stream to use for the calculation.
  */
 template <bool OnlyUseGenericAlgorithm, template <typename, size_t> typename AType, typename ADataType, size_t ARank,
           template <typename, size_t> typename BType, typename BDataType, size_t BRank, template <typename, size_t> typename CType,
@@ -91,7 +88,7 @@ template <bool OnlyUseGenericAlgorithm, template <typename, size_t> typename ATy
 auto einsum(const CDataType C_prefactor, const std::tuple<CIndices...> &C_indices, CType<CDataType, CRank> *C,
             const std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> AB_prefactor,
             const std::tuple<AIndices...> &A_indices, const AType<ADataType, ARank> &A, const std::tuple<BIndices...> &B_indices,
-            const BType<BDataType, BRank> &B, dim3 threads = dim3(32), dim3 blocks = dim3(32))
+            const BType<BDataType, BRank> &B, hipStream_t stream)
     -> std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<ADataType, ARank>, AType<ADataType, ARank>> &&
                         std::is_base_of_v<::einsums::detail::TensorBase<BDataType, BRank>, BType<BDataType, BRank>> &&
                         std::is_base_of_v<::einsums::detail::TensorBase<CDataType, CRank>, CType<CDataType, CRank>>>;
@@ -110,13 +107,14 @@ auto einsum(const CDataType C_prefactor, const std::tuple<CIndices...> &C_indice
  * @param A The A tensor.
  * @param B_indices The indice for the B tensor.
  * @param B The B tensor.
+ * @param stream The stream to use for the calculation.
  */
 template <template <typename, size_t> typename AType, typename ADataType, size_t ARank, template <typename, size_t> typename BType,
           typename BDataType, size_t BRank, template <typename, size_t> typename CType, typename CDataType, size_t CRank,
           typename... CIndices, typename... AIndices, typename... BIndices, typename U>
 auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<CDataType, CRank> *C, const U UAB_prefactor,
             const std::tuple<AIndices...> &A_indices, const AType<ADataType, ARank> &A, const std::tuple<BIndices...> &B_indices,
-            const BType<BDataType, BRank> &B)
+            const BType<BDataType, BRank> &B, hipStream_t stream = 0)
     -> std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<ADataType, ARank>, AType<ADataType, ARank>> &&
                         std::is_base_of_v<::einsums::detail::TensorBase<BDataType, BRank>, BType<BDataType, BRank>> &&
                         std::is_base_of_v<::einsums::detail::TensorBase<CDataType, CRank>, CType<CDataType, CRank>> &&
@@ -129,56 +127,56 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
 template <NotASmartPointer AType, SmartPointer BType, NotASmartPointer CType, typename... CIndices, typename... AIndices,
           typename... BIndices, typename T>
 void einsum(const T C_prefactor, const std::tuple<CIndices...> &C_indices, CType *C, const T AB_prefactor,
-            const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices, const BType &B) {
-    einsum(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, *B);
+            const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices, const BType &B, hipStream_t stream = 0) {
+    einsum(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, *B, stream);
 }
 
 // 3. C n A y B n
 template <SmartPointer AType, NotASmartPointer BType, NotASmartPointer CType, typename... CIndices, typename... AIndices,
           typename... BIndices, typename T>
 auto einsum(const T C_prefactor, const std::tuple<CIndices...> &C_indices, CType *C, const T AB_prefactor,
-            const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices, const BType &B) {
-    einsum(C_prefactor, C_indices, C, AB_prefactor, A_indices, *A, B_indices, B);
+            const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices, const BType &B, hipStream_t stream = 0) {
+    einsum(C_prefactor, C_indices, C, AB_prefactor, A_indices, *A, B_indices, B, stream);
 }
 
 // 4. C n A y B y
 template <SmartPointer AType, SmartPointer BType, NotASmartPointer CType, typename... CIndices, typename... AIndices, typename... BIndices,
           typename T>
 auto einsum(const T C_prefactor, const std::tuple<CIndices...> &C_indices, CType *C, const T AB_prefactor,
-            const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices, const BType &B) {
-    einsum(C_prefactor, C_indices, C, AB_prefactor, A_indices, *A, B_indices, *B);
+            const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices, const BType &B, hipStream_t stream = 0) {
+    einsum(C_prefactor, C_indices, C, AB_prefactor, A_indices, *A, B_indices, *B, stream);
 }
 
 // 5. C y A n B n
 template <NotASmartPointer AType, NotASmartPointer BType, SmartPointer CType, typename... CIndices, typename... AIndices,
           typename... BIndices, typename T>
 auto einsum(const T C_prefactor, const std::tuple<CIndices...> &C_indices, CType *C, const T AB_prefactor,
-            const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices, const BType &B) {
-    einsum(C_prefactor, C_indices, C->get(), AB_prefactor, A_indices, A, B_indices, B);
+            const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices, const BType &B, hipStream_t stream = 0) {
+    einsum(C_prefactor, C_indices, C->get(), AB_prefactor, A_indices, A, B_indices, B, stream);
 }
 
 // 6. C y A n B y
 template <NotASmartPointer AType, SmartPointer BType, SmartPointer CType, typename... CIndices, typename... AIndices, typename... BIndices,
           typename T>
 auto einsum(const T C_prefactor, const std::tuple<CIndices...> &C_indices, CType *C, const T AB_prefactor,
-            const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices, const BType &B) {
-    einsum(C_prefactor, C_indices, C->get(), AB_prefactor, A_indices, A, B_indices, *B);
+            const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices, const BType &B, hipStream_t stream = 0) {
+    einsum(C_prefactor, C_indices, C->get(), AB_prefactor, A_indices, A, B_indices, *B, stream);
 }
 
 // 7. C y A y B n
 template <SmartPointer AType, NotASmartPointer BType, SmartPointer CType, typename... CIndices, typename... AIndices, typename... BIndices,
           typename T>
 auto einsum(const T C_prefactor, const std::tuple<CIndices...> &C_indices, CType *C, const T AB_prefactor,
-            const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices, const BType &B) {
-    einsum(C_prefactor, C_indices, C->get(), AB_prefactor, A_indices, *A, B_indices, B);
+            const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices, const BType &B, hipStream_t stream = 0) {
+    einsum(C_prefactor, C_indices, C->get(), AB_prefactor, A_indices, *A, B_indices, B, stream);
 }
 
 // 8. C y A y B y
 template <SmartPointer AType, SmartPointer BType, SmartPointer CType, typename... CIndices, typename... AIndices, typename... BIndices,
           typename T>
 auto einsum(const T C_prefactor, const std::tuple<CIndices...> &C_indices, CType *C, const T AB_prefactor,
-            const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices, const BType &B) {
-    einsum(C_prefactor, C_indices, C->get(), AB_prefactor, A_indices, *A, B_indices, *B);
+            const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices, const BType &B, hipStream_t stream = 0) {
+    einsum(C_prefactor, C_indices, C->get(), AB_prefactor, A_indices, *A, B_indices, *B, stream);
 }
 
 //
@@ -189,60 +187,60 @@ auto einsum(const T C_prefactor, const std::tuple<CIndices...> &C_indices, CType
 template <NotASmartPointer AType, NotASmartPointer BType, NotASmartPointer CType, typename... CIndices, typename... AIndices,
           typename... BIndices>
 void einsum(const std::tuple<CIndices...> &C_indices, CType *C, const std::tuple<AIndices...> &A_indices, const AType &A,
-            const std::tuple<BIndices...> &B_indices, const BType &B) {
-    einsum(0, C_indices, C, 1, A_indices, A, B_indices, B);
+            const std::tuple<BIndices...> &B_indices, const BType &B, hipStream_t stream = 0) {
+    einsum(0, C_indices, C, 1, A_indices, A, B_indices, B, stream);
 }
 
 // 2. C n A n B y
 template <NotASmartPointer AType, SmartPointer BType, NotASmartPointer CType, typename... CIndices, typename... AIndices,
           typename... BIndices>
 void einsum(const std::tuple<CIndices...> &C_indices, CType *C, const std::tuple<AIndices...> &A_indices, const AType &A,
-            const std::tuple<BIndices...> &B_indices, const BType &B) {
-    einsum(0, C_indices, C, 1, A_indices, A, B_indices, *B);
+            const std::tuple<BIndices...> &B_indices, const BType &B, hipStream_t stream = 0) {
+    einsum(0, C_indices, C, 1, A_indices, A, B_indices, *B, stream);
 }
 
 // 3. C n A y B n
 template <SmartPointer AType, NotASmartPointer BType, NotASmartPointer CType, typename... CIndices, typename... AIndices,
           typename... BIndices>
 void einsum(const std::tuple<CIndices...> &C_indices, CType *C, const std::tuple<AIndices...> &A_indices, const AType &A,
-            const std::tuple<BIndices...> &B_indices, const BType &B) {
-    einsum(0, C_indices, C, 1, A_indices, *A, B_indices, B);
+            const std::tuple<BIndices...> &B_indices, const BType &B, hipStream_t stream = 0) {
+    einsum(0, C_indices, C, 1, A_indices, *A, B_indices, B, stream);
 }
 
 // 4. C n A y B y
 template <SmartPointer AType, SmartPointer BType, NotASmartPointer CType, typename... CIndices, typename... AIndices, typename... BIndices>
 void einsum(const std::tuple<CIndices...> &C_indices, CType *C, const std::tuple<AIndices...> &A_indices, const AType &A,
-            const std::tuple<BIndices...> &B_indices, const BType &B) {
-    einsum(0, C_indices, C, 1, A_indices, *A, B_indices, *B);
+            const std::tuple<BIndices...> &B_indices, const BType &B, hipStream_t stream = 0) {
+    einsum(0, C_indices, C, 1, A_indices, *A, B_indices, *B, stream);
 }
 
 // 5. C y A n B n
 template <NotASmartPointer AType, NotASmartPointer BType, SmartPointer CType, typename... CIndices, typename... AIndices,
           typename... BIndices>
 void einsum(const std::tuple<CIndices...> &C_indices, CType *C, const std::tuple<AIndices...> &A_indices, const AType &A,
-            const std::tuple<BIndices...> &B_indices, const BType &B) {
-    einsum(0, C_indices, C->get(), 1, A_indices, A, B_indices, B);
+            const std::tuple<BIndices...> &B_indices, const BType &B, hipStream_t stream = 0) {
+    einsum(0, C_indices, C->get(), 1, A_indices, A, B_indices, B, stream);
 }
 
 // 6. C y A n B y
 template <NotASmartPointer AType, SmartPointer BType, SmartPointer CType, typename... CIndices, typename... AIndices, typename... BIndices>
 void einsum(const std::tuple<CIndices...> &C_indices, CType *C, const std::tuple<AIndices...> &A_indices, const AType &A,
-            const std::tuple<BIndices...> &B_indices, const BType &B) {
-    einsum(0, C_indices, C->get(), 1, A_indices, A, B_indices, *B);
+            const std::tuple<BIndices...> &B_indices, const BType &B, hipStream_t stream = 0) {
+    einsum(0, C_indices, C->get(), 1, A_indices, A, B_indices, *B, stream);
 }
 
 // 7. C y A y B n
 template <SmartPointer AType, NotASmartPointer BType, SmartPointer CType, typename... CIndices, typename... AIndices, typename... BIndices>
 void einsum(const std::tuple<CIndices...> &C_indices, CType *C, const std::tuple<AIndices...> &A_indices, const AType &A,
-            const std::tuple<BIndices...> &B_indices, const BType &B) {
-    einsum(0, C_indices, C->get(), 1, A_indices, *A, B_indices, B);
+            const std::tuple<BIndices...> &B_indices, const BType &B, hipStream_t stream = 0) {
+    einsum(0, C_indices, C->get(), 1, A_indices, *A, B_indices, B, stream);
 }
 
 // 8. C y A y B y
 template <SmartPointer AType, SmartPointer BType, SmartPointer CType, typename... CIndices, typename... AIndices, typename... BIndices>
 void einsum(const std::tuple<CIndices...> &C_indices, CType *C, const std::tuple<AIndices...> &A_indices, const AType &A,
-            const std::tuple<BIndices...> &B_indices, const BType &B) {
-    einsum(0, C_indices, C->get(), 1, A_indices, *A, B_indices, *B);
+            const std::tuple<BIndices...> &B_indices, const BType &B, hipStream_t stream = 0) {
+    einsum(0, C_indices, C->get(), 1, A_indices, *A, B_indices, *B, stream);
 }
 
 END_EINSUMS_NAMESPACE_HPP(einsums::tensor_algebra::gpu)

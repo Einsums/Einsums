@@ -30,16 +30,18 @@ TEST_CASE("timer") {
     auto B = create_random_tensor("B", 100, 100);
 
     // println("pre omp_get_max_active_levels {}", omp_get_max_active_levels());
+
 #pragma omp parallel for
     for (int _i = 0; _i < 1000; _i++) {
         timer::push("B: test timer");
         timer::push("B: test timer 2");
 
-        auto C = create_tensor("C", 100, 100);
+        auto C = Tensor<double, 2>(std::move(create_tensor("C", 100, 100)));
         zero(C);
 
+#pragma omp task depend(in: A, B) depend(out: C)
         einsum(Indices{i, j}, &C, Indices{i, k}, A, Indices{k, j}, B);
-
+#pragma omp taskgroup
         timer::pop();
         timer::pop();
     }
@@ -65,6 +67,7 @@ TEST_CASE("zero-fill") {
     }
 
     // Make sure the tensor is actually zero
+#pragma omp parallel for
     for (int _i = 0; _i < 10000 * 10000; _i++) {
         REQUIRE(A(_i) == double(0.0));
     }
@@ -83,6 +86,7 @@ TEST_CASE("zero-memset") {
         timer::pop();
     }
 
+#pragma omp parallel for
     for (int _i = 0; _i < 10000 * 10000; _i++) {
         REQUIRE(A(_i) == double(0.0));
     }
@@ -98,6 +102,7 @@ TEST_CASE("zero-tensor") {
         timer::pop();
     }
 
+#pragma omp parallel for
     for (int _i = 0; _i < 10000 * 10000; _i++) {
         REQUIRE(A(_i) == double(0.0));
     }

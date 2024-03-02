@@ -15,8 +15,6 @@ TEST_CASE("HostDevReference Tests", "[gpu][utilities]") {
     using namespace einsums;
     using namespace einsums::gpu;
 
-    gpu::initialize();
-
     double *host_ptr, *dev_ptr;
 
     hip_catch(hipMalloc((void **)&dev_ptr, sizeof(double)));
@@ -43,8 +41,6 @@ TEST_CASE("HostDevReference Tests", "[gpu][utilities]") {
     hip_catch(hipHostUnregister((void *)host_ptr));
 
     delete host_ptr;
-
-    gpu::finalize();
 }
 
 TEST_CASE("Index Combinations", "[gpu][utilities]") {

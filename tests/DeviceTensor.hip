@@ -15,8 +15,6 @@ TEST_CASE("Tensor Construction", "[gpu][tensor]") {
     using namespace einsums::gpu;
     using namespace einsums::gpu::detail;
 
-    einsums::gpu::initialize();
-
     // Test creation and access.
     DeviceTensor<double, 2> A("A", einsums::detail::DEV_ONLY, 3, 3);
     DeviceTensor<double, 2> B("B", einsums::detail::MAPPED, 3, 3);
@@ -44,6 +42,8 @@ TEST_CASE("Tensor Construction", "[gpu][tensor]") {
     B.zero();
     C.zero();
 
+    hip_catch(hipDeviceSynchronize());
+
     for (size_t i = 0; i < 3; i++) {
         for (size_t j = 0; j < 3; j++) {
             CHECK((A(i, j).get() == 0));
@@ -63,6 +63,8 @@ TEST_CASE("Tensor Construction", "[gpu][tensor]") {
     C(0, 0) = 1.0;
     C(1, 1) = 1.0;
     C(2, 2) = 1.0;
+
+    hip_catch(hipDeviceSynchronize());
 
     for (size_t i = 0; i < 3; i++) {
         CHECK((A(i, i).get() == 1.0));
@@ -90,6 +92,8 @@ TEST_CASE("Tensor Construction", "[gpu][tensor]") {
     A.zero();
     B.zero();
     C.zero();
+
+    hip_catch(hipDeviceSynchronize());
 
     for (size_t i = 0; i < 3; i++) {
         for (size_t j = 0; j < 3; j++) {
@@ -129,6 +133,8 @@ TEST_CASE("Tensor Construction", "[gpu][tensor]") {
     B_copy.zero();
     C_copy.zero();
 
+    hip_catch(hipDeviceSynchronize());
+
     for (size_t i = 0; i < 3; i++) {
         for (size_t j = 0; j < 3; j++) {
             CHECK((A_copy(i, j).get() == 0));
@@ -159,14 +165,14 @@ TEST_CASE("Tensor Construction", "[gpu][tensor]") {
     REQUIRE(A_copy.data() == nullptr);
     REQUIRE(B_copy.data() == nullptr);
     REQUIRE(C_copy.data() == nullptr);
+
+    hip_catch(hipDeviceSynchronize());
 }
 
 TEST_CASE("GPU Set all", "[gpu][tensor]") {
     using namespace einsums;
     using namespace einsums::gpu;
     using namespace einsums::gpu::detail;
-
-    gpu::initialize();
 
     DeviceTensor<double, 2> A("A", einsums::detail::DEV_ONLY, 3, 3);
     DeviceTensor<double, 2> B("B", einsums::detail::MAPPED, 3, 3);
@@ -175,6 +181,8 @@ TEST_CASE("GPU Set all", "[gpu][tensor]") {
     A.set_all(1.0);
     B.set_all(2.0);
     C.set_all(3.0);
+
+    hip_catch(hipDeviceSynchronize());
 
     for (size_t i = 0; i < 3; i++) {
         for (size_t j = 0; j < 3; j++) {
@@ -188,6 +196,8 @@ TEST_CASE("GPU Set all", "[gpu][tensor]") {
     B = 5.0;
     C = 6.0;
 
+    hip_catch(hipDeviceSynchronize());
+
     for (size_t i = 0; i < 3; i++) {
         for (size_t j = 0; j < 3; j++) {
             CHECK((A(i, j).get() == 4.0));
@@ -195,6 +205,8 @@ TEST_CASE("GPU Set all", "[gpu][tensor]") {
             CHECK((C(i, j).get() == 6.0));
         }
     }
+
+    hip_catch(hipDeviceSynchronize());
 }
 
 TEST_CASE("Check memory", "[gpu][tensor]") {
@@ -202,11 +214,11 @@ TEST_CASE("Check memory", "[gpu][tensor]") {
     using namespace einsums::gpu;
     using namespace einsums::gpu::detail;
 
-    gpu::initialize();
-
     DeviceTensor<double, 2> A("A", einsums::detail::DEV_ONLY, 3, 3);
     DeviceTensor<double, 2> B("B", einsums::detail::MAPPED, 3, 3);
     DeviceTensor<double, 2> C("C", einsums::detail::PINNED, 3, 3);
+
+    hip_catch(hipDeviceSynchronize());
 
     hipError_t            status;
     hipPointerAttribute_t attribs;
@@ -274,8 +286,6 @@ TEST_CASE("Test reading and writing vectors", "[gpu][tensor]") {
     using namespace einsums::gpu;
     using namespace einsums::gpu::detail;
 
-    gpu::initialize();
-
     DeviceTensor<double, 2> A("A", einsums::detail::DEV_ONLY, 3, 3);
     DeviceTensor<double, 2> B("B", einsums::detail::MAPPED, 3, 3);
     DeviceTensor<double, 2> C("C", einsums::detail::PINNED, 3, 3);
@@ -286,6 +296,8 @@ TEST_CASE("Test reading and writing vectors", "[gpu][tensor]") {
     B.read(data);
     C.read(data);
 
+    hip_catch(hipDeviceSynchronize());
+
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
             CHECK((A(i, j) == (double)(i * 3 + j + 1)));
@@ -295,6 +307,9 @@ TEST_CASE("Test reading and writing vectors", "[gpu][tensor]") {
     }
 
     A.zero();
+
+    hip_catch(hipDeviceSynchronize());
+
     A.write(data);
 
     for (int i = 0; i < 9; i++) {
@@ -308,6 +323,9 @@ TEST_CASE("Test reading and writing vectors", "[gpu][tensor]") {
     }
 
     C.zero();
+
+    hip_catch(hipDeviceSynchronize());
+
     C.write(data);
 
     for (int i = 0; i < 9; i++) {
@@ -320,8 +338,6 @@ TEST_CASE("Test reading and writing arrays", "[gpu][tensor]") {
     using namespace einsums::gpu;
     using namespace einsums::gpu::detail;
 
-    gpu::initialize();
-
     DeviceTensor<double, 2> A("A", einsums::detail::DEV_ONLY, 3, 3);
     DeviceTensor<double, 2> B("B", einsums::detail::MAPPED, 3, 3);
     DeviceTensor<double, 2> C("C", einsums::detail::PINNED, 3, 3);
@@ -332,6 +348,8 @@ TEST_CASE("Test reading and writing arrays", "[gpu][tensor]") {
     B.read(data);
     C.read(data);
 
+    hip_catch(hipDeviceSynchronize());
+
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
             CHECK((A(i, j) == (double)(i * 3 + j + 1)));
@@ -341,6 +359,9 @@ TEST_CASE("Test reading and writing arrays", "[gpu][tensor]") {
     }
 
     A.zero();
+
+    hip_catch(hipDeviceSynchronize());
+
     A.write(data);
 
     for (int i = 0; i < 9; i++) {
@@ -354,6 +375,9 @@ TEST_CASE("Test reading and writing arrays", "[gpu][tensor]") {
     }
 
     C.zero();
+
+    hip_catch(hipDeviceSynchronize());
+
     C.write(data);
 
     for (int i = 0; i < 9; i++) {
@@ -365,8 +389,6 @@ TEST_CASE("Test tensor assignments", "[gpu][tensor]") {
     using namespace einsums;
     using namespace einsums::gpu;
     using namespace einsums::gpu::detail;
-
-    gpu::initialize();
 
     DeviceTensor<double, 2> A0("A0", einsums::detail::DEV_ONLY, 3, 3);
     DeviceTensor<double, 2> B0("B0", einsums::detail::MAPPED, 3, 3);
@@ -406,10 +428,14 @@ TEST_CASE("Test tensor assignments", "[gpu][tensor]") {
         }
     }
 
+    hip_catch(hipDeviceSynchronize());
+
     // Test the various copies of the same size, but with different locations.
     A0 = A1;
     B0 = B1;
     C0 = C1;
+
+    hip_catch(hipDeviceSynchronize());
 
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
@@ -423,6 +449,8 @@ TEST_CASE("Test tensor assignments", "[gpu][tensor]") {
     B0 = C1;
     C0 = A1;
 
+    hip_catch(hipDeviceSynchronize());
+
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
             CHECK((A0(i, j) == B1(i, j)));
@@ -434,6 +462,8 @@ TEST_CASE("Test tensor assignments", "[gpu][tensor]") {
     A0 = C1;
     B0 = A1;
     C0 = B1;
+
+    hip_catch(hipDeviceSynchronize());
 
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
@@ -447,6 +477,8 @@ TEST_CASE("Test tensor assignments", "[gpu][tensor]") {
     A0 = A2;
     B0 = B2;
     C0 = C2;
+
+    hip_catch(hipDeviceSynchronize());
 
     CHECK((A0.dim(0) == 5 && A0.dim(1) == 5));
     CHECK((B0.dim(0) == 5 && B0.dim(1) == 5));
@@ -465,9 +497,13 @@ TEST_CASE("Test tensor assignments", "[gpu][tensor]") {
     B0 = B1;
     C0 = C1;
 
+    hip_catch(hipDeviceSynchronize());
+
     A0 = B2;
     B0 = C2;
     C0 = A2;
+
+    hip_catch(hipDeviceSynchronize());
 
     CHECK((A0.dim(0) == 5 && A0.dim(1) == 5));
     CHECK((B0.dim(0) == 5 && B0.dim(1) == 5));
@@ -486,9 +522,13 @@ TEST_CASE("Test tensor assignments", "[gpu][tensor]") {
     B0 = B1;
     C0 = C1;
 
+    hip_catch(hipDeviceSynchronize());
+
     A0 = C2;
     B0 = A2;
     C0 = B2;
+
+    hip_catch(hipDeviceSynchronize());
 
     CHECK((A0.dim(0) == 5 && A0.dim(1) == 5));
     CHECK((B0.dim(0) == 5 && B0.dim(1) == 5));
@@ -507,10 +547,14 @@ TEST_CASE("Test tensor assignments", "[gpu][tensor]") {
     B0 = B1;
     C0 = C1;
 
+    hip_catch(hipDeviceSynchronize());
+
     // Test the converting copies of the same size.
     A0 = A3;
     B0 = B3;
     C0 = C3;
+
+    hip_catch(hipDeviceSynchronize());
 
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
@@ -524,6 +568,8 @@ TEST_CASE("Test tensor assignments", "[gpu][tensor]") {
     B0 = C3;
     C0 = A3;
 
+    hip_catch(hipDeviceSynchronize());
+
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
             CHECK((A0(i, j) == B3(i, j)));
@@ -535,6 +581,8 @@ TEST_CASE("Test tensor assignments", "[gpu][tensor]") {
     A0 = C3;
     B0 = A3;
     C0 = B3;
+
+    hip_catch(hipDeviceSynchronize());
 
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
@@ -548,6 +596,8 @@ TEST_CASE("Test tensor assignments", "[gpu][tensor]") {
     A0 = A4;
     B0 = B4;
     C0 = C4;
+
+    hip_catch(hipDeviceSynchronize());
 
     CHECK((A0.dim(0) == 5 && A0.dim(1) == 5));
     CHECK((B0.dim(0) == 5 && B0.dim(1) == 5));
@@ -566,9 +616,13 @@ TEST_CASE("Test tensor assignments", "[gpu][tensor]") {
     B0 = B1;
     C0 = C1;
 
+    hip_catch(hipDeviceSynchronize());
+
     A0 = B4;
     B0 = C4;
     C0 = A4;
+
+    hip_catch(hipDeviceSynchronize());
 
     CHECK((A0.dim(0) == 5 && A0.dim(1) == 5));
     CHECK((B0.dim(0) == 5 && B0.dim(1) == 5));
@@ -587,9 +641,13 @@ TEST_CASE("Test tensor assignments", "[gpu][tensor]") {
     B0 = B1;
     C0 = C1;
 
+    hip_catch(hipDeviceSynchronize());
+
     A0 = C4;
     B0 = A4;
     C0 = B4;
+
+    hip_catch(hipDeviceSynchronize());
 
     CHECK((A0.dim(0) == 5 && A0.dim(1) == 5));
     CHECK((B0.dim(0) == 5 && B0.dim(1) == 5));
@@ -608,8 +666,6 @@ TEST_CASE("Test tensor arithmetic assignments", "[gpu][tensor]") {
     using namespace einsums;
     using namespace einsums::gpu;
     using namespace einsums::gpu::detail;
-
-    gpu::initialize();
 
     DeviceTensor<double, 2> A0("A0", einsums::detail::DEV_ONLY, 3, 3);
     DeviceTensor<double, 2> B0("B0", einsums::detail::MAPPED, 3, 3);
@@ -635,10 +691,14 @@ TEST_CASE("Test tensor arithmetic assignments", "[gpu][tensor]") {
         }
     }
 
+    hip_catch(hipDeviceSynchronize());
+
     SECTION("Multiplication") {
         A0 *= A1;
         B0 *= B1;
         C0 *= C1;
+
+        hip_catch(hipDeviceSynchronize());
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -652,9 +712,13 @@ TEST_CASE("Test tensor arithmetic assignments", "[gpu][tensor]") {
         B0 = B0_orig;
         C0 = C0_orig;
 
+        hip_catch(hipDeviceSynchronize());
+
         A0 *= B1;
         B0 *= C1;
         C0 *= A1;
+
+        hip_catch(hipDeviceSynchronize());
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -668,9 +732,13 @@ TEST_CASE("Test tensor arithmetic assignments", "[gpu][tensor]") {
         B0 = B0_orig;
         C0 = C0_orig;
 
+        hip_catch(hipDeviceSynchronize());
+
         A0 *= C1;
         B0 *= A1;
         C0 *= B1;
+
+        hip_catch(hipDeviceSynchronize());
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -683,12 +751,16 @@ TEST_CASE("Test tensor arithmetic assignments", "[gpu][tensor]") {
         A0 = A0_orig;
         B0 = B0_orig;
         C0 = C0_orig;
+
+        hip_catch(hipDeviceSynchronize());
     }
 
     SECTION("Addition") {
         A0 += A1;
         B0 += B1;
         C0 += C1;
+
+        hip_catch(hipDeviceSynchronize());
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -702,9 +774,13 @@ TEST_CASE("Test tensor arithmetic assignments", "[gpu][tensor]") {
         B0 = B0_orig;
         C0 = C0_orig;
 
+        hip_catch(hipDeviceSynchronize());
+
         A0 += B1;
         B0 += C1;
         C0 += A1;
+
+        hip_catch(hipDeviceSynchronize());
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -718,9 +794,13 @@ TEST_CASE("Test tensor arithmetic assignments", "[gpu][tensor]") {
         B0 = B0_orig;
         C0 = C0_orig;
 
+        hip_catch(hipDeviceSynchronize());
+
         A0 += C1;
         B0 += A1;
         C0 += B1;
+
+        hip_catch(hipDeviceSynchronize());
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -733,12 +813,16 @@ TEST_CASE("Test tensor arithmetic assignments", "[gpu][tensor]") {
         A0 = A0_orig;
         B0 = B0_orig;
         C0 = C0_orig;
+
+        hip_catch(hipDeviceSynchronize());
     }
 
     SECTION("Division") {
         A0 /= A1;
         B0 /= B1;
         C0 /= C1;
+
+        hip_catch(hipDeviceSynchronize());
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -752,9 +836,13 @@ TEST_CASE("Test tensor arithmetic assignments", "[gpu][tensor]") {
         B0 = B0_orig;
         C0 = C0_orig;
 
+        hip_catch(hipDeviceSynchronize());
+
         A0 /= B1;
         B0 /= C1;
         C0 /= A1;
+
+        hip_catch(hipDeviceSynchronize());
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -768,9 +856,13 @@ TEST_CASE("Test tensor arithmetic assignments", "[gpu][tensor]") {
         B0 = B0_orig;
         C0 = C0_orig;
 
+        hip_catch(hipDeviceSynchronize());
+
         A0 /= C1;
         B0 /= A1;
         C0 /= B1;
+
+        hip_catch(hipDeviceSynchronize());
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -783,12 +875,16 @@ TEST_CASE("Test tensor arithmetic assignments", "[gpu][tensor]") {
         A0 = A0_orig;
         B0 = B0_orig;
         C0 = C0_orig;
+
+        hip_catch(hipDeviceSynchronize());
     }
 
     SECTION("Subtraction") {
         A0 -= A1;
         B0 -= B1;
         C0 -= C1;
+
+        hip_catch(hipDeviceSynchronize());
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -802,9 +898,13 @@ TEST_CASE("Test tensor arithmetic assignments", "[gpu][tensor]") {
         B0 = B0_orig;
         C0 = C0_orig;
 
+        hip_catch(hipDeviceSynchronize());
+
         A0 -= B1;
         B0 -= C1;
         C0 -= A1;
+
+        hip_catch(hipDeviceSynchronize());
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -818,9 +918,13 @@ TEST_CASE("Test tensor arithmetic assignments", "[gpu][tensor]") {
         B0 = B0_orig;
         C0 = C0_orig;
 
+        hip_catch(hipDeviceSynchronize());
+
         A0 -= C1;
         B0 -= A1;
         C0 -= B1;
+
+        hip_catch(hipDeviceSynchronize());
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -833,12 +937,16 @@ TEST_CASE("Test tensor arithmetic assignments", "[gpu][tensor]") {
         A0 = A0_orig;
         B0 = B0_orig;
         C0 = C0_orig;
+
+        hip_catch(hipDeviceSynchronize());
     }
 
     SECTION("Scalar operations") {
         A0 *= 2.0;
         B0 *= 3.0;
         C0 *= 4.0;
+
+        hip_catch(hipDeviceSynchronize());
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -852,9 +960,13 @@ TEST_CASE("Test tensor arithmetic assignments", "[gpu][tensor]") {
         B0 = B0_orig;
         C0 = C0_orig;
 
+        hip_catch(hipDeviceSynchronize());
+
         A0 += 2.0;
         B0 += 3.0;
         C0 += 4.0;
+
+        hip_catch(hipDeviceSynchronize());
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -868,9 +980,13 @@ TEST_CASE("Test tensor arithmetic assignments", "[gpu][tensor]") {
         B0 = B0_orig;
         C0 = C0_orig;
 
+        hip_catch(hipDeviceSynchronize());
+
         A0 /= 2.0;
         B0 /= 3.0;
         C0 /= 4.0;
+
+        hip_catch(hipDeviceSynchronize());
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -884,9 +1000,13 @@ TEST_CASE("Test tensor arithmetic assignments", "[gpu][tensor]") {
         B0 = B0_orig;
         C0 = C0_orig;
 
+        hip_catch(hipDeviceSynchronize());
+
         A0 -= 2.0;
         B0 -= 3.0;
         C0 -= 4.0;
+
+        hip_catch(hipDeviceSynchronize());
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -899,6 +1019,8 @@ TEST_CASE("Test tensor arithmetic assignments", "[gpu][tensor]") {
         A0 = A0_orig;
         B0 = B0_orig;
         C0 = C0_orig;
+
+        hip_catch(hipDeviceSynchronize());
     }
 }
 
@@ -906,8 +1028,6 @@ TEST_CASE("Test device-host interfacing", "[gpu][tensor]") {
     using namespace einsums;
     using namespace einsums::gpu;
     using namespace einsums::gpu::detail;
-
-    gpu::initialize();
 
     Tensor<double, 2> host_tensor("Host", 3, 3);
 
@@ -919,13 +1039,19 @@ TEST_CASE("Test device-host interfacing", "[gpu][tensor]") {
 
     DeviceTensor<double, 2> A(host_tensor, einsums::detail::DEV_ONLY);
 
+    hip_catch(hipDeviceSynchronize());
+
     host_tensor *= 10;
 
     DeviceTensor<double, 2> B(host_tensor, einsums::detail::PINNED);
 
+    hip_catch(hipDeviceSynchronize());
+
     host_tensor *= 2;
 
     DeviceTensor<double, 2> C(host_tensor, einsums::detail::MAPPED);
+
+    hip_catch(hipDeviceSynchronize());
 
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
@@ -938,6 +1064,8 @@ TEST_CASE("Test device-host interfacing", "[gpu][tensor]") {
     auto A_host = (Tensor<double, 2>)A;
     auto B_host = (Tensor<double, 2>)B;
     auto C_host = (Tensor<double, 2>)C;
+
+    hip_catch(hipDeviceSynchronize());
 
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
@@ -954,15 +1082,17 @@ TEST_CASE("Zero-rank GPU tensors", "[gpu][tensor]") {
     using namespace einsums::gpu;
     using namespace einsums::gpu::detail;
 
-    gpu::initialize();
-
     DeviceTensor<double, 0> A("A", DEV_ONLY);
     DeviceTensor<double, 0> B("B", PINNED);
     DeviceTensor<double, 0> C("C", MAPPED);
 
+    hip_catch(hipDeviceSynchronize());
+
     DeviceTensor<double, 0> A_copy(A);
     DeviceTensor<double, 0> B_copy(B);
     DeviceTensor<double, 0> C_copy(C);
+
+    hip_catch(hipDeviceSynchronize());
 
     hipError_t            status;
     hipPointerAttribute_t attribs;
@@ -998,6 +1128,8 @@ TEST_CASE("Zero-rank GPU tensors", "[gpu][tensor]") {
     B = 2.0;
     C = 3.0;
 
+    hip_catch(hipDeviceSynchronize());
+
     CHECK(((double)A == 1.0));
     CHECK(((double)B == 2.0));
     CHECK(((double)C == 3.0));
@@ -1005,12 +1137,16 @@ TEST_CASE("Zero-rank GPU tensors", "[gpu][tensor]") {
     A = B;
     B = C;
 
+    hip_catch(hipDeviceSynchronize());
+
     CHECK(((double)A == 2.0));
     CHECK(((double)B == 3.0));
 
     A *= 2.0;
     B *= 2.0;
     C *= 2.0;
+
+    hip_catch(hipDeviceSynchronize());
 
     CHECK(((double)A == 4.0));
     CHECK(((double)B == 6.0));
@@ -1020,6 +1156,8 @@ TEST_CASE("Zero-rank GPU tensors", "[gpu][tensor]") {
     B += 2.0;
     C += 2.0;
 
+    hip_catch(hipDeviceSynchronize());
+
     CHECK(((double)A == 6.0));
     CHECK(((double)B == 8.0));
     CHECK(((double)C == 8.0));
@@ -1027,6 +1165,8 @@ TEST_CASE("Zero-rank GPU tensors", "[gpu][tensor]") {
     A /= 2.0;
     B /= 2.0;
     C /= 2.0;
+
+    hip_catch(hipDeviceSynchronize());
 
     CHECK(((double)A == 3.0));
     CHECK(((double)B == 4.0));
@@ -1036,6 +1176,8 @@ TEST_CASE("Zero-rank GPU tensors", "[gpu][tensor]") {
     B -= 2.0;
     C -= 2.0;
 
+    hip_catch(hipDeviceSynchronize());
+
     CHECK(((double)A == 1.0));
     CHECK(((double)B == 2.0));
     CHECK(((double)C == 2.0));
@@ -1044,9 +1186,13 @@ TEST_CASE("Zero-rank GPU tensors", "[gpu][tensor]") {
 
     D = 10.0;
 
+    hip_catch(hipDeviceSynchronize());
+
     DeviceTensor<double, 0> E(D, DEV_ONLY);
     DeviceTensor<double, 0> F(D, MAPPED);
     DeviceTensor<double, 0> G(D, PINNED);
+
+    hip_catch(hipDeviceSynchronize());
 
     CHECK(((double)E == 10.0));
     CHECK(((double)F == 10.0));

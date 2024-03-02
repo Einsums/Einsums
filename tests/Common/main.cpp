@@ -43,6 +43,8 @@ auto main(int argc, char *argv[]) -> int {
 
     // Passing false means "do not print timer report", whereas passing true will print the
     // timer report.
+    // Print the timer report to a file anyways.
+    einsums::timer::report("./timings.txt");
     einsums::finalize(false);
 
     return result;
