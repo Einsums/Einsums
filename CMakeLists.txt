@@ -74,7 +74,7 @@ add_feature_info(
         EINSUMS_CONTINUOUSLY_TEST_EINSUM ${EINSUMS_CONTINUOUSLY_TEST_EINSUM}
         "Test every call to einsum. EXPENSIVE!")
 add_feature_info(EINSUMS_TEST_EINSUM_ABORT ${EINSUMS_TEST_EINSUM_ABORT}
-        "Abort execution if an error found")
+        "Abort execution if an error is found")
 add_feature_info(EINSUMS_WARN_NOT_IMPLEMENTED ${EINSUMS_WARN_NOT_IMPLEMENTED}
         "Report if a specific case is not implemented")
 add_feature_info(EINSUMS_SHOW_WARNING ${EINSUMS_SHOW_WARNING}
