@@ -38,12 +38,15 @@ struct Timer {
     time_point start;
 
   public:
-    Timer(const std::string &name) {
+    explicit Timer(const std::string &name) {
         start = clock::now();
         push(name);
     }
 
-    ~Timer() { pop(clock::now() - start); }
+    ~Timer() {
+        auto difference = clock::now() - start;
+        pop(difference);
+    }
 };
 
 } // namespace einsums::timer

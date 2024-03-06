@@ -5,9 +5,7 @@
 
 #include "einsums/Blas.hpp"
 
-#include "backends/linear_algebra/cblas/cblas.hpp"
 #include "backends/linear_algebra/mkl/mkl.hpp"
-#include "backends/linear_algebra/netlib/Netlib.hpp"
 #include "backends/linear_algebra/onemkl/onemkl.hpp"
 #include "backends/linear_algebra/vendor/Vendor.hpp"
 
