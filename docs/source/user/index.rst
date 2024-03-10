@@ -18,6 +18,7 @@ detailts are found in reference.
     :maxdepth: 1
 
     absolute_beginners
+    <building-from-source>
 
 .. toctree::
     :caption: Extras

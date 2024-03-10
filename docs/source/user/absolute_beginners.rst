@@ -29,7 +29,7 @@ If you desire to compile from source, see .
 
 If you have Python, you can install Einsums with::
 
-    conda install einsums -C psi4
+    conda install einsums
 
 How to include Einsums
 ----------------------
@@ -42,14 +42,14 @@ For example, in your CMakeLists.txt file you can have lines similar to the follo
 
 .. code-block:: cmake
 
-    find_package(Einsums 0.1 CONFIG)
+    find_package(Einsums 0.3 CONFIG)
 
     add_executable(sample main.cpp)
     target_link_libraries(samples Einsums::einsums)
 
 Then in your main.cpp you can have something like
 
-.. code-block::
+.. code-block:: c++
 
     #include <einsums.hpp>
 
@@ -66,7 +66,7 @@ Reading the example code
 
 If you are not already comfortable with reading tutorials that contain a lot code,
 you might not know how to interpret a code block that looks
-like this::
+like this:: c++
 
     auto A = einsums::create_random_tensor(6)
     auto B = einsums::Tensor{std::move(A), -1, 6}
@@ -86,7 +86,7 @@ How to create a Tensor
 To create an Einsums Tensor, you can use the function :cpp:func:`einsums::create_tensor`.
 
 All you need to do to create a simple tensor is pass a name for the tensor and the
-dimensionality of each index.::
+dimensionality of each index.:: c++
 
     #include <einsums.hpp>
 
@@ -97,7 +97,7 @@ dimensionality of each index.::
     }
 
 In this example, we are using the C++ ``auto`` to simplify the type signature. We can
-write the data type explicitly if we want to.::
+write the data type explicitly if we want to.:: c++
 
     #include <einsums.hpp>
 
@@ -116,14 +116,14 @@ write the data type explicitly if we want to.::
 **Specifying your data type**
 
 While the default data type is double-precision floating point (``double``), you
-can explicitly specify which data type you want use.::
+can explicitly specify which data type you want use.:: c++
 
     auto A = einsums::create_tensor<float>("A", 2, 2);
 
     auto B = einsums::Tensor<float>{"B", 2, 2};
 
 Einsums and the underlying mathematical operations also supports the use of
-complex numbers.::
+complex numbers.:: c++
 
     auto C = einsums::create_tensor<std::complex<double>>("C", 2, 2);
 
