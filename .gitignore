@@ -1,4 +1,4 @@
-*build*/
+/*build*/
 
 # Prerequisites
 *.d
@@ -62,7 +62,7 @@ CMakeSettings.json
 __pycache__
 docs/_doxygen
 docs/api
-docs/_build
+docs/build
 
 # Random Apple stuff
 .DS_Store
