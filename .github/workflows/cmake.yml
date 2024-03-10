@@ -71,7 +71,6 @@ jobs:
             - liblapacke
             - hdf5
             - zlib
-            - elfutils
             #- dpcpp_linux-64
           EOF
           if [[ "${{ runner.os }}" == "Linux" ]]; then
