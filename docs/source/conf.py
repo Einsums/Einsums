@@ -43,6 +43,7 @@ if m:
 extensions = [
     'sphinx.ext.mathjax',
     'sphinx.ext.ifconfig',
+    'sphinx.ext.intersphinx',
     'breathe',
     'sphinx_design'
 ]

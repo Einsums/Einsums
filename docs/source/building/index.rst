@@ -35,8 +35,7 @@ other system-level dependencies to build it on your system.
    If you are using Conda, you can skip the steps in this section - with the
    exception of installing the Apple Developer Tools for macOS. All other
    dependencies will be installed automatically by the
-   ``mamba env create -f devtools *-dev.yml`` command. Replacing ``*`` with
-   either ``linux`` or ``macos``.
+   ``mamba env create -f devtools environment.yml`` command.
 
    If you don't have a conda installation yet, we recommend using
    Mambaforge_; any conda flavor will work though.
@@ -127,5 +126,10 @@ or running benchmarks.
 
 Customizing builds
 ------------------
+
+.. toctree::
+   :maxdepth: 1
+
+   compilers_and_options
 
 .. _Mambaforge: https://github.com/conda-forge/miniforge#mambaforge
