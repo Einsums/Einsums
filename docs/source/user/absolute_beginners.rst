@@ -86,7 +86,7 @@ How to create a Tensor
 To create an Einsums Tensor, you can use the function :cpp:func:`einsums::create_tensor`.
 
 All you need to do to create a simple tensor is pass a name for the tensor and the
-dimensionality of each index.:: c++
+dimensionality of each index.::
 
     #include <einsums.hpp>
 
@@ -97,7 +97,7 @@ dimensionality of each index.:: c++
     }
 
 In this example, we are using the C++ ``auto`` to simplify the type signature. We can
-write the data type explicitly if we want to.:: c++
+write the data type explicitly if we want to.::
 
     #include <einsums.hpp>
 
@@ -116,14 +116,14 @@ write the data type explicitly if we want to.:: c++
 **Specifying your data type**
 
 While the default data type is double-precision floating point (``double``), you
-can explicitly specify which data type you want use.:: c++
+can explicitly specify which data type you want use.::
 
     auto A = einsums::create_tensor<float>("A", 2, 2);
 
     auto B = einsums::Tensor<float>{"B", 2, 2};
 
 Einsums and the underlying mathematical operations also supports the use of
-complex numbers.:: c++
+complex numbers.::
 
     auto C = einsums::create_tensor<std::complex<double>>("C", 2, 2);
 

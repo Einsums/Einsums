@@ -21,5 +21,11 @@ dependencies:
   - hdf5
   - zlib
 
-  - libdwarf-dev
-  - elfutils
+  # Needed to build the documentation
+  - sphinx=6.2.1
+  - sphinx-design
+  - six
+  - pydata-sphinx-theme
+  - doxygen
+  - breathe=4.35.0
+  - docutils>=0.12
