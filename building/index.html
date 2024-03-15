@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Einsums reference &#8212; Einsums 0.4.0 documentation</title>
+    <title>Building from source &#8212; Einsums 0.4.0 documentation</title>
   
   
   
@@ -42,11 +42,11 @@
     <script src="../_static/doctools.js"></script>
     <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/design-tabs.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'reference/index';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'building/index';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Classes/Structs" href="classes.html" />
-    <link rel="prev" title="Einsums license" href="../license.html" />
+    <link rel="next" title="Compiler selection and customizing a build" href="compilers_and_options.html" />
+    <link rel="prev" title="Tensor creation functions" href="../reference/function.create.tensors.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -148,15 +148,15 @@
                     </li>
                 
 
-                    <li class="nav-item current active">
-                      <a class="nav-link nav-internal" href="#">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../reference/index.html">
                         API Reference
                       </a>
                     </li>
                 
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../building/index.html">
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="#">
                         Building from source
                       </a>
                     </li>
@@ -232,6 +232,10 @@ document.write(`
   
 
   
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
 </div>
 
     </header>
@@ -262,15 +266,15 @@ document.write(`
                     </li>
                 
 
-                    <li class="nav-item current active">
-                      <a class="nav-link nav-internal" href="#">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../reference/index.html">
                         API Reference
                       </a>
                     </li>
                 
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../building/index.html">
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="#">
                         Building from source
                       </a>
                     </li>
@@ -322,14 +326,7 @@ document.write(`
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="classes.html">Classes/Structs</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="class.tensor.html">Tensor</a></li>
-</ul>
-</li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="functions.html">Functions</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="function.create.tensors.html">Tensor creation functions</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="compilers_and_options.html">Compiler selection and customizing a build</a></li>
 </ul>
 </div>
 </nav></div>
@@ -367,7 +364,7 @@ document.write(`
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
-    <li class="breadcrumb-item active" aria-current="page">Einsums reference</li>
+    <li class="breadcrumb-item active" aria-current="page">Building from source</li>
   </ul>
 </nav>
 </div>
@@ -384,31 +381,126 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="einsums-reference">
-<span id="reference"></span><h1>Einsums reference<a class="headerlink" href="#einsums-reference" title="Permalink to this heading">#</a></h1>
-<dl class="field-list simple">
-<dt class="field-odd">Release<span class="colon">:</span></dt>
-<dd class="field-odd"><p>0.4.0</p>
-</dd>
-<dt class="field-even">Date<span class="colon">:</span></dt>
-<dd class="field-even"><p>Mar 15, 2024</p>
-</dd>
-</dl>
-<p>This reference manual details functions, modules, and objects
-included in Einsums, describing what they are and what they do.
-For learning how to use Einsums, see the .</p>
+  <section id="building-from-source">
+<span id="id1"></span><h1>Building from source<a class="headerlink" href="#building-from-source" title="Permalink to this heading">#</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you are only trying to install Einsums, we recommend using binaries -
+Installation for details on that.</p>
+</div>
+<p>Building Einsums from source requires setting up system-level dependencies
+(compilers, BLAS/LAPACK libraries, etc.) first, and then invoking a build. The
+build may be done in order to install Einsums for local usage, develop Einsums
+itself, or build redistributable binary packages. Any it may be desired to
+customize aspects of how the build is done. This guide will cover all these
+aspects. In addition, it provides background information on how the Einsums build
+works.</p>
+<section id="system-level-dependencies">
+<span id="system-level"></span><h2>System-level dependencies<a class="headerlink" href="#system-level-dependencies" title="Permalink to this heading">#</a></h2>
+<p>Einsums is a C++ compiled library, which means you need compilers and some
+other system-level dependencies to build it on your system.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you are using Conda, you can skip the steps in this section - with the
+exception of installing the Apple Developer Tools for macOS. All other
+dependencies will be installed automatically by the
+<code class="docutils literal notranslate"><span class="pre">mamba</span> <span class="pre">env</span> <span class="pre">create</span> <span class="pre">-f</span> <span class="pre">devtools</span> <span class="pre">environment.yml</span></code> command.</p>
+<p>If you don’t have a conda installation yet, we recommend using
+<a class="reference external" href="https://github.com/conda-forge/miniforge#mambaforge">Mambaforge</a>; any conda flavor will work though.</p>
+</div>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" data-sync-id="linux" for="sd-tab-item-0">
+Linux</label><div class="sd-tab-content docutils">
+<p>You will need:</p>
+<ul class="simple">
+<li><p>C++ compiler with C++20 support (GCC, LLVM/Clang, or Intel).</p></li>
+<li><p>BLAS and LAPACK libraries. <a class="reference external" href="https://github.com/OpenMathLib/OpenBLAS/">OpenBLAS</a>
+is the Einsums default; other variants include Apple Accelerate,
+<a class="reference external" href="https://software.intel.com/en-us/intel-mkl">MKL</a>,
+<a class="reference external" href="https://math-atlas.sourceforce.net/">ATLAS</a> and
+<a class="reference external" href="https://www.netlib.org/lapack/index.hmtl">Netlib</a> ( or “Reference”)
+BLAS and LAPACK.</p></li>
+<li><p>CMake</p></li>
+</ul>
+<p>Optional:</p>
+<ul class="simple">
+<li><p>For the Fourier Transform abilities, you will need either <a class="reference external" href="https://www.fftw.org">FFTW3</a>
+or MKL.</p></li>
+</ul>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-3">
+Debian/Ubuntu Linux</label><div class="sd-tab-content docutils">
+<p>Need to include instructions for installing system-wide dependencies
+on various distributions.</p>
+</div>
+<input id="sd-tab-item-4" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-4">
+CentOS/RHEL</label><div class="sd-tab-content docutils">
+<p>blah blah blah</p>
+</div>
+</div>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" data-sync-id="macos" for="sd-tab-item-1">
+macOS</label><div class="sd-tab-content docutils">
+<p>Install Apple Developer Tools. An easy way to do this is to
+<a class="reference external" href="https://blog.teamtreehouse.com/introduction-to-the-mac-os-x-command-line">open a terminal window</a>,
+enter the command:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">xcode</span><span class="o">-</span><span class="n">select</span><span class="w"> </span><span class="o">--</span><span class="n">install</span>
+</pre></div>
+</div>
+<p>and follow the prompts. Apple Developer Tools includes Git, the Clang C/C++
+compilers, and other development utilities that may be required.</p>
+</div>
+<input id="sd-tab-item-2" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" data-sync-id="windows" for="sd-tab-item-2">
+Windows</label><div class="sd-tab-content docutils">
+<p>Windows is not supported at this time.</p>
+</div>
+</div>
+</section>
+<section id="building-einsums-from-source">
+<h2>Building Einsums from source<a class="headerlink" href="#building-einsums-from-source" title="Permalink to this heading">#</a></h2>
+<p>If you want to build from source in order to work on Einsums itself, first clone
+the Einsums repository.:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">git</span><span class="w"> </span><span class="n">clone</span><span class="w"> </span><span class="n">https</span><span class="o">:</span><span class="c1">//github.com/Einsums/Einsums.git</span>
+<span class="n">cd</span><span class="w"> </span><span class="n">Einsums</span>
+</pre></div>
+</div>
+<p>Then you want to do the following:</p>
+<ol class="arabic simple">
+<li><p>Create a dedicated development environment (conda environment),</p></li>
+<li><p>Install all needed dependencies (<em>build</em>, and also <em>test</em>, and <em>doc</em>
+dependencies.</p></li>
+<li><p>Build Einsums.</p></li>
+</ol>
+<p>To create an <code class="docutils literal notranslate"><span class="pre">einsums-dev</span></code> development environment with every required and
+optional dependency installed, run:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">mamba</span><span class="w"> </span><span class="n">env</span><span class="w"> </span><span class="n">create</span><span class="w"> </span><span class="o">-</span><span class="n">f</span><span class="w"> </span><span class="n">devtools</span><span class="o">/</span><span class="n">conda</span><span class="o">-</span><span class="n">envs</span><span class="o">/</span><span class="n">environment</span><span class="p">.</span><span class="n">yml</span>
+<span class="n">mamba</span><span class="w"> </span><span class="n">activate</span><span class="w"> </span><span class="n">einsums</span><span class="o">-</span><span class="n">dev</span>
+</pre></div>
+</div>
+<p>To build Einsums in an activated development environment, run:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">mkdir</span><span class="w"> </span><span class="n">build</span>
+<span class="n">cd</span><span class="w"> </span><span class="n">build</span>
+<span class="n">cmake</span><span class="w"> </span><span class="p">..</span>
+<span class="n">make</span>
+</pre></div>
+</div>
+<p>This will build Einsums inside the <code class="docutils literal notranslate"><span class="pre">build</span></code> directory. You can then run tests
+(<code class="docutils literal notranslate"><span class="pre">ctest</span></code>), or take other development steps like build the html documentation
+or running benchmarks.</p>
+</section>
+<section id="customizing-builds">
+<h2>Customizing builds<a class="headerlink" href="#customizing-builds" title="Permalink to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="classes.html">Classes/Structs</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="class.tensor.html">Tensor</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="functions.html">Functions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function.create.tensors.html">Tensor creation functions</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="compilers_and_options.html">Compiler selection and customizing a build</a></li>
 </ul>
 </div>
+</section>
 </section>
 
 
@@ -422,20 +514,20 @@ For learning how to use Einsums, see the .</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../license.html"
+       href="../reference/function.create.tensors.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Einsums license</p>
+        <p class="prev-next-title">Tensor creation functions</p>
       </div>
     </a>
     <a class="right-next"
-       href="classes.html"
+       href="compilers_and_options.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Classes/Structs</p>
+        <p class="prev-next-title">Compiler selection and customizing a build</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -446,7 +538,24 @@ For learning how to use Einsums, see the .</p>
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"></div>
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#system-level-dependencies">System-level dependencies</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#building-einsums-from-source">Building Einsums from source</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#customizing-builds">Customizing builds</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

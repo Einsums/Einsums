@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Einsums reference &#8212; Einsums 0.4.0 documentation</title>
+    <title>Compiler selection and customizing a build &#8212; Einsums 0.4.0 documentation</title>
   
   
   
@@ -42,11 +42,10 @@
     <script src="../_static/doctools.js"></script>
     <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/design-tabs.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'reference/index';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'building/compilers_and_options';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Classes/Structs" href="classes.html" />
-    <link rel="prev" title="Einsums license" href="../license.html" />
+    <link rel="prev" title="Building from source" href="index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -148,15 +147,15 @@
                     </li>
                 
 
-                    <li class="nav-item current active">
-                      <a class="nav-link nav-internal" href="#">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../reference/index.html">
                         API Reference
                       </a>
                     </li>
                 
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../building/index.html">
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="index.html">
                         Building from source
                       </a>
                     </li>
@@ -232,6 +231,10 @@ document.write(`
   
 
   
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
 </div>
 
     </header>
@@ -262,15 +265,15 @@ document.write(`
                     </li>
                 
 
-                    <li class="nav-item current active">
-                      <a class="nav-link nav-internal" href="#">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../reference/index.html">
                         API Reference
                       </a>
                     </li>
                 
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../building/index.html">
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="index.html">
                         Building from source
                       </a>
                     </li>
@@ -321,15 +324,8 @@ document.write(`
 <nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
-  <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="classes.html">Classes/Structs</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="class.tensor.html">Tensor</a></li>
-</ul>
-</li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="functions.html">Functions</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="function.create.tensors.html">Tensor creation functions</a></li>
-</ul>
-</li>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Compiler selection and customizing a build</a></li>
 </ul>
 </div>
 </nav></div>
@@ -367,7 +363,10 @@ document.write(`
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
-    <li class="breadcrumb-item active" aria-current="page">Einsums reference</li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Building from source</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">Compiler...</li>
   </ul>
 </nav>
 </div>
@@ -384,31 +383,72 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="einsums-reference">
-<span id="reference"></span><h1>Einsums reference<a class="headerlink" href="#einsums-reference" title="Permalink to this heading">#</a></h1>
-<dl class="field-list simple">
-<dt class="field-odd">Release<span class="colon">:</span></dt>
-<dd class="field-odd"><p>0.4.0</p>
-</dd>
-<dt class="field-even">Date<span class="colon">:</span></dt>
-<dd class="field-even"><p>Mar 15, 2024</p>
-</dd>
-</dl>
-<p>This reference manual details functions, modules, and objects
-included in Einsums, describing what they are and what they do.
-For learning how to use Einsums, see the .</p>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="classes.html">Classes/Structs</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="class.tensor.html">Tensor</a></li>
+  <section id="compiler-selection-and-customizing-a-build">
+<h1>Compiler selection and customizing a build<a class="headerlink" href="#compiler-selection-and-customizing-a-build" title="Permalink to this heading">#</a></h1>
+<section id="selecting-a-specific-compiler">
+<h2>Selecting a specific compiler<a class="headerlink" href="#selecting-a-specific-compiler" title="Permalink to this heading">#</a></h2>
+<p>CMake supports the standard environment variable <code class="docutils literal notranslate"><span class="pre">CXX</span></code> to select a specific C++ compiler.
+This environment variable is documented in the <a class="reference external" href="https://cmake.org/cmake/help/latest/envvar/CC.html">CMake docs</a>.</p>
+<p>Note that environment variables only get applied from a clean build, because they affect
+the configuration stage. An incremental rebuild does not react to changes in environment
+variables.</p>
+<p>CMake also supports passing the <code class="docutils literal notranslate"><span class="pre">-DCMAKE_CXX_COMPILER=</span></code> <a class="reference external" href="https://cmake.org/cmake/help/latest/variable/CMAKE_LANG_COMPILER.html">variable</a>
+to the command-line call to <code class="docutils literal notranslate"><span class="pre">cmake</span></code>.</p>
+</section>
+<section id="selecting-build-type">
+<h2>Selecting build type<a class="headerlink" href="#selecting-build-type" title="Permalink to this heading">#</a></h2>
+<p>CMake natively supports four build types: <code class="docutils literal notranslate"><span class="pre">Debug</span></code>, <code class="docutils literal notranslate"><span class="pre">Release</span></code>, <code class="docutils literal notranslate"><span class="pre">MinSizeRel</span></code>, and <code class="docutils literal notranslate"><span class="pre">RelWithDebInfo</span></code>.</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Release</span></code>: high optimization level, no debug info, code or asserts.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Debug</span></code>: No optimization, asserts enabled, [custom debug (output) code enabled],
+debug info included in executable (so you can step through the code with a
+debugger and have address to source-file:line-number translation).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">RelWithDebInfo</span></code>: optimized, <em>with</em> debug info, but no debug (output) code or asserts.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MinSizeRel</span></code>: same as Release but optimizing for size rather than speed.</p></li>
+</ol>
+<p>Einsums provides additional build types: <code class="docutils literal notranslate"><span class="pre">ASAN</span></code>, <code class="docutils literal notranslate"><span class="pre">MSAN</span></code>, and <code class="docutils literal notranslate"><span class="pre">UBSAN</span></code>. These are not used very often and currently are not
+guaranteed to work.</p>
+<ol class="arabic" start="5">
+<li><p><code class="docutils literal notranslate"><span class="pre">ASAN</span></code>: Address Sanitizer (aka ASan) is a memory error detector for C/C++. It finds:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Use after free (dangling pointer dereference)</p></li>
+<li><p>Heap buffer overflow</p></li>
+<li><p>Stack buffer overflow</p></li>
+<li><p>Global buffer overflow</p></li>
+<li><p>Use after return</p></li>
+<li><p>Use after scope</p></li>
+<li><p>Initialization order bugs</p></li>
+<li><p>Memory leaks</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MSAN</span></code>: Memory Sanitizer (aka MSan) is a detector of uninitialized memory reads in C/C++ programs.
+Uninitialized values occur when stack- or heap-allocated memory is read before it is written.
+MSan detects cases where such values affect program execution.
+MSan is bit-exact: it can track uninitialized bits in a bitfield.
+It will tolerate copying of uninitialized memory, and also simple logic and arithmetic operations with it.</p>
+<p>In general, MSan silently tracks the spread of uninitialized data in memory, and reports a warning when a
+code branch is taken (or not taken) depending on an uninitialized value.</p>
+<p>MSan implements a subset of functionality found in Valgrind (Memcheck tool). It is significantly faster
+than Memcheck.</p>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">UBSAN</span></code>: Undefined Behavior Sanitizer (UBSan) is a fast undefined behavior detector. UBSan modifies
+the program at compile-time to catch various kinds of undefined behavior during program execution, for
+example:</p>
+<ul class="simple">
+<li><p>Array subscript out of bounds, where the bounds can be statically determined</p></li>
+<li><p>Bitwise shifts that are out of bounds for their data type</p></li>
+<li><p>Dereferencing misaligned or null pointers</p></li>
+<li><p>Signed integer overflow</p></li>
+<li><p>Conversion to, from, or between floating-point types which would overflow the destination</p></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="functions.html">Functions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function.create.tensors.html">Tensor creation functions</a></li>
-</ul>
-</li>
-</ul>
-</div>
+</ol>
+</section>
+<section id="internal-einsums-testing">
+<h2>Internal Einsums testing<a class="headerlink" href="#internal-einsums-testing" title="Permalink to this heading">#</a></h2>
+</section>
 </section>
 
 
@@ -422,22 +462,13 @@ For learning how to use Einsums, see the .</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../license.html"
+       href="index.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Einsums license</p>
+        <p class="prev-next-title">Building from source</p>
       </div>
-    </a>
-    <a class="right-next"
-       href="classes.html"
-       title="next page">
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Classes/Structs</p>
-      </div>
-      <i class="fa-solid fa-angle-right"></i>
     </a>
 </div>
                 </footer>
@@ -446,7 +477,24 @@ For learning how to use Einsums, see the .</p>
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"></div>
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selecting-a-specific-compiler">Selecting a specific compiler</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selecting-build-type">Selecting build type</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#internal-einsums-testing">Internal Einsums testing</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>
