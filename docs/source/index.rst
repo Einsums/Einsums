@@ -16,6 +16,7 @@ Einsums's documentation
 
    User Guide <user/index>
    API Reference <reference/index>
+   Building from source <building/index>
 
 **Version**: |release|
 

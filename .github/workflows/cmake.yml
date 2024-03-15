@@ -14,7 +14,6 @@ jobs:
         cxx: [ L-Gnu, M-Clang, L-Intel ]
         build_type: [ Release, Debug ]
         hptt: [ ON, OFF ]
-        build_job_queue: [ ON, OFF ]
         include:
           - cmargs: ""
           - testargs: ""
@@ -40,7 +39,7 @@ jobs:
         exclude:
           - cxx: L-Intel
             build_type: Debug
-    name: "Build • ${{ matrix.cxx }} • ${{ matrix.build_type }} • HPTT=${{ matrix.hptt }} • Job Queue=${{ matrix.build_job_queue }}"
+    name: "Build • ${{ matrix.cxx }} • ${{ matrix.build_type }} • HPTT=${{ matrix.hptt }}"
     runs-on: ${{matrix.os}}
     defaults:
       run:
@@ -135,7 +134,6 @@ jobs:
             -D EINSUMS_SHOW_WARNING=OFF \
             -D EINSUMS_USE_HPTT=${{matrix.hptt}} \
             -D EINSUMS_STATIC_BUILD=${{matrix.hptt}} \
-            -D EINSUMS_JOB_QUEUES=${{matrix.build_job_queue}} \
             -D CMAKE_INSTALL_PREFIX="${{github.workspace}}/installed" \
             -DCMAKE_PREFIX_PATH="${CONDA_PREFIX}" \
             ${{ matrix.cmargs }}
