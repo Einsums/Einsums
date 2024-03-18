@@ -139,6 +139,6 @@ void dlassq(int n, const double *x, int incx, double *scale, double *sumsq);
 void classq(int n, const std::complex<float> *x, int incx, float *scale, float *sumsq);
 void zlassq(int n, const std::complex<double> *x, int incx, double *scale, double *sumsq);
 
-auto dgesdd(char, int, int, double *, int, double *, double *, int, double *, int, double *, int, int *) -> int;
+auto dgesdd(char, int, int, double *, int, double *, double *, int, double *, int/*, double *, int, int * */) -> int;
 
 } // namespace einsums::backend::linear_algebra::vendor

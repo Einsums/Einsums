@@ -557,9 +557,11 @@ void zlassq(int n, const std::complex<double> *x, int incx, double *scale, doubl
     FC_GLOBAL(zlassq, ZLASSQ)(&n, x, &incx, scale, sumsq);
 }
 
-auto dgesdd(char jobz, int m, int n, double *a, int lda, double *s, double *u, int ldu, double *vt, int ldvt, double *work, int lwork,
-            int *iwork) -> int {
+auto dgesdd(char jobz, int m, int n, double *a, int lda, double *s, double *u, int ldu, double *vt, int ldvt/*, double *work, int lwork,
+            int *iwork */) -> int {
     LabeledSection0();
+
+    // TODO: Essentially re-implement the lapacke function here. d
 
     int info{0};
     FC_GLOBAL(dgesdd, DGESDD)(&jobz, &n, &m, a, &lda, s, vt, &ldvt, u, &ldu, work, &lwork, iwork, &info);
