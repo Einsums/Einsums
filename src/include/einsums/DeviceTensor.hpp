@@ -367,6 +367,23 @@ struct DeviceTensor : public ::einsums::detail::TensorBase<T, Rank> {
     DeviceTensor(const DeviceTensorView<T, Rank> &other, hipStream_t stream = 0);
 
     /**
+     * @brief Resize a tensor.
+     *
+     * @param dims The new dimensions of a tensor.
+     */
+    void resize(Dim<Rank> dims);
+
+    /**
+     * @brief Resize a tensor.
+     *
+     * @param dims The new dimensions of a tensor.
+     */
+    template<typename... Dims>
+    auto resize(Dims... dims) -> std::enable_if<sizeof...(Dims) == Rank, void> {
+        resize(Dim<Rank>{dims...});
+    }
+
+    /**
      * @brief Zeroes out the tensor data.
      */
     void zero(hipStream_t stream = 0);
