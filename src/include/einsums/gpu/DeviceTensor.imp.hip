@@ -449,6 +449,10 @@ __global__ void set_all(T *data, const size_t *dims, const size_t *strides, T va
 
 template <typename T, size_t Rank>
 void DeviceTensor<T, Rank>::resize(Dim<Rank> dims) {
+    if (dims == _dims) {
+        return;
+    }
+
     struct Stride {
         size_t value{1};
         Stride() = default;

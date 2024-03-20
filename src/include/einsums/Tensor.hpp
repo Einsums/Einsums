@@ -351,6 +351,10 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
      * @param dims The new dimensions of a tensor.
      */
     void resize(Dim<Rank> dims) {
+        if(dims == _dims) {
+            return;
+        }
+
         struct Stride {
             size_t value{1};
             Stride() = default;
