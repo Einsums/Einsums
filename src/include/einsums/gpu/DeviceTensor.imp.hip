@@ -463,11 +463,17 @@ void DeviceTensor<T, Rank>::resize(Dim<Rank> dims) {
         }
     };
 
+    size_t old_size = size();
+
     _dims = dims;
 
     // Row-major order of dimensions
     ::std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
     size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
+
+    if (size == old_size) {
+        return;
+    }
 
     if (this->_mode == einsums::detail::MAPPED) {
         hip_catch(hipHostUnregister((void *)this->_host_data));

@@ -355,6 +355,8 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
             return;
         }
 
+        size_t old_size = size();
+
         struct Stride {
             size_t value{1};
             Stride() = default;
@@ -371,8 +373,10 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
         std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
         size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
 
-        // Resize the data structure
-        _data.resize(size);
+        if(size != old_size) {
+            // Resize the data structure
+            _data.resize(size);
+        }
     }
 
     /**
