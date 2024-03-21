@@ -53,6 +53,15 @@ auto max(const TensorType<T, Rank> &tensor) -> T {
     return *result;
 }
 
+template <template <typename, size_t> typename TensorType, typename T, size_t Rank>
+auto min(const TensorType<T, Rank> &tensor) -> T {
+    LabeledSection0();
+
+    // TODO: This currently only works with Tensor's not TensorViews. And it needs to be OpenMP'd
+    auto result = std::min_element(tensor.vector_data().begin(), tensor.vector_data().end());
+    return *result;
+}
+
 BEGIN_EINSUMS_NAMESPACE_HPP(new_tensor)
 
 using einsums::element_operations::max; // nolint

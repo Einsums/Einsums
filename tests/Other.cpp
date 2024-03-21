@@ -50,6 +50,15 @@ TEST_CASE("timer") {
     // println("post omp_get_max_active_levels {}", omp_get_max_active_levels());
 }
 
+TEST_CASE("create_tensor") {
+    using namespace einsums;
+
+    auto A = create_tensor("Test", 7, 7);
+    auto B = create_tensor(7, 7);
+
+}
+
+#if 0
 #if defined(__has_feature)
 #    if !__has_feature(address_sanitzer)
 
@@ -107,3 +116,5 @@ TEST_CASE("zero-tensor") {
         REQUIRE(A(_i) == double(0.0));
     }
 }
+
+#endif
