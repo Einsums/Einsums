@@ -351,11 +351,9 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
      * @param dims The new dimensions of a tensor.
      */
     void resize(Dim<Rank> dims) {
-        if(dims == _dims) {
+        if (_dims == dims) {
             return;
         }
-
-        size_t old_size = size();
 
         struct Stride {
             size_t value{1};
@@ -373,10 +371,8 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
         std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
         size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
 
-        if(size != old_size) {
-            // Resize the data structure
-            _data.resize(size);
-        }
+        // Resize the data structure
+        _data.resize(size);
     }
 
     /**
@@ -384,9 +380,9 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
      *
      * @param dims The new dimensions of a tensor.
      */
-    template<typename... Dims>
-    auto resize(Dims... dims) -> std::enable_if<sizeof...(Dims) == Rank, void> {
-        resize(Dim<Rank>{dims...});
+    template <typename... Dims>
+    auto resize(Dims... dims) -> std::enable_if_t<(sizeof...(Dims) == Rank), void> {
+        resize(Dim<Rank>{static_cast<size_t>(dims)...});
     }
 
     /**
