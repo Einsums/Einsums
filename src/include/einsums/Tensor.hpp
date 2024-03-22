@@ -381,7 +381,7 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
      * @param dims The new dimensions of a tensor.
      */
     template <typename... Dims>
-    auto resize(Dims... dims) -> std::enable_if_t<(sizeof...(Dims) == Rank), void> {
+    auto resize(Dims... dims) -> std::enable_if_t<(std::is_arithmetic_v<Dims> && ... && (sizeof...(Dims) == Rank)), void> {
         resize(Dim<Rank>{static_cast<size_t>(dims)...});
     }
 
