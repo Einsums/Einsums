@@ -318,7 +318,7 @@ struct BlockTensor : public detail::TensorBase<T, Rank> {
         }
     auto operator()(MultiIndex... index) const -> const T & {
 
-        assert(sizeof...(MultiIndex) == _dims.size());
+        static_assert(sizeof...(MultiIndex) == Rank);
 
         auto index_list = std::array{static_cast<std::int64_t>(index)...};
 
@@ -365,7 +365,7 @@ struct BlockTensor : public detail::TensorBase<T, Rank> {
         }
     auto operator()(MultiIndex... index) -> T & {
 
-        assert(sizeof...(MultiIndex) == _dims.size());
+        static_assert(sizeof...(MultiIndex) == Rank);
 
         auto index_list = std::array{static_cast<std::int64_t>(index)...};
 
