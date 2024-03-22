@@ -17,6 +17,9 @@ template <typename T, size_t Rank>
 struct TensorView;
 
 template <typename T, size_t Rank>
+struct BlockTensor;
+
+template <typename T, size_t Rank>
 struct DiskTensor;
 
 template <typename T, size_t ViewRank, size_t Rank>
@@ -26,10 +29,16 @@ namespace detail {
 
 template <typename D, size_t Rank, typename T>
 struct IsIncoreRankTensor
-    : public std::bool_constant<std::is_same_v<std::decay_t<D>, Tensor<T, Rank>> || std::is_same_v<std::decay_t<D>, TensorView<T, Rank>>> {
-};
+    : public std::bool_constant<std::is_same_v<std::decay_t<D>, Tensor<T, Rank>> || std::is_same_v<std::decay_t<D>, TensorView<T, Rank>> ||
+                                std::is_same_v<std::decay_t<D>, BlockTensor<T, Rank>>> {};
 template <typename D, size_t Rank, typename T>
 inline constexpr bool IsIncoreRankTensorV = IsIncoreRankTensor<D, Rank, T>::value;
+
+template <typename D, size_t Rank, typename T>
+struct IsIncoreRankBlockTensor : public std::bool_constant<std::is_same_v<std::decay_t<D>, BlockTensor<T, Rank>>> {};
+
+template<typename D, size_t Rank, typename T>
+inline constexpr bool IsIncoreRankBlockTensorV = IsIncoreRankBlockTensor<D, Rank, T>::value;
 
 template <typename D, size_t Rank, size_t ViewRank = Rank, typename T = double>
 struct IsOndiskTensor
@@ -56,6 +65,9 @@ inline constexpr bool IsOndiskTensorV = IsOndiskTensor<D, Rank, ViewRank, T>::va
  */
 template <typename Input, size_t Rank, typename DataType = double>
 concept CoreRankTensor = detail::IsIncoreRankTensorV<Input, Rank, DataType>;
+
+template<typename Input, size_t Rank, typename DataType = double>
+concept CoreRankBlockTensor = detail::IsIncoreRankBlockTensorV<Input, Rank, DataType>;
 
 template <typename Input, size_t Rank, size_t ViewRank = Rank, typename DataType = double>
 concept DiskRankTensor = detail::IsOndiskTensorV<Input, Rank, ViewRank, DataType>;

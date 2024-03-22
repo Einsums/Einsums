@@ -20,6 +20,7 @@
 #include "einsums/Sort.hpp"
 #include "einsums/State.hpp"
 #include "einsums/Tensor.hpp"
+#include "einsums/BlockTensor.hpp"
 #include "einsums/TensorAlgebra.hpp"
 #include "einsums/Timer.hpp"
 #include "einsums/Utilities.hpp"

@@ -1,25 +1,35 @@
 #pragma once
 
 #include "einsums/_Common.hpp"
+
 #include "einsums/Tensor.hpp"
+#include "einsums/utility/TensorTraits.hpp"
+
+#include <stdexcept>
 
 BEGIN_EINSUMS_NAMESPACE_HPP(einsums)
 
-template<typename T, size_t Rank>
+template <typename T, size_t Rank>
+struct BlockTensor;
+
+template <typename T, size_t Rank>
 struct BlockTensor : public detail::TensorBase<T, Rank> {
   private:
-    std::string  _name{"(Unnamed)"};
-    size_t _dim; // Only allowing square tensors.
+    std::string _name{"(Unnamed)"};
+    size_t      _dim; // Only allowing square tensors.
 
     std::vector<Tensor<T, Rank>> _blocks;
-    std::vector<Range> _ranges;
+    std::vector<Range>           _ranges;
 
     template <typename T_, size_t OtherRank>
     friend struct BlockTensor;
 
+    template <typename T_, size_t Rank_>
+    friend struct BlockTensorView;
+
   public:
-        using datatype = T;
-    using Vector = std::vector<T, AlignedAllocator<T, 64>>;
+    using datatype = T;
+    using Vector   = std::vector<T, AlignedAllocator<T, 64>>;
 
     /**
      * @brief Construct a new Tensor object. Default constructor.
@@ -39,10 +49,11 @@ struct BlockTensor : public detail::TensorBase<T, Rank> {
     /**
      * @brief Construct a new Tensor object with the given name and dimensions.
      *
-     * Constructs a new Tensor object using the information provided in \p name and \p dims .
+     * Constructs a new Tensor object using the information provided in \p name and \p block_dims .
      *
      * @code
-     * auto A = Tensor("A", 3, 3);
+     * // Constructs a rank 4 tensor with two blocks, the first is 2x2x2x2, the second is 3x3x3x3.
+     * auto A = BlockTensor<double, 4>("A", 2, 3);
      * @endcode
      *
      * The newly constructed Tensor is NOT zeroed out for you. If you start having NaN issues
@@ -50,33 +61,55 @@ struct BlockTensor : public detail::TensorBase<T, Rank> {
      *
      * @tparam Dims Variadic template arguments for the dimensions. Must be castable to size_t.
      * @param name Name of the new tensor.
-     * @param dims The dimensions of each rank of the tensor.
+     * @param block_dims The size of each block.
      */
     template <typename... Dims>
-    explicit BlockTensor(std::string name, size_t dim) : _name{std::move(name)}, _dim{dim}, _blocks{}, _ranges{} {
+    explicit BlockTensor(std::string name, Dims... block_dims)
+        : _name{std::move(name)}, _dim{(static_cast<size_t>(block_dims) + ...)}, _blocks(), _ranges(sizeof...(Dims)) {
+        auto dim_array  = Dim<sizeof...(Dims)>{block_dims...};
+        auto _block_dims = Dim<Rank>();
+
+        size_t sum = 0;
+        for (int i = 0; i < sizeof...(Dims); i++) {
+            _ranges[i] = Range{sum, sum + dim_array[i]};
+            sum += dim_array[i];
+
+            _block_dims.fill(dim_array[i]);
+
+            _blocks.emplace_back(_block_dims);
+        }
     }
 
     /**
      * @brief Construct a new Tensor object using the dimensions given by Dim object.
      *
-     * @param dims The dimensions of the new tensor in Dim form.
+     * @param block_dims The dimensions of the new tensor in Dim form.
      */
-    explicit BlockTensor(size_t dim) : _dim{dim} {
+    template <size_t Dims>
+    explicit BlockTensor(Dim<Dims> block_dims) : _blocks(), _ranges(Dims) {
+        auto _block_dims = Dim<Rank>();
+
+        size_t sum = 0;
+        for (int i = 0; i < Dims; i++) {
+            _ranges[i] = Range{sum, sum + _block_dims[i]};
+            sum += _block_dims[i];
+
+            _block_dims.fill(_block_dims[i]);
+
+            _blocks.emplace_back(_block_dims);
+        }
+
+        _dim = sum;
     }
 
     /**
      * @brief Zeroes out the tensor data.
      */
     void zero() {
-        // #pragma omp parallel
-        //         {
-        //             auto tid       = omp_get_thread_num();
-        //             auto chunksize = _data.size() / omp_get_num_threads();
-        //             auto begin     = _data.begin() + chunksize * tid;
-        //             auto end       = (tid == omp_get_num_threads() - 1) ? _data.end() : begin + chunksize;
-        //             memset(&(*begin), 0, end - begin);
-        //         }
-        memset(_data.data(), 0, sizeof(T) * _data.size());
+#pragma omp parallel for
+        for (int i = 0; i < _blocks.size(); i++) {
+            _blocks[i].zero();
+        }
     }
 
     /**
@@ -85,36 +118,104 @@ struct BlockTensor : public detail::TensorBase<T, Rank> {
      * @param value Value to set the elements to.
      */
     void set_all(T value) {
-        // #pragma omp parallel
-        //         {
-        //             auto tid       = omp_get_thread_num();
-        //             auto chunksize = _data.size() / omp_get_num_threads();
-        //             auto begin     = _data.begin() + chunksize * tid;
-        //             auto end       = (tid == omp_get_num_threads() - 1) ? _data.end() : begin + chunksize;
-        //             std::fill(begin, end, value);
-        //         }
-        std::fill(_data.begin(), _data.end(), value);
+#pragma omp parallel for
+        for (int i = 0; i < _blocks.size(); i++) {
+            _blocks[i].set_all(value);
+        }
+    }
+
+    const Tensor<T, Rank> &block(int id) const { return _blocks.at(id); }
+
+    Tensor<T, Rank> &block(int id) { return _blocks.at(id); }
+
+    /**
+     * Add a block to the end of the list of blocks.
+     */
+    void push_block(Tensor<T, Rank> &&value) {
+        for (int i = 0; i < Rank; i++) {
+            if (value.block_dim(i) != value.block_dim(0)) {
+                throw std::runtime_error(
+                    "Can only push square/hypersquare tensors to a block tensor. Make sure all dimensions are the same.");
+            }
+        }
+        _blocks.push_back(value);
+        _ranges.emplace_back({_dim, _dim + value.block_dim(0)});
+        _dim += value.block_dim(0);
     }
 
     /**
-     * @brief Returns a pointer to the data.
-     *
-     * Try very hard to not use this function. Current data may or may not exist
-     * on the host device at the time of the call if using GPU backend.
-     *
-     * @return T* A pointer to the data.
+     * Add a bloc to the specified position in the
      */
-    auto data() -> T * { return _data.data(); }
+    void insert_block(int pos, Tensor<T, Rank> &&value) {
+        for (int i = 0; i < Rank; i++) {
+            if (value.block_dim(i) != value.block_dim(0)) {
+                throw std::runtime_error(
+                    "Can only push square/hypersquare tensors to a block tensor. Make sure all dimensions are the same.");
+            }
+        }
+        // Add the block.
+        _blocks.insert(std::next(_blocks.begin(), pos), value);
+
+        // Add the new ranges.
+        if (pos == 0) {
+            _ranges.emplace(_ranges.begin(), {0, value.block_dim(0)});
+        } else {
+            _ranges.emplace(std::next(_ranges.begin(), pos), {_ranges[pos - 1][1], _ranges[pos - 1][1] + value.block_dim(0)});
+        }
+
+        for (int i = pos + 1; i < _ranges.size(); i++) {
+            _ranges[i][0] += value.block_dim(0);
+            _ranges[i][1] += value.block_dim(0);
+        }
+
+        // Add the new dimension.
+        _dim += value.block_dim(0);
+    }
 
     /**
-     * @brief Returns a constant pointer to the data.
-     *
-     * Try very hard to not use this function. Current data may or may not exist
-     * on the host device at the time of the call if using GPU backend.
-     *
-     * @return const T* An immutable pointer to the data.
+     * Add a block to the end of the list of blocks.
      */
-    auto data() const -> const T * { return _data.data(); }
+    void push_block(const Tensor<T, Rank> &value) {
+        for (int i = 0; i < Rank; i++) {
+            if (value.block_dim(i) != value.block_dim(0)) {
+                throw std::runtime_error(
+                    "Can only push square/hypersquare tensors to a block tensor. Make sure all dimensions are the same.");
+            }
+        }
+        _blocks.push_back(value);
+        _ranges.emplace_back({_dim, _dim + value.block_dim(0)});
+        _dim += value.block_dim(0);
+    }
+
+    /**
+     * Add a bloc to the specified position in the
+     */
+    void insert_block(int pos, const Tensor<T, Rank> &value) {
+        for (int i = 0; i < Rank; i++) {
+            if (value.block_dim(i) != value.block_dim(0)) {
+                throw std::runtime_error(
+                    "Can only push square/hypersquare tensors to a block tensor. Make sure all dimensions are the same.");
+            }
+        }
+        // Add the block.
+        _blocks.insert(std::next(_blocks.begin(), pos), value);
+
+        // Add the new ranges.
+        if (pos == 0) {
+            _ranges.emplace(_ranges.begin(), {0, value.block_dim(0)});
+        } else {
+            _ranges.emplace(std::next(_ranges.begin(), pos), {_ranges[pos - 1][1], _ranges[pos - 1][1] + value.block_dim(0)});
+        }
+
+        for (int i = pos + 1; i < _ranges.size(); i++) {
+            _ranges[i][0] += value.block_dim(0);
+            _ranges[i][1] += value.block_dim(0);
+        }
+
+        // Add the new dimension.
+        _dim += value.block_dim(0);
+    }
+
 
     /**
      * Returns a pointer into the tensor at the given location.
@@ -137,16 +238,36 @@ struct BlockTensor : public detail::TensorBase<T, Rank> {
         }
     auto data(MultiIndex... index) -> T * {
 #if !defined(DOXYGEN_SHOULD_SKIP_THIS)
-        assert(sizeof...(MultiIndex) <= _dims.size());
+        assert(sizeof...(MultiIndex) <= Rank);
 
         auto index_list = std::array{static_cast<std::int64_t>(index)...};
+        int  block      = -1;
+
         for (auto [i, _index] : enumerate(index_list)) {
             if (_index < 0) {
-                index_list[i] = _dims[i] + _index;
+                index_list[i] = _dim + _index;
+            }
+
+            // Find the block.
+            if (block == -1) {
+                for (int j = 0; j < _ranges.size(); j++) {
+                    if (_ranges[j][0] <= _index && _index < _ranges[j][1]) {
+                        block = j;
+                        break;
+                    }
+                }
+            }
+
+            if (_ranges[block][0] <= _index && _index < _ranges[block][1]) {
+                // Remap the index to be in the block.
+                index_list[i] -= _ranges[block][0];
+            } else {
+                return nullptr; // The indices point outside of all the blocks.
             }
         }
-        size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
-        return &_data[ordinal];
+
+        size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _blocks[block].strides().begin(), size_t{0});
+        return &(_blocks[block].data()[ordinal]);
 #endif
     }
 
@@ -170,13 +291,31 @@ struct BlockTensor : public detail::TensorBase<T, Rank> {
         assert(sizeof...(MultiIndex) == _dims.size());
 
         auto index_list = std::array{static_cast<std::int64_t>(index)...};
+
+        int block = -1;
         for (auto [i, _index] : enumerate(index_list)) {
             if (_index < 0) {
-                index_list[i] = _dims[i] + _index;
+                index_list[i] = _dim + _index;
+            }
+
+            if (block == -1) {
+                for (int j = 0; j < _ranges.size(); j++) {
+                    if (_ranges[j][0] <= _index && _index < _ranges[j][1]) {
+                        block = j;
+                        break;
+                    }
+                }
+            }
+
+            if (_ranges[block][0] <= _index && _index < _ranges[block][1]) {
+                // Remap the index to be in the block.
+                index_list[i] -= _ranges[block][0];
+            } else {
+                return 0; // The indices point outside of all the blocks.
             }
         }
-        size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
-        return _data[ordinal];
+        size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _blocks[block].strides().begin(), size_t{0});
+        return _blocks[block].data()[ordinal];
     }
 
     /**
@@ -199,123 +338,125 @@ struct BlockTensor : public detail::TensorBase<T, Rank> {
         assert(sizeof...(MultiIndex) == _dims.size());
 
         auto index_list = std::array{static_cast<std::int64_t>(index)...};
+
+        int block = -1;
         for (auto [i, _index] : enumerate(index_list)) {
             if (_index < 0) {
-                index_list[i] = _dims[i] + _index;
+                index_list[i] = _dim + _index;
+            }
+
+            if (block == -1) {
+                for (int j = 0; j < _ranges.size(); j++) {
+                    if (_ranges[j][0] <= _index && _index < _ranges[j][1]) {
+                        block = j;
+                        break;
+                    }
+                }
+            }
+
+            if (_ranges[block][0] <= _index && _index < _ranges[block][1]) {
+                // Remap the index to be in the block.
+                index_list[i] -= _ranges[block][0];
+            } else {
+                return 0; // The indices point outside of all the blocks.
             }
         }
-        size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
-        return _data[ordinal];
+        size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _blocks[block].strides().begin(), size_t{0});
+        return _blocks[block].data()[ordinal];
     }
 
-    auto operator=(const Tensor<T, Rank> &other) -> Tensor<T, Rank> & {
-        bool realloc{false};
-        for (int i = 0; i < Rank; i++) {
-            if (dim(i) == 0 || (dim(i) != other.dim(i)))
-                realloc = true;
+    /**
+     * @brief Return the block with the given index.
+     */
+    const Tensor<T, Rank> &operator[](size_t index) const { return _blocks.at(index); }
+
+    /**
+     * @brief Return the block with the given index.
+     */
+    Tensor<T, Rank> &operator[](size_t index) { return _blocks.at(index); }
+
+    /**
+     * @brief Return the block with the given name.
+     */
+    const Tensor<T, Rank> operator[](const std::string &name) const {
+        for (auto tens : _blocks) {
+            if (tens.name() == name) {
+                return tens;
+            }
+        }
+        throw std::out_of_range("Could not find block with the name " + name);
+    }
+
+    /**
+     * @brief Return the block with the given name.
+     */
+    Tensor<T, Rank> operator[](const std::string &name) {
+        for (auto tens : _blocks) {
+            if (tens.name() == name) {
+                return tens;
+            }
+        }
+        throw std::out_of_range("Could not find block with the name " + name);
+    }
+
+    auto operator=(const BlockTensor<T, Rank> &other) -> BlockTensor<T, Rank> & {
+
+        if (_blocks.size() != other._blocks.size()) {
+            _blocks.resize(other._blocks.size());
+            _ranges.resize(other._ranges.size());
         }
 
-        if (realloc) {
-            struct Stride {
-                size_t value{1};
-                Stride() = default;
-                auto operator()(size_t dim) -> size_t {
-                    auto old_value = value;
-                    value *= dim;
-                    return old_value;
-                }
-            };
+        _dim = other._dim;
 
-            _dims = other._dims;
-
-            // Row-major order of dimensions
-            std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
-            size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
-
-            // Resize the data structure
-            _data.resize(size);
+#pragma omp parallel for
+        for (int i = 0; i < _blocks.size(); i++) {
+            _blocks[i] = other._blocks[i];
+            _ranges[i] = other._ranges[i];
         }
-
-        std::copy(other._data.begin(), other._data.end(), _data.begin());
 
         return *this;
     }
 
     template <typename TOther>
         requires(!std::same_as<T, TOther>)
-    auto operator=(const Tensor<TOther, Rank> &other) -> Tensor<T, Rank> & {
-        bool realloc{false};
-        for (int i = 0; i < Rank; i++) {
-            if (dim(i) == 0)
-                realloc = true;
-            else if (dim(i) != other.dim(i)) {
-                std::string str = fmt::format("Tensor::operator= dimensions do not match (this){} (other){}", dim(i), other.dim(i));
-                if constexpr (Rank != 1)
-                    throw std::runtime_error(str);
-                else
-                    realloc = true;
-            }
+    auto operator=(const BlockTensor<TOther, Rank> &other) -> BlockTensor<T, Rank> & {
+        if (_blocks.size() != other._blocks.size()) {
+            _blocks.resize(other._blocks.size());
+            _ranges.resize(other._ranges.size());
         }
 
-        if (realloc) {
-            struct Stride {
-                size_t value{1};
-                Stride() = default;
-                auto operator()(size_t dim) -> size_t {
-                    auto old_value = value;
-                    value *= dim;
-                    return old_value;
-                }
-            };
+        _dim = other._dim;
 
-            _dims = other._dims;
-
-            // Row-major order of dimensions
-            std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
-            size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
-
-            // Resize the data structure
-            _data.resize(size);
-        }
-
-        auto target_dims = get_dim_ranges<Rank>(*this);
-        for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
-            T &target_value = std::apply(*this, target_combination);
-            T  value        = std::apply(other, target_combination);
-            target_value    = value;
+#pragma omp parallel for
+        for (int i = 0; i < _blocks.size(); i++) {
+            _blocks[i] = other._blocks[i];
+            _ranges[i] = other._ranges[i];
         }
 
         return *this;
     }
 
 #define OPERATOR(OP)                                                                                                                       \
-    auto operator OP(const T &b) -> Tensor<T, Rank> & {                                                                                    \
-        EINSUMS_OMP_PARALLEL {                                                                                                             \
-            auto tid       = omp_get_thread_num();                                                                                         \
-            auto chunksize = _data.size() / omp_get_num_threads();                                                                         \
-            auto begin     = _data.begin() + chunksize * tid;                                                                              \
-            auto end       = (tid == omp_get_num_threads() - 1) ? _data.end() : begin + chunksize;                                         \
-            EINSUMS_OMP_SIMD for (auto i = begin; i < end; i++) {                                                                          \
-                (*i) OP b;                                                                                                                 \
-            }                                                                                                                              \
+    auto operator OP(const T &b) -> BlockTensor<T, Rank> & {                                                                               \
+        for (auto tens : _blocks) {                                                                                                        \
+            tens OP b;                                                                                                                     \
         }                                                                                                                                  \
         return *this;                                                                                                                      \
     }                                                                                                                                      \
                                                                                                                                            \
-    auto operator OP(const Tensor<T, Rank> &b) -> Tensor<T, Rank> & {                                                                      \
-        if (size() != b.size()) {                                                                                                          \
-            throw std::runtime_error(fmt::format("operator" EINSUMS_STRINGIFY(OP) " : tensors differ in size : {} {}", size(), b.size())); \
+    auto operator OP(const BlockTensor<T, Rank> &b) -> BlockTensor<T, Rank> & {                                                            \
+        if (_blocks.size() != b._blocks.size()) {                                                                                          \
+            throw std::runtime_error(fmt::format("operator" EINSUMS_STRINGIFY(OP) " : tensors differ in number of blocks : {} {}",         \
+                                                 _blocks.size(), b._blocks.size()));                                                       \
         }                                                                                                                                  \
-        EINSUMS_OMP_PARALLEL {                                                                                                             \
-            auto tid       = omp_get_thread_num();                                                                                         \
-            auto chunksize = _data.size() / omp_get_num_threads();                                                                         \
-            auto abegin    = _data.begin() + chunksize * tid;                                                                              \
-            auto bbegin    = b._data.begin() + chunksize * tid;                                                                            \
-            auto aend      = (tid == omp_get_num_threads() - 1) ? _data.end() : abegin + chunksize;                                        \
-            auto j         = bbegin;                                                                                                       \
-            EINSUMS_OMP_SIMD for (auto i = abegin; i < aend; i++) {                                                                        \
-                (*i) OP(*j++);                                                                                                             \
+        for (int i = 0; i < _blocks.size(); i++) {                                                                                         \
+            if (_blocks[i].size() != b._blocks[i].size()) {                                                                                \
+                throw std::runtime_error(fmt::format("operator" EINSUMS_STRINGIFY(OP) " : tensor blocks differ in size : {} {}",           \
+                                                     _blocks[i].size(), b._blocks[i].size()));                                             \
             }                                                                                                                              \
+        }                                                                                                                                  \
+        for (int i = 0; i < _blocks.size(); i++) {                                                                                         \
+            _blocks[i] OP b._blocks[i];                                                                                                    \
         }                                                                                                                                  \
         return *this;                                                                                                                      \
     }
@@ -327,32 +468,87 @@ struct BlockTensor : public detail::TensorBase<T, Rank> {
 
 #undef OPERATOR
 
-    [[nodiscard]] auto dim(int d) const -> size_t {
-        // Add support for negative indices.
-        if (d < 0)
-            d += Rank;
-        return _dims[d];
+    /**
+     * @brief Convert block tensor into a normal tensor.
+     */
+    explicit operator Tensor<T, Rank>() {
+        Dim<Rank> block_dims;
+
+        for (int i = 0; i < Rank; i++) {
+            block_dims[i] = _dim;
+        }
+
+        Tensor<T, Rank> out(_name, block_dims);
+
+        out.zero();
+
+#pragma omp parallel for
+        for (int i = 0; i < _ranges.size(); i++) {
+            std::array<Range, Rank> ranges;
+            ranges.fill(_ranges[i]);
+            out(ranges) = _blocks[i];
+        }
+
+        return out;
     }
-    auto dims() const -> Dim<Rank> { return _dims; }
 
-    ALIAS_TEMPLATE_FUNCTION(shape, dims);
+    size_t num_blocks() {
+        return _blocks.size();
+    }
 
-    auto vector_data() const -> const Vector & { return _data; }
-    auto vector_data() -> Vector & { return _data; }
+    [[nodiscard]] auto block_dim() const -> size_t { return _dim; }
+
+    Dim<Rank> block_dims(size_t block) const { return _blocks.at(block).dims(); }
+
+    Dim<Rank> block_dim(size_t block, int ind) const { return _blocks.at(block).dim(ind); }
+
+    Dim<Rank> block_dims(const std::string &name) const {
+        for (auto tens : _blocks) {
+            if (tens.name() == name) {
+                return tens.block_dims();
+            }
+        }
+
+        throw std::out_of_range("Could not find block with the name " + name);
+    }
+
+    Dim<Rank> block_dim(const std::string &name, int ind) const {
+        for (auto tens : _blocks) {
+            if (tens.name() == name) {
+                return tens.block_dim(ind);
+            }
+        }
+
+        throw std::out_of_range("Could not find block with the name " + name);
+    }
+
+    Dim<Rank> dims() const {
+        Dim<Rank> out;
+        out.fill(_dim);
+        return out;
+    }
+
+    size_t dim(int dim = 0) const {
+        return _dim;
+    }
+
+    auto vector_data() const -> const std::vector<Tensor<T, Rank>> & { return _blocks; }
+    auto vector_data() -> std::vector<Tensor<T, Rank>> & { return _blocks; }
 
     [[nodiscard]] auto name() const -> const std::string & { return _name; }
     void               set_name(const std::string &name) { _name = name; }
 
-    [[nodiscard]] auto stride(int d) const noexcept -> size_t {
-        if (d < 0)
-            d += Rank;
-        return _strides[d];
-    }
-
-    auto strides() const noexcept -> const auto & { return _strides; }
+    auto strides(int i) const noexcept -> const auto & { return _blocks[i].strides(); }
 
     // Returns the linear size of the tensor
-    [[nodiscard]] auto size() const { return std::accumulate(std::begin(_dims), std::begin(_dims) + Rank, 1, std::multiplies<>{}); }
+    [[nodiscard]] auto size() const {
+        size_t sum = 0;
+        for (auto tens : _blocks) {
+            sum += tens.size();
+        }
+
+        return sum;
+    }
 
     [[nodiscard]] auto full_view_of_underlying() const noexcept -> bool { return true; }
 };
