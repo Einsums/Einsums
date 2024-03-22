@@ -8,6 +8,7 @@ add_executable(test-all
     Tensor.cpp
     TensorAlgebra.cpp
     TensorAlgebraTasks.cpp
+    BlockTensor.cpp
 )
 
 if(EINSUMS_COVERAGE)

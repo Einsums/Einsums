@@ -1,6 +1,7 @@
 #pragma once
 
 #include "einsums/_Common.hpp"
+#include "einsums/_Compiler.hpp"
 
 #include "einsums/Tensor.hpp"
 #include "einsums/utility/TensorTraits.hpp"
@@ -80,6 +81,25 @@ struct BlockTensor : public detail::TensorBase<T, Rank> {
         }
     }
 
+    template<typename ArrayArg>
+    explicit BlockTensor(std::string name, const ArrayArg &block_dims)
+        : _name{std::move(name)}, _dim{0}, _blocks() {
+
+        auto _block_dims = Dim<Rank>();
+
+        size_t sum = 0;
+        for (int i = 0; i < block_dims.size(); i++) {
+            _ranges[i] = Range{sum, sum + block_dims[i]};
+            sum += block_dims[i];
+
+            _block_dims.fill(block_dims[i]);
+
+            _blocks.emplace_back(_block_dims);
+        }
+
+        _dim = sum;
+    }
+
     /**
      * @brief Construct a new Tensor object using the dimensions given by Dim object.
      *
@@ -102,11 +122,21 @@ struct BlockTensor : public detail::TensorBase<T, Rank> {
         _dim = sum;
     }
 
+    int block_of(size_t index) const {
+        for(int i = 0; i < _ranges.size(); i++) {
+            if(_ranges[i][0] <= i && _ranges[i][1] > i) {
+                return i;
+            }
+        }
+
+        throw std::out_of_range("Index out of range.");
+    }
+
     /**
      * @brief Zeroes out the tensor data.
      */
     void zero() {
-#pragma omp parallel for
+        EINSUMS_OMP_PARALLEL_FOR
         for (int i = 0; i < _blocks.size(); i++) {
             _blocks[i].zero();
         }
@@ -118,7 +148,7 @@ struct BlockTensor : public detail::TensorBase<T, Rank> {
      * @param value Value to set the elements to.
      */
     void set_all(T value) {
-#pragma omp parallel for
+        EINSUMS_OMP_PARALLEL_FOR
         for (int i = 0; i < _blocks.size(); i++) {
             _blocks[i].set_all(value);
         }
@@ -358,7 +388,7 @@ struct BlockTensor : public detail::TensorBase<T, Rank> {
                 // Remap the index to be in the block.
                 index_list[i] -= _ranges[block][0];
             } else {
-                return 0; // The indices point outside of all the blocks.
+                return *new T(0);
             }
         }
         size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _blocks[block].strides().begin(), size_t{0});
@@ -408,7 +438,7 @@ struct BlockTensor : public detail::TensorBase<T, Rank> {
 
         _dim = other._dim;
 
-#pragma omp parallel for
+        EINSUMS_OMP_PARALLEL_FOR
         for (int i = 0; i < _blocks.size(); i++) {
             _blocks[i] = other._blocks[i];
             _ranges[i] = other._ranges[i];
@@ -427,7 +457,7 @@ struct BlockTensor : public detail::TensorBase<T, Rank> {
 
         _dim = other._dim;
 
-#pragma omp parallel for
+        EINSUMS_OMP_PARALLEL_FOR
         for (int i = 0; i < _blocks.size(); i++) {
             _blocks[i] = other._blocks[i];
             _ranges[i] = other._ranges[i];
@@ -482,7 +512,7 @@ struct BlockTensor : public detail::TensorBase<T, Rank> {
 
         out.zero();
 
-#pragma omp parallel for
+        EINSUMS_OMP_PARALLEL_FOR
         for (int i = 0; i < _ranges.size(); i++) {
             std::array<Range, Rank> ranges;
             ranges.fill(_ranges[i]);
@@ -492,11 +522,15 @@ struct BlockTensor : public detail::TensorBase<T, Rank> {
         return out;
     }
 
-    size_t num_blocks() {
+    size_t num_blocks() const {
         return _blocks.size();
     }
 
     [[nodiscard]] auto block_dim() const -> size_t { return _dim; }
+
+    Range block_range(int i) const {
+        return _ranges.at(i);
+    }
 
     Dim<Rank> block_dims(size_t block) const { return _blocks.at(block).dims(); }
 
