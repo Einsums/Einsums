@@ -9,6 +9,7 @@
 #include "einsums/_Compiler.hpp"
 
 #include "einsums/Blas.hpp"
+#include "einsums/BlockTensor.hpp"
 #include "einsums/STL.hpp"
 #include "einsums/Section.hpp"
 #include "einsums/Tensor.hpp"

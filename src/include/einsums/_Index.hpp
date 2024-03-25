@@ -5,10 +5,13 @@
 
 #pragma once
 
-#include "_Export.hpp"
 #include "einsums/Print.hpp"
 
+#include <cstdarg>
 #include <ostream>
+#include <vector>
+
+#include "_Export.hpp"
 
 // Including complex header defines "I" to be used with complex numbers. If we allow that then
 // we cannot use "I" as an indexing tab to einsum.
@@ -20,6 +23,25 @@ namespace einsums::tensor_algebra::index {
 /// Base struct for index tags. It might not be technically needed but it will allow
 /// compile-time checks to be performed.
 struct LabelBase {};
+
+struct IndexBase {
+  public:
+    constexpr IndexBase() = default;
+
+    virtual ~IndexBase() = default;
+
+    size_t operator()(std::va_list args) const { return va_arg(args, size_t); }
+
+    size_t operator()(size_t index) const { return index; }
+
+    template <typename T>
+    size_t operator()(std::vector<T> *args) const {
+        size_t out = args->at(0);
+        args->erase(args->begin());
+
+        return out;
+    }
+};
 } // namespace einsums::tensor_algebra::index
 
 /*! \def MAKE_INDEX(x)
@@ -28,7 +50,7 @@ struct LabelBase {};
 */
 #define MAKE_INDEX(x)                                                                                                                      \
     namespace einsums::tensor_algebra::index {                                                                                             \
-    struct x : public LabelBase {                                                                                                          \
+    struct x : public LabelBase, public IndexBase {                                                                                        \
         static constexpr char letter = static_cast<const char (&)[2]>(#x)[0];                                                              \
         constexpr x()                = default;                                                                                            \
     };                                                                                                                                     \

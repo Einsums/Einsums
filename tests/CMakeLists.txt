@@ -9,6 +9,7 @@ add_executable(test-all
     TensorAlgebra.cpp
     TensorAlgebraTasks.cpp
     BlockTensor.cpp
+    SymmTensor.cpp
 )
 
 if(EINSUMS_COVERAGE)
