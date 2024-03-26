@@ -152,7 +152,7 @@ template <typename T, size_t Rank>
 struct Tensor final : public detail::TensorBase<T, Rank> {
 
     using datatype = T;
-    using Vector = std::vector<T, AlignedAllocator<T, 64>>;
+    using Vector   = std::vector<T, AlignedAllocator<T, 64>>;
 
     /**
      * @brief Construct a new Tensor object. Default constructor.
@@ -1719,9 +1719,9 @@ auto create_tensor(const std::string name, Args... args) {
     return Tensor<Type, sizeof...(Args)>{name, args...};
 }
 
-template<typename Type=double, typename... Args>
-auto create_tensor(std::uint64_t first, Args... args){
-    return Tensor<Type, sizeof...(Args)+1>{"Temporary", first, args...};
+template <typename Type = double, std::integral... Args>
+auto create_tensor(Args... args) {
+    return Tensor<Type, sizeof...(Args)>{"Temporary", args...};
 }
 
 /**
