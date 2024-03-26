@@ -141,7 +141,8 @@ get_property(EINSUMS_LINALG_INT_INTERFACE TARGET tgt::lapack PROPERTY INT_INTERF
 
 # Set default FFT library to mkl, if mkl was found, otherwise FFTW3
 set(EINSUMS_FFT_LIBRARY_DEFAULT "fftw3")
-if (${EINSUMS_LINALG_VENDOR} MATCHES "[mM][kK][lL]")
+# if (${EINSUMS_LINALG_VENDOR} MATCHES "[mM][kK][lL]")
+if (TARGET MKL::MKL)
     set(EINSUMS_FFT_LIBRARY_DEFAULT "mkl")
 endif ()
 

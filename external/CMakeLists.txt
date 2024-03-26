@@ -38,6 +38,3 @@ endif()
 FetchContent_MakeAvailable(fmt)
 
 FetchContent_MakeAvailable(range-v3)
-
-# promote netlib src scope so that src/CM can build it
-set(netlib_SOURCE_DIR "${netlib_SOURCE_DIR}" PARENT_SCOPE)

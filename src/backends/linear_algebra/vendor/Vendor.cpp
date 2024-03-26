@@ -5,12 +5,14 @@
 
 #include "Vendor.hpp"
 
+#include "einsums/_Common.hpp"
+
 #include "einsums/LinearAlgebra.hpp"
 #include "einsums/Print.hpp"
 #include "einsums/Section.hpp"
-#include "einsums/_Common.hpp"
 
 #include <fmt/format.h>
+
 #include <stdexcept>
 
 #ifndef FC_SYMBOL
@@ -70,9 +72,9 @@ extern void FC_GLOBAL(zscal, ZSCAL)(int *, std::complex<double> *, std::complex<
 extern void FC_GLOBAL(csscal, CSSCAL)(int *, float *, std::complex<float> *, int *);
 extern void FC_GLOBAL(zdscal, ZDSCAL)(int *, double *, std::complex<double> *, int *);
 
-extern float  FC_GLOBAL(sdot, SDOT)(int *, const float *, int *, const float *, int *);
-extern double FC_GLOBAL(ddot, DDOT)(int *, const double *, int *, const double *, int *);
-extern std::complex<float> FC_GLOBAL(cdotu, CDOTU)(int *, const std::complex<float> *, int *, const std::complex<float> *, int *);
+extern float                FC_GLOBAL(sdot, SDOT)(int *, const float *, int *, const float *, int *);
+extern double               FC_GLOBAL(ddot, DDOT)(int *, const double *, int *, const double *, int *);
+extern std::complex<float>  FC_GLOBAL(cdotu, CDOTU)(int *, const std::complex<float> *, int *, const std::complex<float> *, int *);
 extern std::complex<double> FC_GLOBAL(zdotu, ZDOTU)(int *, const std::complex<double> *, int *, const std::complex<double> *, int *);
 
 extern void FC_GLOBAL(saxpy, SAXPY)(int *, float *, const float *, int *, float *, int *);
@@ -561,10 +563,26 @@ auto dgesdd(char jobz, int m, int n, double *a, int lda, double *s, double *u, i
             int *iwork */) -> int {
     LabeledSection0();
 
-    // TODO: Essentially re-implement the lapacke function here. d
+    // Query optimal workspace size
+    int    info{0};
+    int    lwork{-1};
+    double work_query;
+    FC_GLOBAL(dgesdd, DGESDD)(&jobz, &n, &m, a, &lda, s, vt, &ldvt, u, &ldu, &work_query, &lwork, nullptr, &info);
+    lwork = static_cast<int>(work_query);
 
-    int info{0};
+    // Allocate work array
+    double *work = new double[lwork];
+
+    // Allocate iwork array
+    int *iwork = new int[8 * std::min(m, n)];
+
+    // Compute SVD
     FC_GLOBAL(dgesdd, DGESDD)(&jobz, &n, &m, a, &lda, s, vt, &ldvt, u, &ldu, work, &lwork, iwork, &info);
+
+    // Free workspace arrays
+    delete[] work;
+    delete[] iwork;
+
     return info;
 }
 
