@@ -11,7 +11,7 @@ Einsums user guide
 ##################
 
 This guide is an overview and explains the important features;
-detailts are found in reference.
+details are found in reference.
 
 .. toctree::
     :caption: Getting started

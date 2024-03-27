@@ -152,7 +152,7 @@ template <typename T, size_t Rank>
 struct Tensor final : public detail::TensorBase<T, Rank> {
 
     using datatype = T;
-    using Vector = std::vector<T, AlignedAllocator<T, 64>>;
+    using Vector   = std::vector<T, AlignedAllocator<T, 64>>;
 
     /**
      * @brief Construct a new Tensor object. Default constructor.
@@ -1715,8 +1715,13 @@ DiskTensor(h5::fd_t &file, std::string name, Chunk<sizeof...(Dims)> chunk, Dims.
  * @return A new tensor. By default memory is not initialized to anything. It may be filled with garbage.
  */
 template <typename Type = double, typename... Args>
-auto create_tensor(const std::string name, Args... args) -> Tensor<Type, sizeof...(Args)> {
+auto create_tensor(const std::string name, Args... args) {
     return Tensor<Type, sizeof...(Args)>{name, args...};
+}
+
+template <typename Type = double, std::integral... Args>
+auto create_tensor(Args... args) {
+    return Tensor<Type, sizeof...(Args)>{"Temporary", args...};
 }
 
 /**

@@ -16,6 +16,7 @@ import datetime
 import re
 import os
 import sys
+
 sys.path.insert(0, os.path.abspath('../sphinxext'))
 
 # -- Project information -----------------------------------------------------
@@ -29,8 +30,10 @@ branding = open('../../cmake/EinsumsBranding.cmake', 'r').read()
 p = re.compile('set\(EINSUMS_VERSION\s+"(\d+\.\d+\.\d+)')
 m = p.match(branding)
 release = 'unknown-version'
+version = 'unknown-version'
 if m:
     release = m.group(1)
+    version = m.group(1)
 
 # -- General configuration ---------------------------------------------------
 
@@ -38,10 +41,11 @@ if m:
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-  'sphinx.ext.mathjax',
-  'sphinx.ext.ifconfig',
-  'breathe',
-  'sphinx_design'
+    'sphinx.ext.mathjax',
+    'sphinx.ext.ifconfig',
+    'sphinx.ext.intersphinx',
+    'breathe',
+    'sphinx_design'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -51,7 +55,6 @@ templates_path = ['_templates']
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
-
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -90,7 +93,7 @@ html_domain_indices = False
 # -- Setup the breathe extension ---------------------------------------------
 
 breathe_projects = {
-  "Einsums": os.path.join('..', 'build', 'doxygen', 'xml')
+    "Einsums": os.path.join('..', 'build', 'doxygen', 'xml')
 }
 breathe_default_project = "Einsums"
 breathe_default_members = ("members", "undoc-members", "protected-members")
