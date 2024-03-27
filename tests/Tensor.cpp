@@ -12,8 +12,15 @@
 TEST_CASE("Tensor creation", "[tensor]") {
     using namespace einsums;
 
-    Tensor A("A", 3, 3);
-    Tensor B("B", 3, 3);
+    Tensor A("A", 1, 1);
+    Tensor B("B", 1, 1);
+
+    REQUIRE((A.dim(0) == 1 && A.dim(1) == 1));
+    REQUIRE((B.dim(0) == 1 && B.dim(1) == 1));
+
+    A.resize(einsums::Dim<2>{3, 3});
+    B.resize(einsums::Dim<2>{3, 3});
+
     auto   C = create_tensor<double>("C", 3, 3);
 
     REQUIRE((A.dim(0) == 3 && A.dim(1) == 3));

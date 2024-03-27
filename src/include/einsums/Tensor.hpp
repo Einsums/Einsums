@@ -346,6 +346,46 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
     }
 
     /**
+     * @brief Resize a tensor.
+     *
+     * @param dims The new dimensions of a tensor.
+     */
+    void resize(Dim<Rank> dims) {
+        if (_dims == dims) {
+            return;
+        }
+
+        struct Stride {
+            size_t value{1};
+            Stride() = default;
+            auto operator()(size_t dim) -> size_t {
+                auto old_value = value;
+                value *= dim;
+                return old_value;
+            }
+        };
+
+        _dims = dims;
+
+        // Row-major order of dimensions
+        std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
+        size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
+
+        // Resize the data structure
+        _data.resize(size);
+    }
+
+    /**
+     * @brief Resize a tensor.
+     *
+     * @param dims The new dimensions of a tensor.
+     */
+    template <typename... Dims>
+    auto resize(Dims... dims) -> std::enable_if_t<(std::is_arithmetic_v<Dims> && ... && (sizeof...(Dims) == Rank)), void> {
+        resize(Dim<Rank>{static_cast<size_t>(dims)...});
+    }
+
+    /**
      * @brief Zeroes out the tensor data.
      */
     void zero() {
