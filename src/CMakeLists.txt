@@ -337,8 +337,6 @@ install(
 
 install(
   FILES
-    ../cmake/FindCBLAS.cmake
-    ../cmake/FindLAPACKE.cmake
     ../cmake/FindFFTW.cmake
     ../cmake/FindTargetHDF5.cmake
   DESTINATION ${EINSUMS_INSTALL_CMAKEDIR}
