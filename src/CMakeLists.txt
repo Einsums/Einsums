@@ -47,6 +47,14 @@ extend_einsums_target(einsums
         hip::device
 )
 
+extend_einsums_target(einsums
+    SOURCES
+        TensorConvert.cpp
+    CONDITION
+        EINSUMS_PSI4_CONNECTOR
+    PUBLIC_DEPENDS
+        psi4::core)
+
 # HIP's amd_comgr needs ncurses. Ncurses needs tinfo. Neither target adds the appropriate dependencies or paths.
 # If this gets fixed, this can be removed.
 if(EINSUMS_BUILD_HIP)
