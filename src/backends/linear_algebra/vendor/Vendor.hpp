@@ -139,6 +139,9 @@ void dlassq(int n, const double *x, int incx, double *scale, double *sumsq);
 void classq(int n, const std::complex<float> *x, int incx, float *scale, float *sumsq);
 void zlassq(int n, const std::complex<double> *x, int incx, double *scale, double *sumsq);
 
+auto sgesvd(char, char, int, int, float *, int, float *, float *, int, float *, int, float *) -> int;
+auto dgesvd(char, char, int, int, double *, int, double *, double *, int, double *, int, double *) -> int;
+
 auto dgesdd(char, int, int, double *, int, double *, double *, int, double *, int) -> int;
 auto sgesdd(char, int, int, float *, int, float *, float *, int, float *, int) -> int;
 
