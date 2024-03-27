@@ -5,14 +5,13 @@
 
 #include "einsums/Blas.hpp"
 
-#include "backends/linear_algebra/cblas/cblas.hpp"
+#include <fmt/format.h>
+
+#include <stdexcept>
+
 #include "backends/linear_algebra/mkl/mkl.hpp"
-#include "backends/linear_algebra/netlib/Netlib.hpp"
 #include "backends/linear_algebra/onemkl/onemkl.hpp"
 #include "backends/linear_algebra/vendor/Vendor.hpp"
-
-#include <fmt/format.h>
-#include <stdexcept>
 
 namespace einsums::blas {
 
@@ -258,23 +257,11 @@ void zlassq(eint n, const std::complex<double> *x, eint incx, double *scale, dou
 }
 
 auto sgesdd(char jobz, eint m, eint n, float *a, eint lda, float *s, float *u, eint ldu, float *vt, eint ldvt) -> eint {
-#if defined(EINSUMS_HAVE_MKL_LAPACKE_H)
-    return ::einsums::backend::linear_algebra::mkl::sgesdd(jobz, m, n, a, lda, s, u, ldu, vt, ldvt);
-#elif defined(EINSUMS_HAVE_LAPACKE)
-    return ::einsums::backend::linear_algebra::cblas::sgesdd(jobz, m, n, a, lda, s, u, ldu, vt, ldvt);
-#else
-    throw std::runtime_error("sgesdd not implemented.");
-#endif
+    return ::einsums::backend::linear_algebra::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::sgesdd(jobz, m, n, a, lda, s, u, ldu, vt, ldvt);
 }
 
 auto dgesdd(char jobz, eint m, eint n, double *a, eint lda, double *s, double *u, eint ldu, double *vt, eint ldvt) -> eint {
-#if defined(EINSUMS_HAVE_MKL_LAPACKE_H)
-    return ::einsums::backend::linear_algebra::mkl::dgesdd(jobz, m, n, a, lda, s, u, ldu, vt, ldvt);
-#elif defined(EINSUMS_HAVE_LAPACKE)
-    return ::einsums::backend::linear_algebra::cblas::dgesdd(jobz, m, n, a, lda, s, u, ldu, vt, ldvt);
-#else
-    throw std::runtime_error("dgesdd not implemented.");
-#endif
+    return ::einsums::backend::linear_algebra::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::dgesdd(jobz, m, n, a, lda, s, u, ldu, vt, ldvt);
 }
 
 auto cgesdd(char jobz, eint m, eint n, std::complex<float> *a, eint lda, float *s, std::complex<float> *u, eint ldu,
@@ -301,24 +288,14 @@ auto zgesdd(char jobz, eint m, eint n, std::complex<double> *a, eint lda, double
 
 auto sgesvd(char jobu, char jobvt, eint m, eint n, float *a, eint lda, float *s, float *u, eint ldu, float *vt, eint ldvt, float *superb)
     -> eint {
-#if defined(EINSUMS_HAVE_MKL_LAPACKE_H)
-    return ::einsums::backend::linear_algebra::mkl::sgesvd(jobu, jobvt, m, n, a, lda, s, u, ldu, vt, ldvt, superb);
-#elif defined(EINSUMS_HAVE_LAPACKE_H)
-    return ::einsums::backend::linear_algebra::cblas::sgesvd(jobu, jobvt, m, n, a, lda, s, u, ldu, vt, ldvt, superb);
-#else
-    throw std::runtime_error("dgesvd not implemented.");
-#endif
+    return ::einsums::backend::linear_algebra::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::sgesvd(jobu, jobvt, m, n, a, lda, s, u, ldu, vt, ldvt,
+                                                                                        superb);
 }
 
 auto dgesvd(char jobu, char jobvt, eint m, eint n, double *a, eint lda, double *s, double *u, eint ldu, double *vt, eint ldvt,
             double *superb) -> eint {
-#if defined(EINSUMS_HAVE_MKL_LAPACKE_H)
-    return ::einsums::backend::linear_algebra::mkl::dgesvd(jobu, jobvt, m, n, a, lda, s, u, ldu, vt, ldvt, superb);
-#elif defined(EINSUMS_HAVE_LAPACKE_H)
-    return ::einsums::backend::linear_algebra::cblas::dgesvd(jobu, jobvt, m, n, a, lda, s, u, ldu, vt, ldvt, superb);
-#else
-    throw std::runtime_error("dgesvd not implemented.");
-#endif
+    return ::einsums::backend::linear_algebra::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::dgesvd(jobu, jobvt, m, n, a, lda, s, u, ldu, vt, ldvt,
+                                                                                        superb);
 }
 
 auto dgees(char jobvs, eint n, double *a, eint lda, eint *sdim, double *wr, double *wi, double *vs, eint ldvs) -> eint {

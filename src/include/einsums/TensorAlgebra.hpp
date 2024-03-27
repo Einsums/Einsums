@@ -340,7 +340,7 @@ auto einsum(const CDataType C_prefactor, const std::tuple<CIndices...> & /*Cs*/,
 
         return;
     } else if constexpr (element_wise_multiplication) {
-        timer::Timer const element_wise_multiplication{"element-wise multiplication"};
+        timer::Timer const element_wise_multiplication_timer{"element-wise multiplication"};
 
         auto target_dims = get_dim_ranges<CRank>(*C);
         auto view        = std::apply(ranges::views::cartesian_product, target_dims);

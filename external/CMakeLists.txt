@@ -19,8 +19,6 @@ add_subdirectory(fmt)
 
 add_subdirectory(rangev3)
 
-add_subdirectory(netlib)
-
 find_package(ZLIB REQUIRED)
 find_package(TargetHDF5 REQUIRED)
 # promote Mm version's scope so that it can be baked into EinsumsConfig
@@ -40,7 +38,3 @@ endif()
 FetchContent_MakeAvailable(fmt)
 
 FetchContent_MakeAvailable(range-v3)
-
-FetchContent_MakeAvailable(netlib)
-# promote netlib src scope so that src/CM can build it
-set(netlib_SOURCE_DIR "${netlib_SOURCE_DIR}" PARENT_SCOPE)
