@@ -563,8 +563,6 @@ void zlassq(int n, const std::complex<double> *x, int incx, double *scale, doubl
 
 auto dgesdd(char jobz, int m, int n, double *a, int lda, double *s, double *u, int ldu, double *vt, int ldvt/*, double *work, int lwork,
             int *iwork */) -> int {
-    using namespace util;
-
     LabeledSection0();
 
     // // Query optimal workspace size
@@ -589,9 +587,9 @@ auto dgesdd(char jobz, int m, int n, double *a, int lda, double *s, double *u, i
 
     // return info;
 
-    int nrows_u  = (util::lsame(jobz, 'a') || util::lsame(jobz, 's') || (util::lsame(jobz, '0') && m < n)) ? m : 1;
-    int ncols_u  = (util::lsame(jobz, 'a') || (util::lsame(jobz, 'o') && m < n)) ? m : (util::lsame(jobz, 's') ? std::min(m, n) : 1);
-    int nrows_vt = (util::lsame(jobz, 'a') || (util::lsame(jobz, 'o') && m >= n)) ? n : (util::lsame(jobz, 's') ? std::min(m, n) : 1);
+    int nrows_u  = (lsame(jobz, 'a') || lsame(jobz, 's') || (lsame(jobz, '0') && m < n)) ? m : 1;
+    int ncols_u  = (lsame(jobz, 'a') || (lsame(jobz, 'o') && m < n)) ? m : (lsame(jobz, 's') ? std::min(m, n) : 1);
+    int nrows_vt = (lsame(jobz, 'a') || (lsame(jobz, 'o') && m >= n)) ? n : (lsame(jobz, 's') ? std::min(m, n) : 1);
 
     int lda_t  = std::max(1, m);
     int ldu_t  = std::max(1, nrows_u);

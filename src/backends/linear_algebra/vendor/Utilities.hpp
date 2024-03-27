@@ -9,7 +9,7 @@
 #include <cctype>
 #include <vector>
 
-namespace einsums::backend::linear_algebra::vendor::util {
+namespace einsums::backend::linear_algebra::vendor {
 
 inline bool lsame(char ca, char cb) {
     return std::tolower(ca) == std::tolower(cb);
@@ -54,4 +54,4 @@ void transpose(Integer m, Integer n, const T *in, Integer ldin, std::vector<T> &
     tranpose<Order>(m, n, in, ldin, out.data(), ldout);
 }
 
-} // namespace einsums::backend::linear_algebra::vendor::util
+} // namespace einsums::backend::linear_algebra::vendor
