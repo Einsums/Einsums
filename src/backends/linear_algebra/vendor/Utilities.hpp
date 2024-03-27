@@ -46,12 +46,12 @@ void transpose(Integer m, Integer n, const T *in, Integer ldin, T *out, Integer 
 
 template <OrderMajor Order, typename T, typename Integer>
 void transpose(Integer m, Integer n, const std::vector<T> &in, Integer ldin, T *out, Integer ldout) {
-    tranpose<Order>(m, n, in.data(), ldin, out, ldout);
+    transpose<Order>(m, n, in.data(), ldin, out, ldout);
 }
 
 template <OrderMajor Order, typename T, typename Integer>
 void transpose(Integer m, Integer n, const T *in, Integer ldin, std::vector<T> &out, Integer ldout) {
-    tranpose<Order>(m, n, in, ldin, out.data(), ldout);
+    transpose<Order>(m, n, in, ldin, out.data(), ldout);
 }
 
 } // namespace einsums::backend::linear_algebra::vendor

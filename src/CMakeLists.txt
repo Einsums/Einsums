@@ -57,7 +57,7 @@ if(EINSUMS_BUILD_HIP)
     target_link_libraries(einsums PUBLIC ${CURSES_LIBRARIES})
 endif()
 
-  
+
 
 extend_einsums_target(einsums
     SOURCES
@@ -114,28 +114,6 @@ extend_einsums_target(einsums
         backends/fft/fftw3/fft.cpp
     FEATURE_INFO
         "FFTW3 backend"
-)
-
-extend_einsums_target(einsums
-    DEPENDS
-        lapacke
-    DEFINES
-        EINSUMS_HAVE_LAPACKE_H
-        EINSUMS_HAVE_LAPACKE
-    CONDITION
-        TARGET lapacke
-)
-
-extend_einsums_target(einsums
-    SOURCES
-        backends/linear_algebra/cblas/cblas.cpp
-    DEPENDS
-        cblas
-    DEFINES
-        EINSUMS_HAVE_CBLAS_H
-        EINSUMS_HAVE_CBLAS
-    CONDITION
-        TARGET cblas
 )
 
 extend_einsums_target(einsums
@@ -284,12 +262,6 @@ install(
 set(tgts einsums Einsums_h5cpp)
 if (TARGET hptt::hptt)
     list(APPEND tgts hptt)
-endif()
-if(TARGET cblas)
-    list(APPEND tgts cblas)
-endif()
-if(TARGET lapacke)
-    list(APPEND tgts lapacke)
 endif()
 
 install(
