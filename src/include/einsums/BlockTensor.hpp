@@ -162,14 +162,14 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
      */
     void push_block(tensor_type &&value) {
         for (int i = 0; i < Rank; i++) {
-            if (value.block_dim(i) != value.block_dim(0)) {
+            if (value.dim(i) != value.dim(0)) {
                 throw std::runtime_error(
                     "Can only push square/hypersquare tensors to a block tensor. Make sure all dimensions are the same.");
             }
         }
         _blocks.push_back(value);
-        _ranges.emplace_back({_dim, _dim + value.block_dim(0)});
-        _dim += value.block_dim(0);
+        _ranges.emplace_back(_dim, _dim + value.dim(0));
+        _dim += value.dim(0);
     }
 
     /**
@@ -177,7 +177,7 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
      */
     void insert_block(int pos, tensor_type &&value) {
         for (int i = 0; i < Rank; i++) {
-            if (value.block_dim(i) != value.block_dim(0)) {
+            if (value.dim(i) != value.dim(0)) {
                 throw std::runtime_error(
                     "Can only push square/hypersquare tensors to a block tensor. Make sure all dimensions are the same.");
             }
@@ -187,18 +187,18 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
 
         // Add the new ranges.
         if (pos == 0) {
-            _ranges.emplace(_ranges.begin(), {0, value.block_dim(0)});
+            _ranges.emplace(_ranges.begin(), {0, value.dim(0)});
         } else {
-            _ranges.emplace(std::next(_ranges.begin(), pos), {_ranges[pos - 1][1], _ranges[pos - 1][1] + value.block_dim(0)});
+            _ranges.emplace(std::next(_ranges.begin(), pos), {_ranges[pos - 1][1], _ranges[pos - 1][1] + value.dim(0)});
         }
 
         for (int i = pos + 1; i < _ranges.size(); i++) {
-            _ranges[i][0] += value.block_dim(0);
-            _ranges[i][1] += value.block_dim(0);
+            _ranges[i][0] += value.dim(0);
+            _ranges[i][1] += value.dim(0);
         }
 
         // Add the new dimension.
-        _dim += value.block_dim(0);
+        _dim += value.dim(0);
     }
 
     /**
@@ -206,14 +206,14 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
      */
     void push_block(const tensor_type &value) {
         for (int i = 0; i < Rank; i++) {
-            if (value.block_dim(i) != value.block_dim(0)) {
+            if (value.dim(i) != value.dim(0)) {
                 throw std::runtime_error(
                     "Can only push square/hypersquare tensors to a block tensor. Make sure all dimensions are the same.");
             }
         }
         _blocks.push_back(value);
-        _ranges.emplace_back({_dim, _dim + value.block_dim(0)});
-        _dim += value.block_dim(0);
+        _ranges.emplace_back(_dim, _dim + value.dim(0));
+        _dim += value.dim(0);
     }
 
     /**
@@ -221,7 +221,7 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
      */
     void insert_block(int pos, const tensor_type &value) {
         for (int i = 0; i < Rank; i++) {
-            if (value.block_dim(i) != value.block_dim(0)) {
+            if (value.dim(i) != value.dim(0)) {
                 throw std::runtime_error(
                     "Can only push square/hypersquare tensors to a block tensor. Make sure all dimensions are the same.");
             }
@@ -231,14 +231,14 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
 
         // Add the new ranges.
         if (pos == 0) {
-            _ranges.emplace(_ranges.begin(), {0, value.block_dim(0)});
+            _ranges.emplace(_ranges.begin(), {0, value.dim(0)});
         } else {
-            _ranges.emplace(std::next(_ranges.begin(), pos), {_ranges[pos - 1][1], _ranges[pos - 1][1] + value.block_dim(0)});
+            _ranges.emplace(std::next(_ranges.begin(), pos), {_ranges[pos - 1][1], _ranges[pos - 1][1] + value.dim(0)});
         }
 
         for (int i = pos + 1; i < _ranges.size(); i++) {
-            _ranges[i][0] += value.block_dim(0);
-            _ranges[i][1] += value.block_dim(0);
+            _ranges[i][0] += value.dim(0);
+            _ranges[i][1] += value.dim(0);
         }
 
         // Add the new dimension.
@@ -499,14 +499,16 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
     /**
      * @brief Convert block tensor into a normal tensor.
      */
-    explicit operator TensorType<T, Rank>() {
+    explicit operator TensorType<T, Rank>() const {
         Dim<Rank> block_dims;
 
         for (int i = 0; i < Rank; i++) {
             block_dims[i] = _dim;
         }
 
-        TensorType<T, Rank> out(_name, block_dims);
+        TensorType<T, Rank> out(block_dims);
+
+        out.set_name(_name);
 
         out.zero();
 
@@ -514,7 +516,7 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
         for (int i = 0; i < _ranges.size(); i++) {
             std::array<Range, Rank> ranges;
             ranges.fill(_ranges[i]);
-            out(ranges) = _blocks[i];
+            std::apply(out, ranges) = _blocks[i];
         }
 
         return out;
@@ -524,11 +526,13 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
 
     [[nodiscard]] auto block_dim() const -> size_t { return _dim; }
 
+    std::vector<Range> ranges() const { return _ranges; }
+
     Range block_range(int i) const { return _ranges.at(i); }
 
     Dim<Rank> block_dims(size_t block) const { return _blocks.at(block).dims(); }
 
-    Dim<Rank> block_dim(size_t block, int ind) const { return _blocks.at(block).dim(ind); }
+    size_t block_dim(size_t block, int ind = 0) const { return _blocks.at(block).dim(ind); }
 
     Dim<Rank> block_dims(const std::string &name) const {
         for (auto tens : _blocks) {
@@ -540,7 +544,7 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
         throw std::out_of_range("Could not find block with the name " + name);
     }
 
-    Dim<Rank> block_dim(const std::string &name, int ind) const {
+    size_t block_dim(const std::string &name, int ind = 0) const {
         for (auto tens : _blocks) {
             if (tens.name() == name) {
                 return tens.block_dim(ind);
@@ -557,6 +561,16 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
     }
 
     size_t dim(int dim = 0) const { return _dim; }
+
+    std::vector<size_t> vector_dims() const {
+        std::vector<size_t> out(num_blocks());
+
+        for (int i = 0; i < out.size(); i++) {
+            out[i] = _blocks[i].dim(0);
+        }
+
+        return out;
+    }
 
     auto vector_data() const -> const std::vector<tensor_type> & { return _blocks; }
     auto vector_data() -> std::vector<tensor_type> & { return _blocks; }
@@ -731,3 +745,45 @@ struct BlockDeviceTensor : public BlockTensorBase<T, Rank, DeviceTensor> {
 #endif
 
 END_EINSUMS_NAMESPACE_HPP(einsums)
+
+template <size_t Rank, typename T>
+void println(const einsums::BlockTensor<T, Rank> &A, TensorPrintOptions options = {}) {
+    println("Name: {}", A.name());
+    {
+        print::Indent const indent{};
+        println("Block Tensor");
+        println("Data Type: {}", type_name<T>());
+
+        for (int i = 0; i < A.num_blocks(); i++) {
+            println(A[i], options);
+        }
+    }
+}
+
+template <size_t Rank, typename T>
+void fprintln(FILE *fp, const einsums::BlockTensor<T, Rank> &A, TensorPrintOptions options = {}) {
+    fprintln(fp, "Name: {}", A.name());
+    {
+        print::Indent const indent{};
+        fprintln(fp, "Block Tensor");
+        fprintln(fp, "Data Type: {}", type_name<T>());
+
+        for (int i = 0; i < A.num_blocks(); i++) {
+            fprintln(fp, A[i], options);
+        }
+    }
+}
+
+template <size_t Rank, typename T>
+void fprintln(std::ostream &os, const einsums::BlockTensor<T, Rank> &A, TensorPrintOptions options = {}) {
+    fprintln(os, "Name: {}", A.name());
+    {
+        print::Indent const indent{};
+        fprintln(os, "Block Tensor");
+        fprintln(os, "Data Type: {}", type_name<T>());
+
+        for (int i = 0; i < A.num_blocks(); i++) {
+            fprintln(os, A[i], options);
+        }
+    }
+}

@@ -23,25 +23,6 @@ namespace einsums::tensor_algebra::index {
 /// Base struct for index tags. It might not be technically needed but it will allow
 /// compile-time checks to be performed.
 struct LabelBase {};
-
-struct IndexBase {
-  public:
-    constexpr IndexBase() = default;
-
-    virtual ~IndexBase() = default;
-
-    size_t operator()(std::va_list args) const { return va_arg(args, size_t); }
-
-    size_t operator()(size_t index) const { return index; }
-
-    template <typename T>
-    size_t operator()(std::vector<T> *args) const {
-        size_t out = args->at(0);
-        args->erase(args->begin());
-
-        return out;
-    }
-};
 } // namespace einsums::tensor_algebra::index
 
 /*! \def MAKE_INDEX(x)
@@ -50,11 +31,26 @@ struct IndexBase {
 */
 #define MAKE_INDEX(x)                                                                                                                      \
     namespace einsums::tensor_algebra::index {                                                                                             \
-    struct x : public LabelBase, public IndexBase {                                                                                        \
+    struct x : public LabelBase {                                                                                                          \
         static constexpr char letter = static_cast<const char (&)[2]>(#x)[0];                                                              \
         constexpr x()                = default;                                                                                            \
+        size_t operator()(std::va_list args) const {                                                                                       \
+            return va_arg(args, size_t);                                                                                                   \
+        }                                                                                                                                  \
+                                                                                                                                           \
+        size_t operator()(size_t index) const {                                                                                            \
+            return index;                                                                                                                  \
+        }                                                                                                                                  \
+                                                                                                                                           \
+        template <typename T>                                                                                                              \
+        size_t operator()(std::vector<T> *args) const {                                                                                    \
+            size_t out = args->at(0);                                                                                                      \
+            args->erase(args->begin());                                                                                                    \
+                                                                                                                                           \
+            return out;                                                                                                                    \
+        }                                                                                                                                  \
     };                                                                                                                                     \
-    static struct x x;                                                                                                                     \
+    static constexpr struct x x;                                                                                                           \
                                                                                                                                            \
     inline auto operator<<(std::ostream &os, const struct x &) -> std::ostream & {                                                         \
         os << x::letter;                                                                                                                   \

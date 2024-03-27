@@ -603,7 +603,7 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
                   einsums::detail::IsIncoreRankBlockTensorV<BType<BDataType, BRank>, BRank, BDataType> &&
                   einsums::detail::IsIncoreRankBlockTensorV<CType<CDataType, CRank>, CRank, CDataType>) {
 
-        if (A.num_blocks() != B.num_blocks() || A.num_blocks() != C->num_blocks() || B.num_blocks() != C->num_blocks) {
+        if (A.num_blocks() != B.num_blocks() || A.num_blocks() != C->num_blocks() || B.num_blocks() != C->num_blocks()) {
             throw std::runtime_error("All tensors passed to einsums need to have the same number of blocks.");
         }
 

@@ -196,7 +196,8 @@ void syev(AType<T, ARank> *A, WType<T, WRank> *W) {
     if constexpr (einsums::detail::IsIncoreRankBlockTensorV<AType<T, ARank>, ARank, T>) {
         EINSUMS_OMP_PARALLEL_FOR
         for (int i = 0; i < A->num_blocks(); i++) {
-            syev(&(A->block(i)), &((*W)(A->block_range(i))));
+            auto out_block = (*W)(A->block_range(i));
+            syev(&(A->block(i)), &out_block);
         }
     } else {
 
@@ -453,11 +454,11 @@ auto dot(const Type<T, Rank> &A, const Type<T, Rank> &B) -> T {
 
     if constexpr (einsums::detail::IsIncoreRankBlockTensorV<Type<T, Rank>, Rank, T>) {
         if (A.num_blocks() != B.num_blocks()) {
-            return dot((Tensor<T, Rank>)A, (Tensor<T, Rank>)B);
+            return dot((einsums::Tensor<T, Rank>)A, (einsums::Tensor<T, Rank>)B);
         }
 
         if (A.ranges() != B.ranges()) {
-            return dot((Tensor<T, Rank>)A, (Tensor<T, Rank>)B);
+            return dot((einsums::Tensor<T, Rank>)A, (einsums::Tensor<T, Rank>)B);
         }
 
         T out{0};
