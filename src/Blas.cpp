@@ -256,13 +256,7 @@ void zlassq(eint n, const std::complex<double> *x, eint incx, double *scale, dou
 }
 
 auto sgesdd(char jobz, eint m, eint n, float *a, eint lda, float *s, float *u, eint ldu, float *vt, eint ldvt) -> eint {
-#if defined(EINSUMS_HAVE_MKL_LAPACKE_H)
-    return ::einsums::backend::linear_algebra::mkl::sgesdd(jobz, m, n, a, lda, s, u, ldu, vt, ldvt);
-#elif defined(EINSUMS_HAVE_LAPACKE)
-    return ::einsums::backend::linear_algebra::cblas::sgesdd(jobz, m, n, a, lda, s, u, ldu, vt, ldvt);
-#else
-    throw std::runtime_error("sgesdd not implemented.");
-#endif
+    return ::einsums::backend::linear_algebra::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::sgesdd(jobz, m, n, a, lda, s, u, ldu, vt, ldvt);
 }
 
 auto dgesdd(char jobz, eint m, eint n, double *a, eint lda, double *s, double *u, eint ldu, double *vt, eint ldvt) -> eint {

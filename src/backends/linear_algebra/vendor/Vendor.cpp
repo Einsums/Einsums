@@ -113,6 +113,8 @@ extern void FC_GLOBAL(zlassq, ZLASSQ)(int *n, const std::complex<double> *x, int
 
 extern void FC_GLOBAL(dgesdd, DGESDD)(char *, int *, int *, double *, int *, double *, double *, int *, double *, int *, double *, int *,
                                       int *, int *);
+extern void FC_GLOBAL(sgesdd, SGESDD)(char *, int *, int *, float *, int *, float *, float *, int *, float *, int *, float *, int *, int *,
+                                      int *);
 }
 
 BEGIN_EINSUMS_NAMESPACE_CPP(einsums::backend::linear_algebra::vendor)
@@ -561,97 +563,76 @@ void zlassq(int n, const std::complex<double> *x, int incx, double *scale, doubl
     FC_GLOBAL(zlassq, ZLASSQ)(&n, x, &incx, scale, sumsq);
 }
 
-auto dgesdd(char jobz, int m, int n, double *a, int lda, double *s, double *u, int ldu, double *vt, int ldvt/*, double *work, int lwork,
-            int *iwork */) -> int {
-    LabeledSection0();
+#define GESDD(Type, lcletter, UCLETTER)                                                                                                    \
+    auto lcletter##gesdd(char jobz, int m, int n, Type *a, int lda, Type *s, Type *u, int ldu, Type *vt, int ldvt)->int {                  \
+        LabeledSection0();                                                                                                                 \
+                                                                                                                                           \
+        int nrows_u  = (lsame(jobz, 'a') || lsame(jobz, 's') || (lsame(jobz, '0') && m < n)) ? m : 1;                                      \
+        int ncols_u  = (lsame(jobz, 'a') || (lsame(jobz, 'o') && m < n)) ? m : (lsame(jobz, 's') ? std::min(m, n) : 1);                    \
+        int nrows_vt = (lsame(jobz, 'a') || (lsame(jobz, 'o') && m >= n)) ? n : (lsame(jobz, 's') ? std::min(m, n) : 1);                   \
+                                                                                                                                           \
+        int               lda_t  = std::max(1, m);                                                                                         \
+        int               ldu_t  = std::max(1, nrows_u);                                                                                   \
+        int               ldvt_t = std::max(1, nrows_vt);                                                                                  \
+        std::vector<Type> a_t, u_t, vt_t;                                                                                                  \
+                                                                                                                                           \
+        /* Check leading dimensions(s) */                                                                                                  \
+        if (lda < n) {                                                                                                                     \
+            println_warn("gesdd warning: lda < n, lda = {}, n = {}", lda, n);                                                              \
+            return -5;                                                                                                                     \
+        }                                                                                                                                  \
+        if (ldu < ncols_u) {                                                                                                               \
+            println_warn("gesdd warning: ldu < ncols_u, ldu = {}, ncols_u = {}", ldu, ncols_u);                                            \
+            return -8;                                                                                                                     \
+        }                                                                                                                                  \
+        if (ldvt < n) {                                                                                                                    \
+            println_warn("gesdd warning: ldvt < n, ldvt = {}, n = {}", ldvt, n);                                                           \
+            return -10;                                                                                                                    \
+        }                                                                                                                                  \
+                                                                                                                                           \
+        /* Query optimial working array(s) */                                                                                              \
+        int  info{0};                                                                                                                      \
+        int  lwork{-1};                                                                                                                    \
+        Type work_query;                                                                                                                   \
+        FC_GLOBAL(lcletter##gesdd, UCLETTER##GESDD)                                                                                        \
+        (&jobz, &m, &n, a, &lda_t, s, u, &ldu_t, vt, &ldvt_t, &work_query, &lwork, nullptr, &info);                                        \
+        lwork = (int)work_query;                                                                                                           \
+                                                                                                                                           \
+        /* Allocate memory for temporary arrays(s) */                                                                                      \
+        a_t.resize(lda_t *std::max(1, n));                                                                                                 \
+        if (lsame(jobz, 'a') || lsame(jobz, 's') || (lsame(jobz, 'o') && (m < n))) {                                                       \
+            u_t.resize(ldu_t *std::max(1, ncols_u));                                                                                       \
+        }                                                                                                                                  \
+        if (lsame(jobz, 'a') || lsame(jobz, 's') || (lsame(jobz, 'o') && (m >= n))) {                                                      \
+            vt_t.resize(ldvt_t *std::max(1, n));                                                                                           \
+        }                                                                                                                                  \
+                                                                                                                                           \
+        /* Allocate work array */                                                                                                          \
+        std::vector<Type> work(lwork);                                                                                                     \
+                                                                                                                                           \
+        /* Allocate iwork array */                                                                                                         \
+        std::vector<int> iwork(8 * std::min(m, n));                                                                                        \
+                                                                                                                                           \
+        /* Transpose input matrices */                                                                                                     \
+        transpose<OrderMajor::Row>(m, n, a, lda, a_t, lda_t);                                                                              \
+                                                                                                                                           \
+        /* Call lapack routine */                                                                                                          \
+        FC_GLOBAL(lcletter##gesdd, UCLETTER##GESDD)                                                                                        \
+        (&jobz, &m, &n, a_t.data(), &lda_t, s, u_t.data(), &ldu_t, vt_t.data(), &ldvt_t, work.data(), &lwork, iwork.data(), &info);        \
+                                                                                                                                           \
+        /* Transpose output matrices */                                                                                                    \
+        transpose<OrderMajor::Column>(m, n, a_t, lda_t, a, lda);                                                                           \
+        if (lsame(jobz, 'a') || lsame(jobz, 's') || (lsame(jobz, 'o') && (m < n))) {                                                       \
+            transpose<OrderMajor::Column>(nrows_u, ncols_u, u_t, ldu_t, u, ldu);                                                           \
+        }                                                                                                                                  \
+        if (lsame(jobz, 'a') || lsame(jobz, 's') || (lsame(jobz, 'o') && (m >= n))) {                                                      \
+            transpose<OrderMajor::Column>(nrows_vt, n, vt_t, ldvt_t, vt, ldvt);                                                            \
+        }                                                                                                                                  \
+                                                                                                                                           \
+        return 0;                                                                                                                          \
+    } /**/
 
-    // // Query optimal workspace size
-    // int    info{0};
-    // int    lwork{-1};
-    // double work_query;
-    // FC_GLOBAL(dgesdd, DGESDD)(&jobz, &n, &m, a, &lda, s, vt, &ldvt, u, &ldu, &work_query, &lwork, nullptr, &info);
-    // lwork = static_cast<int>(work_query);
-
-    // // Allocate work array
-    // double *work = new double[lwork];
-
-    // // Allocate iwork array
-    // int *iwork = new int[8 * std::min(m, n)];
-
-    // // Compute SVD
-    // FC_GLOBAL(dgesdd, DGESDD)(&jobz, &n, &m, a, &lda, s, vt, &ldvt, u, &ldu, work, &lwork, iwork, &info);
-
-    // // Free workspace arrays
-    // delete[] work;
-    // delete[] iwork;
-
-    // return info;
-
-    int nrows_u  = (lsame(jobz, 'a') || lsame(jobz, 's') || (lsame(jobz, '0') && m < n)) ? m : 1;
-    int ncols_u  = (lsame(jobz, 'a') || (lsame(jobz, 'o') && m < n)) ? m : (lsame(jobz, 's') ? std::min(m, n) : 1);
-    int nrows_vt = (lsame(jobz, 'a') || (lsame(jobz, 'o') && m >= n)) ? n : (lsame(jobz, 's') ? std::min(m, n) : 1);
-
-    int lda_t  = std::max(1, m);
-    int ldu_t  = std::max(1, nrows_u);
-    int ldvt_t = std::max(1, nrows_vt);
-
-    // double *a_t  = nullptr;
-    // double *u_t  = nullptr;
-    // double *vt_t = nullptr;
-    std::vector<double> a_t, u_t, vt_t;
-
-    // Check leading dimensions(s)
-    if (lda < n) {
-        println_warn("gesdd warning: lda < n, lda = {}, n = {}", lda, n);
-        return -5;
-    }
-    if (ldu < ncols_u) {
-        println_warn("gesdd warning: ldu < ncols_u, ldu = {}, ncols_u = {}", ldu, ncols_u);
-        return -8;
-    }
-    if (ldvt < n) {
-        println_warn("gesdd warning: ldvt < n, ldvt = {}, n = {}", ldvt, n);
-        return -10;
-    }
-
-    // Query optimial working array(s)
-    int    info{0};
-    int    lwork{-1};
-    double work_query;
-    FC_GLOBAL(dgesdd, DGESDD)(&jobz, &m, &n, a, &lda_t, s, u, &ldu_t, vt, &ldvt_t, &work_query, &lwork, nullptr, &info);
-
-    // Allocate memory for temporary arrays(s)
-    a_t.resize(lda_t * std::max(1, n));
-    if (lsame(jobz, 'a') || lsame(jobz, 's') || (lsame(jobz, 'o') && (m < n))) {
-        u_t.resize(ldu_t * std::max(1, ncols_u));
-    }
-    if (lsame(jobz, 'a') || lsame(jobz, 's') || (lsame(jobz, 'o') && (m >= n))) {
-        vt_t.resize(ldvt_t * std::max(1, n));
-    }
-
-    // Allocate work array
-    std::vector<double> work(lwork);
-
-    // Allocate iwork array
-    std::vector<int> iwork(8 * std::min(m, n));
-
-    // Transpose input matrices
-    transpose<OrderMajor::Row>(m, n, a, lda, a_t, lda_t);
-
-    // Call lapack routine
-    FC_GLOBAL(dgesdd, DGESDD)
-    (&jobz, &m, &n, a_t.data(), &lda_t, s, u_t.data(), &ldu_t, vt_t.data(), &ldvt_t, work.data(), &lwork, iwork.data(), &info);
-
-    // Transpose output matrices
-    transpose<OrderMajor::Column>(m, n, a_t, lda_t, a, lda);
-    if (lsame(jobz, 'a') || lsame(jobz, 's') || (lsame(jobz, 'o') && (m < n))) {
-        transpose<OrderMajor::Column>(nrows_u, ncols_u, u_t, ldu_t, u, ldu);
-    }
-    if (lsame(jobz, 'a') || lsame(jobz, 's') || (lsame(jobz, 'o') && (m >= n))) {
-        transpose<OrderMajor::Column>(nrows_vt, n, vt_t, ldvt_t, vt, ldvt);
-    }
-
-    return 0;
-}
+GESDD(double, d, D);
+GESDD(float, s, S);
 
 END_EINSUMS_NAMESPACE_CPP(einsums::backend::vendor)
