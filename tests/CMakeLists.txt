@@ -42,6 +42,7 @@ extend_einsums_target(test-all
         GPULinearAlgebra.hip
         GPU.hip
         GPUTensorAlgebraTasks.hip
+        BlockDeviceTensor.hip
     CONDITION
         EINSUMS_BUILD_HIP
     PUBLIC_DEPENDS

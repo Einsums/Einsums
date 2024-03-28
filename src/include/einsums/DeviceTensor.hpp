@@ -18,6 +18,9 @@ struct DeviceTensorView;
 template <typename T, size_t Rank>
 struct DeviceTensor;
 
+template<typename T, size_t Rank>
+struct BlockDeviceTensor;
+
 namespace detail {
 
 /**
@@ -34,7 +37,16 @@ enum HostToDeviceMode { DEV_ONLY, MAPPED, PINNED };
  */
 template <typename D, size_t Rank, typename T>
 struct IsDeviceRankTensor : public std::bool_constant<std::is_same_v<std::decay_t<D>, DeviceTensor<T, Rank>> ||
-                                                      std::is_same_v<std::decay_t<D>, DeviceTensorView<T, Rank>>> {};
+                                                      std::is_same_v<std::decay_t<D>, DeviceTensorView<T, Rank>> ||
+                                                      std::is_same_v<std::decay_t<D>, BlockDeviceTensor<T, Rank>>> {};
+
+/**
+ * @struct IsDeviceRankBlockTensor
+ *
+ * @brief Struct for specifying that a tensor is device compatible, and is block diagonal.
+ */
+template<typename D, size_t Rank, typename T>
+struct IsDeviceRankBlockTensor : public std::bool_constant<std::is_same_v<std::decay_t<D>, BlockDeviceTensor<T, Rank>>> {};
 
 /**
  * @property IsDeviceRankTensorV
@@ -44,6 +56,15 @@ struct IsDeviceRankTensor : public std::bool_constant<std::is_same_v<std::decay_
 template <typename D, size_t Rank, typename T>
 inline constexpr bool IsDeviceRankTensorV = IsDeviceRankTensor<D, Rank, T>::value;
 
+
+/**
+ * @property IsDeviceRankTensorV
+ *
+ * @brief True if the tensor is device compatible and is block diagonal.
+ */
+template <typename D, size_t Rank, typename T>
+inline constexpr bool IsDeviceRankBlockTensorV = IsDeviceRankBlockTensor<D, Rank, T>::value;
+
 /**
  * @concept DeviceRankTensor
  *
@@ -51,6 +72,14 @@ inline constexpr bool IsDeviceRankTensorV = IsDeviceRankTensor<D, Rank, T>::valu
  */
 template <typename Input, size_t Rank, typename DataType = double>
 concept DeviceRankTensor = detail::IsDeviceRankTensorV<Input, Rank, DataType>;
+
+/**
+ * @concept DeviceRankBlockTensor
+ *
+ * @brief Concept for testing whether a tensor parameter is available to the GPU and is block diagonal.
+ */
+template <typename Input, size_t Rank, typename DataType = double>
+concept DeviceRankBlockTensor = detail::IsDeviceRankBlockTensorV<Input, Rank, DataType>;
 
 /**
  * Turns a single sentinel value into an index combination.
@@ -144,6 +173,9 @@ class HostDevReference {
      * Get the value of the reference.
      */
     T get() const {
+        if(_ptr == nullptr) {
+            return T{0};
+        }
         if (is_on_host) {
             return *_ptr;
         } else {

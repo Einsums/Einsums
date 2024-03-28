@@ -66,7 +66,7 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
      */
     template <typename... Dims>
     explicit BlockTensorBase(std::string name, Dims... block_dims)
-        : _name{std::move(name)}, _dim{(static_cast<size_t>(block_dims) + ...)}, _blocks(), _ranges() {
+        : _name{std::move(name)}, _dim{(static_cast<size_t>(block_dims) + ... + 0)}, _blocks(), _ranges() {
         auto dim_array   = Dim<sizeof...(Dims)>{block_dims...};
         auto _block_dims = Dim<Rank>();
 
@@ -389,8 +389,8 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
                 return *new T(0);
             }
         }
-        size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _blocks.at(block).strides().begin(), size_t{0});
-        return _blocks.at(block).data()[ordinal];
+
+        return std::apply(_blocks.at(block), index_list);
     }
 
     /**
@@ -660,7 +660,7 @@ struct BlockDeviceTensor : public BlockTensorBase<T, Rank, DeviceTensor> {
     /**
      * @brief Construct a new Tensor object. Default copy constructor
      */
-    BlockDeviceTensor(const BlockTensor &) = default;
+    BlockDeviceTensor(const BlockDeviceTensor &) = default;
 
     /**
      * @brief Destroy the Tensor object.
@@ -686,38 +686,32 @@ struct BlockDeviceTensor : public BlockTensorBase<T, Rank, DeviceTensor> {
      */
     template <typename... Dims>
     explicit BlockDeviceTensor(std::string name, detail::HostToDeviceMode mode, Dims... block_dims)
-        : BlockTensorBase<T, Rank, DeviceTensor>(), _name{std::move(name)}, _dim{(static_cast<size_t>(block_dims) + ...)}, _blocks(),
-          _ranges(sizeof...(Dims)) {
-        auto dim_array   = Dim<sizeof...(Dims)>{block_dims...};
-        auto _block_dims = Dim<Rank>();
+        : BlockTensorBase<T, Rank, DeviceTensor>(name) {
 
-        size_t sum = 0;
+        auto dims = std::array<size_t, sizeof...(Dims)>{static_cast<size_t>(block_dims)...};
+
         for (int i = 0; i < sizeof...(Dims); i++) {
-            _ranges[i] = Range(sum, sum + dim_array[i]);
-            sum += dim_array[i];
 
-            _block_dims.fill(dim_array[i]);
+            Dim<Rank> pass_dims;
+            ;
 
-            _blocks.emplace_back(_block_dims, mode);
+            pass_dims.fill(dims[i]);
+
+            BlockTensorBase<T, Rank, DeviceTensor>::push_block(DeviceTensor<T, Rank>(pass_dims, mode));
         }
     }
 
     template <typename ArrayArg>
     explicit BlockDeviceTensor(std::string name, detail::HostToDeviceMode mode, const ArrayArg &block_dims)
-        : BlockTensorBase<T, Rank, DeviceTensor>(), _name{std::move(name)}, _dim{0}, _blocks() {
-        auto _block_dims = Dim<Rank>();
-
-        size_t sum = 0;
+        : BlockTensorBase<T, Rank, DeviceTensor>(name) {
         for (int i = 0; i < block_dims.size(); i++) {
-            _ranges[i] = Range(sum, sum + block_dims[i]);
-            sum += block_dims[i];
 
-            _block_dims.fill(block_dims[i]);
+            Dim<Rank> pass_dims;
 
-            _blocks.emplace_back(_block_dims, mode);
+            pass_dims.fill(block_dims[i]);
+
+            BlockTensorBase<T, Rank, DeviceTensor>::push_block(DeviceTensor<T, Rank>(pass_dims, mode));
         }
-
-        _dim = sum;
     }
 
     /**
@@ -726,21 +720,54 @@ struct BlockDeviceTensor : public BlockTensorBase<T, Rank, DeviceTensor> {
      * @param block_dims The dimensions of the new tensor in Dim form.
      */
     template <size_t Dims>
-    explicit BlockDeviceTensor(detail::HostToDeviceMode mode, Dim<Dims> block_dims)
-        : BlockTensorBase<T, Rank, DeviceTensor>(block_dims), _blocks(), _ranges(Dims) {
-        auto _block_dims = Dim<Rank>();
-
-        size_t sum = 0;
+    explicit BlockDeviceTensor(detail::HostToDeviceMode mode, Dim<Dims> block_dims) : BlockTensorBase<T, Rank, DeviceTensor>() {
         for (int i = 0; i < block_dims.size(); i++) {
-            _ranges[i] = Range(sum, sum + block_dims[i]);
-            sum += block_dims[i];
 
-            _block_dims.fill(block_dims[i]);
+            Dim<Rank> pass_dims;
 
-            _blocks.emplace_back(_block_dims, mode);
+            pass_dims.fill(block_dims[i]);
+
+            BlockTensorBase<T, Rank, DeviceTensor>::push_block(DeviceTensor<T, Rank>(pass_dims, mode));
+        }
+    }
+
+    template <typename... MultiIndex>
+        requires requires {
+            requires NoneOfType<AllT, MultiIndex...>;
+            requires NoneOfType<Range, MultiIndex...>;
+        }
+    auto operator()(MultiIndex... index) -> HostDevReference<T> & {
+
+        static_assert(sizeof...(MultiIndex) == Rank);
+
+        auto index_list = std::array{static_cast<std::int64_t>(index)...};
+
+        int block = -1;
+        for (auto [i, _index] : enumerate(index_list)) {
+            if (_index < 0) {
+                index_list[i] = BlockTensorBase<T, Rank, DeviceTensor>::_dim + _index;
+            }
+
+            if (block == -1) {
+                for (int j = 0; j < BlockTensorBase<T, Rank, DeviceTensor>::_ranges.size(); j++) {
+                    if (BlockTensorBase<T, Rank, DeviceTensor>::_ranges[j][0] <= _index &&
+                        _index < BlockTensorBase<T, Rank, DeviceTensor>::_ranges[j][1]) {
+                        block = j;
+                        break;
+                    }
+                }
+            }
+
+            if (BlockTensorBase<T, Rank, DeviceTensor>::_ranges.at(block)[0] <= _index &&
+                _index < BlockTensorBase<T, Rank, DeviceTensor>::_ranges.at(block)[1]) {
+                // Remap the index to be in the block.
+                index_list[i] -= BlockTensorBase<T, Rank, DeviceTensor>::_ranges.at(block)[0];
+            } else {
+                return *new HostDevReference<T>();
+            }
         }
 
-        _dim = sum;
+        return std::apply(BlockTensorBase<T, Rank, DeviceTensor>::_blocks.at(block), index_list);
     }
 };
 
