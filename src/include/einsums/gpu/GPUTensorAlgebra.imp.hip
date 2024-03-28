@@ -913,8 +913,68 @@ auto einsum(const U UC_prefactor, const ::std::tuple<CIndices...> &C_indices, CT
     delete testing;
 #endif
 
-    // Perform the actual einsum
-    ::einsums::tensor_algebra::gpu::detail::einsum<false>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B, stream);
+// If the tensors are all block tensors, handle them appropriately.
+    if constexpr (einsums::detail::IsDeviceRankBlockTensorV<AType<ADataType, ARank>, ARank, ADataType> &&
+                  einsums::detail::IsDeviceRankBlockTensorV<BType<BDataType, BRank>, BRank, BDataType> &&
+                  einsums::detail::IsDeviceRankBlockTensorV<CType<CDataType, CRank>, CRank, CDataType>) {
+
+        if (A.num_blocks() != B.num_blocks() || A.num_blocks() != C->num_blocks() || B.num_blocks() != C->num_blocks()) {
+            throw std::runtime_error("All tensors passed to einsums need to have the same number of blocks.");
+        }
+
+        for (int i = 0; i < A.num_blocks(); i++) {
+            if (A.block_dim(i) != B.block_dim(i) || A.block_dim(i) != C->block_dim(i) || B.block_dim(i) != C->block_dim(i)) {
+                throw std::runtime_error("Inconsistent block sizes in tensors.");
+            }
+        }
+
+        // Perform einsum on each block separately.
+        EINSUMS_OMP_PARALLEL_FOR
+        for (int i = 0; i < A.num_blocks(); i++) {
+            if(A.block_dim(i) == 0) {
+                continue;
+            }
+            ::einsums::tensor_algebra::gpu::detail::einsum<false>(C_prefactor, C_indices, &(C->block(i)), AB_prefactor, A_indices, A[i], B_indices, B[i], stream);
+        }
+    } else if constexpr (einsums::detail::IsDeviceRankBlockTensorV<AType<ADataType, ARank>, ARank, ADataType> &&
+                         einsums::detail::IsDeviceRankBlockTensorV<BType<BDataType, BRank>, BRank, BDataType> && CRank == 0) {
+        if (A.num_blocks() != B.num_blocks()) {
+            throw std::runtime_error("All tensors passed to einsums need to have the same number of blocks.");
+        }
+
+        for (int i = 0; i < A.num_blocks(); i++) {
+            if (A.block_dim(i) != B.block_dim(i)) {
+                throw std::runtime_error("Inconsistent block sizes in tensors.");
+            }
+        }
+
+        // Perform einsum on each block separately.
+        if(C_prefactor == CDataType{0}) {
+            *C = 0;
+        } else {
+            *C *= C_prefactor;
+        }
+        for (int i = 0; i < A.num_blocks(); i++) {
+            if(A.block_dim(i) == 0) {
+                continue;
+            }
+            
+            DeviceTensor<CDataType, 0> temp;
+
+            temp = 0;
+
+            ::einsums::tensor_algebra::gpu::detail::einsum<false>(C_prefactor, C_indices, &temp, AB_prefactor, A_indices, A[i], B_indices, B[i], stream);
+
+            *C += temp;
+        }
+    } else if constexpr (einsums::detail::IsDeviceRankBlockTensorV<AType<ADataType, ARank>, ARank, ADataType> ||
+                         einsums::detail::IsDeviceRankBlockTensorV<BType<BDataType, BRank>, BRank, BDataType>) {
+        // Use generic algorithm if mixing block and normal tensors.
+        ::einsums::tensor_algebra::gpu::detail::einsum<true>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B, stream);
+    } else {
+        // Default einsums.
+        ::einsums::tensor_algebra::gpu::detail::einsum<false>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B, stream);
+    }
 
 #if 0 // defined(EINSUMS_TEST_NANS)
     if constexpr (CRank != 0) {

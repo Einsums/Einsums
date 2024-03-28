@@ -619,7 +619,7 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
             if(A.block_dim(i) == 0) {
                 continue;
             }
-            detail::einsum<true>(C_prefactor, C_indices, &(C->block(i)), AB_prefactor, A_indices, A[i], B_indices, B[i]);
+            detail::einsum<false>(C_prefactor, C_indices, &(C->block(i)), AB_prefactor, A_indices, A[i], B_indices, B[i]);
         }
     } else if constexpr (einsums::detail::IsIncoreRankBlockTensorV<AType<ADataType, ARank>, ARank, ADataType> &&
                          einsums::detail::IsIncoreRankBlockTensorV<BType<BDataType, BRank>, BRank, BDataType> && CRank == 0) {
@@ -648,17 +648,17 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
 
             temp = 0;
 
-            detail::einsum<true>(C_prefactor, C_indices, &temp, AB_prefactor, A_indices, A[i], B_indices, B[i]);
+            detail::einsum<false>(C_prefactor, C_indices, &temp, AB_prefactor, A_indices, A[i], B_indices, B[i]);
 
             *C += temp;
         }
     } else if constexpr (einsums::detail::IsIncoreRankBlockTensorV<AType<ADataType, ARank>, ARank, ADataType> ||
                          einsums::detail::IsIncoreRankBlockTensorV<BType<BDataType, BRank>, BRank, BDataType>) {
         // Use generic algorithm if mixing block and normal tensors.
-        detail::einsum<false>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
+        detail::einsum<true>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
     } else {
         // Default einsums.
-        detail::einsum<true>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
+        detail::einsum<false>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
     }
 #if defined(EINSUMS_TEST_NANS)
     // The tests need a wait.

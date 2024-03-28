@@ -107,6 +107,24 @@ __global__ EINSUMS_EXPORT void symm_gemm(bool TransA, bool TransB, int m, int n,
 __global__ EINSUMS_EXPORT void symm_gemm(bool TransA, bool TransB, int m, int n, const hipDoubleComplex *A, int lda,
                                          const hipDoubleComplex *B, int ldb, hipDoubleComplex *C, int ldc);
 
+/**
+ * Internal solvers.
+ */
+EINSUMS_EXPORT int gesv(int n, int nrhs, float *A, int lda, int *ipiv, float *B, int ldb, float *X, int ldx, hipStream_t stream = 0);
+EINSUMS_EXPORT int gesv(int n, int nrhs, double *A, int lda, int *ipiv, double *B, int ldb, double *X, int ldx, hipStream_t stream = 0);
+EINSUMS_EXPORT int gesv(int n, int nrhs, hipComplex *A, int lda, int *ipiv, hipComplex *B, int ldb, hipComplex *X, int ldx,
+                        hipStream_t stream = 0);
+EINSUMS_EXPORT int gesv(int n, int nrhs, hipDoubleComplex *A, int lda, int *ipiv, hipDoubleComplex *B, int ldb, hipDoubleComplex *X,
+                        int ldx, hipStream_t stream = 0);
+
+/**
+ * Internal axpy.
+ */
+EINSUMS_EXPORT void axpy(int n, const float *alpha, const float *X, int incx, float *Y, int incy);
+EINSUMS_EXPORT void axpy(int n, const double *alpha, const double *X, int incx, double *Y, int incy);
+EINSUMS_EXPORT void axpy(int n, const hipComplex *alpha, const hipComplex *X, int incx, hipComplex *Y, int incy);
+EINSUMS_EXPORT void axpy(int n, const hipDoubleComplex *alpha, const hipDoubleComplex *X, int incx, hipDoubleComplex *Y, int incy);
+
 } // namespace detail
 
 /**
@@ -121,8 +139,9 @@ template <bool TransA, bool TransB, template <typename, size_t> typename AType, 
         requires ::einsums::detail::DeviceRankTensor<BType<T, Rank>, 2, T>;
         requires ::einsums::detail::DeviceRankTensor<CType<T, Rank>, 2, T>;
         requires !::einsums::detail::DeviceRankBlockTensor<CType<T, Rank>, 2, T> ||
-                     (::einsums::detail::DeviceRankBlockTensor<AType<T, Rank>, 2, T> && ::einsums::detail::DeviceRankBlockTensor<BType<T, Rank>, 2, T>);
-        requires (!std::is_pointer_v<T>);
+                     (::einsums::detail::DeviceRankBlockTensor<AType<T, Rank>, 2, T> &&
+                      ::einsums::detail::DeviceRankBlockTensor<BType<T, Rank>, 2, T>);
+        requires(!std::is_pointer_v<T>);
     }
 void gemm(T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, T beta, CType<T, Rank> *C, hipStream_t stream = 0);
 
@@ -168,10 +187,10 @@ void gemv(T alpha, const AType<T, ARank> &A, const XType<T, XYRank> &x, T beta, 
  * @brief Scales all the elements in a tensor by a scalar.
  */
 template <template <typename, size_t> typename AType, size_t ARank, typename T>
-requires requires {
-    requires ::einsums::detail::DeviceRankTensor<AType<T, ARank>, ARank, T>;
-    requires !std::is_pointer_v<T>;
-}
+    requires requires {
+        requires ::einsums::detail::DeviceRankTensor<AType<T, ARank>, ARank, T>;
+        requires !std::is_pointer_v<T>;
+    }
 void scale(T scale, AType<T, ARank> *A, hipStream_t stream = 0);
 
 /**
@@ -191,9 +210,19 @@ void symm_gemm(const AType<T, Rank> &A, const BType<T, Rank> &B, CType<T, Rank> 
 /**
  * @brief Performs @f$y = a*x + y@f$.
  */
-template<template<typename, size_t> typename XType, template<typename, size_t> typename YType, typename T, size_t Rank>
-requires (!std::is_pointer_v<T>)
-void axpy(T alpha, const XType<T, Rank> &X, YType<T, Rank> *Y);
+template <template <typename, size_t> typename XType, template <typename, size_t> typename YType, typename T, size_t Rank>
+    requires(!std::is_pointer_v<T>)
+void axpy(T alpha, const XType<T, Rank> &X, YType<T, Rank> *Y, hipStream_t stream = 0);
+
+/**
+ * @brief Solves a linear system.
+ */
+template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename BType, size_t BRank, typename T>
+    requires requires {
+        requires ::einsums::detail::DeviceRankTensor<AType<T, ARank>, 2, T>;
+        requires ::einsums::detail::DeviceRankTensor<BType<T, BRank>, 2, T>;
+    }
+int gesv(AType<T, ARank> *A, BType<T, BRank> *B, hipStream_t stream = 0);
 
 /**
  * @brief Wrapper for matrix multiplication.
@@ -207,7 +236,8 @@ template <bool TransA, bool TransB, template <typename, size_t> typename AType, 
         requires ::einsums::detail::DeviceRankTensor<BType<T, Rank>, 2, T>;
         requires ::einsums::detail::DeviceRankTensor<CType<T, Rank>, 2, T>;
         requires !::einsums::detail::DeviceRankBlockTensor<CType<T, Rank>, 2, T> ||
-                     (::einsums::detail::DeviceRankBlockTensor<AType<T, Rank>, 2, T> && ::einsums::detail::DeviceRankBlockTensor<BType<T, Rank>, 2, T>);
+                     (::einsums::detail::DeviceRankBlockTensor<AType<T, Rank>, 2, T> &&
+                      ::einsums::detail::DeviceRankBlockTensor<BType<T, Rank>, 2, T>);
     }
 void gemm(const T *alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const T *beta, CType<T, Rank> *C, hipStream_t stream = 0);
 
@@ -248,9 +278,8 @@ void scale(const T *scale, AType<T, ARank> *A, hipStream_t stream = 0);
 /**
  * @brief Performs @f$y = a*x + y@f$.
  */
-template<template<typename, size_t> typename XType, template<typename, size_t> typename YType, typename T, size_t Rank>
-void axpy(const T *alpha, const XType<T, Rank> &X, YType<T, Rank> *Y);
-
+template <template <typename, size_t> typename XType, template <typename, size_t> typename YType, typename T, size_t Rank>
+void axpy(const T *alpha, const XType<T, Rank> &X, YType<T, Rank> *Y, hipStream_t stream = 0);
 
 END_EINSUMS_NAMESPACE_HPP(einsums::linear_algebra::gpu)
 

@@ -4,6 +4,7 @@
 #include "einsums/_GPUUtils.hpp"
 
 #include "einsums/../../backends/linear_algebra/hipblas/hipblas.hpp"
+#include "einsums/DeviceTensor.hpp"
 #include "einsums/GPULinearAlgebra.hpp"
 
 #include <hip/driver_types.h>
@@ -203,7 +204,7 @@ void ger(const T *alpha, const XYType<T, XYRank> &X, const XYType<T, XYRank> &Y,
     hipblas_catch(hipblasGetStream(get_blas_handle(), &prev_stream));
     hipblas_catch(hipblasSetStream(get_blas_handle(), stream));
 
-    detail::ger(X.dim(0), Y.dim(0), (dev_datatype *) alpha, X.data(), X.stride(0), Y.data(), Y.stride(0), A->data(), A->stride(0));
+    detail::ger(X.dim(0), Y.dim(0), (dev_datatype *)alpha, X.data(), X.stride(0), Y.data(), Y.stride(0), A->data(), A->stride(0));
 
     hipblas_catch(hipblasSetStream(get_blas_handle(), prev_stream));
 
@@ -251,9 +252,11 @@ void gemv(const T *alpha, const AType<T, ARank> &A, const XType<T, XYRank> &x, c
         hipblas_catch(hipblasSetStream(get_blas_handle(), stream));
 
         if constexpr (!TransA) {
-            detail::gemv(HIPBLAS_OP_T, m, n, (dev_datatype *) alpha, A.data(), A.stride(0), x.data(), x.stride(0), (dev_datatype *) beta, y->data(), y->stride(0));
+            detail::gemv(HIPBLAS_OP_T, m, n, (dev_datatype *)alpha, A.data(), A.stride(0), x.data(), x.stride(0), (dev_datatype *)beta,
+                         y->data(), y->stride(0));
         } else {
-            detail::gemv(HIPBLAS_OP_N, m, n, (dev_datatype *) alpha, A.data(), A.stride(0), x.data(), x.stride(0), (dev_datatype *) beta, y->data(), y->stride(0));
+            detail::gemv(HIPBLAS_OP_N, m, n, (dev_datatype *)alpha, A.data(), A.stride(0), x.data(), x.stride(0), (dev_datatype *)beta,
+                         y->data(), y->stride(0));
         }
 
         hipblas_catch(hipblasSetStream(get_blas_handle(), prev_stream));
@@ -283,7 +286,7 @@ void scale(const T *scale, AType<T, ARank> *A, hipStream_t stream) {
     hipblas_catch(hipblasGetStream(get_blas_handle(), &prev_stream));
     hipblas_catch(hipblasSetStream(get_blas_handle(), stream));
 
-    detail::scal(A->size(), (dev_datatype *) scale, A->data(), 1);
+    detail::scal(A->size(), (dev_datatype *)scale, A->data(), 1);
 
     hipblas_catch(hipblasSetStream(get_blas_handle(), prev_stream));
 
@@ -386,7 +389,7 @@ void ger(T alpha, const XYType<T, XYRank> &X, const XYType<T, XYRank> &Y, AType<
     // Wait for the copies to happen, since the values will disappear later.
     hip_catch(hipEventSynchronize(wait_event));
 
-    ger((T *) alpha_gpu, X, Y, A, stream);
+    ger((T *)alpha_gpu, X, Y, A, stream);
 
     hip_catch(hipFreeAsync(alpha_gpu, stream));
 
@@ -415,8 +418,6 @@ void gemv(T alpha, const AType<T, ARank> &A, const XType<T, XYRank> &x, T beta, 
     hip_catch(hipMemcpyAsync((void *)alpha_gpu, (const void *)&alpha, sizeof(dev_datatype), hipMemcpyHostToDevice));
     hip_catch(hipMemcpyAsync((void *)beta_gpu, (const void *)&beta, sizeof(dev_datatype), hipMemcpyHostToDevice));
 
-    int m = A.dim(1), n = A.dim(0);
-
     hipEvent_t wait_event;
 
     hip_catch(hipEventCreate(&wait_event));
@@ -425,7 +426,7 @@ void gemv(T alpha, const AType<T, ARank> &A, const XType<T, XYRank> &x, T beta, 
     // Wait for the copies to happen, since the values will disappear later.
     hip_catch(hipEventSynchronize(wait_event));
 
-    gemv<TransA>((T *) alpha_gpu, A, x, (T *) beta_gpu, y, stream);
+    gemv<TransA>((T *)alpha_gpu, A, x, (T *)beta_gpu, y, stream);
 
     hip_catch(hipFreeAsync(alpha_gpu, stream));
     hip_catch(hipFreeAsync(beta_gpu, stream));
@@ -459,11 +460,175 @@ void scale(T scale_, AType<T, ARank> *A, hipStream_t stream) {
     // Wait for the copies to happen, since the values will disappear later.
     hip_catch(hipEventSynchronize(wait_event));
 
-    scale((T *) scale_gpu, A, stream);
+    scale((T *)scale_gpu, A, stream);
 
     hip_catch(hipFreeAsync(scale_gpu, stream));
 
     hip_catch(hipEventDestroy(wait_event));
+}
+
+template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename BType, size_t BRank, typename T>
+    requires requires {
+        requires ::einsums::detail::DeviceRankTensor<AType<T, ARank>, 2, T>;
+        requires ::einsums::detail::DeviceRankTensor<BType<T, BRank>, 2, T>;
+    }
+int gesv(AType<T, ARank> *A, BType<T, BRank> *B, hipStream_t stream) {
+    if constexpr (einsums::detail::IsIncoreRankBlockTensorV<AType<T, ARank>, ARank, T> &&
+                  einsums::detail::IsIncoreRankBlockTensorV<BType<T, BRank>, BRank, T>) {
+
+        if (A->num_blocks() != B->num_blocks()) {
+            throw std::runtime_error("gesv: Tensors need the same number of blocks.");
+        }
+
+        int info_out = 0;
+
+        EINSUMS_OMP_PARALLEL_FOR
+        for (int i = 0; i < A->num_blocks(); i++) {
+            if (A->block_dim(i) == 0) {
+                continue;
+            }
+            int info = gesv(&(A->block(i)), &(B->block(i)), stream);
+
+            info_out |= info;
+
+            if (info != 0) {
+                println("gesv: Got non-zero return: %d", info);
+            }
+        }
+
+        return info_out;
+
+    } else if constexpr (einsums::detail::IsIncoreRankBlockTensorV<AType<T, ARank>, ARank, T>) {
+        int info_out = 0;
+
+        EINSUMS_OMP_PARALLEL_FOR
+        for (int i = 0; i < A->num_blocks(); i++) {
+
+            if (A->block_dim(i) == 0) {
+                continue;
+            }
+            int info = gesv(&(A->block(i)), &((*B)(AllT(), A->block_range(i))), stream);
+
+            info_out |= info;
+
+            if (info != 0) {
+                println("gesv: Got non-zero return: %d", info);
+            }
+        }
+
+        return info_out;
+    }
+
+    LabeledSection0();
+
+    auto n   = A->dim(0);
+    auto lda = A->stride(0);
+    auto ldb = B->stride(0);
+
+    auto nrhs = B->dim(0);
+
+    int lwork = n;
+
+    __device_ptr__ int *ipiv;
+
+#ifdef __HIP_PLATFORM_NVIDIA__
+    DeviceTensor<T, BRank> X = DeviceTensor<T, BRank>(einsums::detail::DEV_ONLY, B->dims());
+#endif
+
+    einsums::gpu::hip_catch(hipMallocAsync((void **)&ipiv, sizeof(int) * lwork, stream));
+
+    hipEvent_t wait_event;
+
+    einsums::gpu::hip_catch(hipEventCreate(&wait_event));
+    einsums::gpu::hip_catch(hipEventRecord(wait_event, stream));
+
+    // Wait for the copies to happen, since the values will disappear later.
+    einsums::gpu::hip_catch(hipEventSynchronize(wait_event));
+
+#ifdef __HIP_PLATFORM_NVIDIA__
+    int info = detail::gesv(n, nrhs, A->data(), lda, ipiv.data(), B->data(), ldb, X.data(), X.stride(0));
+#elif defined(__HIP_PLATFORM_AMD__)
+    int info = detail::gesv(n, nrhs, A->data(), lda, ipiv, B->data(), ldb, B->data(), ldb);
+#endif
+
+    einsums::gpu::hip_catch(hipFreeAsync(ipiv, stream));
+
+    einsums::gpu::hip_catch(hipEventDestroy(wait_event));
+
+    return info;
+}
+
+template <template <typename, size_t> typename XType, template <typename, size_t> typename YType, typename T, size_t Rank>
+    requires(!std::is_pointer_v<T>)
+void axpy(T alpha, const XType<T, Rank> &X, YType<T, Rank> *Y, hipStream_t stream) {
+    using namespace einsums::gpu;
+    using namespace einsums::backend::linear_algebra::hipblas::detail;
+
+    using dev_datatype = ::std::conditional_t<::std::is_same_v<T, ::std::complex<float>>, hipComplex,
+                                              ::std::conditional_t<::std::is_same_v<T, ::std::complex<double>>, hipDoubleComplex, T>>;
+
+    dev_datatype *alpha_gpu;
+
+    hip_catch(hipMallocFromPoolAsync((void **)&alpha_gpu, sizeof(dev_datatype), get_scale_pool(), stream));
+
+    hip_catch(hipMemcpyAsync(alpha_gpu, &alpha, sizeof(dev_datatype), hipMemcpyHostToDevice, stream));
+
+    hipEvent_t wait_event;
+
+    hip_catch(hipEventCreate(&wait_event));
+    hip_catch(hipEventRecord(wait_event, stream));
+
+    // Wait for the copies to happen, since the values will disappear later.
+    hip_catch(hipEventSynchronize(wait_event));
+
+    axpy((T *)alpha, X, Y, stream);
+
+    hip_catch(hipFreeAsync(alpha, stream));
+
+    hip_catch(hipEventDestroy(wait_event));
+}
+
+template <template <typename, size_t> typename XType, template <typename, size_t> typename YType, typename T, size_t Rank>
+void axpy(const T *alpha, const XType<T, Rank> &X, YType<T, Rank> *Y, hipStream_t stream) {
+    if constexpr (einsums::detail::IsIncoreRankBlockTensorV<XType<T, Rank>, Rank, T> &&
+                  einsums::detail::IsIncoreRankBlockTensorV<YType<T, Rank>, Rank, T>) {
+        if (X.num_blocks() != Y->num_blocks()) {
+            throw std::runtime_error("axpy: Tensors need to have the same number of blocks.");
+        }
+
+        if (X.ranges() != Y->ranges()) {
+            throw std::runtime_error("axpy: Tensor blocks need to be compatible.");
+        }
+
+        EINSUMS_OMP_PARALLEL_FOR
+        for (int i = 0; i < X.num_blocks(); i++) {
+            if (X.block_dim() == 0) {
+                continue;
+            }
+
+            axpy(alpha, X[i], &(Y->block(i)));
+        }
+    } else if constexpr (einsums::detail::IsIncoreRankBlockTensorV<XType<T, Rank>, Rank, T>) {
+        EINSUMS_OMP_PARALLEL_FOR
+        for (int i = 0; i < X.num_blocks(); i++) {
+            if (X.block_dim() == 0) {
+                continue;
+            }
+
+            std::array<einsums::Range, Rank> slice;
+
+            slice.fill(X.block_range());
+
+            auto Y_block = std::apply(*Y, slice);
+
+            axpy(alpha, X[i], &Y_block);
+        }
+    } else {
+
+        LabeledSection0();
+
+        detail::axpy(X.dim(0) * X.stride(0), alpha, X.data(), 1, Y->data(), 1);
+    }
 }
 
 } // namespace gpu
