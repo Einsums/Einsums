@@ -36,6 +36,9 @@ void sum_square(const AType<ADataType, ARank> &a, RemoveComplexT<ADataType> *sca
 
         EINSUMS_OMP_PARALLEL_FOR
         for (int i = 0; i < a.num_blocks(); i++) {
+            if (a.block_dim(i) == 0) {
+                continue;
+            }
             RemoveComplexT<ADataType> out;
 
             sum_square(a.block(i), scale, &out);
@@ -97,6 +100,9 @@ void gemm(const T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const
 
         EINSUMS_OMP_PARALLEL_FOR
         for (int i = 0; i < A.num_blocks(); i++) {
+            if (A.block_dim(i) == 0) {
+                continue;
+            }
             gemm<TransA, TransB>(alpha, A.block(i), B.block(i), beta, &(C->block(i)));
         }
 
@@ -108,6 +114,9 @@ void gemm(const T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const
         } else {
             EINSUMS_OMP_PARALLEL_FOR
             for (int i = 0; i < A.num_blocks(); i++) {
+                if (A.block_dim(i) == 0) {
+                    continue;
+                }
                 gemm<TransA, TransB>(alpha, A.block(i), B.block(i), beta, &((*C)(A.block_range(i), A.block_range(i))));
             }
         }
@@ -171,6 +180,9 @@ void gemv(const T alpha, const AType<T, ARank> &A, const XType<T, XYRank> &x, co
 
         EINSUMS_OMP_PARALLEL_FOR
         for (int i = 0; i < A.num_blocks(); i++) {
+            if (A.block_dim(i) == 0) {
+                continue;
+            }
             gemv(alpha, A.block(i), x(A.block_range(i)), beta, &((*y)(A.block_range(i))));
         }
 
@@ -196,6 +208,12 @@ void syev(AType<T, ARank> *A, WType<T, WRank> *W) {
     if constexpr (einsums::detail::IsIncoreRankBlockTensorV<AType<T, ARank>, ARank, T>) {
         EINSUMS_OMP_PARALLEL_FOR
         for (int i = 0; i < A->num_blocks(); i++) {
+            if (A->block_dim(i) == 0) {
+                continue;
+            }
+            if (A->block_range(i)[1] < 0) {
+                printf("Hi");
+            }
             auto out_block = (*W)(A->block_range(i));
             syev(&(A->block(i)), &out_block);
         }
@@ -225,6 +243,9 @@ void heev(AType<T, ARank> *A, WType<RemoveComplexT<T>, WRank> *W) {
     if constexpr (einsums::detail::IsIncoreRankBlockTensorV<AType<T, ARank>, ARank, T>) {
         EINSUMS_OMP_PARALLEL_FOR
         for (int i = 0; i < A->num_blocks(); i++) {
+            if (A->block_dim(i) == 0) {
+                continue;
+            }
             heev(&(A->block(i)), &((*W)(A->block_range(i))));
         }
     } else {
@@ -260,6 +281,9 @@ auto gesv(AType<T, ARank> *A, BType<T, BRank> *B) -> int {
 
         EINSUMS_OMP_PARALLEL_FOR
         for (int i = 0; i < A->num_blocks(); i++) {
+            if (A->block_dim(i) == 0) {
+                continue;
+            }
             int info = gesv(&(A->block(i)), &(B->block(i)));
 
             info_out |= info;
@@ -276,6 +300,10 @@ auto gesv(AType<T, ARank> *A, BType<T, BRank> *B) -> int {
 
         EINSUMS_OMP_PARALLEL_FOR
         for (int i = 0; i < A->num_blocks(); i++) {
+
+            if (A->block_dim(i) == 0) {
+                continue;
+            }
             int info = gesv(&(A->block(i)), &((*B)(AllT(), A->block_range(i))));
 
             info_out |= info;
@@ -341,6 +369,9 @@ void scale(T scale, AType<T, ARank> *A) {
 
         EINSUMS_OMP_PARALLEL_FOR
         for (int i = 0; i < A->num_blocks(); i++) {
+            if (A->block_dim(i) == 0) {
+                continue;
+            }
             scale(scale, &(A->block(i)));
         }
     } else {
@@ -396,6 +427,9 @@ auto pow(const AType<T, ARank> &a, T alpha, T cutoff = std::numeric_limits<T>::e
 
         EINSUMS_OMP_PARALLEL_FOR
         for (int i = 0; i < a.num_blocks(); i++) {
+            if (a.block_dim(i) == 0) {
+                continue;
+            }
             out.block(i) = pow(a.block(i), alpha, cutoff);
         }
 
@@ -465,6 +499,9 @@ auto dot(const Type<T, Rank> &A, const Type<T, Rank> &B) -> T {
 
 #pragma omp parallel for reduction(+ : out)
         for (int i = 0; i < A.num_blocks(); i++) {
+            if (A.block_dim(i) == 0) {
+                continue;
+            }
             out += dot(A.block(i), B.block(i));
         }
 
@@ -500,6 +537,9 @@ auto dot(const Type<T, Rank> &A, const Type<T, Rank> &B, const Type<T, Rank> &C)
 
 #pragma omp parallel for reduction(+ : out)
         for (int i = 0; i < A.num_blocks(); i++) {
+            if (A.block_dim(i) == 0) {
+                continue;
+            }
             out += dot(A.block(i), B.block(i), C.block(i));
         }
 
@@ -533,22 +573,97 @@ template <template <typename, size_t> typename XType, template <typename, size_t
     requires requires {
         requires CoreRankTensor<XType<T, Rank>, Rank, T>;
         requires CoreRankTensor<YType<T, Rank>, Rank, T>;
+        requires !CoreRankBlockTensor<YType<T, Rank>, Rank, T> ||
+                     (CoreRankBlockTensor<XType<T, Rank>, Rank, T> && CoreRankBlockTensor<YType<T, Rank>, Rank, T>);
     }
 void axpy(T alpha, const XType<T, Rank> &X, YType<T, Rank> *Y) {
-    LabeledSection0();
+    if constexpr (einsums::detail::IsIncoreRankBlockTensorV<XType<T, Rank>, Rank, T> &&
+                  einsums::detail::IsIncoreRankBlockTensorV<YType<T, Rank>, Rank, T>) {
+        if (X.num_blocks() != Y->num_blocks()) {
+            throw std::runtime_error("axpy: Tensors need to have the same number of blocks.");
+        }
 
-    blas::axpy(X.dim(0) * X.stride(0), alpha, X.data(), 1, Y->data(), 1);
+        if (X.ranges() != Y->ranges()) {
+            throw std::runtime_error("axpy: Tensor blocks need to be compatible.");
+        }
+
+        EINSUMS_OMP_PARALLEL_FOR
+        for (int i = 0; i < X.num_blocks(); i++) {
+            if (X.block_dim() == 0) {
+                continue;
+            }
+
+            axpy(alpha, X[i], &(Y->block(i)));
+        }
+    } else if constexpr (einsums::detail::IsIncoreRankBlockTensorV<XType<T, Rank>, Rank, T>) {
+        EINSUMS_OMP_PARALLEL_FOR
+        for (int i = 0; i < X.num_blocks(); i++) {
+            if (X.block_dim() == 0) {
+                continue;
+            }
+
+            std::array<einsums::Range, Rank> slice;
+
+            slice.fill(X.block_range());
+
+            auto Y_block = std::apply(*Y, slice);
+
+            axpy(alpha, X[i], &Y_block);
+        }
+    } else {
+
+        LabeledSection0();
+
+        blas::axpy(X.dim(0) * X.stride(0), alpha, X.data(), 1, Y->data(), 1);
+    }
 }
 
 template <template <typename, size_t> typename XType, template <typename, size_t> typename YType, typename T, size_t Rank>
     requires requires {
         requires CoreRankTensor<XType<T, Rank>, Rank, T>;
         requires CoreRankTensor<YType<T, Rank>, Rank, T>;
+        requires !CoreRankBlockTensor<YType<T, Rank>, Rank, T> ||
+                     (CoreRankBlockTensor<XType<T, Rank>, Rank, T> && CoreRankBlockTensor<YType<T, Rank>, Rank, T>);
     }
 void axpby(T alpha, const XType<T, Rank> &X, T beta, YType<T, Rank> *Y) {
-    LabeledSection0();
+    if constexpr (einsums::detail::IsIncoreRankBlockTensorV<XType<T, Rank>, Rank, T> &&
+                  einsums::detail::IsIncoreRankBlockTensorV<YType<T, Rank>, Rank, T>) {
+        if (X.num_blocks() != Y->num_blocks()) {
+            throw std::runtime_error("axpby: Tensors need to have the same number of blocks.");
+        }
 
-    blas::axpby(X.dim(0) * X.stride(0), alpha, X.data(), 1, beta, Y->data(), 1);
+        if (X.ranges() != Y->ranges()) {
+            throw std::runtime_error("axpby: Tensor blocks need to be compatible.");
+        }
+
+        EINSUMS_OMP_PARALLEL_FOR
+        for (int i = 0; i < X.num_blocks(); i++) {
+            if (X.block_dim() == 0) {
+                continue;
+            }
+            axpby(alpha, X[i], beta, Y->block(i));
+        }
+    } else if constexpr (einsums::detail::IsIncoreRankBlockTensorV<XType<T, Rank>, Rank, T>) {
+        EINSUMS_OMP_PARALLEL_FOR
+        for (int i = 0; i < X.num_blocks(); i++) {
+            if (X.block_dim() == 0) {
+                continue;
+            }
+
+            std::array<einsums::Range, Rank> slice;
+
+            slice.fill(X.block_range());
+
+            auto Y_block = std::apply(*Y, slice);
+
+            axpby(alpha, X[i], beta, &Y_block);
+        }
+    } else {
+
+        LabeledSection0();
+
+        blas::axpby(X.dim(0) * X.stride(0), alpha, X.data(), 1, beta, Y->data(), 1);
+    }
 }
 
 template <template <typename, size_t> typename XYType, size_t XYRank, template <typename, size_t> typename AType, typename T, size_t ARank>

@@ -17,10 +17,10 @@ template <typename T, size_t Rank, template <typename, size_t> typename TensorTy
 struct BlockTensorBase : public detail::TensorBase<T, Rank> {
   protected:
     std::string _name{"(Unnamed)"};
-    size_t      _dim; // Only allowing square tensors.
+    size_t      _dim{0}; // Only allowing square tensors.
 
-    std::vector<TensorType<T, Rank>> _blocks;
-    std::vector<Range>               _ranges;
+    std::vector<TensorType<T, Rank>> _blocks{};
+    std::vector<Range>               _ranges{};
 
     template <typename T_, size_t OtherRank, template <typename, size_t> typename OtherTensor>
     friend struct BlockTensorBase;
@@ -66,13 +66,13 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
      */
     template <typename... Dims>
     explicit BlockTensorBase(std::string name, Dims... block_dims)
-        : _name{std::move(name)}, _dim{(static_cast<size_t>(block_dims) + ...)}, _blocks(), _ranges(sizeof...(Dims)) {
+        : _name{std::move(name)}, _dim{(static_cast<size_t>(block_dims) + ...)}, _blocks(), _ranges() {
         auto dim_array   = Dim<sizeof...(Dims)>{block_dims...};
         auto _block_dims = Dim<Rank>();
 
         size_t sum = 0;
         for (int i = 0; i < sizeof...(Dims); i++) {
-            _ranges[i] = Range{sum, sum + dim_array[i]};
+            _ranges.emplace_back(sum, sum + dim_array[i]);
             sum += dim_array[i];
 
             _block_dims.fill(dim_array[i]);
@@ -82,13 +82,13 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
     }
 
     template <typename ArrayArg>
-    explicit BlockTensorBase(std::string name, const ArrayArg &block_dims) : _name{std::move(name)}, _dim{0}, _blocks() {
+    explicit BlockTensorBase(std::string name, const ArrayArg &block_dims) : _name{std::move(name)}, _dim{0}, _blocks(), _ranges() {
 
         auto _block_dims = Dim<Rank>();
 
         size_t sum = 0;
         for (int i = 0; i < block_dims.size(); i++) {
-            _ranges[i] = Range{sum, sum + block_dims[i]};
+            _ranges.emplace_back(sum, sum + block_dims[i]);
             sum += block_dims[i];
 
             _block_dims.fill(block_dims[i]);
@@ -105,12 +105,12 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
      * @param block_dims The dimensions of the new tensor in Dim form.
      */
     template <size_t Dims>
-    explicit BlockTensorBase(Dim<Dims> block_dims) : _blocks(), _ranges(Dims) {
+    explicit BlockTensorBase(Dim<Dims> block_dims) : _blocks(), _ranges() {
         auto _block_dims = Dim<Rank>();
 
         size_t sum = 0;
         for (int i = 0; i < Dims; i++) {
-            _ranges[i] = Range{sum, sum + _block_dims[i]};
+            _ranges.emplace_back(sum, sum + _block_dims[i]);
             sum += _block_dims[i];
 
             _block_dims.fill(_block_dims[i]);
@@ -187,9 +187,9 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
 
         // Add the new ranges.
         if (pos == 0) {
-            _ranges.emplace(_ranges.begin(), {0, value.dim(0)});
+            _ranges.emplace(_ranges.begin(), 0, value.dim(0));
         } else {
-            _ranges.emplace(std::next(_ranges.begin(), pos), {_ranges[pos - 1][1], _ranges[pos - 1][1] + value.dim(0)});
+            _ranges.emplace(std::next(_ranges.begin(), pos), _ranges[pos - 1][1], _ranges[pos - 1][1] + value.dim(0));
         }
 
         for (int i = pos + 1; i < _ranges.size(); i++) {
@@ -231,9 +231,9 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
 
         // Add the new ranges.
         if (pos == 0) {
-            _ranges.emplace(_ranges.begin(), {0, value.dim(0)});
+            _ranges.emplace(_ranges.begin(), 0, value.dim(0));
         } else {
-            _ranges.emplace(std::next(_ranges.begin(), pos), {_ranges[pos - 1][1], _ranges[pos - 1][1] + value.dim(0)});
+            _ranges.emplace(std::next(_ranges.begin(), pos), _ranges[pos - 1][1], _ranges[pos - 1][1] + value.dim(0));
         }
 
         for (int i = pos + 1; i < _ranges.size(); i++) {
@@ -342,8 +342,8 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
                 return 0; // The indices point outside of all the blocks.
             }
         }
-        size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _blocks[block].strides().begin(), size_t{0});
-        return _blocks[block].data()[ordinal];
+        size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _blocks.at(block).strides().begin(), size_t{0});
+        return _blocks.at(block).data()[ordinal];
     }
 
     /**
@@ -382,15 +382,15 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
                 }
             }
 
-            if (_ranges[block][0] <= _index && _index < _ranges[block][1]) {
+            if (_ranges.at(block)[0] <= _index && _index < _ranges.at(block)[1]) {
                 // Remap the index to be in the block.
-                index_list[i] -= _ranges[block][0];
+                index_list[i] -= _ranges.at(block)[0];
             } else {
                 return *new T(0);
             }
         }
-        size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _blocks[block].strides().begin(), size_t{0});
-        return _blocks[block].data()[ordinal];
+        size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _blocks.at(block).strides().begin(), size_t{0});
+        return _blocks.at(block).data()[ordinal];
     }
 
     /**
@@ -436,10 +436,11 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
 
         _dim = other._dim;
 
+        _ranges = other._ranges;
+
         EINSUMS_OMP_PARALLEL_FOR
         for (int i = 0; i < _blocks.size(); i++) {
             _blocks[i] = other._blocks[i];
-            _ranges[i] = other._ranges[i];
         }
 
         return *this;
@@ -455,10 +456,11 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
 
         _dim = other._dim;
 
+        _ranges = other._ranges;
+
         EINSUMS_OMP_PARALLEL_FOR
         for (int i = 0; i < _blocks.size(); i++) {
             _blocks[i] = other._blocks[i];
-            _ranges[i] = other._ranges[i];
         }
 
         return *this;
@@ -691,7 +693,7 @@ struct BlockDeviceTensor : public BlockTensorBase<T, Rank, DeviceTensor> {
 
         size_t sum = 0;
         for (int i = 0; i < sizeof...(Dims); i++) {
-            _ranges[i] = Range{sum, sum + dim_array[i]};
+            _ranges[i] = Range(sum, sum + dim_array[i]);
             sum += dim_array[i];
 
             _block_dims.fill(dim_array[i]);
@@ -707,7 +709,7 @@ struct BlockDeviceTensor : public BlockTensorBase<T, Rank, DeviceTensor> {
 
         size_t sum = 0;
         for (int i = 0; i < block_dims.size(); i++) {
-            _ranges[i] = Range{sum, sum + block_dims[i]};
+            _ranges[i] = Range(sum, sum + block_dims[i]);
             sum += block_dims[i];
 
             _block_dims.fill(block_dims[i]);
@@ -730,7 +732,7 @@ struct BlockDeviceTensor : public BlockTensorBase<T, Rank, DeviceTensor> {
 
         size_t sum = 0;
         for (int i = 0; i < block_dims.size(); i++) {
-            _ranges[i] = Range{sum, sum + block_dims[i]};
+            _ranges[i] = Range(sum, sum + block_dims[i]);
             sum += block_dims[i];
 
             _block_dims.fill(block_dims[i]);

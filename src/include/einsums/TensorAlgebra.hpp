@@ -616,7 +616,41 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
         // Perform einsum on each block separately.
         EINSUMS_OMP_PARALLEL_FOR
         for (int i = 0; i < A.num_blocks(); i++) {
+            if(A.block_dim(i) == 0) {
+                continue;
+            }
             detail::einsum<true>(C_prefactor, C_indices, &(C->block(i)), AB_prefactor, A_indices, A[i], B_indices, B[i]);
+        }
+    } else if constexpr (einsums::detail::IsIncoreRankBlockTensorV<AType<ADataType, ARank>, ARank, ADataType> &&
+                         einsums::detail::IsIncoreRankBlockTensorV<BType<BDataType, BRank>, BRank, BDataType> && CRank == 0) {
+        if (A.num_blocks() != B.num_blocks()) {
+            throw std::runtime_error("All tensors passed to einsums need to have the same number of blocks.");
+        }
+
+        for (int i = 0; i < A.num_blocks(); i++) {
+            if (A.block_dim(i) != B.block_dim(i)) {
+                throw std::runtime_error("Inconsistent block sizes in tensors.");
+            }
+        }
+
+        // Perform einsum on each block separately.
+        if(C_prefactor == CDataType{0}) {
+            *C = 0;
+        } else {
+            *C *= C_prefactor;
+        }
+        for (int i = 0; i < A.num_blocks(); i++) {
+            if(A.block_dim(i) == 0) {
+                continue;
+            }
+            
+            Tensor<CDataType, 0> temp;
+
+            temp = 0;
+
+            detail::einsum<true>(C_prefactor, C_indices, &temp, AB_prefactor, A_indices, A[i], B_indices, B[i]);
+
+            *C += temp;
         }
     } else if constexpr (einsums::detail::IsIncoreRankBlockTensorV<AType<ADataType, ARank>, ARank, ADataType> ||
                          einsums::detail::IsIncoreRankBlockTensorV<BType<BDataType, BRank>, BRank, BDataType>) {
@@ -964,17 +998,17 @@ auto element(MultiOperator multi_opt, CType<T, Rank> *C, MultiTensors<T, Rank> &
     if constexpr ((einsums::detail::IsIncoreRankBlockTensorV<MultiTensors<T, Rank>, Rank, T> && ... &&
                    einsums::detail::IsIncoreRankBlockTensorV<CType<T, Rank>, Rank, T>)) {
 
-        if(((C->num_blocks() != tensors.num_blocks()) || ...)) {
+        if (((C->num_blocks() != tensors.num_blocks()) || ...)) {
             throw std::runtime_error("element: All tensors need to have the same number of blocks.");
         }
-        for(int i = 0; i < C->num_blocks; i++) {
-            if(((C->block_dim(i) != tensors.block_dim(i)) || ...)) {
+        for (int i = 0; i < C->num_blocks; i++) {
+            if (((C->block_dim(i) != tensors.block_dim(i)) || ...)) {
                 throw std::runtime_error("element: All tensor blocks need to have the same size.");
             }
         }
 
         for (int i = 0; i < C->num_blocks; i++) {
-            element(multi_opt, &(C->block(i)), tensors.block(i) ...);
+            element(multi_opt, &(C->block(i)), tensors.block(i)...);
         }
         return;
     }
