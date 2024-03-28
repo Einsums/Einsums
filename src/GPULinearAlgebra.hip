@@ -132,6 +132,164 @@ void scal(int size, const hipDoubleComplex *alpha, hipDoubleComplex *x, int incx
     hipblas_catch(hipblasZscal(handle, size, (const hipblasDoubleComplex *)alpha, (hipblasDoubleComplex *)x, incx));
 }
 
+int gesv(int n, int nrhs, float *A, int lda, int *ipiv, float *B, int ldb, float *X, int ldx, hipStream_t stream) {
+
+    hipsolverHandle_t handle = get_solver_handle();
+
+    int  out;
+    int *out_gpu;
+
+    hip_catch(hipMallocAsync((void **)&out_gpu, sizeof(int), stream));
+
+    size_t work_size;
+
+    hipsolver_catch(hipsolverSSgesv_bufferSize(handle, n, nrhs, A, lda, ipiv, B, ldb, X, ldx, &work_size));
+
+    void *work;
+
+    hip_catch(hipMallocAsync(&work, work_size, stream));
+
+    int niters;
+
+    hipsolver_catch(hipsolverSSgesv(handle, n, nrhs, A, lda, ipiv, B, ldb, X, ldx, work, work_size, &niters, out_gpu));
+
+    hip_catch(hipMemcpyAsync((void *)&out, (void *)out_gpu, sizeof(int), hipMemcpyDeviceToHost, stream));
+
+    hip_catch(hipFreeAsync(out_gpu, stream));
+    hip_catch(hipFreeAsync(work, stream));
+
+    hipEvent_t wait_event;
+
+    hip_catch(hipEventCreate(&wait_event));
+    hip_catch(hipEventRecord(wait_event, stream));
+    hip_catch(hipEventSynchronize(wait_event));
+
+    return out;
+}
+int gesv(int n, int nrhs, double *A, int lda, int *ipiv, double *B, int ldb, double *X, int ldx, hipStream_t stream) {
+    hipsolverHandle_t handle = get_solver_handle();
+
+    int  out;
+    int *out_gpu;
+
+    hip_catch(hipMallocAsync((void **)&out_gpu, sizeof(int), stream));
+
+    size_t work_size;
+
+    hipsolver_catch(hipsolverDDgesv_bufferSize(handle, n, nrhs, A, lda, ipiv, B, ldb, X, ldx, &work_size));
+
+    void *work;
+
+    hip_catch(hipMallocAsync(&work, work_size, stream));
+
+    int niters;
+
+    hipsolver_catch(hipsolverDDgesv(handle, n, nrhs, A, lda, ipiv, B, ldb, X, ldx, work, work_size, &niters, out_gpu));
+
+    hip_catch(hipMemcpyAsync((void *)&out, (void *)out_gpu, sizeof(int), hipMemcpyDeviceToHost, stream));
+
+    hip_catch(hipFreeAsync(out_gpu, stream));
+    hip_catch(hipFreeAsync(work, stream));
+
+    hipEvent_t wait_event;
+
+    hip_catch(hipEventCreate(&wait_event));
+    hip_catch(hipEventRecord(wait_event, stream));
+    hip_catch(hipEventSynchronize(wait_event));
+
+    return out;
+}
+
+int gesv(int n, int nrhs, hipComplex *A, int lda, int *ipiv, hipComplex *B, int ldb, hipComplex *X, int ldx, hipStream_t stream) {
+    hipsolverHandle_t handle = get_solver_handle();
+
+    int  out;
+    int *out_gpu;
+
+    hip_catch(hipMallocAsync((void **)&out_gpu, sizeof(int), stream));
+
+    size_t work_size;
+
+    hipsolver_catch(hipsolverCCgesv_bufferSize(handle, n, nrhs, A, lda, ipiv, B, ldb, X, ldx, &work_size));
+
+    void *work;
+
+    hip_catch(hipMallocAsync(&work, work_size, stream));
+
+    int niters;
+
+    hipsolver_catch(hipsolverCCgesv(handle, n, nrhs, A, lda, ipiv, B, ldb, X, ldx, work, work_size, &niters, out_gpu));
+
+    hip_catch(hipMemcpyAsync((void *)&out, (void *)out_gpu, sizeof(int), hipMemcpyDeviceToHost, stream));
+
+    hip_catch(hipFreeAsync(out_gpu, stream));
+    hip_catch(hipFreeAsync(work, stream));
+
+    hipEvent_t wait_event;
+
+    hip_catch(hipEventCreate(&wait_event));
+    hip_catch(hipEventRecord(wait_event, stream));
+    hip_catch(hipEventSynchronize(wait_event));
+
+    return out;
+}
+int gesv(int n, int nrhs, hipDoubleComplex *A, int lda, int *ipiv, hipDoubleComplex *B, int ldb, hipDoubleComplex *X, int ldx,
+         hipStream_t stream) {
+    hipsolverHandle_t handle = get_solver_handle();
+
+    int  out;
+    int *out_gpu;
+
+    hip_catch(hipMallocAsync((void **)&out_gpu, sizeof(int), stream));
+
+    size_t work_size;
+
+    hipsolver_catch(hipsolverZZgesv_bufferSize(handle, n, nrhs, A, lda, ipiv, B, ldb, X, ldx, &work_size));
+
+    void *work;
+
+    hip_catch(hipMallocAsync(&work, work_size, stream));
+
+    int niters;
+
+    hipsolver_catch(hipsolverZZgesv(handle, n, nrhs, A, lda, ipiv, B, ldb, X, ldx, work, work_size, &niters, out_gpu));
+
+    hip_catch(hipMemcpyAsync((void *)&out, (void *)out_gpu, sizeof(int), hipMemcpyDeviceToHost, stream));
+
+    hip_catch(hipFreeAsync(out_gpu, stream));
+    hip_catch(hipFreeAsync(work, stream));
+
+    hipEvent_t wait_event;
+
+    hip_catch(hipEventCreate(&wait_event));
+    hip_catch(hipEventRecord(wait_event, stream));
+    hip_catch(hipEventSynchronize(wait_event));
+
+    return out;
+}
+
+EINSUMS_EXPORT void axpy(int n, const float *alpha, const float *X, int incx, float *Y, int incy) {
+    hipblasHandle_t handle = get_blas_handle();
+
+    hipblas_catch(hipblasSaxpy(handle, n, alpha, X, incx, Y, incy));
+}
+
+EINSUMS_EXPORT void axpy(int n, const double *alpha, const double *X, int incx, double *Y, int incy) {
+    hipblasHandle_t handle = get_blas_handle();
+
+    hipblas_catch(hipblasDaxpy(handle, n, alpha, X, incx, Y, incy));
+}
+EINSUMS_EXPORT void axpy(int n, const hipComplex *alpha, const hipComplex *X, int incx, hipComplex *Y, int incy) {
+    hipblasHandle_t handle = get_blas_handle();
+
+    hipblas_catch(hipblasCaxpy(handle, n, (hipblasComplex *)alpha, (hipblasComplex *)X, incx, (hipblasComplex *)Y, incy));
+}
+EINSUMS_EXPORT void axpy(int n, const hipDoubleComplex *alpha, const hipDoubleComplex *X, int incx, hipDoubleComplex *Y, int incy) {
+    hipblasHandle_t handle = get_blas_handle();
+
+    hipblas_catch(hipblasZaxpy(handle, n, (hipblasDoubleComplex *)alpha, (hipblasDoubleComplex *)X, incx, (hipblasDoubleComplex *)Y, incy));
+}
+
 __global__ EINSUMS_EXPORT void symm_gemm(bool TransA, bool TransB, int m, int n, const float *A, int lda, const float *B, int ldb, float *C,
                                          int ldc) {
     int thread, kernel_size;

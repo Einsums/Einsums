@@ -410,14 +410,14 @@ int sgesv(int n, int nrhs, float *a, int lda, int *ipiv, float *b, int ldb) {
      * HIP says that for Rocm, if B and X are the same pointer, the result will be as normal, simply
      * using the in-place version. This should take advantage of this fact.
      */
-#ifdef HIP_PLATFORM_AMD
+#ifdef __HIP_PLATFORM_AMD__
     // niters is nullptr so that if it does become used, it will break and we will get bug reports.
     hipsolver_catch(hipsolverSSgesv(solver_handle, n, nrhs, a_gpu, lda, ipiv_gpu, b_gpu, ldb, b_gpu, ldb, nullptr, 0, nullptr, info));
 
     hip_catch(hipDeviceSynchronize());
 
     hip_catch(hipMemcpy(b, b_gpu, b_size * sizeof(math_type), hipMemcpyDeviceToHost));
-#elif defined(HIP_PLATFORM_NVIDIA)
+#elif defined(__HIP_PLATFORM_NVIDIA__)
     hip_catch(hipMalloc(&x_gpu, b_size * sizeof(math_type)));
 
     hip_catch(hipMemcpy(x_gpu, b, b_size * sizeof(math_type), hipMemcpyHostToDevice));
@@ -470,14 +470,14 @@ int dgesv(int n, int nrhs, double *a, int lda, int *ipiv, double *b, int ldb) {
      * HIP says that for Rocm, if B and X are the same pointer, the result will be as normal, simply
      * using the in-place version. This should take advantage of this fact.
      */
-#ifdef HIP_PLATFORM_AMD
+#ifdef __HIP_PLATFORM_AMD__
     // niters is nullptr so that if it does become used, it will break and we will get bug reports.
     hipsolver_catch(hipsolverDDgesv(solver_handle, n, nrhs, a_gpu, lda, ipiv_gpu, b_gpu, ldb, b_gpu, ldb, nullptr, 0, nullptr, info));
 
     hip_catch(hipDeviceSynchronize());
 
     hip_catch(hipMemcpy(b, b_gpu, b_size * sizeof(math_type), hipMemcpyDeviceToHost));
-#elif defined(HIP_PLATFORM_NVIDIA)
+#elif defined(__HIP_PLATFORM_NVIDIA__)
     hip_catch(hipMalloc(&x_gpu, b_size * sizeof(math_type)));
 
     hip_catch(hipMemcpy(x_gpu, b, b_size * sizeof(math_type), hipMemcpyHostToDevice));
@@ -530,14 +530,14 @@ int cgesv(int n, int nrhs, std::complex<float> *a, int lda, int *ipiv, std::comp
      * HIP says that for Rocm, if B and X are the same pointer, the result will be as normal, simply
      * using the in-place version. This should take advantage of this fact.
      */
-#ifdef HIP_PLATFORM_AMD
+#ifdef __HIP_PLATFORM_AMD__
     // niters is nullptr so that if it does become used, it will break and we will get bug reports.
     hipsolver_catch(hipsolverCCgesv(solver_handle, n, nrhs, a_gpu, lda, ipiv_gpu, b_gpu, ldb, b_gpu, ldb, nullptr, 0, nullptr, info));
 
     hip_catch(hipDeviceSynchronize());
 
     hip_catch(hipMemcpy(b, b_gpu, b_size * sizeof(math_type), hipMemcpyDeviceToHost));
-#elif defined(HIP_PLATFORM_NVIDIA)
+#elif defined(__HIP_PLATFORM_NVIDIA__)
     hip_catch(hipMalloc(&x_gpu, b_size * sizeof(math_type)));
 
     hip_catch(hipMemcpy(x_gpu, b, b_size * sizeof(math_type), hipMemcpyHostToDevice));
@@ -590,14 +590,14 @@ int zgesv(int n, int nrhs, std::complex<double> *a, int lda, int *ipiv, std::com
      * HIP says that for Rocm, if B and X are the same pointer, the result will be as normal, simply
      * using the in-place version. This should take advantage of this fact.
      */
-#ifdef HIP_PLATFORM_AMD
+#ifdef __HIP_PLATFORM_AMD__
     // niters is nullptr so that if it does become used, it will break and we will get bug reports.
     hipsolver_catch(hipsolverZZgesv(solver_handle, n, nrhs, a_gpu, lda, ipiv_gpu, b_gpu, ldb, b_gpu, ldb, nullptr, 0, nullptr, info));
 
     hip_catch(hipDeviceSynchronize());
 
     hip_catch(hipMemcpy(b, b_gpu, b_size * sizeof(math_type), hipMemcpyDeviceToHost));
-#elif defined(HIP_PLATFORM_NVIDIA)
+#elif defined(__HIP_PLATFORM_NVIDIA__)
     hip_catch(hipMalloc(&x_gpu, b_size * sizeof(math_type)));
 
     hip_catch(hipMemcpy(x_gpu, b, b_size * sizeof(math_type), hipMemcpyHostToDevice));
@@ -630,7 +630,10 @@ int zgesv(int n, int nrhs, std::complex<double> *a, int lda, int *ipiv, std::com
 int sgetrf(int m, int n, float *a, int lda, int *ipiv) {
     using math_type = float;
 
-    math_type *a_gpu, *ipiv_gpu, *work;
+    hipsolverHandle_t handle = get_solver_handle();
+
+    math_type *a_gpu, *work;
+    int *ipiv_gpu;
 
     int lwork, *info = new int{0};
 
@@ -651,7 +654,7 @@ int sgetrf(int m, int n, float *a, int lda, int *ipiv) {
     /*
      * Cuda does not require a work array, and the argument is ignored. AMD requires a work array.
      */
-#ifdef HIP_PLATFORM_AMD
+#ifdef __HIP_PLATFORM_AMD__
     hipsolver_catch(hipsolverSgetrf_bufferSize(handle, m, n, a_gpu, lda, &lwork));
 
     hip_catch(hipMalloc(&work, lwork * sizeof(math_type)));
@@ -661,7 +664,7 @@ int sgetrf(int m, int n, float *a, int lda, int *ipiv) {
     hip_catch(hipDeviceSynchronize());
 
     hip_catch(hipFree(work));
-#elif defined(HIP_PLATFORM_NVIDIA)
+#elif defined(__HIP_PLATFORM_NVIDIA__)
     hipsolver_catch(hipsolverSgetrf(handle, m, n, a_gpu, lda, nullptr, 0, ipiv_gpu, info));
 
     hip_catch(hipDeviceSynchronize());
@@ -687,7 +690,11 @@ int sgetrf(int m, int n, float *a, int lda, int *ipiv) {
 int dgetrf(int m, int n, double *a, int lda, int *ipiv) {
     using math_type = double;
 
-    math_type *a_gpu, *ipiv_gpu, *work;
+    hipsolverHandle_t handle = get_solver_handle();
+
+    math_type *a_gpu, *work;
+
+    int *ipiv_gpu;
 
     int lwork, *info = new int{0};
 
@@ -708,7 +715,7 @@ int dgetrf(int m, int n, double *a, int lda, int *ipiv) {
     /*
      * Cuda does not require a work array, and the argument is ignored. AMD requires a work array.
      */
-#ifdef HIP_PLATFORM_AMD
+#ifdef __HIP_PLATFORM_AMD__
     hipsolver_catch(hipsolverDgetrf_bufferSize(handle, m, n, a_gpu, lda, &lwork));
 
     hip_catch(hipMalloc(&work, lwork * sizeof(math_type)));
@@ -718,7 +725,7 @@ int dgetrf(int m, int n, double *a, int lda, int *ipiv) {
     hip_catch(hipDeviceSynchronize());
 
     hip_catch(hipFree(work));
-#elif defined(HIP_PLATFORM_NVIDIA)
+#elif defined(__HIP_PLATFORM_NVIDIA__)
     hipsolver_catch(hipsolverDgetrf(handle, m, n, a_gpu, lda, nullptr, 0, ipiv_gpu, info));
 
     hip_catch(hipDeviceSynchronize());
@@ -744,7 +751,11 @@ int dgetrf(int m, int n, double *a, int lda, int *ipiv) {
 int cgetrf(int m, int n, std::complex<float> *a, int lda, int *ipiv) {
     using math_type = hipblasComplex;
 
-    math_type *a_gpu, *ipiv_gpu, *work;
+    hipsolverHandle_t handle = get_solver_handle();
+
+    math_type *a_gpu, *work;
+
+    int *ipiv_gpu;
 
     int lwork, *info = new int{0};
 
@@ -765,18 +776,18 @@ int cgetrf(int m, int n, std::complex<float> *a, int lda, int *ipiv) {
     /*
      * Cuda does not require a work array, and the argument is ignored. AMD requires a work array.
      */
-#ifdef HIP_PLATFORM_AMD
-    hipsolver_catch(hipsolverCgetrf_bufferSize(handle, m, n, a_gpu, lda, &lwork));
+#ifdef __HIP_PLATFORM_AMD__
+    hipsolver_catch(hipsolverCgetrf_bufferSize(handle, m, n, (hipComplex *) a_gpu, lda, &lwork));
 
     hip_catch(hipMalloc(&work, lwork * sizeof(math_type)));
 
-    hipsolver_catch(hipsolverCgetrf(handle, m, n, a_gpu, lda, work, lwork, ipiv_gpu, info));
+    hipsolver_catch(hipsolverCgetrf(handle, m, n, (hipComplex *) a_gpu, lda, (hipComplex *) work, lwork, ipiv_gpu, info));
 
     hip_catch(hipDeviceSynchronize());
 
     hip_catch(hipFree(work));
-#elif defined(HIP_PLATFORM_NVIDIA)
-    hipsolver_catch(hipsolverCgetrf(handle, m, n, a_gpu, lda, nullptr, 0, ipiv_gpu, info));
+#elif defined(__HIP_PLATFORM_NVIDIA__)
+    hipsolver_catch(hipsolverCgetrf(handle, m, n, (hipComplex *) a_gpu, lda, nullptr, 0, ipiv_gpu, info));
 
     hip_catch(hipDeviceSynchronize());
 #endif
@@ -801,7 +812,11 @@ int cgetrf(int m, int n, std::complex<float> *a, int lda, int *ipiv) {
 int zgetrf(int m, int n, std::complex<double> *a, int lda, int *ipiv) {
     using math_type = hipblasDoubleComplex;
 
-    math_type *a_gpu, *ipiv_gpu, *work;
+    hipsolverHandle_t handle = get_solver_handle();
+
+    math_type *a_gpu, *work;
+
+    int *ipiv_gpu;
 
     int lwork, *info = new int{0};
 
@@ -822,17 +837,17 @@ int zgetrf(int m, int n, std::complex<double> *a, int lda, int *ipiv) {
     /*
      * Cuda does not require a work array, and the argument is ignored. AMD requires a work array.
      */
-#ifdef HIP_PLATFORM_AMD
-    hipsolver_catch(hipsolverZgetrf_bufferSize(handle, m, n, a_gpu, lda, &lwork));
+#ifdef __HIP_PLATFORM_AMD__
+    hipsolver_catch(hipsolverZgetrf_bufferSize(handle, m, n, (hipDoubleComplex *) a_gpu, lda, &lwork));
 
     hip_catch(hipMalloc(&work, lwork * sizeof(math_type)));
 
-    hipsolver_catch(hipsolverZgetrf(handle, m, n, a_gpu, lda, work, lwork, ipiv_gpu, info));
+    hipsolver_catch(hipsolverZgetrf(handle, m, n, (hipDoubleComplex *) a_gpu, lda, (hipDoubleComplex *) work, lwork, ipiv_gpu, info));
 
     hip_catch(hipDeviceSynchronize());
 
     hip_catch(hipFree(work));
-#elif defined(HIP_PLATFORM_NVIDIA)
+#elif defined(__HIP_PLATFORM_NVIDIA__)
     hipsolver_catch(hipsolverZgetrf(handle, m, n, a_gpu, lda, nullptr, 0, ipiv_gpu, info));
 
     hip_catch(hipDeviceSynchronize());
