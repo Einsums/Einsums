@@ -7,6 +7,7 @@
 
 #include "einsums/_Common.hpp"
 #include "einsums/_Export.hpp"
+
 #include "einsums/utility/ComplexTraits.hpp"
 
 #include <vector>
@@ -208,6 +209,23 @@ inline auto syev<float>(char job, char uplo, eint n, float *a, eint lda, float *
 template <>
 inline auto syev<double>(char job, char uplo, eint n, double *a, eint lda, double *w, double *work, eint lwork) -> eint {
     return detail::dsyev(job, uplo, n, a, lda, w, work, lwork);
+}
+
+/*!
+ * Performs matrix diagonalization on a general matrix.
+ */
+namespace detail {
+auto EINSUMS_EXPORT cgeev(char jobvl, char jobvr, int n, std::complex<float> *a, int lda, std::complex<float> *w, std::complex<float> *vl,
+                          int ldvl, std::complex<float> *vr, int ldvr) -> eint;
+}
+
+template <typename T>
+auto geev(char jobvl, char jobvr, eint n, T *a, eint lda, T *w, T *vl, eint ldvl, T *vr, eint ldvr) -> eint;
+
+template <>
+inline auto geev<std::complex<float>>(char jobvl, char jobvr, eint n, std::complex<float> *a, eint lda, std::complex<float> *w,
+                                      std::complex<float> *vl, eint ldvl, std::complex<float> *vr, eint ldvr) -> eint {
+    return detail::cgeev(jobvl, jobvr, n, a, lda, w, vl, ldvl, vr, ldvr);
 }
 
 /*!

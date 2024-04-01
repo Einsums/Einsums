@@ -48,6 +48,12 @@ auto ssyev(char job, char uplo, int n, float *a, int lda, float *w, float *work,
 auto dsyev(char job, char uplo, int n, double *a, int lda, double *w, double *work, int lwork) -> int;
 
 /*!
+ * Computes all eigenvalues and left and right eigenvectors of a general matrix.
+ */
+auto cgeev(char jobvl, char jobvr, int n, std::complex<float> *a, int lda, std::complex<float> *w, std::complex<float> *vl, int ldvl,
+           std::complex<float> *vr, int ldvr) -> int;
+
+/*!
  * Computes all eigenvalues and, optionally, eigenvectors of a Hermitian matrix.
  */
 auto cheev(char job, char uplo, int n, std::complex<float> *a, int lda, float *w, std::complex<float> *work, int lwork, float *rwork)

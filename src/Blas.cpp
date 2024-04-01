@@ -74,6 +74,11 @@ auto dsyev(char job, char uplo, eint n, double *a, eint lda, double *w, double *
     return ::einsums::backend::linear_algebra::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::dsyev(job, uplo, n, a, lda, w, work, lwork);
 }
 
+auto cgeev(char jobvl, char jobvr, int n, std::complex<float> *a, int lda, std::complex<float> *w, std::complex<float> *vl, int ldvl,
+           std::complex<float> *vr, int ldvr) -> eint {
+    return ::einsums::backend::linear_algebra::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::cgeev(jobvl, jobvr, n, a, lda, w, vl, ldvl, vr, ldvr);
+}
+
 auto sgesv(eint n, eint nrhs, float *a, eint lda, eint *ipiv, float *b, eint ldb) -> eint {
     return ::einsums::backend::linear_algebra::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::sgesv(n, nrhs, a, lda, ipiv, b, ldb);
 }

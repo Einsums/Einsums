@@ -156,6 +156,26 @@ template <template <typename, size_t> typename AType, size_t ARank, template <ty
     requires requires {
         requires CoreRankTensor<AType<T, ARank>, 2, T>;
         requires CoreRankTensor<WType<T, WRank>, 1, T>;
+    }
+void geev(AType<T, ARank> *A, WType<T, WRank> *W, AType<T, ARank> *lvecs, AType<T, ARank> *rvecs) {
+    LabeledSection1(fmt::format("<ComputeEigenvectors={}>", ComputeEigenvectors));
+
+    assert(A->dim(0) == A->dim(1));
+    assert(W->dim(0) == A->dim(0));
+    assert(A->dim(0) == lvecs->dim(0));
+    assert(A->dim(1) == lvecs->dim(1));
+    assert(A->dim(0) == rvecs->dim(0));
+    assert(A->dim(1) == rvecs->dim(1));
+
+    blas::geev(ComputeEigenvectors ? 'v' : 'n', ComputeEigenvectors ? 'v' : 'n', A->dim(0), A->data(), A->stride(0), W->data(),
+               lvecs->data(), lvecs->stride(0), rvecs->data(), rvecs->stride(0), W->data(), W->stride(0));
+}
+
+template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename WType, size_t WRank, typename T,
+          bool ComputeEigenvectors = true>
+    requires requires {
+        requires CoreRankTensor<AType<T, ARank>, 2, T>;
+        requires CoreRankTensor<WType<T, WRank>, 1, T>;
         requires Complex<T>;
     }
 void heev(AType<T, ARank> *A, WType<RemoveComplexT<T>, WRank> *W) {
