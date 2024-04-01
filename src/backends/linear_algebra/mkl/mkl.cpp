@@ -5,10 +5,12 @@
 
 #include "mkl.hpp"
 
-#include "einsums/Section.hpp"
 #include "einsums/_Common.hpp"
 
+#include "einsums/Section.hpp"
+
 #include <fmt/format.h>
+
 #include <mkl_blas.h>
 #include <mkl_cblas.h>
 #include <mkl_lapack.h>
@@ -196,6 +198,16 @@ auto dsyev(const char job, const char uplo, const eint n, double *a, const eint 
 
     eint info{0};
     ::dsyev(&job, &uplo, &n, a, &lda, w, work, &lwork, &info);
+    return info;
+}
+
+auto cgeev(char jobvl, char jobvr, int n, std::complex<float> *a, int lda, std::complex<float> *w, std::complex<float> *vl, int ldvl,
+           std::complex<float> *vr, int ldvr) -> int {
+    LabeledSection1(mkl_interface());
+
+    eint info{0};
+    ::cgeev(&jobvl, &jobvr, &n, reinterpret_cast<MKL_Complex8 *>(a), &lda, reinterpret_cast<MKL_Complex8 *>(w),
+            reinterpret_cast<MKL_Complex8 *>(vl), &ldvl, reinterpret_cast<MKL_Complex8 *>(vr), &ldvr, &info);
     return info;
 }
 
