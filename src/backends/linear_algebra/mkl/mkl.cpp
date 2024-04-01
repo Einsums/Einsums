@@ -205,9 +205,9 @@ auto cgeev(char jobvl, char jobvr, eint n, std::complex<float> *a, eint lda, std
            std::complex<float> *vr, eint ldvr) -> eint {
     LabeledSection1(mkl_interface());
 
-    eint info{0};
-    ::cgeev(&jobvl, &jobvr, &n, reinterpret_cast<MKL_Complex8 *>(a), &lda, reinterpret_cast<MKL_Complex8 *>(w),
-            reinterpret_cast<MKL_Complex8 *>(vl), &ldvl, reinterpret_cast<MKL_Complex8 *>(vr), &ldvr, &info);
+    eint info = LAPACKE_cgeev(LAPACK_ROW_MAJOR, jobvl, jobvr, n, reinterpret_cast<lapack_complex_float *>(a), lda,
+                              reinterpret_cast<lapack_complex_float *>(w), reinterpret_cast<lapack_complex_float *>(vl), ldvl,
+                              reinterpret_cast<lapack_complex_float *>(vr), ldvr);
     return info;
 }
 

@@ -168,7 +168,7 @@ void geev(AType<T, ARank> *A, WType<T, WRank> *W, AType<T, ARank> *lvecs, AType<
     assert(A->dim(1) == rvecs->dim(1));
 
     blas::geev(ComputeEigenvectors ? 'v' : 'n', ComputeEigenvectors ? 'v' : 'n', A->dim(0), A->data(), A->stride(0), W->data(),
-               lvecs->data(), lvecs->stride(0), rvecs->data(), rvecs->stride(0), W->data(), W->stride(0));
+               lvecs->data(), lvecs->stride(0), rvecs->data(), rvecs->stride(0));
 }
 
 template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename WType, size_t WRank, typename T,

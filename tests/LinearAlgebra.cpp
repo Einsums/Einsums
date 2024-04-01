@@ -14,6 +14,7 @@
 #include "einsums/utility/ComplexTraits.hpp"
 
 #include <catch2/catch_all.hpp>
+#include <complex>
 #include <filesystem>
 
 using namespace einsums;
@@ -423,6 +424,37 @@ TEST_CASE("syev") {
     SECTION("double") {
         syev_test<double>();
     }
+}
+
+void sgeev_test() {
+    using namespace einsums;
+    using namespace einsums::linear_algebra;
+
+    auto a  = create_tensor<std::complex<float>>("a", 4, 4);
+    auto w  = create_tensor<std::complex<float>>("w", 4);
+    auto vl = create_tensor<std::complex<float>>("vl", 4, 4);
+    auto vr = create_tensor<std::complex<float>>("vr", 4, 4);
+
+    a.vector_data() = std::vector<std::complex<float>, einsums::AlignedAllocator<std::complex<float>, 64>>{
+        {-3.84f, 2.25f},  {-8.94f, -4.75f}, {8.95f, -6.53f},  {-9.87f, 4.82f},  {-0.66f, 0.83f},  {-4.40f, -3.82f},
+        {-3.50f, -4.26f}, {-3.15f, 7.36f},  {-3.99f, -4.73f}, {-5.88f, -6.60f}, {-3.36f, -0.40f}, {-0.75f, 5.23f},
+        {7.74f, 4.18f},   {3.66f, -7.53f},  {2.58f, 3.60f},   {4.59f, 5.41f}};
+
+    einsums::linear_algebra::geev(&a, &w, &vl, &vr);
+
+    CHECK_THAT(w(0).real(), Catch::Matchers::WithinRel(-9.4298, 0.001));
+    CHECK_THAT(w(1).real(), Catch::Matchers::WithinRel(-3.4419, 0.001));
+    CHECK_THAT(w(2).real(), Catch::Matchers::WithinRel(0.1056, 0.001));
+    CHECK_THAT(w(3).real(), Catch::Matchers::WithinRel(5.7562, 0.001));
+
+    CHECK_THAT(w(0).imag(), Catch::Matchers::WithinRel(-12.9833, 0.001));
+    CHECK_THAT(w(1).imag(), Catch::Matchers::WithinRel(12.6897, 0.001));
+    CHECK_THAT(w(2).imag(), Catch::Matchers::WithinRel(-3.3950, 0.001));
+    CHECK_THAT(w(3).imag(), Catch::Matchers::WithinRel(7.1286, 0.001));
+}
+
+TEST_CASE("geev") {
+    sgeev_test();
 }
 
 template <typename T>
