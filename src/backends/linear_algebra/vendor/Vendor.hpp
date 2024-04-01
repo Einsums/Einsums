@@ -144,5 +144,27 @@ auto dgesvd(char, char, int, int, double *, int, double *, double *, int, double
 
 auto dgesdd(char, int, int, double *, int, double *, double *, int, double *, int) -> int;
 auto sgesdd(char, int, int, float *, int, float *, float *, int, float *, int) -> int;
+auto zgesdd(char jobz, int m, int n, std::complex<double> *a, int lda, double *s, std::complex<double> *u, int ldu,
+            std::complex<double> *vt, int ldvt) -> int;
+auto cgesdd(char jobz, int m, int n, std::complex<float> *a, int lda, float *s, std::complex<float> *u, int ldu, std::complex<float> *vt,
+            int ldvt) -> int;
+
+auto dgees(char jobvs, int n, double *a, int lda, int *sdim, double *wr, double *wi, double *vs, int ldvs) -> int;
+auto sgees(char jobvs, int n, float *a, int lda, int *sdim, float *wr, float *wi, float *vs, int ldvs) -> int;
+
+auto dtrsyl(char trana, char tranb, int isgn, int m, int n, const double *a, int lda, const double *b, int ldb, double *c, int ldc,
+            double *scale) -> int;
+auto strsyl(char trana, char tranb, int isgn, int m, int n, const float *a, int lda, const float *b, int ldb, float *c, int ldc,
+            float *scale) -> int;
+
+auto sorgqr(int m, int n, int k, float *a, int lda, const float *tau) -> int;
+auto dorgqr(int m, int n, int k, double *a, int lda, const double *tau) -> int;
+auto cungqr(int m, int n, int k, std::complex<float> *a, int lda, const std::complex<float> *tau) -> int;
+auto zungqr(int m, int n, int k, std::complex<double> *a, int lda, const std::complex<double> *tau) -> int;
+
+auto dgeqrf(int m, int n, double *a, int lda, double *tau) -> int;
+auto sgeqrf(int m, int n, float *a, int lda, float *tau) -> int;
+auto cgeqrf(int m, int n, std::complex<float> *a, int lda, std::complex<float> *tau) -> int;
+auto zgeqrf(int m, int n, std::complex<double> *a, int lda, std::complex<double> *tau) -> int;
 
 } // namespace einsums::backend::linear_algebra::vendor

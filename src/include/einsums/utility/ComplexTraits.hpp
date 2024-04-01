@@ -21,7 +21,7 @@ template <typename type>
 struct IsComplex : std::bool_constant<IsComplexV<type>> {};
 
 template <typename type>
-concept Complex = IsComplexV<type>;
+concept Complex = IsComplex<type>::value;
 
 template <typename T>
 struct ComplexType {
