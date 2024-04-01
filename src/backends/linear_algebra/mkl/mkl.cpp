@@ -201,8 +201,8 @@ auto dsyev(const char job, const char uplo, const eint n, double *a, const eint 
     return info;
 }
 
-auto cgeev(char jobvl, char jobvr, int n, std::complex<float> *a, int lda, std::complex<float> *w, std::complex<float> *vl, int ldvl,
-           std::complex<float> *vr, int ldvr) -> int {
+auto cgeev(char jobvl, char jobvr, eint n, std::complex<float> *a, eint lda, std::complex<float> *w, std::complex<float> *vl, eint ldvl,
+           std::complex<float> *vr, eint ldvr) -> eint {
     LabeledSection1(mkl_interface());
 
     eint info{0};
