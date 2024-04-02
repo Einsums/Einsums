@@ -211,6 +211,16 @@ auto cgeev(char jobvl, char jobvr, eint n, std::complex<float> *a, eint lda, std
     return info;
 }
 
+auto zgeev(char jobvl, char jobvr, eint n, std::complex<double> *a, eint lda, std::complex<double> *w, std::complex<double> *vl, eint ldvl,
+           std::complex<double> *vr, eint ldvr) -> eint {
+    LabeledSection1(mkl_interface());
+
+    eint info = LAPACKE_zgeev(LAPACK_ROW_MAJOR, jobvl, jobvr, n, reinterpret_cast<lapack_complex_double *>(a), lda,
+                              reinterpret_cast<lapack_complex_double *>(w), reinterpret_cast<lapack_complex_double *>(vl), ldvl,
+                              reinterpret_cast<lapack_complex_double *>(vr), ldvr);
+    return info;
+}
+
 auto cheev(const char job, const char uplo, const eint n, std::complex<float> *a, const eint lda, float *w, std::complex<float> *work,
            const eint lwork, float *rwork) -> eint {
     LabeledSection1(mkl_interface());

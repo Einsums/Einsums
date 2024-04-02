@@ -217,7 +217,9 @@ inline auto syev<double>(char job, char uplo, eint n, double *a, eint lda, doubl
 namespace detail {
 auto EINSUMS_EXPORT cgeev(char jobvl, char jobvr, int n, std::complex<float> *a, int lda, std::complex<float> *w, std::complex<float> *vl,
                           int ldvl, std::complex<float> *vr, int ldvr) -> eint;
-}
+auto EINSUMS_EXPORT zgeev(char jobvl, char jobvr, int n, std::complex<double> *a, int lda, std::complex<double> *w,
+                          std::complex<double> *vl, int ldvl, std::complex<double> *vr, int ldvr) -> eint;
+} // namespace detail
 
 template <typename T>
 auto geev(char jobvl, char jobvr, eint n, T *a, eint lda, T *w, T *vl, eint ldvl, T *vr, eint ldvr) -> eint;
@@ -226,6 +228,12 @@ template <>
 inline auto geev<std::complex<float>>(char jobvl, char jobvr, eint n, std::complex<float> *a, eint lda, std::complex<float> *w,
                                       std::complex<float> *vl, eint ldvl, std::complex<float> *vr, eint ldvr) -> eint {
     return detail::cgeev(jobvl, jobvr, n, a, lda, w, vl, ldvl, vr, ldvr);
+}
+
+template <>
+inline auto geev<std::complex<double>>(char jobvl, char jobvr, eint n, std::complex<double> *a, eint lda, std::complex<double> *w,
+                                       std::complex<double> *vl, eint ldvl, std::complex<double> *vr, eint ldvr) -> eint {
+    return detail::zgeev(jobvl, jobvr, n, a, lda, w, vl, ldvl, vr, ldvr);
 }
 
 /*!

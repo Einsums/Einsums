@@ -61,6 +61,8 @@ auto dsyev(const char job, const char uplo, const eint n, double *a, const eint 
 
 auto cgeev(char jobvl, char jobvr, eint n, std::complex<float> *a, eint lda, std::complex<float> *w, std::complex<float> *vl, eint ldvl,
            std::complex<float> *vr, eint ldvr) -> eint;
+auto zgeev(char jobvl, char jobvr, eint n, std::complex<double> *a, eint lda, std::complex<double> *w, std::complex<double> *vl, eint ldvl,
+           std::complex<double> *vr, eint ldvr) -> eint;
 
 /*!
  * Computes all eigenvalues and, optionally, eigenvectors of a Hermitian matrix.
