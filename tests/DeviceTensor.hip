@@ -16,9 +16,18 @@ TEST_CASE("Tensor Construction", "[gpu][tensor]") {
     using namespace einsums::gpu::detail;
 
     // Test creation and access.
-    DeviceTensor<double, 2> A("A", einsums::detail::DEV_ONLY, 3, 3);
-    DeviceTensor<double, 2> B("B", einsums::detail::MAPPED, 3, 3);
-    DeviceTensor<double, 2> C("C", einsums::detail::PINNED, 3, 3);
+    DeviceTensor<double, 2> A("A", einsums::detail::DEV_ONLY, 1, 1);
+    DeviceTensor<double, 2> B("B", einsums::detail::MAPPED, 1, 1);
+    DeviceTensor<double, 2> C("C", einsums::detail::PINNED, 1, 1);
+
+    CHECK((A.dim(0) == 3 && A.dim(1) == 3));
+    CHECK((B.dim(0) == 3 && B.dim(1) == 3));
+    CHECK((C.dim(0) == 3 && C.dim(1) == 3));
+
+    A.resize(einsums::Dim<2>{3, 3});
+    B.resize(einsums::Dim<2>{3, 3});
+    C.resize(einsums::Dim<2>{3, 3});
+
     DeviceTensor<double, 2> A_dim(einsums::Dim<2>{3, 3}, einsums::detail::DEV_ONLY);
     DeviceTensor<double, 2> B_dim(einsums::Dim<2>{3, 3}, einsums::detail::MAPPED);
     DeviceTensor<double, 2> C_dim(einsums::Dim<2>{3, 3}, einsums::detail::PINNED);
