@@ -6,6 +6,7 @@
 #include "Vendor.hpp"
 
 #include "einsums/_Common.hpp"
+#include "einsums/_Compiler.hpp"
 
 #include "einsums/LinearAlgebra.hpp"
 #include "einsums/Print.hpp"
@@ -35,6 +36,8 @@
 #    define FC_GLOBAL(name, NAME) NAME##_
 #endif
 
+EINSUMS_DISABLE_WARNING_PUSH
+EINSUMS_DISABLE_WARNING_RETURN_TYPE_C_LINKAGE
 extern "C" {
 
 extern void FC_GLOBAL(sgemm, SGEMM)(char *, char *, int *, int *, int *, float *, const float *, int *, const float *, int *, float *,
@@ -152,6 +155,7 @@ extern void FC_GLOBAL(cgeqrf, CGEQRF)(int *, int *, std::complex<float> *, int *
 extern void FC_GLOBAL(zgeqrf, ZGEQRF)(int *, int *, std::complex<double> *, int *, std::complex<double> *, std::complex<double> *, int *,
                                       int *);
 } // extern "C"
+EINSUMS_DISABLE_WARNING_POP
 
 BEGIN_EINSUMS_NAMESPACE_CPP(einsums::backend::linear_algebra::vendor)
 

@@ -3,15 +3,16 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //----------------------------------------------------------------------------------------------
 
+#include "einsums/_Common.hpp"
+
 #include "einsums/Blas.hpp"
 #include "einsums/OpenMP.h"
 #include "einsums/Timer.hpp"
-#include "einsums/_Common.hpp"
-#include "einsums/parallel/MPI.hpp"
 
 #ifdef __HIP__
-#include "einsums/_GPUUtils.hpp"
-#include "backends/linear_algebra/hipblas/hipblas.hpp"
+#    include "einsums/_GPUUtils.hpp"
+
+#    include "backends/linear_algebra/hipblas/hipblas.hpp"
 #endif
 
 #include <h5cpp/all>
@@ -19,12 +20,6 @@
 namespace einsums {
 
 auto initialize() -> int {
-#if defined(EINSUMS_IN_PARALLEL)
-    ErrorOr<void, mpi::Error> result = mpi::initialize(0, nullptr);
-    if (result.is_error())
-        return 1;
-#endif
-
 #ifdef __HIP__
     einsums::gpu::initialize();
     einsums::backend::linear_algebra::hipblas::initialize();
@@ -46,13 +41,9 @@ void finalize(bool timerReport) {
 
     blas::finalize();
 
-#ifdef __HIP__    
+#ifdef __HIP__
     einsums::backend::linear_algebra::hipblas::finalize();
     einsums::gpu::finalize();
-#endif
-
-#if defined(EINSUMS_IN_PARALLEL)
-    ErrorOr<void, mpi::Error> result = mpi::finalize();
 #endif
 
     if (timerReport)

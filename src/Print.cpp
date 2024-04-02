@@ -7,7 +7,6 @@
 
 #include "einsums/OpenMP.h"
 #include "einsums/Timer.hpp"
-#include "einsums/parallel/MPI.hpp"
 
 #include <algorithm>
 #include <cstdarg>
@@ -85,12 +84,7 @@ void suppress_output(bool onoff) {
 namespace {
 
 void print_line(const std::string &line) {
-#if defined(EINSUMS_IN_PARALLEL)
-    einsums::mpi::ErrorOr<int> size = einsums::mpi::rank();
-    int                        rank = size.value();
-#else
     constexpr int rank = 0;
-#endif
 
     if (rank == 0) {
         std::string line_header;
@@ -115,12 +109,7 @@ void print_line(const std::string &line) {
 }
 
 void fprint_line(std::FILE *fp, const std::string &line) {
-#if defined(EINSUMS_IN_PARALLEL)
-    einsums::mpi::ErrorOr<int> size = einsums::mpi::rank();
-    int                        rank = size.value();
-#else
     constexpr int rank = 0;
-#endif
 
     if (rank == 0) {
         std::string line_header;
@@ -145,12 +134,7 @@ void fprint_line(std::FILE *fp, const std::string &line) {
 }
 
 void fprint_line(std::ostream &os, const std::string &line) {
-#if defined(EINSUMS_IN_PARALLEL)
-    einsums::mpi::ErrorOr<int> size = einsums::mpi::rank();
-    int                        rank = size.value();
-#else
     constexpr int rank = 0;
-#endif
 
     if (rank == 0) {
         std::string line_header;
@@ -177,7 +161,7 @@ void fprint_line(std::ostream &os, const std::string &line) {
 
 namespace detail {
 void println(const std::string &str) {
-    if (print::suppress == false) {
+    if (!print::suppress) {
         std::istringstream iss(str);
 
         for (std::string line; std::getline(iss, line);) {
@@ -187,7 +171,7 @@ void println(const std::string &str) {
 }
 
 void fprintln(std::FILE *fp, const std::string &str) {
-    if (print::suppress == false) {
+    if (!print::suppress) {
         std::istringstream iss(str);
 
         for (std::string line; std::getline(iss, line);) {
@@ -197,7 +181,7 @@ void fprintln(std::FILE *fp, const std::string &str) {
 }
 
 void fprintln(std::ostream &os, const std::string &str) {
-    if (print::suppress == false) {
+    if (!print::suppress) {
         std::istringstream iss(str);
 
         for (std::string line; std::getline(iss, line);) {

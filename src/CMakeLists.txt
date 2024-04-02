@@ -57,22 +57,6 @@ if(EINSUMS_BUILD_HIP)
     target_link_libraries(einsums PUBLIC ${CURSES_LIBRARIES})
 endif()
 
-
-
-extend_einsums_target(einsums
-    SOURCES
-        parallel/MPI.cpp
-    PUBLIC_DEPENDS
-        MPI::MPI_CXX
-    PUBLIC_DEFINES
-        H5_HAVE_PARALLEL
-        EINSUMS_IN_PARALLEL
-    CONDITION
-        TARGET MPI::MPI_CXX
-    FEATURE_INFO
-        "MPI parallelism"
-)
-
 extend_einsums_target(einsums
     SOURCES
         backends/onemkl/onemkl.cpp
