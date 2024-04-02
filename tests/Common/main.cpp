@@ -4,6 +4,8 @@
 //----------------------------------------------------------------------------------------------
 
 #define CATCH_CONFIG_RUNNER
+#include "einsums/_Compiler.hpp"
+
 #include "einsums/Blas.hpp"
 #include "einsums/OpenMP.h"
 #include "einsums/Print.hpp"
@@ -14,23 +16,14 @@
 #include <catch2/catch_all.hpp>
 #include <h5cpp/io>
 
-#if defined(EINSUMS_IN_PARALLEL)
-#    include <h5cpp/H5Pall.hpp>
-#    include <mpi.h>
-#endif
-
 auto main(int argc, char *argv[]) -> int {
     einsums::initialize();
 
-#if defined(EINSUMS_IN_PARALLEL)
-    MPI_Comm comm = MPI_COMM_WORLD;
-    MPI_Info info = MPI_INFO_NULL;
     // Create a file to hold the data from the DiskTensor tests.
-    einsums::state::data = h5::create(std::string(std::tmpnam(nullptr)), H5F_ACC_TRUNC, h5::fcpl, h5::mpiio({comm, info}));
-#else
-    // Create a file to hold the data from the DiskTensor tests.
+    EINSUMS_DISABLE_WARNING_PUSH
+    EINSUMS_DISABLE_WARNING_DEPRECATED_DECLARATIONS
     einsums::state::data = h5::create(std::string(std::tmpnam(nullptr)), H5F_ACC_TRUNC);
-#endif
+    EINSUMS_DISABLE_WARNING_POP
 
     // println("Running on {} thread(s)", omp_get_max_threads());
 

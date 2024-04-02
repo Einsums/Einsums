@@ -59,6 +59,13 @@ void zgemv(const char transa, const eint m, const eint n, const std::complex<dou
 auto ssyev(const char job, const char uplo, const eint n, float *a, const eint lda, float *w, float *work, const eint lwork) -> eint;
 auto dsyev(const char job, const char uplo, const eint n, double *a, const eint lda, double *w, double *work, const eint lwork) -> eint;
 
+auto sgeev(char jobvl, char jobvr, int n, float *a, int lda, std::complex<float> *w, float *vl, int ldvl, float *vr, int ldvr) -> int;
+auto dgeev(char jobvl, char jobvr, int n, double *a, int lda, std::complex<double> *w, double *vl, int ldvl, double *vr, int ldvr) -> int;
+auto cgeev(char jobvl, char jobvr, eint n, std::complex<float> *a, eint lda, std::complex<float> *w, std::complex<float> *vl, eint ldvl,
+           std::complex<float> *vr, eint ldvr) -> eint;
+auto zgeev(char jobvl, char jobvr, eint n, std::complex<double> *a, eint lda, std::complex<double> *w, std::complex<double> *vl, eint ldvl,
+           std::complex<double> *vr, eint ldvr) -> eint;
+
 /*!
  * Computes all eigenvalues and, optionally, eigenvectors of a Hermitian matrix.
  */

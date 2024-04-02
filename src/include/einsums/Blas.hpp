@@ -7,6 +7,7 @@
 
 #include "einsums/_Common.hpp"
 #include "einsums/_Export.hpp"
+
 #include "einsums/utility/ComplexTraits.hpp"
 
 #include <vector>
@@ -208,6 +209,48 @@ inline auto syev<float>(char job, char uplo, eint n, float *a, eint lda, float *
 template <>
 inline auto syev<double>(char job, char uplo, eint n, double *a, eint lda, double *w, double *work, eint lwork) -> eint {
     return detail::dsyev(job, uplo, n, a, lda, w, work, lwork);
+}
+
+/*!
+ * Performs matrix diagonalization on a general matrix.
+ */
+namespace detail {
+auto EINSUMS_EXPORT sgeev(char jobvl, char jobvr, eint n, float *a, eint lda, std::complex<float> *w, float *vl, eint ldvl, float *vr,
+                          eint ldvr) -> eint;
+auto EINSUMS_EXPORT dgeev(char jobvl, char jobvr, eint n, double *a, eint lda, std::complex<double> *w, double *vl, eint ldvl, double *vr,
+                          eint ldvr) -> eint;
+auto EINSUMS_EXPORT cgeev(char jobvl, char jobvr, eint n, std::complex<float> *a, eint lda, std::complex<float> *w, std::complex<float> *vl,
+                          eint ldvl, std::complex<float> *vr, eint ldvr) -> eint;
+auto EINSUMS_EXPORT zgeev(char jobvl, char jobvr, eint n, std::complex<double> *a, eint lda, std::complex<double> *w,
+                          std::complex<double> *vl, eint ldvl, std::complex<double> *vr, eint ldvr) -> eint;
+} // namespace detail
+
+// Complex version
+template <typename T>
+auto geev(char jobvl, char jobvr, eint n, T *a, eint lda, AddComplexT<T> *w, T *vl, eint ldvl, T *vr, eint ldvr) -> eint;
+
+template <>
+inline auto geev<float>(char jobvl, char jobvr, eint n, float *a, eint lda, std::complex<float> *w, float *vl, eint ldvl, float *vr,
+                        eint ldvr) -> eint {
+    return detail::sgeev(jobvl, jobvr, n, a, lda, w, vl, ldvl, vr, ldvr);
+}
+
+template <>
+inline auto geev<double>(char jobvl, char jobvr, eint n, double *a, eint lda, std::complex<double> *w, double *vl, eint ldvl, double *vr,
+                         eint ldvr) -> eint {
+    return detail::dgeev(jobvl, jobvr, n, a, lda, w, vl, ldvl, vr, ldvr);
+}
+
+template <>
+inline auto geev<std::complex<float>>(char jobvl, char jobvr, eint n, std::complex<float> *a, eint lda, std::complex<float> *w,
+                                      std::complex<float> *vl, eint ldvl, std::complex<float> *vr, eint ldvr) -> eint {
+    return detail::cgeev(jobvl, jobvr, n, a, lda, w, vl, ldvl, vr, ldvr);
+}
+
+template <>
+inline auto geev<std::complex<double>>(char jobvl, char jobvr, eint n, std::complex<double> *a, eint lda, std::complex<double> *w,
+                                       std::complex<double> *vl, eint ldvl, std::complex<double> *vr, eint ldvr) -> eint {
+    return detail::zgeev(jobvl, jobvr, n, a, lda, w, vl, ldvl, vr, ldvr);
 }
 
 /*!

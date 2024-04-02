@@ -128,12 +128,6 @@ include(autocmake_safeguards)
 include(cmake/FindITTNOTIFY.cmake)
 # include(cmake/FindIntelSYCL.cmake)
 
-# We don't do anything in parallel yet.
-# find_package(MPI)
-if (TARGET MPI::MPI_CXX)
-    set(HDF5_PREFER_PARALLEL True)
-endif ()
-
 # Prefer to use MKL
 find_package(TargetLAPACK REQUIRED)
 get_property(EINSUMS_LINALG_VENDOR TARGET tgt::lapack PROPERTY VENDOR)
@@ -141,7 +135,8 @@ get_property(EINSUMS_LINALG_INT_INTERFACE TARGET tgt::lapack PROPERTY INT_INTERF
 
 # Set default FFT library to mkl, if mkl was found, otherwise FFTW3
 set(EINSUMS_FFT_LIBRARY_DEFAULT "fftw3")
-if (${EINSUMS_LINALG_VENDOR} MATCHES "[mM][kK][lL]")
+# if (${EINSUMS_LINALG_VENDOR} MATCHES "[mM][kK][lL]")
+if (TARGET MKL::MKL)
     set(EINSUMS_FFT_LIBRARY_DEFAULT "mkl")
 endif ()
 

@@ -5,14 +5,13 @@
 
 #include "einsums/Blas.hpp"
 
-#include "backends/linear_algebra/cblas/cblas.hpp"
+#include <fmt/format.h>
+
+#include <stdexcept>
+
 #include "backends/linear_algebra/mkl/mkl.hpp"
-#include "backends/linear_algebra/netlib/Netlib.hpp"
 #include "backends/linear_algebra/onemkl/onemkl.hpp"
 #include "backends/linear_algebra/vendor/Vendor.hpp"
-
-#include <fmt/format.h>
-#include <stdexcept>
 
 namespace einsums::blas {
 
@@ -73,6 +72,25 @@ auto ssyev(char job, char uplo, eint n, float *a, eint lda, float *w, float *wor
 
 auto dsyev(char job, char uplo, eint n, double *a, eint lda, double *w, double *work, eint lwork) -> eint {
     return ::einsums::backend::linear_algebra::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::dsyev(job, uplo, n, a, lda, w, work, lwork);
+}
+
+auto sgeev(char jobvl, char jobvr, eint n, float *a, eint lda, std::complex<float> *w, float *vl, eint ldvl, float *vr, eint ldvr) -> eint {
+    return ::einsums::backend::linear_algebra::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::sgeev(jobvl, jobvr, n, a, lda, w, vl, ldvl, vr, ldvr);
+}
+
+auto dgeev(char jobvl, char jobvr, eint n, double *a, eint lda, std::complex<double> *w, double *vl, eint ldvl, double *vr, eint ldvr)
+    -> eint {
+    return ::einsums::backend::linear_algebra::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::dgeev(jobvl, jobvr, n, a, lda, w, vl, ldvl, vr, ldvr);
+}
+
+auto cgeev(char jobvl, char jobvr, eint n, std::complex<float> *a, eint lda, std::complex<float> *w, std::complex<float> *vl, eint ldvl,
+           std::complex<float> *vr, eint ldvr) -> eint {
+    return ::einsums::backend::linear_algebra::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::cgeev(jobvl, jobvr, n, a, lda, w, vl, ldvl, vr, ldvr);
+}
+
+auto zgeev(char jobvl, char jobvr, eint n, std::complex<double> *a, eint lda, std::complex<double> *w, std::complex<double> *vl, eint ldvl,
+           std::complex<double> *vr, eint ldvr) -> eint {
+    return ::einsums::backend::linear_algebra::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::zgeev(jobvl, jobvr, n, a, lda, w, vl, ldvl, vr, ldvr);
 }
 
 auto sgesv(eint n, eint nrhs, float *a, eint lda, eint *ipiv, float *b, eint ldb) -> eint {
@@ -258,77 +276,37 @@ void zlassq(eint n, const std::complex<double> *x, eint incx, double *scale, dou
 }
 
 auto sgesdd(char jobz, eint m, eint n, float *a, eint lda, float *s, float *u, eint ldu, float *vt, eint ldvt) -> eint {
-#if defined(EINSUMS_HAVE_MKL_LAPACKE_H)
-    return ::einsums::backend::linear_algebra::mkl::sgesdd(jobz, m, n, a, lda, s, u, ldu, vt, ldvt);
-#elif defined(EINSUMS_HAVE_LAPACKE)
-    return ::einsums::backend::linear_algebra::cblas::sgesdd(jobz, m, n, a, lda, s, u, ldu, vt, ldvt);
-#else
-    throw std::runtime_error("sgesdd not implemented.");
-#endif
+    return ::einsums::backend::linear_algebra::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::sgesdd(jobz, m, n, a, lda, s, u, ldu, vt, ldvt);
 }
 
 auto dgesdd(char jobz, eint m, eint n, double *a, eint lda, double *s, double *u, eint ldu, double *vt, eint ldvt) -> eint {
-#if defined(EINSUMS_HAVE_MKL_LAPACKE_H)
-    return ::einsums::backend::linear_algebra::mkl::dgesdd(jobz, m, n, a, lda, s, u, ldu, vt, ldvt);
-#elif defined(EINSUMS_HAVE_LAPACKE)
-    return ::einsums::backend::linear_algebra::cblas::dgesdd(jobz, m, n, a, lda, s, u, ldu, vt, ldvt);
-#else
-    throw std::runtime_error("dgesdd not implemented.");
-#endif
+    return ::einsums::backend::linear_algebra::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::dgesdd(jobz, m, n, a, lda, s, u, ldu, vt, ldvt);
 }
 
 auto cgesdd(char jobz, eint m, eint n, std::complex<float> *a, eint lda, float *s, std::complex<float> *u, eint ldu,
             std::complex<float> *vt, eint ldvt) -> eint {
-#if defined(EINSUMS_HAVE_MKL_LAPACKE_H)
-    return ::einsums::backend::linear_algebra::mkl::cgesdd(jobz, m, n, a, lda, s, u, ldu, vt, ldvt);
-#elif defined(EINSUMS_HAVE_LAPACKE)
-    return ::einsums::backend::linear_algebra::cblas::cgesdd(jobz, m, n, a, lda, s, u, ldu, vt, ldvt);
-#else
-    throw std::runtime_error("dgesdd not implemented.");
-#endif
+    return ::einsums::backend::linear_algebra::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::cgesdd(jobz, m, n, a, lda, s, u, ldu, vt, ldvt);
 }
 
 auto zgesdd(char jobz, eint m, eint n, std::complex<double> *a, eint lda, double *s, std::complex<double> *u, eint ldu,
             std::complex<double> *vt, eint ldvt) -> eint {
-#if defined(EINSUMS_HAVE_MKL_LAPACKE_H)
-    return ::einsums::backend::linear_algebra::mkl::zgesdd(jobz, m, n, a, lda, s, u, ldu, vt, ldvt);
-#elif defined(EINSUMS_HAVE_LAPACKE)
-    return ::einsums::backend::linear_algebra::cblas::zgesdd(jobz, m, n, a, lda, s, u, ldu, vt, ldvt);
-#else
-    throw std::runtime_error("dgesdd not implemented.");
-#endif
+    return ::einsums::backend::linear_algebra::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::zgesdd(jobz, m, n, a, lda, s, u, ldu, vt, ldvt);
 }
 
 auto sgesvd(char jobu, char jobvt, eint m, eint n, float *a, eint lda, float *s, float *u, eint ldu, float *vt, eint ldvt, float *superb)
     -> eint {
-#if defined(EINSUMS_HAVE_MKL_LAPACKE_H)
-    return ::einsums::backend::linear_algebra::mkl::sgesvd(jobu, jobvt, m, n, a, lda, s, u, ldu, vt, ldvt, superb);
-#elif defined(EINSUMS_HAVE_LAPACKE_H)
-    return ::einsums::backend::linear_algebra::cblas::sgesvd(jobu, jobvt, m, n, a, lda, s, u, ldu, vt, ldvt, superb);
-#else
-    throw std::runtime_error("dgesvd not implemented.");
-#endif
+    return ::einsums::backend::linear_algebra::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::sgesvd(jobu, jobvt, m, n, a, lda, s, u, ldu, vt, ldvt,
+                                                                                        superb);
 }
 
 auto dgesvd(char jobu, char jobvt, eint m, eint n, double *a, eint lda, double *s, double *u, eint ldu, double *vt, eint ldvt,
             double *superb) -> eint {
-#if defined(EINSUMS_HAVE_MKL_LAPACKE_H)
-    return ::einsums::backend::linear_algebra::mkl::dgesvd(jobu, jobvt, m, n, a, lda, s, u, ldu, vt, ldvt, superb);
-#elif defined(EINSUMS_HAVE_LAPACKE_H)
-    return ::einsums::backend::linear_algebra::cblas::dgesvd(jobu, jobvt, m, n, a, lda, s, u, ldu, vt, ldvt, superb);
-#else
-    throw std::runtime_error("dgesvd not implemented.");
-#endif
+    return ::einsums::backend::linear_algebra::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::dgesvd(jobu, jobvt, m, n, a, lda, s, u, ldu, vt, ldvt,
+                                                                                        superb);
 }
 
 auto dgees(char jobvs, eint n, double *a, eint lda, eint *sdim, double *wr, double *wi, double *vs, eint ldvs) -> eint {
-#if defined(EINSUMS_HAVE_MKL_LAPACKE_H)
-    return ::einsums::backend::linear_algebra::mkl::dgees(jobvs, n, a, lda, sdim, wr, wi, vs, ldvs);
-#elif defined(EINSUMS_HAVE_LAPACKE)
-    return ::einsums::backend::linear_algebra::cblas::dgees(jobvs, n, a, lda, sdim, wr, wi, vs, ldvs);
-#else
-    throw std::runtime_error("dgees not implemented.");
-#endif
+    return ::einsums::backend::linear_algebra::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::dgees(jobvs, n, a, lda, sdim, wr, wi, vs, ldvs);
 }
 
 auto strsyl(char trana, char tranb, eint isgn, eint m, eint n, const float *a, eint lda, const float *b, eint ldb, float *c, eint ldc,
@@ -344,13 +322,8 @@ auto strsyl(char trana, char tranb, eint isgn, eint m, eint n, const float *a, e
 
 auto dtrsyl(char trana, char tranb, eint isgn, eint m, eint n, const double *a, eint lda, const double *b, eint ldb, double *c, eint ldc,
             double *scale) -> eint {
-#if defined(EINSUMS_HAVE_MKL_LAPACKE_H)
-    return ::einsums::backend::linear_algebra::mkl::dtrsyl(trana, tranb, isgn, m, n, a, lda, b, ldb, c, ldc, scale);
-#elif defined(EINSUMS_HAVE_LAPACKE)
-    return ::einsums::backend::linear_algebra::cblas::dtrsyl(trana, tranb, isgn, m, n, a, lda, b, ldb, c, ldc, scale);
-#else
-    throw std::runtime_error("dtrsyl not implemented.");
-#endif
+    return ::einsums::backend::linear_algebra::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::dtrsyl(trana, tranb, isgn, m, n, a, lda, b, ldb, c, ldc,
+                                                                                        scale);
 }
 
 auto ctrsyl(char trana, char tranb, eint isgn, eint m, eint n, const std::complex<float> *a, eint lda, const std::complex<float> *b,
@@ -376,83 +349,35 @@ auto ztrsyl(char trana, char tranb, eint isgn, eint m, eint n, const std::comple
 }
 
 auto sgeqrf(eint m, eint n, float *a, eint lda, float *tau) -> eint {
-#if defined(EINSUMS_HAVE_MKL_LAPACKE_H)
-    return ::einsums::backend::linear_algebra::mkl::sgeqrf(m, n, a, lda, tau);
-#elif defined(EINSUMS_HAVE_LAPACKE)
-    return ::einsums::backend::linear_algebra::cblas::sgeqrf(m, n, a, lda, tau);
-#else
-    throw std::runtime_error("dgeqrf not implemented.");
-#endif
+    return ::einsums::backend::linear_algebra::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::sgeqrf(m, n, a, lda, tau);
 }
 
 auto dgeqrf(eint m, eint n, double *a, eint lda, double *tau) -> eint {
-#if defined(EINSUMS_HAVE_MKL_LAPACKE_H)
-    return ::einsums::backend::linear_algebra::mkl::dgeqrf(m, n, a, lda, tau);
-#elif defined(EINSUMS_HAVE_LAPACKE)
-    return ::einsums::backend::linear_algebra::cblas::dgeqrf(m, n, a, lda, tau);
-#else
-    throw std::runtime_error("dgeqrf not implemented.");
-#endif
+    return ::einsums::backend::linear_algebra::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::dgeqrf(m, n, a, lda, tau);
 }
 
 auto cgeqrf(eint m, eint n, std::complex<float> *a, eint lda, std::complex<float> *tau) -> eint {
-#if defined(EINSUMS_HAVE_MKL_LAPACKE_H)
-    return ::einsums::backend::linear_algebra::mkl::cgeqrf(m, n, a, lda, tau);
-#elif defined(EINSUMS_HAVE_LAPACKE)
-    return ::einsums::backend::linear_algebra::cblas::cgeqrf(m, n, a, lda, tau);
-#else
-    throw std::runtime_error("dgeqrf not implemented.");
-#endif
+    return ::einsums::backend::linear_algebra::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::cgeqrf(m, n, a, lda, tau);
 }
 
 auto zgeqrf(eint m, eint n, std::complex<double> *a, eint lda, std::complex<double> *tau) -> eint {
-#if defined(EINSUMS_HAVE_MKL_LAPACKE_H)
-    return ::einsums::backend::linear_algebra::mkl::zgeqrf(m, n, a, lda, tau);
-#elif defined(EINSUMS_HAVE_LAPACKE)
-    return ::einsums::backend::linear_algebra::cblas::zgeqrf(m, n, a, lda, tau);
-#else
-    throw std::runtime_error("dgeqrf not implemented.");
-#endif
+    return ::einsums::backend::linear_algebra::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::zgeqrf(m, n, a, lda, tau);
 }
 
 auto sorgqr(eint m, eint n, eint k, float *a, eint lda, const float *tau) -> eint {
-#if defined(EINSUMS_HAVE_MKL_LAPACKE_H)
-    return ::einsums::backend::linear_algebra::mkl::sorgqr(m, n, k, a, lda, tau);
-#elif defined(EINSUMS_HAVE_LAPACKE)
-    return ::einsums::backend::linear_algebra::cblas::sorgqr(m, n, k, a, lda, tau);
-#else
-    throw std::runtime_error("dorgqr not implemented.");
-#endif
+    return ::einsums::backend::linear_algebra::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::sorgqr(m, n, k, a, lda, tau);
 }
 
 auto dorgqr(eint m, eint n, eint k, double *a, eint lda, const double *tau) -> eint {
-#if defined(EINSUMS_HAVE_MKL_LAPACKE_H)
-    return ::einsums::backend::linear_algebra::mkl::dorgqr(m, n, k, a, lda, tau);
-#elif defined(EINSUMS_HAVE_LAPACKE)
-    return ::einsums::backend::linear_algebra::cblas::dorgqr(m, n, k, a, lda, tau);
-#else
-    throw std::runtime_error("dorgqr not implemented.");
-#endif
+    return ::einsums::backend::linear_algebra::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::dorgqr(m, n, k, a, lda, tau);
 }
 
 auto cungqr(eint m, eint n, eint k, std::complex<float> *a, eint lda, const std::complex<float> *tau) -> eint {
-#if defined(EINSUMS_HAVE_MKL_LAPACKE_H)
-    return ::einsums::backend::linear_algebra::mkl::cungqr(m, n, k, a, lda, tau);
-#elif defined(EINSUMS_HAVE_LAPACKE)
-    return ::einsums::backend::linear_algebra::cblas::cungqr(m, n, k, a, lda, tau);
-#else
-    throw std::runtime_error("dorgqr not implemented.");
-#endif
+    return ::einsums::backend::linear_algebra::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::cungqr(m, n, k, a, lda, tau);
 }
 
 auto zungqr(eint m, eint n, eint k, std::complex<double> *a, eint lda, const std::complex<double> *tau) -> eint {
-#if defined(EINSUMS_HAVE_MKL_LAPACKE_H)
-    return ::einsums::backend::linear_algebra::mkl::zungqr(m, n, k, a, lda, tau);
-#elif defined(EINSUMS_HAVE_LAPACKE)
-    return ::einsums::backend::linear_algebra::cblas::zungqr(m, n, k, a, lda, tau);
-#else
-    throw std::runtime_error("dorgqr not implemented.");
-#endif
+    return ::einsums::backend::linear_algebra::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::zungqr(m, n, k, a, lda, tau);
 }
 
 } // namespace detail

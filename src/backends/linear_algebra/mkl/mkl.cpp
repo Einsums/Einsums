@@ -5,10 +5,12 @@
 
 #include "mkl.hpp"
 
-#include "einsums/Section.hpp"
 #include "einsums/_Common.hpp"
 
+#include "einsums/Section.hpp"
+
 #include <fmt/format.h>
+
 #include <mkl_blas.h>
 #include <mkl_cblas.h>
 #include <mkl_lapack.h>
@@ -196,6 +198,53 @@ auto dsyev(const char job, const char uplo, const eint n, double *a, const eint 
 
     eint info{0};
     ::dsyev(&job, &uplo, &n, a, &lda, w, work, &lwork, &info);
+    return info;
+}
+
+auto sgeev(char jobvl, char jobvr, int n, float *a, int lda, std::complex<float> *w, float *vl, int ldvl, float *vr, int ldvr) -> int {
+    LabeledSection1(mkl_interface());
+
+    std::vector<float> wr(n), wi(n);
+    eint               info = LAPACKE_sgeev(LAPACK_ROW_MAJOR, jobvl, jobvr, n, a, lda, wr.data(), wi.data(), vl, ldvl, vr, ldvr);
+
+    /* Pack wr and wi into w */
+    for (int i = 0; i < n; i++) {
+        w[i] = std::complex<float>(wr[i], wi[i]);
+    }
+
+    return info;
+}
+auto dgeev(char jobvl, char jobvr, int n, double *a, int lda, std::complex<double> *w, double *vl, int ldvl, double *vr, int ldvr) -> int {
+    LabeledSection1(mkl_interface());
+
+    std::vector<double> wr(n), wi(n);
+    eint                info = LAPACKE_dgeev(LAPACK_ROW_MAJOR, jobvl, jobvr, n, a, lda, wr.data(), wi.data(), vl, ldvl, vr, ldvr);
+
+    /* Pack wr and wi into w */
+    for (int i = 0; i < n; i++) {
+        w[i] = std::complex<double>(wr[i], wi[i]);
+    }
+
+    return info;
+}
+
+auto cgeev(char jobvl, char jobvr, eint n, std::complex<float> *a, eint lda, std::complex<float> *w, std::complex<float> *vl, eint ldvl,
+           std::complex<float> *vr, eint ldvr) -> eint {
+    LabeledSection1(mkl_interface());
+
+    eint info = LAPACKE_cgeev(LAPACK_ROW_MAJOR, jobvl, jobvr, n, reinterpret_cast<lapack_complex_float *>(a), lda,
+                              reinterpret_cast<lapack_complex_float *>(w), reinterpret_cast<lapack_complex_float *>(vl), ldvl,
+                              reinterpret_cast<lapack_complex_float *>(vr), ldvr);
+    return info;
+}
+
+auto zgeev(char jobvl, char jobvr, eint n, std::complex<double> *a, eint lda, std::complex<double> *w, std::complex<double> *vl, eint ldvl,
+           std::complex<double> *vr, eint ldvr) -> eint {
+    LabeledSection1(mkl_interface());
+
+    eint info = LAPACKE_zgeev(LAPACK_ROW_MAJOR, jobvl, jobvr, n, reinterpret_cast<lapack_complex_double *>(a), lda,
+                              reinterpret_cast<lapack_complex_double *>(w), reinterpret_cast<lapack_complex_double *>(vl), ldvl,
+                              reinterpret_cast<lapack_complex_double *>(vr), ldvr);
     return info;
 }
 
