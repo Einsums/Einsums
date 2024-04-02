@@ -23,6 +23,9 @@ struct IsComplex : std::bool_constant<IsComplexV<type>> {};
 template <typename type>
 concept Complex = IsComplex<type>::value;
 
+template <typename type>
+concept NotComplex = !IsComplex<type>::value;
+
 template <typename T>
 struct ComplexType {
     using Type = T;

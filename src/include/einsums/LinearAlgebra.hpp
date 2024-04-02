@@ -151,14 +151,14 @@ void syev(AType<T, ARank> *A, WType<T, WRank> *W) {
     blas::syev(ComputeEigenvectors ? 'v' : 'n', 'u', n, A->data(), lda, W->data(), work.data(), lwork);
 }
 
-template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename WType, size_t WRank, typename T,
-          bool ComputeEigenvectors = true>
+template <template <typename, size_t> typename AType, size_t ARank, template <Complex, size_t> typename WType, size_t WRank, typename T,
+          bool ComputeLeftRightEigenvectors = true>
     requires requires {
         requires CoreRankTensor<AType<T, ARank>, 2, T>;
-        requires CoreRankTensor<WType<T, WRank>, 1, T>;
+        requires CoreRankTensor<WType<AddComplexT<T>, WRank>, 1, AddComplexT<T>>;
     }
-void geev(AType<T, ARank> *A, WType<T, WRank> *W, AType<T, ARank> *lvecs, AType<T, ARank> *rvecs) {
-    LabeledSection1(fmt::format("<ComputeEigenvectors={}>", ComputeEigenvectors));
+void geev(AType<T, ARank> *A, WType<AddComplexT<T>, WRank> *W, AType<T, ARank> *lvecs, AType<T, ARank> *rvecs) {
+    LabeledSection1(fmt::format("<ComputeLeftRightEigenvectors={}>", ComputeLeftRightEigenvectors));
 
     assert(A->dim(0) == A->dim(1));
     assert(W->dim(0) == A->dim(0));
@@ -167,8 +167,8 @@ void geev(AType<T, ARank> *A, WType<T, WRank> *W, AType<T, ARank> *lvecs, AType<
     assert(A->dim(0) == rvecs->dim(0));
     assert(A->dim(1) == rvecs->dim(1));
 
-    blas::geev(ComputeEigenvectors ? 'v' : 'n', ComputeEigenvectors ? 'v' : 'n', A->dim(0), A->data(), A->stride(0), W->data(),
-               lvecs->data(), lvecs->stride(0), rvecs->data(), rvecs->stride(0));
+    blas::geev(ComputeLeftRightEigenvectors ? 'v' : 'n', ComputeLeftRightEigenvectors ? 'v' : 'n', A->dim(0), A->data(), A->stride(0),
+               W->data(), lvecs->data(), lvecs->stride(0), rvecs->data(), rvecs->stride(0));
 }
 
 template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename WType, size_t WRank, typename T,

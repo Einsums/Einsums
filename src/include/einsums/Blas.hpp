@@ -215,14 +215,31 @@ inline auto syev<double>(char job, char uplo, eint n, double *a, eint lda, doubl
  * Performs matrix diagonalization on a general matrix.
  */
 namespace detail {
+auto EINSUMS_EXPORT sgeev(char jobvl, char jobvr, int n, float *a, int lda, std::complex<float> *w, float *vl, int ldvl, float *vr,
+                          int ldvr) -> int;
+auto EINSUMS_EXPORT dgeev(char jobvl, char jobvr, int n, double *a, int lda, std::complex<double> *w, double *vl, int ldvl, double *vr,
+                          int ldvr) -> int;
 auto EINSUMS_EXPORT cgeev(char jobvl, char jobvr, int n, std::complex<float> *a, int lda, std::complex<float> *w, std::complex<float> *vl,
                           int ldvl, std::complex<float> *vr, int ldvr) -> eint;
 auto EINSUMS_EXPORT zgeev(char jobvl, char jobvr, int n, std::complex<double> *a, int lda, std::complex<double> *w,
                           std::complex<double> *vl, int ldvl, std::complex<double> *vr, int ldvr) -> eint;
 } // namespace detail
 
+// Complex version
 template <typename T>
-auto geev(char jobvl, char jobvr, eint n, T *a, eint lda, T *w, T *vl, eint ldvl, T *vr, eint ldvr) -> eint;
+auto geev(char jobvl, char jobvr, eint n, T *a, eint lda, AddComplexT<T> *w, T *vl, eint ldvl, T *vr, eint ldvr) -> eint;
+
+template <>
+inline auto geev<float>(char jobvl, char jobvr, eint n, float *a, eint lda, std::complex<float> *w, float *vl, eint ldvl, float *vr,
+                        eint ldvr) -> eint {
+    return detail::sgeev(jobvl, jobvr, n, a, lda, w, vl, ldvl, vr, ldvr);
+}
+
+template <>
+inline auto geev<double>(char jobvl, char jobvr, eint n, double *a, eint lda, std::complex<double> *w, double *vl, eint ldvl, double *vr,
+                         eint ldvr) -> eint {
+    return detail::dgeev(jobvl, jobvr, n, a, lda, w, vl, ldvl, vr, ldvr);
+}
 
 template <>
 inline auto geev<std::complex<float>>(char jobvl, char jobvr, eint n, std::complex<float> *a, eint lda, std::complex<float> *w,

@@ -50,6 +50,8 @@ auto dsyev(char job, char uplo, int n, double *a, int lda, double *w, double *wo
 /*!
  * Computes all eigenvalues and left and right eigenvectors of a general matrix.
  */
+auto sgeev(char jobvl, char jobvr, int n, float *a, int lda, std::complex<float> *w, float *vl, int ldvl, float *vr, int ldvr) -> int;
+auto dgeev(char jobvl, char jobvr, int n, double *a, int lda, std::complex<double> *w, double *vl, int ldvl, double *vr, int ldvr) -> int;
 auto cgeev(char jobvl, char jobvr, int n, std::complex<float> *a, int lda, std::complex<float> *w, std::complex<float> *vl, int ldvl,
            std::complex<float> *vr, int ldvr) -> int;
 auto zgeev(char jobvl, char jobvr, int n, std::complex<double> *a, int lda, std::complex<double> *w, std::complex<double> *vl, int ldvl,

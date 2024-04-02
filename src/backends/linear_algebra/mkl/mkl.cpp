@@ -201,6 +201,33 @@ auto dsyev(const char job, const char uplo, const eint n, double *a, const eint 
     return info;
 }
 
+auto sgeev(char jobvl, char jobvr, int n, float *a, int lda, std::complex<float> *w, float *vl, int ldvl, float *vr, int ldvr) -> int {
+    LabeledSection1(mkl_interface());
+
+    std::vector<float> wr(n), wi(n);
+    eint               info = LAPACKE_sgeev(LAPACK_ROW_MAJOR, jobvl, jobvr, n, a, lda, wr.data(), wi.data(), vl, ldvl, vr, ldvr);
+
+    /* Pack wr and wi into w */
+    for (int i = 0; i < n; i++) {
+        w[i] = std::complex<float>(wr[i], wi[i]);
+    }
+
+    return info;
+}
+auto dgeev(char jobvl, char jobvr, int n, double *a, int lda, std::complex<double> *w, double *vl, int ldvl, double *vr, int ldvr) -> int {
+    LabeledSection1(mkl_interface());
+
+    std::vector<double> wr(n), wi(n);
+    eint                info = LAPACKE_dgeev(LAPACK_ROW_MAJOR, jobvl, jobvr, n, a, lda, wr.data(), wi.data(), vl, ldvl, vr, ldvr);
+
+    /* Pack wr and wi into w */
+    for (int i = 0; i < n; i++) {
+        w[i] = std::complex<double>(wr[i], wi[i]);
+    }
+
+    return info;
+}
+
 auto cgeev(char jobvl, char jobvr, eint n, std::complex<float> *a, eint lda, std::complex<float> *w, std::complex<float> *vl, eint ldvl,
            std::complex<float> *vr, eint ldvr) -> eint {
     LabeledSection1(mkl_interface());
