@@ -74,21 +74,22 @@ auto dsyev(char job, char uplo, eint n, double *a, eint lda, double *w, double *
     return ::einsums::backend::linear_algebra::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::dsyev(job, uplo, n, a, lda, w, work, lwork);
 }
 
-auto sgeev(char jobvl, char jobvr, int n, float *a, int lda, std::complex<float> *w, float *vl, int ldvl, float *vr, int ldvr) -> eint {
+auto sgeev(char jobvl, char jobvr, eint n, float *a, eint lda, std::complex<float> *w, float *vl, eint ldvl, float *vr, eint ldvr) -> eint {
     return ::einsums::backend::linear_algebra::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::sgeev(jobvl, jobvr, n, a, lda, w, vl, ldvl, vr, ldvr);
 }
 
-auto dgeev(char jobvl, char jobvr, int n, double *a, int lda, std::complex<double> *w, double *vl, int ldvl, double *vr, int ldvr) -> eint {
+auto dgeev(char jobvl, char jobvr, eint n, double *a, eint lda, std::complex<double> *w, double *vl, eint ldvl, double *vr, eint ldvr)
+    -> eint {
     return ::einsums::backend::linear_algebra::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::dgeev(jobvl, jobvr, n, a, lda, w, vl, ldvl, vr, ldvr);
 }
 
-auto cgeev(char jobvl, char jobvr, int n, std::complex<float> *a, int lda, std::complex<float> *w, std::complex<float> *vl, int ldvl,
-           std::complex<float> *vr, int ldvr) -> eint {
+auto cgeev(char jobvl, char jobvr, eint n, std::complex<float> *a, eint lda, std::complex<float> *w, std::complex<float> *vl, eint ldvl,
+           std::complex<float> *vr, eint ldvr) -> eint {
     return ::einsums::backend::linear_algebra::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::cgeev(jobvl, jobvr, n, a, lda, w, vl, ldvl, vr, ldvr);
 }
 
-auto zgeev(char jobvl, char jobvr, int n, std::complex<double> *a, int lda, std::complex<double> *w, std::complex<double> *vl, int ldvl,
-           std::complex<double> *vr, int ldvr) -> eint {
+auto zgeev(char jobvl, char jobvr, eint n, std::complex<double> *a, eint lda, std::complex<double> *w, std::complex<double> *vl, eint ldvl,
+           std::complex<double> *vr, eint ldvr) -> eint {
     return ::einsums::backend::linear_algebra::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::zgeev(jobvl, jobvr, n, a, lda, w, vl, ldvl, vr, ldvr);
 }
 
