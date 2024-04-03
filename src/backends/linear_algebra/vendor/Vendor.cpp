@@ -95,12 +95,13 @@ extern void FC_GLOBAL(zscal, ZSCAL)(blas_int *, std::complex<double> *, std::com
 extern void FC_GLOBAL(csscal, CSSCAL)(blas_int *, float *, std::complex<float> *, blas_int *);
 extern void FC_GLOBAL(zdscal, ZDSCAL)(blas_int *, double *, std::complex<double> *, blas_int *);
 
-extern float                FC_GLOBAL(sdot, SDOT)(blas_int *, const float *, blas_int *, const float *, blas_int *);
-extern double               FC_GLOBAL(ddot, DDOT)(blas_int *, const double *, blas_int *, const double *, blas_int *);
-extern std::complex<float>  FC_GLOBAL(cdotu, CDOTU)(blas_int *, const std::complex<float> *, blas_int *, const std::complex<float> *,
-                                                   blas_int *);
-extern std::complex<double> FC_GLOBAL(zdotu, ZDOTU)(blas_int *, const std::complex<double> *, blas_int *, const std::complex<double> *,
-                                                    blas_int *);
+extern float  FC_GLOBAL(sdot, SDOT)(blas_int *, const float *, blas_int *, const float *, blas_int *);
+extern double FC_GLOBAL(ddot, DDOT)(blas_int *, const double *, blas_int *, const double *, blas_int *);
+// MKL seems to have a different function signature than openblas.
+// extern std::complex<float>  FC_GLOBAL(cdotu, CDOTU)(blas_int *, const std::complex<float> *, blas_int *, const std::complex<float> *,
+//                                                    blas_int *);
+// extern std::complex<double> FC_GLOBAL(zdotu, ZDOTU)(blas_int *, const std::complex<double> *, blas_int *, const std::complex<double> *,
+//                                                     blas_int *);
 
 extern void FC_GLOBAL(saxpy, SAXPY)(blas_int *, float *, const float *, blas_int *, float *, blas_int *);
 extern void FC_GLOBAL(daxpy, DAXPY)(blas_int *, double *, const double *, blas_int *, double *, blas_int *);
@@ -404,17 +405,18 @@ auto ddot(blas_int n, const double *x, blas_int incx, const double *y, blas_int 
     return FC_GLOBAL(ddot, DDOT)(&n, x, &incx, y, &incy);
 }
 
-auto cdot(blas_int n, const std::complex<float> *x, blas_int incx, const std::complex<float> *y, blas_int incy) -> std::complex<float> {
-    LabeledSection0();
+// auto cdot(blas_int n, const std::complex<float> *x, blas_int incx, const std::complex<float> *y, blas_int incy) -> std::complex<float> {
+//     LabeledSection0();
 
-    return FC_GLOBAL(cdotu, CDOTU)(&n, x, &incx, y, &incy);
-}
+//     return FC_GLOBAL(cdotu, CDOTU)(&n, x, &incx, y, &incy);
+// }
 
-auto zdot(blas_int n, const std::complex<double> *x, blas_int incx, const std::complex<double> *y, blas_int incy) -> std::complex<double> {
-    LabeledSection0();
+// auto zdot(blas_int n, const std::complex<double> *x, blas_int incx, const std::complex<double> *y, blas_int incy) -> std::complex<double>
+// {
+//     LabeledSection0();
 
-    return FC_GLOBAL(zdotu, ZDOTU)(&n, x, &incx, y, &incy);
-}
+//     return FC_GLOBAL(zdotu, ZDOTU)(&n, x, &incx, y, &incy);
+// }
 
 void saxpy(blas_int n, float alpha_x, const float *x, blas_int inc_x, float *y, blas_int inc_y) {
     LabeledSection0();
@@ -635,8 +637,7 @@ void zlassq(blas_int n, const std::complex<double> *x, blas_int incx, double *sc
 
 #define GESDD(Type, lcletter, UCLETTER)                                                                                                    \
     auto lcletter##gesdd(char jobz, blas_int m, blas_int n, Type *a, blas_int lda, Type *s, Type *u, blas_int ldu, Type *vt,               \
-                         blas_int ldvt)                                                                                                    \
-        ->blas_int {                                                                                                                       \
+                         blas_int ldvt) -> blas_int {                                                                                      \
         LabeledSection0();                                                                                                                 \
                                                                                                                                            \
         blas_int nrows_u  = (lsame(jobz, 'a') || lsame(jobz, 's') || (lsame(jobz, '0') && m < n)) ? m : 1;                                 \
@@ -706,8 +707,7 @@ void zlassq(blas_int n, const std::complex<double> *x, blas_int incx, double *sc
 
 #define GESDD_complex(Type, lc, UC)                                                                                                        \
     auto lc##gesdd(char jobz, blas_int m, blas_int n, std::complex<Type> *a, blas_int lda, Type *s, std::complex<Type> *u, blas_int ldu,   \
-                   std::complex<Type> *vt, blas_int ldvt)                                                                                  \
-        ->blas_int {                                                                                                                       \
+                   std::complex<Type> *vt, blas_int ldvt) -> blas_int {                                                                    \
         LabeledSection0();                                                                                                                 \
                                                                                                                                            \
         blas_int nrows_u  = (lsame(jobz, 'a') || lsame(jobz, 's') || (lsame(jobz, '0') && m < n)) ? m : 1;                                 \
@@ -797,8 +797,7 @@ GESDD_complex(double, z, Z);
 
 #define GESVD(Type, lcletter, UCLETTER)                                                                                                    \
     auto lcletter##gesvd(char jobu, char jobvt, blas_int m, blas_int n, Type *a, blas_int lda, Type *s, Type *u, blas_int ldu, Type *vt,   \
-                         blas_int ldvt, Type *superb)                                                                                      \
-        ->blas_int {                                                                                                                       \
+                         blas_int ldvt, Type *superb) -> blas_int {                                                                        \
         LabeledSection0();                                                                                                                 \
                                                                                                                                            \
         blas_int info  = 0;                                                                                                                \
@@ -884,7 +883,8 @@ GESVD(double, d, D);
 GESVD(float, s, S);
 
 #define GEES(Type, lc, UC)                                                                                                                 \
-    auto lc##gees(char jobvs, blas_int n, Type *a, blas_int lda, blas_int *sdim, Type *wr, Type *wi, Type *vs, blas_int ldvs)->blas_int {  \
+    auto lc##gees(char jobvs, blas_int n, Type *a, blas_int lda, blas_int *sdim, Type *wr, Type *wi, Type *vs, blas_int ldvs)              \
+        -> blas_int {                                                                                                                      \
         LabeledSection0();                                                                                                                 \
                                                                                                                                            \
         blas_int  info  = 0;                                                                                                               \
@@ -942,8 +942,7 @@ GEES(float, s, S);
 
 #define TRSYL(Type, lc, uc)                                                                                                                \
     auto lc##trsyl(char trana, char tranb, blas_int isgn, blas_int m, blas_int n, const Type *a, blas_int lda, const Type *b,              \
-                   blas_int ldb, Type *c, blas_int ldc, Type *scale)                                                                       \
-        ->blas_int {                                                                                                                       \
+                   blas_int ldb, Type *c, blas_int ldc, Type *scale) -> blas_int {                                                         \
         blas_int info  = 0;                                                                                                                \
         blas_int lda_t = std::max(blas_int{1}, m);                                                                                         \
         blas_int ldb_t = std::max(blas_int{1}, n);                                                                                         \
@@ -991,7 +990,7 @@ TRSYL(double, d, D);
 TRSYL(float, s, S);
 
 #define ORGQR(Type, lc, uc)                                                                                                                \
-    auto lc##orgqr(blas_int m, blas_int n, blas_int k, Type *a, blas_int lda, const Type *tau)->blas_int {                                 \
+    auto lc##orgqr(blas_int m, blas_int n, blas_int k, Type *a, blas_int lda, const Type *tau) -> blas_int {                               \
         LabeledSection0();                                                                                                                 \
                                                                                                                                            \
         blas_int info{0};                                                                                                                  \
@@ -1033,7 +1032,7 @@ ORGQR(double, d, D);
 ORGQR(float, s, S);
 
 #define UNGQR(Type, lc, uc)                                                                                                                \
-    auto lc##ungqr(blas_int m, blas_int n, blas_int k, Type *a, blas_int lda, const Type *tau)->blas_int {                                 \
+    auto lc##ungqr(blas_int m, blas_int n, blas_int k, Type *a, blas_int lda, const Type *tau) -> blas_int {                               \
         LabeledSection0();                                                                                                                 \
                                                                                                                                            \
         blas_int info{0};                                                                                                                  \
@@ -1075,7 +1074,7 @@ UNGQR(std::complex<float>, c, C);
 UNGQR(std::complex<double>, z, Z);
 
 #define GEQRF(Type, lc, uc)                                                                                                                \
-    auto lc##geqrf(blas_int m, blas_int n, Type *a, blas_int lda, Type *tau)->blas_int {                                                   \
+    auto lc##geqrf(blas_int m, blas_int n, Type *a, blas_int lda, Type *tau) -> blas_int {                                                 \
         LabeledSection0();                                                                                                                 \
                                                                                                                                            \
         blas_int info{0};                                                                                                                  \
@@ -1116,7 +1115,7 @@ UNGQR(std::complex<double>, z, Z);
     } /**/
 
 #define GEQRF_complex(Type, lc, uc)                                                                                                        \
-    auto lc##geqrf(blas_int m, blas_int n, Type *a, blas_int lda, Type *tau)->blas_int {                                                   \
+    auto lc##geqrf(blas_int m, blas_int n, Type *a, blas_int lda, Type *tau) -> blas_int {                                                 \
         LabeledSection0();                                                                                                                 \
                                                                                                                                            \
         blas_int info{0};                                                                                                                  \
@@ -1163,8 +1162,7 @@ GEQRF_complex(std::complex<float>, c, C);
 
 #define GEEV_complex(Type, lc, UC)                                                                                                         \
     auto lc##geev(char jobvl, char jobvr, blas_int n, std::complex<Type> *a, blas_int lda, std::complex<Type> *w, std::complex<Type> *vl,  \
-                  blas_int ldvl, std::complex<Type> *vr, blas_int ldvr)                                                                    \
-        ->blas_int {                                                                                                                       \
+                  blas_int ldvl, std::complex<Type> *vr, blas_int ldvr) -> blas_int {                                                      \
         LabeledSection0();                                                                                                                 \
                                                                                                                                            \
         blas_int                        info  = 0;                                                                                         \
@@ -1240,8 +1238,7 @@ GEEV_complex(double, z, Z);
 
 #define GEEV(Type, lc, uc)                                                                                                                 \
     auto lc##geev(char jobvl, char jobvr, blas_int n, Type *a, blas_int lda, std::complex<Type> *w, Type *vl, blas_int ldvl, Type *vr,     \
-                  blas_int ldvr)                                                                                                           \
-        ->blas_int {                                                                                                                       \
+                  blas_int ldvr) -> blas_int {                                                                                             \
         LabeledSection0();                                                                                                                 \
                                                                                                                                            \
         blas_int          info  = 0;                                                                                                       \
