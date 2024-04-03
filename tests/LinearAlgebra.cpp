@@ -562,3 +562,26 @@ TEST_CASE("sum_square") {
         lassq_test<std::complex<double>>();
     }
 }
+
+template <NotComplex T>
+void norm_test() {
+    using namespace einsums;
+    using namespace einsums::linear_algebra;
+
+    auto A = create_tensor<T>("a", 9, 9);
+
+    A.vector_data() = std::vector<T, einsums::AlignedAllocator<T, 64>>{
+        1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0,  0.0,  0.0, 4.0, 1.0, 1.0,
+        1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 5.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0,  0.0,  6.0, 1.0, 1.0, 1.0,
+        1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 7.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0,  8.0,  1.0, 1.0, 1.0, 1.0,
+        0.0, 0.0, 0.0, 0.0, 0.0, 9.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0, 11.0, 12.0};
+
+    T result = einsums::linear_algebra::norm(Norm::One, A);
+
+    CHECK_THAT(result, Catch::Matchers::WithinRel(15.0, 0.1));
+}
+
+TEST_CASE("norm") {
+    norm_test<float>();
+    //    norm_test<double>();
+}

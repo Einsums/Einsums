@@ -244,19 +244,19 @@ auto zgetri(eint n, std::complex<double> *a, eint lda, const eint *ipiv) -> eint
 }
 
 auto slange(char norm_type, eint m, eint n, const float *A, eint lda, float *work) -> float {
-    return ::einsums::backend::linear_algebra::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::slange(norm_type, n, m, A, lda, work);
+    return ::einsums::backend::linear_algebra::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::slange(norm_type, m, n, A, lda, work);
 }
 
 auto dlange(char norm_type, eint m, eint n, const double *A, eint lda, double *work) -> double {
-    return ::einsums::backend::linear_algebra::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::dlange(norm_type, n, m, A, lda, work);
+    return ::einsums::backend::linear_algebra::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::dlange(norm_type, m, n, A, lda, work);
 }
 
 auto clange(char norm_type, eint m, eint n, const std::complex<float> *A, eint lda, float *work) -> float {
-    return ::einsums::backend::linear_algebra::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::clange(norm_type, n, m, A, lda, work);
+    return ::einsums::backend::linear_algebra::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::clange(norm_type, m, n, A, lda, work);
 }
 
 auto zlange(char norm_type, eint m, eint n, const std::complex<double> *A, eint lda, double *work) -> double {
-    return ::einsums::backend::linear_algebra::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::zlange(norm_type, n, m, A, lda, work);
+    return ::einsums::backend::linear_algebra::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::zlange(norm_type, m, n, A, lda, work);
 }
 
 void slassq(eint n, const float *x, eint incx, float *scale, float *sumsq) {

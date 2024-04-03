@@ -37,7 +37,7 @@ void sum_square(const AType<ADataType, ARank> &a, RemoveComplexT<ADataType> *sca
 }
 
 /**
- * @brief General matrix multipilication.
+ * @brief General matrix multiplication.
  *
  * Takes two rank-2 tensors ( \p A and \p B ) performs the multiplication and stores the result in to another
  * rank-2 tensor that is passed in ( \p C ).
@@ -451,12 +451,8 @@ template <template <typename, size_t> typename AType, typename ADataType, size_t
 auto norm(Norm norm_type, const AType<ADataType, ARank> &a) -> RemoveComplexT<ADataType> {
     LabeledSection0();
 
-    if (norm_type != Norm::Infinity) {
-        return blas::lange(norm_type, a->dim(0), a->dim(1), a->data(), a->stride(0), nullptr);
-    } else {
-        std::vector<RemoveComplexT<ADataType>> work(a->dim(0), 0.0);
-        return blas::lange(norm_type, a->dim(0), a->dim(1), a->data(), a->stride(0), work.data());
-    }
+    std::vector<RemoveComplexT<ADataType>> work(a.dim(0), 0.0);
+    return blas::lange(static_cast<char>(norm_type), a.dim(0), a.dim(1), a.data(), a.stride(0), work.data());
 }
 
 // Uses the original svd function found in lapack, gesvd, request all left and right vectors.
