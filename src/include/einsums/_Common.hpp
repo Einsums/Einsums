@@ -5,11 +5,12 @@
 
 #pragma once
 
+#include "einsums/_Compiler.hpp"
+#include "einsums/_Export.hpp"
+
 #include "einsums/Error.hpp"
 #include "einsums/Print.hpp"
 #include "einsums/STL.hpp"
-#include "einsums/_Compiler.hpp"
-#include "einsums/_Export.hpp"
 
 #include <array>
 #include <cstdint>
@@ -53,14 +54,19 @@
 
 namespace einsums {
 
-#if defined(MKL_ILP64)
-using eint  = long long int;          // NOLINT
-using euint = unsigned long long int; // NOLINT
-using elong = long long int;          // NOLINT
+#if EINSUMS_BLAS_INTERFACE_ILP64
+using blas_int   = long long int;          // NOLINT
+using blas_euint = unsigned long long int; // NOLINT
+using blas_elong = long long int;          // NOLINT
+#elif EINSUMS_BLAS_INTERFACE_LP64
+using blas_int   = int;          // NOLINT
+using blas_euint = unsigned int; // NOLINT
+using blas_elong = long int;     // NOLINT
 #else
-using eint  = int;          // NOLINT
-using euint = unsigned int; // NOLINT
-using elong = long int;     // NOLINT
+#    warning Unknown BLAS interface type. Defaulting to LP64
+using blas_int   = int;          // NOLINT
+using blas_euint = unsigned int; // NOLINT
+using blas_elong = long int;     // NOLINT
 #endif
 
 /**
@@ -260,6 +266,6 @@ struct fmt::formatter<einsums::Range> {
 // Taken from https://www.fluentcpp.com/2017/10/27/function-aliases-cpp/
 #define ALIAS_TEMPLATE_FUNCTION(highLevelFunction, lowLevelFunction)                                                                       \
     template <typename... Args>                                                                                                            \
-    inline auto highLevelFunction(Args &&...args)->decltype(lowLevelFunction(std::forward<Args>(args)...)) {                               \
+    inline auto highLevelFunction(Args &&...args) -> decltype(lowLevelFunction(std::forward<Args>(args)...)) {                             \
         return lowLevelFunction(std::forward<Args>(args)...);                                                                              \
     }
