@@ -683,7 +683,7 @@ void zlassq(blas_int n, const std::complex<double> *x, blas_int incx, double *sc
         std::vector<Type> work(lwork);                                                                                                     \
                                                                                                                                            \
         /* Allocate iwork array */                                                                                                         \
-        std::vector<int> iwork(8 * std::min(m, n));                                                                                        \
+        std::vector<blas_int> iwork(8 * std::min(m, n));                                                                                   \
                                                                                                                                            \
         /* Transpose input matrices */                                                                                                     \
         transpose<OrderMajor::Row>(m, n, a, lda, a_t, lda_t);                                                                              \
@@ -724,7 +724,7 @@ void zlassq(blas_int n, const std::complex<double> *x, blas_int incx, double *sc
         std::vector<std::complex<Type>> a_t, u_t, vt_t;                                                                                    \
         std::vector<Type>               rwork;                                                                                             \
         std::vector<std::complex<Type>> work;                                                                                              \
-        std::vector<int>                iwork;                                                                                             \
+        std::vector<blas_int>           iwork;                                                                                             \
                                                                                                                                            \
         /* Check leading dimensions(s) */                                                                                                  \
         if (lda < n) {                                                                                                                     \
