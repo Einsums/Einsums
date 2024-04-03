@@ -477,7 +477,7 @@ void ger_parameter_check(blas_int m, blas_int n, blas_int inc_x, blas_int inc_y,
         throw std::runtime_error(fmt::format("einsums::backend::vendor::ger: inc_x ({}) is zero.", inc_x));
     } else if (inc_y == 0) {
         throw std::runtime_error(fmt::format("einsums::backend::vendor::ger: inc_y ({}) is zero.", inc_y));
-    } else if (lda < std::max(1, n)) {
+    } else if (lda < std::max(blas_int{1}, n)) {
         throw std::runtime_error(fmt::format("einsums::backend::vendor::ger: lda ({}) is less than max(1, n ({})).", lda, n));
     }
 }
@@ -643,9 +643,9 @@ void zlassq(blas_int n, const std::complex<double> *x, blas_int incx, double *sc
         blas_int ncols_u  = (lsame(jobz, 'a') || (lsame(jobz, 'o') && m < n)) ? m : (lsame(jobz, 's') ? std::min(m, n) : 1);               \
         blas_int nrows_vt = (lsame(jobz, 'a') || (lsame(jobz, 'o') && m >= n)) ? n : (lsame(jobz, 's') ? std::min(m, n) : 1);              \
                                                                                                                                            \
-        blas_int          lda_t  = std::max(1, m);                                                                                         \
-        blas_int          ldu_t  = std::max(1, nrows_u);                                                                                   \
-        blas_int          ldvt_t = std::max(1, nrows_vt);                                                                                  \
+        blas_int          lda_t  = std::max(blas_int{1}, m);                                                                               \
+        blas_int          ldu_t  = std::max(blas_int{1}, nrows_u);                                                                         \
+        blas_int          ldvt_t = std::max(blas_int{1}, nrows_vt);                                                                        \
         std::vector<Type> a_t, u_t, vt_t;                                                                                                  \
                                                                                                                                            \
         /* Check leading dimensions(s) */                                                                                                  \
@@ -671,12 +671,12 @@ void zlassq(blas_int n, const std::complex<double> *x, blas_int incx, double *sc
         lwork = (int)work_query;                                                                                                           \
                                                                                                                                            \
         /* Allocate memory for temporary arrays(s) */                                                                                      \
-        a_t.resize(lda_t *std::max(1, n));                                                                                                 \
+        a_t.resize(lda_t *std::max(blas_int{1}, n));                                                                                       \
         if (lsame(jobz, 'a') || lsame(jobz, 's') || (lsame(jobz, 'o') && (m < n))) {                                                       \
-            u_t.resize(ldu_t *std::max(1, ncols_u));                                                                                       \
+            u_t.resize(ldu_t *std::max(blas_int{1}, ncols_u));                                                                             \
         }                                                                                                                                  \
         if (lsame(jobz, 'a') || lsame(jobz, 's') || (lsame(jobz, 'o') && (m >= n))) {                                                      \
-            vt_t.resize(ldvt_t *std::max(1, n));                                                                                           \
+            vt_t.resize(ldvt_t *std::max(blas_int{1}, n));                                                                                 \
         }                                                                                                                                  \
                                                                                                                                            \
         /* Allocate work array */                                                                                                          \
@@ -714,9 +714,9 @@ void zlassq(blas_int n, const std::complex<double> *x, blas_int incx, double *sc
         blas_int ncols_u  = (lsame(jobz, 'a') || (lsame(jobz, 'o') && m < n)) ? m : (lsame(jobz, 's') ? std::min(m, n) : 1);               \
         blas_int nrows_vt = (lsame(jobz, 'a') || (lsame(jobz, 'o') && m >= n)) ? n : (lsame(jobz, 's') ? std::min(m, n) : 1);              \
                                                                                                                                            \
-        blas_int                        lda_t  = std::max(1, m);                                                                           \
-        blas_int                        ldu_t  = std::max(1, nrows_u);                                                                     \
-        blas_int                        ldvt_t = std::max(1, nrows_vt);                                                                    \
+        blas_int                        lda_t  = std::max(blas_int{1}, m);                                                                 \
+        blas_int                        ldu_t  = std::max(blas_int{1}, nrows_u);                                                           \
+        blas_int                        ldvt_t = std::max(blas_int{1}, nrows_vt);                                                          \
         blas_int                        info{0};                                                                                           \
         blas_int                        lwork{-1};                                                                                         \
         size_t                          lrwork;                                                                                            \
@@ -741,12 +741,13 @@ void zlassq(blas_int n, const std::complex<double> *x, blas_int incx, double *sc
         }                                                                                                                                  \
                                                                                                                                            \
         if (lsame(jobz, 'n')) {                                                                                                            \
-            lrwork = std::max(1, 7 * std::min(m, n));                                                                                      \
+            lrwork = std::max(blas_int{1}, 7 * std::min(m, n));                                                                            \
         } else {                                                                                                                           \
-            lrwork = (size_t)std::max(1, std::min(m, n) * std::max(5 * std::min(m, n) + 7, 2 * std::max(m, n) + 2 * std::min(m, n) + 1));  \
+            lrwork = (size_t)std::max(blas_int{1},                                                                                         \
+                                      std::min(m, n) * std::max(5 * std::min(m, n) + 7, 2 * std::max(m, n) + 2 * std::min(m, n) + 1));     \
         }                                                                                                                                  \
                                                                                                                                            \
-        iwork.resize(std::max(1, 8 * std::min(m, n)));                                                                                     \
+        iwork.resize(std::max(blas_int{1}, 8 * std::min(m, n)));                                                                           \
         rwork.resize(lrwork);                                                                                                              \
                                                                                                                                            \
         /* Query optimal working array(s) */                                                                                               \
@@ -757,12 +758,12 @@ void zlassq(blas_int n, const std::complex<double> *x, blas_int incx, double *sc
         work.resize(lwork);                                                                                                                \
                                                                                                                                            \
         /* Allocate memory for temporary arrays(s) */                                                                                      \
-        a_t.resize(lda_t *std::max(1, n));                                                                                                 \
+        a_t.resize(lda_t *std::max(blas_int{1}, n));                                                                                       \
         if (lsame(jobz, 'a') || lsame(jobz, 's') || (lsame(jobz, 'o') && (m < n))) {                                                       \
-            u_t.resize(ldu_t *std::max(1, ncols_u));                                                                                       \
+            u_t.resize(ldu_t *std::max(blas_int{1}, ncols_u));                                                                             \
         }                                                                                                                                  \
         if (lsame(jobz, 'a') || lsame(jobz, 's') || (lsame(jobz, 'o') && (m >= n))) {                                                      \
-            vt_t.resize(ldvt_t *std::max(1, n));                                                                                           \
+            vt_t.resize(ldvt_t *std::max(blas_int{1}, n));                                                                                 \
         }                                                                                                                                  \
                                                                                                                                            \
         /* Transpose input matrices */                                                                                                     \
@@ -811,9 +812,9 @@ GESDD_complex(double, z, Z);
         blas_int nrows_vt = lsame(jobvt, 'a') ? n : (lsame(jobvt, 's') ? std::min(m, n) : 1);                                              \
         blas_int ncols_vt = (lsame(jobvt, 'a') || lsame(jobvt, 's')) ? n : 1;                                                              \
                                                                                                                                            \
-        blas_int lda_t  = std::max(1, m);                                                                                                  \
-        blas_int ldu_t  = std::max(1, nrows_u);                                                                                            \
-        blas_int ldvt_t = std::max(1, nrows_vt);                                                                                           \
+        blas_int lda_t  = std::max(blas_int{1}, m);                                                                                        \
+        blas_int ldu_t  = std::max(blas_int{1}, nrows_u);                                                                                  \
+        blas_int ldvt_t = std::max(blas_int{1}, nrows_vt);                                                                                 \
                                                                                                                                            \
         /* Check leading dimensions */                                                                                                     \
         if (lda < n) {                                                                                                                     \
@@ -835,19 +836,19 @@ GESDD_complex(double, z, Z);
         if (info != 0)                                                                                                                     \
             println_abort("gesvd work array size query failed. info {}", info);                                                            \
                                                                                                                                            \
-        lwork = (int)work_query;                                                                                                           \
+        lwork = (blas_int)work_query;                                                                                                      \
                                                                                                                                            \
         /* Allocate memory for work array */                                                                                               \
         std::vector<Type> work(lwork);                                                                                                     \
                                                                                                                                            \
         /* Allocate memory for temporary array(s) */                                                                                       \
-        std::vector<Type> a_t(lda_t *std::max(1, n));                                                                                      \
+        std::vector<Type> a_t(lda_t *std::max(blas_int{1}, n));                                                                            \
         std::vector<Type> u_t, vt_t;                                                                                                       \
         if (lsame(jobu, 'a') || lsame(jobu, 's')) {                                                                                        \
-            u_t.resize(ldu_t *std::max(1, ncols_u));                                                                                       \
+            u_t.resize(ldu_t *std::max(blas_int{1}, ncols_u));                                                                             \
         }                                                                                                                                  \
         if (lsame(jobvt, 'a') || lsame(jobvt, 's')) {                                                                                      \
-            vt_t.resize(ldvt_t *std::max(1, n));                                                                                           \
+            vt_t.resize(ldvt_t *std::max(blas_int{1}, n));                                                                                 \
         }                                                                                                                                  \
                                                                                                                                            \
         /* Transpose input matrices */                                                                                                     \
@@ -892,8 +893,8 @@ GESVD(float, s, S);
                                                                                                                                            \
         Type work_query;                                                                                                                   \
                                                                                                                                            \
-        blas_int lda_t  = std::max(1, n);                                                                                                  \
-        blas_int ldvs_t = std::max(1, n);                                                                                                  \
+        blas_int lda_t  = std::max(blas_int{1}, n);                                                                                        \
+        blas_int ldvs_t = std::max(blas_int{1}, n);                                                                                        \
                                                                                                                                            \
         /* Check leading dimensions */                                                                                                     \
         if (lda < n) {                                                                                                                     \
@@ -909,15 +910,15 @@ GESVD(float, s, S);
         FC_GLOBAL(lc##gees, UC##GEES)                                                                                                      \
         (&jobvs, &sort, nullptr, &n, a, &lda_t, sdim, wr, wi, vs, &ldvs_t, &work_query, &lwork, bwork, &info);                             \
                                                                                                                                            \
-        lwork = (int)work_query;                                                                                                           \
+        lwork = (blas_int)work_query;                                                                                                      \
         /* Allocate memory for work array */                                                                                               \
         std::vector<Type> work(lwork);                                                                                                     \
                                                                                                                                            \
         /* Allocate memory for temporary array(s) */                                                                                       \
-        std::vector<Type> a_t(lda_t *std::max(1, n));                                                                                      \
+        std::vector<Type> a_t(lda_t *std::max(blas_int{1}, n));                                                                            \
         std::vector<Type> vs_t;                                                                                                            \
         if (lsame(jobvs, 'v')) {                                                                                                           \
-            vs_t.resize(ldvs_t *std::max(1, n));                                                                                           \
+            vs_t.resize(ldvs_t *std::max(blas_int{1}, n));                                                                                 \
         }                                                                                                                                  \
                                                                                                                                            \
         /* Transpose input matrices */                                                                                                     \
@@ -944,9 +945,9 @@ GEES(float, s, S);
                    blas_int ldb, Type *c, blas_int ldc, Type *scale)                                                                       \
         ->blas_int {                                                                                                                       \
         blas_int info  = 0;                                                                                                                \
-        blas_int lda_t = std::max(1, m);                                                                                                   \
-        blas_int ldb_t = std::max(1, n);                                                                                                   \
-        blas_int ldc_t = std::max(1, m);                                                                                                   \
+        blas_int lda_t = std::max(blas_int{1}, m);                                                                                         \
+        blas_int ldb_t = std::max(blas_int{1}, n);                                                                                         \
+        blas_int ldc_t = std::max(blas_int{1}, m);                                                                                         \
                                                                                                                                            \
         /* Check leading dimensions */                                                                                                     \
         if (lda < m) {                                                                                                                     \
@@ -963,9 +964,9 @@ GEES(float, s, S);
         }                                                                                                                                  \
                                                                                                                                            \
         /* Allocate memory for temporary array(s) */                                                                                       \
-        std::vector<Type> a_t(lda_t *std::max(1, m));                                                                                      \
-        std::vector<Type> b_t(ldb_t *std::max(1, n));                                                                                      \
-        std::vector<Type> c_t(ldc_t *std::max(1, n));                                                                                      \
+        std::vector<Type> a_t(lda_t *std::max(blas_int{1}, m));                                                                            \
+        std::vector<Type> b_t(ldb_t *std::max(blas_int{1}, n));                                                                            \
+        std::vector<Type> c_t(ldc_t *std::max(blas_int{1}, n));                                                                            \
                                                                                                                                            \
         /* Transpose input matrices */                                                                                                     \
         transpose<OrderMajor::Row>(m, m, a, lda, a_t, lda_t);                                                                              \
@@ -997,7 +998,7 @@ TRSYL(float, s, S);
         blas_int lwork{-1};                                                                                                                \
         Type     work_query;                                                                                                               \
                                                                                                                                            \
-        blas_int lda_t = std::max(1, m);                                                                                                   \
+        blas_int lda_t = std::max(blas_int{1}, m);                                                                                         \
                                                                                                                                            \
         /* Check leading dimensions */                                                                                                     \
         if (lda < n) {                                                                                                                     \
@@ -1008,10 +1009,10 @@ TRSYL(float, s, S);
         /* Query optimal working array size */                                                                                             \
         FC_GLOBAL(lc##orgqr, UC##ORGQR)(&m, &n, &k, a, &lda_t, tau, &work_query, &lwork, &info);                                           \
                                                                                                                                            \
-        lwork = (int)work_query;                                                                                                           \
+        lwork = (blas_int)work_query;                                                                                                      \
         std::vector<Type> work(lwork);                                                                                                     \
                                                                                                                                            \
-        std::vector<Type> a_t(lda_t *std::max(1, n));                                                                                      \
+        std::vector<Type> a_t(lda_t *std::max(blas_int{1}, n));                                                                            \
         /* Transpose input matrices */                                                                                                     \
         transpose<OrderMajor::Row>(m, n, a, lda, a_t, lda_t);                                                                              \
                                                                                                                                            \
@@ -1039,7 +1040,7 @@ ORGQR(float, s, S);
         blas_int lwork{-1};                                                                                                                \
         Type     work_query;                                                                                                               \
                                                                                                                                            \
-        blas_int lda_t = std::max(1, m);                                                                                                   \
+        blas_int lda_t = std::max(blas_int{1}, m);                                                                                         \
                                                                                                                                            \
         /* Check leading dimensions */                                                                                                     \
         if (lda < n) {                                                                                                                     \
@@ -1050,10 +1051,10 @@ ORGQR(float, s, S);
         /* Query optimal working array size */                                                                                             \
         FC_GLOBAL(lc##ungqr, UC##UNGQR)(&m, &n, &k, a, &lda_t, tau, &work_query, &lwork, &info);                                           \
                                                                                                                                            \
-        lwork = (int)(work_query.real());                                                                                                  \
+        lwork = (blas_int)(work_query.real());                                                                                             \
         std::vector<Type> work(lwork);                                                                                                     \
                                                                                                                                            \
-        std::vector<Type> a_t(lda_t *std::max(1, n));                                                                                      \
+        std::vector<Type> a_t(lda_t *std::max(blas_int{1}, n));                                                                            \
         /* Transpose input matrices */                                                                                                     \
         transpose<OrderMajor::Row>(m, n, a, lda, a_t, lda_t);                                                                              \
                                                                                                                                            \
@@ -1081,7 +1082,7 @@ UNGQR(std::complex<double>, z, Z);
         blas_int lwork{-1};                                                                                                                \
         Type     work_query;                                                                                                               \
                                                                                                                                            \
-        blas_int lda_t = std::max(1, m);                                                                                                   \
+        blas_int lda_t = std::max(blas_int{1}, m);                                                                                         \
                                                                                                                                            \
         /* Check leading dimensions */                                                                                                     \
         if (lda < n) {                                                                                                                     \
@@ -1092,11 +1093,11 @@ UNGQR(std::complex<double>, z, Z);
         /* Query optimal working array size */                                                                                             \
         FC_GLOBAL(lc##geqrf, UC##GEQRF)(&m, &n, a, &lda_t, tau, &work_query, &lwork, &info);                                               \
                                                                                                                                            \
-        lwork = (int)work_query;                                                                                                           \
+        lwork = (blas_int)work_query;                                                                                                      \
         std::vector<Type> work(lwork);                                                                                                     \
                                                                                                                                            \
         /* Allocate memory for temporary array(s) */                                                                                       \
-        std::vector<Type> a_t(lda_t *std::max(1, n));                                                                                      \
+        std::vector<Type> a_t(lda_t *std::max(blas_int{1}, n));                                                                            \
                                                                                                                                            \
         /* Transpose input matrices */                                                                                                     \
         transpose<OrderMajor::Row>(m, n, a, lda, a_t, lda_t);                                                                              \
@@ -1122,7 +1123,7 @@ UNGQR(std::complex<double>, z, Z);
         blas_int lwork{-1};                                                                                                                \
         Type     work_query;                                                                                                               \
                                                                                                                                            \
-        blas_int lda_t = std::max(1, m);                                                                                                   \
+        blas_int lda_t = std::max(blas_int{1}, m);                                                                                         \
                                                                                                                                            \
         /* Check leading dimensions */                                                                                                     \
         if (lda < n) {                                                                                                                     \
@@ -1133,11 +1134,11 @@ UNGQR(std::complex<double>, z, Z);
         /* Query optimal working array size */                                                                                             \
         FC_GLOBAL(lc##geqrf, UC##GEQRF)(&m, &n, a, &lda_t, tau, &work_query, &lwork, &info);                                               \
                                                                                                                                            \
-        lwork = (int)(work_query.real());                                                                                                  \
+        lwork = (blas_int)(work_query.real());                                                                                             \
         std::vector<Type> work(lwork);                                                                                                     \
                                                                                                                                            \
         /* Allocate memory for temporary array(s) */                                                                                       \
-        std::vector<Type> a_t(lda_t *std::max(1, n));                                                                                      \
+        std::vector<Type> a_t(lda_t *std::max(blas_int{1}, n));                                                                            \
                                                                                                                                            \
         /* Transpose input matrices */                                                                                                     \
         transpose<OrderMajor::Row>(m, n, a, lda, a_t, lda_t);                                                                              \
@@ -1173,11 +1174,11 @@ GEQRF_complex(std::complex<float>, c, C);
         std::complex<Type>              work_query;                                                                                        \
                                                                                                                                            \
         /* Allocate memory for working array(s) */                                                                                         \
-        rwork.resize(std::max(1, 2 * n));                                                                                                  \
+        rwork.resize(std::max(blas_int{1}, 2 * n));                                                                                        \
                                                                                                                                            \
-        blas_int                        lda_t  = std::max(1, n);                                                                           \
-        blas_int                        ldvl_t = std::max(1, n);                                                                           \
-        blas_int                        ldvr_t = std::max(1, n);                                                                           \
+        blas_int                        lda_t  = std::max(blas_int{1}, n);                                                                 \
+        blas_int                        ldvl_t = std::max(blas_int{1}, n);                                                                 \
+        blas_int                        ldvr_t = std::max(blas_int{1}, n);                                                                 \
         std::vector<std::complex<Type>> a_t;                                                                                               \
         std::vector<std::complex<Type>> vl_t;                                                                                              \
         std::vector<std::complex<Type>> vr_t;                                                                                              \
@@ -1201,15 +1202,15 @@ GEQRF_complex(std::complex<float>, c, C);
         (&jobvl, &jobvr, &n, a, &lda_t, w, vl, &ldvl_t, vr, &ldvr_t, &work_query, &lwork, rwork.data(), &info);                            \
                                                                                                                                            \
         /* Allocate memory for temporary array(s) */                                                                                       \
-        lwork = (int)work_query.real();                                                                                                    \
+        lwork = (blas_int)work_query.real();                                                                                               \
         work.resize(lwork);                                                                                                                \
                                                                                                                                            \
-        a_t.resize(lda_t *std::max(1, n));                                                                                                 \
+        a_t.resize(lda_t *std::max(blas_int{1}, n));                                                                                       \
         if (lsame(jobvl, 'v')) {                                                                                                           \
-            vl_t.resize(ldvl_t *std::max(1, n));                                                                                           \
+            vl_t.resize(ldvl_t *std::max(blas_int{1}, n));                                                                                 \
         }                                                                                                                                  \
         if (lsame(jobvr, 'v')) {                                                                                                           \
-            vr_t.resize(ldvr_t *std::max(1, n));                                                                                           \
+            vr_t.resize(ldvr_t *std::max(blas_int{1}, n));                                                                                 \
         }                                                                                                                                  \
                                                                                                                                            \
         /* Transpose input matrices */                                                                                                     \
@@ -1248,9 +1249,9 @@ GEEV_complex(double, z, Z);
         std::vector<Type> work;                                                                                                            \
         Type              work_query;                                                                                                      \
                                                                                                                                            \
-        blas_int lda_t  = std::max(1, n);                                                                                                  \
-        blas_int ldvl_t = std::max(1, n);                                                                                                  \
-        blas_int ldvr_t = std::max(1, n);                                                                                                  \
+        blas_int lda_t  = std::max(blas_int{1}, n);                                                                                        \
+        blas_int ldvl_t = std::max(blas_int{1}, n);                                                                                        \
+        blas_int ldvr_t = std::max(blas_int{1}, n);                                                                                        \
                                                                                                                                            \
         std::vector<Type> a_t;                                                                                                             \
         std::vector<Type> vl_t;                                                                                                            \
@@ -1276,15 +1277,15 @@ GEEV_complex(double, z, Z);
         (&jobvl, &jobvr, &n, a, &lda_t, wr.data(), wi.data(), vl, &ldvl_t, vr, &ldvr_t, &work_query, &lwork, &info);                       \
                                                                                                                                            \
         /* Allocate memory for temporary array(s) */                                                                                       \
-        lwork = (int)work_query;                                                                                                           \
+        lwork = (blas_int)work_query;                                                                                                      \
         work.resize(lwork);                                                                                                                \
                                                                                                                                            \
-        a_t.resize(lda_t *std::max(1, n));                                                                                                 \
+        a_t.resize(lda_t *std::max(blas_int{1}, n));                                                                                       \
         if (lsame(jobvl, 'v')) {                                                                                                           \
-            vl_t.resize(ldvl_t *std::max(1, n));                                                                                           \
+            vl_t.resize(ldvl_t *std::max(blas_int{1}, n));                                                                                 \
         }                                                                                                                                  \
         if (lsame(jobvr, 'v')) {                                                                                                           \
-            vr_t.resize(ldvr_t *std::max(1, n));                                                                                           \
+            vr_t.resize(ldvr_t *std::max(blas_int{1}, n));                                                                                 \
         }                                                                                                                                  \
                                                                                                                                            \
         /* Transpose input matrices */                                                                                                     \
