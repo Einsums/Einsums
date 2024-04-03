@@ -5,9 +5,10 @@
 
 #include "fft.hpp"
 
+#include "einsums/_Common.hpp"
+
 #include "einsums/Print.hpp"
 #include "einsums/Section.hpp"
-#include "einsums/_Common.hpp"
 
 #if defined(EINSUMS_HAVE_FFT_LIBRARY_MKL)
 #    include <fftw/fftw3.h>

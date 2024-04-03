@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include "einsums/_Common.hpp"
+
 #include <complex>
 
 namespace einsums::backend::linear_algebra::vendor {
@@ -15,81 +17,88 @@ void finalize();
 /*!
  * Performs matrix multiplication for general square matices of type double.
  */
-void sgemm(char transa, char transb, int m, int n, int k, float alpha, const float *a, int lda, const float *b, int ldb, float beta,
-           float *c, int ldc);
-void dgemm(char transa, char transb, int m, int n, int k, double alpha, const double *a, int lda, const double *b, int ldb, double beta,
-           double *c, int ldc);
-void cgemm(char transa, char transb, int m, int n, int k, std::complex<float> alpha, const std::complex<float> *a, int lda,
-           const std::complex<float> *b, int ldb, std::complex<float> beta, std::complex<float> *c, int ldc);
-void zgemm(char transa, char transb, int m, int n, int k, std::complex<double> alpha, const std::complex<double> *a, int lda,
-           const std::complex<double> *b, int ldb, std::complex<double> beta, std::complex<double> *c, int ldc);
+void sgemm(char transa, char transb, blas_int m, blas_int n, blas_int k, float alpha, const float *a, blas_int lda, const float *b,
+           blas_int ldb, float beta, float *c, blas_int ldc);
+void dgemm(char transa, char transb, blas_int m, blas_int n, blas_int k, double alpha, const double *a, blas_int lda, const double *b,
+           blas_int ldb, double beta, double *c, blas_int ldc);
+void cgemm(char transa, char transb, blas_int m, blas_int n, blas_int k, std::complex<float> alpha, const std::complex<float> *a,
+           blas_int lda, const std::complex<float> *b, blas_int ldb, std::complex<float> beta, std::complex<float> *c, blas_int ldc);
+void zgemm(char transa, char transb, blas_int m, blas_int n, blas_int k, std::complex<double> alpha, const std::complex<double> *a,
+           blas_int lda, const std::complex<double> *b, blas_int ldb, std::complex<double> beta, std::complex<double> *c, blas_int ldc);
 
 /*!
  * Performs matrix vector multiplication.
  */
-void sgemv(char transa, int m, int n, float alpha, const float *a, int lda, const float *x, int incx, float beta, float *y, int incy);
-void dgemv(char transa, int m, int n, double alpha, const double *a, int lda, const double *x, int incx, double beta, double *y, int incy);
-void cgemv(char transa, int m, int n, std::complex<float> alpha, const std::complex<float> *a, int lda, const std::complex<float> *x,
-           int incx, std::complex<float> beta, std::complex<float> *y, int incy);
-void zgemv(char transa, int m, int n, std::complex<double> alpha, const std::complex<double> *a, int lda, const std::complex<double> *x,
-           int incx, std::complex<double> beta, std::complex<double> *y, int incy);
+void sgemv(char transa, blas_int m, blas_int n, float alpha, const float *a, blas_int lda, const float *x, blas_int incx, float beta,
+           float *y, blas_int incy);
+void dgemv(char transa, blas_int m, blas_int n, double alpha, const double *a, blas_int lda, const double *x, blas_int incx, double beta,
+           double *y, blas_int incy);
+void cgemv(char transa, blas_int m, blas_int n, std::complex<float> alpha, const std::complex<float> *a, blas_int lda,
+           const std::complex<float> *x, blas_int incx, std::complex<float> beta, std::complex<float> *y, blas_int incy);
+void zgemv(char transa, blas_int m, blas_int n, std::complex<double> alpha, const std::complex<double> *a, blas_int lda,
+           const std::complex<double> *x, blas_int incx, std::complex<double> beta, std::complex<double> *y, blas_int incy);
 
-void saxpby(const int n, const float a, const float *x, const int incx, const float b, float *y, const int incy);
-void daxpby(const int n, const double a, const double *x, const int incx, const double b, double *y, const int incy);
-void caxpby(const int n, const std::complex<float> a, const std::complex<float> *x, const int incx, const std::complex<float> b,
-            std::complex<float> *y, const int incy);
-void zaxpby(const int n, const std::complex<double> a, const std::complex<double> *x, const int incx, const std::complex<double> b,
-            std::complex<double> *y, const int incy);
+void saxpby(const blas_int n, const float a, const float *x, const blas_int incx, const float b, float *y, const blas_int incy);
+void daxpby(const blas_int n, const double a, const double *x, const blas_int incx, const double b, double *y, const blas_int incy);
+void caxpby(const blas_int n, const std::complex<float> a, const std::complex<float> *x, const blas_int incx, const std::complex<float> b,
+            std::complex<float> *y, const blas_int incy);
+void zaxpby(const blas_int n, const std::complex<double> a, const std::complex<double> *x, const blas_int incx,
+            const std::complex<double> b, std::complex<double> *y, const blas_int incy);
 
 /*!
  * Performs symmetric matrix diagonalization.
  */
-auto ssyev(char job, char uplo, int n, float *a, int lda, float *w, float *work, int lwork) -> int;
-auto dsyev(char job, char uplo, int n, double *a, int lda, double *w, double *work, int lwork) -> int;
+auto ssyev(char job, char uplo, blas_int n, float *a, blas_int lda, float *w, float *work, blas_int lwork) -> blas_int;
+auto dsyev(char job, char uplo, blas_int n, double *a, blas_int lda, double *w, double *work, blas_int lwork) -> blas_int;
 
 /*!
  * Computes all eigenvalues and left and right eigenvectors of a general matrix.
  */
-auto sgeev(char jobvl, char jobvr, int n, float *a, int lda, std::complex<float> *w, float *vl, int ldvl, float *vr, int ldvr) -> int;
-auto dgeev(char jobvl, char jobvr, int n, double *a, int lda, std::complex<double> *w, double *vl, int ldvl, double *vr, int ldvr) -> int;
-auto cgeev(char jobvl, char jobvr, int n, std::complex<float> *a, int lda, std::complex<float> *w, std::complex<float> *vl, int ldvl,
-           std::complex<float> *vr, int ldvr) -> int;
-auto zgeev(char jobvl, char jobvr, int n, std::complex<double> *a, int lda, std::complex<double> *w, std::complex<double> *vl, int ldvl,
-           std::complex<double> *vr, int ldvr) -> int;
+auto sgeev(char jobvl, char jobvr, blas_int n, float *a, blas_int lda, std::complex<float> *w, float *vl, blas_int ldvl, float *vr,
+           blas_int ldvr) -> blas_int;
+auto dgeev(char jobvl, char jobvr, blas_int n, double *a, blas_int lda, std::complex<double> *w, double *vl, blas_int ldvl, double *vr,
+           blas_int ldvr) -> blas_int;
+auto cgeev(char jobvl, char jobvr, blas_int n, std::complex<float> *a, blas_int lda, std::complex<float> *w, std::complex<float> *vl,
+           blas_int ldvl, std::complex<float> *vr, blas_int ldvr) -> blas_int;
+auto zgeev(char jobvl, char jobvr, blas_int n, std::complex<double> *a, blas_int lda, std::complex<double> *w, std::complex<double> *vl,
+           blas_int ldvl, std::complex<double> *vr, blas_int ldvr) -> blas_int;
 
 /*!
  * Computes all eigenvalues and, optionally, eigenvectors of a Hermitian matrix.
  */
-auto cheev(char job, char uplo, int n, std::complex<float> *a, int lda, float *w, std::complex<float> *work, int lwork, float *rwork)
-    -> int;
-auto zheev(char job, char uplo, int n, std::complex<double> *a, int lda, double *w, std::complex<double> *work, int lwork, double *rwork)
-    -> int;
+auto cheev(char job, char uplo, blas_int n, std::complex<float> *a, blas_int lda, float *w, std::complex<float> *work, blas_int lwork,
+           float *rwork) -> blas_int;
+auto zheev(char job, char uplo, blas_int n, std::complex<double> *a, blas_int lda, double *w, std::complex<double> *work, blas_int lwork,
+           double *rwork) -> blas_int;
 
 /*!
  * Computes the solution to system of linear equations A * x = B for general
  * matrices.
  */
-auto sgesv(int n, int nrhs, float *a, int lda, int *ipiv, float *b, int ldb) -> int;
-auto dgesv(int n, int nrhs, double *a, int lda, int *ipiv, double *b, int ldb) -> int;
-auto cgesv(int n, int nrhs, std::complex<float> *a, int lda, int *ipiv, std::complex<float> *b, int ldb) -> int;
-auto zgesv(int n, int nrhs, std::complex<double> *a, int lda, int *ipiv, std::complex<double> *b, int ldb) -> int;
+auto sgesv(blas_int n, blas_int nrhs, float *a, blas_int lda, blas_int *ipiv, float *b, blas_int ldb) -> blas_int;
+auto dgesv(blas_int n, blas_int nrhs, double *a, blas_int lda, blas_int *ipiv, double *b, blas_int ldb) -> blas_int;
+auto cgesv(blas_int n, blas_int nrhs, std::complex<float> *a, blas_int lda, blas_int *ipiv, std::complex<float> *b, blas_int ldb)
+    -> blas_int;
+auto zgesv(blas_int n, blas_int nrhs, std::complex<double> *a, blas_int lda, blas_int *ipiv, std::complex<double> *b, blas_int ldb)
+    -> blas_int;
 
-void sscal(int n, float alpha, float *vec, int inc);
-void dscal(int n, double alpha, double *vec, int inc);
-void cscal(int n, std::complex<float> alpha, std::complex<float> *vec, int inc);
-void zscal(int n, std::complex<double> alpha, std::complex<double> *vec, int inc);
-void csscal(int n, float alpha, std::complex<float> *vec, int inc);
-void zdscal(int n, double alpha, std::complex<double> *vec, int inc);
+void sscal(blas_int n, float alpha, float *vec, blas_int inc);
+void dscal(blas_int n, double alpha, double *vec, blas_int inc);
+void cscal(blas_int n, std::complex<float> alpha, std::complex<float> *vec, blas_int inc);
+void zscal(blas_int n, std::complex<double> alpha, std::complex<double> *vec, blas_int inc);
+void csscal(blas_int n, float alpha, std::complex<float> *vec, blas_int inc);
+void zdscal(blas_int n, double alpha, std::complex<double> *vec, blas_int inc);
 
-auto sdot(int n, const float *x, int incx, const float *y, int incy) -> float;
-auto ddot(int n, const double *x, int incx, const double *y, int incy) -> double;
-auto cdot(int n, const std::complex<float> *x, int incx, const std::complex<float> *y, int incy) -> std::complex<float>;
-auto zdot(int n, const std::complex<double> *x, int incx, const std::complex<double> *y, int incy) -> std::complex<double>;
+auto sdot(blas_int n, const float *x, blas_int incx, const float *y, blas_int incy) -> float;
+auto ddot(blas_int n, const double *x, blas_int incx, const double *y, blas_int incy) -> double;
+auto cdot(blas_int n, const std::complex<float> *x, blas_int incx, const std::complex<float> *y, blas_int incy) -> std::complex<float>;
+auto zdot(blas_int n, const std::complex<double> *x, blas_int incx, const std::complex<double> *y, blas_int incy) -> std::complex<double>;
 
-void saxpy(int n, float alpha_x, const float *x, int inc_x, float *y, int inc_y);
-void daxpy(int n, double alpha_x, const double *x, int inc_x, double *y, int inc_y);
-void caxpy(int n, std::complex<float> alpha_x, const std::complex<float> *x, int inc_x, std::complex<float> *y, int inc_y);
-void zaxpy(int n, std::complex<double> alpha_x, const std::complex<double> *x, int inc_x, std::complex<double> *y, int inc_y);
+void saxpy(blas_int n, float alpha_x, const float *x, blas_int inc_x, float *y, blas_int inc_y);
+void daxpy(blas_int n, double alpha_x, const double *x, blas_int inc_x, double *y, blas_int inc_y);
+void caxpy(blas_int n, std::complex<float> alpha_x, const std::complex<float> *x, blas_int inc_x, std::complex<float> *y, blas_int inc_y);
+void zaxpy(blas_int n, std::complex<double> alpha_x, const std::complex<double> *x, blas_int inc_x, std::complex<double> *y,
+           blas_int inc_y);
 
 /*!
  * Performs a rank-1 update of a general matrix.
@@ -102,16 +111,16 @@ void zaxpy(int n, std::complex<double> alpha_x, const std::complex<double> *x, i
  *   y is an n-element vector,
  *   A is an m-by-n general matrix
  */
-void sger(int m, int n, float alpha, const float *x, int inc_x, const float *y, int inc_y, float *a, int lda);
-void dger(int m, int n, double alpha, const double *x, int inc_x, const double *y, int inc_y, double *a, int lda);
-void cger(int m, int n, std::complex<float> alpha, const std::complex<float> *x, int inc_x, const std::complex<float> *y, int inc_y,
-          std::complex<float> *a, int lda);
-void zger(int m, int n, std::complex<double> alpha, const std::complex<double> *x, int inc_x, const std::complex<double> *y, int inc_y,
-          std::complex<double> *a, int lda);
+void sger(blas_int m, blas_int n, float alpha, const float *x, blas_int inc_x, const float *y, blas_int inc_y, float *a, blas_int lda);
+void dger(blas_int m, blas_int n, double alpha, const double *x, blas_int inc_x, const double *y, blas_int inc_y, double *a, blas_int lda);
+void cger(blas_int m, blas_int n, std::complex<float> alpha, const std::complex<float> *x, blas_int inc_x, const std::complex<float> *y,
+          blas_int inc_y, std::complex<float> *a, blas_int lda);
+void zger(blas_int m, blas_int n, std::complex<double> alpha, const std::complex<double> *x, blas_int inc_x, const std::complex<double> *y,
+          blas_int inc_y, std::complex<double> *a, blas_int lda);
 
 /*!
  * Computes the LU factorization of a general M-by-N matrix A
- * using partial pivoting with row interchanges.
+ * using partial pivoting with row blas_interchanges.
  *
  * The factorization has the form
  *   A = P * L * U
@@ -120,10 +129,10 @@ void zger(int m, int n, std::complex<double> alpha, const std::complex<double> *
  * triangular (upper trapezoidal if m < n).
  *
  */
-auto sgetrf(int, int, float *, int, int *) -> int;
-auto dgetrf(int, int, double *, int, int *) -> int;
-auto cgetrf(int, int, std::complex<float> *, int, int *) -> int;
-auto zgetrf(int, int, std::complex<double> *, int, int *) -> int;
+auto sgetrf(blas_int, blas_int, float *, blas_int, blas_int *) -> blas_int;
+auto dgetrf(blas_int, blas_int, double *, blas_int, blas_int *) -> blas_int;
+auto cgetrf(blas_int, blas_int, std::complex<float> *, blas_int, blas_int *) -> blas_int;
+auto zgetrf(blas_int, blas_int, std::complex<double> *, blas_int, blas_int *) -> blas_int;
 
 /*!
  * Computes the inverse of a matrix using the LU factorization computed
@@ -134,47 +143,47 @@ auto zgetrf(int, int, std::complex<double> *, int, int *) -> int;
  *  <0 the (-INFO)-th argument has an illegal value
  *  >0 U(INFO, INFO) is exactly zero; the matrix is singular
  */
-auto sgetri(int, float *, int, const int *) -> int;
-auto dgetri(int, double *, int, const int *) -> int;
-auto cgetri(int, std::complex<float> *, int, const int *) -> int;
-auto zgetri(int, std::complex<double> *, int, const int *) -> int;
+auto sgetri(blas_int, float *, blas_int, const blas_int *) -> blas_int;
+auto dgetri(blas_int, double *, blas_int, const blas_int *) -> blas_int;
+auto cgetri(blas_int, std::complex<float> *, blas_int, const blas_int *) -> blas_int;
+auto zgetri(blas_int, std::complex<double> *, blas_int, const blas_int *) -> blas_int;
 
-auto slange(char norm_type, int m, int n, const float *A, int lda, float *work) -> float;
-auto dlange(char norm_type, int m, int n, const double *A, int lda, double *work) -> double;
-auto clange(char norm_type, int m, int n, const std::complex<float> *A, int lda, float *work) -> float;
-auto zlange(char norm_type, int m, int n, const std::complex<double> *A, int lda, double *work) -> double;
+auto slange(char norm_type, blas_int m, blas_int n, const float *A, blas_int lda, float *work) -> float;
+auto dlange(char norm_type, blas_int m, blas_int n, const double *A, blas_int lda, double *work) -> double;
+auto clange(char norm_type, blas_int m, blas_int n, const std::complex<float> *A, blas_int lda, float *work) -> float;
+auto zlange(char norm_type, blas_int m, blas_int n, const std::complex<double> *A, blas_int lda, double *work) -> double;
 
-void slassq(int n, const float *x, int incx, float *scale, float *sumsq);
-void dlassq(int n, const double *x, int incx, double *scale, double *sumsq);
-void classq(int n, const std::complex<float> *x, int incx, float *scale, float *sumsq);
-void zlassq(int n, const std::complex<double> *x, int incx, double *scale, double *sumsq);
+void slassq(blas_int n, const float *x, blas_int incx, float *scale, float *sumsq);
+void dlassq(blas_int n, const double *x, blas_int incx, double *scale, double *sumsq);
+void classq(blas_int n, const std::complex<float> *x, blas_int incx, float *scale, float *sumsq);
+void zlassq(blas_int n, const std::complex<double> *x, blas_int incx, double *scale, double *sumsq);
 
-auto sgesvd(char, char, int, int, float *, int, float *, float *, int, float *, int, float *) -> int;
-auto dgesvd(char, char, int, int, double *, int, double *, double *, int, double *, int, double *) -> int;
+auto sgesvd(char, char, blas_int, blas_int, float *, blas_int, float *, float *, blas_int, float *, blas_int, float *) -> blas_int;
+auto dgesvd(char, char, blas_int, blas_int, double *, blas_int, double *, double *, blas_int, double *, blas_int, double *) -> blas_int;
 
-auto dgesdd(char, int, int, double *, int, double *, double *, int, double *, int) -> int;
-auto sgesdd(char, int, int, float *, int, float *, float *, int, float *, int) -> int;
-auto zgesdd(char jobz, int m, int n, std::complex<double> *a, int lda, double *s, std::complex<double> *u, int ldu,
-            std::complex<double> *vt, int ldvt) -> int;
-auto cgesdd(char jobz, int m, int n, std::complex<float> *a, int lda, float *s, std::complex<float> *u, int ldu, std::complex<float> *vt,
-            int ldvt) -> int;
+auto dgesdd(char, blas_int, blas_int, double *, blas_int, double *, double *, blas_int, double *, blas_int) -> blas_int;
+auto sgesdd(char, blas_int, blas_int, float *, blas_int, float *, float *, blas_int, float *, blas_int) -> blas_int;
+auto zgesdd(char jobz, blas_int m, blas_int n, std::complex<double> *a, blas_int lda, double *s, std::complex<double> *u, blas_int ldu,
+            std::complex<double> *vt, blas_int ldvt) -> blas_int;
+auto cgesdd(char jobz, blas_int m, blas_int n, std::complex<float> *a, blas_int lda, float *s, std::complex<float> *u, blas_int ldu,
+            std::complex<float> *vt, blas_int ldvt) -> blas_int;
 
-auto dgees(char jobvs, int n, double *a, int lda, int *sdim, double *wr, double *wi, double *vs, int ldvs) -> int;
-auto sgees(char jobvs, int n, float *a, int lda, int *sdim, float *wr, float *wi, float *vs, int ldvs) -> int;
+auto dgees(char jobvs, blas_int n, double *a, blas_int lda, blas_int *sdim, double *wr, double *wi, double *vs, blas_int ldvs) -> blas_int;
+auto sgees(char jobvs, blas_int n, float *a, blas_int lda, blas_int *sdim, float *wr, float *wi, float *vs, blas_int ldvs) -> blas_int;
 
-auto dtrsyl(char trana, char tranb, int isgn, int m, int n, const double *a, int lda, const double *b, int ldb, double *c, int ldc,
-            double *scale) -> int;
-auto strsyl(char trana, char tranb, int isgn, int m, int n, const float *a, int lda, const float *b, int ldb, float *c, int ldc,
-            float *scale) -> int;
+auto dtrsyl(char trana, char tranb, blas_int isgn, blas_int m, blas_int n, const double *a, blas_int lda, const double *b, blas_int ldb,
+            double *c, blas_int ldc, double *scale) -> blas_int;
+auto strsyl(char trana, char tranb, blas_int isgn, blas_int m, blas_int n, const float *a, blas_int lda, const float *b, blas_int ldb,
+            float *c, blas_int ldc, float *scale) -> blas_int;
 
-auto sorgqr(int m, int n, int k, float *a, int lda, const float *tau) -> int;
-auto dorgqr(int m, int n, int k, double *a, int lda, const double *tau) -> int;
-auto cungqr(int m, int n, int k, std::complex<float> *a, int lda, const std::complex<float> *tau) -> int;
-auto zungqr(int m, int n, int k, std::complex<double> *a, int lda, const std::complex<double> *tau) -> int;
+auto sorgqr(blas_int m, blas_int n, blas_int k, float *a, blas_int lda, const float *tau) -> blas_int;
+auto dorgqr(blas_int m, blas_int n, blas_int k, double *a, blas_int lda, const double *tau) -> blas_int;
+auto cungqr(blas_int m, blas_int n, blas_int k, std::complex<float> *a, blas_int lda, const std::complex<float> *tau) -> blas_int;
+auto zungqr(blas_int m, blas_int n, blas_int k, std::complex<double> *a, blas_int lda, const std::complex<double> *tau) -> blas_int;
 
-auto dgeqrf(int m, int n, double *a, int lda, double *tau) -> int;
-auto sgeqrf(int m, int n, float *a, int lda, float *tau) -> int;
-auto cgeqrf(int m, int n, std::complex<float> *a, int lda, std::complex<float> *tau) -> int;
-auto zgeqrf(int m, int n, std::complex<double> *a, int lda, std::complex<double> *tau) -> int;
+auto dgeqrf(blas_int m, blas_int n, double *a, blas_int lda, double *tau) -> blas_int;
+auto sgeqrf(blas_int m, blas_int n, float *a, blas_int lda, float *tau) -> blas_int;
+auto cgeqrf(blas_int m, blas_int n, std::complex<float> *a, blas_int lda, std::complex<float> *tau) -> blas_int;
+auto zgeqrf(blas_int m, blas_int n, std::complex<double> *a, blas_int lda, std::complex<double> *tau) -> blas_int;
 
 } // namespace einsums::backend::linear_algebra::vendor

@@ -101,40 +101,21 @@ extend_einsums_target(einsums
 )
 
 extend_einsums_target(einsums
-    SOURCES
-        backends/linear_algebra/mkl/mkl.cpp
-    DEFINES
-        EINSUMS_HAVE_MKL_LAPACKE_H
-        EINSUMS_HAVE_MKL_CBLAS_H
-        EINSUMS_HAVE_CBLAS
-        EINSUMS_HAVE_LAPACKE
-        EINSUMS_LINEAR_ALGEBRA_NAMESPACE=mkl
+    PUBLIC_DEFINES
+        EINSUMS_BLAS_INTERFACE_ILP64
     CONDITION
-        EINSUMS_LINALG_VENDOR STREQUAL MKL
+        EINSUMS_LINALG_INT_INTERFACE STREQUAL ilp64
     FEATURE_INFO
-        "MKL backend"
+        "BLAS ILP64 (64-bit integers)"
 )
 
 extend_einsums_target(einsums
     PUBLIC_DEFINES
-        MKL_ILP64
-    DEFINES
-        MKL_INTERFACE=ILP64
+        EINSUMS_BLAS_INTERFACE_LP64
     CONDITION
-        (EINSUMS_LINALG_VENDOR STREQUAL MKL AND EINSUMS_LINALG_INT_INTERFACE STREQUAL ilp64)
+        EINSUMS_LINALG_INT_INTERFACE STREQUAL lp64
     FEATURE_INFO
-        "MKL ILP64 (64-bit integers)"
-)
-
-extend_einsums_target(einsums
-    PUBLIC_DEFINES
-        MKL_LP64
-    DEFINES
-        MKL_INTERFACE=LP64
-    CONDITION
-        (EINSUMS_LINALG_VENDOR STREQUAL MKL AND EINSUMS_LINALG_INT_INTERFACE STREQUAL lp64)
-    FEATURE_INFO
-        "MKL LP64 (32-bit integers)"
+        "LP64 (32-bit integers)"
 )
 
 extend_einsums_target(einsums
@@ -167,7 +148,7 @@ extend_einsums_target(einsums
     DEFINES
         EINSUMS_LINEAR_ALGEBRA_NAMESPACE=vendor
     CONDITION
-        NOT EINSUMS_LINALG_VENDOR STREQUAL MKL AND NOT EINSUMS_LINALG_VENDOR STREQUAL HIP
+        NOT EINSUMS_LINALG_VENDOR STREQUAL HIP
     FEATURE_INFO
         "Generic vendor backend"
 )
