@@ -5,9 +5,10 @@
 
 #include "fft.hpp"
 
+#include "einsums/_Common.hpp"
+
 #include "einsums/Print.hpp"
 #include "einsums/Section.hpp"
-#include "einsums/_Common.hpp"
 
 #include <mkl_dfti.h>
 

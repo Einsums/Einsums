@@ -67,7 +67,6 @@ jobs:
             #ACC- libblas=*=*accelerate
             #OBL- libblas=*=*openblas
             #OBL- openblas=*=*openmp*
-            - liblapacke
             - hdf5
             - zlib
             #- dpcpp_linux-64
@@ -108,16 +107,10 @@ jobs:
           channels: conda-forge
 
       # Step is unnecessary; remove step for debugging.
-      - name: Confound Environment - test fetched cblas/lapacke
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.build_type == 'Debug' && matrix.hptt == 'OFF' }}
-        run: |
-          conda remove liblapacke libcblas --solver=libmamba
-
-      # Step is unnecessary; remove step for debugging.
       - name: Confound Environment - test fetched everything
         if: matrix.cxx == 'L-src'
         run: |
-          conda remove catch2 fmt range-v3 liblapacke libcblas --solver=libmamba
+          conda remove catch2 fmt range-v3 --solver=libmamba
 
       - name: Conda environment
         run: |

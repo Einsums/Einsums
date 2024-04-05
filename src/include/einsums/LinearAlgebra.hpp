@@ -55,7 +55,7 @@ void sum_square(const AType<ADataType, ARank> &a, RemoveComplexT<ADataType> *sca
 }
 
 /**
- * @brief General matrix multipilication.
+ * @brief General matrix multiplication.
  *
  * Takes two rank-2 tensors ( \p A and \p B ) performs the multiplication and stores the result in to another
  * rank-2 tensor that is passed in ( \p C ).
@@ -232,6 +232,26 @@ void syev(AType<T, ARank> *A, WType<T, WRank> *W) {
     }
 }
 
+template <template <typename, size_t> typename AType, size_t ARank, template <Complex, size_t> typename WType, size_t WRank, typename T,
+          bool ComputeLeftRightEigenvectors = true>
+    requires requires {
+        requires CoreRankTensor<AType<T, ARank>, 2, T>;
+        requires CoreRankTensor<WType<AddComplexT<T>, WRank>, 1, AddComplexT<T>>;
+    }
+void geev(AType<T, ARank> *A, WType<AddComplexT<T>, WRank> *W, AType<T, ARank> *lvecs, AType<T, ARank> *rvecs) {
+    LabeledSection1(fmt::format("<ComputeLeftRightEigenvectors={}>", ComputeLeftRightEigenvectors));
+
+    assert(A->dim(0) == A->dim(1));
+    assert(W->dim(0) == A->dim(0));
+    assert(A->dim(0) == lvecs->dim(0));
+    assert(A->dim(1) == lvecs->dim(1));
+    assert(A->dim(0) == rvecs->dim(0));
+    assert(A->dim(1) == rvecs->dim(1));
+
+    blas::geev(ComputeLeftRightEigenvectors ? 'v' : 'n', ComputeLeftRightEigenvectors ? 'v' : 'n', A->dim(0), A->data(), A->stride(0),
+               W->data(), lvecs->data(), lvecs->stride(0), rvecs->data(), rvecs->stride(0));
+}
+
 template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename WType, size_t WRank, typename T,
           bool ComputeEigenvectors = true>
     requires requires {
@@ -324,8 +344,8 @@ auto gesv(AType<T, ARank> *A, BType<T, BRank> *B) -> int {
 
     auto nrhs = B->dim(0);
 
-    int               lwork = n;
-    std::vector<eint> ipiv(lwork);
+    int                   lwork = n;
+    std::vector<blas_int> ipiv(lwork);
 
     int info = blas::gesv(n, nrhs, A->data(), lda, ipiv.data(), B->data(), ldb);
     return info;
@@ -679,7 +699,7 @@ void ger(T alpha, const XYType<T, XYRank> &X, const XYType<T, XYRank> &Y, AType<
 
 template <template <typename, size_t> typename TensorType, typename T, size_t TensorRank>
     requires CoreRankTensor<TensorType<T, TensorRank>, 2, T>
-auto getrf(TensorType<T, TensorRank> *A, std::vector<eint> *pivot) -> int {
+auto getrf(TensorType<T, TensorRank> *A, std::vector<blas_int> *pivot) -> int {
     LabeledSection0();
 
     if (pivot->size() < std::min(A->dim(0), A->dim(1))) {
@@ -699,7 +719,7 @@ auto getrf(TensorType<T, TensorRank> *A, std::vector<eint> *pivot) -> int {
 
 template <template <typename, size_t> typename TensorType, typename T, size_t TensorRank>
     requires CoreRankTensor<TensorType<T, TensorRank>, 2, T>
-auto getri(TensorType<T, TensorRank> *A, const std::vector<eint> &pivot) -> int {
+auto getri(TensorType<T, TensorRank> *A, const std::vector<blas_int> &pivot) -> int {
     LabeledSection0();
 
     int result = blas::getri(A->dim(0), A->data(), A->stride(0), pivot.data());
@@ -722,13 +742,12 @@ void invert(TensorType<T, TensorRank> *A) {
 
         LabeledSection0();
 
-        std::vector<eint> pivot(A->dim(0));
-        int               result = getrf(A, &pivot);
-        if (result > 0) {
-            println("invert: getrf: the ({}, {}) element of the factor U or L is zero, and the inverse could not be computed", result,
-                    result);
-            std::abort();
-        }
+    std::vector<blas_int> pivot(A->dim(0));
+    int                   result = getrf(A, &pivot);
+    if (result > 0) {
+        println("invert: getrf: the ({}, {}) element of the factor U or L is zero, and the inverse could not be computed", result, result);
+        std::abort();
+    }
 
         result = getri(A, pivot);
         if (result > 0) {
@@ -754,12 +773,8 @@ template <template <typename, size_t> typename AType, typename ADataType, size_t
 auto norm(Norm norm_type, const AType<ADataType, ARank> &a) -> RemoveComplexT<ADataType> {
     LabeledSection0();
 
-    if (norm_type != Norm::Infinity) {
-        return blas::lange(norm_type, a->dim(0), a->dim(1), a->data(), a->stride(0), nullptr);
-    } else {
-        std::vector<RemoveComplexT<ADataType>> work(a->dim(0), 0.0);
-        return blas::lange(norm_type, a->dim(0), a->dim(1), a->data(), a->stride(0), work.data());
-    }
+    std::vector<RemoveComplexT<ADataType>> work(a.dim(0), 0.0);
+    return blas::lange(static_cast<char>(norm_type), a.dim(0), a.dim(1), a.data(), a.stride(0), work.data());
 }
 
 // Uses the original svd function found in lapack, gesvd, request all left and right vectors.
@@ -809,9 +824,9 @@ auto svd_nullspace(const AType<T, Rank> &_A) -> Tensor<T, 2> {
     // Calling svd will destroy the original data. Make a copy of it.
     Tensor<T, 2> A = _A;
 
-    eint m   = A.dim(0);
-    eint n   = A.dim(1);
-    eint lda = A.stride(0);
+    blas_int m   = A.dim(0);
+    blas_int n   = A.dim(1);
+    blas_int lda = A.stride(0);
 
     auto U = create_tensor<T>("U", m, m);
     zero(U);
@@ -954,9 +969,9 @@ auto truncated_syev(const AType<T, ARank> &A, size_t k) -> std::tuple<Tensor<T, 
 
     Tensor<double, 1> tau("tau", std::min(n, k + 5));
     // Compute QR factorization of Y
-    eint const info1 = blas::geqrf(n, k + 5, Y.data(), k + 5, tau.data());
+    blas_int const info1 = blas::geqrf(n, k + 5, Y.data(), k + 5, tau.data());
     // Extract Matrix Q out of QR factorization
-    eint const info2 = blas::orgqr(n, k + 5, tau.dim(0), Y.data(), k + 5, const_cast<const double *>(tau.data()));
+    blas_int const info2 = blas::orgqr(n, k + 5, tau.dim(0), Y.data(), k + 5, const_cast<const double *>(tau.data()));
 
     Tensor<double, 2> &Q1 = Y;
 
@@ -1025,11 +1040,11 @@ inline auto solve_continuous_lyapunov(const Tensor<T, 2> &A, const Tensor<T, 2> 
 
     /// TODO: Break this off into a separate schur function
     // Compute Schur Decomposition of A
-    Tensor<T, 2>      R = A; // R is a copy of A
-    Tensor<T, 2>      wr("Schur Real Buffer", n, n);
-    Tensor<T, 2>      wi("Schur Imaginary Buffer", n, n);
-    Tensor<T, 2>      U("Lyapunov U", n, n);
-    std::vector<eint> sdim(1);
+    Tensor<T, 2>          R = A; // R is a copy of A
+    Tensor<T, 2>          wr("Schur Real Buffer", n, n);
+    Tensor<T, 2>          wi("Schur Imaginary Buffer", n, n);
+    Tensor<T, 2>          U("Lyapunov U", n, n);
+    std::vector<blas_int> sdim(1);
     blas::gees('V', n, R.data(), n, sdim.data(), wr.data(), wi.data(), U.data(), n);
 
     // Compute F = U^T * Q * U
@@ -1054,31 +1069,31 @@ auto qr(const AType<T, ARank> &_A) -> std::tuple<Tensor<T, 2>, Tensor<T, 1>> {
     LabeledSection0();
 
     // Copy A because it will be overwritten by the QR call.
-    Tensor<T, 2> A = _A;
-    const eint   m = A.dim(0);
-    const eint   n = A.dim(1);
+    Tensor<T, 2>   A = _A;
+    const blas_int m = A.dim(0);
+    const blas_int n = A.dim(1);
 
     Tensor<double, 1> tau("tau", std::min(m, n));
     // Compute QR factorization of Y
-    eint info = blas::geqrf(m, n, A.data(), n, tau.data());
+    blas_int info = blas::geqrf(m, n, A.data(), n, tau.data());
 
     if (info != 0) {
         println_abort("{} parameter to geqrf has an illegal value.", -info);
     }
 
     // Extract Matrix Q out of QR factorization
-    // eint info2 = blas::orgqr(m, n, tau.dim(0), A.data(), n, const_cast<const double *>(tau.data()));
+    // blas_int info2 = blas::orgqr(m, n, tau.dim(0), A.data(), n, const_cast<const double *>(tau.data()));
     return {A, tau};
 }
 
 template <typename T>
 auto q(const Tensor<T, 2> &qr, const Tensor<T, 1> &tau) -> Tensor<T, 2> {
-    const eint m = qr.dim(1);
-    const eint p = qr.dim(0);
+    const blas_int m = qr.dim(1);
+    const blas_int p = qr.dim(0);
 
     Tensor<T, 2> Q = qr;
 
-    eint info = blas::orgqr(m, m, p, Q.data(), m, tau.data());
+    blas_int info = blas::orgqr(m, m, p, Q.data(), m, tau.data());
     if (info != 0) {
         println_abort("{} parameter to orgqr has an illegal value. {} {} {}", -info, m, m, p);
     }

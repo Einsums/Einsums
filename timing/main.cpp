@@ -257,6 +257,7 @@ auto main() -> int {
     }
 #endif
 
+#if 0
     auto [_t, _w] = polynomial::laguerre::gauss_laguerre(40);
     println(_t);
     println(_w);
@@ -281,6 +282,7 @@ auto main() -> int {
 
     // auto result = fft::fftfreq(8, 0.1);
     // println(result);
+#endif
 
     timer::report();
     blas::finalize();

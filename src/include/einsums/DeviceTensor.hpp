@@ -345,7 +345,24 @@ struct DeviceTensor : public ::einsums::detail::TensorBase<T, Rank> {
      *
      * @param other The tensor view to copy.
      */
-    DeviceTensor(const DeviceTensorView<T, Rank> &other);
+    DeviceTensor(const DeviceTensorView<T, Rank> &other, hipStream_t stream = 0);
+
+    /**
+     * @brief Resize a tensor.
+     *
+     * @param dims The new dimensions of a tensor.
+     */
+    void resize(Dim<Rank> dims);
+
+    /**
+     * @brief Resize a tensor.
+     *
+     * @param dims The new dimensions of a tensor.
+     */
+    template <typename... Dims>
+    auto resize(Dims... dims) -> std::enable_if_t<(std::is_integral_v<Dims> && ... && sizeof...(Dims) == Rank), void> {
+        resize(Dim<Rank>{static_cast<size_t>(dims)...});
+    }
 
     /**
      * @brief Zeroes out the tensor data.
