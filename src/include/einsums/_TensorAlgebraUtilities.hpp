@@ -212,13 +212,13 @@ constexpr auto _contiguous_positions(const std::tuple<PositionsInX...> &x, std::
  *
  * @verbatim
  * {i, 0, j, 1, k, 2}
- * @verbatim
+ * @endverbatim
  *
  * or
  *
  * @verbatim
  * {i, 0, j, 2, k 1}
- * @verbatim
+ * @endverbatim
  *
  * In the first case, the function will return true because the indices of the labels are contiguous.
  * And in the second case, the function will return false because the indices of the labels are not contiguous.

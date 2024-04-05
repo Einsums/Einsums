@@ -20,3 +20,4 @@ The examples assume that Einsums has been include with::
     :maxdepth: 2
 
     function.create.tensors
+    function.linear_algebra

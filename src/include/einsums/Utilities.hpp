@@ -177,6 +177,23 @@ auto diagonal_like(const Tensor<T, 1> &v, const Tensor<T, 2> &like) -> Tensor<T,
     return result;
 }
 
+/**
+ * @brief Create a new tensor with \p name and \p index with ones on the diagonal. Defaults to using double for the underlying data and
+ * automatically determines the rank of the tensor from \p index .
+ *
+ * A \p name is required for the tensor. \p name is used when printing and performing disk operations.
+ *
+ * @code
+ * auto a = create_identity_tensor("a", 3, 3);          // auto -> Tensor<double, 2>
+ * auto b = create_identity_tensor<float>("b" 4, 5, 6); // auto -> Tensor<float, 3>
+ * @endcode
+ *
+ * @tparam T The datatype of the underlying tensor. Defaults to double.
+ * @tparam MultiIndex The datatype of the calling parameters. In almost all cases you should just ignore this parameter.
+ * @param name The name of the new tensor.
+ * @param index The arguments needed to construct the tensor.
+ * @return A new tensor filled with random data
+ */
 template <typename T = double, typename... MultiIndex>
 auto create_identity_tensor(const std::string &name, MultiIndex... index) -> Tensor<T, sizeof...(MultiIndex)> {
     static_assert(sizeof...(MultiIndex) >= 1, "Rank parameter doesn't make sense.");
@@ -191,6 +208,23 @@ auto create_identity_tensor(const std::string &name, MultiIndex... index) -> Ten
     return A;
 }
 
+/**
+ * @brief Create a new tensor with \p name and \p index filled with ones. Defaults to using double for the underlying data and
+ * automatically determines the rank of the tensor from \p index .
+ *
+ * A \p name is required for the tensor. \p name is used when printing and performing disk operations.
+ *
+ * @code
+ * auto a = create_ones_tensor("a", 3, 3);          // auto -> Tensor<double, 2>
+ * auto b = create_ones_tensor<float>("b" 4, 5, 6); // auto -> Tensor<float, 3>
+ * @endcode
+ *
+ * @tparam T The datatype of the underlying tensor. Defaults to double.
+ * @tparam MultiIndex The datatype of the calling parameters. In almost all cases you should just ignore this parameter.
+ * @param name The name of the new tensor.
+ * @param index The arguments needed to construct the tensor.
+ * @return A new tensor filled with random data
+ */
 template <typename T = double, typename... MultiIndex>
 auto create_ones_tensor(const std::string &name, MultiIndex... index) -> Tensor<T, sizeof...(MultiIndex)> {
     static_assert(sizeof...(MultiIndex) >= 1, "Rank parameter doesn't make sense.");
@@ -201,11 +235,42 @@ auto create_ones_tensor(const std::string &name, MultiIndex... index) -> Tensor<
     return A;
 }
 
+/**
+ * @brief Creates a new tensor with the same rank and dimensions of the provided tensor.
+ *
+ * The tensor name will not be copied from the provided tensor. Be sure to call set_name on the new tensor.
+ *
+ * @code
+ * auto a = create_ones_tensor("a", 3, 3);          // auto -> Tensor<double, 2>
+ * auto b = create_tensor_like(a);                  // auto -> Tensor<double, 2>
+ * @endcode
+ *
+ * @tparam TensorType The basic type of the provided tensor.
+ * @tparam DataType The underlying datatype of the provided tensor.
+ * @tparam Rank The rank of the provided tensor.
+ * @param tensor The provided tensor to copy the dimensions from.
+ * @return A new tensor with the same rank and dimensions as the provided tensor.
+ */
 template <template <typename, size_t> typename TensorType, typename DataType, size_t Rank>
 auto create_tensor_like(const TensorType<DataType, Rank> &tensor) -> Tensor<DataType, Rank> {
     return Tensor<DataType, Rank>{tensor.dims()};
 }
 
+/**
+ * @brief Creates a new tensor with the same rank and dimensions of the provided tensor.
+ *
+ * @code
+ * auto a = create_ones_tensor("a", 3, 3);          // auto -> Tensor<double, 2>
+ * auto b = create_tensor_like("b", a);             // auto -> Tensor<double, 2>
+ * @endcode
+ *
+ * @tparam TensorType The basic type of the provided tensor.
+ * @tparam DataType The underlying datatype of the provided tensor.
+ * @tparam Rank The rank of the provided tensor.
+ * @param name The name of the new tensor.
+ * @param tensor The provided tensor to copy the dimensions from.
+ * @return A new tensor with the same rank and dimensions as the provided tensor.
+ */
 template <template <typename, size_t> typename TensorType, typename DataType, size_t Rank>
 auto create_tensor_like(const std::string name, const TensorType<DataType, Rank> &tensor) -> Tensor<DataType, Rank> {
     auto result = Tensor<DataType, Rank>{tensor.dims()};

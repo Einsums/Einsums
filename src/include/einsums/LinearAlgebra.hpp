@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //----------------------------------------------------------------------------------------------
 
+/** \file LinearAlgebra.hoo
+ * Contains Einsums' Tensor-based linear algebra functions.
+ */
+
 #pragma once
 
 #include "einsums/_Common.hpp"
@@ -26,6 +30,15 @@
 
 BEGIN_EINSUMS_NAMESPACE_HPP(einsums::linear_algebra)
 
+/**
+ * @brief Computes the square sum of a tensor.
+ * @tparam AType
+ * @tparam ADataType
+ * @tparam ARank
+ * @param a
+ * @param scale
+ * @param sumsq
+ */
 template <template <typename, size_t> typename AType, typename ADataType, size_t ARank>
     requires CoreRankTensor<AType<ADataType, ARank>, 1, ADataType>
 void sum_square(const AType<ADataType, ARank> &a, RemoveComplexT<ADataType> *scale, RemoveComplexT<ADataType> *sumsq) {
@@ -57,8 +70,10 @@ void sum_square(const AType<ADataType, ARank> &a, RemoveComplexT<ADataType> *sca
  *
  * @tparam TransA Tranpose A?
  * @tparam TransB Tranpose B?
+ * @param alpha Scaling factor for the product of A and B
  * @param A First input tensor
  * @param B Second input tensor
+ * @param beta Scaling factor for the output tensor C
  * @param C Output tensor
  * @tparam T the underlying data type
  */
@@ -93,6 +108,7 @@ void gemm(const T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const
  *
  * @tparam TransA Tranpose A?
  * @tparam TransB Tranpose B?
+ * @param alpha Scaling factor for the product of A and B
  * @param A First input tensor
  * @param B Second input tensor
  * @returns resulting tensor
