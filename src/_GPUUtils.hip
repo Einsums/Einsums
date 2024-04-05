@@ -438,7 +438,7 @@ void initialize() {
         detail::default_streams = new std::vector<hipStream_t>(omp_get_num_threads());
 
         for(int i = 0; i < omp_get_num_threads(); i++) {
-            hip_catch(hipStreamCreate(&(detail::default_streams->at(i))));
+            hip_catch(hipStreamCreateWithFlags(&(detail::default_streams->at(i)), hipStreamNonBlocking));
         }
     }
 

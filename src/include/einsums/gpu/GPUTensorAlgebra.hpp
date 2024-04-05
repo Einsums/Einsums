@@ -914,6 +914,7 @@ auto einsum(const U UC_prefactor, const ::std::tuple<CIndices...> &C_indices, CT
                 continue;
             }
             ::einsums::tensor_algebra::detail::einsum<false>(C_prefactor, C_indices, &(C->block(i)), AB_prefactor, A_indices, A[i], B_indices, B[i]);
+            gpu::stream_wait();
         }
     } else if constexpr (einsums::detail::IsDeviceRankBlockTensorV<AType<ADataType, ARank>, ARank, ADataType> &&
                          einsums::detail::IsDeviceRankBlockTensorV<BType<BDataType, BRank>, BRank, BDataType> && CRank == 0) {
@@ -943,6 +944,8 @@ auto einsum(const U UC_prefactor, const ::std::tuple<CIndices...> &C_indices, CT
             temp = 0;
 
             ::einsums::tensor_algebra::detail::einsum<false>(C_prefactor, C_indices, &temp, AB_prefactor, A_indices, A[i], B_indices, B[i]);
+
+            gpu::stream_wait();
 
             *C += temp;
         }

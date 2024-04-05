@@ -137,7 +137,9 @@ void dot(CDataType C_prefactor, CType<CDataType, 0> &C,
             C *= C_prefactor;
         }
 
-#pragma omp parallel for reduction(+ : C)
+        CDataType out = CDataType{0};
+
+#pragma omp parallel for reduction(+ : out)
         for (int i = 0; i < A.num_blocks(); i++) {
 
             if (A.block_dim(i) == 0) {
@@ -146,10 +148,12 @@ void dot(CDataType C_prefactor, CType<CDataType, 0> &C,
             CType<CDataType, 0> temp;
             dot(CDataType{0}, temp, AB_prefactor, A.block(i), B.block(i));
 
-            C += temp;
+            gpu::stream_wait();
 
-            stream_wait();
+            out += temp;
         }
+
+        C = out;
 
     } else if constexpr (einsums::detail::IsDeviceRankBlockTensorV<AType<ADataType, ARank>, ARank, ADataType> &&
                          !einsums::detail::IsDeviceRankBlockTensorV<BType<BDataType, BRank>, BRank, BDataType>) {
@@ -481,7 +485,7 @@ int gesv(AType<T, ARank> *A, BType<T, BRank> *B) {
         }
 
         return info_out;
-    }
+    } else {
 
     LabeledSection0();
 
@@ -510,6 +514,7 @@ int gesv(AType<T, ARank> *A, BType<T, BRank> *B) {
     einsums::gpu::hip_catch(hipFreeAsync(ipiv, gpu::get_stream()));
 
     return info;
+    }
 }
 
 template <template <typename, size_t> typename XType, template <typename, size_t> typename YType, typename T, size_t Rank>
