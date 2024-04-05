@@ -11,7 +11,6 @@
 
 #ifdef __HIP__
 #include "einsums/_GPUUtils.hpp"
-#include "backends/linear_algebra/hipblas/hipblas.hpp"
 #endif
 
 #include <h5cpp/all>
@@ -27,7 +26,6 @@ auto initialize() -> int {
 
 #ifdef __HIP__
     einsums::gpu::initialize();
-    einsums::backend::linear_algebra::hipblas::initialize();
 #endif
 
     timer::initialize();
@@ -47,8 +45,8 @@ void finalize(bool timerReport) {
     blas::finalize();
 
 #ifdef __HIP__    
-    einsums::backend::linear_algebra::hipblas::finalize();
     einsums::gpu::finalize();
+
 #endif
 
 #if defined(EINSUMS_IN_PARALLEL)

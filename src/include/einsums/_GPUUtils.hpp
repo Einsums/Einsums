@@ -12,6 +12,8 @@
 #include <hip/hip_complex.h>
 #include <hip/hip_runtime.h>
 #include <hip/hip_runtime_api.h>
+#include <hipblas/hipblas.h>
+#include <hipsolver/hipsolver.h>
 #include <omp.h>
 
 BEGIN_EINSUMS_NAMESPACE_HPP(einsums::gpu)
@@ -182,7 +184,263 @@ using ErrorRuntimeMemory               = hip_exception<hipErrorRuntimeMemory>;
 using ErrorRuntimeOther                = hip_exception<hipErrorRuntimeOther>;
 using ErrorTbd                         = hip_exception<hipErrorTbd>;
 
-} // namespace detail
+/**
+ * @struct hipblas_exception
+ * @brief Wraps hipBLAS status codes into an exception.
+ *
+ * Wraps hipBLAS status codes so that they can be thrown and caught. There is one code for each named hipBLAS status code.
+ *
+ * @tparam error The status code handled by this exception.
+ */
+template <hipblasStatus_t error>
+struct hipblas_exception : public std::exception {
+  private:
+    ::std::string message;
+
+  public:
+    /**
+     * @brief Construct a new hipblas_exception.
+     */
+    hipblas_exception(const char *diagnostic) : message{""} {
+        message += diagnostic;
+        message += hipblasStatusToString(error);
+    }
+
+    /**
+     * @brief Return the error string corresponding to the status code.
+     */
+    const char *what() const _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW override { return message.c_str(); }
+
+    /**
+     * @brief Equality operator.
+     */
+    template <hipblasStatus_t other_error>
+    bool operator==(const hipblas_exception<other_error> &other) const {
+        return error == other_error;
+    }
+
+    /**
+     * @brief Equality operator.
+     */
+    bool operator==(hipblasStatus_t other) const { return error == other; }
+
+    /**
+     * @brief Inequality operator.
+     */
+    template <hipblasStatus_t other_error>
+    bool operator!=(const hipblas_exception<other_error> &other) const {
+        return error != other_error;
+    }
+
+    /**
+     * @brief Inequality operator.
+     */
+    bool operator!=(hipblasStatus_t other) const { return error != other; }
+
+    friend bool operator==(hipblasStatus_t, const hipblas_exception<error> &);
+    friend bool operator!=(hipblasStatus_t, const hipblas_exception<error> &);
+};
+
+/**
+ * @brief Reverse equality operator.
+ */
+template <hipblasStatus_t error>
+bool operator==(hipblasStatus_t first, const hipblas_exception<error> &second) {
+    return first == error;
+}
+
+/**
+ * @brief Reverse inequality operator.
+ */
+template <hipblasStatus_t error>
+bool operator!=(hipblasStatus_t first, const hipblas_exception<error> &second) {
+    return first != error;
+}
+
+// Put the status code documentaion in a different header for cleaner code.
+#include "einsums/gpu/hipblas_status_doc.hpp"
+
+using blasSuccess         = hipblas_exception<HIPBLAS_STATUS_SUCCESS>;
+using blasNotInitialized  = hipblas_exception<HIPBLAS_STATUS_NOT_INITIALIZED>;
+using blasAllocFailed     = hipblas_exception<HIPBLAS_STATUS_ALLOC_FAILED>;
+using blasInvalidValue    = hipblas_exception<HIPBLAS_STATUS_INVALID_VALUE>;
+using blasMappingError    = hipblas_exception<HIPBLAS_STATUS_MAPPING_ERROR>;
+using blasExecutionFailed = hipblas_exception<HIPBLAS_STATUS_EXECUTION_FAILED>;
+using blasInternalError   = hipblas_exception<HIPBLAS_STATUS_INTERNAL_ERROR>;
+using blasNotSupported    = hipblas_exception<HIPBLAS_STATUS_NOT_SUPPORTED>;
+using blasArchMismatch    = hipblas_exception<HIPBLAS_STATUS_ARCH_MISMATCH>;
+using blasHandleIsNullptr = hipblas_exception<HIPBLAS_STATUS_HANDLE_IS_NULLPTR>;
+using blasInvalidEnum     = hipblas_exception<HIPBLAS_STATUS_INVALID_ENUM>;
+using blasUnknown         = hipblas_exception<HIPBLAS_STATUS_UNKNOWN>;
+
+/**
+ * @brief Create a string representation of an hipsolverStatus_t value.
+ * Create a string representation of an hipsolverStatus_t value. There is no
+ * equivalent function in hipSolver at this point in time, so a custom one
+ * had to be made.
+ *
+ * @param status The status code to convert.
+ *
+ * @return A pointer to a string containing a brief message detailing the status.
+ */
+EINSUMS_EXPORT const char *hipsolverStatusToString(hipsolverStatus_t status);
+
+/**
+ * @struct hipsolver_exception
+ *
+ * @brief Wraps hipSolver status codes into an exception.
+ *
+ * Wraps hipSolver status codes into an exception which allows them to be thrown and caught.
+ *
+ * @tparam error The status code wrapped by the object.
+ */
+template <hipsolverStatus_t error>
+struct hipsolver_exception : public std::exception {
+  private:
+    ::std::string message;
+
+  public:
+    /**
+     * Construct a new exception.
+     */
+    hipsolver_exception(const char *diagnostic) : message{""} {
+        message += diagnostic;
+        message += hipsolverStatusToString(error);
+    }
+
+    /**
+     * Return the error string.
+     */
+    const char *what() const _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW override { return message.c_str(); }
+
+    /**
+     * Equality operator.
+     */
+    template <hipsolverStatus_t other_error>
+    bool operator==(const hipsolver_exception<other_error> &other) const {
+        return error == other_error;
+    }
+
+    /**
+     * Equality operator.
+     */
+    bool operator==(hipsolverStatus_t other) const { return error == other; }
+
+    /**
+     * Inquality operator.
+     */
+    template <hipsolverStatus_t other_error>
+    bool operator!=(const hipsolver_exception<other_error> &other) const {
+        return error != other_error;
+    }
+
+    /**
+     * Inquality operator.
+     */
+    bool operator!=(hipsolverStatus_t other) const { return error != other; }
+
+    friend bool operator==(hipsolverStatus_t, const hipsolver_exception<error> &);
+    friend bool operator!=(hipsolverStatus_t, const hipsolver_exception<error> &);
+};
+
+/**
+ * Reverse equality operator.
+ */
+template <hipsolverStatus_t error>
+bool operator==(hipsolverStatus_t first, const hipsolver_exception<error> &second) {
+    return first == error;
+}
+
+/**
+ * Reverse inequality operator.
+ */
+template <hipsolverStatus_t error>
+bool operator!=(hipsolverStatus_t first, const hipsolver_exception<error> &second) {
+    return first != error;
+}
+
+using solverSuccess          = hipsolver_exception<HIPSOLVER_STATUS_SUCCESS>;
+using solverNotInitialized   = hipsolver_exception<HIPSOLVER_STATUS_NOT_INITIALIZED>;
+using solverAllocFailed      = hipsolver_exception<HIPSOLVER_STATUS_ALLOC_FAILED>;
+using solverInvalidValue     = hipsolver_exception<HIPSOLVER_STATUS_INVALID_VALUE>;
+using solverMappingError     = hipsolver_exception<HIPSOLVER_STATUS_MAPPING_ERROR>;
+using solverExecutionFailed  = hipsolver_exception<HIPSOLVER_STATUS_EXECUTION_FAILED>;
+using solverInternalError    = hipsolver_exception<HIPSOLVER_STATUS_INTERNAL_ERROR>;
+using solverFuncNotSupported = hipsolver_exception<HIPSOLVER_STATUS_NOT_SUPPORTED>;
+using solverArchMismatch     = hipsolver_exception<HIPSOLVER_STATUS_ARCH_MISMATCH>;
+using solverHandleIsNullptr  = hipsolver_exception<HIPSOLVER_STATUS_HANDLE_IS_NULLPTR>;
+using solverInvalidEnum      = hipsolver_exception<HIPSOLVER_STATUS_INVALID_ENUM>;
+using solverUnknown          = hipsolver_exception<HIPSOLVER_STATUS_UNKNOWN>;
+// using solverZeroPivot = hipsolver_exception<HIPSOLVER_STATUS_ZERO_PIVOT>;
+}
+
+// Get the handles used internally. Can be used by other blas and solver processes.
+/**
+ * @brief Get the internal hipBLAS handle.
+ *
+ * @return The current internal hipBLAS handle.
+ */
+EINSUMS_EXPORT hipblasHandle_t get_blas_handle();
+EINSUMS_EXPORT hipblasHandle_t get_blas_handle(int thread_id);
+
+/**
+ * @brief Get the internal hipSolver handle.
+ *
+ * @return The current internal hipSolver handle.
+ */
+EINSUMS_EXPORT hipsolverHandle_t get_solver_handle();
+EINSUMS_EXPORT hipsolverHandle_t get_solver_handle(int thread_id);
+
+// Set the handles used internally. Useful to avoid creating multiple contexts.
+/**
+ * @brief Set the internal hipBLAS handle.
+ *
+ * @param value The new handle.
+ *
+ * @return The new handle.
+ */
+EINSUMS_EXPORT hipblasHandle_t set_blas_handle(hipblasHandle_t value);
+EINSUMS_EXPORT hipblasHandle_t set_blas_handle(hipblasHandle_t value, int thread_id);
+
+/**
+ * @brief Set the internal hipSolver handle.
+ *
+ * @param value The new handle.
+ *
+ * @return The new handle.
+ */
+EINSUMS_EXPORT hipsolverHandle_t set_solver_handle(hipsolverHandle_t value);
+EINSUMS_EXPORT hipsolverHandle_t set_solver_handle(hipsolverHandle_t value, int thread_id);
+
+/**
+ * @brief Takes a status code as an argument and throws the appropriate exception.
+ *
+ * @param status The status to convert.
+ * @param throw_success If true, then an exception will be thrown if a success status is passed. If false, then a success will cause the
+ * function to exit quietly.
+ */
+__host__ EINSUMS_EXPORT void __hipblas_catch__(hipblasStatus_t status, const char *diagnostic, bool throw_success = false);
+
+/**
+ * @brief Takes a status code as an argument and throws the appropriate exception.
+ *
+ * @param status The status to convert.
+ * @param throw_success If true, then an exception will be thrown if a success status is passed. If false, then a success will cause the
+ * function to exit quietly.
+ */
+__host__ EINSUMS_EXPORT void __hipsolver_catch__(hipsolverStatus_t status, const char *diagnostic, bool throw_success = false);
+
+#define hipblas_catch_STR1(x) #x
+#define hipblas_catch_STR(x)  hipblas_catch_STR1(x)
+#define hipblas_catch(condition, ...)                                                                                                      \
+    __hipblas_catch__((condition), __FILE__ ":" hipblas_catch_STR(__LINE__) ": " __VA_OPT__(, ) __VA_ARGS__)
+
+#define hipsolver_catch_STR1(x) #x
+#define hipsolver_catch_STR(x)  hipblas_catch_STR1(x)
+#define hipsolver_catch(condition, ...)                                                                                                    \
+    __hipsolver_catch__((condition), __FILE__ ":" hipsolver_catch_STR(__LINE__) ": " __VA_OPT__(, ) __VA_ARGS__)
+
+
 
 /**
  * Wraps up an HIP function to catch any error codes. If the function does not return
@@ -247,5 +505,43 @@ __host__ inline dim3 blocks(size_t compute_size) {
         return dim3(16);
     }
 }
+
+/**
+ * @brief Wait on a stream.
+ */
+__host__
+EINSUMS_EXPORT void stream_wait(hipStream_t stream);
+
+/**
+ * @brief Wait on the current thread's stream.
+ */
+__host__
+EINSUMS_EXPORT void stream_wait();
+
+/**
+ * @brief Wait on all streams managed by Einsums.
+ */
+__host__
+EINSUMS_EXPORT void all_stream_wait();
+
+// Because I want it to be plural as well
+#define all_streams_wait() all_stream_wait()
+
+/**
+ * @brief Gets the stream assigned to the current thread.
+ */
+EINSUMS_EXPORT hipStream_t get_stream();
+EINSUMS_EXPORT hipStream_t get_stream(int thread_id);
+
+/**
+ * @brief Sets the stream assigned to the current thread.
+ */
+EINSUMS_EXPORT void set_stream(hipStream_t stream);
+EINSUMS_EXPORT void set_stream(hipStream_t stream, int thread_id);
+
+inline void device_synchronize() {
+    hip_catch(hipDeviceSynchronize());
+}
+
 
 END_EINSUMS_NAMESPACE_HPP(einsums::gpu)

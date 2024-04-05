@@ -4,6 +4,7 @@
 //----------------------------------------------------------------------------------------------
 
 #include "einsums/GPUTensorAlgebra.hpp"
+#include "einsums/TensorAlgebra.hpp"
 
 #include "einsums/GPULinearAlgebra.hpp"
 #include "einsums/STL.hpp"
@@ -35,8 +36,8 @@ TEST_CASE("Test dependence GPU timing", "[jobs][gpu]") {
         timer::push("Sequential GPU");
 
         for(int sentinel = 0; sentinel < 100; sentinel++) {
-            einsums::tensor_algebra::gpu::einsum(Indices{i, j}, &C, Indices{i, k}, A, Indices{k, j}, B);
-            einsums::tensor_algebra::gpu::einsum(Indices{i, j}, &D, Indices{i, k}, A, Indices{k, j}, B);
+            einsums::tensor_algebra::einsum(Indices{i, j}, &C, Indices{i, k}, A, Indices{k, j}, B);
+            einsums::tensor_algebra::einsum(Indices{i, j}, &D, Indices{i, k}, A, Indices{k, j}, B);
         }
 
         timer::pop();
@@ -51,12 +52,12 @@ TEST_CASE("Test dependence GPU timing", "[jobs][gpu]") {
             for(int sentinel = 0; sentinel < 100; sentinel++) {
 #       pragma omp task depend(in: A, B), depend(out: C)
                 {
-                    einsums::tensor_algebra::gpu::einsum(Indices{i, j}, &C, Indices{i, k}, A, Indices{k, j}, B);
+                    einsums::tensor_algebra::einsum(Indices{i, j}, &C, Indices{i, k}, A, Indices{k, j}, B);
                 }
 
 #       pragma omp task depend(in: A, B), depend(out: D)
                 {
-                    einsums::tensor_algebra::gpu::einsum(Indices{i, j}, &D, Indices{i, k}, A, Indices{k, j}, B);
+                    einsums::tensor_algebra::einsum(Indices{i, j}, &D, Indices{i, k}, A, Indices{k, j}, B);
                 }
             }
 

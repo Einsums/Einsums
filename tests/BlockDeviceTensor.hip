@@ -57,7 +57,7 @@ TEST_CASE("GPU Block Tensor creation", "[gpu][tensor][block-tensor]") {
     }
 
     // Perform basic matrix multiplication
-    einsums::linear_algebra::gpu::gemm<false, false>(1.0, A, B, 0.0, &C);
+    einsums::linear_algebra::gemm<false, false>(1.0, A, B, 0.0, &C);
 
     for (int i = 0; i < 6; i++) {
         for (int j = 0; j < 6; j++) {

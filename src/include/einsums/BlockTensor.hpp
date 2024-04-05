@@ -770,10 +770,52 @@ struct BlockDeviceTensor : public BlockTensorBase<T, Rank, DeviceTensor> {
         return std::apply(BlockTensorBase<T, Rank, DeviceTensor>::_blocks.at(block), index_list);
     }
 };
-
 #endif
-
 END_EINSUMS_NAMESPACE_HPP(einsums)
+
+#ifdef __HIP__
+template <size_t Rank, typename T>
+void println(const einsums::BlockDeviceTensor<T, Rank> &A, TensorPrintOptions options = {}) {
+    println("Name: {}", A.name());
+    {
+        print::Indent const indent{};
+        println("Block Tensor");
+        println("Data Type: {}", type_name<T>());
+
+        for (int i = 0; i < A.num_blocks(); i++) {
+            println(A[i], options);
+        }
+    }
+}
+
+template <size_t Rank, typename T>
+void fprintln(FILE *fp, const einsums::BlockDeviceTensor<T, Rank> &A, TensorPrintOptions options = {}) {
+    fprintln(fp, "Name: {}", A.name());
+    {
+        print::Indent const indent{};
+        fprintln(fp, "Block Tensor");
+        fprintln(fp, "Data Type: {}", type_name<T>());
+
+        for (int i = 0; i < A.num_blocks(); i++) {
+            fprintln(fp, A[i], options);
+        }
+    }
+}
+
+template <size_t Rank, typename T>
+void fprintln(std::ostream &os, const einsums::BlockDeviceTensor<T, Rank> &A, TensorPrintOptions options = {}) {
+    fprintln(os, "Name: {}", A.name());
+    {
+        print::Indent const indent{};
+        fprintln(os, "Block Tensor");
+        fprintln(os, "Data Type: {}", type_name<T>());
+
+        for (int i = 0; i < A.num_blocks(); i++) {
+            fprintln(os, A[i], options);
+        }
+    }
+}
+#endif
 
 template <size_t Rank, typename T>
 void println(const einsums::BlockTensor<T, Rank> &A, TensorPrintOptions options = {}) {

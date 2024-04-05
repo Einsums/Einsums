@@ -18,7 +18,7 @@ struct DeviceTensorView;
 template <typename T, size_t Rank>
 struct DeviceTensor;
 
-template<typename T, size_t Rank>
+template <typename T, size_t Rank>
 struct BlockDeviceTensor;
 
 namespace detail {
@@ -29,57 +29,6 @@ namespace detail {
  * @brief Enum that specifies how device tensors store data and make it available to the GPU.
  */
 enum HostToDeviceMode { DEV_ONLY, MAPPED, PINNED };
-
-/**
- * @struct IsDeviceRankTensor
- *
- * @brief Struct for specifying that a tensor is device compatible.
- */
-template <typename D, size_t Rank, typename T>
-struct IsDeviceRankTensor : public std::bool_constant<std::is_same_v<std::decay_t<D>, DeviceTensor<T, Rank>> ||
-                                                      std::is_same_v<std::decay_t<D>, DeviceTensorView<T, Rank>> ||
-                                                      std::is_same_v<std::decay_t<D>, BlockDeviceTensor<T, Rank>>> {};
-
-/**
- * @struct IsDeviceRankBlockTensor
- *
- * @brief Struct for specifying that a tensor is device compatible, and is block diagonal.
- */
-template<typename D, size_t Rank, typename T>
-struct IsDeviceRankBlockTensor : public std::bool_constant<std::is_same_v<std::decay_t<D>, BlockDeviceTensor<T, Rank>>> {};
-
-/**
- * @property IsDeviceRankTensorV
- *
- * @brief True if the tensor is device compatible.
- */
-template <typename D, size_t Rank, typename T>
-inline constexpr bool IsDeviceRankTensorV = IsDeviceRankTensor<D, Rank, T>::value;
-
-
-/**
- * @property IsDeviceRankTensorV
- *
- * @brief True if the tensor is device compatible and is block diagonal.
- */
-template <typename D, size_t Rank, typename T>
-inline constexpr bool IsDeviceRankBlockTensorV = IsDeviceRankBlockTensor<D, Rank, T>::value;
-
-/**
- * @concept DeviceRankTensor
- *
- * @brief Concept for testing whether a tensor parameter is available to the GPU.
- */
-template <typename Input, size_t Rank, typename DataType = double>
-concept DeviceRankTensor = detail::IsDeviceRankTensorV<Input, Rank, DataType>;
-
-/**
- * @concept DeviceRankBlockTensor
- *
- * @brief Concept for testing whether a tensor parameter is available to the GPU and is block diagonal.
- */
-template <typename Input, size_t Rank, typename DataType = double>
-concept DeviceRankBlockTensor = detail::IsDeviceRankBlockTensorV<Input, Rank, DataType>;
 
 /**
  * Turns a single sentinel value into an index combination.
@@ -173,7 +122,7 @@ class HostDevReference {
      * Get the value of the reference.
      */
     T get() const {
-        if(_ptr == nullptr) {
+        if (_ptr == nullptr) {
             return T{0};
         }
         if (is_on_host) {
@@ -396,19 +345,19 @@ struct DeviceTensor : public ::einsums::detail::TensorBase<T, Rank> {
      *
      * @param other The tensor view to copy.
      */
-    DeviceTensor(const DeviceTensorView<T, Rank> &other, hipStream_t stream = 0);
+    DeviceTensor(const DeviceTensorView<T, Rank> &other);
 
     /**
      * @brief Zeroes out the tensor data.
      */
-    void zero(hipStream_t stream = 0);
+    void zero();
 
     /**
      * @brief Set the all entries to the given value.
      *
      * @param value Value to set the elements to.
      */
-    void set_all(T value, hipStream_t stream = 0);
+    void set_all(T value);
 
     /**
      * @brief Returns a pointer to the data.
@@ -471,6 +420,13 @@ struct DeviceTensor : public ::einsums::detail::TensorBase<T, Rank> {
         }
     auto data(MultiIndex... index) -> dev_datatype *;
 
+    template <typename... MultiIndex>
+        requires requires {
+            requires NoneOfType<AllT, MultiIndex...>;
+            requires NoneOfType<Range, MultiIndex...>;
+        }
+    auto data(MultiIndex... index) const -> const dev_datatype *;
+
     /**
      * Sends data from the host to the device.
      *
@@ -502,18 +458,18 @@ struct DeviceTensor : public ::einsums::detail::TensorBase<T, Rank> {
     /**
      * Assignments with a stream.
      */
-    DeviceTensor<T, Rank> &assign(const DeviceTensor<T, Rank> &other, hipStream_t stream = 0);
+    DeviceTensor<T, Rank> &assign(const DeviceTensor<T, Rank> &other);
     DeviceTensor<T, Rank> &assign(const Tensor<T, Rank> &other);
 
     template <typename TOther>
         requires(!std::same_as<T, TOther>)
-    DeviceTensor<T, Rank> &assign(const DeviceTensor<TOther, Rank> &other, hipStream_t stream = 0);
+    DeviceTensor<T, Rank> &assign(const DeviceTensor<TOther, Rank> &other);
 
-    DeviceTensor<T, Rank> &assign(const DeviceTensorView<T, Rank> &other, hipStream_t stream = 0);
+    DeviceTensor<T, Rank> &assign(const DeviceTensorView<T, Rank> &other);
 
     template <typename TOther>
         requires(!std::same_as<T, TOther>)
-    DeviceTensor<T, Rank> &assign(const DeviceTensorView<TOther, Rank> &other, hipStream_t stream = 0);
+    DeviceTensor<T, Rank> &assign(const DeviceTensorView<TOther, Rank> &other);
 
     /**
      * @brief Subscripts into the tensor.
@@ -596,44 +552,28 @@ struct DeviceTensor : public ::einsums::detail::TensorBase<T, Rank> {
     /**
      * @brief Operate and assign every element with a scalar.
      */
-    DeviceTensor<T, Rank> &add_assign(const T &other, hipStream_t stream = 0);
-    DeviceTensor<T, Rank> &mult_assign(const T &other, hipStream_t stream = 0);
-    DeviceTensor<T, Rank> &sub_assign(const T &other, hipStream_t stream = 0);
-    DeviceTensor<T, Rank> &div_assign(const T &other, hipStream_t stream = 0);
+    DeviceTensor<T, Rank> &add_assign(const T &other);
+    DeviceTensor<T, Rank> &mult_assign(const T &other);
+    DeviceTensor<T, Rank> &sub_assign(const T &other);
+    DeviceTensor<T, Rank> &div_assign(const T &other);
 
-    DeviceTensor<T, Rank> &operator*=(const T &other) {
-        return this->mult_assign(other);
-    }
-    DeviceTensor<T, Rank> &operator+=(const T &other) {
-        return this->add_assign(other);
-    }
-    DeviceTensor<T, Rank> &operator-=(const T &other) {
-        return this->sub_assign(other);
-    }
-    DeviceTensor<T, Rank> &operator/=(const T &other) {
-        return this->div_assign(other);
-    }
+    DeviceTensor<T, Rank> &operator*=(const T &other) { return this->mult_assign(other); }
+    DeviceTensor<T, Rank> &operator+=(const T &other) { return this->add_assign(other); }
+    DeviceTensor<T, Rank> &operator-=(const T &other) { return this->sub_assign(other); }
+    DeviceTensor<T, Rank> &operator/=(const T &other) { return this->div_assign(other); }
 
     /**
      * @brief Operate and assign two tensors element-wise.
      */
-    DeviceTensor<T, Rank> &add_assign(const DeviceTensor<T, Rank> &other, hipStream_t stream = 0);
-    DeviceTensor<T, Rank> &mult_assign(const DeviceTensor<T, Rank> &other, hipStream_t stream = 0);
-    DeviceTensor<T, Rank> &sub_assign(const DeviceTensor<T, Rank> &other, hipStream_t stream = 0);
-    DeviceTensor<T, Rank> &div_assign(const DeviceTensor<T, Rank> &other, hipStream_t stream = 0);
+    DeviceTensor<T, Rank> &add_assign(const DeviceTensor<T, Rank> &other);
+    DeviceTensor<T, Rank> &mult_assign(const DeviceTensor<T, Rank> &other);
+    DeviceTensor<T, Rank> &sub_assign(const DeviceTensor<T, Rank> &other);
+    DeviceTensor<T, Rank> &div_assign(const DeviceTensor<T, Rank> &other);
 
-    DeviceTensor<T, Rank> &operator*=(const DeviceTensor<T, Rank> &other) {
-        return this->mult_assign(other);
-    }
-    DeviceTensor<T, Rank> &operator+=(const DeviceTensor<T, Rank> &other) {
-        return this->add_assign(other);
-    }
-    DeviceTensor<T, Rank> &operator-=(const DeviceTensor<T, Rank> &other) {
-        return this->sub_assign(other);
-    }
-    DeviceTensor<T, Rank> &operator/=(const DeviceTensor<T, Rank> &other) {
-        return this->div_assign(other);
-    }
+    DeviceTensor<T, Rank> &operator*=(const DeviceTensor<T, Rank> &other) { return this->mult_assign(other); }
+    DeviceTensor<T, Rank> &operator+=(const DeviceTensor<T, Rank> &other) { return this->add_assign(other); }
+    DeviceTensor<T, Rank> &operator-=(const DeviceTensor<T, Rank> &other) { return this->sub_assign(other); }
+    DeviceTensor<T, Rank> &operator/=(const DeviceTensor<T, Rank> &other) { return this->div_assign(other); }
 
     /**
      * @brief Get the dimension for the given rank.
@@ -726,7 +666,7 @@ struct DeviceTensor : public ::einsums::detail::TensorBase<T, Rank> {
     /**
      * @brief Copy a device tensor to the host.
      */
-    explicit operator Tensor<T, Rank>();
+    explicit operator Tensor<T, Rank>() const;
 };
 
 /**
@@ -791,23 +731,23 @@ struct DeviceTensor<T, 0> : public einsums::detail::TensorBase<T, 0> {
     /**
      * @brief Construct a new tensor on the GPU.
      */
-    DeviceTensor() = default;
+    DeviceTensor() : _mode(detail::DEV_ONLY) { gpu::hip_catch(hipMallocAsync((void **)&_data, sizeof(T), gpu::get_stream())); }
 
     /**
      * @brief Copy construct a new GPU tensor.
      */
     DeviceTensor(const DeviceTensor<T, 0> &other, detail::HostToDeviceMode mode = detail::DEV_ONLY) : _mode{mode} {
-        if(mode == detail::DEV_ONLY) {
-            gpu::hip_catch(hipMalloc((void **)&_data, sizeof(T)));
-            gpu::hip_catch(hipMemcpy((void *)_data, (const void *)other.data(), sizeof(T), hipMemcpyDeviceToDevice));
-        } else if(mode == detail::MAPPED) {
-            _host_data = new T((T) other);
-            gpu::hip_catch(hipHostRegister((void *) _host_data, sizeof(T), hipHostRegisterDefault));
-            gpu::hip_catch(hipHostGetDevicePointer((void **) &_data, (void *) _host_data, 0));
+        if (mode == detail::DEV_ONLY) {
+            gpu::hip_catch(hipMallocAsync((void **)&_data, sizeof(T), gpu::get_stream()));
+            gpu::hip_catch(hipMemcpyAsync((void *)_data, (const void *)other.data(), sizeof(T), hipMemcpyDeviceToDevice, gpu::get_stream()));
+        } else if (mode == detail::MAPPED) {
+            _host_data = new T((T)other);
+            gpu::hip_catch(hipHostRegister((void *)_host_data, sizeof(T), hipHostRegisterDefault));
+            gpu::hip_catch(hipHostGetDevicePointer((void **)&_data, (void *)_host_data, 0));
         } else {
-            gpu::hip_catch(hipHostMalloc((void **) &_host_data, sizeof(T), 0));
-            *_host_data = (T) other;
-            gpu::hip_catch(hipHostGetDevicePointer((void **) &_data, (void *) _host_data, 0));
+            gpu::hip_catch(hipHostMalloc((void **)&_host_data, sizeof(T), 0));
+            *_host_data = (T)other;
+            gpu::hip_catch(hipHostGetDevicePointer((void **)&_data, (void *)_host_data, 0));
         }
     }
 
@@ -824,7 +764,7 @@ struct DeviceTensor<T, 0> : public einsums::detail::TensorBase<T, 0> {
         } else if (this->_mode == detail::PINNED) {
             gpu::hip_catch(hipHostFree((void *)this->_host_data));
         } else if (this->_mode == detail::DEV_ONLY) {
-            gpu::hip_catch(hipFree((void *)this->_data));
+            gpu::hip_catch(hipFreeAsync((void *)this->_data, gpu::get_stream()));
         }
     }
 
@@ -832,15 +772,15 @@ struct DeviceTensor<T, 0> : public einsums::detail::TensorBase<T, 0> {
      * @brief Construct a new tensor by dims.
      */
     DeviceTensor(Dim<0> dims, detail::HostToDeviceMode mode = detail::DEV_ONLY) : _mode{mode} {
-        if(mode == detail::DEV_ONLY) {
-            gpu::hip_catch(hipMalloc((void **)&_data, sizeof(T)));
-        } else if(mode == detail::MAPPED) {
+        if (mode == detail::DEV_ONLY) {
+            gpu::hip_catch(hipMallocAsync((void **)&_data, sizeof(T), gpu::get_stream()));
+        } else if (mode == detail::MAPPED) {
             _host_data = new T();
-            gpu::hip_catch(hipHostRegister((void *) _host_data, sizeof(T), hipHostRegisterDefault));
-            gpu::hip_catch(hipHostGetDevicePointer((void **) &_data, (void *) _host_data, 0));
+            gpu::hip_catch(hipHostRegister((void *)_host_data, sizeof(T), hipHostRegisterDefault));
+            gpu::hip_catch(hipHostGetDevicePointer((void **)&_data, (void *)_host_data, 0));
         } else {
-            gpu::hip_catch(hipHostMalloc((void **) &_host_data, sizeof(T), 0));
-            gpu::hip_catch(hipHostGetDevicePointer((void **) &_data, (void *) _host_data, 0));
+            gpu::hip_catch(hipHostMalloc((void **)&_host_data, sizeof(T), 0));
+            gpu::hip_catch(hipHostGetDevicePointer((void **)&_data, (void *)_host_data, 0));
         }
     }
 
@@ -860,7 +800,7 @@ struct DeviceTensor<T, 0> : public einsums::detail::TensorBase<T, 0> {
             break;
         case detail::DEV_ONLY:
             this->_host_data = nullptr;
-            gpu::hip_catch(hipMalloc((void **)&(this->_data), sizeof(T)));
+            gpu::hip_catch(hipMallocAsync((void **)&(this->_data), sizeof(T), gpu::get_stream()));
             break;
         }
     }
@@ -872,7 +812,7 @@ struct DeviceTensor<T, 0> : public einsums::detail::TensorBase<T, 0> {
     [[nodiscard]] auto host_data() const -> const host_datatype * { return _host_data; }
 
     auto operator=(const DeviceTensor<T, 0> &other) -> DeviceTensor<T, 0> & {
-        gpu::hip_catch(hipMemcpy((void *)_data, (const void *)other.data(), sizeof(T), hipMemcpyDeviceToDevice));
+        gpu::hip_catch(hipMemcpyAsync((void *)_data, (const void *)other.data(), sizeof(T), hipMemcpyDeviceToDevice, gpu::get_stream()));
         return *this;
     }
 
@@ -880,7 +820,7 @@ struct DeviceTensor<T, 0> : public einsums::detail::TensorBase<T, 0> {
         if (_mode == detail::MAPPED || _mode == detail::PINNED) {
             *_host_data = other;
         } else {
-            gpu::hip_catch(hipMemcpy((void *)_data, (const void *)&other, sizeof(T), hipMemcpyHostToDevice));
+            gpu::hip_catch(hipMemcpyAsync((void *)_data, (const void *)&other, sizeof(T), hipMemcpyHostToDevice, gpu::get_stream()));
         }
         return *this;
     }
@@ -892,7 +832,7 @@ struct DeviceTensor<T, 0> : public einsums::detail::TensorBase<T, 0> {
             T temp;
             gpu::hip_catch(hipMemcpy((void *)&temp, (const void *)_data, sizeof(T), hipMemcpyDeviceToHost));
             temp += other;
-            gpu::hip_catch(hipMemcpy((void *)_data, (const void *)&temp, sizeof(T), hipMemcpyHostToDevice));
+            gpu::hip_catch(hipMemcpyAsync((void *)_data, (const void *)&temp, sizeof(T), hipMemcpyHostToDevice, gpu::get_stream()));
         }
         return *this;
     }
@@ -904,7 +844,7 @@ struct DeviceTensor<T, 0> : public einsums::detail::TensorBase<T, 0> {
             T temp;
             gpu::hip_catch(hipMemcpy((void *)&temp, (const void *)_data, sizeof(T), hipMemcpyDeviceToHost));
             temp -= other;
-            gpu::hip_catch(hipMemcpy((void *)_data, (const void *)&temp, sizeof(T), hipMemcpyHostToDevice));
+            gpu::hip_catch(hipMemcpyAsync((void *)_data, (const void *)&temp, sizeof(T), hipMemcpyHostToDevice, gpu::get_stream()));
         }
         return *this;
     }
@@ -916,7 +856,7 @@ struct DeviceTensor<T, 0> : public einsums::detail::TensorBase<T, 0> {
             T temp;
             gpu::hip_catch(hipMemcpy((void *)&temp, (const void *)_data, sizeof(T), hipMemcpyDeviceToHost));
             temp *= other;
-            gpu::hip_catch(hipMemcpy((void *)_data, (const void *)&temp, sizeof(T), hipMemcpyHostToDevice));
+            gpu::hip_catch(hipMemcpyAsync((void *)_data, (const void *)&temp, sizeof(T), hipMemcpyHostToDevice, gpu::get_stream()));
         }
         return *this;
     }
@@ -928,7 +868,7 @@ struct DeviceTensor<T, 0> : public einsums::detail::TensorBase<T, 0> {
             T temp;
             gpu::hip_catch(hipMemcpy((void *)&temp, (const void *)_data, sizeof(T), hipMemcpyDeviceToHost));
             temp /= other;
-            gpu::hip_catch(hipMemcpy((void *)_data, (const void *)&temp, sizeof(T), hipMemcpyHostToDevice));
+            gpu::hip_catch(hipMemcpyAsync((void *)_data, (const void *)&temp, sizeof(T), hipMemcpyHostToDevice, gpu::get_stream()));
         }
         return *this;
     }
@@ -974,8 +914,8 @@ struct DeviceTensor<T, 0> : public einsums::detail::TensorBase<T, 0> {
             break;
         case detail::DEV_ONLY:
             this->_host_data = nullptr;
-            gpu::hip_catch(hipMalloc((void **)&(this->_data), sizeof(T)));
-            gpu::hip_catch(hipMemcpy((void *)this->_data, (const void *)other.data(), sizeof(T), hipMemcpyHostToDevice));
+            gpu::hip_catch(hipMallocAsync((void **)&(this->_data), sizeof(T), gpu::get_stream()));
+            gpu::hip_catch(hipMemcpyAsync((void *)this->_data, (const void *)other.data(), sizeof(T), hipMemcpyHostToDevice, gpu::get_stream()));
             break;
         }
     }
@@ -1120,13 +1060,13 @@ struct DeviceTensorView : public ::einsums::detail::TensorBase<T, Rank> {
         common_initialization(other, args...);
     }
 
-    DeviceTensorView<T, Rank> &assign(const __host_ptr__ T *other, hipStream_t stream = 0);
+    DeviceTensorView<T, Rank> &assign(const __host_ptr__ T *other);
 
     template <template <typename, size_t> typename AType>
-        requires detail::DeviceRankTensor<AType<T, Rank>, Rank, T>
-    DeviceTensorView<T, Rank> &assign(const AType<T, Rank> &other, hipStream_t stream = 0);
+        requires DeviceRankTensor<AType<T, Rank>, Rank, T>
+    DeviceTensorView<T, Rank> &assign(const AType<T, Rank> &other);
 
-    void set_all(const T &value, hipStream_t stream = 0);
+    void set_all(const T &value);
 
     /**
      * @brief Copy as much data as is needed from the host pointer to the device.
@@ -1137,14 +1077,14 @@ struct DeviceTensorView : public ::einsums::detail::TensorBase<T, Rank> {
      * @brief Copy data from another tensor.
      */
     template <template <typename, size_t> typename AType>
-        requires detail::DeviceRankTensor<AType<T, Rank>, Rank, T>
+        requires DeviceRankTensor<AType<T, Rank>, Rank, T>
     auto operator=(const AType<T, Rank> &other) -> DeviceTensorView &;
 
     /**
      * @brief Copy data from a tensor.
      */
     template <template <typename, size_t> typename AType>
-        requires detail::DeviceRankTensor<AType<T, Rank>, Rank, T>
+        requires DeviceRankTensor<AType<T, Rank>, Rank, T>
     auto operator=(const AType<T, Rank> &&other) -> DeviceTensorView &;
 
     /**
@@ -1155,39 +1095,30 @@ struct DeviceTensorView : public ::einsums::detail::TensorBase<T, Rank> {
         return *this;
     }
 
-
-    DeviceTensorView<T, Rank> &mult_assign(const T &value, hipStream_t stream = 0);
-    DeviceTensorView<T, Rank> &div_assign(const T &value, hipStream_t stream = 0);
-    DeviceTensorView<T, Rank> &add_assign(const T &value, hipStream_t stream = 0);
-    DeviceTensorView<T, Rank> &sub_assign(const T &value, hipStream_t stream = 0);
-
-    /**
-     * @brief Operate each element in the view with a scalar.
-     */
-    DeviceTensorView &operator*=(const T &value) {
-        return this->mult_assign(value);
-    }
+    DeviceTensorView<T, Rank> &mult_assign(const T &value);
+    DeviceTensorView<T, Rank> &div_assign(const T &value);
+    DeviceTensorView<T, Rank> &add_assign(const T &value);
+    DeviceTensorView<T, Rank> &sub_assign(const T &value);
 
     /**
      * @brief Operate each element in the view with a scalar.
      */
-    DeviceTensorView &operator/=(const T &value) {
-        return this->div_assign(value);
-    }
+    DeviceTensorView &operator*=(const T &value) { return this->mult_assign(value); }
 
     /**
      * @brief Operate each element in the view with a scalar.
      */
-    DeviceTensorView &operator+=(const T &value) {
-        return this->add_assign(value);
-    }
+    DeviceTensorView &operator/=(const T &value) { return this->div_assign(value); }
 
     /**
      * @brief Operate each element in the view with a scalar.
      */
-    DeviceTensorView &operator-=(const T &value) {
-        return this->sub_assign(value);
-    }
+    DeviceTensorView &operator+=(const T &value) { return this->add_assign(value); }
+
+    /**
+     * @brief Operate each element in the view with a scalar.
+     */
+    DeviceTensorView &operator-=(const T &value) { return this->sub_assign(value); }
 
     /**
      * @brief Get a pointer to the GPU data.
@@ -1300,5 +1231,5 @@ struct DeviceTensorView : public ::einsums::detail::TensorBase<T, Rank> {
 
 } // namespace einsums
 
-#include "einsums/gpu/DeviceTensor.imp.hip"
-#include "einsums/gpu/DeviceTensorView.imp.hip"
+#include "einsums/gpu/DeviceTensor.hpp"
+#include "einsums/gpu/DeviceTensorView.hpp"

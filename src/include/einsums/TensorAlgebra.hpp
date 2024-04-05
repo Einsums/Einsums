@@ -46,6 +46,13 @@ template <typename... CUniqueIndices, typename... AUniqueIndices, typename... BU
           typename... TargetPositionInC, typename... LinkPositionInLink, template <typename, size_t> typename CType, typename CDataType,
           size_t CRank, template <typename, size_t> typename AType, typename ADataType, size_t ARank,
           template <typename, size_t> typename BType, typename BDataType, size_t BRank>
+          #ifdef __HIP__
+          requires requires {
+                requires !DeviceRankTensor<CType<CDataType, CRank>, CRank, CDataType>;
+                requires !DeviceRankTensor<AType<ADataType, ARank>, ARank, ADataType>;
+                requires !DeviceRankTensor<BType<BDataType, BRank>, BRank, BDataType>;
+          }
+          #endif
 void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, const std::tuple<AUniqueIndices...> & /*A_unique*/,
                               const std::tuple<BUniqueIndices...> & /*B_unique*/, const std::tuple<LinkUniqueIndices...> &link_unique,
                               const std::tuple<CIndices...> & /*C_indices*/, const std::tuple<AIndices...> & /*A_indices*/,
@@ -155,6 +162,13 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
 template <bool OnlyUseGenericAlgorithm, template <typename, size_t> typename AType, typename ADataType, size_t ARank,
           template <typename, size_t> typename BType, typename BDataType, size_t BRank, template <typename, size_t> typename CType,
           typename CDataType, size_t CRank, typename... CIndices, typename... AIndices, typename... BIndices>
+          #ifdef __HIP__
+          requires requires {
+                requires !DeviceRankTensor<CType<CDataType, CRank>, CRank, CDataType>;
+                requires !DeviceRankTensor<AType<ADataType, ARank>, ARank, ADataType>;
+                requires !DeviceRankTensor<BType<BDataType, BRank>, BRank, BDataType>;
+          }
+          #endif
 auto einsum(const CDataType C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<CDataType, CRank> *C,
             const std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> AB_prefactor,
             const std::tuple<AIndices...> & /*As*/, const AType<ADataType, ARank> &A, const std::tuple<BIndices...> & /*Bs*/,
@@ -563,6 +577,13 @@ auto einsum(const CDataType C_prefactor, const std::tuple<CIndices...> & /*Cs*/,
 template <template <typename, size_t> typename AType, typename ADataType, size_t ARank, template <typename, size_t> typename BType,
           typename BDataType, size_t BRank, template <typename, size_t> typename CType, typename CDataType, size_t CRank,
           typename... CIndices, typename... AIndices, typename... BIndices, typename U>
+          #ifdef __HIP__
+          requires requires {
+                requires !DeviceRankTensor<CType<CDataType, CRank>, CRank, CDataType>;
+                requires !DeviceRankTensor<AType<ADataType, ARank>, ARank, ADataType>;
+                requires !DeviceRankTensor<BType<BDataType, BRank>, BRank, BDataType>;
+          }
+          #endif
 auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<CDataType, CRank> *C, const U UAB_prefactor,
             const std::tuple<AIndices...> &A_indices, const AType<ADataType, ARank> &A, const std::tuple<BIndices...> &B_indices,
             const BType<BDataType, BRank> &B)
