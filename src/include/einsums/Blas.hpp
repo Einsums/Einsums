@@ -375,6 +375,18 @@ auto EINSUMS_EXPORT zdot(blas_int n, const std::complex<double> *x, blas_int inc
     -> std::complex<double>;
 } // namespace detail
 
+/**
+ * Computes the dot product of two vectors. For complex vector it is the non-conjugated dot product;
+ * (c|z)dotu in BLAS nomenclature.
+ *
+ * @tparam T underlying data type
+ * @param n length of the vectors
+ * @param x first vector
+ * @param incx how many elements to skip in x
+ * @param y second vector
+ * @param incy how many elements to skip in yo
+ * @return result of the dot product
+ */
 template <typename T>
 auto dot(blas_int n, const T *x, blas_int incx, const T *y, blas_int incy) -> T;
 
