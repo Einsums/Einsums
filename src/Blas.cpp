@@ -317,13 +317,8 @@ auto dgees(char jobvs, blas_int n, double *a, blas_int lda, blas_int *sdim, doub
 
 auto strsyl(char trana, char tranb, blas_int isgn, blas_int m, blas_int n, const float *a, blas_int lda, const float *b, blas_int ldb,
             float *c, blas_int ldc, float *scale) -> blas_int {
-#if defined(EINSUMS_HAVE_MKL_LAPACKE_H)
-    return ::einsums::backend::linear_algebra::mkl::strsyl(trana, tranb, isgn, m, n, a, lda, b, ldb, c, ldc, scale);
-#elif defined(EINSUMS_HAVE_LAPACKE)
-    return ::einsums::backend::linear_algebra::cblas::strsyl(trana, tranb, isgn, m, n, a, lda, b, ldb, c, ldc, scale);
-#else
-    throw std::runtime_error("dtrsyl not implemented.");
-#endif
+    return ::einsums::backend::linear_algebra::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::strsyl(trana, tranb, isgn, m, n, a, lda, b, ldb, c, ldc,
+                                                                                        scale);
 }
 
 auto dtrsyl(char trana, char tranb, blas_int isgn, blas_int m, blas_int n, const double *a, blas_int lda, const double *b, blas_int ldb,
@@ -339,7 +334,7 @@ auto ctrsyl(char trana, char tranb, blas_int isgn, blas_int m, blas_int n, const
 #elif defined(EINSUMS_HAVE_LAPACKE)
     return ::einsums::backend::linear_algebra::cblas::ctrsyl(trana, tranb, isgn, m, n, a, lda, b, ldb, c, ldc, scale);
 #else
-    throw std::runtime_error("dtrsyl not implemented.");
+    throw std::runtime_error("ctrsyl not implemented.");
 #endif
 }
 
@@ -350,7 +345,7 @@ auto ztrsyl(char trana, char tranb, blas_int isgn, blas_int m, blas_int n, const
 #elif defined(EINSUMS_HAVE_LAPACKE)
     return ::einsums::backend::linear_algebra::cblas::ztrsyl(trana, tranb, isgn, m, n, a, lda, b, ldb, c, ldc, scale);
 #else
-    throw std::runtime_error("dtrsyl not implemented.");
+    throw std::runtime_error("ztrsyl not implemented.");
 #endif
 }
 
