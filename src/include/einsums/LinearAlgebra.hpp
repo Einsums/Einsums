@@ -246,7 +246,6 @@ void heev(AType<T, ARank> *A, WType<RemoveComplexT<T>, WRank> *W) {
     blas::heev(ComputeEigenvectors ? 'v' : 'n', 'u', n, A->data(), lda, W->data(), work.data(), lwork, rwork.data());
 }
 
-// This assumes column-major ordering!!
 template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename BType, size_t BRank, typename T>
     requires requires {
         requires CoreRankTensor<AType<T, ARank>, 2, T>;
