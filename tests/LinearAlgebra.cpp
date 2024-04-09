@@ -406,7 +406,7 @@ void syev_test() {
     auto A = create_tensor<T>("a", 3, 3);
     auto b = create_tensor<T>("b", 3);
 
-    A.vector_data() = std::vector<T, einsums::AlignedAllocator<T, 64>>{1.0, 2.0, 3.0, 2.0, 4.0, 5.0, 3.0, 5.0, 6.0};
+    A.vector_data() = einsums::VectorData<T>{1.0, 2.0, 3.0, 2.0, 4.0, 5.0, 3.0, 5.0, 6.0};
 
     // Perform basic matrix multiplication
     einsums::linear_algebra::syev(&A, &b);
@@ -436,9 +436,8 @@ void geev_test() {
     auto vl = create_tensor<T>("vl", 5, 5);
     auto vr = create_tensor<T>("vr", 5, 5);
 
-    a.vector_data() = std::vector<T, einsums::AlignedAllocator<T, 64>>{-1.01f, 0.86f, -4.60f, 3.31f,  -4.81f, 3.98f,  0.53f, -7.04f, 5.29f,
-                                                                       3.55f,  3.30f, 8.26f,  -3.89f, 8.20f,  -1.51f, 4.43f, 4.96f,  -7.66f,
-                                                                       -7.33f, 6.18f, 7.31f,  -6.43f, -6.16f, 2.47f,  5.58f};
+    a.vector_data() = VectorData<T>{-1.01f, 0.86f,  -4.60f, 3.31f, -4.81f, 3.98f,  0.53f, -7.04f, 5.29f,  3.55f,  3.30f, 8.26f, -3.89f,
+                                    8.20f,  -1.51f, 4.43f,  4.96f, -7.66f, -7.33f, 6.18f, 7.31f,  -6.43f, -6.16f, 2.47f, 5.58f};
 
     einsums::linear_algebra::geev(&a, &w, &vl, &vr);
 
@@ -584,4 +583,34 @@ void norm_test() {
 TEST_CASE("norm") {
     //    norm_test<float>();
     //    norm_test<double>();
+}
+
+template <typename T>
+void getrf_and_getri_test() {
+    using namespace einsums;
+    using namespace einsums::linear_algebra;
+    using namespace einsums::tensor_algebra;
+    using namespace einsums::tensor_algebra::index;
+
+    auto             A_ = create_tensor<T>("A", 4, 4);
+    auto             A  = create_tensor<T>("A", 4, 4);
+    std::vector<int> pivot(4);
+
+    A_.vector_data() =
+        VectorData<T>{1.80, 2.88, 2.05, -0.89, 5.25, -2.95, -0.95, -3.80, 1.58, -2.69, -2.90, -1.04, -1.11, -0.66, -0.59, 0.80};
+    sort(Indices{i, j}, &A, Indices{i, j}, A_);
+
+    einsums::linear_algebra::getrf(&A, &pivot);
+    einsums::linear_algebra::getri(&A, pivot);
+
+    CHECK_THAT(A.vector_data(),
+               Catch::Matchers::Approx(VectorData<T>{1.77199817, 0.57569082, 0.08432537, 4.81550236, -0.11746607, -0.44561501, 0.41136261,
+                                                     -1.71258093, 0.17985639, 0.45266204, -0.66756530, 1.48240005, 2.49438204, 0.76497689,
+                                                     -0.03595380, 7.61190029})
+                   .margin(0.01));
+}
+
+TEST_CASE("getrf_getri") {
+    getrf_and_getri_test<float>();
+    getrf_and_getri_test<double>();
 }
