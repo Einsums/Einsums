@@ -6,8 +6,8 @@
 
 .. _function.linear_algebra:
 
-Linear Algebra
-==============
+Linear Algebra (BLAS, LAPACK, etc.)
+===================================
 
 .. sectionauthor:: Justin M. Turney
 
@@ -16,84 +16,84 @@ This module contains functions for performing linear algebra operations on tenso
 BLAS Level 1 Routines
 ---------------------
 
+BLAS Level 1 routines perform operations of both addition and reduction on vectors of data.
+Typical operations include scaling and dot products.
+
 .. doxygenfunction:: einsums::linear_algebra::dot(const Type<T, 1> &A, const Type<T, 1> &B)
-    :project: Einsums
 
 .. doxygenfunction:: einsums::linear_algebra::dot(const Type<T, Rank> &A, const Type<T, Rank> &B)
-    :project: Einsums
 
 .. doxygenfunction:: einsums::linear_algebra::dot(const Type<T, Rank> &A, const Type<T, Rank> &B, const Type<T, Rank> &C)
-    :project: Einsums
 
 .. doxygenfunction:: einsums::linear_algebra::scale(T scale, AType<T, ARank>* A)
-    :project: Einsums
 
 .. doxygenfunction:: einsums::linear_algebra::scale_column(size_t col, T scale, AType<T, ARank>* A)
-    :project: Einsums
 
 .. doxygenfunction:: einsums::linear_algebra::scale_row(size_t row, T scale, AType<T, ARank>* A)
-    :project: Einsums
 
 BLAS Level 2 Routines
 ---------------------
 
+BLAS Level 2 routines perform matrix-vector operations, such as matrix-vector multiplication, rank-1
+and rank-2 matrix updates, and solution of triangular systems.
+
 .. doxygenfunction:: einsums::linear_algebra::axpy(T alpha, const XType<T, Rank> &X, YType<T, Rank> *Y)
-    :project: Einsums
 
 .. doxygenfunction:: einsums::linear_algebra::axpby(T alpha, const XType<T, Rank> &X, T beta, YType<T, Rank> *Y)
-    :project: Einsums
 
-.. For some reason gemv does not want to be documented
 .. doxygenfunction:: einsums::linear_algebra::gemv(const T alpha, const AType<T, ARank> &A, const XType<T, XYRank> &z, const T beta, YType<T, XYRank> *y)
-    :project: Einsums
 
 .. doxygenfunction:: einsums::linear_algebra::ger(T alpha, const XYType<T, XYRank> &X, const XYType<T, XYRank> &Y, AType<T, ARank> *A)
-    :project: Einsums
 
 BLAS Level 3 Routines
 ---------------------
 
+BLAS Level 3 routines perform matrix-matrix operations, such as matrix-matrix multiplication, rank-k update, and
+solutions of triangular systems.
+
 .. The LONG function signature is needed because there are multiple functions named gemm and it's how to differentiate them in the documentation.
 .. doxygenfunction:: einsums::linear_algebra::gemm(const T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const T beta, CType<T, Rank> *C)(const T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const T beta, CType<T, Rank> *C)
-    :project: Einsums
 
 .. doxygenfunction:: einsums::linear_algebra::gemm(const T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B)
-    :project: Einsums
 
 LAPACK Routines
 ---------------
 
-.. doxygenfunction:: einsums::linear_algebra::geev
-    :project: Einsums
+LAPACK routines can be divided into the following groups according to the operations they perform:
 
-.. doxygenfunction:: einsums::linear_algebra::gesv
-    :project: Einsums
+* Routines for solving systems of linear equations, factoring and inverting matrices, and estimating condition numbers.
+* Routines for solving least squares problems, eigenvalue and singular value problems, and Sylvester's equations.
+* Auxiliary and utility routines used to perform certain subtasks, common low-level computation or related tasks.
+
+LAPACK Linear Equation Computational Routines
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. note::
+      These functions assume Fortran, column-major ordering.
 
 .. doxygenfunction:: einsums::linear_algebra::getri(TensorType<T, TensorRank> *A, const std::vector<blas_int> &pivot)
 
 .. doxygenfunction:: einsums::linear_algebra::getrf(TensorType<T, TensorRank> *A, std::vector<blas_int> *pivot)
-    :project: Einsums
+
+To be classified
+^^^^^^^^^^^^^^^^
+
+.. doxygenfunction:: einsums::linear_algebra::geev
+
+.. doxygenfunction:: einsums::linear_algebra::gesv
 
 .. doxygenfunction:: einsums::linear_algebra::heev
-    :project: Einsums
 
 .. doxygenfunction:: einsums::linear_algebra::invert(TensorType<T, TensorRank> *A)
-    :project: Einsums
 
 .. doxygenfunction:: einsums::linear_algebra::pow
-    :project: Einsums
 
 .. doxygenfunction:: einsums::linear_algebra::sum_square
-    :project: Einsums
 
 .. doxygenfunction:: einsums::linear_algebra::svd
-    :project: Einsums
 
 .. doxygenfunction:: einsums::linear_algebra::svd_nullspace
-    :project: Einsums
 
 .. doxygenfunction:: einsums::linear_algebra::syev(AType<T, ARank> *A, WType<T, WRank> *W)
-    :project: Einsums
 
 .. doxygenfunction:: einsums::linear_algebra::syev(const AType<T, ARank> &A)
-    :project: Einsums

@@ -142,6 +142,9 @@ auto get_dim_ranges(const TensorType<T, Rank> &tensor) {
     return detail::get_dim_ranges(tensor, std::make_index_sequence<N>{});
 }
 
+template <typename T>
+using VectorData = std::vector<T, AlignedAllocator<T, 64>>;
+
 /**
  * @brief Represents a general tensor
  *
@@ -152,7 +155,7 @@ template <typename T, size_t Rank>
 struct Tensor final : public detail::TensorBase<T, Rank> {
 
     using datatype = T;
-    using Vector   = std::vector<T, AlignedAllocator<T, 64>>;
+    using Vector   = VectorData<T>;
 
     /**
      * @brief Construct a new Tensor object. Default constructor.
@@ -694,7 +697,7 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
     }
 
 #define OPERATOR(OP)                                                                                                                       \
-    auto operator OP(const T &b) -> Tensor<T, Rank> & {                                                                                    \
+    auto operator OP(const T &b)->Tensor<T, Rank> & {                                                                                      \
         EINSUMS_OMP_PARALLEL {                                                                                                             \
             auto tid       = omp_get_thread_num();                                                                                         \
             auto chunksize = _data.size() / omp_get_num_threads();                                                                         \
@@ -707,7 +710,7 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
         return *this;                                                                                                                      \
     }                                                                                                                                      \
                                                                                                                                            \
-    auto operator OP(const Tensor<T, Rank> &b) -> Tensor<T, Rank> & {                                                                      \
+    auto operator OP(const Tensor<T, Rank> &b)->Tensor<T, Rank> & {                                                                        \
         if (size() != b.size()) {                                                                                                          \
             throw std::runtime_error(fmt::format("operator" EINSUMS_STRINGIFY(OP) " : tensors differ in size : {} {}", size(), b.size())); \
         }                                                                                                                                  \
@@ -810,7 +813,7 @@ struct Tensor<T, 0> : public detail::TensorBase<T, 0> {
 #    undef OPERATOR
 #endif
 #define OPERATOR(OP)                                                                                                                       \
-    auto operator OP(const T &other) -> Tensor<T, 0> & {                                                                                   \
+    auto operator OP(const T &other)->Tensor<T, 0> & {                                                                                     \
         _data OP other;                                                                                                                    \
         return *this;                                                                                                                      \
     }
@@ -958,7 +961,7 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
 #    undef OPERATOR)
 #endif
 #define OPERATOR(OP)                                                                                                                       \
-    auto operator OP(const T &value) -> TensorView & {                                                                                     \
+    auto operator OP(const T &value)->TensorView & {                                                                                       \
         auto target_dims = get_dim_ranges<Rank>(*this);                                                                                    \
         auto view        = std::apply(ranges::views::cartesian_product, target_dims);                                                      \
         _Pragma("omp parallel for") for (auto target_combination = view.begin(); target_combination != view.end(); target_combination++) { \

@@ -19,7 +19,7 @@ For learning how to use Einsums, see the .
 
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
    classes
    functions

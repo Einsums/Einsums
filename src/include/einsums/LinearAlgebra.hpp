@@ -186,6 +186,37 @@ void gemv(const T alpha, const AType<T, ARank> &A, const XType<T, XYRank> &z, co
     blas::gemv(TransA ? 't' : 'n', m, n, alpha, A.data(), lda, z.data(), incx, beta, y->data(), incy);
 }
 
+/**
+ * Computes all eigenvalues and, optionally, eigenvectors of a real symmetric matrix.
+ *
+ * This routines assumes the upper triangle of A is stored. The lower triangle is not referenced.
+ *
+ * @code
+ * // Create tensors A and b.
+ * auto A = einsums::create_tensor("A", 3, 3);
+ * auto b = einsums::create_tensor("b", 3);
+ *
+ * // Fill A with the symmetric data.
+ * A.vector_data() = einsums::VectorData{1.0, 2.0, 3.0, 2.0, 4.0, 5.0, 3.0, 5.0, 6.0};
+ *
+ * // On exit, A is destroyed and replaced with the eigenvectors.
+ * // b is replaced with the eigenvalues in ascending order.
+ * einsums::linear_algebra::syev(&A, &b);
+ * @endcode
+ *
+ * @tparam AType The type of the tensor A
+ * @tparam ARank The rank of the tensor A (required to be 2)
+ * @tparam WType The type of the tensor W
+ * @tparam WRank The rank of the tensor W (required to be 1)
+ * @tparam T The underlying data type (required to be real)
+ * @tparam ComputeEigenvectors If true, eigenvalues and eigenvectors are computed. If false, only eigenvalues are computed. Defaults to
+ * true.
+ * @param A
+ *   On entry, the symmetric matrix A in the leading N-by-N upper triangular part of A.
+ *   On exit, if eigenvectors are requested, the orthonormal eigenvectors of A.
+ *   Any data previously stored in A is destroyed.
+ * @param W On exit, the eigenvalues in ascending order.
+ */
 template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename WType, size_t WRank, typename T,
           bool ComputeEigenvectors = true>
     requires requires {
@@ -267,6 +298,30 @@ auto gesv(AType<T, ARank> *A, BType<T, BRank> *B) -> int {
     return info;
 }
 
+/**
+ * Computes all eigenvalues and, optionally, eigenvectors of a real symmetric matrix.
+ *
+ * This routines assumes the upper triangle of A is stored. The lower triangle is not referenced.
+ *
+ * @code
+ * // Create tensors A and b.
+ * auto A = einsums::create_tensor("A", 3, 3);
+ *
+ * // Fill A with the symmetric data.
+ * A.vector_data() = einsums::VectorData{1.0, 2.0, 3.0, 2.0, 4.0, 5.0, 3.0, 5.0, 6.0};
+ *
+ * // On exit, A is not destroyed. The eigenvectors and eigenvalues are returned in a std::tuple.
+ * auto [evecs, evals ] = einsums::linear_algebra::syev(A);
+ * @endcode
+ *
+ * @tparam AType The type of the tensor A
+ * @tparam ARank The rank of the tensor A (required to be 2)
+ * @tparam T The underlying data type (required to be real)
+ * @tparam ComputeEigenvectors If true, eigenvalues and eigenvectors are computed. If false, only eigenvalues are computed. Defaults to
+ * true.
+ * @param A The symmetric matrix A in the leading N-by-N upper triangular part of A.
+ * @return std::tuple<Tensor<T, 2>, Tensor<T, 1>> The eigenvectors and eigenvalues.
+ */
 template <template <typename, size_t> typename AType, size_t ARank, typename T, bool ComputeEigenvectors = true>
     requires CoreRankTensor<AType<T, ARank>, 2, T>
 auto syev(const AType<T, ARank> &A) -> std::tuple<Tensor<T, 2>, Tensor<T, 1>> {
@@ -282,6 +337,23 @@ auto syev(const AType<T, ARank> &A) -> std::tuple<Tensor<T, 2>, Tensor<T, 1>> {
     return std::make_tuple(a, w);
 }
 
+/**
+ * Scales a tensor by a scalar.
+ *
+ * @code
+ * auto A = einsums::create_ones_tensor("A", 3, 3);
+ *
+ * // A is filled with 1.0
+ * einsums::linear_algebra::scale(2.0, &A);
+ * // A is now filled with 2.0
+ * @endcode
+ *
+ * @tparam AType The type of the tensor
+ * @tparam ARank The rank of the tensor
+ * @tparam T The underlying data type
+ * @param scale The scalar to scale the tensor by
+ * @param A The tensor to scale
+ */
 template <template <typename, size_t> typename AType, size_t ARank, typename T>
     requires CoreRankTensor<AType<T, ARank>, ARank, T>
 void scale(T scale, AType<T, ARank> *A) {
@@ -439,6 +511,23 @@ void ger(T alpha, const XYType<T, XYRank> &X, const XYType<T, XYRank> &Y, AType<
     blas::ger(X.dim(0), Y.dim(0), alpha, X.data(), X.stride(0), Y.data(), Y.stride(0), A->data(), A->stride(0));
 }
 
+/**
+ * @brief Computes the LU factorization of a general m-by-n matrix.
+ *
+ * The routine computes the LU factorization of a general m-by-n matrix A as
+ * \f[
+ * A = P*L*U
+ * \f]
+ * where P is a permutation matrix, L is lower triangular with unit diagonal elements and U is upper triangular. The routine uses
+ * partial pivoting, with row interchanges.
+ *
+ * @tparam TensorType
+ * @tparam T
+ * @tparam TensorRank
+ * @param A
+ * @param pivot
+ * @return
+ */
 template <template <typename, size_t> typename TensorType, typename T, size_t TensorRank>
     requires CoreRankTensor<TensorType<T, TensorRank>, 2, T>
 auto getrf(TensorType<T, TensorRank> *A, std::vector<blas_int> *pivot) -> int {
@@ -451,13 +540,25 @@ auto getrf(TensorType<T, TensorRank> *A, std::vector<blas_int> *pivot) -> int {
     int result = blas::getrf(A->dim(0), A->dim(1), A->data(), A->stride(0), pivot->data());
 
     if (result < 0) {
-        println("getrf: argument {} has an invalid value", -result);
+        println_warn("getrf: argument {} has an invalid value", -result);
         abort();
     }
 
     return result;
 }
 
+/**
+ * @brief Computes the inverse of a matrix using the LU factorization computed by getrf.
+ *
+ * The routine computes the inverse \f$inv(A)\f$ of a general matrix \f$A\f$. Before calling this routine, call getrf to factorize \f$A\f$.
+ *
+ * @tparam TensorType The type of the tensor
+ * @tparam T The underlying data type
+ * @tparam TensorRank The rank of the tensor
+ * @param A The matrix to invert
+ * @param pivot The pivot vector from getrf
+ * @return int If 0, the execution is successful.
+ */
 template <template <typename, size_t> typename TensorType, typename T, size_t TensorRank>
     requires CoreRankTensor<TensorType<T, TensorRank>, 2, T>
 auto getri(TensorType<T, TensorRank> *A, const std::vector<blas_int> &pivot) -> int {
@@ -466,7 +567,7 @@ auto getri(TensorType<T, TensorRank> *A, const std::vector<blas_int> &pivot) -> 
     int result = blas::getri(A->dim(0), A->data(), A->stride(0), pivot.data());
 
     if (result < 0) {
-        println("getri: argument {} has an invalid value", -result);
+        println_warn("getri: argument {} has an invalid value", -result);
     }
     return result;
 }
