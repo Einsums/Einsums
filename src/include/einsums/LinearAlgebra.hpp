@@ -3,10 +3,6 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //----------------------------------------------------------------------------------------------
 
-/** \file LinearAlgebra.hoo
- * Contains Einsums' Tensor-based linear algebra functions.
- */
-
 #pragma once
 
 #include "einsums/_Common.hpp"
@@ -28,16 +24,33 @@
 #include <tuple>
 #include <type_traits>
 
+// For some stupid reason doxygen can't handle this macro here but it can in other files.
+#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
 BEGIN_EINSUMS_NAMESPACE_HPP(einsums::linear_algebra)
+#else
+namespace einsums::linear_algebra {
+#endif
 
 /**
  * @brief Computes the square sum of a tensor.
- * @tparam AType
- * @tparam ADataType
- * @tparam ARank
- * @param a
- * @param scale
- * @param sumsq
+ *
+ * returns the values scale_out and sumsq_out such that
+ * \f[
+ *   (scale_{out}^{2})*sumsq_{out} = a( 1 )^{2} +...+ a( n )^{2} + (scale_{in}^{2})*sumsq_{in},
+ * \f]
+ *
+ * Under the hood the LAPACK routine `lassq` is used.
+ *
+ * @code
+ * NEED TO ADD AN EXAMPLE
+ * @endcode
+ *
+ * @tparam AType The type of the tensor
+ * @tparam ADataType The underlying data type of the tensor
+ * @tparam ARank The rank of the tensor
+ * @param a The tensor to compute the sum of squares for
+ * @param scale scale_in and scale_out for the equation provided
+ * @param sumsq sumsq_in and sumsq_out for the equation provided
  */
 template <template <typename, size_t> typename AType, typename ADataType, size_t ARank>
     requires CoreRankTensor<AType<ADataType, ARank>, 1, ADataType>
@@ -68,8 +81,8 @@ void sum_square(const AType<ADataType, ARank> &a, RemoveComplexT<ADataType> *sca
  * einsums::linear_algebra::gemm<false, false>(1.0, A, B, 0.0, &C);
  * @endcode
  *
- * @tparam TransA Tranpose A?
- * @tparam TransB Tranpose B?
+ * @tparam TransA Tranpose A? true or false
+ * @tparam TransB Tranpose B? true or false
  * @param alpha Scaling factor for the product of A and B
  * @param A First input tensor
  * @param B Second input tensor
@@ -94,16 +107,15 @@ void gemm(const T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const
 }
 
 /**
- * @brief General matrix multipilication. Returns new tensor.
+ * @brief General matrix multiplication. Returns new tensor.
  *
  * Takes two rank-2 tensors performs the multiplication and returns the result
  *
  * @code
  * auto A = einsums::create_random_tensor("A", 3, 3);
  * auto B = einsums::create_random_tensor("B", 3, 3);
- * auto C = einsums::create_tensor("C", 3, 3);
  *
- * einsums::linear_algebra::gemm<false, false>(1.0, A, B, 0.0, &C);
+ * auto C = einsums::linear_algebra::gemm<false, false>(1.0, A, B);
  * @endcode
  *
  * @tparam TransA Tranpose A?
@@ -130,6 +142,33 @@ auto gemm(const T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B) -> Te
     return C;
 }
 
+/**
+ * @brief General matrix-vector multiplication.
+ *
+ * This function performs one of the matrix-vector operations
+ * \f[
+ *    y := alpha*A*z + beta*y\mathrm{,\ or\ }y := alpha*A^{T}*z + beta*y,
+ * \f]
+ * where alpha and beta are scalars, z and y are vectors and A is an
+ * \f$m\f$ by \f$n\f$ matrix.
+ *
+ * @code
+ * NEED TO ADD AN EXAMPLE
+ * @endcode
+ *
+ * @tparam TransA Transpose matrix A? true or false
+ * @tparam AType The type of the matrix A
+ * @tparam XType The type of the vector z
+ * @tparam YType The type of the vector y
+ * @tparam ARank The rank of the matrix A
+ * @tparam XYRank  The rank of the vectors z and y
+ * @tparam T The underlying data type
+ * @param alpha Scaling factor for the product of A and z
+ * @param A Matrix A
+ * @param z Vector z
+ * @param beta Scaling factor for the output vector y
+ * @param y Output vector y
+ */
 template <bool TransA, template <typename, size_t> typename AType, template <typename, size_t> typename XType,
           template <typename, size_t> typename YType, size_t ARank, size_t XYRank, typename T>
     requires requires {
@@ -137,14 +176,14 @@ template <bool TransA, template <typename, size_t> typename AType, template <typ
         requires CoreRankTensor<XType<T, XYRank>, 1, T>;
         requires CoreRankTensor<YType<T, XYRank>, 1, T>;
     }
-void gemv(const T alpha, const AType<T, ARank> &A, const XType<T, XYRank> &x, const T beta, YType<T, XYRank> *y) {
+void gemv(const T alpha, const AType<T, ARank> &A, const XType<T, XYRank> &z, const T beta, YType<T, XYRank> *y) {
     LabeledSection1(fmt::format("<TransA={}>", TransA));
     auto m = A.dim(0), n = A.dim(1);
     auto lda  = A.stride(0);
-    auto incx = x.stride(0);
+    auto incx = z.stride(0);
     auto incy = y->stride(0);
 
-    blas::gemv(TransA ? 't' : 'n', m, n, alpha, A.data(), lda, x.data(), incx, beta, y->data(), incy);
+    blas::gemv(TransA ? 't' : 'n', m, n, alpha, A.data(), lda, z.data(), incx, beta, y->data(), incy);
 }
 
 template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename WType, size_t WRank, typename T,
@@ -414,7 +453,6 @@ auto getrf(TensorType<T, TensorRank> *A, std::vector<blas_int> *pivot) -> int {
 
     if (result < 0) {
         println("getrf: argument {} has an invalid value", -result);
-    std:
         abort();
     }
 

@@ -57,11 +57,11 @@ void EINSUMS_EXPORT zgemm(char transa, char transb, blas_int m, blas_int n, blas
  * alpha and beta are scalar values.
  *
  * @tparam T The datatype of the GEMM.
- * @param[in] transa Whether to transpose matrix \param a:
+ * @param[in] transa Whether to transpose matrix \param a :
  *   - 'N' or 'n' for no transpose,
  *   - 'T' or 't' for transpose,
  *   - 'C' or 'c' for conjugate transpose.
- * @param[in] transb Whether to transpose matrix \param b.
+ * @param[in] transb Whether to transpose matrix \param b .
  * @param[in] m The number of rows in matrix A and C.
  * @param[in] n The number of columns in matrix B and C.
  * @param[in] k The number of columns in matrix A and rows in matrix B.
