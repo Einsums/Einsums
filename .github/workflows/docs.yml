@@ -4,10 +4,13 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    types: [ labeled ]
 
 jobs:
   # Build job
   build:
+    if: ${{ github.event.label.name == 'documentation' }}
     defaults:
       run:
         shell: bash -el {0}
@@ -36,6 +39,8 @@ jobs:
           make html
 
       - name: GitHub Pages Deploy
+        # Only deploy on the main branch
+        if: ${{ github.ref == 'refs/heads/main' }}
         uses: JamesIves/github-pages-deploy-action@v4.4.3
         with:
           branch: gh-pages
