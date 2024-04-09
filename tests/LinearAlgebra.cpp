@@ -592,9 +592,9 @@ void getrf_and_getri_test() {
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
 
-    auto             A_ = create_tensor<T>("A", 4, 4);
-    auto             A  = create_tensor<T>("A", 4, 4);
-    std::vector<int> pivot(4);
+    auto                  A_ = create_tensor<T>("A", 4, 4);
+    auto                  A  = create_tensor<T>("A", 4, 4);
+    std::vector<blas_int> pivot(4);
 
     A_.vector_data() =
         VectorData<T>{1.80, 2.88, 2.05, -0.89, 5.25, -2.95, -0.95, -3.80, 1.58, -2.69, -2.90, -1.04, -1.11, -0.66, -0.59, 0.80};
