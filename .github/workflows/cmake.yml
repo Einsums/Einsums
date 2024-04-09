@@ -70,6 +70,7 @@ jobs:
             - hdf5
             - zlib
             #- dpcpp_linux-64
+            #- mkl=2024.0.0
           EOF
           if [[ "${{ runner.os }}" == "Linux" ]]; then
             :
@@ -80,6 +81,7 @@ jobs:
             fi
             if [[ "${{ matrix.cxx }}" == "L-Intel" ]]; then
               sed -i "s/#- dpcpp_linux-64/- dpcpp_linux-64/g" export.yaml
+              sed -i "s/#- mkl/- mkl=2024.0.0/g" export.yaml
             fi
           fi
           if [[ "${{ runner.os }}" == "macOS" ]]; then
