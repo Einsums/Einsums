@@ -70,7 +70,7 @@ jobs:
             - hdf5
             - zlib
             #- dpcpp_linux-64
-            #- mkl=2024.0.0
+            #- mkl
           EOF
           if [[ "${{ runner.os }}" == "Linux" ]]; then
             :
