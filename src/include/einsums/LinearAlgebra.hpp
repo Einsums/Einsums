@@ -572,6 +572,16 @@ auto getri(TensorType<T, TensorRank> *A, const std::vector<blas_int> &pivot) -> 
     return result;
 }
 
+/**
+ * @brief Inverts a matrix.
+ *
+ * Utilizes the LAPACK routines getrf and getri to invert a matrix.
+ *
+ * @tparam TensorType The type of the tensor
+ * @tparam T The underlying data type
+ * @tparam TensorRank The rank of the tensor
+ * @param A Matrix to invert. On exit, the inverse of A.
+ */
 template <template <typename, size_t> typename TensorType, typename T, size_t TensorRank>
     requires CoreRankTensor<TensorType<T, TensorRank>, 2, T>
 void invert(TensorType<T, TensorRank> *A) {
@@ -580,26 +590,49 @@ void invert(TensorType<T, TensorRank> *A) {
     std::vector<blas_int> pivot(A->dim(0));
     int                   result = getrf(A, &pivot);
     if (result > 0) {
-        println("invert: getrf: the ({}, {}) element of the factor U or L is zero, and the inverse could not be computed", result, result);
-        std::abort();
+        println_abort("invert: getrf: the ({}, {}) element of the factor U or L is zero, and the inverse could not be computed", result,
+                      result);
     }
 
     result = getri(A, pivot);
     if (result > 0) {
-        println("invert: getri: the ({}, {}) element of the factor U or L i zero, and the inverse could not be computed", result, result);
-        std::abort();
+        println_abort("invert: getri: the ({}, {}) element of the factor U or L i zero, and the inverse could not be computed", result,
+                      result);
     }
 }
 
+#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
 template <SmartPointer SmartPtr>
 void invert(SmartPtr *A) {
     LabeledSection0();
 
     return invert(A->get());
 }
+#endif
 
 enum class Norm : char { MaxAbs = 'M', One = 'O', Infinity = 'I', Frobenius = 'F', Two = 'F' };
 
+/**
+ * @brief Computes the norm of a matrix.
+ *
+ * Returns the value of the one norm, or the Frobenius norm, or
+ * the infinity norm, or the element of largest absolute value of a
+ * real matrix A.
+ *
+ * @code
+ * NEED TO ADD AN EXAMPLE
+ * @endcode
+ *
+ * @tparam AType The type of the matrix
+ * @tparam ADataType The underlying data type of the matrix
+ * @tparam ARank The rank of the matrix
+ * @param norm_type where Norm::One denotes the one norm of a matrix (maximum column sum),
+ *   Norm::Infinity denotes the infinity norm of a matrix  (maximum row sum) and
+ *   Norm::Frobenius denotes the Frobenius norm of a matrix (square root of sum of
+ *   squares). Note that \f$ max(abs(A(i,j))) \f$ is not a consistent matrix norm.
+ * @param a The matrix to compute the norm of
+ * @return The norm of the matrix
+ */
 template <template <typename, size_t> typename AType, typename ADataType, size_t ARank>
     requires CoreRankTensor<AType<ADataType, ARank>, 2, ADataType>
 auto norm(Norm norm_type, const AType<ADataType, ARank> &a) -> RemoveComplexT<ADataType> {

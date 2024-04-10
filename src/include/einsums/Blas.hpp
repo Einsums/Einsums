@@ -16,7 +16,7 @@
 namespace einsums::blas {
 
 /**
- * @brief Initializes the underlying BLAS library.
+ * @brief Initializes the underlying BLAS and LAPACK library.
  *
  * Handles any initialization that the underlying BLAS implementation requires.
  * For example, a GPU implementation would likely need to obtain a device handle to
@@ -53,36 +53,40 @@ void EINSUMS_EXPORT zgemm(char transa, char transb, blas_int m, blas_int n, blas
 /**
  * @brief Perform a General Matrix Multiply (GEMM) operation.
  *
- * This function computes the product of two double-precision matrices, C = alpha * A * B + beta * C, where A, B, and C are matrices, and
+ * This function computes the product of two matrices,
+ * \f[
+ * C = alpha * A * B + beta * C,
+ * \f]
+ * where A, B, and C are matrices, and
  * alpha and beta are scalar values.
  *
  * @tparam T The datatype of the GEMM.
- * @param[in] transa Whether to transpose matrix \param a :
+ * @param transa Whether to transpose matrix a :
  *   - 'N' or 'n' for no transpose,
  *   - 'T' or 't' for transpose,
  *   - 'C' or 'c' for conjugate transpose.
- * @param[in] transb Whether to transpose matrix \param b .
- * @param[in] m The number of rows in matrix A and C.
- * @param[in] n The number of columns in matrix B and C.
- * @param[in] k The number of columns in matrix A and rows in matrix B.
- * @param[in] alpha The scalar alpha.
- * @param[in] a A pointer to the matrix A with dimensions ( \param lda , \param k ) when transa is 'N' or 'n', and ( \param lda , \param m )
+ * @param transb Whether to transpose matrix b .
+ * @param m The number of rows in matrix A and C.
+ * @param n The number of columns in matrix B and C.
+ * @param k The number of columns in matrix A and rows in matrix B.
+ * @param alpha The scalar alpha.
+ * @param a A pointer to the matrix A with dimensions `(lda, k)` when transa is 'N' or 'n', and `(lda, m)`
  * otherwise.
- * @param[in] lda Leading dimension of A, specifying the distance between two consecutive columns.
- * @param[in] b A pointer to the matrix B with dimensions ( \param ldb , \param n) when transB is 'N' or 'n', and ( \param ldb , \param k)
+ * @param lda Leading dimension of A, specifying the distance between two consecutive columns.
+ * @param b A pointer to the matrix B with dimensions `(ldb, n)` when transB is 'N' or 'n', and `(ldb, k)`
  * otherwise.
- * @param[in] ldb Leading dimension of B, specifying the distance between two consecutive columns.
- * @param[in] beta The scalar beta.
- * @param[in,out] c A pointer to the matrix C with dimensions ( \param ldc , \param n ).
- * @param[in] ldc Leading dimension of C, specifying the distance between two consecutive columns.
+ * @param ldb Leading dimension of B, specifying the distance between two consecutive columns.
+ * @param beta The scalar beta.
+ * @param c A pointer to the matrix C with dimensions `(ldc, n)`.
+ * @param ldc Leading dimension of C, specifying the distance between two consecutive columns.
  *
  * @note The function performs one of the following matrix operations:
- * - If transA is 'N' or 'n' and transB is 'N' or 'n': C = alpha * A * B + beta * C
- * - If transA is 'N' or 'n' and transB is 'T' or 't': C = alpha * A * B^T + beta * C
- * - If transA is 'T' or 't' and transB is 'N' or 'n': C = alpha * A^T * B + beta * C
- * - If transA is 'T' or 't' and transB is 'T' or 't': C = alpha * A^T * B^T + beta * C
- * - If transA is 'C' or 'c' and transB is 'N' or 'n': C = alpha * A^H * B + beta * C
- * - If transA is 'C' or 'c' and transB is 'T' or 't': C = alpha * A^H * B^T + beta * C
+ * - If transA is 'N' or 'n' and transB is 'N' or 'n': \f$C = alpha * A * B + beta * C\f$
+ * - If transA is 'N' or 'n' and transB is 'T' or 't': \f$C = alpha * A * B^T + beta * C\f$
+ * - If transA is 'T' or 't' and transB is 'N' or 'n': \f$C = alpha * A^T * B + beta * C\f$
+ * - If transA is 'T' or 't' and transB is 'T' or 't': \f$C = alpha * A^T * B^T + beta * C\f$
+ * - If transA is 'C' or 'c' and transB is 'N' or 'n': \f$C = alpha * A^H * B + beta * C\f$
+ * - If transA is 'C' or 'c' and transB is 'T' or 't': \f$C = alpha * A^H * B^T + beta * C\f$
  *
  * @return None.
  */
@@ -230,8 +234,8 @@ auto EINSUMS_EXPORT zgeev(char jobvl, char jobvr, blas_int n, std::complex<doubl
 
 // Complex version
 template <typename T>
-auto geev(char jobvl, char jobvr, blas_int n, T *a, blas_int lda, AddComplexT<T> *w, T *vl, blas_int ldvl, T *vr, blas_int ldvr)
-    -> blas_int;
+auto geev(char jobvl, char jobvr, blas_int n, T *a, blas_int lda, AddComplexT<T> *w, T *vl, blas_int ldvl, T *vr,
+          blas_int ldvr) -> blas_int;
 
 template <>
 inline auto geev<float>(char jobvl, char jobvr, blas_int n, float *a, blas_int lda, std::complex<float> *w, float *vl, blas_int ldvl,
@@ -268,8 +272,8 @@ auto EINSUMS_EXPORT zheev(char job, char uplo, blas_int n, std::complex<double> 
 } // namespace detail
 
 template <typename T>
-auto heev(char job, char uplo, blas_int n, std::complex<T> *a, blas_int lda, T *w, std::complex<T> *work, blas_int lwork, T *rwork)
-    -> blas_int;
+auto heev(char job, char uplo, blas_int n, std::complex<T> *a, blas_int lda, T *w, std::complex<T> *work, blas_int lwork,
+          T *rwork) -> blas_int;
 
 template <>
 inline auto heev<float>(char job, char uplo, blas_int n, std::complex<float> *a, blas_int lda, float *w, std::complex<float> *work,
@@ -369,10 +373,10 @@ inline void scal<std::complex<double>>(blas_int n, const double alpha, std::comp
 namespace detail {
 auto EINSUMS_EXPORT sdot(blas_int n, const float *x, blas_int incx, const float *y, blas_int incy) -> float;
 auto EINSUMS_EXPORT ddot(blas_int n, const double *x, blas_int incx, const double *y, blas_int incy) -> double;
-auto EINSUMS_EXPORT cdot(blas_int n, const std::complex<float> *x, blas_int incx, const std::complex<float> *y, blas_int incy)
-    -> std::complex<float>;
-auto EINSUMS_EXPORT zdot(blas_int n, const std::complex<double> *x, blas_int incx, const std::complex<double> *y, blas_int incy)
-    -> std::complex<double>;
+auto EINSUMS_EXPORT cdot(blas_int n, const std::complex<float> *x, blas_int incx, const std::complex<float> *y,
+                         blas_int incy) -> std::complex<float>;
+auto EINSUMS_EXPORT zdot(blas_int n, const std::complex<double> *x, blas_int incx, const std::complex<double> *y,
+                         blas_int incy) -> std::complex<double>;
 } // namespace detail
 
 /**
@@ -401,8 +405,8 @@ inline auto dot<double>(blas_int n, const double *x, blas_int incx, const double
 }
 
 template <>
-inline auto dot<std::complex<float>>(blas_int n, const std::complex<float> *x, blas_int incx, const std::complex<float> *y, blas_int incy)
-    -> std::complex<float> {
+inline auto dot<std::complex<float>>(blas_int n, const std::complex<float> *x, blas_int incx, const std::complex<float> *y,
+                                     blas_int incy) -> std::complex<float> {
     return detail::cdot(n, x, incx, y, incy);
 }
 
@@ -634,14 +638,14 @@ inline auto lange<double>(char norm_type, blas_int m, blas_int n, const double *
 }
 
 template <>
-inline auto lange<std::complex<float>>(char norm_type, blas_int m, blas_int n, const std::complex<float> *A, blas_int lda, float *work)
-    -> float {
+inline auto lange<std::complex<float>>(char norm_type, blas_int m, blas_int n, const std::complex<float> *A, blas_int lda,
+                                       float *work) -> float {
     return detail::clange(norm_type, m, n, A, lda, work);
 }
 
 template <>
-inline auto lange<std::complex<double>>(char norm_type, blas_int m, blas_int n, const std::complex<double> *A, blas_int lda, double *work)
-    -> double {
+inline auto lange<std::complex<double>>(char norm_type, blas_int m, blas_int n, const std::complex<double> *A, blas_int lda,
+                                        double *work) -> double {
     return detail::zlange(norm_type, m, n, A, lda, work);
 }
 
@@ -691,8 +695,8 @@ auto EINSUMS_EXPORT zgesdd(char jobz, blas_int m, blas_int n, std::complex<doubl
 } // namespace detail
 
 template <typename T>
-auto gesdd(char jobz, blas_int m, blas_int n, T *a, blas_int lda, RemoveComplexT<T> *s, T *u, blas_int ldu, T *vt, blas_int ldvt)
-    -> blas_int;
+auto gesdd(char jobz, blas_int m, blas_int n, T *a, blas_int lda, RemoveComplexT<T> *s, T *u, blas_int ldu, T *vt,
+           blas_int ldvt) -> blas_int;
 
 template <>
 inline auto gesdd<float>(char jobz, blas_int m, blas_int n, float *a, blas_int lda, float *s, float *u, blas_int ldu, float *vt,
@@ -741,8 +745,8 @@ inline auto gesvd<double>(char jobu, char jobvt, blas_int m, blas_int n, double 
 }
 
 namespace detail {
-auto EINSUMS_EXPORT sgees(char jobvs, blas_int n, float *a, blas_int lda, blas_int *sdim, float *wr, float *wi, float *vs, blas_int ldvs)
-    -> blas_int;
+auto EINSUMS_EXPORT sgees(char jobvs, blas_int n, float *a, blas_int lda, blas_int *sdim, float *wr, float *wi, float *vs,
+                          blas_int ldvs) -> blas_int;
 auto EINSUMS_EXPORT dgees(char jobvs, blas_int n, double *a, blas_int lda, blas_int *sdim, double *wr, double *wi, double *vs,
                           blas_int ldvs) -> blas_int;
 } // namespace detail
@@ -755,14 +759,14 @@ template <typename T>
 auto gees(char jobvs, blas_int n, T *a, blas_int lda, blas_int *sdim, T *wr, T *wi, T *vs, blas_int ldvs) -> blas_int;
 
 template <>
-inline auto gees<float>(char jobvs, blas_int n, float *a, blas_int lda, blas_int *sdim, float *wr, float *wi, float *vs, blas_int ldvs)
-    -> blas_int {
+inline auto gees<float>(char jobvs, blas_int n, float *a, blas_int lda, blas_int *sdim, float *wr, float *wi, float *vs,
+                        blas_int ldvs) -> blas_int {
     return detail::sgees(jobvs, n, a, lda, sdim, wr, wi, vs, ldvs);
 }
 
 template <>
-inline auto gees<double>(char jobvs, blas_int n, double *a, blas_int lda, blas_int *sdim, double *wr, double *wi, double *vs, blas_int ldvs)
-    -> blas_int {
+inline auto gees<double>(char jobvs, blas_int n, double *a, blas_int lda, blas_int *sdim, double *wr, double *wi, double *vs,
+                         blas_int ldvs) -> blas_int {
     return detail::dgees(jobvs, n, a, lda, sdim, wr, wi, vs, ldvs);
 }
 
@@ -840,8 +844,8 @@ inline auto geqrf<std::complex<float>>(blas_int m, blas_int n, std::complex<floa
 }
 
 template <>
-inline auto geqrf<std::complex<double>>(blas_int m, blas_int n, std::complex<double> *a, blas_int lda, std::complex<double> *tau)
-    -> blas_int {
+inline auto geqrf<std::complex<double>>(blas_int m, blas_int n, std::complex<double> *a, blas_int lda,
+                                        std::complex<double> *tau) -> blas_int {
     return detail::zgeqrf(m, n, a, lda, tau);
 }
 
@@ -851,10 +855,10 @@ inline auto geqrf<std::complex<double>>(blas_int m, blas_int n, std::complex<dou
 namespace detail {
 auto EINSUMS_EXPORT sorgqr(blas_int m, blas_int n, blas_int k, float *a, blas_int lda, const float *tau) -> blas_int;
 auto EINSUMS_EXPORT dorgqr(blas_int m, blas_int n, blas_int k, double *a, blas_int lda, const double *tau) -> blas_int;
-auto EINSUMS_EXPORT cungqr(blas_int m, blas_int n, blas_int k, std::complex<float> *a, blas_int lda, const std::complex<float> *tau)
-    -> blas_int;
-auto EINSUMS_EXPORT zungqr(blas_int m, blas_int n, blas_int k, std::complex<double> *a, blas_int lda, const std::complex<double> *tau)
-    -> blas_int;
+auto EINSUMS_EXPORT cungqr(blas_int m, blas_int n, blas_int k, std::complex<float> *a, blas_int lda,
+                           const std::complex<float> *tau) -> blas_int;
+auto EINSUMS_EXPORT zungqr(blas_int m, blas_int n, blas_int k, std::complex<double> *a, blas_int lda,
+                           const std::complex<double> *tau) -> blas_int;
 } // namespace detail
 
 template <typename T>

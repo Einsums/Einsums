@@ -11,10 +11,12 @@ Linear Algebra (BLAS, LAPACK, etc.)
 
 .. sectionauthor:: Justin M. Turney
 
-This module contains functions for performing linear algebra operations on tensors.
+This module contains functions for performing high-level linear algebra operations on tensors.
 
-BLAS Level 1 Routines
----------------------
+The functions in this module are designed to be used with the `Tensor` class and its subclasses.
+
+BLAS Level 1 Functions
+----------------------
 
 BLAS Level 1 routines perform operations of both addition and reduction on vectors of data.
 Typical operations include scaling and dot products.
@@ -31,8 +33,8 @@ Typical operations include scaling and dot products.
 
 .. doxygenfunction:: einsums::linear_algebra::scale_row(size_t row, T scale, AType<T, ARank>* A)
 
-BLAS Level 2 Routines
----------------------
+BLAS Level 2 Functions
+----------------------
 
 BLAS Level 2 routines perform matrix-vector operations, such as matrix-vector multiplication, rank-1
 and rank-2 matrix updates, and solution of triangular systems.
@@ -45,8 +47,8 @@ and rank-2 matrix updates, and solution of triangular systems.
 
 .. doxygenfunction:: einsums::linear_algebra::ger(T alpha, const XYType<T, XYRank> &X, const XYType<T, XYRank> &Y, AType<T, ARank> *A)
 
-BLAS Level 3 Routines
----------------------
+BLAS Level 3 Functions
+----------------------
 
 BLAS Level 3 routines perform matrix-matrix operations, such as matrix-matrix multiplication, rank-k update, and
 solutions of triangular systems.
@@ -56,8 +58,8 @@ solutions of triangular systems.
 
 .. doxygenfunction:: einsums::linear_algebra::gemm(const T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B)
 
-LAPACK Routines
----------------
+LAPACK Functions
+----------------
 
 LAPACK routines can be divided into the following groups according to the operations they perform:
 
@@ -65,8 +67,8 @@ LAPACK routines can be divided into the following groups according to the operat
 * Routines for solving least squares problems, eigenvalue and singular value problems, and Sylvester's equations.
 * Auxiliary and utility routines used to perform certain subtasks, common low-level computation or related tasks.
 
-LAPACK Linear Equation Computational Routines
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+LAPACK Linear Equation Computational Functions
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. note::
       These functions assume Fortran, column-major ordering.
@@ -85,6 +87,8 @@ To be classified
 .. doxygenfunction:: einsums::linear_algebra::heev
 
 .. doxygenfunction:: einsums::linear_algebra::invert(TensorType<T, TensorRank> *A)
+
+.. doxygenfunction:: einsums::linear_algebra::norm
 
 .. doxygenfunction:: einsums::linear_algebra::pow
 

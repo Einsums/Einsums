@@ -21,3 +21,4 @@ The examples assume that Einsums has been include with::
 
     function.create.tensors
     function.linear_algebra
+    function.low_level.linear_algebra
