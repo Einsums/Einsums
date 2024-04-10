@@ -131,7 +131,10 @@ extern void FC_GLOBAL(cgetri, CGETRI)(blas_int *, std::complex<float> *, blas_in
 extern void FC_GLOBAL(zgetri, ZGETRI)(blas_int *, std::complex<double> *, blas_int *, blas_int *, std::complex<double> *, blas_int *,
                                       blas_int *);
 
-// TODO: According to OpenBLAS clapack and Accelerate returns double for Xlange's.
+// According to my Xcode 15.3 macOS 14.4 SDK:
+// The Accelerate clapack.h header does use double for Xlange's. However, that interface is deprecated according to the headers.
+// The "new lapack" Accelerate header does use the following return types. For now, we're going to leave it as is.
+// If it becomes an issue then we'll need to do something about it.
 extern float  FC_GLOBAL(slange, SLANGE)(const char *, blas_int *, blas_int *, const float *, blas_int *, float *);
 extern double FC_GLOBAL(dlange, DLANGE)(const char *, blas_int *, blas_int *, const double *, blas_int *, double *);
 extern float  FC_GLOBAL(clange, CLANGE)(const char *, blas_int *, blas_int *, const std::complex<float> *, blas_int *, float *);

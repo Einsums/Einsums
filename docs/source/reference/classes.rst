@@ -16,6 +16,10 @@ the class/struct. The examples assume that Einsums has been incldued with::
 
     #include <einsums.hpp>
 
+It is also assumed, in many examples, that the following `using namespace` command has been used::
+
+    using namespace einsums;
+
 .. toctree::
     :maxdepth: 2
 

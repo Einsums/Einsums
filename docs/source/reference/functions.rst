@@ -10,11 +10,15 @@
 Functions
 *********
 
-In this chapter Doxygen docstrings are presented for functions, grouped by functionality.
+In this chapter, Doxygen docstrings are presented for functions, grouped by functionality.
 Many docstrings contain example code, which demonstrates basic usage of the function.
 The examples assume that Einsums has been include with::
 
     #include <einsums.hpp>
+
+It is also assumed, in many examples, that the following `using namespace` command has been used::
+
+    using namespace einsums;
 
 .. toctree::
     :maxdepth: 2
