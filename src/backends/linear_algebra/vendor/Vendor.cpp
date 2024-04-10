@@ -14,6 +14,7 @@
 
 #include <fmt/format.h>
 
+#include <cstddef>
 #include <stdexcept>
 
 #include "Utilities.hpp"
@@ -414,9 +415,9 @@ auto cdot(blas_int n, const std::complex<float> *x, blas_int incx, const std::co
     LabeledSection0();
 
     // Since MKL does not conform to the netlib standard, we need to use the following code.
-    std::complex<float> result{0.0f, 0.0f};
+    std::complex<float> result{0.0F, 0.0F};
     for (blas_int i = 0; i < n; ++i) {
-        result += x[i * incx] * y[i * incy];
+        result += x[static_cast<ptrdiff_t>(i * incx)] * y[static_cast<ptrdiff_t>(i * incy)];
     }
     return result;
 }
@@ -428,7 +429,7 @@ auto zdot(blas_int n, const std::complex<double> *x, blas_int incx, const std::c
     // Since MKL does not conform to the netlib standard, we need to use the following code.
     std::complex<double> result{0.0, 0.0};
     for (blas_int i = 0; i < n; ++i) {
-        result += x[i * incx] * y[i * incy];
+        result += x[static_cast<ptrdiff_t>(i * incx)] * y[static_cast<ptrdiff_t>(i * incy)];
     }
     return result;
 }
@@ -488,13 +489,17 @@ namespace {
 void ger_parameter_check(blas_int m, blas_int n, blas_int inc_x, blas_int inc_y, blas_int lda) {
     if (m < 0) {
         throw std::runtime_error(fmt::format("einsums::backend::vendor::ger: m ({}) is less than zero.", m));
-    } else if (n < 0) {
+    }
+    if (n < 0) {
         throw std::runtime_error(fmt::format("einsums::backend::vendor::ger: n ({}) is less than zero.", n));
-    } else if (inc_x == 0) {
+    }
+    if (inc_x == 0) {
         throw std::runtime_error(fmt::format("einsums::backend::vendor::ger: inc_x ({}) is zero.", inc_x));
-    } else if (inc_y == 0) {
+    }
+    if (inc_y == 0) {
         throw std::runtime_error(fmt::format("einsums::backend::vendor::ger: inc_y ({}) is zero.", inc_y));
-    } else if (lda < std::max(blas_int{1}, n)) {
+    }
+    if (lda < std::max(blas_int{1}, n)) {
         throw std::runtime_error(fmt::format("einsums::backend::vendor::ger: lda ({}) is less than max(1, n ({})).", lda, n));
     }
 }
