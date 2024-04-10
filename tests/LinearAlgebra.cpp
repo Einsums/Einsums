@@ -581,8 +581,8 @@ void norm_test() {
 }
 
 TEST_CASE("norm") {
-    //    norm_test<float>();
-    //    norm_test<double>();
+    norm_test<float>();
+    norm_test<double>();
 }
 
 template <typename T>
