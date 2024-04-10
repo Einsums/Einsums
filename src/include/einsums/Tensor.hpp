@@ -211,7 +211,6 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
         _data.resize(size);
     }
 
-    // Once this is called "otherTensor" is no longer a valid tensor.
     /**
      * @brief Construct a new Tensor object. Moving \p existingTensor data to the new tensor.
      *
@@ -270,8 +269,9 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
         if (nfound == 1) {
             size_t size{1};
             for (auto [i, dim] : enumerate(_dims)) {
-                if (i != location)
+                if (i != location) {
                     size *= dim;
+                }
             }
             if (size > existingTensor.size()) {
                 throw std::runtime_error("Size of new tensor is larger than the parent tensor.");
@@ -321,7 +321,7 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
      *
      * @param other The tensor view to copy.
      */
-    Tensor(const TensorView<T, Rank> &other) : _name{other._name}, _dims{other._dims} {
+    explicit Tensor(const TensorView<T, Rank> &other) : _name{other._name}, _dims{other._dims} {
         struct Stride {
             size_t value{1};
             Stride() = default;
@@ -384,7 +384,9 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
      * @param dims The new dimensions of a tensor.
      */
     template <typename... Dims>
-    auto resize(Dims... dims) -> std::enable_if_t<(std::is_arithmetic_v<Dims> && ... && (sizeof...(Dims) == Rank)), void> {
+    auto resize(Dims... dims) -> void
+        requires((std::is_arithmetic_v<Dims> && ... && (sizeof...(Dims) == Rank)))
+    {
         resize(Dim<Rank>{static_cast<size_t>(dims)...});
     }
 
@@ -602,8 +604,9 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
     auto operator=(const Tensor<T, Rank> &other) -> Tensor<T, Rank> & {
         bool realloc{false};
         for (int i = 0; i < Rank; i++) {
-            if (dim(i) == 0 || (dim(i) != other.dim(i)))
+            if (dim(i) == 0 || (dim(i) != other.dim(i))) {
                 realloc = true;
+            }
         }
 
         if (realloc) {
@@ -637,14 +640,15 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
     auto operator=(const Tensor<TOther, Rank> &other) -> Tensor<T, Rank> & {
         bool realloc{false};
         for (int i = 0; i < Rank; i++) {
-            if (dim(i) == 0)
+            if (dim(i) == 0) {
                 realloc = true;
-            else if (dim(i) != other.dim(i)) {
+            } else if (dim(i) != other.dim(i)) {
                 std::string str = fmt::format("Tensor::operator= dimensions do not match (this){} (other){}", dim(i), other.dim(i));
-                if constexpr (Rank != 1)
+                if constexpr (Rank != 1) {
                     throw std::runtime_error(str);
-                else
+                } else {
                     realloc = true;
+                }
             }
         }
 
@@ -737,8 +741,9 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
 
     [[nodiscard]] auto dim(int d) const -> size_t {
         // Add support for negative indices.
-        if (d < 0)
+        if (d < 0) {
             d += Rank;
+        }
         return _dims[d];
     }
     auto dims() const -> Dim<Rank> { return _dims; }
@@ -752,8 +757,9 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
     void               set_name(const std::string &name) { _name = name; }
 
     [[nodiscard]] auto stride(int d) const noexcept -> size_t {
-        if (d < 0)
+        if (d < 0) {
             d += Rank;
+        }
         return _strides[d];
     }
 
@@ -794,7 +800,7 @@ struct Tensor<T, 0> : public detail::TensorBase<T, 0> {
 
     explicit Tensor(std::string name) : _name{std::move(name)} {};
 
-    explicit Tensor(Dim<0>) {}
+    explicit Tensor(Dim<0> _ignore) {}
 
     auto               data() -> T               *{ return &_data; }
     [[nodiscard]] auto data() const -> const T * { return &_data; }
@@ -915,7 +921,7 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
         auto target_dims = get_dim_ranges<Rank>(*this);
         auto view        = std::apply(ranges::views::cartesian_product, target_dims);
 
-#pragma omp parallel for
+#pragma omp parallel for default(none) shared(view, other)
         for (auto target_combination = view.begin(); target_combination != view.end(); target_combination++) {
             T &target = std::apply(*this, *target_combination);
             target    = std::apply(other, *target_combination);
@@ -935,7 +941,7 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
         auto target_dims = get_dim_ranges<Rank>(*this);
         auto view        = std::apply(ranges::views::cartesian_product, target_dims);
 
-#pragma omp parallel for
+#pragma omp parallel for default(none) shared(view, other)
         for (auto target_combination = view.begin(); target_combination != view.end(); target_combination++) {
             T &target = std::apply(*this, *target_combination);
             target    = std::apply(other, *target_combination);
@@ -948,7 +954,7 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
         auto target_dims = get_dim_ranges<Rank>(*this);
         auto view        = std::apply(ranges::views::cartesian_product, target_dims);
 
-#pragma omp parallel for
+#pragma omp parallel for default(none) shared(view, fill_value)
         for (auto target_combination = view.begin(); target_combination != view.end(); target_combination++) {
             T &target = std::apply(*this, *target_combination);
             target    = fill_value;
