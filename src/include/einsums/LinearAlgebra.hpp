@@ -610,7 +610,16 @@ void invert(SmartPtr *A) {
 }
 #endif
 
-enum class Norm : char { MaxAbs = 'M', One = 'O', Infinity = 'I', Frobenius = 'F', Two = 'F' };
+/**
+ * @brief Indicates the type of norm to compute.
+ */
+enum class Norm : char {
+    MaxAbs    = 'M', /**< \f$val = max(abs(Aij))\f$, largest absolute value of the matrix A. */
+    One       = '1', /**< \f$val = norm1(A)\f$, 1-norm of the matrix A (maximum column sum) */
+    Infinity  = 'I', /**< \f$val = normI(A)\f$, infinity norm of the matrix A (maximum row sum) */
+    Frobenius = 'F', /**< \f$val = normF(A)\f$, Frobenius norm of the matrix A (square root of sum of squares). */
+    //    Two       = 'F'
+};
 
 /**
  * @brief Computes the norm of a matrix.
@@ -619,8 +628,14 @@ enum class Norm : char { MaxAbs = 'M', One = 'O', Infinity = 'I', Frobenius = 'F
  * the infinity norm, or the element of largest absolute value of a
  * real matrix A.
  *
+ * @note
+ * This function assumes that the matrix is stored in column-major order.
+ *
  * @code
- * NEED TO ADD AN EXAMPLE
+ * using namespace einsums;
+ *
+ * auto A = einsums::create_random_tensor("A", 3, 3);
+ * auto norm = einsums::linear_algebra::norm(einsums::linear_algebra::Norm::One, A);
  * @endcode
  *
  * @tparam AType The type of the matrix
@@ -638,7 +653,7 @@ template <template <typename, size_t> typename AType, typename ADataType, size_t
 auto norm(Norm norm_type, const AType<ADataType, ARank> &a) -> RemoveComplexT<ADataType> {
     LabeledSection0();
 
-    std::vector<RemoveComplexT<ADataType>> work(a.dim(0), 0.0);
+    std::vector<RemoveComplexT<ADataType>> work(4 * a.dim(0), 0.0);
     return blas::lange(static_cast<char>(norm_type), a.dim(0), a.dim(1), a.data(), a.stride(0), work.data());
 }
 

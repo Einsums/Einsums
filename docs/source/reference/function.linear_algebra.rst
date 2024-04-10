@@ -88,6 +88,8 @@ To be classified
 
 .. doxygenfunction:: einsums::linear_algebra::invert(TensorType<T, TensorRank> *A)
 
+.. Keep the next two: Norm and norm, together if any relocation happens.
+.. doxygenenum:: einsums::linear_algebra::Norm
 .. doxygenfunction:: einsums::linear_algebra::norm
 
 .. doxygenfunction:: einsums::linear_algebra::pow

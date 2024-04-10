@@ -566,18 +566,20 @@ template <NotComplex T>
 void norm_test() {
     using namespace einsums;
     using namespace einsums::linear_algebra;
+    using namespace einsums::tensor_algebra;
+    using namespace einsums::tensor_algebra::index;
 
     auto A = create_tensor<T>("a", 9, 9);
 
-    A.vector_data() = std::vector<T, einsums::AlignedAllocator<T, 64>>{
-        1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0,  0.0,  0.0, 4.0, 1.0, 1.0,
-        1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 5.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0,  0.0,  6.0, 1.0, 1.0, 1.0,
-        1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 7.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0,  8.0,  1.0, 1.0, 1.0, 1.0,
-        0.0, 0.0, 0.0, 0.0, 0.0, 9.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0, 11.0, 12.0};
+    A.vector_data() =
+        VectorData<T>{1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0,  0.0,  0.0, 4.0, 1.0, 1.0,
+                      1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 5.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0,  0.0,  6.0, 1.0, 1.0, 1.0,
+                      1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 7.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0,  8.0,  1.0, 1.0, 1.0, 1.0,
+                      0.0, 0.0, 0.0, 0.0, 0.0, 9.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0, 11.0, 12.0};
 
     T result = einsums::linear_algebra::norm(Norm::One, A);
 
-    CHECK_THAT(result, Catch::Matchers::WithinRel(15.0, 0.1));
+    CHECK_THAT(result, Catch::Matchers::WithinRel(33.0, 0.1));
 }
 
 TEST_CASE("norm") {
@@ -592,13 +594,11 @@ void getrf_and_getri_test() {
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
 
-    auto                  A_ = create_tensor<T>("A", 4, 4);
-    auto                  A  = create_tensor<T>("A", 4, 4);
+    auto                  A = create_tensor<T>("A", 4, 4);
     std::vector<blas_int> pivot(4);
 
-    A_.vector_data() =
+    A.vector_data() =
         VectorData<T>{1.80, 2.88, 2.05, -0.89, 5.25, -2.95, -0.95, -3.80, 1.58, -2.69, -2.90, -1.04, -1.11, -0.66, -0.59, 0.80};
-    sort(Indices{i, j}, &A, Indices{i, j}, A_);
 
     einsums::linear_algebra::getrf(&A, &pivot);
     einsums::linear_algebra::getri(&A, pivot);

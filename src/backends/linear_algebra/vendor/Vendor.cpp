@@ -131,10 +131,11 @@ extern void FC_GLOBAL(cgetri, CGETRI)(blas_int *, std::complex<float> *, blas_in
 extern void FC_GLOBAL(zgetri, ZGETRI)(blas_int *, std::complex<double> *, blas_int *, blas_int *, std::complex<double> *, blas_int *,
                                       blas_int *);
 
-extern float  FC_GLOBAL(slange, SLANGE)(char, int, int, const float *, int, float *);                 // NOLINT
-extern double FC_GLOBAL(dlange, DLANGE)(char, int, int, const double *, int, double *);               // NOLINT
-extern float  FC_GLOBAL(clange, CLANGE)(char, int, int, const std::complex<float> *, int, float *);   // NOLINT
-extern double FC_GLOBAL(zlange, ZLANGE)(char, int, int, const std::complex<double> *, int, double *); // NOLINT
+// TODO: According to OpenBLAS clapack and Accelerate returns double for Xlange's.
+extern float  FC_GLOBAL(slange, SLANGE)(const char *, blas_int *, blas_int *, const float *, blas_int *, float *);
+extern double FC_GLOBAL(dlange, DLANGE)(const char *, blas_int *, blas_int *, const double *, blas_int *, double *);
+extern float  FC_GLOBAL(clange, CLANGE)(const char *, blas_int *, blas_int *, const std::complex<float> *, blas_int *, float *);
+extern double FC_GLOBAL(zlange, ZLANGE)(const char *, blas_int *, blas_int *, const std::complex<double> *, blas_int *, double *);
 
 extern void FC_GLOBAL(slassq, SLASSQ)(blas_int *n, const float *x, blas_int *incx, float *scale, float *sumsq);
 extern void FC_GLOBAL(dlassq, DLASSQ)(blas_int *n, const double *x, blas_int *incx, double *scale, double *sumsq);
@@ -339,8 +340,8 @@ auto dgesv(blas_int n, blas_int nrhs, double *a, blas_int lda, blas_int *ipiv, d
     return info;
 }
 
-auto cgesv(blas_int n, blas_int nrhs, std::complex<float> *a, blas_int lda, blas_int *ipiv, std::complex<float> *b, blas_int ldb)
-    -> blas_int {
+auto cgesv(blas_int n, blas_int nrhs, std::complex<float> *a, blas_int lda, blas_int *ipiv, std::complex<float> *b,
+           blas_int ldb) -> blas_int {
     LabeledSection0();
 
     blas_int info{0};
@@ -348,8 +349,8 @@ auto cgesv(blas_int n, blas_int nrhs, std::complex<float> *a, blas_int lda, blas
     return info;
 }
 
-auto zgesv(blas_int n, blas_int nrhs, std::complex<double> *a, blas_int lda, blas_int *ipiv, std::complex<double> *b, blas_int ldb)
-    -> blas_int {
+auto zgesv(blas_int n, blas_int nrhs, std::complex<double> *a, blas_int lda, blas_int *ipiv, std::complex<double> *b,
+           blas_int ldb) -> blas_int {
     LabeledSection0();
 
     blas_int info{0};
@@ -601,25 +602,25 @@ auto zgetri(blas_int n, std::complex<double> *a, blas_int lda, const blas_int *i
 auto slange(char norm_type, blas_int m, blas_int n, const float *A, blas_int lda, float *work) -> float {
     LabeledSection0();
 
-    return FC_GLOBAL(slange, SLANGE)(norm_type, m, n, A, lda, work);
+    return FC_GLOBAL(slange, SLANGE)(&norm_type, &m, &n, A, &lda, work);
 }
 
 auto dlange(char norm_type, blas_int m, blas_int n, const double *A, blas_int lda, double *work) -> double {
     LabeledSection0();
 
-    return FC_GLOBAL(dlange, DLANGE)(norm_type, m, n, A, lda, work);
+    return FC_GLOBAL(dlange, DLANGE)(&norm_type, &m, &n, A, &lda, work);
 }
 
 auto clange(char norm_type, blas_int m, blas_int n, const std::complex<float> *A, blas_int lda, float *work) -> float {
     LabeledSection0();
 
-    return FC_GLOBAL(clange, CLANGE)(norm_type, m, n, A, lda, work);
+    return FC_GLOBAL(clange, CLANGE)(&norm_type, &m, &n, A, &lda, work);
 }
 
 auto zlange(char norm_type, blas_int m, blas_int n, const std::complex<double> *A, blas_int lda, double *work) -> double {
     LabeledSection0();
 
-    return FC_GLOBAL(zlange, ZLANGE)(norm_type, m, n, A, lda, work);
+    return FC_GLOBAL(zlange, ZLANGE)(&norm_type, &m, &n, A, &lda, work);
 }
 
 void slassq(blas_int n, const float *x, blas_int incx, float *scale, float *sumsq) {
