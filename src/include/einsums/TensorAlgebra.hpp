@@ -571,12 +571,14 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
     
     using ABDataType = std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType>;
 
+    if constexpr (!std::is_integral_v<U>) {
     LabeledSection1(FP_ZERO != std::fpclassify(UC_prefactor)
                         ? fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{} + {} "{}"{})", C->name(), print_tuple_no_type(C_indices),
                                       UAB_prefactor, A.name(), print_tuple_no_type(A_indices), B.name(), print_tuple_no_type(B_indices),
                                       UC_prefactor, C->name(), print_tuple_no_type(C_indices))
                         : fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{})", C->name(), print_tuple_no_type(C_indices), UAB_prefactor,
                                       A.name(), print_tuple_no_type(A_indices), B.name(), print_tuple_no_type(B_indices)));
+    } else { throw std::runtime_error("Sending integer to fpclassify."); }
 
     const CDataType  C_prefactor  = UC_prefactor;
     const ABDataType AB_prefactor = UAB_prefactor;
