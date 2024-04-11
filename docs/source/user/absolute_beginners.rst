@@ -25,7 +25,8 @@ You have two choices for installing Einsums, compiling from source directly or b
 Compiling from source allows you to enable/disable certain features and to include debugging
 options into your code.
 
-If you desire to compile from source, see .
+If you desire to compile from source, visit
+:ref:`Building from source <building-from-source>`.
 
 If you have Python, you can install Einsums with::
 
@@ -40,9 +41,8 @@ If you are using CMake use can use the :code:`find_package` function. Then with 
 
 For example, in your CMakeLists.txt file you can have lines similar to the following:
 
-.. code-block:: cmake
-
-    find_package(Einsums 0.3 CONFIG)
+.. parsed-literal::
+    find_package(Einsums \ |release| \ CONFIG)
 
     add_executable(sample main.cpp)
     target_link_libraries(samples Einsums::einsums)
@@ -54,9 +54,8 @@ Then in your main.cpp you can have something like
     #include <einsums.hpp>
 
     int main() {
-        using namespace einsums;
 
-        auto A = create_tensor("A", 3, 3);
+        auto A = einsums::create_tensor("A", 3, 3);
 
         return 0;
     }
@@ -66,16 +65,15 @@ Reading the example code
 
 If you are not already comfortable with reading tutorials that contain a lot code,
 you might not know how to interpret a code block that looks
-like this:: c++
+like this::
 
-    auto A = einsums::create_random_tensor(6)
-    auto B = einsums::Tensor{std::move(A), -1, 6}
-    B.shape()
-    --> Dims{1, 6 }
+    auto A = einsums::create_random_tensor(6);
+    auto B = einsums::Tensor{std::move(A), -1, 6};
+    B.shape();  // --> Dims{1, 6 }
 
 If you are not familiar with this style, it's very easy to understand.
 If you see do not see ``-->``, you're looking at the **input**, or the code that
-you would type. Everything that has ``-->`` in front of it is potential
+you would type. Everything that is comment and has ``-->`` in front of it is potential
 **output** or a representation of what you should expect.  The lines with
 ``-->`` should not be copied into your code and will cause a compile error
 if types or pasted into your code.
@@ -85,13 +83,13 @@ How to create a Tensor
 
 To create an Einsums Tensor, you can use the function :cpp:func:`einsums::create_tensor`.
 
-All you need to do to create a simple tensor is pass a name for the tensor and the
+All you need to do to create a basic tensor is pass a name for the tensor and the
 dimensionality of each index.::
 
     #include <einsums.hpp>
 
     int main(int, char**) {
-        auto A = einsums::create_tensor("A", 2, 2);
+        auto A = einsums::create_tensor("A", 2, 2);  // --> einsums::Tensor<2, double>
 
         return 0;
     }
@@ -110,6 +108,7 @@ write the data type explicitly if we want to.::
 
         // Allow the compiler to determine things.
         auto C = einsums::create_tensor("C", 2, 2);
+
         return 0;
     }
 
@@ -122,8 +121,7 @@ can explicitly specify which data type you want use.::
 
     auto B = einsums::Tensor<float>{"B", 2, 2};
 
-Einsums and the underlying mathematical operations also supports the use of
-complex numbers.::
+Einsums also supports the use of complex numbers.::
 
     auto C = einsums::create_tensor<std::complex<double>>("C", 2, 2);
 

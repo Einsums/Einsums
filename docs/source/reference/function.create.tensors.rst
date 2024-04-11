@@ -38,3 +38,9 @@ Functions for creating pre-filled tensors
 .. doxygenfunction:: einsums::create_tensor_like(const TensorType<DataType, Rank>&)
 
 .. doxygenfunction:: einsums::create_tensor_like(const std::string, const TensorType<DataType, Rank>&)
+
+Additional functions for creating tensors
+-----------------------------------------
+
+.. doxygenfunction:: einsums::arange(T start, T stop, T step)
+.. doxygenfunction:: einsums::arange(T stop)
