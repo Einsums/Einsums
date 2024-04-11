@@ -44,8 +44,8 @@ void init_data(einsums::Tensor<std::complex<T>, 1> &data, int N, int H) {
     }
 }
 
-template <typename T, int N = 6, int H = -1>
-auto verify_r(einsums::Tensor<T, 1> &x) -> std::enable_if_t<!einsums::IsComplexV<T>> {
+template <einsums::NotComplex T, int N = 6, int H = -1>
+auto verify_r(einsums::Tensor<T, 1> &x) -> void {
     T   err, errthr, maxerr;
     int n;
 
@@ -66,8 +66,8 @@ auto verify_r(einsums::Tensor<T, 1> &x) -> std::enable_if_t<!einsums::IsComplexV
     }
 }
 
-template <typename Source, typename Result, int N = 6, int H = -1>
-auto ifft1d_1() -> std::enable_if_t<!einsums::IsComplexV<Result>> {
+template <typename Source, einsums::NotComplex Result, int N = 6, int H = -1>
+auto ifft1d_1() -> void {
     using namespace einsums;
 
     auto x_data   = create_tensor<Source>("sample data", einsums::IsComplexV<Source> ? N / 2 + 1 : N);
@@ -84,8 +84,8 @@ auto ifft1d_1() -> std::enable_if_t<!einsums::IsComplexV<Result>> {
     verify_r(x_result);
 }
 
-template <typename Source, typename Result, int N = 7, int H = -N / 2>
-auto ifft1d_1() -> std::enable_if_t<einsums::IsComplexV<Source> && einsums::IsComplexV<Result>> {
+template <einsums::Complex Source, einsums::Complex Result, int N = 7, int H = -N / 2>
+auto ifft1d_1() -> void {
     using namespace einsums;
     using SourceBase = einsums::RemoveComplexT<Source>;
     using ResultBase = einsums::RemoveComplexT<Result>;
@@ -136,8 +136,8 @@ auto ifft1d_1() -> std::enable_if_t<einsums::IsComplexV<Source> && einsums::IsCo
     }
 }
 
-template <typename Source, typename Result, int N = 6, int H = -1>
-auto fft1d_1() -> std::enable_if_t<!einsums::IsComplexV<Source>> {
+template <einsums::NotComplex Source, typename Result, int N = 6, int H = -1>
+auto fft1d_1() -> void {
     using namespace einsums;
 
     auto x_data   = create_tensor<Source>("sample data", N);
@@ -170,8 +170,8 @@ auto fft1d_1() -> std::enable_if_t<!einsums::IsComplexV<Source>> {
     }
 }
 
-template <typename Source, typename Result, int N = 7, int H = -N / 2>
-auto fft1d_1() -> std::enable_if_t<einsums::IsComplexV<Source> && einsums::IsComplexV<Result>> {
+template <einsums::Complex Source, einsums::Complex Result, int N = 7, int H = -N / 2>
+auto fft1d_1() -> void {
     using namespace einsums;
     using SourceBase = einsums::RemoveComplexT<Source>;
     using ResultBase = einsums::RemoveComplexT<Result>;

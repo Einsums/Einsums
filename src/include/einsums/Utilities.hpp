@@ -93,29 +93,27 @@ auto create_random_tensor(const std::string &name, MultiIndex... index) -> Tenso
     }
 
     if constexpr (std::is_same_v<T, std::complex<float>>) {
-#pragma omp parallel
+#pragma omp parallel default(none) shared(A, re, unif)
         {
             auto tid       = omp_get_thread_num();
             auto chunksize = A.vector_data().size() / omp_get_num_threads();
             auto begin     = A.vector_data().begin() + chunksize * tid;
             auto end       = (tid == omp_get_num_threads() - 1) ? A.vector_data().end() : begin + chunksize;
-            std::generate(A.vector_data().begin(), A.vector_data().end(), [&]() {
-                return T{static_cast<float>(unif(re)), static_cast<float>(unif(re))};
-            });
+            std::generate(A.vector_data().begin(), A.vector_data().end(),
+                          [&]() { return T{static_cast<float>(unif(re)), static_cast<float>(unif(re))}; });
         }
     } else if constexpr (std::is_same_v<T, std::complex<double>>) {
-#pragma omp parallel
+#pragma omp parallel default(none) shared(A, re, unif)
         {
             auto tid       = omp_get_thread_num();
             auto chunksize = A.vector_data().size() / omp_get_num_threads();
             auto begin     = A.vector_data().begin() + chunksize * tid;
             auto end       = (tid == omp_get_num_threads() - 1) ? A.vector_data().end() : begin + chunksize;
-            std::generate(A.vector_data().begin(), A.vector_data().end(), [&]() {
-                return T{static_cast<double>(unif(re)), static_cast<double>(unif(re))};
-            });
+            std::generate(A.vector_data().begin(), A.vector_data().end(),
+                          [&]() { return T{static_cast<double>(unif(re)), static_cast<double>(unif(re))}; });
         }
     } else {
-#pragma omp parallel
+#pragma omp parallel default(none) shared(A, re, unif)
         {
             auto tid       = omp_get_thread_num();
             auto chunksize = A.vector_data().size() / omp_get_num_threads();
@@ -125,9 +123,10 @@ auto create_random_tensor(const std::string &name, MultiIndex... index) -> Tenso
         }
     }
 
-    if constexpr (Normalize == true && sizeof...(MultiIndex) == 2) {
+    if constexpr (Normalize && sizeof...(MultiIndex) == 2) {
         for (int col = 0; col < A.dim(-1); col++) {
-            RemoveComplexT<T> scale{1}, sumsq{0};
+            RemoveComplexT<T> scale{1};
+            RemoveComplexT<T> sumsq{0};
 
             auto column = A(All, col);
             // auto collapsed = TensorView{A, Dim<2>{-1, A.dim(-1)}};
@@ -278,7 +277,21 @@ auto create_tensor_like(const std::string name, const TensorType<DataType, Rank>
     return result;
 }
 
-template <typename T>
+/**
+ * @brief Creates a new rank-1 tensor filled with digits from \p start to \p stop in \p step increments.
+ *
+ * @code
+ * // auto -> Tensor<double, 1> with data ranging from 0.0 to 9.0
+ * auto a = arange<double>(0, 10);
+ * @endcode
+ *
+ * @tparam T Underlying datatype of the tensor
+ * @param start Value to start the tensor with
+ * @param stop Value to stop the tensor with
+ * @param step Increment value
+ * @return new rank-1 tensor filled with digits from \p start to \p stop in \p step increments
+ */
+template <NotComplex T>
 auto arange(T start, T stop, T step = T{1}) -> Tensor<T, 1> {
     assert(stop >= start);
 
@@ -296,7 +309,19 @@ auto arange(T start, T stop, T step = T{1}) -> Tensor<T, 1> {
     return result;
 }
 
-template <typename T>
+/**
+ * @brief Creates a new rank-1 tensor filled with digits from 0 to \p stop .
+ *
+ * @code
+ * // auto -> Tensor<double, 1> with data ranging from 0.0 to 9.0
+ * auto a = arange<double>(10);
+ * @endcode
+ *
+ * @tparam T Underlying datatype of the tensor
+ * @param stop Value to stop the tensor with
+ * @return new rank-1 tensor filled with digits from 0 to \p stop
+ */
+template <NotComplex T>
 auto arange(T stop) -> Tensor<T, 1> {
     return arange(T{0}, stop);
 }

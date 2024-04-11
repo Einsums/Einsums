@@ -8,11 +8,12 @@
 #include "einsums/OpenMP.h"
 #include "einsums/Print.hpp"
 
+#include <fmt/chrono.h>
+
 #include <array>
 #include <cassert>
 #include <chrono>
 #include <cstring>
-#include <fmt/chrono.h>
 #include <map>
 #include <memory>
 #include <mutex>
@@ -34,17 +35,17 @@ struct TimerDetail {
     // Number of times the timer has been called
     size_t total_calls{0};
 
-    TimerDetail                       *parent;
+    TimerDetail                       *parent{nullptr};
     std::map<std::string, TimerDetail> children;
     std::vector<std::string>           order;
 
     time_point start_time;
 };
 
-TimerDetail *current_timer;
-TimerDetail *root;
+TimerDetail *current_timer{nullptr};
+TimerDetail *root{nullptr};
 
-} // namespace
+} // namespace detail
 
 void initialize() {
     using namespace detail;
@@ -128,7 +129,7 @@ void print_timer_info(TimerDetail *timer, std::ostream &os) { // NOLINT
     }
 }
 
-} // namespace
+} // namespace detail
 
 void report() {
     detail::print_timer_info(detail::root, stdout);
@@ -143,14 +144,15 @@ void report(const std::string &fname) {
     std::fclose(fp);
 }
 
-void report(const char *fname) {
-    std::FILE *fp = std::fopen(fname, "w+");
-
-    detail::print_timer_info(detail::root, fp);
-
-    std::fflush(fp);
-    std::fclose(fp);
-}
+// Handled by const std::string& above
+// void report(const char *fname) {
+//    std::FILE *fp = std::fopen(fname, "w+");
+//
+//    detail::print_timer_info(detail::root, fp);
+//
+//    std::fflush(fp);
+//    std::fclose(fp);
+//}
 
 void report(std::FILE *fp) {
     detail::print_timer_info(detail::root, fp);

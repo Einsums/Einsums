@@ -5,6 +5,11 @@
 
 #pragma once
 
+#include "einsums/_Common.hpp"
+#include "einsums/_Compiler.hpp"
+#include "einsums/_Index.hpp"
+#include "einsums/_TensorAlgebraUtilities.hpp"
+
 #include "einsums/LinearAlgebra.hpp"
 #include "einsums/OpenMP.h"
 #include "einsums/Print.hpp"
@@ -12,10 +17,6 @@
 #include "einsums/Section.hpp"
 #include "einsums/Tensor.hpp"
 #include "einsums/Timer.hpp"
-#include "einsums/_Common.hpp"
-#include "einsums/_Compiler.hpp"
-#include "einsums/_Index.hpp"
-#include "einsums/_TensorAlgebraUtilities.hpp"
 #include "einsums/utility/SmartPointerTraits.hpp"
 
 #include <algorithm>
@@ -568,7 +569,7 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
                         std::is_base_of_v<::einsums::detail::TensorBase<BDataType, BRank>, BType<BDataType, BRank>> &&
                         std::is_base_of_v<::einsums::detail::TensorBase<CDataType, CRank>, CType<CDataType, CRank>> &&
                         std::is_arithmetic_v<U>> {
-    
+
     using ABDataType = std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType>;
 
     LabeledSection1(FP_ZERO != std::fpclassify(UC_prefactor)
@@ -584,26 +585,22 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
 #if defined(EINSUMS_CONTINUOUSLY_TEST_EINSUM)
     // Clone C into a new tensor
     Tensor<CDataType, CRank> testC = Tensor<CDataType, CRank>{C->dims()};
-    testC = *C;
+    testC                          = *C;
 
     // Perform the einsum using only the generic algorithm
     timer::push("testing");
-//#pragma omp task depend(in: A, B) depend(inout: testC)
-{
-    detail::einsum<true>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, A, B_indices, B);
-}
-//#pragma omp taskwait depend(in: testC)
+    // #pragma omp task depend(in: A, B) depend(inout: testC)
+    { detail::einsum<true>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, A, B_indices, B); }
+    // #pragma omp taskwait depend(in: testC)
     timer::pop();
 #endif
 
     // Perform the actual einsum
-//#pragma omp task depend(in: A, B) depend(inout: *C)
-{
-    detail::einsum<true>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
-}
+    // #pragma omp task depend(in: A, B) depend(inout: *C)
+    { detail::einsum<true>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B); }
 #if defined(EINSUMS_TEST_NANS)
-// The tests need a wait.
-//#pragma omp taskwait depend(in: *C, testC)
+    // The tests need a wait.
+    // #pragma omp taskwait depend(in: *C, testC)
     if constexpr (CRank != 0) {
         auto target_dims = get_dim_ranges<CRank>(*C);
         for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
@@ -985,8 +982,10 @@ constexpr auto get_n(const std::tuple<List...> &) {
  * @returns unfolded_tensor of shape ``(tensor.dim(mode), -1)``
  */
 template <unsigned int mode, template <typename, size_t> typename CType, size_t CRank, typename T = double>
-auto unfold(const CType<T, CRank> &source) -> std::enable_if_t<std::is_same_v<Tensor<T, CRank>, CType<T, CRank>>, Tensor<T, 2>> {
-    LabeledSection1(fmt::format("mode-{} unfold on {} threads", mode, omp_get_max_threads()));
+auto unfold(const CType<T, CRank> &source) -> Tensor<T, 2>
+    requires(std::is_same_v<Tensor<T, CRank>, CType<T, CRank>>)
+{
+    LabeledSection1(fmt::format("mode-{} unfold", mode));
 
     Dim<2> target_dims;
     target_dims[0] = source.dim(mode);
@@ -1046,10 +1045,11 @@ auto unfold(const CType<T, CRank> &source) -> std::enable_if_t<std::is_same_v<Te
  */
 template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename BType, size_t BRank,
           typename... AIndices, typename... BIndices, typename T = double>
-auto khatri_rao(const std::tuple<AIndices...> &, const AType<T, ARank> &A, const std::tuple<BIndices...> &, const BType<T, BRank> &B)
-    -> std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<T, ARank>, AType<T, ARank>> &&
-                            std::is_base_of_v<::einsums::detail::TensorBase<T, BRank>, BType<T, BRank>>,
-                        Tensor<T, 2>> {
+auto khatri_rao(const std::tuple<AIndices...> &, const AType<T, ARank> &A, const std::tuple<BIndices...> &,
+                const BType<T, BRank> &B) -> Tensor<T, 2>
+    requires(std::is_base_of_v<::einsums::detail::TensorBase<T, ARank>, AType<T, ARank>> &&
+             std::is_base_of_v<::einsums::detail::TensorBase<T, BRank>, BType<T, BRank>>)
+{
     LabeledSection0();
 
     constexpr auto A_indices = std::tuple<AIndices...>();

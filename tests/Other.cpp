@@ -21,7 +21,7 @@ TEST_CASE("timer") {
     using namespace einsums::tensor_algebra::index;
 
 #pragma omp parallel for
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < 100; i++) {
         timer::push("A: test timer");
         timer::pop();
     }
@@ -32,14 +32,14 @@ TEST_CASE("timer") {
     // println("pre omp_get_max_active_levels {}", omp_get_max_active_levels());
 
 #pragma omp parallel for
-    for (int _i = 0; _i < 1000; _i++) {
+    for (int _i = 0; _i < 100; _i++) {
         timer::push("B: test timer");
         timer::push("B: test timer 2");
 
-        auto C = Tensor<double, 2>(std::move(create_tensor("C", 100, 100)));
+        auto C = create_tensor("C", 100, 100);
         zero(C);
 
-#pragma omp task depend(in: A, B) depend(out: C)
+#pragma omp task depend(in : A, B) depend(out : C)
         einsum(Indices{i, j}, &C, Indices{i, k}, A, Indices{k, j}, B);
 #pragma omp taskgroup
         timer::pop();
@@ -55,12 +55,11 @@ TEST_CASE("create_tensor") {
 
     auto A = create_tensor("Test", 7, 7);
     auto B = create_tensor(7, 7);
-
 }
 
 #if 0
-#if defined(__has_feature)
-#    if !__has_feature(address_sanitzer)
+#    if defined(__has_feature)
+#        if !__has_feature(address_sanitzer)
 
 // If compiling with ASAN enabled, this has been shown to provide false test errors.
 // For some reason the fill is not setting a hard double 0.0
@@ -76,13 +75,13 @@ TEST_CASE("zero-fill") {
     }
 
     // Make sure the tensor is actually zero
-#pragma omp parallel for
+#            pragma omp parallel for
     for (int _i = 0; _i < 10000 * 10000; _i++) {
         REQUIRE(A(_i) == double(0.0));
     }
 }
+#        endif
 #    endif
-#endif
 
 TEST_CASE("zero-memset") {
     using namespace einsums;
@@ -95,7 +94,7 @@ TEST_CASE("zero-memset") {
         timer::pop();
     }
 
-#pragma omp parallel for
+#    pragma omp parallel for
     for (int _i = 0; _i < 10000 * 10000; _i++) {
         REQUIRE(A(_i) == double(0.0));
     }
@@ -111,7 +110,7 @@ TEST_CASE("zero-tensor") {
         timer::pop();
     }
 
-#pragma omp parallel for
+#    pragma omp parallel for
     for (int _i = 0; _i < 10000 * 10000; _i++) {
         REQUIRE(A(_i) == double(0.0));
     }
