@@ -611,7 +611,8 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
         for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
             CDataType Cvalue{std::apply(*C, target_combination)};
             if constexpr (!IsComplexV<CDataType>) {
-                if (std::isnan(Cvalue)) {
+                //if (std::isnan(Cvalue)) {
+                if (std::isnan(static_cast<double>(Cvalue))) {
                     println(bg(fmt::color::red) | fg(fmt::color::white), "NaN DETECTED!");
                     println(bg(fmt::color::red) | fg(fmt::color::white), "    {:f} {}({:}) += {:f} {}({:}) * {}({:})", C_prefactor,
                             C->name(), print_tuple_no_type(C_indices), AB_prefactor, A.name(), print_tuple_no_type(A_indices), B.name(),
