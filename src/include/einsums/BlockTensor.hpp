@@ -13,6 +13,15 @@
 
 BEGIN_EINSUMS_NAMESPACE_HPP(einsums)
 
+/**
+ * @struct BlockTensorBase
+ *
+ * Represents a block-diagonal tensor.
+ *
+ * @tparam T The data type stored in this tensor.
+ * @tparam Rank The rank of the tensor
+ * @tparam TensorType The underlying type for the tensors.
+ */
 template <typename T, size_t Rank, template <typename, size_t> typename TensorType>
 struct BlockTensorBase : public detail::TensorBase<T, Rank> {
   protected:
@@ -33,24 +42,24 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
     using tensor_type = TensorType<T, Rank>;
 
     /**
-     * @brief Construct a new Tensor object. Default constructor.
+     * @brief Construct a new BlockTensor object. Default constructor.
      */
     BlockTensorBase() = default;
 
     /**
-     * @brief Construct a new Tensor object. Default copy constructor
+     * @brief Construct a new BlockTensor object. Default copy constructor
      */
     BlockTensorBase(const BlockTensorBase &) = default;
 
     /**
-     * @brief Destroy the Tensor object.
+     * @brief Destroy the BlockTensor object.
      */
     virtual ~BlockTensorBase() = default;
 
     /**
-     * @brief Construct a new Tensor object with the given name and dimensions.
+     * @brief Construct a new BlockTensor object with the given name and blockdimensions.
      *
-     * Constructs a new Tensor object using the information provided in \p name and \p block_dims .
+     * Constructs a new BlockTensor object using the information provided in \p name and \p block_dims .
      *
      * @code
      * // Constructs a rank 4 tensor with two blocks, the first is 2x2x2x2, the second is 3x3x3x3.
@@ -81,6 +90,23 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
         }
     }
 
+    /**
+     * @brief Construct a new BlockTensor object with the given name and blockdimensions.
+     *
+     * Constructs a new BlockTensor object using the information provided in \p name and \p block_dims .
+     *
+     * @code
+     * // Constructs a rank 4 tensor with two blocks, the first is 2x2x2x2, the second is 3x3x3x3.
+     * auto A = BlockTensor<double, 4>("A", 2, 3);
+     * @endcode
+     *
+     * The newly constructed Tensor is NOT zeroed out for you. If you start having NaN issues
+     * in your code try calling Tensor.zero() or zero(Tensor) to see if that resolves it.
+     *
+     * @tparam Dims Variadic template arguments for the dimensions. Must be castable to size_t.
+     * @param name Name of the new tensor.
+     * @param block_dims The size of each block.
+     */
     template <typename ArrayArg>
     explicit BlockTensorBase(std::string name, const ArrayArg &block_dims) : _name{std::move(name)}, _dim{0}, _blocks(), _ranges() {
 
@@ -100,9 +126,9 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
     }
 
     /**
-     * @brief Construct a new Tensor object using the dimensions given by Dim object.
+     * @brief Construct a new BlockTensor object using the dimensions given by Dim object.
      *
-     * @param block_dims The dimensions of the new tensor in Dim form.
+     * @param block_dims The dimension of each block.
      */
     template <size_t Dims>
     explicit BlockTensorBase(Dim<Dims> block_dims) : _blocks(), _ranges() {
@@ -121,6 +147,11 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
         _dim = sum;
     }
 
+    /**
+     * @brief Find the block which can be indexed by the given index.
+     *
+     * This finds the block for which the index is within its range.
+     */
     int block_of(size_t index) const {
         for (int i = 0; i < _ranges.size(); i++) {
             if (_ranges[i][0] <= i && _ranges[i][1] > i) {
@@ -142,7 +173,7 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
     }
 
     /**
-     * @brief Set the all entries to the given value.
+     * @brief Set the all entries in the blocks to the given value.
      *
      * @param value Value to set the elements to.
      */
@@ -153,12 +184,18 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
         }
     }
 
+    /**
+     * @brief Return the selected block with an integer ID.
+     */
     const tensor_type &block(int id) const { return _blocks.at(id); }
 
+    /**
+     * @brief Return the selected block with an integer ID.
+     */
     tensor_type &block(int id) { return _blocks.at(id); }
 
     /**
-     * Add a block to the end of the list of blocks.
+     * @brief Add a block to the end of the list of blocks.
      */
     void push_block(tensor_type &&value) {
         for (int i = 0; i < Rank; i++) {
@@ -173,7 +210,7 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
     }
 
     /**
-     * Add a bloc to the specified position in the
+     * @brief Add a block to the specified position in the
      */
     void insert_block(int pos, tensor_type &&value) {
         for (int i = 0; i < Rank; i++) {
@@ -202,7 +239,7 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
     }
 
     /**
-     * Add a block to the end of the list of blocks.
+     * @brief Add a block to the end of the list of blocks.
      */
     void push_block(const tensor_type &value) {
         for (int i = 0; i < Rank; i++) {
@@ -217,7 +254,7 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
     }
 
     /**
-     * Add a bloc to the specified position in the
+     * @brief Add a block to the specified position in the
      */
     void insert_block(int pos, const tensor_type &value) {
         for (int i = 0; i < Rank; i++) {
@@ -247,12 +284,6 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
 
     /**
      * Returns a pointer into the tensor at the given location.
-     *
-     * @code
-     * auto A = Tensor("A", 3, 3, 3); // Creates a rank-3 tensor of 27 elements
-     *
-     * double* A_pointer = A.data(1, 2, 3); // Returns the pointer to element (1, 2, 3) in A.
-     * @endcode
      *
      *
      * @tparam MultiIndex The datatypes of the passed parameters. Must be castable to
@@ -427,6 +458,9 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
         throw std::out_of_range("Could not find block with the name " + name);
     }
 
+    /**
+     * @brief Copy assignment.
+     */
     auto operator=(const BlockTensorBase<T, Rank, TensorType> &other) -> BlockTensorBase<T, Rank, TensorType> & {
 
         if (_blocks.size() != other._blocks.size()) {
@@ -446,6 +480,9 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
         return *this;
     }
 
+    /**
+     * @brief Copy assignment with a cast.
+     */
     template <typename TOther>
         requires(!std::same_as<T, TOther>)
     auto operator=(const BlockTensorBase<TOther, Rank, TensorType> &other) -> BlockTensorBase<T, Rank, TensorType> & {
@@ -524,18 +561,42 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
         return out;
     }
 
+    /**
+     * @brief Return the number of blocks.
+     */
     size_t num_blocks() const { return _blocks.size(); }
 
+    /**
+     * @brief Return the dimension of the tensor.
+     */
     [[nodiscard]] auto block_dim() const -> size_t { return _dim; }
 
+    /**
+     * @brief Return a list containing the ranges for each block.
+     */
     std::vector<Range> ranges() const { return _ranges; }
 
+    /**
+     * @brief Return the range for a given block.
+     */
     Range block_range(int i) const { return _ranges.at(i); }
 
+    /**
+     * @brief Return the dimensions of the given block.
+     */
     Dim<Rank> block_dims(size_t block) const { return _blocks.at(block).dims(); }
 
+    /**
+     * @brief Return the dimension of a block on a given axis.
+     *
+     * Because the tensors are assumed to be square, changing the second parameter should not affect the output.
+     * The second parameter is not ignored.
+     */
     size_t block_dim(size_t block, int ind = 0) const { return _blocks.at(block).dim(ind); }
 
+    /**
+     * @brief Return the dimensions of a given block.
+     */
     Dim<Rank> block_dims(const std::string &name) const {
         for (auto tens : _blocks) {
             if (tens.name() == name) {
@@ -546,6 +607,12 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
         throw std::out_of_range("Could not find block with the name " + name);
     }
 
+    /**
+     * @brief Return the dimension of a block on a given axis.
+     *
+     * Because the tensors are assumed to be square, changing the second parameter should not affect the output.
+     * The second parameter is not ignored.
+     */
     size_t block_dim(const std::string &name, int ind = 0) const {
         for (auto tens : _blocks) {
             if (tens.name() == name) {
@@ -556,14 +623,25 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
         throw std::out_of_range("Could not find block with the name " + name);
     }
 
+    /**
+     * @brief Return the dimensions of this tensor.
+     */
     Dim<Rank> dims() const {
         Dim<Rank> out;
         out.fill(_dim);
         return out;
     }
 
+    /**
+     * @brief Return the dimension of this tensor along an axis.
+     *
+     * Because the tensor is square, the argument is ignored.
+     */
     size_t dim(int dim = 0) const { return _dim; }
 
+    /**
+     * @brief Return the dimensions of each of the blocks.
+     */
     std::vector<size_t> vector_dims() const {
         std::vector<size_t> out(num_blocks());
 
@@ -574,15 +652,39 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
         return out;
     }
 
+    /**
+     * @brief Returns the list of tensors.
+     */
     auto vector_data() const -> const std::vector<tensor_type> & { return _blocks; }
+
+    /**
+     * @brief Returns the list of tensors.
+     */
     auto vector_data() -> std::vector<tensor_type> & { return _blocks; }
 
+    /**
+     * @brief Gets the name of the tensor.
+     */
     [[nodiscard]] auto name() const -> const std::string & { return _name; }
+
+    /**
+     * @brief Sets the name of the tensor.
+     */
     void               set_name(const std::string &name) { _name = name; }
 
+    /**
+     * @brief Gets the name of a block.
+     */
     [[nodiscard]] auto name(int i) const -> const std::string & { return _blocks[i].name(); }
+
+    /**
+     * @brief Sets the name of a block.
+     */
     void               set_name(int i, const std::string &name) { _blocks[i].set_name(name); }
 
+    /**
+     * @brief Returns the strides of a given block.
+     */
     auto strides(int i) const noexcept -> const auto & { return _blocks[i].strides(); }
 
     // Returns the linear size of the tensor
@@ -598,35 +700,43 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
     [[nodiscard]] auto full_view_of_underlying() const noexcept -> bool { return true; }
 };
 
+/**
+ * @struct BlockTensor
+ *
+ * Represents a block-diagonal tensor in core memory.
+ *
+ * @tparam T The type of data stored in the tensor.
+ * @tparam Rank The rank of the tensor.
+ */
 template <typename T, size_t Rank>
 struct BlockTensor : public BlockTensorBase<T, Rank, Tensor> {
   public:
     /**
-     * @brief Construct a new Tensor object. Default constructor.
+     * @brief Construct a new BlockTensor object. Default constructor.
      */
     BlockTensor() = default;
 
     /**
-     * @brief Construct a new Tensor object. Default copy constructor
+     * @brief Construct a new BlockTensor object. Default copy constructor
      */
     BlockTensor(const BlockTensor &) = default;
 
     /**
-     * @brief Destroy the Tensor object.
+     * @brief Destroy the BlockTensor object.
      */
     ~BlockTensor() = default;
 
     /**
-     * @brief Construct a new Tensor object with the given name and dimensions.
+     * @brief Construct a new BlockTensor object with the given name and dimensions.
      *
-     * Constructs a new Tensor object using the information provided in \p name and \p block_dims .
+     * Constructs a new BlockTensor object using the information provided in \p name and \p block_dims .
      *
      * @code
      * // Constructs a rank 4 tensor with two blocks, the first is 2x2x2x2, the second is 3x3x3x3.
      * auto A = BlockTensor<double, 4>("A", 2, 3);
      * @endcode
      *
-     * The newly constructed Tensor is NOT zeroed out for you. If you start having NaN issues
+     * The newly constructed BlockTensor is NOT zeroed out for you. If you start having NaN issues
      * in your code try calling Tensor.zero() or zero(Tensor) to see if that resolves it.
      *
      * @tparam Dims Variadic template arguments for the dimensions. Must be castable to size_t.
@@ -636,11 +746,29 @@ struct BlockTensor : public BlockTensorBase<T, Rank, Tensor> {
     template <typename... Dims>
     explicit BlockTensor(std::string name, Dims... block_dims) : BlockTensorBase<T, Rank, Tensor>(name, block_dims...) {}
 
+
+    /**
+     * @brief Construct a new BlockTensor object with the given name and dimensions.
+     *
+     * Constructs a new BlockTensor object using the information provided in \p name and \p block_dims .
+     *
+     * @code
+     * // Constructs a rank 4 tensor with two blocks, the first is 2x2x2x2, the second is 3x3x3x3.
+     * auto A = BlockTensor<double, 4>("A", 2, 3);
+     * @endcode
+     *
+     * The newly constructed BlockTensor is NOT zeroed out for you. If you start having NaN issues
+     * in your code try calling Tensor.zero() or zero(Tensor) to see if that resolves it.
+     *
+     * @tparam Dims Variadic template arguments for the dimensions. Must be castable to size_t.
+     * @param name Name of the new tensor.
+     * @param block_dims The size of each block.
+     */
     template <typename ArrayArg>
     explicit BlockTensor(std::string name, const ArrayArg &block_dims) : BlockTensorBase<T, Rank, Tensor>(name, block_dims) {}
 
     /**
-     * @brief Construct a new Tensor object using the dimensions given by Dim object.
+     * @brief Construct a new BlockTensor object using the dimensions given by Dim object.
      *
      * @param block_dims The dimensions of the new tensor in Dim form.
      */
@@ -649,28 +777,36 @@ struct BlockTensor : public BlockTensorBase<T, Rank, Tensor> {
 };
 
 #ifdef __HIP__
+/**
+ * @struct BlockDeviceTensor
+ *
+ * Represents a block-diagonal tensor stored on the device.
+ *
+ * @tparam T The type of data stored. Automatic conversion of complex types.
+ * @tparam Rank The rank of the tensor.
+ */
 template <typename T, size_t Rank>
 struct BlockDeviceTensor : public BlockTensorBase<T, Rank, DeviceTensor> {
   public:
     /**
-     * @brief Construct a new Tensor object. Default constructor.
+     * @brief Construct a new BlockDeviceTensor object. Default constructor.
      */
     BlockDeviceTensor() = default;
 
     /**
-     * @brief Construct a new Tensor object. Default copy constructor
+     * @brief Construct a new BlockDeviceTensor object. Default copy constructor
      */
     BlockDeviceTensor(const BlockDeviceTensor &) = default;
 
     /**
-     * @brief Destroy the Tensor object.
+     * @brief Destroy the BlockDeviceTensor object.
      */
     ~BlockDeviceTensor() = default;
 
     /**
-     * @brief Construct a new Tensor object with the given name and dimensions.
+     * @brief Construct a new BlockDeviceTensor object with the given name and dimensions.
      *
-     * Constructs a new Tensor object using the information provided in \p name and \p block_dims .
+     * Constructs a new BlockDeviceTensor object using the information provided in \p name and \p block_dims .
      *
      * @code
      * // Constructs a rank 4 tensor with two blocks, the first is 2x2x2x2, the second is 3x3x3x3.
@@ -682,6 +818,7 @@ struct BlockDeviceTensor : public BlockTensorBase<T, Rank, DeviceTensor> {
      *
      * @tparam Dims Variadic template arguments for the dimensions. Must be castable to size_t.
      * @param name Name of the new tensor.
+     * @param mode The storage mode.
      * @param block_dims The size of each block.
      */
     template <typename... Dims>
@@ -701,6 +838,24 @@ struct BlockDeviceTensor : public BlockTensorBase<T, Rank, DeviceTensor> {
         }
     }
 
+    /**
+     * @brief Construct a new BlockDeviceTensor object with the given name and dimensions.
+     *
+     * Constructs a new BlockDeviceTensor object using the information provided in \p name and \p block_dims .
+     *
+     * @code
+     * // Constructs a rank 4 tensor with two blocks, the first is 2x2x2x2, the second is 3x3x3x3.
+     * auto A = BlockTensor<double, 4>("A", 2, 3);
+     * @endcode
+     *
+     * The newly constructed Tensor is NOT zeroed out for you. If you start having NaN issues
+     * in your code try calling Tensor.zero() or zero(Tensor) to see if that resolves it.
+     *
+     * @tparam Dims Variadic template arguments for the dimensions. Must be castable to size_t.
+     * @param name Name of the new tensor.
+     * @param mode The storage mode.
+     * @param block_dims The size of each block.
+     */
     template <typename ArrayArg>
     explicit BlockDeviceTensor(std::string name, detail::HostToDeviceMode mode, const ArrayArg &block_dims)
         : BlockTensorBase<T, Rank, DeviceTensor>(name) {
@@ -715,8 +870,9 @@ struct BlockDeviceTensor : public BlockTensorBase<T, Rank, DeviceTensor> {
     }
 
     /**
-     * @brief Construct a new Tensor object using the dimensions given by Dim object.
+     * @brief Construct a new BlockTensor object using the dimensions given by Dim object.
      *
+     * @param mode The storage mode.
      * @param block_dims The dimensions of the new tensor in Dim form.
      */
     template <size_t Dims>
@@ -731,6 +887,13 @@ struct BlockDeviceTensor : public BlockTensorBase<T, Rank, DeviceTensor> {
         }
     }
 
+    /**
+     * @brief Subscripts into the tensor.
+     *
+     * This is different from the normal subscript since there needs to be a way to 
+     * access data on the device. C++ references do not handle data synchronization
+     * in this way, so it needs to be done differently.
+     */
     template <typename... MultiIndex>
         requires requires {
             requires NoneOfType<AllT, MultiIndex...>;

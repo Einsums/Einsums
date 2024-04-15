@@ -539,6 +539,11 @@ EINSUMS_EXPORT hipStream_t get_stream(int thread_id);
 EINSUMS_EXPORT void set_stream(hipStream_t stream);
 EINSUMS_EXPORT void set_stream(hipStream_t stream, int thread_id);
 
+/**
+ * @brief Synchronize to all operations on the device.
+ *
+ * Waits until the device is in an idle state before continuing. Blocks on all streams.
+ */
 inline void device_synchronize() {
     hip_catch(hipDeviceSynchronize());
 }
