@@ -11,6 +11,7 @@
 
 TEST_CASE("GPU Block Tensor creation", "[gpu][tensor][block-tensor]") {
     using namespace einsums;
+    using namespace einsums::gpu;
 
     BlockDeviceTensor<double, 2> A("A", einsums::detail::DEV_ONLY, 3, 3);
     BlockDeviceTensor<double, 2> B("B", einsums::detail::DEV_ONLY, 3, 3);
@@ -22,10 +23,12 @@ TEST_CASE("GPU Block Tensor creation", "[gpu][tensor][block-tensor]") {
     A.zero();
     B.zero();
 
+    hip_catch(hipDeviceSynchronize());
+
     for (int i = 0; i < 6; i++) {
         for (int j = 0; j < 6; j++) {
-            CHECK(A(i, j) == 0.0);
-            CHECK(B(i, j) == 0.0);
+            CHECK((double) A(i, j) == 0.0);
+            CHECK((double) B(i, j) == 0.0);
         }
     }
 
@@ -44,14 +47,16 @@ TEST_CASE("GPU Block Tensor creation", "[gpu][tensor][block-tensor]") {
     B(4, 4) = 1.0;
     B(5, 5) = 1.0;
 
+    hip_catch(hipDeviceSynchronize());
+
     for (int i = 0; i < 6; i++) {
         for (int j = 0; j < 6; j++) {
             if (i == j) {
-                CHECK(A(i, j) == 1.0);
-                CHECK(B(i, j) == 1.0);
+                CHECK((double) A(i, j) == 1.0);
+                CHECK((double) B(i, j) == 1.0);
             } else {
-                CHECK(A(i, j) == 0.0);
-                CHECK(B(i, j) == 0.0);
+                CHECK((double) A(i, j) == 0.0);
+                CHECK((double) B(i, j) == 0.0);
             }
         }
     }
@@ -59,12 +64,14 @@ TEST_CASE("GPU Block Tensor creation", "[gpu][tensor][block-tensor]") {
     // Perform basic matrix multiplication
     einsums::linear_algebra::gemm<false, false>(1.0, A, B, 0.0, &C);
 
+    hip_catch(hipDeviceSynchronize());
+
     for (int i = 0; i < 6; i++) {
         for (int j = 0; j < 6; j++) {
             if (i == j) {
-                CHECK(C(i, j) == 1.0);
+                CHECK((double) C(i, j) == 1.0);
             } else {
-                CHECK(C(i, j) == 0.0);
+                CHECK((double) C(i, j) == 0.0);
             }
         }
     }
