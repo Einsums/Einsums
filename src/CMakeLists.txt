@@ -14,8 +14,6 @@ add_einsums_library(einsums
         State.cpp
         TensorAlgebra.cpp
         Timer.cpp
-        SymmIndex.cpp
-        Symmetry.cpp
 
         polynomial/Laguerre.cpp
 

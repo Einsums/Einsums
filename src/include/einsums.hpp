@@ -18,7 +18,6 @@
 #include "einsums/State.hpp"
 #include "einsums/Tensor.hpp"
 #include "einsums/BlockTensor.hpp"
-#include "einsums/SymmTensor.hpp"
 
 #ifdef __HIP__
 #include "einsums/DeviceTensor.hpp"
