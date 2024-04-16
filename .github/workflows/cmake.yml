@@ -45,6 +45,11 @@ jobs:
               -DCMAKE_C_COMPILER=clang-cl
               -DMKL_ROOT="${CONDA_PREFIX}"
               -DEINSUMS_STATIC_BUILD=ON
+            testargs: >
+              -DCMAKE_CXX_COMPILER=clang-cl
+              -DCMAKE_C_COMPILER=clang-cl
+              -DMKL_ROOT="${CONDA_PREFIX}"
+              -DEINSUMS_STATIC_BUILD=ON
         exclude:
           - cxx: L-Intel
             build_type: Debug
@@ -187,7 +192,13 @@ jobs:
           add_executable(timings "../timing/main.cpp")
           target_link_libraries(timings Einsums::einsums)
           EOF
-          cmake -S . -B build -G Ninja --log-level verbose -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="${CONDA_PREFIX};${CONDA_PREFIX}/Library;${{ github.workspace }}/installed"
+          cmake -S . \
+            -B build \
+            -G Ninja \
+            --log-level verbose \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_PREFIX_PATH="${CONDA_PREFIX};${CONDA_PREFIX}/Library;${{ github.workspace }}/installed" \
+            ${{ matrix.testargs }}
           cmake --build build
           ./build/timings
 
