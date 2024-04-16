@@ -154,16 +154,11 @@ jobs:
       - name: Build & Install
         run: |
           cmake --build "${{github.workspace}}/build" --config ${{matrix.build_type}} --target install
-          cat ${{github.workspace}}/installed/share/cmake/Einsums/EinsumsConfig.cmake
+          cat "${{github.workspace}}/installed/share/cmake/Einsums/EinsumsConfig.cmake"
 
       - name: Test (CTest) - unit tests
-        working-directory: ${{github.workspace}}/build
+        working-directory: "${{github.workspace}}/build"
         run: ctest
-
-      - name: Test (Catch2) - unit tests
-        if: false
-        working-directory: ${{github.workspace}}/build/tests
-        run: ./test-all
 
       - name: Test (find_package) - consume installation
         shell: bash -l {0}
