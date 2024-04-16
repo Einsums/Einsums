@@ -37,7 +37,6 @@ ALLSPHINXOPTS   = -WT --keep-going -d build/doctrees $(PAPEROPT_$(PAPER)) \
 help:
 	@echo "Please use \`make <target>' where <target> is one of"
 	@echo "  clean     to remove generated doc files and start fresh"
-	@echo "  docenv    make a virtual environment in which to build docs"
 	@echo "  html      to make standalone HTML files"
 	@echo "  htmlhelp  to make HTML files and a HTML help project"
 	@echo "  latex     to make LaTeX files, you can set PAPER=a4 or PAPER=letter"
@@ -45,7 +44,7 @@ help:
 	@echo "  linkcheck to check all external links for integrity"
 	@echo "  dist PYVER=... to make a distribution-ready tree"
 	@echo "  gitwash-update GITWASH=path/to/gitwash  update gitwash developer docs"
-	@echo "  merge-doc TAG=... to clone numpy/doc and archive documentation into it"
+	@echo "  merge-doc TAG=... to clone einsums/doc and archive documentation into it"
 	@echo "  show      to show the html output in a browser"
 
 clean:
