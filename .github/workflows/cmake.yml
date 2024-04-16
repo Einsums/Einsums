@@ -187,7 +187,7 @@ jobs:
           add_executable(timings "../timing/main.cpp")
           target_link_libraries(timings Einsums::einsums)
           EOF
-          cmake -S . -B build -G Ninja --log-level verbose -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="${CONDA_PREFIX};${{github.workspace}}/installed"
+          cmake -S . -B build -G Ninja --log-level verbose -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="${CONDA_PREFIX};${CONDA_PREFIX}/Library;${{ github.workspace }}/installed"
           cmake --build build
           ./build/timings
 
