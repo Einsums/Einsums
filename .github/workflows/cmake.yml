@@ -44,6 +44,7 @@ jobs:
               -DCMAKE_CXX_COMPILER=clang-cl
               -DCMAKE_C_COMPILER=clang-cl
               -DMKL_ROOT="${CONDA_PREFIX}"
+              -DEINSUMS_STATIC_BUILD=ON
         exclude:
           - cxx: L-Intel
             build_type: Debug
