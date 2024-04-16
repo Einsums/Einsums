@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        cxx: [ L-Gnu, M-Clang, L-Intel, W-ClangCL ]
+        cxx: [ L-Gnu, M-Clang, L-Intel ]
         build_type: [ Release, Debug ]
         hptt: [ ON, OFF ]
         include:
@@ -38,6 +38,8 @@ jobs:
               -DFETCHCONTENT_TRY_FIND_PACKAGE_MODE=NEVER
           - cxx: W-ClangCL
             os: windows-latest
+            build_type: [ Release, Debug ]
+            hptt: OFF
             cmargs: >
               -DCMAKE_CXX_COMPILER=clang-cl
               -DCMAKE_C_COMPILER=clang-cl
