@@ -38,7 +38,6 @@ jobs:
               -DFETCHCONTENT_TRY_FIND_PACKAGE_MODE=NEVER
           - cxx: W-ClangCL
             os: windows-latest
-            hptt: OFF
             cmargs: >
               -DCMAKE_CXX_COMPILER=clang-cl
               -DCMAKE_C_COMPILER=clang-cl
