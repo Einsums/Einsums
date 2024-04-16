@@ -4,10 +4,9 @@ include(FeatureSummary)
 #
 # Setup path handling
 #
+include(GNUInstallDirs)
 
 if (UNIX)
-    include(GNUInstallDirs)
-
     set(_EINSUMS_LIBRARY_BASE_PATH "${CMAKE_INSTALL_LIBDIR}")
     set(_EINSUMS_LIBRARY_PATH "${_EINSUMS_LIBRARY_BASE_PATH}/einsums")
     set(_EINSUMS_LIBEXEC_PATH "${CMAKE_INSTALL_LIBEXECDIR}/einsums")
