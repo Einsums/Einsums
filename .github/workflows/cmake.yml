@@ -38,7 +38,7 @@ jobs:
               -DFETCHCONTENT_TRY_FIND_PACKAGE_MODE=NEVER
           - cxx: W-ClangCL
             os: windows-latest
-            build_type: [ Release, Debug ]
+            build_type: Release
             hptt: OFF
             cmargs: >
               -DCMAKE_CXX_COMPILER=clang-cl
