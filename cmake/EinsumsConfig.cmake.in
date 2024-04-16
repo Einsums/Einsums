@@ -110,7 +110,7 @@ elseif(@EINSUMS_FFT_LIBRARY@ STREQUAL fftw3)  # EINSUMS_FFT_LIBRARY
 endif()
 
 if(NOT TARGET ZLIB::ZLIB)
-    find_package(ZLIB)
+    find_dependency(ZLIB)
 endif()
 if(NOT TARGET tgt::hdf5)
     find_dependency(TargetHDF5 @TargetHDF5_VERSION_Mm@)
