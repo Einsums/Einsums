@@ -10,8 +10,8 @@
 
 FetchContent_Declare(
   h5cpp
-  URL https://github.com/Einsums/h5cpp/archive/v1.10.4-6+3.tar.gz
-  URL_HASH SHA256=c790e38b3251fc2114c452858c85c86659aacb6037f24901bed55b72f6e2af03
+  URL https://github.com/Einsums/h5cpp/archive/v1.10.4-6+4.tar.gz
+  URL_HASH SHA256=f9acf8d35ac1584d0c0f36471abc3faaa3e181d2713950b1af21e4f4bc0f9991
   SOURCE_SUBDIR fake
   SYSTEM
   OVERRIDE_FIND_PACKAGE
