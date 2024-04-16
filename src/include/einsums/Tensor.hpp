@@ -1876,7 +1876,7 @@ auto println(const AType<T, Rank> &A, TensorPrintOptions options) ->
                     for (int j = 0; j < final_dim; j++) {
                         if (j % options.width == 0) {
                             std::ostringstream tmp;
-                            detail::TuplePrinterNoType<decltype(target_combination), Rank - 1>::print(tmp, target_combination);
+                            ::einsums::detail::TuplePrinterNoType<decltype(target_combination), Rank - 1>::print(tmp, target_combination);
                             if (final_dim >= j + options.width)
                                 oss << fmt::format(
                                     "{:<14}", fmt::format("({}, {:{}d}-{:{}d}): ", tmp.str(), j, ndigits, j + options.width - 1, ndigits));
@@ -1919,7 +1919,7 @@ auto println(const AType<T, Rank> &A, TensorPrintOptions options) ->
                 for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
                     std::ostringstream oss;
                     oss << "(";
-                    detail::TuplePrinterNoType<decltype(target_combination), Rank>::print(oss, target_combination);
+                    ::einsums::detail::TuplePrinterNoType<decltype(target_combination), Rank>::print(oss, target_combination);
                     oss << "): ";
 
                     T value = std::apply(A, target_combination);

@@ -22,7 +22,7 @@ auto main(int argc, char *argv[]) -> int {
     // Create a file to hold the data from the DiskTensor tests.
     EINSUMS_DISABLE_WARNING_PUSH
     EINSUMS_DISABLE_WARNING_DEPRECATED_DECLARATIONS
-    einsums::state::data = h5::create(std::string(std::tmpnam(nullptr)), H5F_ACC_TRUNC);
+    einsums::state::data() = h5::create(std::string(std::tmpnam(nullptr)), H5F_ACC_TRUNC);
     EINSUMS_DISABLE_WARNING_POP
 
     // println("Running on {} thread(s)", omp_get_max_threads());
@@ -32,7 +32,7 @@ auto main(int argc, char *argv[]) -> int {
     // Ensure file is closed before finalize is called. If einsums is running parallel MPI will have been
     // finalized BEFORE the HDF5 file has been closed and MPI will report that an MPI function was called
     // after having been finalized.
-    H5Fclose(einsums::state::data);
+    H5Fclose(einsums::state::data());
 
     // Passing false means "do not print timer report", whereas passing true will print the
     // timer report.

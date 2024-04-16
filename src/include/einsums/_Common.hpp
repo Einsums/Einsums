@@ -29,7 +29,7 @@
 #define BEGIN_EINSUMS_NAMESPACE_HPP(x)                                                                                                     \
     namespace x {                                                                                                                          \
     namespace detail {                                                                                                                     \
-    extern EINSUMS_EXPORT std::string s_Namespace;                                                                                         \
+    EINSUMS_EXPORT const std::string& get_namespace();                                                                                     \
     }
 
 /**
@@ -44,8 +44,15 @@
 #define BEGIN_EINSUMS_NAMESPACE_CPP(x)                                                                                                     \
     namespace x {                                                                                                                          \
     namespace detail {                                                                                                                     \
-    EINSUMS_EXPORT std::string s_Namespace = #x;                                                                                           \
+    namespace {                                                                                                                            \
+    std::string s_Namespace = #x;                                                                                                          \
+    }                                                                                                                                      \
+    EINSUMS_EXPORT const std::string& get_namespace() { return s_Namespace; }                                                              \
     }
+
+#if !defined(EINSUMS_ZERO)
+#define EINSUMS_ZERO (1e-10)
+#endif
 
 /**
  * Matching macro to BEGIN_EINSUMS_NAMESPACE_HPP(x)

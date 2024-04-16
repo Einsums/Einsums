@@ -154,20 +154,22 @@ endif ()
 add_subdirectory(external)
 add_subdirectory(src)
 
-if(EINSUMS_COVERAGE)
+if(EINSUMS_COVERAGE AND NOT MSVC)
     target_compile_options(einsums PUBLIC $<$<COMPILE_LANG_AND_ID:CXX,Clang>:-fprofile-instr-generate -fcoverage-mapping>)
     target_compile_options(einsums PUBLIC $<$<COMPILE_LANGUAGE:HIP>:-fprofile-instr-generate -fcoverage-mapping>)
     target_compile_options(einsums PUBLIC $<$<COMPILE_LANG_AND_ID:CXX,GNU>:--coverage>)
 endif()
 
-target_compile_options(einsums BEFORE PUBLIC $<$<CONFIG:Debug>:-gdwarf-2 -O0 -g3 -ggdb>)
+if (NOT MSVC)
+    target_compile_options(einsums BEFORE PUBLIC $<$<CONFIG:Debug>:-gdwarf-2 -O0 -g3 -ggdb>)
+endif()
 
 if (EINSUMS_ENABLE_TESTING)
     enable_testing()
     add_subdirectory(tests)
 endif ()
 
-add_subdirectory(timing)
+# add_subdirectory(timing)
 # add_subdirectory(experiments)
 
 feature_summary(INCLUDE_QUIET_PACKAGES WHAT PACKAGES_FOUND PACKAGES_NOT_FOUND

@@ -568,10 +568,9 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
                         std::is_base_of_v<::einsums::detail::TensorBase<BDataType, BRank>, BType<BDataType, BRank>> &&
                         std::is_base_of_v<::einsums::detail::TensorBase<CDataType, CRank>, CType<CDataType, CRank>> &&
                         std::is_arithmetic_v<U>> {
-    
     using ABDataType = std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType>;
 
-    LabeledSection1(FP_ZERO != std::fpclassify(UC_prefactor)
+    LabeledSection1((std::fabs(UC_prefactor) > EINSUMS_ZERO)
                         ? fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{} + {} "{}"{})", C->name(), print_tuple_no_type(C_indices),
                                       UAB_prefactor, A.name(), print_tuple_no_type(A_indices), B.name(), print_tuple_no_type(B_indices),
                                       UC_prefactor, C->name(), print_tuple_no_type(C_indices))
