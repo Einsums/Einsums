@@ -169,7 +169,7 @@ if (EINSUMS_ENABLE_TESTING)
     add_subdirectory(tests)
 endif ()
 
-# add_subdirectory(timing)
+add_subdirectory(timing)
 # add_subdirectory(experiments)
 
 feature_summary(INCLUDE_QUIET_PACKAGES WHAT PACKAGES_FOUND PACKAGES_NOT_FOUND
