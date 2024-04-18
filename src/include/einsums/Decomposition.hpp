@@ -355,14 +355,14 @@ auto weighted_parafac(const TTensor<TType, TRank> &tensor, const TTensor<TType, 
     bool   converged  = false;
     double prev_error = 0.0;
     while (iter < n_iter_max) {
-        size_t n = 0;
+        size_t n = 0; // NOLINT
         for_sequence<TRank>([&](auto n_ind) {
             // Form V and Khatri-Rao product intermediates
             Tensor<TType, 2> V;
             Tensor<TType, 2> KR;
             bool             first = true;
 
-            size_t m = 0;
+            size_t m = 0; // NOLINT
             for_sequence<TRank>([&](auto m_ind) {
                 if (m_ind != n_ind) {
                     Tensor<TType, 2> A_tA{"V", rank, rank};

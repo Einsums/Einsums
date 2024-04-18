@@ -197,11 +197,28 @@ inline auto get_from_tuple(Tuple &&tuple, size_t index) -> ReturnType {
     return returnValue;
 }
 
+/**
+ * @brief Provides compile-time for loop over a sequence.
+ *
+ * @tparam T datatype of the sequence
+ * @tparam S the sequence to work through
+ * @tparam F the functor type to call
+ * @param f the functor to call
+ */
 template <typename T, T... S, typename F>
 constexpr void for_sequence(std::integer_sequence<T, S...>, F f) {
     (static_cast<void>(f(std::integral_constant<T, S>{})), ...);
 }
 
+/**
+ * @brief Provides compile-time for loop semantics.
+ *
+ * Loops from 0 to n-1.
+ *
+ * @tparam n the number of iterations to perform
+ * @tparam F the functor type to call
+ * @param f the functor
+ */
 template <auto n, typename F>
 constexpr void for_sequence(F f) {
     for_sequence(std::make_integer_sequence<decltype(n), n>{}, f);

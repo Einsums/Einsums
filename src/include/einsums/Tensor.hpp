@@ -207,7 +207,6 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
         size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
 
         // Resize the data structure
-        // TODO: Is this setting all the elements to zero?
         _data.resize(size);
     }
 
@@ -310,7 +309,6 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
         size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
 
         // Resize the data structure
-        // TODO: Is this setting all the elements to zero?
         _data.resize(size);
     }
 
@@ -831,8 +829,8 @@ struct Tensor<T, 0> : public detail::TensorBase<T, 0> {
 
 #undef OPERATOR
 
-    operator T() const { return _data; }
-    operator T &() { return _data; }
+    operator T() const { return _data; } // NOLINT
+    operator T &() { return _data; }     // NOLINT
 
     [[nodiscard]] auto name() const -> const std::string & { return _name; }
     void               set_name(const std::string &name) { _name = name; }
@@ -970,7 +968,7 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
     auto operator OP(const T &value)->TensorView & {                                                                                       \
         auto target_dims = get_dim_ranges<Rank>(*this);                                                                                    \
         auto view        = std::apply(ranges::views::cartesian_product, target_dims);                                                      \
-        _Pragma("omp parallel for") for (auto target_combination = view.begin(); target_combination != view.end(); target_combination++) { \
+        EINSUMS_OMP_PARALLEL_FOR for (auto target_combination = view.begin(); target_combination != view.end(); target_combination++) {    \
             T        &target = std::apply(*this, *target_combination);                                                                     \
             target OP value;                                                                                                               \
         }                                                                                                                                  \
@@ -1094,8 +1092,9 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
     }
 
     template <template <typename, size_t> typename TensorType, size_t OtherRank, typename... Args>
-    auto common_initialization(TensorType<T, OtherRank> &other, Args &&...args)
-        -> std::enable_if_t<std::is_base_of_v<detail::TensorBase<T, OtherRank>, TensorType<T, OtherRank>>> {
+    auto common_initialization(TensorType<T, OtherRank> &other, Args &&...args) -> void
+        requires std::is_base_of_v<detail::TensorBase<T, OtherRank>, TensorType<T, OtherRank>>
+    {
 
         static_assert(Rank <= OtherRank, "A TensorView must be the same Rank or smaller that the Tensor being viewed.");
 
@@ -1609,7 +1608,7 @@ struct DiskTensor final : public detail::TensorBase<T, Rank> {
 
     h5::ds_t _disk;
 
-    // Did the entry already exist on disk? Doesn't indicate validity of the data just the existance of the entry.
+    // Did the entry already exist on disk? Doesn't indicate validity of the data just the existence of the entry.
     bool _existed{false};
 };
 
@@ -1690,8 +1689,8 @@ struct DiskView final : public detail::TensorBase<T, ViewRank> {
     [[nodiscard]] auto dim(int d) const -> size_t { return _tensor.dim(d); }
     auto               dims() const -> Dim<Rank> { return _tensor.dims(); }
 
-    operator Tensor<T, ViewRank> &() const { return _tensor; }
-    operator const Tensor<T, ViewRank> &() const { return _tensor; }
+    operator Tensor<T, ViewRank> &() const { return _tensor; }       // NOLINT
+    operator const Tensor<T, ViewRank> &() const { return _tensor; } // NOLINT
 
     void zero() { _tensor.zero(); }
     void set_all(T value) { _tensor.set_all(value); }
@@ -1858,7 +1857,7 @@ auto println(const AType<T, Rank> &A, TensorPrintOptions options) ->
             println();
 
             if constexpr (Rank == 0) {
-                T value = A;
+                const T value = static_cast<const T>(A);
 
                 std::ostringstream oss;
                 oss << "              ";
