@@ -694,7 +694,7 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
     }
 
 #define OPERATOR(OP)                                                                                                                       \
-    auto operator OP(const T &b) -> Tensor<T, Rank> & {                                                                                    \
+    auto operator OP(const T &b)->Tensor<T, Rank> & {                                                                                      \
         EINSUMS_OMP_PARALLEL {                                                                                                             \
             auto tid       = omp_get_thread_num();                                                                                         \
             auto chunksize = _data.size() / omp_get_num_threads();                                                                         \
@@ -707,7 +707,7 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
         return *this;                                                                                                                      \
     }                                                                                                                                      \
                                                                                                                                            \
-    auto operator OP(const Tensor<T, Rank> &b) -> Tensor<T, Rank> & {                                                                      \
+    auto operator OP(const Tensor<T, Rank> &b)->Tensor<T, Rank> & {                                                                        \
         if (size() != b.size()) {                                                                                                          \
             throw std::runtime_error(fmt::format("operator" EINSUMS_STRINGIFY(OP) " : tensors differ in size : {} {}", size(), b.size())); \
         }                                                                                                                                  \
@@ -810,7 +810,7 @@ struct Tensor<T, 0> : public detail::TensorBase<T, 0> {
 #    undef OPERATOR
 #endif
 #define OPERATOR(OP)                                                                                                                       \
-    auto operator OP(const T &other) -> Tensor<T, 0> & {                                                                                   \
+    auto operator OP(const T &other)->Tensor<T, 0> & {                                                                                     \
         _data OP other;                                                                                                                    \
         return *this;                                                                                                                      \
     }
@@ -958,7 +958,7 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
 #    undef OPERATOR)
 #endif
 #define OPERATOR(OP)                                                                                                                       \
-    auto operator OP(const T &value) -> TensorView & {                                                                                     \
+    auto operator OP(const T &value)->TensorView & {                                                                                       \
         auto target_dims = get_dim_ranges<Rank>(*this);                                                                                    \
         auto view        = std::apply(ranges::views::cartesian_product, target_dims);                                                      \
         _Pragma("omp parallel for") for (auto target_combination = view.begin(); target_combination != view.end(); target_combination++) { \
@@ -1455,7 +1455,7 @@ struct DiskTensor final : public detail::TensorBase<T, Rank> {
         if (H5Lexists(_file, _name.c_str(), H5P_DEFAULT) > 0) {
             _existed = true;
             try {
-                _disk = h5::open(state::data, _name);
+                _disk = h5::open(state::data(), _name);
             } catch (std::exception &e) {
                 println("Unable to open disk tensor '%s'", _name.c_str());
                 std::abort();
@@ -1888,7 +1888,7 @@ auto println(const AType<T, Rank> &A, TensorPrintOptions options) ->
                     for (int j = 0; j < final_dim; j++) {
                         if (j % options.width == 0) {
                             std::ostringstream tmp;
-                            detail::TuplePrinterNoType<decltype(target_combination), Rank - 1>::print(tmp, target_combination);
+                            ::einsums::detail::TuplePrinterNoType<decltype(target_combination), Rank - 1>::print(tmp, target_combination);
                             if (final_dim >= j + options.width)
                                 oss << fmt::format(
                                     "{:<14}", fmt::format("({}, {:{}d}-{:{}d}): ", tmp.str(), j, ndigits, j + options.width - 1, ndigits));
@@ -1936,7 +1936,7 @@ auto println(const AType<T, Rank> &A, TensorPrintOptions options) ->
                 for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
                     std::ostringstream oss;
                     oss << "(";
-                    detail::TuplePrinterNoType<decltype(target_combination), Rank>::print(oss, target_combination);
+                    ::einsums::detail::TuplePrinterNoType<decltype(target_combination), Rank>::print(oss, target_combination);
                     oss << "): ";
 
                     T value = std::apply(A, target_combination);
@@ -2045,7 +2045,7 @@ auto fprintln(std::FILE *fp, const AType<T, Rank> &A, TensorPrintOptions options
                     for (int j = 0; j < final_dim; j++) {
                         if (j % options.width == 0) {
                             std::ostringstream tmp;
-                            detail::TuplePrinterNoType<decltype(target_combination), Rank - 1>::print(tmp, target_combination);
+                            einsums::detail::TuplePrinterNoType<decltype(target_combination), Rank - 1>::print(tmp, target_combination);
                             if (final_dim >= j + options.width)
                                 oss << fmt::format(
                                     "{:<14}", fmt::format("({}, {:{}d}-{:{}d}): ", tmp.str(), j, ndigits, j + options.width - 1, ndigits));
@@ -2093,7 +2093,7 @@ auto fprintln(std::FILE *fp, const AType<T, Rank> &A, TensorPrintOptions options
                 for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
                     std::ostringstream oss;
                     oss << "(";
-                    detail::TuplePrinterNoType<decltype(target_combination), Rank>::print(oss, target_combination);
+                    einsums::detail::TuplePrinterNoType<decltype(target_combination), Rank>::print(oss, target_combination);
                     oss << "): ";
 
                     T value = std::apply(A, target_combination);
@@ -2202,7 +2202,7 @@ auto fprintln(std::ostream &os, const AType<T, Rank> &A, TensorPrintOptions opti
                     for (int j = 0; j < final_dim; j++) {
                         if (j % options.width == 0) {
                             std::ostringstream tmp;
-                            detail::TuplePrinterNoType<decltype(target_combination), Rank - 1>::print(tmp, target_combination);
+                            einsums::detail::TuplePrinterNoType<decltype(target_combination), Rank - 1>::print(tmp, target_combination);
                             if (final_dim >= j + options.width)
                                 oss << fmt::format(
                                     "{:<14}", fmt::format("({}, {:{}d}-{:{}d}): ", tmp.str(), j, ndigits, j + options.width - 1, ndigits));
@@ -2250,7 +2250,7 @@ auto fprintln(std::ostream &os, const AType<T, Rank> &A, TensorPrintOptions opti
                 for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
                     std::ostringstream oss;
                     oss << "(";
-                    detail::TuplePrinterNoType<decltype(target_combination), Rank>::print(oss, target_combination);
+                    einsums::detail::TuplePrinterNoType<decltype(target_combination), Rank>::print(oss, target_combination);
                     oss << "): ";
 
                     T value = std::apply(A, target_combination);

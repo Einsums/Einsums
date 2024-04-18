@@ -45,7 +45,7 @@ auto sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<
                         sizeof...(CIndices) == sizeof...(AIndices) && sizeof...(CIndices) == CRank && sizeof...(AIndices) == ARank &&
                         std::is_arithmetic_v<U>> {
 
-    LabeledSection1(FP_ZERO != std::fpclassify(UC_prefactor)
+    LabeledSection1((std::fabs(UC_prefactor) > EINSUMS_ZERO)
                         ? fmt::format(R"(sort: "{}"{} = {} "{}"{} + {} "{}"{})", C->name(), print_tuple_no_type(C_indices), UA_prefactor,
                                       A.name(), print_tuple_no_type(A_indices), UC_prefactor, C->name(), print_tuple_no_type(C_indices))
                         : fmt::format(R"(sort: "{}"{} = {} "{}"{})", C->name(), print_tuple_no_type(C_indices), UA_prefactor, A.name(),

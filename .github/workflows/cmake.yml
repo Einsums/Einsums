@@ -36,6 +36,21 @@ jobs:
             cmargs: >
               -DFETCHCONTENT_QUIET=OFF
               -DFETCHCONTENT_TRY_FIND_PACKAGE_MODE=NEVER
+          - cxx: W-ClangCL
+            os: windows-latest
+            build_type: Release
+            hptt: OFF
+            cmargs: >
+              -DCMAKE_CXX_COMPILER=clang-cl
+              -DCMAKE_C_COMPILER=clang-cl
+              -DMKL_ROOT="${CONDA_PREFIX}"
+              -DEINSUMS_STATIC_BUILD=ON
+            testargs: >
+              -DCMAKE_CXX_COMPILER=clang-cl
+              -DCMAKE_C_COMPILER=clang-cl
+              -DMKL_ROOT="${CONDA_PREFIX}"
+              -DEINSUMS_STATIC_BUILD=ON
+              -D ZLIB_USE_STATIC_LIBS=ON
         exclude:
           - cxx: L-Intel
             build_type: Debug
@@ -63,6 +78,7 @@ jobs:
             - fmt
             - range-v3
             - blas-devel
+            #WMKL- mkl-devel=2023.2.0
             #MKL- libblas=*=*mkl
             #ACC- libblas=*=*accelerate
             #OBL- libblas=*=*openblas
@@ -91,6 +107,10 @@ jobs:
           fi
           if [[ "${{ runner.os }}" == "Windows" ]]; then
             :
+            sed -i "s;#WMKL;;g" export.yaml
+            sed -i "s;- blas-devel;;g" export.yaml
+            sed -i "s;- elfutils;;g" export.yaml
+            sed -i "s/- cxx/#- cxx/g" export.yaml
           fi
           # model sed for L/W
           #   sed -i "s;;;g" export.yaml
@@ -119,33 +139,34 @@ jobs:
           mamba info
           mamba list
 
+      - name: Prepare compiler environment for Windows
+        if: ${{ runner.os == 'Windows' }}
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
       - name: Configure CMake
         run: |
           cmake \
             -S . \
-            -B ${{github.workspace}}/build \
+            -B "${{github.workspace}}/build" \
             -G Ninja \
             -D CMAKE_BUILD_TYPE=${{matrix.build_type}} \
             -D EINSUMS_SHOW_WARNING=OFF \
             -D EINSUMS_USE_HPTT=${{matrix.hptt}} \
             -D EINSUMS_STATIC_BUILD=${{matrix.hptt}} \
             -D CMAKE_INSTALL_PREFIX="${{github.workspace}}/installed" \
-            -DCMAKE_PREFIX_PATH="${CONDA_PREFIX}" \
+            -D CMAKE_PREFIX_PATH="${CONDA_PREFIX}" \
             ${{ matrix.cmargs }}
 
       - name: Build & Install
         run: |
-          cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}} --target install
-          cat ${{github.workspace}}/installed/share/cmake/Einsums/EinsumsConfig.cmake
+          cmake --build "${{github.workspace}}/build" --config ${{matrix.build_type}} --target install
+          cat "${{github.workspace}}/installed/share/cmake/Einsums/EinsumsConfig.cmake"
 
       - name: Test (CTest) - unit tests
-        working-directory: ${{github.workspace}}/build
+        working-directory: "${{github.workspace}}/build"
         run: ctest
-
-      - name: Test (Catch2) - unit tests
-        if: false
-        working-directory: ${{github.workspace}}/build/tests
-        run: ./test-all
 
       - name: Test (find_package) - consume installation
         shell: bash -l {0}
@@ -174,7 +195,13 @@ jobs:
           add_executable(timings "../timing/main.cpp")
           target_link_libraries(timings Einsums::einsums)
           EOF
-          cmake -S . -B build -G Ninja --log-level verbose -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="${CONDA_PREFIX};${{github.workspace}}/installed"
+          cmake -S . \
+            -B build \
+            -G Ninja \
+            --log-level verbose \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_PREFIX_PATH="${CONDA_PREFIX};${CONDA_PREFIX}/Library;${{ github.workspace }}/installed" \
+            ${{ matrix.testargs }}
           cmake --build build
           ./build/timings
 

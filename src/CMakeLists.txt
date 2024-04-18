@@ -57,6 +57,11 @@ if(EINSUMS_BUILD_HIP)
     target_link_libraries(einsums PUBLIC ${CURSES_LIBRARIES})
 endif()
 
+if(MSVC)
+    target_compile_definitions(einsums PUBLIC _USE_MATH_DEFINES)
+    target_compile_options(einsums PUBLIC "/EHsc")
+endif()
+
 extend_einsums_target(einsums
     SOURCES
         backends/onemkl/onemkl.cpp

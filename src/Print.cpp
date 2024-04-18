@@ -159,7 +159,7 @@ void fprint_line(std::ostream &os, const std::string &line) {
 
 } // namespace
 
-namespace detail {
+namespace einsums::detail {
 void println(const std::string &str) {
     if (!print::suppress) {
         std::istringstream iss(str);

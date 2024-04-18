@@ -11,13 +11,15 @@ add_executable(test-all
     BlockTensor.cpp
 )
 
-if(EINSUMS_COVERAGE)
+if(EINSUMS_COVERAGE AND NOT MSVC)
     target_compile_options(test-all PUBLIC $<$<COMPILE_LANG_AND_ID:CXX,Clang>:-fprofile-instr-generate -fcoverage-mapping>)
     target_compile_options(test-all PUBLIC $<$<COMPILE_LANGUAGE:HIP>:-fprofile-instr-generate -fcoverage-mapping>)
     target_compile_options(test-all PUBLIC $<$<COMPILE_LANG_AND_ID:CXX,GNU>:--coverage>)
 endif()
 
-target_compile_options(einsums BEFORE PUBLIC $<$<CONFIG:Debug>:-gdwarf-2>)
+if (NOT MSVC)
+    target_compile_options(einsums BEFORE PUBLIC $<$<CONFIG:Debug>:-gdwarf-2>)
+endif()
 
 extend_einsums_target(test-all
     SOURCES

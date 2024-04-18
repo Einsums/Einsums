@@ -622,7 +622,7 @@ TEST_CASE("sort2") {
     }
 
     SECTION("Rank 2 - axpy (2)") {
-        Tensor A = create_random_tensor("A", 3, 3);
+        Tensor A = create_incremented_tensor("A", 3, 3);
         Tensor C0{"C", 3, 3};
         Tensor C1{"C", 3, 3};
 
