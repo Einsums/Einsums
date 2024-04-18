@@ -28,10 +28,9 @@ namespace einsums::timer {
 struct GPUTimer {
 private:
     hipEvent_t start_event, end_event;
-    hipStream_t _stream;
 
     public:
-    GPUTimer(const std::string &name, hipStream_t stream = (hipStream_t) 0);
+    GPUTimer(const std::string &name);
     ~GPUTimer();
 };
 

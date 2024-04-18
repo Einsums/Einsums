@@ -8,6 +8,7 @@ add_executable(test-all
     Tensor.cpp
     TensorAlgebra.cpp
     TensorAlgebraTasks.cpp
+    BlockTensor.cpp
 )
 
 if(EINSUMS_COVERAGE AND NOT MSVC)
@@ -42,6 +43,7 @@ extend_einsums_target(test-all
         GPULinearAlgebra.hip
         GPU.hip
         GPUTensorAlgebraTasks.hip
+        BlockDeviceTensor.hip
     CONDITION
         EINSUMS_BUILD_HIP
     PUBLIC_DEPENDS

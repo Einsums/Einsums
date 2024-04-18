@@ -148,7 +148,7 @@ struct fmt::formatter<einsums::Dim<Rank>> {
 
         // Check if reached the end of the range:
         if (it != end && *it != '}')
-            throw_format_error("invalid format");
+            detail::throw_format_error("invalid format");
 
         // Return an iterator past the end of the parsed range:
         return it;
@@ -175,7 +175,7 @@ struct fmt::formatter<einsums::Stride<Rank>> {
 
         // Check if reached the end of the range:
         if (it != end && *it != '}')
-            throw_format_error("invalid format");
+            detail::throw_format_error("invalid format");
 
         // Return an iterator past the end of the parsed range:
         return it;
@@ -202,7 +202,7 @@ struct fmt::formatter<einsums::Count<Rank>> {
 
         // Check if reached the end of the range:
         if (it != end && *it != '}')
-            throw_format_error("invalid format");
+            detail::throw_format_error("invalid format");
 
         // Return an iterator past the end of the parsed range:
         return it;
@@ -229,7 +229,7 @@ struct fmt::formatter<einsums::Offset<Rank>> {
 
         // Check if reached the end of the range:
         if (it != end && *it != '}')
-            throw_format_error("invalid format");
+            detail::throw_format_error("invalid format");
 
         // Return an iterator past the end of the parsed range:
         return it;
@@ -256,7 +256,7 @@ struct fmt::formatter<einsums::Range> {
 
         // Check if reached the end of the range:
         if (it != end && *it != '}')
-            throw_format_error("invalid format");
+            detail::throw_format_error("invalid format");
 
         // Return an iterator past the end of the parsed range:
         return it;

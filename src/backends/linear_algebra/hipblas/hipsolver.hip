@@ -8,13 +8,11 @@
 
 #include "hipblas.hpp"
 
-namespace einsums::backend::linear_algebra::hipblas {
-
 using namespace einsums::gpu;
 
-namespace detail {
+namespace einsums::backend::linear_algebra::hipblas {
 
-hipsolverHandle_t solver_handle = nullptr;
+namespace detail {
 
 __host__ __device__ hipsolverOperation_t hipsolver_char_to_op(char trans) {
     switch (trans) {
@@ -53,99 +51,6 @@ __host__ __device__ hipsolverFillMode_t hipsolver_fill(char fill) {
     default:
         return HIPSOLVER_FILL_MODE_UPPER;
     }
-}
-
-__host__ void __hipsolver_catch__(hipsolverStatus_t condition, const char *diagnostic, bool throw_success) {
-    switch (condition) {
-    case HIPSOLVER_STATUS_SUCCESS:
-        if (throw_success) {
-            throw detail::solverSuccess(diagnostic);
-        } else {
-            return;
-        }
-        break;
-    case HIPSOLVER_STATUS_NOT_INITIALIZED:
-        throw detail::solverNotInitialized(diagnostic);
-        break;
-    case HIPSOLVER_STATUS_ALLOC_FAILED:
-        throw detail::solverAllocFailed(diagnostic);
-        break;
-    case HIPSOLVER_STATUS_INVALID_VALUE:
-        throw detail::solverInvalidValue(diagnostic);
-        break;
-    case HIPSOLVER_STATUS_MAPPING_ERROR:
-        throw detail::solverMappingError(diagnostic);
-        break;
-    case HIPSOLVER_STATUS_EXECUTION_FAILED:
-        throw detail::solverExecutionFailed(diagnostic);
-        break;
-    case HIPSOLVER_STATUS_INTERNAL_ERROR:
-        throw detail::solverInternalError(diagnostic);
-        break;
-    case HIPSOLVER_STATUS_NOT_SUPPORTED:
-        throw detail::solverFuncNotSupported(diagnostic);
-        break;
-    case HIPSOLVER_STATUS_ARCH_MISMATCH:
-        throw detail::solverArchMismatch(diagnostic);
-        break;
-    case HIPSOLVER_STATUS_HANDLE_IS_NULLPTR:
-        throw detail::solverHandleIsNullptr(diagnostic);
-        break;
-    case HIPSOLVER_STATUS_INVALID_ENUM:
-        throw detail::solverInvalidEnum(diagnostic);
-        break;
-    case HIPSOLVER_STATUS_UNKNOWN:
-        throw detail::solverUnknown(diagnostic);
-        break;
-    // case HIPSOLVER_STATUS_ZERO_PIVOT:
-    //     throw detail::solverZeroPivot();
-    //     break;
-    default:
-        throw detail::solverUnknown(diagnostic);
-    }
-}
-
-const char *hipsolverStatusToString(hipsolverStatus_t status) {
-    switch (status) {
-    case HIPSOLVER_STATUS_SUCCESS:
-        return "HIPSOLVER_STATUS_SUCCESS: Success.";
-    case HIPSOLVER_STATUS_NOT_INITIALIZED:
-        return "HIPSOLVER_STATUS_NOT_INITIALIZED: Handle has not been initialized. Make sure to call hipsolverCreate().";
-    case HIPSOLVER_STATUS_ALLOC_FAILED:
-        return "HIPSOLVER_STATUS_ALLOC_FAILED: Could not allocate resources.";
-    case HIPSOLVER_STATUS_INVALID_VALUE:
-        return "HIPSOLVER_STATUS_INVALID_VALUE: An unsupported numerical value was passed to a function.";
-    case HIPSOLVER_STATUS_MAPPING_ERROR:
-        return "HIPSOLVER_STATUS_MAPPING_ERROR: Could not access GPU memory space.";
-    case HIPSOLVER_STATUS_EXECUTION_FAILED:
-        return "HIPSOLVER_STATUS_EXECUTION_FAILED: Failed to execute the program or function.";
-    case HIPSOLVER_STATUS_INTERNAL_ERROR:
-        return "HIPSOLVER_STATUS_INTERNAL_ERROR: An unspecified internal error has occurred.";
-    case HIPSOLVER_STATUS_NOT_SUPPORTED:
-        return "HIPSOLVER_STATUS_NOT_SUPPORTED: The function requested is not supported.";
-    case HIPSOLVER_STATUS_ARCH_MISMATCH:
-        return "HIPSOLVER_STATUS_ARCH_MISMATCH: The code was compiled for a different device than it is being run on.";
-    case HIPSOLVER_STATUS_HANDLE_IS_NULLPTR:
-        return "HIPSOLVER_STATUS_HANDLE_IS_NULLPTR: The handle that was passed to the function was the null pointer. Make sure it is "
-               "initialized properly.";
-    case HIPSOLVER_STATUS_INVALID_ENUM:
-        return "HIPSOLVER_STATUS_INVALID_ENUM: An unsupported enum value was passed to the function.";
-    case HIPSOLVER_STATUS_UNKNOWN:
-        return "HIPSOLVER_STATUS_UNKNOWN: The backend returned an unsupported status code.";
-    // case HIPSOLVER_STATUS_ZERO_PIVOT:
-    //     return "HIPSOLVER_STATUS_ZERO_PIVOT: A pivot of zero was chosen, leading to a zero-division.";
-    default:
-        return "Unrecognized status code from HIPSolver was passed to the stringifier. Assuming HIPSOLVER_STATUS_UNKNOWN.";
-    }
-}
-
-hipsolverHandle_t get_solver_handle() {
-    return solver_handle;
-}
-
-hipsolverHandle_t set_solver_handle(hipsolverHandle_t value) {
-    solver_handle = value;
-    return solver_handle;
 }
 
 } // namespace detail
@@ -187,10 +92,10 @@ int ssyev(char job, char uplo, int n, float *a, int lda, float *w, float *work, 
     hip_catch(hipHostRegister(info, sizeof(int), hipHostRegisterDefault));
 
     if (lwork == 0 || work == nullptr) {
-        hipsolver_catch(hipsolverSsyevd(detail::solver_handle, detail::hipsolver_job(job), detail::hipsolver_fill(uplo), n, a_gpu, lda,
+        hipsolver_catch(hipsolverSsyevd(get_solver_handle(), detail::hipsolver_job(job), detail::hipsolver_fill(uplo), n, a_gpu, lda,
                                         w_gpu, nullptr, 0, info));
     } else {
-        hipsolver_catch(hipsolverSsyevd(detail::solver_handle, detail::hipsolver_job(job), detail::hipsolver_fill(uplo), n, a_gpu, lda,
+        hipsolver_catch(hipsolverSsyevd(get_solver_handle(), detail::hipsolver_job(job), detail::hipsolver_fill(uplo), n, a_gpu, lda,
                                         w_gpu, work, lwork, info));
     }
 
@@ -242,10 +147,10 @@ int dsyev(char job, char uplo, int n, double *a, int lda, double *w, double *wor
     hip_catch(hipHostRegister(info, sizeof(int), hipHostRegisterDefault));
 
     if (lwork == 0 || work == nullptr) {
-        hipsolver_catch(hipsolverDsyevd(detail::solver_handle, detail::hipsolver_job(job), detail::hipsolver_fill(uplo), n, a_gpu, lda,
+        hipsolver_catch(hipsolverDsyevd(get_solver_handle(), detail::hipsolver_job(job), detail::hipsolver_fill(uplo), n, a_gpu, lda,
                                         w_gpu, nullptr, 0, info));
     } else {
-        hipsolver_catch(hipsolverDsyevd(detail::solver_handle, detail::hipsolver_job(job), detail::hipsolver_fill(uplo), n, a_gpu, lda,
+        hipsolver_catch(hipsolverDsyevd(get_solver_handle(), detail::hipsolver_job(job), detail::hipsolver_fill(uplo), n, a_gpu, lda,
                                         w_gpu, work, lwork, info));
     }
 
@@ -302,10 +207,10 @@ int cheev(char job, char uplo, int n, std::complex<float> *a, int lda, float *w,
     hip_catch(hipHostRegister(info, sizeof(int), hipHostRegisterDefault));
 
     if (lwork == 0 || work == nullptr) {
-        hipsolver_catch(hipsolverCheevd(detail::solver_handle, detail::hipsolver_job(job), detail::hipsolver_fill(uplo), n,
+        hipsolver_catch(hipsolverCheevd(get_solver_handle(), detail::hipsolver_job(job), detail::hipsolver_fill(uplo), n,
                                         (math_type *)a_gpu, lda, w_gpu, nullptr, 0, info));
     } else {
-        hipsolver_catch(hipsolverCheevd(detail::solver_handle, detail::hipsolver_job(job), detail::hipsolver_fill(uplo), n,
+        hipsolver_catch(hipsolverCheevd(get_solver_handle(), detail::hipsolver_job(job), detail::hipsolver_fill(uplo), n,
                                         (math_type *)a_gpu, lda, w_gpu, (math_type *)work, lwork, info));
     }
 
@@ -359,10 +264,10 @@ int zheev(char job, char uplo, int n, std::complex<double> *a, int lda, double *
     hip_catch(hipHostRegister(info, sizeof(int), hipHostRegisterDefault));
 
     if (lwork == 0 || work == nullptr) {
-        hipsolver_catch(hipsolverZheevd(detail::solver_handle, detail::hipsolver_job(job), detail::hipsolver_fill(uplo), n,
+        hipsolver_catch(hipsolverZheevd(get_solver_handle(), detail::hipsolver_job(job), detail::hipsolver_fill(uplo), n,
                                         (math_type *)a_gpu, lda, w_gpu, nullptr, 0, info));
     } else {
-        hipsolver_catch(hipsolverZheevd(detail::solver_handle, detail::hipsolver_job(job), detail::hipsolver_fill(uplo), n,
+        hipsolver_catch(hipsolverZheevd(get_solver_handle(), detail::hipsolver_job(job), detail::hipsolver_fill(uplo), n,
                                         (math_type *)a_gpu, lda, w_gpu, (math_type *)work, lwork, info));
     }
 
@@ -410,19 +315,19 @@ int sgesv(int n, int nrhs, float *a, int lda, int *ipiv, float *b, int ldb) {
      * HIP says that for Rocm, if B and X are the same pointer, the result will be as normal, simply
      * using the in-place version. This should take advantage of this fact.
      */
-#ifdef HIP_PLATFORM_AMD
+#ifdef __HIP_PLATFORM_AMD__
     // niters is nullptr so that if it does become used, it will break and we will get bug reports.
-    hipsolver_catch(hipsolverSSgesv(solver_handle, n, nrhs, a_gpu, lda, ipiv_gpu, b_gpu, ldb, b_gpu, ldb, nullptr, 0, nullptr, info));
+    hipsolver_catch(hipsolverSSgesv(get_solver_handle(), n, nrhs, a_gpu, lda, ipiv_gpu, b_gpu, ldb, b_gpu, ldb, nullptr, 0, nullptr, info));
 
     hip_catch(hipDeviceSynchronize());
 
     hip_catch(hipMemcpy(b, b_gpu, b_size * sizeof(math_type), hipMemcpyDeviceToHost));
-#elif defined(HIP_PLATFORM_NVIDIA)
+#elif defined(__HIP_PLATFORM_NVIDIA__)
     hip_catch(hipMalloc(&x_gpu, b_size * sizeof(math_type)));
 
     hip_catch(hipMemcpy(x_gpu, b, b_size * sizeof(math_type), hipMemcpyHostToDevice));
 
-    hipsolver_catch(hipsolverSSgesv(solver_handle, n, nrhs, a_gpu, lda, ipiv_gpu, b_gpu, ldb, x_gpu, ldb, nullptr, 0, nullptr, info));
+    hipsolver_catch(hipsolverSSgesv(get_solver_handle(), n, nrhs, a_gpu, lda, ipiv_gpu, b_gpu, ldb, x_gpu, ldb, nullptr, 0, nullptr, info));
 
     hip_catch(hipDeviceSynchronize());
 
@@ -470,19 +375,19 @@ int dgesv(int n, int nrhs, double *a, int lda, int *ipiv, double *b, int ldb) {
      * HIP says that for Rocm, if B and X are the same pointer, the result will be as normal, simply
      * using the in-place version. This should take advantage of this fact.
      */
-#ifdef HIP_PLATFORM_AMD
+#ifdef __HIP_PLATFORM_AMD__
     // niters is nullptr so that if it does become used, it will break and we will get bug reports.
-    hipsolver_catch(hipsolverDDgesv(solver_handle, n, nrhs, a_gpu, lda, ipiv_gpu, b_gpu, ldb, b_gpu, ldb, nullptr, 0, nullptr, info));
+    hipsolver_catch(hipsolverDDgesv(get_solver_handle(), n, nrhs, a_gpu, lda, ipiv_gpu, b_gpu, ldb, b_gpu, ldb, nullptr, 0, nullptr, info));
 
     hip_catch(hipDeviceSynchronize());
 
     hip_catch(hipMemcpy(b, b_gpu, b_size * sizeof(math_type), hipMemcpyDeviceToHost));
-#elif defined(HIP_PLATFORM_NVIDIA)
+#elif defined(__HIP_PLATFORM_NVIDIA__)
     hip_catch(hipMalloc(&x_gpu, b_size * sizeof(math_type)));
 
     hip_catch(hipMemcpy(x_gpu, b, b_size * sizeof(math_type), hipMemcpyHostToDevice));
 
-    hipsolver_catch(hipsolverDDgesv(solver_handle, n, nrhs, a_gpu, lda, ipiv_gpu, b_gpu, ldb, x_gpu, ldb, nullptr, 0, nullptr, info));
+    hipsolver_catch(hipsolverDDgesv(get_solver_handle(), n, nrhs, a_gpu, lda, ipiv_gpu, b_gpu, ldb, x_gpu, ldb, nullptr, 0, nullptr, info));
 
     hip_catch(hipDeviceSynchronize());
 
@@ -530,19 +435,19 @@ int cgesv(int n, int nrhs, std::complex<float> *a, int lda, int *ipiv, std::comp
      * HIP says that for Rocm, if B and X are the same pointer, the result will be as normal, simply
      * using the in-place version. This should take advantage of this fact.
      */
-#ifdef HIP_PLATFORM_AMD
+#ifdef __HIP_PLATFORM_AMD__
     // niters is nullptr so that if it does become used, it will break and we will get bug reports.
-    hipsolver_catch(hipsolverCCgesv(solver_handle, n, nrhs, a_gpu, lda, ipiv_gpu, b_gpu, ldb, b_gpu, ldb, nullptr, 0, nullptr, info));
+    hipsolver_catch(hipsolverCCgesv(get_solver_handle(), n, nrhs, a_gpu, lda, ipiv_gpu, b_gpu, ldb, b_gpu, ldb, nullptr, 0, nullptr, info));
 
     hip_catch(hipDeviceSynchronize());
 
     hip_catch(hipMemcpy(b, b_gpu, b_size * sizeof(math_type), hipMemcpyDeviceToHost));
-#elif defined(HIP_PLATFORM_NVIDIA)
+#elif defined(__HIP_PLATFORM_NVIDIA__)
     hip_catch(hipMalloc(&x_gpu, b_size * sizeof(math_type)));
 
     hip_catch(hipMemcpy(x_gpu, b, b_size * sizeof(math_type), hipMemcpyHostToDevice));
 
-    hipsolver_catch(hipsolverCCgesv(solver_handle, n, nrhs, a_gpu, lda, ipiv_gpu, b_gpu, ldb, x_gpu, ldb, nullptr, 0, nullptr, info));
+    hipsolver_catch(hipsolverCCgesv(get_solver_handle(), n, nrhs, a_gpu, lda, ipiv_gpu, b_gpu, ldb, x_gpu, ldb, nullptr, 0, nullptr, info));
 
     hip_catch(hipDeviceSynchronize());
 
@@ -590,19 +495,19 @@ int zgesv(int n, int nrhs, std::complex<double> *a, int lda, int *ipiv, std::com
      * HIP says that for Rocm, if B and X are the same pointer, the result will be as normal, simply
      * using the in-place version. This should take advantage of this fact.
      */
-#ifdef HIP_PLATFORM_AMD
+#ifdef __HIP_PLATFORM_AMD__
     // niters is nullptr so that if it does become used, it will break and we will get bug reports.
-    hipsolver_catch(hipsolverZZgesv(solver_handle, n, nrhs, a_gpu, lda, ipiv_gpu, b_gpu, ldb, b_gpu, ldb, nullptr, 0, nullptr, info));
+    hipsolver_catch(hipsolverZZgesv(get_solver_handle(), n, nrhs, a_gpu, lda, ipiv_gpu, b_gpu, ldb, b_gpu, ldb, nullptr, 0, nullptr, info));
 
     hip_catch(hipDeviceSynchronize());
 
     hip_catch(hipMemcpy(b, b_gpu, b_size * sizeof(math_type), hipMemcpyDeviceToHost));
-#elif defined(HIP_PLATFORM_NVIDIA)
+#elif defined(__HIP_PLATFORM_NVIDIA__)
     hip_catch(hipMalloc(&x_gpu, b_size * sizeof(math_type)));
 
     hip_catch(hipMemcpy(x_gpu, b, b_size * sizeof(math_type), hipMemcpyHostToDevice));
 
-    hipsolver_catch(hipsolverZZgesv(solver_handle, n, nrhs, a_gpu, lda, ipiv_gpu, b_gpu, ldb, x_gpu, ldb, nullptr, 0, nullptr, info));
+    hipsolver_catch(hipsolverZZgesv(get_solver_handle(), n, nrhs, a_gpu, lda, ipiv_gpu, b_gpu, ldb, x_gpu, ldb, nullptr, 0, nullptr, info));
 
     hip_catch(hipDeviceSynchronize());
 
@@ -630,7 +535,10 @@ int zgesv(int n, int nrhs, std::complex<double> *a, int lda, int *ipiv, std::com
 int sgetrf(int m, int n, float *a, int lda, int *ipiv) {
     using math_type = float;
 
-    math_type *a_gpu, *ipiv_gpu, *work;
+    hipsolverHandle_t handle = get_solver_handle();
+
+    math_type *a_gpu, *work;
+    int *ipiv_gpu;
 
     int lwork, *info = new int{0};
 
@@ -651,7 +559,7 @@ int sgetrf(int m, int n, float *a, int lda, int *ipiv) {
     /*
      * Cuda does not require a work array, and the argument is ignored. AMD requires a work array.
      */
-#ifdef HIP_PLATFORM_AMD
+#ifdef __HIP_PLATFORM_AMD__
     hipsolver_catch(hipsolverSgetrf_bufferSize(handle, m, n, a_gpu, lda, &lwork));
 
     hip_catch(hipMalloc(&work, lwork * sizeof(math_type)));
@@ -661,7 +569,7 @@ int sgetrf(int m, int n, float *a, int lda, int *ipiv) {
     hip_catch(hipDeviceSynchronize());
 
     hip_catch(hipFree(work));
-#elif defined(HIP_PLATFORM_NVIDIA)
+#elif defined(__HIP_PLATFORM_NVIDIA__)
     hipsolver_catch(hipsolverSgetrf(handle, m, n, a_gpu, lda, nullptr, 0, ipiv_gpu, info));
 
     hip_catch(hipDeviceSynchronize());
@@ -687,7 +595,11 @@ int sgetrf(int m, int n, float *a, int lda, int *ipiv) {
 int dgetrf(int m, int n, double *a, int lda, int *ipiv) {
     using math_type = double;
 
-    math_type *a_gpu, *ipiv_gpu, *work;
+    hipsolverHandle_t handle = get_solver_handle();
+
+    math_type *a_gpu, *work;
+
+    int *ipiv_gpu;
 
     int lwork, *info = new int{0};
 
@@ -708,7 +620,7 @@ int dgetrf(int m, int n, double *a, int lda, int *ipiv) {
     /*
      * Cuda does not require a work array, and the argument is ignored. AMD requires a work array.
      */
-#ifdef HIP_PLATFORM_AMD
+#ifdef __HIP_PLATFORM_AMD__
     hipsolver_catch(hipsolverDgetrf_bufferSize(handle, m, n, a_gpu, lda, &lwork));
 
     hip_catch(hipMalloc(&work, lwork * sizeof(math_type)));
@@ -718,7 +630,7 @@ int dgetrf(int m, int n, double *a, int lda, int *ipiv) {
     hip_catch(hipDeviceSynchronize());
 
     hip_catch(hipFree(work));
-#elif defined(HIP_PLATFORM_NVIDIA)
+#elif defined(__HIP_PLATFORM_NVIDIA__)
     hipsolver_catch(hipsolverDgetrf(handle, m, n, a_gpu, lda, nullptr, 0, ipiv_gpu, info));
 
     hip_catch(hipDeviceSynchronize());
@@ -744,7 +656,11 @@ int dgetrf(int m, int n, double *a, int lda, int *ipiv) {
 int cgetrf(int m, int n, std::complex<float> *a, int lda, int *ipiv) {
     using math_type = hipblasComplex;
 
-    math_type *a_gpu, *ipiv_gpu, *work;
+    hipsolverHandle_t handle = get_solver_handle();
+
+    math_type *a_gpu, *work;
+
+    int *ipiv_gpu;
 
     int lwork, *info = new int{0};
 
@@ -765,18 +681,18 @@ int cgetrf(int m, int n, std::complex<float> *a, int lda, int *ipiv) {
     /*
      * Cuda does not require a work array, and the argument is ignored. AMD requires a work array.
      */
-#ifdef HIP_PLATFORM_AMD
-    hipsolver_catch(hipsolverCgetrf_bufferSize(handle, m, n, a_gpu, lda, &lwork));
+#ifdef __HIP_PLATFORM_AMD__
+    hipsolver_catch(hipsolverCgetrf_bufferSize(handle, m, n, (hipComplex *) a_gpu, lda, &lwork));
 
     hip_catch(hipMalloc(&work, lwork * sizeof(math_type)));
 
-    hipsolver_catch(hipsolverCgetrf(handle, m, n, a_gpu, lda, work, lwork, ipiv_gpu, info));
+    hipsolver_catch(hipsolverCgetrf(handle, m, n, (hipComplex *) a_gpu, lda, (hipComplex *) work, lwork, ipiv_gpu, info));
 
     hip_catch(hipDeviceSynchronize());
 
     hip_catch(hipFree(work));
-#elif defined(HIP_PLATFORM_NVIDIA)
-    hipsolver_catch(hipsolverCgetrf(handle, m, n, a_gpu, lda, nullptr, 0, ipiv_gpu, info));
+#elif defined(__HIP_PLATFORM_NVIDIA__)
+    hipsolver_catch(hipsolverCgetrf(handle, m, n, (hipComplex *) a_gpu, lda, nullptr, 0, ipiv_gpu, info));
 
     hip_catch(hipDeviceSynchronize());
 #endif
@@ -801,7 +717,11 @@ int cgetrf(int m, int n, std::complex<float> *a, int lda, int *ipiv) {
 int zgetrf(int m, int n, std::complex<double> *a, int lda, int *ipiv) {
     using math_type = hipblasDoubleComplex;
 
-    math_type *a_gpu, *ipiv_gpu, *work;
+    hipsolverHandle_t handle = get_solver_handle();
+
+    math_type *a_gpu, *work;
+
+    int *ipiv_gpu;
 
     int lwork, *info = new int{0};
 
@@ -822,17 +742,17 @@ int zgetrf(int m, int n, std::complex<double> *a, int lda, int *ipiv) {
     /*
      * Cuda does not require a work array, and the argument is ignored. AMD requires a work array.
      */
-#ifdef HIP_PLATFORM_AMD
-    hipsolver_catch(hipsolverZgetrf_bufferSize(handle, m, n, a_gpu, lda, &lwork));
+#ifdef __HIP_PLATFORM_AMD__
+    hipsolver_catch(hipsolverZgetrf_bufferSize(handle, m, n, (hipDoubleComplex *) a_gpu, lda, &lwork));
 
     hip_catch(hipMalloc(&work, lwork * sizeof(math_type)));
 
-    hipsolver_catch(hipsolverZgetrf(handle, m, n, a_gpu, lda, work, lwork, ipiv_gpu, info));
+    hipsolver_catch(hipsolverZgetrf(handle, m, n, (hipDoubleComplex *) a_gpu, lda, (hipDoubleComplex *) work, lwork, ipiv_gpu, info));
 
     hip_catch(hipDeviceSynchronize());
 
     hip_catch(hipFree(work));
-#elif defined(HIP_PLATFORM_NVIDIA)
+#elif defined(__HIP_PLATFORM_NVIDIA__)
     hipsolver_catch(hipsolverZgetrf(handle, m, n, a_gpu, lda, nullptr, 0, ipiv_gpu, info));
 
     hip_catch(hipDeviceSynchronize());
