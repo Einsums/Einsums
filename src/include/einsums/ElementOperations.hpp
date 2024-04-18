@@ -5,10 +5,11 @@
 
 #pragma once
 
-#include "einsums/Section.hpp"
-#include "einsums/Tensor.hpp"
 #include "einsums/_Common.hpp"
 #include "einsums/_Compiler.hpp"
+
+#include "einsums/Section.hpp"
+#include "einsums/Tensor.hpp"
 
 #include <algorithm>
 
@@ -20,8 +21,7 @@ void omp_loop(vector &data, Functor functor) {
     LabeledSection0();
 
     // TODO: This only works for Tensors not their views because we assume data is a std::vector
-#pragma omp parallel
-    {
+    EINSUMS_OMP_PARALLEL {
         auto tid       = omp_get_thread_num();
         auto chunksize = data.size() / omp_get_num_threads();
         auto begin     = data.begin() + chunksize * tid;

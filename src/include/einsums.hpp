@@ -6,7 +6,6 @@
 #pragma once
 
 #include "einsums/ElementOperations.hpp"
-#include "einsums/Error.hpp"
 #include "einsums/FFT.hpp"
 #include "einsums/H5.hpp"
 #include "einsums/LinearAlgebra.hpp"
@@ -35,4 +34,3 @@
 
 #include "einsums/Blas.hpp"
 #include "einsums/Decomposition.hpp"
-

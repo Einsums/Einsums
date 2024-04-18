@@ -6,6 +6,7 @@
 #pragma once
 
 #include "einsums/_Export.hpp"
+
 #include "fmt/color.h"
 #include "fmt/core.h"
 #include "fmt/format.h"
@@ -58,7 +59,7 @@ namespace einsums::detail {
 void EINSUMS_EXPORT println(const std::string &oss);
 void EINSUMS_EXPORT fprintln(std::FILE *fp, const std::string &oss);
 void EINSUMS_EXPORT fprintln(std::ostream &os, const std::string &oss);
-}
+} // namespace detail
 
 //
 // Taken from https://stackoverflow.com/posts/59522794/revisions
@@ -148,7 +149,8 @@ struct TuplePrinterNoType<Tuple, 1> {
     static void print(std::ostream &os, const Tuple &t) { os << std::get<0>(t); }
 };
 
-template <typename... Args, std::enable_if_t<sizeof...(Args) == 0, int> = 0>
+template <typename... Args>
+    requires(sizeof...(Args) > 0)
 auto print_tuple(const std::tuple<Args...> &) -> std::string {
     return {"()"};
 }
@@ -223,7 +225,7 @@ void fprintln(std::FILE *fp, const std::string_view &f, const Ts... ts) {
 template <typename... Ts>
 void fprintln(std::FILE *fp, const fmt::text_style &style, const std::string_view &format, const Ts... ts) {
     std::string s;
-    if(fp == stdout || fp == stderr) {
+    if (fp == stdout || fp == stderr) {
         s = fmt::format(style, format, ts...);
     } else {
         s = fmt::format(format, ts...);
@@ -237,7 +239,7 @@ inline void fprintln(std::FILE *fp, const std::string &format) {
 
 inline void fprintln(std::FILE *fp, const fmt::text_style &style, const std::string_view &format) {
     std::string s;
-    if(fp == stdout || fp == stderr) {
+    if (fp == stdout || fp == stderr) {
         s = fmt::format(style, format);
     } else {
         s = format;

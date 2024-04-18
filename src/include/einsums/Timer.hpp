@@ -14,7 +14,7 @@ namespace einsums::timer {
 
 using clock      = std::chrono::high_resolution_clock;
 using time_point = std::chrono::time_point<clock>;
-using duration = std::chrono::high_resolution_clock::duration;
+using duration   = std::chrono::high_resolution_clock::duration;
 
 namespace detail {
 struct TimerDetail;
@@ -25,7 +25,7 @@ void EINSUMS_EXPORT finalize();
 
 void EINSUMS_EXPORT report();
 void EINSUMS_EXPORT report(const std::string &fname);
-void EINSUMS_EXPORT report(const char *fname);
+// void EINSUMS_EXPORT report(const char *fname); // const std::string& should be able to handle this case.
 void EINSUMS_EXPORT report(std::FILE *fp);
 void EINSUMS_EXPORT report(std::ostream &os);
 

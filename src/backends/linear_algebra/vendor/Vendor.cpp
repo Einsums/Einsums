@@ -14,6 +14,7 @@
 
 #include <fmt/format.h>
 
+#include <cstddef>
 #include <stdexcept>
 
 #include "Utilities.hpp"
@@ -131,10 +132,14 @@ extern void FC_GLOBAL(cgetri, CGETRI)(blas_int *, std::complex<float> *, blas_in
 extern void FC_GLOBAL(zgetri, ZGETRI)(blas_int *, std::complex<double> *, blas_int *, blas_int *, std::complex<double> *, blas_int *,
                                       blas_int *);
 
-extern float  FC_GLOBAL(slange, SLANGE)(char, int, int, const float *, int, float *);                 // NOLINT
-extern double FC_GLOBAL(dlange, DLANGE)(char, int, int, const double *, int, double *);               // NOLINT
-extern float  FC_GLOBAL(clange, CLANGE)(char, int, int, const std::complex<float> *, int, float *);   // NOLINT
-extern double FC_GLOBAL(zlange, ZLANGE)(char, int, int, const std::complex<double> *, int, double *); // NOLINT
+// According to my Xcode 15.3 macOS 14.4 SDK:
+// The Accelerate clapack.h header does use double for Xlange's. However, that interface is deprecated according to the headers.
+// The "new lapack" Accelerate header does use the following return types. For now, we're going to leave it as is.
+// If it becomes an issue then we'll need to do something about it.
+extern float  FC_GLOBAL(slange, SLANGE)(const char *, blas_int *, blas_int *, const float *, blas_int *, float *);
+extern double FC_GLOBAL(dlange, DLANGE)(const char *, blas_int *, blas_int *, const double *, blas_int *, double *);
+extern float  FC_GLOBAL(clange, CLANGE)(const char *, blas_int *, blas_int *, const std::complex<float> *, blas_int *, float *);
+extern double FC_GLOBAL(zlange, ZLANGE)(const char *, blas_int *, blas_int *, const std::complex<double> *, blas_int *, double *);
 
 extern void FC_GLOBAL(slassq, SLASSQ)(blas_int *n, const float *x, blas_int *incx, float *scale, float *sumsq);
 extern void FC_GLOBAL(dlassq, DLASSQ)(blas_int *n, const double *x, blas_int *incx, double *scale, double *sumsq);
@@ -339,8 +344,8 @@ auto dgesv(blas_int n, blas_int nrhs, double *a, blas_int lda, blas_int *ipiv, d
     return info;
 }
 
-auto cgesv(blas_int n, blas_int nrhs, std::complex<float> *a, blas_int lda, blas_int *ipiv, std::complex<float> *b, blas_int ldb)
-    -> blas_int {
+auto cgesv(blas_int n, blas_int nrhs, std::complex<float> *a, blas_int lda, blas_int *ipiv, std::complex<float> *b,
+           blas_int ldb) -> blas_int {
     LabeledSection0();
 
     blas_int info{0};
@@ -348,8 +353,8 @@ auto cgesv(blas_int n, blas_int nrhs, std::complex<float> *a, blas_int lda, blas
     return info;
 }
 
-auto zgesv(blas_int n, blas_int nrhs, std::complex<double> *a, blas_int lda, blas_int *ipiv, std::complex<double> *b, blas_int ldb)
-    -> blas_int {
+auto zgesv(blas_int n, blas_int nrhs, std::complex<double> *a, blas_int lda, blas_int *ipiv, std::complex<double> *b,
+           blas_int ldb) -> blas_int {
     LabeledSection0();
 
     blas_int info{0};
@@ -410,9 +415,9 @@ auto cdot(blas_int n, const std::complex<float> *x, blas_int incx, const std::co
     LabeledSection0();
 
     // Since MKL does not conform to the netlib standard, we need to use the following code.
-    std::complex<float> result{0.0f, 0.0f};
+    std::complex<float> result{0.0F, 0.0F};
     for (blas_int i = 0; i < n; ++i) {
-        result += x[i * incx] * y[i * incy];
+        result += x[static_cast<ptrdiff_t>(i * incx)] * y[static_cast<ptrdiff_t>(i * incy)];
     }
     return result;
 }
@@ -424,7 +429,7 @@ auto zdot(blas_int n, const std::complex<double> *x, blas_int incx, const std::c
     // Since MKL does not conform to the netlib standard, we need to use the following code.
     std::complex<double> result{0.0, 0.0};
     for (blas_int i = 0; i < n; ++i) {
-        result += x[i * incx] * y[i * incy];
+        result += x[static_cast<ptrdiff_t>(i * incx)] * y[static_cast<ptrdiff_t>(i * incy)];
     }
     return result;
 }
@@ -484,13 +489,17 @@ namespace {
 void ger_parameter_check(blas_int m, blas_int n, blas_int inc_x, blas_int inc_y, blas_int lda) {
     if (m < 0) {
         throw std::runtime_error(fmt::format("einsums::backend::vendor::ger: m ({}) is less than zero.", m));
-    } else if (n < 0) {
+    }
+    if (n < 0) {
         throw std::runtime_error(fmt::format("einsums::backend::vendor::ger: n ({}) is less than zero.", n));
-    } else if (inc_x == 0) {
+    }
+    if (inc_x == 0) {
         throw std::runtime_error(fmt::format("einsums::backend::vendor::ger: inc_x ({}) is zero.", inc_x));
-    } else if (inc_y == 0) {
+    }
+    if (inc_y == 0) {
         throw std::runtime_error(fmt::format("einsums::backend::vendor::ger: inc_y ({}) is zero.", inc_y));
-    } else if (lda < std::max(blas_int{1}, n)) {
+    }
+    if (lda < std::max(blas_int{1}, n)) {
         throw std::runtime_error(fmt::format("einsums::backend::vendor::ger: lda ({}) is less than max(1, n ({})).", lda, n));
     }
 }
@@ -601,25 +610,25 @@ auto zgetri(blas_int n, std::complex<double> *a, blas_int lda, const blas_int *i
 auto slange(char norm_type, blas_int m, blas_int n, const float *A, blas_int lda, float *work) -> float {
     LabeledSection0();
 
-    return FC_GLOBAL(slange, SLANGE)(norm_type, m, n, A, lda, work);
+    return FC_GLOBAL(slange, SLANGE)(&norm_type, &m, &n, A, &lda, work);
 }
 
 auto dlange(char norm_type, blas_int m, blas_int n, const double *A, blas_int lda, double *work) -> double {
     LabeledSection0();
 
-    return FC_GLOBAL(dlange, DLANGE)(norm_type, m, n, A, lda, work);
+    return FC_GLOBAL(dlange, DLANGE)(&norm_type, &m, &n, A, &lda, work);
 }
 
 auto clange(char norm_type, blas_int m, blas_int n, const std::complex<float> *A, blas_int lda, float *work) -> float {
     LabeledSection0();
 
-    return FC_GLOBAL(clange, CLANGE)(norm_type, m, n, A, lda, work);
+    return FC_GLOBAL(clange, CLANGE)(&norm_type, &m, &n, A, &lda, work);
 }
 
 auto zlange(char norm_type, blas_int m, blas_int n, const std::complex<double> *A, blas_int lda, double *work) -> double {
     LabeledSection0();
 
-    return FC_GLOBAL(zlange, ZLANGE)(norm_type, m, n, A, lda, work);
+    return FC_GLOBAL(zlange, ZLANGE)(&norm_type, &m, &n, A, &lda, work);
 }
 
 void slassq(blas_int n, const float *x, blas_int incx, float *scale, float *sumsq) {

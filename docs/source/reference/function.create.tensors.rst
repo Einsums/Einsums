@@ -4,7 +4,7 @@
      Licensed under the MIT License. See LICENSE.txt in the project root for license information.
     ----------------------------------------------------------------------------------------------
 
-.. _functions.tensor.creation:
+.. _function.tensor.creation:
 
 Tensor creation functions
 =========================
@@ -19,32 +19,28 @@ Tensor is an in-memory variant of a tensor and DiskTensor is an on-disk variant 
 can and will use Tensors.
 
 .. doxygenfunction:: einsums::create_tensor(const std::string, Args...)
-   :project: Einsums
 
 .. doxygenfunction:: einsums::create_disk_tensor(h5::fd_t&, const std::string, Args...)
-   :project: Einsums
 
 .. doxygenfunction:: einsums::create_disk_tensor_like(h5::fd_t&, const Tensor<T, Rank>&)
-   :project: Einsums
 
 Functions for creating pre-filled tensors
 -----------------------------------------
 
 .. doxygenfunction:: einsums::create_incremented_tensor(const std::string&, MultiIndex...)
-   :project: Einsums
 
 .. doxygenfunction:: einsums::create_random_tensor(const std::string&, MultiIndex...)
-   :project: Einsums
 
 .. doxygenfunction:: einsums::create_identity_tensor(const std::string&, MultiIndex...)
-   :project: Einsums
 
 .. doxygenfunction:: einsums::create_ones_tensor(const std::string&, MultiIndex...)
-   :project: Einsums
 
 .. doxygenfunction:: einsums::create_tensor_like(const TensorType<DataType, Rank>&)
-   :project: Einsums
 
 .. doxygenfunction:: einsums::create_tensor_like(const std::string, const TensorType<DataType, Rank>&)
-   :project: Einsums
 
+Additional functions for creating tensors
+-----------------------------------------
+
+.. doxygenfunction:: einsums::arange(T start, T stop, T step)
+.. doxygenfunction:: einsums::arange(T stop)

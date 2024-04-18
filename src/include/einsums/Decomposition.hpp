@@ -5,13 +5,14 @@
 
 #pragma once
 
+#include "einsums/_Common.hpp"
+
 #include "einsums/LinearAlgebra.hpp"
 #include "einsums/Section.hpp"
 #include "einsums/Sort.hpp"
 #include "einsums/Tensor.hpp"
 #include "einsums/TensorAlgebra.hpp"
 #include "einsums/Utilities.hpp"
-#include "einsums/_Common.hpp"
 
 #include <cmath>
 #include <functional>
@@ -35,8 +36,8 @@ auto validate_cp_rank(const Dim<TRank> shape, const std::string &rounding = "rou
         throw std::runtime_error(fmt::format("Rounding should of round, floow, or ceil, but got {}", rounding));
     }
 
-    double prod = std::accumulate(shape.begin(), shape.end(), 1, std::multiplies<double>());
-    double sum  = std::accumulate(shape.begin(), shape.end(), 0, std::plus<double>());
+    double prod = std::accumulate(shape.begin(), shape.end(), 1, std::multiplies<>());
+    double sum  = std::accumulate(shape.begin(), shape.end(), 0, std::plus<>());
 
     return static_cast<int>(rounding_func(prod / sum));
 }
@@ -222,8 +223,8 @@ auto initialize_cp(std::vector<Tensor<TType, 2>> &folds, size_t rank) -> std::ve
  *   tensor = [|weights; factor[0], ..., factors[-1] |].
  */
 template <template <typename, size_t> typename TTensor, size_t TRank, typename TType = double>
-auto parafac(const TTensor<TType, TRank> &tensor, size_t rank, int n_iter_max = 100, double tolerance = 1.e-8)
-    -> std::vector<Tensor<TType, 2>> {
+auto parafac(const TTensor<TType, TRank> &tensor, size_t rank, int n_iter_max = 100,
+             double tolerance = 1.e-8) -> std::vector<Tensor<TType, 2>> {
     LabeledSection0();
 
     using namespace einsums::tensor_algebra;
@@ -354,14 +355,14 @@ auto weighted_parafac(const TTensor<TType, TRank> &tensor, const TTensor<TType, 
     bool   converged  = false;
     double prev_error = 0.0;
     while (iter < n_iter_max) {
-        size_t n = 0;
+        size_t n = 0; // NOLINT
         for_sequence<TRank>([&](auto n_ind) {
             // Form V and Khatri-Rao product intermediates
             Tensor<TType, 2> V;
             Tensor<TType, 2> KR;
             bool             first = true;
 
-            size_t m = 0;
+            size_t m = 0; // NOLINT
             for_sequence<TRank>([&](auto m_ind) {
                 if (m_ind != n_ind) {
                     Tensor<TType, 2> A_tA{"V", rank, rank};
@@ -573,8 +574,8 @@ auto tucker_ho_svd(const TTensor<TType, TRank> &tensor, std::vector<size_t> &ran
  *   tensor = [|weights[r0][r1]...; factor[0][r1], ..., factors[-1][rn] |].
  */
 template <template <typename, size_t> typename TTensor, size_t TRank, typename TType = double>
-auto tucker_ho_oi(const TTensor<TType, TRank> &tensor, std::vector<size_t> &ranks, int n_iter_max = 100, double tolerance = 1.e-8)
-    -> std::tuple<TTensor<TType, TRank>, std::vector<Tensor<TType, 2>>> {
+auto tucker_ho_oi(const TTensor<TType, TRank> &tensor, std::vector<size_t> &ranks, int n_iter_max = 100,
+                  double tolerance = 1.e-8) -> std::tuple<TTensor<TType, TRank>, std::vector<Tensor<TType, 2>>> {
     LabeledSection0();
 
     // Use HO SVD as a starting guess

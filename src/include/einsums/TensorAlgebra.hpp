@@ -46,13 +46,13 @@ template <typename... CUniqueIndices, typename... AUniqueIndices, typename... BU
           typename... TargetPositionInC, typename... LinkPositionInLink, template <typename, size_t> typename CType, typename CDataType,
           size_t CRank, template <typename, size_t> typename AType, typename ADataType, size_t ARank,
           template <typename, size_t> typename BType, typename BDataType, size_t BRank>
-          #ifdef __HIP__
-          requires requires {
-                requires !DeviceRankTensor<CType<CDataType, CRank>, CRank, CDataType>;
-                requires !DeviceRankTensor<AType<ADataType, ARank>, ARank, ADataType>;
-                requires !DeviceRankTensor<BType<BDataType, BRank>, BRank, BDataType>;
-          }
-          #endif
+#ifdef __HIP__
+    requires requires {
+        requires !DeviceRankTensor<CType<CDataType, CRank>, CRank, CDataType>;
+        requires !DeviceRankTensor<AType<ADataType, ARank>, ARank, ADataType>;
+        requires !DeviceRankTensor<BType<BDataType, BRank>, BRank, BDataType>;
+    }
+#endif
 void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, const std::tuple<AUniqueIndices...> & /*A_unique*/,
                               const std::tuple<BUniqueIndices...> & /*B_unique*/, const std::tuple<LinkUniqueIndices...> &link_unique,
                               const std::tuple<CIndices...> & /*C_indices*/, const std::tuple<AIndices...> & /*A_indices*/,
@@ -84,7 +84,7 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
             sum += AB_prefactor * A_value * B_value;
         }
 
-        CDataType &target_value = *C;
+        auto &target_value = static_cast<CDataType &>(*C);
         if (C_prefactor == CDataType{0.0})
             target_value = CDataType{0.0};
         target_value *= C_prefactor;
@@ -162,20 +162,20 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
 template <bool OnlyUseGenericAlgorithm, template <typename, size_t> typename AType, typename ADataType, size_t ARank,
           template <typename, size_t> typename BType, typename BDataType, size_t BRank, template <typename, size_t> typename CType,
           typename CDataType, size_t CRank, typename... CIndices, typename... AIndices, typename... BIndices>
-          #ifdef __HIP__
-          requires requires {
-                requires !DeviceRankTensor<CType<CDataType, CRank>, CRank, CDataType>;
-                requires !DeviceRankTensor<AType<ADataType, ARank>, ARank, ADataType>;
-                requires !DeviceRankTensor<BType<BDataType, BRank>, BRank, BDataType>;
-          }
-          #endif
+    requires requires {
+        requires std::derived_from<AType<ADataType, ARank>, ::einsums::detail::TensorBase<ADataType, ARank>>;
+        requires std::derived_from<BType<BDataType, BRank>, ::einsums::detail::TensorBase<BDataType, BRank>>;
+        requires std::derived_from<CType<CDataType, CRank>, ::einsums::detail::TensorBase<CDataType, CRank>>;
+#ifdef __HIP__
+        requires !DeviceRankTensor<CType<CDataType, CRank>, CRank, CDataType>;
+        requires !DeviceRankTensor<AType<ADataType, ARank>, ARank, ADataType>;
+        requires !DeviceRankTensor<BType<BDataType, BRank>, BRank, BDataType>;
+#endif
+    }
 auto einsum(const CDataType C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<CDataType, CRank> *C,
             const std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> AB_prefactor,
             const std::tuple<AIndices...> & /*As*/, const AType<ADataType, ARank> &A, const std::tuple<BIndices...> & /*Bs*/,
-            const BType<BDataType, BRank> &B)
-    -> std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<ADataType, ARank>, AType<ADataType, ARank>> &&
-                        std::is_base_of_v<::einsums::detail::TensorBase<BDataType, BRank>, BType<BDataType, BRank>> &&
-                        std::is_base_of_v<::einsums::detail::TensorBase<CDataType, CRank>, CType<CDataType, CRank>>> {
+            const BType<BDataType, BRank> &B) -> void {
     print::Indent const _indent;
 
     constexpr auto A_indices = std::tuple<AIndices...>();
@@ -577,23 +577,23 @@ auto einsum(const CDataType C_prefactor, const std::tuple<CIndices...> & /*Cs*/,
 template <template <typename, size_t> typename AType, typename ADataType, size_t ARank, template <typename, size_t> typename BType,
           typename BDataType, size_t BRank, template <typename, size_t> typename CType, typename CDataType, size_t CRank,
           typename... CIndices, typename... AIndices, typename... BIndices, typename U>
-          #ifdef __HIP__
-          requires requires {
-                requires !DeviceRankTensor<CType<CDataType, CRank>, CRank, CDataType>;
-                requires !DeviceRankTensor<AType<ADataType, ARank>, ARank, ADataType>;
-                requires !DeviceRankTensor<BType<BDataType, BRank>, BRank, BDataType>;
-          }
-          #endif
+    requires requires {
+        requires std::is_base_of_v<::einsums::detail::TensorBase<ADataType, ARank>, AType<ADataType, ARank>>;
+        requires std::is_base_of_v<::einsums::detail::TensorBase<BDataType, BRank>, BType<BDataType, BRank>>;
+        requires std::is_base_of_v<::einsums::detail::TensorBase<CDataType, CRank>, CType<CDataType, CRank>>;
+        requires(!einsums::detail::IsIncoreRankBlockTensorV<CType<CDataType, CRank>, CRank, CDataType> ||
+                 einsums::detail::IsIncoreRankBlockTensorV<AType<ADataType, ARank>, ARank, ADataType> &&
+                     einsums::detail::IsIncoreRankBlockTensorV<BType<BDataType, BRank>, BRank, BDataType>);
+        requires std::is_arithmetic_v<U>;
+#ifdef __HIP__
+        requires !DeviceRankTensor<CType<CDataType, CRank>, CRank, CDataType>;
+        requires !DeviceRankTensor<AType<ADataType, ARank>, ARank, ADataType>;
+        requires !DeviceRankTensor<BType<BDataType, BRank>, BRank, BDataType>;
+#endif
+    }
 auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<CDataType, CRank> *C, const U UAB_prefactor,
             const std::tuple<AIndices...> &A_indices, const AType<ADataType, ARank> &A, const std::tuple<BIndices...> &B_indices,
-            const BType<BDataType, BRank> &B)
-    -> std::enable_if_t<
-        std::is_base_of_v<::einsums::detail::TensorBase<ADataType, ARank>, AType<ADataType, ARank>> &&
-        std::is_base_of_v<::einsums::detail::TensorBase<BDataType, BRank>, BType<BDataType, BRank>> &&
-        std::is_base_of_v<::einsums::detail::TensorBase<CDataType, CRank>, CType<CDataType, CRank>> &&
-        (!einsums::detail::IsIncoreRankBlockTensorV<CType<CDataType, CRank>, CRank, CDataType> ||
-         einsums::detail::IsIncoreRankBlockTensorV<AType<ADataType, ARank>, ARank, ADataType> &&
-             einsums::detail::IsIncoreRankBlockTensorV<BType<BDataType, BRank>, BRank, BDataType>)&&std::is_arithmetic_v<U>> {
+            const BType<BDataType, BRank> &B) -> void {
     using ABDataType = std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType>;
 
     LabeledSection1((std::fabs(UC_prefactor) > EINSUMS_ZERO)
@@ -637,7 +637,7 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
         // Perform einsum on each block separately.
         EINSUMS_OMP_PARALLEL_FOR
         for (int i = 0; i < A.num_blocks(); i++) {
-            if(A.block_dim(i) == 0) {
+            if (A.block_dim(i) == 0) {
                 continue;
             }
             detail::einsum<false>(C_prefactor, C_indices, &(C->block(i)), AB_prefactor, A_indices, A[i], B_indices, B[i]);
@@ -655,16 +655,16 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
         }
 
         // Perform einsum on each block separately.
-        if(C_prefactor == CDataType{0}) {
+        if (C_prefactor == CDataType{0}) {
             *C = 0;
         } else {
             *C *= C_prefactor;
         }
         for (int i = 0; i < A.num_blocks(); i++) {
-            if(A.block_dim(i) == 0) {
+            if (A.block_dim(i) == 0) {
                 continue;
             }
-            
+
             Tensor<CDataType, 0> temp;
 
             temp = 0;
@@ -815,8 +815,8 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
             }
         }
     } else {
-        const CDataType Cvalue = *C;
-        const CDataType Ctest  = testC;
+        const CDataType Cvalue = static_cast<const CDataType>(*C);
+        const CDataType Ctest  = static_cast<const CDataType>(testC);
 
         // testC could be a Tensor<CDataType, 0> type. Cast it to the underlying data type.
         if (std::abs(Cvalue - (CDataType)testC) > 1.0E-6) {
@@ -988,8 +988,8 @@ void einsum(const std::tuple<CIndices...> &C_indices, CType *C, const std::tuple
 ///
 
 template <template <typename, size_t> typename CType, size_t CRank, typename UnaryOperator, typename T = double>
-auto element_transform(CType<T, CRank> *C, UnaryOperator unary_opt)
-    -> std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<T, CRank>, CType<T, CRank>>> {
+    requires std::derived_from<CType<T, CRank>, ::einsums::detail::TensorBase<T, CRank>>
+auto element_transform(CType<T, CRank> *C, UnaryOperator unary_opt) -> void {
     if constexpr (einsums::detail::IsIncoreRankBlockTensorV<CType<T, CRank>, CRank, T>) {
         for (int i = 0; i < C->num_blocks(); i++) {
             element_transform(&(C->block(i)), unary_opt);
@@ -1091,8 +1091,10 @@ constexpr auto get_n(const std::tuple<List...> &) {
  * @returns unfolded_tensor of shape ``(tensor.dim(mode), -1)``
  */
 template <unsigned int mode, template <typename, size_t> typename CType, size_t CRank, typename T = double>
-auto unfold(const CType<T, CRank> &source) -> std::enable_if_t<std::is_same_v<Tensor<T, CRank>, CType<T, CRank>>, Tensor<T, 2>> {
-    LabeledSection1(fmt::format("mode-{} unfold on {} threads", mode, omp_get_max_threads()));
+auto unfold(const CType<T, CRank> &source) -> Tensor<T, 2>
+    requires(std::is_same_v<Tensor<T, CRank>, CType<T, CRank>>)
+{
+    LabeledSection1(fmt::format("mode-{} unfold", mode));
 
     Dim<2> target_dims;
     target_dims[0] = source.dim(mode);
@@ -1152,10 +1154,11 @@ auto unfold(const CType<T, CRank> &source) -> std::enable_if_t<std::is_same_v<Te
  */
 template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename BType, size_t BRank,
           typename... AIndices, typename... BIndices, typename T = double>
-auto khatri_rao(const std::tuple<AIndices...> &, const AType<T, ARank> &A, const std::tuple<BIndices...> &, const BType<T, BRank> &B)
-    -> std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<T, ARank>, AType<T, ARank>> &&
-                            std::is_base_of_v<::einsums::detail::TensorBase<T, BRank>, BType<T, BRank>>,
-                        Tensor<T, 2>> {
+auto khatri_rao(const std::tuple<AIndices...> &, const AType<T, ARank> &A, const std::tuple<BIndices...> &,
+                const BType<T, BRank> &B) -> Tensor<T, 2>
+    requires(std::is_base_of_v<::einsums::detail::TensorBase<T, ARank>, AType<T, ARank>> &&
+             std::is_base_of_v<::einsums::detail::TensorBase<T, BRank>, BType<T, BRank>>)
+{
     LabeledSection0();
 
     constexpr auto A_indices = std::tuple<AIndices...>();

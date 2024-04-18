@@ -26,8 +26,34 @@
 #include <tuple>
 #include <type_traits>
 
+// For some stupid reason doxygen can't handle this macro here but it can in other files.
+#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
 BEGIN_EINSUMS_NAMESPACE_HPP(einsums::linear_algebra)
+#else
+namespace einsums::linear_algebra {
+#endif
 
+/**
+ * @brief Computes the square sum of a tensor.
+ *
+ * returns the values scale_out and sumsq_out such that
+ * \f[
+ *   (scale_{out}^{2})*sumsq_{out} = a( 1 )^{2} +...+ a( n )^{2} + (scale_{in}^{2})*sumsq_{in},
+ * \f]
+ *
+ * Under the hood the LAPACK routine `lassq` is used.
+ *
+ * @code
+ * NEED TO ADD AN EXAMPLE
+ * @endcode
+ *
+ * @tparam AType The type of the tensor
+ * @tparam ADataType The underlying data type of the tensor
+ * @tparam ARank The rank of the tensor
+ * @param a The tensor to compute the sum of squares for
+ * @param scale scale_in and scale_out for the equation provided
+ * @param sumsq sumsq_in and sumsq_out for the equation provided
+ */
 template <template <typename, size_t> typename AType, typename ADataType, size_t ARank>
     requires CoreRankTensor<AType<ADataType, ARank>, 1, ADataType>
 void sum_square(const AType<ADataType, ARank> &a, RemoveComplexT<ADataType> *scale, RemoveComplexT<ADataType> *sumsq) {
@@ -73,10 +99,12 @@ void sum_square(const AType<ADataType, ARank> &a, RemoveComplexT<ADataType> *sca
  * einsums::linear_algebra::gemm<false, false>(1.0, A, B, 0.0, &C);
  * @endcode
  *
- * @tparam TransA Tranpose A?
- * @tparam TransB Tranpose B?
+ * @tparam TransA Tranpose A? true or false
+ * @tparam TransB Tranpose B? true or false
+ * @param alpha Scaling factor for the product of A and B
  * @param A First input tensor
  * @param B Second input tensor
+ * @param beta Scaling factor for the output tensor C
  * @param C Output tensor
  * @tparam T the underlying data type
  */
@@ -133,20 +161,20 @@ void gemm(const T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const
 }
 
 /**
- * @brief General matrix multipilication. Returns new tensor.
+ * @brief General matrix multiplication. Returns new tensor.
  *
  * Takes two rank-2 tensors performs the multiplication and returns the result
  *
  * @code
  * auto A = einsums::create_random_tensor("A", 3, 3);
  * auto B = einsums::create_random_tensor("B", 3, 3);
- * auto C = einsums::create_tensor("C", 3, 3);
  *
- * einsums::linear_algebra::gemm<false, false>(1.0, A, B, 0.0, &C);
+ * auto C = einsums::linear_algebra::gemm<false, false>(1.0, A, B);
  * @endcode
  *
  * @tparam TransA Tranpose A?
  * @tparam TransB Tranpose B?
+ * @param alpha Scaling factor for the product of A and B
  * @param A First input tensor
  * @param B Second input tensor
  * @returns resulting tensor
@@ -168,6 +196,33 @@ auto gemm(const T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B) -> Te
     return C;
 }
 
+/**
+ * @brief General matrix-vector multiplication.
+ *
+ * This function performs one of the matrix-vector operations
+ * \f[
+ *    y := alpha*A*z + beta*y\mathrm{,\ or\ }y := alpha*A^{T}*z + beta*y,
+ * \f]
+ * where alpha and beta are scalars, z and y are vectors and A is an
+ * \f$m\f$ by \f$n\f$ matrix.
+ *
+ * @code
+ * NEED TO ADD AN EXAMPLE
+ * @endcode
+ *
+ * @tparam TransA Transpose matrix A? true or false
+ * @tparam AType The type of the matrix A
+ * @tparam XType The type of the vector z
+ * @tparam YType The type of the vector y
+ * @tparam ARank The rank of the matrix A
+ * @tparam XYRank  The rank of the vectors z and y
+ * @tparam T The underlying data type
+ * @param alpha Scaling factor for the product of A and z
+ * @param A Matrix A
+ * @param z Vector z
+ * @param beta Scaling factor for the output vector y
+ * @param y Output vector y
+ */
 template <bool TransA, template <typename, size_t> typename AType, template <typename, size_t> typename XType,
           template <typename, size_t> typename YType, size_t ARank, size_t XYRank, typename T>
     requires requires {
@@ -197,6 +252,37 @@ void gemv(const T alpha, const AType<T, ARank> &A, const XType<T, XYRank> &x, co
     }
 }
 
+/**
+ * Computes all eigenvalues and, optionally, eigenvectors of a real symmetric matrix.
+ *
+ * This routines assumes the upper triangle of A is stored. The lower triangle is not referenced.
+ *
+ * @code
+ * // Create tensors A and b.
+ * auto A = einsums::create_tensor("A", 3, 3);
+ * auto b = einsums::create_tensor("b", 3);
+ *
+ * // Fill A with the symmetric data.
+ * A.vector_data() = einsums::VectorData{1.0, 2.0, 3.0, 2.0, 4.0, 5.0, 3.0, 5.0, 6.0};
+ *
+ * // On exit, A is destroyed and replaced with the eigenvectors.
+ * // b is replaced with the eigenvalues in ascending order.
+ * einsums::linear_algebra::syev(&A, &b);
+ * @endcode
+ *
+ * @tparam AType The type of the tensor A
+ * @tparam ARank The rank of the tensor A (required to be 2)
+ * @tparam WType The type of the tensor W
+ * @tparam WRank The rank of the tensor W (required to be 1)
+ * @tparam T The underlying data type (required to be real)
+ * @tparam ComputeEigenvectors If true, eigenvalues and eigenvectors are computed. If false, only eigenvalues are computed. Defaults to
+ * true.
+ * @param A
+ *   On entry, the symmetric matrix A in the leading N-by-N upper triangular part of A.
+ *   On exit, if eigenvectors are requested, the orthonormal eigenvectors of A.
+ *   Any data previously stored in A is destroyed.
+ * @param W On exit, the eigenvalues in ascending order.
+ */
 template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename WType, size_t WRank, typename T,
           bool ComputeEigenvectors = true>
     requires requires {
@@ -283,7 +369,6 @@ void heev(AType<T, ARank> *A, WType<RemoveComplexT<T>, WRank> *W) {
     }
 }
 
-// This assumes column-major ordering!!
 template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename BType, size_t BRank, typename T>
     requires requires {
         requires CoreRankTensor<AType<T, ARank>, 2, T>;
@@ -351,6 +436,30 @@ auto gesv(AType<T, ARank> *A, BType<T, BRank> *B) -> int {
     return info;
 }
 
+/**
+ * Computes all eigenvalues and, optionally, eigenvectors of a real symmetric matrix.
+ *
+ * This routines assumes the upper triangle of A is stored. The lower triangle is not referenced.
+ *
+ * @code
+ * // Create tensors A and b.
+ * auto A = einsums::create_tensor("A", 3, 3);
+ *
+ * // Fill A with the symmetric data.
+ * A.vector_data() = einsums::VectorData{1.0, 2.0, 3.0, 2.0, 4.0, 5.0, 3.0, 5.0, 6.0};
+ *
+ * // On exit, A is not destroyed. The eigenvectors and eigenvalues are returned in a std::tuple.
+ * auto [evecs, evals ] = einsums::linear_algebra::syev(A);
+ * @endcode
+ *
+ * @tparam AType The type of the tensor A
+ * @tparam ARank The rank of the tensor A (required to be 2)
+ * @tparam T The underlying data type (required to be real)
+ * @tparam ComputeEigenvectors If true, eigenvalues and eigenvectors are computed. If false, only eigenvalues are computed. Defaults to
+ * true.
+ * @param A The symmetric matrix A in the leading N-by-N upper triangular part of A.
+ * @return std::tuple<Tensor<T, 2>, Tensor<T, 1>> The eigenvectors and eigenvalues.
+ */
 template <template <typename, size_t> typename AType, size_t ARank, typename T, bool ComputeEigenvectors = true>
     requires CoreRankBlockTensor<AType<T, ARank>, 2, T>
 auto syev(const AType<T, ARank> &A) -> std::tuple<BlockTensor<T, 2>, Tensor<T, 1>> {
@@ -382,6 +491,23 @@ auto syev(const AType<T, ARank> &A) -> std::tuple<Tensor<T, 2>, Tensor<T, 1>> {
     return std::make_tuple(a, w);
 }
 
+/**
+ * Scales a tensor by a scalar.
+ *
+ * @code
+ * auto A = einsums::create_ones_tensor("A", 3, 3);
+ *
+ * // A is filled with 1.0
+ * einsums::linear_algebra::scale(2.0, &A);
+ * // A is now filled with 2.0
+ * @endcode
+ *
+ * @tparam AType The type of the tensor
+ * @tparam ARank The rank of the tensor
+ * @tparam T The underlying data type
+ * @param scale The scalar to scale the tensor by
+ * @param A The tensor to scale
+ */
 template <template <typename, size_t> typename AType, size_t ARank, typename T>
     requires CoreRankTensor<AType<T, ARank>, ARank, T>
 void scale(T scale, AType<T, ARank> *A) {
@@ -697,6 +823,23 @@ void ger(T alpha, const XYType<T, XYRank> &X, const XYType<T, XYRank> &Y, AType<
     blas::ger(X.dim(0), Y.dim(0), alpha, X.data(), X.stride(0), Y.data(), Y.stride(0), A->data(), A->stride(0));
 }
 
+/**
+ * @brief Computes the LU factorization of a general m-by-n matrix.
+ *
+ * The routine computes the LU factorization of a general m-by-n matrix A as
+ * \f[
+ * A = P*L*U
+ * \f]
+ * where P is a permutation matrix, L is lower triangular with unit diagonal elements and U is upper triangular. The routine uses
+ * partial pivoting, with row interchanges.
+ *
+ * @tparam TensorType
+ * @tparam T
+ * @tparam TensorRank
+ * @param A
+ * @param pivot
+ * @return
+ */
 template <template <typename, size_t> typename TensorType, typename T, size_t TensorRank>
     requires CoreRankTensor<TensorType<T, TensorRank>, 2, T>
 auto getrf(TensorType<T, TensorRank> *A, std::vector<blas_int> *pivot) -> int {
@@ -709,14 +852,25 @@ auto getrf(TensorType<T, TensorRank> *A, std::vector<blas_int> *pivot) -> int {
     int result = blas::getrf(A->dim(0), A->dim(1), A->data(), A->stride(0), pivot->data());
 
     if (result < 0) {
-        println("getrf: argument {} has an invalid value", -result);
-    std:
+        println_warn("getrf: argument {} has an invalid value", -result);
         abort();
     }
 
     return result;
 }
 
+/**
+ * @brief Computes the inverse of a matrix using the LU factorization computed by getrf.
+ *
+ * The routine computes the inverse \f$inv(A)\f$ of a general matrix \f$A\f$. Before calling this routine, call getrf to factorize \f$A\f$.
+ *
+ * @tparam TensorType The type of the tensor
+ * @tparam T The underlying data type
+ * @tparam TensorRank The rank of the tensor
+ * @param A The matrix to invert
+ * @param pivot The pivot vector from getrf
+ * @return int If 0, the execution is successful.
+ */
 template <template <typename, size_t> typename TensorType, typename T, size_t TensorRank>
     requires CoreRankTensor<TensorType<T, TensorRank>, 2, T>
 auto getri(TensorType<T, TensorRank> *A, const std::vector<blas_int> &pivot) -> int {
@@ -725,11 +879,21 @@ auto getri(TensorType<T, TensorRank> *A, const std::vector<blas_int> &pivot) -> 
     int result = blas::getri(A->dim(0), A->data(), A->stride(0), pivot.data());
 
     if (result < 0) {
-        println("getri: argument {} has an invalid value", -result);
+        println_warn("getri: argument {} has an invalid value", -result);
     }
     return result;
 }
 
+/**
+ * @brief Inverts a matrix.
+ *
+ * Utilizes the LAPACK routines getrf and getri to invert a matrix.
+ *
+ * @tparam TensorType The type of the tensor
+ * @tparam T The underlying data type
+ * @tparam TensorRank The rank of the tensor
+ * @param A Matrix to invert. On exit, the inverse of A.
+ */
 template <template <typename, size_t> typename TensorType, typename T, size_t TensorRank>
     requires CoreRankTensor<TensorType<T, TensorRank>, 2, T>
 void invert(TensorType<T, TensorRank> *A) {
@@ -739,41 +903,77 @@ void invert(TensorType<T, TensorRank> *A) {
             invert(&(A->block(i)));
         }
     } else {
-
         LabeledSection0();
 
-    std::vector<blas_int> pivot(A->dim(0));
-    int                   result = getrf(A, &pivot);
-    if (result > 0) {
-        println("invert: getrf: the ({}, {}) element of the factor U or L is zero, and the inverse could not be computed", result, result);
-        std::abort();
-    }
+        std::vector<blas_int> pivot(A->dim(0));
+        int                   result = getrf(A, &pivot);
+        if (result > 0) {
+            println_abort("invert: getrf: the ({}, {}) element of the factor U or L is zero, and the inverse could not be computed", result,
+                          result);
+        }
 
         result = getri(A, pivot);
         if (result > 0) {
-            println("invert: getri: the ({}, {}) element of the factor U or L i zero, and the inverse could not be computed", result,
-                    result);
-            std::abort();
+            println_abort("invert: getri: the ({}, {}) element of the factor U or L i zero, and the inverse could not be computed", result,
+                          result);
         }
     }
 }
 
+#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
 template <SmartPointer SmartPtr>
 void invert(SmartPtr *A) {
     LabeledSection0();
 
     return invert(A->get());
 }
+#endif
 
-enum class Norm : char { MaxAbs = 'M', One = 'O', Infinity = 'I', Frobenius = 'F', Two = 'F' };
+/**
+ * @brief Indicates the type of norm to compute.
+ */
+enum class Norm : char {
+    MaxAbs    = 'M', /**< \f$val = max(abs(Aij))\f$, largest absolute value of the matrix A. */
+    One       = '1', /**< \f$val = norm1(A)\f$, 1-norm of the matrix A (maximum column sum) */
+    Infinity  = 'I', /**< \f$val = normI(A)\f$, infinity norm of the matrix A (maximum row sum) */
+    Frobenius = 'F', /**< \f$val = normF(A)\f$, Frobenius norm of the matrix A (square root of sum of squares). */
+    //    Two       = 'F'
+};
 
-// TODO: find the best way to find the norm of a block tensor, especially for Frobenius.
+/**
+ * @brief Computes the norm of a matrix.
+ *
+ * Returns the value of the one norm, or the Frobenius norm, or
+ * the infinity norm, or the element of largest absolute value of a
+ * real matrix A.
+ *
+ * @note
+ * This function assumes that the matrix is stored in column-major order.
+ *
+ * @code
+ * using namespace einsums;
+ *
+ * auto A = einsums::create_random_tensor("A", 3, 3);
+ * auto norm = einsums::linear_algebra::norm(einsums::linear_algebra::Norm::One, A);
+ * @endcode
+ *
+ * @tparam AType The type of the matrix
+ * @tparam ADataType The underlying data type of the matrix
+ * @tparam ARank The rank of the matrix
+ * @param norm_type where Norm::One denotes the one norm of a matrix (maximum column sum),
+ *   Norm::Infinity denotes the infinity norm of a matrix  (maximum row sum) and
+ *   Norm::Frobenius denotes the Frobenius norm of a matrix (square root of sum of
+ *   squares). Note that \f$ max(abs(A(i,j))) \f$ is not a consistent matrix norm.
+ * @param a The matrix to compute the norm of
+ * @return The norm of the matrix
+ */
+
 template <template <typename, size_t> typename AType, typename ADataType, size_t ARank>
     requires CoreRankTensor<AType<ADataType, ARank>, 2, ADataType>
 auto norm(Norm norm_type, const AType<ADataType, ARank> &a) -> RemoveComplexT<ADataType> {
     LabeledSection0();
 
-    std::vector<RemoveComplexT<ADataType>> work(a.dim(0), 0.0);
+    std::vector<RemoveComplexT<ADataType>> work(4 * a.dim(0), 0.0);
     return blas::lange(static_cast<char>(norm_type), a.dim(0), a.dim(1), a.data(), a.stride(0), work.data());
 }
 

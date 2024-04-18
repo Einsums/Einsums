@@ -8,7 +8,6 @@
 #include "einsums/_Compiler.hpp"
 #include "einsums/_Export.hpp"
 
-#include "einsums/Error.hpp"
 #include "einsums/Print.hpp"
 #include "einsums/STL.hpp"
 

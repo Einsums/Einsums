@@ -189,4 +189,4 @@ void fprintln(std::ostream &os, const std::string &str) {
         }
     }
 }
-} // namespace detail
+} // namespace einsums::detail

@@ -103,9 +103,8 @@ void gesvd_test() {
 
     auto a = create_tensor<T>("a", N, LDA);
 
-    a.vector_data() = std::vector<T, einsums::AlignedAllocator<T, 64>>{8.79, 6.11, -9.15, 9.57,  -3.49, 9.84, 9.93, 6.91,  -7.93, 1.64,
-                                                                       4.02, 0.15, 9.83,  5.04,  4.86,  8.83, 9.80, -8.99, 5.45,  -0.27,
-                                                                       4.85, 0.74, 10.00, -6.02, 3.16,  7.98, 3.01, 5.80,  4.27,  -5.31};
+    a.vector_data() = einsums::VectorData<T>{8.79, 6.11, -9.15, 9.57, -3.49, 9.84, 9.93, 6.91,  -7.93, 1.64, 4.02, 0.15, 9.83, 5.04, 4.86,
+                                             8.83, 9.80, -8.99, 5.45, -0.27, 4.85, 0.74, 10.00, -6.02, 3.16, 7.98, 3.01, 5.80, 4.27, -5.31};
 
     auto [u, s, vt] = linear_algebra::svd(a);
 
@@ -191,9 +190,8 @@ void gesdd_test() {
 
     auto a = create_tensor<T>("a", N, LDA);
 
-    a.vector_data() =
-        std::vector<T, einsums::AlignedAllocator<T, 64>>{7.52,  -0.76, 5.13,  -4.75, 1.33,  -2.40, -1.10, 0.62,  6.62, 8.52, 4.91,  -6.77,
-                                                         -7.95, 9.34,  -5.66, 5.75,  -5.49, 2.34,  1.08,  -7.10, 0.87, 5.30, -3.52, 3.95};
+    a.vector_data() = einsums::VectorData<T>{7.52,  -0.76, 5.13,  -4.75, 1.33,  -2.40, -1.10, 0.62,  6.62, 8.52, 4.91,  -6.77,
+                                             -7.95, 9.34,  -5.66, 5.75,  -5.49, 2.34,  1.08,  -7.10, 0.87, 5.30, -3.52, 3.95};
 
     auto [u, s, vt] = linear_algebra::svd_dd(a);
 
@@ -282,25 +280,24 @@ void gesv_test() {
     auto a = create_tensor<T>("a", N, LDA);
     auto b = create_tensor<T>("b", NRHS, LDB);
 
-    a.vector_data() = std::vector<T, einsums::AlignedAllocator<T, 64>>{6.80,  -2.11, 5.66,  5.97,  8.23,  -6.05, -3.30, 5.36, -4.44,
-                                                                       1.08,  -0.45, 2.58,  -2.70, 0.27,  9.04,  8.32,  2.71, 4.35,
-                                                                       -7.17, 2.14,  -9.67, -5.14, -7.26, 6.08,  -6.87};
-    b.vector_data() = std::vector<T, einsums::AlignedAllocator<T, 64>>{4.02, 6.19, -8.22, -7.57, -3.03, -1.56, 4.00, -8.67,
-                                                                       1.75, 2.86, 9.81,  -4.09, -4.57, -8.61, 8.99};
+    a.vector_data() = einsums::VectorData<T>{6.80, -2.11, 5.66, 5.97, 8.23, -6.05, -3.30, 5.36,  -4.44, 1.08,  -0.45, 2.58, -2.70,
+                                             0.27, 9.04,  8.32, 2.71, 4.35, -7.17, 2.14,  -9.67, -5.14, -7.26, 6.08,  -6.87};
+    b.vector_data() =
+        einsums::VectorData<T>{4.02, 6.19, -8.22, -7.57, -3.03, -1.56, 4.00, -8.67, 1.75, 2.86, 9.81, -4.09, -4.57, -8.61, 8.99};
 
     linear_algebra::gesv(&a, &b);
 
     CHECK_THAT(a.vector_data(),
-               Catch::Matchers::Approx(std::vector<T, einsums::AlignedAllocator<T, 64>>{
-                                           8.23000000,  0.82624544,  0.68772783,  0.72539490, -0.25637910,  1.08000000,   -6.94234508,
-                                           -0.66508563, 0.75240087,  0.43545957,  9.04000000, -7.91925881,  -14.18404477, 0.02320302,
-                                           -0.58842060, 2.14000000,  6.55183475,  7.23579360, -13.81984350, -0.33743379,  -6.87000000,
-                                           -3.99369380, -5.19145820, 14.18877913, -3.42921969})
+               Catch::Matchers::Approx(einsums::VectorData<T>{8.23000000,  0.82624544,  0.68772783,   0.72539490,   -0.25637910,
+                                                              1.08000000,  -6.94234508, -0.66508563,  0.75240087,   0.43545957,
+                                                              9.04000000,  -7.91925881, -14.18404477, 0.02320302,   -0.58842060,
+                                                              2.14000000,  6.55183475,  7.23579360,   -13.81984350, -0.33743379,
+                                                              -6.87000000, -3.99369380, -5.19145820,  14.18877913,  -3.42921969})
                    .margin(0.00001));
     CHECK_THAT(b.vector_data(),
-               Catch::Matchers::Approx(std::vector<T, einsums::AlignedAllocator<T, 64>>{
-                                           -0.80071403, -0.69524338, 0.59391499, 1.32172561, 0.56575620, -0.38962139, -0.55442713,
-                                           0.84222739, -0.10380185, 0.10571095, 0.95546491, 0.22065963, 1.90063673, 5.35766149, 4.04060266})
+               Catch::Matchers::Approx(einsums::VectorData<T>{-0.80071403, -0.69524338, 0.59391499, 1.32172561, 0.56575620, -0.38962139,
+                                                              -0.55442713, 0.84222739, -0.10380185, 0.10571095, 0.95546491, 0.22065963,
+                                                              1.90063673, 5.35766149, 4.04060266})
                    .margin(0.00001));
 }
 
@@ -406,7 +403,7 @@ void syev_test() {
     auto A = create_tensor<T>("a", 3, 3);
     auto b = create_tensor<T>("b", 3);
 
-    A.vector_data() = std::vector<T, einsums::AlignedAllocator<T, 64>>{1.0, 2.0, 3.0, 2.0, 4.0, 5.0, 3.0, 5.0, 6.0};
+    A.vector_data() = einsums::VectorData<T>{1.0, 2.0, 3.0, 2.0, 4.0, 5.0, 3.0, 5.0, 6.0};
 
     // Perform basic matrix multiplication
     einsums::linear_algebra::syev(&A, &b);
@@ -436,9 +433,8 @@ void geev_test() {
     auto vl = create_tensor<T>("vl", 5, 5);
     auto vr = create_tensor<T>("vr", 5, 5);
 
-    a.vector_data() = std::vector<T, einsums::AlignedAllocator<T, 64>>{-1.01f, 0.86f, -4.60f, 3.31f,  -4.81f, 3.98f,  0.53f, -7.04f, 5.29f,
-                                                                       3.55f,  3.30f, 8.26f,  -3.89f, 8.20f,  -1.51f, 4.43f, 4.96f,  -7.66f,
-                                                                       -7.33f, 6.18f, 7.31f,  -6.43f, -6.16f, 2.47f,  5.58f};
+    a.vector_data() = VectorData<T>{-1.01f, 0.86f,  -4.60f, 3.31f, -4.81f, 3.98f,  0.53f, -7.04f, 5.29f,  3.55f,  3.30f, 8.26f, -3.89f,
+                                    8.20f,  -1.51f, 4.43f,  4.96f, -7.66f, -7.33f, 6.18f, 7.31f,  -6.43f, -6.16f, 2.47f, 5.58f};
 
     einsums::linear_algebra::geev(&a, &w, &vl, &vr);
 
@@ -471,10 +467,10 @@ void geev_test() {
     auto vl = create_tensor<T>("vl", 4, 4);
     auto vr = create_tensor<T>("vr", 4, 4);
 
-    a.vector_data() = std::vector<T, einsums::AlignedAllocator<T, 64>>{
-        {-3.84f, 2.25f},  {-8.94f, -4.75f}, {8.95f, -6.53f},  {-9.87f, 4.82f},  {-0.66f, 0.83f},  {-4.40f, -3.82f},
-        {-3.50f, -4.26f}, {-3.15f, 7.36f},  {-3.99f, -4.73f}, {-5.88f, -6.60f}, {-3.36f, -0.40f}, {-0.75f, 5.23f},
-        {7.74f, 4.18f},   {3.66f, -7.53f},  {2.58f, 3.60f},   {4.59f, 5.41f}};
+    a.vector_data() =
+        einsums::VectorData<T>{{-3.84f, 2.25f},  {-8.94f, -4.75f}, {8.95f, -6.53f},  {-9.87f, 4.82f},  {-0.66f, 0.83f},  {-4.40f, -3.82f},
+                               {-3.50f, -4.26f}, {-3.15f, 7.36f},  {-3.99f, -4.73f}, {-5.88f, -6.60f}, {-3.36f, -0.40f}, {-0.75f, 5.23f},
+                               {7.74f, 4.18f},   {3.66f, -7.53f},  {2.58f, 3.60f},   {4.59f, 5.41f}};
 
     einsums::linear_algebra::geev(&a, &w, &vl, &vr);
 
@@ -504,9 +500,9 @@ void heev_test() {
     auto A = create_tensor<T>("a", 3, 3);
     auto b = create_tensor<typename ComplexType<T>::Type>("b", 3);
 
-    A.vector_data() = std::vector<T, einsums::AlignedAllocator<T, 64>>{
-        {0.199889, 0.0},       {-0.330816, -0.127778},  {-0.0546237, 0.176589}, {-0.330816, 0.127778}, {0.629179, 0.0},
-        {-0.224813, 0.327171}, {-0.0546237, -0.176589}, {-0.0224813, 0.327171}, {0.170931, 0.0}};
+    A.vector_data() = einsums::VectorData<T>{{0.199889, 0.0},         {-0.330816, -0.127778}, {-0.0546237, 0.176589},
+                                             {-0.330816, 0.127778},   {0.629179, 0.0},        {-0.224813, 0.327171},
+                                             {-0.0546237, -0.176589}, {-0.0224813, 0.327171}, {0.170931, 0.0}};
 
     einsums::linear_algebra::heev(&A, &b);
 
@@ -567,21 +563,51 @@ template <NotComplex T>
 void norm_test() {
     using namespace einsums;
     using namespace einsums::linear_algebra;
+    using namespace einsums::tensor_algebra;
+    using namespace einsums::tensor_algebra::index;
 
     auto A = create_tensor<T>("a", 9, 9);
 
-    A.vector_data() = std::vector<T, einsums::AlignedAllocator<T, 64>>{
-        1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0,  0.0,  0.0, 4.0, 1.0, 1.0,
-        1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 5.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0,  0.0,  6.0, 1.0, 1.0, 1.0,
-        1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 7.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0,  8.0,  1.0, 1.0, 1.0, 1.0,
-        0.0, 0.0, 0.0, 0.0, 0.0, 9.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0, 11.0, 12.0};
+    A.vector_data() =
+        VectorData<T>{1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0,  0.0,  0.0, 4.0, 1.0, 1.0,
+                      1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 5.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0,  0.0,  6.0, 1.0, 1.0, 1.0,
+                      1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 7.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0,  8.0,  1.0, 1.0, 1.0, 1.0,
+                      0.0, 0.0, 0.0, 0.0, 0.0, 9.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0, 11.0, 12.0};
 
     T result = einsums::linear_algebra::norm(Norm::One, A);
 
-    CHECK_THAT(result, Catch::Matchers::WithinRel(15.0, 0.1));
+    CHECK_THAT(result, Catch::Matchers::WithinRel(33.0, 0.1));
 }
 
 TEST_CASE("norm") {
-    //    norm_test<float>();
-    //    norm_test<double>();
+    norm_test<float>();
+    norm_test<double>();
+}
+
+template <typename T>
+void getrf_and_getri_test() {
+    using namespace einsums;
+    using namespace einsums::linear_algebra;
+    using namespace einsums::tensor_algebra;
+    using namespace einsums::tensor_algebra::index;
+
+    auto                  A = create_tensor<T>("A", 4, 4);
+    std::vector<blas_int> pivot(4);
+
+    A.vector_data() =
+        VectorData<T>{1.80, 2.88, 2.05, -0.89, 5.25, -2.95, -0.95, -3.80, 1.58, -2.69, -2.90, -1.04, -1.11, -0.66, -0.59, 0.80};
+
+    einsums::linear_algebra::getrf(&A, &pivot);
+    einsums::linear_algebra::getri(&A, pivot);
+
+    CHECK_THAT(A.vector_data(),
+               Catch::Matchers::Approx(VectorData<T>{1.77199817, 0.57569082, 0.08432537, 4.81550236, -0.11746607, -0.44561501, 0.41136261,
+                                                     -1.71258093, 0.17985639, 0.45266204, -0.66756530, 1.48240005, 2.49438204, 0.76497689,
+                                                     -0.03595380, 7.61190029})
+                   .margin(0.01));
+}
+
+TEST_CASE("getrf_getri") {
+    getrf_and_getri_test<float>();
+    getrf_and_getri_test<double>();
 }

@@ -30,13 +30,6 @@ extend_einsums_target(test-all
 
 extend_einsums_target(test-all
     SOURCES
-        Parallel.cpp
-    CONDITION
-        TARGET MPI::MPI_CXX
-)
-
-extend_einsums_target(test-all
-    SOURCES
         DeviceTensor_extras.hip
         DeviceTensor.hip
         DeviceTensorView.hip
