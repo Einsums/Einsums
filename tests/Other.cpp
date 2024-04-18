@@ -31,23 +31,22 @@ TEST_CASE("timer") {
 
     // println("pre omp_get_max_active_levels {}", omp_get_max_active_levels());
 
-#pragma omp parallel for
+    // #pragma omp parallel for
     for (int _i = 0; _i < 100; _i++) {
-        timer::push("B: test timer");
-        timer::push("B: test timer 2");
+        // timer::push("B: test timer");
+        // timer::push("B: test timer 2");
 
         auto C = create_tensor("C", 100, 100);
         zero(C);
 
-
-#pragma omp taskgroup
+        // #pragma omp taskgroup
         {
-#pragma omp task depend(in : A, B) depend(out : C)
+            // #pragma omp task depend(in : A, B) depend(out : C)
             einsum(Indices{i, j}, &C, Indices{i, k}, A, Indices{k, j}, B);
         }
 
-        timer::pop();
-        timer::pop();
+        // timer::pop();
+        // timer::pop();
     }
 
     // println("omp_get_supported_active_levels {}", omp_get_supported_active_levels());

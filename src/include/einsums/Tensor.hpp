@@ -1864,7 +1864,7 @@ auto println(const AType<T, Rank> &A, TensorPrintOptions options) ->
             println();
 
             if constexpr (Rank == 0) {
-                const T value = static_cast<const T>(A);
+                const T value = A;
 
                 std::ostringstream oss;
                 oss << "              ";

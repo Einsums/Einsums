@@ -82,7 +82,11 @@ void print_timer_info(TimerDetail *timer, std::FILE *fp) { // NOLINT
         } else {
             buffer = "total_calls == 0!!!";
         }
-        fprintln(fp, "{0:<{1}} : {3: <{4}}{2}", buffer, 70 - print::current_indent_level(), timer->name, "", print::current_indent_level());
+        int width = 70 - print::current_indent_level();
+        if (width < 0) {
+            width = 0;
+        }
+        fprintln(fp, "{0:<{1}} : {3: <{4}}{2}", buffer, width, timer->name, "", print::current_indent_level());
     } else {
         fprintln(fp);
         fprintln(fp);
