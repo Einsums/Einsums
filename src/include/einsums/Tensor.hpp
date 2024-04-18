@@ -1463,7 +1463,7 @@ struct DiskTensor final : public detail::TensorBase<T, Rank> {
         if (H5Lexists(_file, _name.c_str(), H5P_DEFAULT) > 0) {
             _existed = true;
             try {
-                _disk = h5::open(state::data, _name);
+                _disk = h5::open(state::data(), _name);
             } catch (std::exception &e) {
                 println("Unable to open disk tensor '%s'", _name.c_str());
                 std::abort();
@@ -1832,6 +1832,13 @@ auto println(const AType<T, Rank> &A, TensorPrintOptions options) ->
                 println("Type: In Core Tensor");
             else
                 println("Type: In Core Tensor View");
+#ifdef __HIP__
+        } else if constexpr (einsums::DeviceRankTensor<AType<T, Rank>, Rank, T>) {
+            if constexpr (std::is_same_v<AType<T, Rank>, einsums::DeviceTensor<T, Rank>>)
+                println("Type: Device Tensor");
+            else
+                println("Type: Device Tensor View");
+#endif
         } else
             println("Type: Disk Tensor");
 
@@ -1874,7 +1881,12 @@ auto println(const AType<T, Rank> &A, TensorPrintOptions options) ->
 
                 println("{}", oss.str());
                 println();
+#ifndef __HIP__
             } else if constexpr (Rank > 1 && einsums::CoreRankTensor<AType<T, Rank>, Rank, T>) {
+#else
+            } else if constexpr (Rank > 1 &&
+                                 (einsums::CoreRankTensor<AType<T, Rank>, Rank, T> || einsums::DeviceRankTensor<AType<T, Rank>, Rank, T>)) {
+#endif
                 auto target_dims = einsums::get_dim_ranges<Rank - 1>(A);
                 auto final_dim   = A.dim(Rank - 1);
                 auto ndigits     = einsums::ndigits(final_dim);
@@ -1884,7 +1896,7 @@ auto println(const AType<T, Rank> &A, TensorPrintOptions options) ->
                     for (int j = 0; j < final_dim; j++) {
                         if (j % options.width == 0) {
                             std::ostringstream tmp;
-                            detail::TuplePrinterNoType<decltype(target_combination), Rank - 1>::print(tmp, target_combination);
+                            ::einsums::detail::TuplePrinterNoType<decltype(target_combination), Rank - 1>::print(tmp, target_combination);
                             if (final_dim >= j + options.width)
                                 oss << fmt::format(
                                     "{:<14}", fmt::format("({}, {:{}d}-{:{}d}): ", tmp.str(), j, ndigits, j + options.width - 1, ndigits));
@@ -1921,13 +1933,18 @@ auto println(const AType<T, Rank> &A, TensorPrintOptions options) ->
                     println("{}", oss.str());
                     println();
                 }
+#ifndef __HIP__
             } else if constexpr (Rank == 1 && einsums::CoreRankTensor<AType<T, Rank>, Rank, T>) {
+#else
+            } else if constexpr (Rank == 1 &&
+                                 (einsums::CoreRankTensor<AType<T, Rank>, Rank, T> || einsums::DeviceRankTensor<AType<T, Rank>, Rank, T>)) {
+#endif
                 auto target_dims = einsums::get_dim_ranges<Rank>(A);
 
                 for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
                     std::ostringstream oss;
                     oss << "(";
-                    detail::TuplePrinterNoType<decltype(target_combination), Rank>::print(oss, target_combination);
+                    ::einsums::detail::TuplePrinterNoType<decltype(target_combination), Rank>::print(oss, target_combination);
                     oss << "): ";
 
                     T value = std::apply(A, target_combination);
@@ -1972,6 +1989,13 @@ auto fprintln(std::FILE *fp, const AType<T, Rank> &A, TensorPrintOptions options
                 fprintln(fp, "Type: In Core Tensor");
             else
                 fprintln(fp, "Type: In Core Tensor View");
+#ifdef __HIP__
+        } else if constexpr (einsums::DeviceRankTensor<AType<T, Rank>, Rank, T>) {
+            if constexpr (std::is_same_v<AType<T, Rank>, einsums::DeviceTensor<T, Rank>>)
+                fprintln(fp, "Type: Device Tensor");
+            else
+                fprintln(fp, "Type: Device Tensor View");
+#endif
         } else
             fprintln(fp, "Type: Disk Tensor");
 
@@ -2014,7 +2038,12 @@ auto fprintln(std::FILE *fp, const AType<T, Rank> &A, TensorPrintOptions options
 
                 fprintln(fp, "{}", oss.str());
                 fprintln(fp);
+#ifndef __HIP__
             } else if constexpr (Rank > 1 && einsums::CoreRankTensor<AType<T, Rank>, Rank, T>) {
+#else
+            } else if constexpr (Rank > 1 &&
+                                 (einsums::CoreRankTensor<AType<T, Rank>, Rank, T> || einsums::DeviceRankTensor<AType<T, Rank>, Rank, T>)) {
+#endif
                 auto target_dims = einsums::get_dim_ranges<Rank - 1>(A);
                 auto final_dim   = A.dim(Rank - 1);
                 auto ndigits     = einsums::ndigits(final_dim);
@@ -2024,7 +2053,7 @@ auto fprintln(std::FILE *fp, const AType<T, Rank> &A, TensorPrintOptions options
                     for (int j = 0; j < final_dim; j++) {
                         if (j % options.width == 0) {
                             std::ostringstream tmp;
-                            detail::TuplePrinterNoType<decltype(target_combination), Rank - 1>::print(tmp, target_combination);
+                            einsums::detail::TuplePrinterNoType<decltype(target_combination), Rank - 1>::print(tmp, target_combination);
                             if (final_dim >= j + options.width)
                                 oss << fmt::format(
                                     "{:<14}", fmt::format("({}, {:{}d}-{:{}d}): ", tmp.str(), j, ndigits, j + options.width - 1, ndigits));
@@ -2061,13 +2090,18 @@ auto fprintln(std::FILE *fp, const AType<T, Rank> &A, TensorPrintOptions options
                     fprintln(fp, "{}", oss.str());
                     fprintln(fp);
                 }
+#ifndef __HIP__
             } else if constexpr (Rank == 1 && einsums::CoreRankTensor<AType<T, Rank>, Rank, T>) {
+#else
+            } else if constexpr (Rank == 1 &&
+                                 (einsums::CoreRankTensor<AType<T, Rank>, Rank, T> || einsums::DeviceRankTensor<AType<T, Rank>, Rank, T>)) {
+#endif
                 auto target_dims = einsums::get_dim_ranges<Rank>(A);
 
                 for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
                     std::ostringstream oss;
                     oss << "(";
-                    detail::TuplePrinterNoType<decltype(target_combination), Rank>::print(oss, target_combination);
+                    einsums::detail::TuplePrinterNoType<decltype(target_combination), Rank>::print(oss, target_combination);
                     oss << "): ";
 
                     T value = std::apply(A, target_combination);
@@ -2112,6 +2146,13 @@ auto fprintln(std::ostream &os, const AType<T, Rank> &A, TensorPrintOptions opti
                 fprintln(os, "Type: In Core Tensor");
             else
                 fprintln(os, "Type: In Core Tensor View");
+#ifdef __HIP__
+        } else if constexpr (einsums::DeviceRankTensor<AType<T, Rank>, Rank, T>) {
+            if constexpr (std::is_same_v<AType<T, Rank>, einsums::DeviceTensor<T, Rank>>)
+                fprintln(os, "Type: Device Tensor");
+            else
+                fprintln(os, "Type: Device Tensor View");
+#endif
         } else
             fprintln(os, "Type: Disk Tensor");
 
@@ -2154,7 +2195,12 @@ auto fprintln(std::ostream &os, const AType<T, Rank> &A, TensorPrintOptions opti
 
                 fprintln(os, "{}", oss.str());
                 fprintln(os);
+#ifndef __HIP__
             } else if constexpr (Rank > 1 && einsums::CoreRankTensor<AType<T, Rank>, Rank, T>) {
+#else
+            } else if constexpr (Rank > 1 &&
+                                 (einsums::CoreRankTensor<AType<T, Rank>, Rank, T> || einsums::DeviceRankTensor<AType<T, Rank>, Rank, T>)) {
+#endif
                 auto target_dims = einsums::get_dim_ranges<Rank - 1>(A);
                 auto final_dim   = A.dim(Rank - 1);
                 auto ndigits     = einsums::ndigits(final_dim);
@@ -2164,7 +2210,7 @@ auto fprintln(std::ostream &os, const AType<T, Rank> &A, TensorPrintOptions opti
                     for (int j = 0; j < final_dim; j++) {
                         if (j % options.width == 0) {
                             std::ostringstream tmp;
-                            detail::TuplePrinterNoType<decltype(target_combination), Rank - 1>::print(tmp, target_combination);
+                            einsums::detail::TuplePrinterNoType<decltype(target_combination), Rank - 1>::print(tmp, target_combination);
                             if (final_dim >= j + options.width)
                                 oss << fmt::format(
                                     "{:<14}", fmt::format("({}, {:{}d}-{:{}d}): ", tmp.str(), j, ndigits, j + options.width - 1, ndigits));
@@ -2201,13 +2247,18 @@ auto fprintln(std::ostream &os, const AType<T, Rank> &A, TensorPrintOptions opti
                     fprintln(os, "{}", oss.str());
                     fprintln(os);
                 }
+#ifndef __HIP__
             } else if constexpr (Rank == 1 && einsums::CoreRankTensor<AType<T, Rank>, Rank, T>) {
+#else
+            } else if constexpr (Rank == 1 &&
+                                 (einsums::CoreRankTensor<AType<T, Rank>, Rank, T> || einsums::DeviceRankTensor<AType<T, Rank>, Rank, T>)) {
+#endif
                 auto target_dims = einsums::get_dim_ranges<Rank>(A);
 
                 for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
                     std::ostringstream oss;
                     oss << "(";
-                    detail::TuplePrinterNoType<decltype(target_combination), Rank>::print(oss, target_combination);
+                    einsums::detail::TuplePrinterNoType<decltype(target_combination), Rank>::print(oss, target_combination);
                     oss << "): ";
 
                     T value = std::apply(A, target_combination);

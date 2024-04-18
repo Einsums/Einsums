@@ -39,9 +39,13 @@ TEST_CASE("timer") {
         auto C = create_tensor("C", 100, 100);
         zero(C);
 
-#pragma omp task depend(in : A, B) depend(out : C)
-        einsum(Indices{i, j}, &C, Indices{i, k}, A, Indices{k, j}, B);
+
 #pragma omp taskgroup
+        {
+#pragma omp task depend(in : A, B) depend(out : C)
+            einsum(Indices{i, j}, &C, Indices{i, k}, A, Indices{k, j}, B);
+        }
+
         timer::pop();
         timer::pop();
     }

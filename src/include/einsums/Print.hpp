@@ -55,7 +55,7 @@ struct Indent {
 
 } // namespace print
 
-namespace detail {
+namespace einsums::detail {
 void EINSUMS_EXPORT println(const std::string &oss);
 void EINSUMS_EXPORT fprintln(std::FILE *fp, const std::string &oss);
 void EINSUMS_EXPORT fprintln(std::ostream &os, const std::string &oss);
@@ -120,7 +120,8 @@ template <typename T>
 [[nodiscard]] auto type_name(const T &) -> const char * {
     return type_name<T>();
 }
-namespace detail {
+
+namespace einsums::detail {
 
 template <typename Tuple, std::size_t N>
 struct TuplePrinter {
@@ -165,7 +166,7 @@ template <typename... Args, std::enable_if_t<sizeof...(Args) != 0, int> = 0>
 auto print_tuple(const std::tuple<Args...> &t) -> std::string {
     std::ostringstream out;
     out << "(";
-    detail::TuplePrinter<decltype(t), sizeof...(Args)>::print(out, t);
+    ::einsums::detail::TuplePrinter<decltype(t), sizeof...(Args)>::print(out, t);
     out << ")";
     return out.str();
 }
@@ -174,7 +175,7 @@ template <typename... Args, std::enable_if_t<sizeof...(Args) != 0, int> = 0>
 auto print_tuple_no_type(const std::tuple<Args...> &t) -> std::string {
     std::ostringstream out;
     out << "(";
-    detail::TuplePrinterNoType<decltype(t), sizeof...(Args)>::print(out, t);
+    ::einsums::detail::TuplePrinterNoType<decltype(t), sizeof...(Args)>::print(out, t);
     out << ")";
     return out.str();
 }
@@ -193,32 +194,32 @@ using fmt::fg;       // NOLINT
 template <typename... Ts>
 void println(const std::string_view &f, const Ts... ts) {
     std::string s = fmt::format(fmt::runtime(f), ts...);
-    detail::println(s);
+    ::einsums::detail::println(s);
 }
 
 template <typename... Ts>
 void println(const fmt::text_style &style, const std::string_view &format, const Ts... ts) {
     std::string s = fmt::format(style, format, ts...);
-    detail::println(s);
+    ::einsums::detail::println(s);
 }
 
 inline void println(const std::string &format) {
-    detail::println(format);
+    ::einsums::detail::println(format);
 }
 
 inline void println(const fmt::text_style &style, const std::string_view &format) {
     std::string const s = fmt::format(style, format);
-    detail::println(s);
+    ::einsums::detail::println(s);
 }
 
 inline void println() {
-    detail::println("\n");
+    ::einsums::detail::println("\n");
 }
 
 template <typename... Ts>
 void fprintln(std::FILE *fp, const std::string_view &f, const Ts... ts) {
     std::string s = fmt::format(fmt::runtime(f), ts...);
-    detail::fprintln(fp, s);
+    ::einsums::detail::fprintln(fp, s);
 }
 
 template <typename... Ts>
@@ -229,11 +230,11 @@ void fprintln(std::FILE *fp, const fmt::text_style &style, const std::string_vie
     } else {
         s = fmt::format(format, ts...);
     }
-    detail::fprintln(fp, s);
+    ::einsums::detail::fprintln(fp, s);
 }
 
 inline void fprintln(std::FILE *fp, const std::string &format) {
-    detail::fprintln(fp, format);
+    ::einsums::detail::fprintln(fp, format);
 }
 
 inline void fprintln(std::FILE *fp, const fmt::text_style &style, const std::string_view &format) {
@@ -243,36 +244,36 @@ inline void fprintln(std::FILE *fp, const fmt::text_style &style, const std::str
     } else {
         s = format;
     }
-    detail::fprintln(fp, s);
+    ::einsums::detail::fprintln(fp, s);
 }
 
 inline void fprintln(std::FILE *fp) {
-    detail::fprintln(fp, "\n");
+    ::einsums::detail::fprintln(fp, "\n");
 }
 
 template <typename... Ts>
 void fprintln(std::ostream &fp, const std::string_view &f, const Ts... ts) {
     std::string s = fmt::format(fmt::runtime(f), ts...);
-    detail::fprintln(fp, s);
+    ::einsums::detail::fprintln(fp, s);
 }
 
 template <typename... Ts>
 void fprintln(std::ostream &fp, const fmt::text_style &style, const std::string_view &format, const Ts... ts) {
     std::string s = fmt::format(style, format, ts...);
-    detail::fprintln(fp, s);
+    ::einsums::detail::fprintln(fp, s);
 }
 
 inline void fprintln(std::ostream &fp, const std::string &format) {
-    detail::fprintln(fp, format);
+    ::einsums::detail::fprintln(fp, format);
 }
 
 inline void fprintln(std::ostream &fp, const fmt::text_style &style, const std::string_view &format) {
     std::string const s = fmt::format(style, format);
-    detail::fprintln(fp, s);
+    ::einsums::detail::fprintln(fp, s);
 }
 
 inline void fprintln(std::ostream &fp) {
-    detail::fprintln(fp, "\n");
+    ::einsums::detail::fprintln(fp, "\n");
 }
 
 template <typename... Ts>

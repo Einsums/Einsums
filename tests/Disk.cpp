@@ -23,9 +23,9 @@ TEST_CASE("disktensor-creation", "[disktensor]") {
     using namespace einsums;
 
     SECTION("double") {
-        DiskTensor A(state::data, "/A0", 3, 3);
-        DiskTensor B(state::data, "/B0", 3, 3);
-        DiskTensor C(state::data, "/C0", 3, 3);
+        DiskTensor A(state::data(), "/A0", 3, 3);
+        DiskTensor B(state::data(), "/B0", 3, 3);
+        DiskTensor C(state::data(), "/C0", 3, 3);
 
         REQUIRE((A.dim(0) == 3 && A.dim(1) == 3));
         REQUIRE((B.dim(0) == 3 && B.dim(1) == 3));
@@ -33,13 +33,13 @@ TEST_CASE("disktensor-creation", "[disktensor]") {
     }
 
     SECTION("float") {
-        auto A = create_disk_tensor<float>(state::data, "/A1", 3, 3);
+        auto A = create_disk_tensor<float>(state::data(), "/A1", 3, 3);
         REQUIRE((A.dim(0) == 3 && A.dim(1) == 3));
     }
 
     // Complex datatypes currently not supported.  It should be able to handle this through defining a HDF5 compound datatype.
     // SECTION("complex<double>") {
-    //     auto A = create_disk_tensor<std::complex<double>>(state::data, "/A2", 3, 3);
+    //     auto A = create_disk_tensor<std::complex<double>>(state::data(), "/A2", 3, 3);
     //     REQUIRE((A.dim(0) == 3 && A.dim(1) == 3));
     // }
 }
@@ -48,7 +48,7 @@ TEST_CASE("disktensor-creation", "[disktensor]") {
 TEST_CASE("Write/Read", "[disktensor]") {
     using namespace einsums;
 
-    DiskTensor<2> A(state::data, "/A1", 3, 3);
+    DiskTensor<2> A(state::data(), "/A1", 3, 3);
 
     // Data must exist on disk before it can be read in.
     Tensor<2> Ad = create_random_tensor("A", 3, 3);
@@ -97,7 +97,7 @@ TEST_CASE("Write/Read", "[disktensor]") {
 TEST_CASE("DiskView 3x3", "[disktensor]") {
     using namespace einsums;
 
-    DiskTensor<2> A(state::data, "/A2", 3, 3);
+    DiskTensor<2> A(state::data(), "/A2", 3, 3);
 
     // Data must exist on disk before it can be read in.
     Tensor<2> Ad = create_random_tensor("A", 3, 3);
@@ -166,19 +166,19 @@ TEST_CASE("DiskView 7x7x7x7", "[disktensor]") {
     using namespace einsums;
 
     SECTION("Write [7,7] data to [:,2,4,:]") {
-        DiskTensor g(state::data, "g0", 7, 7, 7, 7);
+        DiskTensor g(state::data(), "g0", 7, 7, 7, 7);
         Tensor     data   = create_random_tensor("data", 7, 7);
         g(All, 2, 4, All) = data;
     }
 
     SECTION("Write [7,2,7] data to [:,4-5,2,:]") {
-        DiskTensor g(state::data, "g1", 7, 7, 7, 7);
+        DiskTensor g(state::data(), "g1", 7, 7, 7, 7);
         Tensor     data2            = create_random_tensor("data", 7, 2, 7);
         g(All, Range{4, 6}, 2, All) = data2;
     }
 
     SECTION("Write/Read [7,7] data to/from [2,2,:,:]") {
-        DiskTensor g(state::data, "g2", 3, 3, 3, 3);
+        DiskTensor g(state::data(), "g2", 3, 3, 3, 3);
         Tensor     data3 = create_random_tensor("data", 3, 3);
         double     value = 0.0;
 

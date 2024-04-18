@@ -34,7 +34,7 @@ auto main() -> int {
     H5Eset_auto(0, nullptr, nullptr);
 
     // Create a file to hold the data from the DiskTensor tests.
-    einsums::state::data = h5::create("Data.h5", H5F_ACC_TRUNC);
+    einsums::state::data() = h5::create("Data.h5", H5F_ACC_TRUNC);
 
 #define NMO 32
 #define NBS 100
@@ -289,6 +289,5 @@ auto main() -> int {
     blas::finalize();
     timer::finalize();
 
-    // Typically you would build a new wavefunction and populate it with data
     return EXIT_SUCCESS;
 }

@@ -5,19 +5,18 @@
 
 namespace einsums::timer {
 
-GPUTimer::GPUTimer(const std::string &name, hipStream_t stream) { 
+GPUTimer::GPUTimer(const std::string &name) { 
         using namespace einsums::gpu;
         hip_catch(hipEventCreate(&start_event));
         hip_catch(hipEventCreate(&end_event));
 
-        hip_catch(hipEventRecord(start_event, stream));
-        _stream = stream;
+        hip_catch(hipEventRecord(start_event, get_stream()));
 
         push(name);
     }
 GPUTimer::~GPUTimer() {
         using namespace einsums::gpu;
-        hip_catch(hipEventRecord(end_event, _stream));
+        hip_catch(hipEventRecord(end_event, get_stream()));
 
         hip_catch(hipEventSynchronize(end_event));
 

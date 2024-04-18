@@ -8,15 +8,18 @@ add_executable(test-all
     Tensor.cpp
     TensorAlgebra.cpp
     TensorAlgebraTasks.cpp
+    BlockTensor.cpp
 )
 
-if(EINSUMS_COVERAGE)
+if(EINSUMS_COVERAGE AND NOT MSVC)
     target_compile_options(test-all PUBLIC $<$<COMPILE_LANG_AND_ID:CXX,Clang>:-fprofile-instr-generate -fcoverage-mapping>)
     target_compile_options(test-all PUBLIC $<$<COMPILE_LANGUAGE:HIP>:-fprofile-instr-generate -fcoverage-mapping>)
     target_compile_options(test-all PUBLIC $<$<COMPILE_LANG_AND_ID:CXX,GNU>:--coverage>)
 endif()
 
-target_compile_options(einsums BEFORE PUBLIC $<$<CONFIG:Debug>:-gdwarf-2>)
+if (NOT MSVC)
+    target_compile_options(einsums BEFORE PUBLIC $<$<CONFIG:Debug>:-gdwarf-2>)
+endif()
 
 extend_einsums_target(test-all
     SOURCES
@@ -33,6 +36,7 @@ extend_einsums_target(test-all
         GPULinearAlgebra.hip
         GPU.hip
         GPUTensorAlgebraTasks.hip
+        BlockDeviceTensor.hip
     CONDITION
         EINSUMS_BUILD_HIP
     PUBLIC_DEPENDS

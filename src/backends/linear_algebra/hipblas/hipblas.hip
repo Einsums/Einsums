@@ -8,13 +8,11 @@
 
 #include "hipblas.hpp"
 
-namespace einsums::backend::linear_algebra::hipblas {
-
 using namespace einsums::gpu;
 
-namespace detail {
+namespace einsums::backend::linear_algebra::hipblas {
 
-hipblasHandle_t blas_handle = nullptr;
+namespace detail {
 
 __host__ __device__ hipblasOperation_t hipblas_char_to_op(char trans) {
     switch (trans) {
@@ -29,87 +27,9 @@ __host__ __device__ hipblasOperation_t hipblas_char_to_op(char trans) {
     }
 }
 
-__host__ void __hipblas_catch__(hipblasStatus_t status, const char *diagnostic, bool throw_success) {
-    switch (status) {
-    case HIPBLAS_STATUS_SUCCESS:
-        if (throw_success) {
-            throw detail::blasSuccess(diagnostic);
-        } else {
-            return;
-        }
-        break;
-    case HIPBLAS_STATUS_NOT_INITIALIZED:
-        throw einsums::backend::linear_algebra::hipblas::detail::blasNotInitialized(diagnostic);
-        break;
-    case HIPBLAS_STATUS_ALLOC_FAILED:
-        throw detail::blasAllocFailed(diagnostic);
-        break;
-    case HIPBLAS_STATUS_INVALID_VALUE:
-        throw detail::blasInvalidValue(diagnostic);
-        break;
-    case HIPBLAS_STATUS_MAPPING_ERROR:
-        throw detail::blasMappingError(diagnostic);
-        break;
-    case HIPBLAS_STATUS_EXECUTION_FAILED:
-        throw detail::blasExecutionFailed(diagnostic);
-        break;
-    case HIPBLAS_STATUS_INTERNAL_ERROR:
-        throw detail::blasInternalError(diagnostic);
-        break;
-    case HIPBLAS_STATUS_NOT_SUPPORTED:
-        throw detail::blasNotSupported(diagnostic);
-        break;
-    case HIPBLAS_STATUS_ARCH_MISMATCH:
-        throw detail::blasArchMismatch(diagnostic);
-        break;
-    case HIPBLAS_STATUS_HANDLE_IS_NULLPTR:
-        throw detail::blasHandleIsNullptr(diagnostic);
-        break;
-    case HIPBLAS_STATUS_INVALID_ENUM:
-        throw detail::blasInvalidEnum(diagnostic);
-        break;
-    default:
-        throw detail::blasUnknown(diagnostic);
-    }
-}
-
-hipblasHandle_t get_blas_handle() {
-    return blas_handle;
-}
-
-hipblasHandle_t set_blas_handle(hipblasHandle_t value) {
-    blas_handle = value;
-    return blas_handle;
-}
-
 } // namespace detail
 
 using namespace detail;
-
-__host__ void initialize() {
-
-    if (detail::blas_handle == nullptr) {
-        hipblas_catch(hipblasCreate(&detail::blas_handle));
-    }
-
-    if (detail::get_solver_handle() == nullptr) {
-        hipsolverHandle_t handle;
-        hipsolver_catch(hipsolverCreate(&handle));
-        detail::set_solver_handle(handle);
-    }
-}
-
-__host__ void finalize() {
-    if (detail::blas_handle != nullptr) {
-        hipblas_catch(hipblasDestroy(detail::blas_handle));
-        detail::blas_handle = nullptr;
-    }
-
-    if (detail::get_solver_handle() != nullptr) {
-        hipsolver_catch(hipsolverDestroy(detail::get_solver_handle()));
-        detail::set_solver_handle(nullptr);
-    }
-}
 
 /*!
  * Performs matrix multiplication for general square matices of type double.
@@ -148,7 +68,7 @@ __host__ void sgemm(char transa, char transb, int m, int n, int k, float alpha, 
     }
 
     // Compute.
-    hipblas_catch(hipblasSgemm(detail::blas_handle, hipblas_char_to_op(transa), hipblas_char_to_op(transb), m, n, k, &(gpu_scalars->alpha),
+    hipblas_catch(hipblasSgemm(get_blas_handle(), hipblas_char_to_op(transa), hipblas_char_to_op(transb), m, n, k, &(gpu_scalars->alpha),
                                a_gpu, lda, b_gpu, ldb, &(gpu_scalars->beta), c_gpu, ldc));
 
     // Wait for the device to finish.
@@ -197,7 +117,7 @@ __host__ void dgemm(char transa, char transb, int m, int n, int k, double alpha,
     }
 
     // Compute.
-    hipblas_catch(hipblasDgemm(detail::blas_handle, hipblas_char_to_op(transa), hipblas_char_to_op(transb), m, n, k, &(gpu_scalars->alpha),
+    hipblas_catch(hipblasDgemm(get_blas_handle(), hipblas_char_to_op(transa), hipblas_char_to_op(transb), m, n, k, &(gpu_scalars->alpha),
                                a_gpu, lda, b_gpu, ldb, &(gpu_scalars->beta), c_gpu, ldc));
 
     // Wait for the device to finish.
@@ -246,7 +166,7 @@ __host__ void cgemm(char transa, char transb, int m, int n, int k, std::complex<
     }
 
     // Compute.
-    hipblas_catch(hipblasCgemm(detail::blas_handle, hipblas_char_to_op(transa), hipblas_char_to_op(transb), m, n, k, &(gpu_scalars->alpha),
+    hipblas_catch(hipblasCgemm(get_blas_handle(), hipblas_char_to_op(transa), hipblas_char_to_op(transb), m, n, k, &(gpu_scalars->alpha),
                                a_gpu, lda, b_gpu, ldb, &(gpu_scalars->beta), c_gpu, ldc));
 
     // Wait for the device to finish.
@@ -295,7 +215,7 @@ __host__ void zgemm(char transa, char transb, int m, int n, int k, std::complex<
     }
 
     // Compute.
-    hipblas_catch(hipblasZgemm(detail::blas_handle, hipblas_char_to_op(transa), hipblas_char_to_op(transb), m, n, k, &(gpu_scalars->alpha),
+    hipblas_catch(hipblasZgemm(get_blas_handle(), hipblas_char_to_op(transa), hipblas_char_to_op(transb), m, n, k, &(gpu_scalars->alpha),
                                a_gpu, lda, b_gpu, ldb, &(gpu_scalars->beta), c_gpu, ldc));
 
     // Wait for the device to finish.
@@ -338,7 +258,7 @@ void sgemv(char transa, int m, int n, float alpha, const float *a, int lda, cons
         hip_catch(hipMemcpy(y_gpu, y, y_size * sizeof(math_type), hipMemcpyHostToDevice));
     }
 
-    hipblas_catch(hipblasSgemv(blas_handle, hipblas_char_to_op(transa), m, n, &(gpu_scalars->alpha), a_gpu, lda, x_gpu, incx,
+    hipblas_catch(hipblasSgemv(get_blas_handle(), hipblas_char_to_op(transa), m, n, &(gpu_scalars->alpha), a_gpu, lda, x_gpu, incx,
                                &(gpu_scalars->beta), y_gpu, incy));
 
     hip_catch(hipMemcpy(y, y_gpu, y_size * sizeof(math_type), hipMemcpyDeviceToHost));
@@ -373,7 +293,7 @@ void dgemv(char transa, int m, int n, double alpha, const double *a, int lda, co
         hip_catch(hipMemcpy(y_gpu, y, y_size * sizeof(math_type), hipMemcpyHostToDevice));
     }
 
-    hipblas_catch(hipblasDgemv(blas_handle, hipblas_char_to_op(transa), m, n, &(gpu_scalars->alpha), a_gpu, lda, x_gpu, incx,
+    hipblas_catch(hipblasDgemv(get_blas_handle(), hipblas_char_to_op(transa), m, n, &(gpu_scalars->alpha), a_gpu, lda, x_gpu, incx,
                                &(gpu_scalars->beta), y_gpu, incy));
 
     hip_catch(hipMemcpy(y, y_gpu, y_size * sizeof(math_type), hipMemcpyDeviceToHost));
@@ -409,7 +329,7 @@ void cgemv(char transa, int m, int n, std::complex<float> alpha, const std::comp
         hip_catch(hipMemcpy(y_gpu, y, y_size * sizeof(math_type), hipMemcpyHostToDevice));
     }
 
-    hipblas_catch(hipblasCgemv(blas_handle, hipblas_char_to_op(transa), m, n, &(gpu_scalars->alpha), a_gpu, lda, x_gpu, incx,
+    hipblas_catch(hipblasCgemv(get_blas_handle(), hipblas_char_to_op(transa), m, n, &(gpu_scalars->alpha), a_gpu, lda, x_gpu, incx,
                                &(gpu_scalars->beta), y_gpu, incy));
 
     hip_catch(hipMemcpy(y, y_gpu, y_size * sizeof(math_type), hipMemcpyDeviceToHost));
@@ -444,7 +364,7 @@ void zgemv(char transa, int m, int n, std::complex<double> alpha, const std::com
         hip_catch(hipMemcpy(y_gpu, y, y_size * sizeof(math_type), hipMemcpyHostToDevice));
     }
 
-    hipblas_catch(hipblasZgemv(blas_handle, hipblas_char_to_op(transa), m, n, &(gpu_scalars->alpha), a_gpu, lda, x_gpu, incx,
+    hipblas_catch(hipblasZgemv(get_blas_handle(), hipblas_char_to_op(transa), m, n, &(gpu_scalars->alpha), a_gpu, lda, x_gpu, incx,
                                &(gpu_scalars->beta), y_gpu, incy));
 
     hip_catch(hipMemcpy(y, y_gpu, y_size * sizeof(math_type), hipMemcpyDeviceToHost));
@@ -468,7 +388,7 @@ void sscal(int n, float alpha, float *vec, int inc) {
     hip_catch(hipMemcpy(vec_gpu, vec, vec_size * sizeof(math_type), hipMemcpyHostToDevice));
     hip_catch(hipMemcpy(alpha_gpu, &alpha, sizeof(math_type), hipMemcpyHostToDevice));
 
-    hipblas_catch(hipblasSscal(blas_handle, n, alpha_gpu, vec_gpu, inc));
+    hipblas_catch(hipblasSscal(get_blas_handle(), n, alpha_gpu, vec_gpu, inc));
 
     hip_catch(hipDeviceSynchronize());
 
@@ -491,7 +411,7 @@ void dscal(int n, double alpha, double *vec, int inc) {
     hip_catch(hipMemcpy(vec_gpu, vec, vec_size * sizeof(math_type), hipMemcpyHostToDevice));
     hip_catch(hipMemcpy(alpha_gpu, &alpha, sizeof(math_type), hipMemcpyHostToDevice));
 
-    hipblas_catch(hipblasDscal(blas_handle, n, alpha_gpu, vec_gpu, inc));
+    hipblas_catch(hipblasDscal(get_blas_handle(), n, alpha_gpu, vec_gpu, inc));
 
     hip_catch(hipDeviceSynchronize());
 
@@ -514,7 +434,7 @@ void cscal(int n, std::complex<float> alpha, std::complex<float> *vec, int inc) 
     hip_catch(hipMemcpy(vec_gpu, vec, vec_size * sizeof(math_type), hipMemcpyHostToDevice));
     hip_catch(hipMemcpy(alpha_gpu, &alpha, sizeof(math_type), hipMemcpyHostToDevice));
 
-    hipblas_catch(hipblasCscal(blas_handle, n, alpha_gpu, vec_gpu, inc));
+    hipblas_catch(hipblasCscal(get_blas_handle(), n, alpha_gpu, vec_gpu, inc));
 
     hip_catch(hipDeviceSynchronize());
 
@@ -537,7 +457,7 @@ void zscal(int n, std::complex<double> alpha, std::complex<double> *vec, int inc
     hip_catch(hipMemcpy(vec_gpu, vec, vec_size * sizeof(math_type), hipMemcpyHostToDevice));
     hip_catch(hipMemcpy(alpha_gpu, &alpha, sizeof(math_type), hipMemcpyHostToDevice));
 
-    hipblas_catch(hipblasZscal(blas_handle, n, alpha_gpu, vec_gpu, inc));
+    hipblas_catch(hipblasZscal(get_blas_handle(), n, alpha_gpu, vec_gpu, inc));
 
     hip_catch(hipDeviceSynchronize());
 
@@ -561,7 +481,7 @@ float sdot(int n, const float *x, int incx, const float *y, int incy) {
     hip_catch(hipMemcpy(y_gpu, y, y_size * sizeof(math_type), hipMemcpyHostToDevice));
 
     // result can be device or host, according to the docs.
-    hipblas_catch(hipblasSdot(blas_handle, n, x_gpu, incx, y_gpu, incy, &result));
+    hipblas_catch(hipblasSdot(get_blas_handle(), n, x_gpu, incx, y_gpu, incy, &result));
 
     hip_catch(hipFree(x_gpu));
     hip_catch(hipFree(y_gpu));
@@ -583,7 +503,7 @@ double ddot(int n, const double *x, int incx, const double *y, int incy) {
     hip_catch(hipMemcpy(y_gpu, y, y_size * sizeof(math_type), hipMemcpyHostToDevice));
 
     // result can be device or host, according to the docs.
-    hipblas_catch(hipblasDdot(blas_handle, n, x_gpu, incx, y_gpu, incy, &result));
+    hipblas_catch(hipblasDdot(get_blas_handle(), n, x_gpu, incx, y_gpu, incy, &result));
 
     hip_catch(hipFree(x_gpu));
     hip_catch(hipFree(y_gpu));
@@ -605,7 +525,7 @@ std::complex<float> cdot(int n, const std::complex<float> *x, int incx, const st
     hip_catch(hipMemcpy(y_gpu, y, y_size * sizeof(math_type), hipMemcpyHostToDevice));
 
     // result can be device or host, according to the docs.
-    hipblas_catch(hipblasCdotc(blas_handle, n, x_gpu, incx, y_gpu, incy, &result));
+    hipblas_catch(hipblasCdotc(get_blas_handle(), n, x_gpu, incx, y_gpu, incy, &result));
 
     hip_catch(hipFree(x_gpu));
     hip_catch(hipFree(y_gpu));
@@ -627,7 +547,7 @@ std::complex<double> zdot(int n, const std::complex<double> *x, int incx, const 
     hip_catch(hipMemcpy(y_gpu, y, y_size * sizeof(math_type), hipMemcpyHostToDevice));
 
     // result can be device or host, according to the docs.
-    hipblas_catch(hipblasZdotc(blas_handle, n, x_gpu, incx, y_gpu, incy, &result));
+    hipblas_catch(hipblasZdotc(get_blas_handle(), n, x_gpu, incx, y_gpu, incy, &result));
 
     hip_catch(hipFree(x_gpu));
     hip_catch(hipFree(y_gpu));
@@ -655,7 +575,7 @@ void saxpy(int n, float alpha_x, const float *x, int inc_x, float *y, int inc_y)
     hip_catch(hipMemcpy(y_gpu, y, y_size * sizeof(math_type), hipMemcpyHostToDevice));
     hip_catch(hipMemcpy(alpha_gpu, &alpha_x, sizeof(math_type), hipMemcpyHostToDevice));
 
-    hipblas_catch(hipblasSaxpy(blas_handle, n, alpha_gpu, x_gpu, inc_x, y_gpu, inc_y));
+    hipblas_catch(hipblasSaxpy(get_blas_handle(), n, alpha_gpu, x_gpu, inc_x, y_gpu, inc_y));
 
     hip_catch(hipDeviceSynchronize());
 
@@ -686,7 +606,7 @@ void daxpy(int n, double alpha_x, const double *x, int inc_x, double *y, int inc
     hip_catch(hipMemcpy(y_gpu, y, y_size * sizeof(math_type), hipMemcpyHostToDevice));
     hip_catch(hipMemcpy(alpha_gpu, &alpha_x, sizeof(math_type), hipMemcpyHostToDevice));
 
-    hipblas_catch(hipblasDaxpy(blas_handle, n, alpha_gpu, x_gpu, inc_x, y_gpu, inc_y));
+    hipblas_catch(hipblasDaxpy(get_blas_handle(), n, alpha_gpu, x_gpu, inc_x, y_gpu, inc_y));
 
     hip_catch(hipDeviceSynchronize());
 
@@ -717,7 +637,7 @@ void caxpy(int n, std::complex<float> alpha_x, const std::complex<float> *x, int
     hip_catch(hipMemcpy(y_gpu, y, y_size * sizeof(math_type), hipMemcpyHostToDevice));
     hip_catch(hipMemcpy(alpha_gpu, &alpha_x, sizeof(math_type), hipMemcpyHostToDevice));
 
-    hipblas_catch(hipblasCaxpy(blas_handle, n, alpha_gpu, x_gpu, inc_x, y_gpu, inc_y));
+    hipblas_catch(hipblasCaxpy(get_blas_handle(), n, alpha_gpu, x_gpu, inc_x, y_gpu, inc_y));
 
     hip_catch(hipDeviceSynchronize());
 
@@ -748,7 +668,7 @@ void zaxpy(int n, std::complex<double> alpha_x, const std::complex<double> *x, i
     hip_catch(hipMemcpy(y_gpu, y, y_size * sizeof(math_type), hipMemcpyHostToDevice));
     hip_catch(hipMemcpy(alpha_gpu, &alpha_x, sizeof(math_type), hipMemcpyHostToDevice));
 
-    hipblas_catch(hipblasZaxpy(blas_handle, n, alpha_gpu, x_gpu, inc_x, y_gpu, inc_y));
+    hipblas_catch(hipblasZaxpy(get_blas_handle(), n, alpha_gpu, x_gpu, inc_x, y_gpu, inc_y));
 
     hip_catch(hipDeviceSynchronize());
 
@@ -791,7 +711,7 @@ void sger(int m, int n, float alpha, const float *x, int inc_x, const float *y, 
     hip_catch(hipMemcpy(a_gpu, a, a_size * sizeof(math_type), hipMemcpyHostToDevice));
     hip_catch(hipMemcpy(alpha_gpu, &alpha, sizeof(math_type), hipMemcpyHostToDevice));
 
-    hipblas_catch(hipblasSger(blas_handle, m, n, alpha_gpu, x_gpu, inc_x, y_gpu, inc_y, a_gpu, lda));
+    hipblas_catch(hipblasSger(get_blas_handle(), m, n, alpha_gpu, x_gpu, inc_x, y_gpu, inc_y, a_gpu, lda));
 
     hip_catch(hipDeviceSynchronize());
 
@@ -824,7 +744,7 @@ void dger(int m, int n, double alpha, const double *x, int inc_x, const double *
     hip_catch(hipMemcpy(a_gpu, a, a_size * sizeof(math_type), hipMemcpyHostToDevice));
     hip_catch(hipMemcpy(alpha_gpu, &alpha, sizeof(math_type), hipMemcpyHostToDevice));
 
-    hipblas_catch(hipblasDger(blas_handle, m, n, alpha_gpu, x_gpu, inc_x, y_gpu, inc_y, a_gpu, lda));
+    hipblas_catch(hipblasDger(get_blas_handle(), m, n, alpha_gpu, x_gpu, inc_x, y_gpu, inc_y, a_gpu, lda));
 
     hip_catch(hipDeviceSynchronize());
 
@@ -858,7 +778,7 @@ void cger(int m, int n, std::complex<float> alpha, const std::complex<float> *x,
     hip_catch(hipMemcpy(a_gpu, a, a_size * sizeof(math_type), hipMemcpyHostToDevice));
     hip_catch(hipMemcpy(alpha_gpu, &alpha, sizeof(math_type), hipMemcpyHostToDevice));
 
-    hipblas_catch(hipblasCgerc(blas_handle, m, n, alpha_gpu, x_gpu, inc_x, y_gpu, inc_y, a_gpu, lda));
+    hipblas_catch(hipblasCgerc(get_blas_handle(), m, n, alpha_gpu, x_gpu, inc_x, y_gpu, inc_y, a_gpu, lda));
 
     hip_catch(hipDeviceSynchronize());
 
@@ -892,7 +812,7 @@ void zger(int m, int n, std::complex<double> alpha, const std::complex<double> *
     hip_catch(hipMemcpy(a_gpu, a, a_size * sizeof(math_type), hipMemcpyHostToDevice));
     hip_catch(hipMemcpy(alpha_gpu, &alpha, sizeof(math_type), hipMemcpyHostToDevice));
 
-    hipblas_catch(hipblasZgerc(blas_handle, m, n, alpha_gpu, x_gpu, inc_x, y_gpu, inc_y, a_gpu, lda));
+    hipblas_catch(hipblasZgerc(get_blas_handle(), m, n, alpha_gpu, x_gpu, inc_x, y_gpu, inc_y, a_gpu, lda));
 
     hip_catch(hipDeviceSynchronize());
 
