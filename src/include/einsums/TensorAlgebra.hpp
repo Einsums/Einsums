@@ -532,25 +532,25 @@ auto einsum(const CDataType C_prefactor, const std::tuple<CIndices...> & /*Cs*/,
                         if constexpr (!transpose_C && !transpose_A && !transpose_B) {
                             linear_algebra::gemm<false, false>(AB_prefactor, tA, tB, C_prefactor, &tC);
                             return;
-                        } else if constexpr (!transpose_C && !transpose_A && transpose_B) {
+                        } else if constexpr (!transpose_C && !transpose_A) {
                             linear_algebra::gemm<false, true>(AB_prefactor, tA, tB, C_prefactor, &tC);
                             return;
-                        } else if constexpr (!transpose_C && transpose_A && !transpose_B) {
+                        } else if constexpr (!transpose_C && !transpose_B) {
                             linear_algebra::gemm<true, false>(AB_prefactor, tA, tB, C_prefactor, &tC);
                             return;
-                        } else if constexpr (!transpose_C && transpose_A && transpose_B) {
+                        } else if constexpr (!transpose_C) {
                             linear_algebra::gemm<true, true>(AB_prefactor, tA, tB, C_prefactor, &tC);
                             return;
-                        } else if constexpr (transpose_C && !transpose_A && !transpose_B) {
+                        } else if constexpr (!transpose_A && !transpose_B) {
                             linear_algebra::gemm<true, true>(AB_prefactor, tB, tA, C_prefactor, &tC);
                             return;
-                        } else if constexpr (transpose_C && !transpose_A && transpose_B) {
+                        } else if constexpr (!transpose_A && transpose_B) {
                             linear_algebra::gemm<false, true>(AB_prefactor, tB, tA, C_prefactor, &tC);
                             return;
-                        } else if constexpr (transpose_C && transpose_A && !transpose_B) {
+                        } else if constexpr (transpose_A && !transpose_B) {
                             linear_algebra::gemm<true, false>(AB_prefactor, tB, tA, C_prefactor, &tC);
                             return;
-                        } else if constexpr (transpose_C && transpose_A && transpose_B) {
+                        } else if constexpr (transpose_A && transpose_B) {
                             linear_algebra::gemm<false, false>(AB_prefactor, tB, tA, C_prefactor, &tC);
                             return;
                         } else {
