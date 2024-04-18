@@ -2472,12 +2472,12 @@ TEST_CASE("dot") {
     SECTION("double") {
         dot_test<double>();
     }
-    // SECTION("cfloat") {
-    //     dot_test<std::complex<float>>();
-    // }
-    // SECTION("cdouble") {
-    //     dot_test<std::complex<double>>();
-    // }
+    SECTION("cfloat") {
+        dot_test<std::complex<float>>();
+    }
+    SECTION("cdouble") {
+        dot_test<std::complex<double>>();
+    }
 }
 
 TEST_CASE("andy") {

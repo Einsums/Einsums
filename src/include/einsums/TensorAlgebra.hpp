@@ -681,6 +681,7 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
         // Default einsums.
         detail::einsum<false>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
     }
+
 #if defined(EINSUMS_TEST_NANS)
     // The tests need a wait.
     // #pragma omp taskwait depend(in: *C, testC)

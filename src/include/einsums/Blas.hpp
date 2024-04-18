@@ -369,12 +369,24 @@ inline void scal<std::complex<double>>(blas_int n, const double alpha, std::comp
 namespace detail {
 auto EINSUMS_EXPORT sdot(blas_int n, const float *x, blas_int incx, const float *y, blas_int incy) -> float;
 auto EINSUMS_EXPORT ddot(blas_int n, const double *x, blas_int incx, const double *y, blas_int incy) -> double;
-// auto EINSUMS_EXPORT cdot(blas_int n, const std::complex<float> *x, blas_int incx, const std::complex<float> *y, blas_int incy)
-//     -> std::complex<float>;
-// auto EINSUMS_EXPORT zdot(blas_int n, const std::complex<double> *x, blas_int incx, const std::complex<double> *y, blas_int incy)
-//     -> std::complex<double>;
+auto EINSUMS_EXPORT cdot(blas_int n, const std::complex<float> *x, blas_int incx, const std::complex<float> *y, blas_int incy)
+    -> std::complex<float>;
+auto EINSUMS_EXPORT zdot(blas_int n, const std::complex<double> *x, blas_int incx, const std::complex<double> *y, blas_int incy)
+    -> std::complex<double>;
 } // namespace detail
 
+/**
+ * Computes the dot product of two vectors. For complex vector it is the non-conjugated dot product;
+ * (c|z)dotu in BLAS nomenclature.
+ *
+ * @tparam T underlying data type
+ * @param n length of the vectors
+ * @param x first vector
+ * @param incx how many elements to skip in x
+ * @param y second vector
+ * @param incy how many elements to skip in yo
+ * @return result of the dot product
+ */
 template <typename T>
 auto dot(blas_int n, const T *x, blas_int incx, const T *y, blas_int incy) -> T;
 
@@ -388,18 +400,17 @@ inline auto dot<double>(blas_int n, const double *x, blas_int incx, const double
     return detail::ddot(n, x, incx, y, incy);
 }
 
-// template <>
-// inline auto dot<std::complex<float>>(blas_int n, const std::complex<float> *x, blas_int incx, const std::complex<float> *y, blas_int
-// incy)
-//     -> std::complex<float> {
-//     return detail::cdot(n, x, incx, y, incy);
-// }
+template <>
+inline auto dot<std::complex<float>>(blas_int n, const std::complex<float> *x, blas_int incx, const std::complex<float> *y, blas_int incy)
+    -> std::complex<float> {
+    return detail::cdot(n, x, incx, y, incy);
+}
 
-// template <>
-// inline auto dot<std::complex<double>>(blas_int n, const std::complex<double> *x, blas_int incx, const std::complex<double> *y,
-//                                       blas_int incy) -> std::complex<double> {
-//     return detail::zdot(n, x, incx, y, incy);
-// }
+template <>
+inline auto dot<std::complex<double>>(blas_int n, const std::complex<double> *x, blas_int incx, const std::complex<double> *y,
+                                      blas_int incy) -> std::complex<double> {
+    return detail::zdot(n, x, incx, y, incy);
+}
 
 namespace detail {
 void EINSUMS_EXPORT saxpy(blas_int n, float alpha_x, const float *x, blas_int inc_x, float *y, blas_int inc_y);
