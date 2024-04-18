@@ -160,7 +160,9 @@ if(EINSUMS_COVERAGE)
     target_compile_options(einsums PUBLIC $<$<COMPILE_LANG_AND_ID:CXX,GNU>:--coverage>)
 endif()
 
-target_compile_options(einsums BEFORE PUBLIC $<$<CONFIG:Debug>:-gdwarf-2 -O0 -g3 -ggdb>)
+target_compile_options(einsums BEFORE PUBLIC $<$<CONFIG:Debug>:$<$<COMPILE_LANG_AND_ID:CXX,Clang>:-gdwarf-4 -O0 -g3 -ggdb>>)
+target_compile_options(einsums BEFORE PUBLIC $<$<CONFIG:Debug>:$<$<COMPILE_LANG_AND_ID:HIP,Clang>:-gdwarf-4 -O0 -g3 -ggdb>>)
+target_compile_options(einsums BEFORE PUBLIC $<$<CONFIG:Debug>:$<$<COMPILE_LANG_AND_ID:CXX,GNU>:-Og -g3 -ggdb>>)
 
 if (EINSUMS_ENABLE_TESTING)
     enable_testing()

@@ -72,17 +72,17 @@ __global__ void copy_to_tensor_array(T *to_data, const size_t *to_dims, const si
 } // namespace detail
 
 template <typename T, size_t Rank>
-DeviceTensorView<T, Rank> &DeviceTensorView<T, Rank>::assign(const __host_ptr__ T *data, hipStream_t stream) {
+DeviceTensorView<T, Rank> &DeviceTensorView<T, Rank>::assign(const __host_ptr__ T *data) {
     using namespace einsums::gpu;
     T *gpu_ptr;
 
     hip_catch(hipHostRegister((void *)data, this->size() * sizeof(T), hipHostRegisterDefault));
     hip_catch(hipHostGetDevicePointer((void **)&gpu_ptr, (void *)data, 0));
 
-    einsums::detail::copy_to_tensor_array<T, Rank><<<block_size(this->size()), blocks(this->size()), 0, stream>>>(
+    einsums::detail::copy_to_tensor_array<T, Rank><<<block_size(this->size()), blocks(this->size()), 0, get_stream()>>>(
         this->_data, this->_gpu_dims, this->_gpu_strides, gpu_ptr, this->size());
 
-    hip_catch(hipStreamSynchronize(stream));
+    hip_catch(hipStreamSynchronize(get_stream()));
 
     hip_catch(hipHostUnregister(data));
 
@@ -91,11 +91,11 @@ DeviceTensorView<T, Rank> &DeviceTensorView<T, Rank>::assign(const __host_ptr__ 
 
 template <typename T, size_t Rank>
 template <template <typename, size_t> typename AType>
-    requires detail::DeviceRankTensor<AType<T, Rank>, Rank, T>
-auto DeviceTensorView<T, Rank>::assign(const AType<T, Rank> &other, hipStream_t stream) -> DeviceTensorView<T, Rank> & {
+    requires DeviceRankTensor<AType<T, Rank>, Rank, T>
+auto DeviceTensorView<T, Rank>::assign(const AType<T, Rank> &other) -> DeviceTensorView<T, Rank> & {
     using namespace einsums::gpu;
 
-    einsums::detail::copy_to_tensor<T, Rank><<<block_size(this->size()), blocks(this->size()), 0, stream>>>(
+    einsums::detail::copy_to_tensor<T, Rank><<<block_size(this->size()), blocks(this->size()), 0, get_stream()>>>(
         this->_data, this->_gpu_dims, this->_gpu_strides, other.data(), other.gpu_dims(), other.gpu_strides(), this->size());
 
     return *this;
@@ -103,7 +103,7 @@ auto DeviceTensorView<T, Rank>::assign(const AType<T, Rank> &other, hipStream_t 
 
 template <typename T, size_t Rank>
 template <template <typename, size_t> typename AType>
-    requires detail::DeviceRankTensor<AType<T, Rank>, Rank, T>
+    requires DeviceRankTensor<AType<T, Rank>, Rank, T>
 auto DeviceTensorView<T, Rank>::operator=(const AType<T, Rank> &&other) -> DeviceTensorView<T, Rank> & {
     using namespace einsums::gpu;
 
@@ -115,9 +115,9 @@ auto DeviceTensorView<T, Rank>::operator=(const AType<T, Rank> &&other) -> Devic
 }
 
 template <typename T, size_t Rank>
-void DeviceTensorView<T, Rank>::set_all(const T &fill_value, hipStream_t stream) {
+void DeviceTensorView<T, Rank>::set_all(const T &fill_value) {
     using namespace einsums::gpu;
-    einsums::detail::set_all<T, Rank><<<block_size(this->size()), blocks(this->size()), 0, stream>>>(
+    einsums::detail::set_all<T, Rank><<<block_size(this->size()), blocks(this->size()), 0, get_stream()>>>(
         this->_data, this->_gpu_dims, this->_gpu_strides, fill_value);
 }
 
@@ -128,39 +128,39 @@ auto DeviceTensorView<T, Rank>::operator=(const __host_ptr__ T *other) -> Device
 
 template<typename T, size_t Rank>
     template <template <typename, size_t> typename AType>
-        requires detail::DeviceRankTensor<AType<T, Rank>, Rank, T>
+        requires DeviceRankTensor<AType<T, Rank>, Rank, T>
     auto DeviceTensorView<T, Rank>::operator=(const AType<T, Rank> &other) -> DeviceTensorView<T, Rank> & {
         return this->assign(other);
     }
 
 template <typename T, size_t Rank>
-DeviceTensorView<T, Rank> &DeviceTensorView<T, Rank>::add_assign(const T &other, hipStream_t stream) {
+DeviceTensorView<T, Rank> &DeviceTensorView<T, Rank>::add_assign(const T &other) {
     using namespace einsums::gpu;
-    einsums::detail::add_and_assign_scal<T, Rank><<<block_size(this->size()), blocks(this->size()), 0, stream>>>(
+    einsums::detail::add_and_assign_scal<T, Rank><<<block_size(this->size()), blocks(this->size()), 0, get_stream()>>>(
         this->_data, this->_gpu_dims, this->_gpu_strides, other, _strides[0] * _dims[0]);
     return *this;
 }
 
 template <typename T, size_t Rank>
-DeviceTensorView<T, Rank> &DeviceTensorView<T, Rank>::sub_assign(const T &other, hipStream_t stream) {
+DeviceTensorView<T, Rank> &DeviceTensorView<T, Rank>::sub_assign(const T &other) {
     using namespace einsums::gpu;
-    einsums::detail::sub_and_assign_scal<T, Rank><<<block_size(this->size()), blocks(this->size()), 0, stream>>>(
+    einsums::detail::sub_and_assign_scal<T, Rank><<<block_size(this->size()), blocks(this->size()), 0, get_stream()>>>(
         this->_data, this->_gpu_dims, this->_gpu_strides, other, _strides[0] * _dims[0]);
     return *this;
 }
 
 template <typename T, size_t Rank>
-DeviceTensorView<T, Rank> &DeviceTensorView<T, Rank>::mult_assign(const T &other, hipStream_t stream) {
+DeviceTensorView<T, Rank> &DeviceTensorView<T, Rank>::mult_assign(const T &other) {
     using namespace einsums::gpu;
-    einsums::detail::mul_and_assign_scal<T, Rank><<<block_size(this->size()), blocks(this->size()), 0, stream>>>(
+    einsums::detail::mul_and_assign_scal<T, Rank><<<block_size(this->size()), blocks(this->size()), 0, get_stream()>>>(
         this->_data, this->_gpu_dims, this->_gpu_strides, other, _strides[0] * _dims[0]);
     return *this;
 }
 
 template <typename T, size_t Rank>
-DeviceTensorView<T, Rank> &DeviceTensorView<T, Rank>::div_assign(const T &other, hipStream_t stream) {
+DeviceTensorView<T, Rank> &DeviceTensorView<T, Rank>::div_assign(const T &other) {
     using namespace einsums::gpu;
-    einsums::detail::div_and_assign_scal<T, Rank><<<block_size(this->size()), blocks(this->size()), 0, stream>>>(
+    einsums::detail::div_and_assign_scal<T, Rank><<<block_size(this->size()), blocks(this->size()), 0, get_stream()>>>(
         this->_data, this->_gpu_dims, this->_gpu_strides, other, _strides[0] * _dims[0]);
     return *this;
 }

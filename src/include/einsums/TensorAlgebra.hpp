@@ -5,6 +5,11 @@
 
 #pragma once
 
+#include "einsums/_Common.hpp"
+#include "einsums/_Compiler.hpp"
+#include "einsums/_Index.hpp"
+#include "einsums/_TensorAlgebraUtilities.hpp"
+
 #include "einsums/LinearAlgebra.hpp"
 #include "einsums/OpenMP.h"
 #include "einsums/Print.hpp"
@@ -12,11 +17,8 @@
 #include "einsums/Section.hpp"
 #include "einsums/Tensor.hpp"
 #include "einsums/Timer.hpp"
-#include "einsums/_Common.hpp"
-#include "einsums/_Compiler.hpp"
-#include "einsums/_Index.hpp"
-#include "einsums/_TensorAlgebraUtilities.hpp"
 #include "einsums/utility/SmartPointerTraits.hpp"
+#include "einsums/utility/TensorTraits.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -44,6 +46,13 @@ template <typename... CUniqueIndices, typename... AUniqueIndices, typename... BU
           typename... TargetPositionInC, typename... LinkPositionInLink, template <typename, size_t> typename CType, typename CDataType,
           size_t CRank, template <typename, size_t> typename AType, typename ADataType, size_t ARank,
           template <typename, size_t> typename BType, typename BDataType, size_t BRank>
+          #ifdef __HIP__
+          requires requires {
+                requires !DeviceRankTensor<CType<CDataType, CRank>, CRank, CDataType>;
+                requires !DeviceRankTensor<AType<ADataType, ARank>, ARank, ADataType>;
+                requires !DeviceRankTensor<BType<BDataType, BRank>, BRank, BDataType>;
+          }
+          #endif
 void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, const std::tuple<AUniqueIndices...> & /*A_unique*/,
                               const std::tuple<BUniqueIndices...> & /*B_unique*/, const std::tuple<LinkUniqueIndices...> &link_unique,
                               const std::tuple<CIndices...> & /*C_indices*/, const std::tuple<AIndices...> & /*A_indices*/,
@@ -153,6 +162,13 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
 template <bool OnlyUseGenericAlgorithm, template <typename, size_t> typename AType, typename ADataType, size_t ARank,
           template <typename, size_t> typename BType, typename BDataType, size_t BRank, template <typename, size_t> typename CType,
           typename CDataType, size_t CRank, typename... CIndices, typename... AIndices, typename... BIndices>
+          #ifdef __HIP__
+          requires requires {
+                requires !DeviceRankTensor<CType<CDataType, CRank>, CRank, CDataType>;
+                requires !DeviceRankTensor<AType<ADataType, ARank>, ARank, ADataType>;
+                requires !DeviceRankTensor<BType<BDataType, BRank>, BRank, BDataType>;
+          }
+          #endif
 auto einsum(const CDataType C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<CDataType, CRank> *C,
             const std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> AB_prefactor,
             const std::tuple<AIndices...> & /*As*/, const AType<ADataType, ARank> &A, const std::tuple<BIndices...> & /*Bs*/,
@@ -561,14 +577,23 @@ auto einsum(const CDataType C_prefactor, const std::tuple<CIndices...> & /*Cs*/,
 template <template <typename, size_t> typename AType, typename ADataType, size_t ARank, template <typename, size_t> typename BType,
           typename BDataType, size_t BRank, template <typename, size_t> typename CType, typename CDataType, size_t CRank,
           typename... CIndices, typename... AIndices, typename... BIndices, typename U>
+          #ifdef __HIP__
+          requires requires {
+                requires !DeviceRankTensor<CType<CDataType, CRank>, CRank, CDataType>;
+                requires !DeviceRankTensor<AType<ADataType, ARank>, ARank, ADataType>;
+                requires !DeviceRankTensor<BType<BDataType, BRank>, BRank, BDataType>;
+          }
+          #endif
 auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<CDataType, CRank> *C, const U UAB_prefactor,
             const std::tuple<AIndices...> &A_indices, const AType<ADataType, ARank> &A, const std::tuple<BIndices...> &B_indices,
             const BType<BDataType, BRank> &B)
-    -> std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<ADataType, ARank>, AType<ADataType, ARank>> &&
-                        std::is_base_of_v<::einsums::detail::TensorBase<BDataType, BRank>, BType<BDataType, BRank>> &&
-                        std::is_base_of_v<::einsums::detail::TensorBase<CDataType, CRank>, CType<CDataType, CRank>> &&
-                        std::is_arithmetic_v<U>> {
-    
+    -> std::enable_if_t<
+        std::is_base_of_v<::einsums::detail::TensorBase<ADataType, ARank>, AType<ADataType, ARank>> &&
+        std::is_base_of_v<::einsums::detail::TensorBase<BDataType, BRank>, BType<BDataType, BRank>> &&
+        std::is_base_of_v<::einsums::detail::TensorBase<CDataType, CRank>, CType<CDataType, CRank>> &&
+        (!einsums::detail::IsIncoreRankBlockTensorV<CType<CDataType, CRank>, CRank, CDataType> ||
+         einsums::detail::IsIncoreRankBlockTensorV<AType<ADataType, ARank>, ARank, ADataType> &&
+             einsums::detail::IsIncoreRankBlockTensorV<BType<BDataType, BRank>, BRank, BDataType>)&&std::is_arithmetic_v<U>> {
     using ABDataType = std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType>;
 
     LabeledSection1(FP_ZERO != std::fpclassify(UC_prefactor)
@@ -584,26 +609,82 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
 #if defined(EINSUMS_CONTINUOUSLY_TEST_EINSUM)
     // Clone C into a new tensor
     Tensor<CDataType, CRank> testC = Tensor<CDataType, CRank>{C->dims()};
-    testC = *C;
+    testC                          = *C;
 
     // Perform the einsum using only the generic algorithm
     timer::push("testing");
-//#pragma omp task depend(in: A, B) depend(inout: testC)
-{
-    detail::einsum<true>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, A, B_indices, B);
-}
-//#pragma omp taskwait depend(in: testC)
+    // #pragma omp task depend(in: A, B) depend(inout: testC)
+    { detail::einsum<true>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, A, B_indices, B); }
+    // #pragma omp taskwait depend(in: testC)
     timer::pop();
 #endif
 
-    // Perform the actual einsum
-//#pragma omp task depend(in: A, B) depend(inout: *C)
-{
-    detail::einsum<false>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
-}
+    // If the tensors are all block tensors, handle them appropriately.
+    if constexpr (einsums::detail::IsIncoreRankBlockTensorV<AType<ADataType, ARank>, ARank, ADataType> &&
+                  einsums::detail::IsIncoreRankBlockTensorV<BType<BDataType, BRank>, BRank, BDataType> &&
+                  einsums::detail::IsIncoreRankBlockTensorV<CType<CDataType, CRank>, CRank, CDataType>) {
+
+        if (A.num_blocks() != B.num_blocks() || A.num_blocks() != C->num_blocks() || B.num_blocks() != C->num_blocks()) {
+            throw std::runtime_error("All tensors passed to einsums need to have the same number of blocks.");
+        }
+
+        for (int i = 0; i < A.num_blocks(); i++) {
+            if (A.block_dim(i) != B.block_dim(i) || A.block_dim(i) != C->block_dim(i) || B.block_dim(i) != C->block_dim(i)) {
+                throw std::runtime_error("Inconsistent block sizes in tensors.");
+            }
+        }
+
+        // Perform einsum on each block separately.
+        EINSUMS_OMP_PARALLEL_FOR
+        for (int i = 0; i < A.num_blocks(); i++) {
+            if(A.block_dim(i) == 0) {
+                continue;
+            }
+            detail::einsum<false>(C_prefactor, C_indices, &(C->block(i)), AB_prefactor, A_indices, A[i], B_indices, B[i]);
+        }
+    } else if constexpr (einsums::detail::IsIncoreRankBlockTensorV<AType<ADataType, ARank>, ARank, ADataType> &&
+                         einsums::detail::IsIncoreRankBlockTensorV<BType<BDataType, BRank>, BRank, BDataType> && CRank == 0) {
+        if (A.num_blocks() != B.num_blocks()) {
+            throw std::runtime_error("All tensors passed to einsums need to have the same number of blocks.");
+        }
+
+        for (int i = 0; i < A.num_blocks(); i++) {
+            if (A.block_dim(i) != B.block_dim(i)) {
+                throw std::runtime_error("Inconsistent block sizes in tensors.");
+            }
+        }
+
+        // Perform einsum on each block separately.
+        if(C_prefactor == CDataType{0}) {
+            *C = 0;
+        } else {
+            *C *= C_prefactor;
+        }
+        for (int i = 0; i < A.num_blocks(); i++) {
+            if(A.block_dim(i) == 0) {
+                continue;
+            }
+            
+            Tensor<CDataType, 0> temp;
+
+            temp = 0;
+
+            detail::einsum<false>(C_prefactor, C_indices, &temp, AB_prefactor, A_indices, A[i], B_indices, B[i]);
+
+            *C += temp;
+        }
+    } else if constexpr (einsums::detail::IsIncoreRankBlockTensorV<AType<ADataType, ARank>, ARank, ADataType> ||
+                         einsums::detail::IsIncoreRankBlockTensorV<BType<BDataType, BRank>, BRank, BDataType>) {
+        // Use generic algorithm if mixing block and normal tensors.
+        detail::einsum<true>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
+    } else {
+        // Default einsums.
+        detail::einsum<false>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
+    }
+
 #if defined(EINSUMS_TEST_NANS)
-// The tests need a wait.
-//#pragma omp taskwait depend(in: *C, testC)
+    // The tests need a wait.
+    // #pragma omp taskwait depend(in: *C, testC)
     if constexpr (CRank != 0) {
         auto target_dims = get_dim_ranges<CRank>(*C);
         for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
@@ -909,6 +990,13 @@ void einsum(const std::tuple<CIndices...> &C_indices, CType *C, const std::tuple
 template <template <typename, size_t> typename CType, size_t CRank, typename UnaryOperator, typename T = double>
 auto element_transform(CType<T, CRank> *C, UnaryOperator unary_opt)
     -> std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<T, CRank>, CType<T, CRank>>> {
+    if constexpr (einsums::detail::IsIncoreRankBlockTensorV<CType<T, CRank>, CRank, T>) {
+        for (int i = 0; i < C->num_blocks(); i++) {
+            element_transform(&(C->block(i)), unary_opt);
+        }
+        return;
+    }
+
     LabeledSection0();
 
     auto target_dims = get_dim_ranges<CRank>(*C);
@@ -929,6 +1017,24 @@ void element_transform(SmartPtr *C, UnaryOperator unary_opt) {
 template <template <typename, size_t> typename CType, template <typename, size_t> typename... MultiTensors, size_t Rank,
           typename MultiOperator, typename T = double>
 auto element(MultiOperator multi_opt, CType<T, Rank> *C, MultiTensors<T, Rank> &...tensors) {
+    if constexpr ((einsums::detail::IsIncoreRankBlockTensorV<MultiTensors<T, Rank>, Rank, T> && ... &&
+                   einsums::detail::IsIncoreRankBlockTensorV<CType<T, Rank>, Rank, T>)) {
+
+        if (((C->num_blocks() != tensors.num_blocks()) || ...)) {
+            throw std::runtime_error("element: All tensors need to have the same number of blocks.");
+        }
+        for (int i = 0; i < C->num_blocks; i++) {
+            if (((C->block_dim(i) != tensors.block_dim(i)) || ...)) {
+                throw std::runtime_error("element: All tensor blocks need to have the same size.");
+            }
+        }
+
+        for (int i = 0; i < C->num_blocks; i++) {
+            element(multi_opt, &(C->block(i)), tensors.block(i)...);
+        }
+        return;
+    }
+
     LabeledSection0();
 
     auto target_dims = get_dim_ranges<Rank>(*C);

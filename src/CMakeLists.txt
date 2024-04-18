@@ -133,6 +133,7 @@ extend_einsums_target(einsums
 extend_einsums_target(einsums
     SOURCES
         backends/linear_algebra/hipblas/hipblas.hip
+        backends/linear_algebra/hipblas/hipsolver.hip
     CONDITION
         EINSUMS_BUILD_HIP
     PUBLIC_DEPENDS
