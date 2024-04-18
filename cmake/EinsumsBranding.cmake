@@ -1,4 +1,4 @@
-set(EINSUMS_VERSION "0.4.1")
-set(EINSUMS_VERSION_COMPAT "0.4.1")                      # The Einsums compatibility version.
+set(EINSUMS_VERSION "0.5.0")
+set(EINSUMS_VERSION_COMPAT "0.5.0")                      # The Einsums compatibility version.
 set(EINSUMS_VERSION_DISPLAY "1.0.0-beta1")               # The Einsums display version.
 set(EINSUMS_COPYRIGHT_YEAR "2024")                       # The Einsums current copyright year.
