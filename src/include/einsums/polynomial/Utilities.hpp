@@ -25,8 +25,7 @@ auto get_domain(const TensorType<T, 1> &x) -> Tensor<T, 1> {
         min = max = x(0);
     }
 
-#pragma omp parallel
-    {
+    EINSUMS_OMP_PARALLEL {
         T    local_min{0}, local_max{0};
         T    local_imin{0}, local_imax{0};
         auto size = x.size();
@@ -38,7 +37,7 @@ auto get_domain(const TensorType<T, 1> &x) -> Tensor<T, 1> {
             local_min = local_max = x(0);
         }
 
-#pragma omp for nowait
+        EINSUMS_OMP_FOR_NOWAIT
         for (size_t i = 1; i < size; i++) {
             if constexpr (IsComplexV<T>) {
                 if (x(i).real() < local_min)
@@ -57,8 +56,7 @@ auto get_domain(const TensorType<T, 1> &x) -> Tensor<T, 1> {
             }
         }
 
-#pragma omp critical
-        {
+        EINSUMS_OMP_CRITICAL {
             if (local_min < min)
                 min = local_min;
             if (local_imin < imin)

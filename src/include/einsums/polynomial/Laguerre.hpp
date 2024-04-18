@@ -17,7 +17,9 @@
 BEGIN_EINSUMS_NAMESPACE_HPP(einsums::polynomial::laguerre)
 
 template <typename T>
-auto companion(const Tensor<T, 1> &c) -> std::enable_if_t<std::is_signed_v<T>, Tensor<T, 2>> {
+auto companion(const Tensor<T, 1> &c) -> Tensor<T, 2>
+    requires std::is_signed_v<T>
+{
     LabeledSection0();
 
     if (c.dim(0) < 2) {

@@ -35,7 +35,7 @@ struct EINSUMS_EXPORT Section {
      * @param name Name of the section to be timed. If VTune is available then \p name becomes the label in VTune.
      * @param pushTimer Enable Einsums timing mechanism for this section. Default is true.
      */
-    Section(const std::string &name, bool pushTimer = true);
+    explicit Section(const std::string &name, bool pushTimer = true);
 
     /**
      * @brief Construct a new Section object
