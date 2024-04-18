@@ -69,7 +69,6 @@ einsums_option(EINSUMS_H5CPP_USE_OMP_ALIGNED_ALLOC BOOL
         "On Mac, use omp_aligned_alloc instead of aligned_alloc. Helpful for old SDK." OFF)
 einsums_option(EINSUMS_BUILD_HIP BOOL "Build HIP GPU code." OFF)
 einsums_option(EINSUMS_COVERAGE BOOL "Enable code coverage checking" OFF)
-einsums_option(EINSUMS_PSI4_CONNECTOR BOOL "Build the Psi4 connector and tensor converter." OFF)
 
 add_feature_info(
         EINSUMS_CONTINUOUSLY_TEST_EINSUM ${EINSUMS_CONTINUOUSLY_TEST_EINSUM}
