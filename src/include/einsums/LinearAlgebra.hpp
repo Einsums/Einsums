@@ -903,20 +903,20 @@ void invert(TensorType<T, TensorRank> *A) {
             invert(&(A->block(i)));
         }
     } else {
-
         LabeledSection0();
 
-    std::vector<blas_int> pivot(A->dim(0));
-    int                   result = getrf(A, &pivot);
-    if (result > 0) {
-        println_abort("invert: getrf: the ({}, {}) element of the factor U or L is zero, and the inverse could not be computed", result,
-                      result);
-    }
+        std::vector<blas_int> pivot(A->dim(0));
+        int                   result = getrf(A, &pivot);
+        if (result > 0) {
+            println_abort("invert: getrf: the ({}, {}) element of the factor U or L is zero, and the inverse could not be computed", result,
+                          result);
+        }
 
-    result = getri(A, pivot);
-    if (result > 0) {
-        println_abort("invert: getri: the ({}, {}) element of the factor U or L i zero, and the inverse could not be computed", result,
-                      result);
+        result = getri(A, pivot);
+        if (result > 0) {
+            println_abort("invert: getri: the ({}, {}) element of the factor U or L i zero, and the inverse could not be computed", result,
+                          result);
+        }
     }
 }
 
