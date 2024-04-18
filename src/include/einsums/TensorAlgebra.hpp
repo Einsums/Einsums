@@ -599,7 +599,7 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
     // Perform the actual einsum
 //#pragma omp task depend(in: A, B) depend(inout: *C)
 {
-    detail::einsum<true>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
+    detail::einsum<false>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
 }
 #if defined(EINSUMS_TEST_NANS)
 // The tests need a wait.
