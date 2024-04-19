@@ -10,6 +10,7 @@
 #include "fmt/color.h"
 #include "fmt/core.h"
 #include "fmt/format.h"
+#include "fmt/std.h"
 // #include "fmt/ranges.h"
 
 #include <algorithm>
@@ -59,7 +60,7 @@ namespace einsums::detail {
 void EINSUMS_EXPORT println(const std::string &oss);
 void EINSUMS_EXPORT fprintln(std::FILE *fp, const std::string &oss);
 void EINSUMS_EXPORT fprintln(std::ostream &os, const std::string &oss);
-} // namespace detail
+} // namespace einsums::detail
 
 //
 // Taken from https://stackoverflow.com/posts/59522794/revisions
@@ -160,7 +161,7 @@ auto print_tuple_no_type(const std::tuple<Args...> &) -> std::string {
     return {"()"};
 }
 
-} // namespace detail
+} // namespace einsums::detail
 
 template <typename... Args, std::enable_if_t<sizeof...(Args) != 0, int> = 0>
 auto print_tuple(const std::tuple<Args...> &t) -> std::string {
