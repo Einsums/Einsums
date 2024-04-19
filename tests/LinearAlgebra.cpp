@@ -313,6 +313,67 @@ TEST_CASE("gesv") {
     }
 }
 
+template <einsums::NotComplex T>
+void gemv_test() {
+    using namespace einsums;
+    using namespace einsums::linear_algebra;
+
+    auto A  = create_incremented_tensor<T>("A", 3, 3);
+    auto b  = create_incremented_tensor<T>("b", 3);
+    auto fy = create_incremented_tensor<T>("y", 3);
+    auto ty = create_incremented_tensor<T>("y", 3);
+
+    // Perform basic matrix-vector
+    einsums::linear_algebra::gemv<false>(1.0, A, b, 0.0, &fy);
+    einsums::linear_algebra::gemv<true>(1.0, A, b, 0.0, &ty);
+
+    REQUIRE(fy(0) == 5.0);
+    REQUIRE(fy(1) == 14.0);
+    REQUIRE(fy(2) == 23.0);
+
+    REQUIRE(ty(0) == 15.0);
+    REQUIRE(ty(1) == 18.0);
+    REQUIRE(ty(2) == 21.0);
+}
+
+template <einsums::Complex T>
+void gemv_test() {
+    using namespace einsums;
+    using namespace einsums::linear_algebra;
+
+    auto A  = create_incremented_tensor<T>("A", 3, 3);
+    auto b  = create_incremented_tensor<T>("b", 3);
+    auto fy = create_incremented_tensor<T>("y", 3);
+    auto ty = create_incremented_tensor<T>("y", 3);
+
+    // Perform basic matrix-vector
+    einsums::linear_algebra::gemv<false>(T{1.0, 1.0}, A, b, T{0.0, 0.0}, &fy);
+    einsums::linear_algebra::gemv<true>(T{1.0, 1.0}, A, b, T{0.0, 0.0}, &ty);
+
+    REQUIRE(fy(0) == T{-10, 10});
+    REQUIRE(fy(1) == T{-28, 28});
+    REQUIRE(fy(2) == T{-46, 46});
+
+    REQUIRE(ty(0) == T{-30, 30});
+    REQUIRE(ty(1) == T{-36, 36});
+    REQUIRE(ty(2) == T{-42, 42});
+}
+
+TEST_CASE("gemv") {
+    SECTION("double") {
+        gemv_test<double>();
+    }
+    SECTION("float") {
+        gemv_test<float>();
+    }
+    SECTION("complex<double>") {
+        gemv_test<std::complex<double>>();
+    }
+    SECTION("complex<float>") {
+        gemv_test<std::complex<float>>();
+    }
+}
+
 template <typename T>
 void gemm_test_1() {
     using namespace einsums;

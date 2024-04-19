@@ -1706,7 +1706,7 @@ TEST_CASE("Transpose C", "[einsum]") {
     }
 }
 
-TEST_CASE("gemv") {
+TEST_CASE("einsum_gemv") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;

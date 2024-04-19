@@ -224,13 +224,14 @@ auto gemm(const T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B) -> Te
  * @param y Output vector y
  */
 template <bool TransA, template <typename, size_t> typename AType, template <typename, size_t> typename XType,
-          template <typename, size_t> typename YType, size_t ARank, size_t XYRank, typename T>
+          template <typename, size_t> typename YType, size_t ARank, size_t XYRank, typename T, typename U>
     requires requires {
         requires CoreRankTensor<AType<T, ARank>, 2, T>;
         requires CoreRankTensor<XType<T, XYRank>, 1, T>;
         requires CoreRankTensor<YType<T, XYRank>, 1, T>;
+        requires std::convertible_to<U, T>; // Make sure the alpha and beta can be converted to T
     }
-void gemv(const T alpha, const AType<T, ARank> &A, const XType<T, XYRank> &x, const T beta, YType<T, XYRank> *y) {
+void gemv(const U alpha, const AType<T, ARank> &A, const XType<T, XYRank> &x, const U beta, YType<T, XYRank> *y) {
     if constexpr (einsums::detail::IsIncoreRankBlockTensorV<AType<T, ARank>, ARank, T>) {
 
         EINSUMS_OMP_PARALLEL_FOR
@@ -238,7 +239,7 @@ void gemv(const T alpha, const AType<T, ARank> &A, const XType<T, XYRank> &x, co
             if (A.block_dim(i) == 0) {
                 continue;
             }
-            gemv(alpha, A.block(i), x(A.block_range(i)), beta, &((*y)(A.block_range(i))));
+            gemv(static_cast<T>(alpha), A.block(i), x(A.block_range(i)), static_cast<T>(beta), &((*y)(A.block_range(i))));
         }
 
     } else {
@@ -248,7 +249,7 @@ void gemv(const T alpha, const AType<T, ARank> &A, const XType<T, XYRank> &x, co
         auto incx = x.stride(0);
         auto incy = y->stride(0);
 
-        blas::gemv(TransA ? 't' : 'n', m, n, alpha, A.data(), lda, x.data(), incx, beta, y->data(), incy);
+        blas::gemv(TransA ? 't' : 'n', m, n, static_cast<T>(alpha), A.data(), lda, x.data(), incx, static_cast<T>(beta), y->data(), incy);
     }
 }
 
