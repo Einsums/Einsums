@@ -235,7 +235,7 @@ template <bool TransA, template <typename, size_t> typename AType, template <typ
         requires CoreRankTensor<YType<T, XYRank>, 1, T>;
         requires std::convertible_to<U, T>; // Make sure the alpha and beta can be converted to T
     }
-void gemv(const U alpha, const AType<T, ARank> &A, const XType<T, XYRank> &x, const U beta, YType<T, XYRank> *y) {
+void gemv(const U alpha, const AType<T, ARank> &A, const XType<T, XYRank> &z, const U beta, YType<T, XYRank> *y) {
     if constexpr (einsums::detail::IsIncoreRankBlockTensorV<AType<T, ARank>, ARank, T>) {
 
         EINSUMS_OMP_PARALLEL_FOR
@@ -250,10 +250,10 @@ void gemv(const U alpha, const AType<T, ARank> &A, const XType<T, XYRank> &x, co
         LabeledSection1(fmt::format("<TransA={}>", TransA));
         auto m = A.dim(0), n = A.dim(1);
         auto lda  = A.stride(0);
-        auto incx = x.stride(0);
+        auto incx = z.stride(0);
         auto incy = y->stride(0);
 
-        blas::gemv(TransA ? 't' : 'n', m, n, static_cast<T>(alpha), A.data(), lda, x.data(), incx, static_cast<T>(beta), y->data(), incy);
+        blas::gemv(TransA ? 't' : 'n', m, n, static_cast<T>(alpha), A.data(), lda, z.data(), incx, static_cast<T>(beta), y->data(), incy);
     }
 }
 
@@ -441,6 +441,7 @@ auto gesv(AType<T, ARank> *A, BType<T, BRank> *B) -> int {
     return info;
 }
 
+#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
 /**
  * Computes all eigenvalues and, optionally, eigenvectors of a real symmetric matrix.
  *
@@ -477,6 +478,7 @@ auto syev(const AType<T, ARank> &A) -> std::tuple<BlockTensor<T, 2>, Tensor<T, 1
 
     return std::make_tuple(a, w);
 }
+#endif
 
 template <template <typename, size_t> typename AType, size_t ARank, typename T, bool ComputeEigenvectors = true>
     requires requires {
