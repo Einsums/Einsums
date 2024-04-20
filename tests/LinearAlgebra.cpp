@@ -379,27 +379,48 @@ void gemm_test_1() {
     using namespace einsums;
     using namespace einsums::linear_algebra;
 
-    auto A  = create_incremented_tensor<T>("a", 3, 3);
-    auto B  = create_incremented_tensor<T>("b", 3, 3);
-    auto C  = create_tensor<T>("c", 3, 3);
-    auto C0 = create_tensor<T>("C0", 3, 3);
-    zero(C);
-    zero(C0);
+    auto A    = create_incremented_tensor<T>("a", 3, 3);
+    auto B    = create_incremented_tensor<T>("b", 3, 3);
+    auto Cff  = create_tensor<T>("c", 3, 3);
+    auto C0ff = create_tensor<T>("C0", 3, 3);
+    zero(Cff);
+    zero(C0ff);
+    auto Cft  = create_tensor<T>("c", 3, 3);
+    auto C0ft = create_tensor<T>("C0", 3, 3);
+    zero(Cft);
+    zero(C0ft);
+    auto Ctf  = create_tensor<T>("c", 3, 3);
+    auto C0tf = create_tensor<T>("C0", 3, 3);
+    zero(Ctf);
+    zero(C0tf);
+    auto Ctt  = create_tensor<T>("c", 3, 3);
+    auto C0tt = create_tensor<T>("C0", 3, 3);
+    zero(Ctt);
+    zero(C0tt);
 
     // Perform basic matrix multiplication
-    einsums::linear_algebra::gemm<false, false>(T{1.0}, A, B, T{0.0}, &C);
+    einsums::linear_algebra::gemm<false, false>(T{1.0}, A, B, T{0.0}, &Cff);
+    einsums::linear_algebra::gemm<false, true>(T{1.0}, A, B, T{0.0}, &Cft);
+    einsums::linear_algebra::gemm<true, false>(T{1.0}, A, B, T{0.0}, &Ctf);
+    einsums::linear_algebra::gemm<true, true>(T{1.0}, A, B, T{0.0}, &Ctt);
 
     for (size_t i = 0; i < 3; i++) {
         for (size_t j = 0; j < 3; j++) {
             for (size_t k = 0; k < 3; k++) {
-                C0(i, j) += A(i, k) * B(k, j);
+                C0ff(i, j) += A(i, k) * B(k, j);
+                C0ft(i, j) += A(i, k) * B(j, k);
+                C0tf(i, j) += A(k, i) * B(k, j);
+                C0tt(i, j) += A(k, i) * B(j, k);
             }
         }
     }
 
     for (size_t i = 0; i < 3; i++) {
         for (size_t j = 0; j < 3; j++) {
-            REQUIRE(C0(i, j) == C(i, j));
+            REQUIRE(C0ff(i, j) == Cff(i, j));
+            REQUIRE(C0ft(i, j) == Cft(i, j));
+            REQUIRE(C0tf(i, j) == Ctf(i, j));
+            REQUIRE(C0tt(i, j) == Ctt(i, j));
         }
     }
 }
@@ -422,30 +443,88 @@ TEST_CASE("gemm_1") {
     }
 }
 
-template <typename T>
+template <einsums::NotComplex T>
 void gemm_test_2() {
     using namespace einsums;
     using namespace einsums::linear_algebra;
 
-    auto A  = create_incremented_tensor<T>("a", 3, 2);
-    auto B  = create_incremented_tensor<T>("b", 2, 3);
-    auto C0 = create_tensor<T>("C0", 3, 3);
-    zero(C0);
+    auto A    = create_incremented_tensor<T>("a", 3, 3);
+    auto B    = create_incremented_tensor<T>("b", 3, 3);
+    auto C0ff = create_tensor<T>("C0", 3, 3);
+    auto C0ft = create_tensor<T>("C0", 3, 3);
+    auto C0tf = create_tensor<T>("C0", 3, 3);
+    auto C0tt = create_tensor<T>("C0", 3, 3);
+    zero(C0ff);
+    zero(C0tf);
+    zero(C0ft);
+    zero(C0tt);
 
     // Perform basic matrix multiplication
-    auto C = einsums::linear_algebra::gemm<false, false>(T{1.0}, A, B);
+    auto Cff = einsums::linear_algebra::gemm<false, false>(1.0, A, B);
+    auto Cft = einsums::linear_algebra::gemm<false, true>(1.0, A, B);
+    auto Ctf = einsums::linear_algebra::gemm<true, false>(1.0, A, B);
+    auto Ctt = einsums::linear_algebra::gemm<true, true>(1.0, A, B);
 
     for (size_t i = 0; i < 3; i++) {
         for (size_t j = 0; j < 3; j++) {
-            for (size_t k = 0; k < 2; k++) {
-                C0(i, j) += A(i, k) * B(k, j);
+            for (size_t k = 0; k < 3; k++) {
+                C0ff(i, j) += A(i, k) * B(k, j);
+                C0ft(i, j) += A(i, k) * B(j, k);
+                C0tf(i, j) += A(k, i) * B(k, j);
+                C0tt(i, j) += A(k, i) * B(j, k);
             }
         }
     }
 
     for (size_t i = 0; i < 3; i++) {
         for (size_t j = 0; j < 3; j++) {
-            REQUIRE(C0(i, j) == C(i, j));
+            REQUIRE(C0ff(i, j) == Cff(i, j));
+            REQUIRE(C0ft(i, j) == Cft(i, j));
+            REQUIRE(C0tf(i, j) == Ctf(i, j));
+            REQUIRE(C0tt(i, j) == Ctt(i, j));
+        }
+    }
+}
+
+template <einsums::Complex T>
+void gemm_test_2() {
+    using namespace einsums;
+    using namespace einsums::linear_algebra;
+
+    auto A    = create_incremented_tensor<T>("a", 3, 3);
+    auto B    = create_incremented_tensor<T>("b", 3, 3);
+    auto C0ff = create_tensor<T>("C0", 3, 3);
+    auto C0ft = create_tensor<T>("C0", 3, 3);
+    auto C0tf = create_tensor<T>("C0", 3, 3);
+    auto C0tt = create_tensor<T>("C0", 3, 3);
+    zero(C0ff);
+    zero(C0tf);
+    zero(C0ft);
+    zero(C0tt);
+
+    // Perform basic matrix multiplication
+    auto Cff = einsums::linear_algebra::gemm<false, false>(T{1.0, 1.0}, A, B);
+    auto Cft = einsums::linear_algebra::gemm<false, true>(T{1.0, 1.0}, A, B);
+    auto Ctf = einsums::linear_algebra::gemm<true, false>(T{1.0, 1.0}, A, B);
+    auto Ctt = einsums::linear_algebra::gemm<true, true>(T{1.0, 1.0}, A, B);
+
+    for (size_t i = 0; i < 3; i++) {
+        for (size_t j = 0; j < 3; j++) {
+            for (size_t k = 0; k < 3; k++) {
+                C0ff(i, j) += T{1.0, 1.0} * A(i, k) * B(k, j);
+                C0ft(i, j) += T{1.0, 1.0} * A(i, k) * B(j, k);
+                C0tf(i, j) += T{1.0, 1.0} * A(k, i) * B(k, j);
+                C0tt(i, j) += T{1.0, 1.0} * A(k, i) * B(j, k);
+            }
+        }
+    }
+
+    for (size_t i = 0; i < 3; i++) {
+        for (size_t j = 0; j < 3; j++) {
+            REQUIRE(C0ff(i, j) == Cff(i, j));
+            REQUIRE(C0ft(i, j) == Cft(i, j));
+            REQUIRE(C0tf(i, j) == Ctf(i, j));
+            REQUIRE(C0tt(i, j) == Ctt(i, j));
         }
     }
 }
@@ -453,6 +532,15 @@ void gemm_test_2() {
 TEST_CASE("gemm_2") {
     SECTION("double") {
         gemm_test_2<double>();
+    }
+    SECTION("float") {
+        gemm_test_2<float>();
+    }
+    SECTION("complex<float>") {
+        gemm_test_2<std::complex<float>>();
+    }
+    SECTION("complex<double>") {
+        gemm_test_2<std::complex<double>>();
     }
 }
 
