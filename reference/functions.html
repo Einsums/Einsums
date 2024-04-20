@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Functions &#8212; Einsums 0.4.1 documentation</title>
+    <title>Functions &#8212; Einsums 0.6.0 documentation</title>
   
   
   
@@ -328,6 +328,8 @@ document.write(`
 </li>
 <li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">Functions</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="function.create.tensors.html">Tensor creation functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="function.linear_algebra.html">Linear Algebra (BLAS, LAPACK, etc.)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="function.low_level.linear_algebra.html">Low-Level Linear Algebra (BLAS, LAPACK, etc.)</a></li>
 </ul>
 </li>
 </ul>
@@ -389,10 +391,14 @@ document.write(`
                   
   <section id="functions">
 <span id="id1"></span><h1>Functions<a class="headerlink" href="#functions" title="Permalink to this heading">#</a></h1>
-<p>In this chapter Doxygen docstrings are presented for functions, grouped by functionality.
+<p>In this chapter, Doxygen docstrings are presented for functions, grouped by functionality.
 Many docstrings contain example code, which demonstrates basic usage of the function.
 The examples assume that Einsums has been include with:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;einsums.hpp&gt;</span>
+</pre></div>
+</div>
+<p>It is also assumed, in many examples, that the following <cite>using namespace</cite> command has been used:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">einsums</span><span class="p">;</span>
 </pre></div>
 </div>
 <div class="toctree-wrapper compound">
@@ -400,6 +406,22 @@ The examples assume that Einsums has been include with:</p>
 <li class="toctree-l1"><a class="reference internal" href="function.create.tensors.html">Tensor creation functions</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="function.create.tensors.html#functions-for-creating-standard-tensors">Functions for creating standard tensors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="function.create.tensors.html#functions-for-creating-pre-filled-tensors">Functions for creating pre-filled tensors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="function.create.tensors.html#additional-functions-for-creating-tensors">Additional functions for creating tensors</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="function.linear_algebra.html">Linear Algebra (BLAS, LAPACK, etc.)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function.linear_algebra.html#blas-level-1-functions">BLAS Level 1 Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="function.linear_algebra.html#blas-level-2-functions">BLAS Level 2 Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="function.linear_algebra.html#blas-level-3-functions">BLAS Level 3 Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="function.linear_algebra.html#lapack-functions">LAPACK Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="function.low_level.linear_algebra.html">Low-Level Linear Algebra (BLAS, LAPACK, etc.)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="function.low_level.linear_algebra.html#blas-level-1-functions">BLAS Level 1 Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="function.low_level.linear_algebra.html#blas-level-2-functions">BLAS Level 2 Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="function.low_level.linear_algebra.html#blas-level-3-functions">BLAS Level 3 Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="function.low_level.linear_algebra.html#lapack-functions">LAPACK Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="function.low_level.linear_algebra.html#to-be-classified">To Be Classified</a></li>
 </ul>
 </li>
 </ul>

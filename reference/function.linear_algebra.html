@@ -1,0 +1,989 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Linear Algebra (BLAS, LAPACK, etc.) &#8212; Einsums 0.6.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/einsums.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
+  <script src="../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/design-tabs.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'reference/function.linear_algebra';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Low-Level Linear Algebra (BLAS, LAPACK, etc.)" href="function.low_level.linear_algebra.html" />
+    <link rel="prev" title="Tensor creation functions" href="function.create.tensors.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/einsums-logo.png" class="logo__image only-light" alt=""/>
+    <script>document.write(`<img src="../_static/einsums-logo.png" class="logo__image only-dark" alt=""/>`);</script>
+  
+  
+    <p class="title logo__title">Einsums</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav class="navbar-nav">
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user/index.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="index.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../building/index.html">
+                        Building from source
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item">
+<nav class="navbar-nav">
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user/index.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="index.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../building/index.html">
+                        Building from source
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="classes.html">Classes/Structs</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="class.tensor.html">Tensor</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="functions.html">Functions</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="function.create.tensors.html">Tensor creation functions</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Linear Algebra (BLAS, LAPACK, etc.)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="function.low_level.linear_algebra.html">Low-Level Linear Algebra (BLAS, LAPACK, etc.)</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Einsums reference</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="functions.html" class="nav-link">Functions</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">Linear...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="linear-algebra-blas-lapack-etc">
+<span id="function-linear-algebra"></span><h1>Linear Algebra (BLAS, LAPACK, etc.)<a class="headerlink" href="#linear-algebra-blas-lapack-etc" title="Permalink to this heading">#</a></h1>
+<p>This module contains functions for performing high-level linear algebra operations on tensors.</p>
+<p>The functions in this module are designed to be used with the <cite>Tensor</cite> class and its subclasses.</p>
+<section id="blas-level-1-functions">
+<h2>BLAS Level 1 Functions<a class="headerlink" href="#blas-level-1-functions" title="Permalink to this heading">#</a></h2>
+<p>BLAS Level 1 routines perform operations of both addition and reduction on vectors of data.
+Typical operations include scaling and dot products.</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4II0_6size_tE00EN7einsums14linear_algebra3dotE1TRK4TypeI1TXL1EEERK4TypeI1TXL1EEE">
+<span id="_CPPv3II0_6size_tE00EN7einsums14linear_algebra3dotERK4TypeI1TXL1EEERK4TypeI1TXL1EEE"></span><span id="_CPPv2II0_6size_tE00EN7einsums14linear_algebra3dotERK4TypeI1TX1EERK4TypeI1TX1EE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Type</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1_1linear__algebra_1a72fd64f6cb5cbc945365cde0555ac56b"></span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">einsums</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">linear_algebra</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">dot</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE00EN7einsums14linear_algebra3dotE1TRK4TypeI1TXL1EEERK4TypeI1TXL1EEE" title="einsums::linear_algebra::dot::Type"><span class="n"><span class="pre">Type</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4II0_6size_tE00EN7einsums14linear_algebra3dotE1TRK4TypeI1TXL1EEERK4TypeI1TXL1EEE" title="einsums::linear_algebra::dot::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE00EN7einsums14linear_algebra3dotE1TRK4TypeI1TXL1EEERK4TypeI1TXL1EEE" title="einsums::linear_algebra::dot::Type"><span class="n"><span class="pre">Type</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4II0_6size_tE00EN7einsums14linear_algebra3dotE1TRK4TypeI1TXL1EEERK4TypeI1TXL1EEE" title="einsums::linear_algebra::dot::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">B</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE00EN7einsums14linear_algebra3dotE1TRK4TypeI1TXL1EEERK4TypeI1TXL1EEE" title="einsums::linear_algebra::dot::T"><span class="n"><span class="pre">T</span></span></a><a class="headerlink" href="#_CPPv4II0_6size_tE00EN7einsums14linear_algebra3dotE1TRK4TypeI1TXL1EEERK4TypeI1TXL1EEE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra3dotE1TRK4TypeI1T4RankERK4TypeI1T4RankE">
+<span id="_CPPv3II0_6size_tE00_6size_tEN7einsums14linear_algebra3dotERK4TypeI1T4RankERK4TypeI1T4RankE"></span><span id="_CPPv2II0_6size_tE00_6size_tEN7einsums14linear_algebra3dotERK4TypeI1T4RankERK4TypeI1T4RankE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Type</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Rank</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1_1linear__algebra_1a5a05c1e113d9712dc46f6fa70d7b46f1"></span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">einsums</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">linear_algebra</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">dot</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra3dotE1TRK4TypeI1T4RankERK4TypeI1T4RankE" title="einsums::linear_algebra::dot::Type"><span class="n"><span class="pre">Type</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra3dotE1TRK4TypeI1T4RankERK4TypeI1T4RankE" title="einsums::linear_algebra::dot::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra3dotE1TRK4TypeI1T4RankERK4TypeI1T4RankE" title="einsums::linear_algebra::dot::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra3dotE1TRK4TypeI1T4RankERK4TypeI1T4RankE" title="einsums::linear_algebra::dot::Type"><span class="n"><span class="pre">Type</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra3dotE1TRK4TypeI1T4RankERK4TypeI1T4RankE" title="einsums::linear_algebra::dot::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra3dotE1TRK4TypeI1T4RankERK4TypeI1T4RankE" title="einsums::linear_algebra::dot::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">B</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra3dotE1TRK4TypeI1T4RankERK4TypeI1T4RankE" title="einsums::linear_algebra::dot::T"><span class="n"><span class="pre">T</span></span></a><a class="headerlink" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra3dotE1TRK4TypeI1T4RankERK4TypeI1T4RankE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra3dotE1TRK4TypeI1T4RankERK4TypeI1T4RankERK4TypeI1T4RankE">
+<span id="_CPPv3II0_6size_tE00_6size_tEN7einsums14linear_algebra3dotERK4TypeI1T4RankERK4TypeI1T4RankERK4TypeI1T4RankE"></span><span id="_CPPv2II0_6size_tE00_6size_tEN7einsums14linear_algebra3dotERK4TypeI1T4RankERK4TypeI1T4RankERK4TypeI1T4RankE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Type</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Rank</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1_1linear__algebra_1a4435dfce429b8a17bdf8f8b3ba0d808a"></span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">einsums</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">linear_algebra</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">dot</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra3dotE1TRK4TypeI1T4RankERK4TypeI1T4RankERK4TypeI1T4RankE" title="einsums::linear_algebra::dot::Type"><span class="n"><span class="pre">Type</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra3dotE1TRK4TypeI1T4RankERK4TypeI1T4RankERK4TypeI1T4RankE" title="einsums::linear_algebra::dot::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra3dotE1TRK4TypeI1T4RankERK4TypeI1T4RankERK4TypeI1T4RankE" title="einsums::linear_algebra::dot::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra3dotE1TRK4TypeI1T4RankERK4TypeI1T4RankERK4TypeI1T4RankE" title="einsums::linear_algebra::dot::Type"><span class="n"><span class="pre">Type</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra3dotE1TRK4TypeI1T4RankERK4TypeI1T4RankERK4TypeI1T4RankE" title="einsums::linear_algebra::dot::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra3dotE1TRK4TypeI1T4RankERK4TypeI1T4RankERK4TypeI1T4RankE" title="einsums::linear_algebra::dot::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">B</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra3dotE1TRK4TypeI1T4RankERK4TypeI1T4RankERK4TypeI1T4RankE" title="einsums::linear_algebra::dot::Type"><span class="n"><span class="pre">Type</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra3dotE1TRK4TypeI1T4RankERK4TypeI1T4RankERK4TypeI1T4RankE" title="einsums::linear_algebra::dot::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra3dotE1TRK4TypeI1T4RankERK4TypeI1T4RankERK4TypeI1T4RankE" title="einsums::linear_algebra::dot::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">C</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra3dotE1TRK4TypeI1T4RankERK4TypeI1T4RankERK4TypeI1T4RankE" title="einsums::linear_algebra::dot::T"><span class="n"><span class="pre">T</span></span></a><a class="headerlink" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra3dotE1TRK4TypeI1T4RankERK4TypeI1T4RankERK4TypeI1T4RankE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4II0_6size_tE0_6size_t0EN7einsums14linear_algebra5scaleEv1TP5ATypeI1T5ARankE">
+<span id="_CPPv3II0_6size_tE0_6size_t0EN7einsums14linear_algebra5scaleE1TP5ATypeI1T5ARankE"></span><span id="_CPPv2II0_6size_tE0_6size_t0EN7einsums14linear_algebra5scaleE1TP5ATypeI1T5ARankE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ARank</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1_1linear__algebra_1a4f86adc44397442866ac6f5959b4d621"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">einsums</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">linear_algebra</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">scale</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_t0EN7einsums14linear_algebra5scaleEv1TP5ATypeI1T5ARankE" title="einsums::linear_algebra::scale::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">scale</span></span>, <a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_t0EN7einsums14linear_algebra5scaleEv1TP5ATypeI1T5ARankE" title="einsums::linear_algebra::scale::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_t0EN7einsums14linear_algebra5scaleEv1TP5ATypeI1T5ARankE" title="einsums::linear_algebra::scale::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_t0EN7einsums14linear_algebra5scaleEv1TP5ATypeI1T5ARankE" title="einsums::linear_algebra::scale::ARank"><span class="n"><span class="pre">ARank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4II0_6size_tE0_6size_t0EN7einsums14linear_algebra5scaleEv1TP5ATypeI1T5ARankE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Scales a tensor by a scalar. </p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">create_ones_tensor</span><span class="p">(</span><span class="s">&quot;A&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
+
+<span class="c1">// A is filled with 1.0</span>
+<span class="n">einsums</span><span class="o">::</span><span class="n">linear_algebra</span><span class="o">::</span><span class="n">scale</span><span class="p">(</span><span class="mf">2.0</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">A</span><span class="p">);</span>
+<span class="c1">// A is now filled with 2.0</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>AType</strong> – The type of the tensor </p></li>
+<li><p><strong>ARank</strong> – The rank of the tensor </p></li>
+<li><p><strong>T</strong> – The underlying data type </p></li>
+</ul>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>scale</strong> – The scalar to scale the tensor by </p></li>
+<li><p><strong>A</strong> – The tensor to scale </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4II0_6size_tE0_6size_t0EN7einsums14linear_algebra12scale_columnEv6size_t1TP5ATypeI1T5ARankE">
+<span id="_CPPv3II0_6size_tE0_6size_t0EN7einsums14linear_algebra12scale_columnE6size_t1TP5ATypeI1T5ARankE"></span><span id="_CPPv2II0_6size_tE0_6size_t0EN7einsums14linear_algebra12scale_columnE6size_t1TP5ATypeI1T5ARankE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ARank</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1_1linear__algebra_1adf9118d46bdcbc1116a5c8ffb2d3523e"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">einsums</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">linear_algebra</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">scale_column</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">col</span></span>, <a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_t0EN7einsums14linear_algebra12scale_columnEv6size_t1TP5ATypeI1T5ARankE" title="einsums::linear_algebra::scale_column::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">scale</span></span>, <a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_t0EN7einsums14linear_algebra12scale_columnEv6size_t1TP5ATypeI1T5ARankE" title="einsums::linear_algebra::scale_column::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_t0EN7einsums14linear_algebra12scale_columnEv6size_t1TP5ATypeI1T5ARankE" title="einsums::linear_algebra::scale_column::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_t0EN7einsums14linear_algebra12scale_columnEv6size_t1TP5ATypeI1T5ARankE" title="einsums::linear_algebra::scale_column::ARank"><span class="n"><span class="pre">ARank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4II0_6size_tE0_6size_t0EN7einsums14linear_algebra12scale_columnEv6size_t1TP5ATypeI1T5ARankE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4II0_6size_tE0_6size_t0EN7einsums14linear_algebra9scale_rowEv6size_t1TP5ATypeI1T5ARankE">
+<span id="_CPPv3II0_6size_tE0_6size_t0EN7einsums14linear_algebra9scale_rowE6size_t1TP5ATypeI1T5ARankE"></span><span id="_CPPv2II0_6size_tE0_6size_t0EN7einsums14linear_algebra9scale_rowE6size_t1TP5ATypeI1T5ARankE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ARank</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1_1linear__algebra_1ab52b51a5196b5a55f84d4f1f0c497b79"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">einsums</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">linear_algebra</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">scale_row</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">row</span></span>, <a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_t0EN7einsums14linear_algebra9scale_rowEv6size_t1TP5ATypeI1T5ARankE" title="einsums::linear_algebra::scale_row::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">scale</span></span>, <a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_t0EN7einsums14linear_algebra9scale_rowEv6size_t1TP5ATypeI1T5ARankE" title="einsums::linear_algebra::scale_row::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_t0EN7einsums14linear_algebra9scale_rowEv6size_t1TP5ATypeI1T5ARankE" title="einsums::linear_algebra::scale_row::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_t0EN7einsums14linear_algebra9scale_rowEv6size_t1TP5ATypeI1T5ARankE" title="einsums::linear_algebra::scale_row::ARank"><span class="n"><span class="pre">ARank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4II0_6size_tE0_6size_t0EN7einsums14linear_algebra9scale_rowEv6size_t1TP5ATypeI1T5ARankE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</section>
+<section id="blas-level-2-functions">
+<h2>BLAS Level 2 Functions<a class="headerlink" href="#blas-level-2-functions" title="Permalink to this heading">#</a></h2>
+<p>BLAS Level 2 routines perform matrix-vector operations, such as matrix-vector multiplication, rank-1
+and rank-2 matrix updates, and solution of triangular systems.</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4II0_6size_tE0I0_6size_tE00_6size_tEN7einsums14linear_algebra4axpyEv1TRK5XTypeI1T4RankEP5YTypeI1T4RankE">
+<span id="_CPPv3II0_6size_tE0I0_6size_tE00_6size_tEN7einsums14linear_algebra4axpyE1TRK5XTypeI1T4RankEP5YTypeI1T4RankE"></span><span id="_CPPv2II0_6size_tE0I0_6size_tE00_6size_tEN7einsums14linear_algebra4axpyE1TRK5XTypeI1T4RankEP5YTypeI1T4RankE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">XType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">YType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Rank</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1_1linear__algebra_1a27b5063f4f6ff456eb36ed758b0a52b1"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">einsums</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">linear_algebra</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">axpy</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4II0_6size_tE0I0_6size_tE00_6size_tEN7einsums14linear_algebra4axpyEv1TRK5XTypeI1T4RankEP5YTypeI1T4RankE" title="einsums::linear_algebra::axpy::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE0I0_6size_tE00_6size_tEN7einsums14linear_algebra4axpyEv1TRK5XTypeI1T4RankEP5YTypeI1T4RankE" title="einsums::linear_algebra::axpy::XType"><span class="n"><span class="pre">XType</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4II0_6size_tE0I0_6size_tE00_6size_tEN7einsums14linear_algebra4axpyEv1TRK5XTypeI1T4RankEP5YTypeI1T4RankE" title="einsums::linear_algebra::axpy::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE0I0_6size_tE00_6size_tEN7einsums14linear_algebra4axpyEv1TRK5XTypeI1T4RankEP5YTypeI1T4RankE" title="einsums::linear_algebra::axpy::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">X</span></span>, <a class="reference internal" href="#_CPPv4II0_6size_tE0I0_6size_tE00_6size_tEN7einsums14linear_algebra4axpyEv1TRK5XTypeI1T4RankEP5YTypeI1T4RankE" title="einsums::linear_algebra::axpy::YType"><span class="n"><span class="pre">YType</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4II0_6size_tE0I0_6size_tE00_6size_tEN7einsums14linear_algebra4axpyEv1TRK5XTypeI1T4RankEP5YTypeI1T4RankE" title="einsums::linear_algebra::axpy::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE0I0_6size_tE00_6size_tEN7einsums14linear_algebra4axpyEv1TRK5XTypeI1T4RankEP5YTypeI1T4RankE" title="einsums::linear_algebra::axpy::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">Y</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4II0_6size_tE0I0_6size_tE00_6size_tEN7einsums14linear_algebra4axpyEv1TRK5XTypeI1T4RankEP5YTypeI1T4RankE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4II0_6size_tE0I0_6size_tE00_6size_tEN7einsums14linear_algebra5axpbyEv1TRK5XTypeI1T4RankE1TP5YTypeI1T4RankE">
+<span id="_CPPv3II0_6size_tE0I0_6size_tE00_6size_tEN7einsums14linear_algebra5axpbyE1TRK5XTypeI1T4RankE1TP5YTypeI1T4RankE"></span><span id="_CPPv2II0_6size_tE0I0_6size_tE00_6size_tEN7einsums14linear_algebra5axpbyE1TRK5XTypeI1T4RankE1TP5YTypeI1T4RankE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">XType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">YType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Rank</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1_1linear__algebra_1addec8d9c29d81797480bd949dc82887a"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">einsums</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">linear_algebra</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">axpby</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4II0_6size_tE0I0_6size_tE00_6size_tEN7einsums14linear_algebra5axpbyEv1TRK5XTypeI1T4RankE1TP5YTypeI1T4RankE" title="einsums::linear_algebra::axpby::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE0I0_6size_tE00_6size_tEN7einsums14linear_algebra5axpbyEv1TRK5XTypeI1T4RankE1TP5YTypeI1T4RankE" title="einsums::linear_algebra::axpby::XType"><span class="n"><span class="pre">XType</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4II0_6size_tE0I0_6size_tE00_6size_tEN7einsums14linear_algebra5axpbyEv1TRK5XTypeI1T4RankE1TP5YTypeI1T4RankE" title="einsums::linear_algebra::axpby::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE0I0_6size_tE00_6size_tEN7einsums14linear_algebra5axpbyEv1TRK5XTypeI1T4RankE1TP5YTypeI1T4RankE" title="einsums::linear_algebra::axpby::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">X</span></span>, <a class="reference internal" href="#_CPPv4II0_6size_tE0I0_6size_tE00_6size_tEN7einsums14linear_algebra5axpbyEv1TRK5XTypeI1T4RankE1TP5YTypeI1T4RankE" title="einsums::linear_algebra::axpby::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">beta</span></span>, <a class="reference internal" href="#_CPPv4II0_6size_tE0I0_6size_tE00_6size_tEN7einsums14linear_algebra5axpbyEv1TRK5XTypeI1T4RankE1TP5YTypeI1T4RankE" title="einsums::linear_algebra::axpby::YType"><span class="n"><span class="pre">YType</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4II0_6size_tE0I0_6size_tE00_6size_tEN7einsums14linear_algebra5axpbyEv1TRK5XTypeI1T4RankE1TP5YTypeI1T4RankE" title="einsums::linear_algebra::axpby::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE0I0_6size_tE00_6size_tEN7einsums14linear_algebra5axpbyEv1TRK5XTypeI1T4RankE1TP5YTypeI1T4RankE" title="einsums::linear_algebra::axpby::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">Y</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4II0_6size_tE0I0_6size_tE00_6size_tEN7einsums14linear_algebra5axpbyEv1TRK5XTypeI1T4RankE1TP5YTypeI1T4RankE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_bI0_6size_tE0I0_6size_tE0I0_6size_tE0_6size_t_6size_t00EN7einsums14linear_algebra4gemvEvK1URK5ATypeI1T5ARankERK5XTypeI1T6XYRankEK1UP5YTypeI1T6XYRankE">
+<span id="_CPPv3I_bI0_6size_tE0I0_6size_tE0I0_6size_tE0_6size_t_6size_t00EN7einsums14linear_algebra4gemvEK1URK5ATypeI1T5ARankERK5XTypeI1T6XYRankEK1UP5YTypeI1T6XYRankE"></span><span id="_CPPv2I_bI0_6size_tE0I0_6size_tE0I0_6size_tE0_6size_t_6size_t00EN7einsums14linear_algebra4gemvEK1URK5ATypeI1T5ARankERK5XTypeI1T6XYRankEK1UP5YTypeI1T6XYRankE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TransA</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">XType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">YType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ARank</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">XYRank</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">U</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1_1linear__algebra_1a59572759162ddfdbd359e103f336393d"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">einsums</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">linear_algebra</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">gemv</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_bI0_6size_tE0I0_6size_tE0I0_6size_tE0_6size_t_6size_t00EN7einsums14linear_algebra4gemvEvK1URK5ATypeI1T5ARankERK5XTypeI1T6XYRankEK1UP5YTypeI1T6XYRankE" title="einsums::linear_algebra::gemv::U"><span class="n"><span class="pre">U</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_bI0_6size_tE0I0_6size_tE0I0_6size_tE0_6size_t_6size_t00EN7einsums14linear_algebra4gemvEvK1URK5ATypeI1T5ARankERK5XTypeI1T6XYRankEK1UP5YTypeI1T6XYRankE" title="einsums::linear_algebra::gemv::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_bI0_6size_tE0I0_6size_tE0I0_6size_tE0_6size_t_6size_t00EN7einsums14linear_algebra4gemvEvK1URK5ATypeI1T5ARankERK5XTypeI1T6XYRankEK1UP5YTypeI1T6XYRankE" title="einsums::linear_algebra::gemv::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_bI0_6size_tE0I0_6size_tE0I0_6size_tE0_6size_t_6size_t00EN7einsums14linear_algebra4gemvEvK1URK5ATypeI1T5ARankERK5XTypeI1T6XYRankEK1UP5YTypeI1T6XYRankE" title="einsums::linear_algebra::gemv::ARank"><span class="n"><span class="pre">ARank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_bI0_6size_tE0I0_6size_tE0I0_6size_tE0_6size_t_6size_t00EN7einsums14linear_algebra4gemvEvK1URK5ATypeI1T5ARankERK5XTypeI1T6XYRankEK1UP5YTypeI1T6XYRankE" title="einsums::linear_algebra::gemv::XType"><span class="n"><span class="pre">XType</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_bI0_6size_tE0I0_6size_tE0I0_6size_tE0_6size_t_6size_t00EN7einsums14linear_algebra4gemvEvK1URK5ATypeI1T5ARankERK5XTypeI1T6XYRankEK1UP5YTypeI1T6XYRankE" title="einsums::linear_algebra::gemv::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_bI0_6size_tE0I0_6size_tE0I0_6size_tE0_6size_t_6size_t00EN7einsums14linear_algebra4gemvEvK1URK5ATypeI1T5ARankERK5XTypeI1T6XYRankEK1UP5YTypeI1T6XYRankE" title="einsums::linear_algebra::gemv::XYRank"><span class="n"><span class="pre">XYRank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">z</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_bI0_6size_tE0I0_6size_tE0I0_6size_tE0_6size_t_6size_t00EN7einsums14linear_algebra4gemvEvK1URK5ATypeI1T5ARankERK5XTypeI1T6XYRankEK1UP5YTypeI1T6XYRankE" title="einsums::linear_algebra::gemv::U"><span class="n"><span class="pre">U</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">beta</span></span>, <a class="reference internal" href="#_CPPv4I_bI0_6size_tE0I0_6size_tE0I0_6size_tE0_6size_t_6size_t00EN7einsums14linear_algebra4gemvEvK1URK5ATypeI1T5ARankERK5XTypeI1T6XYRankEK1UP5YTypeI1T6XYRankE" title="einsums::linear_algebra::gemv::YType"><span class="n"><span class="pre">YType</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_bI0_6size_tE0I0_6size_tE0I0_6size_tE0_6size_t_6size_t00EN7einsums14linear_algebra4gemvEvK1URK5ATypeI1T5ARankERK5XTypeI1T6XYRankEK1UP5YTypeI1T6XYRankE" title="einsums::linear_algebra::gemv::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_bI0_6size_tE0I0_6size_tE0I0_6size_tE0_6size_t_6size_t00EN7einsums14linear_algebra4gemvEvK1URK5ATypeI1T5ARankERK5XTypeI1T6XYRankEK1UP5YTypeI1T6XYRankE" title="einsums::linear_algebra::gemv::XYRank"><span class="n"><span class="pre">XYRank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">y</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_bI0_6size_tE0I0_6size_tE0I0_6size_tE0_6size_t_6size_t00EN7einsums14linear_algebra4gemvEvK1URK5ATypeI1T5ARankERK5XTypeI1T6XYRankEK1UP5YTypeI1T6XYRankE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>General matrix-vector multiplication. </p>
+<p>This function performs one of the matrix-vector operations  <div class="math notranslate nohighlight">
+\[
+   y := alpha*A*z + beta*y\mathrm{,\ or\ }y := alpha*A^{T}*z + beta*y,
+\]</div>
+ where alpha and beta are scalars, z and y are vectors and A is an <span class="math notranslate nohighlight">\(m\)</span> by <span class="math notranslate nohighlight">\(n\)</span> matrix.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">NEED</span><span class="w"> </span><span class="n">TO</span><span class="w"> </span><span class="n">ADD</span><span class="w"> </span><span class="n">AN</span><span class="w"> </span><span class="n">EXAMPLE</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TransA</strong> – Transpose matrix A? true or false </p></li>
+<li><p><strong>AType</strong> – The type of the matrix A </p></li>
+<li><p><strong>XType</strong> – The type of the vector z </p></li>
+<li><p><strong>YType</strong> – The type of the vector y </p></li>
+<li><p><strong>ARank</strong> – The rank of the matrix A </p></li>
+<li><p><strong>XYRank</strong> – The rank of the vectors z and y </p></li>
+<li><p><strong>T</strong> – The underlying data type </p></li>
+</ul>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>alpha</strong> – Scaling factor for the product of A and z </p></li>
+<li><p><strong>A</strong> – Matrix A </p></li>
+<li><p><strong>z</strong> – Vector z </p></li>
+<li><p><strong>beta</strong> – Scaling factor for the output vector y </p></li>
+<li><p><strong>y</strong> – Output vector y </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4II0_6size_tE0_6size_tI0_6size_tE00_6size_tEN7einsums14linear_algebra3gerEv1TRK6XYTypeI1T6XYRankERK6XYTypeI1T6XYRankEP5ATypeI1T5ARankE">
+<span id="_CPPv3II0_6size_tE0_6size_tI0_6size_tE00_6size_tEN7einsums14linear_algebra3gerE1TRK6XYTypeI1T6XYRankERK6XYTypeI1T6XYRankEP5ATypeI1T5ARankE"></span><span id="_CPPv2II0_6size_tE0_6size_tI0_6size_tE00_6size_tEN7einsums14linear_algebra3gerE1TRK6XYTypeI1T6XYRankERK6XYTypeI1T6XYRankEP5ATypeI1T5ARankE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">XYType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">XYRank</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ARank</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1_1linear__algebra_1ab277b8f190c9d0d8e30d9d605cd2c446"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">einsums</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">linear_algebra</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">ger</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_tI0_6size_tE00_6size_tEN7einsums14linear_algebra3gerEv1TRK6XYTypeI1T6XYRankERK6XYTypeI1T6XYRankEP5ATypeI1T5ARankE" title="einsums::linear_algebra::ger::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_tI0_6size_tE00_6size_tEN7einsums14linear_algebra3gerEv1TRK6XYTypeI1T6XYRankERK6XYTypeI1T6XYRankEP5ATypeI1T5ARankE" title="einsums::linear_algebra::ger::XYType"><span class="n"><span class="pre">XYType</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_tI0_6size_tE00_6size_tEN7einsums14linear_algebra3gerEv1TRK6XYTypeI1T6XYRankERK6XYTypeI1T6XYRankEP5ATypeI1T5ARankE" title="einsums::linear_algebra::ger::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_tI0_6size_tE00_6size_tEN7einsums14linear_algebra3gerEv1TRK6XYTypeI1T6XYRankERK6XYTypeI1T6XYRankEP5ATypeI1T5ARankE" title="einsums::linear_algebra::ger::XYRank"><span class="n"><span class="pre">XYRank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">X</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_tI0_6size_tE00_6size_tEN7einsums14linear_algebra3gerEv1TRK6XYTypeI1T6XYRankERK6XYTypeI1T6XYRankEP5ATypeI1T5ARankE" title="einsums::linear_algebra::ger::XYType"><span class="n"><span class="pre">XYType</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_tI0_6size_tE00_6size_tEN7einsums14linear_algebra3gerEv1TRK6XYTypeI1T6XYRankERK6XYTypeI1T6XYRankEP5ATypeI1T5ARankE" title="einsums::linear_algebra::ger::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_tI0_6size_tE00_6size_tEN7einsums14linear_algebra3gerEv1TRK6XYTypeI1T6XYRankERK6XYTypeI1T6XYRankEP5ATypeI1T5ARankE" title="einsums::linear_algebra::ger::XYRank"><span class="n"><span class="pre">XYRank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">Y</span></span>, <a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_tI0_6size_tE00_6size_tEN7einsums14linear_algebra3gerEv1TRK6XYTypeI1T6XYRankERK6XYTypeI1T6XYRankEP5ATypeI1T5ARankE" title="einsums::linear_algebra::ger::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_tI0_6size_tE00_6size_tEN7einsums14linear_algebra3gerEv1TRK6XYTypeI1T6XYRankERK6XYTypeI1T6XYRankEP5ATypeI1T5ARankE" title="einsums::linear_algebra::ger::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_tI0_6size_tE00_6size_tEN7einsums14linear_algebra3gerEv1TRK6XYTypeI1T6XYRankERK6XYTypeI1T6XYRankEP5ATypeI1T5ARankE" title="einsums::linear_algebra::ger::ARank"><span class="n"><span class="pre">ARank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4II0_6size_tE0_6size_tI0_6size_tE00_6size_tEN7einsums14linear_algebra3gerEv1TRK6XYTypeI1T6XYRankERK6XYTypeI1T6XYRankEP5ATypeI1T5ARankE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</section>
+<section id="blas-level-3-functions">
+<h2>BLAS Level 3 Functions<a class="headerlink" href="#blas-level-3-functions" title="Permalink to this heading">#</a></h2>
+<p>BLAS Level 3 routines perform matrix-matrix operations, such as matrix-matrix multiplication, rank-k update, and
+solutions of triangular systems.</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_b_bI0_6size_tE0I0_6size_tE0I0_6size_tE0_6size_t00EN7einsums14linear_algebra4gemmEvK1URK5ATypeI1T4RankERK5BTypeI1T4RankEK1UP5CTypeI1T4RankE">
+<span id="_CPPv3I_b_bI0_6size_tE0I0_6size_tE0I0_6size_tE0_6size_t00EN7einsums14linear_algebra4gemmEK1URK5ATypeI1T4RankERK5BTypeI1T4RankEK1UP5CTypeI1T4RankE"></span><span id="_CPPv2I_b_bI0_6size_tE0I0_6size_tE0I0_6size_tE0_6size_t00EN7einsums14linear_algebra4gemmEK1URK5ATypeI1T4RankERK5BTypeI1T4RankEK1UP5CTypeI1T4RankE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TransA</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TransB</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Rank</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">U</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1_1linear__algebra_1a89cbb0e8e43bf414cfaaa29a04fd1343"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">einsums</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">linear_algebra</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">gemm</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_b_bI0_6size_tE0I0_6size_tE0I0_6size_tE0_6size_t00EN7einsums14linear_algebra4gemmEvK1URK5ATypeI1T4RankERK5BTypeI1T4RankEK1UP5CTypeI1T4RankE" title="einsums::linear_algebra::gemm::U"><span class="n"><span class="pre">U</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_b_bI0_6size_tE0I0_6size_tE0I0_6size_tE0_6size_t00EN7einsums14linear_algebra4gemmEvK1URK5ATypeI1T4RankERK5BTypeI1T4RankEK1UP5CTypeI1T4RankE" title="einsums::linear_algebra::gemm::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_b_bI0_6size_tE0I0_6size_tE0I0_6size_tE0_6size_t00EN7einsums14linear_algebra4gemmEvK1URK5ATypeI1T4RankERK5BTypeI1T4RankEK1UP5CTypeI1T4RankE" title="einsums::linear_algebra::gemm::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_b_bI0_6size_tE0I0_6size_tE0I0_6size_tE0_6size_t00EN7einsums14linear_algebra4gemmEvK1URK5ATypeI1T4RankERK5BTypeI1T4RankEK1UP5CTypeI1T4RankE" title="einsums::linear_algebra::gemm::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_b_bI0_6size_tE0I0_6size_tE0I0_6size_tE0_6size_t00EN7einsums14linear_algebra4gemmEvK1URK5ATypeI1T4RankERK5BTypeI1T4RankEK1UP5CTypeI1T4RankE" title="einsums::linear_algebra::gemm::BType"><span class="n"><span class="pre">BType</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_b_bI0_6size_tE0I0_6size_tE0I0_6size_tE0_6size_t00EN7einsums14linear_algebra4gemmEvK1URK5ATypeI1T4RankERK5BTypeI1T4RankEK1UP5CTypeI1T4RankE" title="einsums::linear_algebra::gemm::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_b_bI0_6size_tE0I0_6size_tE0I0_6size_tE0_6size_t00EN7einsums14linear_algebra4gemmEvK1URK5ATypeI1T4RankERK5BTypeI1T4RankEK1UP5CTypeI1T4RankE" title="einsums::linear_algebra::gemm::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">B</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_b_bI0_6size_tE0I0_6size_tE0I0_6size_tE0_6size_t00EN7einsums14linear_algebra4gemmEvK1URK5ATypeI1T4RankERK5BTypeI1T4RankEK1UP5CTypeI1T4RankE" title="einsums::linear_algebra::gemm::U"><span class="n"><span class="pre">U</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">beta</span></span>, <a class="reference internal" href="#_CPPv4I_b_bI0_6size_tE0I0_6size_tE0I0_6size_tE0_6size_t00EN7einsums14linear_algebra4gemmEvK1URK5ATypeI1T4RankERK5BTypeI1T4RankEK1UP5CTypeI1T4RankE" title="einsums::linear_algebra::gemm::CType"><span class="n"><span class="pre">CType</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_b_bI0_6size_tE0I0_6size_tE0I0_6size_tE0_6size_t00EN7einsums14linear_algebra4gemmEvK1URK5ATypeI1T4RankERK5BTypeI1T4RankEK1UP5CTypeI1T4RankE" title="einsums::linear_algebra::gemm::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_b_bI0_6size_tE0I0_6size_tE0I0_6size_tE0_6size_t00EN7einsums14linear_algebra4gemmEvK1URK5ATypeI1T4RankERK5BTypeI1T4RankEK1UP5CTypeI1T4RankE" title="einsums::linear_algebra::gemm::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">C</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_b_bI0_6size_tE0I0_6size_tE0I0_6size_tE0_6size_t00EN7einsums14linear_algebra4gemmEvK1URK5ATypeI1T4RankERK5BTypeI1T4RankEK1UP5CTypeI1T4RankE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>General matrix multiplication. </p>
+<p>Takes two rank-2 tensors ( <code class="docutils literal notranslate"><span class="pre">A</span></code> and <code class="docutils literal notranslate"><span class="pre">B</span></code> ) performs the multiplication and stores the result in to another rank-2 tensor that is passed in ( <code class="docutils literal notranslate"><span class="pre">C</span></code> ).</p>
+<p>In this equation, <code class="docutils literal notranslate"><span class="pre">TransA</span></code> is op(A) and <code class="docutils literal notranslate"><span class="pre">TransB</span></code> is op(B).  <div class="math notranslate nohighlight">
+\[
+C = \alpha \;op(A) \;op(B) + \beta C
+\]</div>
+</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">create_random_tensor</span><span class="p">(</span><span class="s">&quot;A&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">create_random_tensor</span><span class="p">(</span><span class="s">&quot;B&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">C</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">create_tensor</span><span class="p">(</span><span class="s">&quot;C&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
+
+<span class="n">einsums</span><span class="o">::</span><span class="n">linear_algebra</span><span class="o">::</span><span class="n">gemm</span><span class="o">&lt;</span><span class="nb">false</span><span class="p">,</span><span class="w"> </span><span class="nb">false</span><span class="o">&gt;</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">B</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">C</span><span class="p">);</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TransA</strong> – Tranpose A? true or false </p></li>
+<li><p><strong>TransB</strong> – Tranpose B? true or false </p></li>
+<li><p><strong>T</strong> – the underlying data type </p></li>
+</ul>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>alpha</strong> – Scaling factor for the product of A and B </p></li>
+<li><p><strong>A</strong> – First input tensor </p></li>
+<li><p><strong>B</strong> – Second input tensor </p></li>
+<li><p><strong>beta</strong> – Scaling factor for the output tensor C </p></li>
+<li><p><strong>C</strong> – Output tensor </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_b_bI0_6size_tE0I0_6size_tE0_6size_t00EN7einsums14linear_algebra4gemmE6TensorI1TXL2EEEK1URK5ATypeI1T4RankERK5BTypeI1T4RankE">
+<span id="_CPPv3I_b_bI0_6size_tE0I0_6size_tE0_6size_t00EN7einsums14linear_algebra4gemmEK1URK5ATypeI1T4RankERK5BTypeI1T4RankE"></span><span id="_CPPv2I_b_bI0_6size_tE0I0_6size_tE0_6size_t00EN7einsums14linear_algebra4gemmEK1URK5ATypeI1T4RankERK5BTypeI1T4RankE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TransA</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TransB</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Rank</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">U</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1_1linear__algebra_1ae3ec2265fb6e3684149e96e6ae529df5"></span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">einsums</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">linear_algebra</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">gemm</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_b_bI0_6size_tE0I0_6size_tE0_6size_t00EN7einsums14linear_algebra4gemmE6TensorI1TXL2EEEK1URK5ATypeI1T4RankERK5BTypeI1T4RankE" title="einsums::linear_algebra::gemm::U"><span class="n"><span class="pre">U</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_b_bI0_6size_tE0I0_6size_tE0_6size_t00EN7einsums14linear_algebra4gemmE6TensorI1TXL2EEEK1URK5ATypeI1T4RankERK5BTypeI1T4RankE" title="einsums::linear_algebra::gemm::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_b_bI0_6size_tE0I0_6size_tE0_6size_t00EN7einsums14linear_algebra4gemmE6TensorI1TXL2EEEK1URK5ATypeI1T4RankERK5BTypeI1T4RankE" title="einsums::linear_algebra::gemm::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_b_bI0_6size_tE0I0_6size_tE0_6size_t00EN7einsums14linear_algebra4gemmE6TensorI1TXL2EEEK1URK5ATypeI1T4RankERK5BTypeI1T4RankE" title="einsums::linear_algebra::gemm::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_b_bI0_6size_tE0I0_6size_tE0_6size_t00EN7einsums14linear_algebra4gemmE6TensorI1TXL2EEEK1URK5ATypeI1T4RankERK5BTypeI1T4RankE" title="einsums::linear_algebra::gemm::BType"><span class="n"><span class="pre">BType</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_b_bI0_6size_tE0I0_6size_tE0_6size_t00EN7einsums14linear_algebra4gemmE6TensorI1TXL2EEEK1URK5ATypeI1T4RankERK5BTypeI1T4RankE" title="einsums::linear_algebra::gemm::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_b_bI0_6size_tE0I0_6size_tE0_6size_t00EN7einsums14linear_algebra4gemmE6TensorI1TXL2EEEK1URK5ATypeI1T4RankERK5BTypeI1T4RankE" title="einsums::linear_algebra::gemm::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">B</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><a class="reference internal" href="class.tensor.html#_CPPv4I0_6size_tEN7einsums6TensorE" title="einsums::Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_b_bI0_6size_tE0I0_6size_tE0_6size_t00EN7einsums14linear_algebra4gemmE6TensorI1TXL2EEEK1URK5ATypeI1T4RankERK5BTypeI1T4RankE" title="einsums::linear_algebra::gemm::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I_b_bI0_6size_tE0I0_6size_tE0_6size_t00EN7einsums14linear_algebra4gemmE6TensorI1TXL2EEEK1URK5ATypeI1T4RankERK5BTypeI1T4RankE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>General matrix multiplication. </p>
+<p>Returns new tensor.</p>
+<p>Takes two rank-2 tensors performs the multiplication and returns the result</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">create_random_tensor</span><span class="p">(</span><span class="s">&quot;A&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">create_random_tensor</span><span class="p">(</span><span class="s">&quot;B&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
+
+<span class="k">auto</span><span class="w"> </span><span class="n">C</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">linear_algebra</span><span class="o">::</span><span class="n">gemm</span><span class="o">&lt;</span><span class="nb">false</span><span class="p">,</span><span class="w"> </span><span class="nb">false</span><span class="o">&gt;</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">B</span><span class="p">);</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TransA</strong> – Tranpose A? </p></li>
+<li><p><strong>TransB</strong> – Tranpose B? </p></li>
+<li><p><strong>T</strong> – the underlying data type </p></li>
+</ul>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>alpha</strong> – Scaling factor for the product of A and B </p></li>
+<li><p><strong>A</strong> – First input tensor </p></li>
+<li><p><strong>B</strong> – Second input tensor </p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>resulting tensor </p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="lapack-functions">
+<h2>LAPACK Functions<a class="headerlink" href="#lapack-functions" title="Permalink to this heading">#</a></h2>
+<p>LAPACK routines can be divided into the following groups according to the operations they perform:</p>
+<ul class="simple">
+<li><p>Routines for solving systems of linear equations, factoring and inverting matrices, and estimating condition numbers.</p></li>
+<li><p>Routines for solving least squares problems, eigenvalue and singular value problems, and Sylvester’s equations.</p></li>
+<li><p>Auxiliary and utility routines used to perform certain subtasks, common low-level computation or related tasks.</p></li>
+</ul>
+<section id="lapack-linear-equation-computational-functions">
+<h3>LAPACK Linear Equation Computational Functions<a class="headerlink" href="#lapack-linear-equation-computational-functions" title="Permalink to this heading">#</a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>These functions assume Fortran, column-major ordering.</p>
+</div>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra5getriEiP10TensorTypeI1T10TensorRankERKNSt6vectorI8blas_intEE">
+<span id="_CPPv3II0_6size_tE00_6size_tEN7einsums14linear_algebra5getriEP10TensorTypeI1T10TensorRankERKNSt6vectorI8blas_intEE"></span><span id="_CPPv2II0_6size_tE00_6size_tEN7einsums14linear_algebra5getriEP10TensorTypeI1T10TensorRankERKNSt6vectorI8blas_intEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TensorType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TensorRank</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1_1linear__algebra_1a0fca3ec2bd9ff99c2c47afa230be8c78"></span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">einsums</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">linear_algebra</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">getri</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra5getriEiP10TensorTypeI1T10TensorRankERKNSt6vectorI8blas_intEE" title="einsums::linear_algebra::getri::TensorType"><span class="n"><span class="pre">TensorType</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra5getriEiP10TensorTypeI1T10TensorRankERKNSt6vectorI8blas_intEE" title="einsums::linear_algebra::getri::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra5getriEiP10TensorTypeI1T10TensorRankERKNSt6vectorI8blas_intEE" title="einsums::linear_algebra::getri::TensorRank"><span class="n"><span class="pre">TensorRank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">blas_int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">pivot</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><a class="headerlink" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra5getriEiP10TensorTypeI1T10TensorRankERKNSt6vectorI8blas_intEE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Computes the inverse of a matrix using the LU factorization computed by getrf. </p>
+<p>The routine computes the inverse <span class="math notranslate nohighlight">\(inv(A)\)</span> of a general matrix <span class="math notranslate nohighlight">\(A\)</span>. Before calling this routine, call getrf to factorize <span class="math notranslate nohighlight">\(A\)</span>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TensorType</strong> – The type of the tensor </p></li>
+<li><p><strong>T</strong> – The underlying data type </p></li>
+<li><p><strong>TensorRank</strong> – The rank of the tensor </p></li>
+</ul>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>A</strong> – The matrix to invert </p></li>
+<li><p><strong>pivot</strong> – The pivot vector from getrf </p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int If 0, the execution is successful. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra5getrfEiP10TensorTypeI1T10TensorRankEPNSt6vectorI8blas_intEE">
+<span id="_CPPv3II0_6size_tE00_6size_tEN7einsums14linear_algebra5getrfEP10TensorTypeI1T10TensorRankEPNSt6vectorI8blas_intEE"></span><span id="_CPPv2II0_6size_tE00_6size_tEN7einsums14linear_algebra5getrfEP10TensorTypeI1T10TensorRankEPNSt6vectorI8blas_intEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TensorType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TensorRank</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1_1linear__algebra_1a27b7155baf78f11908f801ddf94a6b94"></span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">einsums</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">linear_algebra</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">getrf</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra5getrfEiP10TensorTypeI1T10TensorRankEPNSt6vectorI8blas_intEE" title="einsums::linear_algebra::getrf::TensorType"><span class="n"><span class="pre">TensorType</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra5getrfEiP10TensorTypeI1T10TensorRankEPNSt6vectorI8blas_intEE" title="einsums::linear_algebra::getrf::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra5getrfEiP10TensorTypeI1T10TensorRankEPNSt6vectorI8blas_intEE" title="einsums::linear_algebra::getrf::TensorRank"><span class="n"><span class="pre">TensorRank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">blas_int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">pivot</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><a class="headerlink" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra5getrfEiP10TensorTypeI1T10TensorRankEPNSt6vectorI8blas_intEE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Computes the LU factorization of a general m-by-n matrix. </p>
+<p>The routine computes the LU factorization of a general m-by-n matrix A as  <div class="math notranslate nohighlight">
+\[
+A = P*L*U
+\]</div>
+ where P is a permutation matrix, L is lower triangular with unit diagonal elements and U is upper triangular. The routine uses partial pivoting, with row interchanges.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TensorType</strong> – </p></li>
+<li><p><strong>T</strong> – </p></li>
+<li><p><strong>TensorRank</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>A</strong> – </p></li>
+<li><p><strong>pivot</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="to-be-classified">
+<h3>To be classified<a class="headerlink" href="#to-be-classified" title="Permalink to this heading">#</a></h3>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4II0_6size_tE0_6size_tI_7Complex_6size_tE0_6size_t0_bEN7einsums14linear_algebra4geevEvP5ATypeI1T5ARankEP5WTypeI11AddComplexTI1TE5WRankEP5ATypeI1T5ARankEP5ATypeI1T5ARankE">
+<span id="_CPPv3II0_6size_tE0_6size_tI_7Complex_6size_tE0_6size_t0_bEN7einsums14linear_algebra4geevEP5ATypeI1T5ARankEP5WTypeI11AddComplexTI1TE5WRankEP5ATypeI1T5ARankEP5ATypeI1T5ARankE"></span><span id="_CPPv2II0_6size_tE0_6size_tI_7Complex_6size_tE0_6size_t0_bEN7einsums14linear_algebra4geevEP5ATypeI1T5ARankEP5WTypeI11AddComplexTI1TE5WRankEP5ATypeI1T5ARankEP5ATypeI1T5ARankE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ARank</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Complex</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">WType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">WRank</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ComputeLeftRightEigenvectors</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1_1linear__algebra_1acd2ad4548d4be795efd5f917b64749b9"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">einsums</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">linear_algebra</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">geev</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_tI_7Complex_6size_tE0_6size_t0_bEN7einsums14linear_algebra4geevEvP5ATypeI1T5ARankEP5WTypeI11AddComplexTI1TE5WRankEP5ATypeI1T5ARankEP5ATypeI1T5ARankE" title="einsums::linear_algebra::geev::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_tI_7Complex_6size_tE0_6size_t0_bEN7einsums14linear_algebra4geevEvP5ATypeI1T5ARankEP5WTypeI11AddComplexTI1TE5WRankEP5ATypeI1T5ARankEP5ATypeI1T5ARankE" title="einsums::linear_algebra::geev::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_tI_7Complex_6size_tE0_6size_t0_bEN7einsums14linear_algebra4geevEvP5ATypeI1T5ARankEP5WTypeI11AddComplexTI1TE5WRankEP5ATypeI1T5ARankEP5ATypeI1T5ARankE" title="einsums::linear_algebra::geev::ARank"><span class="n"><span class="pre">ARank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span>, <a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_tI_7Complex_6size_tE0_6size_t0_bEN7einsums14linear_algebra4geevEvP5ATypeI1T5ARankEP5WTypeI11AddComplexTI1TE5WRankEP5ATypeI1T5ARankEP5ATypeI1T5ARankE" title="einsums::linear_algebra::geev::WType"><span class="n"><span class="pre">WType</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">AddComplexT</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_tI_7Complex_6size_tE0_6size_t0_bEN7einsums14linear_algebra4geevEvP5ATypeI1T5ARankEP5WTypeI11AddComplexTI1TE5WRankEP5ATypeI1T5ARankEP5ATypeI1T5ARankE" title="einsums::linear_algebra::geev::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_tI_7Complex_6size_tE0_6size_t0_bEN7einsums14linear_algebra4geevEvP5ATypeI1T5ARankEP5WTypeI11AddComplexTI1TE5WRankEP5ATypeI1T5ARankEP5ATypeI1T5ARankE" title="einsums::linear_algebra::geev::WRank"><span class="n"><span class="pre">WRank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">W</span></span>, <a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_tI_7Complex_6size_tE0_6size_t0_bEN7einsums14linear_algebra4geevEvP5ATypeI1T5ARankEP5WTypeI11AddComplexTI1TE5WRankEP5ATypeI1T5ARankEP5ATypeI1T5ARankE" title="einsums::linear_algebra::geev::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_tI_7Complex_6size_tE0_6size_t0_bEN7einsums14linear_algebra4geevEvP5ATypeI1T5ARankEP5WTypeI11AddComplexTI1TE5WRankEP5ATypeI1T5ARankEP5ATypeI1T5ARankE" title="einsums::linear_algebra::geev::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_tI_7Complex_6size_tE0_6size_t0_bEN7einsums14linear_algebra4geevEvP5ATypeI1T5ARankEP5WTypeI11AddComplexTI1TE5WRankEP5ATypeI1T5ARankEP5ATypeI1T5ARankE" title="einsums::linear_algebra::geev::ARank"><span class="n"><span class="pre">ARank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">lvecs</span></span>, <a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_tI_7Complex_6size_tE0_6size_t0_bEN7einsums14linear_algebra4geevEvP5ATypeI1T5ARankEP5WTypeI11AddComplexTI1TE5WRankEP5ATypeI1T5ARankEP5ATypeI1T5ARankE" title="einsums::linear_algebra::geev::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_tI_7Complex_6size_tE0_6size_t0_bEN7einsums14linear_algebra4geevEvP5ATypeI1T5ARankEP5WTypeI11AddComplexTI1TE5WRankEP5ATypeI1T5ARankEP5ATypeI1T5ARankE" title="einsums::linear_algebra::geev::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_tI_7Complex_6size_tE0_6size_t0_bEN7einsums14linear_algebra4geevEvP5ATypeI1T5ARankEP5WTypeI11AddComplexTI1TE5WRankEP5ATypeI1T5ARankEP5ATypeI1T5ARankE" title="einsums::linear_algebra::geev::ARank"><span class="n"><span class="pre">ARank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">rvecs</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4II0_6size_tE0_6size_tI_7Complex_6size_tE0_6size_t0_bEN7einsums14linear_algebra4geevEvP5ATypeI1T5ARankEP5WTypeI11AddComplexTI1TE5WRankEP5ATypeI1T5ARankEP5ATypeI1T5ARankE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4II0_6size_tE0_6size_tI0_6size_tE0_6size_t0EN7einsums14linear_algebra4gesvEiP5ATypeI1T5ARankEP5BTypeI1T5BRankE">
+<span id="_CPPv3II0_6size_tE0_6size_tI0_6size_tE0_6size_t0EN7einsums14linear_algebra4gesvEP5ATypeI1T5ARankEP5BTypeI1T5BRankE"></span><span id="_CPPv2II0_6size_tE0_6size_tI0_6size_tE0_6size_t0EN7einsums14linear_algebra4gesvEP5ATypeI1T5ARankEP5BTypeI1T5BRankE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ARank</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BRank</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1_1linear__algebra_1a73075e92a5b5bf204fdd2c20cbc6f956"></span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">einsums</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">linear_algebra</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">gesv</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_tI0_6size_tE0_6size_t0EN7einsums14linear_algebra4gesvEiP5ATypeI1T5ARankEP5BTypeI1T5BRankE" title="einsums::linear_algebra::gesv::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_tI0_6size_tE0_6size_t0EN7einsums14linear_algebra4gesvEiP5ATypeI1T5ARankEP5BTypeI1T5BRankE" title="einsums::linear_algebra::gesv::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_tI0_6size_tE0_6size_t0EN7einsums14linear_algebra4gesvEiP5ATypeI1T5ARankEP5BTypeI1T5BRankE" title="einsums::linear_algebra::gesv::ARank"><span class="n"><span class="pre">ARank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span>, <a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_tI0_6size_tE0_6size_t0EN7einsums14linear_algebra4gesvEiP5ATypeI1T5ARankEP5BTypeI1T5BRankE" title="einsums::linear_algebra::gesv::BType"><span class="n"><span class="pre">BType</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_tI0_6size_tE0_6size_t0EN7einsums14linear_algebra4gesvEiP5ATypeI1T5ARankEP5BTypeI1T5BRankE" title="einsums::linear_algebra::gesv::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_tI0_6size_tE0_6size_t0EN7einsums14linear_algebra4gesvEiP5ATypeI1T5ARankEP5BTypeI1T5BRankE" title="einsums::linear_algebra::gesv::BRank"><span class="n"><span class="pre">BRank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">B</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><a class="headerlink" href="#_CPPv4II0_6size_tE0_6size_tI0_6size_tE0_6size_t0EN7einsums14linear_algebra4gesvEiP5ATypeI1T5ARankEP5BTypeI1T5BRankE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4II0_6size_tE0_6size_tI0_6size_tE0_6size_t0_bEN7einsums14linear_algebra4heevEvP5ATypeI1T5ARankEP5WTypeI14RemoveComplexTI1TE5WRankE">
+<span id="_CPPv3II0_6size_tE0_6size_tI0_6size_tE0_6size_t0_bEN7einsums14linear_algebra4heevEP5ATypeI1T5ARankEP5WTypeI14RemoveComplexTI1TE5WRankE"></span><span id="_CPPv2II0_6size_tE0_6size_tI0_6size_tE0_6size_t0_bEN7einsums14linear_algebra4heevEP5ATypeI1T5ARankEP5WTypeI14RemoveComplexTI1TE5WRankE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ARank</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">WType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">WRank</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ComputeEigenvectors</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1_1linear__algebra_1a990452e6fe073331c698fac6bfb9e523"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">einsums</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">linear_algebra</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">heev</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_tI0_6size_tE0_6size_t0_bEN7einsums14linear_algebra4heevEvP5ATypeI1T5ARankEP5WTypeI14RemoveComplexTI1TE5WRankE" title="einsums::linear_algebra::heev::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_tI0_6size_tE0_6size_t0_bEN7einsums14linear_algebra4heevEvP5ATypeI1T5ARankEP5WTypeI14RemoveComplexTI1TE5WRankE" title="einsums::linear_algebra::heev::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_tI0_6size_tE0_6size_t0_bEN7einsums14linear_algebra4heevEvP5ATypeI1T5ARankEP5WTypeI14RemoveComplexTI1TE5WRankE" title="einsums::linear_algebra::heev::ARank"><span class="n"><span class="pre">ARank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span>, <a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_tI0_6size_tE0_6size_t0_bEN7einsums14linear_algebra4heevEvP5ATypeI1T5ARankEP5WTypeI14RemoveComplexTI1TE5WRankE" title="einsums::linear_algebra::heev::WType"><span class="n"><span class="pre">WType</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">RemoveComplexT</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_tI0_6size_tE0_6size_t0_bEN7einsums14linear_algebra4heevEvP5ATypeI1T5ARankEP5WTypeI14RemoveComplexTI1TE5WRankE" title="einsums::linear_algebra::heev::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_tI0_6size_tE0_6size_t0_bEN7einsums14linear_algebra4heevEvP5ATypeI1T5ARankEP5WTypeI14RemoveComplexTI1TE5WRankE" title="einsums::linear_algebra::heev::WRank"><span class="n"><span class="pre">WRank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">W</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4II0_6size_tE0_6size_tI0_6size_tE0_6size_t0_bEN7einsums14linear_algebra4heevEvP5ATypeI1T5ARankEP5WTypeI14RemoveComplexTI1TE5WRankE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra6invertEvP10TensorTypeI1T10TensorRankE">
+<span id="_CPPv3II0_6size_tE00_6size_tEN7einsums14linear_algebra6invertEP10TensorTypeI1T10TensorRankE"></span><span id="_CPPv2II0_6size_tE00_6size_tEN7einsums14linear_algebra6invertEP10TensorTypeI1T10TensorRankE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TensorType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TensorRank</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1_1linear__algebra_1aa4e5759214401156e84ab281af69ec8c"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">einsums</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">linear_algebra</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">invert</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra6invertEvP10TensorTypeI1T10TensorRankE" title="einsums::linear_algebra::invert::TensorType"><span class="n"><span class="pre">TensorType</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra6invertEvP10TensorTypeI1T10TensorRankE" title="einsums::linear_algebra::invert::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra6invertEvP10TensorTypeI1T10TensorRankE" title="einsums::linear_algebra::invert::TensorRank"><span class="n"><span class="pre">TensorRank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra6invertEvP10TensorTypeI1T10TensorRankE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Inverts a matrix. </p>
+<p>Utilizes the LAPACK routines getrf and getri to invert a matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TensorType</strong> – The type of the tensor </p></li>
+<li><p><strong>T</strong> – The underlying data type </p></li>
+<li><p><strong>TensorRank</strong> – The rank of the tensor </p></li>
+</ul>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>A</strong> – Matrix to invert. On exit, the inverse of A. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp enum-class">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14linear_algebra4NormE">
+<span id="_CPPv3N7einsums14linear_algebra4NormE"></span><span id="_CPPv2N7einsums14linear_algebra4NormE"></span><span class="target" id="namespaceeinsums_1_1linear__algebra_1a8f7603f971807d204e2fdd99c094f070"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">einsums</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">linear_algebra</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">Norm</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><a class="headerlink" href="#_CPPv4N7einsums14linear_algebra4NormE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Indicates the type of norm to compute. </p>
+<p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14linear_algebra4Norm6MaxAbsE">
+<span id="_CPPv3N7einsums14linear_algebra4Norm6MaxAbsE"></span><span id="_CPPv2N7einsums14linear_algebra4Norm6MaxAbsE"></span><span class="target" id="namespaceeinsums_1_1linear__algebra_1a8f7603f971807d204e2fdd99c094f070a70daa745cdfcc8f37de05539bc55d60d"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MaxAbs</span></span></span><a class="headerlink" href="#_CPPv4N7einsums14linear_algebra4Norm6MaxAbsE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p><span class="math notranslate nohighlight">\(val = max(abs(Aij))\)</span>, largest absolute value of the matrix A. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14linear_algebra4Norm3OneE">
+<span id="_CPPv3N7einsums14linear_algebra4Norm3OneE"></span><span id="_CPPv2N7einsums14linear_algebra4Norm3OneE"></span><span class="target" id="namespaceeinsums_1_1linear__algebra_1a8f7603f971807d204e2fdd99c094f070a06c2cea18679d64399783748fa367bdd"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">One</span></span></span><a class="headerlink" href="#_CPPv4N7einsums14linear_algebra4Norm3OneE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p><span class="math notranslate nohighlight">\(val = norm1(A)\)</span>, 1-norm of the matrix A (maximum column sum) </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14linear_algebra4Norm8InfinityE">
+<span id="_CPPv3N7einsums14linear_algebra4Norm8InfinityE"></span><span id="_CPPv2N7einsums14linear_algebra4Norm8InfinityE"></span><span class="target" id="namespaceeinsums_1_1linear__algebra_1a8f7603f971807d204e2fdd99c094f070aeb2ac5b04180d8d6011a016aeb8f75b3"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Infinity</span></span></span><a class="headerlink" href="#_CPPv4N7einsums14linear_algebra4Norm8InfinityE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p><span class="math notranslate nohighlight">\(val = normI(A)\)</span>, infinity norm of the matrix A (maximum row sum) </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N7einsums14linear_algebra4Norm9FrobeniusE">
+<span id="_CPPv3N7einsums14linear_algebra4Norm9FrobeniusE"></span><span id="_CPPv2N7einsums14linear_algebra4Norm9FrobeniusE"></span><span class="target" id="namespaceeinsums_1_1linear__algebra_1a8f7603f971807d204e2fdd99c094f070aaa17ea000d1c6e31414adf8083928f30"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Frobenius</span></span></span><a class="headerlink" href="#_CPPv4N7einsums14linear_algebra4Norm9FrobeniusE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p><span class="math notranslate nohighlight">\(val = normF(A)\)</span>, Frobenius norm of the matrix A (square root of sum of squares). </p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra4normE14RemoveComplexTI9ADataTypeE4NormRK5ATypeI9ADataType5ARankE">
+<span id="_CPPv3II0_6size_tE00_6size_tEN7einsums14linear_algebra4normE4NormRK5ATypeI9ADataType5ARankE"></span><span id="_CPPv2II0_6size_tE00_6size_tEN7einsums14linear_algebra4normE4NormRK5ATypeI9ADataType5ARankE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ADataType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ARank</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1_1linear__algebra_1a16be3efd4153de8f8e73c24d69b08c6a"></span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">einsums</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">linear_algebra</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">norm</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7einsums14linear_algebra4NormE" title="einsums::linear_algebra::Norm"><span class="n"><span class="pre">Norm</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">norm_type</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra4normE14RemoveComplexTI9ADataTypeE4NormRK5ATypeI9ADataType5ARankE" title="einsums::linear_algebra::norm::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra4normE14RemoveComplexTI9ADataTypeE4NormRK5ATypeI9ADataType5ARankE" title="einsums::linear_algebra::norm::ADataType"><span class="n"><span class="pre">ADataType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra4normE14RemoveComplexTI9ADataTypeE4NormRK5ATypeI9ADataType5ARankE" title="einsums::linear_algebra::norm::ARank"><span class="n"><span class="pre">ARank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">a</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><span class="n"><span class="pre">RemoveComplexT</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra4normE14RemoveComplexTI9ADataTypeE4NormRK5ATypeI9ADataType5ARankE" title="einsums::linear_algebra::norm::ADataType"><span class="n"><span class="pre">ADataType</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra4normE14RemoveComplexTI9ADataTypeE4NormRK5ATypeI9ADataType5ARankE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Computes the norm of a matrix. </p>
+<p>Returns the value of the one norm, or the Frobenius norm, or the infinity norm, or the element of largest absolute value of a real matrix A.</p>
+<p><div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">einsums</span><span class="p">;</span>
+
+<span class="k">auto</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">create_random_tensor</span><span class="p">(</span><span class="s">&quot;A&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">norm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">linear_algebra</span><span class="o">::</span><span class="n">norm</span><span class="p">(</span><span class="n">einsums</span><span class="o">::</span><span class="n">linear_algebra</span><span class="o">::</span><span class="n">Norm</span><span class="o">::</span><span class="n">One</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="p">);</span>
+</pre></div>
+</div>
+</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This function assumes that the matrix is stored in column-major order.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>AType</strong> – The type of the matrix </p></li>
+<li><p><strong>ADataType</strong> – The underlying data type of the matrix </p></li>
+<li><p><strong>ARank</strong> – The rank of the matrix </p></li>
+</ul>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>norm_type</strong> – where <a class="reference internal" href="#namespaceeinsums_1_1linear__algebra_1a8f7603f971807d204e2fdd99c094f070a06c2cea18679d64399783748fa367bdd"><span class="std std-ref">Norm::One</span></a> denotes the one norm of a matrix (maximum column sum), <a class="reference internal" href="#namespaceeinsums_1_1linear__algebra_1a8f7603f971807d204e2fdd99c094f070aeb2ac5b04180d8d6011a016aeb8f75b3"><span class="std std-ref">Norm::Infinity</span></a> denotes the infinity norm of a matrix (maximum row sum) and <a class="reference internal" href="#namespaceeinsums_1_1linear__algebra_1a8f7603f971807d204e2fdd99c094f070aaa17ea000d1c6e31414adf8083928f30"><span class="std std-ref">Norm::Frobenius</span></a> denotes the Frobenius norm of a matrix (square root of sum of squares). Note that <span class="math notranslate nohighlight">\( max(abs(A(i,j))) \)</span> is not a consistent matrix norm. </p></li>
+<li><p><strong>a</strong> – The matrix to compute the norm of </p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The norm of the matrix </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4II0_6size_tE0_6size_t0EN7einsums14linear_algebra3powE5ATypeI1T5ARankERK5ATypeI1T5ARankE1T1T">
+<span id="_CPPv3II0_6size_tE0_6size_t0EN7einsums14linear_algebra3powERK5ATypeI1T5ARankE1T1T"></span><span id="_CPPv2II0_6size_tE0_6size_t0EN7einsums14linear_algebra3powERK5ATypeI1T5ARankE1T1T"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ARank</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1_1linear__algebra_1a797b2d067374bba5e146f1ec30860c9a"></span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">einsums</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">linear_algebra</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">pow</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_t0EN7einsums14linear_algebra3powE5ATypeI1T5ARankERK5ATypeI1T5ARankE1T1T" title="einsums::linear_algebra::pow::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_t0EN7einsums14linear_algebra3powE5ATypeI1T5ARankERK5ATypeI1T5ARankE1T1T" title="einsums::linear_algebra::pow::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_t0EN7einsums14linear_algebra3powE5ATypeI1T5ARankERK5ATypeI1T5ARankE1T1T" title="einsums::linear_algebra::pow::ARank"><span class="n"><span class="pre">ARank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">a</span></span>, <a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_t0EN7einsums14linear_algebra3powE5ATypeI1T5ARankERK5ATypeI1T5ARankE1T1T" title="einsums::linear_algebra::pow::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">alpha</span></span>, <a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_t0EN7einsums14linear_algebra3powE5ATypeI1T5ARankERK5ATypeI1T5ARankE1T1T" title="einsums::linear_algebra::pow::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">cutoff</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">numeric_limits</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_t0EN7einsums14linear_algebra3powE5ATypeI1T5ARankERK5ATypeI1T5ARankE1T1T" title="einsums::linear_algebra::pow::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">epsilon</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_t0EN7einsums14linear_algebra3powE5ATypeI1T5ARankERK5ATypeI1T5ARankE1T1T" title="einsums::linear_algebra::pow::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_t0EN7einsums14linear_algebra3powE5ATypeI1T5ARankERK5ATypeI1T5ARankE1T1T" title="einsums::linear_algebra::pow::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_t0EN7einsums14linear_algebra3powE5ATypeI1T5ARankERK5ATypeI1T5ARankE1T1T" title="einsums::linear_algebra::pow::ARank"><span class="n"><span class="pre">ARank</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4II0_6size_tE0_6size_t0EN7einsums14linear_algebra3powE5ATypeI1T5ARankERK5ATypeI1T5ARankE1T1T" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Computes the matrix power of a to alpha. </p>
+<p>Return a new tensor, does not destroy a.</p>
+<p>
+TODO This function needs to have a test case implemented. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>AType</strong> – </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>a</strong> – Matrix to take power of </p></li>
+<li><p><strong>alpha</strong> – The power to take </p></li>
+<li><p><strong>cutoff</strong> – Values below cutoff are considered zero.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>std::enable_if_t&lt;std::is_base_of_v&lt;Detail::TensorBase&lt;double, 2&gt;, AType&gt;, AType&gt;</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra10sum_squareEvRK5ATypeI9ADataType5ARankEP14RemoveComplexTI9ADataTypeEP14RemoveComplexTI9ADataTypeE">
+<span id="_CPPv3II0_6size_tE00_6size_tEN7einsums14linear_algebra10sum_squareERK5ATypeI9ADataType5ARankEP14RemoveComplexTI9ADataTypeEP14RemoveComplexTI9ADataTypeE"></span><span id="_CPPv2II0_6size_tE00_6size_tEN7einsums14linear_algebra10sum_squareERK5ATypeI9ADataType5ARankEP14RemoveComplexTI9ADataTypeEP14RemoveComplexTI9ADataTypeE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ADataType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ARank</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1_1linear__algebra_1a8c421f6b1c4dbab016c1a305f3c9f7ce"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">einsums</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">linear_algebra</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">sum_square</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra10sum_squareEvRK5ATypeI9ADataType5ARankEP14RemoveComplexTI9ADataTypeEP14RemoveComplexTI9ADataTypeE" title="einsums::linear_algebra::sum_square::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra10sum_squareEvRK5ATypeI9ADataType5ARankEP14RemoveComplexTI9ADataTypeEP14RemoveComplexTI9ADataTypeE" title="einsums::linear_algebra::sum_square::ADataType"><span class="n"><span class="pre">ADataType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra10sum_squareEvRK5ATypeI9ADataType5ARankEP14RemoveComplexTI9ADataTypeEP14RemoveComplexTI9ADataTypeE" title="einsums::linear_algebra::sum_square::ARank"><span class="n"><span class="pre">ARank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">a</span></span>, <span class="n"><span class="pre">RemoveComplexT</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra10sum_squareEvRK5ATypeI9ADataType5ARankEP14RemoveComplexTI9ADataTypeEP14RemoveComplexTI9ADataTypeE" title="einsums::linear_algebra::sum_square::ADataType"><span class="n"><span class="pre">ADataType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">scale</span></span>, <span class="n"><span class="pre">RemoveComplexT</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra10sum_squareEvRK5ATypeI9ADataType5ARankEP14RemoveComplexTI9ADataTypeEP14RemoveComplexTI9ADataTypeE" title="einsums::linear_algebra::sum_square::ADataType"><span class="n"><span class="pre">ADataType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">sumsq</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra10sum_squareEvRK5ATypeI9ADataType5ARankEP14RemoveComplexTI9ADataTypeEP14RemoveComplexTI9ADataTypeE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Computes the square sum of a tensor. </p>
+<p>returns the values scale_out and sumsq_out such that  <div class="math notranslate nohighlight">
+\[
+  (scale_{out}^{2})*sumsq_{out} = a( 1 )^{2} +...+ a( n )^{2} + (scale_{in}^{2})*sumsq_{in},
+\]</div>
+</p>
+<p>Under the hood the LAPACK routine <code class="docutils literal notranslate"><span class="pre">lassq</span></code> is used.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">NEED</span><span class="w"> </span><span class="n">TO</span><span class="w"> </span><span class="n">ADD</span><span class="w"> </span><span class="n">AN</span><span class="w"> </span><span class="n">EXAMPLE</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>AType</strong> – The type of the tensor </p></li>
+<li><p><strong>ADataType</strong> – The underlying data type of the tensor </p></li>
+<li><p><strong>ARank</strong> – The rank of the tensor </p></li>
+</ul>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>a</strong> – The tensor to compute the sum of squares for </p></li>
+<li><p><strong>scale</strong> – scale_in and scale_out for the equation provided </p></li>
+<li><p><strong>sumsq</strong> – sumsq_in and sumsq_out for the equation provided </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra3svdENSt5tupleI6TensorI1TXL2EEE6TensorI14RemoveComplexTI1TEXL1EEE6TensorI1TXL2EEEEERK5ATypeI1T5ARankE">
+<span id="_CPPv3II0_6size_tE00_6size_tEN7einsums14linear_algebra3svdERK5ATypeI1T5ARankE"></span><span id="_CPPv2II0_6size_tE00_6size_tEN7einsums14linear_algebra3svdERK5ATypeI1T5ARankE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ARank</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1_1linear__algebra_1a04c9c2552d81c55e969a8b048088949e"></span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">einsums</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">linear_algebra</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">svd</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra3svdENSt5tupleI6TensorI1TXL2EEE6TensorI14RemoveComplexTI1TEXL1EEE6TensorI1TXL2EEEEERK5ATypeI1T5ARankE" title="einsums::linear_algebra::svd::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra3svdENSt5tupleI6TensorI1TXL2EEE6TensorI14RemoveComplexTI1TEXL1EEE6TensorI1TXL2EEEEERK5ATypeI1T5ARankE" title="einsums::linear_algebra::svd::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra3svdENSt5tupleI6TensorI1TXL2EEE6TensorI14RemoveComplexTI1TEXL1EEE6TensorI1TXL2EEEEERK5ATypeI1T5ARankE" title="einsums::linear_algebra::svd::ARank"><span class="n"><span class="pre">ARank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">_A</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="class.tensor.html#_CPPv4I0_6size_tEN7einsums6TensorE" title="einsums::Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra3svdENSt5tupleI6TensorI1TXL2EEE6TensorI14RemoveComplexTI1TEXL1EEE6TensorI1TXL2EEEEERK5ATypeI1T5ARankE" title="einsums::linear_algebra::svd::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="class.tensor.html#_CPPv4I0_6size_tEN7einsums6TensorE" title="einsums::Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">RemoveComplexT</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra3svdENSt5tupleI6TensorI1TXL2EEE6TensorI14RemoveComplexTI1TEXL1EEE6TensorI1TXL2EEEEERK5ATypeI1T5ARankE" title="einsums::linear_algebra::svd::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="class.tensor.html#_CPPv4I0_6size_tEN7einsums6TensorE" title="einsums::Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra3svdENSt5tupleI6TensorI1TXL2EEE6TensorI14RemoveComplexTI1TEXL1EEE6TensorI1TXL2EEEEERK5ATypeI1T5ARankE" title="einsums::linear_algebra::svd::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra3svdENSt5tupleI6TensorI1TXL2EEE6TensorI14RemoveComplexTI1TEXL1EEE6TensorI1TXL2EEEEERK5ATypeI1T5ARankE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra13svd_nullspaceE6TensorI1TXL2EEERK5ATypeI1T4RankE">
+<span id="_CPPv3II0_6size_tE00_6size_tEN7einsums14linear_algebra13svd_nullspaceERK5ATypeI1T4RankE"></span><span id="_CPPv2II0_6size_tE00_6size_tEN7einsums14linear_algebra13svd_nullspaceERK5ATypeI1T4RankE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Rank</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1_1linear__algebra_1a70e78c9b0cbd787952c207bf4e04046d"></span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">einsums</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">linear_algebra</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">svd_nullspace</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra13svd_nullspaceE6TensorI1TXL2EEERK5ATypeI1T4RankE" title="einsums::linear_algebra::svd_nullspace::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra13svd_nullspaceE6TensorI1TXL2EEERK5ATypeI1T4RankE" title="einsums::linear_algebra::svd_nullspace::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra13svd_nullspaceE6TensorI1TXL2EEERK5ATypeI1T4RankE" title="einsums::linear_algebra::svd_nullspace::Rank"><span class="n"><span class="pre">Rank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">_A</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><a class="reference internal" href="class.tensor.html#_CPPv4I0_6size_tEN7einsums6TensorE" title="einsums::Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra13svd_nullspaceE6TensorI1TXL2EEERK5ATypeI1T4RankE" title="einsums::linear_algebra::svd_nullspace::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4II0_6size_tE00_6size_tEN7einsums14linear_algebra13svd_nullspaceE6TensorI1TXL2EEERK5ATypeI1T4RankE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4II0_6size_tE0_6size_tI0_6size_tE0_6size_t0_bEN7einsums14linear_algebra4syevEvP5ATypeI1T5ARankEP5WTypeI1T5WRankE">
+<span id="_CPPv3II0_6size_tE0_6size_tI0_6size_tE0_6size_t0_bEN7einsums14linear_algebra4syevEP5ATypeI1T5ARankEP5WTypeI1T5WRankE"></span><span id="_CPPv2II0_6size_tE0_6size_tI0_6size_tE0_6size_t0_bEN7einsums14linear_algebra4syevEP5ATypeI1T5ARankEP5WTypeI1T5WRankE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ARank</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">WType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">WRank</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ComputeEigenvectors</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1_1linear__algebra_1a44d505a9ff4b68dad62f9a36ee0c9199"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">einsums</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">linear_algebra</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">syev</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_tI0_6size_tE0_6size_t0_bEN7einsums14linear_algebra4syevEvP5ATypeI1T5ARankEP5WTypeI1T5WRankE" title="einsums::linear_algebra::syev::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_tI0_6size_tE0_6size_t0_bEN7einsums14linear_algebra4syevEvP5ATypeI1T5ARankEP5WTypeI1T5WRankE" title="einsums::linear_algebra::syev::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_tI0_6size_tE0_6size_t0_bEN7einsums14linear_algebra4syevEvP5ATypeI1T5ARankEP5WTypeI1T5WRankE" title="einsums::linear_algebra::syev::ARank"><span class="n"><span class="pre">ARank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">A</span></span>, <a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_tI0_6size_tE0_6size_t0_bEN7einsums14linear_algebra4syevEvP5ATypeI1T5ARankEP5WTypeI1T5WRankE" title="einsums::linear_algebra::syev::WType"><span class="n"><span class="pre">WType</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_tI0_6size_tE0_6size_t0_bEN7einsums14linear_algebra4syevEvP5ATypeI1T5ARankEP5WTypeI1T5WRankE" title="einsums::linear_algebra::syev::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_tI0_6size_tE0_6size_t0_bEN7einsums14linear_algebra4syevEvP5ATypeI1T5ARankEP5WTypeI1T5WRankE" title="einsums::linear_algebra::syev::WRank"><span class="n"><span class="pre">WRank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">W</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4II0_6size_tE0_6size_tI0_6size_tE0_6size_t0_bEN7einsums14linear_algebra4syevEvP5ATypeI1T5ARankEP5WTypeI1T5WRankE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Computes all eigenvalues and, optionally, eigenvectors of a real symmetric matrix. </p>
+<p>This routines assumes the upper triangle of A is stored. The lower triangle is not referenced.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Create tensors A and b.</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">create_tensor</span><span class="p">(</span><span class="s">&quot;A&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">create_tensor</span><span class="p">(</span><span class="s">&quot;b&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
+
+<span class="c1">// Fill A with the symmetric data.</span>
+<span class="n">A</span><span class="p">.</span><span class="n">vector_data</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">VectorData</span><span class="p">{</span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="mf">2.0</span><span class="p">,</span><span class="w"> </span><span class="mf">3.0</span><span class="p">,</span><span class="w"> </span><span class="mf">2.0</span><span class="p">,</span><span class="w"> </span><span class="mf">4.0</span><span class="p">,</span><span class="w"> </span><span class="mf">5.0</span><span class="p">,</span><span class="w"> </span><span class="mf">3.0</span><span class="p">,</span><span class="w"> </span><span class="mf">5.0</span><span class="p">,</span><span class="w"> </span><span class="mf">6.0</span><span class="p">};</span>
+
+<span class="c1">// On exit, A is destroyed and replaced with the eigenvectors.</span>
+<span class="c1">// b is replaced with the eigenvalues in ascending order.</span>
+<span class="n">einsums</span><span class="o">::</span><span class="n">linear_algebra</span><span class="o">::</span><span class="n">syev</span><span class="p">(</span><span class="o">&amp;</span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">b</span><span class="p">);</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>AType</strong> – The type of the tensor A </p></li>
+<li><p><strong>ARank</strong> – The rank of the tensor A (required to be 2) </p></li>
+<li><p><strong>WType</strong> – The type of the tensor W </p></li>
+<li><p><strong>WRank</strong> – The rank of the tensor W (required to be 1) </p></li>
+<li><p><strong>T</strong> – The underlying data type (required to be real) </p></li>
+<li><p><strong>ComputeEigenvectors</strong> – If true, eigenvalues and eigenvectors are computed. If false, only eigenvalues are computed. Defaults to true. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>A</strong> – On entry, the symmetric matrix A in the leading N-by-N upper triangular part of A. On exit, if eigenvectors are requested, the orthonormal eigenvectors of A. Any data previously stored in A is destroyed. </p></li>
+<li><p><strong>W</strong> – On exit, the eigenvalues in ascending order. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4II0_6size_tE0_6size_t0_bEN7einsums14linear_algebra4syevENSt5tupleI6TensorI1TXL2EEE6TensorI1TXL1EEEEERK5ATypeI1T5ARankE">
+<span id="_CPPv3II0_6size_tE0_6size_t0_bEN7einsums14linear_algebra4syevERK5ATypeI1T5ARankE"></span><span id="_CPPv2II0_6size_tE0_6size_t0_bEN7einsums14linear_algebra4syevERK5ATypeI1T5ARankE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ARank</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ComputeEigenvectors</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceeinsums_1_1linear__algebra_1af3ea0ad537f6f7435a2a7ed9556e6180"></span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">einsums</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">linear_algebra</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">syev</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_t0_bEN7einsums14linear_algebra4syevENSt5tupleI6TensorI1TXL2EEE6TensorI1TXL1EEEEERK5ATypeI1T5ARankE" title="einsums::linear_algebra::syev::AType"><span class="n"><span class="pre">AType</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_t0_bEN7einsums14linear_algebra4syevENSt5tupleI6TensorI1TXL2EEE6TensorI1TXL1EEEEERK5ATypeI1T5ARankE" title="einsums::linear_algebra::syev::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_t0_bEN7einsums14linear_algebra4syevENSt5tupleI6TensorI1TXL2EEE6TensorI1TXL1EEEEERK5ATypeI1T5ARankE" title="einsums::linear_algebra::syev::ARank"><span class="n"><span class="pre">ARank</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="class.tensor.html#_CPPv4I0_6size_tEN7einsums6TensorE" title="einsums::Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_t0_bEN7einsums14linear_algebra4syevENSt5tupleI6TensorI1TXL2EEE6TensorI1TXL1EEEEERK5ATypeI1T5ARankE" title="einsums::linear_algebra::syev::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="class.tensor.html#_CPPv4I0_6size_tEN7einsums6TensorE" title="einsums::Tensor"><span class="n"><span class="pre">Tensor</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4II0_6size_tE0_6size_t0_bEN7einsums14linear_algebra4syevENSt5tupleI6TensorI1TXL2EEE6TensorI1TXL1EEEEERK5ATypeI1T5ARankE" title="einsums::linear_algebra::syev::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4II0_6size_tE0_6size_t0_bEN7einsums14linear_algebra4syevENSt5tupleI6TensorI1TXL2EEE6TensorI1TXL1EEEEERK5ATypeI1T5ARankE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="function.create.tensors.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Tensor creation functions</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="function.low_level.linear_algebra.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Low-Level Linear Algebra (BLAS, LAPACK, etc.)</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#blas-level-1-functions">BLAS Level 1 Functions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#blas-level-2-functions">BLAS Level 2 Functions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#blas-level-3-functions">BLAS Level 3 Functions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lapack-functions">LAPACK Functions</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#lapack-linear-equation-computational-functions">LAPACK Linear Equation Computational Functions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#to-be-classified">To be classified</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022-2024, Einsums Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.2.1.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.2.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

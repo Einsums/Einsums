@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Einsums: the absolute basics for beginners &#8212; Einsums 0.4.1 documentation</title>
+    <title>Einsums: the absolute basics for beginners &#8212; Einsums 0.6.0 documentation</title>
   
   
   
@@ -404,7 +404,8 @@ a wide variety of mathematical operations on tensors.</p>
 <p>You have two choices for installing Einsums, compiling from source directly or by using conda.
 Compiling from source allows you to enable/disable certain features and to include debugging
 options into your code.</p>
-<p>If you desire to compile from source, see .</p>
+<p>If you desire to compile from source, visit
+<a class="reference internal" href="../building/index.html#building-from-source"><span class="std std-ref">Building from source</span></a>.</p>
 <p>If you have Python, you can install Einsums with:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="n">einsums</span>
 </pre></div>
@@ -416,19 +417,16 @@ options into your code.</p>
 If you are using CMake use can use the <code class="code docutils literal notranslate"><span class="pre">find_package</span></code> function. Then with the
 <code class="code docutils literal notranslate"><span class="pre">target_link_libraries</span></code> function you can link against Einsums.</p>
 <p>For example, in your CMakeLists.txt file you can have lines similar to the following:</p>
-<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">find_package</span><span class="p">(</span><span class="s">Einsums</span><span class="w"> </span><span class="s">0.3</span><span class="w"> </span><span class="s">CONFIG</span><span class="p">)</span>
+<pre class="literal-block">find_package(Einsums 0.6.0 CONFIG)
 
-<span class="nb">add_executable</span><span class="p">(</span><span class="s">sample</span><span class="w"> </span><span class="s">main.cpp</span><span class="p">)</span>
-<span class="nb">target_link_libraries</span><span class="p">(</span><span class="s">samples</span><span class="w"> </span><span class="s">Einsums::einsums</span><span class="p">)</span>
-</pre></div>
-</div>
+add_executable(sample main.cpp)
+target_link_libraries(samples Einsums::einsums)</pre>
 <p>Then in your main.cpp you can have something like</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;einsums.hpp&gt;</span>
 
 <span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="k">using</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">einsums</span><span class="p">;</span>
 
-<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_tensor</span><span class="p">(</span><span class="s">&quot;A&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">create_tensor</span><span class="p">(</span><span class="s">&quot;A&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
 
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 <span class="p">}</span>
@@ -439,16 +437,15 @@ If you are using CMake use can use the <code class="code docutils literal notran
 <h2>Reading the example code<a class="headerlink" href="#reading-the-example-code" title="Permalink to this heading">#</a></h2>
 <p>If you are not already comfortable with reading tutorials that contain a lot code,
 you might not know how to interpret a code block that looks
-like this:: c++</p>
-<blockquote>
-<div><p>auto A = einsums::create_random_tensor(6)
-auto B = einsums::Tensor{std::move(A), -1, 6}
-B.shape()
-–&gt; Dims{1, 6 }</p>
-</div></blockquote>
+like this:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">create_random_tensor</span><span class="p">(</span><span class="mi">6</span><span class="p">);</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">Tensor</span><span class="p">{</span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">A</span><span class="p">),</span><span class="w"> </span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">};</span>
+<span class="n">B</span><span class="p">.</span><span class="n">shape</span><span class="p">();</span><span class="w">  </span><span class="c1">// --&gt; Dims{1, 6 }</span>
+</pre></div>
+</div>
 <p>If you are not familiar with this style, it’s very easy to understand.
 If you see do not see <code class="docutils literal notranslate"><span class="pre">--&gt;</span></code>, you’re looking at the <strong>input</strong>, or the code that
-you would type. Everything that has <code class="docutils literal notranslate"><span class="pre">--&gt;</span></code> in front of it is potential
+you would type. Everything that is comment and has <code class="docutils literal notranslate"><span class="pre">--&gt;</span></code> in front of it is potential
 <strong>output</strong> or a representation of what you should expect.  The lines with
 <code class="docutils literal notranslate"><span class="pre">--&gt;</span></code> should not be copied into your code and will cause a compile error
 if types or pasted into your code.</p>
@@ -456,12 +453,12 @@ if types or pasted into your code.</p>
 <section id="how-to-create-a-tensor">
 <h2>How to create a Tensor<a class="headerlink" href="#how-to-create-a-tensor" title="Permalink to this heading">#</a></h2>
 <p>To create an Einsums Tensor, you can use the function <a class="reference internal" href="../reference/function.create.tensors.html#_CPPv4I0DpEN7einsums13create_tensorEDaKNSt6stringEDp4Args" title="einsums::create_tensor"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">einsums::create_tensor()</span></code></a>.</p>
-<p>All you need to do to create a simple tensor is pass a name for the tensor and the
+<p>All you need to do to create a basic tensor is pass a name for the tensor and the
 dimensionality of each index.:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;einsums.hpp&gt;</span>
 
 <span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="o">**</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">create_tensor</span><span class="p">(</span><span class="s">&quot;A&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">create_tensor</span><span class="p">(</span><span class="s">&quot;A&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span><span class="w">  </span><span class="c1">// --&gt; einsums::Tensor&lt;2, double&gt;</span>
 
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 <span class="p">}</span>
@@ -480,6 +477,7 @@ write the data type explicitly if we want to.:</p>
 
 <span class="w">    </span><span class="c1">// Allow the compiler to determine things.</span>
 <span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">C</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">create_tensor</span><span class="p">(</span><span class="s">&quot;C&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span>
+
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 <span class="p">}</span>
 </pre></div>
@@ -492,8 +490,7 @@ can explicitly specify which data type you want use.:</p>
 <span class="k">auto</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="p">{</span><span class="s">&quot;B&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">};</span>
 </pre></div>
 </div>
-<p>Einsums and the underlying mathematical operations also supports the use of
-complex numbers.:</p>
+<p>Einsums also supports the use of complex numbers.:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">C</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">create_tensor</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">complex</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="s">&quot;C&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span>
 
 <span class="k">auto</span><span class="w"> </span><span class="n">D</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">einsums</span><span class="o">::</span><span class="n">Tensor</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">complex</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;&gt;</span><span class="p">{</span><span class="s">&quot;D&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">};</span>
