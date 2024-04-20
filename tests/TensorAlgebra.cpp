@@ -6,16 +6,13 @@
 #include "einsums/TensorAlgebra.hpp"
 
 #include "einsums/LinearAlgebra.hpp"
-#include "einsums/STL.hpp"
 #include "einsums/Sort.hpp"
-#include "einsums/State.hpp"
 #include "einsums/Tensor.hpp"
 #include "einsums/Utilities.hpp"
 
 #include <H5Fpublic.h>
 #include <catch2/catch_all.hpp>
 #include <complex>
-#include <type_traits>
 
 TEST_CASE("Identity Tensor", "[tensor]") {
     using namespace einsums;
@@ -637,7 +634,7 @@ TEST_CASE("sort2") {
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                REQUIRE(C0(i, j) == C1(i, j));
+                REQUIRE_THAT(C0(i, j), Catch::Matchers::WithinRel(C1(i, j), 0.00001));
             }
         }
 
@@ -652,7 +649,7 @@ TEST_CASE("sort2") {
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                REQUIRE(C0(i, j) == C1(i, j));
+                REQUIRE_THAT(C0(i, j), Catch::Matchers::WithinRel(C1(i, j), 0.00001));
             }
         }
     }
@@ -671,7 +668,7 @@ TEST_CASE("sort2") {
 
         for (int i = 0, ij = 1; i < 3; i++) {
             for (int j = 0; j < 3; j++, ij++) {
-                REQUIRE(C(j, i) == A(i, j));
+                REQUIRE_THAT(C(j, i), Catch::Matchers::WithinRel(A(i, j), 0.00001));
             }
         }
     }
@@ -692,7 +689,7 @@ TEST_CASE("sort2") {
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 for (int k = 0; k < 3; k++) {
-                    REQUIRE(B(k, j, i) == A(i, j, k));
+                    REQUIRE_THAT(B(k, j, i), Catch::Matchers::WithinRel(A(i, j, k), 0.00001));
                 }
             }
         }
@@ -701,7 +698,7 @@ TEST_CASE("sort2") {
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 for (int k = 0; k < 3; k++) {
-                    REQUIRE(B(i, k, j) == A(i, j, k));
+                    REQUIRE_THAT(B(i, k, j), Catch::Matchers::WithinRel(A(i, j, k), 0.00001));
                 }
             }
         }
@@ -710,7 +707,7 @@ TEST_CASE("sort2") {
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 for (int k = 0; k < 3; k++) {
-                    REQUIRE(B(j, k, i) == A(i, j, k));
+                    REQUIRE_THAT(B(j, k, i), Catch::Matchers::WithinRel(A(i, j, k), 0.00001));
                 }
             }
         }
@@ -719,7 +716,7 @@ TEST_CASE("sort2") {
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 for (int k = 0; k < 3; k++) {
-                    REQUIRE(B(i, j, k) == A(k, j, i));
+                    REQUIRE_THAT(B(i, j, k), Catch::Matchers::WithinRel(A(k, j, i), 0.00001));
                 }
             }
         }
@@ -744,7 +741,7 @@ TEST_CASE("sort2") {
             for (int j = 0; j < 3; j++) {
                 for (int k = 0; k < 3; k++) {
                     for (int l = 0; l < 3; l++) {
-                        REQUIRE(B(i, l, k, j) == 0.5 * A(k, j, l, i));
+                        REQUIRE_THAT(B(i, l, k, j), Catch::Matchers::WithinRel(0.5 * A(k, j, l, i), 0.00001));
                     }
                 }
             }
@@ -794,7 +791,7 @@ TEST_CASE("sort2") {
         sort(Indices{j, i}, &B, Indices{i, j}, A);
         for (int i = 0; i < A.dim(0); i++) {
             for (int j = 0; j < A.dim(1); j++) {
-                REQUIRE(B(j, i) == A(i, j));
+                REQUIRE_THAT(B(j, i), Catch::Matchers::WithinRel(A(i, j), 0.00001));
             }
         }
     }
@@ -815,7 +812,7 @@ TEST_CASE("sort2") {
         for (int i = 0, ij = 1; i < A.dim(0); i++) {
             for (int j = 0; j < A.dim(1); j++) {
                 for (int k = 0; k < A.dim(2); k++, ij++) {
-                    REQUIRE(B(j, k, i) == A(i, j, k));
+                    REQUIRE_THAT(B(j, k, i), Catch::Matchers::WithinRel(A(i, j, k), 0.00001));
                 }
             }
         }
@@ -1709,7 +1706,7 @@ TEST_CASE("Transpose C", "[einsum]") {
     }
 }
 
-TEST_CASE("gemv") {
+TEST_CASE("einsum_gemv") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;

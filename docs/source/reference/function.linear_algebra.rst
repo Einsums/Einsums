@@ -43,7 +43,7 @@ and rank-2 matrix updates, and solution of triangular systems.
 
 .. doxygenfunction:: einsums::linear_algebra::axpby(T alpha, const XType<T, Rank> &X, T beta, YType<T, Rank> *Y)
 
-.. doxygenfunction:: einsums::linear_algebra::gemv(const T alpha, const AType<T, ARank> &A, const XType<T, XYRank> &z, const T beta, YType<T, XYRank> *y)
+.. doxygenfunction:: einsums::linear_algebra::gemv(const U alpha, const AType<T, ARank> &A, const XType<T, XYRank> &z, const U beta, YType<T, XYRank> *y)
 
 .. doxygenfunction:: einsums::linear_algebra::ger(T alpha, const XYType<T, XYRank> &X, const XYType<T, XYRank> &Y, AType<T, ARank> *A)
 
@@ -54,9 +54,9 @@ BLAS Level 3 routines perform matrix-matrix operations, such as matrix-matrix mu
 solutions of triangular systems.
 
 .. The LONG function signature is needed because there are multiple functions named gemm and it's how to differentiate them in the documentation.
-.. doxygenfunction:: einsums::linear_algebra::gemm(const T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const T beta, CType<T, Rank> *C)(const T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const T beta, CType<T, Rank> *C)
+.. doxygenfunction:: einsums::linear_algebra::gemm(const U alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const U beta, CType<T, Rank> *C)(const T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const T beta, CType<T, Rank> *C)
 
-.. doxygenfunction:: einsums::linear_algebra::gemm(const T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B)
+.. doxygenfunction:: einsums::linear_algebra::gemm(const U alpha, const AType<T, Rank> &A, const BType<T, Rank> &B)
 
 LAPACK Functions
 ----------------

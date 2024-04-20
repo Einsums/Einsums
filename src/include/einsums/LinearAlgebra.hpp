@@ -109,15 +109,16 @@ void sum_square(const AType<ADataType, ARank> &a, RemoveComplexT<ADataType> *sca
  * @tparam T the underlying data type
  */
 template <bool TransA, bool TransB, template <typename, size_t> typename AType, template <typename, size_t> typename BType,
-          template <typename, size_t> typename CType, size_t Rank, typename T>
+          template <typename, size_t> typename CType, size_t Rank, typename T, typename U>
     requires requires {
         requires CoreRankTensor<AType<T, Rank>, 2, T>;
         requires CoreRankTensor<BType<T, Rank>, 2, T>;
         requires CoreRankTensor<CType<T, Rank>, 2, T>;
         requires !CoreRankBlockTensor<CType<T, Rank>, 2, T> ||
                      (CoreRankBlockTensor<AType<T, Rank>, 2, T> && CoreRankBlockTensor<BType<T, Rank>, 2, T>);
+        requires std::convertible_to<U, T>;
     }
-void gemm(const T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const T beta, CType<T, Rank> *C) {
+void gemm(const U alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const U beta, CType<T, Rank> *C) {
     if constexpr (einsums::detail::IsIncoreRankBlockTensorV<AType<T, Rank>, Rank, T> &&
                   einsums::detail::IsIncoreRankBlockTensorV<BType<T, Rank>, Rank, T> &&
                   einsums::detail::IsIncoreRankBlockTensorV<CType<T, Rank>, Rank, T>) {
@@ -131,21 +132,22 @@ void gemm(const T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const
             if (A.block_dim(i) == 0) {
                 continue;
             }
-            gemm<TransA, TransB>(alpha, A.block(i), B.block(i), beta, &(C->block(i)));
+            gemm<TransA, TransB>(static_cast<T>(alpha), A.block(i), B.block(i), static_cast<T>(beta), &(C->block(i)));
         }
 
         return;
     } else if constexpr (einsums::detail::IsIncoreRankBlockTensorV<AType<T, Rank>, Rank, T> &&
                          einsums::detail::IsIncoreRankBlockTensorV<BType<T, Rank>, Rank, T>) {
         if (A.num_blocks() != B.num_blocks()) {
-            gemm<TransA, TransB>(alpha, (Tensor<T, 2>)A, (Tensor<T, 2>)B, beta, C);
+            gemm<TransA, TransB>(static_cast<T>(alpha), (Tensor<T, 2>)A, (Tensor<T, 2>)B, static_cast<T>(beta), C);
         } else {
             EINSUMS_OMP_PARALLEL_FOR
             for (int i = 0; i < A.num_blocks(); i++) {
                 if (A.block_dim(i) == 0) {
                     continue;
                 }
-                gemm<TransA, TransB>(alpha, A.block(i), B.block(i), beta, &((*C)(A.block_range(i), A.block_range(i))));
+                gemm<TransA, TransB>(static_cast<T>(alpha), A.block(i), B.block(i), static_cast<T>(beta),
+                                     &((*C)(A.block_range(i), A.block_range(i))));
             }
         }
 
@@ -156,7 +158,8 @@ void gemm(const T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const
         auto m = C->dim(0), n = C->dim(1), k = TransA ? A.dim(0) : A.dim(1);
         auto lda = A.stride(0), ldb = B.stride(0), ldc = C->stride(0);
 
-        blas::gemm(TransA ? 't' : 'n', TransB ? 't' : 'n', m, n, k, alpha, A.data(), lda, B.data(), ldb, beta, C->data(), ldc);
+        blas::gemm(TransA ? 't' : 'n', TransB ? 't' : 'n', m, n, k, static_cast<T>(alpha), A.data(), lda, B.data(), ldb,
+                   static_cast<T>(beta), C->data(), ldc);
     }
 }
 
@@ -181,17 +184,18 @@ void gemm(const T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const
  * @tparam T the underlying data type
  */
 template <bool TransA, bool TransB, template <typename, size_t> typename AType, template <typename, size_t> typename BType, size_t Rank,
-          typename T>
+          typename T, typename U>
     requires requires {
         requires CoreRankTensor<AType<T, Rank>, 2, T>;
         requires CoreRankTensor<BType<T, Rank>, 2, T>;
+        requires std::convertible_to<U, T>;
     }
-auto gemm(const T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B) -> Tensor<T, 2> {
+auto gemm(const U alpha, const AType<T, Rank> &A, const BType<T, Rank> &B) -> Tensor<T, 2> {
     LabeledSection0();
 
     Tensor<T, 2> C{"gemm result", TransA ? A.dim(1) : A.dim(0), TransB ? B.dim(0) : B.dim(1)};
 
-    gemm<TransA, TransB>(alpha, A, B, 0.0, &C);
+    gemm<TransA, TransB>(static_cast<T>(alpha), A, B, static_cast<T>(0.0), &C);
 
     return C;
 }
@@ -224,13 +228,14 @@ auto gemm(const T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B) -> Te
  * @param y Output vector y
  */
 template <bool TransA, template <typename, size_t> typename AType, template <typename, size_t> typename XType,
-          template <typename, size_t> typename YType, size_t ARank, size_t XYRank, typename T>
+          template <typename, size_t> typename YType, size_t ARank, size_t XYRank, typename T, typename U>
     requires requires {
         requires CoreRankTensor<AType<T, ARank>, 2, T>;
         requires CoreRankTensor<XType<T, XYRank>, 1, T>;
         requires CoreRankTensor<YType<T, XYRank>, 1, T>;
+        requires std::convertible_to<U, T>; // Make sure the alpha and beta can be converted to T
     }
-void gemv(const T alpha, const AType<T, ARank> &A, const XType<T, XYRank> &x, const T beta, YType<T, XYRank> *y) {
+void gemv(const U alpha, const AType<T, ARank> &A, const XType<T, XYRank> &z, const U beta, YType<T, XYRank> *y) {
     if constexpr (einsums::detail::IsIncoreRankBlockTensorV<AType<T, ARank>, ARank, T>) {
 
         EINSUMS_OMP_PARALLEL_FOR
@@ -238,17 +243,17 @@ void gemv(const T alpha, const AType<T, ARank> &A, const XType<T, XYRank> &x, co
             if (A.block_dim(i) == 0) {
                 continue;
             }
-            gemv(alpha, A.block(i), x(A.block_range(i)), beta, &((*y)(A.block_range(i))));
+            gemv(static_cast<T>(alpha), A.block(i), x(A.block_range(i)), static_cast<T>(beta), &((*y)(A.block_range(i))));
         }
 
     } else {
         LabeledSection1(fmt::format("<TransA={}>", TransA));
         auto m = A.dim(0), n = A.dim(1);
         auto lda  = A.stride(0);
-        auto incx = x.stride(0);
+        auto incx = z.stride(0);
         auto incy = y->stride(0);
 
-        blas::gemv(TransA ? 't' : 'n', m, n, alpha, A.data(), lda, x.data(), incx, beta, y->data(), incy);
+        blas::gemv(TransA ? 't' : 'n', m, n, static_cast<T>(alpha), A.data(), lda, z.data(), incx, static_cast<T>(beta), y->data(), incy);
     }
 }
 
@@ -436,6 +441,7 @@ auto gesv(AType<T, ARank> *A, BType<T, BRank> *B) -> int {
     return info;
 }
 
+#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
 /**
  * Computes all eigenvalues and, optionally, eigenvectors of a real symmetric matrix.
  *
@@ -472,6 +478,7 @@ auto syev(const AType<T, ARank> &A) -> std::tuple<BlockTensor<T, 2>, Tensor<T, 1
 
     return std::make_tuple(a, w);
 }
+#endif
 
 template <template <typename, size_t> typename AType, size_t ARank, typename T, bool ComputeEigenvectors = true>
     requires requires {
