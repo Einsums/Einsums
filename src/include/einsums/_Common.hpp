@@ -28,7 +28,7 @@
 #define BEGIN_EINSUMS_NAMESPACE_HPP(x)                                                                                                     \
     namespace x {                                                                                                                          \
     namespace detail {                                                                                                                     \
-    EINSUMS_EXPORT const std::string& get_namespace();                                                                                     \
+    EINSUMS_EXPORT const std::string &get_namespace();                                                                                     \
     }
 
 /**
@@ -46,11 +46,13 @@
     namespace {                                                                                                                            \
     std::string s_Namespace = #x;                                                                                                          \
     }                                                                                                                                      \
-    EINSUMS_EXPORT const std::string& get_namespace() { return s_Namespace; }                                                              \
+    EINSUMS_EXPORT const std::string &get_namespace() {                                                                                    \
+        return s_Namespace;                                                                                                                \
+    }                                                                                                                                      \
     }
 
 #if !defined(EINSUMS_ZERO)
-#define EINSUMS_ZERO (1e-10)
+#    define EINSUMS_ZERO (1e-10)
 #endif
 
 /**
@@ -98,40 +100,26 @@ auto EINSUMS_EXPORT initialize() -> int;
  */
 void EINSUMS_EXPORT finalize(bool timerReport = false);
 
-// The following detail and "using" statements below are needed to ensure Dims, Strides, and Offsets are strong-types in C++
-namespace detail {
+#define DEFINE_STRUCT(Name, UnderlyingType)                                                                                                \
+    template <std::size_t Rank>                                                                                                            \
+    struct Name : std::array<std::int64_t, Rank> {                                                                                         \
+        template <typename... Args>                                                                                                        \
+        constexpr explicit Name(Args... args) : std::array<std::int64_t, Rank>{static_cast<std::int64_t>(args)...} {                       \
+        }                                                                                                                                  \
+    };                                                                                                                                     \
+    template <typename... Args>                                                                                                            \
+    Name(Args... args)->Name<sizeof...(Args)> /**/
 
-struct DimType {};
-struct StrideType {};
-struct OffsetType {};
-struct CountType {};
-struct RangeType {};
-struct ChunkType {};
+DEFINE_STRUCT(Dim, std::int64_t);
+DEFINE_STRUCT(Stride, std::size_t);
+DEFINE_STRUCT(Offset, std::size_t);
+DEFINE_STRUCT(Count, std::size_t);
+DEFINE_STRUCT(Chunk, std::int64_t);
 
-template <typename T, std::size_t Rank, typename UnderlyingType = std::size_t>
-struct Array : public std::array<UnderlyingType, Rank> {
+struct Range : std::array<std::int64_t, 2> {
     template <typename... Args>
-    constexpr explicit Array(Args... args) : std::array<UnderlyingType, Rank>{static_cast<UnderlyingType>(args)...} {}
-    using Type = T;
+    constexpr explicit Range(Args... args) : std::array<std::int64_t, 2>{static_cast<std::int64_t>(args)...} {}
 };
-} // namespace detail
-
-template <std::size_t Rank>
-using Dim = detail::Array<detail::DimType, Rank, std::int64_t>;
-
-template <std::size_t Rank>
-using Stride = detail::Array<detail::StrideType, Rank>;
-
-template <std::size_t Rank>
-using Offset = detail::Array<detail::OffsetType, Rank>;
-
-template <std::size_t Rank>
-using Count = detail::Array<detail::CountType, Rank>;
-
-using Range = detail::Array<detail::RangeType, 2, std::int64_t>;
-
-template <std::size_t Rank>
-using Chunk = detail::Array<detail::ChunkType, Rank, std::int64_t>;
 
 struct AllT {};
 static struct AllT All; // NOLINT
