@@ -18,8 +18,8 @@ TEST_CASE("Tensor creation", "[tensor]") {
     REQUIRE((A.dim(0) == 1 && A.dim(1) == 1));
     REQUIRE((B.dim(0) == 1 && B.dim(1) == 1));
 
-    A.resize(einsums::Dim<2>{3, 3});
-    B.resize(einsums::Dim<2>{3, 3});
+    A.resize(einsums::Dim{3, 3});
+    B.resize(einsums::Dim{3, 3});
 
     auto C = create_tensor<double>("C", 3, 3);
 
@@ -140,11 +140,11 @@ TEST_CASE("Tensor Invert") {
 TEST_CASE("TensorView creation", "[tensor]") {
     // With the aid of deduction guides we can choose to not specify the rank on the tensor
     einsums::Tensor     A("A", 3, 3, 3);
-    einsums::TensorView viewA(A, einsums::Dim<2>{3, 9});
+    einsums::TensorView viewA(A, einsums::Dim{3, 9});
 
     // Since we are changing the underlying datatype to float the deduction guides will not work.
     einsums::Tensor     fA("A", 3, 3, 3);
-    einsums::TensorView fviewA(fA, einsums::Dim<2>{3, 9});
+    einsums::TensorView fviewA(fA, einsums::Dim{3, 9});
 
     for (int i = 0, ijk = 0; i < 3; i++)
         for (int j = 0; j < 3; j++)
@@ -226,7 +226,7 @@ TEST_CASE("Tensor-3D HDF5") {
 TEST_CASE("TensorView-2D HDF5") {
     SECTION("Subview Offset{0,0,0}") {
         auto                           A = einsums::create_random_tensor("A", 3, 3, 3);
-        einsums::TensorView<double, 2> viewA(A, einsums::Dim<2>{3, 9});
+        einsums::TensorView<double, 2> viewA(A, einsums::Dim{3, 9});
 
         REQUIRE((A.dim(0) == 3 && A.dim(1) == 3 && A.dim(2) == 3));
         REQUIRE((viewA.dim(0) == 3 && viewA.dim(1) == 9));
@@ -251,7 +251,7 @@ TEST_CASE("TensorView Ranges") {
 
     SECTION("Subviews") {
         auto                C = einsums::create_random_tensor("C", 3, 3);
-        einsums::TensorView viewC(C, einsums::Dim<2>{2, 2}, einsums::Offset<2>{1, 1}, einsums::Stride<2>{3, 1});
+        einsums::TensorView viewC(C, einsums::Dim{2, 2}, einsums::Offset{1, 1}, einsums::Stride{3, 1});
 
         // einsums::println("C strides: %zu %zu\n", C.strides()[0], C.strides()[1]);
 
@@ -349,6 +349,34 @@ TEST_CASE("types") {
     SECTION("double->complex<float>") {
         types_test<std::complex<float>, double>();
     }
+}
+
+template <typename T>
+void test_tensor_from_tensorview() {
+    using namespace einsums;
+
+    auto   A  = create_incremented_tensor("A", 10, 10);
+    auto   vA = TensorView(A, Dim{2, 2}, Offset{4, 4});
+    Tensor B  = vA;
+
+    REQUIRE(B(0, 0) == A(4, 4));
+    REQUIRE(B(0, 1) == A(4, 5));
+    REQUIRE(B(1, 0) == A(5, 4));
+    REQUIRE(B(1, 1) == A(5, 5));
+}
+
+TEST_CASE("tensor_tensorview") {
+    test_tensor_from_tensorview<float>();
+    test_tensor_from_tensorview<double>();
+    test_tensor_from_tensorview<std::complex<float>>();
+    test_tensor_from_tensorview<std::complex<double>>();
+}
+
+void test_tensorview() {
+    using namespace einsums;
+
+    auto A = create_incremented_tensor("A", 10, 10);
+    //    auto B = A(Dim{2, 2}, Offset{4, 4});
 }
 
 template <einsums::NotComplex T>

@@ -319,7 +319,7 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
      *
      * @param other The tensor view to copy.
      */
-    explicit Tensor(const TensorView<T, Rank> &other) : _name{other._name}, _dims{other._dims} {
+    Tensor(const TensorView<T, Rank> &other) : _name{other._name}, _dims{other._dims} {
         struct Stride {
             size_t value{1};
             Stride() = default;
@@ -458,6 +458,8 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
         requires requires {
             requires NoneOfType<AllT, MultiIndex...>;
             requires NoneOfType<Range, MultiIndex...>;
+            requires NoneOfType<Dim<Rank>, MultiIndex...>;
+            requires NoneOfType<Offset<Rank>, MultiIndex...>;
         }
     auto data(MultiIndex... index) -> T * {
 #if !defined(DOXYGEN_SHOULD_SKIP_THIS)
@@ -488,6 +490,8 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
         requires requires {
             requires NoneOfType<AllT, MultiIndex...>;
             requires NoneOfType<Range, MultiIndex...>;
+            requires NoneOfType<Dim<Rank>, MultiIndex...>;
+            requires NoneOfType<Offset<Rank>, MultiIndex...>;
         }
     auto operator()(MultiIndex... index) const -> const T & {
 
@@ -517,6 +521,8 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
         requires requires {
             requires NoneOfType<AllT, MultiIndex...>;
             requires NoneOfType<Range, MultiIndex...>;
+            requires NoneOfType<Dim<Rank>, MultiIndex...>;
+            requires NoneOfType<Offset<Rank>, MultiIndex...>;
         }
     auto operator()(MultiIndex... index) -> T & {
 
