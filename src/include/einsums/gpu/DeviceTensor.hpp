@@ -300,10 +300,10 @@ __global__ void copy_to_tensor(T *to_data, const size_t *to_dims, const size_t *
 
     size_t inds[Rank];
 
-    while (curr_element < elements_adjusted) {
+    while (curr_element < elements) {
 
         // Convert index into index combination.
-        index_to_combination<Rank>(curr_element % elements, to_dims, inds);
+        index_to_combination<Rank>(curr_element, to_dims, inds);
 
         // Map index combination onto the view.
         size_t from_ind = combination_to_index<Rank>(inds, from_dims, from_strides);
@@ -347,10 +347,10 @@ __global__ void copy_to_tensor_conv(T *to_data, const size_t *to_dims, const siz
 
     size_t inds[Rank];
 
-    while (curr_element < elements_adjusted) {
+    while (curr_element < elements) {
 
         // Convert index into index combination.
-        index_to_combination<Rank>(curr_element % elements, to_dims, inds);
+        index_to_combination<Rank>(curr_element, to_dims, inds);
 
         // Map index combination onto the view.
         size_t from_ind = combination_to_index<Rank>(inds, from_dims, from_strides);
@@ -399,6 +399,8 @@ DeviceTensor<T, Rank>::DeviceTensor(const DeviceTensorView<T, Rank> &other) : _n
 
     einsums::detail::copy_to_tensor<T, Rank><<<block_size(size), blocks(size), 0, get_stream()>>>(
         this->_data, this->_gpu_dims, this->_gpu_strides, other.data(), other.gpu_dims(), other.gpu_strides(), size);
+
+    gpu::stream_wait();
 }
 
 namespace detail {
@@ -427,10 +429,10 @@ __global__ void set_all(T *data, const size_t *dims, const size_t *strides, T va
 
     size_t inds[Rank];
 
-    while (curr_element < elements_adjusted) {
+    while (curr_element < elements) {
 
         // Convert index into index combination.
-        index_to_combination<Rank>(curr_element % elements, dims, inds);
+        index_to_combination<Rank>(curr_element, dims, inds);
 
         // Map index combination onto the tensor.
         size_t ind = combination_to_index<Rank>(inds, dims, strides);
@@ -447,11 +449,10 @@ __global__ void set_all(T *data, const size_t *dims, const size_t *strides, T va
 
 } // namespace detail
 
-
-template<typename T, size_t Rank>
+template <typename T, size_t Rank>
 void DeviceTensor<T, Rank>::resize(Dim<Rank> dims) {
     using namespace einsums::gpu;
-    
+
     if (dims == _dims) {
         return;
     }
@@ -501,13 +502,14 @@ void DeviceTensor<T, Rank>::resize(Dim<Rank> dims) {
 
     hip_catch(hipMemcpy((void *)this->_gpu_dims, (const void *)this->_dims.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
     hip_catch(hipMemcpy((void *)this->_gpu_strides, (const void *)this->_strides.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
-}   
+}
 
 template <typename T, size_t Rank>
 void DeviceTensor<T, Rank>::zero() {
     using namespace einsums::gpu;
     einsums::detail::set_all<dev_datatype, Rank><<<block_size(this->size()), blocks(this->size()), 0, get_stream()>>>(
         this->_data, this->_gpu_dims, this->_gpu_strides, einsums::gpu::HipCast<dev_datatype, double>::cast(0.0));
+    stream_wait();
 }
 
 template <typename T, size_t Rank>
@@ -515,6 +517,7 @@ void DeviceTensor<T, Rank>::set_all(T value) {
     using namespace einsums::gpu;
     einsums::detail::set_all<T, Rank><<<block_size(this->size()), blocks(this->size()), 0, get_stream()>>>(
         this->_data, this->_gpu_dims, this->_gpu_strides, HipCast<dev_datatype, T>::cast(value));
+    stream_wait();
 }
 
 template <typename T, size_t Rank>
@@ -793,6 +796,8 @@ DeviceTensor<T, Rank> &DeviceTensor<T, Rank>::assign(const DeviceTensor<T, Rank>
             this->_data, this->_gpu_dims, this->_gpu_strides, other._data, other._gpu_dims, other._gpu_strides, _strides[0] * _dims[0]);
     }
 
+    gpu::stream_wait();
+
     return *this;
 }
 
@@ -854,6 +859,8 @@ auto DeviceTensor<T, Rank>::assign(const DeviceTensor<TOther, Rank> &other) -> D
         einsums::detail::copy_to_tensor_conv<T, Rank, TOther><<<block_size(other.size()), blocks(other.size()), 0, get_stream()>>>(
             this->_data, this->_gpu_dims, this->_gpu_strides, other._data, other._gpu_dims, other._gpu_strides, _strides[0] * _dims[0]);
     }
+
+    gpu::stream_wait();
 
     return *this;
 }
@@ -921,6 +928,8 @@ auto DeviceTensor<T, Rank>::assign(const DeviceTensorView<TOther, Rank> &other) 
     using namespace einsums::gpu;
     einsums::detail::copy_to_tensor_conv<T, Rank, TOther><<<block_size(other.size()), blocks(other.size()), 0, get_stream()>>>(
         this->_data, this->_gpu_dims, this->_gpu_strides, other.data(), other.gpu_dims(), other.gpu_strides(), _strides[0] * _dims[0]);
+
+    gpu::stream_wait();
     return *this;
 }
 
@@ -980,10 +989,10 @@ __global__ void add_and_assign(T *to_data, const size_t *to_dims, const size_t *
     }
 
     size_t inds[Rank];
-    while (curr_element < elements_adjusted) {
+    while (curr_element < elements) {
 
         // Convert index into index combination.
-        index_to_combination<Rank>(curr_element % elements, to_dims, inds);
+        index_to_combination<Rank>(curr_element, to_dims, inds);
 
         // Map index combination onto the view.
         size_t from_ind = combination_to_index<Rank>(inds, from_dims, from_strides);
@@ -1027,10 +1036,10 @@ __global__ void sub_and_assign(T *to_data, const size_t *to_dims, const size_t *
 
     size_t inds[Rank];
 
-    while (curr_element < elements_adjusted) {
+    while (curr_element < elements) {
 
         // Convert index into index combination.
-        index_to_combination<Rank>(curr_element % elements, to_dims, inds);
+        index_to_combination<Rank>(curr_element, to_dims, inds);
 
         // Map index combination onto the view.
         size_t from_ind = combination_to_index<Rank>(inds, from_dims, from_strides);
@@ -1074,10 +1083,10 @@ __global__ void mul_and_assign(T *to_data, const size_t *to_dims, const size_t *
 
     size_t inds[Rank];
 
-    while (curr_element < elements_adjusted) {
+    while (curr_element < elements) {
 
         // Convert index into index combination.
-        index_to_combination<Rank>(curr_element % elements, to_dims, inds);
+        index_to_combination<Rank>(curr_element, to_dims, inds);
 
         // Map index combination onto the view.
         size_t from_ind = combination_to_index<Rank>(inds, from_dims, from_strides);
@@ -1121,10 +1130,10 @@ __global__ void div_and_assign(T *to_data, const size_t *to_dims, const size_t *
 
     size_t inds[Rank];
 
-    while (curr_element < elements_adjusted) {
+    while (curr_element < elements) {
 
         // Convert index into index combination.
-        index_to_combination<Rank>(curr_element % elements, to_dims, inds);
+        index_to_combination<Rank>(curr_element, to_dims, inds);
 
         // Map index combination onto the view.
         size_t from_ind = combination_to_index<Rank>(inds, from_dims, from_strides);
@@ -1167,10 +1176,10 @@ __global__ void add_and_assign_scal(T *to_data, const size_t *to_dims, const siz
 
     size_t inds[Rank];
 
-    while (curr_element < elements_adjusted) {
+    while (curr_element < elements) {
 
         // Convert index into index combination.
-        index_to_combination<Rank>(curr_element % elements, to_dims, inds);
+        index_to_combination<Rank>(curr_element, to_dims, inds);
 
         // Map index combination onto the tensor.
         size_t to_ind = combination_to_index<Rank>(inds, to_dims, to_strides);
@@ -1210,10 +1219,10 @@ __global__ void sub_and_assign_scal(T *to_data, const size_t *to_dims, const siz
 
     size_t inds[Rank];
 
-    while (curr_element < elements_adjusted) {
+    while (curr_element < elements) {
 
         // Convert index into index combination.
-        index_to_combination<Rank>(curr_element % elements, to_dims, inds);
+        index_to_combination<Rank>(curr_element, to_dims, inds);
 
         // Map index combination onto the tensor.
         size_t to_ind = combination_to_index<Rank>(inds, to_dims, to_strides);
@@ -1253,10 +1262,10 @@ __global__ void mul_and_assign_scal(T *to_data, const size_t *to_dims, const siz
 
     size_t inds[Rank];
 
-    while (curr_element < elements_adjusted) {
+    while (curr_element < elements) {
 
         // Convert index into index combination.
-        index_to_combination<Rank>(curr_element % elements, to_dims, inds);
+        index_to_combination<Rank>(curr_element, to_dims, inds);
 
         // Map index combination onto the tensor.
         size_t to_ind = combination_to_index<Rank>(inds, to_dims, to_strides);
@@ -1295,10 +1304,10 @@ __global__ void div_and_assign_scal(T *to_data, const size_t *to_dims, const siz
 
     size_t inds[Rank];
 
-    while (curr_element < elements_adjusted) {
+    while (curr_element < elements) {
 
         // Convert index into index combination.
-        index_to_combination<Rank>(curr_element % elements, to_dims, inds);
+        index_to_combination<Rank>(curr_element, to_dims, inds);
 
         // Map index combination onto the tensor.
         size_t to_ind = combination_to_index<Rank>(inds, to_dims, to_strides);
@@ -1320,6 +1329,7 @@ DeviceTensor<T, Rank> &DeviceTensor<T, Rank>::add_assign(const T &other) {
     using namespace einsums::gpu;
     einsums::detail::add_and_assign_scal<T, Rank><<<block_size(this->size()), blocks(this->size()), 0, get_stream()>>>(
         this->_data, this->_gpu_dims, this->_gpu_strides, other, _strides[0] * _dims[0]);
+    gpu::stream_wait();
     return *this;
 }
 
@@ -1328,6 +1338,7 @@ DeviceTensor<T, Rank> &DeviceTensor<T, Rank>::sub_assign(const T &other) {
     using namespace einsums::gpu;
     einsums::detail::sub_and_assign_scal<T, Rank><<<block_size(this->size()), blocks(this->size()), 0, get_stream()>>>(
         this->_data, this->_gpu_dims, this->_gpu_strides, other, _strides[0] * _dims[0]);
+    gpu::stream_wait();
     return *this;
 }
 
@@ -1336,6 +1347,7 @@ DeviceTensor<T, Rank> &DeviceTensor<T, Rank>::mult_assign(const T &other) {
     using namespace einsums::gpu;
     einsums::detail::mul_and_assign_scal<T, Rank><<<block_size(this->size()), blocks(this->size()), 0, get_stream()>>>(
         this->_data, this->_gpu_dims, this->_gpu_strides, other, _strides[0] * _dims[0]);
+    gpu::stream_wait();
     return *this;
 }
 
@@ -1344,6 +1356,7 @@ DeviceTensor<T, Rank> &DeviceTensor<T, Rank>::div_assign(const T &other) {
     using namespace einsums::gpu;
     einsums::detail::div_and_assign_scal<T, Rank><<<block_size(this->size()), blocks(this->size()), 0, get_stream()>>>(
         this->_data, this->_gpu_dims, this->_gpu_strides, other, _strides[0] * _dims[0]);
+    gpu::stream_wait();
     return *this;
 }
 
@@ -1352,6 +1365,7 @@ DeviceTensor<T, Rank> &DeviceTensor<T, Rank>::add_assign(const DeviceTensor<T, R
     using namespace einsums::gpu;
     einsums::detail::add_and_assign<T, Rank><<<block_size(other.size()), blocks(other.size()), 0, get_stream()>>>(
         this->_data, this->_gpu_dims, this->_gpu_strides, other.data(), other.gpu_dims(), other.gpu_strides(), _strides[0] * _dims[0]);
+    gpu::stream_wait();
     return *this;
 }
 
@@ -1360,6 +1374,7 @@ DeviceTensor<T, Rank> &DeviceTensor<T, Rank>::sub_assign(const DeviceTensor<T, R
     using namespace einsums::gpu;
     einsums::detail::sub_and_assign<T, Rank><<<block_size(other.size()), blocks(other.size()), 0, get_stream()>>>(
         this->_data, this->_gpu_dims, this->_gpu_strides, other.data(), other.gpu_dims(), other.gpu_strides(), _strides[0] * _dims[0]);
+    gpu::stream_wait();
     return *this;
 }
 
@@ -1368,6 +1383,7 @@ DeviceTensor<T, Rank> &DeviceTensor<T, Rank>::mult_assign(const DeviceTensor<T, 
     using namespace einsums::gpu;
     einsums::detail::mul_and_assign<T, Rank><<<block_size(other.size()), blocks(other.size()), 0, get_stream()>>>(
         this->_data, this->_gpu_dims, this->_gpu_strides, other.data(), other.gpu_dims(), other.gpu_strides(), _strides[0] * _dims[0]);
+    gpu::stream_wait();
     return *this;
 }
 
@@ -1376,6 +1392,7 @@ DeviceTensor<T, Rank> &DeviceTensor<T, Rank>::div_assign(const DeviceTensor<T, R
     using namespace einsums::gpu;
     einsums::detail::div_and_assign<T, Rank><<<block_size(other.size()), blocks(other.size()), 0, get_stream()>>>(
         this->_data, this->_gpu_dims, this->_gpu_strides, other.data(), other.gpu_dims(), other.gpu_strides(), _strides[0] * _dims[0]);
+    gpu::stream_wait();
     return *this;
 }
 

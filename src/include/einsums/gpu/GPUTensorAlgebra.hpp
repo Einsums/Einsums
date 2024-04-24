@@ -265,13 +265,14 @@ einsum_generic_algorithm_gpu(const size_t *unique_strides, const int *C_index_ta
  * Compute kernel that runs when C has a rank of zero. There are some optimizations that can be made in this case.
  */
 template <typename CDataType, typename ADataType, typename BDataType, size_t UniqueRank, size_t ARank, size_t BRank>
-__global__ void einsum_generic_zero_rank_gpu(
-    const size_t *unique_strides, const int *A_index_table, const int *B_index_table, CDataType *C,
-    const ::std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> AB_prefactor, const ADataType *A,
-    const size_t *A_dims, const size_t *A_stride, const BDataType *B, const size_t *B_dims, const size_t *B_stride, size_t max_index) {
+__global__ void
+einsum_generic_zero_rank_gpu(const size_t *unique_strides, const int *A_index_table, const int *B_index_table, CDataType *C,
+                             const ::std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> AB_prefactor,
+                             const ADataType *A, const size_t *A_dims, const size_t *A_stride, const BDataType *B, const size_t *B_dims,
+                             const size_t *B_stride, size_t max_index) {
 
-        // Allocated by caller.
-        extern __shared__ CDataType work[];
+    // Allocated by caller.
+    extern __shared__ CDataType work[];
 
     using namespace einsums::gpu;
     int thread_id, kernel_size;
@@ -340,8 +341,8 @@ int compile_index_table(const ::std::tuple<Head> &, const Index &, int &out) {
 }
 
 template <int I, typename Head, typename... UniqueIndices, typename Index>
-auto compile_index_table(const ::std::tuple<Head, UniqueIndices...> &, const Index &index, int &out)
-    -> ::std::enable_if_t<sizeof...(UniqueIndices) != 0, int> {
+auto compile_index_table(const ::std::tuple<Head, UniqueIndices...> &, const Index &index,
+                         int &out) -> ::std::enable_if_t<sizeof...(UniqueIndices) != 0, int> {
     if constexpr (::std::is_same_v<Head, Index>) {
         out = I;
     } else {
@@ -369,11 +370,11 @@ void compile_index_table(const ::std::tuple<UniqueIndices...> &from_inds, const 
 template <typename... UniqueIndices, typename... CIndices, typename... AIndices, typename... BIndices, typename... UniqueDims,
           template <typename, size_t> typename CType, typename CDataType, size_t CRank, template <typename, size_t> typename AType,
           typename ADataType, size_t ARank, template <typename, size_t> typename BType, typename BDataType, size_t BRank>
-          requires requires {
-                requires DeviceRankTensor<CType<CDataType, CRank>, CRank, CDataType>;
-                requires DeviceRankTensor<AType<ADataType, ARank>, ARank, ADataType>;
-                requires DeviceRankTensor<BType<BDataType, BRank>, BRank, BDataType>;
-          }
+    requires requires {
+        requires DeviceRankTensor<CType<CDataType, CRank>, CRank, CDataType>;
+        requires DeviceRankTensor<AType<ADataType, ARank>, ARank, ADataType>;
+        requires DeviceRankTensor<BType<BDataType, BRank>, BRank, BDataType>;
+    }
 void einsum_generic_algorithm(const ::std::tuple<UniqueIndices...> &unique_indices, const ::std::tuple<CIndices...> &C_indices,
                               const ::std::tuple<AIndices...> &A_indices, const ::std::tuple<BIndices...> &B_indices,
                               const ::std::tuple<UniqueDims...> &unique_dims, const CDataType C_prefactor, CType<CDataType, CRank> *C,
@@ -401,37 +402,39 @@ void einsum_generic_algorithm(const ::std::tuple<UniqueIndices...> &unique_indic
     }
     hip_catch(hipMallocAsync((void **)&unique_strides_gpu, sizeof...(UniqueIndices) * sizeof(size_t), get_stream()));
 
-    hip_catch(hipMemcpyAsync((void *)A_index_table_gpu, (const void *)A_index_table, sizeof...(AIndices) * sizeof(int), hipMemcpyHostToDevice, get_stream()));
-    hip_catch(hipMemcpyAsync((void *)B_index_table_gpu, (const void *)B_index_table, sizeof...(BIndices) * sizeof(int), hipMemcpyHostToDevice, get_stream()));
+    hip_catch(hipMemcpyAsync((void *)A_index_table_gpu, (const void *)A_index_table, sizeof...(AIndices) * sizeof(int),
+                             hipMemcpyHostToDevice, get_stream()));
+    hip_catch(hipMemcpyAsync((void *)B_index_table_gpu, (const void *)B_index_table, sizeof...(BIndices) * sizeof(int),
+                             hipMemcpyHostToDevice, get_stream()));
     if constexpr (sizeof...(CIndices) != 0) {
-        hip_catch(
-            hipMemcpyAsync((void *)C_index_table_gpu, (const void *)C_index_table, sizeof...(CIndices) * sizeof(int), hipMemcpyHostToDevice, get_stream()));
+        hip_catch(hipMemcpyAsync((void *)C_index_table_gpu, (const void *)C_index_table, sizeof...(CIndices) * sizeof(int),
+                                 hipMemcpyHostToDevice, get_stream()));
     }
     hip_catch(hipMemcpyAsync((void *)unique_strides_gpu, (const void *)unique_strides, sizeof...(UniqueIndices) * sizeof(size_t),
-                        hipMemcpyHostToDevice, get_stream()));
+                             hipMemcpyHostToDevice, get_stream()));
 
     // Calculate the optimal launch bounds.
-    dim3 threads = block_size(::std::get<0>(unique_dims) * unique_strides[0]), grid = blocks(::std::get<0>(unique_dims) * unique_strides[0]);
+    dim3 threads = block_size(::std::get<0>(unique_dims) * unique_strides[0]),
+         grid    = blocks(::std::get<0>(unique_dims) * unique_strides[0]);
 
-    // TODO: what if one of the ranks is zero?
-    // Answer: Only C can have zero rank. Otherwise, it is just a scaling.
     if constexpr (sizeof...(CIndices) != 0) {
         einsum_generic_algorithm_gpu<CDataType, ADataType, BDataType, sizeof...(UniqueIndices), CRank, ARank, BRank>
-                <<<threads, grid, 0, get_stream()>>>(unique_strides_gpu, C_index_table_gpu, A_index_table_gpu, B_index_table_gpu, C_prefactor, C->data(),
-                                  C->gpu_dims(), C->gpu_strides(), AB_prefactor, A.data(), A.gpu_dims(), A.gpu_strides(), B.data(),
-                                  B.gpu_dims(), B.gpu_strides(), ::std::get<0>(unique_dims) * unique_strides[0]);
+            <<<threads, grid, 0, get_stream()>>>(unique_strides_gpu, C_index_table_gpu, A_index_table_gpu, B_index_table_gpu, C_prefactor,
+                                                 C->data(), C->gpu_dims(), C->gpu_strides(), AB_prefactor, A.data(), A.gpu_dims(),
+                                                 A.gpu_strides(), B.data(), B.gpu_dims(), B.gpu_strides(),
+                                                 ::std::get<0>(unique_dims) * unique_strides[0]);
     } else {
-        //CDataType *work;
-        //hip_catch(hipMalloc((void **)&work, threads.x * threads.y * threads.z * blocks.x * blocks.y * blocks.z * sizeof(CDataType)));
+        // CDataType *work;
+        // hip_catch(hipMalloc((void **)&work, threads.x * threads.y * threads.z * blocks.x * blocks.y * blocks.z * sizeof(CDataType)));
         if (C_prefactor == CDataType{0}) {
             *C = CDataType{0};
         } else {
             *C *= C_prefactor;
         }
-        einsum_generic_zero_rank_gpu<CDataType, ADataType, BDataType, sizeof...(UniqueIndices), ARank, BRank><<<threads, grid, 
-            threads.x * threads.y * threads.z * grid.x * grid.y * grid.z * sizeof(CDataType), get_stream()>>>(
-            unique_strides_gpu, A_index_table_gpu, B_index_table_gpu, C->data(), AB_prefactor, A.data(), A.gpu_dims(),
-            A.gpu_strides(), B.data(), B.gpu_dims(), B.gpu_strides(), ::std::get<0>(unique_dims) * unique_strides[0]);
+        einsum_generic_zero_rank_gpu<CDataType, ADataType, BDataType, sizeof...(UniqueIndices), ARank, BRank>
+            <<<threads, grid, threads.x * threads.y * threads.z * grid.x * grid.y * grid.z * sizeof(CDataType), get_stream()>>>(
+                unique_strides_gpu, A_index_table_gpu, B_index_table_gpu, C->data(), AB_prefactor, A.data(), A.gpu_dims(), A.gpu_strides(),
+                B.data(), B.gpu_dims(), B.gpu_strides(), ::std::get<0>(unique_dims) * unique_strides[0]);
     }
 
     hip_catch(hipFreeAsync(A_index_table_gpu, get_stream()));
@@ -445,11 +448,11 @@ void einsum_generic_algorithm(const ::std::tuple<UniqueIndices...> &unique_indic
 template <bool OnlyUseGenericAlgorithm, template <typename, size_t> typename AType, typename ADataType, size_t ARank,
           template <typename, size_t> typename BType, typename BDataType, size_t BRank, template <typename, size_t> typename CType,
           typename CDataType, size_t CRank, typename... CIndices, typename... AIndices, typename... BIndices>
-          requires requires {
-                requires DeviceRankTensor<CType<CDataType, CRank>, CRank, CDataType>;
-                requires DeviceRankTensor<AType<ADataType, ARank>, ARank, ADataType>;
-                requires DeviceRankTensor<BType<BDataType, BRank>, BRank, BDataType>;
-          }
+    requires requires {
+        requires DeviceRankTensor<CType<CDataType, CRank>, CRank, CDataType>;
+        requires DeviceRankTensor<AType<ADataType, ARank>, ARank, ADataType>;
+        requires DeviceRankTensor<BType<BDataType, BRank>, BRank, BDataType>;
+    }
 auto einsum(const CDataType C_prefactor, const ::std::tuple<CIndices...> & /*Cs*/, CType<CDataType, CRank> *C,
             const ::std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> AB_prefactor,
             const ::std::tuple<AIndices...> & /*As*/, const AType<ADataType, ARank> &A, const ::std::tuple<BIndices...> & /*Bs*/,
@@ -634,15 +637,42 @@ auto einsum(const CDataType C_prefactor, const ::std::tuple<CIndices...> & /*Cs*
         throw ::std::runtime_error("einsum: Inconsistent dimensions found!");
     }
 #endif
-
-    if constexpr (!::std::is_same_v<CDataType, ADataType> || !::std::is_same_v<CDataType, BDataType>) {
-        // Mixed datatypes go directly to the generic algorithm.
-        ::einsums::tensor_algebra::detail::einsum_generic_algorithm(All_unique, C_indices, A_indices, B_indices, unique_all_dims,
-                                                                         C_prefactor, C, AB_prefactor, A, B);
-        return;
-    } else if constexpr (dot_product) {
+    if constexpr (dot_product) {
         linear_algebra::dot(C_prefactor, *C, AB_prefactor, A, B);
 
+        return;
+    } else if constexpr (!::std::is_same_v<CDataType, ADataType> || !::std::is_same_v<CDataType, BDataType>) {
+        // Mixed datatypes go directly to the generic algorithm.
+        if constexpr (einsums::detail::IsDeviceRankBlockTensorV<AType<ADataType, ARank>, ARank, ADataType> &&
+                      einsums::detail::IsDeviceRankBlockTensorV<BType<BDataType, BRank>, BRank, BDataType> &&
+                      einsums::detail::IsDeviceRankBlockTensorV<CType<CDataType, CRank>, CRank, CDataType>) {
+            if (A.num_blocks() != B.num_blocks() || A.num_blocks() != C->num_blocks() || B.num_blocks() != C->num_blocks()) {
+                throw std::runtime_error("einsums: Tensors need to have the same number of blocks.");
+            }
+
+            for (int i = 0; i < A.num_blocks(); i++) {
+                if (A.block_dim(i) != B.block_dim(i) || A.block_dim(i) != C->block_dim(i) || B.block_dim(i) != C->block_dim(i)) {
+                    throw new std::runtime_error("einsums: All blocks in the tensors need to have the same dimensions.");
+                }
+            }
+
+#pragma omp task depend(in : A, B) depend(out : *C)
+            {
+                EINSUMS_OMP_PARALLEL_FOR
+                for (int i = 0; i < A.num_blocks(); i++) {
+                    ::einsums::tensor_algebra::detail::einsum_generic_algorithm(All_unique, C_indices, A_indices, B_indices,
+                                                                                unique_all_dims, C_prefactor, &(C->block(i)), AB_prefactor,
+                                                                                A[i], B[i]);
+                    gpu::stream_wait();
+                }
+            }
+        } else {
+#pragma omp task depend(in : A, B) depend(out : *C)
+            {
+                ::einsums::tensor_algebra::detail::einsum_generic_algorithm(All_unique, C_indices, A_indices, B_indices, unique_all_dims,
+                                                                            C_prefactor, C, AB_prefactor, A, B);
+            }
+        }
         return;
     } else if constexpr (element_wise_multiplication) {
         timer::GPUTimer const element_wise_multiplication{"element-wise multiplication"};
@@ -656,96 +686,129 @@ auto einsum(const CDataType C_prefactor, const ::std::tuple<CIndices...> & /*Cs*
         }
 
         // The generic algorithm should work fine.
-        ::einsums::tensor_algebra::detail::einsum_generic_algorithm(All_unique, C_indices, A_indices, B_indices, unique_all_dims,
-                                                                         C_prefactor, C, AB_prefactor, A, B);
+        if constexpr (einsums::detail::IsDeviceRankBlockTensorV<AType<ADataType, ARank>, ARank, ADataType> &&
+                      einsums::detail::IsDeviceRankBlockTensorV<BType<BDataType, BRank>, BRank, BDataType> &&
+                      einsums::detail::IsDeviceRankBlockTensorV<CType<CDataType, CRank>, CRank, CDataType>) {
+            if (A.num_blocks() != B.num_blocks() || A.num_blocks() != C->num_blocks() || B.num_blocks() != C->num_blocks()) {
+                throw std::runtime_error("einsums: Tensors need to have the same number of blocks.");
+            }
+
+            for (int i = 0; i < A.num_blocks(); i++) {
+                if (A.block_dim(i) != B.block_dim(i) || A.block_dim(i) != C->block_dim(i) || B.block_dim(i) != C->block_dim(i)) {
+                    throw new std::runtime_error("einsums: All blocks in the tensors need to have the same dimensions.");
+                }
+            }
+
+#pragma omp task depend(in : A, B) depend(out : *C)
+            {
+                EINSUMS_OMP_PARALLEL_FOR
+                for (int i = 0; i < A.num_blocks(); i++) {
+                    ::einsums::tensor_algebra::detail::einsum_generic_algorithm(All_unique, C_indices, A_indices, B_indices,
+                                                                                unique_all_dims, C_prefactor, &(C->block(i)), AB_prefactor,
+                                                                                A[i], B[i]);
+                    gpu::stream_wait();
+                }
+            }
+        } else {
+#pragma omp task depend(in : A, B) depend(out : *C)
+            {
+                ::einsums::tensor_algebra::detail::einsum_generic_algorithm(All_unique, C_indices, A_indices, B_indices, unique_all_dims,
+                                                                            C_prefactor, C, AB_prefactor, A, B);
+            }
+        }
 
         return;
-    } else if constexpr (outer_product) {
-        do { // do {} while (false) trick to allow us to use a break below to "break" out of the loop.
-            constexpr bool swap_AB = ::std::get<1>(A_target_position_in_C) != 0;
+        //     } else if constexpr (outer_product) {
+        //         do { // do {} while (false) trick to allow us to use a break below to "break" out of the loop.
+        //             constexpr bool swap_AB = ::std::get<1>(A_target_position_in_C) != 0;
 
-            Dim<2> dC;
-            dC[0] = product_dims(A_target_position_in_C, *C);
-            dC[1] = product_dims(B_target_position_in_C, *C);
-            if constexpr (swap_AB)
-                ::std::swap(dC[0], dC[1]);
+        //             Dim<2> dC;
+        //             dC[0] = product_dims(A_target_position_in_C, *C);
+        //             dC[1] = product_dims(B_target_position_in_C, *C);
+        //             if constexpr (swap_AB)
+        //                 ::std::swap(dC[0], dC[1]);
 
-            DeviceTensorView<CDataType, 2> tC{*C, dC};
+        //             DeviceTensorView<CDataType, 2> tC{*C, dC};
 
-            if (C_prefactor != CDataType{1.0})
-                linear_algebra::scale(C_prefactor, C);
+        //             if (C_prefactor != CDataType{1.0})
+        //                 linear_algebra::scale(C_prefactor, C);
 
-            try {
-                if constexpr (swap_AB) {
-                    linear_algebra::ger(AB_prefactor, B.to_rank_1_view(), A.to_rank_1_view(), &tC);
-                } else {
-                    linear_algebra::ger(AB_prefactor, A.to_rank_1_view(), B.to_rank_1_view(), &tC);
-                }
-            } catch (std::runtime_error &e) {
-#if defined(EINSUMS_SHOW_WARNING)
-                println(
-                    bg(fmt::color::yellow) | fg(fmt::color::black),
-                    "Optimized outer product failed. Likely from a non-contiguous TensorView. Attempting to perform generic algorithm.");
-#endif
-                if (C_prefactor == CDataType{0.0}) {
-#if defined(EINSUMS_SHOW_WARNING)
-                    println(bg(fmt::color::red) | fg(fmt::color::white),
-                            "WARNING!! Unable to undo C_prefactor ({}) on C ({}) tensor. Check your results!!!", C_prefactor, C->name());
-#endif
-                } else {
-                    linear_algebra::scale(1.0 / C_prefactor, C);
-                }
-                break; // out of the do {} while(false) loop.
-            }
-            // If we got to this position, assume we successfully called ger.
-            return;
-        } while (false);
+        //             try {
+        //                 if constexpr (swap_AB) {
+        //                     linear_algebra::ger(AB_prefactor, B.to_rank_1_view(), A.to_rank_1_view(), &tC);
+        //                 } else {
+        //                     linear_algebra::ger(AB_prefactor, A.to_rank_1_view(), B.to_rank_1_view(), &tC);
+        //                 }
+        //             } catch (std::runtime_error &e) {
+        // #if defined(EINSUMS_SHOW_WARNING)
+        //                 println(
+        //                     bg(fmt::color::yellow) | fg(fmt::color::black),
+        //                     "Optimized outer product failed. Likely from a non-contiguous TensorView. Attempting to perform generic
+        //                     algorithm.");
+        // #endif
+        //                 if (C_prefactor == CDataType{0.0}) {
+        // #if defined(EINSUMS_SHOW_WARNING)
+        //                     println(bg(fmt::color::red) | fg(fmt::color::white),
+        //                             "WARNING!! Unable to undo C_prefactor ({}) on C ({}) tensor. Check your results!!!", C_prefactor,
+        //                             C->name());
+        // #endif
+        //                 } else {
+        //                     linear_algebra::scale(1.0 / C_prefactor, C);
+        //                 }
+        //                 break; // out of the do {} while(false) loop.
+        //             }
+        //             // If we got to this position, assume we successfully called ger.
+        //             return;
+        //         } while (false);
     } else if constexpr (!OnlyUseGenericAlgorithm) {
         do { // do {} while (false) trick to allow us to use a break below to "break" out of the loop.
             if constexpr (is_gemv_possible) {
-
                 if (!C->full_view_of_underlying() || !A.full_view_of_underlying() || !B.full_view_of_underlying()) {
                     // Fall through to generic algorithm.
                     break;
                 }
 
-                constexpr bool transpose_A = ::std::get<1>(link_position_in_A) == 0;
+#pragma omp task depend(in : A, B) depend(out : *C)
+                {
 
-                Dim<2>    dA;
-                Dim<1>    dB, dC;
-                Stride<2> sA;
-                Stride<1> sB, sC;
+                    constexpr bool transpose_A = ::std::get<1>(link_position_in_A) == 0;
 
-                dA[0] = product_dims(A_target_position_in_C, *C);
-                dA[1] = product_dims(link_position_in_A, A);
-                sA[0] = last_stride(target_position_in_A, A);
-                sA[1] = last_stride(link_position_in_A, A);
-                if constexpr (transpose_A) {
-                    ::std::swap(dA[0], dA[1]);
-                    ::std::swap(sA[0], sA[1]);
-                }
+                    Dim<2>    dA;
+                    Dim<1>    dB, dC;
+                    Stride<2> sA;
+                    Stride<1> sB, sC;
 
-                dB[0] = product_dims(link_position_in_B, B);
-                sB[0] = last_stride(link_position_in_B, B);
+                    dA[0] = product_dims(A_target_position_in_C, *C);
+                    dA[1] = product_dims(link_position_in_A, A);
+                    sA[0] = last_stride(target_position_in_A, A);
+                    sA[1] = last_stride(link_position_in_A, A);
+                    if constexpr (transpose_A) {
+                        ::std::swap(dA[0], dA[1]);
+                        ::std::swap(sA[0], sA[1]);
+                    }
 
-                dC[0] = product_dims(A_target_position_in_C, *C);
-                sC[0] = last_stride(A_target_position_in_C, *C);
+                    dB[0] = product_dims(link_position_in_B, B);
+                    sB[0] = last_stride(link_position_in_B, B);
 
-                const DeviceTensorView<ADataType, 2> tA{const_cast<AType<ADataType, ARank> &>(A), dA, sA};
-                const DeviceTensorView<BDataType, 1> tB{const_cast<BType<BDataType, BRank> &>(B), dB, sB};
-                DeviceTensorView<CDataType, 1>       tC{*C, dC, sC};
+                    dC[0] = product_dims(A_target_position_in_C, *C);
+                    sC[0] = last_stride(A_target_position_in_C, *C);
 
-                // println(*C);
-                // println(tC);
-                // println(A);
-                // println(tA);
-                // println(B);
-                // println(tB);
+                    const DeviceTensorView<ADataType, 2> tA{const_cast<AType<ADataType, ARank> &>(A), dA, sA};
+                    const DeviceTensorView<BDataType, 1> tB{const_cast<BType<BDataType, BRank> &>(B), dB, sB};
+                    DeviceTensorView<CDataType, 1>       tC{*C, dC, sC};
 
-                if constexpr (transpose_A) {
-                    linear_algebra::gemv<true>(AB_prefactor, tA, tB, C_prefactor, &tC);
-                } else {
-                    linear_algebra::gemv<false>(AB_prefactor, tA, tB, C_prefactor, &tC);
+                    // println(*C);
+                    // println(tC);
+                    // println(A);
+                    // println(tA);
+                    // println(B);
+                    // println(tB);
+
+                    if constexpr (transpose_A) {
+                        linear_algebra::gemv<true>(AB_prefactor, tA, tB, C_prefactor, &tC);
+                    } else {
+                        linear_algebra::gemv<false>(AB_prefactor, tA, tB, C_prefactor, &tC);
+                    }
                 }
 
                 return;
@@ -760,83 +823,85 @@ auto einsum(const CDataType C_prefactor, const ::std::tuple<CIndices...> & /*Cs*
                             break;
                         }
 
-                        constexpr bool transpose_A = ::std::get<1>(link_position_in_A) == 0;
-                        constexpr bool transpose_B = ::std::get<1>(link_position_in_B) != 0;
-                        constexpr bool transpose_C = ::std::get<1>(A_target_position_in_C) != 0;
+#pragma omp task depend(in : A, B) depend(out : *C)
+                        {
 
-                        Dim<2>    dA, dB, dC;
-                        Stride<2> sA, sB, sC;
+                            constexpr bool transpose_A = ::std::get<1>(link_position_in_A) == 0;
+                            constexpr bool transpose_B = ::std::get<1>(link_position_in_B) != 0;
+                            constexpr bool transpose_C = ::std::get<1>(A_target_position_in_C) != 0;
 
-                        dA[0] = ::einsums::tensor_algebra::detail::product_dims(A_target_position_in_C, *C);
-                        dA[1] = ::einsums::tensor_algebra::detail::product_dims(link_position_in_A, A);
-                        sA[0] = ::einsums::tensor_algebra::detail::last_stride(target_position_in_A, A);
-                        sA[1] = ::einsums::tensor_algebra::detail::last_stride(link_position_in_A, A);
-                        if constexpr (transpose_A) {
-                            ::std::swap(dA[0], dA[1]);
-                            ::std::swap(sA[0], sA[1]);
-                        }
+                            Dim<2>    dA, dB, dC;
+                            Stride<2> sA, sB, sC;
 
-                        dB[0] = ::einsums::tensor_algebra::detail::product_dims(link_position_in_B, B);
-                        dB[1] = ::einsums::tensor_algebra::detail::product_dims(B_target_position_in_C, *C);
-                        sB[0] = ::einsums::tensor_algebra::detail::last_stride(link_position_in_B, B);
-                        sB[1] = ::einsums::tensor_algebra::detail::last_stride(target_position_in_B, B);
-                        if constexpr (transpose_B) {
-                            ::std::swap(dB[0], dB[1]);
-                            ::std::swap(sB[0], sB[1]);
-                        }
+                            dA[0] = ::einsums::tensor_algebra::detail::product_dims(A_target_position_in_C, *C);
+                            dA[1] = ::einsums::tensor_algebra::detail::product_dims(link_position_in_A, A);
+                            sA[0] = ::einsums::tensor_algebra::detail::last_stride(target_position_in_A, A);
+                            sA[1] = ::einsums::tensor_algebra::detail::last_stride(link_position_in_A, A);
+                            if constexpr (transpose_A) {
+                                ::std::swap(dA[0], dA[1]);
+                                ::std::swap(sA[0], sA[1]);
+                            }
 
-                        dC[0] = ::einsums::tensor_algebra::detail::product_dims(A_target_position_in_C, *C);
-                        dC[1] = ::einsums::tensor_algebra::detail::product_dims(B_target_position_in_C, *C);
-                        sC[0] = ::einsums::tensor_algebra::detail::last_stride(A_target_position_in_C, *C);
-                        sC[1] = ::einsums::tensor_algebra::detail::last_stride(B_target_position_in_C, *C);
-                        if constexpr (transpose_C) {
-                            ::std::swap(dC[0], dC[1]);
-                            ::std::swap(sC[0], sC[1]);
-                        }
+                            dB[0] = ::einsums::tensor_algebra::detail::product_dims(link_position_in_B, B);
+                            dB[1] = ::einsums::tensor_algebra::detail::product_dims(B_target_position_in_C, *C);
+                            sB[0] = ::einsums::tensor_algebra::detail::last_stride(link_position_in_B, B);
+                            sB[1] = ::einsums::tensor_algebra::detail::last_stride(target_position_in_B, B);
+                            if constexpr (transpose_B) {
+                                ::std::swap(dB[0], dB[1]);
+                                ::std::swap(sB[0], sB[1]);
+                            }
 
-                        DeviceTensorView<CDataType, 2>       tC{*C, dC, sC};
-                        const DeviceTensorView<ADataType, 2> tA{const_cast<AType<ADataType, ARank> &>(A), dA, sA};
-                        const DeviceTensorView<BDataType, 2> tB{const_cast<BType<BDataType, BRank> &>(B), dB, sB};
+                            dC[0] = ::einsums::tensor_algebra::detail::product_dims(A_target_position_in_C, *C);
+                            dC[1] = ::einsums::tensor_algebra::detail::product_dims(B_target_position_in_C, *C);
+                            sC[0] = ::einsums::tensor_algebra::detail::last_stride(A_target_position_in_C, *C);
+                            sC[1] = ::einsums::tensor_algebra::detail::last_stride(B_target_position_in_C, *C);
+                            if constexpr (transpose_C) {
+                                ::std::swap(dC[0], dC[1]);
+                                ::std::swap(sC[0], sC[1]);
+                            }
 
-                        // println("--------------------");
-                        // println(*C);
-                        // println(tC);
-                        // println("--------------------");
-                        // println(A);
-                        // println(tA);
-                        // println("--------------------");
-                        // println(B);
-                        // println(tB);
-                        // println("--------------------");
+                            DeviceTensorView<CDataType, 2>       tC{*C, dC, sC};
+                            const DeviceTensorView<ADataType, 2> tA{const_cast<AType<ADataType, ARank> &>(A), dA, sA};
+                            const DeviceTensorView<BDataType, 2> tB{const_cast<BType<BDataType, BRank> &>(B), dB, sB};
 
-                        if constexpr (!transpose_C && !transpose_A && !transpose_B) {
-                            linear_algebra::gemm<false, false>(AB_prefactor, tA, tB, C_prefactor, &tC);
-                            return;
-                        } else if constexpr (!transpose_C && !transpose_A && transpose_B) {
-                            linear_algebra::gemm<false, true>(AB_prefactor, tA, tB, C_prefactor, &tC);
-                            return;
-                        } else if constexpr (!transpose_C && transpose_A && !transpose_B) {
-                            linear_algebra::gemm<true, false>(AB_prefactor, tA, tB, C_prefactor, &tC);
-                            return;
-                        } else if constexpr (!transpose_C && transpose_A && transpose_B) {
-                            linear_algebra::gemm<true, true>(AB_prefactor, tA, tB, C_prefactor, &tC);
-                            return;
-                        } else if constexpr (transpose_C && !transpose_A && !transpose_B) {
-                            linear_algebra::gemm<true, true>(AB_prefactor, tB, tA, C_prefactor, &tC);
-                            return;
-                        } else if constexpr (transpose_C && !transpose_A && transpose_B) {
-                            linear_algebra::gemm<false, true>(AB_prefactor, tB, tA, C_prefactor, &tC);
-                            return;
-                        } else if constexpr (transpose_C && transpose_A && !transpose_B) {
-                            linear_algebra::gemm<true, false>(AB_prefactor, tB, tA, C_prefactor, &tC);
-                            return;
-                        } else if constexpr (transpose_C && transpose_A && transpose_B) {
-                            linear_algebra::gemm<false, false>(AB_prefactor, tB, tA, C_prefactor, &tC);
-                            return;
-                        } else {
-                            println("This GEMM case is not programmed: transpose_C {}, transpose_A {}, transpose_B {}", transpose_C,
-                                    transpose_A, transpose_B);
-                            ::std::abort();
+                            // println("--------------------");
+                            // println(*C);
+                            // println(tC);
+                            // println("--------------------");
+                            // println(A);
+                            // println(tA);
+                            // println("--------------------");
+                            // println(B);
+                            // println(tB);
+                            // println("--------------------");
+
+                            if constexpr (!transpose_C && !transpose_A && !transpose_B) {
+                                linear_algebra::gemm<false, false>(AB_prefactor, tA, tB, C_prefactor, &tC);
+                            } else if constexpr (!transpose_C && !transpose_A && transpose_B) {
+                                linear_algebra::gemm<false, true>(AB_prefactor, tA, tB, C_prefactor, &tC);
+                            } else if constexpr (!transpose_C && transpose_A && !transpose_B) {
+                                linear_algebra::gemm<true, false>(AB_prefactor, tA, tB, C_prefactor, &tC);
+
+                            } else if constexpr (!transpose_C && transpose_A && transpose_B) {
+                                linear_algebra::gemm<true, true>(AB_prefactor, tA, tB, C_prefactor, &tC);
+
+                            } else if constexpr (transpose_C && !transpose_A && !transpose_B) {
+                                linear_algebra::gemm<true, true>(AB_prefactor, tB, tA, C_prefactor, &tC);
+
+                            } else if constexpr (transpose_C && !transpose_A && transpose_B) {
+                                linear_algebra::gemm<false, true>(AB_prefactor, tB, tA, C_prefactor, &tC);
+
+                            } else if constexpr (transpose_C && transpose_A && !transpose_B) {
+                                linear_algebra::gemm<true, false>(AB_prefactor, tB, tA, C_prefactor, &tC);
+
+                            } else if constexpr (transpose_C && transpose_A && transpose_B) {
+                                linear_algebra::gemm<false, false>(AB_prefactor, tB, tA, C_prefactor, &tC);
+
+                            } else {
+                                println("This GEMM case is not programmed: transpose_C {}, transpose_A {}, transpose_B {}", transpose_C,
+                                        transpose_A, transpose_B);
+                                ::std::abort();
+                            }
                         }
                     }
                 }
@@ -848,8 +913,45 @@ auto einsum(const CDataType C_prefactor, const ::std::tuple<CIndices...> & /*Cs*
 
     // If we somehow make it here, then none of our algorithms above could be used. Attempt to use
     // the generic algorithm instead.
-    ::einsums::tensor_algebra::detail::einsum_generic_algorithm(All_unique, C_indices, A_indices, B_indices, unique_all_dims,
-                                                                     C_prefactor, C, AB_prefactor, A, B);
+
+    if constexpr (einsums::detail::IsDeviceRankBlockTensorV<AType<ADataType, ARank>, ARank, ADataType> &&
+                  einsums::detail::IsDeviceRankBlockTensorV<BType<BDataType, BRank>, BRank, BDataType> &&
+                  einsums::detail::IsDeviceRankBlockTensorV<CType<CDataType, CRank>, CRank, CDataType>) {
+        if (A.num_blocks() != B.num_blocks() || A.num_blocks() != C->num_blocks() || B.num_blocks() != C->num_blocks()) {
+            throw std::runtime_error("einsums: Tensors need to have the same number of blocks.");
+        }
+
+        for (int i = 0; i < A.num_blocks(); i++) {
+            if (A.block_dim(i) != B.block_dim(i) || A.block_dim(i) != C->block_dim(i) || B.block_dim(i) != C->block_dim(i)) {
+                throw new std::runtime_error("einsums: All blocks in the tensors need to have the same dimensions.");
+            }
+        }
+
+#pragma omp task depend(in : A, B) depend(out : *C)
+        {
+            EINSUMS_OMP_PARALLEL_FOR
+            for (int i = 0; i < A.num_blocks(); i++) {
+                ::einsums::tensor_algebra::detail::einsum_generic_algorithm(All_unique, C_indices, A_indices, B_indices, unique_all_dims,
+                                                                            C_prefactor, &(C->block(i)), AB_prefactor, A[i], B[i]);
+                gpu::stream_wait();
+            }
+        }
+    } else if constexpr (einsums::detail::IsDeviceRankBlockTensorV<AType<ADataType, ARank>, ARank, ADataType> &&
+                         einsums::detail::IsDeviceRankBlockTensorV<BType<BDataType, BRank>, BRank, BDataType> &&
+                         !einsums::detail::IsDeviceRankBlockTensorV<CType<CDataType, CRank>, CRank, CDataType> && CRank == 0) {
+#pragma omp task depend(in : A, B) depend(out : *C)
+        {
+            ::einsums::tensor_algebra::detail::einsum_generic_algorithm(All_unique, C_indices, A_indices, B_indices, unique_all_dims,
+                                                                        C_prefactor, C, AB_prefactor, (DeviceTensor<ADataType, ARank>)A,
+                                                                        (DeviceTensor<BDataType, BRank>)B);
+        }
+    } else {
+#pragma omp task depend(in : A, B) depend(out : *C)
+        {
+            ::einsums::tensor_algebra::detail::einsum_generic_algorithm(All_unique, C_indices, A_indices, B_indices, unique_all_dims,
+                                                                        C_prefactor, C, AB_prefactor, A, B);
+        }
+    }
 }
 
 } // namespace detail
@@ -857,11 +959,11 @@ auto einsum(const CDataType C_prefactor, const ::std::tuple<CIndices...> & /*Cs*
 template <template <typename, size_t> typename AType, typename ADataType, size_t ARank, template <typename, size_t> typename BType,
           typename BDataType, size_t BRank, template <typename, size_t> typename CType, typename CDataType, size_t CRank,
           typename... CIndices, typename... AIndices, typename... BIndices, typename U>
-          requires requires {
-                requires DeviceRankTensor<CType<CDataType, CRank>, CRank, CDataType>;
-                requires DeviceRankTensor<AType<ADataType, ARank>, ARank, ADataType>;
-                requires DeviceRankTensor<BType<BDataType, BRank>, BRank, BDataType>;
-          }
+    requires requires {
+        requires DeviceRankTensor<CType<CDataType, CRank>, CRank, CDataType>;
+        requires DeviceRankTensor<AType<ADataType, ARank>, ARank, ADataType>;
+        requires DeviceRankTensor<BType<BDataType, BRank>, BRank, BDataType>;
+    }
 auto einsum(const U UC_prefactor, const ::std::tuple<CIndices...> &C_indices, CType<CDataType, CRank> *C, const U UAB_prefactor,
             const ::std::tuple<AIndices...> &A_indices, const AType<ADataType, ARank> &A, const ::std::tuple<BIndices...> &B_indices,
             const BType<BDataType, BRank> &B)
@@ -892,63 +994,61 @@ auto einsum(const U UC_prefactor, const ::std::tuple<CIndices...> &C_indices, CT
     delete testing;
 #endif
 
-// If the tensors are all block tensors, handle them appropriately.
+    // // If the tensors are all block tensors, handle them appropriately.
     if constexpr (einsums::detail::IsDeviceRankBlockTensorV<AType<ADataType, ARank>, ARank, ADataType> &&
                   einsums::detail::IsDeviceRankBlockTensorV<BType<BDataType, BRank>, BRank, BDataType> &&
                   einsums::detail::IsDeviceRankBlockTensorV<CType<CDataType, CRank>, CRank, CDataType>) {
+        ::einsums::tensor_algebra::detail::einsum<false>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
 
-        if (A.num_blocks() != B.num_blocks() || A.num_blocks() != C->num_blocks() || B.num_blocks() != C->num_blocks()) {
-            throw std::runtime_error("All tensors passed to einsums need to have the same number of blocks.");
-        }
+        //         if (A.num_blocks() != B.num_blocks() || A.num_blocks() != C->num_blocks() || B.num_blocks() != C->num_blocks()) {
+        //             throw std::runtime_error("All tensors passed to einsums need to have the same number of blocks.");
+        //         }
 
-        for (int i = 0; i < A.num_blocks(); i++) {
-            if (A.block_dim(i) != B.block_dim(i) || A.block_dim(i) != C->block_dim(i) || B.block_dim(i) != C->block_dim(i)) {
-                throw std::runtime_error("Inconsistent block sizes in tensors.");
-            }
-        }
+        //         for (int i = 0; i < A.num_blocks(); i++) {
+        //             if (A.block_dim(i) != B.block_dim(i) || A.block_dim(i) != C->block_dim(i) || B.block_dim(i) != C->block_dim(i)) {
+        //                 throw std::runtime_error("Inconsistent block sizes in tensors.");
+        //             }
+        //         }
 
-        // Perform einsum on each block separately.
-        EINSUMS_OMP_PARALLEL_FOR
-        for (int i = 0; i < A.num_blocks(); i++) {
-            if(A.block_dim(i) == 0) {
-                continue;
-            }
-            ::einsums::tensor_algebra::detail::einsum<false>(C_prefactor, C_indices, &(C->block(i)), AB_prefactor, A_indices, A[i], B_indices, B[i]);
-            gpu::stream_wait();
-        }
-    } else if constexpr (einsums::detail::IsDeviceRankBlockTensorV<AType<ADataType, ARank>, ARank, ADataType> &&
-                         einsums::detail::IsDeviceRankBlockTensorV<BType<BDataType, BRank>, BRank, BDataType> && CRank == 0) {
-        if (A.num_blocks() != B.num_blocks()) {
-            throw std::runtime_error("All tensors passed to einsums need to have the same number of blocks.");
-        }
+        //         // Perform einsum on each block separately.
+        //         for (int i = 0; i < A.num_blocks(); i++) {
+        //             if(A.block_dim(i) == 0) {
+        //                 continue;
+        //             }
+        //             ::einsums::tensor_algebra::detail::einsum<false>(C_prefactor, C_indices, &(C->block(i)), AB_prefactor, A_indices,
+        //             A[i], B_indices, B[i]);
+        //         }
+        //     } else if constexpr (einsums::detail::IsDeviceRankBlockTensorV<AType<ADataType, ARank>, ARank, ADataType> &&
+        //                          einsums::detail::IsDeviceRankBlockTensorV<BType<BDataType, BRank>, BRank, BDataType> && CRank == 0) {
+        //         if (A.num_blocks() != B.num_blocks()) {
+        //             throw std::runtime_error("All tensors passed to einsums need to have the same number of blocks.");
+        //         }
 
-        for (int i = 0; i < A.num_blocks(); i++) {
-            if (A.block_dim(i) != B.block_dim(i)) {
-                throw std::runtime_error("Inconsistent block sizes in tensors.");
-            }
-        }
+        //         for (int i = 0; i < A.num_blocks(); i++) {
+        //             if (A.block_dim(i) != B.block_dim(i)) {
+        //                 throw std::runtime_error("Inconsistent block sizes in tensors.");
+        //             }
+        //         }
 
-        // Perform einsum on each block separately.
-        if(C_prefactor == CDataType{0}) {
-            *C = 0;
-        } else {
-            *C *= C_prefactor;
-        }
-        for (int i = 0; i < A.num_blocks(); i++) {
-            if(A.block_dim(i) == 0) {
-                continue;
-            }
-            
-            DeviceTensor<CDataType, 0> temp;
+        //         // Perform einsum on each block separately.
+        //         if(C_prefactor == CDataType{0}) {
+        //             *C = 0;
+        //         } else {
+        //             *C *= C_prefactor;
+        //         }
 
-            temp = 0;
+        //         for (int i = 0; i < A.num_blocks(); i++) {
+        //             if(A.block_dim(i) == 0) {
+        //                 continue;
+        //             }
+        //             DeviceTensor<CDataType, 0> temp;
 
-            ::einsums::tensor_algebra::detail::einsum<false>(C_prefactor, C_indices, &temp, AB_prefactor, A_indices, A[i], B_indices, B[i]);
+        //             temp = 0;
 
-            gpu::stream_wait();
-
-            *C += temp;
-        }
+        //             ::einsums::tensor_algebra::detail::einsum<false>(C_prefactor, C_indices, &temp, AB_prefactor, A_indices, A[i],
+        //             B_indices, B[i]); *C += temp;
+        //         }
+        //     } else
     } else if constexpr (einsums::detail::IsDeviceRankBlockTensorV<AType<ADataType, ARank>, ARank, ADataType> ||
                          einsums::detail::IsDeviceRankBlockTensorV<BType<BDataType, BRank>, BRank, BDataType>) {
         // Use generic algorithm if mixing block and normal tensors.
@@ -1185,7 +1285,7 @@ auto khatri_rao(const ::std::tuple<AIndices...> &, const AType<T, ARank> &A, con
 
     // Perform the actual Khatri-Rao product using our einsum routine.
     ::einsums::tensor_algebra::einsum(::std::tuple_cat(A_only, B_only, common), &result, ::std::tuple_cat(A_only, common), A,
-                                           ::std::tuple_cat(B_only, common), B);
+                                      ::std::tuple_cat(B_only, common), B);
 
     // Return a reconstruction of the result tensor ... this can be considered as a simple reshape of the tensor.
     return DeviceTensor<T, 2>{::std::move(result), "KR product", -1, ::einsums::tensor_algebra::detail::product_dims(A_common_position, A)};

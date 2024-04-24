@@ -56,14 +56,14 @@ TEST_CASE("Index Combinations", "[gpu][utilities]") {
 
             index = {(size_t)i, (size_t)j};
 
-            size_t sentinel = combination_to_index(index, tensor.dims(), tensor.strides());
+            size_t sentinel = einsums::detail::combination_to_index(index, tensor.dims(), tensor.strides());
 
             CHECK(sentinel == i * 3 + j);
         }
     }
 
     for (int i = 0; i < 9; i++) {
-        index_to_combination(i, tensor.dims(), index);
+        einsums::detail::index_to_combination(i, tensor.dims(), index);
         CHECK(tensor(index[0], index[1]) == i);
     }
 }
