@@ -254,7 +254,7 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
     }
 
     /**
-     * @brief Add a block to the specified position in the
+     * @brief Add a block to the specified position in the list of blocks.
      */
     void insert_block(int pos, const tensor_type &value) {
         for (int i = 0; i < Rank; i++) {

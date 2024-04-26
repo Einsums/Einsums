@@ -66,53 +66,42 @@ void gemm(const T *alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, cons
             throw std::runtime_error("gemm: Tensors need the same number of blocks.");
         }
 
-#pragma omp task depend(in : A, B) depend(out : *C)
-        {
-
-            EINSUMS_OMP_PARALLEL_FOR
-            for (int i = 0; i < A.num_blocks(); i++) {
-                if (A.block_dim(i) == 0) {
-                    continue;
-                }
-                gemm<TransA, TransB>(alpha, A.block(i), B.block(i), beta, &(C->block(i)));
+        EINSUMS_OMP_PARALLEL_FOR
+        for (int i = 0; i < A.num_blocks(); i++) {
+            if (A.block_dim(i) == 0) {
+                continue;
             }
+            gemm<TransA, TransB>(alpha, A.block(i), B.block(i), beta, &(C->block(i)));
         }
 
         return;
     } else if constexpr (einsums::detail::IsDeviceRankBlockTensorV<AType<T, Rank>, Rank, T> &&
                          einsums::detail::IsDeviceRankBlockTensorV<BType<T, Rank>, Rank, T>) {
 
-#pragma omp task depend(in : A, B) depend(out : *C)
-        {
-            if (A.num_blocks() != B.num_blocks()) {
-                gemm<TransA, TransB>(alpha, (DeviceTensor<T, 2>)A, (DeviceTensor<T, 2>)B, beta, C);
-            } else {
-                EINSUMS_OMP_PARALLEL_FOR
-                for (int i = 0; i < A.num_blocks(); i++) {
-                    if (A.block_dim(i) == 0) {
-                        continue;
-                    }
-                    gemm<TransA, TransB>(alpha, A.block(i), B.block(i), beta, &((*C)(A.block_range(i), A.block_range(i))));
+        if (A.num_blocks() != B.num_blocks()) {
+            gemm<TransA, TransB>(alpha, (DeviceTensor<T, 2>)A, (DeviceTensor<T, 2>)B, beta, C);
+        } else {
+            EINSUMS_OMP_PARALLEL_FOR
+            for (int i = 0; i < A.num_blocks(); i++) {
+                if (A.block_dim(i) == 0) {
+                    continue;
                 }
+                gemm<TransA, TransB>(alpha, A.block(i), B.block(i), beta, &((*C)(A.block_range(i), A.block_range(i))));
             }
         }
-
         return;
     } else {
 
         using dev_datatype = ::std::conditional_t<::std::is_same_v<T, ::std::complex<float>>, hipComplex,
                                                   ::std::conditional_t<::std::is_same_v<T, ::std::complex<double>>, hipDoubleComplex, T>>;
 
-#pragma omp task depend(in : A, B) depend(out : *C)
-        {
-            int m = C->dim(0), n = C->dim(1), k = TransA ? A.dim(0) : A.dim(1);
-            int lda = A.stride(0), ldb = B.stride(0), ldc = C->stride(0);
+        int m = C->dim(0), n = C->dim(1), k = TransA ? A.dim(0) : A.dim(1);
+        int lda = A.stride(0), ldb = B.stride(0), ldc = C->stride(0);
 
-            // Flip the A and B matrices. Row-major vs column major.
-            detail::gpu::gemm(TransB ? HIPBLAS_OP_T : HIPBLAS_OP_N, TransA ? HIPBLAS_OP_T : HIPBLAS_OP_N, n, m, k, (dev_datatype *)alpha,
-                              B.data(), ldb, A.data(), lda, (dev_datatype *)beta, C->data(), ldc);
-            stream_wait();
-        }
+        // Flip the A and B matrices. Row-major vs column major.
+        detail::gpu::gemm(TransB ? HIPBLAS_OP_T : HIPBLAS_OP_N, TransA ? HIPBLAS_OP_T : HIPBLAS_OP_N, n, m, k, (dev_datatype *)alpha,
+                          B.data(), ldb, A.data(), lda, (dev_datatype *)beta, C->data(), ldc);
+        stream_wait();
     }
 }
 
@@ -128,62 +117,58 @@ void dot(CDataType C_prefactor, CType<CDataType, 0> &C,
          const BType<BDataType, BRank> &B) {
     using namespace einsums::gpu;
 
-#pragma omp task depend(in : A, B) depend(out : C)
-    {
-        if constexpr (einsums::detail::IsDeviceRankBlockTensorV<AType<ADataType, ARank>, ARank, ADataType> &&
-                      einsums::detail::IsDeviceRankBlockTensorV<BType<BDataType, BRank>, BRank, BDataType>) {
-            if (A.num_blocks() != B.num_blocks()) {
-                dot(C_prefactor, C, AB_prefactor, (einsums::DeviceTensor<ADataType, ARank>)A, (einsums::DeviceTensor<BDataType, BRank>)B);
-            }
+    if constexpr (einsums::detail::IsDeviceRankBlockTensorV<AType<ADataType, ARank>, ARank, ADataType> &&
+                  einsums::detail::IsDeviceRankBlockTensorV<BType<BDataType, BRank>, BRank, BDataType>) {
+        if (A.num_blocks() != B.num_blocks()) {
+            dot(C_prefactor, C, AB_prefactor, (einsums::DeviceTensor<ADataType, ARank>)A, (einsums::DeviceTensor<BDataType, BRank>)B);
+        }
 
-            if (A.ranges() != B.ranges()) {
-                dot(C_prefactor, C, AB_prefactor, (einsums::DeviceTensor<ADataType, ARank>)A, (einsums::DeviceTensor<BDataType, BRank>)B);
-            }
+        if (A.ranges() != B.ranges()) {
+            dot(C_prefactor, C, AB_prefactor, (einsums::DeviceTensor<ADataType, ARank>)A, (einsums::DeviceTensor<BDataType, BRank>)B);
+        }
 
-            if (C_prefactor == CDataType{0}) {
-                C = CDataType{0};
-            } else {
-                C *= C_prefactor;
-            }
+        if (C_prefactor == CDataType{0}) {
+            C = CDataType{0};
+        } else {
+            C *= C_prefactor;
+        }
 
-            CDataType out = CDataType{0};
+        CDataType out = CDataType{0};
 
 #pragma omp parallel for reduction(+ : out)
-            for (int i = 0; i < A.num_blocks(); i++) {
+        for (int i = 0; i < A.num_blocks(); i++) {
 
-                if (A.block_dim(i) == 0) {
-                    continue;
-                }
-                CType<CDataType, 0> temp;
-                dot(CDataType{0}, temp, AB_prefactor, A.block(i), B.block(i));
-
-#pragma omp atomic update
-                C += temp;
+            if (A.block_dim(i) == 0) {
+                continue;
             }
+            CType<CDataType, 0> temp;
+            dot(CDataType{0}, temp, AB_prefactor, A.block(i), B.block(i));
 
-        } else if constexpr (einsums::detail::IsDeviceRankBlockTensorV<AType<ADataType, ARank>, ARank, ADataType> &&
-                             !einsums::detail::IsDeviceRankBlockTensorV<BType<BDataType, BRank>, BRank, BDataType>) {
-            dot(C_prefactor, C, AB_prefactor, (einsums::DeviceTensor<ADataType, ARank>)A, B);
-        } else if constexpr (!einsums::detail::IsDeviceRankBlockTensorV<AType<ADataType, ARank>, ARank, ADataType> &&
-                             einsums::detail::IsDeviceRankBlockTensorV<BType<BDataType, BRank>, BRank, BDataType>) {
-            dot(C_prefactor, C, A, AB_prefactor, (einsums::DeviceTensor<BDataType, BRank>)B);
-
-        } else {
-
-            if (C_prefactor == CDataType{0}) {
-                C = CDataType{0};
-            } else {
-                C *= C_prefactor;
-            }
-
-            using dev_datatype = std::conditional_t<
-                std::is_same_v<decltype(AB_prefactor), std::complex<float>>, hipComplex,
-                std::conditional_t<std::is_same_v<decltype(AB_prefactor), std::complex<double>>, hipDoubleComplex, decltype(AB_prefactor)>>;
-
-            detail::gpu::dot_kernel<<<block_size(A.size()), blocks(A.size()), 0, get_stream()>>>(
-                C.data(), HipCast<dev_datatype, decltype(AB_prefactor)>::cast(AB_prefactor), A.data(), B.data(), A.size());
-            stream_wait();
+            C += temp;
         }
+
+    } else if constexpr (einsums::detail::IsDeviceRankBlockTensorV<AType<ADataType, ARank>, ARank, ADataType> &&
+                         !einsums::detail::IsDeviceRankBlockTensorV<BType<BDataType, BRank>, BRank, BDataType>) {
+        dot(C_prefactor, C, AB_prefactor, (einsums::DeviceTensor<ADataType, ARank>)A, B);
+    } else if constexpr (!einsums::detail::IsDeviceRankBlockTensorV<AType<ADataType, ARank>, ARank, ADataType> &&
+                         einsums::detail::IsDeviceRankBlockTensorV<BType<BDataType, BRank>, BRank, BDataType>) {
+        dot(C_prefactor, C, A, AB_prefactor, (einsums::DeviceTensor<BDataType, BRank>)B);
+
+    } else {
+
+        if (C_prefactor == CDataType{0}) {
+            C = CDataType{0};
+        } else {
+            C *= C_prefactor;
+        }
+
+        using dev_datatype = std::conditional_t<
+            std::is_same_v<decltype(AB_prefactor), std::complex<float>>, hipComplex,
+            std::conditional_t<std::is_same_v<decltype(AB_prefactor), std::complex<double>>, hipDoubleComplex, decltype(AB_prefactor)>>;
+
+        detail::gpu::dot_kernel<<<block_size(A.size()), blocks(A.size()), 0, get_stream()>>>(
+            C.data(), HipCast<dev_datatype, decltype(AB_prefactor)>::cast(AB_prefactor), A.data(), B.data(), A.size());
+        stream_wait();
     }
 }
 
@@ -215,32 +200,28 @@ void gemv(const T *alpha, const AType<T, ARank> &A, const XType<T, XYRank> &x, c
     using dev_datatype = ::std::conditional_t<::std::is_same_v<T, ::std::complex<float>>, hipComplex,
                                               ::std::conditional_t<::std::is_same_v<T, ::std::complex<double>>, hipDoubleComplex, T>>;
 
-#pragma omp task depend(in : A, x) depend(out : *y)
-    {
+    if constexpr (einsums::detail::IsDeviceRankBlockTensorV<AType<T, ARank>, ARank, T>) {
 
-        if constexpr (einsums::detail::IsDeviceRankBlockTensorV<AType<T, ARank>, ARank, T>) {
-
-            EINSUMS_OMP_PARALLEL_FOR
-            for (int i = 0; i < A.num_blocks(); i++) {
-                if (A.block_dim(i) == 0) {
-                    continue;
-                }
-                gemv(alpha, A.block(i), x(A.block_range(i)), beta, &((*y)(A.block_range(i))));
+        EINSUMS_OMP_PARALLEL_FOR
+        for (int i = 0; i < A.num_blocks(); i++) {
+            if (A.block_dim(i) == 0) {
+                continue;
             }
+            gemv(alpha, A.block(i), x(A.block_range(i)), beta, &((*y)(A.block_range(i))));
+        }
 
+    } else {
+
+        int m = A.dim(1), n = A.dim(0);
+
+        if constexpr (!TransA) {
+            detail::gpu::gemv(HIPBLAS_OP_T, m, n, (dev_datatype *)alpha, A.data(), A.stride(0), x.data(), x.stride(0), (dev_datatype *)beta,
+                              y->data(), y->stride(0));
+            stream_wait();
         } else {
-
-            int m = A.dim(1), n = A.dim(0);
-
-            if constexpr (!TransA) {
-                detail::gpu::gemv(HIPBLAS_OP_T, m, n, (dev_datatype *)alpha, A.data(), A.stride(0), x.data(), x.stride(0),
-                                  (dev_datatype *)beta, y->data(), y->stride(0));
-                stream_wait();
-            } else {
-                detail::gpu::gemv(HIPBLAS_OP_N, m, n, (dev_datatype *)alpha, A.data(), A.stride(0), x.data(), x.stride(0),
-                                  (dev_datatype *)beta, y->data(), y->stride(0));
-                stream_wait();
-            }
+            detail::gpu::gemv(HIPBLAS_OP_N, m, n, (dev_datatype *)alpha, A.data(), A.stride(0), x.data(), x.stride(0), (dev_datatype *)beta,
+                              y->data(), y->stride(0));
+            stream_wait();
         }
     }
 }
@@ -254,24 +235,18 @@ void scale(const T *scale, AType<T, ARank> *A) {
                                               ::std::conditional_t<::std::is_same_v<T, ::std::complex<double>>, hipDoubleComplex, T>>;
 
     if constexpr (einsums::detail::IsDeviceRankBlockTensorV<AType<T, ARank>, ARank, T>) {
-#pragma omp task depend(inout : *A)
-        {
-            EINSUMS_OMP_PARALLEL_FOR
-            for (int i = 0; i < A->num_blocks(); i++) {
-                if (A->block_dim(i) == 0) {
-                    continue;
-                }
-                scale(scale, &(A->block(i)));
+        EINSUMS_OMP_PARALLEL_FOR
+        for (int i = 0; i < A->num_blocks(); i++) {
+            if (A->block_dim(i) == 0) {
+                continue;
             }
+            scale(scale, &(A->block(i)));
         }
 
         return;
     } else {
-#pragma omp task depend(inout : *A)
-        {
-            detail::gpu::scal(A->size(), (dev_datatype *)scale, A->data(), 1);
-            stream_wait();
-        }
+        detail::gpu::scal(A->size(), (dev_datatype *)scale, A->data(), 1);
+        stream_wait();
     }
 }
 
@@ -293,34 +268,27 @@ void symm_gemm(const AType<T, Rank> &A, const BType<T, Rank> &B, CType<T, Rank> 
             throw std::runtime_error("gemm: Tensors need the same number of blocks.");
         }
 
-#pragma omp task depend(in : A, B) depend(out : *C)
-        {
-
-            EINSUMS_OMP_PARALLEL_FOR
-            for (int i = 0; i < A.num_blocks(); i++) {
-                if (A.block_dim(i) == 0) {
-                    continue;
-                }
-                symm_gemm<TransA, TransB>(A.block(i), B.block(i), &(C->block(i)));
+        EINSUMS_OMP_PARALLEL_FOR
+        for (int i = 0; i < A.num_blocks(); i++) {
+            if (A.block_dim(i) == 0) {
+                continue;
             }
+            symm_gemm<TransA, TransB>(A.block(i), B.block(i), &(C->block(i)));
         }
 
         return;
     } else if constexpr (einsums::detail::IsDeviceRankBlockTensorV<AType<T, Rank>, Rank, T> &&
                          einsums::detail::IsDeviceRankBlockTensorV<BType<T, Rank>, Rank, T>) {
-#pragma omp task depend(in : A, B) depend(out : *C)
-        {
-            if (A.num_blocks() != B.num_blocks()) {
-                symm_gemm<TransA, TransB>((DeviceTensor<T, 2>)A, (DeviceTensor<T, 2>)B, C);
-                stream_wait();
-            } else {
-                EINSUMS_OMP_PARALLEL_FOR
-                for (int i = 0; i < A.num_blocks(); i++) {
-                    if (A.block_dim(i) == 0) {
-                        continue;
-                    }
-                    symm_gemm<TransA, TransB>(A.block(i), B.block(i), &((*C)(A.block_range(i), A.block_range(i))));
+        if (A.num_blocks() != B.num_blocks()) {
+            symm_gemm<TransA, TransB>((DeviceTensor<T, 2>)A, (DeviceTensor<T, 2>)B, C);
+            stream_wait();
+        } else {
+            EINSUMS_OMP_PARALLEL_FOR
+            for (int i = 0; i < A.num_blocks(); i++) {
+                if (A.block_dim(i) == 0) {
+                    continue;
                 }
+                symm_gemm<TransA, TransB>(A.block(i), B.block(i), &((*C)(A.block_range(i), A.block_range(i))));
             }
         }
 
@@ -336,16 +304,12 @@ void symm_gemm(const AType<T, Rank> &A, const BType<T, Rank> &B, CType<T, Rank> 
         } else {
             assert(B.dim(1) == A.dim(1) && A.dim(0) == B.dim(1) && C->dim(0) == B.dim(0) && C->dim(1) == B.dim(0));
         }
+        C->zero();
 
-#pragma omp task depend(in : A, B) depend(out : *C)
-        {
-            C->zero();
-
-            einsums::linear_algebra::detail::gpu::symm_gemm<<<block_size(A.dim(0) * A.dim(0) * C->dim(0) * C->dim(0)),
-                                                              blocks(A.dim(0) * A.dim(0) * C->dim(0) * C->dim(0)), 0, get_stream()>>>(
-                TransA, TransB, A.dim(0), C->dim(0), A.data(), A.stride(0), B.data(), B.stride(0), C->data(), C->stride(0));
-            stream_wait();
-        }
+        einsums::linear_algebra::detail::gpu::symm_gemm<<<block_size(A.dim(0) * A.dim(0) * C->dim(0) * C->dim(0)),
+                                                          blocks(A.dim(0) * A.dim(0) * C->dim(0) * C->dim(0)), 0, get_stream()>>>(
+            TransA, TransB, A.dim(0), C->dim(0), A.data(), A.stride(0), B.data(), B.stride(0), C->data(), C->stride(0));
+        stream_wait();
     }
 }
 
@@ -469,20 +433,17 @@ int gesv(AType<T, ARank> *A, BType<T, BRank> *B) {
 
         int info_out = 0;
 
-#pragma omp task depend(inout : *A, *B) depend(out : info_out)
-        {
-            EINSUMS_OMP_PARALLEL_FOR
-            for (int i = 0; i < A->num_blocks(); i++) {
-                if (A->block_dim(i) == 0) {
-                    continue;
-                }
-                int info = gesv(&(A->block(i)), &(B->block(i)));
+        EINSUMS_OMP_PARALLEL_FOR
+        for (int i = 0; i < A->num_blocks(); i++) {
+            if (A->block_dim(i) == 0) {
+                continue;
+            }
+            int info = gesv(&(A->block(i)), &(B->block(i)));
 
-                info_out |= info;
+            info_out |= info;
 
-                if (info != 0) {
-                    println("gesv: Got non-zero return: %d", info);
-                }
+            if (info != 0) {
+                println("gesv: Got non-zero return: %d", info);
             }
         }
 
@@ -491,22 +452,18 @@ int gesv(AType<T, ARank> *A, BType<T, BRank> *B) {
     } else if constexpr (einsums::detail::IsDeviceRankBlockTensorV<AType<T, ARank>, ARank, T>) {
         int info_out = 0;
 
-#pragma omp task depend(inout : *A, *B) depend(out : info_out)
-        {
+        EINSUMS_OMP_PARALLEL_FOR
+        for (int i = 0; i < A->num_blocks(); i++) {
 
-            EINSUMS_OMP_PARALLEL_FOR
-            for (int i = 0; i < A->num_blocks(); i++) {
+            if (A->block_dim(i) == 0) {
+                continue;
+            }
+            int info = gesv(&(A->block(i)), &((*B)(AllT(), A->block_range(i))));
 
-                if (A->block_dim(i) == 0) {
-                    continue;
-                }
-                int info = gesv(&(A->block(i)), &((*B)(AllT(), A->block_range(i))));
+            info_out |= info;
 
-                info_out |= info;
-
-                if (info != 0) {
-                    println("gesv: Got non-zero return: %d", info);
-                }
+            if (info != 0) {
+                println("gesv: Got non-zero return: %d", info);
             }
         }
 
@@ -526,23 +483,19 @@ int gesv(AType<T, ARank> *A, BType<T, BRank> *B) {
 
         __device_ptr__ int *ipiv;
 
-#pragma omp task depend(inout : *A, *B)
-        {
-
 #ifdef __HIP_PLATFORM_NVIDIA__
-            DeviceTensor<T, BRank> X = DeviceTensor<T, BRank>(einsums::detail::DEV_ONLY, B->dims());
+        DeviceTensor<T, BRank> X = DeviceTensor<T, BRank>(einsums::detail::DEV_ONLY, B->dims());
 #endif
 
-            einsums::gpu::hip_catch(hipMallocAsync((void **)&ipiv, sizeof(int) * lwork, gpu::get_stream()));
+        einsums::gpu::hip_catch(hipMallocAsync((void **)&ipiv, sizeof(int) * lwork, gpu::get_stream()));
 
 #ifdef __HIP_PLATFORM_NVIDIA__
-            info = detail::gpu::gesv(n, nrhs, A->data(), lda, ipiv.data(), B->data(), ldb, X.data(), X.stride(0));
+        info = detail::gpu::gesv(n, nrhs, A->data(), lda, ipiv.data(), B->data(), ldb, X.data(), X.stride(0));
 #elif defined(__HIP_PLATFORM_AMD__)
-            info = detail::gpu::gesv(n, nrhs, A->data(), lda, ipiv, B->data(), ldb, B->data(), ldb);
+        info = detail::gpu::gesv(n, nrhs, A->data(), lda, ipiv, B->data(), ldb, B->data(), ldb);
 #endif
 
-            stream_wait();
-        }
+        stream_wait();
 
         einsums::gpu::hip_catch(hipFreeAsync(ipiv, gpu::get_stream()));
 
@@ -590,46 +543,35 @@ void axpy(const T *alpha, const XType<T, Rank> &X, YType<T, Rank> *Y) {
             throw std::runtime_error("axpy: Tensor blocks need to be compatible.");
         }
 
-#pragma omp task depend(in : X) depend(out : *Y)
-        {
-
-            EINSUMS_OMP_PARALLEL_FOR
-            for (int i = 0; i < X.num_blocks(); i++) {
-                if (X.block_dim(i) == 0) {
-                    continue;
-                }
-
-                axpy(alpha, X[i], &(Y->block(i)));
+        EINSUMS_OMP_PARALLEL_FOR
+        for (int i = 0; i < X.num_blocks(); i++) {
+            if (X.block_dim(i) == 0) {
+                continue;
             }
+
+            axpy(alpha, X[i], &(Y->block(i)));
         }
     } else if constexpr (einsums::detail::IsDeviceRankBlockTensorV<XType<T, Rank>, Rank, T>) {
-#pragma omp task depend(in : X) depend(out : *Y)
-        {
-            EINSUMS_OMP_PARALLEL_FOR
-            for (int i = 0; i < X.num_blocks(); i++) {
-                if (X.block_dim(i) == 0) {
-                    continue;
-                }
-
-                std::array<einsums::Range, Rank> slice;
-
-                slice.fill(X.block_range());
-
-                auto Y_block = std::apply(*Y, slice);
-
-                axpy(alpha, X[i], &Y_block);
+        EINSUMS_OMP_PARALLEL_FOR
+        for (int i = 0; i < X.num_blocks(); i++) {
+            if (X.block_dim(i) == 0) {
+                continue;
             }
+
+            std::array<einsums::Range, Rank> slice;
+
+            slice.fill(X.block_range());
+
+            auto Y_block = std::apply(*Y, slice);
+
+            axpy(alpha, X[i], &Y_block);
         }
     } else {
 
         LabeledSection0();
 
-#pragma omp task depend(in : X) depend(out : *Y)
-        {
-
-            detail::gpu::axpy(X.dim(0) * X.stride(0), alpha, X.data(), 1, Y->data(), 1);
-            stream_wait();
-        }
+        detail::gpu::axpy(X.dim(0) * X.stride(0), alpha, X.data(), 1, Y->data(), 1);
+        stream_wait();
     }
 }
 
@@ -645,27 +587,20 @@ template <bool ComputeEigenvectors, template <typename, size_t> typename AType, 
 void syev(AType<T, ARank> *A, WType<T, WRank> *W) {
     using namespace einsums::gpu;
     if constexpr (::einsums::detail::IsDeviceRankBlockTensorV<AType<T, ARank>, ARank, T>) {
-#pragma omp task depend(inout : *A, *W)
-        {
-            EINSUMS_OMP_PARALLEL_FOR
-            for (int i = 0; i < A->num_blocks(); i++) {
-                if (A->block_dim(i) == 0) {
-                    continue;
-                }
-                syev<ComputeEigenvectors>(&(A->block(i)), &((*W))(A->block_range(i)));
+        EINSUMS_OMP_PARALLEL_FOR
+        for (int i = 0; i < A->num_blocks(); i++) {
+            if (A->block_dim(i) == 0) {
+                continue;
             }
+            syev<ComputeEigenvectors>(&(A->block(i)), &((*W))(A->block_range(i)));
         }
     } else {
+        int lda = A->stride(0);
 
-#pragma omp task depend(inout : *A, *W)
-        {
-            int lda = A->stride(0);
+        int info = detail::gpu::syev(ComputeEigenvectors ? HIPSOLVER_EIG_MODE_VECTOR : HIPSOLVER_EIG_MODE_NOVECTOR,
+                                     HIPSOLVER_FILL_MODE_UPPER, A->dim(0), A->data(), lda, W->data());
 
-            int info = detail::gpu::syev(ComputeEigenvectors ? HIPSOLVER_EIG_MODE_VECTOR : HIPSOLVER_EIG_MODE_NOVECTOR,
-                                         HIPSOLVER_FILL_MODE_UPPER, A->dim(0), A->data(), lda, W->data());
-
-            stream_wait();
-        }
+        stream_wait();
     }
 }
 
@@ -704,16 +639,13 @@ AType<T, ARank> pow(const AType<T, ARank> &A, T expo) {
     if constexpr (::einsums::detail::IsDeviceRankBlockTensorV<AType<T, ARank>, ARank, T>) {
         BlockDeviceTensor<T, 2> out(A);
 
-#pragma omp task depend(in : A) depend(out : out)
-        {
-            EINSUMS_OMP_PARALLEL_FOR
-            for (int i = 0; i < out.num_blocks(); i++) {
-                if (out.block_dim(i) == 0) {
-                    continue;
-                }
-
-                out[i] = pow(A.block(i), expo);
+        EINSUMS_OMP_PARALLEL_FOR
+        for (int i = 0; i < out.num_blocks(); i++) {
+            if (out.block_dim(i) == 0) {
+                continue;
             }
+
+            out[i] = pow(A.block(i), expo);
         }
 
         return out;
@@ -727,19 +659,15 @@ AType<T, ARank> pow(const AType<T, ARank> &A, T expo) {
         DeviceTensor<T, 2> out(Dim<2>{A.dim(0), A.dim(1)}, ::einsums::detail::DEV_ONLY);
         DeviceTensor<T, 2> temp(Dim<2>{A.dim(0), A.dim(1)}, ::einsums::detail::DEV_ONLY);
 
-#pragma omp task depend(in : A) depend(out : out)
-        {
+        Evecs.assign(A);
 
-            Evecs.assign(A);
+        syev(&Evecs, &Evals);
 
-            syev(&Evecs, &Evals);
+        Diag.zero();
 
-            Diag.zero();
+        detail::gpu::eig_to_diag<<<dim3(32), dim3(1), 0, get_stream()>>>(Diag.data(), Diag.dim(0), Diag.stride(0), Evals.data(), expo);
 
-            detail::gpu::eig_to_diag<<<dim3(32), dim3(1), 0, get_stream()>>>(Diag.data(), Diag.dim(0), Diag.stride(0), Evals.data(), expo);
-
-            symm_gemm<false, false>(Diag, Evecs, &out);
-        }
+        symm_gemm<false, false>(Diag, Evecs, &out);
 
         return out;
     }
