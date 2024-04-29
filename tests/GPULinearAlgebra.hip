@@ -30,7 +30,6 @@ TEMPLATE_TEST_CASE("GPU Tensor GEMMs", "[gpu][linear-algebra]", float, double, s
     B.read(B_data);
 
     einsums::linear_algebra::gemm<false, false>((TestType)1.0, A, B, (TestType)0.0, &C);
-    hip_catch(hipDeviceSynchronize());
 
     // Issue here
     comp_data = {330.0, 396.0, 462.0, 726.0, 891.0, 1056.0, 1122.0, 1386.0, 1650.0};
@@ -41,7 +40,6 @@ TEMPLATE_TEST_CASE("GPU Tensor GEMMs", "[gpu][linear-algebra]", float, double, s
     }
 
     einsums::linear_algebra::gemm<true, false>((TestType)1.0, A, B, (TestType)0.0, &C);
-    hip_catch(hipDeviceSynchronize());
 
     comp_data = {726.0, 858.0, 990.0, 858.0, 1023.0, 1188.0, 990.0, 1188.0, 1386.0};
     C.write(C_data);
@@ -51,7 +49,6 @@ TEMPLATE_TEST_CASE("GPU Tensor GEMMs", "[gpu][linear-algebra]", float, double, s
     }
 
     einsums::linear_algebra::gemm<false, true>((TestType)1.0, A, B, (TestType)0.0, &C);
-    hip_catch(hipDeviceSynchronize());
 
     comp_data = {154.0, 352.0, 550.0, 352.0, 847.0, 1342.0, 550.0, 1342.0, 2134.0};
     C.write(C_data);
@@ -61,7 +58,6 @@ TEMPLATE_TEST_CASE("GPU Tensor GEMMs", "[gpu][linear-algebra]", float, double, s
     }
 
     einsums::linear_algebra::gemm<true, true>((TestType)1.0, A, B, (TestType)0.0, &C);
-    hip_catch(hipDeviceSynchronize());
 
     comp_data = {330.0, 726.0, 1122.0, 396.0, 891.0, 1386.0, 462.0, 1056.0, 1650.0};
     C.write(C_data);
@@ -89,7 +85,6 @@ TEMPLATE_TEST_CASE("GPU dot products", "[gpu][linear-algebra]", float, double, s
     B.read(B_data);
 
     einsums::linear_algebra::dot((TestType)0.0, C, (TestType)1.0, A, B);
-    hip_catch(hipDeviceSynchronize());
 
     REQUIRE((TestType)C == (TestType)3135.0);
 }
@@ -111,7 +106,6 @@ TEMPLATE_TEST_CASE("GPU outer products", "[gpu][linear-algebra]", float, double,
     C.zero();
 
     einsums::linear_algebra::ger((TestType)1.0, A, B, &C);
-    hip_catch(hipDeviceSynchronize());
 
     std::vector<TestType> comp_data{11.0, 22.0, 33.0, 22.0, 44.0, 66.0, 33.0, 66.0, 99.0};
 
@@ -138,7 +132,6 @@ TEMPLATE_TEST_CASE("GPU Matrix vector products", "[gpu][linear-algebra]", float,
     C.zero();
 
     einsums::linear_algebra::gemv<false>((TestType)1.0, A, B, (TestType)0.0, &C);
-    hip_catch(hipDeviceSynchronize());
 
     std::vector<TestType> comp_data{154.0, 352.0, 550.0};
 
@@ -147,7 +140,6 @@ TEMPLATE_TEST_CASE("GPU Matrix vector products", "[gpu][linear-algebra]", float,
     }
 
     einsums::linear_algebra::gemv<true>((TestType)1.0, A, B, (TestType)0.0, &C);
-    hip_catch(hipDeviceSynchronize());
 
     comp_data = {330.0, 396.0, 462.0};
 
@@ -169,7 +161,6 @@ TEMPLATE_TEST_CASE("GPU scale", "[gpu][linear-algebra]", float, double, std::com
     A.read(A_data);
 
     einsums::linear_algebra::scale((TestType)10.0, &A);
-    hip_catch(hipDeviceSynchronize());
 
     std::vector<TestType> comp_data{10.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 90.0};
 
@@ -196,14 +187,10 @@ TEMPLATE_TEST_CASE("Test Symmetric Multiplication", "[gpu][linear-algebra]", flo
 
     A.read(A_data);
     B.read(B_data);
-    hip_catch(hipDeviceSynchronize());
 
     einsums::linear_algebra::symm_gemm<false, false>(A, B, &C);
 
-    hip_catch(hipDeviceSynchronize());
-
     C.write(C_data);
-    hip_catch(hipDeviceSynchronize());
 
     for (int i = 0; i < 9; i++) {
         CHECK(C_data[i] == comp_data[i]);
@@ -213,10 +200,7 @@ TEMPLATE_TEST_CASE("Test Symmetric Multiplication", "[gpu][linear-algebra]", flo
 
     comp_data = {121968.0, 145926.0, 169884.0, 150282.0, 179685.0, 209088.0, 178596.0, 213444.0, 248292.0};
 
-    hip_catch(hipDeviceSynchronize());
-
     C.write(C_data);
-    hip_catch(hipDeviceSynchronize());
 
     for (int i = 0; i < 9; i++) {
         CHECK(C_data[i] == comp_data[i]);
@@ -226,10 +210,7 @@ TEMPLATE_TEST_CASE("Test Symmetric Multiplication", "[gpu][linear-algebra]", flo
 
     comp_data = {27588.0, 66792.0, 105996.0, 62436.0, 150645.0, 238854.0, 97284.0, 234498.0, 371712.0};
 
-    hip_catch(hipDeviceSynchronize());
-
     C.write(C_data);
-    hip_catch(hipDeviceSynchronize());
 
     for (int i = 0; i < 9; i++) {
         CHECK(C_data[i] == comp_data[i]);
@@ -239,10 +220,7 @@ TEMPLATE_TEST_CASE("Test Symmetric Multiplication", "[gpu][linear-algebra]", flo
 
     comp_data = {27588.0, 62436.0, 97284.0, 66792.0, 150645.0, 234498.0, 105996.0, 238854.0, 371712.0};
 
-    hip_catch(hipDeviceSynchronize());
-
     C.write(C_data);
-    hip_catch(hipDeviceSynchronize());
 
     for (int i = 0; i < 9; i++) {
         CHECK(C_data[i] == comp_data[i]);

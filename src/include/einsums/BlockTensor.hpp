@@ -849,7 +849,6 @@ struct BlockDeviceTensor : public BlockTensorBase<T, Rank, DeviceTensor> {
         for (int i = 0; i < sizeof...(Dims); i++) {
 
             Dim<Rank> pass_dims;
-            ;
 
             pass_dims.fill(dims[i]);
 

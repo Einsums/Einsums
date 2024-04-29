@@ -174,7 +174,7 @@ template <template <typename, size_t> typename AType, size_t ARank, template <ty
 T dot(const AType<T, ARank> &A, const BType<T, BRank> &B) {
     einsums::DeviceTensor<T, 0> out("(unnamed)", einsums::detail::DEV_ONLY);
 
-    dot(0.0, out, 1.0, A, B);
+    dot(T{0.0}, out, T{1.0}, A, B);
 
     return (T)out;
 }
