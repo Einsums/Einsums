@@ -182,7 +182,7 @@ TEST_CASE("Block Device Tensor operations", "[tensor][block-tensor][gpu]") {
 TEST_CASE("Block Device Tensor Info", "[tensor][block-tensor][gpu]") {
     using namespace einsums;
 
-    BlockTensor<double, 2> A("A", einsums::detail::DEV_ONLY, 3, 3);
+    BlockDeviceTensor<double, 2> A("A", einsums::detail::DEV_ONLY, 3, 3);
 
     for (int i = 0; i < 6; i++) {
         CHECK(A.block_of(i) == i / 3);
