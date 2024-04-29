@@ -154,7 +154,7 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
      */
     int block_of(size_t index) const {
         for (int i = 0; i < _ranges.size(); i++) {
-            if (_ranges[i][0] <= i && _ranges[i][1] > i) {
+            if (_ranges[i][0] <= index && _ranges[i][1] > index) {
                 return i;
             }
         }
@@ -193,6 +193,36 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
      * @brief Return the selected block with an integer ID.
      */
     tensor_type &block(int id) { return _blocks.at(id); }
+
+    /**
+     * @brief Return the selected block with an integer ID.
+     */
+    const tensor_type &block(const std::string &name) const {
+        for (int i = 0; i < _blocks.size(); i++) {
+            if (_blocks[i].name() == name) {
+                return _blocks[i];
+            }
+        }
+        if (_blocks.size() == 0) {
+            throw std::out_of_range("Could not find block with the name " + name + ": no blocks in tensor.");
+        }
+        throw std::out_of_range("Could not find block with the name " + name + ": no blocks with given name.");
+    }
+
+    /**
+     * @brief Return the selected block with an integer ID.
+     */
+    tensor_type &block(const std::string &name) {
+        for (int i = 0; i < _blocks.size(); i++) {
+            if (_blocks[i].name() == name) {
+                return _blocks[i];
+            }
+        }
+        if (_blocks.size() == 0) {
+            throw std::out_of_range("Could not find block with the name " + name + ": no blocks in tensor.");
+        }
+        throw std::out_of_range("Could not find block with the name " + name + ": no blocks with given name.");
+    }
 
     /**
      * @brief Add a block to the end of the list of blocks.
@@ -427,36 +457,22 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
     /**
      * @brief Return the block with the given index.
      */
-    const tensor_type &operator[](size_t index) const { return _blocks.at(index); }
+    const tensor_type &operator[](size_t index) const { return this->block(index); }
 
     /**
      * @brief Return the block with the given index.
      */
-    tensor_type &operator[](size_t index) { return _blocks.at(index); }
+    tensor_type &operator[](size_t index) { return this->block(index); }
 
     /**
      * @brief Return the block with the given name.
      */
-    const tensor_type &operator[](const std::string &name) const {
-        for (auto tens : _blocks) {
-            if (tens.name() == name) {
-                return tens;
-            }
-        }
-        throw std::out_of_range("Could not find block with the name " + name);
-    }
+    const tensor_type &operator[](const std::string &name) const { return this->block(name); }
 
     /**
      * @brief Return the block with the given name.
      */
-    tensor_type &operator[](const std::string &name) {
-        for (auto tens : _blocks) {
-            if (tens.name() == name) {
-                return tens;
-            }
-        }
-        throw std::out_of_range("Could not find block with the name " + name);
-    }
+    tensor_type &operator[](const std::string &name) { return this->block(name); }
 
     /**
      * @brief Copy assignment.
