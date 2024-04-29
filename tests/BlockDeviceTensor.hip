@@ -3,19 +3,20 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //----------------------------------------------------------------------------------------------
 
+#include "einsums/DeviceTensor.hpp"
+
 #include <H5Fpublic.h>
 #include <catch2/catch_all.hpp>
 #include <type_traits>
 
 #include "einsums.hpp"
 
-TEST_CASE("GPU Block Tensor creation", "[gpu][tensor][block-tensor]") {
+TEST_CASE("Block Device Tensor creation", "[tensor][block-tensor][gpu]") {
     using namespace einsums;
-    using namespace einsums::gpu;
 
     BlockDeviceTensor<double, 2> A("A", einsums::detail::DEV_ONLY, 3, 3);
     BlockDeviceTensor<double, 2> B("B", einsums::detail::DEV_ONLY, 3, 3);
-    BlockDeviceTensor<double, 2> C("C", einsums::detail::DEV_ONLY, 3, 3);
+    BlockDeviceTensor<double, 2> C;
 
     REQUIRE((A.dim(0) == 6 && A.dim(1) == 6));
     REQUIRE((B.dim(0) == 6 && B.dim(1) == 6));
@@ -23,12 +24,10 @@ TEST_CASE("GPU Block Tensor creation", "[gpu][tensor][block-tensor]") {
     A.zero();
     B.zero();
 
-    hip_catch(hipDeviceSynchronize());
-
     for (int i = 0; i < 6; i++) {
         for (int j = 0; j < 6; j++) {
-            CHECK((double) A(i, j) == 0.0);
-            CHECK((double) B(i, j) == 0.0);
+            CHECK(A(i, j) == 0.0);
+            CHECK(B(i, j) == 0.0);
         }
     }
 
@@ -47,34 +46,150 @@ TEST_CASE("GPU Block Tensor creation", "[gpu][tensor][block-tensor]") {
     B(4, 4) = 1.0;
     B(5, 5) = 1.0;
 
-    hip_catch(hipDeviceSynchronize());
-
     for (int i = 0; i < 6; i++) {
         for (int j = 0; j < 6; j++) {
             if (i == j) {
-                CHECK((double) A(i, j) == 1.0);
-                CHECK((double) B(i, j) == 1.0);
+                CHECK(A(i, j) == 1.0);
+                CHECK(B(i, j) == 1.0);
             } else {
-                CHECK((double) A(i, j) == 0.0);
-                CHECK((double) B(i, j) == 0.0);
+                CHECK(A(i, j) == 0.0);
+                CHECK(B(i, j) == 0.0);
             }
         }
     }
+
+    // Set up C using a different method.
+    C.push_block(DeviceTensor<double, 2>("block2", einsums::detail::DEV_ONLY, 3, 3));
+    C.insert_block(0, DeviceTensor<double, 2>("block1", einsums::detail::DEV_ONLY, 3, 3));
+    C.set_name("C");
 
     // Perform basic matrix multiplication
     einsums::linear_algebra::gemm<false, false>(1.0, A, B, 0.0, &C);
 
-    hip_catch(hipDeviceSynchronize());
+    for (int i = 0; i < 6; i++) {
+        for (int j = 0; j < 6; j++) {
+            if (i == j) {
+                CHECK(C(i, j) == 1.0);
+            } else {
+                CHECK(C(i, j) == 0.0);
+            }
+        }
+    }
+
+    // Check by blocks.
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            if (i == j) {
+                CHECK(A[0](i, j) == 1.0);
+                CHECK(B[0](i, j) == 1.0);
+                CHECK(A[1](i, j) == 1.0);
+                CHECK(B[1](i, j) == 1.0);
+                CHECK(C["block1"](i, j) == 1.0);
+                CHECK(C["block2"](i, j) == 1.0);
+            } else {
+                CHECK(A[0](i, j) == 0.0);
+                CHECK(B[0](i, j) == 0.0);
+                CHECK(A[1](i, j) == 0.0);
+                CHECK(B[1](i, j) == 0.0);
+                CHECK(C["block1"](i, j) == 0.0);
+                CHECK(C["block2"](i, j) == 0.0);
+            }
+        }
+    }
+
+    CHECK_THROWS(C["block3"]);
+
+    A.set_all(2.0);
+
+    for (int i = 0; i < 6; i++) {
+        for (int j = 0; j < 6; j++) {
+            if (i / 3 == j / 3) {
+                REQUIRE(A.block_of(i) == A.block_of(j));
+            } else {
+                REQUIRE(A.block_of(i) != A.block_of(j));
+            }
+            if (A.block_of(i) == A.block_of(j)) {
+                CHECK(A(i, j) == 2.0);
+            } else {
+                CHECK(A(i, j) == 0.0);
+            }
+        }
+    }
+}
+
+TEST_CASE("Block Device Tensor operations", "[tensor][block-tensor][gpu]") {
+    using namespace einsums;
+
+    BlockDeviceTensor<double, 2> A("A", einsums::detail::DEV_ONLY, 3, 3);
+    BlockDeviceTensor<double, 2> B("B", einsums::detail::DEV_ONLY, 3, 3);
+
+    A.zero();
+    B.zero();
+
+    // Set A and B to identity
+    A(0, 0) = 1.0;
+    A(1, 1) = 1.0;
+    A(2, 2) = 1.0;
+    A(3, 3) = 1.0;
+    A(4, 4) = 1.0;
+    A(5, 5) = 1.0;
+
+    B(0, 0) = 1.0;
+    B(1, 1) = 1.0;
+    B(2, 2) = 1.0;
+    B(3, 3) = 1.0;
+    B(4, 4) = 1.0;
+    B(5, 5) = 1.0;
+
+    A *= 2;
+    A += 2;
+    A /= 2;
+    A -= 2;
 
     for (int i = 0; i < 6; i++) {
         for (int j = 0; j < 6; j++) {
             if (i == j) {
-                CHECK((double) C(i, j) == 1.0);
+                CHECK(A(i, j) == 0.0);
+            } else if (A.block_of(i) == A.block_of(j)) {
+                CHECK(A(i, j) == -1.0);
             } else {
-                CHECK((double) C(i, j) == 0.0);
+                CHECK(A(i, j) == 0.0);
             }
         }
     }
+
+    A += B; // Swap here to avoid division by zero.
+    B *= A;
+    B /= A; // Either way there would be a division by zero. Do the addition first to not.
+    B -= A;
+
+    for (int i = 0; i < 6; i++) {
+        for (int j = 0; j < 6; j++) {
+            if (i == j) {
+                CHECK(A(i, j) == 1.0);
+                CHECK(B(i, j) == 0.0);
+            } else if (A.block_of(i) == A.block_of(j)) {
+                CHECK(A(i, j) == -1.0);
+                CHECK(B(i, j) == 1.0);
+            } else {
+                CHECK(A(i, j) == 0.0);
+                CHECK(B(i, j) == 0.0);
+            }
+        }
+    }
+}
+
+TEST_CASE("Block Device Tensor Info", "[tensor][block-tensor][gpu]") {
+    using namespace einsums;
+
+    BlockTensor<double, 2> A("A", einsums::detail::DEV_ONLY, 3, 3);
+
+    for (int i = 0; i < 6; i++) {
+        CHECK(A.block_of(i) == i / 3);
+    }
+
+    CHECK_THROWS(A.block_of(6));
+    CHECK_THROWS(A.block_of(-1));
 }
 
 /*

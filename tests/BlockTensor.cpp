@@ -101,7 +101,7 @@ TEST_CASE("Block Tensor creation", "[tensor][block-tensor]") {
 
     for (int i = 0; i < 6; i++) {
         for (int j = 0; j < 6; j++) {
-            if(i / 3 == j / 3) {
+            if (i / 3 == j / 3) {
                 REQUIRE(A.block_of(i) == A.block_of(j));
             } else {
                 REQUIRE(A.block_of(i) != A.block_of(j));
@@ -115,12 +115,11 @@ TEST_CASE("Block Tensor creation", "[tensor][block-tensor]") {
     }
 }
 
-TEST_CASE("Block Tensor operations", "[tensor]") {
+TEST_CASE("Block Tensor operations", "[tensor][block-tensor]") {
     using namespace einsums;
 
     BlockTensor<double, 2> A("A", 3, 3);
     BlockTensor<double, 2> B("B", 3, 3);
-    BlockTensor<double, 2> C("C", 3, 3);
 
     A.zero();
     B.zero();
@@ -178,12 +177,10 @@ TEST_CASE("Block Tensor operations", "[tensor]") {
     }
 }
 
-TEST_CASE("Block Tensor Info", "[tensor]") {
+TEST_CASE("Block Tensor Info", "[tensor][block-tensor]") {
     using namespace einsums;
 
     BlockTensor<double, 2> A("A", 3, 3);
-    BlockTensor<double, 2> B("B", 3, 3);
-    BlockTensor<double, 2> C("C", 3, 3);
 
     for (int i = 0; i < 6; i++) {
         CHECK(A.block_of(i) == i / 3);
