@@ -14,6 +14,7 @@
 #include "einsums/Section.hpp"
 #include "einsums/Tensor.hpp"
 #include "einsums/utility/SmartPointerTraits.hpp"
+#include "einsums/utility/TensorTraits.hpp"
 
 BEGIN_EINSUMS_NAMESPACE_HPP(einsums::tensor_algebra)
 
@@ -38,6 +39,10 @@ void EINSUMS_EXPORT sort(const int *perm, const int dim, const std::complex<doub
 //
 template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename CType, size_t CRank,
           typename... CIndices, typename... AIndices, typename U, typename T = double>
+requires requires {
+    requires CoreRankTensor<AType<T, ARank>, ARank, T>;
+    requires CoreRankTensor<CType<T, CRank>, CRank, T>;
+}
 auto sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<T, CRank> *C, const U UA_prefactor,
           const std::tuple<AIndices...> &A_indices, const AType<T, ARank> &A)
     -> std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<T, CRank>, CType<T, CRank>> &&

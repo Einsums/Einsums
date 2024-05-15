@@ -16,10 +16,9 @@ using namespace einsums::gpu::detail;
 namespace einsums {
 namespace linear_algebra {
 
-
 namespace detail {
 
-    namespace gpu {
+namespace gpu {
 
 void gemm(hipblasOperation_t transa, hipblasOperation_t transb, int m, int n, int k, const float *alpha, const float *a, int lda,
           const float *b, int ldb, const float *beta, float *c, int ldc) {
@@ -161,7 +160,6 @@ int gesv(int n, int nrhs, float *A, int lda, int *ipiv, float *B, int ldb, float
     hip_catch(hipFreeAsync(out_gpu, get_stream()));
     hip_catch(hipFreeAsync(work, get_stream()));
 
-
     return out;
 }
 int gesv(int n, int nrhs, double *A, int lda, int *ipiv, double *B, int ldb, double *X, int ldx) {
@@ -273,6 +271,105 @@ EINSUMS_EXPORT void axpy(int n, const hipDoubleComplex *alpha, const hipDoubleCo
     hipblasHandle_t handle = get_blas_handle();
 
     hipblas_catch(hipblasZaxpy(handle, n, (hipblasDoubleComplex *)alpha, (hipblasDoubleComplex *)X, incx, (hipblasDoubleComplex *)Y, incy));
+}
+
+EINSUMS_EXPORT void axpby(int n, const float *alpha, const float *X, int incx, const float *beta, float *Y, int incy) {
+    hipblasHandle_t handle = get_blas_handle();
+
+    // hipblas_catch(hipblasSaxpby(handle, n, alpha, X, incx, beta, Y, incy));
+    hipStream_t stream;
+    hipblas_catch(hipblasGetStream(handle, &stream));
+    saxpby_kernel<<<block_size(n), blocks(n), 0, stream>>>(n, alpha, X, incx, beta, Y, incy);
+}
+
+EINSUMS_EXPORT void axpby(int n, const double *alpha, const double *X, int incx, const double *beta, double *Y, int incy) {
+    hipblasHandle_t handle = get_blas_handle();
+
+    // hipblas_catch(hipblasDaxpby(handle, n, alpha, X, incx, beta, Y, incy));
+
+    hipStream_t stream;
+    hipblas_catch(hipblasGetStream(handle, &stream));
+    daxpby_kernel<<<block_size(n), blocks(n), 0, stream>>>(n, alpha, X, incx, beta, Y, incy);
+}
+EINSUMS_EXPORT void axpby(int n, const hipComplex *alpha, const hipComplex *X, int incx, const hipComplex *beta, hipComplex *Y, int incy) {
+    hipblasHandle_t handle = get_blas_handle();
+
+    // hipblas_catch(hipblasCaxpby(handle, n, (hipblasComplex *)alpha, (hipblasComplex *)X, incx, beta, (hipblasComplex *)Y, incy));
+
+    hipStream_t stream;
+    hipblas_catch(hipblasGetStream(handle, &stream));
+    caxpby_kernel<<<block_size(n), blocks(n), 0, stream>>>(n, alpha, X, incx, beta, Y, incy);
+}
+EINSUMS_EXPORT void axpby(int n, const hipDoubleComplex *alpha, const hipDoubleComplex *X, int incx, const hipDoubleComplex *beta,
+                          hipDoubleComplex *Y, int incy) {
+    hipblasHandle_t handle = get_blas_handle();
+
+    // hipblas_catch(
+    //     hipblasZaxpby(handle, n, (hipblasDoubleComplex *)alpha, (hipblasDoubleComplex *)X, incx, beta, (hipblasDoubleComplex *)Y, incy));
+
+    hipStream_t stream;
+    hipblas_catch(hipblasGetStream(handle, &stream));
+    zaxpby_kernel<<<block_size(n), blocks(n), 0, stream>>>(n, alpha, X, incx, beta, Y, incy);
+}
+
+__global__ EINSUMS_EXPORT void saxpby_kernel(int n, const float *alpha, const float *X, int incx, const float *beta, float *Y, int incy) {
+    int thread, kernel_size;
+
+    get_worker_info(thread, kernel_size);
+
+    size_t curr_index = thread;
+
+    for (size_t curr_index = thread; curr_index < n; curr_index += kernel_size) {
+        size_t x_index = incx * curr_index;
+        size_t y_index = incy * curr_index;
+
+        Y[y_index] = *alpha * X[x_index] + *beta * Y[y_index];
+    }
+}
+__global__ EINSUMS_EXPORT void daxpby_kernel(int n, const double *alpha, const double *X, int incx, const double *beta, double *Y,
+                                             int incy) {
+    int thread, kernel_size;
+
+    get_worker_info(thread, kernel_size);
+
+    size_t curr_index = thread;
+
+    for (size_t curr_index = thread; curr_index < n; curr_index += kernel_size) {
+        size_t x_index = incx * curr_index;
+        size_t y_index = incy * curr_index;
+
+        Y[y_index] = *alpha * X[x_index] + *beta * Y[y_index];
+    }
+}
+__global__ EINSUMS_EXPORT void caxpby_kernel(int n, const hipComplex *alpha, const hipComplex *X, int incx, const hipComplex *beta,
+                                             hipComplex *Y, int incy) {
+    int thread, kernel_size;
+
+    get_worker_info(thread, kernel_size);
+
+    size_t curr_index = thread;
+
+    for (size_t curr_index = thread; curr_index < n; curr_index += kernel_size) {
+        size_t x_index = incx * curr_index;
+        size_t y_index = incy * curr_index;
+
+        Y[y_index] = *alpha * X[x_index] + *beta * Y[y_index];
+    }
+}
+__global__ EINSUMS_EXPORT void zaxpby_kernel(int n, const hipDoubleComplex *alpha, const hipDoubleComplex *X, int incx,
+                                             const hipDoubleComplex *beta, hipDoubleComplex *Y, int incy) {
+    int thread, kernel_size;
+
+    get_worker_info(thread, kernel_size);
+
+    size_t curr_index = thread;
+
+    for (size_t curr_index = thread; curr_index < n; curr_index += kernel_size) {
+        size_t x_index = incx * curr_index;
+        size_t y_index = incy * curr_index;
+
+        Y[y_index] = *alpha * X[x_index] + *beta * Y[y_index];
+    }
 }
 
 __global__ EINSUMS_EXPORT void symm_gemm(bool TransA, bool TransB, int m, int n, const float *A, int lda, const float *B, int ldb, float *C,
@@ -483,7 +580,7 @@ int syev(hipsolverEigMode_t jobz, hipsolverFillMode_t uplo, int n, double *A, in
     hipsolver_catch(hipsolverDsyevd(handle, jobz, uplo, n, A, lda, D, work, lwork, dev_info));
 
     hip_catch(hipMemcpyAsync((void *)&out, (void *)dev_info, sizeof(int), hipMemcpyDeviceToHost, get_stream()));
-    
+
     stream_wait();
 
     hip_catch(hipFreeAsync(dev_info, get_stream()));
@@ -491,9 +588,9 @@ int syev(hipsolverEigMode_t jobz, hipsolverFillMode_t uplo, int n, double *A, in
     return out;
 }
 
-    }
+} // namespace gpu
 
 } // namespace detail
 
-}
-}
+} // namespace linear_algebra
+} // namespace einsums

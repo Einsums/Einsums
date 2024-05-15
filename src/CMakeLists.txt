@@ -116,6 +116,14 @@ extend_einsums_target(
 )
 
 extend_einsums_target(
+        einsums
+        SOURCES DeviceSort.hip
+        DEPENDS librett::librett
+        CONDITION EINSUMS_USE_HPTT AND EINSUMS_BUILD_HIP
+        FEATURE_INFO "Librett backend"
+)
+
+extend_einsums_target(
         einsums DEPENDS ittnotify
         DEFINES HAVE_ITTNOTIFY
         CONDITION TARGET ittnotify
