@@ -25,9 +25,9 @@
 
 BEGIN_EINSUMS_NAMESPACE_HPP(einsums::tensor_algebra)
 
-#if defined(EINSUMS_USE_HPTT)
-
 namespace detail {
+
+#if defined(EINSUMS_USE_HPTT)
 
 void EINSUMS_EXPORT gpu_sort(const int *perm, const int dim, const float alpha, const float *A, const int *sizeA, const float beta,
                              float *B);
@@ -37,6 +37,7 @@ void EINSUMS_EXPORT gpu_sort(const int *perm, const int dim, const hipComplex al
                              const hipComplex beta, hipComplex *B);
 void EINSUMS_EXPORT gpu_sort(const int *perm, const int dim, const hipDoubleComplex alpha, const hipDoubleComplex *A, const int *sizeA,
                              const hipDoubleComplex beta, hipDoubleComplex *B);
+                             #endif
 
 template <typename T, size_t Rank>
 __global__ void sort_kernel(const int *perm, const T alpha, const T *A, const size_t *strideA, const T beta, T *B, const size_t *strideB,
@@ -68,8 +69,6 @@ __global__ void sort_kernel(const int *perm, const T alpha, const T *A, const si
 }
 
 } // namespace detail
-
-#endif
 
 //
 // sort algorithm

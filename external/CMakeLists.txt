@@ -31,7 +31,9 @@ if(EINSUMS_USE_HPTT)
     add_subdirectory(hptt EXCLUDE_FROM_ALL)
 
     if(EINSUMS_BUILD_HIP)
-        add_subdirectory(librett EXCLUDE_FROM_ALL)
+        set(ENABLE_HIP ON)
+        add_subdirectory(librett)
+        FetchContent_MakeAvailable(librett)
     endif()
 endif()
 
