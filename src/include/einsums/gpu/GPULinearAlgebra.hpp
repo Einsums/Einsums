@@ -42,7 +42,7 @@ __global__ void dot_kernel(CDataType *C, ::std::conditional_t<sizeof(ADataType) 
         curr_index += kernel_size;
     }
 }
-}
+} // namespace gpu
 
 } // namespace detail
 
@@ -53,8 +53,7 @@ template <bool TransA, bool TransB, template <typename, size_t> typename AType, 
         requires ::einsums::DeviceRankTensor<BType<T, Rank>, 2, T>;
         requires ::einsums::DeviceRankTensor<CType<T, Rank>, 2, T>;
         requires !::einsums::DeviceRankBlockTensor<CType<T, Rank>, 2, T> ||
-                     (::einsums::DeviceRankBlockTensor<AType<T, Rank>, 2, T> &&
-                      ::einsums::DeviceRankBlockTensor<BType<T, Rank>, 2, T>);
+                     (::einsums::DeviceRankBlockTensor<AType<T, Rank>, 2, T> && ::einsums::DeviceRankBlockTensor<BType<T, Rank>, 2, T>);
     }
 void gemm(const T *alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const T *beta, CType<T, Rank> *C) {
     using namespace einsums::gpu;
@@ -73,15 +72,14 @@ void gemm(const T *alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, cons
                 continue;
             }
             gemm<TransA, TransB>(alpha, A.block(i), B.block(i), beta, &(C->block(i)));
-
-            stream_wait();
         }
 
         return;
     } else if constexpr (einsums::detail::IsDeviceRankBlockTensorV<AType<T, Rank>, Rank, T> &&
                          einsums::detail::IsDeviceRankBlockTensorV<BType<T, Rank>, Rank, T>) {
+
         if (A.num_blocks() != B.num_blocks()) {
-            gemm<TransA, TransB>(alpha, (Tensor<T, 2>)A, (Tensor<T, 2>)B, beta, C);
+            gemm<TransA, TransB>(alpha, (DeviceTensor<T, 2>)A, (DeviceTensor<T, 2>)B, beta, C);
         } else {
             EINSUMS_OMP_PARALLEL_FOR
             for (int i = 0; i < A.num_blocks(); i++) {
@@ -89,10 +87,8 @@ void gemm(const T *alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, cons
                     continue;
                 }
                 gemm<TransA, TransB>(alpha, A.block(i), B.block(i), beta, &((*C)(A.block_range(i), A.block_range(i))));
-                stream_wait();
             }
         }
-
         return;
     } else {
 
@@ -103,9 +99,9 @@ void gemm(const T *alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, cons
         int lda = A.stride(0), ldb = B.stride(0), ldc = C->stride(0);
 
         // Flip the A and B matrices. Row-major vs column major.
-        detail::gpu::gemm(TransB ? HIPBLAS_OP_T : HIPBLAS_OP_N, TransA ? HIPBLAS_OP_T : HIPBLAS_OP_N, n, m, k, (dev_datatype *)alpha, B.data(),
-                     ldb, A.data(), lda, (dev_datatype *)beta, C->data(), ldc);
-
+        detail::gpu::gemm(TransB ? HIPBLAS_OP_T : HIPBLAS_OP_N, TransA ? HIPBLAS_OP_T : HIPBLAS_OP_N, n, m, k, (dev_datatype *)alpha,
+                          B.data(), ldb, A.data(), lda, (dev_datatype *)beta, C->data(), ldc);
+        stream_wait();
     }
 }
 
@@ -148,12 +144,8 @@ void dot(CDataType C_prefactor, CType<CDataType, 0> &C,
             CType<CDataType, 0> temp;
             dot(CDataType{0}, temp, AB_prefactor, A.block(i), B.block(i));
 
-            gpu::stream_wait();
-
-            out += temp;
+            C += temp;
         }
-
-        C = out;
 
     } else if constexpr (einsums::detail::IsDeviceRankBlockTensorV<AType<ADataType, ARank>, ARank, ADataType> &&
                          !einsums::detail::IsDeviceRankBlockTensorV<BType<BDataType, BRank>, BRank, BDataType>) {
@@ -176,6 +168,7 @@ void dot(CDataType C_prefactor, CType<CDataType, 0> &C,
 
         detail::gpu::dot_kernel<<<block_size(A.size()), blocks(A.size()), 0, get_stream()>>>(
             C.data(), HipCast<dev_datatype, decltype(AB_prefactor)>::cast(AB_prefactor), A.data(), B.data(), A.size());
+        stream_wait();
     }
 }
 
@@ -192,7 +185,6 @@ void ger(const T *alpha, const XYType<T, XYRank> &X, const XYType<T, XYRank> &Y,
                                               ::std::conditional_t<::std::is_same_v<T, ::std::complex<double>>, hipDoubleComplex, T>>;
 
     detail::gpu::ger(X.dim(0), Y.dim(0), (dev_datatype *)alpha, X.data(), X.stride(0), Y.data(), Y.stride(0), A->data(), A->stride(0));
-
 }
 
 template <bool TransA, template <typename, size_t> typename AType, template <typename, size_t> typename XType,
@@ -216,8 +208,6 @@ void gemv(const T *alpha, const AType<T, ARank> &A, const XType<T, XYRank> &x, c
                 continue;
             }
             gemv(alpha, A.block(i), x(A.block_range(i)), beta, &((*y)(A.block_range(i))));
-
-            stream_wait();
         }
 
     } else {
@@ -226,10 +216,12 @@ void gemv(const T *alpha, const AType<T, ARank> &A, const XType<T, XYRank> &x, c
 
         if constexpr (!TransA) {
             detail::gpu::gemv(HIPBLAS_OP_T, m, n, (dev_datatype *)alpha, A.data(), A.stride(0), x.data(), x.stride(0), (dev_datatype *)beta,
-                         y->data(), y->stride(0));
+                              y->data(), y->stride(0));
+            stream_wait();
         } else {
             detail::gpu::gemv(HIPBLAS_OP_N, m, n, (dev_datatype *)alpha, A.data(), A.stride(0), x.data(), x.stride(0), (dev_datatype *)beta,
-                         y->data(), y->stride(0));
+                              y->data(), y->stride(0));
+            stream_wait();
         }
     }
 }
@@ -249,14 +241,12 @@ void scale(const T *scale, AType<T, ARank> *A) {
                 continue;
             }
             scale(scale, &(A->block(i)));
-
-            stream_wait();
         }
 
         return;
     } else {
-
         detail::gpu::scal(A->size(), (dev_datatype *)scale, A->data(), 1);
+        stream_wait();
     }
 }
 
@@ -284,8 +274,6 @@ void symm_gemm(const AType<T, Rank> &A, const BType<T, Rank> &B, CType<T, Rank> 
                 continue;
             }
             symm_gemm<TransA, TransB>(A.block(i), B.block(i), &(C->block(i)));
-
-            stream_wait();
         }
 
         return;
@@ -293,6 +281,7 @@ void symm_gemm(const AType<T, Rank> &A, const BType<T, Rank> &B, CType<T, Rank> 
                          einsums::detail::IsDeviceRankBlockTensorV<BType<T, Rank>, Rank, T>) {
         if (A.num_blocks() != B.num_blocks()) {
             symm_gemm<TransA, TransB>((DeviceTensor<T, 2>)A, (DeviceTensor<T, 2>)B, C);
+            stream_wait();
         } else {
             EINSUMS_OMP_PARALLEL_FOR
             for (int i = 0; i < A.num_blocks(); i++) {
@@ -300,29 +289,27 @@ void symm_gemm(const AType<T, Rank> &A, const BType<T, Rank> &B, CType<T, Rank> 
                     continue;
                 }
                 symm_gemm<TransA, TransB>(A.block(i), B.block(i), &((*C)(A.block_range(i), A.block_range(i))));
-
-                stream_wait();
             }
         }
 
         return;
     } else {
 
-    if constexpr (TransA && TransB) {
-        assert(B.dim(0) == A.dim(0) && A.dim(1) == B.dim(0) && C->dim(0) == B.dim(1) && C->dim(1) == B.dim(1));
-    } else if constexpr (TransA && !TransB) {
-        assert(B.dim(1) == A.dim(0) && A.dim(1) == B.dim(1) && C->dim(0) == B.dim(0) && C->dim(1) == B.dim(0));
-    } else if constexpr (!TransA && TransB) {
-        assert(B.dim(0) == A.dim(1) && A.dim(0) == B.dim(0) && C->dim(0) == B.dim(1) && C->dim(1) == B.dim(1));
-    } else {
-        assert(B.dim(1) == A.dim(1) && A.dim(0) == B.dim(1) && C->dim(0) == B.dim(0) && C->dim(1) == B.dim(0));
-    }
+        if constexpr (TransA && TransB) {
+            assert(B.dim(0) == A.dim(0) && A.dim(1) == B.dim(0) && C->dim(0) == B.dim(1) && C->dim(1) == B.dim(1));
+        } else if constexpr (TransA && !TransB) {
+            assert(B.dim(1) == A.dim(0) && A.dim(1) == B.dim(1) && C->dim(0) == B.dim(0) && C->dim(1) == B.dim(0));
+        } else if constexpr (!TransA && TransB) {
+            assert(B.dim(0) == A.dim(1) && A.dim(0) == B.dim(0) && C->dim(0) == B.dim(1) && C->dim(1) == B.dim(1));
+        } else {
+            assert(B.dim(1) == A.dim(1) && A.dim(0) == B.dim(1) && C->dim(0) == B.dim(0) && C->dim(1) == B.dim(0));
+        }
+        C->zero();
 
-    C->zero();
-
-    einsums::linear_algebra::detail::gpu::symm_gemm<<<block_size(A.dim(0) * A.dim(0) * C->dim(0) * C->dim(0)),
-                                                      blocks(A.dim(0) * A.dim(0) * C->dim(0) * C->dim(0)), 0, get_stream()>>>(
-        TransA, TransB, A.dim(0), C->dim(0), A.data(), A.stride(0), B.data(), B.stride(0), C->data(), C->stride(0));
+        einsums::linear_algebra::detail::gpu::symm_gemm<<<block_size(A.dim(0) * A.dim(0) * C->dim(0) * C->dim(0)),
+                                                          blocks(A.dim(0) * A.dim(0) * C->dim(0) * C->dim(0)), 0, get_stream()>>>(
+            TransA, TransB, A.dim(0), C->dim(0), A.data(), A.stride(0), B.data(), B.stride(0), C->data(), C->stride(0));
+        stream_wait();
     }
 }
 
@@ -333,8 +320,7 @@ template <bool TransA, bool TransB, template <typename, size_t> typename AType, 
         requires ::einsums::DeviceRankTensor<BType<T, Rank>, 2, T>;
         requires ::einsums::DeviceRankTensor<CType<T, Rank>, 2, T>;
         requires !::einsums::DeviceRankBlockTensor<CType<T, Rank>, 2, T> ||
-                     (::einsums::DeviceRankBlockTensor<AType<T, Rank>, 2, T> &&
-                      ::einsums::DeviceRankBlockTensor<BType<T, Rank>, 2, T>);
+                     (::einsums::DeviceRankBlockTensor<AType<T, Rank>, 2, T> && ::einsums::DeviceRankBlockTensor<BType<T, Rank>, 2, T>);
         requires(!std::is_pointer_v<T>);
     }
 void gemm(T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, T beta, CType<T, Rank> *C) {
@@ -344,15 +330,16 @@ void gemm(T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, T beta, CTy
                                               ::std::conditional_t<::std::is_same_v<T, ::std::complex<double>>, hipDoubleComplex, T>>;
     dev_datatype *alpha_gpu, *beta_gpu;
 
-    hip_catch(hipMallocAsync((void **)&alpha_gpu, sizeof(dev_datatype), get_stream()));
-    hip_catch(hipMallocAsync((void **)&beta_gpu, sizeof(dev_datatype), get_stream()));
+    hip_catch(hipMalloc((void **)&alpha_gpu, sizeof(dev_datatype)));
+    hip_catch(hipMalloc((void **)&beta_gpu, sizeof(dev_datatype)));
 
-    hip_catch(hipMemcpyAsync((void *)alpha_gpu, &alpha, sizeof(dev_datatype), hipMemcpyHostToDevice, get_stream()));
-    hip_catch(hipMemcpyAsync((void *)beta_gpu, &beta, sizeof(dev_datatype), hipMemcpyHostToDevice, get_stream()));
+    hip_catch(hipMemcpy((void *)alpha_gpu, &alpha, sizeof(dev_datatype), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy((void *)beta_gpu, &beta, sizeof(dev_datatype), hipMemcpyHostToDevice));
 
     // Flip the A and B matrices. Row-major vs column major.
     gemm<TransA, TransB>((T *)alpha_gpu, A, B, (T *)beta_gpu, C);
 
+    // These can still be done async.
     hip_catch(hipFreeAsync(alpha_gpu, get_stream()));
     hip_catch(hipFreeAsync(beta_gpu, get_stream()));
 }
@@ -372,9 +359,9 @@ void ger(T alpha, const XYType<T, XYRank> &X, const XYType<T, XYRank> &Y, AType<
 
     dev_datatype *alpha_gpu;
 
-    hip_catch(hipMallocAsync((void **)&alpha_gpu, sizeof(dev_datatype), get_stream()));
+    hip_catch(hipMalloc((void **)&alpha_gpu, sizeof(dev_datatype)));
 
-    hip_catch(hipMemcpyAsync(alpha_gpu, &alpha, sizeof(dev_datatype), hipMemcpyHostToDevice, get_stream()));
+    hip_catch(hipMemcpy(alpha_gpu, &alpha, sizeof(dev_datatype), hipMemcpyHostToDevice));
 
     ger((T *)alpha_gpu, X, Y, A);
 
@@ -396,11 +383,11 @@ void gemv(T alpha, const AType<T, ARank> &A, const XType<T, XYRank> &x, T beta, 
                                               ::std::conditional_t<::std::is_same_v<T, ::std::complex<double>>, hipDoubleComplex, T>>;
     dev_datatype *alpha_gpu, *beta_gpu;
 
-    hip_catch(hipMallocAsync((void **)&alpha_gpu, sizeof(dev_datatype), get_stream()));
-    hip_catch(hipMallocAsync((void **)&beta_gpu, sizeof(dev_datatype), get_stream()));
+    hip_catch(hipMalloc((void **)&alpha_gpu, sizeof(dev_datatype)));
+    hip_catch(hipMalloc((void **)&beta_gpu, sizeof(dev_datatype)));
 
-    hip_catch(hipMemcpyAsync((void *)alpha_gpu, (const void *)&alpha, sizeof(dev_datatype), hipMemcpyHostToDevice));
-    hip_catch(hipMemcpyAsync((void *)beta_gpu, (const void *)&beta, sizeof(dev_datatype), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy((void *)alpha_gpu, (const void *)&alpha, sizeof(dev_datatype), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy((void *)beta_gpu, (const void *)&beta, sizeof(dev_datatype), hipMemcpyHostToDevice));
 
     gemv<TransA>((T *)alpha_gpu, A, x, (T *)beta_gpu, y);
 
@@ -421,9 +408,9 @@ void scale(T scale_, AType<T, ARank> *A) {
 
     dev_datatype *scale_gpu;
 
-    hip_catch(hipMallocAsync((void **)&scale_gpu, sizeof(dev_datatype), get_stream()));
+    hip_catch(hipMalloc((void **)&scale_gpu, sizeof(dev_datatype)));
 
-    hip_catch(hipMemcpyAsync(scale_gpu, &scale_, sizeof(dev_datatype), hipMemcpyHostToDevice, get_stream()));
+    hip_catch(hipMemcpy(scale_gpu, &scale_, sizeof(dev_datatype), hipMemcpyHostToDevice));
 
     scale((T *)scale_gpu, A);
 
@@ -453,8 +440,6 @@ int gesv(AType<T, ARank> *A, BType<T, BRank> *B) {
             }
             int info = gesv(&(A->block(i)), &(B->block(i)));
 
-            stream_wait();
-
             info_out |= info;
 
             if (info != 0) {
@@ -475,8 +460,6 @@ int gesv(AType<T, ARank> *A, BType<T, BRank> *B) {
             }
             int info = gesv(&(A->block(i)), &((*B)(AllT(), A->block_range(i))));
 
-            stream_wait();
-
             info_out |= info;
 
             if (info != 0) {
@@ -487,33 +470,36 @@ int gesv(AType<T, ARank> *A, BType<T, BRank> *B) {
         return info_out;
     } else {
 
-    LabeledSection0();
+        LabeledSection0();
 
-    auto n   = A->dim(0);
-    auto lda = A->stride(0);
-    auto ldb = B->stride(0);
+        auto n   = A->dim(0);
+        auto lda = A->stride(0);
+        auto ldb = B->stride(0);
 
-    auto nrhs = B->dim(0);
+        auto nrhs = B->dim(0);
 
-    int lwork = n;
+        int lwork = n;
+        int info;
 
-    __device_ptr__ int *ipiv;
+        __device_ptr__ int *ipiv;
 
 #ifdef __HIP_PLATFORM_NVIDIA__
-    DeviceTensor<T, BRank> X = DeviceTensor<T, BRank>(einsums::detail::DEV_ONLY, B->dims());
+        DeviceTensor<T, BRank> X = DeviceTensor<T, BRank>(einsums::detail::DEV_ONLY, B->dims());
 #endif
 
-    einsums::gpu::hip_catch(hipMallocAsync((void **)&ipiv, sizeof(int) * lwork, gpu::get_stream()));
+        einsums::gpu::hip_catch(hipMallocAsync((void **)&ipiv, sizeof(int) * lwork, gpu::get_stream()));
 
 #ifdef __HIP_PLATFORM_NVIDIA__
-    int info = detail::gpu::gesv(n, nrhs, A->data(), lda, ipiv.data(), B->data(), ldb, X.data(), X.stride(0));
+        info = detail::gpu::gesv(n, nrhs, A->data(), lda, ipiv.data(), B->data(), ldb, X.data(), X.stride(0));
 #elif defined(__HIP_PLATFORM_AMD__)
-    int info = detail::gpu::gesv(n, nrhs, A->data(), lda, ipiv, B->data(), ldb, B->data(), ldb);
+        info = detail::gpu::gesv(n, nrhs, A->data(), lda, ipiv, B->data(), ldb, B->data(), ldb);
 #endif
 
-    einsums::gpu::hip_catch(hipFreeAsync(ipiv, gpu::get_stream()));
+        stream_wait();
 
-    return info;
+        einsums::gpu::hip_catch(hipFreeAsync(ipiv, gpu::get_stream()));
+
+        return info;
     }
 }
 
@@ -538,7 +524,6 @@ void axpy(T alpha, const XType<T, Rank> &X, YType<T, Rank> *Y) {
     axpy((T *)alpha_gpu, X, Y);
 
     hip_catch(hipFreeAsync(alpha_gpu, get_stream()));
-
 }
 
 template <template <typename, size_t> typename XType, template <typename, size_t> typename YType, typename T, size_t Rank>
@@ -565,8 +550,6 @@ void axpy(const T *alpha, const XType<T, Rank> &X, YType<T, Rank> *Y) {
             }
 
             axpy(alpha, X[i], &(Y->block(i)));
-
-            stream_wait();
         }
     } else if constexpr (einsums::detail::IsDeviceRankBlockTensorV<XType<T, Rank>, Rank, T>) {
         EINSUMS_OMP_PARALLEL_FOR
@@ -582,14 +565,13 @@ void axpy(const T *alpha, const XType<T, Rank> &X, YType<T, Rank> *Y) {
             auto Y_block = std::apply(*Y, slice);
 
             axpy(alpha, X[i], &Y_block);
-
-            stream_wait();
         }
     } else {
 
         LabeledSection0();
 
         detail::gpu::axpy(X.dim(0) * X.stride(0), alpha, X.data(), 1, Y->data(), 1);
+        stream_wait();
     }
 }
 
@@ -611,19 +593,19 @@ void syev(AType<T, ARank> *A, WType<T, WRank> *W) {
                 continue;
             }
             syev<ComputeEigenvectors>(&(A->block(i)), &((*W))(A->block_range(i)));
-
-            stream_wait();
         }
     } else {
         int lda = A->stride(0);
 
-        int info = detail::gpu::syev(ComputeEigenvectors ? HIPSOLVER_EIG_MODE_VECTOR : HIPSOLVER_EIG_MODE_NOVECTOR, HIPSOLVER_FILL_MODE_UPPER,
-                                A->dim(0), A->data(), lda, W->data());
+        int info = detail::gpu::syev(ComputeEigenvectors ? HIPSOLVER_EIG_MODE_VECTOR : HIPSOLVER_EIG_MODE_NOVECTOR,
+                                     HIPSOLVER_FILL_MODE_UPPER, A->dim(0), A->data(), lda, W->data());
+
+        stream_wait();
     }
 }
 
 namespace detail {
-    namespace gpu {
+namespace gpu {
 /**
  * @brief Copy a list of eigenvalues onto the diagonal of a matrix.
  *
@@ -633,8 +615,7 @@ namespace detail {
  * @param eigs The eigenvalues to copy.
  */
 template <typename T>
-__global__
-void eig_to_diag(T *out_matrix, int n, int lda, const T *eigs, T expo) {
+__global__ void eig_to_diag(T *out_matrix, int n, int lda, const T *eigs, T expo) {
     int thread_id, num_threads;
 
     einsums::gpu::get_worker_info(thread_id, num_threads);
@@ -644,7 +625,7 @@ void eig_to_diag(T *out_matrix, int n, int lda, const T *eigs, T expo) {
         out_matrix[i * lda + i] = ::pow(eigs[i], expo);
     }
 }
-    }
+} // namespace gpu
 } // namespace detail
 
 /**
@@ -657,6 +638,7 @@ AType<T, ARank> pow(const AType<T, ARank> &A, T expo) {
     using namespace einsums;
     if constexpr (::einsums::detail::IsDeviceRankBlockTensorV<AType<T, ARank>, ARank, T>) {
         BlockDeviceTensor<T, 2> out(A);
+
         EINSUMS_OMP_PARALLEL_FOR
         for (int i = 0; i < out.num_blocks(); i++) {
             if (out.block_dim(i) == 0) {
@@ -664,8 +646,6 @@ AType<T, ARank> pow(const AType<T, ARank> &A, T expo) {
             }
 
             out[i] = pow(A.block(i), expo);
-
-            stream_wait();
         }
 
         return out;
@@ -676,6 +656,9 @@ AType<T, ARank> pow(const AType<T, ARank> &A, T expo) {
 
         DeviceTensor<T, 2> Diag(Dim<2>{A.dim(0), A.dim(1)}, ::einsums::detail::DEV_ONLY);
 
+        DeviceTensor<T, 2> out(Dim<2>{A.dim(0), A.dim(1)}, ::einsums::detail::DEV_ONLY);
+        DeviceTensor<T, 2> temp(Dim<2>{A.dim(0), A.dim(1)}, ::einsums::detail::DEV_ONLY);
+
         Evecs.assign(A);
 
         syev(&Evecs, &Evals);
@@ -683,9 +666,6 @@ AType<T, ARank> pow(const AType<T, ARank> &A, T expo) {
         Diag.zero();
 
         detail::gpu::eig_to_diag<<<dim3(32), dim3(1), 0, get_stream()>>>(Diag.data(), Diag.dim(0), Diag.stride(0), Evals.data(), expo);
-
-        DeviceTensor<T, 2> out(Dim<2>{A.dim(0), A.dim(1)}, ::einsums::detail::DEV_ONLY);
-        DeviceTensor<T, 2> temp(Dim<2>{A.dim(0), A.dim(1)}, ::einsums::detail::DEV_ONLY);
 
         symm_gemm<false, false>(Diag, Evecs, &out);
 

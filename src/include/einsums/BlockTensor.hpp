@@ -154,7 +154,7 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
      */
     int block_of(size_t index) const {
         for (int i = 0; i < _ranges.size(); i++) {
-            if (_ranges[i][0] <= i && _ranges[i][1] > i) {
+            if (_ranges[i][0] <= index && _ranges[i][1] > index) {
                 return i;
             }
         }
@@ -193,6 +193,36 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
      * @brief Return the selected block with an integer ID.
      */
     tensor_type &block(int id) { return _blocks.at(id); }
+
+    /**
+     * @brief Return the selected block with an integer ID.
+     */
+    const tensor_type &block(const std::string &name) const {
+        for (int i = 0; i < _blocks.size(); i++) {
+            if (_blocks[i].name() == name) {
+                return _blocks[i];
+            }
+        }
+        if (_blocks.size() == 0) {
+            throw std::out_of_range("Could not find block with the name " + name + ": no blocks in tensor.");
+        }
+        throw std::out_of_range("Could not find block with the name " + name + ": no blocks with given name.");
+    }
+
+    /**
+     * @brief Return the selected block with an integer ID.
+     */
+    tensor_type &block(const std::string &name) {
+        for (int i = 0; i < _blocks.size(); i++) {
+            if (_blocks[i].name() == name) {
+                return _blocks[i];
+            }
+        }
+        if (_blocks.size() == 0) {
+            throw std::out_of_range("Could not find block with the name " + name + ": no blocks in tensor.");
+        }
+        throw std::out_of_range("Could not find block with the name " + name + ": no blocks with given name.");
+    }
 
     /**
      * @brief Add a block to the end of the list of blocks.
@@ -254,7 +284,7 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
     }
 
     /**
-     * @brief Add a block to the specified position in the
+     * @brief Add a block to the specified position in the list of blocks.
      */
     void insert_block(int pos, const tensor_type &value) {
         for (int i = 0; i < Rank; i++) {
@@ -427,36 +457,22 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
     /**
      * @brief Return the block with the given index.
      */
-    const tensor_type &operator[](size_t index) const { return _blocks.at(index); }
+    const tensor_type &operator[](size_t index) const { return this->block(index); }
 
     /**
      * @brief Return the block with the given index.
      */
-    tensor_type &operator[](size_t index) { return _blocks.at(index); }
+    tensor_type &operator[](size_t index) { return this->block(index); }
 
     /**
      * @brief Return the block with the given name.
      */
-    const tensor_type &operator[](const std::string &name) const {
-        for (auto tens : _blocks) {
-            if (tens.name() == name) {
-                return tens;
-            }
-        }
-        throw std::out_of_range("Could not find block with the name " + name);
-    }
+    const tensor_type &operator[](const std::string &name) const { return this->block(name); }
 
     /**
      * @brief Return the block with the given name.
      */
-    tensor_type &operator[](const std::string &name) {
-        for (auto tens : _blocks) {
-            if (tens.name() == name) {
-                return tens;
-            }
-        }
-        throw std::out_of_range("Could not find block with the name " + name);
-    }
+    tensor_type &operator[](const std::string &name) { return this->block(name); }
 
     /**
      * @brief Copy assignment.
@@ -504,14 +520,17 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
     }
 
 #define OPERATOR(OP)                                                                                                                       \
-    auto operator OP(const T &b) -> BlockTensorBase<T, Rank, TensorType> & {                                                               \
-        for (auto tens : _blocks) {                                                                                                        \
-            tens OP b;                                                                                                                     \
+    auto operator OP(const T &b)->BlockTensorBase<T, Rank, TensorType> & {                                                                 \
+        for (int i = 0; i < _blocks.size(); i++) {                                                                                         \
+            if (block_dim(i) == 0) {                                                                                                       \
+                continue;                                                                                                                  \
+            }                                                                                                                              \
+            _blocks[i] OP b;                                                                                                               \
         }                                                                                                                                  \
         return *this;                                                                                                                      \
     }                                                                                                                                      \
                                                                                                                                            \
-    auto operator OP(const BlockTensorBase<T, Rank, TensorType> &b) -> BlockTensorBase<T, Rank, TensorType> & {                            \
+    auto operator OP(const BlockTensorBase<T, Rank, TensorType> &b)->BlockTensorBase<T, Rank, TensorType> & {                              \
         if (_blocks.size() != b._blocks.size()) {                                                                                          \
             throw std::runtime_error(fmt::format("operator" EINSUMS_STRINGIFY(OP) " : tensors differ in number of blocks : {} {}",         \
                                                  _blocks.size(), b._blocks.size()));                                                       \
@@ -522,6 +541,7 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
                                                      _blocks[i].size(), b._blocks[i].size()));                                             \
             }                                                                                                                              \
         }                                                                                                                                  \
+        EINSUMS_OMP_PARALLEL_FOR                                                                                                           \
         for (int i = 0; i < _blocks.size(); i++) {                                                                                         \
             _blocks[i] OP b._blocks[i];                                                                                                    \
         }                                                                                                                                  \
@@ -670,7 +690,7 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
     /**
      * @brief Sets the name of the tensor.
      */
-    void               set_name(const std::string &name) { _name = name; }
+    void set_name(const std::string &name) { _name = name; }
 
     /**
      * @brief Gets the name of a block.
@@ -680,7 +700,7 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
     /**
      * @brief Sets the name of a block.
      */
-    void               set_name(int i, const std::string &name) { _blocks[i].set_name(name); }
+    void set_name(int i, const std::string &name) { _blocks[i].set_name(name); }
 
     /**
      * @brief Returns the strides of a given block.
@@ -745,7 +765,6 @@ struct BlockTensor : public BlockTensorBase<T, Rank, Tensor> {
      */
     template <typename... Dims>
     explicit BlockTensor(std::string name, Dims... block_dims) : BlockTensorBase<T, Rank, Tensor>(name, block_dims...) {}
-
 
     /**
      * @brief Construct a new BlockTensor object with the given name and dimensions.
@@ -830,7 +849,6 @@ struct BlockDeviceTensor : public BlockTensorBase<T, Rank, DeviceTensor> {
         for (int i = 0; i < sizeof...(Dims); i++) {
 
             Dim<Rank> pass_dims;
-            ;
 
             pass_dims.fill(dims[i]);
 
@@ -890,7 +908,7 @@ struct BlockDeviceTensor : public BlockTensorBase<T, Rank, DeviceTensor> {
     /**
      * @brief Subscripts into the tensor.
      *
-     * This is different from the normal subscript since there needs to be a way to 
+     * This is different from the normal subscript since there needs to be a way to
      * access data on the device. C++ references do not handle data synchronization
      * in this way, so it needs to be done differently.
      */
