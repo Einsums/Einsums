@@ -143,13 +143,6 @@ auto sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<
 
         gpu::hip_catch(hipMemcpy((void *)gpu_index_table, (void *)index_table, sizeof...(AIndices) * sizeof(int), hipMemcpyHostToDevice));
 
-        std::fprintf(stderr, "Index table: \n");
-        for (int i = 0; i < sizeof...(AIndices); i++) {
-            std::fprintf(stderr, "%d, ", index_table[i]);
-        }
-        std::fprintf(stderr, "\n");
-        std::fflush(stderr);
-
         delete[] index_table; // core version no longer needed.
 
         size_t *stride_A_gpu, *stride_C_gpu;
