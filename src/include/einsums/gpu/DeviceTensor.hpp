@@ -632,7 +632,7 @@ T DeviceTensor<T, Rank>::operator()(MultiIndex... index) const {
         }
         size_t ordinal = ::std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
         return this->_host_data[ordinal];
-    } else if (this->_mode == einsums::detail::DEV_ONLY) {
+    } else {
         T out;
         hip_catch(hipMemcpy((void *)&out, (const void *)this->data(index...), sizeof(T), hipMemcpyHostToDevice));
         return out;
