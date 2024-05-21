@@ -498,7 +498,6 @@ int gesv(AType<T, ARank> *A, BType<T, BRank> *B) {
         stream_wait();
 
         einsums::gpu::hip_catch(hipFreeAsync(ipiv, gpu::get_stream()));
-
         return info;
     }
 }
