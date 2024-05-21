@@ -66,7 +66,7 @@ TEST_CASE("gpu-sort2") {
                 if (i == 0 || j == 0)
                     REQUIRE(C(i, j) == A(i, j));
                 else
-                    REQUIRE(C(j, i) == A(i, j));
+                    CHECK((double) C(j, i) == (double) A(i, j));
             }
         }
     }
@@ -76,7 +76,7 @@ TEST_CASE("gpu-sort2") {
         DeviceTensor<double, 2> C0{"C", einsums::detail::DEV_ONLY, 3, 3};
         DeviceTensor<double, 2> C1{"C", einsums::detail::DEV_ONLY, 3, 3};
 
-        for (int i = 0, ij = 0; i < 3; i++) {
+        for (int i = 0, ij = 1; i < 3; i++) {
             for (int j = 0; j < 3; j++, ij++) {
                 A(i, j) = ij;
             }
@@ -145,6 +145,7 @@ TEST_CASE("gpu-sort2") {
         }
 
         sort(Indices{k, j, i}, &B, Indices{i, j, k}, A);
+
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 for (int k = 0; k < 3; k++) {
@@ -154,6 +155,7 @@ TEST_CASE("gpu-sort2") {
         }
 
         sort(Indices{i, k, j}, &B, Indices{i, j, k}, A);
+
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 for (int k = 0; k < 3; k++) {
@@ -163,6 +165,7 @@ TEST_CASE("gpu-sort2") {
         }
 
         sort(Indices{j, k, i}, &B, Indices{i, j, k}, A);
+
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 for (int k = 0; k < 3; k++) {
@@ -172,6 +175,7 @@ TEST_CASE("gpu-sort2") {
         }
 
         sort(Indices{i, j, k}, &B, Indices{k, j, i}, A);
+
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 for (int k = 0; k < 3; k++) {
@@ -241,7 +245,7 @@ TEST_CASE("gpu-sort2") {
         DeviceTensor<double, 2> A{"A", einsums::detail::DEV_ONLY, 3, 9};
         DeviceTensor<double, 2> B{"B", einsums::detail::DEV_ONLY, 9, 3};
 
-        for (int i = 0, ij = 0; i < A.dim(0); i++) {
+        for (int i = 0, ij = 1; i < A.dim(0); i++) {
             for (int j = 0; j < A.dim(1); j++, ij++) {
                 A(i, j) = ij;
             }

@@ -4,6 +4,7 @@
 //----------------------------------------------------------------------------------------------
 
 #include "einsums/_GPUUtils.hpp"
+
 #include "einsums/DeviceSort.hpp"
 
 #if defined(EINSUMS_USE_HPTT)
@@ -20,12 +21,12 @@
 namespace einsums::tensor_algebra::detail {
 
 void gpu_sort(const int *perm, const int dim, const float alpha, const float *A, const int *sizeA, const float beta, float *B) {
-    librettHandle plan;
+    librettHandle       plan;
     librett_gpuStream_t stream = gpu::get_stream();
 
-    librettPlan(&plan, dim, (int *) sizeA, (int *) perm, sizeof(float), stream);
+    librettPlan(&plan, dim, (int *)sizeA, (int *)perm, sizeof(float), stream);
 
-    librettExecute(plan, (void *) A, B);
+    librettExecute(plan, (void *)A, B);
 }
 
 void gpu_sort(const int *perm, const int dim, const double alpha, const double *A, const int *sizeA, const double beta, double *B) {
@@ -33,31 +34,31 @@ void gpu_sort(const int *perm, const int dim, const double alpha, const double *
 
     librett_gpuStream_t stream = gpu::get_stream();
 
-    librettPlan(&plan, dim, (int *) sizeA, (int *) perm, sizeof(double), stream);
+    librettPlan(&plan, dim, (int *)sizeA, (int *)perm, sizeof(double), stream);
 
-    librettExecute(plan, (void *) A, B);
+    librettExecute(plan, (void *)A, B);
 }
 
-void gpu_sort(const int *perm, const int dim, const hipComplex alpha, const hipComplex *A, const int *sizeA,
-                             const hipComplex beta, hipComplex *B) {
+void gpu_sort(const int *perm, const int dim, const hipComplex alpha, const hipComplex *A, const int *sizeA, const hipComplex beta,
+              hipComplex *B) {
     librettHandle plan;
 
     librett_gpuStream_t stream = gpu::get_stream();
 
-    librettPlan(&plan, dim, (int *) sizeA, (int *) perm, sizeof(hipComplex), stream);
+    librettPlan(&plan, dim, (int *)sizeA, (int *)perm, sizeof(hipComplex), stream);
 
-    librettExecute(plan, (void *) A, B);
+    librettExecute(plan, (void *)A, B);
 }
 
 void gpu_sort(const int *perm, const int dim, const hipDoubleComplex alpha, const hipDoubleComplex *A, const int *sizeA,
-                             const hipDoubleComplex beta, hipDoubleComplex *B) {
+              const hipDoubleComplex beta, hipDoubleComplex *B) {
     librettHandle plan;
 
     librett_gpuStream_t stream = gpu::get_stream();
 
-    librettPlan(&plan, dim, (int *) sizeA, (int *) perm, sizeof(hipDoubleComplex), stream);
+    librettPlan(&plan, dim, (int *)sizeA, (int *)perm, sizeof(hipDoubleComplex), stream);
 
-    librettExecute(plan, (void *) A, B);
+    librettExecute(plan, (void *)A, B);
 }
 
 } // namespace einsums::tensor_algebra::detail
