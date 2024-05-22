@@ -636,6 +636,8 @@ T DeviceTensor<T, Rank>::operator()(MultiIndex... index) const {
         T out;
         hip_catch(hipMemcpy((void *)&out, (const void *)this->data(index...), sizeof(T), hipMemcpyHostToDevice));
         return out;
+    } else {
+        return T{0};
     }
 }
 

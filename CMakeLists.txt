@@ -98,6 +98,8 @@ if(EINSUMS_BUILD_HIP)
     find_package(hipsolver REQUIRED)
     set(CURSES_NEED_NCURSES True)
     find_package(Curses)
+
+    set(ENABLE_HIP ON)
 endif()
 
 # include(cmake/DetectHostArch.cmake) detect_host_arch() message(STATUS

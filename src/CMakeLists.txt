@@ -36,6 +36,12 @@ if(EINSUMS_BUILD_HIP)
     message(STATUS "Curses directory: ${CURSES_LIB_DIR}")
     target_link_directories(einsums BEFORE PUBLIC ${CURSES_LIB_DIR})
     target_link_libraries(einsums PUBLIC ${CURSES_LIBRARIES})
+    if(EINSUMS_USE_HPTT)
+        message("Librett populated: ${librett_POPULATED}")
+        message("Librett source: ${librett_SOURCE_DIR}")
+        #target_include_directories(einsums PUBLIC ${LIBRETT_INCLUDE_DIRS})
+        target_include_directories(einsums PRIVATE ${librett_SOURCE_DIR}/src)
+    endif()
 endif()
 
 if(MSVC)
@@ -113,6 +119,14 @@ extend_einsums_target(
         SOURCES Sort.cpp PUBLIC_DEFINES EINSUMS_USE_HPTT DEPENDS hptt::hptt
         CONDITION EINSUMS_USE_HPTT
         FEATURE_INFO "HPTT backend"
+)
+
+extend_einsums_target(
+        einsums
+        SOURCES DeviceSort.hip
+        DEPENDS librett::librett
+        CONDITION (EINSUMS_USE_HPTT AND EINSUMS_BUILD_HIP)
+        FEATURE_INFO "Librett backend"
 )
 
 extend_einsums_target(

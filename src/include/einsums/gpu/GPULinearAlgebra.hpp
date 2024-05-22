@@ -498,7 +498,6 @@ int gesv(AType<T, ARank> *A, BType<T, BRank> *B) {
         stream_wait();
 
         einsums::gpu::hip_catch(hipFreeAsync(ipiv, gpu::get_stream()));
-
         return info;
     }
 }
@@ -571,6 +570,79 @@ void axpy(const T *alpha, const XType<T, Rank> &X, YType<T, Rank> *Y) {
         LabeledSection0();
 
         detail::gpu::axpy(X.dim(0) * X.stride(0), alpha, X.data(), 1, Y->data(), 1);
+        stream_wait();
+    }
+}
+
+template <template <typename, size_t> typename XType, template <typename, size_t> typename YType, typename T, size_t Rank>
+    requires requires {
+        requires(!std::is_pointer_v<T>);
+        requires DeviceRankTensor<XType<T, Rank>, Rank, T>;
+        requires DeviceRankTensor<YType<T, Rank>, Rank, T>;
+    }
+void axpby(T alpha, const XType<T, Rank> &X, T beta, YType<T, Rank> *Y) {
+    using namespace einsums::gpu;
+
+    using dev_datatype = ::std::conditional_t<::std::is_same_v<T, ::std::complex<float>>, hipComplex,
+                                              ::std::conditional_t<::std::is_same_v<T, ::std::complex<double>>, hipDoubleComplex, T>>;
+
+    dev_datatype *alpha_beta_gpu;
+
+    hip_catch(hipMallocAsync((void **)&alpha_beta_gpu, sizeof(dev_datatype) * 2, get_stream()));
+
+    hip_catch(hipMemcpyAsync(alpha_beta_gpu, &alpha, sizeof(dev_datatype), hipMemcpyHostToDevice, get_stream()));
+    hip_catch(hipMemcpyAsync(&(alpha_beta_gpu[1]), &beta, sizeof(dev_datatype), hipMemcpyHostToDevice, get_stream()));
+
+    axpby((T *)&(alpha_beta_gpu[0]), X, (T *) &(alpha_beta_gpu[1]), Y);
+
+    hip_catch(hipFreeAsync(alpha_beta_gpu, get_stream()));
+}
+
+template <template <typename, size_t> typename XType, template <typename, size_t> typename YType, typename T, size_t Rank>
+    requires requires {
+        requires DeviceRankTensor<XType<T, Rank>, Rank, T>;
+        requires DeviceRankTensor<YType<T, Rank>, Rank, T>;
+    }
+void axpby(const T *alpha, const XType<T, Rank> &X, const T *beta, YType<T, Rank> *Y) {
+    using namespace einsums::gpu;
+    if constexpr (einsums::detail::IsDeviceRankBlockTensorV<XType<T, Rank>, Rank, T> &&
+                  einsums::detail::IsDeviceRankBlockTensorV<YType<T, Rank>, Rank, T>) {
+        if (X.num_blocks() != Y->num_blocks()) {
+            throw std::runtime_error("axpy: Tensors need to have the same number of blocks.");
+        }
+
+        if (X.ranges() != Y->ranges()) {
+            throw std::runtime_error("axpy: Tensor blocks need to be compatible.");
+        }
+
+        EINSUMS_OMP_PARALLEL_FOR
+        for (int i = 0; i < X.num_blocks(); i++) {
+            if (X.block_dim(i) == 0) {
+                continue;
+            }
+
+            axpby(alpha, X[i], beta, &(Y->block(i)));
+        }
+    } else if constexpr (einsums::detail::IsDeviceRankBlockTensorV<XType<T, Rank>, Rank, T>) {
+        EINSUMS_OMP_PARALLEL_FOR
+        for (int i = 0; i < X.num_blocks(); i++) {
+            if (X.block_dim(i) == 0) {
+                continue;
+            }
+
+            std::array<einsums::Range, Rank> slice;
+
+            slice.fill(X.block_range());
+
+            auto Y_block = std::apply(*Y, slice);
+
+            axpby(alpha, X[i], beta, &Y_block);
+        }
+    } else {
+
+        LabeledSection0();
+
+        einsums::linear_algebra::detail::gpu::axpby(X.dim(0) * X.stride(0), alpha, X.data(), 1, beta, Y->data(), 1);
         stream_wait();
     }
 }

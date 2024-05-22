@@ -29,6 +29,12 @@ add_subdirectory(h5cpp)
 if(EINSUMS_USE_HPTT)
     # EXCLUDE_FROM_ALL to suppress install
     add_subdirectory(hptt EXCLUDE_FROM_ALL)
+
+    if(EINSUMS_BUILD_HIP)
+        set(ENABLE_HIP ON)
+        add_subdirectory(librett)
+        FetchContent_MakeAvailable(librett)
+    endif()
 endif()
 
 if(EINSUMS_ENABLE_TESTING)

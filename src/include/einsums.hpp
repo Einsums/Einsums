@@ -13,6 +13,9 @@
 #include "einsums/Print.hpp"
 #include "einsums/STL.hpp"
 #include "einsums/Section.hpp"
+#ifdef __HIP__
+#include "einsums/DeviceSort.hpp"
+#endif
 #include "einsums/Sort.hpp"
 #include "einsums/State.hpp"
 #include "einsums/Tensor.hpp"
