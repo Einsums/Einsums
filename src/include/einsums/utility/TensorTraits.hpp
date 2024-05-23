@@ -34,6 +34,9 @@ struct DeviceTensorView;
 
 template <typename T, size_t Rank>
 struct BlockDeviceTensor;
+
+template <typename T, size_t Rank, template <typename, size_t> typename TensorType>
+struct BlockTensorBase;
 #endif
 
 namespace detail {
@@ -48,7 +51,7 @@ inline constexpr bool IsIncoreRankTensorV = IsIncoreRankTensor<D, Rank, T>::valu
 template <typename D, size_t Rank, typename T>
 struct IsIncoreRankBlockTensor : public std::bool_constant<std::is_same_v<std::decay_t<D>, BlockTensor<T, Rank>>> {};
 
-template<typename D, size_t Rank, typename T>
+template <typename D, size_t Rank, typename T>
 inline constexpr bool IsIncoreRankBlockTensorV = IsIncoreRankBlockTensor<D, Rank, T>::value;
 
 template <typename D, size_t Rank, size_t ViewRank = Rank, typename T = double>
@@ -91,7 +94,22 @@ inline constexpr bool IsDeviceRankTensorV = IsDeviceRankTensor<D, Rank, T>::valu
  */
 template <typename D, size_t Rank, typename T>
 inline constexpr bool IsDeviceRankBlockTensorV = IsDeviceRankBlockTensor<D, Rank, T>::value;
+
+template<typename D, size_t Rank, typename T>
+struct IsBlockRankTensor : std::bool_constant<std::is_same_v<BlockTensor<T, Rank>, D> || std::is_same_v<BlockDeviceTensor<T, Rank>, D>> {};
+#else
+template<typename D, size_t Rank, typename T>
+struct IsBlockRankTensor : std::is_same<BlockTensor<T, Rank>, D> {};
 #endif
+
+
+/**
+ * @property IsBlockRankTensorV
+ *
+ * @brief True if a tensor is a block tensor.
+ */
+template <typename D, size_t Rank, typename T>
+inline constexpr bool IsBlockRankTensorV = IsBlockRankTensor<D, Rank, T>::value;
 
 } // namespace detail
 
@@ -113,7 +131,7 @@ inline constexpr bool IsDeviceRankBlockTensorV = IsDeviceRankBlockTensor<D, Rank
 template <typename Input, size_t Rank, typename DataType = double>
 concept CoreRankTensor = detail::IsIncoreRankTensorV<Input, Rank, DataType>;
 
-template<typename Input, size_t Rank, typename DataType = double>
+template <typename Input, size_t Rank, typename DataType = double>
 concept CoreRankBlockTensor = detail::IsIncoreRankBlockTensorV<Input, Rank, DataType>;
 
 template <typename Input, size_t Rank, size_t ViewRank = Rank, typename DataType = double>
@@ -136,6 +154,9 @@ concept DeviceRankTensor = detail::IsDeviceRankTensorV<Input, Rank, DataType>;
 template <typename Input, size_t Rank, typename DataType = double>
 concept DeviceRankBlockTensor = detail::IsDeviceRankBlockTensorV<Input, Rank, DataType>;
 #endif
+
+template <typename Input, size_t Rank, typename DataType = double>
+concept BlockRankTensor = detail::IsBlockRankTensorV<Input, Rank, DataType>;
 
 namespace detail {
 
