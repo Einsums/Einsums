@@ -2477,6 +2477,39 @@ TEST_CASE("dot") {
     }
 }
 
+TEST_CASE("Dot TensorView and Tensor") {
+    using namespace einsums;
+    using namespace einsums::tensor_algebra;
+    using namespace einsums::tensor_algebra::index;
+
+    const auto i_ = 10, j_ = 10, k_ = 10, l_ = 2;
+
+    auto A  = create_random_tensor<double>("A", i_, k_);
+    auto B  = create_random_tensor<double>("B", k_, j_);
+    auto C  = create_tensor<double>("C", l_, j_);
+    auto C0  = create_tensor<double>("C0", l_, j_);
+    zero(C0);
+
+    auto A_view = A(Range{0, l_}, All); // (l_, k_)
+
+    einsum(Indices{l, j}, &C, Indices{l, k}, A_view, Indices{k, j}, B);
+
+    for (size_t l = 0; l < l_; l++) {
+        for (size_t j = 0; j < j_; j++) {
+            for (size_t k = 0; k < k_; k++) {
+                C0(l, j) += A(l, k) * B(k, j);
+            }
+        }
+    }
+
+    for (size_t l = 0; l < l_; l++) {
+        for (size_t j = 0; j < j_; j++) {
+            println("{:20.14f} {:20.14f} {:20.14f}", C(l, j), C0(l, j), std::abs(C(l, j) - C0(l, j)));
+            REQUIRE_THAT(C(l, j), Catch::Matchers::WithinAbs(C0(l, j), 1e-12));
+        }
+    }
+}
+
 TEST_CASE("andy") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
