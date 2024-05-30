@@ -75,7 +75,7 @@ auto sum(const TensorType<T, Rank> &tensor) -> T {
         T result{0};
 #pragma omp parallel for reduction(+ : result)
         for (int i = 0; i < tensor.num_blocks(); i++) {
-            if (tensor.block_dim[i] == 0) {
+            if (tensor.block_dim(i) == 0) {
                 continue;
             }
             result += sum(tensor[i]);
@@ -85,7 +85,7 @@ auto sum(const TensorType<T, Rank> &tensor) -> T {
     } else if constexpr (einsums::detail::IsDeviceRankTensorV<TensorType<T, Rank>, Rank, T>) {
         auto blocks = gpu::blocks(tensor.size()), threads = gpu::block_size(tensor.size());
 
-        size_t workers = blocks.x * blocks.y * blocks.z * threads.x * threads.y * threads.z;
+        size_t workers = blocks.x * blocks.y * blocks.z * threads.x * threads.y * threads.z * sizeof(T);
 
         T *gpu_result;
 
@@ -100,7 +100,7 @@ auto sum(const TensorType<T, Rank> &tensor) -> T {
         gpu::hip_catch(
             hipMemcpyAsync(dims_and_strides + Rank, tensor.strides().data(), Rank * sizeof(size_t), hipMemcpyHostToDevice, stream));
 
-        detail::sum_kernel<<<blocks, threads, workers, stream>>>(gpu_result, tensor.data(), dims_and_strides, dims_and_strides + Rank,
+        detail::sum_kernel<T, Rank><<<blocks, threads, workers, stream>>>(gpu_result, tensor.data(), dims_and_strides, dims_and_strides + Rank,
                                                                  tensor.size());
 
         gpu::hip_catch(hipFreeAsync(dims_and_strides, stream));
@@ -151,7 +151,7 @@ auto max(const TensorType<T, Rank> &tensor) -> T {
     } else if constexpr (einsums::detail::IsDeviceRankTensorV<TensorType<T, Rank>, Rank, T>) {
         auto blocks = gpu::blocks(tensor.size()), threads = gpu::block_size(tensor.size());
 
-        size_t workers = blocks.x * blocks.y * blocks.z * threads.x * threads.y * threads.z;
+        size_t workers = blocks.x * blocks.y * blocks.z * threads.x * threads.y * threads.z * sizeof(T);
 
         T *gpu_result;
 
@@ -166,7 +166,7 @@ auto max(const TensorType<T, Rank> &tensor) -> T {
         gpu::hip_catch(
             hipMemcpyAsync(dims_and_strides + Rank, tensor.strides().data(), Rank * sizeof(size_t), hipMemcpyHostToDevice, stream));
 
-        detail::max_kernel<<<blocks, threads, workers, stream>>>(gpu_result, tensor.data(), dims_and_strides, dims_and_strides + Rank,
+        detail::max_kernel<T, Rank><<<blocks, threads, workers, stream>>>(gpu_result, tensor.data(), dims_and_strides, dims_and_strides + Rank,
                                                                  tensor.size());
 
         gpu::hip_catch(hipFreeAsync(dims_and_strides, stream));
@@ -182,7 +182,7 @@ auto max(const TensorType<T, Rank> &tensor) -> T {
 
 #endif
     } else {
-        std::vector<T> max_arr(omp_get_num_threads());
+        std::vector<T> max_arr(omp_get_max_threads());
 
         for (int i = 0; i < max_arr.size(); i++) {
             max_arr[i] = T{-INFINITY};
@@ -190,6 +190,7 @@ auto max(const TensorType<T, Rank> &tensor) -> T {
 
 #pragma omp parallel shared(max_arr)
         {
+            auto tid = omp_get_thread_num();
             for (int i = omp_get_thread_num(); i < tensor.size(); i += omp_get_num_threads()) {
                 size_t index = 0, quotient = i;
 
@@ -199,7 +200,7 @@ auto max(const TensorType<T, Rank> &tensor) -> T {
                     quotient /= tensor.dim(j);
                 }
 
-                max_arr[i] = (max_arr[i] > tensor.data()[index]) ? max_arr[i] : tensor.data()[index];
+                max_arr[tid] = (max_arr[tid] > tensor.data()[index]) ? max_arr[tid] : tensor.data()[index];
             }
         }
 
@@ -223,7 +224,7 @@ auto min(const TensorType<T, Rank> &tensor) -> T {
     } else if constexpr (einsums::detail::IsDeviceRankTensorV<TensorType<T, Rank>, Rank, T>) {
         auto blocks = gpu::blocks(tensor.size()), threads = gpu::block_size(tensor.size());
 
-        size_t workers = blocks.x * blocks.y * blocks.z * threads.x * threads.y * threads.z;
+        size_t workers = blocks.x * blocks.y * blocks.z * threads.x * threads.y * threads.z * sizeof(T);
 
         T *gpu_result;
 
@@ -238,7 +239,7 @@ auto min(const TensorType<T, Rank> &tensor) -> T {
         gpu::hip_catch(
             hipMemcpyAsync(dims_and_strides + Rank, tensor.strides().data(), Rank * sizeof(size_t), hipMemcpyHostToDevice, stream));
 
-        detail::min_kernel<<<blocks, threads, workers, stream>>>(gpu_result, tensor.data(), dims_and_strides, dims_and_strides + Rank,
+        detail::min_kernel<T, Rank><<<blocks, threads, workers, stream>>>(gpu_result, tensor.data(), dims_and_strides, dims_and_strides + Rank,
                                                                  tensor.size());
 
         gpu::hip_catch(hipFreeAsync(dims_and_strides, stream));
@@ -254,7 +255,7 @@ auto min(const TensorType<T, Rank> &tensor) -> T {
 
 #endif
     } else {
-        std::vector<T> min_arr(omp_get_num_threads());
+        std::vector<T> min_arr(omp_get_max_threads());
 
         for (int i = 0; i < min_arr.size(); i++) {
             min_arr[i] = T{INFINITY};
@@ -262,6 +263,7 @@ auto min(const TensorType<T, Rank> &tensor) -> T {
 
 #pragma omp parallel shared(min_arr)
         {
+            auto tid = omp_get_thread_num();
             for (int i = omp_get_thread_num(); i < tensor.size(); i += omp_get_num_threads()) {
                 size_t index = 0, quotient = i;
 
@@ -271,7 +273,7 @@ auto min(const TensorType<T, Rank> &tensor) -> T {
                     quotient /= tensor.dim(j);
                 }
 
-                min_arr[i] = (min_arr[i] < tensor.data()[index]) ? min_arr[i] : tensor.data()[index];
+                min_arr[tid] = (min_arr[tid] < tensor.data()[index]) ? min_arr[tid] : tensor.data()[index];
             }
         }
 
@@ -323,7 +325,7 @@ auto abs(const TensorType<T, Rank> &tensor)
         gpu::hip_catch(
             hipMemcpyAsync(dims_and_strides + Rank, tensor.strides().data(), Rank * sizeof(size_t), hipMemcpyHostToDevice, stream));
 
-        einsums::element_operations::detail::abs_kernel<<<blocks, threads, 0, stream>>>(result.data(), dims_and_strides,
+        einsums::element_operations::detail::abs_kernel<T, Rank><<<blocks, threads, 0, stream>>>(result.data(), dims_and_strides,
                                                                                         dims_and_strides + Rank, result.size());
 
         gpu::hip_catch(hipFreeAsync(dims_and_strides, stream));
@@ -395,7 +397,7 @@ auto invert(const TensorType<T, Rank> &tensor)
         gpu::hip_catch(
             hipMemcpyAsync(dims_and_strides + Rank, tensor.strides().data(), Rank * sizeof(size_t), hipMemcpyHostToDevice, stream));
 
-        einsums::element_operations::detail::invert_kernel<<<blocks, threads, 0, stream>>>(result.data(), dims_and_strides,
+        einsums::element_operations::detail::invert_kernel<T, Rank><<<blocks, threads, 0, stream>>>(result.data(), dims_and_strides,
                                                                                            dims_and_strides + Rank, result.size());
 
         gpu::hip_catch(hipFreeAsync(dims_and_strides, stream));
@@ -467,7 +469,7 @@ auto exp(const TensorType<T, Rank> &tensor)
         gpu::hip_catch(
             hipMemcpyAsync(dims_and_strides + Rank, tensor.strides().data(), Rank * sizeof(size_t), hipMemcpyHostToDevice, stream));
 
-        einsums::element_operations::detail::exp_kernel<<<blocks, threads, 0, stream>>>(result.data(), dims_and_strides,
+        einsums::element_operations::detail::exp_kernel<T, Rank><<<blocks, threads, 0, stream>>>(result.data(), dims_and_strides,
                                                                                         dims_and_strides + Rank, result.size());
 
         gpu::hip_catch(hipFreeAsync(dims_and_strides, stream));
@@ -539,8 +541,8 @@ auto scale(const T &scale, const TensorType<T, Rank> &tensor)
         gpu::hip_catch(
             hipMemcpyAsync(dims_and_strides + Rank, tensor.strides().data(), Rank * sizeof(size_t), hipMemcpyHostToDevice, stream));
 
-        einsums::element_operations::detail::scale_kernel<<<blocks, threads, 0, stream>>>(result.data(), scale, dims_and_strides,
-                                                                                        dims_and_strides + Rank, result.size());
+        einsums::element_operations::detail::scale_kernel<T, Rank><<<blocks, threads, 0, stream>>>(result.data(), scale, dims_and_strides,
+                                                                                          dims_and_strides + Rank, result.size());
 
         gpu::hip_catch(hipFreeAsync(dims_and_strides, stream));
 

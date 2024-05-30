@@ -690,7 +690,7 @@ template <typename T>
 __global__ void eig_to_diag(T *out_matrix, int n, int lda, const T *eigs, T expo) {
     int thread_id, num_threads;
 
-    einsums::gpu::get_worker_info(thread_id, num_threads);
+    get_worker_info(thread_id, num_threads);
 
     // Copy to diagonal. Assume the matrix is zeroed, or at least that the user needs the off-diagonal entries.
     for (int i = thread_id; i < n; i += num_threads) {

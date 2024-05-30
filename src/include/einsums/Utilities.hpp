@@ -276,7 +276,7 @@ template <template <typename, size_t> typename TensorType, typename DataType, si
         requires BlockRankTensor<TensorType<DataType, Rank>, Rank, DataType>;
     }
 auto create_tensor_like(const TensorType<DataType, Rank> &tensor) -> BlockTensor<DataType, Rank> {
-    return BlockTensor<DataType, Rank>{tensor.block_dims()};
+    return BlockTensor<DataType, Rank>{"(unnamed)", tensor.vector_dims()};
 }
 
 template <template <typename, size_t> typename TensorType, typename DataType, size_t Rank>
@@ -286,7 +286,7 @@ template <template <typename, size_t> typename TensorType, typename DataType, si
     }
 auto create_tensor_like(const TensorType<DataType, Rank> &tensor,
                         einsums::detail::HostToDeviceMode mode = einsums::detail::DEV_ONLY) -> BlockDeviceTensor<DataType, Rank> {
-    return BlockDeviceTensor<DataType, Rank>{tensor.block_dims(), mode};
+    return BlockDeviceTensor<DataType, Rank>{"(unnamed)", tensor.vector_dims(), mode};
 }
 
 /**
@@ -333,7 +333,7 @@ template <template <typename, size_t> typename TensorType, typename DataType, si
         requires BlockRankTensor<TensorType<DataType, Rank>, Rank, DataType>;
     }
 auto create_tensor_like(const std::string name, const TensorType<DataType, Rank> &tensor) -> BlockTensor<DataType, Rank> {
-    auto result = BlockTensor<DataType, Rank>{tensor.block_dims()};
+    auto result = BlockTensor<DataType, Rank>{"(unnamed)", tensor.vector_dims()};
     result.set_name(name);
     return result;
 }
@@ -345,7 +345,7 @@ template <template <typename, size_t> typename TensorType, typename DataType, si
     }
 auto create_tensor_like(const std::string name, const TensorType<DataType, Rank> &tensor,
                         einsums::detail::HostToDeviceMode mode = einsums::detail::DEV_ONLY) -> BlockDeviceTensor<DataType, Rank> {
-    auto result = BlockDeviceTensor<DataType, Rank>{tensor.block_dims(), mode};
+    auto result = BlockDeviceTensor<DataType, Rank>{"(unnamed)", tensor.vector_dims(), mode};
     result.set_name(name);
     return result;
 }

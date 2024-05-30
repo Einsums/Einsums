@@ -15,17 +15,17 @@ template <typename T, size_t Rank>
 __global__ void sum_kernel(T *out, const T *data, size_t *dims, size_t *strides, size_t size) {
     extern __shared__ T work_array[];
 
-    int worker, kernel_size;
+    unsigned int worker, kernel_size;
 
-    gpu::get_worker_info(worker, kernel_size);
+    get_worker_info(worker, kernel_size);
 
     work_array[worker] = T{0};
 
     if (worker == 0) {
-        out = T{0};
+        *out = T{0};
     }
 
-    for (ssize_t sentinel = worker; sentinel < size; sentinel++) {
+    for (ssize_t sentinel = worker; sentinel < size; sentinel += kernel_size) {
         size_t index = 0, quotient = sentinel, remainder = 0;
 
 #pragma unroll
@@ -37,16 +37,15 @@ __global__ void sum_kernel(T *out, const T *data, size_t *dims, size_t *strides,
 
         work_array[worker] += data[index];
     }
-
     __syncthreads();
 
-    int log = 31 - __clz(kernel_size);
+    int log = 30 - __clz(kernel_size);
 
     for (int s = 0; s < log; s++) {
         size_t index = worker << (s + 1);
         size_t next  = index + (1 << s);
-        if (index < kernel_size && index + next < kernel_size) {
-            work_array[index] += work_array[index + next];
+        if (index < kernel_size && next < kernel_size) {
+            work_array[index] += work_array[next];
         }
         __syncthreads();
     }
@@ -60,17 +59,17 @@ template <typename T, size_t Rank>
 __global__ void max_kernel(T *out, const T *data, size_t *dims, size_t *strides, size_t size) {
     extern __shared__ T work_array[];
 
-    int worker, kernel_size;
+    unsigned int worker, kernel_size;
 
-    gpu::get_worker_info(worker, kernel_size);
+    get_worker_info(worker, kernel_size);
 
     work_array[worker] = T{-INFINITY};
 
     if (worker == 0) {
-        out = T{0};
+        *out = T{0};
     }
 
-    for (ssize_t sentinel = worker; sentinel < size; sentinel++) {
+    for (ssize_t sentinel = worker; sentinel < size; sentinel += kernel_size) {
         size_t index = 0, quotient = sentinel, remainder = 0;
 
 #pragma unroll
@@ -87,13 +86,13 @@ __global__ void max_kernel(T *out, const T *data, size_t *dims, size_t *strides,
 
     __syncthreads();
 
-    int log = 31 - __clz(kernel_size);
+    int log = 30 - __clz(kernel_size);
 
     for (int s = 0; s < log; s++) {
         size_t index = worker << (s + 1);
         size_t next  = index + (1 << s);
-        if (index < kernel_size && index + next < kernel_size) {
-            work_array[index] = (work_array[index] > work_array[index + next]) ? work_array[index] : work_array[index + next];
+        if (index < kernel_size && next < kernel_size) {
+            work_array[index] = (work_array[index] > work_array[next]) ? work_array[index] : work_array[next];
         }
         __syncthreads();
     }
@@ -107,17 +106,17 @@ template <typename T, size_t Rank>
 __global__ void min_kernel(T *out, const T *data, size_t *dims, size_t *strides, size_t size) {
     extern __shared__ T work_array[];
 
-    int worker, kernel_size;
+    unsigned int worker, kernel_size;
 
-    gpu::get_worker_info(worker, kernel_size);
+    get_worker_info(worker, kernel_size);
 
-    work_array[worker] = T{-INFINITY};
+    work_array[worker] = T{INFINITY};
 
     if (worker == 0) {
-        out = T{0};
+        *out = T{0};
     }
 
-    for (ssize_t sentinel = worker; sentinel < size; sentinel++) {
+    for (ssize_t sentinel = worker; sentinel < size; sentinel += kernel_size) {
         size_t index = 0, quotient = sentinel, remainder = 0;
 
 #pragma unroll
@@ -134,13 +133,13 @@ __global__ void min_kernel(T *out, const T *data, size_t *dims, size_t *strides,
 
     __syncthreads();
 
-    int log = 31 - __clz(kernel_size);
+    int log = 30 - __clz(kernel_size);
 
     for (int s = 0; s < log; s++) {
         size_t index = worker << (s + 1);
         size_t next  = index + (1 << s);
-        if (index < kernel_size && index + next < kernel_size) {
-            work_array[index] = (work_array[index] < work_array[index + next]) ? work_array[index] : work_array[index + next];
+        if (index < kernel_size && next < kernel_size) {
+            work_array[index] = (work_array[index] < work_array[next]) ? work_array[index] : work_array[next];
         }
         __syncthreads();
     }
@@ -152,11 +151,11 @@ __global__ void min_kernel(T *out, const T *data, size_t *dims, size_t *strides,
 
 template <typename T, size_t Rank>
 __global__ void abs_kernel(T *data, size_t *dims, size_t *strides, size_t size) {
-    int worker, kernel_size;
+    unsigned int worker, kernel_size;
 
-    gpu::get_worker_info(worker, kernel_size);
+    get_worker_info(worker, kernel_size);
 
-    for (ssize_t sentinel = worker; sentinel < size; sentinel++) {
+    for (ssize_t sentinel = worker; sentinel < size; sentinel += kernel_size) {
         size_t index = 0, quotient = sentinel, remainder = 0;
 
 #pragma unroll
@@ -182,11 +181,11 @@ __global__ void abs_kernel(T *data, size_t *dims, size_t *strides, size_t size) 
 
 template <typename T, size_t Rank>
 __global__ void invert_kernel(T *data, size_t *dims, size_t *strides, size_t size) {
-    int worker, kernel_size;
+    unsigned int worker, kernel_size;
 
-    gpu::get_worker_info(worker, kernel_size);
+    get_worker_info(worker, kernel_size);
 
-    for (ssize_t sentinel = worker; sentinel < size; sentinel++) {
+    for (ssize_t sentinel = worker; sentinel < size; sentinel += kernel_size) {
         size_t index = 0, quotient = sentinel, remainder = 0;
 
 #pragma unroll
@@ -202,11 +201,11 @@ __global__ void invert_kernel(T *data, size_t *dims, size_t *strides, size_t siz
 
 template <typename T, size_t Rank>
 __global__ void exp_kernel(T *data, size_t *dims, size_t *strides, size_t size) {
-    int worker, kernel_size;
+    unsigned int worker, kernel_size;
 
-    gpu::get_worker_info(worker, kernel_size);
+    get_worker_info(worker, kernel_size);
 
-    for (ssize_t sentinel = worker; sentinel < size; sentinel++) {
+    for (ssize_t sentinel = worker; sentinel < size; sentinel += kernel_size) {
         size_t index = 0, quotient = sentinel, remainder = 0;
 
 #pragma unroll
@@ -249,11 +248,11 @@ __global__ void exp_kernel(T *data, size_t *dims, size_t *strides, size_t size) 
 
 template <typename T, size_t Rank>
 __global__ void scale_kernel(T *data, T scale, size_t *dims, size_t *strides, size_t size) {
-    int worker, kernel_size;
+    unsigned int worker, kernel_size;
 
-    gpu::get_worker_info(worker, kernel_size);
+    get_worker_info(worker, kernel_size);
 
-    for (ssize_t sentinel = worker; sentinel < size; sentinel++) {
+    for (ssize_t sentinel = worker; sentinel < size; sentinel += kernel_size) {
         size_t index = 0, quotient = sentinel, remainder = 0;
 
 #pragma unroll
