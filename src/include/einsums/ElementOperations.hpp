@@ -11,6 +11,7 @@
 #include "einsums/Section.hpp"
 #include "einsums/Tensor.hpp"
 #include "einsums/utility/TensorTraits.hpp"
+#include "einsums/Utilities.hpp"
 
 #include <omp.h>
 
