@@ -624,9 +624,12 @@ auto pow(const AType<T, ARank> &a, T alpha, T cutoff = std::numeric_limits<T>::e
     }
 }
 
-template <template <typename, size_t> typename Type, typename T>
-    requires CoreRankTensor<Type<T, 1>, 1, T>
-auto dot(const Type<T, 1> &A, const Type<T, 1> &B) -> T {
+template <template <typename, size_t> typename AType, template <typename, size_t> typename BType, typename T>
+    requires requires {
+        requires CoreRankTensor<AType<T, 1>, 1, T>;
+        requires CoreRankTensor<BType<T, 1>, 1, T>;
+    }
+auto dot(const AType<T, 1> &A, const BType<T, 1> &B) -> T {
     LabeledSection0();
 
     assert(A.dim(0) == B.dim(0));
@@ -635,11 +638,16 @@ auto dot(const Type<T, 1> &A, const Type<T, 1> &B) -> T {
     return result;
 }
 
-template <template <typename, size_t> typename Type, typename T, size_t Rank>
-    requires CoreRankTensor<Type<T, Rank>, Rank, T>
-auto dot(const Type<T, Rank> &A, const Type<T, Rank> &B) -> T {
+template <template <typename, size_t> typename AType, template <typename, size_t> typename BType,
+          typename T, size_t Rank>
+    requires requires {
+        requires CoreRankTensor<AType<T, Rank>, Rank, T>;
+        requires CoreRankTensor<BType<T, Rank>, Rank, T>;
+    }
+auto dot(const AType<T, Rank> &A, const BType<T, Rank> &B) -> T {
 
-    if constexpr (einsums::detail::IsIncoreRankBlockTensorV<Type<T, Rank>, Rank, T>) {
+    if constexpr (einsums::detail::IsIncoreRankBlockTensorV<AType<T, Rank>, Rank, T> &&
+                  einsums::detail::IsIncoreRankBlockTensorV<BType<T, Rank>, Rank, T>) {
         if (A.num_blocks() != B.num_blocks()) {
             return dot((einsums::Tensor<T, Rank>)A, (einsums::Tensor<T, Rank>)B);
         }
@@ -670,14 +678,21 @@ auto dot(const Type<T, Rank> &A, const Type<T, Rank> &B) -> T {
             dim[0] *= A.dim(i);
         }
 
-        return dot(TensorView<T, 1>(const_cast<Type<T, Rank> &>(A), dim), TensorView<T, 1>(const_cast<Type<T, Rank> &>(B), dim));
+        return dot(TensorView<T, 1>(const_cast<AType<T, Rank> &>(A), dim), TensorView<T, 1>(const_cast<BType<T, Rank> &>(B), dim));
     }
 }
 
-template <template <typename, size_t> typename Type, typename T, size_t Rank>
-    requires CoreRankTensor<Type<T, Rank>, Rank, T>
-auto dot(const Type<T, Rank> &A, const Type<T, Rank> &B, const Type<T, Rank> &C) -> T {
-    if constexpr (einsums::detail::IsIncoreRankBlockTensorV<Type<T, Rank>, Rank, T>) {
+template <template <typename, size_t> typename AType, template <typename, size_t> typename BType,
+	  template <typename, size_t> typename CType, typename T, size_t Rank>
+    requires requires {
+        requires CoreRankTensor<AType<T, Rank>, Rank, T>;
+        requires CoreRankTensor<BType<T, Rank>, Rank, T>;
+        requires CoreRankTensor<CType<T, Rank>, Rank, T>;
+    }
+auto dot(const AType<T, Rank> &A, const BType<T, Rank> &B, const CType<T, Rank> &C) -> T {
+    if constexpr (einsums::detail::IsIncoreRankBlockTensorV<AType<T, Rank>, Rank, T> &&
+                  einsums::detail::IsIncoreRankBlockTensorV<BType<T, Rank>, Rank, T> &&
+                  einsums::detail::IsIncoreRankBlockTensorV<CType<T, Rank>, Rank, T>) {
         if (A.num_blocks() != B.num_blocks() || A.num_blocks() != C.num_blocks() || B.num_blocks() != C.num_blocks()) {
             return dot((Tensor<T, Rank>)A, (Tensor<T, Rank>)B, (Tensor<T, Rank>)C);
         }
@@ -709,9 +724,9 @@ auto dot(const Type<T, Rank> &A, const Type<T, Rank> &B, const Type<T, Rank> &C)
             dim[0] *= A.dim(i);
         }
 
-        auto vA = TensorView<T, 1>(const_cast<Type<T, Rank> &>(A), dim);
-        auto vB = TensorView<T, 1>(const_cast<Type<T, Rank> &>(B), dim);
-        auto vC = TensorView<T, 1>(const_cast<Type<T, Rank> &>(C), dim);
+        auto vA = TensorView<T, 1>(const_cast<AType<T, Rank> &>(A), dim);
+        auto vB = TensorView<T, 1>(const_cast<BType<T, Rank> &>(B), dim);
+        auto vC = TensorView<T, 1>(const_cast<CType<T, Rank> &>(C), dim);
 
         T result{0};
 #pragma omp parallel for reduction(+ : result)

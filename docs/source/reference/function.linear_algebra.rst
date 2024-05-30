@@ -21,11 +21,11 @@ BLAS Level 1 Functions
 BLAS Level 1 routines perform operations of both addition and reduction on vectors of data.
 Typical operations include scaling and dot products.
 
-.. doxygenfunction:: einsums::linear_algebra::dot(const Type<T, 1> &A, const Type<T, 1> &B)
+.. doxygenfunction:: einsums::linear_algebra::dot(const AType<T, 1> &A, const BType<T, 1> &B)
 
-.. doxygenfunction:: einsums::linear_algebra::dot(const Type<T, Rank> &A, const Type<T, Rank> &B)
+.. doxygenfunction:: einsums::linear_algebra::dot(const AType<T, Rank> &A, const BType<T, Rank> &B)
 
-.. doxygenfunction:: einsums::linear_algebra::dot(const Type<T, Rank> &A, const Type<T, Rank> &B, const Type<T, Rank> &C)
+.. doxygenfunction:: einsums::linear_algebra::dot(const AType<T, Rank> &A, const BType<T, Rank> &B, const CType<T, Rank> &C)
 
 .. doxygenfunction:: einsums::linear_algebra::scale(T scale, AType<T, ARank>* A)
 
