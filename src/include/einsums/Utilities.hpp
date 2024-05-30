@@ -5,7 +5,9 @@
 
 #pragma once
 
+#ifdef __HIP__
 #include "einsums/DeviceTensor.hpp"
+#endif
 #include "einsums/OpenMP.h"
 #include "einsums/Section.hpp"
 #include "einsums/Tensor.hpp"
@@ -260,6 +262,7 @@ auto create_tensor_like(const TensorType<DataType, Rank> &tensor) -> Tensor<Data
     return Tensor<DataType, Rank>{tensor.dims()};
 }
 
+#ifdef __HIP__
 template <template <typename, size_t> typename TensorType, typename DataType, size_t Rank>
     requires requires {
         requires DeviceRankTensor<TensorType<DataType, Rank>, Rank, DataType>;
@@ -269,6 +272,7 @@ auto create_tensor_like(const TensorType<DataType, Rank> &tensor,
                         einsums::detail::HostToDeviceMode mode = einsums::detail::DEV_ONLY) -> DeviceTensor<DataType, Rank> {
     return DeviceTensor<DataType, Rank>{tensor.dims(), mode};
 }
+#endif
 
 template <template <typename, size_t> typename TensorType, typename DataType, size_t Rank>
     requires requires {
@@ -279,6 +283,7 @@ auto create_tensor_like(const TensorType<DataType, Rank> &tensor) -> BlockTensor
     return BlockTensor<DataType, Rank>{"(unnamed)", tensor.vector_dims()};
 }
 
+#ifdef __HIP__
 template <template <typename, size_t> typename TensorType, typename DataType, size_t Rank>
     requires requires {
         requires DeviceRankTensor<TensorType<DataType, Rank>, Rank, DataType>;
@@ -288,6 +293,7 @@ auto create_tensor_like(const TensorType<DataType, Rank> &tensor,
                         einsums::detail::HostToDeviceMode mode = einsums::detail::DEV_ONLY) -> BlockDeviceTensor<DataType, Rank> {
     return BlockDeviceTensor<DataType, Rank>{"(unnamed)", tensor.vector_dims(), mode};
 }
+#endif
 
 /**
  * @brief Creates a new tensor with the same rank and dimensions of the provided tensor.
@@ -315,6 +321,7 @@ auto create_tensor_like(const std::string name, const TensorType<DataType, Rank>
     return result;
 }
 
+#ifdef __HIP__
 template <template <typename, size_t> typename TensorType, typename DataType, size_t Rank>
     requires requires {
         requires DeviceRankTensor<TensorType<DataType, Rank>, Rank, DataType>;
@@ -326,6 +333,7 @@ auto create_tensor_like(const std::string name, const TensorType<DataType, Rank>
     result.set_name(name);
     return result;
 }
+#endif
 
 template <template <typename, size_t> typename TensorType, typename DataType, size_t Rank>
     requires requires {
@@ -338,6 +346,7 @@ auto create_tensor_like(const std::string name, const TensorType<DataType, Rank>
     return result;
 }
 
+#ifdef __HIP__
 template <template <typename, size_t> typename TensorType, typename DataType, size_t Rank>
     requires requires {
         requires DeviceRankTensor<TensorType<DataType, Rank>, Rank, DataType>;
@@ -349,6 +358,7 @@ auto create_tensor_like(const std::string name, const TensorType<DataType, Rank>
     result.set_name(name);
     return result;
 }
+#endif
 
 /**
  * @brief Creates a new rank-1 tensor filled with digits from \p start to \p stop in \p step increments.
