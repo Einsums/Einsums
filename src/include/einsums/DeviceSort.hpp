@@ -44,7 +44,7 @@ __global__ void sort_kernel(const int *perm, const T alpha, const T *A, const si
                             size_t size) {
     int thread_id, kernel_size;
 
-    gpu::get_worker_info(thread_id, kernel_size);
+    get_worker_info(thread_id, kernel_size);
 
     size_t A_index[Rank], B_index[Rank];
     size_t A_sentinel, B_sentinel;

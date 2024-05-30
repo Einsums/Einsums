@@ -589,7 +589,7 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
     /**
      * @brief Return the dimension of the tensor.
      */
-    [[nodiscard]] auto block_dim() const -> size_t { return _dim; }
+    //[[nodiscard]] auto block_dim() const -> size_t { return _dim; }
 
     /**
      * @brief Return a list containing the ranges for each block.
@@ -875,7 +875,7 @@ struct BlockDeviceTensor : public BlockTensorBase<T, Rank, DeviceTensor> {
      * @param block_dims The size of each block.
      */
     template <typename ArrayArg>
-    explicit BlockDeviceTensor(std::string name, detail::HostToDeviceMode mode, const ArrayArg &block_dims)
+    explicit BlockDeviceTensor(std::string name, const ArrayArg &block_dims, detail::HostToDeviceMode mode)
         : BlockTensorBase<T, Rank, DeviceTensor>(name) {
         for (int i = 0; i < block_dims.size(); i++) {
 

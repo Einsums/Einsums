@@ -5,6 +5,9 @@
 
 #pragma once
 
+#ifdef __HIP__
+#    include "einsums/DeviceTensor.hpp"
+#endif
 #include "einsums/OpenMP.h"
 #include "einsums/Section.hpp"
 #include "einsums/Tensor.hpp"
@@ -251,9 +254,85 @@ auto create_ones_tensor(const std::string &name, MultiIndex... index) -> Tensor<
  * @return A new tensor with the same rank and dimensions as the provided tensor.
  */
 template <template <typename, size_t> typename TensorType, typename DataType, size_t Rank>
+    requires requires {
+        requires CoreRankTensor<TensorType<DataType, Rank>, Rank, DataType>;
+        requires !BlockRankTensor<TensorType<DataType, Rank>, Rank, DataType>;
+    }
 auto create_tensor_like(const TensorType<DataType, Rank> &tensor) -> Tensor<DataType, Rank> {
     return Tensor<DataType, Rank>{tensor.dims()};
 }
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+#    ifdef __HIP__
+/**
+ * @brief Creates a new tensor with the same rank and dimensions of the provided tensor.
+ *
+ * The tensor name will not be copied from the provided tensor. Be sure to call set_name on the new tensor.
+ *
+ * @tparam TensorType The basic type of the provided tensor.
+ * @tparam DataType The underlying datatype of the provided tensor.
+ * @tparam Rank The rank of the provided tensor.
+ * @param tensor The provided tensor to copy the dimensions from.
+ * @param mode The storage mode for the tensor. Defaults to device memory.
+ * @return A new tensor with the same rank and dimensions as the provided tensor.
+ */
+template <template <typename, size_t> typename TensorType, typename DataType, size_t Rank>
+    requires requires {
+        requires DeviceRankTensor<TensorType<DataType, Rank>, Rank, DataType>;
+        requires !BlockRankTensor<TensorType<DataType, Rank>, Rank, DataType>;
+    }
+auto create_tensor_like(const TensorType<DataType, Rank> &tensor,
+                        einsums::detail::HostToDeviceMode mode = einsums::detail::DEV_ONLY) -> DeviceTensor<DataType, Rank> {
+    return DeviceTensor<DataType, Rank>{tensor.dims(), mode};
+}
+#    endif
+
+/**
+ * @brief Creates a new tensor with the same rank, dimensions, and block sizes of the provided tensor.
+ *
+ * The tensor name will not be copied from the provided tensor. Be sure to call set_name on the new tensor.
+ *
+ *
+ * @tparam TensorType The basic type of the provided tensor.
+ * @tparam DataType The underlying datatype of the provided tensor.
+ * @tparam Rank The rank of the provided tensor.
+ * @param tensor The provided tensor to copy the dimensions from.
+ * @return A new tensor with the same rank and dimensions as the provided tensor.
+ */
+template <template <typename, size_t> typename TensorType, typename DataType, size_t Rank>
+    requires requires {
+        requires CoreRankTensor<TensorType<DataType, Rank>, Rank, DataType>;
+        requires BlockRankTensor<TensorType<DataType, Rank>, Rank, DataType>;
+    }
+auto create_tensor_like(const TensorType<DataType, Rank> &tensor) -> BlockTensor<DataType, Rank> {
+    return BlockTensor<DataType, Rank>{"(unnamed)", tensor.vector_dims()};
+}
+
+#    ifdef __HIP__
+/**
+ * @brief Creates a new tensor with the same rank, dimensions, and block sizes of the provided tensor.
+ *
+ * The tensor name will not be copied from the provided tensor. Be sure to call set_name on the new tensor.
+ *
+ *
+ * @tparam TensorType The basic type of the provided tensor.
+ * @tparam DataType The underlying datatype of the provided tensor.
+ * @tparam Rank The rank of the provided tensor.
+ * @param tensor The provided tensor to copy the dimensions from.
+ * @param mode The storage mode for the new tensor. Defaults to device memory.
+ * @return A new tensor with the same rank and dimensions as the provided tensor.
+ */
+template <template <typename, size_t> typename TensorType, typename DataType, size_t Rank>
+    requires requires {
+        requires DeviceRankTensor<TensorType<DataType, Rank>, Rank, DataType>;
+        requires BlockRankTensor<TensorType<DataType, Rank>, Rank, DataType>;
+    }
+auto create_tensor_like(const TensorType<DataType, Rank> &tensor,
+                        einsums::detail::HostToDeviceMode mode = einsums::detail::DEV_ONLY) -> BlockDeviceTensor<DataType, Rank> {
+    return BlockDeviceTensor<DataType, Rank>{"(unnamed)", tensor.vector_dims(), mode};
+}
+#    endif
+#endif
 
 /**
  * @brief Creates a new tensor with the same rank and dimensions of the provided tensor.
@@ -271,11 +350,93 @@ auto create_tensor_like(const TensorType<DataType, Rank> &tensor) -> Tensor<Data
  * @return A new tensor with the same rank and dimensions as the provided tensor.
  */
 template <template <typename, size_t> typename TensorType, typename DataType, size_t Rank>
+    requires requires {
+        requires CoreRankTensor<TensorType<DataType, Rank>, Rank, DataType>;
+        requires !BlockRankTensor<TensorType<DataType, Rank>, Rank, DataType>;
+    }
 auto create_tensor_like(const std::string name, const TensorType<DataType, Rank> &tensor) -> Tensor<DataType, Rank> {
     auto result = Tensor<DataType, Rank>{tensor.dims()};
     result.set_name(name);
     return result;
 }
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+#    ifdef __HIP__
+/**
+ * @brief Creates a new tensor with the same rank and dimensions of the provided tensor.
+ *
+ * @code
+ * auto a = create_ones_tensor("a", 3, 3);          // auto -> Tensor<double, 2>
+ * auto b = create_tensor_like("b", a);             // auto -> Tensor<double, 2>
+ * @endcode
+ *
+ * @tparam TensorType The basic type of the provided tensor.
+ * @tparam DataType The underlying datatype of the provided tensor.
+ * @tparam Rank The rank of the provided tensor.
+ * @param name The name of the new tensor.
+ * @param tensor The provided tensor to copy the dimensions from.
+ * @param mode The storage mode. Defaults to device memory.
+ * @return A new tensor with the same rank and dimensions as the provided tensor.
+ */
+template <template <typename, size_t> typename TensorType, typename DataType, size_t Rank>
+    requires requires {
+        requires DeviceRankTensor<TensorType<DataType, Rank>, Rank, DataType>;
+        requires !BlockRankTensor<TensorType<DataType, Rank>, Rank, DataType>;
+    }
+auto create_tensor_like(const std::string name, const TensorType<DataType, Rank> &tensor,
+                        einsums::detail::HostToDeviceMode mode = einsums::detail::DEV_ONLY) -> DeviceTensor<DataType, Rank> {
+    auto result = DeviceTensor<DataType, Rank>{tensor.dims(), mode};
+    result.set_name(name);
+    return result;
+}
+#    endif
+
+/**
+ * @brief Creates a new tensor with the same, rank, dimensions, and block parameters of the provided tensor.
+ *
+ * @tparam TensorType The basic type of the provided tensor.
+ * @tparam DataType The underlying datatype of the provided tensor.
+ * @tparam Rank The rank of the provided tensor.
+ * @param name The name of the new tensor.
+ * @param tensor The provided tensor to copy the dimensions from.
+ * @return A new tensor with the same rank and dimensions as the provided tensor.
+ */
+template <template <typename, size_t> typename TensorType, typename DataType, size_t Rank>
+    requires requires {
+        requires CoreRankTensor<TensorType<DataType, Rank>, Rank, DataType>;
+        requires BlockRankTensor<TensorType<DataType, Rank>, Rank, DataType>;
+    }
+auto create_tensor_like(const std::string name, const TensorType<DataType, Rank> &tensor) -> BlockTensor<DataType, Rank> {
+    auto result = BlockTensor<DataType, Rank>{"(unnamed)", tensor.vector_dims()};
+    result.set_name(name);
+    return result;
+}
+
+#    ifdef __HIP__
+/**
+ * @brief Creates a new tensor with the same, rank, dimensions, and block parameters of the provided tensor.
+ *
+ * @tparam TensorType The basic type of the provided tensor.
+ * @tparam DataType The underlying datatype of the provided tensor.
+ * @tparam Rank The rank of the provided tensor.
+ * @param name The name of the new tensor.
+ * @param tensor The provided tensor to copy the dimensions from.
+ * @param mode The storage mode for the blocks. Defaults to device memory.
+ * @return A new tensor with the same rank and dimensions as the provided tensor.
+ */
+template <template <typename, size_t> typename TensorType, typename DataType, size_t Rank>
+    requires requires {
+        requires DeviceRankTensor<TensorType<DataType, Rank>, Rank, DataType>;
+        requires BlockRankTensor<TensorType<DataType, Rank>, Rank, DataType>;
+    }
+auto create_tensor_like(const std::string name, const TensorType<DataType, Rank> &tensor,
+                        einsums::detail::HostToDeviceMode mode = einsums::detail::DEV_ONLY) -> BlockDeviceTensor<DataType, Rank> {
+    auto result = BlockDeviceTensor<DataType, Rank>{"(unnamed)", tensor.vector_dims(), mode};
+    result.set_name(name);
+    return result;
+}
+#    endif
+#endif
 
 /**
  * @brief Creates a new rank-1 tensor filled with digits from \p start to \p stop in \p step increments.

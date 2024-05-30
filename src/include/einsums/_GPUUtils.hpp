@@ -372,7 +372,7 @@ using solverHandleIsNullptr  = hipsolver_exception<HIPSOLVER_STATUS_HANDLE_IS_NU
 using solverInvalidEnum      = hipsolver_exception<HIPSOLVER_STATUS_INVALID_ENUM>;
 using solverUnknown          = hipsolver_exception<HIPSOLVER_STATUS_UNKNOWN>;
 // using solverZeroPivot = hipsolver_exception<HIPSOLVER_STATUS_ZERO_PIVOT>;
-}
+} // namespace detail
 
 // Get the handles used internally. Can be used by other blas and solver processes.
 /**
@@ -440,8 +440,6 @@ __host__ EINSUMS_EXPORT void __hipsolver_catch__(hipsolverStatus_t status, const
 #define hipsolver_catch(condition, ...)                                                                                                    \
     __hipsolver_catch__((condition), __FILE__ ":" hipsolver_catch_STR(__LINE__) ": " __VA_OPT__(, ) __VA_ARGS__)
 
-
-
 /**
  * Wraps up an HIP function to catch any error codes. If the function does not return
  * hipSuccess, then an exception will be thrown
@@ -453,14 +451,14 @@ __host__ EINSUMS_EXPORT void __hip_catch__(hipError_t condition, const char *dia
 #define hip_catch(condition, ...) __hip_catch__((condition), __FILE__ ":" hip_catch_STR(__LINE__) ": " __VA_OPT__(, ) __VA_ARGS__)
 
 /**
+ * @def get_worker_info
  * @brief Get the worker thread launch parameters on the GPU.
  */
-__device__ inline void get_worker_info(int &thread_id, int &num_threads) {
-    num_threads = gridDim.x * gridDim.y * gridDim.z * blockDim.x * blockDim.y * blockDim.z;
-    thread_id   = threadIdx.x +
-                blockDim.x * (threadIdx.y +
+#define get_worker_info(thread_id, num_threads)                                                                                            \
+    num_threads = gridDim.x * gridDim.y * gridDim.z * blockDim.x * blockDim.y * blockDim.z;                                                \
+    thread_id   = threadIdx.x +                                                                                                            \
+                blockDim.x * (threadIdx.y +                                                                                                \
                               blockDim.y * (threadIdx.z + blockDim.z * (blockIdx.x + gridDim.x * (blockIdx.y + gridDim.y * blockIdx.z))));
-}
 
 /**
  * Initialize the GPU and HIP.
@@ -509,20 +507,17 @@ __host__ inline dim3 blocks(size_t compute_size) {
 /**
  * @brief Wait on a stream.
  */
-__host__
-EINSUMS_EXPORT void stream_wait(hipStream_t stream);
+__host__ EINSUMS_EXPORT void stream_wait(hipStream_t stream);
 
 /**
  * @brief Wait on the current thread's stream.
  */
-__host__
-EINSUMS_EXPORT void stream_wait();
+__host__ EINSUMS_EXPORT void stream_wait();
 
 /**
  * @brief Wait on all streams managed by Einsums.
  */
-__host__
-EINSUMS_EXPORT void all_stream_wait();
+__host__ EINSUMS_EXPORT void all_stream_wait();
 
 // Because I want it to be plural as well
 #define all_streams_wait() all_stream_wait()
@@ -547,6 +542,5 @@ EINSUMS_EXPORT void set_stream(hipStream_t stream, int thread_id);
 inline void device_synchronize() {
     hip_catch(hipDeviceSynchronize());
 }
-
 
 END_EINSUMS_NAMESPACE_HPP(einsums::gpu)

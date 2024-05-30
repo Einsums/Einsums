@@ -922,7 +922,7 @@ void invert(TensorType<T, TensorRank> *A) {
     if constexpr (einsums::detail::IsIncoreRankBlockTensorV<TensorType<T, TensorRank>, TensorRank, T>) {
         EINSUMS_OMP_PARALLEL_FOR
         for (int i = 0; i < A->num_blocks; i++) {
-            invert(&(A->block(i)));
+            einsums::linear_algebra::invert(&(A->block(i)));
         }
     } else {
         LabeledSection0();
