@@ -111,6 +111,10 @@ jobs:
       - name: Test (CTest) - unit tests
         working-directory: "${{github.workspace}}/build"
         run: ctest
+      
+      - name: Test timings
+        working-directory: "${{github.workspace}}/build"
+        run: ./timing/test-timing
 
       - name: Generate coverage information
         working-directory: "${{github.workspace}}/build"
