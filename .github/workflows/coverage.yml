@@ -123,7 +123,7 @@ jobs:
           SOURCES=${NOTES/.gcno/}
           gcov $SOURCES
           lcov --capture --directory . --output-file coverage.info --no-external \
-          --exclude "${{github.workspace}}/build/_deps/*" --exclude "/usr/*" --exclude "${{github.workspace}}/build/timing/*"
+          --exclude "${{github.workspace}}/build/_deps/\*" --exclude "/usr/\*" --exclude "${{github.workspace}}/build/timing/\*"
       
       - name: Generate coverage html
         working-directory: "${{github.workspace}}/build"
