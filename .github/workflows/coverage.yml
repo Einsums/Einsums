@@ -122,7 +122,7 @@ jobs:
           NOTES=$(find . -name "*.gcno")
           SOURCES=${NOTES/.gcno/}
           gcov $SOURCES
-          lcov --capture --directory . --output-file coverage.info --no-external --exclude "${{github.workspace}}build/*" --exclude /usr/*
+          lcov --capture --directory . --output-file coverage.info --no-external --exclude "${{github.workspace}}/build/*"" --exclude "/usr/*""
       
       - name: Generate coverage html
         working-directory: "${{github.workspace}}/build"
