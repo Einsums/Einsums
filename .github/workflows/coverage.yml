@@ -119,11 +119,10 @@ jobs:
       - name: Generate coverage information
         working-directory: "${{github.workspace}}/build"
         run: |
-          NOTES=$(find . -name "*.gcno")
-          SOURCES=${NOTES/.gcno/}
+          export NOTES=$(find . -name "*.gcno")
+          export SOURCES=${NOTES/.gcno/}
           gcov $SOURCES
-          #lcov --capture --directory . --output-file coverage.info --no-external \
-          #--exclude "${{github.workspace}}/build/_deps/\*" --exclude "/usr/\*" --exclude "${{github.workspace}}/build/timing/\*"
+          lcov --capture --directory . --output-file coverage.info --no-external
       
       - name: Generate coverage html
         working-directory: "${{github.workspace}}/build"
