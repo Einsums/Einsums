@@ -121,7 +121,7 @@ jobs:
         run: |
           export NOTES=$(find . -name "*.gcno")
           export SOURCES=${NOTES/.gcno/}
-          gcov $SOURCES
+          gcov $SOURCES || echo "returned $?"
           lcov --capture --directory . --output-file coverage.info --no-external
       
       - name: Generate coverage html
