@@ -34,6 +34,7 @@ jobs:
             - fmt
             - range-v3
             - blas-devel
+            - lcov
             #WMKL- mkl-devel=2023.2.0
             #MKL- libblas=*=*mkl
             #ACC- libblas=*=*accelerate
