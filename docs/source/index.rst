@@ -17,6 +17,7 @@ Einsums's documentation
    User Guide <user/index>
    API Reference <reference/index>
    Building from source <building/index>
+   Coverage Report <coverage/index>
 
 **Version**: |release|
 
@@ -116,6 +117,22 @@ dgemm call:
       through the process of improving Einsums.
 
       +++
+   
+   .. grid-item-card::
+      
+      Coverage
+      ^^^^^^^^
+
+      Check out the coverage of the tests.
+
+      +++
+
+      .. button-ref:: coverage/index
+         :expand:
+         :color: primary
+         :click-parent:
+
+         Check coverage
 
 
 

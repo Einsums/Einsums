@@ -143,6 +143,8 @@ if(EINSUMS_COVERAGE AND NOT MSVC)
     target_compile_options(einsums PUBLIC $<$<COMPILE_LANG_AND_ID:CXX,Clang>:-fprofile-instr-generate -fcoverage-mapping>)
     target_compile_options(einsums PUBLIC $<$<COMPILE_LANGUAGE:HIP>:-fprofile-instr-generate -fcoverage-mapping>)
     target_compile_options(einsums PUBLIC $<$<COMPILE_LANG_AND_ID:CXX,GNU>:--coverage>)
+    target_link_options(einsums PUBLIC -lgcov --coverage)
+    set(COV_CMD gcov)
 endif()
 
 if (NOT MSVC)
