@@ -133,7 +133,7 @@ jobs:
       
       - name: GitHub Pages Deploy
         uses: JamesIves/github-pages-deploy-action@v4.4.3
-        if: github.event_name == 'push' && github.repository == 'Einsums/Einsums' && ( startsWith( github.ref, 'refs/tags/' ) || github.ref == 'refs/heads/main' )
+        if: github.event_name == 'push' && github.repository == 'cgbriggs99/Einsums' && ( startsWith( github.ref, 'refs/tags/' ) || github.ref == 'refs/heads/main' )
         with:
           branch: gh-pages
           folder: build/coverage
