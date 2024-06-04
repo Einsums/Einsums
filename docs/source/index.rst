@@ -89,7 +89,7 @@ dgemm call:
    .. grid-item-card::
       :img-top: _static/index-images/api.svg
 
-      API Reference
+      Developer's Guide
       ^^^^^^^^^^^^^
 
       The reference guide contains a detailed description of the functions,
@@ -104,7 +104,7 @@ dgemm call:
          :color: primary
          :click-parent:
 
-         To the API reference guide
+         To the developer's guide
 
    .. grid-item-card::
       :img-top: _static/index-images/contributor.svg
