@@ -17,7 +17,7 @@ Einsums's documentation
    User Guide <user/index>
    API Reference <reference/index>
    Building from source <building/index>
-   Coverage Report <coverage/index>
+   Contributor's guide <contrib/index>
 
 **Version**: |release|
 

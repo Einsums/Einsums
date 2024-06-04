@@ -11,7 +11,7 @@
 
 #include <stdexcept>
 
-BEGIN_EINSUMS_NAMESPACE_HPP(einsums)
+namespace einsums {
 
 /**
  * @struct BlockTensorBase
@@ -952,7 +952,7 @@ struct BlockDeviceTensor : public BlockTensorBase<T, Rank, DeviceTensor> {
     }
 };
 #endif
-END_EINSUMS_NAMESPACE_HPP(einsums)
+} // namespace einsums
 
 #ifdef __HIP__
 template <size_t Rank, typename T>
