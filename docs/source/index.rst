@@ -117,22 +117,13 @@ dgemm call:
       through the process of improving Einsums.
 
       +++
-   
-   .. grid-item-card::
-      
-      Coverage
-      ^^^^^^^^
 
-      Check out the coverage of the tests.
-
-      +++
-
-      .. button-ref:: coverage/index
+      .. button-ref:: contrib/index
          :expand:
-         :color: primary
+         :color: primary:
          :click-parent:
 
-         Check coverage
+         To the contributer's guide
 
 
 
