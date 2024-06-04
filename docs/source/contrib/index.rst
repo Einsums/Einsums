@@ -6,9 +6,9 @@
 
 .. _contrib:
 
-##################
+##########################
 Einsums contributing guide
-##################
+##########################
 
 This guide is an in-depth explanation for contributing to Einsums, as well as some developer tools.
 

@@ -1,1 +1,5 @@
+.. _coverage:
+
+###############
 Coverage report
+###############
