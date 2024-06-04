@@ -16,4 +16,4 @@ This guide is an in-depth explanation for contributing to Einsums, as well as so
     :caption: Contributing
     :maxdepth: 1
 
-    Code coverage <coverage/index>
+    Coverage Report <coverage/index>

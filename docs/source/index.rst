@@ -120,7 +120,7 @@ dgemm call:
 
       .. button-ref:: contrib/index
          :expand:
-         :color: primary:
+         :color: primary
          :click-parent:
 
          To the contributer's guide
