@@ -17,7 +17,6 @@ Einsums's documentation
    User Guide <user/index>
    API Reference <reference/index>
    Building from source <building/index>
-   Contributor's guide <contrib/index>
 
 **Version**: |release|
 
@@ -117,13 +116,6 @@ dgemm call:
       through the process of improving Einsums.
 
       +++
-
-      .. button-ref:: contrib/index
-         :expand:
-         :color: primary
-         :click-parent:
-
-         To the contributer's guide
 
 
 
