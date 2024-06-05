@@ -97,6 +97,9 @@ dgemm call:
       methods work and how to use the parameters. It assumes you have an
       understanding of key concepts.
 
+      .. image:: https://codecov.io/github/Einsums/Einsums/graph/badge.svg?token=Z8WA6CEGQA 
+         :target: https://codecov.io/github/Einsums/Einsums
+
       +++
 
       .. button-ref:: reference/index

@@ -2,6 +2,8 @@
 
 Provides compile-time contraction pattern analysis to determine optimal operation to perform.
 
+[![codecov](https://codecov.io/github/Einsums/Einsums/graph/badge.svg?token=Z8WA6CEGQA)](https://codecov.io/github/Einsums/Einsums)
+
 ## Requirements
 A C++ compiler with C++20 support.
 
