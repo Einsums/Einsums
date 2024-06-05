@@ -23,4 +23,4 @@ For learning how to use Einsums, see the .
 
    classes
    functions
-   Coverage Report <coverage/index>
+   Code Coverage <https://codecov.io/github/Einsums/Einsums>

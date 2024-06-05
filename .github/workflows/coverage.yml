@@ -125,17 +125,13 @@ jobs:
           gcov $SOURCES || echo "returned $?"
           lcov --capture --directory . --output-file coverage.info --exclude /usr/\* --exclude */build/_deps/*
       
-      - name: Generate coverage html
-        working-directory: "${{github.workspace}}/build"
-        run: |
-          mkdir coverage
-          genhtml --output-directory coverage coverage.info
-      
-      - name: GitHub Pages Deploy
-        uses: JamesIves/github-pages-deploy-action@v4.4.3
-        if: github.event_name == 'push' && github.repository == 'Einsums/Einsums' && ( startsWith( github.ref, 'refs/tags/' ) || github.ref == 'refs/heads/main' )
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
         with:
-          branch: gh-pages
-          folder: build/coverage
-          target-folder: contrib/coverage
+          verbose: true
+          directory: "${{github.workspace}}/build"
+          file: coverage.info
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      
 
