@@ -1,0 +1,141 @@
+name: Coverage
+
+on:
+  push:
+    branches:
+      main
+  pull_request:
+    branches:
+      main
+
+jobs:
+  build:
+    name: "Coverage testing"
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -el {0}
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Write a Conda Env File
+        run: |
+          cat > export.yaml <<EOF
+          name: einsums-dev
+          channels:
+            - conda-forge
+            - nodefaults
+          dependencies:
+            - cmake
+            - ninja
+            - cxx-compiler
+            - catch2
+            - fftw
+            - fmt
+            - range-v3
+            - blas-devel
+            - lcov
+            #WMKL- mkl-devel=2023.2.0
+            #MKL- libblas=*=*mkl
+            #ACC- libblas=*=*accelerate
+            #OBL- libblas=*=*openblas
+            #OBL- openblas=*=*openmp*
+            - hdf5
+            - zlib
+            #- dpcpp_linux-64
+            #- mkl
+          EOF
+          if [[ "${{ runner.os }}" == "Linux" ]]; then
+            :
+            if [[ "${{ matrix.build_type }}" == "Release" ]]; then
+              sed -i "s;#MKL;;g" export.yaml
+            else
+              sed -i "s;#OBL;;g" export.yaml
+            fi
+            if [[ "${{ matrix.cxx }}" == "L-Intel" ]]; then
+              sed -i "s/#- dpcpp_linux-64/- dpcpp_linux-64/g" export.yaml
+              sed -i "s/#- mkl/- mkl=2024.0.0/g" export.yaml
+            fi
+          fi
+          if [[ "${{ runner.os }}" == "macOS" ]]; then
+            :
+            sed -E -i.bak "s;#OBL;;g" export.yaml
+            sed -E -i.bak "s;- elfutils;;g" export.yaml
+          fi
+          if [[ "${{ runner.os }}" == "Windows" ]]; then
+            :
+            sed -i "s;#WMKL;;g" export.yaml
+            sed -i "s;- blas-devel;;g" export.yaml
+            sed -i "s;- elfutils;;g" export.yaml
+            sed -i "s/- cxx/#- cxx/g" export.yaml
+          fi
+          # model sed for L/W
+          #   sed -i "s;;;g" export.yaml
+          # model sed for M
+          #   sed -E -i.bak "s;;;g" export.yaml
+          cat export.yaml
+
+      - name: Install dependencies
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          activate-environment: einsums-dev
+          #environment-file: devtools/conda-envs/${{matrix.environment}}
+          environment-file: export.yaml
+          miniforge-variant: Mambaforge
+          use-mamba: true
+          channels: conda-forge
+    
+      - name: Conda environment
+        run: |
+          mamba info
+          mamba list
+  
+      - name: Configure CMake
+        run: |
+          cmake \
+            -S . \
+            -B "${{github.workspace}}/build" \
+            -G Ninja \
+            -D CMAKE_BUILD_TYPE=Debug \
+            -D EINSUMS_SHOW_WARNING=OFF \
+            -D EINSUMS_USE_HPTT=OFF \
+            -D EINSUMS_STATIC_BUILD=OFF \
+            -D CMAKE_INSTALL_PREFIX="${{github.workspace}}/installed" \
+            -D CMAKE_PREFIX_PATH="${CONDA_PREFIX}" \
+            -D EINSUMS_COVERAGE=ON
+  
+      - name: Build & Install
+        run: |
+          cmake --build "${{github.workspace}}/build" --config Debug --target install
+          cat "${{github.workspace}}/installed/share/cmake/Einsums/EinsumsConfig.cmake"
+  
+      - name: Test (CTest) - unit tests
+        working-directory: "${{github.workspace}}/build"
+        run: ctest
+      
+      - name: Test timings
+        working-directory: "${{github.workspace}}/build"
+        run: ./timing/test-timing
+
+      - name: Generate coverage information
+        working-directory: "${{github.workspace}}/build"
+        run: |
+          export NOTES=$(find . -name "*.gcno")
+          export SOURCES=${NOTES/.gcno/}
+          gcov $SOURCES || echo "returned $?"
+          lcov --capture --directory . --output-file coverage.info --exclude /usr/\* --exclude */build/_deps/*
+      
+      - name: Generate coverage html
+        working-directory: "${{github.workspace}}/build"
+        run: |
+          mkdir coverage
+          genhtml --output-directory coverage coverage.info
+      
+      - name: GitHub Pages Deploy
+        uses: JamesIves/github-pages-deploy-action@v4.4.3
+        if: github.event_name == 'push' && github.repository == 'Einsums/Einsums' && ( startsWith( github.ref, 'refs/tags/' ) || github.ref == 'refs/heads/main' )
+        with:
+          branch: gh-pages
+          folder: build/coverage
+          target-folder: contrib/coverage
+
