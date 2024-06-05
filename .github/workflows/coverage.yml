@@ -137,5 +137,5 @@ jobs:
         with:
           branch: gh-pages
           folder: build/coverage
-          target-folder: contrib/coverage
+          target-folder: reference/coverage
 
