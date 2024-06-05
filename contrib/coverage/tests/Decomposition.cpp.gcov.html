@@ -1,0 +1,341 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - tests/Decomposition.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">tests</a> - Decomposition.cpp<span style="font-size: 80%;"> (source / <a href="Decomposition.cpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">158</td>
+            <td class="headerCovTableEntry">158</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2024-06-05 11:13:07</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">13</td>
+            <td class="headerCovTableEntry">13</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : //----------------------------------------------------------------------------------------------</a>
+<a name="2"><span class="lineNum">       2 </span>            : // Copyright (c) The Einsums Developers. All rights reserved.</a>
+<a name="3"><span class="lineNum">       3 </span>            : // Licensed under the MIT License. See LICENSE.txt in the project root for license information.</a>
+<a name="4"><span class="lineNum">       4 </span>            : //----------------------------------------------------------------------------------------------</a>
+<a name="5"><span class="lineNum">       5 </span>            : </a>
+<a name="6"><span class="lineNum">       6 </span>            : // CP test cases generate some massive intermediates that the auto einsum tests struggle with.</a>
+<a name="7"><span class="lineNum">       7 </span>            : // Undefine the tests and simply use the manual tests listed in this file.</a>
+<a name="8"><span class="lineNum">       8 </span>            : #undef EINSUMS_USE_CATCH2</a>
+<a name="9"><span class="lineNum">       9 </span>            : #undef EINSUMS_CONTINUOUSLY_TEST_EINSUM</a>
+<a name="10"><span class="lineNum">      10 </span>            : #undef EINSUMS_TEST_NANS</a>
+<a name="11"><span class="lineNum">      11 </span>            : </a>
+<a name="12"><span class="lineNum">      12 </span>            : #include &quot;einsums/Decomposition.hpp&quot;</a>
+<a name="13"><span class="lineNum">      13 </span>            : </a>
+<a name="14"><span class="lineNum">      14 </span>            : #include &quot;einsums/LinearAlgebra.hpp&quot;</a>
+<a name="15"><span class="lineNum">      15 </span>            : #include &quot;einsums/Tensor.hpp&quot;</a>
+<a name="16"><span class="lineNum">      16 </span>            : #include &quot;einsums/TensorAlgebra.hpp&quot;</a>
+<a name="17"><span class="lineNum">      17 </span>            : </a>
+<a name="18"><span class="lineNum">      18 </span>            : #include &lt;catch2/catch_all.hpp&gt;</a>
+<a name="19"><span class="lineNum">      19 </span>            : </a>
+<a name="20"><span class="lineNum">      20 </span><span class="lineCov">          1 : TEST_CASE(&quot;CP 1&quot;) {</span></a>
+<a name="21"><span class="lineNum">      21 </span><span class="lineCov">          1 :     using namespace einsums;</span></a>
+<a name="22"><span class="lineNum">      22 </span><span class="lineCov">          1 :     using namespace einsums::tensor_algebra;</span></a>
+<a name="23"><span class="lineNum">      23 </span><span class="lineCov">          1 :     using namespace einsums::decomposition;</span></a>
+<a name="24"><span class="lineNum">      24 </span>            : </a>
+<a name="25"><span class="lineNum">      25 </span><span class="lineCov">          1 :     Tensor test1(&quot;test 1&quot;, 3, 3, 3);</span></a>
+<a name="26"><span class="lineNum">      26 </span><span class="lineCov">          1 :     test1.vector_data() = einsums::VectorData&lt;double&gt;{0.94706517, 0.3959549,  0.14122476, 0.83665482, 0.27340639, 0.29811429, 0.1823041,</span></a>
+<a name="27"><span class="lineNum">      27 </span>            :                                                       0.66556282, 0.73178046, 0.72504222, 0.58360409, 0.68301135, 0.8316929,  0.66955444,</a>
+<a name="28"><span class="lineNum">      28 </span>            :                                                       0.25182224, 0.24108674, 0.09582611, 0.93056666, 0.60919366, 0.97363788, 0.24531965,</a>
+<a name="29"><span class="lineNum">      29 </span><span class="lineCov">          1 :                                                       0.23757898, 0.43426057, 0.64763913, 0.61224901, 0.86068415, 0.12051599};</span></a>
+<a name="30"><span class="lineNum">      30 </span>            : </a>
+<a name="31"><span class="lineNum">      31 </span><span class="lineCov">          1 :     auto factors = parafac(test1, 2, 50, 1.0e-6);</span></a>
+<a name="32"><span class="lineNum">      32 </span>            : </a>
+<a name="33"><span class="lineNum">      33 </span><span class="lineCov">          1 :     Tensor test1_cp = parafac_reconstruct&lt;3&gt;(factors);</span></a>
+<a name="34"><span class="lineNum">      34 </span>            : </a>
+<a name="35"><span class="lineNum">      35 </span><span class="lineCov">          1 :     double diff = rmsd(test1, test1_cp);</span></a>
+<a name="36"><span class="lineNum">      36 </span>            : </a>
+<a name="37"><span class="lineNum">      37 </span><span class="lineCov">          1 :     REQUIRE(isgreaterequal(diff, 0.0));</span></a>
+<a name="38"><span class="lineNum">      38 </span><span class="lineCov">          1 :     REQUIRE(islessequal(diff, 0.17392));</span></a>
+<a name="39"><span class="lineNum">      39 </span><span class="lineCov">          1 : }</span></a>
+<a name="40"><span class="lineNum">      40 </span>            : </a>
+<a name="41"><span class="lineNum">      41 </span><span class="lineCov">          1 : TEST_CASE(&quot;CP 2&quot;) {</span></a>
+<a name="42"><span class="lineNum">      42 </span><span class="lineCov">          1 :     using namespace einsums;</span></a>
+<a name="43"><span class="lineNum">      43 </span><span class="lineCov">          1 :     using namespace einsums::tensor_algebra;</span></a>
+<a name="44"><span class="lineNum">      44 </span><span class="lineCov">          1 :     using namespace einsums::decomposition;</span></a>
+<a name="45"><span class="lineNum">      45 </span>            : </a>
+<a name="46"><span class="lineNum">      46 </span><span class="lineCov">          1 :     Tensor test2(&quot;test 2&quot;, 3, 4, 2);</span></a>
+<a name="47"><span class="lineNum">      47 </span>            : </a>
+<a name="48"><span class="lineNum">      48 </span><span class="lineCov">          1 :     test2.vector_data() =</span></a>
+<a name="49"><span class="lineNum">      49 </span><span class="lineCov">          1 :         einsums::VectorData&lt;double&gt;{0.29945093, 0.0090937,  0.99788559, 0.0821231,  0.29625705, 0.80278977, 0.15189681, 0.35832086,</span></a>
+<a name="50"><span class="lineNum">      50 </span>            :                                     0.09648153, 0.39398175, 0.49662056, 0.83101396, 0.84288292, 0.48603425, 0.93286471, 0.47101289,</a>
+<a name="51"><span class="lineNum">      51 </span><span class="lineCov">          1 :                                     0.32736096, 0.50067919, 0.49932342, 0.91922942, 0.44777189, 0.23009644, 0.34874549, 0.19356636};</span></a>
+<a name="52"><span class="lineNum">      52 </span>            : </a>
+<a name="53"><span class="lineNum">      53 </span><span class="lineCov">          1 :     auto factors = parafac(test2, 2, 50, 1.0e-6);</span></a>
+<a name="54"><span class="lineNum">      54 </span>            : </a>
+<a name="55"><span class="lineNum">      55 </span><span class="lineCov">          1 :     Tensor test2_cp = parafac_reconstruct&lt;3&gt;(factors);</span></a>
+<a name="56"><span class="lineNum">      56 </span>            : </a>
+<a name="57"><span class="lineNum">      57 </span><span class="lineCov">          1 :     double diff = rmsd(test2, test2_cp);</span></a>
+<a name="58"><span class="lineNum">      58 </span>            : </a>
+<a name="59"><span class="lineNum">      59 </span><span class="lineCov">          1 :     REQUIRE(isgreaterequal(diff, 0.0));</span></a>
+<a name="60"><span class="lineNum">      60 </span><span class="lineCov">          1 :     REQUIRE(islessequal(diff, 0.122492));</span></a>
+<a name="61"><span class="lineNum">      61 </span><span class="lineCov">          1 : }</span></a>
+<a name="62"><span class="lineNum">      62 </span>            : </a>
+<a name="63"><span class="lineNum">      63 </span><span class="lineCov">          1 : TEST_CASE(&quot;CP 3&quot;) {</span></a>
+<a name="64"><span class="lineNum">      64 </span><span class="lineCov">          1 :     using namespace einsums;</span></a>
+<a name="65"><span class="lineNum">      65 </span><span class="lineCov">          1 :     using namespace einsums::tensor_algebra;</span></a>
+<a name="66"><span class="lineNum">      66 </span><span class="lineCov">          1 :     using namespace einsums::decomposition;</span></a>
+<a name="67"><span class="lineNum">      67 </span>            : </a>
+<a name="68"><span class="lineNum">      68 </span><span class="lineCov">          1 :     Tensor test3(&quot;test 3&quot;, 3, 2, 3, 2);</span></a>
+<a name="69"><span class="lineNum">      69 </span>            : </a>
+<a name="70"><span class="lineNum">      70 </span><span class="lineCov">          1 :     test3.vector_data() = einsums::VectorData&lt;double&gt;{</span></a>
+<a name="71"><span class="lineNum">      71 </span>            :         0.37001224, 0.77676895, 0.17589323, 0.02762156, 0.21037116, 0.83686174, 0.35042434, 0.19117270, 0.58095640,</a>
+<a name="72"><span class="lineNum">      72 </span>            :         0.99220655, 0.33536840, 0.15210615, 0.95033534, 0.73212124, 0.31346639, 0.83961596, 0.15418801, 0.58927303,</a>
+<a name="73"><span class="lineNum">      73 </span>            :         0.46744825, 0.44001279, 0.50372353, 0.09696069, 0.96449749, 0.71151666, 0.72334792, 0.98646368, 0.13764230,</a>
+<a name="74"><span class="lineNum">      74 </span><span class="lineCov">          1 :         0.95949904, 0.07774470, 0.18239083, 0.82591821, 0.40939436, 0.22088749, 0.90281597, 0.37465773, 0.02541923};</span></a>
+<a name="75"><span class="lineNum">      75 </span>            : </a>
+<a name="76"><span class="lineNum">      76 </span><span class="lineCov">          1 :     auto factors = parafac(test3, 2, 50, 1.0e-6);</span></a>
+<a name="77"><span class="lineNum">      77 </span>            : </a>
+<a name="78"><span class="lineNum">      78 </span><span class="lineCov">          1 :     Tensor test3_cp = parafac_reconstruct&lt;4&gt;(factors);</span></a>
+<a name="79"><span class="lineNum">      79 </span>            : </a>
+<a name="80"><span class="lineNum">      80 </span><span class="lineCov">          1 :     double diff = rmsd(test3, test3_cp);</span></a>
+<a name="81"><span class="lineNum">      81 </span>            : </a>
+<a name="82"><span class="lineNum">      82 </span><span class="lineCov">          1 :     REQUIRE(isgreaterequal(diff, 0.0));</span></a>
+<a name="83"><span class="lineNum">      83 </span><span class="lineCov">          1 :     REQUIRE(islessequal(diff, 0.228200));</span></a>
+<a name="84"><span class="lineNum">      84 </span><span class="lineCov">          1 : }</span></a>
+<a name="85"><span class="lineNum">      85 </span>            : </a>
+<a name="86"><span class="lineNum">      86 </span><span class="lineCov">          1 : TEST_CASE(&quot;CP 4&quot;) {</span></a>
+<a name="87"><span class="lineNum">      87 </span><span class="lineCov">          1 :     using namespace einsums;</span></a>
+<a name="88"><span class="lineNum">      88 </span><span class="lineCov">          1 :     using namespace einsums::tensor_algebra;</span></a>
+<a name="89"><span class="lineNum">      89 </span><span class="lineCov">          1 :     using namespace einsums::decomposition;</span></a>
+<a name="90"><span class="lineNum">      90 </span>            : </a>
+<a name="91"><span class="lineNum">      91 </span><span class="lineCov">          1 :     Tensor test2(&quot;test 2&quot;, 3, 4, 2);</span></a>
+<a name="92"><span class="lineNum">      92 </span>            : </a>
+<a name="93"><span class="lineNum">      93 </span><span class="lineCov">          1 :     test2.vector_data() =</span></a>
+<a name="94"><span class="lineNum">      94 </span><span class="lineCov">          1 :         einsums::VectorData&lt;double&gt;{0.29945093, 0.0090937,  0.99788559, 0.0821231,  0.29625705, 0.80278977, 0.15189681, 0.35832086,</span></a>
+<a name="95"><span class="lineNum">      95 </span>            :                                     0.09648153, 0.39398175, 0.49662056, 0.83101396, 0.84288292, 0.48603425, 0.93286471, 0.47101289,</a>
+<a name="96"><span class="lineNum">      96 </span><span class="lineCov">          1 :                                     0.32736096, 0.50067919, 0.49932342, 0.91922942, 0.44777189, 0.23009644, 0.34874549, 0.19356636};</span></a>
+<a name="97"><span class="lineNum">      97 </span>            : </a>
+<a name="98"><span class="lineNum">      98 </span><span class="lineCov">          1 :     auto factors = parafac(test2, 24, 100, 1.0e-6);</span></a>
+<a name="99"><span class="lineNum">      99 </span>            : </a>
+<a name="100"><span class="lineNum">     100 </span><span class="lineCov">          1 :     Tensor test2_cp = parafac_reconstruct&lt;3&gt;(factors);</span></a>
+<a name="101"><span class="lineNum">     101 </span>            : </a>
+<a name="102"><span class="lineNum">     102 </span>            :     // println(test2);</a>
+<a name="103"><span class="lineNum">     103 </span>            :     // println(test2_cp);</a>
+<a name="104"><span class="lineNum">     104 </span>            : </a>
+<a name="105"><span class="lineNum">     105 </span><span class="lineCov">          1 :     double diff = rmsd(test2, test2_cp);</span></a>
+<a name="106"><span class="lineNum">     106 </span>            : </a>
+<a name="107"><span class="lineNum">     107 </span><span class="lineCov">          1 :     REQUIRE(isgreaterequal(diff, 0.0));</span></a>
+<a name="108"><span class="lineNum">     108 </span><span class="lineCov">          1 :     REQUIRE(islessequal(diff, 1.0e-6));</span></a>
+<a name="109"><span class="lineNum">     109 </span><span class="lineCov">          1 : }</span></a>
+<a name="110"><span class="lineNum">     110 </span>            : </a>
+<a name="111"><span class="lineNum">     111 </span><span class="lineCov">          1 : TEST_CASE(&quot;TUCKER 1&quot;) {</span></a>
+<a name="112"><span class="lineNum">     112 </span><span class="lineCov">          1 :     using namespace einsums;</span></a>
+<a name="113"><span class="lineNum">     113 </span><span class="lineCov">          1 :     using namespace einsums::tensor_algebra;</span></a>
+<a name="114"><span class="lineNum">     114 </span><span class="lineCov">          1 :     using namespace einsums::decomposition;</span></a>
+<a name="115"><span class="lineNum">     115 </span>            : </a>
+<a name="116"><span class="lineNum">     116 </span><span class="lineCov">          1 :     Tensor test1(&quot;test 1&quot;, 3, 3, 3);</span></a>
+<a name="117"><span class="lineNum">     117 </span><span class="lineCov">          1 :     test1.vector_data() = einsums::VectorData&lt;double&gt;{0.94706517, 0.3959549,  0.14122476, 0.83665482, 0.27340639, 0.29811429, 0.1823041,</span></a>
+<a name="118"><span class="lineNum">     118 </span>            :                                                       0.66556282, 0.73178046, 0.72504222, 0.58360409, 0.68301135, 0.8316929,  0.66955444,</a>
+<a name="119"><span class="lineNum">     119 </span>            :                                                       0.25182224, 0.24108674, 0.09582611, 0.93056666, 0.60919366, 0.97363788, 0.24531965,</a>
+<a name="120"><span class="lineNum">     120 </span><span class="lineCov">          1 :                                                       0.23757898, 0.43426057, 0.64763913, 0.61224901, 0.86068415, 0.12051599};</span></a>
+<a name="121"><span class="lineNum">     121 </span>            : </a>
+<a name="122"><span class="lineNum">     122 </span><span class="lineCov">          1 :     std::vector&lt;size_t&gt; ranks{2, 2, 2};</span></a>
+<a name="123"><span class="lineNum">     123 </span><span class="lineCov">          1 :     auto                result   = tucker_ho_svd(test1, ranks);</span></a>
+<a name="124"><span class="lineNum">     124 </span><span class="lineCov">          1 :     auto                g_tensor = std::get&lt;0&gt;(result);</span></a>
+<a name="125"><span class="lineNum">     125 </span><span class="lineCov">          1 :     auto                factors  = std::get&lt;1&gt;(result);</span></a>
+<a name="126"><span class="lineNum">     126 </span>            : </a>
+<a name="127"><span class="lineNum">     127 </span><span class="lineCov">          1 :     auto test1_ho_svd = tucker_reconstruct(g_tensor, factors);</span></a>
+<a name="128"><span class="lineNum">     128 </span>            : </a>
+<a name="129"><span class="lineNum">     129 </span><span class="lineCov">          1 :     double diff = rmsd(test1, test1_ho_svd);</span></a>
+<a name="130"><span class="lineNum">     130 </span>            : </a>
+<a name="131"><span class="lineNum">     131 </span><span class="lineCov">          1 :     REQUIRE(isgreaterequal(diff, 0.0));</span></a>
+<a name="132"><span class="lineNum">     132 </span><span class="lineCov">          1 :     REQUIRE(islessequal(diff, 0.178837));</span></a>
+<a name="133"><span class="lineNum">     133 </span>            : </a>
+<a name="134"><span class="lineNum">     134 </span><span class="lineCov">          2 :     result   = tucker_ho_oi(test1, ranks, 50, 1.0e-6);</span></a>
+<a name="135"><span class="lineNum">     135 </span><span class="lineCov">          1 :     g_tensor = std::get&lt;0&gt;(result);</span></a>
+<a name="136"><span class="lineNum">     136 </span><span class="lineCov">          1 :     factors  = std::get&lt;1&gt;(result);</span></a>
+<a name="137"><span class="lineNum">     137 </span>            : </a>
+<a name="138"><span class="lineNum">     138 </span><span class="lineCov">          1 :     auto test1_ho_oi = tucker_reconstruct(g_tensor, factors);</span></a>
+<a name="139"><span class="lineNum">     139 </span>            : </a>
+<a name="140"><span class="lineNum">     140 </span><span class="lineCov">          1 :     diff = rmsd(test1, test1_ho_oi);</span></a>
+<a name="141"><span class="lineNum">     141 </span>            : </a>
+<a name="142"><span class="lineNum">     142 </span><span class="lineCov">          1 :     REQUIRE(isgreaterequal(diff, 0.0));</span></a>
+<a name="143"><span class="lineNum">     143 </span><span class="lineCov">          1 :     REQUIRE(islessequal(diff, 0.173911));</span></a>
+<a name="144"><span class="lineNum">     144 </span><span class="lineCov">          2 : }</span></a>
+<a name="145"><span class="lineNum">     145 </span>            : </a>
+<a name="146"><span class="lineNum">     146 </span><span class="lineCov">          1 : TEST_CASE(&quot;TUCKER 2&quot;) {</span></a>
+<a name="147"><span class="lineNum">     147 </span><span class="lineCov">          1 :     using namespace einsums;</span></a>
+<a name="148"><span class="lineNum">     148 </span><span class="lineCov">          1 :     using namespace einsums::tensor_algebra;</span></a>
+<a name="149"><span class="lineNum">     149 </span><span class="lineCov">          1 :     using namespace einsums::decomposition;</span></a>
+<a name="150"><span class="lineNum">     150 </span>            : </a>
+<a name="151"><span class="lineNum">     151 </span><span class="lineCov">          1 :     Tensor test2(&quot;test 2&quot;, 3, 4, 2);</span></a>
+<a name="152"><span class="lineNum">     152 </span><span class="lineCov">          1 :     test2.vector_data() =</span></a>
+<a name="153"><span class="lineNum">     153 </span><span class="lineCov">          1 :         einsums::VectorData&lt;double&gt;{0.29945093, 0.0090937,  0.99788559, 0.0821231,  0.29625705, 0.80278977, 0.15189681, 0.35832086,</span></a>
+<a name="154"><span class="lineNum">     154 </span>            :                                     0.09648153, 0.39398175, 0.49662056, 0.83101396, 0.84288292, 0.48603425, 0.93286471, 0.47101289,</a>
+<a name="155"><span class="lineNum">     155 </span><span class="lineCov">          1 :                                     0.32736096, 0.50067919, 0.49932342, 0.91922942, 0.44777189, 0.23009644, 0.34874549, 0.19356636};</span></a>
+<a name="156"><span class="lineNum">     156 </span>            : </a>
+<a name="157"><span class="lineNum">     157 </span><span class="lineCov">          1 :     std::vector&lt;size_t&gt; ranks{2, 3, 2};</span></a>
+<a name="158"><span class="lineNum">     158 </span><span class="lineCov">          1 :     auto                result   = tucker_ho_svd(test2, ranks);</span></a>
+<a name="159"><span class="lineNum">     159 </span><span class="lineCov">          1 :     auto                g_tensor = std::get&lt;0&gt;(result);</span></a>
+<a name="160"><span class="lineNum">     160 </span><span class="lineCov">          1 :     auto                factors  = std::get&lt;1&gt;(result);</span></a>
+<a name="161"><span class="lineNum">     161 </span>            : </a>
+<a name="162"><span class="lineNum">     162 </span><span class="lineCov">          1 :     auto test2_ho_svd = tucker_reconstruct(g_tensor, factors);</span></a>
+<a name="163"><span class="lineNum">     163 </span>            : </a>
+<a name="164"><span class="lineNum">     164 </span><span class="lineCov">          1 :     double diff = rmsd(test2, test2_ho_svd);</span></a>
+<a name="165"><span class="lineNum">     165 </span>            : </a>
+<a name="166"><span class="lineNum">     166 </span><span class="lineCov">          1 :     REQUIRE(isgreaterequal(diff, 0.0));</span></a>
+<a name="167"><span class="lineNum">     167 </span><span class="lineCov">          1 :     REQUIRE(islessequal(diff, 0.110250));</span></a>
+<a name="168"><span class="lineNum">     168 </span>            : </a>
+<a name="169"><span class="lineNum">     169 </span><span class="lineCov">          2 :     result   = tucker_ho_oi(test2, ranks, 50, 1.0e-6);</span></a>
+<a name="170"><span class="lineNum">     170 </span><span class="lineCov">          1 :     g_tensor = std::get&lt;0&gt;(result);</span></a>
+<a name="171"><span class="lineNum">     171 </span><span class="lineCov">          1 :     factors  = std::get&lt;1&gt;(result);</span></a>
+<a name="172"><span class="lineNum">     172 </span>            : </a>
+<a name="173"><span class="lineNum">     173 </span><span class="lineCov">          1 :     auto test2_ho_oi = tucker_reconstruct(g_tensor, factors);</span></a>
+<a name="174"><span class="lineNum">     174 </span>            : </a>
+<a name="175"><span class="lineNum">     175 </span><span class="lineCov">          1 :     diff = rmsd(test2, test2_ho_oi);</span></a>
+<a name="176"><span class="lineNum">     176 </span>            : </a>
+<a name="177"><span class="lineNum">     177 </span><span class="lineCov">          1 :     REQUIRE(isgreaterequal(diff, 0.0));</span></a>
+<a name="178"><span class="lineNum">     178 </span><span class="lineCov">          1 :     REQUIRE(islessequal(diff, 0.108301));</span></a>
+<a name="179"><span class="lineNum">     179 </span><span class="lineCov">          2 : }</span></a>
+<a name="180"><span class="lineNum">     180 </span>            : </a>
+<a name="181"><span class="lineNum">     181 </span><span class="lineCov">          1 : TEST_CASE(&quot;TUCKER 3&quot;) {</span></a>
+<a name="182"><span class="lineNum">     182 </span><span class="lineCov">          1 :     using namespace einsums;</span></a>
+<a name="183"><span class="lineNum">     183 </span><span class="lineCov">          1 :     using namespace einsums::tensor_algebra;</span></a>
+<a name="184"><span class="lineNum">     184 </span><span class="lineCov">          1 :     using namespace einsums::decomposition;</span></a>
+<a name="185"><span class="lineNum">     185 </span>            : </a>
+<a name="186"><span class="lineNum">     186 </span><span class="lineCov">          1 :     Tensor test3(&quot;test 3&quot;, 3, 2, 3, 2);</span></a>
+<a name="187"><span class="lineNum">     187 </span>            : </a>
+<a name="188"><span class="lineNum">     188 </span><span class="lineCov">          1 :     test3.vector_data() = einsums::VectorData&lt;double&gt;{</span></a>
+<a name="189"><span class="lineNum">     189 </span>            :         0.37001224, 0.77676895, 0.17589323, 0.02762156, 0.21037116, 0.83686174, 0.35042434, 0.19117270, 0.58095640,</a>
+<a name="190"><span class="lineNum">     190 </span>            :         0.99220655, 0.33536840, 0.15210615, 0.95033534, 0.73212124, 0.31346639, 0.83961596, 0.15418801, 0.58927303,</a>
+<a name="191"><span class="lineNum">     191 </span>            :         0.46744825, 0.44001279, 0.50372353, 0.09696069, 0.96449749, 0.71151666, 0.72334792, 0.98646368, 0.13764230,</a>
+<a name="192"><span class="lineNum">     192 </span><span class="lineCov">          1 :         0.95949904, 0.07774470, 0.18239083, 0.82591821, 0.40939436, 0.22088749, 0.90281597, 0.37465773, 0.02541923};</span></a>
+<a name="193"><span class="lineNum">     193 </span>            : </a>
+<a name="194"><span class="lineNum">     194 </span><span class="lineCov">          1 :     std::vector&lt;size_t&gt; ranks{2, 2, 2, 2};</span></a>
+<a name="195"><span class="lineNum">     195 </span><span class="lineCov">          1 :     auto                result   = tucker_ho_svd(test3, ranks);</span></a>
+<a name="196"><span class="lineNum">     196 </span><span class="lineCov">          1 :     auto                g_tensor = std::get&lt;0&gt;(result);</span></a>
+<a name="197"><span class="lineNum">     197 </span><span class="lineCov">          1 :     auto                factors  = std::get&lt;1&gt;(result);</span></a>
+<a name="198"><span class="lineNum">     198 </span>            : </a>
+<a name="199"><span class="lineNum">     199 </span><span class="lineCov">          1 :     auto test3_ho_svd = tucker_reconstruct(g_tensor, factors);</span></a>
+<a name="200"><span class="lineNum">     200 </span>            : </a>
+<a name="201"><span class="lineNum">     201 </span><span class="lineCov">          1 :     double diff = rmsd(test3, test3_ho_svd);</span></a>
+<a name="202"><span class="lineNum">     202 </span>            : </a>
+<a name="203"><span class="lineNum">     203 </span><span class="lineCov">          1 :     REQUIRE(isgreaterequal(diff, 0.0));</span></a>
+<a name="204"><span class="lineNum">     204 </span><span class="lineCov">          1 :     REQUIRE(islessequal(diff, 0.196843));</span></a>
+<a name="205"><span class="lineNum">     205 </span>            : </a>
+<a name="206"><span class="lineNum">     206 </span><span class="lineCov">          2 :     result   = tucker_ho_oi(test3, ranks, 50, 1.0e-6);</span></a>
+<a name="207"><span class="lineNum">     207 </span><span class="lineCov">          1 :     g_tensor = std::get&lt;0&gt;(result);</span></a>
+<a name="208"><span class="lineNum">     208 </span><span class="lineCov">          1 :     factors  = std::get&lt;1&gt;(result);</span></a>
+<a name="209"><span class="lineNum">     209 </span>            : </a>
+<a name="210"><span class="lineNum">     210 </span><span class="lineCov">          1 :     auto test3_ho_oi = tucker_reconstruct(g_tensor, factors);</span></a>
+<a name="211"><span class="lineNum">     211 </span>            : </a>
+<a name="212"><span class="lineNum">     212 </span><span class="lineCov">          1 :     diff = rmsd(test3, test3_ho_oi);</span></a>
+<a name="213"><span class="lineNum">     213 </span>            : </a>
+<a name="214"><span class="lineNum">     214 </span><span class="lineCov">          1 :     REQUIRE(isgreaterequal(diff, 0.0));</span></a>
+<a name="215"><span class="lineNum">     215 </span><span class="lineCov">          1 :     REQUIRE(islessequal(diff, 0.192402));</span></a>
+<a name="216"><span class="lineNum">     216 </span><span class="lineCov">          2 : }</span></a>
+<a name="217"><span class="lineNum">     217 </span>            : </a>
+<a name="218"><span class="lineNum">     218 </span><span class="lineCov">          1 : TEST_CASE(&quot;Lyapunov&quot;) {</span></a>
+<a name="219"><span class="lineNum">     219 </span><span class="lineCov">          1 :     using namespace einsums;</span></a>
+<a name="220"><span class="lineNum">     220 </span><span class="lineCov">          1 :     using namespace einsums::linear_algebra;</span></a>
+<a name="221"><span class="lineNum">     221 </span>            :     // Solves for X, where</a>
+<a name="222"><span class="lineNum">     222 </span>            :     // AX + XA^T = Q</a>
+<a name="223"><span class="lineNum">     223 </span>            : </a>
+<a name="224"><span class="lineNum">     224 </span><span class="lineCov">          1 :     auto A = create_tensor&lt;double&gt;(&quot;A&quot;, 3, 3);</span></a>
+<a name="225"><span class="lineNum">     225 </span><span class="lineCov">          1 :     auto Q = create_tensor&lt;double&gt;(&quot;Q&quot;, 3, 3);</span></a>
+<a name="226"><span class="lineNum">     226 </span>            : </a>
+<a name="227"><span class="lineNum">     227 </span><span class="lineCov">          1 :     A.vector_data() = einsums::VectorData&lt;double&gt;{1.25898804, -0.00000000, -0.58802280, -0.00000000, 1.51359048,</span></a>
+<a name="228"><span class="lineNum">     228 </span><span class="lineCov">          1 :                                                   0.00000000, -0.58802280, 0.00000000,  1.71673427};</span></a>
+<a name="229"><span class="lineNum">     229 </span>            : </a>
+<a name="230"><span class="lineNum">     230 </span><span class="lineCov">          1 :     Q.vector_data() = einsums::VectorData&lt;double&gt;{-0.05892104, 0.00000000, 0.00634896, 0.00000000, -0.02508491,</span></a>
+<a name="231"><span class="lineNum">     231 </span><span class="lineCov">          1 :                                                   0.00000000,  0.00634896, 0.00000000, 0.00155829};</span></a>
+<a name="232"><span class="lineNum">     232 </span>            : </a>
+<a name="233"><span class="lineNum">     233 </span><span class="lineCov">          1 :     auto X = einsums::linear_algebra::solve_lyapunov(A, Q);</span></a>
+<a name="234"><span class="lineNum">     234 </span>            : </a>
+<a name="235"><span class="lineNum">     235 </span><span class="lineCov">          1 :     auto Qtest = einsums::linear_algebra::gemm&lt;false, false&gt;(1.0, A, X);</span></a>
+<a name="236"><span class="lineNum">     236 </span><span class="lineCov">          1 :     auto Q2    = einsums::linear_algebra::gemm&lt;false, true&gt;(1.0, X, A);</span></a>
+<a name="237"><span class="lineNum">     237 </span><span class="lineCov">          1 :     einsums::linear_algebra::axpy(1.0, Q2, &amp;Qtest);</span></a>
+<a name="238"><span class="lineNum">     238 </span>            : </a>
+<a name="239"><span class="lineNum">     239 </span><span class="lineCov">         10 :     for (size_t i = 0; i &lt; 9; i++) {</span></a>
+<a name="240"><span class="lineNum">     240 </span><span class="lineCov">         18 :         CHECK_THAT(Q.data()[i], Catch::Matchers::WithinAbs(Qtest.data()[i], 0.00001));</span></a>
+<a name="241"><span class="lineNum">     241 </span>            :     }</a>
+<a name="242"><span class="lineNum">     242 </span><span class="lineCov">          1 : }</span></a>
+<a name="243"><span class="lineNum">     243 </span>            : </a>
+<a name="244"><span class="lineNum">     244 </span>            : template &lt;typename T&gt;</a>
+<a name="245"><span class="lineNum">     245 </span><span class="lineCov">          4 : void truncated_svd_test() {</span></a>
+<a name="246"><span class="lineNum">     246 </span>            :     using namespace einsums;</a>
+<a name="247"><span class="lineNum">     247 </span>            : </a>
+<a name="248"><span class="lineNum">     248 </span><span class="lineCov">          4 :     auto a         = create_random_tensor&lt;T&gt;(&quot;a&quot;, 10, 10);</span></a>
+<a name="249"><span class="lineNum">     249 </span><span class="lineCov">          4 :     auto [b, c, d] = linear_algebra::truncated_svd(a, 5);</span></a>
+<a name="250"><span class="lineNum">     250 </span><span class="lineCov">          4 : }</span></a>
+<a name="251"><span class="lineNum">     251 </span>            : </a>
+<a name="252"><span class="lineNum">     252 </span><span class="lineCov">          4 : TEST_CASE(&quot;truncated_svd&quot;) {</span></a>
+<a name="253"><span class="lineNum">     253 </span><span class="lineCov">          4 :     SECTION(&quot;float&quot;) {</span></a>
+<a name="254"><span class="lineNum">     254 </span><span class="lineCov">          1 :         truncated_svd_test&lt;float&gt;();</span></a>
+<a name="255"><span class="lineNum">     255 </span><span class="lineCov">          4 :     }</span></a>
+<a name="256"><span class="lineNum">     256 </span><span class="lineCov">          4 :     SECTION(&quot;double&quot;) {</span></a>
+<a name="257"><span class="lineNum">     257 </span><span class="lineCov">          1 :         truncated_svd_test&lt;double&gt;();</span></a>
+<a name="258"><span class="lineNum">     258 </span><span class="lineCov">          4 :     }</span></a>
+<a name="259"><span class="lineNum">     259 </span><span class="lineCov">          4 :     SECTION(&quot;complex float&quot;) {</span></a>
+<a name="260"><span class="lineNum">     260 </span><span class="lineCov">          1 :         truncated_svd_test&lt;std::complex&lt;float&gt;&gt;();</span></a>
+<a name="261"><span class="lineNum">     261 </span><span class="lineCov">          4 :     }</span></a>
+<a name="262"><span class="lineNum">     262 </span><span class="lineCov">          4 :     SECTION(&quot;complex double&quot;) {</span></a>
+<a name="263"><span class="lineNum">     263 </span><span class="lineCov">          1 :         truncated_svd_test&lt;std::complex&lt;double&gt;&gt;();</span></a>
+<a name="264"><span class="lineNum">     264 </span><span class="lineCov">          4 :     }</span></a>
+<a name="265"><span class="lineNum">     265 </span><span class="lineCov">          4 : }</span></a>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="https://github.com/linux-test-project/lcov" target="_parent">LCOV version 1.16</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>
