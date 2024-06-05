@@ -21,6 +21,7 @@ Optional requirements:
 
 * A Fast Fourier Transform library, either FFTW3 or DFT from MKL.
 * For call stack backtracing, refer to the requirements listed [here](https://github.com/bombela/backward-cpp).
+* HIP for graphics card support. Uses hipBlas, hipSolver, and the HIP language. Does not yet support hipFFT.
 
 ## Examples
 This will optimize at compile-time to a BLAS dgemm call.
