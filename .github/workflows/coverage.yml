@@ -125,12 +125,6 @@ jobs:
           gcov $SOURCES || echo "returned $?"
           lcov --capture --directory . --output-file coverage.info --exclude /usr/\* --exclude */build/_deps/*
       
-      - name: Generate coverage html
-        working-directory: "${{github.workspace}}/build"
-        run: |
-          mkdir coverage
-          genhtml --output-directory coverage coverage.info
-      
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4.0.1
         with:
