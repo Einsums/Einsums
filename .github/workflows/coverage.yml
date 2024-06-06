@@ -121,7 +121,7 @@ jobs:
         working-directory: "${{github.workspace}}/build"
         run: |
           export NOTES=$(find . -name "*.gcno")
-          export SOURCES=${NOTES/.gcno/}
+          export SOURCES=${NOTES/.gcno/} 
           gcov $SOURCES || echo "returned $?"
           lcov --capture --directory . --output-file coverage.info --exclude /usr/\* --exclude \*/build/_deps/\*
       
