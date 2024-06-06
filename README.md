@@ -1,5 +1,11 @@
 # Einsums in C++
 
+|   |   |
+|---|---|
+| **Status** | [![codecov](https://codecov.io/github/Einsums/Einsums/graph/badge.svg?token=Z8WA6CEGQA)](https://codecov.io/github/Einsums/Einsums) ![GitHub branch check runs](https://img.shields.io/github/check-runs/Einsums/Einsums/main) |
+| **Release** | ![GitHub Release](https://img.shields.io/github/v/release/Einsums/Einsums) ![GitHub commits since latest release](https://img.shields.io/github/commits-since/Einsums/Einsums/latest) |
+| **Documentation** | [![Documentation](https://img.shields.io/badge/docs-latest-green?style=flat)](https://einsums.github.io/Einsums/) |
+
 Provides compile-time contraction pattern analysis to determine optimal operation to perform.
 
 ## Requirements
@@ -16,6 +22,7 @@ Optional requirements:
 
 * A Fast Fourier Transform library, either FFTW3 or DFT from MKL.
 * For call stack backtracing, refer to the requirements listed [here](https://github.com/bombela/backward-cpp).
+* HIP for graphics card support. Uses hipBlas, hipSolver, and the HIP language. Does not yet support hipFFT.
 
 ## Examples
 This will optimize at compile-time to a BLAS dgemm call.
