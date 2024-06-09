@@ -145,6 +145,11 @@ jobs:
         with:
           arch: x64
 
+      # Workaround for https://github.com/actions/runner-images/issues/10001
+      - name: Update LLVM
+        if: ${{ runner.os == 'Windows' }}
+        run: choco upgrade llvm
+
       - name: Configure CMake
         run: |
           cmake \
