@@ -70,7 +70,7 @@ class TiledTensorBase : detail::TensorBase<T, Rank> {
         }
     }
 
-    /** 
+    /**
      * Copy a tiled tensor.
      *
      * @param other The tensor to be copied.
@@ -82,29 +82,31 @@ class TiledTensorBase : detail::TensorBase<T, Rank> {
         }
     }
 
+    virtual ~TiledTensorBase() = default;
+
     /**
      * Returns the tile with given coordinates. If the tile is not filled, it will be created.
      *
      * @param index The index of the tile.
      * @return The tile at the given index.
      */
-    template<std::integral... MultiIndex>
-    requires (sizeof...(MultiIndex) == Rank)
+    template <std::integral... MultiIndex>
+        requires(sizeof...(MultiIndex) == Rank)
     TensorType<T, Rank> &tile(MultiIndex... index) {
         std::array<int, Rank> arr_index{index...};
 
-        for(int i = 0; i < Rank; i++) {
-            if(arr_index[i] < 0) {
+        for (int i = 0; i < Rank; i++) {
+            if (arr_index[i] < 0) {
                 arr_index[i] += _tile_sizes[i].size();
             }
 
             assert(arr_index[i] < _tile_sizes[i].size() && arr_index[i] >= 0);
         }
 
-        if(!has_tile(arr_index)) {
+        if (!has_tile(arr_index)) {
             Dim<Rank> dims{};
 
-            for(int i = 0; i < Rank; i++) {
+            for (int i = 0; i < Rank; i++) {
                 dims[i] = _tile_sizes[i][arr_index[i]];
             }
             auto new_tile = TensorType<T, Rank>(dims);
@@ -121,13 +123,13 @@ class TiledTensorBase : detail::TensorBase<T, Rank> {
      * @param index The index of the tile.
      * @return The tile at the given index.
      */
-    template<std::integral... MultiIndex>
-    requires (sizeof...(MultiIndex) == Rank)
+    template <std::integral... MultiIndex>
+        requires(sizeof...(MultiIndex) == Rank)
     const TensorType<T, Rank> &tile(MultiIndex... index) const {
         std::array<int, Rank> arr_index{index...};
 
-        for(int i = 0; i < Rank; i++) {
-            if(arr_index[i] < 0) {
+        for (int i = 0; i < Rank; i++) {
+            if (arr_index[i] < 0) {
                 arr_index[i] += _tile_sizes[i].size();
             }
 
@@ -143,23 +145,23 @@ class TiledTensorBase : detail::TensorBase<T, Rank> {
      * @param index The index of the tile.
      * @return The tile at the given index.
      */
-    template<typename Storage>
-    requires (!std::integral<Storage>)
+    template <typename Storage>
+        requires(!std::integral<Storage>)
     TensorType<T, Rank> &tile(Storage index) {
         std::array<int, Rank> arr_index{index};
 
-        for(int i = 0; i < Rank; i++) {
-            if(arr_index[i] < 0) {
+        for (int i = 0; i < Rank; i++) {
+            if (arr_index[i] < 0) {
                 arr_index[i] += _tile_sizes[i].size();
             }
 
             assert(arr_index[i] < _tile_sizes[i].size() && arr_index[i] >= 0);
         }
 
-        if(!has_tile(arr_index)) {
+        if (!has_tile(arr_index)) {
             Dim<Rank> dims{};
 
-            for(int i = 0; i < Rank; i++) {
+            for (int i = 0; i < Rank; i++) {
                 dims[i] = _tile_sizes[i][arr_index[i]];
             }
             auto new_tile = TensorType<T, Rank>(dims);
@@ -176,13 +178,13 @@ class TiledTensorBase : detail::TensorBase<T, Rank> {
      * @param index The index of the tile.
      * @return The tile at the given index.
      */
-    template<typename Storage>
-    requires (!std::integral<Storage>)
+    template <typename Storage>
+        requires(!std::integral<Storage>)
     const TensorType<T, Rank> &tile(Storage index) const {
         std::array<int, Rank> arr_index{index};
 
-        for(int i = 0; i < Rank; i++) {
-            if(arr_index[i] < 0) {
+        for (int i = 0; i < Rank; i++) {
+            if (arr_index[i] < 0) {
                 arr_index[i] += _tile_sizes[i].size();
             }
 
@@ -198,13 +200,13 @@ class TiledTensorBase : detail::TensorBase<T, Rank> {
      * @param index The position to check for a tile.
      * @return True if there is a tile and it is initialized at this position. False if there is no tile or it is not initialized.
      */
-    template<std::integral... MultiIndex>
-    requires (sizeof...(MultiIndex) == Rank)
+    template <std::integral... MultiIndex>
+        requires(sizeof...(MultiIndex) == Rank)
     bool has_tile(MultiIndex... index) const {
         std::array<int, Rank> arr_index{index...};
 
-        for(int i = 0; i < Rank; i++) {
-            if(arr_index[i] < 0) {
+        for (int i = 0; i < Rank; i++) {
+            if (arr_index[i] < 0) {
                 arr_index[i] += _tile_sizes[i].size();
             }
 
@@ -222,23 +224,23 @@ class TiledTensorBase : detail::TensorBase<T, Rank> {
      * @param index The tensor index to check.
      * @return The coordinates of the tile.
      */
-    template<std::integral... MultiIndex>
-    requires (sizeof...(MultiIndex) == Rank)
+    template <std::integral... MultiIndex>
+        requires(sizeof...(MultiIndex) == Rank)
     std::array<int, Rank> tile_of(MultiIndex... index) const {
         std::array<int, Rank> arr_index{index...};
         std::array<int, Rank> out{0};
 
-        for(int i = 0; i < Rank; i++) {
-            if(arr_index[i] < 0) {
+        for (int i = 0; i < Rank; i++) {
+            if (arr_index[i] < 0) {
                 arr_index[i] += _dims[i];
             }
 
-            if(arr_index[i] < 0 || arr_index[i] >= _dims[i]) {
+            if (arr_index[i] < 0 || arr_index[i] >= _dims[i]) {
                 throw(std::out_of_range("Index not in the tensor!"));
             }
 
-            for(int j = 0; j < _tile_offsets[i].size(); j++) {
-                if(arr_index[i] < _tile_offsets[i][j]) {
+            for (int j = 0; j < _tile_offsets[i].size(); j++) {
+                if (arr_index[i] < _tile_offsets[i][j]) {
                     out[i] = j;
                     break;
                 }
@@ -253,13 +255,13 @@ class TiledTensorBase : detail::TensorBase<T, Rank> {
      * @param index The position to check for a tile.
      * @return True if there is a tile and it is initialized at this position. False if there is no tile or it is not initialized.
      */
-    template<typename Storage>
-    requires (!std::integral<Storage>)
+    template <typename Storage>
+        requires(!std::integral<Storage>)
     bool has_tile(Storage index) const {
         std::array<int, Rank> arr_index{index};
 
-        for(int i = 0; i < Rank; i++) {
-            if(arr_index[i] < 0) {
+        for (int i = 0; i < Rank; i++) {
+            if (arr_index[i] < 0) {
                 arr_index[i] += _tile_sizes[i].size();
             }
 
@@ -277,23 +279,23 @@ class TiledTensorBase : detail::TensorBase<T, Rank> {
      * @param index The tensor index to check.
      * @return The coordinates of the tile.
      */
-    template<typename Storage>
-    requires (!std::integral<Storage>)
+    template <typename Storage>
+        requires(!std::integral<Storage>)
     std::array<int, Rank> tile_of(Storage index) const {
         std::array<int, Rank> arr_index{index};
         std::array<int, Rank> out{0};
 
-        for(int i = 0; i < Rank; i++) {
-            if(arr_index[i] < 0) {
+        for (int i = 0; i < Rank; i++) {
+            if (arr_index[i] < 0) {
                 arr_index[i] += _dims[i];
             }
 
-            if(arr_index[i] < 0 || arr_index[i] >= _dims[i]) {
+            if (arr_index[i] < 0 || arr_index[i] >= _dims[i]) {
                 throw(std::out_of_range("Index not in the tensor!"));
             }
 
-            for(int j = 0; j < _tile_offsets[i].size(); j++) {
-                if(arr_index[i] < _tile_offsets[i][j]) {
+            for (int j = 0; j < _tile_offsets[i].size(); j++) {
+                if (arr_index[i] < _tile_offsets[i][j]) {
                     out[i] = j;
                     break;
                 }
@@ -308,22 +310,22 @@ class TiledTensorBase : detail::TensorBase<T, Rank> {
      * @param index The index to evaluate.
      * @return The value at the position.
      */
-    template<std::integral... MultiIndex>
-    requires (sizeof...(MultiIndex) == Rank)
+    template <std::integral... MultiIndex>
+        requires(sizeof...(MultiIndex) == Rank)
     T operator()(MultiIndex... index) const {
         auto coords = tile_of(index...);
 
         auto array_ind = std::array<int, Rank>{index...};
 
         // Find the index in the tile.
-        for(int i = 0; i < Rank; i++) {
-            if(array_ind[i] < 0) {
+        for (int i = 0; i < Rank; i++) {
+            if (array_ind[i] < 0) {
                 array_ind[i] += _dims[i];
             }
             array_ind[i] -= _tile_offsets[i][coords[i]];
         }
 
-        if(has_tile(coords)) {
+        if (has_tile(coords)) {
             return std::apply(tile(coords), array_ind);
         } else {
             return T{0};
@@ -336,16 +338,16 @@ class TiledTensorBase : detail::TensorBase<T, Rank> {
      * @param index The index to evaluate.
      * @return A reference to the position.
      */
-    template<std::integral... MultiIndex>
-    requires (sizeof...(MultiIndex) == Rank)
+    template <std::integral... MultiIndex>
+        requires(sizeof...(MultiIndex) == Rank)
     T &operator()(MultiIndex... index) {
         auto coords = tile_of(index...);
 
         auto array_ind = std::array<int, Rank>{index...};
 
         // Find the index in the tile.
-        for(int i = 0; i < Rank; i++) {
-            if(array_ind[i] < 0) {
+        for (int i = 0; i < Rank; i++) {
+            if (array_ind[i] < 0) {
                 array_ind[i] += _dims[i];
             }
             array_ind[i] -= _tile_offsets[i][coords[i]];
@@ -357,19 +359,151 @@ class TiledTensorBase : detail::TensorBase<T, Rank> {
     /**
      * Sets all entries in the tensor to zero. This clears all tiles. There will be no more tiles after this.
      */
-    void zero() {
-        _tiles.clear();
-    }
+    void zero() { _tiles.clear(); }
 
     /**
      * Sets all entries in the tensor to zero. This keeps all tiles, just calls zero on the tensors.
      */
     void zero_no_clear() {
         EINSUMS_OMP_PARALLEL_FOR
-        for(auto tile : _tiles) {
+        for (auto tile : _tiles) {
             tile.second.zero();
         }
     }
+
+    /**
+     * Sets all entries to the given value. Initializes all tiles, unless zero is given.
+     * If zero is passed, calls @ref zero
+     *
+     * @param value The value to broadcast.
+     */
+    void set_all(T value) {
+        if (value == T{0}) {
+            zero();
+            return;
+        }
+
+        // Find the number of tiles.
+        long num_tiles = 1;
+        for (int i = 0; i < Rank; i++) {
+            num_tiles *= _tile_offsets[i].size();
+        }
+
+        EINSUMS_OMP_PARALLEL_FOR
+        for (long i = 0; i < num_tiles; i++) {
+            std::array<int, Rank> tile_index{};
+            long                  remaining = i;
+
+            // Turn sentinel into an index.
+            for (int j = 0; j < Rank; j++) {
+                tile_index[j] = remaining % _tile_offsets[j].size();
+                remaining /= _tile_offsets[j].size();
+            }
+
+            // Set the tile index.
+            _tiles[tile_index].set_all(value);
+        }
+    }
+
+    /**
+     * Sets all entries to the given value. If a tile does not exist, it is ignored.
+     *
+     * @param value The value to broadcast.
+     */
+    void set_all_existing(T value) {
+        EINSUMS_OMP_PARALLEL_FOR
+        for (auto tile : _tiles) {
+            tile.second.set_all(value);
+        }
+    }
+
+    TiledTensorBase<TensorType, T, Rank> &operator=(T value) {
+        set_all(value);
+        return *this;
+    }
+
+    TiledTensorBase<TensorType, T, Rank> &operator+=(T value) {
+        if (value == T{0}) {
+            return *this;
+        }
+
+        // Find the number of tiles.
+        long num_tiles = 1;
+        for (int i = 0; i < Rank; i++) {
+            num_tiles *= _tile_offsets[i].size();
+        }
+
+        EINSUMS_OMP_PARALLEL_FOR
+        for (long i = 0; i < num_tiles; i++) {
+            std::array<int, Rank> tile_index{};
+            long                  remaining = i;
+
+            // Turn sentinel into an index.
+            for (int j = 0; j < Rank; j++) {
+                tile_index[j] = remaining % _tile_offsets[j].size();
+                remaining /= _tile_offsets[j].size();
+            }
+
+            // Set the tile index.
+            _tiles[tile_index] += value;
+        }
+    }
+
+    TiledTensorBase<TensorType, T, Rank> &operator-=(T value) {
+        if (value == T{0}) {
+            return *this;
+        }
+
+        // Find the number of tiles.
+        long num_tiles = 1;
+        for (int i = 0; i < Rank; i++) {
+            num_tiles *= _tile_offsets[i].size();
+        }
+
+        EINSUMS_OMP_PARALLEL_FOR
+        for (long i = 0; i < num_tiles; i++) {
+            std::array<int, Rank> tile_index{};
+            long                  remaining = i;
+
+            // Turn sentinel into an index.
+            for (int j = 0; j < Rank; j++) {
+                tile_index[j] = remaining % _tile_offsets[j].size();
+                remaining /= _tile_offsets[j].size();
+            }
+
+            // Set the tile index.
+            _tiles[tile_index] -= value;
+        }
+    }
+
+    TiledTensorBase<TensorType, T, Rank> &operator*=(T value) {
+        if(value == T{0}) {
+            zero();
+            return *this;
+        }
+        EINSUMS_OMP_PARALLEL_FOR
+        for (auto tile : _tiles) {
+            tile.second *= value;
+        }
+    }
+
+    TiledTensorBase<TensorType, T, Rank> &operator/=(T value) {
+        EINSUMS_OMP_PARALLEL_FOR
+        for (auto tile : _tiles) {
+            tile.second /= value;
+        }
+    }
+};
+
+template <typename T, size_t Rank>
+class TiledTensor : public TiledTensorBase<Tensor, T, Rank> {
+  public:
+    TiledTensor() = default;
+
+    template <typename... Sizes>
+    TiledTensor(std::string name, Sizes... sizes) : TiledTensorBase<Tensor, T, Rank>(name, sizes...) {}
+
+    TiledTensor(const TiledTensor<T, Rank> &other) = default;
 };
 
 } // namespace einsums
