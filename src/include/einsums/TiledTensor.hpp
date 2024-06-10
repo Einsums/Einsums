@@ -5,6 +5,7 @@
 #include "einsums/Tensor.hpp"
 
 #include <array>
+#include <cmath>
 #include <map>
 #include <vector>
 
@@ -477,7 +478,7 @@ class TiledTensorBase : detail::TensorBase<T, Rank> {
     }
 
     TiledTensorBase<TensorType, T, Rank> &operator*=(T value) {
-        if(value == T{0}) {
+        if (value == T{0}) {
             zero();
             return *this;
         }
@@ -492,6 +493,75 @@ class TiledTensorBase : detail::TensorBase<T, Rank> {
         for (auto tile : _tiles) {
             tile.second /= value;
         }
+    }
+
+    TiledTensorBase<TensorType, T, Rank> &operator+=(const TiledTensorBase<TensorType, T, Rank> &other) {
+        if(_tile_sizes != other._tile_sizes) {
+            throw std::runtime_error("Tiled tensors do not have the same layouts.");
+        }
+
+        EINSUMS_OMP_PARALLEL_FOR
+        for(auto tile : other._tiles) {
+            if(has_tile(tile.first)) {
+                _tiles[tile.first] += tile.second;
+            } else {
+                _tiles[tile.first] = TensorType<T, Rank>(tile.second);
+            }
+        }
+
+        return *this;
+    }
+
+    TiledTensorBase<TensorType, T, Rank> &operator-=(const TiledTensorBase<TensorType, T, Rank> &other) {
+        if(_tile_sizes != other._tile_sizes) {
+            throw std::runtime_error("Tiled tensors do not have the same layouts.");
+        }
+
+        EINSUMS_OMP_PARALLEL_FOR
+        for(auto tile : other._tiles) {
+            if(has_tile(tile.first)) {
+                _tiles[tile.first] -= tile.second;
+            } else {
+                _tiles[tile.first] = TensorType<T, Rank>(tile.second);
+                _tiles[tile.first] *= -1;
+            }
+        }
+
+        return *this;
+    }
+
+    TiledTensorBase<TensorType, T, Rank> &operator*=(const TiledTensorBase<TensorType, T, Rank> &other) {
+        if(_tile_sizes != other._tile_sizes) {
+            throw std::runtime_error("Tiled tensors do not have the same layouts.");
+        }
+
+        EINSUMS_OMP_PARALLEL_FOR
+        for(auto tile : _tiles) {
+            if(other.has_tile(tile.first)) {
+                tile.second *= other._tiles[tile.first];
+            } else {
+                _tiles.erase(tile.first);
+            }
+        }
+
+        return *this;
+    }
+
+    TiledTensorBase<TensorType, T, Rank> &operator/=(const TiledTensorBase<TensorType, T, Rank> &other) {
+        if(_tile_sizes != other._tile_sizes) {
+            throw std::runtime_error("Tiled tensors do not have the same layouts.");
+        }
+
+        EINSUMS_OMP_PARALLEL_FOR
+        for(auto tile : _tiles) {
+            if(other.has_tile(tile.first)) {
+                tile.second /= other._tiles[tile.first];
+            } else {
+                tile.second /= T{0};
+            }
+        }
+
+        return *this;
     }
 };
 
