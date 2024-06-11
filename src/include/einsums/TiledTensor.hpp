@@ -683,7 +683,7 @@ private:
     template <typename... Sizes>
     TiledTensorView(std::string name, Sizes... sizes) : TiledTensorBase<Tensor, T, Rank>(name, sizes...) {}
 
-    TiledTensorView(const TiledTensor<T, Rank> &other) = default;
+    TiledTensorView(const TiledTensorView<T, Rank> &other) = default;
 
     ~TiledTensorView() = default;
 
