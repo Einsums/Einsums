@@ -30,7 +30,7 @@ class TiledTensorBase : detail::TensorBase<T, Rank> {
 
     Dim<Rank> _dims;
 
-    size_t _size;
+    size_t _size, _grid_size;
 
     std::string _name{"(unnamed)"};
 
@@ -68,6 +68,12 @@ class TiledTensorBase : detail::TensorBase<T, Rank> {
             }
             _dims[i] = sum;
             _size *= sum;
+        }
+
+        _grid_size = 1;
+
+        for(int i = 0; i < Rank; i++) {
+            _grid_size *= _tile_offsets[i].size();
         }
     }
 
@@ -562,6 +568,95 @@ class TiledTensorBase : detail::TensorBase<T, Rank> {
         }
 
         return *this;
+    }
+
+    /**
+     * Returns the tile offsets.
+     */
+    std::array<std::vector<int>, Rank> tile_offsets() {
+        return _tile_offsets;
+    }
+
+    /**
+     * Returns the tile offsets along a given dimension.
+     *
+     * @param i The axis to retrieve.
+     * 
+     */
+    std::vector<int> tile_offset(int i = 0) {
+        return _tile_offsets[i];
+    }
+
+    /**
+     * Returns the tile sizes.
+     */
+    std::array<std::vector<int>, Rank> tile_sizes() {
+        return _tile_sizes;
+    }
+
+    /**
+     * Returns the tile sizes along a given dimension.
+     *
+     * @param i The axis to retrieve.
+     * 
+     */
+    std::vector<int> tile_size(int i = 0) {
+        return _tile_sizes[i];
+    }
+
+    /**
+     * Get a reference to the tile map.
+     */
+    const std::map<std::array<int, Rank>, TensorType<T, Rank>> &tiles() const {
+        return _tiles;
+    }
+
+    /**
+     * Get a reference to the tile map.
+     */
+    std::map<std::array<int, Rank>, TensorType<T, Rank>> &tiles() {
+        return _tiles;
+    }
+
+    /**
+     * Get the name.
+     */
+    std::string name() const {
+        return _name;
+    }
+
+    /**
+     * Sets the name.
+     *
+     * @param val The new name.
+     */
+    void set_name(std::string val) {
+        _name = val;
+    }
+
+    /**
+     * Gets the size of the tensor.
+     */
+    size_t size() const {
+        return _size;
+    }
+
+    /**
+     * Gets the number of possible tiles, empty and filled.
+     */
+    size_t grid_size() const {
+        return _grid_size;
+    }
+
+    /**
+     * Gets the number of filled tiles.
+     */
+    size_t num_filled() const {
+        return _tiles.size();
+    }
+
+    [[nodiscard]] bool full_view_of_underlying() const {
+        return true;
     }
 };
 
