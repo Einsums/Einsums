@@ -366,12 +366,12 @@ class TiledTensorBase : detail::TensorBase<T, Rank> {
     /**
      * Sets all entries in the tensor to zero. This clears all tiles. There will be no more tiles after this.
      */
-    void zero() { _tiles.clear(); }
+    virtual void zero() { _tiles.clear(); }
 
     /**
      * Sets all entries in the tensor to zero. This keeps all tiles, just calls zero on the tensors.
      */
-    void zero_no_clear() {
+    virtual void zero_no_clear() {
         EINSUMS_OMP_PARALLEL_FOR
         for (auto tile : _tiles) {
             tile.second.zero();
@@ -384,7 +384,7 @@ class TiledTensorBase : detail::TensorBase<T, Rank> {
      *
      * @param value The value to broadcast.
      */
-    void set_all(T value) {
+    virtual void set_all(T value) {
         if (value == T{0}) {
             zero();
             return;
@@ -417,19 +417,19 @@ class TiledTensorBase : detail::TensorBase<T, Rank> {
      *
      * @param value The value to broadcast.
      */
-    void set_all_existing(T value) {
+    virtual void set_all_existing(T value) {
         EINSUMS_OMP_PARALLEL_FOR
         for (auto tile : _tiles) {
             tile.second.set_all(value);
         }
     }
 
-    TiledTensorBase<TensorType, T, Rank> &operator=(T value) {
+    virtual TiledTensorBase<TensorType, T, Rank> &operator=(T value) {
         set_all(value);
         return *this;
     }
 
-    TiledTensorBase<TensorType, T, Rank> &operator+=(T value) {
+    virtual TiledTensorBase<TensorType, T, Rank> &operator+=(T value) {
         if (value == T{0}) {
             return *this;
         }
@@ -456,7 +456,7 @@ class TiledTensorBase : detail::TensorBase<T, Rank> {
         }
     }
 
-    TiledTensorBase<TensorType, T, Rank> &operator-=(T value) {
+    virtual TiledTensorBase<TensorType, T, Rank> &operator-=(T value) {
         if (value == T{0}) {
             return *this;
         }
@@ -483,7 +483,7 @@ class TiledTensorBase : detail::TensorBase<T, Rank> {
         }
     }
 
-    TiledTensorBase<TensorType, T, Rank> &operator*=(T value) {
+    virtual TiledTensorBase<TensorType, T, Rank> &operator*=(T value) {
         if (value == T{0}) {
             zero();
             return *this;
@@ -494,14 +494,14 @@ class TiledTensorBase : detail::TensorBase<T, Rank> {
         }
     }
 
-    TiledTensorBase<TensorType, T, Rank> &operator/=(T value) {
+    virtual TiledTensorBase<TensorType, T, Rank> &operator/=(T value) {
         EINSUMS_OMP_PARALLEL_FOR
         for (auto tile : _tiles) {
             tile.second /= value;
         }
     }
 
-    TiledTensorBase<TensorType, T, Rank> &operator+=(const TiledTensorBase<TensorType, T, Rank> &other) {
+    virtual TiledTensorBase<TensorType, T, Rank> &operator+=(const TiledTensorBase<TensorType, T, Rank> &other) {
         if(_tile_sizes != other._tile_sizes) {
             throw std::runtime_error("Tiled tensors do not have the same layouts.");
         }
@@ -518,7 +518,7 @@ class TiledTensorBase : detail::TensorBase<T, Rank> {
         return *this;
     }
 
-    TiledTensorBase<TensorType, T, Rank> &operator-=(const TiledTensorBase<TensorType, T, Rank> &other) {
+    virtual TiledTensorBase<TensorType, T, Rank> &operator-=(const TiledTensorBase<TensorType, T, Rank> &other) {
         if(_tile_sizes != other._tile_sizes) {
             throw std::runtime_error("Tiled tensors do not have the same layouts.");
         }
@@ -536,7 +536,7 @@ class TiledTensorBase : detail::TensorBase<T, Rank> {
         return *this;
     }
 
-    TiledTensorBase<TensorType, T, Rank> &operator*=(const TiledTensorBase<TensorType, T, Rank> &other) {
+    virtual TiledTensorBase<TensorType, T, Rank> &operator*=(const TiledTensorBase<TensorType, T, Rank> &other) {
         if(_tile_sizes != other._tile_sizes) {
             throw std::runtime_error("Tiled tensors do not have the same layouts.");
         }
@@ -553,7 +553,7 @@ class TiledTensorBase : detail::TensorBase<T, Rank> {
         return *this;
     }
 
-    TiledTensorBase<TensorType, T, Rank> &operator/=(const TiledTensorBase<TensorType, T, Rank> &other) {
+    virtual TiledTensorBase<TensorType, T, Rank> &operator/=(const TiledTensorBase<TensorType, T, Rank> &other) {
         if(_tile_sizes != other._tile_sizes) {
             throw std::runtime_error("Tiled tensors do not have the same layouts.");
         }
@@ -573,7 +573,7 @@ class TiledTensorBase : detail::TensorBase<T, Rank> {
     /**
      * Returns the tile offsets.
      */
-    std::array<std::vector<int>, Rank> tile_offsets() {
+    virtual std::array<std::vector<int>, Rank> tile_offsets() {
         return _tile_offsets;
     }
 
@@ -583,14 +583,14 @@ class TiledTensorBase : detail::TensorBase<T, Rank> {
      * @param i The axis to retrieve.
      * 
      */
-    std::vector<int> tile_offset(int i = 0) {
+    virtual std::vector<int> tile_offset(int i = 0) {
         return _tile_offsets[i];
     }
 
     /**
      * Returns the tile sizes.
      */
-    std::array<std::vector<int>, Rank> tile_sizes() {
+    virtual std::array<std::vector<int>, Rank> tile_sizes() {
         return _tile_sizes;
     }
 
@@ -600,28 +600,28 @@ class TiledTensorBase : detail::TensorBase<T, Rank> {
      * @param i The axis to retrieve.
      * 
      */
-    std::vector<int> tile_size(int i = 0) {
+    virtual std::vector<int> tile_size(int i = 0) {
         return _tile_sizes[i];
     }
 
     /**
      * Get a reference to the tile map.
      */
-    const std::map<std::array<int, Rank>, TensorType<T, Rank>> &tiles() const {
+    virtual const std::map<std::array<int, Rank>, TensorType<T, Rank>> &tiles() const {
         return _tiles;
     }
 
     /**
      * Get a reference to the tile map.
      */
-    std::map<std::array<int, Rank>, TensorType<T, Rank>> &tiles() {
+    virtual std::map<std::array<int, Rank>, TensorType<T, Rank>> &tiles() {
         return _tiles;
     }
 
     /**
      * Get the name.
      */
-    std::string name() const {
+    virtual std::string name() const {
         return _name;
     }
 
@@ -630,38 +630,38 @@ class TiledTensorBase : detail::TensorBase<T, Rank> {
      *
      * @param val The new name.
      */
-    void set_name(std::string val) {
+    virtual void set_name(std::string val) {
         _name = val;
     }
 
     /**
      * Gets the size of the tensor.
      */
-    size_t size() const {
+    virtual size_t size() const {
         return _size;
     }
 
     /**
      * Gets the number of possible tiles, empty and filled.
      */
-    size_t grid_size() const {
+    virtual size_t grid_size() const {
         return _grid_size;
     }
 
     /**
      * Gets the number of filled tiles.
      */
-    size_t num_filled() const {
+    virtual size_t num_filled() const {
         return _tiles.size();
     }
 
-    [[nodiscard]] bool full_view_of_underlying() const {
+    [[nodiscard]] virtual bool full_view_of_underlying() const {
         return true;
     }
 };
 
 template <typename T, size_t Rank>
-class TiledTensor : public TiledTensorBase<Tensor, T, Rank> {
+class TiledTensor final : public TiledTensorBase<Tensor, T, Rank> {
   public:
     TiledTensor() = default;
 
@@ -669,6 +669,27 @@ class TiledTensor : public TiledTensorBase<Tensor, T, Rank> {
     TiledTensor(std::string name, Sizes... sizes) : TiledTensorBase<Tensor, T, Rank>(name, sizes...) {}
 
     TiledTensor(const TiledTensor<T, Rank> &other) = default;
+
+    ~TiledTensor() = default;
+};
+
+template <typename T, size_t Rank>
+class TiledTensorView final : public TiledTensorBase<TensorView, T, Rank> {
+private:
+    bool _full_view_of_underlying{false};
+  public:
+    TiledTensorView() = default;
+
+    template <typename... Sizes>
+    TiledTensorView(std::string name, Sizes... sizes) : TiledTensorBase<Tensor, T, Rank>(name, sizes...) {}
+
+    TiledTensorView(const TiledTensor<T, Rank> &other) = default;
+
+    ~TiledTensorView() = default;
+
+    [[nodiscard]] bool full_view_of_underlying() const override {
+        return true;
+    }
 };
 
 } // namespace einsums
