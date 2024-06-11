@@ -3,6 +3,11 @@
 #include "einsums/_Common.hpp"
 
 #include "einsums/Tensor.hpp"
+#include <string>
+
+#ifdef __HIP__
+#    include "einsums/DeviceTensor.hpp"
+#endif
 
 #include <array>
 #include <cmath>
@@ -33,6 +38,25 @@ class TiledTensorBase : detail::TensorBase<T, Rank> {
     size_t _size, _grid_size;
 
     std::string _name{"(unnamed)"};
+
+    /**
+     * Add a tile using the underlying type's preferred method. Also gives it a name.
+     */
+    virtual void add_tile(std::array<int, Rank> pos) {
+        std::string tile_name = _name + " - (";
+        Dim<Rank> dims{};
+
+        for(int i = 0; i < Rank; i++) {
+            tile_name += std::to_string(pos[i]);
+            dims[i] = _tile_sizes[i][pos[i]];
+            if(i != Rank - 1) {
+                tile_name += ", ";
+            }
+        }
+        tile_name += ")";
+
+        std::apply(_tiles.emplace, std::tuple_cat(std::make_tuple(pos, tile_name), dims));
+    }
 
   public:
     /**
@@ -72,7 +96,7 @@ class TiledTensorBase : detail::TensorBase<T, Rank> {
 
         _grid_size = 1;
 
-        for(int i = 0; i < Rank; i++) {
+        for (int i = 0; i < Rank; i++) {
             _grid_size *= _tile_offsets[i].size();
         }
     }
@@ -116,9 +140,8 @@ class TiledTensorBase : detail::TensorBase<T, Rank> {
             for (int i = 0; i < Rank; i++) {
                 dims[i] = _tile_sizes[i][arr_index[i]];
             }
-            auto new_tile = TensorType<T, Rank>(dims);
-            new_tile.zero();
-            _tiles[arr_index] = new_tile;
+
+            add_tile(arr_index);
         }
 
         return _tiles[arr_index];
@@ -134,6 +157,28 @@ class TiledTensorBase : detail::TensorBase<T, Rank> {
         requires(sizeof...(MultiIndex) == Rank)
     const TensorType<T, Rank> &tile(MultiIndex... index) const {
         std::array<int, Rank> arr_index{index...};
+
+        for (int i = 0; i < Rank; i++) {
+            if (arr_index[i] < 0) {
+                arr_index[i] += _tile_sizes[i].size();
+            }
+
+            assert(arr_index[i] < _tile_sizes[i].size() && arr_index[i] >= 0);
+        }
+
+        return _tiles.at(arr_index);
+    }
+
+    /**
+     * Returns the tile with given coordinates. If the tile is not filled, this will throw an error.
+     *
+     * @param index The index of the tile.
+     * @return The tile at the given index.
+     */
+    template <typename Storage>
+        requires(!std::integral<Storage>)
+    const TensorType<T, Rank> &tile(Storage index) const {
+        std::array<int, Rank> arr_index{index};
 
         for (int i = 0; i < Rank; i++) {
             if (arr_index[i] < 0) {
@@ -171,34 +216,10 @@ class TiledTensorBase : detail::TensorBase<T, Rank> {
             for (int i = 0; i < Rank; i++) {
                 dims[i] = _tile_sizes[i][arr_index[i]];
             }
-            auto new_tile = TensorType<T, Rank>(dims);
-            new_tile.zero();
-            _tiles[arr_index] = new_tile;
+            add_tile(arr_index);
         }
 
         return _tiles[arr_index];
-    }
-
-    /**
-     * Returns the tile with given coordinates. If the tile is not filled, this will throw an error.
-     *
-     * @param index The index of the tile.
-     * @return The tile at the given index.
-     */
-    template <typename Storage>
-        requires(!std::integral<Storage>)
-    const TensorType<T, Rank> &tile(Storage index) const {
-        std::array<int, Rank> arr_index{index};
-
-        for (int i = 0; i < Rank; i++) {
-            if (arr_index[i] < 0) {
-                arr_index[i] += _tile_sizes[i].size();
-            }
-
-            assert(arr_index[i] < _tile_sizes[i].size() && arr_index[i] >= 0);
-        }
-
-        return _tiles.at(arr_index);
     }
 
     /**
@@ -502,13 +523,13 @@ class TiledTensorBase : detail::TensorBase<T, Rank> {
     }
 
     virtual TiledTensorBase<TensorType, T, Rank> &operator+=(const TiledTensorBase<TensorType, T, Rank> &other) {
-        if(_tile_sizes != other._tile_sizes) {
+        if (_tile_sizes != other._tile_sizes) {
             throw std::runtime_error("Tiled tensors do not have the same layouts.");
         }
 
         EINSUMS_OMP_PARALLEL_FOR
-        for(auto tile : other._tiles) {
-            if(has_tile(tile.first)) {
+        for (auto tile : other._tiles) {
+            if (has_tile(tile.first)) {
                 _tiles[tile.first] += tile.second;
             } else {
                 _tiles[tile.first] = TensorType<T, Rank>(tile.second);
@@ -519,13 +540,13 @@ class TiledTensorBase : detail::TensorBase<T, Rank> {
     }
 
     virtual TiledTensorBase<TensorType, T, Rank> &operator-=(const TiledTensorBase<TensorType, T, Rank> &other) {
-        if(_tile_sizes != other._tile_sizes) {
+        if (_tile_sizes != other._tile_sizes) {
             throw std::runtime_error("Tiled tensors do not have the same layouts.");
         }
 
         EINSUMS_OMP_PARALLEL_FOR
-        for(auto tile : other._tiles) {
-            if(has_tile(tile.first)) {
+        for (auto tile : other._tiles) {
+            if (has_tile(tile.first)) {
                 _tiles[tile.first] -= tile.second;
             } else {
                 _tiles[tile.first] = TensorType<T, Rank>(tile.second);
@@ -537,13 +558,13 @@ class TiledTensorBase : detail::TensorBase<T, Rank> {
     }
 
     virtual TiledTensorBase<TensorType, T, Rank> &operator*=(const TiledTensorBase<TensorType, T, Rank> &other) {
-        if(_tile_sizes != other._tile_sizes) {
+        if (_tile_sizes != other._tile_sizes) {
             throw std::runtime_error("Tiled tensors do not have the same layouts.");
         }
 
         EINSUMS_OMP_PARALLEL_FOR
-        for(auto tile : _tiles) {
-            if(other.has_tile(tile.first)) {
+        for (auto tile : _tiles) {
+            if (other.has_tile(tile.first)) {
                 tile.second *= other._tiles[tile.first];
             } else {
                 _tiles.erase(tile.first);
@@ -554,13 +575,13 @@ class TiledTensorBase : detail::TensorBase<T, Rank> {
     }
 
     virtual TiledTensorBase<TensorType, T, Rank> &operator/=(const TiledTensorBase<TensorType, T, Rank> &other) {
-        if(_tile_sizes != other._tile_sizes) {
+        if (_tile_sizes != other._tile_sizes) {
             throw std::runtime_error("Tiled tensors do not have the same layouts.");
         }
 
         EINSUMS_OMP_PARALLEL_FOR
-        for(auto tile : _tiles) {
-            if(other.has_tile(tile.first)) {
+        for (auto tile : _tiles) {
+            if (other.has_tile(tile.first)) {
                 tile.second /= other._tiles[tile.first];
             } else {
                 tile.second /= T{0};
@@ -573,91 +594,67 @@ class TiledTensorBase : detail::TensorBase<T, Rank> {
     /**
      * Returns the tile offsets.
      */
-    virtual std::array<std::vector<int>, Rank> tile_offsets() {
-        return _tile_offsets;
-    }
+    virtual std::array<std::vector<int>, Rank> tile_offsets() { return _tile_offsets; }
 
     /**
      * Returns the tile offsets along a given dimension.
      *
      * @param i The axis to retrieve.
-     * 
+     *
      */
-    virtual std::vector<int> tile_offset(int i = 0) {
-        return _tile_offsets[i];
-    }
+    virtual std::vector<int> tile_offset(int i = 0) { return _tile_offsets[i]; }
 
     /**
      * Returns the tile sizes.
      */
-    virtual std::array<std::vector<int>, Rank> tile_sizes() {
-        return _tile_sizes;
-    }
+    virtual std::array<std::vector<int>, Rank> tile_sizes() { return _tile_sizes; }
 
     /**
      * Returns the tile sizes along a given dimension.
      *
      * @param i The axis to retrieve.
-     * 
+     *
      */
-    virtual std::vector<int> tile_size(int i = 0) {
-        return _tile_sizes[i];
-    }
+    virtual std::vector<int> tile_size(int i = 0) { return _tile_sizes[i]; }
 
     /**
      * Get a reference to the tile map.
      */
-    virtual const std::map<std::array<int, Rank>, TensorType<T, Rank>> &tiles() const {
-        return _tiles;
-    }
+    virtual const std::map<std::array<int, Rank>, TensorType<T, Rank>> &tiles() const { return _tiles; }
 
     /**
      * Get a reference to the tile map.
      */
-    virtual std::map<std::array<int, Rank>, TensorType<T, Rank>> &tiles() {
-        return _tiles;
-    }
+    virtual std::map<std::array<int, Rank>, TensorType<T, Rank>> &tiles() { return _tiles; }
 
     /**
      * Get the name.
      */
-    virtual std::string name() const {
-        return _name;
-    }
+    virtual std::string name() const { return _name; }
 
     /**
      * Sets the name.
      *
      * @param val The new name.
      */
-    virtual void set_name(std::string val) {
-        _name = val;
-    }
+    virtual void set_name(std::string val) { _name = val; }
 
     /**
      * Gets the size of the tensor.
      */
-    virtual size_t size() const {
-        return _size;
-    }
+    virtual size_t size() const { return _size; }
 
     /**
      * Gets the number of possible tiles, empty and filled.
      */
-    virtual size_t grid_size() const {
-        return _grid_size;
-    }
+    virtual size_t grid_size() const { return _grid_size; }
 
     /**
      * Gets the number of filled tiles.
      */
-    virtual size_t num_filled() const {
-        return _tiles.size();
-    }
+    virtual size_t num_filled() const { return _tiles.size(); }
 
-    [[nodiscard]] virtual bool full_view_of_underlying() const {
-        return true;
-    }
+    [[nodiscard]] virtual bool full_view_of_underlying() const { return true; }
 };
 
 template <typename T, size_t Rank>
@@ -675,21 +672,129 @@ class TiledTensor final : public TiledTensorBase<Tensor, T, Rank> {
 
 template <typename T, size_t Rank>
 class TiledTensorView final : public TiledTensorBase<TensorView, T, Rank> {
-private:
+  private:
     bool _full_view_of_underlying{false};
+
+    void add_tile(std::array<int, Rank> pos) override {
+        throw std::runtime_error("Can't add a tile to a TiledTensorView!");
+    }
+
   public:
     TiledTensorView() = default;
 
     template <typename... Sizes>
-    TiledTensorView(std::string name, Sizes... sizes) : TiledTensorBase<Tensor, T, Rank>(name, sizes...) {}
+    TiledTensorView(std::string name, Sizes... sizes) : TiledTensorBase<TensorView, T, Rank>(name, sizes...) {}
 
     TiledTensorView(const TiledTensorView<T, Rank> &other) = default;
 
     ~TiledTensorView() = default;
 
-    [[nodiscard]] bool full_view_of_underlying() const override {
-        return true;
+    [[nodiscard]] bool full_view_of_underlying() const override { return _full_view_of_underlying; }
+
+    void insert_tile(std::array<int, Rank> pos, TensorView<T, Rank> &view) {
+        this->_tiles[pos] = view;
     }
 };
+
+#ifdef __HIP__
+template <typename T, size_t Rank>
+class TiledDeviceTensor final : public TiledTensorBase<DeviceTensor, T, Rank> {
+  private:
+    detail::HostDeviceMode _mode{detail::DEV_ONLY};
+
+    void add_tile(std::array<int, Rank> pos) override {
+        std::string tile_name = _name + " - (";
+        Dim<Rank> dims{};
+
+        for(int i = 0; i < Rank; i++) {
+            tile_name += std::to_string(pos[i]);
+            dims[i] = _tile_sizes[i][pos[i]];
+            if(i != Rank - 1) {
+                tile_name += ", ";
+            }
+        }
+        tile_name += ")";
+
+        std::apply(_tiles.emplace, std::tuple_cat(std::make_tuple(pos, tile_name, _mode), dims));
+    }
+
+  public:
+    TiledDeviceTensor() = default;
+
+    template <typename... Sizes>
+        requires !(std::is_same_v<Sizes, detail::HostDeviceMode> || ...)
+                 TiledDeviceTensor(std::string name, Sizes... sizes, detail::HostDeviceMode mode = detail::DEV_ONLY)
+        : _mode{mode},
+    TiledTensorBase<DeviceTensor, T, Rank>(name, sizes...) {}
+
+    TiledDeviceTensor(const TiledDeviceTensor<T, Rank> &other) = default;
+
+    ~TiledDeviceTensor() = default;
+
+    /**
+     * Returns the tile with given coordinates. If the tile is not filled, it will be created.
+     *
+     * @param index The index of the tile.
+     * @return The tile at the given index.
+     */
+    template <typename Storage>
+        requires(!std::integral<Storage>)
+    TensorType<T, Rank> &tile(Storage index) {
+        std::array<int, Rank> arr_index{index};
+
+        for (int i = 0; i < Rank; i++) {
+            if (arr_index[i] < 0) {
+                arr_index[i] += _tile_sizes[i].size();
+            }
+
+            assert(arr_index[i] < _tile_sizes[i].size() && arr_index[i] >= 0);
+        }
+
+        if (!has_tile(arr_index)) {
+            Dim<Rank> dims{};
+
+            for (int i = 0; i < Rank; i++) {
+                dims[i] = _tile_sizes[i][arr_index[i]];
+            }
+            auto new_tile = TensorType<T, Rank>(dims);
+            new_tile.zero();
+            _tiles[arr_index] = new_tile;
+        }
+
+        return _tiles[arr_index];
+    }
+};
+
+template <typename T, size_t Rank>
+class TiledDeviceTensorView final : public TiledTensorBase<DeviceTensorView, T, Rank> {
+  private:
+    bool                   _full_view_of_underlying{false};
+    detail::HostDeviceMode _mode{detail::DEV_ONLY};
+
+    void add_tile(std::array<int, Rank> pos) override {
+        throw std::runtime_error("Can't add a tile to a TiledDeviceTensorView!");
+    }
+
+  public:
+    TiledDeviceTensorView() = default;
+
+    template <typename... Sizes>
+        requires !(std::is_same_v<Sizes, detail::HostDeviceMode> || ...)
+                 TiledDeviceTensorView(std::string name, Sizes... sizes, detail::HostDeviceMode mode = detail::DEV_ONLY)
+        : _mode{mode},
+    TiledTensorBase<DeviceTensorView, T, Rank>(name, sizes...) {}
+
+    TiledDeviceTensorView(const TiledDeviceTensorView<T, Rank> &other) = default;
+
+    ~TiledDeviceTensorView() = default;
+
+    [[nodiscard]] bool full_view_of_underlying() const override { return _full_view_of_underlying; }
+
+    void insert_tile(std::array<int, Rank> pos, DeviceTensorView<T, Rank> &view) {
+        this->_tiles[pos] = view;
+    }
+};
+
+#endif
 
 } // namespace einsums
