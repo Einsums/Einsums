@@ -10,6 +10,7 @@ add_executable(test-all
     TensorAlgebraTasks.cpp
     BlockTensor.cpp
     ElementOps.cpp
+    TiledTensor.cpp
 )
 
 if(EINSUMS_COVERAGE AND NOT MSVC)

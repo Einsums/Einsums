@@ -20,6 +20,12 @@ template <typename T, size_t Rank>
 struct BlockTensor;
 
 template <typename T, size_t Rank>
+struct TiledTensor;
+
+template <typename T, size_t Rank>
+struct TiledTensorView;
+
+template <typename T, size_t Rank>
 struct DiskTensor;
 
 template <typename T, size_t ViewRank, size_t Rank>
@@ -44,7 +50,10 @@ namespace detail {
 template <typename D, size_t Rank, typename T>
 struct IsIncoreRankTensor
     : public std::bool_constant<std::is_same_v<std::decay_t<D>, Tensor<T, Rank>> || std::is_same_v<std::decay_t<D>, TensorView<T, Rank>> ||
-                                std::is_same_v<std::decay_t<D>, BlockTensor<T, Rank>>> {};
+                                std::is_same_v<std::decay_t<D>, BlockTensor<T, Rank>> ||
+                                std::is_same_v<std::decay_t<D>, TiledTensor<T, Rank>> ||
+                                std::is_same_v<std::decay_t<D>, TiledTensorView<T, Rank>>> {};
+
 template <typename D, size_t Rank, typename T>
 inline constexpr bool IsIncoreRankTensorV = IsIncoreRankTensor<D, Rank, T>::value;
 
@@ -53,6 +62,13 @@ struct IsIncoreRankBlockTensor : public std::bool_constant<std::is_same_v<std::d
 
 template <typename D, size_t Rank, typename T>
 inline constexpr bool IsIncoreRankBlockTensorV = IsIncoreRankBlockTensor<D, Rank, T>::value;
+
+template <typename D, size_t Rank, typename T>
+struct IsIncoreRankTiledTensor : public std::bool_constant<std::is_same_v<std::decay_t<D>, TiledTensor<T, Rank>> ||
+                                                           std::is_same_v<std::decay_t<D>, TiledTensorView<T, Rank>>> {};
+
+template <typename D, size_t Rank, typename T>
+inline constexpr bool IsIncoreRankTiledTensorV = IsIncoreRankTiledTensor<D, Rank, T>::value;
 
 template <typename D, size_t Rank, size_t ViewRank = Rank, typename T = double>
 struct IsOndiskTensor
@@ -95,13 +111,12 @@ inline constexpr bool IsDeviceRankTensorV = IsDeviceRankTensor<D, Rank, T>::valu
 template <typename D, size_t Rank, typename T>
 inline constexpr bool IsDeviceRankBlockTensorV = IsDeviceRankBlockTensor<D, Rank, T>::value;
 
-template<typename D, size_t Rank, typename T>
+template <typename D, size_t Rank, typename T>
 struct IsBlockRankTensor : std::bool_constant<std::is_same_v<BlockTensor<T, Rank>, D> || std::is_same_v<BlockDeviceTensor<T, Rank>, D>> {};
 #else
-template<typename D, size_t Rank, typename T>
+template <typename D, size_t Rank, typename T>
 struct IsBlockRankTensor : std::is_same<BlockTensor<T, Rank>, D> {};
 #endif
-
 
 /**
  * @property IsBlockRankTensorV
@@ -133,6 +148,9 @@ concept CoreRankTensor = detail::IsIncoreRankTensorV<Input, Rank, DataType>;
 
 template <typename Input, size_t Rank, typename DataType = double>
 concept CoreRankBlockTensor = detail::IsIncoreRankBlockTensorV<Input, Rank, DataType>;
+
+template <typename Input, size_t Rank, typename DataType = double>
+concept CoreRankTiledTensor = detail::IsIncoreRankTiledTensorV<Input, Rank, DataType>;
 
 template <typename Input, size_t Rank, size_t ViewRank = Rank, typename DataType = double>
 concept DiskRankTensor = detail::IsOndiskTensorV<Input, Rank, ViewRank, DataType>;
