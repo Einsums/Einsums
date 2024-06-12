@@ -31,9 +31,6 @@ TEST_CASE("TiledTensor creation", "[tensor]") {
     A.zero();
     B.zero();
 
-    println(A);
-    println(B);
-
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
             CHECK(fabs(A(i, j)) < 1e-11);
@@ -51,8 +48,6 @@ TEST_CASE("TiledTensor creation", "[tensor]") {
     B(2, 2) = 1.0;
 
     B += A;
-    println(A);
-    println(B);
 
     // Perform basic matrix multiplication
     // einsums::linear_algebra::gemm<false, false>(1.0, A, B, 0.0, &C);

@@ -412,7 +412,7 @@ class TiledTensorBase : public detail::TensorBase<T, Rank> {
             }
             array_ind[i] -= _tile_offsets[i][coords[i]];
         }
-        auto out = tile(coords);
+        auto &out = tile(coords);
 
         return std::apply(out, array_ind);
     }
