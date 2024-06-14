@@ -426,8 +426,7 @@ class TiledTensorBase : public detail::TensorBase<T, Rank> {
      * Sets all entries in the tensor to zero. This keeps all tiles, just calls zero on the tensors.
      */
     void zero_no_clear() {
-        EINSUMS_OMP_PARALLEL_FOR
-        for (auto tile : _tiles) {
+        for (auto &tile : _tiles) {
             tile.second.zero();
         }
     }
@@ -472,17 +471,21 @@ class TiledTensorBase : public detail::TensorBase<T, Rank> {
      * @param value The value to broadcast.
      */
     void set_all_existing(T value) {
-        EINSUMS_OMP_PARALLEL_FOR
-        for (auto tile : _tiles) {
+        for (auto &tile : _tiles) {
             tile.second.set_all(value);
         }
     }
 
     TiledTensorBase<TensorType, T, Rank> &operator=(const TiledTensorBase<TensorType, T, Rank> &copy) {
         zero();
+        _tile_sizes   = copy._tile_sizes;
+        _tile_offsets = copy._tile_offsets;
+        _dims         = copy._dims;
+        _name         = copy._name;
+        _size         = copy._size;
+        _grid_size    = copy._grid_size;
 
-        EINSUMS_OMP_PARALLEL_FOR
-        for (auto tile : copy._tiles) {
+        for (const auto &tile : copy._tiles) {
             add_tile(tile.first);
             _tiles[tile.first] = tile.second;
         }
@@ -556,16 +559,14 @@ class TiledTensorBase : public detail::TensorBase<T, Rank> {
             zero();
             return *this;
         }
-        EINSUMS_OMP_PARALLEL_FOR
-        for (auto tile : _tiles) {
+        for (auto &tile : _tiles) {
             tile.second *= value;
         }
         return *this;
     }
 
     TiledTensorBase<TensorType, T, Rank> &operator/=(T value) {
-        EINSUMS_OMP_PARALLEL_FOR
-        for (auto tile : _tiles) {
+        for (auto &tile : _tiles) {
             tile.second /= value;
         }
         return *this;
@@ -576,7 +577,6 @@ class TiledTensorBase : public detail::TensorBase<T, Rank> {
             throw std::runtime_error("Tiled tensors do not have the same layouts.");
         }
 
-        // EINSUMS_OMP_PARALLEL_FOR
         for (const auto &tile : other._tiles) {
             if (has_tile(tile.first)) {
                 _tiles[tile.first] += tile.second;
@@ -593,8 +593,7 @@ class TiledTensorBase : public detail::TensorBase<T, Rank> {
             throw std::runtime_error("Tiled tensors do not have the same layouts.");
         }
 
-        EINSUMS_OMP_PARALLEL_FOR
-        for (auto &tile : other._tiles) {
+        for (const auto &tile : other._tiles) {
             if (has_tile(tile.first)) {
                 _tiles[tile.first] -= tile.second;
             } else {
@@ -611,8 +610,7 @@ class TiledTensorBase : public detail::TensorBase<T, Rank> {
             throw std::runtime_error("Tiled tensors do not have the same layouts.");
         }
 
-        EINSUMS_OMP_PARALLEL_FOR
-        for (auto tile : _tiles) {
+        for (const auto &tile : _tiles) {
             if (other.has_tile(tile.first)) {
                 tile.second *= other._tiles[tile.first];
             } else {
@@ -628,8 +626,7 @@ class TiledTensorBase : public detail::TensorBase<T, Rank> {
             throw std::runtime_error("Tiled tensors do not have the same layouts.");
         }
 
-        EINSUMS_OMP_PARALLEL_FOR
-        for (auto tile : _tiles) {
+        for (const auto &tile : _tiles) {
             if (other.has_tile(tile.first)) {
                 tile.second /= other._tiles[tile.first];
             } else {
@@ -699,6 +696,11 @@ class TiledTensorBase : public detail::TensorBase<T, Rank> {
      * Gets the number of possible tiles, empty and filled.
      */
     size_t grid_size() const { return _grid_size; }
+
+    /**
+     * Gets the number of possible tiles along an axis, empty and filled.
+     */
+    size_t grid_size(int i) const { return _tile_sizes[i].size(); }
 
     /**
      * Gets the number of filled tiles.

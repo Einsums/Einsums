@@ -57,17 +57,17 @@ namespace einsums::linear_algebra {
 template <template <typename, size_t> typename AType, typename ADataType, size_t ARank>
     requires CoreRankTensor<AType<ADataType, ARank>, 1, ADataType>
 void sum_square(const AType<ADataType, ARank> &a, RemoveComplexT<ADataType> *scale, RemoveComplexT<ADataType> *sumsq) {
-    if constexpr (einsums::detail::IsIncoreRankBlockTensorV<AType<ADataType, ARank>, ARank, ADataType>) {
+    if constexpr (einsums::detail::IsIncoreRankTiledTensorV<AType<ADataType, ARank>, ARank, ADataType>) {
         *sumsq = 0;
 
         EINSUMS_OMP_PARALLEL_FOR
-        for (int i = 0; i < a.num_blocks(); i++) {
-            if (a.block_dim(i) == 0) {
+        for (int i = 0; i < a.grid_size(0); i++) {
+            if (!a.has_block(i)) {
                 continue;
             }
             RemoveComplexT<ADataType> out;
 
-            sum_square(a.block(i), scale, &out);
+            sum_square(a.tile(i), scale, &out);
 
             *sumsq += out;
         }
