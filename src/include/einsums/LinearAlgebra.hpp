@@ -136,6 +136,87 @@ void gemm(const U alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const
         }
 
         return;
+    } else if constexpr (einsums::detail::IsIncoreRankTiledTensorV<AType<T, Rank>, Rank, T> &&
+                         einsums::detail::IsIncoreRankTiledTensorV<BType<T, Rank>, Rank, T> &&
+                         einsums::detail::IsIncoreRankTiledTensorV<CType<T, Rank>, Rank, T>) {
+        // Check for compatibility.
+        if (C->grid_size(0) != A.grid_size(TransA ? 1 : 0) || C->grid_size(1) != B.grid_size(TransB ? 0 : 1)) {
+            throw std::runtime_error("gemm: Output tensor needs to have a compatible tile grid with the inputs.");
+        }
+        if (A.grid_size(TransA ? 0 : 1) != B.grid_size(TransB ? 1 : 0)) {
+            throw std::runtime_error("gemm: Input tensors need to have compatible tile grids.");
+        }
+        for (int i = 0; i < C->grid_size(0); i++) {
+            if (C->tile_size(0)[i] != A.tile_size(TransA ? 1 : 0)[i]) {
+                throw std::runtime_error("gemm: Tile sizes need to match between all three tensors.");
+            }
+        }
+        for (int i = 0; i < C->grid_size(1); i++) {
+            if (C->tile_size(1)[i] != B.tile_size(TransB ? 0 : 1)[i]) {
+                throw std::runtime_error("gemm: Tile sizes need to match between all three tensors.");
+            }
+        }
+        for (int i = 0; i < A.grid_size(TransA ? 0 : 1); i++) {
+            if (A.tile_size(TransA ? 0 : 1)[i] != B.tile_size(TransB ? 1 : 0)[i]) {
+                throw std::runtime_error("gemm: Tile sizes need to match between all three tensors.");
+            }
+        }
+
+// For every block in C, do matrix multiplication.
+#pragma omp parallel for collapse(2)
+        for (int i = 0; i < C->grid_size(0); i++) {
+            for (int j = 0; j < C->grid_size(1); j++) {
+                // Check to see if C will be modified.
+                bool modified = false;
+                for (int k = 0; k < A.grid_size(TransA ? 0 : 1); k++) {
+                    if constexpr (TransA && TransB) {
+                        modified |= A.has_tile(k, i) && B.has_tile(j, k);
+                    } else if constexpr (!TransA && TransB) {
+                        modified |= A.has_tile(i, k) && B.has_tile(j, k);
+                    } else if constexpr (TransA && !TransB) {
+                        modified |= A.has_tile(k, i) && B.has_tile(k, j);
+                    } else {
+                        modified |= A.has_tile(i, k) && B.has_tile(k, j);
+                    }
+                }
+
+                // If C is modified, then loop through and matrix multiply. Otherwise, scale or delete depending on beta.
+                if (modified) {
+                    auto &C_tile = C->tile(i, j);
+                    if (beta == U{0.0}) {
+                        C_tile.zero();
+                    } else {
+                        C_tile *= beta;
+                    }
+
+                    for (int k = 0; k < A.grid_size(TransA ? 0 : 1); k++) {
+                        if constexpr (TransA && TransB) {
+                            if (A.has_tile(k, i) && B.has_tile(j, k)) {
+                                gemm<TransA, TransB>(alpha, A.tile(k, i), B.tile(j, k), U{1.0}, &C_tile);
+                            }
+                        } else if constexpr (TransA && !TransB) {
+                            if (A.has_tile(k, i) && B.has_tile(k, j)) {
+                                gemm<TransA, TransB>(alpha, A.tile(k, i), B.tile(k, j), U{1.0}, &C_tile);
+                            }
+                        } else if constexpr (!TransA && TransB) {
+                            if (A.has_tile(i, k) && B.has_tile(j, k)) {
+                                gemm<TransA, TransB>(alpha, A.tile(i, k), B.tile(j, k), U{1.0}, &C_tile);
+                            }
+                        } else {
+                            if (A.has_tile(i, k) && B.has_tile(k, j)) {
+                                gemm<TransA, TransB>(alpha, A.tile(i, k), B.tile(k, j), U{1.0}, &C_tile);
+                            }
+                        }
+                    }
+                } else if(C->has_tile(i, j)) {
+                    if (beta == U{0.0}) {
+                        C->tiles().erase(std::array<int, 2>{i, j});
+                    } else {
+                        C->tile(i, j) *= beta;
+                    }
+                }
+            }
+        }
     } else if constexpr (einsums::detail::IsIncoreRankBlockTensorV<AType<T, Rank>, Rank, T> &&
                          einsums::detail::IsIncoreRankBlockTensorV<BType<T, Rank>, Rank, T>) {
         if (A.num_blocks() != B.num_blocks()) {
@@ -638,8 +719,7 @@ auto dot(const AType<T, 1> &A, const BType<T, 1> &B) -> T {
     return result;
 }
 
-template <template <typename, size_t> typename AType, template <typename, size_t> typename BType,
-          typename T, size_t Rank>
+template <template <typename, size_t> typename AType, template <typename, size_t> typename BType, typename T, size_t Rank>
     requires requires {
         requires CoreRankTensor<AType<T, Rank>, Rank, T>;
         requires CoreRankTensor<BType<T, Rank>, Rank, T>;
@@ -683,7 +763,7 @@ auto dot(const AType<T, Rank> &A, const BType<T, Rank> &B) -> T {
 }
 
 template <template <typename, size_t> typename AType, template <typename, size_t> typename BType,
-	  template <typename, size_t> typename CType, typename T, size_t Rank>
+          template <typename, size_t> typename CType, typename T, size_t Rank>
     requires requires {
         requires CoreRankTensor<AType<T, Rank>, Rank, T>;
         requires CoreRankTensor<BType<T, Rank>, Rank, T>;

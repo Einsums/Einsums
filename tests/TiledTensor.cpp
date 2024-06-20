@@ -14,6 +14,7 @@ TEST_CASE("TiledTensor creation", "[tensor]") {
 
     TiledTensor<double, 2> A("A", std::array{1, 2});
     TiledTensor<double, 2> B("B", std::array{1, 2});
+    TiledTensor<double, 2> C("C", std::array{1, 2});
 
     REQUIRE(A.dim(0) == 3);
     REQUIRE(A.dim(1) == 3);
@@ -47,19 +48,19 @@ TEST_CASE("TiledTensor creation", "[tensor]") {
     B(1, 1) = 1.0;
     B(2, 2) = 1.0;
 
-    B += A;
-
     // Perform basic matrix multiplication
-    // einsums::linear_algebra::gemm<false, false>(1.0, A, B, 0.0, &C);
+    einsums::linear_algebra::gemm<false, false>(1.0, A, B, 0.0, &C);
 
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
             if (i == j) {
                 CHECK(A(i, j) == 1.0);
-                CHECK(B(i, j) == 2.0);
+                CHECK(B(i, j) == 1.0);
+                CHECK(C(i, j) == 1.0);
             } else {
                 CHECK(A(i, j) == 0.0);
                 CHECK(B(i, j) == 0.0);
+                CHECK(C(i, j) == 0.0);
             }
         }
     }

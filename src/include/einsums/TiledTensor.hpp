@@ -666,12 +666,12 @@ class TiledTensorBase : public detail::TensorBase<T, Rank> {
     /**
      * Get a reference to the tile map.
      */
-    const std::map<std::array<int, Rank>, TensorType<T, Rank>> &tiles() const { return _tiles; }
+    const std::map<std::array<int, Rank>, TensorType<T, Rank>, detail::ArrayCompare<Rank>> &tiles() const { return _tiles; }
 
     /**
      * Get a reference to the tile map.
      */
-    std::map<std::array<int, Rank>, TensorType<T, Rank>> &tiles() { return _tiles; }
+    std::map<std::array<int, Rank>, TensorType<T, Rank>, detail::ArrayCompare<Rank>> &tiles() { return _tiles; }
 
     /**
      * Get the name.
