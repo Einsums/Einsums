@@ -162,8 +162,8 @@ void gemm(const U alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const
             }
         }
 
-        // For every block in C, do matrix multiplication.
-        // #pragma omp parallel for collapse(2)
+// For every block in C, do matrix multiplication.
+#pragma omp parallel for collapse(2)
         for (int i = 0; i < C->grid_size(0); i++) {
             for (int j = 0; j < C->grid_size(1); j++) {
                 // Check to see if C will be modified.
