@@ -162,8 +162,8 @@ void gemm(const U alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const
             }
         }
 
-// For every block in C, do matrix multiplication.
-#pragma omp parallel for collapse(2)
+        // For every block in C, do matrix multiplication.
+        // #pragma omp parallel for collapse(2)
         for (int i = 0; i < C->grid_size(0); i++) {
             for (int j = 0; j < C->grid_size(1); j++) {
                 // Check to see if C will be modified.
@@ -182,8 +182,8 @@ void gemm(const U alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const
 
                 // If C is modified, then loop through and matrix multiply. Otherwise, scale or delete depending on beta.
                 if (modified) {
-                    bool created = !C->has_tile(i, j);
-                    auto &C_tile = C->tile(i, j);
+                    bool  created = !C->has_tile(i, j);
+                    auto &C_tile  = C->tile(i, j);
                     if (beta == U{0.0} || created) {
                         C_tile.zero();
                     } else {
@@ -209,7 +209,7 @@ void gemm(const U alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const
                             }
                         }
                     }
-                } else if(C->has_tile(i, j)) {
+                } else if (C->has_tile(i, j)) {
                     if (beta == U{0.0}) {
                         C->tiles().erase(std::array<int, 2>{i, j});
                     } else {
