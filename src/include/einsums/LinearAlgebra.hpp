@@ -161,6 +161,7 @@ void gemm(const U alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const
                 throw std::runtime_error("gemm: Tile sizes need to match between all three tensors.");
             }
         }
+        std::mutex *mod_lock = new std::mutex();
 
 // For every block in C, do matrix multiplication.
 #pragma omp parallel for collapse(2)
@@ -183,7 +184,9 @@ void gemm(const U alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const
                 // If C is modified, then loop through and matrix multiply. Otherwise, scale or delete depending on beta.
                 if (modified) {
                     bool  created = !C->has_tile(i, j);
+                    mod_lock->lock();
                     auto &C_tile  = C->tile(i, j);
+                    mod_lock->unlock();
                     if (beta == U{0.0} || created) {
                         C_tile.zero();
                     } else {
@@ -211,13 +214,16 @@ void gemm(const U alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const
                     }
                 } else if (C->has_tile(i, j)) {
                     if (beta == U{0.0}) {
+                        mod_lock->lock();
                         C->tiles().erase(std::array<int, 2>{i, j});
+                        mod_lock->unlock();
                     } else {
                         C->tile(i, j) *= beta;
                     }
                 }
             }
         }
+        delete mod_lock;
     } else if constexpr (einsums::detail::IsIncoreRankBlockTensorV<AType<T, Rank>, Rank, T> &&
                          einsums::detail::IsIncoreRankBlockTensorV<BType<T, Rank>, Rank, T>) {
         if (A.num_blocks() != B.num_blocks()) {

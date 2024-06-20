@@ -11,8 +11,9 @@
 #endif
 
 #include <array>
+#include <bit>
 #include <cmath>
-#include <map>
+#include <unordered_map>
 #include <vector>
 
 namespace einsums {
@@ -35,6 +36,25 @@ struct ArrayCompare {
     typedef std::array<int, Rank> second_argument_type;
     typedef bool                  result_type;
 };
+
+template <size_t n>
+class array_hash {
+  public:
+    array_hash() {}
+    size_t operator()(const std::array<int, n> &arr) const {
+        size_t hash = 0;
+
+// Use a barrel shift to hash.
+#pragma unroll
+        for (ssize_t i = 0; i < n; i++) {
+            hash = std::rotl(hash, 11);
+            hash ^= arr[i];
+        }
+
+        return hash;
+    }
+};
+
 } // namespace detail
 
 /**
@@ -48,11 +68,13 @@ struct ArrayCompare {
  */
 template <template <typename, size_t> typename TensorType, typename T, size_t Rank>
 class TiledTensorBase : public detail::TensorBase<T, Rank> {
+  public:
+    using map_type = typename std::unordered_map<std::array<int, Rank>, TensorType<T, Rank>, detail::array_hash<Rank>>;
 
   protected:
     std::array<std::vector<int>, Rank> _tile_offsets, _tile_sizes;
 
-    std::map<std::array<int, Rank>, TensorType<T, Rank>, detail::ArrayCompare<Rank>> _tiles;
+    map_type _tiles;
 
     Dim<Rank> _dims;
 
@@ -666,12 +688,12 @@ class TiledTensorBase : public detail::TensorBase<T, Rank> {
     /**
      * Get a reference to the tile map.
      */
-    const std::map<std::array<int, Rank>, TensorType<T, Rank>, detail::ArrayCompare<Rank>> &tiles() const { return _tiles; }
+    const map_type &tiles() const { return _tiles; }
 
     /**
      * Get a reference to the tile map.
      */
-    std::map<std::array<int, Rank>, TensorType<T, Rank>, detail::ArrayCompare<Rank>> &tiles() { return _tiles; }
+    map_type &tiles() { return _tiles; }
 
     /**
      * Get the name.
