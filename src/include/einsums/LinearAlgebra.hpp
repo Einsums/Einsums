@@ -182,8 +182,9 @@ void gemm(const U alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const
 
                 // If C is modified, then loop through and matrix multiply. Otherwise, scale or delete depending on beta.
                 if (modified) {
+                    bool created = !C->has_tile(i, j);
                     auto &C_tile = C->tile(i, j);
-                    if (beta == U{0.0}) {
+                    if (beta == U{0.0} || created) {
                         C_tile.zero();
                     } else {
                         C_tile *= beta;
