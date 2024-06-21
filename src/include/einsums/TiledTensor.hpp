@@ -3,6 +3,7 @@
 #include "einsums/_Common.hpp"
 
 #include "einsums/Tensor.hpp"
+#include "einsums/utility/HashFuncs.hpp"
 
 #include <string>
 
@@ -11,56 +12,17 @@
 #endif
 
 #include <array>
-#include <bit>
 #include <cmath>
 #include <unordered_map>
 #include <vector>
+#include <mutex>
 
 namespace einsums {
-namespace detail {
-template <size_t Rank>
-struct ArrayCompare {
-  public:
-    bool operator()(const std::array<int, Rank> &x, const std::array<int, Rank> &y) const {
-        for (int i = 0; i < Rank; i++) {
-            if (x[i] < y[i]) {
-                return true;
-            }
-            if (x[i] > y[i]) {
-                return false;
-            }
-        }
-        return false;
-    }
-    typedef std::array<int, Rank> first_argument_type;
-    typedef std::array<int, Rank> second_argument_type;
-    typedef bool                  result_type;
-};
-
-template <size_t n>
-class array_hash {
-  public:
-    array_hash() {}
-    size_t operator()(const std::array<int, n> &arr) const {
-        size_t hash = 0;
-
-// Use a barrel shift to hash.
-#pragma unroll
-        for (ssize_t i = 0; i < n; i++) {
-            hash = std::rotl(hash, 11);
-            hash ^= arr[i];
-        }
-
-        return hash;
-    }
-};
-
-} // namespace detail
 
 /**
  * @struct TiledTensorBase
  *
- * Represents a tiled tensor.
+ * Represents a tiled tensor. Is a lockable type.
  *
  * @tparam TensorType The underlying storage type.
  * @tparam T The type of data being stored.
@@ -69,12 +31,14 @@ class array_hash {
 template <template <typename, size_t> typename TensorType, typename T, size_t Rank>
 class TiledTensorBase : public detail::TensorBase<T, Rank> {
   public:
-    using map_type = typename std::unordered_map<std::array<int, Rank>, TensorType<T, Rank>, detail::array_hash<Rank>>;
+    using map_type = typename std::unordered_map<std::array<int, Rank>, TensorType<T, Rank>, einsums::hashes::container_hash<std::array<int, Rank>>>;
 
   protected:
     std::array<std::vector<int>, Rank> _tile_offsets, _tile_sizes;
 
     map_type _tiles;
+
+    std::mutex _lock{};
 
     Dim<Rank> _dims;
 
@@ -730,6 +694,18 @@ class TiledTensorBase : public detail::TensorBase<T, Rank> {
     size_t num_filled() const { return _tiles.size(); }
 
     bool full_view_of_underlying() const { return true; }
+
+    void lock() {
+        _lock.lock();
+    }
+
+    bool try_lock() {
+        return _lock.try_lock();
+    }
+
+    void unlock() {
+        _lock.unlock();
+    }
 };
 
 template <typename T, size_t Rank>

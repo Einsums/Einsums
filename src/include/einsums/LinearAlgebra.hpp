@@ -183,10 +183,10 @@ void gemm(const U alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const
 
                 // If C is modified, then loop through and matrix multiply. Otherwise, scale or delete depending on beta.
                 if (modified) {
+                    C->lock();
                     bool  created = !C->has_tile(i, j);
-                    mod_lock->lock();
                     auto &C_tile  = C->tile(i, j);
-                    mod_lock->unlock();
+                    C->unlock();
                     if (beta == U{0.0} || created) {
                         C_tile.zero();
                     } else {
@@ -212,18 +212,22 @@ void gemm(const U alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const
                             }
                         }
                     }
-                } else if (C->has_tile(i, j)) {
-                    if (beta == U{0.0}) {
-                        mod_lock->lock();
-                        C->tiles().erase(std::array<int, 2>{i, j});
-                        mod_lock->unlock();
+                } else {
+                    C->lock();
+                    if (C->has_tile(i, j)) {
+                        if (beta == U{0.0}) {
+                            C->tiles().erase(std::array<int, 2>{i, j});
+                            C->unlock();
+                        } else {
+                            C->unlock();
+                            C->tile(i, j) *= beta;
+                        }
                     } else {
-                        C->tile(i, j) *= beta;
+                        C->unlock();
                     }
                 }
             }
         }
-        delete mod_lock;
     } else if constexpr (einsums::detail::IsIncoreRankBlockTensorV<AType<T, Rank>, Rank, T> &&
                          einsums::detail::IsIncoreRankBlockTensorV<BType<T, Rank>, Rank, T>) {
         if (A.num_blocks() != B.num_blocks()) {
@@ -971,7 +975,8 @@ auto getrf(TensorType<T, TensorRank> *A, std::vector<blas_int> *pivot) -> int {
 /**
  * @brief Computes the inverse of a matrix using the LU factorization computed by getrf.
  *
- * The routine computes the inverse \f$inv(A)\f$ of a general matrix \f$A\f$. Before calling this routine, call getrf to factorize \f$A\f$.
+ * The routine computes the inverse \f$inv(A)\f$ of a general matrix \f$A\f$. Before calling this routine, call getrf to factorize
+ * \f$A\f$.
  *
  * @tparam TensorType The type of the tensor
  * @tparam T The underlying data type
