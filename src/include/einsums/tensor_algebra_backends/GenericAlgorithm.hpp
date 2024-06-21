@@ -1,32 +1,15 @@
 #pragma once
 
-#include "einsums/_Common.hpp"
 #include "einsums/_Compiler.hpp"
-#include "einsums/_Index.hpp"
 #include "einsums/_TensorAlgebraUtilities.hpp"
 
-#include "einsums/LinearAlgebra.hpp"
-#include "einsums/OpenMP.h"
-#include "einsums/Print.hpp"
-#include "einsums/STL.hpp"
 #include "einsums/Section.hpp"
-#include "einsums/Tensor.hpp"
-#include "einsums/Timer.hpp"
-#include "einsums/utility/SmartPointerTraits.hpp"
-#include "einsums/utility/TensorTraits.hpp"
 
-#include <algorithm>
 #include <cmath>
-#include <complex>
 #include <cstddef>
-#include <functional>
-#include <numeric>
-#include <sstream>
-#include <stdexcept>
-#include <string>
+#include <range/v3/view/cartesian_product.hpp>
 #include <tuple>
 #include <type_traits>
-#include <utility>
 
 namespace einsums::tensor_algebra::detail {
 
@@ -147,4 +130,4 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
         }
     }
 }
-}
+} // namespace einsums::tensor_algebra::detail

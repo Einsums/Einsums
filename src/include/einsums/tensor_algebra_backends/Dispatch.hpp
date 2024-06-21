@@ -2,27 +2,20 @@
 
 #include "einsums/_Common.hpp"
 #include "einsums/_Compiler.hpp"
-#include "einsums/_Index.hpp"
 #include "einsums/_TensorAlgebraUtilities.hpp"
 
 #include "einsums/LinearAlgebra.hpp"
-#include "einsums/OpenMP.h"
 #include "einsums/Print.hpp"
 #include "einsums/STL.hpp"
 #include "einsums/Section.hpp"
 #include "einsums/Tensor.hpp"
 #include "einsums/Timer.hpp"
 #include "einsums/tensor_algebra_backends/GenericAlgorithm.hpp"
-#include "einsums/utility/SmartPointerTraits.hpp"
 #include "einsums/utility/TensorTraits.hpp"
 
 #include <algorithm>
 #include <cmath>
-#include <complex>
 #include <cstddef>
-#include <functional>
-#include <numeric>
-#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <tuple>

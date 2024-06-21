@@ -1,34 +1,21 @@
 #pragma once
 
-#include "einsums/_Common.hpp"
 #include "einsums/_Compiler.hpp"
-#include "einsums/_Index.hpp"
-#include "einsums/_TensorAlgebraUtilities.hpp"
 
-#include "einsums/LinearAlgebra.hpp"
-#include "einsums/OpenMP.h"
 #include "einsums/Print.hpp"
-#include "einsums/STL.hpp"
 #include "einsums/Section.hpp"
 #include "einsums/Tensor.hpp"
-#include "einsums/Timer.hpp"
-#include "einsums/utility/SmartPointerTraits.hpp"
 #include "einsums/utility/TensorTraits.hpp"
 
-#include <algorithm>
 #include <cmath>
-#include <complex>
 #include <cstddef>
-#include <functional>
-#include <numeric>
-#include <sstream>
 #include <stdexcept>
-#include <string>
 #include <tuple>
-#include <type_traits>
-#include <utility>
 
 namespace einsums::tensor_algebra {
+
+namespace detail {}
+
 template <template <typename, size_t> typename CType, size_t CRank, typename UnaryOperator, typename T>
     requires std::derived_from<CType<T, CRank>, ::einsums::detail::TensorBase<T, CRank>>
 auto element_transform(CType<T, CRank> *C, UnaryOperator unary_opt) -> void {

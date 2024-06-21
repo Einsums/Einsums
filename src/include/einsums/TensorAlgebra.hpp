@@ -6,32 +6,16 @@
 #pragma once
 
 #include "einsums/_Common.hpp"
-#include "einsums/_Compiler.hpp"
-#include "einsums/_Index.hpp"
-#include "einsums/_TensorAlgebraUtilities.hpp"
 
-#include "einsums/LinearAlgebra.hpp"
-#include "einsums/OpenMP.h"
-#include "einsums/Print.hpp"
 #include "einsums/STL.hpp"
-#include "einsums/Section.hpp"
 #include "einsums/Tensor.hpp"
-#include "einsums/Timer.hpp"
 #include "einsums/utility/SmartPointerTraits.hpp"
 #include "einsums/utility/TensorTraits.hpp"
 
-#include <algorithm>
 #include <cmath>
-#include <complex>
 #include <cstddef>
-#include <functional>
-#include <numeric>
-#include <sstream>
-#include <stdexcept>
-#include <string>
 #include <tuple>
 #include <type_traits>
-#include <utility>
 
 #if defined(EINSUMS_USE_CATCH2)
 #    include <catch2/catch_all.hpp>
@@ -233,5 +217,5 @@ END_EINSUMS_NAMESPACE_HPP(einsums::tensor_algebra)
 
 #include "einsums/tensor_algebra_backends/Dispatch.hpp"
 #include "einsums/tensor_algebra_backends/ElementTransform.hpp"
-#include "einsums/tensor_algebra_backends/Unfold.hpp"
 #include "einsums/tensor_algebra_backends/KhatriRao.hpp"
+#include "einsums/tensor_algebra_backends/Unfold.hpp"
