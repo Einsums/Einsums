@@ -1415,4 +1415,118 @@ auto q(const Tensor<T, 2> &qr, const Tensor<T, 1> &tau) -> Tensor<T, 2> {
     return Q;
 }
 
+template <template <typename, size_t> typename AType, template <typename, size_t> typename BType,
+          template <typename, size_t> typename CType, typename T, size_t Rank>
+    requires requires {
+        requires CoreRankTensor<AType<T, Rank>, Rank, T>;
+        requires CoreRankTensor<BType<T, Rank>, Rank, T>;
+        requires CoreRankTensor<CType<T, Rank>, Rank, T>;
+    }
+void direct_product(T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, T beta, CType<T, Rank> *C) {
+    if constexpr (einsums::detail::IsIncoreRankBlockTensorV<AType<T, Rank>, Rank, T> &&
+                  einsums::detail::IsIncoreRankBlockTensorV<BType<T, Rank>, Rank, T> &&
+                  einsums::detail::IsIncoreRankBlockTensorV<CType<T, Rank>, Rank, T>) {
+        EINSUMS_OMP_PARALLEL_FOR
+        for (int i = 0; i < A.num_blocks(); i++) {
+            if (A.block_dim(i) == 0) {
+                continue;
+            }
+            direct_product(alpha, A.block(i), B.block(i), beta, &(C->block(i)));
+        }
+    } else if constexpr (einsums::detail::IsIncoreRankTiledTensorV<AType<T, Rank>, Rank, T> &&
+                         einsums::detail::IsIncoreRankTiledTensorV<BType<T, Rank>, Rank, T> &&
+                         einsums::detail::IsIncoreRankTiledTensorV<CType<T, Rank>, Rank, T>) {
+        EINSUMS_OMP_PARALLEL_FOR
+        for (size_t sentinel = 0; sentinel < A.grid_size(); sentinel++) {
+            std::array<int, Rank> index = std::array<int, Rank>{};
+            size_t                hold  = sentinel;
+
+            // Calculate the index.
+            for (int i = 0; i < Rank; i++) {
+                index[i] = hold % A.grid_size(i);
+                hold /= A.grid_size(i);
+            }
+            if (A.has_tile(index) && B.has_tile(index)) {
+                direct_product(alpha, A.tile(index), B.tile(index), beta, &(C->tile(index)));
+            }
+        }
+    } else if constexpr ((einsums::detail::IsIncoreRankTiledTensorV<AType<T, Rank>, Rank, T> ||
+                          einsums::detail::IsIncoreRankTiledTensorV<BType<T, Rank>, Rank, T> ||
+                          einsums::detail::IsIncoreRankTiledTensorV<CType<T, Rank>, Rank, T>) &&
+                         (einsums::detail::IsIncoreRankBlockTensorV<AType<T, Rank>, Rank, T> ||
+                          einsums::detail::IsIncoreRankBlockTensorV<BType<T, Rank>, Rank, T> ||
+                          einsums::detail::IsIncoreRankBlockTensorV<CType<T, Rank>, Rank, T>) &&
+                         !(einsums::detail::IsIncoreRankTiledTensorV<AType<T, Rank>, Rank, T> &&
+                           einsums::detail::IsIncoreRankTiledTensorV<BType<T, Rank>, Rank, T> &&
+                           einsums::detail::IsIncoreRankBlockTensorV<CType<T, Rank>, Rank, T>)) {
+        size_t num_blocks;
+        if constexpr (einsums::detail::IsIncoreRankBlockTensorV<AType<T, Rank>, Rank, T>) {
+            num_blocks = A.num_blocks();
+        } else {
+            num_blocks = B.num_blocks();
+        }
+
+        EINSUMS_OMP_PARALLEL_FOR
+        for (int i = 0; i < num_blocks; i++) {
+            std::array<int, Rank> index = std::array<int, Rank>{i};
+
+            if constexpr (einsums::detail::IsIncoreRankTiledTensorV<AType<T, Rank>, Rank, T> &&
+                          einsums::detail::IsIncoreRankBlockTensorV<BType<T, Rank>, Rank, T> &&
+                          einsums::detail::IsIncoreRankTiledTensorV<CType<T, Rank>, Rank, T>) {
+                if (!A.has_tile(index) || B.block_dim(i) == 0) {
+                    continue;
+                }
+                direct_product(alpha, A.tile(index), B.block(i), beta, &(C->tile(index)));
+            } else if constexpr (einsums::detail::IsIncoreRankTiledTensorV<AType<T, Rank>, Rank, T> &&
+                                 einsums::detail::IsIncoreRankBlockTensorV<BType<T, Rank>, Rank, T> &&
+                                 einsums::detail::IsIncoreRankBlockTensorV<CType<T, Rank>, Rank, T>) {
+                if (!A.has_tile(index) || B.block_dim(i) == 0) {
+                    continue;
+                }
+                direct_product(alpha, A.tile(index), B.block(i), beta, &(C->block(i)));
+            } else if constexpr (einsums::detail::IsIncoreRankBlockTensorV<AType<T, Rank>, Rank, T> &&
+                                 einsums::detail::IsIncoreRankBlockTensorV<BType<T, Rank>, Rank, T> &&
+                                 einsums::detail::IsIncoreRankTiledTensorV<CType<T, Rank>, Rank, T>) {
+                if (A.block_dim(i) == 0) {
+                    continue;
+                }
+                direct_product(alpha, A.block(i), B.block(i), beta, &(C->tile(index)));
+            } else if constexpr (einsums::detail::IsIncoreRankBlockTensorV<AType<T, Rank>, Rank, T> &&
+                                 einsums::detail::IsIncoreRankTiledTensorV<BType<T, Rank>, Rank, T> &&
+                                 einsums::detail::IsIncoreRankTiledTensorV<CType<T, Rank>, Rank, T>) {
+                if (!B.has_tile(index) || A.block_dim(i) == 0) {
+                    continue;
+                }
+                direct_product(alpha, A.block(i), B.tile(index), beta, &(C->tile(index)));
+            } else {
+                if (!B.has_tile(index) || A.block_dim(i) == 0) {
+                    continue;
+                }
+                direct_product(alpha, A.block(i), B.tile(index), beta, &(C->block(i)));
+            }
+        }
+    } else {
+        auto target_dims = get_dim_ranges<Rank>(*C);
+        auto view        = std::apply(ranges::views::cartesian_product, target_dims);
+
+        // Ensure the various tensors passed in are the same dimensionality
+        if (((C->dims() != A.dims()) || C->dims() != B.dims())) {
+            println_abort("direct_product: at least one tensor does not have same dimensionality as destination");
+        }
+
+        // Horrible hack. For some reason, in the for loop below, the result could be
+        // NAN if the target_value is initially a trash value.
+        if (beta == T(0)) {
+            C->zero();
+        }
+
+        EINSUMS_OMP_PARALLEL_FOR
+        for (auto it = view.begin(); it != view.end(); it++) {
+            T &target_value = std::apply(*C, *it);
+            T  AB_product   = std::apply(A, *it) * std::apply(B, *it);
+            target_value    = beta * target_value + alpha * AB_product;
+        }
+    }
+}
+
 END_EINSUMS_NAMESPACE_HPP(einsums::linear_algebra)

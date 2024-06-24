@@ -12,9 +12,9 @@
 TEST_CASE("TiledTensor creation", "[tensor]") {
     using namespace einsums;
 
-    TiledTensor<double, 2> A("A", std::array{1, 2});
-    TiledTensor<double, 2> B("B", std::array{1, 2});
-    TiledTensor<double, 2> C("C", std::array{1, 2});
+    TiledTensor<double, 2> A("A", std::array{1, 0, 2});
+    TiledTensor<double, 2> B("B", std::array{1, 0, 2});
+    TiledTensor<double, 2> C("C", std::array{1, 0, 2});
 
     REQUIRE(A.dim(0) == 3);
     REQUIRE(A.dim(1) == 3);
@@ -22,12 +22,16 @@ TEST_CASE("TiledTensor creation", "[tensor]") {
     REQUIRE(B.dim(1) == 3);
     REQUIRE(A.tile_offset(0)[0] == 0);
     REQUIRE(A.tile_offset(0)[1] == 1);
+    REQUIRE(A.tile_offset(0)[2] == 1);
     REQUIRE(B.tile_offset(0)[0] == 0);
     REQUIRE(B.tile_offset(0)[1] == 1);
+    REQUIRE(B.tile_offset(0)[2] == 1);
     REQUIRE(A.tile_offset(1)[0] == 0);
     REQUIRE(A.tile_offset(1)[1] == 1);
+    REQUIRE(A.tile_offset(1)[2] == 1);
     REQUIRE(B.tile_offset(1)[0] == 0);
     REQUIRE(B.tile_offset(1)[1] == 1);
+    REQUIRE(B.tile_offset(1)[2] == 1);
 
     A.zero();
     B.zero();

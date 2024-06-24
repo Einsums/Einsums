@@ -4,6 +4,7 @@
 #include "einsums/_TensorAlgebraUtilities.hpp"
 
 #include "einsums/Section.hpp"
+#include "einsums/utility/TensorTraits.hpp"
 
 #include <cmath>
 #include <cstddef>
@@ -18,13 +19,16 @@ template <typename... CUniqueIndices, typename... AUniqueIndices, typename... BU
           typename... TargetPositionInC, typename... LinkPositionInLink, template <typename, size_t> typename CType, typename CDataType,
           size_t CRank, template <typename, size_t> typename AType, typename ADataType, size_t ARank,
           template <typename, size_t> typename BType, typename BDataType, size_t BRank>
-#ifdef __HIP__
     requires requires {
+        requires RankBasicTensor<CType<CDataType, CRank>, CRank, CDataType>;
+        requires RankBasicTensor<AType<ADataType, ARank>, ARank, ADataType>;
+        requires RankBasicTensor<BType<BDataType, BRank>, BRank, BDataType>;
+#ifdef __HIP__
         requires !DeviceRankTensor<CType<CDataType, CRank>, CRank, CDataType>;
         requires !DeviceRankTensor<AType<ADataType, ARank>, ARank, ADataType>;
         requires !DeviceRankTensor<BType<BDataType, BRank>, BRank, BDataType>;
-    }
 #endif
+    }
 void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, const std::tuple<AUniqueIndices...> & /*A_unique*/,
                               const std::tuple<BUniqueIndices...> & /*B_unique*/, const std::tuple<LinkUniqueIndices...> &link_unique,
                               const std::tuple<CIndices...> & /*C_indices*/, const std::tuple<AIndices...> & /*A_indices*/,

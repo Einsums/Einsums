@@ -256,7 +256,7 @@ auto create_ones_tensor(const std::string &name, MultiIndex... index) -> Tensor<
 template <template <typename, size_t> typename TensorType, typename DataType, size_t Rank>
     requires requires {
         requires CoreRankTensor<TensorType<DataType, Rank>, Rank, DataType>;
-        requires !BlockRankTensor<TensorType<DataType, Rank>, Rank, DataType>;
+        requires !RankBlockTensor<TensorType<DataType, Rank>, Rank, DataType>;
     }
 auto create_tensor_like(const TensorType<DataType, Rank> &tensor) -> Tensor<DataType, Rank> {
     return Tensor<DataType, Rank>{tensor.dims()};
@@ -302,7 +302,7 @@ auto create_tensor_like(const TensorType<DataType, Rank> &tensor,
 template <template <typename, size_t> typename TensorType, typename DataType, size_t Rank>
     requires requires {
         requires CoreRankTensor<TensorType<DataType, Rank>, Rank, DataType>;
-        requires BlockRankTensor<TensorType<DataType, Rank>, Rank, DataType>;
+        requires RankBlockTensor<TensorType<DataType, Rank>, Rank, DataType>;
     }
 auto create_tensor_like(const TensorType<DataType, Rank> &tensor) -> BlockTensor<DataType, Rank> {
     return BlockTensor<DataType, Rank>{"(unnamed)", tensor.vector_dims()};
@@ -352,7 +352,7 @@ auto create_tensor_like(const TensorType<DataType, Rank> &tensor,
 template <template <typename, size_t> typename TensorType, typename DataType, size_t Rank>
     requires requires {
         requires CoreRankTensor<TensorType<DataType, Rank>, Rank, DataType>;
-        requires !BlockRankTensor<TensorType<DataType, Rank>, Rank, DataType>;
+        requires !RankBlockTensor<TensorType<DataType, Rank>, Rank, DataType>;
     }
 auto create_tensor_like(const std::string name, const TensorType<DataType, Rank> &tensor) -> Tensor<DataType, Rank> {
     auto result = Tensor<DataType, Rank>{tensor.dims()};
@@ -404,7 +404,7 @@ auto create_tensor_like(const std::string name, const TensorType<DataType, Rank>
 template <template <typename, size_t> typename TensorType, typename DataType, size_t Rank>
     requires requires {
         requires CoreRankTensor<TensorType<DataType, Rank>, Rank, DataType>;
-        requires BlockRankTensor<TensorType<DataType, Rank>, Rank, DataType>;
+        requires RankBlockTensor<TensorType<DataType, Rank>, Rank, DataType>;
     }
 auto create_tensor_like(const std::string name, const TensorType<DataType, Rank> &tensor) -> BlockTensor<DataType, Rank> {
     auto result = BlockTensor<DataType, Rank>{"(unnamed)", tensor.vector_dims()};
