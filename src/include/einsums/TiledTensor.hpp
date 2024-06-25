@@ -95,7 +95,7 @@ class TiledTensorBase : public detail::TensorBase<T, Rank> {
         for (int i = 0; i < Rank; i++) {
             _tile_offsets[i] = std::vector<int>();
             int sum          = 0;
-            for (int j = 0; j < Rank; j++) {
+            for (int j = 0; j < _tile_sizes[i].size(); j++) {
                 _tile_offsets[i].push_back(sum);
                 sum += _tile_sizes[i][j];
             }
