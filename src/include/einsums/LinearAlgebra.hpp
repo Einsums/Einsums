@@ -516,7 +516,7 @@ auto gesv(AType<T, ARank> *A, BType<T, BRank> *B) -> int {
         }
 
         return info_out;
-    }
+    } else {
 
     LabeledSection0();
 
@@ -531,6 +531,7 @@ auto gesv(AType<T, ARank> *A, BType<T, BRank> *B) -> int {
 
     int info = blas::gesv(n, nrhs, A->data(), lda, ipiv.data(), B->data(), ldb);
     return info;
+    }
 }
 
 #if !defined(DOXYGEN_SHOULD_SKIP_THIS)

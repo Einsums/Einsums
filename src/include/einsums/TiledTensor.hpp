@@ -747,78 +747,45 @@ class TiledTensorView final : public TiledTensorBase<TensorView, T, Rank> {
 template <typename T, size_t Rank>
 class TiledDeviceTensor final : public TiledTensorBase<DeviceTensor, T, Rank> {
   private:
-    detail::HostDeviceMode _mode{detail::DEV_ONLY};
+    detail::HostToDeviceMode _mode{detail::DEV_ONLY};
 
     void add_tile(std::array<int, Rank> pos) override {
-        std::string tile_name = _name + " - (";
+        std::string tile_name = this->_name + " - (";
         Dim<Rank>   dims{};
 
         for (int i = 0; i < Rank; i++) {
             tile_name += std::to_string(pos[i]);
-            dims[i] = _tile_sizes[i][pos[i]];
+            dims[i] = this->_tile_sizes[i][pos[i]];
             if (i != Rank - 1) {
                 tile_name += ", ";
             }
         }
         tile_name += ")";
 
-        _tiles.emplace(pos, _mode, dims);
-        _tiles[pos].set_name(tile_name);
-        _tiles[pos].zero();
+        this->_tiles.emplace(pos, _mode, dims);
+        this->_tiles[pos].set_name(tile_name);
+        this->_tiles[pos].zero();
     }
 
   public:
     TiledDeviceTensor() = default;
 
     template <typename... Sizes>
-        requires !(std::is_same_v<Sizes, detail::HostDeviceMode> || ...)
-                 TiledDeviceTensor(std::string name, Sizes... sizes, detail::HostDeviceMode mode = detail::DEV_ONLY)
+        requires (!(std::is_same_v<Sizes, detail::HostToDeviceMode> || ...))
+                 TiledDeviceTensor(std::string name, Sizes... sizes, detail::HostToDeviceMode mode = detail::DEV_ONLY)
         : _mode{mode},
     TiledTensorBase<DeviceTensor, T, Rank>(name, sizes...) {}
 
     TiledDeviceTensor(const TiledDeviceTensor<T, Rank> &other) = default;
 
     ~TiledDeviceTensor() = default;
-
-    /**
-     * Returns the tile with given coordinates. If the tile is not filled, it will be created.
-     *
-     * @param index The index of the tile.
-     * @return The tile at the given index.
-     */
-    template <typename Storage>
-        requires(!std::integral<Storage>)
-    TensorType<T, Rank> &tile(Storage index) {
-        std::array<int, Rank> arr_index{index};
-
-        for (int i = 0; i < Rank; i++) {
-            if (arr_index[i] < 0) {
-                arr_index[i] += _tile_sizes[i].size();
-            }
-
-            assert(arr_index[i] < _tile_sizes[i].size() && arr_index[i] >= 0);
-        }
-
-        if (!has_tile(arr_index)) {
-            Dim<Rank> dims{};
-
-            for (int i = 0; i < Rank; i++) {
-                dims[i] = _tile_sizes[i][arr_index[i]];
-            }
-            auto new_tile = TensorType<T, Rank>(dims);
-            new_tile.zero();
-            _tiles[arr_index] = new_tile;
-        }
-
-        return _tiles[arr_index];
-    }
 };
 
 template <typename T, size_t Rank>
 class TiledDeviceTensorView final : public TiledTensorBase<DeviceTensorView, T, Rank> {
   private:
     bool                   _full_view_of_underlying{false};
-    detail::HostDeviceMode _mode{detail::DEV_ONLY};
+    detail::HostToDeviceMode _mode{detail::DEV_ONLY};
 
     void add_tile(std::array<int, Rank> pos) override { throw std::runtime_error("Can't add a tile to a TiledDeviceTensorView!"); }
 
@@ -826,8 +793,8 @@ class TiledDeviceTensorView final : public TiledTensorBase<DeviceTensorView, T, 
     TiledDeviceTensorView() = default;
 
     template <typename... Sizes>
-        requires !(std::is_same_v<Sizes, detail::HostDeviceMode> || ...)
-                 TiledDeviceTensorView(std::string name, Sizes... sizes, detail::HostDeviceMode mode = detail::DEV_ONLY)
+        requires (!(std::is_same_v<Sizes, detail::HostToDeviceMode> || ...))
+                 TiledDeviceTensorView(std::string name, Sizes... sizes, detail::HostToDeviceMode mode = detail::DEV_ONLY)
         : _mode{mode},
     TiledTensorBase<DeviceTensorView, T, Rank>(name, sizes...) {}
 

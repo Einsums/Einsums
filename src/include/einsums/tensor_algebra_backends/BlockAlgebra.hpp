@@ -11,7 +11,7 @@
 #include "einsums/utility/TensorTraits.hpp"
 
 #include <tuple>
-namespace einsums::detail {
+namespace einsums::tensor_algebra::detail {
 
 template <bool OnlyUseGenericAlgorithm, template <typename, size_t> typename AType, typename ADataType, size_t ARank,
           template <typename, size_t> typename BType, typename BDataType, size_t BRank, template <typename, size_t> typename CType,
@@ -116,7 +116,7 @@ auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndi
 
 #ifdef __HIP__
     if constexpr (einsums::detail::IsDeviceRankTensorV<AType<ADataType, ARank>, ARank, ADataType>) {
-        device_ptr CDataType *temp;
+        __device_ptr__ CDataType *temp;
 
         gpu::hip_catch(hipMalloc(temp, omp_get_max_threads() * sizeof(CDataType)));
         EINSUMS_OMP_PARALLEL_FOR
@@ -131,7 +131,7 @@ auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndi
         } else {
             *C *= C_prefactor;
         }
-        host_ptr CDataType *host_temp = new CDataType[omp_get_max_threads()];
+        __host_ptr__ CDataType *host_temp = new CDataType[omp_get_max_threads()];
 
         gpu::hip_catch(hipMemcpy(host_temp, temp, omp_get_max_threads() * sizeof(CDataType), hipMemcpyDeviceToHost));
         *C = std::accumulate(host_temp, host_temp + omp_get_max_threads(), (CDataType)*C);
@@ -249,7 +249,7 @@ auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndi
 
 #ifdef __HIP__
     if constexpr (einsums::detail::IsDeviceRankTensorV<AType<ADataType, ARank>, ARank, ADataType>) {
-        device_ptr CDataType *temp;
+        __device_ptr__ CDataType *temp;
 
         gpu::hip_catch(hipMalloc(temp, omp_get_max_threads() * sizeof(CDataType)));
         EINSUMS_OMP_PARALLEL_FOR
@@ -266,7 +266,7 @@ auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndi
         } else {
             *C *= C_prefactor;
         }
-        host_ptr CDataType *host_temp = new CDataType[omp_get_max_threads()];
+        __host_ptr__ CDataType *host_temp = new CDataType[omp_get_max_threads()];
 
         gpu::hip_catch(hipMemcpy(host_temp, temp, omp_get_max_threads() * sizeof(CDataType), hipMemcpyDeviceToHost));
         *C = std::accumulate(host_temp, host_temp + omp_get_max_threads(), (CDataType)*C);
@@ -387,7 +387,7 @@ auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndi
 
 #ifdef __HIP__
     if constexpr (einsums::detail::IsDeviceRankTensorV<AType<ADataType, ARank>, ARank, ADataType>) {
-        device_ptr CDataType *temp;
+        __device_ptr__ CDataType *temp;
 
         gpu::hip_catch(hipMalloc(temp, omp_get_max_threads() * sizeof(CDataType)));
         EINSUMS_OMP_PARALLEL_FOR
@@ -404,7 +404,7 @@ auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndi
         } else {
             *C *= C_prefactor;
         }
-        host_ptr CDataType *host_temp = new CDataType[omp_get_max_threads()];
+        __host_ptr__ CDataType *host_temp = new CDataType[omp_get_max_threads()];
 
         gpu::hip_catch(hipMemcpy(host_temp, temp, omp_get_max_threads() * sizeof(CDataType), hipMemcpyDeviceToHost));
         *C = std::accumulate(host_temp, host_temp + omp_get_max_threads(), (CDataType)*C);
@@ -436,4 +436,4 @@ auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndi
 #endif
 }
 
-} // namespace einsums::detail
+} // namespace einsums::tensor_algebra::detail

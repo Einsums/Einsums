@@ -2,6 +2,7 @@
 
 #include "einsums/DeviceTensor.hpp"
 #include "einsums/GPULinearAlgebra.hpp"
+#include "einsums/GPUTimer.hpp"
 
 #include <catch2/catch_all.hpp>
 #include <hip/driver_types.h>
@@ -26,11 +27,11 @@ __global__ void time_waster(unsigned int max) {
 
 TEST_CASE("GPU Timer", "[gpu][timer]") {
 
-        einsums::timer::GPUTimer *timer = new einsums::timer::GPUTimer("GPU Timer");
-        for (int i = 0; i < KERNELS; i++) {
-            time_waster<<<dim3(256), dim3(2)>>>(CYCLES);
-        }
-        delete timer;
+    einsums::timer::GPUTimer *timer = new einsums::timer::GPUTimer("GPU Timer");
+    for (int i = 0; i < KERNELS; i++) {
+        time_waster<<<dim3(256), dim3(2)>>>(CYCLES);
+    }
+    delete timer;
 }
 
 TEST_CASE("gpu-sort2") {
@@ -66,7 +67,7 @@ TEST_CASE("gpu-sort2") {
                 if (i == 0 || j == 0)
                     REQUIRE(C(i, j) == A(i, j));
                 else
-                    CHECK((double) C(j, i) == (double) A(i, j));
+                    CHECK((double)C(j, i) == (double)A(i, j));
             }
         }
     }
@@ -93,7 +94,7 @@ TEST_CASE("gpu-sort2") {
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                REQUIRE_THAT((double) C0(i, j), Catch::Matchers::WithinRel((double) C1(i, j), 0.00001));
+                REQUIRE_THAT((double)C0(i, j), Catch::Matchers::WithinRel((double)C1(i, j), 0.00001));
             }
         }
 
@@ -108,7 +109,7 @@ TEST_CASE("gpu-sort2") {
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                REQUIRE_THAT((double) C0(i, j), Catch::Matchers::WithinRel((double) C1(i, j), 0.00001));
+                REQUIRE_THAT((double)C0(i, j), Catch::Matchers::WithinRel((double)C1(i, j), 0.00001));
             }
         }
     }
@@ -127,7 +128,7 @@ TEST_CASE("gpu-sort2") {
 
         for (int i = 0, ij = 1; i < 3; i++) {
             for (int j = 0; j < 3; j++, ij++) {
-                REQUIRE_THAT((double) C(j, i), Catch::Matchers::WithinRel((double) A(i, j), 0.00001));
+                REQUIRE_THAT((double)C(j, i), Catch::Matchers::WithinRel((double)A(i, j), 0.00001));
             }
         }
     }
@@ -149,7 +150,7 @@ TEST_CASE("gpu-sort2") {
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 for (int k = 0; k < 3; k++) {
-                    REQUIRE_THAT((double) B(k, j, i), Catch::Matchers::WithinRel((double) A(i, j, k), 0.00001));
+                    REQUIRE_THAT((double)B(k, j, i), Catch::Matchers::WithinRel((double)A(i, j, k), 0.00001));
                 }
             }
         }
@@ -159,7 +160,7 @@ TEST_CASE("gpu-sort2") {
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 for (int k = 0; k < 3; k++) {
-                    REQUIRE_THAT((double) B(i, k, j), Catch::Matchers::WithinRel((double) A(i, j, k), 0.00001));
+                    REQUIRE_THAT((double)B(i, k, j), Catch::Matchers::WithinRel((double)A(i, j, k), 0.00001));
                 }
             }
         }
@@ -169,7 +170,7 @@ TEST_CASE("gpu-sort2") {
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 for (int k = 0; k < 3; k++) {
-                    REQUIRE_THAT((double) B(j, k, i), Catch::Matchers::WithinRel((double) A(i, j, k), 0.00001));
+                    REQUIRE_THAT((double)B(j, k, i), Catch::Matchers::WithinRel((double)A(i, j, k), 0.00001));
                 }
             }
         }
@@ -179,7 +180,7 @@ TEST_CASE("gpu-sort2") {
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 for (int k = 0; k < 3; k++) {
-                    REQUIRE_THAT((double) B(i, j, k), Catch::Matchers::WithinRel((double) A(k, j, i), 0.00001));
+                    REQUIRE_THAT((double)B(i, j, k), Catch::Matchers::WithinRel((double)A(k, j, i), 0.00001));
                 }
             }
         }
@@ -204,7 +205,7 @@ TEST_CASE("gpu-sort2") {
             for (int j = 0; j < 3; j++) {
                 for (int k = 0; k < 3; k++) {
                     for (int l = 0; l < 3; l++) {
-                        REQUIRE_THAT((double) B(i, l, k, j), Catch::Matchers::WithinRel(0.5 * A(k, j, l, i), 0.00001));
+                        REQUIRE_THAT((double)B(i, l, k, j), Catch::Matchers::WithinRel(0.5 * A(k, j, l, i), 0.00001));
                     }
                 }
             }
@@ -254,7 +255,7 @@ TEST_CASE("gpu-sort2") {
         sort(Indices{j, i}, &B, Indices{i, j}, A);
         for (int i = 0; i < A.dim(0); i++) {
             for (int j = 0; j < A.dim(1); j++) {
-                REQUIRE_THAT((double) B(j, i), Catch::Matchers::WithinRel((double) A(i, j), 0.00001));
+                REQUIRE_THAT((double)B(j, i), Catch::Matchers::WithinRel((double)A(i, j), 0.00001));
             }
         }
     }
@@ -275,7 +276,7 @@ TEST_CASE("gpu-sort2") {
         for (int i = 0, ij = 1; i < A.dim(0); i++) {
             for (int j = 0; j < A.dim(1); j++) {
                 for (int k = 0; k < A.dim(2); k++, ij++) {
-                    REQUIRE_THAT((double) B(j, k, i), Catch::Matchers::WithinRel((double) A(i, j, k), 0.00001));
+                    REQUIRE_THAT((double)B(j, k, i), Catch::Matchers::WithinRel((double)A(i, j, k), 0.00001));
                 }
             }
         }

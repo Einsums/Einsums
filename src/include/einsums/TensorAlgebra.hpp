@@ -222,9 +222,6 @@ auto khatri_rao(const std::tuple<AIndices...> &, const AType<T, ARank> &A, const
 
 END_EINSUMS_NAMESPACE_HPP(einsums::tensor_algebra)
 
-#ifdef __HIP__
-#    include "einsums/tensor_algebra_backends/GPUTensorAlgebra.hpp"
-#endif
 #include "einsums/tensor_algebra_backends/Dispatch.hpp"
 #include "einsums/tensor_algebra_backends/ElementTransform.hpp"
 #include "einsums/tensor_algebra_backends/KhatriRao.hpp"

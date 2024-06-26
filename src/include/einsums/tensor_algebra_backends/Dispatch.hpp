@@ -10,6 +10,8 @@
 #include "einsums/Section.hpp"
 #include "einsums/Tensor.hpp"
 #include "einsums/Timer.hpp"
+#include "einsums/tensor_algebra_backends/BlockAlgebra.hpp"
+#include "einsums/tensor_algebra_backends/GPUTensorAlgebra.hpp"
 #include "einsums/tensor_algebra_backends/GenericAlgorithm.hpp"
 #include "einsums/utility/TensorTraits.hpp"
 
@@ -28,177 +30,6 @@
 
 namespace einsums::tensor_algebra {
 namespace detail {
-
-template <typename UniqueIndex, int BDim, typename BType>
-inline size_t get_dim_ranges_for_many_b(const BType &B, const ::std::tuple<> &B_indices) {
-    return 1;
-}
-
-template <typename UniqueIndex, int BDim, typename BType, typename BHead>
-inline auto get_dim_ranges_for_many_b(const BType &B, const ::std::tuple<BHead> &B_indices)
-    -> ::std::enable_if<::std::is_same_v<BHead, UniqueIndex>, size_t> {
-    return B.dim(BDim);
-}
-
-template <typename UniqueIndex, int BDim, typename BType, typename BHead, typename... BIndices>
-inline size_t get_dim_ranges_for_many_b(const BType &B, const ::std::tuple<BHead, BIndices...> &B_indices) {
-    if constexpr (::std::is_same_v<BHead, UniqueIndex>) {
-        return B.dim(BDim);
-    } else {
-        return get_dim_ranges_for_many_b<UniqueIndex, BDim + 1>(B, ::std::tuple<BIndices...>());
-    }
-}
-
-template <typename UniqueIndex, int ADim, typename AType, typename BType, typename... BIndices>
-inline size_t get_dim_ranges_for_many_a(const AType &A, const ::std::tuple<> &A_indices, const BType &B,
-                                        const ::std::tuple<BIndices...> &B_indices) {
-    return get_dim_ranges_for_many_b<UniqueIndex, 0>(B, B_indices);
-}
-
-template <typename UniqueIndex, int ADim, typename AType, typename BType, typename AHead, typename... BIndices>
-inline size_t get_dim_ranges_for_many_a(const AType &A, const ::std::tuple<AHead> &A_indices, const BType &B,
-                                        const ::std::tuple<BIndices...> &B_indices) {
-    if constexpr (::std::is_same_v<AHead, UniqueIndex>) {
-        return A.dim(ADim);
-    } else {
-        return get_dim_ranges_for_many_b<UniqueIndex, 0>(B, B_indices);
-    }
-}
-
-template <typename UniqueIndex, int ADim, typename AType, typename BType, typename AHead, typename... AIndices, typename... BIndices>
-inline auto get_dim_ranges_for_many_a(const AType &A, const ::std::tuple<AHead, AIndices...> &A_indices, const BType &B,
-                                      const ::std::tuple<BIndices...> &B_indices) -> ::std::enable_if_t<sizeof...(AIndices) != 0, size_t> {
-    if constexpr (::std::is_same_v<AHead, UniqueIndex>) {
-        return A.dim(ADim);
-    } else {
-        return get_dim_ranges_for_many_a<UniqueIndex, ADim + 1>(A, ::std::tuple<AIndices...>(), B, B_indices);
-    }
-}
-
-template <typename UniqueIndex, int CDim, typename CType, typename AType, typename BType, typename... AIndices, typename... BIndices>
-inline size_t get_dim_ranges_for_many_c(const CType &C, const ::std::tuple<> &C_indices, const AType &A,
-                                        const ::std::tuple<AIndices...> &A_indices, const BType &B,
-                                        const ::std::tuple<BIndices...> &B_indices) {
-    return get_dim_ranges_for_many_a<UniqueIndex, 0>(A, A_indices, B, B_indices);
-}
-
-template <typename UniqueIndex, int CDim, typename CType, typename AType, typename BType, typename CHead, typename... AIndices,
-          typename... BIndices>
-inline size_t get_dim_ranges_for_many_c(const CType &C, const ::std::tuple<CHead> &C_indices, const AType &A,
-                                        const ::std::tuple<AIndices...> &A_indices, const BType &B,
-                                        const ::std::tuple<BIndices...> &B_indices) {
-    if constexpr (::std::is_same_v<CHead, UniqueIndex>) {
-        return C.dim(CDim);
-    } else {
-        return get_dim_ranges_for_many_a<UniqueIndex, 0>(A, A_indices, B, B_indices);
-    }
-}
-
-template <typename UniqueIndex, int CDim, typename CType, typename AType, typename BType, typename CHead, typename... CIndices,
-          typename... AIndices, typename... BIndices>
-inline auto get_dim_ranges_for_many_c(const CType &C, const ::std::tuple<CHead, CIndices...> &C_indices, const AType &A,
-                                      const ::std::tuple<AIndices...> &A_indices, const BType &B,
-                                      const ::std::tuple<BIndices...> &B_indices) -> ::std::enable_if_t<sizeof...(CIndices) != 0, size_t> {
-    if constexpr (::std::is_same_v<CHead, UniqueIndex>) {
-        return C.dim(CDim);
-    } else {
-        return get_dim_ranges_for_many_c<UniqueIndex, CDim + 1>(C, ::std::tuple<CIndices...>(), A, A_indices, B, B_indices);
-    }
-}
-
-/**
- * @brief Finds the dimensions for the requested indices.
- *
- * @param C The C tensor.
- * @param C_indices The indices for the C tensor.
- * @param A The A tensor.
- * @param A_indices The indices for the A tensor.
- * @param B The B tensor.
- * @param B_indices The indices for the B tensor.
- * @param All_unique_indices The list of all indices with duplicates removed.
- */
-template <typename CType, typename AType, typename BType, typename... CIndices, typename... AIndices, typename... BIndices,
-          typename... AllUniqueIndices>
-inline auto get_dim_ranges_for_many(const CType &C, const ::std::tuple<CIndices...> &C_indices, const AType &A,
-                                    const ::std::tuple<AIndices...> &A_indices, const BType &B, const ::std::tuple<BIndices...> &B_indices,
-                                    const ::std::tuple<AllUniqueIndices...> &All_unique_indices) {
-    return ::std::tuple{get_dim_ranges_for_many_c<AllUniqueIndices, 0>(C, C_indices, A, A_indices, B, B_indices)...};
-}
-
-/**
- * @brief Converts a single sentinel value into a list of indices.
- */
-template <size_t num_unique_inds>
-inline void sentinel_to_indices(size_t sentinel, const size_t *unique_strides, size_t *out_inds) {
-    size_t hold = sentinel;
-
-#pragma unroll
-    for (ssize_t i = 0; i < num_unique_inds; i++) {
-        if (unique_strides[i] != 0) {
-            out_inds[i] = hold / unique_strides[i];
-            hold %= unique_strides[i];
-        } else {
-            out_inds[i] = 0;
-        }
-    }
-}
-
-template <typename... UniqueDims, size_t... I>
-void dims_to_strides(const ::std::tuple<UniqueDims...> &dims, size_t *out, ::std::index_sequence<I...>) {
-    ::std::array<size_t, sizeof...(UniqueDims)> arr{::std::get<I>(dims)...};
-
-    size_t stride = 1;
-
-    for (int i = sizeof...(UniqueDims) - 1; i >= 0; i--) {
-        out[i] = stride;
-        stride *= arr[i];
-    }
-}
-
-/**
- * @brief Compute the strides for turning a sentinel into a list of indices.
- */
-template <typename... UniqueDims>
-void dims_to_strides(const ::std::tuple<UniqueDims...> &dims, size_t *out) {
-    dims_to_strides(dims, out, ::std::make_index_sequence<sizeof...(UniqueDims)>());
-}
-
-template <int I, typename Head, typename Index>
-int compile_index_table(const ::std::tuple<Head> &, const Index &, int &out) {
-    if constexpr (::std::is_same_v<Head, Index>) {
-        out = I;
-    } else {
-        out = -1;
-    }
-    return 0;
-}
-
-template <int I, typename Head, typename... UniqueIndices, typename Index>
-auto compile_index_table(const ::std::tuple<Head, UniqueIndices...> &, const Index &index,
-                         int &out) -> ::std::enable_if_t<sizeof...(UniqueIndices) != 0, int> {
-    if constexpr (::std::is_same_v<Head, Index>) {
-        out = I;
-    } else {
-        compile_index_table<I + 1>(::std::tuple<UniqueIndices...>(), index, out);
-    }
-    return 0;
-}
-
-template <typename... UniqueIndices, typename... Indices, size_t... I>
-void compile_index_table(const ::std::tuple<UniqueIndices...> &from_inds, const ::std::tuple<Indices...> &to_inds, int *out,
-                         ::std::index_sequence<I...>) {
-    ::std::array<int, sizeof...(Indices)> arr{compile_index_table<0>(from_inds, ::std::get<I>(to_inds), out[I])...};
-}
-
-/**
- * @brief Turn a list of indices into a link table.
- *
- * Takes a list of indices and creates a mapping so that an index list for a tensor can reference the unique index list.
- */
-template <typename... UniqueIndices, typename... Indices>
-void compile_index_table(const ::std::tuple<UniqueIndices...> &from_inds, const ::std::tuple<Indices...> &to_inds, int *out) {
-    compile_index_table(from_inds, to_inds, out, ::std::make_index_sequence<sizeof...(Indices)>());
-}
 
 template <bool OnlyUseGenericAlgorithm, template <typename, size_t> typename AType, typename ADataType, size_t ARank,
           template <typename, size_t> typename BType, typename BDataType, size_t BRank, template <typename, size_t> typename CType,
@@ -356,15 +187,7 @@ auto einsum(const CDataType C_prefactor, const std::tuple<CIndices...> & /*Cs*/,
 
     if constexpr (!std::is_same_v<CDataType, ADataType> || !std::is_same_v<CDataType, BDataType>) {
         // Mixed datatypes go directly to the generic algorithm.
-        if constexpr (!einsums::detail::IsBasicTensorV<AType<ADataType, ARank>, ARank, ADataType> ||
-                      !einsums::detail::IsBasicTensorV<BType<BDataType, BRank>, BRank, BDataType> ||
-                      !einsums::detail::IsBasicTensorV<CType<CDataType, CRank>, CRank, CDataType>) {
-            einsum_special_dispatch<true>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
-        } else {
-            einsum_generic_algorithm(C_unique, A_unique, B_unique, link_unique, C_indices, A_indices, B_indices, unique_target_dims,
-                                     unique_link_dims, target_position_in_C, link_position_in_link, C_prefactor, C, AB_prefactor, A, B);
-        }
-        return;
+        goto generic_default;
     } else if constexpr (dot_product) {
         CDataType temp = linear_algebra::dot(A, B);
         (*C) *= C_prefactor;
@@ -382,232 +205,246 @@ auto einsum(const CDataType C_prefactor, const std::tuple<CIndices...> & /*Cs*/,
                          !einsums::detail::IsBasicTensorV<CType<CDataType, CRank>, CRank, CDataType>) {
         einsum_special_dispatch<OnlyUseGenericAlgorithm>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
     } else if constexpr (outer_product) {
-        do { // do {} while (false) trick to allow us to use a break below to "break" out of the loop.
-            if (!A.full_view_of_underlying() || !B.full_view_of_underlying()) {
-                break;
-            }
-            constexpr bool swap_AB = std::get<1>(A_target_position_in_C) != 0;
+        if (!A.full_view_of_underlying() || !B.full_view_of_underlying()) {
+            goto generic_default;
+        }
+        constexpr bool swap_AB = std::get<1>(A_target_position_in_C) != 0;
 
-            Dim<2> dC;
-            dC[0] = product_dims(A_target_position_in_C, *C);
-            dC[1] = product_dims(B_target_position_in_C, *C);
-            if constexpr (swap_AB)
-                std::swap(dC[0], dC[1]);
+        Dim<2> dC;
+        dC[0] = product_dims(A_target_position_in_C, *C);
+        dC[1] = product_dims(B_target_position_in_C, *C);
+        if constexpr (swap_AB)
+            std::swap(dC[0], dC[1]);
 
 #ifdef __HIP__
-            std::conditional_t<einsums::detail::IsIncoreRankTensorV<CType<CDataType, CRank>, CRank, CDataType>, TensorView<CDataType, 2>,
-                               DeviceTensorView<CDataType, 2>>
-                tC{*C, dC};
+        std::conditional_t<einsums::detail::IsIncoreRankTensorV<CType<CDataType, CRank>, CRank, CDataType>, TensorView<CDataType, 2>,
+                           DeviceTensorView<CDataType, 2>>
+            tC{*C, dC};
 #else
-            TensorView<CDataType, 2> tC{*C, dC};
+        TensorView<CDataType, 2> tC{*C, dC};
 #endif
-            if (C_prefactor != CDataType{1.0})
-                linear_algebra::scale(C_prefactor, C);
+        if (C_prefactor != CDataType{1.0})
+            linear_algebra::scale(C_prefactor, C);
 
-            try {
-                if constexpr (swap_AB) {
-                    linear_algebra::ger(AB_prefactor, B.to_rank_1_view(), A.to_rank_1_view(), &tC);
-                } else {
-                    linear_algebra::ger(AB_prefactor, A.to_rank_1_view(), B.to_rank_1_view(), &tC);
-                }
-            } catch (std::runtime_error &e) {
-#if defined(EINSUMS_SHOW_WARNING)
-                println(bg(fmt::color::yellow) | fg(fmt::color::black), "Optimized outer product failed. Likely from a non-contiguous "
-                                                                        "TensorView. Attempting to perform generic algorithm.");
-#endif
-                if (C_prefactor == CDataType{0.0}) {
-#if defined(EINSUMS_SHOW_WARNING)
-                    println(bg(fmt::color::red) | fg(fmt::color::white),
-                            "WARNING!! Unable to undo C_prefactor ({}) on C ({}) tensor. Check your results!!!", C_prefactor, C->name());
-#endif
-                } else {
-                    linear_algebra::scale(1.0 / C_prefactor, C);
-                }
-                break; // out of the do {} while(false) loop.
+        try {
+            if constexpr (swap_AB) {
+                linear_algebra::ger(AB_prefactor, B.to_rank_1_view(), A.to_rank_1_view(), &tC);
+            } else {
+                linear_algebra::ger(AB_prefactor, A.to_rank_1_view(), B.to_rank_1_view(), &tC);
             }
-            // If we got to this position, assume we successfully called ger.
-            return;
-        } while (false);
+        } catch (std::runtime_error &e) {
+#if defined(EINSUMS_SHOW_WARNING)
+            println(bg(fmt::color::yellow) | fg(fmt::color::black), "Optimized outer product failed. Likely from a non-contiguous "
+                                                                    "TensorView. Attempting to perform generic algorithm.");
+#endif
+            if (C_prefactor == CDataType{0.0}) {
+#if defined(EINSUMS_SHOW_WARNING)
+                println(bg(fmt::color::red) | fg(fmt::color::white),
+                        "WARNING!! Unable to undo C_prefactor ({}) on C ({}) tensor. Check your results!!!", C_prefactor, C->name());
+#endif
+            } else {
+                linear_algebra::scale(1.0 / C_prefactor, C);
+            }
+            goto generic_default; // Go to the generic algorithm.
+        }
+        // If we got to this position, assume we successfully called ger.
+        return;
     } else if constexpr (!OnlyUseGenericAlgorithm) {
-        do { // do {} while (false) trick to allow us to use a break below to "break" out of the loop.
-            if constexpr (is_gemv_possible) {
-                if (!C->full_view_of_underlying() || !A.full_view_of_underlying() || !B.full_view_of_underlying()) {
-                    // Fall through to generic algorithm.
-                    break;
-                }
+        if constexpr (is_gemv_possible) {
+            if (!C->full_view_of_underlying() || !A.full_view_of_underlying() || !B.full_view_of_underlying()) {
+                // Fall through to generic algorithm.
+                goto generic_default;
+            }
 
-                constexpr bool transpose_A = std::get<1>(link_position_in_A) == 0;
+            constexpr bool transpose_A = std::get<1>(link_position_in_A) == 0;
 
-                Dim<2>    dA;
-                Dim<1>    dB, dC;
-                Stride<2> sA;
-                Stride<1> sB, sC;
+            Dim<2>    dA;
+            Dim<1>    dB, dC;
+            Stride<2> sA;
+            Stride<1> sB, sC;
 
-                dA[0] = product_dims(A_target_position_in_C, *C);
-                dA[1] = product_dims(link_position_in_A, A);
-                sA[0] = last_stride(target_position_in_A, A);
-                sA[1] = last_stride(link_position_in_A, A);
-                if constexpr (transpose_A) {
-                    std::swap(dA[0], dA[1]);
-                    std::swap(sA[0], sA[1]);
-                }
+            dA[0] = product_dims(A_target_position_in_C, *C);
+            dA[1] = product_dims(link_position_in_A, A);
+            sA[0] = last_stride(target_position_in_A, A);
+            sA[1] = last_stride(link_position_in_A, A);
+            if constexpr (transpose_A) {
+                std::swap(dA[0], dA[1]);
+                std::swap(sA[0], sA[1]);
+            }
 
-                dB[0] = product_dims(link_position_in_B, B);
-                sB[0] = last_stride(link_position_in_B, B);
+            dB[0] = product_dims(link_position_in_B, B);
+            sB[0] = last_stride(link_position_in_B, B);
 
-                dC[0] = product_dims(A_target_position_in_C, *C);
-                sC[0] = last_stride(A_target_position_in_C, *C);
+            dC[0] = product_dims(A_target_position_in_C, *C);
+            sC[0] = last_stride(A_target_position_in_C, *C);
 
 #ifdef __HIP__
-                std::conditional_t<einsums::detail::IsIncoreRankTensorV<CType<CDataType, CRank>, CRank, CDataType>,
-                                   const TensorView<CDataType, 2>, const DeviceTensorView<CDataType, 2>>
-                    tA{const_cast<AType<ADataType, ARank> &>(A), dA, sA};
-                std::conditional_t<einsums::detail::IsIncoreRankTensorV<CType<CDataType, CRank>, CRank, CDataType>,
-                                   const TensorView<CDataType, 2>, const DeviceTensorView<CDataType, 2>>
-                    tB{const_cast<BType<BDataType, BRank> &>(B), dB, sB};
-                std::conditional_t<einsums::detail::IsIncoreRankTensorV<CType<CDataType, CRank>, CRank, CDataType>,
-                                   TensorView<CDataType, 2>, DeviceTensorView<CDataType, 2>>
-                    tC{*C, dC};
+            std::conditional_t<einsums::detail::IsIncoreRankTensorV<AType<ADataType, ARank>, ARank, ADataType>,
+                               const TensorView<ADataType, 2>, const DeviceTensorView<ADataType, 2>>
+                tA{const_cast<AType<ADataType, ARank> &>(A), dA, sA};
+            std::conditional_t<einsums::detail::IsIncoreRankTensorV<BType<BDataType, BRank>, BRank, BDataType>,
+                               const TensorView<BDataType, 1>, const DeviceTensorView<BDataType, 1>>
+                tB{const_cast<BType<BDataType, BRank> &>(B), dB, sB};
+            std::conditional_t<einsums::detail::IsIncoreRankTensorV<CType<CDataType, CRank>, CRank, CDataType>, TensorView<CDataType, 1>,
+                               DeviceTensorView<CDataType, 1>>
+                tC{*C, dC, sC};
 #else
-                const TensorView<ADataType, 2> tA{const_cast<AType<ADataType, ARank> &>(A), dA, sA};
-                const TensorView<BDataType, 1> tB{const_cast<BType<BDataType, BRank> &>(B), dB, sB};
-                TensorView<CDataType, 1>       tC{*C, dC, sC};
+            const TensorView<ADataType, 2> tA{const_cast<AType<ADataType, ARank> &>(A), dA, sA};
+            const TensorView<BDataType, 1> tB{const_cast<BType<BDataType, BRank> &>(B), dB, sB};
+            TensorView<CDataType, 1>       tC{*C, dC, sC};
 #endif
 
-                // println(*C);
-                // println(tC);
-                // println(A);
-                // println(tA);
-                // println(B);
-                // println(tB);
+            // println(*C);
+            // println(tC);
+            // println(A);
+            // println(tA);
+            // println(B);
+            // println(tB);
 
-                if constexpr (transpose_A) {
-                    linear_algebra::gemv<true>(AB_prefactor, tA, tB, C_prefactor, &tC);
-                } else {
-                    linear_algebra::gemv<false>(AB_prefactor, tA, tB, C_prefactor, &tC);
-                }
-
-                return;
+            if constexpr (transpose_A) {
+                linear_algebra::gemv<true>(AB_prefactor, tA, tB, C_prefactor, &tC);
+            } else {
+                linear_algebra::gemv<false>(AB_prefactor, tA, tB, C_prefactor, &tC);
             }
-            // To use a gemm the input tensors need to be at least rank 2
-            else if constexpr (CRank >= 2 && ARank >= 2 && BRank >= 2) {
-                if constexpr (!A_hadamard_found && !B_hadamard_found && !C_hadamard_found) {
-                    if constexpr (is_gemm_possible) {
-                        if constexpr (is_gemv_possible) {
-                            if constexpr (einsums::detail::IsBlockTensorV<AType<ADataType, ARank>, ARank, ADataType> &&
-                                          einsums::detail::IsBlockTensorV<BType<BDataType, BRank>, BRank, BDataType> &&
-                                          einsums::detail::IsBlockTensorV<CType<CDataType, CRank>, CRank, CDataType>) {
-                                EINSUMS_OMP_PARALLEL_FOR
-                                for (int i = 0; i < A.num_blocks(); i++) {
-                                    if (A.block_dim(i) == 0) {
-                                        continue;
-                                    }
-                                    einsum<false>(C_prefactor, C_indices, &(C->block(i)), AB_prefactor, A_indices, A.block(i), B_indices,
-                                                  B.block(i));
+
+            return;
+        }
+        // To use a gemm the input tensors need to be at least rank 2
+        else if constexpr (CRank >= 2 && ARank >= 2 && BRank >= 2) {
+            if constexpr (!A_hadamard_found && !B_hadamard_found && !C_hadamard_found) {
+                if constexpr (is_gemm_possible) {
+                    if constexpr (is_gemv_possible) {
+                        if constexpr (einsums::detail::IsBlockTensorV<AType<ADataType, ARank>, ARank, ADataType> &&
+                                      einsums::detail::IsBlockTensorV<BType<BDataType, BRank>, BRank, BDataType> &&
+                                      einsums::detail::IsBlockTensorV<CType<CDataType, CRank>, CRank, CDataType>) {
+                            EINSUMS_OMP_PARALLEL_FOR
+                            for (int i = 0; i < A.num_blocks(); i++) {
+                                if (A.block_dim(i) == 0) {
+                                    continue;
                                 }
-                            } else if constexpr (!einsums::detail::IsBasicTensorV<AType<ADataType, ARank>, ARank, ADataType> ||
-                                                 !einsums::detail::IsBasicTensorV<BType<BDataType, BRank>, BRank, BDataType> ||
-                                                 !einsums::detail::IsBasicTensorV<CType<CDataType, CRank>, CRank, CDataType>) {
-                                break; // Use generic algorithm.
+                                einsum<false>(C_prefactor, C_indices, &(C->block(i)), AB_prefactor, A_indices, A.block(i), B_indices,
+                                              B.block(i));
+                            }
+                        } else if constexpr (!einsums::detail::IsBasicTensorV<AType<ADataType, ARank>, ARank, ADataType> ||
+                                             !einsums::detail::IsBasicTensorV<BType<BDataType, BRank>, BRank, BDataType> ||
+                                             !einsums::detail::IsBasicTensorV<CType<CDataType, CRank>, CRank, CDataType>) {
+                            goto generic_default; // Use generic algorithm.
+                        } else {
+
+                            if (!C->full_view_of_underlying() || !A.full_view_of_underlying() || !B.full_view_of_underlying()) {
+                                // Fall through to generic algorithm.
+                                goto generic_default;
+                            }
+
+                            constexpr bool transpose_A = std::get<1>(link_position_in_A) == 0;
+                            constexpr bool transpose_B = std::get<1>(link_position_in_B) != 0;
+                            constexpr bool transpose_C = std::get<1>(A_target_position_in_C) != 0;
+
+                            Dim<2>    dA, dB, dC;
+                            Stride<2> sA, sB, sC;
+
+                            dA[0] = product_dims(A_target_position_in_C, *C);
+                            dA[1] = product_dims(link_position_in_A, A);
+                            sA[0] = last_stride(target_position_in_A, A);
+                            sA[1] = last_stride(link_position_in_A, A);
+                            if constexpr (transpose_A) {
+                                std::swap(dA[0], dA[1]);
+                                std::swap(sA[0], sA[1]);
+                            }
+
+                            dB[0] = product_dims(link_position_in_B, B);
+                            dB[1] = product_dims(B_target_position_in_C, *C);
+                            sB[0] = last_stride(link_position_in_B, B);
+                            sB[1] = last_stride(target_position_in_B, B);
+                            if constexpr (transpose_B) {
+                                std::swap(dB[0], dB[1]);
+                                std::swap(sB[0], sB[1]);
+                            }
+
+                            dC[0] = product_dims(A_target_position_in_C, *C);
+                            dC[1] = product_dims(B_target_position_in_C, *C);
+                            sC[0] = last_stride(A_target_position_in_C, *C);
+                            sC[1] = last_stride(B_target_position_in_C, *C);
+                            if constexpr (transpose_C) {
+                                std::swap(dC[0], dC[1]);
+                                std::swap(sC[0], sC[1]);
+                            }
+
+#ifdef __HIP__
+                            std::conditional_t<einsums::detail::IsIncoreRankTensorV<AType<ADataType, ARank>, ARank, ADataType>,
+                                               const TensorView<ADataType, 2>, const DeviceTensorView<ADataType, 2>>
+                                tA{const_cast<AType<ADataType, ARank> &>(A), dA, sA};
+                            std::conditional_t<einsums::detail::IsIncoreRankTensorV<BType<BDataType, BRank>, BRank, BDataType>,
+                                               const TensorView<BDataType, 2>, const DeviceTensorView<BDataType, 2>>
+                                tB{const_cast<BType<BDataType, BRank> &>(B), dB, sB};
+                            std::conditional_t<einsums::detail::IsIncoreRankTensorV<CType<CDataType, CRank>, CRank, CDataType>,
+                                               TensorView<CDataType, 2>, DeviceTensorView<CDataType, 2>>
+                                tC{*C, dC, sC};
+#else
+                            const TensorView<ADataType, 2> tA{const_cast<AType<ADataType, ARank> &>(A), dA, sA};
+                            const TensorView<BDataType, 2> tB{const_cast<BType<BDataType, BRank> &>(B), dB, sB};
+                            TensorView<CDataType, 2>       tC{*C, dC, sC};
+#endif
+
+                            // println("--------------------");
+                            // println(*C);
+                            // println(tC);
+                            // println("--------------------");
+                            // println(A);
+                            // println(tA);
+                            // println("--------------------");
+                            // println(B);
+                            // println(tB);
+                            // println("--------------------");
+
+                            if constexpr (!transpose_C && !transpose_A && !transpose_B) {
+                                linear_algebra::gemm<false, false>(AB_prefactor, tA, tB, C_prefactor, &tC);
+                                return;
+                            } else if constexpr (!transpose_C && !transpose_A) {
+                                linear_algebra::gemm<false, true>(AB_prefactor, tA, tB, C_prefactor, &tC);
+                                return;
+                            } else if constexpr (!transpose_C && !transpose_B) {
+                                linear_algebra::gemm<true, false>(AB_prefactor, tA, tB, C_prefactor, &tC);
+                                return;
+                            } else if constexpr (!transpose_C) {
+                                linear_algebra::gemm<true, true>(AB_prefactor, tA, tB, C_prefactor, &tC);
+                                return;
+                            } else if constexpr (!transpose_A && !transpose_B) {
+                                linear_algebra::gemm<true, true>(AB_prefactor, tB, tA, C_prefactor, &tC);
+                                return;
+                            } else if constexpr (!transpose_A && transpose_B) {
+                                linear_algebra::gemm<false, true>(AB_prefactor, tB, tA, C_prefactor, &tC);
+                                return;
+                            } else if constexpr (transpose_A && !transpose_B) {
+                                linear_algebra::gemm<true, false>(AB_prefactor, tB, tA, C_prefactor, &tC);
+                                return;
+                            } else if constexpr (transpose_A && transpose_B) {
+                                linear_algebra::gemm<false, false>(AB_prefactor, tB, tA, C_prefactor, &tC);
+                                return;
                             } else {
-
-                                if (!C->full_view_of_underlying() || !A.full_view_of_underlying() || !B.full_view_of_underlying()) {
-                                    // Fall through to generic algorithm.
-                                    break;
-                                }
-
-                                constexpr bool transpose_A = std::get<1>(link_position_in_A) == 0;
-                                constexpr bool transpose_B = std::get<1>(link_position_in_B) != 0;
-                                constexpr bool transpose_C = std::get<1>(A_target_position_in_C) != 0;
-
-                                Dim<2>    dA, dB, dC;
-                                Stride<2> sA, sB, sC;
-
-                                dA[0] = product_dims(A_target_position_in_C, *C);
-                                dA[1] = product_dims(link_position_in_A, A);
-                                sA[0] = last_stride(target_position_in_A, A);
-                                sA[1] = last_stride(link_position_in_A, A);
-                                if constexpr (transpose_A) {
-                                    std::swap(dA[0], dA[1]);
-                                    std::swap(sA[0], sA[1]);
-                                }
-
-                                dB[0] = product_dims(link_position_in_B, B);
-                                dB[1] = product_dims(B_target_position_in_C, *C);
-                                sB[0] = last_stride(link_position_in_B, B);
-                                sB[1] = last_stride(target_position_in_B, B);
-                                if constexpr (transpose_B) {
-                                    std::swap(dB[0], dB[1]);
-                                    std::swap(sB[0], sB[1]);
-                                }
-
-                                dC[0] = product_dims(A_target_position_in_C, *C);
-                                dC[1] = product_dims(B_target_position_in_C, *C);
-                                sC[0] = last_stride(A_target_position_in_C, *C);
-                                sC[1] = last_stride(B_target_position_in_C, *C);
-                                if constexpr (transpose_C) {
-                                    std::swap(dC[0], dC[1]);
-                                    std::swap(sC[0], sC[1]);
-                                }
-
-                                TensorView<CDataType, 2>       tC{*C, dC, sC};
-                                const TensorView<ADataType, 2> tA{const_cast<AType<ADataType, ARank> &>(A), dA, sA};
-                                const TensorView<BDataType, 2> tB{const_cast<BType<BDataType, BRank> &>(B), dB, sB};
-
-                                // println("--------------------");
-                                // println(*C);
-                                // println(tC);
-                                // println("--------------------");
-                                // println(A);
-                                // println(tA);
-                                // println("--------------------");
-                                // println(B);
-                                // println(tB);
-                                // println("--------------------");
-
-                                if constexpr (!transpose_C && !transpose_A && !transpose_B) {
-                                    linear_algebra::gemm<false, false>(AB_prefactor, tA, tB, C_prefactor, &tC);
-                                    return;
-                                } else if constexpr (!transpose_C && !transpose_A) {
-                                    linear_algebra::gemm<false, true>(AB_prefactor, tA, tB, C_prefactor, &tC);
-                                    return;
-                                } else if constexpr (!transpose_C && !transpose_B) {
-                                    linear_algebra::gemm<true, false>(AB_prefactor, tA, tB, C_prefactor, &tC);
-                                    return;
-                                } else if constexpr (!transpose_C) {
-                                    linear_algebra::gemm<true, true>(AB_prefactor, tA, tB, C_prefactor, &tC);
-                                    return;
-                                } else if constexpr (!transpose_A && !transpose_B) {
-                                    linear_algebra::gemm<true, true>(AB_prefactor, tB, tA, C_prefactor, &tC);
-                                    return;
-                                } else if constexpr (!transpose_A && transpose_B) {
-                                    linear_algebra::gemm<false, true>(AB_prefactor, tB, tA, C_prefactor, &tC);
-                                    return;
-                                } else if constexpr (transpose_A && !transpose_B) {
-                                    linear_algebra::gemm<true, false>(AB_prefactor, tB, tA, C_prefactor, &tC);
-                                    return;
-                                } else if constexpr (transpose_A && transpose_B) {
-                                    linear_algebra::gemm<false, false>(AB_prefactor, tB, tA, C_prefactor, &tC);
-                                    return;
-                                } else {
-                                    println("This GEMM case is not programmed: transpose_C {}, transpose_A {}, transpose_B {}", transpose_C,
-                                            transpose_A, transpose_B);
-                                    std::abort();
-                                }
+                                println("This GEMM case is not programmed: transpose_C {}, transpose_A {}, transpose_B {}", transpose_C,
+                                        transpose_A, transpose_B);
+                                std::abort();
                             }
                         }
                     }
                 }
             }
-            // If we make it here, then none of our algorithms for this last block could be used.
-            // Fall through to the generic algorithm below.
-        } while (false);
+        }
     }
 
+// Label to jump to when the generic algorithm is needed.
+generic_default:;
     // If we somehow make it here, then none of our algorithms above could be used. Attempt to use
     // the generic algorithm instead.
-    einsum_generic_algorithm(C_unique, A_unique, B_unique, link_unique, C_indices, A_indices, B_indices, unique_target_dims,
-                             unique_link_dims, target_position_in_C, link_position_in_link, C_prefactor, C, AB_prefactor, A, B);
+    if constexpr (!einsums::detail::IsBasicTensorV<AType<ADataType, ARank>, ARank, ADataType> ||
+                  !einsums::detail::IsBasicTensorV<BType<BDataType, BRank>, BRank, BDataType> ||
+                  !einsums::detail::IsBasicTensorV<CType<CDataType, CRank>, CRank, CDataType>) {
+        einsum_special_dispatch<true>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
+    } else {
+        einsum_generic_algorithm(C_unique, A_unique, B_unique, link_unique, C_indices, A_indices, B_indices, unique_target_dims,
+                                 unique_link_dims, target_position_in_C, link_position_in_link, C_prefactor, C, AB_prefactor, A, B);
+    }
 }
 } // namespace detail
 
@@ -652,15 +489,28 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
 
 #if defined(EINSUMS_CONTINUOUSLY_TEST_EINSUM)
     // Clone C into a new tensor
-    Tensor<CDataType, CRank> testC = Tensor<CDataType, CRank>{C->dims()};
-    testC                          = *C;
-
-    // Perform the einsum using only the generic algorithm
-    timer::push("testing");
-    // #pragma omp task depend(in: A, B) depend(inout: testC)
-    { detail::einsum<true>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, A, B_indices, B); }
-    // #pragma omp taskwait depend(in: testC)
-    timer::pop();
+    auto testC = Tensor<CDataType, CRank>(*C);
+#    ifdef __HIP__
+    if constexpr (einsums::detail::IsDeviceRankTensorV<CType<CDataType, CRank>, CRank, CDataType>) {
+        auto testA = Tensor<ADataType, ARank>(A);
+        auto testB = Tensor<BDataType, BRank>(B);
+        // Perform the einsum using only the generic algorithm
+        timer::push("testing");
+        // #pragma omp task depend(in: A, B) depend(inout: testC)
+        { detail::einsum<true>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, testA, B_indices, testB); }
+        // #pragma omp taskwait depend(in: testC)
+        timer::pop();
+    } else {
+#    endif
+        // Perform the einsum using only the generic algorithm
+        timer::push("testing");
+        // #pragma omp task depend(in: A, B) depend(inout: testC)
+        { detail::einsum<true>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, A, B_indices, B); }
+        // #pragma omp taskwait depend(in: testC)
+        timer::pop();
+#    ifdef __HIP__
+    }
+#    endif
 #endif
 
     // Default einsums.

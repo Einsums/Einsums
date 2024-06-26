@@ -41,8 +41,11 @@ struct DeviceTensorView;
 template <typename T, size_t Rank>
 struct BlockDeviceTensor;
 
-template <typename T, size_t Rank, template <typename, size_t> typename TensorType>
-struct BlockTensorBase;
+template <typename T, size_t Rank>
+struct TiledDeviceTensor;
+
+template <typename T, size_t Rank>
+struct TiledDeviceTensorView;
 #endif
 
 namespace detail {
@@ -140,14 +143,6 @@ struct IsDeviceRankTensor : public std::bool_constant<std::is_same_v<std::decay_
                                                       std::is_same_v<std::decay_t<D>, BlockDeviceTensor<T, Rank>>> {};
 
 /**
- * @struct IsDeviceRankBlockTensor
- *
- * @brief Struct for specifying that a tensor is device compatible, and is block diagonal.
- */
-template <typename D, size_t Rank, typename T>
-struct IsDeviceRankBlockTensor : public std::bool_constant<IsDeviceRankTensorV<D, Rank, T> && IsBlockTensor<D, Rank, T>> {};
-
-/**
  * @property IsDeviceRankTensorV
  *
  * @brief True if the tensor is device compatible.
@@ -156,12 +151,42 @@ template <typename D, size_t Rank, typename T>
 inline constexpr bool IsDeviceRankTensorV = IsDeviceRankTensor<D, Rank, T>::value;
 
 /**
- * @property IsDeviceRankTensorV
+ * @struct IsDeviceRankBlockTensor
+ *
+ * @brief Struct for specifying that a tensor is device compatible, and is block diagonal.
+ */
+template <typename D, size_t Rank, typename T>
+struct IsDeviceRankBlockTensor : public std::bool_constant<IsDeviceRankTensorV<D, Rank, T> && IsBlockTensorV<D, Rank, T>> {};
+
+/**
+ * @property IsDeviceRankBlockTensorV
  *
  * @brief True if the tensor is device compatible and is block diagonal.
  */
 template <typename D, size_t Rank, typename T>
 inline constexpr bool IsDeviceRankBlockTensorV = IsDeviceRankBlockTensor<D, Rank, T>::value;
+
+/**
+ * @struct IsDeviceRankTiledTensor
+ *
+ * @brief Struct for specifying that a tensor is device compatible, and is tiled.
+ */
+template <typename D, size_t Rank, typename T>
+struct IsDeviceRankTiledTensor : public std::bool_constant<IsDeviceRankTensorV<D, Rank, T> && IsTiledTensorV<D, Rank, T>> {};
+
+/**
+ * @property IsDeviceRankTiledTensorV
+ *
+ * @brief True if the tensor is device compatible and is tiled.
+ */
+template <typename D, size_t Rank, typename T>
+inline constexpr bool IsDeviceRankTiledTensorV = IsDeviceRankTiledTensor<D, Rank, T>::value;
+
+template <typename D, size_t Rank, typename T>
+struct IsDeviceRankBasicTensor : public std::bool_constant<IsBasicTensorV<D, Rank, T> && IsDeviceRankTensorV<D, Rank, T>> {};
+
+template <typename D, size_t Rank, typename T>
+constexpr inline bool IsDeviceRankBasicTensorV = IsDeviceRankBasicTensor<D, Rank, T>::value;
 #endif
 
 } // namespace detail
@@ -238,6 +263,14 @@ concept DiskRankTensor = detail::IsOndiskTensorV<Input, Rank, ViewRank, DataType
  */
 template <typename Input, size_t Rank, typename DataType = double>
 concept DeviceRankTensor = detail::IsDeviceRankTensorV<Input, Rank, DataType>;
+
+/**
+ * @concept DeviceRankTensor
+ *
+ * @brief Concept for testing whether a tensor parameter is available to the GPU.
+ */
+template <typename Input, size_t Rank, typename DataType = double>
+concept DeviceRankBasicTensor = detail::IsDeviceRankBasicTensorV<Input, Rank, DataType>;
 
 /**
  * @concept DeviceRankBlockTensor
