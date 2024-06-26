@@ -70,13 +70,13 @@ struct IsBasicTensor
                                 std::is_same_v<std::decay_t<D>, DeviceTensorView<T, Rank>>> {};
 #endif
 
-template<typename D, size_t Rank, typename T>
+template <typename D, size_t Rank, typename T>
 constexpr inline bool IsBasicTensorV = IsBasicTensor<D, Rank, T>::value;
 
-template<typename D, size_t Rank, typename T>
+template <typename D, size_t Rank, typename T>
 struct IsIncoreRankBasicTensor : public std::bool_constant<IsBasicTensorV<D, Rank, T> && IsIncoreRankTensorV<D, Rank, T>> {};
 
-template<typename D, size_t Rank, typename T>
+template <typename D, size_t Rank, typename T>
 constexpr inline bool IsIncoreRankBasicTensorV = IsIncoreRankBasicTensor<D, Rank, T>::value;
 
 // Block tensor tests.
@@ -189,7 +189,7 @@ concept CoreRankTensor = detail::IsIncoreRankTensorV<Input, Rank, DataType>;
  *
  * This allows Tensor, TensorView, DeviceTensor, and DeviceTensorview.
  */
-template<typename Input, size_t Rank, typename DataType = double>
+template <typename Input, size_t Rank, typename DataType = double>
 concept RankBasicTensor = detail::IsBasicTensorV<Input, Rank, DataType>;
 
 /**
@@ -197,7 +197,7 @@ concept RankBasicTensor = detail::IsBasicTensorV<Input, Rank, DataType>;
  *
  * This allows Tensor, TensorView, DeviceTensor, and DeviceTensorview.
  */
-template<typename Input, size_t Rank, typename DataType = double>
+template <typename Input, size_t Rank, typename DataType = double>
 concept CoreRankBasicTensor = detail::IsIncoreRankBasicTensorV<Input, Rank, DataType>;
 
 /**

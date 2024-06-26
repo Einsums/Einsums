@@ -24,7 +24,7 @@
 BEGIN_EINSUMS_NAMESPACE_HPP(einsums::tensor_algebra)
 
 /*
- * Dispatchers for einsum. 
+ * Dispatchers for einsum.
  */
 template <template <typename, size_t> typename AType, typename ADataType, size_t ARank, template <typename, size_t> typename BType,
           typename BDataType, size_t BRank, template <typename, size_t> typename CType, typename CDataType, size_t CRank,
@@ -33,6 +33,22 @@ template <template <typename, size_t> typename AType, typename ADataType, size_t
         requires std::is_base_of_v<::einsums::detail::TensorBase<ADataType, ARank>, AType<ADataType, ARank>>;
         requires std::is_base_of_v<::einsums::detail::TensorBase<BDataType, BRank>, BType<BDataType, BRank>>;
         requires std::is_base_of_v<::einsums::detail::TensorBase<CDataType, CRank>, CType<CDataType, CRank>>;
+#ifdef __HIP__
+        requires(CoreRankTensor<AType<ADataType, ARank>, ARank, ADataType> && CoreRankTensor<BType<BDataType, BRank>, BRank, BDataType> &&
+                 CoreRankTensor<CType<CDataType, CRank>, CRank, CDataType>) ||
+                    (DeviceRankTensor<AType<ADataType, ARank>, ARank, ADataType> &&
+                     DeviceRankTensor<BType<BDataType, BRank>, BRank, BDataType> &&
+                     DeviceRankTensor<CType<CDataType, CRank>, CRank, CDataType>) ||
+                    (DiskRankTensor<AType<ADataType, ARank>, ARank, ARank, ADataType> &&
+                     DiskRankTensor<BType<BDataType, BRank>, BRank, BRank, BDataType> &&
+                     DiskRankTensor<CType<CDataType, CRank>, CRank, CRank, CDataType>);
+#else
+        requires(CoreRankTensor<AType<ADataType, ARank>, ARank, ADataType> && CoreRankTensor<BType<BDataType, BRank>, BRank, BDataType> &&
+                 CoreRankTensor<CType<CDataType, CRank>, CRank, CDataType>) ||
+                    (DiskRankTensor<AType<ADataType, ARank>, ARank, ARank, ADataType> &&
+                     DiskRankTensor<BType<BDataType, BRank>, BRank, BRank, BDataType> &&
+                     DiskRankTensor<CType<CDataType, CRank>, CRank, CRank, CDataType>);
+#endif
     }
 auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<CDataType, CRank> *C, const U UAB_prefactor,
             const std::tuple<AIndices...> &A_indices, const AType<ADataType, ARank> &A, const std::tuple<BIndices...> &B_indices,
@@ -207,7 +223,7 @@ auto khatri_rao(const std::tuple<AIndices...> &, const AType<T, ARank> &A, const
 END_EINSUMS_NAMESPACE_HPP(einsums::tensor_algebra)
 
 #ifdef __HIP__
-#include "einsums/tensor_algebra_backends/GPUTensorAlgebra.hpp"
+#    include "einsums/tensor_algebra_backends/GPUTensorAlgebra.hpp"
 #endif
 #include "einsums/tensor_algebra_backends/Dispatch.hpp"
 #include "einsums/tensor_algebra_backends/ElementTransform.hpp"
