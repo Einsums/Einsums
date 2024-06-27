@@ -68,6 +68,11 @@ auto sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<
     auto target_dims = get_dim_ranges<CRank>(*C);
     auto a_dims      = detail::get_dim_ranges_for(A, target_position_in_A);
 
+    // If the prefactor is zero, set the tensor to zero. This avoids NaNs.
+    if(C_prefactor == T(0.0)) {
+        *C = T(0.0);
+    }
+
     // HPTT interface currently only works for full Tensors and not TensorViews
 #if defined(EINSUMS_USE_HPTT)
     if constexpr (std::is_same_v<CType<T, CRank>, Tensor<T, CRank>> && std::is_same_v<AType<T, ARank>, Tensor<T, ARank>>) {

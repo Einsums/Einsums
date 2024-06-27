@@ -7,6 +7,10 @@
 #include "einsums/Tensor.hpp"
 #include "einsums/utility/TensorTraits.hpp"
 
+#ifdef __HIP__
+#    include "einsums/DeviceTensor.hpp"
+#endif
+
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
@@ -18,11 +22,25 @@
 namespace einsums::tensor_algebra {
 template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename BType, size_t BRank,
           typename... AIndices, typename... BIndices, typename T>
-auto khatri_rao(const std::tuple<AIndices...> &, const AType<T, ARank> &A, const std::tuple<BIndices...> &,
-                const BType<T, BRank> &B) -> Tensor<T, 2>
+auto khatri_rao(const std::tuple<AIndices...> &, const AType<T, ARank> &A, const std::tuple<BIndices...> &, const BType<T, BRank> &B) ->
+#ifdef __HIP__
+    std::conditional_t<einsums::detail::IsIncoreRankTensorV<AType<T, ARank>, ARank, T>, Tensor<T, 2>, DeviceTensor<T, 2>>
+    requires requires {
+        requires(std::is_base_of_v<::einsums::detail::TensorBase<T, ARank>, AType<T, ARank>> &&
+                 std::is_base_of_v<::einsums::detail::TensorBase<T, BRank>, BType<T, BRank>>);
+        requires InSamePlace<AType<T, ARank>, BType<T, BRank>, ARank, BRank, T>;
+    }
+#else
+    Tensor<T, 2>
     requires(std::is_base_of_v<::einsums::detail::TensorBase<T, ARank>, AType<T, ARank>> &&
              std::is_base_of_v<::einsums::detail::TensorBase<T, BRank>, BType<T, BRank>>)
+#endif
 {
+#ifdef __HIP__
+    using OutType = std::conditional_t<einsums::detail::IsIncoreRankTensorV<AType<T, ARank>, ARank, T>, Tensor<T, 2>, DeviceTensor<T, 2>>;
+#else
+    using OutType = Tensor<T, 2>;
+#endif
     LabeledSection0();
 
     constexpr auto A_indices = std::tuple<AIndices...>();
@@ -54,15 +72,31 @@ auto khatri_rao(const std::tuple<AIndices...> &, const AType<T, ARank> &A, const
         }
     });
 
-    auto result_dims = std::tuple_cat(std::make_tuple("KR product"), A_only_dims, B_only_dims, A_common_dims);
+#ifdef __HIP__
+    if constexpr (std::is_same_v<OutType, DeviceTensor<T, 2>>) {
+        auto result_dims =
+            std::tuple_cat(std::make_tuple("KR product"), einsums::detail::DEV_ONLY, A_only_dims, B_only_dims, A_common_dims);
+        // Construct resulting tensor
+        auto result = std::make_from_tuple<DeviceTensor<T, std::tuple_size_v<decltype(result_dims)> - 1>>(result_dims);
+        // Perform the actual Khatri-Rao product using our einsum routine.
+        einsum(std::tuple_cat(A_only, B_only, common), &result, std::tuple_cat(A_only, common), A, std::tuple_cat(B_only, common), B);
 
-    // Construct resulting tensor
-    auto result = std::make_from_tuple<Tensor<T, std::tuple_size_v<decltype(result_dims)> - 1>>(result_dims);
+        // Return a reconstruction of the result tensor ... this can be considered as a simple reshape of the tensor.
 
-    // Perform the actual Khatri-Rao product using our einsum routine.
-    einsum(std::tuple_cat(A_only, B_only, common), &result, std::tuple_cat(A_only, common), A, std::tuple_cat(B_only, common), B);
+        return OutType{std::move(result), "KR product", -1, detail::product_dims(A_common_position, A)};
+    } else {
+#endif
+        auto result_dims = std::tuple_cat(std::make_tuple("KR product"), A_only_dims, B_only_dims, A_common_dims);
+        // Construct resulting tensor
+        auto result = std::make_from_tuple<Tensor<T, std::tuple_size_v<decltype(result_dims)> - 1>>(result_dims);
+        // Perform the actual Khatri-Rao product using our einsum routine.
+        einsum(std::tuple_cat(A_only, B_only, common), &result, std::tuple_cat(A_only, common), A, std::tuple_cat(B_only, common), B);
 
-    // Return a reconstruction of the result tensor ... this can be considered as a simple reshape of the tensor.
-    return Tensor<T, 2>{std::move(result), "KR product", -1, detail::product_dims(A_common_position, A)};
+        // Return a reconstruction of the result tensor ... this can be considered as a simple reshape of the tensor.
+
+        return OutType{std::move(result), "KR product", -1, detail::product_dims(A_common_position, A)};
+#ifdef __HIP__
+    }
+#endif
 }
 } // namespace einsums::tensor_algebra

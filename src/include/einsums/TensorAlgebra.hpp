@@ -214,11 +214,20 @@ auto unfold(const CType<T, CRank> &source) -> Tensor<T, 2>
  * Result is described as {(I,J), r}. If multiple common indices are provided they will be collapsed into a single index in the result.
  */
 template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename BType, size_t BRank,
-          typename... AIndices, typename... BIndices, typename T = double>
-auto khatri_rao(const std::tuple<AIndices...> &, const AType<T, ARank> &A, const std::tuple<BIndices...> &,
-                const BType<T, BRank> &B) -> Tensor<T, 2>
+          typename... AIndices, typename... BIndices, typename T>
+auto khatri_rao(const std::tuple<AIndices...> &, const AType<T, ARank> &A, const std::tuple<BIndices...> &, const BType<T, BRank> &B) ->
+#ifdef __HIP__
+    std::conditional_t<einsums::detail::IsIncoreRankTensorV<AType<T, ARank>, ARank, T>, Tensor<T, 2>, DeviceTensor<T, 2>>
+    requires requires {
+        requires(std::is_base_of_v<::einsums::detail::TensorBase<T, ARank>, AType<T, ARank>> &&
+                 std::is_base_of_v<::einsums::detail::TensorBase<T, BRank>, BType<T, BRank>>);
+        requires InSamePlace<AType<T, ARank>, BType<T, BRank>, ARank, BRank, T>;
+    };
+#else
+    Tensor<T, 2>
     requires(std::is_base_of_v<::einsums::detail::TensorBase<T, ARank>, AType<T, ARank>> &&
              std::is_base_of_v<::einsums::detail::TensorBase<T, BRank>, BType<T, BRank>>);
+#endif
 
 END_EINSUMS_NAMESPACE_HPP(einsums::tensor_algebra)
 

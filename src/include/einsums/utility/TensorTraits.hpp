@@ -189,6 +189,27 @@ template <typename D, size_t Rank, typename T>
 constexpr inline bool IsDeviceRankBasicTensorV = IsDeviceRankBasicTensor<D, Rank, T>::value;
 #endif
 
+/**
+ * @struct AreInSamePlace
+ *
+ * Determines whether the tensors are all in the same place, either in core, on disk, or on the GPU.
+ */
+#ifndef __HIP__
+template <typename AType, typename BType, size_t ARank, size_t BRank, typename ADataType, typename BDataType = ADataType>
+struct AreInSamePlace
+    : public std::bool_constant<(IsIncoreRankTensorV<AType, ARank, ADataType> && IsIncoreRankTensorV<BType, BRank, BDataType>) ||
+                                (IsOndiskTensorV<AType, ARank, ARank, ADataType> && IsOndiskTensorV<BType, BRank, BRank, BDataType>)> {};
+#else
+template <typename AType, typename BType, size_t ARank, size_t BRank, typename ADataType, typename BDataType = ADataType>
+struct AreInSamePlace
+    : public std::bool_constant<(IsIncoreRankTensorV<AType, ARank, ADataType> && IsIncoreRankTensorV<BType, BRank, BDataType>) ||
+                                (IsOndiskTensorV<AType, ARank, ARank, ADataType> && IsOndiskTensorV<BType, BRank, BRank, BDataType>) ||
+                                (IsDeviceRankTensorV<AType, ARank, ADataType> && IsDeviceRankTensorV<BType, BRank, BDataType>)> {};
+#endif
+
+template<typename AType, typename BType, size_t ARank, size_t BRank, typename ADataType, typename BDataType = ADataType>
+constexpr inline bool AreInSamePlaceV = AreInSamePlace<AType, BType, ARank, BRank, ADataType, BDataType>::value;
+
 } // namespace detail
 
 /**
@@ -288,6 +309,9 @@ concept DeviceRankBlockTensor = detail::IsDeviceRankBlockTensorV<Input, Rank, Da
 template <typename Input, size_t Rank, typename DataType = double>
 concept DeviceRankTiledTensor = detail::IsDeviceRankTiledTensorV<Input, Rank, DataType>;
 #endif
+
+template<typename AType, typename BType, size_t ARank, size_t BRank, typename ADataType, typename BDataType = ADataType>
+concept InSamePlace = detail::AreInSamePlaceV<AType, BType, ARank, BRank, ADataType, BDataType>;
 
 namespace detail {
 
