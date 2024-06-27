@@ -32,7 +32,7 @@ TEST_CASE("Test dependence GPU timing", "[jobs][gpu]") {
     SECTION("Sequential") {
         timer::push("Sequential GPU");
 
-        for (int sentinel = 0; sentinel < 10; sentinel++) {
+        for (int sentinel = 0; sentinel < 100; sentinel++) {
             einsums::tensor_algebra::einsum(Indices{i, j}, &C, Indices{i, k}, A, Indices{k, j}, B);
             einsums::tensor_algebra::einsum(Indices{i, j}, &D, Indices{i, k}, A, Indices{k, j}, B);
         }
@@ -46,7 +46,7 @@ TEST_CASE("Test dependence GPU timing", "[jobs][gpu]") {
         {
             timer::push("Tasked GPU");
 
-            for (int sentinel = 0; sentinel < 10; sentinel++) {
+            for (int sentinel = 0; sentinel < 100; sentinel++) {
 #pragma omp task depend(in : A, B), depend(out : C)
                 { einsums::tensor_algebra::einsum(Indices{i, j}, &C, Indices{i, k}, A, Indices{k, j}, B); }
 

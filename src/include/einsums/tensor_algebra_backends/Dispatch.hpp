@@ -11,7 +11,9 @@
 #include "einsums/Tensor.hpp"
 #include "einsums/Timer.hpp"
 #include "einsums/tensor_algebra_backends/BlockAlgebra.hpp"
-#include "einsums/tensor_algebra_backends/GPUTensorAlgebra.hpp"
+#ifdef __HIP__
+#    include "einsums/tensor_algebra_backends/GPUTensorAlgebra.hpp"
+#endif
 #include "einsums/tensor_algebra_backends/GenericAlgorithm.hpp"
 #include "einsums/utility/TensorTraits.hpp"
 
@@ -313,119 +315,117 @@ auto einsum(const CDataType C_prefactor, const std::tuple<CIndices...> & /*Cs*/,
         else if constexpr (CRank >= 2 && ARank >= 2 && BRank >= 2) {
             if constexpr (!A_hadamard_found && !B_hadamard_found && !C_hadamard_found) {
                 if constexpr (is_gemm_possible) {
-                    if constexpr (is_gemv_possible) {
-                        if constexpr (einsums::detail::IsBlockTensorV<AType<ADataType, ARank>, ARank, ADataType> &&
-                                      einsums::detail::IsBlockTensorV<BType<BDataType, BRank>, BRank, BDataType> &&
-                                      einsums::detail::IsBlockTensorV<CType<CDataType, CRank>, CRank, CDataType>) {
-                            EINSUMS_OMP_PARALLEL_FOR
-                            for (int i = 0; i < A.num_blocks(); i++) {
-                                if (A.block_dim(i) == 0) {
-                                    continue;
-                                }
-                                einsum<false>(C_prefactor, C_indices, &(C->block(i)), AB_prefactor, A_indices, A.block(i), B_indices,
-                                              B.block(i));
+                    if constexpr (einsums::detail::IsBlockTensorV<AType<ADataType, ARank>, ARank, ADataType> &&
+                                  einsums::detail::IsBlockTensorV<BType<BDataType, BRank>, BRank, BDataType> &&
+                                  einsums::detail::IsBlockTensorV<CType<CDataType, CRank>, CRank, CDataType>) {
+                        EINSUMS_OMP_PARALLEL_FOR
+                        for (int i = 0; i < A.num_blocks(); i++) {
+                            if (A.block_dim(i) == 0) {
+                                continue;
                             }
-                        } else if constexpr (!einsums::detail::IsBasicTensorV<AType<ADataType, ARank>, ARank, ADataType> ||
-                                             !einsums::detail::IsBasicTensorV<BType<BDataType, BRank>, BRank, BDataType> ||
-                                             !einsums::detail::IsBasicTensorV<CType<CDataType, CRank>, CRank, CDataType>) {
-                            goto generic_default; // Use generic algorithm.
-                        } else {
+                            einsum<false>(C_prefactor, C_indices, &(C->block(i)), AB_prefactor, A_indices, A.block(i), B_indices,
+                                          B.block(i));
+                        }
+                    } else if constexpr (!einsums::detail::IsBasicTensorV<AType<ADataType, ARank>, ARank, ADataType> ||
+                                         !einsums::detail::IsBasicTensorV<BType<BDataType, BRank>, BRank, BDataType> ||
+                                         !einsums::detail::IsBasicTensorV<CType<CDataType, CRank>, CRank, CDataType>) {
+                        goto generic_default; // Use generic algorithm.
+                    } else {
 
-                            if (!C->full_view_of_underlying() || !A.full_view_of_underlying() || !B.full_view_of_underlying()) {
-                                // Fall through to generic algorithm.
-                                goto generic_default;
-                            }
+                        if (!C->full_view_of_underlying() || !A.full_view_of_underlying() || !B.full_view_of_underlying()) {
+                            // Fall through to generic algorithm.
+                            goto generic_default;
+                        }
 
-                            constexpr bool transpose_A = std::get<1>(link_position_in_A) == 0;
-                            constexpr bool transpose_B = std::get<1>(link_position_in_B) != 0;
-                            constexpr bool transpose_C = std::get<1>(A_target_position_in_C) != 0;
+                        constexpr bool transpose_A = std::get<1>(link_position_in_A) == 0;
+                        constexpr bool transpose_B = std::get<1>(link_position_in_B) != 0;
+                        constexpr bool transpose_C = std::get<1>(A_target_position_in_C) != 0;
 
-                            Dim<2>    dA, dB, dC;
-                            Stride<2> sA, sB, sC;
+                        Dim<2>    dA, dB, dC;
+                        Stride<2> sA, sB, sC;
 
-                            dA[0] = product_dims(A_target_position_in_C, *C);
-                            dA[1] = product_dims(link_position_in_A, A);
-                            sA[0] = last_stride(target_position_in_A, A);
-                            sA[1] = last_stride(link_position_in_A, A);
-                            if constexpr (transpose_A) {
-                                std::swap(dA[0], dA[1]);
-                                std::swap(sA[0], sA[1]);
-                            }
+                        dA[0] = product_dims(A_target_position_in_C, *C);
+                        dA[1] = product_dims(link_position_in_A, A);
+                        sA[0] = last_stride(target_position_in_A, A);
+                        sA[1] = last_stride(link_position_in_A, A);
+                        if constexpr (transpose_A) {
+                            std::swap(dA[0], dA[1]);
+                            std::swap(sA[0], sA[1]);
+                        }
 
-                            dB[0] = product_dims(link_position_in_B, B);
-                            dB[1] = product_dims(B_target_position_in_C, *C);
-                            sB[0] = last_stride(link_position_in_B, B);
-                            sB[1] = last_stride(target_position_in_B, B);
-                            if constexpr (transpose_B) {
-                                std::swap(dB[0], dB[1]);
-                                std::swap(sB[0], sB[1]);
-                            }
+                        dB[0] = product_dims(link_position_in_B, B);
+                        dB[1] = product_dims(B_target_position_in_C, *C);
+                        sB[0] = last_stride(link_position_in_B, B);
+                        sB[1] = last_stride(target_position_in_B, B);
+                        if constexpr (transpose_B) {
+                            std::swap(dB[0], dB[1]);
+                            std::swap(sB[0], sB[1]);
+                        }
 
-                            dC[0] = product_dims(A_target_position_in_C, *C);
-                            dC[1] = product_dims(B_target_position_in_C, *C);
-                            sC[0] = last_stride(A_target_position_in_C, *C);
-                            sC[1] = last_stride(B_target_position_in_C, *C);
-                            if constexpr (transpose_C) {
-                                std::swap(dC[0], dC[1]);
-                                std::swap(sC[0], sC[1]);
-                            }
+                        dC[0] = product_dims(A_target_position_in_C, *C);
+                        dC[1] = product_dims(B_target_position_in_C, *C);
+                        sC[0] = last_stride(A_target_position_in_C, *C);
+                        sC[1] = last_stride(B_target_position_in_C, *C);
+                        if constexpr (transpose_C) {
+                            std::swap(dC[0], dC[1]);
+                            std::swap(sC[0], sC[1]);
+                        }
 
 #ifdef __HIP__
-                            std::conditional_t<einsums::detail::IsIncoreRankTensorV<AType<ADataType, ARank>, ARank, ADataType>,
-                                               const TensorView<ADataType, 2>, const DeviceTensorView<ADataType, 2>>
-                                tA{const_cast<AType<ADataType, ARank> &>(A), dA, sA};
-                            std::conditional_t<einsums::detail::IsIncoreRankTensorV<BType<BDataType, BRank>, BRank, BDataType>,
-                                               const TensorView<BDataType, 2>, const DeviceTensorView<BDataType, 2>>
-                                tB{const_cast<BType<BDataType, BRank> &>(B), dB, sB};
-                            std::conditional_t<einsums::detail::IsIncoreRankTensorV<CType<CDataType, CRank>, CRank, CDataType>,
-                                               TensorView<CDataType, 2>, DeviceTensorView<CDataType, 2>>
-                                tC{*C, dC, sC};
+                        std::conditional_t<einsums::detail::IsIncoreRankTensorV<AType<ADataType, ARank>, ARank, ADataType>,
+                                           const TensorView<ADataType, 2>, const DeviceTensorView<ADataType, 2>>
+                            tA{const_cast<AType<ADataType, ARank> &>(A), dA, sA};
+                        std::conditional_t<einsums::detail::IsIncoreRankTensorV<BType<BDataType, BRank>, BRank, BDataType>,
+                                           const TensorView<BDataType, 2>, const DeviceTensorView<BDataType, 2>>
+                            tB{const_cast<BType<BDataType, BRank> &>(B), dB, sB};
+                        std::conditional_t<einsums::detail::IsIncoreRankTensorV<CType<CDataType, CRank>, CRank, CDataType>,
+                                           TensorView<CDataType, 2>, DeviceTensorView<CDataType, 2>>
+                            tC{*C, dC, sC};
 #else
-                            const TensorView<ADataType, 2> tA{const_cast<AType<ADataType, ARank> &>(A), dA, sA};
-                            const TensorView<BDataType, 2> tB{const_cast<BType<BDataType, BRank> &>(B), dB, sB};
-                            TensorView<CDataType, 2>       tC{*C, dC, sC};
+                        const TensorView<ADataType, 2> tA{const_cast<AType<ADataType, ARank> &>(A), dA, sA};
+                        const TensorView<BDataType, 2> tB{const_cast<BType<BDataType, BRank> &>(B), dB, sB};
+                        TensorView<CDataType, 2>       tC{*C, dC, sC};
 #endif
 
-                            // println("--------------------");
-                            // println(*C);
-                            // println(tC);
-                            // println("--------------------");
-                            // println(A);
-                            // println(tA);
-                            // println("--------------------");
-                            // println(B);
-                            // println(tB);
-                            // println("--------------------");
+                        // println("--------------------");
+                        // println(*C);
+                        // println(tC);
+                        // println("--------------------");
+                        // println(A);
+                        // println(tA);
+                        // println("--------------------");
+                        // println(B);
+                        // println(tB);
+                        // println("--------------------");
 
-                            if constexpr (!transpose_C && !transpose_A && !transpose_B) {
-                                linear_algebra::gemm<false, false>(AB_prefactor, tA, tB, C_prefactor, &tC);
-                                return;
-                            } else if constexpr (!transpose_C && !transpose_A) {
-                                linear_algebra::gemm<false, true>(AB_prefactor, tA, tB, C_prefactor, &tC);
-                                return;
-                            } else if constexpr (!transpose_C && !transpose_B) {
-                                linear_algebra::gemm<true, false>(AB_prefactor, tA, tB, C_prefactor, &tC);
-                                return;
-                            } else if constexpr (!transpose_C) {
-                                linear_algebra::gemm<true, true>(AB_prefactor, tA, tB, C_prefactor, &tC);
-                                return;
-                            } else if constexpr (!transpose_A && !transpose_B) {
-                                linear_algebra::gemm<true, true>(AB_prefactor, tB, tA, C_prefactor, &tC);
-                                return;
-                            } else if constexpr (!transpose_A && transpose_B) {
-                                linear_algebra::gemm<false, true>(AB_prefactor, tB, tA, C_prefactor, &tC);
-                                return;
-                            } else if constexpr (transpose_A && !transpose_B) {
-                                linear_algebra::gemm<true, false>(AB_prefactor, tB, tA, C_prefactor, &tC);
-                                return;
-                            } else if constexpr (transpose_A && transpose_B) {
-                                linear_algebra::gemm<false, false>(AB_prefactor, tB, tA, C_prefactor, &tC);
-                                return;
-                            } else {
-                                println("This GEMM case is not programmed: transpose_C {}, transpose_A {}, transpose_B {}", transpose_C,
-                                        transpose_A, transpose_B);
-                                std::abort();
-                            }
+                        if constexpr (!transpose_C && !transpose_A && !transpose_B) {
+                            linear_algebra::gemm<false, false>(AB_prefactor, tA, tB, C_prefactor, &tC);
+                            return;
+                        } else if constexpr (!transpose_C && !transpose_A) {
+                            linear_algebra::gemm<false, true>(AB_prefactor, tA, tB, C_prefactor, &tC);
+                            return;
+                        } else if constexpr (!transpose_C && !transpose_B) {
+                            linear_algebra::gemm<true, false>(AB_prefactor, tA, tB, C_prefactor, &tC);
+                            return;
+                        } else if constexpr (!transpose_C) {
+                            linear_algebra::gemm<true, true>(AB_prefactor, tA, tB, C_prefactor, &tC);
+                            return;
+                        } else if constexpr (!transpose_A && !transpose_B) {
+                            linear_algebra::gemm<true, true>(AB_prefactor, tB, tA, C_prefactor, &tC);
+                            return;
+                        } else if constexpr (!transpose_A && transpose_B) {
+                            linear_algebra::gemm<false, true>(AB_prefactor, tB, tA, C_prefactor, &tC);
+                            return;
+                        } else if constexpr (transpose_A && !transpose_B) {
+                            linear_algebra::gemm<true, false>(AB_prefactor, tB, tA, C_prefactor, &tC);
+                            return;
+                        } else if constexpr (transpose_A && transpose_B) {
+                            linear_algebra::gemm<false, false>(AB_prefactor, tB, tA, C_prefactor, &tC);
+                            return;
+                        } else {
+                            println("This GEMM case is not programmed: transpose_C {}, transpose_A {}, transpose_B {}", transpose_C,
+                                    transpose_A, transpose_B);
+                            std::abort();
                         }
                     }
                 }
