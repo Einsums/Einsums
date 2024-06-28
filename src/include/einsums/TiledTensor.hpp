@@ -39,13 +39,13 @@ class TiledTensorBase : public detail::TensorBase<T, Rank> {
 
     map_type _tiles;
 
-    mutable std::mutex _lock{}; // Make it mutable so that it can be modified by const methods.
-
     Dim<Rank> _dims;
 
     size_t _size, _grid_size;
 
     std::string _name{"(unnamed)"};
+
+    T _zero{0.0};
 
     /**
      * Add a tile using the underlying type's preferred method. Also gives it a name.
@@ -359,7 +359,7 @@ class TiledTensorBase : public detail::TensorBase<T, Rank> {
      */
     template <std::integral... MultiIndex>
         requires(sizeof...(MultiIndex) == Rank)
-    T operator()(MultiIndex... index) const {
+    const T &operator()(MultiIndex... index) const {
         auto coords = tile_of(index...);
 
         auto array_ind = std::array<int, Rank>{index...};
@@ -375,7 +375,7 @@ class TiledTensorBase : public detail::TensorBase<T, Rank> {
         if (has_tile(coords)) {
             return std::apply(tile(coords), array_ind);
         } else {
-            return T{0.0};
+            return _zero;
         }
     }
 
@@ -735,24 +735,20 @@ class TiledTensorBase : public detail::TensorBase<T, Rank> {
     }
 
     /**
-     * Lock the TiledTensor.
+     * Convert.
      */
-    void lock() const {
-        _lock.lock();
-    }
+    operator TensorType<T, Rank> () const {
+        TensorType<T, Rank> out(_dims);
+        out.set_name(name());
 
-    /**
-     * Try to lock the TiledTensor. Returns false if a lock could not be obtained, or true if it could.
-     */
-    bool try_lock() const {
-        return _lock.try_lock();
-    }
+        auto target_dims = get_dim_ranges<Rank>(*this);
+        for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
+            T &target_value = std::apply(out, target_combination);
+            T  value        = std::apply(*this, target_combination);
+            target_value    = value;
+        }
 
-    /**
-     * Unlock the TiledTensor.
-     */
-    void unlock() const {
-        _lock.unlock();
+        return out;
     }
 };
 

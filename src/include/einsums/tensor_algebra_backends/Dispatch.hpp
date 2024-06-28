@@ -9,8 +9,11 @@
 #include "einsums/STL.hpp"
 #include "einsums/Section.hpp"
 #include "einsums/Tensor.hpp"
+#include "einsums/BlockTensor.hpp"
+#include "einsums/TiledTensor.hpp"
 #include "einsums/Timer.hpp"
 #include "einsums/tensor_algebra_backends/BlockAlgebra.hpp"
+#include "einsums/tensor_algebra_backends/TileAlgebra.hpp"
 #ifdef __HIP__
 #    include "einsums/tensor_algebra_backends/GPUTensorAlgebra.hpp"
 #endif
@@ -490,27 +493,38 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
 #if defined(EINSUMS_CONTINUOUSLY_TEST_EINSUM)
     // Clone C into a new tensor
     auto testC = Tensor<CDataType, CRank>(*C);
+    timer::push("testing");
 #    ifdef __HIP__
     if constexpr (einsums::detail::IsDeviceRankTensorV<CType<CDataType, CRank>, CRank, CDataType>) {
         auto testA = Tensor<ADataType, ARank>(A);
         auto testB = Tensor<BDataType, BRank>(B);
         // Perform the einsum using only the generic algorithm
-        timer::push("testing");
         // #pragma omp task depend(in: A, B) depend(inout: testC)
         { detail::einsum<true>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, testA, B_indices, testB); }
         // #pragma omp taskwait depend(in: testC)
-        timer::pop();
     } else {
 #    endif
-        // Perform the einsum using only the generic algorithm
-        timer::push("testing");
-        // #pragma omp task depend(in: A, B) depend(inout: testC)
-        { detail::einsum<true>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, A, B_indices, B); }
-        // #pragma omp taskwait depend(in: testC)
-        timer::pop();
+        if constexpr (!einsums::detail::IsBasicTensorV<AType<ADataType, ARank>, ARank, ADataType> &&
+                      !einsums::detail::IsBasicTensorV<BType<BDataType, BRank>, BRank, BDataType>) {
+            auto testA = Tensor<ADataType, ARank>(A);
+            auto testB = Tensor<BDataType, BRank>(B);
+            { detail::einsum<true>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, testA, B_indices, testB); }
+        } else if constexpr (!einsums::detail::IsBasicTensorV<AType<ADataType, ARank>, ARank, ADataType>) {
+            auto testA = Tensor<ADataType, ARank>(A);
+            { detail::einsum<true>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, testA, B_indices, B); }
+        } else if constexpr (!einsums::detail::IsBasicTensorV<BType<BDataType, BRank>, BRank, BDataType>) {
+            auto testB = Tensor<BDataType, BRank>(B);
+            { detail::einsum<true>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, A, B_indices, testB); }
+        } else {
+            // Perform the einsum using only the generic algorithm
+            // #pragma omp task depend(in: A, B) depend(inout: testC)
+            { detail::einsum<true>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, A, B_indices, B); }
+            // #pragma omp taskwait depend(in: testC)
+        }
 #    ifdef __HIP__
     }
 #    endif
+    timer::pop();
 #endif
 
     // Default einsums.

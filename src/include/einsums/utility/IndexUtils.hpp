@@ -104,7 +104,7 @@ inline auto get_dim_ranges_for_many(const CType &C, const ::std::tuple<CIndices.
                                             const ::std::tuple<AIndices...> &A_indices, const BType &B,
                                             const ::std::tuple<BIndices...>         &B_indices,
                                             const ::std::tuple<AllUniqueIndices...> &All_unique_indices) {
-    return ::std::tuple{get_dim_ranges_for_many_c<AllUniqueIndices, 0>(C, C_indices, A, A_indices, B, B_indices)...};
+    return ::std::array{get_dim_ranges_for_many_c<AllUniqueIndices, 0>(C, C_indices, A, A_indices, B, B_indices)...};
 }
 
 /**
@@ -125,24 +125,32 @@ HOSTDEV inline void sentinel_to_indices(size_t sentinel, const size_t *unique_st
     }
 }
 
-template <typename... UniqueDims, size_t... I>
-void dims_to_strides(const ::std::tuple<UniqueDims...> &dims, std::array<size_t, sizeof...(UniqueDims)> &out, ::std::index_sequence<I...>) {
-    ::std::array<size_t, sizeof...(UniqueDims)> arr{::std::get<I>(dims)...};
+template <size_t num_unique_inds>
+inline void sentinel_to_indices(size_t sentinel, const std::array<size_t, num_unique_inds> &unique_strides, std::array<size_t, num_unique_inds> &out_inds) {
+    size_t hold = sentinel;
 
-    size_t stride = 1;
-
-    for (int i = sizeof...(UniqueDims) - 1; i >= 0; i--) {
-        out[i] = stride;
-        stride *= arr[i];
+#pragma unroll
+    for (ssize_t i = 0; i < num_unique_inds; i++) {
+        if (unique_strides[i] != 0) {
+            out_inds[i] = hold / unique_strides[i];
+            hold %= unique_strides[i];
+        } else {
+            out_inds[i] = 0;
+        }
     }
 }
 
 /**
  * @brief Compute the strides for turning a sentinel into a list of indices.
  */
-template <typename... UniqueDims>
-void dims_to_strides(const ::std::tuple<UniqueDims...> &dims, std::array<size_t, sizeof...(UniqueDims)> &out) {
-    dims_to_strides(dims, out, ::std::make_index_sequence<sizeof...(UniqueDims)>());
+template <size_t Dims>
+void dims_to_strides(const ::std::array<size_t, Dims> &dims, std::array<size_t, Dims> &out) {
+    size_t stride = 1;
+
+    for (int i = Dims - 1; i >= 0; i--) {
+        out[i] = stride;
+        stride *= dims[i];
+    }
 }
 
 template <int I, typename Head, typename Index>
@@ -180,6 +188,23 @@ void compile_index_table(const ::std::tuple<UniqueIndices...> &from_inds, const 
 template <typename... UniqueIndices, typename... Indices>
 void compile_index_table(const ::std::tuple<UniqueIndices...> &from_inds, const ::std::tuple<Indices...> &to_inds,
                                         int *out) {
+    compile_index_table(from_inds, to_inds, out, ::std::make_index_sequence<sizeof...(Indices)>());
+}
+
+template <typename... UniqueIndices, typename... Indices, size_t... I>
+void compile_index_table(const ::std::tuple<UniqueIndices...> &from_inds, const ::std::tuple<Indices...> &to_inds, std::array<int, sizeof...(Indices)> &out,
+                                        ::std::index_sequence<I...>) {
+    ::std::array<int, sizeof...(Indices)> arr{compile_index_table<0>(from_inds, ::std::get<I>(to_inds), out[I])...};
+}
+
+/**
+ * @brief Turn a list of indices into a link table.
+ *
+ * Takes a list of indices and creates a mapping so that an index list for a tensor can reference the unique index list.
+ */
+template <typename... UniqueIndices, typename... Indices>
+void compile_index_table(const ::std::tuple<UniqueIndices...> &from_inds, const ::std::tuple<Indices...> &to_inds,
+                                        std::array<int, sizeof...(Indices)> &out) {
     compile_index_table(from_inds, to_inds, out, ::std::make_index_sequence<sizeof...(Indices)>());
 }
 } // namespace einsums::tensor_algebra::detail
