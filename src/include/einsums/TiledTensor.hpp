@@ -16,6 +16,7 @@
 #include <unordered_map>
 #include <vector>
 #include <mutex>
+#include <concepts>
 
 namespace einsums {
 
@@ -38,7 +39,7 @@ class TiledTensorBase : public detail::TensorBase<T, Rank> {
 
     map_type _tiles;
 
-    std::mutex _lock{};
+    mutable std::mutex _lock{}; // Make it mutable so that it can be modified by const methods.
 
     Dim<Rank> _dims;
 
@@ -634,7 +635,7 @@ class TiledTensorBase : public detail::TensorBase<T, Rank> {
      * @param i The axis to retrieve.
      *
      */
-    std::vector<int> tile_offset(int i = 0) const { return _tile_offsets[i]; }
+    std::vector<int> tile_offset(int i = 0) const { return _tile_offsets.at(i); }
 
     /**
      * Returns the tile sizes.
@@ -647,7 +648,7 @@ class TiledTensorBase : public detail::TensorBase<T, Rank> {
      * @param i The axis to retrieve.
      *
      */
-    std::vector<int> tile_size(int i = 0) const { return _tile_sizes[i]; }
+    std::vector<int> tile_size(int i = 0) const { return _tile_sizes.at(i); }
 
     /**
      * Get a reference to the tile map.
@@ -695,15 +696,62 @@ class TiledTensorBase : public detail::TensorBase<T, Rank> {
 
     bool full_view_of_underlying() const { return true; }
 
-    void lock() {
+    /**
+     * Check to see if the given tile has zero size.
+     *
+     * @param index The index of the tile, as a list of integers.
+     * @return True if the tile has at least one dimension of zero, leading to a size of zero, or false if there are no zero dimensions.
+     */
+    template<std::integral... Index>
+    requires (sizeof...(Index) == Rank)
+    bool has_zero_size(Index... index) const {
+        std::array<size_t, Rank> arr_index = std::array<size_t, Rank>{(size_t) index...};
+
+        for(int i = 0; i < Rank; i++) {
+            if(_tile_sizes[i].at(arr_index[i]) == 0) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Check to see if the given tile has zero size.
+     *
+     * @param index The index of the tile, as a container of integers.
+     * @return True if the tile has at least one dimension of zero, leading to a size of zero, or false if there are no zero dimensions.
+     */
+    template<typename Storage>
+    requires (!std::integral<Storage>)
+    bool has_zero_size(const Storage &index) const {
+        for(int i = 0; i < Rank; i++) {
+            if(_tile_sizes[i].at(index[i]) == 0) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Lock the TiledTensor.
+     */
+    void lock() const {
         _lock.lock();
     }
 
-    bool try_lock() {
+    /**
+     * Try to lock the TiledTensor. Returns false if a lock could not be obtained, or true if it could.
+     */
+    bool try_lock() const {
         return _lock.try_lock();
     }
 
-    void unlock() {
+    /**
+     * Unlock the TiledTensor.
+     */
+    void unlock() const {
         _lock.unlock();
     }
 };
@@ -755,7 +803,7 @@ class TiledDeviceTensor final : public TiledTensorBase<DeviceTensor, T, Rank> {
 
         for (int i = 0; i < Rank; i++) {
             tile_name += std::to_string(pos[i]);
-            dims[i] = this->_tile_sizes[i][pos[i]];
+            dims[i] = this->_tile_sizes[i].at(pos[i]);
             if (i != Rank - 1) {
                 tile_name += ", ";
             }
@@ -763,8 +811,8 @@ class TiledDeviceTensor final : public TiledTensorBase<DeviceTensor, T, Rank> {
         tile_name += ")";
 
         this->_tiles.emplace(pos, _mode, dims);
-        this->_tiles[pos].set_name(tile_name);
-        this->_tiles[pos].zero();
+        this->_tiles.at(pos).set_name(tile_name);
+        this->_tiles.at(pos).zero();
     }
 
   public:

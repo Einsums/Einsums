@@ -53,7 +53,7 @@ TEST_CASE("gpu-sort2") {
 
         for (int i = 0, ij = 1; i < 3; i++) {
             for (int j = 0; j < 3; j++, ij++) {
-                REQUIRE(C(i, j) == A(i, j));
+                REQUIRE((double) C(i, j) == (double) A(i, j));
             }
         }
 
@@ -65,7 +65,7 @@ TEST_CASE("gpu-sort2") {
         for (int i = 0, ij = 1; i < 3; i++) {
             for (int j = 0; j < 3; j++, ij++) {
                 if (i == 0 || j == 0)
-                    REQUIRE(C(i, j) == A(i, j));
+                    REQUIRE((double) C(i, j) == (double) A(i, j));
                 else
                     CHECK((double)C(j, i) == (double)A(i, j));
             }

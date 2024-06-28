@@ -56,7 +56,7 @@ template <bool OnlyUseGenericAlgorithm, template <typename, size_t> typename ATy
         requires RankBlockTensor<AType<ADataType, ARank>, ARank, ADataType>;
         requires RankBlockTensor<BType<BDataType, BRank>, BRank, BDataType>;
         requires RankBasicTensor<CType<CDataType, CRank>, CRank, CDataType>;
-        requires CRank > 1;
+        requires CRank >= 1;
     }
 auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndices...> &C_indices, CType<CDataType, CRank> *C,
                              const std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> AB_prefactor,
@@ -73,6 +73,7 @@ auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndi
             throw std::runtime_error("einsum_special_dispatch: Block tensors need to have the same block sizes.");
         }
     }
+
 
     // Loop through and perform einsums.
     EINSUMS_OMP_PARALLEL_FOR
@@ -121,7 +122,7 @@ auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndi
         gpu::hip_catch(hipMalloc(temp, omp_get_max_threads() * sizeof(CDataType)));
         EINSUMS_OMP_PARALLEL_FOR
         for (int i = 0; i < A.num_blocks(); i++) {
-            einsum<OnlyUseGenericAlgorithm>(C_prefactor, C_indices, temp + omp_get_thread_num(), AB_prefactor, A_indices, A[i], B_indices,
+            einsum<OnlyUseGenericAlgorithm>(CDataType(0.0), C_indices, temp + omp_get_thread_num(), AB_prefactor, A_indices, A[i], B_indices,
                                             B[i]);
             gpu::stream_wait();
         }
@@ -151,7 +152,7 @@ auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndi
 #pragma omp parallel for reduction(+ : temp)
         for (int i = 0; i < A.num_blocks(); i++) {
             CType<CDataType, CRank> temp_c = *C;
-            einsum<OnlyUseGenericAlgorithm>(C_prefactor, C_indices, &temp_c, AB_prefactor, A_indices, A[i], B_indices, B[i]);
+            einsum<OnlyUseGenericAlgorithm>(CDataType(0.0), C_indices, &temp_c, AB_prefactor, A_indices, A[i], B_indices, B[i]);
             temp += (CDataType)temp_c;
         }
         *C += temp;
@@ -256,7 +257,7 @@ auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndi
         for (int i = 0; i < B.num_blocks(); i++) {
             std::array<Range, ARank> view_index;
             view_index.fill(B.block_range(i));
-            einsum<OnlyUseGenericAlgorithm>(C_prefactor, C_indices, temp + omp_get_thread_num(), AB_prefactor, A_indices,
+            einsum<OnlyUseGenericAlgorithm>(CDataType(0.0), C_indices, temp + omp_get_thread_num(), AB_prefactor, A_indices,
                                             std::apply(A, view_index), B_indices, B[i]);
             gpu::stream_wait();
         }
@@ -288,7 +289,7 @@ auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndi
             CType<CDataType, CRank>  temp_c = *C;
             std::array<Range, ARank> view_index;
             view_index.fill(B.block_range(i));
-            einsum<OnlyUseGenericAlgorithm>(C_prefactor, C_indices, &temp_c, AB_prefactor, A_indices, std::apply(A, view_index), B_indices,
+            einsum<OnlyUseGenericAlgorithm>(CDataType(0.0), C_indices, &temp_c, AB_prefactor, A_indices, std::apply(A, view_index), B_indices,
                                             B[i]);
             temp += (CDataType)temp_c;
         }
@@ -394,7 +395,7 @@ auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndi
         for (int i = 0; i < A.num_blocks(); i++) {
             std::array<Range, BRank> view_index;
             view_index.fill(A.block_range(i));
-            einsum<OnlyUseGenericAlgorithm>(C_prefactor, C_indices, temp + omp_get_thread_num(), AB_prefactor, A_indices, A[i], B_indices,
+            einsum<OnlyUseGenericAlgorithm>(CDataType(0.0), C_indices, temp + omp_get_thread_num(), AB_prefactor, A_indices, A[i], B_indices,
                                             std::apply(B, view_index));
             gpu::stream_wait();
         }
@@ -426,7 +427,7 @@ auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndi
             CType<CDataType, CRank>  temp_c = *C;
             std::array<Range, BRank> view_index;
             view_index.fill(A.block_range(i));
-            einsum<OnlyUseGenericAlgorithm>(C_prefactor, C_indices, &temp_c, AB_prefactor, A_indices, A[i], B_indices,
+            einsum<OnlyUseGenericAlgorithm>(CDataType(0.0), C_indices, &temp_c, AB_prefactor, A_indices, A[i], B_indices,
                                             std::apply(B, view_index));
             temp += (CDataType)temp_c;
         }

@@ -520,7 +520,7 @@ struct DeviceTensor : public ::einsums::detail::TensorBase<T, Rank> {
             requires NoneOfType<AllT, MultiIndex...>;
             requires NoneOfType<Range, MultiIndex...>;
         }
-    auto operator()(MultiIndex... index) -> HostDevReference<T> &;
+    auto operator()(MultiIndex... index) -> HostDevReference<T>;
 
     // WARNING: Chances are this function will not work if you mix All{}, Range{} and explicit indexes.
     /**

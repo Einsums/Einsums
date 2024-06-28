@@ -645,7 +645,7 @@ template <typename... MultiIndex>
         requires NoneOfType<AllT, MultiIndex...>;
         requires NoneOfType<Range, MultiIndex...>;
     }
-HostDevReference<T> &DeviceTensor<T, Rank>::operator()(MultiIndex... index) {
+HostDevReference<T> DeviceTensor<T, Rank>::operator()(MultiIndex... index) {
     using namespace einsums::gpu;
     assert(sizeof...(MultiIndex) <= _dims.size());
 
@@ -662,9 +662,9 @@ HostDevReference<T> &DeviceTensor<T, Rank>::operator()(MultiIndex... index) {
     }
 
     if (this->_mode == einsums::detail::MAPPED || this->_mode == einsums::detail::PINNED) {
-        return *new HostDevReference<T>(this->_host_data + ordinal, true);
+        return HostDevReference<T>(this->_host_data + ordinal, true);
     } else {
-        return *new HostDevReference<host_datatype>((host_datatype *)_data + ordinal, false);
+        return HostDevReference<host_datatype>((host_datatype *)_data + ordinal, false);
     }
 }
 

@@ -26,8 +26,8 @@ TEST_CASE("Block Device Tensor creation", "[tensor][block-tensor][gpu]") {
 
     for (int i = 0; i < 6; i++) {
         for (int j = 0; j < 6; j++) {
-            CHECK(A(i, j) == 0.0);
-            CHECK(B(i, j) == 0.0);
+            CHECK((double) A(i, j) == 0.0);
+            CHECK((double) B(i, j) == 0.0);
         }
     }
 
@@ -49,11 +49,11 @@ TEST_CASE("Block Device Tensor creation", "[tensor][block-tensor][gpu]") {
     for (int i = 0; i < 6; i++) {
         for (int j = 0; j < 6; j++) {
             if (i == j) {
-                CHECK(A(i, j) == 1.0);
-                CHECK(B(i, j) == 1.0);
+                CHECK((double) A(i, j) == 1.0);
+                CHECK((double) B(i, j) == 1.0);
             } else {
-                CHECK(A(i, j) == 0.0);
-                CHECK(B(i, j) == 0.0);
+                CHECK((double) A(i, j) == 0.0);
+                CHECK((double) B(i, j) == 0.0);
             }
         }
     }
@@ -69,9 +69,9 @@ TEST_CASE("Block Device Tensor creation", "[tensor][block-tensor][gpu]") {
     for (int i = 0; i < 6; i++) {
         for (int j = 0; j < 6; j++) {
             if (i == j) {
-                CHECK(C(i, j) == 1.0);
+                CHECK((double) C(i, j) == 1.0);
             } else {
-                CHECK(C(i, j) == 0.0);
+                CHECK((double) C(i, j) == 0.0);
             }
         }
     }
@@ -80,19 +80,20 @@ TEST_CASE("Block Device Tensor creation", "[tensor][block-tensor][gpu]") {
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
             if (i == j) {
-                CHECK(A[0](i, j) == 1.0);
-                CHECK(B[0](i, j) == 1.0);
-                CHECK(A[1](i, j) == 1.0);
-                CHECK(B[1](i, j) == 1.0);
-                CHECK(C["block1"](i, j) == 1.0);
-                CHECK(C["block2"](i, j) == 1.0);
+                CHECK((double) A[0](i, j) == 1.0);
+                CHECK((double) B[0](i, j) == 1.0);
+                CHECK((double) A[1](i, j) == 1.0);
+                CHECK((double) B[1](i, j) == 1.0);
+                CHECK((double) C["block1"](i, j) == 1.0);
+                CHECK((double) C["block2"](i, j) == 1.0);
             } else {
-                CHECK(A[0](i, j) == 0.0);
-                CHECK(B[0](i, j) == 0.0);
-                CHECK(A[1](i, j) == 0.0);
-                CHECK(B[1](i, j) == 0.0);
-                CHECK(C["block1"](i, j) == 0.0);
-                CHECK(C["block2"](i, j) == 0.0);
+                CHECK((double) A[0](i, j) == 0.0);
+                CHECK((double) A[0](i, j) == 0.0);
+                CHECK((double) B[0](i, j) == 0.0);
+                CHECK((double) A[1](i, j) == 0.0);
+                CHECK((double) B[1](i, j) == 0.0);
+                CHECK((double) C["block1"](i, j) == 0.0);
+                CHECK((double) C["block2"](i, j) == 0.0);
             }
         }
     }
@@ -109,9 +110,9 @@ TEST_CASE("Block Device Tensor creation", "[tensor][block-tensor][gpu]") {
                 REQUIRE(A.block_of(i) != A.block_of(j));
             }
             if (A.block_of(i) == A.block_of(j)) {
-                CHECK(A(i, j) == 2.0);
+                CHECK((double) A(i, j) == 2.0);
             } else {
-                CHECK(A(i, j) == 0.0);
+                CHECK((double) A(i, j) == 0.0);
             }
         }
     }
@@ -149,11 +150,11 @@ TEST_CASE("Block Device Tensor operations", "[tensor][block-tensor][gpu]") {
     for (int i = 0; i < 6; i++) {
         for (int j = 0; j < 6; j++) {
             if (i == j) {
-                CHECK(A(i, j) == 0.0);
+                CHECK((double) A(i, j) == 0.0);
             } else if (A.block_of(i) == A.block_of(j)) {
-                CHECK(A(i, j) == -1.0);
+                CHECK((double) A(i, j) == -1.0);
             } else {
-                CHECK(A(i, j) == 0.0);
+                CHECK((double) A(i, j) == 0.0);
             }
         }
     }
@@ -166,14 +167,14 @@ TEST_CASE("Block Device Tensor operations", "[tensor][block-tensor][gpu]") {
     for (int i = 0; i < 6; i++) {
         for (int j = 0; j < 6; j++) {
             if (i == j) {
-                CHECK(A(i, j) == 1.0);
-                CHECK(B(i, j) == 0.0);
+                CHECK((double) A(i, j) == 1.0);
+                CHECK((double) B(i, j) == 0.0);
             } else if (A.block_of(i) == A.block_of(j)) {
-                CHECK(A(i, j) == -1.0);
-                CHECK(B(i, j) == 1.0);
+                CHECK((double) A(i, j) == -1.0);
+                CHECK((double) B(i, j) == 1.0);
             } else {
-                CHECK(A(i, j) == 0.0);
-                CHECK(B(i, j) == 0.0);
+                CHECK((double) A(i, j) == 0.0);
+                CHECK((double) B(i, j) == 0.0);
             }
         }
     }
