@@ -72,7 +72,7 @@ template <template <typename, size_t> typename TensorType, typename T, size_t Ra
 auto sum(const TensorType<T, Rank> &tensor) -> T {
     LabeledSection0();
 
-    if constexpr (einsums::detail::IsBlockRankTensorV<TensorType<T, Rank>, Rank, T>) {
+    if constexpr (einsums::detail::IsBlockTensorV<TensorType<T, Rank>, Rank, T>) {
         T result{0};
 #pragma omp parallel for reduction(+ : result)
         for (int i = 0; i < tensor.num_blocks(); i++) {
@@ -140,7 +140,7 @@ template <template <typename, size_t> typename TensorType, typename T, size_t Ra
 auto max(const TensorType<T, Rank> &tensor) -> T {
     LabeledSection0();
 
-    if constexpr (einsums::detail::IsBlockRankTensorV<TensorType<T, Rank>, Rank, T>) {
+    if constexpr (einsums::detail::IsBlockTensorV<TensorType<T, Rank>, Rank, T>) {
         std::vector<T> max_arr(tensor.num_blocks());
 
 #pragma omp parallel for shared(max_arr)
@@ -213,7 +213,7 @@ template <template <typename, size_t> typename TensorType, typename T, size_t Ra
 auto min(const TensorType<T, Rank> &tensor) -> T {
     LabeledSection0();
 
-    if constexpr (einsums::detail::IsBlockRankTensorV<TensorType<T, Rank>, Rank, T>) {
+    if constexpr (einsums::detail::IsBlockTensorV<TensorType<T, Rank>, Rank, T>) {
         std::vector<T> min_arr(tensor.num_blocks());
 
 #pragma omp parallel for shared(min_arr)
@@ -290,7 +290,7 @@ using einsums::element_operations::sum; // nolint
 template <template <typename, size_t> typename TensorType, typename T, size_t Rank>
 auto abs(const TensorType<T, Rank> &tensor)
     -> std::conditional_t<
-        einsums::detail::IsBlockRankTensorV<TensorType<T, Rank>, Rank, T>,
+        einsums::detail::IsBlockTensorV<TensorType<T, Rank>, Rank, T>,
 #ifdef __HIP__
         std::conditional_t<einsums::detail::IsIncoreRankTensorV<TensorType<T, Rank>, Rank, T>, BlockTensor<T, Rank>,
                            BlockDeviceTensor<T, Rank>>,
@@ -300,7 +300,7 @@ auto abs(const TensorType<T, Rank> &tensor)
 #endif
     LabeledSection0();
 
-    if constexpr (einsums::detail::IsBlockRankTensorV<TensorType<T, Rank>, Rank, T>) {
+    if constexpr (einsums::detail::IsBlockTensorV<TensorType<T, Rank>, Rank, T>) {
         auto result = create_tensor_like(tensor);
 #pragma omp parallel for shared(result)
         for (int i = 0; i < tensor.num_blocks(); i++) {
@@ -362,7 +362,7 @@ auto abs(const TensorType<T, Rank> &tensor)
 template <template <typename, size_t> typename TensorType, typename T, size_t Rank>
 auto invert(const TensorType<T, Rank> &tensor)
     -> std::conditional_t<
-        einsums::detail::IsBlockRankTensorV<TensorType<T, Rank>, Rank, T>,
+        einsums::detail::IsBlockTensorV<TensorType<T, Rank>, Rank, T>,
 #ifdef __HIP__
         std::conditional_t<einsums::detail::IsIncoreRankTensorV<TensorType<T, Rank>, Rank, T>, BlockTensor<T, Rank>,
                            BlockDeviceTensor<T, Rank>>,
@@ -372,7 +372,7 @@ auto invert(const TensorType<T, Rank> &tensor)
 #endif
     LabeledSection0();
 
-    if constexpr (einsums::detail::IsBlockRankTensorV<TensorType<T, Rank>, Rank, T>) {
+    if constexpr (einsums::detail::IsBlockTensorV<TensorType<T, Rank>, Rank, T>) {
         auto result = create_tensor_like(tensor);
 #pragma omp parallel for shared(result)
         for (int i = 0; i < tensor.num_blocks(); i++) {
@@ -434,7 +434,7 @@ auto invert(const TensorType<T, Rank> &tensor)
 template <template <typename, size_t> typename TensorType, typename T, size_t Rank>
 auto exp(const TensorType<T, Rank> &tensor)
     -> std::conditional_t<
-        einsums::detail::IsBlockRankTensorV<TensorType<T, Rank>, Rank, T>,
+        einsums::detail::IsBlockTensorV<TensorType<T, Rank>, Rank, T>,
 #ifdef __HIP__
         std::conditional_t<einsums::detail::IsIncoreRankTensorV<TensorType<T, Rank>, Rank, T>, BlockTensor<T, Rank>,
                            BlockDeviceTensor<T, Rank>>,
@@ -444,7 +444,7 @@ auto exp(const TensorType<T, Rank> &tensor)
 #endif
     LabeledSection0();
 
-    if constexpr (einsums::detail::IsBlockRankTensorV<TensorType<T, Rank>, Rank, T>) {
+    if constexpr (einsums::detail::IsBlockTensorV<TensorType<T, Rank>, Rank, T>) {
         auto result = create_tensor_like(tensor);
 #pragma omp parallel for shared(result)
         for (int i = 0; i < tensor.num_blocks(); i++) {
@@ -506,7 +506,7 @@ auto exp(const TensorType<T, Rank> &tensor)
 template <template <typename, size_t> typename TensorType, typename T, size_t Rank>
 auto scale(const T &scale, const TensorType<T, Rank> &tensor)
     -> std::conditional_t<
-        einsums::detail::IsBlockRankTensorV<TensorType<T, Rank>, Rank, T>,
+        einsums::detail::IsBlockTensorV<TensorType<T, Rank>, Rank, T>,
 #ifdef __HIP__
         std::conditional_t<einsums::detail::IsIncoreRankTensorV<TensorType<T, Rank>, Rank, T>, BlockTensor<T, Rank>,
                            BlockDeviceTensor<T, Rank>>,
@@ -516,7 +516,7 @@ auto scale(const T &scale, const TensorType<T, Rank> &tensor)
 #endif
     LabeledSection0();
 
-    if constexpr (einsums::detail::IsBlockRankTensorV<TensorType<T, Rank>, Rank, T>) {
+    if constexpr (einsums::detail::IsBlockTensorV<TensorType<T, Rank>, Rank, T>) {
         auto result = create_tensor_like(tensor);
 #pragma omp parallel for shared(result)
         for (int i = 0; i < tensor.num_blocks(); i++) {

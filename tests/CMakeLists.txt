@@ -10,6 +10,7 @@ add_executable(test-all
     TensorAlgebraTasks.cpp
     BlockTensor.cpp
     ElementOps.cpp
+    TiledTensor.cpp
 )
 
 if(EINSUMS_COVERAGE AND NOT MSVC)
@@ -34,6 +35,7 @@ extend_einsums_target(test-all
         DeviceTensor_extras.hip
         DeviceTensor.hip
         DeviceTensorView.hip
+        DeviceTiledTensor.hip
         GPULinearAlgebra.hip
         GPU.hip
         GPUTensorAlgebraTasks.hip

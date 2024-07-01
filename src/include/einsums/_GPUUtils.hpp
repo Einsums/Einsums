@@ -543,4 +543,68 @@ inline void device_synchronize() {
     hip_catch(hipDeviceSynchronize());
 }
 
+__device__ inline bool is_zero(double value) {
+    return value == 0.0;
+}
+
+__device__ inline bool is_zero(float value) {
+    return value == 0.0f;
+}
+
+__device__ inline bool is_zero(hipComplex value) {
+    return value.x == 0.0f && value.y == 0.0f;
+}
+
+__device__ inline bool is_zero(hipDoubleComplex value) {
+    return value.x == 0.0 && value.y == 0.0;
+}
+
+__device__ inline void make_zero(double &value) {
+    value = 0.0;
+}
+
+__device__ inline void make_zero(float &value) {
+    value = 0.0f;
+}
+
+__device__ inline void make_zero(hipComplex &value) {
+    value.x = 0.0f;
+    value.y = 0.0f;
+}
+
+__device__ inline void make_zero(hipDoubleComplex &value) {
+    value.x = 0.0;
+    value.y = 0.0;
+}
+
+/**
+ * @brief Wrap the atomicAdd operation to allow polymorphism on complex arguments.
+ */
+__device__ inline void atomicAdd_wrap(float *address, float value) {
+    atomicAdd(address, value);
+}
+
+/**
+ * @brief Wrap the atomicAdd operation to allow polymorphism on complex arguments.
+ */
+__device__ inline void atomicAdd_wrap(double *address, double value) {
+    atomicAdd(address, value);
+}
+
+/**
+ * @brief Wrap the atomicAdd operation to allow polymorphism on complex arguments.
+ */
+__device__ inline void atomicAdd_wrap(hipComplex *address, hipComplex value) {
+    atomicAdd(&(address->x), value.x);
+    atomicAdd(&(address->y), value.y);
+}
+
+/**
+ * @brief Wrap the atomicAdd operation to allow polymorphism on complex arguments.
+ */
+__device__ inline void atomicAdd_wrap(hipDoubleComplex *address, hipDoubleComplex value) {
+    atomicAdd(&(address->x), value.x);
+    atomicAdd(&(address->y), value.y);
+}
+
 END_EINSUMS_NAMESPACE_HPP(einsums::gpu)

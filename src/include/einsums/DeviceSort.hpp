@@ -11,12 +11,13 @@
 #include "einsums/_TensorAlgebraUtilities.hpp"
 
 #include "einsums/DeviceTensor.hpp"
-#include "einsums/GPULinearAlgebra.hpp"
+#include "einsums/LinearAlgebra.hpp"
 #include "einsums/STL.hpp"
 #include "einsums/Section.hpp"
-#include "einsums/gpu/GPUTensorAlgebra.hpp"
+#include "einsums/TensorAlgebra.hpp"
 #include "einsums/utility/SmartPointerTraits.hpp"
 #include "einsums/utility/TensorTraits.hpp"
+#include "einsums/utility/IndexUtils.hpp"
 
 #include <hip/driver_types.h>
 #include <hip/hip_common.h>

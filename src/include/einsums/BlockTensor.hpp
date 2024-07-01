@@ -34,6 +34,8 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
     template <typename T_, size_t OtherRank, template <typename, size_t> typename OtherTensor>
     friend struct BlockTensorBase;
 
+    T _zero_value{0.0};
+
     // template <typename T_, size_t Rank_>
     // friend struct BlockTensorViewBase;
 
@@ -447,7 +449,10 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
                 // Remap the index to be in the block.
                 index_list[i] -= _ranges.at(block)[0];
             } else {
-                return *new T(0);
+                if (_zero_value != T(0.0)) {
+                    _zero_value = T(0.0);
+                }
+                return _zero_value;
             }
         }
 
@@ -917,7 +922,7 @@ struct BlockDeviceTensor : public BlockTensorBase<T, Rank, DeviceTensor> {
             requires NoneOfType<AllT, MultiIndex...>;
             requires NoneOfType<Range, MultiIndex...>;
         }
-    auto operator()(MultiIndex... index) -> HostDevReference<T> & {
+    auto operator()(MultiIndex... index) -> HostDevReference<T> {
 
         static_assert(sizeof...(MultiIndex) == Rank);
 
@@ -944,7 +949,7 @@ struct BlockDeviceTensor : public BlockTensorBase<T, Rank, DeviceTensor> {
                 // Remap the index to be in the block.
                 index_list[i] -= BlockTensorBase<T, Rank, DeviceTensor>::_ranges.at(block)[0];
             } else {
-                return *new HostDevReference<T>();
+                return HostDevReference<T>();
             }
         }
 

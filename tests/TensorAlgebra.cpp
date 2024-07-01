@@ -2504,7 +2504,7 @@ TEST_CASE("Dot TensorView and Tensor") {
 
     for (size_t l = 0; l < l_; l++) {
         for (size_t j = 0; j < j_; j++) {
-            println("{:20.14f} {:20.14f} {:20.14f}", C(l, j), C0(l, j), std::abs(C(l, j) - C0(l, j)));
+            //println("{:20.14f} {:20.14f} {:20.14f}", C(l, j), C0(l, j), std::abs(C(l, j) - C0(l, j)));
             REQUIRE_THAT(C(l, j), Catch::Matchers::WithinAbs(C0(l, j), 1e-12));
         }
     }

@@ -1,6 +1,6 @@
 
 #include "einsums/DeviceTensor.hpp"
-#include "einsums/GPULinearAlgebra.hpp"
+#include "einsums/LinearAlgebra.hpp"
 
 #include <catch2/catch_all.hpp>
 #include <hip/driver_types.h>
@@ -76,7 +76,6 @@ TEMPLATE_TEST_CASE("GPU dot products", "[gpu][linear-algebra]", float, double, s
     using namespace einsums::gpu::detail;
 
     DeviceTensor<TestType, 2> A("A", DEV_ONLY, 3, 3), B("B", DEV_ONLY, 3, 3);
-    DeviceTensor<TestType, 0> C("C", DEV_ONLY);
 
     // Input data.
     std::vector<TestType> A_data{1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0}, B_data{11.0, 22.0, 33.0, 44.0, 55.0, 66.0, 77.0, 88.0, 99.0};
@@ -84,9 +83,9 @@ TEMPLATE_TEST_CASE("GPU dot products", "[gpu][linear-algebra]", float, double, s
     A.read(A_data);
     B.read(B_data);
 
-    einsums::linear_algebra::dot((TestType)0.0, C, (TestType)1.0, A, B);
+    TestType test = einsums::linear_algebra::dot(A, B);
 
-    REQUIRE((TestType)C == (TestType)3135.0);
+    REQUIRE(test == (TestType)3135.0);
 }
 
 TEMPLATE_TEST_CASE("GPU outer products", "[gpu][linear-algebra]", float, double, std::complex<float>, std::complex<double>) {

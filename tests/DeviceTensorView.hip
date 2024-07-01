@@ -59,31 +59,31 @@ TEST_CASE("Constructing Views", "[gpu][tensor]") {
 
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
-            CHECK(A1(i, j) == 0.0);
-            CHECK(B1(i, j) == 1.0);
-            CHECK(C1(i, j) == 2.0);
-            CHECK(A5(i, j) == 0.0);
-            CHECK(B5(i, j) == 1.0);
-            CHECK(C5(i, j) == 2.0);
+            CHECK((double) A1(i, j) == 0.0);
+            CHECK((double) B1(i, j) == 1.0);
+            CHECK((double) C1(i, j) == 2.0);
+            CHECK((double) A5(i, j) == 0.0);
+            CHECK((double) B5(i, j) == 1.0);
+            CHECK((double) C5(i, j) == 2.0);
 
             if (i != 2 && j != 2) {
-                CHECK(A6(i, j) == 0.0);
-                CHECK(B6(i, j) == 1.0);
-                CHECK(C6(i, j) == 2.0);
-                CHECK(A7(i, j) == 0.0);
-                CHECK(B7(i, j) == 1.0);
-                CHECK(C7(i, j) == 2.0);
+                CHECK((double) A6(i, j) == 0.0);
+                CHECK((double) B6(i, j) == 1.0);
+                CHECK((double) C6(i, j) == 2.0);
+                CHECK((double) A7(i, j) == 0.0);
+                CHECK((double) B7(i, j) == 1.0);
+                CHECK((double) C7(i, j) == 2.0);
             }
         }
     }
 
     for (int i = 0; i < 9; i++) {
-        CHECK(A2(i) == 0.0);
-        CHECK(B2(i) == 1.0);
-        CHECK(C2(i) == 2.0);
-        CHECK(A4(i) == 0.0);
-        CHECK(B4(i) == 1.0);
-        CHECK(C4(i) == 2.0);
+        CHECK((double) A2(i) == 0.0);
+        CHECK((double) B2(i) == 1.0);
+        CHECK((double) C2(i) == 2.0);
+        CHECK((double) A4(i) == 0.0);
+        CHECK((double) B4(i) == 1.0);
+        CHECK((double) C4(i) == 2.0);
     }
 }
 
@@ -118,12 +118,12 @@ TEST_CASE("GPU View Set all", "[gpu][tensor]") {
 
     for (size_t i = 0; i < 3; i++) {
         for (size_t j = 0; j < 3; j++) {
-            CHECK(A(i, j).get() == 4.0);
-            CHECK((B(i, j).get() == 5.0));
-            CHECK((C(i, j).get() == 6.0));
-            CHECK((A1(i, j) == 4.0));
-            CHECK((B1(i, j) == 5.0));
-            CHECK((C1(i, j) == 6.0));
+            CHECK((double) A(i, j) == 4.0);
+            CHECK((double) B(i, j) == 5.0);
+            CHECK((double) C(i, j) == 6.0);
+            CHECK((double) A1(i, j) == 4.0);
+            CHECK((double) B1(i, j) == 5.0);
+            CHECK((double) C1(i, j) == 6.0);
         }
     }
 
@@ -141,12 +141,12 @@ TEST_CASE("GPU View Set all", "[gpu][tensor]") {
 
     for (size_t i = 0; i < 3; i++) {
         for (size_t j = 0; j < 3; j++) {
-            CHECK((A(i, j).get() == 1.0));
-            CHECK((B(i, j).get() == 2.0));
-            CHECK((C(i, j).get() == 3.0));
-            CHECK((A1(i, j) == 1.0));
-            CHECK((B1(i, j) == 2.0));
-            CHECK((C1(i, j) == 3.0));
+            CHECK((double) A(i, j) == 1.0);
+            CHECK((double) B(i, j) == 2.0);
+            CHECK((double) C(i, j) == 3.0);
+            CHECK((double) A1(i, j) == 1.0);
+            CHECK((double) B1(i, j) == 2.0);
+            CHECK((double) C1(i, j) == 3.0);
         }
     }
 }
