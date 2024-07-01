@@ -11,7 +11,7 @@
 #include "einsums/_TensorAlgebraUtilities.hpp"
 
 #include "einsums/DeviceTensor.hpp"
-#include "einsums/GPULinearAlgebra.hpp"
+#include "einsums/LinearAlgebra.hpp"
 #include "einsums/STL.hpp"
 #include "einsums/Section.hpp"
 #include "einsums/TensorAlgebra.hpp"

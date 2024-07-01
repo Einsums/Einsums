@@ -4,7 +4,7 @@
 //----------------------------------------------------------------------------------------------
 
 #include "einsums/DeviceTensor.hpp"
-#include "einsums/GPULinearAlgebra.hpp"
+#include "einsums/LinearAlgebra.hpp"
 #include "einsums/STL.hpp"
 #include "einsums/Sort.hpp"
 #include "einsums/State.hpp"

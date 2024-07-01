@@ -26,7 +26,6 @@
 #include "einsums/DeviceTensor.hpp"
 #include "einsums/_GPUCast.hpp"
 #include "einsums/_GPUUtils.hpp"
-#include "einsums/GPULinearAlgebra.hpp"
 #endif
 
 #include "einsums/TensorAlgebra.hpp"

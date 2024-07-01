@@ -1,7 +1,7 @@
 #include "einsums/_Common.hpp"
 #include "einsums/_GPUUtils.hpp"
 
-#include "einsums/GPULinearAlgebra.hpp"
+#include "einsums/LinearAlgebra.hpp"
 
 #include <hip/driver_types.h>
 #include <hip/hip_common.h>

@@ -15,70 +15,6 @@ namespace tensor_algebra {
 
 namespace detail {
 
-__device__ inline bool is_zero(double value) {
-    return value == 0.0;
-}
-
-__device__ inline bool is_zero(float value) {
-    return value == 0.0f;
-}
-
-__device__ inline bool is_zero(hipComplex value) {
-    return value.x == 0.0f && value.y == 0.0f;
-}
-
-__device__ inline bool is_zero(hipDoubleComplex value) {
-    return value.x == 0.0 && value.y == 0.0;
-}
-
-__device__ inline void make_zero(double &value) {
-    value = 0.0;
-}
-
-__device__ inline void make_zero(float &value) {
-    value = 0.0f;
-}
-
-__device__ inline void make_zero(hipComplex &value) {
-    value.x = 0.0f;
-    value.y = 0.0f;
-}
-
-__device__ inline void make_zero(hipDoubleComplex &value) {
-    value.x = 0.0;
-    value.y = 0.0;
-}
-
-/**
- * @brief Wrap the atomicAdd operation to allow polymorphism on complex arguments.
- */
-__device__ inline void atomicAdd_wrap(float *address, float value) {
-    atomicAdd(address, value);
-}
-
-/**
- * @brief Wrap the atomicAdd operation to allow polymorphism on complex arguments.
- */
-__device__ inline void atomicAdd_wrap(double *address, double value) {
-    atomicAdd(address, value);
-}
-
-/**
- * @brief Wrap the atomicAdd operation to allow polymorphism on complex arguments.
- */
-__device__ inline void atomicAdd_wrap(hipComplex *address, hipComplex value) {
-    atomicAdd(&(address->x), value.x);
-    atomicAdd(&(address->y), value.y);
-}
-
-/**
- * @brief Wrap the atomicAdd operation to allow polymorphism on complex arguments.
- */
-__device__ inline void atomicAdd_wrap(hipDoubleComplex *address, hipDoubleComplex value) {
-    atomicAdd(&(address->x), value.x);
-    atomicAdd(&(address->y), value.y);
-}
-
 template <typename CDataType, typename ADataType, typename BDataType, size_t UniqueRank, size_t CRank, size_t ARank, size_t BRank>
 __global__ void
 einsum_generic_algorithm_gpu(const size_t *unique_strides, const int *C_index_table, const int *A_index_table, const int *B_index_table,
@@ -139,7 +75,7 @@ einsum_generic_algorithm_gpu(const size_t *unique_strides, const int *C_index_ta
             B_sentinel += B_stride[i] * Unique_index[B_index_table[i]];
         }
 
-        atomicAdd_wrap(C + C_sentinel, (CDataType)(AB_prefactor * A[A_sentinel] * B[B_sentinel]));
+        einsums::gpu::atomicAdd_wrap(C + C_sentinel, (CDataType)(AB_prefactor * A[A_sentinel] * B[B_sentinel]));
 
         curr_index += kernel_size;
     }
@@ -191,7 +127,7 @@ einsum_generic_zero_rank_gpu(const size_t *unique_strides, const int *A_index_ta
         work[thread_id] += A[A_sentinel] * B[B_sentinel];
     }
 
-    atomicAdd_wrap(C, AB_prefactor * work[thread_id]);
+    einsums::gpu::atomicAdd_wrap(C, AB_prefactor * work[thread_id]);
 }
 
 template <typename... CUniqueIndices, typename... AUniqueIndices, typename... BUniqueIndices, typename... LinkUniqueIndices,

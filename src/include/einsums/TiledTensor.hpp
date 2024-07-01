@@ -4,6 +4,7 @@
 
 #include "einsums/Tensor.hpp"
 #include "einsums/utility/HashFuncs.hpp"
+#include "einsums/utility/TensorTraits.hpp"
 
 #include <string>
 
@@ -13,10 +14,10 @@
 
 #include <array>
 #include <cmath>
+#include <concepts>
+#include <mutex>
 #include <unordered_map>
 #include <vector>
-#include <mutex>
-#include <concepts>
 
 namespace einsums {
 
@@ -32,7 +33,8 @@ namespace einsums {
 template <template <typename, size_t> typename TensorType, typename T, size_t Rank>
 class TiledTensorBase : public detail::TensorBase<T, Rank> {
   public:
-    using map_type = typename std::unordered_map<std::array<int, Rank>, TensorType<T, Rank>, einsums::hashes::container_hash<std::array<int, Rank>>>;
+    using map_type =
+        typename std::unordered_map<std::array<int, Rank>, TensorType<T, Rank>, einsums::hashes::container_hash<std::array<int, Rank>>>;
 
   protected:
     std::array<std::vector<int>, Rank> _tile_offsets, _tile_sizes;
@@ -44,8 +46,6 @@ class TiledTensorBase : public detail::TensorBase<T, Rank> {
     size_t _size, _grid_size;
 
     std::string _name{"(unnamed)"};
-
-    T _zero{0.0};
 
     /**
      * Add a tile using the underlying type's preferred method. Also gives it a name.
@@ -359,7 +359,7 @@ class TiledTensorBase : public detail::TensorBase<T, Rank> {
      */
     template <std::integral... MultiIndex>
         requires(sizeof...(MultiIndex) == Rank)
-    const T &operator()(MultiIndex... index) const {
+    T operator()(MultiIndex... index) const {
         auto coords = tile_of(index...);
 
         auto array_ind = std::array<int, Rank>{index...};
@@ -375,7 +375,7 @@ class TiledTensorBase : public detail::TensorBase<T, Rank> {
         if (has_tile(coords)) {
             return std::apply(tile(coords), array_ind);
         } else {
-            return _zero;
+            return T{0.0};
         }
     }
 
@@ -702,13 +702,13 @@ class TiledTensorBase : public detail::TensorBase<T, Rank> {
      * @param index The index of the tile, as a list of integers.
      * @return True if the tile has at least one dimension of zero, leading to a size of zero, or false if there are no zero dimensions.
      */
-    template<std::integral... Index>
-    requires (sizeof...(Index) == Rank)
+    template <std::integral... Index>
+        requires(sizeof...(Index) == Rank)
     bool has_zero_size(Index... index) const {
-        std::array<size_t, Rank> arr_index = std::array<size_t, Rank>{(size_t) index...};
+        std::array<size_t, Rank> arr_index = std::array<size_t, Rank>{(size_t)index...};
 
-        for(int i = 0; i < Rank; i++) {
-            if(_tile_sizes[i].at(arr_index[i]) == 0) {
+        for (int i = 0; i < Rank; i++) {
+            if (_tile_sizes[i].at(arr_index[i]) == 0) {
                 return true;
             }
         }
@@ -722,11 +722,11 @@ class TiledTensorBase : public detail::TensorBase<T, Rank> {
      * @param index The index of the tile, as a container of integers.
      * @return True if the tile has at least one dimension of zero, leading to a size of zero, or false if there are no zero dimensions.
      */
-    template<typename Storage>
-    requires (!std::integral<Storage>)
+    template <typename Storage>
+        requires(!std::integral<Storage>)
     bool has_zero_size(const Storage &index) const {
-        for(int i = 0; i < Rank; i++) {
-            if(_tile_sizes[i].at(index[i]) == 0) {
+        for (int i = 0; i < Rank; i++) {
+            if (_tile_sizes[i].at(index[i]) == 0) {
                 return true;
             }
         }
@@ -737,13 +737,13 @@ class TiledTensorBase : public detail::TensorBase<T, Rank> {
     /**
      * Convert.
      */
-    operator TensorType<T, Rank> () const {
+    operator TensorType<T, Rank>() const {
         TensorType<T, Rank> out(_dims);
         out.set_name(name());
 
         auto target_dims = get_dim_ranges<Rank>(*this);
         for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
-            T &target_value = std::apply(out, target_combination);
+            auto target_value = std::apply(out, target_combination);
             T  value        = std::apply(*this, target_combination);
             target_value    = value;
         }
@@ -784,7 +784,10 @@ class TiledTensorView final : public TiledTensorBase<TensorView, T, Rank> {
 
     [[nodiscard]] bool full_view_of_underlying() const override { return _full_view_of_underlying; }
 
-    void insert_tile(std::array<int, Rank> pos, TensorView<T, Rank> &view) { this->_tiles[pos] = view; }
+    void insert_tile(std::array<int, Rank> pos, TensorView<T, Rank> &view) {
+        std::lock_guard(*this);
+        this->_tiles[pos] = view;
+    }
 };
 
 #ifdef __HIP__
@@ -806,7 +809,7 @@ class TiledDeviceTensor final : public TiledTensorBase<DeviceTensor, T, Rank> {
         }
         tile_name += ")";
 
-        this->_tiles.emplace(pos, _mode, dims);
+        this->_tiles.emplace(pos, DeviceTensor<T, Rank>(dims, _mode));
         this->_tiles.at(pos).set_name(tile_name);
         this->_tiles.at(pos).zero();
     }
@@ -815,20 +818,76 @@ class TiledDeviceTensor final : public TiledTensorBase<DeviceTensor, T, Rank> {
     TiledDeviceTensor() = default;
 
     template <typename... Sizes>
-        requires (!(std::is_same_v<Sizes, detail::HostToDeviceMode> || ...))
-                 TiledDeviceTensor(std::string name, Sizes... sizes, detail::HostToDeviceMode mode = detail::DEV_ONLY)
-        : _mode{mode},
-    TiledTensorBase<DeviceTensor, T, Rank>(name, sizes...) {}
+        requires(!(std::is_same_v<Sizes, detail::HostToDeviceMode> || ...))
+    TiledDeviceTensor(std::string name, detail::HostToDeviceMode mode, Sizes... sizes)
+        : _mode{mode}, TiledTensorBase<DeviceTensor, T, Rank>(name, sizes...) {}
 
     TiledDeviceTensor(const TiledDeviceTensor<T, Rank> &other) = default;
 
     ~TiledDeviceTensor() = default;
+
+    /**
+     * Indexes into the tensor. If the index points to a tile that is not initialized, this will return zero.
+     *
+     * @param index The index to evaluate.
+     * @return The value at the position.
+     */
+    template <std::integral... MultiIndex>
+        requires(sizeof...(MultiIndex) == Rank)
+    T operator()(MultiIndex... index) const {
+        auto coords = this->tile_of(index...);
+
+        auto array_ind = std::array<int, Rank>{index...};
+
+        // Find the index in the tile.
+        for (int i = 0; i < Rank; i++) {
+            if (array_ind[i] < 0) {
+                array_ind[i] += this->_dims[i];
+            }
+            array_ind[i] -= this->_tile_offsets[i][coords[i]];
+        }
+
+        if (this->has_tile(coords)) {
+            return std::apply(this->tile(coords), array_ind);
+        } else {
+            return T{0};
+        }
+    }
+
+    /**
+     * Indexes into the tensor. If the index points to a tile that is not initialized, it will create the tile and return a value for it.
+     *
+     * @param index The index to evaluate.
+     * @return A reference to the position.
+     */
+    template <std::integral... MultiIndex>
+        requires(sizeof...(MultiIndex) == Rank)
+    HostDevReference<T> operator()(MultiIndex... index) {
+        auto coords = this->tile_of(index...);
+
+        auto array_ind = std::array<int, Rank>{index...};
+
+        // Find the index in the tile.
+        for (int i = 0; i < Rank; i++) {
+            if (array_ind[i] < 0) {
+                array_ind[i] += this->_dims[i];
+            }
+            array_ind[i] -= this->_tile_offsets[i][coords[i]];
+        }
+        auto &out = this->tile(coords);
+
+        return std::apply(out, array_ind);
+    }
+
+    operator Tensor<T, Rank>() const {
+        return (Tensor<T, Rank>) (DeviceTensor<T, Rank>) *this;
+    }
 };
 
 template <typename T, size_t Rank>
 class TiledDeviceTensorView final : public TiledTensorBase<DeviceTensorView, T, Rank> {
   private:
-    bool                   _full_view_of_underlying{false};
+    bool                     _full_view_of_underlying{false};
     detail::HostToDeviceMode _mode{detail::DEV_ONLY};
 
     void add_tile(std::array<int, Rank> pos) override { throw std::runtime_error("Can't add a tile to a TiledDeviceTensorView!"); }
@@ -837,10 +896,9 @@ class TiledDeviceTensorView final : public TiledTensorBase<DeviceTensorView, T, 
     TiledDeviceTensorView() = default;
 
     template <typename... Sizes>
-        requires (!(std::is_same_v<Sizes, detail::HostToDeviceMode> || ...))
-                 TiledDeviceTensorView(std::string name, Sizes... sizes, detail::HostToDeviceMode mode = detail::DEV_ONLY)
-        : _mode{mode},
-    TiledTensorBase<DeviceTensorView, T, Rank>(name, sizes...) {}
+        requires(!(std::is_same_v<Sizes, detail::HostToDeviceMode> || ...))
+    TiledDeviceTensorView(std::string name, detail::HostToDeviceMode mode, Sizes... sizes)
+        : _mode{mode}, TiledTensorBase<DeviceTensorView, T, Rank>(name, sizes...) {}
 
     TiledDeviceTensorView(const TiledDeviceTensorView<T, Rank> &other) = default;
 
@@ -849,14 +907,68 @@ class TiledDeviceTensorView final : public TiledTensorBase<DeviceTensorView, T, 
     [[nodiscard]] bool full_view_of_underlying() const override { return _full_view_of_underlying; }
 
     void insert_tile(std::array<int, Rank> pos, DeviceTensorView<T, Rank> &view) { this->_tiles[pos] = view; }
+
+    /**
+     * Indexes into the tensor. If the index points to a tile that is not initialized, this will return zero.
+     *
+     * @param index The index to evaluate.
+     * @return The value at the position.
+     */
+    template <std::integral... MultiIndex>
+        requires(sizeof...(MultiIndex) == Rank)
+    T operator()(MultiIndex... index) const {
+        auto coords = this->tile_of(index...);
+
+        auto array_ind = std::array<int, Rank>{index...};
+
+        // Find the index in the tile.
+        for (int i = 0; i < Rank; i++) {
+            if (array_ind[i] < 0) {
+                array_ind[i] += this->_dims[i];
+            }
+            array_ind[i] -= this->_tile_offsets[i][coords[i]];
+        }
+
+        if (this->has_tile(coords)) {
+            return std::apply(this->tile(coords), array_ind);
+        } else {
+            return T{0};
+        }
+    }
+
+    /**
+     * Indexes into the tensor. If the index points to a tile that is not initialized, it will create the tile and return a value for it.
+     *
+     * @param index The index to evaluate.
+     * @return A reference to the position.
+     */
+    template <std::integral... MultiIndex>
+        requires(sizeof...(MultiIndex) == Rank)
+    HostDevReference<T> operator()(MultiIndex... index) {
+        auto coords = this->tile_of(index...);
+
+        auto array_ind = std::array<int, Rank>{index...};
+
+        // Find the index in the tile.
+        for (int i = 0; i < Rank; i++) {
+            if (array_ind[i] < 0) {
+                array_ind[i] += this->_dims[i];
+            }
+            array_ind[i] -= this->_tile_offsets[i][coords[i]];
+        }
+        auto &out = this->tile(coords);
+
+        return std::apply(out, array_ind);
+    }
 };
 
 #endif
 
 } // namespace einsums
 
-template <size_t Rank, typename T>
-void println(const einsums::TiledTensor<T, Rank> &A, TensorPrintOptions options = {}) {
+template <template<typename, size_t> typename TensorType, size_t Rank, typename T>
+    requires einsums::RankTiledTensor<TensorType<T, Rank>, Rank, T>
+void println(const TensorType<T, Rank> &A, TensorPrintOptions options = {}) {
     println("Name: {}", A.name());
     {
         print::Indent const indent{};
@@ -886,8 +998,9 @@ void println(const einsums::TiledTensor<T, Rank> &A, TensorPrintOptions options 
     }
 }
 
-template <size_t Rank, typename T>
-void fprintln(FILE *fp, const einsums::TiledTensor<T, Rank> &A, TensorPrintOptions options = {}) {
+template <template<typename, size_t> typename TensorType, size_t Rank, typename T>
+    requires einsums::RankTiledTensor<TensorType<T, Rank>, Rank, T>
+void fprintln(FILE *fp, const TensorType<T, Rank> &A, TensorPrintOptions options = {}) {
     fprintln(fp, "Name: {}", A.name());
     {
         print::Indent const indent{};
@@ -917,8 +1030,9 @@ void fprintln(FILE *fp, const einsums::TiledTensor<T, Rank> &A, TensorPrintOptio
     }
 }
 
-template <size_t Rank, typename T>
-void fprintln(std::ostream &os, const einsums::TiledTensor<T, Rank> &A, TensorPrintOptions options = {}) {
+template <template<typename, size_t> typename TensorType, size_t Rank, typename T>
+    requires einsums::RankTiledTensor<TensorType<T, Rank>, Rank, T>
+void fprintln(std::ostream &os, const TensorType<T, Rank> &A, TensorPrintOptions options = {}) {
     fprintln(os, "Name: {}", A.name());
     {
         print::Indent const indent{};

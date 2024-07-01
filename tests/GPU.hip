@@ -1,7 +1,7 @@
 #include "einsums/_Common.hpp"
 
 #include "einsums/DeviceTensor.hpp"
-#include "einsums/GPULinearAlgebra.hpp"
+#include "einsums/LinearAlgebra.hpp"
 #include "einsums/GPUTimer.hpp"
 
 #include <catch2/catch_all.hpp>

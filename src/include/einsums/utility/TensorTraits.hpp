@@ -138,9 +138,11 @@ inline constexpr bool IsOndiskTensorV = IsOndiskTensor<D, Rank, ViewRank, T>::va
  * @brief Struct for specifying that a tensor is device compatible.
  */
 template <typename D, size_t Rank, typename T>
-struct IsDeviceRankTensor : public std::bool_constant<std::is_same_v<std::decay_t<D>, DeviceTensor<T, Rank>> ||
-                                                      std::is_same_v<std::decay_t<D>, DeviceTensorView<T, Rank>> ||
-                                                      std::is_same_v<std::decay_t<D>, BlockDeviceTensor<T, Rank>>> {};
+struct IsDeviceRankTensor
+    : public std::bool_constant<
+          std::is_same_v<std::decay_t<D>, DeviceTensor<T, Rank>> || std::is_same_v<std::decay_t<D>, DeviceTensorView<T, Rank>> ||
+          std::is_same_v<std::decay_t<D>, BlockDeviceTensor<T, Rank>> || std::is_same_v<std::decay_t<D>, TiledDeviceTensor<T, Rank>> ||
+          std::is_same_v<std::decay_t<D>, TiledDeviceTensorView<T, Rank>>> {};
 
 /**
  * @property IsDeviceRankTensorV
@@ -207,7 +209,7 @@ struct AreInSamePlace
                                 (IsDeviceRankTensorV<AType, ARank, ADataType> && IsDeviceRankTensorV<BType, BRank, BDataType>)> {};
 #endif
 
-template<typename AType, typename BType, size_t ARank, size_t BRank, typename ADataType, typename BDataType = ADataType>
+template <typename AType, typename BType, size_t ARank, size_t BRank, typename ADataType, typename BDataType = ADataType>
 constexpr inline bool AreInSamePlaceV = AreInSamePlace<AType, BType, ARank, BRank, ADataType, BDataType>::value;
 
 } // namespace detail
@@ -310,8 +312,38 @@ template <typename Input, size_t Rank, typename DataType = double>
 concept DeviceRankTiledTensor = detail::IsDeviceRankTiledTensorV<Input, Rank, DataType>;
 #endif
 
-template<typename AType, typename BType, size_t ARank, size_t BRank, typename ADataType, typename BDataType = ADataType>
+template <typename AType, typename BType, size_t ARank, size_t BRank, typename ADataType, typename BDataType = ADataType>
 concept InSamePlace = detail::AreInSamePlaceV<AType, BType, ARank, BRank, ADataType, BDataType>;
+
+template <template <typename, size_t> typename TensorType, size_t Rank, typename T>
+struct remove_view {
+    using type = TensorType<T, Rank>;
+};
+
+template <size_t Rank, typename T>
+struct remove_view<TensorView, Rank, T> {
+    using type = Tensor<T, Rank>;
+};
+
+template <size_t Rank, typename T>
+struct remove_view<TiledTensorView, Rank, T> {
+    using type = TiledTensor<T, Rank>;
+};
+
+#ifdef __HIP__
+template <size_t Rank, typename T>
+struct remove_view<DeviceTensorView, Rank, T> {
+    using type = DeviceTensor<T, Rank>;
+};
+
+template <size_t Rank, typename T>
+struct remove_view<TiledDeviceTensorView, Rank, T> {
+    using type = TiledDeviceTensor<T, Rank>;
+};
+#endif
+
+template <template <typename, size_t> typename TensorType, size_t Rank, typename T>
+using remove_view_t = typename remove_view<TensorType, Rank, T>::type;
 
 namespace detail {
 
