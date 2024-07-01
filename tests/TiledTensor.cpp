@@ -443,6 +443,7 @@ TEST_CASE("tiled einsum1", "[tensor]") {
                 B(i, j) = ij;
             }
         }
+        C.zero();
 
         REQUIRE_NOTHROW(einsum(Indices{index::i, index::j}, &C, Indices{index::i, index::k}, A, Indices{index::k, index::j}, B));
 
@@ -453,15 +454,15 @@ TEST_CASE("tiled einsum1", "[tensor]") {
         /*[[ 30,  36,  42],
            [ 66,  81,  96],
            [102, 126, 150]]*/
-        REQUIRE(C(0, 0) == 30.0);
-        REQUIRE(C(0, 1) == 36.0);
-        REQUIRE(C(0, 2) == 42.0);
-        REQUIRE(C(1, 0) == 66.0);
-        REQUIRE(C(1, 1) == 81.0);
-        REQUIRE(C(1, 2) == 96.0);
-        REQUIRE(C(2, 0) == 102.0);
-        REQUIRE(C(2, 1) == 126.0);
-        REQUIRE(C(2, 2) == 150.0);
+        CHECK(C(0, 0) == 30.0);
+        CHECK(C(0, 1) == 36.0);
+        CHECK(C(0, 2) == 42.0);
+        CHECK(C(1, 0) == 66.0);
+        CHECK(C(1, 1) == 81.0);
+        CHECK(C(1, 2) == 96.0);
+        CHECK(C(2, 0) == 102.0);
+        CHECK(C(2, 1) == 126.0);
+        CHECK(C(2, 2) == 150.0);
     }
 
     SECTION("il=ijk,jkl") {
@@ -477,6 +478,7 @@ TEST_CASE("tiled einsum1", "[tensor]") {
                 }
             }
         }
+        C.zero();
 
         // println(A);
         // println(B);

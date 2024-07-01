@@ -60,6 +60,7 @@ TEST_CASE("Block Tensor creation", "[tensor][block-tensor]") {
     C.push_block(Tensor<double, 2>("block2", 3, 3));
     C.insert_block(0, Tensor<double, 2>("block1", 3, 3));
     C.set_name("C");
+    C.zero();
 
     // Perform basic matrix multiplication
     einsums::linear_algebra::gemm<false, false>(1.0, A, B, 0.0, &C);

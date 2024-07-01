@@ -443,7 +443,7 @@ generic_default:;
     if constexpr (!einsums::detail::IsBasicTensorV<AType<ADataType, ARank>, ARank, ADataType> ||
                   !einsums::detail::IsBasicTensorV<BType<BDataType, BRank>, BRank, BDataType> ||
                   !einsums::detail::IsBasicTensorV<CType<CDataType, CRank>, CRank, CDataType>) {
-        einsum_special_dispatch<true>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
+        einsum_special_dispatch<OnlyUseGenericAlgorithm>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
     } else {
         einsum_generic_algorithm(C_unique, A_unique, B_unique, link_unique, C_indices, A_indices, B_indices, unique_target_dims,
                                  unique_link_dims, target_position_in_C, link_position_in_link, C_prefactor, C, AB_prefactor, A, B);

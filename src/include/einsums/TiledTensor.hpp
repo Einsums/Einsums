@@ -740,12 +740,11 @@ class TiledTensorBase : public detail::TensorBase<T, Rank> {
     operator TensorType<T, Rank>() const {
         TensorType<T, Rank> out(_dims);
         out.set_name(name());
+        out.zero();
 
         auto target_dims = get_dim_ranges<Rank>(*this);
         for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
-            auto target_value = std::apply(out, target_combination);
-            T  value        = std::apply(*this, target_combination);
-            target_value    = value;
+            std::apply(out, target_combination) = std::apply(*this, target_combination);
         }
 
         return out;

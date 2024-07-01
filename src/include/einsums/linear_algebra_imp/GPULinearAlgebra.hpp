@@ -32,6 +32,9 @@ __global__ void dot_kernel(T *C,
 
     T temp;
     make_zero(temp);
+    if(thread_id == 0) {
+        make_zero(*C);
+    }
 
     while (curr_index < elements) {
         temp = temp + A[curr_index] * B[curr_index];

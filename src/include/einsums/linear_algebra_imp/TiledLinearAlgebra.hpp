@@ -69,7 +69,7 @@ void gemm(const U alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const
                 auto &C_tile  = C->tile(i, j);
                 C->unlock();
                 if (beta == U{0.0} || created) {
-                    C_tile = T{0.0};
+                    C_tile.zero();
                 } else {
                     C_tile *= beta;
                 }
@@ -97,15 +97,13 @@ void gemm(const U alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const
                 C->lock();
                 if (C->has_tile(i, j) && !C->has_zero_size(i, j)) {
                     if (beta == U{0.0}) {
-                        C->tiles().erase(std::array<int, 2>{i, j});
-                        C->unlock();
+                        //C->tiles().erase(std::array<int, 2>{i, j});
+                        C->tile(i, j).zero();
                     } else {
-                        C->unlock();
                         C->tile(i, j) *= beta;
                     }
-                } else {
-                    C->unlock();
                 }
+                C->unlock();
             }
         }
     }
