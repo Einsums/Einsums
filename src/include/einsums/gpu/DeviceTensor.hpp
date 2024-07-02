@@ -60,6 +60,10 @@ DeviceTensor<T, Rank>::~DeviceTensor() {
 
 template <typename T, size_t Rank>
 template <typename... Dims>
+requires requires {
+            requires (sizeof...(Dims) == Rank);
+            requires (!std::is_same_v<detail::HostToDeviceMode, Dims> && ...);
+        }
 DeviceTensor<T, Rank>::DeviceTensor(::std::string name, einsums::detail::HostToDeviceMode mode, Dims... dims)
     : _name{::std::move(name)}, _dims{static_cast<size_t>(dims)...}, _mode{mode} {
     using namespace einsums::gpu;
@@ -87,6 +91,52 @@ DeviceTensor<T, Rank>::DeviceTensor(::std::string name, einsums::detail::HostToD
         hip_catch(hipHostMalloc((void **)&(this->_host_data), size * sizeof(T), 0));
         hip_catch(hipHostGetDevicePointer((void **)&(this->_data), (void *)this->_host_data, 0));
     } else if (mode == einsums::detail::DEV_ONLY) {
+        this->_host_data = nullptr;
+        hip_catch(hipMalloc((void **)&(this->_data), size * sizeof(T)));
+    }
+
+    hip_catch(hipMalloc((void **)&(this->_gpu_dims), 2 * sizeof(size_t) * Rank));
+    this->_gpu_strides = this->_gpu_dims + Rank;
+
+    assert(this->_gpu_dims != nullptr && this->_dims.data() != nullptr);
+
+    hip_catch(hipMemcpy((void *)this->_gpu_dims, (const void *)this->_dims.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy((void *)this->_gpu_strides, (const void *)this->_strides.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
+}
+
+template <typename T, size_t Rank>
+template <typename... Dims>
+requires requires {
+            requires (sizeof...(Dims) == Rank);
+            requires (!std::is_same_v<detail::HostToDeviceMode, Dims> && ...);
+        }
+DeviceTensor<T, Rank>::DeviceTensor(::std::string name, Dims... dims)
+    : _name{::std::move(name)}, _dims{static_cast<size_t>(dims)...}, _mode{detail::DEV_ONLY} {
+    using namespace einsums::gpu;
+    static_assert(Rank == sizeof...(dims), "Declared Rank does not match provided dims");
+
+    struct Stride {
+        size_t value{1};
+        Stride() = default;
+        auto operator()(size_t dim) -> size_t {
+            auto old_value = value;
+            value *= dim;
+            return old_value;
+        }
+    };
+
+    // Row-major order of dimensions
+    ::std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
+    size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
+
+    if (_mode == einsums::detail::MAPPED) {
+        this->_host_data = new T[size];
+        hip_catch(hipHostRegister((void *)this->_host_data, size * sizeof(T), hipHostRegisterDefault));
+        hip_catch(hipHostGetDevicePointer((void **)&(this->_data), (void *)this->_host_data, 0));
+    } else if (_mode == einsums::detail::PINNED) {
+        hip_catch(hipHostMalloc((void **)&(this->_host_data), size * sizeof(T), 0));
+        hip_catch(hipHostGetDevicePointer((void **)&(this->_data), (void *)this->_host_data, 0));
+    } else if (_mode == einsums::detail::DEV_ONLY) {
         this->_host_data = nullptr;
         hip_catch(hipMalloc((void **)&(this->_data), size * sizeof(T)));
     }

@@ -21,13 +21,15 @@ TEST_CASE("Test dependence GPU timing", "[jobs][gpu]") {
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
 
-    auto A = DeviceTensor<double, 2>("A", einsums::detail::DEV_ONLY, 100, 100);
-    auto B = DeviceTensor<double, 2>("B", einsums::detail::DEV_ONLY, 100, 100);
+    gpu::device_synchronize();
 
-    A      = create_random_tensor("A", 100, 100);
-    B      = create_random_tensor("B", 100, 100);
-    auto C = DeviceTensor<double, 2>("C", einsums::detail::DEV_ONLY, 100, 100),
-         D = DeviceTensor<double, 2>("D", einsums::detail::DEV_ONLY, 100, 100);
+    auto A = DeviceTensor<double, 2>("A", einsums::detail::DEV_ONLY, 10, 10);
+    auto B = DeviceTensor<double, 2>("B", einsums::detail::DEV_ONLY, 10, 10);
+
+    A      = create_random_tensor("A", 10, 10);
+    B      = create_random_tensor("B", 10, 10);
+    auto C = DeviceTensor<double, 2>("C", einsums::detail::DEV_ONLY, 10, 10),
+         D = DeviceTensor<double, 2>("D", einsums::detail::DEV_ONLY, 10, 10);
     C.zero();
     D.zero();
 

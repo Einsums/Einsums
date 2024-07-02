@@ -21,8 +21,7 @@ namespace detail {
 namespace gpu {
 
 template <typename T>
-__global__ void dot_kernel(T *C, 
-                           const T *__restrict__ A, const T *__restrict__ B, size_t elements) {
+__global__ void dot_kernel(T *C, const T *__restrict__ A, const T *__restrict__ B, size_t elements) {
     using namespace einsums::gpu;
     int thread_id, kernel_size;
 
@@ -32,7 +31,7 @@ __global__ void dot_kernel(T *C,
 
     T temp;
     make_zero(temp);
-    if(thread_id == 0) {
+    if (thread_id == 0) {
         make_zero(*C);
     }
 
@@ -141,14 +140,16 @@ EINSUMS_EXPORT void axpby(int n, const hipDoubleComplex *alpha, const hipDoubleC
                           hipDoubleComplex *Y, int incy);
 
 __global__ EINSUMS_EXPORT void saxpby_kernel(int n, const float *alpha, const float *X, int incx, const float *beta, float *Y, int incy);
-__global__ EINSUMS_EXPORT void daxpby_kernel(int n, const double *alpha, const double *X, int incx, const double *beta, double *Y, int incy);
+__global__ EINSUMS_EXPORT void daxpby_kernel(int n, const double *alpha, const double *X, int incx, const double *beta, double *Y,
+                                             int incy);
 __global__ EINSUMS_EXPORT void caxpby_kernel(int n, const hipComplex *alpha, const hipComplex *X, int incx, const hipComplex *beta,
-                                            hipComplex *Y, int incy);
+                                             hipComplex *Y, int incy);
 __global__ EINSUMS_EXPORT void zaxpby_kernel(int n, const hipDoubleComplex *alpha, const hipDoubleComplex *X, int incx,
-                                            const hipDoubleComplex *beta, hipDoubleComplex *Y, int incy);
+                                             const hipDoubleComplex *beta, hipDoubleComplex *Y, int incy);
 
 EINSUMS_EXPORT int syev(hipsolverEigMode_t jobz, hipsolverFillMode_t uplo, int n, float *A, int lda, float *D);
 EINSUMS_EXPORT int syev(hipsolverEigMode_t jobz, hipsolverFillMode_t uplo, int n, double *A, int lda, double *D);
+
 } // namespace gpu
 
 template <bool TransA, bool TransB, template <typename, size_t> typename AType, template <typename, size_t> typename BType,
@@ -178,28 +179,25 @@ template <template <typename, size_t> typename AType, template <typename, size_t
         requires ::einsums::DeviceRankBasicTensor<AType<T, Rank>, Rank, T>;
         requires ::einsums::DeviceRankBasicTensor<BType<T, Rank>, Rank, T>;
     }
-T dot(const AType<T, Rank> &A,
-         const BType<T, Rank> &B) {
+T dot(const AType<T, Rank> &A, const BType<T, Rank> &B) {
     using namespace einsums::gpu;
 
-    using dev_datatype = std::conditional_t<
-        std::is_same_v<T, std::complex<float>>, hipComplex,
-        std::conditional_t<std::is_same_v<T, std::complex<double>>, hipDoubleComplex, T>>;
+    using dev_datatype = std::conditional_t<std::is_same_v<T, std::complex<float>>, hipComplex,
+                                            std::conditional_t<std::is_same_v<T, std::complex<double>>, hipDoubleComplex, T>>;
 
     __device_ptr__ dev_datatype *gpu_out;
-    auto grid = block_size(A.size());
-    auto num_blocks = blocks(A.size());
+    auto                         grid       = block_size(A.size());
+    auto                         num_blocks = blocks(A.size());
 
-    hip_catch(hipMalloc((void **) &gpu_out, sizeof(T)));
+    hip_catch(hipMalloc((void **)&gpu_out, sizeof(T)));
 
-    gpu::dot_kernel<<<block_size(A.size()), blocks(A.size()), 0, get_stream()>>>(
-        gpu_out, A.data(), B.data(), A.size());
+    gpu::dot_kernel<<<block_size(A.size()), blocks(A.size()), 0, get_stream()>>>(gpu_out, A.data(), B.data(), A.size());
     stream_wait();
 
     T out;
-    hip_catch(hipMemcpy((void *) &out, (void *) gpu_out, sizeof(T), hipMemcpyDeviceToHost));
+    hip_catch(hipMemcpy((void *)&out, (void *)gpu_out, sizeof(T), hipMemcpyDeviceToHost));
 
-    hip_catch(hipFree((void *) gpu_out));
+    hip_catch(hipFree((void *)gpu_out));
 
     return out;
 }
@@ -216,6 +214,8 @@ void ger(const T *alpha, const XYType<T, XYRank> &X, const XYType<T, XYRank> &Y,
                                               ::std::conditional_t<::std::is_same_v<T, ::std::complex<double>>, hipDoubleComplex, T>>;
 
     gpu::ger(X.dim(0), Y.dim(0), (dev_datatype *)alpha, X.data(), X.stride(0), Y.data(), Y.stride(0), A->data(), A->stride(0));
+
+    stream_wait();
 }
 
 template <bool TransA, template <typename, size_t> typename AType, template <typename, size_t> typename XType,
@@ -234,12 +234,12 @@ void gemv(const T *alpha, const AType<T, ARank> &A, const XType<T, XYRank> &x, c
     int m = A.dim(1), n = A.dim(0);
 
     if constexpr (!TransA) {
-        gpu::gemv(HIPBLAS_OP_T, m, n, (dev_datatype *)alpha, A.data(), A.stride(0), x.data(), x.stride(0), (dev_datatype *)beta,
-                          y->data(), y->stride(0));
+        gpu::gemv(HIPBLAS_OP_T, m, n, (dev_datatype *)alpha, A.data(), A.stride(0), x.data(), x.stride(0), (dev_datatype *)beta, y->data(),
+                  y->stride(0));
         stream_wait();
     } else {
-        gpu::gemv(HIPBLAS_OP_N, m, n, (dev_datatype *)alpha, A.data(), A.stride(0), x.data(), x.stride(0), (dev_datatype *)beta,
-                          y->data(), y->stride(0));
+        gpu::gemv(HIPBLAS_OP_N, m, n, (dev_datatype *)alpha, A.data(), A.stride(0), x.data(), x.stride(0), (dev_datatype *)beta, y->data(),
+                  y->stride(0));
         stream_wait();
     }
 }
@@ -303,7 +303,6 @@ void gemm(T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, T beta, CTy
     hip_catch(hipMemcpy((void *)alpha_gpu, &alpha, sizeof(dev_datatype), hipMemcpyHostToDevice));
     hip_catch(hipMemcpy((void *)beta_gpu, &beta, sizeof(dev_datatype), hipMemcpyHostToDevice));
 
-    // Flip the A and B matrices. Row-major vs column major.
     gemm<TransA, TransB>((T *)alpha_gpu, A, B, (T *)beta_gpu, C);
 
     // These can still be done async.
@@ -390,80 +389,33 @@ template <template <typename, size_t> typename AType, size_t ARank, template <ty
     }
 int gesv(AType<T, ARank> *A, BType<T, BRank> *B) {
     using namespace einsums::gpu;
-    if constexpr (einsums::detail::IsDeviceRankBlockTensorV<AType<T, ARank>, ARank, T> &&
-                  einsums::detail::IsDeviceRankBlockTensorV<BType<T, BRank>, BRank, T>) {
+    auto n   = A->dim(0);
+    auto lda = A->stride(0);
+    auto ldb = B->stride(0);
 
-        if (A->num_blocks() != B->num_blocks()) {
-            throw std::runtime_error("gesv: Tensors need the same number of blocks.");
-        }
+    auto nrhs = B->dim(0);
 
-        int info_out = 0;
+    int lwork = n;
+    int info;
 
-        EINSUMS_OMP_PARALLEL_FOR
-        for (int i = 0; i < A->num_blocks(); i++) {
-            if (A->block_dim(i) == 0) {
-                continue;
-            }
-            int info = gesv(&(A->block(i)), &(B->block(i)));
-
-            info_out |= info;
-
-            if (info != 0) {
-                println("gesv: Got non-zero return: %d", info);
-            }
-        }
-
-        return info_out;
-
-    } else if constexpr (einsums::detail::IsDeviceRankBlockTensorV<AType<T, ARank>, ARank, T>) {
-        int info_out = 0;
-
-        EINSUMS_OMP_PARALLEL_FOR
-        for (int i = 0; i < A->num_blocks(); i++) {
-
-            if (A->block_dim(i) == 0) {
-                continue;
-            }
-            int info = gesv(&(A->block(i)), &((*B)(AllT(), A->block_range(i))));
-
-            info_out |= info;
-
-            if (info != 0) {
-                println("gesv: Got non-zero return: %d", info);
-            }
-        }
-
-        return info_out;
-    } else {
-
-        auto n   = A->dim(0);
-        auto lda = A->stride(0);
-        auto ldb = B->stride(0);
-
-        auto nrhs = B->dim(0);
-
-        int lwork = n;
-        int info;
-
-        __device_ptr__ int *ipiv;
+    __device_ptr__ int *ipiv;
 
 #ifdef __HIP_PLATFORM_NVIDIA__
-        DeviceTensor<T, BRank> X = DeviceTensor<T, BRank>(einsums::detail::DEV_ONLY, B->dims());
+    DeviceTensor<T, BRank> X = DeviceTensor<T, BRank>(einsums::detail::DEV_ONLY, B->dims());
 #endif
 
-        einsums::gpu::hip_catch(hipMallocAsync((void **)&ipiv, sizeof(int) * lwork, einsums::gpu::get_stream()));
+    einsums::gpu::hip_catch(hipMallocAsync((void **)&ipiv, sizeof(int) * lwork, einsums::gpu::get_stream()));
 
 #ifdef __HIP_PLATFORM_NVIDIA__
-        info = gpu::gesv(n, nrhs, A->data(), lda, ipiv.data(), B->data(), ldb, X.data(), X.stride(0));
+    info = gpu::gesv(n, nrhs, A->data(), lda, ipiv.data(), B->data(), ldb, X.data(), X.stride(0));
 #elif defined(__HIP_PLATFORM_AMD__)
-        info = gpu::gesv(n, nrhs, A->data(), lda, ipiv, B->data(), ldb, B->data(), ldb);
+    info = gpu::gesv(n, nrhs, A->data(), lda, ipiv, B->data(), ldb, B->data(), ldb);
 #endif
 
-        stream_wait();
+    stream_wait();
 
-        einsums::gpu::hip_catch(hipFreeAsync(ipiv, einsums::gpu::get_stream()));
-        return info;
-    }
+    einsums::gpu::hip_catch(hipFreeAsync(ipiv, einsums::gpu::get_stream()));
+    return info;
 }
 
 template <template <typename, size_t> typename XType, template <typename, size_t> typename YType, typename T, size_t Rank>
@@ -608,6 +560,56 @@ AType<T, ARank> pow(const AType<T, ARank> &A, T expo) {
     symm_gemm<false, false>(Diag, Evecs, &out);
 
     return out;
+}
+
+template <template <typename, size_t> typename AType, size_t ARank, typename T>
+    requires DeviceRankBasicTensor<AType<T, ARank>, 2, T>
+void scale_row(size_t row, const T *scale, AType<T, ARank> *A) {
+    gpu::scal(A->dim(1), scale, A->data(row, 0ul), A->stride(1));
+}
+
+template <template <typename, size_t> typename AType, size_t ARank, typename T>
+    requires DeviceRankBasicTensor<AType<T, ARank>, 2, T>
+void scale_column(size_t col, const T *scale, AType<T, ARank> *A) {
+    gpu::scal(A->dim(0), scale, A->data(0ul, col), A->stride(0));
+}
+
+template <template <typename, size_t> typename AType, size_t ARank, typename T>
+    requires DeviceRankBasicTensor<AType<T, ARank>, 2, T>
+void scale_row(size_t row, T scale, AType<T, ARank> *A) {
+    using namespace einsums::gpu;
+
+    using dev_datatype = ::std::conditional_t<::std::is_same_v<T, ::std::complex<float>>, hipComplex,
+                                              ::std::conditional_t<::std::is_same_v<T, ::std::complex<double>>, hipDoubleComplex, T>>;
+
+    dev_datatype *alpha_gpu;
+
+    hip_catch(hipMallocAsync((void **)&alpha_gpu, sizeof(dev_datatype), get_stream()));
+
+    hip_catch(hipMemcpyAsync(alpha_gpu, &scale, sizeof(dev_datatype), hipMemcpyHostToDevice, get_stream()));
+
+    scale_row(row, (T *)alpha_gpu, A);
+
+    hip_catch(hipFreeAsync(alpha_gpu, get_stream()));
+}
+
+template <template <typename, size_t> typename AType, size_t ARank, typename T>
+    requires DeviceRankBasicTensor<AType<T, ARank>, 2, T>
+void scale_column(size_t col, T scale, AType<T, ARank> *A) {
+    using namespace einsums::gpu;
+
+    using dev_datatype = ::std::conditional_t<::std::is_same_v<T, ::std::complex<float>>, hipComplex,
+                                              ::std::conditional_t<::std::is_same_v<T, ::std::complex<double>>, hipDoubleComplex, T>>;
+
+    dev_datatype *alpha_gpu;
+
+    hip_catch(hipMallocAsync((void **)&alpha_gpu, sizeof(dev_datatype), get_stream()));
+
+    hip_catch(hipMemcpyAsync(alpha_gpu, &scale, sizeof(dev_datatype), hipMemcpyHostToDevice, get_stream()));
+
+    scale_column(col, (T *)alpha_gpu, A);
+
+    hip_catch(hipFreeAsync(alpha_gpu, get_stream()));
 }
 
 } // namespace detail

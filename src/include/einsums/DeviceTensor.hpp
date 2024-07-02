@@ -166,6 +166,116 @@ class HostDevReference {
     }
 
     /**
+     * Add assignment.
+     */
+    HostDevReference<T> &operator+=(const T &other) {
+        assert(_ptr != nullptr);
+        if (is_on_host) {
+            *_ptr += other;
+        } else {
+            T temp = other + get();
+            gpu::hip_catch(hipMemcpy((void *)_ptr, (const void *)&temp, sizeof(T), hipMemcpyHostToDevice));
+        }
+        return *this;
+    }
+
+    /**
+     * Add assignment.
+     */
+    HostDevReference<T> &operator+=(const HostDevReference<T> &other) {
+        if (is_on_host) {
+            *_ptr += other.get();
+        } else {
+            T temp = other.get() + get();
+            gpu::hip_catch(hipMemcpy((void *)_ptr, (const void *)&temp, sizeof(T), hipMemcpyHostToDevice));
+        }
+        return *this;
+    }
+
+    /**
+     * Sub assignment.
+     */
+    HostDevReference<T> &operator-=(const T &other) {
+        assert(_ptr != nullptr);
+        if (is_on_host) {
+            *_ptr -= other;
+        } else {
+            T temp = get() - other;
+            gpu::hip_catch(hipMemcpy((void *)_ptr, (const void *)&temp, sizeof(T), hipMemcpyHostToDevice));
+        }
+        return *this;
+    }
+
+    /**
+     * Sub assignment.
+     */
+    HostDevReference<T> &operator-=(const HostDevReference<T> &other) {
+        if (is_on_host) {
+            *_ptr -= other.get();
+        } else {
+            T temp = get() - other.get();
+            gpu::hip_catch(hipMemcpy((void *)_ptr, (const void *)&temp, sizeof(T), hipMemcpyHostToDevice));
+        }
+        return *this;
+    }
+
+    /**
+     * Mult assignment.
+     */
+    HostDevReference<T> &operator*=(const T &other) {
+        assert(_ptr != nullptr);
+        if (is_on_host) {
+            *_ptr *= other;
+        } else {
+            T temp = get() * other;
+            gpu::hip_catch(hipMemcpy((void *)_ptr, (const void *)&temp, sizeof(T), hipMemcpyHostToDevice));
+        }
+        return *this;
+    }
+
+    /**
+     * Mult assignment.
+     */
+    HostDevReference<T> &operator*=(const HostDevReference<T> &other) {
+        if (is_on_host) {
+            *_ptr *= other.get();
+        } else {
+            T temp = get() * other.get();
+            gpu::hip_catch(hipMemcpy((void *)_ptr, (const void *)&temp, sizeof(T), hipMemcpyHostToDevice));
+        }
+        return *this;
+    }
+
+    /**
+     * div assignment.
+     */
+    HostDevReference<T> &operator/=(const T &other) {
+        assert(_ptr != nullptr);
+        if (is_on_host) {
+            *_ptr /= other;
+        } else {
+            T temp = get() / other;
+            gpu::hip_catch(hipMemcpy((void *)_ptr, (const void *)&temp, sizeof(T), hipMemcpyHostToDevice));
+        }
+        return *this;
+    }
+
+    /**
+     * Div assignment.
+     */
+    HostDevReference<T> &operator/=(const HostDevReference<T> &other) {
+        if (is_on_host) {
+            *_ptr /= other.get();
+        } else {
+            T temp = get() / other.get();
+            gpu::hip_catch(hipMemcpy((void *)_ptr, (const void *)&temp, sizeof(T), hipMemcpyHostToDevice));
+        }
+        return *this;
+    }
+
+
+
+    /**
      * Get the address handled by the reference.
      */
     T *operator&() { return _ptr; }
@@ -300,7 +410,34 @@ struct DeviceTensor : public ::einsums::detail::TensorBase<T, Rank> {
      * @param dims The dimensions of each rank of the tensor.
      */
     template <typename... Dims>
+    requires requires {
+            requires (sizeof...(Dims) == Rank);
+            requires (!std::is_same_v<detail::HostToDeviceMode, Dims> && ...);
+        }
     explicit DeviceTensor(std::string name, detail::HostToDeviceMode mode, Dims... dims);
+
+    /**
+     * @brief Construct a new DeviceTensor object with the given name and dimensions.
+     *
+     * Constructs a new DeviceTensor object using the information provided in \p name and \p dims .
+     *
+     * @code
+     * auto A = DeviceTensor("A", 3, 3);
+     * @endcode
+     *
+     * The newly constructed DeviceTensor is NOT zeroed out for you. If you start having NaN issues
+     * in your code try calling DeviceTensor.zero() or zero(DeviceTensor) to see if that resolves it.
+     *
+     * @tparam Dims Variadic template arguments for the dimensions. Must be castable to size_t.
+     * @param name Name of the new tensor.
+     * @param dims The dimensions of each rank of the tensor.
+     */
+    template <typename... Dims>
+        requires requires {
+            requires (sizeof...(Dims) == Rank);
+            requires (!std::is_same_v<detail::HostToDeviceMode, Dims> && ...);
+        }
+    explicit DeviceTensor(std::string name, Dims... dims);
 
     // Once this is called "otherTensor" is no longer a valid tensor.
     /**
@@ -1057,7 +1194,7 @@ struct DeviceTensorView : public ::einsums::detail::TensorBase<T, Rank> {
      */
     template <size_t OtherRank, typename... Args>
     explicit DeviceTensorView(DeviceTensorView<T, OtherRank> &other, const Dim<Rank> &dim, Args &&...args)
-        : _name{other._name}, _dims{dim}, _parent_mutex{other._parent_mutex} {
+        : _name{other.name()}, _dims{dim}, _parent_mutex{other._parent_mutex} {
         common_initialization(other, args...);
     }
 
@@ -1066,7 +1203,7 @@ struct DeviceTensorView : public ::einsums::detail::TensorBase<T, Rank> {
      */
     template <size_t OtherRank, typename... Args>
     explicit DeviceTensorView(const DeviceTensorView<T, OtherRank> &other, const Dim<Rank> &dim, Args &&...args)
-        : _name{other._name}, _dims{dim}, _parent_mutex{other._parent_mutex} {
+        : _name{other.name()}, _dims{dim}, _parent_mutex{other._parent_mutex} {
         common_initialization(const_cast<DeviceTensorView<T, OtherRank> &>(other), args...);
     }
 
@@ -1260,6 +1397,12 @@ struct DeviceTensorView : public ::einsums::detail::TensorBase<T, Rank> {
         _parent_mutex->unlock();
     }
 
+    operator Tensor<T, Rank>() const {
+        DeviceTensor temp(*this);
+
+        return (Tensor<T, Rank>) temp; 
+    }
+
   private:
     /**
      * @brief Method for initializing the view.
@@ -1267,7 +1410,41 @@ struct DeviceTensorView : public ::einsums::detail::TensorBase<T, Rank> {
     template <template <typename, size_t> typename TensorType, size_t OtherRank, typename... Args>
     auto common_initialization(TensorType<T, OtherRank> &other, Args &&...args)
         -> std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<T, OtherRank>, TensorType<T, OtherRank>>>;
+
+    template<typename OtherT, size_t OtherRank>
+    friend struct DeviceTensorView;
+
+    template<typename OtherT, size_t OtherRank>
+    friend struct DeviceTensor;
 };
+
+#ifdef __cpp_deduction_guides
+template <typename... Args>
+requires (!std::is_same_v<Args, detail::HostToDeviceMode> && ...)
+DeviceTensor(const std::string &, Args...) -> DeviceTensor<double, sizeof...(Args)>;
+template <typename... Args>
+requires (!std::is_same_v<Args, detail::HostToDeviceMode> && ...)
+DeviceTensor(const std::string &, detail::HostToDeviceMode, Args...) -> DeviceTensor<double, sizeof...(Args)>;
+template <typename T, size_t OtherRank, typename... Dims>
+explicit DeviceTensor(DeviceTensor<T, OtherRank> &&otherTensor, std::string name, Dims... dims) -> DeviceTensor<T, sizeof...(dims)>;
+template <size_t Rank, typename... Args>
+requires (!std::is_same_v<Args, detail::HostToDeviceMode> && ...)
+explicit DeviceTensor(const Dim<Rank> &, Args...) -> DeviceTensor<double, Rank>;
+template <size_t Rank, typename... Args>
+requires (!std::is_same_v<Args, detail::HostToDeviceMode> && ...)
+explicit DeviceTensor(const Dim<Rank> &, detail::HostToDeviceMode, Args...) -> DeviceTensor<double, Rank>;
+
+template <typename T, size_t Rank, size_t OtherRank, typename... Args>
+DeviceTensorView(DeviceTensor<T, OtherRank> &, const Dim<Rank> &, Args...) -> DeviceTensorView<T, Rank>;
+template <typename T, size_t Rank, size_t OtherRank, typename... Args>
+DeviceTensorView(const DeviceTensor<T, OtherRank> &, const Dim<Rank> &, Args...) -> DeviceTensorView<T, Rank>;
+template <typename T, size_t Rank, size_t OtherRank, typename... Args>
+DeviceTensorView(DeviceTensorView<T, OtherRank> &, const Dim<Rank> &, Args...) -> DeviceTensorView<T, Rank>;
+template <typename T, size_t Rank, size_t OtherRank, typename... Args>
+DeviceTensorView(const DeviceTensorView<T, OtherRank> &, const Dim<Rank> &, Args...) -> DeviceTensorView<T, Rank>;
+template <typename T, size_t Rank, size_t OtherRank, typename... Args>
+DeviceTensorView(std::string, DeviceTensor<T, OtherRank> &, const Dim<Rank> &, Args...) -> DeviceTensorView<T, Rank>;
+#endif
 
 } // namespace einsums
 

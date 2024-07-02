@@ -13,11 +13,12 @@ DeviceTensorView<T, Rank>::DeviceTensorView(const DeviceTensorView<T, Rank> &cop
     this->_dims                    = copy.dims();
     this->_strides                 = copy.strides();
     this->_name                    = copy.name();
-    this->_data                    = copy.data();
+    hip_catch(hipMalloc((void **) &_data, sizeof(T) * _dims[0] * _strides[0]));
+    hip_catch(hipMemcpy((void *) this->_data, (void *) copy.data(), sizeof(T) * _dims[0] * _strides[0], hipMemcpyDeviceToDevice));
     this->_full_view_of_underlying = copy.full_view_of_underlying();
 
     hip_catch(hipMalloc((void **)&(this->_gpu_dims), 2 * sizeof(size_t) * Rank));
-    this->_gpu_strides = (char *) this->_gpu_dims + sizeof(size_t) * Rank;
+    this->_gpu_strides = this->_gpu_dims + Rank;
 
     hip_catch(hipMemcpy((void *)this->_gpu_dims, (const void *)this->_dims.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
     hip_catch(hipMemcpy((void *)this->_gpu_strides, (const void *)this->_strides.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));

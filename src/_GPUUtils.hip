@@ -299,6 +299,9 @@ __host__ void __hipblas_catch__(hipblasStatus_t status, const char *diagnostic, 
 }
 
 hipblasHandle_t get_blas_handle(int thread_id) {
+    if(thread_id >= detail::blas_handles->size()) {
+        return detail::blas_handles->at(0);
+    }
     return detail::blas_handles->at(thread_id);
 }
 
@@ -402,6 +405,9 @@ const char *hipsolverStatusToString(hipsolverStatus_t status) {
 }
 
 hipsolverHandle_t get_solver_handle(int thread_id) {
+    if(thread_id >= detail::solver_handles->size()) {
+        return detail::solver_handles->at(0);
+    }
     return detail::solver_handles->at(thread_id);
 }
 

@@ -221,4 +221,43 @@ void ger(T alpha, const XYType<T, XYRank> &X, const XYType<T, XYRank> &Y, AType<
     blas::ger(X.dim(0), Y.dim(0), alpha, X.data(), X.stride(0), Y.data(), Y.stride(0), A->data(), A->stride(0));
 }
 
+template <bool TransA, bool TransB, template <typename, size_t> typename AType, template <typename, size_t> typename BType,
+          template <typename, size_t> typename CType, size_t Rank, typename T>
+    requires requires {
+        requires ::einsums::CoreRankBasicTensor<AType<T, Rank>, 2, T>;
+        requires ::einsums::CoreRankBasicTensor<BType<T, Rank>, 2, T>;
+        requires ::einsums::CoreRankBasicTensor<CType<T, Rank>, 2, T>;
+    }
+void symm_gemm(const AType<T, Rank> &A, const BType<T, Rank> &B, CType<T, Rank> *C) {
+    int temp_rows, temp_cols;
+    if constexpr (TransA && TransB) {
+        assert(B.dim(0) == A.dim(0) && A.dim(1) == B.dim(0) && C->dim(0) == B.dim(1) && C->dim(1) == B.dim(1));
+    } else if constexpr (TransA && !TransB) {
+        assert(B.dim(1) == A.dim(0) && A.dim(1) == B.dim(1) && C->dim(0) == B.dim(0) && C->dim(1) == B.dim(0));
+    } else if constexpr (!TransA && TransB) {
+        assert(B.dim(0) == A.dim(1) && A.dim(0) == B.dim(0) && C->dim(0) == B.dim(1) && C->dim(1) == B.dim(1));
+    } else {
+        assert(B.dim(1) == A.dim(1) && A.dim(0) == B.dim(1) && C->dim(0) == B.dim(0) && C->dim(1) == B.dim(0));
+    }
+
+    if constexpr (TransA) {
+        temp_rows = A.dim(1);
+    } else {
+        temp_rows = A.dim(0);
+    }
+
+    if constexpr (TransB) {
+        temp_cols = B.dim(0);
+    } else {
+        temp_cols = B.dim(1);
+    }
+
+    *C = T(0.0);
+
+    Tensor<T, 2> temp{"temp", temp_rows, temp_cols};
+
+    gemm<TransA, TransB>(T{1.0}, A, B, T{0.0}, &temp);
+    gemm<!TransB, false>(T{1.0}, B, temp, T{0.0}, C);
+}
+
 } // namespace einsums::linear_algebra::detail

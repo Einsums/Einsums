@@ -38,6 +38,7 @@ extend_einsums_target(test-all
         DeviceTiledTensor.hip
         GPULinearAlgebra.hip
         GPU.hip
+        GPUTensorAlgebra.hip
         GPUTensorAlgebraTasks.hip
         BlockDeviceTensor.hip
         ElementOpsGPU.hip

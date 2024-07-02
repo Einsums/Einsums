@@ -193,9 +193,14 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
          grid    = blocks(::std::get<0>(unique_dims) * unique_strides[0]);
 
     if constexpr (sizeof...(CIndices) != 0) {
-        einsum_generic_algorithm_gpu<CDataType, ADataType, BDataType, std::tuple_size<decltype(unique_indices)>::value, CRank, ARank, BRank>
-            <<<threads, grid, 0, get_stream()>>>(unique_strides_gpu, C_index_table_gpu, A_index_table_gpu, B_index_table_gpu, C_prefactor,
-                                                 C->data(), C->gpu_dims(), C->gpu_strides(), AB_prefactor, A.data(), A.gpu_dims(),
+        using C_devtype = std::remove_pointer_t<std::decay_t<decltype(C->data())>>;
+        using A_devtype = std::remove_pointer_t<std::decay_t<decltype(A.data())>>;
+        using B_devtype = std::remove_pointer_t<std::decay_t<decltype(B.data())>>;
+        using AB_devtype = std::remove_pointer_t<std::decay_t<std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), decltype(A.data()), decltype(B.data())>>>;
+
+        einsum_generic_algorithm_gpu<C_devtype, A_devtype, B_devtype, std::tuple_size<decltype(unique_indices)>::value, CRank, ARank, BRank>
+            <<<threads, grid, 0, get_stream()>>>(unique_strides_gpu, C_index_table_gpu, A_index_table_gpu, B_index_table_gpu, HipCast<CDataType, C_devtype>::cast(C_prefactor),
+                                                 C->data(), C->gpu_dims(), C->gpu_strides(), HipCast<decltype(AB_prefactor), AB_devtype>::cast(AB_prefactor), A.data(), A.gpu_dims(),
                                                  A.gpu_strides(), B.data(), B.gpu_dims(), B.gpu_strides(),
                                                  ::std::get<0>(unique_dims) * unique_strides[0]);
     } else {
@@ -206,9 +211,15 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
         } else {
             *C *= C_prefactor;
         }
-        einsum_generic_zero_rank_gpu<CDataType, ADataType, BDataType, std::tuple_size<decltype(unique_indices)>::value, ARank, BRank>
+
+        using C_devtype = std::remove_pointer_t<std::decay_t<decltype(C->data())>>;
+        using A_devtype = std::remove_pointer_t<std::decay_t<decltype(A.data())>>;
+        using B_devtype = std::remove_pointer_t<std::decay_t<decltype(B.data())>>;
+        using AB_devtype = std::remove_pointer_t<std::decay_t<std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), decltype(A.data()), decltype(B.data())>>>;
+
+        einsum_generic_zero_rank_gpu<C_devtype, A_devtype, B_devtype, std::tuple_size<decltype(unique_indices)>::value, ARank, BRank>
             <<<threads, grid, threads.x * threads.y * threads.z * grid.x * grid.y * grid.z * sizeof(CDataType), get_stream()>>>(
-                unique_strides_gpu, A_index_table_gpu, B_index_table_gpu, C->data(), AB_prefactor, A.data(), A.gpu_dims(), A.gpu_strides(),
+                unique_strides_gpu, A_index_table_gpu, B_index_table_gpu, C->data(), HipCast<decltype(AB_prefactor), AB_devtype>::cast(AB_prefactor), A.data(), A.gpu_dims(), A.gpu_strides(),
                 B.data(), B.gpu_dims(), B.gpu_strides(), ::std::get<0>(unique_dims) * unique_strides[0]);
     }
 

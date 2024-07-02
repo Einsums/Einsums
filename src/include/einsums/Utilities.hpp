@@ -143,6 +143,13 @@ auto create_random_tensor(const std::string &name, MultiIndex... index) -> Tenso
     return A;
 }
 
+#ifdef __HIP__
+template <typename T = double, bool Normalize = false, typename... MultiIndex>
+auto create_random_gpu_tensor(const std::string &name, MultiIndex... index) -> DeviceTensor<T, sizeof...(MultiIndex)> {
+    return DeviceTensor<T, sizeof...(MultiIndex)>(create_random_tensor<T, Normalize, MultiIndex...>(name, index...));
+}
+#endif
+
 namespace detail {
 
 template <template <typename, size_t> typename TensorType, typename DataType, size_t Rank, typename Tuple, std::size_t... I>
@@ -461,11 +468,6 @@ auto arange(T start, T stop, T step = T{1}) -> Tensor<T, 1> {
 template <NotComplex T>
 auto arange(T stop) -> Tensor<T, 1> {
     return arange(T{0}, stop);
-}
-
-template <typename T>
-auto divmod(T n, T d) -> std::tuple<T, T> {
-    return {n / d, n % d};
 }
 
 struct DisableOMPNestedScope {

@@ -1384,8 +1384,8 @@ auto read(const h5::fd_t &fd, const std::string &name) -> Tensor<T, 0> {
     }
 }
 
-template <typename T, size_t Rank>
-void zero(Tensor<T, Rank> &A) {
+template <template<typename, size_t> typename TensorType, typename T, size_t Rank>
+void zero(TensorType<T, Rank> &A) {
     A.zero();
 }
 

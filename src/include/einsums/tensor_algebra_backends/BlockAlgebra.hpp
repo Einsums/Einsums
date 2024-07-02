@@ -41,11 +41,6 @@ auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndi
     EINSUMS_OMP_PARALLEL_FOR
     for (int i = 0; i < A.num_blocks(); i++) {
         einsum<OnlyUseGenericAlgorithm>(C_prefactor, C_indices, &(C->block(i)), AB_prefactor, A_indices, A[i], B_indices, B[i]);
-#ifdef __HIP__
-        if constexpr (einsums::detail::IsDeviceRankTensorV<AType<ADataType, ARank>, ARank, ADataType>) {
-            gpu::stream_wait();
-        }
-#endif
     }
 }
 
@@ -82,11 +77,6 @@ auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndi
         view_index.fill(A.block_range(i));
         einsum<OnlyUseGenericAlgorithm>(C_prefactor, C_indices, &(std::apply(*C, view_index)), AB_prefactor, A_indices, A[i], B_indices,
                                         B[i]);
-#ifdef __HIP__
-        if constexpr (einsums::detail::IsDeviceRankTensorV<AType<ADataType, ARank>, ARank, ADataType>) {
-            gpu::stream_wait();
-        }
-#endif
     }
 }
 
@@ -124,7 +114,6 @@ auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndi
         for (int i = 0; i < A.num_blocks(); i++) {
             einsum<OnlyUseGenericAlgorithm>(CDataType(0.0), C_indices, temp + omp_get_thread_num(), AB_prefactor, A_indices, A[i], B_indices,
                                             B[i]);
-            gpu::stream_wait();
         }
 
         if (C_prefactor == CDataType{0.0}) {
@@ -193,11 +182,6 @@ auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndi
         view_index.fill(B.block_range(i));
         einsum<OnlyUseGenericAlgorithm>(C_prefactor, C_indices, &(C->block(i)), AB_prefactor, A_indices, std::apply(A, view_index),
                                         B_indices, B[i]);
-#ifdef __HIP__
-        if constexpr (einsums::detail::IsDeviceRankTensorV<AType<ADataType, ARank>, ARank, ADataType>) {
-            gpu::stream_wait();
-        }
-#endif
     }
 }
 
@@ -225,11 +209,6 @@ auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndi
         view_index_a.fill(B.block_range(i));
         einsum<OnlyUseGenericAlgorithm>(C_prefactor, C_indices, &(std::apply(*C, view_index_c)), AB_prefactor, A_indices,
                                         std::apply(A, view_index_a), B_indices, B[i]);
-#ifdef __HIP__
-        if constexpr (einsums::detail::IsDeviceRankTensorV<AType<ADataType, ARank>, ARank, ADataType>) {
-            gpu::stream_wait();
-        }
-#endif
     }
 }
 
@@ -259,7 +238,6 @@ auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndi
             view_index.fill(B.block_range(i));
             einsum<OnlyUseGenericAlgorithm>(CDataType(0.0), C_indices, temp + omp_get_thread_num(), AB_prefactor, A_indices,
                                             std::apply(A, view_index), B_indices, B[i]);
-            gpu::stream_wait();
         }
 
         if (C_prefactor == CDataType{0.0}) {
@@ -331,11 +309,6 @@ auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndi
         view_index.fill(A.block_range(i));
         einsum<OnlyUseGenericAlgorithm>(C_prefactor, C_indices, &(C->block(i)), AB_prefactor, A_indices, A[i], B_indices,
                                         std::apply(B, view_index));
-#ifdef __HIP__
-        if constexpr (einsums::detail::IsDeviceRankTensorV<AType<ADataType, ARank>, ARank, ADataType>) {
-            gpu::stream_wait();
-        }
-#endif
     }
 }
 
@@ -363,11 +336,6 @@ auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndi
         view_index_b.fill(A.block_range(i));
         einsum<OnlyUseGenericAlgorithm>(C_prefactor, C_indices, &(std::apply(*C, view_index_c)), AB_prefactor, A_indices, A[i], B_indices,
                                         std::apply(B, view_index_b));
-#ifdef __HIP__
-        if constexpr (einsums::detail::IsDeviceRankTensorV<AType<ADataType, ARank>, ARank, ADataType>) {
-            gpu::stream_wait();
-        }
-#endif
     }
 }
 
@@ -397,7 +365,6 @@ auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndi
             view_index.fill(A.block_range(i));
             einsum<OnlyUseGenericAlgorithm>(CDataType(0.0), C_indices, temp + omp_get_thread_num(), AB_prefactor, A_indices, A[i], B_indices,
                                             std::apply(B, view_index));
-            gpu::stream_wait();
         }
 
         if (C_prefactor == CDataType{0.0}) {

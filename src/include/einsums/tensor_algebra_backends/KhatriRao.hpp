@@ -75,9 +75,9 @@ auto khatri_rao(const std::tuple<AIndices...> &, const AType<T, ARank> &A, const
 #ifdef __HIP__
     if constexpr (std::is_same_v<OutType, DeviceTensor<T, 2>>) {
         auto result_dims =
-            std::tuple_cat(std::make_tuple("KR product"), einsums::detail::DEV_ONLY, A_only_dims, B_only_dims, A_common_dims);
+            std::tuple_cat(std::make_tuple("KR product"), std::make_tuple(einsums::detail::DEV_ONLY), A_only_dims, B_only_dims, A_common_dims);
         // Construct resulting tensor
-        auto result = std::make_from_tuple<DeviceTensor<T, std::tuple_size_v<decltype(result_dims)> - 1>>(result_dims);
+        auto result = std::make_from_tuple<DeviceTensor<T, std::tuple_size_v<decltype(result_dims)> - 2>>(result_dims);
         // Perform the actual Khatri-Rao product using our einsum routine.
         einsum(std::tuple_cat(A_only, B_only, common), &result, std::tuple_cat(A_only, common), A, std::tuple_cat(B_only, common), B);
 

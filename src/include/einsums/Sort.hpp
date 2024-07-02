@@ -16,6 +16,10 @@
 #include "einsums/utility/SmartPointerTraits.hpp"
 #include "einsums/utility/TensorTraits.hpp"
 
+#ifdef __HIP__
+#include "einsums/DeviceSort.hpp"
+#endif
+
 BEGIN_EINSUMS_NAMESPACE_HPP(einsums::tensor_algebra)
 
 #if defined(EINSUMS_USE_HPTT)
