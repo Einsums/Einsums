@@ -607,4 +607,6 @@ __device__ inline void atomicAdd_wrap(hipDoubleComplex *address, hipDoubleComple
     atomicAdd(&(address->y), value.y);
 }
 
+__host__ EINSUMS_EXPORT int get_warpsize(void);
+
 END_EINSUMS_NAMESPACE_HPP(einsums::gpu)

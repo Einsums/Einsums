@@ -295,4 +295,21 @@ void axpby(T alpha, const XType<T, Rank> &X, T beta, YType<T, Rank> *Y) {
     }
 }
 
+template <template <typename, size_t> typename AType, template <typename, size_t> typename BType,
+          template <typename, size_t> typename CType, typename T, size_t Rank>
+    requires requires {
+        requires RankBlockTensor<AType<T, Rank>, Rank, T>;
+        requires RankBlockTensor<BType<T, Rank>, Rank, T>;
+        requires RankBlockTensor<CType<T, Rank>, Rank, T>;
+    }
+void direct_product(T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, T beta, CType<T, Rank> *C) {
+    EINSUMS_OMP_PARALLEL_FOR
+    for (int i = 0; i < A.num_blocks(); i++) {
+        if (A.block_dim(i) == 0) {
+            continue;
+        }
+        direct_product(alpha, A.block(i), B.block(i), beta, &(C->block(i)));
+    }
+}
+
 } // namespace einsums::linear_algebra::detail

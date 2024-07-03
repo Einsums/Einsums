@@ -260,4 +260,34 @@ void symm_gemm(const AType<T, Rank> &A, const BType<T, Rank> &B, CType<T, Rank> 
     gemm<!TransB, false>(T{1.0}, B, temp, T{0.0}, C);
 }
 
+template <template <typename, size_t> typename AType, template <typename, size_t> typename BType,
+          template <typename, size_t> typename CType, typename T, size_t Rank>
+    requires requires {
+        requires CoreRankTensor<AType<T, Rank>, Rank, T>;
+        requires CoreRankTensor<BType<T, Rank>, Rank, T>;
+        requires CoreRankTensor<CType<T, Rank>, Rank, T>;
+    }
+void direct_product(T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, T beta, CType<T, Rank> *C) {
+    auto target_dims = get_dim_ranges<Rank>(*C);
+    auto view        = std::apply(ranges::views::cartesian_product, target_dims);
+
+    // Ensure the various tensors passed in are the same dimensionality
+    if (((C->dims() != A.dims()) || C->dims() != B.dims())) {
+        println_abort("direct_product: at least one tensor does not have same dimensionality as destination");
+    }
+
+    // Horrible hack. For some reason, in the for loop below, the result could be
+    // NAN if the target_value is initially a trash value.
+    if (beta == T(0)) {
+        C->zero();
+    }
+
+    EINSUMS_OMP_PARALLEL_FOR
+    for (auto it = view.begin(); it != view.end(); it++) {
+        T &target_value = std::apply(*C, *it);
+        T  AB_product   = std::apply(A, *it) * std::apply(B, *it);
+        target_value    = beta * target_value + alpha * AB_product;
+    }
+}
+
 } // namespace einsums::linear_algebra::detail

@@ -558,4 +558,12 @@ void set_stream(hipStream_t stream, int thread_id) {
     hipsolver_catch(hipsolverSetStream(get_solver_handle(), stream));
 }
 
+__host__ int get_warpsize(void) {
+    static int warpsize = 0;
+    if(warpsize == 0) {
+        hip_catch(hipDeviceGetAttribute(&warpsize, hipDeviceAttributeWarpSize, 0));
+    }
+    return warpsize;
+}
+
 END_EINSUMS_NAMESPACE_CPP(einsums::gpu)

@@ -2227,7 +2227,7 @@ TEST_CASE("GPU B_tilde") {
     }
 }
 
-TEST_CASE("Khatri-Rao") {
+TEST_CASE("GPU Khatri-Rao") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;

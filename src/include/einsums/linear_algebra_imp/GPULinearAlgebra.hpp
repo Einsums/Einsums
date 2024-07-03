@@ -150,6 +150,32 @@ __global__ EINSUMS_EXPORT void zaxpby_kernel(int n, const hipDoubleComplex *alph
 EINSUMS_EXPORT int syev(hipsolverEigMode_t jobz, hipsolverFillMode_t uplo, int n, float *A, int lda, float *D);
 EINSUMS_EXPORT int syev(hipsolverEigMode_t jobz, hipsolverFillMode_t uplo, int n, double *A, int lda, double *D);
 
+template <size_t Rank, typename T>
+__global__ void direct_product_kernel(T beta, T *__restrict__ C, const size_t *__restrict__ C_strides, T alpha, const T *__restrict__ A,
+                                      const size_t *__restrict__ A_strides, const T *__restrict__ B, const size_t *__restrict__ B_strides,
+                                      const size_t *__restrict__ Index_dims, const size_t *__restrict__ Index_strides, size_t elems) {
+    int thread_id, kernel_size;
+
+    get_worker_info(thread_id, kernel_size);
+
+    for (size_t curr = thread_id; curr < elems; curr += kernel_size) {
+        size_t quotient = curr;
+
+        size_t A_index = 0, B_index = 0, C_index = 0;
+
+        for (int i = 0; i < Rank; i++) {
+            size_t rem = quotient % Index_strides[i];
+            quotient /= Index_dims[i];
+
+            A_index += rem * A_strides[i];
+            B_index += rem * B_strides[i];
+            C_index += rem * C_strides[i];
+        }
+
+        C[C_index] = beta * C[C_index] + alpha * A[A_index] * B[B_index];
+    }
+}
+
 } // namespace gpu
 
 template <bool TransA, bool TransB, template <typename, size_t> typename AType, template <typename, size_t> typename BType,
@@ -610,6 +636,49 @@ void scale_column(size_t col, T scale, AType<T, ARank> *A) {
     scale_column(col, (T *)alpha_gpu, A);
 
     hip_catch(hipFreeAsync(alpha_gpu, get_stream()));
+}
+
+template <template <typename, size_t> typename AType, template <typename, size_t> typename BType,
+          template <typename, size_t> typename CType, typename T, size_t Rank>
+    requires requires {
+        requires DeviceRankTensor<AType<T, Rank>, Rank, T>;
+        requires DeviceRankTensor<BType<T, Rank>, Rank, T>;
+        requires DeviceRankTensor<CType<T, Rank>, Rank, T>;
+    }
+void direct_product(T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, T beta, CType<T, Rank> *C) {
+    using namespace einsums::gpu;
+
+    using T_devtype  = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<decltype(C->data())>>>;
+    using T_hosttype = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<T>>>;
+
+    assert(A.dims() == B.dims() && A.dims() == C->dims());
+
+    size_t elems = A.size();
+
+    std::array<size_t, Rank> Index_strides;
+
+    size_t prod = 1;
+
+    for (int i = Rank - 1; i >= 0; i--) {
+        Index_strides[i] = prod;
+        prod *= A.dim(i);
+    }
+
+    size_t *gpu_Ind_strides;
+
+    hip_catch(hipMalloc((void **)&gpu_Ind_strides, Rank * sizeof(size_t)));
+
+    hip_catch(hipMemcpy((void *)gpu_Ind_strides, Index_strides.data(), Rank * sizeof(size_t), hipMemcpyHostToDevice));
+
+    dim3 threads = block_size(elems), num_blocks = blocks(elems);
+
+    gpu::direct_product_kernel<Rank><<<threads, num_blocks, 0, get_stream()>>>(
+        HipCast<T_devtype, T_hosttype>::cast(beta), C->data(), C->gpu_strides(), HipCast<T_devtype, T_hosttype>::cast(alpha), A.data(),
+        A.gpu_strides(), B.data(), B.gpu_strides(), A.gpu_dims(), gpu_Ind_strides, elems);
+
+    stream_wait();
+
+    hip_catch(hipFree((void *)gpu_Ind_strides));
 }
 
 } // namespace detail

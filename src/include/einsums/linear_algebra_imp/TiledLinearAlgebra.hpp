@@ -97,7 +97,7 @@ void gemm(const U alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const
                 C->lock();
                 if (C->has_tile(i, j) && !C->has_zero_size(i, j)) {
                     if (beta == U{0.0}) {
-                        //C->tiles().erase(std::array<int, 2>{i, j});
+                        // C->tiles().erase(std::array<int, 2>{i, j});
                         C->tile(i, j).zero();
                     } else {
                         C->tile(i, j) *= beta;
@@ -218,6 +218,30 @@ void gemv(const U alpha, const AType<T, ARank> &A, const XType<T, XYRank> &z, co
                     }
                 }
             }
+        }
+    }
+}
+
+template <template <typename, size_t> typename AType, template <typename, size_t> typename BType,
+          template <typename, size_t> typename CType, typename T, size_t Rank>
+    requires requires {
+        requires RankTiledTensor<AType<T, Rank>, Rank, T>;
+        requires RankTiledTensor<BType<T, Rank>, Rank, T>;
+        requires RankTiledTensor<CType<T, Rank>, Rank, T>;
+    }
+void direct_product(T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, T beta, CType<T, Rank> *C) {
+    EINSUMS_OMP_PARALLEL_FOR
+    for (size_t sentinel = 0; sentinel < A.grid_size(); sentinel++) {
+        std::array<int, Rank> index = std::array<int, Rank>{};
+        size_t                hold  = sentinel;
+
+        // Calculate the index.
+        for (int i = 0; i < Rank; i++) {
+            index[i] = hold % A.grid_size(i);
+            hold /= A.grid_size(i);
+        }
+        if (A.has_tile(index) && B.has_tile(index)) {
+            direct_product(alpha, A.tile(index), B.tile(index), beta, &(C->tile(index)));
         }
     }
 }
