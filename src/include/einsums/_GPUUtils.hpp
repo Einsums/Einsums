@@ -510,9 +510,19 @@ __host__ inline dim3 blocks(size_t compute_size) {
 __host__ EINSUMS_EXPORT void stream_wait(hipStream_t stream);
 
 /**
- * @brief Wait on the current thread's stream.
+ * @brief Indicates that the next skippable wait on the current thread should be skipped.
+ * Does not apply to stream_wait(stream) with the stream specified, all_stream_wait, or device_synchronize.
+ * Does not affect stream_wait(false), and stream_wait(false) does not affect the skip state.
  */
-__host__ EINSUMS_EXPORT void stream_wait();
+__host__ EINSUMS_EXPORT void skip_next_wait();
+
+/**
+ * @brief Wait on the current thread's stream. Can be skippable or not.
+ *
+ * @param may_skip Indicate that the wait may be skipped to avoid unnecessary waits. Only skipped after a call to skip_next_wait,
+ * then resets the skip flag so that later waits are not skipped.
+ */
+__host__ EINSUMS_EXPORT void stream_wait(bool may_skip = true);
 
 /**
  * @brief Wait on all streams managed by Einsums.

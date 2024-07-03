@@ -252,6 +252,7 @@ namespace detail {
 std::vector<hipblasHandle_t> *blas_handles = nullptr;
 std::vector<hipsolverHandle_t> *solver_handles = nullptr;
 std::vector<hipStream_t> *default_streams = nullptr;
+std::vector<bool> *skip_waits = nullptr;
 }
 
 __host__ void __hipblas_catch__(hipblasStatus_t status, const char *diagnostic, bool throw_success) {
@@ -465,6 +466,14 @@ void initialize() {
             hipsolver_catch(hipsolverSetStream(detail::solver_handles->at(i), detail::default_streams->at(i)));
         }
     }
+
+    if(detail::skip_waits == nullptr) {
+        detail::skip_waits = new std::vector<bool>(omp_get_num_threads());
+
+        for(int i = 0; i < omp_get_num_threads(); i++) {
+            detail::skip_waits->at(i) = false;
+        }
+    }
 }
 
 void finalize() {
@@ -500,7 +509,16 @@ __host__ hipMemPool_t &get_scale_pool() {
 }
 
 __host__
-void stream_wait() {
+void skip_next_wait() {
+    detail::skip_waits->at(omp_get_thread_num()) = true;
+}
+
+__host__
+void stream_wait(bool may_skip) {
+    if(may_skip && detail::skip_waits->at(omp_get_thread_num())) {
+        detail::skip_waits->at(omp_get_thread_num()) = false;
+        return;
+    }
     stream_wait(get_stream());
 }
 

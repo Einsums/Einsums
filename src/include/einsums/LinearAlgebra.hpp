@@ -965,7 +965,7 @@ template <template <typename, size_t> typename AType, template <typename, size_t
 void direct_product(T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, T beta, CType<T, Rank> *C) {
     LabeledSection0();
 
-    detail::direct_product(alpha, A, B, beta, C); 
+    detail::direct_product(alpha, A, B, beta, C);
 }
 
 END_EINSUMS_NAMESPACE_HPP(einsums::linear_algebra)

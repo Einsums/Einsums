@@ -2,6 +2,7 @@
 
 #include "einsums/_GPUUtils.hpp"
 #include "einsums/_TensorAlgebraUtilities.hpp"
+
 #include "einsums/utility/IndexUtils.hpp"
 
 #include <bits/utility.h>
@@ -17,11 +18,13 @@ namespace detail {
 
 template <typename CDataType, typename ADataType, typename BDataType, size_t UniqueRank, size_t CRank, size_t ARank, size_t BRank>
 __global__ void
-einsum_generic_algorithm_gpu(const size_t *unique_strides, const int *__restrict__ C_index_table, const int *__restrict__ A_index_table, const int *__restrict__ B_index_table,
-                             const CDataType C_prefactor, CDataType *__restrict__ C, const size_t *__restrict__ C_dims, const size_t *__restrict__ C_stride,
+einsum_generic_algorithm_gpu(const size_t *unique_strides, const int *__restrict__ C_index_table, const int *__restrict__ A_index_table,
+                             const int *__restrict__ B_index_table, const CDataType C_prefactor, CDataType *__restrict__ C,
+                             const size_t *__restrict__ C_dims, const size_t *__restrict__ C_stride,
                              const ::std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> AB_prefactor,
-                             const ADataType *__restrict__ A, const size_t *__restrict__ A_dims, const size_t *__restrict__ A_stride, const BDataType *__restrict__ B, const size_t *__restrict__ B_dims,
-                             const size_t *__restrict__ B_stride, size_t max_index) {
+                             const ADataType *__restrict__ A, const size_t *__restrict__ A_dims, const size_t *__restrict__ A_stride,
+                             const BDataType *__restrict__ B, const size_t *__restrict__ B_dims, const size_t *__restrict__ B_stride,
+                             size_t max_index) {
     using namespace einsums::gpu;
 
     int thread_id, kernel_size;
@@ -86,10 +89,12 @@ einsum_generic_algorithm_gpu(const size_t *unique_strides, const int *__restrict
  */
 template <typename CDataType, typename ADataType, typename BDataType, size_t UniqueRank, size_t ARank, size_t BRank>
 __global__ void
-einsum_generic_zero_rank_gpu(const size_t *__restrict__ unique_strides, const int *__restrict__ A_index_table, const int *__restrict__ B_index_table, CDataType *__restrict__ C,
+einsum_generic_zero_rank_gpu(const size_t *__restrict__ unique_strides, const int *__restrict__ A_index_table,
+                             const int *__restrict__ B_index_table, CDataType *__restrict__ C,
                              const ::std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> AB_prefactor,
-                             const ADataType *__restrict__ A, const size_t *__restrict__ A_dims, const size_t *__restrict__ A_stride, const BDataType *__restrict__ B, const size_t *__restrict__ B_dims,
-                             const size_t *__restrict__ B_stride, size_t max_index, CDataType *work_array) {
+                             const ADataType *__restrict__ A, const size_t *__restrict__ A_dims, const size_t *__restrict__ A_stride,
+                             const BDataType *__restrict__ B, const size_t *__restrict__ B_dims, const size_t *__restrict__ B_stride,
+                             size_t max_index, CDataType *work_array) {
 
     CDataType value;
 
@@ -99,7 +104,7 @@ einsum_generic_zero_rank_gpu(const size_t *__restrict__ unique_strides, const in
     get_worker_info(thread_id, kernel_size);
 
     // Clear the work array.
-    if(thread_id % warpSize == 0) {     
+    if (thread_id % warpSize == 0) {
         make_zero(work_array[thread_id / warpSize]);
     }
     make_zero(value);
@@ -129,7 +134,7 @@ einsum_generic_zero_rank_gpu(const size_t *__restrict__ unique_strides, const in
         value = value + A[A_sentinel] * B[B_sentinel];
     }
 
-    for(unsigned int i = warpSize / 2; i > 0; i /= 2) {
+    for (unsigned int i = warpSize / 2; i > 0; i /= 2) {
         if constexpr (std::is_same_v<CDataType, float> || std::is_same_v<CDataType, double>) {
             value = value + __shfl_down(value, i);
         } else {
@@ -138,20 +143,20 @@ einsum_generic_zero_rank_gpu(const size_t *__restrict__ unique_strides, const in
         }
     }
 
-    if(thread_id % warpSize == 0) {
+    if (thread_id % warpSize == 0) {
         work_array[thread_id / warpSize] = value;
     }
 
-    for(unsigned int i = kernel_size / 2 / warpSize; i > 0; i /= 2) {
+    for (unsigned int i = kernel_size / 2 / warpSize; i > 0; i /= 2) {
         __syncthreads();
-        if(thread_id + i > kernel_size / warpSize) {
+        if (thread_id + i > kernel_size / warpSize) {
             continue;
         }
         work_array[thread_id] = work_array[thread_id] + work_array[thread_id + i];
     }
     __syncthreads();
 
-    if(thread_id == 0) {
+    if (thread_id == 0) {
         *C = work_array[0];
     }
 }
@@ -171,8 +176,8 @@ template <typename... CUniqueIndices, typename... AUniqueIndices, typename... BU
     }
 void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, const std::tuple<AUniqueIndices...> & /*A_unique*/,
                               const std::tuple<BUniqueIndices...> & /*B_unique*/, const std::tuple<LinkUniqueIndices...> &link_unique,
-                              const std::tuple<CIndices...> & C_indices, const std::tuple<AIndices...> & A_indices,
-                              const std::tuple<BIndices...> & B_indices, const std::tuple<TargetDims...> &target_dims,
+                              const std::tuple<CIndices...> &C_indices, const std::tuple<AIndices...> &A_indices,
+                              const std::tuple<BIndices...> &B_indices, const std::tuple<TargetDims...> &target_dims,
                               const std::tuple<LinkDims...> &link_dims, const std::tuple<TargetPositionInC...> &target_position_in_C,
                               const std::tuple<LinkPositionInLink...> &link_position_in_link, const CDataType C_prefactor,
                               CType<CDataType, CRank>                                                                *C,
@@ -181,7 +186,7 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
     using namespace einsums::gpu;
 
     constexpr auto unique_indices = unique_t<std::tuple<CIndices..., AIndices..., BIndices...>>();
-    auto unique_dims = get_dim_ranges_for_many(*C, C_indices, A, A_indices, B, B_indices, unique_indices);
+    auto           unique_dims    = get_dim_ranges_for_many(*C, C_indices, A, A_indices, B, B_indices, unique_indices);
 
     auto unique_strides = std::array<size_t, std::tuple_size<decltype(unique_indices)>::value>();
 
@@ -201,7 +206,8 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
     if constexpr (sizeof...(CIndices) != 0) {
         hip_catch(hipMallocAsync((void **)&C_index_table_gpu, sizeof...(CIndices) * sizeof(int), get_stream()));
     }
-    hip_catch(hipMallocAsync((void **)&unique_strides_gpu, std::tuple_size<decltype(unique_indices)>::value * sizeof(size_t), get_stream()));
+    hip_catch(
+        hipMallocAsync((void **)&unique_strides_gpu, std::tuple_size<decltype(unique_indices)>::value * sizeof(size_t), get_stream()));
 
     hip_catch(hipMemcpyAsync((void *)A_index_table_gpu, (const void *)A_index_table, sizeof...(AIndices) * sizeof(int),
                              hipMemcpyHostToDevice, get_stream()));
@@ -211,27 +217,29 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
         hip_catch(hipMemcpyAsync((void *)C_index_table_gpu, (const void *)C_index_table, sizeof...(CIndices) * sizeof(int),
                                  hipMemcpyHostToDevice, get_stream()));
     }
-    hip_catch(hipMemcpyAsync((void *)unique_strides_gpu, (const void *)unique_strides.data(), std::tuple_size<decltype(unique_indices)>::value * sizeof(size_t),
-                             hipMemcpyHostToDevice, get_stream()));
+    hip_catch(hipMemcpyAsync((void *)unique_strides_gpu, (const void *)unique_strides.data(),
+                             std::tuple_size<decltype(unique_indices)>::value * sizeof(size_t), hipMemcpyHostToDevice, get_stream()));
 
     // Calculate the optimal launch bounds.
     dim3 threads = block_size(::std::get<0>(unique_dims) * unique_strides[0]),
          grid    = blocks(::std::get<0>(unique_dims) * unique_strides[0]);
 
     if constexpr (sizeof...(CIndices) != 0) {
-        using C_devtype = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<decltype(C->data())>>>;
-        using A_devtype = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<decltype(A.data())>>>;
-        using B_devtype = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<decltype(B.data())>>>;
-        using AB_devtype = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), decltype(A.data()), decltype(B.data())>>>>;
-        using C_hosttype = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<CDataType>>>;
-        using A_hosttype = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<ADataType>>>;
-        using B_hosttype = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<BDataType>>>;
+        using C_devtype   = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<decltype(C->data())>>>;
+        using A_devtype   = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<decltype(A.data())>>>;
+        using B_devtype   = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<decltype(B.data())>>>;
+        using AB_devtype  = std::remove_cvref_t<std::remove_pointer_t<
+             std::decay_t<std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), decltype(A.data()), decltype(B.data())>>>>;
+        using C_hosttype  = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<CDataType>>>;
+        using A_hosttype  = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<ADataType>>>;
+        using B_hosttype  = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<BDataType>>>;
         using AB_hosttype = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<decltype(AB_prefactor)>>>;
 
         einsum_generic_algorithm_gpu<C_devtype, A_devtype, B_devtype, std::tuple_size<decltype(unique_indices)>::value, CRank, ARank, BRank>
-            <<<threads, grid, 0, get_stream()>>>(unique_strides_gpu, C_index_table_gpu, A_index_table_gpu, B_index_table_gpu, HipCast<C_devtype, C_hosttype>::cast(C_prefactor),
-                                                 C->data(), C->gpu_dims(), C->gpu_strides(), HipCast<AB_devtype, AB_hosttype>::cast(AB_prefactor), A.data(), A.gpu_dims(),
-                                                 A.gpu_strides(), B.data(), B.gpu_dims(), B.gpu_strides(),
+            <<<threads, grid, 0, get_stream()>>>(unique_strides_gpu, C_index_table_gpu, A_index_table_gpu, B_index_table_gpu,
+                                                 HipCast<C_devtype, C_hosttype>::cast(C_prefactor), C->data(), C->gpu_dims(),
+                                                 C->gpu_strides(), HipCast<AB_devtype, AB_hosttype>::cast(AB_prefactor), A.data(),
+                                                 A.gpu_dims(), A.gpu_strides(), B.data(), B.gpu_dims(), B.gpu_strides(),
                                                  ::std::get<0>(unique_dims) * unique_strides[0]);
     } else {
         // CDataType *work;
@@ -242,25 +250,28 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
             *C *= C_prefactor;
         }
 
-        using C_devtype = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<decltype(C->data())>>>;
-        using A_devtype = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<decltype(A.data())>>>;
-        using B_devtype = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<decltype(B.data())>>>;
-        using AB_devtype = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), decltype(A.data()), decltype(B.data())>>>>;
-        using C_hosttype = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<CDataType>>>;
-        using A_hosttype = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<ADataType>>>;
-        using B_hosttype = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<BDataType>>>;
+        using C_devtype   = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<decltype(C->data())>>>;
+        using A_devtype   = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<decltype(A.data())>>>;
+        using B_devtype   = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<decltype(B.data())>>>;
+        using AB_devtype  = std::remove_cvref_t<std::remove_pointer_t<
+             std::decay_t<std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), decltype(A.data()), decltype(B.data())>>>>;
+        using C_hosttype  = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<CDataType>>>;
+        using A_hosttype  = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<ADataType>>>;
+        using B_hosttype  = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<BDataType>>>;
         using AB_hosttype = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<decltype(AB_prefactor)>>>;
 
         C_devtype *work_array;
 
-        hip_catch(hipMalloc((void **) &work_array, threads.x * threads.y * threads.z * grid.x * grid.y * grid.z * sizeof(CDataType) / get_warpsize()));
+        hip_catch(hipMalloc((void **)&work_array,
+                            threads.x * threads.y * threads.z * grid.x * grid.y * grid.z * sizeof(CDataType) / get_warpsize()));
 
         einsum_generic_zero_rank_gpu<C_devtype, A_devtype, B_devtype, std::tuple_size<decltype(unique_indices)>::value, ARank, BRank>
-            <<<threads, grid, 0, get_stream()>>>(
-                unique_strides_gpu, A_index_table_gpu, B_index_table_gpu, C->data(), HipCast<AB_devtype, AB_hosttype>::cast(AB_prefactor), A.data(), A.gpu_dims(), A.gpu_strides(),
-                B.data(), B.gpu_dims(), B.gpu_strides(), ::std::get<0>(unique_dims) * unique_strides[0], work_array);
+            <<<threads, grid, 0, get_stream()>>>(unique_strides_gpu, A_index_table_gpu, B_index_table_gpu, C->data(),
+                                                 HipCast<AB_devtype, AB_hosttype>::cast(AB_prefactor), A.data(), A.gpu_dims(),
+                                                 A.gpu_strides(), B.data(), B.gpu_dims(), B.gpu_strides(),
+                                                 ::std::get<0>(unique_dims) * unique_strides[0], work_array);
 
-        hip_catch(hipFreeAsync((void *) work_array, get_stream()));
+        hip_catch(hipFreeAsync((void *)work_array, get_stream()));
     }
 
     hip_catch(hipFreeAsync(A_index_table_gpu, get_stream()));

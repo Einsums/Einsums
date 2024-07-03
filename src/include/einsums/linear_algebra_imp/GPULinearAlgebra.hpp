@@ -4,6 +4,8 @@
 #include "einsums/_GPUUtils.hpp"
 
 #include "einsums/DeviceTensor.hpp"
+#include "einsums/_Index.hpp"
+#include "einsums/utility/SmartPointerTraits.hpp"
 
 #include <hip/driver_types.h>
 #include <hip/hip_common.h>
@@ -12,6 +14,11 @@
 #include <hipblas/hipblas.h>
 #include <hipsolver/hipsolver.h>
 #include <hipsolver/internal/hipsolver-types.h>
+
+namespace einsums::tensor_algebra {
+template <NotASmartPointer ObjectA, NotASmartPointer ObjectC, typename... CIndices, typename... AIndices>
+void sort(const std::tuple<CIndices...> &C_indices, ObjectC *C, const std::tuple<AIndices...> &A_indices, const ObjectA &A);
+}
 
 namespace einsums {
 namespace linear_algebra {
@@ -239,9 +246,15 @@ void ger(const T *alpha, const XYType<T, XYRank> &X, const XYType<T, XYRank> &Y,
     using dev_datatype = ::std::conditional_t<::std::is_same_v<T, ::std::complex<float>>, hipComplex,
                                               ::std::conditional_t<::std::is_same_v<T, ::std::complex<double>>, hipDoubleComplex, T>>;
 
-    gpu::ger(X.dim(0), Y.dim(0), (dev_datatype *)alpha, X.data(), X.stride(0), Y.data(), Y.stride(0), A->data(), A->stride(0));
+    DeviceTensor<T, ARank> A_temp(*A);
 
-    stream_wait();
+    gpu::ger(X.dim(0), Y.dim(0), (dev_datatype *)alpha, X.data(), X.stride(0), Y.data(), Y.stride(0), A_temp.data(), A_temp.stride(0));
+
+    einsums::tensor_algebra::sort(einsums::tensor_algebra::Indices{einsums::tensor_algebra::index::i, einsums::tensor_algebra::index::j}, A,
+                                  einsums::tensor_algebra::Indices{einsums::tensor_algebra::index::j, einsums::tensor_algebra::index::i},
+                                  A_temp);
+
+    // No wait needed. sort waits.
 }
 
 template <bool TransA, template <typename, size_t> typename AType, template <typename, size_t> typename XType,
