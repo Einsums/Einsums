@@ -966,7 +966,7 @@ DeviceTensor<T, Rank> &DeviceTensor<T, Rank>::assign(const Tensor<T, Rank> &othe
         hip_catch(hipMemcpy((void *)this->_gpu_strides, (const void *)this->_strides.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
     }
 
-    hip_catch(hipMemcpy((void *)this->_data, (const void *)other.data(), this->size(), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpy((void *)this->_data, (const void *)other.data(), this->size() * sizeof(T), hipMemcpyHostToDevice));
 
     return *this;
 }
