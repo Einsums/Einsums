@@ -26,7 +26,7 @@ auto initialize() -> int {
     blas::initialize();
 
     // Disable nested omp regions
-    omp_set_max_active_levels(1);
+    // omp_set_max_active_levels(1);
 
     // Disable HDF5 diagnostic reporting.
     H5Eset_auto(0, nullptr, nullptr);
