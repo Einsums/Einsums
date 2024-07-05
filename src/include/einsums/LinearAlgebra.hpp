@@ -296,17 +296,33 @@ auto gesv(AType<T, ARank> *A, BType<T, BRank> *B) -> int {
  * @return std::tuple<Tensor<T, 2>, Tensor<T, 1>> The eigenvectors and eigenvalues.
  */
 template <template <typename, size_t> typename AType, typename T, bool ComputeEigenvectors = true>
-auto syev(const AType<T, 2> &A) -> std::tuple<remove_view_t<AType, 2, T>, remove_view_t<AType, 1, T>> {
+auto syev(const AType<T, 2> &A) -> std::tuple<remove_view_t<AType, 2, T>, 
+#ifdef __HIP__
+std::conditional_t<einsums::detail::IsDeviceRankTensorV<AType<T, 1>, 1, T>, DeviceTensor<T, 1>, Tensor<T, 1>>
+#else
+Tensor<T, 1>
+#endif
+> {
     LabeledSection0();
 
     assert(A.dim(0) == A.dim(1));
 
     remove_view_t<AType, 2, T> a = A;
-    remove_view_t<AType, 1, T> w{"eigenvalues", A.dim(0)};
+    #ifdef __HIP__
+    if constexpr (einsums::detail::IsDeviceRankTensorV<AType<T, 2>, 2, T>) {
+        DeviceTensor<T, 1> w{"eigenvalues", einsums::detail::DEV_ONLY, A.dim(0)};
+        syev<ComputeEigenvectors>(&a, &w);
+        return std::make_tuple(a, w);
+    } else {
+    #endif
+    Tensor<T, 1> w{"eigenvalues", A.dim(0)};
 
     syev<ComputeEigenvectors>(&a, &w);
 
     return std::make_tuple(a, w);
+    #ifdef __HIP__
+    }
+    #endif
 }
 
 /**
