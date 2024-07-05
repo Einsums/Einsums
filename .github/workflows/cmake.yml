@@ -40,6 +40,7 @@ jobs:
             os: windows-latest
             build_type: Release
             hptt: OFF
+            llvm-version: "17.0.6"
             cmargs: >
               -DCMAKE_CXX_COMPILER=clang-cl
               -DCMAKE_C_COMPILER=clang-cl
@@ -111,6 +112,7 @@ jobs:
             sed -i "s;- blas-devel;;g" export.yaml
             sed -i "s;- elfutils;;g" export.yaml
             sed -i "s/- cxx/#- cxx/g" export.yaml
+            sed -i "s;#- dpcpp_linux-64;- clangdev ${{ matrix.cfg.llvm-version }};g" export.yaml
           fi
           # model sed for L/W
           #   sed -i "s;;;g" export.yaml
