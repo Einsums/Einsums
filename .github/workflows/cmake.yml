@@ -46,6 +46,7 @@ jobs:
               -DCMAKE_C_COMPILER=clang-cl
               -DMKL_ROOT="${CONDA_PREFIX}"
               -DEINSUMS_STATIC_BUILD=ON
+              -D CMAKE_CXX_FLAGS="-IC:\Miniconda3\envs\einsums-dev\opt\compiler\include"
             testargs: >
               -DCMAKE_CXX_COMPILER=clang-cl
               -DCMAKE_C_COMPILER=clang-cl
