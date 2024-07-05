@@ -503,4 +503,70 @@ TEST_CASE("tiled einsum1", "[tensor]") {
         REQUIRE(C(2, 1) == 3078.0);
         REQUIRE(C(2, 2) == 3285.0);
     }
+
+    SECTION("ik=block ij,jk") {
+        BlockTensor<double, 2> A("A", 1, 0, 2);
+        TiledTensor<double, 2> B("B", std::array{1, 0, 2});
+        TiledTensor<double, 2> C("C", std::array{1, 0, 2});
+
+        for (int i = 0, ij = 1; i < 3; i++) {
+            for (int j = 0; j < 3; j++, ij++) {
+                A(i, j) = ij;
+                B(i, j) = ij;
+            }
+        }
+        C.zero();
+
+        REQUIRE_NOTHROW(einsum(Indices{index::i, index::j}, &C, Indices{index::i, index::k}, A, Indices{index::k, index::j}, B));
+
+        // println(A);
+        // println(B);
+        // println(C);
+        
+        /*[[ 1,  2,  3],
+           [ 62,  73,  84],
+           [ 95, 112, 129]]*/
+        CHECK(C(0, 0) == 1.0);
+        CHECK(C(0, 1) == 2.0);
+        CHECK(C(0, 2) == 3.0);
+        CHECK(C(1, 0) == 62.0);
+        CHECK(C(1, 1) == 73.0);
+        CHECK(C(1, 2) == 84.0);
+        CHECK(C(2, 0) == 95.0);
+        CHECK(C(2, 1) == 112.0);
+        CHECK(C(2, 2) == 129.0);
+    }
+
+    SECTION("ik=ij,block jk") {
+        BlockTensor<double, 2> A("A", 1, 0, 2);
+        TiledTensor<double, 2> B("B", std::array{1, 0, 2});
+        TiledTensor<double, 2> C("C", std::array{1, 0, 2});
+
+        for (int i = 0, ij = 1; i < 3; i++) {
+            for (int j = 0; j < 3; j++, ij++) {
+                A(i, j) = ij;
+                B(i, j) = ij;
+            }
+        }
+        C.zero();
+
+        REQUIRE_NOTHROW(einsum(Indices{index::i, index::j}, &C, Indices{index::i, index::k}, B, Indices{index::k, index::j}, A));
+
+        // println(A);
+        // println(B);
+        // println(C);
+
+        /*[[ 1,  34,  39],
+           [ 4,  73,  84],
+           [ 7, 112, 129]]*/
+        CHECK(C(0, 0) == 1.0);
+        CHECK(C(0, 1) == 34.0);
+        CHECK(C(0, 2) == 39.0);
+        CHECK(C(1, 0) == 4.0);
+        CHECK(C(1, 1) == 73.0);
+        CHECK(C(1, 2) == 84.0);
+        CHECK(C(2, 0) == 7.0);
+        CHECK(C(2, 1) == 112.0);
+        CHECK(C(2, 2) == 129.0);
+    }
 }

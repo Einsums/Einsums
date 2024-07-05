@@ -14,6 +14,7 @@
 #include "einsums/Timer.hpp"
 #include "einsums/tensor_algebra_backends/BlockAlgebra.hpp"
 #include "einsums/tensor_algebra_backends/TileAlgebra.hpp"
+#include "einsums/tensor_algebra_backends/BlockTileAlgebra.hpp"
 #ifdef __HIP__
 #    include "einsums/tensor_algebra_backends/GPUTensorAlgebra.hpp"
 #endif
