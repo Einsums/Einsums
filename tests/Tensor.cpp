@@ -359,6 +359,36 @@ void test_tensor_from_tensorview() {
     auto   vA = TensorView(A, Dim{2, 2}, Offset{4, 4});
     Tensor B  = vA;
 
+    A.lock();
+
+    int locked = 0;
+
+#pragma omp parallel shared(locked)
+    {
+        if (vA.try_lock()) {
+            locked++;
+            vA.unlock();
+        }
+    }
+    REQUIRE(locked == 1);
+
+    A.unlock();
+
+    vA.lock();
+
+    locked = 0;
+
+#pragma omp parallel shared(locked)
+    {
+        if (A.try_lock()) {
+            locked++;
+            A.unlock();
+        }
+    }
+    REQUIRE(locked == 1);
+
+    vA.unlock();
+
     REQUIRE(B(0, 0) == A(4, 4));
     REQUIRE(B(0, 1) == A(4, 5));
     REQUIRE(B(1, 0) == A(5, 4));
