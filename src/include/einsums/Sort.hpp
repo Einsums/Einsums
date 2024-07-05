@@ -16,7 +16,11 @@
 #include "einsums/utility/SmartPointerTraits.hpp"
 #include "einsums/utility/TensorTraits.hpp"
 
-BEGIN_EINSUMS_NAMESPACE_HPP(einsums::tensor_algebra)
+#ifdef __HIP__
+#    include "einsums/DeviceSort.hpp"
+#endif
+
+namespace einsums::tensor_algebra {
 
 #if defined(EINSUMS_USE_HPTT)
 
@@ -39,16 +43,16 @@ void EINSUMS_EXPORT sort(const int *perm, const int dim, const std::complex<doub
 //
 template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename CType, size_t CRank,
           typename... CIndices, typename... AIndices, typename U, typename T = double>
-requires requires {
-    requires CoreRankTensor<AType<T, ARank>, ARank, T>;
-    requires CoreRankTensor<CType<T, CRank>, CRank, T>;
-}
+    requires requires {
+        requires CoreRankTensor<AType<T, ARank>, ARank, T>;
+        requires CoreRankTensor<CType<T, CRank>, CRank, T>;
+    }
 auto sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<T, CRank> *C, const U UA_prefactor,
-          const std::tuple<AIndices...> &A_indices, const AType<T, ARank> &A)
-    -> std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<T, CRank>, CType<T, CRank>> &&
-                        std::is_base_of_v<::einsums::detail::TensorBase<T, ARank>, AType<T, ARank>> &&
-                        sizeof...(CIndices) == sizeof...(AIndices) && sizeof...(CIndices) == CRank && sizeof...(AIndices) == ARank &&
-                        std::is_arithmetic_v<U>> {
+          const std::tuple<AIndices...> &A_indices,
+          const AType<T, ARank> &A) -> std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<T, CRank>, CType<T, CRank>> &&
+                                                        std::is_base_of_v<::einsums::detail::TensorBase<T, ARank>, AType<T, ARank>> &&
+                                                        sizeof...(CIndices) == sizeof...(AIndices) && sizeof...(CIndices) == CRank &&
+                                                        sizeof...(AIndices) == ARank && std::is_arithmetic_v<U>> {
 
     LabeledSection1((std::fabs(UC_prefactor) > EINSUMS_ZERO)
                         ? fmt::format(R"(sort: "{}"{} = {} "{}"{} + {} "{}"{})", C->name(), print_tuple_no_type(C_indices), UA_prefactor,
@@ -67,6 +71,11 @@ auto sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<
 
     auto target_dims = get_dim_ranges<CRank>(*C);
     auto a_dims      = detail::get_dim_ranges_for(A, target_position_in_A);
+
+    // If the prefactor is zero, set the tensor to zero. This avoids NaNs.
+    if (C_prefactor == T{0.0}) {
+        *C = T{0.0};
+    }
 
     // HPTT interface currently only works for full Tensors and not TensorViews
 #if defined(EINSUMS_USE_HPTT)
@@ -97,7 +106,7 @@ auto sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<
             target_value = C_prefactor * target_value + A_prefactor * A_value;
         }
     }
-} // namespace einsums::TensorAlgebra
+}
 
 // Sort with default values, no smart pointers
 template <NotASmartPointer ObjectA, NotASmartPointer ObjectC, typename... CIndices, typename... AIndices>
@@ -123,4 +132,4 @@ void sort(const std::tuple<CIndices...> &C_indices, SmartPointerC *C, const std:
     sort(0, C_indices, C->get(), 1, A_indices, A);
 }
 
-END_EINSUMS_NAMESPACE_HPP(einsums::tensor_algebra)
+} // namespace einsums::tensor_algebra

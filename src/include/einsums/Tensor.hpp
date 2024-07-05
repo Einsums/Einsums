@@ -45,7 +45,36 @@ namespace detail {
 
 template <typename T, size_t Rank>
 struct TensorBase {
+protected:
+    mutable std::recursive_mutex _lock{}; // Make it mutable so that it can be modified even in const methods.
+public:
+    TensorBase() = default;
+
+    TensorBase(const TensorBase &) : _lock{} {}
+
     [[nodiscard]] virtual auto dim(int d) const -> size_t = 0;
+
+    // Make it work with std::lock_guard.
+    /**
+     * Lock the tensor.
+     */
+    virtual void lock() const {
+        _lock.lock();
+    }
+
+    /**
+     * Try to lock the tensor. Returns false if a lock could not be obtained, or true if it could.
+     */
+    virtual bool try_lock() const {
+        return _lock.try_lock();
+    }
+
+    /**
+     * Unlock the tensor.
+     */
+    virtual void unlock() const {
+        _lock.unlock();
+    }
 };
 
 } // namespace detail
@@ -73,16 +102,16 @@ struct TensorPrintOptions {
 
 // Forward declaration of the Tensor printing function.
 template <template <typename, size_t> typename AType, size_t Rank, typename T>
-auto println(const AType<T, Rank> &A, TensorPrintOptions options = {}) ->
-    typename std::enable_if_t<std::is_base_of_v<einsums::detail::TensorBase<T, Rank>, AType<T, Rank>>>;
+requires (einsums::RankBasicTensor<AType<T, Rank>, Rank, T>)
+void println(const AType<T, Rank> &A, TensorPrintOptions options = {});
 
 template <template <typename, size_t> typename AType, size_t Rank, typename T>
-auto fprintln(std::FILE *fp, const AType<T, Rank> &A, TensorPrintOptions options = {}) ->
-    typename std::enable_if_t<std::is_base_of_v<einsums::detail::TensorBase<T, Rank>, AType<T, Rank>>>;
+requires (einsums::RankBasicTensor<AType<T, Rank>, Rank, T>)
+void fprintln(std::FILE *fp, const AType<T, Rank> &A, TensorPrintOptions options = {});
 
 template <template <typename, size_t> typename AType, size_t Rank, typename T>
-auto fprintln(std::ostream &os, const AType<T, Rank> &A, TensorPrintOptions options = {}) ->
-    typename std::enable_if_t<std::is_base_of_v<einsums::detail::TensorBase<T, Rank>, AType<T, Rank>>>;
+requires (einsums::RankBasicTensor<AType<T, Rank>, Rank, T>)
+void fprintln(std::ostream &os, const AType<T, Rank> &A, TensorPrintOptions options = {});
 
 namespace einsums {
 namespace detail {
@@ -863,32 +892,32 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
     // constructors for the types of tensors we support (Tensor and TensorView).  The
     // call to common_initialization is able to perform an enable_if check.
     template <size_t OtherRank, typename... Args>
-    explicit TensorView(const Tensor<T, OtherRank> &other, const Dim<Rank> &dim, Args &&...args) : _name{other._name}, _dims{dim} {
+    explicit TensorView(const Tensor<T, OtherRank> &other, const Dim<Rank> &dim, Args &&...args) : _name{other._name}, _dims{dim}, _parent_mutex{&(other._lock)} {
         // println(" here 1");
         common_initialization(const_cast<Tensor<T, OtherRank> &>(other), args...);
     }
 
     template <size_t OtherRank, typename... Args>
-    explicit TensorView(Tensor<T, OtherRank> &other, const Dim<Rank> &dim, Args &&...args) : _name{other._name}, _dims{dim} {
+    explicit TensorView(Tensor<T, OtherRank> &other, const Dim<Rank> &dim, Args &&...args) : _name{other._name}, _dims{dim}, _parent_mutex{&(other._lock)} {
         // println(" here 2");
         common_initialization(other, args...);
     }
 
     template <size_t OtherRank, typename... Args>
-    explicit TensorView(TensorView<T, OtherRank> &other, const Dim<Rank> &dim, Args &&...args) : _name{other._name}, _dims{dim} {
+    explicit TensorView(TensorView<T, OtherRank> &other, const Dim<Rank> &dim, Args &&...args) : _name{other._name}, _dims{dim}, _parent_mutex{other._parent_mutex} {
         // println(" here 3");
         common_initialization(other, args...);
     }
 
     template <size_t OtherRank, typename... Args>
-    explicit TensorView(const TensorView<T, OtherRank> &other, const Dim<Rank> &dim, Args &&...args) : _name{other._name}, _dims{dim} {
+    explicit TensorView(const TensorView<T, OtherRank> &other, const Dim<Rank> &dim, Args &&...args) : _name{other._name}, _dims{dim}, _parent_mutex{other._parent_mutex} {
         // println(" here 4");
         common_initialization(const_cast<TensorView<T, OtherRank> &>(other), args...);
     }
 
     template <size_t OtherRank, typename... Args>
     explicit TensorView(std::string name, Tensor<T, OtherRank> &other, const Dim<Rank> &dim, Args &&...args)
-        : _name{std::move(name)}, _dims{dim} {
+        : _name{std::move(name)}, _dims{dim}, _parent_mutex{&(other._lock)} {
         // println(" here 5");
         common_initialization(other, args...);
     }
@@ -1035,7 +1064,7 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
         return _data[ordinal];
     }
 
-    [[nodiscard]] auto dim(int d) const -> size_t {
+    [[nodiscard]] auto dim(int d) const -> size_t override {
         if (d < 0)
             d += Rank;
         return _dims[d];
@@ -1074,6 +1103,27 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
     [[nodiscard]] auto full_view_of_underlying() const noexcept -> bool { return _full_view_of_underlying; }
 
     [[nodiscard]] auto size() const { return std::accumulate(std::begin(_dims), std::begin(_dims) + Rank, 1, std::multiplies<>{}); }
+
+    /**
+     * Lock the tensor.
+     */
+    void lock() const override {
+        _parent_mutex->lock();
+    }
+
+    /**
+     * Try to lock the tensor. Returns false if a lock could not be obtained, or true if it could.
+     */
+    bool try_lock() const override {
+        return _parent_mutex->try_lock();
+    }
+
+    /**
+     * Unlock the tensor.
+     */
+    void unlock() const override {
+        _parent_mutex->unlock();
+    }
 
   private:
     auto common_initialization(const T *other) {
@@ -1187,6 +1237,8 @@ struct TensorView final : public detail::TensorBase<T, Rank> {
     bool _full_view_of_underlying{false};
 
     T *_data;
+
+    mutable std::recursive_mutex *_parent_mutex;
 
     template <typename T_, size_t Rank_>
     friend struct Tensor;
@@ -1332,8 +1384,8 @@ auto read(const h5::fd_t &fd, const std::string &name) -> Tensor<T, 0> {
     }
 }
 
-template <typename T, size_t Rank>
-void zero(Tensor<T, Rank> &A) {
+template <template<typename, size_t> typename TensorType, typename T, size_t Rank>
+void zero(TensorType<T, Rank> &A) {
     A.zero();
 }
 
@@ -1827,8 +1879,8 @@ auto create_disk_tensor_like(h5::fd_t &file, const Tensor<T, Rank> &tensor) -> D
 } // namespace einsums
 
 template <template <typename, size_t> typename AType, size_t Rank, typename T>
-auto println(const AType<T, Rank> &A, TensorPrintOptions options) ->
-    typename std::enable_if_t<std::is_base_of_v<einsums::detail::TensorBase<T, Rank>, AType<T, Rank>>> {
+requires (einsums::RankBasicTensor<AType<T, Rank>, Rank, T>)
+void println(const AType<T, Rank> &A, TensorPrintOptions options) {
     println("Name: {}", A.name());
     {
         print::Indent const indent{};
@@ -1984,8 +2036,8 @@ auto println(const AType<T, Rank> &A, TensorPrintOptions options) ->
 }
 
 template <template <typename, size_t> typename AType, size_t Rank, typename T>
-auto fprintln(std::FILE *fp, const AType<T, Rank> &A, TensorPrintOptions options) ->
-    typename std::enable_if_t<std::is_base_of_v<einsums::detail::TensorBase<T, Rank>, AType<T, Rank>>> {
+requires (einsums::RankBasicTensor<AType<T, Rank>, Rank, T>)
+void fprintln(std::FILE *fp, const AType<T, Rank> &A, TensorPrintOptions options) {
     fprintln(fp, "Name: {}", A.name());
     {
         print::Indent const indent{};
@@ -2141,8 +2193,8 @@ auto fprintln(std::FILE *fp, const AType<T, Rank> &A, TensorPrintOptions options
 }
 
 template <template <typename, size_t> typename AType, size_t Rank, typename T>
-auto fprintln(std::ostream &os, const AType<T, Rank> &A, TensorPrintOptions options) ->
-    typename std::enable_if_t<std::is_base_of_v<einsums::detail::TensorBase<T, Rank>, AType<T, Rank>>> {
+requires (einsums::RankBasicTensor<AType<T, Rank>, Rank, T>)
+void fprintln(std::ostream &os, const AType<T, Rank> &A, TensorPrintOptions options) {
     fprintln(os, "Name: {}", A.name());
     {
         print::Indent const indent{};

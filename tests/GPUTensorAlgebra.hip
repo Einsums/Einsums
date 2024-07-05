@@ -3,194 +3,198 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //----------------------------------------------------------------------------------------------
 
-#include "einsums/TensorAlgebra.hpp"
-
+#include "einsums/DeviceTensor.hpp"
 #include "einsums/LinearAlgebra.hpp"
 #include "einsums/Sort.hpp"
-#include "einsums/Tensor.hpp"
+#include "einsums/TensorAlgebra.hpp"
 #include "einsums/Utilities.hpp"
 
 #include <H5Fpublic.h>
 #include <catch2/catch_all.hpp>
 #include <complex>
 
-TEST_CASE("Identity Tensor", "[tensor]") {
+TEST_CASE("GPU Identity Tensor", "[tensor]") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
 
-    Tensor I = create_identity_tensor("I", 3, 3);
+    DeviceTensor<double, 2> I("I", einsums::detail::DEV_ONLY, 3, 3);
+    I = create_identity_tensor("I", 3, 3);
 
-    REQUIRE(I(0, 0) == 1.0);
-    REQUIRE(I(0, 1) == 0.0);
-    REQUIRE(I(0, 2) == 0.0);
-    REQUIRE(I(1, 0) == 0.0);
-    REQUIRE(I(1, 1) == 1.0);
-    REQUIRE(I(1, 2) == 0.0);
-    REQUIRE(I(2, 0) == 0.0);
-    REQUIRE(I(2, 1) == 0.0);
-    REQUIRE(I(2, 2) == 1.0);
+    REQUIRE((double)I(0, 0) == 1.0);
+    REQUIRE((double)I(0, 1) == 0.0);
+    REQUIRE((double)I(0, 2) == 0.0);
+    REQUIRE((double)I(1, 0) == 0.0);
+    REQUIRE((double)I(1, 1) == 1.0);
+    REQUIRE((double)I(1, 2) == 0.0);
+    REQUIRE((double)I(2, 0) == 0.0);
+    REQUIRE((double)I(2, 1) == 0.0);
+    REQUIRE((double)I(2, 2) == 1.0);
 }
 
-TEST_CASE("Scale Row", "[tensor]") {
+TEST_CASE("GPU Scale Row", "[tensor]") {
     using namespace einsums;
     using namespace einsums::linear_algebra;
 
-    Tensor I_original = create_random_tensor("I", 3, 3);
-    Tensor I_copy     = I_original;
+    DeviceTensor<double, 2> I_original{"I", einsums::detail::DEV_ONLY, 3, 3};
+    I_original                     = create_random_tensor("I", 3, 3);
+    DeviceTensor<double, 2> I_copy = I_original;
 
     scale_row(1, 2.0, &I_copy);
 
-    REQUIRE(I_copy(0, 0) == I_original(0, 0));
-    REQUIRE(I_copy(0, 1) == I_original(0, 1));
-    REQUIRE(I_copy(0, 2) == I_original(0, 2));
-    REQUIRE(I_copy(1, 0) == 2.0 * I_original(1, 0));
-    REQUIRE(I_copy(1, 1) == 2.0 * I_original(1, 1));
-    REQUIRE(I_copy(1, 2) == 2.0 * I_original(1, 2));
-    REQUIRE(I_copy(2, 0) == I_original(2, 0));
-    REQUIRE(I_copy(2, 1) == I_original(2, 1));
-    REQUIRE(I_copy(2, 2) == I_original(2, 2));
+    REQUIRE((double)I_copy(0, 0) == (double)I_original(0, 0));
+    REQUIRE((double)I_copy(0, 1) == (double)I_original(0, 1));
+    REQUIRE((double)I_copy(0, 2) == (double)I_original(0, 2));
+    REQUIRE((double)I_copy(1, 0) == 2.0 * (double)I_original(1, 0));
+    REQUIRE((double)I_copy(1, 1) == 2.0 * (double)I_original(1, 1));
+    REQUIRE((double)I_copy(1, 2) == 2.0 * (double)I_original(1, 2));
+    REQUIRE((double)I_copy(2, 0) == (double)I_original(2, 0));
+    REQUIRE((double)I_copy(2, 1) == (double)I_original(2, 1));
+    REQUIRE((double)I_copy(2, 2) == (double)I_original(2, 2));
 }
 
-TEST_CASE("Scale Column", "[tensor]") {
+TEST_CASE("GPU Scale Column", "[tensor]") {
     using namespace einsums;
     using namespace einsums::linear_algebra;
 
-    Tensor I_original = create_random_tensor("I", 3, 3);
-    Tensor I_copy     = I_original;
+    DeviceTensor<double, 2> I_original{"I", einsums::detail::DEV_ONLY, 3, 3};
+    I_original                     = create_random_tensor("I", 3, 3);
+    DeviceTensor<double, 2> I_copy = I_original;
 
     scale_column(1, 2.0, &I_copy);
 
-    REQUIRE(I_copy(0, 0) == I_original(0, 0));
-    REQUIRE(I_copy(0, 1) == 2.0 * I_original(0, 1));
-    REQUIRE(I_copy(0, 2) == I_original(0, 2));
-    REQUIRE(I_copy(1, 0) == I_original(1, 0));
-    REQUIRE(I_copy(1, 1) == 2.0 * I_original(1, 1));
-    REQUIRE(I_copy(1, 2) == I_original(1, 2));
-    REQUIRE(I_copy(2, 0) == I_original(2, 0));
-    REQUIRE(I_copy(2, 1) == 2.0 * I_original(2, 1));
-    REQUIRE(I_copy(2, 2) == I_original(2, 2));
+    REQUIRE((double)I_copy(0, 0) == (double)I_original(0, 0));
+    REQUIRE((double)I_copy(0, 1) == 2.0 * (double)I_original(0, 1));
+    REQUIRE((double)I_copy(0, 2) == (double)I_original(0, 2));
+    REQUIRE((double)I_copy(1, 0) == (double)I_original(1, 0));
+    REQUIRE((double)I_copy(1, 1) == 2.0 * (double)I_original(1, 1));
+    REQUIRE((double)I_copy(1, 2) == (double)I_original(1, 2));
+    REQUIRE((double)I_copy(2, 0) == (double)I_original(2, 0));
+    REQUIRE((double)I_copy(2, 1) == 2.0 * (double)I_original(2, 1));
+    REQUIRE((double)I_copy(2, 2) == (double)I_original(2, 2));
 }
 
-TEST_CASE("Scale Row TensorView", "[tensor]") {
+TEST_CASE("GPU Scale Row TensorView", "[tensor]") {
     using namespace einsums;
     using namespace einsums::linear_algebra;
 
-    Tensor     I_original = create_random_tensor("I", 3, 3);
-    Tensor     I_copy     = I_original;
-    TensorView I_view{I_copy, Dim<2>{2, 2}, Offset<2>{1, 1}};
+    DeviceTensor<double, 2> I_original{"I", einsums::detail::DEV_ONLY, 3, 3};
+    I_original              = create_random_tensor("I", 3, 3);
+    DeviceTensor     I_copy = I_original;
+    DeviceTensorView I_view{I_copy, Dim<2>{2, 2}, Offset<2>{1, 1}};
 
     scale_row(1, 2.0, &I_view);
 
-    REQUIRE(I_copy(0, 0) == I_original(0, 0));
-    REQUIRE(I_copy(0, 1) == I_original(0, 1));
-    REQUIRE(I_copy(0, 2) == I_original(0, 2));
-    REQUIRE(I_copy(1, 0) == I_original(1, 0));
-    REQUIRE(I_copy(1, 1) == I_original(1, 1));
-    REQUIRE(I_copy(1, 2) == I_original(1, 2));
-    REQUIRE(I_copy(2, 0) == I_original(2, 0));
-    REQUIRE(I_copy(2, 1) == 2.0 * I_original(2, 1));
-    REQUIRE(I_copy(2, 2) == 2.0 * I_original(2, 2));
+    REQUIRE((double)I_copy(0, 0) == (double)I_original(0, 0));
+    REQUIRE((double)I_copy(0, 1) == (double)I_original(0, 1));
+    REQUIRE((double)I_copy(0, 2) == (double)I_original(0, 2));
+    REQUIRE((double)I_copy(1, 0) == (double)I_original(1, 0));
+    REQUIRE((double)I_copy(1, 1) == (double)I_original(1, 1));
+    REQUIRE((double)I_copy(1, 2) == (double)I_original(1, 2));
+    REQUIRE((double)I_copy(2, 0) == (double)I_original(2, 0));
+    REQUIRE((double)I_copy(2, 1) == 2.0 * (double)I_original(2, 1));
+    REQUIRE((double)I_copy(2, 2) == 2.0 * (double)I_original(2, 2));
 
-    REQUIRE(I_view(0, 0) == I_original(1, 1));
-    REQUIRE(I_view(0, 1) == I_original(1, 2));
-    REQUIRE(I_view(1, 0) == 2.0 * I_original(2, 1));
-    REQUIRE(I_view(1, 1) == 2.0 * I_original(2, 2));
+    REQUIRE((double)I_view(0, 0) == (double)I_original(1, 1));
+    REQUIRE((double)I_view(0, 1) == (double)I_original(1, 2));
+    REQUIRE((double)I_view(1, 0) == 2.0 * (double)I_original(2, 1));
+    REQUIRE((double)I_view(1, 1) == 2.0 * (double)I_original(2, 2));
 }
 
-TEST_CASE("Scale Column TensorView", "[tensor]") {
+TEST_CASE("GPU Scale Column TensorView", "[tensor]") {
     using namespace einsums;
     using namespace einsums::linear_algebra;
 
-    Tensor     I_original = create_random_tensor("I", 3, 3);
-    Tensor     I_copy     = I_original;
-    TensorView I_view{I_copy, Dim<2>{2, 2}, Offset<2>{1, 1}};
+    DeviceTensor<double, 2> I_original{"I", einsums::detail::DEV_ONLY, 3, 3};
+    I_original              = create_random_tensor("I", 3, 3);
+    DeviceTensor     I_copy = I_original;
+    DeviceTensorView I_view{I_copy, Dim<2>{2, 2}, Offset<2>{1, 1}};
 
     scale_column(1, 2.0, &I_view);
 
-    REQUIRE(I_copy(0, 0) == I_original(0, 0));
-    REQUIRE(I_copy(0, 1) == I_original(0, 1));
-    REQUIRE(I_copy(0, 2) == I_original(0, 2));
-    REQUIRE(I_copy(1, 0) == I_original(1, 0));
-    REQUIRE(I_copy(1, 1) == I_original(1, 1));
-    REQUIRE(I_copy(1, 2) == 2.0 * I_original(1, 2));
-    REQUIRE(I_copy(2, 0) == I_original(2, 0));
-    REQUIRE(I_copy(2, 1) == I_original(2, 1));
-    REQUIRE(I_copy(2, 2) == 2.0 * I_original(2, 2));
+    REQUIRE((double)I_copy(0, 0) == (double)I_original(0, 0));
+    REQUIRE((double)I_copy(0, 1) == (double)I_original(0, 1));
+    REQUIRE((double)I_copy(0, 2) == (double)I_original(0, 2));
+    REQUIRE((double)I_copy(1, 0) == (double)I_original(1, 0));
+    REQUIRE((double)I_copy(1, 1) == (double)I_original(1, 1));
+    REQUIRE((double)I_copy(1, 2) == 2.0 * (double)I_original(1, 2));
+    REQUIRE((double)I_copy(2, 0) == (double)I_original(2, 0));
+    REQUIRE((double)I_copy(2, 1) == (double)I_original(2, 1));
+    REQUIRE((double)I_copy(2, 2) == 2.0 * (double)I_original(2, 2));
 
-    REQUIRE(I_view(0, 0) == I_original(1, 1));
-    REQUIRE(I_view(0, 1) == 2.0 * I_original(1, 2));
-    REQUIRE(I_view(1, 0) == I_original(2, 1));
-    REQUIRE(I_view(1, 1) == 2.0 * I_original(2, 2));
+    REQUIRE((double)I_view(0, 0) == (double)I_original(1, 1));
+    REQUIRE((double)I_view(0, 1) == 2.0 * (double)I_original(1, 2));
+    REQUIRE((double)I_view(1, 0) == (double)I_original(2, 1));
+    REQUIRE((double)I_view(1, 1) == 2.0 * (double)I_original(2, 2));
 }
 
-TEST_CASE("GEMM TensorView", "[tensor]") {
+TEST_CASE("GPU GEMM TensorView", "[tensor]") {
     using namespace einsums;
     using namespace einsums::linear_algebra;
 
-    Tensor I_original{"I", 3, 3};
+    DeviceTensor<double, 2> I_original{"I", einsums::detail::DEV_ONLY, 3, 3};
 
     for (int i = 0, ij = 1; i < 3; i++)
         for (int j = 0; j < 3; j++, ij++)
             I_original(i, j) = ij;
 
-    Tensor     I_copy = I_original;
-    TensorView I_view{I_copy, Dim<2>{2, 2}, Offset<2>{1, 1}};
+    DeviceTensor     I_copy = I_original;
+    DeviceTensorView I_view{I_copy, Dim<2>{2, 2}, Offset<2>{1, 1}};
 
     SECTION("Result into 2x2 matrix") {
-        Tensor result{"result", 2, 2};
+        DeviceTensor<double, 2> result{"result", einsums::detail::DEV_ONLY, 2, 2};
 
         gemm<false, false>(1.0, I_view, I_view, 0.0, &result);
 
-        REQUIRE(result(0, 0) == 73.0);
-        REQUIRE(result(0, 1) == 84.0);
-        REQUIRE(result(1, 0) == 112.0);
-        REQUIRE(result(1, 1) == 129.0);
+        REQUIRE((double)result(0, 0) == 73.0);
+        REQUIRE((double)result(0, 1) == 84.0);
+        REQUIRE((double)result(1, 0) == 112.0);
+        REQUIRE((double)result(1, 1) == 129.0);
     }
 
     SECTION("Result into 2x2 view of matrix") {
-        Tensor result{"result", 5, 5};
+        DeviceTensor<double, 2> result{"result", einsums::detail::DEV_ONLY, 5, 5};
         result.zero();
-        TensorView result_view{result, Dim<2>{2, 2}, Offset<2>{3, 2}};
+        DeviceTensorView result_view{result, Dim<2>{2, 2}, Offset<2>{3, 2}};
 
         gemm<false, false>(1.0, I_view, I_view, 0.0, &result_view);
 
         // Check view
-        REQUIRE(result_view(0, 0) == 73.0);
-        REQUIRE(result_view(0, 1) == 84.0);
-        REQUIRE(result_view(1, 0) == 112.0);
-        REQUIRE(result_view(1, 1) == 129.0);
+        REQUIRE((double)result_view(0, 0) == 73.0);
+        REQUIRE((double)result_view(0, 1) == 84.0);
+        REQUIRE((double)result_view(1, 0) == 112.0);
+        REQUIRE((double)result_view(1, 1) == 129.0);
 
         // Check full
-        REQUIRE(result(3, 2) == 73.0);
-        REQUIRE(result(3, 3) == 84.0);
-        REQUIRE(result(4, 2) == 112.0);
-        REQUIRE(result(4, 3) == 129.0);
+        REQUIRE((double)result(3, 2) == 73.0);
+        REQUIRE((double)result(3, 3) == 84.0);
+        REQUIRE((double)result(4, 2) == 112.0);
+        REQUIRE((double)result(4, 3) == 129.0);
     }
 
     SECTION("Transpose") {
-        Tensor result{"result", 2, 2};
+        DeviceTensor<double, 2> result{"result", einsums::detail::DEV_ONLY, 2, 2};
 
         gemm<false, true>(1.0, I_view, I_view, 0.0, &result);
-        REQUIRE(result(0, 0) == 61.0);
-        REQUIRE(result(0, 1) == 94.0);
-        REQUIRE(result(1, 0) == 94.0);
-        REQUIRE(result(1, 1) == 145.0);
+        REQUIRE((double)result(0, 0) == 61.0);
+        REQUIRE((double)result(0, 1) == 94.0);
+        REQUIRE((double)result(1, 0) == 94.0);
+        REQUIRE((double)result(1, 1) == 145.0);
 
         gemm<true, false>(1.0, I_view, I_view, 0.0, &result);
-        REQUIRE(result(0, 0) == 89.0);
-        REQUIRE(result(0, 1) == 102.0);
-        REQUIRE(result(1, 0) == 102.0);
-        REQUIRE(result(1, 1) == 117.0);
+        REQUIRE((double)result(0, 0) == 89.0);
+        REQUIRE((double)result(0, 1) == 102.0);
+        REQUIRE((double)result(1, 0) == 102.0);
+        REQUIRE((double)result(1, 1) == 117.0);
 
         gemm<true, true>(1.0, I_view, I_view, 0.0, &result);
-        REQUIRE(result(0, 0) == 73.0);
-        REQUIRE(result(0, 1) == 112.0);
-        REQUIRE(result(1, 0) == 84.0);
-        REQUIRE(result(1, 1) == 129.0);
+        REQUIRE((double)result(0, 0) == 73.0);
+        REQUIRE((double)result(0, 1) == 112.0);
+        REQUIRE((double)result(1, 0) == 84.0);
+        REQUIRE((double)result(1, 1) == 129.0);
     }
 }
 
-TEST_CASE("Subset TensorView", "[tensor]") {
+TEST_CASE("GPU Subset TensorView", "[tensor]") {
     using namespace einsums;
     using namespace einsums::linear_algebra;
 
@@ -198,11 +202,12 @@ TEST_CASE("Subset TensorView", "[tensor]") {
         const size_t size = 7;
         const size_t row  = 1;
 
-        Tensor     I_original = create_random_tensor("Original", size, size);
-        TensorView I_view     = I_original(row, All);
+        DeviceTensor<double, 2> I_original{"Original", einsums::detail::DEV_ONLY, size, size};
+        I_original              = create_random_tensor("Original", size, size);
+        DeviceTensorView I_view = I_original(row, All);
 
         for (size_t i = 0; i < size; i++) {
-            REQUIRE(I_original(row, i) == I_view(i));
+            REQUIRE((double)I_original(row, i) == (double)I_view(i));
         }
     }
 
@@ -210,12 +215,13 @@ TEST_CASE("Subset TensorView", "[tensor]") {
         const size_t size = 7;
         const size_t d1   = 4;
 
-        Tensor     I_original = create_random_tensor("Original", size, size, size);
-        TensorView I_view     = I_original(d1, All, All);
+        DeviceTensor<double, 3> I_original{"Original", einsums::detail::DEV_ONLY, size, size, size};
+        I_original              = create_random_tensor("Original", size, size, size);
+        DeviceTensorView I_view = I_original(d1, All, All);
 
         for (size_t i = 0; i < size; i++) {
             for (size_t j = 0; j < size; j++) {
-                REQUIRE(I_original(d1, i, j) == I_view(i, j));
+                REQUIRE((double)I_original(d1, i, j) == (double)I_view(i, j));
             }
         }
     }
@@ -225,11 +231,12 @@ TEST_CASE("Subset TensorView", "[tensor]") {
         const size_t d1   = 4;
         const size_t d2   = 3;
 
-        Tensor     I_original = create_random_tensor("Original", size, size, size);
-        TensorView I_view     = I_original(d1, d2, All);
+        DeviceTensor<double, 3> I_original{"Original", einsums::detail::DEV_ONLY, size, size, size};
+        I_original              = create_random_tensor("Original", size, size, size);
+        DeviceTensorView I_view = I_original(d1, d2, All);
 
         for (size_t i = 0; i < size; i++) {
-            REQUIRE(I_original(d1, d2, i) == I_view(i));
+            REQUIRE((double)I_original(d1, d2, i) == (double)I_view(i));
         }
     }
 
@@ -237,7 +244,8 @@ TEST_CASE("Subset TensorView", "[tensor]") {
         const size_t d1_size = 7, d2_size = 3, d3_size = 3;
         const size_t d1 = 4;
 
-        Tensor original = create_random_tensor("Original", d1_size, d2_size, d3_size);
+        DeviceTensor<double, 3> original{"Original", einsums::detail::DEV_ONLY, d1_size, d2_size, d3_size};
+        original = create_random_tensor("Original", d1_size, d2_size, d3_size);
 
         // Set submatrix to a set of known values
         for (size_t i = 0, ij = 1; i < 3; i++) {
@@ -247,64 +255,64 @@ TEST_CASE("Subset TensorView", "[tensor]") {
         }
 
         // Obtain a 3x3 view of original[4,:,:]
-        TensorView view = original(d1, All, All);
-        Tensor     result{"result", d2_size, d3_size};
+        DeviceTensorView        view = original(d1, All, All);
+        DeviceTensor<double, 2> result{"result", einsums::detail::DEV_ONLY, d2_size, d3_size};
 
         // false, false
         {
             gemm<false, false>(1.0, view, view, 0.0, &result);
 
-            REQUIRE(result(0, 0) == 30.0);
-            REQUIRE(result(0, 1) == 36.0);
-            REQUIRE(result(0, 2) == 42.0);
-            REQUIRE(result(1, 0) == 66.0);
-            REQUIRE(result(1, 1) == 81.0);
-            REQUIRE(result(1, 2) == 96.0);
-            REQUIRE(result(2, 0) == 102.0);
-            REQUIRE(result(2, 1) == 126.0);
-            REQUIRE(result(2, 2) == 150.0);
+            REQUIRE((double)result(0, 0) == 30.0);
+            REQUIRE((double)result(0, 1) == 36.0);
+            REQUIRE((double)result(0, 2) == 42.0);
+            REQUIRE((double)result(1, 0) == 66.0);
+            REQUIRE((double)result(1, 1) == 81.0);
+            REQUIRE((double)result(1, 2) == 96.0);
+            REQUIRE((double)result(2, 0) == 102.0);
+            REQUIRE((double)result(2, 1) == 126.0);
+            REQUIRE((double)result(2, 2) == 150.0);
         }
         // false, true
         {
             gemm<false, true>(1.0, view, view, 0.0, &result);
 
-            REQUIRE(result(0, 0) == 14.0);
-            REQUIRE(result(0, 1) == 32.0);
-            REQUIRE(result(0, 2) == 50.0);
-            REQUIRE(result(1, 0) == 32.0);
-            REQUIRE(result(1, 1) == 77.0);
-            REQUIRE(result(1, 2) == 122.0);
-            REQUIRE(result(2, 0) == 50.0);
-            REQUIRE(result(2, 1) == 122.0);
-            REQUIRE(result(2, 2) == 194.0);
+            REQUIRE((double)result(0, 0) == 14.0);
+            REQUIRE((double)result(0, 1) == 32.0);
+            REQUIRE((double)result(0, 2) == 50.0);
+            REQUIRE((double)result(1, 0) == 32.0);
+            REQUIRE((double)result(1, 1) == 77.0);
+            REQUIRE((double)result(1, 2) == 122.0);
+            REQUIRE((double)result(2, 0) == 50.0);
+            REQUIRE((double)result(2, 1) == 122.0);
+            REQUIRE((double)result(2, 2) == 194.0);
         }
         // true, false
         {
             gemm<true, false>(1.0, view, view, 0.0, &result);
 
-            REQUIRE(result(0, 0) == 66.0);
-            REQUIRE(result(0, 1) == 78.0);
-            REQUIRE(result(0, 2) == 90.0);
-            REQUIRE(result(1, 0) == 78.0);
-            REQUIRE(result(1, 1) == 93.0);
-            REQUIRE(result(1, 2) == 108.0);
-            REQUIRE(result(2, 0) == 90.0);
-            REQUIRE(result(2, 1) == 108.0);
-            REQUIRE(result(2, 2) == 126.0);
+            REQUIRE((double)result(0, 0) == 66.0);
+            REQUIRE((double)result(0, 1) == 78.0);
+            REQUIRE((double)result(0, 2) == 90.0);
+            REQUIRE((double)result(1, 0) == 78.0);
+            REQUIRE((double)result(1, 1) == 93.0);
+            REQUIRE((double)result(1, 2) == 108.0);
+            REQUIRE((double)result(2, 0) == 90.0);
+            REQUIRE((double)result(2, 1) == 108.0);
+            REQUIRE((double)result(2, 2) == 126.0);
         }
         // true, true
         {
             gemm<true, true>(1.0, view, view, 0.0, &result);
 
-            REQUIRE(result(0, 0) == 30.0);
-            REQUIRE(result(0, 1) == 66.0);
-            REQUIRE(result(0, 2) == 102.0);
-            REQUIRE(result(1, 0) == 36.0);
-            REQUIRE(result(1, 1) == 81.0);
-            REQUIRE(result(1, 2) == 126.0);
-            REQUIRE(result(2, 0) == 42.0);
-            REQUIRE(result(2, 1) == 96.0);
-            REQUIRE(result(2, 2) == 150.0);
+            REQUIRE((double)result(0, 0) == 30.0);
+            REQUIRE((double)result(0, 1) == 66.0);
+            REQUIRE((double)result(0, 2) == 102.0);
+            REQUIRE((double)result(1, 0) == 36.0);
+            REQUIRE((double)result(1, 1) == 81.0);
+            REQUIRE((double)result(1, 2) == 126.0);
+            REQUIRE((double)result(2, 0) == 42.0);
+            REQUIRE((double)result(2, 1) == 96.0);
+            REQUIRE((double)result(2, 2) == 150.0);
         }
     }
 
@@ -320,7 +328,8 @@ TEST_CASE("Subset TensorView", "[tensor]") {
         const size_t                e1 = 2;
         const std::array<size_t, 6> untouched_d1{0, 1, 3, 4, 5, 6};
 
-        Tensor original = create_random_tensor("Original", d1_size, d2_size, d3_size);
+        DeviceTensor<double, 3> original{"Original", einsums::detail::DEV_ONLY, d1_size, d2_size, d3_size};
+        original = create_random_tensor("Original", d1_size, d2_size, d3_size);
 
         // Set submatrix to a set of known values
         for (size_t i = 0, ij = 1; i < 3; i++) {
@@ -329,14 +338,14 @@ TEST_CASE("Subset TensorView", "[tensor]") {
             }
         }
 
-        Tensor copy = original;
+        DeviceTensor copy = original;
 
         // Obtain a 3x3 view of original[4,:,:]
         //   A view does not copy data it is just an offset pointer into the original with necessary striding information.
-        TensorView view = original(d1, All, All);
+        DeviceTensorView view = original(d1, All, All);
 
         // Obtain a 3x3 view of original[2,:,:] to store the result
-        TensorView result = original(e1, All, All);
+        DeviceTensorView result = original(e1, All, All);
 
         // false, false
         {
@@ -344,21 +353,21 @@ TEST_CASE("Subset TensorView", "[tensor]") {
             gemm<false, false>(1.0, view, view, 0.0, &result);
 
             // Test against the view
-            REQUIRE(result(0, 0) == 30.0);
-            REQUIRE(result(0, 1) == 36.0);
-            REQUIRE(result(0, 2) == 42.0);
-            REQUIRE(result(1, 0) == 66.0);
-            REQUIRE(result(1, 1) == 81.0);
-            REQUIRE(result(1, 2) == 96.0);
-            REQUIRE(result(2, 0) == 102.0);
-            REQUIRE(result(2, 1) == 126.0);
-            REQUIRE(result(2, 2) == 150.0);
+            REQUIRE((double)result(0, 0) == 30.0);
+            REQUIRE((double)result(0, 1) == 36.0);
+            REQUIRE((double)result(0, 2) == 42.0);
+            REQUIRE((double)result(1, 0) == 66.0);
+            REQUIRE((double)result(1, 1) == 81.0);
+            REQUIRE((double)result(1, 2) == 96.0);
+            REQUIRE((double)result(2, 0) == 102.0);
+            REQUIRE((double)result(2, 1) == 126.0);
+            REQUIRE((double)result(2, 2) == 150.0);
 
             // Test that the elements that shouldn't have been touched:
             for (size_t i : untouched_d1) {
                 for (size_t j = 0; j < d2_size; j++) {
                     for (size_t k = 0; k < d3_size; k++) {
-                        REQUIRE(original(i, j, k) == copy(i, j, k));
+                        REQUIRE((double)original(i, j, k) == (double)copy(i, j, k));
                     }
                 }
             }
@@ -367,21 +376,21 @@ TEST_CASE("Subset TensorView", "[tensor]") {
         {
             gemm<false, true>(1.0, view, view, 0.0, &result);
 
-            REQUIRE(result(0, 0) == 14.0);
-            REQUIRE(result(0, 1) == 32.0);
-            REQUIRE(result(0, 2) == 50.0);
-            REQUIRE(result(1, 0) == 32.0);
-            REQUIRE(result(1, 1) == 77.0);
-            REQUIRE(result(1, 2) == 122.0);
-            REQUIRE(result(2, 0) == 50.0);
-            REQUIRE(result(2, 1) == 122.0);
-            REQUIRE(result(2, 2) == 194.0);
+            REQUIRE((double)result(0, 0) == 14.0);
+            REQUIRE((double)result(0, 1) == 32.0);
+            REQUIRE((double)result(0, 2) == 50.0);
+            REQUIRE((double)result(1, 0) == 32.0);
+            REQUIRE((double)result(1, 1) == 77.0);
+            REQUIRE((double)result(1, 2) == 122.0);
+            REQUIRE((double)result(2, 0) == 50.0);
+            REQUIRE((double)result(2, 1) == 122.0);
+            REQUIRE((double)result(2, 2) == 194.0);
 
             // Test that the elements that shouldn't have been touched:
             for (size_t i : untouched_d1) {
                 for (size_t j = 0; j < d2_size; j++) {
                     for (size_t k = 0; k < d3_size; k++) {
-                        REQUIRE(original(i, j, k) == copy(i, j, k));
+                        REQUIRE((double)original(i, j, k) == (double)copy(i, j, k));
                     }
                 }
             }
@@ -390,21 +399,21 @@ TEST_CASE("Subset TensorView", "[tensor]") {
         {
             gemm<true, false>(1.0, view, view, 0.0, &result);
 
-            REQUIRE(result(0, 0) == 66.0);
-            REQUIRE(result(0, 1) == 78.0);
-            REQUIRE(result(0, 2) == 90.0);
-            REQUIRE(result(1, 0) == 78.0);
-            REQUIRE(result(1, 1) == 93.0);
-            REQUIRE(result(1, 2) == 108.0);
-            REQUIRE(result(2, 0) == 90.0);
-            REQUIRE(result(2, 1) == 108.0);
-            REQUIRE(result(2, 2) == 126.0);
+            REQUIRE((double)result(0, 0) == 66.0);
+            REQUIRE((double)result(0, 1) == 78.0);
+            REQUIRE((double)result(0, 2) == 90.0);
+            REQUIRE((double)result(1, 0) == 78.0);
+            REQUIRE((double)result(1, 1) == 93.0);
+            REQUIRE((double)result(1, 2) == 108.0);
+            REQUIRE((double)result(2, 0) == 90.0);
+            REQUIRE((double)result(2, 1) == 108.0);
+            REQUIRE((double)result(2, 2) == 126.0);
 
             // Test that the elements that shouldn't have been touched:
             for (size_t i : untouched_d1) {
                 for (size_t j = 0; j < d2_size; j++) {
                     for (size_t k = 0; k < d3_size; k++) {
-                        REQUIRE(original(i, j, k) == copy(i, j, k));
+                        REQUIRE((double)original(i, j, k) == (double)copy(i, j, k));
                     }
                 }
             }
@@ -413,21 +422,21 @@ TEST_CASE("Subset TensorView", "[tensor]") {
         {
             gemm<true, true>(1.0, view, view, 0.0, &result);
 
-            REQUIRE(result(0, 0) == 30.0);
-            REQUIRE(result(0, 1) == 66.0);
-            REQUIRE(result(0, 2) == 102.0);
-            REQUIRE(result(1, 0) == 36.0);
-            REQUIRE(result(1, 1) == 81.0);
-            REQUIRE(result(1, 2) == 126.0);
-            REQUIRE(result(2, 0) == 42.0);
-            REQUIRE(result(2, 1) == 96.0);
-            REQUIRE(result(2, 2) == 150.0);
+            REQUIRE((double)result(0, 0) == 30.0);
+            REQUIRE((double)result(0, 1) == 66.0);
+            REQUIRE((double)result(0, 2) == 102.0);
+            REQUIRE((double)result(1, 0) == 36.0);
+            REQUIRE((double)result(1, 1) == 81.0);
+            REQUIRE((double)result(1, 2) == 126.0);
+            REQUIRE((double)result(2, 0) == 42.0);
+            REQUIRE((double)result(2, 1) == 96.0);
+            REQUIRE((double)result(2, 2) == 150.0);
 
             // Test that the elements that shouldn't have been touched:
             for (size_t i : untouched_d1) {
                 for (size_t j = 0; j < d2_size; j++) {
                     for (size_t k = 0; k < d3_size; k++) {
-                        REQUIRE(original(i, j, k) == copy(i, j, k));
+                        REQUIRE((double)original(i, j, k) == (double)copy(i, j, k));
                     }
                 }
             }
@@ -435,14 +444,14 @@ TEST_CASE("Subset TensorView", "[tensor]") {
     }
 }
 
-TEST_CASE("einsum1", "[tensor]") {
+TEST_CASE("GPU einsum1", "[tensor]") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
 
     SECTION("ik=ij,jk") {
-        Tensor A{"A", 3, 3};
-        Tensor B{"B", 3, 3};
-        Tensor C{"C", 3, 3};
+        DeviceTensor<double, 2> A{"A", einsums::detail::DEV_ONLY, 3, 3};
+        DeviceTensor<double, 2> B{"B", einsums::detail::DEV_ONLY, 3, 3};
+        DeviceTensor<double, 2> C{"C", einsums::detail::DEV_ONLY, 3, 3};
 
         for (int i = 0, ij = 1; i < 3; i++) {
             for (int j = 0; j < 3; j++, ij++) {
@@ -460,21 +469,21 @@ TEST_CASE("einsum1", "[tensor]") {
         /*[[ 30,  36,  42],
            [ 66,  81,  96],
            [102, 126, 150]]*/
-        REQUIRE(C(0, 0) == 30.0);
-        REQUIRE(C(0, 1) == 36.0);
-        REQUIRE(C(0, 2) == 42.0);
-        REQUIRE(C(1, 0) == 66.0);
-        REQUIRE(C(1, 1) == 81.0);
-        REQUIRE(C(1, 2) == 96.0);
-        REQUIRE(C(2, 0) == 102.0);
-        REQUIRE(C(2, 1) == 126.0);
-        REQUIRE(C(2, 2) == 150.0);
+        REQUIRE((double)C(0, 0) == 30.0);
+        REQUIRE((double)C(0, 1) == 36.0);
+        REQUIRE((double)C(0, 2) == 42.0);
+        REQUIRE((double)C(1, 0) == 66.0);
+        REQUIRE((double)C(1, 1) == 81.0);
+        REQUIRE((double)C(1, 2) == 96.0);
+        REQUIRE((double)C(2, 0) == 102.0);
+        REQUIRE((double)C(2, 1) == 126.0);
+        REQUIRE((double)C(2, 2) == 150.0);
     }
 
     SECTION("il=ijk,jkl") {
-        Tensor A{"A", 3, 3, 3};
-        Tensor B{"B", 3, 3, 3};
-        Tensor C{"C", 3, 3};
+        DeviceTensor<double, 3> A{"A", einsums::detail::DEV_ONLY, 3, 3, 3};
+        DeviceTensor<double, 3> B{"B", einsums::detail::DEV_ONLY, 3, 3, 3};
+        DeviceTensor<double, 2> C{"C", einsums::detail::DEV_ONLY, 3, 3};
 
         for (int i = 0, ij = 1; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -498,19 +507,19 @@ TEST_CASE("einsum1", "[tensor]") {
         // array([[ 765.,  810.,  855.],
         //        [1818., 1944., 2070.],
         //        [2871., 3078., 3285.]])
-        REQUIRE(C(0, 0) == 765.0);
-        REQUIRE(C(0, 1) == 810.0);
-        REQUIRE(C(0, 2) == 855.0);
-        REQUIRE(C(1, 0) == 1818.0);
-        REQUIRE(C(1, 1) == 1944.0);
-        REQUIRE(C(1, 2) == 2070.0);
-        REQUIRE(C(2, 0) == 2871.0);
-        REQUIRE(C(2, 1) == 3078.0);
-        REQUIRE(C(2, 2) == 3285.0);
+        REQUIRE((double)C(0, 0) == 765.0);
+        REQUIRE((double)C(0, 1) == 810.0);
+        REQUIRE((double)C(0, 2) == 855.0);
+        REQUIRE((double)C(1, 0) == 1818.0);
+        REQUIRE((double)C(1, 1) == 1944.0);
+        REQUIRE((double)C(1, 2) == 2070.0);
+        REQUIRE((double)C(2, 0) == 2871.0);
+        REQUIRE((double)C(2, 1) == 3078.0);
+        REQUIRE((double)C(2, 2) == 3285.0);
     }
 }
 
-TEST_CASE("einsum TensorView", "[tensor]") {
+TEST_CASE("GPU einsum TensorView", "[tensor]") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
 
@@ -522,7 +531,8 @@ TEST_CASE("einsum TensorView", "[tensor]") {
         const size_t                e1 = 2;
         const std::array<size_t, 6> untouched1{0, 1, 3, 4, 5, 6};
 
-        Tensor original = create_random_tensor("Original", d1_size, d2_size, d3_size);
+        DeviceTensor<double, 3> original{"Original", einsums::detail::DEV_ONLY, d1_size, d2_size, d3_size};
+        original = create_random_tensor("Original", d1_size, d2_size, d3_size);
 
         // Set submatrix to a set of known values
         for (size_t i = 0, ij = 1; i < 3; i++) {
@@ -531,13 +541,13 @@ TEST_CASE("einsum TensorView", "[tensor]") {
             }
         }
 
-        Tensor copy = original;
+        DeviceTensor copy = original;
 
         // Obtain a 3x3 view of original[4,:,:]
-        TensorView view = original(d1, All, All);
+        DeviceTensorView view = original(d1, All, All);
 
         // Obtain a 3x3 view of original[2,:,:] to store the result
-        TensorView result = original(e1, All, All);
+        DeviceTensorView result = original(e1, All, All);
 
         // false, false
         {
@@ -547,32 +557,32 @@ TEST_CASE("einsum TensorView", "[tensor]") {
             // gemm<false, false>(1.0, view, view, 0.0, &result);
 
             // Test against the view
-            REQUIRE(result(0, 0) == 30.0);
-            REQUIRE(result(0, 1) == 36.0);
-            REQUIRE(result(0, 2) == 42.0);
-            REQUIRE(result(1, 0) == 66.0);
-            REQUIRE(result(1, 1) == 81.0);
-            REQUIRE(result(1, 2) == 96.0);
-            REQUIRE(result(2, 0) == 102.0);
-            REQUIRE(result(2, 1) == 126.0);
-            REQUIRE(result(2, 2) == 150.0);
+            REQUIRE((double)result(0, 0) == 30.0);
+            REQUIRE((double)result(0, 1) == 36.0);
+            REQUIRE((double)result(0, 2) == 42.0);
+            REQUIRE((double)result(1, 0) == 66.0);
+            REQUIRE((double)result(1, 1) == 81.0);
+            REQUIRE((double)result(1, 2) == 96.0);
+            REQUIRE((double)result(2, 0) == 102.0);
+            REQUIRE((double)result(2, 1) == 126.0);
+            REQUIRE((double)result(2, 2) == 150.0);
 
             // Test the position in the original
-            REQUIRE(original(2, 0, 0) == 30.0);
-            REQUIRE(original(2, 0, 1) == 36.0);
-            REQUIRE(original(2, 0, 2) == 42.0);
-            REQUIRE(original(2, 1, 0) == 66.0);
-            REQUIRE(original(2, 1, 1) == 81.0);
-            REQUIRE(original(2, 1, 2) == 96.0);
-            REQUIRE(original(2, 2, 0) == 102.0);
-            REQUIRE(original(2, 2, 1) == 126.0);
-            REQUIRE(original(2, 2, 2) == 150.0);
+            REQUIRE((double)original(2, 0, 0) == 30.0);
+            REQUIRE((double)original(2, 0, 1) == 36.0);
+            REQUIRE((double)original(2, 0, 2) == 42.0);
+            REQUIRE((double)original(2, 1, 0) == 66.0);
+            REQUIRE((double)original(2, 1, 1) == 81.0);
+            REQUIRE((double)original(2, 1, 2) == 96.0);
+            REQUIRE((double)original(2, 2, 0) == 102.0);
+            REQUIRE((double)original(2, 2, 1) == 126.0);
+            REQUIRE((double)original(2, 2, 2) == 150.0);
 
             // Test that the elements that shouldn't have been touched:
             for (size_t i : untouched1) {
                 for (size_t j = 0; j < d2_size; j++) {
                     for (size_t k = 0; k < d3_size; k++) {
-                        REQUIRE(original(i, j, k) == copy(i, j, k));
+                        REQUIRE((double)original(i, j, k) == (double)copy(i, j, k));
                     }
                 }
             }
@@ -580,14 +590,14 @@ TEST_CASE("einsum TensorView", "[tensor]") {
     }
 }
 
-TEST_CASE("sort2") {
+TEST_CASE("GPU sort2") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
 
     SECTION("Rank 2 - axpy") {
-        Tensor A{"A", 3, 3};
-        Tensor C{"C", 3, 3};
+        DeviceTensor<double, 2> A{"A", einsums::detail::DEV_ONLY, 3, 3};
+        DeviceTensor<double, 2> C{"C", einsums::detail::DEV_ONLY, 3, 3};
 
         for (int i = 0, ij = 1; i < 3; i++) {
             for (int j = 0; j < 3; j++, ij++) {
@@ -599,29 +609,35 @@ TEST_CASE("sort2") {
 
         for (int i = 0, ij = 1; i < 3; i++) {
             for (int j = 0; j < 3; j++, ij++) {
-                REQUIRE(C(i, j) == A(i, j));
+                REQUIRE((double) C(i, j) == (double) A(i, j));
             }
         }
 
-        TensorView A_view{A, Dim<2>{2, 2}, Offset<2>{1, 1}};
-        TensorView C_view{C, Dim<2>{2, 2}, Offset<2>{1, 1}};
+        DeviceTensorView A_view{A, Dim<2>{2, 2}, Offset<2>{1, 1}};
+        DeviceTensorView C_view{C, Dim<2>{2, 2}, Offset<2>{1, 1}};
 
         sort(Indices{j, i}, &C_view, Indices{i, j}, A_view);
 
         for (int i = 0, ij = 1; i < 3; i++) {
             for (int j = 0; j < 3; j++, ij++) {
                 if (i == 0 || j == 0)
-                    REQUIRE(C(i, j) == A(i, j));
+                    REQUIRE((double) C(i, j) == (double) A(i, j));
                 else
-                    REQUIRE(C(j, i) == A(i, j));
+                    CHECK((double)C(j, i) == (double)A(i, j));
             }
         }
     }
 
     SECTION("Rank 2 - axpy (2)") {
-        Tensor A = create_incremented_tensor("A", 3, 3);
-        Tensor C0{"C", 3, 3};
-        Tensor C1{"C", 3, 3};
+        DeviceTensor<double, 2> A{"A", einsums::detail::DEV_ONLY, 3, 3};
+        DeviceTensor<double, 2> C0{"C", einsums::detail::DEV_ONLY, 3, 3};
+        DeviceTensor<double, 2> C1{"C", einsums::detail::DEV_ONLY, 3, 3};
+
+        for (int i = 0, ij = 1; i < 3; i++) {
+            for (int j = 0; j < 3; j++, ij++) {
+                A(i, j) = ij;
+            }
+        }
 
         for (int i = 0, ij = 1; i < 3; i++) {
             for (int j = 0; j < 3; j++, ij++) {
@@ -634,7 +650,7 @@ TEST_CASE("sort2") {
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                REQUIRE_THAT(C0(i, j), Catch::Matchers::WithinRel(C1(i, j), 0.00001));
+                REQUIRE_THAT((double)C0(i, j), Catch::Matchers::WithinRel((double)C1(i, j), 0.00001));
             }
         }
 
@@ -649,14 +665,14 @@ TEST_CASE("sort2") {
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                REQUIRE_THAT(C0(i, j), Catch::Matchers::WithinRel(C1(i, j), 0.00001));
+                REQUIRE_THAT((double)C0(i, j), Catch::Matchers::WithinRel((double)C1(i, j), 0.00001));
             }
         }
     }
 
     SECTION("Rank 2") {
-        Tensor A{"A", 3, 3};
-        Tensor C{"C", 3, 3};
+        DeviceTensor<double, 2> A{"A", einsums::detail::DEV_ONLY, 3, 3};
+        DeviceTensor<double, 2> C{"C", einsums::detail::DEV_ONLY, 3, 3};
 
         for (int i = 0, ij = 1; i < 3; i++) {
             for (int j = 0; j < 3; j++, ij++) {
@@ -668,14 +684,14 @@ TEST_CASE("sort2") {
 
         for (int i = 0, ij = 1; i < 3; i++) {
             for (int j = 0; j < 3; j++, ij++) {
-                REQUIRE_THAT(C(j, i), Catch::Matchers::WithinRel(A(i, j), 0.00001));
+                REQUIRE_THAT((double)C(j, i), Catch::Matchers::WithinRel((double)A(i, j), 0.00001));
             }
         }
     }
 
     SECTION("Rank 3") {
-        Tensor A{"A", 3, 3, 3};
-        Tensor B{"B", 3, 3, 3};
+        DeviceTensor<double, 3> A{"A", einsums::detail::DEV_ONLY, 3, 3, 3};
+        DeviceTensor<double, 3> B{"B", einsums::detail::DEV_ONLY, 3, 3, 3};
 
         for (int i = 0, ij = 1; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -686,45 +702,49 @@ TEST_CASE("sort2") {
         }
 
         sort(Indices{k, j, i}, &B, Indices{i, j, k}, A);
+
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 for (int k = 0; k < 3; k++) {
-                    REQUIRE_THAT(B(k, j, i), Catch::Matchers::WithinRel(A(i, j, k), 0.00001));
+                    REQUIRE_THAT((double)B(k, j, i), Catch::Matchers::WithinRel((double)A(i, j, k), 0.00001));
                 }
             }
         }
 
         sort(Indices{i, k, j}, &B, Indices{i, j, k}, A);
+
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 for (int k = 0; k < 3; k++) {
-                    REQUIRE_THAT(B(i, k, j), Catch::Matchers::WithinRel(A(i, j, k), 0.00001));
+                    REQUIRE_THAT((double)B(i, k, j), Catch::Matchers::WithinRel((double)A(i, j, k), 0.00001));
                 }
             }
         }
 
         sort(Indices{j, k, i}, &B, Indices{i, j, k}, A);
+
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 for (int k = 0; k < 3; k++) {
-                    REQUIRE_THAT(B(j, k, i), Catch::Matchers::WithinRel(A(i, j, k), 0.00001));
+                    REQUIRE_THAT((double)B(j, k, i), Catch::Matchers::WithinRel((double)A(i, j, k), 0.00001));
                 }
             }
         }
 
         sort(Indices{i, j, k}, &B, Indices{k, j, i}, A);
+
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 for (int k = 0; k < 3; k++) {
-                    REQUIRE_THAT(B(i, j, k), Catch::Matchers::WithinRel(A(k, j, i), 0.00001));
+                    REQUIRE_THAT((double)B(i, j, k), Catch::Matchers::WithinRel((double)A(k, j, i), 0.00001));
                 }
             }
         }
     }
 
     SECTION("Rank 4") {
-        Tensor A{"A", 3, 3, 3, 3};
-        Tensor B{"B", 3, 3, 3, 3};
+        DeviceTensor<double, 4> A{"A", einsums::detail::DEV_ONLY, 3, 3, 3, 3};
+        DeviceTensor<double, 4> B{"B", einsums::detail::DEV_ONLY, 3, 3, 3, 3};
 
         for (int i = 0, ij = 1; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -741,7 +761,7 @@ TEST_CASE("sort2") {
             for (int j = 0; j < 3; j++) {
                 for (int k = 0; k < 3; k++) {
                     for (int l = 0; l < 3; l++) {
-                        REQUIRE_THAT(B(i, l, k, j), Catch::Matchers::WithinRel(0.5 * A(k, j, l, i), 0.00001));
+                        REQUIRE_THAT((double)B(i, l, k, j), Catch::Matchers::WithinRel(0.5 * A(k, j, l, i), 0.00001));
                     }
                 }
             }
@@ -779,10 +799,10 @@ TEST_CASE("sort2") {
     // }
 
     SECTION("Rank 2 - Different Sizes") {
-        Tensor A{"A", 3, 9};
-        Tensor B{"B", 9, 3};
+        DeviceTensor<double, 2> A{"A", einsums::detail::DEV_ONLY, 3, 9};
+        DeviceTensor<double, 2> B{"B", einsums::detail::DEV_ONLY, 9, 3};
 
-        for (int i = 0, ij = 0; i < A.dim(0); i++) {
+        for (int i = 0, ij = 1; i < A.dim(0); i++) {
             for (int j = 0; j < A.dim(1); j++, ij++) {
                 A(i, j) = ij;
             }
@@ -791,14 +811,14 @@ TEST_CASE("sort2") {
         sort(Indices{j, i}, &B, Indices{i, j}, A);
         for (int i = 0; i < A.dim(0); i++) {
             for (int j = 0; j < A.dim(1); j++) {
-                REQUIRE_THAT(B(j, i), Catch::Matchers::WithinRel(A(i, j), 0.00001));
+                REQUIRE_THAT((double)B(j, i), Catch::Matchers::WithinRel((double)A(i, j), 0.00001));
             }
         }
     }
 
     SECTION("Rank 3 - Different Sizes") {
-        Tensor A{"A", 2, 3, 4};
-        Tensor B{"B", 3, 4, 2};
+        DeviceTensor<double, 3> A{"A", einsums::detail::DEV_ONLY, 2, 3, 4};
+        DeviceTensor<double, 3> B{"B", einsums::detail::DEV_ONLY, 3, 4, 2};
 
         for (int i = 0, ij = 1; i < A.dim(0); i++) {
             for (int j = 0; j < A.dim(1); j++) {
@@ -812,55 +832,61 @@ TEST_CASE("sort2") {
         for (int i = 0, ij = 1; i < A.dim(0); i++) {
             for (int j = 0; j < A.dim(1); j++) {
                 for (int k = 0; k < A.dim(2); k++, ij++) {
-                    REQUIRE_THAT(B(j, k, i), Catch::Matchers::WithinRel(A(i, j, k), 0.00001));
+                    REQUIRE_THAT((double)B(j, k, i), Catch::Matchers::WithinRel((double)A(i, j, k), 0.00001));
                 }
             }
         }
     }
 }
 
-TEST_CASE("einsum2") {
+TEST_CASE("GPU einsum2") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
 
     SECTION("3x3 <- 3x5 * 5x3") {
-        Tensor C0{"C0", 3, 3};
-        Tensor C1{"C1", 3, 3};
-        Tensor A = create_random_tensor("A", 3, 5);
-        Tensor B = create_random_tensor("B", 5, 3);
+        DeviceTensor<double, 2> C0{"C0", einsums::detail::DEV_ONLY, 3, 3};
+        DeviceTensor<double, 2> C1{"C1", einsums::detail::DEV_ONLY, 3, 3};
+        DeviceTensor<double, 2> A{"A", einsums::detail::DEV_ONLY, 3, 5};
+        A = create_random_tensor("A", 3, 5);
+        DeviceTensor<double, 2> B{"B", einsums::detail::DEV_ONLY, 5, 3};
+        B = create_random_tensor("B", 5, 3);
 
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
         linear_algebra::gemm<false, false>(1.0, A, B, 0.0, &C1);
 
         for (size_t i0 = 0; i0 < C0.dim(0); i0++) {
             for (size_t j0 = 0; j0 < C0.dim(1); j0++) {
-                REQUIRE_THAT(C0(i0, j0), Catch::Matchers::WithinRel(C1(i0, j0), 0.0001));
+                REQUIRE_THAT((double) C0(i0, j0), Catch::Matchers::WithinRel((double) C1(i0, j0), 0.0001));
             }
         }
     }
 
     SECTION("3x3 <- 3x5 * 3x5") {
-        Tensor C0{"C0", 3, 3};
-        Tensor C1{"C1", 3, 3};
-        Tensor A = create_random_tensor("A", 3, 5);
-        Tensor B = create_random_tensor("B", 3, 5);
+        DeviceTensor<double, 2> C0{"C0", einsums::detail::DEV_ONLY, 3, 3};
+        DeviceTensor<double, 2> C1{"C1", einsums::detail::DEV_ONLY, 3, 3};
+        DeviceTensor<double, 2> A{"A", einsums::detail::DEV_ONLY, 3, 5};
+        A = create_random_tensor("A", 3, 5);
+        DeviceTensor<double, 2> B{"B", einsums::detail::DEV_ONLY, 3, 5};
+        B = create_random_tensor("B", 3, 5);
 
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{j, k}, B));
         linear_algebra::gemm<false, true>(1.0, A, B, 0.0, &C1);
 
         for (size_t i0 = 0; i0 < C0.dim(0); i0++) {
             for (size_t j0 = 0; j0 < C0.dim(1); j0++) {
-                REQUIRE_THAT(C0(i0, j0), Catch::Matchers::WithinRel(C1(i0, j0), 0.0001));
+                REQUIRE_THAT((double) C0(i0, j0), Catch::Matchers::WithinRel((double) C1(i0, j0), 0.0001));
             }
         }
     }
 
     SECTION("3 <- 3x5 * 5") {
-        Tensor C0{"C0", 3};
-        Tensor C1{"C1", 3};
-        Tensor A = create_random_tensor("A", 3, 5);
-        Tensor B = create_random_tensor("B", 5);
+        DeviceTensor<double, 1> C0{"C0", einsums::detail::DEV_ONLY, 3};
+        DeviceTensor<double, 1> C1{"C1", einsums::detail::DEV_ONLY, 3};
+        DeviceTensor<double, 2> A{"A", einsums::detail::DEV_ONLY, 3, 5};
+        A = create_random_tensor("A", 3, 5);
+        DeviceTensor<double, 1> B{"B", einsums::detail::DEV_ONLY, 5};
+        B = create_random_tensor("B", 5);
 
         C0.zero();
         C1.zero();
@@ -869,17 +895,19 @@ TEST_CASE("einsum2") {
         linear_algebra::gemv<false>(1.0, A, B, 0.0, &C1);
 
         for (size_t i0 = 0; i0 < C0.dim(0); i0++) {
-            REQUIRE_THAT(C0(i0), Catch::Matchers::WithinAbs(C1(i0), 0.001));
+            REQUIRE_THAT((double) C0(i0), Catch::Matchers::WithinAbs((double) C1(i0), 0.001));
         }
     }
 
     SECTION("3 <- 3x4x5 * 4x3x5") {
-        Tensor C0{"C0", 3};
-        zero(C0);
-        Tensor C1{"C1", 3};
-        zero(C1);
-        Tensor A = create_random_tensor("A", 3, 4, 5);
-        Tensor B = create_random_tensor("B", 4, 3, 5);
+        DeviceTensor<double, 1> C0{"C0", einsums::detail::DEV_ONLY, 3};
+        DeviceTensor<double, 1> C1{"C1", einsums::detail::DEV_ONLY, 3};
+        DeviceTensor<double, 3> A{"A", einsums::detail::DEV_ONLY, 3, 4, 5};
+        A = create_random_tensor("A", 3, 4, 5);
+        DeviceTensor<double, 3> B{"B", einsums::detail::DEV_ONLY, 4, 3, 5};
+        B = create_random_tensor("B", 4, 3, 5);
+        C0.zero();
+        C1.zero();
 
         REQUIRE_NOTHROW(einsum(Indices{i}, &C0, Indices{i, j, k}, A, Indices{j, i, k}, B));
 
@@ -888,24 +916,26 @@ TEST_CASE("einsum2") {
 
             for (size_t j0 = 0; j0 < 4; j0++) {
                 for (size_t k0 = 0; k0 < 5; k0++) {
-                    sum += A(i0, j0, k0) * B(j0, i0, k0);
+                    sum += (double) A(i0, j0, k0) * (double) B(j0, i0, k0);
                 }
             }
             C1(i0) = sum;
         }
 
         for (size_t i0 = 0; i0 < 3; i0++) {
-            REQUIRE_THAT(C0(i0), Catch::Matchers::WithinRel(C1(i0), 0.0001));
+            REQUIRE_THAT((double) C0(i0), Catch::Matchers::WithinRel((double) C1(i0), 0.0001));
         }
     }
 
     SECTION("3x5 <- 3x4x5 * 4x3x5") {
-        Tensor C0{"C0", 3, 5};
-        Tensor C1{"C1", 3, 5};
-        zero(C0);
-        zero(C1);
-        Tensor A = create_random_tensor("A", 3, 4, 5);
-        Tensor B = create_random_tensor("B", 4, 3, 5);
+        DeviceTensor<double, 2> C0{"C0", einsums::detail::DEV_ONLY, 3, 5};
+        DeviceTensor<double, 2> C1{"C1", einsums::detail::DEV_ONLY, 3, 5};
+        DeviceTensor<double, 3> A{"A", einsums::detail::DEV_ONLY, 3, 4, 5};
+        A = create_random_tensor("A", 3, 4, 5);
+        DeviceTensor<double, 3> B{"B", einsums::detail::DEV_ONLY, 4, 3, 5};
+        B = create_random_tensor("B", 4, 3, 5);
+        C0.zero();
+        C1.zero();
 
         // timer::push("einsum: 3x5 <- 3x4x5 * 4x3x5");
         REQUIRE_NOTHROW(einsum(Indices{i, k}, &C0, Indices{i, j, k}, A, Indices{j, i, k}, B));
@@ -917,7 +947,7 @@ TEST_CASE("einsum2") {
                 double sum{0};
                 for (size_t j0 = 0; j0 < 4; j0++) {
 
-                    sum += A(i0, j0, k0) * B(j0, i0, k0);
+                    sum += (double) A(i0, j0, k0) * (double) B(j0, i0, k0);
                 }
                 C1(i0, k0) = sum;
             }
@@ -926,18 +956,20 @@ TEST_CASE("einsum2") {
 
         for (size_t i0 = 0; i0 < 3; i0++) {
             for (size_t j0 = 0; j0 < 5; j0++) {
-                REQUIRE_THAT(C0(i0, j0), Catch::Matchers::WithinRel(C1(i0, j0), 0.0001));
+                REQUIRE_THAT((double) C0(i0, j0), Catch::Matchers::WithinRel((double) C1(i0, j0), 0.0001));
             }
         }
     }
 
     SECTION("3, l <- 3x4x5 * 4x3x5") {
-        Tensor C0{"C0", 3, 5};
-        zero(C0);
-        Tensor C1{"C1", 3, 5};
-        zero(C1);
-        Tensor A = create_random_tensor("A", 3, 4, 5);
-        Tensor B = create_random_tensor("B", 4, 3, 5);
+        DeviceTensor<double, 2> C0{"C0", einsums::detail::DEV_ONLY, 3, 5};
+        DeviceTensor<double, 2> C1{"C1", einsums::detail::DEV_ONLY, 3, 5};
+        DeviceTensor<double, 3> A{"A", einsums::detail::DEV_ONLY, 3, 4, 5};
+        A = create_random_tensor("A", 3, 4, 5);
+        DeviceTensor<double, 3> B{"B", einsums::detail::DEV_ONLY, 4, 3, 5};
+        B = create_random_tensor("B", 4, 3, 5);
+        C0.zero();
+        C1.zero();
 
         // timer::push("einsum: 3x5 <- 3x4x5 * 4x3x5");
         REQUIRE_NOTHROW(einsum(Indices{i, l}, &C0, Indices{i, j, k}, A, Indices{j, i, k}, B));
@@ -950,7 +982,7 @@ TEST_CASE("einsum2") {
                     double sum{0};
                     for (size_t j0 = 0; j0 < 4; j0++) {
 
-                        sum += A(i0, j0, k0) * B(j0, i0, k0);
+                        sum += (double) A(i0, j0, k0) * (double) B(j0, i0, k0);
                     }
                     C1(i0, l0) += sum;
                 }
@@ -961,7 +993,7 @@ TEST_CASE("einsum2") {
         for (size_t i0 = 0; i0 < 3; i0++) {
             for (size_t j0 = 0; j0 < 5; j0++) {
                 // REQUIRE(C0(i0, j0) == C1(i0, j0));?
-                REQUIRE_THAT(C0(i0, j0), Catch::Matchers::WithinRel(C1(i0, j0), 0.0000001));
+                REQUIRE_THAT((double) C0(i0, j0), Catch::Matchers::WithinRel((double) C1(i0, j0), 0.0000001));
             }
         }
     }
@@ -970,7 +1002,7 @@ TEST_CASE("einsum2") {
     // timer::finalize();
 }
 
-TEST_CASE("einsum3") {
+TEST_CASE("GPU einsum3") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
@@ -978,10 +1010,12 @@ TEST_CASE("einsum3") {
     // timer::initialize();
 
     SECTION("3x3 <- 3x5 * 5x3") {
-        Tensor C0{"C0", 3, 3};
-        Tensor C1{"C1", 3, 3};
-        Tensor A = create_random_tensor("A", 3, 5);
-        Tensor B = create_random_tensor("B", 5, 3);
+        DeviceTensor<double, 2> C0{"C0", einsums::detail::DEV_ONLY, 3, 3};
+        DeviceTensor<double, 2> C1{"C1", einsums::detail::DEV_ONLY, 3, 3};
+        DeviceTensor<double, 2> A{"A", einsums::detail::DEV_ONLY, 3, 5};
+        A = create_random_tensor("A", 3, 5);
+        DeviceTensor<double, 2> B{"B", einsums::detail::DEV_ONLY, 5, 3};
+        B = create_random_tensor("B", 5, 3);
 
         // Working to get the einsum to perform the gemm that follows.
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
@@ -989,19 +1023,21 @@ TEST_CASE("einsum3") {
 
         for (size_t i0 = 0; i0 < C0.dim(0); i0++) {
             for (size_t j0 = 0; j0 < C0.dim(1); j0++) {
-                REQUIRE_THAT(C0(i0, j0), Catch::Matchers::WithinRel(C1(i0, j0), 0.0001));
+                REQUIRE_THAT((double) C0(i0, j0), Catch::Matchers::WithinRel((double) C1(i0, j0), 0.0001));
             }
         }
     }
 
     SECTION("3x3x3x3 <- 3x3x3x3 * 3x3") {
         // This one is to represent a two-electron integral transformation
-        Tensor gMO0{"g0", 3, 3, 3, 3};
-        Tensor gMO1{"g1", 3, 3, 3, 3};
+        DeviceTensor<double, 4> gMO0{"g0", einsums::detail::DEV_ONLY, 3, 3, 3, 3};
+        DeviceTensor<double, 4> gMO1{"g1", einsums::detail::DEV_ONLY, 3, 3, 3, 3};
         zero(gMO0);
         zero(gMO1);
-        Tensor A = create_random_tensor("A", 3, 3, 3, 3);
-        Tensor B = create_random_tensor("B", 3, 3);
+        DeviceTensor<double, 4> A{"A", einsums::detail::DEV_ONLY, 3, 3, 3, 3};
+        A = create_random_tensor("A", 3, 3, 3, 3);
+        DeviceTensor<double, 2> B{"B", einsums::detail::DEV_ONLY, 3, 3};
+        B = create_random_tensor("B", 3, 3);
 
         REQUIRE_NOTHROW(einsum(Indices{i, j, k, l}, &gMO0, Indices{i, j, k, p}, A, Indices{p, l}, B));
 
@@ -1021,7 +1057,7 @@ TEST_CASE("einsum3") {
             for (size_t j0 = 0; j0 < gMO0.dim(1); j0++) {
                 for (size_t k0 = 0; k0 < gMO0.dim(2); k0++) {
                     for (size_t l0 = 0; l0 < gMO0.dim(3); l0++) {
-                        REQUIRE_THAT(gMO0(i0, j0, k0, l0), Catch::Matchers::WithinAbs(gMO1(i0, j0, k0, l0), 0.001));
+                        REQUIRE_THAT((double) gMO0(i0, j0, k0, l0), Catch::Matchers::WithinAbs((double) gMO1(i0, j0, k0, l0), 0.001));
                     }
                 }
             }
@@ -1046,7 +1082,7 @@ TEST_CASE("einsum3") {
             for (size_t j0 = 0; j0 < gMO0.dim(1); j0++) {
                 for (size_t k0 = 0; k0 < gMO0.dim(2); k0++) {
                     for (size_t l0 = 0; l0 < gMO0.dim(3); l0++) {
-                        REQUIRE_THAT(gMO0(i0, j0, k0, l0), Catch::Matchers::WithinAbs(gMO1(i0, j0, k0, l0), 0.001));
+                        REQUIRE_THAT((double) gMO0(i0, j0, k0, l0), Catch::Matchers::WithinAbs((double) gMO1(i0, j0, k0, l0), 0.001));
                     }
                 }
             }
@@ -1063,7 +1099,7 @@ TEST_CASE("einsum3") {
             for (size_t j0 = 0; j0 < gMO0.dim(1); j0++) {
                 for (size_t k0 = 0; k0 < gMO0.dim(2); k0++) {
                     for (size_t l0 = 0; l0 < gMO0.dim(3); l0++) {
-                        REQUIRE_THAT(gMO0(i0, j0, k0, l0), Catch::Matchers::WithinAbs(gMO1(i0, j0, k0, l0), 0.001));
+                        REQUIRE_THAT((double) gMO0(i0, j0, k0, l0), Catch::Matchers::WithinAbs((double) gMO1(i0, j0, k0, l0), 0.001));
                     }
                 }
             }
@@ -1074,7 +1110,7 @@ TEST_CASE("einsum3") {
     // timer::finalize();
 }
 
-TEST_CASE("einsum4") {
+TEST_CASE("GPU einsum4") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
@@ -1082,12 +1118,14 @@ TEST_CASE("einsum4") {
     // timer::initialize();
     SECTION("3x3x3x3 <- 3x3x3x3 * 3x3") {
         // This one is to represent a two-electron integral transformation
-        Tensor gMO0{"g0", 3, 3, 3, 3};
-        Tensor gMO1{"g1", 3, 3, 3, 3};
+        DeviceTensor<double, 4> gMO0{"g0", einsums::detail::DEV_ONLY, 3, 3, 3, 3};
+        DeviceTensor<double, 4> gMO1{"g1", einsums::detail::DEV_ONLY, 3, 3, 3, 3};
         zero(gMO0);
         zero(gMO1);
-        Tensor A = create_random_tensor("A", 3, 3, 3, 3);
-        Tensor B = create_random_tensor("B", 3, 3);
+        DeviceTensor<double, 4> A{"A", einsums::detail::DEV_ONLY, 3, 3, 3, 3};
+        A = create_random_tensor("A", 3, 3, 3, 3);
+        DeviceTensor<double, 2> B{"B", einsums::detail::DEV_ONLY, 3, 3};
+        B = create_random_tensor("B", 3, 3);
 
         REQUIRE_NOTHROW(einsum(Indices{p, q, r, l}, &gMO0, Indices{p, q, r, s}, A, Indices{s, l}, B));
 
@@ -1107,7 +1145,7 @@ TEST_CASE("einsum4") {
             for (size_t j0 = 0; j0 < gMO0.dim(1); j0++) {
                 for (size_t k0 = 0; k0 < gMO0.dim(2); k0++) {
                     for (size_t l0 = 0; l0 < gMO0.dim(3); l0++) {
-                        REQUIRE_THAT(gMO0(i0, j0, k0, l0), Catch::Matchers::WithinAbs(gMO1(i0, j0, k0, l0), 0.001));
+                        REQUIRE_THAT((double) gMO0(i0, j0, k0, l0), Catch::Matchers::WithinAbs((double) gMO1(i0, j0, k0, l0), 0.001));
                     }
                 }
             }
@@ -1132,138 +1170,37 @@ TEST_CASE("einsum4") {
             for (size_t j0 = 0; j0 < gMO0.dim(1); j0++) {
                 for (size_t k0 = 0; k0 < gMO0.dim(2); k0++) {
                     for (size_t l0 = 0; l0 < gMO0.dim(3); l0++) {
-                        REQUIRE_THAT(gMO0(i0, j0, k0, l0), Catch::Matchers::WithinAbs(gMO1(i0, j0, k0, l0), 0.001));
+                        REQUIRE_THAT((double) gMO0(i0, j0, k0, l0), Catch::Matchers::WithinAbs((double) gMO1(i0, j0, k0, l0), 0.001));
                     }
                 }
             }
         }
-
-#if 0
-        for (size_t i0 = 0; i0 < gMO0.dim(0); i0++) {
-            for (size_t j0 = 0; j0 < gMO0.dim(1); j0++) {
-                auto vgMO0 = gMO0(i0, j0, All, All);
-                TensorAlgebra::einsum(Indices{k, s}, &vgMO0, Indices{r, s}, A(i0, j0, All, All), Indices{r, k}, B);
-            }
-        }
-
-        for (size_t i0 = 0; i0 < gMO0.dim(0); i0++) {
-            for (size_t j0 = 0; j0 < gMO0.dim(1); j0++) {
-                for (size_t k0 = 0; k0 < gMO0.dim(2); k0++) {
-                    for (size_t l0 = 0; l0 < gMO0.dim(3); l0++) {
-                        // println("i0 %lu j0 %lu k0 %lu l0 %lu, gMO0 %lf, gMO1 %lf", i0, j0, k0, l0, gMO0(i0, j0, k0, l0),
-                        // gMO1(i0, j0, k0, l0));
-                        REQUIRE(gMO0(i0, j0, k0, l0) == gMO1(i0, j0, k0, l0));
-                    }
-                }
-            }
-        }
-#endif
     }
 
     // timer::report();
     // timer::finalize();
 }
 
-TEST_CASE("IntegralTransformation") {
+TEST_CASE("GPU IntegralTransformation") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
 
-    // timer::initialize();
-    // SECTION("3x3x3x3 <- 3x3x3x3 * 3x3 * 3x3 * 3x3 * 3x3") {
-    //     Tensor C1 = create_random_tensor("C1", 4, 2);
-    //     Tensor C2 = create_random_tensor("C2", 4, 2);
-    //     Tensor C3 = create_random_tensor("C3", 4, 3);
-    //     Tensor C4 = create_random_tensor("C4", 4, 4);
-
-    //     Tensor true_answer{"true", 2, 2, 3, 4};
-    //     Tensor memory_ao = create_random_tensor("ao", 4, 4, 4, 4);
-    //     DiskTensor disk_ao{State::data, "ao", 4, 4, 4, 4};
-
-    //     // #pragma omp parallel for collapse(8)
-    //     for (size_t i0 = 0; i0 < C1.dim(1); i0++) {
-    //         for (size_t j0 = 0; j0 < C2.dim(1); j0++) {
-    //             for (size_t k0 = 0; k0 < C3.dim(1); k0++) {
-    //                 for (size_t l0 = 0; l0 < C4.dim(1); l0++) {
-
-    //                     for (size_t p0 = 0; p0 < C1.dim(0); p0++) {
-    //                         for (size_t q0 = 0; q0 < C2.dim(0); q0++) {
-    //                             for (size_t r0 = 0; r0 < C3.dim(0); r0++) {
-    //                                 for (size_t s0 = 0; s0 < C4.dim(0); s0++) {
-    //                                     true_answer(i0, j0, k0, l0) +=
-    //                                         C1(p0, i0) * C2(q0, j0) * C3(r0, k0) * C4(s0, l0) * memory_ao(p0, q0, r0, s0);
-    //                                 }
-    //                             }
-    //                         }
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     }
-
-    //     // Save our inital memory_ao to disk
-    //     write(State::data, C1);
-    //     write(State::data, C2);
-    //     write(State::data, C3);
-    //     write(State::data, C4);
-
-    //     disk_ao(All, All, All, All) = memory_ao;
-    //     auto temp = disk_ao(All, All, All, All);
-    //     auto &temp2 = temp.get();
-
-    //     // Ensure the data was saved to disk correctly
-    //     for (size_t i0 = 0; i0 < C1.dim(1); i0++) {
-    //         for (size_t j0 = 0; j0 < C2.dim(1); j0++) {
-    //             for (size_t k0 = 0; k0 < C3.dim(1); k0++) {
-    //                 for (size_t l0 = 0; l0 < C4.dim(1); l0++) {
-    //                     REQUIRE(temp2(i0, j0, k0, l0) == memory_ao(i0, j0, k0, l0));
-    //                 }
-    //             }
-    //         }
-    //     }
-
-    //     auto memory_result = transformation("mo", memory_ao, C1, C2, C3, C4);
-    //     auto disk_result = transformation("mo", disk_ao, C1, C2, C3, C4);
-
-    //     // Make sure the memory and disk results match
-    //     for (size_t i0 = 0; i0 < C1.dim(1); i0++) {
-    //         for (size_t j0 = 0; j0 < C2.dim(1); j0++) {
-    //             for (size_t k0 = 0; k0 < C3.dim(1); k0++) {
-    //                 for (size_t l0 = 0; l0 < C4.dim(1); l0++) {
-    //                     REQUIRE_THAT(memory_result(i0, j0, k0, l0), Catch::Matchers::WithinRel(true_answer(i0, j0, k0, l0), 0.0000001));
-    //                 }
-    //             }
-    //         }
-    //     }
-
-    //     for (size_t i0 = 0; i0 < C1.dim(1); i0++) {
-    //         for (size_t j0 = 0; j0 < C2.dim(1); j0++) {
-    //             auto disk_view = disk_result(i0, j0, All, All);
-    //             auto &disk_tensor = disk_view.get();
-    //             for (size_t k0 = 0; k0 < C3.dim(1); k0++) {
-    //                 for (size_t l0 = 0; l0 < C4.dim(1); l0++) {
-    //                     REQUIRE_THAT(disk_tensor(k0, l0), Catch::Matchers::WithinRel(true_answer(i0, j0, k0, l0), 0.0000001));
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
 
     SECTION("R2 <- R3 * R3") {
-        Tensor W_mi = create_random_tensor("W_mi", 4, 4);
-        Tensor g_m  = create_random_tensor("g_m", 4, 8, 8);
-        Tensor t_i  = create_random_tensor("t_i", 4, 8, 8);
-
-        // println(W_mi);
-        // println(g_m);
-        // println(t_i);
+        DeviceTensor<double, 2> W_mi{"W_mi", einsums::detail::DEV_ONLY, 4, 4};
+        W_mi = create_random_tensor("W_mi", 4, 4);
+        DeviceTensor<double, 3> g_m{"g_m", einsums::detail::DEV_ONLY, 4, 8, 8};
+        g_m = create_random_tensor("g_m", 4, 8, 8);
+        DeviceTensor<double, 3> t_i{"t_i", einsums::detail::DEV_ONLY, 4, 8, 8};
+        t_i  = create_random_tensor("t_i", 4, 8, 8);
 
         REQUIRE_NOTHROW(einsum(1.0, Indices{index::n, index::j}, &W_mi, 0.25, Indices{index::n, index::e, index::f}, g_m,
                                Indices{index::j, index::e, index::f}, t_i));
     }
 }
 
-TEST_CASE("Hadamard") {
+TEST_CASE("GPU Hadamard") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
@@ -1271,10 +1208,12 @@ TEST_CASE("Hadamard") {
     size_t _i = 3, _j = 4, _k = 5;
 
     SECTION("i,j <- i,i * j*j") {
-        Tensor A = create_random_tensor("A", _i, _i);
-        Tensor B = create_random_tensor("B", _j, _j);
-        Tensor C{"C", _i, _j};
-        Tensor C0{"C0", _i, _j};
+        DeviceTensor<double, 2> A{"A", einsums::detail::DEV_ONLY, _i, _i};
+        A = create_random_tensor("A", _i, _i);
+        DeviceTensor<double, 2> B{"B", einsums::detail::DEV_ONLY, _j, _j};
+        B = create_random_tensor("B", _j, _j);
+        DeviceTensor<double, 2> C{"C", einsums::detail::DEV_ONLY, _i, _j};
+        DeviceTensor<double, 2> C0{"C0", einsums::detail::DEV_ONLY, _i, _j};
         C0.zero();
         C.zero();
 
@@ -1294,16 +1233,18 @@ TEST_CASE("Hadamard") {
 
         for (size_t i0 = 0; i0 < _i; i0++) {
             for (size_t j0 = 0; j0 < _j; j0++) {
-                REQUIRE_THAT(C(i0, j0), Catch::Matchers::WithinAbs(C0(i0, j0), 0.0001));
+                REQUIRE_THAT((double) C(i0, j0), Catch::Matchers::WithinAbs((double) C0(i0, j0), 0.0001));
             }
         }
     }
 
     SECTION("i,j <- i,i,j * j,j,i") {
-        Tensor A = create_random_tensor("A", _i, _i, _j);
-        Tensor B = create_random_tensor("B", _j, _j, _i);
-        Tensor C{"C", _i, _j};
-        Tensor C0{"C0", _i, _j};
+        DeviceTensor<double, 3> A{"A", einsums::detail::DEV_ONLY, _i, _i, _j};
+        A = create_random_tensor("A", _i, _i, _j);
+        DeviceTensor<double, 3> B{"B", einsums::detail::DEV_ONLY, _j, _j, _i};
+        B = create_random_tensor("B", _j, _j, _i);
+        DeviceTensor<double, 2> C{"C", einsums::detail::DEV_ONLY, _i, _j};
+        DeviceTensor<double, 2> C0{"C0", einsums::detail::DEV_ONLY, _i, _j};
         C0.zero();
         C.zero();
 
@@ -1323,16 +1264,18 @@ TEST_CASE("Hadamard") {
 
         for (size_t i0 = 0; i0 < _i; i0++) {
             for (size_t j0 = 0; j0 < _j; j0++) {
-                REQUIRE_THAT(C(i0, j0), Catch::Matchers::WithinAbs(C0(i0, j0), 0.0001));
+                REQUIRE_THAT((double) C(i0, j0), Catch::Matchers::WithinAbs((double) C0(i0, j0), 0.0001));
             }
         }
     }
 
     SECTION("i,j <- i,j,i * j,i,j") {
-        Tensor A = create_random_tensor("A", _i, _j, _i);
-        Tensor B = create_random_tensor("B", _j, _i, _j);
-        Tensor C{"C", _i, _j};
-        Tensor C0{"C0", _i, _j};
+        DeviceTensor<double, 3> A{"A", einsums::detail::DEV_ONLY, _i, _j, _i};
+        A = create_random_tensor("A", _i, _j, _i);
+        DeviceTensor<double, 3> B{"B", einsums::detail::DEV_ONLY, _j, _i, _j};
+        B = create_random_tensor("B", _j, _i, _j);
+        DeviceTensor<double, 2> C{"C", einsums::detail::DEV_ONLY, _i, _j};
+        DeviceTensor<double, 2> C0{"C0", einsums::detail::DEV_ONLY, _i, _j};
         C0.zero();
         C.zero();
 
@@ -1352,16 +1295,18 @@ TEST_CASE("Hadamard") {
 
         for (size_t i0 = 0; i0 < _i; i0++) {
             for (size_t j0 = 0; j0 < _j; j0++) {
-                REQUIRE_THAT(C(i0, j0), Catch::Matchers::WithinAbs(C0(i0, j0), 0.0001));
+                REQUIRE_THAT((double) C(i0, j0), Catch::Matchers::WithinAbs((double) C0(i0, j0), 0.0001));
             }
         }
     }
 
     SECTION("i,j,i <- i,j,i * j,i,j") {
-        Tensor A = create_random_tensor("A", _i, _j, _i);
-        Tensor B = create_random_tensor("B", _j, _i, _j);
-        Tensor C{"C", _i, _j, _i};
-        Tensor C0{"C0", _i, _j, _i};
+        DeviceTensor<double, 3> A{"A", einsums::detail::DEV_ONLY, _i, _j, _i};
+        A = create_random_tensor("A", _i, _j, _i);
+        DeviceTensor<double, 3> B{"B", einsums::detail::DEV_ONLY, _j, _i, _j};
+        B = create_random_tensor("B", _j, _i, _j);
+        DeviceTensor<double, 3> C{"C", einsums::detail::DEV_ONLY, _i, _j, _i};
+        DeviceTensor<double, 3> C0{"C0", einsums::detail::DEV_ONLY, _i, _j, _i};
         C0.zero();
         C.zero();
 
@@ -1375,16 +1320,18 @@ TEST_CASE("Hadamard") {
 
         for (size_t i0 = 0; i0 < _i; i0++) {
             for (size_t j0 = 0; j0 < _j; j0++) {
-                CHECK_THAT(C(i0, j0, i0), Catch::Matchers::WithinRel(C0(i0, j0, i0), 0.00001));
+                CHECK_THAT((double) C(i0, j0, i0), Catch::Matchers::WithinRel((double) C0(i0, j0, i0), 0.00001));
             }
         }
     }
 
     SECTION("i,i,i <- i,j,i * j,i,j") {
-        Tensor A = create_random_tensor("A", _i, _j, _i);
-        Tensor B = create_random_tensor("B", _j, _i, _j);
-        Tensor C{"C", _i, _i, _i};
-        Tensor C0{"C0", _i, _i, _i};
+        DeviceTensor<double, 3> A{"A", einsums::detail::DEV_ONLY, _i, _j, _i};
+        A = create_random_tensor("A", _i, _j, _i);
+        DeviceTensor<double, 3> B{"B", einsums::detail::DEV_ONLY, _j, _i, _j};
+        B = create_random_tensor("B", _j, _i, _j);
+        DeviceTensor<double, 3> C{"C", einsums::detail::DEV_ONLY, _i, _i, _i};
+        DeviceTensor<double, 3> C0{"C0", einsums::detail::DEV_ONLY, _i, _i, _i};
         C0.zero();
         C.zero();
 
@@ -1397,15 +1344,17 @@ TEST_CASE("Hadamard") {
         REQUIRE_NOTHROW(einsum(Indices{i, i, i}, &C, Indices{i, j, i}, A, Indices{j, i, j}, B));
 
         for (size_t i0 = 0; i0 < _i; i0++) {
-            CHECK_THAT(C(i0, i0, i0), Catch::Matchers::WithinRel(C0(i0, i0, i0), 0.00001));
+            CHECK_THAT((double) C(i0, i0, i0), Catch::Matchers::WithinRel((double) C0(i0, i0, i0), 0.00001));
         }
     }
 
     SECTION("i,i <- i,j,k * j,i,k") {
-        Tensor A = create_random_tensor("A", _i, _j, _k);
-        Tensor B = create_random_tensor("B", _j, _i, _k);
-        Tensor C{"C", _i, _i};
-        Tensor C0{"C0", _i, _i};
+        DeviceTensor<double, 3> A{"A", einsums::detail::DEV_ONLY, _i, _j, _k};
+        A = create_random_tensor("A", _i, _j, _k);
+        DeviceTensor<double, 3> B{"B", einsums::detail::DEV_ONLY, _j, _i, _k};
+        B = create_random_tensor("B", _j, _i, _k);
+        DeviceTensor<double, 2> C{"C", einsums::detail::DEV_ONLY, _i, _i};
+        DeviceTensor<double, 2> C0{"C0", einsums::detail::DEV_ONLY, _i, _i};
         C0.zero();
         C.zero();
 
@@ -1421,22 +1370,24 @@ TEST_CASE("Hadamard") {
 
         for (size_t i0 = 0; i0 < _i; i0++) {
             for (size_t j0 = 0; j0 < _i; j0++) {
-                CHECK_THAT(C(i0, j0), Catch::Matchers::WithinRel(C0(i0, j0), 0.00001));
+                CHECK_THAT((double) C(i0, j0), Catch::Matchers::WithinRel((double) C0(i0, j0), 0.00001));
             }
         }
     }
 }
 
-TEST_CASE("unique_ptr") {
+TEST_CASE("GPU unique_ptr") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
 
     SECTION("C") {
-        auto   C0 = std::make_unique<Tensor<double, 2>>("C0", 3, 3);
-        Tensor C1{"C1", 3, 3};
-        Tensor A = create_random_tensor("A", 3, 5);
-        Tensor B = create_random_tensor("B", 5, 3);
+        auto   C0 = std::make_unique<DeviceTensor<double, 2>>("C0", einsums::detail::DEV_ONLY, 3, 3);
+        DeviceTensor<double, 2> C1{"C1", einsums::detail::DEV_ONLY, 3, 3};
+        DeviceTensor<double, 2> A{"A", einsums::detail::DEV_ONLY, 3, 5};
+        A = create_random_tensor("A", 3, 5);
+        DeviceTensor<double, 2> B{"B", einsums::detail::DEV_ONLY, 5, 3};
+        B = create_random_tensor("B", 5, 3);
 
         // Working to get the einsum to perform the gemm that follows.
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
@@ -1444,16 +1395,18 @@ TEST_CASE("unique_ptr") {
 
         for (size_t i0 = 0; i0 < C0->dim(0); i0++) {
             for (size_t j0 = 0; j0 < C0->dim(1); j0++) {
-                REQUIRE_THAT(C0->operator()(i0, j0), Catch::Matchers::WithinRel(C1(i0, j0), 0.0001));
+                REQUIRE_THAT((double) C0->operator()(i0, j0), Catch::Matchers::WithinRel((double) C1(i0, j0), 0.0001));
             }
         }
     }
 
     SECTION("A") {
-        Tensor C0{"C0", 3, 3};
-        Tensor C1{"C1", 3, 3};
-        auto   A = std::make_unique<Tensor<double, 2>>(create_random_tensor("A", 3, 5));
-        Tensor B = create_random_tensor("B", 5, 3);
+
+        DeviceTensor<double, 2> C0{"C1", einsums::detail::DEV_ONLY, 3, 3};
+        DeviceTensor<double, 2> C1{"C1", einsums::detail::DEV_ONLY, 3, 3};
+        auto   A = std::make_unique<DeviceTensor<double, 2>>(create_random_tensor("A", 3, 5));
+        DeviceTensor<double, 2> B{"B", einsums::detail::DEV_ONLY, 5, 3};
+        B = create_random_tensor("B", 5, 3);
 
         // Working to get the einsum to perform the gemm that follows.
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
@@ -1461,16 +1414,17 @@ TEST_CASE("unique_ptr") {
 
         for (size_t i0 = 0; i0 < C0.dim(0); i0++) {
             for (size_t j0 = 0; j0 < C0.dim(1); j0++) {
-                REQUIRE_THAT(C0(i0, j0), Catch::Matchers::WithinRel(C1(i0, j0), 0.0001));
+                REQUIRE_THAT((double) C0(i0, j0), Catch::Matchers::WithinRel((double) C1(i0, j0), 0.0001));
             }
         }
     }
 
     SECTION("B") {
-        Tensor C0{"C0", 3, 3};
-        Tensor C1{"C1", 3, 3};
-        Tensor A = create_random_tensor("A", 3, 5);
-        auto   B = std::make_unique<Tensor<double, 2>>(create_random_tensor("B", 5, 3));
+        DeviceTensor<double, 2> C0{"C1", einsums::detail::DEV_ONLY, 3, 3};
+        DeviceTensor<double, 2> C1{"C1", einsums::detail::DEV_ONLY, 3, 3};
+        DeviceTensor<double, 2> A{"A", einsums::detail::DEV_ONLY, 3, 5};
+        A = create_random_tensor("A", 3, 5);
+        auto   B = std::make_unique<DeviceTensor<double, 2>>(create_random_tensor("B", 5, 3));
 
         // Working to get the einsum to perform the gemm that follows.
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
@@ -1478,16 +1432,16 @@ TEST_CASE("unique_ptr") {
 
         for (size_t i0 = 0; i0 < C0.dim(0); i0++) {
             for (size_t j0 = 0; j0 < C0.dim(1); j0++) {
-                REQUIRE_THAT(C0(i0, j0), Catch::Matchers::WithinRel(C1(i0, j0), 0.0001));
+                REQUIRE_THAT((double) C0(i0, j0), Catch::Matchers::WithinRel((double) C1(i0, j0), 0.0001));
             }
         }
     }
 
     SECTION("AB") {
-        Tensor C0{"C0", 3, 3};
-        Tensor C1{"C1", 3, 3};
-        auto   A = std::make_unique<Tensor<double, 2>>(create_random_tensor("A", 3, 5));
-        auto   B = std::make_unique<Tensor<double, 2>>(create_random_tensor("B", 5, 3));
+        DeviceTensor<double, 2> C0{"C1", einsums::detail::DEV_ONLY, 3, 3};
+        DeviceTensor<double, 2> C1{"C1", einsums::detail::DEV_ONLY, 3, 3};
+        auto   A = std::make_unique<DeviceTensor<double, 2>>(create_random_tensor("A", 3, 5));
+        auto   B = std::make_unique<DeviceTensor<double, 2>>(create_random_tensor("B", 5, 3));
 
         // Working to get the einsum to perform the gemm that follows.
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
@@ -1495,16 +1449,17 @@ TEST_CASE("unique_ptr") {
 
         for (size_t i0 = 0; i0 < C0.dim(0); i0++) {
             for (size_t j0 = 0; j0 < C0.dim(1); j0++) {
-                REQUIRE_THAT(C0(i0, j0), Catch::Matchers::WithinRel(C1(i0, j0), 0.0001));
+                REQUIRE_THAT((double) C0(i0, j0), Catch::Matchers::WithinRel((double) C1(i0, j0), 0.0001));
             }
         }
     }
 
     SECTION("CA") {
-        auto   C0 = std::make_unique<Tensor<double, 2>>("C0", 3, 3);
-        Tensor C1{"C1", 3, 3};
-        auto   A = std::make_unique<Tensor<double, 2>>(create_random_tensor("A", 3, 5));
-        Tensor B = create_random_tensor("B", 5, 3);
+        auto   C0 = std::make_unique<DeviceTensor<double, 2>>("C0", einsums::detail::DEV_ONLY, 3, 3);
+        DeviceTensor<double, 2> C1{"C1", einsums::detail::DEV_ONLY, 3, 3};
+        auto   A = std::make_unique<DeviceTensor<double, 2>>(create_random_tensor("A", 3, 5));
+        DeviceTensor<double, 2> B{"B", einsums::detail::DEV_ONLY, 5, 3};
+        B = create_random_tensor("B", 5, 3);
 
         // Working to get the einsum to perform the gemm that follows.
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
@@ -1512,16 +1467,18 @@ TEST_CASE("unique_ptr") {
 
         for (size_t i0 = 0; i0 < C0->dim(0); i0++) {
             for (size_t j0 = 0; j0 < C0->dim(1); j0++) {
-                REQUIRE_THAT(C0->operator()(i0, j0), Catch::Matchers::WithinRel(C1(i0, j0), 0.0001));
+                REQUIRE_THAT((double) C0->operator()(i0, j0), Catch::Matchers::WithinRel((double) C1(i0, j0), 0.0001));
             }
         }
     }
 
     SECTION("CB") {
-        auto   C0 = std::make_unique<Tensor<double, 2>>("C0", 3, 3);
-        Tensor C1{"C1", 3, 3};
-        Tensor A = create_random_tensor("A", 3, 5);
-        auto   B = std::make_unique<Tensor<double, 2>>(create_random_tensor("B", 5, 3));
+        auto   C0 = std::make_unique<DeviceTensor<double, 2>>("C0", einsums::detail::DEV_ONLY, 3, 3);
+        DeviceTensor<double, 2> C1{"C1", einsums::detail::DEV_ONLY, 3, 3};
+        DeviceTensor<double, 2> A{"A", einsums::detail::DEV_ONLY, 3, 5};
+        A = create_random_tensor("A", 3, 5);
+        auto   B = std::make_unique<DeviceTensor<double, 2>>(create_random_tensor("B", 5, 3));
+
 
         // Working to get the einsum to perform the gemm that follows.
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
@@ -1529,16 +1486,16 @@ TEST_CASE("unique_ptr") {
 
         for (size_t i0 = 0; i0 < C0->dim(0); i0++) {
             for (size_t j0 = 0; j0 < C0->dim(1); j0++) {
-                REQUIRE_THAT(C0->operator()(i0, j0), Catch::Matchers::WithinRel(C1(i0, j0), 0.0001));
+                REQUIRE_THAT((double) C0->operator()(i0, j0), Catch::Matchers::WithinRel((double) C1(i0, j0), 0.0001));
             }
         }
     }
 
     SECTION("CAB") {
-        auto   C0 = std::make_unique<Tensor<double, 2>>("C0", 3, 3);
-        Tensor C1{"C1", 3, 3};
-        auto   A = std::make_unique<Tensor<double, 2>>(create_random_tensor("A", 3, 5));
-        auto   B = std::make_unique<Tensor<double, 2>>(create_random_tensor("B", 5, 3));
+        auto   C0 = std::make_unique<DeviceTensor<double, 2>>("C0", einsums::detail::DEV_ONLY, 3, 3);
+        DeviceTensor<double, 2> C1{"C1", einsums::detail::DEV_ONLY, 3, 3};
+        auto   A = std::make_unique<DeviceTensor<double, 2>>(create_random_tensor("A", 3, 5));
+        auto   B = std::make_unique<DeviceTensor<double, 2>>(create_random_tensor("B", 5, 3));
 
         // Working to get the einsum to perform the gemm that follows.
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
@@ -1546,13 +1503,13 @@ TEST_CASE("unique_ptr") {
 
         for (size_t i0 = 0; i0 < C0->dim(0); i0++) {
             for (size_t j0 = 0; j0 < C0->dim(1); j0++) {
-                REQUIRE_THAT(C0->operator()(i0, j0), Catch::Matchers::WithinRel(C1(i0, j0), 0.0001));
+                REQUIRE_THAT((double) C0->operator()(i0, j0), Catch::Matchers::WithinRel((double) C1(i0, j0), 0.0001));
             }
         }
     }
 }
 
-TEST_CASE("Transpose C", "[einsum]") {
+TEST_CASE("GPU Transpose C", "[einsum]") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
@@ -1560,10 +1517,11 @@ TEST_CASE("Transpose C", "[einsum]") {
     size_t _i = 3, _j = 4, _k = 5;
 
     SECTION("i,j <- j,k * k,i === true, false, false") {
-        Tensor A = create_random_tensor("A", _j, _k);
-        Tensor B = create_random_tensor("B", _k, _i);
-        Tensor C{"C", _i, _j};
-        Tensor C0{"C0", _i, _j};
+        DeviceTensor<double, 2> A{"A", einsums::detail::DEV_ONLY, _j, _k};
+        A = create_random_tensor("A", _j, _k);
+        DeviceTensor B = create_random_gpu_tensor("B", _k, _i);
+        DeviceTensor C{"C", _i, _j};
+        DeviceTensor C0{"C0", _i, _j};
         C0.zero();
 
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C, Indices{j, k}, A, Indices{k, i}, B));
@@ -1581,16 +1539,16 @@ TEST_CASE("Transpose C", "[einsum]") {
 
         for (size_t i0 = 0; i0 < _i; i0++) {
             for (size_t j0 = 0; j0 < _j; j0++) {
-                REQUIRE_THAT(C(i0, j0), Catch::Matchers::WithinAbs(C0(i0, j0), 0.001));
+                REQUIRE_THAT((double) C(i0, j0), Catch::Matchers::WithinAbs((double) C0(i0, j0), 0.001));
             }
         }
     }
 
     SECTION("i,j <- k,j * k,i === true, true, false") {
-        Tensor A = create_random_tensor("A", _k, _j);
-        Tensor B = create_random_tensor("B", _k, _i);
-        Tensor C{"C", _i, _j};
-        Tensor C0{"C0", _i, _j};
+        DeviceTensor A = create_random_gpu_tensor("A", _k, _j);
+        DeviceTensor B = create_random_gpu_tensor("B", _k, _i);
+        DeviceTensor C{"C", _i, _j};
+        DeviceTensor C0{"C0", _i, _j};
         C0.zero();
 
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C, Indices{k, j}, A, Indices{k, i}, B));
@@ -1608,16 +1566,16 @@ TEST_CASE("Transpose C", "[einsum]") {
 
         for (size_t i0 = 0; i0 < _i; i0++) {
             for (size_t j0 = 0; j0 < _j; j0++) {
-                REQUIRE_THAT(C(i0, j0), Catch::Matchers::WithinAbs(C0(i0, j0), 0.001));
+                REQUIRE_THAT((double) C(i0, j0), Catch::Matchers::WithinAbs((double) C0(i0, j0), 0.001));
             }
         }
     }
 
     SECTION("i,j <- j,k * i,k === true, false, true") {
-        Tensor A = create_random_tensor("A", _j, _k);
-        Tensor B = create_random_tensor("B", _i, _k);
-        Tensor C{"C", _i, _j};
-        Tensor C0{"C0", _i, _j};
+        DeviceTensor A = create_random_gpu_tensor("A", _j, _k);
+        DeviceTensor B = create_random_gpu_tensor("B", _i, _k);
+        DeviceTensor C{"C", _i, _j};
+        DeviceTensor C0{"C0", _i, _j};
         C0.zero();
 
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C, Indices{j, k}, A, Indices{i, k}, B));
@@ -1635,16 +1593,16 @@ TEST_CASE("Transpose C", "[einsum]") {
 
         for (size_t i0 = 0; i0 < _i; i0++) {
             for (size_t j0 = 0; j0 < _j; j0++) {
-                REQUIRE_THAT(C(i0, j0), Catch::Matchers::WithinAbs(C0(i0, j0), 0.001));
+                REQUIRE_THAT((double) C(i0, j0), Catch::Matchers::WithinAbs((double) C0(i0, j0), 0.001));
             }
         }
     }
 
     SECTION("i,j <- k,j * i,k === true, true, true") {
-        Tensor A = create_random_tensor("A", _k, _j);
-        Tensor B = create_random_tensor("B", _i, _k);
-        Tensor C{"C", _i, _j};
-        Tensor C0{"C0", _i, _j};
+        DeviceTensor A = create_random_gpu_tensor("A", _k, _j);
+        DeviceTensor B = create_random_gpu_tensor("B", _i, _k);
+        DeviceTensor C{"C", _i, _j};
+        DeviceTensor C0{"C0", _i, _j};
         C0.zero();
 
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C, Indices{k, j}, A, Indices{i, k}, B));
@@ -1662,7 +1620,7 @@ TEST_CASE("Transpose C", "[einsum]") {
 
         for (size_t i0 = 0; i0 < _i; i0++) {
             for (size_t j0 = 0; j0 < _j; j0++) {
-                REQUIRE_THAT(C(i0, j0), Catch::Matchers::WithinAbs(C0(i0, j0), 0.001));
+                REQUIRE_THAT((double) C(i0, j0), Catch::Matchers::WithinAbs((double) C0(i0, j0), 0.001));
             }
         }
     }
@@ -1670,13 +1628,13 @@ TEST_CASE("Transpose C", "[einsum]") {
     SECTION("Wmnij <- 0.25 t_ijef * g_mnef") {
         size_t _m = 12, _n = 12, _i = 5, _j = 5, _e = 7, _f = 7;
 
-        Tensor Wmnij{"Wmnij", _m, _n, _i, _j};
+        DeviceTensor Wmnij{"Wmnij", _m, _n, _i, _j};
         zero(Wmnij);
-        Tensor W0{"Wmnij", _m, _n, _i, _j};
+        DeviceTensor W0{"Wmnij", _m, _n, _i, _j};
         zero(W0);
 
-        Tensor t_oovv = create_random_tensor("t_oovv", _i, _j, _e, _f);
-        Tensor g_oovv = create_random_tensor("g_oovv", _m, _n, _e, _f);
+        DeviceTensor t_oovv = create_random_gpu_tensor("t_oovv", _i, _j, _e, _f);
+        DeviceTensor g_oovv = create_random_gpu_tensor("g_oovv", _m, _n, _e, _f);
 
         REQUIRE_NOTHROW(einsum(1.0, Indices{m, n, i, j}, &Wmnij, 0.25, Indices{i, j, e, f}, t_oovv, Indices{m, n, e, f}, g_oovv));
 
@@ -1698,7 +1656,7 @@ TEST_CASE("Transpose C", "[einsum]") {
             for (size_t n0 = 0; n0 < _n; n0++) {
                 for (size_t i0 = 0; i0 < _i; i0++) {
                     for (size_t j0 = 0; j0 < _j; j0++) {
-                        REQUIRE_THAT(Wmnij(m0, n0, i0, j0), Catch::Matchers::WithinAbs(W0(m0, n0, i0, j0), 0.001));
+                        REQUIRE_THAT((double) Wmnij(m0, n0, i0, j0), Catch::Matchers::WithinAbs((double) W0(m0, n0, i0, j0), 0.001));
                     }
                 }
             }
@@ -1706,7 +1664,7 @@ TEST_CASE("Transpose C", "[einsum]") {
     }
 }
 
-TEST_CASE("einsum_gemv") {
+TEST_CASE("GPU einsum_gemv") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
@@ -1714,20 +1672,20 @@ TEST_CASE("einsum_gemv") {
     SECTION("check") {
         size_t _p = 7, _q = 7, _r = 7, _s = 7;
 
-        Tensor g = create_random_tensor("g", _p, _q, _r, _s);
-        Tensor D = create_random_tensor("d", _r, _s);
+        DeviceTensor g = create_random_gpu_tensor("g", _p, _q, _r, _s);
+        DeviceTensor D = create_random_gpu_tensor("d", _r, _s);
 
-        Tensor F{"F", _p, _q};
-        Tensor F0{"F0", _p, _q};
+        DeviceTensor F{"F", _p, _q};
+        DeviceTensor F0{"F0", _p, _q};
 
         zero(F);
         zero(F0);
 
         REQUIRE_NOTHROW(einsum(1.0, Indices{p, q}, &F0, 2.0, Indices{p, q, r, s}, g, Indices{r, s}, D));
 
-        TensorView gv{g, Dim<2>{_p * _q, _r * _s}};
-        TensorView dv{D, Dim<1>{_r * _s}};
-        TensorView Fv{F, Dim<1>{_p * _q}};
+        DeviceTensorView gv{g, Dim<2>{_p * _q, _r * _s}};
+        DeviceTensorView dv{D, Dim<1>{_r * _s}};
+        DeviceTensorView Fv{F, Dim<1>{_p * _q}};
 
         linear_algebra::gemv<false>(2.0, gv, dv, 1.0, &Fv);
 
@@ -1736,24 +1694,24 @@ TEST_CASE("einsum_gemv") {
     }
 }
 
-TEST_CASE("TensorView einsum") {
+TEST_CASE("GPU TensorView einsum") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
 
     // Test if everything passed to einsum is a TensorView.
-    Tensor     A = create_random_tensor("A", 3, 5);
-    Tensor     B = create_random_tensor("B", 3, 5);
-    TensorView A_view{A, Dim<2>{3, 3}};
-    TensorView B_view{B, Dim<2>{3, 3}, Offset<2>{0, 2}};
+    DeviceTensor     A = create_random_gpu_tensor("A", 3, 5);
+    DeviceTensor     B = create_random_gpu_tensor("B", 3, 5);
+    DeviceTensorView A_view{A, Dim<2>{3, 3}};
+    DeviceTensorView B_view{B, Dim<2>{3, 3}, Offset<2>{0, 2}};
 
-    Tensor C{"C2", 10, 10};
+    DeviceTensor C{"C2", 10, 10};
     C.zero();
-    TensorView C_view{C, Dim<2>{3, 3}, Offset<2>{5, 5}};
+    DeviceTensorView C_view{C, Dim<2>{3, 3}, Offset<2>{5, 5}};
 
     // To perform the test we make an explicit copy of the TensorViews into their own Tensors
-    Tensor A_copy{"A copy", 3, 3};
-    Tensor B_copy{"B copy", 3, 3};
+    DeviceTensor A_copy{"A copy", 3, 3};
+    DeviceTensor B_copy{"B copy", 3, 3};
 
     for (int x = 0; x < 3; x++) {
         for (int y = 0; y < 3; y++) {
@@ -1763,7 +1721,7 @@ TEST_CASE("TensorView einsum") {
     }
 
     // The target solution is determined from not using views
-    Tensor C_solution{"C solution", 3, 3};
+    DeviceTensor C_solution{"C solution", 3, 3};
     C_solution.zero();
     REQUIRE_NOTHROW(einsum(Indices{i, j}, &C_solution, Indices{i, k}, A_copy, Indices{j, k}, B_copy));
 
@@ -1772,13 +1730,13 @@ TEST_CASE("TensorView einsum") {
 
     for (int x = 0; x < 3; x++) {
         for (int y = 0; y < 3; y++) {
-            REQUIRE_THAT(C_view(x, y), Catch::Matchers::WithinAbs(C_solution(x, y), 0.001));
-            REQUIRE_THAT(C(x + 5, y + 5), Catch::Matchers::WithinAbs(C_solution(x, y), 0.001));
+            REQUIRE_THAT((double) C_view(x, y), Catch::Matchers::WithinAbs((double) C_solution(x, y), 0.001));
+            REQUIRE_THAT((double) C(x + 5, y + 5), Catch::Matchers::WithinAbs((double) C_solution(x, y), 0.001));
         }
     }
 }
 
-TEST_CASE("outer product") {
+TEST_CASE("GPU outer product") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
@@ -1786,16 +1744,16 @@ TEST_CASE("outer product") {
     size_t _x{100}, _y{100};
 
     SECTION("1 * 1 -> 2") {
-        Tensor A = create_random_tensor("A", _x);
-        Tensor B = create_random_tensor("B", _y);
-        Tensor C{"C", _x, _y};
+        DeviceTensor A = create_random_gpu_tensor("A", _x);
+        DeviceTensor B = create_random_gpu_tensor("B", _y);
+        DeviceTensor C{"C", _x, _y};
         zero(C);
 
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C, Indices{i}, A, Indices{j}, B));
 
         for (int x = 0; x < _x; x++) {
             for (int y = 0; y < _y; y++) {
-                REQUIRE_THAT(C(x, y), Catch::Matchers::WithinAbs(A(x) * B(y), 0.001));
+                REQUIRE_THAT((double) C(x, y), Catch::Matchers::WithinAbs((double) A(x) * B(y), 0.001));
             }
         }
 
@@ -1804,7 +1762,7 @@ TEST_CASE("outer product") {
 
         for (int x = 0; x < _x; x++) {
             for (int y = 0; y < _y; y++) {
-                REQUIRE_THAT(C(x, y), Catch::Matchers::WithinAbs(A(y) * B(x), 0.001));
+                REQUIRE_THAT((double) C(x, y), Catch::Matchers::WithinAbs((double) A(y) * B(x), 0.001));
             }
         }
 
@@ -1813,7 +1771,7 @@ TEST_CASE("outer product") {
 
         for (int x = 0; x < _x; x++) {
             for (int y = 0; y < _y; y++) {
-                REQUIRE_THAT(C(y, x), Catch::Matchers::WithinAbs(A(y) * B(x), 0.001));
+                REQUIRE_THAT((double) C(y, x), Catch::Matchers::WithinAbs((double) A(y) * B(x), 0.001));
             }
         }
 
@@ -1822,15 +1780,15 @@ TEST_CASE("outer product") {
 
         for (int x = 0; x < _x; x++) {
             for (int y = 0; y < _y; y++) {
-                REQUIRE_THAT(C(y, x), Catch::Matchers::WithinAbs(A(x) * B(y), 0.001));
+                REQUIRE_THAT((double) C(y, x), Catch::Matchers::WithinAbs((double) A(x) * B(y), 0.001));
             }
         }
     }
 
     SECTION("2 * 1 -> 3") {
-        Tensor A = create_random_tensor("A", 3, 3);
-        Tensor B = create_random_tensor("B", 3);
-        Tensor C{"C", 3, 3, 3};
+        DeviceTensor A = create_random_gpu_tensor("A", 3, 3);
+        DeviceTensor B = create_random_gpu_tensor("B", 3);
+        DeviceTensor C{"C", 3, 3, 3};
 
         C.set_all(0.0);
         REQUIRE_NOTHROW(einsum(Indices{i, j, k}, &C, Indices{i, j}, A, Indices{k}, B));
@@ -1838,7 +1796,7 @@ TEST_CASE("outer product") {
         for (int x = 0; x < 3; x++) {
             for (int y = 0; y < 3; y++) {
                 for (int z = 0; z < 3; z++) {
-                    REQUIRE_THAT(C(x, y, z), Catch::Matchers::WithinAbs(A(x, y) * B(z), 0.001));
+                    REQUIRE_THAT((double) C(x, y, z), Catch::Matchers::WithinAbs((double) A(x, y) * B(z), 0.001));
                 }
             }
         }
@@ -1849,7 +1807,7 @@ TEST_CASE("outer product") {
         for (int x = 0; x < 3; x++) {
             for (int y = 0; y < 3; y++) {
                 for (int z = 0; z < 3; z++) {
-                    REQUIRE_THAT(C(z, x, y), Catch::Matchers::WithinAbs(A(x, y) * B(z), 0.001));
+                    REQUIRE_THAT((double) C(z, x, y), Catch::Matchers::WithinAbs((double) A(x, y) * B(z), 0.001));
                 }
             }
         }
@@ -1860,16 +1818,16 @@ TEST_CASE("outer product") {
         for (int x = 0; x < 3; x++) {
             for (int y = 0; y < 3; y++) {
                 for (int z = 0; z < 3; z++) {
-                    REQUIRE_THAT(C(z, x, y), Catch::Matchers::WithinAbs(A(x, y) * B(z), 0.001));
+                    REQUIRE_THAT((double) C(z, x, y), Catch::Matchers::WithinAbs((double) A(x, y) * B(z), 0.001));
                 }
             }
         }
     }
 
     SECTION("2 * 2 -> 4") {
-        Tensor A = create_random_tensor("A", 3, 3);
-        Tensor B = create_random_tensor("B", 3, 3);
-        Tensor C{"C", 3, 3, 3, 3};
+        DeviceTensor A = create_random_gpu_tensor("A", 3, 3);
+        DeviceTensor B = create_random_gpu_tensor("B", 3, 3);
+        DeviceTensor C{"C", 3, 3, 3, 3};
 
         C.set_all(0.0);
         REQUIRE_NOTHROW(einsum(Indices{i, j, k, l}, &C, Indices{i, j}, A, Indices{k, l}, B));
@@ -1878,7 +1836,7 @@ TEST_CASE("outer product") {
             for (int x = 0; x < 3; x++) {
                 for (int y = 0; y < 3; y++) {
                     for (int z = 0; z < 3; z++) {
-                        REQUIRE_THAT(C(w, x, y, z), Catch::Matchers::WithinAbs(A(w, x) * B(y, z), 0.001));
+                        REQUIRE_THAT((double) C(w, x, y, z), Catch::Matchers::WithinAbs((double) A(w, x) * B(y, z), 0.001));
                     }
                 }
             }
@@ -1891,7 +1849,7 @@ TEST_CASE("outer product") {
             for (int x = 0; x < 3; x++) {
                 for (int y = 0; y < 3; y++) {
                     for (int z = 0; z < 3; z++) {
-                        REQUIRE_THAT(C(w, x, y, z), Catch::Matchers::WithinAbs(A(y, z) * B(w, x), 0.001));
+                        REQUIRE_THAT((double) C(w, x, y, z), Catch::Matchers::WithinAbs((double) A(y, z) * B(w, x), 0.001));
                     }
                 }
             }
@@ -1899,25 +1857,25 @@ TEST_CASE("outer product") {
     }
 }
 
-TEST_CASE("view outer product") {
+TEST_CASE("GPU view outer product") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
 
     SECTION("1 * 1 -> 2") {
-        Tensor A = create_random_tensor("A", 6);
-        Tensor B = create_random_tensor("B", 6);
+        DeviceTensor A = create_random_gpu_tensor("A", 6);
+        DeviceTensor B = create_random_gpu_tensor("B", 6);
 
-        auto   vA = TensorView(A, Dim<1>{3}, Offset<1>{3});
-        auto   vB = TensorView(B, Dim<1>{3});
-        Tensor C{"C", 3, 3};
+        auto   vA = DeviceTensorView(A, Dim<1>{3}, Offset<1>{3});
+        auto   vB = DeviceTensorView(B, Dim<1>{3});
+        DeviceTensor C{"C", 3, 3};
         C.set_all(0.0);
 
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C, Indices{i}, vA, Indices{j}, vB));
 
         for (int x = 0; x < 3; x++) {
             for (int y = 0; y < 3; y++) {
-                REQUIRE_THAT(C(x, y), Catch::Matchers::WithinAbs(vA(x) * vB(y), 0.001));
+                REQUIRE_THAT((double) C(x, y), Catch::Matchers::WithinAbs((double) vA(x) * vB(y), 0.001));
             }
         }
 
@@ -1926,7 +1884,7 @@ TEST_CASE("view outer product") {
 
         for (int x = 0; x < 3; x++) {
             for (int y = 0; y < 3; y++) {
-                REQUIRE_THAT(C(x, y), Catch::Matchers::WithinAbs(vA(y) * vB(x), 0.001));
+                REQUIRE_THAT((double) C(x, y), Catch::Matchers::WithinAbs((double) vA(y) * vB(x), 0.001));
             }
         }
 
@@ -1935,7 +1893,7 @@ TEST_CASE("view outer product") {
 
         for (int x = 0; x < 3; x++) {
             for (int y = 0; y < 3; y++) {
-                REQUIRE_THAT(C(y, x), Catch::Matchers::WithinAbs(vA(y) * vB(x), 0.001));
+                REQUIRE_THAT((double) C(y, x), Catch::Matchers::WithinAbs((double) vA(y) * vB(x), 0.001));
             }
         }
 
@@ -1944,17 +1902,17 @@ TEST_CASE("view outer product") {
 
         for (int x = 0; x < 3; x++) {
             for (int y = 0; y < 3; y++) {
-                REQUIRE_THAT(C(y, x), Catch::Matchers::WithinAbs(vA(x) * vB(y), 0.001));
+                REQUIRE_THAT((double) C(y, x), Catch::Matchers::WithinAbs((double) vA(x) * vB(y), 0.001));
             }
         }
     }
 
     SECTION("2 * 2 -> 4") {
-        Tensor A  = create_random_tensor("A", 9, 9);
-        Tensor B  = create_random_tensor("B", 12, 12);
-        auto   vA = TensorView{A, Dim<2>{3, 3}, Offset<2>{6, 3}};
-        auto   vB = TensorView{B, Dim<2>{3, 3}, Offset<2>{5, 7}};
-        Tensor C{"C", 3, 3, 3, 3};
+        DeviceTensor A  = create_random_gpu_tensor("A", 9, 9);
+        DeviceTensor B  = create_random_gpu_tensor("B", 12, 12);
+        auto   vA = DeviceTensorView{A, Dim<2>{3, 3}, Offset<2>{6, 3}};
+        auto   vB = DeviceTensorView{B, Dim<2>{3, 3}, Offset<2>{5, 7}};
+        DeviceTensor C{"C", 3, 3, 3, 3};
 
         C.set_all(0.0);
         REQUIRE_NOTHROW(einsum(Indices{i, j, k, l}, &C, Indices{i, j}, vA, Indices{k, l}, vB));
@@ -1963,7 +1921,7 @@ TEST_CASE("view outer product") {
             for (int x = 0; x < 3; x++) {
                 for (int y = 0; y < 3; y++) {
                     for (int z = 0; z < 3; z++) {
-                        REQUIRE_THAT(C(w, x, y, z), Catch::Matchers::WithinAbs(vA(w, x) * vB(y, z), 0.001));
+                        REQUIRE_THAT((double) C(w, x, y, z), Catch::Matchers::WithinAbs((double) vA(w, x) * vB(y, z), 0.001));
                     }
                 }
             }
@@ -1976,7 +1934,7 @@ TEST_CASE("view outer product") {
             for (int x = 0; x < 3; x++) {
                 for (int y = 0; y < 3; y++) {
                     for (int z = 0; z < 3; z++) {
-                        REQUIRE_THAT(C(w, x, y, z), Catch::Matchers::WithinAbs(vA(y, z) * vB(w, x), 0.001));
+                        REQUIRE_THAT((double) C(w, x, y, z), Catch::Matchers::WithinAbs((double) vA(y, z) * vB(w, x), 0.001));
                     }
                 }
             }
@@ -1984,166 +1942,166 @@ TEST_CASE("view outer product") {
     }
 }
 
-TEST_CASE("element transform") {
-    using namespace einsums;
-    using namespace einsums::tensor_algebra;
-    using namespace einsums::tensor_algebra::index;
+// TEST_CASE("element transform") {
+//     using namespace einsums;
+//     using namespace einsums::tensor_algebra;
+//     using namespace einsums::tensor_algebra::index;
 
-    SECTION("tensor") {
-        Tensor A     = create_random_tensor("A", 32, 32, 32, 32);
-        Tensor Acopy = A;
+//     SECTION("tensor") {
+//         DeviceTensor A     = create_random_gpu_tensor("A", 32, 32, 32, 32);
+//         DeviceTensor Acopy = A;
 
-        element_transform(&A, [](double val) -> double { return 1.0 / val; });
+//         element_transform(&A, [](double val) -> double { return 1.0 / val; });
 
-        for (int w = 0; w < 3; w++) {
-            for (int x = 0; x < 3; x++) {
-                for (int y = 0; y < 3; y++) {
-                    for (int z = 0; z < 3; z++) {
-                        REQUIRE_THAT(A(w, x, y, z), Catch::Matchers::WithinAbs(1.0 / Acopy(w, x, y, z), 0.001));
-                    }
-                }
-            }
-        }
-    }
+//         for (int w = 0; w < 3; w++) {
+//             for (int x = 0; x < 3; x++) {
+//                 for (int y = 0; y < 3; y++) {
+//                     for (int z = 0; z < 3; z++) {
+//                         REQUIRE_THAT((double) A(w, x, y, z), Catch::Matchers::WithinAbs(1.0 / (double) Acopy(w, x, y, z), 0.001));
+//                     }
+//                 }
+//             }
+//         }
+//     }
 
-    SECTION("smartptr tensor") {
-        auto A = std::make_unique<Tensor<double, 4>>("A", 32, 32, 32, 32);
+//     SECTION("smartptr tensor") {
+//         auto A = std::make_unique<DeviceTensor<double, 4>>("A", 32, 32, 32, 32);
 
-        element_transform(&A, [](double val) -> double { return 1.0 / val; });
-    }
-}
+//         element_transform(&A, [](double val) -> double { return 1.0 / val; });
+//     }
+// }
 
-TEST_CASE("element") {
-    using namespace einsums;
-    using namespace einsums::tensor_algebra;
-    using namespace einsums::tensor_algebra::index;
+// TEST_CASE("element") {
+//     using namespace einsums;
+//     using namespace einsums::tensor_algebra;
+//     using namespace einsums::tensor_algebra::index;
 
-    SECTION("1") {
-        Tensor A     = create_random_tensor("A", 10, 10, 10, 10);
-        Tensor Acopy = A;
+//     SECTION("1") {
+//         Tensor A     = create_random_tensor("A", 10, 10, 10, 10);
+//         Tensor Acopy = A;
 
-        Tensor B = create_random_tensor("B", 10, 10, 10, 10);
+//         Tensor B = create_random_tensor("B", 10, 10, 10, 10);
 
-        element([](double const &Aval, double const &Bval) -> double { return Aval + Bval; }, &A, B);
+//         element([](double const &Aval, double const &Bval) -> double { return Aval + Bval; }, &A, B);
 
-        for (int w = 0; w < 10; w++) {
-            for (int x = 0; x < 10; x++) {
-                for (int y = 0; y < 10; y++) {
-                    for (int z = 0; z < 10; z++) {
-                        REQUIRE_THAT(A(w, x, y, z), Catch::Matchers::WithinAbs(Acopy(w, x, y, z) + B(w, x, y, z), 0.001));
-                    }
-                }
-            }
-        }
-    }
+//         for (int w = 0; w < 10; w++) {
+//             for (int x = 0; x < 10; x++) {
+//                 for (int y = 0; y < 10; y++) {
+//                     for (int z = 0; z < 10; z++) {
+//                         REQUIRE_THAT(A(w, x, y, z), Catch::Matchers::WithinAbs(Acopy(w, x, y, z) + B(w, x, y, z), 0.001));
+//                     }
+//                 }
+//             }
+//         }
+//     }
 
-    SECTION("2") {
-        Tensor A     = create_random_tensor("A", 10, 10, 10, 10);
-        Tensor Acopy = A;
+//     SECTION("2") {
+//         Tensor A     = create_random_tensor("A", 10, 10, 10, 10);
+//         Tensor Acopy = A;
 
-        Tensor B = create_random_tensor("B", 10, 10, 10, 10);
-        Tensor C = create_random_tensor("C", 10, 10, 10, 10);
+//         Tensor B = create_random_tensor("B", 10, 10, 10, 10);
+//         Tensor C = create_random_tensor("C", 10, 10, 10, 10);
 
-        element([](double const &Aval, double const &Bval, double const &Cval) -> double { return Aval + Bval + Cval; }, &A, B, C);
+//         element([](double const &Aval, double const &Bval, double const &Cval) -> double { return Aval + Bval + Cval; }, &A, B, C);
 
-        for (int w = 0; w < 10; w++) {
-            for (int x = 0; x < 10; x++) {
-                for (int y = 0; y < 10; y++) {
-                    for (int z = 0; z < 10; z++) {
-                        REQUIRE_THAT(A(w, x, y, z), Catch::Matchers::WithinAbs(Acopy(w, x, y, z) + B(w, x, y, z) + C(w, x, y, z), 0.001));
-                    }
-                }
-            }
-        }
-    }
+//         for (int w = 0; w < 10; w++) {
+//             for (int x = 0; x < 10; x++) {
+//                 for (int y = 0; y < 10; y++) {
+//                     for (int z = 0; z < 10; z++) {
+//                         REQUIRE_THAT(A(w, x, y, z), Catch::Matchers::WithinAbs(Acopy(w, x, y, z) + B(w, x, y, z) + C(w, x, y, z), 0.001));
+//                     }
+//                 }
+//             }
+//         }
+//     }
 
-    // SECTION("2 - error") {
+//     // SECTION("2 - error") {
 
-    //     Tensor A = create_random_tensor("A", 10, 10, 10, 10);
-    //     Tensor Acopy = A;
+//     //     Tensor A = create_random_tensor("A", 10, 10, 10, 10);
+//     //     Tensor Acopy = A;
 
-    //     Tensor B = create_random_tensor("B", 10, 10, 10, 9);
-    //     Tensor C = create_random_tensor("C", 10, 10, 10, 10);
+//     //     Tensor B = create_random_tensor("B", 10, 10, 10, 9);
+//     //     Tensor C = create_random_tensor("C", 10, 10, 10, 10);
 
-    //     element(
-    //         &A, [](double const &Aval, double const &Bval, double const &Cval) -> double { return Aval + Bval + Cval; }, B, C);
-    // }
-}
+//     //     element(
+//     //         &A, [](double const &Aval, double const &Bval, double const &Cval) -> double { return Aval + Bval + Cval; }, B, C);
+//     // }
+// }
 
-TEST_CASE("einsum element") {
-    using namespace einsums;
-    using namespace einsums::tensor_algebra;
-    using namespace einsums::tensor_algebra::index;
+// TEST_CASE("einsum element") {
+//     using namespace einsums;
+//     using namespace einsums::tensor_algebra;
+//     using namespace einsums::tensor_algebra::index;
 
-    const int _i{50}, _j{50};
+//     const int _i{50}, _j{50};
 
-    SECTION("1") {
-        Tensor C  = Tensor{"C", _i, _j};
-        Tensor C0 = Tensor{"C", _i, _j};
+//     SECTION("1") {
+//         Tensor C  = Tensor{"C", _i, _j};
+//         Tensor C0 = Tensor{"C", _i, _j};
 
-        Tensor B = create_random_tensor("B", _i, _j);
-        Tensor A = create_random_tensor("A", _i, _j);
+//         Tensor B = create_random_tensor("B", _i, _j);
+//         Tensor A = create_random_tensor("A", _i, _j);
 
-        element([](double const & /*Cval*/, double const &Aval, double const &Bval) -> double { return Aval * Bval; }, &C0, A, B);
+//         element([](double const & /*Cval*/, double const &Aval, double const &Bval) -> double { return Aval * Bval; }, &C0, A, B);
 
-        einsum(Indices{i, j}, &C, Indices{i, j}, A, Indices{i, j}, B);
+//         einsum(Indices{i, j}, &C, Indices{i, j}, A, Indices{i, j}, B);
 
-        for (int w = 0; w < _i; w++) {
-            for (int x = 0; x < _j; x++) {
-                REQUIRE_THAT(C(w, x), Catch::Matchers::WithinAbs(C0(w, x), 1.0e-5));
-            }
-        }
-    }
+//         for (int w = 0; w < _i; w++) {
+//             for (int x = 0; x < _j; x++) {
+//                 REQUIRE_THAT(C(w, x), Catch::Matchers::WithinAbs(C0(w, x), 1.0e-5));
+//             }
+//         }
+//     }
 
-    SECTION("2") {
-        Tensor C  = create_random_tensor("C", _i, _j);
-        Tensor C0 = C;
-        Tensor testresult{"result", _i, _j};
-        zero(testresult);
+//     SECTION("2") {
+//         Tensor C  = create_random_tensor("C", _i, _j);
+//         Tensor C0 = C;
+//         Tensor testresult{"result", _i, _j};
+//         zero(testresult);
 
-        Tensor A = create_random_tensor("A", _i, _j);
+//         Tensor A = create_random_tensor("A", _i, _j);
 
-        element([](double const &Cval, double const &Aval) -> double { return Cval * Aval; }, &C, A);
+//         element([](double const &Cval, double const &Aval) -> double { return Cval * Aval; }, &C, A);
 
-        einsum(Indices{i, j}, &testresult, Indices{i, j}, C0, Indices{i, j}, A);
+//         einsum(Indices{i, j}, &testresult, Indices{i, j}, C0, Indices{i, j}, A);
 
-        for (int w = 0; w < _i; w++) {
-            for (int x = 0; x < _j; x++) {
-                REQUIRE_THAT(C(w, x), Catch::Matchers::WithinAbs(testresult(w, x), 1.0e-5));
-            }
-        }
-    }
+//         for (int w = 0; w < _i; w++) {
+//             for (int x = 0; x < _j; x++) {
+//                 REQUIRE_THAT(C(w, x), Catch::Matchers::WithinAbs(testresult(w, x), 1.0e-5));
+//             }
+//         }
+//     }
 
-    SECTION("3") {
-        Tensor parentC  = create_random_tensor("parentC", _i, _i, _i, _j);
-        Tensor parentC0 = parentC;
-        Tensor parentA  = create_random_tensor("parentA", _i, _i, _i, _j);
+//     SECTION("3") {
+//         Tensor parentC  = create_random_tensor("parentC", _i, _i, _i, _j);
+//         Tensor parentC0 = parentC;
+//         Tensor parentA  = create_random_tensor("parentA", _i, _i, _i, _j);
 
-        auto   C  = parentC(3, All, All, 4);
-        auto   C0 = parentC0(3, All, All, 4);
-        Tensor testresult{"result", _i, _j};
+//         auto   C  = parentC(3, All, All, 4);
+//         auto   C0 = parentC0(3, All, All, 4);
+//         Tensor testresult{"result", _i, _j};
 
-        for (int w = 0; w < _i; w++) {
-            for (int x = 0; x < _j; x++) {
-                testresult(w, x) = C(w, x);
-            }
-        }
+//         for (int w = 0; w < _i; w++) {
+//             for (int x = 0; x < _j; x++) {
+//                 testresult(w, x) = C(w, x);
+//             }
+//         }
 
-        auto A = parentA(1, 2, All, All);
+//         auto A = parentA(1, 2, All, All);
 
-        element([](double const &Cval, double const &Aval) -> double { return Cval * Aval; }, &C, A);
+//         element([](double const &Cval, double const &Aval) -> double { return Cval * Aval; }, &C, A);
 
-        einsum(Indices{i, j}, &testresult, Indices{i, j}, C0, Indices{i, j}, A);
+//         einsum(Indices{i, j}, &testresult, Indices{i, j}, C0, Indices{i, j}, A);
 
-        for (int w = 0; w < _i; w++) {
-            for (int x = 0; x < _j; x++) {
-                REQUIRE_THAT(C(w, x), Catch::Matchers::WithinAbs(testresult(w, x), 1.0e-5));
-            }
-        }
-    }
-}
+//         for (int w = 0; w < _i; w++) {
+//             for (int x = 0; x < _j; x++) {
+//                 REQUIRE_THAT(C(w, x), Catch::Matchers::WithinAbs(testresult(w, x), 1.0e-5));
+//             }
+//         }
+//     }
+// }
 
-TEST_CASE("F12 - V term") {
+TEST_CASE("GPU F12 - V term") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
@@ -2151,27 +2109,29 @@ TEST_CASE("F12 - V term") {
     // int nocc{5}, ncabs{116}, nobs{41};
     int nocc{1}, ncabs{4}, nobs{2};
     int nall{nobs + ncabs};
+    DeviceTensor F{"F", nall, nall, nall, nall};
+    DeviceTensor G{"G", nall, nall, nall, nall};
 
-    auto F = create_incremented_tensor("F", nall, nall, nall, nall);
-    auto G = create_incremented_tensor("G", nall, nall, nall, nall);
+    F = create_incremented_tensor("F", nall, nall, nall, nall);
+    G = create_incremented_tensor("G", nall, nall, nall, nall);
 
-    TensorView F_ooco{F, Dim<4>{nocc, nocc, ncabs, nocc}, Offset<4>{0, 0, nobs, 0}};
-    TensorView F_oooc{F, Dim<4>{nocc, nocc, nocc, ncabs}, Offset<4>{0, 0, 0, nobs}};
-    TensorView F_oopq{F, Dim<4>{nocc, nocc, nobs, nobs}, Offset<4>{0, 0, 0, 0}};
-    TensorView G_ooco{G, Dim<4>{nocc, nocc, ncabs, nocc}, Offset<4>{0, 0, nobs, 0}};
-    TensorView G_oooc{G, Dim<4>{nocc, nocc, nocc, ncabs}, Offset<4>{0, 0, 0, nobs}};
-    TensorView G_oopq{G, Dim<4>{nocc, nocc, nobs, nobs}, Offset<4>{0, 0, 0, 0}};
+    DeviceTensorView F_ooco{F, Dim<4>{nocc, nocc, ncabs, nocc}, Offset<4>{0, 0, nobs, 0}};
+    DeviceTensorView F_oooc{F, Dim<4>{nocc, nocc, nocc, ncabs}, Offset<4>{0, 0, 0, nobs}};
+    DeviceTensorView F_oopq{F, Dim<4>{nocc, nocc, nobs, nobs}, Offset<4>{0, 0, 0, 0}};
+    DeviceTensorView G_ooco{G, Dim<4>{nocc, nocc, ncabs, nocc}, Offset<4>{0, 0, nobs, 0}};
+    DeviceTensorView G_oooc{G, Dim<4>{nocc, nocc, nocc, ncabs}, Offset<4>{0, 0, 0, nobs}};
+    DeviceTensorView G_oopq{G, Dim<4>{nocc, nocc, nobs, nobs}, Offset<4>{0, 0, 0, 0}};
 
-    Tensor ijkl_1 = Tensor{"Einsum Temp 1", nocc, nocc, nocc, nocc};
-    Tensor ijkl_2 = Tensor{"Einsum Temp 2", nocc, nocc, nocc, nocc};
-    Tensor ijkl_3 = Tensor{"Einsum Temp 3", nocc, nocc, nocc, nocc};
+    DeviceTensor ijkl_1 = DeviceTensor{"Einsum Temp 1", nocc, nocc, nocc, nocc};
+    DeviceTensor ijkl_2 = DeviceTensor{"Einsum Temp 2", nocc, nocc, nocc, nocc};
+    DeviceTensor ijkl_3 = DeviceTensor{"Einsum Temp 3", nocc, nocc, nocc, nocc};
 
     ijkl_1.set_all(0.0);
     ijkl_2.set_all(0.0);
     ijkl_3.set_all(0.0);
 
-    Tensor result  = Tensor{"Result", nocc, nocc, nocc, nocc};
-    Tensor result2 = Tensor{"Result2", nocc, nocc, nocc, nocc};
+    DeviceTensor result  = DeviceTensor{"Result", nocc, nocc, nocc, nocc};
+    DeviceTensor result2 = DeviceTensor{"Result2", nocc, nocc, nocc, nocc};
 
     // println(F);
     // println(G);
@@ -2209,7 +2169,7 @@ TEST_CASE("F12 - V term") {
         for (size_t _j = 0; _j < nocc; _j++) {
             for (size_t _k = 0; _k < nocc; _k++) {
                 for (size_t _l = 0; _l < nocc; _l++) {
-                    REQUIRE_THAT(result2(_i, _j, _k, _l), Catch::Matchers::WithinAbs(result(_i, _j, _k, _l), 0.001));
+                    REQUIRE_THAT((double) result2(_i, _j, _k, _l), Catch::Matchers::WithinAbs((double) result(_i, _j, _k, _l), 0.001));
                 }
             }
         }
@@ -2219,14 +2179,14 @@ TEST_CASE("F12 - V term") {
         for (size_t _j = 0; _j < nocc; _j++) {
             for (size_t _k = 0; _k < nocc; _k++) {
                 for (size_t _l = 0; _l < nocc; _l++) {
-                    REQUIRE_THAT(ijkl_1(_i, _j, _k, _l), Catch::Matchers::WithinAbs(result(_i, _j, _k, _l), 0.001));
+                    REQUIRE_THAT((double) ijkl_1(_i, _j, _k, _l), Catch::Matchers::WithinAbs((double) result(_i, _j, _k, _l), 0.001));
                 }
             }
         }
     }
 }
 
-TEST_CASE("B_tilde") {
+TEST_CASE("GPU B_tilde") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
@@ -2236,12 +2196,12 @@ TEST_CASE("B_tilde") {
     assert(nobs > nocc); // sanity check
     int nall{nobs + ncabs}, nvir{nobs - nocc};
 
-    Tensor CD{"CD", nocc, nocc, nvir, nvir};
-    Tensor CD0{"CD0", nocc, nocc, nvir, nvir};
+    DeviceTensor CD{"CD", nocc, nocc, nvir, nvir};
+    DeviceTensor CD0{"CD0", nocc, nocc, nvir, nvir};
     zero(CD);
     zero(CD0);
-    auto C    = create_random_tensor("C", nocc, nocc, nvir, nvir);
-    auto D    = create_random_tensor("D", nocc, nocc, nvir, nvir);
+    auto C    = create_random_gpu_tensor("C", nocc, nocc, nvir, nvir);
+    auto D    = create_random_gpu_tensor("D", nocc, nocc, nvir, nvir);
     auto D_ij = D(2, 2, All, All);
 
     einsum(Indices{k, l, a, b}, &CD, Indices{k, l, a, b}, C, Indices{a, b}, D_ij);
@@ -2260,14 +2220,14 @@ TEST_CASE("B_tilde") {
         for (int _l = 0; _l < nocc; _l++) {
             for (int _a = 0; _a < nvir; _a++) {
                 for (int _b = 0; _b < nvir; _b++) {
-                    REQUIRE_THAT(CD(_k, _l, _a, _b), Catch::Matchers::WithinAbs(CD0(_k, _l, _a, _b), 0.000001));
+                    REQUIRE_THAT((double) CD(_k, _l, _a, _b), Catch::Matchers::WithinAbs((double) CD0(_k, _l, _a, _b), 0.000001));
                 }
             }
         }
     }
 }
 
-TEST_CASE("Khatri-Rao") {
+TEST_CASE("GPU Khatri-Rao") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
@@ -2276,11 +2236,11 @@ TEST_CASE("Khatri-Rao") {
 
     SECTION("einsum") {
 
-        auto KR  = Tensor{"KR", _I, _M, _r};
-        auto KR0 = Tensor{"KR0", _I, _M, _r};
+        auto KR  = DeviceTensor{"KR", _I, _M, _r};
+        auto KR0 = DeviceTensor{"KR0", _I, _M, _r};
 
-        auto T = create_random_tensor("T", _I, _r);
-        auto U = create_random_tensor("U", _M, _r);
+        auto T = create_random_gpu_tensor("T", _I, _r);
+        auto U = create_random_gpu_tensor("U", _M, _r);
 
         einsum(Indices{I, M, r}, &KR, Indices{I, r}, T, Indices{M, r}, U);
 
@@ -2295,17 +2255,17 @@ TEST_CASE("Khatri-Rao") {
         for (int x = 0; x < _I; x++) {
             for (int y = 0; y < _M; y++) {
                 for (int z = 0; z < _r; z++) {
-                    REQUIRE_THAT(KR(x, y, z), Catch::Matchers::WithinAbs(KR0(x, y, z), 0.000001));
+                    REQUIRE_THAT((double) KR(x, y, z), Catch::Matchers::WithinAbs((double) KR0(x, y, z), 0.000001));
                 }
             }
         }
     }
 
     SECTION("special function") {
-        auto KR0 = Tensor{"KR0", _I, _M, _r};
+        auto KR0 = DeviceTensor{"KR0", _I, _M, _r};
 
-        auto T = create_random_tensor("T", _I, _r);
-        auto U = create_random_tensor("U", _M, _r);
+        auto T = create_random_gpu_tensor("T", _I, _r);
+        auto U = create_random_gpu_tensor("U", _M, _r);
 
         auto KR = khatri_rao(Indices{I, r}, T, Indices{M, r}, U);
         // println(result);
@@ -2318,28 +2278,28 @@ TEST_CASE("Khatri-Rao") {
             }
         }
 
-        auto KR0_view = TensorView{KR0, Dim<2>{_I * _M, _r}};
+        auto KR0_view = DeviceTensorView{KR0, Dim<2>{_I * _M, _r}};
 
         for (int x = 0; x < _I * _M; x++) {
             for (int z = 0; z < _r; z++) {
-                REQUIRE_THAT(KR(x, z), Catch::Matchers::WithinAbs(KR0_view(x, z), 0.000001));
+                REQUIRE_THAT((double) KR(x, z), Catch::Matchers::WithinAbs((double) KR0_view(x, z), 0.000001));
             }
         }
     }
 }
 
 template <typename TC, typename TA, typename TB>
-void einsum_mixed_test() {
+void einsum_gpu_mixed_test() {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
 
     const auto i_ = 10, j_ = 10, k_ = 10;
 
-    auto A  = create_random_tensor<TA>("A", i_, k_);
-    auto B  = create_random_tensor<TB>("B", k_, j_);
-    auto C  = create_tensor<TC>("C", i_, j_);
-    auto C0 = create_tensor<TC>("C0", i_, j_);
+    auto A  = create_random_gpu_tensor<TA>("A", i_, k_);
+    auto B  = create_random_gpu_tensor<TB>("B", k_, j_);
+    auto C  = DeviceTensor<TC, 2>("C", i_, j_);
+    auto C0 = DeviceTensor<TC, 2>("C0", i_, j_);
     zero(C);
     zero(C0);
 
@@ -2348,7 +2308,7 @@ void einsum_mixed_test() {
     for (size_t i = 0; i < i_; i++) {
         for (size_t j = 0; j < j_; j++) {
             for (size_t k = 0; k < k_; k++) {
-                C0(i, j) += A(i, k) * B(k, j);
+                C0(i, j) += (TA) A(i, k) * (TB) B(k, j);
             }
         }
     }
@@ -2356,27 +2316,27 @@ void einsum_mixed_test() {
     for (size_t i = 0; i < i_; i++) {
         for (size_t j = 0; j < j_; j++) {
             // println("{:20.14f} {:20.14f} {:20.14f}", C(i, j), C0(i, j), std::abs(C(i, j) - C0(i, j)));
-            CHECK(std::abs(C(i, j) - C0(i, j)) < RemoveComplexT<TC>{1.0E-4});
+            CHECK(std::abs((TC) C(i, j) - (TC) C0(i, j)) < RemoveComplexT<TC>{1.0E-4});
             // REQUIRE_THAT(C(i, j), Catch::Matchers::WithinAbs(C0(i, j), RemoveComplexT<TC>{1.0E-16}));
         }
     }
 }
 
-TEST_CASE("einsum-mixed") {
+TEST_CASE("GPU einsum-mixed") {
     SECTION("d-f-d") {
-        einsum_mixed_test<double, float, double>();
+        einsum_gpu_mixed_test<double, float, double>();
     }
     SECTION("d-f-f") {
-        einsum_mixed_test<double, float, float>();
+        einsum_gpu_mixed_test<double, float, float>();
     }
     SECTION("f-d-d") {
-        einsum_mixed_test<float, double, double>();
+        einsum_gpu_mixed_test<float, double, double>();
     }
     SECTION("cd-cd-d") {
-        einsum_mixed_test<std::complex<double>, std::complex<double>, double>();
+        einsum_gpu_mixed_test<std::complex<double>, std::complex<double>, double>();
     }
     SECTION("d-d-d") {
-        einsum_mixed_test<double, double, double>();
+        einsum_gpu_mixed_test<double, double, double>();
     }
     // VERY SENSITIVE
     // SECTION("cf-cd-f") {
@@ -2394,16 +2354,16 @@ void dot_test() {
     size_t i_{10}, j_{10}, a_{10}, b_{10};
 
     SECTION("1") {
-        auto         A = create_random_tensor<T>("A", i_);
-        auto         B = create_random_tensor<T>("B", i_);
-        Tensor<T, 0> C_obtained("C obtained");
+        auto         A = create_random_gpu_tensor<T>("A", i_);
+        auto         B = create_random_gpu_tensor<T>("B", i_);
+        DeviceTensor<T, 0> C_obtained("C obtained");
 
         auto C_expected = dot(A, B);
 
         einsum(Indices{}, &C_obtained, Indices{i}, A, Indices{i}, B);
 
         if constexpr (!einsums::IsComplexV<T>) {
-            REQUIRE_THAT(C_obtained, Catch::Matchers::WithinAbsMatcher(C_expected, 0.0001));
+            REQUIRE_THAT((T) C_obtained, Catch::Matchers::WithinAbsMatcher((T) C_expected, 0.0001));
         } else {
             REQUIRE_THAT(((T)C_obtained).real(), Catch::Matchers::WithinAbsMatcher(C_expected.real(), 0.0001));
             REQUIRE_THAT(((T)C_obtained).imag(), Catch::Matchers::WithinAbsMatcher(C_expected.imag(), 0.0001));
@@ -2411,16 +2371,16 @@ void dot_test() {
     }
 
     SECTION("2") {
-        auto         A = create_random_tensor<T>("A", i_, j_);
-        auto         B = create_random_tensor<T>("B", i_, j_);
-        Tensor<T, 0> C_obtained("C obtained");
+        auto         A = create_random_gpu_tensor<T>("A", i_, j_);
+        auto         B = create_random_gpu_tensor<T>("B", i_, j_);
+        DeviceTensor<T, 0> C_obtained("C obtained");
 
         auto C_expected = dot(A, B);
 
         einsum(Indices{}, &C_obtained, Indices{i, j}, A, Indices{i, j}, B);
 
         if constexpr (!einsums::IsComplexV<T>) {
-            REQUIRE_THAT(C_obtained, Catch::Matchers::WithinAbsMatcher(C_expected, 0.0001));
+            REQUIRE_THAT((T) C_obtained, Catch::Matchers::WithinAbsMatcher((T) C_expected, 0.0001));
         } else {
             REQUIRE_THAT(((T)C_obtained).real(), Catch::Matchers::WithinAbsMatcher(C_expected.real(), 0.0001));
             REQUIRE_THAT(((T)C_obtained).imag(), Catch::Matchers::WithinAbsMatcher(C_expected.imag(), 0.0001));
@@ -2428,16 +2388,16 @@ void dot_test() {
     }
 
     SECTION("3") {
-        auto         A = create_random_tensor<T>("A", i_, j_, a_);
-        auto         B = create_random_tensor<T>("B", i_, j_, a_);
-        Tensor<T, 0> C_obtained("C obtained");
+        auto         A = create_random_gpu_tensor<T>("A", i_, j_, a_);
+        auto         B = create_random_gpu_tensor<T>("B", i_, j_, a_);
+        DeviceTensor<T, 0> C_obtained("C obtained");
 
         auto C_expected = dot(A, B);
 
         einsum(Indices{}, &C_obtained, Indices{i, j, a}, A, Indices{i, j, a}, B);
 
         if constexpr (!einsums::IsComplexV<T>) {
-            REQUIRE_THAT(C_obtained, Catch::Matchers::WithinAbsMatcher(C_expected, 0.0001));
+            REQUIRE_THAT((T) C_obtained, Catch::Matchers::WithinAbsMatcher((T) C_expected, 0.0001));
         } else {
             REQUIRE_THAT(((T)C_obtained).real(), Catch::Matchers::WithinAbsMatcher(C_expected.real(), 0.0001));
             REQUIRE_THAT(((T)C_obtained).imag(), Catch::Matchers::WithinAbsMatcher(C_expected.imag(), 0.0001));
@@ -2445,16 +2405,16 @@ void dot_test() {
     }
 
     SECTION("4") {
-        auto         A = create_random_tensor<T>("A", i_, j_, a_, b_);
-        auto         B = create_random_tensor<T>("B", i_, j_, a_, b_);
-        Tensor<T, 0> C_obtained("C obtained");
+        auto         A = create_random_gpu_tensor<T>("A", i_, j_, a_, b_);
+        auto         B = create_random_gpu_tensor<T>("B", i_, j_, a_, b_);
+        DeviceTensor<T, 0> C_obtained("C obtained");
 
         auto C_expected = dot(A, B);
 
         einsum(Indices{}, &C_obtained, Indices{i, j, a, b}, A, Indices{i, j, a, b}, B);
 
         if constexpr (!einsums::IsComplexV<T>) {
-            REQUIRE_THAT(C_obtained, Catch::Matchers::WithinAbsMatcher(C_expected, 0.0001));
+            REQUIRE_THAT((T) C_obtained, Catch::Matchers::WithinAbsMatcher((T) C_expected, 0.0001));
         } else {
             REQUIRE_THAT(((T)C_obtained).real(), Catch::Matchers::WithinAbsMatcher(C_expected.real(), 0.0001));
             REQUIRE_THAT(((T)C_obtained).imag(), Catch::Matchers::WithinAbsMatcher(C_expected.imag(), 0.0001));
@@ -2462,7 +2422,7 @@ void dot_test() {
     }
 }
 
-TEST_CASE("dot") {
+TEST_CASE("GPU dot") {
     SECTION("float") {
         dot_test<float>();
     }
@@ -2477,17 +2437,17 @@ TEST_CASE("dot") {
     }
 }
 
-TEST_CASE("Dot TensorView and Tensor") {
+TEST_CASE("GPU Dot TensorView and Tensor") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
 
     const auto i_ = 10, j_ = 10, k_ = 10, l_ = 2;
 
-    auto A  = create_random_tensor<double>("A", i_, k_);
-    auto B  = create_random_tensor<double>("B", k_, j_);
-    auto C  = create_tensor<double>("C", l_, j_);
-    auto C0  = create_tensor<double>("C0", l_, j_);
+    auto A  = create_random_gpu_tensor<double>("A", i_, k_);
+    auto B  = create_random_gpu_tensor<double>("B", k_, j_);
+    auto C  = DeviceTensor<double, 2>("C", l_, j_);
+    auto C0 = DeviceTensor<double, 2>("C0", l_, j_);
     zero(C0);
 
     auto A_view = A(Range{0, l_}, All); // (l_, k_)
@@ -2504,22 +2464,22 @@ TEST_CASE("Dot TensorView and Tensor") {
 
     for (size_t l = 0; l < l_; l++) {
         for (size_t j = 0; j < j_; j++) {
-            //println("{:20.14f} {:20.14f} {:20.14f}", C(l, j), C0(l, j), std::abs(C(l, j) - C0(l, j)));
-            REQUIRE_THAT(C(l, j), Catch::Matchers::WithinAbs(C0(l, j), 1e-12));
+            // println("{:20.14f} {:20.14f} {:20.14f}", C(l, j), C0(l, j), std::abs(C(l, j) - C0(l, j)));
+            REQUIRE_THAT((double) C(l, j), Catch::Matchers::WithinAbs((double) C0(l, j), 1e-12));
         }
     }
 }
 
-TEST_CASE("andy") {
+TEST_CASE("GPU andy") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
 
     size_t proj_rank_{10}, nocc_{5}, nvirt_{28}, naux_{3}, u_rank_{4};
 
     SECTION("1") {
-        auto y_iW_        = create_random_tensor("y_iW", nocc_, proj_rank_);
-        auto y_aW_        = create_random_tensor("y_aW", nvirt_, proj_rank_);
-        auto ortho_temp_1 = create_tensor("ortho temp 1", nocc_, nvirt_, proj_rank_);
+        auto y_iW_        = create_random_gpu_tensor("y_iW", nocc_, proj_rank_);
+        auto y_aW_        = create_random_gpu_tensor("y_aW", nvirt_, proj_rank_);
+        auto ortho_temp_1 = DeviceTensor("ortho temp 1", nocc_, nvirt_, proj_rank_);
 
         zero(ortho_temp_1);
         einsum(0.0, Indices{index::i, index::a, index::W}, &ortho_temp_1, 1.0, Indices{index::i, index::W}, y_iW_,
@@ -2527,9 +2487,9 @@ TEST_CASE("andy") {
     }
 
     SECTION("2") {
-        auto tau_         = create_random_tensor("tau", proj_rank_, proj_rank_);
-        auto ortho_temp_1 = create_random_tensor("ortho temp 1", nocc_, nvirt_, proj_rank_);
-        auto ortho_temp_2 = create_tensor("ortho temp 2", nocc_, nvirt_, proj_rank_);
+        auto tau_         = create_random_gpu_tensor("tau", proj_rank_, proj_rank_);
+        auto ortho_temp_1 = create_random_gpu_tensor("ortho temp 1", nocc_, nvirt_, proj_rank_);
+        auto ortho_temp_2 = DeviceTensor("ortho temp 2", nocc_, nvirt_, proj_rank_);
 
         zero(ortho_temp_2);
         einsum(0.0, Indices{index::i, index::a, index::P}, &ortho_temp_2, 1.0, Indices{index::i, index::a, index::W}, ortho_temp_1,
@@ -2537,25 +2497,25 @@ TEST_CASE("andy") {
     }
 
     SECTION("3") {
-        auto a = create_random_tensor("a", nvirt_, nvirt_);
-        auto b = create_random_tensor("b", nvirt_, nvirt_);
-        auto c = create_tensor("c", nvirt_, nvirt_);
+        auto a = create_random_gpu_tensor("a", nvirt_, nvirt_);
+        auto b = create_random_gpu_tensor("b", nvirt_, nvirt_);
+        auto c = DeviceTensor("c", nvirt_, nvirt_);
         zero(c);
 
         einsum(0.0, Indices{index::p, index::q}, &c, -1.0, Indices{index::p, index::q}, a, Indices{index::p, index::q}, b);
 
         for (int x = 0; x < nvirt_; x++) {
             for (int y = 0; y < nvirt_; y++) {
-                REQUIRE_THAT(c(x, y), Catch::Matchers::WithinRel(-a(x, y) * b(x, y)));
+                REQUIRE_THAT((double) c(x, y), Catch::Matchers::WithinRel((double) -a(x, y) * b(x, y)));
             }
         }
     }
 
     SECTION("4") {
-        auto A  = create_random_tensor("a", proj_rank_, nocc_, nvirt_);
-        auto B  = create_random_tensor("b", nocc_, nvirt_, proj_rank_);
-        auto c  = create_tensor("c", proj_rank_, proj_rank_);
-        auto c0 = create_tensor("c0", proj_rank_, proj_rank_);
+        auto A  = create_random_gpu_tensor("a", proj_rank_, nocc_, nvirt_);
+        auto B  = create_random_gpu_tensor("b", nocc_, nvirt_, proj_rank_);
+        auto c  = DeviceTensor("c", proj_rank_, proj_rank_);
+        auto c0 = DeviceTensor("c0", proj_rank_, proj_rank_);
 
         zero(c);
         einsum(Indices{index::Q, index::X}, &c, Indices{index::Q, index::i, index::a}, A, Indices{index::i, index::a, index::X}, B);
@@ -2573,16 +2533,16 @@ TEST_CASE("andy") {
 
         for (size_t Q = 0; Q < proj_rank_; Q++) {
             for (size_t X = 0; X < proj_rank_; X++) {
-                REQUIRE_THAT(c(Q, X), Catch::Matchers::WithinRel(c0(Q, X), 0.00001));
+                REQUIRE_THAT((double) c(Q, X), Catch::Matchers::WithinRel((double) c0(Q, X), 0.00001));
             }
         }
     }
 
     SECTION("5") {
-        auto F_TEMP = create_random_tensor("F_TEMP", proj_rank_, proj_rank_, proj_rank_);
-        auto y_aW   = create_random_tensor("y_aW", nvirt_, proj_rank_);
-        auto F_BAR  = create_tensor("F_BAR", proj_rank_, nvirt_, proj_rank_);
-        auto F_BAR0 = create_tensor("F_BAR", proj_rank_, nvirt_, proj_rank_);
+        auto F_TEMP = create_random_gpu_tensor("F_TEMP", proj_rank_, proj_rank_, proj_rank_);
+        auto y_aW   = create_random_gpu_tensor("y_aW", nvirt_, proj_rank_);
+        auto F_BAR  = DeviceTensor("F_BAR", proj_rank_, nvirt_, proj_rank_);
+        auto F_BAR0 = DeviceTensor("F_BAR", proj_rank_, nvirt_, proj_rank_);
 
         zero(F_BAR);
         einsum(Indices{index::Q, index::a, index::X}, &F_BAR, Indices{index::Q, index::Y, index::X}, F_TEMP, Indices{index::a, index::Y},
@@ -2602,28 +2562,28 @@ TEST_CASE("andy") {
         for (size_t Q = 0; Q < proj_rank_; Q++) {
             for (size_t a = 0; a < nvirt_; a++) {
                 for (size_t X = 0; X < proj_rank_; X++) {
-                    REQUIRE_THAT(F_BAR(Q, a, X), Catch::Matchers::WithinRel(F_BAR0(Q, a, X), 0.00001));
+                    REQUIRE_THAT((double) F_BAR(Q, a, X), Catch::Matchers::WithinRel((double) F_BAR0(Q, a, X), 0.00001));
                 }
             }
         }
     }
 
     SECTION("6") {
-        auto A = create_random_tensor("A", 84);
-        auto C = create_tensor("C", 84, 84);
+        auto A = create_random_gpu_tensor("A", 84);
+        auto C = DeviceTensor("C", 84, 84);
         zero(C);
 
         einsum(Indices{index::a, index::b}, &C, Indices{index::a}, A, Indices{index::b}, A);
 
         for (size_t a = 0; a < 84; a++) {
             for (size_t b = 0; b < 84; b++) {
-                REQUIRE_THAT(C(a, b), Catch::Matchers::WithinRel(A(a) * A(b), 0.00001));
+                REQUIRE_THAT((double) C(a, b), Catch::Matchers::WithinRel((double) A(a) * A(b), 0.00001));
             }
         }
     }
 
     SECTION("7") {
-        auto A = create_tensor("A", 9);
+        auto A = DeviceTensor("A", 9);
         A(0)   = 0.26052754;
         A(1)   = 0.20708203;
         A(2)   = 0.18034861;
@@ -2633,23 +2593,23 @@ TEST_CASE("andy") {
         A(6)   = 0.10285149;
         A(7)   = 0.10164104;
         A(8)   = 0.06130642;
-        auto C = create_tensor("C", 9, 9);
+        auto C = DeviceTensor("C", 9, 9);
         zero(C);
 
         einsum(Indices{index::a, index::b}, &C, Indices{index::a}, A, Indices{index::b}, A);
 
         for (size_t a = 0; a < 9; a++) {
             for (size_t b = 0; b < 9; b++) {
-                REQUIRE_THAT(C(a, b), Catch::Matchers::WithinRel(A(a) * A(b), 0.00001));
+                REQUIRE_THAT((double) C(a, b), Catch::Matchers::WithinRel((double) A(a) * A(b), 0.00001));
             }
         }
     }
 
     SECTION("8") {
-        auto C_TILDE = create_random_tensor("C_TILDE", naux_, nvirt_, u_rank_);
-        auto B_QY    = create_random_tensor("B_QY", naux_, u_rank_);
+        auto C_TILDE = create_random_gpu_tensor("C_TILDE", naux_, nvirt_, u_rank_);
+        auto B_QY    = create_random_gpu_tensor("B_QY", naux_, u_rank_);
 
-        auto D_TILDE = create_tensor("D_TILDE", nvirt_, u_rank_);
+        auto D_TILDE = DeviceTensor("D_TILDE", nvirt_, u_rank_);
         zero(D_TILDE);
 
         einsum(0.0, Indices{index::a, index::X}, &D_TILDE, 1.0, Indices{index::Q, index::a, index::X}, C_TILDE, Indices{index::Q, index::X},
@@ -2657,35 +2617,35 @@ TEST_CASE("andy") {
     }
 
     SECTION("9") {
-        auto Qov  = create_random_tensor("Qov", naux_, nocc_, nvirt_);
-        auto ia_X = create_random_tensor("ia_X", nocc_, nvirt_, u_rank_);
+        auto Qov  = create_random_gpu_tensor("Qov", naux_, nocc_, nvirt_);
+        auto ia_X = create_random_gpu_tensor("ia_X", nocc_, nvirt_, u_rank_);
 
-        auto N_QX = create_tensor("N_QX", naux_, u_rank_);
+        auto N_QX = DeviceTensor("N_QX", naux_, u_rank_);
         zero(N_QX);
 
         einsum(Indices{index::Q, index::X}, &N_QX, Indices{index::Q, index::i, index::a}, Qov, Indices{index::i, index::a, index::X}, ia_X);
     }
 
     SECTION("10") {
-        auto t_ia = create_random_tensor("t_ia", nocc_, nvirt_);
-        auto ia_X = create_random_tensor("ia_X", nocc_, nvirt_, u_rank_);
+        auto t_ia = create_random_gpu_tensor("t_ia", nocc_, nvirt_);
+        auto ia_X = create_random_gpu_tensor("ia_X", nocc_, nvirt_, u_rank_);
 
-        auto M_X = create_tensor("M_X", u_rank_);
+        auto M_X = DeviceTensor("M_X", u_rank_);
         zero(M_X);
 
         einsum(Indices{index::X}, &M_X, Indices{index::i, index::a, index::X}, ia_X, Indices{index::i, index::a}, t_ia);
     }
 
     SECTION("11") {
-        auto B_Qmo = create_random_tensor("Q", naux_, nocc_ + nvirt_, nocc_ + nvirt_);
+        auto B_Qmo = create_random_gpu_tensor("Q", naux_, nocc_ + nvirt_, nocc_ + nvirt_);
         // println(B_Qmo);
         auto Qov = B_Qmo(All, Range{0, nocc_}, Range{nocc_, nocc_ + nvirt_});
 
         // println(Qov, {.full_output = false});
 
-        auto ia_X = create_random_tensor("ia_X", nocc_, nvirt_, u_rank_);
+        auto ia_X = create_random_gpu_tensor("ia_X", nocc_, nvirt_, u_rank_);
 
-        auto N_QX = create_tensor("N_QX", naux_, u_rank_);
+        auto N_QX = DeviceTensor("N_QX", naux_, u_rank_);
         zero(N_QX);
 
         einsum(Indices{index::Q, index::X}, &N_QX, Indices{index::Q, index::i, index::a}, Qov, Indices{index::i, index::a, index::X}, ia_X);

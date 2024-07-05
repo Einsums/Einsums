@@ -252,6 +252,7 @@ namespace detail {
 std::vector<hipblasHandle_t> *blas_handles = nullptr;
 std::vector<hipsolverHandle_t> *solver_handles = nullptr;
 std::vector<hipStream_t> *default_streams = nullptr;
+std::vector<bool> *skip_waits = nullptr;
 }
 
 __host__ void __hipblas_catch__(hipblasStatus_t status, const char *diagnostic, bool throw_success) {
@@ -299,6 +300,9 @@ __host__ void __hipblas_catch__(hipblasStatus_t status, const char *diagnostic, 
 }
 
 hipblasHandle_t get_blas_handle(int thread_id) {
+    if(thread_id >= detail::blas_handles->size()) {
+        return detail::blas_handles->at(0);
+    }
     return detail::blas_handles->at(thread_id);
 }
 
@@ -402,6 +406,9 @@ const char *hipsolverStatusToString(hipsolverStatus_t status) {
 }
 
 hipsolverHandle_t get_solver_handle(int thread_id) {
+    if(thread_id >= detail::solver_handles->size()) {
+        return detail::solver_handles->at(0);
+    }
     return detail::solver_handles->at(thread_id);
 }
 
@@ -459,6 +466,14 @@ void initialize() {
             hipsolver_catch(hipsolverSetStream(detail::solver_handles->at(i), detail::default_streams->at(i)));
         }
     }
+
+    if(detail::skip_waits == nullptr) {
+        detail::skip_waits = new std::vector<bool>(omp_get_num_threads());
+
+        for(int i = 0; i < omp_get_num_threads(); i++) {
+            detail::skip_waits->at(i) = false;
+        }
+    }
 }
 
 void finalize() {
@@ -494,7 +509,16 @@ __host__ hipMemPool_t &get_scale_pool() {
 }
 
 __host__
-void stream_wait() {
+void skip_next_wait() {
+    detail::skip_waits->at(omp_get_thread_num()) = true;
+}
+
+__host__
+void stream_wait(bool may_skip) {
+    if(may_skip && detail::skip_waits->at(omp_get_thread_num())) {
+        detail::skip_waits->at(omp_get_thread_num()) = false;
+        return;
+    }
     stream_wait(get_stream());
 }
 
@@ -550,6 +574,14 @@ void set_stream(hipStream_t stream, int thread_id) {
 
     hipblas_catch(hipblasSetStream(get_blas_handle(), stream));
     hipsolver_catch(hipsolverSetStream(get_solver_handle(), stream));
+}
+
+__host__ int get_warpsize(void) {
+    static int warpsize = 0;
+    if(warpsize == 0) {
+        hip_catch(hipDeviceGetAttribute(&warpsize, hipDeviceAttributeWarpSize, 0));
+    }
+    return warpsize;
 }
 
 END_EINSUMS_NAMESPACE_CPP(einsums::gpu)

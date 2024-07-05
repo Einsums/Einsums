@@ -11,10 +11,11 @@
 #include "einsums/_TensorAlgebraUtilities.hpp"
 
 #include "einsums/DeviceTensor.hpp"
-#include "einsums/GPULinearAlgebra.hpp"
+#include "einsums/LinearAlgebra.hpp"
 #include "einsums/STL.hpp"
 #include "einsums/Section.hpp"
-#include "einsums/gpu/GPUTensorAlgebra.hpp"
+#include "einsums/TensorAlgebra.hpp"
+#include "einsums/utility/IndexUtils.hpp"
 #include "einsums/utility/SmartPointerTraits.hpp"
 #include "einsums/utility/TensorTraits.hpp"
 
@@ -23,7 +24,7 @@
 #include <hip/hip_runtime.h>
 #include <hip/hip_runtime_api.h>
 
-BEGIN_EINSUMS_NAMESPACE_HPP(einsums::tensor_algebra)
+namespace einsums::tensor_algebra {
 
 namespace detail {
 
@@ -114,7 +115,7 @@ auto sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<
     // LibreTT interface currently only works for full Tensors and not TensorViews
 #if defined(EINSUMS_USE_HPTT)
     if constexpr (std::is_same_v<CType<T, CRank>, DeviceTensor<T, CRank>> && std::is_same_v<AType<T, ARank>, DeviceTensor<T, ARank>>) {
-        if (C_prefactor == 0.0) {
+        if (C_prefactor == T{0.0}) {
             std::array<int, ARank> perms{};
             std::array<int, ARank> size{};
 
@@ -124,7 +125,9 @@ auto sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<
             }
 
             detail::gpu_sort(perms.data(), ARank, A_prefactor, A.data(), size.data(), C_prefactor, C->data());
-            *C *= A_prefactor; // Librett does not handle prefactors (yet?)
+            if (A_prefactor != T{1.0}) {
+                *C *= A_prefactor; // Librett does not handle prefactors (yet?)
+            }
 
             gpu::stream_wait();
             return;
@@ -132,7 +135,7 @@ auto sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<
     }
 #endif
     if constexpr (std::is_same_v<decltype(A_indices), decltype(C_indices)>) {
-        linear_algebra::axpby(A_prefactor, A, C_prefactor, C);
+        ::einsums::linear_algebra::axpby(A_prefactor, A, C_prefactor, C);
     } else {
         int *index_table = new int[sizeof...(AIndices)];
         int *gpu_index_table;
@@ -157,8 +160,12 @@ auto sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<
 
         hipStream_t stream = gpu::get_stream();
 
-        detail::sort_kernel<T, ARank><<<gpu::blocks(A.size()), gpu::block_size(A.size()), 0, stream>>>(
-            gpu_index_table, A_prefactor, A.data(), stride_A_gpu, C_prefactor, C->data(), stride_C_gpu, A.size());
+        using T_devtype  = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<decltype(C->data())>>>;
+        using T_hosttype = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<T>>>;
+
+        detail::sort_kernel<T_devtype, ARank><<<gpu::blocks(A.size()), gpu::block_size(A.size()), 0, stream>>>(
+            gpu_index_table, gpu::HipCast<T_devtype, T_hosttype>::cast(A_prefactor), A.data(), stride_A_gpu,
+            gpu::HipCast<T_devtype, T_hosttype>::cast(C_prefactor), C->data(), stride_C_gpu, A.size());
         hipEvent_t wait_event;
 
         gpu::hip_catch(hipEventCreate(&wait_event));
@@ -172,6 +179,6 @@ auto sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<
 
         gpu::hip_catch(hipEventDestroy(wait_event));
     }
-} // namespace einsums::TensorAlgebra
+}
 
-END_EINSUMS_NAMESPACE_HPP(einsums::tensor_algebra)
+} // namespace einsums::tensor_algebra

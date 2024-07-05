@@ -510,9 +510,19 @@ __host__ inline dim3 blocks(size_t compute_size) {
 __host__ EINSUMS_EXPORT void stream_wait(hipStream_t stream);
 
 /**
- * @brief Wait on the current thread's stream.
+ * @brief Indicates that the next skippable wait on the current thread should be skipped.
+ * Does not apply to stream_wait(stream) with the stream specified, all_stream_wait, or device_synchronize.
+ * Does not affect stream_wait(false), and stream_wait(false) does not affect the skip state.
  */
-__host__ EINSUMS_EXPORT void stream_wait();
+__host__ EINSUMS_EXPORT void skip_next_wait();
+
+/**
+ * @brief Wait on the current thread's stream. Can be skippable or not.
+ *
+ * @param may_skip Indicate that the wait may be skipped to avoid unnecessary waits. Only skipped after a call to skip_next_wait,
+ * then resets the skip flag so that later waits are not skipped.
+ */
+__host__ EINSUMS_EXPORT void stream_wait(bool may_skip = true);
 
 /**
  * @brief Wait on all streams managed by Einsums.
@@ -542,5 +552,71 @@ EINSUMS_EXPORT void set_stream(hipStream_t stream, int thread_id);
 inline void device_synchronize() {
     hip_catch(hipDeviceSynchronize());
 }
+
+__device__ inline bool is_zero(double value) {
+    return value == 0.0;
+}
+
+__device__ inline bool is_zero(float value) {
+    return value == 0.0f;
+}
+
+__device__ inline bool is_zero(hipComplex value) {
+    return value.x == 0.0f && value.y == 0.0f;
+}
+
+__device__ inline bool is_zero(hipDoubleComplex value) {
+    return value.x == 0.0 && value.y == 0.0;
+}
+
+__device__ inline void make_zero(double &value) {
+    value = 0.0;
+}
+
+__device__ inline void make_zero(float &value) {
+    value = 0.0f;
+}
+
+__device__ inline void make_zero(hipComplex &value) {
+    value.x = 0.0f;
+    value.y = 0.0f;
+}
+
+__device__ inline void make_zero(hipDoubleComplex &value) {
+    value.x = 0.0;
+    value.y = 0.0;
+}
+
+/**
+ * @brief Wrap the atomicAdd operation to allow polymorphism on complex arguments.
+ */
+__device__ inline void atomicAdd_wrap(float *address, float value) {
+    atomicAdd(address, value);
+}
+
+/**
+ * @brief Wrap the atomicAdd operation to allow polymorphism on complex arguments.
+ */
+__device__ inline void atomicAdd_wrap(double *address, double value) {
+    atomicAdd(address, value);
+}
+
+/**
+ * @brief Wrap the atomicAdd operation to allow polymorphism on complex arguments.
+ */
+__device__ inline void atomicAdd_wrap(hipComplex *address, hipComplex value) {
+    atomicAdd(&(address->x), value.x);
+    atomicAdd(&(address->y), value.y);
+}
+
+/**
+ * @brief Wrap the atomicAdd operation to allow polymorphism on complex arguments.
+ */
+__device__ inline void atomicAdd_wrap(hipDoubleComplex *address, hipDoubleComplex value) {
+    atomicAdd(&(address->x), value.x);
+    atomicAdd(&(address->y), value.y);
+}
+
+__host__ EINSUMS_EXPORT int get_warpsize(void);
 
 END_EINSUMS_NAMESPACE_HPP(einsums::gpu)

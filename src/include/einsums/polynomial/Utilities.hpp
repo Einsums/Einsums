@@ -99,7 +99,9 @@ auto from_roots(LineFunction line, MultiplyFunction mult, const Tensor<T, 1> &ro
         }
 
         while (n > 1) {
-            auto [a, b] = divmod(n, 2);
+            auto res = std::div(n, 2);
+            auto a = res.rem;
+            auto b = res.quot;
         }
     }
 }

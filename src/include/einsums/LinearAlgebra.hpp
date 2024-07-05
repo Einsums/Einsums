@@ -9,7 +9,6 @@
 #include "einsums/_Compiler.hpp"
 
 #include "einsums/Blas.hpp"
-#include "einsums/BlockTensor.hpp"
 #include "einsums/STL.hpp"
 #include "einsums/Section.hpp"
 #include "einsums/Tensor.hpp"
@@ -17,6 +16,14 @@
 #include "einsums/utility/ComplexTraits.hpp"
 #include "einsums/utility/SmartPointerTraits.hpp"
 #include "einsums/utility/TensorTraits.hpp"
+#ifdef __HIP__
+#    include "einsums/DeviceTensor.hpp"
+#    include "einsums/linear_algebra_imp/GPULinearAlgebra.hpp"
+#endif
+#include "einsums/linear_algebra_imp/BaseLinearAlgebra.hpp"
+#include "einsums/linear_algebra_imp/BlockLinearAlgebra.hpp"
+#include "einsums/linear_algebra_imp/BlockTiledLinearAlgebra.hpp"
+#include "einsums/linear_algebra_imp/TiledLinearAlgebra.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -55,29 +62,9 @@ namespace einsums::linear_algebra {
  * @param sumsq sumsq_in and sumsq_out for the equation provided
  */
 template <template <typename, size_t> typename AType, typename ADataType, size_t ARank>
-    requires CoreRankTensor<AType<ADataType, ARank>, 1, ADataType>
 void sum_square(const AType<ADataType, ARank> &a, RemoveComplexT<ADataType> *scale, RemoveComplexT<ADataType> *sumsq) {
-    if constexpr (einsums::detail::IsIncoreRankBlockTensorV<AType<ADataType, ARank>, ARank, ADataType>) {
-        *sumsq = 0;
-
-        EINSUMS_OMP_PARALLEL_FOR
-        for (int i = 0; i < a.num_blocks(); i++) {
-            if (a.block_dim(i) == 0) {
-                continue;
-            }
-            RemoveComplexT<ADataType> out;
-
-            sum_square(a.block(i), scale, &out);
-
-            *sumsq += out;
-        }
-    } else {
-        LabeledSection0();
-
-        int n    = a.dim(0);
-        int incx = a.stride(0);
-        blas::lassq(n, a.data(), incx, scale, sumsq);
-    }
+    LabeledSection0();
+    detail::sum_square(a, scale, sumsq);
 }
 
 /**
@@ -111,56 +98,13 @@ void sum_square(const AType<ADataType, ARank> &a, RemoveComplexT<ADataType> *sca
 template <bool TransA, bool TransB, template <typename, size_t> typename AType, template <typename, size_t> typename BType,
           template <typename, size_t> typename CType, size_t Rank, typename T, typename U>
     requires requires {
-        requires CoreRankTensor<AType<T, Rank>, 2, T>;
-        requires CoreRankTensor<BType<T, Rank>, 2, T>;
-        requires CoreRankTensor<CType<T, Rank>, 2, T>;
-        requires !CoreRankBlockTensor<CType<T, Rank>, 2, T> ||
-                     (CoreRankBlockTensor<AType<T, Rank>, 2, T> && CoreRankBlockTensor<BType<T, Rank>, 2, T>);
+        requires InSamePlace<AType<T, Rank>, BType<T, Rank>, Rank, Rank, T, T>;
+        requires InSamePlace<AType<T, Rank>, CType<T, Rank>, Rank, Rank, T, T>;
         requires std::convertible_to<U, T>;
     }
 void gemm(const U alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const U beta, CType<T, Rank> *C) {
-    if constexpr (einsums::detail::IsIncoreRankBlockTensorV<AType<T, Rank>, Rank, T> &&
-                  einsums::detail::IsIncoreRankBlockTensorV<BType<T, Rank>, Rank, T> &&
-                  einsums::detail::IsIncoreRankBlockTensorV<CType<T, Rank>, Rank, T>) {
-
-        if (A.num_blocks() != B.num_blocks() || A.num_blocks() != C->num_blocks() || B.num_blocks() != C->num_blocks()) {
-            throw std::runtime_error("gemm: Tensors need the same number of blocks.");
-        }
-
-        EINSUMS_OMP_PARALLEL_FOR
-        for (int i = 0; i < A.num_blocks(); i++) {
-            if (A.block_dim(i) == 0) {
-                continue;
-            }
-            gemm<TransA, TransB>(static_cast<T>(alpha), A.block(i), B.block(i), static_cast<T>(beta), &(C->block(i)));
-        }
-
-        return;
-    } else if constexpr (einsums::detail::IsIncoreRankBlockTensorV<AType<T, Rank>, Rank, T> &&
-                         einsums::detail::IsIncoreRankBlockTensorV<BType<T, Rank>, Rank, T>) {
-        if (A.num_blocks() != B.num_blocks()) {
-            gemm<TransA, TransB>(static_cast<T>(alpha), (Tensor<T, 2>)A, (Tensor<T, 2>)B, static_cast<T>(beta), C);
-        } else {
-            EINSUMS_OMP_PARALLEL_FOR
-            for (int i = 0; i < A.num_blocks(); i++) {
-                if (A.block_dim(i) == 0) {
-                    continue;
-                }
-                gemm<TransA, TransB>(static_cast<T>(alpha), A.block(i), B.block(i), static_cast<T>(beta),
-                                     &((*C)(A.block_range(i), A.block_range(i))));
-            }
-        }
-
-        return;
-    } else {
-        LabeledSection0();
-
-        auto m = C->dim(0), n = C->dim(1), k = TransA ? A.dim(0) : A.dim(1);
-        auto lda = A.stride(0), ldb = B.stride(0), ldc = C->stride(0);
-
-        blas::gemm(TransA ? 't' : 'n', TransB ? 't' : 'n', m, n, k, static_cast<T>(alpha), A.data(), lda, B.data(), ldb,
-                   static_cast<T>(beta), C->data(), ldc);
-    }
+    LabeledSection0();
+    detail::gemm<TransA, TransB>(alpha, A, B, beta, C);
 }
 
 /**
@@ -186,18 +130,34 @@ void gemm(const U alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const
 template <bool TransA, bool TransB, template <typename, size_t> typename AType, template <typename, size_t> typename BType, size_t Rank,
           typename T, typename U>
     requires requires {
-        requires CoreRankTensor<AType<T, Rank>, 2, T>;
-        requires CoreRankTensor<BType<T, Rank>, 2, T>;
+        requires InSamePlace<AType<T, Rank>, BType<T, Rank>, 2, 2, T, T>;
+        requires std::is_same_v<remove_view_t<AType, Rank, T>, remove_view_t<BType, Rank, T>>;
         requires std::convertible_to<U, T>;
     }
-auto gemm(const U alpha, const AType<T, Rank> &A, const BType<T, Rank> &B) -> Tensor<T, 2> {
+auto gemm(const U alpha, const AType<T, Rank> &A, const BType<T, Rank> &B) -> remove_view_t<AType, Rank, T> {
     LabeledSection0();
 
-    Tensor<T, 2> C{"gemm result", TransA ? A.dim(1) : A.dim(0), TransB ? B.dim(0) : B.dim(1)};
-
+    remove_view_t<AType, Rank, T> C{"gemm result", TransA ? A.dim(1) : A.dim(0), TransB ? B.dim(0) : B.dim(1)};
     gemm<TransA, TransB>(static_cast<T>(alpha), A, B, static_cast<T>(0.0), &C);
 
     return C;
+}
+
+/**
+ * @brief Computes a common double multiplication between two matrices.
+ *
+ * Computes @f$ C = OP(B)^T OP(A) OP(B) @f$.
+ */
+template <bool TransA, bool TransB, template <typename, size_t> typename AType, template <typename, size_t> typename BType,
+          template <typename, size_t> typename CType, size_t Rank, typename T>
+    requires requires {
+        requires InSamePlace<AType<T, Rank>, BType<T, Rank>, 2, 2, T, T>;
+        requires InSamePlace<AType<T, Rank>, CType<T, Rank>, 2, 2, T, T>;
+    }
+void symm_gemm(const AType<T, Rank> &A, const BType<T, Rank> &B, CType<T, Rank> *C) {
+    LabeledSection0();
+
+    detail::symm_gemm<TransA, TransB>(A, B, C);
 }
 
 /**
@@ -230,31 +190,14 @@ auto gemm(const U alpha, const AType<T, Rank> &A, const BType<T, Rank> &B) -> Te
 template <bool TransA, template <typename, size_t> typename AType, template <typename, size_t> typename XType,
           template <typename, size_t> typename YType, size_t ARank, size_t XYRank, typename T, typename U>
     requires requires {
-        requires CoreRankTensor<AType<T, ARank>, 2, T>;
-        requires CoreRankTensor<XType<T, XYRank>, 1, T>;
-        requires CoreRankTensor<YType<T, XYRank>, 1, T>;
+        requires InSamePlace<AType<T, ARank>, XType<T, XYRank>, 2, 1, T, T>;
+        requires InSamePlace<AType<T, ARank>, YType<T, XYRank>, 2, 1, T, T>;
         requires std::convertible_to<U, T>; // Make sure the alpha and beta can be converted to T
     }
 void gemv(const U alpha, const AType<T, ARank> &A, const XType<T, XYRank> &z, const U beta, YType<T, XYRank> *y) {
-    if constexpr (einsums::detail::IsIncoreRankBlockTensorV<AType<T, ARank>, ARank, T>) {
+    LabeledSection1(fmt::format("<TransA={}>", TransA));
 
-        EINSUMS_OMP_PARALLEL_FOR
-        for (int i = 0; i < A.num_blocks(); i++) {
-            if (A.block_dim(i) == 0) {
-                continue;
-            }
-            gemv(static_cast<T>(alpha), A.block(i), x(A.block_range(i)), static_cast<T>(beta), &((*y)(A.block_range(i))));
-        }
-
-    } else {
-        LabeledSection1(fmt::format("<TransA={}>", TransA));
-        auto m = A.dim(0), n = A.dim(1);
-        auto lda  = A.stride(0);
-        auto incx = z.stride(0);
-        auto incy = y->stride(0);
-
-        blas::gemv(TransA ? 't' : 'n', m, n, static_cast<T>(alpha), A.data(), lda, z.data(), incx, static_cast<T>(beta), y->data(), incy);
-    }
+    detail::gemv<TransA>(alpha, A, z, beta, y);
 }
 
 /**
@@ -291,157 +234,43 @@ void gemv(const U alpha, const AType<T, ARank> &A, const XType<T, XYRank> &z, co
 template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename WType, size_t WRank, typename T,
           bool ComputeEigenvectors = true>
     requires requires {
-        requires CoreRankTensor<AType<T, ARank>, 2, T>;
-        requires CoreRankTensor<WType<T, WRank>, 1, T>;
+        requires InSamePlace<AType<T, ARank>, WType<T, WRank>, 2, 1, T, T>;
         requires !Complex<T>;
     }
 void syev(AType<T, ARank> *A, WType<T, WRank> *W) {
-    if constexpr (einsums::detail::IsIncoreRankBlockTensorV<AType<T, ARank>, ARank, T>) {
-        EINSUMS_OMP_PARALLEL_FOR
-        for (int i = 0; i < A->num_blocks(); i++) {
-            if (A->block_dim(i) == 0) {
-                continue;
-            }
-            if (A->block_range(i)[1] < 0) {
-                printf("Hi");
-            }
-            auto out_block = (*W)(A->block_range(i));
-            syev(&(A->block(i)), &out_block);
-        }
-    } else {
 
-        LabeledSection1(fmt::format("<ComputeEigenvectors={}>", ComputeEigenvectors));
-
-        assert(A->dim(0) == A->dim(1));
-
-        auto           n     = A->dim(0);
-        auto           lda   = A->stride(0);
-        int            lwork = 3 * n;
-        std::vector<T> work(lwork);
-
-        blas::syev(ComputeEigenvectors ? 'v' : 'n', 'u', n, A->data(), lda, W->data(), work.data(), lwork);
-    }
+    LabeledSection1(fmt::format("<ComputeEigenvectors={}>", ComputeEigenvectors));
+    detail::syev<AType, ARank, WType, WRank, T, ComputeEigenvectors>(A, W);
 }
 
 template <template <typename, size_t> typename AType, size_t ARank, template <Complex, size_t> typename WType, size_t WRank, typename T,
           bool ComputeLeftRightEigenvectors = true>
-    requires requires {
-        requires CoreRankTensor<AType<T, ARank>, 2, T>;
-        requires CoreRankTensor<WType<AddComplexT<T>, WRank>, 1, AddComplexT<T>>;
-    }
+    requires InSamePlace<AType<T, ARank>, WType<AddComplexT<T>, WRank>, 2, 1, T, AddComplexT<T>>
 void geev(AType<T, ARank> *A, WType<AddComplexT<T>, WRank> *W, AType<T, ARank> *lvecs, AType<T, ARank> *rvecs) {
     LabeledSection1(fmt::format("<ComputeLeftRightEigenvectors={}>", ComputeLeftRightEigenvectors));
 
-    assert(A->dim(0) == A->dim(1));
-    assert(W->dim(0) == A->dim(0));
-    assert(A->dim(0) == lvecs->dim(0));
-    assert(A->dim(1) == lvecs->dim(1));
-    assert(A->dim(0) == rvecs->dim(0));
-    assert(A->dim(1) == rvecs->dim(1));
-
-    blas::geev(ComputeLeftRightEigenvectors ? 'v' : 'n', ComputeLeftRightEigenvectors ? 'v' : 'n', A->dim(0), A->data(), A->stride(0),
-               W->data(), lvecs->data(), lvecs->stride(0), rvecs->data(), rvecs->stride(0));
+    detail::geev<AType, ARank, WType, WRank, T, ComputeLeftRightEigenvectors>(A, W, lvecs, rvecs);
 }
 
 template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename WType, size_t WRank, typename T,
           bool ComputeEigenvectors = true>
     requires requires {
-        requires CoreRankTensor<AType<T, ARank>, 2, T>;
-        requires CoreRankTensor<WType<T, WRank>, 1, T>;
+        requires InSamePlace<AType<T, ARank>, WType<RemoveComplexT<T>, WRank>, 2, 1, T, RemoveComplexT<T>>;
         requires Complex<T>;
     }
 void heev(AType<T, ARank> *A, WType<RemoveComplexT<T>, WRank> *W) {
-    if constexpr (einsums::detail::IsIncoreRankBlockTensorV<AType<T, ARank>, ARank, T>) {
-        EINSUMS_OMP_PARALLEL_FOR
-        for (int i = 0; i < A->num_blocks(); i++) {
-            if (A->block_dim(i) == 0) {
-                continue;
-            }
-            heev(&(A->block(i)), &((*W)(A->block_range(i))));
-        }
-    } else {
-
-        LabeledSection1(fmt::format("<ComputeEigenvectors={}>", ComputeEigenvectors));
-        assert(A->dim(0) == A->dim(1));
-
-        auto                           n     = A->dim(0);
-        auto                           lda   = A->stride(0);
-        int                            lwork = 2 * n;
-        std::vector<T>                 work(lwork);
-        std::vector<RemoveComplexT<T>> rwork(3 * n);
-
-        blas::heev(ComputeEigenvectors ? 'v' : 'n', 'u', n, A->data(), lda, W->data(), work.data(), lwork, rwork.data());
-    }
+    LabeledSection1(fmt::format("<ComputeEigenvectors={}>", ComputeEigenvectors));
+    detail::heev<AType, ARank, WType, WRank, T, ComputeEigenvectors>(A, W);
 }
 
 template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename BType, size_t BRank, typename T>
-    requires requires {
-        requires CoreRankTensor<AType<T, ARank>, 2, T>;
-        requires CoreRankTensor<BType<T, BRank>, 2, T>;
-    }
+    requires(InSamePlace<AType<T, ARank>, BType<T, BRank>, 2, 2, T, T>)
 auto gesv(AType<T, ARank> *A, BType<T, BRank> *B) -> int {
-    if constexpr (einsums::detail::IsIncoreRankBlockTensorV<AType<T, ARank>, ARank, T> &&
-                  einsums::detail::IsIncoreRankBlockTensorV<BType<T, BRank>, BRank, T>) {
-
-        if (A->num_blocks() != B->num_blocks()) {
-            throw std::runtime_error("gesv: Tensors need the same number of blocks.");
-        }
-
-        int info_out = 0;
-
-        EINSUMS_OMP_PARALLEL_FOR
-        for (int i = 0; i < A->num_blocks(); i++) {
-            if (A->block_dim(i) == 0) {
-                continue;
-            }
-            int info = gesv(&(A->block(i)), &(B->block(i)));
-
-            info_out |= info;
-
-            if (info != 0) {
-                println("gesv: Got non-zero return: %d", info);
-            }
-        }
-
-        return info_out;
-
-    } else if constexpr (einsums::detail::IsIncoreRankBlockTensorV<AType<T, ARank>, ARank, T>) {
-        int info_out = 0;
-
-        EINSUMS_OMP_PARALLEL_FOR
-        for (int i = 0; i < A->num_blocks(); i++) {
-
-            if (A->block_dim(i) == 0) {
-                continue;
-            }
-            int info = gesv(&(A->block(i)), &((*B)(AllT(), A->block_range(i))));
-
-            info_out |= info;
-
-            if (info != 0) {
-                println("gesv: Got non-zero return: %d", info);
-            }
-        }
-
-        return info_out;
-    }
 
     LabeledSection0();
-
-    auto n   = A->dim(0);
-    auto lda = A->dim(0);
-    auto ldb = B->dim(1);
-
-    auto nrhs = B->dim(0);
-
-    int                   lwork = n;
-    std::vector<blas_int> ipiv(lwork);
-
-    int info = blas::gesv(n, nrhs, A->data(), lda, ipiv.data(), B->data(), ldb);
-    return info;
+    return detail::gesv(A, B);
 }
 
-#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
 /**
  * Computes all eigenvalues and, optionally, eigenvectors of a real symmetric matrix.
  *
@@ -459,43 +288,40 @@ auto gesv(AType<T, ARank> *A, BType<T, BRank> *B) -> int {
  * @endcode
  *
  * @tparam AType The type of the tensor A
- * @tparam ARank The rank of the tensor A (required to be 2)
  * @tparam T The underlying data type (required to be real)
  * @tparam ComputeEigenvectors If true, eigenvalues and eigenvectors are computed. If false, only eigenvalues are computed. Defaults to
  * true.
  * @param A The symmetric matrix A in the leading N-by-N upper triangular part of A.
  * @return std::tuple<Tensor<T, 2>, Tensor<T, 1>> The eigenvectors and eigenvalues.
  */
-template <template <typename, size_t> typename AType, size_t ARank, typename T, bool ComputeEigenvectors = true>
-    requires CoreRankBlockTensor<AType<T, ARank>, 2, T>
-auto syev(const AType<T, ARank> &A) -> std::tuple<BlockTensor<T, 2>, Tensor<T, 1>> {
-    LabeledSection0();
-
-    BlockTensor<T, 2> a = A;
-    Tensor<T, 1>      w{"eigenvalues", A.dim(0)};
-
-    syev<ComputeEigenvectors>(&a, &w);
-
-    return std::make_tuple(a, w);
-}
+template <template <typename, size_t> typename AType, typename T, bool ComputeEigenvectors = true>
+auto syev(const AType<T, 2> &A) -> std::tuple<remove_view_t<AType, 2, T>, 
+#ifdef __HIP__
+std::conditional_t<einsums::detail::IsDeviceRankTensorV<AType<T, 1>, 1, T>, DeviceTensor<T, 1>, Tensor<T, 1>>
+#else
+Tensor<T, 1>
 #endif
-
-template <template <typename, size_t> typename AType, size_t ARank, typename T, bool ComputeEigenvectors = true>
-    requires requires {
-        requires CoreRankTensor<AType<T, ARank>, 2, T>;
-        requires !CoreRankBlockTensor<AType<T, ARank>, ARank, T>;
-    }
-auto syev(const AType<T, ARank> &A) -> std::tuple<Tensor<T, 2>, Tensor<T, 1>> {
+> {
     LabeledSection0();
 
     assert(A.dim(0) == A.dim(1));
 
-    Tensor<T, 2> a = A;
+    remove_view_t<AType, 2, T> a = A;
+    #ifdef __HIP__
+    if constexpr (einsums::detail::IsDeviceRankTensorV<AType<T, 2>, 2, T>) {
+        DeviceTensor<T, 1> w{"eigenvalues", einsums::detail::DEV_ONLY, A.dim(0)};
+        syev<ComputeEigenvectors>(&a, &w);
+        return std::make_tuple(a, w);
+    } else {
+    #endif
     Tensor<T, 1> w{"eigenvalues", A.dim(0)};
 
-    blas::syev<ComputeEigenvectors>(&a, &w);
+    syev<ComputeEigenvectors>(&a, &w);
 
     return std::make_tuple(a, w);
+    #ifdef __HIP__
+    }
+    #endif
 }
 
 /**
@@ -516,47 +342,26 @@ auto syev(const AType<T, ARank> &A) -> std::tuple<Tensor<T, 2>, Tensor<T, 1>> {
  * @param A The tensor to scale
  */
 template <template <typename, size_t> typename AType, size_t ARank, typename T>
-    requires CoreRankTensor<AType<T, ARank>, ARank, T>
 void scale(T scale, AType<T, ARank> *A) {
-    if constexpr (einsums::detail::IsIncoreRankBlockTensorV<AType<T, ARank>, ARank, T>) {
+    LabeledSection0();
 
-        EINSUMS_OMP_PARALLEL_FOR
-        for (int i = 0; i < A->num_blocks(); i++) {
-            if (A->block_dim(i) == 0) {
-                continue;
-            }
-            scale(scale, &(A->block(i)));
-        }
-    } else {
-
-        LabeledSection0();
-
-        blas::scal(A->dim(0) * A->stride(0), scale, A->data(), 1);
-    }
+    detail::scale(scale, A);
 }
 
 template <template <typename, size_t> typename AType, size_t ARank, typename T>
-    requires CoreRankTensor<AType<T, ARank>, 2, T>
+    requires(ARank == 2)
 void scale_row(size_t row, T scale, AType<T, ARank> *A) {
     LabeledSection0();
 
-    if constexpr (einsums::detail::IsIncoreRankBlockTensorV<AType<T, ARank>, ARank, T>) {
-        blas::scal(A->block_dim(A->block_of(row), 1), scale, A->data(row, 0ul), A->block(A->block_of(row)).stride(1));
-    } else {
-        blas::scal(A->dim(1), scale, A->data(row, 0ul), A->stride(1));
-    }
+    detail::scale_row(row, scale, A);
 }
 
 template <template <typename, size_t> typename AType, size_t ARank, typename T>
-    requires CoreRankTensor<AType<T, ARank>, 2, T>
+    requires(ARank == 2)
 void scale_column(size_t col, T scale, AType<T, ARank> *A) {
     LabeledSection0();
 
-    if constexpr (einsums::detail::IsIncoreRankBlockTensorV<AType<T, ARank>, ARank, T>) {
-        blas::scal(A->block_dim(A->block_of(col), 1), scale, A->data(0ul, col), A->block(A->block_of(col)).stride(0));
-    } else {
-        blas::scal(A->dim(0), scale, A->data(0ul, col), A->stride(0));
-    }
+    detail::scale_column(col, scale, A);
 }
 
 /**
@@ -572,35 +377,47 @@ void scale_column(size_t col, T scale, AType<T, ARank> *A) {
  * TODO This function needs to have a test case implemented.
  */
 template <template <typename, size_t> typename AType, size_t ARank, typename T>
-    requires CoreRankTensor<AType<T, ARank>, 2, T>
-auto pow(const AType<T, ARank> &a, T alpha, T cutoff = std::numeric_limits<T>::epsilon()) -> AType<T, ARank> {
-    if constexpr (einsums::detail::IsIncoreRankBlockTensorV<AType<T, ARank>, ARank, T>) {
-        auto out = AType<T, ARank>(a); // Copy a so that this has the same signature.
-        out.set_name("pow result");
+    requires(ARank == 2)
+auto pow(const AType<T, ARank> &a, T alpha, T cutoff = std::numeric_limits<T>::epsilon()) -> remove_view_t<AType, 2, T> {
+    LabeledSection0();
 
-        EINSUMS_OMP_PARALLEL_FOR
-        for (int i = 0; i < a.num_blocks(); i++) {
-            if (a.block_dim(i) == 0) {
-                continue;
-            }
-            out.block(i) = pow(a.block(i), alpha, cutoff);
-        }
+#ifdef __HIP__
+    if constexpr (einsums::detail::IsDeviceRankTensorV<AType<T, ARank>, ARank, T>) {
+        DeviceTensor<T, 1> Evals(Dim<1>{a.dim(0)}, ::einsums::detail::DEV_ONLY);
+
+        remove_view_t<AType, 2, T> Evecs(Dim<2>{a.dim(0), a.dim(1)});
+
+        remove_view_t<AType, 2, T> Diag(Dim<2>{a.dim(0), a.dim(1)}, ::einsums::detail::DEV_ONLY);
+
+        remove_view_t<AType, 2, T> out(Dim<2>{a.dim(0), a.dim(1)}, ::einsums::detail::DEV_ONLY);
+        remove_view_t<AType, 2, T> temp(Dim<2>{a.dim(0), a.dim(1)}, ::einsums::detail::DEV_ONLY);
+
+        Evecs.assign(a);
+
+        syev(&Evecs, &Evals);
+
+        Diag.zero();
+
+        detail::detail::gpu::eig_to_diag<<<dim3(32), dim3(1), 0, gpu::get_stream()>>>(Diag.data(), Diag.dim(0), Diag.stride(0),
+                                                                                      Evals.data(), alpha);
+
+        symm_gemm<false, false>(Diag, Evecs, &out);
 
         return out;
     } else {
-        LabeledSection0();
+#endif
 
         assert(a.dim(0) == a.dim(1));
 
-        size_t       n  = a.dim(0);
-        Tensor<T, 2> a1 = a;
-        Tensor<T, 2> result{"pow result", a.dim(0), a.dim(1)};
-        Tensor<T, 1> e{"e", n};
+        size_t                     n  = a.dim(0);
+        remove_view_t<AType, 2, T> a1 = a;
+        remove_view_t<AType, 2, T> result{"pow result", a.dim(0), a.dim(1)};
+        Tensor<T, 1>               e{"e", n};
 
         // Diagonalize
         syev(&a1, &e);
 
-        Tensor<T, 2> a2 = a1;
+        remove_view_t<AType, 2, T> a2 = a1;
 
         // Determine the largest magnitude of the eigenvalues to use as a scaling factor for the cutoff.
         double max_e = std::fabs(e(n - 1)) > std::fabs(e(0)) ? std::fabs(e(n - 1)) : std::fabs(e(0));
@@ -621,228 +438,62 @@ auto pow(const AType<T, ARank> &a, T alpha, T cutoff = std::numeric_limits<T>::e
         gemm<true, false>(1.0, a2, a1, 0.0, &result);
 
         return result;
+#ifdef __HIP__
     }
+#endif
 }
 
 template <template <typename, size_t> typename AType, template <typename, size_t> typename BType, typename T>
-    requires requires {
-        requires CoreRankTensor<AType<T, 1>, 1, T>;
-        requires CoreRankTensor<BType<T, 1>, 1, T>;
-    }
+    requires InSamePlace<AType<T, 1>, BType<T, 1>, 1, 1, T, T>
 auto dot(const AType<T, 1> &A, const BType<T, 1> &B) -> T {
     LabeledSection0();
 
-    assert(A.dim(0) == B.dim(0));
-
-    auto result = blas::dot(A.dim(0), A.data(), A.stride(0), B.data(), B.stride(0));
-    return result;
+    return detail::dot(A, B);
 }
 
-template <template <typename, size_t> typename AType, template <typename, size_t> typename BType,
-          typename T, size_t Rank>
-    requires requires {
-        requires CoreRankTensor<AType<T, Rank>, Rank, T>;
-        requires CoreRankTensor<BType<T, Rank>, Rank, T>;
-    }
+template <template <typename, size_t> typename AType, template <typename, size_t> typename BType, typename T, size_t Rank>
+    requires InSamePlace<AType<T, Rank>, BType<T, Rank>, Rank, Rank, T, T>
 auto dot(const AType<T, Rank> &A, const BType<T, Rank> &B) -> T {
 
-    if constexpr (einsums::detail::IsIncoreRankBlockTensorV<AType<T, Rank>, Rank, T> &&
-                  einsums::detail::IsIncoreRankBlockTensorV<BType<T, Rank>, Rank, T>) {
-        if (A.num_blocks() != B.num_blocks()) {
-            return dot((einsums::Tensor<T, Rank>)A, (einsums::Tensor<T, Rank>)B);
-        }
+    LabeledSection0();
 
-        if (A.ranges() != B.ranges()) {
-            return dot((einsums::Tensor<T, Rank>)A, (einsums::Tensor<T, Rank>)B);
-        }
-
-        T out{0};
-
-#pragma omp parallel for reduction(+ : out)
-        for (int i = 0; i < A.num_blocks(); i++) {
-            if (A.block_dim(i) == 0) {
-                continue;
-            }
-            out += dot(A.block(i), B.block(i));
-        }
-
-        return out;
-
-    } else {
-        LabeledSection0();
-
-        Dim<1> dim{1};
-
-        for (size_t i = 0; i < Rank; i++) {
-            assert(A.dim(i) == B.dim(i));
-            dim[0] *= A.dim(i);
-        }
-
-        return dot(TensorView<T, 1>(const_cast<AType<T, Rank> &>(A), dim), TensorView<T, 1>(const_cast<BType<T, Rank> &>(B), dim));
-    }
+    return detail::dot(A, B);
 }
 
 template <template <typename, size_t> typename AType, template <typename, size_t> typename BType,
-	  template <typename, size_t> typename CType, typename T, size_t Rank>
+          template <typename, size_t> typename CType, typename T, size_t Rank>
     requires requires {
-        requires CoreRankTensor<AType<T, Rank>, Rank, T>;
-        requires CoreRankTensor<BType<T, Rank>, Rank, T>;
-        requires CoreRankTensor<CType<T, Rank>, Rank, T>;
+        requires InSamePlace<AType<T, Rank>, BType<T, Rank>, Rank, Rank, T, T>;
+        requires InSamePlace<AType<T, Rank>, CType<T, Rank>, Rank, Rank, T, T>;
     }
 auto dot(const AType<T, Rank> &A, const BType<T, Rank> &B, const CType<T, Rank> &C) -> T {
-    if constexpr (einsums::detail::IsIncoreRankBlockTensorV<AType<T, Rank>, Rank, T> &&
-                  einsums::detail::IsIncoreRankBlockTensorV<BType<T, Rank>, Rank, T> &&
-                  einsums::detail::IsIncoreRankBlockTensorV<CType<T, Rank>, Rank, T>) {
-        if (A.num_blocks() != B.num_blocks() || A.num_blocks() != C.num_blocks() || B.num_blocks() != C.num_blocks()) {
-            return dot((Tensor<T, Rank>)A, (Tensor<T, Rank>)B, (Tensor<T, Rank>)C);
-        }
 
-        if (A.ranges() != B.ranges() || A.ranges() != C.ranges() || B.ranges() != C.ranges()) {
-            return dot((Tensor<T, Rank>)A, (Tensor<T, Rank>)B, (Tensor<T, Rank>)C);
-        }
-
-        T out{0};
-
-#pragma omp parallel for reduction(+ : out)
-        for (int i = 0; i < A.num_blocks(); i++) {
-            if (A.block_dim(i) == 0) {
-                continue;
-            }
-            out += dot(A.block(i), B.block(i), C.block(i));
-        }
-
-        return out;
-
-    } else {
-
-        LabeledSection0();
-
-        Dim<1> dim{1};
-
-        for (size_t i = 0; i < Rank; i++) {
-            assert(A.dim(i) == B.dim(i) && A.dim(i) == C.dim(i));
-            dim[0] *= A.dim(i);
-        }
-
-        auto vA = TensorView<T, 1>(const_cast<AType<T, Rank> &>(A), dim);
-        auto vB = TensorView<T, 1>(const_cast<BType<T, Rank> &>(B), dim);
-        auto vC = TensorView<T, 1>(const_cast<CType<T, Rank> &>(C), dim);
-
-        T result{0};
-#pragma omp parallel for reduction(+ : result)
-        for (size_t i = 0; i < dim[0]; i++) {
-            result += vA(i) * vB(i) * vC(i);
-        }
-        return result;
-    }
+    LabeledSection0();
+    return detail::dot(A, B, C);
 }
 
 template <template <typename, size_t> typename XType, template <typename, size_t> typename YType, typename T, size_t Rank>
-    requires requires {
-        requires CoreRankTensor<XType<T, Rank>, Rank, T>;
-        requires CoreRankTensor<YType<T, Rank>, Rank, T>;
-        requires !CoreRankBlockTensor<YType<T, Rank>, Rank, T> ||
-                     (CoreRankBlockTensor<XType<T, Rank>, Rank, T> && CoreRankBlockTensor<YType<T, Rank>, Rank, T>);
-    }
+    requires InSamePlace<XType<T, Rank>, YType<T, Rank>, Rank, Rank, T, T>
 void axpy(T alpha, const XType<T, Rank> &X, YType<T, Rank> *Y) {
-    if constexpr (einsums::detail::IsIncoreRankBlockTensorV<XType<T, Rank>, Rank, T> &&
-                  einsums::detail::IsIncoreRankBlockTensorV<YType<T, Rank>, Rank, T>) {
-        if (X.num_blocks() != Y->num_blocks()) {
-            throw std::runtime_error("axpy: Tensors need to have the same number of blocks.");
-        }
+    LabeledSection0();
 
-        if (X.ranges() != Y->ranges()) {
-            throw std::runtime_error("axpy: Tensor blocks need to be compatible.");
-        }
-
-        EINSUMS_OMP_PARALLEL_FOR
-        for (int i = 0; i < X.num_blocks(); i++) {
-            if (X.block_dim() == 0) {
-                continue;
-            }
-
-            axpy(alpha, X[i], &(Y->block(i)));
-        }
-    } else if constexpr (einsums::detail::IsIncoreRankBlockTensorV<XType<T, Rank>, Rank, T>) {
-        EINSUMS_OMP_PARALLEL_FOR
-        for (int i = 0; i < X.num_blocks(); i++) {
-            if (X.block_dim() == 0) {
-                continue;
-            }
-
-            std::array<einsums::Range, Rank> slice;
-
-            slice.fill(X.block_range());
-
-            auto Y_block = std::apply(*Y, slice);
-
-            axpy(alpha, X[i], &Y_block);
-        }
-    } else {
-
-        LabeledSection0();
-
-        blas::axpy(X.dim(0) * X.stride(0), alpha, X.data(), 1, Y->data(), 1);
-    }
+    detail::axpy(alpha, X, Y);
 }
 
 template <template <typename, size_t> typename XType, template <typename, size_t> typename YType, typename T, size_t Rank>
-    requires requires {
-        requires CoreRankTensor<XType<T, Rank>, Rank, T>;
-        requires CoreRankTensor<YType<T, Rank>, Rank, T>;
-        requires !CoreRankBlockTensor<YType<T, Rank>, Rank, T> ||
-                     (CoreRankBlockTensor<XType<T, Rank>, Rank, T> && CoreRankBlockTensor<YType<T, Rank>, Rank, T>);
-    }
+    requires InSamePlace<XType<T, Rank>, YType<T, Rank>, Rank, Rank, T, T>
 void axpby(T alpha, const XType<T, Rank> &X, T beta, YType<T, Rank> *Y) {
-    if constexpr (einsums::detail::IsIncoreRankBlockTensorV<XType<T, Rank>, Rank, T> &&
-                  einsums::detail::IsIncoreRankBlockTensorV<YType<T, Rank>, Rank, T>) {
-        if (X.num_blocks() != Y->num_blocks()) {
-            throw std::runtime_error("axpby: Tensors need to have the same number of blocks.");
-        }
+    LabeledSection0();
 
-        if (X.ranges() != Y->ranges()) {
-            throw std::runtime_error("axpby: Tensor blocks need to be compatible.");
-        }
-
-        EINSUMS_OMP_PARALLEL_FOR
-        for (int i = 0; i < X.num_blocks(); i++) {
-            if (X.block_dim() == 0) {
-                continue;
-            }
-            axpby(alpha, X[i], beta, Y->block(i));
-        }
-    } else if constexpr (einsums::detail::IsIncoreRankBlockTensorV<XType<T, Rank>, Rank, T>) {
-        EINSUMS_OMP_PARALLEL_FOR
-        for (int i = 0; i < X.num_blocks(); i++) {
-            if (X.block_dim() == 0) {
-                continue;
-            }
-
-            std::array<einsums::Range, Rank> slice;
-
-            slice.fill(X.block_range());
-
-            auto Y_block = std::apply(*Y, slice);
-
-            axpby(alpha, X[i], beta, &Y_block);
-        }
-    } else {
-
-        LabeledSection0();
-
-        blas::axpby(X.dim(0) * X.stride(0), alpha, X.data(), 1, beta, Y->data(), 1);
-    }
+    detail::axpby(alpha, X, beta, Y);
 }
 
 template <template <typename, size_t> typename XYType, size_t XYRank, template <typename, size_t> typename AType, typename T, size_t ARank>
-    requires requires {
-        requires CoreRankTensor<XYType<T, XYRank>, 1, T>;
-        requires CoreRankTensor<AType<T, ARank>, 2, T>;
-    }
+    requires InSamePlace<AType<T, ARank>, XYType<T, XYRank>, 2, 1, T, T>
 void ger(T alpha, const XYType<T, XYRank> &X, const XYType<T, XYRank> &Y, AType<T, ARank> *A) {
     LabeledSection0();
 
-    blas::ger(X.dim(0), Y.dim(0), alpha, X.data(), X.stride(0), Y.data(), Y.stride(0), A->data(), A->stride(0));
+    detail::ger(alpha, X, Y, A);
 }
 
 /**
@@ -884,7 +535,8 @@ auto getrf(TensorType<T, TensorRank> *A, std::vector<blas_int> *pivot) -> int {
 /**
  * @brief Computes the inverse of a matrix using the LU factorization computed by getrf.
  *
- * The routine computes the inverse \f$inv(A)\f$ of a general matrix \f$A\f$. Before calling this routine, call getrf to factorize \f$A\f$.
+ * The routine computes the inverse \f$inv(A)\f$ of a general matrix \f$A\f$. Before calling this routine, call getrf to factorize
+ * \f$A\f$.
  *
  * @tparam TensorType The type of the tensor
  * @tparam T The underlying data type
@@ -1321,6 +973,14 @@ auto q(const Tensor<T, 2> &qr, const Tensor<T, 1> &tau) -> Tensor<T, 2> {
     }
 
     return Q;
+}
+
+template <template <typename, size_t> typename AType, template <typename, size_t> typename BType,
+          template <typename, size_t> typename CType, typename T, size_t Rank>
+void direct_product(T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, T beta, CType<T, Rank> *C) {
+    LabeledSection0();
+
+    detail::direct_product(alpha, A, B, beta, C);
 }
 
 END_EINSUMS_NAMESPACE_HPP(einsums::linear_algebra)

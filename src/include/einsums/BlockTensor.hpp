@@ -30,9 +30,12 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
 
     std::vector<TensorType<T, Rank>> _blocks{};
     std::vector<Range>               _ranges{};
+    std::vector<size_t> _dims;
 
     template <typename T_, size_t OtherRank, template <typename, size_t> typename OtherTensor>
     friend struct BlockTensorBase;
+
+    T _zero_value{0.0};
 
     // template <typename T_, size_t Rank_>
     // friend struct BlockTensorViewBase;
@@ -75,7 +78,7 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
      */
     template <typename... Dims>
     explicit BlockTensorBase(std::string name, Dims... block_dims)
-        : _name{std::move(name)}, _dim{(static_cast<size_t>(block_dims) + ... + 0)}, _blocks(), _ranges() {
+        : _name{std::move(name)}, _dim{(static_cast<size_t>(block_dims) + ... + 0)}, _blocks(), _ranges(), _dims(sizeof...(Dims)) {
         auto dim_array   = Dim<sizeof...(Dims)>{block_dims...};
         auto _block_dims = Dim<Rank>();
 
@@ -87,6 +90,8 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
             _block_dims.fill(dim_array[i]);
 
             _blocks.emplace_back(_block_dims);
+
+            _dims[i] = dim_array[i];
         }
     }
 
@@ -108,7 +113,7 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
      * @param block_dims The size of each block.
      */
     template <typename ArrayArg>
-    explicit BlockTensorBase(std::string name, const ArrayArg &block_dims) : _name{std::move(name)}, _dim{0}, _blocks(), _ranges() {
+    explicit BlockTensorBase(std::string name, const ArrayArg &block_dims) : _name{std::move(name)}, _dim{0}, _blocks(), _ranges(), _dims(block_dims) {
 
         auto _block_dims = Dim<Rank>();
 
@@ -131,7 +136,7 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
      * @param block_dims The dimension of each block.
      */
     template <size_t Dims>
-    explicit BlockTensorBase(Dim<Dims> block_dims) : _blocks(), _ranges() {
+    explicit BlockTensorBase(Dim<Dims> block_dims) : _blocks(), _ranges(), _dims(block_dims) {
         auto _block_dims = Dim<Rank>();
 
         size_t sum = 0;
@@ -447,7 +452,10 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
                 // Remap the index to be in the block.
                 index_list[i] -= _ranges.at(block)[0];
             } else {
-                return *new T(0);
+                if (_zero_value != T(0.0)) {
+                    _zero_value = T(0.0);
+                }
+                return _zero_value;
             }
         }
 
@@ -587,9 +595,9 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
     size_t num_blocks() const { return _blocks.size(); }
 
     /**
-     * @brief Return the dimension of the tensor.
+     * @brief Return the dimensions of each block.
      */
-    //[[nodiscard]] auto block_dim() const -> size_t { return _dim; }
+    [[nodiscard]] auto block_dims() const -> const std::vector<size_t> { return _dims; }
 
     /**
      * @brief Return a list containing the ranges for each block.
@@ -917,7 +925,7 @@ struct BlockDeviceTensor : public BlockTensorBase<T, Rank, DeviceTensor> {
             requires NoneOfType<AllT, MultiIndex...>;
             requires NoneOfType<Range, MultiIndex...>;
         }
-    auto operator()(MultiIndex... index) -> HostDevReference<T> & {
+    auto operator()(MultiIndex... index) -> HostDevReference<T> {
 
         static_assert(sizeof...(MultiIndex) == Rank);
 
@@ -944,7 +952,7 @@ struct BlockDeviceTensor : public BlockTensorBase<T, Rank, DeviceTensor> {
                 // Remap the index to be in the block.
                 index_list[i] -= BlockTensorBase<T, Rank, DeviceTensor>::_ranges.at(block)[0];
             } else {
-                return *new HostDevReference<T>();
+                return HostDevReference<T>();
             }
         }
 

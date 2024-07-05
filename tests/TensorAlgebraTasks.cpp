@@ -29,8 +29,7 @@ TEST_CASE("Test dependence timing", "[jobs]") {
     SECTION("Sequential") {
         timer::push("Sequential");
 
-
-        for(int sentinel = 0; sentinel < 10; sentinel++) {
+        for (int sentinel = 0; sentinel < 10; sentinel++) {
             einsum(Indices{i, j}, &C, Indices{i, k}, A, Indices{k, j}, B);
             einsum(Indices{i, j}, &D, Indices{i, k}, A, Indices{k, j}, B);
         }
@@ -44,16 +43,20 @@ TEST_CASE("Test dependence timing", "[jobs]") {
         {
             timer::push("Tasked");
 
-
-            for(int sentinel = 0; sentinel < 10; sentinel++) {
-#pragma omp task depend(in: A, B), depend(out: C)
+            for (int sentinel = 0; sentinel < 10; sentinel++) {
+#pragma omp task depend(in : A, B), depend(out : C)
                 {
+                    C.lock();
                     einsum(Indices{i, j}, &C, Indices{i, k}, A, Indices{k, j}, B);
+                    C.unlock();
                 }
 
-
 #pragma omp task depend(in : A, B), depend(out : D)
-                { einsum(Indices{i, j}, &D, Indices{i, k}, A, Indices{k, j}, B); }
+                {
+                    D.try_lock();
+                    einsum(Indices{i, j}, &D, Indices{i, k}, A, Indices{k, j}, B);
+                    D.unlock();
+                }
             }
 
             timer::pop();

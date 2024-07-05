@@ -143,6 +143,15 @@ auto create_random_tensor(const std::string &name, MultiIndex... index) -> Tenso
     return A;
 }
 
+#ifdef __HIP__
+template <typename T = double, bool Normalize = false, typename... MultiIndex>
+auto create_random_gpu_tensor(const std::string &name, MultiIndex... index) -> DeviceTensor<T, sizeof...(MultiIndex)> {
+    DeviceTensor<T, sizeof...(MultiIndex)> out{name, einsums::detail::DEV_ONLY, index...};
+    out = create_random_tensor<T, Normalize, MultiIndex...>(name, index...);
+    return out;
+}
+#endif
+
 namespace detail {
 
 template <template <typename, size_t> typename TensorType, typename DataType, size_t Rank, typename Tuple, std::size_t... I>
@@ -254,10 +263,7 @@ auto create_ones_tensor(const std::string &name, MultiIndex... index) -> Tensor<
  * @return A new tensor with the same rank and dimensions as the provided tensor.
  */
 template <template <typename, size_t> typename TensorType, typename DataType, size_t Rank>
-    requires requires {
-        requires CoreRankTensor<TensorType<DataType, Rank>, Rank, DataType>;
-        requires !BlockRankTensor<TensorType<DataType, Rank>, Rank, DataType>;
-    }
+    requires CoreRankBasicTensor<TensorType<DataType, Rank>, Rank, DataType>
 auto create_tensor_like(const TensorType<DataType, Rank> &tensor) -> Tensor<DataType, Rank> {
     return Tensor<DataType, Rank>{tensor.dims()};
 }
@@ -277,10 +283,7 @@ auto create_tensor_like(const TensorType<DataType, Rank> &tensor) -> Tensor<Data
  * @return A new tensor with the same rank and dimensions as the provided tensor.
  */
 template <template <typename, size_t> typename TensorType, typename DataType, size_t Rank>
-    requires requires {
-        requires DeviceRankTensor<TensorType<DataType, Rank>, Rank, DataType>;
-        requires !BlockRankTensor<TensorType<DataType, Rank>, Rank, DataType>;
-    }
+    requires DeviceRankBasicTensor<TensorType<DataType, Rank>, Rank, DataType>
 auto create_tensor_like(const TensorType<DataType, Rank> &tensor,
                         einsums::detail::HostToDeviceMode mode = einsums::detail::DEV_ONLY) -> DeviceTensor<DataType, Rank> {
     return DeviceTensor<DataType, Rank>{tensor.dims(), mode};
@@ -300,10 +303,7 @@ auto create_tensor_like(const TensorType<DataType, Rank> &tensor,
  * @return A new tensor with the same rank and dimensions as the provided tensor.
  */
 template <template <typename, size_t> typename TensorType, typename DataType, size_t Rank>
-    requires requires {
-        requires CoreRankTensor<TensorType<DataType, Rank>, Rank, DataType>;
-        requires BlockRankTensor<TensorType<DataType, Rank>, Rank, DataType>;
-    }
+    requires CoreRankBlockTensor<TensorType<DataType, Rank>, Rank, DataType>
 auto create_tensor_like(const TensorType<DataType, Rank> &tensor) -> BlockTensor<DataType, Rank> {
     return BlockTensor<DataType, Rank>{"(unnamed)", tensor.vector_dims()};
 }
@@ -323,10 +323,7 @@ auto create_tensor_like(const TensorType<DataType, Rank> &tensor) -> BlockTensor
  * @return A new tensor with the same rank and dimensions as the provided tensor.
  */
 template <template <typename, size_t> typename TensorType, typename DataType, size_t Rank>
-    requires requires {
-        requires DeviceRankTensor<TensorType<DataType, Rank>, Rank, DataType>;
-        requires BlockRankTensor<TensorType<DataType, Rank>, Rank, DataType>;
-    }
+    requires DeviceRankBlockTensor<TensorType<DataType, Rank>, Rank, DataType>
 auto create_tensor_like(const TensorType<DataType, Rank> &tensor,
                         einsums::detail::HostToDeviceMode mode = einsums::detail::DEV_ONLY) -> BlockDeviceTensor<DataType, Rank> {
     return BlockDeviceTensor<DataType, Rank>{"(unnamed)", tensor.vector_dims(), mode};
@@ -350,10 +347,7 @@ auto create_tensor_like(const TensorType<DataType, Rank> &tensor,
  * @return A new tensor with the same rank and dimensions as the provided tensor.
  */
 template <template <typename, size_t> typename TensorType, typename DataType, size_t Rank>
-    requires requires {
-        requires CoreRankTensor<TensorType<DataType, Rank>, Rank, DataType>;
-        requires !BlockRankTensor<TensorType<DataType, Rank>, Rank, DataType>;
-    }
+    requires CoreRankBasicTensor<TensorType<DataType, Rank>, Rank, DataType>
 auto create_tensor_like(const std::string name, const TensorType<DataType, Rank> &tensor) -> Tensor<DataType, Rank> {
     auto result = Tensor<DataType, Rank>{tensor.dims()};
     result.set_name(name);
@@ -379,10 +373,7 @@ auto create_tensor_like(const std::string name, const TensorType<DataType, Rank>
  * @return A new tensor with the same rank and dimensions as the provided tensor.
  */
 template <template <typename, size_t> typename TensorType, typename DataType, size_t Rank>
-    requires requires {
-        requires DeviceRankTensor<TensorType<DataType, Rank>, Rank, DataType>;
-        requires !BlockRankTensor<TensorType<DataType, Rank>, Rank, DataType>;
-    }
+    requires DeviceRankBasicTensor<TensorType<DataType, Rank>, Rank, DataType>
 auto create_tensor_like(const std::string name, const TensorType<DataType, Rank> &tensor,
                         einsums::detail::HostToDeviceMode mode = einsums::detail::DEV_ONLY) -> DeviceTensor<DataType, Rank> {
     auto result = DeviceTensor<DataType, Rank>{tensor.dims(), mode};
@@ -402,10 +393,7 @@ auto create_tensor_like(const std::string name, const TensorType<DataType, Rank>
  * @return A new tensor with the same rank and dimensions as the provided tensor.
  */
 template <template <typename, size_t> typename TensorType, typename DataType, size_t Rank>
-    requires requires {
-        requires CoreRankTensor<TensorType<DataType, Rank>, Rank, DataType>;
-        requires BlockRankTensor<TensorType<DataType, Rank>, Rank, DataType>;
-    }
+    requires CoreRankBlockTensor<TensorType<DataType, Rank>, Rank, DataType>
 auto create_tensor_like(const std::string name, const TensorType<DataType, Rank> &tensor) -> BlockTensor<DataType, Rank> {
     auto result = BlockTensor<DataType, Rank>{"(unnamed)", tensor.vector_dims()};
     result.set_name(name);
@@ -425,10 +413,7 @@ auto create_tensor_like(const std::string name, const TensorType<DataType, Rank>
  * @return A new tensor with the same rank and dimensions as the provided tensor.
  */
 template <template <typename, size_t> typename TensorType, typename DataType, size_t Rank>
-    requires requires {
-        requires DeviceRankTensor<TensorType<DataType, Rank>, Rank, DataType>;
-        requires BlockRankTensor<TensorType<DataType, Rank>, Rank, DataType>;
-    }
+    requires DeviceRankBlockTensor<TensorType<DataType, Rank>, Rank, DataType>
 auto create_tensor_like(const std::string name, const TensorType<DataType, Rank> &tensor,
                         einsums::detail::HostToDeviceMode mode = einsums::detail::DEV_ONLY) -> BlockDeviceTensor<DataType, Rank> {
     auto result = BlockDeviceTensor<DataType, Rank>{"(unnamed)", tensor.vector_dims(), mode};
@@ -485,11 +470,6 @@ auto arange(T start, T stop, T step = T{1}) -> Tensor<T, 1> {
 template <NotComplex T>
 auto arange(T stop) -> Tensor<T, 1> {
     return arange(T{0}, stop);
-}
-
-template <typename T>
-auto divmod(T n, T d) -> std::tuple<T, T> {
-    return {n / d, n % d};
 }
 
 struct DisableOMPNestedScope {

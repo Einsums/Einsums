@@ -102,4 +102,4 @@ To be classified
 
 .. doxygenfunction:: einsums::linear_algebra::syev(AType<T, ARank> *A, WType<T, WRank> *W)
 
-.. doxygenfunction:: einsums::linear_algebra::syev(const AType<T, ARank> &A)
+.. doxygenfunction:: einsums::linear_algebra::syev(const AType<T, 2> &A)
