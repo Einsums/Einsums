@@ -1350,9 +1350,9 @@ TEST_CASE("GPU Hadamard") {
 
     SECTION("i,i <- i,j,k * j,i,k") {
         DeviceTensor<double, 3> A{"A", einsums::detail::DEV_ONLY, _i, _j, _k};
-        A = create_random_tensor("A", _i, _j, _i);
+        A = create_random_tensor("A", _i, _j, _k);
         DeviceTensor<double, 3> B{"B", einsums::detail::DEV_ONLY, _j, _i, _k};
-        B = create_random_tensor("B", _j, _i, _j);
+        B = create_random_tensor("B", _j, _i, _k);
         DeviceTensor<double, 2> C{"C", einsums::detail::DEV_ONLY, _i, _i};
         DeviceTensor<double, 2> C0{"C0", einsums::detail::DEV_ONLY, _i, _i};
         C0.zero();

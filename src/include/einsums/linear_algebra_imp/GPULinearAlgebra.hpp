@@ -6,6 +6,7 @@
 #include "einsums/DeviceTensor.hpp"
 #include "einsums/_Index.hpp"
 #include "einsums/utility/SmartPointerTraits.hpp"
+#include "einsums/utility/IndexUtils.hpp"
 
 #include <hip/driver_types.h>
 #include <hip/hip_common.h>
@@ -16,6 +17,9 @@
 #include <hipsolver/internal/hipsolver-types.h>
 
 namespace einsums::tensor_algebra {
+    namespace detail {
+
+    }
 template <NotASmartPointer ObjectA, NotASmartPointer ObjectC, typename... CIndices, typename... AIndices>
 void sort(const std::tuple<CIndices...> &C_indices, ObjectC *C, const std::tuple<AIndices...> &A_indices, const ObjectA &A);
 }
@@ -165,19 +169,21 @@ __global__ void direct_product_kernel(T beta, T *__restrict__ C, const size_t *_
 
     get_worker_info(thread_id, kernel_size);
 
+    size_t index[Rank];
+
     for (size_t curr = thread_id; curr < elems; curr += kernel_size) {
-        size_t quotient = curr;
+        
+        einsums::tensor_algebra::detail::sentinel_to_indices<Rank>(curr, Index_strides, index);
 
         size_t A_index = 0, B_index = 0, C_index = 0;
 
-        for (int i = 0; i < Rank; i++) {
-            size_t rem = quotient % Index_strides[i];
-            quotient /= Index_dims[i];
-
-            A_index += rem * A_strides[i];
-            B_index += rem * B_strides[i];
-            C_index += rem * C_strides[i];
+        for(int i = 0; i < Rank; i++) {
+            A_index += index[i] * A_strides[i];
+            B_index += index[i] * B_strides[i];
+            C_index += index[i] * C_strides[i];
         }
+
+        
 
         C[C_index] = beta * C[C_index] + alpha * A[A_index] * B[B_index];
     }
@@ -246,7 +252,11 @@ void ger(const T *alpha, const XYType<T, XYRank> &X, const XYType<T, XYRank> &Y,
     using dev_datatype = ::std::conditional_t<::std::is_same_v<T, ::std::complex<float>>, hipComplex,
                                               ::std::conditional_t<::std::is_same_v<T, ::std::complex<double>>, hipDoubleComplex, T>>;
 
-    DeviceTensor<T, ARank> A_temp(*A);
+    DeviceTensor<T, ARank> A_temp{"ger temp", einsums::detail::DEV_ONLY, A->dim(1), A->dim(0)};
+    
+    einsums::tensor_algebra::sort(einsums::tensor_algebra::Indices{einsums::tensor_algebra::index::i, einsums::tensor_algebra::index::j}, &A_temp,
+                                  einsums::tensor_algebra::Indices{einsums::tensor_algebra::index::j, einsums::tensor_algebra::index::i},
+                                  *A);
 
     gpu::ger(X.dim(0), Y.dim(0), (dev_datatype *)alpha, X.data(), X.stride(0), Y.data(), Y.stride(0), A_temp.data(), A_temp.stride(0));
 

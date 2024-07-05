@@ -109,7 +109,10 @@ auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndi
     if constexpr (einsums::detail::IsDeviceRankTensorV<AType<ADataType, ARank>, ARank, ADataType>) {
         __device_ptr__ CDataType *temp;
 
-        gpu::hip_catch(hipMalloc(temp, omp_get_max_threads() * sizeof(CDataType)));
+        size_t elems = omp_get_max_threads();
+        gpu::hip_catch(hipMalloc(temp, elems * sizeof(CDataType)));
+        __host_ptr__ CDataType *host_temp = new CDataType[elems];
+
         EINSUMS_OMP_PARALLEL_FOR
         for (int i = 0; i < A.num_blocks(); i++) {
             einsum<OnlyUseGenericAlgorithm>(CDataType(0.0), C_indices, temp + omp_get_thread_num(), AB_prefactor, A_indices, A[i], B_indices,
@@ -121,10 +124,9 @@ auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndi
         } else {
             *C *= C_prefactor;
         }
-        __host_ptr__ CDataType *host_temp = new CDataType[omp_get_max_threads()];
 
-        gpu::hip_catch(hipMemcpy(host_temp, temp, omp_get_max_threads() * sizeof(CDataType), hipMemcpyDeviceToHost));
-        *C = std::accumulate(host_temp, host_temp + omp_get_max_threads(), (CDataType)*C);
+        gpu::hip_catch(hipMemcpy(host_temp, temp, elems * sizeof(CDataType), hipMemcpyDeviceToHost));
+        *C = std::accumulate(host_temp, host_temp + elems, (CDataType)*C);
 
         delete[] host_temp;
         gpu::hip_catch(hipFree(temp));
@@ -231,7 +233,9 @@ auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndi
     if constexpr (einsums::detail::IsDeviceRankTensorV<AType<ADataType, ARank>, ARank, ADataType>) {
         __device_ptr__ CDataType *temp;
 
-        gpu::hip_catch(hipMalloc(temp, omp_get_max_threads() * sizeof(CDataType)));
+        size_t elems = omp_get_max_threads();
+        gpu::hip_catch(hipMalloc(temp, elems * sizeof(CDataType)));
+        __host_ptr__ CDataType *host_temp = new CDataType[elems];
         EINSUMS_OMP_PARALLEL_FOR
         for (int i = 0; i < B.num_blocks(); i++) {
             std::array<Range, ARank> view_index;
@@ -245,10 +249,9 @@ auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndi
         } else {
             *C *= C_prefactor;
         }
-        __host_ptr__ CDataType *host_temp = new CDataType[omp_get_max_threads()];
 
-        gpu::hip_catch(hipMemcpy(host_temp, temp, omp_get_max_threads() * sizeof(CDataType), hipMemcpyDeviceToHost));
-        *C = std::accumulate(host_temp, host_temp + omp_get_max_threads(), (CDataType)*C);
+        gpu::hip_catch(hipMemcpy(host_temp, temp, elems * sizeof(CDataType), hipMemcpyDeviceToHost));
+        *C = std::accumulate(host_temp, host_temp + elems, (CDataType)*C);
 
         delete[] host_temp;
         gpu::hip_catch(hipFree(temp));
@@ -358,7 +361,10 @@ auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndi
     if constexpr (einsums::detail::IsDeviceRankTensorV<AType<ADataType, ARank>, ARank, ADataType>) {
         __device_ptr__ CDataType *temp;
 
-        gpu::hip_catch(hipMalloc(temp, omp_get_max_threads() * sizeof(CDataType)));
+        size_t elems = omp_get_max_threads();
+
+        gpu::hip_catch(hipMalloc(temp, elems * sizeof(CDataType)));
+        __host_ptr__ CDataType *host_temp = new CDataType[elems];
         EINSUMS_OMP_PARALLEL_FOR
         for (int i = 0; i < A.num_blocks(); i++) {
             std::array<Range, BRank> view_index;
@@ -372,10 +378,9 @@ auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndi
         } else {
             *C *= C_prefactor;
         }
-        __host_ptr__ CDataType *host_temp = new CDataType[omp_get_max_threads()];
 
-        gpu::hip_catch(hipMemcpy(host_temp, temp, omp_get_max_threads() * sizeof(CDataType), hipMemcpyDeviceToHost));
-        *C = std::accumulate(host_temp, host_temp + omp_get_max_threads(), (CDataType)*C);
+        gpu::hip_catch(hipMemcpy(host_temp, temp, elems * sizeof(CDataType), hipMemcpyDeviceToHost));
+        *C = std::accumulate(host_temp, host_temp + elems, (CDataType)*C);
 
         delete[] host_temp;
         gpu::hip_catch(hipFree(temp));

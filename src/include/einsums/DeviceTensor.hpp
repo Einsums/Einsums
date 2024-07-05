@@ -129,15 +129,8 @@ class HostDevReference {
             return *_ptr;
         } else {
             T out;
-            try {
             gpu::hip_catch(hipMemcpy((void *)&out, (const void *)_ptr, sizeof(T), hipMemcpyDeviceToHost));
-            } catch (gpu::detail::ErrorInvalidValue &e) {
-                printf("Pointers: %p and %p\n", &out, _ptr);
-                throw e;
-            } catch (gpu::detail::ErrorInvalidMemcpyDirection &e) {
-                printf("Pointers: %p and %p\n", &out, _ptr);
-                throw e;
-            }
+
             return out;
         }
     }

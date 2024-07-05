@@ -146,7 +146,9 @@ auto create_random_tensor(const std::string &name, MultiIndex... index) -> Tenso
 #ifdef __HIP__
 template <typename T = double, bool Normalize = false, typename... MultiIndex>
 auto create_random_gpu_tensor(const std::string &name, MultiIndex... index) -> DeviceTensor<T, sizeof...(MultiIndex)> {
-    return DeviceTensor<T, sizeof...(MultiIndex)>(create_random_tensor<T, Normalize, MultiIndex...>(name, index...));
+    DeviceTensor<T, sizeof...(MultiIndex)> out{name, einsums::detail::DEV_ONLY, index...};
+    out = create_random_tensor<T, Normalize, MultiIndex...>(name, index...);
+    return out;
 }
 #endif
 

@@ -966,7 +966,11 @@ DeviceTensor<T, Rank> &DeviceTensor<T, Rank>::assign(const Tensor<T, Rank> &othe
         hip_catch(hipMemcpy((void *)this->_gpu_strides, (const void *)this->_strides.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
     }
 
-    hip_catch(hipMemcpy((void *)this->_data, (const void *)other.data(), this->size() * sizeof(T), hipMemcpyHostToDevice));
+    if(this->_mode == einsums::detail::DEV_ONLY) {
+        hip_catch(hipMemcpy((void *)this->_data, (const void *)other.data(), this->size() * sizeof(T), hipMemcpyHostToDevice));
+    } else {
+        std::memcpy(this->_host_data, other.data(), this->size() * sizeof(T));
+    }
 
     return *this;
 }
@@ -1458,15 +1462,16 @@ DeviceTensor<T, Rank>::DeviceTensor(const Tensor<T, Rank> &copy, einsums::detail
         this->_host_data = new T[copy.size()];
         hip_catch(hipHostRegister((void *)this->_host_data, copy.size() * sizeof(T), hipHostRegisterDefault));
         hip_catch(hipHostGetDevicePointer((void **)&(this->_data), (void *)this->_host_data, 0));
+        std::memcpy(this->_host_data, copy.data(), copy.size() * sizeof(T));
     } else if (mode == einsums::detail::PINNED) {
         hip_catch(hipHostMalloc((void **)&(this->_host_data), copy.size() * sizeof(T), 0));
         hip_catch(hipHostGetDevicePointer((void **)&(this->_data), (void *)this->_host_data, 0));
+        std::memcpy(this->_host_data, copy.data(), copy.size() * sizeof(T));
     } else if (mode == einsums::detail::DEV_ONLY) {
         this->_host_data = nullptr;
         hip_catch(hipMalloc((void **)&(this->_data), copy.size() * sizeof(T)));
+        hip_catch(hipMemcpy((void *)this->_data, (const void *)copy.data(), copy.size() * sizeof(T), hipMemcpyHostToDevice));
     }
-
-    hip_catch(hipMemcpy((void *)this->_data, (const void *)copy.data(), copy.size() * sizeof(T), hipMemcpyHostToDevice));
 
     hip_catch(hipMalloc((void **)&(this->_gpu_dims), 2 * sizeof(size_t) * Rank));
     this->_gpu_strides = this->_gpu_dims + Rank;
