@@ -8,6 +8,44 @@
 #endif
 
 namespace einsums::linear_algebra::detail {
+template <template <typename, size_t> typename AType, template <typename, size_t> typename BType, typename T, size_t Rank>
+    requires requires {
+        requires RankTiledTensor<AType<T, Rank>, Rank, T>;
+        requires RankTiledTensor<BType<T, Rank>, Rank, T>;
+    }
+auto dot(const AType<T, Rank> &A, const BType<T, Rank> &B) -> T {
+    std::array<size_t, Rank> strides;
+
+    size_t prod = 1;
+
+    for (int i = 0; i < Rank; i++) {
+        if (A.grid_size(i) != B.grid_size(i)) {
+            throw std::runtime_error("dot: Tiled tensors have incompatible tiles.");
+        }
+
+        strides[Rank - 1 - i] = prod;
+        prod *= A.grid_size(i);
+    }
+    T out = 0;
+
+#pragma omp parallel for reduction(+ : out)
+    for (size_t index = 0; index < A.grid_size(); index++) {
+        std::array<size_t, Rank> index_arr;
+
+        for (int i = 0; i < Rank; i++) {
+            index_arr[i] = index / strides[i];
+            index %= A.grid_size(i);
+        }
+
+        if (!A.has_tile(index_arr) || !B.has_tile(index_arr) || A.has_zero_size(index_arr) || B.has_zero_size(index_arr)) {
+            continue;
+        }
+        out += dot(A.tile(index_arr), B.tile(index_arr));
+    }
+
+    return out;
+}
+
 template <bool TransA, bool TransB, template <typename, size_t> typename AType, template <typename, size_t> typename BType,
           template <typename, size_t> typename CType, size_t Rank, typename T, typename U>
     requires requires {
@@ -243,6 +281,38 @@ void direct_product(T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, T
         if (A.has_tile(index) && B.has_tile(index)) {
             direct_product(alpha, A.tile(index), B.tile(index), beta, &(C->tile(index)));
         }
+    }
+}
+
+template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename XYType, size_t XYRank, typename T>
+    requires requires {
+        requires RankTiledTensor<AType<T, ARank>, 2, T>;
+        requires RankTiledTensor<XYType<T, XYRank>, 1, T>;
+    }
+void ger(T alpha, const XYType<T, XYRank> &X, const XYType<T, XYRank> &Y, AType<T, ARank> *A) {
+    if (A->grid_size(0) != X.grid_size(0) && A->grid_size(1) != Y.grid_size(0)) {
+        throw std::runtime_error("ger: Tiled tensors have incompatible grids!");
+    }
+
+#pragma omp parallel for collapse(2)
+    for (int i = 0; i < X.grid_size(); i++) {
+        for (int j = 0; j < Y.grid_size(); j++) {
+            if (X.has_zero_size(i) || Y.has_zero_size(j) || !X.has_tile(i) || !Y.has_tile(j)) {
+                continue;
+            }
+            auto &a_tile = A->tile(i, j);
+
+            ger(alpha, X.tile[i], Y.tile[j], &a_tile);
+        }
+    }
+}
+
+template <template <typename, size_t> typename AType, typename T, size_t Rank>
+requires RankTiledTensor<AType<T, Rank>, Rank, T>
+void scale(T alpha, AType<T, Rank> *A) {
+    EINSUMS_OMP_PARALLEL_FOR
+    for (auto it = A->tiles().begin(); it != A->tiles().end(); it++) {
+        scale(alpha, &(it->second));
     }
 }
 

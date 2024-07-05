@@ -452,7 +452,7 @@ auto dot(const AType<T, 1> &A, const BType<T, 1> &B) -> T {
 }
 
 template <template <typename, size_t> typename AType, template <typename, size_t> typename BType, typename T, size_t Rank>
-    requires InSamePlace<AType<T, 1>, BType<T, 1>, 1, 1, T, T>
+    requires InSamePlace<AType<T, Rank>, BType<T, Rank>, Rank, Rank, T, T>
 auto dot(const AType<T, Rank> &A, const BType<T, Rank> &B) -> T {
 
     LabeledSection0();
