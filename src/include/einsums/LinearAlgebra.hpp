@@ -288,7 +288,6 @@ auto gesv(AType<T, ARank> *A, BType<T, BRank> *B) -> int {
  * @endcode
  *
  * @tparam AType The type of the tensor A
- * @tparam ARank The rank of the tensor A (required to be 2)
  * @tparam T The underlying data type (required to be real)
  * @tparam ComputeEigenvectors If true, eigenvalues and eigenvectors are computed. If false, only eigenvalues are computed. Defaults to
  * true.
