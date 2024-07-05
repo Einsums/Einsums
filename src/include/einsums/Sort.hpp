@@ -73,8 +73,8 @@ auto sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<
     auto a_dims      = detail::get_dim_ranges_for(A, target_position_in_A);
 
     // If the prefactor is zero, set the tensor to zero. This avoids NaNs.
-    if (C_prefactor == T(0.0)) {
-        *C = T(0.0);
+    if (C_prefactor == T{0.0}) {
+        *C = T{0.0};
     }
 
     // HPTT interface currently only works for full Tensors and not TensorViews
