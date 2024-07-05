@@ -166,7 +166,7 @@ jobs:
 
       - name: Test (CTest) - unit tests
         working-directory: "${{github.workspace}}/build"
-        run: ctest
+        run: ctest --rerun-failed --output-on-failure
 
       - name: Test (find_package) - consume installation
         shell: bash -l {0}
