@@ -1239,7 +1239,7 @@ __global__ void add_and_assign_scal(T *to_data, const size_t *to_dims, const siz
         size_t to_ind = combination_to_index<Rank>(inds, to_dims, to_strides);
 
         // Do the copy.
-        to_data[to_ind] += scalar;
+        to_data[to_ind] = to_data[to_ind] + scalar;
 
         // Increment.
         curr_element += kernel_size;
@@ -1282,7 +1282,7 @@ __global__ void sub_and_assign_scal(T *to_data, const size_t *to_dims, const siz
         size_t to_ind = combination_to_index<Rank>(inds, to_dims, to_strides);
 
         // Do the copy.
-        to_data[to_ind] -= scalar;
+        to_data[to_ind] = to_data[to_ind] - scalar;
 
         // Increment.
         curr_element += kernel_size;
@@ -1325,7 +1325,7 @@ __global__ void mul_and_assign_scal(T *to_data, const size_t *to_dims, const siz
         size_t to_ind = combination_to_index<Rank>(inds, to_dims, to_strides);
 
         // Do the copy.
-        to_data[to_ind] *= scalar;
+        to_data[to_ind] = to_data[to_ind] * scalar;
 
         // Increment.
         curr_element += kernel_size;
@@ -1367,7 +1367,7 @@ __global__ void div_and_assign_scal(T *to_data, const size_t *to_dims, const siz
         size_t to_ind = combination_to_index<Rank>(inds, to_dims, to_strides);
 
         // Do the copy.
-        to_data[to_ind] /= scalar;
+        to_data[to_ind] = to_data[to_ind] / scalar;
 
         // Increment.
         curr_element += kernel_size;
@@ -1381,8 +1381,8 @@ __global__ void div_and_assign_scal(T *to_data, const size_t *to_dims, const siz
 template <typename T, size_t Rank>
 DeviceTensor<T, Rank> &DeviceTensor<T, Rank>::add_assign(const T &other) {
     using namespace einsums::gpu;
-    einsums::detail::add_and_assign_scal<T, Rank><<<block_size(this->size()), blocks(this->size()), 0, get_stream()>>>(
-        this->_data, this->_gpu_dims, this->_gpu_strides, other, _strides[0] * _dims[0]);
+    einsums::detail::add_and_assign_scal<dev_datatype, Rank><<<block_size(this->size()), blocks(this->size()), 0, get_stream()>>>(
+        this->_data, this->_gpu_dims, this->_gpu_strides, einsums::gpu::HipCast<dev_datatype, T>::cast(other), _strides[0] * _dims[0]);
     gpu::stream_wait();
     return *this;
 }
@@ -1390,8 +1390,8 @@ DeviceTensor<T, Rank> &DeviceTensor<T, Rank>::add_assign(const T &other) {
 template <typename T, size_t Rank>
 DeviceTensor<T, Rank> &DeviceTensor<T, Rank>::sub_assign(const T &other) {
     using namespace einsums::gpu;
-    einsums::detail::sub_and_assign_scal<T, Rank><<<block_size(this->size()), blocks(this->size()), 0, get_stream()>>>(
-        this->_data, this->_gpu_dims, this->_gpu_strides, other, _strides[0] * _dims[0]);
+    einsums::detail::sub_and_assign_scal<dev_datatype, Rank><<<block_size(this->size()), blocks(this->size()), 0, get_stream()>>>(
+        this->_data, this->_gpu_dims, this->_gpu_strides, einsums::gpu::HipCast<dev_datatype, T>::cast(other), _strides[0] * _dims[0]);
     gpu::stream_wait();
     return *this;
 }
@@ -1399,8 +1399,8 @@ DeviceTensor<T, Rank> &DeviceTensor<T, Rank>::sub_assign(const T &other) {
 template <typename T, size_t Rank>
 DeviceTensor<T, Rank> &DeviceTensor<T, Rank>::mult_assign(const T &other) {
     using namespace einsums::gpu;
-    einsums::detail::mul_and_assign_scal<T, Rank><<<block_size(this->size()), blocks(this->size()), 0, get_stream()>>>(
-        this->_data, this->_gpu_dims, this->_gpu_strides, other, _strides[0] * _dims[0]);
+    einsums::detail::mul_and_assign_scal<dev_datatype, Rank><<<block_size(this->size()), blocks(this->size()), 0, get_stream()>>>(
+        this->_data, this->_gpu_dims, this->_gpu_strides, einsums::gpu::HipCast<dev_datatype, T>::cast(other), _strides[0] * _dims[0]);
     gpu::stream_wait();
     return *this;
 }
@@ -1408,8 +1408,8 @@ DeviceTensor<T, Rank> &DeviceTensor<T, Rank>::mult_assign(const T &other) {
 template <typename T, size_t Rank>
 DeviceTensor<T, Rank> &DeviceTensor<T, Rank>::div_assign(const T &other) {
     using namespace einsums::gpu;
-    einsums::detail::div_and_assign_scal<T, Rank><<<block_size(this->size()), blocks(this->size()), 0, get_stream()>>>(
-        this->_data, this->_gpu_dims, this->_gpu_strides, other, _strides[0] * _dims[0]);
+    einsums::detail::div_and_assign_scal<dev_datatype, Rank><<<block_size(this->size()), blocks(this->size()), 0, get_stream()>>>(
+        this->_data, this->_gpu_dims, this->_gpu_strides, einsums::gpu::HipCast<dev_datatype, T>::cast(other), _strides[0] * _dims[0]);
     gpu::stream_wait();
     return *this;
 }

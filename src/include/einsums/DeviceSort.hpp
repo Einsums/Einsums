@@ -7,6 +7,7 @@
 
 #include "einsums/_Common.hpp"
 #include "einsums/_Compiler.hpp"
+#include "einsums/_GPUCast.hpp"
 #include "einsums/_GPUUtils.hpp"
 #include "einsums/_TensorAlgebraUtilities.hpp"
 
@@ -124,7 +125,11 @@ auto sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<
                 size[i0]  = A.dim(ARank - i0 - 1);
             }
 
-            detail::gpu_sort(perms.data(), ARank, A_prefactor, A.data(), size.data(), C_prefactor, C->data());
+            using T_devtype  = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<decltype(C->data())>>>;
+            using T_hosttype = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<T>>>;
+
+            detail::gpu_sort(perms.data(), ARank, einsums::gpu::HipCast<T_devtype, T_hosttype>::cast(A_prefactor), A.data(), size.data(),
+                             einsums::gpu::HipCast<T_devtype, T_hosttype>::cast(C_prefactor), C->data());
             if (A_prefactor != T{1.0}) {
                 *C *= A_prefactor; // Librett does not handle prefactors (yet?)
             }
