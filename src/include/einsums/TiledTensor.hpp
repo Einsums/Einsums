@@ -759,6 +759,8 @@ class TiledTensor final : public TiledTensorBase<Tensor, T, Rank> {
     template <typename... Sizes>
     TiledTensor(std::string name, Sizes... sizes) : TiledTensorBase<Tensor, T, Rank>(name, sizes...) {}
 
+    TiledTensor(std::string name, std::initializer_list<int> init) : TiledTensorBase<Tensor, T, Rank>(name, init) {}
+
     TiledTensor(const TiledTensor<T, Rank> &other) : TiledTensorBase<Tensor, T, Rank>(other) {}
 
     ~TiledTensor() = default;

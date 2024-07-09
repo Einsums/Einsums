@@ -231,8 +231,8 @@ void gemv(const U alpha, const AType<T, ARank> &A, const XType<T, XYRank> &z, co
  *   Any data previously stored in A is destroyed.
  * @param W On exit, the eigenvalues in ascending order.
  */
-template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename WType, size_t WRank, typename T,
-          bool ComputeEigenvectors = true>
+template <bool ComputeEigenvectors = true, template <typename, size_t> typename AType, size_t ARank,
+          template <typename, size_t> typename WType, size_t WRank, typename T>
     requires requires {
         requires InSamePlace<AType<T, ARank>, WType<T, WRank>, 2, 1, T, T>;
         requires !Complex<T>;
@@ -240,27 +240,27 @@ template <template <typename, size_t> typename AType, size_t ARank, template <ty
 void syev(AType<T, ARank> *A, WType<T, WRank> *W) {
 
     LabeledSection1(fmt::format("<ComputeEigenvectors={}>", ComputeEigenvectors));
-    detail::syev<AType, ARank, WType, WRank, T, ComputeEigenvectors>(A, W);
+    detail::syev<ComputeEigenvectors>(A, W);
 }
 
-template <template <typename, size_t> typename AType, size_t ARank, template <Complex, size_t> typename WType, size_t WRank, typename T,
-          bool ComputeLeftRightEigenvectors = true>
+template <bool ComputeLeftRightEigenvectors = true, template <typename, size_t> typename AType, size_t ARank,
+          template <Complex, size_t> typename WType, size_t WRank, typename T>
     requires InSamePlace<AType<T, ARank>, WType<AddComplexT<T>, WRank>, 2, 1, T, AddComplexT<T>>
 void geev(AType<T, ARank> *A, WType<AddComplexT<T>, WRank> *W, AType<T, ARank> *lvecs, AType<T, ARank> *rvecs) {
     LabeledSection1(fmt::format("<ComputeLeftRightEigenvectors={}>", ComputeLeftRightEigenvectors));
 
-    detail::geev<AType, ARank, WType, WRank, T, ComputeLeftRightEigenvectors>(A, W, lvecs, rvecs);
+    detail::geev<ComputeLeftRightEigenvectors>(A, W, lvecs, rvecs);
 }
 
-template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename WType, size_t WRank, typename T,
-          bool ComputeEigenvectors = true>
+template <bool ComputeEigenvectors = true, template <typename, size_t> typename AType, size_t ARank,
+          template <typename, size_t> typename WType, size_t WRank, typename T>
     requires requires {
         requires InSamePlace<AType<T, ARank>, WType<RemoveComplexT<T>, WRank>, 2, 1, T, RemoveComplexT<T>>;
         requires Complex<T>;
     }
 void heev(AType<T, ARank> *A, WType<RemoveComplexT<T>, WRank> *W) {
     LabeledSection1(fmt::format("<ComputeEigenvectors={}>", ComputeEigenvectors));
-    detail::heev<AType, ARank, WType, WRank, T, ComputeEigenvectors>(A, W);
+    detail::heev<ComputeEigenvectors>(A, W);
 }
 
 template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename BType, size_t BRank, typename T>
@@ -295,33 +295,34 @@ auto gesv(AType<T, ARank> *A, BType<T, BRank> *B) -> int {
  * @return std::tuple<Tensor<T, 2>, Tensor<T, 1>> The eigenvectors and eigenvalues.
  */
 template <template <typename, size_t> typename AType, typename T, bool ComputeEigenvectors = true>
-auto syev(const AType<T, 2> &A) -> std::tuple<remove_view_t<AType, 2, T>, 
+auto syev(const AType<T, 2> &A)
+    -> std::tuple<remove_view_t<AType, 2, T>,
 #ifdef __HIP__
-std::conditional_t<einsums::detail::IsDeviceRankTensorV<AType<T, 1>, 1, T>, DeviceTensor<T, 1>, Tensor<T, 1>>
+                  std::conditional_t<einsums::detail::IsDeviceRankTensorV<AType<T, 1>, 1, T>, DeviceTensor<T, 1>, Tensor<T, 1>>
 #else
-Tensor<T, 1>
+                  Tensor<T, 1>
 #endif
-> {
+                  > {
     LabeledSection0();
 
     assert(A.dim(0) == A.dim(1));
 
     remove_view_t<AType, 2, T> a = A;
-    #ifdef __HIP__
+#ifdef __HIP__
     if constexpr (einsums::detail::IsDeviceRankTensorV<AType<T, 2>, 2, T>) {
         DeviceTensor<T, 1> w{"eigenvalues", einsums::detail::DEV_ONLY, A.dim(0)};
         syev<ComputeEigenvectors>(&a, &w);
         return std::make_tuple(a, w);
     } else {
-    #endif
-    Tensor<T, 1> w{"eigenvalues", A.dim(0)};
+#endif
+        Tensor<T, 1> w{"eigenvalues", A.dim(0)};
 
-    syev<ComputeEigenvectors>(&a, &w);
+        syev<ComputeEigenvectors>(&a, &w);
 
-    return std::make_tuple(a, w);
-    #ifdef __HIP__
+        return std::make_tuple(a, w);
+#ifdef __HIP__
     }
-    #endif
+#endif
 }
 
 /**
@@ -373,8 +374,6 @@ void scale_column(size_t col, T scale, AType<T, ARank> *A) {
  * @param cutoff Values below cutoff are considered zero.
  *
  * @return std::enable_if_t<std::is_base_of_v<Detail::TensorBase<double, 2>, AType>, AType>
- *
- * TODO This function needs to have a test case implemented.
  */
 template <template <typename, size_t> typename AType, size_t ARank, typename T>
     requires(ARank == 2)
@@ -385,16 +384,16 @@ auto pow(const AType<T, ARank> &a, T alpha, T cutoff = std::numeric_limits<T>::e
     if constexpr (einsums::detail::IsDeviceRankTensorV<AType<T, ARank>, ARank, T>) {
         DeviceTensor<T, 1> Evals(Dim<1>{a.dim(0)}, ::einsums::detail::DEV_ONLY);
 
-        remove_view_t<AType, 2, T> Evecs(Dim<2>{a.dim(0), a.dim(1)});
+        remove_view_t<AType, 2, T> Evecs = create_tensor_like(a);
 
-        remove_view_t<AType, 2, T> Diag(Dim<2>{a.dim(0), a.dim(1)}, ::einsums::detail::DEV_ONLY);
+        remove_view_t<AType, 2, T> Diag = create_tensor_like(a);
 
-        remove_view_t<AType, 2, T> out(Dim<2>{a.dim(0), a.dim(1)}, ::einsums::detail::DEV_ONLY);
-        remove_view_t<AType, 2, T> temp(Dim<2>{a.dim(0), a.dim(1)}, ::einsums::detail::DEV_ONLY);
+        remove_view_t<AType, 2, T> out = create_tensor_like(a);
+        remove_view_t<AType, 2, T> temp = create_tensor_like(a);
 
         Evecs.assign(a);
 
-        syev(&Evecs, &Evals);
+        syev<true>(&Evecs, &Evals);
 
         Diag.zero();
 
@@ -411,16 +410,25 @@ auto pow(const AType<T, ARank> &a, T alpha, T cutoff = std::numeric_limits<T>::e
 
         size_t                     n  = a.dim(0);
         remove_view_t<AType, 2, T> a1 = a;
-        remove_view_t<AType, 2, T> result{"pow result", a.dim(0), a.dim(1)};
+        remove_view_t<AType, 2, T> result = create_tensor_like(a);
+        result.set_name("pow result");
         Tensor<T, 1>               e{"e", n};
+        result.zero();
 
         // Diagonalize
-        syev(&a1, &e);
+        syev<true>(&a1, &e);
 
-        remove_view_t<AType, 2, T> a2 = a1;
+        remove_view_t<AType, 2, T> a2(a1);
 
         // Determine the largest magnitude of the eigenvalues to use as a scaling factor for the cutoff.
-        double max_e = std::fabs(e(n - 1)) > std::fabs(e(0)) ? std::fabs(e(n - 1)) : std::fabs(e(0));
+
+        double max_e = 0;
+        // Block tensors don't have sorted eigenvalues, so we can't make assumptions about ordering.
+        for(int i = 0; i < n; i++) {
+            if(std::fabs(e(i)) > max_e) {
+                max_e = std::fabs(e(i));
+            }
+        }
 
         for (size_t i = 0; i < n; i++) {
             if (alpha < 0.0 && std::fabs(e(i)) < cutoff * max_e) {

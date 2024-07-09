@@ -23,6 +23,21 @@
 
 BEGIN_EINSUMS_NAMESPACE_HPP(einsums::tensor_algebra)
 
+namespace detail {
+template <bool OnlyUseGenericAlgorithm, template <typename, size_t> typename AType, typename ADataType, size_t ARank,
+          template <typename, size_t> typename BType, typename BDataType, size_t BRank, template <typename, size_t> typename CType,
+          typename CDataType, size_t CRank, typename... CIndices, typename... AIndices, typename... BIndices>
+    requires requires {
+        requires std::derived_from<AType<ADataType, ARank>, ::einsums::detail::TensorBase<ADataType, ARank>>;
+        requires std::derived_from<BType<BDataType, BRank>, ::einsums::detail::TensorBase<BDataType, BRank>>;
+        requires std::derived_from<CType<CDataType, CRank>, ::einsums::detail::TensorBase<CDataType, CRank>>;
+    }
+auto einsum(const CDataType C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType<CDataType, CRank> *C,
+            const std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> AB_prefactor,
+            const std::tuple<AIndices...> & /*As*/, const AType<ADataType, ARank> &A, const std::tuple<BIndices...> & /*Bs*/,
+            const BType<BDataType, BRank> &B) -> void;
+} // namespace detail
+
 /*
  * Dispatchers for einsum.
  */

@@ -2,11 +2,11 @@
 
 #include "einsums/_GPUCast.hpp"
 #include "einsums/_GPUUtils.hpp"
+#include "einsums/_Index.hpp"
 
 #include "einsums/DeviceTensor.hpp"
-#include "einsums/_Index.hpp"
-#include "einsums/utility/SmartPointerTraits.hpp"
 #include "einsums/utility/IndexUtils.hpp"
+#include "einsums/utility/SmartPointerTraits.hpp"
 
 #include <hip/driver_types.h>
 #include <hip/hip_common.h>
@@ -17,12 +17,10 @@
 #include <hipsolver/internal/hipsolver-types.h>
 
 namespace einsums::tensor_algebra {
-    namespace detail {
-
-    }
+namespace detail {}
 template <NotASmartPointer ObjectA, NotASmartPointer ObjectC, typename... CIndices, typename... AIndices>
 void sort(const std::tuple<CIndices...> &C_indices, ObjectC *C, const std::tuple<AIndices...> &A_indices, const ObjectA &A);
-}
+} // namespace einsums::tensor_algebra
 
 namespace einsums {
 namespace linear_algebra {
@@ -172,18 +170,16 @@ __global__ void direct_product_kernel(T beta, T *__restrict__ C, const size_t *_
     size_t index[Rank];
 
     for (size_t curr = thread_id; curr < elems; curr += kernel_size) {
-        
+
         einsums::tensor_algebra::detail::sentinel_to_indices<Rank>(curr, Index_strides, index);
 
         size_t A_index = 0, B_index = 0, C_index = 0;
 
-        for(int i = 0; i < Rank; i++) {
+        for (int i = 0; i < Rank; i++) {
             A_index += index[i] * A_strides[i];
             B_index += index[i] * B_strides[i];
             C_index += index[i] * C_strides[i];
         }
-
-        
 
         C[C_index] = beta * C[C_index] + alpha * A[A_index] * B[B_index];
     }
@@ -253,10 +249,10 @@ void ger(const T *alpha, const XYType<T, XYRank> &X, const XYType<T, XYRank> &Y,
                                               ::std::conditional_t<::std::is_same_v<T, ::std::complex<double>>, hipDoubleComplex, T>>;
 
     DeviceTensor<T, ARank> A_temp{"ger temp", einsums::detail::DEV_ONLY, A->dim(1), A->dim(0)};
-    
-    einsums::tensor_algebra::sort(einsums::tensor_algebra::Indices{einsums::tensor_algebra::index::i, einsums::tensor_algebra::index::j}, &A_temp,
-                                  einsums::tensor_algebra::Indices{einsums::tensor_algebra::index::j, einsums::tensor_algebra::index::i},
-                                  *A);
+
+    einsums::tensor_algebra::sort(
+        einsums::tensor_algebra::Indices{einsums::tensor_algebra::index::i, einsums::tensor_algebra::index::j}, &A_temp,
+        einsums::tensor_algebra::Indices{einsums::tensor_algebra::index::j, einsums::tensor_algebra::index::i}, *A);
 
     gpu::ger(X.dim(0), Y.dim(0), (dev_datatype *)alpha, X.data(), X.stride(0), Y.data(), Y.stride(0), A_temp.data(), A_temp.stride(0));
 
@@ -295,13 +291,13 @@ void gemv(const T *alpha, const AType<T, ARank> &A, const XType<T, XYRank> &x, c
 
 template <template <typename, size_t> typename AType, size_t ARank, typename T>
     requires ::einsums::DeviceRankBasicTensor<AType<T, ARank>, ARank, T>
-void scale(const T *scale, AType<T, ARank> *A) {
+void scale(const T *alpha, AType<T, ARank> *A) {
     using namespace einsums::gpu;
 
     using dev_datatype = ::std::conditional_t<::std::is_same_v<T, ::std::complex<float>>, hipComplex,
                                               ::std::conditional_t<::std::is_same_v<T, ::std::complex<double>>, hipDoubleComplex, T>>;
 
-    gpu::scal(A->size(), (dev_datatype *)scale, A->data(), 1);
+    gpu::scal(A->size(), (dev_datatype *)alpha, A->data(), 1);
     stream_wait();
 }
 
@@ -469,29 +465,6 @@ int gesv(AType<T, ARank> *A, BType<T, BRank> *B) {
 
 template <template <typename, size_t> typename XType, template <typename, size_t> typename YType, typename T, size_t Rank>
     requires requires {
-        requires(!std::is_pointer_v<T>);
-        requires DeviceRankBasicTensor<XType<T, Rank>, Rank, T>;
-        requires DeviceRankBasicTensor<YType<T, Rank>, Rank, T>;
-    }
-void axpy(T alpha, const XType<T, Rank> &X, YType<T, Rank> *Y) {
-    using namespace einsums::gpu;
-
-    using dev_datatype = ::std::conditional_t<::std::is_same_v<T, ::std::complex<float>>, hipComplex,
-                                              ::std::conditional_t<::std::is_same_v<T, ::std::complex<double>>, hipDoubleComplex, T>>;
-
-    dev_datatype *alpha_gpu;
-
-    hip_catch(hipMallocAsync((void **)&alpha_gpu, sizeof(dev_datatype), get_stream()));
-
-    hip_catch(hipMemcpyAsync(alpha_gpu, &alpha, sizeof(dev_datatype), hipMemcpyHostToDevice, get_stream()));
-
-    axpy((T *)alpha_gpu, X, Y);
-
-    hip_catch(hipFreeAsync(alpha_gpu, get_stream()));
-}
-
-template <template <typename, size_t> typename XType, template <typename, size_t> typename YType, typename T, size_t Rank>
-    requires requires {
         requires DeviceRankBasicTensor<XType<T, Rank>, Rank, T>;
         requires DeviceRankBasicTensor<YType<T, Rank>, Rank, T>;
     }
@@ -512,6 +485,29 @@ void axpby(const T *alpha, const XType<T, Rank> &X, const T *beta, YType<T, Rank
 
     einsums::linear_algebra::detail::gpu::axpby(X.dim(0) * X.stride(0), alpha, X.data(), 1, beta, Y->data(), 1);
     stream_wait();
+}
+
+template <template <typename, size_t> typename XType, template <typename, size_t> typename YType, typename T, size_t Rank>
+    requires requires {
+        requires(!std::is_pointer_v<T>);
+        requires DeviceRankBasicTensor<XType<T, Rank>, Rank, T>;
+        requires DeviceRankBasicTensor<YType<T, Rank>, Rank, T>;
+    }
+void axpy(T alpha, const XType<T, Rank> &X, YType<T, Rank> *Y) {
+    using namespace einsums::gpu;
+
+    using dev_datatype = ::std::conditional_t<::std::is_same_v<T, ::std::complex<float>>, hipComplex,
+                                              ::std::conditional_t<::std::is_same_v<T, ::std::complex<double>>, hipDoubleComplex, T>>;
+
+    dev_datatype *alpha_gpu;
+
+    hip_catch(hipMallocAsync((void **)&alpha_gpu, sizeof(dev_datatype), get_stream()));
+
+    hip_catch(hipMemcpyAsync(alpha_gpu, &alpha, sizeof(dev_datatype), hipMemcpyHostToDevice, get_stream()));
+
+    axpy((T *)alpha_gpu, X, Y);
+
+    hip_catch(hipFreeAsync(alpha_gpu, get_stream()));
 }
 
 template <template <typename, size_t> typename XType, template <typename, size_t> typename YType, typename T, size_t Rank>
@@ -541,8 +537,8 @@ void axpby(T alpha, const XType<T, Rank> &X, T beta, YType<T, Rank> *Y) {
 /**
  * @brief Computes the eigenvalues and eigenvectors of a symmetric matrix.
  */
-template <bool ComputeEigenvectors, template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename WType,
-          size_t WRank, typename T>
+template <bool ComputeEigenvectors = true, template <typename, size_t> typename AType, size_t ARank,
+          template <typename, size_t> typename WType, size_t WRank, typename T>
     requires requires {
         requires ::einsums::DeviceRankBasicTensor<AType<T, ARank>, 2, T>;
         requires ::einsums::DeviceRankBasicTensor<WType<T, WRank>, 1, T>;
@@ -581,51 +577,21 @@ __global__ void eig_to_diag(T *out_matrix, int n, int lda, const T *eigs, T expo
 } // namespace gpu
 } // namespace detail
 
-/**
- * @brief Computes the power of a symmetric matrix.
- */
-template <template <typename, size_t> typename AType, typename T, size_t ARank>
-    requires ::einsums::DeviceRankBasicTensor<AType<T, ARank>, 2, T>
-AType<T, ARank> pow(const AType<T, ARank> &A, T expo) {
-    using namespace einsums::gpu;
-    using namespace einsums;
-    DeviceTensor<T, 1> Evals(Dim<1>{A.dim(0)}, ::einsums::detail::DEV_ONLY);
-
-    DeviceTensor<T, 2> Evecs(Dim<2>{A.dim(0), A.dim(1)});
-
-    DeviceTensor<T, 2> Diag(Dim<2>{A.dim(0), A.dim(1)}, ::einsums::detail::DEV_ONLY);
-
-    DeviceTensor<T, 2> out(Dim<2>{A.dim(0), A.dim(1)}, ::einsums::detail::DEV_ONLY);
-    DeviceTensor<T, 2> temp(Dim<2>{A.dim(0), A.dim(1)}, ::einsums::detail::DEV_ONLY);
-
-    Evecs.assign(A);
-
-    syev(&Evecs, &Evals);
-
-    Diag.zero();
-
-    detail::gpu::eig_to_diag<<<dim3(32), dim3(1), 0, get_stream()>>>(Diag.data(), Diag.dim(0), Diag.stride(0), Evals.data(), expo);
-
-    symm_gemm<false, false>(Diag, Evecs, &out);
-
-    return out;
+template <template <typename, size_t> typename AType, size_t ARank, typename T>
+    requires DeviceRankBasicTensor<AType<T, ARank>, 2, T>
+void scale_row(size_t row, const T *alpha, AType<T, ARank> *A) {
+    gpu::scal(A->dim(1), alpha, A->data(row, 0ul), A->stride(1));
 }
 
 template <template <typename, size_t> typename AType, size_t ARank, typename T>
     requires DeviceRankBasicTensor<AType<T, ARank>, 2, T>
-void scale_row(size_t row, const T *scale, AType<T, ARank> *A) {
-    gpu::scal(A->dim(1), scale, A->data(row, 0ul), A->stride(1));
+void scale_column(size_t col, const T *alpha, AType<T, ARank> *A) {
+    gpu::scal(A->dim(0), alpha, A->data(0ul, col), A->stride(0));
 }
 
 template <template <typename, size_t> typename AType, size_t ARank, typename T>
     requires DeviceRankBasicTensor<AType<T, ARank>, 2, T>
-void scale_column(size_t col, const T *scale, AType<T, ARank> *A) {
-    gpu::scal(A->dim(0), scale, A->data(0ul, col), A->stride(0));
-}
-
-template <template <typename, size_t> typename AType, size_t ARank, typename T>
-    requires DeviceRankBasicTensor<AType<T, ARank>, 2, T>
-void scale_row(size_t row, T scale, AType<T, ARank> *A) {
+void scale_row(size_t row, T alpha, AType<T, ARank> *A) {
     using namespace einsums::gpu;
 
     using dev_datatype = ::std::conditional_t<::std::is_same_v<T, ::std::complex<float>>, hipComplex,
@@ -635,7 +601,7 @@ void scale_row(size_t row, T scale, AType<T, ARank> *A) {
 
     hip_catch(hipMallocAsync((void **)&alpha_gpu, sizeof(dev_datatype), get_stream()));
 
-    hip_catch(hipMemcpyAsync(alpha_gpu, &scale, sizeof(dev_datatype), hipMemcpyHostToDevice, get_stream()));
+    hip_catch(hipMemcpyAsync(alpha_gpu, &alpha, sizeof(dev_datatype), hipMemcpyHostToDevice, get_stream()));
 
     scale_row(row, (T *)alpha_gpu, A);
 
@@ -644,7 +610,7 @@ void scale_row(size_t row, T scale, AType<T, ARank> *A) {
 
 template <template <typename, size_t> typename AType, size_t ARank, typename T>
     requires DeviceRankBasicTensor<AType<T, ARank>, 2, T>
-void scale_column(size_t col, T scale, AType<T, ARank> *A) {
+void scale_column(size_t col, T alpha, AType<T, ARank> *A) {
     using namespace einsums::gpu;
 
     using dev_datatype = ::std::conditional_t<::std::is_same_v<T, ::std::complex<float>>, hipComplex,
@@ -654,7 +620,7 @@ void scale_column(size_t col, T scale, AType<T, ARank> *A) {
 
     hip_catch(hipMallocAsync((void **)&alpha_gpu, sizeof(dev_datatype), get_stream()));
 
-    hip_catch(hipMemcpyAsync(alpha_gpu, &scale, sizeof(dev_datatype), hipMemcpyHostToDevice, get_stream()));
+    hip_catch(hipMemcpyAsync(alpha_gpu, &alpha, sizeof(dev_datatype), hipMemcpyHostToDevice, get_stream()));
 
     scale_column(col, (T *)alpha_gpu, A);
 

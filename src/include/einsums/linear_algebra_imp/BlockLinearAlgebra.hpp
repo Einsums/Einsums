@@ -83,11 +83,11 @@ void gemv(const U alpha, const AType<T, ARank> &A, const XType<T, XYRank> &z, co
     }
 }
 
-template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename WType, size_t WRank, typename T,
-          bool ComputeEigenvectors = true>
+template <bool ComputeEigenvectors = true, template <typename, size_t> typename AType, size_t ARank,
+          template <typename, size_t> typename WType, size_t WRank, typename T>
     requires requires {
         requires RankBlockTensor<AType<T, ARank>, 2, T>;
-        requires RankBlockTensor<WType<T, WRank>, 1, T>;
+        requires RankBasicTensor<WType<T, WRank>, 1, T>;
         requires !Complex<T>;
     }
 void syev(AType<T, ARank> *A, WType<T, WRank> *W) {
@@ -97,15 +97,15 @@ void syev(AType<T, ARank> *A, WType<T, WRank> *W) {
             continue;
         }
         auto out_block = (*W)(A->block_range(i));
-        syev<AType, ARank, WType, WRank, T, ComputeEigenvectors>(&(A->block(i)), &out_block);
+        syev<ComputeEigenvectors>(&(A->block(i)), &out_block);
     }
 }
 
-template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename WType, size_t WRank, typename T,
-          bool ComputeEigenvectors = true>
+template <bool ComputeEigenvectors = true, template <typename, size_t> typename AType, size_t ARank,
+          template <typename, size_t> typename WType, size_t WRank, typename T>
     requires requires {
         requires RankBlockTensor<AType<T, ARank>, 2, T>;
-        requires RankBlockTensor<WType<T, WRank>, 1, T>;
+        requires RankBasicTensor<WType<T, WRank>, 1, T>;
         requires !Complex<T>;
     }
 void geev(AType<T, ARank> *A, WType<AddComplexT<T>, WRank> *W, AType<T, ARank> *lvecs, AType<T, ARank> *rvecs) {
@@ -119,11 +119,11 @@ void geev(AType<T, ARank> *A, WType<AddComplexT<T>, WRank> *W, AType<T, ARank> *
     }
 }
 
-template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename WType, size_t WRank, typename T,
-          bool ComputeEigenvectors = true>
+template <bool ComputeEigenvectors = true, template <typename, size_t> typename AType, size_t ARank,
+          template <typename, size_t> typename WType, size_t WRank, typename T>
     requires requires {
         requires RankBlockTensor<AType<T, ARank>, 2, T>;
-        requires RankBlockTensor<WType<RemoveComplexT<T>, WRank>, 1, WType<RemoveComplexT<T>, WRank>>;
+        requires RankBasicTensor<WType<RemoveComplexT<T>, WRank>, 1, WType<RemoveComplexT<T>, WRank>>;
         requires Complex<T>;
     }
 void heev(AType<T, ARank> *A, WType<RemoveComplexT<T>, WRank> *W) {
@@ -168,26 +168,30 @@ auto gesv(AType<T, ARank> *A, BType<T, BRank> *B) -> int {
 
 template <template <typename, size_t> typename AType, size_t ARank, typename T>
     requires RankBlockTensor<AType<T, ARank>, ARank, T>
-void scale(T scale, AType<T, ARank> *A) {
+void scale(T alpha, AType<T, ARank> *A) {
     EINSUMS_OMP_PARALLEL_FOR
     for (int i = 0; i < A->num_blocks(); i++) {
         if (A->block_dim(i) == 0) {
             continue;
         }
-        scale(scale, &(A->block(i)));
+        scale(alpha, &(A->block(i)));
     }
 }
 
 template <template <typename, size_t> typename AType, size_t ARank, typename T>
     requires RankBlockTensor<AType<T, ARank>, 2, T>
-void scale_row(size_t row, T scale, AType<T, ARank> *A) {
-    scale(scale, A->block(A->block_of(row))(row, AllT()));
+void scale_row(size_t row, T alpha, AType<T, ARank> *A) {
+    int block_ind = A->block_of(row);
+    auto temp = A->block(block_ind)(row - A->block_range(block_ind)[0], AllT());
+    scale(alpha, &temp);
 }
 
 template <template <typename, size_t> typename AType, size_t ARank, typename T>
     requires RankBlockTensor<AType<T, ARank>, 2, T>
-void scale_column(size_t column, T scale, AType<T, ARank> *A) {
-    scale(scale, A->block(A->block_of(column))(AllT(), column));
+void scale_column(size_t column, T alpha, AType<T, ARank> *A) {
+    int block_ind = A->block_of(column);
+    auto temp = A->block(block_ind)(AllT(), column - A->block_range(block_ind)[0]);
+    scale(alpha, &temp);
 }
 
 template <template <typename, size_t> typename AType, template <typename, size_t> typename BType, typename T, size_t Rank>
@@ -197,11 +201,11 @@ template <template <typename, size_t> typename AType, template <typename, size_t
     }
 auto dot(const AType<T, Rank> &A, const BType<T, Rank> &B) -> T {
     if (A.num_blocks() != B.num_blocks()) {
-        return dot((einsums::Tensor<T, Rank>)A, (einsums::Tensor<T, Rank>)B);
+        return dot(typename AType<T, Rank>::tensor_type(A), typename BType<T, Rank>::tensor_type(B));
     }
 
     if (A.ranges() != B.ranges()) {
-        return dot((einsums::Tensor<T, Rank>)A, (einsums::Tensor<T, Rank>)B);
+        return dot(typename AType<T, Rank>::tensor_type(A), typename BType<T, Rank>::tensor_type(B));
     }
 
     T out{0};
@@ -263,7 +267,7 @@ void axpy(T alpha, const XType<T, Rank> &X, YType<T, Rank> *Y) {
 
     EINSUMS_OMP_PARALLEL_FOR
     for (int i = 0; i < X.num_blocks(); i++) {
-        if (X.block_dim() == 0) {
+        if (X.block_dim(i) == 0) {
             continue;
         }
 
@@ -288,10 +292,10 @@ void axpby(T alpha, const XType<T, Rank> &X, T beta, YType<T, Rank> *Y) {
 
     EINSUMS_OMP_PARALLEL_FOR
     for (int i = 0; i < X.num_blocks(); i++) {
-        if (X.block_dim() == 0) {
+        if (X.block_dim(i) == 0) {
             continue;
         }
-        axpby(alpha, X[i], beta, Y->block(i));
+        axpby(alpha, X[i], beta, &(Y->block(i)));
     }
 }
 

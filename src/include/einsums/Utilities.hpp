@@ -326,7 +326,7 @@ template <template <typename, size_t> typename TensorType, typename DataType, si
     requires DeviceRankBlockTensor<TensorType<DataType, Rank>, Rank, DataType>
 auto create_tensor_like(const TensorType<DataType, Rank> &tensor,
                         einsums::detail::HostToDeviceMode mode = einsums::detail::DEV_ONLY) -> BlockDeviceTensor<DataType, Rank> {
-    return BlockDeviceTensor<DataType, Rank>{"(unnamed)", tensor.vector_dims(), mode};
+    return BlockDeviceTensor<DataType, Rank>{"(unnamed)", mode, tensor.vector_dims()};
 }
 #    endif
 #endif

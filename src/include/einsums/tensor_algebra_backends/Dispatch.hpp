@@ -209,7 +209,7 @@ auto einsum(const CDataType C_prefactor, const std::tuple<CIndices...> & /*Cs*/,
     } else if constexpr (!einsums::detail::IsBasicTensorV<AType<ADataType, ARank>, ARank, ADataType> ||
                          !einsums::detail::IsBasicTensorV<BType<BDataType, BRank>, BRank, BDataType> ||
                          !einsums::detail::IsBasicTensorV<CType<CDataType, CRank>, CRank, CDataType>) {
-        einsum_special_dispatch<OnlyUseGenericAlgorithm>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
+        goto generic_default;
     } else if constexpr (outer_product) {
         if (!A.full_view_of_underlying() || !B.full_view_of_underlying()) {
             goto generic_default;

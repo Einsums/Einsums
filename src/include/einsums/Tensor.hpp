@@ -612,6 +612,51 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
                                                                                                            strides};
     }
 
+    // WARNING: Chances are this function will not work if you mix All{}, Range{} and explicit indexes.
+    template <typename... MultiIndex>
+        requires requires { requires AtLeastOneOfType<AllT, MultiIndex...>; }
+    auto operator()(MultiIndex... index) const -> const TensorView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> {
+        // Construct a TensorView using the indices provided as the starting point for the view.
+        // e.g.:
+        //    Tensor T{"Big Tensor", 7, 7, 7, 7};
+        //    T(0, 0) === T(0, 0, :, :) === TensorView{T, Dims<2>{7, 7}, Offset{0, 0}, Stride{49, 1}} ??
+        // println("Here");
+        const auto &indices = std::forward_as_tuple(index...);
+
+        Offset<Rank>                                                                         offsets;
+        Stride<count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> strides{};
+        Dim<count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()>    dims{};
+
+        int counter{0};
+        for_sequence<sizeof...(MultiIndex)>([&](auto i) {
+            // println("looking at {}", i);
+            if constexpr (std::is_convertible_v<std::tuple_element_t<i, std::tuple<MultiIndex...>>, std::int64_t>) {
+                auto tmp = static_cast<std::int64_t>(std::get<i>(indices));
+                if (tmp < 0)
+                    tmp = _dims[i] + tmp;
+                offsets[i] = tmp;
+            } else if constexpr (std::is_same_v<AllT, std::tuple_element_t<i, std::tuple<MultiIndex...>>>) {
+                strides[counter] = _strides[i];
+                dims[counter]    = _dims[i];
+                counter++;
+
+            } else if constexpr (std::is_same_v<Range, std::tuple_element_t<i, std::tuple<MultiIndex...>>>) {
+                auto range       = std::get<i>(indices);
+                offsets[counter] = range[0];
+                if (range[1] < 0) {
+                    auto temp = _dims[i] + range[1];
+                    range[1]  = temp;
+                }
+                dims[counter]    = range[1] - range[0];
+                strides[counter] = _strides[i];
+                counter++;
+            }
+        });
+
+        return TensorView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()>{*this, std::move(dims), offsets,
+                                                                                                           strides};
+    }
+
     template <typename... MultiIndex>
         requires NumOfType<Range, Rank, MultiIndex...>
     auto operator()(MultiIndex... index) const -> TensorView<T, Rank> {

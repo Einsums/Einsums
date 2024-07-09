@@ -47,8 +47,8 @@ void gemv(const U alpha, const AType<T, ARank> &A, const XType<T, XYRank> &z, co
     blas::gemv(TransA ? 't' : 'n', m, n, static_cast<T>(alpha), A.data(), lda, z.data(), incx, static_cast<T>(beta), y->data(), incy);
 }
 
-template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename WType, size_t WRank, typename T,
-          bool ComputeEigenvectors = true>
+template <bool ComputeEigenvectors = true, template <typename, size_t> typename AType, size_t ARank,
+          template <typename, size_t> typename WType, size_t WRank, typename T>
     requires requires {
         requires CoreRankBasicTensor<AType<T, ARank>, 2, T>;
         requires CoreRankBasicTensor<WType<T, WRank>, 1, T>;
@@ -65,8 +65,8 @@ void syev(AType<T, ARank> *A, WType<T, WRank> *W) {
     blas::syev(ComputeEigenvectors ? 'v' : 'n', 'u', n, A->data(), lda, W->data(), work.data(), lwork);
 }
 
-template <template <typename, size_t> typename AType, size_t ARank, template <Complex, size_t> typename WType, size_t WRank, typename T,
-          bool ComputeLeftRightEigenvectors = true>
+template <bool ComputeLeftRightEigenvectors = true, template <typename, size_t> typename AType, size_t ARank,
+          template <Complex, size_t> typename WType, size_t WRank, typename T>
     requires requires {
         requires CoreRankBasicTensor<AType<T, ARank>, 2, T>;
         requires CoreRankBasicTensor<WType<AddComplexT<T>, WRank>, 1, AddComplexT<T>>;
@@ -83,8 +83,8 @@ void geev(AType<T, ARank> *A, WType<AddComplexT<T>, WRank> *W, AType<T, ARank> *
                W->data(), lvecs->data(), lvecs->stride(0), rvecs->data(), rvecs->stride(0));
 }
 
-template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename WType, size_t WRank, typename T,
-          bool ComputeEigenvectors = true>
+template <bool ComputeEigenvectors = true, template <typename, size_t> typename AType, size_t ARank,
+          template <typename, size_t> typename WType, size_t WRank, typename T>
     requires requires {
         requires CoreRankBasicTensor<AType<T, ARank>, 2, T>;
         requires CoreRankBasicTensor<WType<RemoveComplexT<T>, WRank>, 1, RemoveComplexT<T>>;

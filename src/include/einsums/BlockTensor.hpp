@@ -30,7 +30,7 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
 
     std::vector<TensorType<T, Rank>> _blocks{};
     std::vector<Range>               _ranges{};
-    std::vector<size_t> _dims;
+    std::vector<size_t>              _dims;
 
     template <typename T_, size_t OtherRank, template <typename, size_t> typename OtherTensor>
     friend struct BlockTensorBase;
@@ -113,7 +113,8 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
      * @param block_dims The size of each block.
      */
     template <typename ArrayArg>
-    explicit BlockTensorBase(std::string name, const ArrayArg &block_dims) : _name{std::move(name)}, _dim{0}, _blocks(), _ranges(), _dims(block_dims) {
+    explicit BlockTensorBase(std::string name, const ArrayArg &block_dims)
+        : _name{std::move(name)}, _dim{0}, _blocks(), _ranges(), _dims(block_dims.cbegin(), block_dims.cend()) {
 
         auto _block_dims = Dim<Rank>();
 
@@ -498,6 +499,9 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
 
         EINSUMS_OMP_PARALLEL_FOR
         for (int i = 0; i < _blocks.size(); i++) {
+            if(block_dim(i) == 0) {
+                continue;
+            }
             _blocks[i] = other._blocks[i];
         }
 
@@ -521,6 +525,9 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
 
         EINSUMS_OMP_PARALLEL_FOR
         for (int i = 0; i < _blocks.size(); i++) {
+            if(block_dim(i) == 0) {
+                continue;
+            }
             _blocks[i] = other._blocks[i];
         }
 
@@ -551,6 +558,9 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
         }                                                                                                                                  \
         EINSUMS_OMP_PARALLEL_FOR                                                                                                           \
         for (int i = 0; i < _blocks.size(); i++) {                                                                                         \
+            if (block_dim(i) == 0) {                                                                                                       \
+                continue;                                                                                                                  \
+            }                                                                                                                              \
             _blocks[i] OP b._blocks[i];                                                                                                    \
         }                                                                                                                                  \
         return *this;                                                                                                                      \
@@ -581,6 +591,9 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
 
         EINSUMS_OMP_PARALLEL_FOR
         for (int i = 0; i < _ranges.size(); i++) {
+            if (this->block_dim(i) == 0) {
+                continue;
+            }
             std::array<Range, Rank> ranges;
             ranges.fill(_ranges[i]);
             std::apply(out, ranges) = _blocks[i];
@@ -883,7 +896,7 @@ struct BlockDeviceTensor : public BlockTensorBase<T, Rank, DeviceTensor> {
      * @param block_dims The size of each block.
      */
     template <typename ArrayArg>
-    explicit BlockDeviceTensor(std::string name, const ArrayArg &block_dims, detail::HostToDeviceMode mode)
+    explicit BlockDeviceTensor(std::string name, detail::HostToDeviceMode mode, const ArrayArg &block_dims)
         : BlockTensorBase<T, Rank, DeviceTensor>(name) {
         for (int i = 0; i < block_dims.size(); i++) {
 

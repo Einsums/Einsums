@@ -11,7 +11,11 @@ add_executable(test-all
     BlockTensor.cpp
     ElementOps.cpp
     TiledTensor.cpp
+    QChemTests.cpp
 )
+
+file(GLOB __data_files data/water_sto3g/*)
+file(COPY ${__data_files} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/data/water_sto3g)
 
 if(EINSUMS_COVERAGE AND NOT MSVC)
     target_compile_options(test-all PUBLIC $<$<COMPILE_LANG_AND_ID:CXX,Clang>:-fprofile-instr-generate -fcoverage-mapping>)

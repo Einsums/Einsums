@@ -1,9 +1,9 @@
 #pragma once
 
-#include "einsums/utility/TensorTraits.hpp"
-#include "einsums/utility/IndexUtils.hpp"
 #include "einsums/TensorAlgebra.hpp"
 #include "einsums/tensor_algebra_backends/Dispatch.hpp"
+#include "einsums/utility/IndexUtils.hpp"
+#include "einsums/utility/TensorTraits.hpp"
 
 #include <tuple>
 
@@ -13,10 +13,15 @@ template <bool OnlyUseGenericAlgorithm, template <typename, size_t> typename ATy
           template <typename, size_t> typename BType, typename BDataType, size_t BRank, template <typename, size_t> typename CType,
           typename CDataType, size_t CRank, typename... CIndices, typename... AIndices, typename... BIndices>
     requires requires {
-        requires (RankTiledTensor<AType<ADataType, ARank>, ARank, ADataType> || RankBlockTensor<AType<ADataType, ARank>, ARank, ADataType>);
-        requires (RankTiledTensor<BType<BDataType, BRank>, BRank, BDataType> || RankBlockTensor<BType<BDataType, BRank>, BRank, BDataType>);
-        requires (!RankTiledTensor<AType<ADataType, ARank>, ARank, ADataType> || !RankTiledTensor<BType<BDataType, BRank>, BRank, BDataType>);
-        requires RankTiledTensor<CType<CDataType, CRank>, CRank, CDataType>;
+        requires(RankTiledTensor<AType<ADataType, ARank>, ARank, ADataType> || RankBlockTensor<AType<ADataType, ARank>, ARank, ADataType>);
+        requires(RankTiledTensor<BType<BDataType, BRank>, BRank, BDataType> || RankBlockTensor<BType<BDataType, BRank>, BRank, BDataType>);
+        requires(!RankTiledTensor<AType<ADataType, ARank>, ARank, ADataType> ||
+                 !RankTiledTensor<BType<BDataType, BRank>, BRank, BDataType> ||
+                 !RankTiledTensor<CType<CDataType, CRank>, CRank, CDataType>);
+        requires(!RankBlockTensor<AType<ADataType, ARank>, ARank, ADataType> ||
+                 !RankBlockTensor<BType<BDataType, BRank>, BRank, BDataType> ||
+                 !RankBlockTensor<CType<CDataType, CRank>, CRank, CDataType>);
+        requires(RankTiledTensor<CType<CDataType, CRank>, CRank, CDataType> || RankBlockTensor<CType<CDataType, CRank>, CRank, CDataType>);
     }
 auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndices...> &C_indices, CType<CDataType, CRank> *C,
                              const std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> AB_prefactor,
@@ -44,7 +49,7 @@ auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndi
         *C *= C_prefactor;
     }
 
-    EINSUMS_OMP_PARALLEL_FOR
+    //EINSUMS_OMP_PARALLEL_FOR
     for (size_t sentinel = 0; sentinel < unique_grid[0] * unique_strides[0]; sentinel++) {
         thread_local std::array<size_t, std::tuple_size<decltype(unique_indices)>::value> unique_index_table;
 
@@ -58,70 +63,102 @@ auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndi
         for (int i = 0; i < ARank; i++) {
             A_tile_index[i] = unique_index_table[A_index_table[i]];
             if constexpr (einsums::detail::IsBlockTensorV<AType<ADataType, ARank>, ARank, ADataType>) {
-                if(A_tile_index[i] != A_tile_index[0]) {
+                if (A_tile_index[i] != A_tile_index[0]) {
                     skip = true;
                 }
             }
         }
 
-        if(skip) {
+        if (skip) {
             continue;
         }
 
         for (int i = 0; i < BRank; i++) {
             B_tile_index[i] = unique_index_table[B_index_table[i]];
             if constexpr (einsums::detail::IsBlockTensorV<BType<BDataType, BRank>, BRank, BDataType>) {
-                if(B_tile_index[i] != B_tile_index[0]) {
+                if (B_tile_index[i] != B_tile_index[0]) {
                     skip = true;
                 }
             }
         }
 
-        if(skip) {
+        if (skip) {
             continue;
         }
 
         for (int i = 0; i < CRank; i++) {
             C_tile_index[i] = unique_index_table[C_index_table[i]];
+            if constexpr (einsums::detail::IsBlockTensorV<CType<CDataType, CRank>, CRank, CDataType>) {
+                if (C_tile_index[i] != C_tile_index[0]) {
+                    skip = true;
+                }
+            }
+        }
+
+        if (skip) {
+            continue;
         }
 
         if constexpr (einsums::detail::IsBlockTensorV<AType<ADataType, ARank>, ARank, ADataType>) {
-            if(A.block_dim(A_tile_index[0]) == 0) {
+            if (A.block_dim(A_tile_index[0]) == 0) {
                 continue;
             }
         } else {
-            if(!A.has_tile(A_tile_index) || A.has_zero_size(A_tile_index)) {
+            if (!A.has_tile(A_tile_index) || A.has_zero_size(A_tile_index)) {
                 continue;
             }
         }
 
         if constexpr (einsums::detail::IsBlockTensorV<BType<BDataType, BRank>, BRank, BDataType>) {
-            if(B.block_dim(B_tile_index[0]) == 0) {
+            if (B.block_dim(B_tile_index[0]) == 0) {
                 continue;
             }
         } else {
-            if(!B.has_tile(B_tile_index) || B.has_zero_size(B_tile_index)) {
+            if (!B.has_tile(B_tile_index) || B.has_zero_size(B_tile_index)) {
                 continue;
             }
         }
 
-        if (C->has_zero_size(C_tile_index)) {
-            continue;
-        }
+        if constexpr (einsums::detail::IsBlockTensorV<CType<CDataType, CRank>, CRank, CDataType>) {
+            if (C->block_dim(C_tile_index[0]) == 0) {
+                continue;
+            }
 
-        C->lock();
-        auto &C_tile = C->tile(C_tile_index);
-        C->unlock();
-        C_tile.lock();
-        if constexpr (einsums::detail::IsBlockTensorV<AType<ADataType, ARank>, ARank, ADataType> && einsums::detail::IsBlockTensorV<BType<BDataType, BRank>, BRank, BDataType>) {
-            einsum<OnlyUseGenericAlgorithm>(CDataType{1.0}, C_indices, &C_tile, AB_prefactor, A_indices, A[A_tile_index[0]], B_indices, B[B_tile_index[0]]);
-        } else if constexpr (einsums::detail::IsBlockTensorV<AType<ADataType, ARank>, ARank, ADataType>) {
-            einsum<OnlyUseGenericAlgorithm>(CDataType{1.0}, C_indices, &C_tile, AB_prefactor, A_indices, A[A_tile_index[0]], B_indices, B.tile(B_tile_index));
-        } else if constexpr (einsums::detail::IsBlockTensorV<BType<BDataType, BRank>, BRank, BDataType>) {
-            einsum<OnlyUseGenericAlgorithm>(CDataType{1.0}, C_indices, &C_tile, AB_prefactor, A_indices, A.tile(A_tile_index), B_indices, B[B_tile_index[0]]);
+            C->lock();
+            auto &C_block = C->block(C_tile_index[0]);
+            C->unlock();
+            C_block.lock();
+            if constexpr (einsums::detail::IsBlockTensorV<AType<ADataType, ARank>, ARank, ADataType>) {
+                einsum<OnlyUseGenericAlgorithm>(CDataType{1.0}, C_indices, &C_block, AB_prefactor, A_indices, A[A_tile_index[0]], B_indices,
+                                                B.tile(B_tile_index));
+            } else if constexpr (einsums::detail::IsBlockTensorV<BType<BDataType, BRank>, BRank, BDataType>) {
+                einsum<OnlyUseGenericAlgorithm>(CDataType{1.0}, C_indices, &C_block, AB_prefactor, A_indices, A.tile(A_tile_index),
+                                                B_indices, B[B_tile_index[0]]);
+            }
+            C_block.unlock();
+        } else {
+            if (C->has_zero_size(B_tile_index)) {
+                continue;
+            }
+
+            C->lock();
+            auto &C_tile = C->tile(C_tile_index);
+            C->unlock();
+            C_tile.lock();
+            if constexpr (einsums::detail::IsBlockTensorV<AType<ADataType, ARank>, ARank, ADataType> &&
+                          einsums::detail::IsBlockTensorV<BType<BDataType, BRank>, BRank, BDataType>) {
+                einsum<OnlyUseGenericAlgorithm>(CDataType{1.0}, C_indices, &C_tile, AB_prefactor, A_indices, A[A_tile_index[0]], B_indices,
+                                                B[B_tile_index[0]]);
+            } else if constexpr (einsums::detail::IsBlockTensorV<AType<ADataType, ARank>, ARank, ADataType>) {
+                einsum<OnlyUseGenericAlgorithm>(CDataType{1.0}, C_indices, &C_tile, AB_prefactor, A_indices, A[A_tile_index[0]], B_indices,
+                                                B.tile(B_tile_index));
+            } else if constexpr (einsums::detail::IsBlockTensorV<BType<BDataType, BRank>, BRank, BDataType>) {
+                einsum<OnlyUseGenericAlgorithm>(CDataType{1.0}, C_indices, &C_tile, AB_prefactor, A_indices, A.tile(A_tile_index),
+                                                B_indices, B[B_tile_index[0]]);
+            }
+            C_tile.unlock();
         }
-        C_tile.unlock();
     }
 }
 
-}
+} // namespace einsums::tensor_algebra::detail

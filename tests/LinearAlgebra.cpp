@@ -760,3 +760,27 @@ TEST_CASE("getrf_getri") {
     getrf_and_getri_test<float>();
     getrf_and_getri_test<double>();
 }
+
+TEMPLATE_TEST_CASE("pow", "[linalg]", float, double) {
+    using namespace einsums;
+    using namespace einsums::linear_algebra;
+
+    Tensor<TestType, 2> A = create_random_tensor<TestType>("A", 10, 10);
+    // Can only handle symmetric matrices.
+    for(int i = 0; i < A.dim(0); i++) {
+        for(int j = 0; j < i; j++) {
+            A(i, j) = A(j, i);
+        }
+    }
+
+    Tensor<TestType, 2> B = einsums::linear_algebra::pow(A, TestType{2.0});
+    Tensor<TestType, 2> C = create_tensor_like(A);
+
+    gemm<false, false>(1.0, A, A, 0.0, &C);
+
+    for(int i = 0; i < A.dim(0); i++) {
+        for(int j = 0; j < A.dim(1); j++) {
+            CHECK_THAT(B(i, j), Catch::Matchers::WithinRel(C(i, j), TestType{1e-6}));
+        }
+    }
+}
