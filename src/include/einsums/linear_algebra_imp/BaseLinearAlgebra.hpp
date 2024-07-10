@@ -167,6 +167,37 @@ auto dot(const AType<T, Rank> &A, const BType<T, Rank> &B) -> T {
     return dot(TensorView<T, 1>(const_cast<AType<T, Rank> &>(A), dim), TensorView<T, 1>(const_cast<BType<T, Rank> &>(B), dim));
 }
 
+template <template <typename, size_t> typename AType, template <typename, size_t> typename BType, typename T>
+    requires requires {
+        requires CoreRankBasicTensor<AType<T, 1>, 1, T>;
+        requires CoreRankBasicTensor<BType<T, 1>, 1, T>;
+    }
+auto true_dot(const AType<T, 1> &A, const BType<T, 1> &B) -> T {
+    assert(A.dim(0) == B.dim(0));
+
+    if constexpr (!std::is_arithmetic_v<T>) {
+        return blas::dotc(A.dim(0), A.data(), A.stride(0), B.data(), B.stride(0));
+    } else {
+        return blas::dot(A.dim(0), A.data(), A.stride(0), B.data(), B.stride(0));
+    }
+}
+
+template <template <typename, size_t> typename AType, template <typename, size_t> typename BType, typename T, size_t Rank>
+    requires requires {
+        requires CoreRankBasicTensor<AType<T, Rank>, Rank, T>;
+        requires CoreRankBasicTensor<BType<T, Rank>, Rank, T>;
+    }
+auto true_dot(const AType<T, Rank> &A, const BType<T, Rank> &B) -> T {
+    Dim<1> dim{1};
+
+    for (size_t i = 0; i < Rank; i++) {
+        assert(A.dim(i) == B.dim(i));
+        dim[0] *= A.dim(i);
+    }
+
+    return true_dot(TensorView<T, 1>(const_cast<AType<T, Rank> &>(A), dim), TensorView<T, 1>(const_cast<BType<T, Rank> &>(B), dim));
+}
+
 template <template <typename, size_t> typename AType, template <typename, size_t> typename BType,
           template <typename, size_t> typename CType, typename T, size_t Rank>
     requires requires {

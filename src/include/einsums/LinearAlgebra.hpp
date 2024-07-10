@@ -32,6 +32,7 @@
 #include <stdexcept>
 #include <tuple>
 #include <type_traits>
+#include <complex>
 
 // For some stupid reason doxygen can't handle this macro here but it can in other files.
 #if !defined(DOXYGEN_SHOULD_SKIP_THIS)
@@ -468,6 +469,23 @@ auto dot(const AType<T, Rank> &A, const BType<T, Rank> &B) -> T {
     return detail::dot(A, B);
 }
 
+template <template <typename, size_t> typename AType, template <typename, size_t> typename BType, typename T>
+    requires InSamePlace<AType<T, 1>, BType<T, 1>, 1, 1, T, T>
+auto true_dot(const AType<T, 1> &A, const BType<T, 1> &B) -> RemoveComplexT<T> {
+    LabeledSection0();
+
+    return detail::true_dot(A, B);
+}
+
+template <template <typename, size_t> typename AType, template <typename, size_t> typename BType, typename T, size_t Rank>
+    requires InSamePlace<AType<T, Rank>, BType<T, Rank>, Rank, Rank, T, T>
+auto true_dot(const AType<T, Rank> &A, const BType<T, Rank> &B) -> RemoveComplexT<T> {
+
+    LabeledSection0();
+
+    return detail::true_dot(A, B);
+}
+
 template <template <typename, size_t> typename AType, template <typename, size_t> typename BType,
           template <typename, size_t> typename CType, typename T, size_t Rank>
     requires requires {
@@ -657,6 +675,11 @@ auto norm(Norm norm_type, const AType<ADataType, ARank> &a) -> RemoveComplexT<AD
 
     std::vector<RemoveComplexT<ADataType>> work(4 * a.dim(0), 0.0);
     return blas::lange(static_cast<char>(norm_type), a.dim(0), a.dim(1), a.data(), a.stride(0), work.data());
+}
+
+template<template<typename, size_t> typename AType, typename ADataType, size_t ARank>
+RemoveComplexT<ADataType> vec_norm(const AType<ADataType, ARank> &a) {
+    return std::sqrt(std::abs(true_dot(a, a)));
 }
 
 // Uses the original svd function found in lapack, gesvd, request all left and right vectors.

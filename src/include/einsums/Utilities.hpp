@@ -170,7 +170,7 @@ void set_to(TensorType<DataType, Rank> &tensor, DataType value, Tuple const &tup
  */
 template <typename T>
 auto diagonal(const Tensor<T, 1> &v) -> Tensor<T, 2> {
-    auto result = create_tensor(v.name(), v.dim(0), v.dim(0));
+    auto result = create_tensor<T>(v.name(), v.dim(0), v.dim(0));
     zero(result);
     for (size_t i = 0; i < v.dim(0); i++) {
         result(i, i) = v(i);

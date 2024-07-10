@@ -241,6 +241,8 @@ TEST_CASE("RHF") {
     TEI_sym.tile(3, 3, 2, 2) = TEI_temp2(Range{5, 7}, Range{5, 7}, Range{4, 5}, Range{4, 5});
     TEI_sym.tile(3, 3, 3, 3) = TEI_temp2(Range{5, 7}, Range{5, 7}, Range{5, 7}, Range{5, 7});
 
+    REQUIRE_THAT(TEI_sym(4, 4, 4, 4), Catch::Matchers::WithinRel(TEI_temp2(4, 4, 4, 4), 1e-6));
+
     // Compute the unitary transform.
     X = einsums::linear_algebra::pow(S_sym, -0.5);
 

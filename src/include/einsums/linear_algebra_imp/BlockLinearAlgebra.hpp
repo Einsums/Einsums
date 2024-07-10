@@ -221,6 +221,33 @@ auto dot(const AType<T, Rank> &A, const BType<T, Rank> &B) -> T {
     return out;
 }
 
+template <template <typename, size_t> typename AType, template <typename, size_t> typename BType, typename T, size_t Rank>
+    requires requires {
+        requires RankBlockTensor<AType<T, Rank>, Rank, T>;
+        requires RankBlockTensor<BType<T, Rank>, Rank, T>;
+    }
+auto true_dot(const AType<T, Rank> &A, const BType<T, Rank> &B) -> T {
+    if (A.num_blocks() != B.num_blocks()) {
+        return true_dot(typename AType<T, Rank>::tensor_type(A), typename BType<T, Rank>::tensor_type(B));
+    }
+
+    if (A.ranges() != B.ranges()) {
+        return true_dot(typename AType<T, Rank>::tensor_type(A), typename BType<T, Rank>::tensor_type(B));
+    }
+
+    T out{0};
+
+#pragma omp parallel for reduction(+ : out)
+    for (int i = 0; i < A.num_blocks(); i++) {
+        if (A.block_dim(i) == 0) {
+            continue;
+        }
+        out += true_dot(A.block(i), B.block(i));
+    }
+
+    return out;
+}
+
 template <template <typename, size_t> typename AType, template <typename, size_t> typename BType,
           template <typename, size_t> typename CType, typename T, size_t Rank>
     requires requires {

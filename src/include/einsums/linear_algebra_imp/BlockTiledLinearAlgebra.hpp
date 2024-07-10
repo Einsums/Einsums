@@ -114,6 +114,50 @@ auto dot(const AType<T, Rank> &A, const BType<T, Rank> &B) -> T {
     return out;
 }
 
+template <template <typename, size_t> typename AType, template <typename, size_t> typename BType, typename T, size_t Rank>
+    requires requires {
+        requires(RankTiledTensor<AType<T, Rank>, Rank, T> || RankBlockTensor<AType<T, Rank>, Rank, T>);
+        requires(RankTiledTensor<BType<T, Rank>, Rank, T> || RankBlockTensor<BType<T, Rank>, Rank, T>);
+        requires(RankTiledTensor<AType<T, Rank>, Rank, T> || RankTiledTensor<BType<T, Rank>, Rank, T>);
+    }
+auto true_dot(const AType<T, Rank> &A, const BType<T, Rank> &B) -> T {
+    for (int i = 0; i < Rank; i++) {
+        if (A.grid_size(i) != B.num_blocks()) {
+            throw std::runtime_error("dot: Tiled tensor and block tensor have incompatible layouts.");
+        }
+    }
+    T out = T{0.0};
+
+    int num_blocks;
+
+    if constexpr (einsums::detail::IsBlockTensorV<AType<T, Rank>, Rank, T>) {
+        num_blocks = A.num_blocks();
+    } else {
+        num_blocks = B.num_blocks();
+    }
+
+#pragma omp parallel for reduction(+ : out)
+    for (int i = 0; i < num_blocks; i++) {
+        std::array<size_t, Rank> tile_index;
+        for (int j = 0; j < Rank; j++) {
+            tile_index[j] = i;
+        }
+        if constexpr (einsums::detail::IsBlockTensorV<AType<T, Rank>, Rank, T>) {
+            if (A.block_dim(i) == 0 || !B.has_block(tile_index) || B.has_zero_size(tile_index)) {
+                continue;
+            }
+            out += true_dot(A[i], B.tile(tile_index));
+        } else {
+            if (B.block_dim(i) == 0 || !A.has_block(tile_index) || A.has_zero_size(tile_index)) {
+                continue;
+            }
+            out += true_dot(B[i], A.tile(tile_index));
+        }
+    }
+
+    return out;
+}
+
 template <bool TransA, bool TransB, template <typename, size_t> typename AType, template <typename, size_t> typename BType,
           template <typename, size_t> typename CType, size_t Rank, typename T, typename U>
     requires requires {

@@ -52,6 +52,35 @@ __global__ void dot_kernel(T *C, const T *__restrict__ A, const T *__restrict__ 
     einsums::gpu::atomicAdd_wrap(C, temp);
 }
 
+template <typename T>
+__global__ void true_dot_kernel(T *C, const T *__restrict__ A, const T *__restrict__ B, size_t elements) {
+    using namespace einsums::gpu;
+    int thread_id, kernel_size;
+
+    get_worker_info(thread_id, kernel_size);
+
+    size_t curr_index = thread_id;
+
+    T temp;
+    make_zero(temp);
+    if (thread_id == 0) {
+        make_zero(*C);
+    }
+
+    while (curr_index < elements) {
+        if constexpr (std::is_same_v<T, hipComplex> || std::is_same_v<T, hipDoubleComplex>) {
+            T conjugate = A[curr_index];
+            conjugate.y = -conjugate.y;
+            temp = temp + conjugate * B[curr_index];
+        } else {    
+            temp = temp + A[curr_index] * B[curr_index];
+        }
+        curr_index += kernel_size;
+    }
+
+    einsums::gpu::atomicAdd_wrap(C, temp);
+}
+
 /**
  * Internal gemm functions.
  */
@@ -227,6 +256,34 @@ T dot(const AType<T, Rank> &A, const BType<T, Rank> &B) {
     hip_catch(hipMalloc((void **)&gpu_out, sizeof(T)));
 
     gpu::dot_kernel<<<block_size(A.size()), blocks(A.size()), 0, get_stream()>>>(gpu_out, A.data(), B.data(), A.size());
+    stream_wait();
+
+    T out;
+    hip_catch(hipMemcpy((void *)&out, (void *)gpu_out, sizeof(T), hipMemcpyDeviceToHost));
+
+    hip_catch(hipFree((void *)gpu_out));
+
+    return out;
+}
+
+template <template <typename, size_t> typename AType, template <typename, size_t> typename BType, typename T, size_t Rank>
+    requires requires {
+        requires ::einsums::DeviceRankBasicTensor<AType<T, Rank>, Rank, T>;
+        requires ::einsums::DeviceRankBasicTensor<BType<T, Rank>, Rank, T>;
+    }
+T true_dot(const AType<T, Rank> &A, const BType<T, Rank> &B) {
+    using namespace einsums::gpu;
+
+    using dev_datatype = std::conditional_t<std::is_same_v<T, std::complex<float>>, hipComplex,
+                                            std::conditional_t<std::is_same_v<T, std::complex<double>>, hipDoubleComplex, T>>;
+
+    __device_ptr__ dev_datatype *gpu_out;
+    auto                         grid       = block_size(A.size());
+    auto                         num_blocks = blocks(A.size());
+
+    hip_catch(hipMalloc((void **)&gpu_out, sizeof(T)));
+
+    gpu::true_dot_kernel<<<block_size(A.size()), blocks(A.size()), 0, get_stream()>>>(gpu_out, A.data(), B.data(), A.size());
     stream_wait();
 
     T out;

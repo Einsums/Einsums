@@ -98,6 +98,8 @@ extern void FC_GLOBAL(zdscal, ZDSCAL)(blas_int *, double *, std::complex<double>
 
 extern float  FC_GLOBAL(sdot, SDOT)(blas_int *, const float *, blas_int *, const float *, blas_int *);
 extern double FC_GLOBAL(ddot, DDOT)(blas_int *, const double *, blas_int *, const double *, blas_int *);
+extern std::complex<float>  FC_GLOBAL(cdotc, CDOTC)(blas_int *, const std::complex<float> *, blas_int *, const std::complex<float> *, blas_int *);
+extern std::complex<double> FC_GLOBAL(zdotc, ZDOTC)(blas_int *, const std::complex<double> *, blas_int *, const std::complex<double> *, blas_int *);
 // MKL seems to have a different function signature than openblas.
 // extern std::complex<float>  FC_GLOBAL(cdotu, CDOTU)(blas_int *, const std::complex<float> *, blas_int *, const std::complex<float> *,
 //                                                    blas_int *);
@@ -432,6 +434,18 @@ auto zdot(blas_int n, const std::complex<double> *x, blas_int incx, const std::c
         result += x[static_cast<ptrdiff_t>(i * incx)] * y[static_cast<ptrdiff_t>(i * incy)];
     }
     return result;
+}
+
+auto cdotc(blas_int n, const std::complex<float> *x, blas_int incx, const std::complex<float> *y, blas_int incy) -> std::complex<float> {
+    LabeledSection0();
+
+    return FC_GLOBAL(cdotc, CDOTC)(&n, x, &incx, y, &incy);
+}
+
+auto zdotc(blas_int n, const std::complex<double> *x, blas_int incx, const std::complex<double> *y, blas_int incy) -> std::complex<double> {
+    LabeledSection0();
+
+    return FC_GLOBAL(zdotc, ZDOTC)(&n, x, &incx, y, &incy);
 }
 
 void saxpy(blas_int n, float alpha_x, const float *x, blas_int inc_x, float *y, blas_int inc_y) {

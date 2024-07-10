@@ -46,6 +46,44 @@ auto dot(const AType<T, Rank> &A, const BType<T, Rank> &B) -> T {
     return out;
 }
 
+template <template <typename, size_t> typename AType, template <typename, size_t> typename BType, typename T, size_t Rank>
+    requires requires {
+        requires RankTiledTensor<AType<T, Rank>, Rank, T>;
+        requires RankTiledTensor<BType<T, Rank>, Rank, T>;
+    }
+auto true_dot(const AType<T, Rank> &A, const BType<T, Rank> &B) -> T {
+    std::array<size_t, Rank> strides;
+
+    size_t prod = 1;
+
+    for (int i = 0; i < Rank; i++) {
+        if (A.grid_size(i) != B.grid_size(i)) {
+            throw std::runtime_error("dot: Tiled tensors have incompatible tiles.");
+        }
+
+        strides[Rank - 1 - i] = prod;
+        prod *= A.grid_size(i);
+    }
+    T out = 0;
+
+#pragma omp parallel for reduction(+ : out)
+    for (size_t index = 0; index < A.grid_size(); index++) {
+        std::array<size_t, Rank> index_arr;
+
+        for (int i = 0; i < Rank; i++) {
+            index_arr[i] = index / strides[i];
+            index %= A.grid_size(i);
+        }
+
+        if (!A.has_tile(index_arr) || !B.has_tile(index_arr) || A.has_zero_size(index_arr) || B.has_zero_size(index_arr)) {
+            continue;
+        }
+        out += true_dot(A.tile(index_arr), B.tile(index_arr));
+    }
+
+    return out;
+}
+
 template <bool TransA, bool TransB, template <typename, size_t> typename AType, template <typename, size_t> typename BType,
           template <typename, size_t> typename CType, size_t Rank, typename T, typename U>
     requires requires {
