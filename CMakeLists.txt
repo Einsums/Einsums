@@ -14,8 +14,6 @@ project(
 include(FeatureSummary)
 include(EinsumsAPI)
 
-include(autocmake_safeguards)
-
 # Force C++ standard globally, do not fall back, do not use compiler extensions
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -44,8 +42,9 @@ if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
             CACHE STRING "Choose the type of build." FORCE
     )
     set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
-
 endif ()
+
+include(autocmake_safeguards)
 
 einsums_option(EINSUMS_CONTINUOUSLY_TEST_EINSUM BOOL "Every call to TensorAlgebra::einsum is tested" OFF)
 einsums_option(EINSUMS_TEST_EINSUM_ABORT BOOL "Abort execution if an error is found" ON)
