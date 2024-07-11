@@ -1,0 +1,10 @@
+coverage:
+  status:
+    project:
+      default:
+        threshold: 50%
+    patch:
+      default:
+        threshold: 50%
+  ignore:
+    - "tests/"
