@@ -33,9 +33,9 @@ struct LabelBase {};
     namespace einsums::tensor_algebra::index {                                                                                             \
     struct x : public LabelBase {                                                                                                          \
         static constexpr char letter = static_cast<const char (&)[2]>(#x)[0];                                                              \
-        constexpr x()                = default;                                                                                            \
-        size_t operator()(std::va_list args) const {                                                                                       \
-            return va_arg(args, size_t);                                                                                                   \
+        constexpr             x()    = default;                                                                                            \
+        size_t                operator()(std::va_list args) const {                                                                        \
+            return va_arg(args, size_t);                                                                                    \
         }                                                                                                                                  \
                                                                                                                                            \
         size_t operator()(size_t index) const {                                                                                            \
@@ -60,7 +60,7 @@ struct LabelBase {};
     template <>                                                                                                                            \
     struct EINSUMS_EXPORT fmt::formatter<struct ::einsums::tensor_algebra::index::x> : fmt::formatter<char> {                              \
         template <typename FormatContext>                                                                                                  \
-        auto format(const struct ::einsums::tensor_algebra::index::x &, FormatContext &ctx) {                                              \
+        auto format(const struct ::einsums::tensor_algebra::index::x &, FormatContext &ctx) const {                                        \
             return formatter<char>::format(::einsums::tensor_algebra::index::x::letter, ctx);                                              \
         }                                                                                                                                  \
     };

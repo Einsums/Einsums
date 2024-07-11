@@ -200,7 +200,7 @@ void println(const std::string_view &f, const Ts... ts) {
 
 template <typename... Ts>
 void println(const fmt::text_style &style, const std::string_view &format, const Ts... ts) {
-    std::string s = fmt::format(style, format, ts...);
+    std::string s = fmt::format(style, fmt::runtime(format), ts...);
     ::einsums::detail::println(s);
 }
 
@@ -209,7 +209,7 @@ inline void println(const std::string &format) {
 }
 
 inline void println(const fmt::text_style &style, const std::string_view &format) {
-    std::string const s = fmt::format(style, format);
+    std::string const s = fmt::format(style, fmt::runtime(format));
     ::einsums::detail::println(s);
 }
 
@@ -241,7 +241,7 @@ inline void fprintln(std::FILE *fp, const std::string &format) {
 inline void fprintln(std::FILE *fp, const fmt::text_style &style, const std::string_view &format) {
     std::string s;
     if (fp == stdout || fp == stderr) {
-        s = fmt::format(style, format);
+        s = fmt::format(style, fmt::runtime(format));
     } else {
         s = format;
     }
@@ -269,7 +269,7 @@ inline void fprintln(std::ostream &fp, const std::string &format) {
 }
 
 inline void fprintln(std::ostream &fp, const fmt::text_style &style, const std::string_view &format) {
-    std::string const s = fmt::format(style, format);
+    std::string const s = fmt::format(style, fmt::runtime(format));
     ::einsums::detail::fprintln(fp, s);
 }
 
