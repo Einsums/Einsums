@@ -181,16 +181,16 @@ void scale(T alpha, AType<T, ARank> *A) {
 template <template <typename, size_t> typename AType, size_t ARank, typename T>
     requires RankBlockTensor<AType<T, ARank>, 2, T>
 void scale_row(size_t row, T alpha, AType<T, ARank> *A) {
-    int block_ind = A->block_of(row);
-    auto temp = A->block(block_ind)(row - A->block_range(block_ind)[0], AllT());
+    int  block_ind = A->block_of(row);
+    auto temp      = A->block(block_ind)(row - A->block_range(block_ind)[0], AllT());
     scale(alpha, &temp);
 }
 
 template <template <typename, size_t> typename AType, size_t ARank, typename T>
     requires RankBlockTensor<AType<T, ARank>, 2, T>
 void scale_column(size_t column, T alpha, AType<T, ARank> *A) {
-    int block_ind = A->block_of(column);
-    auto temp = A->block(block_ind)(AllT(), column - A->block_range(block_ind)[0]);
+    int  block_ind = A->block_of(column);
+    auto temp      = A->block(block_ind)(AllT(), column - A->block_range(block_ind)[0]);
     scale(alpha, &temp);
 }
 
@@ -341,6 +341,22 @@ void direct_product(T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, T
         }
         direct_product(alpha, A.block(i), B.block(i), beta, &(C->block(i)));
     }
+}
+
+template <template <typename, size_t> typename AType, size_t ARank, typename T>
+    requires RankBlockTensor<AType<T, ARank>, 2, T>
+auto pow(const AType<T, ARank> &a, T alpha, T cutoff = std::numeric_limits<T>::epsilon()) -> remove_view_t<AType, 2, T> {
+    remove_view_t<AType, 2, T> out{"pow result", a.vector_dims()};
+
+    EINSUMS_OMP_PARALLEL_FOR
+    for (int i = 0; i < a.num_blocks(); i++) {
+        if (a.block_dim(i) == 0) {
+            continue;
+        }
+        out[i] = pow(a[i], alpha, cutoff);
+    }
+
+    return out;
 }
 
 } // namespace einsums::linear_algebra::detail

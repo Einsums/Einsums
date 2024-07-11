@@ -321,4 +321,49 @@ void direct_product(T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, T
     }
 }
 
+template <template <typename, size_t> typename AType, size_t ARank, typename T>
+    requires CoreRankBasicTensor<AType<T, ARank>, 2, T>
+auto pow(const AType<T, ARank> &a, T alpha, T cutoff = std::numeric_limits<T>::epsilon()) -> Tensor<T, 2> {
+    assert(a.dim(0) == a.dim(1));
+
+    size_t                     n      = a.dim(0);
+    remove_view_t<AType, 2, T> a1     = a;
+    remove_view_t<AType, 2, T> result = create_tensor_like(a);
+    result.set_name("pow result");
+    Tensor<T, 1> e{"e", n};
+    result.zero();
+
+    // Diagonalize
+    syev<true>(&a1, &e);
+
+    remove_view_t<AType, 2, T> a2(a1);
+
+    // Determine the largest magnitude of the eigenvalues to use as a scaling factor for the cutoff.
+
+    T max_e{0.0};
+    // Block tensors don't have sorted eigenvalues, so we can't make assumptions about ordering.
+    for (int i = 0; i < n; i++) {
+        if (std::fabs(e(i)) > max_e) {
+            max_e = std::fabs(e(i));
+        }
+    }
+
+    for (size_t i = 0; i < n; i++) {
+        if (alpha < 0.0 && std::fabs(e(i)) < cutoff * max_e) {
+            e(i) = 0.0;
+        } else {
+            e(i) = std::pow(e(i), alpha);
+            if (!std::isfinite(e(i))) {
+                e(i) = 0.0;
+            }
+        }
+
+        scale_row(i, e(i), &a2);
+    }
+
+    gemm<true, false>(1.0, a2, a1, 0.0, &result);
+
+    return result;
+}
+
 } // namespace einsums::linear_algebra::detail

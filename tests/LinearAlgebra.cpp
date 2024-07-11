@@ -573,6 +573,71 @@ TEST_CASE("syev") {
     }
 }
 
+TEMPLATE_TEST_CASE("definite and semidefinite", "[linear-algebra]", float, double) {
+    using namespace einsums;
+    using namespace einsums::linear_algebra;
+
+    constexpr int size = 10;
+
+    SECTION("positive definite") {
+        auto A = create_random_definite<TestType>("A", size, size);
+
+        auto B = create_tensor<TestType>("B", size);
+
+        syev(&A, &B);
+
+        for (int i = 0; i < size; i++) {
+            REQUIRE(B(i) > TestType{0.0});
+        }
+    }
+
+    SECTION("negative definite") {
+        auto A = create_random_definite<TestType>("A", size, size, TestType{-1.0});
+
+        auto B = create_tensor<TestType>("B", size);
+
+        syev(&A, &B);
+
+        for (int i = 0; i < size; i++) {
+            REQUIRE(B(i) < TestType{0.0});
+        }
+    }
+
+    SECTION("positive semi-definite") {
+        auto A = create_random_semidefinite<TestType>("A", size, size);
+
+        auto B = create_tensor<TestType>("B", size);
+
+        syev(&A, &B);
+
+        int zeros = 0;
+        for (int i = 0; i < size; i++) {
+            if (std::abs(B(i)) < TestType{1e-6}) {
+                zeros++;
+            }
+            REQUIRE(B(i) >= TestType{-1e-6});
+        }
+        REQUIRE(zeros >= 1);
+    }
+
+    SECTION("negative semi-definite") {
+        auto A = create_random_semidefinite<TestType>("A", size, size, TestType{-1.0});
+
+        auto B = create_tensor<TestType>("B", size);
+
+        syev(&A, &B);
+
+        int zeros = 0;
+        for (int i = 0; i < size; i++) {
+            if (std::abs(B(i) - TestType{0.0}) < TestType{1e-6}) {
+                zeros++;
+            }
+            REQUIRE(B(i) <= TestType{1e-6});
+        }
+        REQUIRE(zeros >= 1);
+    }
+}
+
 template <NotComplex T>
 void geev_test() {
     using namespace einsums;
@@ -774,7 +839,7 @@ TEMPLATE_TEST_CASE("dot", "[linear-algebra]", float, double) {
 
         TestType test{0.0};
 
-        for(int i = 0; i < size; i++) {
+        for (int i = 0; i < size; i++) {
             test += A(i) * B(i);
         }
 
@@ -787,13 +852,13 @@ TEMPLATE_TEST_CASE("dot", "[linear-algebra]", float, double) {
         Tensor<TestType, 2> A = create_random_tensor<TestType>("A", size, size);
         Tensor<TestType, 2> B = create_random_tensor<TestType>("B", size, size);
 
-        for(int i = 0; i < size; i++) {
+        for (int i = 0; i < size; i++) {
             auto A_view = A(AllT(), i);
             auto B_view = B(i, AllT());
 
             TestType test{0.0};
 
-            for(int j = 0; j < size; j++) {
+            for (int j = 0; j < size; j++) {
                 test += A(j, i) * B(i, j);
             }
 
@@ -809,8 +874,8 @@ TEMPLATE_TEST_CASE("dot", "[linear-algebra]", float, double) {
 
         TestType test{0.0};
 
-        for(int i = 0; i < size; i++) {
-            for(int j = 0; j < size; j++) {
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
                 test += A(i, j) * B(i, j);
             }
         }
@@ -849,28 +914,28 @@ TEST_CASE("pow") {
 
     SECTION("Integer power") {
 
-    Tensor<TestType, 2> A = create_random_tensor<TestType>("A", 10, 10);
-    // Can only handle symmetric matrices.
-    for(int i = 0; i < A.dim(0); i++) {
-        for(int j = 0; j < i; j++) {
-            A(i, j) = A(j, i);
+        Tensor<TestType, 2> A = create_random_tensor<TestType>("A", 10, 10);
+        // Can only handle symmetric matrices.
+        for (int i = 0; i < A.dim(0); i++) {
+            for (int j = 0; j < i; j++) {
+                A(i, j) = A(j, i);
+            }
         }
-    }
 
-    Tensor<TestType, 2> B = einsums::linear_algebra::pow(A, TestType{2.0});
-    Tensor<TestType, 2> C = create_tensor_like(A);
+        Tensor<TestType, 2> B = einsums::linear_algebra::pow(A, TestType{2.0});
+        Tensor<TestType, 2> C = create_tensor_like(A);
 
-    gemm<false, false>(1.0, A, A, 0.0, &C);
+        gemm<false, false>(1.0, A, A, 0.0, &C);
 
-    for(int i = 0; i < A.dim(0); i++) {
-        for(int j = 0; j < A.dim(1); j++) {
-            CHECK(std::abs(B(i, j) - C(i, j)) < 1e-6);
+        for (int i = 0; i < A.dim(0); i++) {
+            for (int j = 0; j < A.dim(1); j++) {
+                CHECK(std::abs(B(i, j) - C(i, j)) < TestType{1e-6});
+            }
         }
-    }
     }
 
     SECTION("Non-integer power") {
-        constexpr int size = 3;
+        constexpr int       size = 3;
         Tensor<TestType, 2> A{"A", size, size};
         Tensor<TestType, 2> B{"B", size, size};
         Tensor<TestType, 2> C{"C", size, size};
@@ -883,13 +948,13 @@ TEST_CASE("pow") {
         // Set up the diagonal.
         Tensor<TestType, 1> Evals{"Evals", size};
 
-        for(int i = 0; i < size; i++) {
+        for (int i = 0; i < size; i++) {
             TestType val;
 
             // If we get zero, reroll until not zero.
             do {
                 val = normal(engine);
-            } while(val == TestType{0.0});
+            } while (val == TestType{0.0});
 
             Evals(i) = std::abs(val); // Can't have negatives in a positive definite matrix.
         }
@@ -904,28 +969,28 @@ TEST_CASE("pow") {
         v1 /= norm;
 
         // Orthogonalize.
-        for(int i = 1; i < size; i++) {
+        for (int i = 1; i < size; i++) {
             auto qi = Evecs(AllT(), i);
-            for(int j = 0; j < i; j++) {
+            for (int j = 0; j < i; j++) {
                 auto qj = Evecs(AllT(), j);
 
                 auto proj = true_dot(qi, qj);
 
-                //axpy(-proj, qj, &qi);
-                for(int k = 0; k < size; k++) {
+                // axpy(-proj, qj, &qi);
+                for (int k = 0; k < size; k++) {
                     qi(k) -= proj * qj(k);
                 }
             }
 
-            while(vec_norm(qi) < 1e-6) {
+            while (vec_norm(qi) < 1e-6) {
                 qi = create_random_tensor<TestType>("new vec", size);
-                for(int j = 0; j < i; j++) {
+                for (int j = 0; j < i; j++) {
                     auto qj = Evecs(AllT(), j);
 
                     auto proj = true_dot(qi, qj);
 
-                    //axpy(-proj, qj, &qi);
-                    for(int k = 0; k < size; k++) {
+                    // axpy(-proj, qj, &qi);
+                    for (int k = 0; k < size; k++) {
                         qi(k) -= proj * qj(k);
                     }
                 }
@@ -936,7 +1001,7 @@ TEST_CASE("pow") {
         // Create the test tensors.
         auto Diag1 = diagonal(Evals);
 
-        for(int i = 0; i < size; i++) {
+        for (int i = 0; i < size; i++) {
             Evals(i) = std::pow(Evals(i), TestType{0.5});
         }
         auto Diag2 = diagonal(Evals);
@@ -949,11 +1014,63 @@ TEST_CASE("pow") {
         C.zero();
         C = pow(A, TestType{0.5});
 
-        for(int i = 0; i < size; i++) {
-            for(int j = 0; j < size; j++) {
-                CHECK(std::abs(C(i, j) - B(i, j)) < 1e-6);
-                CHECK(std::abs(C(i, j) - C(j, i)) < 1e-6);
-                CHECK(std::abs(B(i, j) - B(j, i)) < 1e-6);
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                CHECK(std::abs(C(i, j) - B(i, j)) < TestType{1e-6});
+                CHECK(std::abs(C(i, j) - C(j, i)) < TestType{1e-6});
+                CHECK(std::abs(B(i, j) - B(j, i)) < TestType{1e-6});
+            }
+        }
+    }
+
+    SECTION("Integer power blocks") {
+
+        BlockTensor<TestType, 2> A("A", 4, 0, 1, 2);
+
+        for (int i = 0; i < A.num_blocks(); i++) {
+            if (A.block_dim(i) == 0) {
+                continue;
+            }
+            A[i] = create_random_tensor("block", A.block_dim(i), A.block_dim(i));
+            // Can only handle symmetric matrices.
+            for (int j = 0; j < A.block_dim(i); j++) {
+                for (int k = 0; k < j; k++) {
+                    A[i](j, k) = A[i](k, j);
+                }
+            }
+        }
+
+        BlockTensor<TestType, 2> B = einsums::linear_algebra::pow(A, TestType{2.0});
+        BlockTensor<TestType, 2> C = create_tensor_like(A);
+        C.zero();
+
+        gemm<false, false>(1.0, A, A, 0.0, &C);
+
+        for (int i = 0; i < A.dim(0); i++) {
+            for (int j = 0; j < A.dim(1); j++) {
+                CHECK(std::abs(B(i, j) - C(i, j)) < TestType{1e-6});
+            }
+        }
+    }
+
+    SECTION("Non-integer power blocks") {
+
+        BlockTensor<TestType, 2> A("A", 4, 0, 1, 2);
+
+        for (int i = 0; i < A.num_blocks(); i++) {
+            if (A.block_dim(i) == 0) {
+                continue;
+            }
+            A[i] = create_random_definite("block", A.block_dim(i), A.block_dim(i));
+        }
+
+        BlockTensor<TestType, 2> B      = einsums::linear_algebra::pow(A, TestType{0.5});
+        Tensor<TestType, 2>      A_base = (Tensor<TestType, 2>)A;
+        Tensor<TestType, 2>      C      = einsums::linear_algebra::pow(A_base, TestType{0.5});
+
+        for (int i = 0; i < A.dim(0); i++) {
+            for (int j = 0; j < A.dim(1); j++) {
+                CHECK(std::abs(B(i, j) - C(i, j)) < TestType{1e-6});
             }
         }
     }

@@ -201,6 +201,8 @@ TEST_CASE("RHF") {
         }
     }
 
+    println(Symm);
+
     // Compute the Hamiltonian.
     H = T;
     H += V;
@@ -214,6 +216,12 @@ TEST_CASE("RHF") {
     S_sym[2](0, 0) = symm_temp2(4, 4);
     S_sym[3]       = symm_temp2(Range{5, 7}, Range{5, 7});
 
+    for(int i = 0; i < 7; i++) {
+        for(int j = 0; j < 7; j++) {
+            CHECK_THAT(S_sym(i, j), Catch::Matchers::WithinAbs(symm_temp2(i, j), 1e-8));
+        }
+    }
+
     REQUIRE_NOTHROW(einsum(Indices{index::i, index::j}, &symm_temp1, Indices{index::i, index::k}, H, Indices{index::k, index::j}, Symm));
     REQUIRE_NOTHROW(
         einsum(Indices{index::i, index::j}, &symm_temp2, Indices{index::k, index::i}, Symm, Indices{index::k, index::j}, symm_temp1));
@@ -222,26 +230,56 @@ TEST_CASE("RHF") {
     H_sym[2](0, 0) = symm_temp2(4, 4);
     H_sym[3]       = symm_temp2(Range{5, 7}, Range{5, 7});
 
-    REQUIRE_NOTHROW(einsum(Indices{index::i, index::j, index::k, index::l}, &TEI_temp1, Indices{index::i, index::m, index::k, index::l},
-                           TEI, Indices{index::m, index::j}, Symm));
-    REQUIRE_NOTHROW(einsum(Indices{index::i, index::j, index::k, index::l}, &TEI_temp2, Indices{index::m, index::j, index::k, index::l},
-                           TEI_temp1, Indices{index::m, index::i}, Symm));
+    REQUIRE_NOTHROW(einsum(Indices{index::i, index::j, index::k, index::l}, &TEI_temp1, Indices{index::m, index::j, index::k, index::l},
+                           TEI, Indices{index::m, index::i}, Symm));
+    REQUIRE_NOTHROW(einsum(Indices{index::i, index::j, index::k, index::l}, &TEI_temp2, Indices{index::i, index::m, index::k, index::l},
+                           TEI_temp1, Indices{index::m, index::j}, Symm));
     REQUIRE_NOTHROW(einsum(Indices{index::i, index::j, index::k, index::l}, &TEI_temp1, Indices{index::i, index::j, index::m, index::l},
                            TEI_temp2, Indices{index::m, index::k}, Symm));
     REQUIRE_NOTHROW(einsum(Indices{index::i, index::j, index::k, index::l}, &TEI_temp2, Indices{index::i, index::j, index::k, index::m},
                            TEI_temp1, Indices{index::m, index::l}, Symm));
 
     TEI_sym.tile(0, 0, 0, 0) = TEI_temp2(Range{0, 4}, Range{0, 4}, Range{0, 4}, Range{0, 4});
-    TEI_sym.tile(0, 0, 2, 2) = TEI_temp2(Range{0, 4}, Range{0, 4}, Range{4, 5}, Range{4, 5});
-    TEI_sym.tile(0, 0, 3, 3) = TEI_temp2(Range{0, 4}, Range{0, 4}, Range{5, 7}, Range{5, 7});
-    TEI_sym.tile(2, 2, 0, 0) = TEI_temp2(Range{4, 5}, Range{4, 5}, Range{0, 4}, Range{0, 4});
     TEI_sym.tile(2, 2, 2, 2) = TEI_temp2(4, 4, 4, 4);
-    TEI_sym.tile(2, 2, 3, 3) = TEI_temp2(Range{4, 5}, Range{4, 5}, Range{5, 7}, Range{5, 7});
-    TEI_sym.tile(3, 3, 0, 0) = TEI_temp2(Range{5, 7}, Range{5, 7}, Range{0, 4}, Range{0, 4});
-    TEI_sym.tile(3, 3, 2, 2) = TEI_temp2(Range{5, 7}, Range{5, 7}, Range{4, 5}, Range{4, 5});
     TEI_sym.tile(3, 3, 3, 3) = TEI_temp2(Range{5, 7}, Range{5, 7}, Range{5, 7}, Range{5, 7});
 
-    REQUIRE_THAT(TEI_sym(4, 4, 4, 4), Catch::Matchers::WithinRel(TEI_temp2(4, 4, 4, 4), 1e-6));
+    TEI_sym.tile(0, 0, 2, 2) = TEI_temp2(Range{0, 4}, Range{0, 4}, Range{4, 5}, Range{4, 5});
+    TEI_sym.tile(0, 2, 0, 2) = TEI_temp2(Range{0, 4}, Range{4, 5}, Range{0, 4}, Range{4, 5});
+    TEI_sym.tile(0, 2, 2, 0) = TEI_temp2(Range{0, 4}, Range{4, 5}, Range{4, 5}, Range{0, 4});
+    TEI_sym.tile(2, 0, 0, 2) = TEI_temp2(Range{4, 5}, Range{0, 4}, Range{0, 4}, Range{4, 5});
+    TEI_sym.tile(2, 0, 2, 0) = TEI_temp2(Range{4, 5}, Range{0, 4}, Range{4, 5}, Range{0, 4});
+    TEI_sym.tile(2, 2, 0, 0) = TEI_temp2(Range{4, 5}, Range{4, 5}, Range{0, 4}, Range{0, 4});
+
+    TEI_sym.tile(0, 0, 3, 3) = TEI_temp2(Range{0, 4}, Range{0, 4}, Range{5, 7}, Range{5, 7});
+    TEI_sym.tile(0, 3, 0, 3) = TEI_temp2(Range{0, 4}, Range{5, 7}, Range{0, 4}, Range{5, 7});
+    TEI_sym.tile(0, 3, 3, 0) = TEI_temp2(Range{0, 4}, Range{5, 7}, Range{5, 7}, Range{0, 4});
+    TEI_sym.tile(3, 0, 0, 3) = TEI_temp2(Range{5, 7}, Range{0, 4}, Range{0, 4}, Range{5, 7});
+    TEI_sym.tile(3, 0, 3, 0) = TEI_temp2(Range{5, 7}, Range{0, 4}, Range{5, 7}, Range{0, 4});
+    TEI_sym.tile(3, 3, 0, 0) = TEI_temp2(Range{5, 7}, Range{5, 7}, Range{0, 4}, Range{0, 4});
+    
+    TEI_sym.tile(2, 2, 3, 3) = TEI_temp2(Range{4, 5}, Range{4, 5}, Range{5, 7}, Range{5, 7});
+    TEI_sym.tile(2, 3, 2, 3) = TEI_temp2(Range{4, 5}, Range{5, 7}, Range{4, 5}, Range{5, 7});
+    TEI_sym.tile(2, 3, 3, 2) = TEI_temp2(Range{4, 5}, Range{5, 7}, Range{5, 7}, Range{4, 5});
+    TEI_sym.tile(3, 2, 2, 3) = TEI_temp2(Range{5, 7}, Range{4, 5}, Range{4, 5}, Range{5, 7});
+    TEI_sym.tile(3, 2, 3, 2) = TEI_temp2(Range{5, 7}, Range{4, 5}, Range{5, 7}, Range{4, 5});
+    TEI_sym.tile(3, 3, 2, 2) = TEI_temp2(Range{5, 7}, Range{5, 7}, Range{4, 5}, Range{4, 5});
+
+    const auto &TEI_sym_ref = *&TEI_sym;
+
+    for(int i = 0; i < 7; i++) {
+        for(int j = 0; j < 7; j++) {
+            for(int k = 0; k < 7; k++) {
+                for(int l = 0; l < 7; l++) {
+                    if(std::abs(TEI_sym_ref(i, j, k, l) - TEI_temp2(i, j, k, l)) >= 1e-8) {
+                        printf("Indices %d %d %d %d\n", i, j, k, l);
+                        auto indices = TEI_sym_ref.tile_of(i, j, k, l);
+                        printf("Tile indices %d %d %d %d\n", indices[0], indices[1], indices[2], indices[3]);
+                    }
+                    CHECK_THAT(TEI_sym_ref(i, j, k, l), Catch::Matchers::WithinAbs(TEI_temp2(i, j, k, l), 1e-8));
+                }
+            }
+        }
+    }
 
     // Compute the unitary transform.
     X = einsums::linear_algebra::pow(S_sym, -0.5);
@@ -250,8 +288,8 @@ TEST_CASE("RHF") {
     F = H_sym;
 
     // Transform.
-    REQUIRE_NOTHROW(einsum(Indices{index::i, index::j}, &temp1, Indices{index::i, index::k}, F, Indices{index::k, index::j}, X));
-    REQUIRE_NOTHROW(einsum(Indices{index::i, index::j}, &Ft, Indices{index::k, index::j}, temp1, Indices{index::k, index::i}, X));
+    REQUIRE_NOTHROW(einsum(Indices{index::i, index::j}, &temp1, Indices{index::i, index::k}, F, Indices{index::j, index::k}, X));
+    REQUIRE_NOTHROW(einsum(Indices{index::i, index::j}, &Ft, Indices{index::k, index::j}, temp1, Indices{index::i, index::k}, X));
 
     // Compute the coefficients.
     Ct = Ft;

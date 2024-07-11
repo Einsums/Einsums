@@ -27,12 +27,12 @@
 
 #include <algorithm>
 #include <cmath>
+#include <complex>
 #include <cstddef>
 #include <limits>
 #include <stdexcept>
 #include <tuple>
 #include <type_traits>
-#include <complex>
 
 // For some stupid reason doxygen can't handle this macro here but it can in other files.
 #if !defined(DOXYGEN_SHOULD_SKIP_THIS)
@@ -99,8 +99,8 @@ void sum_square(const AType<ADataType, ARank> &a, RemoveComplexT<ADataType> *sca
 template <bool TransA, bool TransB, template <typename, size_t> typename AType, template <typename, size_t> typename BType,
           template <typename, size_t> typename CType, size_t Rank, typename T, typename U>
     requires requires {
-        requires InSamePlace<AType<T, Rank>, BType<T, Rank>, Rank, Rank, T, T>;
-        requires InSamePlace<AType<T, Rank>, CType<T, Rank>, Rank, Rank, T, T>;
+        requires InSamePlace<AType<T, Rank>, BType<T, Rank>, 2, 2, T, T>;
+        requires InSamePlace<AType<T, Rank>, CType<T, Rank>, 2, 2, T, T>;
         requires std::convertible_to<U, T>;
     }
 void gemm(const U alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const U beta, CType<T, Rank> *C) {
@@ -381,75 +381,7 @@ template <template <typename, size_t> typename AType, size_t ARank, typename T>
 auto pow(const AType<T, ARank> &a, T alpha, T cutoff = std::numeric_limits<T>::epsilon()) -> remove_view_t<AType, 2, T> {
     LabeledSection0();
 
-#ifdef __HIP__
-    if constexpr (einsums::detail::IsDeviceRankTensorV<AType<T, ARank>, ARank, T>) {
-        DeviceTensor<T, 1> Evals(Dim<1>{a.dim(0)}, ::einsums::detail::DEV_ONLY);
-
-        remove_view_t<AType, 2, T> Evecs = create_tensor_like(a);
-
-        remove_view_t<AType, 2, T> Diag = create_tensor_like(a);
-
-        remove_view_t<AType, 2, T> out = create_tensor_like(a);
-        remove_view_t<AType, 2, T> temp = create_tensor_like(a);
-
-        Evecs.assign(a);
-
-        syev<true>(&Evecs, &Evals);
-
-        Diag.zero();
-
-        detail::detail::gpu::eig_to_diag<<<dim3(32), dim3(1), 0, gpu::get_stream()>>>(Diag.data(), Diag.dim(0), Diag.stride(0),
-                                                                                      Evals.data(), alpha);
-
-        symm_gemm<false, false>(Diag, Evecs, &out);
-
-        return out;
-    } else {
-#endif
-
-        assert(a.dim(0) == a.dim(1));
-
-        size_t                     n  = a.dim(0);
-        remove_view_t<AType, 2, T> a1 = a;
-        remove_view_t<AType, 2, T> result = create_tensor_like(a);
-        result.set_name("pow result");
-        Tensor<T, 1>               e{"e", n};
-        result.zero();
-
-        // Diagonalize
-        syev<true>(&a1, &e);
-
-        remove_view_t<AType, 2, T> a2(a1);
-
-        // Determine the largest magnitude of the eigenvalues to use as a scaling factor for the cutoff.
-
-        double max_e = 0;
-        // Block tensors don't have sorted eigenvalues, so we can't make assumptions about ordering.
-        for(int i = 0; i < n; i++) {
-            if(std::fabs(e(i)) > max_e) {
-                max_e = std::fabs(e(i));
-            }
-        }
-
-        for (size_t i = 0; i < n; i++) {
-            if (alpha < 0.0 && std::fabs(e(i)) < cutoff * max_e) {
-                e(i) = 0.0;
-            } else {
-                e(i) = std::pow(e(i), alpha);
-                if (!std::isfinite(e(i))) {
-                    e(i) = 0.0;
-                }
-            }
-
-            scale_row(i, e(i), &a2);
-        }
-
-        gemm<true, false>(1.0, a2, a1, 0.0, &result);
-
-        return result;
-#ifdef __HIP__
-    }
-#endif
+    return detail::pow(a, alpha, cutoff);
 }
 
 template <template <typename, size_t> typename AType, template <typename, size_t> typename BType, typename T>
@@ -545,7 +477,7 @@ auto getrf(TensorType<T, TensorRank> *A, std::vector<blas_int> *pivot) -> int {
     LabeledSection0();
 
     if (pivot->size() < std::min(A->dim(0), A->dim(1))) {
-        println("getrf: resizing pivot vector from {} to {}", pivot->size(), std::min(A->dim(0), A->dim(1)));
+        // println("getrf: resizing pivot vector from {} to {}", pivot->size(), std::min(A->dim(0), A->dim(1)));
         pivot->resize(std::min(A->dim(0), A->dim(1)));
     }
     int result = blas::getrf(A->dim(0), A->dim(1), A->data(), A->stride(0), pivot->data());
@@ -677,7 +609,7 @@ auto norm(Norm norm_type, const AType<ADataType, ARank> &a) -> RemoveComplexT<AD
     return blas::lange(static_cast<char>(norm_type), a.dim(0), a.dim(1), a.data(), a.stride(0), work.data());
 }
 
-template<template<typename, size_t> typename AType, typename ADataType, size_t ARank>
+template <template <typename, size_t> typename AType, typename ADataType, size_t ARank>
 RemoveComplexT<ADataType> vec_norm(const AType<ADataType, ARank> &a) {
     return std::sqrt(std::abs(true_dot(a, a)));
 }
@@ -866,42 +798,42 @@ auto truncated_syev(const AType<T, ARank> &A, size_t k) -> std::tuple<Tensor<T, 
     size_t n = A.dim(0);
 
     // Omega Test Matrix
-    Tensor<double, 2> omega = create_random_tensor("omega", n, k + 5);
+    Tensor<T, 2> omega = create_random_tensor<T>("omega", n, k + 5);
 
     // Matrix Y = A * Omega
-    Tensor<double, 2> Y("Y", n, k + 5);
-    gemm<false, false>(1.0, A, omega, 0.0, &Y);
+    Tensor<T, 2> Y("Y", n, k + 5);
+    gemm<false, false>(T{1.0}, A, omega, T{0.0}, &Y);
 
-    Tensor<double, 1> tau("tau", std::min(n, k + 5));
+    Tensor<T, 1> tau("tau", std::min(n, k + 5));
     // Compute QR factorization of Y
     blas_int const info1 = blas::geqrf(n, k + 5, Y.data(), k + 5, tau.data());
     // Extract Matrix Q out of QR factorization
-    blas_int const info2 = blas::orgqr(n, k + 5, tau.dim(0), Y.data(), k + 5, const_cast<const double *>(tau.data()));
+    blas_int const info2 = blas::orgqr(n, k + 5, tau.dim(0), Y.data(), k + 5, const_cast<const T *>(tau.data()));
 
-    Tensor<double, 2> &Q1 = Y;
+    Tensor<T, 2> &Q1 = Y;
 
     // Cast the matrix A into a smaller rank (B)
     // B = Q^T * A * Q
-    Tensor<double, 2> Btemp("Btemp", k + 5, n);
+    Tensor<T, 2> Btemp("Btemp", k + 5, n);
     gemm<true, false>(1.0, Q1, A, 0.0, &Btemp);
-    Tensor<double, 2> B("B", k + 5, k + 5);
+    Tensor<T, 2> B("B", k + 5, k + 5);
     gemm<false, false>(1.0, Btemp, Q1, 0.0, &B);
 
     // Create buffer for eigenvalues
-    Tensor<double, 1> w("eigenvalues", k + 5);
+    Tensor<T, 1> w("eigenvalues", k + 5);
 
     // Diagonalize B
     syev(&B, &w);
 
     // Cast U back into full basis (B is column-major so we need to transpose it)
-    Tensor<double, 2> U("U", n, k + 5);
+    Tensor<T, 2> U("U", n, k + 5);
     gemm<false, true>(1.0, Q1, B, 0.0, &U);
 
     return std::make_tuple(U, w);
 }
 
 template <typename T>
-inline auto pseudoinverse(const Tensor<T, 2> &A, double tol) -> Tensor<T, 2> {
+inline auto pseudoinverse(const Tensor<T, 2> &A, T tol) -> Tensor<T, 2> {
     LabeledSection0();
 
     auto [U, S, Vh] = svd_a(A);
@@ -910,7 +842,7 @@ inline auto pseudoinverse(const Tensor<T, 2> &A, double tol) -> Tensor<T, 2> {
     for (size_t v = 0; v < S.dim(0); v++) {
         T val = S(v);
         if (val > tol)
-            scale_column(v, 1.0 / val, &U);
+            scale_column(v, T{1.0} / val, &U);
         else {
             new_dim = v;
             break;
@@ -978,7 +910,7 @@ auto qr(const AType<T, ARank> &_A) -> std::tuple<Tensor<T, 2>, Tensor<T, 1>> {
     const blas_int m = A.dim(0);
     const blas_int n = A.dim(1);
 
-    Tensor<double, 1> tau("tau", std::min(m, n));
+    Tensor<T, 1> tau("tau", std::min(m, n));
     // Compute QR factorization of Y
     blas_int info = blas::geqrf(m, n, A.data(), n, tau.data());
 
@@ -1012,6 +944,63 @@ void direct_product(T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, T
     LabeledSection0();
 
     detail::direct_product(alpha, A, B, beta, C);
+}
+
+/**
+ * Computes the determinant of a matrix.
+ */
+template <template <typename, size_t> typename AType, typename T, size_t Rank>
+    requires(Rank == 2)
+T det(const AType<T, Rank> &A) {
+    if (A.dim(0) != A.dim(1)) {
+        throw std::runtime_error("det: Can only take the determinant of a square matrix.");
+    }
+
+    remove_view_t<AType, Rank, T> temp = A;
+
+    std::vector<blas_int> pivots;
+    int                   singular = getrf(&A, &pivots);
+    if (singular > 0) {
+        return T{0.0}; // Matrix is singular, so it has a determinant of zero.
+    }
+
+    T ret{1.0};
+
+    int parity = 0;
+
+    // Calculate the effect of the pivots.
+#pragma omp parallel for simd reduction(+ : parity)
+    for (int i = 0; i < A.dim(0); i++) {
+        int      temp_parity = 0;
+        blas_int curr        = pivots.at(i);
+
+        bool skip = false;
+
+        while (curr != i + 1) {
+            if (curr < i + 1) {
+                skip = true;
+                break;
+            }
+            temp_parity++;
+            curr = pivots.at(curr - 1);
+        }
+
+        if (!skip) {
+            parity += temp_parity;
+        }
+    }
+
+// Calculate the contribution of the diagonal elements.
+#pragma omp parallel for simd reduction(* : ret)
+    for (int i = 0; i < A.dim(0); i++) {
+        ret *= A(i, i);
+    }
+
+    if (parity % 2 == 1) {
+        ret *= T{-1.0};
+    }
+
+    return ret;
 }
 
 END_EINSUMS_NAMESPACE_HPP(einsums::linear_algebra)

@@ -13,6 +13,31 @@
 #include "einsums/Tensor.hpp"
 #include "einsums/utility/ComplexTraits.hpp"
 
+#include <numbers>
+
+// Forward definitions for positive definite matrices.
+namespace einsums::linear_algebra {
+template <bool TransA, bool TransB, template <typename, size_t> typename AType, template <typename, size_t> typename BType,
+          template <typename, size_t> typename CType, size_t Rank, typename T, typename U>
+    requires requires {
+        requires InSamePlace<AType<T, Rank>, BType<T, Rank>, 2, 2, T, T>;
+        requires InSamePlace<AType<T, Rank>, CType<T, Rank>, 2, 2, T, T>;
+        requires std::convertible_to<U, T>;
+    }
+void gemm(const U alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const U beta, CType<T, Rank> *C);
+
+template <template <typename, size_t> typename TensorType, typename T, size_t TensorRank>
+    requires CoreRankTensor<TensorType<T, TensorRank>, 2, T>
+auto getrf(TensorType<T, TensorRank> *A, std::vector<blas_int> *pivot) -> int;
+
+template <template <typename, size_t> typename AType, size_t ARank, typename T>
+    requires CoreRankTensor<AType<T, ARank>, 2, T>
+auto qr(const AType<T, ARank> &_A) -> std::tuple<Tensor<T, 2>, Tensor<T, 1>>;
+
+template <typename T>
+auto q(const Tensor<T, 2> &qr, const Tensor<T, 1> &tau) -> Tensor<T, 2>;
+} // namespace einsums::linear_algebra
+
 namespace einsums {
 
 /**
@@ -87,14 +112,6 @@ auto create_random_tensor(const std::string &name, MultiIndex... index) -> Tenso
     std::uniform_real_distribution<double> unif(lower_bound, upper_bound);
     std::default_random_engine             re;
 
-    {
-        static std::chrono::high_resolution_clock::time_point const beginning = std::chrono::high_resolution_clock::now();
-
-        // std::chrono::high_resolution_clock::duration d = std::chrono::high_resolution_clock::now() - beginning;
-
-        // re.seed(d.count());
-    }
-
     if constexpr (std::is_same_v<T, std::complex<float>>) {
 #pragma omp parallel default(none) shared(A, re, unif)
         {
@@ -151,6 +168,146 @@ auto create_random_gpu_tensor(const std::string &name, MultiIndex... index) -> D
     return out;
 }
 #endif
+
+/**
+ * Create a random positive or negative definite matrix.
+ * A positive definite matrix is a symmetric matrix whose eigenvalues are all positive.
+ * Similarly for negative definite matrices.
+ *
+ * This function first generates a set of random eigenvectors, making sure they are non-singular.
+ * Then, it uses these to form an orthonormal eigenbasis for the new matrix. Then, it generates
+ * the eigenvalues. The eigenvalues are distributed using a Maxwell-Boltzmann distribution
+ * with the given mean, defaulting to 1. Then, the returned matrix is formed
+ * by computing @f$P^TDP@f$. If the mean is negative, then the result will be a negative
+ * definite matrix.
+ *
+ * @param name The name for the matrix.
+ * @param rows The number of rows.
+ * @param cols The number of columns. Should equal the number of rows.
+ * @param mean The mean for the eigenvalues. Defaults to 1.
+ * @return A new positive definite or negative definite matrix.
+ */
+template <typename T = double>
+auto create_random_definite(const std::string &name, int rows, int cols, T mean = T{1.0}) -> Tensor<T, 2> {
+    if (rows != cols) {
+        throw std::runtime_error("Can only make square positive definite matrices.");
+    }
+    Tensor<T, 2> Evecs = create_random_tensor<T>("name", rows, cols);
+
+    Tensor<T, 2>          Temp = Evecs;
+    std::vector<blas_int> pivs;
+
+    // Make sure the eigenvectors are non-singular.
+    while (linear_algebra::getrf(&Temp, &pivs) > 0) {
+        Evecs = create_random_tensor<T>("name", rows, cols);
+        Temp  = Evecs;
+    }
+
+    // QR decompose Evecs to get a random matrix of orthonormal eigenvectors.
+    auto pair = linear_algebra::qr(Evecs);
+
+    Evecs = linear_algebra::q(std::get<0>(pair), std::get<1>(pair));
+
+    std::default_random_engine engine;
+
+    // Create random eigenvalues. Need to calculate the standard deviation from the mean.
+    auto normal = std::normal_distribution<T>(0, std::abs(mean) / T{2.0} / std::numbers::sqrt2_v<T> / std::numbers::inv_sqrtpi_v<T>);
+
+    Tensor<T, 1> Evals("name2", rows);
+
+    for (int i = 0; i < rows; i++) {
+        // Maxwell-Boltzmann distribute the eigenvalues. Make sure they are positive.
+        do {
+            T val1 = normal(engine), val2 = normal(engine), val3 = normal(engine);
+
+            Evals(i) = std::sqrt(val1 * val1 + val2 * val2 + val3 * val3);
+            if (mean < T{0.0}) {
+                Evals(i) = -Evals(i);
+            }
+        } while (Evals(i) == T{0.0}); // Make sure they are non-zero.
+    }
+
+    // Create the tensor.
+    Tensor<T, 2> ret = diagonal(Evals);
+
+    linear_algebra::gemm<false, false>(1.0, ret, Evecs, 0.0, &Temp);
+    linear_algebra::gemm<true, false>(1.0, Evecs, Temp, 0.0, &ret);
+
+    ret.set_name(name);
+
+    return ret;
+}
+
+/**
+ * Create a random positive or negative semi-definite matrix.
+ * A positive semi-definite matrix is a symmetric matrix whose eigenvalues are all non-negative.
+ * Similarly for negative semi-definite matrices.
+ *
+ * This function first generates a set of random eigenvectors, making sure they are non-singular.
+ * Then, it uses these to form an orthonormal eigenbasis for the new matrix. Then, it generates
+ * the eigenvalues. The eigenvalues are distributed using a Maxwell-Boltzmann distribution
+ * with the given mean, defaulting to 1. If desired, a number of eigenvalues can be forced to be zero.
+ * Then, the returned matrix is formed by computing @f$P^TDP@f$.
+ *
+ * @param name The name for the matrix.
+ * @param rows The number of rows.
+ * @param cols The number of columns. Should equal the number of rows.
+ * @param mean The mean for the eigenvalues. Defaults to 1. If negative, the result is a negative semi-definite matrix.
+ * @param force_zeros The number of elements to force to be zero. Defaults to 1.
+ * @return A new positive or negative semi-definite matrix.
+ */
+template <typename T = double, bool Normalize = false>
+auto create_random_semidefinite(const std::string &name, int rows, int cols, T mean = T{1.0}, int force_zeros = 1) -> Tensor<T, 2> {
+    if (rows != cols) {
+        throw std::runtime_error("Can only make square positive definite matrices.");
+    }
+    Tensor<T, 2> Evecs = create_random_tensor<T>("name", rows, cols);
+
+    Tensor<T, 2>          Temp = Evecs;
+    std::vector<blas_int> pivs;
+
+    // Make sure the eigenvectors are non-singular.
+    while (linear_algebra::getrf(&Temp, &pivs) > 0) {
+        Evecs = create_random_tensor<T>("name", rows, cols);
+        Temp  = Evecs;
+    }
+
+    // QR decompose Evecs to get a random matrix of orthonormal eigenvectors.
+    auto pair = linear_algebra::qr(Evecs);
+
+    Evecs = linear_algebra::q(std::get<0>(pair), std::get<1>(pair));
+
+    std::default_random_engine engine;
+
+    // Create random eigenvalues. Need to calculate the standard deviation from the mean.
+    auto normal = std::normal_distribution<T>(0, std::abs(mean) / T{2.0} / std::numbers::sqrt2_v<T> / std::numbers::inv_sqrtpi_v<T>);
+
+    Tensor<T, 1> Evals("name2", rows);
+
+    for (int i = 0; i < rows; i++) {
+        if (i < force_zeros) {
+            Evals(i) = T{0.0};
+        } else {
+            // Maxwell-Boltzmann distribute the eigenvalues. Make sure they are positive.
+            T val1 = normal(engine), val2 = normal(engine), val3 = normal(engine);
+
+            Evals(i) = std::sqrt(val1 * val1 + val2 * val2 + val3 * val3);
+            if (mean < T{0.0}) {
+                Evals(i) = -Evals(i);
+            }
+        }
+    }
+
+    // Create the tensor.
+    Tensor<T, 2> ret = diagonal(Evals);
+
+    linear_algebra::gemm<false, false>(1.0, ret, Evecs, 0.0, &Temp);
+    linear_algebra::gemm<true, false>(1.0, Evecs, Temp, 0.0, &ret);
+
+    ret.set_name(name);
+
+    return ret;
+}
 
 namespace detail {
 

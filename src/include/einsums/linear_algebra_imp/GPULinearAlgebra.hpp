@@ -71,8 +71,8 @@ __global__ void true_dot_kernel(T *C, const T *__restrict__ A, const T *__restri
         if constexpr (std::is_same_v<T, hipComplex> || std::is_same_v<T, hipDoubleComplex>) {
             T conjugate = A[curr_index];
             conjugate.y = -conjugate.y;
-            temp = temp + conjugate * B[curr_index];
-        } else {    
+            temp        = temp + conjugate * B[curr_index];
+        } else {
             temp = temp + A[curr_index] * B[curr_index];
         }
         curr_index += kernel_size;
@@ -610,30 +610,6 @@ void syev(AType<T, ARank> *A, WType<T, WRank> *W) {
     stream_wait();
 }
 
-namespace detail {
-namespace gpu {
-/**
- * @brief Copy a list of eigenvalues onto the diagonal of a matrix.
- *
- * @param out_matrix The matrix output. Only the diagonal entries are touched.
- * @param n The number of columns and the number of eigenvalues.
- * @param lda The leading dimension of the out_matrix. lda >= n.
- * @param eigs The eigenvalues to copy.
- */
-template <typename T>
-__global__ void eig_to_diag(T *out_matrix, int n, int lda, const T *eigs, T expo) {
-    int thread_id, num_threads;
-
-    get_worker_info(thread_id, num_threads);
-
-    // Copy to diagonal. Assume the matrix is zeroed, or at least that the user needs the off-diagonal entries.
-    for (int i = thread_id; i < n; i += num_threads) {
-        out_matrix[i * lda + i] = ::pow(eigs[i], expo);
-    }
-}
-} // namespace gpu
-} // namespace detail
-
 template <template <typename, size_t> typename AType, size_t ARank, typename T>
     requires DeviceRankBasicTensor<AType<T, ARank>, 2, T>
 void scale_row(size_t row, const T *alpha, AType<T, ARank> *A) {
@@ -725,6 +701,53 @@ void direct_product(T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, T
     stream_wait();
 
     hip_catch(hipFree((void *)gpu_Ind_strides));
+}
+
+namespace gpu {
+/**
+ * @brief Copy a list of eigenvalues onto the diagonal of a matrix.
+ *
+ * @param out_matrix The matrix output. Only the diagonal entries are touched.
+ * @param n The number of columns and the number of eigenvalues.
+ * @param lda The leading dimension of the out_matrix. lda >= n.
+ * @param eigs The eigenvalues to copy.
+ */
+template <typename T>
+__global__ void eig_to_diag(T *out_matrix, int n, int lda, const T *eigs, T expo) {
+    int thread_id, num_threads;
+
+    get_worker_info(thread_id, num_threads);
+
+    // Copy to diagonal. Assume the matrix is zeroed, or at least that the user needs the off-diagonal entries.
+    for (int i = thread_id; i < n; i += num_threads) {
+        out_matrix[i * lda + i] = ::pow(eigs[i], expo);
+    }
+}
+} // namespace gpu
+
+template <template <typename, size_t> typename AType, size_t ARank, typename T>
+    requires DeviceRankBasicTensor<AType<T, ARank>, 2, T>
+auto pow(const AType<T, ARank> &a, T alpha, T cutoff = std::numeric_limits<T>::epsilon()) -> remove_view_t<AType, 2, T> {
+    DeviceTensor<T, 1> Evals(Dim<1>{a.dim(0)}, ::einsums::detail::DEV_ONLY);
+
+    remove_view_t<AType, 2, T> Evecs = create_tensor_like(a);
+
+    remove_view_t<AType, 2, T> Diag = create_tensor_like(a);
+
+    remove_view_t<AType, 2, T> out  = create_tensor_like(a);
+    remove_view_t<AType, 2, T> temp = create_tensor_like(a);
+
+    Evecs.assign(a);
+
+    syev<true>(&Evecs, &Evals);
+
+    Diag.zero();
+
+    gpu::eig_to_diag<<<dim3(32), dim3(1), 0, einsums::gpu::get_stream()>>>(Diag.data(), Diag.dim(0), Diag.stride(0), Evals.data(), alpha);
+
+    symm_gemm<false, false>(Diag, Evecs, &out);
+
+    return out;
 }
 
 } // namespace detail
