@@ -12,7 +12,6 @@
 // Items in this namespace contribute to the global state of the program
 namespace einsums::state {
 
-EINSUMS_EXPORT h5::fd_t& data();
-EINSUMS_EXPORT h5::fd_t& checkpoint_file();
+EINSUMS_EXPORT h5::fd_t &data();
 
 } // namespace einsums::state
