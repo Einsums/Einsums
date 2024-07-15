@@ -882,7 +882,7 @@ TEMPLATE_TEST_CASE("dot", "[linear-algebra]", float, double) {
 
         auto dot_res = dot(A, B);
 
-        REQUIRE(std::abs(dot_res - test) < 1e-6);
+        REQUIRE(std::abs(dot_res - test) < TestType{1e-6});
     }
 
     // SECTION("Rank 2 tensor views") {
