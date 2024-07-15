@@ -54,19 +54,16 @@ static void read_tensor(std::string fname, einsums::Tensor<double, Rank> *out) {
         } else if constexpr (Rank == 4) {
             double val = std::atof(next);
 
-            std::array<int, 4> ind1{indices[0], indices[1], indices[2], indices[3]}, ind2{indices[1], indices[0], indices[2], indices[3]},
-                ind3{indices[0], indices[1], indices[3], indices[2]}, ind4{indices[1], indices[0], indices[2], indices[3]},
-                ind5{indices[2], indices[3], indices[0], indices[1]}, ind6{indices[3], indices[2], indices[0], indices[1]},
-                ind7{indices[2], indices[3], indices[1], indices[0]}, ind8{indices[3], indices[2], indices[1], indices[0]};
+            int i = indices[0], j = indices[1], k = indices[2], l = indices[3];
 
-            std::apply(*out, ind1) = val;
-            std::apply(*out, ind2) = val;
-            std::apply(*out, ind3) = val;
-            std::apply(*out, ind4) = val;
-            std::apply(*out, ind5) = val;
-            std::apply(*out, ind6) = val;
-            std::apply(*out, ind7) = val;
-            std::apply(*out, ind8) = val;
+            (*out)(i, j, k, l) = val;
+            (*out)(i, j, l, k) = val;
+            (*out)(j, i, k, l) = val;
+            (*out)(j, i, l, k) = val;
+            (*out)(k, l, i, j) = val;
+            (*out)(l, k, i, j) = val;
+            (*out)(k, l, j, i) = val;
+            (*out)(l, k, j, i) = val;
         }
     }
 
@@ -187,6 +184,31 @@ TEST_CASE("RHF") {
     REQUIRE_NOTHROW(read_tensor("data/water_sto3g/V.dat", &V));
     TEI.zero();
     REQUIRE_NOTHROW(read_tensor("data/water_sto3g/TEI.dat", &TEI));
+
+    // Make sure that the tensors are formatted correctly.
+    for(int i = 0; i < 7; i++) {
+        for(int j = 0; j < 7; j++) {
+            REQUIRE_THAT(S(i, j), Catch::Matchers::WithinAbs(S(j, i), 1e-8));
+            REQUIRE_THAT(T(i, j), Catch::Matchers::WithinAbs(T(j, i), 1e-8));
+            REQUIRE_THAT(V(i, j), Catch::Matchers::WithinAbs(V(j, i), 1e-8));
+        }
+    }
+
+    for(int i = 0; i < 7; i++) {
+        for(int j = 0; j < 7; j++) {
+            for(int k = 0; k < 7; k++) {
+                for(int l = 0; l < 7; l++) {
+                    REQUIRE_THAT(TEI(i, j, l, k), Catch::Matchers::WithinAbs(TEI(i, j, k, l), 1e-8));
+                    REQUIRE_THAT(TEI(j, i, k, l), Catch::Matchers::WithinAbs(TEI(i, j, k, l), 1e-8));
+                    REQUIRE_THAT(TEI(j, i, l, k), Catch::Matchers::WithinAbs(TEI(i, j, k, l), 1e-8));
+                    REQUIRE_THAT(TEI(k, l, i, j), Catch::Matchers::WithinAbs(TEI(i, j, k, l), 1e-8));
+                    REQUIRE_THAT(TEI(k, l, j, i), Catch::Matchers::WithinAbs(TEI(i, j, k, l), 1e-8));
+                    REQUIRE_THAT(TEI(l, k, i, j), Catch::Matchers::WithinAbs(TEI(i, j, k, l), 1e-8));
+                    REQUIRE_THAT(TEI(l, k, j, i), Catch::Matchers::WithinAbs(TEI(i, j, k, l), 1e-8));
+                }
+            }
+        }
+    }
 
     double enuc = 8.002367061810450;
 
