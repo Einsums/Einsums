@@ -587,7 +587,7 @@ TEMPLATE_TEST_CASE("definite and semidefinite", "[linear-algebra]", float, doubl
         syev(&A, &B);
 
         for (int i = 0; i < size; i++) {
-            REQUIRE(B(i) > TestType{0.0});
+            REQUIRE(B(i) >= -einsums::WithinStrict(TestType(0.0), TestType{10000.0}).get_error());
         }
     }
 
@@ -599,7 +599,7 @@ TEMPLATE_TEST_CASE("definite and semidefinite", "[linear-algebra]", float, doubl
         syev(&A, &B);
 
         for (int i = 0; i < size; i++) {
-            REQUIRE(B(i) < TestType{0.0});
+            REQUIRE(B(i) <= einsums::WithinStrict(TestType(0.0), TestType{10000.0}).get_error());
         }
     }
 
@@ -612,10 +612,10 @@ TEMPLATE_TEST_CASE("definite and semidefinite", "[linear-algebra]", float, doubl
 
         int zeros = 0;
         for (int i = 0; i < size; i++) {
-            if (std::abs(B(i)) < TestType{1e-6}) {
+            if (einsums::WithinStrict(TestType(0.0), TestType{10000.0}).match(B(i))) {
                 zeros++;
             }
-            REQUIRE(B(i) >= TestType{-1e-6});
+            REQUIRE(B(i) >= -einsums::WithinStrict(TestType(0.0), TestType{10000.0}).get_error());
         }
         REQUIRE(zeros >= 1);
     }
@@ -629,10 +629,10 @@ TEMPLATE_TEST_CASE("definite and semidefinite", "[linear-algebra]", float, doubl
 
         int zeros = 0;
         for (int i = 0; i < size; i++) {
-            if (std::abs(B(i) - TestType{0.0}) < TestType{1e-6}) {
+            if (einsums::WithinStrict(TestType(0.0),TestType{10000.0}).match(B(i))) {
                 zeros++;
             }
-            REQUIRE(B(i) <= TestType{1e-6});
+            REQUIRE(B(i) <= einsums::WithinStrict(TestType(0.0), TestType{10000.0}).get_error());
         }
         REQUIRE(zeros >= 1);
     }
@@ -845,7 +845,7 @@ TEMPLATE_TEST_CASE("dot", "[linear-algebra]", float, double) {
 
         auto dot_res = dot(A, B);
 
-        REQUIRE(std::abs(dot_res - test) < TestType{1e-6f});
+        REQUIRE_THAT(dot_res, einsums::WithinStrict(test, TestType{10000.0}));
     }
 
     SECTION("Rank 1 tensor views") {
@@ -864,7 +864,7 @@ TEMPLATE_TEST_CASE("dot", "[linear-algebra]", float, double) {
 
             auto dot_res = dot(A_view, B_view);
 
-            REQUIRE(std::abs(dot_res - test) < TestType{1e-6f});
+            REQUIRE_THAT(dot_res, einsums::WithinStrict(test, TestType{10000.0}));
         }
     }
 
@@ -882,7 +882,7 @@ TEMPLATE_TEST_CASE("dot", "[linear-algebra]", float, double) {
 
         auto dot_res = dot(A, B);
 
-        REQUIRE(std::abs(dot_res - test) < TestType{1e-6f});
+        REQUIRE_THAT(dot_res, einsums::WithinStrict(test, TestType{10000.0}));
     }
 
     // SECTION("Rank 2 tensor views") {
@@ -901,7 +901,7 @@ TEMPLATE_TEST_CASE("dot", "[linear-algebra]", float, double) {
 
     //         auto dot_res = dot(A_view, B_view);
 
-    //         REQUIRE(std::abs(dot_res - test) < 1e-6);
+    //         REQUIRE(std::abs(dot_res - test) < static_cast<TestType>(EINSUMS_ZERO));
     //     }
     // }
 }
@@ -929,7 +929,7 @@ TEST_CASE("pow") {
 
         for (int i = 0; i < A.dim(0); i++) {
             for (int j = 0; j < A.dim(1); j++) {
-                CHECK(std::abs(B(i, j) - C(i, j)) < TestType{1e-6});
+                CHECK_THAT(B(i, j), einsums::WithinStrict(C(i, j), TestType{10000.0}));
             }
         }
     }
@@ -982,7 +982,7 @@ TEST_CASE("pow") {
                 }
             }
 
-            while (vec_norm(qi) < 1e-6) {
+            while (vec_norm(qi) < einsums::WithinStrict(TestType{0.0}, TestType{10000.0}).get_error()) {
                 qi = create_random_tensor<TestType>("new vec", size);
                 for (int j = 0; j < i; j++) {
                     auto qj = Evecs(AllT(), j);
@@ -1016,9 +1016,9 @@ TEST_CASE("pow") {
 
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                CHECK(std::abs(C(i, j) - B(i, j)) < TestType{1e-6});
-                CHECK(std::abs(C(i, j) - C(j, i)) < TestType{1e-6});
-                CHECK(std::abs(B(i, j) - B(j, i)) < TestType{1e-6});
+                CHECK_THAT(B(i, j), einsums::WithinStrict(C(i, j), TestType{10000.0}));
+                CHECK_THAT(C(j, i), einsums::WithinStrict(C(i, j), TestType{10000.0}));
+                CHECK_THAT(B(j, i), einsums::WithinStrict(B(i, j), TestType{10000.0}));
             }
         }
     }
@@ -1048,7 +1048,7 @@ TEST_CASE("pow") {
 
         for (int i = 0; i < A.dim(0); i++) {
             for (int j = 0; j < A.dim(1); j++) {
-                CHECK(std::abs(B(i, j) - C(i, j)) < TestType{1e-6});
+                CHECK_THAT(B(i, j), einsums::WithinStrict(C(i, j), TestType{10000.0}));
             }
         }
     }
@@ -1070,7 +1070,7 @@ TEST_CASE("pow") {
 
         for (int i = 0; i < A.dim(0); i++) {
             for (int j = 0; j < A.dim(1); j++) {
-                CHECK(std::abs(B(i, j) - C(i, j)) < TestType{1e-6});
+                CHECK_THAT(B(i, j), einsums::WithinStrict(C(i, j), TestType{10000.0}));
             }
         }
     }

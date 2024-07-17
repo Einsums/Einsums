@@ -1,3 +1,5 @@
+#include "einsums/_Common.hpp"
+
 #include <catch2/catch_all.hpp>
 #include <cmath>
 #include <initializer_list>
@@ -149,19 +151,173 @@ static void compute_diis_fock(const std::vector<double> &coefs, const std::vecto
     }
 }
 
-TEST_CASE("RHF") {
+TEST_CASE("RHF No symmetry") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::linear_algebra;
 
     Tensor<double, 2> S("Overlap", 7, 7), T("Kinetic Energy", 7, 7), V("Potential Energy", 7, 7), H("Core Hamiltonian", 7, 7),
-        Symm("Symmetrizer", 7, 7), symm_temp1("Symmetrizing temp1", 7, 7), symm_temp2("Symmetrizing temp1", 7, 7);
+        temp1("temp1", 7, 7), temp2("temp2", 7, 7), X("Unitary transform", 7, 7), C("MO Coefs", 7, 7), Ct("Transformed MO Coefs", 7, 7),
+        D("Density Matrix", 7, 7), D_prev("Previous Density Matrix", 7, 7), F("Fock Matrix", 7, 7), Ft("Transformed Fock Matrix", 7, 7);
+
+    Tensor<double, 4> TEI("Two-electron Integrals", 7, 7, 7, 7);
+
+    Tensor<double, 1> Evals("Eigenvalues", 7);
+
+    S.zero();
+    T.zero();
+    V.zero();
+    H.zero();
+    temp1.zero();
+    temp2.zero();
+    X.zero();
+    C.zero();
+    Ct.zero();
+    D.zero();
+    D_prev.zero();
+    F.zero();
+    Ft.zero();
+    Evals.zero();
+    TEI.zero();
+
+    REQUIRE_NOTHROW(read_tensor("data/water_sto3g/S.dat", &S));
+    REQUIRE_NOTHROW(read_tensor("data/water_sto3g/T.dat", &T));
+    REQUIRE_NOTHROW(read_tensor("data/water_sto3g/V.dat", &V));
+    REQUIRE_NOTHROW(read_tensor("data/water_sto3g/TEI.dat", &TEI));
+
+    // Make sure that the tensors are formatted correctly.
+    for (int i = 0; i < 7; i++) {
+        for (int j = 0; j < 7; j++) {
+            REQUIRE_THAT(S(i, j), Catch::Matchers::WithinAbs(S(j, i), EINSUMS_ZERO));
+            REQUIRE_THAT(T(i, j), Catch::Matchers::WithinAbs(T(j, i), EINSUMS_ZERO));
+            REQUIRE_THAT(V(i, j), Catch::Matchers::WithinAbs(V(j, i), EINSUMS_ZERO));
+        }
+    }
+
+    for (int i = 0; i < 7; i++) {
+        for (int j = 0; j < 7; j++) {
+            for (int k = 0; k < 7; k++) {
+                for (int l = 0; l < 7; l++) {
+                    REQUIRE_THAT(TEI(i, j, l, k), Catch::Matchers::WithinAbs(TEI(i, j, k, l), EINSUMS_ZERO));
+                    REQUIRE_THAT(TEI(j, i, k, l), Catch::Matchers::WithinAbs(TEI(i, j, k, l), EINSUMS_ZERO));
+                    REQUIRE_THAT(TEI(j, i, l, k), Catch::Matchers::WithinAbs(TEI(i, j, k, l), EINSUMS_ZERO));
+                    REQUIRE_THAT(TEI(k, l, i, j), Catch::Matchers::WithinAbs(TEI(i, j, k, l), EINSUMS_ZERO));
+                    REQUIRE_THAT(TEI(k, l, j, i), Catch::Matchers::WithinAbs(TEI(i, j, k, l), EINSUMS_ZERO));
+                    REQUIRE_THAT(TEI(l, k, i, j), Catch::Matchers::WithinAbs(TEI(i, j, k, l), EINSUMS_ZERO));
+                    REQUIRE_THAT(TEI(l, k, j, i), Catch::Matchers::WithinAbs(TEI(i, j, k, l), EINSUMS_ZERO));
+                }
+            }
+        }
+    }
+
+    H = T;
+    H += V;
+
+    X = pow(S, -0.5);
+
+    double enuc = 8.002367061810450;
+
+    // Set up initial Fock matrix.
+    F = H;
+
+    // Transform.
+    REQUIRE_NOTHROW(einsum(Indices{index::i, index::j}, &temp1, Indices{index::i, index::k}, F, Indices{index::k, index::j}, X));
+    REQUIRE_NOTHROW(einsum(Indices{index::i, index::j}, &Ft, Indices{index::k, index::j}, temp1, Indices{index::k, index::i}, X));
+
+    // Diagonalize.
+    Ct = Ft;
+    syev(&Ct, &Evals);
+
+    for(int i = 0; i < 6; i++) {
+        REQUIRE(Evals(i) <= Evals(i + 1));
+    }
+
+    REQUIRE_NOTHROW(einsum(Indices{index::i, index::j}, &C, Indices{index::j, index::k}, Ct, Indices{index::k, index::i}, X));
+
+    // Form the density matrix.
+    auto Cocc = C(All, Range{0, 5});
+
+    REQUIRE_NOTHROW(einsum(Indices{index::i, index::j}, &D, Indices{index::i, index::m}, Cocc, Indices{index::j, index::m}, Cocc));
+
+    // Compute the energy.
+
+    Tensor<double, 0> Elec;
+
+    Elec = 0;
+
+    REQUIRE_NOTHROW(einsum(Indices{}, &Elec, Indices{index::i, index::j}, D, Indices{index::i, index::j}, F));
+    REQUIRE_NOTHROW(einsum(1.0, Indices{}, &Elec, 1.0, Indices{index::i, index::j}, D, Indices{index::i, index::j}, H));
+
+    double e0 = (double)Elec + enuc, e1 = 0;
+
+    int cycles = 0;
+
+    double dRMS = 1;
+
+    while (std::abs(e0 - e1) > 1e-10 && dRMS > 1e-6 && cycles < 50) {
+        cycles++;
+        e1     = e0;
+        D_prev = D;
+        // Form the new Fock matrix.
+        F = H;
+
+        REQUIRE_NOTHROW(einsum(1.0, Indices{index::i, index::j}, &F, 2.0, Indices{index::k, index::l}, D,
+                               Indices{index::i, index::j, index::k, index::l}, TEI));
+        REQUIRE_NOTHROW(einsum(1.0, Indices{index::i, index::j}, &F, -1.0, Indices{index::k, index::l}, D,
+                               Indices{index::i, index::k, index::j, index::l}, TEI));
+
+        // Transform.
+        REQUIRE_NOTHROW(einsum(Indices{index::i, index::j}, &temp1, Indices{index::i, index::k}, F, Indices{index::k, index::j}, X));
+        REQUIRE_NOTHROW(einsum(Indices{index::i, index::j}, &Ft, Indices{index::k, index::j}, temp1, Indices{index::k, index::i}, X));
+
+        // Diagonalize.
+        Ct = Ft;
+        syev(&Ct, &Evals);
+
+        REQUIRE_NOTHROW(einsum(Indices{index::i, index::j}, &C, Indices{index::j, index::k}, Ct, Indices{index::k, index::i}, X));
+
+        // Form the density matrix.
+        Cocc = C(All, Range{0, 5});
+
+        REQUIRE_NOTHROW(einsum(Indices{index::i, index::j}, &D, Indices{index::i, index::m}, Cocc, Indices{index::j, index::m}, Cocc));
+
+        // Compute the energy.
+        Elec = 0;
+
+        REQUIRE_NOTHROW(einsum(Indices{}, &Elec, Indices{index::i, index::j}, D, Indices{index::i, index::j}, F));
+        REQUIRE_NOTHROW(einsum(1.0, Indices{}, &Elec, 1.0, Indices{index::i, index::j}, D, Indices{index::i, index::j}, H));
+
+        e0 = Elec + enuc;
+
+        Tensor<double, 0> rms;
+
+        rms = 0;
+        temp1 = D;
+        temp1 -= D_prev;
+
+        REQUIRE_NOTHROW(einsum(Indices{}, &rms, Indices{index::i, index::j}, temp1, Indices{index::i, index::j}, temp1));
+
+        dRMS = std::sqrt((double) rms) / 7.0;
+    }
+
+    REQUIRE(cycles < 50);
+    REQUIRE_THAT(e0, Catch::Matchers::WithinAbs(-74.942079928192, 1e-6));
+}
+
+TEST_CASE("RHF symmetry") {
+    using namespace einsums;
+    using namespace einsums::tensor_algebra;
+    using namespace einsums::linear_algebra;
+
+    Tensor<double, 2> S("Overlap", 7, 7), T("Kinetic Energy", 7, 7), V("Potential Energy", 7, 7), H("Core Hamiltonian", 7, 7),
+        Symm("Symmetrizer", 7, 7), symm_temp1("Symmetrizing temp1", 7, 7), symm_temp2("Symmetrizing temp1", 7, 7),
+        X("Unitary Transform", 7, 7);
     Tensor<double, 4> TEI("Two-electron integrals", 7, 7, 7, 7), TEI_temp1("Two-electron symmetrize temp1", 7, 7, 7, 7),
-        TEI_temp2("Two-electron symmetrize temp2", 7, 7, 7, 7), TEI_temp3("Two-electron symmetrize temp3", 7, 7, 7, 7);
+        TEI_temp2("Two-electron symmetrize temp2", 7, 7, 7, 7);
 
     BlockTensor<double, 2> S_sym("Overlap", 4, 0, 1, 2), H_sym("Hamiltonian", 4, 0, 1, 2), D("Density", 4, 0, 1, 2),
         D_prev("Previous density", 4, 0, 1, 2), F("Fock Matrix", 4, 0, 1, 2), Ft("Transformed Fock", 4, 0, 1, 2),
-        X("Unitary Transform", 4, 0, 1, 2), C("MO coefs", 4, 0, 1, 2), Cocc("Occupied MO coefs", 4, 0, 1, 2),
+        X_sym("Unitary Transform", 4, 0, 1, 2), C("MO coefs", 4, 0, 1, 2), Cocc("Occupied MO coefs", 4, 0, 1, 2),
         Ct("Transformed MO coefficients", 4, 0, 1, 2), temp1("Temp1", 4, 0, 1, 2), temp2("Temp2", 4, 0, 1, 2), FDS("FDS", 4, 0, 1, 2),
         SDF("SDF", 4, 0, 1, 2);
     std::vector<BlockTensor<double, 2>> DIIS_errors, DIIS_focks;
@@ -178,33 +334,60 @@ TEST_CASE("RHF") {
     double e0 = -1, e1 = 0;
     double dRMS = 1;
 
+    S.zero();
+    T.zero();
+    V.zero();
+    H.zero();
+    Symm.zero();
+    symm_temp1.zero();
+    symm_temp2.zero();
+    X.zero();
+    TEI.zero();
+    TEI_temp1.zero();
+    TEI_temp2.zero();
+    S_sym.zero();
+    H_sym.zero();
+    D.zero();
+    D_prev.zero();
+    F.zero();
+    Ft.zero();
+    X_sym.zero();
+    C.zero();
+    Ct.zero();
+    Cocc.zero();
+    temp1.zero();
+    temp2.zero();
+    SDF.zero();
+    FDS.zero();
+    TEI_sym.zero();
+    Evals.zero();
+
     // Read in the values.
     REQUIRE_NOTHROW(read_tensor("data/water_sto3g/S.dat", &S));
     REQUIRE_NOTHROW(read_tensor("data/water_sto3g/T.dat", &T));
     REQUIRE_NOTHROW(read_tensor("data/water_sto3g/V.dat", &V));
-    TEI.zero();
     REQUIRE_NOTHROW(read_tensor("data/water_sto3g/TEI.dat", &TEI));
 
     // Make sure that the tensors are formatted correctly.
-    for(int i = 0; i < 7; i++) {
-        for(int j = 0; j < 7; j++) {
-            REQUIRE_THAT(S(i, j), Catch::Matchers::WithinAbs(S(j, i), 1e-8));
-            REQUIRE_THAT(T(i, j), Catch::Matchers::WithinAbs(T(j, i), 1e-8));
-            REQUIRE_THAT(V(i, j), Catch::Matchers::WithinAbs(V(j, i), 1e-8));
+    for (int i = 0; i < 7; i++) {
+        for (int j = 0; j < 7; j++) {
+            REQUIRE_THAT(S(i, j), Catch::Matchers::WithinAbs(S(j, i), EINSUMS_ZERO));
+            REQUIRE_THAT(T(i, j), Catch::Matchers::WithinAbs(T(j, i), EINSUMS_ZERO));
+            REQUIRE_THAT(V(i, j), Catch::Matchers::WithinAbs(V(j, i), EINSUMS_ZERO));
         }
     }
 
-    for(int i = 0; i < 7; i++) {
-        for(int j = 0; j < 7; j++) {
-            for(int k = 0; k < 7; k++) {
-                for(int l = 0; l < 7; l++) {
-                    REQUIRE_THAT(TEI(i, j, l, k), Catch::Matchers::WithinAbs(TEI(i, j, k, l), 1e-8));
-                    REQUIRE_THAT(TEI(j, i, k, l), Catch::Matchers::WithinAbs(TEI(i, j, k, l), 1e-8));
-                    REQUIRE_THAT(TEI(j, i, l, k), Catch::Matchers::WithinAbs(TEI(i, j, k, l), 1e-8));
-                    REQUIRE_THAT(TEI(k, l, i, j), Catch::Matchers::WithinAbs(TEI(i, j, k, l), 1e-8));
-                    REQUIRE_THAT(TEI(k, l, j, i), Catch::Matchers::WithinAbs(TEI(i, j, k, l), 1e-8));
-                    REQUIRE_THAT(TEI(l, k, i, j), Catch::Matchers::WithinAbs(TEI(i, j, k, l), 1e-8));
-                    REQUIRE_THAT(TEI(l, k, j, i), Catch::Matchers::WithinAbs(TEI(i, j, k, l), 1e-8));
+    for (int i = 0; i < 7; i++) {
+        for (int j = 0; j < 7; j++) {
+            for (int k = 0; k < 7; k++) {
+                for (int l = 0; l < 7; l++) {
+                    REQUIRE_THAT(TEI(i, j, l, k), Catch::Matchers::WithinAbs(TEI(i, j, k, l), EINSUMS_ZERO));
+                    REQUIRE_THAT(TEI(j, i, k, l), Catch::Matchers::WithinAbs(TEI(i, j, k, l), EINSUMS_ZERO));
+                    REQUIRE_THAT(TEI(j, i, l, k), Catch::Matchers::WithinAbs(TEI(i, j, k, l), EINSUMS_ZERO));
+                    REQUIRE_THAT(TEI(k, l, i, j), Catch::Matchers::WithinAbs(TEI(i, j, k, l), EINSUMS_ZERO));
+                    REQUIRE_THAT(TEI(k, l, j, i), Catch::Matchers::WithinAbs(TEI(i, j, k, l), EINSUMS_ZERO));
+                    REQUIRE_THAT(TEI(l, k, i, j), Catch::Matchers::WithinAbs(TEI(i, j, k, l), EINSUMS_ZERO));
+                    REQUIRE_THAT(TEI(l, k, j, i), Catch::Matchers::WithinAbs(TEI(i, j, k, l), EINSUMS_ZERO));
                 }
             }
         }
@@ -213,9 +396,9 @@ TEST_CASE("RHF") {
     double enuc = 8.002367061810450;
 
     // Matrix for forming salcs.
-    std::vector<double> symm_values{1, 0, 0, 0, 0, 0, 0,         0, 1, 0,         0, 0, 0, 0,         0, 0,
-                                    0, 0, 0, 1, 0, 0, 0,         1, 0, 0,         0, 0, 0, 0,         0, 0,
-                                    1, 0, 0, 0, 0, 0, M_SQRT1_2, 0, 0, -M_SQRT1_2, 0, 0, 0, M_SQRT1_2, 0, 0, M_SQRT1_2};
+    std::vector<double> symm_values{1, 0, 0, 0, 0,         0, 0, 0,          1, 0, 0, 0,         0, 0, 0,        0, 0,
+                                    0, 0, 1, 0, 0,         0, 1, 0,          0, 0, 0, 0,         0, 0, 0,        1, 0,
+                                    0, 0, 0, 0, M_SQRT1_2, 0, 0, -M_SQRT1_2, 0, 0, 0, M_SQRT1_2, 0, 0, M_SQRT1_2};
 
     for (int i = 0; i < 7; i++) {
         for (int j = 0; j < 7; j++) {
@@ -223,11 +406,10 @@ TEST_CASE("RHF") {
         }
     }
 
-    println(Symm);
-
     // Compute the Hamiltonian.
     H = T;
     H += V;
+    X = pow(S, -0.5);
 
     // Symmetrize
     REQUIRE_NOTHROW(einsum(Indices{index::i, index::j}, &symm_temp1, Indices{index::i, index::k}, S, Indices{index::k, index::j}, Symm));
@@ -238,9 +420,9 @@ TEST_CASE("RHF") {
     S_sym[2](0, 0) = symm_temp2(4, 4);
     S_sym[3]       = symm_temp2(Range{5, 7}, Range{5, 7});
 
-    for(int i = 0; i < 7; i++) {
-        for(int j = 0; j < 7; j++) {
-            CHECK_THAT(S_sym(i, j), Catch::Matchers::WithinAbs(symm_temp2(i, j), 1e-8));
+    for (int i = 0; i < 7; i++) {
+        for (int j = 0; j < 7; j++) {
+            CHECK_THAT(S_sym(i, j), Catch::Matchers::WithinAbs(symm_temp2(i, j), EINSUMS_ZERO));
         }
     }
 
@@ -251,6 +433,20 @@ TEST_CASE("RHF") {
     H_sym[0]       = symm_temp2(Range{0, 4}, Range{0, 4});
     H_sym[2](0, 0) = symm_temp2(4, 4);
     H_sym[3]       = symm_temp2(Range{5, 7}, Range{5, 7});
+
+    REQUIRE_NOTHROW(einsum(Indices{index::i, index::j}, &symm_temp1, Indices{index::i, index::k}, X, Indices{index::k, index::j}, Symm));
+    REQUIRE_NOTHROW(
+        einsum(Indices{index::i, index::j}, &symm_temp2, Indices{index::k, index::i}, symm_temp1, Indices{index::k, index::j}, Symm));
+
+    X_sym[0]       = symm_temp2(Range{0, 4}, Range{0, 4});
+    X_sym[2](0, 0) = symm_temp2(4, 4);
+    X_sym[3]       = symm_temp2(Range{5, 7}, Range{5, 7});
+
+    for (int i = 0; i < 7; i++) {
+        for (int j = 0; j < 7; j++) {
+            CHECK_THAT(X_sym(i, j), Catch::Matchers::WithinAbs(symm_temp2(i, j), EINSUMS_ZERO));
+        }
+    }
 
     REQUIRE_NOTHROW(einsum(Indices{index::i, index::j, index::k, index::l}, &TEI_temp1, Indices{index::m, index::j, index::k, index::l},
                            TEI, Indices{index::m, index::i}, Symm));
@@ -278,7 +474,7 @@ TEST_CASE("RHF") {
     TEI_sym.tile(3, 0, 0, 3) = TEI_temp2(Range{5, 7}, Range{0, 4}, Range{0, 4}, Range{5, 7});
     TEI_sym.tile(3, 0, 3, 0) = TEI_temp2(Range{5, 7}, Range{0, 4}, Range{5, 7}, Range{0, 4});
     TEI_sym.tile(3, 3, 0, 0) = TEI_temp2(Range{5, 7}, Range{5, 7}, Range{0, 4}, Range{0, 4});
-    
+
     TEI_sym.tile(2, 2, 3, 3) = TEI_temp2(Range{4, 5}, Range{4, 5}, Range{5, 7}, Range{5, 7});
     TEI_sym.tile(2, 3, 2, 3) = TEI_temp2(Range{4, 5}, Range{5, 7}, Range{4, 5}, Range{5, 7});
     TEI_sym.tile(2, 3, 3, 2) = TEI_temp2(Range{4, 5}, Range{5, 7}, Range{5, 7}, Range{4, 5});
@@ -288,37 +484,38 @@ TEST_CASE("RHF") {
 
     const auto &TEI_sym_ref = *&TEI_sym;
 
-    for(int i = 0; i < 7; i++) {
-        for(int j = 0; j < 7; j++) {
-            for(int k = 0; k < 7; k++) {
-                for(int l = 0; l < 7; l++) {
-                    if(std::abs(TEI_sym_ref(i, j, k, l) - TEI_temp2(i, j, k, l)) >= 1e-8) {
-                        printf("Indices %d %d %d %d\n", i, j, k, l);
-                        auto indices = TEI_sym_ref.tile_of(i, j, k, l);
-                        printf("Tile indices %d %d %d %d\n", indices[0], indices[1], indices[2], indices[3]);
-                    }
-                    CHECK_THAT(TEI_sym_ref(i, j, k, l), Catch::Matchers::WithinAbs(TEI_temp2(i, j, k, l), 1e-8));
+    for (int i = 0; i < 7; i++) {
+        for (int j = 0; j < 7; j++) {
+            for (int k = 0; k < 7; k++) {
+                for (int l = 0; l < 7; l++) {
+                    CHECK_THAT(TEI_sym_ref(i, j, k, l), Catch::Matchers::WithinAbs(TEI_temp2(i, j, k, l), EINSUMS_ZERO));
                 }
             }
         }
     }
 
     // Compute the unitary transform.
-    X = einsums::linear_algebra::pow(S_sym, -0.5);
+    temp1 = einsums::linear_algebra::pow(S_sym, -0.5);
+
+    for (int i = 0; i < 7; i++) {
+        for (int j = 0; j < 7; j++) {
+            CHECK_THAT(temp1(i, j), Catch::Matchers::WithinAbs(X_sym(i, j), EINSUMS_ZERO));
+        }
+    }
 
     // Compute the guess Fock matrix.
     F = H_sym;
 
     // Transform.
-    REQUIRE_NOTHROW(einsum(Indices{index::i, index::j}, &temp1, Indices{index::i, index::k}, F, Indices{index::j, index::k}, X));
-    REQUIRE_NOTHROW(einsum(Indices{index::i, index::j}, &Ft, Indices{index::k, index::j}, temp1, Indices{index::i, index::k}, X));
+    REQUIRE_NOTHROW(einsum(Indices{index::i, index::j}, &temp1, Indices{index::i, index::k}, F, Indices{index::j, index::k}, X_sym));
+    REQUIRE_NOTHROW(einsum(Indices{index::i, index::j}, &Ft, Indices{index::k, index::j}, temp1, Indices{index::i, index::k}, X_sym));
 
     // Compute the coefficients.
     Ct = Ft;
     syev(&Ct, &Evals);
 
     // Transform back.
-    REQUIRE_NOTHROW(einsum(Indices{index::i, index::j}, &C, Indices{index::k, index::j}, Ct, Indices{index::i, index::k}, X));
+    REQUIRE_NOTHROW(einsum(Indices{index::i, index::j}, &C, Indices{index::j, index::k}, Ct, Indices{index::i, index::k}, X_sym));
 
     // Compute the occupied orbitals.
     update_Cocc(Evals, &Cocc, C, occ_per_irrep);
@@ -335,20 +532,7 @@ TEST_CASE("RHF") {
 
     e0 += (double)Elec;
 
-    println(H_sym);
-    println(S_sym);
-    println(X);
-    println(C);
-    println(D);
-
-    printf("Initial occupation: ");
-    for(auto val : occ_per_irrep) {
-        printf("%d ", val);
-    }
-
-    printf("\n%d\t%lf\n", 0, e0);
-
-    while (std::fabs(e0 - e1) > 1e-10 && dRMS > 1e-10 && cycles < 50) {
+    while (std::fabs(e0 - e1) > 1e-10 && cycles < 50) {
         D_prev = D;
         e1     = e0;
 
@@ -361,15 +545,15 @@ TEST_CASE("RHF") {
                                Indices{index::k, index::l}, D));
 
         // Transform.
-        REQUIRE_NOTHROW(einsum(Indices{index::i, index::j}, &temp1, Indices{index::i, index::k}, F, Indices{index::k, index::j}, X));
-        REQUIRE_NOTHROW(einsum(Indices{index::i, index::j}, &Ft, Indices{index::k, index::j}, temp1, Indices{index::k, index::i}, X));
+        REQUIRE_NOTHROW(einsum(Indices{index::i, index::j}, &temp1, Indices{index::i, index::k}, F, Indices{index::k, index::j}, X_sym));
+        REQUIRE_NOTHROW(einsum(Indices{index::i, index::j}, &Ft, Indices{index::k, index::j}, temp1, Indices{index::k, index::i}, X_sym));
 
         // Compute the coefficients.
         Ct = Ft;
         syev(&Ct, &Evals);
 
         // Transform back.
-        REQUIRE_NOTHROW(einsum(Indices{index::i, index::j}, &C, Indices{index::k, index::j}, Ct, Indices{index::i, index::k}, X));
+        REQUIRE_NOTHROW(einsum(Indices{index::i, index::j}, &C, Indices{index::j, index::k}, Ct, Indices{index::i, index::k}, X_sym));
 
         // Compute the occupied orbitals.
         update_Cocc(Evals, &Cocc, C, occ_per_irrep);
@@ -385,18 +569,14 @@ TEST_CASE("RHF") {
 
         e0 += (double)Elec;
 
-        if (cycles > 0) {
-            Tensor<double, 0> rms;
+        Tensor<double, 0> rms;
 
-            temp1 = D;
-            temp1 -= D_prev;
+        temp1 = D;
+        temp1 -= D_prev;
 
-            REQUIRE_NOTHROW(einsum(Indices{}, &rms, Indices{index::i, index::j}, temp1, Indices{index::i, index::j}, temp2));
+        REQUIRE_NOTHROW(einsum(0.0, Indices{}, &rms, 1.0 / 49.0, Indices{index::i, index::j}, temp1, Indices{index::i, index::j}, temp2));
 
-            dRMS = std::sqrt((double)rms);
-        }
-
-        printf("%d\t%lf\t%lf\t%lf\n", cycles, e0, e0 - e1, dRMS);
+        dRMS = std::sqrt((double)rms);
 
         REQUIRE_NOTHROW(einsum(Indices{index::i, index::j}, &temp1, Indices{index::i, index::k}, S_sym, Indices{index::k, index::j}, D));
         REQUIRE_NOTHROW(einsum(Indices{index::i, index::j}, &SDF, Indices{index::i, index::k}, temp1, Indices{index::k, index::j}, F));
@@ -437,7 +617,4 @@ TEST_CASE("RHF") {
 
     REQUIRE(cycles < 50);
     REQUIRE_THAT(e0, Catch::Matchers::WithinAbs(-74.942079928192, 1e-6));
-}
-
-TEST_CASE("RHF-MP2") {
 }
