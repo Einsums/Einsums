@@ -228,7 +228,7 @@ TEST_CASE("RHF No symmetry") {
     Ct = Ft;
     syev(&Ct, &Evals);
 
-    for(int i = 0; i < 6; i++) {
+    for (int i = 0; i < 6; i++) {
         REQUIRE(Evals(i) <= Evals(i + 1));
     }
 
@@ -291,13 +291,13 @@ TEST_CASE("RHF No symmetry") {
 
         Tensor<double, 0> rms;
 
-        rms = 0;
+        rms   = 0;
         temp1 = D;
         temp1 -= D_prev;
 
         REQUIRE_NOTHROW(einsum(Indices{}, &rms, Indices{index::i, index::j}, temp1, Indices{index::i, index::j}, temp1));
 
-        dRMS = std::sqrt((double) rms) / 7.0;
+        dRMS = std::sqrt((double)rms) / 7.0;
     }
 
     REQUIRE(cycles < 50);
@@ -323,11 +323,16 @@ TEST_CASE("RHF symmetry") {
     std::vector<BlockTensor<double, 2>> DIIS_errors, DIIS_focks;
     std::vector<double>                 DIIS_coefs;
 
-    TiledTensor<double, 4> TEI_sym("Two-electron integrals", {4, 0, 1, 2});
+    TiledTensor<double, 4> TEI_sym("Two-electron integrals", {4, 0, 1, 2}), MP2_temp1("MP2 temp1", {4, 0, 1, 2}),
+        MP2_temp2("MP2 temp2", {4, 0, 1, 2}),
+        MP2_amps("MP2 amplitudes", std::vector<int>{3, 0, 1, 1}, std::vector<int>{1, 0, 0, 1}, std::vector<int>{3, 0, 1, 1},
+                 std::vector<int>{1, 0, 0, 1}),
+        MP2_amps_den("MP2 amplitudes with denominator", std::vector<int>{3, 0, 1, 1}, std::vector<int>{1, 0, 0, 1},
+                     std::vector<int>{3, 0, 1, 1}, std::vector<int>{1, 0, 0, 1});
 
     Tensor<double, 1> Evals("Eigenvalues", 7);
 
-    std::array<int, 4> occ_per_irrep;
+    std::array<int, 4> occ_per_irrep, irrep_sizes{4, 0, 1, 2}, irrep_offs{0, 4, 4, 5};
 
     int cycles = 0;
 
@@ -361,6 +366,8 @@ TEST_CASE("RHF symmetry") {
     FDS.zero();
     TEI_sym.zero();
     Evals.zero();
+    MP2_temp1.zero();
+    MP2_temp2.zero();
 
     // Read in the values.
     REQUIRE_NOTHROW(read_tensor("data/water_sto3g/S.dat", &S));
@@ -586,35 +593,90 @@ TEST_CASE("RHF symmetry") {
         temp1 = FDS;
         temp1 -= SDF;
 
-        // if (DIIS_errors.size() == 6) {
-        //     double max_error = -INFINITY;
-        //     int    max_index = -1;
+        if (DIIS_errors.size() == 6) {
+            double max_error = -INFINITY;
+            int    max_index = -1;
 
-        //     Tensor<double, 0> dot_temp;
+            Tensor<double, 0> dot_temp;
 
-        //     for (int i = 0; i < DIIS_errors.size(); i++) {
-        //         einsum(Indices{}, &dot_temp, Indices{index::i, index::j}, temp1, Indices{index::i, index::j}, DIIS_errors[i]);
+            for (int i = 0; i < DIIS_errors.size(); i++) {
+                einsum(Indices{}, &dot_temp, Indices{index::i, index::j}, temp1, Indices{index::i, index::j}, DIIS_errors[i]);
 
-        //         if ((double)dot_temp < max_error) {
-        //             max_error = (double)dot_temp;
-        //             max_index = i;
-        //         }
-        //     }
+                if ((double)dot_temp > max_error) {
+                    max_error = (double)dot_temp;
+                    max_index = i;
+                }
+            }
 
-        //     DIIS_focks[max_index]  = F;
-        //     DIIS_errors[max_index] = temp1;
-        // } else {
-        //     DIIS_errors.push_back(temp1);
-        //     DIIS_focks.push_back(F);
-        //     DIIS_coefs.push_back(0.0);
-        // }
+            DIIS_focks[max_index]  = F;
+            DIIS_errors[max_index] = temp1;
+        } else {
+            DIIS_errors.push_back(temp1);
+            DIIS_focks.push_back(F);
+            DIIS_coefs.push_back(0.0);
+        }
 
-        // compute_diis_coefs(DIIS_errors, &DIIS_coefs);
-        // compute_diis_fock(DIIS_coefs, DIIS_focks, &F);
+        compute_diis_coefs(DIIS_errors, &DIIS_coefs);
+        compute_diis_fock(DIIS_coefs, DIIS_focks, &F);
 
         cycles++;
     }
 
     REQUIRE(cycles < 50);
     REQUIRE_THAT(e0, Catch::Matchers::WithinAbs(-74.942079928192, 1e-6));
+
+    // MP2 now.
+    // Compute the new two electron integrals.
+    REQUIRE_NOTHROW(einsum(Indices{index::i, index::j, index::k, index::l}, &MP2_temp1, Indices{index::m, index::j, index::k, index::l},
+                           TEI_sym, Indices{index::m, index::i}, C));
+    REQUIRE_NOTHROW(einsum(Indices{index::i, index::j, index::k, index::l}, &MP2_temp2, Indices{index::i, index::m, index::k, index::l},
+                           MP2_temp1, Indices{index::m, index::j}, C));
+    REQUIRE_NOTHROW(einsum(Indices{index::i, index::j, index::k, index::l}, &MP2_temp1, Indices{index::i, index::j, index::m, index::l},
+                           MP2_temp2, Indices{index::m, index::k}, C));
+    REQUIRE_NOTHROW(einsum(Indices{index::i, index::j, index::k, index::l}, &MP2_temp2, Indices{index::i, index::j, index::k, index::m},
+                           MP2_temp1, Indices{index::m, index::l}, C));
+
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            for (int k = 0; k < 4; k++) {
+                for (int l = 0; l < 4; l++) {
+                    if (!MP2_temp2.has_tile(i, j, k, l) || MP2_temp2.has_zero_size(i, j, k, l)) {
+                        continue;
+                    }
+
+                    auto &out_tile     = MP2_amps.tile(i, j, k, l);
+                    auto &out_tile_den = MP2_amps_den.tile(i, j, k, l);
+                    auto &in_tile      = MP2_temp2.tile(i, j, k, l);
+
+                    for (int I = 0; I < occ_per_irrep[i]; I++) {
+                        for (int A = occ_per_irrep[j]; A < irrep_sizes[j]; A++) {
+                            for (int J = 0; J < occ_per_irrep[k]; J++) {
+                                for (int B = occ_per_irrep[l]; B < irrep_sizes[l]; B++) {
+                                    double den = Evals(I + irrep_offs[i]) + Evals(J + irrep_offs[k]) - Evals(A + irrep_offs[j]) -
+                                                 Evals(B + irrep_offs[l]);
+                                    out_tile_den(I, A - occ_per_irrep[j], J, B - occ_per_irrep[l]) = in_tile(I, A, J, B) / den;
+                                    out_tile(I, A - occ_per_irrep[j], J, B - occ_per_irrep[l])     = in_tile(I, A, J, B);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Compute the MP2 energy.
+    Tensor<double, 0> EMP2;
+    EMP2 = 0;
+
+    REQUIRE_NOTHROW(einsum(0.0, Indices{}, &EMP2, 2.0, Indices{index::i, index::a, index::j, index::b}, MP2_amps_den,
+                           Indices{index::i, index::a, index::j, index::b}, MP2_amps));
+    REQUIRE_NOTHROW(einsum(1.0, Indices{}, &EMP2, -1.0, Indices{index::i, index::a, index::j, index::b}, MP2_amps_den,
+                           Indices{index::i, index::b, index::j, index::a}, MP2_amps));
+
+    double eMP2 = (double) EMP2;
+    double e_tot = e0 + eMP2;
+
+    REQUIRE_THAT(eMP2, Catch::Matchers::WithinAbs(-0.049149636120, 1e-6));
+    REQUIRE_THAT(e_tot, Catch::Matchers::WithinAbs(-74.991229564312, 1e-6));
 }

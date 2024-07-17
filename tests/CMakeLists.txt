@@ -12,6 +12,7 @@ add_executable(test-all
     ElementOps.cpp
     TiledTensor.cpp
     QChemTests.cpp
+    OtherCatch.cpp
 )
 
 file(GLOB __data_files data/water_sto3g/*)

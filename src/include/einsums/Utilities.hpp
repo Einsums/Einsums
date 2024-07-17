@@ -196,16 +196,16 @@ auto create_random_definite(const std::string &name, int rows, int cols, T mean 
     if (rows != cols) {
         throw std::runtime_error("Can only make square positive definite matrices.");
     }
-    Tensor<T, 2> Evecs = create_random_tensor<T>("name", rows, cols);
+    Tensor<T, 2> Evecs("name", rows, cols);
 
     Tensor<T, 2>          Temp = Evecs;
     std::vector<blas_int> pivs;
 
     // Make sure the eigenvectors are non-singular.
-    while (linear_algebra::getrf(&Temp, &pivs) > 0) {
+    do {
         Evecs = create_random_tensor<T>("name", rows, cols);
         Temp  = Evecs;
-    }
+    } while (linear_algebra::getrf(&Temp, &pivs) > 0);
 
     // QR decompose Evecs to get a random matrix of orthonormal eigenvectors.
     auto pair = linear_algebra::qr(Evecs);
@@ -265,16 +265,16 @@ auto create_random_semidefinite(const std::string &name, int rows, int cols, T m
     if (rows != cols) {
         throw std::runtime_error("Can only make square positive definite matrices.");
     }
-    Tensor<T, 2> Evecs = create_random_tensor<T>("name", rows, cols);
+    Tensor<T, 2> Evecs("name", rows, cols);
 
     Tensor<T, 2>          Temp = Evecs;
     std::vector<blas_int> pivs;
 
     // Make sure the eigenvectors are non-singular.
-    while (linear_algebra::getrf(&Temp, &pivs) > 0) {
+    do {
         Evecs = create_random_tensor<T>("name", rows, cols);
         Temp  = Evecs;
-    }
+    } while (linear_algebra::getrf(&Temp, &pivs) > 0);
 
     // QR decompose Evecs to get a random matrix of orthonormal eigenvectors.
     auto pair = linear_algebra::qr(Evecs);

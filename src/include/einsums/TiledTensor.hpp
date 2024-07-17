@@ -135,7 +135,7 @@ class TiledTensorBase : public detail::TensorBase<T, Rank> {
     template <std::integral... MultiIndex>
         requires(sizeof...(MultiIndex) == Rank)
     TensorType<T, Rank> &tile(MultiIndex... index) {
-        std::array<int, Rank> arr_index{index...};
+        std::array<int, Rank> arr_index{static_cast<int>(index)...};
 
         for (int i = 0; i < Rank; i++) {
             if (arr_index[i] < 0) {
@@ -167,7 +167,7 @@ class TiledTensorBase : public detail::TensorBase<T, Rank> {
     template <std::integral... MultiIndex>
         requires(sizeof...(MultiIndex) == Rank)
     const TensorType<T, Rank> &tile(MultiIndex... index) const {
-        std::array<int, Rank> arr_index{index...};
+        std::array<int, Rank> arr_index{static_cast<int>(index)...};
 
         for (int i = 0; i < Rank; i++) {
             if (arr_index[i] < 0) {
@@ -189,9 +189,10 @@ class TiledTensorBase : public detail::TensorBase<T, Rank> {
     template <typename Storage>
         requires(!std::integral<Storage>)
     const TensorType<T, Rank> &tile(Storage index) const {
-        std::array<int, Rank> arr_index{index};
+        std::array<int, Rank> arr_index;
 
         for (int i = 0; i < Rank; i++) {
+            arr_index[i] = static_cast<int>(index[i]);
             if (arr_index[i] < 0) {
                 arr_index[i] += _tile_sizes[i].size();
             }
@@ -242,7 +243,7 @@ class TiledTensorBase : public detail::TensorBase<T, Rank> {
     template <std::integral... MultiIndex>
         requires(sizeof...(MultiIndex) == Rank)
     bool has_tile(MultiIndex... index) const {
-        std::array<int, Rank> arr_index{index...};
+        std::array<int, Rank> arr_index{static_cast<int>(index)...};
 
         for (int i = 0; i < Rank; i++) {
             if (arr_index[i] < 0) {
@@ -266,7 +267,7 @@ class TiledTensorBase : public detail::TensorBase<T, Rank> {
     template <std::integral... MultiIndex>
         requires(sizeof...(MultiIndex) == Rank)
     std::array<int, Rank> tile_of(MultiIndex... index) const {
-        std::array<int, Rank> arr_index{index...};
+        std::array<int, Rank> arr_index{static_cast<int>(index)...};
         std::array<int, Rank> out{0};
 
         for (int i = 0; i < Rank; i++) {
@@ -301,11 +302,12 @@ class TiledTensorBase : public detail::TensorBase<T, Rank> {
     template <typename Storage>
         requires(!std::integral<Storage>)
     bool has_tile(Storage index) const {
-        std::array<int, Rank> arr_index{index};
+        std::array<int, Rank> arr_index;
 
         for (int i = 0; i < Rank; i++) {
+            arr_index[i] = static_cast<int>(index[i]);
             if (arr_index[i] < 0) {
-                arr_index[i] += _tile_sizes[i].size();
+                index[i] += _tile_sizes[i].size();
             }
 
             if (arr_index[i] >= _tile_sizes[i].size() || arr_index[i] < 0) {
@@ -325,10 +327,11 @@ class TiledTensorBase : public detail::TensorBase<T, Rank> {
     template <typename Storage>
         requires(!std::integral<Storage>)
     std::array<int, Rank> tile_of(Storage index) const {
-        std::array<int, Rank> arr_index{index};
+        std::array<int, Rank> arr_index;
         std::array<int, Rank> out{0};
 
         for (int i = 0; i < Rank; i++) {
+            arr_index[i] = static_cast<int>(index[i]);
             if (arr_index[i] < 0) {
                 arr_index[i] += _dims[i];
             }
@@ -362,7 +365,7 @@ class TiledTensorBase : public detail::TensorBase<T, Rank> {
     T operator()(MultiIndex... index) const {
         auto coords = tile_of(index...);
 
-        auto array_ind = std::array<int, Rank>{index...};
+        auto array_ind = std::array<int, Rank>{static_cast<int>(index)...};
 
         // Find the index in the tile.
         for (int i = 0; i < Rank; i++) {
@@ -390,7 +393,7 @@ class TiledTensorBase : public detail::TensorBase<T, Rank> {
     T &operator()(MultiIndex... index) {
         auto coords = tile_of(index...);
 
-        auto array_ind = std::array<int, Rank>{index...};
+        auto array_ind = std::array<int, Rank>{static_cast<int>(index)...};
 
         // Find the index in the tile.
         for (int i = 0; i < Rank; i++) {
@@ -705,7 +708,7 @@ class TiledTensorBase : public detail::TensorBase<T, Rank> {
     template <std::integral... Index>
         requires(sizeof...(Index) == Rank)
     bool has_zero_size(Index... index) const {
-        std::array<size_t, Rank> arr_index = std::array<size_t, Rank>{(size_t)index...};
+        std::array<int, Rank> arr_index{static_cast<int>(index)...};
 
         for (int i = 0; i < Rank; i++) {
             if (_tile_sizes[i].at(arr_index[i]) == 0) {
@@ -838,7 +841,7 @@ class TiledDeviceTensor final : public TiledTensorBase<DeviceTensor, T, Rank> {
     T operator()(MultiIndex... index) const {
         auto coords = this->tile_of(index...);
 
-        auto array_ind = std::array<int, Rank>{index...};
+        auto array_ind = std::array<int, Rank>{static_cast<int>(index)...};
 
         // Find the index in the tile.
         for (int i = 0; i < Rank; i++) {
@@ -866,7 +869,7 @@ class TiledDeviceTensor final : public TiledTensorBase<DeviceTensor, T, Rank> {
     HostDevReference<T> operator()(MultiIndex... index) {
         auto coords = this->tile_of(index...);
 
-        auto array_ind = std::array<int, Rank>{index...};
+        auto array_ind = std::array<int, Rank>{static_cast<int>(index)...};
 
         // Find the index in the tile.
         for (int i = 0; i < Rank; i++) {
@@ -880,9 +883,7 @@ class TiledDeviceTensor final : public TiledTensorBase<DeviceTensor, T, Rank> {
         return std::apply(out, array_ind);
     }
 
-    operator Tensor<T, Rank>() const {
-        return (Tensor<T, Rank>) (DeviceTensor<T, Rank>) *this;
-    }
+    operator Tensor<T, Rank>() const { return (Tensor<T, Rank>)(DeviceTensor<T, Rank>)*this; }
 };
 
 template <typename T, size_t Rank>
@@ -920,7 +921,7 @@ class TiledDeviceTensorView final : public TiledTensorBase<DeviceTensorView, T, 
     T operator()(MultiIndex... index) const {
         auto coords = this->tile_of(index...);
 
-        auto array_ind = std::array<int, Rank>{index...};
+        auto array_ind = std::array<int, Rank>{static_cast<int>(index)...};
 
         // Find the index in the tile.
         for (int i = 0; i < Rank; i++) {
@@ -948,7 +949,7 @@ class TiledDeviceTensorView final : public TiledTensorBase<DeviceTensorView, T, 
     HostDevReference<T> operator()(MultiIndex... index) {
         auto coords = this->tile_of(index...);
 
-        auto array_ind = std::array<int, Rank>{index...};
+        auto array_ind = std::array<int, Rank>{static_cast<int>(index)...};
 
         // Find the index in the tile.
         for (int i = 0; i < Rank; i++) {
@@ -967,7 +968,7 @@ class TiledDeviceTensorView final : public TiledTensorBase<DeviceTensorView, T, 
 
 } // namespace einsums
 
-template <template<typename, size_t> typename TensorType, size_t Rank, typename T>
+template <template <typename, size_t> typename TensorType, size_t Rank, typename T>
     requires einsums::RankTiledTensor<TensorType<T, Rank>, Rank, T>
 void println(const TensorType<T, Rank> &A, TensorPrintOptions options = {}) {
     println("Name: {}", A.name());
@@ -999,7 +1000,7 @@ void println(const TensorType<T, Rank> &A, TensorPrintOptions options = {}) {
     }
 }
 
-template <template<typename, size_t> typename TensorType, size_t Rank, typename T>
+template <template <typename, size_t> typename TensorType, size_t Rank, typename T>
     requires einsums::RankTiledTensor<TensorType<T, Rank>, Rank, T>
 void fprintln(FILE *fp, const TensorType<T, Rank> &A, TensorPrintOptions options = {}) {
     fprintln(fp, "Name: {}", A.name());
@@ -1031,7 +1032,7 @@ void fprintln(FILE *fp, const TensorType<T, Rank> &A, TensorPrintOptions options
     }
 }
 
-template <template<typename, size_t> typename TensorType, size_t Rank, typename T>
+template <template <typename, size_t> typename TensorType, size_t Rank, typename T>
     requires einsums::RankTiledTensor<TensorType<T, Rank>, Rank, T>
 void fprintln(std::ostream &os, const TensorType<T, Rank> &A, TensorPrintOptions options = {}) {
     fprintln(os, "Name: {}", A.name());

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "einsums/utility/TensorTraits.hpp"
-#include "einsums/utility/IndexUtils.hpp"
 #include "einsums/TensorAlgebra.hpp"
 #include "einsums/tensor_algebra_backends/Dispatch.hpp"
+#include "einsums/utility/IndexUtils.hpp"
+#include "einsums/utility/TensorTraits.hpp"
 
 #include <tuple>
 
@@ -218,8 +218,79 @@ auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndi
         auto &C_tile = C->tile(C_tile_index);
         C->unlock();
         C_tile.lock();
-        einsum<OnlyUseGenericAlgorithm>(CDataType{1.0}, C_indices, &C_tile, AB_prefactor, A_indices, A.tile(A_tile_index), B_indices, B.tile(B_tile_index));
+        einsum<OnlyUseGenericAlgorithm>(CDataType{1.0}, C_indices, &C_tile, AB_prefactor, A_indices, A.tile(A_tile_index), B_indices,
+                                        B.tile(B_tile_index));
         C_tile.unlock();
     }
+}
+
+template <bool OnlyUseGenericAlgorithm, template <typename, size_t> typename AType, typename ADataType, size_t ARank,
+          template <typename, size_t> typename BType, typename BDataType, size_t BRank, template <typename, size_t> typename CType,
+          typename CDataType, size_t CRank, typename... CIndices, typename... AIndices, typename... BIndices>
+    requires requires {
+        requires RankTiledTensor<AType<ADataType, ARank>, ARank, ADataType>;
+        requires RankTiledTensor<BType<BDataType, BRank>, BRank, BDataType>;
+        requires RankBasicTensor<CType<CDataType, CRank>, 0, CDataType>;
+    }
+auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndices...> &C_indices, CType<CDataType, CRank> *C,
+                             const std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> AB_prefactor,
+                             const std::tuple<AIndices...> &A_indices, const AType<ADataType, ARank> &A,
+                             const std::tuple<BIndices...> &B_indices, const BType<BDataType, BRank> &B) -> void {
+
+    constexpr auto unique_indices = unique_t<std::tuple<CIndices..., AIndices..., BIndices...>>();
+    auto           unique_grid    = get_grid_ranges_for_many(*C, C_indices, A, A_indices, B, B_indices, unique_indices);
+
+    auto unique_strides = std::array<size_t, std::tuple_size<decltype(unique_indices)>::value>();
+
+    dims_to_strides(unique_grid, unique_strides);
+
+    std::array<int, ARank> A_index_table;
+    std::array<int, BRank> B_index_table;
+
+    compile_index_table(unique_indices, A_indices, A_index_table);
+    compile_index_table(unique_indices, B_indices, B_index_table);
+
+    if (C_prefactor == CDataType(0.0)) {
+        *C = CDataType{0.0};
+    } else {
+        *C *= C_prefactor;
+    }
+
+    CDataType out{0.0};
+
+#pragma omp parallel for simd reduction(+ : out)
+    for (size_t sentinel = 0; sentinel < unique_grid[0] * unique_strides[0]; sentinel++) {
+        thread_local std::array<size_t, std::tuple_size<decltype(unique_indices)>::value> unique_index_table;
+
+        sentinel_to_indices(sentinel, unique_strides, unique_index_table);
+        thread_local std::array<int, ARank> A_tile_index;
+        thread_local std::array<int, BRank> B_tile_index;
+
+        for (int i = 0; i < ARank; i++) {
+            A_tile_index[i] = unique_index_table[A_index_table[i]];
+        }
+
+        for (int i = 0; i < BRank; i++) {
+            B_tile_index[i] = unique_index_table[B_index_table[i]];
+        }
+
+#ifdef __HIP__
+        if constexpr (einsums::detail::IsDeviceRankTensorV<CType<CDataType, CRank>, CRank, CDataType>) {
+            DeviceTensor<CDataType, 0> C_tile;
+            einsum<OnlyUseGenericAlgorithm>(CDataType{0.0}, C_indices, &C_tile, AB_prefactor, A_indices, A.tile(A_tile_index), B_indices,
+                                            B.tile(B_tile_index));
+            out += (double)C_tile;
+        } else {
+#endif
+            Tensor<CDataType, 0> C_tile;
+            einsum<OnlyUseGenericAlgorithm>(CDataType{0.0}, C_indices, &C_tile, AB_prefactor, A_indices, A.tile(A_tile_index), B_indices,
+                                            B.tile(B_tile_index));
+            out += (double)C_tile;
+#ifdef __HIP__
+        }
+#endif
+    }
+
+    *C = out;
 }
 } // namespace einsums::tensor_algebra::detail

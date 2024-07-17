@@ -31,10 +31,11 @@ auto dot(const AType<T, Rank> &A, const BType<T, Rank> &B) -> T {
 #pragma omp parallel for reduction(+ : out)
     for (size_t index = 0; index < A.grid_size(); index++) {
         std::array<size_t, Rank> index_arr;
+        size_t temp_index = index;
 
         for (int i = 0; i < Rank; i++) {
-            index_arr[i] = index / strides[i];
-            index %= A.grid_size(i);
+            index_arr[i] = temp_index / strides[i];
+            temp_index %= A.grid_size(i);
         }
 
         if (!A.has_tile(index_arr) || !B.has_tile(index_arr) || A.has_zero_size(index_arr) || B.has_zero_size(index_arr)) {
@@ -69,10 +70,11 @@ auto true_dot(const AType<T, Rank> &A, const BType<T, Rank> &B) -> T {
 #pragma omp parallel for reduction(+ : out)
     for (size_t index = 0; index < A.grid_size(); index++) {
         std::array<size_t, Rank> index_arr;
+        size_t temp_index = index;
 
         for (int i = 0; i < Rank; i++) {
-            index_arr[i] = index / strides[i];
-            index %= A.grid_size(i);
+            index_arr[i] = temp_index / strides[i];
+            temp_index %= A.grid_size(i);
         }
 
         if (!A.has_tile(index_arr) || !B.has_tile(index_arr) || A.has_zero_size(index_arr) || B.has_zero_size(index_arr)) {

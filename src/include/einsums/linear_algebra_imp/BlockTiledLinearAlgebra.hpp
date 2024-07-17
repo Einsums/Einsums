@@ -75,6 +75,7 @@ template <template <typename, size_t> typename AType, template <typename, size_t
         requires(RankTiledTensor<AType<T, Rank>, Rank, T> || RankBlockTensor<AType<T, Rank>, Rank, T>);
         requires(RankTiledTensor<BType<T, Rank>, Rank, T> || RankBlockTensor<BType<T, Rank>, Rank, T>);
         requires(RankTiledTensor<AType<T, Rank>, Rank, T> || RankTiledTensor<BType<T, Rank>, Rank, T>);
+        requires(RankBlockTensor<AType<T, Rank>, Rank, T> || RankBlockTensor<BType<T, Rank>, Rank, T>);
     }
 auto dot(const AType<T, Rank> &A, const BType<T, Rank> &B) -> T {
     for (int i = 0; i < Rank; i++) {
