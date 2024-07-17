@@ -274,6 +274,10 @@ auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndi
             B_tile_index[i] = unique_index_table[B_index_table[i]];
         }
 
+        if(!A.has_tile(A_tile_index) || !B.has_tile(B_tile_index) || A.has_zero_size(A_tile_index) || B.has_zero_size(B_tile_index)) {
+            continue;
+        }
+
 #ifdef __HIP__
         if constexpr (einsums::detail::IsDeviceRankTensorV<CType<CDataType, CRank>, CRank, CDataType>) {
             DeviceTensor<CDataType, 0> C_tile;

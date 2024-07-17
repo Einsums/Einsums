@@ -640,7 +640,7 @@ TEST_CASE("RHF symmetry") {
         for (int j = 0; j < 4; j++) {
             for (int k = 0; k < 4; k++) {
                 for (int l = 0; l < 4; l++) {
-                    if (!MP2_temp2.has_tile(i, j, k, l) || MP2_temp2.has_zero_size(i, j, k, l)) {
+                    if (!MP2_temp2.has_tile(i, j, k, l) || MP2_temp2.has_zero_size(i, j, k, l) || MP2_amps.has_zero_size(i, j, k, l)) {
                         continue;
                     }
 

@@ -9,8 +9,5 @@ TEMPLATE_TEST_CASE("Strict floating-point matchers", "[matchers]", float, double
 
     CHECK_FALSE(matcher.match(TestType{1.0}));
     CHECK(matcher.match(0.0));
-
-    double a, b, c;
-
-    CHECK(std::sscanf(matcher.describe().c_str(), "%lf%lf%lf", &a, &b, &c) == 3);
+    CHECK_THAT(matcher.describe(), Catch::Matchers::Matches("is within a fraction of -?[0-9]+(\\.[0-9]*)?f? to -?[0-9]+(\\.[0-9]*)?f?"));
 }
