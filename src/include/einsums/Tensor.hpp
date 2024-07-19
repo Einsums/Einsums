@@ -7,6 +7,7 @@
 
 #include "einsums/_Common.hpp"
 
+#include "einsums/ArithmeticTensor.hpp"
 #include "einsums/OpenMP.h"
 #include "einsums/Print.hpp"
 #include "einsums/STL.hpp"
@@ -751,6 +752,18 @@ struct Tensor final : public detail::TensorBase<T, Rank> {
             _data.resize(size);
         }
 
+        auto target_dims = get_dim_ranges<Rank>(*this);
+        for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
+            T &target_value = std::apply(*this, target_combination);
+            T  value        = std::apply(other, target_combination);
+            target_value    = value;
+        }
+
+        return *this;
+    }
+
+    template<typename... Args>
+    auto operator=(const ArithmeticTensor<T, Rank, Args...> &other) -> Tensor<T, Rank> & {
         auto target_dims = get_dim_ranges<Rank>(*this);
         for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
             T &target_value = std::apply(*this, target_combination);

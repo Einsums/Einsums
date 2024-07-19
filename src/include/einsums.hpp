@@ -18,6 +18,7 @@
 #endif
 #include "einsums/Sort.hpp"
 #include "einsums/State.hpp"
+#include "einsums/ArithmeticTensor.hpp"
 #include "einsums/Tensor.hpp"
 #include "einsums/BlockTensor.hpp"
 #include "einsums/TiledTensor.hpp"
