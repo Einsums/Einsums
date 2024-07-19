@@ -1,5 +1,5 @@
 find_package(range-v3)
-find_package(fmt)
+find_package(fmt 11)
 
 add_einsums_library(
         einsums
