@@ -15,7 +15,7 @@ template <typename T, size_t Rank>
 struct FunctionTensorView;
 
 template <typename T, size_t Rank>
-struct BaseFunctionTensor : einsums::detail::TensorBase<T, Rank> {
+struct BaseFunctionTensor : public einsums::detail::TensorBase<T, Rank> {
   protected:
     Dim<Rank>   _dims;
     std::string _name;
@@ -50,22 +50,26 @@ struct BaseFunctionTensor : einsums::detail::TensorBase<T, Rank> {
         }
     }
 
-    template <typename MultiIndex...>
+    virtual ~BaseFunctionTensor() = default;
+
+    virtual T call(const std::array<int, Rank> &inds) const = 0;
+
+    template <typename... MultiIndex>
         requires requires {
             requires(sizeof...(MultiIndex) == Rank);
-            requires(std::is_integral_v(MultiIndex) && ...);
+            requires(std::is_integral_v<MultiIndex> && ...);
         }
     T operator()(MultiIndex... inds) const {
         auto new_inds = std::array<int, Rank>{static_cast<int>(inds)...};
 
         fix_indices(&new_inds);
 
-        return (*this)(new_inds);
+        return this->call(new_inds);
     }
 
     template <typename Storage>
         requires requires {
-            requires !std::is_integral_v(Storage);
+            requires !std::is_integral_v<Storage>;
             requires !std::is_same_v<Storage, AllT>;
             requires !std::is_same_v<Storage, Range>;
             requires !std::is_same_v<Storage, std::array<int, Rank>>;
@@ -79,15 +83,14 @@ struct BaseFunctionTensor : einsums::detail::TensorBase<T, Rank> {
 
         fix_indices(&new_inds);
 
-        return (*this)(new_inds);
+        return this->call(new_inds);
     }
-
-    [[nodiscard]] virtual T operator()(const std::array<int, Rank> &inds) const = 0;
 
     template <typename... MultiIndex>
         requires requires {
             requires(sizeof...(MultiIndex) == Rank);
             requires(AtLeastOneOfType<AllT, MultiIndex...>);
+            requires(NoneOfType<std::array<int, Rank>, MultiIndex...>);
         }
     auto operator()(MultiIndex... inds) const
         -> FunctionTensorView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> {
@@ -127,16 +130,47 @@ struct BaseFunctionTensor : einsums::detail::TensorBase<T, Rank> {
 
         return FunctionTensorView(this, offsets, dims, index_template);
     }
+
+    Dim<Rank> dims() const {
+        return _dims;
+    }
+
+    [[nodiscard]] auto dim(int d) const -> size_t {
+        return _dims[d];
+    }
+
+    const std::string &name() const {
+        return _name;
+    }
+
+    void set_name(std::string &str) {
+        _name = str;
+    }
+};
+
+template<typename T, size_t Rank>
+struct FuncPointerTensor : public BaseFunctionTensor<T, Rank> {
+private:
+    T (*_func_ptr)(const std::array<int, Rank> &);
+public:
+    template <typename... Args>
+    FuncPointerTensor(std::string name, T(*func_ptr)(const std::array<int, Rank> &), Args... dims) : BaseFunctionTensor<T, Rank>(name, dims...), _func_ptr(func_ptr) {}
+
+    virtual ~FuncPointerTensor() = default;
+
+    virtual T call(const std::array<int, Rank> &inds) const override {
+        return _func_ptr(inds);
+    }
 };
 
 template <typename T, size_t Rank>
-struct FunctionTensorView : einsums::detail::TensorBase<T, Rank> {
+struct FunctionTensorView : public einsums::detail::TensorBase<T, Rank> {
   protected:
     const BaseFunctionTensor<T, Rank> *_func_tensor;
     Dim<Rank>                          _dims;
     std::string                        _name;
     Offset<Rank>                       _offsets;
-    size_t                             size;
+    size_t                             _size;
     size_t                             _true_rank;
     std::vector<int>                _index_template;
 
@@ -162,7 +196,7 @@ struct FunctionTensorView : einsums::detail::TensorBase<T, Rank> {
     }
 
   public:
-    FunctionTensorView(std::string name, const BaseFunctionTensor<T, Rank> *func_tens, const Offset<Rank> &offsets, const Dim<Rank> &dims, std::vector<size_t> index_template))
+    FunctionTensorView(std::string name, const BaseFunctionTensor<T, Rank> *func_tens, const Offset<Rank> &offsets, const Dim<Rank> &dims, std::vector<int> index_template)
         : _dims{dims}, _name{name}, _offsets{offsets}, _func_tensor(func_tens), _index_template(index_template), _true_rank{index_template.size()} {
         _size = 1;
 
@@ -172,7 +206,7 @@ struct FunctionTensorView : einsums::detail::TensorBase<T, Rank> {
         }
     }
 
-    FunctionTensorView(const BaseFunctionTensor<T, Rank> *func_tens, const Offset<Rank> &offsets, const Dim<Rank> &dims, std::vector<size_t> index_template))
+    FunctionTensorView(const BaseFunctionTensor<T, Rank> *func_tens, const Offset<Rank> &offsets, const Dim<Rank> &dims, std::vector<int> index_template)
         : _dims{dims}, _name{"(unnamed)"}, _offsets{offsets}, _func_tensor(func_tens), _index_template(index_template), _true_rank{index_template.size()} {
         _size = 1;
 
@@ -182,10 +216,10 @@ struct FunctionTensorView : einsums::detail::TensorBase<T, Rank> {
         }
     }
 
-    template <typename MultiIndex...>
+    template <typename... MultiIndex>
         requires requires {
             requires(sizeof...(MultiIndex) == Rank);
-            requires(std::is_integral_v(MultiIndex) && ...);
+            requires(std::is_integral_v<MultiIndex> && ...);
         }
     T operator()(MultiIndex... inds) const {
         auto new_inds = std::array<int, Rank>{static_cast<int>(inds)...};
@@ -197,10 +231,9 @@ struct FunctionTensorView : einsums::detail::TensorBase<T, Rank> {
 
     template <typename Storage>
         requires requires {
-            requires !std::is_integral_v(Storage);
+            requires !std::is_integral_v<Storage>;
             requires !std::is_same_v<Storage, AllT>;
             requires !std::is_same_v<Storage, Range>;
-            requires !std::is_same_v<Storage, std::array<int, Rank>>;
         }
     T operator()(const Storage &inds) const {
         auto new_inds = std::array<int, Rank>();
@@ -213,6 +246,18 @@ struct FunctionTensorView : einsums::detail::TensorBase<T, Rank> {
 
         return (*_func_tensor)(new_inds);
     }
-}
+
+    Dim<Rank> dims() const {
+        return _dims;
+    }
+
+    const std::string &name() const {
+        return _name;
+    }
+
+    void set_name(std::string &str) {
+        _name = str;
+    }
+};
 
 } // namespace einsums

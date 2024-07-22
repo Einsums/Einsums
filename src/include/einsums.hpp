@@ -22,6 +22,7 @@
 #include "einsums/Tensor.hpp"
 #include "einsums/BlockTensor.hpp"
 #include "einsums/TiledTensor.hpp"
+#include "einsums/FunctionTensor.hpp"
 
 #ifdef __HIP__
 #include "einsums/DeviceTensor.hpp"

@@ -14,6 +14,7 @@ add_executable(test-all
     QChemTests.cpp
     OtherCatch.cpp
     ArithmeticTensor.cpp
+    FunctionTensor.cpp
 )
 
 file(GLOB __data_files data/water_sto3g/*)

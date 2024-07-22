@@ -64,4 +64,11 @@ TEST_CASE("Arithmetic Tensor") {
             CHECK_THAT(C(i, j), Catch::Matchers::WithinAbs((A(i, j) + B(i, j)) / (A(i, j) * B(i, j)), 1e-10));
         }
     }
+
+    C = 2.0 * A + B;
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            CHECK_THAT(C(i, j), Catch::Matchers::WithinAbs(2.0 * A(i, j) + B(i, j), 1e-10));
+        }
+    }
 }
