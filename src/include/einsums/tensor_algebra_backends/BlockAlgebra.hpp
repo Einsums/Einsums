@@ -14,19 +14,15 @@
 #include <tuple>
 namespace einsums::tensor_algebra::detail {
 
-template <bool OnlyUseGenericAlgorithm, template <typename, size_t> typename AType, typename ADataType, size_t ARank,
-          template <typename, size_t> typename BType, typename BDataType, size_t BRank, template <typename, size_t> typename CType,
-          typename CDataType, size_t CRank, typename... CIndices, typename... AIndices, typename... BIndices>
-    requires requires {
-        requires RankBlockTensor<AType<ADataType, ARank>, ARank, ADataType>;
-        requires RankBlockTensor<BType<BDataType, BRank>, BRank, BDataType>;
-        requires RankBlockTensor<CType<CDataType, CRank>, CRank, CDataType>;
-        requires std::tuple_size_v<intersect_t<std::tuple<AIndices...>, std::tuple<BIndices...>>> != 0;
-    }
-auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndices...> &C_indices, CType<CDataType, CRank> *C,
-                             const std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> AB_prefactor,
-                             const std::tuple<AIndices...> &A_indices, const AType<ADataType, ARank> &A,
-                             const std::tuple<BIndices...> &B_indices, const BType<BDataType, BRank> &B) -> void {
+template <bool OnlyUseGenericAlgorithm, BlockTensorConcept AType, BlockTensorConcept BType, BlockTensorConcept CType, typename... CIndices,
+          typename... AIndices, typename... BIndices>
+    requires(std::tuple_size_v<intersect_t<std::tuple<AIndices...>, std::tuple<BIndices...>>> != 0)
+auto einsum_special_dispatch(const typename CType::data_type C_prefactor, const std::tuple<CIndices...> &C_indices, CType *C,
+                             const std::conditional_t<(sizeof(typename AType::data_type) > sizeof(typename BType::data_type)),
+                                                      typename AType::data_type, typename BType::data_type>
+                                                            AB_prefactor,
+                             const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices,
+                             const BType &B) -> void {
 
     // Check compatibility.
     if (A.num_blocks() != B.num_blocks() || A.num_blocks() != C->num_blocks()) {
@@ -46,20 +42,18 @@ auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndi
     }
 }
 
-template <bool OnlyUseGenericAlgorithm, template <typename, size_t> typename AType, typename ADataType, size_t ARank,
-          template <typename, size_t> typename BType, typename BDataType, size_t BRank, template <typename, size_t> typename CType,
-          typename CDataType, size_t CRank, typename... CIndices, typename... AIndices, typename... BIndices>
+template <bool OnlyUseGenericAlgorithm, BlockTensorConcept AType, BlockTensorConcept BType, BasicTensorConcept CType, typename... CIndices,
+          typename... AIndices, typename... BIndices>
     requires requires {
-        requires RankBlockTensor<AType<ADataType, ARank>, ARank, ADataType>;
-        requires RankBlockTensor<BType<BDataType, BRank>, BRank, BDataType>;
-        requires RankBasicTensor<CType<CDataType, CRank>, CRank, CDataType>;
         requires(std::tuple_size_v<intersect_t<std::tuple<AIndices...>, std::tuple<BIndices...>>> != 0);
-        requires CRank >= 1;
+        requires CType::rank >= 1;
     }
-auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndices...> &C_indices, CType<CDataType, CRank> *C,
-                             const std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> AB_prefactor,
-                             const std::tuple<AIndices...> &A_indices, const AType<ADataType, ARank> &A,
-                             const std::tuple<BIndices...> &B_indices, const BType<BDataType, BRank> &B) -> void {
+auto einsum_special_dispatch(const typename CType::data_type C_prefactor, const std::tuple<CIndices...> &C_indices, CType *C,
+                             const std::conditional_t<(sizeof(typename AType::data_type) > sizeof(typename BType::data_type)),
+                                                      typename AType::data_type, typename BType::data_type>
+                                                            AB_prefactor,
+                             const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices,
+                             const BType &B) -> void {
 
     // Check compatibility.
     if (A.num_blocks() != B.num_blocks()) {
@@ -75,7 +69,7 @@ auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndi
     // Loop through and perform einsums.
     EINSUMS_OMP_PARALLEL_FOR
     for (int i = 0; i < A.num_blocks(); i++) {
-        std::array<Range, CRank> view_index;
+        std::array<Range, CType::rank> view_index;
         view_index.fill(A.block_range(i));
         einsum<OnlyUseGenericAlgorithm>(C_prefactor, C_indices, &(std::apply(*C, view_index)), AB_prefactor, A_indices, A[i], B_indices,
                                         B[i]);
@@ -99,19 +93,15 @@ auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndi
 //     static_assert(false, "Needs to be implemented.");
 // }
 
-template <bool OnlyUseGenericAlgorithm, template <typename, size_t> typename AType, typename ADataType, size_t ARank,
-          template <typename, size_t> typename BType, typename BDataType, size_t BRank, template <typename, size_t> typename CType,
-          typename CDataType, size_t CRank, typename... CIndices, typename... AIndices, typename... BIndices>
-    requires requires {
-        requires RankBlockTensor<AType<ADataType, ARank>, ARank, ADataType>;
-        requires RankBlockTensor<BType<BDataType, BRank>, BRank, BDataType>;
-        requires RankBasicTensor<CType<CDataType, CRank>, CRank, CDataType>;
-        requires CRank == 0;
-    }
-auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndices...> &C_indices, CType<CDataType, CRank> *C,
-                             const std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> AB_prefactor,
-                             const std::tuple<AIndices...> &A_indices, const AType<ADataType, ARank> &A,
-                             const std::tuple<BIndices...> &B_indices, const BType<BDataType, BRank> &B) -> void {
+template <bool OnlyUseGenericAlgorithm, BlockTensorConcept AType, BlockTensorConcept BType, ScalarConcept CType, typename... CIndices,
+          typename... AIndices, typename... BIndices>
+auto einsum_special_dispatch(const typename CType::data_type C_prefactor, const std::tuple<CIndices...> &C_indices, CType *C,
+                             const std::conditional_t<(sizeof(typename AType::data_type) > sizeof(typename BType::data_type)),
+                                                      typename AType::data_type, typename BType::data_type>
+                                                            AB_prefactor,
+                             const std::tuple<AIndices...> &A_indices, const AType &A,
+                             const std::tuple<BIndices...> &B_indices, const BType &B) -> void {
+    using CDataType = typename CType::data_type;
 
     // Check compatibility.
     if (A.num_blocks() != B.num_blocks()) {
@@ -130,13 +120,13 @@ auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndi
         size_t     elems = omp_get_max_threads();
         CDataType *temp  = new CDataType[elems];
 
-        for(int i = 0; i < elems; i++) {
+        for (int i = 0; i < elems; i++) {
             temp[i] = CDataType{0.0};
         }
 
         EINSUMS_OMP_PARALLEL_FOR
         for (int i = 0; i < A.num_blocks(); i++) {
-            if(A.block_dim(i) == 0) {
+            if (A.block_dim(i) == 0) {
                 continue;
             }
             DeviceTensor<CDataType, 0> tempC;
@@ -165,10 +155,10 @@ auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndi
         // Loop through and perform einsums.
 #pragma omp parallel for reduction(+ : temp)
         for (int i = 0; i < A.num_blocks(); i++) {
-            if(A.block_dim(i) == 0) {
+            if (A.block_dim(i) == 0) {
                 continue;
             }
-            CType<CDataType, CRank> temp_c = *C;
+            CType temp_c = *C;
             einsum<OnlyUseGenericAlgorithm>(CDataType(0.0), C_indices, &temp_c, AB_prefactor, A_indices, A[i], B_indices, B[i]);
             temp += (CDataType)temp_c;
         }
@@ -206,7 +196,7 @@ auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndi
     // Loop through and perform einsums.
     EINSUMS_OMP_PARALLEL_FOR
     for (int i = 0; i < B.num_blocks(); i++) {
-        if(B.block_dim(i) == 0) {
+        if (B.block_dim(i) == 0) {
             continue;
         }
         std::array<Range, ARank> view_index;
@@ -234,7 +224,7 @@ auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndi
     // Loop through and perform einsums.
     EINSUMS_OMP_PARALLEL_FOR
     for (int i = 0; i < B.num_blocks(); i++) {
-        if(B.block_dim(i) == 0) {
+        if (B.block_dim(i) == 0) {
             continue;
         }
         std::array<Range, CRank> view_index_c;
@@ -270,7 +260,7 @@ auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndi
         __host_ptr__ CDataType *host_temp = new CDataType[elems];
         EINSUMS_OMP_PARALLEL_FOR
         for (int i = 0; i < B.num_blocks(); i++) {
-            if(B.block_dim(i) == 0) {
+            if (B.block_dim(i) == 0) {
                 continue;
             }
             std::array<Range, ARank> view_index;
@@ -302,7 +292,7 @@ auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndi
         // Loop through and perform einsums.
 #pragma omp parallel for reduction(+ : temp)
         for (int i = 0; i < B.num_blocks(); i++) {
-            if(B.block_dim(i) == 0) {
+            if (B.block_dim(i) == 0) {
                 continue;
             }
             CType<CDataType, CRank>  temp_c = *C;
@@ -346,7 +336,7 @@ auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndi
     // Loop through and perform einsums.
     EINSUMS_OMP_PARALLEL_FOR
     for (int i = 0; i < A.num_blocks(); i++) {
-        if(A.block_dim(i) == 0) {
+        if (A.block_dim(i) == 0) {
             continue;
         }
         std::array<Range, BRank> view_index;
@@ -374,7 +364,7 @@ auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndi
     // Loop through and perform einsums.
     EINSUMS_OMP_PARALLEL_FOR
     for (int i = 0; i < A.num_blocks(); i++) {
-        if(A.block_dim(i) == 0) {
+        if (A.block_dim(i) == 0) {
             continue;
         }
         std::array<Range, CRank> view_index_c;
@@ -411,7 +401,7 @@ auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndi
         __host_ptr__ CDataType *host_temp = new CDataType[elems];
         EINSUMS_OMP_PARALLEL_FOR
         for (int i = 0; i < A.num_blocks(); i++) {
-            if(A.block_dim(i) == 0) {
+            if (A.block_dim(i) == 0) {
                 continue;
             }
             std::array<Range, BRank> view_index;
@@ -443,7 +433,7 @@ auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndi
         // Loop through and perform einsums.
 #pragma omp parallel for reduction(+ : temp)
         for (int i = 0; i < A.num_blocks(); i++) {
-            if(A.block_dim(i) == 0) {
+            if (A.block_dim(i) == 0) {
                 continue;
             }
             CType<CDataType, CRank>  temp_c = *C;
