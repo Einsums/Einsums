@@ -46,13 +46,14 @@ template <template <typename, size_t> typename AType, size_t ARank, template <ty
     requires requires {
         requires CoreRankTensor<AType<T, ARank>, ARank, T>;
         requires CoreRankTensor<CType<T, CRank>, CRank, T>;
+        requires sizeof...(CIndices) == sizeof...(AIndices);
+        requires sizeof...(CIndices) == CRank;
+        requires sizeof...(AIndices) == ARank;
+        requires std::is_arithmetic_v<U>;
     }
-auto sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<T, CRank> *C, const U UA_prefactor,
+void sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<T, CRank> *C, const U UA_prefactor,
           const std::tuple<AIndices...> &A_indices,
-          const AType<T, ARank> &A) -> std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<T, CRank>, CType<T, CRank>> &&
-                                                        std::is_base_of_v<::einsums::detail::TensorBase<T, ARank>, AType<T, ARank>> &&
-                                                        sizeof...(CIndices) == sizeof...(AIndices) && sizeof...(CIndices) == CRank &&
-                                                        sizeof...(AIndices) == ARank && std::is_arithmetic_v<U>> {
+          const AType<T, ARank> &A) {
 
     LabeledSection1((std::fabs(UC_prefactor) > EINSUMS_ZERO)
                         ? fmt::format(R"(sort: "{}"{} = {} "{}"{} + {} "{}"{})", C->name(), print_tuple_no_type(C_indices), UA_prefactor,

@@ -194,7 +194,7 @@ template <bool TransA, template <typename, size_t> typename AType, template <typ
         requires std::convertible_to<U, T>; // Make sure the alpha and beta can be converted to T
     }
 void gemv(const U alpha, const AType<T, ARank> &A, const XType<T, XYRank> &z, const U beta, YType<T, XYRank> *y) {
-    if constexpr (einsums::detail::IsTiledTensorV<XType<T, XYRank>, XYRank, T>) {
+    if constexpr (einsums::detail::IsTiledTensorV<XType<T, XYRank>>) {
         if constexpr (TransA) {
             if (A.tile_sizes(0) != z.tile_sizes(0)) {
                 throw std::runtime_error("gemv: Tiled tensors need to have compatible tile sizes.");
@@ -205,7 +205,7 @@ void gemv(const U alpha, const AType<T, ARank> &A, const XType<T, XYRank> &z, co
             }
         }
     }
-    if constexpr (einsums::detail::IsTiledTensorV<YType<T, XYRank>, XYRank, T>) {
+    if constexpr (einsums::detail::IsTiledTensorV<YType<T, XYRank>>) {
         if constexpr (TransA) {
             if (A.tile_sizes(1) != y->tile_sizes(0)) {
                 throw std::runtime_error("gemv: Tiled tensors need to have compatible tile sizes.");
@@ -229,7 +229,7 @@ void gemv(const U alpha, const AType<T, ARank> &A, const XType<T, XYRank> &z, co
         if (A.tile_size((TransA) ? 1 : 0)[i] == 0) {
             continue;
         }
-        if constexpr (einsums::detail::IsTiledTensorV<YType<T, XYRank>, XYRank, T>) {
+        if constexpr (einsums::detail::IsTiledTensorV<YType<T, XYRank>>) {
             y->lock();
             auto &y_tile = y->tile(i);
             y->unlock();
@@ -243,7 +243,7 @@ void gemv(const U alpha, const AType<T, ARank> &A, const XType<T, XYRank> &z, co
                         continue;
                     }
                 }
-                if constexpr (einsums::detail::IsTiledTensorV<XType<T, XYRank>, XYRank, T>) {
+                if constexpr (einsums::detail::IsTiledTensorV<XType<T, XYRank>>) {
                     if constexpr (TransA) {
                         gemv<TransA>(alpha, A.tile(j, i), z.tile(j), U(1.0), &y_tile);
                     } else {
@@ -276,7 +276,7 @@ void gemv(const U alpha, const AType<T, ARank> &A, const XType<T, XYRank> &z, co
                         continue;
                     }
                 }
-                if constexpr (einsums::detail::IsTiledTensorV<XType<T, XYRank>, XYRank, T>) {
+                if constexpr (einsums::detail::IsTiledTensorV<XType<T, XYRank>>) {
                     if constexpr (TransA) {
                         gemv<TransA>(alpha, A.tile(j, i), z.tile(j), U(1.0), &y_tile);
                     } else {

@@ -1,3 +1,4 @@
+#include "einsums/_Common.hpp"
 #include "einsums.hpp"
 
 #include "catch2/catch_all.hpp"
@@ -14,4 +15,8 @@ TEST_CASE("Function Tensor") {
             CHECK_THAT(A(i, j), Catch::Matchers::WithinAbs((i + 1) * (j + 1), 1e-7));
         }
     }
+
+    auto B = A(einsums::All, einsums::Range{5, 10});
+
+    
 }

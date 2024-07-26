@@ -23,7 +23,7 @@ template <template <typename, size_t> typename AType, template <typename, size_t
     }
 void direct_product(T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, T beta, CType<T, Rank> *C) {
     size_t num_blocks;
-    if constexpr (einsums::detail::IsBlockTensorV<AType<T, Rank>, Rank, T>) {
+    if constexpr (einsums::detail::IsBlockTensorV<AType<T, Rank>>) {
         num_blocks = A.num_blocks();
     } else {
         num_blocks = B.num_blocks();
@@ -33,30 +33,30 @@ void direct_product(T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, T
     for (int i = 0; i < num_blocks; i++) {
         std::array<int, Rank> index = std::array<int, Rank>{i};
 
-        if constexpr (einsums::detail::IsTiledTensorV<AType<T, Rank>, Rank, T> &&
-                      einsums::detail::IsBlockTensorV<BType<T, Rank>, Rank, T> &&
-                      einsums::detail::IsTiledTensorV<CType<T, Rank>, Rank, T>) {
+        if constexpr (einsums::detail::IsTiledTensorV<AType<T, Rank>> &&
+                      einsums::detail::IsBlockTensorV<BType<T, Rank>> &&
+                      einsums::detail::IsTiledTensorV<CType<T, Rank>>) {
             if (!A.has_tile(index) || B.block_dim(i) == 0) {
                 continue;
             }
             direct_product(alpha, A.tile(index), B.block(i), beta, &(C->tile(index)));
-        } else if constexpr (einsums::detail::IsTiledTensorV<AType<T, Rank>, Rank, T> &&
-                             einsums::detail::IsBlockTensorV<BType<T, Rank>, Rank, T> &&
-                             einsums::detail::IsBlockTensorV<CType<T, Rank>, Rank, T>) {
+        } else if constexpr (einsums::detail::IsTiledTensorV<AType<T, Rank>> &&
+                             einsums::detail::IsBlockTensorV<BType<T, Rank>> &&
+                             einsums::detail::IsBlockTensorV<CType<T, Rank>>) {
             if (!A.has_tile(index) || B.block_dim(i) == 0) {
                 continue;
             }
             direct_product(alpha, A.tile(index), B.block(i), beta, &(C->block(i)));
-        } else if constexpr (einsums::detail::IsBlockTensorV<AType<T, Rank>, Rank, T> &&
-                             einsums::detail::IsBlockTensorV<BType<T, Rank>, Rank, T> &&
-                             einsums::detail::IsTiledTensorV<CType<T, Rank>, Rank, T>) {
+        } else if constexpr (einsums::detail::IsBlockTensorV<AType<T, Rank>> &&
+                             einsums::detail::IsBlockTensorV<BType<T, Rank>> &&
+                             einsums::detail::IsTiledTensorV<CType<T, Rank>>) {
             if (A.block_dim(i) == 0) {
                 continue;
             }
             direct_product(alpha, A.block(i), B.block(i), beta, &(C->tile(index)));
-        } else if constexpr (einsums::detail::IsBlockTensorV<AType<T, Rank>, Rank, T> &&
-                             einsums::detail::IsTiledTensorV<BType<T, Rank>, Rank, T> &&
-                             einsums::detail::IsTiledTensorV<CType<T, Rank>, Rank, T>) {
+        } else if constexpr (einsums::detail::IsBlockTensorV<AType<T, Rank>> &&
+                             einsums::detail::IsTiledTensorV<BType<T, Rank>> &&
+                             einsums::detail::IsTiledTensorV<CType<T, Rank>>) {
             if (!B.has_tile(index) || A.block_dim(i) == 0) {
                 continue;
             }
@@ -87,7 +87,7 @@ auto dot(const AType<T, Rank> &A, const BType<T, Rank> &B) -> T {
 
     int num_blocks;
 
-    if constexpr (einsums::detail::IsBlockTensorV<AType<T, Rank>, Rank, T>) {
+    if constexpr (einsums::detail::IsBlockTensorV<AType<T, Rank>>) {
         num_blocks = A.num_blocks();
     } else {
         num_blocks = B.num_blocks();
@@ -99,7 +99,7 @@ auto dot(const AType<T, Rank> &A, const BType<T, Rank> &B) -> T {
         for (int j = 0; j < Rank; j++) {
             tile_index[j] = i;
         }
-        if constexpr (einsums::detail::IsBlockTensorV<AType<T, Rank>, Rank, T>) {
+        if constexpr (einsums::detail::IsBlockTensorV<AType<T, Rank>>) {
             if (A.block_dim(i) == 0 || !B.has_block(tile_index) || B.has_zero_size(tile_index)) {
                 continue;
             }
@@ -131,7 +131,7 @@ auto true_dot(const AType<T, Rank> &A, const BType<T, Rank> &B) -> T {
 
     int num_blocks;
 
-    if constexpr (einsums::detail::IsBlockTensorV<AType<T, Rank>, Rank, T>) {
+    if constexpr (einsums::detail::IsBlockTensorV<AType<T, Rank>>) {
         num_blocks = A.num_blocks();
     } else {
         num_blocks = B.num_blocks();
@@ -143,7 +143,7 @@ auto true_dot(const AType<T, Rank> &A, const BType<T, Rank> &B) -> T {
         for (int j = 0; j < Rank; j++) {
             tile_index[j] = i;
         }
-        if constexpr (einsums::detail::IsBlockTensorV<AType<T, Rank>, Rank, T>) {
+        if constexpr (einsums::detail::IsBlockTensorV<AType<T, Rank>>) {
             if (A.block_dim(i) == 0 || !B.has_block(tile_index) || B.has_zero_size(tile_index)) {
                 continue;
             }

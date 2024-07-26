@@ -4,6 +4,7 @@
 #include "einsums/_GPUUtils.hpp"
 
 #include "einsums/Tensor.hpp"
+#include "einsums/utilities/TensorTraits.hpp"
 
 #include <hip/driver_types.h>
 #include <hip/hip_common.h>
@@ -274,8 +275,6 @@ class HostDevReference {
         return *this;
     }
 
-
-
     /**
      * Get the address handled by the reference.
      */
@@ -296,22 +295,11 @@ class HostDevReference {
  * @tparam Rank The rank of the tensor.
  */
 template <typename T, size_t Rank>
-struct DeviceTensor : public ::einsums::detail::TensorBase<T, Rank> {
+struct DeviceTensor : public einsums::detail::DeviceTensorBase<T, Rank>,
+                      einsums::detail::BasicTensorBase<T, Rank> {
   public:
-    /**
-     * @typedef dev_datatype
-     *
-     * @brief The data type stored on the device. This is only different if T is complex.
-     */
-    using dev_datatype = std::conditional_t<std::is_same_v<T, std::complex<float>>, hipComplex,
-                                            std::conditional_t<std::is_same_v<T, std::complex<double>>, hipDoubleComplex, T>>;
-
-    /**
-     * @typedef host_datatype
-     *
-     * @brief The data type stored on the host. It is an alias of T.
-     */
-    using host_datatype = T;
+    using dev_datatype  = typename einsums::detail::DeviceTensorBase<T, Rank>::dev_datatype;
+    using host_datatype = typename einsums::detail::DeviceTensorBase<T, Rank>::host_datatype;
 
   private:
     /**
@@ -411,9 +399,9 @@ struct DeviceTensor : public ::einsums::detail::TensorBase<T, Rank> {
      * @param dims The dimensions of each rank of the tensor.
      */
     template <typename... Dims>
-    requires requires {
-            requires (sizeof...(Dims) == Rank);
-            requires (!std::is_same_v<detail::HostToDeviceMode, Dims> && ...);
+        requires requires {
+            requires(sizeof...(Dims) == Rank);
+            requires(!std::is_same_v<detail::HostToDeviceMode, Dims> && ...);
         }
     explicit DeviceTensor(std::string name, detail::HostToDeviceMode mode, Dims... dims);
 
@@ -435,8 +423,8 @@ struct DeviceTensor : public ::einsums::detail::TensorBase<T, Rank> {
      */
     template <typename... Dims>
         requires requires {
-            requires (sizeof...(Dims) == Rank);
-            requires (!std::is_same_v<detail::HostToDeviceMode, Dims> && ...);
+            requires(sizeof...(Dims) == Rank);
+            requires(!std::is_same_v<detail::HostToDeviceMode, Dims> && ...);
         }
     explicit DeviceTensor(std::string name, Dims... dims);
 
@@ -666,8 +654,8 @@ struct DeviceTensor : public ::einsums::detail::TensorBase<T, Rank> {
      */
     template <typename... MultiIndex>
         requires requires { requires AtLeastOneOfType<AllT, MultiIndex...>; }
-    auto operator()(MultiIndex... index)
-        -> DeviceTensorView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()>;
+    auto
+    operator()(MultiIndex... index) -> DeviceTensorView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()>;
 
     /**
      * @brief Subscripts into the tensor and creates a view.
@@ -830,22 +818,10 @@ struct DeviceTensor : public ::einsums::detail::TensorBase<T, Rank> {
  * Implementation for a zero-rank tensor.
  */
 template <typename T>
-struct DeviceTensor<T, 0> : public einsums::detail::TensorBase<T, 0> {
+struct DeviceTensor<T, 0> : public einsums::detail::DeviceTensorBase<T, 0>, einsums::detail::BasicTensorBase<T, 0> {
   public:
-    /**
-     * @typedef dev_datatype
-     *
-     * @brief The data type stored on the device. This is only different if T is complex.
-     */
-    using dev_datatype = std::conditional_t<std::is_same_v<T, std::complex<float>>, hipComplex,
-                                            std::conditional_t<std::is_same_v<T, std::complex<double>>, hipDoubleComplex, T>>;
-
-    /**
-     * @typedef host_datatype
-     *
-     * @brief The data type stored on the host. It is an alias of T.
-     */
-    using host_datatype = T;
+    using dev_datatype  = typename einsums::detail::DeviceTensorBase<T, Rank>::dev_datatype;
+    using host_datatype = typename einsums::detail::DeviceTensorBase<T, Rank>::host_datatype;
 
   private:
     /**
@@ -894,7 +870,8 @@ struct DeviceTensor<T, 0> : public einsums::detail::TensorBase<T, 0> {
     DeviceTensor(const DeviceTensor<T, 0> &other, detail::HostToDeviceMode mode = detail::DEV_ONLY) : _mode{mode} {
         if (mode == detail::DEV_ONLY) {
             gpu::hip_catch(hipMallocAsync((void **)&_data, sizeof(T), gpu::get_stream()));
-            gpu::hip_catch(hipMemcpyAsync((void *)_data, (const void *)other.data(), sizeof(T), hipMemcpyDeviceToDevice, gpu::get_stream()));
+            gpu::hip_catch(
+                hipMemcpyAsync((void *)_data, (const void *)other.data(), sizeof(T), hipMemcpyDeviceToDevice, gpu::get_stream()));
         } else if (mode == detail::MAPPED) {
             _host_data = new T((T)other);
             gpu::hip_catch(hipHostRegister((void *)_host_data, sizeof(T), hipHostRegisterDefault));
@@ -1070,7 +1047,8 @@ struct DeviceTensor<T, 0> : public einsums::detail::TensorBase<T, 0> {
         case detail::DEV_ONLY:
             this->_host_data = nullptr;
             gpu::hip_catch(hipMallocAsync((void **)&(this->_data), sizeof(T), gpu::get_stream()));
-            gpu::hip_catch(hipMemcpyAsync((void *)this->_data, (const void *)other.data(), sizeof(T), hipMemcpyHostToDevice, gpu::get_stream()));
+            gpu::hip_catch(
+                hipMemcpyAsync((void *)this->_data, (const void *)other.data(), sizeof(T), hipMemcpyHostToDevice, gpu::get_stream()));
             break;
         }
     }
@@ -1087,7 +1065,9 @@ struct DeviceTensor<T, 0> : public einsums::detail::TensorBase<T, 0> {
 };
 
 template <typename T, size_t Rank>
-struct DeviceTensorView : public ::einsums::detail::TensorBase<T, Rank> {
+struct DeviceTensorView : public einsums::detail::BasicTensorBase<T, Rank>,
+                          einsums::detail::DeviceTensorBase<T, Rank>,
+                          einsums::detail::TensorViewBase<T, Rank, DeviceTensor> {
   public:
     /**
      * @typedef dev_datatype
@@ -1186,7 +1166,8 @@ struct DeviceTensorView : public ::einsums::detail::TensorBase<T, Rank> {
      * @brief Create a tensor view around the given tensor.
      */
     template <size_t OtherRank, typename... Args>
-    explicit DeviceTensorView(DeviceTensor<T, OtherRank> &other, const Dim<Rank> &dim, Args &&...args) : _name{other._name}, _dims{dim}, _parent_mutex(&(other._lock)) {
+    explicit DeviceTensorView(DeviceTensor<T, OtherRank> &other, const Dim<Rank> &dim, Args &&...args)
+        : _name{other._name}, _dims{dim}, _parent_mutex(&(other._lock)) {
         common_initialization(other, args...);
     }
 
@@ -1380,28 +1361,22 @@ struct DeviceTensorView : public ::einsums::detail::TensorBase<T, Rank> {
     /**
      * Lock the tensor.
      */
-    void lock() const override {
-        _parent_mutex->lock();
-    }
+    void lock() const override { _parent_mutex->lock(); }
 
     /**
      * Try to lock the tensor. Returns false if a lock could not be obtained, or true if it could.
      */
-    bool try_lock() const override {
-        return _parent_mutex->try_lock();
-    }
+    bool try_lock() const override { return _parent_mutex->try_lock(); }
 
     /**
      * Unlock the tensor.
      */
-    void unlock() const override {
-        _parent_mutex->unlock();
-    }
+    void unlock() const override { _parent_mutex->unlock(); }
 
     operator Tensor<T, Rank>() const {
         DeviceTensor temp(*this);
 
-        return (Tensor<T, Rank>) temp; 
+        return (Tensor<T, Rank>)temp;
     }
 
   private:
@@ -1410,29 +1385,29 @@ struct DeviceTensorView : public ::einsums::detail::TensorBase<T, Rank> {
      */
     template <template <typename, size_t> typename TensorType, size_t OtherRank, typename... Args>
     auto common_initialization(TensorType<T, OtherRank> &other, Args &&...args)
-        -> std::enable_if_t<std::is_base_of_v<::einsums::detail::TensorBase<T, OtherRank>, TensorType<T, OtherRank>>>;
+        -> std::enable_if_t<std::is_base_of_v<::einsums::tensor_props::TensorBase<T, OtherRank>, TensorType<T, OtherRank>>>;
 
-    template<typename OtherT, size_t OtherRank>
+    template <typename OtherT, size_t OtherRank>
     friend struct DeviceTensorView;
 
-    template<typename OtherT, size_t OtherRank>
+    template <typename OtherT, size_t OtherRank>
     friend struct DeviceTensor;
 };
 
 #ifdef __cpp_deduction_guides
 template <typename... Args>
-requires (!std::is_same_v<Args, detail::HostToDeviceMode> && ...)
+    requires(!std::is_same_v<Args, detail::HostToDeviceMode> && ...)
 DeviceTensor(const std::string &, Args...) -> DeviceTensor<double, sizeof...(Args)>;
 template <typename... Args>
-requires (!std::is_same_v<Args, detail::HostToDeviceMode> && ...)
+    requires(!std::is_same_v<Args, detail::HostToDeviceMode> && ...)
 DeviceTensor(const std::string &, detail::HostToDeviceMode, Args...) -> DeviceTensor<double, sizeof...(Args)>;
 template <typename T, size_t OtherRank, typename... Dims>
 explicit DeviceTensor(DeviceTensor<T, OtherRank> &&otherTensor, std::string name, Dims... dims) -> DeviceTensor<T, sizeof...(dims)>;
 template <size_t Rank, typename... Args>
-requires (!std::is_same_v<Args, detail::HostToDeviceMode> && ...)
+    requires(!std::is_same_v<Args, detail::HostToDeviceMode> && ...)
 explicit DeviceTensor(const Dim<Rank> &, Args...) -> DeviceTensor<double, Rank>;
 template <size_t Rank, typename... Args>
-requires (!std::is_same_v<Args, detail::HostToDeviceMode> && ...)
+    requires(!std::is_same_v<Args, detail::HostToDeviceMode> && ...)
 explicit DeviceTensor(const Dim<Rank> &, detail::HostToDeviceMode, Args...) -> DeviceTensor<double, Rank>;
 
 template <typename T, size_t Rank, size_t OtherRank, typename... Args>

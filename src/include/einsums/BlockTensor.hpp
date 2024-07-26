@@ -7,11 +7,14 @@
 #    include "einsums/DeviceTensor.hpp"
 #endif
 #include "einsums/Tensor.hpp"
+#include "einsums/utility/TensorBases.hpp"
 #include "einsums/utility/TensorTraits.hpp"
 
 #include <stdexcept>
 
 namespace einsums {
+
+namespace tensor_props {
 
 /**
  * @struct BlockTensorBase
@@ -22,17 +25,20 @@ namespace einsums {
  * @tparam Rank The rank of the tensor
  * @tparam TensorType The underlying type for the tensors.
  */
-template <typename T, size_t Rank, template <typename, size_t> typename TensorType>
-struct BlockTensorBase : public detail::TensorBase<T, Rank> {
+template <typename T, size_t Rank, typename TensorType>
+struct BlockTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>,
+                         virtual TensorBase<T, Rank>,
+                         virtual BlockTensorBaseNoExtra,
+                         virtual LockableTensorBase {
   protected:
     std::string _name{"(Unnamed)"};
     size_t      _dim{0}; // Only allowing square tensors.
 
-    std::vector<TensorType<T, Rank>> _blocks{};
-    std::vector<Range>               _ranges{};
-    std::vector<size_t>              _dims;
+    std::vector<TensorType> _blocks{};
+    std::vector<Range>      _ranges{};
+    std::vector<size_t>     _dims;
 
-    template <typename T_, size_t OtherRank, template <typename, size_t> typename OtherTensor>
+    template <typename T_, size_t OtherRank, typename OtherTensorType>
     friend struct BlockTensorBase;
 
     T _zero_value{0.0};
@@ -41,9 +47,6 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
     // friend struct BlockTensorViewBase;
 
   public:
-    using datatype    = T;
-    using tensor_type = TensorType<T, Rank>;
-
     /**
      * @brief Construct a new BlockTensor object. Default constructor.
      */
@@ -53,6 +56,11 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
      * @brief Construct a new BlockTensor object. Default copy constructor
      */
     BlockTensorBase(const BlockTensorBase &) = default;
+
+    /**
+     * @brief Construct a new BlockTensor object. Default move constructor
+     */
+    BlockTensorBase(BlockTensorBase &&) = default;
 
     /**
      * @brief Destroy the BlockTensor object.
@@ -193,17 +201,17 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
     /**
      * @brief Return the selected block with an integer ID.
      */
-    const tensor_type &block(int id) const { return _blocks.at(id); }
+    const TensorType &block(int id) const { return _blocks.at(id); }
 
     /**
      * @brief Return the selected block with an integer ID.
      */
-    tensor_type &block(int id) { return _blocks.at(id); }
+    TensorType &block(int id) { return _blocks.at(id); }
 
     /**
      * @brief Return the selected block with an integer ID.
      */
-    const tensor_type &block(const std::string &name) const {
+    const TensorType &block(const std::string &name) const {
         for (int i = 0; i < _blocks.size(); i++) {
             if (_blocks[i].name() == name) {
                 return _blocks[i];
@@ -218,7 +226,7 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
     /**
      * @brief Return the selected block with an integer ID.
      */
-    tensor_type &block(const std::string &name) {
+    TensorType &block(const std::string &name) {
         for (int i = 0; i < _blocks.size(); i++) {
             if (_blocks[i].name() == name) {
                 return _blocks[i];
@@ -233,7 +241,7 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
     /**
      * @brief Add a block to the end of the list of blocks.
      */
-    void push_block(tensor_type &&value) {
+    void push_block(TensorType &&value) {
         for (int i = 0; i < Rank; i++) {
             if (value.dim(i) != value.dim(0)) {
                 throw std::runtime_error(
@@ -248,7 +256,7 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
     /**
      * @brief Add a block to the specified position in the
      */
-    void insert_block(int pos, tensor_type &&value) {
+    void insert_block(int pos, TensorType &&value) {
         for (int i = 0; i < Rank; i++) {
             if (value.dim(i) != value.dim(0)) {
                 throw std::runtime_error(
@@ -277,7 +285,7 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
     /**
      * @brief Add a block to the end of the list of blocks.
      */
-    void push_block(const tensor_type &value) {
+    void push_block(const TensorType &value) {
         for (int i = 0; i < Rank; i++) {
             if (value.dim(i) != value.dim(0)) {
                 throw std::runtime_error(
@@ -292,7 +300,7 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
     /**
      * @brief Add a block to the specified position in the list of blocks.
      */
-    void insert_block(int pos, const tensor_type &value) {
+    void insert_block(int pos, const TensorType &value) {
         for (int i = 0; i < Rank; i++) {
             if (value.dim(i) != value.dim(0)) {
                 throw std::runtime_error(
@@ -466,22 +474,22 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
     /**
      * @brief Return the block with the given index.
      */
-    const tensor_type &operator[](size_t index) const { return this->block(index); }
+    const TensorType &operator[](size_t index) const { return this->block(index); }
 
     /**
      * @brief Return the block with the given index.
      */
-    tensor_type &operator[](size_t index) { return this->block(index); }
+    TensorType &operator[](size_t index) { return this->block(index); }
 
     /**
      * @brief Return the block with the given name.
      */
-    const tensor_type &operator[](const std::string &name) const { return this->block(name); }
+    const TensorType &operator[](const std::string &name) const { return this->block(name); }
 
     /**
      * @brief Return the block with the given name.
      */
-    tensor_type &operator[](const std::string &name) { return this->block(name); }
+    TensorType &operator[](const std::string &name) { return this->block(name); }
 
     /**
      * @brief Copy assignment.
@@ -499,7 +507,7 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
 
         EINSUMS_OMP_PARALLEL_FOR
         for (int i = 0; i < _blocks.size(); i++) {
-            if(block_dim(i) == 0) {
+            if (block_dim(i) == 0) {
                 continue;
             }
             _blocks[i] = other._blocks[i];
@@ -525,7 +533,7 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
 
         EINSUMS_OMP_PARALLEL_FOR
         for (int i = 0; i < _blocks.size(); i++) {
-            if(block_dim(i) == 0) {
+            if (block_dim(i) == 0) {
                 continue;
             }
             _blocks[i] = other._blocks[i];
@@ -576,14 +584,14 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
     /**
      * @brief Convert block tensor into a normal tensor.
      */
-    explicit operator TensorType<T, Rank>() const {
+    explicit operator TensorType() const {
         Dim<Rank> block_dims;
 
         for (int i = 0; i < Rank; i++) {
             block_dims[i] = _dim;
         }
 
-        TensorType<T, Rank> out(block_dims);
+        TensorType out(block_dims);
 
         out.set_name(_name);
 
@@ -667,7 +675,7 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
     /**
      * @brief Return the dimensions of this tensor.
      */
-    Dim<Rank> dims() const {
+    virtual Dim<Rank> dims() const override {
         Dim<Rank> out;
         out.fill(_dim);
         return out;
@@ -678,7 +686,9 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
      *
      * Because the tensor is square, the argument is ignored.
      */
-    size_t dim(int dim = 0) const { return _dim; }
+    virtual size_t dim(int dim) const override { return _dim; }
+
+    virtual size_t dim() const { return _dim; }
 
     /**
      * @brief Return the dimensions of each of the blocks.
@@ -696,22 +706,22 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
     /**
      * @brief Returns the list of tensors.
      */
-    auto vector_data() const -> const std::vector<tensor_type> & { return _blocks; }
+    auto vector_data() const -> const std::vector<TensorType> & { return _blocks; }
 
     /**
      * @brief Returns the list of tensors.
      */
-    auto vector_data() -> std::vector<tensor_type> & { return _blocks; }
+    auto vector_data() -> std::vector<TensorType> & { return _blocks; }
 
     /**
      * @brief Gets the name of the tensor.
      */
-    [[nodiscard]] auto name() const -> const std::string & { return _name; }
+    [[nodiscard]] auto name() const -> const std::string &override { return _name; }
 
     /**
      * @brief Sets the name of the tensor.
      */
-    void set_name(const std::string &name) { _name = name; }
+    void set_name(const std::string &name) override { _name = name; }
 
     /**
      * @brief Gets the name of a block.
@@ -738,8 +748,9 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
         return sum;
     }
 
-    [[nodiscard]] auto full_view_of_underlying() const noexcept -> bool { return true; }
+    [[nodiscard]] auto full_view_of_underlying() const noexcept -> bool override { return true; }
 };
+} // namespace tensor_props
 
 /**
  * @struct BlockTensor
@@ -750,7 +761,7 @@ struct BlockTensorBase : public detail::TensorBase<T, Rank> {
  * @tparam Rank The rank of the tensor.
  */
 template <typename T, size_t Rank>
-struct BlockTensor : public BlockTensorBase<T, Rank, Tensor> {
+struct BlockTensor : public virtual tensor_props::BlockTensorBase<T, Rank, Tensor<T, Rank>>, virtual tensor_props::CoreTensorBase {
   public:
     /**
      * @brief Construct a new BlockTensor object. Default constructor.
@@ -785,7 +796,8 @@ struct BlockTensor : public BlockTensorBase<T, Rank, Tensor> {
      * @param block_dims The size of each block.
      */
     template <typename... Dims>
-    explicit BlockTensor(std::string name, Dims... block_dims) : BlockTensorBase<T, Rank, Tensor>(name, block_dims...) {}
+    explicit BlockTensor(std::string name, Dims... block_dims)
+        : tensor_props::BlockTensorBase<T, Rank, Tensor<T, Rank>>(name, block_dims...) {}
 
     /**
      * @brief Construct a new BlockTensor object with the given name and dimensions.
@@ -805,7 +817,8 @@ struct BlockTensor : public BlockTensorBase<T, Rank, Tensor> {
      * @param block_dims The size of each block.
      */
     template <typename ArrayArg>
-    explicit BlockTensor(std::string name, const ArrayArg &block_dims) : BlockTensorBase<T, Rank, Tensor>(name, block_dims) {}
+    explicit BlockTensor(std::string name, const ArrayArg &block_dims)
+        : tensor_props::BlockTensorBase<T, Rank, Tensor<T, Rank>>(name, block_dims) {}
 
     /**
      * @brief Construct a new BlockTensor object using the dimensions given by Dim object.
@@ -813,7 +826,9 @@ struct BlockTensor : public BlockTensorBase<T, Rank, Tensor> {
      * @param block_dims The dimensions of the new tensor in Dim form.
      */
     template <size_t Dims>
-    explicit BlockTensor(Dim<Dims> block_dims) : BlockTensorBase<T, Rank, Tensor>(block_dims) {}
+    explicit BlockTensor(Dim<Dims> block_dims) : tensor_props::BlockTensorBase<T, Rank, Tensor<T, Rank>>(block_dims) {}
+
+    // size_t dim(int d) const override { return detail::BlockTensorBase<T, Rank, Tensor>::dim(d); }
 };
 
 #ifdef __HIP__
@@ -826,8 +841,13 @@ struct BlockTensor : public BlockTensorBase<T, Rank, Tensor> {
  * @tparam Rank The rank of the tensor.
  */
 template <typename T, size_t Rank>
-struct BlockDeviceTensor : public BlockTensorBase<T, Rank, DeviceTensor> {
+struct BlockDeviceTensor : public virtual tensor_props::BlockTensorBase<T, Rank, DeviceTensor<T, Rank>>,
+                           virtual tensor_props::DeviceTensorBase,
+                           virtual tensor_props::DevTypedTensorBase<T> {
   public:
+    using host_datatype = typename tensor_props::DevTypedTensorBase<T>::host_datatype;
+    using dev_datatype  = typename tensor_props::DevTypedTensorBase<T>::dev_datatype;
+
     /**
      * @brief Construct a new BlockDeviceTensor object. Default constructor.
      */
@@ -863,7 +883,7 @@ struct BlockDeviceTensor : public BlockTensorBase<T, Rank, DeviceTensor> {
      */
     template <typename... Dims>
     explicit BlockDeviceTensor(std::string name, detail::HostToDeviceMode mode, Dims... block_dims)
-        : BlockTensorBase<T, Rank, DeviceTensor>(name) {
+        : detail::BlockTensorBase<T, Rank, DeviceTensor>(name) {
 
         auto dims = std::array<size_t, sizeof...(Dims)>{static_cast<size_t>(block_dims)...};
 
@@ -897,7 +917,7 @@ struct BlockDeviceTensor : public BlockTensorBase<T, Rank, DeviceTensor> {
      */
     template <typename ArrayArg>
     explicit BlockDeviceTensor(std::string name, detail::HostToDeviceMode mode, const ArrayArg &block_dims)
-        : BlockTensorBase<T, Rank, DeviceTensor>(name) {
+        : detail::BlockTensorBase<T, Rank, DeviceTensor>(name) {
         for (int i = 0; i < block_dims.size(); i++) {
 
             Dim<Rank> pass_dims;
@@ -915,7 +935,7 @@ struct BlockDeviceTensor : public BlockTensorBase<T, Rank, DeviceTensor> {
      * @param block_dims The dimensions of the new tensor in Dim form.
      */
     template <size_t Dims>
-    explicit BlockDeviceTensor(detail::HostToDeviceMode mode, Dim<Dims> block_dims) : BlockTensorBase<T, Rank, DeviceTensor>() {
+    explicit BlockDeviceTensor(detail::HostToDeviceMode mode, Dim<Dims> block_dims) : detail::BlockTensorBase<T, Rank, DeviceTensor>() {
         for (int i = 0; i < block_dims.size(); i++) {
 
             Dim<Rank> pass_dims;
@@ -971,18 +991,19 @@ struct BlockDeviceTensor : public BlockTensorBase<T, Rank, DeviceTensor> {
 
         return std::apply(BlockTensorBase<T, Rank, DeviceTensor>::_blocks.at(block), index_list);
     }
+
+    size_t dim(int d) const override { return detail::BlockTensorBase<T, Rank, DeviceTensor>::dim(d); }
 };
 #endif
 } // namespace einsums
 
-#ifdef __HIP__
-template <size_t Rank, typename T>
-void println(const einsums::BlockDeviceTensor<T, Rank> &A, TensorPrintOptions options = {}) {
+template <einsums::BlockTensorConcept AType>
+void println(const AType &A, TensorPrintOptions options = {}) {
     println("Name: {}", A.name());
     {
         print::Indent const indent{};
         println("Block Tensor");
-        println("Data Type: {}", type_name<T>());
+        println("Data Type: {}", type_name<typename AType::data_type>());
 
         for (int i = 0; i < A.num_blocks(); i++) {
             println(A[i], options);
@@ -990,13 +1011,13 @@ void println(const einsums::BlockDeviceTensor<T, Rank> &A, TensorPrintOptions op
     }
 }
 
-template <size_t Rank, typename T>
-void fprintln(FILE *fp, const einsums::BlockDeviceTensor<T, Rank> &A, TensorPrintOptions options = {}) {
+template <einsums::BlockTensorConcept AType, typename... Args>
+void fprintln(FILE *fp, const AType &A, TensorPrintOptions options = {}) {
     fprintln(fp, "Name: {}", A.name());
     {
         print::Indent const indent{};
         fprintln(fp, "Block Tensor");
-        fprintln(fp, "Data Type: {}", type_name<T>());
+        fprintln(fp, "Data Type: {}", type_name<typename AType::data_type>());
 
         for (int i = 0; i < A.num_blocks(); i++) {
             fprintln(fp, A[i], options);
@@ -1004,56 +1025,13 @@ void fprintln(FILE *fp, const einsums::BlockDeviceTensor<T, Rank> &A, TensorPrin
     }
 }
 
-template <size_t Rank, typename T>
-void fprintln(std::ostream &os, const einsums::BlockDeviceTensor<T, Rank> &A, TensorPrintOptions options = {}) {
+template <einsums::BlockTensorConcept AType, typename... Args>
+void fprintln(std::ostream &os, const AType &A, TensorPrintOptions options = {}) {
     fprintln(os, "Name: {}", A.name());
     {
         print::Indent const indent{};
         fprintln(os, "Block Tensor");
-        fprintln(os, "Data Type: {}", type_name<T>());
-
-        for (int i = 0; i < A.num_blocks(); i++) {
-            fprintln(os, A[i], options);
-        }
-    }
-}
-#endif
-
-template <size_t Rank, typename T>
-void println(const einsums::BlockTensor<T, Rank> &A, TensorPrintOptions options = {}) {
-    println("Name: {}", A.name());
-    {
-        print::Indent const indent{};
-        println("Block Tensor");
-        println("Data Type: {}", type_name<T>());
-
-        for (int i = 0; i < A.num_blocks(); i++) {
-            println(A[i], options);
-        }
-    }
-}
-
-template <size_t Rank, typename T>
-void fprintln(FILE *fp, const einsums::BlockTensor<T, Rank> &A, TensorPrintOptions options = {}) {
-    fprintln(fp, "Name: {}", A.name());
-    {
-        print::Indent const indent{};
-        fprintln(fp, "Block Tensor");
-        fprintln(fp, "Data Type: {}", type_name<T>());
-
-        for (int i = 0; i < A.num_blocks(); i++) {
-            fprintln(fp, A[i], options);
-        }
-    }
-}
-
-template <size_t Rank, typename T>
-void fprintln(std::ostream &os, const einsums::BlockTensor<T, Rank> &A, TensorPrintOptions options = {}) {
-    fprintln(os, "Name: {}", A.name());
-    {
-        print::Indent const indent{};
-        fprintln(os, "Block Tensor");
-        fprintln(os, "Data Type: {}", type_name<T>());
+        fprintln(os, "Data Type: {}", type_name<typename AType::data_type>());
 
         for (int i = 0; i < A.num_blocks(); i++) {
             fprintln(os, A[i], options);

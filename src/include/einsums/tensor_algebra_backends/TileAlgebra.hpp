@@ -17,9 +17,9 @@ inline size_t get_grid_ranges_for_many_b(const BType<BDataType, BRank> &B, const
 template <typename UniqueIndex, int BDim, template <typename, size_t> typename BType, typename BDataType, size_t BRank, typename BHead>
 inline auto get_grid_ranges_for_many_b(const BType<BDataType, BRank> &B, const ::std::tuple<BHead> &B_indices)
     -> ::std::enable_if<::std::is_same_v<BHead, UniqueIndex>, size_t> {
-    if constexpr (einsums::detail::IsTiledTensorV<BType<BDataType, BRank>, BRank, BDataType>) {
+    if constexpr (einsums::detail::IsTiledTensorV<BType<BDataType, BRank>>) {
         return B.grid_size(BDim);
-    } else if constexpr (einsums::detail::IsBlockTensorV<BType<BDataType, BRank>, BRank, BDataType>) {
+    } else if constexpr (einsums::detail::IsBlockTensorV<BType<BDataType, BRank>>) {
         return B.num_blocks();
     } else {
         return 1;
@@ -30,9 +30,9 @@ template <typename UniqueIndex, int BDim, template <typename, size_t> typename B
           typename... BIndices>
 inline size_t get_grid_ranges_for_many_b(const BType<BDataType, BRank> &B, const ::std::tuple<BHead, BIndices...> &B_indices) {
     if constexpr (::std::is_same_v<BHead, UniqueIndex>) {
-        if constexpr (einsums::detail::IsTiledTensorV<BType<BDataType, BRank>, BRank, BDataType>) {
+        if constexpr (einsums::detail::IsTiledTensorV<BType<BDataType, BRank>>) {
             return B.grid_size(BDim);
-        } else if constexpr (einsums::detail::IsBlockTensorV<BType<BDataType, BRank>, BRank, BDataType>) {
+        } else if constexpr (einsums::detail::IsBlockTensorV<BType<BDataType, BRank>>) {
             return B.num_blocks();
         } else {
             return 1;
@@ -54,9 +54,9 @@ template <typename UniqueIndex, int ADim, template <typename, size_t> typename A
 inline size_t get_grid_ranges_for_many_a(const AType<ADataType, ARank> &A, const ::std::tuple<AHead> &A_indices,
                                          const BType<BDataType, BRank> &B, const ::std::tuple<BIndices...> &B_indices) {
     if constexpr (::std::is_same_v<AHead, UniqueIndex>) {
-        if constexpr (einsums::detail::IsTiledTensorV<AType<ADataType, ARank>, ARank, ADataType>) {
+        if constexpr (einsums::detail::IsTiledTensorV<AType<ADataType, ARank>>) {
             return A.grid_size(ADim);
-        } else if constexpr (einsums::detail::IsBlockTensorV<AType<ADataType, ARank>, ARank, ADataType>) {
+        } else if constexpr (einsums::detail::IsBlockTensorV<AType<ADataType, ARank>>) {
             return A.num_blocks();
         } else {
             return 1;
@@ -73,9 +73,9 @@ inline auto get_grid_ranges_for_many_a(const AType<ADataType, ARank> &A, const :
                                        const BType<BDataType, BRank>   &B,
                                        const ::std::tuple<BIndices...> &B_indices) -> ::std::enable_if_t<sizeof...(AIndices) != 0, size_t> {
     if constexpr (::std::is_same_v<AHead, UniqueIndex>) {
-        if constexpr (einsums::detail::IsTiledTensorV<AType<ADataType, ARank>, ARank, ADataType>) {
+        if constexpr (einsums::detail::IsTiledTensorV<AType<ADataType, ARank>>) {
             return A.grid_size(ADim);
-        } else if constexpr (einsums::detail::IsBlockTensorV<AType<ADataType, ARank>, ARank, ADataType>) {
+        } else if constexpr (einsums::detail::IsBlockTensorV<AType<ADataType, ARank>>) {
             return A.num_blocks();
         } else {
             return 1;
@@ -101,9 +101,9 @@ inline size_t get_grid_ranges_for_many_c(const CType<CDataType, CRank> &C, const
                                          const AType<ADataType, ARank> &A, const ::std::tuple<AIndices...> &A_indices,
                                          const BType<BDataType, BRank> &B, const ::std::tuple<BIndices...> &B_indices) {
     if constexpr (::std::is_same_v<CHead, UniqueIndex>) {
-        if constexpr (einsums::detail::IsTiledTensorV<CType<CDataType, CRank>, CRank, CDataType>) {
+        if constexpr (einsums::detail::IsTiledTensorV<CType<CDataType, CRank>>) {
             return C.grid_size(CDim);
-        } else if constexpr (einsums::detail::IsBlockTensorV<CType<CDataType, CRank>, CRank, CDataType>) {
+        } else if constexpr (einsums::detail::IsBlockTensorV<CType<CDataType, CRank>>) {
             return C.num_blocks();
         } else {
             return 1;
@@ -121,9 +121,9 @@ inline auto get_grid_ranges_for_many_c(const CType<CDataType, CRank> &C, const :
                                        const BType<BDataType, BRank>   &B,
                                        const ::std::tuple<BIndices...> &B_indices) -> ::std::enable_if_t<sizeof...(CIndices) != 0, size_t> {
     if constexpr (::std::is_same_v<CHead, UniqueIndex>) {
-        if constexpr (einsums::detail::IsTiledTensorV<CType<CDataType, CRank>, CRank, CDataType>) {
+        if constexpr (einsums::detail::IsTiledTensorV<CType<CDataType, CRank>>) {
             return C.grid_size(CDim);
-        } else if constexpr (einsums::detail::IsBlockTensorV<CType<CDataType, CRank>, CRank, CDataType>) {
+        } else if constexpr (einsums::detail::IsBlockTensorV<CType<CDataType, CRank>>) {
             return C.num_blocks();
         } else {
             return 1;

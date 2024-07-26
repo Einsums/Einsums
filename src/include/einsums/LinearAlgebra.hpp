@@ -62,8 +62,8 @@ namespace einsums::linear_algebra {
  * @param scale scale_in and scale_out for the equation provided
  * @param sumsq sumsq_in and sumsq_out for the equation provided
  */
-template <template <typename, size_t> typename AType, typename ADataType, size_t ARank>
-void sum_square(const AType<ADataType, ARank> &a, RemoveComplexT<ADataType> *scale, RemoveComplexT<ADataType> *sumsq) {
+template <TensorConcept AType>
+void sum_square(const AType &a, RemoveComplexT<typename AType::data_type> *scale, RemoveComplexT<typename AType::data_type> *sumsq) {
     LabeledSection0();
     detail::sum_square(a, scale, sumsq);
 }
@@ -96,14 +96,13 @@ void sum_square(const AType<ADataType, ARank> &a, RemoveComplexT<ADataType> *sca
  * @param C Output tensor
  * @tparam T the underlying data type
  */
-template <bool TransA, bool TransB, template <typename, size_t> typename AType, template <typename, size_t> typename BType,
-          template <typename, size_t> typename CType, size_t Rank, typename T, typename U>
+template <bool TransA, bool TransB, MatrixConcept AType, MatrixConcept BType, MatrixConcept CType, typename U>
     requires requires {
-        requires InSamePlace<AType<T, Rank>, BType<T, Rank>, 2, 2, T, T>;
-        requires InSamePlace<AType<T, Rank>, CType<T, Rank>, 2, 2, T, T>;
-        requires std::convertible_to<U, T>;
+        requires InSamePlace<AType, BType, CType>;
+        requires std::convertible_to<U, typename AType::data_type>;
+        requires SameUnderlying<AType, BType, CType>;
     }
-void gemm(const U alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const U beta, CType<T, Rank> *C) {
+void gemm(const U alpha, const AType &A, const BType &B, const U beta, CType *C) {
     LabeledSection0();
     detail::gemm<TransA, TransB>(alpha, A, B, beta, C);
 }
@@ -128,18 +127,18 @@ void gemm(const U alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const
  * @returns resulting tensor
  * @tparam T the underlying data type
  */
-template <bool TransA, bool TransB, template <typename, size_t> typename AType, template <typename, size_t> typename BType, size_t Rank,
-          typename T, typename U>
+template <bool TransA, bool TransB, MatrixConcept AType, MatrixConcept BType, typename U>
     requires requires {
-        requires InSamePlace<AType<T, Rank>, BType<T, Rank>, 2, 2, T, T>;
-        requires std::is_same_v<remove_view_t<AType, Rank, T>, remove_view_t<BType, Rank, T>>;
-        requires std::convertible_to<U, T>;
+        requires InSamePlace<AType, BType>;
+        requires std::is_same_v<remove_view_t<AType>, remove_view_t<BType>>;
+        requires std::convertible_to<U, typename AType::data_type>;
+        requires SameUnderlying<AType, BType>;
     }
-auto gemm(const U alpha, const AType<T, Rank> &A, const BType<T, Rank> &B) -> remove_view_t<AType, Rank, T> {
+auto gemm(const U alpha, const AType &A, const BType &B) -> remove_view_t<AType> {
     LabeledSection0();
 
-    remove_view_t<AType, Rank, T> C{"gemm result", TransA ? A.dim(1) : A.dim(0), TransB ? B.dim(0) : B.dim(1)};
-    gemm<TransA, TransB>(static_cast<T>(alpha), A, B, static_cast<T>(0.0), &C);
+    remove_view_t<AType> C{"gemm result", TransA ? A.dim(1) : A.dim(0), TransB ? B.dim(0) : B.dim(1)};
+    gemm<TransA, TransB>(static_cast<typename AType::data_type>(alpha), A, B, static_cast<typename AType::data_type>(0.0), &C);
 
     return C;
 }
@@ -149,13 +148,12 @@ auto gemm(const U alpha, const AType<T, Rank> &A, const BType<T, Rank> &B) -> re
  *
  * Computes @f$ C = OP(B)^T OP(A) OP(B) @f$.
  */
-template <bool TransA, bool TransB, template <typename, size_t> typename AType, template <typename, size_t> typename BType,
-          template <typename, size_t> typename CType, size_t Rank, typename T>
+template <bool TransA, bool TransB, MatrixConcept AType, MatrixConcept BType, MatrixConcept CType>
     requires requires {
-        requires InSamePlace<AType<T, Rank>, BType<T, Rank>, 2, 2, T, T>;
-        requires InSamePlace<AType<T, Rank>, CType<T, Rank>, 2, 2, T, T>;
+        requires InSamePlace<AType, BType, CType>;
+        requires SameUnderlying<AType, BType, CType>;
     }
-void symm_gemm(const AType<T, Rank> &A, const BType<T, Rank> &B, CType<T, Rank> *C) {
+void symm_gemm(const AType &A, const BType &B, CType *C) {
     LabeledSection0();
 
     detail::symm_gemm<TransA, TransB>(A, B, C);
@@ -188,14 +186,13 @@ void symm_gemm(const AType<T, Rank> &A, const BType<T, Rank> &B, CType<T, Rank> 
  * @param beta Scaling factor for the output vector y
  * @param y Output vector y
  */
-template <bool TransA, template <typename, size_t> typename AType, template <typename, size_t> typename XType,
-          template <typename, size_t> typename YType, size_t ARank, size_t XYRank, typename T, typename U>
+template <bool TransA, MatrixConcept AType, VectorConcept XType, VectorConcept YType, typename U>
     requires requires {
-        requires InSamePlace<AType<T, ARank>, XType<T, XYRank>, 2, 1, T, T>;
-        requires InSamePlace<AType<T, ARank>, YType<T, XYRank>, 2, 1, T, T>;
-        requires std::convertible_to<U, T>; // Make sure the alpha and beta can be converted to T
+        requires InSamePlace<AType, XType, YType>;
+        requires SameUnderlying<AType, XType, YType>;
+        requires std::convertible_to<U, typename AType::data_type>;
     }
-void gemv(const U alpha, const AType<T, ARank> &A, const XType<T, XYRank> &z, const U beta, YType<T, XYRank> *y) {
+void gemv(const U alpha, const AType &A, const XType &z, const U beta, YType *y) {
     LabeledSection1(fmt::format("<TransA={}>", TransA));
 
     detail::gemv<TransA>(alpha, A, z, beta, y);
@@ -232,41 +229,52 @@ void gemv(const U alpha, const AType<T, ARank> &A, const XType<T, XYRank> &z, co
  *   Any data previously stored in A is destroyed.
  * @param W On exit, the eigenvalues in ascending order.
  */
-template <bool ComputeEigenvectors = true, template <typename, size_t> typename AType, size_t ARank,
-          template <typename, size_t> typename WType, size_t WRank, typename T>
+template <bool ComputeEigenvectors = true, MatrixConcept AType, VectorConcept WType>
     requires requires {
-        requires InSamePlace<AType<T, ARank>, WType<T, WRank>, 2, 1, T, T>;
-        requires !Complex<T>;
+        requires InSamePlace<AType, WType>;
+        requires SameUnderlying<AType, WType>;
+        requires !Complex<AType>;
     }
-void syev(AType<T, ARank> *A, WType<T, WRank> *W) {
+void syev(AType *A, WType *W) {
 
     LabeledSection1(fmt::format("<ComputeEigenvectors={}>", ComputeEigenvectors));
     detail::syev<ComputeEigenvectors>(A, W);
 }
 
-template <bool ComputeLeftRightEigenvectors = true, template <typename, size_t> typename AType, size_t ARank,
-          template <Complex, size_t> typename WType, size_t WRank, typename T>
-    requires InSamePlace<AType<T, ARank>, WType<AddComplexT<T>, WRank>, 2, 1, T, AddComplexT<T>>
-void geev(AType<T, ARank> *A, WType<AddComplexT<T>, WRank> *W, AType<T, ARank> *lvecs, AType<T, ARank> *rvecs) {
+/**
+ * @brief Compute the general eigendecomposition of a matrix.
+ *
+ * Can only be used to compute both left and right eigen vectors or neither.
+ */
+template <bool ComputeLeftRightEigenvectors = true, MatrixConcept AType, VectorConcept WType>
+    requires requires {
+        requires InSamePlace<AType, WType>;
+        requires std::is_same_v<typename WType::data_type, AddComplexT<typename AType::data_type>>;
+    }
+void geev(AType *A, WType *W, AType *lvecs, AType *rvecs) {
     LabeledSection1(fmt::format("<ComputeLeftRightEigenvectors={}>", ComputeLeftRightEigenvectors));
 
     detail::geev<ComputeLeftRightEigenvectors>(A, W, lvecs, rvecs);
 }
 
-template <bool ComputeEigenvectors = true, template <typename, size_t> typename AType, size_t ARank,
-          template <typename, size_t> typename WType, size_t WRank, typename T>
+template <bool ComputeEigenvectors = true, MatrixConcept AType, VectorConcept WType>
     requires requires {
-        requires InSamePlace<AType<T, ARank>, WType<RemoveComplexT<T>, WRank>, 2, 1, T, RemoveComplexT<T>>;
-        requires Complex<T>;
+        requires InSamePlace<AType, WType>;
+        requires Complex<AType>;
+        requires !Complex<WType>;
+        requires std::is_same_v<typename WType::data_type, RemoveComplexT<typename AType::data_type>>;
     }
-void heev(AType<T, ARank> *A, WType<RemoveComplexT<T>, WRank> *W) {
+void heev(AType *A, WType *W) {
     LabeledSection1(fmt::format("<ComputeEigenvectors={}>", ComputeEigenvectors));
     detail::heev<ComputeEigenvectors>(A, W);
 }
 
-template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename BType, size_t BRank, typename T>
-    requires(InSamePlace<AType<T, ARank>, BType<T, BRank>, 2, 2, T, T>)
-auto gesv(AType<T, ARank> *A, BType<T, BRank> *B) -> int {
+template <MatrixConcept AType, MatrixConcept BType>
+    requires requires {
+        requires InSamePlace<AType, BType>;
+        requires SameUnderlying<AType, BType>;
+    }
+auto gesv(AType *A, BType *B) -> int {
 
     LabeledSection0();
     return detail::gesv(A, B);
@@ -295,35 +303,20 @@ auto gesv(AType<T, ARank> *A, BType<T, BRank> *B) -> int {
  * @param A The symmetric matrix A in the leading N-by-N upper triangular part of A.
  * @return std::tuple<Tensor<T, 2>, Tensor<T, 1>> The eigenvectors and eigenvalues.
  */
-template <template <typename, size_t> typename AType, typename T, bool ComputeEigenvectors = true>
-auto syev(const AType<T, 2> &A)
-    -> std::tuple<remove_view_t<AType, 2, T>,
-#ifdef __HIP__
-                  std::conditional_t<einsums::detail::IsDeviceRankTensorV<AType<T, 1>, 1, T>, DeviceTensor<T, 1>, Tensor<T, 1>>
-#else
-                  Tensor<T, 1>
-#endif
-                  > {
+template <bool ComputeEigenvectors = true, MatrixConcept AType>
+    requires(NotComplex<AType>)
+auto syev(const AType &A) -> std::tuple<remove_view_t<AType>, BasicTensorLike<AType, typename AType::data_type, 1>> {
     LabeledSection0();
 
     assert(A.dim(0) == A.dim(1));
 
-    remove_view_t<AType, 2, T> a = A;
-#ifdef __HIP__
-    if constexpr (einsums::detail::IsDeviceRankTensorV<AType<T, 2>, 2, T>) {
-        DeviceTensor<T, 1> w{"eigenvalues", einsums::detail::DEV_ONLY, A.dim(0)};
-        syev<ComputeEigenvectors>(&a, &w);
-        return std::make_tuple(a, w);
-    } else {
-#endif
-        Tensor<T, 1> w{"eigenvalues", A.dim(0)};
+    remove_view_t<AType> a = A;
 
-        syev<ComputeEigenvectors>(&a, &w);
+    BasicTensorLike<AType, typename AType::data_type, 1> w{"eigenvalues", A.dim(0)};
 
-        return std::make_tuple(a, w);
-#ifdef __HIP__
-    }
-#endif
+    syev<ComputeEigenvectors>(&a, &w);
+
+    return std::make_tuple(a, w);
 }
 
 /**
@@ -343,24 +336,22 @@ auto syev(const AType<T, 2> &A)
  * @param scale The scalar to scale the tensor by
  * @param A The tensor to scale
  */
-template <template <typename, size_t> typename AType, size_t ARank, typename T>
-void scale(T scale, AType<T, ARank> *A) {
+template <TensorConcept AType>
+void scale(typename AType::data_type scale, AType *A) {
     LabeledSection0();
 
     detail::scale(scale, A);
 }
 
-template <template <typename, size_t> typename AType, size_t ARank, typename T>
-    requires(ARank == 2)
-void scale_row(size_t row, T scale, AType<T, ARank> *A) {
+template <MatrixConcept AType>
+void scale_row(size_t row, typename AType::data_type scale, AType *A) {
     LabeledSection0();
 
     detail::scale_row(row, scale, A);
 }
 
-template <template <typename, size_t> typename AType, size_t ARank, typename T>
-    requires(ARank == 2)
-void scale_column(size_t col, T scale, AType<T, ARank> *A) {
+template <MatrixConcept AType>
+void scale_column(size_t col, typename AType::data_type scale, AType *A) {
     LabeledSection0();
 
     detail::scale_column(col, scale, A);
@@ -376,79 +367,101 @@ void scale_column(size_t col, T scale, AType<T, ARank> *A) {
  *
  * @return std::enable_if_t<std::is_base_of_v<Detail::TensorBase<double, 2>, AType>, AType>
  */
-template <template <typename, size_t> typename AType, size_t ARank, typename T>
-    requires(ARank == 2)
-auto pow(const AType<T, ARank> &a, T alpha, T cutoff = std::numeric_limits<T>::epsilon()) -> remove_view_t<AType, 2, T> {
+template <MatrixConcept AType>
+auto pow(const AType &a, typename AType::data_type alpha,
+         typename AType::data_type cutoff = std::numeric_limits<typename AType::data_type>::epsilon()) -> remove_view_t<AType> {
     LabeledSection0();
 
     return detail::pow(a, alpha, cutoff);
 }
 
-template <template <typename, size_t> typename AType, template <typename, size_t> typename BType, typename T>
-    requires InSamePlace<AType<T, 1>, BType<T, 1>, 1, 1, T, T>
-auto dot(const AType<T, 1> &A, const BType<T, 1> &B) -> T {
-    LabeledSection0();
-
-    return detail::dot(A, B);
-}
-
-template <template <typename, size_t> typename AType, template <typename, size_t> typename BType, typename T, size_t Rank>
-    requires InSamePlace<AType<T, Rank>, BType<T, Rank>, Rank, Rank, T, T>
-auto dot(const AType<T, Rank> &A, const BType<T, Rank> &B) -> T {
-
-    LabeledSection0();
-
-    return detail::dot(A, B);
-}
-
-template <template <typename, size_t> typename AType, template <typename, size_t> typename BType, typename T>
-    requires InSamePlace<AType<T, 1>, BType<T, 1>, 1, 1, T, T>
-auto true_dot(const AType<T, 1> &A, const BType<T, 1> &B) -> RemoveComplexT<T> {
-    LabeledSection0();
-
-    return detail::true_dot(A, B);
-}
-
-template <template <typename, size_t> typename AType, template <typename, size_t> typename BType, typename T, size_t Rank>
-    requires InSamePlace<AType<T, Rank>, BType<T, Rank>, Rank, Rank, T, T>
-auto true_dot(const AType<T, Rank> &A, const BType<T, Rank> &B) -> RemoveComplexT<T> {
-
-    LabeledSection0();
-
-    return detail::true_dot(A, B);
-}
-
-template <template <typename, size_t> typename AType, template <typename, size_t> typename BType,
-          template <typename, size_t> typename CType, typename T, size_t Rank>
+template <VectorConcept AType, VectorConcept BType>
     requires requires {
-        requires InSamePlace<AType<T, Rank>, BType<T, Rank>, Rank, Rank, T, T>;
-        requires InSamePlace<AType<T, Rank>, CType<T, Rank>, Rank, Rank, T, T>;
+        requires InSamePlace<AType, BType>;
+        requires SameUnderlying<AType, BType>;
     }
-auto dot(const AType<T, Rank> &A, const BType<T, Rank> &B, const CType<T, Rank> &C) -> T {
+auto dot(const AType &A, const BType &B) -> typename AType::data_type {
+    LabeledSection0();
+
+    return detail::dot(A, B);
+}
+
+template <TensorConcept AType, TensorConcept BType>
+    requires requires {
+        requires SameUnderlyingAndRank<AType, BType>;
+        requires InSamePlace<AType, BType>;
+        requires AType::rank != 1;
+    }
+auto dot(const AType &A, const BType &B) -> typename AType::data_type {
+
+    LabeledSection0();
+
+    return detail::dot(A, B);
+}
+
+template <VectorConcept AType, VectorConcept BType>
+    requires requires {
+        requires InSamePlace<AType, BType>;
+        requires SameUnderlying<AType, BType>;
+    }
+auto true_dot(const AType &A, const BType &B) -> typename AType::data_type {
+    LabeledSection0();
+
+    return detail::true_dot(A, B);
+}
+
+template <TensorConcept AType, TensorConcept BType>
+    requires requires {
+        requires SameUnderlyingAndRank<AType, BType>;
+        requires InSamePlace<AType, BType>;
+        requires AType::rank != 1;
+    }
+auto true_dot(const AType &A, const BType &B) -> typename AType::data_type {
+
+    LabeledSection0();
+
+    return detail::true_dot(A, B);
+}
+
+template <TensorConcept AType, TensorConcept BType, TensorConcept CType>
+    requires requires {
+        requires InSamePlace<AType, BType, CType>;
+        requires SameUnderlyingAndRank<AType, BType, CType>;
+    }
+auto dot(const AType &A, const BType &B, const CType &C) -> typename AType::data_type {
 
     LabeledSection0();
     return detail::dot(A, B, C);
 }
 
-template <template <typename, size_t> typename XType, template <typename, size_t> typename YType, typename T, size_t Rank>
-    requires InSamePlace<XType<T, Rank>, YType<T, Rank>, Rank, Rank, T, T>
-void axpy(T alpha, const XType<T, Rank> &X, YType<T, Rank> *Y) {
+template <TensorConcept XType, TensorConcept YType>
+    requires requires {
+        requires InSamePlace<XType, YType>;
+        requires SameUnderlyingAndRank<XType, YType>;
+    }
+void axpy(typename XType::data_type alpha, const XType &X, YType *Y) {
     LabeledSection0();
 
     detail::axpy(alpha, X, Y);
 }
 
-template <template <typename, size_t> typename XType, template <typename, size_t> typename YType, typename T, size_t Rank>
-    requires InSamePlace<XType<T, Rank>, YType<T, Rank>, Rank, Rank, T, T>
-void axpby(T alpha, const XType<T, Rank> &X, T beta, YType<T, Rank> *Y) {
+template <TensorConcept XType, TensorConcept YType>
+    requires requires {
+        requires InSamePlace<XType, YType>;
+        requires SameUnderlyingAndRank<XType, YType>;
+    }
+void axpby(typename XType::data_type alpha, const XType &X, typename XType::data_type beta, YType *Y) {
     LabeledSection0();
 
     detail::axpby(alpha, X, beta, Y);
 }
 
-template <template <typename, size_t> typename XYType, size_t XYRank, template <typename, size_t> typename AType, typename T, size_t ARank>
-    requires InSamePlace<AType<T, ARank>, XYType<T, XYRank>, 2, 1, T, T>
-void ger(T alpha, const XYType<T, XYRank> &X, const XYType<T, XYRank> &Y, AType<T, ARank> *A) {
+template <MatrixConcept AType, VectorConcept XYType>
+    requires requires {
+        requires SameUnderlying<AType, XYType>;
+        requires InSamePlace<AType, XYType>;
+    }
+void ger(typename AType::data_type alpha, const XYType &X, const XYType &Y, AType *A) {
     LabeledSection0();
 
     detail::ger(alpha, X, Y, A);
@@ -956,7 +969,7 @@ T det(const AType<T, Rank> &A) {
         throw std::runtime_error("det: Can only take the determinant of a square matrix.");
     }
 
-    remove_view_t<AType, Rank, T> temp = A;
+    remove_view_t<AType<T, Rank>> temp = A;
 
     std::vector<blas_int> pivots;
     int                   singular = getrf(&A, &pivots);

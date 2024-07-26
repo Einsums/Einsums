@@ -10,25 +10,24 @@
 
 namespace einsums::linear_algebra::detail {
 
-template <bool TransA, bool TransB, template <typename, size_t> typename AType, template <typename, size_t> typename BType,
-          template <typename, size_t> typename CType, size_t Rank, typename T, typename U>
-    requires requires {
-        requires RankBlockTensor<AType<T, Rank>, 2, T>;
-        requires RankBlockTensor<BType<T, Rank>, 2, T>;
-        requires RankBlockTensor<CType<T, Rank>, 2, T>;
-        requires std::convertible_to<U, T>;
-    }
-void gemm(const U alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const U beta, CType<T, Rank> *C) {
+template<bool TransA, bool TransB, BlockTensorConcept AType, BlockTensorConcept BType, BlockTensorConcept CType, typename U>
+requires requires {
+    requires SameUnderlyingAndRank<AType, BType, CType>;
+    requires MatrixConcept<AType>;
+    requires std::convertible_to<U, typename AType::data_type>;
+}
+void gemm(const U alpha, const AType &A, const BType &B, const U beta, CType *C) {
     if (A.num_blocks() != B.num_blocks() || A.num_blocks() != C->num_blocks() || B.num_blocks() != C->num_blocks()) {
         throw std::runtime_error("gemm: Tensors need the same number of blocks.");
     }
 
+    using T = typename AType::data_type;
+
 #ifdef __HIP__
-    if constexpr (einsums::detail::IsDeviceRankTensorV<AType<T, Rank>, Rank, T>) {
+    if constexpr (einsums::detail::IsDeviceTensorV<AType>) {
         using namespace einsums::gpu;
 
-        using dev_datatype = ::std::conditional_t<::std::is_same_v<T, ::std::complex<float>>, hipComplex,
-                                                  ::std::conditional_t<::std::is_same_v<T, ::std::complex<double>>, hipDoubleComplex, T>>;
+        using dev_datatype = typename AType::dev_datatype;
         dev_datatype *alpha_gpu, *beta_gpu;
 
         hip_catch(hipMalloc((void **)&alpha_gpu, sizeof(dev_datatype)));
@@ -345,8 +344,8 @@ void direct_product(T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, T
 
 template <template <typename, size_t> typename AType, size_t ARank, typename T>
     requires RankBlockTensor<AType<T, ARank>, 2, T>
-auto pow(const AType<T, ARank> &a, T alpha, T cutoff = std::numeric_limits<T>::epsilon()) -> remove_view_t<AType, 2, T> {
-    remove_view_t<AType, 2, T> out{"pow result", a.vector_dims()};
+auto pow(const AType<T, ARank> &a, T alpha, T cutoff = std::numeric_limits<T>::epsilon()) -> remove_view_t<AType<T, 2>> {
+    remove_view_t<AType<T, 2>> out{"pow result", a.vector_dims()};
 
     EINSUMS_OMP_PARALLEL_FOR
     for (int i = 0; i < a.num_blocks(); i++) {

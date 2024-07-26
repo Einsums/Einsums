@@ -7,6 +7,21 @@
 #include "catch2/matchers/catch_matchers_floating_point.hpp"
 #include "einsums.hpp"
 
+class ScaleFunctionTensor : public virtual einsums::tensor_props::FunctionTensorBase<double, 4>, virtual einsums::tensor_props::CoreTensorBase {
+  private:
+    const einsums::Tensor<double, 1> *Evals;
+
+  public:
+    ScaleFunctionTensor(std::string name, const einsums::Tensor<double, 1> *evals)
+        : Evals{evals}, einsums::tensor_props::FunctionTensorBase<double, 4>(name, evals->dim(0), evals->dim(0), evals->dim(0), evals->dim(0)) {}
+
+    virtual double call(const std::array<int, 4> &inds) const override {
+        return 1 / ((*Evals)(inds[0]) + (*Evals)(inds[1]) - (*Evals)(inds[2]) - (*Evals)(inds[3]));
+    }
+
+    size_t dim(int d) const override { return einsums::tensor_props::FunctionTensorBase<double, 4>::dim(d); }
+};
+
 template <size_t Rank>
 static void read_tensor(std::string fname, einsums::Tensor<double, Rank> *out) {
     std::FILE *input = std::fopen(fname.c_str(), "r");
@@ -160,7 +175,8 @@ TEST_CASE("RHF No symmetry") {
         temp1("temp1", 7, 7), temp2("temp2", 7, 7), X("Unitary transform", 7, 7), C("MO Coefs", 7, 7), Ct("Transformed MO Coefs", 7, 7),
         D("Density Matrix", 7, 7), D_prev("Previous Density Matrix", 7, 7), F("Fock Matrix", 7, 7), Ft("Transformed Fock Matrix", 7, 7);
 
-    Tensor<double, 4> TEI("Two-electron Integrals", 7, 7, 7, 7);
+    Tensor<double, 4> TEI("Two-electron Integrals", 7, 7, 7, 7), MP2_temp1("MP2_temp1", 7, 7, 7, 7), MP2_temp2("MP2_temp2", 7, 7, 7, 7),
+        MP2_amps("MP2 amplitudes", 5, 2, 5, 2);
 
     Tensor<double, 1> Evals("Eigenvalues", 7);
 
@@ -302,6 +318,24 @@ TEST_CASE("RHF No symmetry") {
 
     REQUIRE(cycles < 50);
     REQUIRE_THAT(e0, Catch::Matchers::WithinAbs(-74.942079928192, 1e-6));
+
+    // MP2
+
+    // Transform the two-electron integrals.
+
+    REQUIRE_NOTHROW(einsum(Indices{index::i, index::j, index::k, index::l}, &MP2_temp1, Indices{index::m, index::j, index::k, index::l},
+                           TEI, Indices{index::m, index::i}, C));
+    REQUIRE_NOTHROW(einsum(Indices{index::i, index::j, index::k, index::l}, &MP2_temp2, Indices{index::i, index::m, index::k, index::l},
+                           MP2_temp1, Indices{index::m, index::j}, C));
+    REQUIRE_NOTHROW(einsum(Indices{index::i, index::j, index::k, index::l}, &MP2_temp1, Indices{index::i, index::j, index::m, index::l},
+                           MP2_temp2, Indices{index::m, index::k}, C));
+    REQUIRE_NOTHROW(einsum(Indices{index::i, index::j, index::k, index::l}, &TEI, Indices{index::i, index::j, index::k, index::m},
+                           MP2_temp1, Indices{index::m, index::l}, C));
+
+    // Set up the scales.
+    ScaleFunctionTensor MP2_scale("MP2 scale", &Evals);
+
+    auto MP2_scale_view = MP2_scale(Range{0, 5}, Range{5, 7}, Range{0, 5}, Range{5, 7});
 }
 
 TEST_CASE("RHF symmetry") {
@@ -636,6 +670,11 @@ TEST_CASE("RHF symmetry") {
     REQUIRE_NOTHROW(einsum(Indices{index::i, index::j, index::k, index::l}, &MP2_temp2, Indices{index::i, index::j, index::k, index::m},
                            MP2_temp1, Indices{index::m, index::l}, C));
 
+    // Create the new tensor.
+    ScaleFunctionTensor MP2_factors("MP2 factors", &Evals);
+
+    // Create the view.
+
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
             for (int k = 0; k < 4; k++) {
@@ -674,7 +713,7 @@ TEST_CASE("RHF symmetry") {
     REQUIRE_NOTHROW(einsum(1.0, Indices{}, &EMP2, -1.0, Indices{index::i, index::a, index::j, index::b}, MP2_amps_den,
                            Indices{index::i, index::b, index::j, index::a}, MP2_amps));
 
-    double eMP2 = (double) EMP2;
+    double eMP2  = (double)EMP2;
     double e_tot = e0 + eMP2;
 
     REQUIRE_THAT(eMP2, Catch::Matchers::WithinAbs(-0.049149636120, 1e-6));

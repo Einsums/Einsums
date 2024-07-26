@@ -5,9 +5,12 @@
 
 #pragma once
 
+#include "einsums/utility/TensorTraits.hpp"
+
 #ifdef __HIP__
 #    include "einsums/DeviceTensor.hpp"
 #endif
+#include "einsums/BlockTensor.hpp"
 #include "einsums/OpenMP.h"
 #include "einsums/Section.hpp"
 #include "einsums/Tensor.hpp"
@@ -21,14 +24,13 @@
 
 // Forward definitions for positive definite matrices.
 namespace einsums::linear_algebra {
-template <bool TransA, bool TransB, template <typename, size_t> typename AType, template <typename, size_t> typename BType,
-          template <typename, size_t> typename CType, size_t Rank, typename T, typename U>
+template <bool TransA, bool TransB, MatrixConcept AType, MatrixConcept BType, MatrixConcept CType, typename U>
     requires requires {
-        requires InSamePlace<AType<T, Rank>, BType<T, Rank>, 2, 2, T, T>;
-        requires InSamePlace<AType<T, Rank>, CType<T, Rank>, 2, 2, T, T>;
-        requires std::convertible_to<U, T>;
+        requires InSamePlace<AType, BType, CType>;
+        requires std::convertible_to<U, typename AType::data_type>;
+        requires SameUnderlying<AType, BType, CType>;
     }
-void gemm(const U alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const U beta, CType<T, Rank> *C);
+void gemm(const U alpha, const AType &A, const BType &B, const U beta, CType *C);
 
 template <template <typename, size_t> typename TensorType, typename T, size_t TensorRank>
     requires CoreRankTensor<TensorType<T, TensorRank>, 2, T>

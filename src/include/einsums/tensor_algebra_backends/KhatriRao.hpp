@@ -20,27 +20,16 @@
 #include <utility>
 
 namespace einsums::tensor_algebra {
-template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename BType, size_t BRank,
-          typename... AIndices, typename... BIndices, typename T>
-auto khatri_rao(const std::tuple<AIndices...> &, const AType<T, ARank> &A, const std::tuple<BIndices...> &, const BType<T, BRank> &B) ->
-#ifdef __HIP__
-    std::conditional_t<einsums::detail::IsIncoreRankTensorV<AType<T, ARank>, ARank, T>, Tensor<T, 2>, DeviceTensor<T, 2>>
+template <TensorConcept AType, TensorConcept BType, typename... AIndices, typename... BIndices>
     requires requires {
-        requires(std::is_base_of_v<::einsums::detail::TensorBase<T, ARank>, AType<T, ARank>> &&
-                 std::is_base_of_v<::einsums::detail::TensorBase<T, BRank>, BType<T, BRank>>);
-        requires InSamePlace<AType<T, ARank>, BType<T, BRank>, ARank, BRank, T>;
+        requires InSamePlace<AType, BType>;
+        requires AType::rank == sizeof...(AIndices);
+        requires BType::rank == sizeof...(BIndices);
     }
-#else
-    Tensor<T, 2>
-    requires(std::is_base_of_v<::einsums::detail::TensorBase<T, ARank>, AType<T, ARank>> &&
-             std::is_base_of_v<::einsums::detail::TensorBase<T, BRank>, BType<T, BRank>>)
-#endif
-{
-#ifdef __HIP__
-    using OutType = std::conditional_t<einsums::detail::IsIncoreRankTensorV<AType<T, ARank>, ARank, T>, Tensor<T, 2>, DeviceTensor<T, 2>>;
-#else
-    using OutType = Tensor<T, 2>;
-#endif
+auto khatri_rao(const std::tuple<AIndices...> &, const AType &A, const std::tuple<BIndices...> &,
+                const BType &B) -> BasicTensorLike<AType, typename AType::data_type, 2> {
+    using OutType = BasicTensorLike<AType, typename AType::data_type, 2>;
+    using T       = typename AType::data_type;
     LabeledSection0();
 
     constexpr auto A_indices = std::tuple<AIndices...>();
@@ -74,8 +63,8 @@ auto khatri_rao(const std::tuple<AIndices...> &, const AType<T, ARank> &A, const
 
 #ifdef __HIP__
     if constexpr (std::is_same_v<OutType, DeviceTensor<T, 2>>) {
-        auto result_dims =
-            std::tuple_cat(std::make_tuple("KR product"), std::make_tuple(einsums::detail::DEV_ONLY), A_only_dims, B_only_dims, A_common_dims);
+        auto result_dims = std::tuple_cat(std::make_tuple("KR product"), std::make_tuple(einsums::detail::DEV_ONLY), A_only_dims,
+                                          B_only_dims, A_common_dims);
         // Construct resulting tensor
         auto result = std::make_from_tuple<DeviceTensor<T, std::tuple_size_v<decltype(result_dims)> - 2>>(result_dims);
         // Perform the actual Khatri-Rao product using our einsum routine.

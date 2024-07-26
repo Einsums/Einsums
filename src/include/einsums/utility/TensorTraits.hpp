@@ -3,347 +3,1373 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //----------------------------------------------------------------------------------------------
 
+/*
+ * Naming conventions:
+ *
+ * Each of the basic properties in TensorBases.hpp is converted into a test type.
+ * If a basic property is called NameBase, then the test type is IsName.
+ * The inline bool constant is then called IsNameV and the concept is called
+ * NameConcept. The exception to this is that CoreTensorBase becomes IsIncoreTensor and
+ * IsIncoreTensorV, but CoreTensorConcept.
+ *
+ * For combined types, it is a bit different. If the combined type is intended to completely
+ * specify a tensor, then for a tensor type called Name, the test type, if it exists is called
+ * IsRankName, the constant is IsRankNameV, and the concept is RankName. If the storage location
+ * is specified, then the pattern is IsLocationRankName, IsLocationRankNameV, and LocationRankName.
+ * If Location is Core, then it becomes IsIncoreRankName, IsIncoreRankNameV, and CoreRankName.
+ * The templates for these will start with the type being tested, then the rank, then the stored
+ * data type.
+ *
+ * For any other concept called Name, the test type, if it exists, will be IsName and the constant
+ * will be IsNameV, converting any Core to Incore in the process.
+ */
+
 #pragma once
+
+#include "einsums/utility/TensorBases.hpp"
 
 #include <cstddef>
 #include <type_traits>
 
 namespace einsums {
 
-template <typename T, size_t Rank>
-struct Tensor;
-
-template <typename T, size_t Rank>
-struct TensorView;
-
-template <typename T, size_t Rank>
-struct BlockTensor;
-
-template <typename T, size_t Rank>
-struct TiledTensor;
-
-template <typename T, size_t Rank>
-struct TiledTensorView;
-
-template <typename T, size_t Rank>
-struct DiskTensor;
-
-template <typename T, size_t ViewRank, size_t Rank>
-struct DiskView;
-
-#ifdef __HIP__
-template <typename T, size_t Rank>
-struct DeviceTensor;
-
-template <typename T, size_t Rank>
-struct DeviceTensorView;
-
-template <typename T, size_t Rank>
-struct BlockDeviceTensor;
-
-template <typename T, size_t Rank>
-struct TiledDeviceTensor;
-
-template <typename T, size_t Rank>
-struct TiledDeviceTensorView;
-#endif
-
 namespace detail {
 
-template <typename D, size_t Rank, typename T>
-struct IsIncoreRankTensor
-    : public std::bool_constant<std::is_same_v<std::decay_t<D>, Tensor<T, Rank>> || std::is_same_v<std::decay_t<D>, TensorView<T, Rank>> ||
-                                std::is_same_v<std::decay_t<D>, BlockTensor<T, Rank>> ||
-                                std::is_same_v<std::decay_t<D>, TiledTensor<T, Rank>> ||
-                                std::is_same_v<std::decay_t<D>, TiledTensorView<T, Rank>>> {};
+/**************************************
+ *               Structs              *
+ **************************************/
 
-template <typename D, size_t Rank, typename T>
-inline constexpr bool IsIncoreRankTensorV = IsIncoreRankTensor<D, Rank, T>::value;
+/**********************
+ *    Basic traits.   *
+ **********************/
 
-#ifndef __HIP__
-template <typename D, size_t Rank, typename T>
-struct IsBasicTensor
-    : public std::bool_constant<std::is_same_v<std::decay_t<D>, Tensor<T, Rank>> || std::is_same_v<std::decay_t<D>, TensorView<T, Rank>>> {
-};
-#else
-template <typename D, size_t Rank, typename T>
-struct IsBasicTensor
-    : public std::bool_constant<std::is_same_v<std::decay_t<D>, Tensor<T, Rank>> || std::is_same_v<std::decay_t<D>, TensorView<T, Rank>> ||
-                                std::is_same_v<std::decay_t<D>, DeviceTensor<T, Rank>> ||
-                                std::is_same_v<std::decay_t<D>, DeviceTensorView<T, Rank>>> {};
-#endif
+/**
+ * @struct IsTensor
+ *
+ * @brief Tests whether the given type is a tensor or not.
+ *
+ * Checks to see if the given type is derived from einsums::tensor_props::TensorBase.
+ *
+ * @tparam D The type to check.
+ */
+template <typename D>
+struct IsTensor : public std::is_base_of<tensor_props::TensorBaseNoExtra, D> {};
 
-template <typename D, size_t Rank, typename T>
-constexpr inline bool IsBasicTensorV = IsBasicTensor<D, Rank, T>::value;
+/**
+ * @struct IsTypedTensor
+ *
+ * @brief Tests whether the given type is a tensor with an underlying type.
+ *
+ * @tparam D The tensor type to check.
+ * @tparam T The type the tensor should store.
+ */
+template <typename D, typename T>
+struct IsTypedTensor : public std::is_base_of<tensor_props::TypedTensorBase<T>, D> {};
 
-template <typename D, size_t Rank, typename T>
-struct IsIncoreRankBasicTensor : public std::bool_constant<IsBasicTensorV<D, Rank, T> && IsIncoreRankTensorV<D, Rank, T>> {};
+/**
+ * @struct IsRankTensor
+ *
+ * @brief Tests whether the given type is a tensor with the given rank.
+ *
+ * @tparam D The tensor type to check.
+ * @tparam Rank The rank the tensor should have.
+ */
+template <typename D, size_t Rank>
+struct IsRankTensor : public std::is_base_of<tensor_props::RankTensorBase<Rank>, D> {};
 
-template <typename D, size_t Rank, typename T>
-constexpr inline bool IsIncoreRankBasicTensorV = IsIncoreRankBasicTensor<D, Rank, T>::value;
+/**
+ * @struct IsLockableTensor
+ *
+ * @brief Tests whether the given tensor type can be locked.
+ *
+ * @tparam D The tensor type to check.
+ */
+template <typename D>
+struct IsLockableTensor : public std::is_base_of<tensor_props::LockableTensorBase, D> {};
 
-// Block tensor tests.
-#ifndef __HIP__
+/**
+ * @struct IsTRTensor
+ *
+ * @brief Tests whether the given tensor type has a storage type and rank.
+ *
+ * This checks to see if the tensor derives RankTensorBase and TypedTensorBase.
+ * Try not to rely on a tensor deriving TRTensorBase, as this may not always be the case.
+ *
+ * @tparam D The tensor type to check.
+ * @tparam T The storage type stored by the tensor.
+ * @tparam Rank The expected rank of the tensor.
+ */
 template <typename D, size_t Rank, typename T>
-struct IsBlockTensor : public std::bool_constant<std::is_same_v<std::decay_t<D>, BlockTensor<T, Rank>>> {};
-#else
-template <typename D, size_t Rank, typename T>
-struct IsBlockTensor : public std::bool_constant<std::is_same_v<std::decay_t<D>, BlockTensor<T, Rank>> ||
-                                                 std::is_same_v<std::decay_t<D>, BlockDeviceTensor<T, Rank>>> {};
-#endif
+struct IsTRTensor : std::bool_constant<IsRankTensor<D, Rank>::value && IsTypedTensor<D, T>::value> {};
 
+/**
+ * @struct IsTRLTensor
+ *
+ * @brief Tests whether the given tensor type has a storage type and rank and can be locked.
+ *
+ * This checks to see if the tensor derives RankTensorBase, TypedTensorBase, and LockableTensorBase.
+ * Try not to rely on a tensor deriving TRLTensorBase, as this may not always be the case.
+ *
+ * @tparam D The tensor type to check.
+ * @tparam Rank The expected rank of the tensor.
+ * @tparam T The expected storage type stored by the tensor.
+ */
 template <typename D, size_t Rank, typename T>
-inline constexpr bool IsBlockTensorV = IsBlockTensor<D, Rank, T>::value;
+struct IsTRLTensor : std::bool_constant<IsRankTensor<D, Rank>::value && IsTypedTensor<D, T>::value && IsLockableTensor<D>::value> {};
 
-// In-core and block.
-template <typename D, size_t Rank, typename T>
-struct IsIncoreRankBlockTensor : public std::bool_constant<IsBlockTensorV<D, Rank, T> && IsIncoreRankTensorV<D, Rank, T>> {};
-
-template <typename D, size_t Rank, typename T>
-inline constexpr bool IsIncoreRankBlockTensorV = IsIncoreRankBlockTensor<D, Rank, T>::value;
-
-// Tiled tensor tests.
-#ifndef __HIP__
-template <typename D, size_t Rank, typename T>
-struct IsTiledTensor : public std::bool_constant<std::is_same_v<std::decay_t<D>, TiledTensor<T, Rank>> ||
-                                                 std::is_same_v<std::decay_t<D>, TiledTensorView<T, Rank>>> {};
-#else
-template <typename D, size_t Rank, typename T>
-struct IsTiledTensor
-    : public std::bool_constant<
-          std::is_same_v<std::decay_t<D>, TiledTensor<T, Rank>> || std::is_same_v<std::decay_t<D>, TiledTensorView<T, Rank>> ||
-          std::is_same_v<std::decay_t<D>, TiledDeviceTensor<T, Rank>> || std::is_same_v<std::decay_t<D>, TiledDeviceTensorView<T, Rank>>> {
-};
-#endif
-
-template <typename D, size_t Rank, typename T>
-inline constexpr bool IsTiledTensorV = IsTiledTensor<D, Rank, T>::value;
-
-template <typename D, size_t Rank, typename T>
-struct IsIncoreRankTiledTensor : public std::bool_constant<IsTiledTensorV<D, Rank, T> && IsIncoreRankTensorV<D, Rank, T>> {};
-
-template <typename D, size_t Rank, typename T>
-inline constexpr bool IsIncoreRankTiledTensorV = IsIncoreRankTiledTensor<D, Rank, T>::value;
-
-template <typename D, size_t Rank, size_t ViewRank = Rank, typename T = double>
-struct IsOndiskTensor
-    : public std::bool_constant<std::is_same_v<D, DiskTensor<T, Rank>> || std::is_same_v<D, DiskView<T, ViewRank, Rank>>> {};
-template <typename D, size_t Rank, size_t ViewRank = Rank, typename T = double>
-inline constexpr bool IsOndiskTensorV = IsOndiskTensor<D, Rank, ViewRank, T>::value;
+/**
+ * @struct IsIncoreTensor
+ *
+ * @brief Checks to see if the tensor is available in-core.
+ *
+ * Checks the tensor against CoreTensorBase.
+ *
+ * @tparam D The tensor to check.
+ */
+template <typename D>
+struct IsIncoreTensor : public std::is_base_of<tensor_props::CoreTensorBase, D> {};
 
 #ifdef __HIP__
 /**
- * @struct IsDeviceRankTensor
+ * @struct IsDeviceTensor
  *
- * @brief Struct for specifying that a tensor is device compatible.
+ * @brief Checks to see if the tensor is available to graphics hardware.
+ *
+ * Checks the tensor against DeviceTensorBase.
+ *
+ * @tparam D The tensor to check.
+ */
+template <typename D>
+struct IsDeviceTensor : public std::is_base_of<tensor_props::DeviceTensorBase, D> {};
+#endif
+
+/**
+ * @struct IsDiskTensor
+ *
+ * @brief Checks to see if the tensor is stored on-disk.
+ *
+ * Checks whether the tensor inherits DiskTensorBase.
+ *
+ * @tparam D The tensor type to check.
+ */
+template <typename D>
+struct IsDiskTensor : public std::is_base_of<tensor_props::DiskTensorBase, D> {};
+
+/**
+ * @struct IsTensorView
+ *
+ * @brief Checks to see if the tensor is a view of another.
+ *
+ * Checks whether the tensor inherits TensorViewBaseNoExtra.
+ *
+ * @tparam D The tensor type to check.
+ */
+template <typename D>
+struct IsTensorView : public std::is_base_of<tensor_props::TensorViewBaseNoExtra, D> {};
+
+/**
+ * @struct IsViewOf
+ *
+ * @brief Checks to see if the tensor is a view of another tensor with the kind of tensor specified.
+ *
+ * Checks whether the tensor inherits the appropriate TensorViewBase.
+ *
+ * @tparam D The tensor type to check.
+ * @tparam Viewed The type of tensor expected to be viewed.
+ */
+template <typename D, typename Viewed>
+struct IsViewOf : public std::is_base_of<tensor_props::TensorViewBaseOnlyViewed<Viewed>, D> {};
+
+/**
+ * @struct IsBasicTensor
+ *
+ * @brief Checks to see if the tensor is a basic tensor.
+ *
+ * Checks to see if the tensor inherits BasicTensorBaseNoExtra.
+ *
+ * @tparam D The tensor to check.
+ */
+template <typename D>
+struct IsBasicTensor : public std::is_base_of<tensor_props::BasicTensorBaseNoExtra, D> {};
+
+/**
+ * @struct IsCollectedTensor
+ *
+ * @brief Checks to see if the tensor is a tensor collection with the given storage type.
+ *
+ * Checks to see if the tensor inherits CollectedTensorBaseOnlyStored if a type is given, or CollectedTensorBaseNoExtra if type is not
+ * given.
+ *
+ * @tparam D The tensor to check.
+ * @tparam StoredType The type of the tensors stored in the collection, or void if you don't care.
+ */
+template <typename D, typename StoredType = void>
+struct IsCollectedTensor : public std::bool_constant<std::is_void_v<StoredType>
+                                                         ? std::is_base_of_v<tensor_props::CollectedTensorBaseNoExtra, D>
+                                                         : std::is_base_of_v<tensor_props::CollectedTensorBaseOnlyStored<StoredType>, D>> {
+};
+
+/**
+ * @struct IsTiledTensor
+ *
+ * @brief Checks to see if the tensor is a tiled tensor with the given storage type.
+ *
+ * Checks to see if the tensor inherits TiledTensorBaseNoExtra. If a type is given, also check to see if it inherits
+ * the appropriate CollectedTensorBaseOnlyStored.
+ *
+ * @tparam D The tensor to check.
+ * @tparam StoredType The type of the tensors stored in the collection, or void if you don't care.
+ */
+template <typename D, typename StoredType = void>
+struct IsTiledTensor : public std::bool_constant<std::is_base_of_v<tensor_props::TiledTensorBaseNoExtra, D> &&
+                                                 (std::is_void_v<StoredType> ||
+                                                  std::is_base_of_v<tensor_props::CollectedTensorBaseOnlyStored<StoredType>, D>)> {};
+
+/**
+ * @struct IsBlockTensor
+ *
+ * @brief Checks to see if the tensor is a block tensor with the given storage type.
+ *
+ * Checks to see if the tensor inherits BlockTensorBaseNoExtra. If a type is given, also check to see if it inherits
+ * the appropriate CollectedTensorBaseOnlyStored.
+ *
+ * @tparam D The tensor to check.
+ * @tparam StoredType The type of the tensors stored in the collection, or void if you don't care.
+ */
+template <typename D, typename StoredType = void>
+struct IsBlockTensor : public std::bool_constant<std::is_base_of_v<tensor_props::BlockTensorBaseNoExtra, D> &&
+                                                 (std::is_void_v<StoredType> ||
+                                                  std::is_base_of_v<tensor_props::CollectedTensorBaseOnlyStored<StoredType>, D>)> {};
+
+/**
+ * @struct IsFunctionTensor
+ *
+ * @brief Checks to see if the tensor is a function tensor.
+ *
+ * @tparam D The tensor type to check.
+ */
+template <typename D>
+struct IsFunctionTensor : public std::is_base_of<tensor_props::FunctionTensorBaseNoExtra, D> {};
+
+/********************************
+ *      Inline definitions      *
+ ********************************/
+
+/**
+ * @property IsTensorV
+ *
+ * @brief Tests whether the given type is a tensor or not.
+ *
+ * Checks to see if the given type is derived from einsums::tensor_props::TensorBase.
+ *
+ * @tparam D The type to check.
+ */
+template <typename D>
+constexpr inline bool IsTensorV = IsTensor<D>::value;
+
+/**
+ * @property IsTypedTensorV
+ *
+ * @brief Tests whether the given type is a tensor with an underlying type.
+ *
+ * @tparam D The tensor type to check.
+ * @tparam T The type the tensor should store.
+ */
+template <typename D, typename T>
+constexpr inline bool IsTypedTensorV = IsTypedTensor<D, T>::value;
+
+/**
+ * @property IsRankTensorV
+ *
+ * @brief Tests whether the given type is a tensor with the given rank.
+ *
+ * @tparam D The tensor type to check.
+ * @tparam Rank The rank the tensor should have.
+ */
+template <typename D, size_t Rank>
+constexpr inline bool IsRankTensorV = IsRankTensor<D, Rank>::value;
+
+/**
+ * @property IsLockableTensorV
+ *
+ * @brief Tests whether the given tensor type can be locked.
+ *
+ * @tparam D The tensor type to check.
+ */
+template <typename D>
+constexpr inline bool IsLockableTensorV = IsLockableTensor<D>::value;
+
+/**
+ * @property IsTRTensorV
+ *
+ * @brief Tests whether the given tensor type has a storage type and rank.
+ *
+ * This checks to see if the tensor derives RankTensorBase and TypedTensorBase.
+ * Try not to rely on a tensor deriving TRTensorBase, as this may not always be the case.
+ *
+ * @tparam D The tensor type to check.
+ * @tparam T The storage type stored by the tensor.
+ * @tparam Rank The expected rank of the tensor.
  */
 template <typename D, size_t Rank, typename T>
-struct IsDeviceRankTensor
-    : public std::bool_constant<
-          std::is_same_v<std::decay_t<D>, DeviceTensor<T, Rank>> || std::is_same_v<std::decay_t<D>, DeviceTensorView<T, Rank>> ||
-          std::is_same_v<std::decay_t<D>, BlockDeviceTensor<T, Rank>> || std::is_same_v<std::decay_t<D>, TiledDeviceTensor<T, Rank>> ||
-          std::is_same_v<std::decay_t<D>, TiledDeviceTensorView<T, Rank>>> {};
+constexpr inline bool IsTRTensorV = IsTRTensor<D, Rank, T>::value;
 
+/**
+ * @property IsTRLTensorV
+ *
+ * @brief Tests whether the given tensor type has a storage type and rank and can be locked.
+ *
+ * This checks to see if the tensor derives RankTensorBase, TypedTensorBase, and LockableTensorBase.
+ * Try not to rely on a tensor deriving TRLTensorBase, as this may not always be the case.
+ *
+ * @tparam D The tensor type to check.
+ * @tparam Rank The expected rank of the tensor.
+ * @tparam T The expected storage type stored by the tensor.
+ */
+template <typename D, size_t Rank, typename T>
+constexpr inline bool IsTRLTensorV = IsTRLTensor<D, Rank, T>::value;
+
+/**
+ * @property IsIncoreTensorV
+ *
+ * @brief Checks to see if the tensor is available in-core.
+ *
+ * Checks the tensor against CoreTensorBase.
+ *
+ * @tparam D The tensor to check.
+ */
+template <typename D>
+constexpr inline bool IsIncoreTensorV = IsIncoreTensor<D>::value;
+
+#ifdef __HIP__
+/**
+ * @property IsDeviceTensorV
+ *
+ * @brief Checks to see if the tensor is available to graphics hardware.
+ *
+ * Checks the tensor against DeviceTensorBase.
+ *
+ * @tparam D The tensor to check.
+ */
+template <typename D>
+constexpr inline bool IsDeviceTensorV = IsDeviceTensor<D>::value;
+#endif
+
+/**
+ * @property IsDiskTensorV
+ *
+ * @brief Checks to see if the tensor is stored on-disk.
+ *
+ * Checks whether the tensor inherits DiskTensorBase.
+ *
+ * @tparam D The tensor type to check.
+ */
+template <typename D>
+constexpr inline bool IsDiskTensorV = IsDiskTensor<D>::value;
+
+/**
+ * @property IsTensorViewV
+ *
+ * @brief Checks to see if the tensor is a view of another.
+ *
+ * Checks whether the tensor inherits TensorViewBaseNoExtra.
+ *
+ * @tparam D The tensor type to check.
+ */
+template <typename D>
+constexpr inline bool IsTensorViewV = IsTensorView<D>::value;
+
+/**
+ * @property IsViewOfV
+ *
+ * @brief Checks to see if the tensor is a view of another tensor with the kind of tensor specified.
+ *
+ * Checks whether the tensor inherits the appropriate TensorViewBase.
+ *
+ * @tparam D The tensor type to check.
+ * @tparam Viewed The type of tensor expected to be viewed.
+ */
+template <typename D, typename Viewed>
+constexpr inline bool IsViewOfV = IsViewOf<D, Viewed>::value;
+
+/**
+ * @property IsBasicTensorV
+ *
+ * @brief Checks to see if the tensor is a basic tensor.
+ *
+ * Checks to see if the tensor inherits BasicTensorBaseNoExtra.
+ *
+ * @tparam D The tensor to check.
+ */
+template <typename D>
+constexpr inline bool IsBasicTensorV = IsBasicTensor<D>::value;
+
+/**
+ * @property IsCollectedTensorV
+ *
+ * @brief Checks to see if the tensor is a tensor collection with the given storage type.
+ *
+ * Checks to see if the tensor inherits CollectedTensorBaseOnlyStored if a type is given, or CollectedTensorBaseNoExtra if type is not
+ * given.
+ *
+ * @tparam D The tensor to check.
+ * @tparam StoredType The type of the tensors stored in the collection, or void if you don't care.
+ */
+template <typename D, typename StoredType = void>
+constexpr inline bool IsCollectedTensorV = IsCollectedTensor<D, StoredType>::value;
+
+/**
+ * @property IsTiledTensorV
+ *
+ * @brief Checks to see if the tensor is a tiled tensor with the given storage type.
+ *
+ * Checks to see if the tensor inherits TiledTensorBaseNoExtra. If a type is given, also check to see if it inherits
+ * the appropriate CollectedTensorBaseOnlyStored.
+ *
+ * @tparam D The tensor to check.
+ * @tparam StoredType The type of the tensors stored in the collection, or void if you don't care.
+ */
+template <typename D, typename StoredType = void>
+constexpr inline bool IsTiledTensorV = IsTiledTensor<D, StoredType>::value;
+
+/**
+ * @property IsBlockTensorV
+ *
+ * @brief Checks to see if the tensor is a block tensor with the given storage type.
+ *
+ * Checks to see if the tensor inherits BlockTensorBaseNoExtra. If a type is given, also check to see if it inherits
+ * the appropriate CollectedTensorBaseOnlyStored.
+ *
+ * @tparam D The tensor to check.
+ * @tparam StoredType The type of the tensors stored in the collection, or void if you don't care.
+ */
+template <typename D, typename StoredType = void>
+constexpr inline bool IsBlockTensorV = IsBlockTensor<D, StoredType>::value;
+
+/**
+ * @property IsFunctionTensorV
+ *
+ * @brief Checks to see if the tensor is a function tensor.
+ *
+ * @tparam D The tensor type to check.
+ */
+template <typename D>
+constexpr inline bool IsFunctionTensorV = IsFunctionTensor<D>::value;
+
+/**************************************
+ *        Combined expressions        *
+ **************************************/
+
+/**
+ * @property IsSamePlaceV
+ *
+ * @brief Requires that all tensors are in the same storage place.
+ *
+ * @tparam Tensors The tensors to check.
+ */
+template <typename... Tensors>
+#ifdef __HIP__
+constexpr inline bool IsInSamePlaceV =
+    (IsIncoreTensorV<Tensors> && ...) || (IsDeviceTensorV<Tensors> && ...) || (IsDiskTensorV<Tensors> && ...);
+#else
+constexpr inline bool IsInSamePlaceV = (IsIncoreTensorV<Tensors> && ...) || (IsDiskTensorV<Tensors> && ...);
+#endif
+
+/**
+ * @property IsIncoreRankTensorV
+ *
+ * @brief Requires that a tensor is in-core, stores the required type, and has the required rank.
+ *
+ * @tparam D The tensor to check.
+ * @tparam Rank The rank of the tensor.
+ * @tparam T The type that should be stored.
+ */
+template <typename D, size_t Rank, typename T>
+constexpr inline bool IsIncoreRankTensorV = IsIncoreTensorV<D> && IsTRTensorV<D, Rank, T>;
+
+#ifdef __HIP__
 /**
  * @property IsDeviceRankTensorV
  *
- * @brief True if the tensor is device compatible.
+ * @brief Requires that a tensor is available to the graphics hardware, stores the required type, and has the required rank.
+ *
+ * @tparam D The tensor to check.
+ * @tparam Rank The rank of the tensor.
+ * @tparam T The type that should be stored.
  */
 template <typename D, size_t Rank, typename T>
-inline constexpr bool IsDeviceRankTensorV = IsDeviceRankTensor<D, Rank, T>::value;
+constexpr inline bool IsDeviceRankTensorV = IsDeviceTensorV<D> && IsTRTensorV<D, Rank, T>;
+#endif
 
 /**
- * @struct IsDeviceRankBlockTensor
+ * @property IsDiskRankTensorV
  *
- * @brief Struct for specifying that a tensor is device compatible, and is block diagonal.
+ * @brief Requires that a tensor is stored on disk, stores the required type, and has the required rank.
+ *
+ * @tparam D The tensor to check.
+ * @tparam Rank The rank of the tensor.
+ * @tparam T The type that should be stored.
  */
 template <typename D, size_t Rank, typename T>
-struct IsDeviceRankBlockTensor : public std::bool_constant<IsDeviceRankTensorV<D, Rank, T> && IsBlockTensorV<D, Rank, T>> {};
+constexpr inline bool IsDiskRankTensorV = IsDiskTensorV<D> && IsTRTensorV<D, Rank, T>;
 
+/**
+ * @property IsRankBasicTensorV
+ *
+ * @brief Requires that a tensor is a basic tensor, stores the required type, and has the required rank.
+ *
+ * @tparam D The tensor to check.
+ * @tparam Rank The rank of the tensor.
+ * @tparam T The type that should be stored.
+ */
+template <typename D, size_t Rank, typename T>
+constexpr inline bool IsRankBasicTensorV = IsBasicTensorV<D> && IsTRTensorV<D, Rank, T>;
+
+/**
+ * @property IsRankTiledTensorV
+ *
+ * @brief Requires that a tensor is a Tiled tensor, stores the required type, and has the required rank.
+ *
+ * @tparam D The tensor to check.
+ * @tparam Rank The rank of the tensor.
+ * @tparam T The type that should be stored.
+ */
+template <typename D, size_t Rank, typename T>
+constexpr inline bool IsRankTiledTensorV = IsTiledTensorV<D> && IsTRTensorV<D, Rank, T>;
+
+/**
+ * @property IsRankBlockTensorV
+ *
+ * @brief Requires that a tensor is a block tensor, stores the required type, and has the required rank.
+ *
+ * @tparam D The tensor to check.
+ * @tparam Rank The rank of the tensor.
+ * @tparam T The type that should be stored.
+ */
+template <typename D, size_t Rank, typename T>
+constexpr inline bool IsRankBlockTensorV = IsBlockTensorV<D> && IsTRTensorV<D, Rank, T>;
+
+/**
+ * @property IsIncoreRankBasicTensorV
+ *
+ * @brief Requires that a tensor is a basic tensor stored in-core, stores the required type, and has the required rank.
+ *
+ * @tparam D The tensor to check.
+ * @tparam Rank The rank of the tensor.
+ * @tparam T The type that should be stored.
+ */
+template <typename D, size_t Rank, typename T>
+constexpr inline bool IsIncoreRankBasicTensorV = IsBasicTensorV<D> && IsTRTensorV<D, Rank, T> && IsIncoreTensorV<D>;
+
+#ifdef __HIP__
+/**
+ * @property IsDeviceRankBasicTensorV
+ *
+ * @brief Requires that a tensor is a basic tensor available to graphics hardware, stores the required type, and has the required rank.
+ *
+ * @tparam D The tensor to check.
+ * @tparam Rank The rank of the tensor.
+ * @tparam T The type that should be stored.
+ */
+template <typename D, size_t Rank, typename T>
+constexpr inline bool IsDeviceRankBasicTensorV = IsBasicTensorV<D> && IsTRTensorV<D, Rank, T> && IsDeviceTensorV<D>;
+#endif
+
+/**
+ * @property IsIncoreRankBlockTensorV
+ *
+ * @brief Requires that a tensor is a block tensor stored in-core, stores the required type, and has the required rank.
+ *
+ * @tparam D The tensor to check.
+ * @tparam Rank The rank of the tensor.
+ * @tparam T The type that should be stored.
+ */
+template <typename D, size_t Rank, typename T>
+constexpr inline bool IsIncoreRankBlockTensorV = IsBlockTensorV<D> && IsTRTensorV<D, Rank, T> && IsIncoreTensorV<D>;
+
+#ifdef __HIP__
 /**
  * @property IsDeviceRankBlockTensorV
  *
- * @brief True if the tensor is device compatible and is block diagonal.
+ * @brief Requires that a tensor is a block tensor available to graphics hardware, stores the required type, and has the required rank.
+ *
+ * @tparam D The tensor to check.
+ * @tparam Rank The rank of the tensor.
+ * @tparam T The type that should be stored.
  */
 template <typename D, size_t Rank, typename T>
-inline constexpr bool IsDeviceRankBlockTensorV = IsDeviceRankBlockTensor<D, Rank, T>::value;
+constexpr inline bool IsDeviceRankBlockTensorV = IsBlockTensorV<D> && IsTRTensorV<D, Rank, T> && IsDeviceTensorV<D>;
+#endif
 
 /**
- * @struct IsDeviceRankTiledTensor
+ * @property IsIncoreRankTiledTensorV
  *
- * @brief Struct for specifying that a tensor is device compatible, and is tiled.
+ * @brief Requires that a tensor is a tiled tensor stored in-core, stores the required type, and has the required rank.
+ *
+ * @tparam D The tensor to check.
+ * @tparam Rank The rank of the tensor.
+ * @tparam T The type that should be stored.
  */
 template <typename D, size_t Rank, typename T>
-struct IsDeviceRankTiledTensor : public std::bool_constant<IsDeviceRankTensorV<D, Rank, T> && IsTiledTensorV<D, Rank, T>> {};
+constexpr inline bool IsIncoreRankTiledTensorV = IsTiledTensorV<D> && IsTRTensorV<D, Rank, T> && IsIncoreTensorV<D>;
 
+#ifdef __HIP__
 /**
  * @property IsDeviceRankTiledTensorV
  *
- * @brief True if the tensor is device compatible and is tiled.
+ * @brief Requires that a tensor is a tiled tensor available to graphics hardware, stores the required type, and has the required rank.
+ *
+ * @tparam D The tensor to check.
+ * @tparam Rank The rank of the tensor.
+ * @tparam T The type that should be stored.
  */
 template <typename D, size_t Rank, typename T>
-inline constexpr bool IsDeviceRankTiledTensorV = IsDeviceRankTiledTensor<D, Rank, T>::value;
-
-template <typename D, size_t Rank, typename T>
-struct IsDeviceRankBasicTensor : public std::bool_constant<IsBasicTensorV<D, Rank, T> && IsDeviceRankTensorV<D, Rank, T>> {};
-
-template <typename D, size_t Rank, typename T>
-constexpr inline bool IsDeviceRankBasicTensorV = IsDeviceRankBasicTensor<D, Rank, T>::value;
+constexpr inline bool IsDeviceRankTiledTensorV = IsTiledTensorV<D> && IsTRTensorV<D, Rank, T> && IsDeviceTensorV<D>;
 #endif
 
 /**
- * @struct AreInSamePlace
+ * @property IsIncoreBasicTensorV
  *
- * Determines whether the tensors are all in the same place, either in core, on disk, or on the GPU.
+ * @brief Checks to see if the tensor is available in-core and is a basic tensor.
+ *
+ * Checks the tensor against CoreTensorBase and BasicTensorBase.
+ *
+ * @tparam D The tensor to check.
  */
-#ifndef __HIP__
-template <typename AType, typename BType, size_t ARank, size_t BRank, typename ADataType, typename BDataType = ADataType>
-struct AreInSamePlace
-    : public std::bool_constant<(IsIncoreRankTensorV<AType, ARank, ADataType> && IsIncoreRankTensorV<BType, BRank, BDataType>) ||
-                                (IsOndiskTensorV<AType, ARank, ARank, ADataType> && IsOndiskTensorV<BType, BRank, BRank, BDataType>)> {};
-#else
-template <typename AType, typename BType, size_t ARank, size_t BRank, typename ADataType, typename BDataType = ADataType>
-struct AreInSamePlace
-    : public std::bool_constant<(IsIncoreRankTensorV<AType, ARank, ADataType> && IsIncoreRankTensorV<BType, BRank, BDataType>) ||
-                                (IsOndiskTensorV<AType, ARank, ARank, ADataType> && IsOndiskTensorV<BType, BRank, BRank, BDataType>) ||
-                                (IsDeviceRankTensorV<AType, ARank, ADataType> && IsDeviceRankTensorV<BType, BRank, BDataType>)> {};
+template <typename D>
+constexpr inline bool IsIncoreBasicTensorV = IsIncoreTensor<D>::value && IsBasicTensor<D>::value;
+
+#ifdef __HIP__
+/**
+ * @property IsDeviceBasicTensorV
+ *
+ * @brief Checks to see if the tensor is available to graphics hardware and is a basic tensor.
+ *
+ * Checks the tensor against DeviceTensorBase and BasicTensorBase.
+ *
+ * @tparam D The tensor to check.
+ */
+template <typename D>
+constexpr inline bool IsDeviceBasicTensorV = IsDeviceTensor<D>::value && IsBasicTensor<D>::value;
 #endif
 
-template <typename AType, typename BType, size_t ARank, size_t BRank, typename ADataType, typename BDataType = ADataType>
-constexpr inline bool AreInSamePlaceV = AreInSamePlace<AType, BType, ARank, BRank, ADataType, BDataType>::value;
+/**
+ * @property IsDiskBasicTensorV
+ *
+ * @brief Checks to see if the tensor is stored on-disk and is a basic tensor.
+ *
+ * Checks whether the tensor inherits DiskTensorBase and BasicTensorBase.
+ *
+ * @tparam D The tensor type to check.
+ */
+template <typename D>
+constexpr inline bool IsDiskBasicTensorV = IsDiskTensor<D>::value && IsBasicTensor<D>::value;
+
+/**
+ * @property IsIncoreTiledTensorV
+ *
+ * @brief Checks to see if the tensor is available in-core and is a basic tensor.
+ *
+ * Checks the tensor against CoreTensorBase and TiledTensorBase.
+ *
+ * @tparam D The tensor to check.
+ */
+template <typename D>
+constexpr inline bool IsIncoreTiledTensorV = IsIncoreTensor<D>::value && IsTiledTensor<D>::value;
+
+#ifdef __HIP__
+/**
+ * @property IsDeviceTiledTensorV
+ *
+ * @brief Checks to see if the tensor is available to graphics hardware and is a tiled tensor.
+ *
+ * Checks the tensor against DeviceTensorBase and TiledTensorBase.
+ *
+ * @tparam D The tensor to check.
+ */
+template <typename D>
+constexpr inline bool IsDeviceTiledTensorV = IsDeviceTensor<D>::value && IsTiledTensor<D>::value;
+#endif
+
+/**
+ * @property IsDiskTiledTensorV
+ *
+ * @brief Checks to see if the tensor is stored on-disk and is a tiled tensor.
+ *
+ * Checks whether the tensor inherits DiskTensorBase and TiledTensorBase.
+ *
+ * @tparam D The tensor type to check.
+ */
+template <typename D>
+constexpr inline bool IsDiskTiledTensorV = IsDiskTensor<D>::value && IsTiledTensor<D>::value;
+
+/**
+ * @property IsIncoreBlockTensorV
+ *
+ * @brief Checks to see if the tensor is available in-core and is a block tensor.
+ *
+ * Checks the tensor against CoreTensorBase and BlockTensorBase.
+ *
+ * @tparam D The tensor to check.
+ */
+template <typename D>
+constexpr inline bool IsIncoreBlockTensorV = IsIncoreTensor<D>::value && IsBlockTensor<D>::value;
+
+#ifdef __HIP__
+/**
+ * @property IsDeviceBlockTensorV
+ *
+ * @brief Checks to see if the tensor is available to graphics hardware and is a block tensor.
+ *
+ * Checks the tensor against DeviceTensorBase and BlockTensorBase.
+ *
+ * @tparam D The tensor to check.
+ */
+template <typename D>
+constexpr inline bool IsDeviceBlockTensorV = IsDeviceTensor<D>::value && IsBlockTensor<D>::value;
+#endif
+
+/**
+ * @property IsDiskBlockTensorV
+ *
+ * @brief Checks to see if the tensor is stored on-disk and is a block tensor.
+ *
+ * Checks whether the tensor inherits DiskTensorBase and BlockTensorBase.
+ *
+ * @tparam D The tensor type to check.
+ */
+template <typename D>
+constexpr inline bool IsDiskBlockTensorV = IsDiskTensor<D>::value && IsBlockTensor<D>::value;
+
+/**
+ * @property IsSameUnderlyingV
+ *
+ * @brief Checks to see if the tensors have the same storage type, but without specifying that type.
+ *
+ * @tparam First The first tensor.
+ * @tparam Rest The rest of the tensors.
+ */
+template <typename First, typename... Rest>
+constexpr inline bool IsSameUnderlyingV = (std::is_same_v<typename First::data_type, typename Rest::data_type> && ...);
+
+/**
+ * @property IsSameRankV
+ *
+ * @brief Checks to see if the tensors have the same rank.
+ *
+ * @tparam First The first tensor.
+ * @tparam Rest The rest of the tensors
+ */
+template <typename First, typename... Rest>
+constexpr inline bool IsSameRankV = ((First::rank == Rest::rank) && ...);
+
+/**
+ * @property IsSameUnderlyingAndRankV
+ *
+ * @brief Checks to see if the tensors have the same rank.
+ *
+ * @tparam First The first tensor.
+ * @tparam Rest The rest of the tensors
+ */
+template <typename First, typename... Rest>
+constexpr inline bool IsSameUnderlyingAndRankV = IsSameUnderlyingV<First, Rest...> && IsSameRankV<First, Rest...>;
 
 } // namespace detail
 
 /**
- * @brief Concept that requires a tensor to be in core.
+ * @concept TensorConcept
  *
- * Example usage:
+ * @brief Tests whether the given type is a tensor or not.
  *
- * @code
- * template <template <typename, size_t> typename AType, typename ADataType, size_t ARank>
- *    requires CoreRankTensor<AType<ADataType, ARank>, 1, ADataType>
- * void sum_square(const AType<ADataType, ARank> &a, RemoveComplexT<ADataType> *scale, RemoveComplexT<ADataType> *sumsq) {}
- * @endcode
+ * Checks to see if the given type is derived from einsums::tensor_props::TensorBase.
  *
- * @tparam Input
- * @tparam Rank
- * @tparam DataType
+ * @tparam D The type to check.
  */
-template <typename Input, size_t Rank, typename DataType = double>
-concept CoreRankTensor = detail::IsIncoreRankTensorV<Input, Rank, DataType>;
+template <typename D>
+concept TensorConcept = detail::IsTensorV<D>;
 
 /**
- * @brief Concept that requires a tensor to be a normal tensor.
+ * @concept TypedTensorConcept
  *
- * This allows Tensor, TensorView, DeviceTensor, and DeviceTensorview.
- */
-template <typename Input, size_t Rank, typename DataType = double>
-concept RankBasicTensor = detail::IsBasicTensorV<Input, Rank, DataType>;
-
-/**
- * @brief Concept that requires a tensor to be a normal tensor and in-core. Allows Tensor and TensorView.
+ * @brief Tests whether the given type is a tensor with an underlying type.
  *
- * This allows Tensor, TensorView, DeviceTensor, and DeviceTensorview.
+ * @tparam D The tensor type to check.
+ * @tparam T The type the tensor should store.
  */
-template <typename Input, size_t Rank, typename DataType = double>
-concept CoreRankBasicTensor = detail::IsIncoreRankBasicTensorV<Input, Rank, DataType>;
+template <typename D, typename T>
+concept TypedTensorConcept = detail::IsTypedTensorV<D, T>;
 
 /**
- * @brief concept that requires a tensor to be a BlockTensor or a BlockDeviceTensor.
+ * @concept RankTensorConcept
+ *
+ * @brief Tests whether the given type is a tensor with the given rank.
+ *
+ * @tparam D The tensor type to check.
+ * @tparam Rank The rank the tensor should have.
  */
-template <typename Input, size_t Rank, typename DataType = double>
-concept RankBlockTensor = detail::IsBlockTensorV<Input, Rank, DataType>;
+template <typename D, size_t Rank>
+concept RankTensorConcept = detail::IsRankTensorV<D, Rank>;
 
 /**
- * @brief Concept that requires a tensor to be a TiledTensor, TiledTensorView, TiledDeviceTensor, or TiledDeviceTensorView.
+ * @concept LockableTensorConcept
+ *
+ * @brief Tests whether the given tensor type can be locked.
+ *
+ * @tparam D The tensor type to check.
  */
-template <typename Input, size_t Rank, typename DataType = double>
-concept RankTiledTensor = detail::IsTiledTensorV<Input, Rank, DataType>;
+template <typename D>
+concept LockableTensorConcept = detail::IsLockableTensorV<D>;
 
 /**
- * @brief Concept that requires a tensor to be in-core and a block tensor. Only allows for BlockTensor.
+ * @concept TRTensorConcept
+ *
+ * @brief Tests whether the given tensor type has a storage type and rank.
+ *
+ * This checks to see if the tensor derives RankTensorBase and TypedTensorBase.
+ * Try not to rely on a tensor deriving TRTensorBase, as this may not always be the case.
+ *
+ * @tparam D The tensor type to check.
+ * @tparam T The storage type stored by the tensor.
+ * @tparam Rank The expected rank of the tensor.
  */
-template <typename Input, size_t Rank, typename DataType = double>
-concept CoreRankBlockTensor = detail::IsIncoreRankBlockTensorV<Input, Rank, DataType>;
+template <typename D, size_t Rank, typename T>
+concept TRTensorConcept = detail::IsTRTensorV<D, Rank, T>;
 
 /**
- * @brief Concept that requires a tensor to be in-core and a tiled tensor. Allows for TiledTensor and TiledTensorView.
+ * @concept TRLTensorConcept
+ *
+ * @brief Tests whether the given tensor type has a storage type and rank and can be locked.
+ *
+ * This checks to see if the tensor derives RankTensorBase, TypedTensorBase, and LockableTensorBase.
+ * Try not to rely on a tensor deriving TRLTensorBase, as this may not always be the case.
+ *
+ * @tparam D The tensor type to check.
+ * @tparam Rank The expected rank of the tensor.
+ * @tparam T The expected storage type stored by the tensor.
  */
-template <typename Input, size_t Rank, typename DataType = double>
-concept CoreRankTiledTensor = detail::IsIncoreRankTiledTensorV<Input, Rank, DataType>;
+template <typename D, size_t Rank, typename T>
+concept TRLTensorConcept = detail::IsTRLTensorV<D, Rank, T>;
 
 /**
- * @brief Concept that requires a tensor to be on-disk.
+ * @concept CoreTensorConcept
+ *
+ * @brief Checks to see if the tensor is available in-core.
+ *
+ * Checks the tensor against CoreTensorBase.
+ *
+ * @tparam D The tensor to check.
  */
-template <typename Input, size_t Rank, size_t ViewRank = Rank, typename DataType = double>
-concept DiskRankTensor = detail::IsOndiskTensorV<Input, Rank, ViewRank, DataType>;
+template <typename D>
+concept CoreTensorConcept = detail::IsIncoreTensorV<D>;
+
+#ifdef __HIP__
+/**
+ * @concept DeviceTensorConcept
+ *
+ * @brief Checks to see if the tensor is available to graphics hardware.
+ *
+ * Checks the tensor against DeviceTensorBase.
+ *
+ * @tparam D The tensor to check.
+ */
+template <typename D>
+concept DeviceTensorConcept = detail::IsDeviceTensorV<D>;
+#endif
+
+/**
+ * @concept DiskTensorConcept
+ *
+ * @brief Checks to see if the tensor is stored on-disk.
+ *
+ * Checks whether the tensor inherits DiskTensorBase.
+ *
+ * @tparam D The tensor type to check.
+ */
+template <typename D>
+concept DiskTensorConcept = detail::IsDiskTensorV<D>;
+
+/**
+ * @concept TensorViewConcept
+ *
+ * @brief Checks to see if the tensor is a view of another.
+ *
+ * Checks whether the tensor inherits TensorViewBaseNoExtra.
+ *
+ * @tparam D The tensor type to check.
+ */
+template <typename D>
+concept TensorViewConcept = detail::IsTensorViewV<D>;
+
+/**
+ * @concept ViewOfConcept
+ *
+ * @brief Checks to see if the tensor is a view of another tensor with the kind of tensor specified.
+ *
+ * Checks whether the tensor inherits the appropriate TensorViewBase.
+ *
+ * @tparam D The tensor type to check.
+ * @tparam Viewed The type of tensor expected to be viewed.
+ */
+template <typename D, typename Viewed>
+concept ViewOfConcept = detail::IsViewOfV<D, Viewed>;
+
+/**
+ * @concept BasicTensorConcept
+ *
+ * @brief Checks to see if the tensor is a basic tensor.
+ *
+ * Checks to see if the tensor inherits BasicTensorBaseNoExtra.
+ *
+ * @tparam D The tensor to check.
+ */
+template <typename D>
+concept BasicTensorConcept = detail::IsBasicTensorV<D>;
+
+/**
+ * @concept CollectedTensorConcept
+ *
+ * @brief Checks to see if the tensor is a tensor collection with the given storage type.
+ *
+ * Checks to see if the tensor inherits CollectedTensorBaseOnlyStored if a type is given, or CollectedTensorBaseNoExtra if type is not
+ * given.
+ *
+ * @tparam D The tensor to check.
+ * @tparam StoredType The type of the tensors stored in the collection, or void if you don't care.
+ */
+template <typename D, typename StoredType = void>
+concept CollectedTensorConcept = detail::IsCollectedTensorV<D, StoredType>;
+
+/**
+ * @concept TiledTensorConcept
+ *
+ * @brief Checks to see if the tensor is a tiled tensor with the given storage type.
+ *
+ * Checks to see if the tensor inherits TiledTensorBaseNoExtra. If a type is given, also check to see if it inherits
+ * the appropriate CollectedTensorBaseOnlyStored.
+ *
+ * @tparam D The tensor to check.
+ * @tparam StoredType The type of the tensors stored in the collection, or void if you don't care.
+ */
+template <typename D, typename StoredType = void>
+concept TiledTensorConcept = detail::IsTiledTensorV<D, StoredType>;
+
+/**
+ * @concept BlockTensorConcept
+ *
+ * @brief Checks to see if the tensor is a block tensor with the given storage type.
+ *
+ * Checks to see if the tensor inherits BlockTensorBaseNoExtra. If a type is given, also check to see if it inherits
+ * the appropriate CollectedTensorBaseOnlyStored.
+ *
+ * @tparam D The tensor to check.
+ * @tparam StoredType The type of the tensors stored in the collection, or void if you don't care.
+ */
+template <typename D, typename StoredType = void>
+concept BlockTensorConcept = detail::IsBlockTensorV<D, StoredType>;
+
+/**
+ * @concept FunctionTensorConcept
+ *
+ * @brief Checks to see if the tensor is a function tensor.
+ *
+ * @tparam D The tensor type to check.
+ */
+template <typename D>
+concept FunctionTensorConcept = detail::IsFunctionTensorV<D>;
+
+/**
+ * @concept CoreRankTensor
+ *
+ * @brief Requires that a tensor is in-core, stores the required type, and has the required rank.
+ *
+ * @tparam D The tensor to check.
+ * @tparam Rank The rank of the tensor.
+ * @tparam T The type that should be stored.
+ */
+template <typename D, size_t Rank, typename T>
+concept CoreRankTensor = detail::IsIncoreRankTensorV<D, Rank, T>;
 
 #ifdef __HIP__
 /**
  * @concept DeviceRankTensor
  *
- * @brief Concept for testing whether a tensor parameter is available to the GPU.
- */
-template <typename Input, size_t Rank, typename DataType = double>
-concept DeviceRankTensor = detail::IsDeviceRankTensorV<Input, Rank, DataType>;
-
-/**
- * @concept DeviceRankTensor
+ * @brief Requires that a tensor is available to the graphics hardware, stores the required type, and has the required rank.
  *
- * @brief Concept for testing whether a tensor parameter is available to the GPU.
+ * @tparam D The tensor to check.
+ * @tparam Rank The rank of the tensor.
+ * @tparam T The type that should be stored.
  */
-template <typename Input, size_t Rank, typename DataType = double>
-concept DeviceRankBasicTensor = detail::IsDeviceRankBasicTensorV<Input, Rank, DataType>;
-
-/**
- * @concept DeviceRankBlockTensor
- *
- * @brief Concept for testing whether a tensor parameter is available to the GPU and is block diagonal.
- */
-template <typename Input, size_t Rank, typename DataType = double>
-concept DeviceRankBlockTensor = detail::IsDeviceRankBlockTensorV<Input, Rank, DataType>;
-
-/**
- * @concept DeviceRankBlockTensor
- *
- * @brief Concept for testing whether a tensor parameter is available to the GPU and is tiled.
- */
-template <typename Input, size_t Rank, typename DataType = double>
-concept DeviceRankTiledTensor = detail::IsDeviceRankTiledTensorV<Input, Rank, DataType>;
+template <typename D, size_t Rank, typename T>
+concept DeviceRankTensor = detail::IsDeviceRankTensorV<D, Rank, T>;
 #endif
 
-template <typename AType, typename BType, size_t ARank, size_t BRank, typename ADataType, typename BDataType = ADataType>
-concept InSamePlace = detail::AreInSamePlaceV<AType, BType, ARank, BRank, ADataType, BDataType>;
+/**
+ * @concept DiskRankTensor
+ *
+ * @brief Requires that a tensor is stored on disk, stores the required type, and has the required rank.
+ *
+ * @tparam D The tensor to check.
+ * @tparam Rank The rank of the tensor.
+ * @tparam T The type that should be stored.
+ */
+template <typename D, size_t Rank, typename T>
+concept DiskRankTensor = detail::IsDiskRankTensorV<D, Rank, T>;
 
-template <template <typename, size_t> typename TensorType, size_t Rank, typename T>
+/**
+ * @concept RankBasicTensor
+ *
+ * @brief Requires that a tensor is a basic tensor, stores the required type, and has the required rank.
+ *
+ * @tparam D The tensor to check.
+ * @tparam Rank The rank of the tensor.
+ * @tparam T The type that should be stored.
+ */
+template <typename D, size_t Rank, typename T>
+concept RankBasicTensor = detail::IsRankBasicTensorV<D, Rank, T>;
+
+/**
+ * @concept RankTiledTensor
+ *
+ * @brief Requires that a tensor is a Tiled tensor, stores the required type, and has the required rank.
+ *
+ * @tparam D The tensor to check.
+ * @tparam Rank The rank of the tensor.
+ * @tparam T The type that should be stored.
+ */
+template <typename D, size_t Rank, typename T>
+concept RankTiledTensor = detail::IsRankTiledTensorV<D, Rank, T>;
+
+/**
+ * @concept RankBlockTensor
+ *
+ * @brief Requires that a tensor is a block tensor, stores the required type, and has the required rank.
+ *
+ * @tparam D The tensor to check.
+ * @tparam Rank The rank of the tensor.
+ * @tparam T The type that should be stored.
+ */
+template <typename D, size_t Rank, typename T>
+concept RankBlockTensor = detail::IsRankBlockTensorV<D, Rank, T>;
+
+/**
+ * @concept CoreRankBasicTensor
+ *
+ * @brief Requires that a tensor is a basic tensor stored in-core, stores the required type, and has the required rank.
+ *
+ * @tparam D The tensor to check.
+ * @tparam Rank The rank of the tensor.
+ * @tparam T The type that should be stored.
+ */
+template <typename D, size_t Rank, typename T>
+concept CoreRankBasicTensor = detail::IsIncoreRankBasicTensorV<D, Rank, T>;
+
+#ifdef __HIP__
+/**
+ * @concept DeviceRankBasicTensor
+ *
+ * @brief Requires that a tensor is a basic tensor available to graphics hardware, stores the required type, and has the required rank.
+ *
+ * @tparam D The tensor to check.
+ * @tparam Rank The rank of the tensor.
+ * @tparam T The type that should be stored.
+ */
+template <typename D, size_t Rank, typename T>
+concept DeviceRankBasicTensor = detail::IsDeviceRankBasicTensorV<D, Rank, T>;
+#endif
+
+/**
+ * @concept CoreRankBlockTensor
+ *
+ * @brief Requires that a tensor is a block tensor stored in-core, stores the required type, and has the required rank.
+ *
+ * @tparam D The tensor to check.
+ * @tparam Rank The rank of the tensor.
+ * @tparam T The type that should be stored.
+ */
+template <typename D, size_t Rank, typename T>
+concept CoreRankBlockTensor = detail::IsIncoreRankBlockTensorV<D, Rank, T>;
+
+#ifdef __HIP__
+/**
+ * @concept DeviceRankBlockTensor
+ *
+ * @brief Requires that a tensor is a block tensor available to graphics hardware, stores the required type, and has the required rank.
+ *
+ * @tparam D The tensor to check.
+ * @tparam Rank The rank of the tensor.
+ * @tparam T The type that should be stored.
+ */
+template <typename D, size_t Rank, typename T>
+concept DeviceRankBlockTensor = detail::IsDeviceRankBlockTensorV<D, Rank, T>;
+#endif
+
+/**
+ * @concept CoreRankTiledTensor
+ *
+ * @brief Requires that a tensor is a tiled tensor stored in-core, stores the required type, and has the required rank.
+ *
+ * @tparam D The tensor to check.
+ * @tparam Rank The rank of the tensor.
+ * @tparam T The type that should be stored.
+ */
+template <typename D, size_t Rank, typename T>
+concept CoreRankTiledTensor = detail::IsIncoreRankTiledTensorV<D, Rank, T>;
+
+#ifdef __HIP__
+/**
+ * @concept DeviceRankTiledTensor
+ *
+ * @brief Requires that a tensor is a tiled tensor available to graphics hardware, stores the required type, and has the required rank.
+ *
+ * @tparam D The tensor to check.
+ * @tparam Rank The rank of the tensor.
+ * @tparam T The type that should be stored.
+ */
+template <typename D, size_t Rank, typename T>
+concept DeviceRankTiledTensor = detail::IsDeviceRankTiledTensorV<D, Rank, T>;
+#endif
+
+/**
+ * @concept CoreBasicTensorConcept
+ *
+ * @brief Requires that a tensor is a basic tensor stored in-core.
+ *
+ * @tparam D The tensor to check.
+ * @tparam Rank The rank of the tensor.
+ * @tparam T The type that should be stored.
+ */
+template <typename D>
+concept CoreBasicTensorConcept = detail::IsIncoreBasicTensorV<D>;
+
+#ifdef __HIP__
+/**
+ * @concept DeviceBasicTensorConcept
+ *
+ * @brief Requires that a tensor is a basic tensor available to graphics hardware.
+ *
+ * @tparam D The tensor to check.
+ */
+template <typename D>
+concept DeviceBasicTensorConcept = detail::IsDeviceBasicTensorV<D>;
+#endif
+
+/**
+ * @concept CoreBlockTensorConcept
+ *
+ * @brief Requires that a tensor is a block tensor stored in-core.
+ *
+ * @tparam D The tensor to check.
+ */
+template <typename D>
+concept CoreBlockTensorConcept = detail::IsIncoreBlockTensorV<D>;
+
+#ifdef __HIP__
+/**
+ * @concept DeviceBlockTensorConcept
+ *
+ * @brief Requires that a tensor is a block tensor available to graphics hardware.
+ *
+ * @tparam D The tensor to check.
+ */
+template <typename D>
+concept DeviceBlockTensorConcept = detail::IsDeviceBlockTensorV<D>;
+#endif
+
+/**
+ * @concept CoreTiledTensorConcept
+ *
+ * @brief Requires that a tensor is a tiled tensor stored in-core.
+ *
+ * @tparam D The tensor to check.
+ */
+template <typename D>
+concept CoreTiledTensorConcept = detail::IsIncoreTiledTensorV<D>;
+
+#ifdef __HIP__
+/**
+ * @concept DeviceTiledTensorConcept
+ *
+ * @brief Requires that a tensor is a tiled tensor available to graphics hardware.
+ *
+ * @tparam D The tensor to check.
+ */
+template <typename D>
+concept DeviceTiledTensorConcept = detail::IsDeviceTiledTensorV<D>;
+#endif
+
+/**
+ * @concept InSamePlace
+ *
+ * @brief Requires that all tensors are in the same storage place.
+ *
+ * @tparam Tensors The tensors to check.
+ */
+template <typename... Tensors>
+concept InSamePlace = detail::IsInSamePlaceV<Tensors...>;
+
+/**
+ * @concept MatrixConcept
+ *
+ * @brief Alias of RankTensorConcept<D, 2>.
+ *
+ * Shorthand for requiring that a tensor be a matrix.
+ *
+ * @tparam D The tensor to check.
+ */
+template <typename D>
+concept MatrixConcept = RankTensorConcept<D, 2>;
+
+/**
+ * @concept VectorConcept
+ *
+ * @brief Alias of RankTensorConcept<D, 1>.
+ *
+ * Shorthand for requiring that a tensor be a vector.
+ *
+ * @tparam D The tensor to check.
+ */
+template <typename D>
+concept VectorConcept = RankTensorConcept<D, 1>;
+
+/**
+ * @concept ScalarConcept
+ *
+ * @brief Alias of RankTensorConcept<D, 0>.
+ *
+ * Shorthand for requiring that a tensor be a scalar.
+ *
+ * @tparam D The tensor to check.
+ */
+template <typename D>
+concept ScalarConcept = RankTensorConcept<D, 0>;
+
+/**
+ * @concept SameUnderlying
+ *
+ * @brief Checks that several tensors store the same type.
+ *
+ * @tparam First The first tensor.
+ * @tparam Rest The rest of the tensors.
+ */
+template <typename First, typename... Rest>
+concept SameUnderlying = detail::IsSameUnderlyingV<First, Rest...>;
+
+/**
+ * @concept SameRank
+ *
+ * @brief Checks that several tensors have the same rank.
+ *
+ * @tparam First The first tensor.
+ * @tparam Rest The rest of the tensors.
+ */
+template <typename First, typename... Rest>
+concept SameRank = detail::IsSameRankV<First, Rest...>;
+
+/**
+ * @concept SameUnderlyingAndRank
+ *
+ * @brief Checks that several tensors have the same rank and underlying type.
+ *
+ * @tparam First The first tensor.
+ * @tparam Rest The rest of the tensors.
+ */
+template <typename First, typename... Rest>
+concept SameUnderlyingAndRank = detail::IsSameUnderlyingAndRankV<First, Rest...>;
+
+/**
+ * @struct remove_view
+ *
+ * @brief Gets the underlying type of a view.
+ *
+ * @tparam D The tensor type to strip.
+ */
+template <typename D>
 struct remove_view {
-    using type = TensorType<T, Rank>;
+  public:
+    using base_type = D;
 };
 
-template <size_t Rank, typename T>
-struct remove_view<TensorView, Rank, T> {
-    using type = Tensor<T, Rank>;
+template <TensorViewConcept D>
+struct remove_view<D> {
+  public:
+    using base_type = typename D::underlying_type;
 };
 
-template <size_t Rank, typename T>
-struct remove_view<TiledTensorView, Rank, T> {
-    using type = TiledTensor<T, Rank>;
-};
+/**
+ * @typedef remove_view_t
+ *
+ * @brief Gets the underlying type of a view.
+ *
+ * @tparam D The tensor type to strip.
+ */
+template <typename D>
+using remove_view_t = typename remove_view<D>::base_type;
+
+namespace detail {
+/**
+ * @brief Creates a new tensor with the same type as the input but with a different rank or storage type.
+ *
+ * This does not initialize the new tensor and more or less is used to get the return type with a decltype.
+ *
+ * @param tensor The tensor whose type is being copied.
+ * @tparam TensorType The type of the
+ */
+template <typename NewT, size_t NewRank, template <typename, size_t> typename TensorType, typename T, size_t Rank>
+    requires(TensorConcept<TensorType<T, Rank>>)
+TensorType<NewT, NewRank> create_tensor_of_same_type(const TensorType<T, Rank> &tensor) {
+    return TensorType<NewT, NewRank>();
+}
+
+/**
+ * @brief Creates a new basic tensor in the same place as the input, but with a different rank and storage type..
+ *
+ * This does not initialize the new tensor and more or less is used to get the return type with a decltype.
+ *
+ * @param tensor The tensor whose type is being copied.
+ * @tparam TensorType The type of the
+ */
+template <typename NewT, size_t NewRank, CoreTensorConcept TensorType>
+Tensor<NewT, NewRank> create_basic_tensor_like(const TensorType &tensor) {
+    return Tensor<NewT, NewRank>();
+}
 
 #ifdef __HIP__
-template <size_t Rank, typename T>
-struct remove_view<DeviceTensorView, Rank, T> {
-    using type = DeviceTensor<T, Rank>;
-};
-
-template <size_t Rank, typename T>
-struct remove_view<TiledDeviceTensorView, Rank, T> {
-    using type = TiledDeviceTensor<T, Rank>;
-};
+template <typename NewT, size_t NewRank, DeviceTensorConcept TensorType>
+DeviceTensor<NewT, NewRank> create_basic_tensor_like(const TensorType &tensor) {
+    return DeviceTensor<NewT, NewRank>();
+}
 #endif
 
-template <template <typename, size_t> typename TensorType, size_t Rank, typename T>
-using remove_view_t = typename remove_view<TensorType, Rank, T>::type;
+template <typename NewT, size_t NewRank, DiskTensorConcept TensorType>
+DiskTensor<NewT, NewRank> create_basic_tensor_like(const TensorType &tensor) {
+    return DiskTensor<NewT, NewRank>();
+}
+
+} // namespace detail
+
+/**
+ * @typedef TensorLike
+ *
+ * @brief Gets the type of a tensor, but with a new rank and type.
+ *
+ * @tparam D The underlying tensor type.
+ * @tparam T The new type.
+ * @tparam Rank The new rank.
+ */
+template <TensorConcept D, typename T, size_t Rank>
+using TensorLike = decltype(detail::create_tensor_of_same_type<T, Rank>(D()));
+
+/**
+ * @typedef BasicTensorLike
+ *
+ * @brief Gets the type of basic tensor with the same storage location, but with different rank and underlying type.
+ *
+ * @tparam D The underlying tensor type.
+ * @tparam T The new type.
+ * @tparam Rank The new rank.
+ */
+template <TensorConcept D, typename T, size_t Rank>
+using BasicTensorLike = decltype(detail::create_basic_tensor_like<T, Rank>(D()));
 
 namespace detail {
 

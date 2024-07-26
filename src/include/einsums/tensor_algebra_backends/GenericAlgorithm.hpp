@@ -16,17 +16,18 @@ namespace einsums::tensor_algebra::detail {
 
 template <typename... CUniqueIndices, typename... AUniqueIndices, typename... BUniqueIndices, typename... LinkUniqueIndices,
           typename... CIndices, typename... AIndices, typename... BIndices, typename... TargetDims, typename... LinkDims,
-          typename... TargetPositionInC, typename... LinkPositionInLink, template <typename, size_t> typename CType, typename CDataType,
-          size_t CRank, template <typename, size_t> typename AType, typename ADataType, size_t ARank,
-          template <typename, size_t> typename BType, typename BDataType, size_t BRank>
+          typename... TargetPositionInC, typename... LinkPositionInLink, template <typename, size_t, typename...> typename CType,
+          typename CDataType, size_t CRank, template <typename, size_t, typename...> typename AType, typename ADataType, size_t ARank,
+          template <typename, size_t, typename...> typename BType, typename BDataType, size_t BRank, typename... CArgs, typename... AArgs,
+          typename... BArgs>
     requires requires {
-        requires RankBasicTensor<CType<CDataType, CRank>, CRank, CDataType>;
-        requires RankBasicTensor<AType<ADataType, ARank>, ARank, ADataType>;
-        requires RankBasicTensor<BType<BDataType, BRank>, BRank, BDataType>;
+        requires RankBasicTensor<CType<CDataType, CRank, CArgs...>, CRank, CDataType>;
+        requires RankBasicTensor<AType<ADataType, ARank, AArgs...>, ARank, ADataType>;
+        requires RankBasicTensor<BType<BDataType, BRank, BArgs...>, BRank, BDataType>;
 #ifdef __HIP__
-        requires !DeviceRankTensor<CType<CDataType, CRank>, CRank, CDataType>;
-        requires !DeviceRankTensor<AType<ADataType, ARank>, ARank, ADataType>;
-        requires !DeviceRankTensor<BType<BDataType, BRank>, BRank, BDataType>;
+        requires !DeviceRankTensor<CType<CDataType, CRank, CArgs...>, CRank, CDataType>;
+        requires !DeviceRankTensor<AType<ADataType, ARank, AArgs...>, ARank, ADataType>;
+        requires !DeviceRankTensor<BType<BDataType, BRank, BArgs...>, BRank, BDataType>;
 #endif
     }
 void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, const std::tuple<AUniqueIndices...> & /*A_unique*/,
@@ -35,9 +36,9 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
                               const std::tuple<BIndices...> & /*B_indices*/, const std::tuple<TargetDims...> &target_dims,
                               const std::tuple<LinkDims...> &link_dims, const std::tuple<TargetPositionInC...> &target_position_in_C,
                               const std::tuple<LinkPositionInLink...> &link_position_in_link, const CDataType C_prefactor,
-                              CType<CDataType, CRank>                                                                *C,
+                              CType<CDataType, CRank, CArgs...>                                                      *C,
                               const std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> AB_prefactor,
-                              const AType<ADataType, ARank> &A, const BType<BDataType, BRank> &B) {
+                              const AType<ADataType, ARank, AArgs...> &A, const BType<BDataType, BRank, BArgs...> &B) {
     LabeledSection0();
 
     auto view = std::apply(ranges::views::cartesian_product, target_dims);
