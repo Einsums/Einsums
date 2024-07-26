@@ -37,8 +37,8 @@
 namespace einsums::tensor_algebra {
 namespace detail {
 
-template <bool OnlyUseGenericAlgorithm, typename AType, typename BType, typename CType, typename... CIndices, typename... AIndices,
-          typename... BIndices>
+template <bool OnlyUseGenericAlgorithm, TensorConcept AType, TensorConcept BType, TensorConcept CType, typename... CIndices,
+          typename... AIndices, typename... BIndices>
 auto einsum(const typename CType::data_type C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType *C,
             const std::conditional_t<(sizeof(typename AType::data_type) > sizeof(typename BType::data_type)), typename AType::data_type,
                                      typename BType::data_type>
@@ -487,8 +487,7 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
         // #pragma omp taskwait depend(in: testC)
     } else {
 #    endif
-        if constexpr (!einsums::detail::IsBasicTensorV<AType> &&
-                      !einsums::detail::IsBasicTensorV<BType>) {
+        if constexpr (!einsums::detail::IsBasicTensorV<AType> && !einsums::detail::IsBasicTensorV<BType>) {
             auto testA = Tensor<ADataType, ARank>(A);
             auto testB = Tensor<BDataType, BRank>(B);
             { detail::einsum<true>(C_prefactor, C_indices, &testC, AB_prefactor, A_indices, testA, B_indices, testB); }

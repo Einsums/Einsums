@@ -25,8 +25,8 @@ BEGIN_EINSUMS_NAMESPACE_HPP(einsums::tensor_algebra)
 
 namespace detail {
 
-template <bool OnlyUseGenericAlgorithm, typename AType, typename BType, typename CType, typename... CIndices, typename... AIndices,
-          typename... BIndices>
+template <bool OnlyUseGenericAlgorithm, TensorConcept AType, TensorConcept BType, TensorConcept CType, typename... CIndices,
+          typename... AIndices, typename... BIndices>
 auto einsum(const typename CType::data_type C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType *C,
             const std::conditional_t<(sizeof(typename AType::data_type) > sizeof(typename BType::data_type)), typename AType::data_type,
                                      typename BType::data_type>
