@@ -175,7 +175,7 @@ template <CoreBasicTensorConcept AType, CoreBasicTensorConcept BType>
 auto true_dot(const AType &A, const BType &B) -> typename AType::data_type {
     assert(A.dim(0) == B.dim(0));
 
-    if constexpr (!IsComplexV<AType>) {
+    if constexpr (IsComplexV<AType>) {
         return blas::dotc(A.dim(0), A.data(), A.stride(0), B.data(), B.stride(0));
     } else {
         return blas::dot(A.dim(0), A.data(), A.stride(0), B.data(), B.stride(0));

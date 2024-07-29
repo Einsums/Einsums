@@ -1374,6 +1374,7 @@ auto read(const h5::fd_t &fd, const std::string &name) -> Tensor<T, Rank> {
         return temp;
     } catch (std::exception &e) {
         println("Unable to open disk tensor '{}'", name);
+        fprintln(stderr, "{}", e.what());
         std::abort();
     }
 }

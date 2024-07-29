@@ -450,8 +450,9 @@ generic_default:;
 }
 } // namespace detail
 
-template <typename AType, typename BType, typename CType, typename U, typename... CIndices, typename... AIndices, typename... BIndices>
-    requires InSamePlace<AType, BType, CType>
+template <TensorConcept AType, TensorConcept BType, TensorConcept CType, typename U, typename... CIndices, typename... AIndices,
+          typename... BIndices>
+    requires(InSamePlace<AType, BType, CType>)
 auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType *C, const U UAB_prefactor,
             const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices, const BType &B) -> void {
     using ADataType        = AType::data_type;

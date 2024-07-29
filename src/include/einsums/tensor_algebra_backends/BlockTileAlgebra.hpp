@@ -1,6 +1,7 @@
 #pragma once
 
 #include "einsums/TensorAlgebra.hpp"
+#include "einsums/tensor_algebra_backends/TileAlgebra.hpp"
 #include "einsums/tensor_algebra_backends/Dispatch.hpp"
 #include "einsums/utility/IndexUtils.hpp"
 #include "einsums/utility/TensorTraits.hpp"
