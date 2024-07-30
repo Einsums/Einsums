@@ -193,8 +193,10 @@ auto einsum(const typename CType::data_type C_prefactor, const std::tuple<CIndic
     }
 #endif
 
-    if constexpr (!std::is_same_v<CDataType, ADataType> || !std::is_same_v<CDataType, BDataType>) {
-        // Mixed datatypes go directly to the generic algorithm.
+    if constexpr (!std::is_same_v<CDataType, ADataType> || !std::is_same_v<CDataType, BDataType> ||
+                  (!einsums::detail::IsAlgebraTensorV<AType> || !einsums::detail::IsAlgebraTensorV<BType> ||
+                   !einsums::detail::IsAlgebraTensorV<CType>)) {
+        // Mixed datatypes and poorly behaved tensor types go directly to the generic algorithm.
         goto generic_default;
     } else if constexpr (dot_product) {
         CDataType temp = linear_algebra::dot(A, B);
@@ -440,8 +442,10 @@ auto einsum(const typename CType::data_type C_prefactor, const std::tuple<CIndic
 generic_default:;
     // If we somehow make it here, then none of our algorithms above could be used. Attempt to use
     // the generic algorithm instead.
-    if constexpr (!einsums::detail::IsBasicTensorV<AType> || !einsums::detail::IsBasicTensorV<BType> ||
-                  !einsums::detail::IsBasicTensorV<CType>) {
+    if constexpr (einsums::detail::IsAlgebraTensorV<AType> && einsums::detail::IsAlgebraTensorV<BType> &&
+                  einsums::detail::IsAlgebraTensorV<CType> &&
+                  (!einsums::detail::IsBasicTensorV<AType> || !einsums::detail::IsBasicTensorV<BType> ||
+                   !einsums::detail::IsBasicTensorV<CType>)) {
         einsum_special_dispatch<OnlyUseGenericAlgorithm>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
     } else {
         einsum_generic_algorithm(C_unique, A_unique, B_unique, link_unique, C_indices, A_indices, B_indices, unique_target_dims,

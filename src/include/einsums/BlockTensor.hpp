@@ -29,7 +29,8 @@ template <typename T, size_t Rank, typename TensorType>
 struct BlockTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>,
                          virtual TensorBase<T, Rank>,
                          virtual BlockTensorBaseNoExtra,
-                         virtual LockableTensorBase {
+                         virtual LockableTensorBase,
+                         virtual AlgebraOptimizedTensor {
   protected:
     std::string _name{"(Unnamed)"};
     size_t      _dim{0}; // Only allowing square tensors.
@@ -716,7 +717,7 @@ struct BlockTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
     /**
      * @brief Gets the name of the tensor.
      */
-    [[nodiscard]] auto name() const -> const std::string &override { return _name; }
+    [[nodiscard]] auto name() const -> const std::string & override { return _name; }
 
     /**
      * @brief Sets the name of the tensor.

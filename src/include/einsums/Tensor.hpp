@@ -149,7 +149,8 @@ using VectorData = std::vector<T, AlignedAllocator<T, 64>>;
 template <typename T, size_t Rank>
 struct Tensor : public virtual tensor_props::CoreTensorBase,
                 virtual tensor_props::BasicTensorBase<T, Rank>,
-                virtual tensor_props::LockableTensorBase {
+                virtual tensor_props::LockableTensorBase,
+                virtual tensor_props::AlgebraOptimizedTensor {
 
     using datatype = T;
     using Vector   = VectorData<T>;
@@ -831,8 +832,12 @@ struct Tensor : public virtual tensor_props::CoreTensorBase,
 
     auto full_view_of_underlying() const noexcept -> bool override { return true; }
 
+    const std::string &name() const override { return _name; };
+
+    void set_name(const std::string &new_name) override { _name = new_name; };
+
   private:
-    std::string  _name{"(Unnamed)"};
+    std::string  _name{"(unnamed)"};
     Dim<Rank>    _dims;
     Stride<Rank> _strides;
     Vector       _data;
@@ -845,8 +850,10 @@ struct Tensor : public virtual tensor_props::CoreTensorBase,
 }; // namespace einsums
 
 template <typename T>
-struct Tensor<T, 0>
-    : public virtual tensor_props::CoreTensorBase, virtual tensor_props::BasicTensorBase<T, 0>, virtual tensor_props::LockableTensorBase {
+struct Tensor<T, 0> : public virtual tensor_props::CoreTensorBase,
+                      virtual tensor_props::BasicTensorBase<T, 0>,
+                      virtual tensor_props::LockableTensorBase,
+                      virtual tensor_props::AlgebraOptimizedTensor {
 
     Tensor()                   = default;
     Tensor(const Tensor &)     = default;
@@ -898,9 +905,9 @@ struct Tensor<T, 0>
 
     [[nodiscard]] auto full_view_of_underlying() const noexcept -> bool override { return true; }
 
-    size_t stride(int d) const override {return 0;}
+    size_t stride(int d) const override { return 0; }
 
-    Stride<0> strides() const override {return Stride<0>();}
+    Stride<0> strides() const override { return Stride<0>(); }
 
   private:
     std::string _name{"(Unnamed)"};
@@ -911,7 +918,8 @@ template <typename T, size_t Rank>
 struct TensorView final : public virtual tensor_props::CoreTensorBase,
                           virtual tensor_props::BasicTensorBase<T, Rank>,
                           virtual tensor_props::TensorViewBase<T, Rank, Tensor<T, Rank>>,
-                          virtual tensor_props::LockableTensorBase {
+                          virtual tensor_props::LockableTensorBase,
+                          virtual tensor_props::AlgebraOptimizedTensor {
 
     TensorView()                   = delete;
     TensorView(const TensorView &) = default;
@@ -1162,7 +1170,7 @@ struct TensorView final : public virtual tensor_props::CoreTensorBase,
 
         static_assert(Rank <= OtherRank, "A TensorView must be the same Rank or smaller that the Tensor being viewed.");
 
-        this->_lock = other.get_mutex();
+        set_mutex(other.get_mutex());
 
         Stride<Rank>      default_strides{};
         Offset<OtherRank> default_offsets{};
@@ -1242,7 +1250,7 @@ struct TensorView final : public virtual tensor_props::CoreTensorBase,
     std::string  _name{"(Unnamed View)"};
     Dim<Rank>    _dims;
     Stride<Rank> _strides;
-    // Offsets<Rank> _offsets;
+    //Offset<Rank> _offsets;
 
     bool _full_view_of_underlying{false};
 
@@ -1551,8 +1559,8 @@ struct DiskTensor final : public virtual tensor_props::DiskTensorBase,
 
     // Provides ability to store another tensor to a part of a disk tensor.
 
-    [[nodiscard]] auto dim(int d) const -> size_t { return _dims[d]; }
-    auto               dims() const -> Dim<Rank> { return _dims; }
+    [[nodiscard]] auto dim(int d) const -> size_t override { return _dims[d]; }
+    auto               dims() const -> Dim<Rank> override { return _dims; }
 
     [[nodiscard]] auto existed() const -> bool { return _existed; }
 
@@ -1560,7 +1568,9 @@ struct DiskTensor final : public virtual tensor_props::DiskTensorBase,
 
     // void _write(Tensor<T, Rank> &data) { h5::write(disk(), data); }
 
-    [[nodiscard]] auto name() const -> const std::string & { return _name; }
+    [[nodiscard]] auto name() const -> const std::string & override { return _name; }
+
+    void set_name(const std::string &new_name) override { _name = new_name; }
 
     [[nodiscard]] auto stride(int d) const noexcept -> size_t { return _strides[d]; }
 
@@ -1760,6 +1770,9 @@ struct DiskView final : public virtual tensor_props::DiskTensorBase,
     [[nodiscard]] auto dim(int d) const -> size_t override { return _tensor.dim(d); }
     auto               dims() const -> Dim<ViewRank> override { return _tensor.dims(); }
 
+    const std::string &name() const override { return _name; }
+    void               set_name(const std::string &new_name) override { _name = new_name; }
+
     operator Tensor<T, ViewRank> &() const { return _tensor; }       // NOLINT
     operator const Tensor<T, ViewRank> &() const { return _tensor; } // NOLINT
 
@@ -1787,6 +1800,7 @@ struct DiskView final : public virtual tensor_props::DiskTensorBase,
     Offset<Rank>         _offsets;
     Stride<Rank>         _strides;
     Tensor<T, ViewRank>  _tensor;
+    std::string          _name{"(unnamed)"};
 
     bool _readOnly{false};
 

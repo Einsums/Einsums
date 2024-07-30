@@ -7,16 +7,18 @@
 #include "catch2/matchers/catch_matchers_floating_point.hpp"
 #include "einsums.hpp"
 
-class ScaleFunctionTensor : public virtual einsums::tensor_props::FunctionTensorBase<double, 4>, virtual einsums::tensor_props::CoreTensorBase {
+class ScaleFunctionTensor : public virtual einsums::tensor_props::FunctionTensorBase<double, 4>,
+                            virtual einsums::tensor_props::CoreTensorBase {
   private:
     const einsums::Tensor<double, 1> *Evals;
 
   public:
     ScaleFunctionTensor(std::string name, const einsums::Tensor<double, 1> *evals)
-        : Evals{evals}, einsums::tensor_props::FunctionTensorBase<double, 4>(name, evals->dim(0), evals->dim(0), evals->dim(0), evals->dim(0)) {}
+        : Evals{evals},
+          einsums::tensor_props::FunctionTensorBase<double, 4>(name, evals->dim(0), evals->dim(0), evals->dim(0), evals->dim(0)) {}
 
     virtual double call(const std::array<int, 4> &inds) const override {
-        return 1 / ((*Evals)(inds[0]) + (*Evals)(inds[1]) - (*Evals)(inds[2]) - (*Evals)(inds[3]));
+        return 1.0 / ((*Evals)(inds[0]) + (*Evals)(inds[2]) - (*Evals)(inds[1]) - (*Evals)(inds[3]));
     }
 
     size_t dim(int d) const override { return einsums::tensor_props::FunctionTensorBase<double, 4>::dim(d); }
@@ -166,7 +168,7 @@ static void compute_diis_fock(const std::vector<double> &coefs, const std::vecto
     }
 }
 
-TEST_CASE("RHF No symmetry") {
+TEST_CASE("RHF No symmetry", "[qchem]") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::linear_algebra;
@@ -175,8 +177,7 @@ TEST_CASE("RHF No symmetry") {
         temp1("temp1", 7, 7), temp2("temp2", 7, 7), X("Unitary transform", 7, 7), C("MO Coefs", 7, 7), Ct("Transformed MO Coefs", 7, 7),
         D("Density Matrix", 7, 7), D_prev("Previous Density Matrix", 7, 7), F("Fock Matrix", 7, 7), Ft("Transformed Fock Matrix", 7, 7);
 
-    Tensor<double, 4> TEI("Two-electron Integrals", 7, 7, 7, 7), MP2_temp1("MP2_temp1", 7, 7, 7, 7), MP2_temp2("MP2_temp2", 7, 7, 7, 7),
-        MP2_amps("MP2 amplitudes", 5, 2, 5, 2);
+    Tensor<double, 4> TEI("Two-electron Integrals", 7, 7, 7, 7), MP2_temp1("MP2_temp1", 7, 7, 7, 7), MP2_temp2("MP2_temp2", 7, 7, 7, 7);
 
     Tensor<double, 1> Evals("Eigenvalues", 7);
 
@@ -323,19 +324,74 @@ TEST_CASE("RHF No symmetry") {
 
     // Transform the two-electron integrals.
 
-    REQUIRE_NOTHROW(einsum(Indices{index::i, index::j, index::k, index::l}, &MP2_temp1, Indices{index::m, index::j, index::k, index::l},
-                           TEI, Indices{index::m, index::i}, C));
-    REQUIRE_NOTHROW(einsum(Indices{index::i, index::j, index::k, index::l}, &MP2_temp2, Indices{index::i, index::m, index::k, index::l},
-                           MP2_temp1, Indices{index::m, index::j}, C));
-    REQUIRE_NOTHROW(einsum(Indices{index::i, index::j, index::k, index::l}, &MP2_temp1, Indices{index::i, index::j, index::m, index::l},
-                           MP2_temp2, Indices{index::m, index::k}, C));
-    REQUIRE_NOTHROW(einsum(Indices{index::i, index::j, index::k, index::l}, &TEI, Indices{index::i, index::j, index::k, index::m},
-                           MP2_temp1, Indices{index::m, index::l}, C));
+    REQUIRE_NOTHROW(einsum(Indices{index::p, index::q, index::r, index::s}, &MP2_temp1, Indices{index::m, index::q, index::r, index::s},
+                           TEI, Indices{index::m, index::p}, C));
+    REQUIRE_NOTHROW(einsum(Indices{index::p, index::q, index::r, index::s}, &MP2_temp2, Indices{index::p, index::m, index::r, index::s},
+                           MP2_temp1, Indices{index::m, index::q}, C));
+    REQUIRE_NOTHROW(einsum(Indices{index::p, index::q, index::r, index::s}, &MP2_temp1, Indices{index::p, index::q, index::m, index::s},
+                           MP2_temp2, Indices{index::m, index::r}, C));
+    REQUIRE_NOTHROW(einsum(Indices{index::p, index::q, index::r, index::s}, &TEI, Indices{index::p, index::q, index::r, index::m},
+                           MP2_temp1, Indices{index::m, index::s}, C));
 
     // Set up the scales.
     ScaleFunctionTensor MP2_scale("MP2 scale", &Evals);
 
     auto MP2_scale_view = MP2_scale(Range{0, 5}, Range{5, 7}, Range{0, 5}, Range{5, 7});
+    auto TEI_iajb       = TEI(Range{0, 5}, Range{5, 7}, Range{0, 5}, Range{5, 7});
+    auto MP2_amps       = Tensor<double, 4>("MP2 Scaled", 5, 2, 5, 2);
+    auto MP2_amps_2     = Tensor<double, 4>("MP2 Scaled", 5, 2, 5, 2);
+
+    Tensor<double, 4> TEI_iajb_tens = TEI_iajb;
+
+    for (int i = 0; i < 5; i++) {
+        for (int a = 0; a < 2; a++) {
+            for (int j = 0; j < 5; j++) {
+                for (int b = 0; b < 2; b++) {
+                    REQUIRE_THAT(TEI_iajb(i, a, j, b), Catch::Matchers::WithinRelMatcher(TEI_iajb_tens(i, a, j, b), 1e-6));
+                    REQUIRE_THAT(TEI_iajb(i, a, j, b), Catch::Matchers::WithinRelMatcher(TEI(i, a + 5, j, b + 5), 1e-6));
+                }
+            }
+        }
+    }
+
+    MP2_amps.zero();
+
+    REQUIRE_NOTHROW(einsum(Indices{index::i, index::a, index::j, index::b}, &MP2_amps, Indices{index::i, index::a, index::j, index::b},
+                           TEI_iajb, Indices{index::i, index::a, index::j, index::b}, MP2_scale_view));
+
+    REQUIRE_NOTHROW(einsum(Indices{index::i, index::a, index::j, index::b}, &MP2_amps_2, Indices{index::i, index::a, index::j, index::b},
+                           TEI_iajb_tens, Indices{index::i, index::a, index::j, index::b}, MP2_scale_view));
+
+    for (int i = 0; i < 5; i++) {
+        for (int a = 0; a < 2; a++) {
+            for (int j = 0; j < 5; j++) {
+                for (int b = 0; b < 2; b++) {
+                    REQUIRE_THAT(MP2_amps(i, a, j, b), Catch::Matchers::WithinRelMatcher(MP2_amps_2(i, a, j, b), 1e-6));
+                }
+            }
+        }
+    }
+
+    Tensor<double, 0> EMP2_0, EMP2_1, EMP2_2, EMP2_3;
+
+    REQUIRE_NOTHROW(einsum(0.0, Indices{}, &EMP2_0, 2.0, Indices{index::i, index::a, index::j, index::b}, MP2_amps,
+                           Indices{index::i, index::a, index::j, index::b}, TEI_iajb));
+    REQUIRE_NOTHROW(einsum(0.0, Indices{}, &EMP2_1, -1.0, Indices{index::i, index::a, index::j, index::b}, MP2_amps,
+                           Indices{index::i, index::b, index::j, index::a}, TEI_iajb));
+
+    REQUIRE_NOTHROW(einsum(0.0, Indices{}, &EMP2_2, 2.0, Indices{index::i, index::a, index::j, index::b}, MP2_amps,
+                           Indices{index::i, index::a, index::j, index::b}, TEI_iajb_tens));
+    REQUIRE_NOTHROW(einsum(0.0, Indices{}, &EMP2_3, -1.0, Indices{index::i, index::a, index::j, index::b}, MP2_amps,
+                           Indices{index::i, index::b, index::j, index::a}, TEI_iajb_tens));
+    
+    CHECK_THAT((double) EMP2_0, Catch::Matchers::WithinRel((double) EMP2_2, 1e-6));
+    CHECK_THAT((double) EMP2_1, Catch::Matchers::WithinRel((double) EMP2_3, 1e-6));
+
+    double eMP2  = (double)EMP2_0 + (double)EMP2_1;
+    double e_tot = e0 + eMP2;
+
+    REQUIRE_THAT(eMP2, Catch::Matchers::WithinAbs(-0.049149636120, 1e-6));
+    REQUIRE_THAT(e_tot, Catch::Matchers::WithinAbs(-74.991229564312, 1e-6));
 }
 
 TEST_CASE("RHF symmetry") {
@@ -705,15 +761,23 @@ TEST_CASE("RHF symmetry") {
     }
 
     // Compute the MP2 energy.
-    Tensor<double, 0> EMP2;
-    EMP2 = 0;
+    Tensor<double, 0> EMP2_0, EMP2_1, EMP2_2, EMP2_3;
+    Tensor<double, 4> MP2_amps_den_tens = MP2_amps_den, MP2_amps_tens = MP2_amps;
 
-    REQUIRE_NOTHROW(einsum(0.0, Indices{}, &EMP2, 2.0, Indices{index::i, index::a, index::j, index::b}, MP2_amps_den,
+    REQUIRE_NOTHROW(einsum(0.0, Indices{}, &EMP2_0, 2.0, Indices{index::i, index::a, index::j, index::b}, MP2_amps_den,
                            Indices{index::i, index::a, index::j, index::b}, MP2_amps));
-    REQUIRE_NOTHROW(einsum(1.0, Indices{}, &EMP2, -1.0, Indices{index::i, index::a, index::j, index::b}, MP2_amps_den,
+    REQUIRE_NOTHROW(einsum(1.0, Indices{}, &EMP2_1, -1.0, Indices{index::i, index::a, index::j, index::b}, MP2_amps_den,
                            Indices{index::i, index::b, index::j, index::a}, MP2_amps));
 
-    double eMP2  = (double)EMP2;
+    REQUIRE_NOTHROW(einsum(0.0, Indices{}, &EMP2_2, 2.0, Indices{index::i, index::a, index::j, index::b}, MP2_amps_den_tens,
+                           Indices{index::i, index::a, index::j, index::b}, MP2_amps_tens));
+    REQUIRE_NOTHROW(einsum(1.0, Indices{}, &EMP2_3, -1.0, Indices{index::i, index::a, index::j, index::b}, MP2_amps_den_tens,
+                           Indices{index::i, index::b, index::j, index::a}, MP2_amps_tens));
+
+    CHECK_THAT((double) EMP2_0, Catch::Matchers::WithinRel((double) EMP2_2, 1e-6));
+    REQUIRE_THAT((double) EMP2_1, Catch::Matchers::WithinRel((double) EMP2_3, 1e-6));
+
+    double eMP2  = (double)EMP2_0 + (double) EMP2_1;
     double e_tot = e0 + eMP2;
 
     REQUIRE_THAT(eMP2, Catch::Matchers::WithinAbs(-0.049149636120, 1e-6));

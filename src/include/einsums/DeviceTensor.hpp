@@ -5,6 +5,7 @@
 
 #include "einsums/Tensor.hpp"
 #include "einsums/utilities/TensorTraits.hpp"
+#include "einsums/utility/TensorBases.hpp"
 
 #include <hip/driver_types.h>
 #include <hip/hip_common.h>
@@ -295,8 +296,8 @@ class HostDevReference {
  * @tparam Rank The rank of the tensor.
  */
 template <typename T, size_t Rank>
-struct DeviceTensor : public einsums::detail::DeviceTensorBase<T, Rank>,
-                      einsums::detail::BasicTensorBase<T, Rank> {
+struct DeviceTensor : public virtual einsums::tensor_props::DeviceTensorBase<T, Rank>,
+                      virtual einsums::tensor_props::BasicTensorBase<T, Rank>, virtual einsums::tensor_props::AlgebraOptimizedTensor {
   public:
     using dev_datatype  = typename einsums::detail::DeviceTensorBase<T, Rank>::dev_datatype;
     using host_datatype = typename einsums::detail::DeviceTensorBase<T, Rank>::host_datatype;

@@ -61,6 +61,7 @@ struct ArithmeticTensor : public virtual tensor_props::TensorBase<T, Rank> {
   protected:
     std::tuple<Args...> _tuple;
     Dim<Rank>           _dims;
+    std::string         _name{"(unnamed ArithmeticTensor)"};
 
   public:
     using tuple_type = std::tuple<Args...>;
@@ -77,6 +78,10 @@ struct ArithmeticTensor : public virtual tensor_props::TensorBase<T, Rank> {
     Dim<Rank> dims() const override { return _dims; }
 
     size_t dim(int d) const override { return _dims[d]; }
+
+    const std::string &name() const override { return _name; }
+
+    void set_name(const std::string &new_name) override { _name = new_name; }
 };
 
 } // namespace einsums

@@ -123,15 +123,10 @@ struct TensorBaseNoExtra {
  */
 template <typename T, size_t Rank>
 struct TensorBase : public virtual TensorBaseNoExtra, virtual TypedTensorBase<T>, virtual RankTensorBase<Rank> {
-  protected:
-    std::string _name{"(unnamed)"};
-
   public:
     TensorBase() = default;
 
     TensorBase(const TensorBase &) = default;
-
-    TensorBase(std::string name) : _name{name} {}
 
     virtual ~TensorBase() = default;
 
@@ -139,9 +134,9 @@ struct TensorBase : public virtual TensorBaseNoExtra, virtual TypedTensorBase<T>
 
     virtual bool full_view_of_underlying() const { return true; }
 
-    virtual const std::string &name() const { return _name; }
+    virtual const std::string &name() const = 0;
 
-    virtual void set_name(const std::string &new_name) { _name = new_name; }
+    virtual void set_name(const std::string &new_name) = 0;
 };
 
 /**
@@ -156,12 +151,12 @@ struct LockableTensorBase {
      *
      * @brief The base mutex for locking the tensor.
      */
-    mutable std::shared_ptr<std::recursive_mutex> _lock{}; // Make it mutable so that it can be modified even in const methods.
+    mutable std::shared_ptr<std::recursive_mutex> _lock; // Make it mutable so that it can be modified even in const methods.
 
   public:
-    LockableTensorBase() = default;
+    LockableTensorBase() { _lock = std::make_shared<std::recursive_mutex>(); }
 
-    LockableTensorBase(const LockableTensorBase &) : _lock{} {}
+    LockableTensorBase(const LockableTensorBase &) { _lock = std::make_shared<std::recursive_mutex>(); }
 
     /**
      * @brief Lock the tensor.
@@ -182,6 +177,11 @@ struct LockableTensorBase {
      * @brief Get the mutex.
      */
     std::shared_ptr<std::recursive_mutex> get_mutex() const { return _lock; }
+
+    /**
+     * @brief Set the mutex.
+     */
+    void set_mutex(std::shared_ptr<std::recursive_mutex> mutex) { _lock = mutex; }
 };
 
 /*==================
@@ -331,8 +331,8 @@ struct BasicTensorBase : virtual TensorBase<T, Rank>, virtual BasicTensorBaseNoE
     virtual T       *data()       = 0;
     virtual const T *data() const = 0;
 
-    virtual size_t stride(int d) const = 0;
-    virtual Stride<Rank> strides() const = 0;
+    virtual size_t       stride(int d) const = 0;
+    virtual Stride<Rank> strides() const     = 0;
 };
 
 /**
@@ -448,4 +448,18 @@ struct FunctionTensorBaseNoExtra {
 // Large class. See FunctionTensor.hpp for code.
 template <typename T, size_t Rank>
 struct FunctionTensorBase;
+
+/**
+ * @struct AlgebraOptimizedTensor
+ *
+ * @brief Specifies that the tensor type can be used by einsum to select different routines other than the generic algorithm.
+ */
+struct AlgebraOptimizedTensor {
+  public:
+    AlgebraOptimizedTensor()                               = default;
+    AlgebraOptimizedTensor(const AlgebraOptimizedTensor &) = default;
+
+    virtual ~AlgebraOptimizedTensor() = default;
+};
+
 } // namespace einsums::tensor_props

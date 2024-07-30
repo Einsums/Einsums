@@ -34,7 +34,10 @@ namespace tensor_props {
  * @tparam Rank The tensor rank.
  */
 template <typename T, size_t Rank, typename TensorType>
-struct TiledTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>, virtual TiledTensorBaseNoExtra, virtual LockableTensorBase {
+struct TiledTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>,
+                         virtual TiledTensorBaseNoExtra,
+                         virtual LockableTensorBase,
+                         virtual AlgebraOptimizedTensor {
   public:
     using map_type = typename std::unordered_map<std::array<int, Rank>, TensorType, einsums::hashes::container_hash<std::array<int, Rank>>>;
 

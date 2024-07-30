@@ -95,13 +95,14 @@ auto einsum_special_dispatch(const typename CType::data_type C_prefactor, const 
 
 template <bool OnlyUseGenericAlgorithm, BlockTensorConcept AType, BlockTensorConcept BType, ScalarConcept CType, typename... CIndices,
           typename... AIndices, typename... BIndices>
-auto einsum_special_dispatch(const typename CType::data_type C_prefactor, const std::tuple<CIndices...> &C_indices, CType *C,
+auto einsum_special_dispatch(const DataType<CType> C_prefactor, const std::tuple<CIndices...> &C_indices, CType *C,
                              const std::conditional_t<(sizeof(typename AType::data_type) > sizeof(typename BType::data_type)),
                                                       typename AType::data_type, typename BType::data_type>
                                                             AB_prefactor,
                              const std::tuple<AIndices...> &A_indices, const AType &A,
                              const std::tuple<BIndices...> &B_indices, const BType &B) -> void {
-    using CDataType = typename CType::data_type;
+
+    using CDataType = DataType<CType>;
 
     // Check compatibility.
     if (A.num_blocks() != B.num_blocks()) {

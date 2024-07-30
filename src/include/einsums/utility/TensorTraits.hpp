@@ -78,6 +78,18 @@ template <typename D, size_t Rank>
 struct IsRankTensor : public std::is_base_of<tensor_props::RankTensorBase<Rank>, D> {};
 
 /**
+ * @struct IsScalar
+ *
+ * @brief Tests to see if a value is a scalar value.
+ *
+ * Checks to see if a type is either a tensor with rank 0 or a scalar type such as double or complex<float>.
+ *
+ * @tparam D The type to check.
+ */
+template <typename D>
+struct IsScalar : public std::bool_constant<IsRankTensor<D, 0>::value || !IsTensor<D>::value> {};
+
+/**
  * @struct IsLockableTensor
  *
  * @brief Tests whether the given tensor type can be locked.
@@ -251,6 +263,16 @@ struct IsBlockTensor : public std::bool_constant<std::is_base_of_v<tensor_props:
 template <typename D>
 struct IsFunctionTensor : public std::is_base_of<tensor_props::FunctionTensorBaseNoExtra, D> {};
 
+/**
+ * @struct IsAlgebraTensor
+ *
+ * @brief Checks to see if operations with the tensor can be optimized using libraries, indicated by deriving AlgebraOptimizedTensor.
+ *
+ * @tparam D The tensor to check.
+ */
+template <typename D>
+struct IsAlgebraTensor : public std::is_base_of<tensor_props::AlgebraOptimizedTensor, D> {};
+
 /********************************
  *      Inline definitions      *
  ********************************/
@@ -288,6 +310,18 @@ constexpr inline bool IsTypedTensorV = IsTypedTensor<D, T>::value;
  */
 template <typename D, size_t Rank>
 constexpr inline bool IsRankTensorV = IsRankTensor<D, Rank>::value;
+
+/**
+ * @param IsScalarV
+ *
+ * @brief Tests to see if a value is a scalar value.
+ *
+ * Checks to see if a type is either a tensor with rank 0 or a scalar type such as double or complex<float>.
+ *
+ * @tparam D The type to check.
+ */
+template <typename D>
+constexpr inline bool IsScalarV = IsScalar<D>::value;
 
 /**
  * @property IsLockableTensorV
@@ -455,6 +489,16 @@ constexpr inline bool IsBlockTensorV = IsBlockTensor<D, StoredType>::value;
  */
 template <typename D>
 constexpr inline bool IsFunctionTensorV = IsFunctionTensor<D>::value;
+
+/**
+ * @property IsAlgebraTensorV
+ *
+ * @brief Checks to see if operations with the tensor can be optimized using libraries, indicated by deriving AlgebraOptimizedTensor.
+ *
+ * @tparam D The tensor to check.
+ */
+template <typename D>
+constexpr inline bool IsAlgebraTensorV = IsAlgebraTensor<D>::value;
 
 /**************************************
  *        Combined expressions        *
@@ -978,6 +1022,16 @@ template <typename D>
 concept FunctionTensorConcept = detail::IsFunctionTensorV<D>;
 
 /**
+ * @concept AlgebraTensorConcept
+ *
+ * @brief Checks to see if operations with the tensor can be optimized with libraries.
+ *
+ * @tparam D The tensor type to check.
+ */
+template <typename D>
+concept AlgebraTensorConcept = detail::IsAlgebraTensorV<D>;
+
+/**
  * @concept CoreRankTensor
  *
  * @brief Requires that a tensor is in-core, stores the required type, and has the required rank.
@@ -1241,7 +1295,7 @@ concept VectorConcept = RankTensorConcept<D, 1>;
  * @tparam D The tensor to check.
  */
 template <typename D>
-concept ScalarConcept = RankTensorConcept<D, 0>;
+concept ScalarConcept = detail::IsScalarV<D>;
 
 /**
  * @concept SameUnderlying
@@ -1345,6 +1399,17 @@ DiskTensor<NewT, NewRank> create_basic_tensor_like(const TensorType &tensor) {
     return DiskTensor<NewT, NewRank>();
 }
 
+template <typename D>
+    requires(!TensorConcept<D>)
+D type_function(const D &value) {
+    return value;
+}
+
+template <TensorConcept D>
+typename D::data_type type_function(const D &value) {
+    return typename D::data_type{0.0};
+}
+
 } // namespace detail
 
 /**
@@ -1370,6 +1435,17 @@ using TensorLike = decltype(detail::create_tensor_of_same_type<T, Rank>(D()));
  */
 template <TensorConcept D, typename T, size_t Rank>
 using BasicTensorLike = decltype(detail::create_basic_tensor_like<T, Rank>(D()));
+
+/**
+ * @typedef DataType
+ *
+ * @brief Gets the data type of a tensor/scalar.
+ *
+ * Normally, you can get the data type using an expression such as typename AType::data_type. However, if you want
+ * to support both zero-rank tensors and scalars, then this typedef can help with brevity.
+ */
+template<typename D>
+using DataType = decltype(detail::type_function(D()));
 
 namespace detail {
 
