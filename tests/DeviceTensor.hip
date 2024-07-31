@@ -171,9 +171,9 @@ TEST_CASE("Tensor Construction", "[gpu][tensor]") {
     DeviceTensor<double, 2> B_new(std::move(B_copy), "B_new", 3, 3);
     DeviceTensor<double, 2> C_new(std::move(C_copy), "C_new", 1, -1);
 
-    REQUIRE(A_copy.data() == nullptr);
-    REQUIRE(B_copy.data() == nullptr);
-    REQUIRE(C_copy.data() == nullptr);
+    REQUIRE(A_copy.gpu_data() == nullptr);
+    REQUIRE(B_copy.gpu_data() == nullptr);
+    REQUIRE(C_copy.gpu_data() == nullptr);
 
     hip_catch(hipDeviceSynchronize());
 }
@@ -232,7 +232,7 @@ TEST_CASE("Check memory", "[gpu][tensor]") {
     hipError_t            status;
     hipPointerAttribute_t attribs;
 
-    status = hipPointerGetAttributes(&attribs, A.data());
+    status = hipPointerGetAttributes(&attribs, A.gpu_data());
 
     CHECK((status != hipErrorInvalidValue));
     CHECK((attribs.type == hipMemoryTypeDevice));
@@ -247,14 +247,14 @@ TEST_CASE("Check memory", "[gpu][tensor]") {
     CHECK((status != hipErrorInvalidValue));
     CHECK((attribs.type == hipMemoryTypeDevice));
 
-    CHECK((A.host_data() == nullptr));
+    CHECK((A.data() == nullptr));
 
-    status = hipPointerGetAttributes(&attribs, B.data());
+    status = hipPointerGetAttributes(&attribs, B.gpu_data());
 
     CHECK((status != hipErrorInvalidValue));
     CHECK((attribs.type == hipMemoryTypeHost));
 
-    status = hipPointerGetAttributes(&attribs, B.host_data());
+    status = hipPointerGetAttributes(&attribs, B.data());
 
     CHECK((status != hipErrorInvalidValue));
     CHECK((attribs.type == hipMemoryTypeHost));
@@ -269,12 +269,12 @@ TEST_CASE("Check memory", "[gpu][tensor]") {
     CHECK((status != hipErrorInvalidValue));
     CHECK((attribs.type == hipMemoryTypeDevice));
 
-    status = hipPointerGetAttributes(&attribs, C.data());
+    status = hipPointerGetAttributes(&attribs, C.gpu_data());
 
     CHECK((status != hipErrorInvalidValue));
     CHECK((attribs.type == hipMemoryTypeHost));
 
-    status = hipPointerGetAttributes(&attribs, C.host_data());
+    status = hipPointerGetAttributes(&attribs, C.data());
 
     CHECK((status != hipErrorInvalidValue));
     CHECK((attribs.type == hipMemoryTypeHost));
@@ -1106,29 +1106,29 @@ TEST_CASE("Zero-rank GPU tensors", "[gpu][tensor]") {
     hipError_t            status;
     hipPointerAttribute_t attribs;
 
-    status = hipPointerGetAttributes(&attribs, A.data());
+    status = hipPointerGetAttributes(&attribs, A.gpu_data());
 
     CHECK((status != hipErrorInvalidValue));
     CHECK((attribs.type == hipMemoryTypeDevice));
 
-    CHECK((A.host_data() == nullptr));
+    CHECK((A.data() == nullptr));
+
+    status = hipPointerGetAttributes(&attribs, B.gpu_data());
+
+    CHECK((status != hipErrorInvalidValue));
+    CHECK((attribs.type == hipMemoryTypeHost));
 
     status = hipPointerGetAttributes(&attribs, B.data());
 
     CHECK((status != hipErrorInvalidValue));
     CHECK((attribs.type == hipMemoryTypeHost));
 
-    status = hipPointerGetAttributes(&attribs, B.host_data());
+    status = hipPointerGetAttributes(&attribs, C.gpu_data());
 
     CHECK((status != hipErrorInvalidValue));
     CHECK((attribs.type == hipMemoryTypeHost));
 
     status = hipPointerGetAttributes(&attribs, C.data());
-
-    CHECK((status != hipErrorInvalidValue));
-    CHECK((attribs.type == hipMemoryTypeHost));
-
-    status = hipPointerGetAttributes(&attribs, C.host_data());
 
     CHECK((status != hipErrorInvalidValue));
     CHECK((attribs.type == hipMemoryTypeHost));
