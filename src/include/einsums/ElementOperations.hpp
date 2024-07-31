@@ -104,7 +104,7 @@ auto sum(const TensorType &tensor) -> TensorType::data_type {
         gpu::hip_catch(
             hipMemcpyAsync(dims_and_strides + Rank, tensor.strides().data(), Rank * sizeof(size_t), hipMemcpyHostToDevice, stream));
 
-        detail::sum_kernel<T, Rank><<<blocks, threads, workers, stream>>>(gpu_result, tensor.data(), dims_and_strides, dims_and_strides + Rank,
+        detail::sum_kernel<T, Rank><<<blocks, threads, workers, stream>>>(gpu_result, tensor.gpu_data(), dims_and_strides, dims_and_strides + Rank,
                                                                  tensor.size());
 
         gpu::hip_catch(hipFreeAsync(dims_and_strides, stream));
@@ -173,7 +173,7 @@ auto max(const TensorType &tensor) -> TensorType::data_type {
         gpu::hip_catch(
             hipMemcpyAsync(dims_and_strides + Rank, tensor.strides().data(), Rank * sizeof(size_t), hipMemcpyHostToDevice, stream));
 
-        detail::max_kernel<T, Rank><<<blocks, threads, workers, stream>>>(gpu_result, tensor.data(), dims_and_strides, dims_and_strides + Rank,
+        detail::max_kernel<T, Rank><<<blocks, threads, workers, stream>>>(gpu_result, tensor.gpu_data(), dims_and_strides, dims_and_strides + Rank,
                                                                  tensor.size());
 
         gpu::hip_catch(hipFreeAsync(dims_and_strides, stream));
@@ -249,7 +249,7 @@ auto min(const TensorType &tensor) -> TensorType::data_type {
         gpu::hip_catch(
             hipMemcpyAsync(dims_and_strides + Rank, tensor.strides().data(), Rank * sizeof(size_t), hipMemcpyHostToDevice, stream));
 
-        detail::min_kernel<T, Rank><<<blocks, threads, workers, stream>>>(gpu_result, tensor.data(), dims_and_strides, dims_and_strides + Rank,
+        detail::min_kernel<T, Rank><<<blocks, threads, workers, stream>>>(gpu_result, tensor.gpu_data(), dims_and_strides, dims_and_strides + Rank,
                                                                  tensor.size());
 
         gpu::hip_catch(hipFreeAsync(dims_and_strides, stream));
@@ -329,7 +329,7 @@ auto abs(const TensorType &tensor) -> remove_view_t<TensorType> {
         gpu::hip_catch(
             hipMemcpyAsync(dims_and_strides + Rank, tensor.strides().data(), Rank * sizeof(size_t), hipMemcpyHostToDevice, stream));
 
-        einsums::element_operations::detail::abs_kernel<T, Rank><<<blocks, threads, 0, stream>>>(result.data(), dims_and_strides,
+        einsums::element_operations::detail::abs_kernel<T, Rank><<<blocks, threads, 0, stream>>>(result.gpu_data(), dims_and_strides,
                                                                                         dims_and_strides + Rank, result.size());
 
         gpu::hip_catch(hipFreeAsync(dims_and_strides, stream));
@@ -396,7 +396,7 @@ auto invert(const TensorType &tensor)
         gpu::hip_catch(
             hipMemcpyAsync(dims_and_strides + Rank, tensor.strides().data(), Rank * sizeof(size_t), hipMemcpyHostToDevice, stream));
 
-        einsums::element_operations::detail::invert_kernel<T, Rank><<<blocks, threads, 0, stream>>>(result.data(), dims_and_strides,
+        einsums::element_operations::detail::invert_kernel<T, Rank><<<blocks, threads, 0, stream>>>(result.gpu_data(), dims_and_strides,
                                                                                            dims_and_strides + Rank, result.size());
 
         gpu::hip_catch(hipFreeAsync(dims_and_strides, stream));
@@ -463,7 +463,7 @@ auto exp(const TensorType &tensor)
         gpu::hip_catch(
             hipMemcpyAsync(dims_and_strides + Rank, tensor.strides().data(), Rank * sizeof(size_t), hipMemcpyHostToDevice, stream));
 
-        einsums::element_operations::detail::exp_kernel<T, Rank><<<blocks, threads, 0, stream>>>(result.data(), dims_and_strides,
+        einsums::element_operations::detail::exp_kernel<T, Rank><<<blocks, threads, 0, stream>>>(result.gpu_data(), dims_and_strides,
                                                                                         dims_and_strides + Rank, result.size());
 
         gpu::hip_catch(hipFreeAsync(dims_and_strides, stream));
@@ -531,7 +531,7 @@ auto scale(const typename TensorType::data_type &scale, const TensorType &tensor
         gpu::hip_catch(
             hipMemcpyAsync(dims_and_strides + Rank, tensor.strides().data(), Rank * sizeof(size_t), hipMemcpyHostToDevice, stream));
 
-        einsums::element_operations::detail::scale_kernel<T, Rank><<<blocks, threads, 0, stream>>>(result.data(), scale, dims_and_strides,
+        einsums::element_operations::detail::scale_kernel<T, Rank><<<blocks, threads, 0, stream>>>(result.gpu_data(), scale, dims_and_strides,
                                                                                           dims_and_strides + Rank, result.size());
 
         gpu::hip_catch(hipFreeAsync(dims_and_strides, stream));

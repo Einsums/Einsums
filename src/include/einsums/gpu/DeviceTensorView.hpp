@@ -14,7 +14,7 @@ DeviceTensorView<T, Rank>::DeviceTensorView(const DeviceTensorView<T, Rank> &cop
     this->_strides                 = copy.strides();
     this->_name                    = copy.name();
     hip_catch(hipMalloc((void **) &_data, sizeof(T) * _dims[0] * _strides[0]));
-    hip_catch(hipMemcpy((void *) this->_data, (void *) copy.data(), sizeof(T) * _dims[0] * _strides[0], hipMemcpyDeviceToDevice));
+    hip_catch(hipMemcpy((void *) this->_data, (void *) copy.gpu_data(), sizeof(T) * _dims[0] * _strides[0], hipMemcpyDeviceToDevice));
     this->_full_view_of_underlying = copy.full_view_of_underlying();
 
     hip_catch(hipMalloc((void **)&(this->_gpu_dims), 2 * sizeof(size_t) * Rank));
@@ -97,7 +97,7 @@ auto DeviceTensorView<T, Rank>::assign(const AType<T, Rank> &other) -> DeviceTen
     using namespace einsums::gpu;
 
     einsums::detail::copy_to_tensor<T, Rank><<<block_size(this->size()), blocks(this->size()), 0, get_stream()>>>(
-        this->_data, this->_gpu_dims, this->_gpu_strides, other.data(), other.gpu_dims(), other.gpu_strides(), this->size());
+        this->_data, this->_gpu_dims, this->_gpu_strides, other.gpu_data(), other.gpu_dims(), other.gpu_strides(), this->size());
 
     gpu::stream_wait();
 
@@ -111,7 +111,7 @@ auto DeviceTensorView<T, Rank>::operator=(const AType<T, Rank> &&other) -> Devic
     using namespace einsums::gpu;
 
     einsums::detail::copy_to_tensor<T, Rank><<<block_size(this->size()), blocks(this->size())>>>(
-        this->_data, this->_gpu_dims, this->_gpu_strides, other.data(), other.gpu_dims(), other.gpu_strides(), this->size());
+        this->_data, this->_gpu_dims, this->_gpu_strides, other.gpu_data(), other.gpu_dims(), other.gpu_strides(), this->size());
 
     gpu::stream_wait();
 
@@ -177,7 +177,7 @@ DeviceTensorView<T, Rank> &DeviceTensorView<T, Rank>::div_assign(const T &other)
 
 template <typename T, size_t Rank>
 template <typename... MultiIndex>
-auto DeviceTensorView<T, Rank>::data(MultiIndex... index) const -> DeviceTensorView<T, Rank>::dev_datatype * {
+auto DeviceTensorView<T, Rank>::gpu_data(MultiIndex... index) const -> DeviceTensorView<T, Rank>::dev_datatype * {
     using namespace einsums::gpu;
     assert(sizeof...(MultiIndex) <= _dims.size());
 
@@ -192,7 +192,7 @@ auto DeviceTensorView<T, Rank>::data(MultiIndex... index) const -> DeviceTensorV
 }
 
 template <typename T, size_t Rank>
-auto DeviceTensorView<T, Rank>::data_array(const ::std::array<size_t, Rank> &index_list) const -> __device_ptr__ T * {
+auto DeviceTensorView<T, Rank>::gpu_data_array(const ::std::array<size_t, Rank> &index_list) const -> __device_ptr__ T * {
     using namespace einsums::gpu;
     size_t ordinal = ::std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
     return _data + ordinal;
@@ -204,7 +204,7 @@ auto DeviceTensorView<T, Rank>::operator()(MultiIndex... index) const -> T {
     using namespace einsums::gpu;
     T out;
 
-    hip_catch(hipMemcpy(&out, this->data(index...), sizeof(T), hipMemcpyDeviceToHost));
+    hip_catch(hipMemcpy(&out, this->gpu_data(index...), sizeof(T), hipMemcpyDeviceToHost));
 
     return out;
 }
@@ -236,6 +236,8 @@ auto DeviceTensorView<T, Rank>::common_initialization(TensorType<T, OtherRank> &
     using namespace einsums::gpu;
 
     static_assert(Rank <= OtherRank, "A TensorView must be the same Rank or smaller that the Tensor being viewed.");
+
+    set_mutex(other.get_mutex());
 
     Stride<Rank>      default_strides{};
     Offset<OtherRank> default_offsets{};
@@ -310,6 +312,11 @@ auto DeviceTensorView<T, Rank>::common_initialization(TensorType<T, OtherRank> &
     // Determine the ordinal using the offsets provided (if any) and the strides of the parent
     size_t ordinal = ::std::inner_product(offsets.begin(), offsets.end(), other._strides.begin(), size_t{0});
     _data          = other._data + ordinal;
+    if(other._host_data != nullptr) {
+        _host_data = other._host_data + ordinal;
+    } else {
+        _host_data = nullptr;
+    }
 
     hip_catch(hipMalloc((void **)&(this->_gpu_dims), 2 * sizeof(size_t) * Rank));
     this->_gpu_strides = this->_gpu_dims + Rank;

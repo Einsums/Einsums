@@ -64,10 +64,10 @@ struct DevTypedTensorBase : public virtual TypedTensorBase<HostT> {
 
     using host_datatype = HostT;
 
-    HostDevTypedTensorBase()                               = default;
-    HostDevTypedTensorBase(const HostDevTypedTensorBase &) = default;
+    DevTypedTensorBase()                               = default;
+    DevTypedTensorBase(const DevTypedTensorBase &) = default;
 
-    virtual ~HostDevTypedTensorBase() = default;
+    virtual ~DevTypedTensorBase() = default;
 };
 #endif
 

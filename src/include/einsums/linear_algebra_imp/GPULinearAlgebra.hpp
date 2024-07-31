@@ -7,6 +7,7 @@
 #include "einsums/DeviceTensor.hpp"
 #include "einsums/utility/IndexUtils.hpp"
 #include "einsums/utility/SmartPointerTraits.hpp"
+#include "einsums/utility/TensorTraits.hpp"
 
 #include <hip/driver_types.h>
 #include <hip/hip_common.h>
@@ -233,8 +234,8 @@ void gemm(const T *alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, cons
     int lda = A.stride(0), ldb = B.stride(0), ldc = C->stride(0);
 
     // Flip the A and B matrices. Row-major vs column major.
-    gpu::gemm(TransB ? HIPBLAS_OP_T : HIPBLAS_OP_N, TransA ? HIPBLAS_OP_T : HIPBLAS_OP_N, n, m, k, (dev_datatype *)alpha, B.data(), ldb,
-              A.data(), lda, (dev_datatype *)beta, C->data(), ldc);
+    gpu::gemm(TransB ? HIPBLAS_OP_T : HIPBLAS_OP_N, TransA ? HIPBLAS_OP_T : HIPBLAS_OP_N, n, m, k, (dev_datatype *)alpha, B.gpu_data(), ldb,
+              A.gpu_data(), lda, (dev_datatype *)beta, C->gpu_data(), ldc);
     stream_wait();
 }
 
@@ -255,7 +256,7 @@ T dot(const AType<T, Rank> &A, const BType<T, Rank> &B) {
 
     hip_catch(hipMalloc((void **)&gpu_out, sizeof(T)));
 
-    gpu::dot_kernel<<<block_size(A.size()), blocks(A.size()), 0, get_stream()>>>(gpu_out, A.data(), B.data(), A.size());
+    gpu::dot_kernel<<<block_size(A.size()), blocks(A.size()), 0, get_stream()>>>(gpu_out, A.gpu_data(), B.gpu_data(), A.size());
     stream_wait();
 
     T out;
@@ -283,7 +284,7 @@ T true_dot(const AType<T, Rank> &A, const BType<T, Rank> &B) {
 
     hip_catch(hipMalloc((void **)&gpu_out, sizeof(T)));
 
-    gpu::true_dot_kernel<<<block_size(A.size()), blocks(A.size()), 0, get_stream()>>>(gpu_out, A.data(), B.data(), A.size());
+    gpu::true_dot_kernel<<<block_size(A.size()), blocks(A.size()), 0, get_stream()>>>(gpu_out, A.gpu_data(), B.gpu_data(), A.size());
     stream_wait();
 
     T out;
@@ -311,7 +312,7 @@ void ger(const T *alpha, const XYType<T, XYRank> &X, const XYType<T, XYRank> &Y,
         einsums::tensor_algebra::Indices{einsums::tensor_algebra::index::i, einsums::tensor_algebra::index::j}, &A_temp,
         einsums::tensor_algebra::Indices{einsums::tensor_algebra::index::j, einsums::tensor_algebra::index::i}, *A);
 
-    gpu::ger(X.dim(0), Y.dim(0), (dev_datatype *)alpha, X.data(), X.stride(0), Y.data(), Y.stride(0), A_temp.data(), A_temp.stride(0));
+    gpu::ger(X.dim(0), Y.dim(0), (dev_datatype *)alpha, X.gpu_data(), X.stride(0), Y.gpu_data(), Y.stride(0), A_temp.gpu_data(), A_temp.stride(0));
 
     einsums::tensor_algebra::sort(einsums::tensor_algebra::Indices{einsums::tensor_algebra::index::i, einsums::tensor_algebra::index::j}, A,
                                   einsums::tensor_algebra::Indices{einsums::tensor_algebra::index::j, einsums::tensor_algebra::index::i},
@@ -336,11 +337,11 @@ void gemv(const T *alpha, const AType<T, ARank> &A, const XType<T, XYRank> &x, c
     int m = A.dim(1), n = A.dim(0);
 
     if constexpr (!TransA) {
-        gpu::gemv(HIPBLAS_OP_T, m, n, (dev_datatype *)alpha, A.data(), A.stride(0), x.data(), x.stride(0), (dev_datatype *)beta, y->data(),
+        gpu::gemv(HIPBLAS_OP_T, m, n, (dev_datatype *)alpha, A.gpu_data(), A.stride(0), x.gpu_data(), x.stride(0), (dev_datatype *)beta, y->gpu_data(),
                   y->stride(0));
         stream_wait();
     } else {
-        gpu::gemv(HIPBLAS_OP_N, m, n, (dev_datatype *)alpha, A.data(), A.stride(0), x.data(), x.stride(0), (dev_datatype *)beta, y->data(),
+        gpu::gemv(HIPBLAS_OP_N, m, n, (dev_datatype *)alpha, A.gpu_data(), A.stride(0), x.gpu_data(), x.stride(0), (dev_datatype *)beta, y->gpu_data(),
                   y->stride(0));
         stream_wait();
     }
@@ -354,7 +355,7 @@ void scale(const T *alpha, AType<T, ARank> *A) {
     using dev_datatype = ::std::conditional_t<::std::is_same_v<T, ::std::complex<float>>, hipComplex,
                                               ::std::conditional_t<::std::is_same_v<T, ::std::complex<double>>, hipDoubleComplex, T>>;
 
-    gpu::scal(A->size(), (dev_datatype *)alpha, A->data(), 1);
+    gpu::scal(A->size(), (dev_datatype *)alpha, A->gpu_data(), 1);
     stream_wait();
 }
 
@@ -381,7 +382,7 @@ void symm_gemm(const AType<T, Rank> &A, const BType<T, Rank> &B, CType<T, Rank> 
 
     einsums::linear_algebra::detail::gpu::symm_gemm<<<block_size(A.dim(0) * A.dim(0) * C->dim(0) * C->dim(0)),
                                                       blocks(A.dim(0) * A.dim(0) * C->dim(0) * C->dim(0)), 0, get_stream()>>>(
-        TransA, TransB, A.dim(0), C->dim(0), A.data(), A.stride(0), B.data(), B.stride(0), C->data(), C->stride(0));
+        TransA, TransB, A.dim(0), C->dim(0), A.gpu_data(), A.stride(0), B.gpu_data(), B.stride(0), C->gpu_data(), C->stride(0));
     stream_wait();
 }
 
@@ -509,9 +510,9 @@ int gesv(AType<T, ARank> *A, BType<T, BRank> *B) {
     einsums::gpu::hip_catch(hipMallocAsync((void **)&ipiv, sizeof(int) * lwork, einsums::gpu::get_stream()));
 
 #ifdef __HIP_PLATFORM_NVIDIA__
-    info = gpu::gesv(n, nrhs, A->data(), lda, ipiv.data(), B->data(), ldb, X.data(), X.stride(0));
+    info = gpu::gesv(n, nrhs, A->gpu_data(), lda, ipiv.gpu_data(), B->gpu_data(), ldb, X.gpu_data(), X.stride(0));
 #elif defined(__HIP_PLATFORM_AMD__)
-    info = gpu::gesv(n, nrhs, A->data(), lda, ipiv, B->data(), ldb, B->data(), ldb);
+    info = gpu::gesv(n, nrhs, A->gpu_data(), lda, ipiv, B->gpu_data(), ldb, B->gpu_data(), ldb);
 #endif
 
     stream_wait();
@@ -528,7 +529,7 @@ template <template <typename, size_t> typename XType, template <typename, size_t
 void axpy(const T *alpha, const XType<T, Rank> &X, YType<T, Rank> *Y) {
     using namespace einsums::gpu;
 
-    gpu::axpy(X.dim(0) * X.stride(0), alpha, X.data(), 1, Y->data(), 1);
+    gpu::axpy(X.dim(0) * X.stride(0), alpha, X.gpu_data(), 1, Y->gpu_data(), 1);
     stream_wait();
 }
 
@@ -540,7 +541,7 @@ template <template <typename, size_t> typename XType, template <typename, size_t
 void axpby(const T *alpha, const XType<T, Rank> &X, const T *beta, YType<T, Rank> *Y) {
     using namespace einsums::gpu;
 
-    einsums::linear_algebra::detail::gpu::axpby(X.dim(0) * X.stride(0), alpha, X.data(), 1, beta, Y->data(), 1);
+    einsums::linear_algebra::detail::gpu::axpby(X.dim(0) * X.stride(0), alpha, X.gpu_data(), 1, beta, Y->gpu_data(), 1);
     stream_wait();
 }
 
@@ -605,7 +606,7 @@ void syev(AType<T, ARank> *A, WType<T, WRank> *W) {
     int lda = A->stride(0);
 
     int info = detail::gpu::syev(ComputeEigenvectors ? HIPSOLVER_EIG_MODE_VECTOR : HIPSOLVER_EIG_MODE_NOVECTOR, HIPSOLVER_FILL_MODE_UPPER,
-                                 A->dim(0), A->data(), lda, W->data());
+                                 A->dim(0), A->gpu_data(), lda, W->gpu_data());
 
     stream_wait();
 }
@@ -613,13 +614,13 @@ void syev(AType<T, ARank> *A, WType<T, WRank> *W) {
 template <template <typename, size_t> typename AType, size_t ARank, typename T>
     requires DeviceRankBasicTensor<AType<T, ARank>, 2, T>
 void scale_row(size_t row, const T *alpha, AType<T, ARank> *A) {
-    gpu::scal(A->dim(1), alpha, A->data(row, 0ul), A->stride(1));
+    gpu::scal(A->dim(1), alpha, A->gpu_data(row, 0ul), A->stride(1));
 }
 
 template <template <typename, size_t> typename AType, size_t ARank, typename T>
     requires DeviceRankBasicTensor<AType<T, ARank>, 2, T>
 void scale_column(size_t col, const T *alpha, AType<T, ARank> *A) {
-    gpu::scal(A->dim(0), alpha, A->data(0ul, col), A->stride(0));
+    gpu::scal(A->dim(0), alpha, A->gpu_data(0ul, col), A->stride(0));
 }
 
 template <template <typename, size_t> typename AType, size_t ARank, typename T>
@@ -670,7 +671,7 @@ template <template <typename, size_t> typename AType, template <typename, size_t
 void direct_product(T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, T beta, CType<T, Rank> *C) {
     using namespace einsums::gpu;
 
-    using T_devtype  = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<decltype(C->data())>>>;
+    using T_devtype  = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<decltype(C->gpu_data())>>>;
     using T_hosttype = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<T>>>;
 
     assert(A.dims() == B.dims() && A.dims() == C->dims());
@@ -695,8 +696,8 @@ void direct_product(T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, T
     dim3 threads = block_size(elems), num_blocks = blocks(elems);
 
     gpu::direct_product_kernel<Rank><<<threads, num_blocks, 0, get_stream()>>>(
-        HipCast<T_devtype, T_hosttype>::cast(beta), C->data(), C->gpu_strides(), HipCast<T_devtype, T_hosttype>::cast(alpha), A.data(),
-        A.gpu_strides(), B.data(), B.gpu_strides(), A.gpu_dims(), gpu_Ind_strides, elems);
+        HipCast<T_devtype, T_hosttype>::cast(beta), C->gpu_data(), C->gpu_strides(), HipCast<T_devtype, T_hosttype>::cast(alpha), A.gpu_data(),
+        A.gpu_strides(), B.gpu_data(), B.gpu_strides(), A.gpu_dims(), gpu_Ind_strides, elems);
 
     stream_wait();
 
@@ -725,17 +726,19 @@ __global__ void eig_to_diag(T *out_matrix, int n, int lda, const T *eigs, T expo
 }
 } // namespace gpu
 
-template <template <typename, size_t> typename AType, size_t ARank, typename T>
-    requires DeviceRankBasicTensor<AType<T, ARank>, 2, T>
-auto pow(const AType<T, ARank> &a, T alpha, T cutoff = std::numeric_limits<T>::epsilon()) -> remove_view_t<AType, 2, T> {
+template <MatrixConcept AType>
+    requires DeviceBasicTensorConcept<AType>
+auto pow(const AType &a, typename AType::host_datatype alpha,
+         typename AType::host_datatype cutoff = std::numeric_limits<typename AType::host_datatype>::epsilon()) -> remove_view_t<AType> {
+    using T = typename AType::host_datatype;
     DeviceTensor<T, 1> Evals(Dim<1>{a.dim(0)}, ::einsums::detail::DEV_ONLY);
 
-    remove_view_t<AType, 2, T> Evecs = create_tensor_like(a);
+    remove_view_t<AType> Evecs = create_tensor_like(a);
 
-    remove_view_t<AType, 2, T> Diag = create_tensor_like(a);
+    remove_view_t<AType> Diag = create_tensor_like(a);
 
-    remove_view_t<AType, 2, T> out  = create_tensor_like(a);
-    remove_view_t<AType, 2, T> temp = create_tensor_like(a);
+    remove_view_t<AType> out  = create_tensor_like(a);
+    remove_view_t<AType> temp = create_tensor_like(a);
 
     Evecs.assign(a);
 
@@ -743,7 +746,7 @@ auto pow(const AType<T, ARank> &a, T alpha, T cutoff = std::numeric_limits<T>::e
 
     Diag.zero();
 
-    gpu::eig_to_diag<<<dim3(32), dim3(1), 0, einsums::gpu::get_stream()>>>(Diag.data(), Diag.dim(0), Diag.stride(0), Evals.data(), alpha);
+    gpu::eig_to_diag<<<dim3(32), dim3(1), 0, einsums::gpu::get_stream()>>>(Diag.gpu_data(), Diag.dim(0), Diag.stride(0), Evals.gpu_data(), alpha);
 
     symm_gemm<false, false>(Diag, Evecs, &out);
 

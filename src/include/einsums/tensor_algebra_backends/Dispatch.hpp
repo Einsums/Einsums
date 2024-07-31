@@ -11,6 +11,7 @@
 #include "einsums/Section.hpp"
 #include "einsums/Tensor.hpp"
 #include "einsums/TiledTensor.hpp"
+#include "einsums/FunctionTensor.hpp"
 #include "einsums/Timer.hpp"
 #include "einsums/tensor_algebra_backends/BlockAlgebra.hpp"
 #include "einsums/tensor_algebra_backends/BlockTileAlgebra.hpp"
@@ -288,13 +289,13 @@ auto einsum(const typename CType::data_type C_prefactor, const std::tuple<CIndic
             sC[0] = last_stride(A_target_position_in_C, *C);
 
 #ifdef __HIP__
-            std::conditional_t<einsums::detail::IsIncoreRankTensorV<AType, ARank, ADataType>, const TensorView<ADataType, 2>,
+            std::conditional_t<einsums::detail::IsIncoreTensorV<AType>, const TensorView<ADataType, 2>,
                                const DeviceTensorView<ADataType, 2>>
-                tA{const_cast<AType<ADataType, ARank> &>(A), dA, sA};
-            std::conditional_t<einsums::detail::IsIncoreRankTensorV<BType, BRank, BDataType>, const TensorView<BDataType, 1>,
+                tA{const_cast<AType &>(A), dA, sA};
+            std::conditional_t<einsums::detail::IsIncoreTensorV<BType>, const TensorView<BDataType, 1>,
                                const DeviceTensorView<BDataType, 1>>
-                tB{const_cast<BType<BDataType, BRank> &>(B), dB, sB};
-            std::conditional_t<einsums::detail::IsIncoreRankTensorV<CType, CRank, CDataType>, TensorView<CDataType, 1>,
+                tB{const_cast<BType &>(B), dB, sB};
+            std::conditional_t<einsums::detail::IsIncoreTensorV<CType>, TensorView<CDataType, 1>,
                                DeviceTensorView<CDataType, 1>>
                 tC{*C, dC, sC};
 #else

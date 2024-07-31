@@ -125,11 +125,11 @@ auto sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<
                 size[i0]  = A.dim(ARank - i0 - 1);
             }
 
-            using T_devtype  = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<decltype(C->data())>>>;
+            using T_devtype  = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<decltype(C->gpu_data())>>>;
             using T_hosttype = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<T>>>;
 
-            detail::gpu_sort(perms.data(), ARank, einsums::gpu::HipCast<T_devtype, T_hosttype>::cast(A_prefactor), A.data(), size.data(),
-                             einsums::gpu::HipCast<T_devtype, T_hosttype>::cast(C_prefactor), C->data());
+            detail::gpu_sort(perms.data(), ARank, einsums::gpu::HipCast<T_devtype, T_hosttype>::cast(A_prefactor), A.gpu_data(), size.data(),
+                             einsums::gpu::HipCast<T_devtype, T_hosttype>::cast(C_prefactor), C->gpu_data());
             if (A_prefactor != T{1.0}) {
                 *C *= A_prefactor; // Librett does not handle prefactors (yet?)
             }
@@ -165,12 +165,12 @@ auto sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<
 
         hipStream_t stream = gpu::get_stream();
 
-        using T_devtype  = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<decltype(C->data())>>>;
+        using T_devtype  = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<decltype(C->gpu_data())>>>;
         using T_hosttype = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<T>>>;
 
         detail::sort_kernel<T_devtype, ARank><<<gpu::blocks(A.size()), gpu::block_size(A.size()), 0, stream>>>(
-            gpu_index_table, gpu::HipCast<T_devtype, T_hosttype>::cast(A_prefactor), A.data(), stride_A_gpu,
-            gpu::HipCast<T_devtype, T_hosttype>::cast(C_prefactor), C->data(), stride_C_gpu, A.size());
+            gpu_index_table, gpu::HipCast<T_devtype, T_hosttype>::cast(A_prefactor), A.gpu_data(), stride_A_gpu,
+            gpu::HipCast<T_devtype, T_hosttype>::cast(C_prefactor), C->gpu_data(), stride_C_gpu, A.size());
         hipEvent_t wait_event;
 
         gpu::hip_catch(hipEventCreate(&wait_event));

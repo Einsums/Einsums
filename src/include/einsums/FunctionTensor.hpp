@@ -15,6 +15,11 @@ namespace einsums {
 template <typename T, size_t Rank, size_t BaseRank>
 struct FunctionTensorView;
 
+#ifdef __HIP__
+template <typename T, size_t Rank, size_t BaseRank>
+struct DeviceFunctionTensorView;
+#endif
+
 namespace tensor_props {
 template <typename T, size_t Rank>
 struct FunctionTensorBase : public virtual TensorBase<T, Rank>, virtual FunctionTensorBaseNoExtra, virtual CoreTensorBase {
@@ -211,7 +216,7 @@ struct FunctionTensorBase : public virtual TensorBase<T, Rank>, virtual Function
 
 template <typename T, size_t Rank>
 struct FuncPointerTensor : public virtual tensor_props::FunctionTensorBase<T, Rank>, virtual tensor_props::CoreTensorBase {
-  private:
+  protected:
     T (*_func_ptr)(const std::array<int, Rank> &);
 
   public:
@@ -292,109 +297,6 @@ struct FunctionTensorView : public virtual tensor_props::FunctionTensorBase<T, R
         auto fixed_inds = apply_view(inds);
         return _func_tensor->call(fixed_inds);
     }
-
-    // template <typename... MultiIndex>
-    //     requires requires {
-    //         requires(sizeof...(MultiIndex) == Rank);
-    //         requires(std::is_integral_v<MultiIndex> && ...);
-    //     }
-    // T operator()(MultiIndex... inds) const {
-    //     auto new_inds = std::array<int, Rank>{static_cast<int>(inds)...};
-
-    //     auto fixed_inds = apply_view(new_inds);
-
-    //     return (*_func_tensor)(fixed_inds);
-    // }
-
-    // template <typename Storage>
-    //     requires requires {
-    //         requires !std::is_integral_v<Storage>;
-    //         requires !std::is_same_v<Storage, AllT>;
-    //         requires !std::is_same_v<Storage, Range>;
-    //     }
-    // T operator()(const Storage &inds) const {
-    //     auto new_inds = std::array<int, Rank>();
-
-    //     for (int i = 0; i < Rank; i++) {
-    //         new_inds[i] = (int)inds.at(i);
-    //     }
-
-    //     auto fixed_inds = apply_view(new_inds);
-
-    //     return (*_func_tensor)(fixed_inds);
-    // }
-
-    // template <typename... MultiIndex>
-    //     requires requires {
-    //         requires(sizeof...(MultiIndex) == Rank);
-    //         requires(AtLeastOneOfType<AllT, MultiIndex...>);
-    //         requires(NoneOfType<std::array<int, Rank>, MultiIndex...>);
-    //     }
-    // auto operator()(MultiIndex... inds) const
-    //     -> FunctionTensorView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>(), UnderlyingRank> {
-    //     const auto &indices = std::forward_as_tuple(inds...);
-
-    //     std::vector<int> index_template(_index_template);
-
-    //     Offset<count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> offsets;
-    //     Dim<count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()>    dims{};
-
-    //     int counter{0}, counter_2{0};
-    //     for_sequence<sizeof...(MultiIndex)>([&](auto i) {
-    //         // println("looking at {}", i);
-    //         while (index_template[counter_2] >= 0) { // Skip already assigned values.
-    //             counter_2++;
-    //         }
-    //         if constexpr (std::is_convertible_v<std::tuple_element_t<i, std::tuple<MultiIndex...>>, std::int64_t>) {
-    //             auto tmp = static_cast<std::int64_t>(std::get<i>(indices));
-    //             if (tmp < 0)
-    //                 tmp = this->_dims[i] + tmp;
-    //             index_template[counter_2] = tmp;
-    //         } else if constexpr (std::is_same_v<AllT, std::tuple_element_t<i, std::tuple<MultiIndex...>>>) {
-    //             dims[counter]             = this->_dims[i];
-    //             offsets[counter]          = 0;
-    //             index_template[counter_2] = -1;
-    //             counter++;
-
-    //         } else if constexpr (std::is_same_v<Range, std::tuple_element_t<i, std::tuple<MultiIndex...>>>) {
-    //             auto range       = std::get<i>(indices);
-    //             offsets[counter] = range[0];
-    //             if (range[1] < 0) {
-    //                 auto temp = this->_dims[i] + range[1];
-    //                 range[1]  = temp;
-    //             }
-    //             dims[counter]     = range[1] - range[0];
-    //             index_template[i] = -1;
-    //             counter++;
-    //         }
-    //         counter_2++;
-    //     });
-
-    //     return FunctionTensorView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>(), UnderlyingRank>(
-    //         this, offsets, dims, index_template);
-    // }
-
-    // template <typename... MultiIndex>
-    //     requires NumOfType<Range, Rank, MultiIndex...>
-    // auto operator()(MultiIndex... index) const -> FunctionTensorView<T, Rank, UnderlyingRank> {
-    //     Dim<Rank>    dims{};
-    //     Offset<Rank> offset{};
-
-    //     auto ranges = get_array_from_tuple<std::array<Range, Rank>>(std::forward_as_tuple(index...));
-
-    //     for (int r = 0; r < Rank; r++) {
-    //         auto range = ranges[r];
-    //         offset[r]  = range[0];
-    //         if (range[1] < 0) {
-    //             auto temp = this->_dims[r] + range[1];
-    //             range[1]  = temp;
-    //         }
-    //         dims[r] = range[1] - range[0];
-    //     }
-    //     // index template doesn't change. No single indices to modify it.
-
-    //     return FunctionTensorView<T, Rank, Rank>{*this, std::move(offset), std::move(dims), _index_template};
-    // }
 
     bool full_view_of_underlying() const override { return _full_view; }
 };

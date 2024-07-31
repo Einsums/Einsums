@@ -33,6 +33,20 @@
 
 namespace einsums {
 
+// Forward declarations.
+template<typename T, size_t Rank>
+struct Tensor;
+
+#ifdef __HIP__
+template<typename T, size_t Rank>
+struct DeviceTensor;
+#endif
+
+
+template<typename T, size_t Rank>
+struct DiskTensor;
+
+
 namespace detail {
 
 /**************************************
@@ -1446,6 +1460,48 @@ using BasicTensorLike = decltype(detail::create_basic_tensor_like<T, Rank>(D()))
  */
 template<typename D>
 using DataType = decltype(detail::type_function(D()));
+
+namespace tensor_props {
+/**
+ * @struct LocationTensorBaseOf
+ *
+ * @brief Gets the location base (CoreTensorBase, DiskTensorBase, etc.) of the argument.
+ *
+ * @tparam D The tensor type to query.
+ */
+template<typename D>
+struct LocationTensorBaseOf {};
+
+template<CoreTensorConcept D>
+struct LocationTensorBaseOf<D> {
+    using type = CoreTensorBase;
+};
+
+template<DiskTensorConcept D>
+struct LocationTensorBaseOf<D> {
+    using type = DiskTensorBase;
+};
+
+#ifdef __HIP__
+template<DeviceTensorConcept D>
+struct LocationTensorBaseOf<D> {
+    using type = DeviceTensorBase;
+};
+#endif
+
+/**
+ * @typedef LocationTensorBaseOfT
+ *
+ * @brief Gets the location base (CoreTensorBase, DiskTensorBase, etc.) of the argument.
+ *
+ * This typedef can be used as a base class for tensors.
+ *
+ * @tparam D The tensor type to query.
+ */
+template<typename D>
+using LocationTensorBaseOfT = typename LocationTensorBaseOf<D>::type;
+
+}
 
 namespace detail {
 

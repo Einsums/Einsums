@@ -116,7 +116,7 @@ auto einsum_special_dispatch(const DataType<CType> C_prefactor, const std::tuple
     }
 
 #ifdef __HIP__
-    if constexpr (einsums::detail::IsDeviceRankTensorV<AType<ADataType, ARank>, ARank, ADataType>) {
+    if constexpr (einsums::detail::IsDeviceTensorV<AType>) {
 
         size_t     elems = omp_get_max_threads();
         CDataType *temp  = new CDataType[elems];

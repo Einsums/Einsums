@@ -843,9 +843,9 @@ struct TiledDeviceTensor final : public virtual tensor_props::TiledTensorBase<T,
     template <typename... Sizes>
         requires(!(std::is_same_v<Sizes, detail::HostToDeviceMode> || ...))
     TiledDeviceTensor(std::string name, detail::HostToDeviceMode mode, Sizes... sizes)
-        : _mode{mode}, TiledTensorBase<T, Rank, DeviceTensor<T, Rank>>(name, sizes...) {}
+        : _mode{mode}, tensor_props::TiledTensorBase<T, Rank, DeviceTensor<T, Rank>>(name, sizes...) {}
 
-    TiledDeviceTensor(const detail::TiledDeviceTensor<T, Rank> &other) = default;
+    TiledDeviceTensor(const TiledDeviceTensor<T, Rank> &other) = default;
 
     ~TiledDeviceTensor() = default;
 
@@ -910,7 +910,7 @@ struct TiledDeviceTensor final : public virtual tensor_props::TiledTensorBase<T,
 template <typename T, size_t Rank>
 struct TiledDeviceTensorView final : public virtual tensor_props::TiledTensorBase<T, Rank, DeviceTensorView<T, Rank>>,
                                      virtual tensor_props::DeviceTensorBase,
-                                     virtual tensor_props::TensorViewBase<T, Rank, DeviceTiledTensor<T, Rank>> {
+                                     virtual tensor_props::TensorViewBase<T, Rank, TiledDeviceTensor<T, Rank>> {
   private:
     bool                     _full_view_of_underlying{false};
     detail::HostToDeviceMode _mode{detail::DEV_ONLY};
@@ -923,7 +923,7 @@ struct TiledDeviceTensorView final : public virtual tensor_props::TiledTensorBas
     template <typename... Sizes>
         requires(!(std::is_same_v<Sizes, detail::HostToDeviceMode> || ...))
     TiledDeviceTensorView(std::string name, detail::HostToDeviceMode mode, Sizes... sizes)
-        : _mode{mode}, TiledTensorBase<T, Rank, DeviceTensorView>(name, sizes...) {}
+        : _mode{mode}, tensor_props::TiledTensorBase<T, Rank, DeviceTensorView<T, Rank>>(name, sizes...) {}
 
     TiledDeviceTensorView(const TiledDeviceTensorView<T, Rank> &other) = default;
 

@@ -45,6 +45,29 @@ auto q(const Tensor<T, 2> &qr, const Tensor<T, 1> &tau) -> Tensor<T, 2>;
 } // namespace einsums::linear_algebra
 
 namespace einsums {
+    // Forward declarations of tensors.
+    template<typename T, size_t Rank>
+    struct Tensor;
+
+    template<typename T, size_t Rank>
+    struct BlockTensor;
+
+    template<typename T, size_t Rank>
+    struct TiledTensor;
+
+    #ifdef __HIP__
+    template<typename T, size_t Rank>
+    struct DeviceTensor;
+
+    template<typename T, size_t Rank>
+    struct BlockDeviceTensor;
+
+    template<typename T, size_t Rank>
+    struct TiledDeviceTensor;
+    #endif
+}
+
+namespace einsums {
 
 /**
  * @brief Create a new tensor with \p name and \p index filled with incremental data.
