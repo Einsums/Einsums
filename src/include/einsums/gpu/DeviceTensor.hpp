@@ -728,7 +728,7 @@ T DeviceTensor<T, Rank>::operator()(MultiIndex... index) const {
         return this->_host_data[ordinal];
     } else {
         T out;
-        hip_catch(hipMemcpy((void *)&out, (const void *)this->data(index...), sizeof(T), hipMemcpyHostToDevice));
+        hip_catch(hipMemcpy((void *)&out, (const void *)this->gpu_data(index...), sizeof(T), hipMemcpyDeviceToHost));
         return out;
     }
 }
