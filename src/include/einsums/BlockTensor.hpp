@@ -949,6 +949,90 @@ struct BlockDeviceTensor : public virtual tensor_props::BlockTensorBase<T, Rank,
     }
 
     /**
+     * @brief Construct a new BlockDeviceTensor object with the given name and dimensions.
+     *
+     * Constructs a new BlockDeviceTensor object using the information provided in \p name and \p block_dims .
+     *
+     * @code
+     * // Constructs a rank 4 tensor with two blocks, the first is 2x2x2x2, the second is 3x3x3x3.
+     * auto A = BlockTensor<double, 4>("A", 2, 3);
+     * @endcode
+     *
+     * The newly constructed Tensor is NOT zeroed out for you. If you start having NaN issues
+     * in your code try calling Tensor.zero() or zero(Tensor) to see if that resolves it.
+     *
+     * @tparam Dims Variadic template arguments for the dimensions. Must be castable to size_t.
+     * @param name Name of the new tensor.
+     * @param mode The storage mode.
+     * @param block_dims The size of each block.
+     */
+    template <typename... Dims>
+    requires(NoneOfType<detail::HostToDeviceMode, Dims...>)
+    explicit BlockDeviceTensor(std::string name, Dims... block_dims)
+        : tensor_props::BlockTensorBase<T, Rank, DeviceTensor<T, Rank>>(name) {
+
+        auto dims = std::array<size_t, sizeof...(Dims)>{static_cast<size_t>(block_dims)...};
+
+        for (int i = 0; i < sizeof...(Dims); i++) {
+
+            Dim<Rank> pass_dims;
+
+            pass_dims.fill(dims[i]);
+
+            tensor_props::BlockTensorBase<T, Rank, DeviceTensor<T, Rank>>::push_block(DeviceTensor<T, Rank>(pass_dims, detail::DEV_ONLY));
+        }
+    }
+
+    /**
+     * @brief Construct a new BlockDeviceTensor object with the given name and dimensions.
+     *
+     * Constructs a new BlockDeviceTensor object using the information provided in \p name and \p block_dims .
+     *
+     * @code
+     * // Constructs a rank 4 tensor with two blocks, the first is 2x2x2x2, the second is 3x3x3x3.
+     * auto A = BlockTensor<double, 4>("A", 2, 3);
+     * @endcode
+     *
+     * The newly constructed Tensor is NOT zeroed out for you. If you start having NaN issues
+     * in your code try calling Tensor.zero() or zero(Tensor) to see if that resolves it.
+     *
+     * @tparam Dims Variadic template arguments for the dimensions. Must be castable to size_t.
+     * @param name Name of the new tensor.
+     * @param mode The storage mode.
+     * @param block_dims The size of each block.
+     */
+    template <typename ArrayArg>
+    explicit BlockDeviceTensor(std::string name, const ArrayArg &block_dims)
+        : tensor_props::BlockTensorBase<T, Rank, DeviceTensor<T, Rank>>(name) {
+        for (int i = 0; i < block_dims.size(); i++) {
+
+            Dim<Rank> pass_dims;
+
+            pass_dims.fill(block_dims[i]);
+
+            tensor_props::BlockTensorBase<T, Rank, DeviceTensor<T, Rank>>::push_block(DeviceTensor<T, Rank>(pass_dims, detail::DEV_ONLY));
+        }
+    }
+
+    /**
+     * @brief Construct a new BlockTensor object using the dimensions given by Dim object.
+     *
+     * @param block_dims The dimensions of the new tensor in Dim form.
+     */
+    template <size_t Dims>
+    explicit BlockDeviceTensor(Dim<Dims> block_dims)
+        : tensor_props::BlockTensorBase<T, Rank, DeviceTensor<T, Rank>>() {
+        for (int i = 0; i < block_dims.size(); i++) {
+
+            Dim<Rank> pass_dims;
+
+            pass_dims.fill(block_dims[i]);
+
+            this->push_block(DeviceTensor<T, Rank>(pass_dims, detail::DEV_ONLY));
+        }
+    }
+
+    /**
      * Returns a pointer into the tensor at the given location.
      *
      *

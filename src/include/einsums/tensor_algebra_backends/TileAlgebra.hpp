@@ -258,7 +258,7 @@ auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndi
 
     CDataType out{0.0};
 
-#pragma omp parallel for simd reduction(+ : out)
+#pragma omp parallel for reduction(+ : out)
     for (size_t sentinel = 0; sentinel < unique_grid[0] * unique_strides[0]; sentinel++) {
         thread_local std::array<size_t, std::tuple_size<decltype(unique_indices)>::value> unique_index_table;
 

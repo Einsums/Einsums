@@ -48,7 +48,6 @@ struct FunctionTensorBase : public virtual TensorBase<T, Rank>, virtual Function
 
   public:
     FunctionTensorBase(const FunctionTensorBase &) = default;
-    FunctionTensorBase(FunctionTensorBase &&)      = default;
 
     template <typename... Args>
         requires(!std::is_same_v<Args, Dim<Rank>> || ...)
@@ -224,6 +223,10 @@ struct FuncPointerTensor : public virtual tensor_props::FunctionTensorBase<T, Ra
     FuncPointerTensor(std::string name, T (*func_ptr)(const std::array<int, Rank> &), Args... dims)
         : tensor_props::FunctionTensorBase<T, Rank>(name, dims...), _func_ptr(func_ptr) {}
 
+    FuncPointerTensor(const FuncPointerTensor<T, Rank> &copy) : tensor_props::FunctionTensorBase<T, Rank>(copy) {
+        _func_ptr = copy._func_ptr;
+    }
+
     virtual ~FuncPointerTensor() = default;
 
     virtual T call(const std::array<int, Rank> &inds) const override { return _func_ptr(inds); }
@@ -292,6 +295,13 @@ struct FunctionTensorView : public virtual tensor_props::FunctionTensorBase<T, R
     FunctionTensorView(const tensor_props::FunctionTensorBase<T, UnderlyingRank> *func_tens, const Offset<Rank> &offsets,
                        const Dim<Rank> &dims, const std::array<int, UnderlyingRank> &index_template)
         : _offsets{offsets}, _func_tensor(func_tens), _index_template{index_template}, tensor_props::FunctionTensorBase<T, Rank>(dims) {}
+
+    FunctionTensorView(const FunctionTensorView &copy) : tensor_props::FunctionTensorBase<T, Rank>(copy) {
+        _func_tensor = copy._func_tensor;
+        _offsets = copy._offsets;
+        _index_template = copy._index_template;
+        _full_view = copy._full_view;
+    }
 
     virtual T call(const std::array<int, Rank> &inds) const override {
         auto fixed_inds = apply_view(inds);

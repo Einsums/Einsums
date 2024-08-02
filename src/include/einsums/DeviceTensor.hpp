@@ -855,7 +855,7 @@ template <typename T>
 struct DeviceTensor<T, 0> : public virtual tensor_props::DeviceTensorBase,
                             virtual tensor_props::BasicTensorBase<T, 0>,
                             virtual tensor_props::DevTypedTensorBase<T>,
-                            virtual tensor_props::LockableTensorBase {
+                            virtual tensor_props::LockableTensorBase, virtual tensor_props::AlgebraOptimizedTensor {
   public:
     using dev_datatype  = typename tensor_props::DevTypedTensorBase<T>::dev_datatype;
     using host_datatype = typename tensor_props::DevTypedTensorBase<T>::host_datatype;
@@ -1117,7 +1117,7 @@ struct DeviceTensorView : public virtual tensor_props::BasicTensorBase<T, Rank>,
                           virtual tensor_props::DeviceTensorBase,
                           virtual tensor_props::TensorViewBase<T, Rank, DeviceTensor<T, Rank>>,
                           virtual tensor_props::DevTypedTensorBase<T>,
-                          virtual tensor_props::LockableTensorBase {
+                          virtual tensor_props::LockableTensorBase, virtual tensor_props::AlgebraOptimizedTensor {
   public:
     using dev_datatype  = typename tensor_props::DevTypedTensorBase<T>::dev_datatype;
     using host_datatype = typename tensor_props::DevTypedTensorBase<T>::host_datatype;

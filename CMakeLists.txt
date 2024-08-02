@@ -95,10 +95,6 @@ if(EINSUMS_BUILD_HIP)
     set(ENV{hipsolver_DIR} ${hipsolver_DIR})
 
     enable_language(HIP)
-    find_package(hipblas REQUIRED)
-    find_package(hipsolver REQUIRED)
-    set(CURSES_NEED_NCURSES True)
-    find_package(Curses)
 
     set(ENABLE_HIP ON)
 endif()
@@ -138,6 +134,14 @@ if (OpenMP_FOUND)
 endif ()
 
 add_subdirectory(external)
+
+if(EINSUMS_BUILD_HIP)
+    find_package(hipblas REQUIRED)
+    find_package(hipsolver REQUIRED)
+    set(CURSES_NEED_NCURSES True)
+    find_package(Curses)
+endif()
+
 add_subdirectory(src)
 
 if(EINSUMS_COVERAGE AND NOT MSVC)
