@@ -225,11 +225,11 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
          grid    = blocks(::std::get<0>(unique_dims) * unique_strides[0]);
 
     if constexpr (sizeof...(CIndices) != 0) {
-        using C_devtype   = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<decltype(C->data())>>>;
-        using A_devtype   = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<decltype(A.data())>>>;
-        using B_devtype   = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<decltype(B.data())>>>;
+        using C_devtype   = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<decltype(C->gpu_data())>>>;
+        using A_devtype   = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<decltype(A.gpu_data())>>>;
+        using B_devtype   = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<decltype(B.gpu_data())>>>;
         using AB_devtype  = std::remove_cvref_t<std::remove_pointer_t<
-             std::decay_t<std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), decltype(A.data()), decltype(B.data())>>>>;
+             std::decay_t<std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), decltype(A.gpu_data()), decltype(B.gpu_data())>>>>;
         using C_hosttype  = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<CDataType>>>;
         using A_hosttype  = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<ADataType>>>;
         using B_hosttype  = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<BDataType>>>;
@@ -237,9 +237,9 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
 
         einsum_generic_algorithm_gpu<C_devtype, A_devtype, B_devtype, std::tuple_size<decltype(unique_indices)>::value, CRank, ARank, BRank>
             <<<threads, grid, 0, get_stream()>>>(unique_strides_gpu, C_index_table_gpu, A_index_table_gpu, B_index_table_gpu,
-                                                 HipCast<C_devtype, C_hosttype>::cast(C_prefactor), C->data(), C->gpu_dims(),
-                                                 C->gpu_strides(), HipCast<AB_devtype, AB_hosttype>::cast(AB_prefactor), A.data(),
-                                                 A.gpu_dims(), A.gpu_strides(), B.data(), B.gpu_dims(), B.gpu_strides(),
+                                                 HipCast<C_devtype, C_hosttype>::cast(C_prefactor), C->gpu_data(), C->gpu_dims(),
+                                                 C->gpu_strides(), HipCast<AB_devtype, AB_hosttype>::cast(AB_prefactor), A.gpu_data(),
+                                                 A.gpu_dims(), A.gpu_strides(), B.gpu_data(), B.gpu_dims(), B.gpu_strides(),
                                                  ::std::get<0>(unique_dims) * unique_strides[0]);
     } else {
         // CDataType *work;
@@ -250,11 +250,11 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
             *C *= C_prefactor;
         }
 
-        using C_devtype   = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<decltype(C->data())>>>;
-        using A_devtype   = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<decltype(A.data())>>>;
-        using B_devtype   = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<decltype(B.data())>>>;
+        using C_devtype   = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<decltype(C->gpu_data())>>>;
+        using A_devtype   = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<decltype(A.gpu_data())>>>;
+        using B_devtype   = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<decltype(B.gpu_data())>>>;
         using AB_devtype  = std::remove_cvref_t<std::remove_pointer_t<
-             std::decay_t<std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), decltype(A.data()), decltype(B.data())>>>>;
+             std::decay_t<std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), decltype(A.gpu_data()), decltype(B.gpu_data())>>>>;
         using C_hosttype  = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<CDataType>>>;
         using A_hosttype  = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<ADataType>>>;
         using B_hosttype  = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<BDataType>>>;
@@ -266,9 +266,9 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
                             threads.x * threads.y * threads.z * grid.x * grid.y * grid.z * sizeof(CDataType) / get_warpsize()));
 
         einsum_generic_zero_rank_gpu<C_devtype, A_devtype, B_devtype, std::tuple_size<decltype(unique_indices)>::value, ARank, BRank>
-            <<<threads, grid, 0, get_stream()>>>(unique_strides_gpu, A_index_table_gpu, B_index_table_gpu, C->data(),
-                                                 HipCast<AB_devtype, AB_hosttype>::cast(AB_prefactor), A.data(), A.gpu_dims(),
-                                                 A.gpu_strides(), B.data(), B.gpu_dims(), B.gpu_strides(),
+            <<<threads, grid, 0, get_stream()>>>(unique_strides_gpu, A_index_table_gpu, B_index_table_gpu, C->gpu_data(),
+                                                 HipCast<AB_devtype, AB_hosttype>::cast(AB_prefactor), A.gpu_data(), A.gpu_dims(),
+                                                 A.gpu_strides(), B.gpu_data(), B.gpu_dims(), B.gpu_strides(),
                                                  ::std::get<0>(unique_dims) * unique_strides[0], work_array);
 
         hip_catch(hipFreeAsync((void *)work_array, get_stream()));

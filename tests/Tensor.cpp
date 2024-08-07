@@ -295,7 +295,7 @@ TEST_CASE("Tensor 2D - HDF5 wrapper") {
 
     for (int i = 0; i < 3; i++)
         for (int j = 0; j < 3; j++)
-            REQUIRE(B(i, j) == B(i, j));
+            REQUIRE(A(i, j) == B(i, j));
 }
 
 TEST_CASE("reshape") {

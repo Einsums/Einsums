@@ -377,6 +377,10 @@ auto EINSUMS_EXPORT cdot(blas_int n, const std::complex<float> *x, blas_int incx
                          blas_int incy) -> std::complex<float>;
 auto EINSUMS_EXPORT zdot(blas_int n, const std::complex<double> *x, blas_int incx, const std::complex<double> *y,
                          blas_int incy) -> std::complex<double>;
+auto EINSUMS_EXPORT cdotc(blas_int n, const std::complex<float> *x, blas_int incx, const std::complex<float> *y,
+                         blas_int incy) -> std::complex<float>;
+auto EINSUMS_EXPORT zdotc(blas_int n, const std::complex<double> *x, blas_int incx, const std::complex<double> *y,
+                         blas_int incy) -> std::complex<double>;
 } // namespace detail
 
 /**
@@ -414,6 +418,21 @@ template <>
 inline auto dot<std::complex<double>>(blas_int n, const std::complex<double> *x, blas_int incx, const std::complex<double> *y,
                                       blas_int incy) -> std::complex<double> {
     return detail::zdot(n, x, incx, y, incy);
+}
+
+template <typename T>
+auto dotc(blas_int n, const T *x, blas_int incx, const T *y, blas_int incy) -> T;
+
+template <>
+inline auto dotc<std::complex<float>>(blas_int n, const std::complex<float> *x, blas_int incx, const std::complex<float> *y,
+                                     blas_int incy) -> std::complex<float> {
+    return detail::cdotc(n, x, incx, y, incy);
+}
+
+template <>
+inline auto dotc<std::complex<double>>(blas_int n, const std::complex<double> *x, blas_int incx, const std::complex<double> *y,
+                                      blas_int incy) -> std::complex<double> {
+    return detail::zdotc(n, x, incx, y, incy);
 }
 
 namespace detail {

@@ -306,15 +306,15 @@ inline void fprintln_warn(std::FILE *fp, const std::string_view &format, const T
 }
 
 template <typename... Ts>
-inline void fprintln_abort(const std::string_view &format, const Ts... ts) {
+inline void fprintln_abort(std::ostream &os, const std::string_view &format, const Ts... ts) {
     std::string message = std::string("ERROR: ") + format.data();
-    println(bg(fmt::color::red) | fg(fmt::color::white), message, ts...);
+    fprintln(os, bg(fmt::color::red) | fg(fmt::color::white), message, ts...);
 
     std::abort();
 }
 
 template <typename... Ts>
-inline void fprintln_warn(const std::string_view &format, const Ts... ts) {
+inline void fprintln_warn(std::ostream &os, const std::string_view &format, const Ts... ts) {
     std::string message = std::string("WARNING: ") + format.data();
-    println(bg(fmt::color::yellow) | fg(fmt::color::black), message, ts...);
+    fprintln(os, bg(fmt::color::yellow) | fg(fmt::color::black), message, ts...);
 }

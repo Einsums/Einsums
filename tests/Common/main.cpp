@@ -17,6 +17,8 @@
 #include <h5cpp/io>
 
 auto main(int argc, char *argv[]) -> int {
+    Catch::StringMaker<float>::precision = 10;
+    Catch::StringMaker<double>::precision = 17;
     einsums::initialize();
 
     // Create a file to hold the data from the DiskTensor tests.

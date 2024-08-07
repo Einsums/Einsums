@@ -8,12 +8,12 @@
 #endif
 
 namespace einsums::linear_algebra::detail {
-template <template <typename, size_t> typename AType, template <typename, size_t> typename BType, typename T, size_t Rank>
-    requires requires {
-        requires RankTiledTensor<AType<T, Rank>, Rank, T>;
-        requires RankTiledTensor<BType<T, Rank>, Rank, T>;
-    }
-auto dot(const AType<T, Rank> &A, const BType<T, Rank> &B) -> T {
+
+template <TiledTensorConcept AType, TiledTensorConcept BType>
+    requires SameUnderlyingAndRank<AType, BType>
+auto dot(const AType &A, const BType &B) -> typename AType::data_type {
+    constexpr size_t Rank = AType::rank;
+    using T               = typename AType::data_type;
     std::array<size_t, Rank> strides;
 
     size_t prod = 1;
@@ -31,10 +31,11 @@ auto dot(const AType<T, Rank> &A, const BType<T, Rank> &B) -> T {
 #pragma omp parallel for reduction(+ : out)
     for (size_t index = 0; index < A.grid_size(); index++) {
         std::array<size_t, Rank> index_arr;
+        size_t                   temp_index = index;
 
         for (int i = 0; i < Rank; i++) {
-            index_arr[i] = index / strides[i];
-            index %= A.grid_size(i);
+            index_arr[i] = temp_index / strides[i];
+            temp_index %= strides[i];
         }
 
         if (!A.has_tile(index_arr) || !B.has_tile(index_arr) || A.has_zero_size(index_arr) || B.has_zero_size(index_arr)) {
@@ -46,15 +47,51 @@ auto dot(const AType<T, Rank> &A, const BType<T, Rank> &B) -> T {
     return out;
 }
 
-template <bool TransA, bool TransB, template <typename, size_t> typename AType, template <typename, size_t> typename BType,
-          template <typename, size_t> typename CType, size_t Rank, typename T, typename U>
-    requires requires {
-        requires RankTiledTensor<AType<T, Rank>, 2, T>;
-        requires RankTiledTensor<BType<T, Rank>, 2, T>;
-        requires RankTiledTensor<CType<T, Rank>, 2, T>;
-        requires std::convertible_to<U, T>;
+template <TiledTensorConcept AType, TiledTensorConcept BType>
+    requires SameUnderlyingAndRank<AType, BType>
+auto true_dot(const AType &A, const BType &B) -> typename AType::data_type {
+    constexpr size_t Rank = AType::rank;
+    using T               = typename AType::data_type;
+    std::array<size_t, Rank> strides;
+
+    size_t prod = 1;
+
+    for (int i = 0; i < Rank; i++) {
+        if (A.grid_size(i) != B.grid_size(i)) {
+            throw std::runtime_error("dot: Tiled tensors have incompatible tiles.");
+        }
+
+        strides[Rank - 1 - i] = prod;
+        prod *= A.grid_size(i);
     }
-void gemm(const U alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const U beta, CType<T, Rank> *C) {
+    T out = 0;
+
+//#pragma omp parallel for reduction(+ : out)
+    for (size_t index = 0; index < A.grid_size(); index++) {
+        std::array<size_t, Rank> index_arr;
+        size_t                   temp_index = index;
+
+        for (int i = 0; i < Rank; i++) {
+            index_arr[i] = temp_index / strides[i];
+            temp_index %= A.grid_size(i);
+        }
+
+        if (!A.has_tile(index_arr) || !B.has_tile(index_arr) || A.has_zero_size(index_arr) || B.has_zero_size(index_arr)) {
+            continue;
+        }
+        out += true_dot(A.tile(index_arr), B.tile(index_arr));
+    }
+
+    return out;
+}
+
+template <bool TransA, bool TransB, TiledTensorConcept AType, TiledTensorConcept BType, TiledTensorConcept CType, typename U>
+    requires requires {
+        requires MatrixConcept<AType>;
+        requires SameUnderlyingAndRank<AType, BType, CType>;
+        requires std::convertible_to<U, typename AType::data_type>;
+    }
+void gemm(const U alpha, const AType &A, const BType &B, const U beta, CType *C) {
     // Check for compatibility.
     if (C->grid_size(0) != A.grid_size(TransA ? 1 : 0) || C->grid_size(1) != B.grid_size(TransB ? 0 : 1)) {
         throw std::runtime_error("gemm: Output tensor needs to have a compatible tile grid with the inputs.");
@@ -147,14 +184,14 @@ void gemm(const U alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const
     }
 }
 
-template <bool TransA, template <typename, size_t> typename AType, template <typename, size_t> typename XType,
-          template <typename, size_t> typename YType, size_t ARank, size_t XYRank, typename T, typename U>
+template <bool TransA, TiledTensorConcept AType, VectorConcept XType, VectorConcept YType, typename U>
     requires requires {
-        requires RankTiledTensor<AType<T, ARank>, 2, T>;
-        requires std::convertible_to<U, T>; // Make sure the alpha and beta can be converted to T
+        requires MatrixConcept<AType>;
+        requires SameUnderlying<AType, XType, YType>;
+        requires std::convertible_to<U, typename AType::data_type>;
     }
-void gemv(const U alpha, const AType<T, ARank> &A, const XType<T, XYRank> &z, const U beta, YType<T, XYRank> *y) {
-    if constexpr (einsums::detail::IsTiledTensorV<XType<T, XYRank>, XYRank, T>) {
+void gemv(const U alpha, const AType &A, const XType &z, const U beta, YType *y) {
+    if constexpr (einsums::detail::IsTiledTensorV<XType>) {
         if constexpr (TransA) {
             if (A.tile_sizes(0) != z.tile_sizes(0)) {
                 throw std::runtime_error("gemv: Tiled tensors need to have compatible tile sizes.");
@@ -165,7 +202,7 @@ void gemv(const U alpha, const AType<T, ARank> &A, const XType<T, XYRank> &z, co
             }
         }
     }
-    if constexpr (einsums::detail::IsTiledTensorV<YType<T, XYRank>, XYRank, T>) {
+    if constexpr (einsums::detail::IsTiledTensorV<YType>) {
         if constexpr (TransA) {
             if (A.tile_sizes(1) != y->tile_sizes(0)) {
                 throw std::runtime_error("gemv: Tiled tensors need to have compatible tile sizes.");
@@ -189,7 +226,7 @@ void gemv(const U alpha, const AType<T, ARank> &A, const XType<T, XYRank> &z, co
         if (A.tile_size((TransA) ? 1 : 0)[i] == 0) {
             continue;
         }
-        if constexpr (einsums::detail::IsTiledTensorV<YType<T, XYRank>, XYRank, T>) {
+        if constexpr (einsums::detail::IsTiledTensorV<YType>) {
             y->lock();
             auto &y_tile = y->tile(i);
             y->unlock();
@@ -203,7 +240,7 @@ void gemv(const U alpha, const AType<T, ARank> &A, const XType<T, XYRank> &z, co
                         continue;
                     }
                 }
-                if constexpr (einsums::detail::IsTiledTensorV<XType<T, XYRank>, XYRank, T>) {
+                if constexpr (einsums::detail::IsTiledTensorV<XType>) {
                     if constexpr (TransA) {
                         gemv<TransA>(alpha, A.tile(j, i), z.tile(j), U(1.0), &y_tile);
                     } else {
@@ -236,7 +273,7 @@ void gemv(const U alpha, const AType<T, ARank> &A, const XType<T, XYRank> &z, co
                         continue;
                     }
                 }
-                if constexpr (einsums::detail::IsTiledTensorV<XType<T, XYRank>, XYRank, T>) {
+                if constexpr (einsums::detail::IsTiledTensorV<XType>) {
                     if constexpr (TransA) {
                         gemv<TransA>(alpha, A.tile(j, i), z.tile(j), U(1.0), &y_tile);
                     } else {
@@ -260,14 +297,11 @@ void gemv(const U alpha, const AType<T, ARank> &A, const XType<T, XYRank> &z, co
     }
 }
 
-template <template <typename, size_t> typename AType, template <typename, size_t> typename BType,
-          template <typename, size_t> typename CType, typename T, size_t Rank>
-    requires requires {
-        requires RankTiledTensor<AType<T, Rank>, Rank, T>;
-        requires RankTiledTensor<BType<T, Rank>, Rank, T>;
-        requires RankTiledTensor<CType<T, Rank>, Rank, T>;
-    }
-void direct_product(T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, T beta, CType<T, Rank> *C) {
+template <TiledTensorConcept AType, TiledTensorConcept BType, TiledTensorConcept CType>
+    requires SameUnderlyingAndRank<AType, BType, CType>
+void direct_product(typename AType::data_type alpha, const AType &A, const BType &B, typename AType::data_type beta, CType *C) {
+    using T               = typename AType::data_type;
+    constexpr size_t Rank = AType::rank;
     EINSUMS_OMP_PARALLEL_FOR
     for (size_t sentinel = 0; sentinel < A.grid_size(); sentinel++) {
         std::array<int, Rank> index = std::array<int, Rank>{};
@@ -284,12 +318,13 @@ void direct_product(T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, T
     }
 }
 
-template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename XYType, size_t XYRank, typename T>
+template <TiledTensorConcept AType, TiledTensorConcept XYType>
     requires requires {
-        requires RankTiledTensor<AType<T, ARank>, 2, T>;
-        requires RankTiledTensor<XYType<T, XYRank>, 1, T>;
+        requires MatrixConcept<AType>;
+        requires VectorConcept<XYType>;
+        requires SameUnderlying<AType, XYType>;
     }
-void ger(T alpha, const XYType<T, XYRank> &X, const XYType<T, XYRank> &Y, AType<T, ARank> *A) {
+void ger(typename AType::data_type alpha, const XYType &X, const XYType &Y, AType *A) {
     if (A->grid_size(0) != X.grid_size(0) && A->grid_size(1) != Y.grid_size(0)) {
         throw std::runtime_error("ger: Tiled tensors have incompatible grids!");
     }
@@ -307,9 +342,8 @@ void ger(T alpha, const XYType<T, XYRank> &X, const XYType<T, XYRank> &Y, AType<
     }
 }
 
-template <template <typename, size_t> typename AType, typename T, size_t Rank>
-requires RankTiledTensor<AType<T, Rank>, Rank, T>
-void scale(T alpha, AType<T, Rank> *A) {
+template <TiledTensorConcept AType>
+void scale(typename AType::data_type alpha, AType *A) {
     EINSUMS_OMP_PARALLEL_FOR
     for (auto it = A->tiles().begin(); it != A->tiles().end(); it++) {
         scale(alpha, &(it->second));

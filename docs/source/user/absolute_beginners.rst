@@ -69,7 +69,7 @@ like this::
 
     auto A = einsums::create_random_tensor(6);
     auto B = einsums::Tensor{std::move(A), -1, 6};
-    B.shape();  // --> Dims{1, 6 }
+    B.dims();  // --> Dims{1, 6 }
 
 If you are not familiar with this style, it's very easy to understand.
 If you see do not see ``-->``, you're looking at the **input**, or the code that

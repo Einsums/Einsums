@@ -93,6 +93,8 @@ auto sdot(blas_int n, const float *x, blas_int incx, const float *y, blas_int in
 auto ddot(blas_int n, const double *x, blas_int incx, const double *y, blas_int incy) -> double;
 auto cdot(blas_int n, const std::complex<float> *x, blas_int incx, const std::complex<float> *y, blas_int incy) -> std::complex<float>;
 auto zdot(blas_int n, const std::complex<double> *x, blas_int incx, const std::complex<double> *y, blas_int incy) -> std::complex<double>;
+auto cdotc(blas_int n, const std::complex<float> *x, blas_int incx, const std::complex<float> *y, blas_int incy) -> std::complex<float>;
+auto zdotc(blas_int n, const std::complex<double> *x, blas_int incx, const std::complex<double> *y, blas_int incy) -> std::complex<double>;
 
 void saxpy(blas_int n, float alpha_x, const float *x, blas_int inc_x, float *y, blas_int inc_y);
 void daxpy(blas_int n, double alpha_x, const double *x, blas_int inc_x, double *y, blas_int inc_y);
