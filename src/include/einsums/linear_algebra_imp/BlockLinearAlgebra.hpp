@@ -53,7 +53,7 @@ void gemm(const U alpha, const AType &A, const BType &B, const U beta, CType *C)
             if (A.block_dim(i) == 0) {
                 continue;
             }
-            gemm<TransA, TransB>(static_cast<T>(alpha), A.block(i), B.block(i), static_cast<T>(1.0), &(C->block(i)));
+            gemm<TransA, TransB>(static_cast<T>(alpha), A.block(i), B.block(i), static_cast<T>(beta), &(C->block(i)));
         }
 #ifdef __HIP__
     }

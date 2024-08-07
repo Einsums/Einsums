@@ -1106,31 +1106,26 @@ TEST_CASE("Zero-rank GPU tensors", "[gpu][tensor]") {
     hipError_t            status;
     hipPointerAttribute_t attribs;
 
-    status = hipPointerGetAttributes(&attribs, A.gpu_data());
+    REQUIRE_NOTHROW(hip_catch(hipPointerGetAttributes(&attribs, A.gpu_data())));
 
-    CHECK((status != hipErrorInvalidValue));
     CHECK((attribs.type == hipMemoryTypeDevice));
 
     CHECK((A.data() == nullptr));
 
-    status = hipPointerGetAttributes(&attribs, B.gpu_data());
+    REQUIRE_NOTHROW(hip_catch(hipPointerGetAttributes(&attribs, B.gpu_data())));
 
-    CHECK((status != hipErrorInvalidValue));
     CHECK((attribs.type == hipMemoryTypeHost));
 
-    status = hipPointerGetAttributes(&attribs, B.data());
+    REQUIRE_NOTHROW(hip_catch(hipPointerGetAttributes(&attribs, B.data())));
 
-    CHECK((status != hipErrorInvalidValue));
     CHECK((attribs.type == hipMemoryTypeHost));
 
-    status = hipPointerGetAttributes(&attribs, C.gpu_data());
+    REQUIRE_NOTHROW(hip_catch(hipPointerGetAttributes(&attribs, C.gpu_data())));
 
-    CHECK((status != hipErrorInvalidValue));
     CHECK((attribs.type == hipMemoryTypeHost));
 
-    status = hipPointerGetAttributes(&attribs, C.data());
+    REQUIRE_NOTHROW(hip_catch(hipPointerGetAttributes(&attribs, C.data())));
 
-    CHECK((status != hipErrorInvalidValue));
     CHECK((attribs.type == hipMemoryTypeHost));
 
     A = 1.0;

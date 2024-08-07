@@ -942,7 +942,7 @@ struct DeviceTensor<T, 0> : public virtual tensor_props::DeviceTensorBase,
      */
     DeviceTensor(Dim<0> dims, detail::HostToDeviceMode mode = detail::DEV_ONLY) : _mode{mode} {
         if (mode == detail::DEV_ONLY) {
-            gpu::hip_catch(hipMallocAsync((void **)&_data, sizeof(T), gpu::get_stream()));
+            gpu::hip_catch(hipMalloc((void **)&_data, sizeof(T)));
         } else if (mode == detail::MAPPED) {
             _host_data = new T();
             gpu::hip_catch(hipHostRegister((void *)_host_data, sizeof(T), hipHostRegisterDefault));
@@ -969,7 +969,7 @@ struct DeviceTensor<T, 0> : public virtual tensor_props::DeviceTensorBase,
             break;
         case detail::DEV_ONLY:
             this->_host_data = nullptr;
-            gpu::hip_catch(hipMallocAsync((void **)&(this->_data), sizeof(T), gpu::get_stream()));
+            gpu::hip_catch(hipMalloc((void **)&(this->_data), sizeof(T)));
             break;
         }
     }

@@ -70,7 +70,6 @@ struct TiledTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
 
         _tiles.emplace(pos, dims);
         _tiles[pos].set_name(tile_name);
-        _tiles[pos].zero();
     }
 
   public:
@@ -768,6 +767,25 @@ struct TiledTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
 
 template <typename T, size_t Rank>
 struct TiledTensor final : public virtual tensor_props::TiledTensorBase<T, Rank, Tensor<T, Rank>>, virtual tensor_props::CoreTensorBase {
+  protected:
+    void add_tile(std::array<int, Rank> pos) override {
+        std::string tile_name = this->_name + " - (";
+        Dim<Rank>   dims{};
+
+        for (int i = 0; i < Rank; i++) {
+            tile_name += std::to_string(pos[i]);
+            dims[i] = this->_tile_sizes[i][pos[i]];
+            if (i != Rank - 1) {
+                tile_name += ", ";
+            }
+        }
+        tile_name += ")";
+
+        this->_tiles.emplace(pos, dims);
+        this->_tiles[pos].set_name(tile_name);
+        this->_tiles[pos].zero();
+    }
+
   public:
     TiledTensor() = default;
 

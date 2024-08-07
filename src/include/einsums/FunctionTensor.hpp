@@ -47,10 +47,14 @@ struct FunctionTensorBase : public virtual TensorBase<T, Rank>, virtual Function
     }
 
   public:
+    FunctionTensorBase() = default;
     FunctionTensorBase(const FunctionTensorBase &) = default;
 
     template <typename... Args>
-        requires(!std::is_same_v<Args, Dim<Rank>> || ...)
+        requires requires {
+            requires(!std::is_same_v<Args, Dim<Rank>> || ...);
+            requires sizeof...(Args) == Rank;
+        }
     FunctionTensorBase(std::string name, Args... dims) : _dims{dims...}, _name{name} {
         _size = 1;
 
@@ -268,6 +272,7 @@ struct FunctionTensorView : public virtual tensor_props::FunctionTensorBase<T, R
     }
 
   public:
+    FunctionTensorView() = default;
     FunctionTensorView(std::string name, const tensor_props::FunctionTensorBase<T, UnderlyingRank> *func_tens, const Offset<Rank> &offsets,
                        const Dim<Rank> &dims, const std::array<int, UnderlyingRank> &index_template)
         : _offsets{offsets}, _func_tensor(func_tens), _index_template{index_template},
