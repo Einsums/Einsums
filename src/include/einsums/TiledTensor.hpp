@@ -1101,7 +1101,7 @@ void fprintln(std::ostream &os, const TensorType<T, Rank> &A, TensorPrintOptions
             }
 
             if (A.has_tile(tile_index)) {
-                println(A.tile(tile_index));
+                fprintln(os, A.tile(tile_index));
             }
         }
     }
