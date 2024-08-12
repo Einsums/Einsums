@@ -1261,11 +1261,9 @@ struct DeviceTensorView : public virtual tensor_props::BasicTensorBase<T, Rank>,
     auto operator=(const AType<T, Rank> &other) -> DeviceTensorView &;
 
     /**
-     * @brief Copy data from a tensor.
+     * @brief Copy data from another tensor.
      */
-    template <template <typename, size_t> typename AType>
-        requires DeviceRankTensor<AType<T, Rank>, Rank, T>
-    auto operator=(const AType<T, Rank> &&other) -> DeviceTensorView &;
+    auto operator=(const DeviceTensorView<T, Rank> &other) -> DeviceTensorView &;
 
     /**
      * @brief Fill the view with a value.

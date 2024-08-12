@@ -120,9 +120,14 @@ static void update_Cocc(const einsums::Tensor<double, 1> &energies, einsums::Blo
     }
 
     (*Cocc).zero();
-#pragma omp parallel for
+//#pragma omp parallel for
     for (int i = 0; i < 4; i++) {
-        (*Cocc)[i](einsums::AllT{}, einsums::Range(0, occ_per_irrep[i])) = C[i](einsums::AllT{}, einsums::Range(0, occ_per_irrep[i]));
+        if(occ_per_irrep[i] == 0) {
+            continue;
+        }
+        einsums::TensorView<double, 2> view1 = (*Cocc)[i](einsums::All, einsums::Range{0, occ_per_irrep[i]});
+        const einsums::TensorView<double, 2> view2 = C[i](einsums::All, einsums::Range{0, occ_per_irrep[i]});
+        view1 = view2;
     }
 }
 

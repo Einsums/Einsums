@@ -980,13 +980,9 @@ struct TensorView final : public virtual tensor_props::CoreTensorBase,
         return *this;
     }
 
-    template <template <typename, size_t> typename AType>
-        requires CoreRankTensor<AType<T, Rank>, Rank, T>
-    auto operator=(const AType<T, Rank> &other) -> TensorView & {
-        if constexpr (std::is_same_v<AType<T, Rank>, TensorView<T, Rank>>) {
-            if (this == &other)
-                return *this;
-        }
+    auto operator=(const TensorView<T, Rank> &other) -> TensorView & {
+        if (this == &other)
+            return *this;
 
         auto target_dims = get_dim_ranges<Rank>(*this);
         auto view        = std::apply(ranges::views::cartesian_product, target_dims);
@@ -1002,7 +998,7 @@ struct TensorView final : public virtual tensor_props::CoreTensorBase,
 
     template <template <typename, size_t> typename AType>
         requires CoreRankTensor<AType<T, Rank>, Rank, T>
-    auto operator=(const AType<T, Rank> &&other) -> TensorView & {
+    auto operator=(const AType<T, Rank> &other) -> TensorView & {
         if constexpr (std::is_same_v<AType<T, Rank>, TensorView<T, Rank>>) {
             if (this == &other)
                 return *this;
@@ -1011,7 +1007,7 @@ struct TensorView final : public virtual tensor_props::CoreTensorBase,
         auto target_dims = get_dim_ranges<Rank>(*this);
         auto view        = std::apply(ranges::views::cartesian_product, target_dims);
 
-#pragma omp parallel for default(none) shared(view, other)
+//#pragma omp parallel for default(none) shared(view, other)
         for (auto target_combination = view.begin(); target_combination != view.end(); target_combination++) {
             T &target = std::apply(*this, *target_combination);
             target    = std::apply(other, *target_combination);

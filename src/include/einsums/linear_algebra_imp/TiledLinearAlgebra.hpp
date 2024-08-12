@@ -66,7 +66,7 @@ auto true_dot(const AType &A, const BType &B) -> typename AType::data_type {
     }
     T out = 0;
 
-//#pragma omp parallel for reduction(+ : out)
+#pragma omp parallel for reduction(+ : out)
     for (size_t index = 0; index < A.grid_size(); index++) {
         std::array<size_t, Rank> index_arr;
         size_t                   temp_index = index;

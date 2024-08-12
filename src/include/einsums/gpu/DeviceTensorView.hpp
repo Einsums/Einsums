@@ -104,20 +104,10 @@ auto DeviceTensorView<T, Rank>::assign(const AType<T, Rank> &other) -> DeviceTen
     return *this;
 }
 
-template <typename T, size_t Rank>
-template <template <typename, size_t> typename AType>
-    requires DeviceRankTensor<AType<T, Rank>, Rank, T>
-auto DeviceTensorView<T, Rank>::operator=(const AType<T, Rank> &&other) -> DeviceTensorView<T, Rank> & {
-    using namespace einsums::gpu;
-
-    einsums::detail::copy_to_tensor<T, Rank><<<block_size(this->size()), blocks(this->size())>>>(
-        this->_data, this->_gpu_dims, this->_gpu_strides, other.gpu_data(), other.gpu_dims(), other.gpu_strides(), this->size());
-
-    gpu::stream_wait();
-
-
-    return *this;
-}
+template<typename T, size_t Rank>
+    auto DeviceTensorView<T, Rank>::operator=(const DeviceTensorView<T, Rank> &other) -> DeviceTensorView<T, Rank> & {
+        return this->assign(other);
+    }
 
 template <typename T, size_t Rank>
 void DeviceTensorView<T, Rank>::set_all(const T &fill_value) {

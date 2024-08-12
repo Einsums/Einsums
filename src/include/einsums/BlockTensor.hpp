@@ -56,12 +56,11 @@ struct BlockTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
     /**
      * @brief Construct a new BlockTensor object. Default copy constructor
      */
-    BlockTensorBase(const BlockTensorBase &) = default;
-
-    /**
-     * @brief Construct a new BlockTensor object. Default move constructor
-     */
-    BlockTensorBase(BlockTensorBase &&) = default;
+    BlockTensorBase(const BlockTensorBase &other) : _ranges{other._ranges}, _dims{other._dims}, _blocks{}, _dim{other._dim} {
+        for(int i = 0; i < other._blocks.size(); i++) {
+            _blocks.emplace_back((const TensorType &) other._blocks[i]);
+        }
+    }
 
     /**
      * @brief Destroy the BlockTensor object.
@@ -102,6 +101,8 @@ struct BlockTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
 
             _dims[i] = dim_array[i];
         }
+
+        _dim = sum;
     }
 
     /**
