@@ -720,6 +720,16 @@ TEST_CASE("RHF symmetry") {
     REQUIRE(cycles < 50);
     REQUIRE_THAT(e0, Catch::Matchers::WithinAbs(-74.942079928192, 1e-6));
 
+    BlockTensor<double, 2> C2;
+
+    C2 = C;
+
+    for(int i = 0; i < 7; i++) {
+        for(int j = 0; j < 7; j++) {
+            REQUIRE_THAT(C2(i, j), Catch::Matchers::WithinAbs(C(i, j), 1e-6));
+        }
+    }
+
     // MP2 now.
     // Compute the new two electron integrals.
     REQUIRE_NOTHROW(einsum(Indices{index::i, index::j, index::k, index::l}, &MP2_temp1, Indices{index::m, index::j, index::k, index::l},

@@ -47,6 +47,25 @@ struct BlockTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
     // template <typename T_, size_t Rank_>
     // friend struct BlockTensorViewBase;
 
+    void update_dims() {
+        if(_dims.size() != _blocks.size()) {
+            _dims.resize(_blocks.size());
+        }
+        if(_ranges.size() != _blocks.size()){
+            _ranges.resize(_blocks.size());
+        }
+        
+        size_t sum = 0;
+
+        for(int i = 0; i < _blocks.size(); i++) {
+            _dims[i] = _blocks[i].dim(0);
+            _ranges[i] = Range{sum, sum + _dims[i]};
+            sum += _dims[i];
+        }
+
+        _dim = sum;
+    }
+
   public:
     /**
      * @brief Construct a new BlockTensor object. Default constructor.
@@ -60,6 +79,8 @@ struct BlockTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
         for(int i = 0; i < other._blocks.size(); i++) {
             _blocks.emplace_back((const TensorType &) other._blocks[i]);
         }
+
+        update_dims();
     }
 
     /**
@@ -90,19 +111,13 @@ struct BlockTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
         auto dim_array   = Dim<sizeof...(Dims)>{block_dims...};
         auto _block_dims = Dim<Rank>();
 
-        size_t sum = 0;
         for (int i = 0; i < sizeof...(Dims); i++) {
-            _ranges.emplace_back(sum, sum + dim_array[i]);
-            sum += dim_array[i];
-
             _block_dims.fill(dim_array[i]);
 
             _blocks.emplace_back(_block_dims);
-
-            _dims[i] = dim_array[i];
         }
 
-        _dim = sum;
+        update_dims();
     }
 
     /**
@@ -128,17 +143,13 @@ struct BlockTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
 
         auto _block_dims = Dim<Rank>();
 
-        size_t sum = 0;
         for (int i = 0; i < block_dims.size(); i++) {
-            _ranges.emplace_back(sum, sum + block_dims[i]);
-            sum += block_dims[i];
-
             _block_dims.fill(block_dims[i]);
 
             _blocks.emplace_back(_block_dims);
         }
 
-        _dim = sum;
+        update_dims();
     }
 
     /**
@@ -150,17 +161,14 @@ struct BlockTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
     explicit BlockTensorBase(Dim<Dims> block_dims) : _blocks(), _ranges(), _dims(block_dims) {
         auto _block_dims = Dim<Rank>();
 
-        size_t sum = 0;
         for (int i = 0; i < Dims; i++) {
-            _ranges.emplace_back(sum, sum + _block_dims[i]);
-            sum += _block_dims[i];
-
             _block_dims.fill(_block_dims[i]);
 
             _blocks.emplace_back(_block_dims);
         }
 
-        _dim = sum;
+        update_dims();
+
     }
 
     /**
@@ -251,8 +259,7 @@ struct BlockTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
             }
         }
         _blocks.push_back(value);
-        _ranges.emplace_back(_dim, _dim + value.dim(0));
-        _dim += value.dim(0);
+        update_dims();
     }
 
     /**
@@ -268,20 +275,7 @@ struct BlockTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
         // Add the block.
         _blocks.insert(std::next(_blocks.begin(), pos), value);
 
-        // Add the new ranges.
-        if (pos == 0) {
-            _ranges.emplace(_ranges.begin(), 0, value.dim(0));
-        } else {
-            _ranges.emplace(std::next(_ranges.begin(), pos), _ranges[pos - 1][1], _ranges[pos - 1][1] + value.dim(0));
-        }
-
-        for (int i = pos + 1; i < _ranges.size(); i++) {
-            _ranges[i][0] += value.dim(0);
-            _ranges[i][1] += value.dim(0);
-        }
-
-        // Add the new dimension.
-        _dim += value.dim(0);
+        update_dims();
     }
 
     /**
@@ -295,8 +289,7 @@ struct BlockTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
             }
         }
         _blocks.push_back(value);
-        _ranges.emplace_back(_dim, _dim + value.dim(0));
-        _dim += value.dim(0);
+        update_dims();
     }
 
     /**
@@ -312,20 +305,7 @@ struct BlockTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
         // Add the block.
         _blocks.insert(std::next(_blocks.begin(), pos), value);
 
-        // Add the new ranges.
-        if (pos == 0) {
-            _ranges.emplace(_ranges.begin(), 0, value.dim(0));
-        } else {
-            _ranges.emplace(std::next(_ranges.begin(), pos), _ranges[pos - 1][1], _ranges[pos - 1][1] + value.dim(0));
-        }
-
-        for (int i = pos + 1; i < _ranges.size(); i++) {
-            _ranges[i][0] += value.dim(0);
-            _ranges[i][1] += value.dim(0);
-        }
-
-        // Add the new dimension.
-        _dim += value.block_dim(0);
+        update_dims();
     }
 
     /**
@@ -508,13 +488,16 @@ struct BlockTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
 
         _ranges = other._ranges;
 
+        assert(_dims.size() > 0 || _dim == 0);
+        assert(_dims.size() == _ranges.size());
+        assert(_dims.size() == _blocks.size());
+
         EINSUMS_OMP_PARALLEL_FOR
         for (int i = 0; i < _blocks.size(); i++) {
-            if (block_dim(i) == 0) {
-                continue;
-            }
             _blocks[i] = other._blocks[i];
         }
+
+        update_dims();
 
         return *this;
     }
@@ -537,11 +520,10 @@ struct BlockTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
 
         EINSUMS_OMP_PARALLEL_FOR
         for (int i = 0; i < _blocks.size(); i++) {
-            if (block_dim(i) == 0) {
-                continue;
-            }
             _blocks[i] = other._blocks[i];
         }
+
+        update_dims();
 
         return *this;
     }
@@ -589,6 +571,33 @@ struct BlockTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
      * @brief Convert block tensor into a normal tensor.
      */
     explicit operator TensorType() const {
+        Dim<Rank> block_dims;
+
+        for (int i = 0; i < Rank; i++) {
+            block_dims[i] = _dim;
+        }
+
+        TensorType out(block_dims);
+
+        out.set_name(_name);
+
+        out.zero();
+
+        EINSUMS_OMP_PARALLEL_FOR
+        for (int i = 0; i < _ranges.size(); i++) {
+            if (this->block_dim(i) == 0) {
+                continue;
+            }
+            std::array<Range, Rank> ranges;
+            ranges.fill(_ranges[i]);
+            std::apply(out, ranges) = _blocks[i];
+        }
+
+        return out;
+    }
+
+    explicit operator TensorType() {
+        update_dims();
         Dim<Rank> block_dims;
 
         for (int i = 0; i < Rank; i++) {
