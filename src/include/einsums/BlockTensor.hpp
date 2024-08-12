@@ -500,8 +500,9 @@ struct BlockTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
 
         if (_blocks.size() != other._blocks.size()) {
             _blocks.resize(other._blocks.size());
-            _ranges.resize(other._ranges.size());
         }
+
+        _dims = other._dims;
 
         _dim = other._dim;
 
@@ -526,8 +527,9 @@ struct BlockTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
     auto operator=(const BlockTensorBase<TOther, Rank, TensorType> &other) -> BlockTensorBase<T, Rank, TensorType> & {
         if (_blocks.size() != other._blocks.size()) {
             _blocks.resize(other._blocks.size());
-            _ranges.resize(other._ranges.size());
         }
+
+        _dims = other._dims;
 
         _dim = other._dim;
 
