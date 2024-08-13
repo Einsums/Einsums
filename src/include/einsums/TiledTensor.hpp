@@ -280,7 +280,7 @@ struct TiledTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
             }
 
             if (arr_index[i] < 0 || arr_index[i] >= _dims[i]) {
-                throw(std::out_of_range("Index not in the tensor!"));
+                throw EINSUMSEXCEPTION("Index not in the tensor!");
             }
 
             if (arr_index[i] >= _tile_offsets[i][_tile_offsets[i].size() - 1]) {
@@ -341,7 +341,7 @@ struct TiledTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
             }
 
             if (arr_index[i] < 0 || arr_index[i] >= _dims[i]) {
-                throw(std::out_of_range("Index not in the tensor!"));
+                throw EINSUMSEXCEPTION("Index not in the tensor!");
             }
 
             if (arr_index[i] >= _tile_offsets[i][_tile_offsets[i].size() - 1]) {
@@ -568,7 +568,7 @@ struct TiledTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
 
     TiledTensorBase &operator+=(const TiledTensorBase &other) {
         if (_tile_sizes != other._tile_sizes) {
-            throw std::runtime_error("Tiled tensors do not have the same layouts.");
+            throw EINSUMSEXCEPTION("Tiled tensors do not have the same layouts.");
         }
 
         for (const auto &tile : other._tiles) {
@@ -584,7 +584,7 @@ struct TiledTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
 
     TiledTensorBase &operator-=(const TiledTensorBase &other) {
         if (_tile_sizes != other._tile_sizes) {
-            throw std::runtime_error("Tiled tensors do not have the same layouts.");
+            throw EINSUMSEXCEPTION("Tiled tensors do not have the same layouts.");
         }
 
         for (const auto &tile : other._tiles) {
@@ -601,7 +601,7 @@ struct TiledTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
 
     TiledTensorBase &operator*=(const TiledTensorBase &other) {
         if (_tile_sizes != other._tile_sizes) {
-            throw std::runtime_error("Tiled tensors do not have the same layouts.");
+            throw EINSUMSEXCEPTION("Tiled tensors do not have the same layouts.");
         }
 
         for (const auto &tile : _tiles) {
@@ -617,7 +617,7 @@ struct TiledTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
 
     TiledTensorBase &operator/=(const TiledTensorBase &other) {
         if (_tile_sizes != other._tile_sizes) {
-            throw std::runtime_error("Tiled tensors do not have the same layouts.");
+            throw EINSUMSEXCEPTION("Tiled tensors do not have the same layouts.");
         }
 
         for (const auto &tile : _tiles) {
@@ -808,7 +808,7 @@ struct TiledTensorView final : public virtual tensor_props::TiledTensorBase<T, R
   private:
     bool _full_view_of_underlying{false};
 
-    void add_tile(std::array<int, Rank> pos) override { throw std::runtime_error("Can't add a tile to a TiledTensorView!"); }
+    void add_tile(std::array<int, Rank> pos) override { throw EINSUMSEXCEPTION("Can't add a tile to a TiledTensorView!"); }
 
   public:
     TiledTensorView() = default;
@@ -933,7 +933,7 @@ struct TiledDeviceTensorView final : public virtual tensor_props::TiledTensorBas
     bool                     _full_view_of_underlying{false};
     detail::HostToDeviceMode _mode{detail::DEV_ONLY};
 
-    void add_tile(std::array<int, Rank> pos) override { throw std::runtime_error("Can't add a tile to a TiledDeviceTensorView!"); }
+    void add_tile(std::array<int, Rank> pos) override { throw EINSUMSEXCEPTION("Can't add a tile to a TiledDeviceTensorView!"); }
 
   public:
     TiledDeviceTensorView() = default;
@@ -1019,6 +1019,14 @@ void println(const TensorType<T, Rank> &A, TensorPrintOptions options = {}) {
         print::Indent const indent{};
         println("Tiled Tensor");
         println("Data Type: {}", type_name<T>());
+        
+        if constexpr (Rank > 0) {
+            std::ostringstream oss;
+            for (size_t i = 0; i < Rank; i++) {
+                oss << A.dim(i) << " ";
+            }
+            println("Dims{{{}}}", oss.str().c_str());
+        }
 
         // Find the number of tiles.
         long num_tiles = 1;
@@ -1037,7 +1045,7 @@ void println(const TensorType<T, Rank> &A, TensorPrintOptions options = {}) {
             }
 
             if (A.has_tile(tile_index)) {
-                println(A.tile(tile_index));
+                println(A.tile(tile_index), options);
             }
         }
     }
@@ -1052,6 +1060,14 @@ void fprintln(FILE *fp, const TensorType<T, Rank> &A, TensorPrintOptions options
         fprintln(fp, "Tiled Tensor");
         fprintln(fp, "Data Type: {}", type_name<T>());
 
+        if constexpr (Rank > 0) {
+            std::ostringstream oss;
+            for (size_t i = 0; i < Rank; i++) {
+                oss << A.dim(i) << " ";
+            }
+            fprintln(fp, "Dims{{{}}}", oss.str().c_str());
+        }
+
         // Find the number of tiles.
         long num_tiles = 1;
         for (int i = 0; i < Rank; i++) {
@@ -1069,7 +1085,7 @@ void fprintln(FILE *fp, const TensorType<T, Rank> &A, TensorPrintOptions options
             }
 
             if (A.has_tile(tile_index)) {
-                fprintln(fp, A.tile(tile_index));
+                fprintln(fp, A.tile(tile_index)), options;
             }
         }
     }
@@ -1084,6 +1100,14 @@ void fprintln(std::ostream &os, const TensorType<T, Rank> &A, TensorPrintOptions
         fprintln(os, "Tiled Tensor");
         fprintln(os, "Data Type: {}", type_name<T>());
 
+        if constexpr (Rank > 0) {
+            std::ostringstream oss;
+            for (size_t i = 0; i < Rank; i++) {
+                oss << A.dim(i) << " ";
+            }
+            fprintln(os, "Dims{{{}}}", oss.str().c_str());
+        }
+
         // Find the number of tiles.
         long num_tiles = 1;
         for (int i = 0; i < Rank; i++) {
@@ -1101,7 +1125,7 @@ void fprintln(std::ostream &os, const TensorType<T, Rank> &A, TensorPrintOptions
             }
 
             if (A.has_tile(tile_index)) {
-                fprintln(os, A.tile(tile_index));
+                fprintln(os, A.tile(tile_index), options);
             }
         }
     }

@@ -206,7 +206,7 @@ auto DeviceTensorView<T, Rank>::to_rank_1_view() const -> DeviceTensorView<T, 1>
         return *this;
     } else {
         if (_strides[Rank - 1] != 1) {
-            throw ::std::runtime_error("Creating a Rank-1 TensorView for this Tensor(View) is not supported.");
+            throw EINSUMSEXCEPTION("Creating a Rank-1 TensorView for this Tensor(View) is not supported.");
         }
         size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
         Dim<1> dim{size};
@@ -246,7 +246,7 @@ auto DeviceTensorView<T, Rank>::common_initialization(TensorType<T, OtherRank> &
     }
 
     if (nfound > 1) {
-        throw ::std::runtime_error("More than one -1 was provided.");
+        throw EINSUMSEXCEPTION("More than one -1 was provided.");
     }
 
     if (nfound == 1 && Rank == 1) {
@@ -260,7 +260,7 @@ auto DeviceTensorView<T, Rank>::common_initialization(TensorType<T, OtherRank> &
     }
 
     if (nfound == 1 && Rank > 1) {
-        throw ::std::runtime_error("Haven't coded up this case yet.");
+        throw EINSUMSEXCEPTION("Haven't coded up this case yet.");
     }
 
     // If the Ranks are the same then use "other"s stride information
@@ -288,7 +288,7 @@ auto DeviceTensorView<T, Rank>::common_initialization(TensorType<T, OtherRank> &
             // Stride information cannot be automatically deduced.  It must be provided.
             default_strides = arguments::get(error_strides, args...);
             if (default_strides[0] == static_cast<size_t>(-1)) {
-                throw ::std::runtime_error("Unable to automatically deduce stride information. Stride must be passed in.");
+                throw EINSUMSEXCEPTION("Unable to automatically deduce stride information. Stride must be passed in.");
             }
         }
     }

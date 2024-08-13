@@ -60,6 +60,7 @@ einsums_option(EINSUMS_BUILD_HIP BOOL "Build HIP GPU code." OFF)
 einsums_option(EINSUMS_COVERAGE BOOL "Enable code coverage checking" OFF)
 einsums_option(EINSUMS_FAST_INTRINSICS BOOL "When generating code for GPU, use the fast math intrinsics (__expf, __sinf, etc.) \
 rather than the normal math functions (expf, sinf, etc.) for single-precision floats and single-precision complex floats." OFF)
+einsums_option(EINSUMS_ANONYMIZE BOOL "When generating error messages, decides whether to anonymize the file names or not." OFF)
 
 add_feature_info(EINSUMS_CONTINUOUSLY_TEST_EINSUM ${EINSUMS_CONTINUOUSLY_TEST_EINSUM} "Test every call to einsum. EXPENSIVE!")
 add_feature_info(EINSUMS_TEST_EINSUM_ABORT ${EINSUMS_TEST_EINSUM_ABORT} "Abort execution if an error is found")
@@ -161,6 +162,10 @@ endif()
 
 if(EINSUMS_FAST_INTRINSICS)
     target_compile_definitions(einsums PUBLIC -DEINSUMS_FAST_INTRINSICS)
+endif()
+
+if(EINSUMS_ANONYMIZE)
+    target_compile_definitions(einsums PUBLIC -DEINSUMS_ANONYMIZE)
 endif()
 
 if (EINSUMS_ENABLE_TESTING)

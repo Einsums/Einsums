@@ -33,7 +33,7 @@ auto validate_cp_rank(const Dim<TRank> shape, const std::string &rounding = "rou
     } else if (rounding == "round") {
         rounding_func = ::round;
     } else {
-        throw std::runtime_error(fmt::format("Rounding should of round, floow, or ceil, but got {}", rounding));
+        throw EINSUMSEXCEPTION(fmt::format("Rounding should of round, floow, or ceil, but got {}", rounding));
     }
 
     double prod = std::accumulate(shape.begin(), shape.end(), 1, std::multiplies<>());

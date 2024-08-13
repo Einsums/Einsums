@@ -41,7 +41,7 @@ struct FunctionTensorBase : public virtual TensorBase<T, Rank>, virtual Function
                 } else {
                     message = fmt::format("{}({}) ", message, inds->at(i));
                 }
-                throw std::out_of_range(fmt::format("{}is too far less than zero or is greater than {}", message, _dims[i]));
+                throw EINSUMSEXCEPTION(fmt::format("{}is too far less than zero or is greater than {}", message, _dims[i]));
             }
         }
     }
@@ -259,7 +259,7 @@ struct FunctionTensorView : public virtual tensor_props::FunctionTensorBase<T, R
                 out.at(curr_rank) += this->_dims[i];
             }
             if (out.at(curr_rank) >= this->_dims[i] || out.at(curr_rank) < 0) {
-                throw std::out_of_range(
+                throw EINSUMSEXCEPTION(
                     fmt::format("Function tensor view index out of range! Index of rank {} is {}, which is < 0 or >= {}.", i, inds.at(i),
                                 this->_dims[i]));
             }

@@ -183,7 +183,7 @@ struct BlockTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
             }
         }
 
-        throw std::out_of_range("Index out of range.");
+        throw EINSUMSEXCEPTION("Index out of range!");
     }
 
     /**
@@ -228,9 +228,9 @@ struct BlockTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
             }
         }
         if (_blocks.size() == 0) {
-            throw std::out_of_range("Could not find block with the name " + name + ": no blocks in tensor.");
+            throw EINSUMSEXCEPTION("Could not find block with the name " + name + ": no blocks in tensor.");
         }
-        throw std::out_of_range("Could not find block with the name " + name + ": no blocks with given name.");
+        throw EINSUMSEXCEPTION("Could not find block with the name " + name + ": no blocks with given name.");
     }
 
     /**
@@ -243,9 +243,9 @@ struct BlockTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
             }
         }
         if (_blocks.size() == 0) {
-            throw std::out_of_range("Could not find block with the name " + name + ": no blocks in tensor.");
+            throw EINSUMSEXCEPTION("Could not find block with the name " + name + ": no blocks in tensor.");
         }
-        throw std::out_of_range("Could not find block with the name " + name + ": no blocks with given name.");
+        throw EINSUMSEXCEPTION("Could not find block with the name " + name + ": no blocks with given name.");
     }
 
     /**
@@ -254,7 +254,7 @@ struct BlockTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
     void push_block(TensorType &&value) {
         for (int i = 0; i < Rank; i++) {
             if (value.dim(i) != value.dim(0)) {
-                throw std::runtime_error(
+                throw EINSUMSEXCEPTION(
                     "Can only push square/hypersquare tensors to a block tensor. Make sure all dimensions are the same.");
             }
         }
@@ -268,7 +268,7 @@ struct BlockTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
     void insert_block(int pos, TensorType &&value) {
         for (int i = 0; i < Rank; i++) {
             if (value.dim(i) != value.dim(0)) {
-                throw std::runtime_error(
+                throw EINSUMSEXCEPTION(
                     "Can only push square/hypersquare tensors to a block tensor. Make sure all dimensions are the same.");
             }
         }
@@ -284,7 +284,7 @@ struct BlockTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
     void push_block(const TensorType &value) {
         for (int i = 0; i < Rank; i++) {
             if (value.dim(i) != value.dim(0)) {
-                throw std::runtime_error(
+                throw EINSUMSEXCEPTION(
                     "Can only push square/hypersquare tensors to a block tensor. Make sure all dimensions are the same.");
             }
         }
@@ -298,7 +298,7 @@ struct BlockTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
     void insert_block(int pos, const TensorType &value) {
         for (int i = 0; i < Rank; i++) {
             if (value.dim(i) != value.dim(0)) {
-                throw std::runtime_error(
+                throw EINSUMSEXCEPTION(
                     "Can only push square/hypersquare tensors to a block tensor. Make sure all dimensions are the same.");
             }
         }
@@ -541,12 +541,12 @@ struct BlockTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
                                                                                                                                            \
     auto operator OP(const BlockTensorBase<T, Rank, TensorType> &b)->BlockTensorBase<T, Rank, TensorType> & {                              \
         if (_blocks.size() != b._blocks.size()) {                                                                                          \
-            throw std::runtime_error(fmt::format("operator" EINSUMS_STRINGIFY(OP) " : tensors differ in number of blocks : {} {}",         \
+            throw EINSUMSEXCEPTION(fmt::format("tensors differ in number of blocks : {} {}",         \
                                                  _blocks.size(), b._blocks.size()));                                                       \
         }                                                                                                                                  \
         for (int i = 0; i < _blocks.size(); i++) {                                                                                         \
             if (_blocks[i].size() != b._blocks[i].size()) {                                                                                \
-                throw std::runtime_error(fmt::format("operator" EINSUMS_STRINGIFY(OP) " : tensor blocks differ in size : {} {}",           \
+                throw EINSUMSEXCEPTION(fmt::format("tensor blocks differ in size : {} {}",           \
                                                      _blocks[i].size(), b._blocks[i].size()));                                             \
             }                                                                                                                              \
         }                                                                                                                                  \
@@ -666,7 +666,7 @@ struct BlockTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
             }
         }
 
-        throw std::out_of_range("Could not find block with the name " + name);
+        throw EINSUMSEXCEPTION("Could not find block with the name " + name);
     }
 
     /**
@@ -682,7 +682,7 @@ struct BlockTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
             }
         }
 
-        throw std::out_of_range("Could not find block with the name " + name);
+        throw EINSUMSEXCEPTION("Could not find block with the name " + name);
     }
 
     /**

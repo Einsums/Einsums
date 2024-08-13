@@ -26,12 +26,12 @@ auto einsum_special_dispatch(const typename CType::data_type C_prefactor, const 
 
     // Check compatibility.
     if (A.num_blocks() != B.num_blocks() || A.num_blocks() != C->num_blocks()) {
-        throw std::runtime_error("einsum_special_dispatch: Block tensors need to have the same number of blocks.");
+        throw EINSUMSEXCEPTION("Block tensors need to have the same number of blocks.");
     }
 
     for (int i = 0; i < A.num_blocks(); i++) {
         if (A.block_dim(i) != B.block_dim(i) || A.block_dim(i) != C->block_dim(i)) {
-            throw std::runtime_error("einsum_special_dispatch: Block tensors need to have the same block sizes.");
+            throw EINSUMSEXCEPTION("Block tensors need to have the same block sizes.");
         }
     }
 
@@ -57,12 +57,12 @@ auto einsum_special_dispatch(const typename CType::data_type C_prefactor, const 
 
     // Check compatibility.
     if (A.num_blocks() != B.num_blocks()) {
-        throw std::runtime_error("einsum_special_dispatch: Block tensors need to have the same number of blocks.");
+        throw EINSUMSEXCEPTION("Block tensors need to have the same number of blocks.");
     }
 
     for (int i = 0; i < A.num_blocks(); i++) {
         if (A.block_dim(i) != B.block_dim(i)) {
-            throw std::runtime_error("einsum_special_dispatch: Block tensors need to have the same block sizes.");
+            throw EINSUMSEXCEPTION("Block tensors need to have the same block sizes.");
         }
     }
 
@@ -106,12 +106,12 @@ auto einsum_special_dispatch(const DataType<CType> C_prefactor, const std::tuple
 
     // Check compatibility.
     if (A.num_blocks() != B.num_blocks()) {
-        throw std::runtime_error("einsum_special_dispatch: Block tensors need to have the same number of blocks.");
+        throw EINSUMSEXCEPTION("Block tensors need to have the same number of blocks.");
     }
 
     for (int i = 0; i < A.num_blocks(); i++) {
         if (A.block_dim(i) != B.block_dim(i)) {
-            throw std::runtime_error("einsum_special_dispatch: Block tensors need to have the same block sizes.");
+            throw EINSUMSEXCEPTION("Block tensors need to have the same block sizes.");
         }
     }
 
@@ -185,12 +185,12 @@ auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndi
 
     // Check compatibility.
     if (B.num_blocks() != C->num_blocks()) {
-        throw std::runtime_error("einsum_special_dispatch: Block tensors need to have the same number of blocks.");
+        throw EINSUMSEXCEPTION("Block tensors need to have the same number of blocks.");
     }
 
     for (int i = 0; i < B.num_blocks(); i++) {
         if (B.block_dim(i) != C->block_dim(i)) {
-            throw std::runtime_error("einsum_special_dispatch: Block tensors need to have the same block sizes.");
+            throw EINSUMSEXCEPTION("Block tensors need to have the same block sizes.");
         }
     }
 
@@ -325,12 +325,12 @@ auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndi
 
     // Check compatibility.
     if (A.num_blocks() != C->num_blocks()) {
-        throw std::runtime_error("einsum_special_dispatch: Block tensors need to have the same number of blocks.");
+        throw EINSUMSEXCEPTION("Block tensors need to have the same number of blocks.");
     }
 
     for (int i = 0; i < A.num_blocks(); i++) {
         if (A.block_dim(i) != C->block_dim(i)) {
-            throw std::runtime_error("einsum_special_dispatch: Block tensors need to have the same block sizes.");
+            throw EINSUMSEXCEPTION("Block tensors need to have the same block sizes.");
         }
     }
 

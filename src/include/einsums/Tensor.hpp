@@ -6,6 +6,7 @@
 #pragma once
 
 #include "einsums/_Common.hpp"
+#include "einsums/Exception.hpp"
 
 #include "einsums/ArithmeticTensor.hpp"
 #include "einsums/OpenMP.h"
@@ -260,7 +261,7 @@ struct Tensor : public virtual tensor_props::CoreTensorBase,
         }
 
         if (nfound > 1) {
-            throw std::runtime_error("More than one -1 was provided.");
+            throw EINSUMSEXCEPTION("More than one -1 was provided.");
         }
 
         if (nfound == 1) {
@@ -271,7 +272,7 @@ struct Tensor : public virtual tensor_props::CoreTensorBase,
                 }
             }
             if (size > existingTensor.size()) {
-                throw std::runtime_error("Size of new tensor is larger than the parent tensor.");
+                throw EINSUMSEXCEPTION("Size of new tensor is larger than the parent tensor.");
             }
             _dims[location] = existingTensor.size() / size;
         }
@@ -282,7 +283,7 @@ struct Tensor : public virtual tensor_props::CoreTensorBase,
 
         // Check size
         if (_data.size() != size) {
-            throw std::runtime_error("Provided dims to not match size of parent tensor");
+            throw EINSUMSEXCEPTION("Provided dims to not match size of parent tensor");
         }
     }
 
@@ -691,9 +692,9 @@ struct Tensor : public virtual tensor_props::CoreTensorBase,
             if (dim(i) == 0) {
                 realloc = true;
             } else if (dim(i) != other.dim(i)) {
-                std::string str = fmt::format("Tensor::operator= dimensions do not match (this){} (other){}", dim(i), other.dim(i));
+                std::string str = fmt::format("dimensions do not match (this){} (other){}", dim(i), other.dim(i));
                 if constexpr (Rank != 1) {
-                    throw std::runtime_error(str);
+                    throw EINSUMSEXCEPTION(str);
                 } else {
                     realloc = true;
                 }
@@ -776,7 +777,7 @@ struct Tensor : public virtual tensor_props::CoreTensorBase,
                                                                                                                                            \
     auto operator OP(const Tensor<T, Rank> &b)->Tensor<T, Rank> & {                                                                        \
         if (size() != b.size()) {                                                                                                          \
-            throw std::runtime_error(fmt::format("operator" EINSUMS_STRINGIFY(OP) " : tensors differ in size : {} {}", size(), b.size())); \
+            throw EINSUMSEXCEPTION(fmt::format("tensors differ in size : {} {}", size(), b.size())); \
         }                                                                                                                                  \
         EINSUMS_OMP_PARALLEL {                                                                                                             \
             auto tid       = omp_get_thread_num();                                                                                         \
@@ -1120,7 +1121,7 @@ struct TensorView final : public virtual tensor_props::CoreTensorBase,
             return *this;
         } else {
             if (_strides[Rank - 1] != 1) {
-                throw std::runtime_error("Creating a Rank-1 TensorView for this Tensor(View) is not supported.");
+                throw EINSUMSEXCEPTION("Creating a Rank-1 TensorView for this Tensor(View) is not supported.");
             }
             size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
             Dim<1> dim{size};
@@ -1185,7 +1186,7 @@ struct TensorView final : public virtual tensor_props::CoreTensorBase,
         }
 
         if (nfound > 1) {
-            throw std::runtime_error("More than one -1 was provided.");
+            throw EINSUMSEXCEPTION("More than one -1 was provided.");
         }
 
         if (nfound == 1 && Rank == 1) {
@@ -1199,7 +1200,7 @@ struct TensorView final : public virtual tensor_props::CoreTensorBase,
         }
 
         if (nfound == 1 && Rank > 1) {
-            throw std::runtime_error("Haven't coded up this case yet.");
+            throw EINSUMSEXCEPTION("Haven't coded up this case yet.");
         }
 
         // If the Ranks are the same then use "other"s stride information
@@ -1227,7 +1228,7 @@ struct TensorView final : public virtual tensor_props::CoreTensorBase,
                 // Stride information cannot be automatically deduced.  It must be provided.
                 default_strides = arguments::get(error_strides, args...);
                 if (default_strides[0] == static_cast<size_t>(-1)) {
-                    throw std::runtime_error("Unable to automatically deduce stride information. Stride must be passed in.");
+                    throw EINSUMSEXCEPTION("Unable to automatically deduce stride information. Stride must be passed in.");
                 }
             }
         }
@@ -1332,7 +1333,7 @@ void write(const h5::fd_t &fd, const TensorView<T, Rank> &ref, Args &&...args) {
     disk_offset.rank    = Rank;
 
     if (ref.stride(Rank - 1) != 1) {
-        throw std::runtime_error("Final dimension of TensorView must be contiguous to write.");
+        throw EINSUMSEXCEPTION("Final dimension of TensorView must be contiguous to write.");
     }
 
     const h5::offset &offset = h5::arg::get(offset_default, args...);
@@ -1725,14 +1726,14 @@ struct DiskView final : public virtual tensor_props::DiskTensorBase,
     template <template <typename, size_t> typename TType>
     auto operator=(const TType<T, ViewRank> &other) -> DiskView & {
         if (_readOnly) {
-            throw std::runtime_error("Attempting to write data to a read only disk view.");
+            throw EINSUMSEXCEPTION("Attempting to write data to a read only disk view.");
         }
 
         // Check dims
         for (int i = 0; i < ViewRank; i++) {
             if (_dims[i] != other.dim(i)) {
-                throw std::runtime_error(
-                    fmt::format("DiskView::operator= : dims do not match (i {} dim {} other {})", i, _dims[i], other.dim(i)));
+                throw EINSUMSEXCEPTION(
+                    fmt::format("dims do not match (i {} dim {} other {})", i, _dims[i], other.dim(i)));
             }
         }
 

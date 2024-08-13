@@ -219,7 +219,7 @@ auto create_random_gpu_tensor(const std::string &name, MultiIndex... index) -> D
 template <typename T = double>
 auto create_random_definite(const std::string &name, int rows, int cols, T mean = T{1.0}) -> Tensor<T, 2> {
     if (rows != cols) {
-        throw std::runtime_error("Can only make square positive definite matrices.");
+        throw EINSUMSEXCEPTION("Can only make square positive definite matrices.");
     }
     Tensor<T, 2> Evecs("name", rows, cols);
 
@@ -288,7 +288,7 @@ auto create_random_definite(const std::string &name, int rows, int cols, T mean 
 template <typename T = double, bool Normalize = false>
 auto create_random_semidefinite(const std::string &name, int rows, int cols, T mean = T{1.0}, int force_zeros = 1) -> Tensor<T, 2> {
     if (rows != cols) {
-        throw std::runtime_error("Can only make square positive definite matrices.");
+        throw EINSUMSEXCEPTION("Can only make square positive definite matrices.");
     }
     Tensor<T, 2> Evecs("name", rows, cols);
 

@@ -53,6 +53,11 @@ struct hip_exception : public std::exception {
         message += hipGetErrorString(error);
     }
 
+    hip_exception(std::string diagnostic) : message{""} {
+        message += diagnostic;
+        message += hipGetErrorString(error);
+    }
+
     /**
      * @brief Return the error string.
      */
@@ -206,6 +211,11 @@ struct hipblas_exception : public std::exception {
         message += hipblasStatusToString(error);
     }
 
+    hipblas_exception(std::string diagnostic) : message{""} {
+        message += diagnostic;
+        message += hipblasStatusToString(error);
+    }
+
     /**
      * @brief Return the error string corresponding to the status code.
      */
@@ -304,6 +314,11 @@ struct hipsolver_exception : public std::exception {
      * Construct a new exception.
      */
     hipsolver_exception(const char *diagnostic) : message{""} {
+        message += diagnostic;
+        message += hipsolverStatusToString(error);
+    }
+
+    hipsolver_exception(std::string diagnostic) : message{""} {
         message += diagnostic;
         message += hipsolverStatusToString(error);
     }
@@ -419,7 +434,7 @@ EINSUMS_EXPORT hipsolverHandle_t set_solver_handle(hipsolverHandle_t value, int 
  * @param throw_success If true, then an exception will be thrown if a success status is passed. If false, then a success will cause the
  * function to exit quietly.
  */
-__host__ EINSUMS_EXPORT void __hipblas_catch__(hipblasStatus_t status, const char *diagnostic, bool throw_success = false);
+__host__ EINSUMS_EXPORT void __hipblas_catch__(hipblasStatus_t status, const char *diagnostic, const char *funcname, bool throw_success = false);
 
 /**
  * @brief Takes a status code as an argument and throws the appropriate exception.
@@ -428,27 +443,23 @@ __host__ EINSUMS_EXPORT void __hipblas_catch__(hipblasStatus_t status, const cha
  * @param throw_success If true, then an exception will be thrown if a success status is passed. If false, then a success will cause the
  * function to exit quietly.
  */
-__host__ EINSUMS_EXPORT void __hipsolver_catch__(hipsolverStatus_t status, const char *diagnostic, bool throw_success = false);
-
-#define hipblas_catch_STR1(x) #x
-#define hipblas_catch_STR(x)  hipblas_catch_STR1(x)
-#define hipblas_catch(condition, ...)                                                                                                      \
-    __hipblas_catch__((condition), __FILE__ ":" hipblas_catch_STR(__LINE__) ": " __VA_OPT__(, ) __VA_ARGS__)
-
-#define hipsolver_catch_STR1(x) #x
-#define hipsolver_catch_STR(x)  hipblas_catch_STR1(x)
-#define hipsolver_catch(condition, ...)                                                                                                    \
-    __hipsolver_catch__((condition), __FILE__ ":" hipsolver_catch_STR(__LINE__) ": " __VA_OPT__(, ) __VA_ARGS__)
+__host__ EINSUMS_EXPORT void __hipsolver_catch__(hipsolverStatus_t status, const char *diagnostic, const char *funcname, bool throw_success = false);
 
 /**
  * Wraps up an HIP function to catch any error codes. If the function does not return
  * hipSuccess, then an exception will be thrown
  */
-__host__ EINSUMS_EXPORT void __hip_catch__(hipError_t condition, const char *diagnostic, bool throw_success = false);
+__host__ EINSUMS_EXPORT void __hip_catch__(hipError_t condition, const char *diagnostic, const char *funcname, bool throw_success = false);
 
 #define hip_catch_STR1(x)         #x
 #define hip_catch_STR(x)          hip_catch_STR1(x)
-#define hip_catch(condition, ...) __hip_catch__((condition), __FILE__ ":" hip_catch_STR(__LINE__) ": " __VA_OPT__(, ) __VA_ARGS__)
+#define hip_catch(condition, ...) __hip_catch__((condition), __FILE__ ":" hip_catch_STR(__LINE__) ":", std::source_location::current().function_name() __VA_OPT__(, ) __VA_ARGS__)
+
+#define hipblas_catch(condition, ...)                                                                                                      \
+    __hipblas_catch__((condition), __FILE__ ":" hip_catch_STR(__LINE__) ":", std::source_location::current().function_name() __VA_OPT__(, ) __VA_ARGS__)
+
+#define hipsolver_catch(condition, ...)                                                                                                    \
+    __hipsolver_catch__((condition), __FILE__ ":" hip_catch_STR(__LINE__) ":", std::source_location::current().function_name() __VA_OPT__(, ) __VA_ARGS__)
 
 /**
  * @def get_worker_info

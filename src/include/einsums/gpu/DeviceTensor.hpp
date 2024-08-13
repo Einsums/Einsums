@@ -190,7 +190,7 @@ DeviceTensor<T, Rank>::DeviceTensor(DeviceTensor<T, OtherRank> &&existingTensor,
     }
 
     if (nfound > 1) {
-        throw ::std::runtime_error("More than one -1 was provided.");
+        throw EINSUMSEXCEPTION("More than one -1 was provided.");
     }
 
     if (nfound == 1) {
@@ -200,7 +200,7 @@ DeviceTensor<T, Rank>::DeviceTensor(DeviceTensor<T, OtherRank> &&existingTensor,
                 size *= dim;
         }
         if (size > existingTensor.size()) {
-            throw ::std::runtime_error("Size of new tensor is larger than the parent tensor.");
+            throw EINSUMSEXCEPTION("Size of new tensor is larger than the parent tensor.");
         }
         _dims[location] = existingTensor.size() / size;
     }
@@ -211,7 +211,7 @@ DeviceTensor<T, Rank>::DeviceTensor(DeviceTensor<T, OtherRank> &&existingTensor,
 
     // Check size
     if (existingTensor.size() != size) {
-        throw ::std::runtime_error("Provided dims to not match size of parent tensor");
+        throw EINSUMSEXCEPTION("Provided dims to not match size of parent tensor");
     }
 
     hip_catch(hipMalloc((void **)&(this->_gpu_dims), 2 * sizeof(size_t) * Rank));
@@ -752,7 +752,7 @@ HostDevReference<T> DeviceTensor<T, Rank>::operator()(MultiIndex... index) {
     size_t ordinal = ::std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
 
     if (ordinal > this->size()) {
-        throw std::out_of_range("Array index out of range!");
+        throw EINSUMSEXCEPTION("Array index out of range!");
     }
 
     if (this->_mode == einsums::detail::MAPPED || this->_mode == einsums::detail::PINNED) {

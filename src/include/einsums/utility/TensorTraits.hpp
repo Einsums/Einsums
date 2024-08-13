@@ -1304,7 +1304,7 @@ concept VectorConcept = RankTensorConcept<D, 1>;
  *
  * @brief Alias of RankTensorConcept<D, 0>.
  *
- * Shorthand for requiring that a tensor be a scalar.
+ * Shorthand for requiring that a tensor be a scalar. That is, a tensor with zero rank or a variable with a type such as double or std::complex<float>.
  *
  * @tparam D The tensor to check.
  */
@@ -1460,6 +1460,30 @@ using BasicTensorLike = decltype(detail::create_basic_tensor_like<T, Rank>(D()))
  */
 template<typename D>
 using DataType = decltype(detail::type_function(D()));
+
+/**
+ * @struct BiggestType
+ *
+ * @brief Gets the type with the biggest storage specification.
+ */
+template<typename First, typename... Rest>
+struct BiggestType {
+    using type = std::conditional_t<(sizeof(First) > sizeof(typename BiggestType<Rest...>::type)), First, typename BiggestType<Rest...>::type>;
+};
+
+template<typename First>
+struct BiggestType<First> {
+    using type = First;
+};
+
+/**
+ * @typedef BiggestTypeT
+ * 
+ * @brief Gets the type with the biggest storage specification.
+ */
+template<typename... Args>
+using BiggestTypeT = typename BiggestType<Args...>::type;
+
 
 namespace tensor_props {
 /**

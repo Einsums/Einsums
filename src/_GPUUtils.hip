@@ -14,7 +14,12 @@
 
 BEGIN_EINSUMS_NAMESPACE_CPP(einsums::gpu)
 
-__host__ void __hip_catch__(hipError_t condition, const char *diagnostic, bool throw_success) {
+__host__ void __hip_catch__(hipError_t condition, const char *location, const char *funcname, bool throw_success) {
+
+    std::string diagnostic = location;
+
+    diagnostic.append(funcname);
+
     // Auto-generated code.
     switch (condition) {
     case hipSuccess:
@@ -255,7 +260,11 @@ std::vector<hipStream_t> *default_streams = nullptr;
 std::vector<bool> *skip_waits = nullptr;
 }
 
-__host__ void __hipblas_catch__(hipblasStatus_t status, const char *diagnostic, bool throw_success) {
+__host__ void __hipblas_catch__(hipblasStatus_t status, const char *location, const char *funcname, bool throw_success) {
+    std::string diagnostic = location;
+
+    diagnostic.append(funcname);
+
     switch (status) {
     case HIPBLAS_STATUS_SUCCESS:
         if (throw_success) {
@@ -319,7 +328,10 @@ hipblasHandle_t set_blas_handle(hipblasHandle_t value) {
     return set_blas_handle(value, omp_get_thread_num());
 }
 
-__host__ void __hipsolver_catch__(hipsolverStatus_t condition, const char *diagnostic, bool throw_success) {
+__host__ void __hipsolver_catch__(hipsolverStatus_t condition, const char *location, const char *funcname, bool throw_success) {
+    std::string diagnostic = location;
+    diagnostic.append(funcname);
+
     switch (condition) {
     case HIPSOLVER_STATUS_SUCCESS:
         if (throw_success) {

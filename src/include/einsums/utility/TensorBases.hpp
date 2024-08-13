@@ -94,6 +94,8 @@ struct RankTensorBase {
     virtual ~RankTensorBase() = default;
 
     virtual Dim<Rank> dims() const = 0;
+
+    virtual auto dim(int d) const -> size_t = 0;
 };
 
 /**
@@ -129,8 +131,6 @@ struct TensorBase : public virtual TensorBaseNoExtra, virtual TypedTensorBase<T>
     TensorBase(const TensorBase &) = default;
 
     virtual ~TensorBase() = default;
-
-    virtual auto dim(int d) const -> size_t = 0;
 
     virtual bool full_view_of_underlying() const { return true; }
 

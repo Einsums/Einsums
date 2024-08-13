@@ -57,7 +57,7 @@ auto khatri_rao(const std::tuple<AIndices...> &, const AType &A, const std::tupl
     // Sanity check - ensure the common dims between A and B are the same size.
     for_sequence<std::tuple_size_v<decltype(common)>>([&](auto i) {
         if (std::get<i>(A_common_dims) != std::get<i>(B_common_dims)) {
-            throw std::runtime_error(fmt::format("Common dimensions for index {} of A and B do not match.", std::get<i>(common)));
+            throw EINSUMSEXCEPTION(fmt::format("Common dimensions for index {} of A and B do not match.", std::get<i>(common)));
         }
     });
 

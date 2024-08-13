@@ -23,7 +23,7 @@ auto companion(const Tensor<T, 1> &c) -> Tensor<T, 2>
     LabeledSection0();
 
     if (c.dim(0) < 2) {
-        throw std::runtime_error("Series (c) must have maximum degree of at least 1.");
+        throw EINSUMSEXCEPTION("Series (c) must have maximum degree of at least 1.");
     }
 
     if (c.dim(0) == 2) {

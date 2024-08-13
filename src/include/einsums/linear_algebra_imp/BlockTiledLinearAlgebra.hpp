@@ -72,7 +72,7 @@ template <CollectedTensorConcept AType, CollectedTensorConcept BType>
 auto dot(const AType &A, const BType &B) -> typename AType::data_type {
     for (int i = 0; i < AType::rank; i++) {
         if (A.grid_size(i) != B.num_blocks()) {
-            throw std::runtime_error("dot: Tiled tensor and block tensor have incompatible layouts.");
+            throw EINSUMSEXCEPTION("Tiled tensor and block tensor have incompatible layouts.");
         }
     }
     using T               = typename AType::data_type;
@@ -118,7 +118,7 @@ template <CollectedTensorConcept AType, CollectedTensorConcept BType>
 auto true_dot(const AType &A, const BType &B) -> typename AType::data_type {
     for (int i = 0; i < AType::rank; i++) {
         if (A.grid_size(i) != B.num_blocks()) {
-            throw std::runtime_error("dot: Tiled tensor and block tensor have incompatible layouts.");
+            throw EINSUMSEXCEPTION("Tiled tensor and block tensor have incompatible layouts.");
         }
     }
     using T               = typename AType::data_type;
@@ -164,24 +164,24 @@ requires requires {
 void gemm(const U alpha, const AType &A, const BType &B, const U beta, CType *C) {
     // Check for compatibility.
     if (C->grid_size(0) != A.num_blocks() || C->grid_size(1) != B.grid_size(TransB ? 0 : 1)) {
-        throw std::runtime_error("gemm: Output tensor needs to have a compatible tile grid with the inputs.");
+        throw EINSUMSEXCEPTION("Output tensor needs to have a compatible tile grid with the inputs.");
     }
     if (A.num_blocks() != B.grid_size(TransB ? 1 : 0)) {
-        throw std::runtime_error("gemm: Input tensors need to have compatible tile grids.");
+        throw EINSUMSEXCEPTION("Input tensors need to have compatible tile grids.");
     }
     for (int i = 0; i < C->grid_size(0); i++) {
         if (C->tile_size(0)[i] != A.block_dims(i)) {
-            throw std::runtime_error("gemm: Tile sizes need to match between all three tensors.");
+            throw EINSUMSEXCEPTION("Tile sizes need to match between all three tensors.");
         }
     }
     for (int i = 0; i < C->grid_size(1); i++) {
         if (C->tile_size(1)[i] != B.tile_size(TransB ? 0 : 1)[i]) {
-            throw std::runtime_error("gemm: Tile sizes need to match between all three tensors.");
+            throw EINSUMSEXCEPTION("Tile sizes need to match between all three tensors.");
         }
     }
     for (int i = 0; i < A.num_blocks(); i++) {
         if (A.block_dim(i) != B.tile_size(TransB ? 1 : 0)[i]) {
-            throw std::runtime_error("gemm: Tile sizes need to match between all three tensors.");
+            throw EINSUMSEXCEPTION("Tile sizes need to match between all three tensors.");
         }
     }
     int x_size = C->grid_size(0), y_size = C->grid_size(1);
@@ -215,24 +215,24 @@ requires requires {
 void gemm(const U alpha, const AType &A, const BType &B, const U beta, CType *C) {
     // Check for compatibility.
     if (C->grid_size(0) != A.grid_size(TransA ? 1 : 0) || C->grid_size(1) != B.num_blocks()) {
-        throw std::runtime_error("gemm: Output tensor needs to have a compatible tile grid with the inputs.");
+        throw EINSUMSEXCEPTION("Output tensor needs to have a compatible tile grid with the inputs.");
     }
     if (A.grid_size(TransA ? 0 : 1) != B.num_blocks()) {
-        throw std::runtime_error("gemm: Input tensors need to have compatible tile grids.");
+        throw EINSUMSEXCEPTION("Input tensors need to have compatible tile grids.");
     }
     for (int i = 0; i < C->grid_size(0); i++) {
         if (C->tile_size(0)[i] != A.tile_size(TransA ? 1 : 0)[i]) {
-            throw std::runtime_error("gemm: Tile sizes need to match between all three tensors.");
+            throw EINSUMSEXCEPTION("Tile sizes need to match between all three tensors.");
         }
     }
     for (int i = 0; i < C->grid_size(1); i++) {
         if (C->tile_size(1)[i] != B.block_dim(i)) {
-            throw std::runtime_error("gemm: Tile sizes need to match between all three tensors.");
+            throw EINSUMSEXCEPTION("Tile sizes need to match between all three tensors.");
         }
     }
     for (int i = 0; i < A.num_blocks; i++) {
         if (A.tile_size(TransA ? 0 : 1)[i] != B.block_dim(i)) {
-            throw std::runtime_error("gemm: Tile sizes need to match between all three tensors.");
+            throw EINSUMSEXCEPTION("Tile sizes need to match between all three tensors.");
         }
     }
     int x_size = C->grid_size(0), y_size = C->grid_size(1);

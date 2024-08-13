@@ -190,7 +190,7 @@ auto einsum(const typename CType::data_type C_prefactor, const std::tuple<CIndic
     });
 
     if (runtime_indices_abort) {
-        throw std::runtime_error("einsum: Inconsistent dimensions found!");
+        throw EINSUMSEXCEPTION("Inconsistent dimensions found!");
     }
 #endif
 
@@ -536,7 +536,7 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
                     println(A);
                     println(B);
 
-                    throw std::runtime_error("NAN detected in resulting tensor.");
+                    throw EINSUMSEXCEPTION("NAN detected in resulting tensor.");
                 }
 
                 if (std::isinf(Cvalue)) {
@@ -549,7 +549,7 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
                     println(A);
                     println(B);
 
-                    throw std::runtime_error("Infinity detected in resulting tensor.");
+                    throw EINSUMSEXCEPTION("Infinity detected in resulting tensor.");
                 }
 
                 if (std::abs(Cvalue) > 100000000) {
@@ -562,7 +562,7 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
                     println(A);
                     println(B);
 
-                    throw std::runtime_error("Large value detected in resulting tensor.");
+                    throw EINSUMSEXCEPTION("Large value detected in resulting tensor.");
                 }
             }
         }

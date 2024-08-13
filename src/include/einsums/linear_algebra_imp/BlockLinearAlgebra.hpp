@@ -18,7 +18,7 @@ template <bool TransA, bool TransB, BlockTensorConcept AType, BlockTensorConcept
     }
 void gemm(const U alpha, const AType &A, const BType &B, const U beta, CType *C) {
     if (A.num_blocks() != B.num_blocks() || A.num_blocks() != C->num_blocks() || B.num_blocks() != C->num_blocks()) {
-        throw std::runtime_error("gemm: Tensors need the same number of blocks.");
+        throw EINSUMSEXCEPTION("gemm: Tensors need the same number of blocks.");
     }
 
     using T = typename AType::data_type;
@@ -140,7 +140,7 @@ template <BlockTensorConcept AType, BlockTensorConcept BType>
     }
 auto gesv(AType *A, BType *B) -> int {
     if (A->num_blocks() != B->num_blocks()) {
-        throw std::runtime_error("gesv: Tensors need the same number of blocks.");
+        throw EINSUMSEXCEPTION("gesv: Tensors need the same number of blocks.");
     }
 
     int info_out = 0;
@@ -272,11 +272,11 @@ template <BlockTensorConcept XType, BlockTensorConcept YType>
 void axpy(typename XType::data_type alpha, const XType &X, YType *Y) {
 
     if (X.num_blocks() != Y->num_blocks()) {
-        throw std::runtime_error("axpy: Tensors need to have the same number of blocks.");
+        throw EINSUMSEXCEPTION("axpy: Tensors need to have the same number of blocks.");
     }
 
     if (X.ranges() != Y->ranges()) {
-        throw std::runtime_error("axpy: Tensor blocks need to be compatible.");
+        throw EINSUMSEXCEPTION("axpy: Tensor blocks need to be compatible.");
     }
 
     EINSUMS_OMP_PARALLEL_FOR
@@ -294,11 +294,11 @@ template <BlockTensorConcept XType, BlockTensorConcept YType>
 void axpby(typename XType::data_type alpha, const XType &X, typename YType::data_type beta, YType *Y) {
 
     if (X.num_blocks() != Y->num_blocks()) {
-        throw std::runtime_error("axpby: Tensors need to have the same number of blocks.");
+        throw EINSUMSEXCEPTION("axpby: Tensors need to have the same number of blocks.");
     }
 
     if (X.ranges() != Y->ranges()) {
-        throw std::runtime_error("axpby: Tensor blocks need to be compatible.");
+        throw EINSUMSEXCEPTION("axpby: Tensor blocks need to be compatible.");
     }
 
     EINSUMS_OMP_PARALLEL_FOR

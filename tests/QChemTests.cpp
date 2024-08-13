@@ -51,7 +51,7 @@ static void read_tensor(std::string fname, einsums::Tensor<double, Rank> *out) {
             if (next == NULL) {
                 std::printf("Line %d in file ", line_num);
                 println(fname);
-                throw std::runtime_error("Line in file not formatted correctly!");
+                throw EINSUMSEXCEPTION("Line in file not formatted correctly!");
             }
 
             indices[i] = std::atoi(next) - 1;
@@ -62,7 +62,7 @@ static void read_tensor(std::string fname, einsums::Tensor<double, Rank> *out) {
         if (next == NULL) {
             std::printf("Line %d in file ", line_num);
             println(fname);
-            throw std::runtime_error("Line in file not formatted correctly!");
+            throw EINSUMSEXCEPTION("Line in file not formatted correctly!");
         }
 
         if constexpr (Rank == 2) {
@@ -732,6 +732,10 @@ TEST_CASE("RHF symmetry") {
 
     // MP2 now.
     // Compute the new two electron integrals.
+    MP2_temp1.zero();
+    MP2_temp2.zero();
+    MP2_amps.zero();
+    MP2_amps_den.zero();
     REQUIRE_NOTHROW(einsum(Indices{index::i, index::j, index::k, index::l}, &MP2_temp1, Indices{index::m, index::j, index::k, index::l},
                            TEI_sym, Indices{index::m, index::i}, C));
     REQUIRE_NOTHROW(einsum(Indices{index::i, index::j, index::k, index::l}, &MP2_temp2, Indices{index::i, index::m, index::k, index::l},

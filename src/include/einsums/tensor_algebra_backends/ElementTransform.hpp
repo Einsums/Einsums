@@ -45,11 +45,11 @@ auto element(MultiOperator multi_opt, CType<T, Rank> *C, MultiTensors<T, Rank> &
                    einsums::detail::IsIncoreRankBlockTensorV<CType<T, Rank>, Rank, T>)) {
 
         if (((C->num_blocks() != tensors.num_blocks()) || ...)) {
-            throw std::runtime_error("element: All tensors need to have the same number of blocks.");
+            throw EINSUMSEXCEPTION("element: All tensors need to have the same number of blocks.");
         }
         for (int i = 0; i < C->num_blocks; i++) {
             if (((C->block_dim(i) != tensors.block_dim(i)) || ...)) {
-                throw std::runtime_error("element: All tensor blocks need to have the same size.");
+                throw EINSUMSEXCEPTION("element: All tensor blocks need to have the same size.");
             }
         }
 

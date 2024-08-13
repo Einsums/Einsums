@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include "einsums/Exception.hpp"
 #include "einsums/ElementOperations.hpp"
 #include "einsums/FFT.hpp"
 #include "einsums/H5.hpp"

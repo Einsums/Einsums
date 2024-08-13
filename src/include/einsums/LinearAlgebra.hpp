@@ -24,6 +24,7 @@
 #include "einsums/linear_algebra_imp/BlockLinearAlgebra.hpp"
 #include "einsums/linear_algebra_imp/BlockTiledLinearAlgebra.hpp"
 #include "einsums/linear_algebra_imp/TiledLinearAlgebra.hpp"
+#include "einsums/linear_algebra_imp/UnoptimizedLinearAlgebra.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -966,7 +967,7 @@ template <template <typename, size_t> typename AType, typename T, size_t Rank>
     requires(Rank == 2)
 T det(const AType<T, Rank> &A) {
     if (A.dim(0) != A.dim(1)) {
-        throw std::runtime_error("det: Can only take the determinant of a square matrix.");
+        throw EINSUMSEXCEPTION("Can only take the determinant of a square matrix.");
     }
 
     remove_view_t<AType<T, Rank>> temp = A;
