@@ -25,11 +25,12 @@ BEGIN_EINSUMS_NAMESPACE_HPP(einsums::tensor_algebra)
 
 namespace detail {
 
-template <bool OnlyUseGenericAlgorithm, TensorConcept AType, TensorConcept BType, TensorConcept CType, typename... CIndices,
+// CType has typename to allow for interoperability with scalar types.
+template <bool OnlyUseGenericAlgorithm, TensorConcept AType, TensorConcept BType, typename CType, typename... CIndices,
           typename... AIndices, typename... BIndices>
-auto einsum(const typename CType::data_type C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType *C,
-            const std::conditional_t<(sizeof(typename AType::data_type) > sizeof(typename BType::data_type)), typename AType::data_type,
-                                     typename BType::data_type>
+requires(TensorConcept<CType> || (ScalarConcept<CType> && sizeof...(CIndices) == 0))
+auto einsum(const DataTypeT<CType> C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType *C,
+            const BiggestTypeT<typename AType::data_type, typename BType::data_type>
                 AB_prefactor,
             const std::tuple<AIndices...> & /*As*/, const AType &A, const std::tuple<BIndices...> & /*Bs*/, const BType &B) -> void;
 } // namespace detail
@@ -37,9 +38,12 @@ auto einsum(const typename CType::data_type C_prefactor, const std::tuple<CIndic
 /*
  * Dispatchers for einsum.
  */
-template <TensorConcept AType, TensorConcept BType, TensorConcept CType, typename U, typename... CIndices, typename... AIndices,
+template <TensorConcept AType, TensorConcept BType, typename CType, typename U, typename... CIndices, typename... AIndices,
           typename... BIndices>
-    requires(InSamePlace<AType, BType, CType>)
+requires requires {
+    requires InSamePlace<AType, BType>;
+    requires InSamePlace<AType, CType> || !TensorConcept<CType>;
+}
 auto einsum(const U C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType *C, const U UAB_prefactor,
             const std::tuple<AIndices...> & /*As*/, const AType &A, const std::tuple<BIndices...> & /*Bs*/, const BType &B) -> void;
 

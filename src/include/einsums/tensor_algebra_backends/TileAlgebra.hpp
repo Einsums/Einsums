@@ -154,18 +154,20 @@ inline auto get_grid_ranges_for_many(const CType<CDataType, CRank> &C, const ::s
     return ::std::array{get_grid_ranges_for_many_c<AllUniqueIndices, 0>(C, C_indices, A, A_indices, B, B_indices)...};
 }
 
-template <bool OnlyUseGenericAlgorithm, template <typename, size_t> typename AType, typename ADataType, size_t ARank,
-          template <typename, size_t> typename BType, typename BDataType, size_t BRank, template <typename, size_t> typename CType,
-          typename CDataType, size_t CRank, typename... CIndices, typename... AIndices, typename... BIndices>
-    requires requires {
-        requires RankTiledTensor<AType<ADataType, ARank>, ARank, ADataType>;
-        requires RankTiledTensor<BType<BDataType, BRank>, BRank, BDataType>;
-        requires RankTiledTensor<CType<CDataType, CRank>, CRank, CDataType>;
-    }
-auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndices...> &C_indices, CType<CDataType, CRank> *C,
-                             const std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> AB_prefactor,
-                             const std::tuple<AIndices...> &A_indices, const AType<ADataType, ARank> &A,
-                             const std::tuple<BIndices...> &B_indices, const BType<BDataType, BRank> &B) -> void {
+template<bool OnlyUseGenericAlgorithm, TiledTensorConcept AType, TiledTensorConcept BType, TiledTensorConcept CType, typename... CIndices, typename... AIndices, typename... BIndices>
+requires(CType::rank != 0)
+auto einsum_special_dispatch(const typename CType::data_type C_prefactor, const std::tuple<CIndices...> &C_indices, CType *C,
+                             const BiggestTypeT<typename AType::data_type, typename BType::data_type> AB_prefactor,
+                             const std::tuple<AIndices...> &A_indices, const AType &A,
+                             const std::tuple<BIndices...> &B_indices, const BType &B) -> void {
+
+    constexpr size_t ARank = AType::rank;
+    constexpr size_t BRank = BType::rank;
+    constexpr size_t CRank = CType::rank;
+
+    using ADataType = typename AType::data_type;
+    using BDataType = typename BType::data_type;
+    using CDataType = typename CType::data_type;
 
     constexpr auto unique_indices = unique_t<std::tuple<CIndices..., AIndices..., BIndices...>>();
     auto           unique_grid    = get_grid_ranges_for_many(*C, C_indices, A, A_indices, B, B_indices, unique_indices);
@@ -224,18 +226,19 @@ auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndi
     }
 }
 
-template <bool OnlyUseGenericAlgorithm, template <typename, size_t> typename AType, typename ADataType, size_t ARank,
-          template <typename, size_t> typename BType, typename BDataType, size_t BRank, template <typename, size_t> typename CType,
-          typename CDataType, size_t CRank, typename... CIndices, typename... AIndices, typename... BIndices>
-    requires requires {
-        requires RankTiledTensor<AType<ADataType, ARank>, ARank, ADataType>;
-        requires RankTiledTensor<BType<BDataType, BRank>, BRank, BDataType>;
-        requires RankBasicTensor<CType<CDataType, CRank>, 0, CDataType>;
-    }
-auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndices...> &C_indices, CType<CDataType, CRank> *C,
-                             const std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> AB_prefactor,
-                             const std::tuple<AIndices...> &A_indices, const AType<ADataType, ARank> &A,
-                             const std::tuple<BIndices...> &B_indices, const BType<BDataType, BRank> &B) -> void {
+template<bool OnlyUseGenericAlgorithm, TiledTensorConcept AType, TiledTensorConcept BType, ScalarConcept CType, typename... CIndices, typename... AIndices, typename... BIndices>
+auto einsum_special_dispatch(const DataTypeT<CType> C_prefactor, const std::tuple<CIndices...> &C_indices, CType *C,
+                             const BiggestTypeT<typename AType::data_type, typename BType::data_type> AB_prefactor,
+                             const std::tuple<AIndices...> &A_indices, const AType &A,
+                             const std::tuple<BIndices...> &B_indices, const BType &B) -> void {
+
+    constexpr size_t ARank = AType::rank;
+    constexpr size_t BRank = BType::rank;
+    constexpr size_t CRank = CType::rank;
+
+    using ADataType = typename AType::data_type;
+    using BDataType = typename BType::data_type;
+    using CDataType = typename CType::data_type;
 
     constexpr auto unique_indices = unique_t<std::tuple<CIndices..., AIndices..., BIndices...>>();
     auto           unique_grid    = get_grid_ranges_for_many(*C, C_indices, A, A_indices, B, B_indices, unique_indices);
@@ -278,21 +281,10 @@ auto einsum_special_dispatch(const CDataType C_prefactor, const std::tuple<CIndi
             continue;
         }
 
-#ifdef __HIP__
-        if constexpr (einsums::detail::IsDeviceRankTensorV<CType<CDataType, CRank>, CRank, CDataType>) {
-            DeviceTensor<CDataType, 0> C_tile;
+            CDataType C_tile;
             einsum<OnlyUseGenericAlgorithm>(CDataType{0.0}, C_indices, &C_tile, AB_prefactor, A_indices, A.tile(A_tile_index), B_indices,
                                             B.tile(B_tile_index));
-            out += (double)C_tile;
-        } else {
-#endif
-            Tensor<CDataType, 0> C_tile;
-            einsum<OnlyUseGenericAlgorithm>(CDataType{0.0}, C_indices, &C_tile, AB_prefactor, A_indices, A.tile(A_tile_index), B_indices,
-                                            B.tile(B_tile_index));
-            out += (double)C_tile;
-#ifdef __HIP__
-        }
-#endif
+            out += C_tile;
     }
 
     *C = out;

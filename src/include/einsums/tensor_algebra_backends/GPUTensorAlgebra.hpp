@@ -161,29 +161,24 @@ einsum_generic_zero_rank_gpu(const size_t *__restrict__ unique_strides, const in
     }
 }
 
-template <typename... CUniqueIndices, typename... AUniqueIndices, typename... BUniqueIndices, typename... LinkUniqueIndices,
-          typename... CIndices, typename... AIndices, typename... BIndices, typename... TargetDims, typename... LinkDims,
-          typename... TargetPositionInC, typename... LinkPositionInLink, template <typename, size_t> typename CType, typename CDataType,
-          size_t CRank, template <typename, size_t> typename AType, typename ADataType, size_t ARank,
-          template <typename, size_t> typename BType, typename BDataType, size_t BRank>
-    requires requires {
-        requires RankBasicTensor<CType<CDataType, CRank>, CRank, CDataType>;
-        requires RankBasicTensor<AType<ADataType, ARank>, ARank, ADataType>;
-        requires RankBasicTensor<BType<BDataType, BRank>, BRank, BDataType>;
-        requires DeviceRankTensor<CType<CDataType, CRank>, CRank, CDataType>;
-        requires DeviceRankTensor<AType<ADataType, ARank>, ARank, ADataType>;
-        requires DeviceRankTensor<BType<BDataType, BRank>, BRank, BDataType>;
-    }
+template<typename... CUniqueIndices, typename... AUniqueIndices, typename... BUniqueIndices, typename... LinkUniqueIndices, typename... CIndices,
+    typename... AIndices, typename... BIndices, typename... TargetDims, typename... LinkDims,
+    typename... TargetPositionInC, typename... LinkPositionInLink, typename CType, DeviceBasicTensorConcept AType, DeviceBasicTensorConcept BType>
+requires(DeviceBasicTensorConcept<CType> || !TensorConcept<CType>)
 void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, const std::tuple<AUniqueIndices...> & /*A_unique*/,
                               const std::tuple<BUniqueIndices...> & /*B_unique*/, const std::tuple<LinkUniqueIndices...> &link_unique,
                               const std::tuple<CIndices...> &C_indices, const std::tuple<AIndices...> &A_indices,
                               const std::tuple<BIndices...> &B_indices, const std::tuple<TargetDims...> &target_dims,
                               const std::tuple<LinkDims...> &link_dims, const std::tuple<TargetPositionInC...> &target_position_in_C,
-                              const std::tuple<LinkPositionInLink...> &link_position_in_link, const CDataType C_prefactor,
-                              CType<CDataType, CRank>                                                                *C,
-                              const std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> AB_prefactor,
-                              const AType<ADataType, ARank> &A, const BType<BDataType, BRank> &B) {
+                              const std::tuple<LinkPositionInLink...> &link_position_in_link, const DataTypeT<CType> C_prefactor,
+                              CType                                                                *C,
+                              const BiggestTypeT<typename AType::data_type, typename BType::data_type> AB_prefactor,
+                              const AType &A, const BType &B) {
     using namespace einsums::gpu;
+
+    constexpr size_t ARank = AType::rank;
+    constexpr size_t BRank = BType::rank;
+    constexpr size_t CRank = TensorRank<CType>;
 
     constexpr auto unique_indices = unique_t<std::tuple<CIndices..., AIndices..., BIndices...>>();
     auto           unique_dims    = get_dim_ranges_for_many(*C, C_indices, A, A_indices, B, B_indices, unique_indices);
@@ -225,15 +220,14 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
          grid    = blocks(::std::get<0>(unique_dims) * unique_strides[0]);
 
     if constexpr (sizeof...(CIndices) != 0) {
-        using C_devtype   = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<decltype(C->gpu_data())>>>;
-        using A_devtype   = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<decltype(A.gpu_data())>>>;
-        using B_devtype   = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<decltype(B.gpu_data())>>>;
-        using AB_devtype  = std::remove_cvref_t<std::remove_pointer_t<
-             std::decay_t<std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), decltype(A.gpu_data()), decltype(B.gpu_data())>>>>;
-        using C_hosttype  = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<CDataType>>>;
-        using A_hosttype  = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<ADataType>>>;
-        using B_hosttype  = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<BDataType>>>;
-        using AB_hosttype = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<decltype(AB_prefactor)>>>;
+        using C_devtype   = typename CType::dev_datatype;
+        using A_devtype   = typename AType::dev_datatype;
+        using B_devtype   = typename BType::dev_datatype;
+        using AB_devtype  = BiggestTypeT<A_devtype, B_devtype>;
+        using C_hosttype  = typename CType::host_datatype;
+        using A_hosttype  = typename AType::host_datatype;
+        using B_hosttype  = typename BType::host_datatype;
+        using AB_hosttype = BiggestTypeT<A_hosttype, B_hosttype>;
 
         einsum_generic_algorithm_gpu<C_devtype, A_devtype, B_devtype, std::tuple_size<decltype(unique_indices)>::value, CRank, ARank, BRank>
             <<<threads, grid, 0, get_stream()>>>(unique_strides_gpu, C_index_table_gpu, A_index_table_gpu, B_index_table_gpu,
@@ -242,28 +236,27 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
                                                  A.gpu_dims(), A.gpu_strides(), B.gpu_data(), B.gpu_dims(), B.gpu_strides(),
                                                  ::std::get<0>(unique_dims) * unique_strides[0]);
     } else {
+        using C_devtype   = typename einsums::tensor_props::DevTypedTensorBase<DataTypeT<CType>>::dev_datatype;
+        using A_devtype   = typename AType::dev_datatype;
+        using B_devtype   = typename BType::dev_datatype;
+        using AB_devtype  = BiggestTypeT<A_devtype, B_devtype>;
+        using C_hosttype  = DataTypeT<CType>;
+        using A_hosttype  = typename AType::host_datatype;
+        using B_hosttype  = typename BType::host_datatype;
+        using AB_hosttype = BiggestTypeT<A_hosttype, B_hosttype>;
+
         // CDataType *work;
         // hip_catch(hipMalloc((void **)&work, threads.x * threads.y * threads.z * blocks.x * blocks.y * blocks.z * sizeof(CDataType)));
-        if (C_prefactor == CDataType{0}) {
-            *C = CDataType{0};
+        if (C_prefactor == typename CType::data_type{0}) {
+            *C = typename CType::data_type{0};
         } else {
             *C *= C_prefactor;
         }
 
-        using C_devtype   = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<decltype(C->gpu_data())>>>;
-        using A_devtype   = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<decltype(A.gpu_data())>>>;
-        using B_devtype   = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<decltype(B.gpu_data())>>>;
-        using AB_devtype  = std::remove_cvref_t<std::remove_pointer_t<
-             std::decay_t<std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), decltype(A.gpu_data()), decltype(B.gpu_data())>>>>;
-        using C_hosttype  = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<CDataType>>>;
-        using A_hosttype  = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<ADataType>>>;
-        using B_hosttype  = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<BDataType>>>;
-        using AB_hosttype = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<decltype(AB_prefactor)>>>;
-
         C_devtype *work_array;
 
         hip_catch(hipMalloc((void **)&work_array,
-                            threads.x * threads.y * threads.z * grid.x * grid.y * grid.z * sizeof(CDataType) / get_warpsize()));
+                            threads.x * threads.y * threads.z * grid.x * grid.y * grid.z * sizeof(C_devtype) / get_warpsize()));
 
         einsum_generic_zero_rank_gpu<C_devtype, A_devtype, B_devtype, std::tuple_size<decltype(unique_indices)>::value, ARank, BRank>
             <<<threads, grid, 0, get_stream()>>>(unique_strides_gpu, A_index_table_gpu, B_index_table_gpu, C->gpu_data(),

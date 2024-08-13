@@ -217,18 +217,16 @@ __global__ void direct_product_kernel(T beta, T *__restrict__ C, const size_t *_
 
 } // namespace gpu
 
-template <bool TransA, bool TransB, template <typename, size_t> typename AType, template <typename, size_t> typename BType,
-          template <typename, size_t> typename CType, size_t Rank, typename T>
-    requires requires {
-        requires ::einsums::DeviceRankBasicTensor<AType<T, Rank>, 2, T>;
-        requires ::einsums::DeviceRankBasicTensor<BType<T, Rank>, 2, T>;
-        requires ::einsums::DeviceRankBasicTensor<CType<T, Rank>, 2, T>;
-    }
-void gemm(const T *alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const T *beta, CType<T, Rank> *C) {
+template<bool TransA, bool TransB, DeviceBasicTensorConcept AType, DeviceBasicTensorConcept BType, DeviceBasicTensorConcept CType, typename T>
+requires requires {
+    requires MatrixConcept<AType>;
+    requires SameUnderlyingAndRank<AType, BType, CType>;
+    requires std::is_same_v<typename AType::host_datatype, T>;
+}
+void gemm(const T *alpha, const AType &A, const BType &B, const T *beta, CType *C) {
     using namespace einsums::gpu;
 
-    using dev_datatype = ::std::conditional_t<::std::is_same_v<T, ::std::complex<float>>, hipComplex,
-                                              ::std::conditional_t<::std::is_same_v<T, ::std::complex<double>>, hipDoubleComplex, T>>;
+    using dev_datatype = typename AType::dev_datatype;
 
     int m = C->dim(0), n = C->dim(1), k = TransA ? A.dim(0) : A.dim(1);
     int lda = A.stride(0), ldb = B.stride(0), ldc = C->stride(0);
@@ -239,16 +237,13 @@ void gemm(const T *alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, cons
     stream_wait();
 }
 
-template <template <typename, size_t> typename AType, template <typename, size_t> typename BType, typename T, size_t Rank>
-    requires requires {
-        requires ::einsums::DeviceRankBasicTensor<AType<T, Rank>, Rank, T>;
-        requires ::einsums::DeviceRankBasicTensor<BType<T, Rank>, Rank, T>;
-    }
-T dot(const AType<T, Rank> &A, const BType<T, Rank> &B) {
+template<DeviceBasicTensorConcept AType, DeviceBasicTensorConcept BType>
+    requires(SameUnderlyingAndRank<AType, BType>)
+typename AType::data_type dot(const AType &A, const BType &B) {
     using namespace einsums::gpu;
 
-    using dev_datatype = std::conditional_t<std::is_same_v<T, std::complex<float>>, hipComplex,
-                                            std::conditional_t<std::is_same_v<T, std::complex<double>>, hipDoubleComplex, T>>;
+    using dev_datatype = typename AType::dev_datatype;
+    using T = typename AType::data_type;
 
     __device_ptr__ dev_datatype *gpu_out;
     auto                         grid       = block_size(A.size());
@@ -267,16 +262,13 @@ T dot(const AType<T, Rank> &A, const BType<T, Rank> &B) {
     return out;
 }
 
-template <template <typename, size_t> typename AType, template <typename, size_t> typename BType, typename T, size_t Rank>
-    requires requires {
-        requires ::einsums::DeviceRankBasicTensor<AType<T, Rank>, Rank, T>;
-        requires ::einsums::DeviceRankBasicTensor<BType<T, Rank>, Rank, T>;
-    }
-T true_dot(const AType<T, Rank> &A, const BType<T, Rank> &B) {
+template<DeviceBasicTensorConcept AType, DeviceBasicTensorConcept BType>
+    requires(SameUnderlyingAndRank<AType, BType>)
+typename AType::data_type true_dot(const AType &A, const BType &B) {
     using namespace einsums::gpu;
 
-    using dev_datatype = std::conditional_t<std::is_same_v<T, std::complex<float>>, hipComplex,
-                                            std::conditional_t<std::is_same_v<T, std::complex<double>>, hipDoubleComplex, T>>;
+    using dev_datatype = typename AType::dev_datatype;
+    using T = typename AType::data_type;
 
     __device_ptr__ dev_datatype *gpu_out;
     auto                         grid       = block_size(A.size());
@@ -295,18 +287,20 @@ T true_dot(const AType<T, Rank> &A, const BType<T, Rank> &B) {
     return out;
 }
 
-template <template <typename, size_t> typename XYType, size_t XYRank, template <typename, size_t> typename AType, typename T, size_t ARank>
-    requires requires {
-        requires ::einsums::DeviceRankBasicTensor<XYType<T, XYRank>, 1, T>;
-        requires ::einsums::DeviceRankBasicTensor<AType<T, ARank>, 2, T>;
-    }
-void ger(const T *alpha, const XYType<T, XYRank> &X, const XYType<T, XYRank> &Y, AType<T, ARank> *A) {
+template<DeviceBasicTensorConcept AType, DeviceBasicTensorConcept XType, DeviceBasicTensorConcept YType, typename T>
+requires requires {
+    requires SameUnderlying<AType, XType, YType>;
+    requires VectorConcept<XType>;
+    requires VectorConcept<YType>;
+    requires MatrixConcept<AType>;
+    requires std::is_same_v<typename AType::data_type, T>;
+}
+void ger(const T *alpha, const XType &X, const YType &Y, AType *A) {
     using namespace einsums::gpu;
 
-    using dev_datatype = ::std::conditional_t<::std::is_same_v<T, ::std::complex<float>>, hipComplex,
-                                              ::std::conditional_t<::std::is_same_v<T, ::std::complex<double>>, hipDoubleComplex, T>>;
+    using dev_datatype = typename AType::dev_datatype;
 
-    DeviceTensor<T, ARank> A_temp{"ger temp", einsums::detail::DEV_ONLY, A->dim(1), A->dim(0)};
+    DeviceTensor<T, 2> A_temp{"ger temp", einsums::detail::DEV_ONLY, A->dim(1), A->dim(0)};
 
     einsums::tensor_algebra::sort(
         einsums::tensor_algebra::Indices{einsums::tensor_algebra::index::i, einsums::tensor_algebra::index::j}, &A_temp,
@@ -321,18 +315,18 @@ void ger(const T *alpha, const XYType<T, XYRank> &X, const XYType<T, XYRank> &Y,
     // No wait needed. sort waits.
 }
 
-template <bool TransA, template <typename, size_t> typename AType, template <typename, size_t> typename XType,
-          template <typename, size_t> typename YType, size_t ARank, size_t XYRank, typename T>
-    requires requires {
-        requires ::einsums::DeviceRankBasicTensor<AType<T, ARank>, 2, T>;
-        requires ::einsums::DeviceRankBasicTensor<XType<T, XYRank>, 1, T>;
-        requires ::einsums::DeviceRankBasicTensor<YType<T, XYRank>, 1, T>;
-    }
-void gemv(const T *alpha, const AType<T, ARank> &A, const XType<T, XYRank> &x, const T *beta, YType<T, XYRank> *y) {
+template<bool TransA, DeviceBasicTensorConcept AType, DeviceBasicTensorConcept XType, DeviceBasicTensorConcept YType, typename T>
+requires requires {
+    requires MatrixConcept<AType>;
+    requires VectorConcept<XType>;
+    requires VectorConcept<YType>;
+    requires SameUnderlying<AType, XType, YType>;
+    requires std::is_same_v<typename AType::data_type, T>;
+}
+void gemv(const T *alpha, const AType &A, const XType &x, const T *beta, YType *y) {
     using namespace einsums::gpu;
 
-    using dev_datatype = ::std::conditional_t<::std::is_same_v<T, ::std::complex<float>>, hipComplex,
-                                              ::std::conditional_t<::std::is_same_v<T, ::std::complex<double>>, hipDoubleComplex, T>>;
+    using dev_datatype = typename AType::dev_datatype;
 
     int m = A.dim(1), n = A.dim(0);
 
@@ -347,26 +341,24 @@ void gemv(const T *alpha, const AType<T, ARank> &A, const XType<T, XYRank> &x, c
     }
 }
 
-template <template <typename, size_t> typename AType, size_t ARank, typename T>
-    requires ::einsums::DeviceRankBasicTensor<AType<T, ARank>, ARank, T>
-void scale(const T *alpha, AType<T, ARank> *A) {
+template<DeviceBasicTensorConcept AType, typename T>
+requires(std::is_same_v<typename AType::data_type, T>)
+void scale(const T *alpha, AType *A) {
     using namespace einsums::gpu;
 
-    using dev_datatype = ::std::conditional_t<::std::is_same_v<T, ::std::complex<float>>, hipComplex,
-                                              ::std::conditional_t<::std::is_same_v<T, ::std::complex<double>>, hipDoubleComplex, T>>;
+    using dev_datatype = typename AType::dev_datatype;
 
+    // TODO: Compatibility with views.
     gpu::scal(A->size(), (dev_datatype *)alpha, A->gpu_data(), 1);
     stream_wait();
 }
 
-template <bool TransA, bool TransB, template <typename, size_t> typename AType, template <typename, size_t> typename BType,
-          template <typename, size_t> typename CType, size_t Rank, typename T>
-    requires requires {
-        requires ::einsums::DeviceRankBasicTensor<AType<T, Rank>, 2, T>;
-        requires ::einsums::DeviceRankBasicTensor<BType<T, Rank>, 2, T>;
-        requires ::einsums::DeviceRankBasicTensor<CType<T, Rank>, 2, T>;
-    }
-void symm_gemm(const AType<T, Rank> &A, const BType<T, Rank> &B, CType<T, Rank> *C) {
+template<bool TransA, bool TransB, DeviceBasicTensorConcept AType, DeviceBasicTensorConcept BType, DeviceBasicTensorConcept CType>
+requires requires {
+    requires MatrixConcept<AType>;
+    requires SameUnderlyingAndRank<AType, BType, CType>;
+}
+void symm_gemm(const AType &A, const BType &B, CType *C) {
     using namespace einsums::gpu;
 
     if constexpr (TransA && TransB) {
@@ -378,7 +370,7 @@ void symm_gemm(const AType<T, Rank> &A, const BType<T, Rank> &B, CType<T, Rank> 
     } else {
         assert(B.dim(1) == A.dim(1) && A.dim(0) == B.dim(1) && C->dim(0) == B.dim(0) && C->dim(1) == B.dim(0));
     }
-    *C = T(0.0);
+    *C = typename CType::data_type(0.0);
 
     einsums::linear_algebra::detail::gpu::symm_gemm<<<block_size(A.dim(0) * A.dim(0) * C->dim(0) * C->dim(0)),
                                                       blocks(A.dim(0) * A.dim(0) * C->dim(0) * C->dim(0)), 0, get_stream()>>>(
@@ -386,18 +378,16 @@ void symm_gemm(const AType<T, Rank> &A, const BType<T, Rank> &B, CType<T, Rank> 
     stream_wait();
 }
 
-template <bool TransA, bool TransB, template <typename, size_t> typename AType, template <typename, size_t> typename BType,
-          template <typename, size_t> typename CType, size_t Rank, typename T>
-    requires requires {
-        requires ::einsums::DeviceRankBasicTensor<AType<T, Rank>, 2, T>;
-        requires ::einsums::DeviceRankBasicTensor<BType<T, Rank>, 2, T>;
-        requires ::einsums::DeviceRankBasicTensor<CType<T, Rank>, 2, T>;
-    }
-void gemm(T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, T beta, CType<T, Rank> *C) {
+template<bool TransA, bool TransB, DeviceBasicTensorConcept AType, DeviceBasicTensorConcept BType, DeviceBasicTensorConcept CType, typename T>
+requires requires {
+    requires MatrixConcept<AType>;
+    requires SameUnderlyingAndRank<AType, BType, CType>;
+    requires std::is_same_v<typename AType::data_type, T>;
+}
+void gemm(T alpha, const AType &A, const BType &B, T beta, CType *C) {
     using namespace einsums::gpu;
 
-    using dev_datatype = ::std::conditional_t<::std::is_same_v<T, ::std::complex<float>>, hipComplex,
-                                              ::std::conditional_t<::std::is_same_v<T, ::std::complex<double>>, hipDoubleComplex, T>>;
+    using dev_datatype = typename AType::dev_datatype;
     dev_datatype *alpha_gpu, *beta_gpu;
 
     hip_catch(hipMalloc((void **)&alpha_gpu, sizeof(dev_datatype)));
@@ -413,17 +403,18 @@ void gemm(T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, T beta, CTy
     hip_catch(hipFreeAsync(beta_gpu, get_stream()));
 }
 
-template <template <typename, size_t> typename XYType, size_t XYRank, template <typename, size_t> typename AType, typename T, size_t ARank>
-    requires requires {
-        requires ::einsums::DeviceRankBasicTensor<XYType<T, XYRank>, 1, T>;
-        requires ::einsums::DeviceRankBasicTensor<AType<T, ARank>, 2, T>;
-        requires !std::is_pointer_v<T>;
-    }
-void ger(T alpha, const XYType<T, XYRank> &X, const XYType<T, XYRank> &Y, AType<T, ARank> *A) {
+template<DeviceBasicTensorConcept AType, DeviceBasicTensorConcept XType, DeviceBasicTensorConcept YType, typename T>
+requires requires {
+    requires MatrixConcept<AType>;
+    requires VectorConcept<XType>;
+    requires VectorConcept<YType>;
+    requires SameUnderlying<AType, XType, YType>;
+    requires std::is_same_v<typename AType::data_type, T>;
+}
+void ger(T alpha, const XType &X, const YType &Y, AType *A) {
     using namespace einsums::gpu;
 
-    using dev_datatype = ::std::conditional_t<::std::is_same_v<T, ::std::complex<float>>, hipComplex,
-                                              ::std::conditional_t<::std::is_same_v<T, ::std::complex<double>>, hipDoubleComplex, T>>;
+    using dev_datatype = typename AType::data_type;
 
     dev_datatype *alpha_gpu;
 
@@ -436,19 +427,18 @@ void ger(T alpha, const XYType<T, XYRank> &X, const XYType<T, XYRank> &Y, AType<
     hip_catch(hipFreeAsync(alpha_gpu, get_stream()));
 }
 
-template <bool TransA, template <typename, size_t> typename AType, template <typename, size_t> typename XType,
-          template <typename, size_t> typename YType, size_t ARank, size_t XYRank, typename T>
-    requires requires {
-        requires ::einsums::DeviceRankBasicTensor<AType<T, ARank>, 2, T>;
-        requires ::einsums::DeviceRankBasicTensor<XType<T, XYRank>, 1, T>;
-        requires ::einsums::DeviceRankBasicTensor<YType<T, XYRank>, 1, T>;
-        requires !std::is_pointer_v<T>;
-    }
-void gemv(T alpha, const AType<T, ARank> &A, const XType<T, XYRank> &x, T beta, YType<T, XYRank> *y) {
+template<bool TransA, DeviceBasicTensorConcept AType, DeviceBasicTensorConcept XType, DeviceBasicTensorConcept YType, typename T>
+requires requires {
+    requires MatrixConcept<AType>;
+    requires VectorConcept<XType>;
+    requires VectorConcept<YType>;
+    requires SameUnderlying<AType, XType, YType>;
+    requires std::is_same_v<typename AType::data_type, T>;
+}
+void gemv(T alpha, const AType &A, const XType &x, T beta, YType *y) {
     using namespace einsums::gpu;
 
-    using dev_datatype = ::std::conditional_t<::std::is_same_v<T, ::std::complex<float>>, hipComplex,
-                                              ::std::conditional_t<::std::is_same_v<T, ::std::complex<double>>, hipDoubleComplex, T>>;
+    using dev_datatype = typename AType::dev_datatype;
     dev_datatype *alpha_gpu, *beta_gpu;
 
     hip_catch(hipMalloc((void **)&alpha_gpu, sizeof(dev_datatype)));
@@ -463,16 +453,12 @@ void gemv(T alpha, const AType<T, ARank> &A, const XType<T, XYRank> &x, T beta, 
     hip_catch(hipFreeAsync(beta_gpu, get_stream()));
 }
 
-template <template <typename, size_t> typename AType, size_t ARank, typename T>
-    requires requires {
-        requires ::einsums::DeviceRankBasicTensor<AType<T, ARank>, ARank, T>;
-        requires !std::is_pointer_v<T>;
-    }
-void scale(T scale_, AType<T, ARank> *A) {
+template<DeviceBasicTensorConcept AType, typename T>
+requires(std::is_same_v<typename AType::data_type, T>)
+void scale(T scale_, AType *A) {
     using namespace einsums::gpu;
 
-    using dev_datatype = ::std::conditional_t<::std::is_same_v<T, ::std::complex<float>>, hipComplex,
-                                              ::std::conditional_t<::std::is_same_v<T, ::std::complex<double>>, hipDoubleComplex, T>>;
+    using dev_datatype = typename AType::dev_datatype;
 
     dev_datatype *scale_gpu;
 
@@ -485,12 +471,12 @@ void scale(T scale_, AType<T, ARank> *A) {
     hip_catch(hipFreeAsync(scale_gpu, get_stream()));
 }
 
-template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename BType, size_t BRank, typename T>
-    requires requires {
-        requires ::einsums::DeviceRankBasicTensor<AType<T, ARank>, 2, T>;
-        requires ::einsums::DeviceRankBasicTensor<BType<T, BRank>, 2, T>;
-    }
-int gesv(AType<T, ARank> *A, BType<T, BRank> *B) {
+template<DeviceBasicTensorConcept AType, DeviceBasicTensorConcept BType>
+requires requires {
+    requires MatrixConcept<AType>;
+    requires SameUnderlyingAndRank<AType, BType>;
+}
+int gesv(AType *A, BType *B) {
     using namespace einsums::gpu;
     auto n   = A->dim(0);
     auto lda = A->stride(0);
@@ -504,13 +490,13 @@ int gesv(AType<T, ARank> *A, BType<T, BRank> *B) {
     __device_ptr__ int *ipiv;
 
 #ifdef __HIP_PLATFORM_NVIDIA__
-    DeviceTensor<T, BRank> X = DeviceTensor<T, BRank>(einsums::detail::DEV_ONLY, B->dims());
+    DeviceTensor<typename AType::data_type, 2> X = DeviceTensor<typename AType::data_type, 2>(einsums::detail::DEV_ONLY, B->dims());
 #endif
 
     einsums::gpu::hip_catch(hipMallocAsync((void **)&ipiv, sizeof(int) * lwork, einsums::gpu::get_stream()));
 
 #ifdef __HIP_PLATFORM_NVIDIA__
-    info = gpu::gesv(n, nrhs, A->gpu_data(), lda, ipiv.gpu_data(), B->gpu_data(), ldb, X.gpu_data(), X.stride(0));
+    info = gpu::gesv(n, nrhs, A->gpu_data(), lda, ipiv, B->gpu_data(), ldb, X.gpu_data(), X.stride(0));
 #elif defined(__HIP_PLATFORM_AMD__)
     info = gpu::gesv(n, nrhs, A->gpu_data(), lda, ipiv, B->gpu_data(), ldb, B->gpu_data(), ldb);
 #endif
@@ -521,41 +507,39 @@ int gesv(AType<T, ARank> *A, BType<T, BRank> *B) {
     return info;
 }
 
-template <template <typename, size_t> typename XType, template <typename, size_t> typename YType, typename T, size_t Rank>
-    requires requires {
-        requires DeviceRankBasicTensor<XType<T, Rank>, Rank, T>;
-        requires DeviceRankBasicTensor<YType<T, Rank>, Rank, T>;
-    }
-void axpy(const T *alpha, const XType<T, Rank> &X, YType<T, Rank> *Y) {
+template<DeviceBasicTensorConcept XType, DeviceBasicTensorConcept YType, typename T>
+requires requires {
+    requires SameUnderlyingAndRank<XType, YType>;
+    requires std::is_same_v<typename XType::data_type, T>;
+}
+void axpy(const T *alpha, const XType &X, YType *Y) {
     using namespace einsums::gpu;
 
     gpu::axpy(X.dim(0) * X.stride(0), alpha, X.gpu_data(), 1, Y->gpu_data(), 1);
     stream_wait();
 }
 
-template <template <typename, size_t> typename XType, template <typename, size_t> typename YType, typename T, size_t Rank>
-    requires requires {
-        requires DeviceRankBasicTensor<XType<T, Rank>, Rank, T>;
-        requires DeviceRankBasicTensor<YType<T, Rank>, Rank, T>;
-    }
-void axpby(const T *alpha, const XType<T, Rank> &X, const T *beta, YType<T, Rank> *Y) {
+template<DeviceBasicTensorConcept XType, DeviceBasicTensorConcept YType, typename T>
+requires requires {
+    requires SameUnderlyingAndRank<XType, YType>;
+    requires std::is_same_v<typename XType::data_type, T>;
+}
+void axpby(const T *alpha, const XType &X, const T *beta, YType *Y) {
     using namespace einsums::gpu;
 
     einsums::linear_algebra::detail::gpu::axpby(X.dim(0) * X.stride(0), alpha, X.gpu_data(), 1, beta, Y->gpu_data(), 1);
     stream_wait();
 }
 
-template <template <typename, size_t> typename XType, template <typename, size_t> typename YType, typename T, size_t Rank>
-    requires requires {
-        requires(!std::is_pointer_v<T>);
-        requires DeviceRankBasicTensor<XType<T, Rank>, Rank, T>;
-        requires DeviceRankBasicTensor<YType<T, Rank>, Rank, T>;
-    }
-void axpy(T alpha, const XType<T, Rank> &X, YType<T, Rank> *Y) {
+template<DeviceBasicTensorConcept XType, DeviceBasicTensorConcept YType, typename T>
+requires requires {
+    requires SameUnderlyingAndRank<XType, YType>;
+    requires std::is_same_v<typename XType::data_type, T>;
+}
+void axpy(T alpha, const XType &X, YType *Y) {
     using namespace einsums::gpu;
 
-    using dev_datatype = ::std::conditional_t<::std::is_same_v<T, ::std::complex<float>>, hipComplex,
-                                              ::std::conditional_t<::std::is_same_v<T, ::std::complex<double>>, hipDoubleComplex, T>>;
+    using dev_datatype = typename XType::dev_datatype;
 
     dev_datatype *alpha_gpu;
 
@@ -568,17 +552,15 @@ void axpy(T alpha, const XType<T, Rank> &X, YType<T, Rank> *Y) {
     hip_catch(hipFreeAsync(alpha_gpu, get_stream()));
 }
 
-template <template <typename, size_t> typename XType, template <typename, size_t> typename YType, typename T, size_t Rank>
-    requires requires {
-        requires(!std::is_pointer_v<T>);
-        requires DeviceRankBasicTensor<XType<T, Rank>, Rank, T>;
-        requires DeviceRankBasicTensor<YType<T, Rank>, Rank, T>;
-    }
-void axpby(T alpha, const XType<T, Rank> &X, T beta, YType<T, Rank> *Y) {
+template<DeviceBasicTensorConcept XType, DeviceBasicTensorConcept YType, typename T>
+requires requires {
+    requires SameUnderlyingAndRank<XType, YType>;
+    requires std::is_same_v<typename XType::data_type, T>;
+}
+void axpby(T alpha, const XType &X, T beta, YType *Y) {
     using namespace einsums::gpu;
 
-    using dev_datatype = ::std::conditional_t<::std::is_same_v<T, ::std::complex<float>>, hipComplex,
-                                              ::std::conditional_t<::std::is_same_v<T, ::std::complex<double>>, hipDoubleComplex, T>>;
+    using dev_datatype = typename XType::dev_datatype;
 
     dev_datatype *alpha_beta_gpu;
 
@@ -595,13 +577,14 @@ void axpby(T alpha, const XType<T, Rank> &X, T beta, YType<T, Rank> *Y) {
 /**
  * @brief Computes the eigenvalues and eigenvectors of a symmetric matrix.
  */
-template <bool ComputeEigenvectors = true, template <typename, size_t> typename AType, size_t ARank,
-          template <typename, size_t> typename WType, size_t WRank, typename T>
-    requires requires {
-        requires ::einsums::DeviceRankBasicTensor<AType<T, ARank>, 2, T>;
-        requires ::einsums::DeviceRankBasicTensor<WType<T, WRank>, 1, T>;
-    }
-void syev(AType<T, ARank> *A, WType<T, WRank> *W) {
+
+template<bool ComputeEigenvectors = true, DeviceBasicTensorConcept AType, DeviceBasicTensorConcept WType>
+requires requires {
+    requires MatrixConcept<AType>;
+    requires VectorConcept<WType>;
+    requires SameUnderlying<AType, WType>;
+}
+void syev(AType *A, WType *W) {
     using namespace einsums::gpu;
     int lda = A->stride(0);
 
@@ -611,25 +594,33 @@ void syev(AType<T, ARank> *A, WType<T, WRank> *W) {
     stream_wait();
 }
 
-template <template <typename, size_t> typename AType, size_t ARank, typename T>
-    requires DeviceRankBasicTensor<AType<T, ARank>, 2, T>
-void scale_row(size_t row, const T *alpha, AType<T, ARank> *A) {
+template<DeviceBasicTensorConcept AType, typename T>
+requires requires {
+    requires MatrixConcept<AType>;
+    requires std::is_same_v<typename AType::data_type, T>;
+}
+void scale_row(size_t row, const T *alpha, AType *A) {
     gpu::scal(A->dim(1), alpha, A->gpu_data(row, 0ul), A->stride(1));
 }
 
-template <template <typename, size_t> typename AType, size_t ARank, typename T>
-    requires DeviceRankBasicTensor<AType<T, ARank>, 2, T>
-void scale_column(size_t col, const T *alpha, AType<T, ARank> *A) {
+template<DeviceBasicTensorConcept AType, typename T>
+requires requires {
+    requires MatrixConcept<AType>;
+    requires std::is_same_v<typename AType::data_type, T>;
+}
+void scale_column(size_t col, const T *alpha, AType *A) {
     gpu::scal(A->dim(0), alpha, A->gpu_data(0ul, col), A->stride(0));
 }
 
-template <template <typename, size_t> typename AType, size_t ARank, typename T>
-    requires DeviceRankBasicTensor<AType<T, ARank>, 2, T>
-void scale_row(size_t row, T alpha, AType<T, ARank> *A) {
+template<DeviceBasicTensorConcept AType, typename T>
+requires requires {
+    requires MatrixConcept<AType>;
+    requires std::is_same_v<typename AType::data_type, T>;
+}
+void scale_row(size_t row, T alpha, AType *A) {
     using namespace einsums::gpu;
 
-    using dev_datatype = ::std::conditional_t<::std::is_same_v<T, ::std::complex<float>>, hipComplex,
-                                              ::std::conditional_t<::std::is_same_v<T, ::std::complex<double>>, hipDoubleComplex, T>>;
+    using dev_datatype = typename AType::dev_datatype;
 
     dev_datatype *alpha_gpu;
 
@@ -642,13 +633,15 @@ void scale_row(size_t row, T alpha, AType<T, ARank> *A) {
     hip_catch(hipFreeAsync(alpha_gpu, get_stream()));
 }
 
-template <template <typename, size_t> typename AType, size_t ARank, typename T>
-    requires DeviceRankBasicTensor<AType<T, ARank>, 2, T>
-void scale_column(size_t col, T alpha, AType<T, ARank> *A) {
+template<DeviceBasicTensorConcept AType, typename T>
+requires requires {
+    requires MatrixConcept<AType>;
+    requires std::is_same_v<typename AType::data_type, T>;
+}
+void scale_column(size_t col, T alpha, AType *A) {
     using namespace einsums::gpu;
 
-    using dev_datatype = ::std::conditional_t<::std::is_same_v<T, ::std::complex<float>>, hipComplex,
-                                              ::std::conditional_t<::std::is_same_v<T, ::std::complex<double>>, hipDoubleComplex, T>>;
+    using dev_datatype = typename AType::dev_datatype;
 
     dev_datatype *alpha_gpu;
 
@@ -661,18 +654,18 @@ void scale_column(size_t col, T alpha, AType<T, ARank> *A) {
     hip_catch(hipFreeAsync(alpha_gpu, get_stream()));
 }
 
-template <template <typename, size_t> typename AType, template <typename, size_t> typename BType,
-          template <typename, size_t> typename CType, typename T, size_t Rank>
-    requires requires {
-        requires DeviceRankTensor<AType<T, Rank>, Rank, T>;
-        requires DeviceRankTensor<BType<T, Rank>, Rank, T>;
-        requires DeviceRankTensor<CType<T, Rank>, Rank, T>;
-    }
-void direct_product(T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, T beta, CType<T, Rank> *C) {
+template<DeviceBasicTensorConcept AType, DeviceBasicTensorConcept BType, DeviceBasicTensorConcept CType, typename T>
+requires requires {
+    requires SameUnderlyingAndRank<AType, BType, CType>;
+    requires std::is_same_v<typename AType::data_type, T>;
+}
+void direct_product(T alpha, const AType &A, const BType &B, T beta, CType *C) {
     using namespace einsums::gpu;
 
-    using T_devtype  = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<decltype(C->gpu_data())>>>;
-    using T_hosttype = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<T>>>;
+    using T_devtype  = typename CType::dev_datatype;
+    using T_hosttype = typename CType::host_datatype;
+
+    constexpr size_t Rank = CType::rank;
 
     assert(A.dims() == B.dims() && A.dims() == C->dims());
 

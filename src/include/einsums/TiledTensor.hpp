@@ -55,22 +55,7 @@ struct TiledTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
     /**
      * Add a tile using the underlying type's preferred method. Also gives it a name.
      */
-    virtual void add_tile(std::array<int, Rank> pos) {
-        std::string tile_name = _name + " - (";
-        Dim<Rank>   dims{};
-
-        for (int i = 0; i < Rank; i++) {
-            tile_name += std::to_string(pos[i]);
-            dims[i] = _tile_sizes[i][pos[i]];
-            if (i != Rank - 1) {
-                tile_name += ", ";
-            }
-        }
-        tile_name += ")";
-
-        _tiles.emplace(pos, dims);
-        _tiles[pos].set_name(tile_name);
-    }
+    virtual void add_tile(std::array<int, Rank> pos) = 0;
 
   public:
     /**

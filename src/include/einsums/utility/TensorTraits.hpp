@@ -1413,17 +1413,6 @@ DiskTensor<NewT, NewRank> create_basic_tensor_like(const TensorType &tensor) {
     return DiskTensor<NewT, NewRank>();
 }
 
-template <typename D>
-    requires(!TensorConcept<D>)
-D type_function(const D &value) {
-    return value;
-}
-
-template <TensorConcept D>
-typename D::data_type type_function(const D &value) {
-    return typename D::data_type{0.0};
-}
-
 } // namespace detail
 
 /**
@@ -1451,7 +1440,7 @@ template <TensorConcept D, typename T, size_t Rank>
 using BasicTensorLike = decltype(detail::create_basic_tensor_like<T, Rank>(D()));
 
 /**
- * @typedef DataType
+ * @struct DataType
  *
  * @brief Gets the data type of a tensor/scalar.
  *
@@ -1459,7 +1448,39 @@ using BasicTensorLike = decltype(detail::create_basic_tensor_like<T, Rank>(D()))
  * to support both zero-rank tensors and scalars, then this typedef can help with brevity.
  */
 template<typename D>
-using DataType = decltype(detail::type_function(D()));
+struct DataType {
+    using type = D;
+};
+
+template<TensorConcept D>
+struct DataType<D> {
+    using type = typename D::data_type;
+};
+
+/**
+ * @typedef DataTypeT
+ *
+ * @brief Gets the data type of a tensor/scalar.
+ *
+ * Normally, you can get the data type using an expression such as typename AType::data_type. However, if you want
+ * to support both zero-rank tensors and scalars, then this typedef can help with brevity.
+ */
+template<typename D>
+using DataTypeT = typename DataType<D>::type;
+
+/**
+ * @property TensorRank
+ *
+ * @brief Gets the rank of a tensor/scalar.
+ *
+ * Normally, you can get the rank using an expression such as AType::rank. However,
+ * if you want to support both zero-rank tensors and scalars, then this constant can help with brevity.
+ */
+template<typename D>
+constexpr size_t TensorRank = 0;
+
+template<TensorConcept D>
+constexpr size_t TensorRank<D> = D::rank;
 
 /**
  * @struct BiggestType

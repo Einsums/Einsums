@@ -38,26 +38,27 @@
 namespace einsums::tensor_algebra {
 namespace detail {
 
-template <bool OnlyUseGenericAlgorithm, TensorConcept AType, TensorConcept BType, TensorConcept CType, typename... CIndices,
+// CType has typename to allow for interoperability with scalar types.
+template <bool OnlyUseGenericAlgorithm, TensorConcept AType, TensorConcept BType, typename CType, typename... CIndices,
           typename... AIndices, typename... BIndices>
-auto einsum(const typename CType::data_type C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType *C,
-            const std::conditional_t<(sizeof(typename AType::data_type) > sizeof(typename BType::data_type)), typename AType::data_type,
-                                     typename BType::data_type>
+requires(TensorConcept<CType> || (ScalarConcept<CType> && sizeof...(CIndices) == 0))
+auto einsum(const DataTypeT<CType> C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType *C,
+            const BiggestTypeT<typename AType::data_type, typename BType::data_type>
                 AB_prefactor,
             const std::tuple<AIndices...> & /*As*/, const AType &A, const std::tuple<BIndices...> & /*Bs*/, const BType &B) -> void {
     print::Indent const _indent;
 
     using ADataType        = AType::data_type;
     using BDataType        = BType::data_type;
-    using CDataType        = CType::data_type;
+    using CDataType        = DataTypeT<CType>;
     constexpr size_t ARank = AType::rank;
     constexpr size_t BRank = BType::rank;
-    constexpr size_t CRank = CType::rank;
+    constexpr size_t CRank = TensorRank<CType>;
 
     constexpr auto A_indices = std::tuple<AIndices...>();
     constexpr auto B_indices = std::tuple<BIndices...>();
     constexpr auto C_indices = std::tuple<CIndices...>();
-    using ABDataType         = std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType>;
+    using ABDataType         = BiggestTypeT<typename AType::data_type, typename BType::data_type>;
 
     // 1. Ensure the ranks are correct. (Compile-time check.)
     static_assert(sizeof...(CIndices) == CRank, "Rank of C does not match Indices given for C.");
@@ -163,7 +164,12 @@ auto einsum(const typename CType::data_type C_prefactor, const std::tuple<CIndic
             }
         });
         for_sequence<CRank>([&](auto c) {
-            size_t dimC = C->dim(c);
+            size_t dimC;
+            if constexpr (einsums::detail::IsTensorV<CType>) {
+                dimC = C->dim(c);
+            } else {
+                dimC = 0;
+            }
             if (std::get<a>(A_indices).letter == std::get<c>(C_indices).letter) {
                 if (dimA != dimC) {
                     println(bg(fmt::color::red) | fg(fmt::color::white), "{:f} {}({:}) += {:f} {}({:}) * {}({:})", C_prefactor, C->name(),
@@ -177,7 +183,12 @@ auto einsum(const typename CType::data_type C_prefactor, const std::tuple<CIndic
     for_sequence<BRank>([&](auto b) {
         size_t dimB = B.dim(b);
         for_sequence<CRank>([&](auto c) {
-            size_t dimC = C->dim(c);
+            size_t dimC;
+            if constexpr (einsums::detail::IsTensorV<CType>) {
+                dimC = C->dim(c);
+            } else {
+                dimC = 0;
+            }
             if (std::get<b>(B_indices).letter == std::get<c>(C_indices).letter) {
                 if (dimB != dimC) {
                     println(bg(fmt::color::red) | fg(fmt::color::white), "{:f} {}({:}) += {:f} {}({:}) * {}({:})", C_prefactor, C->name(),
@@ -455,9 +466,12 @@ generic_default:;
 }
 } // namespace detail
 
-template <TensorConcept AType, TensorConcept BType, TensorConcept CType, typename U, typename... CIndices, typename... AIndices,
+template <TensorConcept AType, TensorConcept BType, typename CType, typename U, typename... CIndices, typename... AIndices,
           typename... BIndices>
-    requires(InSamePlace<AType, BType, CType>)
+requires requires {
+    requires InSamePlace<AType, BType>;
+    requires InSamePlace<AType, CType> || !TensorConcept<CType>;
+}
 auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType *C, const U UAB_prefactor,
             const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices, const BType &B) -> void {
     using ADataType        = AType::data_type;
