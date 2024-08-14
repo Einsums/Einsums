@@ -144,7 +144,7 @@ struct TiledTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
             add_tile(arr_index);
         }
 
-        return _tiles[arr_index];
+        return _tiles.at(arr_index);
     }
 
     /**
@@ -220,7 +220,7 @@ struct TiledTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
             add_tile(arr_index);
         }
 
-        return _tiles[arr_index];
+        return _tiles.at(arr_index);
     }
 
     /**
@@ -440,7 +440,7 @@ struct TiledTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
             }
 
             // Set the tile index.
-            _tiles[tile_index].set_all(value);
+            _tiles.at(tile_index).set_all(value);
         }
     }
 
@@ -466,7 +466,7 @@ struct TiledTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
 
         for (const auto &tile : copy._tiles) {
             add_tile(tile.first);
-            _tiles[tile.first] = tile.second;
+            _tiles.at(tile.first) = tile.second;
         }
 
         return *this;
@@ -500,7 +500,7 @@ struct TiledTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
             }
 
             // Set the tile index.
-            _tiles[tile_index] += value;
+            _tiles.at(tile_index) += value;
         }
         return *this;
     }
@@ -528,7 +528,7 @@ struct TiledTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
             }
 
             // Set the tile index.
-            _tiles[tile_index] -= value;
+            _tiles.at(tile_index) -= value;
         }
         return *this;
     }
@@ -558,9 +558,10 @@ struct TiledTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
 
         for (const auto &tile : other._tiles) {
             if (has_tile(tile.first)) {
-                _tiles[tile.first] += tile.second;
+                _tiles.at(tile.first) += tile.second;
             } else {
-                _tiles[tile.first] = TensorType(tile.second);
+                add_tile(tile.first);
+                _tiles.at(tile.first) = TensorType(tile.second);
             }
         }
 
@@ -574,10 +575,11 @@ struct TiledTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
 
         for (const auto &tile : other._tiles) {
             if (has_tile(tile.first)) {
-                _tiles[tile.first] -= tile.second;
+                _tiles.at(tile.first) -= tile.second;
             } else {
-                _tiles[tile.first] = TensorType(tile.second);
-                _tiles[tile.first] *= -1;
+                add_tile(tile.first);
+                _tiles.at(tile.first) = TensorType(tile.second);
+                _tiles.at(tile.first) *= -1;
             }
         }
 
@@ -591,7 +593,7 @@ struct TiledTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
 
         for (const auto &tile : _tiles) {
             if (other.has_tile(tile.first)) {
-                tile.second *= other._tiles[tile.first];
+                tile.second *= other._tiles.at(tile.first);
             } else {
                 _tiles.erase(tile.first);
             }
@@ -607,7 +609,7 @@ struct TiledTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
 
         for (const auto &tile : _tiles) {
             if (other.has_tile(tile.first)) {
-                tile.second /= other._tiles[tile.first];
+                tile.second /= other._tiles.at(tile.first);
             } else {
                 tile.second /= T{0};
             }
@@ -767,8 +769,8 @@ struct TiledTensor final : public virtual tensor_props::TiledTensorBase<T, Rank,
         tile_name += ")";
 
         this->_tiles.emplace(pos, dims);
-        this->_tiles[pos].set_name(tile_name);
-        this->_tiles[pos].zero();
+        this->_tiles.at(pos).set_name(tile_name);
+        this->_tiles.at(pos).zero();
     }
 
   public:
@@ -996,9 +998,10 @@ struct TiledDeviceTensorView final : public virtual tensor_props::TiledTensorBas
 
 } // namespace einsums
 
-template <template <typename, size_t> typename TensorType, size_t Rank, typename T>
-    requires einsums::RankTiledTensor<TensorType<T, Rank>, Rank, T>
-void println(const TensorType<T, Rank> &A, TensorPrintOptions options = {}) {
+template <einsums::TiledTensorConcept TensorType>
+void println(const TensorType &A, TensorPrintOptions options = {}) {
+    using T = typename TensorType::data_type;
+    constexpr size_t Rank = TensorType::rank;
     println("Name: {}", A.name());
     {
         print::Indent const indent{};
@@ -1036,9 +1039,10 @@ void println(const TensorType<T, Rank> &A, TensorPrintOptions options = {}) {
     }
 }
 
-template <template <typename, size_t> typename TensorType, size_t Rank, typename T>
-    requires einsums::RankTiledTensor<TensorType<T, Rank>, Rank, T>
-void fprintln(FILE *fp, const TensorType<T, Rank> &A, TensorPrintOptions options = {}) {
+template<einsums::TiledTensorConcept TensorType>
+void fprintln(FILE *fp, const TensorType &A, TensorPrintOptions options = {}) {
+    using T = typename TensorType::data_type;
+    constexpr size_t Rank = TensorType::rank;
     fprintln(fp, "Name: {}", A.name());
     {
         print::Indent const indent{};
@@ -1076,9 +1080,10 @@ void fprintln(FILE *fp, const TensorType<T, Rank> &A, TensorPrintOptions options
     }
 }
 
-template <template <typename, size_t> typename TensorType, size_t Rank, typename T>
-    requires einsums::RankTiledTensor<TensorType<T, Rank>, Rank, T>
-void fprintln(std::ostream &os, const TensorType<T, Rank> &A, TensorPrintOptions options = {}) {
+template<einsums::TiledTensorConcept TensorType>
+void fprintln(std::ostream &os, const TensorType &A, TensorPrintOptions options = {}) {
+    using T = typename TensorType::data_type;
+    constexpr size_t Rank = TensorType::rank;
     fprintln(os, "Name: {}", A.name());
     {
         print::Indent const indent{};

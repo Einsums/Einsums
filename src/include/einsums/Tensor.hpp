@@ -68,17 +68,17 @@ struct TensorPrintOptions {
 };
 
 // Forward declaration of the Tensor printing function.
-template <template <typename, size_t> typename AType, size_t Rank, typename T>
-    requires(einsums::RankBasicTensor<AType<T, Rank>, Rank, T>)
-void println(const AType<T, Rank> &A, TensorPrintOptions options = {});
+template <einsums::TensorConcept AType>
+    requires(einsums::BasicTensorConcept<AType> || !einsums::AlgebraTensorConcept<AType>)
+void println(const AType &A, TensorPrintOptions options = {});
 
-template <template <typename, size_t> typename AType, size_t Rank, typename T>
-    requires(einsums::RankBasicTensor<AType<T, Rank>, Rank, T>)
-void fprintln(std::FILE *fp, const AType<T, Rank> &A, TensorPrintOptions options = {});
+template <einsums::TensorConcept AType>
+    requires(einsums::BasicTensorConcept<AType> || !einsums::AlgebraTensorConcept<AType>)
+void fprintln(std::FILE *fp, const AType &A, TensorPrintOptions options = {});
 
-template <template <typename, size_t> typename AType, size_t Rank, typename T>
-    requires(einsums::RankBasicTensor<AType<T, Rank>, Rank, T>)
-void fprintln(std::ostream &os, const AType<T, Rank> &A, TensorPrintOptions options = {});
+template <einsums::TensorConcept AType>
+    requires(einsums::BasicTensorConcept<AType> || !einsums::AlgebraTensorConcept<AType>)
+void fprintln(std::ostream &os, const AType &A, TensorPrintOptions options = {});
 
 namespace einsums {
 namespace detail {
@@ -1916,29 +1916,35 @@ auto create_disk_tensor_like(h5::fd_t &file, const Tensor<T, Rank> &tensor) -> D
 
 } // namespace einsums
 
-template <template <typename, size_t> typename AType, size_t Rank, typename T>
-    requires(einsums::RankBasicTensor<AType<T, Rank>, Rank, T>)
-void println(const AType<T, Rank> &A, TensorPrintOptions options) {
+template <einsums::TensorConcept AType>
+    requires(einsums::BasicTensorConcept<AType> || !einsums::AlgebraTensorConcept<AType>)
+void println(const AType &A, TensorPrintOptions options) {
+    using T = typename AType::data_type;
+    constexpr size_t Rank = AType::rank;
+
     println("Name: {}", A.name());
     {
         print::Indent const indent{};
 
-        if constexpr (einsums::CoreRankTensor<AType<T, Rank>, Rank, T>) {
-            if constexpr (std::is_same_v<AType<T, Rank>, einsums::Tensor<T, Rank>>)
+        if constexpr (einsums::CoreTensorConcept<AType>) {
+            if constexpr (!einsums::TensorViewConcept<AType>)
                 println("Type: In Core Tensor");
             else
                 println("Type: In Core Tensor View");
 #ifdef __HIP__
-        } else if constexpr (einsums::DeviceRankTensor<AType<T, Rank>, Rank, T>) {
-            if constexpr (std::is_same_v<AType<T, Rank>, einsums::DeviceTensor<T, Rank>>)
+        } else if constexpr (einsums::DeviceTensorConcept<AType>) {
+            if constexpr (!einsums::TensorViewConcept<AType>)
                 println("Type: Device Tensor");
             else
                 println("Type: Device Tensor View");
 #endif
-        } else
+        } else if constexpr (einsums::DiskTensorConcept<AType>) {
             println("Type: Disk Tensor");
+        } else {
+            println("Type: {}", type_name<AType>());
+        }
 
-        println("Data Type: {}", type_name<T>());
+        println("Data Type: {}", type_name<typename AType::data_type>());
 
         if constexpr (Rank > 0) {
             std::ostringstream oss;
@@ -1948,7 +1954,7 @@ void println(const AType<T, Rank> &A, TensorPrintOptions options) {
             println("Dims{{{}}}", oss.str().c_str());
         }
 
-        if constexpr (Rank > 0) {
+        if constexpr (Rank > 0 && einsums::BasicTensorConcept<AType>) {
             std::ostringstream oss;
             for (size_t i = 0; i < Rank; i++) {
                 oss << A.stride(i) << " ";
@@ -1978,10 +1984,10 @@ void println(const AType<T, Rank> &A, TensorPrintOptions options) {
                 println("{}", oss.str());
                 println();
 #ifndef __HIP__
-            } else if constexpr (Rank > 1 && einsums::CoreRankTensor<AType<T, Rank>, Rank, T>) {
+            } else if constexpr (Rank > 1 && einsums::CoreTensorConcept<AType>) {
 #else
             } else if constexpr (Rank > 1 &&
-                                 (einsums::CoreRankTensor<AType<T, Rank>, Rank, T> || einsums::DeviceRankTensor<AType<T, Rank>, Rank, T>)) {
+                                 (einsums::CoreTensorConcept<AType> || einsums::DeviceTensorConcept<AType>)) {
 #endif
                 auto target_dims = einsums::get_dim_ranges<Rank - 1>(A);
                 auto final_dim   = A.dim(Rank - 1);
@@ -2030,10 +2036,10 @@ void println(const AType<T, Rank> &A, TensorPrintOptions options) {
                     println();
                 }
 #ifndef __HIP__
-            } else if constexpr (Rank == 1 && einsums::CoreRankTensor<AType<T, Rank>, Rank, T>) {
+            } else if constexpr (Rank == 1 && einsums::CoreTensorConcept<AType>) {
 #else
             } else if constexpr (Rank == 1 &&
-                                 (einsums::CoreRankTensor<AType<T, Rank>, Rank, T> || einsums::DeviceRankTensor<AType<T, Rank>, Rank, T>)) {
+                                 (einsums::CoreTensorConcept<AType> || einsums::DeviceTensorConcept<AType>)) {
 #endif
                 auto target_dims = einsums::get_dim_ranges<Rank>(A);
 
@@ -2073,29 +2079,35 @@ void println(const AType<T, Rank> &A, TensorPrintOptions options) {
     println();
 }
 
-template <template <typename, size_t> typename AType, size_t Rank, typename T>
-    requires(einsums::RankBasicTensor<AType<T, Rank>, Rank, T>)
-void fprintln(std::FILE *fp, const AType<T, Rank> &A, TensorPrintOptions options) {
+template <einsums::TensorConcept AType>
+    requires(einsums::BasicTensorConcept<AType> || !einsums::AlgebraTensorConcept<AType>)
+void fprintln(std::FILE *fp, const AType &A, TensorPrintOptions options) {
+    using T = typename AType::data_type;
+    constexpr size_t Rank = AType::rank;
+
     fprintln(fp, "Name: {}", A.name());
     {
         print::Indent const indent{};
 
-        if constexpr (einsums::CoreRankTensor<AType<T, Rank>, Rank, T>) {
-            if constexpr (std::is_same_v<AType<T, Rank>, einsums::Tensor<T, Rank>>)
+        if constexpr (einsums::CoreTensorConcept<AType>) {
+            if constexpr (!einsums::TensorViewConcept<AType>)
                 fprintln(fp, "Type: In Core Tensor");
             else
                 fprintln(fp, "Type: In Core Tensor View");
 #ifdef __HIP__
-        } else if constexpr (einsums::DeviceRankTensor<AType<T, Rank>, Rank, T>) {
-            if constexpr (std::is_same_v<AType<T, Rank>, einsums::DeviceTensor<T, Rank>>)
+        } else if constexpr (einsums::DeviceTensorConcept<AType>) {
+            if constexpr (!einsums::TensorViewConcept<AType>)
                 fprintln(fp, "Type: Device Tensor");
             else
                 fprintln(fp, "Type: Device Tensor View");
 #endif
-        } else
+        } else if constexpr (einsums::DiskTensorConcept<AType>) {
             fprintln(fp, "Type: Disk Tensor");
+        } else {
+            fprintln(fp, "Type: {}", type_name<AType>());
+        }
 
-        fprintln(fp, "Data Type: {}", type_name<T>());
+        fprintln(fp, "Data Type: {}", type_name<typename AType::data_type>());
 
         if constexpr (Rank > 0) {
             std::ostringstream oss;
@@ -2105,7 +2117,7 @@ void fprintln(std::FILE *fp, const AType<T, Rank> &A, TensorPrintOptions options
             fprintln(fp, "Dims{{{}}}", oss.str().c_str());
         }
 
-        if constexpr (Rank > 0) {
+        if constexpr (Rank > 0 && einsums::BasicTensorConcept<AType>) {
             std::ostringstream oss;
             for (size_t i = 0; i < Rank; i++) {
                 oss << A.stride(i) << " ";
@@ -2135,10 +2147,10 @@ void fprintln(std::FILE *fp, const AType<T, Rank> &A, TensorPrintOptions options
                 fprintln(fp, "{}", oss.str());
                 fprintln(fp);
 #ifndef __HIP__
-            } else if constexpr (Rank > 1 && einsums::CoreRankTensor<AType<T, Rank>, Rank, T>) {
+            } else if constexpr (Rank > 1 && einsums::CoreTensorConcept<AType>) {
 #else
             } else if constexpr (Rank > 1 &&
-                                 (einsums::CoreRankTensor<AType<T, Rank>, Rank, T> || einsums::DeviceRankTensor<AType<T, Rank>, Rank, T>)) {
+                                 (einsums::CoreTensorConcept<AType> || einsums::DeviceTensorConcept<AType>)) {
 #endif
                 auto target_dims = einsums::get_dim_ranges<Rank - 1>(A);
                 auto final_dim   = A.dim(Rank - 1);
@@ -2187,10 +2199,10 @@ void fprintln(std::FILE *fp, const AType<T, Rank> &A, TensorPrintOptions options
                     fprintln(fp);
                 }
 #ifndef __HIP__
-            } else if constexpr (Rank == 1 && einsums::CoreRankTensor<AType<T, Rank>, Rank, T>) {
+            } else if constexpr (Rank == 1 && einsums::CoreTensorConcept<AType>) {
 #else
             } else if constexpr (Rank == 1 &&
-                                 (einsums::CoreRankTensor<AType<T, Rank>, Rank, T> || einsums::DeviceRankTensor<AType<T, Rank>, Rank, T>)) {
+                                 (einsums::CoreTensorConcept<AType> || einsums::DeviceTensorConcept<AType>)) {
 #endif
                 auto target_dims = einsums::get_dim_ranges<Rank>(A);
 
@@ -2230,27 +2242,33 @@ void fprintln(std::FILE *fp, const AType<T, Rank> &A, TensorPrintOptions options
     fprintln(fp);
 }
 
-template <template <typename, size_t> typename AType, size_t Rank, typename T>
-    requires(einsums::RankBasicTensor<AType<T, Rank>, Rank, T>)
-void fprintln(std::ostream &os, const AType<T, Rank> &A, TensorPrintOptions options) {
+template <einsums::TensorConcept AType>
+    requires(einsums::BasicTensorConcept<AType> || !einsums::AlgebraTensorConcept<AType>)
+void fprintln(std::ostream &os, const AType &A, TensorPrintOptions options) {
+    using T = typename AType::data_type;
+    constexpr size_t Rank = AType::rank;
+
     fprintln(os, "Name: {}", A.name());
     {
         print::Indent const indent{};
 
-        if constexpr (einsums::CoreRankTensor<AType<T, Rank>, Rank, T>) {
-            if constexpr (std::is_same_v<AType<T, Rank>, einsums::Tensor<T, Rank>>)
+        if constexpr (einsums::CoreTensorConcept<AType>) {
+            if constexpr (!einsums::TensorViewConcept<AType>)
                 fprintln(os, "Type: In Core Tensor");
             else
                 fprintln(os, "Type: In Core Tensor View");
 #ifdef __HIP__
-        } else if constexpr (einsums::DeviceRankTensor<AType<T, Rank>, Rank, T>) {
-            if constexpr (std::is_same_v<AType<T, Rank>, einsums::DeviceTensor<T, Rank>>)
+        } else if constexpr (einsums::DeviceTensorConcept<AType>) {
+            if constexpr (!einsums::TensorViewConcept<AType>)
                 fprintln(os, "Type: Device Tensor");
             else
                 fprintln(os, "Type: Device Tensor View");
 #endif
-        } else
+        } else if constexpr (einsums::DiskTensorConcept<AType>) {
             fprintln(os, "Type: Disk Tensor");
+        } else {
+            fprintln(os, "Type: {}", type_name<AType>());
+        }
 
         fprintln(os, "Data Type: {}", type_name<T>());
 
@@ -2262,7 +2280,7 @@ void fprintln(std::ostream &os, const AType<T, Rank> &A, TensorPrintOptions opti
             fprintln(os, "Dims{{{}}}", oss.str().c_str());
         }
 
-        if constexpr (Rank > 0) {
+        if constexpr (Rank > 0 && einsums::BasicTensorConcept<AType>) {
             std::ostringstream oss;
             for (size_t i = 0; i < Rank; i++) {
                 oss << A.stride(i) << " ";
@@ -2292,10 +2310,10 @@ void fprintln(std::ostream &os, const AType<T, Rank> &A, TensorPrintOptions opti
                 fprintln(os, "{}", oss.str());
                 fprintln(os);
 #ifndef __HIP__
-            } else if constexpr (Rank > 1 && einsums::CoreRankTensor<AType<T, Rank>, Rank, T>) {
+            } else if constexpr (Rank > 1 && einsums::CoreTensorConcept<AType>) {
 #else
             } else if constexpr (Rank > 1 &&
-                                 (einsums::CoreRankTensor<AType<T, Rank>, Rank, T> || einsums::DeviceRankTensor<AType<T, Rank>, Rank, T>)) {
+                                 (einsums::CoreTensorConcept<AType> || einsums::DeviceTensorConcept<AType>)) {
 #endif
                 auto target_dims = einsums::get_dim_ranges<Rank - 1>(A);
                 auto final_dim   = A.dim(Rank - 1);
@@ -2344,10 +2362,10 @@ void fprintln(std::ostream &os, const AType<T, Rank> &A, TensorPrintOptions opti
                     fprintln(os);
                 }
 #ifndef __HIP__
-            } else if constexpr (Rank == 1 && einsums::CoreRankTensor<AType<T, Rank>, Rank, T>) {
+            } else if constexpr (Rank == 1 && einsums::CoreTensorConcept<AType>) {
 #else
             } else if constexpr (Rank == 1 &&
-                                 (einsums::CoreRankTensor<AType<T, Rank>, Rank, T> || einsums::DeviceRankTensor<AType<T, Rank>, Rank, T>)) {
+                                 (einsums::CoreTensorConcept<AType> || einsums::DeviceTensorConcept<AType>)) {
 #endif
                 auto target_dims = einsums::get_dim_ranges<Rank>(A);
 

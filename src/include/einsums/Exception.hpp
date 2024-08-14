@@ -13,19 +13,23 @@ private:
     std::string _what;
 
 public:
-    EinsumsException(const char *location, const char *function, const char *message) : _what{""} {
-        _what += location;
-        _what += ": In function ";
+    EinsumsException(const char *file, const char *line, const char *function, const char *message) : _what{""} {
+        _what += file;
+        _what += ":";
+        _what += line;
+        _what += ":\nIn function ";
         _what += function;
-        _what += ": ";
+        _what += ":\n";
         _what += message;
     }
 
-    EinsumsException(const char *location, const char *function, std::string message) : _what{""} {
-        _what += location;
-        _what += ": In function ";
+    EinsumsException(const char *file, const char *line, const char *function, std::string message) : _what{""} {
+        _what += file;
+        _what += ":";
+        _what += line;
+        _what += ":\nIn function ";
         _what += function;
-        _what += ": ";
+        _what += ":\n";
         _what += message;
     }
 
@@ -45,4 +49,4 @@ public:
 
 #define __EINSUMS_EXCEPTION_STR1__(x) #x
 #define __EINSUMS_EXCEPTION_STR__(x) __EINSUMS_EXCEPTION_STR1__(x)
-#define EINSUMSEXCEPTION(what) einsums::EinsumsException(einsums::detail::anonymize(__FILE__).c_str(), std::source_location::current().function_name(), (what))
+#define EINSUMSEXCEPTION(what) einsums::EinsumsException(einsums::detail::anonymize(__FILE__).c_str(), __EINSUMS_EXCEPTION_STR__(__LINE__), std::source_location::current().function_name(), (what))

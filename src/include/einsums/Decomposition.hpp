@@ -45,8 +45,11 @@ auto validate_cp_rank(const Dim<TRank> shape, const std::string &rounding = "rou
 /**
  * Computes the 2-norm of a tensor
  */
-template <template <typename, size_t> typename TTensor, size_t TRank, typename TType = double>
-auto norm(const TTensor<TType, TRank> &tensor) -> TType {
+template <TensorConcept TTensor>
+auto norm(const TTensor &tensor) -> DataTypeT<TTensor> {
+    using TType = DataTypeT<TTensor>;
+    constexpr size_t TRank = TensorRank<TTensor>;
+
     LabeledSection0();
 
     TType val         = 0.0;
@@ -63,8 +66,14 @@ auto norm(const TTensor<TType, TRank> &tensor) -> TType {
 /**
  * Computes the RMSD between two tensors of arbitrary dimension
  */
-template <template <typename, size_t> typename TTensor, size_t TRank, typename TType = double>
-auto rmsd(const TTensor<TType, TRank> &tensor1, const TTensor<TType, TRank> &tensor2) -> TType {
+template <TensorConcept AType, TensorConcept BType>
+requires requires {
+    requires SameUnderlyingAndRank<AType, BType>;
+    requires InSamePlace<AType, BType>;
+}
+auto rmsd(const AType &tensor1, const BType &tensor2) -> DataTypeT<AType> {
+    using TType = DataTypeT<AType>;
+    constexpr size_t TRank = TensorRank<AType>;
     LabeledSection0();
 
     TType diff = 0.0;
@@ -89,8 +98,14 @@ auto rmsd(const TTensor<TType, TRank> &tensor1, const TTensor<TType, TRank> &ten
 /**
  * "Weight" a tensor for weighted CANDECOMP/PARAFAC decompositions (returns a copy) by input weights
  */
-template <template <typename, size_t> typename TTensor, size_t TRank, typename TType = double>
-auto weight_tensor(const TTensor<TType, TRank> &tensor, const TTensor<TType, 1> &weights) -> Tensor<TType, TRank> {
+template <TensorConcept TTensor, VectorConcept WTensor>
+requires requires {
+    requires SameUnderlying<TTensor, WTensor>;
+    requires InSamePlace<TTensor, WTensor>;
+}
+auto weight_tensor(const TTensor &tensor, const WTensor &weights) -> Tensor<DataTypeT<TTensor>, TensorRank<TTensor>> {
+    using TType = DataTypeT<TTensor>;
+    constexpr size_t TRank = TensorRank<TTensor>;
     LabeledSection0();
 
     if (tensor.dim(0) != weights.dim(0)) {

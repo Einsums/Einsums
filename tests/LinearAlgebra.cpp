@@ -929,7 +929,7 @@ TEST_CASE("pow") {
 
         for (int i = 0; i < A.dim(0); i++) {
             for (int j = 0; j < A.dim(1); j++) {
-                CHECK_THAT(B(i, j), einsums::WithinStrict(C(i, j), TestType{10000.0}));
+                CHECK_THAT(B(i, j), Catch::Matchers::WithinAbs(C(i, j), TestType{1e-6}));
             }
         }
     }
@@ -982,7 +982,7 @@ TEST_CASE("pow") {
                 }
             }
 
-            while (vec_norm(qi) < einsums::WithinStrict(TestType{0.0}, TestType{10000.0}).get_error()) {
+            while (vec_norm(qi) < TestType{1e-6}) {
                 qi = create_random_tensor<TestType>("new vec", size);
                 for (int j = 0; j < i; j++) {
                     auto qj = Evecs(AllT(), j);
@@ -1016,9 +1016,9 @@ TEST_CASE("pow") {
 
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                CHECK_THAT(B(i, j), einsums::WithinStrict(C(i, j), TestType{10000.0}));
-                CHECK_THAT(C(j, i), einsums::WithinStrict(C(i, j), TestType{10000.0}));
-                CHECK_THAT(B(j, i), einsums::WithinStrict(B(i, j), TestType{10000.0}));
+                CHECK_THAT(B(i, j), Catch::Matchers::WithinAbs(C(i, j), TestType{1e-6}));
+                CHECK_THAT(C(j, i), Catch::Matchers::WithinAbs(C(i, j), TestType{1e-6}));
+                CHECK_THAT(B(j, i), Catch::Matchers::WithinAbs(B(i, j), TestType{1e-6}));
             }
         }
     }
@@ -1048,7 +1048,7 @@ TEST_CASE("pow") {
 
         for (int i = 0; i < A.dim(0); i++) {
             for (int j = 0; j < A.dim(1); j++) {
-                CHECK_THAT(B(i, j), einsums::WithinStrict(C(i, j), TestType{10000.0}));
+                CHECK_THAT(B(i, j), Catch::Matchers::WithinAbs(C(i, j), TestType{1e-6}));
             }
         }
     }
@@ -1070,7 +1070,7 @@ TEST_CASE("pow") {
 
         for (int i = 0; i < A.dim(0); i++) {
             for (int j = 0; j < A.dim(1); j++) {
-                CHECK_THAT(B(i, j), einsums::WithinStrict(C(i, j), TestType{10000.0}));
+                CHECK_THAT(B(i, j), Catch::Matchers::WithinAbs(C(i, j), TestType{1e-6}));
             }
         }
     }

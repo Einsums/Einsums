@@ -317,8 +317,3 @@ struct FunctionTensorView : public virtual tensor_props::FunctionTensorBase<T, R
 };
 
 } // namespace einsums
-
-template <einsums::FunctionTensorConcept AType>
-void println(const AType &A, TensorPrintOptions options = {}) {
-    println((einsums::Tensor<typename AType::data_type, AType::rank>)A, options);
-}

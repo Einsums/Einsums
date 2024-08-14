@@ -16,6 +16,7 @@
 #include "einsums/utility/ComplexTraits.hpp"
 #include "einsums/utility/SmartPointerTraits.hpp"
 #include "einsums/utility/TensorTraits.hpp"
+#include "einsums/linear_algebra_imp/UnoptimizedLinearAlgebra.hpp"
 #ifdef __HIP__
 #    include "einsums/DeviceTensor.hpp"
 #    include "einsums/linear_algebra_imp/GPULinearAlgebra.hpp"
@@ -24,8 +25,6 @@
 #include "einsums/linear_algebra_imp/BlockLinearAlgebra.hpp"
 #include "einsums/linear_algebra_imp/BlockTiledLinearAlgebra.hpp"
 #include "einsums/linear_algebra_imp/TiledLinearAlgebra.hpp"
-#include "einsums/linear_algebra_imp/UnoptimizedLinearAlgebra.hpp"
-
 #include <algorithm>
 #include <cmath>
 #include <complex>
@@ -479,15 +478,13 @@ void ger(typename AType::data_type alpha, const XYType &X, const XYType &Y, ATyp
  * partial pivoting, with row interchanges.
  *
  * @tparam TensorType
- * @tparam T
- * @tparam TensorRank
  * @param A
  * @param pivot
  * @return
  */
-template <template <typename, size_t> typename TensorType, typename T, size_t TensorRank>
-    requires CoreRankTensor<TensorType<T, TensorRank>, 2, T>
-auto getrf(TensorType<T, TensorRank> *A, std::vector<blas_int> *pivot) -> int {
+template <MatrixConcept TensorType>
+    requires(CoreTensorConcept<TensorType>)
+auto getrf(TensorType *A, std::vector<blas_int> *pivot) -> int {
     LabeledSection0();
 
     if (pivot->size() < std::min(A->dim(0), A->dim(1))) {
@@ -517,9 +514,9 @@ auto getrf(TensorType<T, TensorRank> *A, std::vector<blas_int> *pivot) -> int {
  * @param pivot The pivot vector from getrf
  * @return int If 0, the execution is successful.
  */
-template <template <typename, size_t> typename TensorType, typename T, size_t TensorRank>
-    requires CoreRankTensor<TensorType<T, TensorRank>, 2, T>
-auto getri(TensorType<T, TensorRank> *A, const std::vector<blas_int> &pivot) -> int {
+template <MatrixConcept TensorType>
+    requires(CoreTensorConcept<TensorType>)
+auto getri(TensorType *A, const std::vector<blas_int> &pivot) -> int {
     LabeledSection0();
 
     int result = blas::getri(A->dim(0), A->data(), A->stride(0), pivot.data());
@@ -540,12 +537,12 @@ auto getri(TensorType<T, TensorRank> *A, const std::vector<blas_int> &pivot) -> 
  * @tparam TensorRank The rank of the tensor
  * @param A Matrix to invert. On exit, the inverse of A.
  */
-template <template <typename, size_t> typename TensorType, typename T, size_t TensorRank>
-    requires CoreRankTensor<TensorType<T, TensorRank>, 2, T>
-void invert(TensorType<T, TensorRank> *A) {
-    if constexpr (einsums::detail::IsIncoreRankBlockTensorV<TensorType<T, TensorRank>, TensorRank, T>) {
+template <MatrixConcept TensorType>
+    requires(CoreTensorConcept<TensorType>)
+void invert(TensorType *A) {
+    if constexpr (einsums::detail::IsIncoreBlockTensorV<TensorType>) {
         EINSUMS_OMP_PARALLEL_FOR
-        for (int i = 0; i < A->num_blocks; i++) {
+        for (int i = 0; i < A->num_blocks(); i++) {
             einsums::linear_algebra::invert(&(A->block(i)));
         }
     } else {
@@ -613,25 +610,26 @@ enum class Norm : char {
  * @param a The matrix to compute the norm of
  * @return The norm of the matrix
  */
-
-template <template <typename, size_t> typename AType, typename ADataType, size_t ARank>
-    requires CoreRankTensor<AType<ADataType, ARank>, 2, ADataType>
-auto norm(Norm norm_type, const AType<ADataType, ARank> &a) -> RemoveComplexT<ADataType> {
+template <MatrixConcept AType>
+    requires(CoreTensorConcept<AType>)
+auto norm(Norm norm_type, const AType &a) -> RemoveComplexT<AType> {
     LabeledSection0();
 
-    std::vector<RemoveComplexT<ADataType>> work(4 * a.dim(0), 0.0);
+    std::vector<RemoveComplexT<AType>> work(4 * a.dim(0), 0.0);
     return blas::lange(static_cast<char>(norm_type), a.dim(0), a.dim(1), a.data(), a.stride(0), work.data());
 }
 
-template <template <typename, size_t> typename AType, typename ADataType, size_t ARank>
-RemoveComplexT<ADataType> vec_norm(const AType<ADataType, ARank> &a) {
+template <TensorConcept AType>
+RemoveComplexT<AType> vec_norm(const AType &a) {
     return std::sqrt(std::abs(true_dot(a, a)));
 }
 
 // Uses the original svd function found in lapack, gesvd, request all left and right vectors.
-template <template <typename, size_t> typename AType, typename T, size_t ARank>
-    requires CoreRankTensor<AType<T, ARank>, 2, T>
-auto svd(const AType<T, ARank> &_A) -> std::tuple<Tensor<T, 2>, Tensor<RemoveComplexT<T>, 1>, Tensor<T, 2>> {
+template <MatrixConcept AType>
+    requires(CoreTensorConcept<AType>)
+auto svd(const AType &_A)
+    -> std::tuple<Tensor<typename AType::data_type, 2>, Tensor<RemoveComplexT<AType>, 1>, Tensor<typename AType::data_type, 2>> {
+    using T = typename AType::data_type;
     LabeledSection0();
 
     DisableOMPThreads const nothreads;
@@ -667,9 +665,10 @@ auto svd(const AType<T, ARank> &_A) -> std::tuple<Tensor<T, 2>, Tensor<RemoveCom
     return std::make_tuple(U, S, Vt);
 }
 
-template <template <typename, size_t> typename AType, typename T, size_t Rank>
-    requires CoreRankTensor<AType<T, Rank>, 2, T>
-auto svd_nullspace(const AType<T, Rank> &_A) -> Tensor<T, 2> {
+template <MatrixConcept AType>
+    requires(CoreTensorConcept<AType>)
+auto svd_nullspace(const AType &_A) -> Tensor<typename AType::data_type, 2> {
+    using T = typename AType::data_type;
     LabeledSection0();
 
     // Calling svd will destroy the original data. Make a copy of it.
@@ -725,9 +724,11 @@ auto svd_nullspace(const AType<T, Rank> &_A) -> Tensor<T, 2> {
 
 enum class Vectors : char { All = 'A', Some = 'S', Overwrite = 'O', None = 'N' };
 
-template <template <typename, size_t> typename AType, typename T, size_t ARank>
-    requires CoreRankTensor<AType<T, ARank>, 2, T>
-auto svd_dd(const AType<T, ARank> &_A, Vectors job = Vectors::All) -> std::tuple<Tensor<T, 2>, Tensor<RemoveComplexT<T>, 1>, Tensor<T, 2>> {
+template <MatrixConcept AType>
+    requires(CoreTensorConcept<AType>)
+auto svd_dd(const AType &_A, Vectors job = Vectors::All)
+    -> std::tuple<Tensor<typename AType::data_type, 2>, Tensor<RemoveComplexT<AType>, 1>, Tensor<typename AType::data_type, 2>> {
+    using T = typename AType::data_type;
     LabeledSection0();
 
     DisableOMPThreads const nothreads;
@@ -761,9 +762,11 @@ auto svd_dd(const AType<T, ARank> &_A, Vectors job = Vectors::All) -> std::tuple
     return std::make_tuple(U, S, Vt);
 }
 
-template <template <typename, size_t> typename AType, typename T, size_t ARank>
-    requires CoreRankTensor<AType<T, ARank>, 2, T>
-auto truncated_svd(const AType<T, ARank> &_A, size_t k) -> std::tuple<Tensor<T, 2>, Tensor<RemoveComplexT<T>, 1>, Tensor<T, 2>> {
+template <MatrixConcept AType>
+    requires(CoreTensorConcept<AType>)
+auto truncated_svd(const AType &_A, size_t k)
+    -> std::tuple<Tensor<typename AType::data_type, 2>, Tensor<RemoveComplexT<AType>, 1>, Tensor<typename AType::data_type, 2>> {
+    using T = typename AType::data_type;
     LabeledSection0();
 
     size_t m = _A.dim(0);
@@ -800,9 +803,10 @@ auto truncated_svd(const AType<T, ARank> &_A, size_t k) -> std::tuple<Tensor<T, 
     return std::make_tuple(U, S, Vt);
 }
 
-template <template <typename, size_t> typename AType, size_t ARank, typename T>
-    requires CoreRankTensor<AType<T, ARank>, 2, T>
-auto truncated_syev(const AType<T, ARank> &A, size_t k) -> std::tuple<Tensor<T, 2>, Tensor<T, 1>> {
+template <MatrixConcept AType>
+    requires(CoreTensorConcept<AType>)
+auto truncated_syev(const AType &A, size_t k) -> std::tuple<Tensor<typename AType::data_type, 2>, Tensor<typename AType::data_type, 1>> {
+    using T = typename AType::data_type;
     LabeledSection0();
 
     if (A.dim(0) != A.dim(1)) {
@@ -846,8 +850,12 @@ auto truncated_syev(const AType<T, ARank> &A, size_t k) -> std::tuple<Tensor<T, 
     return std::make_tuple(U, w);
 }
 
-template <typename T>
-inline auto pseudoinverse(const Tensor<T, 2> &A, T tol) -> Tensor<T, 2> {
+template <MatrixConcept AType, typename T>
+    requires requires {
+        requires CoreTensorConcept<AType>;
+        requires std::is_same_v<typename AType::data_type, T>;
+    }
+inline auto pseudoinverse(const AType &A, T tol) -> Tensor<T, 2> {
     LabeledSection0();
 
     auto [U, S, Vh] = svd_a(A);
@@ -872,8 +880,14 @@ inline auto pseudoinverse(const Tensor<T, 2> &A, T tol) -> Tensor<T, 2> {
     return pinv;
 }
 
-template <typename T>
-inline auto solve_continuous_lyapunov(const Tensor<T, 2> &A, const Tensor<T, 2> &Q) -> Tensor<T, 2> {
+template <MatrixConcept AType, MatrixConcept QType>
+    requires requires {
+        requires CoreTensorConcept<AType>;
+        requires CoreTensorConcept<QType>;
+        requires SameUnderlying<AType, QType>;
+    }
+inline auto solve_continuous_lyapunov(const AType &A, const QType &Q) -> Tensor<typename AType::data_type, 2> {
+    using T = typename AType::data_type;
     LabeledSection0();
 
     if (A.dim(0) != A.dim(1)) {
@@ -914,9 +928,10 @@ inline auto solve_continuous_lyapunov(const Tensor<T, 2> &A, const Tensor<T, 2> 
 
 ALIAS_TEMPLATE_FUNCTION(solve_lyapunov, solve_continuous_lyapunov)
 
-template <template <typename, size_t> typename AType, size_t ARank, typename T>
-    requires CoreRankTensor<AType<T, ARank>, 2, T>
-auto qr(const AType<T, ARank> &_A) -> std::tuple<Tensor<T, 2>, Tensor<T, 1>> {
+template <MatrixConcept AType>
+    requires(CoreTensorConcept<AType>)
+auto qr(const AType &_A) -> std::tuple<Tensor<typename AType::data_type, 2>, Tensor<typename AType::data_type, 1>> {
+    using T = typename AType::data_type;
     LabeledSection0();
 
     // Copy A because it will be overwritten by the QR call.
@@ -937,8 +952,14 @@ auto qr(const AType<T, ARank> &_A) -> std::tuple<Tensor<T, 2>, Tensor<T, 1>> {
     return {A, tau};
 }
 
-template <typename T>
-auto q(const Tensor<T, 2> &qr, const Tensor<T, 1> &tau) -> Tensor<T, 2> {
+template<MatrixConcept AType, VectorConcept TauType>
+requires requires {
+    requires CoreTensorConcept<AType>;
+    requires CoreTensorConcept<TauType>;
+    requires SameUnderlying<AType, TauType>;
+}
+auto q(const AType &qr, const TauType &tau) -> Tensor<typename AType::data_type, 2> {
+    using T = typename AType::data_type;
     const blas_int m = qr.dim(1);
     const blas_int p = qr.dim(0);
 
@@ -952,9 +973,9 @@ auto q(const Tensor<T, 2> &qr, const Tensor<T, 1> &tau) -> Tensor<T, 2> {
     return Q;
 }
 
-template <template <typename, size_t> typename AType, template <typename, size_t> typename BType,
-          template <typename, size_t> typename CType, typename T, size_t Rank>
-void direct_product(T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, T beta, CType<T, Rank> *C) {
+template<TensorConcept AType, TensorConcept BType, TensorConcept CType, typename T>
+requires(SameRank<AType, BType, CType>)
+void direct_product(T alpha, const AType &A, const BType &B, T beta, CType *C) {
     LabeledSection0();
 
     detail::direct_product(alpha, A, B, beta, C);
@@ -963,17 +984,17 @@ void direct_product(T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, T
 /**
  * Computes the determinant of a matrix.
  */
-template <template <typename, size_t> typename AType, typename T, size_t Rank>
-    requires(Rank == 2)
-T det(const AType<T, Rank> &A) {
+template<MatrixConcept AType>
+typename AType::data_type det(const AType &A) {
+    using T = typename AType::data_type;
     if (A.dim(0) != A.dim(1)) {
         throw EINSUMSEXCEPTION("Can only take the determinant of a square matrix.");
     }
 
-    remove_view_t<AType<T, Rank>> temp = A;
+    remove_view_t<AType> temp = A;
 
     std::vector<blas_int> pivots;
-    int                   singular = getrf(&A, &pivots);
+    int                   singular = getrf(&temp, &pivots);
     if (singular > 0) {
         return T{0.0}; // Matrix is singular, so it has a determinant of zero.
     }

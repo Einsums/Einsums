@@ -247,10 +247,19 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
 
         // CDataType *work;
         // hip_catch(hipMalloc((void **)&work, threads.x * threads.y * threads.z * blocks.x * blocks.y * blocks.z * sizeof(CDataType)));
-        if (C_prefactor == typename CType::data_type{0}) {
-            *C = typename CType::data_type{0};
+        if (C_prefactor == DataTypeT<CType>{0}) {
+            *C = DataTypeT<CType>{0};
         } else {
             *C *= C_prefactor;
+        }
+
+        __device_ptr__ C_devtype *C_data;
+
+        if constexpr (einsums::detail::IsTensorV<CType>) {
+            C_data = C->gpu_data();
+        } else {
+            hip_catch(hipMalloc((void **) &C_data, sizeof(C_devtype)));
+            hip_catch(hipMemcpy(C_data, C, sizeof(C_devtype), hipMemcpyHostToDevice));
         }
 
         C_devtype *work_array;
@@ -259,10 +268,16 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
                             threads.x * threads.y * threads.z * grid.x * grid.y * grid.z * sizeof(C_devtype) / get_warpsize()));
 
         einsum_generic_zero_rank_gpu<C_devtype, A_devtype, B_devtype, std::tuple_size<decltype(unique_indices)>::value, ARank, BRank>
-            <<<threads, grid, 0, get_stream()>>>(unique_strides_gpu, A_index_table_gpu, B_index_table_gpu, C->gpu_data(),
+            <<<threads, grid, 0, get_stream()>>>(unique_strides_gpu, A_index_table_gpu, B_index_table_gpu, C_data,
                                                  HipCast<AB_devtype, AB_hosttype>::cast(AB_prefactor), A.gpu_data(), A.gpu_dims(),
                                                  A.gpu_strides(), B.gpu_data(), B.gpu_dims(), B.gpu_strides(),
                                                  ::std::get<0>(unique_dims) * unique_strides[0], work_array);
+
+        if constexpr (!einsums::detail::IsTensorV<CType>) {
+            gpu::stream_wait();
+            hip_catch(hipMemcpy(C, C_data, sizeof(C_devtype), hipMemcpyDeviceToHost));
+            hip_catch(hipFree(C_data));
+        }
 
         hip_catch(hipFreeAsync((void *)work_array, get_stream()));
     }

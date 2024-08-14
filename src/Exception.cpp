@@ -29,7 +29,7 @@ std::string einsums::detail::anonymize(std::string fpath) {
         if(temp.filename() == "src" || temp.filename() == "tests" || temp.filename() == "timing") {
             swap = std::filesystem::path("/git");
             swap /= out;
-            out = swap
+            out = swap;
             return (std::string) out;
         }
 

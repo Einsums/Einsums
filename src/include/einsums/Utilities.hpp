@@ -32,16 +32,21 @@ template <bool TransA, bool TransB, MatrixConcept AType, MatrixConcept BType, Ma
     }
 void gemm(const U alpha, const AType &A, const BType &B, const U beta, CType *C);
 
-template <template <typename, size_t> typename TensorType, typename T, size_t TensorRank>
-    requires CoreRankTensor<TensorType<T, TensorRank>, 2, T>
-auto getrf(TensorType<T, TensorRank> *A, std::vector<blas_int> *pivot) -> int;
+template <MatrixConcept TensorType>
+    requires(CoreTensorConcept<TensorType>)
+auto getrf(TensorType *A, std::vector<blas_int> *pivot) -> int;
 
-template <template <typename, size_t> typename AType, size_t ARank, typename T>
-    requires CoreRankTensor<AType<T, ARank>, 2, T>
-auto qr(const AType<T, ARank> &_A) -> std::tuple<Tensor<T, 2>, Tensor<T, 1>>;
+template <MatrixConcept AType>
+    requires(CoreTensorConcept<AType>)
+auto qr(const AType &_A) -> std::tuple<Tensor<typename AType::data_type, 2>, Tensor<typename AType::data_type, 1>>;
 
-template <typename T>
-auto q(const Tensor<T, 2> &qr, const Tensor<T, 1> &tau) -> Tensor<T, 2>;
+template<MatrixConcept AType, VectorConcept TauType>
+requires requires {
+    requires CoreTensorConcept<AType>;
+    requires CoreTensorConcept<TauType>;
+    requires SameUnderlying<AType, TauType>;
+}
+auto q(const AType &qr, const TauType &tau) -> Tensor<typename AType::data_type, 2>;
 } // namespace einsums::linear_algebra
 
 namespace einsums {
@@ -68,6 +73,26 @@ namespace einsums {
 }
 
 namespace einsums {
+
+/**
+ * @typedef Matrix
+ *
+ * @brief Equivalent to Tensor<T, 2>.
+ *
+ * @tparam T The underlying type. Defaults to double.
+ */
+template<typename T = double>
+using Matrix = Tensor<T, 2>;
+
+/**
+ * @typedef Vector
+ *
+ * @brief Equivalent to Tensor<T, 1>.
+ *
+ * @tparam T The underlying type. Defaults to double.
+ */
+template<typename T = double>
+using Vector = Tensor<T, 1>;
 
 /**
  * @brief Create a new tensor with \p name and \p index filled with incremental data.
