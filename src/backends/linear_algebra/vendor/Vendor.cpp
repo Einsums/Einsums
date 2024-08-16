@@ -19,6 +19,10 @@
 
 #include "Utilities.hpp"
 
+#if defined(EINSUMS_HAVE_MKL)
+#    include <mkl.h>
+#endif
+
 #ifndef FC_SYMBOL
 #    define FC_SYMBOL 2
 #endif
@@ -192,8 +196,27 @@ extern void FC_GLOBAL(zgeqrf, ZGEQRF)(blas_int *, blas_int *, std::complex<doubl
 } // extern "C"
 EINSUMS_DISABLE_WARNING_POP
 
-void initialize() {
+namespace {
+extern "C" void xerbla(const char *srname, const int *info, const int len) {
+    if (*info == 1001) {
+        println_abort("BLAS/LAPACK: Incompatible optional parameters on entry to {}", srname);
+    } else if (*info == 1000 || *info == 1089) {
+        println_abort("BLAS/LAPACK: Insufficient workspace available in function {}.", srname);
+    } else if (*info < 0) {
+        println_abort("BLAS/LAPACK: Condition {} detected in function {}}.", -(*info), srname);
+    } else {
+        println_abort("BLAS/LAPACK: The value of parameter {} is invalid in function call to {}.", *info, srname);
+    }
 }
+
+} // namespace
+
+void initialize() {
+#if defined(EINSUMS_HAVE_MKL)
+    mkl_set_xerbla(&xerbla);
+#endif
+}
+
 void finalize() {
 }
 
