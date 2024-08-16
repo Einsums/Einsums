@@ -43,6 +43,7 @@
 
 BEGIN_EINSUMS_NAMESPACE_CPP(einsums::backend::linear_algebra::vendor)
 
+#if !defined(EINSUMS_HAVE_MKL)
 EINSUMS_DISABLE_WARNING_PUSH
 EINSUMS_DISABLE_WARNING_RETURN_TYPE_C_LINKAGE
 extern "C" {
@@ -195,6 +196,7 @@ extern void FC_GLOBAL(zgeqrf, ZGEQRF)(blas_int *, blas_int *, std::complex<doubl
                                       std::complex<double> *, blas_int *, blas_int *);
 } // extern "C"
 EINSUMS_DISABLE_WARNING_POP
+#endif
 
 namespace {
 extern "C" void xerbla(const char *srname, const int *info, const int len) {
