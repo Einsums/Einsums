@@ -16,6 +16,7 @@
 #include <algorithm>
 #include <cassert>
 #include <complex>
+#include <cpptrace/cpptrace.hpp>
 #include <cstring>
 #include <iomanip>
 #include <iostream>
@@ -50,7 +51,7 @@ void EINSUMS_EXPORT always_print_thread_id(bool onoff);
 void EINSUMS_EXPORT suppress_output(bool onoff);
 
 struct Indent {
-    Indent() { indent(); }
+     Indent() { indent(); }
     ~Indent() { deindent(); }
 };
 
@@ -282,6 +283,8 @@ inline void println_abort(const std::string_view &format, const Ts... ts) {
     std::string message = std::string("ERROR: ") + format.data();
     println(bg(fmt::color::red) | fg(fmt::color::white), message, ts...);
 
+    cpptrace::generate_trace().print();
+
     std::abort();
 }
 
@@ -289,6 +292,8 @@ template <typename... Ts>
 inline void println_warn(const std::string_view &format, const Ts... ts) {
     std::string message = std::string("WARNING: ") + format.data();
     println(bg(fmt::color::yellow) | fg(fmt::color::black), message, ts...);
+
+    cpptrace::generate_trace(0, 3).print();
 }
 
 template <typename... Ts>

@@ -28,6 +28,8 @@ extend_einsums_target(
         CONDITION EINSUMS_BUILD_HIP PUBLIC_DEPENDS roc::hipblas roc::hipsolver hip::host hip::device
 )
 
+extend_einsums_target(einsums PUBLIC_DEPENDS cpptrace::cpptrace)
+
 # HIP's amd_comgr needs ncurses. Ncurses needs tinfo. Neither target adds the appropriate dependencies or paths. If this gets fixed, this can be removed.
 if(EINSUMS_BUILD_HIP)
     target_compile_options(einsums PUBLIC ${CURSES_CFLAGS})
@@ -40,7 +42,7 @@ if(EINSUMS_BUILD_HIP)
     if(EINSUMS_USE_HPTT)
         message("Librett populated: ${librett_POPULATED}")
         message("Librett source: ${librett_SOURCE_DIR}")
-        #target_include_directories(einsums PUBLIC ${LIBRETT_INCLUDE_DIRS})
+        # target_include_directories(einsums PUBLIC ${LIBRETT_INCLUDE_DIRS})
         target_include_directories(einsums PRIVATE ${librett_SOURCE_DIR}/src)
     endif()
 endif()
@@ -92,6 +94,12 @@ extend_einsums_target(
 
 extend_einsums_target(
         einsums
+        CONDITION (EINSUMS_LINALG_VENDOR STREQUAL MKL)
+        PUBLIC_DEFINES EINSUMS_HAVE_MKL
+)
+
+extend_einsums_target(
+        einsums
         CONDITION (EINSUMS_LINALG_VENDOR STREQUAL MKL
         AND TARGET FFT::FFT
         AND EINSUMS_FFT_LIBRARY STREQUAL mkl)
@@ -124,8 +132,7 @@ extend_einsums_target(
 
 extend_einsums_target(
         einsums
-        SOURCES DeviceSort.hip
-        DEPENDS librett::librett
+        SOURCES DeviceSort.hip DEPENDS librett::librett
         CONDITION (EINSUMS_USE_HPTT AND EINSUMS_BUILD_HIP)
         FEATURE_INFO "Librett backend"
 )

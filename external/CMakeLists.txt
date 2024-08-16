@@ -44,3 +44,5 @@ endif()
 FetchContent_MakeAvailable(fmt)
 
 FetchContent_MakeAvailable(range-v3)
+
+add_subdirectory(cpptrace)
