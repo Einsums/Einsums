@@ -1,5 +1,6 @@
 find_package(range-v3)
 find_package(fmt 11)
+find_package(cpptrace)
 
 add_einsums_library(
         einsums
