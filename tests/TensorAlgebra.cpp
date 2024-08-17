@@ -4,7 +4,7 @@
 //----------------------------------------------------------------------------------------------
 
 // Force einsums to perform runtime indices size checks.
-#define EINSUMS_IS_TESTING 1
+#define EINSUMS_IS_TESTING            1
 #define EINSUMS_RUNTIME_INDICES_CHECK 1
 
 #include "einsums/TensorAlgebra.hpp"
@@ -2703,9 +2703,9 @@ TEST_CASE("runtime-indices-check") {
 
     const auto i_ = 4, j_ = 5, k_ = 10, l_ = 2;
 
-    auto A  = create_random_tensor<double>("A", i_, k_);
-    auto B  = create_random_tensor<double>("B", k_, j_);
-    auto C  = create_tensor<double>("C", l_, j_);
+    auto A = create_random_tensor<double>("A", i_, k_);
+    auto B = create_random_tensor<double>("B", k_, j_);
+    auto C = create_tensor<double>("C", l_, j_);
 
     CHECK_THROWS(einsum(Indices{l, j}, &C, Indices{l, k}, A, Indices{k, j}, B));
 }

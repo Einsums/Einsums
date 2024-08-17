@@ -130,10 +130,6 @@ void initialize() {
 
 void finalize() {
     using namespace detail;
-    if (root != current_timer) {
-        // Try to print out the information remaining.
-        print_timer_info(root , stdout);
-    }
     assert(root == current_timer);
     delete root;
     root = current_timer = nullptr;

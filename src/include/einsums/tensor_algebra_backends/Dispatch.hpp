@@ -198,7 +198,7 @@ auto einsum(const DataTypeT<CType> C_prefactor, const std::tuple<CIndices...> & 
                     println(bg(fmt::color::red) | fg(fmt::color::white), "{:f} {}({:}) += {:f} {}({:}) * {}({:})", C_prefactor, C->name(),
                             print_tuple_no_type(C_indices), AB_prefactor, A.name(), print_tuple_no_type(A_indices), B.name(),
                             print_tuple_no_type(B_indices));
-#endif
+#    endif
                     runtime_indices_abort = true;
                 }
             }
