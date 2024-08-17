@@ -29,6 +29,13 @@ jobs:
               -DCMAKE_CXX_FLAGS="--gcc-toolchain=${CONDA_PREFIX} --sysroot=${CONDA_PREFIX}/${HOST}/sysroot -target ${HOST}"
               -DOpenMP_CXX_INCLUDE_DIR="${CONDA_PREFIX}/include"
             # OpenMP search dir needed b/c setting CMAKE_CXX_FLAGS overrides conda's CXXFLAGS that passes same dir as -isystem
+          - cxx: M-src
+            os: macos-latest
+            build_type: Debug
+            hptt: ON
+            cmargs: >
+              -DFETCHCONTENT_QUIET=OFF
+              -DFETCHCONTENT_TRY_FIND_PACKAGE_MODE=NEVER
           - cxx: L-src
             os: ubuntu-latest
             build_type: Debug
@@ -135,7 +142,7 @@ jobs:
 
       # Step is unnecessary; remove step for debugging.
       - name: Confound Environment - test fetched everything
-        if: matrix.cxx == 'L-src'
+        if: matrix.cxx == 'L-src' || matrix.cxx == 'M-src'
         run: |
           conda remove catch2 fmt range-v3 cpptrace --solver=libmamba
 
