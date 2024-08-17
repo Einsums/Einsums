@@ -21,7 +21,9 @@
 
 #if defined(EINSUMS_HAVE_MKL)
 typedef void (*XerblaEntry)(const char *Name, const int *Num, const int Len);
-XerblaEntry  mkl_set_xerbla(XerblaEntry xerbla);
+extern "C" {
+XerblaEntry mkl_set_xerbla(XerblaEntry xerbla);
+}
 #endif
 
 #ifndef FC_SYMBOL
