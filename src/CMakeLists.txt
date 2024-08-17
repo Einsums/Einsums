@@ -1,6 +1,8 @@
 find_package(range-v3)
 find_package(fmt 11)
-find_package(cpptrace)
+if (NOT WIN32)
+    find_package(cpptrace)
+endif ()
 
 add_einsums_library(
         einsums
@@ -236,14 +238,14 @@ install(
 )
 
 # On windows copy cpptrace.dll to the same directory as the executable for your_target
-if (WIN32)
-    add_custom_command(
-            TARGET einsums POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            $<TARGET_FILE:cpptrace::cpptrace>
-            $<TARGET_FILE_DIR:einsums>
-    )
-endif ()
+#if (WIN32)
+#    add_custom_command(
+#            TARGET einsums POST_BUILD
+#            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+#            $<TARGET_FILE:cpptrace::cpptrace>
+#            $<TARGET_FILE_DIR:einsums>
+#    )
+#endif ()
 
 # include(JoinPaths) join_paths(libdir_for_pc_file "\${exec_prefix}" "${CMAKE_INSTALL_LIBDIR}") join_paths(includedir_for_pc_file "\${prefix}" "${CMAKE_INSTALL_INCLUDEDIR}")
 #
