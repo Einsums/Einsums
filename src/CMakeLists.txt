@@ -235,6 +235,16 @@ install(
         COMPONENT ${ein}_Development
 )
 
+# On windows copy cpptrace.dll to the same directory as the executable for your_target
+if (WIN32)
+    add_custom_command(
+            TARGET einsums POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            $<TARGET_FILE:cpptrace::cpptrace>
+            $<TARGET_FILE_DIR:einsums>
+    )
+endif ()
+
 # include(JoinPaths) join_paths(libdir_for_pc_file "\${exec_prefix}" "${CMAKE_INSTALL_LIBDIR}") join_paths(includedir_for_pc_file "\${prefix}" "${CMAKE_INSTALL_INCLUDEDIR}")
 #
 # configure_file(cmake/einsums.pc.cmake.in einsums.pc @ONLY) install( FILES ${CMAKE_CURRENT_BINARY_DIR}/einsums.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig/ COMPONENT
