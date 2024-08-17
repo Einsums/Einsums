@@ -124,7 +124,7 @@ endif()
 if(NOT TARGET fmt::fmt)
     find_dependency(fmt)
 endif()
-if(NOT TARGET cpptrace::cpptrace)
+if(@EINSUMS_HAVE_CPPTRACE@ AND NOT TARGET cpptrace::cpptrace)
 find_dependency(cpptrace)
 endif()
 
