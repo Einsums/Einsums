@@ -124,6 +124,9 @@ endif()
 if(NOT TARGET fmt::fmt)
     find_dependency(fmt)
 endif()
+if(NOT TARGET cpptrace::cpptrace)
+find_dependency(cpptrace::cpptrace)
+endif()
 
 # Check all required components are available before trying to load any
 check_required_components(${ein})
