@@ -29,7 +29,7 @@ extend_einsums_target(
         CONDITION EINSUMS_BUILD_HIP PUBLIC_DEPENDS roc::hipblas roc::hipsolver hip::host hip::device
 )
 
-extend_einsums_target(einsums PUBLIC_DEPENDS cpptrace::cpptrace)
+extend_einsums_target(einsums CONDITION TARGET cpptrace::cpptrace PUBLIC_DEFINES EINSUMS_HAVE_CPPTRACE PUBLIC_DEPENDS cpptrace::cpptrace)
 
 # HIP's amd_comgr needs ncurses. Ncurses needs tinfo. Neither target adds the appropriate dependencies or paths. If this gets fixed, this can be removed.
 if(EINSUMS_BUILD_HIP)

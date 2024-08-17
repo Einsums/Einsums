@@ -114,6 +114,7 @@ jobs:
             sed -i "s;- blas-devel;;g" export.yaml
             sed -i "s;- elfutils;;g" export.yaml
             sed -i "s/- cxx/#- cxx/g" export.yaml
+            sed -i "s/- cpptrace/#- cpptrace/g" export.yaml
             sed -i "s;#- dpcpp_linux-64;- clangdev ${{ matrix.llvm-version }};g" export.yaml
           fi
           # model sed for L/W

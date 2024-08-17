@@ -16,13 +16,16 @@
 #include <algorithm>
 #include <cassert>
 #include <complex>
-#include <cpptrace/cpptrace.hpp>
 #include <cstring>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
 #include <string_view>
+
+#if defined(EINSUMS_HAVE_CPPTRACE)
+#    include <cpptrace/cpptrace.hpp>
+#endif
 
 namespace print {
 
@@ -283,7 +286,9 @@ inline void println_abort(const std::string_view &format, const Ts... ts) {
     std::string message = std::string("ERROR: ") + format.data();
     println(bg(fmt::color::red) | fg(fmt::color::white), message, ts...);
 
+#if defined(EINSUMS_HAVE_CPPTRACE)
     cpptrace::generate_trace().print();
+#endif
 
     std::abort();
 }
@@ -293,7 +298,9 @@ inline void println_warn(const std::string_view &format, const Ts... ts) {
     std::string message = std::string("WARNING: ") + format.data();
     println(bg(fmt::color::yellow) | fg(fmt::color::black), message, ts...);
 
+#if defined(EINSUMS_HAVE_CPPTRACE)
     cpptrace::generate_trace(0, 3).print();
+#endif
 }
 
 template <typename... Ts>
