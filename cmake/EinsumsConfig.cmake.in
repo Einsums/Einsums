@@ -124,9 +124,7 @@ endif()
 if(NOT TARGET fmt::fmt)
     find_dependency(fmt)
 endif()
-if(@EINSUMS_HAVE_CPPTRACE@ AND NOT TARGET cpptrace::cpptrace)
 find_dependency(cpptrace)
-endif()
 
 # Check all required components are available before trying to load any
 check_required_components(${ein})
