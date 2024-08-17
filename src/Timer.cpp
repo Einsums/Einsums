@@ -47,28 +47,6 @@ TimerDetail *root{nullptr};
 
 } // namespace detail
 
-void initialize() {
-    using namespace detail;
-    root              = new TimerDetail();
-    root->name        = "Total Run Time";
-    root->total_calls = 1;
-
-    current_timer = root;
-
-    // Determine timer overhead
-    for (size_t i = 0; i < 1000; i++) {
-        push("Timer Overhead");
-        pop();
-    }
-}
-
-void finalize() {
-    using namespace detail;
-    assert(root == current_timer);
-    delete root;
-    root = current_timer = nullptr;
-}
-
 namespace detail {
 using std::chrono::duration_cast;
 using std::chrono::milliseconds;
@@ -134,6 +112,32 @@ void print_timer_info(TimerDetail *timer, std::ostream &os) { // NOLINT
 }
 
 } // namespace detail
+
+void initialize() {
+    using namespace detail;
+    root              = new TimerDetail();
+    root->name        = "Total Run Time";
+    root->total_calls = 1;
+
+    current_timer = root;
+
+    // Determine timer overhead
+    for (size_t i = 0; i < 1000; i++) {
+        push("Timer Overhead");
+        pop();
+    }
+}
+
+void finalize() {
+    using namespace detail;
+    if (root != current_timer) {
+        // Try to print out the information remaining.
+        print_timer_info(root , stdout);
+    }
+    assert(root == current_timer);
+    delete root;
+    root = current_timer = nullptr;
+}
 
 void report() {
     detail::print_timer_info(detail::root, stdout);

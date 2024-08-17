@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //----------------------------------------------------------------------------------------------
 
+// Force einsums to perform runtime indices size checks.
+#define EINSUMS_IS_TESTING 1
+#define EINSUMS_RUNTIME_INDICES_CHECK 1
+
 #include "einsums/TensorAlgebra.hpp"
 
 #include "einsums/LinearAlgebra.hpp"
@@ -2690,4 +2694,18 @@ TEST_CASE("andy") {
 
         einsum(Indices{index::Q, index::X}, &N_QX, Indices{index::Q, index::i, index::a}, Qov, Indices{index::i, index::a, index::X}, ia_X);
     }
+}
+
+TEST_CASE("runtime-indices-check") {
+    using namespace einsums;
+    using namespace einsums::tensor_algebra;
+    using namespace einsums::tensor_algebra::index;
+
+    const auto i_ = 4, j_ = 5, k_ = 10, l_ = 2;
+
+    auto A  = create_random_tensor<double>("A", i_, k_);
+    auto B  = create_random_tensor<double>("B", k_, j_);
+    auto C  = create_tensor<double>("C", l_, j_);
+
+    CHECK_THROWS(einsum(Indices{l, j}, &C, Indices{l, k}, A, Indices{k, j}, B));
 }

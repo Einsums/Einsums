@@ -155,9 +155,11 @@ auto einsum(const DataTypeT<CType> C_prefactor, const std::tuple<CIndices...> & 
             size_t dimB = B.dim(b);
             if (std::get<a>(A_indices).letter == std::get<b>(B_indices).letter) {
                 if (dimA != dimB) {
+#    if !defined(EINSUMS_IS_TESTING)
                     println(bg(fmt::color::red) | fg(fmt::color::white), "{:f} {}({:}) += {:f} {}({:}) * {}({:})", C_prefactor, C->name(),
                             print_tuple_no_type(C_indices), AB_prefactor, A.name(), print_tuple_no_type(A_indices), B.name(),
                             print_tuple_no_type(B_indices));
+#    endif
                     runtime_indices_abort = true;
                 }
             }
@@ -171,9 +173,11 @@ auto einsum(const DataTypeT<CType> C_prefactor, const std::tuple<CIndices...> & 
             }
             if (std::get<a>(A_indices).letter == std::get<c>(C_indices).letter) {
                 if (dimA != dimC) {
+#    if !defined(EINSUMS_IS_TESTING)
                     println(bg(fmt::color::red) | fg(fmt::color::white), "{:f} {}({:}) += {:f} {}({:}) * {}({:})", C_prefactor, C->name(),
                             print_tuple_no_type(C_indices), AB_prefactor, A.name(), print_tuple_no_type(A_indices), B.name(),
                             print_tuple_no_type(B_indices));
+#    endif
                     runtime_indices_abort = true;
                 }
             }
@@ -190,9 +194,11 @@ auto einsum(const DataTypeT<CType> C_prefactor, const std::tuple<CIndices...> & 
             }
             if (std::get<b>(B_indices).letter == std::get<c>(C_indices).letter) {
                 if (dimB != dimC) {
+#    if !defined(EINSUMS_IS_TESTING)
                     println(bg(fmt::color::red) | fg(fmt::color::white), "{:f} {}({:}) += {:f} {}({:}) * {}({:})", C_prefactor, C->name(),
                             print_tuple_no_type(C_indices), AB_prefactor, A.name(), print_tuple_no_type(A_indices), B.name(),
                             print_tuple_no_type(B_indices));
+#endif
                     runtime_indices_abort = true;
                 }
             }
@@ -504,7 +510,8 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
 #if defined(EINSUMS_CONTINUOUSLY_TEST_EINSUM)
     // Clone C into a new tensor
     auto testC = Tensor<CDataType, CRank>(*C);
-    timer::push("testing");
+    {
+        Section t1("testing");
 #    ifdef __HIP__
     if constexpr (einsums::detail::IsDeviceTensorV<CType>) {
         auto testA = Tensor<ADataType, ARank>(A);
@@ -532,9 +539,9 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
             // #pragma omp taskwait depend(in: testC)
         }
 #    ifdef __HIP__
-    }
+        }
 #    endif
-    timer::pop();
+    }
 #endif
 
     // Default einsums.
