@@ -79,6 +79,7 @@ jobs:
             - fftw
             - fmt
             - range-v3
+            - cpptrace
             - blas-devel
             #WMKL- mkl-devel=2023.2.0
             #MKL- libblas=*=*mkl
@@ -135,7 +136,7 @@ jobs:
       - name: Confound Environment - test fetched everything
         if: matrix.cxx == 'L-src'
         run: |
-          conda remove catch2 fmt range-v3 --solver=libmamba
+          conda remove catch2 fmt range-v3 cpptrace --solver=libmamba
 
       - name: Conda environment
         run: |
