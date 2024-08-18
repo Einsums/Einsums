@@ -114,6 +114,7 @@ jobs:
             :
             sed -E -i.bak "s;#OBL;;g" export.yaml
             sed -E -i.bak "s;- elfutils;;g" export.yaml
+            sed -i "s/- cpptrace/#- cpptrace/g" export.yaml
           fi
           if [[ "${{ runner.os }}" == "Windows" ]]; then
             :
