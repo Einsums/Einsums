@@ -139,8 +139,8 @@ jobs:
           #miniforge-variant: Mambaforge
           use-mamba: true
           mamba-version: "*"
-          channels: conda-forge,defaults
-          channel-priority: true
+          #channels: conda-forge,defaults
+          #channel-priority: true
 
       # Step is unnecessary; remove step for debugging.
       - name: Confound Environment - test fetched everything
