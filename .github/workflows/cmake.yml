@@ -69,7 +69,7 @@ jobs:
       run:
         shell: bash -el {0}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Write a Conda Env File
         run: |
@@ -131,14 +131,16 @@ jobs:
           cat export.yaml
 
       - name: Install dependencies
-        uses: conda-incubator/setup-miniconda@v2
+        uses: conda-incubator/setup-miniconda@v3
         with:
           activate-environment: einsums-dev
           #environment-file: devtools/conda-envs/${{matrix.environment}}
           environment-file: export.yaml
-          miniforge-variant: Mambaforge
+          #miniforge-variant: Mambaforge
           use-mamba: true
-          channels: conda-forge
+          mamba-version: "*"
+          channels: conda-forge,defaults
+          channel-priority: true
 
       # Step is unnecessary; remove step for debugging.
       - name: Confound Environment - test fetched everything
