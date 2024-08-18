@@ -144,10 +144,15 @@ jobs:
           #channel-priority: true
 
       # Step is unnecessary; remove step for debugging.
-      - name: Confound Environment - test fetched everything
-        if: matrix.cxx == 'L-src' || matrix.cxx == 'M-src'
+      - name: Confound Environment - test fetched everything L-src
+        if: matrix.cxx == 'L-src'
         run: |
           conda remove catch2 fmt range-v3 cpptrace --solver=libmamba
+
+      - name: Confound Environment - test fetched everything M-src
+        if: matrix.cxx == 'M-src'
+        run: |
+          conda remove catch2 fmt range-v3 --solver=libmamba
 
       - name: Conda environment
         run: |
