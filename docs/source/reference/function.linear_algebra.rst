@@ -25,11 +25,11 @@ Typical operations include scaling and dot products.
 
 .. doxygenfunction:: einsums::linear_algebra::dot(const AType &A, const BType &B, const CType &C)
 
-.. doxygenfunction:: einsums::linear_algebra::scale(T scale, AType* A)
+.. doxygenfunction:: einsums::linear_algebra::scale
 
-.. doxygenfunction:: einsums::linear_algebra::scale_column(size_t col, T scale, AType* A)
+.. doxygenfunction:: einsums::linear_algebra::scale_column
 
-.. doxygenfunction:: einsums::linear_algebra::scale_row(size_t row, T scale, AType* A)
+.. doxygenfunction:: einsums::linear_algebra::scale_row
 
 BLAS Level 2 Functions
 ----------------------
@@ -37,13 +37,13 @@ BLAS Level 2 Functions
 BLAS Level 2 routines perform matrix-vector operations, such as matrix-vector multiplication, rank-1
 and rank-2 matrix updates, and solution of triangular systems.
 
-.. doxygenfunction:: einsums::linear_algebra::axpy(T alpha, const XType &X, YType *Y)
+.. doxygenfunction:: einsums::linear_algebra::axpy
 
-.. doxygenfunction:: einsums::linear_algebra::axpby(T alpha, const XType &X, T beta, YType *Y)
+.. doxygenfunction:: einsums::linear_algebra::axpby
 
-.. doxygenfunction:: einsums::linear_algebra::gemv(const U alpha, const AType &A, const XType &z, const U beta, YType *y)
+.. doxygenfunction:: einsums::linear_algebra::gemv
 
-.. doxygenfunction:: einsums::linear_algebra::ger(T alpha, const XYType &X, const XYType &Y, AType *A)
+.. doxygenfunction:: einsums::linear_algebra::ger
 
 BLAS Level 3 Functions
 ----------------------
