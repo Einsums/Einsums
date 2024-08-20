@@ -375,6 +375,7 @@ auto pow(const AType &a, typename AType::data_type alpha,
     return detail::pow(a, alpha, cutoff);
 }
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 template <VectorConcept AType, VectorConcept BType>
     requires requires {
         requires InSamePlace<AType, BType>;
@@ -385,7 +386,16 @@ auto dot(const AType &A, const BType &B) -> typename AType::data_type {
 
     return detail::dot(A, B);
 }
+#endif
 
+/**
+ * @brief Performs the dot product between two tensors.
+ *
+ * This performs @f$\sum_{ijk\cdots} A_{ijk\cdots}B_{ijk\cdots}@f$
+ *
+ * @param A One of the tensors
+ * @param B The other tensor.
+ */
 template <TensorConcept AType, TensorConcept BType>
     requires requires {
         requires SameUnderlyingAndRank<AType, BType>;
@@ -399,6 +409,7 @@ auto dot(const AType &A, const BType &B) -> typename AType::data_type {
     return detail::dot(A, B);
 }
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 template <VectorConcept AType, VectorConcept BType>
     requires requires {
         requires InSamePlace<AType, BType>;
@@ -409,7 +420,17 @@ auto true_dot(const AType &A, const BType &B) -> typename AType::data_type {
 
     return detail::true_dot(A, B);
 }
+#endif
 
+/**
+ * @brief Performs the true dot product between two tensors.
+ *
+ * This performs @f$\sum_{ijk\cdots} A_{ijk\cdots}^* B_{ijk\cdots}@f$, where the asterisk indicates the complex conjugate.
+ * If the tensors are real-valued, then this is equivalent to dot.
+ *
+ * @param A One of the tensors. The complex conjugate is taken of this.
+ * @param B The other tensor.
+ */
 template <TensorConcept AType, TensorConcept BType>
     requires requires {
         requires SameUnderlyingAndRank<AType, BType>;
@@ -423,6 +444,15 @@ auto true_dot(const AType &A, const BType &B) -> typename AType::data_type {
     return detail::true_dot(A, B);
 }
 
+/**
+ * @brief Performs the dot product between three tensors.
+ *
+ * This performs @f$\sum_{ijk\cdots} A_{ijk\cdots}B_{ijk\cdots}C_{ijk\cdots}@f$
+ *
+ * @param A One of the tensors.
+ * @param B The second tensor.
+ * @param C The third tensor.
+ */
 template <TensorConcept AType, TensorConcept BType, TensorConcept CType>
     requires requires {
         requires InSamePlace<AType, BType, CType>;
