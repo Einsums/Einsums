@@ -206,7 +206,7 @@ extern "C" void xerbla(const char *srname, const int *info, const int len) {
     } else if (*info == 1000 || *info == 1089) {
         println_abort("BLAS/LAPACK: Insufficient workspace available in function {}.", srname);
     } else if (*info < 0) {
-        println_abort("BLAS/LAPACK: Condition {} detected in function {}}.", -(*info), srname);
+        println_abort("BLAS/LAPACK: Condition {} detected in function {}.", -(*info), srname);
     } else {
         println_abort("BLAS/LAPACK: The value of parameter {} is invalid in function call to {}.", *info, srname);
     }
