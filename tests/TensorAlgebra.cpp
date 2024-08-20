@@ -584,97 +584,146 @@ TEST_CASE("einsum TensorView", "[tensor]") {
     }
 }
 
+template<typename T>
+void sort_2_axpy() {
+    using namespace einsums;
+    using namespace einsums::tensor_algebra;
+    using namespace einsums::tensor_algebra::index;
+
+    auto A = create_tensor<T>("A", 3, 3);
+    auto C = create_tensor<T>("C", 3, 3);
+
+    for (int i = 0, ij = 1; i < 3; i++) {
+        for (int j = 0; j < 3; j++, ij++) {
+            A(i, j) = ij;
+        }
+    }
+
+    sort(Indices{i, j}, &C, Indices{i, j}, A);
+
+    for (int i = 0, ij = 1; i < 3; i++) {
+        for (int j = 0; j < 3; j++, ij++) {
+            REQUIRE(C(i, j) == A(i, j));
+        }
+    }
+
+    TensorView A_view{A, Dim{2, 2}, Offset{1, 1}};
+    TensorView C_view{C, Dim{2, 2}, Offset{1, 1}};
+
+    sort(Indices{j, i}, &C_view, Indices{i, j}, A_view);
+
+    for (int i = 0, ij = 1; i < 3; i++) {
+        for (int j = 0; j < 3; j++, ij++) {
+            if (i == 0 || j == 0)
+                REQUIRE(C(i, j) == A(i, j));
+            else
+                REQUIRE(C(j, i) == A(i, j));
+        }
+    }
+}
+
+template<typename T>
+void sort_2_axpy_2() {
+    using namespace einsums;
+    using namespace einsums::tensor_algebra;
+    using namespace einsums::tensor_algebra::index;
+
+    auto A = create_incremented_tensor<T>("A", 3, 3);
+    auto C0 = create_tensor<T>("C", 3, 3);
+    auto C1 = create_tensor<T>("C", 3, 3);
+
+    for (int i = 0, ij = 1; i < 3; i++) {
+        for (int j = 0; j < 3; j++, ij++) {
+            C0(i, j) = ij;
+            C1(i, j) = ij + A(i, j);
+        }
+    }
+
+    sort(1.0, Indices{i, j}, &C0, 1.0, Indices{i, j}, A);
+
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            if constexpr (IsComplexV<T>) {
+            } else {
+                REQUIRE_THAT(C0(i, j), Catch::Matchers::WithinRel(C1(i, j), static_cast<T>(0.00001)));
+            }
+        }
+    }
+
+    for (int i = 0, ij = 1; i < 3; i++) {
+        for (int j = 0; j < 3; j++, ij++) {
+            C0(i, j) = ij;
+            C1(i, j) = 2.0 * ij + 0.5 * A(i, j);
+        }
+    }
+
+    sort(2.0, Indices{i, j}, &C0, 0.5, Indices{i, j}, A);
+
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            if constexpr (IsComplexV<T>) {
+                REQUIRE_THAT(C0(i, j).real(), Catch::Matchers::WithinRel(C1(i, j).real(), static_cast<RemoveComplexT<T>>(0.00001)));
+                REQUIRE_THAT(C0(i, j).imag(), Catch::Matchers::WithinRel(C1(i, j).imag(), static_cast<RemoveComplexT<T>>(0.00001)));
+            } else {
+                REQUIRE_THAT(C0(i, j), Catch::Matchers::WithinRel(C1(i, j), static_cast<T>(0.00001)));
+            }
+        }
+    }
+}
+
+template<typename T>
+void sort_2() {
+    using namespace einsums;
+    using namespace einsums::tensor_algebra;
+    using namespace einsums::tensor_algebra::index;
+
+    auto A = create_tensor<T>("A", 3, 3);
+    auto C = create_tensor<T>("C", 3, 3);
+
+    for (int i = 0, ij = 1; i < 3; i++) {
+        for (int j = 0; j < 3; j++, ij++) {
+            A(i, j) = ij;
+        }
+    }
+
+    sort(Indices{j, i}, &C, Indices{i, j}, A);
+
+    for (int i = 0, ij = 1; i < 3; i++) {
+        for (int j = 0; j < 3; j++, ij++) {
+            if constexpr (IsComplexV<T>) {
+                REQUIRE_THAT(C(j, i).real(), Catch::Matchers::WithinRel(A(i, j).real(), static_cast<RemoveComplexT<T>>(0.00001)));
+                REQUIRE_THAT(C(j, i).imag(), Catch::Matchers::WithinRel(A(i, j).imag(), static_cast<RemoveComplexT<T>>(0.00001)));
+            } else {
+                REQUIRE_THAT(C(j, i), Catch::Matchers::WithinRel(A(i, j), static_cast<T>(0.00001)));
+            }
+        }
+    }
+}
+
 TEST_CASE("sort2") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
 
     SECTION("Rank 2 - axpy") {
-        Tensor A{"A", 3, 3};
-        Tensor C{"C", 3, 3};
-
-        for (int i = 0, ij = 1; i < 3; i++) {
-            for (int j = 0; j < 3; j++, ij++) {
-                A(i, j) = ij;
-            }
-        }
-
-        sort(Indices{i, j}, &C, Indices{i, j}, A);
-
-        for (int i = 0, ij = 1; i < 3; i++) {
-            for (int j = 0; j < 3; j++, ij++) {
-                REQUIRE(C(i, j) == A(i, j));
-            }
-        }
-
-        TensorView A_view{A, Dim<2>{2, 2}, Offset<2>{1, 1}};
-        TensorView C_view{C, Dim<2>{2, 2}, Offset<2>{1, 1}};
-
-        sort(Indices{j, i}, &C_view, Indices{i, j}, A_view);
-
-        for (int i = 0, ij = 1; i < 3; i++) {
-            for (int j = 0; j < 3; j++, ij++) {
-                if (i == 0 || j == 0)
-                    REQUIRE(C(i, j) == A(i, j));
-                else
-                    REQUIRE(C(j, i) == A(i, j));
-            }
-        }
+        sort_2_axpy<double>();
+        sort_2_axpy<float>();
+        sort_2_axpy<std::complex<double>>();
+        sort_2_axpy<std::complex<float>>();
     }
 
     SECTION("Rank 2 - axpy (2)") {
-        Tensor A = create_incremented_tensor("A", 3, 3);
-        Tensor C0{"C", 3, 3};
-        Tensor C1{"C", 3, 3};
-
-        for (int i = 0, ij = 1; i < 3; i++) {
-            for (int j = 0; j < 3; j++, ij++) {
-                C0(i, j) = ij;
-                C1(i, j) = ij + A(i, j);
-            }
-        }
-
-        sort(1.0, Indices{i, j}, &C0, 1.0, Indices{i, j}, A);
-
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                REQUIRE_THAT(C0(i, j), Catch::Matchers::WithinRel(C1(i, j), 0.00001));
-            }
-        }
-
-        for (int i = 0, ij = 1; i < 3; i++) {
-            for (int j = 0; j < 3; j++, ij++) {
-                C0(i, j) = ij;
-                C1(i, j) = 2.0 * ij + 0.5 * A(i, j);
-            }
-        }
-
-        sort(2.0, Indices{i, j}, &C0, 0.5, Indices{i, j}, A);
-
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                REQUIRE_THAT(C0(i, j), Catch::Matchers::WithinRel(C1(i, j), 0.00001));
-            }
-        }
+        sort_2_axpy_2<double>();
+        sort_2_axpy_2<float>();
+        sort_2_axpy<std::complex<double>>();
+        sort_2_axpy<std::complex<float>>();
     }
 
     SECTION("Rank 2") {
-        Tensor A{"A", 3, 3};
-        Tensor C{"C", 3, 3};
-
-        for (int i = 0, ij = 1; i < 3; i++) {
-            for (int j = 0; j < 3; j++, ij++) {
-                A(i, j) = ij;
-            }
-        }
-
-        sort(Indices{j, i}, &C, Indices{i, j}, A);
-
-        for (int i = 0, ij = 1; i < 3; i++) {
-            for (int j = 0; j < 3; j++, ij++) {
-                REQUIRE_THAT(C(j, i), Catch::Matchers::WithinRel(A(i, j), 0.00001));
-            }
-        }
+        sort_2<double>();
+        sort_2<float>();
+        sort_2<std::complex<double>>();
+        sort_2<std::complex<float>>();
     }
 
     SECTION("Rank 3") {
@@ -752,36 +801,6 @@ TEST_CASE("sort2") {
         }
     }
 
-    // SECTION("Rank 5") {
-    //     Tensor<float, 5> A{"A", 3, 3, 3, 3, 3};
-    //     Tensor<float, 5> B{"B", 3, 3, 3, 3, 3};
-
-    //     for (short i = 0, ij = 1; i < 3; i++) {
-    //         for (int j = 0; j < 3; j++) {
-    //             for (int k = 0; k < 3; k++) {
-    //                 for (int l = 0; l < 3; l++) {
-    //                     for (int m = 0; m < 3; m++, ij++) {
-    //                         A(i, j, k, l, m) = ij;
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     }
-
-    //     sort(Indices{i, k, l, m, j}, &B, Indices{j, k, l, m, i}, A);
-    //     for (int i = 0; i < 3; i++) {
-    //         for (int j = 0; j < 3; j++) {
-    //             for (int k = 0; k < 3; k++) {
-    //                 for (int l = 0; l < 3; l++) {
-    //                     for (int m = 0; m < 3; m++) {
-    //                         REQUIRE(B(i, k, l, m, j) == A(j, k, l, m, i));
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
-
     SECTION("Rank 2 - Different Sizes") {
         Tensor A{"A", 3, 9};
         Tensor B{"B", 9, 3};
@@ -823,25 +842,42 @@ TEST_CASE("sort2") {
     }
 }
 
+template<typename T>
+void einsum2_3x3_3x5_5x3() {
+    using namespace einsums;
+    using namespace einsums::tensor_algebra;
+    using namespace einsums::tensor_algebra::index;
+
+    auto C0 = create_tensor<T>("C0", 3, 3);
+    auto C1 = create_tensor<T>("C1", 3, 3);
+    auto A = create_random_tensor<T>("A", 3, 5);
+    auto B = create_random_tensor<T>("B", 5, 3);
+
+    REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
+    linear_algebra::gemm<false, false>(1.0, A, B, 0.0, &C1);
+
+    for (size_t i0 = 0; i0 < C0.dim(0); i0++) {
+        for (size_t j0 = 0; j0 < C0.dim(1); j0++) {
+            if constexpr (IsComplexV<T>) {
+                REQUIRE_THAT(C0(i0, j0).real(), Catch::Matchers::WithinRel(C1(i0, j0).real(), static_cast<RemoveComplexT<T>>(0.0001)));
+                REQUIRE_THAT(C0(i0, j0).imag(), Catch::Matchers::WithinRel(C1(i0, j0).imag(), static_cast<RemoveComplexT<T>>(0.0001)));
+            } else {
+                REQUIRE_THAT(C0(i0, j0), Catch::Matchers::WithinRel(C1(i0, j0), static_cast<T>(0.0001)));
+            }
+        }
+    }
+}
+
 TEST_CASE("einsum2") {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
 
     SECTION("3x3 <- 3x5 * 5x3") {
-        Tensor C0{"C0", 3, 3};
-        Tensor C1{"C1", 3, 3};
-        Tensor A = create_random_tensor("A", 3, 5);
-        Tensor B = create_random_tensor("B", 5, 3);
-
-        REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
-        linear_algebra::gemm<false, false>(1.0, A, B, 0.0, &C1);
-
-        for (size_t i0 = 0; i0 < C0.dim(0); i0++) {
-            for (size_t j0 = 0; j0 < C0.dim(1); j0++) {
-                REQUIRE_THAT(C0(i0, j0), Catch::Matchers::WithinRel(C1(i0, j0), 0.0001));
-            }
-        }
+        einsum2_3x3_3x5_5x3<double>();
+        einsum2_3x3_3x5_5x3<float>();
+        einsum2_3x3_3x5_5x3<std::complex<double>>();
+        einsum2_3x3_3x5_5x3<std::complex<float>>();
     }
 
     SECTION("3x3 <- 3x5 * 3x5") {
@@ -1205,7 +1241,7 @@ TEST_CASE("IntegralTransformation") {
     //         }
     //     }
 
-    //     // Save our inital memory_ao to disk
+    //     // Save our initial memory_ao to disk
     //     write(State::data, C1);
     //     write(State::data, C2);
     //     write(State::data, C3);
@@ -2409,8 +2445,8 @@ void dot_test() {
         if constexpr (!einsums::IsComplexV<T>) {
             REQUIRE_THAT(C_obtained, Catch::Matchers::WithinAbsMatcher(C_expected, 0.0001));
         } else {
-            REQUIRE_THAT(((T)C_obtained).real(), Catch::Matchers::WithinAbsMatcher(C_expected.real(), 0.0001));
-            REQUIRE_THAT(((T)C_obtained).imag(), Catch::Matchers::WithinAbsMatcher(C_expected.imag(), 0.0001));
+            REQUIRE_THAT(static_cast<T>(C_obtained).real(), Catch::Matchers::WithinAbsMatcher(C_expected.real(), 0.0001));
+            REQUIRE_THAT(static_cast<T>(C_obtained).imag(), Catch::Matchers::WithinAbsMatcher(C_expected.imag(), 0.0001));
         }
     }
 
@@ -2426,8 +2462,8 @@ void dot_test() {
         if constexpr (!einsums::IsComplexV<T>) {
             REQUIRE_THAT(C_obtained, Catch::Matchers::WithinAbsMatcher(C_expected, 0.0001));
         } else {
-            REQUIRE_THAT(((T)C_obtained).real(), Catch::Matchers::WithinAbsMatcher(C_expected.real(), 0.0001));
-            REQUIRE_THAT(((T)C_obtained).imag(), Catch::Matchers::WithinAbsMatcher(C_expected.imag(), 0.0001));
+            REQUIRE_THAT(static_cast<T>(C_obtained).real(), Catch::Matchers::WithinAbsMatcher(C_expected.real(), 0.0001));
+            REQUIRE_THAT(static_cast<T>(C_obtained).imag(), Catch::Matchers::WithinAbsMatcher(C_expected.imag(), 0.0001));
         }
     }
 
@@ -2443,8 +2479,8 @@ void dot_test() {
         if constexpr (!einsums::IsComplexV<T>) {
             REQUIRE_THAT(C_obtained, Catch::Matchers::WithinAbsMatcher(C_expected, 0.0001));
         } else {
-            REQUIRE_THAT(((T)C_obtained).real(), Catch::Matchers::WithinAbsMatcher(C_expected.real(), 0.0001));
-            REQUIRE_THAT(((T)C_obtained).imag(), Catch::Matchers::WithinAbsMatcher(C_expected.imag(), 0.0001));
+            REQUIRE_THAT(static_cast<T>(C_obtained).real(), Catch::Matchers::WithinAbsMatcher(C_expected.real(), 0.0001));
+            REQUIRE_THAT(static_cast<T>(C_obtained).imag(), Catch::Matchers::WithinAbsMatcher(C_expected.imag(), 0.0001));
         }
     }
 
@@ -2460,8 +2496,8 @@ void dot_test() {
         if constexpr (!einsums::IsComplexV<T>) {
             REQUIRE_THAT(C_obtained, Catch::Matchers::WithinAbsMatcher(C_expected, 0.0001));
         } else {
-            REQUIRE_THAT(((T)C_obtained).real(), Catch::Matchers::WithinAbsMatcher(C_expected.real(), 0.0001));
-            REQUIRE_THAT(((T)C_obtained).imag(), Catch::Matchers::WithinAbsMatcher(C_expected.imag(), 0.0001));
+            REQUIRE_THAT(static_cast<T>(C_obtained).real(), Catch::Matchers::WithinAbsMatcher(C_expected.real(), 0.0001));
+            REQUIRE_THAT(static_cast<T>(C_obtained).imag(), Catch::Matchers::WithinAbsMatcher(C_expected.imag(), 0.0001));
         }
     }
 }
