@@ -71,11 +71,12 @@ struct TiledTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
      * @param sizes The grids to apply.
      */
     template <typename... Sizes>
+    requires(!std::is_same_v<std::array<std::vector<int>, Rank>, Sizes> && ... && true)
     TiledTensorBase(std::string name, Sizes... sizes) : _name(name), _tile_offsets(), _tile_sizes(), _tiles(), _size(0), _dims{} {
         static_assert(sizeof...(Sizes) == Rank || sizeof...(Sizes) == 1);
 
         _size = 1;
-        if constexpr (sizeof...(Sizes) == Rank) {
+        if constexpr (sizeof...(Sizes) == Rank && !std::is_same_v<std::array<std::vector<int>, Rank>, decltype(std::get<0>(std::tuple(sizes...)))>) {
             _tile_sizes = std::array<std::vector<int>, Rank>{std::vector<int>(sizes.begin(), sizes.end())...};
         } else {
             for (int i = 0; i < Rank; i++) {
@@ -87,7 +88,27 @@ struct TiledTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
             int sum          = 0;
             for (int j = 0; j < _tile_sizes[i].size(); j++) {
                 _tile_offsets[i].push_back(sum);
-                sum += _tile_sizes[i][j];
+                sum += _tile_sizes[i].at(j);
+            }
+            _dims[i] = sum;
+            _size *= sum;
+        }
+
+        _grid_size = 1;
+
+        for (int i = 0; i < Rank; i++) {
+            _grid_size *= _tile_offsets[i].size();
+        }
+    }
+
+    TiledTensorBase(std::string name, const std::array<std::vector<int>, Rank> &sizes) : _name(name), _tile_offsets(), _tile_sizes(sizes), _tiles(), _size(0), _dims{} {
+        _size = 1;
+        for (int i = 0; i < Rank; i++) {
+            _tile_offsets[i] = std::vector<int>();
+            int sum          = 0;
+            for (int j = 0; j < _tile_sizes[i].size(); j++) {
+                _tile_offsets[i].push_back(sum);
+                sum += _tile_sizes[i].at(j);
             }
             _dims[i] = sum;
             _size *= sum;
@@ -108,7 +129,7 @@ struct TiledTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
     TiledTensorBase(const TiledTensorBase<T, Rank, TensorType> &other)
         : _tile_offsets(other._tile_offsets), _tile_sizes(other._tile_sizes), _name(other._name), _size(other._size), _tiles(),
           _dims{other._dims} {
-        for (auto pair : other._tiles) {
+        for (auto &pair : other._tiles) {
             _tiles[pair.first] = TensorType(pair.second);
         }
     }
@@ -138,7 +159,7 @@ struct TiledTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
             Dim<Rank> dims{};
 
             for (int i = 0; i < Rank; i++) {
-                dims[i] = _tile_sizes[i][arr_index[i]];
+                dims[i] = _tile_sizes[i].at(arr_index[i]);
             }
 
             add_tile(arr_index);
@@ -215,7 +236,7 @@ struct TiledTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
             Dim<Rank> dims{};
 
             for (int i = 0; i < Rank; i++) {
-                dims[i] = _tile_sizes[i][arr_index[i]];
+                dims[i] = _tile_sizes[i].at(arr_index[i]);
             }
             add_tile(arr_index);
         }
@@ -268,11 +289,11 @@ struct TiledTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
                 throw EINSUMSEXCEPTION("Index not in the tensor!");
             }
 
-            if (arr_index[i] >= _tile_offsets[i][_tile_offsets[i].size() - 1]) {
+            if (arr_index[i] >= _tile_offsets[i].at(_tile_offsets[i].size() - 1)) {
                 out[i] = _tile_offsets[i].size() - 1;
             } else {
                 for (int j = 0; j < _tile_offsets[i].size() - 1; j++) {
-                    if (arr_index[i] < _tile_offsets[i][j + 1] && arr_index[i] >= _tile_offsets[i][j]) {
+                    if (arr_index[i] < _tile_offsets[i].at(j + 1) && arr_index[i] >= _tile_offsets[i].at(j)) {
                         out[i] = j;
                         break;
                     }
@@ -329,11 +350,11 @@ struct TiledTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
                 throw EINSUMSEXCEPTION("Index not in the tensor!");
             }
 
-            if (arr_index[i] >= _tile_offsets[i][_tile_offsets[i].size() - 1]) {
+            if (arr_index[i] >= _tile_offsets[i].at(_tile_offsets[i].size() - 1)) {
                 out[i] = _tile_offsets[i].size() - 1;
             } else {
                 for (int j = 0; j < _tile_offsets[i].size() - 1; j++) {
-                    if (arr_index[i] < _tile_offsets[i][j + 1] && arr_index[i] >= _tile_offsets[i][j]) {
+                    if (arr_index[i] < _tile_offsets[i].at(j + 1) && arr_index[i] >= _tile_offsets[i].at(j)) {
                         out[i] = j;
                         break;
                     }
@@ -361,7 +382,7 @@ struct TiledTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
             if (array_ind[i] < 0) {
                 array_ind[i] += _dims[i];
             }
-            array_ind[i] -= _tile_offsets[i][coords[i]];
+            array_ind[i] -= _tile_offsets[i].at(coords[i]);
         }
 
         if (has_tile(coords)) {
@@ -389,7 +410,7 @@ struct TiledTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
             if (array_ind[i] < 0) {
                 array_ind[i] += _dims[i];
             }
-            array_ind[i] -= _tile_offsets[i][coords[i]];
+            array_ind[i] -= _tile_offsets[i].at(coords[i]);
         }
         auto &out = tile(coords);
 
@@ -455,7 +476,26 @@ struct TiledTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
         }
     }
 
-    TiledTensorBase &operator=(const TiledTensorBase &copy) {
+    TiledTensorBase<T, Rank, TensorType> &operator=(const TiledTensorBase<T, Rank, TensorType> &copy) {
+        zero();
+        _tile_sizes   = copy._tile_sizes;
+        _tile_offsets = copy._tile_offsets;
+        _dims         = copy._dims;
+        _name         = copy._name;
+        _size         = copy._size;
+        _grid_size    = copy._grid_size;
+
+        for (const auto &tile : copy._tiles) {
+            add_tile(tile.first);
+            _tiles.at(tile.first) = tile.second;
+        }
+
+        return *this;
+    }
+
+    template<TiledTensorConcept TensorOther>
+    requires(SameUnderlyingAndRank<TiledTensorBase<T, Rank, TensorType>, TensorOther>)
+    TiledTensorBase<T, Rank, TensorType> &operator=(const TensorOther &copy) {
         zero();
         _tile_sizes   = copy._tile_sizes;
         _tile_offsets = copy._tile_offsets;
@@ -761,7 +801,7 @@ struct TiledTensor final : public virtual tensor_props::TiledTensorBase<T, Rank,
 
         for (int i = 0; i < Rank; i++) {
             tile_name += std::to_string(pos[i]);
-            dims[i] = this->_tile_sizes[i][pos[i]];
+            dims[i] = this->_tile_sizes[i].at(pos[i]);
             if (i != Rank - 1) {
                 tile_name += ", ";
             }
@@ -784,6 +824,25 @@ struct TiledTensor final : public virtual tensor_props::TiledTensorBase<T, Rank,
     TiledTensor(const TiledTensor<T, Rank> &other) : tensor_props::TiledTensorBase<T, Rank, Tensor<T, Rank>>(other) {}
 
     ~TiledTensor() = default;
+    
+    template<TiledTensorConcept TensorOther>
+    requires(SameUnderlyingAndRank<TiledTensor<T, Rank>, TensorOther>)
+    TiledTensor<T, Rank> &operator=(const TensorOther &copy) {
+        this->zero();
+        this->_tile_sizes   = copy.tile_sizes();
+        this->_tile_offsets = copy.tile_offsets();
+        this->_dims         = copy.dims();
+        this->_name         = copy.name();
+        this->_size         = copy.size();
+        this->_grid_size    = copy.grid_size();
+
+        for (const auto &tile : copy.tiles()) {
+            add_tile(tile.first);
+            this->_tiles.at(tile.first) = tile.second;
+        }
+
+        return *this;
+    }
 
     size_t dim(int d) const override { return this->_dims[d]; }
 };
@@ -850,6 +909,11 @@ struct TiledDeviceTensor final : public virtual tensor_props::TiledTensorBase<T,
     TiledDeviceTensor(std::string name, detail::HostToDeviceMode mode, Sizes... sizes)
         : _mode{mode}, tensor_props::TiledTensorBase<T, Rank, DeviceTensor<T, Rank>>(name, sizes...) {}
 
+    template <typename... Sizes>
+        requires(!(std::is_same_v<Sizes, detail::HostToDeviceMode> || ...))
+    TiledDeviceTensor(std::string name, Sizes... sizes)
+        : tensor_props::TiledTensorBase<T, Rank, DeviceTensor<T, Rank>>(name, sizes...) {}
+
     TiledDeviceTensor(const TiledDeviceTensor<T, Rank> &other) = default;
 
     ~TiledDeviceTensor() = default;
@@ -872,7 +936,7 @@ struct TiledDeviceTensor final : public virtual tensor_props::TiledTensorBase<T,
             if (array_ind[i] < 0) {
                 array_ind[i] += this->_dims[i];
             }
-            array_ind[i] -= this->_tile_offsets[i][coords[i]];
+            array_ind[i] -= this->_tile_offsets[i].at(coords[i]);
         }
 
         if (this->has_tile(coords)) {
@@ -900,11 +964,30 @@ struct TiledDeviceTensor final : public virtual tensor_props::TiledTensorBase<T,
             if (array_ind[i] < 0) {
                 array_ind[i] += this->_dims[i];
             }
-            array_ind[i] -= this->_tile_offsets[i][coords[i]];
+            array_ind[i] -= this->_tile_offsets[i].at(coords[i]);
         }
         auto &out = this->tile(coords);
 
         return std::apply(out, array_ind);
+    }
+
+    template<TiledTensorConcept TensorOther>
+    requires(SameUnderlyingAndRank<TiledDeviceTensor<T, Rank>, TensorOther>)
+    TiledDeviceTensor<T, Rank> &operator=(const TensorOther &copy) {
+        this->zero();
+        this->_tile_sizes   = copy.tile_sizes();
+        this->_tile_offsets = copy.tile_offsets();
+        this->_dims         = copy.dims();
+        this->_name         = copy.name();
+        this->_size         = copy.size();
+        this->_grid_size    = copy.grid_size();
+
+        for (const auto &tile : copy.tiles()) {
+            add_tile(tile.first);
+            this->_tiles.at(tile.first) = tile.second;
+        }
+
+        return *this;
     }
 
     operator Tensor<T, Rank>() const { return (Tensor<T, Rank>)(DeviceTensor<T, Rank>)*this; }
@@ -932,6 +1015,13 @@ struct TiledDeviceTensorView final : public virtual tensor_props::TiledTensorBas
 
     TiledDeviceTensorView(const TiledDeviceTensorView<T, Rank> &other) = default;
 
+    TiledDeviceTensorView(TiledTensor<T, Rank> &other) : tensor_props::TiledTensorBase<T, Rank, DeviceTensorView<T, Rank>>(other.name(), other.tile_sizes()) {
+        for(auto &tile : other.tiles()) {
+            this->_tiles.emplace(tile.first, tile.second);
+        }
+
+    }
+
     ~TiledDeviceTensorView() = default;
 
     [[nodiscard]] bool full_view_of_underlying() const override { return _full_view_of_underlying; }
@@ -956,7 +1046,7 @@ struct TiledDeviceTensorView final : public virtual tensor_props::TiledTensorBas
             if (array_ind[i] < 0) {
                 array_ind[i] += this->_dims[i];
             }
-            array_ind[i] -= this->_tile_offsets[i][coords[i]];
+            array_ind[i] -= this->_tile_offsets.at(i).at(coords[i]);
         }
 
         if (this->has_tile(coords)) {
@@ -984,7 +1074,7 @@ struct TiledDeviceTensorView final : public virtual tensor_props::TiledTensorBas
             if (array_ind[i] < 0) {
                 array_ind[i] += this->_dims[i];
             }
-            array_ind[i] -= this->_tile_offsets[i][coords[i]];
+            array_ind[i] -= this->_tile_offsets.at(i).at(coords[i]);
         }
         auto &out = this->tile(coords);
 

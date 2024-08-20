@@ -94,7 +94,7 @@ einsum_generic_zero_rank_gpu(const size_t *__restrict__ unique_strides, const in
                              const ::std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> AB_prefactor,
                              const ADataType *__restrict__ A, const size_t *__restrict__ A_dims, const size_t *__restrict__ A_stride,
                              const BDataType *__restrict__ B, const size_t *__restrict__ B_dims, const size_t *__restrict__ B_stride,
-                             size_t max_index, CDataType *work_array) {
+                             size_t max_index) {
 
     CDataType value;
 
@@ -103,10 +103,7 @@ einsum_generic_zero_rank_gpu(const size_t *__restrict__ unique_strides, const in
 
     get_worker_info(thread_id, kernel_size);
 
-    // Clear the work array.
-    if (thread_id % warpSize == 0) {
-        make_zero(work_array[thread_id / warpSize]);
-    }
+    // Clear the dot product.
     make_zero(value);
 
     ssize_t curr_index;
@@ -132,33 +129,11 @@ einsum_generic_zero_rank_gpu(const size_t *__restrict__ unique_strides, const in
         }
 
         value = value + A[A_sentinel] * B[B_sentinel];
+
+        curr_index += kernel_size;
     }
 
-    for (unsigned int i = warpSize / 2; i > 0; i /= 2) {
-        if constexpr (std::is_same_v<CDataType, float> || std::is_same_v<CDataType, double>) {
-            value = value + __shfl_down(value, i);
-        } else {
-            value.x = value.x + __shfl_down(value.x, i);
-            value.y = value.y + __shfl_down(value.y, i);
-        }
-    }
-
-    if (thread_id % warpSize == 0) {
-        work_array[thread_id / warpSize] = value;
-    }
-
-    for (unsigned int i = kernel_size / 2 / warpSize; i > 0; i /= 2) {
-        __syncthreads();
-        if (thread_id + i > kernel_size / warpSize) {
-            continue;
-        }
-        work_array[thread_id] = work_array[thread_id] + work_array[thread_id + i];
-    }
-    __syncthreads();
-
-    if (thread_id == 0) {
-        *C = work_array[0];
-    }
+    atomicAdd_wrap(C, (CDataType) (AB_prefactor * value));
 }
 
 template<typename... CUniqueIndices, typename... AUniqueIndices, typename... BUniqueIndices, typename... LinkUniqueIndices, typename... CIndices,
@@ -247,8 +222,8 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
 
         // CDataType *work;
         // hip_catch(hipMalloc((void **)&work, threads.x * threads.y * threads.z * blocks.x * blocks.y * blocks.z * sizeof(CDataType)));
-        if (C_prefactor == DataTypeT<CType>{0}) {
-            *C = DataTypeT<CType>{0};
+        if (C_prefactor == DataTypeT<CType>{0.0}) {
+            *C = DataTypeT<CType>{0.0};
         } else {
             *C *= C_prefactor;
         }
@@ -262,24 +237,18 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
             hip_catch(hipMemcpy(C_data, C, sizeof(C_devtype), hipMemcpyHostToDevice));
         }
 
-        C_devtype *work_array;
-
-        hip_catch(hipMalloc((void **)&work_array,
-                            threads.x * threads.y * threads.z * grid.x * grid.y * grid.z * sizeof(C_devtype) / get_warpsize()));
 
         einsum_generic_zero_rank_gpu<C_devtype, A_devtype, B_devtype, std::tuple_size<decltype(unique_indices)>::value, ARank, BRank>
             <<<threads, grid, 0, get_stream()>>>(unique_strides_gpu, A_index_table_gpu, B_index_table_gpu, C_data,
                                                  HipCast<AB_devtype, AB_hosttype>::cast(AB_prefactor), A.gpu_data(), A.gpu_dims(),
                                                  A.gpu_strides(), B.gpu_data(), B.gpu_dims(), B.gpu_strides(),
-                                                 ::std::get<0>(unique_dims) * unique_strides[0], work_array);
+                                                 ::std::get<0>(unique_dims) * unique_strides[0]);
 
         if constexpr (!einsums::detail::IsTensorV<CType>) {
             gpu::stream_wait();
             hip_catch(hipMemcpy(C, C_data, sizeof(C_devtype), hipMemcpyDeviceToHost));
             hip_catch(hipFree(C_data));
         }
-
-        hip_catch(hipFreeAsync((void *)work_array, get_stream()));
     }
 
     hip_catch(hipFreeAsync(A_index_table_gpu, get_stream()));

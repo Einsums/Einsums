@@ -41,19 +41,20 @@ void EINSUMS_EXPORT sort(const int *perm, const int dim, const std::complex<doub
 //
 // sort algorithm
 //
-template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename CType, size_t CRank,
-          typename... CIndices, typename... AIndices, typename U, typename T = double>
-    requires requires {
-        requires CoreRankTensor<AType<T, ARank>, ARank, T>;
-        requires CoreRankTensor<CType<T, CRank>, CRank, T>;
-        requires sizeof...(CIndices) == sizeof...(AIndices);
-        requires sizeof...(CIndices) == CRank;
-        requires sizeof...(AIndices) == ARank;
-        requires std::is_arithmetic_v<U>;
-    }
-void sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<T, CRank> *C, const U UA_prefactor,
+template<CoreTensorConcept AType, CoreTensorConcept CType, typename... CIndices, typename... AIndices, typename U>
+requires requires {
+    requires sizeof...(CIndices) == sizeof...(AIndices);
+    requires sizeof...(CIndices) == CType::rank;
+    requires sizeof...(AIndices) == AType::rank;
+    requires SameUnderlyingAndRank<AType, CType>;
+    requires std::is_arithmetic_v<U>;
+}
+void sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType *C, const U UA_prefactor,
           const std::tuple<AIndices...> &A_indices,
-          const AType<T, ARank> &A) {
+          const AType &A) {
+    using T = typename AType::data_type;
+    constexpr size_t ARank = AType::rank;
+    constexpr size_t CRank = CType::rank;
 
     LabeledSection1((std::fabs(UC_prefactor) > EINSUMS_ZERO)
                         ? fmt::format(R"(sort: "{}"{} = {} "{}"{} + {} "{}"{})", C->name(), print_tuple_no_type(C_indices), UA_prefactor,
@@ -80,7 +81,7 @@ void sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<
 
     // HPTT interface currently only works for full Tensors and not TensorViews
 #if defined(EINSUMS_USE_HPTT)
-    if constexpr (std::is_same_v<CType<T, CRank>, Tensor<T, CRank>> && std::is_same_v<AType<T, ARank>, Tensor<T, ARank>>) {
+    if constexpr (std::is_same_v<CType, Tensor<T, CRank>> && std::is_same_v<AType, Tensor<T, ARank>>) {
         std::array<int, ARank> perms{};
         std::array<int, ARank> size{};
 

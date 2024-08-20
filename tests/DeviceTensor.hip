@@ -10,7 +10,7 @@
 
 #include "catch2/catch_test_macros.hpp"
 
-TEST_CASE("Tensor Construction", "[gpu][tensor]") {
+TEST_CASE("GPU Tensor Construction", "[gpu][tensor]") {
     using namespace einsums;
     using namespace einsums::gpu;
     using namespace einsums::gpu::detail;

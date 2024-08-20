@@ -42,6 +42,13 @@
 #include <utility>
 #include <vector>
 
+#ifdef __HIP__
+#include <hip/hip_common.h>
+#include <hip/hip_runtime.h>
+#include <hip/hip_runtime_api.h>
+#include "einsums/_GPUUtils.hpp"
+#endif
+
 namespace einsums {
 
 namespace detail {} // namespace detail
@@ -732,8 +739,13 @@ struct Tensor : public virtual tensor_props::CoreTensorBase,
         return *this;
     }
 
-    template <typename... Args>
-    auto operator=(const ArithmeticTensor<T, Rank, Args...> &other) -> Tensor<T, Rank> & {
+    template <TensorConcept OtherTensor>
+    requires requires {
+        requires !BasicTensorConcept<OtherTensor>;
+        requires SameRank<Tensor<T, Rank>, OtherTensor>;
+        requires CoreTensorConcept<OtherTensor>;
+    }
+    auto operator=(const OtherTensor &other) -> Tensor<T, Rank> & {
         auto target_dims = get_dim_ranges<Rank>(*this);
         for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
             T &target_value = std::apply(*this, target_combination);
@@ -755,6 +767,42 @@ struct Tensor : public virtual tensor_props::CoreTensorBase,
 
         return *this;
     }
+    
+#ifdef __HIP__
+    auto operator=(const DeviceTensor<T, Rank> &other) -> Tensor<T, Rank> & {
+        bool realloc{false};
+        for (int i = 0; i < Rank; i++) {
+            if (dim(i) == 0 || (dim(i) != other.dim(i))) {
+                realloc = true;
+            }
+        }
+
+        if (realloc) {
+            struct Stride {
+                size_t value{1};
+                Stride() = default;
+                auto operator()(size_t dim) -> size_t {
+                    auto old_value = value;
+                    value *= dim;
+                    return old_value;
+                }
+            };
+
+            _dims = other.dims();
+
+            // Row-major order of dimensions
+            std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
+            size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
+
+            // Resize the data structure
+            _data.resize(size);
+        }
+
+        gpu::hip_catch(hipMemcpy(_data.data(), other.gpu_data(), _strides[0] * _dims[0] * sizeof(T), hipMemcpyDeviceToHost));
+
+        return *this;
+    }
+#endif
 
     auto operator=(const T &fill_value) -> Tensor & {
         set_all(fill_value);

@@ -18,6 +18,7 @@
 #include "einsums/DeviceSort.hpp"
 #endif
 #include "einsums/Sort.hpp"
+#include "einsums/ContainerSort.hpp"
 #include "einsums/State.hpp"
 #include "einsums/ArithmeticTensor.hpp"
 #include "einsums/Tensor.hpp"

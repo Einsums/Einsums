@@ -57,7 +57,7 @@ __host__ __device__ inline T compute_arithmetic(const std::tuple<SubtractionOp, 
 } // namespace detail
 
 template <typename T, size_t Rank, typename... Args>
-struct ArithmeticTensor : public virtual tensor_props::TensorBase<T, Rank> {
+struct ArithmeticTensor : public virtual tensor_props::TensorBase<T, Rank>, virtual tensor_props::CoreTensorBase {
   protected:
     std::tuple<Args...> _tuple;
     Dim<Rank>           _dims;
@@ -69,7 +69,7 @@ struct ArithmeticTensor : public virtual tensor_props::TensorBase<T, Rank> {
     ArithmeticTensor(const std::tuple<Args...> &input, Dim<Rank> dims) : _tuple{input}, _dims{dims} { ; }
 
     template <typename... MultiIndex>
-    __host__ __device__ T operator()(MultiIndex... inds) const {
+    T operator()(MultiIndex... inds) const {
         return detail::compute_arithmetic<T>(&_tuple, inds...);
     }
 

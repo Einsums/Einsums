@@ -13,22 +13,48 @@
 namespace einsums {
 
 template <typename T, size_t Rank>
-DeviceTensor<T, Rank>::DeviceTensor(const DeviceTensor<T, Rank> &copy) {
+DeviceTensor<T, Rank>::DeviceTensor(const DeviceTensor<T, Rank> &copy, detail::HostToDeviceMode mode) {
     using namespace einsums::gpu;
     this->_name    = copy._name;
     this->_dims    = copy._dims;
     this->_strides = copy._strides;
-    this->_mode    = einsums::detail::DEV_ONLY;
+    this->_mode    = mode;
 
-    hip_catch(hipMalloc((void **)&(this->_data), copy.size() * sizeof(T)));
-
-    if (copy._mode == einsums::detail::DEV_ONLY) {
-        hip_catch(hipMemcpy((void *)this->_data, (const void *)copy._data, copy.size() * sizeof(T), hipMemcpyDeviceToDevice));
-    } else {
-        hip_catch(hipMemcpy((void *)this->_data, (const void *)copy._host_data, copy.size() * sizeof(T), hipMemcpyHostToDevice));
+    if(mode == einsums::detail::UNKNOWN) {
+        _mode = copy._mode;
     }
 
-    this->_host_data = nullptr;
+    size_t size = copy.dim(0) * copy.stride(0);
+
+    switch(_mode) {
+    case einsums::detail::MAPPED:
+        this->_host_data = new T[size];
+        hip_catch(hipHostRegister((void *)this->_host_data, size * sizeof(T), hipHostRegisterDefault));
+        hip_catch(hipHostGetDevicePointer((void **)&(this->_data), (void *)this->_host_data, 0));
+        break;
+    case einsums::detail::PINNED:
+        hip_catch(hipHostMalloc((void **)&(this->_host_data), size * sizeof(T), 0));
+        hip_catch(hipHostGetDevicePointer((void **)&(this->_data), (void *)this->_host_data, 0));
+        break;
+    case einsums::detail::DEV_ONLY:
+        this->_host_data = nullptr;
+        hip_catch(hipMalloc((void **)&(this->_data), size * sizeof(T)));
+        break;
+    default:
+        throw EINSUMSEXCEPTION("Did not understand the provided mode!");
+    }
+
+    switch(copy._mode) {
+    case einsums::detail::DEV_ONLY:
+        hip_catch(hipMemcpy((void *)this->_data, (const void *)copy._data, copy.size() * sizeof(T), hipMemcpyDeviceToDevice));
+        break;
+    case einsums::detail::PINNED:
+    case einsums::detail::MAPPED:
+        hip_catch(hipMemcpy((void *)this->_data, (const void *)copy._host_data, copy.size() * sizeof(T), hipMemcpyHostToDevice));
+        break;
+    default:
+        throw EINSUMSEXCEPTION("DeviceTensor being copied has not been initialized!");
+    }
 
     // This will almost certainly allocate a full 4 kB, so optimize the packing.
     hip_catch(hipMalloc((void **)&(this->_gpu_dims), 2 * sizeof(size_t) * Rank));
@@ -41,16 +67,23 @@ DeviceTensor<T, Rank>::DeviceTensor(const DeviceTensor<T, Rank> &copy) {
 template <typename T, size_t Rank>
 DeviceTensor<T, Rank>::~DeviceTensor() {
     using namespace einsums::gpu;
-    if (this->_mode == einsums::detail::MAPPED) {
+
+    switch(_mode) {
+    case einsums::detail::MAPPED:
         if (this->_host_data == nullptr) {
             return;
         }
         hip_catch(hipHostUnregister((void *)this->_host_data));
         delete[] this->_host_data;
-    } else if (this->_mode == einsums::detail::PINNED) {
+        break;
+    case einsums::detail::PINNED:
         hip_catch(hipHostFree((void *)this->_host_data));
-    } else if (this->_mode == einsums::detail::DEV_ONLY) {
+        break;
+    case einsums::detail::DEV_ONLY:
         hip_catch(hipFree((void *)this->_data));
+        break;
+    default:
+        break;
     }
 
     if (this->_gpu_dims != nullptr) {
@@ -60,10 +93,10 @@ DeviceTensor<T, Rank>::~DeviceTensor() {
 
 template <typename T, size_t Rank>
 template <typename... Dims>
-requires requires {
-            requires (sizeof...(Dims) == Rank);
-            requires (!std::is_same_v<detail::HostToDeviceMode, Dims> && ...);
-        }
+    requires requires {
+        requires(sizeof...(Dims) == Rank);
+        requires(!std::is_same_v<detail::HostToDeviceMode, Dims> && ...);
+    }
 DeviceTensor<T, Rank>::DeviceTensor(::std::string name, einsums::detail::HostToDeviceMode mode, Dims... dims)
     : _name{::std::move(name)}, _dims{static_cast<size_t>(dims)...}, _mode{mode} {
     using namespace einsums::gpu;
@@ -83,16 +116,22 @@ DeviceTensor<T, Rank>::DeviceTensor(::std::string name, einsums::detail::HostToD
     ::std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
     size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
 
-    if (mode == einsums::detail::MAPPED) {
+    switch(mode) {
+    case einsums::detail::MAPPED:
         this->_host_data = new T[size];
         hip_catch(hipHostRegister((void *)this->_host_data, size * sizeof(T), hipHostRegisterDefault));
         hip_catch(hipHostGetDevicePointer((void **)&(this->_data), (void *)this->_host_data, 0));
-    } else if (mode == einsums::detail::PINNED) {
+        break;
+    case einsums::detail::PINNED:
         hip_catch(hipHostMalloc((void **)&(this->_host_data), size * sizeof(T), 0));
         hip_catch(hipHostGetDevicePointer((void **)&(this->_data), (void *)this->_host_data, 0));
-    } else if (mode == einsums::detail::DEV_ONLY) {
+        break;
+    case einsums::detail::DEV_ONLY:
         this->_host_data = nullptr;
         hip_catch(hipMalloc((void **)&(this->_data), size * sizeof(T)));
+        break;
+    default:
+        throw EINSUMSEXCEPTION("Did not understand the provided mode!");
     }
 
     hip_catch(hipMalloc((void **)&(this->_gpu_dims), 2 * sizeof(size_t) * Rank));
@@ -106,10 +145,10 @@ DeviceTensor<T, Rank>::DeviceTensor(::std::string name, einsums::detail::HostToD
 
 template <typename T, size_t Rank>
 template <typename... Dims>
-requires requires {
-            requires (sizeof...(Dims) == Rank);
-            requires (!std::is_same_v<detail::HostToDeviceMode, Dims> && ...);
-        }
+    requires requires {
+        requires(sizeof...(Dims) == Rank);
+        requires(!std::is_same_v<detail::HostToDeviceMode, Dims> && ...);
+    }
 DeviceTensor<T, Rank>::DeviceTensor(::std::string name, Dims... dims)
     : _name{::std::move(name)}, _dims{static_cast<size_t>(dims)...}, _mode{detail::DEV_ONLY} {
     using namespace einsums::gpu;
@@ -129,16 +168,22 @@ DeviceTensor<T, Rank>::DeviceTensor(::std::string name, Dims... dims)
     ::std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
     size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
 
-    if (_mode == einsums::detail::MAPPED) {
+    switch(_mode) {
+    case einsums::detail::MAPPED:
         this->_host_data = new T[size];
         hip_catch(hipHostRegister((void *)this->_host_data, size * sizeof(T), hipHostRegisterDefault));
         hip_catch(hipHostGetDevicePointer((void **)&(this->_data), (void *)this->_host_data, 0));
-    } else if (_mode == einsums::detail::PINNED) {
+        break;
+    case einsums::detail::PINNED:
         hip_catch(hipHostMalloc((void **)&(this->_host_data), size * sizeof(T), 0));
         hip_catch(hipHostGetDevicePointer((void **)&(this->_data), (void *)this->_host_data, 0));
-    } else if (_mode == einsums::detail::DEV_ONLY) {
+        break;
+    case einsums::detail::DEV_ONLY:
         this->_host_data = nullptr;
         hip_catch(hipMalloc((void **)&(this->_data), size * sizeof(T)));
+        break;
+    default:
+        throw EINSUMSEXCEPTION("Did not understand the provided mode!");
     }
 
     hip_catch(hipMalloc((void **)&(this->_gpu_dims), 2 * sizeof(size_t) * Rank));
@@ -155,6 +200,9 @@ template <size_t OtherRank, typename... Dims>
 DeviceTensor<T, Rank>::DeviceTensor(DeviceTensor<T, OtherRank> &&existingTensor, ::std::string name, Dims... dims)
     : _name{::std::move(name)}, _dims{static_cast<size_t>(dims)...} {
     using namespace einsums::gpu;
+    if(existingTensor._mode == einsums::detail::UNKNOWN) {
+        throw EINSUMSEXCEPTION("DeviceTensor being copied has not been initialized!");
+    }
     this->_host_data = existingTensor._host_data;
     this->_data      = existingTensor._data;
     this->_mode      = existingTensor._mode;
@@ -238,16 +286,22 @@ DeviceTensor<T, Rank>::DeviceTensor(Dim<Rank> dims, einsums::detail::HostToDevic
     ::std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
     size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
 
-    if (mode == einsums::detail::MAPPED) {
+    switch(mode) {
+    case einsums::detail::MAPPED:
         this->_host_data = new T[size];
         hip_catch(hipHostRegister((void *)this->_host_data, size * sizeof(T), hipHostRegisterDefault));
         hip_catch(hipHostGetDevicePointer((void **)&(this->_data), (void *)this->_host_data, 0));
-    } else if (mode == einsums::detail::PINNED) {
+        break;
+    case einsums::detail::PINNED:
         hip_catch(hipHostMalloc((void **)&(this->_host_data), size * sizeof(T), 0));
         hip_catch(hipHostGetDevicePointer((void **)&(this->_data), (void *)this->_host_data, 0));
-    } else if (mode == einsums::detail::DEV_ONLY) {
+        break;
+    case einsums::detail::DEV_ONLY:
         this->_host_data = nullptr;
         hip_catch(hipMalloc((void **)&(this->_data), size * sizeof(T)));
+        break;
+    default:
+        throw EINSUMSEXCEPTION("Could not understand the provided mode!");
     }
 
     hip_catch(hipMalloc((void **)&(this->_gpu_dims), 2 * sizeof(size_t) * Rank));
@@ -529,25 +583,42 @@ void DeviceTensor<T, Rank>::resize(Dim<Rank> dims) {
         return;
     }
 
-    if (this->_mode == einsums::detail::MAPPED) {
+    switch(_mode) {
+    case einsums::detail::MAPPED:
         hip_catch(hipHostUnregister((void *)this->_host_data));
 
-        delete[] this->_host_data;
+        if(this->_host_data != nullptr) {
+            delete[] this->_host_data;
+        }
         this->_host_data = new T[size];
 
         hip_catch(hipHostRegister((void *)this->_host_data, size * sizeof(T), hipHostRegisterDefault));
 
         hip_catch(hipHostGetDevicePointer((void **)&(this->_data), (void *)this->_host_data, 0));
-    } else if (this->_mode == einsums::detail::PINNED) {
-        hip_catch(hipHostFree((void *)this->_host_data));
+        break;
+    case einsums::detail::PINNED:
+        if(this->_host_data != nullptr) {
+            hip_catch(hipHostFree((void *)this->_host_data));
+        }
 
         hip_catch(hipHostMalloc((void **)&(this->_host_data), size * sizeof(T), 0));
 
         hip_catch(hipHostGetDevicePointer((void **)&(this->_data), (void *)this->_host_data, 0));
-    } else if (this->_mode == einsums::detail::DEV_ONLY) {
-        hip_catch(hipFree((void *)this->_data));
+        break;
+    case einsums::detail::DEV_ONLY:
+        if(this->_data != nullptr) {
+            hip_catch(hipFree((void *)this->_data));
+        }
 
         hip_catch(hipMalloc((void **)&(this->_data), size * sizeof(T)));
+        break;
+    default:
+        throw EINSUMSEXCEPTION("Tensor has not been initialized!");
+    }
+
+    if(this->_gpu_dims == nullptr) {
+        hip_catch(hipMalloc((void **) &this->_gpu_dims, 2 * sizeof(size_t) * Rank));
+        _gpu_strides = _gpu_dims + Rank;
     }
 
     hip_catch(hipMemcpy((void *)this->_gpu_dims, (const void *)this->_dims.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
@@ -663,10 +734,16 @@ void DeviceTensor<T, Rank>::read(const std::vector<T> &data) {
     using namespace einsums::gpu;
     assert(data.size() <= this->size());
 
-    if (this->_mode == einsums::detail::MAPPED || this->_mode == einsums::detail::PINNED) {
-        ::std::memcpy((void *)this->_host_data, (const void *)data.data(), data.size() * sizeof(T));
-    } else {
+    switch(_mode) {
+    case einsums::detail::MAPPED:
+    case einsums::detail::PINNED:
+        std::memcpy((void *)this->_host_data, (const void *)data.data(), data.size() * sizeof(T));
+        break;
+    case einsums::detail::DEV_ONLY:
         hip_catch(hipMemcpy((void *)this->_data, (const void *)data.data(), data.size() * sizeof(T), hipMemcpyHostToDevice));
+        break;
+    default:
+        throw EINSUMSEXCEPTION("Tensor was not initialized!");
     }
 }
 
@@ -677,10 +754,16 @@ void DeviceTensor<T, Rank>::write(::std::vector<T> &data) {
         data.resize(this->size());
     }
 
-    if (this->_mode == einsums::detail::MAPPED || this->_mode == einsums::detail::PINNED) {
-        ::std::memcpy((void *)data.data(), (const void *)this->_host_data, this->size() * sizeof(T));
-    } else {
+    switch(_mode) {
+    case einsums::detail::MAPPED:
+    case einsums::detail::PINNED:
+        std::memcpy((void *)data.data(), (const void *)this->_host_data, this->size() * sizeof(T));
+        break;
+    case einsums::detail::DEV_ONLY:
         hip_catch(hipMemcpy((void *)data.data(), (const void *)this->_data, this->size() * sizeof(T), hipMemcpyDeviceToHost));
+        break;
+    default:
+        throw EINSUMSEXCEPTION("Tensor was not initialized!");
     }
 }
 
@@ -688,10 +771,16 @@ template <typename T, size_t Rank>
 void DeviceTensor<T, Rank>::read(const T *data) {
     using namespace einsums::gpu;
 
-    if (this->_mode == einsums::detail::MAPPED || this->_mode == einsums::detail::PINNED) {
-        ::std::memcpy((void *)this->_host_data, (const void *)data, this->size() * sizeof(T));
-    } else {
+    switch(_mode) {
+    case einsums::detail::MAPPED:
+    case einsums::detail::PINNED:
+        std::memcpy((void *)this->_host_data, (const void *)data, this->size() * sizeof(T));
+        break;
+    case einsums::detail::DEV_ONLY:
         hip_catch(hipMemcpy((void *)this->_data, (const void *)data, this->size() * sizeof(T), hipMemcpyHostToDevice));
+        break;
+    default:
+        throw EINSUMSEXCEPTION("Tensor was not initialized!");
     }
 }
 
@@ -699,10 +788,16 @@ template <typename T, size_t Rank>
 void DeviceTensor<T, Rank>::write(T *data) {
     using namespace einsums::gpu;
 
-    if (this->_mode == einsums::detail::MAPPED || this->_mode == einsums::detail::PINNED) {
-        ::std::memcpy((void *)data, (const void *)this->_host_data, this->size() * sizeof(T));
-    } else {
+    switch(_mode) {
+    case einsums::detail::MAPPED:
+    case einsums::detail::PINNED:
+        std::memcpy((void *)data, (const void *)this->_host_data, this->size() * sizeof(T));
+        break;
+    case einsums::detail::DEV_ONLY:
         hip_catch(hipMemcpy((void *)data, (const void *)this->_data, this->size() * sizeof(T), hipMemcpyDeviceToHost));
+        break;
+    default:
+        throw EINSUMSEXCEPTION("Tensor was not initialized!");
     }
 }
 
@@ -715,21 +810,27 @@ template <typename... MultiIndex>
 T DeviceTensor<T, Rank>::operator()(MultiIndex... index) const {
     using namespace einsums::gpu;
 
-    if (this->_mode == einsums::detail::MAPPED || this->_mode == einsums::detail::PINNED) {
+    T out;
+    auto index_list = ::std::array{static_cast<std::int64_t>(index)...};
+    size_t ordinal;
+
+    switch(_mode) {
+    case einsums::detail::MAPPED:
+    case einsums::detail::PINNED:
         assert(sizeof...(MultiIndex) <= _dims.size());
 
-        auto index_list = ::std::array{static_cast<std::int64_t>(index)...};
         for (auto [i, _index] : enumerate(index_list)) {
             if (_index < 0) {
                 index_list[i] = _dims[i] + _index;
             }
         }
-        size_t ordinal = ::std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
+        ordinal = ::std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
         return this->_host_data[ordinal];
-    } else {
-        T out;
+    case einsums::detail::DEV_ONLY:
         hip_catch(hipMemcpy((void *)&out, (const void *)this->gpu_data(index...), sizeof(T), hipMemcpyDeviceToHost));
         return out;
+    default:
+        throw EINSUMSEXCEPTION("Tensor was not initialized!");
     }
 }
 
@@ -755,10 +856,14 @@ HostDevReference<T> DeviceTensor<T, Rank>::operator()(MultiIndex... index) {
         throw EINSUMSEXCEPTION("Array index out of range!");
     }
 
-    if (this->_mode == einsums::detail::MAPPED || this->_mode == einsums::detail::PINNED) {
+    switch(_mode) {
+    case einsums::detail::MAPPED:
+    case einsums::detail::PINNED:
         return HostDevReference<T>(this->_host_data + ordinal, true);
-    } else {
+    case einsums::detail::DEV_ONLY:
         return HostDevReference<host_datatype>((host_datatype *)_data + ordinal, false);
+    default:
+        throw EINSUMSEXCEPTION("Tensor was not initialized!");
     }
 }
 
@@ -836,7 +941,7 @@ auto DeviceTensor<T, Rank>::operator()(MultiIndex... index) const -> DeviceTenso
 template <typename T, size_t Rank>
 DeviceTensor<T, Rank> &DeviceTensor<T, Rank>::assign(const DeviceTensor<T, Rank> &other) {
     using namespace einsums::gpu;
-    bool realloc{false};
+    bool realloc{_data == nullptr};
     for (int i = 0; i < Rank; i++) {
         if (dim(i) == 0 || (dim(i) != other.dim(i)))
             realloc = true;
@@ -859,7 +964,8 @@ DeviceTensor<T, Rank> &DeviceTensor<T, Rank>::assign(const DeviceTensor<T, Rank>
         ::std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
         size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
 
-        if (this->_mode == einsums::detail::MAPPED) {
+        switch(_mode) {
+        case einsums::detail::MAPPED:
             hip_catch(hipHostUnregister((void *)this->_host_data));
 
             delete[] this->_host_data;
@@ -868,16 +974,29 @@ DeviceTensor<T, Rank> &DeviceTensor<T, Rank>::assign(const DeviceTensor<T, Rank>
             hip_catch(hipHostRegister((void *)this->_host_data, size * sizeof(T), hipHostRegisterDefault));
 
             hip_catch(hipHostGetDevicePointer((void **)&(this->_data), (void *)this->_host_data, 0));
-        } else if (this->_mode == einsums::detail::PINNED) {
+            break;
+        case einsums::detail::PINNED:
             hip_catch(hipHostFree((void *)this->_host_data));
 
             hip_catch(hipHostMalloc((void **)&(this->_host_data), size * sizeof(T), 0));
 
             hip_catch(hipHostGetDevicePointer((void **)&(this->_data), (void *)this->_host_data, 0));
-        } else if (this->_mode == einsums::detail::DEV_ONLY) {
+            break;
+        case einsums::detail::DEV_ONLY:
             hip_catch(hipFree((void *)this->_data));
 
             hip_catch(hipMalloc((void **)&(this->_data), size * sizeof(T)));
+            break;
+        default:
+            throw EINSUMSEXCEPTION("Tensor being assigned to is not initialized!");
+        }
+
+        if(this->_gpu_dims == nullptr) {
+            hip_catch(hipMalloc((void **) &this->_gpu_dims, 2 * Rank * sizeof(size_t)));
+            if(this->_gpu_strides != nullptr) {
+                hip_catch(hipFree((void *) this->_gpu_strides));
+            }
+            this->_gpu_strides = this->_gpu_dims + Rank;
         }
 
         hip_catch(hipMemcpy((void *)this->_gpu_dims, (const void *)this->_dims.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
@@ -923,7 +1042,8 @@ auto DeviceTensor<T, Rank>::assign(const DeviceTensor<TOther, Rank> &other) -> D
         ::std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
         size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
 
-        if (this->_mode == einsums::detail::MAPPED) {
+        switch(_mode) {
+        case einsums::detail::MAPPED:
             hip_catch(hipHostUnregister((void *)this->_host_data));
 
             delete[] this->_host_data;
@@ -932,16 +1052,29 @@ auto DeviceTensor<T, Rank>::assign(const DeviceTensor<TOther, Rank> &other) -> D
             hip_catch(hipHostRegister((void *)this->_host_data, size * sizeof(T), hipHostRegisterDefault));
 
             hip_catch(hipHostGetDevicePointer((void **)&(this->_data), (void *)this->_host_data, 0));
-        } else if (this->_mode == einsums::detail::PINNED) {
+            break;
+        case einsums::detail::PINNED:
             hip_catch(hipHostFree((void *)this->_host_data));
 
             hip_catch(hipHostMalloc((void **)&(this->_host_data), size * sizeof(T), 0));
 
             hip_catch(hipHostGetDevicePointer((void **)&(this->_data), (void *)this->_host_data, 0));
-        } else if (this->_mode == einsums::detail::DEV_ONLY) {
+            break;
+        case einsums::detail::DEV_ONLY:
             hip_catch(hipFree((void *)this->_data));
 
             hip_catch(hipMalloc((void **)&(this->_data), size * sizeof(T)));
+            break;
+        default:
+            throw EINSUMSEXCEPTION("Tensor being assigned to was not initialized!");
+        }
+
+        if(this->_gpu_dims == nullptr) {
+            hip_catch(hipMalloc((void **) &this->_gpu_dims, 2 * Rank * sizeof(size_t)));
+            if(this->_gpu_strides != nullptr) {
+                hip_catch(hipFree((void *) this->_gpu_strides));
+            }
+            this->_gpu_strides = this->_gpu_dims + Rank;
         }
 
         hip_catch(hipMemcpy((void *)this->_gpu_dims, (const void *)this->_dims.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
@@ -985,7 +1118,8 @@ DeviceTensor<T, Rank> &DeviceTensor<T, Rank>::assign(const Tensor<T, Rank> &othe
         ::std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
         size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
 
-        if (this->_mode == einsums::detail::MAPPED) {
+        switch(_mode) {
+        case einsums::detail::MAPPED:
             hip_catch(hipHostUnregister((void *)this->_host_data));
 
             delete[] this->_host_data;
@@ -994,26 +1128,33 @@ DeviceTensor<T, Rank> &DeviceTensor<T, Rank>::assign(const Tensor<T, Rank> &othe
             hip_catch(hipHostRegister((void *)this->_host_data, size * sizeof(T), hipHostRegisterDefault));
 
             hip_catch(hipHostGetDevicePointer((void **)&(this->_data), (void *)this->_host_data, 0));
-        } else if (this->_mode == einsums::detail::PINNED) {
+            break;
+        case einsums::detail::PINNED:
             hip_catch(hipHostFree((void *)this->_host_data));
 
             hip_catch(hipHostMalloc((void **)&(this->_host_data), size * sizeof(T), 0));
 
             hip_catch(hipHostGetDevicePointer((void **)&(this->_data), (void *)this->_host_data, 0));
-        } else if (this->_mode == einsums::detail::DEV_ONLY) {
+            break;
+        case einsums::detail::DEV_ONLY:
             hip_catch(hipFree((void *)this->_data));
 
             hip_catch(hipMalloc((void **)&(this->_data), size * sizeof(T)));
+            break;
+        default:
+            throw EINSUMSEXCEPTION("Tensor being assinged to was not initialized!");
         }
 
         hip_catch(hipMemcpy((void *)this->_gpu_dims, (const void *)this->_dims.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
         hip_catch(hipMemcpy((void *)this->_gpu_strides, (const void *)this->_strides.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
     }
 
-    if(this->_mode == einsums::detail::DEV_ONLY) {
+    if (this->_mode == einsums::detail::DEV_ONLY) {
         hip_catch(hipMemcpy((void *)this->_data, (const void *)other.data(), this->size() * sizeof(T), hipMemcpyHostToDevice));
-    } else {
+    } else if(_mode == einsums::detail::MAPPED || _mode == einsums::detail::PINNED) {
         std::memcpy(this->_host_data, other.data(), this->size() * sizeof(T));
+    } else {
+        throw EINSUMSEXCEPTION("Tensor being assigned to was not initialized!");
     }
 
     return *this;
@@ -1021,7 +1162,6 @@ DeviceTensor<T, Rank> &DeviceTensor<T, Rank>::assign(const Tensor<T, Rank> &othe
 
 template <typename T, size_t Rank>
 template <typename TOther>
-    requires(!std::same_as<T, TOther>)
 auto DeviceTensor<T, Rank>::assign(const DeviceTensorView<TOther, Rank> &other) -> DeviceTensor<T, Rank> & {
     using namespace einsums::gpu;
     einsums::detail::copy_to_tensor_conv<T, Rank, TOther><<<block_size(other.size()), blocks(other.size()), 0, get_stream()>>>(
@@ -1515,6 +1655,8 @@ DeviceTensor<T, Rank>::DeviceTensor(const Tensor<T, Rank> &copy, einsums::detail
         this->_host_data = nullptr;
         hip_catch(hipMalloc((void **)&(this->_data), copy.size() * sizeof(T)));
         hip_catch(hipMemcpy((void *)this->_data, (const void *)copy.data(), copy.size() * sizeof(T), hipMemcpyHostToDevice));
+    } else {
+        throw EINSUMSEXCEPTION("Unknown occupancy mode!");
     }
 
     hip_catch(hipMalloc((void **)&(this->_gpu_dims), 2 * sizeof(size_t) * Rank));

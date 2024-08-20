@@ -221,7 +221,7 @@ void gemv(const U alpha, const AType &A, const XType &z, const U beta, YType *y)
     }
 
     int loop_bound = (TransA) ? A.grid_size(1) : A.grid_size(0);
-    //        EINSUMS_OMP_PARALLEL_FOR
+    EINSUMS_OMP_PARALLEL_FOR
     for (int i = 0; i < loop_bound; i++) {
         if (A.tile_size((TransA) ? 1 : 0)[i] == 0) {
             continue;
