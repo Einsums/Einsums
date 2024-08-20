@@ -584,7 +584,7 @@ TEST_CASE("einsum TensorView", "[tensor]") {
     }
 }
 
-template<typename T>
+template <typename T>
 void sort_2_axpy() {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
@@ -622,13 +622,13 @@ void sort_2_axpy() {
     }
 }
 
-template<typename T>
+template <typename T>
 void sort_2_axpy_2() {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
 
-    auto A = create_incremented_tensor<T>("A", 3, 3);
+    auto A  = create_incremented_tensor<T>("A", 3, 3);
     auto C0 = create_tensor<T>("C", 3, 3);
     auto C1 = create_tensor<T>("C", 3, 3);
 
@@ -671,7 +671,7 @@ void sort_2_axpy_2() {
     }
 }
 
-template<typename T>
+template <typename T>
 void sort_2() {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
@@ -842,7 +842,7 @@ TEST_CASE("sort2") {
     }
 }
 
-template<typename T>
+template <typename T>
 void einsum2_3x3_3x5_5x3() {
     using namespace einsums;
     using namespace einsums::tensor_algebra;
@@ -850,8 +850,8 @@ void einsum2_3x3_3x5_5x3() {
 
     auto C0 = create_tensor<T>("C0", 3, 3);
     auto C1 = create_tensor<T>("C1", 3, 3);
-    auto A = create_random_tensor<T>("A", 3, 5);
-    auto B = create_random_tensor<T>("B", 5, 3);
+    auto A  = create_random_tensor<T>("A", 3, 5);
+    auto B  = create_random_tensor<T>("B", 5, 3);
 
     REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
     linear_algebra::gemm<false, false>(1.0, A, B, 0.0, &C1);
