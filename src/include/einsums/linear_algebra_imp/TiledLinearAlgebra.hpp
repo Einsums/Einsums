@@ -312,8 +312,11 @@ void direct_product(typename AType::data_type alpha, const AType &A, const BType
             index[i] = hold % A.grid_size(i);
             hold /= A.grid_size(i);
         }
-        if (A.has_tile(index) && B.has_tile(index)) {
-            direct_product(alpha, A.tile(index), B.tile(index), beta, &(C->tile(index)));
+        if (A.has_tile(index) && B.has_tile(index) && !A.has_zero_size(index) && !B.has_zero_size(index)) {
+            C->lock();
+            auto &C_tile = C->tile(index);
+            C->unlock();
+            direct_product(alpha, A.tile(index), B.tile(index), beta, &C_tile);
         }
     }
 }
@@ -335,7 +338,9 @@ void ger(typename AType::data_type alpha, const XYType &X, const XYType &Y, ATyp
             if (X.has_zero_size(i) || Y.has_zero_size(j) || !X.has_tile(i) || !Y.has_tile(j)) {
                 continue;
             }
+            A->lock();
             auto &a_tile = A->tile(i, j);
+            A->unlock();
 
             ger(alpha, X.tile[i], Y.tile[j], &a_tile);
         }

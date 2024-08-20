@@ -35,7 +35,10 @@ void direct_product(typename AType::data_type alpha, const AType &A, const BType
             if (!A.has_tile(index) || B.block_dim(i) == 0) {
                 continue;
             }
-            direct_product(alpha, A.tile(index), B.block(i), beta, &(C->tile(index)));
+            C->lock();
+            auto &C_tile = C->tile(index);
+            C->unlock();
+            direct_product(alpha, A.tile(index), B.block(i), beta, &C_tile);
         } else if constexpr (einsums::detail::IsTiledTensorV<AType> && einsums::detail::IsBlockTensorV<BType> &&
                              einsums::detail::IsBlockTensorV<CType>) {
             if (!A.has_tile(index) || B.block_dim(i) == 0) {
@@ -47,13 +50,19 @@ void direct_product(typename AType::data_type alpha, const AType &A, const BType
             if (A.block_dim(i) == 0) {
                 continue;
             }
-            direct_product(alpha, A.block(i), B.block(i), beta, &(C->tile(index)));
+            C->lock();
+            auto &C_tile = C->tile(index);
+            C->unlock();
+            direct_product(alpha, A.block(i), B.block(i), beta, &C_tile);
         } else if constexpr (einsums::detail::IsBlockTensorV<AType> && einsums::detail::IsTiledTensorV<BType> &&
                              einsums::detail::IsTiledTensorV<CType>) {
             if (!B.has_tile(index) || A.block_dim(i) == 0) {
                 continue;
             }
-            direct_product(alpha, A.block(i), B.tile(index), beta, &(C->tile(index)));
+            C->lock();
+            auto &C_tile = C->tile(index);
+            C->unlock();
+            direct_product(alpha, A.block(i), B.tile(index), beta, &C_tile);
         } else {
             if (!B.has_tile(index) || A.block_dim(i) == 0) {
                 continue;
@@ -193,13 +202,17 @@ void gemm(const U alpha, const AType &A, const BType &B, const U beta, CType *C)
                 if (C->has_zero_size(i, j) || !B.has_tile(j, i) || B.has_zero_size(j, i) || A.block_dim(i) == 0) {
                     continue;
                 }
+                C->lock();
                 auto &C_tile = C->tile(i, j);
+                C->unlock();
                 gemm<TransA, TransB>(alpha, A[i], B.tile(j, i), beta, &C_tile);
             } else {
                 if (C->has_zero_size(i, j) || !B.has_tile(i, j) || B.has_zero_size(i, j) || A.block_dim(i) == 0) {
                     continue;
                 }
+                C->lock();
                 auto &C_tile = C->tile(i, j);
+                C->unlock();
                 gemm<TransA, TransB>(alpha, A[i], B.tile(i, j), beta, &C_tile);
             }
         }
@@ -244,13 +257,17 @@ void gemm(const U alpha, const AType &A, const BType &B, const U beta, CType *C)
                 if (C->has_zero_size(i, j) || !A.has_tile(j, i) || A.has_zero_size(j, i) || B.block_dim(j) == 0) {
                     continue;
                 }
+                C->lock();
                 auto &C_tile = C->tile(i, j);
+                C->unlock();
                 gemm<TransA, TransB>(alpha, A.tile(j, i), B[j], beta, &C_tile);
             } else {
                 if (C->has_zero_size(i, j) || !A.has_tile(i, j) || A.has_zero_size(i, j) || B.block_dim(j) == 0) {
                     continue;
                 }
+                C->lock();
                 auto &C_tile = C->tile(i, j);
+                C->unlock();
                 gemm<TransA, TransB>(alpha, A.tile(j, i), B[j], beta, &C_tile);
             }
         }
