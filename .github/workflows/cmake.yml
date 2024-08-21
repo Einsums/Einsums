@@ -232,13 +232,4 @@ jobs:
 
   macos_default:
     name: macOS
-    strategy:
-      fail-fast: false
-      matrix:
-        build_type: [ Release, Debug ]
-        hptt: [ ON, OFF ]
     uses: ./.github/workflows/macos-build-and-test.yml
-    with:
-      build_type: ${{ matrix.build_type }}
-      build_with_hptt: ${{ matrix.hptt }}
-      build_cache_size: 2G

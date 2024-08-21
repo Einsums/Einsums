@@ -16,23 +16,18 @@ on:
       build_configure_extra_args:
         type: string
         required: false
-      build_type:
-        type: string
-        required: false
-        default: Release
-      build_with_hptt:
-        type: string
-        required: false
-        default: YES
-      extra_cmake_args:
-        type: string
-        required: false
 
 permissions: read-all
 
 jobs:
   build:
-    name: "Build • ${{ inputs.build_type }} • HPTT=${{ inputs.build_with_hptt }}"
+    strategy:
+      fail-fast: false
+      matrix:
+        build_type: [ Release, Debug ]
+        hptt: [ ON, OFF ]
+
+    name: "${{ matrix.build_type }} • HPTT=${{ matrix.build_with_hptt }}"
     runs-on: macos-latest
     env:
       CCACHE_DIR: $GITHUB_WORKSPACE/build_cache_${{ inputs.build_cache_suffix }}
@@ -51,7 +46,7 @@ jobs:
         with:
           path: build_cache_${{ inputs.build_cache_suffix }}
           key: einsums-${{ runner.os }}-${{ inputs.build_cache_suffix }}-${{ github.sha }}
-          restore-keys: sycl-${{ runner.os }}-${{ inputs.build_cache_suffix }}-
+          restore-keys: einsums-${{ runner.os }}-${{ inputs.build_cache_suffix }}-
 
       - name: Install Dependencies
         uses: conda-incubator/setup-miniconda@v3
@@ -71,17 +66,16 @@ jobs:
           cmake \
             -S "$GITHUB_WORKSPACE/src" \
             -B "$GITHUB_WORKSPACE/build" \
-            -D CMAKE_BUILD_TYPE=${{ inputs.build_type }} \
+            -D CMAKE_BUILD_TYPE=${{ matrix.build_type }} \
             -D EINSUMS_SHOW_WARNING=OFF \
-            -D EINSUMS_USE_HPTT=${{ inputs.build_with_hptt }} \
-            -D EINSUMS_STATIC_BUILD=${{ inputs.build_with_hptt }} \
+            -D EINSUMS_USE_HPTT=${{ matrix.build_with_hptt }} \
+            -D EINSUMS_STATIC_BUILD=${{ matrix.build_with_hptt }} \
             -D CMAKE_INSTALL_PREFIX="${{ github.workspace }}/installed" \
-            -D CMAKE_PREFIX_PATH="${CONDA_PREFIX}" \
-            ${{ inputs.extra_cmake_args }}
+            -D CMAKE_PREFIX_PATH="${CONDA_PREFIX}"
 
       - name: Build and Install
         run: |
-          cmake --build "${{ github.workspace }}/build" --config ${{ inputs.build_type }} --target install
+          cmake --build "${{ github.workspace }}/build" --config ${{ matrix.build_type }} --target install
 
       - name: Test (CTest) - Unit Tests
         working-directory: "${{ github.workspace }}/build"
@@ -118,7 +112,7 @@ jobs:
             -B build \
             -G Ninja \
             --log-level verbose \
-            -DCMAKE_BUILD_TYPE=${{ inputs.build_type }} \
+            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
             -DCMAKE_PREFIX_PATH="${CONDA_PREFIX};${CONDA_PREFIX}/Library;${{ github.workspace }}/installed"
           cmake --build build
           ./build/timings
