@@ -73,8 +73,7 @@ jobs:
 
       - name: Update environment
         run:
-          mamba env update -n anaconda-client-env -f
-          src/devtools/conda-envs/macos.yml
+          mamba env update -n einsums-env -f src/devtools/conda-envs/macos.yml
         if: steps.cache.outputs.cache-hit != 'true'
 
       - name: Conda Environment
