@@ -1,0 +1,125 @@
+name: macOS build and test workflow
+on:
+  workflow_call:
+    inputs:
+      build_ref:
+        type: string
+        required: false
+      build_cache_suffix:
+        type: string
+        required: false
+        default: "default"
+      build_cache_size:
+        type: string
+        required: false
+        default: 2G
+      build_configure_extra_args:
+        type: string
+        required: false
+      build_type:
+        type: string
+        required: false
+        default: Release
+      build_with_hptt:
+        type: string
+        required: false
+        default: YES
+      extra_cmake_args:
+        type: string
+        required: false
+
+permissions: read-all
+
+jobs:
+  build:
+    name: "Build • ${{ inputs.build_type }} • HPTT=${{ inputs.build_with_hptt }}"
+    runs-on: macos-latest
+    env:
+      CCACHE_DIR: $GITHUB_WORKSPACE/build_cache_${{ inputs.build_cache_suffix }}
+      CCACHE_MAXSIZE: ${{ inputs.build_cache_size }}
+    defaults:
+      run:
+        shell: bash -el {0}
+    steps:
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.build_ref }}
+          path: src
+
+      - uses: actions/cache@v4
+        with:
+          path: build_cache_${{ inputs.build_cache_suffix }}
+          key: einsums-${{ runner.os }}-${{ inputs.build_cache_suffix }}-${{ github.sha }}
+          restore-keys: sycl-${{ runner.os }}-${{ inputs.build_cache_suffix }}-
+
+      - name: Install Dependencies
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          activate-environment: einsums-dev
+          environment-file: devtools/conda-envs/macos.yml
+          use-mamba: true
+          mamba-version: "*"
+
+      - name: Conda Environment
+        run: |
+          mamba info
+          mamba list
+
+      - name: Configure CMake
+        run: |
+          cmake \
+            -S "$GITHUB_WORKSPACE/src" \
+            -B "$GITHUB_WORKSPACE/build" \
+            -D CMAKE_BUILD_TYPE=${{ inputs.build_type }} \
+            -D EINSUMS_SHOW_WARNING=OFF \
+            -D EINSUMS_USE_HPTT=${{ inputs.build_with_hptt }} \
+            -D EINSUMS_STATIC_BUILD=${{ inputs.build_with_hptt }} \
+            -D CMAKE_INSTALL_PREFIX="${{ github.workspace }}/installed" \
+            -D CMAKE_PREFIX_PATH="${CONDA_PREFIX}" \
+            ${{ inputs.extra_cmake_args }}
+
+      - name: Build and Install
+        run: |
+          cmake --build "${{ github.workspace }}/build" --config ${{ inputs.build_type }} --target install
+
+      - name: Test (CTest) - Unit Tests
+        working-directory: "${{ github.workspace }}/build"
+        run: ctest --rerun-failed --output-on-failure
+
+      - name: Test (find_package) - consume installation
+        shell: bash -l {0}
+        run: |
+          mkdir test_installed_library && cd test_installed_library
+          cat > CMakeLists.txt <<EOF
+          cmake_minimum_required(VERSION 3.8)
+          project(sample)
+          find_package(Einsums REQUIRED)
+          include(CMakePrintHelpers)
+          cmake_print_properties(
+            TARGETS
+              Einsums::einsums
+              HDF5::HDF5
+              tgt::lapack
+              OpenMP::OpenMP_CXX
+            PROPERTIES
+              IMPORTED_LINK_DEPENDENT_LIBRARIES
+              INTERFACE_LOCATION
+              INTERFACE_LINK_LIBRARIES
+              INTERFACE_INCLUDE_DIRECTORIES
+              INTERFACE_COMPILE_DEFINITIONS
+              INTERFACE_COMPILE_OPTIONS
+              INTERFACE_SYSTEM_INCLUDE_DIRECTORIES
+            )
+          add_executable(timings "../timing/main.cpp")
+          target_link_libraries(timings Einsums::einsums)
+          EOF
+          cmake -S . \
+            -B build \
+            -G Ninja \
+            --log-level verbose \
+            -DCMAKE_BUILD_TYPE=${{ inputs.build_type }} \
+            -DCMAKE_PREFIX_PATH="${CONDA_PREFIX};${CONDA_PREFIX}/Library;${{ github.workspace }}/installed"
+          cmake --build build
+          ./build/timings
+

@@ -15,7 +15,6 @@ dependencies:
   - fftw
   - fmt
   - range-v3
-  - cpptrace
 
   # HDF5
   # * zlib brings headers; hdf5 package only bring libzlib

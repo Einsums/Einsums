@@ -24,8 +24,8 @@ jobs:
           - testargs: ""
           - cxx: L-Gnu
             os: ubuntu-latest
-          - cxx: M-Clang
-            os: macos-latest
+          #- cxx: M-Clang
+          #  os: macos-latest
           - cxx: L-Intel
             os: ubuntu-latest
             cmargs: >
@@ -34,13 +34,13 @@ jobs:
               -DCMAKE_CXX_FLAGS="--gcc-toolchain=${CONDA_PREFIX} --sysroot=${CONDA_PREFIX}/${HOST}/sysroot -target ${HOST}"
               -DOpenMP_CXX_INCLUDE_DIR="${CONDA_PREFIX}/include"
             # OpenMP search dir needed b/c setting CMAKE_CXX_FLAGS overrides conda's CXXFLAGS that passes same dir as -isystem
-          - cxx: M-src
-            os: macos-latest
-            build_type: Debug
-            hptt: ON
-            cmargs: >
-              -DFETCHCONTENT_QUIET=OFF
-              -DFETCHCONTENT_TRY_FIND_PACKAGE_MODE=NEVER
+          #- cxx: M-src
+          #  os: macos-latest
+          #  build_type: Debug
+          #  hptt: ON
+          #  cmargs: >
+          #    -DFETCHCONTENT_QUIET=OFF
+          #    -DFETCHCONTENT_TRY_FIND_PACKAGE_MODE=NEVER
           - cxx: L-src
             os: ubuntu-latest
             build_type: Debug
@@ -230,3 +230,14 @@ jobs:
           cmake --build build
           ./build/timings
 
+  macos_default:
+    name: macOS
+    strategy:
+      fail-fast: false
+      matrix:
+        build_type: [ Release, Debug ]
+        hptt: [ ON, OFF ]
+    uses: ./.github/workflows/macos-build-and-test.yml
+    with:
+      build_type: ${{ matrix.build_type }}
+      build_with_hptt: ${{ matrix.hptt }}
