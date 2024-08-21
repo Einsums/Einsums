@@ -1,4 +1,4 @@
-name: macOS build and test workflow
+name: Linux build and test workflow
 on:
   workflow_call:
     inputs:
@@ -24,10 +24,23 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        cmake_extra: ""
+        compiler: [ gcc, intel ]
+        blas: [ openblas, mkl ]
         hptt: [ ON, OFF ]
+        include:
+          - compiler: intel
+            cmake_extra: >
+              -DCMAKE_CXX_COMPILER=icpx
+              -DCMAKE_CXX_FLAGS="--gcc-toolchain=${CONDA_PREFIX} --sysroot=${CONDA_PREFIX}/${HOST}/sysroot -target ${HOST}"
+              -DOpenMP_CXX_INCLUDE_DIR="${CONDA_PREFIX}/include"
+            # OpenMP search dir needed b/c setting CMAKE_CXX_FLAGS overrides conda's CXXFLAGS that passes same dir as -isystem
+        exclude:
+          - compiler: intel
+            blas: openblas
 
-    name: "HPTT=${{ matrix.hptt }}"
-    runs-on: macos-latest
+    name: "${{ matrix.compiler }} • ${{ matrix.blas }} • HPTT=${{ matrix.hptt }}"
+    runs-on: ubuntu-latest
     env:
       CCACHE_DIR: $GITHUB_WORKSPACE/build_cache_${{ inputs.build_cache_suffix }}
       CCACHE_MAXSIZE: ${{ inputs.build_cache_size }}
@@ -45,8 +58,8 @@ jobs:
         uses: actions/cache@v4
         with:
           path: build_cache_${{ inputs.build_cache_suffix }}
-          key: einsums-${{ runner.os }}-${{ inputs.build_cache_suffix }}-hptt-${{ matrix.hptt }}-${{ github.sha }}
-          restore-keys: einsums-${{ runner.os }}-${{ inputs.build_cache_suffix }}-hptt-${{ matrix.hptt }}-
+          key: einsums-${{ runner.os }}-${{ inputs.build_cache_suffix }}-${{ matrix.compiler }}-${{ matrix.blas }}-hptt-${{ matrix.hptt }}-${{ github.sha }}
+          restore-keys: einsums-${{ runner.os }}-${{ inputs.build_cache_suffix }}-${{ matrix.compiler }}-${{ matrix.blas }}-hptt-${{ matrix.hptt }}-
 
       # From https://github.com/conda-incubator/setup-miniconda?tab=readme-ov-file#caching-environments
       - name: Setup Miniforge
@@ -65,7 +78,7 @@ jobs:
         with:
           path: ${{ env.CONDA }}/envs
           key:
-            conda-${{ runner.os }}-${{ runner.arch }}-${{ steps.get-date.outputs.today }}-${{ hashFiles('src/devtools/conda-envs/macos.yml') }}-${{ env.CACHE_NUMBER }}
+            conda-${{ runner.os }}-${{ runner.arch }}-${{ steps.get-date.outputs.today }}-${{ hashFiles(format('src/devtools/conda-envs/linux-{}-{}.yml', matrix.compiler, matrix.blas)) }}-${{ env.CACHE_NUMBER }}
         env:
           # Increase this value to reset cache if etc/example-environment.yml has not changed
           CACHE_NUMBER: 0
@@ -73,7 +86,7 @@ jobs:
 
       - name: Update environment
         run:
-          mamba env update -n einsums-env -f src/devtools/conda-envs/macos.yml
+          mamba env update -n einsums-env -f src/devtools/conda-envs/${{ format('src/devtools/conda-envs/linux-{}-{}.yml', matrix.compiler, matrix.blas) }}.yml
         if: steps.cache.outputs.cache-hit != 'true'
 
       - name: Conda Environment
@@ -93,7 +106,8 @@ jobs:
             -D EINSUMS_USE_HPTT=${{ matrix.hptt }} \
             -D EINSUMS_STATIC_BUILD=${{ matrix.hptt }} \
             -D CMAKE_INSTALL_PREFIX="${{ github.workspace }}/installed" \
-            -D CMAKE_PREFIX_PATH="${CONDA_PREFIX}"
+            -D CMAKE_PREFIX_PATH="${CONDA_PREFIX}" \
+            ${{ matrix.cmake_extra }}
 
       - name: Build and Install
         run: |

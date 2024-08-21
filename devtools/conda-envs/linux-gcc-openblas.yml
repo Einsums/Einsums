@@ -1,0 +1,35 @@
+name: einsums-dev
+channels:
+  - conda-forge
+  - nodefaults
+dependencies:
+  # Development
+  - cmake
+  - ccache
+  - cxx-compiler
+  - ninja
+
+  # OpenBLAS
+  - libblas=*=*openblas
+  - openblas=*=openmp*
+
+  # Prebuilts to save einsums the work
+  - catch2
+  - fftw
+  - fmt
+  - range-v3
+  - cpptrace
+
+  # HDF5
+  # * zlib brings headers; hdf5 package only bring libzlib
+  - hdf5
+  - zlib
+
+  # Needed to build the documentation
+  - sphinx=6.2.1
+  - sphinx-design
+  - six
+  - pydata-sphinx-theme
+  - doxygen
+  - breathe=4.35.0
+  - docutils>=0.12
