@@ -1,0 +1,155 @@
+name: Linux build and test workflow
+on:
+  workflow_call:
+    inputs:
+      build_ref:
+        type: string
+        required: false
+      build_cache_suffix:
+        type: string
+        required: false
+        default: "default"
+      build_cache_size:
+        type: string
+        required: false
+        default: 2G
+      build_configure_extra_args:
+        type: string
+        required: false
+
+permissions: read-all
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        hptt: [ ON, OFF ]
+
+    name: "HPTT=${{ matrix.hptt }}"
+    runs-on: windows-latest
+    env:
+      CCACHE_DIR: $GITHUB_WORKSPACE/build_cache_${{ inputs.build_cache_suffix }}
+      CCACHE_MAXSIZE: ${{ inputs.build_cache_size }}
+    defaults:
+      run:
+        shell: bash -el {0}
+    steps:
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.build_ref }}
+          path: src
+
+      - name: Cache Build Cache
+        uses: actions/cache@v4
+        with:
+          path: build_cache_${{ inputs.build_cache_suffix }}
+          key: einsums-${{ runner.os }}-${{ inputs.build_cache_suffix }}-hptt-${{ matrix.hptt }}-${{ github.sha }}
+          restore-keys: einsums-${{ runner.os }}-${{ inputs.build_cache_suffix }}-hptt-${{ matrix.hptt }}-
+
+      # From https://github.com/conda-incubator/setup-miniconda?tab=readme-ov-file#caching-environments
+      - name: Setup Miniforge
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          miniforge-version: latest
+          activate-environment: einsums-env
+
+      - name: Get Date
+        id: get-date
+        run: echo "today=$(/bin/date -u '+%Y%m%d')" >> $GITHUB_OUTPUT
+        shell: bash
+
+      - name: Cache Conda env
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.CONDA }}/envs
+          key:
+            conda-${{ runner.os }}-${{ runner.arch }}-${{ steps.get-date.outputs.today }}-${{ hashFiles('src/devtools/conda-envs/windows.yml') }}-${{ env.CACHE_NUMBER }}
+        env:
+          # Increase this value to reset cache if etc/example-environment.yml has not changed
+          CACHE_NUMBER: 0
+        id: cache
+
+      - name: Update environment
+        run:
+          mamba env update -n einsums-env -f src/devtools/conda-envs/windows.yml
+        if: steps.cache.outputs.cache-hit != 'true'
+
+      - name: Conda Environment
+        run: |
+          conda info
+          conda list
+
+      - name: Prepare compile environment for Windows
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      - name: Configure CMake
+        run: |
+          cmake \
+            -G Ninja \
+            -S "$GITHUB_WORKSPACE/src" \
+            -B "$GITHUB_WORKSPACE/build" \
+            -D CMAKE_C_COMPILER_LAUNCHER=ccache \
+            -D CMAKE_CXX_COMPILER_LAUNCHER=ccache \
+            -D CMAKE_BUILD_TYPE=Release \
+            -D EINSUMS_SHOW_WARNING=OFF \
+            -D EINSUMS_USE_HPTT=${{ matrix.hptt }} \
+            -D CMAKE_INSTALL_PREFIX="${{ github.workspace }}/installed" \
+            -D CMAKE_PREFIX_PATH="${CONDA_PREFIX}" \
+            -D CMAKE_CXX_COMPILER=clang-cl
+            -D CMAKE_C_COMPILER=clang-cl
+            -D MKL_ROOT="${CONDA_PREFIX}"
+            -D EINSUMS_STATIC_BUILD=ON
+            -D CMAKE_CXX_FLAGS="-IC:\Miniconda3\envs\einsums-dev\opt\compiler\include"
+
+      - name: Build and Install
+        run: |
+          cmake --build "${{ github.workspace }}/build" --config Release --target install
+
+      - name: Test (CTest) - Unit Tests
+        working-directory: "${{ github.workspace }}/build"
+        run: ctest --rerun-failed --output-on-failure
+
+      - name: Test (find_package) - consume installation
+        shell: bash -l {0}
+        run: |
+          mkdir test_installed_library && cd test_installed_library
+          cat > CMakeLists.txt <<EOF
+          cmake_minimum_required(VERSION 3.8)
+          project(sample)
+          find_package(Einsums REQUIRED)
+          include(CMakePrintHelpers)
+          cmake_print_properties(
+            TARGETS
+              Einsums::einsums
+              HDF5::HDF5
+              tgt::lapack
+              OpenMP::OpenMP_CXX
+            PROPERTIES
+              IMPORTED_LINK_DEPENDENT_LIBRARIES
+              INTERFACE_LOCATION
+              INTERFACE_LINK_LIBRARIES
+              INTERFACE_INCLUDE_DIRECTORIES
+              INTERFACE_COMPILE_DEFINITIONS
+              INTERFACE_COMPILE_OPTIONS
+              INTERFACE_SYSTEM_INCLUDE_DIRECTORIES
+            )
+          add_executable(timings "../src/timing/main.cpp")
+          target_link_libraries(timings Einsums::einsums)
+          EOF
+          cmake -S . \
+            -B build \
+            -G Ninja \
+            --log-level verbose \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_PREFIX_PATH="${CONDA_PREFIX};${CONDA_PREFIX}/Library;${{ github.workspace }}/installed" \
+            -DCMAKE_CXX_COMPILER=clang-cl
+            -DCMAKE_C_COMPILER=clang-cl
+            -DMKL_ROOT="${CONDA_PREFIX}"
+            -DEINSUMS_STATIC_BUILD=ON
+           -D ZLIB_USE_STATIC_LIBS=ON     
+          cmake --build build
+          ./build/timings
