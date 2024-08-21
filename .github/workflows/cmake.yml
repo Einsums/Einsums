@@ -241,3 +241,4 @@ jobs:
     with:
       build_type: ${{ matrix.build_type }}
       build_with_hptt: ${{ matrix.hptt }}
+      build_cache_size: 2G
