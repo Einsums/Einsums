@@ -22,11 +22,14 @@ DeviceTensorView<T, Rank>::DeviceTensorView(const DeviceTensorView<T, Rank> &cop
 
     hip_catch(hipMemcpy((void *)this->_gpu_dims, (const void *)this->_dims.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
     hip_catch(hipMemcpy((void *)this->_gpu_strides, (const void *)this->_strides.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
+    gpu::device_synchronize();
 }
 
 template <typename T, size_t Rank>
 DeviceTensorView<T, Rank>::~DeviceTensorView() {
     using namespace einsums::gpu;
+
+    gpu::device_synchronize();
     hip_catch(hipFree((void *)this->_gpu_dims));
 
     if(_free_dev_data) {
@@ -199,6 +202,7 @@ auto DeviceTensorView<T, Rank>::operator()(MultiIndex... index) const -> T {
     T out;
 
     hip_catch(hipMemcpy(&out, this->gpu_data(index...), sizeof(T), hipMemcpyDeviceToHost));
+    // no sync
 
     return out;
 }
@@ -317,6 +321,7 @@ auto DeviceTensorView<T, Rank>::common_initialization(TensorType<T, OtherRank> &
 
     hip_catch(hipMemcpy((void *)this->_gpu_dims, (const void *)this->_dims.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
     hip_catch(hipMemcpy((void *)this->_gpu_strides, (const void *)this->_strides.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
+    gpu::device_synchronize();
 }
 
 } // namespace einsums

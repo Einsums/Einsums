@@ -62,11 +62,15 @@ DeviceTensor<T, Rank>::DeviceTensor(const DeviceTensor<T, Rank> &copy, detail::H
 
     hip_catch(hipMemcpy((void *)this->_gpu_dims, (const void *)this->_dims.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
     hip_catch(hipMemcpy((void *)this->_gpu_strides, (const void *)this->_strides.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
+
+    gpu::device_synchronize();
 }
 
 template <typename T, size_t Rank>
 DeviceTensor<T, Rank>::~DeviceTensor() {
     using namespace einsums::gpu;
+
+    gpu::device_synchronize();
 
     switch(_mode) {
     case einsums::detail::MAPPED:
@@ -141,6 +145,8 @@ DeviceTensor<T, Rank>::DeviceTensor(::std::string name, einsums::detail::HostToD
 
     hip_catch(hipMemcpy((void *)this->_gpu_dims, (const void *)this->_dims.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
     hip_catch(hipMemcpy((void *)this->_gpu_strides, (const void *)this->_strides.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
+
+    gpu::device_synchronize();
 }
 
 template <typename T, size_t Rank>
@@ -193,6 +199,8 @@ DeviceTensor<T, Rank>::DeviceTensor(::std::string name, Dims... dims)
 
     hip_catch(hipMemcpy((void *)this->_gpu_dims, (const void *)this->_dims.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
     hip_catch(hipMemcpy((void *)this->_gpu_strides, (const void *)this->_strides.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
+
+    gpu::device_synchronize();
 }
 
 template <typename T, size_t Rank>
@@ -267,6 +275,7 @@ DeviceTensor<T, Rank>::DeviceTensor(DeviceTensor<T, OtherRank> &&existingTensor,
 
     hip_catch(hipMemcpy((void *)this->_gpu_dims, (const void *)this->_dims.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
     hip_catch(hipMemcpy((void *)this->_gpu_strides, (const void *)this->_strides.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
+    gpu::device_synchronize();
 }
 
 template <typename T, size_t Rank>
@@ -309,6 +318,7 @@ DeviceTensor<T, Rank>::DeviceTensor(Dim<Rank> dims, einsums::detail::HostToDevic
 
     hip_catch(hipMemcpy((void *)this->_gpu_dims, (const void *)this->_dims.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
     hip_catch(hipMemcpy((void *)this->_gpu_strides, (const void *)this->_strides.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
+    gpu::device_synchronize();
 }
 
 namespace detail {
@@ -501,6 +511,8 @@ DeviceTensor<T, Rank>::DeviceTensor(const DeviceTensorView<T, Rank> &other) : _n
     hip_catch(hipMemcpy((void *)this->_gpu_dims, (const void *)this->_dims.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
     hip_catch(hipMemcpy((void *)this->_gpu_strides, (const void *)this->_strides.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
 
+    gpu::device_synchronize();
+
     einsums::detail::copy_to_tensor<T, Rank><<<block_size(size), blocks(size), 0, get_stream()>>>(
         this->_data, this->_gpu_dims, this->_gpu_strides, other.gpu_data(), other.gpu_dims(), other.gpu_strides(), size);
 
@@ -623,6 +635,7 @@ void DeviceTensor<T, Rank>::resize(Dim<Rank> dims) {
 
     hip_catch(hipMemcpy((void *)this->_gpu_dims, (const void *)this->_dims.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
     hip_catch(hipMemcpy((void *)this->_gpu_strides, (const void *)this->_strides.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
+    gpu::device_synchronize();
 }
 
 template <typename T, size_t Rank>
@@ -741,6 +754,7 @@ void DeviceTensor<T, Rank>::read(const std::vector<T> &data) {
         break;
     case einsums::detail::DEV_ONLY:
         hip_catch(hipMemcpy((void *)this->_data, (const void *)data.data(), data.size() * sizeof(T), hipMemcpyHostToDevice));
+        gpu::device_synchronize();
         break;
     default:
         throw EINSUMSEXCEPTION("Tensor was not initialized!");
@@ -761,6 +775,7 @@ void DeviceTensor<T, Rank>::write(::std::vector<T> &data) {
         break;
     case einsums::detail::DEV_ONLY:
         hip_catch(hipMemcpy((void *)data.data(), (const void *)this->_data, this->size() * sizeof(T), hipMemcpyDeviceToHost));
+        // No sync
         break;
     default:
         throw EINSUMSEXCEPTION("Tensor was not initialized!");
@@ -778,6 +793,7 @@ void DeviceTensor<T, Rank>::read(const T *data) {
         break;
     case einsums::detail::DEV_ONLY:
         hip_catch(hipMemcpy((void *)this->_data, (const void *)data, this->size() * sizeof(T), hipMemcpyHostToDevice));
+        gpu::device_synchronize();
         break;
     default:
         throw EINSUMSEXCEPTION("Tensor was not initialized!");
@@ -795,6 +811,7 @@ void DeviceTensor<T, Rank>::write(T *data) {
         break;
     case einsums::detail::DEV_ONLY:
         hip_catch(hipMemcpy((void *)data, (const void *)this->_data, this->size() * sizeof(T), hipMemcpyDeviceToHost));
+        // No sync
         break;
     default:
         throw EINSUMSEXCEPTION("Tensor was not initialized!");
@@ -828,6 +845,7 @@ T DeviceTensor<T, Rank>::operator()(MultiIndex... index) const {
         return this->_host_data[ordinal];
     case einsums::detail::DEV_ONLY:
         hip_catch(hipMemcpy((void *)&out, (const void *)this->gpu_data(index...), sizeof(T), hipMemcpyDeviceToHost));
+        // no sync
         return out;
     default:
         throw EINSUMSEXCEPTION("Tensor was not initialized!");
@@ -1002,6 +1020,8 @@ DeviceTensor<T, Rank> &DeviceTensor<T, Rank>::assign(const DeviceTensor<T, Rank>
         hip_catch(hipMemcpy((void *)this->_gpu_dims, (const void *)this->_dims.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
         hip_catch(hipMemcpy((void *)this->_gpu_strides, (const void *)this->_strides.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
 
+        gpu::device_synchronize();
+
         einsums::detail::copy_to_tensor<T, Rank><<<block_size(other.size()), blocks(other.size()), 0, get_stream()>>>(
             this->_data, this->_gpu_dims, this->_gpu_strides, other._data, other._gpu_dims, other._gpu_strides, size);
     } else {
@@ -1079,6 +1099,7 @@ auto DeviceTensor<T, Rank>::assign(const DeviceTensor<TOther, Rank> &other) -> D
 
         hip_catch(hipMemcpy((void *)this->_gpu_dims, (const void *)this->_dims.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
         hip_catch(hipMemcpy((void *)this->_gpu_strides, (const void *)this->_strides.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
+        gpu::device_synchronize();
 
         einsums::detail::copy_to_tensor_conv<T, Rank, TOther><<<block_size(other.size()), blocks(other.size()), 0, get_stream()>>>(
             this->_data, this->_gpu_dims, this->_gpu_strides, other._data, other._gpu_dims, other._gpu_strides, size);
@@ -1147,10 +1168,12 @@ DeviceTensor<T, Rank> &DeviceTensor<T, Rank>::assign(const Tensor<T, Rank> &othe
 
         hip_catch(hipMemcpy((void *)this->_gpu_dims, (const void *)this->_dims.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
         hip_catch(hipMemcpy((void *)this->_gpu_strides, (const void *)this->_strides.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
+        gpu::device_synchronize();
     }
 
     if (this->_mode == einsums::detail::DEV_ONLY) {
         hip_catch(hipMemcpy((void *)this->_data, (const void *)other.data(), this->size() * sizeof(T), hipMemcpyHostToDevice));
+        gpu::device_synchronize();
     } else if(_mode == einsums::detail::MAPPED || _mode == einsums::detail::PINNED) {
         std::memcpy(this->_host_data, other.data(), this->size() * sizeof(T));
     } else {
@@ -1655,6 +1678,7 @@ DeviceTensor<T, Rank>::DeviceTensor(const Tensor<T, Rank> &copy, einsums::detail
         this->_host_data = nullptr;
         hip_catch(hipMalloc((void **)&(this->_data), copy.size() * sizeof(T)));
         hip_catch(hipMemcpy((void *)this->_data, (const void *)copy.data(), copy.size() * sizeof(T), hipMemcpyHostToDevice));
+        gpu::device_synchronize();
     } else {
         throw EINSUMSEXCEPTION("Unknown occupancy mode!");
     }
@@ -1664,6 +1688,7 @@ DeviceTensor<T, Rank>::DeviceTensor(const Tensor<T, Rank> &copy, einsums::detail
 
     hip_catch(hipMemcpy((void *)this->_gpu_dims, (const void *)this->_dims.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
     hip_catch(hipMemcpy((void *)this->_gpu_strides, (const void *)this->_strides.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
+    gpu::device_synchronize();
 }
 
 template <typename T, size_t Rank>
@@ -1674,6 +1699,7 @@ DeviceTensor<T, Rank>::operator Tensor<T, Rank>() const {
     out.set_name(this->_name);
 
     hip_catch(hipMemcpy((void *)out.data(), (const void *)this->_data, this->size() * sizeof(T), hipMemcpyDeviceToHost));
+    // no sync needed
 
     return out;
 }

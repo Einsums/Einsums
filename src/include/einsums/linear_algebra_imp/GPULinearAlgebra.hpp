@@ -256,6 +256,7 @@ typename AType::data_type dot(const AType &A, const BType &B) {
 
     T out;
     hip_catch(hipMemcpy((void *)&out, (void *)gpu_out, sizeof(T), hipMemcpyDeviceToHost));
+    // No sync
 
     hip_catch(hipFree((void *)gpu_out));
 
@@ -281,6 +282,7 @@ typename AType::data_type true_dot(const AType &A, const BType &B) {
 
     T out;
     hip_catch(hipMemcpy((void *)&out, (void *)gpu_out, sizeof(T), hipMemcpyDeviceToHost));
+    // No sync
 
     hip_catch(hipFree((void *)gpu_out));
 
@@ -393,8 +395,8 @@ void gemm(T alpha, const AType &A, const BType &B, T beta, CType *C) {
     hip_catch(hipMalloc((void **)&alpha_gpu, sizeof(dev_datatype)));
     hip_catch(hipMalloc((void **)&beta_gpu, sizeof(dev_datatype)));
 
-    hip_catch(hipMemcpy((void *)alpha_gpu, &alpha, sizeof(dev_datatype), hipMemcpyHostToDevice));
-    hip_catch(hipMemcpy((void *)beta_gpu, &beta, sizeof(dev_datatype), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpyAsync((void *)alpha_gpu, &alpha, sizeof(dev_datatype), hipMemcpyHostToDevice, get_stream()));
+    hip_catch(hipMemcpyAsync((void *)beta_gpu, &beta, sizeof(dev_datatype), hipMemcpyHostToDevice, get_stream()));
 
     gemm<TransA, TransB>((T *)alpha_gpu, A, B, (T *)beta_gpu, C);
 
@@ -420,7 +422,7 @@ void ger(T alpha, const XType &X, const YType &Y, AType *A) {
 
     hip_catch(hipMalloc((void **)&alpha_gpu, sizeof(dev_datatype)));
 
-    hip_catch(hipMemcpy(alpha_gpu, &alpha, sizeof(dev_datatype), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpyAsync(alpha_gpu, &alpha, sizeof(dev_datatype), hipMemcpyHostToDevice, get_stream()));
 
     ger((T *)alpha_gpu, X, Y, A);
 
@@ -444,8 +446,8 @@ void gemv(T alpha, const AType &A, const XType &x, T beta, YType *y) {
     hip_catch(hipMalloc((void **)&alpha_gpu, sizeof(dev_datatype)));
     hip_catch(hipMalloc((void **)&beta_gpu, sizeof(dev_datatype)));
 
-    hip_catch(hipMemcpy((void *)alpha_gpu, (const void *)&alpha, sizeof(dev_datatype), hipMemcpyHostToDevice));
-    hip_catch(hipMemcpy((void *)beta_gpu, (const void *)&beta, sizeof(dev_datatype), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpyAsync((void *)alpha_gpu, (const void *)&alpha, sizeof(dev_datatype), hipMemcpyHostToDevice, get_stream()));
+    hip_catch(hipMemcpyAsync((void *)beta_gpu, (const void *)&beta, sizeof(dev_datatype), hipMemcpyHostToDevice, get_stream()));
 
     gemv<TransA>((T *)alpha_gpu, A, x, (T *)beta_gpu, y);
 
@@ -464,7 +466,7 @@ void scale(T scale_, AType *A) {
 
     hip_catch(hipMalloc((void **)&scale_gpu, sizeof(dev_datatype)));
 
-    hip_catch(hipMemcpy(scale_gpu, &scale_, sizeof(dev_datatype), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpyAsync(scale_gpu, &scale_, sizeof(dev_datatype), hipMemcpyHostToDevice, get_stream()));
 
     scale((T *)scale_gpu, A);
 
@@ -688,7 +690,7 @@ void direct_product(T alpha, const AType &A, const BType &B, T beta, CType *C) {
 
     hip_catch(hipMalloc((void **)&gpu_Ind_strides, Rank * sizeof(size_t)));
 
-    hip_catch(hipMemcpy((void *)gpu_Ind_strides, Index_strides.data(), Rank * sizeof(size_t), hipMemcpyHostToDevice));
+    hip_catch(hipMemcpyAsync((void *)gpu_Ind_strides, Index_strides.data(), Rank * sizeof(size_t), hipMemcpyHostToDevice, get_stream()));
 
     dim3 threads = block_size(elems), num_blocks = blocks(elems);
 

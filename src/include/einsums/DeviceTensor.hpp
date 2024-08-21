@@ -132,6 +132,7 @@ class HostDevReference {
         } else {
             T out;
             gpu::hip_catch(hipMemcpy((void *)&out, (const void *)_ptr, sizeof(T), hipMemcpyDeviceToHost));
+            // no sync
 
             return out;
         }
@@ -147,6 +148,7 @@ class HostDevReference {
         } else {
             T temp = other;
             gpu::hip_catch(hipMemcpy((void *)_ptr, (const void *)&temp, sizeof(T), hipMemcpyHostToDevice));
+            gpu::device_synchronize();
         }
         return *this;
     }
@@ -160,10 +162,11 @@ class HostDevReference {
         } else {
             if (other.is_on_host) {
                 T temp = other.get();
-                gpu::hip_catch(hipMemcpy((void *)_ptr, (const void *)&temp, sizeof(T), hipMemcpyHostToDevice));
+                gpu::hip_catch(hipMemcpyAsync((void *)_ptr, (const void *)&temp, sizeof(T), hipMemcpyHostToDevice, gpu::get_stream()));
             } else if (this->_ptr != other._ptr) {
-                gpu::hip_catch(hipMemcpy((void *)_ptr, (const void *)other._ptr, sizeof(T), hipMemcpyDeviceToDevice));
+                gpu::hip_catch(hipMemcpyAsync((void *)_ptr, (const void *)other._ptr, sizeof(T), hipMemcpyDeviceToDevice, gpu::get_stream()));
             }
+            gpu::stream_wait();
         }
         return *this;
     }
@@ -178,6 +181,7 @@ class HostDevReference {
         } else {
             T temp = other + get();
             gpu::hip_catch(hipMemcpy((void *)_ptr, (const void *)&temp, sizeof(T), hipMemcpyHostToDevice));
+            gpu::device_synchronize();
         }
         return *this;
     }
@@ -191,6 +195,7 @@ class HostDevReference {
         } else {
             T temp = other.get() + get();
             gpu::hip_catch(hipMemcpy((void *)_ptr, (const void *)&temp, sizeof(T), hipMemcpyHostToDevice));
+            gpu::device_synchronize();
         }
         return *this;
     }
@@ -205,6 +210,7 @@ class HostDevReference {
         } else {
             T temp = get() - other;
             gpu::hip_catch(hipMemcpy((void *)_ptr, (const void *)&temp, sizeof(T), hipMemcpyHostToDevice));
+            gpu::device_synchronize();
         }
         return *this;
     }
@@ -218,6 +224,7 @@ class HostDevReference {
         } else {
             T temp = get() - other.get();
             gpu::hip_catch(hipMemcpy((void *)_ptr, (const void *)&temp, sizeof(T), hipMemcpyHostToDevice));
+            gpu::device_synchronize();
         }
         return *this;
     }
@@ -232,6 +239,7 @@ class HostDevReference {
         } else {
             T temp = get() * other;
             gpu::hip_catch(hipMemcpy((void *)_ptr, (const void *)&temp, sizeof(T), hipMemcpyHostToDevice));
+            gpu::device_synchronize();
         }
         return *this;
     }
@@ -245,6 +253,7 @@ class HostDevReference {
         } else {
             T temp = get() * other.get();
             gpu::hip_catch(hipMemcpy((void *)_ptr, (const void *)&temp, sizeof(T), hipMemcpyHostToDevice));
+            gpu::device_synchronize();
         }
         return *this;
     }
@@ -259,6 +268,7 @@ class HostDevReference {
         } else {
             T temp = get() / other;
             gpu::hip_catch(hipMemcpy((void *)_ptr, (const void *)&temp, sizeof(T), hipMemcpyHostToDevice));
+            gpu::device_synchronize();
         }
         return *this;
     }
@@ -272,6 +282,7 @@ class HostDevReference {
         } else {
             T temp = get() / other.get();
             gpu::hip_catch(hipMemcpy((void *)_ptr, (const void *)&temp, sizeof(T), hipMemcpyHostToDevice));
+            gpu::device_synchronize();
         }
         return *this;
     }
@@ -906,6 +917,7 @@ struct DeviceTensor<T, 0> : public virtual tensor_props::DeviceTensorBase,
             gpu::hip_catch(hipMalloc((void **)&_data, sizeof(T)));
             gpu::hip_catch(
                 hipMemcpyAsync((void *)_data, (const void *)other.gpu_data(), sizeof(T), hipMemcpyDeviceToDevice, gpu::get_stream()));
+                gpu::stream_wait();
         } else if (mode == detail::MAPPED) {
             _host_data = new T((T)other);
             gpu::hip_catch(hipHostRegister((void *)_host_data, sizeof(T), hipHostRegisterDefault));
@@ -991,6 +1003,7 @@ struct DeviceTensor<T, 0> : public virtual tensor_props::DeviceTensorBase,
     auto operator=(const DeviceTensor<T, 0> &other) -> DeviceTensor<T, 0> & {
         gpu::hip_catch(
             hipMemcpyAsync((void *)_data, (const void *)other.gpu_data(), sizeof(T), hipMemcpyDeviceToDevice, gpu::get_stream()));
+        gpu::stream_wait();
         return *this;
     }
 
@@ -999,6 +1012,7 @@ struct DeviceTensor<T, 0> : public virtual tensor_props::DeviceTensorBase,
             *_host_data = other;
         } else if(_mode == detail::DEV_ONLY) {
             gpu::hip_catch(hipMemcpyAsync((void *)_data, (const void *)&other, sizeof(T), hipMemcpyHostToDevice, gpu::get_stream()));
+            gpu::stream_wait();
         } else {
             throw EINSUMSEXCEPTION("Tensor was not initialized!");
         }
@@ -1011,8 +1025,10 @@ struct DeviceTensor<T, 0> : public virtual tensor_props::DeviceTensorBase,
         } else if(_mode == detail::DEV_ONLY) {
             T temp;
             gpu::hip_catch(hipMemcpy((void *)&temp, (const void *)_data, sizeof(T), hipMemcpyDeviceToHost));
+            // no sync
             temp += other;
             gpu::hip_catch(hipMemcpyAsync((void *)_data, (const void *)&temp, sizeof(T), hipMemcpyHostToDevice, gpu::get_stream()));
+            gpu::stream_wait();
         } else {
             throw EINSUMSEXCEPTION("Tensor was not initialized!");
         }
@@ -1025,8 +1041,10 @@ struct DeviceTensor<T, 0> : public virtual tensor_props::DeviceTensorBase,
         } else if(_mode == detail::DEV_ONLY) {
             T temp;
             gpu::hip_catch(hipMemcpy((void *)&temp, (const void *)_data, sizeof(T), hipMemcpyDeviceToHost));
+            // no sync
             temp -= other;
             gpu::hip_catch(hipMemcpyAsync((void *)_data, (const void *)&temp, sizeof(T), hipMemcpyHostToDevice, gpu::get_stream()));
+            gpu::stream_wait();
         } else {
             throw EINSUMSEXCEPTION("Tensor was not initialized!");
         }
@@ -1039,8 +1057,10 @@ struct DeviceTensor<T, 0> : public virtual tensor_props::DeviceTensorBase,
         } else if(_mode == detail::DEV_ONLY) {
             T temp;
             gpu::hip_catch(hipMemcpy((void *)&temp, (const void *)_data, sizeof(T), hipMemcpyDeviceToHost));
+            // no sync
             temp *= other;
             gpu::hip_catch(hipMemcpyAsync((void *)_data, (const void *)&temp, sizeof(T), hipMemcpyHostToDevice, gpu::get_stream()));
+            gpu::stream_wait();
         } else {
             throw EINSUMSEXCEPTION("Tensor was not initialized!");
         }
@@ -1053,8 +1073,10 @@ struct DeviceTensor<T, 0> : public virtual tensor_props::DeviceTensorBase,
         } else if(_mode == detail::DEV_ONLY) {
             T temp;
             gpu::hip_catch(hipMemcpy((void *)&temp, (const void *)_data, sizeof(T), hipMemcpyDeviceToHost));
+            // no sync
             temp /= other;
             gpu::hip_catch(hipMemcpyAsync((void *)_data, (const void *)&temp, sizeof(T), hipMemcpyHostToDevice, gpu::get_stream()));
+            gpu::stream_wait();
         } else {
             throw EINSUMSEXCEPTION("Tensor was not initialized!");
         }
@@ -1067,6 +1089,7 @@ struct DeviceTensor<T, 0> : public virtual tensor_props::DeviceTensorBase,
             return *_host_data;
         } else if(_mode == detail::DEV_ONLY) {
             gpu::hip_catch(hipMemcpy((void *)&out, (const void *)_data, sizeof(T), hipMemcpyDeviceToHost));
+            // no sync
             return out;
         } else {
             throw EINSUMSEXCEPTION("Tensor was not initialized!");
@@ -1117,6 +1140,7 @@ struct DeviceTensor<T, 0> : public virtual tensor_props::DeviceTensorBase,
             gpu::hip_catch(hipMallocAsync((void **)&(this->_data), sizeof(T), gpu::get_stream()));
             gpu::hip_catch(
                 hipMemcpyAsync((void *)this->_data, (const void *)other.data(), sizeof(T), hipMemcpyHostToDevice, gpu::get_stream()));
+            gpu::stream_wait();
             break;
         default:
             throw EINSUMSEXCEPTION("Could not understand occupancy mode!");
@@ -1283,6 +1307,7 @@ struct DeviceTensorView : public virtual tensor_props::BasicTensorBase<T, Rank>,
 
         gpu::hip_catch(hipMemcpy((void *)this->_gpu_dims, (const void *)this->_dims.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
         gpu::hip_catch(hipMemcpy((void *)this->_gpu_strides, (const void *)this->_strides.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
+        gpu::device_synchronize();
 
         gpu::hip_catch(hipHostRegister(_host_data, _strides[0] * _dims[0] * sizeof(T), hipHostRegisterDefault));
         gpu::hip_catch(hipHostGetDevicePointer((void **) &_data, _host_data, 0));

@@ -235,7 +235,7 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
             C_data = C->gpu_data();
         } else {
             hip_catch(hipMalloc((void **) &C_data, sizeof(C_devtype)));
-            hip_catch(hipMemcpy(C_data, C, sizeof(C_devtype), hipMemcpyHostToDevice));
+            hip_catch(hipMemcpyAsync(C_data, C, sizeof(C_devtype), hipMemcpyHostToDevice, get_stream()));
         }
 
 
@@ -248,6 +248,7 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
 
         if constexpr (!einsums::detail::IsTensorV<CType>) {
             hip_catch(hipMemcpy(C, C_data, sizeof(C_devtype), hipMemcpyDeviceToHost));
+            // No sync
             hip_catch(hipFree(C_data));
         }
     }
