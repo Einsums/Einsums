@@ -27,7 +27,7 @@ jobs:
         build_type: [ Release, Debug ]
         hptt: [ ON, OFF ]
 
-    name: "${{ matrix.build_type }} • HPTT=${{ matrix.build_with_hptt }}"
+    name: "${{ matrix.build_type }} • HPTT=${{ matrix.hptt }}"
     runs-on: macos-latest
     env:
       CCACHE_DIR: $GITHUB_WORKSPACE/build_cache_${{ inputs.build_cache_suffix }}
@@ -68,8 +68,8 @@ jobs:
             -B "$GITHUB_WORKSPACE/build" \
             -D CMAKE_BUILD_TYPE=${{ matrix.build_type }} \
             -D EINSUMS_SHOW_WARNING=OFF \
-            -D EINSUMS_USE_HPTT=${{ matrix.build_with_hptt }} \
-            -D EINSUMS_STATIC_BUILD=${{ matrix.build_with_hptt }} \
+            -D EINSUMS_USE_HPTT=${{ matrix.hptt }} \
+            -D EINSUMS_STATIC_BUILD=${{ matrix.hptt }} \
             -D CMAKE_INSTALL_PREFIX="${{ github.workspace }}/installed" \
             -D CMAKE_PREFIX_PATH="${CONDA_PREFIX}"
 
