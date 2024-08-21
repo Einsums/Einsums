@@ -1,4 +1,7 @@
 name: einsums-dev
+channels:
+  - conda-forge
+  - nodefaults
 dependencies:
   # Development
   - cmake
