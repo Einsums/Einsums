@@ -117,7 +117,7 @@ jobs:
           ./build/timings
 
       - uses: actions/cache/save@v4
-        if: matrix.hptt == ON
+        if: matrix.hptt == 'ON'
         with:
           path: build_cache_${{ inputs.build_cache_suffix }}
           key: einsums-${{ runner.os }}-${{ inputs.build_cache_suffix }}-${{ github.sha }}
