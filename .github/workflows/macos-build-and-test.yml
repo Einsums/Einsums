@@ -52,7 +52,7 @@ jobs:
         uses: conda-incubator/setup-miniconda@v3
         with:
           activate-environment: einsums-dev
-          environment-file: devtools/conda-envs/macos-build-and-test.yml
+          environment-file: src/devtools/conda-envs/macos-build-and-test.yml
           use-mamba: true
           mamba-version: "*"
 
