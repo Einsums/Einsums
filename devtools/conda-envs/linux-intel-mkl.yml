@@ -12,8 +12,8 @@ dependencies:
   # MKL
   - blas-devel
   - libblas=*=*mkl
-  - mkl
-  - dpcpp_linux-64
+  - mkl=2024.0.0
+  - dpcpp_linux-64=2024.0.0
 
   # Prebuilts to save einsums the work
   - catch2

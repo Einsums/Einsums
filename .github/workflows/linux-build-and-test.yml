@@ -97,6 +97,7 @@ jobs:
       - name: Configure CMake
         run: |
           cmake \
+            -G Ninja \
             -S "$GITHUB_WORKSPACE/src" \
             -B "$GITHUB_WORKSPACE/build" \
             -D CMAKE_C_COMPILER_LAUNCHER=ccache \
