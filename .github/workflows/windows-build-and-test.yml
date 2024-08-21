@@ -99,10 +99,10 @@ jobs:
             -D EINSUMS_USE_HPTT=${{ matrix.hptt }} \
             -D CMAKE_INSTALL_PREFIX="${{ github.workspace }}/installed" \
             -D CMAKE_PREFIX_PATH="${CONDA_PREFIX}" \
-            -D CMAKE_CXX_COMPILER=clang-cl
-            -D CMAKE_C_COMPILER=clang-cl
-            -D MKL_ROOT="${CONDA_PREFIX}"
-            -D EINSUMS_STATIC_BUILD=ON
+            -D CMAKE_CXX_COMPILER=clang-cl \
+            -D CMAKE_C_COMPILER=clang-cl \
+            -D MKL_ROOT="${CONDA_PREFIX}" \
+            -D EINSUMS_STATIC_BUILD=ON \
             -D CMAKE_CXX_FLAGS="-IC:\Miniconda3\envs\einsums-dev\opt\compiler\include"
 
       - name: Build and Install
@@ -146,10 +146,10 @@ jobs:
             --log-level verbose \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_PREFIX_PATH="${CONDA_PREFIX};${CONDA_PREFIX}/Library;${{ github.workspace }}/installed" \
-            -DCMAKE_CXX_COMPILER=clang-cl
-            -DCMAKE_C_COMPILER=clang-cl
-            -DMKL_ROOT="${CONDA_PREFIX}"
-            -DEINSUMS_STATIC_BUILD=ON
+            -DCMAKE_CXX_COMPILER=clang-cl \
+            -DCMAKE_C_COMPILER=clang-cl \
+            -DMKL_ROOT="${CONDA_PREFIX}" \
+            -DEINSUMS_STATIC_BUILD=ON \
            -D ZLIB_USE_STATIC_LIBS=ON     
           cmake --build build
           ./build/timings
