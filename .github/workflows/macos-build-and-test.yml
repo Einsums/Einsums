@@ -105,7 +105,7 @@ jobs:
               INTERFACE_COMPILE_OPTIONS
               INTERFACE_SYSTEM_INCLUDE_DIRECTORIES
             )
-          add_executable(timings "../timing/main.cpp")
+          add_executable(timings "../src/timing/main.cpp")
           target_link_libraries(timings Einsums::einsums)
           EOF
           cmake -S . \
