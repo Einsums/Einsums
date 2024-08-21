@@ -21,12 +21,7 @@ permissions: read-all
 
 jobs:
   build:
-    strategy:
-      fail-fast: false
-      matrix:
-        hptt: [ ON, OFF ]
-
-    name: "HPTT=${{ matrix.hptt }}"
+    name: "HPTT=OFF"
     runs-on: windows-latest
     env:
       CCACHE_DIR: $GITHUB_WORKSPACE/build_cache_${{ inputs.build_cache_suffix }}
@@ -45,8 +40,8 @@ jobs:
         uses: actions/cache@v4
         with:
           path: build_cache_${{ inputs.build_cache_suffix }}
-          key: einsums-${{ runner.os }}-${{ inputs.build_cache_suffix }}-hptt-${{ matrix.hptt }}-${{ github.sha }}
-          restore-keys: einsums-${{ runner.os }}-${{ inputs.build_cache_suffix }}-hptt-${{ matrix.hptt }}-
+          key: einsums-${{ runner.os }}-${{ inputs.build_cache_suffix }}-${{ github.sha }}
+          restore-keys: einsums-${{ runner.os }}-${{ inputs.build_cache_suffix }}-
 
       # From https://github.com/conda-incubator/setup-miniconda?tab=readme-ov-file#caching-environments
       - name: Setup Miniforge
@@ -96,7 +91,7 @@ jobs:
             -D CMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -D CMAKE_BUILD_TYPE=Release \
             -D EINSUMS_SHOW_WARNING=OFF \
-            -D EINSUMS_USE_HPTT=${{ matrix.hptt }} \
+            -D EINSUMS_USE_HPTT=OFF \
             -D CMAKE_INSTALL_PREFIX="${{ github.workspace }}/installed" \
             -D CMAKE_PREFIX_PATH="${CONDA_PREFIX}" \
             -D CMAKE_CXX_COMPILER=clang-cl \
