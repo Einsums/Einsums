@@ -473,35 +473,35 @@ void initialize() {
     hip_catch(hipMemPoolCreate(&pool, &props));
 
     if (detail::default_streams == nullptr) {
-        detail::default_streams = new std::vector<hipStream_t>(omp_get_num_threads());
+        detail::default_streams = new std::vector<hipStream_t>(omp_get_max_threads());
 
-        for (int i = 0; i < omp_get_num_threads(); i++) {
+        for (int i = 0; i < omp_get_max_threads(); i++) {
             hip_catch(hipStreamCreateWithFlags(&(detail::default_streams->at(i)), hipStreamNonBlocking));
         }
     }
 
     if (detail::blas_handles == nullptr) {
-        detail::blas_handles = new std::vector<hipblasHandle_t>(omp_get_num_threads());
+        detail::blas_handles = new std::vector<hipblasHandle_t>(omp_get_max_threads());
 
-        for (int i = 0; i < omp_get_num_threads(); i++) {
+        for (int i = 0; i < omp_get_max_threads(); i++) {
             hipblas_catch(hipblasCreate(&(detail::blas_handles->at(i))));
             hipblas_catch(hipblasSetStream(detail::blas_handles->at(i), detail::default_streams->at(i)));
         }
     }
 
     if (detail::solver_handles == nullptr) {
-        detail::solver_handles = new std::vector<hipsolverHandle_t>(omp_get_num_threads());
+        detail::solver_handles = new std::vector<hipsolverHandle_t>(omp_get_max_threads());
 
-        for (int i = 0; i < omp_get_num_threads(); i++) {
+        for (int i = 0; i < omp_get_max_threads(); i++) {
             hipsolver_catch(hipsolverCreate(&(detail::solver_handles->at(i))));
             hipsolver_catch(hipsolverSetStream(detail::solver_handles->at(i), detail::default_streams->at(i)));
         }
     }
 
     if (detail::skip_waits == nullptr) {
-        detail::skip_waits = new std::vector<bool>(omp_get_num_threads());
+        detail::skip_waits = new std::vector<bool>(omp_get_max_threads());
 
-        for (int i = 0; i < omp_get_num_threads(); i++) {
+        for (int i = 0; i < omp_get_max_threads(); i++) {
             detail::skip_waits->at(i) = false;
         }
     }
@@ -509,7 +509,7 @@ void initialize() {
 
 void finalize() {
     if (detail::blas_handles != nullptr) {
-        for (int i = 0; i < omp_get_num_threads(); i++) {
+        for (int i = 0; i < omp_get_max_threads(); i++) {
             hipblas_catch(hipblasDestroy(detail::blas_handles->at(i)));
         }
         delete detail::blas_handles;
@@ -517,7 +517,7 @@ void finalize() {
     }
 
     if (detail::solver_handles != nullptr) {
-        for (int i = 0; i < omp_get_num_threads(); i++) {
+        for (int i = 0; i < omp_get_max_threads(); i++) {
             hipsolver_catch(hipsolverDestroy(detail::solver_handles->at(i)));
         }
         delete detail::solver_handles;
@@ -563,7 +563,7 @@ __host__ void stream_wait(hipStream_t stream) {
 
 __host__ void all_stream_wait() {
 
-    std::vector<hipEvent_t> wait_events(omp_get_num_threads());
+    std::vector<hipEvent_t> wait_events(omp_get_max_threads());
 
     for (int i = 0; i < wait_events.size(); i++) {
         hip_catch(hipEventCreate(&(wait_events.at(i))));

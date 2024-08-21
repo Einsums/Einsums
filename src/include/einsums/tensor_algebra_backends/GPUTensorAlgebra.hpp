@@ -210,6 +210,7 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
                                                  C->gpu_strides(), HipCast<AB_devtype, AB_hosttype>::cast(AB_prefactor), A.gpu_data(),
                                                  A.gpu_dims(), A.gpu_strides(), B.gpu_data(), B.gpu_dims(), B.gpu_strides(),
                                                  ::std::get<0>(unique_dims) * unique_strides[0]);
+        gpu::stream_wait();
     } else {
         using C_devtype   = typename einsums::tensor_props::DevTypedTensorBase<DataTypeT<CType>>::dev_datatype;
         using A_devtype   = typename AType::dev_datatype;
@@ -243,9 +244,9 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
                                                  HipCast<AB_devtype, AB_hosttype>::cast(AB_prefactor), A.gpu_data(), A.gpu_dims(),
                                                  A.gpu_strides(), B.gpu_data(), B.gpu_dims(), B.gpu_strides(),
                                                  ::std::get<0>(unique_dims) * unique_strides[0]);
+        gpu::stream_wait();
 
         if constexpr (!einsums::detail::IsTensorV<CType>) {
-            gpu::stream_wait();
             hip_catch(hipMemcpy(C, C_data, sizeof(C_devtype), hipMemcpyDeviceToHost));
             hip_catch(hipFree(C_data));
         }
@@ -257,8 +258,6 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
         hip_catch(hipFreeAsync(C_index_table_gpu, get_stream()));
     }
     hip_catch(hipFreeAsync(unique_strides_gpu, get_stream()));
-
-    gpu::stream_wait();
 }
 
 } // namespace detail

@@ -295,7 +295,7 @@ requires requires {
     requires MatrixConcept<AType>;
     requires std::is_same_v<typename AType::data_type, T>;
 }
-void ger(const T *alpha, const XType &X, const YType &Y, AType *A) {
+void ger(const __device_ptr__ T *alpha, const XType &X, const YType &Y, AType *A) {
     using namespace einsums::gpu;
 
     using dev_datatype = typename AType::dev_datatype;
@@ -323,7 +323,7 @@ requires requires {
     requires SameUnderlying<AType, XType, YType>;
     requires std::is_same_v<typename AType::data_type, T>;
 }
-void gemv(const T *alpha, const AType &A, const XType &x, const T *beta, YType *y) {
+void gemv(const __device_ptr__ T *alpha, const AType &A, const XType &x, const T *beta, YType *y) {
     using namespace einsums::gpu;
 
     using dev_datatype = typename AType::dev_datatype;
@@ -343,7 +343,7 @@ void gemv(const T *alpha, const AType &A, const XType &x, const T *beta, YType *
 
 template<DeviceBasicTensorConcept AType, typename T>
 requires(std::is_same_v<typename AType::data_type, T>)
-void scale(const T *alpha, AType *A) {
+void scale(const __device_ptr__ T *alpha, AType *A) {
     using namespace einsums::gpu;
 
     using dev_datatype = typename AType::dev_datatype;
@@ -512,7 +512,7 @@ requires requires {
     requires SameUnderlyingAndRank<XType, YType>;
     requires std::is_same_v<typename XType::data_type, T>;
 }
-void axpy(const T *alpha, const XType &X, YType *Y) {
+void axpy(const __device_ptr__ T *alpha, const XType &X, YType *Y) {
     using namespace einsums::gpu;
 
     gpu::axpy(X.dim(0) * X.stride(0), alpha, X.gpu_data(), 1, Y->gpu_data(), 1);
@@ -524,7 +524,7 @@ requires requires {
     requires SameUnderlyingAndRank<XType, YType>;
     requires std::is_same_v<typename XType::data_type, T>;
 }
-void axpby(const T *alpha, const XType &X, const T *beta, YType *Y) {
+void axpby(const __device_ptr__ T *alpha, const XType &X, const T *beta, YType *Y) {
     using namespace einsums::gpu;
 
     einsums::linear_algebra::detail::gpu::axpby(X.dim(0) * X.stride(0), alpha, X.gpu_data(), 1, beta, Y->gpu_data(), 1);
@@ -599,8 +599,10 @@ requires requires {
     requires MatrixConcept<AType>;
     requires std::is_same_v<typename AType::data_type, T>;
 }
-void scale_row(size_t row, const T *alpha, AType *A) {
+void scale_row(size_t row, const __device_ptr__  T *alpha, AType *A) {
+    using namespace einsums::gpu;
     gpu::scal(A->dim(1), alpha, A->gpu_data(row, 0ul), A->stride(1));
+    stream_wait();
 }
 
 template<DeviceBasicTensorConcept AType, typename T>
@@ -608,8 +610,10 @@ requires requires {
     requires MatrixConcept<AType>;
     requires std::is_same_v<typename AType::data_type, T>;
 }
-void scale_column(size_t col, const T *alpha, AType *A) {
+void scale_column(size_t col, const __device_ptr__ T *alpha, AType *A) {
+    using namespace einsums::gpu;
     gpu::scal(A->dim(0), alpha, A->gpu_data(0ul, col), A->stride(0));
+    stream_wait();
 }
 
 template<DeviceBasicTensorConcept AType, typename T>
