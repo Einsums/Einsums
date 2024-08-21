@@ -86,7 +86,7 @@ jobs:
 
       - name: Update environment
         run:
-          mamba env update -n einsums-env -f src/devtools/conda-envs/${{ format('src/devtools/conda-envs/linux-{0}-{1}.yml', matrix.compiler, matrix.blas) }}.yml
+          mamba env update -n einsums-env -f ${{ format('src/devtools/conda-envs/linux-{0}-{1}.yml', matrix.compiler, matrix.blas) }}.yml
         if: steps.cache.outputs.cache-hit != 'true'
 
       - name: Conda Environment
