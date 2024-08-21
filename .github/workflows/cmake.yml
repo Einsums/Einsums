@@ -13,6 +13,7 @@ concurrency:
 
 jobs:
   detect_changes:
+    name: "Detect Changes"
     uses: ./.github/workflows/detect-changes.yml
 
   #  build:

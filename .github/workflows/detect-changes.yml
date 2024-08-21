@@ -11,7 +11,7 @@ permissions: read-all
 
 jobs:
   need_check:
-    name: Decide could be affected by the changes
+    name: Find
     runs-on: ubuntu-latest
     timeout-minutes: 3
     outputs:
