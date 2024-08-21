@@ -24,10 +24,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        build_type: [ Release, Debug ]
         hptt: [ ON, OFF ]
 
-    name: "${{ matrix.build_type }} • HPTT=${{ matrix.hptt }}"
+    name: "HPTT=${{ matrix.hptt }}"
     runs-on: macos-latest
     env:
       CCACHE_DIR: $GITHUB_WORKSPACE/build_cache_${{ inputs.build_cache_suffix }}
@@ -42,7 +41,7 @@ jobs:
           ref: ${{ inputs.build_ref }}
           path: src
 
-      - uses: actions/cache@v4
+      - uses: actions/cache/restore@v4
         with:
           path: build_cache_${{ inputs.build_cache_suffix }}
           key: einsums-${{ runner.os }}-${{ inputs.build_cache_suffix }}-${{ github.sha }}
@@ -66,7 +65,7 @@ jobs:
             -B "$GITHUB_WORKSPACE/build" \
             -D CMAKE_C_COMPILER_LAUNCHER=ccache \
             -D CMAKE_CXX_COMPILER_LAUNCHER=ccache \
-            -D CMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+            -D CMAKE_BUILD_TYPE=Release \
             -D EINSUMS_SHOW_WARNING=OFF \
             -D EINSUMS_USE_HPTT=${{ matrix.hptt }} \
             -D EINSUMS_STATIC_BUILD=${{ matrix.hptt }} \
@@ -75,7 +74,7 @@ jobs:
 
       - name: Build and Install
         run: |
-          cmake --build "${{ github.workspace }}/build" --config ${{ matrix.build_type }} --target install
+          cmake --build "${{ github.workspace }}/build" --config Release --target install
 
       - name: Test (CTest) - Unit Tests
         working-directory: "${{ github.workspace }}/build"
@@ -112,8 +111,13 @@ jobs:
             -B build \
             -G Ninja \
             --log-level verbose \
-            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+            -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_PREFIX_PATH="${CONDA_PREFIX};${CONDA_PREFIX}/Library;${{ github.workspace }}/installed"
           cmake --build build
           ./build/timings
 
+      - uses: actions/cache/save@v4
+        if: matrix.hptt == ON
+        with:
+          path: build_cache_${{ inputs.build_cache_suffix }}
+          key: einsums-${{ runner.os }}-${{ inputs.build_cache_suffix }}-${{ github.sha }}
