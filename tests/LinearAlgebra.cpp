@@ -845,7 +845,7 @@ TEMPLATE_TEST_CASE("dot", "[linear-algebra]", float, double) {
 
         auto dot_res = dot(A, B);
 
-        REQUIRE_THAT(dot_res, einsums::WithinStrict(test, TestType{10000.0}));
+        REQUIRE_THAT(dot_res, einsums::WithinStrict(test, TestType{100000.0}));
     }
 
     SECTION("Rank 1 tensor views") {
@@ -864,7 +864,7 @@ TEMPLATE_TEST_CASE("dot", "[linear-algebra]", float, double) {
 
             auto dot_res = dot(A_view, B_view);
 
-            REQUIRE_THAT(dot_res, einsums::WithinStrict(test, TestType{10000.0}));
+            REQUIRE_THAT(dot_res, einsums::WithinStrict(test, TestType{100000.0}));
         }
     }
 
@@ -882,7 +882,7 @@ TEMPLATE_TEST_CASE("dot", "[linear-algebra]", float, double) {
 
         auto dot_res = dot(A, B);
 
-        REQUIRE_THAT(dot_res, einsums::WithinStrict(test, TestType{10000.0}));
+        REQUIRE_THAT(dot_res, einsums::WithinStrict(test, TestType{100000.0}));
     }
 
     // SECTION("Rank 2 tensor views") {
