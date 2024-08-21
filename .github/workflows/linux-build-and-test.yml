@@ -78,7 +78,7 @@ jobs:
         with:
           path: ${{ env.CONDA }}/envs
           key:
-            conda-${{ runner.os }}-${{ runner.arch }}-${{ steps.get-date.outputs.today }}-${{ hashFiles(format('src/devtools/conda-envs/linux-{}-{}.yml', matrix.compiler, matrix.blas)) }}-${{ env.CACHE_NUMBER }}
+            conda-${{ runner.os }}-${{ runner.arch }}-${{ steps.get-date.outputs.today }}-${{ hashFiles(format('src/devtools/conda-envs/linux-{0}-{1}.yml', matrix.compiler, matrix.blas)) }}-${{ env.CACHE_NUMBER }}
         env:
           # Increase this value to reset cache if etc/example-environment.yml has not changed
           CACHE_NUMBER: 0
@@ -86,7 +86,7 @@ jobs:
 
       - name: Update environment
         run:
-          mamba env update -n einsums-env -f src/devtools/conda-envs/${{ format('src/devtools/conda-envs/linux-{}-{}.yml', matrix.compiler, matrix.blas) }}.yml
+          mamba env update -n einsums-env -f src/devtools/conda-envs/${{ format('src/devtools/conda-envs/linux-{0}-{1}.yml', matrix.compiler, matrix.blas) }}.yml
         if: steps.cache.outputs.cache-hit != 'true'
 
       - name: Conda Environment
