@@ -1,3 +1,5 @@
+# If you are only interested in working on documentation and not C++ code
+# then this environment file is for you :)
 name: docs-env
 channels:
   - conda-forge
