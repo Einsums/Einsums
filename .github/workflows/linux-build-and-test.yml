@@ -24,11 +24,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        cmake_extra: ""
         compiler: [ gcc, intel ]
         blas: [ openblas, mkl ]
         hptt: [ ON, OFF ]
         include:
+          - cmake_extra: ""
           - compiler: intel
             cmake_extra: >
               -DCMAKE_CXX_COMPILER=icpx
