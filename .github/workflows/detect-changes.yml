@@ -26,7 +26,10 @@ jobs:
               - 'docs/**'
             ci:
               - '.github/workflows/**'
+            tests: &tests
+              - 'tests/**'
             src:
+              - *tests
               - 'src/**'
 
       - name: Set output
