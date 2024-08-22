@@ -46,7 +46,11 @@ auto einsum_special_dispatch(const typename CType::data_type C_prefactor, const 
     compile_index_table(unique_indices, C_indices, C_index_table);
 
     if (C_prefactor == CDataType(0.0)) {
-        C->zero();
+        if constexpr (einsums::detail::IsTiledTensorV<CType> && einsums::detail::IsTensorViewV<CType>) {
+            C->zero_no_clear();
+        } else {
+            C->zero();
+        }
     } else {
         *C *= C_prefactor;
     }

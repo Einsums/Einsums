@@ -207,7 +207,7 @@ auto einsum(const DataTypeT<CType> C_prefactor, const std::tuple<CIndices...> & 
 
     if constexpr (!std::is_same_v<CDataType, ADataType> || !std::is_same_v<CDataType, BDataType> ||
                   (!einsums::detail::IsAlgebraTensorV<AType> || !einsums::detail::IsAlgebraTensorV<BType> ||
-                   !einsums::detail::IsAlgebraTensorV<CType>)) {
+                   (!einsums::detail::IsAlgebraTensorV<CType> && !einsums::detail::IsScalarV<CType>))) {
         // Mixed datatypes and poorly behaved tensor types go directly to the generic algorithm.
         goto generic_default;
     } else if constexpr (dot_product) {
@@ -455,9 +455,9 @@ generic_default:;
     // If we somehow make it here, then none of our algorithms above could be used. Attempt to use
     // the generic algorithm instead.
     if constexpr (einsums::detail::IsAlgebraTensorV<AType> && einsums::detail::IsAlgebraTensorV<BType> &&
-                  einsums::detail::IsAlgebraTensorV<CType> &&
+                  (einsums::detail::IsAlgebraTensorV<CType> || !einsums::detail::IsTensorV<CType>) &&
                   (!einsums::detail::IsBasicTensorV<AType> || !einsums::detail::IsBasicTensorV<BType> ||
-                   !einsums::detail::IsBasicTensorV<CType>)) {
+                   (!einsums::detail::IsBasicTensorV<CType> && einsums::detail::IsTensorV<CType>))) {
         einsum_special_dispatch<OnlyUseGenericAlgorithm>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
     } else {
         einsum_generic_algorithm(C_unique, A_unique, B_unique, link_unique, C_indices, A_indices, B_indices, unique_target_dims,
@@ -476,19 +476,28 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
             const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices, const BType &B) -> void {
     using ADataType        = AType::data_type;
     using BDataType        = BType::data_type;
-    using CDataType        = CType::data_type;
+    using CDataType        = DataTypeT<CType>;
     constexpr size_t ARank = AType::rank;
     constexpr size_t BRank = BType::rank;
-    constexpr size_t CRank = CType::rank;
+    constexpr size_t CRank = TensorRank<CType>;
 
     using ABDataType = std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType>;
 
+    if constexpr (einsums::detail::IsTensorV<CType>) {
     LabeledSection1((std::fabs(UC_prefactor) > EINSUMS_ZERO)
                         ? fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{} + {} "{}"{})", C->name(), print_tuple_no_type(C_indices),
                                       UAB_prefactor, A.name(), print_tuple_no_type(A_indices), B.name(), print_tuple_no_type(B_indices),
                                       UC_prefactor, C->name(), print_tuple_no_type(C_indices))
                         : fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{})", C->name(), print_tuple_no_type(C_indices), UAB_prefactor,
                                       A.name(), print_tuple_no_type(A_indices), B.name(), print_tuple_no_type(B_indices)));
+    } else {
+        LabeledSection1((std::fabs(UC_prefactor) > EINSUMS_ZERO)
+                        ? fmt::format(R"(einsum: "C"{} = {} "{}"{} * "{}"{} + {} "C"{})", print_tuple_no_type(C_indices),
+                                      UAB_prefactor, A.name(), print_tuple_no_type(A_indices), B.name(), print_tuple_no_type(B_indices),
+                                      UC_prefactor, print_tuple_no_type(C_indices))
+                        : fmt::format(R"(einsum: "C"{} = {} "{}"{} * "{}"{})", print_tuple_no_type(C_indices), UAB_prefactor,
+                                      A.name(), print_tuple_no_type(A_indices), B.name(), print_tuple_no_type(B_indices)));
+    }
 
     const CDataType  C_prefactor  = UC_prefactor;
     const ABDataType AB_prefactor = UAB_prefactor;
@@ -498,7 +507,7 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
     auto testC = Tensor<CDataType, CRank>(*C);
     timer::push("testing");
 #    ifdef __HIP__
-    if constexpr (einsums::detail::IsDeviceRankTensorV<CType, CRank, CDataType>) {
+    if constexpr (einsums::detail::IsDeviceTensorV<CType>) {
         auto testA = Tensor<ADataType, ARank>(A);
         auto testB = Tensor<BDataType, BRank>(B);
         // Perform the einsum using only the generic algorithm

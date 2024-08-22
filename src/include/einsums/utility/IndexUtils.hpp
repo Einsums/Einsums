@@ -153,6 +153,19 @@ void dims_to_strides(const ::std::array<size_t, Dims> &dims, std::array<size_t, 
     }
 }
 
+/**
+ * @brief Compute the strides for turning a sentinel into a list of indices.
+ */
+template <size_t Dims>
+void dims_to_strides(const Dim<Dims> &dims, std::array<size_t, Dims> &out) {
+    size_t stride = 1;
+
+    for (int i = Dims - 1; i >= 0; i--) {
+        out[i] = stride;
+        stride *= dims[i];
+    }
+}
+
 template <int I, typename Head, typename Index>
 int compile_index_table(const ::std::tuple<Head> &, const Index &, int &out) {
     if constexpr (::std::is_same_v<Head, Index>) {

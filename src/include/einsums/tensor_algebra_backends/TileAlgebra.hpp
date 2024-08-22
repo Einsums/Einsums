@@ -1,21 +1,23 @@
 #pragma once
 
+#include "einsums/_TensorAlgebraUtilities.hpp"
+
 #include "einsums/TensorAlgebra.hpp"
 #include "einsums/tensor_algebra_backends/Dispatch.hpp"
 #include "einsums/utility/IndexUtils.hpp"
 #include "einsums/utility/TensorTraits.hpp"
-#include "einsums/_TensorAlgebraUtilities.hpp"
 
 #include <tuple>
 
 namespace einsums::tensor_algebra::detail {
 
-template<bool OnlyUseGenericAlgorithm, TiledTensorConcept AType, TiledTensorConcept BType, TiledTensorConcept CType, typename... CIndices, typename... AIndices, typename... BIndices>
-requires(CType::rank != 0)
+template <bool OnlyUseGenericAlgorithm, TiledTensorConcept AType, TiledTensorConcept BType, TiledTensorConcept CType, typename... CIndices,
+          typename... AIndices, typename... BIndices>
+    requires(CType::rank != 0)
 auto einsum_special_dispatch(const typename CType::data_type C_prefactor, const std::tuple<CIndices...> &C_indices, CType *C,
                              const BiggestTypeT<typename AType::data_type, typename BType::data_type> AB_prefactor,
-                             const std::tuple<AIndices...> &A_indices, const AType &A,
-                             const std::tuple<BIndices...> &B_indices, const BType &B) -> void {
+                             const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices,
+                             const BType &B) -> void {
 
     constexpr size_t ARank = AType::rank;
     constexpr size_t BRank = BType::rank;
@@ -41,19 +43,23 @@ auto einsum_special_dispatch(const typename CType::data_type C_prefactor, const 
     compile_index_table(unique_indices, C_indices, C_index_table);
 
     if (C_prefactor == CDataType(0.0)) {
-        C->zero();
+        if constexpr (!einsums::detail::IsTensorViewV<CType>) {
+            C->zero_no_clear();
+        } else {
+            C->zero();
+        }
     } else {
         *C *= C_prefactor;
     }
 
     EINSUMS_OMP_PARALLEL_FOR
     for (size_t sentinel = 0; sentinel < unique_grid[0] * unique_strides[0]; sentinel++) {
-        thread_local std::array<size_t, std::tuple_size<decltype(unique_indices)>::value> unique_index_table;
+        std::array<size_t, std::tuple_size<decltype(unique_indices)>::value> unique_index_table;
 
         sentinel_to_indices(sentinel, unique_strides, unique_index_table);
-        thread_local std::array<int, ARank> A_tile_index;
-        thread_local std::array<int, BRank> B_tile_index;
-        thread_local std::array<int, CRank> C_tile_index;
+        std::array<int, ARank> A_tile_index;
+        std::array<int, BRank> B_tile_index;
+        std::array<int, CRank> C_tile_index;
 
         for (int i = 0; i < ARank; i++) {
             A_tile_index[i] = unique_index_table[A_index_table[i]];
@@ -82,11 +88,12 @@ auto einsum_special_dispatch(const typename CType::data_type C_prefactor, const 
     }
 }
 
-template<bool OnlyUseGenericAlgorithm, TiledTensorConcept AType, TiledTensorConcept BType, ScalarConcept CType, typename... CIndices, typename... AIndices, typename... BIndices>
+template <bool OnlyUseGenericAlgorithm, TiledTensorConcept AType, TiledTensorConcept BType, ScalarConcept CType, typename... CIndices,
+          typename... AIndices, typename... BIndices>
 auto einsum_special_dispatch(const DataTypeT<CType> C_prefactor, const std::tuple<CIndices...> &C_indices, CType *C,
                              const BiggestTypeT<typename AType::data_type, typename BType::data_type> AB_prefactor,
-                             const std::tuple<AIndices...> &A_indices, const AType &A,
-                             const std::tuple<BIndices...> &B_indices, const BType &B) -> void {
+                             const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices,
+                             const BType &B) -> void {
 
     constexpr size_t ARank = AType::rank;
     constexpr size_t BRank = BType::rank;
@@ -94,7 +101,7 @@ auto einsum_special_dispatch(const DataTypeT<CType> C_prefactor, const std::tupl
 
     using ADataType = typename AType::data_type;
     using BDataType = typename BType::data_type;
-    using CDataType = typename CType::data_type;
+    using CDataType = DataTypeT<CType>;
 
     constexpr auto unique_indices = unique_t<std::tuple<CIndices..., AIndices..., BIndices...>>();
     auto           unique_grid    = get_grid_ranges_for_many(*C, C_indices, A, A_indices, B, B_indices, unique_indices);
@@ -119,11 +126,11 @@ auto einsum_special_dispatch(const DataTypeT<CType> C_prefactor, const std::tupl
 
 #pragma omp parallel for reduction(+ : out)
     for (size_t sentinel = 0; sentinel < unique_grid[0] * unique_strides[0]; sentinel++) {
-        thread_local std::array<size_t, std::tuple_size<decltype(unique_indices)>::value> unique_index_table;
+        std::array<size_t, std::tuple_size<decltype(unique_indices)>::value> unique_index_table;
 
         sentinel_to_indices(sentinel, unique_strides, unique_index_table);
-        thread_local std::array<int, ARank> A_tile_index;
-        thread_local std::array<int, BRank> B_tile_index;
+        std::array<int, ARank> A_tile_index;
+        std::array<int, BRank> B_tile_index;
 
         for (int i = 0; i < ARank; i++) {
             A_tile_index[i] = unique_index_table[A_index_table[i]];
@@ -133,14 +140,14 @@ auto einsum_special_dispatch(const DataTypeT<CType> C_prefactor, const std::tupl
             B_tile_index[i] = unique_index_table[B_index_table[i]];
         }
 
-        if(!A.has_tile(A_tile_index) || !B.has_tile(B_tile_index) || A.has_zero_size(A_tile_index) || B.has_zero_size(B_tile_index)) {
+        if (!A.has_tile(A_tile_index) || !B.has_tile(B_tile_index) || A.has_zero_size(A_tile_index) || B.has_zero_size(B_tile_index)) {
             continue;
         }
 
-            CDataType C_tile{0.0};
-            einsum<OnlyUseGenericAlgorithm>(CDataType{0.0}, C_indices, &C_tile, AB_prefactor, A_indices, A.tile(A_tile_index), B_indices,
-                                            B.tile(B_tile_index));
-            out += C_tile;
+        CDataType C_tile{0.0};
+        einsum<OnlyUseGenericAlgorithm>(CDataType{0.0}, C_indices, &C_tile, AB_prefactor, A_indices, A.tile(A_tile_index), B_indices,
+                                        B.tile(B_tile_index));
+        out += C_tile;
     }
 
     *C += out;

@@ -264,6 +264,7 @@ std::vector<hipblasHandle_t>   *blas_handles    = nullptr;
 std::vector<hipsolverHandle_t> *solver_handles  = nullptr;
 std::vector<hipStream_t>       *default_streams = nullptr;
 std::vector<bool>              *skip_waits      = nullptr;
+std::mutex                      wait_mutex;
 } // namespace detail
 
 __host__ void __hipblas_catch__(hipblasStatus_t status, const char *func_call, const char *fname, const char *location,
@@ -531,7 +532,6 @@ void finalize() {
         delete detail::default_streams;
         detail::default_streams = nullptr;
     }
-    // hip_catch(hipDeviceReset());
     hip_catch(hipMemPoolDestroy(pool));
 }
 
@@ -555,7 +555,12 @@ __host__ void stream_wait(hipStream_t stream) {
     hipEvent_t wait_event;
 
     hip_catch(hipEventCreate(&wait_event));
+
+    detail::wait_mutex.lock();
+
     hip_catch(hipEventRecord(wait_event, stream));
+
+    detail::wait_mutex.unlock();
 
     hip_catch(hipEventSynchronize(wait_event));
     hip_catch(hipEventDestroy(wait_event));
@@ -565,10 +570,14 @@ __host__ void all_stream_wait() {
 
     std::vector<hipEvent_t> wait_events(omp_get_max_threads());
 
+    detail::wait_mutex.lock();
+
     for (int i = 0; i < wait_events.size(); i++) {
         hip_catch(hipEventCreate(&(wait_events.at(i))));
         hip_catch(hipEventRecord(wait_events.at(i), detail::default_streams->at(i)));
     }
+
+    detail::wait_mutex.unlock();
 
     for (int i = 0; i < wait_events.size(); i++) {
         hip_catch(hipEventSynchronize(wait_events.at(i)));
@@ -580,6 +589,7 @@ __host__ void all_stream_wait() {
  * @brief Gets the stream assigned to the current thread.
  */
 hipStream_t get_stream() {
+    auto guard = std::lock_guard(detail::wait_mutex);
     return get_stream(omp_get_thread_num());
 }
 hipStream_t get_stream(int thread_id) {
@@ -597,6 +607,7 @@ void set_stream(hipStream_t stream) {
 }
 
 void set_stream(hipStream_t stream, int thread_id) {
+    auto guard = std::lock_guard(detail::wait_mutex);
     detail::default_streams->at(thread_id) = stream;
 
     hipblas_catch(hipblasSetStream(get_blas_handle(), stream));

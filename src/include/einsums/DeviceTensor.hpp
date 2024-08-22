@@ -644,10 +644,12 @@ struct DeviceTensor : public virtual einsums::tensor_props::DeviceTensorBase,
     void write(T *data);
 
     /**
-     * Assignments with a stream.
+     * Assignments
      */
     DeviceTensor<T, Rank> &assign(const DeviceTensor<T, Rank> &other);
     DeviceTensor<T, Rank> &assign(const Tensor<T, Rank> &other);
+
+    DeviceTensor<T, Rank> &init(const DeviceTensor<T, Rank> &other, einsums::detail::HostToDeviceMode mode = einsums::detail::UNKNOWN);
 
     template <typename TOther>
         requires(!std::same_as<T, TOther>)
@@ -1320,6 +1322,10 @@ struct DeviceTensorView : public virtual tensor_props::BasicTensorBase<T, Rank>,
     DeviceTensorView<T, Rank> &assign(const AType<T, Rank> &other);
 
     void set_all(const T &value);
+
+    void zero() {
+        set_all(T{0.0});
+    }
 
     /**
      * @brief Copy as much data as is needed from the host pointer to the device.

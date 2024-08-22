@@ -762,6 +762,47 @@ struct BlockTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
     }
 
     [[nodiscard]] auto full_view_of_underlying() const noexcept -> bool override { return true; }
+
+    virtual void lock() const override {
+        LockableTensorBase::lock();
+    }
+
+    virtual void unlock() const override {
+        LockableTensorBase::unlock();
+    }
+
+    virtual bool try_lock() const override {
+        return LockableTensorBase::try_lock();
+    }
+
+    /**
+     * Lock the specific block.
+     */
+    virtual void lock(int block) const {
+        if constexpr (einsums::detail::IsLockableTensorV<TensorType>) {
+            _blocks.at(block).lock();
+        }
+    }
+
+    /**
+     * Try to lock the specific block.
+     */
+    virtual bool try_lock(int block) const {
+        if constexpr (einsums::detail::IsLockableTensorV<TensorType>) {
+            return _blocks.at(block).try_lock();
+        } else {
+            return true;
+        }
+    }
+
+    /**
+     * Unlock the specific block.
+     */
+    virtual void unlock(int block) const {
+        if constexpr (einsums::detail::IsLockableTensorV<TensorType>) {
+            _blocks.at(block).unlock();
+        }
+    }
 };
 } // namespace tensor_props
 

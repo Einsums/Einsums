@@ -30,14 +30,12 @@ namespace detail {
 
 namespace gpu {
 
-template <typename T>
-__global__ void dot_kernel(T *C, const T *__restrict__ A, const T *__restrict__ B, size_t elements) {
+template <size_t Rank, typename T>
+__global__ void dot_kernel(T *C, const T *__restrict__ A, const T *__restrict__ B, const size_t *__restrict__ dims, const size_t *__restrict__ strides, const size_t *__restrict__ A_strides, const size_t *__restrict__ B_strides) {
     using namespace einsums::gpu;
     int thread_id, kernel_size;
 
     get_worker_info(thread_id, kernel_size);
-
-    size_t curr_index = thread_id;
 
     T temp;
     make_zero(temp);
@@ -45,22 +43,31 @@ __global__ void dot_kernel(T *C, const T *__restrict__ A, const T *__restrict__ 
         make_zero(*C);
     }
 
-    while (curr_index < elements) {
-        temp = temp + A[curr_index] * B[curr_index];
-        curr_index += kernel_size;
+    size_t A_index, B_index;
+
+    for(size_t curr_index = thread_id; curr_index < dims[0] * strides[0]; curr_index += kernel_size) {
+        A_index = 0;
+        B_index = 0;
+        size_t quotient = curr_index;
+
+        for(int i = 0; i < Rank; i++) {
+            A_index += (quotient / strides[i]) * A_strides[i];
+            B_index += (quotient / strides[i]) * B_strides[i];
+            quotient %= strides[i];
+        }
+
+        temp = temp + A[A_index] * B[B_index];
     }
 
     einsums::gpu::atomicAdd_wrap(C, temp);
 }
 
-template <typename T>
-__global__ void true_dot_kernel(T *C, const T *__restrict__ A, const T *__restrict__ B, size_t elements) {
+template <size_t Rank, typename T>
+__global__ void true_dot_kernel(T *C, const T *__restrict__ A, const T *__restrict__ B, const size_t *__restrict__ dims, const size_t *__restrict__ strides, const size_t *__restrict__ A_strides, const size_t *__restrict__ B_strides) {
     using namespace einsums::gpu;
     int thread_id, kernel_size;
 
     get_worker_info(thread_id, kernel_size);
-
-    size_t curr_index = thread_id;
 
     T temp;
     make_zero(temp);
@@ -68,7 +75,19 @@ __global__ void true_dot_kernel(T *C, const T *__restrict__ A, const T *__restri
         make_zero(*C);
     }
 
-    while (curr_index < elements) {
+    size_t A_index, B_index;
+
+    for(size_t curr_index = thread_id; curr_index < dims[0] * strides[0]; curr_index += kernel_size) {
+        A_index = 0;
+        B_index = 0;
+        size_t quotient = curr_index;
+
+        for(int i = 0; i < Rank; i++) {
+            A_index += (quotient / strides[i]) * A_strides[i];
+            B_index += (quotient / strides[i]) * B_strides[i];
+            quotient %= strides[i];
+        }
+
         if constexpr (std::is_same_v<T, hipComplex> || std::is_same_v<T, hipDoubleComplex>) {
             T conjugate = A[curr_index];
             conjugate.y = -conjugate.y;
@@ -76,7 +95,6 @@ __global__ void true_dot_kernel(T *C, const T *__restrict__ A, const T *__restri
         } else {
             temp = temp + A[curr_index] * B[curr_index];
         }
-        curr_index += kernel_size;
     }
 
     einsums::gpu::atomicAdd_wrap(C, temp);
@@ -211,7 +229,11 @@ __global__ void direct_product_kernel(T beta, T *__restrict__ C, const size_t *_
             C_index += index[i] * C_strides[i];
         }
 
-        C[C_index] = beta * C[C_index] + alpha * A[A_index] * B[B_index];
+        if(beta == T{0.0}) {
+            C[C_index] = alpha * A[A_index] * B[B_index];
+        } else {
+            C[C_index] = beta * C[C_index] + alpha * A[A_index] * B[B_index];
+        }
     }
 }
 
@@ -244,14 +266,27 @@ typename AType::data_type dot(const AType &A, const BType &B) {
 
     using dev_datatype = typename AType::dev_datatype;
     using T = typename AType::data_type;
+    constexpr size_t Rank = AType::rank;
 
     __device_ptr__ dev_datatype *gpu_out;
     auto                         grid       = block_size(A.size());
     auto                         num_blocks = blocks(A.size());
+    size_t *gpu_strides;
+    std::array<size_t, Rank> strides;
 
     hip_catch(hipMalloc((void **)&gpu_out, sizeof(T)));
+    hip_catch(hipMalloc((void**) &gpu_strides, Rank * sizeof(size_t)));
 
-    gpu::dot_kernel<<<block_size(A.size()), blocks(A.size()), 0, get_stream()>>>(gpu_out, A.gpu_data(), B.gpu_data(), A.size());
+    size_t prod = 1;
+
+    for(int i = Rank - 1; i >= 0; i--) {
+        strides[i] = prod;
+        prod *= A.dim(i);
+    }
+
+    hip_catch(hipMemcpy(gpu_strides, strides.data(), Rank * sizeof(size_t), hipMemcpyHostToDevice));
+
+    gpu::dot_kernel<Rank><<<block_size(A.size()), blocks(A.size()), 0, get_stream()>>>(gpu_out, A.gpu_data(), B.gpu_data(), A.gpu_dims(), gpu_strides, A.gpu_strides(), B.gpu_strides());
     stream_wait();
 
     T out;
@@ -259,6 +294,7 @@ typename AType::data_type dot(const AType &A, const BType &B) {
     // No sync
 
     hip_catch(hipFree((void *)gpu_out));
+    hip_catch(hipFree((void*) gpu_strides));
 
     return out;
 }
@@ -270,14 +306,28 @@ typename AType::data_type true_dot(const AType &A, const BType &B) {
 
     using dev_datatype = typename AType::dev_datatype;
     using T = typename AType::data_type;
+    constexpr size_t Rank = AType::rank;
 
     __device_ptr__ dev_datatype *gpu_out;
+    size_t *gpu_strides;
+    std::array<size_t, Rank> strides;
+
     auto                         grid       = block_size(A.size());
     auto                         num_blocks = blocks(A.size());
 
     hip_catch(hipMalloc((void **)&gpu_out, sizeof(T)));
+    hip_catch(hipMalloc((void**) &gpu_strides, Rank * sizeof(size_t)));
 
-    gpu::true_dot_kernel<<<block_size(A.size()), blocks(A.size()), 0, get_stream()>>>(gpu_out, A.gpu_data(), B.gpu_data(), A.size());
+    size_t prod = 1;
+
+    for(int i = Rank - 1; i >= 0; i--) {
+        strides[i] = prod;
+        prod *= A.dim(i);
+    }
+
+    hip_catch(hipMemcpy(gpu_strides, strides.data(), Rank * sizeof(size_t), hipMemcpyHostToDevice));
+
+    gpu::true_dot_kernel<Rank><<<block_size(A.size()), blocks(A.size()), 0, get_stream()>>>(gpu_out, A.gpu_data(), B.gpu_data(), A.gpu_dims(), gpu_strides, A.gpu_strides(), B.gpu_strides());
     stream_wait();
 
     T out;
@@ -285,6 +335,7 @@ typename AType::data_type true_dot(const AType &A, const BType &B) {
     // No sync
 
     hip_catch(hipFree((void *)gpu_out));
+    hip_catch(hipFree((void*) gpu_strides));
 
     return out;
 }
@@ -690,7 +741,7 @@ void direct_product(T alpha, const AType &A, const BType &B, T beta, CType *C) {
 
     hip_catch(hipMalloc((void **)&gpu_Ind_strides, Rank * sizeof(size_t)));
 
-    hip_catch(hipMemcpyAsync((void *)gpu_Ind_strides, Index_strides.data(), Rank * sizeof(size_t), hipMemcpyHostToDevice, get_stream()));
+    hip_catch(hipMemcpy((void *)gpu_Ind_strides, Index_strides.data(), Rank * sizeof(size_t), hipMemcpyHostToDevice));
 
     dim3 threads = block_size(elems), num_blocks = blocks(elems);
 

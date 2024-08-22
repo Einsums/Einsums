@@ -57,11 +57,14 @@ struct TiledTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
      */
     virtual void add_tile(std::array<int, Rank> pos) = 0;
 
+    template<typename TOther, size_t RankOther, typename TensorTypeOther>
+    friend struct TiledTensorBase;
+
   public:
     /**
      * Create a new empty tiled tensor.
      */
-    TiledTensorBase() : _tile_offsets(), _tile_sizes(), _tiles(), _size(0), _dims{} {}
+    TiledTensorBase() : _tile_offsets(), _tile_sizes(), _tiles(), _size(0), _dims{}, _grid_size{0} {}
 
     /**
      * Create a new empty tiled tensor with the given grid. If only one grid is given, the grid is applied to all dimensions.
@@ -128,7 +131,21 @@ struct TiledTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
      */
     TiledTensorBase(const TiledTensorBase<T, Rank, TensorType> &other)
         : _tile_offsets(other._tile_offsets), _tile_sizes(other._tile_sizes), _name(other._name), _size(other._size), _tiles(),
-          _dims{other._dims} {
+          _dims{other._dims}, _grid_size{other._grid_size} {
+        for (auto &pair : other._tiles) {
+            _tiles[pair.first] = TensorType(pair.second);
+        }
+    }
+
+    /**
+     * Copy a tiled tensor from one tensor type to another.
+     *
+     * @param other The tensor to be copied and converted.
+     */
+    template<TRTensorConcept<Rank, T> OtherTensor>
+    TiledTensorBase(const TiledTensorBase<T, Rank, OtherTensor> &other) 
+        : _tile_offsets(other._tile_offsets), _tile_sizes(other._tile_sizes), _name(other._name), _size(other._size), _tiles(),
+          _dims{other._dims}, _grid_size{other._grid_size} {
         for (auto &pair : other._tiles) {
             _tiles[pair.first] = TensorType(pair.second);
         }
@@ -823,6 +840,10 @@ struct TiledTensor final : public virtual tensor_props::TiledTensorBase<T, Rank,
 
     TiledTensor(const TiledTensor<T, Rank> &other) : tensor_props::TiledTensorBase<T, Rank, Tensor<T, Rank>>(other) {}
 
+    template<TiledTensorConcept OtherTensor>
+        requires(SameUnderlyingAndRank<TiledTensor<T, Rank>, OtherTensor>)
+    TiledTensor(const OtherTensor &other) : tensor_props::TiledTensorBase<T, Rank, Tensor<T, Rank>>(other) {}
+
     ~TiledTensor() = default;
     
     template<TiledTensorConcept TensorOther>
@@ -915,6 +936,9 @@ struct TiledDeviceTensor final : public virtual tensor_props::TiledTensorBase<T,
         : tensor_props::TiledTensorBase<T, Rank, DeviceTensor<T, Rank>>(name, sizes...) {}
 
     TiledDeviceTensor(const TiledDeviceTensor<T, Rank> &other) = default;
+
+    template<RankTiledTensor<Rank, T> OtherType>
+    TiledDeviceTensor(const OtherType &other) : tensor_props::TiledTensorBase<T, Rank, DeviceTensor<T, Rank>>(other) { }
 
     ~TiledDeviceTensor() = default;
 
