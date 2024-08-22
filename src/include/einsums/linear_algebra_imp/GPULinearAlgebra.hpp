@@ -771,15 +771,15 @@ namespace gpu {
  * @param lda The leading dimension of the out_matrix. lda >= n.
  * @param eigs The eigenvalues to copy.
  */
-template <typename T>
-__global__ void eig_to_diag(T *out_matrix, int n, int lda, const T *eigs, T expo) {
+template <typename T, typename U>
+__global__ void eig_to_diag(T *__restrict__ out_matrix, int n, int lda, const U *__restrict__ eigs, T expo) {
     int thread_id, num_threads;
 
     get_worker_info(thread_id, num_threads);
 
     // Copy to diagonal. Assume the matrix is zeroed, or at least that the user needs the off-diagonal entries.
     for (int i = thread_id; i < n; i += num_threads) {
-        out_matrix[i * lda + i] = ::pow(eigs[i], expo);
+        out_matrix[i * lda + i] = ::pow(einsums::gpu::HipCast<T, U>::cast(eigs[i]), expo);
     }
 }
 } // namespace gpu
@@ -789,7 +789,7 @@ template <MatrixConcept AType>
 auto pow(const AType &a, typename AType::host_datatype alpha,
          typename AType::host_datatype cutoff = std::numeric_limits<typename AType::host_datatype>::epsilon()) -> remove_view_t<AType> {
     using T = typename AType::host_datatype;
-    DeviceTensor<T, 1> Evals(Dim<1>{a.dim(0)}, ::einsums::detail::DEV_ONLY);
+    DeviceTensor<RemoveComplexT<T>, 1> Evals(Dim<1>{a.dim(0)}, ::einsums::detail::DEV_ONLY);
 
     remove_view_t<AType> Evecs = create_tensor_like(a);
 
@@ -800,7 +800,11 @@ auto pow(const AType &a, typename AType::host_datatype alpha,
 
     Evecs.assign(a);
 
-    syev<true>(&Evecs, &Evals);
+    if constexpr (einsums::IsComplexV<AType>) {
+        hyev<true>(&Evecs, &Evals);
+    } else {
+        syev<true>(&Evecs, &Evals);
+    }
 
     Diag.zero();
 

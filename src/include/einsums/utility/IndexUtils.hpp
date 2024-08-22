@@ -106,6 +106,10 @@ inline auto get_dim_ranges_for_many(const CType &C, const ::std::tuple<CIndices.
 
 /**
  * @brief Converts a single sentinel value into a list of indices.
+ *
+ * @param sentinel The sentinel to convert.
+ * @param unique_strides The strides of the unique indices that the sentinel is iterating over.
+ * @param out_inds The converted indices.
  */
 template <size_t num_unique_inds>
 HOSTDEV inline void sentinel_to_indices(size_t sentinel, const size_t *unique_strides, size_t *out_inds) {
@@ -140,6 +144,9 @@ inline void sentinel_to_indices(size_t sentinel, const std::array<size_t, num_un
 
 /**
  * @brief Compute the strides for turning a sentinel into a list of indices.
+ *
+ * @param dims The list of dimensions.
+ * @param out The calculated strides.
  */
 template <size_t Dims>
 void dims_to_strides(const ::std::array<size_t, Dims> &dims, std::array<size_t, Dims> &out) {
@@ -151,9 +158,6 @@ void dims_to_strides(const ::std::array<size_t, Dims> &dims, std::array<size_t, 
     }
 }
 
-/**
- * @brief Compute the strides for turning a sentinel into a list of indices.
- */
 template <size_t Dims>
 void dims_to_strides(const Dim<Dims> &dims, std::array<size_t, Dims> &out) {
     size_t stride = 1;
@@ -207,11 +211,6 @@ void compile_index_table(const ::std::tuple<UniqueIndices...> &from_inds, const 
     ::std::array<int, sizeof...(Indices)> arr{compile_index_table<0>(from_inds, ::std::get<I>(to_inds), out[I])...};
 }
 
-/**
- * @brief Turn a list of indices into a link table.
- *
- * Takes a list of indices and creates a mapping so that an index list for a tensor can reference the unique index list.
- */
 template <typename... UniqueIndices, typename... Indices>
 void compile_index_table(const ::std::tuple<UniqueIndices...> &from_inds, const ::std::tuple<Indices...> &to_inds,
                          std::array<int, sizeof...(Indices)> &out) {

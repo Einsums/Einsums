@@ -576,6 +576,11 @@ inline void device_synchronize() {
     hip_catch(hipDeviceSynchronize());
 }
 
+/**
+ * @brief Checks whether the parameter is exactly zero for its type.
+ *
+ * This is needed because of the lack of portability between types on the device.
+ */
 __device__ inline bool is_zero(double value) {
     return value == 0.0;
 }
@@ -592,6 +597,12 @@ __device__ inline bool is_zero(hipDoubleComplex value) {
     return value.x == 0.0 && value.y == 0.0;
 }
 
+
+/**
+ * @brief Sets the input to zero for its type.
+ *
+ * This is needed because of the lack of portability between types on the device.
+ */
 __device__ inline void make_zero(double &value) {
     value = 0.0;
 }
@@ -640,6 +651,9 @@ __device__ inline void atomicAdd_wrap(hipDoubleComplex *address, hipDoubleComple
     atomicAdd(&(address->y), value.y);
 }
 
+/**
+ * @brief Returns the number of threads within a warp on the current GPU device.
+ */
 __host__ EINSUMS_EXPORT int get_warpsize(void);
 
 END_EINSUMS_NAMESPACE_HPP(einsums::gpu)

@@ -5,9 +5,27 @@
 namespace einsums {
 
 namespace detail {
+
+/**
+ * @brief Remove identifying information from a path, such as directory structure and usernames.
+ *
+ * If EINSUMS_ANONYMIZE is disabled, this simply returns the path passed in.
+ * Otherwise, this starts by checking for the src/ directory, the tests/ directory, or the timing/ directory.
+ * If any of those are found, then all directories above those are removed, and /git/ is prepended to the 
+ * resulting string, since these directories should only exist in a local Git repository for Einsums.
+ * If none of those are found, then it looks for include/, since this is where Einsums' headers will be
+ * made available once installed. If it finds this, then it removes all other directories from before this
+ * and prepends /install/ to the string, since the error is likely thrown from an installed file.
+ * If none of those are found, then it defaults to just returning the file path without any transformations.
+ */
 EINSUMS_EXPORT std::string anonymize(std::string fpath);
 }
 
+/**
+ * @struct EinsumsException
+ *
+ * @brief Represents an exception that includes information on where it was thrown from.
+ */
 struct EinsumsException : std::exception {
   private:
     std::string _what;
@@ -45,6 +63,15 @@ struct EinsumsException : std::exception {
 
 #define __EINSUMS_EXCEPTION_STR1__(x) #x
 #define __EINSUMS_EXCEPTION_STR__(x)  __EINSUMS_EXCEPTION_STR1__(x)
+/**
+ * @def EINSUMSEXCEPTION
+ *
+ * @brief Create an EinsumsException with the specified message.
+ *
+ * This creates the exception and initializes it with the file it was thrown from, the line it was
+ * thrown from within the file, and the name of the function that threw it. It also adds a user-specified
+ * message.
+ */
 #define EINSUMSEXCEPTION(what)                                                                                                             \
     einsums::EinsumsException(einsums::detail::anonymize(__FILE__).c_str(), __EINSUMS_EXCEPTION_STR__(__LINE__),                           \
                               std::source_location::current().function_name(), (what))

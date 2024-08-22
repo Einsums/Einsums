@@ -365,11 +365,15 @@ auto pow(const AType &a, typename AType::data_type alpha,
     remove_view_t<AType> a1     = a;
     remove_view_t<AType> result = create_tensor_like(a);
     result.set_name("pow result");
-    Tensor<T, 1> e{"e", n};
+    Tensor<RemoveComplexT<T>, 1> e{"e", n};
     result.zero();
 
     // Diagonalize
-    syev<true>(&a1, &e);
+    if constexpr (einsums::IsComplexV<AType>) {
+        hyev<true>(&a1, &e);
+    } else {
+        syev<true>(&a1, &e);
+    }
 
     remove_view_t<AType> a2(a1);
 

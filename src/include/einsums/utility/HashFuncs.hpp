@@ -24,7 +24,7 @@ struct container_hash {
     virtual ~container_hash() = default;
 
     /**
-     * Hashes the container.
+     * Hashes the contents of a container.
      *
      * @param cont The container to hash.
      * @return The container's hash.

@@ -15,9 +15,32 @@ namespace detail {
 template <typename T, size_t Rank>
 struct TensorBase;
 
+/**
+ * @struct AdditionOp
+ *
+ * @brief Represents the addition between two tensors or between a tensor and a scalar.
+ */
 struct AdditionOp {};
+
+/**
+ * @struct AdditionOp
+ *
+ * @brief Represents the addition between two tensors or between a tensor and a scalar.
+ */
 struct SubtractionOp {};
+
+/**
+ * @struct AdditionOp
+ *
+ * @brief Represents the addition between two tensors or between a tensor and a scalar.
+ */
 struct MultiplicationOp {};
+
+/**
+ * @struct AdditionOp
+ *
+ * @brief Represents the addition between two tensors or between a tensor and a scalar.
+ */
 struct DivisionOp {};
 
 #ifndef __HIP__
@@ -56,6 +79,18 @@ __host__ __device__ inline T compute_arithmetic(const std::tuple<SubtractionOp, 
 
 } // namespace detail
 
+/**
+ * @struct ArithmeticTensor
+ *
+ * This struct allows for lazy evaluation of simple arithmetic expressions without the need to create
+ * several intermediate tensors. The goal is to have these be turned into simple arithmetic expressions
+ * on the elements of the input tensors at compile time. Then, when an assignment is performed, the
+ * elements of the tensors are looped and placed through this arithmetic expression.
+ *
+ * @tparam T The underlying type.
+ * @tparam Rank The rank of the tensors.
+ * @tparam Args The specific set of operations needed to perform the arithmetic operations.
+ */
 template <typename T, size_t Rank, typename... Args>
 struct ArithmeticTensor : public virtual tensor_props::TensorBase<T, Rank>, virtual tensor_props::CoreTensorBase {
   protected:

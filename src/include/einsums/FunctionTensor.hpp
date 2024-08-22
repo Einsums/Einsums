@@ -20,6 +20,15 @@ template <typename T, size_t Rank, size_t BaseRank>
 struct DeviceFunctionTensorView;
 #endif
 
+/**
+ * @struct FunctionTensorBase
+ *
+ * @brief Base class for function tensors.
+ *
+ * A function tensor is one which takes advantage of the use of the operator() to index tensors to provide a way to
+ * call a function. An example of this might be the Kronecker delta, which has such simple structure that creating
+ * a whole new tensor object for it would be wasteful. 
+ */
 namespace tensor_props {
 template <typename T, size_t Rank>
 struct FunctionTensorBase : public virtual TensorBase<T, Rank>, virtual FunctionTensorBaseNoExtra, virtual CoreTensorBase {
@@ -28,6 +37,9 @@ struct FunctionTensorBase : public virtual TensorBase<T, Rank>, virtual Function
     std::string _name{"(unnamed)"};
     size_t      _size;
 
+    /**
+     * @brief Checks for negative indices and makes them positive, then performs range checking.
+     */
     virtual void fix_indices(std::array<int, Rank> *inds) const {
         for (int i = 0; i < Rank; i++) {
             int orig = inds->at(i);
@@ -87,6 +99,13 @@ struct FunctionTensorBase : public virtual TensorBase<T, Rank>, virtual Function
 
     virtual ~FunctionTensorBase() = default;
 
+    /**
+     * @brief Call the function.
+     *
+     * This is the method that should be overloaded in child classes to perform the actual
+     * function call. Due to the inability to override methods with variable parameters,
+     * this method with a set input type is the workaround.
+     */
     virtual T call(const std::array<int, Rank> &inds) const = 0;
 
     template <typename... MultiIndex>
@@ -314,6 +333,23 @@ struct FunctionTensorView : public virtual tensor_props::FunctionTensorBase<T, R
     }
 
     bool full_view_of_underlying() const override { return _full_view; }
+};
+
+/**
+ * @struct KroneckerDelta
+ *
+ * @brief This function tensor represents the Kronecker delta, and can be used in einsum calls.
+ *
+ * This function tensor can act as an example of what can be done with the more general function tensors.
+ */
+template<typename T>
+struct KroneckerDelta : public virtual tensor_props::FunctionTensorBase<T, 2>, virtual tensor_props::CoreTensorBase {
+public:
+    KroneckerDelta(size_t dim) : tensor_props::FunctionTensorBase<T, 2>("Kronecker Delta", dim, dim) {}
+
+    virtual T call(const std::array<int, 2> &inds) const override {
+        return (inds[0] == inds[1])? T{1.0}: T{0.0};
+    }
 };
 
 } // namespace einsums
