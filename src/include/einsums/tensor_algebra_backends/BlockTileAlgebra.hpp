@@ -1,8 +1,8 @@
 #pragma once
 
 #include "einsums/TensorAlgebra.hpp"
-#include "einsums/tensor_algebra_backends/TileAlgebra.hpp"
 #include "einsums/tensor_algebra_backends/Dispatch.hpp"
+#include "einsums/tensor_algebra_backends/TileAlgebra.hpp"
 #include "einsums/utility/IndexUtils.hpp"
 #include "einsums/utility/TensorTraits.hpp"
 
@@ -10,22 +10,23 @@
 
 namespace einsums::tensor_algebra::detail {
 
-template<bool OnlyUseGenericAlgorithm, TensorConcept AType, TensorConcept BType, TensorConcept CType, typename... CIndices, typename... AIndices, typename... BIndices>
-requires requires {
-    requires (TiledTensorConcept<AType> || BlockTensorConcept<AType>);
-    requires (TiledTensorConcept<BType> || BlockTensorConcept<BType>);
-    requires (TiledTensorConcept<CType> || BlockTensorConcept<CType>);
-    requires (!TiledTensorConcept<AType> || !TiledTensorConcept<BType> || !TiledTensorConcept<CType>);
-    requires (!BlockTensorConcept<AType> || !BlockTensorConcept<BType> || !BlockTensorConcept<CType>);
-}
+template <bool OnlyUseGenericAlgorithm, TensorConcept AType, TensorConcept BType, TensorConcept CType, typename... CIndices,
+          typename... AIndices, typename... BIndices>
+    requires requires {
+        requires(TiledTensorConcept<AType> || BlockTensorConcept<AType>);
+        requires(TiledTensorConcept<BType> || BlockTensorConcept<BType>);
+        requires(TiledTensorConcept<CType> || BlockTensorConcept<CType>);
+        requires(!TiledTensorConcept<AType> || !TiledTensorConcept<BType> || !TiledTensorConcept<CType>);
+        requires(!BlockTensorConcept<AType> || !BlockTensorConcept<BType> || !BlockTensorConcept<CType>);
+    }
 auto einsum_special_dispatch(const typename CType::data_type C_prefactor, const std::tuple<CIndices...> &C_indices, CType *C,
                              const BiggestTypeT<typename AType::data_type, typename BType::data_type> AB_prefactor,
-                             const std::tuple<AIndices...> &A_indices, const AType &A,
-                             const std::tuple<BIndices...> &B_indices, const BType &B) -> void {
+                             const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices,
+                             const BType &B) -> void {
 
-    using ADataType = typename AType::data_type;
-    using BDataType = typename BType::data_type;
-    using CDataType = typename CType::data_type;
+    using ADataType        = typename AType::data_type;
+    using BDataType        = typename BType::data_type;
+    using CDataType        = typename CType::data_type;
     constexpr size_t ARank = AType::rank;
     constexpr size_t BRank = BType::rank;
     constexpr size_t CRank = CType::rank;
@@ -151,8 +152,7 @@ auto einsum_special_dispatch(const typename CType::data_type C_prefactor, const 
             auto &C_tile = C->tile(C_tile_index);
             C->unlock();
             C_tile.lock();
-            if constexpr (einsums::detail::IsBlockTensorV<AType> &&
-                          einsums::detail::IsBlockTensorV<BType>) {
+            if constexpr (einsums::detail::IsBlockTensorV<AType> && einsums::detail::IsBlockTensorV<BType>) {
                 einsum<OnlyUseGenericAlgorithm>(CDataType{1.0}, C_indices, &C_tile, AB_prefactor, A_indices, A[A_tile_index[0]], B_indices,
                                                 B[B_tile_index[0]]);
             } else if constexpr (einsums::detail::IsBlockTensorV<AType>) {

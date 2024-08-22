@@ -56,7 +56,6 @@ TEST_CASE("Arithmetic Tensor") {
         }
     }
 
-
     C = (A + B) / (A * B);
 
     for (int i = 0; i < 3; i++) {

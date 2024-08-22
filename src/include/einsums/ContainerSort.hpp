@@ -18,7 +18,7 @@
 #include "einsums/utility/SmartPointerTraits.hpp"
 #include "einsums/utility/TensorTraits.hpp"
 #ifdef __HIP__
-#include "einsums/DeviceSort.hpp"
+#    include "einsums/DeviceSort.hpp"
 #endif
 #include "einsums/Sort.hpp"
 
@@ -53,11 +53,10 @@ void sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType 
  * @param A_indices The indices for the A tensor.
  * @param All_unique_indices The list of all indices with duplicates removed.
  */
-template <typename CType, TensorConcept AType,
-          TensorConcept BType,
-          typename... CIndices, typename... AIndices, typename... BIndices, typename... AllUniqueIndices>
-inline auto get_grid_ranges_for_many(const CType &C, const ::std::tuple<CIndices...> &C_indices,
-                                     const AType &A, const ::std::tuple<AIndices...> &A_indices,
+template <typename CType, TensorConcept AType, TensorConcept BType, typename... CIndices, typename... AIndices, typename... BIndices,
+          typename... AllUniqueIndices>
+inline auto get_grid_ranges_for_many(const CType &C, const ::std::tuple<CIndices...> &C_indices, const AType &A,
+                                     const ::std::tuple<AIndices...>         &A_indices,
                                      const ::std::tuple<AllUniqueIndices...> &All_unique_indices) {
     return ::std::array{get_grid_ranges_for_many_a<AllUniqueIndices, 0>(C, C_indices, A, A_indices)...};
 }
@@ -74,8 +73,8 @@ template <TiledTensorConcept AType, TiledTensorConcept CType, typename... CIndic
 void sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType *C, const U UA_prefactor,
           const std::tuple<AIndices...> &A_indices, const AType &A) {
 
-    using ADataType = typename AType::data_type;
-    using CDataType = typename CType::data_type;
+    using ADataType        = typename AType::data_type;
+    using CDataType        = typename CType::data_type;
     constexpr size_t ARank = AType::rank;
     constexpr size_t CRank = CType::rank;
 
@@ -108,8 +107,7 @@ void sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType 
             C_tile_index[i] = unique_index_table[C_index_table[i]];
         }
 
-        if (!A.has_tile(A_tile_index) || A.has_zero_size(A_tile_index) ||
-            C->has_zero_size(C_tile_index)) {
+        if (!A.has_tile(A_tile_index) || A.has_zero_size(A_tile_index) || C->has_zero_size(C_tile_index)) {
             continue;
         }
 

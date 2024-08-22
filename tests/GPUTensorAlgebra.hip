@@ -609,7 +609,7 @@ TEST_CASE("GPU sort2") {
 
         for (int i = 0, ij = 1; i < 3; i++) {
             for (int j = 0; j < 3; j++, ij++) {
-                REQUIRE((double) C(i, j) == (double) A(i, j));
+                REQUIRE((double)C(i, j) == (double)A(i, j));
             }
         }
 
@@ -621,7 +621,7 @@ TEST_CASE("GPU sort2") {
         for (int i = 0, ij = 1; i < 3; i++) {
             for (int j = 0; j < 3; j++, ij++) {
                 if (i == 0 || j == 0)
-                    REQUIRE((double) C(i, j) == (double) A(i, j));
+                    REQUIRE((double)C(i, j) == (double)A(i, j));
                 else
                     CHECK((double)C(j, i) == (double)A(i, j));
             }
@@ -857,7 +857,7 @@ TEST_CASE("GPU einsum2") {
 
         for (size_t i0 = 0; i0 < C0.dim(0); i0++) {
             for (size_t j0 = 0; j0 < C0.dim(1); j0++) {
-                REQUIRE_THAT((double) C0(i0, j0), Catch::Matchers::WithinRel((double) C1(i0, j0), 0.0001));
+                REQUIRE_THAT((double)C0(i0, j0), Catch::Matchers::WithinRel((double)C1(i0, j0), 0.0001));
             }
         }
     }
@@ -875,7 +875,7 @@ TEST_CASE("GPU einsum2") {
 
         for (size_t i0 = 0; i0 < C0.dim(0); i0++) {
             for (size_t j0 = 0; j0 < C0.dim(1); j0++) {
-                REQUIRE_THAT((double) C0(i0, j0), Catch::Matchers::WithinRel((double) C1(i0, j0), 0.0001));
+                REQUIRE_THAT((double)C0(i0, j0), Catch::Matchers::WithinRel((double)C1(i0, j0), 0.0001));
             }
         }
     }
@@ -895,7 +895,7 @@ TEST_CASE("GPU einsum2") {
         linear_algebra::gemv<false>(1.0, A, B, 0.0, &C1);
 
         for (size_t i0 = 0; i0 < C0.dim(0); i0++) {
-            REQUIRE_THAT((double) C0(i0), Catch::Matchers::WithinAbs((double) C1(i0), 0.001));
+            REQUIRE_THAT((double)C0(i0), Catch::Matchers::WithinAbs((double)C1(i0), 0.001));
         }
     }
 
@@ -916,14 +916,14 @@ TEST_CASE("GPU einsum2") {
 
             for (size_t j0 = 0; j0 < 4; j0++) {
                 for (size_t k0 = 0; k0 < 5; k0++) {
-                    sum += (double) A(i0, j0, k0) * (double) B(j0, i0, k0);
+                    sum += (double)A(i0, j0, k0) * (double)B(j0, i0, k0);
                 }
             }
             C1(i0) = sum;
         }
 
         for (size_t i0 = 0; i0 < 3; i0++) {
-            REQUIRE_THAT((double) C0(i0), Catch::Matchers::WithinRel((double) C1(i0), 0.0001));
+            REQUIRE_THAT((double)C0(i0), Catch::Matchers::WithinRel((double)C1(i0), 0.0001));
         }
     }
 
@@ -947,7 +947,7 @@ TEST_CASE("GPU einsum2") {
                 double sum{0};
                 for (size_t j0 = 0; j0 < 4; j0++) {
 
-                    sum += (double) A(i0, j0, k0) * (double) B(j0, i0, k0);
+                    sum += (double)A(i0, j0, k0) * (double)B(j0, i0, k0);
                 }
                 C1(i0, k0) = sum;
             }
@@ -956,7 +956,7 @@ TEST_CASE("GPU einsum2") {
 
         for (size_t i0 = 0; i0 < 3; i0++) {
             for (size_t j0 = 0; j0 < 5; j0++) {
-                REQUIRE_THAT((double) C0(i0, j0), Catch::Matchers::WithinRel((double) C1(i0, j0), 0.0001));
+                REQUIRE_THAT((double)C0(i0, j0), Catch::Matchers::WithinRel((double)C1(i0, j0), 0.0001));
             }
         }
     }
@@ -982,7 +982,7 @@ TEST_CASE("GPU einsum2") {
                     double sum{0};
                     for (size_t j0 = 0; j0 < 4; j0++) {
 
-                        sum += (double) A(i0, j0, k0) * (double) B(j0, i0, k0);
+                        sum += (double)A(i0, j0, k0) * (double)B(j0, i0, k0);
                     }
                     C1(i0, l0) += sum;
                 }
@@ -993,7 +993,7 @@ TEST_CASE("GPU einsum2") {
         for (size_t i0 = 0; i0 < 3; i0++) {
             for (size_t j0 = 0; j0 < 5; j0++) {
                 // REQUIRE(C0(i0, j0) == C1(i0, j0));?
-                REQUIRE_THAT((double) C0(i0, j0), Catch::Matchers::WithinRel((double) C1(i0, j0), 0.0000001));
+                REQUIRE_THAT((double)C0(i0, j0), Catch::Matchers::WithinRel((double)C1(i0, j0), 0.0000001));
             }
         }
     }
@@ -1023,7 +1023,7 @@ TEST_CASE("GPU einsum3") {
 
         for (size_t i0 = 0; i0 < C0.dim(0); i0++) {
             for (size_t j0 = 0; j0 < C0.dim(1); j0++) {
-                REQUIRE_THAT((double) C0(i0, j0), Catch::Matchers::WithinRel((double) C1(i0, j0), 0.0001));
+                REQUIRE_THAT((double)C0(i0, j0), Catch::Matchers::WithinRel((double)C1(i0, j0), 0.0001));
             }
         }
     }
@@ -1057,7 +1057,7 @@ TEST_CASE("GPU einsum3") {
             for (size_t j0 = 0; j0 < gMO0.dim(1); j0++) {
                 for (size_t k0 = 0; k0 < gMO0.dim(2); k0++) {
                     for (size_t l0 = 0; l0 < gMO0.dim(3); l0++) {
-                        REQUIRE_THAT((double) gMO0(i0, j0, k0, l0), Catch::Matchers::WithinAbs((double) gMO1(i0, j0, k0, l0), 0.001));
+                        REQUIRE_THAT((double)gMO0(i0, j0, k0, l0), Catch::Matchers::WithinAbs((double)gMO1(i0, j0, k0, l0), 0.001));
                     }
                 }
             }
@@ -1082,7 +1082,7 @@ TEST_CASE("GPU einsum3") {
             for (size_t j0 = 0; j0 < gMO0.dim(1); j0++) {
                 for (size_t k0 = 0; k0 < gMO0.dim(2); k0++) {
                     for (size_t l0 = 0; l0 < gMO0.dim(3); l0++) {
-                        REQUIRE_THAT((double) gMO0(i0, j0, k0, l0), Catch::Matchers::WithinAbs((double) gMO1(i0, j0, k0, l0), 0.001));
+                        REQUIRE_THAT((double)gMO0(i0, j0, k0, l0), Catch::Matchers::WithinAbs((double)gMO1(i0, j0, k0, l0), 0.001));
                     }
                 }
             }
@@ -1099,7 +1099,7 @@ TEST_CASE("GPU einsum3") {
             for (size_t j0 = 0; j0 < gMO0.dim(1); j0++) {
                 for (size_t k0 = 0; k0 < gMO0.dim(2); k0++) {
                     for (size_t l0 = 0; l0 < gMO0.dim(3); l0++) {
-                        REQUIRE_THAT((double) gMO0(i0, j0, k0, l0), Catch::Matchers::WithinAbs((double) gMO1(i0, j0, k0, l0), 0.001));
+                        REQUIRE_THAT((double)gMO0(i0, j0, k0, l0), Catch::Matchers::WithinAbs((double)gMO1(i0, j0, k0, l0), 0.001));
                     }
                 }
             }
@@ -1145,7 +1145,7 @@ TEST_CASE("GPU einsum4") {
             for (size_t j0 = 0; j0 < gMO0.dim(1); j0++) {
                 for (size_t k0 = 0; k0 < gMO0.dim(2); k0++) {
                     for (size_t l0 = 0; l0 < gMO0.dim(3); l0++) {
-                        REQUIRE_THAT((double) gMO0(i0, j0, k0, l0), Catch::Matchers::WithinAbs((double) gMO1(i0, j0, k0, l0), 0.001));
+                        REQUIRE_THAT((double)gMO0(i0, j0, k0, l0), Catch::Matchers::WithinAbs((double)gMO1(i0, j0, k0, l0), 0.001));
                     }
                 }
             }
@@ -1170,7 +1170,7 @@ TEST_CASE("GPU einsum4") {
             for (size_t j0 = 0; j0 < gMO0.dim(1); j0++) {
                 for (size_t k0 = 0; k0 < gMO0.dim(2); k0++) {
                     for (size_t l0 = 0; l0 < gMO0.dim(3); l0++) {
-                        REQUIRE_THAT((double) gMO0(i0, j0, k0, l0), Catch::Matchers::WithinAbs((double) gMO1(i0, j0, k0, l0), 0.001));
+                        REQUIRE_THAT((double)gMO0(i0, j0, k0, l0), Catch::Matchers::WithinAbs((double)gMO1(i0, j0, k0, l0), 0.001));
                     }
                 }
             }
@@ -1186,14 +1186,13 @@ TEST_CASE("GPU IntegralTransformation") {
     using namespace einsums::tensor_algebra;
     using namespace einsums::tensor_algebra::index;
 
-
     SECTION("R2 <- R3 * R3") {
         DeviceTensor<double, 2> W_mi{"W_mi", einsums::detail::DEV_ONLY, 4, 4};
         W_mi = create_random_tensor("W_mi", 4, 4);
         DeviceTensor<double, 3> g_m{"g_m", einsums::detail::DEV_ONLY, 4, 8, 8};
         g_m = create_random_tensor("g_m", 4, 8, 8);
         DeviceTensor<double, 3> t_i{"t_i", einsums::detail::DEV_ONLY, 4, 8, 8};
-        t_i  = create_random_tensor("t_i", 4, 8, 8);
+        t_i = create_random_tensor("t_i", 4, 8, 8);
 
         REQUIRE_NOTHROW(einsum(1.0, Indices{index::n, index::j}, &W_mi, 0.25, Indices{index::n, index::e, index::f}, g_m,
                                Indices{index::j, index::e, index::f}, t_i));
@@ -1233,7 +1232,7 @@ TEST_CASE("GPU Hadamard") {
 
         for (size_t i0 = 0; i0 < _i; i0++) {
             for (size_t j0 = 0; j0 < _j; j0++) {
-                REQUIRE_THAT((double) C(i0, j0), Catch::Matchers::WithinAbs((double) C0(i0, j0), 0.0001));
+                REQUIRE_THAT((double)C(i0, j0), Catch::Matchers::WithinAbs((double)C0(i0, j0), 0.0001));
             }
         }
     }
@@ -1264,7 +1263,7 @@ TEST_CASE("GPU Hadamard") {
 
         for (size_t i0 = 0; i0 < _i; i0++) {
             for (size_t j0 = 0; j0 < _j; j0++) {
-                REQUIRE_THAT((double) C(i0, j0), Catch::Matchers::WithinAbs((double) C0(i0, j0), 0.0001));
+                REQUIRE_THAT((double)C(i0, j0), Catch::Matchers::WithinAbs((double)C0(i0, j0), 0.0001));
             }
         }
     }
@@ -1295,7 +1294,7 @@ TEST_CASE("GPU Hadamard") {
 
         for (size_t i0 = 0; i0 < _i; i0++) {
             for (size_t j0 = 0; j0 < _j; j0++) {
-                REQUIRE_THAT((double) C(i0, j0), Catch::Matchers::WithinAbs((double) C0(i0, j0), 0.0001));
+                REQUIRE_THAT((double)C(i0, j0), Catch::Matchers::WithinAbs((double)C0(i0, j0), 0.0001));
             }
         }
     }
@@ -1320,7 +1319,7 @@ TEST_CASE("GPU Hadamard") {
 
         for (size_t i0 = 0; i0 < _i; i0++) {
             for (size_t j0 = 0; j0 < _j; j0++) {
-                CHECK_THAT((double) C(i0, j0, i0), Catch::Matchers::WithinRel((double) C0(i0, j0, i0), 0.00001));
+                CHECK_THAT((double)C(i0, j0, i0), Catch::Matchers::WithinRel((double)C0(i0, j0, i0), 0.00001));
             }
         }
     }
@@ -1344,7 +1343,7 @@ TEST_CASE("GPU Hadamard") {
         REQUIRE_NOTHROW(einsum(Indices{i, i, i}, &C, Indices{i, j, i}, A, Indices{j, i, j}, B));
 
         for (size_t i0 = 0; i0 < _i; i0++) {
-            CHECK_THAT((double) C(i0, i0, i0), Catch::Matchers::WithinRel((double) C0(i0, i0, i0), 0.00001));
+            CHECK_THAT((double)C(i0, i0, i0), Catch::Matchers::WithinRel((double)C0(i0, i0, i0), 0.00001));
         }
     }
 
@@ -1370,7 +1369,7 @@ TEST_CASE("GPU Hadamard") {
 
         for (size_t i0 = 0; i0 < _i; i0++) {
             for (size_t j0 = 0; j0 < _i; j0++) {
-                CHECK_THAT((double) C(i0, j0), Catch::Matchers::WithinRel((double) C0(i0, j0), 0.00001));
+                CHECK_THAT((double)C(i0, j0), Catch::Matchers::WithinRel((double)C0(i0, j0), 0.00001));
             }
         }
     }
@@ -1382,7 +1381,7 @@ TEST_CASE("GPU unique_ptr") {
     using namespace einsums::tensor_algebra::index;
 
     SECTION("C") {
-        auto   C0 = std::make_unique<DeviceTensor<double, 2>>("C0", einsums::detail::DEV_ONLY, 3, 3);
+        auto                    C0 = std::make_unique<DeviceTensor<double, 2>>("C0", einsums::detail::DEV_ONLY, 3, 3);
         DeviceTensor<double, 2> C1{"C1", einsums::detail::DEV_ONLY, 3, 3};
         DeviceTensor<double, 2> A{"A", einsums::detail::DEV_ONLY, 3, 5};
         A = create_random_tensor("A", 3, 5);
@@ -1395,7 +1394,7 @@ TEST_CASE("GPU unique_ptr") {
 
         for (size_t i0 = 0; i0 < C0->dim(0); i0++) {
             for (size_t j0 = 0; j0 < C0->dim(1); j0++) {
-                REQUIRE_THAT((double) C0->operator()(i0, j0), Catch::Matchers::WithinRel((double) C1(i0, j0), 0.0001));
+                REQUIRE_THAT((double)C0->operator()(i0, j0), Catch::Matchers::WithinRel((double)C1(i0, j0), 0.0001));
             }
         }
     }
@@ -1404,7 +1403,7 @@ TEST_CASE("GPU unique_ptr") {
 
         DeviceTensor<double, 2> C0{"C1", einsums::detail::DEV_ONLY, 3, 3};
         DeviceTensor<double, 2> C1{"C1", einsums::detail::DEV_ONLY, 3, 3};
-        auto   A = std::make_unique<DeviceTensor<double, 2>>(create_random_tensor("A", 3, 5));
+        auto                    A = std::make_unique<DeviceTensor<double, 2>>(create_random_tensor("A", 3, 5));
         DeviceTensor<double, 2> B{"B", einsums::detail::DEV_ONLY, 5, 3};
         B = create_random_tensor("B", 5, 3);
 
@@ -1414,7 +1413,7 @@ TEST_CASE("GPU unique_ptr") {
 
         for (size_t i0 = 0; i0 < C0.dim(0); i0++) {
             for (size_t j0 = 0; j0 < C0.dim(1); j0++) {
-                REQUIRE_THAT((double) C0(i0, j0), Catch::Matchers::WithinRel((double) C1(i0, j0), 0.0001));
+                REQUIRE_THAT((double)C0(i0, j0), Catch::Matchers::WithinRel((double)C1(i0, j0), 0.0001));
             }
         }
     }
@@ -1423,8 +1422,8 @@ TEST_CASE("GPU unique_ptr") {
         DeviceTensor<double, 2> C0{"C1", einsums::detail::DEV_ONLY, 3, 3};
         DeviceTensor<double, 2> C1{"C1", einsums::detail::DEV_ONLY, 3, 3};
         DeviceTensor<double, 2> A{"A", einsums::detail::DEV_ONLY, 3, 5};
-        A = create_random_tensor("A", 3, 5);
-        auto   B = std::make_unique<DeviceTensor<double, 2>>(create_random_tensor("B", 5, 3));
+        A      = create_random_tensor("A", 3, 5);
+        auto B = std::make_unique<DeviceTensor<double, 2>>(create_random_tensor("B", 5, 3));
 
         // Working to get the einsum to perform the gemm that follows.
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
@@ -1432,7 +1431,7 @@ TEST_CASE("GPU unique_ptr") {
 
         for (size_t i0 = 0; i0 < C0.dim(0); i0++) {
             for (size_t j0 = 0; j0 < C0.dim(1); j0++) {
-                REQUIRE_THAT((double) C0(i0, j0), Catch::Matchers::WithinRel((double) C1(i0, j0), 0.0001));
+                REQUIRE_THAT((double)C0(i0, j0), Catch::Matchers::WithinRel((double)C1(i0, j0), 0.0001));
             }
         }
     }
@@ -1440,8 +1439,8 @@ TEST_CASE("GPU unique_ptr") {
     SECTION("AB") {
         DeviceTensor<double, 2> C0{"C1", einsums::detail::DEV_ONLY, 3, 3};
         DeviceTensor<double, 2> C1{"C1", einsums::detail::DEV_ONLY, 3, 3};
-        auto   A = std::make_unique<DeviceTensor<double, 2>>(create_random_tensor("A", 3, 5));
-        auto   B = std::make_unique<DeviceTensor<double, 2>>(create_random_tensor("B", 5, 3));
+        auto                    A = std::make_unique<DeviceTensor<double, 2>>(create_random_tensor("A", 3, 5));
+        auto                    B = std::make_unique<DeviceTensor<double, 2>>(create_random_tensor("B", 5, 3));
 
         // Working to get the einsum to perform the gemm that follows.
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
@@ -1449,15 +1448,15 @@ TEST_CASE("GPU unique_ptr") {
 
         for (size_t i0 = 0; i0 < C0.dim(0); i0++) {
             for (size_t j0 = 0; j0 < C0.dim(1); j0++) {
-                REQUIRE_THAT((double) C0(i0, j0), Catch::Matchers::WithinRel((double) C1(i0, j0), 0.0001));
+                REQUIRE_THAT((double)C0(i0, j0), Catch::Matchers::WithinRel((double)C1(i0, j0), 0.0001));
             }
         }
     }
 
     SECTION("CA") {
-        auto   C0 = std::make_unique<DeviceTensor<double, 2>>("C0", einsums::detail::DEV_ONLY, 3, 3);
+        auto                    C0 = std::make_unique<DeviceTensor<double, 2>>("C0", einsums::detail::DEV_ONLY, 3, 3);
         DeviceTensor<double, 2> C1{"C1", einsums::detail::DEV_ONLY, 3, 3};
-        auto   A = std::make_unique<DeviceTensor<double, 2>>(create_random_tensor("A", 3, 5));
+        auto                    A = std::make_unique<DeviceTensor<double, 2>>(create_random_tensor("A", 3, 5));
         DeviceTensor<double, 2> B{"B", einsums::detail::DEV_ONLY, 5, 3};
         B = create_random_tensor("B", 5, 3);
 
@@ -1467,18 +1466,17 @@ TEST_CASE("GPU unique_ptr") {
 
         for (size_t i0 = 0; i0 < C0->dim(0); i0++) {
             for (size_t j0 = 0; j0 < C0->dim(1); j0++) {
-                REQUIRE_THAT((double) C0->operator()(i0, j0), Catch::Matchers::WithinRel((double) C1(i0, j0), 0.0001));
+                REQUIRE_THAT((double)C0->operator()(i0, j0), Catch::Matchers::WithinRel((double)C1(i0, j0), 0.0001));
             }
         }
     }
 
     SECTION("CB") {
-        auto   C0 = std::make_unique<DeviceTensor<double, 2>>("C0", einsums::detail::DEV_ONLY, 3, 3);
+        auto                    C0 = std::make_unique<DeviceTensor<double, 2>>("C0", einsums::detail::DEV_ONLY, 3, 3);
         DeviceTensor<double, 2> C1{"C1", einsums::detail::DEV_ONLY, 3, 3};
         DeviceTensor<double, 2> A{"A", einsums::detail::DEV_ONLY, 3, 5};
-        A = create_random_tensor("A", 3, 5);
-        auto   B = std::make_unique<DeviceTensor<double, 2>>(create_random_tensor("B", 5, 3));
-
+        A      = create_random_tensor("A", 3, 5);
+        auto B = std::make_unique<DeviceTensor<double, 2>>(create_random_tensor("B", 5, 3));
 
         // Working to get the einsum to perform the gemm that follows.
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
@@ -1486,16 +1484,16 @@ TEST_CASE("GPU unique_ptr") {
 
         for (size_t i0 = 0; i0 < C0->dim(0); i0++) {
             for (size_t j0 = 0; j0 < C0->dim(1); j0++) {
-                REQUIRE_THAT((double) C0->operator()(i0, j0), Catch::Matchers::WithinRel((double) C1(i0, j0), 0.0001));
+                REQUIRE_THAT((double)C0->operator()(i0, j0), Catch::Matchers::WithinRel((double)C1(i0, j0), 0.0001));
             }
         }
     }
 
     SECTION("CAB") {
-        auto   C0 = std::make_unique<DeviceTensor<double, 2>>("C0", einsums::detail::DEV_ONLY, 3, 3);
+        auto                    C0 = std::make_unique<DeviceTensor<double, 2>>("C0", einsums::detail::DEV_ONLY, 3, 3);
         DeviceTensor<double, 2> C1{"C1", einsums::detail::DEV_ONLY, 3, 3};
-        auto   A = std::make_unique<DeviceTensor<double, 2>>(create_random_tensor("A", 3, 5));
-        auto   B = std::make_unique<DeviceTensor<double, 2>>(create_random_tensor("B", 5, 3));
+        auto                    A = std::make_unique<DeviceTensor<double, 2>>(create_random_tensor("A", 3, 5));
+        auto                    B = std::make_unique<DeviceTensor<double, 2>>(create_random_tensor("B", 5, 3));
 
         // Working to get the einsum to perform the gemm that follows.
         REQUIRE_NOTHROW(einsum(Indices{i, j}, &C0, Indices{i, k}, A, Indices{k, j}, B));
@@ -1503,7 +1501,7 @@ TEST_CASE("GPU unique_ptr") {
 
         for (size_t i0 = 0; i0 < C0->dim(0); i0++) {
             for (size_t j0 = 0; j0 < C0->dim(1); j0++) {
-                REQUIRE_THAT((double) C0->operator()(i0, j0), Catch::Matchers::WithinRel((double) C1(i0, j0), 0.0001));
+                REQUIRE_THAT((double)C0->operator()(i0, j0), Catch::Matchers::WithinRel((double)C1(i0, j0), 0.0001));
             }
         }
     }
@@ -1518,7 +1516,7 @@ TEST_CASE("GPU Transpose C", "[einsum]") {
 
     SECTION("i,j <- j,k * k,i === true, false, false") {
         DeviceTensor<double, 2> A{"A", einsums::detail::DEV_ONLY, _j, _k};
-        A = create_random_tensor("A", _j, _k);
+        A              = create_random_tensor("A", _j, _k);
         DeviceTensor B = create_random_gpu_tensor("B", _k, _i);
         DeviceTensor C{"C", _i, _j};
         DeviceTensor C0{"C0", _i, _j};
@@ -1539,7 +1537,7 @@ TEST_CASE("GPU Transpose C", "[einsum]") {
 
         for (size_t i0 = 0; i0 < _i; i0++) {
             for (size_t j0 = 0; j0 < _j; j0++) {
-                REQUIRE_THAT((double) C(i0, j0), Catch::Matchers::WithinAbs((double) C0(i0, j0), 0.001));
+                REQUIRE_THAT((double)C(i0, j0), Catch::Matchers::WithinAbs((double)C0(i0, j0), 0.001));
             }
         }
     }
@@ -1566,7 +1564,7 @@ TEST_CASE("GPU Transpose C", "[einsum]") {
 
         for (size_t i0 = 0; i0 < _i; i0++) {
             for (size_t j0 = 0; j0 < _j; j0++) {
-                REQUIRE_THAT((double) C(i0, j0), Catch::Matchers::WithinAbs((double) C0(i0, j0), 0.001));
+                REQUIRE_THAT((double)C(i0, j0), Catch::Matchers::WithinAbs((double)C0(i0, j0), 0.001));
             }
         }
     }
@@ -1593,7 +1591,7 @@ TEST_CASE("GPU Transpose C", "[einsum]") {
 
         for (size_t i0 = 0; i0 < _i; i0++) {
             for (size_t j0 = 0; j0 < _j; j0++) {
-                REQUIRE_THAT((double) C(i0, j0), Catch::Matchers::WithinAbs((double) C0(i0, j0), 0.001));
+                REQUIRE_THAT((double)C(i0, j0), Catch::Matchers::WithinAbs((double)C0(i0, j0), 0.001));
             }
         }
     }
@@ -1620,7 +1618,7 @@ TEST_CASE("GPU Transpose C", "[einsum]") {
 
         for (size_t i0 = 0; i0 < _i; i0++) {
             for (size_t j0 = 0; j0 < _j; j0++) {
-                REQUIRE_THAT((double) C(i0, j0), Catch::Matchers::WithinAbs((double) C0(i0, j0), 0.001));
+                REQUIRE_THAT((double)C(i0, j0), Catch::Matchers::WithinAbs((double)C0(i0, j0), 0.001));
             }
         }
     }
@@ -1656,7 +1654,7 @@ TEST_CASE("GPU Transpose C", "[einsum]") {
             for (size_t n0 = 0; n0 < _n; n0++) {
                 for (size_t i0 = 0; i0 < _i; i0++) {
                     for (size_t j0 = 0; j0 < _j; j0++) {
-                        REQUIRE_THAT((double) Wmnij(m0, n0, i0, j0), Catch::Matchers::WithinAbs((double) W0(m0, n0, i0, j0), 0.001));
+                        REQUIRE_THAT((double)Wmnij(m0, n0, i0, j0), Catch::Matchers::WithinAbs((double)W0(m0, n0, i0, j0), 0.001));
                     }
                 }
             }
@@ -1730,8 +1728,8 @@ TEST_CASE("GPU TensorView einsum") {
 
     for (int x = 0; x < 3; x++) {
         for (int y = 0; y < 3; y++) {
-            REQUIRE_THAT((double) C_view(x, y), Catch::Matchers::WithinAbs((double) C_solution(x, y), 0.001));
-            REQUIRE_THAT((double) C(x + 5, y + 5), Catch::Matchers::WithinAbs((double) C_solution(x, y), 0.001));
+            REQUIRE_THAT((double)C_view(x, y), Catch::Matchers::WithinAbs((double)C_solution(x, y), 0.001));
+            REQUIRE_THAT((double)C(x + 5, y + 5), Catch::Matchers::WithinAbs((double)C_solution(x, y), 0.001));
         }
     }
 }
@@ -1753,7 +1751,7 @@ TEST_CASE("GPU outer product") {
 
         for (int x = 0; x < _x; x++) {
             for (int y = 0; y < _y; y++) {
-                REQUIRE_THAT((double) C(x, y), Catch::Matchers::WithinAbs((double) A(x) * B(y), 0.001));
+                REQUIRE_THAT((double)C(x, y), Catch::Matchers::WithinAbs((double)A(x) * B(y), 0.001));
             }
         }
 
@@ -1762,7 +1760,7 @@ TEST_CASE("GPU outer product") {
 
         for (int x = 0; x < _x; x++) {
             for (int y = 0; y < _y; y++) {
-                REQUIRE_THAT((double) C(x, y), Catch::Matchers::WithinAbs((double) A(y) * B(x), 0.001));
+                REQUIRE_THAT((double)C(x, y), Catch::Matchers::WithinAbs((double)A(y) * B(x), 0.001));
             }
         }
 
@@ -1771,7 +1769,7 @@ TEST_CASE("GPU outer product") {
 
         for (int x = 0; x < _x; x++) {
             for (int y = 0; y < _y; y++) {
-                REQUIRE_THAT((double) C(y, x), Catch::Matchers::WithinAbs((double) A(y) * B(x), 0.001));
+                REQUIRE_THAT((double)C(y, x), Catch::Matchers::WithinAbs((double)A(y) * B(x), 0.001));
             }
         }
 
@@ -1780,7 +1778,7 @@ TEST_CASE("GPU outer product") {
 
         for (int x = 0; x < _x; x++) {
             for (int y = 0; y < _y; y++) {
-                REQUIRE_THAT((double) C(y, x), Catch::Matchers::WithinAbs((double) A(x) * B(y), 0.001));
+                REQUIRE_THAT((double)C(y, x), Catch::Matchers::WithinAbs((double)A(x) * B(y), 0.001));
             }
         }
     }
@@ -1796,7 +1794,7 @@ TEST_CASE("GPU outer product") {
         for (int x = 0; x < 3; x++) {
             for (int y = 0; y < 3; y++) {
                 for (int z = 0; z < 3; z++) {
-                    REQUIRE_THAT((double) C(x, y, z), Catch::Matchers::WithinAbs((double) A(x, y) * B(z), 0.001));
+                    REQUIRE_THAT((double)C(x, y, z), Catch::Matchers::WithinAbs((double)A(x, y) * B(z), 0.001));
                 }
             }
         }
@@ -1807,7 +1805,7 @@ TEST_CASE("GPU outer product") {
         for (int x = 0; x < 3; x++) {
             for (int y = 0; y < 3; y++) {
                 for (int z = 0; z < 3; z++) {
-                    REQUIRE_THAT((double) C(z, x, y), Catch::Matchers::WithinAbs((double) A(x, y) * B(z), 0.001));
+                    REQUIRE_THAT((double)C(z, x, y), Catch::Matchers::WithinAbs((double)A(x, y) * B(z), 0.001));
                 }
             }
         }
@@ -1818,7 +1816,7 @@ TEST_CASE("GPU outer product") {
         for (int x = 0; x < 3; x++) {
             for (int y = 0; y < 3; y++) {
                 for (int z = 0; z < 3; z++) {
-                    REQUIRE_THAT((double) C(z, x, y), Catch::Matchers::WithinAbs((double) A(x, y) * B(z), 0.001));
+                    REQUIRE_THAT((double)C(z, x, y), Catch::Matchers::WithinAbs((double)A(x, y) * B(z), 0.001));
                 }
             }
         }
@@ -1836,7 +1834,7 @@ TEST_CASE("GPU outer product") {
             for (int x = 0; x < 3; x++) {
                 for (int y = 0; y < 3; y++) {
                     for (int z = 0; z < 3; z++) {
-                        REQUIRE_THAT((double) C(w, x, y, z), Catch::Matchers::WithinAbs((double) A(w, x) * B(y, z), 0.001));
+                        REQUIRE_THAT((double)C(w, x, y, z), Catch::Matchers::WithinAbs((double)A(w, x) * B(y, z), 0.001));
                     }
                 }
             }
@@ -1849,7 +1847,7 @@ TEST_CASE("GPU outer product") {
             for (int x = 0; x < 3; x++) {
                 for (int y = 0; y < 3; y++) {
                     for (int z = 0; z < 3; z++) {
-                        REQUIRE_THAT((double) C(w, x, y, z), Catch::Matchers::WithinAbs((double) A(y, z) * B(w, x), 0.001));
+                        REQUIRE_THAT((double)C(w, x, y, z), Catch::Matchers::WithinAbs((double)A(y, z) * B(w, x), 0.001));
                     }
                 }
             }
@@ -1866,8 +1864,8 @@ TEST_CASE("GPU view outer product") {
         DeviceTensor A = create_random_gpu_tensor("A", 6);
         DeviceTensor B = create_random_gpu_tensor("B", 6);
 
-        auto   vA = DeviceTensorView(A, Dim<1>{3}, Offset<1>{3});
-        auto   vB = DeviceTensorView(B, Dim<1>{3});
+        auto         vA = DeviceTensorView(A, Dim<1>{3}, Offset<1>{3});
+        auto         vB = DeviceTensorView(B, Dim<1>{3});
         DeviceTensor C{"C", 3, 3};
         C.set_all(0.0);
 
@@ -1875,7 +1873,7 @@ TEST_CASE("GPU view outer product") {
 
         for (int x = 0; x < 3; x++) {
             for (int y = 0; y < 3; y++) {
-                REQUIRE_THAT((double) C(x, y), Catch::Matchers::WithinAbs((double) vA(x) * vB(y), 0.001));
+                REQUIRE_THAT((double)C(x, y), Catch::Matchers::WithinAbs((double)vA(x) * vB(y), 0.001));
             }
         }
 
@@ -1884,7 +1882,7 @@ TEST_CASE("GPU view outer product") {
 
         for (int x = 0; x < 3; x++) {
             for (int y = 0; y < 3; y++) {
-                REQUIRE_THAT((double) C(x, y), Catch::Matchers::WithinAbs((double) vA(y) * vB(x), 0.001));
+                REQUIRE_THAT((double)C(x, y), Catch::Matchers::WithinAbs((double)vA(y) * vB(x), 0.001));
             }
         }
 
@@ -1893,7 +1891,7 @@ TEST_CASE("GPU view outer product") {
 
         for (int x = 0; x < 3; x++) {
             for (int y = 0; y < 3; y++) {
-                REQUIRE_THAT((double) C(y, x), Catch::Matchers::WithinAbs((double) vA(y) * vB(x), 0.001));
+                REQUIRE_THAT((double)C(y, x), Catch::Matchers::WithinAbs((double)vA(y) * vB(x), 0.001));
             }
         }
 
@@ -1902,7 +1900,7 @@ TEST_CASE("GPU view outer product") {
 
         for (int x = 0; x < 3; x++) {
             for (int y = 0; y < 3; y++) {
-                REQUIRE_THAT((double) C(y, x), Catch::Matchers::WithinAbs((double) vA(x) * vB(y), 0.001));
+                REQUIRE_THAT((double)C(y, x), Catch::Matchers::WithinAbs((double)vA(x) * vB(y), 0.001));
             }
         }
     }
@@ -1910,8 +1908,8 @@ TEST_CASE("GPU view outer product") {
     SECTION("2 * 2 -> 4") {
         DeviceTensor A  = create_random_gpu_tensor("A", 9, 9);
         DeviceTensor B  = create_random_gpu_tensor("B", 12, 12);
-        auto   vA = DeviceTensorView{A, Dim<2>{3, 3}, Offset<2>{6, 3}};
-        auto   vB = DeviceTensorView{B, Dim<2>{3, 3}, Offset<2>{5, 7}};
+        auto         vA = DeviceTensorView{A, Dim<2>{3, 3}, Offset<2>{6, 3}};
+        auto         vB = DeviceTensorView{B, Dim<2>{3, 3}, Offset<2>{5, 7}};
         DeviceTensor C{"C", 3, 3, 3, 3};
 
         C.set_all(0.0);
@@ -1921,7 +1919,7 @@ TEST_CASE("GPU view outer product") {
             for (int x = 0; x < 3; x++) {
                 for (int y = 0; y < 3; y++) {
                     for (int z = 0; z < 3; z++) {
-                        REQUIRE_THAT((double) C(w, x, y, z), Catch::Matchers::WithinAbs((double) vA(w, x) * vB(y, z), 0.001));
+                        REQUIRE_THAT((double)C(w, x, y, z), Catch::Matchers::WithinAbs((double)vA(w, x) * vB(y, z), 0.001));
                     }
                 }
             }
@@ -1934,7 +1932,7 @@ TEST_CASE("GPU view outer product") {
             for (int x = 0; x < 3; x++) {
                 for (int y = 0; y < 3; y++) {
                     for (int z = 0; z < 3; z++) {
-                        REQUIRE_THAT((double) C(w, x, y, z), Catch::Matchers::WithinAbs((double) vA(y, z) * vB(w, x), 0.001));
+                        REQUIRE_THAT((double)C(w, x, y, z), Catch::Matchers::WithinAbs((double)vA(y, z) * vB(w, x), 0.001));
                     }
                 }
             }
@@ -2008,7 +2006,8 @@ TEST_CASE("GPU view outer product") {
 //             for (int x = 0; x < 10; x++) {
 //                 for (int y = 0; y < 10; y++) {
 //                     for (int z = 0; z < 10; z++) {
-//                         REQUIRE_THAT(A(w, x, y, z), Catch::Matchers::WithinAbs(Acopy(w, x, y, z) + B(w, x, y, z) + C(w, x, y, z), 0.001));
+//                         REQUIRE_THAT(A(w, x, y, z), Catch::Matchers::WithinAbs(Acopy(w, x, y, z) + B(w, x, y, z) + C(w, x, y, z),
+//                         0.001));
 //                     }
 //                 }
 //             }
@@ -2107,8 +2106,8 @@ TEST_CASE("GPU F12 - V term") {
     using namespace einsums::tensor_algebra::index;
 
     // int nocc{5}, ncabs{116}, nobs{41};
-    int nocc{1}, ncabs{4}, nobs{2};
-    int nall{nobs + ncabs};
+    int          nocc{1}, ncabs{4}, nobs{2};
+    int          nall{nobs + ncabs};
     DeviceTensor F{"F", nall, nall, nall, nall};
     DeviceTensor G{"G", nall, nall, nall, nall};
 
@@ -2169,7 +2168,7 @@ TEST_CASE("GPU F12 - V term") {
         for (size_t _j = 0; _j < nocc; _j++) {
             for (size_t _k = 0; _k < nocc; _k++) {
                 for (size_t _l = 0; _l < nocc; _l++) {
-                    REQUIRE_THAT((double) result2(_i, _j, _k, _l), Catch::Matchers::WithinAbs((double) result(_i, _j, _k, _l), 0.001));
+                    REQUIRE_THAT((double)result2(_i, _j, _k, _l), Catch::Matchers::WithinAbs((double)result(_i, _j, _k, _l), 0.001));
                 }
             }
         }
@@ -2179,7 +2178,7 @@ TEST_CASE("GPU F12 - V term") {
         for (size_t _j = 0; _j < nocc; _j++) {
             for (size_t _k = 0; _k < nocc; _k++) {
                 for (size_t _l = 0; _l < nocc; _l++) {
-                    REQUIRE_THAT((double) ijkl_1(_i, _j, _k, _l), Catch::Matchers::WithinAbs((double) result(_i, _j, _k, _l), 0.001));
+                    REQUIRE_THAT((double)ijkl_1(_i, _j, _k, _l), Catch::Matchers::WithinAbs((double)result(_i, _j, _k, _l), 0.001));
                 }
             }
         }
@@ -2220,7 +2219,7 @@ TEST_CASE("GPU B_tilde") {
         for (int _l = 0; _l < nocc; _l++) {
             for (int _a = 0; _a < nvir; _a++) {
                 for (int _b = 0; _b < nvir; _b++) {
-                    REQUIRE_THAT((double) CD(_k, _l, _a, _b), Catch::Matchers::WithinAbs((double) CD0(_k, _l, _a, _b), 0.000001));
+                    REQUIRE_THAT((double)CD(_k, _l, _a, _b), Catch::Matchers::WithinAbs((double)CD0(_k, _l, _a, _b), 0.000001));
                 }
             }
         }
@@ -2255,7 +2254,7 @@ TEST_CASE("GPU Khatri-Rao") {
         for (int x = 0; x < _I; x++) {
             for (int y = 0; y < _M; y++) {
                 for (int z = 0; z < _r; z++) {
-                    REQUIRE_THAT((double) KR(x, y, z), Catch::Matchers::WithinAbs((double) KR0(x, y, z), 0.000001));
+                    REQUIRE_THAT((double)KR(x, y, z), Catch::Matchers::WithinAbs((double)KR0(x, y, z), 0.000001));
                 }
             }
         }
@@ -2282,7 +2281,7 @@ TEST_CASE("GPU Khatri-Rao") {
 
         for (int x = 0; x < _I * _M; x++) {
             for (int z = 0; z < _r; z++) {
-                REQUIRE_THAT((double) KR(x, z), Catch::Matchers::WithinAbs((double) KR0_view(x, z), 0.000001));
+                REQUIRE_THAT((double)KR(x, z), Catch::Matchers::WithinAbs((double)KR0_view(x, z), 0.000001));
             }
         }
     }
@@ -2308,7 +2307,7 @@ void einsum_gpu_mixed_test() {
     for (size_t i = 0; i < i_; i++) {
         for (size_t j = 0; j < j_; j++) {
             for (size_t k = 0; k < k_; k++) {
-                C0(i, j) += (TA) A(i, k) * (TB) B(k, j);
+                C0(i, j) += (TA)A(i, k) * (TB)B(k, j);
             }
         }
     }
@@ -2316,7 +2315,7 @@ void einsum_gpu_mixed_test() {
     for (size_t i = 0; i < i_; i++) {
         for (size_t j = 0; j < j_; j++) {
             // println("{:20.14f} {:20.14f} {:20.14f}", C(i, j), C0(i, j), std::abs(C(i, j) - C0(i, j)));
-            CHECK(std::abs((TC) C(i, j) - (TC) C0(i, j)) < RemoveComplexT<TC>{1.0E-4});
+            CHECK(std::abs((TC)C(i, j) - (TC)C0(i, j)) < RemoveComplexT<TC>{1.0E-4});
             // REQUIRE_THAT(C(i, j), Catch::Matchers::WithinAbs(C0(i, j), RemoveComplexT<TC>{1.0E-16}));
         }
     }
@@ -2354,8 +2353,8 @@ void dot_test() {
     size_t i_{10}, j_{10}, a_{10}, b_{10};
 
     SECTION("1") {
-        auto         A = create_random_gpu_tensor<T>("A", i_);
-        auto         B = create_random_gpu_tensor<T>("B", i_);
+        auto               A = create_random_gpu_tensor<T>("A", i_);
+        auto               B = create_random_gpu_tensor<T>("B", i_);
         DeviceTensor<T, 0> C_obtained("C obtained");
 
         auto C_expected = dot(A, B);
@@ -2363,7 +2362,7 @@ void dot_test() {
         einsum(Indices{}, &C_obtained, Indices{i}, A, Indices{i}, B);
 
         if constexpr (!einsums::IsComplexV<T>) {
-            REQUIRE_THAT((T) C_obtained, Catch::Matchers::WithinAbsMatcher((T) C_expected, 0.0001));
+            REQUIRE_THAT((T)C_obtained, Catch::Matchers::WithinAbsMatcher((T)C_expected, 0.0001));
         } else {
             REQUIRE_THAT(((T)C_obtained).real(), Catch::Matchers::WithinAbsMatcher(C_expected.real(), 0.0001));
             REQUIRE_THAT(((T)C_obtained).imag(), Catch::Matchers::WithinAbsMatcher(C_expected.imag(), 0.0001));
@@ -2371,8 +2370,8 @@ void dot_test() {
     }
 
     SECTION("2") {
-        auto         A = create_random_gpu_tensor<T>("A", i_, j_);
-        auto         B = create_random_gpu_tensor<T>("B", i_, j_);
+        auto               A = create_random_gpu_tensor<T>("A", i_, j_);
+        auto               B = create_random_gpu_tensor<T>("B", i_, j_);
         DeviceTensor<T, 0> C_obtained("C obtained");
 
         auto C_expected = dot(A, B);
@@ -2380,7 +2379,7 @@ void dot_test() {
         einsum(Indices{}, &C_obtained, Indices{i, j}, A, Indices{i, j}, B);
 
         if constexpr (!einsums::IsComplexV<T>) {
-            REQUIRE_THAT((T) C_obtained, Catch::Matchers::WithinAbsMatcher((T) C_expected, 0.0001));
+            REQUIRE_THAT((T)C_obtained, Catch::Matchers::WithinAbsMatcher((T)C_expected, 0.0001));
         } else {
             REQUIRE_THAT(((T)C_obtained).real(), Catch::Matchers::WithinAbsMatcher(C_expected.real(), 0.0001));
             REQUIRE_THAT(((T)C_obtained).imag(), Catch::Matchers::WithinAbsMatcher(C_expected.imag(), 0.0001));
@@ -2388,8 +2387,8 @@ void dot_test() {
     }
 
     SECTION("3") {
-        auto         A = create_random_gpu_tensor<T>("A", i_, j_, a_);
-        auto         B = create_random_gpu_tensor<T>("B", i_, j_, a_);
+        auto               A = create_random_gpu_tensor<T>("A", i_, j_, a_);
+        auto               B = create_random_gpu_tensor<T>("B", i_, j_, a_);
         DeviceTensor<T, 0> C_obtained("C obtained");
 
         auto C_expected = dot(A, B);
@@ -2397,7 +2396,7 @@ void dot_test() {
         einsum(Indices{}, &C_obtained, Indices{i, j, a}, A, Indices{i, j, a}, B);
 
         if constexpr (!einsums::IsComplexV<T>) {
-            REQUIRE_THAT((T) C_obtained, Catch::Matchers::WithinAbsMatcher((T) C_expected, 0.0001));
+            REQUIRE_THAT((T)C_obtained, Catch::Matchers::WithinAbsMatcher((T)C_expected, 0.0001));
         } else {
             REQUIRE_THAT(((T)C_obtained).real(), Catch::Matchers::WithinAbsMatcher(C_expected.real(), 0.0001));
             REQUIRE_THAT(((T)C_obtained).imag(), Catch::Matchers::WithinAbsMatcher(C_expected.imag(), 0.0001));
@@ -2405,8 +2404,8 @@ void dot_test() {
     }
 
     SECTION("4") {
-        auto         A = create_random_gpu_tensor<T>("A", i_, j_, a_, b_);
-        auto         B = create_random_gpu_tensor<T>("B", i_, j_, a_, b_);
+        auto               A = create_random_gpu_tensor<T>("A", i_, j_, a_, b_);
+        auto               B = create_random_gpu_tensor<T>("B", i_, j_, a_, b_);
         DeviceTensor<T, 0> C_obtained("C obtained");
 
         auto C_expected = dot(A, B);
@@ -2414,7 +2413,7 @@ void dot_test() {
         einsum(Indices{}, &C_obtained, Indices{i, j, a, b}, A, Indices{i, j, a, b}, B);
 
         if constexpr (!einsums::IsComplexV<T>) {
-            REQUIRE_THAT((T) C_obtained, Catch::Matchers::WithinAbsMatcher((T) C_expected, 0.0001));
+            REQUIRE_THAT((T)C_obtained, Catch::Matchers::WithinAbsMatcher((T)C_expected, 0.0001));
         } else {
             REQUIRE_THAT(((T)C_obtained).real(), Catch::Matchers::WithinAbsMatcher(C_expected.real(), 0.0001));
             REQUIRE_THAT(((T)C_obtained).imag(), Catch::Matchers::WithinAbsMatcher(C_expected.imag(), 0.0001));
@@ -2465,7 +2464,7 @@ TEST_CASE("GPU Dot TensorView and Tensor") {
     for (size_t l = 0; l < l_; l++) {
         for (size_t j = 0; j < j_; j++) {
             // println("{:20.14f} {:20.14f} {:20.14f}", C(l, j), C0(l, j), std::abs(C(l, j) - C0(l, j)));
-            REQUIRE_THAT((double) C(l, j), Catch::Matchers::WithinAbs((double) C0(l, j), 1e-12));
+            REQUIRE_THAT((double)C(l, j), Catch::Matchers::WithinAbs((double)C0(l, j), 1e-12));
         }
     }
 }
@@ -2506,7 +2505,7 @@ TEST_CASE("GPU andy") {
 
         for (int x = 0; x < nvirt_; x++) {
             for (int y = 0; y < nvirt_; y++) {
-                REQUIRE_THAT((double) c(x, y), Catch::Matchers::WithinRel((double) -a(x, y) * b(x, y)));
+                REQUIRE_THAT((double)c(x, y), Catch::Matchers::WithinRel((double)-a(x, y) * b(x, y)));
             }
         }
     }
@@ -2533,7 +2532,7 @@ TEST_CASE("GPU andy") {
 
         for (size_t Q = 0; Q < proj_rank_; Q++) {
             for (size_t X = 0; X < proj_rank_; X++) {
-                REQUIRE_THAT((double) c(Q, X), Catch::Matchers::WithinRel((double) c0(Q, X), 0.00001));
+                REQUIRE_THAT((double)c(Q, X), Catch::Matchers::WithinRel((double)c0(Q, X), 0.00001));
             }
         }
     }
@@ -2562,7 +2561,7 @@ TEST_CASE("GPU andy") {
         for (size_t Q = 0; Q < proj_rank_; Q++) {
             for (size_t a = 0; a < nvirt_; a++) {
                 for (size_t X = 0; X < proj_rank_; X++) {
-                    REQUIRE_THAT((double) F_BAR(Q, a, X), Catch::Matchers::WithinRel((double) F_BAR0(Q, a, X), 0.00001));
+                    REQUIRE_THAT((double)F_BAR(Q, a, X), Catch::Matchers::WithinRel((double)F_BAR0(Q, a, X), 0.00001));
                 }
             }
         }
@@ -2577,7 +2576,7 @@ TEST_CASE("GPU andy") {
 
         for (size_t a = 0; a < 84; a++) {
             for (size_t b = 0; b < 84; b++) {
-                REQUIRE_THAT((double) C(a, b), Catch::Matchers::WithinRel((double) A(a) * A(b), 0.00001));
+                REQUIRE_THAT((double)C(a, b), Catch::Matchers::WithinRel((double)A(a) * A(b), 0.00001));
             }
         }
     }
@@ -2600,7 +2599,7 @@ TEST_CASE("GPU andy") {
 
         for (size_t a = 0; a < 9; a++) {
             for (size_t b = 0; b < 9; b++) {
-                REQUIRE_THAT((double) C(a, b), Catch::Matchers::WithinRel((double) A(a) * A(b), 0.00001));
+                REQUIRE_THAT((double)C(a, b), Catch::Matchers::WithinRel((double)A(a) * A(b), 0.00001));
             }
         }
     }

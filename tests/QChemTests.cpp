@@ -120,14 +120,14 @@ static void update_Cocc(const einsums::Tensor<double, 1> &energies, einsums::Blo
     }
 
     (*Cocc).zero();
-//#pragma omp parallel for
+    // #pragma omp parallel for
     for (int i = 0; i < 4; i++) {
-        if(occ_per_irrep[i] == 0) {
+        if (occ_per_irrep[i] == 0) {
             continue;
         }
-        einsums::TensorView<double, 2> view1 = (*Cocc)[i](einsums::All, einsums::Range{0, occ_per_irrep[i]});
+        einsums::TensorView<double, 2>       view1 = (*Cocc)[i](einsums::All, einsums::Range{0, occ_per_irrep[i]});
         const einsums::TensorView<double, 2> view2 = C[i](einsums::All, einsums::Range{0, occ_per_irrep[i]});
-        view1 = view2;
+        view1                                      = view2;
     }
 }
 
@@ -388,9 +388,9 @@ TEST_CASE("RHF No symmetry", "[qchem]") {
                            Indices{index::i, index::a, index::j, index::b}, TEI_iajb_tens));
     REQUIRE_NOTHROW(einsum(0.0, Indices{}, &EMP2_3, -1.0, Indices{index::i, index::a, index::j, index::b}, MP2_amps,
                            Indices{index::i, index::b, index::j, index::a}, TEI_iajb_tens));
-    
-    CHECK_THAT((double) EMP2_0, Catch::Matchers::WithinRel((double) EMP2_2, 1e-6));
-    CHECK_THAT((double) EMP2_1, Catch::Matchers::WithinRel((double) EMP2_3, 1e-6));
+
+    CHECK_THAT((double)EMP2_0, Catch::Matchers::WithinRel((double)EMP2_2, 1e-6));
+    CHECK_THAT((double)EMP2_1, Catch::Matchers::WithinRel((double)EMP2_3, 1e-6));
 
     double eMP2  = (double)EMP2_0 + (double)EMP2_1;
     double e_tot = e0 + eMP2;
@@ -724,8 +724,8 @@ TEST_CASE("RHF symmetry") {
 
     C2 = C;
 
-    for(int i = 0; i < 7; i++) {
-        for(int j = 0; j < 7; j++) {
+    for (int i = 0; i < 7; i++) {
+        for (int j = 0; j < 7; j++) {
             REQUIRE_THAT(C2(i, j), Catch::Matchers::WithinAbs(C(i, j), 1e-6));
         }
     }
@@ -793,10 +793,10 @@ TEST_CASE("RHF symmetry") {
     REQUIRE_NOTHROW(einsum(1.0, Indices{}, &EMP2_3, -1.0, Indices{index::i, index::a, index::j, index::b}, MP2_amps_den_tens,
                            Indices{index::i, index::b, index::j, index::a}, MP2_amps_tens));
 
-    CHECK_THAT((double) EMP2_0, Catch::Matchers::WithinRel((double) EMP2_2, 1e-6));
-    REQUIRE_THAT((double) EMP2_1, Catch::Matchers::WithinRel((double) EMP2_3, 1e-6));
+    CHECK_THAT((double)EMP2_0, Catch::Matchers::WithinRel((double)EMP2_2, 1e-6));
+    REQUIRE_THAT((double)EMP2_1, Catch::Matchers::WithinRel((double)EMP2_3, 1e-6));
 
-    double eMP2  = (double)EMP2_0 + (double) EMP2_1;
+    double eMP2  = (double)EMP2_0 + (double)EMP2_1;
     double e_tot = e0 + eMP2;
 
     REQUIRE_THAT(eMP2, Catch::Matchers::WithinAbs(-0.049149636120, 1e-6));

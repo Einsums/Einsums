@@ -58,13 +58,13 @@ TEST_CASE("TiledDeviceTensor creation", "[tensor]") {
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
             if (i == j) {
-                CHECK((double) A(i, j) == 1.0);
-                CHECK((double) B(i, j) == 1.0);
-                CHECK((double) C(i, j) == 1.0);
+                CHECK((double)A(i, j) == 1.0);
+                CHECK((double)B(i, j) == 1.0);
+                CHECK((double)C(i, j) == 1.0);
             } else {
-                CHECK((double) A(i, j) == 0.0);
-                CHECK((double) B(i, j) == 0.0);
-                CHECK((double) C(i, j) == 0.0);
+                CHECK((double)A(i, j) == 0.0);
+                CHECK((double)B(i, j) == 0.0);
+                CHECK((double)C(i, j) == 0.0);
             }
         }
     }
@@ -81,8 +81,8 @@ TEST_CASE("TiledDeviceTensor GEMMs", "[tensor]") {
     REQUIRE((B.dim(0) == 3 && B.dim(1) == 3));
     REQUIRE((C.dim(0) == 3 && C.dim(1) == 3));
 
-    for(int i = 0; i < 3; i++) {
-        for(int j = 0; j < 3; j++) {
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
             A(i, j) = 3 * i + j + 1;
             B(i, j) = 33 * i + 11 * j + 11;
         }
@@ -90,33 +90,33 @@ TEST_CASE("TiledDeviceTensor GEMMs", "[tensor]") {
 
     einsums::linear_algebra::gemm<false, false>(1.0, A, B, 0.0, &C);
     auto res = einsums::VectorData<double>{330.0, 396.0, 462.0, 726.0, 891.0, 1056.0, 1122.0, 1386.0, 1650.0};
-    for(int i = 0; i < 3; i++) {
-        for(int j = 0; j < 3; j++) {
-            CHECK((double) C(i, j) == res[3 * i + j]);
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            CHECK((double)C(i, j) == res[3 * i + j]);
         }
     }
 
     einsums::linear_algebra::gemm<true, false>(1.0, A, B, 0.0, &C);
     res = einsums::VectorData<double>{726.0, 858.0, 990.0, 858.0, 1023.0, 1188.0, 990.0, 1188.0, 1386.0};
-    for(int i = 0; i < 3; i++) {
-        for(int j = 0; j < 3; j++) {
-            CHECK((double) C(i, j) == res[3 * i + j]);
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            CHECK((double)C(i, j) == res[3 * i + j]);
         }
     }
 
     einsums::linear_algebra::gemm<false, true>(1.0, A, B, 0.0, &C);
     res = einsums::VectorData<double>{154.0, 352.0, 550.0, 352.0, 847.0, 1342.0, 550.0, 1342.0, 2134.0};
-    for(int i = 0; i < 3; i++) {
-        for(int j = 0; j < 3; j++) {
-            CHECK((double) C(i, j) == res[3 * i + j]);
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            CHECK((double)C(i, j) == res[3 * i + j]);
         }
     }
 
     einsums::linear_algebra::gemm<true, true>(1.0, A, B, 0.0, &C);
     res = einsums::VectorData<double>{330.0, 726.0, 1122.0, 396.0, 891.0, 1386.0, 462.0, 1056.0, 1650.0};
-    for(int i = 0; i < 3; i++) {
-        for(int j = 0; j < 3; j++) {
-            CHECK((double) C(i, j) == res[3 * i + j]);
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            CHECK((double)C(i, j) == res[3 * i + j]);
         }
     }
 }
@@ -124,7 +124,7 @@ TEST_CASE("TiledDeviceTensor GEMMs", "[tensor]") {
 TEST_CASE("TiledDeviceTensor GEMVs", "[tensor]") {
     using namespace einsums;
 
-    TiledDeviceTensor<double, 2> A("A", einsums::detail::DEV_ONLY, std::array{1, 0, 2});
+    TiledDeviceTensor<double, 2>     A("A", einsums::detail::DEV_ONLY, std::array{1, 0, 2});
     einsums::DeviceTensor<double, 1> x("x", einsums::detail::DEV_ONLY, 3);
     einsums::DeviceTensor<double, 1> y("y", einsums::detail::DEV_ONLY, 3);
 
@@ -132,8 +132,8 @@ TEST_CASE("TiledDeviceTensor GEMVs", "[tensor]") {
     REQUIRE((x.dim(0) == 3));
     REQUIRE((y.dim(0) == 3));
 
-    for(int i = 0; i < 3; i++) {
-        for(int j = 0; j < 3; j++) {
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
             A(i, j) = 3 * i + j + 1;
         }
         x(i) = 11 * i + 11;
@@ -142,14 +142,14 @@ TEST_CASE("TiledDeviceTensor GEMVs", "[tensor]") {
     einsums::linear_algebra::gemv<false>(1.0, A, x, 0.0, &y);
     auto res = einsums::VectorData<double>{154.0, 352.0, 550.0};
 
-    for(int i = 0; i < 3; i++) {
-        CHECK((double) y(i) == res[i]);
+    for (int i = 0; i < 3; i++) {
+        CHECK((double)y(i) == res[i]);
     }
 
     einsums::linear_algebra::gemv<true>(1.0, A, x, 0.0, &y);
     res = einsums::VectorData<double>{330.0, 396.0, 462.0};
-    for(int i = 0; i < 3; i++) {
-        CHECK((double) y(i) == res[i]);
+    for (int i = 0; i < 3; i++) {
+        CHECK((double)y(i) == res[i]);
     }
 }
 
@@ -453,15 +453,15 @@ TEST_CASE("tiled device einsum1", "[tensor]") {
         /*[[ 30,  36,  42],
            [ 66,  81,  96],
            [102, 126, 150]]*/
-        REQUIRE((double) C(0, 0) == 30.0);
-        REQUIRE((double) C(0, 1) == 36.0);
-        REQUIRE((double) C(0, 2) == 42.0);
-        REQUIRE((double) C(1, 0) == 66.0);
-        REQUIRE((double) C(1, 1) == 81.0);
-        REQUIRE((double) C(1, 2) == 96.0);
-        REQUIRE((double) C(2, 0) == 102.0);
-        REQUIRE((double) C(2, 1) == 126.0);
-        REQUIRE((double) C(2, 2) == 150.0);
+        REQUIRE((double)C(0, 0) == 30.0);
+        REQUIRE((double)C(0, 1) == 36.0);
+        REQUIRE((double)C(0, 2) == 42.0);
+        REQUIRE((double)C(1, 0) == 66.0);
+        REQUIRE((double)C(1, 1) == 81.0);
+        REQUIRE((double)C(1, 2) == 96.0);
+        REQUIRE((double)C(2, 0) == 102.0);
+        REQUIRE((double)C(2, 1) == 126.0);
+        REQUIRE((double)C(2, 2) == 150.0);
     }
 
     SECTION("il=ijk,jkl") {
@@ -491,14 +491,14 @@ TEST_CASE("tiled device einsum1", "[tensor]") {
         // array([[ 765.,  810.,  855.],
         //        [1818., 1944., 2070.],
         //        [2871., 3078., 3285.]])
-        REQUIRE((double) C(0, 0) == 765.0);
-        REQUIRE((double) C(0, 1) == 810.0);
-        REQUIRE((double) C(0, 2) == 855.0);
-        REQUIRE((double) C(1, 0) == 1818.0);
-        REQUIRE((double) C(1, 1) == 1944.0);
-        REQUIRE((double) C(1, 2) == 2070.0);
-        REQUIRE((double) C(2, 0) == 2871.0);
-        REQUIRE((double) C(2, 1) == 3078.0);
-        REQUIRE((double) C(2, 2) == 3285.0);
+        REQUIRE((double)C(0, 0) == 765.0);
+        REQUIRE((double)C(0, 1) == 810.0);
+        REQUIRE((double)C(0, 2) == 855.0);
+        REQUIRE((double)C(1, 0) == 1818.0);
+        REQUIRE((double)C(1, 1) == 1944.0);
+        REQUIRE((double)C(1, 2) == 2070.0);
+        REQUIRE((double)C(2, 0) == 2871.0);
+        REQUIRE((double)C(2, 1) == 3078.0);
+        REQUIRE((double)C(2, 2) == 3285.0);
     }
 }

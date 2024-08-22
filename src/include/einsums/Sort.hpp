@@ -41,18 +41,17 @@ void EINSUMS_EXPORT sort(const int *perm, const int dim, const std::complex<doub
 //
 // sort algorithm
 //
-template<CoreTensorConcept AType, CoreTensorConcept CType, typename... CIndices, typename... AIndices, typename U>
-requires requires {
-    requires sizeof...(CIndices) == sizeof...(AIndices);
-    requires sizeof...(CIndices) == CType::rank;
-    requires sizeof...(AIndices) == AType::rank;
-    requires SameUnderlyingAndRank<AType, CType>;
-    requires std::is_arithmetic_v<U>;
-}
+template <CoreTensorConcept AType, CoreTensorConcept CType, typename... CIndices, typename... AIndices, typename U>
+    requires requires {
+        requires sizeof...(CIndices) == sizeof...(AIndices);
+        requires sizeof...(CIndices) == CType::rank;
+        requires sizeof...(AIndices) == AType::rank;
+        requires SameUnderlyingAndRank<AType, CType>;
+        requires std::is_arithmetic_v<U>;
+    }
 void sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType *C, const U UA_prefactor,
-          const std::tuple<AIndices...> &A_indices,
-          const AType &A) {
-    using T = typename AType::data_type;
+          const std::tuple<AIndices...> &A_indices, const AType &A) {
+    using T                = typename AType::data_type;
     constexpr size_t ARank = AType::rank;
     constexpr size_t CRank = CType::rank;
 

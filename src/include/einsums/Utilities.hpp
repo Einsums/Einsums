@@ -40,37 +40,37 @@ template <MatrixConcept AType>
     requires(CoreTensorConcept<AType>)
 auto qr(const AType &_A) -> std::tuple<Tensor<typename AType::data_type, 2>, Tensor<typename AType::data_type, 1>>;
 
-template<MatrixConcept AType, VectorConcept TauType>
-requires requires {
-    requires CoreTensorConcept<AType>;
-    requires CoreTensorConcept<TauType>;
-    requires SameUnderlying<AType, TauType>;
-}
+template <MatrixConcept AType, VectorConcept TauType>
+    requires requires {
+        requires CoreTensorConcept<AType>;
+        requires CoreTensorConcept<TauType>;
+        requires SameUnderlying<AType, TauType>;
+    }
 auto q(const AType &qr, const TauType &tau) -> Tensor<typename AType::data_type, 2>;
 } // namespace einsums::linear_algebra
 
 namespace einsums {
-    // Forward declarations of tensors.
-    template<typename T, size_t Rank>
-    struct Tensor;
+// Forward declarations of tensors.
+template <typename T, size_t Rank>
+struct Tensor;
 
-    template<typename T, size_t Rank>
-    struct BlockTensor;
+template <typename T, size_t Rank>
+struct BlockTensor;
 
-    template<typename T, size_t Rank>
-    struct TiledTensor;
+template <typename T, size_t Rank>
+struct TiledTensor;
 
-    #ifdef __HIP__
-    template<typename T, size_t Rank>
-    struct DeviceTensor;
+#ifdef __HIP__
+template <typename T, size_t Rank>
+struct DeviceTensor;
 
-    template<typename T, size_t Rank>
-    struct BlockDeviceTensor;
+template <typename T, size_t Rank>
+struct BlockDeviceTensor;
 
-    template<typename T, size_t Rank>
-    struct TiledDeviceTensor;
-    #endif
-}
+template <typename T, size_t Rank>
+struct TiledDeviceTensor;
+#endif
+} // namespace einsums
 
 namespace einsums {
 
@@ -81,7 +81,7 @@ namespace einsums {
  *
  * @tparam T The underlying type. Defaults to double.
  */
-template<typename T = double>
+template <typename T = double>
 using Matrix = Tensor<T, 2>;
 
 /**
@@ -91,7 +91,7 @@ using Matrix = Tensor<T, 2>;
  *
  * @tparam T The underlying type. Defaults to double.
  */
-template<typename T = double>
+template <typename T = double>
 using Vector = Tensor<T, 1>;
 
 /**

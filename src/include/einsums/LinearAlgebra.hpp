@@ -13,10 +13,10 @@
 #include "einsums/Section.hpp"
 #include "einsums/Tensor.hpp"
 #include "einsums/Utilities.hpp"
+#include "einsums/linear_algebra_imp/UnoptimizedLinearAlgebra.hpp"
 #include "einsums/utility/ComplexTraits.hpp"
 #include "einsums/utility/SmartPointerTraits.hpp"
 #include "einsums/utility/TensorTraits.hpp"
-#include "einsums/linear_algebra_imp/UnoptimizedLinearAlgebra.hpp"
 #ifdef __HIP__
 #    include "einsums/DeviceTensor.hpp"
 #    include "einsums/linear_algebra_imp/GPULinearAlgebra.hpp"
@@ -25,6 +25,7 @@
 #include "einsums/linear_algebra_imp/BlockLinearAlgebra.hpp"
 #include "einsums/linear_algebra_imp/BlockTiledLinearAlgebra.hpp"
 #include "einsums/linear_algebra_imp/TiledLinearAlgebra.hpp"
+
 #include <algorithm>
 #include <cmath>
 #include <complex>
@@ -982,14 +983,14 @@ auto qr(const AType &_A) -> std::tuple<Tensor<typename AType::data_type, 2>, Ten
     return {A, tau};
 }
 
-template<MatrixConcept AType, VectorConcept TauType>
-requires requires {
-    requires CoreTensorConcept<AType>;
-    requires CoreTensorConcept<TauType>;
-    requires SameUnderlying<AType, TauType>;
-}
+template <MatrixConcept AType, VectorConcept TauType>
+    requires requires {
+        requires CoreTensorConcept<AType>;
+        requires CoreTensorConcept<TauType>;
+        requires SameUnderlying<AType, TauType>;
+    }
 auto q(const AType &qr, const TauType &tau) -> Tensor<typename AType::data_type, 2> {
-    using T = typename AType::data_type;
+    using T          = typename AType::data_type;
     const blas_int m = qr.dim(1);
     const blas_int p = qr.dim(0);
 
@@ -1003,8 +1004,8 @@ auto q(const AType &qr, const TauType &tau) -> Tensor<typename AType::data_type,
     return Q;
 }
 
-template<TensorConcept AType, TensorConcept BType, TensorConcept CType, typename T>
-requires(SameRank<AType, BType, CType>)
+template <TensorConcept AType, TensorConcept BType, TensorConcept CType, typename T>
+    requires(SameRank<AType, BType, CType>)
 void direct_product(T alpha, const AType &A, const BType &B, T beta, CType *C) {
     LabeledSection0();
 
@@ -1014,7 +1015,7 @@ void direct_product(T alpha, const AType &A, const BType &B, T beta, CType *C) {
 /**
  * Computes the determinant of a matrix.
  */
-template<MatrixConcept AType>
+template <MatrixConcept AType>
 typename AType::data_type det(const AType &A) {
     using T = typename AType::data_type;
     if (A.dim(0) != A.dim(1)) {

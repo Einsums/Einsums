@@ -2487,7 +2487,7 @@ TEST_CASE("Dot TensorView and Tensor") {
     auto A  = create_random_tensor<double>("A", i_, k_);
     auto B  = create_random_tensor<double>("B", k_, j_);
     auto C  = create_tensor<double>("C", l_, j_);
-    auto C0  = create_tensor<double>("C0", l_, j_);
+    auto C0 = create_tensor<double>("C0", l_, j_);
     zero(C0);
 
     auto A_view = A(Range{0, l_}, All); // (l_, k_)
@@ -2504,7 +2504,7 @@ TEST_CASE("Dot TensorView and Tensor") {
 
     for (size_t l = 0; l < l_; l++) {
         for (size_t j = 0; j < j_; j++) {
-            //println("{:20.14f} {:20.14f} {:20.14f}", C(l, j), C0(l, j), std::abs(C(l, j) - C0(l, j)));
+            // println("{:20.14f} {:20.14f} {:20.14f}", C(l, j), C0(l, j), std::abs(C(l, j) - C0(l, j)));
             REQUIRE_THAT(C(l, j), Catch::Matchers::WithinAbs(C0(l, j), 1e-12));
         }
     }

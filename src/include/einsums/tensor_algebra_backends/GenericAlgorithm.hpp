@@ -16,16 +16,14 @@ namespace einsums::tensor_algebra::detail {
 
 template <typename... CUniqueIndices, typename... AUniqueIndices, typename... BUniqueIndices, typename... LinkUniqueIndices,
           typename... CIndices, typename... AIndices, typename... BIndices, typename... TargetDims, typename... LinkDims,
-          typename... TargetPositionInC, typename... LinkPositionInLink, typename CType, CoreTensorConcept AType,
-          CoreTensorConcept BType>
-requires(CoreTensorConcept<CType> || (!TensorConcept<CType> && sizeof...(CIndices) == 0))
+          typename... TargetPositionInC, typename... LinkPositionInLink, typename CType, CoreTensorConcept AType, CoreTensorConcept BType>
+    requires(CoreTensorConcept<CType> || (!TensorConcept<CType> && sizeof...(CIndices) == 0))
 void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, const std::tuple<AUniqueIndices...> & /*A_unique*/,
                               const std::tuple<BUniqueIndices...> & /*B_unique*/, const std::tuple<LinkUniqueIndices...> &link_unique,
                               const std::tuple<CIndices...> & /*C_indices*/, const std::tuple<AIndices...> & /*A_indices*/,
                               const std::tuple<BIndices...> & /*B_indices*/, const std::tuple<TargetDims...> &target_dims,
                               const std::tuple<LinkDims...> &link_dims, const std::tuple<TargetPositionInC...> &target_position_in_C,
-                              const std::tuple<LinkPositionInLink...> &link_position_in_link, const DataTypeT<CType> C_prefactor,
-                              CType *C,
+                              const std::tuple<LinkPositionInLink...> &link_position_in_link, const DataTypeT<CType> C_prefactor, CType *C,
                               const std::conditional_t<(sizeof(typename AType::data_type) > sizeof(typename BType::data_type)),
                                                        typename AType::data_type, typename BType::data_type>
                                            AB_prefactor,

@@ -57,7 +57,7 @@ struct TiledTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
      */
     virtual void add_tile(std::array<int, Rank> pos) = 0;
 
-    template<typename TOther, size_t RankOther, typename TensorTypeOther>
+    template <typename TOther, size_t RankOther, typename TensorTypeOther>
     friend struct TiledTensorBase;
 
   public:
@@ -74,12 +74,13 @@ struct TiledTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
      * @param sizes The grids to apply.
      */
     template <typename... Sizes>
-    requires(!std::is_same_v<std::array<std::vector<int>, Rank>, Sizes> && ... && true)
+        requires(!std::is_same_v<std::array<std::vector<int>, Rank>, Sizes> && ... && true)
     TiledTensorBase(std::string name, Sizes... sizes) : _name(name), _tile_offsets(), _tile_sizes(), _tiles(), _size(0), _dims{} {
         static_assert(sizeof...(Sizes) == Rank || sizeof...(Sizes) == 1);
 
         _size = 1;
-        if constexpr (sizeof...(Sizes) == Rank && !std::is_same_v<std::array<std::vector<int>, Rank>, decltype(std::get<0>(std::tuple(sizes...)))>) {
+        if constexpr (sizeof...(Sizes) == Rank &&
+                      !std::is_same_v<std::array<std::vector<int>, Rank>, decltype(std::get<0>(std::tuple(sizes...)))>) {
             _tile_sizes = std::array<std::vector<int>, Rank>{std::vector<int>(sizes.begin(), sizes.end())...};
         } else {
             for (int i = 0; i < Rank; i++) {
@@ -104,7 +105,8 @@ struct TiledTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
         }
     }
 
-    TiledTensorBase(std::string name, const std::array<std::vector<int>, Rank> &sizes) : _name(name), _tile_offsets(), _tile_sizes(sizes), _tiles(), _size(0), _dims{} {
+    TiledTensorBase(std::string name, const std::array<std::vector<int>, Rank> &sizes)
+        : _name(name), _tile_offsets(), _tile_sizes(sizes), _tiles(), _size(0), _dims{} {
         _size = 1;
         for (int i = 0; i < Rank; i++) {
             _tile_offsets[i] = std::vector<int>();
@@ -142,8 +144,8 @@ struct TiledTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
      *
      * @param other The tensor to be copied and converted.
      */
-    template<TRTensorConcept<Rank, T> OtherTensor>
-    TiledTensorBase(const TiledTensorBase<T, Rank, OtherTensor> &other) 
+    template <TRTensorConcept<Rank, T> OtherTensor>
+    TiledTensorBase(const TiledTensorBase<T, Rank, OtherTensor> &other)
         : _tile_offsets(other._tile_offsets), _tile_sizes(other._tile_sizes), _name(other._name), _size(other._size), _tiles(),
           _dims{other._dims}, _grid_size{other._grid_size} {
         for (auto &pair : other._tiles) {
@@ -510,8 +512,8 @@ struct TiledTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
         return *this;
     }
 
-    template<TiledTensorConcept TensorOther>
-    requires(SameUnderlyingAndRank<TiledTensorBase<T, Rank, TensorType>, TensorOther>)
+    template <TiledTensorConcept TensorOther>
+        requires(SameUnderlyingAndRank<TiledTensorBase<T, Rank, TensorType>, TensorOther>)
     TiledTensorBase<T, Rank, TensorType> &operator=(const TensorOther &copy) {
         zero();
         _tile_sizes   = copy._tile_sizes;
@@ -840,14 +842,14 @@ struct TiledTensor final : public virtual tensor_props::TiledTensorBase<T, Rank,
 
     TiledTensor(const TiledTensor<T, Rank> &other) : tensor_props::TiledTensorBase<T, Rank, Tensor<T, Rank>>(other) {}
 
-    template<TiledTensorConcept OtherTensor>
+    template <TiledTensorConcept OtherTensor>
         requires(SameUnderlyingAndRank<TiledTensor<T, Rank>, OtherTensor>)
     TiledTensor(const OtherTensor &other) : tensor_props::TiledTensorBase<T, Rank, Tensor<T, Rank>>(other) {}
 
     ~TiledTensor() = default;
-    
-    template<TiledTensorConcept TensorOther>
-    requires(SameUnderlyingAndRank<TiledTensor<T, Rank>, TensorOther>)
+
+    template <TiledTensorConcept TensorOther>
+        requires(SameUnderlyingAndRank<TiledTensor<T, Rank>, TensorOther>)
     TiledTensor<T, Rank> &operator=(const TensorOther &copy) {
         this->zero();
         this->_tile_sizes   = copy.tile_sizes();
@@ -932,13 +934,12 @@ struct TiledDeviceTensor final : public virtual tensor_props::TiledTensorBase<T,
 
     template <typename... Sizes>
         requires(!(std::is_same_v<Sizes, detail::HostToDeviceMode> || ...))
-    TiledDeviceTensor(std::string name, Sizes... sizes)
-        : tensor_props::TiledTensorBase<T, Rank, DeviceTensor<T, Rank>>(name, sizes...) {}
+    TiledDeviceTensor(std::string name, Sizes... sizes) : tensor_props::TiledTensorBase<T, Rank, DeviceTensor<T, Rank>>(name, sizes...) {}
 
     TiledDeviceTensor(const TiledDeviceTensor<T, Rank> &other) = default;
 
-    template<RankTiledTensor<Rank, T> OtherType>
-    TiledDeviceTensor(const OtherType &other) : tensor_props::TiledTensorBase<T, Rank, DeviceTensor<T, Rank>>(other) { }
+    template <RankTiledTensor<Rank, T> OtherType>
+    TiledDeviceTensor(const OtherType &other) : tensor_props::TiledTensorBase<T, Rank, DeviceTensor<T, Rank>>(other) {}
 
     ~TiledDeviceTensor() = default;
 
@@ -995,8 +996,8 @@ struct TiledDeviceTensor final : public virtual tensor_props::TiledTensorBase<T,
         return std::apply(out, array_ind);
     }
 
-    template<TiledTensorConcept TensorOther>
-    requires(SameUnderlyingAndRank<TiledDeviceTensor<T, Rank>, TensorOther>)
+    template <TiledTensorConcept TensorOther>
+        requires(SameUnderlyingAndRank<TiledDeviceTensor<T, Rank>, TensorOther>)
     TiledDeviceTensor<T, Rank> &operator=(const TensorOther &copy) {
         this->zero();
         this->_tile_sizes   = copy.tile_sizes();
@@ -1039,11 +1040,11 @@ struct TiledDeviceTensorView final : public virtual tensor_props::TiledTensorBas
 
     TiledDeviceTensorView(const TiledDeviceTensorView<T, Rank> &other) = default;
 
-    TiledDeviceTensorView(TiledTensor<T, Rank> &other) : tensor_props::TiledTensorBase<T, Rank, DeviceTensorView<T, Rank>>(other.name(), other.tile_sizes()) {
-        for(auto &tile : other.tiles()) {
+    TiledDeviceTensorView(TiledTensor<T, Rank> &other)
+        : tensor_props::TiledTensorBase<T, Rank, DeviceTensorView<T, Rank>>(other.name(), other.tile_sizes()) {
+        for (auto &tile : other.tiles()) {
             this->_tiles.emplace(tile.first, tile.second);
         }
-
     }
 
     ~TiledDeviceTensorView() = default;
@@ -1114,14 +1115,14 @@ struct TiledDeviceTensorView final : public virtual tensor_props::TiledTensorBas
 
 template <einsums::TiledTensorConcept TensorType>
 void println(const TensorType &A, TensorPrintOptions options = {}) {
-    using T = typename TensorType::data_type;
+    using T               = typename TensorType::data_type;
     constexpr size_t Rank = TensorType::rank;
     println("Name: {}", A.name());
     {
         print::Indent const indent{};
         println("Tiled Tensor");
         println("Data Type: {}", type_name<T>());
-        
+
         if constexpr (Rank > 0) {
             std::ostringstream oss;
             for (size_t i = 0; i < Rank; i++) {
@@ -1153,9 +1154,9 @@ void println(const TensorType &A, TensorPrintOptions options = {}) {
     }
 }
 
-template<einsums::TiledTensorConcept TensorType>
+template <einsums::TiledTensorConcept TensorType>
 void fprintln(FILE *fp, const TensorType &A, TensorPrintOptions options = {}) {
-    using T = typename TensorType::data_type;
+    using T               = typename TensorType::data_type;
     constexpr size_t Rank = TensorType::rank;
     fprintln(fp, "Name: {}", A.name());
     {
@@ -1194,9 +1195,9 @@ void fprintln(FILE *fp, const TensorType &A, TensorPrintOptions options = {}) {
     }
 }
 
-template<einsums::TiledTensorConcept TensorType>
+template <einsums::TiledTensorConcept TensorType>
 void fprintln(std::ostream &os, const TensorType &A, TensorPrintOptions options = {}) {
-    using T = typename TensorType::data_type;
+    using T               = typename TensorType::data_type;
     constexpr size_t Rank = TensorType::rank;
     fprintln(os, "Name: {}", A.name());
     {

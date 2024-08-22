@@ -47,7 +47,7 @@ auto validate_cp_rank(const Dim<TRank> shape, const std::string &rounding = "rou
  */
 template <TensorConcept TTensor>
 auto norm(const TTensor &tensor) -> DataTypeT<TTensor> {
-    using TType = DataTypeT<TTensor>;
+    using TType            = DataTypeT<TTensor>;
     constexpr size_t TRank = TensorRank<TTensor>;
 
     LabeledSection0();
@@ -67,12 +67,12 @@ auto norm(const TTensor &tensor) -> DataTypeT<TTensor> {
  * Computes the RMSD between two tensors of arbitrary dimension
  */
 template <TensorConcept AType, TensorConcept BType>
-requires requires {
-    requires SameUnderlyingAndRank<AType, BType>;
-    requires InSamePlace<AType, BType>;
-}
+    requires requires {
+        requires SameUnderlyingAndRank<AType, BType>;
+        requires InSamePlace<AType, BType>;
+    }
 auto rmsd(const AType &tensor1, const BType &tensor2) -> DataTypeT<AType> {
-    using TType = DataTypeT<AType>;
+    using TType            = DataTypeT<AType>;
     constexpr size_t TRank = TensorRank<AType>;
     LabeledSection0();
 
@@ -99,12 +99,12 @@ auto rmsd(const AType &tensor1, const BType &tensor2) -> DataTypeT<AType> {
  * "Weight" a tensor for weighted CANDECOMP/PARAFAC decompositions (returns a copy) by input weights
  */
 template <TensorConcept TTensor, VectorConcept WTensor>
-requires requires {
-    requires SameUnderlying<TTensor, WTensor>;
-    requires InSamePlace<TTensor, WTensor>;
-}
+    requires requires {
+        requires SameUnderlying<TTensor, WTensor>;
+        requires InSamePlace<TTensor, WTensor>;
+    }
 auto weight_tensor(const TTensor &tensor, const WTensor &weights) -> Tensor<DataTypeT<TTensor>, TensorRank<TTensor>> {
-    using TType = DataTypeT<TTensor>;
+    using TType            = DataTypeT<TTensor>;
     constexpr size_t TRank = TensorRank<TTensor>;
     LabeledSection0();
 

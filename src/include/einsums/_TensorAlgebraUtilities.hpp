@@ -6,9 +6,9 @@
 #pragma once
 
 #include "einsums/_Common.hpp"
-#include "einsums/utility/TensorTraits.hpp"
 
 #include "einsums/STL.hpp"
+#include "einsums/utility/TensorTraits.hpp"
 #include "range/v3/view/iota.hpp"
 
 #include <tuple>
@@ -63,12 +63,12 @@ constexpr auto _unique_find_type_with_position() {
 }
 #endif
 
-template<TensorConcept TensorType, typename... Args, size_t... I>
+template <TensorConcept TensorType, typename... Args, size_t... I>
 auto get_dim_ranges_for(const TensorType &tensor, const std::tuple<Args...> &args, std::index_sequence<I...> /*seq*/) {
     return std::tuple{ranges::views::ints(0, (int)tensor.dim(std::get<2 * I + 1>(args)))...};
 }
 
-template<TensorConcept TensorType, typename... Args, size_t... I>
+template <TensorConcept TensorType, typename... Args, size_t... I>
 auto get_dim_for(const TensorType &tensor, const std::tuple<Args...> &args, std::index_sequence<I...> /*seq*/) {
     return std::tuple{tensor.dim(std::get<2 * I + 1>(args))...};
 }
@@ -118,23 +118,23 @@ constexpr auto unique_find_type_with_position(const std::tuple<Ts...> & /*unused
     return _unique_find_type_with_position<std::tuple<Ts...>, Us...>(std::make_index_sequence<sizeof...(Ts)>{});
 }
 
-template<TensorConcept TensorType, typename... Args>
+template <TensorConcept TensorType, typename... Args>
 auto get_dim_ranges_for(const TensorType &tensor, const std::tuple<Args...> &args) {
     return detail::get_dim_ranges_for(tensor, args, std::make_index_sequence<sizeof...(Args) / 2>{});
 }
 
-template<TensorConcept TensorType, typename... Args>
+template <TensorConcept TensorType, typename... Args>
 auto get_dim_for(const TensorType &tensor, const std::tuple<Args...> &args) {
     return detail::get_dim_for(tensor, args, std::make_index_sequence<sizeof...(Args) / 2>{});
 }
 
-template<typename ScalarType>
-requires(!TensorConcept<ScalarType>)
+template <typename ScalarType>
+    requires(!TensorConcept<ScalarType>)
 auto get_dim_ranges_for(const ScalarType &tensor, const std::tuple<> &args) {
     return std::tuple{};
 }
 
-template<typename ScalarType>
+template <typename ScalarType>
 auto get_dim_for(const ScalarType &tensor, const std::tuple<> &args) {
     return std::tuple{};
 }
@@ -268,15 +268,13 @@ constexpr auto is_same_ordering(const std::tuple<PositionsInX...> &positions_in_
     }
 }
 
-template<TensorConcept XType, typename... PositionsInX, size_t... I>
-constexpr auto product_dims(const std::tuple<PositionsInX...> &indices, const XType &X,
-                            std::index_sequence<I...> /*unused*/) -> size_t {
+template <TensorConcept XType, typename... PositionsInX, size_t... I>
+constexpr auto product_dims(const std::tuple<PositionsInX...> &indices, const XType &X, std::index_sequence<I...> /*unused*/) -> size_t {
     return (X.dim(std::get<2 * I + 1>(indices)) * ... * 1);
 }
 
-template<TensorConcept XType, typename... PositionsInX, size_t... I>
-constexpr auto is_same_dims(const std::tuple<PositionsInX...> &indices, const XType &X,
-                            std::index_sequence<I...> /*unused*/) -> bool {
+template <TensorConcept XType, typename... PositionsInX, size_t... I>
+constexpr auto is_same_dims(const std::tuple<PositionsInX...> &indices, const XType &X, std::index_sequence<I...> /*unused*/) -> bool {
     return ((X.dim(std::get<1>(indices)) == X.dim(std::get<2 * I + 1>(indices))) && ... && 1);
 }
 
@@ -285,35 +283,35 @@ constexpr auto same_indices(std::index_sequence<I...> /*unused*/) {
     return (std::is_same_v<std::tuple_element_t<I, LHS>, std::tuple_element_t<I, RHS>> && ...);
 }
 
-template<TensorConcept XType, typename... PositionsInX>
+template <TensorConcept XType, typename... PositionsInX>
 constexpr auto product_dims(const std::tuple<PositionsInX...> &indices, const XType &X) -> size_t {
     return detail::product_dims(indices, X, std::make_index_sequence<sizeof...(PositionsInX) / 2>());
 }
 
-template<typename XType, typename... PositionsInX>
-requires(!TensorConcept<XType>)
+template <typename XType, typename... PositionsInX>
+    requires(!TensorConcept<XType>)
 constexpr auto product_dims(const std::tuple<PositionsInX...> &indices, const XType &X) -> size_t {
     return 0UL;
 }
 
-template<TensorConcept XType, typename... PositionsInX>
+template <TensorConcept XType, typename... PositionsInX>
 constexpr auto is_same_dims(const std::tuple<PositionsInX...> &indices, const XType &X) -> size_t {
     return detail::is_same_dims(indices, X, std::make_index_sequence<sizeof...(PositionsInX) / 2>());
 }
 
-template<typename XType, typename... PositionsInX>
-requires(!TensorConcept<XType>)
+template <typename XType, typename... PositionsInX>
+    requires(!TensorConcept<XType>)
 constexpr auto is_same_dims(const std::tuple<PositionsInX...> &indices, const XType &X) -> size_t {
     return true;
 }
 
-template<TensorConcept XType, typename... PositionsInX>
+template <TensorConcept XType, typename... PositionsInX>
 constexpr auto last_stride(const std::tuple<PositionsInX...> &indices, const XType &X) -> size_t {
     return X.stride(std::get<sizeof...(PositionsInX) - 1>(indices));
 }
 
-template<typename XType, typename... PositionsInX>
-requires(!TensorConcept<XType>)
+template <typename XType, typename... PositionsInX>
+    requires(!TensorConcept<XType>)
 constexpr auto last_stride(const std::tuple<PositionsInX...> &indices, const XType &X) -> size_t {
     return 0UL;
 }
@@ -344,8 +342,7 @@ inline auto get_grid_ranges_for_many_b(const BType &B, const ::std::tuple<BHead>
     }
 }
 
-template <typename UniqueIndex, int BDim, TensorConcept BType, typename BHead,
-          typename... BIndices>
+template <typename UniqueIndex, int BDim, TensorConcept BType, typename BHead, typename... BIndices>
 inline size_t get_grid_ranges_for_many_b(const BType &B, const ::std::tuple<BHead, BIndices...> &B_indices) {
     if constexpr (::std::is_same_v<BHead, UniqueIndex>) {
         if constexpr (einsums::detail::IsTiledTensorV<BType>) {
@@ -360,17 +357,15 @@ inline size_t get_grid_ranges_for_many_b(const BType &B, const ::std::tuple<BHea
     }
 }
 
-template <typename UniqueIndex, int ADim, TensorConcept AType, 
-          TensorConcept BType, typename... BIndices>
-inline size_t get_grid_ranges_for_many_a(const AType &A, const ::std::tuple<> &A_indices,
-                                         const BType &B, const ::std::tuple<BIndices...> &B_indices) {
+template <typename UniqueIndex, int ADim, TensorConcept AType, TensorConcept BType, typename... BIndices>
+inline size_t get_grid_ranges_for_many_a(const AType &A, const ::std::tuple<> &A_indices, const BType &B,
+                                         const ::std::tuple<BIndices...> &B_indices) {
     return get_grid_ranges_for_many_b<UniqueIndex, 0>(B, B_indices);
 }
 
-template <typename UniqueIndex, int ADim, TensorConcept AType,
-          TensorConcept BType, typename AHead, typename... BIndices>
-inline size_t get_grid_ranges_for_many_a(const AType &A, const ::std::tuple<AHead> &A_indices,
-                                         const BType &B, const ::std::tuple<BIndices...> &B_indices) {
+template <typename UniqueIndex, int ADim, TensorConcept AType, TensorConcept BType, typename AHead, typename... BIndices>
+inline size_t get_grid_ranges_for_many_a(const AType &A, const ::std::tuple<AHead> &A_indices, const BType &B,
+                                         const ::std::tuple<BIndices...> &B_indices) {
     if constexpr (::std::is_same_v<AHead, UniqueIndex>) {
         if constexpr (einsums::detail::IsTiledTensorV<AType>) {
             return A.grid_size(ADim);
@@ -384,11 +379,9 @@ inline size_t get_grid_ranges_for_many_a(const AType &A, const ::std::tuple<AHea
     }
 }
 
-template <typename UniqueIndex, int ADim, TensorConcept AType,
-          TensorConcept BType, typename AHead, typename... AIndices,
+template <typename UniqueIndex, int ADim, TensorConcept AType, TensorConcept BType, typename AHead, typename... AIndices,
           typename... BIndices>
-inline auto get_grid_ranges_for_many_a(const AType&A, const ::std::tuple<AHead, AIndices...> &A_indices,
-                                       const BType   &B,
+inline auto get_grid_ranges_for_many_a(const AType &A, const ::std::tuple<AHead, AIndices...> &A_indices, const BType &B,
                                        const ::std::tuple<BIndices...> &B_indices) -> ::std::enable_if_t<sizeof...(AIndices) != 0, size_t> {
     if constexpr (::std::is_same_v<AHead, UniqueIndex>) {
         if constexpr (einsums::detail::IsTiledTensorV<AType>) {
@@ -404,21 +397,19 @@ inline auto get_grid_ranges_for_many_a(const AType&A, const ::std::tuple<AHead, 
 }
 
 // In these functions, leave CType as typename to allow for scalar types and tensor types.
-template <typename UniqueIndex, int CDim, typename CType,
-          TensorConcept AType, TensorConcept BType,
-          typename... AIndices, typename... BIndices>
-inline size_t get_grid_ranges_for_many_c(const CType &C, const ::std::tuple<> &C_indices,
-                                         const AType &A, const ::std::tuple<AIndices...> &A_indices,
-                                         const BType &B, const ::std::tuple<BIndices...> &B_indices) {
+template <typename UniqueIndex, int CDim, typename CType, TensorConcept AType, TensorConcept BType, typename... AIndices,
+          typename... BIndices>
+inline size_t get_grid_ranges_for_many_c(const CType &C, const ::std::tuple<> &C_indices, const AType &A,
+                                         const ::std::tuple<AIndices...> &A_indices, const BType &B,
+                                         const ::std::tuple<BIndices...> &B_indices) {
     return get_grid_ranges_for_many_a<UniqueIndex, 0>(A, A_indices, B, B_indices);
 }
 
-template <typename UniqueIndex, int CDim,  typename CType,
-          TensorConcept AType, TensorConcept BType,
-          typename CHead, typename... AIndices, typename... BIndices>
-inline size_t get_grid_ranges_for_many_c(const CType &C, const ::std::tuple<CHead> &C_indices,
-                                         const AType &A, const ::std::tuple<AIndices...> &A_indices,
-                                         const BType &B, const ::std::tuple<BIndices...> &B_indices) {
+template <typename UniqueIndex, int CDim, typename CType, TensorConcept AType, TensorConcept BType, typename CHead, typename... AIndices,
+          typename... BIndices>
+inline size_t get_grid_ranges_for_many_c(const CType &C, const ::std::tuple<CHead> &C_indices, const AType &A,
+                                         const ::std::tuple<AIndices...> &A_indices, const BType &B,
+                                         const ::std::tuple<BIndices...> &B_indices) {
     if constexpr (::std::is_same_v<CHead, UniqueIndex>) {
         if constexpr (einsums::detail::IsTiledTensorV<CType>) {
             return C.grid_size(CDim);
@@ -432,12 +423,10 @@ inline size_t get_grid_ranges_for_many_c(const CType &C, const ::std::tuple<CHea
     }
 }
 
-template <typename UniqueIndex, int CDim,  typename CType,
-          TensorConcept AType, TensorConcept BType,
-          typename CHead, typename... CIndices, typename... AIndices, typename... BIndices>
-inline auto get_grid_ranges_for_many_c(const CType &C, const ::std::tuple<CHead, CIndices...> &C_indices,
-                                       const AType &A, const ::std::tuple<AIndices...> &A_indices,
-                                       const BType   &B,
+template <typename UniqueIndex, int CDim, typename CType, TensorConcept AType, TensorConcept BType, typename CHead, typename... CIndices,
+          typename... AIndices, typename... BIndices>
+inline auto get_grid_ranges_for_many_c(const CType &C, const ::std::tuple<CHead, CIndices...> &C_indices, const AType &A,
+                                       const ::std::tuple<AIndices...> &A_indices, const BType &B,
                                        const ::std::tuple<BIndices...> &B_indices) -> ::std::enable_if_t<sizeof...(CIndices) != 0, size_t> {
     if constexpr (::std::is_same_v<CHead, UniqueIndex>) {
         if constexpr (einsums::detail::IsTiledTensorV<CType>) {
@@ -463,12 +452,10 @@ inline auto get_grid_ranges_for_many_c(const CType &C, const ::std::tuple<CHead,
  * @param B_indices The indices for the B tensor.
  * @param All_unique_indices The list of all indices with duplicates removed.
  */
-template <typename CType, TensorConcept AType,
-          TensorConcept BType,
-          typename... CIndices, typename... AIndices, typename... BIndices, typename... AllUniqueIndices>
-inline auto get_grid_ranges_for_many(const CType &C, const ::std::tuple<CIndices...> &C_indices,
-                                     const AType &A, const ::std::tuple<AIndices...> &A_indices,
-                                     const BType &B, const ::std::tuple<BIndices...> &B_indices,
+template <typename CType, TensorConcept AType, TensorConcept BType, typename... CIndices, typename... AIndices, typename... BIndices,
+          typename... AllUniqueIndices>
+inline auto get_grid_ranges_for_many(const CType &C, const ::std::tuple<CIndices...> &C_indices, const AType &A,
+                                     const ::std::tuple<AIndices...> &A_indices, const BType &B, const ::std::tuple<BIndices...> &B_indices,
                                      const ::std::tuple<AllUniqueIndices...> &All_unique_indices) {
     return ::std::array{get_grid_ranges_for_many_c<AllUniqueIndices, 0>(C, C_indices, A, A_indices, B, B_indices)...};
 }

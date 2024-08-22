@@ -164,12 +164,12 @@ auto true_dot(const AType &A, const BType &B) -> typename AType::data_type {
     return out;
 }
 
-template<bool TransA, bool TransB, BlockTensorConcept AType, TiledTensorConcept BType, TiledTensorConcept CType, typename U>
-requires requires {
-    requires MatrixConcept<AType>;
-    requires SameUnderlyingAndRank<AType, BType, CType>;
-    requires std::convertible_to<U, typename AType::data_type>;
-}
+template <bool TransA, bool TransB, BlockTensorConcept AType, TiledTensorConcept BType, TiledTensorConcept CType, typename U>
+    requires requires {
+        requires MatrixConcept<AType>;
+        requires SameUnderlyingAndRank<AType, BType, CType>;
+        requires std::convertible_to<U, typename AType::data_type>;
+    }
 void gemm(const U alpha, const AType &A, const BType &B, const U beta, CType *C) {
     // Check for compatibility.
     if (C->grid_size(0) != A.num_blocks() || C->grid_size(1) != B.grid_size(TransB ? 0 : 1)) {
@@ -219,12 +219,12 @@ void gemm(const U alpha, const AType &A, const BType &B, const U beta, CType *C)
     }
 }
 
-template<bool TransA, bool TransB, TiledTensorConcept AType, BlockTensorConcept BType, TiledTensorConcept CType, typename U>
-requires requires {
-    requires MatrixConcept<AType>;
-    requires SameUnderlyingAndRank<AType, BType, CType>;
-    requires std::convertible_to<U, typename AType::data_type>;
-}
+template <bool TransA, bool TransB, TiledTensorConcept AType, BlockTensorConcept BType, TiledTensorConcept CType, typename U>
+    requires requires {
+        requires MatrixConcept<AType>;
+        requires SameUnderlyingAndRank<AType, BType, CType>;
+        requires std::convertible_to<U, typename AType::data_type>;
+    }
 void gemm(const U alpha, const AType &A, const BType &B, const U beta, CType *C) {
     // Check for compatibility.
     if (C->grid_size(0) != A.grid_size(TransA ? 1 : 0) || C->grid_size(1) != B.num_blocks()) {

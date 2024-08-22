@@ -16,11 +16,11 @@ template <typename>
 inline constexpr bool IsComplexV = false;
 
 template <typename type>
-requires(!TensorConcept<type>)
+    requires(!TensorConcept<type>)
 inline constexpr bool IsComplexV<std::complex<type>> =
     std::disjunction_v<std::is_same<type, float>, std::is_same<type, double>, std::is_same<type, long double>>;
 
-template<TensorConcept TensorType>
+template <TensorConcept TensorType>
 inline constexpr bool IsComplexV<TensorType> = IsComplexV<typename TensorType::data_type>;
 
 template <typename type>
@@ -37,7 +37,7 @@ struct ComplexType {
     using Type = T;
 };
 
-template<TensorConcept T>
+template <TensorConcept T>
 struct ComplexType<T> {
     using Type = typename ComplexType<typename T::data_type>::Type;
 };

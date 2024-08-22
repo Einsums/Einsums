@@ -607,7 +607,7 @@ void set_stream(hipStream_t stream) {
 }
 
 void set_stream(hipStream_t stream, int thread_id) {
-    auto guard = std::lock_guard(detail::wait_mutex);
+    auto guard                             = std::lock_guard(detail::wait_mutex);
     detail::default_streams->at(thread_id) = stream;
 
     hipblas_catch(hipblasSetStream(get_blas_handle(), stream));

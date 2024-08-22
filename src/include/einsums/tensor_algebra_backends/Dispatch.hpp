@@ -5,13 +5,13 @@
 #include "einsums/_TensorAlgebraUtilities.hpp"
 
 #include "einsums/BlockTensor.hpp"
+#include "einsums/FunctionTensor.hpp"
 #include "einsums/LinearAlgebra.hpp"
 #include "einsums/Print.hpp"
 #include "einsums/STL.hpp"
 #include "einsums/Section.hpp"
 #include "einsums/Tensor.hpp"
 #include "einsums/TiledTensor.hpp"
-#include "einsums/FunctionTensor.hpp"
 #include "einsums/Timer.hpp"
 #include "einsums/tensor_algebra_backends/BlockAlgebra.hpp"
 #include "einsums/tensor_algebra_backends/BlockTileAlgebra.hpp"
@@ -41,11 +41,10 @@ namespace detail {
 // CType has typename to allow for interoperability with scalar types.
 template <bool OnlyUseGenericAlgorithm, TensorConcept AType, TensorConcept BType, typename CType, typename... CIndices,
           typename... AIndices, typename... BIndices>
-requires(TensorConcept<CType> || (ScalarConcept<CType> && sizeof...(CIndices) == 0))
+    requires(TensorConcept<CType> || (ScalarConcept<CType> && sizeof...(CIndices) == 0))
 auto einsum(const DataTypeT<CType> C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType *C,
-            const BiggestTypeT<typename AType::data_type, typename BType::data_type>
-                AB_prefactor,
-            const std::tuple<AIndices...> & /*As*/, const AType &A, const std::tuple<BIndices...> & /*Bs*/, const BType &B) -> void {
+            const BiggestTypeT<typename AType::data_type, typename BType::data_type> AB_prefactor, const std::tuple<AIndices...> & /*As*/,
+            const AType &A, const std::tuple<BIndices...> & /*Bs*/, const BType &B) -> void {
     print::Indent const _indent;
 
     using ADataType        = AType::data_type;
@@ -306,9 +305,8 @@ auto einsum(const DataTypeT<CType> C_prefactor, const std::tuple<CIndices...> & 
             std::conditional_t<einsums::detail::IsIncoreTensorV<BType>, const TensorView<BDataType, 1>,
                                const DeviceTensorView<BDataType, 1>>
                 tB{const_cast<BType &>(B), dB, sB};
-            std::conditional_t<einsums::detail::IsIncoreTensorV<CType>, TensorView<CDataType, 1>,
-                               DeviceTensorView<CDataType, 1>>
-                tC{*C, dC, sC};
+            std::conditional_t<einsums::detail::IsIncoreTensorV<CType>, TensorView<CDataType, 1>, DeviceTensorView<CDataType, 1>> tC{*C, dC,
+                                                                                                                                     sC};
 #else
             const TensorView<ADataType, 2> tA{const_cast<AType &>(A), dA, sA};
             const TensorView<BDataType, 1> tB{const_cast<BType &>(B), dB, sB};
@@ -468,10 +466,10 @@ generic_default:;
 
 template <TensorConcept AType, TensorConcept BType, typename CType, typename U, typename... CIndices, typename... AIndices,
           typename... BIndices>
-requires requires {
-    requires InSamePlace<AType, BType>;
-    requires InSamePlace<AType, CType> || !TensorConcept<CType>;
-}
+    requires requires {
+        requires InSamePlace<AType, BType>;
+        requires InSamePlace<AType, CType> || !TensorConcept<CType>;
+    }
 auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType *C, const U UAB_prefactor,
             const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices, const BType &B) -> void {
     using ADataType        = AType::data_type;
@@ -484,19 +482,20 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
     using ABDataType = std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType>;
 
     if constexpr (einsums::detail::IsTensorV<CType>) {
-    LabeledSection1((std::fabs(UC_prefactor) > EINSUMS_ZERO)
-                        ? fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{} + {} "{}"{})", C->name(), print_tuple_no_type(C_indices),
-                                      UAB_prefactor, A.name(), print_tuple_no_type(A_indices), B.name(), print_tuple_no_type(B_indices),
-                                      UC_prefactor, C->name(), print_tuple_no_type(C_indices))
-                        : fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{})", C->name(), print_tuple_no_type(C_indices), UAB_prefactor,
-                                      A.name(), print_tuple_no_type(A_indices), B.name(), print_tuple_no_type(B_indices)));
+        LabeledSection1((std::fabs(UC_prefactor) > EINSUMS_ZERO)
+                            ? fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{} + {} "{}"{})", C->name(), print_tuple_no_type(C_indices),
+                                          UAB_prefactor, A.name(), print_tuple_no_type(A_indices), B.name(), print_tuple_no_type(B_indices),
+                                          UC_prefactor, C->name(), print_tuple_no_type(C_indices))
+                            : fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{})", C->name(), print_tuple_no_type(C_indices),
+                                          UAB_prefactor, A.name(), print_tuple_no_type(A_indices), B.name(),
+                                          print_tuple_no_type(B_indices)));
     } else {
         LabeledSection1((std::fabs(UC_prefactor) > EINSUMS_ZERO)
-                        ? fmt::format(R"(einsum: "C"{} = {} "{}"{} * "{}"{} + {} "C"{})", print_tuple_no_type(C_indices),
-                                      UAB_prefactor, A.name(), print_tuple_no_type(A_indices), B.name(), print_tuple_no_type(B_indices),
-                                      UC_prefactor, print_tuple_no_type(C_indices))
-                        : fmt::format(R"(einsum: "C"{} = {} "{}"{} * "{}"{})", print_tuple_no_type(C_indices), UAB_prefactor,
-                                      A.name(), print_tuple_no_type(A_indices), B.name(), print_tuple_no_type(B_indices)));
+                            ? fmt::format(R"(einsum: "C"{} = {} "{}"{} * "{}"{} + {} "C"{})", print_tuple_no_type(C_indices), UAB_prefactor,
+                                          A.name(), print_tuple_no_type(A_indices), B.name(), print_tuple_no_type(B_indices), UC_prefactor,
+                                          print_tuple_no_type(C_indices))
+                            : fmt::format(R"(einsum: "C"{} = {} "{}"{} * "{}"{})", print_tuple_no_type(C_indices), UAB_prefactor, A.name(),
+                                          print_tuple_no_type(A_indices), B.name(), print_tuple_no_type(B_indices)));
     }
 
     const CDataType  C_prefactor  = UC_prefactor;

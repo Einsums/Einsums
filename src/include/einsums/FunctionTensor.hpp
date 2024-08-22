@@ -47,7 +47,7 @@ struct FunctionTensorBase : public virtual TensorBase<T, Rank>, virtual Function
     }
 
   public:
-    FunctionTensorBase() = default;
+    FunctionTensorBase()                           = default;
     FunctionTensorBase(const FunctionTensorBase &) = default;
 
     template <typename... Args>
@@ -170,8 +170,8 @@ struct FunctionTensorBase : public virtual TensorBase<T, Rank>, virtual Function
     template <typename... MultiIndex>
         requires NumOfType<Range, Rank, MultiIndex...>
     auto operator()(MultiIndex... index) const -> FunctionTensorView<T, Rank, Rank> {
-        Dim<Rank>        dims{};
-        Offset<Rank>     offset{};
+        Dim<Rank>             dims{};
+        Offset<Rank>          offset{};
         std::array<int, Rank> index_template;
 
         auto ranges = get_array_from_tuple<std::array<Range, Rank>>(std::forward_as_tuple(index...));
@@ -302,10 +302,10 @@ struct FunctionTensorView : public virtual tensor_props::FunctionTensorBase<T, R
         : _offsets{offsets}, _func_tensor(func_tens), _index_template{index_template}, tensor_props::FunctionTensorBase<T, Rank>(dims) {}
 
     FunctionTensorView(const FunctionTensorView &copy) : tensor_props::FunctionTensorBase<T, Rank>(copy) {
-        _func_tensor = copy._func_tensor;
-        _offsets = copy._offsets;
+        _func_tensor    = copy._func_tensor;
+        _offsets        = copy._offsets;
         _index_template = copy._index_template;
-        _full_view = copy._full_view;
+        _full_view      = copy._full_view;
     }
 
     virtual T call(const std::array<int, Rank> &inds) const override {

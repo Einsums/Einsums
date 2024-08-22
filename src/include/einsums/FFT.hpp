@@ -5,8 +5,9 @@
 
 #pragma once
 
-#include "einsums/Tensor.hpp"
 #include "einsums/_Export.hpp"
+
+#include "einsums/Tensor.hpp"
 
 namespace einsums::fft {
 

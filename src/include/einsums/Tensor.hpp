@@ -6,9 +6,9 @@
 #pragma once
 
 #include "einsums/_Common.hpp"
-#include "einsums/Exception.hpp"
 
 #include "einsums/ArithmeticTensor.hpp"
+#include "einsums/Exception.hpp"
 #include "einsums/OpenMP.h"
 #include "einsums/Print.hpp"
 #include "einsums/STL.hpp"
@@ -43,10 +43,11 @@
 #include <vector>
 
 #ifdef __HIP__
-#include <hip/hip_common.h>
-#include <hip/hip_runtime.h>
-#include <hip/hip_runtime_api.h>
-#include "einsums/_GPUUtils.hpp"
+#    include "einsums/_GPUUtils.hpp"
+
+#    include <hip/hip_common.h>
+#    include <hip/hip_runtime.h>
+#    include <hip/hip_runtime_api.h>
 #endif
 
 namespace einsums {
@@ -740,11 +741,11 @@ struct Tensor : public virtual tensor_props::CoreTensorBase,
     }
 
     template <TensorConcept OtherTensor>
-    requires requires {
-        requires !BasicTensorConcept<OtherTensor>;
-        requires SameRank<Tensor<T, Rank>, OtherTensor>;
-        requires CoreTensorConcept<OtherTensor>;
-    }
+        requires requires {
+            requires !BasicTensorConcept<OtherTensor>;
+            requires SameRank<Tensor<T, Rank>, OtherTensor>;
+            requires CoreTensorConcept<OtherTensor>;
+        }
     auto operator=(const OtherTensor &other) -> Tensor<T, Rank> & {
         auto target_dims = get_dim_ranges<Rank>(*this);
         for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
@@ -767,7 +768,7 @@ struct Tensor : public virtual tensor_props::CoreTensorBase,
 
         return *this;
     }
-    
+
 #ifdef __HIP__
     auto operator=(const DeviceTensor<T, Rank> &other) -> Tensor<T, Rank> & {
         bool realloc{false};
@@ -825,7 +826,7 @@ struct Tensor : public virtual tensor_props::CoreTensorBase,
                                                                                                                                            \
     auto operator OP(const Tensor<T, Rank> &b)->Tensor<T, Rank> & {                                                                        \
         if (size() != b.size()) {                                                                                                          \
-            throw EINSUMSEXCEPTION(fmt::format("tensors differ in size : {} {}", size(), b.size())); \
+            throw EINSUMSEXCEPTION(fmt::format("tensors differ in size : {} {}", size(), b.size()));                                       \
         }                                                                                                                                  \
         EINSUMS_OMP_PARALLEL {                                                                                                             \
             auto tid       = omp_get_thread_num();                                                                                         \
@@ -1056,7 +1057,7 @@ struct TensorView final : public virtual tensor_props::CoreTensorBase,
         auto target_dims = get_dim_ranges<Rank>(*this);
         auto view        = std::apply(ranges::views::cartesian_product, target_dims);
 
-//#pragma omp parallel for default(none) shared(view, other)
+        // #pragma omp parallel for default(none) shared(view, other)
         for (auto target_combination = view.begin(); target_combination != view.end(); target_combination++) {
             T &target = std::apply(*this, *target_combination);
             target    = std::apply(other, *target_combination);
@@ -1295,7 +1296,7 @@ struct TensorView final : public virtual tensor_props::CoreTensorBase,
     std::string  _name{"(Unnamed View)"};
     Dim<Rank>    _dims;
     Stride<Rank> _strides;
-    //Offset<Rank> _offsets;
+    // Offset<Rank> _offsets;
 
     bool _full_view_of_underlying{false};
 
@@ -1780,8 +1781,7 @@ struct DiskView final : public virtual tensor_props::DiskTensorBase,
         // Check dims
         for (int i = 0; i < ViewRank; i++) {
             if (_dims[i] != other.dim(i)) {
-                throw EINSUMSEXCEPTION(
-                    fmt::format("dims do not match (i {} dim {} other {})", i, _dims[i], other.dim(i)));
+                throw EINSUMSEXCEPTION(fmt::format("dims do not match (i {} dim {} other {})", i, _dims[i], other.dim(i)));
             }
         }
 
@@ -1967,7 +1967,7 @@ auto create_disk_tensor_like(h5::fd_t &file, const Tensor<T, Rank> &tensor) -> D
 template <einsums::TensorConcept AType>
     requires(einsums::BasicTensorConcept<AType> || !einsums::AlgebraTensorConcept<AType>)
 void println(const AType &A, TensorPrintOptions options) {
-    using T = typename AType::data_type;
+    using T               = typename AType::data_type;
     constexpr size_t Rank = AType::rank;
 
     println("Name: {}", A.name());
@@ -2034,8 +2034,7 @@ void println(const AType &A, TensorPrintOptions options) {
 #ifndef __HIP__
             } else if constexpr (Rank > 1 && einsums::CoreTensorConcept<AType>) {
 #else
-            } else if constexpr (Rank > 1 &&
-                                 (einsums::CoreTensorConcept<AType> || einsums::DeviceTensorConcept<AType>)) {
+            } else if constexpr (Rank > 1 && (einsums::CoreTensorConcept<AType> || einsums::DeviceTensorConcept<AType>)) {
 #endif
                 auto target_dims = einsums::get_dim_ranges<Rank - 1>(A);
                 auto final_dim   = A.dim(Rank - 1);
@@ -2086,8 +2085,7 @@ void println(const AType &A, TensorPrintOptions options) {
 #ifndef __HIP__
             } else if constexpr (Rank == 1 && einsums::CoreTensorConcept<AType>) {
 #else
-            } else if constexpr (Rank == 1 &&
-                                 (einsums::CoreTensorConcept<AType> || einsums::DeviceTensorConcept<AType>)) {
+            } else if constexpr (Rank == 1 && (einsums::CoreTensorConcept<AType> || einsums::DeviceTensorConcept<AType>)) {
 #endif
                 auto target_dims = einsums::get_dim_ranges<Rank>(A);
 
@@ -2130,7 +2128,7 @@ void println(const AType &A, TensorPrintOptions options) {
 template <einsums::TensorConcept AType>
     requires(einsums::BasicTensorConcept<AType> || !einsums::AlgebraTensorConcept<AType>)
 void fprintln(std::FILE *fp, const AType &A, TensorPrintOptions options) {
-    using T = typename AType::data_type;
+    using T               = typename AType::data_type;
     constexpr size_t Rank = AType::rank;
 
     fprintln(fp, "Name: {}", A.name());
@@ -2197,8 +2195,7 @@ void fprintln(std::FILE *fp, const AType &A, TensorPrintOptions options) {
 #ifndef __HIP__
             } else if constexpr (Rank > 1 && einsums::CoreTensorConcept<AType>) {
 #else
-            } else if constexpr (Rank > 1 &&
-                                 (einsums::CoreTensorConcept<AType> || einsums::DeviceTensorConcept<AType>)) {
+            } else if constexpr (Rank > 1 && (einsums::CoreTensorConcept<AType> || einsums::DeviceTensorConcept<AType>)) {
 #endif
                 auto target_dims = einsums::get_dim_ranges<Rank - 1>(A);
                 auto final_dim   = A.dim(Rank - 1);
@@ -2249,8 +2246,7 @@ void fprintln(std::FILE *fp, const AType &A, TensorPrintOptions options) {
 #ifndef __HIP__
             } else if constexpr (Rank == 1 && einsums::CoreTensorConcept<AType>) {
 #else
-            } else if constexpr (Rank == 1 &&
-                                 (einsums::CoreTensorConcept<AType> || einsums::DeviceTensorConcept<AType>)) {
+            } else if constexpr (Rank == 1 && (einsums::CoreTensorConcept<AType> || einsums::DeviceTensorConcept<AType>)) {
 #endif
                 auto target_dims = einsums::get_dim_ranges<Rank>(A);
 
@@ -2293,7 +2289,7 @@ void fprintln(std::FILE *fp, const AType &A, TensorPrintOptions options) {
 template <einsums::TensorConcept AType>
     requires(einsums::BasicTensorConcept<AType> || !einsums::AlgebraTensorConcept<AType>)
 void fprintln(std::ostream &os, const AType &A, TensorPrintOptions options) {
-    using T = typename AType::data_type;
+    using T               = typename AType::data_type;
     constexpr size_t Rank = AType::rank;
 
     fprintln(os, "Name: {}", A.name());
@@ -2360,8 +2356,7 @@ void fprintln(std::ostream &os, const AType &A, TensorPrintOptions options) {
 #ifndef __HIP__
             } else if constexpr (Rank > 1 && einsums::CoreTensorConcept<AType>) {
 #else
-            } else if constexpr (Rank > 1 &&
-                                 (einsums::CoreTensorConcept<AType> || einsums::DeviceTensorConcept<AType>)) {
+            } else if constexpr (Rank > 1 && (einsums::CoreTensorConcept<AType> || einsums::DeviceTensorConcept<AType>)) {
 #endif
                 auto target_dims = einsums::get_dim_ranges<Rank - 1>(A);
                 auto final_dim   = A.dim(Rank - 1);
@@ -2412,8 +2407,7 @@ void fprintln(std::ostream &os, const AType &A, TensorPrintOptions options) {
 #ifndef __HIP__
             } else if constexpr (Rank == 1 && einsums::CoreTensorConcept<AType>) {
 #else
-            } else if constexpr (Rank == 1 &&
-                                 (einsums::CoreTensorConcept<AType> || einsums::DeviceTensorConcept<AType>)) {
+            } else if constexpr (Rank == 1 && (einsums::CoreTensorConcept<AType> || einsums::DeviceTensorConcept<AType>)) {
 #endif
                 auto target_dims = einsums::get_dim_ranges<Rank>(A);
 

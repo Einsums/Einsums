@@ -48,17 +48,17 @@ struct BlockTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
     // friend struct BlockTensorViewBase;
 
     void update_dims() {
-        if(_dims.size() != _blocks.size()) {
+        if (_dims.size() != _blocks.size()) {
             _dims.resize(_blocks.size());
         }
-        if(_ranges.size() != _blocks.size()){
+        if (_ranges.size() != _blocks.size()) {
             _ranges.resize(_blocks.size());
         }
-        
+
         size_t sum = 0;
 
-        for(int i = 0; i < _blocks.size(); i++) {
-            _dims[i] = _blocks[i].dim(0);
+        for (int i = 0; i < _blocks.size(); i++) {
+            _dims[i]   = _blocks[i].dim(0);
             _ranges[i] = Range{sum, sum + _dims[i]};
             sum += _dims[i];
         }
@@ -76,8 +76,8 @@ struct BlockTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
      * @brief Construct a new BlockTensor object. Default copy constructor
      */
     BlockTensorBase(const BlockTensorBase &other) : _ranges{other._ranges}, _dims{other._dims}, _blocks{}, _dim{other._dim} {
-        for(int i = 0; i < other._blocks.size(); i++) {
-            _blocks.emplace_back((const TensorType &) other._blocks[i]);
+        for (int i = 0; i < other._blocks.size(); i++) {
+            _blocks.emplace_back((const TensorType &)other._blocks[i]);
         }
 
         update_dims();
@@ -168,7 +168,6 @@ struct BlockTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
         }
 
         update_dims();
-
     }
 
     /**
@@ -541,13 +540,11 @@ struct BlockTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
                                                                                                                                            \
     auto operator OP(const BlockTensorBase<T, Rank, TensorType> &b)->BlockTensorBase<T, Rank, TensorType> & {                              \
         if (_blocks.size() != b._blocks.size()) {                                                                                          \
-            throw EINSUMSEXCEPTION(fmt::format("tensors differ in number of blocks : {} {}",         \
-                                                 _blocks.size(), b._blocks.size()));                                                       \
+            throw EINSUMSEXCEPTION(fmt::format("tensors differ in number of blocks : {} {}", _blocks.size(), b._blocks.size()));           \
         }                                                                                                                                  \
         for (int i = 0; i < _blocks.size(); i++) {                                                                                         \
             if (_blocks[i].size() != b._blocks[i].size()) {                                                                                \
-                throw EINSUMSEXCEPTION(fmt::format("tensor blocks differ in size : {} {}",           \
-                                                     _blocks[i].size(), b._blocks[i].size()));                                             \
+                throw EINSUMSEXCEPTION(fmt::format("tensor blocks differ in size : {} {}", _blocks[i].size(), b._blocks[i].size()));       \
             }                                                                                                                              \
         }                                                                                                                                  \
         EINSUMS_OMP_PARALLEL_FOR                                                                                                           \
@@ -763,17 +760,11 @@ struct BlockTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
 
     [[nodiscard]] auto full_view_of_underlying() const noexcept -> bool override { return true; }
 
-    virtual void lock() const override {
-        LockableTensorBase::lock();
-    }
+    virtual void lock() const override { LockableTensorBase::lock(); }
 
-    virtual void unlock() const override {
-        LockableTensorBase::unlock();
-    }
+    virtual void unlock() const override { LockableTensorBase::unlock(); }
 
-    virtual bool try_lock() const override {
-        return LockableTensorBase::try_lock();
-    }
+    virtual bool try_lock() const override { return LockableTensorBase::try_lock(); }
 
     /**
      * Lock the specific block.
@@ -1020,9 +1011,8 @@ struct BlockDeviceTensor : public virtual tensor_props::BlockTensorBase<T, Rank,
      * @param block_dims The size of each block.
      */
     template <typename... Dims>
-    requires(NoneOfType<detail::HostToDeviceMode, Dims...>)
-    explicit BlockDeviceTensor(std::string name, Dims... block_dims)
-        : tensor_props::BlockTensorBase<T, Rank, DeviceTensor<T, Rank>>(name) {
+        requires(NoneOfType<detail::HostToDeviceMode, Dims...>)
+    explicit BlockDeviceTensor(std::string name, Dims... block_dims) : tensor_props::BlockTensorBase<T, Rank, DeviceTensor<T, Rank>>(name) {
 
         auto dims = std::array<size_t, sizeof...(Dims)>{static_cast<size_t>(block_dims)...};
 
@@ -1073,8 +1063,7 @@ struct BlockDeviceTensor : public virtual tensor_props::BlockTensorBase<T, Rank,
      * @param block_dims The dimensions of the new tensor in Dim form.
      */
     template <size_t Dims>
-    explicit BlockDeviceTensor(Dim<Dims> block_dims)
-        : tensor_props::BlockTensorBase<T, Rank, DeviceTensor<T, Rank>>() {
+    explicit BlockDeviceTensor(Dim<Dims> block_dims) : tensor_props::BlockTensorBase<T, Rank, DeviceTensor<T, Rank>>() {
         for (int i = 0; i < block_dims.size(); i++) {
 
             Dim<Rank> pass_dims;
@@ -1099,7 +1088,7 @@ struct BlockDeviceTensor : public virtual tensor_props::BlockTensorBase<T, Rank,
             requires NoneOfType<Range, MultiIndex...>;
         }
     auto gpu_data(MultiIndex... index) -> T * {
-#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
+#    if !defined(DOXYGEN_SHOULD_SKIP_THIS)
         assert(sizeof...(MultiIndex) <= Rank);
 
         auto index_list = std::array{static_cast<std::int64_t>(index)...};
@@ -1130,7 +1119,7 @@ struct BlockDeviceTensor : public virtual tensor_props::BlockTensorBase<T, Rank,
 
         size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), this->_blocks[block].strides().begin(), size_t{0});
         return &(this->_blocks[block].gpu_data()[ordinal]);
-#endif
+#    endif
     }
 
     /**

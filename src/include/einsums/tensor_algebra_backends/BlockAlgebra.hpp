@@ -99,8 +99,8 @@ auto einsum_special_dispatch(const DataTypeT<CType> C_prefactor, const std::tupl
                              const std::conditional_t<(sizeof(typename AType::data_type) > sizeof(typename BType::data_type)),
                                                       typename AType::data_type, typename BType::data_type>
                                                             AB_prefactor,
-                             const std::tuple<AIndices...> &A_indices, const AType &A,
-                             const std::tuple<BIndices...> &B_indices, const BType &B) -> void {
+                             const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices,
+                             const BType &B) -> void {
 
     using CDataType = DataTypeT<CType>;
 
@@ -169,12 +169,13 @@ auto einsum_special_dispatch(const DataTypeT<CType> C_prefactor, const std::tupl
 #endif
 }
 
-template<bool OnlyUseGenericAlgorithm, BasicTensorConcept AType, BlockTensorConcept BType, BlockTensorConcept CType, typename... CIndices, typename... AIndices, typename... BIndices>
-requires(VectorConcept<AType>)
+template <bool OnlyUseGenericAlgorithm, BasicTensorConcept AType, BlockTensorConcept BType, BlockTensorConcept CType, typename... CIndices,
+          typename... AIndices, typename... BIndices>
+    requires(VectorConcept<AType>)
 auto einsum_special_dispatch(const typename CType::data_type C_prefactor, const std::tuple<CIndices...> &C_indices, CType *C,
                              const BiggestTypeT<typename AType::data_type, typename BType::data_type> AB_prefactor,
-                             const std::tuple<AIndices...> &A_indices, const AType &A,
-                             const std::tuple<BIndices...> &B_indices, const BType &B) -> void {
+                             const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices,
+                             const BType &B) -> void {
 
     // Check compatibility.
     if (B.num_blocks() != C->num_blocks()) {
@@ -200,15 +201,16 @@ auto einsum_special_dispatch(const typename CType::data_type C_prefactor, const 
     }
 }
 
-template<bool OnlyUseGenericAlgorithm, BasicTensorConcept AType, BlockTensorConcept BType, BasicTensorConcept CType, typename... CIndices, typename... AIndices, typename... BIndices>
-requires requires {
-    requires VectorConcept<AType>;
-    requires CType::rank > 0;
-}
+template <bool OnlyUseGenericAlgorithm, BasicTensorConcept AType, BlockTensorConcept BType, BasicTensorConcept CType, typename... CIndices,
+          typename... AIndices, typename... BIndices>
+    requires requires {
+        requires VectorConcept<AType>;
+        requires CType::rank > 0;
+    }
 auto einsum_special_dispatch(const typename CType::data_type C_prefactor, const std::tuple<CIndices...> &C_indices, CType *C,
                              const BiggestTypeT<typename AType::data_type, typename BType::data_type> AB_prefactor,
-                             const std::tuple<AIndices...> &A_indices, const AType &A,
-                             const std::tuple<BIndices...> &B_indices, const BType &B) -> void {
+                             const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices,
+                             const BType &B) -> void {
 
     // Loop through and perform einsums.
     EINSUMS_OMP_PARALLEL_FOR
@@ -225,14 +227,15 @@ auto einsum_special_dispatch(const typename CType::data_type C_prefactor, const 
     }
 }
 
-template<bool OnlyUseGenericAlgorithm, BasicTensorConcept AType, BlockTensorConcept BType, ScalarConcept CType, typename... CIndices, typename... AIndices, typename... BIndices>
-requires(VectorConcept<AType>)
+template <bool OnlyUseGenericAlgorithm, BasicTensorConcept AType, BlockTensorConcept BType, ScalarConcept CType, typename... CIndices,
+          typename... AIndices, typename... BIndices>
+    requires(VectorConcept<AType>)
 auto einsum_special_dispatch(const DataTypeT<CType> C_prefactor, const std::tuple<CIndices...> &C_indices, CType *C,
                              const BiggestTypeT<typename AType::data_type, typename BType::data_type> AB_prefactor,
-                             const std::tuple<AIndices...> &A_indices, const AType &A,
-                             const std::tuple<BIndices...> &B_indices, const BType &B) -> void {
+                             const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices,
+                             const BType &B) -> void {
 
-        using CDataType = DataTypeT<CType>;
+    using CDataType = DataTypeT<CType>;
 
 #ifdef __HIP__
     if constexpr (einsums::detail::IsDeviceTensorV<AType>) {
@@ -278,7 +281,7 @@ auto einsum_special_dispatch(const DataTypeT<CType> C_prefactor, const std::tupl
             if (B.block_dim(i) == 0) {
                 continue;
             }
-            CType  temp_c = *C;
+            CType                          temp_c = *C;
             std::array<Range, AType::rank> view_index;
             view_index.fill(B.block_range(i));
             einsum<OnlyUseGenericAlgorithm>(CDataType(0.0), C_indices, &temp_c, AB_prefactor, A_indices, std::apply(A, view_index),
@@ -291,12 +294,13 @@ auto einsum_special_dispatch(const DataTypeT<CType> C_prefactor, const std::tupl
 #endif
 }
 
-template<bool OnlyUseGenericAlgorithm, BlockTensorConcept AType, BasicTensorConcept BType, BlockTensorConcept CType, typename... CIndices, typename... AIndices, typename... BIndices>
-requires(VectorConcept<BType>)
+template <bool OnlyUseGenericAlgorithm, BlockTensorConcept AType, BasicTensorConcept BType, BlockTensorConcept CType, typename... CIndices,
+          typename... AIndices, typename... BIndices>
+    requires(VectorConcept<BType>)
 auto einsum_special_dispatch(const typename CType::data_type C_prefactor, const std::tuple<CIndices...> &C_indices, CType *C,
                              const BiggestTypeT<typename AType::data_type, typename BType::data_type> AB_prefactor,
-                             const std::tuple<AIndices...> &A_indices, const AType &A,
-                             const std::tuple<BIndices...> &B_indices, const BType &B) -> void {
+                             const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices,
+                             const BType &B) -> void {
 
     // Check compatibility.
     if (A.num_blocks() != C->num_blocks()) {
@@ -322,15 +326,16 @@ auto einsum_special_dispatch(const typename CType::data_type C_prefactor, const 
     }
 }
 
-template<bool OnlyUseGenericAlgorithm, BlockTensorConcept AType, BasicTensorConcept BType, BasicTensorConcept CType, typename... CIndices, typename... AIndices, typename... BIndices>
-requires requires {
-    requires CType::rank > 0;
-    requires VectorConcept<BType>;
-}
+template <bool OnlyUseGenericAlgorithm, BlockTensorConcept AType, BasicTensorConcept BType, BasicTensorConcept CType, typename... CIndices,
+          typename... AIndices, typename... BIndices>
+    requires requires {
+        requires CType::rank > 0;
+        requires VectorConcept<BType>;
+    }
 auto einsum_special_dispatch(const typename CType::data_type C_prefactor, const std::tuple<CIndices...> &C_indices, CType *C,
                              const BiggestTypeT<typename AType::data_type, typename BType::data_type> AB_prefactor,
-                             const std::tuple<AIndices...> &A_indices, const AType &A,
-                             const std::tuple<BIndices...> &B_indices, const BType &B) -> void {
+                             const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices,
+                             const BType &B) -> void {
 
     // Loop through and perform einsums.
     EINSUMS_OMP_PARALLEL_FOR
@@ -347,12 +352,13 @@ auto einsum_special_dispatch(const typename CType::data_type C_prefactor, const 
     }
 }
 
-template<bool OnlyUseGenericAlgorithm, BlockTensorConcept AType, BasicTensorConcept BType, ScalarConcept CType, typename... CIndices, typename... AIndices, typename... BIndices>
-requires(VectorConcept<BType>)
+template <bool OnlyUseGenericAlgorithm, BlockTensorConcept AType, BasicTensorConcept BType, ScalarConcept CType, typename... CIndices,
+          typename... AIndices, typename... BIndices>
+    requires(VectorConcept<BType>)
 auto einsum_special_dispatch(const DataTypeT<CType> C_prefactor, const std::tuple<CIndices...> &C_indices, CType *C,
                              const BiggestTypeT<typename AType::data_type, typename BType::data_type> AB_prefactor,
-                             const std::tuple<AIndices...> &A_indices, const AType &A,
-                             const std::tuple<BIndices...> &B_indices, const BType &B) -> void {
+                             const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices,
+                             const BType &B) -> void {
     using CDataType = DataTypeT<CType>;
 
 #ifdef __HIP__
@@ -400,7 +406,7 @@ auto einsum_special_dispatch(const DataTypeT<CType> C_prefactor, const std::tupl
             if (A.block_dim(i) == 0) {
                 continue;
             }
-            CType temp_c = *C;
+            CType                          temp_c = *C;
             std::array<Range, BType::rank> view_index;
             view_index.fill(A.block_range(i));
             einsum<OnlyUseGenericAlgorithm>(CDataType(0.0), C_indices, &temp_c, AB_prefactor, A_indices, A[i], B_indices,

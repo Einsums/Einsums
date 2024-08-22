@@ -34,18 +34,16 @@
 namespace einsums {
 
 // Forward declarations.
-template<typename T, size_t Rank>
+template <typename T, size_t Rank>
 struct Tensor;
 
 #ifdef __HIP__
-template<typename T, size_t Rank>
+template <typename T, size_t Rank>
 struct DeviceTensor;
 #endif
 
-
-template<typename T, size_t Rank>
+template <typename T, size_t Rank>
 struct DiskTensor;
-
 
 namespace detail {
 
@@ -1304,7 +1302,8 @@ concept VectorConcept = RankTensorConcept<D, 1>;
  *
  * @brief Alias of RankTensorConcept<D, 0>.
  *
- * Shorthand for requiring that a tensor be a scalar. That is, a tensor with zero rank or a variable with a type such as double or std::complex<float>.
+ * Shorthand for requiring that a tensor be a scalar. That is, a tensor with zero rank or a variable with a type such as double or
+ * std::complex<float>.
  *
  * @tparam D The tensor to check.
  */
@@ -1447,12 +1446,12 @@ using BasicTensorLike = decltype(detail::create_basic_tensor_like<T, Rank>(D()))
  * Normally, you can get the data type using an expression such as typename AType::data_type. However, if you want
  * to support both zero-rank tensors and scalars, then this typedef can help with brevity.
  */
-template<typename D>
+template <typename D>
 struct DataType {
     using type = D;
 };
 
-template<TensorConcept D>
+template <TensorConcept D>
 struct DataType<D> {
     using type = typename D::data_type;
 };
@@ -1465,7 +1464,7 @@ struct DataType<D> {
  * Normally, you can get the data type using an expression such as typename AType::data_type. However, if you want
  * to support both zero-rank tensors and scalars, then this typedef can help with brevity.
  */
-template<typename D>
+template <typename D>
 using DataTypeT = typename DataType<D>::type;
 
 /**
@@ -1476,10 +1475,10 @@ using DataTypeT = typename DataType<D>::type;
  * Normally, you can get the rank using an expression such as AType::rank. However,
  * if you want to support both zero-rank tensors and scalars, then this constant can help with brevity.
  */
-template<typename D>
+template <typename D>
 constexpr size_t TensorRank = 0;
 
-template<TensorConcept D>
+template <TensorConcept D>
 constexpr size_t TensorRank<D> = D::rank;
 
 /**
@@ -1487,24 +1486,24 @@ constexpr size_t TensorRank<D> = D::rank;
  *
  * @brief Gets the type with the biggest storage specification.
  */
-template<typename First, typename... Rest>
+template <typename First, typename... Rest>
 struct BiggestType {
-    using type = std::conditional_t<(sizeof(First) > sizeof(typename BiggestType<Rest...>::type)), First, typename BiggestType<Rest...>::type>;
+    using type =
+        std::conditional_t<(sizeof(First) > sizeof(typename BiggestType<Rest...>::type)), First, typename BiggestType<Rest...>::type>;
 };
 
-template<typename First>
+template <typename First>
 struct BiggestType<First> {
     using type = First;
 };
 
 /**
  * @typedef BiggestTypeT
- * 
+ *
  * @brief Gets the type with the biggest storage specification.
  */
-template<typename... Args>
+template <typename... Args>
 using BiggestTypeT = typename BiggestType<Args...>::type;
-
 
 namespace tensor_props {
 /**
@@ -1514,21 +1513,21 @@ namespace tensor_props {
  *
  * @tparam D The tensor type to query.
  */
-template<typename D>
+template <typename D>
 struct LocationTensorBaseOf {};
 
-template<CoreTensorConcept D>
+template <CoreTensorConcept D>
 struct LocationTensorBaseOf<D> {
     using type = CoreTensorBase;
 };
 
-template<DiskTensorConcept D>
+template <DiskTensorConcept D>
 struct LocationTensorBaseOf<D> {
     using type = DiskTensorBase;
 };
 
 #ifdef __HIP__
-template<DeviceTensorConcept D>
+template <DeviceTensorConcept D>
 struct LocationTensorBaseOf<D> {
     using type = DeviceTensorBase;
 };
@@ -1543,10 +1542,10 @@ struct LocationTensorBaseOf<D> {
  *
  * @tparam D The tensor type to query.
  */
-template<typename D>
+template <typename D>
 using LocationTensorBaseOfT = typename LocationTensorBaseOf<D>::type;
 
-}
+} // namespace tensor_props
 
 namespace detail {
 

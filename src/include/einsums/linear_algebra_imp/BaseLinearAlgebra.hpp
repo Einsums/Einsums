@@ -3,8 +3,8 @@
 #include "einsums/Blas.hpp"
 #include "einsums/Tensor.hpp"
 #include "einsums/utility/ComplexTraits.hpp"
-#include "einsums/utility/TensorTraits.hpp"
 #include "einsums/utility/IndexUtils.hpp"
+#include "einsums/utility/TensorTraits.hpp"
 
 namespace einsums::linear_algebra::detail {
 
@@ -174,13 +174,13 @@ auto dot(const AType &A, const BType &B) -> typename AType::data_type {
         strides[AType::rank - 1] = 1;
         std::array<size_t, AType::rank> index;
 
-        for(int i = AType::rank - 1; i > 0; i--) {
+        for (int i = AType::rank - 1; i > 0; i--) {
             strides[i - 1] = strides[i] * dims[i];
         }
 
         typename AType::data_type out{0.0};
 
-        for(size_t sentinel = 0; sentinel < strides[0] * dims[0]; sentinel++) {
+        for (size_t sentinel = 0; sentinel < strides[0] * dims[0]; sentinel++) {
             tensor_algebra::detail::sentinel_to_indices(sentinel, strides, index);
 
             out += std::apply(A, index) * std::apply(B, index);
@@ -220,7 +220,7 @@ auto true_dot(const AType &A, const BType &B) -> typename AType::data_type {
         }
 
         return true_dot(TensorView<typename AType::data_type, 1>(const_cast<AType &>(A), dim),
-                   TensorView<typename BType::data_type, 1>(const_cast<BType &>(B), dim));
+                        TensorView<typename BType::data_type, 1>(const_cast<BType &>(B), dim));
     } else {
         auto dims = A.dims();
 
@@ -228,13 +228,13 @@ auto true_dot(const AType &A, const BType &B) -> typename AType::data_type {
         strides[AType::rank - 1] = 1;
         std::array<size_t, AType::rank> index;
 
-        for(int i = AType::rank - 1; i > 0; i--) {
+        for (int i = AType::rank - 1; i > 0; i--) {
             strides[i - 1] = strides[i] * dims[i];
         }
 
         typename AType::data_type out{0.0};
 
-        for(size_t sentinel = 0; sentinel < strides[0] * dims[0]; sentinel++) {
+        for (size_t sentinel = 0; sentinel < strides[0] * dims[0]; sentinel++) {
             tensor_algebra::detail::sentinel_to_indices(sentinel, strides, index);
 
             out += std::conj(std::apply(A, index)) * std::apply(B, index);

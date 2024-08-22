@@ -102,13 +102,13 @@ auto dgesv(blas_int n, blas_int nrhs, double *a, blas_int lda, blas_int *ipiv, d
     return ::einsums::backend::linear_algebra::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::dgesv(n, nrhs, a, lda, ipiv, b, ldb);
 }
 
-auto cgesv(blas_int n, blas_int nrhs, std::complex<float> *a, blas_int lda, blas_int *ipiv, std::complex<float> *b, blas_int ldb)
-    -> blas_int {
+auto cgesv(blas_int n, blas_int nrhs, std::complex<float> *a, blas_int lda, blas_int *ipiv, std::complex<float> *b,
+           blas_int ldb) -> blas_int {
     return ::einsums::backend::linear_algebra::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::cgesv(n, nrhs, a, lda, ipiv, b, ldb);
 }
 
-auto zgesv(blas_int n, blas_int nrhs, std::complex<double> *a, blas_int lda, blas_int *ipiv, std::complex<double> *b, blas_int ldb)
-    -> blas_int {
+auto zgesv(blas_int n, blas_int nrhs, std::complex<double> *a, blas_int lda, blas_int *ipiv, std::complex<double> *b,
+           blas_int ldb) -> blas_int {
     return ::einsums::backend::linear_algebra::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::zgesv(n, nrhs, a, lda, ipiv, b, ldb);
 }
 
@@ -287,13 +287,13 @@ void zlassq(blas_int n, const std::complex<double> *x, blas_int incx, double *sc
     return ::einsums::backend::linear_algebra::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::zlassq(n, x, incx, scale, sumsq);
 }
 
-auto sgesdd(char jobz, blas_int m, blas_int n, float *a, blas_int lda, float *s, float *u, blas_int ldu, float *vt, blas_int ldvt)
-    -> blas_int {
+auto sgesdd(char jobz, blas_int m, blas_int n, float *a, blas_int lda, float *s, float *u, blas_int ldu, float *vt,
+            blas_int ldvt) -> blas_int {
     return ::einsums::backend::linear_algebra::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::sgesdd(jobz, m, n, a, lda, s, u, ldu, vt, ldvt);
 }
 
-auto dgesdd(char jobz, blas_int m, blas_int n, double *a, blas_int lda, double *s, double *u, blas_int ldu, double *vt, blas_int ldvt)
-    -> blas_int {
+auto dgesdd(char jobz, blas_int m, blas_int n, double *a, blas_int lda, double *s, double *u, blas_int ldu, double *vt,
+            blas_int ldvt) -> blas_int {
     return ::einsums::backend::linear_algebra::EINSUMS_LINEAR_ALGEBRA_NAMESPACE::dgesdd(jobz, m, n, a, lda, s, u, ldu, vt, ldvt);
 }
 

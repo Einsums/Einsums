@@ -21,16 +21,16 @@ std::string einsums::detail::anonymize(std::string fpath) {
 
     auto temp = parent;
 
-    while(temp.has_filename()) {
+    while (temp.has_filename()) {
         auto swap = temp.filename();
         swap /= out;
         out = swap;
 
-        if(temp.filename() == "src" || temp.filename() == "tests" || temp.filename() == "timing") {
+        if (temp.filename() == "src" || temp.filename() == "tests" || temp.filename() == "timing") {
             swap = std::filesystem::path("/git");
             swap /= out;
             out = swap;
-            return (std::string) out;
+            return (std::string)out;
         }
 
         temp = temp.parent_path();
@@ -38,18 +38,18 @@ std::string einsums::detail::anonymize(std::string fpath) {
 
     // If we got here, then there is no upper src directory. Go until include then.
     temp = parent;
-    out = filename;
+    out  = filename;
 
-    while(temp.has_filename()) {
+    while (temp.has_filename()) {
         auto swap = temp.filename();
         swap /= out;
         out = swap;
 
-        if(temp.filename() == "include") {
+        if (temp.filename() == "include") {
             swap = std::filesystem::path("/install");
             swap /= out;
             out = swap;
-            return (std::string) out;
+            return (std::string)out;
         }
 
         temp = temp.parent_path();
@@ -58,11 +58,8 @@ std::string einsums::detail::anonymize(std::string fpath) {
     // If we got here, then there must be some issue when building. Return the file path without anonymizing.
     return fpath;
 
-
-
-
 #else
-// If the user doesn't want to anonymize the paths, then just return the full raw path.
-return fpath;
+    // If the user doesn't want to anonymize the paths, then just return the full raw path.
+    return fpath;
 #endif
 }

@@ -10,8 +10,8 @@
 
 #include "einsums/Section.hpp"
 #include "einsums/Tensor.hpp"
-#include "einsums/utility/TensorTraits.hpp"
 #include "einsums/Utilities.hpp"
+#include "einsums/utility/TensorTraits.hpp"
 
 #include <omp.h>
 
@@ -72,7 +72,7 @@ template <TensorConcept TensorType>
 auto sum(const TensorType &tensor) -> TensorType::data_type {
     LabeledSection0();
 
-    using T = typename TensorType::data_type;
+    using T               = typename TensorType::data_type;
     constexpr size_t Rank = TensorType::rank;
 
     if constexpr (einsums::detail::IsBlockTensorV<TensorType>) {
@@ -104,8 +104,8 @@ auto sum(const TensorType &tensor) -> TensorType::data_type {
         gpu::hip_catch(
             hipMemcpyAsync(dims_and_strides + Rank, tensor.strides().data(), Rank * sizeof(size_t), hipMemcpyHostToDevice, stream));
 
-        detail::sum_kernel<T, Rank><<<blocks, threads, workers, stream>>>(gpu_result, tensor.gpu_data(), dims_and_strides, dims_and_strides + Rank,
-                                                                 tensor.size());
+        detail::sum_kernel<T, Rank>
+            <<<blocks, threads, workers, stream>>>(gpu_result, tensor.gpu_data(), dims_and_strides, dims_and_strides + Rank, tensor.size());
 
         gpu::hip_catch(hipFreeAsync(dims_and_strides, stream));
 
@@ -143,7 +143,7 @@ template <TensorConcept TensorType>
 auto max(const TensorType &tensor) -> TensorType::data_type {
     LabeledSection0();
 
-    using T = typename TensorType::data_type;
+    using T               = typename TensorType::data_type;
     constexpr size_t Rank = TensorType::rank;
 
     if constexpr (einsums::detail::IsBlockTensorV<TensorType>) {
@@ -173,8 +173,8 @@ auto max(const TensorType &tensor) -> TensorType::data_type {
         gpu::hip_catch(
             hipMemcpyAsync(dims_and_strides + Rank, tensor.strides().data(), Rank * sizeof(size_t), hipMemcpyHostToDevice, stream));
 
-        detail::max_kernel<T, Rank><<<blocks, threads, workers, stream>>>(gpu_result, tensor.gpu_data(), dims_and_strides, dims_and_strides + Rank,
-                                                                 tensor.size());
+        detail::max_kernel<T, Rank>
+            <<<blocks, threads, workers, stream>>>(gpu_result, tensor.gpu_data(), dims_and_strides, dims_and_strides + Rank, tensor.size());
 
         gpu::hip_catch(hipFreeAsync(dims_and_strides, stream));
 
@@ -219,7 +219,7 @@ template <TensorConcept TensorType>
 auto min(const TensorType &tensor) -> TensorType::data_type {
     LabeledSection0();
 
-    using T = typename TensorType::data_type;
+    using T               = typename TensorType::data_type;
     constexpr size_t Rank = TensorType::rank;
 
     if constexpr (einsums::detail::IsBlockTensorV<TensorType>) {
@@ -249,8 +249,8 @@ auto min(const TensorType &tensor) -> TensorType::data_type {
         gpu::hip_catch(
             hipMemcpyAsync(dims_and_strides + Rank, tensor.strides().data(), Rank * sizeof(size_t), hipMemcpyHostToDevice, stream));
 
-        detail::min_kernel<T, Rank><<<blocks, threads, workers, stream>>>(gpu_result, tensor.gpu_data(), dims_and_strides, dims_and_strides + Rank,
-                                                                 tensor.size());
+        detail::min_kernel<T, Rank>
+            <<<blocks, threads, workers, stream>>>(gpu_result, tensor.gpu_data(), dims_and_strides, dims_and_strides + Rank, tensor.size());
 
         gpu::hip_catch(hipFreeAsync(dims_and_strides, stream));
 
@@ -300,7 +300,7 @@ template <TensorConcept TensorType>
 auto abs(const TensorType &tensor) -> remove_view_t<TensorType> {
     LabeledSection0();
 
-    using T = typename TensorType::data_type;
+    using T               = typename TensorType::data_type;
     constexpr size_t Rank = TensorType::rank;
 
     if constexpr (einsums::detail::IsBlockTensorV<TensorType>) {
@@ -329,8 +329,8 @@ auto abs(const TensorType &tensor) -> remove_view_t<TensorType> {
         gpu::hip_catch(
             hipMemcpyAsync(dims_and_strides + Rank, tensor.strides().data(), Rank * sizeof(size_t), hipMemcpyHostToDevice, stream));
 
-        einsums::element_operations::detail::abs_kernel<T, Rank><<<blocks, threads, 0, stream>>>(result.gpu_data(), dims_and_strides,
-                                                                                        dims_and_strides + Rank, result.size());
+        einsums::element_operations::detail::abs_kernel<T, Rank>
+            <<<blocks, threads, 0, stream>>>(result.gpu_data(), dims_and_strides, dims_and_strides + Rank, result.size());
 
         gpu::hip_catch(hipFreeAsync(dims_and_strides, stream));
 
@@ -363,11 +363,10 @@ auto abs(const TensorType &tensor) -> remove_view_t<TensorType> {
 }
 
 template <TensorConcept TensorType>
-auto invert(const TensorType &tensor)
-    -> remove_view_t<TensorType> {
+auto invert(const TensorType &tensor) -> remove_view_t<TensorType> {
     LabeledSection0();
 
-    using T = typename TensorType::data_type;
+    using T               = typename TensorType::data_type;
     constexpr size_t Rank = TensorType::rank;
 
     if constexpr (einsums::detail::IsBlockTensorV<TensorType>) {
@@ -396,8 +395,8 @@ auto invert(const TensorType &tensor)
         gpu::hip_catch(
             hipMemcpyAsync(dims_and_strides + Rank, tensor.strides().data(), Rank * sizeof(size_t), hipMemcpyHostToDevice, stream));
 
-        einsums::element_operations::detail::invert_kernel<T, Rank><<<blocks, threads, 0, stream>>>(result.gpu_data(), dims_and_strides,
-                                                                                           dims_and_strides + Rank, result.size());
+        einsums::element_operations::detail::invert_kernel<T, Rank>
+            <<<blocks, threads, 0, stream>>>(result.gpu_data(), dims_and_strides, dims_and_strides + Rank, result.size());
 
         gpu::hip_catch(hipFreeAsync(dims_and_strides, stream));
 
@@ -430,11 +429,10 @@ auto invert(const TensorType &tensor)
 }
 
 template <TensorConcept TensorType>
-auto exp(const TensorType &tensor)
-    -> remove_view_t<TensorType> {
+auto exp(const TensorType &tensor) -> remove_view_t<TensorType> {
     LabeledSection0();
 
-    using T = typename TensorType::data_type;
+    using T               = typename TensorType::data_type;
     constexpr size_t Rank = TensorType::rank;
 
     if constexpr (einsums::detail::IsBlockTensorV<TensorType>) {
@@ -463,8 +461,8 @@ auto exp(const TensorType &tensor)
         gpu::hip_catch(
             hipMemcpyAsync(dims_and_strides + Rank, tensor.strides().data(), Rank * sizeof(size_t), hipMemcpyHostToDevice, stream));
 
-        einsums::element_operations::detail::exp_kernel<T, Rank><<<blocks, threads, 0, stream>>>(result.gpu_data(), dims_and_strides,
-                                                                                        dims_and_strides + Rank, result.size());
+        einsums::element_operations::detail::exp_kernel<T, Rank>
+            <<<blocks, threads, 0, stream>>>(result.gpu_data(), dims_and_strides, dims_and_strides + Rank, result.size());
 
         gpu::hip_catch(hipFreeAsync(dims_and_strides, stream));
 
@@ -497,13 +495,11 @@ auto exp(const TensorType &tensor)
 }
 
 template <TensorConcept TensorType>
-auto scale(const typename TensorType::data_type &scale, const TensorType &tensor)
-    -> remove_view_t<TensorType> {
+auto scale(const typename TensorType::data_type &scale, const TensorType &tensor) -> remove_view_t<TensorType> {
     LabeledSection0();
 
-    using T = typename TensorType::data_type;
+    using T               = typename TensorType::data_type;
     constexpr size_t Rank = TensorType::rank;
-
 
     if constexpr (einsums::detail::IsBlockTensorV<TensorType>) {
         auto result = create_tensor_like(tensor);
@@ -531,8 +527,8 @@ auto scale(const typename TensorType::data_type &scale, const TensorType &tensor
         gpu::hip_catch(
             hipMemcpyAsync(dims_and_strides + Rank, tensor.strides().data(), Rank * sizeof(size_t), hipMemcpyHostToDevice, stream));
 
-        einsums::element_operations::detail::scale_kernel<T, Rank><<<blocks, threads, 0, stream>>>(result.gpu_data(), scale, dims_and_strides,
-                                                                                          dims_and_strides + Rank, result.size());
+        einsums::element_operations::detail::scale_kernel<T, Rank>
+            <<<blocks, threads, 0, stream>>>(result.gpu_data(), scale, dims_and_strides, dims_and_strides + Rank, result.size());
 
         gpu::hip_catch(hipFreeAsync(dims_and_strides, stream));
 
