@@ -2,6 +2,8 @@
 
 #include "einsums/_Common.hpp"
 
+#include <source_location>
+
 namespace einsums {
 
 namespace detail {
