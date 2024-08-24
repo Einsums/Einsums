@@ -23,36 +23,28 @@
 
 BEGIN_EINSUMS_NAMESPACE_HPP(einsums::tensor_algebra)
 
+namespace detail {
+
+// CType has typename to allow for interoperability with scalar types.
+template <bool OnlyUseGenericAlgorithm, TensorConcept AType, TensorConcept BType, typename CType, typename... CIndices,
+          typename... AIndices, typename... BIndices>
+    requires(TensorConcept<CType> || (ScalarConcept<CType> && sizeof...(CIndices) == 0))
+auto einsum(const DataTypeT<CType> C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType *C,
+            const BiggestTypeT<typename AType::data_type, typename BType::data_type> AB_prefactor, const std::tuple<AIndices...> & /*As*/,
+            const AType &A, const std::tuple<BIndices...> & /*Bs*/, const BType &B) -> void;
+} // namespace detail
+
 /*
  * Dispatchers for einsum.
  */
-template <template <typename, size_t> typename AType, typename ADataType, size_t ARank, template <typename, size_t> typename BType,
-          typename BDataType, size_t BRank, template <typename, size_t> typename CType, typename CDataType, size_t CRank,
-          typename... CIndices, typename... AIndices, typename... BIndices, typename U>
+template <TensorConcept AType, TensorConcept BType, typename CType, typename U, typename... CIndices, typename... AIndices,
+          typename... BIndices>
     requires requires {
-        requires std::is_base_of_v<::einsums::detail::TensorBase<ADataType, ARank>, AType<ADataType, ARank>>;
-        requires std::is_base_of_v<::einsums::detail::TensorBase<BDataType, BRank>, BType<BDataType, BRank>>;
-        requires std::is_base_of_v<::einsums::detail::TensorBase<CDataType, CRank>, CType<CDataType, CRank>>;
-#ifdef __HIP__
-        requires(CoreRankTensor<AType<ADataType, ARank>, ARank, ADataType> && CoreRankTensor<BType<BDataType, BRank>, BRank, BDataType> &&
-                 CoreRankTensor<CType<CDataType, CRank>, CRank, CDataType>) ||
-                    (DeviceRankTensor<AType<ADataType, ARank>, ARank, ADataType> &&
-                     DeviceRankTensor<BType<BDataType, BRank>, BRank, BDataType> &&
-                     DeviceRankTensor<CType<CDataType, CRank>, CRank, CDataType>) ||
-                    (DiskRankTensor<AType<ADataType, ARank>, ARank, ARank, ADataType> &&
-                     DiskRankTensor<BType<BDataType, BRank>, BRank, BRank, BDataType> &&
-                     DiskRankTensor<CType<CDataType, CRank>, CRank, CRank, CDataType>);
-#else
-        requires(CoreRankTensor<AType<ADataType, ARank>, ARank, ADataType> && CoreRankTensor<BType<BDataType, BRank>, BRank, BDataType> &&
-                 CoreRankTensor<CType<CDataType, CRank>, CRank, CDataType>) ||
-                    (DiskRankTensor<AType<ADataType, ARank>, ARank, ARank, ADataType> &&
-                     DiskRankTensor<BType<BDataType, BRank>, BRank, BRank, BDataType> &&
-                     DiskRankTensor<CType<CDataType, CRank>, CRank, CRank, CDataType>);
-#endif
+        requires InSamePlace<AType, BType>;
+        requires InSamePlace<AType, CType> || !TensorConcept<CType>;
     }
-auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<CDataType, CRank> *C, const U UAB_prefactor,
-            const std::tuple<AIndices...> &A_indices, const AType<ADataType, ARank> &A, const std::tuple<BIndices...> &B_indices,
-            const BType<BDataType, BRank> &B) -> void;
+auto einsum(const U C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType *C, const U UAB_prefactor,
+            const std::tuple<AIndices...> & /*As*/, const AType &A, const std::tuple<BIndices...> & /*Bs*/, const BType &B) -> void;
 
 // Einsums with provided prefactors.
 // 1. C n A n B n is defined above as the base implementation.
@@ -182,7 +174,7 @@ void einsum(const std::tuple<CIndices...> &C_indices, CType *C, const std::tuple
 //
 
 template <template <typename, size_t> typename CType, size_t CRank, typename UnaryOperator, typename T = double>
-    requires std::derived_from<CType<T, CRank>, ::einsums::detail::TensorBase<T, CRank>>
+    requires std::derived_from<CType<T, CRank>, ::einsums::tensor_props::TensorBase<T, CRank>>
 auto element_transform(CType<T, CRank> *C, UnaryOperator unary_opt) -> void;
 
 template <SmartPointer SmartPtr, typename UnaryOperator>
@@ -213,21 +205,14 @@ auto unfold(const CType<T, CRank> &source) -> Tensor<T, 2>
  *
  * Result is described as {(I,J), r}. If multiple common indices are provided they will be collapsed into a single index in the result.
  */
-template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename BType, size_t BRank,
-          typename... AIndices, typename... BIndices, typename T>
-auto khatri_rao(const std::tuple<AIndices...> &, const AType<T, ARank> &A, const std::tuple<BIndices...> &, const BType<T, BRank> &B) ->
-#ifdef __HIP__
-    std::conditional_t<einsums::detail::IsIncoreRankTensorV<AType<T, ARank>, ARank, T>, Tensor<T, 2>, DeviceTensor<T, 2>>
+template <TensorConcept AType, TensorConcept BType, typename... AIndices, typename... BIndices>
     requires requires {
-        requires(std::is_base_of_v<::einsums::detail::TensorBase<T, ARank>, AType<T, ARank>> &&
-                 std::is_base_of_v<::einsums::detail::TensorBase<T, BRank>, BType<T, BRank>>);
-        requires InSamePlace<AType<T, ARank>, BType<T, BRank>, ARank, BRank, T>;
-    };
-#else
-    Tensor<T, 2>
-    requires(std::is_base_of_v<::einsums::detail::TensorBase<T, ARank>, AType<T, ARank>> &&
-             std::is_base_of_v<::einsums::detail::TensorBase<T, BRank>, BType<T, BRank>>);
-#endif
+        requires InSamePlace<AType, BType>;
+        requires AType::rank == sizeof...(AIndices);
+        requires BType::rank == sizeof...(BIndices);
+    }
+auto khatri_rao(const std::tuple<AIndices...> &, const AType &A, const std::tuple<BIndices...> &,
+                const BType &B) -> BasicTensorLike<AType, typename AType::data_type, 2>;
 
 END_EINSUMS_NAMESPACE_HPP(einsums::tensor_algebra)
 

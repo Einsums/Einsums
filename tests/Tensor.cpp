@@ -295,7 +295,7 @@ TEST_CASE("Tensor 2D - HDF5 wrapper") {
 
     for (int i = 0; i < 3; i++)
         for (int j = 0; j < 3; j++)
-            REQUIRE(B(i, j) == B(i, j));
+            REQUIRE(A(i, j) == B(i, j));
 }
 
 TEST_CASE("reshape") {
@@ -419,4 +419,122 @@ void arange_test() {
 TEST_CASE("arange") {
     arange_test<double>();
     arange_test<float>();
+}
+
+TEST_CASE("Tensor traits") {
+    using namespace einsums;
+
+    REQUIRE(TensorConcept<Tensor<double, 0>>);
+    REQUIRE(TensorConcept<Tensor<double, 1>>);
+    REQUIRE(TensorConcept<TensorView<double, 1>>);
+    REQUIRE(TensorConcept<BlockTensor<double, 2>>);
+    REQUIRE(TensorConcept<TiledTensor<double, 2>>);
+    REQUIRE(TensorConcept<TiledTensorView<double, 2>>);
+
+    REQUIRE(!TensorConcept<double>);
+
+    REQUIRE(TypedTensorConcept<Tensor<double, 0>, double>);
+    REQUIRE(TypedTensorConcept<Tensor<double, 1>, double>);
+    REQUIRE(TypedTensorConcept<TensorView<double, 1>, double>);
+    REQUIRE(TypedTensorConcept<BlockTensor<double, 2>, double>);
+    REQUIRE(TypedTensorConcept<TiledTensor<double, 2>, double>);
+    REQUIRE(TypedTensorConcept<TiledTensorView<double, 2>, double>);
+
+    REQUIRE(!TypedTensorConcept<Tensor<double, 0>, float>);
+    REQUIRE(!TypedTensorConcept<Tensor<double, 1>, float>);
+    REQUIRE(!TypedTensorConcept<TensorView<double, 1>, float>);
+    REQUIRE(!TypedTensorConcept<BlockTensor<double, 2>, float>);
+    REQUIRE(!TypedTensorConcept<TiledTensor<double, 2>, float>);
+    REQUIRE(!TypedTensorConcept<TiledTensorView<double, 2>, float>);
+
+    REQUIRE(RankTensorConcept<Tensor<double, 0>, 0>);
+    REQUIRE(RankTensorConcept<Tensor<double, 1>, 1>);
+    REQUIRE(RankTensorConcept<TensorView<double, 1>, 1>);
+    REQUIRE(RankTensorConcept<BlockTensor<double, 2>, 2>);
+    REQUIRE(RankTensorConcept<TiledTensor<double, 2>, 2>);
+    REQUIRE(RankTensorConcept<TiledTensorView<double, 2>, 2>);
+
+    REQUIRE(!RankTensorConcept<Tensor<double, 0>, 3>);
+    REQUIRE(!RankTensorConcept<Tensor<double, 1>, 3>);
+    REQUIRE(!RankTensorConcept<TensorView<double, 1>, 3>);
+    REQUIRE(!RankTensorConcept<BlockTensor<double, 2>, 3>);
+    REQUIRE(!RankTensorConcept<TiledTensor<double, 2>, 3>);
+    REQUIRE(!RankTensorConcept<TiledTensorView<double, 2>, 3>);
+
+    REQUIRE(LockableTensorConcept<Tensor<double, 0>>);
+    REQUIRE(LockableTensorConcept<Tensor<double, 1>>);
+    REQUIRE(LockableTensorConcept<TensorView<double, 1>>);
+    REQUIRE(LockableTensorConcept<BlockTensor<double, 2>>);
+    REQUIRE(LockableTensorConcept<TiledTensor<double, 2>>);
+    REQUIRE(LockableTensorConcept<TiledTensorView<double, 2>>);
+
+    REQUIRE(TRTensorConcept<Tensor<double, 0>, 0, double>);
+    REQUIRE(TRTensorConcept<Tensor<double, 1>, 1, double>);
+    REQUIRE(TRTensorConcept<TensorView<double, 1>, 1, double>);
+    REQUIRE(TRTensorConcept<BlockTensor<double, 2>, 2, double>);
+    REQUIRE(TRTensorConcept<TiledTensor<double, 2>, 2, double>);
+    REQUIRE(TRTensorConcept<TiledTensorView<double, 2>, 2, double>);
+
+    REQUIRE(!TRTensorConcept<Tensor<double, 0>, 3, double>);
+    REQUIRE(!TRTensorConcept<Tensor<double, 1>, 3, double>);
+    REQUIRE(!TRTensorConcept<TensorView<double, 1>, 3, double>);
+    REQUIRE(!TRTensorConcept<BlockTensor<double, 2>, 3, double>);
+    REQUIRE(!TRTensorConcept<TiledTensor<double, 2>, 3, double>);
+    REQUIRE(!TRTensorConcept<TiledTensorView<double, 2>, 3, double>);
+
+    REQUIRE(!TRTensorConcept<Tensor<double, 0>, 0, float>);
+    REQUIRE(!TRTensorConcept<Tensor<double, 1>, 1, float>);
+    REQUIRE(!TRTensorConcept<TensorView<double, 1>, 1, float>);
+    REQUIRE(!TRTensorConcept<BlockTensor<double, 2>, 2, float>);
+    REQUIRE(!TRTensorConcept<TiledTensor<double, 2>, 2, float>);
+    REQUIRE(!TRTensorConcept<TiledTensorView<double, 2>, 2, float>);
+
+    REQUIRE(!TRTensorConcept<Tensor<double, 0>, 3, float>);
+    REQUIRE(!TRTensorConcept<Tensor<double, 1>, 3, float>);
+    REQUIRE(!TRTensorConcept<TensorView<double, 1>, 3, float>);
+    REQUIRE(!TRTensorConcept<BlockTensor<double, 2>, 3, float>);
+    REQUIRE(!TRTensorConcept<TiledTensor<double, 2>, 3, float>);
+    REQUIRE(!TRTensorConcept<TiledTensorView<double, 2>, 3, float>);
+
+    REQUIRE(TRLTensorConcept<Tensor<double, 0>, 0, double>);
+    REQUIRE(TRLTensorConcept<Tensor<double, 1>, 1, double>);
+    REQUIRE(TRLTensorConcept<TensorView<double, 1>, 1, double>);
+    REQUIRE(TRLTensorConcept<BlockTensor<double, 2>, 2, double>);
+    REQUIRE(TRLTensorConcept<TiledTensor<double, 2>, 2, double>);
+    REQUIRE(TRLTensorConcept<TiledTensorView<double, 2>, 2, double>);
+
+    REQUIRE(!TRLTensorConcept<Tensor<double, 0>, 3, double>);
+    REQUIRE(!TRLTensorConcept<Tensor<double, 1>, 3, double>);
+    REQUIRE(!TRLTensorConcept<TensorView<double, 1>, 3, double>);
+    REQUIRE(!TRLTensorConcept<BlockTensor<double, 2>, 3, double>);
+    REQUIRE(!TRLTensorConcept<TiledTensor<double, 2>, 3, double>);
+    REQUIRE(!TRLTensorConcept<TiledTensorView<double, 2>, 3, double>);
+
+    REQUIRE(!TRLTensorConcept<Tensor<double, 0>, 0, float>);
+    REQUIRE(!TRLTensorConcept<Tensor<double, 1>, 1, float>);
+    REQUIRE(!TRLTensorConcept<TensorView<double, 1>, 1, float>);
+    REQUIRE(!TRLTensorConcept<BlockTensor<double, 2>, 2, float>);
+    REQUIRE(!TRLTensorConcept<TiledTensor<double, 2>, 2, float>);
+    REQUIRE(!TRLTensorConcept<TiledTensorView<double, 2>, 2, float>);
+
+    REQUIRE(!TRLTensorConcept<Tensor<double, 0>, 3, float>);
+    REQUIRE(!TRLTensorConcept<Tensor<double, 1>, 3, float>);
+    REQUIRE(!TRLTensorConcept<TensorView<double, 1>, 3, float>);
+    REQUIRE(!TRLTensorConcept<BlockTensor<double, 2>, 3, float>);
+    REQUIRE(!TRLTensorConcept<TiledTensor<double, 2>, 3, float>);
+    REQUIRE(!TRLTensorConcept<TiledTensorView<double, 2>, 3, float>);
+
+    REQUIRE(CoreTensorConcept<Tensor<double, 0>>);
+    REQUIRE(CoreTensorConcept<Tensor<double, 1>>);
+    REQUIRE(CoreTensorConcept<TensorView<double, 1>>);
+    REQUIRE(CoreTensorConcept<BlockTensor<double, 2>>);
+    REQUIRE(CoreTensorConcept<TiledTensor<double, 2>>);
+    REQUIRE(CoreTensorConcept<TiledTensorView<double, 2>>);
+
+    REQUIRE(!TensorViewConcept<Tensor<double, 0>>);
+    REQUIRE(!TensorViewConcept<Tensor<double, 1>>);
+    REQUIRE(TensorViewConcept<TensorView<double, 1>>);
+    REQUIRE(!TensorViewConcept<BlockTensor<double, 2>>);
+    REQUIRE(!TensorViewConcept<TiledTensor<double, 2>>);
+    REQUIRE(TensorViewConcept<TiledTensorView<double, 2>>);
 }

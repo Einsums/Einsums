@@ -277,7 +277,7 @@ auto main() -> int {
         println("test : {:14.10f} {:14.10f}", t, w);
     });
 
-    println("Shape of tensor {}", _t.shape());
+    println("Shape of tensor {}", _t.dims());
 
     // BEGIN: FFT tests
 

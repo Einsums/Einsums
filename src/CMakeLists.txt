@@ -6,6 +6,7 @@ add_einsums_library(
         SOURCES Blas.cpp
         Decomposition.cpp
         ElementOperations.cpp
+        Exception.cpp
         InitializeFinalize.cpp
         LinearAlgebra.cpp
         Memory.cpp

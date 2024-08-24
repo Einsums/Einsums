@@ -14,6 +14,7 @@
 #include "einsums/Utilities.hpp"
 
 #include <catch2/catch_all.hpp>
+#include <typeinfo>
 
 TEST_CASE("timer") {
     using namespace einsums;

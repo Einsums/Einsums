@@ -1,8 +1,8 @@
 #include "einsums/_Common.hpp"
 
 #include "einsums/DeviceTensor.hpp"
-#include "einsums/LinearAlgebra.hpp"
 #include "einsums/GPUTimer.hpp"
+#include "einsums/LinearAlgebra.hpp"
 
 #include <catch2/catch_all.hpp>
 #include <hip/driver_types.h>
@@ -33,4 +33,3 @@ TEST_CASE("GPU Timer", "[gpu][timer]") {
     }
     delete timer;
 }
-

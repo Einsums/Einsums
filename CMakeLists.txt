@@ -60,6 +60,7 @@ einsums_option(EINSUMS_BUILD_HIP BOOL "Build HIP GPU code." OFF)
 einsums_option(EINSUMS_COVERAGE BOOL "Enable code coverage checking" OFF)
 einsums_option(EINSUMS_FAST_INTRINSICS BOOL "When generating code for GPU, use the fast math intrinsics (__expf, __sinf, etc.) \
 rather than the normal math functions (expf, sinf, etc.) for single-precision floats and single-precision complex floats." OFF)
+einsums_option(EINSUMS_ANONYMIZE BOOL "When generating error messages, decides whether to anonymize the file names or not." OFF)
 
 add_feature_info(EINSUMS_CONTINUOUSLY_TEST_EINSUM ${EINSUMS_CONTINUOUSLY_TEST_EINSUM} "Test every call to einsum. EXPENSIVE!")
 add_feature_info(EINSUMS_TEST_EINSUM_ABORT ${EINSUMS_TEST_EINSUM_ABORT} "Abort execution if an error is found")
@@ -95,10 +96,6 @@ if(EINSUMS_BUILD_HIP)
     set(ENV{hipsolver_DIR} ${hipsolver_DIR})
 
     enable_language(HIP)
-    find_package(hipblas REQUIRED)
-    find_package(hipsolver REQUIRED)
-    set(CURSES_NEED_NCURSES True)
-    find_package(Curses)
 
     set(ENABLE_HIP ON)
 endif()
@@ -138,6 +135,14 @@ if (OpenMP_FOUND)
 endif ()
 
 add_subdirectory(external)
+
+if(EINSUMS_BUILD_HIP)
+    find_package(hipblas REQUIRED)
+    find_package(hipsolver REQUIRED)
+    set(CURSES_NEED_NCURSES True)
+    find_package(Curses)
+endif()
+
 add_subdirectory(src)
 
 if(EINSUMS_COVERAGE AND NOT MSVC)
@@ -150,12 +155,17 @@ endif()
 
 if (EINSUMS_ENABLE_TESTING AND NOT MSVC)
     target_compile_options(einsums BEFORE PUBLIC $<$<CONFIG:Debug>:$<$<COMPILE_LANG_AND_ID:CXX,Clang>:-gdwarf-4 -O0 -g3 -ggdb>>)
+    target_compile_options(einsums BEFORE PUBLIC $<$<CONFIG:Debug>:$<$<COMPILE_LANG_AND_ID:CXX,Intel>:-gdwarf-4 -O0 -g3 -ggdb>>)
     target_compile_options(einsums BEFORE PUBLIC $<$<CONFIG:Debug>:$<$<COMPILE_LANG_AND_ID:HIP,Clang>:-gdwarf-4 -O0 -g3 -ggdb>>)
     target_compile_options(einsums BEFORE PUBLIC $<$<CONFIG:Debug>:$<$<COMPILE_LANG_AND_ID:CXX,GNU>:-Og -g3 -ggdb>>)
 endif()
 
 if(EINSUMS_FAST_INTRINSICS)
     target_compile_definitions(einsums PUBLIC -DEINSUMS_FAST_INTRINSICS)
+endif()
+
+if(EINSUMS_ANONYMIZE)
+    target_compile_definitions(einsums PUBLIC -DEINSUMS_ANONYMIZE)
 endif()
 
 if (EINSUMS_ENABLE_TESTING)

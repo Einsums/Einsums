@@ -10,8 +10,8 @@
 
 #include "einsums/Section.hpp"
 #include "einsums/Tensor.hpp"
-#include "einsums/utility/TensorTraits.hpp"
 #include "einsums/Utilities.hpp"
+#include "einsums/utility/TensorTraits.hpp"
 
 #include <omp.h>
 
@@ -68,11 +68,14 @@ __global__ void scale_kernel(T *data, T scale, size_t *dims, size_t *strides, si
 #endif
 END_EINSUMS_NAMESPACE_HPP(detail)
 
-template <template <typename, size_t> typename TensorType, typename T, size_t Rank>
-auto sum(const TensorType<T, Rank> &tensor) -> T {
+template <TensorConcept TensorType>
+auto sum(const TensorType &tensor) -> TensorType::data_type {
     LabeledSection0();
 
-    if constexpr (einsums::detail::IsBlockTensorV<TensorType<T, Rank>, Rank, T>) {
+    using T               = typename TensorType::data_type;
+    constexpr size_t Rank = TensorType::rank;
+
+    if constexpr (einsums::detail::IsBlockTensorV<TensorType>) {
         T result{0};
 #pragma omp parallel for reduction(+ : result)
         for (int i = 0; i < tensor.num_blocks(); i++) {
@@ -83,7 +86,7 @@ auto sum(const TensorType<T, Rank> &tensor) -> T {
         }
         return result;
 #ifdef __HIP__
-    } else if constexpr (einsums::detail::IsDeviceRankTensorV<TensorType<T, Rank>, Rank, T>) {
+    } else if constexpr (einsums::detail::IsDeviceTensorV<TensorType>) {
         auto blocks = gpu::blocks(tensor.size()), threads = gpu::block_size(tensor.size());
 
         size_t workers = blocks.x * blocks.y * blocks.z * threads.x * threads.y * threads.z * sizeof(T);
@@ -101,8 +104,8 @@ auto sum(const TensorType<T, Rank> &tensor) -> T {
         gpu::hip_catch(
             hipMemcpyAsync(dims_and_strides + Rank, tensor.strides().data(), Rank * sizeof(size_t), hipMemcpyHostToDevice, stream));
 
-        detail::sum_kernel<T, Rank><<<blocks, threads, workers, stream>>>(gpu_result, tensor.data(), dims_and_strides, dims_and_strides + Rank,
-                                                                 tensor.size());
+        detail::sum_kernel<T, Rank>
+            <<<blocks, threads, workers, stream>>>(gpu_result, tensor.gpu_data(), dims_and_strides, dims_and_strides + Rank, tensor.size());
 
         gpu::hip_catch(hipFreeAsync(dims_and_strides, stream));
 
@@ -136,11 +139,14 @@ auto sum(const TensorType<T, Rank> &tensor) -> T {
     }
 }
 
-template <template <typename, size_t> typename TensorType, typename T, size_t Rank>
-auto max(const TensorType<T, Rank> &tensor) -> T {
+template <TensorConcept TensorType>
+auto max(const TensorType &tensor) -> TensorType::data_type {
     LabeledSection0();
 
-    if constexpr (einsums::detail::IsBlockTensorV<TensorType<T, Rank>, Rank, T>) {
+    using T               = typename TensorType::data_type;
+    constexpr size_t Rank = TensorType::rank;
+
+    if constexpr (einsums::detail::IsBlockTensorV<TensorType>) {
         std::vector<T> max_arr(tensor.num_blocks());
 
 #pragma omp parallel for shared(max_arr)
@@ -149,7 +155,7 @@ auto max(const TensorType<T, Rank> &tensor) -> T {
         }
         return *std::max_element(max_arr.begin(), max_arr.end());
 #ifdef __HIP__
-    } else if constexpr (einsums::detail::IsDeviceRankTensorV<TensorType<T, Rank>, Rank, T>) {
+    } else if constexpr (einsums::detail::IsDeviceTensorV<TensorType>) {
         auto blocks = gpu::blocks(tensor.size()), threads = gpu::block_size(tensor.size());
 
         size_t workers = blocks.x * blocks.y * blocks.z * threads.x * threads.y * threads.z * sizeof(T);
@@ -167,8 +173,8 @@ auto max(const TensorType<T, Rank> &tensor) -> T {
         gpu::hip_catch(
             hipMemcpyAsync(dims_and_strides + Rank, tensor.strides().data(), Rank * sizeof(size_t), hipMemcpyHostToDevice, stream));
 
-        detail::max_kernel<T, Rank><<<blocks, threads, workers, stream>>>(gpu_result, tensor.data(), dims_and_strides, dims_and_strides + Rank,
-                                                                 tensor.size());
+        detail::max_kernel<T, Rank>
+            <<<blocks, threads, workers, stream>>>(gpu_result, tensor.gpu_data(), dims_and_strides, dims_and_strides + Rank, tensor.size());
 
         gpu::hip_catch(hipFreeAsync(dims_and_strides, stream));
 
@@ -209,11 +215,14 @@ auto max(const TensorType<T, Rank> &tensor) -> T {
     }
 }
 
-template <template <typename, size_t> typename TensorType, typename T, size_t Rank>
-auto min(const TensorType<T, Rank> &tensor) -> T {
+template <TensorConcept TensorType>
+auto min(const TensorType &tensor) -> TensorType::data_type {
     LabeledSection0();
 
-    if constexpr (einsums::detail::IsBlockTensorV<TensorType<T, Rank>, Rank, T>) {
+    using T               = typename TensorType::data_type;
+    constexpr size_t Rank = TensorType::rank;
+
+    if constexpr (einsums::detail::IsBlockTensorV<TensorType>) {
         std::vector<T> min_arr(tensor.num_blocks());
 
 #pragma omp parallel for shared(min_arr)
@@ -222,7 +231,7 @@ auto min(const TensorType<T, Rank> &tensor) -> T {
         }
         return *std::min_element(min_arr.begin(), min_arr.end());
 #ifdef __HIP__
-    } else if constexpr (einsums::detail::IsDeviceRankTensorV<TensorType<T, Rank>, Rank, T>) {
+    } else if constexpr (einsums::detail::IsDeviceTensorV<TensorType>) {
         auto blocks = gpu::blocks(tensor.size()), threads = gpu::block_size(tensor.size());
 
         size_t workers = blocks.x * blocks.y * blocks.z * threads.x * threads.y * threads.z * sizeof(T);
@@ -240,8 +249,8 @@ auto min(const TensorType<T, Rank> &tensor) -> T {
         gpu::hip_catch(
             hipMemcpyAsync(dims_and_strides + Rank, tensor.strides().data(), Rank * sizeof(size_t), hipMemcpyHostToDevice, stream));
 
-        detail::min_kernel<T, Rank><<<blocks, threads, workers, stream>>>(gpu_result, tensor.data(), dims_and_strides, dims_and_strides + Rank,
-                                                                 tensor.size());
+        detail::min_kernel<T, Rank>
+            <<<blocks, threads, workers, stream>>>(gpu_result, tensor.gpu_data(), dims_and_strides, dims_and_strides + Rank, tensor.size());
 
         gpu::hip_catch(hipFreeAsync(dims_and_strides, stream));
 
@@ -287,20 +296,14 @@ BEGIN_EINSUMS_NAMESPACE_HPP(new_tensor)
 using einsums::element_operations::max; // nolint
 using einsums::element_operations::sum; // nolint
 
-template <template <typename, size_t> typename TensorType, typename T, size_t Rank>
-auto abs(const TensorType<T, Rank> &tensor)
-    -> std::conditional_t<
-        einsums::detail::IsBlockTensorV<TensorType<T, Rank>, Rank, T>,
-#ifdef __HIP__
-        std::conditional_t<einsums::detail::IsIncoreRankTensorV<TensorType<T, Rank>, Rank, T>, BlockTensor<T, Rank>,
-                           BlockDeviceTensor<T, Rank>>,
-        std::conditional_t<einsums::detail::IsIncoreRankTensorV<TensorType<T, Rank>, Rank, T>, Tensor<T, Rank>, DeviceTensor<T, Rank>>> {
-#else
-        BlockTensor<T, Rank>, Tensor<T, Rank>> {
-#endif
+template <TensorConcept TensorType>
+auto abs(const TensorType &tensor) -> remove_view_t<TensorType> {
     LabeledSection0();
 
-    if constexpr (einsums::detail::IsBlockTensorV<TensorType<T, Rank>, Rank, T>) {
+    using T               = typename TensorType::data_type;
+    constexpr size_t Rank = TensorType::rank;
+
+    if constexpr (einsums::detail::IsBlockTensorV<TensorType>) {
         auto result = create_tensor_like(tensor);
 #pragma omp parallel for shared(result)
         for (int i = 0; i < tensor.num_blocks(); i++) {
@@ -308,7 +311,7 @@ auto abs(const TensorType<T, Rank> &tensor)
         }
         return result;
 #ifdef __HIP__
-    } else if constexpr (einsums::detail::IsDeviceRankTensorV<TensorType<T, Rank>, Rank, T>) {
+    } else if constexpr (einsums::detail::IsDeviceTensorV<TensorType>) {
         auto result = create_tensor_like(tensor);
 
         // Copy
@@ -326,8 +329,8 @@ auto abs(const TensorType<T, Rank> &tensor)
         gpu::hip_catch(
             hipMemcpyAsync(dims_and_strides + Rank, tensor.strides().data(), Rank * sizeof(size_t), hipMemcpyHostToDevice, stream));
 
-        einsums::element_operations::detail::abs_kernel<T, Rank><<<blocks, threads, 0, stream>>>(result.data(), dims_and_strides,
-                                                                                        dims_and_strides + Rank, result.size());
+        einsums::element_operations::detail::abs_kernel<T, Rank>
+            <<<blocks, threads, 0, stream>>>(result.gpu_data(), dims_and_strides, dims_and_strides + Rank, result.size());
 
         gpu::hip_catch(hipFreeAsync(dims_and_strides, stream));
 
@@ -359,20 +362,14 @@ auto abs(const TensorType<T, Rank> &tensor)
     }
 }
 
-template <template <typename, size_t> typename TensorType, typename T, size_t Rank>
-auto invert(const TensorType<T, Rank> &tensor)
-    -> std::conditional_t<
-        einsums::detail::IsBlockTensorV<TensorType<T, Rank>, Rank, T>,
-#ifdef __HIP__
-        std::conditional_t<einsums::detail::IsIncoreRankTensorV<TensorType<T, Rank>, Rank, T>, BlockTensor<T, Rank>,
-                           BlockDeviceTensor<T, Rank>>,
-        std::conditional_t<einsums::detail::IsIncoreRankTensorV<TensorType<T, Rank>, Rank, T>, Tensor<T, Rank>, DeviceTensor<T, Rank>>> {
-#else
-        BlockTensor<T, Rank>, Tensor<T, Rank>> {
-#endif
+template <TensorConcept TensorType>
+auto invert(const TensorType &tensor) -> remove_view_t<TensorType> {
     LabeledSection0();
 
-    if constexpr (einsums::detail::IsBlockTensorV<TensorType<T, Rank>, Rank, T>) {
+    using T               = typename TensorType::data_type;
+    constexpr size_t Rank = TensorType::rank;
+
+    if constexpr (einsums::detail::IsBlockTensorV<TensorType>) {
         auto result = create_tensor_like(tensor);
 #pragma omp parallel for shared(result)
         for (int i = 0; i < tensor.num_blocks(); i++) {
@@ -380,7 +377,7 @@ auto invert(const TensorType<T, Rank> &tensor)
         }
         return result;
 #ifdef __HIP__
-    } else if constexpr (einsums::detail::IsDeviceRankTensorV<TensorType<T, Rank>, Rank, T>) {
+    } else if constexpr (einsums::detail::IsDeviceTensorV<TensorType>) {
         auto result = create_tensor_like(tensor);
 
         // Copy
@@ -398,8 +395,8 @@ auto invert(const TensorType<T, Rank> &tensor)
         gpu::hip_catch(
             hipMemcpyAsync(dims_and_strides + Rank, tensor.strides().data(), Rank * sizeof(size_t), hipMemcpyHostToDevice, stream));
 
-        einsums::element_operations::detail::invert_kernel<T, Rank><<<blocks, threads, 0, stream>>>(result.data(), dims_and_strides,
-                                                                                           dims_and_strides + Rank, result.size());
+        einsums::element_operations::detail::invert_kernel<T, Rank>
+            <<<blocks, threads, 0, stream>>>(result.gpu_data(), dims_and_strides, dims_and_strides + Rank, result.size());
 
         gpu::hip_catch(hipFreeAsync(dims_and_strides, stream));
 
@@ -431,20 +428,14 @@ auto invert(const TensorType<T, Rank> &tensor)
     }
 }
 
-template <template <typename, size_t> typename TensorType, typename T, size_t Rank>
-auto exp(const TensorType<T, Rank> &tensor)
-    -> std::conditional_t<
-        einsums::detail::IsBlockTensorV<TensorType<T, Rank>, Rank, T>,
-#ifdef __HIP__
-        std::conditional_t<einsums::detail::IsIncoreRankTensorV<TensorType<T, Rank>, Rank, T>, BlockTensor<T, Rank>,
-                           BlockDeviceTensor<T, Rank>>,
-        std::conditional_t<einsums::detail::IsIncoreRankTensorV<TensorType<T, Rank>, Rank, T>, Tensor<T, Rank>, DeviceTensor<T, Rank>>> {
-#else
-        BlockTensor<T, Rank>, Tensor<T, Rank>> {
-#endif
+template <TensorConcept TensorType>
+auto exp(const TensorType &tensor) -> remove_view_t<TensorType> {
     LabeledSection0();
 
-    if constexpr (einsums::detail::IsBlockTensorV<TensorType<T, Rank>, Rank, T>) {
+    using T               = typename TensorType::data_type;
+    constexpr size_t Rank = TensorType::rank;
+
+    if constexpr (einsums::detail::IsBlockTensorV<TensorType>) {
         auto result = create_tensor_like(tensor);
 #pragma omp parallel for shared(result)
         for (int i = 0; i < tensor.num_blocks(); i++) {
@@ -452,7 +443,7 @@ auto exp(const TensorType<T, Rank> &tensor)
         }
         return result;
 #ifdef __HIP__
-    } else if constexpr (einsums::detail::IsDeviceRankTensorV<TensorType<T, Rank>, Rank, T>) {
+    } else if constexpr (einsums::detail::IsDeviceTensorV<TensorType>) {
         auto result = create_tensor_like(tensor);
 
         // Copy
@@ -470,8 +461,8 @@ auto exp(const TensorType<T, Rank> &tensor)
         gpu::hip_catch(
             hipMemcpyAsync(dims_and_strides + Rank, tensor.strides().data(), Rank * sizeof(size_t), hipMemcpyHostToDevice, stream));
 
-        einsums::element_operations::detail::exp_kernel<T, Rank><<<blocks, threads, 0, stream>>>(result.data(), dims_and_strides,
-                                                                                        dims_and_strides + Rank, result.size());
+        einsums::element_operations::detail::exp_kernel<T, Rank>
+            <<<blocks, threads, 0, stream>>>(result.gpu_data(), dims_and_strides, dims_and_strides + Rank, result.size());
 
         gpu::hip_catch(hipFreeAsync(dims_and_strides, stream));
 
@@ -503,20 +494,14 @@ auto exp(const TensorType<T, Rank> &tensor)
     }
 }
 
-template <template <typename, size_t> typename TensorType, typename T, size_t Rank>
-auto scale(const T &scale, const TensorType<T, Rank> &tensor)
-    -> std::conditional_t<
-        einsums::detail::IsBlockTensorV<TensorType<T, Rank>, Rank, T>,
-#ifdef __HIP__
-        std::conditional_t<einsums::detail::IsIncoreRankTensorV<TensorType<T, Rank>, Rank, T>, BlockTensor<T, Rank>,
-                           BlockDeviceTensor<T, Rank>>,
-        std::conditional_t<einsums::detail::IsIncoreRankTensorV<TensorType<T, Rank>, Rank, T>, Tensor<T, Rank>, DeviceTensor<T, Rank>>> {
-#else
-        BlockTensor<T, Rank>, Tensor<T, Rank>> {
-#endif
+template <TensorConcept TensorType>
+auto scale(const typename TensorType::data_type &scale, const TensorType &tensor) -> remove_view_t<TensorType> {
     LabeledSection0();
 
-    if constexpr (einsums::detail::IsBlockTensorV<TensorType<T, Rank>, Rank, T>) {
+    using T               = typename TensorType::data_type;
+    constexpr size_t Rank = TensorType::rank;
+
+    if constexpr (einsums::detail::IsBlockTensorV<TensorType>) {
         auto result = create_tensor_like(tensor);
 #pragma omp parallel for shared(result)
         for (int i = 0; i < tensor.num_blocks(); i++) {
@@ -524,7 +509,7 @@ auto scale(const T &scale, const TensorType<T, Rank> &tensor)
         }
         return result;
 #ifdef __HIP__
-    } else if constexpr (einsums::detail::IsDeviceRankTensorV<TensorType<T, Rank>, Rank, T>) {
+    } else if constexpr (einsums::detail::IsDeviceTensorV<TensorType>) {
         auto result = create_tensor_like(tensor);
 
         // Copy
@@ -542,8 +527,8 @@ auto scale(const T &scale, const TensorType<T, Rank> &tensor)
         gpu::hip_catch(
             hipMemcpyAsync(dims_and_strides + Rank, tensor.strides().data(), Rank * sizeof(size_t), hipMemcpyHostToDevice, stream));
 
-        einsums::element_operations::detail::scale_kernel<T, Rank><<<blocks, threads, 0, stream>>>(result.data(), scale, dims_and_strides,
-                                                                                          dims_and_strides + Rank, result.size());
+        einsums::element_operations::detail::scale_kernel<T, Rank>
+            <<<blocks, threads, 0, stream>>>(result.gpu_data(), scale, dims_and_strides, dims_and_strides + Rank, result.size());
 
         gpu::hip_catch(hipFreeAsync(dims_and_strides, stream));
 

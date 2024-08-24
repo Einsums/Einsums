@@ -10,7 +10,7 @@
 #include "einsums/Timer.hpp"
 
 #ifdef __HIP__
-#include "einsums/_GPUUtils.hpp"
+#    include "einsums/_GPUUtils.hpp"
 #endif
 
 #include <h5cpp/all>
@@ -38,7 +38,7 @@ void finalize(bool timerReport) {
 
     blas::finalize();
 
-#ifdef __HIP__    
+#ifdef __HIP__
     einsums::gpu::finalize();
 
 #endif

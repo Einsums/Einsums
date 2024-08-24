@@ -14,7 +14,18 @@
 
 BEGIN_EINSUMS_NAMESPACE_CPP(einsums::gpu)
 
-__host__ void __hip_catch__(hipError_t condition, const char *diagnostic, bool throw_success) {
+__host__ void __hip_catch__(hipError_t condition, const char *func_call, const char *fname, const char *location, const char *funcname,
+                            bool throw_success) {
+
+    std::string diagnostic = fname;
+    diagnostic += location;
+    diagnostic.append(funcname);
+    diagnostic += "\nError in line: ";
+    diagnostic += func_call;
+    diagnostic += "\nHIP error code ";
+    diagnostic += std::to_string((int)condition);
+    diagnostic += ": ";
+
     // Auto-generated code.
     switch (condition) {
     case hipSuccess:
@@ -249,13 +260,25 @@ __host__ void __hip_catch__(hipError_t condition, const char *diagnostic, bool t
 }
 
 namespace detail {
-std::vector<hipblasHandle_t> *blas_handles = nullptr;
-std::vector<hipsolverHandle_t> *solver_handles = nullptr;
-std::vector<hipStream_t> *default_streams = nullptr;
-std::vector<bool> *skip_waits = nullptr;
-}
+std::vector<hipblasHandle_t>   *blas_handles    = nullptr;
+std::vector<hipsolverHandle_t> *solver_handles  = nullptr;
+std::vector<hipStream_t>       *default_streams = nullptr;
+std::vector<bool>              *skip_waits      = nullptr;
+std::mutex                      wait_mutex;
+} // namespace detail
 
-__host__ void __hipblas_catch__(hipblasStatus_t status, const char *diagnostic, bool throw_success) {
+__host__ void __hipblas_catch__(hipblasStatus_t status, const char *func_call, const char *fname, const char *location,
+                                const char *funcname, bool throw_success) {
+    std::string diagnostic = fname;
+    diagnostic += location;
+    diagnostic += "\nError in line: ";
+    diagnostic += func_call;
+    diagnostic += "\nhipBLAS error code ";
+    diagnostic += std::to_string((int)status);
+    diagnostic += ": ";
+
+    diagnostic.append(funcname);
+
     switch (status) {
     case HIPBLAS_STATUS_SUCCESS:
         if (throw_success) {
@@ -300,9 +323,9 @@ __host__ void __hipblas_catch__(hipblasStatus_t status, const char *diagnostic, 
 }
 
 hipblasHandle_t get_blas_handle(int thread_id) {
-    if(thread_id >= detail::blas_handles->size()) {
-        return detail::blas_handles->at(0);
-    }
+    // if (thread_id >= detail::blas_handles->size()) {
+    //     return detail::blas_handles->at(0);
+    // }
     return detail::blas_handles->at(thread_id);
 }
 
@@ -319,7 +342,17 @@ hipblasHandle_t set_blas_handle(hipblasHandle_t value) {
     return set_blas_handle(value, omp_get_thread_num());
 }
 
-__host__ void __hipsolver_catch__(hipsolverStatus_t condition, const char *diagnostic, bool throw_success) {
+__host__ void __hipsolver_catch__(hipsolverStatus_t condition, const char *func_call, const char *fname, const char *location,
+                                  const char *funcname, bool throw_success) {
+    std::string diagnostic = fname;
+    diagnostic += location;
+    diagnostic.append(funcname);
+    diagnostic += "\nError in line: ";
+    diagnostic += func_call;
+    diagnostic += "\nhipSolver error code ";
+    diagnostic += std::to_string((int)condition);
+    diagnostic += ": ";
+
     switch (condition) {
     case HIPSOLVER_STATUS_SUCCESS:
         if (throw_success) {
@@ -403,12 +436,12 @@ const char *hipsolverStatusToString(hipsolverStatus_t status) {
     }
 }
 
-}
+} // namespace detail
 
 hipsolverHandle_t get_solver_handle(int thread_id) {
-    if(thread_id >= detail::solver_handles->size()) {
-        return detail::solver_handles->at(0);
-    }
+    // if (thread_id >= detail::solver_handles->size()) {
+    //     return detail::solver_handles->at(0);
+    // }
     return detail::solver_handles->at(thread_id);
 }
 
@@ -434,43 +467,42 @@ void initialize() {
 
     hipMemPoolProps props;
 
-    props.allocType = hipMemAllocationTypePinned;
-    props.handleTypes = (hipMemAllocationHandleType) (hipMemHandleTypePosixFileDescriptor | hipMemHandleTypeWin32Kmt);
-    props.location = {hipMemLocationTypeDevice, 0};
-
+    props.allocType   = hipMemAllocationTypePinned;
+    props.handleTypes = (hipMemAllocationHandleType)(hipMemHandleTypePosixFileDescriptor | hipMemHandleTypeWin32Kmt);
+    props.location    = {hipMemLocationTypeDevice, 0};
 
     hip_catch(hipMemPoolCreate(&pool, &props));
 
-    if(detail::default_streams == nullptr) {
-        detail::default_streams = new std::vector<hipStream_t>(omp_get_num_threads());
+    if (detail::default_streams == nullptr) {
+        detail::default_streams = new std::vector<hipStream_t>(omp_get_max_threads());
 
-        for(int i = 0; i < omp_get_num_threads(); i++) {
+        for (int i = 0; i < omp_get_max_threads(); i++) {
             hip_catch(hipStreamCreateWithFlags(&(detail::default_streams->at(i)), hipStreamNonBlocking));
         }
     }
 
     if (detail::blas_handles == nullptr) {
-        detail::blas_handles = new std::vector<hipblasHandle_t>(omp_get_num_threads());
+        detail::blas_handles = new std::vector<hipblasHandle_t>(omp_get_max_threads());
 
-        for(int i = 0; i < omp_get_num_threads(); i++) {
+        for (int i = 0; i < omp_get_max_threads(); i++) {
             hipblas_catch(hipblasCreate(&(detail::blas_handles->at(i))));
             hipblas_catch(hipblasSetStream(detail::blas_handles->at(i), detail::default_streams->at(i)));
         }
     }
 
     if (detail::solver_handles == nullptr) {
-        detail::solver_handles = new std::vector<hipsolverHandle_t>(omp_get_num_threads());
+        detail::solver_handles = new std::vector<hipsolverHandle_t>(omp_get_max_threads());
 
-        for(int i = 0; i < omp_get_num_threads(); i++) {
+        for (int i = 0; i < omp_get_max_threads(); i++) {
             hipsolver_catch(hipsolverCreate(&(detail::solver_handles->at(i))));
             hipsolver_catch(hipsolverSetStream(detail::solver_handles->at(i), detail::default_streams->at(i)));
         }
     }
 
-    if(detail::skip_waits == nullptr) {
-        detail::skip_waits = new std::vector<bool>(omp_get_num_threads());
+    if (detail::skip_waits == nullptr) {
+        detail::skip_waits = new std::vector<bool>(omp_get_max_threads());
 
-        for(int i = 0; i < omp_get_num_threads(); i++) {
+        for (int i = 0; i < omp_get_max_threads(); i++) {
             detail::skip_waits->at(i) = false;
         }
     }
@@ -478,7 +510,7 @@ void initialize() {
 
 void finalize() {
     if (detail::blas_handles != nullptr) {
-        for(int i = 0; i < omp_get_num_threads(); i++) {
+        for (int i = 0; i < omp_get_max_threads(); i++) {
             hipblas_catch(hipblasDestroy(detail::blas_handles->at(i)));
         }
         delete detail::blas_handles;
@@ -486,21 +518,20 @@ void finalize() {
     }
 
     if (detail::solver_handles != nullptr) {
-        for(int i = 0; i < omp_get_num_threads(); i++) {
+        for (int i = 0; i < omp_get_max_threads(); i++) {
             hipsolver_catch(hipsolverDestroy(detail::solver_handles->at(i)));
         }
         delete detail::solver_handles;
         detail::solver_handles = nullptr;
     }
 
-    if(detail::default_streams != nullptr) {
-        for(int i = 0; i < detail::default_streams->size(); i++) {
+    if (detail::default_streams != nullptr) {
+        for (int i = 0; i < detail::default_streams->size(); i++) {
             hip_catch(hipStreamDestroy(detail::default_streams->at(i)));
         }
         delete detail::default_streams;
         detail::default_streams = nullptr;
     }
-    // hip_catch(hipDeviceReset());
     hip_catch(hipMemPoolDestroy(pool));
 }
 
@@ -508,42 +539,47 @@ __host__ hipMemPool_t &get_scale_pool() {
     return pool;
 }
 
-__host__
-void skip_next_wait() {
+__host__ void skip_next_wait() {
     detail::skip_waits->at(omp_get_thread_num()) = true;
 }
 
-__host__
-void stream_wait(bool may_skip) {
-    if(may_skip && detail::skip_waits->at(omp_get_thread_num())) {
+__host__ void stream_wait(bool may_skip) {
+    if (may_skip && detail::skip_waits->at(omp_get_thread_num())) {
         detail::skip_waits->at(omp_get_thread_num()) = false;
         return;
     }
     stream_wait(get_stream());
 }
 
-__host__
-void stream_wait(hipStream_t stream) {
+__host__ void stream_wait(hipStream_t stream) {
     hipEvent_t wait_event;
 
     hip_catch(hipEventCreate(&wait_event));
+
+    detail::wait_mutex.lock();
+
     hip_catch(hipEventRecord(wait_event, stream));
+
+    detail::wait_mutex.unlock();
 
     hip_catch(hipEventSynchronize(wait_event));
     hip_catch(hipEventDestroy(wait_event));
 }
 
-__host__
-void all_stream_wait() {
+__host__ void all_stream_wait() {
 
-    std::vector<hipEvent_t> wait_events(omp_get_num_threads());
+    std::vector<hipEvent_t> wait_events(omp_get_max_threads());
 
-    for(int i = 0; i < wait_events.size(); i++) {
+    detail::wait_mutex.lock();
+
+    for (int i = 0; i < wait_events.size(); i++) {
         hip_catch(hipEventCreate(&(wait_events.at(i))));
         hip_catch(hipEventRecord(wait_events.at(i), detail::default_streams->at(i)));
     }
 
-    for(int i = 0; i < wait_events.size(); i++) {
+    detail::wait_mutex.unlock();
+
+    for (int i = 0; i < wait_events.size(); i++) {
         hip_catch(hipEventSynchronize(wait_events.at(i)));
         hip_catch(hipEventDestroy(wait_events.at(i)));
     }
@@ -553,10 +589,11 @@ void all_stream_wait() {
  * @brief Gets the stream assigned to the current thread.
  */
 hipStream_t get_stream() {
+    auto guard = std::lock_guard(detail::wait_mutex);
     return get_stream(omp_get_thread_num());
 }
 hipStream_t get_stream(int thread_id) {
-    if(detail::default_streams == nullptr) {
+    if (detail::default_streams == nullptr) {
         return nullptr;
     }
     return detail::default_streams->at(thread_id);
@@ -570,6 +607,7 @@ void set_stream(hipStream_t stream) {
 }
 
 void set_stream(hipStream_t stream, int thread_id) {
+    auto guard                             = std::lock_guard(detail::wait_mutex);
     detail::default_streams->at(thread_id) = stream;
 
     hipblas_catch(hipblasSetStream(get_blas_handle(), stream));
@@ -578,7 +616,7 @@ void set_stream(hipStream_t stream, int thread_id) {
 
 __host__ int get_warpsize(void) {
     static int warpsize = 0;
-    if(warpsize == 0) {
+    if (warpsize == 0) {
         hip_catch(hipDeviceGetAttribute(&warpsize, hipDeviceAttributeWarpSize, 0));
     }
     return warpsize;

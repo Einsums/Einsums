@@ -6,12 +6,12 @@
 #pragma once
 
 #include "einsums/_Export.hpp"
-#include "einsums/Timer.hpp"
 #include "einsums/_GPUUtils.hpp"
 
-#include <hip/hip_runtime_api.h>
-#include <hip/hip_common.h>
+#include "einsums/Timer.hpp"
 
+#include <hip/hip_common.h>
+#include <hip/hip_runtime_api.h>
 #include <string>
 
 namespace einsums::timer {
@@ -26,10 +26,10 @@ namespace einsums::timer {
  * head of the stream, they record their time. This allows for kernel timing.
  */
 struct GPUTimer {
-private:
+  private:
     hipEvent_t start_event, end_event;
 
-    public:
+  public:
     GPUTimer(const std::string &name);
     ~GPUTimer();
 };

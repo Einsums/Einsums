@@ -13,6 +13,7 @@
 #include "einsums/Section.hpp"
 #include "einsums/Tensor.hpp"
 #include "einsums/Utilities.hpp"
+#include "einsums/linear_algebra_imp/UnoptimizedLinearAlgebra.hpp"
 #include "einsums/utility/ComplexTraits.hpp"
 #include "einsums/utility/SmartPointerTraits.hpp"
 #include "einsums/utility/TensorTraits.hpp"
@@ -27,6 +28,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <complex>
 #include <cstddef>
 #include <limits>
 #include <stdexcept>
@@ -61,8 +63,8 @@ namespace einsums::linear_algebra {
  * @param scale scale_in and scale_out for the equation provided
  * @param sumsq sumsq_in and sumsq_out for the equation provided
  */
-template <template <typename, size_t> typename AType, typename ADataType, size_t ARank>
-void sum_square(const AType<ADataType, ARank> &a, RemoveComplexT<ADataType> *scale, RemoveComplexT<ADataType> *sumsq) {
+template <TensorConcept AType>
+void sum_square(const AType &a, RemoveComplexT<typename AType::data_type> *scale, RemoveComplexT<typename AType::data_type> *sumsq) {
     LabeledSection0();
     detail::sum_square(a, scale, sumsq);
 }
@@ -95,14 +97,13 @@ void sum_square(const AType<ADataType, ARank> &a, RemoveComplexT<ADataType> *sca
  * @param C Output tensor
  * @tparam T the underlying data type
  */
-template <bool TransA, bool TransB, template <typename, size_t> typename AType, template <typename, size_t> typename BType,
-          template <typename, size_t> typename CType, size_t Rank, typename T, typename U>
+template <bool TransA, bool TransB, MatrixConcept AType, MatrixConcept BType, MatrixConcept CType, typename U>
     requires requires {
-        requires InSamePlace<AType<T, Rank>, BType<T, Rank>, Rank, Rank, T, T>;
-        requires InSamePlace<AType<T, Rank>, CType<T, Rank>, Rank, Rank, T, T>;
-        requires std::convertible_to<U, T>;
+        requires InSamePlace<AType, BType, CType>;
+        requires std::convertible_to<U, typename AType::data_type>;
+        requires SameUnderlying<AType, BType, CType>;
     }
-void gemm(const U alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const U beta, CType<T, Rank> *C) {
+void gemm(const U alpha, const AType &A, const BType &B, const U beta, CType *C) {
     LabeledSection0();
     detail::gemm<TransA, TransB>(alpha, A, B, beta, C);
 }
@@ -127,18 +128,18 @@ void gemm(const U alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const
  * @returns resulting tensor
  * @tparam T the underlying data type
  */
-template <bool TransA, bool TransB, template <typename, size_t> typename AType, template <typename, size_t> typename BType, size_t Rank,
-          typename T, typename U>
+template <bool TransA, bool TransB, MatrixConcept AType, MatrixConcept BType, typename U>
     requires requires {
-        requires InSamePlace<AType<T, Rank>, BType<T, Rank>, 2, 2, T, T>;
-        requires std::is_same_v<remove_view_t<AType, Rank, T>, remove_view_t<BType, Rank, T>>;
-        requires std::convertible_to<U, T>;
+        requires InSamePlace<AType, BType>;
+        requires std::is_same_v<remove_view_t<AType>, remove_view_t<BType>>;
+        requires std::convertible_to<U, typename AType::data_type>;
+        requires SameUnderlying<AType, BType>;
     }
-auto gemm(const U alpha, const AType<T, Rank> &A, const BType<T, Rank> &B) -> remove_view_t<AType, Rank, T> {
+auto gemm(const U alpha, const AType &A, const BType &B) -> remove_view_t<AType> {
     LabeledSection0();
 
-    remove_view_t<AType, Rank, T> C{"gemm result", TransA ? A.dim(1) : A.dim(0), TransB ? B.dim(0) : B.dim(1)};
-    gemm<TransA, TransB>(static_cast<T>(alpha), A, B, static_cast<T>(0.0), &C);
+    remove_view_t<AType> C{"gemm result", TransA ? A.dim(1) : A.dim(0), TransB ? B.dim(0) : B.dim(1)};
+    gemm<TransA, TransB>(static_cast<typename AType::data_type>(alpha), A, B, static_cast<typename AType::data_type>(0.0), &C);
 
     return C;
 }
@@ -148,13 +149,12 @@ auto gemm(const U alpha, const AType<T, Rank> &A, const BType<T, Rank> &B) -> re
  *
  * Computes @f$ C = OP(B)^T OP(A) OP(B) @f$.
  */
-template <bool TransA, bool TransB, template <typename, size_t> typename AType, template <typename, size_t> typename BType,
-          template <typename, size_t> typename CType, size_t Rank, typename T>
+template <bool TransA, bool TransB, MatrixConcept AType, MatrixConcept BType, MatrixConcept CType>
     requires requires {
-        requires InSamePlace<AType<T, Rank>, BType<T, Rank>, 2, 2, T, T>;
-        requires InSamePlace<AType<T, Rank>, CType<T, Rank>, 2, 2, T, T>;
+        requires InSamePlace<AType, BType, CType>;
+        requires SameUnderlying<AType, BType, CType>;
     }
-void symm_gemm(const AType<T, Rank> &A, const BType<T, Rank> &B, CType<T, Rank> *C) {
+void symm_gemm(const AType &A, const BType &B, CType *C) {
     LabeledSection0();
 
     detail::symm_gemm<TransA, TransB>(A, B, C);
@@ -187,14 +187,13 @@ void symm_gemm(const AType<T, Rank> &A, const BType<T, Rank> &B, CType<T, Rank> 
  * @param beta Scaling factor for the output vector y
  * @param y Output vector y
  */
-template <bool TransA, template <typename, size_t> typename AType, template <typename, size_t> typename XType,
-          template <typename, size_t> typename YType, size_t ARank, size_t XYRank, typename T, typename U>
+template <bool TransA, MatrixConcept AType, VectorConcept XType, VectorConcept YType, typename U>
     requires requires {
-        requires InSamePlace<AType<T, ARank>, XType<T, XYRank>, 2, 1, T, T>;
-        requires InSamePlace<AType<T, ARank>, YType<T, XYRank>, 2, 1, T, T>;
-        requires std::convertible_to<U, T>; // Make sure the alpha and beta can be converted to T
+        requires InSamePlace<AType, XType, YType>;
+        requires SameUnderlying<AType, XType, YType>;
+        requires std::convertible_to<U, typename AType::data_type>;
     }
-void gemv(const U alpha, const AType<T, ARank> &A, const XType<T, XYRank> &z, const U beta, YType<T, XYRank> *y) {
+void gemv(const U alpha, const AType &A, const XType &z, const U beta, YType *y) {
     LabeledSection1(fmt::format("<TransA={}>", TransA));
 
     detail::gemv<TransA>(alpha, A, z, beta, y);
@@ -231,41 +230,52 @@ void gemv(const U alpha, const AType<T, ARank> &A, const XType<T, XYRank> &z, co
  *   Any data previously stored in A is destroyed.
  * @param W On exit, the eigenvalues in ascending order.
  */
-template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename WType, size_t WRank, typename T,
-          bool ComputeEigenvectors = true>
+template <bool ComputeEigenvectors = true, MatrixConcept AType, VectorConcept WType>
     requires requires {
-        requires InSamePlace<AType<T, ARank>, WType<T, WRank>, 2, 1, T, T>;
-        requires !Complex<T>;
+        requires InSamePlace<AType, WType>;
+        requires SameUnderlying<AType, WType>;
+        requires !Complex<AType>;
     }
-void syev(AType<T, ARank> *A, WType<T, WRank> *W) {
+void syev(AType *A, WType *W) {
 
     LabeledSection1(fmt::format("<ComputeEigenvectors={}>", ComputeEigenvectors));
-    detail::syev<AType, ARank, WType, WRank, T, ComputeEigenvectors>(A, W);
+    detail::syev<ComputeEigenvectors>(A, W);
 }
 
-template <template <typename, size_t> typename AType, size_t ARank, template <Complex, size_t> typename WType, size_t WRank, typename T,
-          bool ComputeLeftRightEigenvectors = true>
-    requires InSamePlace<AType<T, ARank>, WType<AddComplexT<T>, WRank>, 2, 1, T, AddComplexT<T>>
-void geev(AType<T, ARank> *A, WType<AddComplexT<T>, WRank> *W, AType<T, ARank> *lvecs, AType<T, ARank> *rvecs) {
+/**
+ * @brief Compute the general eigendecomposition of a matrix.
+ *
+ * Can only be used to compute both left and right eigen vectors or neither.
+ */
+template <bool ComputeLeftRightEigenvectors = true, MatrixConcept AType, VectorConcept WType>
+    requires requires {
+        requires InSamePlace<AType, WType>;
+        requires std::is_same_v<typename WType::data_type, AddComplexT<typename AType::data_type>>;
+    }
+void geev(AType *A, WType *W, AType *lvecs, AType *rvecs) {
     LabeledSection1(fmt::format("<ComputeLeftRightEigenvectors={}>", ComputeLeftRightEigenvectors));
 
-    detail::geev<AType, ARank, WType, WRank, T, ComputeLeftRightEigenvectors>(A, W, lvecs, rvecs);
+    detail::geev<ComputeLeftRightEigenvectors>(A, W, lvecs, rvecs);
 }
 
-template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename WType, size_t WRank, typename T,
-          bool ComputeEigenvectors = true>
+template <bool ComputeEigenvectors = true, MatrixConcept AType, VectorConcept WType>
     requires requires {
-        requires InSamePlace<AType<T, ARank>, WType<RemoveComplexT<T>, WRank>, 2, 1, T, RemoveComplexT<T>>;
-        requires Complex<T>;
+        requires InSamePlace<AType, WType>;
+        requires Complex<AType>;
+        requires !Complex<WType>;
+        requires std::is_same_v<typename WType::data_type, RemoveComplexT<typename AType::data_type>>;
     }
-void heev(AType<T, ARank> *A, WType<RemoveComplexT<T>, WRank> *W) {
+void heev(AType *A, WType *W) {
     LabeledSection1(fmt::format("<ComputeEigenvectors={}>", ComputeEigenvectors));
-    detail::heev<AType, ARank, WType, WRank, T, ComputeEigenvectors>(A, W);
+    detail::heev<ComputeEigenvectors>(A, W);
 }
 
-template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename BType, size_t BRank, typename T>
-    requires(InSamePlace<AType<T, ARank>, BType<T, BRank>, 2, 2, T, T>)
-auto gesv(AType<T, ARank> *A, BType<T, BRank> *B) -> int {
+template <MatrixConcept AType, MatrixConcept BType>
+    requires requires {
+        requires InSamePlace<AType, BType>;
+        requires SameUnderlying<AType, BType>;
+    }
+auto gesv(AType *A, BType *B) -> int {
 
     LabeledSection0();
     return detail::gesv(A, B);
@@ -294,34 +304,20 @@ auto gesv(AType<T, ARank> *A, BType<T, BRank> *B) -> int {
  * @param A The symmetric matrix A in the leading N-by-N upper triangular part of A.
  * @return std::tuple<Tensor<T, 2>, Tensor<T, 1>> The eigenvectors and eigenvalues.
  */
-template <template <typename, size_t> typename AType, typename T, bool ComputeEigenvectors = true>
-auto syev(const AType<T, 2> &A) -> std::tuple<remove_view_t<AType, 2, T>, 
-#ifdef __HIP__
-std::conditional_t<einsums::detail::IsDeviceRankTensorV<AType<T, 1>, 1, T>, DeviceTensor<T, 1>, Tensor<T, 1>>
-#else
-Tensor<T, 1>
-#endif
-> {
+template <bool ComputeEigenvectors = true, MatrixConcept AType>
+    requires(NotComplex<AType>)
+auto syev(const AType &A) -> std::tuple<remove_view_t<AType>, BasicTensorLike<AType, typename AType::data_type, 1>> {
     LabeledSection0();
 
     assert(A.dim(0) == A.dim(1));
 
-    remove_view_t<AType, 2, T> a = A;
-    #ifdef __HIP__
-    if constexpr (einsums::detail::IsDeviceRankTensorV<AType<T, 2>, 2, T>) {
-        DeviceTensor<T, 1> w{"eigenvalues", einsums::detail::DEV_ONLY, A.dim(0)};
-        syev<ComputeEigenvectors>(&a, &w);
-        return std::make_tuple(a, w);
-    } else {
-    #endif
-    Tensor<T, 1> w{"eigenvalues", A.dim(0)};
+    remove_view_t<AType> a = A;
+
+    BasicTensorLike<AType, typename AType::data_type, 1> w{"eigenvalues", A.dim(0)};
 
     syev<ComputeEigenvectors>(&a, &w);
 
     return std::make_tuple(a, w);
-    #ifdef __HIP__
-    }
-    #endif
 }
 
 /**
@@ -341,24 +337,22 @@ Tensor<T, 1>
  * @param scale The scalar to scale the tensor by
  * @param A The tensor to scale
  */
-template <template <typename, size_t> typename AType, size_t ARank, typename T>
-void scale(T scale, AType<T, ARank> *A) {
+template <TensorConcept AType>
+void scale(typename AType::data_type scale, AType *A) {
     LabeledSection0();
 
     detail::scale(scale, A);
 }
 
-template <template <typename, size_t> typename AType, size_t ARank, typename T>
-    requires(ARank == 2)
-void scale_row(size_t row, T scale, AType<T, ARank> *A) {
+template <MatrixConcept AType>
+void scale_row(size_t row, typename AType::data_type scale, AType *A) {
     LabeledSection0();
 
     detail::scale_row(row, scale, A);
 }
 
-template <template <typename, size_t> typename AType, size_t ARank, typename T>
-    requires(ARank == 2)
-void scale_column(size_t col, T scale, AType<T, ARank> *A) {
+template <MatrixConcept AType>
+void scale_column(size_t col, typename AType::data_type scale, AType *A) {
     LabeledSection0();
 
     detail::scale_column(col, scale, A);
@@ -373,124 +367,132 @@ void scale_column(size_t col, T scale, AType<T, ARank> *A) {
  * @param cutoff Values below cutoff are considered zero.
  *
  * @return std::enable_if_t<std::is_base_of_v<Detail::TensorBase<double, 2>, AType>, AType>
- *
- * TODO This function needs to have a test case implemented.
  */
-template <template <typename, size_t> typename AType, size_t ARank, typename T>
-    requires(ARank == 2)
-auto pow(const AType<T, ARank> &a, T alpha, T cutoff = std::numeric_limits<T>::epsilon()) -> remove_view_t<AType, 2, T> {
+template <MatrixConcept AType>
+auto pow(const AType &a, typename AType::data_type alpha,
+         typename AType::data_type cutoff = std::numeric_limits<typename AType::data_type>::epsilon()) -> remove_view_t<AType> {
     LabeledSection0();
 
-#ifdef __HIP__
-    if constexpr (einsums::detail::IsDeviceRankTensorV<AType<T, ARank>, ARank, T>) {
-        DeviceTensor<T, 1> Evals(Dim<1>{a.dim(0)}, ::einsums::detail::DEV_ONLY);
-
-        remove_view_t<AType, 2, T> Evecs(Dim<2>{a.dim(0), a.dim(1)});
-
-        remove_view_t<AType, 2, T> Diag(Dim<2>{a.dim(0), a.dim(1)}, ::einsums::detail::DEV_ONLY);
-
-        remove_view_t<AType, 2, T> out(Dim<2>{a.dim(0), a.dim(1)}, ::einsums::detail::DEV_ONLY);
-        remove_view_t<AType, 2, T> temp(Dim<2>{a.dim(0), a.dim(1)}, ::einsums::detail::DEV_ONLY);
-
-        Evecs.assign(a);
-
-        syev(&Evecs, &Evals);
-
-        Diag.zero();
-
-        detail::detail::gpu::eig_to_diag<<<dim3(32), dim3(1), 0, gpu::get_stream()>>>(Diag.data(), Diag.dim(0), Diag.stride(0),
-                                                                                      Evals.data(), alpha);
-
-        symm_gemm<false, false>(Diag, Evecs, &out);
-
-        return out;
-    } else {
-#endif
-
-        assert(a.dim(0) == a.dim(1));
-
-        size_t                     n  = a.dim(0);
-        remove_view_t<AType, 2, T> a1 = a;
-        remove_view_t<AType, 2, T> result{"pow result", a.dim(0), a.dim(1)};
-        Tensor<T, 1>               e{"e", n};
-
-        // Diagonalize
-        syev(&a1, &e);
-
-        remove_view_t<AType, 2, T> a2 = a1;
-
-        // Determine the largest magnitude of the eigenvalues to use as a scaling factor for the cutoff.
-        double max_e = std::fabs(e(n - 1)) > std::fabs(e(0)) ? std::fabs(e(n - 1)) : std::fabs(e(0));
-
-        for (size_t i = 0; i < n; i++) {
-            if (alpha < 0.0 && std::fabs(e(i)) < cutoff * max_e) {
-                e(i) = 0.0;
-            } else {
-                e(i) = std::pow(e(i), alpha);
-                if (!std::isfinite(e(i))) {
-                    e(i) = 0.0;
-                }
-            }
-
-            scale_row(i, e(i), &a2);
-        }
-
-        gemm<true, false>(1.0, a2, a1, 0.0, &result);
-
-        return result;
-#ifdef __HIP__
-    }
-#endif
+    return detail::pow(a, alpha, cutoff);
 }
 
-template <template <typename, size_t> typename AType, template <typename, size_t> typename BType, typename T>
-    requires InSamePlace<AType<T, 1>, BType<T, 1>, 1, 1, T, T>
-auto dot(const AType<T, 1> &A, const BType<T, 1> &B) -> T {
-    LabeledSection0();
-
-    return detail::dot(A, B);
-}
-
-template <template <typename, size_t> typename AType, template <typename, size_t> typename BType, typename T, size_t Rank>
-    requires InSamePlace<AType<T, Rank>, BType<T, Rank>, Rank, Rank, T, T>
-auto dot(const AType<T, Rank> &A, const BType<T, Rank> &B) -> T {
-
-    LabeledSection0();
-
-    return detail::dot(A, B);
-}
-
-template <template <typename, size_t> typename AType, template <typename, size_t> typename BType,
-          template <typename, size_t> typename CType, typename T, size_t Rank>
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+template <VectorConcept AType, VectorConcept BType>
     requires requires {
-        requires InSamePlace<AType<T, Rank>, BType<T, Rank>, Rank, Rank, T, T>;
-        requires InSamePlace<AType<T, Rank>, CType<T, Rank>, Rank, Rank, T, T>;
+        requires InSamePlace<AType, BType>;
+        requires SameUnderlying<AType, BType>;
     }
-auto dot(const AType<T, Rank> &A, const BType<T, Rank> &B, const CType<T, Rank> &C) -> T {
+auto dot(const AType &A, const BType &B) -> typename AType::data_type {
+    LabeledSection0();
+
+    return detail::dot(A, B);
+}
+#endif
+
+/**
+ * @brief Performs the dot product between two tensors.
+ *
+ * This performs @f$\sum_{ijk\cdots} A_{ijk\cdots}B_{ijk\cdots}@f$
+ *
+ * @param A One of the tensors
+ * @param B The other tensor.
+ */
+template <TensorConcept AType, TensorConcept BType>
+    requires requires {
+        requires SameUnderlyingAndRank<AType, BType>;
+        requires InSamePlace<AType, BType>;
+        requires AType::rank != 1;
+    }
+auto dot(const AType &A, const BType &B) -> typename AType::data_type {
+
+    LabeledSection0();
+
+    return detail::dot(A, B);
+}
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+template <VectorConcept AType, VectorConcept BType>
+    requires requires {
+        requires InSamePlace<AType, BType>;
+        requires SameUnderlying<AType, BType>;
+    }
+auto true_dot(const AType &A, const BType &B) -> typename AType::data_type {
+    LabeledSection0();
+
+    return detail::true_dot(A, B);
+}
+#endif
+
+/**
+ * @brief Performs the true dot product between two tensors.
+ *
+ * This performs @f$\sum_{ijk\cdots} A_{ijk\cdots}^* B_{ijk\cdots}@f$, where the asterisk indicates the complex conjugate.
+ * If the tensors are real-valued, then this is equivalent to dot.
+ *
+ * @param A One of the tensors. The complex conjugate is taken of this.
+ * @param B The other tensor.
+ */
+template <TensorConcept AType, TensorConcept BType>
+    requires requires {
+        requires SameUnderlyingAndRank<AType, BType>;
+        requires InSamePlace<AType, BType>;
+        requires AType::rank != 1;
+    }
+auto true_dot(const AType &A, const BType &B) -> typename AType::data_type {
+
+    LabeledSection0();
+
+    return detail::true_dot(A, B);
+}
+
+/**
+ * @brief Performs the dot product between three tensors.
+ *
+ * This performs @f$\sum_{ijk\cdots} A_{ijk\cdots}B_{ijk\cdots}C_{ijk\cdots}@f$
+ *
+ * @param A One of the tensors.
+ * @param B The second tensor.
+ * @param C The third tensor.
+ */
+template <TensorConcept AType, TensorConcept BType, TensorConcept CType>
+    requires requires {
+        requires InSamePlace<AType, BType, CType>;
+        requires SameUnderlyingAndRank<AType, BType, CType>;
+    }
+auto dot(const AType &A, const BType &B, const CType &C) -> typename AType::data_type {
 
     LabeledSection0();
     return detail::dot(A, B, C);
 }
 
-template <template <typename, size_t> typename XType, template <typename, size_t> typename YType, typename T, size_t Rank>
-    requires InSamePlace<XType<T, Rank>, YType<T, Rank>, Rank, Rank, T, T>
-void axpy(T alpha, const XType<T, Rank> &X, YType<T, Rank> *Y) {
+template <TensorConcept XType, TensorConcept YType>
+    requires requires {
+        requires InSamePlace<XType, YType>;
+        requires SameUnderlyingAndRank<XType, YType>;
+    }
+void axpy(typename XType::data_type alpha, const XType &X, YType *Y) {
     LabeledSection0();
 
     detail::axpy(alpha, X, Y);
 }
 
-template <template <typename, size_t> typename XType, template <typename, size_t> typename YType, typename T, size_t Rank>
-    requires InSamePlace<XType<T, Rank>, YType<T, Rank>, Rank, Rank, T, T>
-void axpby(T alpha, const XType<T, Rank> &X, T beta, YType<T, Rank> *Y) {
+template <TensorConcept XType, TensorConcept YType>
+    requires requires {
+        requires InSamePlace<XType, YType>;
+        requires SameUnderlyingAndRank<XType, YType>;
+    }
+void axpby(typename XType::data_type alpha, const XType &X, typename XType::data_type beta, YType *Y) {
     LabeledSection0();
 
     detail::axpby(alpha, X, beta, Y);
 }
 
-template <template <typename, size_t> typename XYType, size_t XYRank, template <typename, size_t> typename AType, typename T, size_t ARank>
-    requires InSamePlace<AType<T, ARank>, XYType<T, XYRank>, 2, 1, T, T>
-void ger(T alpha, const XYType<T, XYRank> &X, const XYType<T, XYRank> &Y, AType<T, ARank> *A) {
+template <MatrixConcept AType, VectorConcept XYType>
+    requires requires {
+        requires SameUnderlying<AType, XYType>;
+        requires InSamePlace<AType, XYType>;
+    }
+void ger(typename AType::data_type alpha, const XYType &X, const XYType &Y, AType *A) {
     LabeledSection0();
 
     detail::ger(alpha, X, Y, A);
@@ -507,19 +509,17 @@ void ger(T alpha, const XYType<T, XYRank> &X, const XYType<T, XYRank> &Y, AType<
  * partial pivoting, with row interchanges.
  *
  * @tparam TensorType
- * @tparam T
- * @tparam TensorRank
  * @param A
  * @param pivot
  * @return
  */
-template <template <typename, size_t> typename TensorType, typename T, size_t TensorRank>
-    requires CoreRankTensor<TensorType<T, TensorRank>, 2, T>
-auto getrf(TensorType<T, TensorRank> *A, std::vector<blas_int> *pivot) -> int {
+template <MatrixConcept TensorType>
+    requires(CoreTensorConcept<TensorType>)
+auto getrf(TensorType *A, std::vector<blas_int> *pivot) -> int {
     LabeledSection0();
 
     if (pivot->size() < std::min(A->dim(0), A->dim(1))) {
-        println("getrf: resizing pivot vector from {} to {}", pivot->size(), std::min(A->dim(0), A->dim(1)));
+        // println("getrf: resizing pivot vector from {} to {}", pivot->size(), std::min(A->dim(0), A->dim(1)));
         pivot->resize(std::min(A->dim(0), A->dim(1)));
     }
     int result = blas::getrf(A->dim(0), A->dim(1), A->data(), A->stride(0), pivot->data());
@@ -545,9 +545,9 @@ auto getrf(TensorType<T, TensorRank> *A, std::vector<blas_int> *pivot) -> int {
  * @param pivot The pivot vector from getrf
  * @return int If 0, the execution is successful.
  */
-template <template <typename, size_t> typename TensorType, typename T, size_t TensorRank>
-    requires CoreRankTensor<TensorType<T, TensorRank>, 2, T>
-auto getri(TensorType<T, TensorRank> *A, const std::vector<blas_int> &pivot) -> int {
+template <MatrixConcept TensorType>
+    requires(CoreTensorConcept<TensorType>)
+auto getri(TensorType *A, const std::vector<blas_int> &pivot) -> int {
     LabeledSection0();
 
     int result = blas::getri(A->dim(0), A->data(), A->stride(0), pivot.data());
@@ -568,12 +568,12 @@ auto getri(TensorType<T, TensorRank> *A, const std::vector<blas_int> &pivot) -> 
  * @tparam TensorRank The rank of the tensor
  * @param A Matrix to invert. On exit, the inverse of A.
  */
-template <template <typename, size_t> typename TensorType, typename T, size_t TensorRank>
-    requires CoreRankTensor<TensorType<T, TensorRank>, 2, T>
-void invert(TensorType<T, TensorRank> *A) {
-    if constexpr (einsums::detail::IsIncoreRankBlockTensorV<TensorType<T, TensorRank>, TensorRank, T>) {
+template <MatrixConcept TensorType>
+    requires(CoreTensorConcept<TensorType>)
+void invert(TensorType *A) {
+    if constexpr (einsums::detail::IsIncoreBlockTensorV<TensorType>) {
         EINSUMS_OMP_PARALLEL_FOR
-        for (int i = 0; i < A->num_blocks; i++) {
+        for (int i = 0; i < A->num_blocks(); i++) {
             einsums::linear_algebra::invert(&(A->block(i)));
         }
     } else {
@@ -641,20 +641,26 @@ enum class Norm : char {
  * @param a The matrix to compute the norm of
  * @return The norm of the matrix
  */
-
-template <template <typename, size_t> typename AType, typename ADataType, size_t ARank>
-    requires CoreRankTensor<AType<ADataType, ARank>, 2, ADataType>
-auto norm(Norm norm_type, const AType<ADataType, ARank> &a) -> RemoveComplexT<ADataType> {
+template <MatrixConcept AType>
+    requires(CoreTensorConcept<AType>)
+auto norm(Norm norm_type, const AType &a) -> RemoveComplexT<AType> {
     LabeledSection0();
 
-    std::vector<RemoveComplexT<ADataType>> work(4 * a.dim(0), 0.0);
+    std::vector<RemoveComplexT<AType>> work(4 * a.dim(0), 0.0);
     return blas::lange(static_cast<char>(norm_type), a.dim(0), a.dim(1), a.data(), a.stride(0), work.data());
 }
 
+template <TensorConcept AType>
+RemoveComplexT<AType> vec_norm(const AType &a) {
+    return std::sqrt(std::abs(true_dot(a, a)));
+}
+
 // Uses the original svd function found in lapack, gesvd, request all left and right vectors.
-template <template <typename, size_t> typename AType, typename T, size_t ARank>
-    requires CoreRankTensor<AType<T, ARank>, 2, T>
-auto svd(const AType<T, ARank> &_A) -> std::tuple<Tensor<T, 2>, Tensor<RemoveComplexT<T>, 1>, Tensor<T, 2>> {
+template <MatrixConcept AType>
+    requires(CoreTensorConcept<AType>)
+auto svd(const AType &_A)
+    -> std::tuple<Tensor<typename AType::data_type, 2>, Tensor<RemoveComplexT<AType>, 1>, Tensor<typename AType::data_type, 2>> {
+    using T = typename AType::data_type;
     LabeledSection0();
 
     DisableOMPThreads const nothreads;
@@ -690,9 +696,10 @@ auto svd(const AType<T, ARank> &_A) -> std::tuple<Tensor<T, 2>, Tensor<RemoveCom
     return std::make_tuple(U, S, Vt);
 }
 
-template <template <typename, size_t> typename AType, typename T, size_t Rank>
-    requires CoreRankTensor<AType<T, Rank>, 2, T>
-auto svd_nullspace(const AType<T, Rank> &_A) -> Tensor<T, 2> {
+template <MatrixConcept AType>
+    requires(CoreTensorConcept<AType>)
+auto svd_nullspace(const AType &_A) -> Tensor<typename AType::data_type, 2> {
+    using T = typename AType::data_type;
     LabeledSection0();
 
     // Calling svd will destroy the original data. Make a copy of it.
@@ -748,9 +755,11 @@ auto svd_nullspace(const AType<T, Rank> &_A) -> Tensor<T, 2> {
 
 enum class Vectors : char { All = 'A', Some = 'S', Overwrite = 'O', None = 'N' };
 
-template <template <typename, size_t> typename AType, typename T, size_t ARank>
-    requires CoreRankTensor<AType<T, ARank>, 2, T>
-auto svd_dd(const AType<T, ARank> &_A, Vectors job = Vectors::All) -> std::tuple<Tensor<T, 2>, Tensor<RemoveComplexT<T>, 1>, Tensor<T, 2>> {
+template <MatrixConcept AType>
+    requires(CoreTensorConcept<AType>)
+auto svd_dd(const AType &_A, Vectors job = Vectors::All)
+    -> std::tuple<Tensor<typename AType::data_type, 2>, Tensor<RemoveComplexT<AType>, 1>, Tensor<typename AType::data_type, 2>> {
+    using T = typename AType::data_type;
     LabeledSection0();
 
     DisableOMPThreads const nothreads;
@@ -784,9 +793,11 @@ auto svd_dd(const AType<T, ARank> &_A, Vectors job = Vectors::All) -> std::tuple
     return std::make_tuple(U, S, Vt);
 }
 
-template <template <typename, size_t> typename AType, typename T, size_t ARank>
-    requires CoreRankTensor<AType<T, ARank>, 2, T>
-auto truncated_svd(const AType<T, ARank> &_A, size_t k) -> std::tuple<Tensor<T, 2>, Tensor<RemoveComplexT<T>, 1>, Tensor<T, 2>> {
+template <MatrixConcept AType>
+    requires(CoreTensorConcept<AType>)
+auto truncated_svd(const AType &_A, size_t k)
+    -> std::tuple<Tensor<typename AType::data_type, 2>, Tensor<RemoveComplexT<AType>, 1>, Tensor<typename AType::data_type, 2>> {
+    using T = typename AType::data_type;
     LabeledSection0();
 
     size_t m = _A.dim(0);
@@ -823,9 +834,10 @@ auto truncated_svd(const AType<T, ARank> &_A, size_t k) -> std::tuple<Tensor<T, 
     return std::make_tuple(U, S, Vt);
 }
 
-template <template <typename, size_t> typename AType, size_t ARank, typename T>
-    requires CoreRankTensor<AType<T, ARank>, 2, T>
-auto truncated_syev(const AType<T, ARank> &A, size_t k) -> std::tuple<Tensor<T, 2>, Tensor<T, 1>> {
+template <MatrixConcept AType>
+    requires(CoreTensorConcept<AType>)
+auto truncated_syev(const AType &A, size_t k) -> std::tuple<Tensor<typename AType::data_type, 2>, Tensor<typename AType::data_type, 1>> {
+    using T = typename AType::data_type;
     LabeledSection0();
 
     if (A.dim(0) != A.dim(1)) {
@@ -835,42 +847,46 @@ auto truncated_syev(const AType<T, ARank> &A, size_t k) -> std::tuple<Tensor<T, 
     size_t n = A.dim(0);
 
     // Omega Test Matrix
-    Tensor<double, 2> omega = create_random_tensor("omega", n, k + 5);
+    Tensor<T, 2> omega = create_random_tensor<T>("omega", n, k + 5);
 
     // Matrix Y = A * Omega
-    Tensor<double, 2> Y("Y", n, k + 5);
-    gemm<false, false>(1.0, A, omega, 0.0, &Y);
+    Tensor<T, 2> Y("Y", n, k + 5);
+    gemm<false, false>(T{1.0}, A, omega, T{0.0}, &Y);
 
-    Tensor<double, 1> tau("tau", std::min(n, k + 5));
+    Tensor<T, 1> tau("tau", std::min(n, k + 5));
     // Compute QR factorization of Y
     blas_int const info1 = blas::geqrf(n, k + 5, Y.data(), k + 5, tau.data());
     // Extract Matrix Q out of QR factorization
-    blas_int const info2 = blas::orgqr(n, k + 5, tau.dim(0), Y.data(), k + 5, const_cast<const double *>(tau.data()));
+    blas_int const info2 = blas::orgqr(n, k + 5, tau.dim(0), Y.data(), k + 5, const_cast<const T *>(tau.data()));
 
-    Tensor<double, 2> &Q1 = Y;
+    Tensor<T, 2> &Q1 = Y;
 
     // Cast the matrix A into a smaller rank (B)
     // B = Q^T * A * Q
-    Tensor<double, 2> Btemp("Btemp", k + 5, n);
+    Tensor<T, 2> Btemp("Btemp", k + 5, n);
     gemm<true, false>(1.0, Q1, A, 0.0, &Btemp);
-    Tensor<double, 2> B("B", k + 5, k + 5);
+    Tensor<T, 2> B("B", k + 5, k + 5);
     gemm<false, false>(1.0, Btemp, Q1, 0.0, &B);
 
     // Create buffer for eigenvalues
-    Tensor<double, 1> w("eigenvalues", k + 5);
+    Tensor<T, 1> w("eigenvalues", k + 5);
 
     // Diagonalize B
     syev(&B, &w);
 
     // Cast U back into full basis (B is column-major so we need to transpose it)
-    Tensor<double, 2> U("U", n, k + 5);
+    Tensor<T, 2> U("U", n, k + 5);
     gemm<false, true>(1.0, Q1, B, 0.0, &U);
 
     return std::make_tuple(U, w);
 }
 
-template <typename T>
-inline auto pseudoinverse(const Tensor<T, 2> &A, double tol) -> Tensor<T, 2> {
+template <MatrixConcept AType, typename T>
+    requires requires {
+        requires CoreTensorConcept<AType>;
+        requires std::is_same_v<typename AType::data_type, T>;
+    }
+inline auto pseudoinverse(const AType &A, T tol) -> Tensor<T, 2> {
     LabeledSection0();
 
     auto [U, S, Vh] = svd_a(A);
@@ -879,7 +895,7 @@ inline auto pseudoinverse(const Tensor<T, 2> &A, double tol) -> Tensor<T, 2> {
     for (size_t v = 0; v < S.dim(0); v++) {
         T val = S(v);
         if (val > tol)
-            scale_column(v, 1.0 / val, &U);
+            scale_column(v, T{1.0} / val, &U);
         else {
             new_dim = v;
             break;
@@ -895,8 +911,14 @@ inline auto pseudoinverse(const Tensor<T, 2> &A, double tol) -> Tensor<T, 2> {
     return pinv;
 }
 
-template <typename T>
-inline auto solve_continuous_lyapunov(const Tensor<T, 2> &A, const Tensor<T, 2> &Q) -> Tensor<T, 2> {
+template <MatrixConcept AType, MatrixConcept QType>
+    requires requires {
+        requires CoreTensorConcept<AType>;
+        requires CoreTensorConcept<QType>;
+        requires SameUnderlying<AType, QType>;
+    }
+inline auto solve_continuous_lyapunov(const AType &A, const QType &Q) -> Tensor<typename AType::data_type, 2> {
+    using T = typename AType::data_type;
     LabeledSection0();
 
     if (A.dim(0) != A.dim(1)) {
@@ -937,9 +959,10 @@ inline auto solve_continuous_lyapunov(const Tensor<T, 2> &A, const Tensor<T, 2> 
 
 ALIAS_TEMPLATE_FUNCTION(solve_lyapunov, solve_continuous_lyapunov)
 
-template <template <typename, size_t> typename AType, size_t ARank, typename T>
-    requires CoreRankTensor<AType<T, ARank>, 2, T>
-auto qr(const AType<T, ARank> &_A) -> std::tuple<Tensor<T, 2>, Tensor<T, 1>> {
+template <MatrixConcept AType>
+    requires(CoreTensorConcept<AType>)
+auto qr(const AType &_A) -> std::tuple<Tensor<typename AType::data_type, 2>, Tensor<typename AType::data_type, 1>> {
+    using T = typename AType::data_type;
     LabeledSection0();
 
     // Copy A because it will be overwritten by the QR call.
@@ -947,7 +970,7 @@ auto qr(const AType<T, ARank> &_A) -> std::tuple<Tensor<T, 2>, Tensor<T, 1>> {
     const blas_int m = A.dim(0);
     const blas_int n = A.dim(1);
 
-    Tensor<double, 1> tau("tau", std::min(m, n));
+    Tensor<T, 1> tau("tau", std::min(m, n));
     // Compute QR factorization of Y
     blas_int info = blas::geqrf(m, n, A.data(), n, tau.data());
 
@@ -960,8 +983,14 @@ auto qr(const AType<T, ARank> &_A) -> std::tuple<Tensor<T, 2>, Tensor<T, 1>> {
     return {A, tau};
 }
 
-template <typename T>
-auto q(const Tensor<T, 2> &qr, const Tensor<T, 1> &tau) -> Tensor<T, 2> {
+template <MatrixConcept AType, VectorConcept TauType>
+    requires requires {
+        requires CoreTensorConcept<AType>;
+        requires CoreTensorConcept<TauType>;
+        requires SameUnderlying<AType, TauType>;
+    }
+auto q(const AType &qr, const TauType &tau) -> Tensor<typename AType::data_type, 2> {
+    using T          = typename AType::data_type;
     const blas_int m = qr.dim(1);
     const blas_int p = qr.dim(0);
 
@@ -975,12 +1004,69 @@ auto q(const Tensor<T, 2> &qr, const Tensor<T, 1> &tau) -> Tensor<T, 2> {
     return Q;
 }
 
-template <template <typename, size_t> typename AType, template <typename, size_t> typename BType,
-          template <typename, size_t> typename CType, typename T, size_t Rank>
-void direct_product(T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, T beta, CType<T, Rank> *C) {
+template <TensorConcept AType, TensorConcept BType, TensorConcept CType, typename T>
+    requires(SameRank<AType, BType, CType>)
+void direct_product(T alpha, const AType &A, const BType &B, T beta, CType *C) {
     LabeledSection0();
 
     detail::direct_product(alpha, A, B, beta, C);
+}
+
+/**
+ * Computes the determinant of a matrix.
+ */
+template <MatrixConcept AType>
+typename AType::data_type det(const AType &A) {
+    using T = typename AType::data_type;
+    if (A.dim(0) != A.dim(1)) {
+        throw EINSUMSEXCEPTION("Can only take the determinant of a square matrix.");
+    }
+
+    remove_view_t<AType> temp = A;
+
+    std::vector<blas_int> pivots;
+    int                   singular = getrf(&temp, &pivots);
+    if (singular > 0) {
+        return T{0.0}; // Matrix is singular, so it has a determinant of zero.
+    }
+
+    T ret{1.0};
+
+    int parity = 0;
+
+    // Calculate the effect of the pivots.
+#pragma omp parallel for simd reduction(+ : parity)
+    for (int i = 0; i < A.dim(0); i++) {
+        int      temp_parity = 0;
+        blas_int curr        = pivots.at(i);
+
+        bool skip = false;
+
+        while (curr != i + 1) {
+            if (curr < i + 1) {
+                skip = true;
+                break;
+            }
+            temp_parity++;
+            curr = pivots.at(curr - 1);
+        }
+
+        if (!skip) {
+            parity += temp_parity;
+        }
+    }
+
+// Calculate the contribution of the diagonal elements.
+#pragma omp parallel for simd reduction(* : ret)
+    for (int i = 0; i < A.dim(0); i++) {
+        ret *= A(i, i);
+    }
+
+    if (parity % 2 == 1) {
+        ret *= T{-1.0};
+    }
+
+    return ret;
 }
 
 END_EINSUMS_NAMESPACE_HPP(einsums::linear_algebra)

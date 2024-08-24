@@ -5,15 +5,94 @@
 
 #pragma once
 
+#include "einsums/utility/TensorTraits.hpp"
+
 #ifdef __HIP__
 #    include "einsums/DeviceTensor.hpp"
 #endif
+#include "einsums/BlockTensor.hpp"
 #include "einsums/OpenMP.h"
 #include "einsums/Section.hpp"
 #include "einsums/Tensor.hpp"
 #include "einsums/utility/ComplexTraits.hpp"
 
+#ifdef EINSUMS_USE_CATCH2
+#    include <catch2/catch_all.hpp>
+#endif
+
+#include <numbers>
+
+// Forward definitions for positive definite matrices.
+namespace einsums::linear_algebra {
+template <bool TransA, bool TransB, MatrixConcept AType, MatrixConcept BType, MatrixConcept CType, typename U>
+    requires requires {
+        requires InSamePlace<AType, BType, CType>;
+        requires std::convertible_to<U, typename AType::data_type>;
+        requires SameUnderlying<AType, BType, CType>;
+    }
+void gemm(const U alpha, const AType &A, const BType &B, const U beta, CType *C);
+
+template <MatrixConcept TensorType>
+    requires(CoreTensorConcept<TensorType>)
+auto getrf(TensorType *A, std::vector<blas_int> *pivot) -> int;
+
+template <MatrixConcept AType>
+    requires(CoreTensorConcept<AType>)
+auto qr(const AType &_A) -> std::tuple<Tensor<typename AType::data_type, 2>, Tensor<typename AType::data_type, 1>>;
+
+template <MatrixConcept AType, VectorConcept TauType>
+    requires requires {
+        requires CoreTensorConcept<AType>;
+        requires CoreTensorConcept<TauType>;
+        requires SameUnderlying<AType, TauType>;
+    }
+auto q(const AType &qr, const TauType &tau) -> Tensor<typename AType::data_type, 2>;
+} // namespace einsums::linear_algebra
+
 namespace einsums {
+// Forward declarations of tensors.
+template <typename T, size_t Rank>
+struct Tensor;
+
+template <typename T, size_t Rank>
+struct BlockTensor;
+
+template <typename T, size_t Rank>
+struct TiledTensor;
+
+#ifdef __HIP__
+template <typename T, size_t Rank>
+struct DeviceTensor;
+
+template <typename T, size_t Rank>
+struct BlockDeviceTensor;
+
+template <typename T, size_t Rank>
+struct TiledDeviceTensor;
+#endif
+} // namespace einsums
+
+namespace einsums {
+
+/**
+ * @typedef Matrix
+ *
+ * @brief Equivalent to Tensor<T, 2>.
+ *
+ * @tparam T The underlying type. Defaults to double.
+ */
+template <typename T = double>
+using Matrix = Tensor<T, 2>;
+
+/**
+ * @typedef Vector
+ *
+ * @brief Equivalent to Tensor<T, 1>.
+ *
+ * @tparam T The underlying type. Defaults to double.
+ */
+template <typename T = double>
+using Vector = Tensor<T, 1>;
 
 /**
  * @brief Create a new tensor with \p name and \p index filled with incremental data.
@@ -87,14 +166,6 @@ auto create_random_tensor(const std::string &name, MultiIndex... index) -> Tenso
     std::uniform_real_distribution<double> unif(lower_bound, upper_bound);
     std::default_random_engine             re;
 
-    {
-        static std::chrono::high_resolution_clock::time_point const beginning = std::chrono::high_resolution_clock::now();
-
-        // std::chrono::high_resolution_clock::duration d = std::chrono::high_resolution_clock::now() - beginning;
-
-        // re.seed(d.count());
-    }
-
     if constexpr (std::is_same_v<T, std::complex<float>>) {
 #pragma omp parallel default(none) shared(A, re, unif)
         {
@@ -152,6 +223,146 @@ auto create_random_gpu_tensor(const std::string &name, MultiIndex... index) -> D
 }
 #endif
 
+/**
+ * Create a random positive or negative definite matrix.
+ * A positive definite matrix is a symmetric matrix whose eigenvalues are all positive.
+ * Similarly for negative definite matrices.
+ *
+ * This function first generates a set of random eigenvectors, making sure they are non-singular.
+ * Then, it uses these to form an orthonormal eigenbasis for the new matrix. Then, it generates
+ * the eigenvalues. The eigenvalues are distributed using a Maxwell-Boltzmann distribution
+ * with the given mean, defaulting to 1. Then, the returned matrix is formed
+ * by computing @f$P^TDP@f$. If the mean is negative, then the result will be a negative
+ * definite matrix.
+ *
+ * @param name The name for the matrix.
+ * @param rows The number of rows.
+ * @param cols The number of columns. Should equal the number of rows.
+ * @param mean The mean for the eigenvalues. Defaults to 1.
+ * @return A new positive definite or negative definite matrix.
+ */
+template <typename T = double>
+auto create_random_definite(const std::string &name, int rows, int cols, T mean = T{1.0}) -> Tensor<T, 2> {
+    if (rows != cols) {
+        throw EINSUMSEXCEPTION("Can only make square positive definite matrices.");
+    }
+    Tensor<T, 2> Evecs("name", rows, cols);
+
+    Tensor<T, 2>          Temp = Evecs;
+    std::vector<blas_int> pivs;
+
+    // Make sure the eigenvectors are non-singular.
+    do {
+        Evecs = create_random_tensor<T>("name", rows, cols);
+        Temp  = Evecs;
+    } while (linear_algebra::getrf(&Temp, &pivs) > 0);
+
+    // QR decompose Evecs to get a random matrix of orthonormal eigenvectors.
+    auto pair = linear_algebra::qr(Evecs);
+
+    Evecs = linear_algebra::q(std::get<0>(pair), std::get<1>(pair));
+
+    std::default_random_engine engine;
+
+    // Create random eigenvalues. Need to calculate the standard deviation from the mean.
+    auto normal = std::normal_distribution<T>(0, std::abs(mean) / T{2.0} / std::numbers::sqrt2_v<T> / std::numbers::inv_sqrtpi_v<T>);
+
+    Tensor<T, 1> Evals("name2", rows);
+
+    for (int i = 0; i < rows; i++) {
+        // Maxwell-Boltzmann distribute the eigenvalues. Make sure they are positive.
+        do {
+            T val1 = normal(engine), val2 = normal(engine), val3 = normal(engine);
+
+            Evals(i) = std::sqrt(val1 * val1 + val2 * val2 + val3 * val3);
+            if (mean < T{0.0}) {
+                Evals(i) = -Evals(i);
+            }
+        } while (Evals(i) == T{0.0}); // Make sure they are non-zero.
+    }
+
+    // Create the tensor.
+    Tensor<T, 2> ret = diagonal(Evals);
+
+    linear_algebra::gemm<false, false>(1.0, ret, Evecs, 0.0, &Temp);
+    linear_algebra::gemm<true, false>(1.0, Evecs, Temp, 0.0, &ret);
+
+    ret.set_name(name);
+
+    return ret;
+}
+
+/**
+ * Create a random positive or negative semi-definite matrix.
+ * A positive semi-definite matrix is a symmetric matrix whose eigenvalues are all non-negative.
+ * Similarly for negative semi-definite matrices.
+ *
+ * This function first generates a set of random eigenvectors, making sure they are non-singular.
+ * Then, it uses these to form an orthonormal eigenbasis for the new matrix. Then, it generates
+ * the eigenvalues. The eigenvalues are distributed using a Maxwell-Boltzmann distribution
+ * with the given mean, defaulting to 1. If desired, a number of eigenvalues can be forced to be zero.
+ * Then, the returned matrix is formed by computing @f$P^TDP@f$.
+ *
+ * @param name The name for the matrix.
+ * @param rows The number of rows.
+ * @param cols The number of columns. Should equal the number of rows.
+ * @param mean The mean for the eigenvalues. Defaults to 1. If negative, the result is a negative semi-definite matrix.
+ * @param force_zeros The number of elements to force to be zero. Defaults to 1.
+ * @return A new positive or negative semi-definite matrix.
+ */
+template <typename T = double, bool Normalize = false>
+auto create_random_semidefinite(const std::string &name, int rows, int cols, T mean = T{1.0}, int force_zeros = 1) -> Tensor<T, 2> {
+    if (rows != cols) {
+        throw EINSUMSEXCEPTION("Can only make square positive definite matrices.");
+    }
+    Tensor<T, 2> Evecs("name", rows, cols);
+
+    Tensor<T, 2>          Temp = Evecs;
+    std::vector<blas_int> pivs;
+
+    // Make sure the eigenvectors are non-singular.
+    do {
+        Evecs = create_random_tensor<T>("name", rows, cols);
+        Temp  = Evecs;
+    } while (linear_algebra::getrf(&Temp, &pivs) > 0);
+
+    // QR decompose Evecs to get a random matrix of orthonormal eigenvectors.
+    auto pair = linear_algebra::qr(Evecs);
+
+    Evecs = linear_algebra::q(std::get<0>(pair), std::get<1>(pair));
+
+    std::default_random_engine engine;
+
+    // Create random eigenvalues. Need to calculate the standard deviation from the mean.
+    auto normal = std::normal_distribution<T>(0, std::abs(mean) / T{2.0} / std::numbers::sqrt2_v<T> / std::numbers::inv_sqrtpi_v<T>);
+
+    Tensor<T, 1> Evals("name2", rows);
+
+    for (int i = 0; i < rows; i++) {
+        if (i < force_zeros) {
+            Evals(i) = T{0.0};
+        } else {
+            // Maxwell-Boltzmann distribute the eigenvalues. Make sure they are positive.
+            T val1 = normal(engine), val2 = normal(engine), val3 = normal(engine);
+
+            Evals(i) = std::sqrt(val1 * val1 + val2 * val2 + val3 * val3);
+            if (mean < T{0.0}) {
+                Evals(i) = -Evals(i);
+            }
+        }
+    }
+
+    // Create the tensor.
+    Tensor<T, 2> ret = diagonal(Evals);
+
+    linear_algebra::gemm<false, false>(1.0, ret, Evecs, 0.0, &Temp);
+    linear_algebra::gemm<true, false>(1.0, Evecs, Temp, 0.0, &ret);
+
+    ret.set_name(name);
+
+    return ret;
+}
+
 namespace detail {
 
 template <template <typename, size_t> typename TensorType, typename DataType, size_t Rank, typename Tuple, std::size_t... I>
@@ -170,7 +381,7 @@ void set_to(TensorType<DataType, Rank> &tensor, DataType value, Tuple const &tup
  */
 template <typename T>
 auto diagonal(const Tensor<T, 1> &v) -> Tensor<T, 2> {
-    auto result = create_tensor(v.name(), v.dim(0), v.dim(0));
+    auto result = create_tensor<T>(v.name(), v.dim(0), v.dim(0));
     zero(result);
     for (size_t i = 0; i < v.dim(0); i++) {
         result(i, i) = v(i);
@@ -326,7 +537,7 @@ template <template <typename, size_t> typename TensorType, typename DataType, si
     requires DeviceRankBlockTensor<TensorType<DataType, Rank>, Rank, DataType>
 auto create_tensor_like(const TensorType<DataType, Rank> &tensor,
                         einsums::detail::HostToDeviceMode mode = einsums::detail::DEV_ONLY) -> BlockDeviceTensor<DataType, Rank> {
-    return BlockDeviceTensor<DataType, Rank>{"(unnamed)", tensor.vector_dims(), mode};
+    return BlockDeviceTensor<DataType, Rank>{"(unnamed)", mode, tensor.vector_dims()};
 }
 #    endif
 #endif
@@ -495,5 +706,71 @@ struct DisableOMPThreads {
   private:
     int _old_max_threads;
 };
+
+#ifdef EINSUMS_USE_CATCH2
+
+/**
+ * @struct WithinStrictMatcher
+ *
+ * Catch2 matcher that matches the strictest range for floating point operations.
+ */
+template <typename T>
+struct WithinStrictMatcher : public Catch::Matchers::MatcherGenericBase {};
+
+template <>
+struct WithinStrictMatcher<float> : public Catch::Matchers::MatcherGenericBase {
+  private:
+    float _value, _scale;
+
+  public:
+    WithinStrictMatcher(float value, float scale) : _value(value), _scale(scale) {}
+
+    bool match(float other) const {
+        // Minimum error is 5.96e-8, according to LAPACK docs.
+        if (_value == 0.0f) {
+            return std::abs(other) <= 5.960464477539063e-08f * _scale;
+        } else {
+            return std::abs((other - _value) / _value) <= 5.960464477539063e-08f * _scale;
+        }
+    }
+
+    std::string describe() const override {
+        return "is within a fraction of " + Catch::StringMaker<float>::convert(5.960464477539063e-08f * _scale) + " to " +
+               Catch::StringMaker<float>::convert(_value);
+    }
+
+    float get_error() const { return 5.960464477539063e-08f * _scale; }
+};
+
+template <>
+struct WithinStrictMatcher<double> : public Catch::Matchers::MatcherGenericBase {
+  private:
+    double _value, _scale;
+
+  public:
+    WithinStrictMatcher(double value, double scale) : _value(value), _scale(scale) {}
+
+    bool match(double other) const {
+        // Minimum error is 1.1e-16, according to LAPACK docs.
+        if (_value == 0.0f) {
+            return std::abs(other) <= 1.1102230246251565e-16 * _scale;
+        } else {
+            return std::abs((other - _value) / _value) <= 1.1102230246251565e-16 * _scale;
+        }
+    }
+
+    std::string describe() const override {
+        return "is within a fraction of " + Catch::StringMaker<double>::convert(1.1102230246251565e-16 * _scale) + " to " +
+               Catch::StringMaker<double>::convert(_value);
+    }
+
+    double get_error() const { return 1.1102230246251565e-16 * _scale; }
+};
+
+template <typename T>
+auto WithinStrict(T value, T scale = T{1.0}) -> WithinStrictMatcher<T> {
+    return WithinStrictMatcher<T>{value, scale};
+}
+#endif
 
 } // namespace einsums

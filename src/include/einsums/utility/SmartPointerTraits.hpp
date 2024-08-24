@@ -34,7 +34,6 @@ template <typename T>
 concept SmartPointer = IsSmartPointerV<T>;
 
 template <typename T>
-concept NotASmartPointer = !
-IsSmartPointerV<T>;
+concept NotASmartPointer = !IsSmartPointerV<T>;
 
 } // namespace einsums

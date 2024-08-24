@@ -10,25 +10,24 @@
 
 namespace einsums::linear_algebra::detail {
 
-template <bool TransA, bool TransB, template <typename, size_t> typename AType, template <typename, size_t> typename BType,
-          template <typename, size_t> typename CType, size_t Rank, typename T, typename U>
+template <bool TransA, bool TransB, BlockTensorConcept AType, BlockTensorConcept BType, BlockTensorConcept CType, typename U>
     requires requires {
-        requires RankBlockTensor<AType<T, Rank>, 2, T>;
-        requires RankBlockTensor<BType<T, Rank>, 2, T>;
-        requires RankBlockTensor<CType<T, Rank>, 2, T>;
-        requires std::convertible_to<U, T>;
+        requires SameUnderlyingAndRank<AType, BType, CType>;
+        requires MatrixConcept<AType>;
+        requires std::convertible_to<U, typename AType::data_type>;
     }
-void gemm(const U alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const U beta, CType<T, Rank> *C) {
+void gemm(const U alpha, const AType &A, const BType &B, const U beta, CType *C) {
     if (A.num_blocks() != B.num_blocks() || A.num_blocks() != C->num_blocks() || B.num_blocks() != C->num_blocks()) {
-        throw std::runtime_error("gemm: Tensors need the same number of blocks.");
+        throw EINSUMSEXCEPTION("gemm: Tensors need the same number of blocks.");
     }
+
+    using T = typename AType::data_type;
 
 #ifdef __HIP__
-    if constexpr (einsums::detail::IsDeviceRankTensorV<AType<T, Rank>, Rank, T>) {
+    if constexpr (einsums::detail::IsDeviceTensorV<AType>) {
         using namespace einsums::gpu;
 
-        using dev_datatype = ::std::conditional_t<::std::is_same_v<T, ::std::complex<float>>, hipComplex,
-                                                  ::std::conditional_t<::std::is_same_v<T, ::std::complex<double>>, hipDoubleComplex, T>>;
+        using dev_datatype = typename AType::dev_datatype;
         dev_datatype *alpha_gpu, *beta_gpu;
 
         hip_catch(hipMalloc((void **)&alpha_gpu, sizeof(dev_datatype)));
@@ -54,20 +53,21 @@ void gemm(const U alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, const
             if (A.block_dim(i) == 0) {
                 continue;
             }
-            gemm<TransA, TransB>(static_cast<T>(alpha), A.block(i), B.block(i), static_cast<T>(1.0), &(C->block(i)));
+            gemm<TransA, TransB>(static_cast<T>(alpha), A.block(i), B.block(i), static_cast<T>(beta), &(C->block(i)));
         }
 #ifdef __HIP__
     }
 #endif
 }
 
-template <bool TransA, template <typename, size_t> typename AType, template <typename, size_t> typename XType,
-          template <typename, size_t> typename YType, size_t ARank, size_t XYRank, typename T, typename U>
+template <bool TransA, BlockTensorConcept AType, VectorConcept XType, VectorConcept YType, typename U>
     requires requires {
-        requires RankBlockTensor<AType<T, ARank>, 2, T>;
-        requires std::convertible_to<U, T>; // Make sure the alpha and beta can be converted to T
+        requires MatrixConcept<AType>;
+        requires SameUnderlying<AType, XType, YType>;
+        requires std::convertible_to<U, typename AType::data_type>;
     }
-void gemv(const U alpha, const AType<T, ARank> &A, const XType<T, XYRank> &z, const U beta, YType<T, XYRank> *y) {
+void gemv(const U alpha, const AType &A, const XType &z, const U beta, YType *y) {
+    using T = typename AType::data_type;
     if (beta == U(0.0)) {
         y->zero();
     } else {
@@ -83,32 +83,29 @@ void gemv(const U alpha, const AType<T, ARank> &A, const XType<T, XYRank> &z, co
     }
 }
 
-template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename WType, size_t WRank, typename T,
-          bool ComputeEigenvectors = true>
+template <bool ComputeEigenvectors = true, BlockTensorConcept AType, VectorConcept WType>
     requires requires {
-        requires RankBlockTensor<AType<T, ARank>, 2, T>;
-        requires RankBlockTensor<WType<T, WRank>, 1, T>;
-        requires !Complex<T>;
+        requires SameUnderlying<AType, WType>;
+        requires NotComplex<AType>;
+        requires MatrixConcept<AType>;
     }
-void syev(AType<T, ARank> *A, WType<T, WRank> *W) {
+void syev(AType *A, WType *W) {
     EINSUMS_OMP_PARALLEL_FOR
     for (int i = 0; i < A->num_blocks(); i++) {
         if (A->block_dim(i) == 0) {
             continue;
         }
         auto out_block = (*W)(A->block_range(i));
-        syev<AType, ARank, WType, WRank, T, ComputeEigenvectors>(&(A->block(i)), &out_block);
+        syev<ComputeEigenvectors>(&(A->block(i)), &out_block);
     }
 }
 
-template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename WType, size_t WRank, typename T,
-          bool ComputeEigenvectors = true>
+template <bool ComputeEigenvectors = true, BlockTensorConcept AType, VectorConcept WType>
     requires requires {
-        requires RankBlockTensor<AType<T, ARank>, 2, T>;
-        requires RankBlockTensor<WType<T, WRank>, 1, T>;
-        requires !Complex<T>;
+        requires std::is_same_v<AddComplexT<typename AType::data_type>, typename WType::data_type>;
+        requires MatrixConcept<AType>;
     }
-void geev(AType<T, ARank> *A, WType<AddComplexT<T>, WRank> *W, AType<T, ARank> *lvecs, AType<T, ARank> *rvecs) {
+void geev(AType *A, WType *W, AType *lvecs, AType *rvecs) {
     EINSUMS_OMP_PARALLEL_FOR
     for (int i = 0; i < A->num_blocks(); i++) {
         if (A->block_dim(i) == 0) {
@@ -119,14 +116,13 @@ void geev(AType<T, ARank> *A, WType<AddComplexT<T>, WRank> *W, AType<T, ARank> *
     }
 }
 
-template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename WType, size_t WRank, typename T,
-          bool ComputeEigenvectors = true>
+template <bool ComputeEigenvectors = true, BlockTensorConcept AType, VectorConcept WType>
     requires requires {
-        requires RankBlockTensor<AType<T, ARank>, 2, T>;
-        requires RankBlockTensor<WType<RemoveComplexT<T>, WRank>, 1, WType<RemoveComplexT<T>, WRank>>;
-        requires Complex<T>;
+        requires MatrixConcept<AType>;
+        requires Complex<AType>;
+        requires std::is_same_v<RemoveComplexT<typename AType::data_type>, typename WType::data_type>;
     }
-void heev(AType<T, ARank> *A, WType<RemoveComplexT<T>, WRank> *W) {
+void heev(AType *A, WType *W) {
     EINSUMS_OMP_PARALLEL_FOR
     for (int i = 0; i < A->num_blocks(); i++) {
         if (A->block_dim(i) == 0) {
@@ -137,14 +133,14 @@ void heev(AType<T, ARank> *A, WType<RemoveComplexT<T>, WRank> *W) {
     }
 }
 
-template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename BType, size_t BRank, typename T>
+template <BlockTensorConcept AType, BlockTensorConcept BType>
     requires requires {
-        requires RankBlockTensor<AType<T, ARank>, 2, T>;
-        requires RankBlockTensor<BType<T, BRank>, 2, T>;
+        requires MatrixConcept<AType>;
+        requires SameUnderlyingAndRank<AType, BType>;
     }
-auto gesv(AType<T, ARank> *A, BType<T, BRank> *B) -> int {
+auto gesv(AType *A, BType *B) -> int {
     if (A->num_blocks() != B->num_blocks()) {
-        throw std::runtime_error("gesv: Tensors need the same number of blocks.");
+        throw EINSUMSEXCEPTION("gesv: Tensors need the same number of blocks.");
     }
 
     int info_out = 0;
@@ -166,43 +162,45 @@ auto gesv(AType<T, ARank> *A, BType<T, BRank> *B) -> int {
     return info_out;
 }
 
-template <template <typename, size_t> typename AType, size_t ARank, typename T>
-    requires RankBlockTensor<AType<T, ARank>, ARank, T>
-void scale(T scale, AType<T, ARank> *A) {
+template <BlockTensorConcept AType>
+void scale(typename AType::data_type alpha, AType *A) {
     EINSUMS_OMP_PARALLEL_FOR
     for (int i = 0; i < A->num_blocks(); i++) {
         if (A->block_dim(i) == 0) {
             continue;
         }
-        scale(scale, &(A->block(i)));
+        scale(alpha, &(A->block(i)));
     }
 }
 
-template <template <typename, size_t> typename AType, size_t ARank, typename T>
-    requires RankBlockTensor<AType<T, ARank>, 2, T>
-void scale_row(size_t row, T scale, AType<T, ARank> *A) {
-    scale(scale, A->block(A->block_of(row))(row, AllT()));
+template <BlockTensorConcept AType>
+    requires MatrixConcept<AType>
+void scale_row(size_t row, typename AType::data_type alpha, AType *A) {
+    int  block_ind = A->block_of(row);
+    auto temp      = A->block(block_ind)(row - A->block_range(block_ind)[0], AllT());
+    scale(alpha, &temp);
 }
 
-template <template <typename, size_t> typename AType, size_t ARank, typename T>
-    requires RankBlockTensor<AType<T, ARank>, 2, T>
-void scale_column(size_t column, T scale, AType<T, ARank> *A) {
-    scale(scale, A->block(A->block_of(column))(AllT(), column));
+template <BlockTensorConcept AType>
+    requires MatrixConcept<AType>
+void scale_column(size_t column, typename AType::data_type alpha, AType *A) {
+    int  block_ind = A->block_of(column);
+    auto temp      = A->block(block_ind)(AllT(), column - A->block_range(block_ind)[0]);
+    scale(alpha, &temp);
 }
 
-template <template <typename, size_t> typename AType, template <typename, size_t> typename BType, typename T, size_t Rank>
-    requires requires {
-        requires RankBlockTensor<AType<T, Rank>, Rank, T>;
-        requires RankBlockTensor<BType<T, Rank>, Rank, T>;
-    }
-auto dot(const AType<T, Rank> &A, const BType<T, Rank> &B) -> T {
+template <BlockTensorConcept AType, BlockTensorConcept BType>
+    requires SameUnderlyingAndRank<AType, BType>
+auto dot(const AType &A, const BType &B) -> typename AType::data_type {
     if (A.num_blocks() != B.num_blocks()) {
-        return dot((einsums::Tensor<T, Rank>)A, (einsums::Tensor<T, Rank>)B);
+        return dot(typename AType::tensor_type(A), typename BType::tensor_type(B));
     }
 
     if (A.ranges() != B.ranges()) {
-        return dot((einsums::Tensor<T, Rank>)A, (einsums::Tensor<T, Rank>)B);
+        return dot(typename AType::tensor_type(A), typename BType::tensor_type(B));
     }
+
+    using T = typename AType::data_type;
 
     T out{0};
 
@@ -217,21 +215,44 @@ auto dot(const AType<T, Rank> &A, const BType<T, Rank> &B) -> T {
     return out;
 }
 
-template <template <typename, size_t> typename AType, template <typename, size_t> typename BType,
-          template <typename, size_t> typename CType, typename T, size_t Rank>
-    requires requires {
-        requires RankBlockTensor<AType<T, Rank>, Rank, T>;
-        requires RankBlockTensor<BType<T, Rank>, Rank, T>;
-        requires RankBlockTensor<CType<T, Rank>, Rank, T>;
+template <BlockTensorConcept AType, BlockTensorConcept BType>
+    requires SameUnderlyingAndRank<AType, BType>
+auto true_dot(const AType &A, const BType &B) -> typename AType::data_type {
+    if (A.num_blocks() != B.num_blocks()) {
+        return true_dot(typename AType::tensor_type(A), typename BType::tensor_type(B));
     }
-auto dot(const AType<T, Rank> &A, const BType<T, Rank> &B, const CType<T, Rank> &C) -> T {
+
+    if (A.ranges() != B.ranges()) {
+        return true_dot(typename AType::tensor_type(A), typename BType::tensor_type(B));
+    }
+
+    using T = typename AType::data_type;
+
+    T out{0};
+
+#pragma omp parallel for reduction(+ : out)
+    for (int i = 0; i < A.num_blocks(); i++) {
+        if (A.block_dim(i) == 0) {
+            continue;
+        }
+        out += true_dot(A.block(i), B.block(i));
+    }
+
+    return out;
+}
+
+template <BlockTensorConcept AType, BlockTensorConcept BType, BlockTensorConcept CType>
+    requires SameUnderlyingAndRank<AType, BType, CType>
+auto dot(const AType &A, const BType &B, const CType &C) -> typename AType::data_type {
     if (A.num_blocks() != B.num_blocks() || A.num_blocks() != C.num_blocks() || B.num_blocks() != C.num_blocks()) {
-        return dot((Tensor<T, Rank>)A, (Tensor<T, Rank>)B, (Tensor<T, Rank>)C);
+        return dot(AType::tensor_type(A), BType::tensor_type(B), CType::tensor_type(C));
     }
 
     if (A.ranges() != B.ranges() || A.ranges() != C.ranges() || B.ranges() != C.ranges()) {
-        return dot((Tensor<T, Rank>)A, (Tensor<T, Rank>)B, (Tensor<T, Rank>)C);
+        return dot(AType::tensor_type(A), BType::tensor_type(B), CType::tensor_type(C));
     }
+
+    using T = typename AType::data_type;
 
     T out{0};
 
@@ -246,24 +267,21 @@ auto dot(const AType<T, Rank> &A, const BType<T, Rank> &B, const CType<T, Rank> 
     return out;
 }
 
-template <template <typename, size_t> typename XType, template <typename, size_t> typename YType, typename T, size_t Rank>
-    requires requires {
-        requires RankBlockTensor<XType<T, Rank>, Rank, T>;
-        requires RankBlockTensor<YType<T, Rank>, Rank, T>;
-    }
-void axpy(T alpha, const XType<T, Rank> &X, YType<T, Rank> *Y) {
+template <BlockTensorConcept XType, BlockTensorConcept YType>
+    requires SameUnderlyingAndRank<XType, YType>
+void axpy(typename XType::data_type alpha, const XType &X, YType *Y) {
 
     if (X.num_blocks() != Y->num_blocks()) {
-        throw std::runtime_error("axpy: Tensors need to have the same number of blocks.");
+        throw EINSUMSEXCEPTION("axpy: Tensors need to have the same number of blocks.");
     }
 
     if (X.ranges() != Y->ranges()) {
-        throw std::runtime_error("axpy: Tensor blocks need to be compatible.");
+        throw EINSUMSEXCEPTION("axpy: Tensor blocks need to be compatible.");
     }
 
     EINSUMS_OMP_PARALLEL_FOR
     for (int i = 0; i < X.num_blocks(); i++) {
-        if (X.block_dim() == 0) {
+        if (X.block_dim(i) == 0) {
             continue;
         }
 
@@ -271,38 +289,30 @@ void axpy(T alpha, const XType<T, Rank> &X, YType<T, Rank> *Y) {
     }
 }
 
-template <template <typename, size_t> typename XType, template <typename, size_t> typename YType, typename T, size_t Rank>
-    requires requires {
-        requires RankBlockTensor<XType<T, Rank>, Rank, T>;
-        requires RankBlockTensor<YType<T, Rank>, Rank, T>;
-    }
-void axpby(T alpha, const XType<T, Rank> &X, T beta, YType<T, Rank> *Y) {
+template <BlockTensorConcept XType, BlockTensorConcept YType>
+    requires SameUnderlyingAndRank<XType, YType>
+void axpby(typename XType::data_type alpha, const XType &X, typename YType::data_type beta, YType *Y) {
 
     if (X.num_blocks() != Y->num_blocks()) {
-        throw std::runtime_error("axpby: Tensors need to have the same number of blocks.");
+        throw EINSUMSEXCEPTION("axpby: Tensors need to have the same number of blocks.");
     }
 
     if (X.ranges() != Y->ranges()) {
-        throw std::runtime_error("axpby: Tensor blocks need to be compatible.");
+        throw EINSUMSEXCEPTION("axpby: Tensor blocks need to be compatible.");
     }
 
     EINSUMS_OMP_PARALLEL_FOR
     for (int i = 0; i < X.num_blocks(); i++) {
-        if (X.block_dim() == 0) {
+        if (X.block_dim(i) == 0) {
             continue;
         }
-        axpby(alpha, X[i], beta, Y->block(i));
+        axpby(alpha, X[i], beta, &(Y->block(i)));
     }
 }
 
-template <template <typename, size_t> typename AType, template <typename, size_t> typename BType,
-          template <typename, size_t> typename CType, typename T, size_t Rank>
-    requires requires {
-        requires RankBlockTensor<AType<T, Rank>, Rank, T>;
-        requires RankBlockTensor<BType<T, Rank>, Rank, T>;
-        requires RankBlockTensor<CType<T, Rank>, Rank, T>;
-    }
-void direct_product(T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, T beta, CType<T, Rank> *C) {
+template <BlockTensorConcept AType, BlockTensorConcept BType, BlockTensorConcept CType>
+    requires SameUnderlyingAndRank<AType, BType, CType>
+void direct_product(typename AType::data_type alpha, const AType &A, const BType &B, typename CType::data_type beta, CType *C) {
     EINSUMS_OMP_PARALLEL_FOR
     for (int i = 0; i < A.num_blocks(); i++) {
         if (A.block_dim(i) == 0) {
@@ -310,6 +320,23 @@ void direct_product(T alpha, const AType<T, Rank> &A, const BType<T, Rank> &B, T
         }
         direct_product(alpha, A.block(i), B.block(i), beta, &(C->block(i)));
     }
+}
+
+template <BlockTensorConcept AType>
+    requires MatrixConcept<AType>
+auto pow(const AType &a, typename AType::data_type alpha,
+         typename AType::data_type cutoff = std::numeric_limits<typename AType::data_type>::epsilon()) -> remove_view_t<AType> {
+    remove_view_t<AType> out{"pow result", a.vector_dims()};
+
+    EINSUMS_OMP_PARALLEL_FOR
+    for (int i = 0; i < a.num_blocks(); i++) {
+        if (a.block_dim(i) == 0) {
+            continue;
+        }
+        out[i] = pow(a[i], alpha, cutoff);
+    }
+
+    return out;
 }
 
 } // namespace einsums::linear_algebra::detail

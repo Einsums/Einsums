@@ -24,7 +24,7 @@ struct container_hash {
     virtual ~container_hash() = default;
 
     /**
-     * Hashes the container.
+     * Hashes the contents of a container.
      *
      * @param cont The container to hash.
      * @return The container's hash.
@@ -34,16 +34,16 @@ struct container_hash {
         // Calculate the mask. If size_t is N bytes, mask for the top N bits.
         // The first part creates a Mersenne value with the appropriate number of bits.
         // The second shifts it to the top.
-        constexpr size_t mask = (((size_t) 2 << sizeof(size_t)) - 1) << (7 * sizeof(size_t));
+        constexpr size_t mask = (((size_t)2 << sizeof(size_t)) - 1) << (7 * sizeof(size_t));
 
         for (const auto &val : cont) {
-            const uint8_t *bytes = (uint8_t *) &val;
+            const uint8_t *bytes = (uint8_t *)&val;
 
-            for(int i = 0; i < sizeof(std::decay_t<decltype(val)>); i++) {
+            for (int i = 0; i < sizeof(std::decay_t<decltype(val)>); i++) {
                 hash <<= sizeof(size_t); // Shift left a number of bits equal to the number of bytes in size_t.
                 hash += bytes[i];
 
-                if((hash & mask) != (size_t) 0) {
+                if ((hash & mask) != (size_t)0) {
                     hash ^= mask >> (6 * sizeof(size_t));
                     hash &= ~mask;
                 }
