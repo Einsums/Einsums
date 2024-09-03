@@ -22,6 +22,12 @@ add_einsums_library(
 )
 target_compile_features(einsums PUBLIC cxx_std_20)
 
+pybind11_add_module(
+    einsums_py
+    PyMain.cpp
+    PyTensorAlgebra.cpp
+)
+
 extend_einsums_target(
         einsums
         SOURCES _GPUUtils.hip backends/linear_algebra/hipblas/hipblas.hip backends/linear_algebra/hipblas/hipsolver.hip GPULinearAlgebra.hip GPUTimer.hip

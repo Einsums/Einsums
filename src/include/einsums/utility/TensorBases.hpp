@@ -462,4 +462,34 @@ struct AlgebraOptimizedTensor {
     virtual ~AlgebraOptimizedTensor() = default;
 };
 
+/**
+ * @struct PyTensorBase
+ *
+ * @brief Tensor base for tensors that can be bound with Python.
+ *
+ * This class stores its rank as a variable rather than as a template parameter.
+ * This means that the einsum call can not be optimized at compile time.
+ * This is the base class, so it doesn't store much in the way of implementation.
+ * This class can not be bound with Python. Only its derived classes should be able to be
+ * bound with Python.
+ *
+ * @tparam T The data type stored.
+ */
+struct PyTensorBase : public
+                        virtual tensor_props::LockableTensorBase {
+
+protected:
+    size_t _rank{0};
+
+public:
+    PyTensorBase() = default;
+    PyTensorBase(const PyTensorBase &) = default;
+
+    PyTensorBase(size_t rank) : _rank{rank} {}
+
+    virtual size_t get_rank() const {
+        return _rank;
+    }
+};
+
 } // namespace einsums::tensor_props
