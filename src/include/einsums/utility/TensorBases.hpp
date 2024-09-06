@@ -96,6 +96,10 @@ struct RankTensorBase {
     virtual Dim<Rank> dims() const = 0;
 
     virtual auto dim(int d) const -> size_t = 0;
+
+    constexpr inline size_t get_rank() const {
+      return Rank;
+    }
 };
 
 /**
@@ -489,6 +493,10 @@ public:
 
     virtual size_t get_rank() const {
         return _rank;
+    }
+
+    virtual void set_rank(size_t rank) {
+      _rank = rank;
     }
 };
 

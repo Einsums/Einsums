@@ -42,3 +42,4 @@
 #include "einsums/polynomial/Utilities.hpp"
 
 #include "einsums/python/Python.hpp"
+#include "einsums/python/PyTensorAlgebra.hpp"

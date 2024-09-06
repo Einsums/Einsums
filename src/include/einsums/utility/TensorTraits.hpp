@@ -1566,7 +1566,7 @@ concept AtLeastOneOfType = detail::count_of_type<T, Args...>() >= 1;
 template <typename T, size_t Num, typename... Args>
 concept NumOfType = detail::count_of_type<T, Args...>() == Num;
 
-templat<typename T, typename... Args>
-concept AllOfType = std::is_same_v<T, Args> && ... && true;
+template<typename T, typename... Args>
+concept AllOfType = (std::is_same_v<T, Args> && ... && true);
 
 } // namespace einsums

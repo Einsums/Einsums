@@ -1,6 +1,7 @@
 #pragma once
 
 #include "einsums/_GPUUtils.hpp"
+#include "einsums/_GPUCast.hpp"
 #include "einsums/_TensorAlgebraUtilities.hpp"
 
 #include "einsums/utility/IndexUtils.hpp"
@@ -17,27 +18,22 @@ namespace tensor_algebra {
 namespace detail {
 
 template <typename CDataType, typename ADataType, typename BDataType, size_t UniqueRank, size_t CRank, size_t ARank, size_t BRank>
-__global__ void einsum_generic_algorithm_gpu(
-    const size_t *__restrict__ unique_strides, const size_t *__restrict__ C_index_strides, const int *__restrict__ C_index_table,
-    const int *__restrict__ A_index_table, const int *__restrict__ B_index_table, const CDataType C_prefactor, CDataType *__restrict__ C,
-    const size_t *__restrict__ C_dims, const size_t *__restrict__ C_stride,
-    const ::std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> AB_prefactor, const ADataType *__restrict__ A,
-    const size_t *__restrict__ A_dims, const size_t *__restrict__ A_stride, const BDataType *__restrict__ B,
-    const size_t *__restrict__ B_dims, const size_t *__restrict__ B_stride, size_t max_index) {
+__global__ void
+einsum_generic_algorithm_gpu(const size_t *__restrict__ unique_strides, const size_t *__restrict__ C_index_strides,
+                             const int *__restrict__ C_index_table, const int *__restrict__ A_index_table,
+                             const int *__restrict__ B_index_table, const CDataType C_prefactor, CDataType *__restrict__ C,
+                             const size_t *__restrict__ C_stride,
+                             const ::std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> AB_prefactor,
+                             const ADataType *__restrict__ A, const size_t *__restrict__ A_stride, const BDataType *__restrict__ B,
+                             const size_t *__restrict__ B_stride, size_t max_index, size_t C_size) {
     using namespace einsums::gpu;
 
     int thread_id, kernel_size;
 
     get_worker_info(thread_id, kernel_size);
 
-    size_t A_index[ARank], B_index[BRank], C_index[CRank], Unique_index[UniqueRank];
+    size_t Unique_index[UniqueRank];
     size_t A_sentinel, B_sentinel, C_sentinel;
-
-    size_t C_size = 1;
-
-    for (int i = 0; i < CRank; i++) {
-        C_size *= C_dims[i];
-    }
 
     // First, set C.
     if (is_zero(C_prefactor)) {
@@ -94,24 +90,18 @@ template <typename CDataType, typename ADataType, typename BDataType, size_t Uni
 __global__ void einsum_generic_algorithm_direct_product_gpu(
     const size_t *__restrict__ unique_strides, const size_t *__restrict__ C_index_strides, const int *__restrict__ C_index_table,
     const int *__restrict__ A_index_table, const int *__restrict__ B_index_table, const CDataType C_prefactor, CDataType *__restrict__ C,
-    const size_t *__restrict__ C_dims, const size_t *__restrict__ C_stride,
+    const size_t *__restrict__ C_stride,
     const ::std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> AB_prefactor, const ADataType *__restrict__ A,
-    const size_t *__restrict__ A_dims, const size_t *__restrict__ A_stride, const BDataType *__restrict__ B,
-    const size_t *__restrict__ B_dims, const size_t *__restrict__ B_stride, size_t max_index) {
+    const size_t *__restrict__ A_stride, const BDataType *__restrict__ B, const size_t *__restrict__ B_stride, size_t max_index,
+    size_t C_size) {
     using namespace einsums::gpu;
 
     int thread_id, kernel_size;
 
     get_worker_info(thread_id, kernel_size);
 
-    size_t A_index[ARank], B_index[BRank], C_index[CRank], Unique_index[UniqueRank];
+    size_t Unique_index[UniqueRank];
     size_t A_sentinel, B_sentinel, C_sentinel;
-
-    size_t C_size = 1;
-
-    for (int i = 0; i < CRank; i++) {
-        C_size *= C_dims[i];
-    }
 
     // First, set C.
     if (is_zero(C_prefactor)) {
@@ -167,11 +157,12 @@ __global__ void einsum_generic_algorithm_direct_product_gpu(
  * Compute kernel that runs when C has a rank of zero. There are some optimizations that can be made in this case.
  */
 template <typename CDataType, typename ADataType, typename BDataType, size_t UniqueRank, size_t ARank, size_t BRank>
-__global__ void einsum_generic_zero_rank_gpu(
-    const size_t *__restrict__ unique_strides, const int *__restrict__ A_index_table, const int *__restrict__ B_index_table,
-    CDataType *__restrict__ C, const ::std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> AB_prefactor,
-    const ADataType *__restrict__ A, const size_t *__restrict__ A_dims, const size_t *__restrict__ A_stride,
-    const BDataType *__restrict__ B, const size_t *__restrict__ B_dims, const size_t *__restrict__ B_stride, size_t max_index) {
+__global__ void
+einsum_generic_zero_rank_gpu(const size_t *__restrict__ unique_strides, const int *__restrict__ A_index_table,
+                             const int *__restrict__ B_index_table, CDataType *__restrict__ C,
+                             const ::std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> AB_prefactor,
+                             const ADataType *__restrict__ A, const size_t *__restrict__ A_stride, const BDataType *__restrict__ B,
+                             const size_t *__restrict__ B_stride, size_t max_index) {
 
     CDataType value;
 
@@ -185,7 +176,7 @@ __global__ void einsum_generic_zero_rank_gpu(
 
     __syncthreads();
 
-    size_t A_index[ARank], B_index[BRank], Unique_index[UniqueRank];
+    size_t Unique_index[UniqueRank];
     size_t A_sentinel, B_sentinel;
 
     for (size_t curr_index = thread_id; curr_index < max_index; curr_index += kernel_size) {
@@ -297,16 +288,16 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
             einsum_generic_algorithm_gpu<C_devtype, A_devtype, B_devtype, std::tuple_size<decltype(unique_indices)>::value, CRank, ARank,
                                          BRank><<<threads, grid, 0, get_stream()>>>(
                 unique_strides_gpu, C_index_strides_gpu, C_index_table_gpu, A_index_table_gpu, B_index_table_gpu,
-                HipCast<C_devtype, C_hosttype>::cast(C_prefactor), C->gpu_data(), C->gpu_dims(), C->gpu_strides(),
-                HipCast<AB_devtype, AB_hosttype>::cast(AB_prefactor), A.gpu_data(), A.gpu_dims(), A.gpu_strides(), B.gpu_data(),
-                B.gpu_dims(), B.gpu_strides(), ::std::get<0>(unique_dims) * unique_strides[0]);
+                HipCast<C_devtype, C_hosttype>::cast(C_prefactor), C->gpu_data(), C->gpu_strides(),
+                HipCast<AB_devtype, AB_hosttype>::cast(AB_prefactor), A.gpu_data(), A.gpu_strides(), B.gpu_data(), B.gpu_strides(),
+                ::std::get<0>(unique_dims) * unique_strides[0], C->size());
         } else {
             einsum_generic_algorithm_direct_product_gpu<C_devtype, A_devtype, B_devtype, std::tuple_size<decltype(unique_indices)>::value,
                                                         CRank, ARank, BRank><<<threads, grid, 0, get_stream()>>>(
                 unique_strides_gpu, C_index_strides_gpu, C_index_table_gpu, A_index_table_gpu, B_index_table_gpu,
-                HipCast<C_devtype, C_hosttype>::cast(C_prefactor), C->gpu_data(), C->gpu_dims(), C->gpu_strides(),
-                HipCast<AB_devtype, AB_hosttype>::cast(AB_prefactor), A.gpu_data(), A.gpu_dims(), A.gpu_strides(), B.gpu_data(),
-                B.gpu_dims(), B.gpu_strides(), ::std::get<0>(unique_dims) * unique_strides[0]);
+                HipCast<C_devtype, C_hosttype>::cast(C_prefactor), C->gpu_data(), C->gpu_strides(),
+                HipCast<AB_devtype, AB_hosttype>::cast(AB_prefactor), A.gpu_data(), A.gpu_strides(), B.gpu_data(), B.gpu_dims(),
+                B.gpu_strides(), ::std::get<0>(unique_dims) * unique_strides[0], C->size());
         }
         gpu::stream_wait();
 
@@ -340,9 +331,8 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
 
         einsum_generic_zero_rank_gpu<C_devtype, A_devtype, B_devtype, std::tuple_size<decltype(unique_indices)>::value, ARank, BRank>
             <<<threads, grid, 0, get_stream()>>>(unique_strides_gpu, A_index_table_gpu, B_index_table_gpu, C_data,
-                                                 HipCast<AB_devtype, AB_hosttype>::cast(AB_prefactor), A.gpu_data(), A.gpu_dims(),
-                                                 A.gpu_strides(), B.gpu_data(), B.gpu_dims(), B.gpu_strides(),
-                                                 ::std::get<0>(unique_dims) * unique_strides[0]);
+                                                 HipCast<AB_devtype, AB_hosttype>::cast(AB_prefactor), A.gpu_data(), A.gpu_strides(),
+                                                 B.gpu_data(), B.gpu_strides(), ::std::get<0>(unique_dims) * unique_strides[0]);
         gpu::stream_wait();
 
         if constexpr (!einsums::detail::IsTensorV<CType>) {

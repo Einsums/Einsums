@@ -70,7 +70,7 @@ add_feature_info(EINSUMS_TEST_NANS ${EINSUMS_TEST_NANS} "Test the result of ever
 add_feature_info(EINSUMS_RUNTIME_INDICES_CHECK ${EINSUMS_RUNTIME_INDICES_CHECK} "Check the sizes of corresponding indices at runtime")
 add_feature_info(EINSUMS_USE_HPTT ${EINSUMS_USE_HPTT} "Build with internal HPTT version")
 
-set(PYBIND11_FINDPYTHON ON)
+find_package(Python 3.11 COMPONENTS Interpreter Development REQUIRED)
 find_package(pybind11 CONFIG REQUIRED)
 
 if(EINSUMS_BUILD_HIP)

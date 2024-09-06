@@ -436,6 +436,77 @@ struct TiledTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
         return std::apply(out, array_ind);
     }
 
+    template <typename Container>
+        requires requires {
+            requires !std::is_integral_v<Container>;
+            requires !std::is_same_v<Container, Dim<Rank>>;
+            requires !std::is_same_v<Container, Stride<Rank>>;
+            requires !std::is_same_v<Container, Offset<Rank>>;
+            requires !std::is_same_v<Container, Range>;
+        }
+    T operator()(const Container &index) const {
+        if (index.size() < Rank) {
+            [[unlikely]] throw EINSUMSEXCEPTION("Not enough indices passed to Tensor!");
+        } else if (index.size() > Rank) {
+            [[unlikely]] throw EINSUMSEXCEPTION("Too many indices passed to Tensor!");
+        }
+        auto coords = tile_of(index);
+
+        std::array<std::int64_t, Rank> array_ind;
+
+        for(size_t i = 0; i < Rank; i++) {
+            array_ind[i] = index[i];
+        }
+
+        // Find the index in the tile.
+        for (int i = 0; i < Rank; i++) {
+            if (array_ind[i] < 0) {
+                array_ind[i] += _dims[i];
+            }
+            array_ind[i] -= _tile_offsets[i].at(coords[i]);
+        }
+
+        if (has_tile(coords)) {
+            return std::apply(tile(coords), array_ind);
+        } else {
+            return T{0.0};
+        }
+    }
+
+    template <typename Container>
+        requires requires {
+            requires !std::is_integral_v<Container>;
+            requires !std::is_same_v<Container, Dim<Rank>>;
+            requires !std::is_same_v<Container, Stride<Rank>>;
+            requires !std::is_same_v<Container, Offset<Rank>>;
+            requires !std::is_same_v<Container, Range>;
+        }
+    T &operator()(const Container &index) {
+        if (index.size() < Rank) {
+            [[unlikely]] throw EINSUMSEXCEPTION("Not enough indices passed to Tensor!");
+        } else if (index.size() > Rank) {
+            [[unlikely]] throw EINSUMSEXCEPTION("Too many indices passed to Tensor!");
+        }
+        auto coords = tile_of(index);
+
+        std::array<std::int64_t, Rank> array_ind;
+
+        for(size_t i = 0; i < Rank; i++) {
+            array_ind[i] = index[i];
+        }
+
+        // Find the index in the tile.
+        for (int i = 0; i < Rank; i++) {
+            if (array_ind[i] < 0) {
+                array_ind[i] += _dims[i];
+            }
+            array_ind[i] -= _tile_offsets[i].at(coords[i]);
+        }
+        auto &out = tile(coords);
+
+        return std::apply(out, array_ind);
+    }
+
     /**
      * Sets all entries in the tensor to zero. This clears all tiles. There will be no more tiles after this.
      */

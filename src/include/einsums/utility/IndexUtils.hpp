@@ -168,6 +168,8 @@ void dims_to_strides(const Dim<Dims> &dims, std::array<size_t, Dims> &out) {
     }
 }
 
+EINSUMS_EXPORT void dims_to_strides(const std::vector<size_t> &dims, std::vector<size_t> &out);
+
 template <int I, typename Head, typename Index>
 int compile_index_table(const ::std::tuple<Head> &, const Index &, int &out) {
     if constexpr (::std::is_same_v<Head, Index>) {

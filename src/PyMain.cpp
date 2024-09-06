@@ -1,7 +1,7 @@
 #include <pybind11/pybind11.h>
-#include <numpy/
+#include <pybind11/numpy.h>
 
-#include "einsums.hpp"
+#include "einsums/python/Python.hpp"
 
 BEGIN_EINSUMS_NAMESPACE_CPP(einsums::python)
 END_EINSUMS_NAMESPACE_CPP(einsums::python)

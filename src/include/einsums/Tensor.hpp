@@ -658,6 +658,54 @@ struct Tensor : public virtual tensor_props::CoreTensorBase,
         return TensorView<T, Rank>{*this, std::move(dims), std::move(offset), std::move(stride)};
     }
 
+    template <typename Container>
+        requires requires {
+            requires !std::is_integral_v<Container>;
+            requires !std::is_same_v<Container, Dim<Rank>>;
+            requires !std::is_same_v<Container, Stride<Rank>>;
+            requires !std::is_same_v<Container, Offset<Rank>>;
+            requires !std::is_same_v<Container, Range>;
+        }
+    T &operator()(const Container &index) {
+        if (index.size() < Rank) {
+            [[unlikely]] throw EINSUMSEXCEPTION("Not enough indices passed to Tensor!");
+        } else if (index.size() > Rank) {
+            [[unlikely]] throw EINSUMSEXCEPTION("Too many indices passed to Tensor!");
+        }
+
+        for (auto [i, _index] : enumerate(index)) {
+            if (_index < 0) {
+                index[i] = _dims[i] + _index;
+            }
+        }
+        size_t ordinal = std::inner_product(index.begin(), index.end(), _strides.begin(), size_t{0});
+        return _data[ordinal];
+    }
+
+    template <typename Container>
+        requires requires {
+            requires !std::is_integral_v<Container>;
+            requires !std::is_same_v<Container, Dim<Rank>>;
+            requires !std::is_same_v<Container, Stride<Rank>>;
+            requires !std::is_same_v<Container, Offset<Rank>>;
+            requires !std::is_same_v<Container, Range>;
+        }
+    const T &operator()(const Container &index) const {
+        if (index.size() < Rank) {
+            [[unlikely]] throw EINSUMSEXCEPTION("Not enough indices passed to Tensor!");
+        } else if (index.size() > Rank) {
+            [[unlikely]] throw EINSUMSEXCEPTION("Too many indices passed to Tensor!");
+        }
+
+        for (auto [i, _index] : enumerate(index)) {
+            if (_index < 0) {
+                index[i] = _dims[i] + _index;
+            }
+        }
+        size_t ordinal = std::inner_product(index.begin(), index.end(), _strides.begin(), size_t{0});
+        return _data[ordinal];
+    }
+
     auto operator=(const Tensor<T, Rank> &other) -> Tensor<T, Rank> & {
         bool realloc{false};
         for (int i = 0; i < Rank; i++) {
@@ -1144,6 +1192,54 @@ struct TensorView final : public virtual tensor_props::CoreTensorBase,
             }
         }
         size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
+        return _data[ordinal];
+    }
+
+    template <typename Container>
+        requires requires {
+            requires !std::is_integral_v<Container>;
+            requires !std::is_same_v<Container, Dim<Rank>>;
+            requires !std::is_same_v<Container, Stride<Rank>>;
+            requires !std::is_same_v<Container, Offset<Rank>>;
+            requires !std::is_same_v<Container, Range>;
+        }
+    T &operator()(const Container &index) {
+        if (index.size() < Rank) {
+            [[unlikely]] throw EINSUMSEXCEPTION("Not enough indices passed to Tensor!");
+        } else if (index.size() > Rank) {
+            [[unlikely]] throw EINSUMSEXCEPTION("Too many indices passed to Tensor!");
+        }
+
+        for (auto [i, _index] : enumerate(index)) {
+            if (_index < 0) {
+                index[i] = _dims[i] + _index;
+            }
+        }
+        size_t ordinal = std::inner_product(index.begin(), index.end(), _strides.begin(), size_t{0});
+        return _data[ordinal];
+    }
+
+    template <typename Container>
+        requires requires {
+            requires !std::is_integral_v<Container>;
+            requires !std::is_same_v<Container, Dim<Rank>>;
+            requires !std::is_same_v<Container, Stride<Rank>>;
+            requires !std::is_same_v<Container, Offset<Rank>>;
+            requires !std::is_same_v<Container, Range>;
+        }
+    const T &operator()(const Container &index) const {
+        if (index.size() < Rank) {
+            [[unlikely]] throw EINSUMSEXCEPTION("Not enough indices passed to Tensor!");
+        } else if (index.size() > Rank) {
+            [[unlikely]] throw EINSUMSEXCEPTION("Too many indices passed to Tensor!");
+        }
+
+        for (auto [i, _index] : enumerate(index)) {
+            if (_index < 0) {
+                index[i] = _dims[i] + _index;
+            }
+        }
+        size_t ordinal = std::inner_product(index.begin(), index.end(), _strides.begin(), size_t{0});
         return _data[ordinal];
     }
 

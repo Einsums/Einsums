@@ -452,6 +452,106 @@ struct BlockTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
         return std::apply(_blocks.at(block), index_list);
     }
 
+    template <typename Container>
+        requires requires {
+            requires !std::is_integral_v<Container>;
+            requires !std::is_same_v<Container, Dim<Rank>>;
+            requires !std::is_same_v<Container, Stride<Rank>>;
+            requires !std::is_same_v<Container, Offset<Rank>>;
+            requires !std::is_same_v<Container, Range>;
+        }
+    T &operator()(const Container &index) {
+        if (index.size() < Rank) {
+            [[unlikely]] throw EINSUMSEXCEPTION("Not enough indices passed to Tensor!");
+        } else if (index.size() > Rank) {
+            [[unlikely]] throw EINSUMSEXCEPTION("Too many indices passed to Tensor!");
+        }
+
+        std::array<std::int64_t, Rank> index_list{};
+
+        for(int i = 0; i < Rank; i++) {
+            index_list[i] = index[i];
+        }
+
+        int block = -1;
+        for (auto [i, _index] : enumerate(index_list)) {
+            if (_index < 0) {
+                index_list[i] = _dim + _index;
+            }
+
+            if (block == -1) {
+                for (int j = 0; j < _ranges.size(); j++) {
+                    if (_ranges[j][0] <= _index && _index < _ranges[j][1]) {
+                        block = j;
+                        break;
+                    }
+                }
+            }
+
+            if (_ranges.at(block)[0] <= _index && _index < _ranges.at(block)[1]) {
+                // Remap the index to be in the block.
+                index_list[i] -= _ranges.at(block)[0];
+            } else {
+                if (_zero_value != T(0.0)) {
+                    _zero_value = T(0.0);
+                }
+                return _zero_value;
+            }
+        }
+
+        return std::apply(_blocks.at(block), index_list);
+    }
+
+    template <typename Container>
+        requires requires {
+            requires !std::is_integral_v<Container>;
+            requires !std::is_same_v<Container, Dim<Rank>>;
+            requires !std::is_same_v<Container, Stride<Rank>>;
+            requires !std::is_same_v<Container, Offset<Rank>>;
+            requires !std::is_same_v<Container, Range>;
+        }
+    const T &operator()(const Container &index) const {
+        if (index.size() < Rank) {
+            [[unlikely]] throw EINSUMSEXCEPTION("Not enough indices passed to Tensor!");
+        } else if (index.size() > Rank) {
+            [[unlikely]] throw EINSUMSEXCEPTION("Too many indices passed to Tensor!");
+        }
+
+        std::array<std::int64_t, Rank> index_list{};
+
+        for(int i = 0; i < Rank; i++) {
+            index_list[i] = index[i];
+        }
+
+        int block = -1;
+        for (auto [i, _index] : enumerate(index_list)) {
+            if (_index < 0) {
+                index_list[i] = _dim + _index;
+            }
+
+            if (block == -1) {
+                for (int j = 0; j < _ranges.size(); j++) {
+                    if (_ranges[j][0] <= _index && _index < _ranges[j][1]) {
+                        block = j;
+                        break;
+                    }
+                }
+            }
+
+            if (_ranges.at(block)[0] <= _index && _index < _ranges.at(block)[1]) {
+                // Remap the index to be in the block.
+                index_list[i] -= _ranges.at(block)[0];
+            } else {
+                if (_zero_value != T(0.0)) {
+                    _zero_value = T(0.0);
+                }
+                return _zero_value;
+            }
+        }
+
+        return std::apply(_blocks.at(block), index_list);
+    }
+
     /**
      * @brief Return the block with the given index.
      */
