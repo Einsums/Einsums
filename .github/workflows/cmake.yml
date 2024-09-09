@@ -89,6 +89,7 @@ jobs:
             - zlib
             #- dpcpp_linux-64
             #- mkl
+            - pybind11
           EOF
           if [[ "${{ runner.os }}" == "Linux" ]]; then
             :
