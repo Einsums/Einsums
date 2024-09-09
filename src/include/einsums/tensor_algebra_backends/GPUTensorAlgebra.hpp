@@ -1,7 +1,7 @@
 #pragma once
 
-#include "einsums/_GPUUtils.hpp"
 #include "einsums/_GPUCast.hpp"
+#include "einsums/_GPUUtils.hpp"
 #include "einsums/_TensorAlgebraUtilities.hpp"
 
 #include "einsums/utility/IndexUtils.hpp"
@@ -296,8 +296,8 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
                                                         CRank, ARank, BRank><<<threads, grid, 0, get_stream()>>>(
                 unique_strides_gpu, C_index_strides_gpu, C_index_table_gpu, A_index_table_gpu, B_index_table_gpu,
                 HipCast<C_devtype, C_hosttype>::cast(C_prefactor), C->gpu_data(), C->gpu_strides(),
-                HipCast<AB_devtype, AB_hosttype>::cast(AB_prefactor), A.gpu_data(), A.gpu_strides(), B.gpu_data(), B.gpu_dims(),
-                B.gpu_strides(), ::std::get<0>(unique_dims) * unique_strides[0], C->size());
+                HipCast<AB_devtype, AB_hosttype>::cast(AB_prefactor), A.gpu_data(), A.gpu_strides(), B.gpu_data(), B.gpu_strides(),
+                ::std::get<0>(unique_dims) * unique_strides[0], C->size());
         }
         gpu::stream_wait();
 

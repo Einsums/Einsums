@@ -15,14 +15,18 @@ add_einsums_library(
         State.cpp
         TensorAlgebra.cpp
         Timer.cpp
+        Utils.cpp
         polynomial/Laguerre.cpp
-        PyTensorAlgebra.cpp
-        PyMain.cpp
         PUBLIC_INCLUDES include
-        DEPENDS tgt::lapack pybind11::module pybind11::headers
+        DEPENDS tgt::lapack
         PUBLIC_DEPENDS range-v3::range-v3 fmt::fmt Einsums::h5cpp
 )
+
+pybind11_add_module(einsums_py PyTensorAlgebra.cpp PyMain.cpp)
 target_compile_features(einsums PUBLIC cxx_std_20)
+target_compile_features(einsums_py PUBLIC cxx_std_20)
+
+target_link_libraries(einsums_py PUBLIC einsums)
 
 extend_einsums_target(
         einsums

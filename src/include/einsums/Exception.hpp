@@ -13,7 +13,7 @@ namespace detail {
  *
  * If EINSUMS_ANONYMIZE is disabled, this simply returns the path passed in.
  * Otherwise, this starts by checking for the src/ directory, the tests/ directory, or the timing/ directory.
- * If any of those are found, then all directories above those are removed, and /git/ is prepended to the 
+ * If any of those are found, then all directories above those are removed, and /git/ is prepended to the
  * resulting string, since these directories should only exist in a local Git repository for Einsums.
  * If none of those are found, then it looks for include/, since this is where Einsums' headers will be
  * made available once installed. If it finds this, then it removes all other directories from before this
@@ -21,7 +21,7 @@ namespace detail {
  * If none of those are found, then it defaults to just returning the file path without any transformations.
  */
 EINSUMS_EXPORT std::string anonymize(std::string fpath);
-}
+} // namespace detail
 
 /**
  * @struct EinsumsException

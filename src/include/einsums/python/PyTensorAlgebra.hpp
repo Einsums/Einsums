@@ -4,7 +4,7 @@
 #include "einsums/_Export.hpp"
 
 #include "einsums/Exception.hpp"
-#include "einsums/python/Python.hpp"
+#include "einsums/Python.hpp"
 #include "einsums/utility/IndexUtils.hpp"
 #include "einsums/utility/TensorBases.hpp"
 

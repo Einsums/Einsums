@@ -1,6 +1,5 @@
+#include "include/einsums/Python.hpp"
 #include "include/einsums/python/PyTensorAlgebra.hpp"
-
-#include "einsums/python/Python.hpp"
 
 #include <pybind11/pybind11.h>
 
