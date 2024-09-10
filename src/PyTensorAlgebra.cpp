@@ -2,6 +2,7 @@
 #include "include/einsums/python/PyTensorAlgebra.hpp"
 
 #include <pybind11/pybind11.h>
+#include <pybind11/numpy.h>
 
 #include "einsums.hpp"
 
@@ -266,12 +267,37 @@ std::vector<size_t> einsums::tensor_algebra::detail::get_dim_ranges_for_many(con
     return out;
 }
 
-void PyEinsumGenericPlan::execute(float C_prefactor, pybind11::array_t<float> &C, float AB_prefactor, const pybind11::array_t<float> &A,
-                                  const pybind11::array_t<float> &B) const {
-    execute_imp<float>(C_prefactor, C, AB_prefactor, A, B);
+void PyEinsumGenericPlan::execute(const pybind11::object &C_prefactor, pybind11::array &C, const pybind11::object &AB_prefactor, const pybind11::array &A,
+                                  const pybind11::array &B) const {
+    if(!C.dtype().is(A.dtype()) || !C.dtype().is(B.dtype())) {
+        throw EINSUMSEXCEPTION("Can not handle tensors with different dtypes (yet)!");
+    } else if(C.dtype().is(py::dtype::of<float>())) {
+        execute_imp<float>(C_prefactor.cast<float>(), C, AB_prefactor.cast<float>(), A, B);
+    } else if(C.dtype().is(py::dtype::of<std::complex<double>>())) {
+        execute_imp<std::complex<double>>(C_prefactor.cast<std::complex<double>>(), C, AB_prefactor.cast<std::complex<double>>(), A, B);
+    } else if(C.dtype().is(py::dtype::of<std::complex<float>>())) {
+        execute_imp<std::complex<float>>(C_prefactor.cast<std::complex<float>>(), C, AB_prefactor.cast<std::complex<float>>(), A, B);
+    } else {
+        execute_imp<double>(C_prefactor.cast<double>(), C, AB_prefactor.cast<double>(), A, B);
+    }
 }
 
-void PyEinsumGenericPlan::execute(double C_prefactor, pybind11::array_t<double> &C, double AB_prefactor, const pybind11::array_t<double> &A,
-                                  const pybind11::array_t<double> &B) const {
-    execute_imp<double>(C_prefactor, C, AB_prefactor, A, B);
+void PyEinsumDotPlan::execute(const pybind11::object &C_prefactor, pybind11::array &C, const pybind11::object &AB_prefactor, const pybind11::array &A,
+                                  const pybind11::array &B) const {
+    if(!C.dtype().is(A.dtype()) || !C.dtype().is(B.dtype())) {
+        throw EINSUMSEXCEPTION("Can not handle tensors with different dtypes (yet)!");
+    } else if(C.dtype().is(py::dtype::of<float>())) {
+        execute_imp<float>(C_prefactor.cast<float>(), C, AB_prefactor.cast<float>(), A, B);
+    } else if(C.dtype().is(py::dtype::of<std::complex<double>>())) {
+        execute_imp<std::complex<double>>(C_prefactor.cast<std::complex<double>>(), C, AB_prefactor.cast<std::complex<double>>(), A, B);
+    } else if(C.dtype().is(py::dtype::of<std::complex<float>>())) {
+        execute_imp<std::complex<float>>(C_prefactor.cast<std::complex<float>>(), C, AB_prefactor.cast<std::complex<float>>(), A, B);
+    } else {
+        execute_imp<double>(C_prefactor.cast<double>(), C, AB_prefactor.cast<double>(), A, B);
+    }
+}
+
+void einsums::python::export_tensor_algebra(pybind11::module_ &m) {
+    py::class_<PyEinsumGenericPlan>(m, "PyEinsumGenericPlan").def("execute", &PyEinsumGenericPlan::execute);
+    py::class_<PyEinsumDotPlan, PyEinsumGenericPlan>(m, "EinsumDotPlan").def("execute", &PyEinsumDotPlan::execute);
 }
