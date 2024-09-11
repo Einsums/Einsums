@@ -178,7 +178,7 @@ jobs:
         working-directory: "${{github.workspace}}"
         run: |
           ls ${{github.workspace}}/installed/lib
-          if [ ${{runner.os}} = "Windows"] then
+          if [[] ${{runner.os}} = "Windows" ]]; then
             export PYTHONPATH="$PYTHONPATH;${{github.workspace}}/installed/lib;$CONDA_PREFIX/lib"
           else
             export PYTHONPATH=$PYTHONPATH:${{github.workspace}}/installed/lib:$CONDA_PREFIX/lib
