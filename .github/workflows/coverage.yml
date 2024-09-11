@@ -111,7 +111,7 @@ jobs:
         run: |
           cmake --build "${{github.workspace}}/build" --config Debug --target install
           cat "${{github.workspace}}/installed/share/cmake/Einsums/EinsumsConfig.cmake"
-          export PYTHONPATH=$PYTHONPATH:${{github.workspace}}/installed/lib
+          export PYTHONPATH=$PYTHONPATH:${{github.workspace}}/installed/lib:$CONDA_PREFIX/lib
   
       - name: Test (CTest) - unit tests
         working-directory: "${{github.workspace}}/build"
