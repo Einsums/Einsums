@@ -178,7 +178,12 @@ jobs:
         working-directory: "${{github.workspace}}"
         run: |
           ls ${{github.workspace}}/installed/lib
-          export PYTHONPATH=$PYTHONPATH:${{github.workspace}}/installed/lib:$CONDA_PREFIX/lib
+          if [ ${{runner.os}} = "Windows"] then
+            export PYTHONPATH="$PYTHONPATH;${{github.workspace}}/installed/lib;$CONDA_PREFIX/lib"
+          else
+            export PYTHONPATH=$PYTHONPATH:${{github.workspace}}/installed/lib:$CONDA_PREFIX/lib
+          fi
+          
           pytest "${{github.workspace}}/tests"
 
       - name: Test (find_package) - consume installation
