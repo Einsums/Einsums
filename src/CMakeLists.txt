@@ -205,6 +205,7 @@ install(
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
+# All need to be LIBRARY_BASE_PATH because Windows thinks this is a runtime artifact, not a library.
 install(
         TARGETS einsums_py
         RUNTIME DESTINATION ${EINSUMS_LIBRARY_BASE_PATH}
