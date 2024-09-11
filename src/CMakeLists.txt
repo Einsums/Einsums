@@ -22,12 +22,16 @@ add_einsums_library(
         PUBLIC_DEPENDS range-v3::range-v3 fmt::fmt Einsums::h5cpp
 )
 
-add_einsums_library(einsums_py MODULE
+add_einsums_library(einsums_py SHARED
         SOURCES
         PyTensorAlgebra.cpp
         PyMain.cpp
         DEPENDS Python3::Module pybind11::module ${pybind11_LIBRARIES} ${Python3_LIBRARIES}
         PUBLIC_DEPENDS einsums)
+
+extend_einsums_target(einsums_py
+        DEPENDS pybind11::windows_extras
+        CONDITION MSVC)
 
 set_target_properties(einsums_py PROPERTIES PREFIX "")
 
@@ -151,6 +155,11 @@ list(
 foreach(define IN LISTS defines)
     extend_einsums_target(
             einsums
+            DEFINES ${define}
+            CONDITION ${define}
+    )
+    extend_einsums_target(
+            einsums_py
             DEFINES ${define}
             CONDITION ${define}
     )
