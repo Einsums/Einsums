@@ -22,7 +22,7 @@ add_einsums_library(
         PUBLIC_DEPENDS range-v3::range-v3 fmt::fmt Einsums::h5cpp
 )
 
-add_einsums_library(einsums_py SHARED
+add_einsums_library(einsums_py MODULE
         SOURCES
         PyTensorAlgebra.cpp
         PyMain.cpp
@@ -34,6 +34,10 @@ extend_einsums_target(einsums_py
         CONDITION MSVC)
 
 set_target_properties(einsums_py PROPERTIES PREFIX "")
+
+if(MSVC)
+        set_target_property(einsums_py PROPERTIES SUFFIX ".pyd")
+endif()
 
 target_compile_features(einsums PUBLIC cxx_std_20)
 target_compile_features(einsums_py PUBLIC cxx_std_20)
