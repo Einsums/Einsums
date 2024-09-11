@@ -22,34 +22,24 @@ add_einsums_library(
         PUBLIC_DEPENDS range-v3::range-v3 fmt::fmt Einsums::h5cpp
 )
 
-pybind11_add_module(einsums_py PyTensorAlgebra.cpp PyMain.cpp)
+add_einsums_library(einsums_py
+        SOURCES
+        PyTensorAlgebra.cpp
+        PyMain.cpp
+        DEPENDS Python3::Module pybind11::module ${pybind11_LIBRARIES} ${Python3_LIBRARIES}
+        PUBLIC_DEPENDS einsums)
+
+set_target_properties(einsums_py PROPERTIES PREFIX "")
+
 target_compile_features(einsums PUBLIC cxx_std_20)
 target_compile_features(einsums_py PUBLIC cxx_std_20)
 
-target_link_libraries(einsums_py PUBLIC einsums)
 
 extend_einsums_target(
         einsums
         SOURCES _GPUUtils.hip backends/linear_algebra/hipblas/hipblas.hip backends/linear_algebra/hipblas/hipsolver.hip GPULinearAlgebra.hip GPUTimer.hip
         CONDITION EINSUMS_BUILD_HIP PUBLIC_DEPENDS roc::hipblas roc::hipsolver hip::host hip::device
 )
-
-# HIP's amd_comgr needs ncurses. Ncurses needs tinfo. Neither target adds the appropriate dependencies or paths. If this gets fixed, this can be removed.
-if(EINSUMS_BUILD_HIP)
-    target_compile_options(einsums PUBLIC ${CURSES_CFLAGS})
-    target_include_directories(einsums PUBLIC ${CURSES_INCLUDE_DIR})
-    list(GET CURSES_LIBRARIES 0 __first)
-    cmake_path(GET __first PARENT_PATH CURSES_LIB_DIR)
-    message(STATUS "Curses directory: ${CURSES_LIB_DIR}")
-    target_link_directories(einsums BEFORE PUBLIC ${CURSES_LIB_DIR})
-    target_link_libraries(einsums PUBLIC ${CURSES_LIBRARIES})
-    if(EINSUMS_USE_HPTT)
-        message("Librett populated: ${librett_POPULATED}")
-        message("Librett source: ${librett_SOURCE_DIR}")
-        #target_include_directories(einsums PUBLIC ${LIBRETT_INCLUDE_DIRS})
-        target_include_directories(einsums PRIVATE ${librett_SOURCE_DIR}/src)
-    endif()
-endif()
 
 if(MSVC)
     target_compile_definitions(einsums PUBLIC _USE_MATH_DEFINES)
@@ -187,7 +177,7 @@ install(
     PATTERN "*.hpp"
 )
 
-set(tgts einsums Einsums_h5cpp)
+set(tgts einsums Einsums_h5cpp einsums_py)
 if (TARGET hptt::hptt)
     list(APPEND tgts hptt)
 endif()

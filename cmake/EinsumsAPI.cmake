@@ -156,6 +156,20 @@ function(add_einsums_library name)
         set(COMPONENT_OPTION "COMPONENT" "${_arg_COMPONENT}")
     endif()
 
+    # HIP's amd_comgr needs ncurses. Ncurses needs tinfo. Neither target adds the appropriate dependencies or paths. If this gets fixed, this can be removed.
+    if(EINSUMS_BUILD_HIP)
+        target_compile_options(${name} PUBLIC ${CURSES_CFLAGS})
+        target_include_directories(${name} PUBLIC ${CURSES_INCLUDE_DIR})
+        list(GET CURSES_LIBRARIES 0 __first)
+        cmake_path(GET __first PARENT_PATH CURSES_LIB_DIR)
+        target_link_directories(${name} BEFORE PUBLIC ${CURSES_LIB_DIR})
+        target_link_libraries(${name} PUBLIC ${CURSES_LIBRARIES})
+        if(EINSUMS_USE_HPTT)
+            #target_include_directories(einsums PUBLIC ${LIBRETT_INCLUDE_DIRS})
+            target_include_directories(${name} PRIVATE ${librett_SOURCE_DIR}/src)
+        endif()
+    endif()
+
 #    if (NOT EINSUMS_STATIC_BUILD OR _arg_SHARED)
 #        install(TARGETS ${name}
 #            EXPORT Einsums

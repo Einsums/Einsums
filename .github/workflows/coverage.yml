@@ -46,6 +46,7 @@ jobs:
             #- dpcpp_linux-64
             #- mkl
             - pybind11
+            - pytest
           EOF
           if [[ "${{ runner.os }}" == "Linux" ]]; then
             :
@@ -110,10 +111,15 @@ jobs:
         run: |
           cmake --build "${{github.workspace}}/build" --config Debug --target install
           cat "${{github.workspace}}/installed/share/cmake/Einsums/EinsumsConfig.cmake"
+          export PYTHONPATH=$PYTHONPATH:${{github.workspace}}/installed/lib
   
       - name: Test (CTest) - unit tests
         working-directory: "${{github.workspace}}/build"
         run: ctest
+      
+      - name: Test (pytest) - unit tests
+        working-directory: "${{github.workspace}}"
+        run: pytest "${{github.workspace}}/tests"
       
       - name: Test timings
         working-directory: "${{github.workspace}}/build"

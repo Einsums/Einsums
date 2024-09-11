@@ -298,6 +298,8 @@ void PyEinsumDotPlan::execute(const pybind11::object &C_prefactor, pybind11::arr
 }
 
 void einsums::python::export_tensor_algebra(pybind11::module_ &m) {
-    py::class_<PyEinsumGenericPlan>(m, "PyEinsumGenericPlan").def("execute", &PyEinsumGenericPlan::execute);
-    py::class_<PyEinsumDotPlan, PyEinsumGenericPlan>(m, "EinsumDotPlan").def("execute", &PyEinsumDotPlan::execute);
+    py::class_<PyEinsumGenericPlan, std::shared_ptr<PyEinsumGenericPlan>>(m, "PyEinsumGenericPlan").def("execute", &PyEinsumGenericPlan::execute);
+    py::class_<PyEinsumDotPlan, PyEinsumGenericPlan, std::shared_ptr<PyEinsumDotPlan>>(m, "EinsumDotPlan").def("execute", &PyEinsumDotPlan::execute);
+
+    m.def("compile_plan", compile_plan, py::arg("C_indices"), py::arg("A_indices"), py::arg("B_indices"), py::arg("unit") = einsums::python::detail::CPU);
 }
