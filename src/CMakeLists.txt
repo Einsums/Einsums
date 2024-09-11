@@ -34,7 +34,7 @@ extend_einsums_target(einsums_py
         CONDITION MSVC)
 
 pybind11_extension(einsums_py)
-if(MSVC)
+if((MSVC) OR (CMAKE_HOST_WIN32))
         set_target_properties(einsums_py PROPERTIES SUFFIX ".pyd")
 endif()
 
