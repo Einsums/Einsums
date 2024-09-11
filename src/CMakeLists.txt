@@ -34,6 +34,9 @@ extend_einsums_target(einsums_py
         CONDITION MSVC)
 
 pybind11_extension(einsums_py)
+if(MSVC)
+        set_target_properties(einsums_py PROPERTIES SUFFIX ".pyd")
+endif()
 
 target_compile_features(einsums PUBLIC cxx_std_20)
 target_compile_features(einsums_py PUBLIC cxx_std_20)
