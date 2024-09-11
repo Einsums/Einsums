@@ -205,30 +205,8 @@ install(
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
-add_library(suffix_test SHARED suffix_test.cpp)
-
-set_target_properties(suffix_test PROPERTIES SUFFIX ".pyd")
-
-get_target_property(__py_suff einsums_py SUFFIX)
-get_target_property(__test_suff suffix_test SUFFIX)
-
-if(MSVC)
-        message("Python module suffix is ${__py_suff}. Should end in .pyd.")
-        message("Testing with a fresh library, the suffix is ${__test_suff}. Should be .pyd.")
-else()
-        message("Python module suffix is ${__py_suff}. Should end in .so.")
-        message("Testing with a fresh library, the suffix is ${__test_suff}. Should be .pyd.")
-endif()
-
 install(
         TARGETS einsums_py
-        RUNTIME DESTINATION ${EINSUMS_LIBRARY_BASE_PATH}
-        LIBRARY DESTINATION ${EINSUMS_LIBRARY_BASE_PATH}
-        ARCHIVE DESTINATION ${EINSUMS_LIBRARY_BASE_PATH}
-)
-
-install(
-        TARGETS suffix_test
         RUNTIME DESTINATION ${EINSUMS_LIBRARY_BASE_PATH}
         LIBRARY DESTINATION ${EINSUMS_LIBRARY_BASE_PATH}
         ARCHIVE DESTINATION ${EINSUMS_LIBRARY_BASE_PATH}
