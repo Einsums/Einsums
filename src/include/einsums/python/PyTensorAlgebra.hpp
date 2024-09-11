@@ -71,7 +71,7 @@ __global__ void einsum_generic_algorithm_gpu(const size_t *__restrict__ unique_s
         for (size_t index = thread_id; index < C_size; index += kernel_size) {
             size_t C_index = 0, quotient = index;
             for (int i = 0; i < C_rank; i++) {
-                C_index += C_stride[i] * (quotient / C_index_strides[i]);
+                C_index += (C_stride[i] / sizeof(DataType)) * (quotient / C_index_strides[i]);
                 quotient %= C_index_strides[i];
             }
             make_zero(C[C_index]);
@@ -80,7 +80,7 @@ __global__ void einsum_generic_algorithm_gpu(const size_t *__restrict__ unique_s
         for (size_t index = thread_id; index < C_size; index += kernel_size) {
             size_t C_index = 0, quotient = index;
             for (int i = 0; i < C_rank; i++) {
-                C_index += C_stride[i] * (quotient / C_index_strides[i]);
+                C_index += (C_stride[i] / sizeof(DataType)) * (quotient / C_index_strides[i]);
                 quotient %= C_index_strides[i];
             }
             C[C_index] = C[C_index] * C_prefactor;
@@ -99,9 +99,9 @@ __global__ void einsum_generic_algorithm_gpu(const size_t *__restrict__ unique_s
             size_t unique_index = quotient / unique_strides[i];
             quotient %= unique_strides[i];
 
-            A_sentinel += A_stride_unique[i] * unique_index;
-            B_sentinel += B_stride_unique[i] * unique_index;
-            C_sentinel += C_stride_unique[i] * unique_index;
+            A_sentinel += (A_stride_unique[i] / sizeof(DataType)) * unique_index;
+            B_sentinel += (B_stride_unique[i] / sizeof(DataType)) * unique_index;
+            C_sentinel += (C_stride_unique[i] / sizeof(DataType)) * unique_index;
         }
 
         einsums::gpu::atomicAdd_wrap(C + C_sentinel, AB_prefactor * A[A_sentinel] * B[B_sentinel]);
@@ -130,7 +130,7 @@ __global__ void einsum_generic_algorithm_direct_product_gpu(
         for (size_t index = thread_id; index < C_size; index += kernel_size) {
             size_t C_index = 0, quotient = index;
             for (int i = 0; i < C_rank; i++) {
-                C_index += C_stride[i] * (quotient / C_index_strides[i]);
+                C_index += (C_stride[i] / sizeof(DataType)) * (quotient / C_index_strides[i]);
                 quotient %= C_index_strides[i];
             }
             make_zero(C[C_index]);
@@ -139,7 +139,7 @@ __global__ void einsum_generic_algorithm_direct_product_gpu(
         for (size_t index = thread_id; index < C_size; index += kernel_size) {
             size_t C_index = 0, quotient = index;
             for (int i = 0; i < C_rank; i++) {
-                C_index += C_stride[i] * (quotient / C_index_strides[i]);
+                C_index += (C_stride[i] / sizeof(DataType)) * (quotient / C_index_strides[i]);
                 quotient %= C_index_strides[i];
             }
             C[C_index] = C[C_index] * C_prefactor;
@@ -158,9 +158,9 @@ __global__ void einsum_generic_algorithm_direct_product_gpu(
             size_t unique_index = quotient / unique_strides[i];
             quotient %= unique_strides[i];
 
-            A_sentinel += A_stride_unique[i] * unique_index;
-            B_sentinel += B_stride_unique[i] * unique_index;
-            C_sentinel += C_stride_unique[i] * unique_index;
+            A_sentinel += (A_stride_unique[i] / sizeof(DataType)) * unique_index;
+            B_sentinel += (B_stride_unique[i] / sizeof(DataType)) * unique_index;
+            C_sentinel += (C_stride_unique[i] / sizeof(DataType)) * unique_index;
         }
 
         C[C_sentinel] = C[C_sentinel] + AB_prefactor * A[A_sentinel] * B[B_sentinel];
@@ -204,8 +204,8 @@ __global__ void einsum_generic_zero_rank_gpu(const size_t *__restrict__ unique_s
             size_t unique_index = quotient / unique_strides[i];
             quotient %= unique_strides[i];
 
-            A_sentinel += A_stride_unique[i] * unique_index;
-            B_sentinel += B_stride_unique[i] * unique_index;
+            A_sentinel += (A_stride_unique[i] / sizeof(DataType)) * unique_index;
+            B_sentinel += (B_stride_unique[i] / sizeof(DataType)) * unique_index;
         }
 
         value = value + A[A_sentinel] * B[B_sentinel];
@@ -239,8 +239,8 @@ __global__ void dot_kernel(const size_t *unique_strides, T *__restrict__ C, cons
             size_t unique_index = quotient / unique_strides[i];
             quotient %= unique_strides[i];
 
-            A_sentinel += A_strides[i] * unique_index;
-            B_sentinel += B_strides[i] * unique_index;
+            A_sentinel += (A_strides[i] / sizeof(T)) * unique_index;
+            B_sentinel += (B_strides[i] / sizeof(T)) * unique_index;
         }
 
         value = value + A[A_sentinel] * B[B_sentinel];
@@ -393,30 +393,31 @@ class PyEinsumGenericPlan {
             }
 
             if (_unit == python::detail::GPU_COPY) {
-                gpu::hip_catch(hipMalloc((void **)&gpu_A, A.shape(0) * A.strides(0) * sizeof(T)));
-                gpu::hip_catch(hipMalloc((void **)&gpu_B, B.shape(0) * B.strides(0) * sizeof(T)));
+                // strides() is already multiplied by the item size.
+                gpu::hip_catch(hipMalloc((void **)&gpu_A, A.shape(0) * A.strides(0)));
+                gpu::hip_catch(hipMalloc((void **)&gpu_B, B.shape(0) * B.strides(0)));
 
-                gpu::hip_catch(hipMemcpyAsync((void *)gpu_A, A.data(), A.shape(0) * A.strides(0) * sizeof(T), hipMemcpyHostToDevice,
+                gpu::hip_catch(hipMemcpyAsync((void *)gpu_A, A.data(), A.shape(0) * A.strides(0), hipMemcpyHostToDevice,
                                               gpu::get_stream()));
-                gpu::hip_catch(hipMemcpyAsync((void *)gpu_A, B.data(), B.shape(0) * B.strides(0) * sizeof(T), hipMemcpyHostToDevice,
+                gpu::hip_catch(hipMemcpyAsync((void *)gpu_A, B.data(), B.shape(0) * B.strides(0), hipMemcpyHostToDevice,
                                               gpu::get_stream()));
 
                 if (_C_permute.size() != 0) {
-                    gpu::hip_catch(hipMalloc((void **)&gpu_C, C.shape(0) * C.strides(0) * sizeof(T)));
+                    gpu::hip_catch(hipMalloc((void **)&gpu_C, C.shape(0) * C.strides(0)));
 
-                    gpu::hip_catch(hipMemcpyAsync((void *)gpu_C, C.mutable_data(), C.shape(0) * C.strides(0) * sizeof(T),
+                    gpu::hip_catch(hipMemcpyAsync((void *)gpu_C, C.mutable_data(), C.shape(0) * C.strides(0),
                                                   hipMemcpyHostToDevice, gpu::get_stream()));
                 }
             } else {
-                gpu::hip_catch(hipHostRegister((void *)A.data(), A.shape(0) * A.strides(0) * sizeof(T), hipHostRegisterDefault));
-                gpu::hip_catch(hipHostRegister((void *)B.data(), B.shape(0) * B.strides(0) * sizeof(T), hipHostRegisterDefault));
+                gpu::hip_catch(hipHostRegister((void *)A.data(), A.shape(0) * A.strides(0), hipHostRegisterDefault));
+                gpu::hip_catch(hipHostRegister((void *)B.data(), B.shape(0) * B.strides(0), hipHostRegisterDefault));
 
                 gpu::hip_catch(hipHostGetDevicePointer((void **)&gpu_A, (void *)A.data(), 0));
                 gpu::hip_catch(hipHostGetDevicePointer((void **)&gpu_B, (void *)B.data(), 0));
 
                 if (_C_permute.size() != 0) {
                     gpu::hip_catch(
-                        hipHostRegister((void *)C.mutable_data(), C.shape(0) * C.strides(0) * sizeof(T), hipHostRegisterDefault));
+                        hipHostRegister((void *)C.mutable_data(), C.shape(0) * C.strides(0), hipHostRegisterDefault));
 
                     gpu::hip_catch(hipHostGetDevicePointer((void **)&gpu_C, (void *)C.mutable_data(), 0));
                 }
@@ -450,7 +451,7 @@ class PyEinsumGenericPlan {
                 gpu::stream_wait();
 
                 if (_unit == python::detail::GPU_COPY) {
-                    gpu::hip_catch(hipMemcpy((void *)C.mutable_data(), (const void *)gpu_C, C.shape(0) * C.strides(0) * sizeof(T),
+                    gpu::hip_catch(hipMemcpy((void *)C.mutable_data(), (const void *)gpu_C, C.shape(0) * C.strides(0),
                                              hipMemcpyDeviceToHost));
                     gpu::hip_catch(hipFree((void *)gpu_C));
                 } else {
@@ -519,7 +520,7 @@ class PyEinsumGenericPlan {
                     size_t quotient = sentinel;
                     size_t C_index  = 0;
                     for (int i = 0; i < _C_permute.size(); i++) {
-                        C_index += C.strides(i) * (quotient / C_index_strides[i]);
+                        C_index += (C.strides(i) / sizeof(T)) * (quotient / C_index_strides[i]);
                         quotient %= C_index_strides[i];
                     }
 
@@ -531,7 +532,7 @@ class PyEinsumGenericPlan {
                     size_t quotient = sentinel;
                     size_t C_index  = 0;
                     for (int i = 0; i < _C_permute.size(); i++) {
-                        C_index += C.strides(i) * (quotient / C_index_strides[i]);
+                        C_index += (C.strides(i) / sizeof(T)) * (quotient / C_index_strides[i]);
                         quotient %= C_index_strides[i];
                     }
 
@@ -553,15 +554,15 @@ class PyEinsumGenericPlan {
                 size_t A_ord = 0, B_ord = 0, C_ord = 0;
 
                 for (int i = 0; i < _A_permute.size(); i++) {
-                    A_ord += A.strides(i) * unique_index[_A_permute[i]];
+                    A_ord += (A.strides(i) / sizeof(T)) * unique_index[_A_permute[i]];
                 }
 
                 for (int i = 0; i < _B_permute.size(); i++) {
-                    B_ord += B.strides(i) * unique_index[_B_permute[i]];
+                    B_ord += (B.strides(i) / sizeof(T)) * unique_index[_B_permute[i]];
                 }
 
                 for (int i = 0; i < _C_permute.size(); i++) {
-                    C_ord += C.strides(i) * unique_index[_C_permute[i]];
+                    C_ord += (C.strides(i) / sizeof(T)) * unique_index[_C_permute[i]];
                 }
 
                 C_data[C_ord] += AB_prefactor * A_data[A_ord] * B_data[B_ord];
@@ -669,7 +670,7 @@ class PyEinsumDotPlan : public PyEinsumGenericPlan {
                 C_data *= C_prefactor;
             }
 
-#pragma omp parallel for simd reduction(+ : C_data)
+//#pragma omp parallel for simd reduction(+ : C_data)
             for (size_t sentinel = 0; sentinel < A.shape(0) * unique_strides[0]; sentinel++) {
                 size_t quotient = sentinel;
                 size_t A_index  = 0;
@@ -678,8 +679,8 @@ class PyEinsumDotPlan : public PyEinsumGenericPlan {
                     size_t unique_index = quotient / unique_strides[i];
                     quotient %= unique_strides[i];
 
-                    A_index += A.strides(i) * unique_index;
-                    B_index += B.strides(i) * unique_index;
+                    A_index += (A.strides(i) / sizeof(T)) * unique_index;
+                    B_index += (B.strides(i) / sizeof(T)) * unique_index;
                 }
 
                 C_data += AB_prefactor * A_data[A_index] * B_data[B_index];

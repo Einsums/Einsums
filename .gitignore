@@ -69,3 +69,4 @@ docs/build
 
 # JetBrains project files
 .idea
+*.env

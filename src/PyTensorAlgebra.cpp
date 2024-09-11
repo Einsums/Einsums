@@ -96,6 +96,9 @@ static vector<pair<char, size_t>> find_ind_with_pos(const string &st1, const str
 }
 
 static bool contiguous_indices(const vector<pair<char, size_t>> &pairs) {
+    if(pairs.size() == 0) {
+        return true;
+    }
     for (int i = 0; i < pairs.size() - 1; i++) {
         if (pairs[i].second != pairs[i + 1].second - 1) {
             return false;
