@@ -33,10 +33,10 @@ extend_einsums_target(einsums_py
         DEPENDS pybind11::windows_extras
         CONDITION MSVC)
 
-pybind11_extension(einsums_py)
 if((MSVC) OR (CMAKE_HOST_WIN32))
         set_target_properties(einsums_py PROPERTIES SUFFIX ".pyd")
 endif()
+pybind11_extension(einsums_py)
 
 target_compile_features(einsums PUBLIC cxx_std_20)
 target_compile_features(einsums_py PUBLIC cxx_std_20)
@@ -204,6 +204,14 @@ install(
         INCLUDES
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
+
+get_target_property(__py_suff einsums_py SUFFIX)
+
+if(MSVC)
+        message("Python module suffix is ${__py_suff}. Should end in .pyd.")
+else()
+        message("Python module suffix is ${__py_suff}. Should end in .so.")
+endif()
 
 install(
         TARGETS einsums_py
