@@ -22,22 +22,18 @@ add_einsums_library(
         PUBLIC_DEPENDS range-v3::range-v3 fmt::fmt Einsums::h5cpp
 )
 
-add_einsums_library(einsums_py MODULE
+add_einsums_library(einsums_py SHARED
         SOURCES
         PyTensorAlgebra.cpp
         PyMain.cpp
-        DEPENDS Python3::Module pybind11::module ${pybind11_LIBRARIES} ${Python3_LIBRARIES}
+        DEPENDS Python3::Module pybind11::module Python3::Python ${pybind11_LIBRARIES} ${Python3_LIBRARIES}
         PUBLIC_DEPENDS einsums)
 
 extend_einsums_target(einsums_py
         DEPENDS pybind11::windows_extras
         CONDITION MSVC)
 
-set_target_properties(einsums_py PROPERTIES PREFIX "")
-
-if(MSVC)
-        set_target_property(einsums_py PROPERTIES SUFFIX ".pyd")
-endif()
+pybind11_extension(einsums_py)
 
 target_compile_features(einsums PUBLIC cxx_std_20)
 target_compile_features(einsums_py PUBLIC cxx_std_20)
@@ -190,7 +186,7 @@ install(
     PATTERN "*.hpp"
 )
 
-set(tgts einsums Einsums_h5cpp einsums_py)
+set(tgts einsums Einsums_h5cpp)
 if (TARGET hptt::hptt)
     list(APPEND tgts hptt)
 endif()
@@ -204,6 +200,14 @@ install(
         PUBLIC_HEADER COMPONENT ${ein}_Development
         INCLUDES
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+
+install(
+        TARGETS einsums_py
+        EXPORT primary_set
+        RUNTIME DESTINATION ${EINSUMS_BIN_PATH}
+        LIBRARY DESTINATION ${EINSUMS_LIBRARY_BASE_PATH}
+        ARCHIVE DESTINATION ${EINSUMS_LIBRARY_BASE_PATH}
 )
 
 install(

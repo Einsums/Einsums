@@ -28,7 +28,7 @@ function(einsums_output_binary_dir varName)
 endfunction()
 
 function(add_einsums_library name)
-    cmake_parse_arguments(_arg "STATIC;OBJECT;SHARED;FEATURE_INFO;SKIP_PCH"
+    cmake_parse_arguments(_arg "STATIC;OBJECT;SHARED;MODULE;FEATURE_INFO;SKIP_PCH"
         "DESTINATION;COMPONENT;SOURCES_PREFIX;BUILD_DEFAULT"
         "CONDITION;DEPENDS;PUBLIC_DEPENDS;DEFINES;PUBLIC_DEFINES;INCLUDES;PUBLIC_INCLUDES;SOURCES;PROPERTIES;PUBLIC_OPTIONS;OPTIONS" ${ARGN}
     )
@@ -63,6 +63,9 @@ function(add_einsums_library name)
     endif()
     if (_arg_OBJECT)
         set(library_type OBJECT)
+    endif()
+    if (_arg_MODULE)
+        set(library_type MODULE)
     endif()
 
     add_library(${name} ${library_type})
@@ -146,7 +149,7 @@ function(add_einsums_library name)
     )
 
     unset(NAMELINK_OPTION)
-    if (library_type STREQUAL "SHARED")
+    if ((library_type STREQUAL "SHARED") OR (library_type STREQUAL "MODULE"))
         set(NAMELINK_OPTION NAMELINK_SKIP)
         einsums_add_link_flags_no_undefined(${name})
     endif()
