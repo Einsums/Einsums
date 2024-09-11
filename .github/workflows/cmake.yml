@@ -91,6 +91,7 @@ jobs:
             #- mkl
             - pybind11
             - pytest
+            - numpy
           EOF
           if [[ "${{ runner.os }}" == "Linux" ]]; then
             :
