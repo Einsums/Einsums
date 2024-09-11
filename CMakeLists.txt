@@ -149,26 +149,15 @@ endif()
 add_subdirectory(src)
 
 if(EINSUMS_COVERAGE AND NOT MSVC)
-    target_compile_options(einsums PUBLIC $<$<COMPILE_LANG_AND_ID:CXX,Clang>:-fprofile-instr-generate -fcoverage-mapping>)
-    target_compile_options(einsums PUBLIC $<$<COMPILE_LANGUAGE:HIP>:-fprofile-instr-generate -fcoverage-mapping>)
-    target_compile_options(einsums PUBLIC $<$<COMPILE_LANG_AND_ID:CXX,GNU>:--coverage>)
-    target_link_options(einsums PUBLIC -lgcov --coverage)
     set(COV_CMD gcov)
 endif()
 
-if (EINSUMS_ENABLE_TESTING AND NOT MSVC)
-    target_compile_options(einsums BEFORE PUBLIC $<$<CONFIG:Debug>:$<$<COMPILE_LANG_AND_ID:CXX,Clang>:-gdwarf-4 -O0 -g3 -ggdb>>)
-    target_compile_options(einsums BEFORE PUBLIC $<$<CONFIG:Debug>:$<$<COMPILE_LANG_AND_ID:CXX,Intel>:-gdwarf-4 -O0 -g3 -ggdb>>)
-    target_compile_options(einsums BEFORE PUBLIC $<$<CONFIG:Debug>:$<$<COMPILE_LANG_AND_ID:HIP,Clang>:-gdwarf-4 -O0 -g3 -ggdb>>)
-    target_compile_options(einsums BEFORE PUBLIC $<$<CONFIG:Debug>:$<$<COMPILE_LANG_AND_ID:CXX,GNU>:-Og -g3 -ggdb>>)
-endif()
-
 if(EINSUMS_FAST_INTRINSICS)
-    target_compile_definitions(einsums PUBLIC -DEINSUMS_FAST_INTRINSICS)
+    add_compile_definitions(-DEINSUMS_FAST_INTRINSICS)
 endif()
 
 if(EINSUMS_ANONYMIZE)
-    target_compile_definitions(einsums PUBLIC -DEINSUMS_ANONYMIZE)
+    add_compile_definitions(-DEINSUMS_ANONYMIZE)
 endif()
 
 if (EINSUMS_ENABLE_TESTING)

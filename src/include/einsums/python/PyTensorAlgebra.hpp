@@ -670,7 +670,7 @@ class PyEinsumDotPlan : public PyEinsumGenericPlan {
                 C_data *= C_prefactor;
             }
 
-//#pragma omp parallel for simd reduction(+ : C_data)
+#pragma omp parallel for simd reduction(+ : C_data)
             for (size_t sentinel = 0; sentinel < A.shape(0) * unique_strides[0]; sentinel++) {
                 size_t quotient = sentinel;
                 size_t A_index  = 0;

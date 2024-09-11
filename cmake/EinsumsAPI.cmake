@@ -170,6 +170,20 @@ function(add_einsums_library name)
         endif()
     endif()
 
+    if(EINSUMS_COVERAGE AND NOT MSVC)
+        target_compile_options(${name} PUBLIC $<$<COMPILE_LANG_AND_ID:CXX,Clang>:-fprofile-instr-generate -fcoverage-mapping>)
+        target_compile_options(${name} PUBLIC $<$<COMPILE_LANGUAGE:HIP>:-fprofile-instr-generate -fcoverage-mapping>)
+        target_compile_options(${name} PUBLIC $<$<COMPILE_LANG_AND_ID:CXX,GNU>:--coverage>)
+        target_link_options(${name} PUBLIC -lgcov --coverage)
+    endif()
+
+    if (EINSUMS_ENABLE_TESTING AND NOT MSVC)
+        target_compile_options(${name} BEFORE PUBLIC $<$<CONFIG:Debug>:$<$<COMPILE_LANG_AND_ID:CXX,Clang>:-gdwarf-4 -O0 -g3 -ggdb>>)
+        target_compile_options(${name} BEFORE PUBLIC $<$<CONFIG:Debug>:$<$<COMPILE_LANG_AND_ID:CXX,Intel>:-gdwarf-4 -O0 -g3 -ggdb>>)
+        target_compile_options(${name} BEFORE PUBLIC $<$<CONFIG:Debug>:$<$<COMPILE_LANG_AND_ID:HIP,Clang>:-gdwarf-4 -O0 -g3 -ggdb>>)
+        target_compile_options(${name} BEFORE PUBLIC $<$<CONFIG:Debug>:$<$<COMPILE_LANG_AND_ID:CXX,GNU>:-Og -g3 -ggdb>>)
+    endif()
+
 #    if (NOT EINSUMS_STATIC_BUILD OR _arg_SHARED)
 #        install(TARGETS ${name}
 #            EXPORT Einsums
