@@ -33,6 +33,12 @@ extend_einsums_target(einsums_py
         DEPENDS pybind11::windows_extras
         CONDITION MSVC)
 
+extend_einsums_target(einsums_py
+        SOURCES
+        PyGpuExceptions.hip
+        CONDITION EINSUMS_BUILD_HIP
+)
+
 if((MSVC) OR (CMAKE_HOST_WIN32))
         set_target_properties(einsums_py PROPERTIES SUFFIX ".pyd")
 endif()

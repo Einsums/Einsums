@@ -1,10 +1,10 @@
-#include "include/einsums/Python.hpp"
 #include "include/einsums/python/PyTensorAlgebra.hpp"
 
-#include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
+#include <pybind11/pybind11.h>
 
 #include "einsums.hpp"
+#include "include/einsums/Python.hpp"
 
 using namespace std;
 using namespace einsums;
@@ -96,7 +96,7 @@ static vector<pair<char, size_t>> find_ind_with_pos(const string &st1, const str
 }
 
 static bool contiguous_indices(const vector<pair<char, size_t>> &pairs) {
-    if(pairs.size() == 0) {
+    if (pairs.size() == 0) {
         return true;
     }
     for (int i = 0; i < pairs.size() - 1; i++) {
@@ -270,30 +270,45 @@ std::vector<size_t> einsums::tensor_algebra::detail::get_dim_ranges_for_many(con
     return out;
 }
 
-void PyEinsumGenericPlan::execute(const pybind11::object &C_prefactor, pybind11::array &C, const pybind11::object &AB_prefactor, const pybind11::array &A,
-                                  const pybind11::array &B) const {
-    if(!C.dtype().is(A.dtype()) || !C.dtype().is(B.dtype())) {
+void PyEinsumGenericPlan::execute(const pybind11::object &C_prefactor, pybind11::array &C, const pybind11::object &AB_prefactor,
+                                  const pybind11::array &A, const pybind11::array &B) const {
+    if (!C.dtype().is(A.dtype()) || !C.dtype().is(B.dtype())) {
         throw EINSUMSEXCEPTION("Can not handle tensors with different dtypes (yet)!");
-    } else if(C.dtype().is(py::dtype::of<float>())) {
+    } else if (C.dtype().is(py::dtype::of<float>())) {
         execute_imp<float>(C_prefactor.cast<float>(), C, AB_prefactor.cast<float>(), A, B);
-    } else if(C.dtype().is(py::dtype::of<std::complex<double>>())) {
+    } else if (C.dtype().is(py::dtype::of<std::complex<double>>())) {
         execute_imp<std::complex<double>>(C_prefactor.cast<std::complex<double>>(), C, AB_prefactor.cast<std::complex<double>>(), A, B);
-    } else if(C.dtype().is(py::dtype::of<std::complex<float>>())) {
+    } else if (C.dtype().is(py::dtype::of<std::complex<float>>())) {
         execute_imp<std::complex<float>>(C_prefactor.cast<std::complex<float>>(), C, AB_prefactor.cast<std::complex<float>>(), A, B);
     } else {
         execute_imp<double>(C_prefactor.cast<double>(), C, AB_prefactor.cast<double>(), A, B);
     }
 }
 
-void PyEinsumDotPlan::execute(const pybind11::object &C_prefactor, pybind11::array &C, const pybind11::object &AB_prefactor, const pybind11::array &A,
-                                  const pybind11::array &B) const {
-    if(!C.dtype().is(A.dtype()) || !C.dtype().is(B.dtype())) {
+void PyEinsumDotPlan::execute(const pybind11::object &C_prefactor, pybind11::array &C, const pybind11::object &AB_prefactor,
+                              const pybind11::array &A, const pybind11::array &B) const {
+    if (!C.dtype().is(A.dtype()) || !C.dtype().is(B.dtype())) {
         throw EINSUMSEXCEPTION("Can not handle tensors with different dtypes (yet)!");
-    } else if(C.dtype().is(py::dtype::of<float>())) {
+    } else if (C.dtype().is(py::dtype::of<float>())) {
         execute_imp<float>(C_prefactor.cast<float>(), C, AB_prefactor.cast<float>(), A, B);
-    } else if(C.dtype().is(py::dtype::of<std::complex<double>>())) {
+    } else if (C.dtype().is(py::dtype::of<std::complex<double>>())) {
         execute_imp<std::complex<double>>(C_prefactor.cast<std::complex<double>>(), C, AB_prefactor.cast<std::complex<double>>(), A, B);
-    } else if(C.dtype().is(py::dtype::of<std::complex<float>>())) {
+    } else if (C.dtype().is(py::dtype::of<std::complex<float>>())) {
+        execute_imp<std::complex<float>>(C_prefactor.cast<std::complex<float>>(), C, AB_prefactor.cast<std::complex<float>>(), A, B);
+    } else {
+        execute_imp<double>(C_prefactor.cast<double>(), C, AB_prefactor.cast<double>(), A, B);
+    }
+}
+
+void PyEinsumDirectProductPlan::execute(const pybind11::object &C_prefactor, pybind11::array &C, const pybind11::object &AB_prefactor,
+                                        const pybind11::array &A, const pybind11::array &B) const {
+    if (!C.dtype().is(A.dtype()) || !C.dtype().is(B.dtype())) {
+        throw EINSUMSEXCEPTION("Can not handle tensors with different dtypes (yet)!");
+    } else if (C.dtype().is(py::dtype::of<float>())) {
+        execute_imp<float>(C_prefactor.cast<float>(), C, AB_prefactor.cast<float>(), A, B);
+    } else if (C.dtype().is(py::dtype::of<std::complex<double>>())) {
+        execute_imp<std::complex<double>>(C_prefactor.cast<std::complex<double>>(), C, AB_prefactor.cast<std::complex<double>>(), A, B);
+    } else if (C.dtype().is(py::dtype::of<std::complex<float>>())) {
         execute_imp<std::complex<float>>(C_prefactor.cast<std::complex<float>>(), C, AB_prefactor.cast<std::complex<float>>(), A, B);
     } else {
         execute_imp<double>(C_prefactor.cast<double>(), C, AB_prefactor.cast<double>(), A, B);
@@ -301,8 +316,13 @@ void PyEinsumDotPlan::execute(const pybind11::object &C_prefactor, pybind11::arr
 }
 
 void einsums::python::export_tensor_algebra(pybind11::module_ &m) {
-    py::class_<PyEinsumGenericPlan, std::shared_ptr<PyEinsumGenericPlan>>(m, "PyEinsumGenericPlan").def("execute", &PyEinsumGenericPlan::execute);
-    py::class_<PyEinsumDotPlan, PyEinsumGenericPlan, std::shared_ptr<PyEinsumDotPlan>>(m, "EinsumDotPlan").def("execute", &PyEinsumDotPlan::execute);
+    py::class_<PyEinsumGenericPlan, std::shared_ptr<PyEinsumGenericPlan>>(m, "EinsumGenericPlan")
+        .def("execute", &PyEinsumGenericPlan::execute);
+    py::class_<PyEinsumDotPlan, PyEinsumGenericPlan, std::shared_ptr<PyEinsumDotPlan>>(m, "EinsumDotPlan")
+        .def("execute", &PyEinsumDotPlan::execute);
+    py::class_<PyEinsumDirectProductPlan, PyEinsumGenericPlan, std::shared_ptr<PyEinsumDirectProductPlan>>(m, "EinsumDirectProductPlan")
+        .def("execute", &PyEinsumDirectProductPlan::execute);
 
-    m.def("compile_plan", compile_plan, py::arg("C_indices"), py::arg("A_indices"), py::arg("B_indices"), py::arg("unit") = einsums::python::detail::CPU);
+    m.def("compile_plan", compile_plan, py::arg("C_indices"), py::arg("A_indices"), py::arg("B_indices"),
+          py::arg("unit") = einsums::python::detail::CPU);
 }

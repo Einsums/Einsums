@@ -13,6 +13,10 @@ enum PyPlanUnit { CPU, GPU_MAP, GPU_COPY };
 
 EINSUMS_EXPORT void export_python_base(pybind11::module_ &mod);
 
+#ifdef __HIP__
+EINSUMS_EXPORT void export_gpu(pybind11::module_ &mod);
+#endif
+
 END_EINSUMS_NAMESPACE_HPP(einsums::python)
 
 #include "einsums/python/PyTensorAlgebra.hpp"

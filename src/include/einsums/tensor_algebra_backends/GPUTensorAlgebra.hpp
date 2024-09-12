@@ -103,30 +103,7 @@ __global__ void einsum_generic_algorithm_direct_product_gpu(
     size_t Unique_index[UniqueRank];
     size_t A_sentinel, B_sentinel, C_sentinel;
 
-    // First, set C.
-    if (is_zero(C_prefactor)) {
-        for (size_t index = thread_id; index < C_size; index += kernel_size) {
-            size_t C_index = 0, quotient = index;
-            for (int i = 0; i < CRank; i++) {
-                C_index += C_stride[i] * (quotient / C_index_strides[i]);
-                quotient %= C_index_strides[i];
-            }
-            make_zero(C[C_index]);
-        }
-    } else {
-        for (size_t index = thread_id; index < C_size; index += kernel_size) {
-            size_t C_index = 0, quotient = index;
-            for (int i = 0; i < CRank; i++) {
-                C_index += C_stride[i] * (quotient / C_index_strides[i]);
-                quotient %= C_index_strides[i];
-            }
-            C[C_index] = C[C_index] * C_prefactor;
-        }
-    }
-
-    __syncthreads();
-
-    // Now, contract.
+    // Direct product.
     for (size_t curr_index = thread_id; curr_index < max_index; curr_index += kernel_size) {
         sentinel_to_indices<UniqueRank>(curr_index, unique_strides, Unique_index);
         A_sentinel = 0;
@@ -148,8 +125,13 @@ __global__ void einsum_generic_algorithm_direct_product_gpu(
         for (ssize_t i = 0; i < BRank; i++) {
             B_sentinel += B_stride[i] * Unique_index[B_index_table[i]];
         }
-
-        C[C_sentinel] = C[C_sentinel] + (CDataType)(AB_prefactor * A[A_sentinel] * B[B_sentinel]);
+        
+        // We can do this here since we are guaranteed to see each element only once.
+        if(is_zero(C_prefactor)) {
+            C[C_sentinel] = (CDataType)(AB_prefactor * A[A_sentinel] * B[B_sentinel]);
+        } else {
+            C[C_sentinel] = C_prefactor * C[C_sentinel] + (CDataType)(AB_prefactor * A[A_sentinel] * B[B_sentinel]);
+        }
     }
 }
 
