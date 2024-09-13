@@ -295,8 +295,8 @@ class PyEinsumGenericPlan {
         }
 #ifdef __HIP__
         if (_unit == einsums::python::detail::GPU_MAP || _unit == einsums::python::detail::GPU_COPY) {
-            T       *C_data = (T *)C.mutable_data();
-            const T *A_data = (const T *)A.data(), *B_data = (const T *)B.data();
+            T       *C_data = (T *)C.mutable_unchecked<T>().mutable_data();
+            const T *A_data = (const T *)A.unchecked<T>().data(), *B_data = (const T *)B.unchecked<T>().data();
 
             size_t C_size = (size_t) C.shape(0) * (size_t) C.strides(0), A_size = (size_t) A.shape(0) * (size_t) A.strides(0), B_size = (size_t) B.shape(0) * (size_t) B.strides(0);
 
@@ -509,8 +509,8 @@ class PyEinsumGenericPlan {
                 gpu::hip_catch(hipFree((void *)gpu_A));
                 gpu::hip_catch(hipFree((void *)gpu_B));
             } else {
-                gpu::hip_catch(hipHostUnregister((void *)A.data()));
-                gpu::hip_catch(hipHostUnregister((void *)B.data()));
+                gpu::hip_catch(hipHostUnregister((void *)A_data));
+                gpu::hip_catch(hipHostUnregister((void *)B_data));
             }
 
             gpu::hip_catch(hipFree((void *)gpu_A_index_table));
@@ -527,9 +527,9 @@ class PyEinsumGenericPlan {
 
             dims_to_strides(unique_dims, unique_strides);
 
-            T       *C_data = (T *)C.mutable_data();
-            const T *A_data = (const T *)A.data();
-            const T *B_data = (const T *)B.data();
+            T       *C_data = (T *)C.mutable_unchecked<T>().mutable_data();
+            const T *A_data = (const T *)A.unchecked<T>().data();
+            const T *B_data = (const T *)B.unchecked<T>().data();
 
             for (int i = 0; i < _C_permute.size(); i++) {
                 C_dims[i] = C.shape(i);
@@ -669,8 +669,8 @@ class PyEinsumDotPlan : public PyEinsumGenericPlan {
             gpu::hip_catch(hipFree((void *)gpu_B_strides));
 
             if (this->_unit == einsums::python::detail::GPU_MAP) {
-                gpu::hip_catch(hipHostUnregister((void *)gpu_A));
-                gpu::hip_catch(hipHostUnregister((void *)gpu_B));
+                gpu::hip_catch(hipHostUnregister((void *)A_data));
+                gpu::hip_catch(hipHostUnregister((void *)B_data));
             } else {
                 gpu::hip_catch(hipFree((void *)gpu_A));
                 gpu::hip_catch(hipFree((void *)gpu_B));
@@ -693,9 +693,9 @@ class PyEinsumDotPlan : public PyEinsumGenericPlan {
             gpu::stream_wait();
         } else {
 #endif
-            T       &C_data = *(T *)(C.mutable_data());
-            const T *A_data = (const T *)(A.data());
-            const T *B_data = (const T *)(B.data());
+            T       &C_data = *(T *)(C.mutable_unchecked<T>().mutable_data());
+            const T *A_data = (const T *)(A.unchecked<T>().data());
+            const T *B_data = (const T *)(B.unchecked<T>().data());
 
             if (C_prefactor == T{0.0}) {
                 C_data = T{0.0};
@@ -750,8 +750,8 @@ class PyEinsumDirectProductPlan : public PyEinsumGenericPlan {
         }
 #ifdef __HIP__
         if (this->_unit == einsums::python::detail::GPU_COPY || this->_unit == einsums::python::detail::GPU_MAP) {
-            T       *C_data = (T *)C.mutable_data();
-            const T *A_data = (const T *)A.data(), *B_data = (const T *)B.data();
+            T       *C_data = (T *)C.mutable_unchecked<T>().mutable_data();
+            const T *A_data = (const T *)A.unchecked<T>().data(), *B_data = (const T *)B.unchecked<T>().data();
 
             __device_ptr__ size_t *gpu_index_strides, *gpu_C_strides, *gpu_A_strides, *gpu_B_strides;
             __device_ptr__ DevDatatype<T> *gpu_C, *gpu_A, *gpu_B;
@@ -806,14 +806,14 @@ class PyEinsumDirectProductPlan : public PyEinsumGenericPlan {
 
                 gpu::hip_catch(hipFree((void *)gpu_C));
             } else {
-                gpu::hip_catch(hipHostUnregister((void *)gpu_A));
-                gpu::hip_catch(hipHostUnregister((void *)gpu_B));
-                gpu::hip_catch(hipHostUnregister((void *)gpu_C));
+                gpu::hip_catch(hipHostUnregister((void *)A_data));
+                gpu::hip_catch(hipHostUnregister((void *)B_data));
+                gpu::hip_catch(hipHostUnregister((void *)C_data));
             }
         } else {
 #endif
-            T       *C_data = (T *)C.mutable_data();
-            const T *A_data = (const T *)A.data(), *B_data = (const T *)B.data();
+            T       *C_data = (T *)C.mutable_unchecked<T>().mutable_data();
+            const T *A_data = (const T *)A.unchecked<T>().data(), *B_data = (const T *)B.unchecked<T>().data();
 
 #pragma omp parallel for simd
             for (size_t sentinel = 0; sentinel < elements; sentinel++) {

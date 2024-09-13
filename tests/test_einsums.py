@@ -35,7 +35,7 @@ def dot_tester(unit) :
     assert(abs(C[0] - C_actual) < 1e-6)
 
 def direct_prod_tester(unit) :
-    A = np.array([[1.0 for i in range(10)] for j in range(10)])
+    A = np.array([[np.random.rand() for i in range(10)] for j in range(10)])
     B = np.array([[np.random.rand() for i in range(10)] for j in range(10)])
     C = np.array([[0.0 for i in range(10)] for j in range(10)])
 
