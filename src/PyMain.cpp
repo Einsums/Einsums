@@ -32,6 +32,8 @@ void einsums::python::export_python_base(pybind11::module_ &mod) {
 }
 
 PYBIND11_MODULE(einsums_py, mod) {
+    einsums::initialize();
+
     mod.doc() = "Einsums Python plugin. Provides a way to interact with the Einsums library through Python.";
 
     export_python_base(mod);
@@ -39,4 +41,7 @@ PYBIND11_MODULE(einsums_py, mod) {
         #ifdef __HIP__
     export_gpu(mod);
     #endif
+
+    auto atexit = py::module_::import("atexit");
+    atexit.attr("register")(py::cpp_function([]() -> void { einsums::finalize(); }));
 }

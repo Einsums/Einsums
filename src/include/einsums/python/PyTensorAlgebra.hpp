@@ -209,7 +209,7 @@ __global__ void dot_kernel(const size_t *unique_strides, T *__restrict__ C, cons
     // Clear the dot product.
     make_zero(value);
 
-    if(thread_id == 0) {
+    if (thread_id == 0) {
         make_zero(*C);
     }
 
@@ -295,7 +295,12 @@ class PyEinsumGenericPlan {
         }
 #ifdef __HIP__
         if (_unit == einsums::python::detail::GPU_MAP || _unit == einsums::python::detail::GPU_COPY) {
-            bool direct_product_swap = (_A_permute.size() == _B_permute.size()) && (_A_permute.size() == _C_permute.size()) &&
+            T       *C_data = (T *)C.mutable_data();
+            const T *A_data = (const T *)A.data(), *B_data = (const T *)B.data();
+
+            size_t C_size = (size_t) C.shape(0) * (size_t) C.strides(0), A_size = (size_t) A.shape(0) * (size_t) A.strides(0), B_size = (size_t) B.shape(0) * (size_t) B.strides(0);
+
+            bool     direct_product_swap = (_A_permute.size() == _B_permute.size()) && (_A_permute.size() == _C_permute.size()) &&
                                        (intersect(_A_permute, _B_permute).size() == _A_permute.size()) &&
                                        (intersect(_A_permute, _C_permute).size() == _A_permute.size()) &&
                                        (intersect(_B_permute, _C_permute).size() == _A_permute.size());
@@ -383,36 +388,36 @@ class PyEinsumGenericPlan {
             gpu::hip_catch(hipMalloc((void **)&gpu_A_index_table, _A_permute.size() * sizeof(int)));
             gpu::hip_catch(hipMalloc((void **)&gpu_B_index_table, _B_permute.size() * sizeof(int)));
 
-            gpu::hip_catch(hipMemcpyAsync((void *)gpu_A_index_table, (const void *)_A_permute.data(), _A_permute.size() * sizeof(int),
-                                          hipMemcpyHostToDevice, gpu::get_stream()));
-            gpu::hip_catch(hipMemcpyAsync((void *)gpu_B_index_table, (const void *)_B_permute.data(), _B_permute.size() * sizeof(int),
-                                          hipMemcpyHostToDevice, gpu::get_stream()));
-            gpu::hip_catch(hipMemcpyAsync((void *)gpu_A_unique_stride, (const void *)A_unique_stride.data(),
-                                          A_unique_stride.size() * sizeof(size_t), hipMemcpyHostToDevice, gpu::get_stream()));
-            gpu::hip_catch(hipMemcpyAsync((void *)gpu_B_unique_stride, (const void *)B_unique_stride.data(),
-                                          B_unique_stride.size() * sizeof(size_t), hipMemcpyHostToDevice, gpu::get_stream()));
+            gpu::hip_catch(hipMemcpy((void *)gpu_A_index_table, (const void *)_A_permute.data(), _A_permute.size() * sizeof(int),
+                                          hipMemcpyHostToDevice));
+            gpu::hip_catch(hipMemcpy((void *)gpu_B_index_table, (const void *)_B_permute.data(), _B_permute.size() * sizeof(int),
+                                          hipMemcpyHostToDevice));
+            gpu::hip_catch(hipMemcpy((void *)gpu_A_unique_stride, (const void *)A_unique_stride.data(),
+                                          A_unique_stride.size() * sizeof(size_t), hipMemcpyHostToDevice));
+            gpu::hip_catch(hipMemcpy((void *)gpu_B_unique_stride, (const void *)B_unique_stride.data(),
+                                          B_unique_stride.size() * sizeof(size_t), hipMemcpyHostToDevice));
 
             if (_C_permute.size() != 0) {
-                gpu::hip_catch(hipMemcpyAsync((void *)gpu_C_index_table, (const void *)_C_permute.data(), _C_permute.size() * sizeof(int),
-                                              hipMemcpyHostToDevice, gpu::get_stream()));
-                gpu::hip_catch(hipMemcpyAsync((void *)gpu_C_unique_stride, (const void *)C_unique_stride.data(),
-                                              C_unique_stride.size() * sizeof(size_t), hipMemcpyHostToDevice, gpu::get_stream()));
+                gpu::hip_catch(hipMemcpy((void *)gpu_C_index_table, (const void *)_C_permute.data(), _C_permute.size() * sizeof(int),
+                                              hipMemcpyHostToDevice));
+                gpu::hip_catch(hipMemcpy((void *)gpu_C_unique_stride, (const void *)C_unique_stride.data(),
+                                              C_unique_stride.size() * sizeof(size_t), hipMemcpyHostToDevice));
             }
 
-            gpu::hip_catch(hipMemcpyAsync((void *)gpu_unique_strides, (const void *)unique_strides.data(),
-                                          unique_strides.size() * sizeof(size_t), hipMemcpyHostToDevice, gpu::get_stream()));
+            gpu::hip_catch(hipMemcpy((void *)gpu_unique_strides, (const void *)unique_strides.data(),
+                                          unique_strides.size() * sizeof(size_t), hipMemcpyHostToDevice));
 
-            gpu::hip_catch(hipMemcpyAsync((void *)gpu_A_stride, (const void *)A.strides(), _A_permute.size() * sizeof(size_t),
-                                          hipMemcpyHostToDevice, gpu::get_stream()));
-            gpu::hip_catch(hipMemcpyAsync((void *)gpu_B_stride, (const void *)B.strides(), _B_permute.size() * sizeof(size_t),
-                                          hipMemcpyHostToDevice, gpu::get_stream()));
+            gpu::hip_catch(hipMemcpy((void *)gpu_A_stride, (const void *)A.strides(), _A_permute.size() * sizeof(size_t),
+                                          hipMemcpyHostToDevice));
+            gpu::hip_catch(hipMemcpy((void *)gpu_B_stride, (const void *)B.strides(), _B_permute.size() * sizeof(size_t),
+                                          hipMemcpyHostToDevice));
             if (_C_permute.size() != 0) {
-                gpu::hip_catch(hipMemcpyAsync((void *)gpu_C_stride, (const void *)C.strides(), _C_permute.size() * sizeof(size_t),
-                                              hipMemcpyHostToDevice, gpu::get_stream()));
-                gpu::hip_catch(hipMemcpyAsync((void *)gpu_C_dims, (const void *)C_dims.data(), _C_permute.size() * sizeof(size_t),
-                                              hipMemcpyHostToDevice, gpu::get_stream()));
-                gpu::hip_catch(hipMemcpyAsync((void *)gpu_C_index_strides, (const void *)C_index_strides.data(),
-                                              _C_permute.size() * sizeof(size_t), hipMemcpyHostToDevice, gpu::get_stream()));
+                gpu::hip_catch(hipMemcpy((void *)gpu_C_stride, (const void *)C.strides(), _C_permute.size() * sizeof(size_t),
+                                              hipMemcpyHostToDevice));
+                gpu::hip_catch(hipMemcpy((void *)gpu_C_dims, (const void *)C_dims.data(), _C_permute.size() * sizeof(size_t),
+                                              hipMemcpyHostToDevice));
+                gpu::hip_catch(hipMemcpy((void *)gpu_C_index_strides, (const void *)C_index_strides.data(),
+                                              _C_permute.size() * sizeof(size_t), hipMemcpyHostToDevice));
             }
 
             if (_unit == python::detail::GPU_COPY) {
@@ -420,27 +425,25 @@ class PyEinsumGenericPlan {
                 gpu::hip_catch(hipMalloc((void **)&gpu_A, A.shape(0) * A.strides(0)));
                 gpu::hip_catch(hipMalloc((void **)&gpu_B, B.shape(0) * B.strides(0)));
 
-                gpu::hip_catch(
-                    hipMemcpy((void *)gpu_A, A.data(), A.shape(0) * A.strides(0), hipMemcpyHostToDevice));
-                gpu::hip_catch(
-                    hipMemcpy((void *)gpu_B, B.data(), B.shape(0) * B.strides(0), hipMemcpyHostToDevice));
+                gpu::hip_catch(hipMemcpy((void *)gpu_A, (const void *)A_data, A.shape(0) * A.strides(0), hipMemcpyHostToDevice));
+                gpu::hip_catch(hipMemcpy((void *)gpu_B, (const void *)B_data, B.shape(0) * B.strides(0), hipMemcpyHostToDevice));
 
                 if (_C_permute.size() != 0) {
                     gpu::hip_catch(hipMalloc((void **)&gpu_C, C.shape(0) * C.strides(0)));
 
-                    gpu::hip_catch(hipMemcpy((void *)gpu_C, (void *) C.mutable_data(), C.shape(0) * C.strides(0), hipMemcpyHostToDevice));
+                    gpu::hip_catch(hipMemcpy((void *)gpu_C, (void *)C_data, C.shape(0) * C.strides(0), hipMemcpyHostToDevice));
                 }
             } else {
-                gpu::hip_catch(hipHostRegister((void *)A.data(), A.shape(0) * A.strides(0), hipHostRegisterDefault));
-                gpu::hip_catch(hipHostRegister((void *)B.data(), B.shape(0) * B.strides(0), hipHostRegisterDefault));
+                gpu::hip_catch(hipHostRegister((void *)A_data, A.shape(0) * A.strides(0), hipHostRegisterDefault));
+                gpu::hip_catch(hipHostRegister((void *)B_data, B.shape(0) * B.strides(0), hipHostRegisterDefault));
 
-                gpu::hip_catch(hipHostGetDevicePointer((void **)&gpu_A, (void *)A.data(), 0));
-                gpu::hip_catch(hipHostGetDevicePointer((void **)&gpu_B, (void *)B.data(), 0));
+                gpu::hip_catch(hipHostGetDevicePointer((void **)&gpu_A, (void *)A_data, 0));
+                gpu::hip_catch(hipHostGetDevicePointer((void **)&gpu_B, (void *)B_data, 0));
 
                 if (_C_permute.size() != 0) {
-                    gpu::hip_catch(hipHostRegister((void *)C.mutable_data(), C.shape(0) * C.strides(0), hipHostRegisterDefault));
+                    gpu::hip_catch(hipHostRegister((void *)C_data, C.shape(0) * C.strides(0), hipHostRegisterDefault));
 
-                    gpu::hip_catch(hipHostGetDevicePointer((void **)&gpu_C, (void *)C.mutable_data(), 0));
+                    gpu::hip_catch(hipHostGetDevicePointer((void **)&gpu_C, (void *)C_data, 0));
                 }
             }
 
@@ -462,21 +465,20 @@ class PyEinsumGenericPlan {
                         gpu_B_unique_stride, unique_dims[0] * unique_strides[0], C.size(), C.ndim(), A.ndim(), B.ndim(),
                         unique_dims.size());
                 }
-
-                gpu::hip_catch(hipFreeAsync((void *)gpu_C_dims, gpu::get_stream()));
-                gpu::hip_catch(hipFreeAsync((void *)gpu_C_stride, gpu::get_stream()));
-                gpu::hip_catch(hipFreeAsync((void *)gpu_C_unique_stride, gpu::get_stream()));
-                gpu::hip_catch(hipFreeAsync((void *)gpu_C_index_table, gpu::get_stream()));
-                gpu::hip_catch(hipFreeAsync((void *)gpu_C_index_strides, gpu::get_stream()));
-
+                
                 gpu::stream_wait();
 
+                gpu::hip_catch(hipFree((void *)gpu_C_dims));
+                gpu::hip_catch(hipFree((void *)gpu_C_stride));
+                gpu::hip_catch(hipFree((void *)gpu_C_unique_stride));
+                gpu::hip_catch(hipFree((void *)gpu_C_index_table));
+                gpu::hip_catch(hipFree((void *)gpu_C_index_strides));
+
                 if (_unit == python::detail::GPU_COPY) {
-                    gpu::hip_catch(
-                        hipMemcpy((void *)C.mutable_data(), (const void *)gpu_C, C.shape(0) * C.strides(0), hipMemcpyDeviceToHost));
+                    gpu::hip_catch(hipMemcpy((void *)C_data, (const void *)gpu_C, C.shape(0) * C.strides(0), hipMemcpyDeviceToHost));
                     gpu::hip_catch(hipFree((void *)gpu_C));
                 } else {
-                    gpu::hip_catch(hipHostUnregister((void *)C.mutable_data()));
+                    gpu::hip_catch(hipHostUnregister((void *)C_data));
                 }
             } else {
                 T &C_val = *(T *)C.mutable_data();
@@ -622,6 +624,10 @@ class PyEinsumDotPlan : public PyEinsumGenericPlan {
 
 #ifdef __HIP__
         if (this->_unit == einsums::python::detail::GPU_MAP || this->_unit == einsums::python::detail::GPU_COPY) {
+            T       *C_data = (T *)C.mutable_unchecked<T>().mutable_data();
+            const T *A_data = (const T *)A.unchecked<T>().data(), *B_data = (const T *)B.unchecked<T>().data();
+
+            size_t C_size = C.shape(0) * C.strides(0), A_size = (size_t) A.shape(0) * (size_t) A.strides(0), B_size = B.shape(0) * B.strides(0);
 
             __device_ptr__ size_t *gpu_unique_strides, *gpu_A_strides, *gpu_B_strides;
             __device_ptr__ DevDatatype<T> *gpu_A, *gpu_B, *gpu_C;
@@ -637,21 +643,18 @@ class PyEinsumDotPlan : public PyEinsumGenericPlan {
             gpu::hip_catch(hipMalloc((void **)&gpu_C, sizeof(DevDatatype<T>)));
 
             if (this->_unit == einsums::python::detail::GPU_MAP) {
-                gpu::hip_catch(
-                    hipHostRegister((void *)A.data(), A.shape(0) * A.strides(0), hipHostRegisterDefault));
-                gpu::hip_catch(
-                    hipHostRegister((void *)B.data(), B.shape(0) * B.strides(0), hipHostRegisterDefault));
-                gpu::hip_catch(hipHostGetDevicePointer((void **)&gpu_A, (void *)A.data(), 0));
-                gpu::hip_catch(hipHostGetDevicePointer((void **)&gpu_B, (void *)B.data(), 0));
+                gpu::hip_catch(hipHostRegister((void *)A_data, A_size, hipHostRegisterDefault));
+                gpu::hip_catch(hipHostRegister((void *)B_data, B_size, hipHostRegisterDefault));
+                gpu::hip_catch(hipHostGetDevicePointer((void **)&gpu_A, (void *)A_data, 0));
+                gpu::hip_catch(hipHostGetDevicePointer((void **)&gpu_B, (void *)B_data, 0));
             } else {
-                size_t A_size = A.shape(0) * A.strides(0);
-                T *A_data = (T *) A.data();
-                gpu::hip_catch(hipMalloc((void **)&gpu_A, A.shape(0) * A.strides(0)));
-                gpu::hip_catch(hipMalloc((void **)&gpu_B, B.shape(0) * B.strides(0)));
-                gpu::hip_catch(hipMemcpy((void *)gpu_A, (const void *)A.data(), A.shape(0) * A.strides(0),
-                                         hipMemcpyHostToDevice));
-                gpu::hip_catch(hipMemcpy((void *)gpu_B, (const void *)B.data(), B.shape(0) * B.strides(0),
-                                         hipMemcpyHostToDevice));
+                gpu_A = nullptr;
+                gpu_B = nullptr;
+                gpu::hip_catch(hipMalloc((void **)&gpu_A, A_size));
+                gpu::hip_catch(hipMalloc((void **)&gpu_B, B_size));
+
+                gpu::hip_catch(hipMemcpy((void *)gpu_A, (const void *)A_data, A_size, hipMemcpyHostToDevice));
+                gpu::hip_catch(hipMemcpy((void *)gpu_B, (const void *)B_data, B_size, hipMemcpyHostToDevice));
             }
 
             auto threads = gpu::block_size(A.shape(0) * unique_strides[0]), blocks = gpu::blocks(A.shape(0) * unique_strides[0]);
@@ -661,16 +664,16 @@ class PyEinsumDotPlan : public PyEinsumGenericPlan {
 
             gpu::stream_wait();
 
-            gpu::hip_catch(hipFreeAsync((void *) gpu_unique_strides, gpu::get_stream()));
-            gpu::hip_catch(hipFreeAsync((void *)gpu_A_strides, gpu::get_stream()));
-            gpu::hip_catch(hipFreeAsync((void *)gpu_B_strides, gpu::get_stream()));
+            gpu::hip_catch(hipFree((void *)gpu_unique_strides));
+            gpu::hip_catch(hipFree((void *)gpu_A_strides));
+            gpu::hip_catch(hipFree((void *)gpu_B_strides));
 
-            if(this->_unit == einsums::python::detail::GPU_MAP) {
-                gpu::hip_catch(hipHostUnregister((void *) gpu_A));
-                gpu::hip_catch(hipHostUnregister((void *) gpu_B));
+            if (this->_unit == einsums::python::detail::GPU_MAP) {
+                gpu::hip_catch(hipHostUnregister((void *)gpu_A));
+                gpu::hip_catch(hipHostUnregister((void *)gpu_B));
             } else {
-                gpu::hip_catch(hipFreeAsync((void *)gpu_A, gpu::get_stream()));
-                gpu::hip_catch(hipFreeAsync((void *)gpu_B, gpu::get_stream()));
+                gpu::hip_catch(hipFree((void *)gpu_A));
+                gpu::hip_catch(hipFree((void *)gpu_B));
             }
 
             T C_temp;
@@ -678,15 +681,16 @@ class PyEinsumDotPlan : public PyEinsumGenericPlan {
             gpu::hip_catch(hipMemcpy((void *)&C_temp, (const void *)gpu_C, sizeof(T), hipMemcpyDeviceToHost));
 
             if (C_prefactor == T{0.0}) {
-                *(T *)(C.mutable_data()) = T{0.0};
+                *C_data = T{0.0};
             } else {
-                *(T *)(C.mutable_data()) *= C_prefactor;
+                *C_data *= C_prefactor;
             }
 
-            *(T *)(C.mutable_data()) += AB_prefactor * C_temp;
+            *C_data += AB_prefactor * C_temp;
 
-            gpu::hip_catch(hipFreeAsync(gpu_C, gpu::get_stream()));
+            gpu::hip_catch(hipFree(gpu_C));
 
+            gpu::stream_wait();
         } else {
 #endif
             T       &C_data = *(T *)(C.mutable_data());
@@ -746,6 +750,9 @@ class PyEinsumDirectProductPlan : public PyEinsumGenericPlan {
         }
 #ifdef __HIP__
         if (this->_unit == einsums::python::detail::GPU_COPY || this->_unit == einsums::python::detail::GPU_MAP) {
+            T       *C_data = (T *)C.mutable_data();
+            const T *A_data = (const T *)A.data(), *B_data = (const T *)B.data();
+
             __device_ptr__ size_t *gpu_index_strides, *gpu_C_strides, *gpu_A_strides, *gpu_B_strides;
             __device_ptr__ DevDatatype<T> *gpu_C, *gpu_A, *gpu_B;
 
@@ -766,20 +773,17 @@ class PyEinsumDirectProductPlan : public PyEinsumGenericPlan {
                 gpu::hip_catch(hipMalloc((void **)&gpu_A, A.shape(0) * A.strides(0)));
                 gpu::hip_catch(hipMalloc((void **)&gpu_B, B.shape(0) * B.strides(0)));
 
-                gpu::hip_catch(hipMemcpyAsync((void *)gpu_C, (const void *)C.mutable_data(), C.shape(0) * C.strides(0),
-                                              hipMemcpyHostToDevice, gpu::get_stream()));
-                gpu::hip_catch(hipMemcpyAsync((void *)gpu_A, (const void *)A.data(), A.shape(0) * A.strides(0), hipMemcpyHostToDevice,
-                                              gpu::get_stream()));
-                gpu::hip_catch(hipMemcpyAsync((void *)gpu_B, (const void *)B.data(), B.shape(0) * B.strides(0), hipMemcpyHostToDevice,
-                                              gpu::get_stream()));
+                gpu::hip_catch(hipMemcpy((void *)gpu_C, (const void *)C_data, C.shape(0) * C.strides(0), hipMemcpyHostToDevice));
+                gpu::hip_catch(hipMemcpy((void *)gpu_A, (const void *)A_data, A.shape(0) * A.strides(0), hipMemcpyHostToDevice));
+                gpu::hip_catch(hipMemcpy((void *)gpu_B, (const void *)B_data, B.shape(0) * B.strides(0), hipMemcpyHostToDevice));
             } else {
-                gpu::hip_catch(hipHostRegister((void *)C.mutable_data(), C.shape(0) * C.strides(0), hipHostRegisterDefault));
-                gpu::hip_catch(hipHostRegister((void *)A.data(), A.shape(0) * A.strides(0), hipHostRegisterDefault));
-                gpu::hip_catch(hipHostRegister((void *)B.data(), B.shape(0) * B.strides(0), hipHostRegisterDefault));
+                gpu::hip_catch(hipHostRegister((void *)C_data, C.shape(0) * C.strides(0), hipHostRegisterDefault));
+                gpu::hip_catch(hipHostRegister((void *)A_data, A.shape(0) * A.strides(0), hipHostRegisterDefault));
+                gpu::hip_catch(hipHostRegister((void *)B_data, B.shape(0) * B.strides(0), hipHostRegisterDefault));
 
-                gpu::hip_catch(hipHostGetDevicePointer((void **)&gpu_C, (void *)C.mutable_data(), 0));
-                gpu::hip_catch(hipHostGetDevicePointer((void **)&gpu_A, (void *)A.data(), 0));
-                gpu::hip_catch(hipHostGetDevicePointer((void **)&gpu_B, (void *)B.data(), 0));
+                gpu::hip_catch(hipHostGetDevicePointer((void **)&gpu_C, (void *)C_data, 0));
+                gpu::hip_catch(hipHostGetDevicePointer((void **)&gpu_A, (void *)A_data, 0));
+                gpu::hip_catch(hipHostGetDevicePointer((void **)&gpu_B, (void *)B_data, 0));
             }
 
             auto threads = gpu::block_size(elements), blocks = gpu::blocks(elements);
@@ -787,20 +791,20 @@ class PyEinsumDirectProductPlan : public PyEinsumGenericPlan {
             detail::direct_product_kernel<DevDatatype<T>><<<threads, blocks, 0, gpu::get_stream()>>>(
                 gpu_index_strides, gpu::HipCast<DevDatatype<T>, T>::cast(C_prefactor), gpu_C, gpu_C_strides,
                 gpu::HipCast<DevDatatype<T>, T>::cast(AB_prefactor), gpu_A, gpu_A_strides, gpu_B, gpu_B_strides, elements, rank);
-
-            gpu::hip_catch(hipFreeAsync((void *)gpu_index_strides, gpu::get_stream()));
-            gpu::hip_catch(hipFreeAsync((void *)gpu_A_strides, gpu::get_stream()));
-            gpu::hip_catch(hipFreeAsync((void *)gpu_B_strides, gpu::get_stream()));
-            gpu::hip_catch(hipFreeAsync((void *)gpu_C_strides, gpu::get_stream()));
-
+            
             gpu::stream_wait();
 
-            if (this->_unit == einsums::python::detail::GPU_COPY) {
-                gpu::hip_catch(hipFreeAsync((void *)gpu_A, gpu::get_stream()));
-                gpu::hip_catch(hipFreeAsync((void *)gpu_B, gpu::get_stream()));
-                gpu::hip_catch(hipMemcpy((void *)C.mutable_data(), (const void *)gpu_C, C.shape(0) * C.strides(0), hipMemcpyDeviceToHost));
+            gpu::hip_catch(hipFree((void *)gpu_index_strides));
+            gpu::hip_catch(hipFree((void *)gpu_A_strides));
+            gpu::hip_catch(hipFree((void *)gpu_B_strides));
+            gpu::hip_catch(hipFree((void *)gpu_C_strides));
 
-                gpu::hip_catch(hipFreeAsync((void *)gpu_C, gpu::get_stream()));
+            if (this->_unit == einsums::python::detail::GPU_COPY) {
+                gpu::hip_catch(hipFree((void *)gpu_A));
+                gpu::hip_catch(hipFree((void *)gpu_B));
+                gpu::hip_catch(hipMemcpy((void *)C_data, (const void *)gpu_C, C.shape(0) * C.strides(0), hipMemcpyDeviceToHost));
+
+                gpu::hip_catch(hipFree((void *)gpu_C));
             } else {
                 gpu::hip_catch(hipHostUnregister((void *)gpu_A));
                 gpu::hip_catch(hipHostUnregister((void *)gpu_B));

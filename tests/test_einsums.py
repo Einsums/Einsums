@@ -2,12 +2,6 @@ import einsums_py as ein
 import pytest
 import numpy as np
 
-@pytest.fixture
-def einsums_setup() :
-    ein.initialize()
-    yield 1
-    ein.finalize()
-
 def generic_tester(unit) :
     A = np.array([[np.random.rand() for i in range(10)] for j in range(10)])
     B = np.array([[np.random.rand() for i in range(10)] for j in range(10)])
@@ -26,7 +20,7 @@ def generic_tester(unit) :
             assert(abs(C[i, j] - C_actual[i, j]) < 1e-6)
 
 def dot_tester(unit) :
-    A = np.array([np.random.rand() for i in range(10)])
+    A = np.array([1.0 for i in range(10)])
     B = np.array([np.random.rand() for i in range(10)])
     C = np.array([0.0])
 
@@ -41,7 +35,7 @@ def dot_tester(unit) :
     assert(abs(C[0] - C_actual) < 1e-6)
 
 def direct_prod_tester(unit) :
-    A = np.array([[np.random.rand() for i in range(10)] for j in range(10)])
+    A = np.array([[1.0 for i in range(10)] for j in range(10)])
     B = np.array([[np.random.rand() for i in range(10)] for j in range(10)])
     C = np.array([[0.0 for i in range(10)] for j in range(10)])
 
@@ -58,21 +52,21 @@ def direct_prod_tester(unit) :
             assert(abs(C[i, j] - C_actual[i, j]) < 1e-6)
 
 
-def test_generic(einsums_setup) :
+def test_generic() :
     generic_tester(ein.CPU)
 
     if ein.gpu_enabled() :
         generic_tester(ein.GPU_MAP)
         generic_tester(ein.GPU_COPY)
 
-def test_dot(einsums_setup) :
+def test_dot() :
     dot_tester(ein.CPU)
 
     if ein.gpu_enabled() :
         dot_tester(ein.GPU_MAP)
         dot_tester(ein.GPU_COPY)
 
-def test_direct_prod(einsums_setup) :
+def test_direct_prod() :
     direct_prod_tester(ein.CPU)
 
     if ein.gpu_enabled() :
