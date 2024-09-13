@@ -20,7 +20,7 @@ def generic_tester(unit) :
             assert(abs(C[i, j] - C_actual[i, j]) < 1e-6)
 
 def dot_tester(unit) :
-    A = np.array([1.0 for i in range(10)])
+    A = np.array([np.random.rand() for i in range(10)])
     B = np.array([np.random.rand() for i in range(10)])
     C = np.array([0.0])
 
@@ -51,6 +51,23 @@ def direct_prod_tester(unit) :
         for j in range(10) :
             assert(abs(C[i, j] - C_actual[i, j]) < 1e-6)
 
+def outer_prod_tester(unit) :
+    A = np.array([np.random.rand() for i in range(10)])
+    B = np.array([np.random.rand() for i in range(10)])
+    C = np.array([[0.0 for i in range(10)] for j in range(10)])
+
+    plan = ein.compile_plan("ij", "i", "j", unit)
+
+    assert(type(plan) is ein.EinsumGerPlan)
+
+    plan.execute(0.0, C, 1.0, A, B)
+
+    C_actual = np.outer(A, B)
+
+    for i in range(10) :
+        for j in range(10) :
+            assert(abs(C[i, j] - C_actual[i, j]) < 1e-6)
+
 
 def test_generic() :
     generic_tester(ein.CPU)
@@ -72,3 +89,10 @@ def test_direct_prod() :
     if ein.gpu_enabled() :
         direct_prod_tester(ein.GPU_MAP)
         direct_prod_tester(ein.GPU_COPY)
+
+def test_outer_prod() :
+    outer_prod_tester(ein.CPU)
+
+    if ein.gpu_enabled() :
+        outer_prod_tester(ein.GPU_MAP)
+        outer_prod_tester(ein.GPU_COPY)

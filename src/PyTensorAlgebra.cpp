@@ -24,7 +24,7 @@ PyEinsumDotPlan::PyEinsumDotPlan(const PyEinsumGenericPlan &plan_base) : PyEinsu
 PyEinsumDirectProductPlan::PyEinsumDirectProductPlan(const PyEinsumGenericPlan &plan_base) : PyEinsumGenericPlan(plan_base) {
 }
 
-PyEinsumGerPlan::PyEinsumGerPlan(const PyEinsumGenericPlan &plan_base) : PyEinsumGenericPlan(plan_base) {
+PyEinsumGerPlan::PyEinsumGerPlan(bool swap_AB, const PyEinsumGenericPlan &plan_base) : PyEinsumGenericPlan(plan_base), _swap_AB{swap_AB} {
 }
 
 PyEinsumGemvPlan::PyEinsumGemvPlan(const PyEinsumGenericPlan &plan_base) : PyEinsumGenericPlan(plan_base) {
@@ -230,7 +230,8 @@ std::shared_ptr<einsums::tensor_algebra::PyEinsumGenericPlan> einsums::tensor_al
     } else if (element_wise_multiplication) {
         return make_shared<PyEinsumDirectProductPlan>(base);
     } else if (outer_product) {
-        return make_shared<PyEinsumGerPlan>(base);
+        bool swap_AB = A_target_position_in_C[0].second != 0;
+        return make_shared<PyEinsumGerPlan>(swap_AB, base);
     } else if (is_gemv_possible) {
         return make_shared<PyEinsumGemvPlan>(base);
     } else if (is_gemm_possible) {
@@ -275,13 +276,13 @@ void PyEinsumGenericPlan::execute(const pybind11::object &C_prefactor, pybind11:
     if (!C.dtype().is(A.dtype()) || !C.dtype().is(B.dtype())) {
         throw EINSUMSEXCEPTION("Can not handle tensors with different dtypes (yet)!");
     } else if (C.dtype().is(py::dtype::of<float>())) {
-        execute_imp<float>(C_prefactor.cast<float>(), C, AB_prefactor.cast<float>(), A, B);
+        execute_generic<float>(C_prefactor.cast<float>(), C, AB_prefactor.cast<float>(), A, B);
     } else if (C.dtype().is(py::dtype::of<std::complex<double>>())) {
-        execute_imp<std::complex<double>>(C_prefactor.cast<std::complex<double>>(), C, AB_prefactor.cast<std::complex<double>>(), A, B);
+        execute_generic<std::complex<double>>(C_prefactor.cast<std::complex<double>>(), C, AB_prefactor.cast<std::complex<double>>(), A, B);
     } else if (C.dtype().is(py::dtype::of<std::complex<float>>())) {
-        execute_imp<std::complex<float>>(C_prefactor.cast<std::complex<float>>(), C, AB_prefactor.cast<std::complex<float>>(), A, B);
+        execute_generic<std::complex<float>>(C_prefactor.cast<std::complex<float>>(), C, AB_prefactor.cast<std::complex<float>>(), A, B);
     } else {
-        execute_imp<double>(C_prefactor.cast<double>(), C, AB_prefactor.cast<double>(), A, B);
+        execute_generic<double>(C_prefactor.cast<double>(), C, AB_prefactor.cast<double>(), A, B);
     }
 }
 
@@ -315,6 +316,54 @@ void PyEinsumDirectProductPlan::execute(const pybind11::object &C_prefactor, pyb
     }
 }
 
+void PyEinsumGerPlan::execute(const pybind11::object &C_prefactor, pybind11::array &C, const pybind11::object &AB_prefactor,
+                                        const pybind11::array &A, const pybind11::array &B) const {
+    // Check to make sure that we can use the library function.
+        size_t C_check = C.itemsize(), A_check = A.itemsize(), B_check = B.itemsize();
+
+        bool use_generic = false;
+
+        for(int i = 0; i < C.ndim(); i++) {
+            if(C_check != C.strides(i)) {
+                use_generic = true;
+                break;
+            }
+            C_check *= C.shape(i);
+        }
+
+        for(int i = 0; i < A.ndim(); i++) {
+            if(A_check != A.strides(i)) {
+                use_generic = true;
+                break;
+            }
+            C_check *= C.shape(i);
+        }
+
+        for(int i = 0; i < B.ndim(); i++) {
+            if(B_check != B.strides(i)) {
+                use_generic = true;
+                break;
+            }
+            B_check *= B.shape(i);
+        }
+
+        if(use_generic) {
+            PyEinsumGenericPlan::execute(C_prefactor, C, AB_prefactor, A, B);
+            return;
+        }
+    if (!C.dtype().is(A.dtype()) || !C.dtype().is(B.dtype())) {
+        throw EINSUMSEXCEPTION("Can not handle tensors with different dtypes (yet)!");
+    } else if (C.dtype().is(py::dtype::of<float>())) {
+        execute_imp<float>(C_prefactor.cast<float>(), C, AB_prefactor.cast<float>(), A, B);
+    } else if (C.dtype().is(py::dtype::of<std::complex<double>>())) {
+        execute_imp<std::complex<double>>(C_prefactor.cast<std::complex<double>>(), C, AB_prefactor.cast<std::complex<double>>(), A, B);
+    } else if (C.dtype().is(py::dtype::of<std::complex<float>>())) {
+        execute_imp<std::complex<float>>(C_prefactor.cast<std::complex<float>>(), C, AB_prefactor.cast<std::complex<float>>(), A, B);
+    } else {
+        execute_imp<double>(C_prefactor.cast<double>(), C, AB_prefactor.cast<double>(), A, B);
+    }
+}
+
 void einsums::python::export_tensor_algebra(pybind11::module_ &m) {
     py::class_<PyEinsumGenericPlan, std::shared_ptr<PyEinsumGenericPlan>>(m, "EinsumGenericPlan")
         .def("execute", &PyEinsumGenericPlan::execute);
@@ -322,6 +371,8 @@ void einsums::python::export_tensor_algebra(pybind11::module_ &m) {
         .def("execute", &PyEinsumDotPlan::execute);
     py::class_<PyEinsumDirectProductPlan, PyEinsumGenericPlan, std::shared_ptr<PyEinsumDirectProductPlan>>(m, "EinsumDirectProductPlan")
         .def("execute", &PyEinsumDirectProductPlan::execute);
+    py::class_<PyEinsumGerPlan, PyEinsumGenericPlan, std::shared_ptr<PyEinsumGerPlan>>(m, "EinsumGerPlan")
+        .def("execute", &PyEinsumGerPlan::execute);
 
     m.def("compile_plan", compile_plan, py::arg("C_indices"), py::arg("A_indices"), py::arg("B_indices"),
           py::arg("unit") = einsums::python::detail::CPU);
