@@ -27,10 +27,22 @@ PyEinsumDirectProductPlan::PyEinsumDirectProductPlan(const PyEinsumGenericPlan &
 PyEinsumGerPlan::PyEinsumGerPlan(bool swap_AB, const PyEinsumGenericPlan &plan_base) : PyEinsumGenericPlan(plan_base), _swap_AB{swap_AB} {
 }
 
-PyEinsumGemvPlan::PyEinsumGemvPlan(const PyEinsumGenericPlan &plan_base) : PyEinsumGenericPlan(plan_base) {
+PyEinsumGemvPlan::PyEinsumGemvPlan(const std::vector<int> &A_link_inds, const std::vector<int> &B_link_inds,
+                                   const std::vector<int> &AC_inds, int A_target_last_ind, int A_link_last_ind, int B_link_last_ind,
+                                   int C_target_last_ind, bool trans_A, bool swap_AB, const PyEinsumGenericPlan &plan_base)
+    : PyEinsumGenericPlan(plan_base), _A_link_pos{A_link_inds}, _B_link_pos{B_link_inds}, _AC_pos{AC_inds}, _trans_A{trans_A},
+      _A_link_last_ind{A_link_last_ind}, _A_target_last_ind{A_target_last_ind}, _B_link_last_ind{B_link_last_ind},
+      _C_target_last_ind{C_target_last_ind}, _swap_AB{swap_AB} {
 }
 
-PyEinsumGemmPlan::PyEinsumGemmPlan(const PyEinsumGenericPlan &plan_base) : PyEinsumGenericPlan(plan_base) {
+PyEinsumGemmPlan::PyEinsumGemmPlan(const std::vector<int> &A_link_inds, const std::vector<int> &B_link_inds,
+                                   const std::vector<int> &AC_inds, const std::vector<int> &BC_inds, int A_target_last_ind,
+                                   int A_link_last_ind, int B_target_last_ind, int B_link_last_ind, int CA_target_last_ind,
+                                   int CB_target_last_ind, bool trans_A, bool trans_B, bool trans_C, const PyEinsumGenericPlan &plan_base)
+    : PyEinsumGenericPlan(plan_base), _A_link_inds{A_link_inds}, _B_link_inds{B_link_inds}, _AC_inds{AC_inds}, _BC_inds{BC_inds},
+      _A_target_last_ind{A_target_last_ind}, _A_link_last_ind{A_link_last_ind}, _B_target_last_ind{B_target_last_ind},
+      _B_link_last_ind{B_link_last_ind}, _CA_target_last_ind{CA_target_last_ind}, _CB_target_last_ind{CB_target_last_ind},
+      _trans_A{trans_A}, _trans_B{trans_B}, _trans_C{trans_C} {
 }
 
 string einsums::tensor_algebra::detail::intersect(const string &st1, const string &st2) {
@@ -154,7 +166,7 @@ std::shared_ptr<einsums::tensor_algebra::PyEinsumGenericPlan> einsums::tensor_al
 
     std::string CminusA = difference(C_indices, A_indices);
 
-    std::string CminusB = difference(C_indices, A_indices);
+    std::string CminusB = difference(C_indices, B_indices);
 
     bool have_remaining_indices_in_CminusA = CminusA.size() > 0;
     bool have_remaining_indices_in_CminusB = CminusB.size() > 0;
@@ -196,8 +208,8 @@ std::shared_ptr<einsums::tensor_algebra::PyEinsumGenericPlan> einsums::tensor_al
     bool contiguous_B_targets_in_C = contiguous_indices(B_target_position_in_C);
 
     bool same_ordering_link_position_in_AB   = same_ordering(link_position_in_A, link_position_in_B);
-    bool same_ordering_target_position_in_CA = same_ordering(target_position_in_A, target_position_in_C);
-    bool same_ordering_target_position_in_CB = same_ordering(target_position_in_B, target_position_in_C);
+    bool same_ordering_target_position_in_CA = same_ordering(target_position_in_A, A_target_position_in_C);
+    bool same_ordering_target_position_in_CB = same_ordering(target_position_in_B, B_target_position_in_C);
 
     bool C_exactly_matches_A = (A_indices == C_indices);
     bool C_exactly_matches_B = (B_indices == C_indices);
@@ -208,10 +220,15 @@ std::shared_ptr<einsums::tensor_algebra::PyEinsumGenericPlan> einsums::tensor_al
                             contiguous_A_targets_in_C && contiguous_B_targets_in_C && same_ordering_link_position_in_AB &&
                             same_ordering_target_position_in_CA && same_ordering_target_position_in_CB && !A_hadamard_found &&
                             !B_hadamard_found && !C_hadamard_found;
-    bool is_gemv_possible = contiguous_link_position_in_A && contiguous_link_position_in_B && contiguous_target_position_in_A &&
-                            same_ordering_link_position_in_AB && same_ordering_target_position_in_CA &&
-                            !same_ordering_target_position_in_CB && B_target_position_in_C.size() == 0 && !A_hadamard_found &&
-                            !B_hadamard_found && !C_hadamard_found;
+    bool is_gemv_AB_possible = contiguous_link_position_in_A && contiguous_link_position_in_B && contiguous_target_position_in_A &&
+                               same_ordering_link_position_in_AB && same_ordering_target_position_in_CA &&
+                               !same_ordering_target_position_in_CB && B_target_position_in_C.size() == 0 && !A_hadamard_found &&
+                               !B_hadamard_found && !C_hadamard_found;
+    bool is_gemv_BA_possible = contiguous_link_position_in_A && contiguous_link_position_in_B && contiguous_target_position_in_B &&
+                               same_ordering_link_position_in_AB && same_ordering_target_position_in_CB &&
+                               !same_ordering_target_position_in_CA && A_target_position_in_C.size() == 0 && !A_hadamard_found &&
+                               !B_hadamard_found && !C_hadamard_found;
+    bool is_gemv_possible = is_gemv_AB_possible || is_gemv_BA_possible;
     bool element_wise_multiplication =
         C_exactly_matches_A && C_exactly_matches_B && !A_hadamard_found && !B_hadamard_found && !C_hadamard_found;
     bool dot_product   = C_indices.length() == 0 && A_exactly_matches_B && !A_hadamard_found && !B_hadamard_found && !C_hadamard_found;
@@ -233,9 +250,228 @@ std::shared_ptr<einsums::tensor_algebra::PyEinsumGenericPlan> einsums::tensor_al
         bool swap_AB = A_target_position_in_C[0].second != 0;
         return make_shared<PyEinsumGerPlan>(swap_AB, base);
     } else if (is_gemv_possible) {
-        return make_shared<PyEinsumGemvPlan>(base);
+        bool swap_AB = is_gemv_BA_possible && !is_gemv_AB_possible;
+        if (!swap_AB) {
+            std::vector<int> A_link_inds, B_link_inds, AC_inds;
+            int              A_target_last_ind = std::max_element(target_position_in_A.cbegin(), target_position_in_A.cend(),
+                                                                  [](const std::pair<char, size_t> &a, const std::pair<char, size_t> &b) -> bool {
+                                                         return a.second < b.second;
+                                                     })
+                                        ->second,
+                A_link_last_ind = std::max_element(link_position_in_A.cbegin(), link_position_in_A.cend(),
+                                                   [](const std::pair<char, size_t> &a, const std::pair<char, size_t> &b) -> bool {
+                                                       return a.second < b.second;
+                                                   })
+                                      ->second,
+                B_link_last_ind = std::max_element(link_position_in_B.cbegin(), link_position_in_B.cend(),
+                                                   [](const std::pair<char, size_t> &a, const std::pair<char, size_t> &b) -> bool {
+                                                       return a.second < b.second;
+                                                   })
+                                      ->second,
+                C_target_last_ind = std::max_element(target_position_in_C.cbegin(), target_position_in_C.cend(),
+                                                     [](const std::pair<char, size_t> &a, const std::pair<char, size_t> &b) -> bool {
+                                                         return a.second < b.second;
+                                                     })
+                                        ->second;
+            bool trans_A = (link_position_in_A[0].second == 0);
+
+            for (const auto &pair : A_target_position_in_C) {
+                bool has_index = false;
+                for (int i = 0; i < AC_inds.size(); i++) {
+                    if (AC_inds[i] == pair.second) {
+                        has_index = true;
+                        break;
+                    }
+                }
+                if (!has_index) {
+                    AC_inds.push_back((int)pair.second);
+                }
+            }
+
+            for (const auto &pair : link_position_in_A) {
+                bool has_index = false;
+                for (int i = 0; i < A_link_inds.size(); i++) {
+                    if (A_link_inds[i] == pair.second) {
+                        has_index = true;
+                        break;
+                    }
+                }
+                if (!has_index) {
+                    A_link_inds.push_back((int)pair.second);
+                }
+            }
+
+            for (const auto &pair : link_position_in_B) {
+                bool has_index = false;
+                for (int i = 0; i < B_link_inds.size(); i++) {
+                    if (B_link_inds[i] == pair.second) {
+                        has_index = true;
+                        break;
+                    }
+                }
+                if (!has_index) {
+                    B_link_inds.push_back((int)pair.second);
+                }
+            }
+
+            return make_shared<PyEinsumGemvPlan>(A_link_inds, B_link_inds, AC_inds, A_target_last_ind, A_link_last_ind, B_link_last_ind,
+                                                 C_target_last_ind, trans_A, swap_AB, base);
+        } else {
+            std::vector<int> A_link_inds, B_link_inds, AC_inds;
+            int              A_target_last_ind = std::max_element(target_position_in_B.cbegin(), target_position_in_B.cend(),
+                                                                  [](const std::pair<char, size_t> &a, const std::pair<char, size_t> &b) -> bool {
+                                                         return a.second < b.second;
+                                                     })
+                                        ->second,
+                A_link_last_ind = std::max_element(link_position_in_B.cbegin(), link_position_in_B.cend(),
+                                                   [](const std::pair<char, size_t> &a, const std::pair<char, size_t> &b) -> bool {
+                                                       return a.second < b.second;
+                                                   })
+                                      ->second,
+                B_link_last_ind = std::max_element(link_position_in_A.cbegin(), link_position_in_A.cend(),
+                                                   [](const std::pair<char, size_t> &a, const std::pair<char, size_t> &b) -> bool {
+                                                       return a.second < b.second;
+                                                   })
+                                      ->second,
+                C_target_last_ind = std::max_element(target_position_in_C.cbegin(), target_position_in_C.cend(),
+                                                     [](const std::pair<char, size_t> &a, const std::pair<char, size_t> &b) -> bool {
+                                                         return a.second < b.second;
+                                                     })
+                                        ->second;
+            bool trans_A = (link_position_in_B[0].second == 0);
+
+            for (const auto &pair : B_target_position_in_C) {
+                bool has_index = false;
+                for (int i = 0; i < AC_inds.size(); i++) {
+                    if (AC_inds[i] == pair.second) {
+                        has_index = true;
+                        break;
+                    }
+                }
+                if (!has_index) {
+                    AC_inds.push_back((int)pair.second);
+                }
+            }
+
+            for (const auto &pair : link_position_in_B) {
+                bool has_index = false;
+                for (int i = 0; i < A_link_inds.size(); i++) {
+                    if (A_link_inds[i] == pair.second) {
+                        has_index = true;
+                        break;
+                    }
+                }
+                if (!has_index) {
+                    A_link_inds.push_back((int)pair.second);
+                }
+            }
+
+            for (const auto &pair : link_position_in_A) {
+                bool has_index = false;
+                for (int i = 0; i < B_link_inds.size(); i++) {
+                    if (B_link_inds[i] == pair.second) {
+                        has_index = true;
+                        break;
+                    }
+                }
+                if (!has_index) {
+                    B_link_inds.push_back((int)pair.second);
+                }
+            }
+
+            return make_shared<PyEinsumGemvPlan>(A_link_inds, B_link_inds, AC_inds, A_target_last_ind, A_link_last_ind, B_link_last_ind,
+                                                 C_target_last_ind, trans_A, swap_AB, base);
+        }
     } else if (is_gemm_possible) {
-        return make_shared<PyEinsumGemmPlan>(base);
+        std::vector<int> A_link_inds, B_link_inds, AC_inds, BC_inds;
+        int              A_target_last_ind = std::max_element(target_position_in_A.cbegin(), target_position_in_A.cend(),
+                                                              [](const std::pair<char, size_t> &a, const std::pair<char, size_t> &b) -> bool {
+                                                     return a.second < b.second;
+                                                 })
+                                    ->second,
+            A_link_last_ind = std::max_element(link_position_in_A.cbegin(), link_position_in_A.cend(),
+                                               [](const std::pair<char, size_t> &a, const std::pair<char, size_t> &b) -> bool {
+                                                   return a.second < b.second;
+                                               })
+                                  ->second,
+            B_target_last_ind = std::max_element(target_position_in_B.cbegin(), target_position_in_B.cend(),
+                                                 [](const std::pair<char, size_t> &a, const std::pair<char, size_t> &b) -> bool {
+                                                     return a.second < b.second;
+                                                 })
+                                    ->second,
+            B_link_last_ind = std::max_element(link_position_in_B.cbegin(), link_position_in_B.cend(),
+                                               [](const std::pair<char, size_t> &a, const std::pair<char, size_t> &b) -> bool {
+                                                   return a.second < b.second;
+                                               })
+                                  ->second,
+            CA_target_last_ind = std::max_element(A_target_position_in_C.cbegin(), A_target_position_in_C.cend(),
+                                                  [](const std::pair<char, size_t> &a, const std::pair<char, size_t> &b) -> bool {
+                                                      return a.second < b.second;
+                                                  })
+                                     ->second,
+            CB_target_last_ind = std::max_element(B_target_position_in_C.cbegin(), B_target_position_in_C.cend(),
+                                                  [](const std::pair<char, size_t> &a, const std::pair<char, size_t> &b) -> bool {
+                                                      return a.second < b.second;
+                                                  })
+                                     ->second;
+        bool trans_A = (link_position_in_A[0].second == 0), trans_B = (link_position_in_B[0].second != 0),
+             trans_C = (A_target_position_in_C[0].second != 0);
+
+        for (const auto &pair : A_target_position_in_C) {
+            bool has_index = false;
+            for (int i = 0; i < AC_inds.size(); i++) {
+                if (AC_inds[i] == pair.second) {
+                    has_index = true;
+                    break;
+                }
+            }
+            if (!has_index) {
+                AC_inds.push_back((int)pair.second);
+            }
+        }
+
+        for (const auto &pair : B_target_position_in_C) {
+            bool has_index = false;
+            for (int i = 0; i < BC_inds.size(); i++) {
+                if (BC_inds[i] == pair.second) {
+                    has_index = true;
+                    break;
+                }
+            }
+            if (!has_index) {
+                BC_inds.push_back((int)pair.second);
+            }
+        }
+
+        for (const auto &pair : link_position_in_A) {
+            bool has_index = false;
+            for (int i = 0; i < A_link_inds.size(); i++) {
+                if (A_link_inds[i] == pair.second) {
+                    has_index = true;
+                    break;
+                }
+            }
+            if (!has_index) {
+                A_link_inds.push_back((int)pair.second);
+            }
+        }
+
+        for (const auto &pair : link_position_in_B) {
+            bool has_index = false;
+            for (int i = 0; i < B_link_inds.size(); i++) {
+                if (B_link_inds[i] == pair.second) {
+                    has_index = true;
+                    break;
+                }
+            }
+            if (!has_index) {
+                B_link_inds.push_back((int)pair.second);
+            }
+        }
+
+        return make_shared<PyEinsumGemmPlan>(A_link_inds, B_link_inds, AC_inds, BC_inds, A_target_last_ind, A_link_last_ind,
+                                             B_target_last_ind, B_link_last_ind, CA_target_last_ind, CB_target_last_ind, trans_A, trans_B,
+                                             trans_C, base);
     } else {
         return make_shared<PyEinsumGenericPlan>(base);
     }
@@ -317,40 +553,154 @@ void PyEinsumDirectProductPlan::execute(const pybind11::object &C_prefactor, pyb
 }
 
 void PyEinsumGerPlan::execute(const pybind11::object &C_prefactor, pybind11::array &C, const pybind11::object &AB_prefactor,
-                                        const pybind11::array &A, const pybind11::array &B) const {
+                              const pybind11::array &A, const pybind11::array &B) const {
     // Check to make sure that we can use the library function.
-        size_t C_check = C.itemsize(), A_check = A.itemsize(), B_check = B.itemsize();
+    size_t C_check = C.itemsize(), A_check = A.itemsize(), B_check = B.itemsize();
 
-        bool use_generic = false;
+    bool use_generic = false;
 
-        for(int i = 0; i < C.ndim(); i++) {
-            if(C_check != C.strides(i)) {
-                use_generic = true;
-                break;
-            }
-            C_check *= C.shape(i);
+    for (int i = C.ndim() - 1; i >= 0; i--) {
+        if (C_check != C.strides(i)) {
+            use_generic = true;
+            break;
         }
+        C_check *= C.shape(i);
+    }
 
-        for(int i = 0; i < A.ndim(); i++) {
-            if(A_check != A.strides(i)) {
-                use_generic = true;
-                break;
-            }
-            C_check *= C.shape(i);
+    for (int i = A.ndim() - 1; i >= 0; i--) {
+        if (A_check != A.strides(i)) {
+            use_generic = true;
+            break;
         }
+        A_check *= A.shape(i);
+    }
 
-        for(int i = 0; i < B.ndim(); i++) {
-            if(B_check != B.strides(i)) {
-                use_generic = true;
-                break;
-            }
-            B_check *= B.shape(i);
+    for (int i = B.ndim() - 1; i >= 0; i--) {
+        if (B_check != B.strides(i)) {
+            use_generic = true;
+            break;
         }
+        B_check *= B.shape(i);
+    }
 
-        if(use_generic) {
+    if (!_swap_AB) {
+        if (use_generic) {
             PyEinsumGenericPlan::execute(C_prefactor, C, AB_prefactor, A, B);
             return;
         }
+        if (!C.dtype().is(A.dtype()) || !C.dtype().is(B.dtype())) {
+            throw EINSUMSEXCEPTION("Can not handle tensors with different dtypes (yet)!");
+        } else if (C.dtype().is(py::dtype::of<float>())) {
+            execute_imp<float>(C_prefactor.cast<float>(), C, AB_prefactor.cast<float>(), A, B);
+        } else if (C.dtype().is(py::dtype::of<std::complex<double>>())) {
+            execute_imp<std::complex<double>>(C_prefactor.cast<std::complex<double>>(), C, AB_prefactor.cast<std::complex<double>>(), A, B);
+        } else if (C.dtype().is(py::dtype::of<std::complex<float>>())) {
+            execute_imp<std::complex<float>>(C_prefactor.cast<std::complex<float>>(), C, AB_prefactor.cast<std::complex<float>>(), A, B);
+        } else {
+            execute_imp<double>(C_prefactor.cast<double>(), C, AB_prefactor.cast<double>(), A, B);
+        }
+    } else {
+        if (use_generic) {
+            PyEinsumGenericPlan::execute(C_prefactor, C, AB_prefactor, B, A);
+            return;
+        }
+        if (!C.dtype().is(A.dtype()) || !C.dtype().is(B.dtype())) {
+            throw EINSUMSEXCEPTION("Can not handle tensors with different dtypes (yet)!");
+        } else if (C.dtype().is(py::dtype::of<float>())) {
+            execute_imp<float>(C_prefactor.cast<float>(), C, AB_prefactor.cast<float>(), B, A);
+        } else if (C.dtype().is(py::dtype::of<std::complex<double>>())) {
+            execute_imp<std::complex<double>>(C_prefactor.cast<std::complex<double>>(), C, AB_prefactor.cast<std::complex<double>>(), B, A);
+        } else if (C.dtype().is(py::dtype::of<std::complex<float>>())) {
+            execute_imp<std::complex<float>>(C_prefactor.cast<std::complex<float>>(), C, AB_prefactor.cast<std::complex<float>>(), B, A);
+        } else {
+            execute_imp<double>(C_prefactor.cast<double>(), C, AB_prefactor.cast<double>(), B, A);
+        }
+    }
+}
+
+void PyEinsumGemvPlan::execute(const pybind11::object &C_prefactor, pybind11::array &C, const pybind11::object &AB_prefactor,
+                               const pybind11::array &A, const pybind11::array &B) const {
+    // Check to make sure that we can use the library function.
+    size_t C_check = C.itemsize(), A_check = A.itemsize(), B_check = B.itemsize();
+
+    bool use_generic = false;
+
+    for (int i = C.ndim() - 1; i >= 0; i--) {
+        if (C_check != C.strides(i)) {
+            use_generic = true;
+            break;
+        }
+        C_check *= C.shape(i);
+    }
+
+    for (int i = A.ndim() - 1; i >= 0; i--) {
+        if (A_check != A.strides(i)) {
+            use_generic = true;
+            break;
+        }
+        A_check *= A.shape(i);
+    }
+
+    for (int i = B.ndim() - 1; i >= 0; i--) {
+        if (B_check != B.strides(i)) {
+            use_generic = true;
+            break;
+        }
+        B_check *= B.shape(i);
+    }
+
+    if (use_generic) {
+        PyEinsumGenericPlan::execute(C_prefactor, C, AB_prefactor, A, B);
+        return;
+    }
+    if (!C.dtype().is(A.dtype()) || !C.dtype().is(B.dtype())) {
+        throw EINSUMSEXCEPTION("Can not handle tensors with different dtypes (yet)!");
+    } else if (C.dtype().is(py::dtype::of<float>())) {
+        execute_imp<float>(C_prefactor.cast<float>(), C, AB_prefactor.cast<float>(), A, B);
+    } else if (C.dtype().is(py::dtype::of<std::complex<double>>())) {
+        execute_imp<std::complex<double>>(C_prefactor.cast<std::complex<double>>(), C, AB_prefactor.cast<std::complex<double>>(), A, B);
+    } else if (C.dtype().is(py::dtype::of<std::complex<float>>())) {
+        execute_imp<std::complex<float>>(C_prefactor.cast<std::complex<float>>(), C, AB_prefactor.cast<std::complex<float>>(), A, B);
+    } else {
+        execute_imp<double>(C_prefactor.cast<double>(), C, AB_prefactor.cast<double>(), A, B);
+    }
+}
+
+void PyEinsumGemmPlan::execute(const pybind11::object &C_prefactor, pybind11::array &C, const pybind11::object &AB_prefactor,
+                               const pybind11::array &A, const pybind11::array &B) const {
+    // Check to make sure that we can use the library function.
+    size_t C_check = C.itemsize(), A_check = A.itemsize(), B_check = B.itemsize();
+
+    bool use_generic = false;
+
+    for (int i = C.ndim() - 1; i >= 0; i--) {
+        if (C_check != C.strides(i)) {
+            use_generic = true;
+            break;
+        }
+        C_check *= C.shape(i);
+    }
+
+    for (int i = A.ndim() - 1; i >= 0; i--) {
+        if (A_check != A.strides(i)) {
+            use_generic = true;
+            break;
+        }
+        A_check *= A.shape(i);
+    }
+
+    for (int i = B.ndim() - 1; i >= 0; i--) {
+        if (B_check != B.strides(i)) {
+            use_generic = true;
+            break;
+        }
+        B_check *= B.shape(i);
+    }
+
+    if (use_generic) {
+        PyEinsumGenericPlan::execute(C_prefactor, C, AB_prefactor, A, B);
+        return;
+    }
     if (!C.dtype().is(A.dtype()) || !C.dtype().is(B.dtype())) {
         throw EINSUMSEXCEPTION("Can not handle tensors with different dtypes (yet)!");
     } else if (C.dtype().is(py::dtype::of<float>())) {
@@ -373,6 +723,10 @@ void einsums::python::export_tensor_algebra(pybind11::module_ &m) {
         .def("execute", &PyEinsumDirectProductPlan::execute);
     py::class_<PyEinsumGerPlan, PyEinsumGenericPlan, std::shared_ptr<PyEinsumGerPlan>>(m, "EinsumGerPlan")
         .def("execute", &PyEinsumGerPlan::execute);
+    py::class_<PyEinsumGemvPlan, PyEinsumGenericPlan, std::shared_ptr<PyEinsumGemvPlan>>(m, "EinsumGemvPlan")
+        .def("execute", &PyEinsumGemvPlan::execute);
+    py::class_<PyEinsumGemmPlan, PyEinsumGenericPlan, std::shared_ptr<PyEinsumGemmPlan>>(m, "EinsumGemmPlan")
+        .def("execute", &PyEinsumGemmPlan::execute);
 
     m.def("compile_plan", compile_plan, py::arg("C_indices"), py::arg("A_indices"), py::arg("B_indices"),
           py::arg("unit") = einsums::python::detail::CPU);

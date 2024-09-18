@@ -510,7 +510,7 @@ void initialize() {
 
 void finalize() {
     if (detail::blas_handles != nullptr) {
-        for (int i = 0; i < omp_get_max_threads(); i++) {
+        for (int i = 0; i < detail::blas_handles->size(); i++) {
             hipblas_catch(hipblasDestroy(detail::blas_handles->at(i)));
         }
         delete detail::blas_handles;
@@ -518,7 +518,7 @@ void finalize() {
     }
 
     if (detail::solver_handles != nullptr) {
-        for (int i = 0; i < omp_get_max_threads(); i++) {
+        for (int i = 0; i < detail::solver_handles->size(); i++) {
             hipsolver_catch(hipsolverDestroy(detail::solver_handles->at(i)));
         }
         delete detail::solver_handles;

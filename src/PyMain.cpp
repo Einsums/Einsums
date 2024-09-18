@@ -1,8 +1,9 @@
-#include <pybind11/numpy.h>
-#include <pybind11/pybind11.h>
+#include "einsums/_Common.hpp"
 
 #include "einsums/Python.hpp"
-#include "einsums/_Common.hpp"
+
+#include <pybind11/numpy.h>
+#include <pybind11/pybind11.h>
 
 BEGIN_EINSUMS_NAMESPACE_CPP(einsums::python)
 END_EINSUMS_NAMESPACE_CPP(einsums::python)
@@ -26,7 +27,9 @@ void einsums::python::export_python_base(pybind11::module_ &mod) {
         .value("GPU_MAP", detail::PyPlanUnit::GPU_MAP)
         .value("GPU_COPY", detail::PyPlanUnit::GPU_COPY)
         .export_values();
-    mod.def("gpu_enabled", gpu_enabled).def("initialize", einsums::initialize).def("finalize", einsums::finalize, py::arg("timer_report") = false);
+    mod.def("gpu_enabled", gpu_enabled)
+        .def("initialize", einsums::initialize)
+        .def("finalize", einsums::finalize, py::arg("timer_report") = false);
 
     py::register_exception<einsums::EinsumsException>(mod, "CoreEinsumsException");
 }
@@ -38,9 +41,9 @@ PYBIND11_MODULE(einsums_py, mod) {
 
     export_python_base(mod);
     export_tensor_algebra(mod);
-        #ifdef __HIP__
+#ifdef __HIP__
     export_gpu(mod);
-    #endif
+#endif
 
     auto atexit = py::module_::import("atexit");
     atexit.attr("register")(py::cpp_function([]() -> void { einsums::finalize(); }));

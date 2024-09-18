@@ -9,6 +9,8 @@
 #include "einsums/utility/IndexUtils.hpp"
 #include "einsums/utility/TensorBases.hpp"
 
+#include <omp.h>
+
 #ifdef __HIP__
 #    include "einsums/_GPUUtils.hpp"
 
@@ -17,6 +19,7 @@
 #    include <hip/hip_common.h>
 #    include <hip/hip_runtime.h>
 #    include <hip/hip_runtime_api.h>
+#    include <hipblas/hipblas.h>
 #endif
 
 #include <pybind11/numpy.h>
@@ -584,32 +587,37 @@ class PyEinsumGenericPlan {
                 }
             }
 
-            EINSUMS_OMP_PARALLEL_FOR
-            for (size_t sentinel = 0; sentinel < unique_dims[0] * unique_strides[0]; sentinel++) {
-                size_t                           quotient = sentinel;
-                thread_local std::vector<size_t> A_index(_A_permute.size()), B_index(_B_permute.size()), C_index(_C_permute.size()),
+            EINSUMS_OMP_PARALLEL {
+                auto thread = omp_get_thread_num();
+                auto kernel = omp_get_num_threads();
+
+                std::vector<size_t> A_index(_A_permute.size()), B_index(_B_permute.size()), C_index(_C_permute.size()),
                     unique_index(unique_dims.size());
 
-                for (int i = 0; i < unique_dims.size(); i++) {
-                    unique_index[i] = quotient / unique_strides[i];
-                    quotient %= unique_strides[i];
+                for (size_t sentinel = thread; sentinel < unique_dims[0] * unique_strides[0]; sentinel += kernel) {
+                    size_t quotient = sentinel;
+
+                    for (int i = 0; i < unique_index.size(); i++) {
+                        unique_index[i] = quotient / unique_strides[i];
+                        quotient %= unique_strides[i];
+                    }
+
+                    size_t A_ord = 0, B_ord = 0, C_ord = 0;
+
+                    for (int i = 0; i < _A_permute.size(); i++) {
+                        A_ord += (A.strides(i) / sizeof(T)) * unique_index[_A_permute[i]];
+                    }
+
+                    for (int i = 0; i < _B_permute.size(); i++) {
+                        B_ord += (B.strides(i) / sizeof(T)) * unique_index[_B_permute[i]];
+                    }
+
+                    for (int i = 0; i < _C_permute.size(); i++) {
+                        C_ord += (C.strides(i) / sizeof(T)) * unique_index[_C_permute[i]];
+                    }
+
+                    C_data[C_ord] += AB_prefactor * A_data[A_ord] * B_data[B_ord];
                 }
-
-                size_t A_ord = 0, B_ord = 0, C_ord = 0;
-
-                for (int i = 0; i < _A_permute.size(); i++) {
-                    A_ord += (A.strides(i) / sizeof(T)) * unique_index[_A_permute[i]];
-                }
-
-                for (int i = 0; i < _B_permute.size(); i++) {
-                    B_ord += (B.strides(i) / sizeof(T)) * unique_index[_B_permute[i]];
-                }
-
-                for (int i = 0; i < _C_permute.size(); i++) {
-                    C_ord += (C.strides(i) / sizeof(T)) * unique_index[_C_permute[i]];
-                }
-
-                C_data[C_ord] += AB_prefactor * A_data[A_ord] * B_data[B_ord];
             }
 #ifdef __HIP__
         }
@@ -948,17 +956,17 @@ class PyEinsumGerPlan : public PyEinsumGenericPlan {
                 }
 
                 if constexpr (std::is_same_v<T, float>) {
-                    gpu::hipblas_catch(hipblasSger(gpu::get_blas_handle(), dC0, dC1, gpu_AB_prefactor, gpu_A, 1, gpu_B, 1, gpu_C, dC0));
+                    gpu::hipblas_catch(hipblasSger(gpu::get_blas_handle(), dC1, dC0, gpu_AB_prefactor, gpu_B, 1, gpu_A, 1, gpu_C, dC1));
                 } else if constexpr (std::is_same_v<T, double>) {
-                    gpu::hipblas_catch(hipblasDger(gpu::get_blas_handle(), dC0, dC1, gpu_AB_prefactor, gpu_A, 1, gpu_B, 1, gpu_C, dC0));
+                    gpu::hipblas_catch(hipblasDger(gpu::get_blas_handle(), dC1, dC0, gpu_AB_prefactor, gpu_B, 1, gpu_A, 1, gpu_C, dC1));
                 } else if constexpr (std::is_same_v<T, std::complex<float>>) {
-                    gpu::hipblas_catch(hipblasCgeru(gpu::get_blas_handle(), dC0, dC1, (const hipblasComplex *)gpu_AB_prefactor,
-                                                    (const hipblasComplex *)gpu_A, 1, (const hipblasComplex *)gpu_B, 1,
-                                                    (hipblasComplex *)gpu_C, dC0));
+                    gpu::hipblas_catch(hipblasCgeru(gpu::get_blas_handle(), dC1, dC0, (const hipblasComplex *)gpu_AB_prefactor,
+                                                    (const hipblasComplex *)gpu_B, 1, (const hipblasComplex *)gpu_A, 1,
+                                                    (hipblasComplex *)gpu_C, dC1));
                 } else if constexpr (std::is_same_v<T, std::complex<double>>) {
-                    gpu::hipblas_catch(hipblasZgeru(gpu::get_blas_handle(), dC0, dC1, (const hipblasDoubleComplex *)gpu_AB_prefactor,
-                                                    (const hipblasDoubleComplex *)gpu_A, 1, (const hipblasDoubleComplex *)gpu_B, 1,
-                                                    (hipblasDoubleComplex *)gpu_C, dC0));
+                    gpu::hipblas_catch(hipblasZgeru(gpu::get_blas_handle(), dC1, dC0, (const hipblasDoubleComplex *)gpu_AB_prefactor,
+                                                    (const hipblasDoubleComplex *)gpu_B, 1, (const hipblasDoubleComplex *)gpu_A, 1,
+                                                    (hipblasDoubleComplex *)gpu_C, dC1));
                 }
 
                 gpu::stream_wait();
@@ -991,7 +999,7 @@ class PyEinsumGerPlan : public PyEinsumGenericPlan {
                     std::swap(A_data, B_data);
                 }
 
-                einsums::blas::ger(dC0, dC1, AB_prefactor, A_data, 1, B_data, 1, C_data, dC0);
+                einsums::blas::ger(dC0, dC1, AB_prefactor, A_data, 1, B_data, 1, C_data, dC1);
 #ifdef __HIP__
             }
 #endif
@@ -1009,31 +1017,313 @@ class PyEinsumGerPlan : public PyEinsumGenericPlan {
 };
 
 class PyEinsumGemvPlan : public PyEinsumGenericPlan {
+  private:
+    std::vector<int> _AC_pos, _A_link_pos, _B_link_pos;
+    int              _A_target_last_ind, _A_link_last_ind, _B_link_last_ind, _C_target_last_ind;
+    bool             _trans_A, _swap_AB;
+
+    template <typename T>
+    void execute_imp(T C_prefactor, pybind11::array &C, T AB_prefactor, const pybind11::array &A, const pybind11::array &B) const {
+        if constexpr (!std::is_same_v<T, float> && !std::is_same_v<T, double> && !std::is_same_v<T, std::complex<float>> &&
+                      !std::is_same_v<T, std::complex<double>>) {
+            this->execute_generic(C_prefactor, C, AB_prefactor, A, B);
+        } else {
+
+            const T *A_data = (const T *)A.unchecked<T>().data(), *B_data = (const T *)B.unchecked<T>().data();
+            size_t   A_size = A.shape(0) * A.strides(0), B_size = B.shape(0) * B.strides(0), C_size = C.shape(0) * C.strides(0);
+
+            size_t dC = 1, dA0 = 1, dA1 = 1, dB = 1, sA0, sA1, sB, sC;
+
+            for (int i = 0; i < _AC_pos.size(); i++) {
+                dA0 *= C.shape(_AC_pos[i]);
+            }
+            for (int i = 0; i < _AC_pos.size(); i++) {
+                dA1 *= A.shape(_A_link_pos[i]);
+            }
+
+            sA0 = A.strides(_A_target_last_ind) / sizeof(T);
+            sA1 = A.strides(_A_link_last_ind) / sizeof(T);
+
+            if (_trans_A) {
+                std::swap(dA0, dA1);
+                std::swap(sA0, sA1);
+            }
+
+            for (int i = 0; i < _B_link_pos.size(); i++) {
+                dB *= B.shape(_B_link_pos[i]);
+            }
+
+            sB = B.strides(_B_link_last_ind) / sizeof(T);
+
+            for (int i = 0; i < _AC_pos.size(); i++) {
+                dC *= C.shape(_AC_pos[i]);
+            }
+
+            sC = C.strides(_C_target_last_ind) / sizeof(T);
+
+            T *C_data = (T *)C.mutable_unchecked<T>().mutable_data();
+
+#ifdef __HIP__
+            if (this->_unit == einsums::python::detail::GPU_MAP || this->_unit == einsums::python::detail::GPU_COPY) {
+                __device_ptr__ DevDatatype<T> *gpu_C, *gpu_A, *gpu_B, *gpu_C_prefactor, *gpu_AB_prefactor;
+
+                if (this->_unit == einsums::python::detail::GPU_MAP) {
+                    gpu::hip_catch(hipHostRegister((void *)A_data, A.nbytes(), hipHostRegisterDefault));
+                    gpu::hip_catch(hipHostRegister((void *)B_data, B.nbytes(), hipHostRegisterDefault));
+                    gpu::hip_catch(hipHostRegister((void *)C_data, C.nbytes(), hipHostRegisterDefault));
+
+                    gpu::hip_catch(hipHostGetDevicePointer((void **)&gpu_C, (void *)C_data, 0));
+                    gpu::hip_catch(hipHostGetDevicePointer((void **)&gpu_A, (void *)A_data, 0));
+                    gpu::hip_catch(hipHostGetDevicePointer((void **)&gpu_B, (void *)B_data, 0));
+                } else {
+                    gpu::hip_catch(hipMalloc((void **)&gpu_A, A.nbytes()));
+                    gpu::hip_catch(hipMalloc((void **)&gpu_B, B.nbytes()));
+                    gpu::hip_catch(hipMalloc((void **)&gpu_C, C.nbytes()));
+
+                    gpu::hip_catch(hipMemcpy((void *)gpu_A, (const void *)A_data, A.nbytes(), hipMemcpyHostToDevice));
+                    gpu::hip_catch(hipMemcpy((void *)gpu_B, (const void *)B_data, B.nbytes(), hipMemcpyHostToDevice));
+                    gpu::hip_catch(hipMemcpy((void *)gpu_C, (const void *)C_data, C.nbytes(), hipMemcpyHostToDevice));
+                }
+
+                gpu::hip_catch(hipMalloc((void **)&gpu_AB_prefactor, sizeof(T)));
+                gpu::hip_catch(hipMemcpy((void *)gpu_AB_prefactor, &AB_prefactor, sizeof(T), hipMemcpyHostToDevice));
+                gpu::hip_catch(hipMalloc((void **)&gpu_C_prefactor, sizeof(T)));
+                gpu::hip_catch(hipMemcpy((void *)gpu_C_prefactor, &AB_prefactor, sizeof(T), hipMemcpyHostToDevice));
+
+                if constexpr (std::is_same_v<T, float>) {
+                    gpu::hipblas_catch(hipblasSgemv(gpu::get_blas_handle(), (!_trans_A) ? HIPBLAS_OP_T : HIPBLAS_OP_N, dA0, dA1,
+                                                    gpu_AB_prefactor, gpu_A, sA0, gpu_B, sB, gpu_C_prefactor, gpu_C, sC));
+                } else if constexpr (std::is_same_v<T, double>) {
+                    gpu::hipblas_catch(hipblasDgemv(gpu::get_blas_handle(), (!_trans_A) ? HIPBLAS_OP_T : HIPBLAS_OP_N, dA0, dA1,
+                                                    gpu_AB_prefactor, gpu_A, sA0, gpu_B, sB, gpu_C_prefactor, gpu_C, sC));
+                } else if constexpr (std::is_same_v<T, std::complex<float>>) {
+                    gpu::hipblas_catch(hipblasCgemv(gpu::get_blas_handle(), (!_trans_A) ? HIPBLAS_OP_T : HIPBLAS_OP_N, dA0, dA1,
+                                                    (const hipblasComplex *)gpu_AB_prefactor, (const hipblasComplex *)gpu_A, sA0,
+                                                    (const hipblasComplex *)gpu_B, sB, (const hipblasComplex *)gpu_C_prefactor,
+                                                    (hipblasComplex *)gpu_C, sC));
+                } else if constexpr (std::is_same_v<T, std::complex<double>>) {
+                    gpu::hipblas_catch(hipblasZgemv(gpu::get_blas_handle(), (!_trans_A) ? HIPBLAS_OP_T : HIPBLAS_OP_N, dA0, dA1,
+                                                    (const hipblasDoubleComplex *)gpu_AB_prefactor, (const hipblasDoubleComplex *)gpu_A,
+                                                    sA0, (const hipblasDoubleComplex *)gpu_B, sB,
+                                                    (const hipblasDoubleComplex *)gpu_C_prefactor, (hipblasDoubleComplex *)gpu_C, sC));
+                }
+
+                gpu::stream_wait();
+
+                if (this->_unit == einsums::python::detail::GPU_MAP) {
+                    gpu::hip_catch(hipHostUnregister((void *)A_data));
+                    gpu::hip_catch(hipHostUnregister((void *)B_data));
+                    gpu::hip_catch(hipHostUnregister((void *)C_data));
+                } else {
+                    gpu::hip_catch(hipFree((void *)gpu_A));
+                    gpu::hip_catch(hipFree((void *)gpu_B));
+
+                    gpu::hip_catch(hipMemcpy((void *)C_data, (const void *)gpu_C, C.nbytes(), hipMemcpyDeviceToHost));
+                    gpu::hip_catch(hipFree((void *)gpu_C));
+                }
+
+                gpu::hip_catch(hipFree((void *)gpu_AB_prefactor));
+                gpu::hip_catch(hipFree((void *)gpu_C_prefactor));
+            } else {
+#endif
+                einsums::blas::gemv((_trans_A) ? 'T' : 'N', dA0, dA1, AB_prefactor, A_data, sA0, B_data, sB, C_prefactor, C_data, sC);
+#ifdef __HIP__
+            }
+#endif
+        }
+    }
+
   public:
     PyEinsumGemvPlan() = delete;
-    explicit PyEinsumGemvPlan(const PyEinsumGenericPlan &plan_base);
+    explicit PyEinsumGemvPlan(const std::vector<int> &A_link_pos, const std::vector<int> &B_link_pos, const std::vector<int> &AC_pos,
+                              int A_target_last_ind, int A_link_last_ind, int B_link_last_ind, int C_target_last_ind, bool trans_A,
+                              bool swap_AB, const PyEinsumGenericPlan &plan_base);
     PyEinsumGemvPlan(const PyEinsumGemvPlan &) = default;
     ~PyEinsumGemvPlan()                        = default;
 
-    // void execute(float C_prefactor, pybind11::array_t<float> &C, float AB_prefactor, const pybind11::array_t<float> &A,
-    //              const pybind11::array_t<float> &B) const override;
-
-    // void execute(double C_prefactor, pybind11::array_t<double> &C, double AB_prefactor, const pybind11::array_t<double> &A,
-    //              const pybind11::array_t<double> &B) const override;
+    void execute(const pybind11::object &C_prefactor, pybind11::array &C, const pybind11::object &AB_prefactor, const pybind11::array &A,
+                 const pybind11::array &B) const override;
 };
 
 class PyEinsumGemmPlan : public PyEinsumGenericPlan {
+  private:
+    std::vector<int> _AC_inds, _BC_inds, _A_link_inds, _B_link_inds;
+    int              _A_target_last_ind, _A_link_last_ind, _B_target_last_ind, _B_link_last_ind, _CA_target_last_ind, _CB_target_last_ind;
+    bool             _trans_A, _trans_B, _trans_C;
+
+    template <typename T>
+    void execute_imp(T C_prefactor, pybind11::array &C, T AB_prefactor, const pybind11::array &A, const pybind11::array &B) const {
+        if constexpr (!std::is_same_v<T, float> && !std::is_same_v<T, double> && !std::is_same_v<T, std::complex<float>> &&
+                      !std::is_same_v<T, std::complex<double>>) {
+            this->execute_generic(C_prefactor, C, AB_prefactor, A, B);
+        } else {
+
+            const T *A_data = (const T *)A.unchecked<T>().data(), *B_data = (const T *)B.unchecked<T>().data();
+            size_t   A_size = A.shape(0) * A.strides(0), B_size = B.shape(0) * B.strides(0), C_size = C.shape(0) * C.strides(0);
+
+            size_t dC0 = 1, dC1 = 1, dA0 = 1, dA1 = 1, dB0 = 1, dB1 = 1, sA0, sA1, sB0, sB1, sC0, sC1;
+
+            for (int i = 0; i < _AC_inds.size(); i++) {
+                dA0 *= C.shape(_AC_inds[i]);
+            }
+            for (int i = 0; i < _AC_inds.size(); i++) {
+                dA1 *= A.shape(_A_link_inds[i]);
+            }
+
+            sA0 = A.strides(_A_target_last_ind) / sizeof(T);
+            sA1 = A.strides(_A_link_last_ind) / sizeof(T);
+
+            if (_trans_A) {
+                std::swap(dA0, dA1);
+                std::swap(sA0, sA1);
+            }
+
+            for (int i = 0; i < _BC_inds.size(); i++) {
+                dB1 *= C.shape(_BC_inds[i]);
+            }
+            for (int i = 0; i < _BC_inds.size(); i++) {
+                dB0 *= B.shape(_B_link_inds[i]);
+            }
+
+            sB1 = B.strides(_B_target_last_ind) / sizeof(T);
+            sB0 = B.strides(_B_link_last_ind) / sizeof(T);
+
+            if (_trans_B) {
+                std::swap(dB0, dB1);
+                std::swap(sB0, sB1);
+            }
+
+            for (int i = 0; i < _AC_inds.size(); i++) {
+                dC0 *= C.shape(_AC_inds[i]);
+            }
+
+            for (int i = 0; i < _BC_inds.size(); i++) {
+                dC1 *= C.shape(_BC_inds[i]);
+            }
+
+            sC0 = C.strides(_CA_target_last_ind) / sizeof(T);
+            sC1 = C.strides(_CB_target_last_ind) / sizeof(T);
+
+            if (_trans_C) {
+                std::swap(dC0, dC1);
+                std::swap(sC0, sC1);
+            }
+
+            T *C_data = (T *)C.mutable_unchecked<T>().mutable_data();
+
+#ifdef __HIP__
+            if (this->_unit == einsums::python::detail::GPU_MAP || this->_unit == einsums::python::detail::GPU_COPY) {
+                __device_ptr__ DevDatatype<T> *gpu_C, *gpu_A, *gpu_B, *gpu_C_prefactor, *gpu_AB_prefactor;
+
+                if (this->_unit == einsums::python::detail::GPU_MAP) {
+                    gpu::hip_catch(hipHostRegister((void *)A_data, A.nbytes(), hipHostRegisterDefault));
+                    gpu::hip_catch(hipHostRegister((void *)B_data, B.nbytes(), hipHostRegisterDefault));
+                    gpu::hip_catch(hipHostRegister((void *)C_data, C.nbytes(), hipHostRegisterDefault));
+
+                    gpu::hip_catch(hipHostGetDevicePointer((void **)&gpu_C, (void *)C_data, 0));
+                    gpu::hip_catch(hipHostGetDevicePointer((void **)&gpu_A, (void *)A_data, 0));
+                    gpu::hip_catch(hipHostGetDevicePointer((void **)&gpu_B, (void *)B_data, 0));
+                } else {
+                    gpu::hip_catch(hipMalloc((void **)&gpu_A, A.nbytes()));
+                    gpu::hip_catch(hipMalloc((void **)&gpu_B, B.nbytes()));
+                    gpu::hip_catch(hipMalloc((void **)&gpu_C, C.nbytes()));
+
+                    gpu::hip_catch(hipMemcpy((void *)gpu_A, (const void *)A_data, A.nbytes(), hipMemcpyHostToDevice));
+                    gpu::hip_catch(hipMemcpy((void *)gpu_B, (const void *)B_data, B.nbytes(), hipMemcpyHostToDevice));
+                    gpu::hip_catch(hipMemcpy((void *)gpu_C, (const void *)C_data, C.nbytes(), hipMemcpyHostToDevice));
+                }
+
+                gpu::hip_catch(hipMalloc((void **)&gpu_AB_prefactor, sizeof(T)));
+                gpu::hip_catch(hipMemcpy((void *)gpu_AB_prefactor, &AB_prefactor, sizeof(T), hipMemcpyHostToDevice));
+                gpu::hip_catch(hipMalloc((void **)&gpu_C_prefactor, sizeof(T)));
+                gpu::hip_catch(hipMemcpy((void *)gpu_C_prefactor, &AB_prefactor, sizeof(T), hipMemcpyHostToDevice));
+
+                if (_trans_C) {
+                    if constexpr (std::is_same_v<T, float>) {
+                        gpu::hipblas_catch(hipblasSgemm(gpu::get_blas_handle(), (!_trans_A) ? HIPBLAS_OP_T : HIPBLAS_OP_N,
+                                                        (!_trans_B) ? HIPBLAS_OP_T : HIPBLAS_OP_N, dA0, dB1, dA1, gpu_AB_prefactor, gpu_A,
+                                                        sA0, gpu_B, sB0, gpu_C_prefactor, gpu_C, sC0));
+                    } else if constexpr (std::is_same_v<T, double>) {
+                        gpu::hipblas_catch(hipblasDgemm(gpu::get_blas_handle(), (!_trans_A) ? HIPBLAS_OP_T : HIPBLAS_OP_N,
+                                                        (!_trans_B) ? HIPBLAS_OP_T : HIPBLAS_OP_N, dA0, dB1, dA1, gpu_AB_prefactor, gpu_A,
+                                                        sA0, gpu_B, sB0, gpu_C_prefactor, gpu_C, sC0));
+                    } else if constexpr (std::is_same_v<T, std::complex<float>>) {
+                        gpu::hipblas_catch(hipblasCgemm(
+                            gpu::get_blas_handle(), (!_trans_A) ? HIPBLAS_OP_T : HIPBLAS_OP_N, (!_trans_B) ? HIPBLAS_OP_T : HIPBLAS_OP_N, dA0,
+                            dB1, dA1, (const hipblasComplex *)gpu_AB_prefactor, (const hipblasComplex *)gpu_A, sA0,
+                            (const hipblasComplex *)gpu_B, sB0, (const hipblasComplex *)gpu_C_prefactor, (hipblasComplex *)gpu_C, sC0));
+                    } else if constexpr (std::is_same_v<T, std::complex<double>>) {
+                        gpu::hipblas_catch(hipblasZgemm(gpu::get_blas_handle(), (!_trans_A) ? HIPBLAS_OP_T : HIPBLAS_OP_N,
+                                                        (!_trans_A) ? HIPBLAS_OP_T : HIPBLAS_OP_N, dA0, dB1, dA1,
+                                                        (const hipblasDoubleComplex *)gpu_AB_prefactor, (const hipblasDoubleComplex *)gpu_A,
+                                                        sA0, (const hipblasDoubleComplex *)gpu_B, sB0,
+                                                        (const hipblasDoubleComplex *)gpu_C_prefactor, (hipblasDoubleComplex *)gpu_C, sC0));
+                    }
+                } else {
+                    if constexpr (std::is_same_v<T, float>) {
+                        gpu::hipblas_catch(hipblasSgemm(gpu::get_blas_handle(), (_trans_B) ? HIPBLAS_OP_T : HIPBLAS_OP_N,
+                                                        (_trans_A) ? HIPBLAS_OP_T : HIPBLAS_OP_N, dB1, dA0, dA1, gpu_AB_prefactor, gpu_B,
+                                                        sB0, gpu_A, sA0, gpu_C_prefactor, gpu_C, sC0));
+                    } else if constexpr (std::is_same_v<T, double>) {
+                        gpu::hipblas_catch(hipblasDgemm(gpu::get_blas_handle(), (_trans_B) ? HIPBLAS_OP_T : HIPBLAS_OP_N,
+                                                        (_trans_A) ? HIPBLAS_OP_T : HIPBLAS_OP_N, dB1, dA0, dA1, gpu_AB_prefactor, gpu_B,
+                                                        sB0, gpu_A, sA0, gpu_C_prefactor, gpu_C, sC0));
+                    } else if constexpr (std::is_same_v<T, std::complex<float>>) {
+                        gpu::hipblas_catch(hipblasCgemm(
+                            gpu::get_blas_handle(), (_trans_B) ? HIPBLAS_OP_T : HIPBLAS_OP_N, (_trans_A) ? HIPBLAS_OP_T : HIPBLAS_OP_N,
+                            dB1, dA0, dA1, (hipblasComplex *)gpu_AB_prefactor, (const hipblasComplex *)gpu_B, sB0,
+                            (const hipblasComplex *)gpu_A, sA0, (hipblasComplex *)gpu_C_prefactor, (hipblasComplex *)gpu_C, sC0));
+                    } else if constexpr (std::is_same_v<T, std::complex<double>>) {
+                        gpu::hipblas_catch(hipblasZgemm(gpu::get_blas_handle(), (_trans_B) ? HIPBLAS_OP_T : HIPBLAS_OP_N,
+                                                        (_trans_A) ? HIPBLAS_OP_T : HIPBLAS_OP_N, dB1, dA0, dA1,
+                                                        (const hipblasDoubleComplex *)gpu_AB_prefactor, (const hipblasDoubleComplex *)gpu_B,
+                                                        sB0, (const hipblasDoubleComplex *)gpu_A, sA0,
+                                                        (const hipblasDoubleComplex *)gpu_C_prefactor, (hipblasDoubleComplex *)gpu_C, sC0));
+                    }
+                }
+
+                gpu::stream_wait();
+
+                if (this->_unit == einsums::python::detail::GPU_MAP) {
+                    gpu::hip_catch(hipHostUnregister((void *)A_data));
+                    gpu::hip_catch(hipHostUnregister((void *)B_data));
+                    gpu::hip_catch(hipHostUnregister((void *)C_data));
+                } else {
+                    gpu::hip_catch(hipFree((void *)gpu_A));
+                    gpu::hip_catch(hipFree((void *)gpu_B));
+
+                    gpu::hip_catch(hipMemcpy((void *)C_data, (const void *)gpu_C, C.nbytes(), hipMemcpyDeviceToHost));
+                    gpu::hip_catch(hipFree((void *)gpu_C));
+                }
+
+                gpu::hip_catch(hipFree((void *)gpu_AB_prefactor));
+                gpu::hip_catch(hipFree((void *)gpu_C_prefactor));
+            } else {
+#endif
+                if (!_trans_C) {
+                    einsums::blas::gemm((_trans_A) ? 'T' : 'N', (_trans_B) ? 'T' : 'N', dA0, dB1, dA1, AB_prefactor, A_data, sA0, B_data,
+                                        sB0, C_prefactor, C_data, sC0);
+                } else {
+                    einsums::blas::gemm((!_trans_B) ? 'T' : 'N', (!_trans_A) ? 'T' : 'N', dB1, dA0, dA1, AB_prefactor, B_data, sB0, A_data,
+                                        sA0, C_prefactor, C_data, sC0);
+                }
+#ifdef __HIP__
+            }
+#endif
+        }
+    }
+
   public:
     PyEinsumGemmPlan() = delete;
-    explicit PyEinsumGemmPlan(const PyEinsumGenericPlan &plan_base);
+    explicit PyEinsumGemmPlan(const std::vector<int> &A_link_inds, const std::vector<int> &B_link_inds, const std::vector<int> &AC_inds,
+                              const std::vector<int> &BC_inds, int A_target_last_ind, int A_link_last_ind, int B_target_last_ind,
+                              int B_link_last_ind, int CA_target_last_ind, int CB_target_last_ind, bool trans_A, bool trans_B, bool trans_C,
+                              const PyEinsumGenericPlan &plan_base);
     PyEinsumGemmPlan(const PyEinsumGemmPlan &) = default;
     ~PyEinsumGemmPlan()                        = default;
 
-    // void execute(float C_prefactor, pybind11::array_t<float> &C, float AB_prefactor, const pybind11::array_t<float> &A,
-    //              const pybind11::array_t<float> &B) const override;
-
-    // void execute(double C_prefactor, pybind11::array_t<double> &C, double AB_prefactor, const pybind11::array_t<double> &A,
-    //              const pybind11::array_t<double> &B) const override;
+    void execute(const pybind11::object &C_prefactor, pybind11::array &C, const pybind11::object &AB_prefactor, const pybind11::array &A,
+                 const pybind11::array &B) const override;
 };
 
 EINSUMS_EXPORT std::shared_ptr<PyEinsumGenericPlan> compile_plan(std::string C_indices, std::string A_indices, std::string B_indices,
