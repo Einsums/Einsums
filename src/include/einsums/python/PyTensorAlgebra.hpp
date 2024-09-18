@@ -883,6 +883,8 @@ class PyEinsumGerPlan : public PyEinsumGenericPlan {
   private:
     bool _swap_AB;
 
+    std::vector<int> _CA_target_pos, _CB_target_pos;
+
     template <typename T>
     void execute_imp(T C_prefactor, pybind11::array &C, T AB_prefactor, const pybind11::array &A, const pybind11::array &B) const {
         if constexpr (!std::is_same_v<T, float> && !std::is_same_v<T, double> && !std::is_same_v<T, std::complex<float>> &&
@@ -895,22 +897,12 @@ class PyEinsumGerPlan : public PyEinsumGenericPlan {
 
             size_t dC0 = 1, dC1 = 1;
 
-            for (int i = 0; i < C.ndim(); i++) {
-                for (int j = 0; j < A.ndim(); j++) {
-                    if (this->_C_permute[i] == this->_A_permute[j]) {
-                        dC0 *= A.shape(j);
-                        break;
-                    }
-                }
+            for (const auto i : _CA_target_pos) {
+                dC0 *= C.shape(i);
             }
 
-            for (int i = 0; i < C.ndim(); i++) {
-                for (int j = 0; j < B.ndim(); j++) {
-                    if (this->_C_permute[i] == this->_B_permute[j]) {
-                        dC1 *= B.shape(j);
-                        break;
-                    }
-                }
+            for (const auto i : _CB_target_pos) {
+                dC1 *= C.shape(i);
             }
 
             if (this->_swap_AB) {
@@ -1008,7 +1000,7 @@ class PyEinsumGerPlan : public PyEinsumGenericPlan {
 
   public:
     PyEinsumGerPlan() = delete;
-    explicit PyEinsumGerPlan(bool swap_AB, const PyEinsumGenericPlan &plan_base);
+    explicit PyEinsumGerPlan(const std::vector<int> &CA_target_pos, const std::vector<int> &CB_target_pos, bool swap_AB, const PyEinsumGenericPlan &plan_base);
     PyEinsumGerPlan(const PyEinsumGerPlan &) = default;
     ~PyEinsumGerPlan()                       = default;
 
@@ -1091,18 +1083,18 @@ class PyEinsumGemvPlan : public PyEinsumGenericPlan {
                 gpu::hip_catch(hipMemcpy((void *)gpu_C_prefactor, &AB_prefactor, sizeof(T), hipMemcpyHostToDevice));
 
                 if constexpr (std::is_same_v<T, float>) {
-                    gpu::hipblas_catch(hipblasSgemv(gpu::get_blas_handle(), (!_trans_A) ? HIPBLAS_OP_T : HIPBLAS_OP_N, dA0, dA1,
+                    gpu::hipblas_catch(hipblasSgemv(gpu::get_blas_handle(), (!_trans_A) ? HIPBLAS_OP_T : HIPBLAS_OP_N, dA1, dA0,
                                                     gpu_AB_prefactor, gpu_A, sA0, gpu_B, sB, gpu_C_prefactor, gpu_C, sC));
                 } else if constexpr (std::is_same_v<T, double>) {
-                    gpu::hipblas_catch(hipblasDgemv(gpu::get_blas_handle(), (!_trans_A) ? HIPBLAS_OP_T : HIPBLAS_OP_N, dA0, dA1,
+                    gpu::hipblas_catch(hipblasDgemv(gpu::get_blas_handle(), (!_trans_A) ? HIPBLAS_OP_T : HIPBLAS_OP_N, dA1, dA0,
                                                     gpu_AB_prefactor, gpu_A, sA0, gpu_B, sB, gpu_C_prefactor, gpu_C, sC));
                 } else if constexpr (std::is_same_v<T, std::complex<float>>) {
-                    gpu::hipblas_catch(hipblasCgemv(gpu::get_blas_handle(), (!_trans_A) ? HIPBLAS_OP_T : HIPBLAS_OP_N, dA0, dA1,
+                    gpu::hipblas_catch(hipblasCgemv(gpu::get_blas_handle(), (!_trans_A) ? HIPBLAS_OP_T : HIPBLAS_OP_N, dA1, dA0,
                                                     (const hipblasComplex *)gpu_AB_prefactor, (const hipblasComplex *)gpu_A, sA0,
                                                     (const hipblasComplex *)gpu_B, sB, (const hipblasComplex *)gpu_C_prefactor,
                                                     (hipblasComplex *)gpu_C, sC));
                 } else if constexpr (std::is_same_v<T, std::complex<double>>) {
-                    gpu::hipblas_catch(hipblasZgemv(gpu::get_blas_handle(), (!_trans_A) ? HIPBLAS_OP_T : HIPBLAS_OP_N, dA0, dA1,
+                    gpu::hipblas_catch(hipblasZgemv(gpu::get_blas_handle(), (!_trans_A) ? HIPBLAS_OP_T : HIPBLAS_OP_N, dA1, dA0,
                                                     (const hipblasDoubleComplex *)gpu_AB_prefactor, (const hipblasDoubleComplex *)gpu_A,
                                                     sA0, (const hipblasDoubleComplex *)gpu_B, sB,
                                                     (const hipblasDoubleComplex *)gpu_C_prefactor, (hipblasDoubleComplex *)gpu_C, sC));

@@ -24,7 +24,9 @@ PyEinsumDotPlan::PyEinsumDotPlan(const PyEinsumGenericPlan &plan_base) : PyEinsu
 PyEinsumDirectProductPlan::PyEinsumDirectProductPlan(const PyEinsumGenericPlan &plan_base) : PyEinsumGenericPlan(plan_base) {
 }
 
-PyEinsumGerPlan::PyEinsumGerPlan(bool swap_AB, const PyEinsumGenericPlan &plan_base) : PyEinsumGenericPlan(plan_base), _swap_AB{swap_AB} {
+PyEinsumGerPlan::PyEinsumGerPlan(const std::vector<int> &CA_target_pos, const std::vector<int> &CB_target_pos, bool swap_AB,
+                                 const PyEinsumGenericPlan &plan_base)
+    : PyEinsumGenericPlan(plan_base), _CA_target_pos{CA_target_pos}, _CB_target_pos{CB_target_pos}, _swap_AB{swap_AB} {
 }
 
 PyEinsumGemvPlan::PyEinsumGemvPlan(const std::vector<int> &A_link_inds, const std::vector<int> &B_link_inds,
@@ -247,8 +249,36 @@ std::shared_ptr<einsums::tensor_algebra::PyEinsumGenericPlan> einsums::tensor_al
     } else if (element_wise_multiplication) {
         return make_shared<PyEinsumDirectProductPlan>(base);
     } else if (outer_product) {
-        bool swap_AB = A_target_position_in_C[0].second != 0;
-        return make_shared<PyEinsumGerPlan>(swap_AB, base);
+        std::vector<int> CA_target_pos, CB_target_pos;
+        bool             swap_AB = A_target_position_in_C[0].second != 0;
+
+        for (const auto &pair : A_target_position_in_C) {
+            bool has_index = false;
+            for (int i = 0; i < CA_target_pos.size(); i++) {
+                if (CA_target_pos[i] == pair.second) {
+                    has_index = true;
+                    break;
+                }
+            }
+            if (!has_index) {
+                CA_target_pos.push_back((int)pair.second);
+            }
+        }
+
+        for (const auto &pair : B_target_position_in_C) {
+            bool has_index = false;
+            for (int i = 0; i < CB_target_pos.size(); i++) {
+                if (CB_target_pos[i] == pair.second) {
+                    has_index = true;
+                    break;
+                }
+            }
+            if (!has_index) {
+                CB_target_pos.push_back((int)pair.second);
+            }
+        }
+
+        return make_shared<PyEinsumGerPlan>(CA_target_pos, CB_target_pos, swap_AB, base);
     } else if (is_gemv_possible) {
         bool swap_AB = is_gemv_BA_possible && !is_gemv_AB_possible;
         if (!swap_AB) {
