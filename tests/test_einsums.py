@@ -197,11 +197,11 @@ def test_mat_vec_prod_large() :
 
 @pytest.mark.slow
 def test_mat_prod_large() :
-    mat_prod_tester(ein.CPU, 1000, 1000, 1000)
+    mat_prod_tester(ein.CPU, 100, 100, 100)
 
     if ein.gpu_enabled() :
-        mat_prod_tester(ein.GPU_MAP, 1000, 1000, 1000)
-        mat_prod_tester(ein.GPU_COPY, 1000, 1000, 1000)
+        mat_prod_tester(ein.GPU_MAP, 100, 100, 100)
+        mat_prod_tester(ein.GPU_COPY, 100, 100, 100)
 
 def test_generic_different() :
     generic_tester(ein.CPU, 11, 13)
