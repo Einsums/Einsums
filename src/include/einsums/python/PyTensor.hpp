@@ -51,7 +51,6 @@ class PyTensorIterator {
         if (_stop) {
             _lock.unlock();
             throw pybind11::stop_iteration();
-            return;
         }
 
         T &out = _tensor(_curr_index);
