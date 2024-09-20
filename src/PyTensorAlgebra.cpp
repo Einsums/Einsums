@@ -1,6 +1,8 @@
 #include "include/einsums/python/PyTensorAlgebra.hpp"
 
+#ifdef __HIP__
 #include "einsums/python/PyGPUView.hpp"
+#endif
 
 #include <pybind11/buffer_info.h>
 #include <pybind11/detail/common.h>
