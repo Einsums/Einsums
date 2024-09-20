@@ -157,7 +157,7 @@ using VectorData = std::vector<T, AlignedAllocator<T, 64>>;
  */
 template <typename T, size_t Rank>
 struct Tensor : public virtual tensor_props::CoreTensorBase,
-                virtual tensor_props::BasicTensorBase<T, Rank>,
+                virtual tensor_props::TRBasicTensorBase<T, Rank>,
                 virtual tensor_props::LockableTensorBase,
                 virtual tensor_props::AlgebraOptimizedTensor {
 
@@ -883,8 +883,8 @@ struct Tensor : public virtual tensor_props::CoreTensorBase,
             auto bbegin    = b._data.begin() + chunksize * tid;                                                                            \
             auto aend      = (tid == omp_get_num_threads() - 1) ? _data.end() : abegin + chunksize;                                        \
             auto j         = bbegin;                                                                                                       \
-            EINSUMS_OMP_SIMD for (auto i = abegin; i < aend; i++) {                                                                        \
-                (*i) OP(*j++);                                                                                                             \
+            EINSUMS_OMP_SIMD for (auto i = abegin; i < aend; i++, j++) {                                                                   \
+                (*i) OP(*j);                                                                                                               \
             }                                                                                                                              \
         }                                                                                                                                  \
         return *this;                                                                                                                      \
@@ -949,7 +949,7 @@ struct Tensor : public virtual tensor_props::CoreTensorBase,
 
 template <typename T>
 struct Tensor<T, 0> : public virtual tensor_props::CoreTensorBase,
-                      virtual tensor_props::BasicTensorBase<T, 0>,
+                      virtual tensor_props::TRBasicTensorBase<T, 0>,
                       virtual tensor_props::LockableTensorBase,
                       virtual tensor_props::AlgebraOptimizedTensor {
 
@@ -1014,8 +1014,8 @@ struct Tensor<T, 0> : public virtual tensor_props::CoreTensorBase,
 
 template <typename T, size_t Rank>
 struct TensorView final : public virtual tensor_props::CoreTensorBase,
-                          virtual tensor_props::BasicTensorBase<T, Rank>,
-                          virtual tensor_props::TensorViewBase<T, Rank, Tensor<T, Rank>>,
+                          virtual tensor_props::TRBasicTensorBase<T, Rank>,
+                          virtual tensor_props::TRTensorViewBase<T, Rank, Tensor<T, Rank>>,
                           virtual tensor_props::LockableTensorBase,
                           virtual tensor_props::AlgebraOptimizedTensor {
 
@@ -1550,7 +1550,7 @@ void zero(TensorType<T, Rank> &A) {
 
 template <typename T, size_t Rank>
 struct DiskTensor final : public virtual tensor_props::DiskTensorBase,
-                          virtual tensor_props::TensorBase<T, Rank>,
+                          virtual tensor_props::TRTensorBase<T, Rank>,
                           virtual tensor_props::LockableTensorBase {
     DiskTensor()                       = default;
     DiskTensor(const DiskTensor &)     = default;
@@ -1835,7 +1835,7 @@ struct DiskTensor final : public virtual tensor_props::DiskTensorBase,
 
 template <typename T, size_t ViewRank, size_t Rank>
 struct DiskView final : public virtual tensor_props::DiskTensorBase,
-                        virtual tensor_props::TensorViewBase<T, ViewRank, DiskTensor<T, Rank>>,
+                        virtual tensor_props::TRTensorViewBase<T, ViewRank, DiskTensor<T, Rank>>,
                         virtual tensor_props::LockableTensorBase {
     DiskView(DiskTensor<T, Rank> &parent, const Dim<ViewRank> &dims, const Count<Rank> &counts, const Offset<Rank> &offsets,
              const Stride<Rank> &strides)

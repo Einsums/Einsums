@@ -36,6 +36,8 @@ extend_einsums_target(einsums_py
 extend_einsums_target(einsums_py
         SOURCES
         PyGpuExceptions.hip
+        PyGPUView.hip
+        PyTensorAlgebra.hip
         CONDITION EINSUMS_BUILD_HIP
 )
 
@@ -214,9 +216,9 @@ install(
 # All need to be LIBRARY_BASE_PATH because Windows thinks this is a runtime artifact, not a library.
 install(
         TARGETS einsums_py
-        RUNTIME DESTINATION ${EINSUMS_LIBRARY_BASE_PATH}
-        LIBRARY DESTINATION ${EINSUMS_LIBRARY_BASE_PATH}
-        ARCHIVE DESTINATION ${EINSUMS_LIBRARY_BASE_PATH}
+        RUNTIME DESTINATION ${EINSUMS_LIBRARY_BASE_PATH}/einsums
+        LIBRARY DESTINATION ${EINSUMS_LIBRARY_BASE_PATH}/einsums
+        ARCHIVE DESTINATION ${EINSUMS_LIBRARY_BASE_PATH}/einsums
 )
 
 install(

@@ -174,7 +174,7 @@ void einsum(const std::tuple<CIndices...> &C_indices, CType *C, const std::tuple
 //
 
 template <template <typename, size_t> typename CType, size_t CRank, typename UnaryOperator, typename T = double>
-    requires std::derived_from<CType<T, CRank>, ::einsums::tensor_props::TensorBase<T, CRank>>
+    requires std::derived_from<CType<T, CRank>, ::einsums::tensor_props::TRTensorBase<T, CRank>>
 auto element_transform(CType<T, CRank> *C, UnaryOperator unary_opt) -> void;
 
 template <SmartPointer SmartPtr, typename UnaryOperator>

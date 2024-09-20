@@ -31,7 +31,7 @@ struct DeviceFunctionTensorView;
  */
 namespace tensor_props {
 template <typename T, size_t Rank>
-struct FunctionTensorBase : public virtual TensorBase<T, Rank>, virtual FunctionTensorBaseNoExtra, virtual CoreTensorBase {
+struct FunctionTensorBase : public virtual TRTensorBase<T, Rank>, virtual FunctionTensorBaseNoExtra, virtual CoreTensorBase {
   protected:
     Dim<Rank>   _dims;
     std::string _name{"(unnamed)"};
@@ -259,7 +259,7 @@ struct FuncPointerTensor : public virtual tensor_props::FunctionTensorBase<T, Ra
 
 template <typename T, size_t Rank, size_t UnderlyingRank>
 struct FunctionTensorView : public virtual tensor_props::FunctionTensorBase<T, Rank>,
-                            virtual tensor_props::TensorViewBase<T, Rank, tensor_props::FunctionTensorBase<T, UnderlyingRank>> {
+                            virtual tensor_props::TRTensorViewBase<T, Rank, tensor_props::FunctionTensorBase<T, UnderlyingRank>> {
   protected:
     const tensor_props::FunctionTensorBase<T, UnderlyingRank> *_func_tensor;
     Offset<Rank>                                               _offsets;

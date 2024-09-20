@@ -309,7 +309,7 @@ class HostDevReference {
  */
 template <typename T, size_t Rank>
 struct DeviceTensor : public virtual einsums::tensor_props::DeviceTensorBase,
-                      virtual einsums::tensor_props::BasicTensorBase<T, Rank>,
+                      virtual einsums::tensor_props::TRBasicTensorBase<T, Rank>,
                       virtual einsums::tensor_props::AlgebraOptimizedTensor,
                       virtual tensor_props::DevTypedTensorBase<T>,
                       virtual tensor_props::LockableTensorBase {
@@ -864,7 +864,7 @@ struct DeviceTensor : public virtual einsums::tensor_props::DeviceTensorBase,
  */
 template <typename T>
 struct DeviceTensor<T, 0> : public virtual tensor_props::DeviceTensorBase,
-                            virtual tensor_props::BasicTensorBase<T, 0>,
+                            virtual tensor_props::TRBasicTensorBase<T, 0>,
                             virtual tensor_props::DevTypedTensorBase<T>,
                             virtual tensor_props::LockableTensorBase,
                             virtual tensor_props::AlgebraOptimizedTensor {
@@ -1163,9 +1163,9 @@ struct DeviceTensor<T, 0> : public virtual tensor_props::DeviceTensorBase,
 };
 
 template <typename T, size_t Rank>
-struct DeviceTensorView : public virtual tensor_props::BasicTensorBase<T, Rank>,
+struct DeviceTensorView : public virtual tensor_props::TRBasicTensorBase<T, Rank>,
                           virtual tensor_props::DeviceTensorBase,
-                          virtual tensor_props::TensorViewBase<T, Rank, DeviceTensor<T, Rank>>,
+                          virtual tensor_props::TRTensorViewBase<T, Rank, DeviceTensor<T, Rank>>,
                           virtual tensor_props::DevTypedTensorBase<T>,
                           virtual tensor_props::LockableTensorBase,
                           virtual tensor_props::AlgebraOptimizedTensor {
@@ -1513,7 +1513,7 @@ struct DeviceTensorView : public virtual tensor_props::BasicTensorBase<T, Rank>,
      */
     template <template <typename, size_t> typename TensorType, size_t OtherRank, typename... Args>
     auto common_initialization(TensorType<T, OtherRank> &other, Args &&...args)
-        -> std::enable_if_t<std::is_base_of_v<::einsums::tensor_props::TensorBase<T, OtherRank>, TensorType<T, OtherRank>>>;
+        -> std::enable_if_t<std::is_base_of_v<::einsums::tensor_props::TRTensorBase<T, OtherRank>, TensorType<T, OtherRank>>>;
 
     template <typename OtherT, size_t OtherRank>
     friend struct DeviceTensorView;

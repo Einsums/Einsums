@@ -67,7 +67,7 @@ struct PS : public std::tuple<Args...> {
 };
 
 template <typename T, size_t Rank>
-struct Tensor : public einsums::tensor_props::TensorBase<T, Rank> {
+struct Tensor : public einsums::tensor_props::TRTensorBase<T, Rank> {
 
     template <typename... dims, typename... ps>
     explicit Tensor(std::string name, Dims dims, PS ps) {

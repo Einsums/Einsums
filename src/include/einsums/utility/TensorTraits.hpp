@@ -65,7 +65,7 @@ namespace detail {
  * @tparam D The type to check.
  */
 template <typename D>
-struct IsTensor : public std::is_base_of<tensor_props::TensorBaseNoExtra, D> {};
+struct IsTensor : public std::is_base_of<tensor_props::TensorBase, D> {};
 
 /**
  * @struct IsTypedTensor
@@ -184,12 +184,12 @@ struct IsDiskTensor : public std::is_base_of<tensor_props::DiskTensorBase, D> {}
  *
  * @brief Checks to see if the tensor is a view of another.
  *
- * Checks whether the tensor inherits TensorViewBaseNoExtra.
+ * Checks whether the tensor inherits TensorViewBaseNoViewed.
  *
  * @tparam D The tensor type to check.
  */
 template <typename D>
-struct IsTensorView : public std::is_base_of<tensor_props::TensorViewBaseNoExtra, D> {};
+struct IsTensorView : public std::is_base_of<tensor_props::TensorViewBaseNoViewed, D> {};
 
 /**
  * @struct IsViewOf
@@ -202,26 +202,26 @@ struct IsTensorView : public std::is_base_of<tensor_props::TensorViewBaseNoExtra
  * @tparam Viewed The type of tensor expected to be viewed.
  */
 template <typename D, typename Viewed>
-struct IsViewOf : public std::is_base_of<tensor_props::TensorViewBaseOnlyViewed<Viewed>, D> {};
+struct IsViewOf : public std::is_base_of<tensor_props::TensorViewBase<Viewed>, D> {};
 
 /**
  * @struct IsBasicTensor
  *
  * @brief Checks to see if the tensor is a basic tensor.
  *
- * Checks to see if the tensor inherits BasicTensorBaseNoExtra.
+ * Checks to see if the tensor inherits BasicTensorBase.
  *
  * @tparam D The tensor to check.
  */
 template <typename D>
-struct IsBasicTensor : public std::is_base_of<tensor_props::BasicTensorBaseNoExtra, D> {};
+struct IsBasicTensor : public std::is_base_of<tensor_props::BasicTensorBase, D> {};
 
 /**
  * @struct IsCollectedTensor
  *
  * @brief Checks to see if the tensor is a tensor collection with the given storage type.
  *
- * Checks to see if the tensor inherits CollectedTensorBaseOnlyStored if a type is given, or CollectedTensorBaseNoExtra if type is not
+ * Checks to see if the tensor inherits CollectedTensorBase if a type is given, or CollectedTensorBaseNoExtra if type is not
  * given.
  *
  * @tparam D The tensor to check.
@@ -230,7 +230,7 @@ struct IsBasicTensor : public std::is_base_of<tensor_props::BasicTensorBaseNoExt
 template <typename D, typename StoredType = void>
 struct IsCollectedTensor : public std::bool_constant<std::is_void_v<StoredType>
                                                          ? std::is_base_of_v<tensor_props::CollectedTensorBaseNoExtra, D>
-                                                         : std::is_base_of_v<tensor_props::CollectedTensorBaseOnlyStored<StoredType>, D>> {
+                                                         : std::is_base_of_v<tensor_props::CollectedTensorBase<StoredType>, D>> {
 };
 
 /**
@@ -239,7 +239,7 @@ struct IsCollectedTensor : public std::bool_constant<std::is_void_v<StoredType>
  * @brief Checks to see if the tensor is a tiled tensor with the given storage type.
  *
  * Checks to see if the tensor inherits TiledTensorBaseNoExtra. If a type is given, also check to see if it inherits
- * the appropriate CollectedTensorBaseOnlyStored.
+ * the appropriate CollectedTensorBase.
  *
  * @tparam D The tensor to check.
  * @tparam StoredType The type of the tensors stored in the collection, or void if you don't care.
@@ -247,7 +247,7 @@ struct IsCollectedTensor : public std::bool_constant<std::is_void_v<StoredType>
 template <typename D, typename StoredType = void>
 struct IsTiledTensor : public std::bool_constant<std::is_base_of_v<tensor_props::TiledTensorBaseNoExtra, D> &&
                                                  (std::is_void_v<StoredType> ||
-                                                  std::is_base_of_v<tensor_props::CollectedTensorBaseOnlyStored<StoredType>, D>)> {};
+                                                  std::is_base_of_v<tensor_props::CollectedTensorBase<StoredType>, D>)> {};
 
 /**
  * @struct IsBlockTensor
@@ -255,7 +255,7 @@ struct IsTiledTensor : public std::bool_constant<std::is_base_of_v<tensor_props:
  * @brief Checks to see if the tensor is a block tensor with the given storage type.
  *
  * Checks to see if the tensor inherits BlockTensorBaseNoExtra. If a type is given, also check to see if it inherits
- * the appropriate CollectedTensorBaseOnlyStored.
+ * the appropriate CollectedTensorBase.
  *
  * @tparam D The tensor to check.
  * @tparam StoredType The type of the tensors stored in the collection, or void if you don't care.
@@ -263,7 +263,7 @@ struct IsTiledTensor : public std::bool_constant<std::is_base_of_v<tensor_props:
 template <typename D, typename StoredType = void>
 struct IsBlockTensor : public std::bool_constant<std::is_base_of_v<tensor_props::BlockTensorBaseNoExtra, D> &&
                                                  (std::is_void_v<StoredType> ||
-                                                  std::is_base_of_v<tensor_props::CollectedTensorBaseOnlyStored<StoredType>, D>)> {};
+                                                  std::is_base_of_v<tensor_props::CollectedTensorBase<StoredType>, D>)> {};
 
 /**
  * @struct IsFunctionTensor

@@ -366,7 +366,7 @@ void scale_column(size_t col, typename AType::data_type scale, AType *A) {
  * @param alpha The power to take
  * @param cutoff Values below cutoff are considered zero.
  *
- * @return std::enable_if_t<std::is_base_of_v<Detail::TensorBase<double, 2>, AType>, AType>
+ * @return std::enable_if_t<std::is_base_of_v<Detail::TRTensorBase<double, 2>, AType>, AType>
  */
 template <MatrixConcept AType>
 auto pow(const AType &a, typename AType::data_type alpha,

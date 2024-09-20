@@ -121,7 +121,7 @@ HOSTDEV inline void sentinel_to_indices(size_t sentinel, const size_t *unique_st
             out_inds[i] = hold / unique_strides[i];
             hold %= unique_strides[i];
         } else {
-            out_inds[i] = 0;
+            [[unlikely]] out_inds[i] = 0;
         }
     }
 }
@@ -137,10 +137,150 @@ inline void sentinel_to_indices(size_t sentinel, const std::array<size_t, num_un
             out_inds[i] = hold / unique_strides[i];
             hold %= unique_strides[i];
         } else {
-            out_inds[i] = 0;
+            [[unlikely]] out_inds[i] = 0;
         }
     }
 }
+
+template <typename StorageType1, typename StorageType2>
+inline void sentinel_to_indices(size_t sentinel, const StorageType1 &unique_strides, StorageType2 &out_inds) {
+    size_t hold = sentinel;
+
+    if (out_inds.size() != unique_strides.size()) {
+        out_inds.resize(unique_strides.size());
+    }
+
+    for (ssize_t i = 0; i < unique_strides.size(); i++) {
+        if (unique_strides[i] != 0) {
+            out_inds[i] = hold / unique_strides[i];
+            hold %= unique_strides[i];
+        } else {
+            [[unlikely]] out_inds[i] = 0;
+        }
+    }
+}
+
+/**
+ * @brief The opposite of sentinel_to_indices. Calculates a sentinel given indices and strides.
+ */
+template <size_t num_unique_inds>
+HOSTDEV inline size_t indices_to_sentinel(const size_t *unique_strides, const size_t *inds) {
+    size_t out = 0;
+
+#pragma unroll
+    for (size_t i = 0; i < num_unique_inds; i++) {
+        out += inds[i] * unique_strides[i];
+    }
+
+    return out;
+}
+
+template <size_t num_unique_inds>
+inline size_t indices_to_sentinel(const std::array<size_t, num_unique_inds> &unique_strides,
+                                  const std::array<size_t, num_unique_inds> &inds) {
+    size_t out = 0;
+
+#pragma unroll
+    for (size_t i = 0; i < num_unique_inds; i++) {
+        out += inds[i] * unique_strides[i];
+    }
+
+    return out;
+}
+
+template <typename StorageType1, typename StorageType2>
+inline size_t indices_to_sentinel(const StorageType1 &unique_strides, const StorageType2 &inds) {
+    size_t out = 0;
+
+    for (size_t i = 0; i < unique_strides.size(); i++) {
+        out += inds[i] * unique_strides[i];
+    }
+
+    return out;
+}
+
+/**
+ * @brief Converts indices to a sentinel. Checks for negative numbers and converts them.
+ *
+ * When checking for negative numbers, it will add the appropriate dimension to bring the index into
+ * the range for that dimension. Can not be used on GPU since it throws errors. Also, running all those if-statements
+ * would be very slow.
+ */
+template <size_t num_unique_inds>
+inline size_t indices_to_sentinel_negative_check(const size_t *unique_strides, const size_t *unique_dims, const size_t *inds) {
+    size_t out = 0;
+
+#pragma unroll
+    for (size_t i = 0; i < num_unique_inds; i++) {
+        size_t ind = inds[i];
+
+        if (ind < 0) {
+            [[unlikely]] ind += unique_dims[i];
+        }
+
+        if (ind < 0 || ind >= unique_dims[i]) {
+            [[unlikely]] throw EINSUMSEXCEPTION(
+                fmt::format("Index out of range! Index {} in rank {} was either greater than or equal to {} or less than {}", inds[i], i,
+                            unique_dims[i], -unique_dims[i]));
+        }
+
+        out += ind * unique_strides[i];
+    }
+
+    return out;
+}
+
+template <size_t num_unique_inds>
+inline size_t indices_to_sentinel_negative_check(const std::array<size_t, num_unique_inds> &unique_strides,
+                                                 const std::array<size_t, num_unique_inds> &unique_dims,
+                                                 const std::array<size_t, num_unique_inds> &inds) {
+    size_t out = 0;
+
+#pragma unroll
+    for (size_t i = 0; i < num_unique_inds; i++) {
+        size_t ind = inds[i];
+
+        if (ind < 0) {
+            [[unlikely]] ind += unique_dims[i];
+        }
+
+        if (ind < 0 || ind >= unique_dims[i]) {
+            [[unlikely]] throw EINSUMSEXCEPTION(
+                fmt::format("Index out of range! Index {} in rank {} was either greater than or equal to {} or less than {}", inds[i], i,
+                            unique_dims[i], -unique_dims[i]));
+        }
+
+        out += ind * unique_strides[i];
+    }
+
+    return out;
+}
+
+template <typename StorageType1, typename StorageType2, typename StorageType3>
+inline size_t indices_to_sentinel_negative_check(const StorageType1 &unique_strides, const StorageType2 &unique_dims,
+                                                 const StorageType3 &inds) {
+    size_t out = 0;
+
+    for (size_t i = 0; i < inds.size(); i++) {
+        size_t ind = inds[i];
+
+        if (ind < 0) {
+            [[unlikely]] ind += unique_dims[i];
+        }
+
+        if (ind < 0 || ind >= unique_dims[i]) {
+            [[unlikely]] throw EINSUMSEXCEPTION(
+                fmt::format("Index out of range! Index {} in rank {} was either greater than or equal to {} or less than {}", inds[i], i,
+                            unique_dims[i], -unique_dims[i]));
+        }
+
+        out += ind * unique_strides[i];
+    }
+
+    return out;
+}
+
+EINSUMS_EXPORT void dims_to_strides(const std::vector<size_t> &dims, std::vector<size_t> &out);
 
 /**
  * @brief Compute the strides for turning a sentinel into a list of indices.
@@ -167,8 +307,6 @@ void dims_to_strides(const Dim<Dims> &dims, std::array<size_t, Dims> &out) {
         stride *= dims[i];
     }
 }
-
-EINSUMS_EXPORT void dims_to_strides(const std::vector<size_t> &dims, std::vector<size_t> &out);
 
 template <int I, typename Head, typename Index>
 int compile_index_table(const ::std::tuple<Head> &, const Index &, int &out) {

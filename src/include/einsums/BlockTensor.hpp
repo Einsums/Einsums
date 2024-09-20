@@ -26,8 +26,8 @@ namespace tensor_props {
  * @tparam TensorType The underlying type for the tensors.
  */
 template <typename T, size_t Rank, typename TensorType>
-struct BlockTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>,
-                         virtual TensorBase<T, Rank>,
+struct BlockTensorBase : public virtual CollectedTensorBase<TensorType>,
+                         virtual TRTensorBase<T, Rank>,
                          virtual BlockTensorBaseNoExtra,
                          virtual LockableTensorBase,
                          virtual AlgebraOptimizedTensor {

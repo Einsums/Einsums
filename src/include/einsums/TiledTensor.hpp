@@ -34,7 +34,8 @@ namespace tensor_props {
  * @tparam Rank The tensor rank.
  */
 template <typename T, size_t Rank, typename TensorType>
-struct TiledTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>,
+struct TiledTensorBase : public virtual CollectedTensorBase<TensorType>,
+                         virtual TRTensorBase<T, Rank>,
                          virtual TiledTensorBaseNoExtra,
                          virtual LockableTensorBase,
                          virtual AlgebraOptimizedTensor {
@@ -454,7 +455,7 @@ struct TiledTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
 
         std::array<std::int64_t, Rank> array_ind;
 
-        for(size_t i = 0; i < Rank; i++) {
+        for (size_t i = 0; i < Rank; i++) {
             array_ind[i] = index[i];
         }
 
@@ -491,7 +492,7 @@ struct TiledTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
 
         std::array<std::int64_t, Rank> array_ind;
 
-        for(size_t i = 0; i < Rank; i++) {
+        for (size_t i = 0; i < Rank; i++) {
             array_ind[i] = index[i];
         }
 
@@ -943,7 +944,7 @@ struct TiledTensor final : public virtual tensor_props::TiledTensorBase<T, Rank,
 
 template <typename T, size_t Rank>
 struct TiledTensorView final : public virtual tensor_props::TiledTensorBase<T, Rank, TensorView<T, Rank>>,
-                               virtual tensor_props::TensorViewBase<T, Rank, TiledTensor<T, Rank>>,
+                               virtual tensor_props::TRTensorViewBase<T, Rank, TiledTensor<T, Rank>>,
                                virtual tensor_props::CoreTensorBase {
   private:
     bool _full_view_of_underlying{false};
@@ -1094,7 +1095,7 @@ struct TiledDeviceTensor final : public virtual tensor_props::TiledTensorBase<T,
 template <typename T, size_t Rank>
 struct TiledDeviceTensorView final : public virtual tensor_props::TiledTensorBase<T, Rank, DeviceTensorView<T, Rank>>,
                                      virtual tensor_props::DeviceTensorBase,
-                                     virtual tensor_props::TensorViewBase<T, Rank, TiledDeviceTensor<T, Rank>> {
+                                     virtual tensor_props::TRTensorViewBase<T, Rank, TiledDeviceTensor<T, Rank>> {
   private:
     bool                     _full_view_of_underlying{false};
     detail::HostToDeviceMode _mode{detail::DEV_ONLY};

@@ -17,7 +17,7 @@ namespace einsums::tensor_algebra {
 namespace detail {}
 
 template <template <typename, size_t> typename CType, size_t CRank, typename UnaryOperator, typename T>
-    requires std::derived_from<CType<T, CRank>, ::einsums::tensor_props::TensorBase<T, CRank>>
+    requires std::derived_from<CType<T, CRank>, ::einsums::tensor_props::TRTensorBase<T, CRank>>
 auto element_transform(CType<T, CRank> *C, UnaryOperator unary_opt) -> void {
     if constexpr (einsums::detail::IsIncoreRankBlockTensorV<CType<T, CRank>, CRank, T>) {
         for (int i = 0; i < C->num_blocks(); i++) {

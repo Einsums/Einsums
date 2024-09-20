@@ -230,7 +230,7 @@ auto DeviceTensorView<T, Rank>::to_rank_1_view() const -> DeviceTensorView<T, 1>
 template <typename T, size_t Rank>
 template <template <typename, size_t> typename TensorType, size_t OtherRank, typename... Args>
 auto DeviceTensorView<T, Rank>::common_initialization(TensorType<T, OtherRank> &other, Args &&...args)
-    -> ::std::enable_if_t<::std::is_base_of_v<::einsums::tensor_props::TensorBase<T, OtherRank>, TensorType<T, OtherRank>>> {
+    -> ::std::enable_if_t<::std::is_base_of_v<::einsums::tensor_props::TRTensorBase<T, OtherRank>, TensorType<T, OtherRank>>> {
     using namespace einsums::gpu;
 
     static_assert(Rank <= OtherRank, "A TensorView must be the same Rank or smaller than the Tensor being viewed.");
