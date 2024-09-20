@@ -1,5 +1,5 @@
 import pytest
-import einsums_py as ein
+import einsums as ein
 import numpy as np
 
 def generic_tester(a: int, b: int) :
