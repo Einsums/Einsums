@@ -22,16 +22,21 @@ add_einsums_library(
         PUBLIC_DEPENDS range-v3::range-v3 fmt::fmt Einsums::h5cpp
 )
 
-add_einsums_library(einsums_py SHARED
+add_einsums_library(einsums_py MODULE
         SOURCES
         PyTensorAlgebra.cpp
         PyMain.cpp
-        DEPENDS pybind11::module ${Python3_LIBRARIES}
+        DEPENDS pybind11::module pybind11::lto ${PYTHON_LIBRARIES}
         PUBLIC_DEPENDS einsums)
 
 extend_einsums_target(einsums_py
         DEPENDS pybind11::windows_extras
         CONDITION MSVC)
+
+if(NOT MSVC AND NOT ${CMAKE_BUILD_TYPE} MATCHES Debug|RelWithDebInfo)
+        # Strip unnecessary sections of the binary on Linux/macOS
+        pybind11_strip(example)
+endif()
 
 extend_einsums_target(einsums_py
         SOURCES
@@ -41,9 +46,6 @@ extend_einsums_target(einsums_py
         CONDITION EINSUMS_BUILD_HIP
 )
 
-if((MSVC) OR (CMAKE_HOST_WIN32))
-        set_target_properties(einsums_py PROPERTIES SUFFIX ".pyd")
-endif()
 pybind11_extension(einsums_py)
 
 target_compile_features(einsums PUBLIC cxx_std_20)

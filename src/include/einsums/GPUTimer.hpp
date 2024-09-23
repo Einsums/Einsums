@@ -25,7 +25,7 @@ namespace einsums::timer {
  * kernel runs. Then, an event is pushed to the stream after a kernel is pushed. When the events reach the
  * head of the stream, they record their time. This allows for kernel timing.
  */
-struct GPUTimer {
+struct EINSUMS_EXPORT GPUTimer {
   private:
     hipEvent_t start_event, end_event;
 
