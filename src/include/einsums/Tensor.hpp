@@ -883,8 +883,9 @@ struct Tensor : public virtual tensor_props::CoreTensorBase,
             auto bbegin    = b._data.begin() + chunksize * tid;                                                                            \
             auto aend      = (tid == omp_get_num_threads() - 1) ? _data.end() : abegin + chunksize;                                        \
             auto j         = bbegin;                                                                                                       \
-            EINSUMS_OMP_SIMD for (auto i = abegin; i < aend; i++, j++) {                                                                   \
+            EINSUMS_OMP_SIMD for (auto i = abegin; i < aend; i++) {                                                                        \
                 (*i) OP(*j);                                                                                                               \
+                j++;                                                                                                                       \
             }                                                                                                                              \
         }                                                                                                                                  \
         return *this;                                                                                                                      \
@@ -1128,7 +1129,7 @@ struct TensorView final : public virtual tensor_props::CoreTensorBase,
     }
 
 #if defined(OPERATOR)
-#    undef OPERATOR)
+#    undef OPERATOR
 #endif
 #define OPERATOR(OP)                                                                                                                       \
     auto operator OP(const T &value)->TensorView & {                                                                                       \
