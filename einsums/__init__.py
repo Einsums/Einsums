@@ -1,4 +1,4 @@
 try:
     from .einsums_py import *
-except :
+except Exception :
     from einsums_py import *
