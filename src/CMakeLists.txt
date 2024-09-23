@@ -26,7 +26,7 @@ add_einsums_library(einsums_py SHARED
         SOURCES
         PyTensorAlgebra.cpp
         PyMain.cpp
-        DEPENDS Python3::Module pybind11::module Python3::Python ${pybind11_LIBRARIES} ${Python3_LIBRARIES}
+        DEPENDS pybind11::module ${Python3_LIBRARIES}
         PUBLIC_DEPENDS einsums)
 
 extend_einsums_target(einsums_py
