@@ -182,8 +182,6 @@ jobs:
           else
             export PYTHONPATH=$PYTHONPATH:${{github.workspace}}/installed/lib:$CONDA_PREFIX/lib
           fi
-          ls ${{github.workspace}}/installed/lib
-          ls ${{github.workspace}}/installed/lib/einsums
           
           pytest "${{github.workspace}}/tests"
 
