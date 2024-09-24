@@ -35,7 +35,7 @@ extend_einsums_target(einsums_py
 
 if(NOT MSVC AND NOT ${CMAKE_BUILD_TYPE} MATCHES Debug|RelWithDebInfo)
         # Strip unnecessary sections of the binary on Linux/macOS
-        pybind11_strip(example)
+        pybind11_strip(einsums_py)
 endif()
 
 extend_einsums_target(einsums_py
