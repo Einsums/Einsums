@@ -37,7 +37,8 @@ class PyGPUView {
 
     std::string _fmt_spec;
 
-    detail::PyViewMode _mode;
+    detail::PyViewMode                _mode;
+    einsums::detail::HostToDeviceMode _dev_tensor_mode{einsums::detail::UNKNOWN};
 
   public:
     PyGPUView(pybind11::buffer &buffer, detail::PyViewMode mode = detail::COPY);
@@ -48,7 +49,8 @@ class PyGPUView {
     PyGPUView(DeviceTensor<T, Rank> &tensor)
         : _dims{tensor.dims()}, _strides(Rank), _gpu_dims{tensor.gpu_dims()}, _rank{Rank}, _itemsize{sizeof(T)},
           _alloc_size{sizeof(T) * tensor.dims(0) * tensor.strides(0)}, _num_items{tensor.size()}, _mode{detail::DEVICE_TENSOR},
-          _fmt_spec{pybind11::format_descriptor<T>::format()} {
+          _fmt_spec{pybind11::format_descriptor<T>::format()}, _host_data{(void *)tensor.host_data()}, _dev_data{(void *)tensor.data()},
+          _dev_tensor_mode{tensor.mode()} {
         gpu::hip_catch(hipMalloc((void **)&_gpu_strides, Rank * sizeof(size_t)));
 
         for (int i = 0; i < Rank; i++) {
@@ -62,7 +64,8 @@ class PyGPUView {
     PyGPUView(DeviceTensorView<T, Rank> &tensor)
         : _dims{tensor.dims()}, _strides(Rank), _gpu_dims{tensor.gpu_dims()}, _rank{Rank}, _itemsize{sizeof(T)},
           _alloc_size{sizeof(T) * tensor.dims(0) * tensor.strides(0)}, _num_items{tensor.size()}, _mode{detail::DEVICE_TENSOR},
-          _fmt_spec{pybind11::format_descriptor<T>::format()} {
+          _fmt_spec{pybind11::format_descriptor<T>::format()}, _host_data{(void *)tensor.host_data()}, _dev_data{(void *)tensor.data()},
+          _dev_tensor_mode{tensor.mode()} {
         gpu::hip_catch(hipMalloc((void **)&_gpu_strides, Rank * sizeof(size_t)));
 
         for (int i = 0; i < Rank; i++) {

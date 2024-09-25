@@ -842,6 +842,11 @@ struct DeviceTensor : public virtual einsums::tensor_props::DeviceTensorBase,
      */
     [[nodiscard]] auto full_view_of_underlying() const noexcept -> bool override { return true; }
 
+    /**
+     * Return the mode of the tensor.
+     */
+    detail::HostToDeviceMode mode() const { return _mode; }
+
     /**********************************************
      * Interface between device and host tensors. *
      **********************************************/

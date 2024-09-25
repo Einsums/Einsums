@@ -100,7 +100,7 @@ PyGPUView::PyGPUView(const pybind11::buffer &buffer, detail::PyViewMode mode) {
 
 PyGPUView::~PyGPUView() {
     if (_mode == detail::COPY) {
-        gpu::hip_catch(hipMemcpy((void *)_host_data, (const void *)_dev_data, _alloc_size, hipMemcpyDeviceToHost));
+        // Don't copy before. There is no guarantee that the host data is still valid.
         gpu::hip_catch(hipFree(_dev_data));
     } else if (_mode == detail::MAP) {
         gpu::hip_catch(hipHostUnregister((void *)_host_data));
@@ -186,9 +186,15 @@ size_t PyGPUView::itemsize() const {
 }
 
 void PyGPUView::update_H2D() {
+    if(_mode == detail::COPY) {
+        gpu::hip_catch(hipMemcpy(_dev_data, _host_data, _alloc_size, hipMemcpyHostToDevice));
+    }
 }
 
 void PyGPUView::update_D2H() {
+    if(_mode == detail::COPY) {
+        gpu::hip_catch(hipMemcpy(_host_data, _dev_data, _alloc_size, hipMemcpyDeviceToHost));
+    }
 }
 
 void einsums::python::export_gpu_view(pybind11::module_ &mod) {

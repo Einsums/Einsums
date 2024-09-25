@@ -35,6 +35,9 @@ EINSUMS_EXPORT std::vector<size_t> get_dim_ranges_for_many(const pybind11::buffe
                                                            const pybind11::buffer_info &A, const std::vector<int> &A_perm,
                                                            const pybind11::buffer_info &B, const std::vector<int> &B_perm,
                                                            int unique_indices);
+EINSUMS_EXPORT std::vector<size_t> get_dim_ranges_for_many(const pybind11::buffer_info &A, const std::vector<int> &A_perm,
+                                                           const pybind11::buffer_info &B, const std::vector<int> &B_perm,
+                                                           int unique_indices);
 
 EINSUMS_EXPORT std::string intersect(const std::string &st1, const std::string &st2);
 
@@ -56,6 +59,9 @@ std::vector<T> intersect(const std::vector<T> &vec1, const std::vector<T> &vec2)
 
 EINSUMS_EXPORT std::vector<size_t> get_dim_ranges_for_many(const python::PyGPUView &C, const std::vector<int> &C_perm,
                                                            const python::PyGPUView &A, const std::vector<int> &A_perm,
+                                                           const python::PyGPUView &B, const std::vector<int> &B_perm, int unique_indices);
+
+EINSUMS_EXPORT std::vector<size_t> get_dim_ranges_for_many(const python::PyGPUView &A, const std::vector<int> &A_perm,
                                                            const python::PyGPUView &B, const std::vector<int> &B_perm, int unique_indices);
 
 template <typename DataType>
@@ -330,7 +336,7 @@ class PyEinsumGenericPlan {
             throw EINSUMSEXCEPTION("Tensor ranks do not match the indices!");
         }
 
-        std::vector<size_t> unique_dims = get_dim_ranges_for_many(C, _C_permute, A, _A_permute, B, _B_permute, _num_inds);
+        std::vector<size_t> unique_dims = get_dim_ranges_for_many(A, _A_permute, B, _B_permute, _num_inds);
 
         std::vector<size_t> unique_strides, C_index_strides, A_unique_stride, B_unique_stride, C_unique_stride;
 
