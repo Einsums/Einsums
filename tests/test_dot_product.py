@@ -2,7 +2,7 @@ import pytest
 import einsums as ein
 import numpy as np
 
-pytestmark = pytest.mark.parametrize(["a"], [tuple(10), pytest.param(1000, marks = pytest.mark.slow)])
+pytestmark = pytest.mark.parametrize("a", [10, pytest.param(1000, marks = pytest.mark.slow)])
 
 def test_dot(a: int) :
     A = np.array([np.random.rand() for i in range(a)])
