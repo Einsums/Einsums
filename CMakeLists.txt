@@ -95,9 +95,15 @@ if(EINSUMS_BUILD_HIP)
     cmake_path(APPEND __hip_cmake_dir "hipsolver" OUTPUT_VARIABLE hipsolver_DIR)
     set(ENV{hipsolver_DIR} ${hipsolver_DIR})
 
-    enable_language(HIP)
-
-    set(ENABLE_HIP ON)
+    if(HIP_PLATFORM STREQUAL nvidia)
+        list(APPEND CMAKE_MODULE_PATH "${hip_DIR}")
+        enable_language(CUDA)
+        find_package(HIP MODULE REQUIRED)
+        set(ENABLE_CUDA ON)
+    else()
+        enable_language(HIP)
+        set(ENABLE_HIP ON)
+    endif()
 endif()
 
 # include(cmake/DetectHostArch.cmake) detect_host_arch() message(STATUS
