@@ -1,5 +1,6 @@
 #pragma once
 
+#include "einsums/_Compiler.hpp"
 #include "einsums/_Export.hpp"
 
 #include "einsums/Blas.hpp"
@@ -25,6 +26,7 @@
 #include <pybind11/pybind11.h>
 #include <string>
 #include <vector>
+#include <cstddef>
 
 namespace einsums::tensor_algebra {
 
