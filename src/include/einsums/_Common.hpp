@@ -9,9 +9,11 @@
 
 #include "einsums/STL.hpp"
 
+#include <fmt/format.h>
+
 #include <array>
 #include <cstdint>
-#include <fmt/format.h>
+#include <sstream>
 
 #define EINSUMS_STRINGIFY(a)  EINSUMS_STRINGIFY2(a)
 #define EINSUMS_STRINGIFY2(a) #a

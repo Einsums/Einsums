@@ -9,6 +9,7 @@
 #include "einsums/_Compiler.hpp"
 
 #include "einsums/Exception.hpp"
+#include "einsums/OpenMP.h"
 #include "einsums/Print.hpp"
 #include "einsums/STL.hpp"
 #include "einsums/Section.hpp"
