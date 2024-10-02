@@ -28,7 +28,7 @@ void direct_product(typename AType::data_type alpha, const AType &A, const BType
 
     EINSUMS_OMP_PARALLEL_FOR
     for (int i = 0; i < num_blocks; i++) {
-        std::array<int, AType::rank> index = std::array<int, AType::rank>{i};
+        std::array<int, AType::Rank> index = std::array<int, AType::Rank>{i};
 
         if constexpr (einsums::detail::IsTiledTensorV<AType> && einsums::detail::IsBlockTensorV<BType> &&
                       einsums::detail::IsTiledTensorV<CType>) {
@@ -79,13 +79,13 @@ template <CollectedTensorConcept AType, CollectedTensorConcept BType>
         requires SameUnderlyingAndRank<AType, BType>;
     }
 auto dot(const AType &A, const BType &B) -> typename AType::data_type {
-    for (int i = 0; i < AType::rank; i++) {
+    for (int i = 0; i < AType::Rank; i++) {
         if (A.grid_size(i) != B.num_blocks()) {
             throw EINSUMSEXCEPTION("Tiled tensor and block tensor have incompatible layouts.");
         }
     }
     using T               = typename AType::data_type;
-    constexpr size_t Rank = AType::rank;
+    constexpr size_t Rank = AType::Rank;
     T                out  = 0;
 
     int num_blocks;
@@ -125,13 +125,13 @@ template <CollectedTensorConcept AType, CollectedTensorConcept BType>
         requires SameUnderlyingAndRank<AType, BType>;
     }
 auto true_dot(const AType &A, const BType &B) -> typename AType::data_type {
-    for (int i = 0; i < AType::rank; i++) {
+    for (int i = 0; i < AType::Rank; i++) {
         if (A.grid_size(i) != B.num_blocks()) {
             throw EINSUMSEXCEPTION("Tiled tensor and block tensor have incompatible layouts.");
         }
     }
     using T               = typename AType::data_type;
-    constexpr size_t Rank = AType::rank;
+    constexpr size_t Rank = AType::Rank;
     T                out  = T{0.0};
 
     int num_blocks;

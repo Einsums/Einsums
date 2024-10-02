@@ -9,9 +9,9 @@ def test_direct_prod(a, b) :
     B = np.array([[np.random.rand() for i in range(a)] for j in range(b)])
     C = np.array([[0.0 for i in range(a)] for j in range(b)])
 
-    plan = ein.compile_plan("ij", "ij", "ij")
+    plan = ein.core.compile_plan("ij", "ij", "ij")
 
-    assert(type(plan) is ein.EinsumDirectProductPlan)
+    assert(type(plan) is ein.core.EinsumDirectProductPlan)
 
     plan.execute(0.0, C, 1.0, A, B)
 
@@ -21,20 +21,20 @@ def test_direct_prod(a, b) :
         for j in range(a) :
             assert(abs(C[i, j] - C_actual[i, j]) < 1e-6)
 
-@pytest.mark.skipif(not ein.gpu_enabled(), reason = "Einsums not built with GPU support!")
+@pytest.mark.skipif(not ein.core.gpu_enabled(), reason = "Einsums not built with GPU support!")
 def test_direct_prod_gpu_copy(a, b) :
     A = np.array([[np.random.rand() for i in range(a)] for j in range(b)])
     B = np.array([[np.random.rand() for i in range(a)] for j in range(b)])
     C = np.array([[0.0 for i in range(a)] for j in range(b)])
 
-    A_view = ein.GPUView(A, ein.COPY)
-    B_view = ein.GPUView(B, ein.COPY)
-    C_view = ein.GPUView(C, ein.COPY)
+    A_view = ein.core.GPUView(A, ein.core.COPY)
+    B_view = ein.core.GPUView(B, ein.core.COPY)
+    C_view = ein.core.GPUView(C, ein.core.COPY)
 
 
-    plan = ein.compile_plan("ij", "ij", "ij")
+    plan = ein.core.compile_plan("ij", "ij", "ij")
 
-    assert(type(plan) is ein.EinsumDirectProductPlan)
+    assert(type(plan) is ein.core.EinsumDirectProductPlan)
 
     plan.execute(0.0, C_view, 1.0, A_view, B_view)
 
@@ -46,20 +46,20 @@ def test_direct_prod_gpu_copy(a, b) :
         for j in range(a) :
             assert(abs(C[i, j] - C_actual[i, j]) < 1e-6)
 
-@pytest.mark.skipif(not ein.gpu_enabled(), reason = "Einsums not built with GPU support!")
+@pytest.mark.skipif(not ein.core.gpu_enabled(), reason = "Einsums not built with GPU support!")
 def test_direct_prod_gpu_map(a, b) :
     A = np.array([[np.random.rand() for i in range(a)] for j in range(b)])
     B = np.array([[np.random.rand() for i in range(a)] for j in range(b)])
     C = np.array([[0.0 for i in range(a)] for j in range(b)])
 
-    A_view = ein.GPUView(A, ein.MAP)
-    B_view = ein.GPUView(B, ein.MAP)
-    C_view = ein.GPUView(C, ein.MAP)
+    A_view = ein.core.GPUView(A, ein.core.MAP)
+    B_view = ein.core.GPUView(B, ein.core.MAP)
+    C_view = ein.core.GPUView(C, ein.core.MAP)
 
 
-    plan = ein.compile_plan("ij", "ij", "ij")
+    plan = ein.core.compile_plan("ij", "ij", "ij")
 
-    assert(type(plan) is ein.EinsumDirectProductPlan)
+    assert(type(plan) is ein.core.EinsumDirectProductPlan)
 
     plan.execute(0.0, C_view, 1.0, A_view, B_view)
 

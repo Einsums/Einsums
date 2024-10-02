@@ -73,7 +73,7 @@ auto sum(const TensorType &tensor) -> TensorType::data_type {
     LabeledSection0();
 
     using T               = typename TensorType::data_type;
-    constexpr size_t Rank = TensorType::rank;
+    constexpr size_t Rank = TensorType::Rank;
 
     if constexpr (einsums::detail::IsBlockTensorV<TensorType>) {
         T result{0};
@@ -144,7 +144,7 @@ auto max(const TensorType &tensor) -> TensorType::data_type {
     LabeledSection0();
 
     using T               = typename TensorType::data_type;
-    constexpr size_t Rank = TensorType::rank;
+    constexpr size_t Rank = TensorType::Rank;
 
     if constexpr (einsums::detail::IsBlockTensorV<TensorType>) {
         std::vector<T> max_arr(tensor.num_blocks());
@@ -220,7 +220,7 @@ auto min(const TensorType &tensor) -> TensorType::data_type {
     LabeledSection0();
 
     using T               = typename TensorType::data_type;
-    constexpr size_t Rank = TensorType::rank;
+    constexpr size_t Rank = TensorType::Rank;
 
     if constexpr (einsums::detail::IsBlockTensorV<TensorType>) {
         std::vector<T> min_arr(tensor.num_blocks());
@@ -301,7 +301,7 @@ auto abs(const TensorType &tensor) -> remove_view_t<TensorType> {
     LabeledSection0();
 
     using T               = typename TensorType::data_type;
-    constexpr size_t Rank = TensorType::rank;
+    constexpr size_t Rank = TensorType::Rank;
 
     if constexpr (einsums::detail::IsBlockTensorV<TensorType>) {
         auto result = create_tensor_like(tensor);
@@ -367,7 +367,7 @@ auto invert(const TensorType &tensor) -> remove_view_t<TensorType> {
     LabeledSection0();
 
     using T               = typename TensorType::data_type;
-    constexpr size_t Rank = TensorType::rank;
+    constexpr size_t Rank = TensorType::Rank;
 
     if constexpr (einsums::detail::IsBlockTensorV<TensorType>) {
         auto result = create_tensor_like(tensor);
@@ -433,7 +433,7 @@ auto exp(const TensorType &tensor) -> remove_view_t<TensorType> {
     LabeledSection0();
 
     using T               = typename TensorType::data_type;
-    constexpr size_t Rank = TensorType::rank;
+    constexpr size_t Rank = TensorType::Rank;
 
     if constexpr (einsums::detail::IsBlockTensorV<TensorType>) {
         auto result = create_tensor_like(tensor);
@@ -499,7 +499,7 @@ auto scale(const typename TensorType::data_type &scale, const TensorType &tensor
     LabeledSection0();
 
     using T               = typename TensorType::data_type;
-    constexpr size_t Rank = TensorType::rank;
+    constexpr size_t Rank = TensorType::Rank;
 
     if constexpr (einsums::detail::IsBlockTensorV<TensorType>) {
         auto result = create_tensor_like(tensor);

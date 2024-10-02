@@ -26,9 +26,9 @@ BEGIN_EINSUMS_NAMESPACE_HPP(einsums::tensor_algebra)
 namespace detail {
 
 // CType has typename to allow for interoperability with scalar types.
-template <bool OnlyUseGenericAlgorithm, TensorConcept AType, TensorConcept BType, typename CType, typename... CIndices,
+template <bool OnlyUseGenericAlgorithm, RankTensorConcept AType, RankTensorConcept BType, typename CType, typename... CIndices,
           typename... AIndices, typename... BIndices>
-    requires(TensorConcept<CType> || (ScalarConcept<CType> && sizeof...(CIndices) == 0))
+    requires(RankTensorConcept<CType> || (ScalarConcept<CType> && sizeof...(CIndices) == 0))
 auto einsum(const DataTypeT<CType> C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType *C,
             const BiggestTypeT<typename AType::data_type, typename BType::data_type> AB_prefactor, const std::tuple<AIndices...> & /*As*/,
             const AType &A, const std::tuple<BIndices...> & /*Bs*/, const BType &B) -> void;
@@ -37,7 +37,7 @@ auto einsum(const DataTypeT<CType> C_prefactor, const std::tuple<CIndices...> & 
 /*
  * Dispatchers for einsum.
  */
-template <TensorConcept AType, TensorConcept BType, typename CType, typename U, typename... CIndices, typename... AIndices,
+template <RankTensorConcept AType, RankTensorConcept BType, typename CType, typename U, typename... CIndices, typename... AIndices,
           typename... BIndices>
     requires requires {
         requires InSamePlace<AType, BType>;
@@ -208,8 +208,8 @@ auto unfold(const CType<T, CRank> &source) -> Tensor<T, 2>
 template <TensorConcept AType, TensorConcept BType, typename... AIndices, typename... BIndices>
     requires requires {
         requires InSamePlace<AType, BType>;
-        requires AType::rank == sizeof...(AIndices);
-        requires BType::rank == sizeof...(BIndices);
+        requires AType::Rank == sizeof...(AIndices);
+        requires BType::Rank == sizeof...(BIndices);
     }
 auto khatri_rao(const std::tuple<AIndices...> &, const AType &A, const std::tuple<BIndices...> &,
                 const BType &B) -> BasicTensorLike<AType, typename AType::data_type, 2>;

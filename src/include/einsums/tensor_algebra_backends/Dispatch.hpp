@@ -39,9 +39,9 @@ namespace einsums::tensor_algebra {
 namespace detail {
 
 // CType has typename to allow for interoperability with scalar types.
-template <bool OnlyUseGenericAlgorithm, TensorConcept AType, TensorConcept BType, typename CType, typename... CIndices,
+template <bool OnlyUseGenericAlgorithm, RankTensorConcept AType, RankTensorConcept BType, typename CType, typename... CIndices,
           typename... AIndices, typename... BIndices>
-    requires(TensorConcept<CType> || (ScalarConcept<CType> && sizeof...(CIndices) == 0))
+    requires(RankTensorConcept<CType> || (ScalarConcept<CType> && sizeof...(CIndices) == 0))
 auto einsum(const DataTypeT<CType> C_prefactor, const std::tuple<CIndices...> & /*Cs*/, CType *C,
             const BiggestTypeT<typename AType::data_type, typename BType::data_type> AB_prefactor, const std::tuple<AIndices...> & /*As*/,
             const AType &A, const std::tuple<BIndices...> & /*Bs*/, const BType &B) -> void {
@@ -50,8 +50,8 @@ auto einsum(const DataTypeT<CType> C_prefactor, const std::tuple<CIndices...> & 
     using ADataType        = AType::data_type;
     using BDataType        = BType::data_type;
     using CDataType        = DataTypeT<CType>;
-    constexpr size_t ARank = AType::rank;
-    constexpr size_t BRank = BType::rank;
+    constexpr size_t ARank = AType::Rank;
+    constexpr size_t BRank = BType::Rank;
     constexpr size_t CRank = TensorRank<CType>;
 
     constexpr auto A_indices = std::tuple<AIndices...>();
@@ -508,7 +508,7 @@ generic_default:;
 }
 } // namespace detail
 
-template <TensorConcept AType, TensorConcept BType, typename CType, typename U, typename... CIndices, typename... AIndices,
+template <RankTensorConcept AType, RankTensorConcept BType, typename CType, typename U, typename... CIndices, typename... AIndices,
           typename... BIndices>
     requires requires {
         requires InSamePlace<AType, BType>;
@@ -519,8 +519,8 @@ auto einsum(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CTyp
     using ADataType        = AType::data_type;
     using BDataType        = BType::data_type;
     using CDataType        = DataTypeT<CType>;
-    constexpr size_t ARank = AType::rank;
-    constexpr size_t BRank = BType::rank;
+    constexpr size_t ARank = AType::Rank;
+    constexpr size_t BRank = BType::Rank;
     constexpr size_t CRank = TensorRank<CType>;
 
     using ABDataType = std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType>;

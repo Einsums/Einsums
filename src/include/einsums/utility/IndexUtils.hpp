@@ -257,6 +257,11 @@ inline size_t indices_to_sentinel_negative_check(const std::array<size_t, num_un
 }
 
 template <typename StorageType1, typename StorageType2, typename StorageType3>
+requires requires {
+    requires !std::is_arithmetic_v<StorageType1>;
+    requires !std::is_arithmetic_v<StorageType2>;
+    requires !std::is_arithmetic_v<StorageType3>;
+}
 inline size_t indices_to_sentinel_negative_check(const StorageType1 &unique_strides, const StorageType2 &unique_dims,
                                                  const StorageType3 &inds) {
     size_t out = 0;

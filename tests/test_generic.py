@@ -9,9 +9,9 @@ def test_generic(a: int, b: int) :
     B = np.array([[np.random.rand() for i in range(b)] for j in range(a)])
     C = np.array([[0.0 for i in range(b)] for j in range(a)])
 
-    plan = ein.compile_plan("ij", "ji", "ij")
+    plan = ein.core.compile_plan("ij", "ji", "ij")
 
-    assert(type(plan) is ein.EinsumGenericPlan)
+    assert(type(plan) is ein.core.EinsumGenericPlan)
 
     plan.execute(0.0, C, 1.0, A, B)
 
@@ -21,19 +21,19 @@ def test_generic(a: int, b: int) :
         for j in range(b) :
             assert(abs(C[i, j] - C_actual[i, j]) < 1e-6)
 
-@pytest.mark.skipif(not ein.gpu_enabled(), reason = "Einsums not built with GPU support!")
+@pytest.mark.skipif(not ein.core.gpu_enabled(), reason = "Einsums not built with GPU support!")
 def test_generic_gpu_copy(a: int, b: int) :
     A = np.array([[np.random.rand() for i in range(a)] for j in range(b)])
     B = np.array([[np.random.rand() for i in range(b)] for j in range(a)])
     C = np.array([[0.0 for i in range(b)] for j in range(a)])
 
-    A_view = ein.GPUView(A, ein.COPY)
-    B_view = ein.GPUView(B, ein.COPY)
-    C_view = ein.GPUView(C, ein.COPY)
+    A_view = ein.core.GPUView(A, ein.core.COPY)
+    B_view = ein.core.GPUView(B, ein.core.COPY)
+    C_view = ein.core.GPUView(C, ein.core.COPY)
 
-    plan = ein.compile_plan("ij", "ji", "ij")
+    plan = ein.core.compile_plan("ij", "ji", "ij")
 
-    assert(type(plan) is ein.EinsumGenericPlan)
+    assert(type(plan) is ein.core.EinsumGenericPlan)
 
     plan.execute(0.0, C_view, 1.0, A_view, B_view)
 
@@ -45,19 +45,19 @@ def test_generic_gpu_copy(a: int, b: int) :
         for j in range(b) :
             assert(abs(C[i, j] - C_actual[i, j]) < 1e-6)
 
-@pytest.mark.skipif(not ein.gpu_enabled(), reason = "Einsums not built with GPU support!")
+@pytest.mark.skipif(not ein.core.gpu_enabled(), reason = "Einsums not built with GPU support!")
 def test_generic_gpu_map(a: int, b: int) :
     A = np.array([[np.random.rand() for i in range(a)] for j in range(b)])
     B = np.array([[np.random.rand() for i in range(b)] for j in range(a)])
     C = np.array([[0.0 for i in range(b)] for j in range(a)])
 
-    A_view = ein.GPUView(A, ein.MAP)
-    B_view = ein.GPUView(B, ein.MAP)
-    C_view = ein.GPUView(C, ein.MAP)
+    A_view = ein.core.GPUView(A, ein.core.MAP)
+    B_view = ein.core.GPUView(B, ein.core.MAP)
+    C_view = ein.core.GPUView(C, ein.core.MAP)
 
-    plan = ein.compile_plan("ij", "ji", "ij")
+    plan = ein.core.compile_plan("ij", "ji", "ij")
 
-    assert(type(plan) is ein.EinsumGenericPlan)
+    assert(type(plan) is ein.core.EinsumGenericPlan)
 
     plan.execute(0.0, C_view, 1.0, A_view, B_view)
 

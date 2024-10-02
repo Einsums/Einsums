@@ -9,9 +9,9 @@ def test_dot(a: int) :
     B = np.array([np.random.rand() for i in range(a)])
     C = np.array([0.0])
 
-    plan = ein.compile_plan("", "i", "i")
+    plan = ein.core.compile_plan("", "i", "i")
 
-    assert(type(plan) is ein.EinsumDotPlan)
+    assert(type(plan) is ein.core.EinsumDotPlan)
 
     plan.execute(0.0, C, 1.0, A, B)
 
@@ -19,19 +19,19 @@ def test_dot(a: int) :
 
     assert(abs(C[0] - C_actual) < 1e-6)
 
-@pytest.mark.skipif(not ein.gpu_enabled(), reason = "Einsums not built with GPU support!")
+@pytest.mark.skipif(not ein.core.gpu_enabled(), reason = "Einsums not built with GPU support!")
 def test_dot_copy(a: int) :
     A = np.array([np.random.rand() for i in range(a)])
     B = np.array([np.random.rand() for i in range(a)])
     C = np.array([0.0])
 
-    A_view = ein.GPUView(A, ein.COPY)
-    B_view = ein.GPUView(B, ein.COPY)
-    C_view = ein.GPUView(C, ein.COPY)
+    A_view = ein.core.GPUView(A, ein.core.COPY)
+    B_view = ein.core.GPUView(B, ein.core.COPY)
+    C_view = ein.core.GPUView(C, ein.core.COPY)
 
-    plan = ein.compile_plan("", "i", "i")
+    plan = ein.core.compile_plan("", "i", "i")
 
-    assert(type(plan) is ein.EinsumDotPlan)
+    assert(type(plan) is ein.core.EinsumDotPlan)
 
     plan.execute(0.0, C_view, 1.0, A_view, B_view)
 
@@ -41,19 +41,19 @@ def test_dot_copy(a: int) :
 
     assert(abs(C[0] - C_actual) < 1e-6)
 
-@pytest.mark.skipif(not ein.gpu_enabled(), reason = "Einsums not built with GPU support!")
+@pytest.mark.skipif(not ein.core.gpu_enabled(), reason = "Einsums not built with GPU support!")
 def test_dot_map(a: int) :
     A = np.array([np.random.rand() for i in range(a)])
     B = np.array([np.random.rand() for i in range(a)])
     C = np.array([0.0])
 
-    A_view = ein.GPUView(A, ein.MAP)
-    B_view = ein.GPUView(B, ein.MAP)
-    C_view = ein.GPUView(C, ein.MAP)
+    A_view = ein.core.GPUView(A, ein.core.MAP)
+    B_view = ein.core.GPUView(B, ein.core.MAP)
+    C_view = ein.core.GPUView(C, ein.core.MAP)
 
-    plan = ein.compile_plan("", "i", "i")
+    plan = ein.core.compile_plan("", "i", "i")
 
-    assert(type(plan) is ein.EinsumDotPlan)
+    assert(type(plan) is ein.core.EinsumDotPlan)
 
     plan.execute(0.0, C_view, 1.0, A_view, B_view)
 

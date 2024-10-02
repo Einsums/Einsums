@@ -9,9 +9,9 @@ def test_mat_vec_prod(a, b) :
     B = np.array([np.random.rand() for i in range(a)])
     C = np.array([0.0 for i in range(b)])
 
-    plan = ein.compile_plan("i", "ij", "j")
+    plan = ein.core.compile_plan("i", "ij", "j")
 
-    assert(type(plan) is ein.EinsumGemvPlan)
+    assert(type(plan) is ein.core.EinsumGemvPlan)
 
     plan.execute(0.0, C, 1.0, A, B)
 
@@ -25,19 +25,19 @@ def test_mat_vec_prod(a, b) :
     for i in range(b) :
         assert(abs(C[i] - C_actual[i]) < 1e-6)
 
-@pytest.mark.skipif(not ein.gpu_enabled(), reason = "Einsums not built with GPU support!")
+@pytest.mark.skipif(not ein.core.gpu_enabled(), reason = "Einsums not built with GPU support!")
 def test_mat_vec_prod_gpu_copy(a, b) :
     A = np.array([[np.random.rand() for i in range(a)] for j in range(b)])
     B = np.array([np.random.rand() for i in range(a)])
     C = np.array([0.0 for i in range(b)])
 
-    plan = ein.compile_plan("i", "ij", "j")
+    plan = ein.core.compile_plan("i", "ij", "j")
 
-    assert(type(plan) is ein.EinsumGemvPlan)
+    assert(type(plan) is ein.core.EinsumGemvPlan)
 
-    A_view = ein.GPUView(A, ein.COPY)
-    B_view = ein.GPUView(B, ein.COPY)
-    C_view = ein.GPUView(C, ein.COPY)
+    A_view = ein.core.GPUView(A, ein.core.COPY)
+    B_view = ein.core.GPUView(B, ein.core.COPY)
+    C_view = ein.core.GPUView(C, ein.core.COPY)
 
     plan.execute(0.0, C_view, 1.0, A_view, B_view)
 
@@ -53,19 +53,19 @@ def test_mat_vec_prod_gpu_copy(a, b) :
     for i in range(b) :
         assert(abs(C[i] - C_actual[i]) < 1e-6)
 
-@pytest.mark.skipif(not ein.gpu_enabled(), reason = "Einsums not built with GPU support!")
+@pytest.mark.skipif(not ein.core.gpu_enabled(), reason = "Einsums not built with GPU support!")
 def test_mat_vec_prod_gpu_map(a, b) :
     A = np.array([[np.random.rand() for i in range(a)] for j in range(b)])
     B = np.array([np.random.rand() for i in range(a)])
     C = np.array([0.0 for i in range(b)])
 
-    plan = ein.compile_plan("i", "ij", "j")
+    plan = ein.core.compile_plan("i", "ij", "j")
 
-    assert(type(plan) is ein.EinsumGemvPlan)
+    assert(type(plan) is ein.core.EinsumGemvPlan)
 
-    A_view = ein.GPUView(A, ein.MAP)
-    B_view = ein.GPUView(B, ein.MAP)
-    C_view = ein.GPUView(C, ein.MAP)
+    A_view = ein.core.GPUView(A, ein.core.MAP)
+    B_view = ein.core.GPUView(B, ein.core.MAP)
+    C_view = ein.core.GPUView(C, ein.core.MAP)
 
     plan.execute(0.0, C_view, 1.0, A_view, B_view)
 

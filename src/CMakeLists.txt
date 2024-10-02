@@ -22,34 +22,7 @@ add_einsums_library(
         PUBLIC_DEPENDS range-v3::range-v3 fmt::fmt Einsums::h5cpp
 )
 
-add_einsums_library(einsums_py MODULE
-        SOURCES
-        PyTensorAlgebra.cpp
-        PyMain.cpp
-        DEPENDS pybind11::module pybind11::lto ${Python3_LIBRARIES}
-        PUBLIC_DEPENDS einsums)
-
-extend_einsums_target(einsums_py
-        DEPENDS pybind11::windows_extras
-        CONDITION MSVC)
-
-if(NOT MSVC AND NOT ${CMAKE_BUILD_TYPE} MATCHES Debug|RelWithDebInfo)
-        # Strip unnecessary sections of the binary on Linux/macOS
-        pybind11_strip(einsums_py)
-endif()
-
-extend_einsums_target(einsums_py
-        SOURCES
-        PyGpuExceptions.hip
-        PyGPUView.hip
-        PyTensorAlgebra.hip
-        CONDITION EINSUMS_BUILD_HIP
-)
-
-pybind11_extension(einsums_py)
-
 target_compile_features(einsums PUBLIC cxx_std_20)
-target_compile_features(einsums_py PUBLIC cxx_std_20)
 
 
 extend_einsums_target(
@@ -171,11 +144,6 @@ foreach(define IN LISTS defines)
             DEFINES ${define}
             CONDITION ${define}
     )
-    extend_einsums_target(
-            einsums_py
-            DEFINES ${define}
-            CONDITION ${define}
-    )
 endforeach()
 
 # <<<  Install & Export  >>>
@@ -215,13 +183,7 @@ install(
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
-# All need to be LIBRARY_BASE_PATH because Windows thinks this is a runtime artifact, not a library.
-install(
-        TARGETS einsums_py
-        RUNTIME DESTINATION ${EINSUMS_LIBRARY_BASE_PATH}
-        LIBRARY DESTINATION ${EINSUMS_LIBRARY_BASE_PATH}
-        ARCHIVE DESTINATION ${EINSUMS_LIBRARY_BASE_PATH}
-)
+
 
 install(
         EXPORT primary_set
@@ -252,6 +214,69 @@ install(
         DESTINATION ${EINSUMS_INSTALL_CMAKEDIR}
         COMPONENT ${ein}_Development
 )
+
+function(build_python_module __VERSION)
+        set(PYBIND11_PYTHON_VERSION ${__VERSION})
+        find_package(Python3 ${__VERSION} EXACT COMPONENTS Interpreter Development REQUIRED)
+        find_package(pybind11 CONFIG REQUIRED)
+        message("Found Python version ${Python3_VERSION}")
+        add_einsums_library(core MODULE
+                SOURCES
+                PyTensorAlgebra.cpp
+                PyMain.cpp
+                DEPENDS pybind11::module pybind11::lto ${Python3_LIBRARIES}
+                PUBLIC_DEPENDS einsums)
+
+        set_target_properties(core PROPERTIES
+                BUILD_RPATH                     "${_LIB_RPATH};${CMAKE_BUILD_RPATH}"
+                INSTALL_RPATH                   "${_LIB_RPATH};${CMAKE_INSTALL_RPATH};${_LIB_RPATH}/../"
+        )
+
+        extend_einsums_target(core
+                DEPENDS pybind11::windows_extras
+        CONDITION MSVC)
+
+        if(NOT MSVC AND NOT ${CMAKE_BUILD_TYPE} MATCHES Debug|RelWithDebInfo)
+                # Strip unnecessary sections of the binary on Linux/macOS
+                pybind11_strip(core)
+        endif()
+
+        extend_einsums_target(core
+                SOURCES
+                PyGpuExceptions.hip
+                PyGPUView.hip
+                PyTensorAlgebra.hip
+        CONDITION EINSUMS_BUILD_HIP
+        )
+
+        pybind11_extension(core)
+        target_compile_features(core PUBLIC cxx_std_20)
+
+        foreach(define IN LISTS defines)
+                extend_einsums_target(
+                        core
+                        DEFINES ${define}
+                        CONDITION ${define}
+                )
+        endforeach()
+
+        # All need to be LIBRARY_BASE_PATH because Windows thinks this is a runtime artifact, not a library.
+        install(
+                TARGETS core 
+                EXPORT primary_set
+                RUNTIME DESTINATION ${EINSUMS_LIBRARY_BASE_PATH}/einsums
+                LIBRARY DESTINATION ${EINSUMS_LIBRARY_BASE_PATH}/einsums
+                ARCHIVE DESTINATION ${EINSUMS_LIBRARY_BASE_PATH}/einsums
+        )
+endfunction()
+
+if(EINSUMS_BUILD_PYTHON STREQUAL "ON")
+        build_python_module("")
+elseif(EINSUMS_BUILD_PYTHON MATCHES "3(\\.[0-9]+)+")
+        build_python_module("${EINSUMS_BUILD_PYTHON}")
+elseif(NOT EINSUMS_BUILD_PYTHON STREQUAL OFF)
+        message(WARNING "EINSUMS_BUILD_PYTHON value ${EINSUMS_BUILD_PYTHON} not recognized! Continuing without building the Python module.")
+endif()
 
 # include(JoinPaths) join_paths(libdir_for_pc_file "\${exec_prefix}" "${CMAKE_INSTALL_LIBDIR}") join_paths(includedir_for_pc_file "\${prefix}" "${CMAKE_INSTALL_INCLUDEDIR}")
 #

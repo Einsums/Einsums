@@ -27,8 +27,8 @@ namespace einsums::tensor_algebra {
 template <BlockTensorConcept AType, BlockTensorConcept CType, typename... CIndices, typename... AIndices, typename U>
     requires requires {
         requires sizeof...(CIndices) == sizeof...(AIndices);
-        requires sizeof...(CIndices) == CType::rank;
-        requires sizeof...(AIndices) == AType::rank;
+        requires sizeof...(CIndices) == CType::Rank;
+        requires sizeof...(AIndices) == AType::Rank;
         requires SameUnderlyingAndRank<AType, CType>;
         requires InSamePlace<AType, CType>;
         requires std::is_arithmetic_v<U>;
@@ -64,8 +64,8 @@ inline auto get_grid_ranges_for_many(const CType &C, const ::std::tuple<CIndices
 template <TiledTensorConcept AType, TiledTensorConcept CType, typename... CIndices, typename... AIndices, typename U>
     requires requires {
         requires sizeof...(CIndices) == sizeof...(AIndices);
-        requires sizeof...(CIndices) == CType::rank;
-        requires sizeof...(AIndices) == AType::rank;
+        requires sizeof...(CIndices) == CType::Rank;
+        requires sizeof...(AIndices) == AType::Rank;
         requires SameUnderlyingAndRank<AType, CType>;
         requires InSamePlace<AType, CType>;
         requires std::is_arithmetic_v<U>;
@@ -75,8 +75,8 @@ void sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType 
 
     using ADataType        = typename AType::data_type;
     using CDataType        = typename CType::data_type;
-    constexpr size_t ARank = AType::rank;
-    constexpr size_t CRank = CType::rank;
+    constexpr size_t ARank = AType::Rank;
+    constexpr size_t CRank = CType::Rank;
 
     constexpr auto unique_indices = unique_t<std::tuple<CIndices..., AIndices...>>();
     auto           unique_grid    = get_grid_ranges_for_many(*C, C_indices, A, A_indices, unique_indices);

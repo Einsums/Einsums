@@ -160,7 +160,7 @@ auto dot(const AType &A, const BType &B) -> typename AType::data_type {
     if (A.full_view_of_underlying() && B.full_view_of_underlying()) {
         Dim<1> dim{1};
 
-        for (size_t i = 0; i < AType::rank; i++) {
+        for (size_t i = 0; i < AType::Rank; i++) {
             assert(A.dim(i) == B.dim(i));
             dim[0] *= A.dim(i);
         }
@@ -170,11 +170,11 @@ auto dot(const AType &A, const BType &B) -> typename AType::data_type {
     } else {
         auto dims = A.dims();
 
-        std::array<size_t, AType::rank> strides;
-        strides[AType::rank - 1] = 1;
-        std::array<size_t, AType::rank> index;
+        std::array<size_t, AType::Rank> strides;
+        strides[AType::Rank - 1] = 1;
+        std::array<size_t, AType::Rank> index;
 
-        for (int i = AType::rank - 1; i > 0; i--) {
+        for (int i = AType::Rank - 1; i > 0; i--) {
             strides[i - 1] = strides[i] * dims[i];
         }
 
@@ -214,7 +214,7 @@ auto true_dot(const AType &A, const BType &B) -> typename AType::data_type {
     if (A.full_view_of_underlying() && B.full_view_of_underlying()) {
         Dim<1> dim{1};
 
-        for (size_t i = 0; i < AType::rank; i++) {
+        for (size_t i = 0; i < AType::Rank; i++) {
             assert(A.dim(i) == B.dim(i));
             dim[0] *= A.dim(i);
         }
@@ -224,11 +224,11 @@ auto true_dot(const AType &A, const BType &B) -> typename AType::data_type {
     } else {
         auto dims = A.dims();
 
-        std::array<size_t, AType::rank> strides;
-        strides[AType::rank - 1] = 1;
-        std::array<size_t, AType::rank> index;
+        std::array<size_t, AType::Rank> strides;
+        strides[AType::Rank - 1] = 1;
+        std::array<size_t, AType::Rank> index;
 
-        for (int i = AType::rank - 1; i > 0; i--) {
+        for (int i = AType::Rank - 1; i > 0; i--) {
             strides[i - 1] = strides[i] * dims[i];
         }
 
@@ -250,7 +250,7 @@ auto dot(const AType &A, const BType &B, const CType &C) -> typename AType::data
     Dim<1> dim{1};
     using T = typename AType::data_type;
 
-    for (size_t i = 0; i < AType::rank; i++) {
+    for (size_t i = 0; i < AType::Rank; i++) {
         assert(A.dim(i) == B.dim(i) && A.dim(i) == C.dim(i));
         dim[0] *= A.dim(i);
     }
@@ -329,7 +329,7 @@ void symm_gemm(const AType &A, const BType &B, CType *C) {
 template <CoreBasicTensorConcept AType, CoreBasicTensorConcept BType, CoreBasicTensorConcept CType>
     requires SameUnderlyingAndRank<AType, BType, CType>
 void direct_product(typename AType::data_type alpha, const AType &A, const BType &B, typename CType::data_type beta, CType *C) {
-    auto target_dims = get_dim_ranges<CType::rank>(*C);
+    auto target_dims = get_dim_ranges<CType::Rank>(*C);
     auto view        = std::apply(ranges::views::cartesian_product, target_dims);
     using T          = typename AType::data_type;
 

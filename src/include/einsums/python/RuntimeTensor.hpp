@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 namespace einsums {
 
@@ -34,9 +35,9 @@ using SharedRuntimeTensorView = std::shared_ptr<RuntimeTensorView<T>>;
  */
 template <typename T>
 class RuntimeTensor : public virtual tensor_props::TensorBase,
-                      virtual tensor_props::TypedTensorBase<T>,
-                      virtual tensor_props::BasicTensorBase,
-                      std::enable_shared_from_this<RuntimeTensor<T>> {
+                      public virtual tensor_props::TypedTensorBase<T>,
+                      public virtual tensor_props::BasicTensorBase,
+                      public std::enable_shared_from_this<RuntimeTensor<T>> {
   public:
     using Vector = VectorData<T>;
 
@@ -95,7 +96,7 @@ class RuntimeTensor : public virtual tensor_props::TensorBase,
         size_t size = 1;
         _strides.resize(rank());
 
-        for (int i = Rank; i >= 0; i--) {
+        for (int i = Rank - 1; i >= 0; i--) {
             _strides[i] = size;
             size *= _dims[i];
         }
@@ -109,33 +110,65 @@ class RuntimeTensor : public virtual tensor_props::TensorBase,
 
     virtual void set_all(T val) { std::fill(_data.begin(), _data.end(), val); }
 
-    T *data() override { return _data.data(); }
+    T *data() { return _data.data(); }
 
-    const T *data() const override { return _data.data(); }
+    const T *data() const { return _data.data(); }
 
     template <typename Storage>
+        requires(!std::is_arithmetic_v<Storage>)
     T *data(const Storage &index) {
-        return &(_data.at(indices_to_sentinel_negative_check(_strides, _dims, index)));
+        return &(_data.at(einsums::tensor_algebra::detail::indices_to_sentinel_negative_check(_strides, _dims, index)));
     }
 
     template <typename Storage>
+        requires(!std::is_arithmetic_v<Storage>)
     const T *data(const Storage &index) const {
-        return &(_data.at(indices_to_sentinel_negative_check(_strides, _dims, index)));
+        return &(_data.at(einsums::tensor_algebra::detail::indices_to_sentinel_negative_check(_strides, _dims, index)));
     }
 
     template <typename Storage>
+        requires(!std::is_arithmetic_v<Storage>)
     T &operator()(const Storage &index) {
-        return _data.at(indices_to_sentinel_negative_check(_strides, _dims, index));
+        return _data.at(einsums::tensor_algebra::detail::indices_to_sentinel_negative_check(_strides, _dims, index));
     }
 
     template <typename Storage>
+        requires(!std::is_arithmetic_v<Storage>)
     const T &operator()(const Storage &index) const {
-        return _data.at(indices_to_sentinel_negative_check(_strides, _dims, index));
+        return _data.at(einsums::tensor_algebra::detail::indices_to_sentinel_negative_check(_strides, _dims, index));
+    }
+
+    T *data(ssize_t index) {
+        if (index < 0) {
+            index += _dims[0];
+        }
+        return &(_data.at(index));
+    }
+
+    const T *data(ssize_t index) const {
+        if (index < 0) {
+            index += _dims[0];
+        }
+        return &(_data.at(index));
+    }
+
+    T &operator()(ssize_t index) {
+        if (index < 0) {
+            index += _dims[0];
+        }
+        return _data.at(index);
+    }
+
+    const T &operator()(ssize_t index) const {
+        if (index < 0) {
+            index += _dims[0];
+        }
+        return _data.at(index);
     }
 
     /*
      * Special cases:
-     *    Rank{a, a}: Keep the axis in the view. It will have dimension 1 and only have the a'th element. a can not be negative.
+     *    Rank{a, a + 1}: Keep the axis in the view. It will have dimension 1 and only have the a'th element. a can not be negative.
      *    Rank{-1, a}: Remove the axis from the view. It will still affect the offset. a can not be negative.
      */
     RuntimeTensorView<T> operator()(const std::vector<Range> &slices) {
@@ -163,7 +196,7 @@ class RuntimeTensor : public virtual tensor_props::TensorBase,
                         end += _dims[i];
                     }
 
-                    if (start < 0 || end < 0 || start >= _dims[i] || end >= _dims[i] || start > end) {
+                    if (start < 0 || end < 0 || start >= _dims[i] || end > _dims[i] || start >= end) {
                         throw EINSUMSEXCEPTION("Index out of range! Either the start or end is out of range!");
                     }
 
@@ -202,7 +235,7 @@ class RuntimeTensor : public virtual tensor_props::TensorBase,
                         end += _dims[i];
                     }
 
-                    if (start < 0 || end < 0 || start >= _dims[i] || end >= _dims[i] || start > end) {
+                    if (start < 0 || end < 0 || start >= _dims[i] || end > _dims[i] || start >= end) {
                         throw EINSUMSEXCEPTION("Index out of range! Either the start or end is out of range!");
                     }
 
@@ -406,8 +439,7 @@ class RuntimeTensor : public virtual tensor_props::TensorBase,
                 } else if constexpr (!IsComplexV<T> && IsComplexV<TOther>) {                                                               \
                     _data[sentinel] OP(T) buffer_data[buffer_sent].real();                                                                 \
                 } else if constexpr (IsComplexV<T> && IsComplexV<TOther>) {                                                                \
-                    _data[sentinel].real() OP(RemoveComplexT<T>) buffer_data[buffer_sent].real();                                          \
-                    _data[sentinel].imag() OP(RemoveComplexT<T>) buffer_data[buffer_sent].imag();                                          \
+                    _data[sentinel] OP(T) buffer_data[buffer_sent];                                                                        \
                 } else {                                                                                                                   \
                     _data[sentinel] OP(T) buffer_data[buffer_sent];                                                                        \
                 }                                                                                                                          \
@@ -420,8 +452,7 @@ class RuntimeTensor : public virtual tensor_props::TensorBase,
                 } else if constexpr (!IsComplexV<T> && IsComplexV<TOther>) {                                                               \
                     _data[sentinel] OP(T) buffer_data[sentinel].real();                                                                    \
                 } else if constexpr (IsComplexV<T> && IsComplexV<TOther>) {                                                                \
-                    _data[sentinel].real() OP(RemoveComplexT<T>) buffer_data[sentinel].real();                                             \
-                    _data[sentinel].imag() OP(RemoveComplexT<T>) buffer_data[sentinel].imag();                                             \
+                    _data[sentinel] OP(T) buffer_data[sentinel];                                                                           \
                 } else {                                                                                                                   \
                     _data[sentinel] OP(T) buffer_data[sentinel];                                                                           \
                 }                                                                                                                          \
@@ -448,7 +479,7 @@ class RuntimeTensor : public virtual tensor_props::TensorBase,
 
         size_t new_size = 1;
         bool   is_view  = false;
-        for (int i = buffer_info.ndim; i >= 0; i--) {
+        for (int i = buffer_info.ndim - 1; i >= 0; i--) {
             _dims[i]    = buffer_info.shape[i];
             _strides[i] = new_size;
             new_size *= _dims[i];
@@ -573,9 +604,10 @@ class RuntimeTensor : public virtual tensor_props::TensorBase,
         EINSUMS_OMP_PARALLEL_FOR                                                                                                           \
         for (size_t sentinel = 0; sentinel < size(); sentinel++) {                                                                         \
             std::vector<size_t> index(rank());                                                                                             \
-            tensor_algebra::detail::sentinel_to_indices(sentinel, _strides, index);                                                        \
-            operator()(index) = b(index);                                                                                                  \
+            tensor_algebra::detail::sentinel_to_indices(sentinel, this->_strides, index);                                                  \
+            this->operator()(index) OP b(index);                                                                                           \
         }                                                                                                                                  \
+        return *this;                                                                                                                      \
     }                                                                                                                                      \
     virtual RuntimeTensor<T> &operator OP(const pybind11::buffer & buffer) {                                                               \
         auto buffer_info = buffer.request();                                                                                               \
@@ -585,7 +617,7 @@ class RuntimeTensor : public virtual tensor_props::TensorBase,
         }                                                                                                                                  \
                                                                                                                                            \
         bool is_view = false;                                                                                                              \
-        for (int i = buffer_info.ndim; i >= 0; i--) {                                                                                      \
+        for (int i = buffer_info.ndim - 1; i >= 0; i--) {                                                                                  \
             if (_dims[i] != buffer_info.shape[i]) {                                                                                        \
                 throw EINSUMSEXCEPTION("Can not perform " #OP " with buffer object with different dimensions!");                           \
             }                                                                                                                              \
@@ -675,7 +707,7 @@ class RuntimeTensor : public virtual tensor_props::TensorBase,
 
 #undef OPERATOR
 
-    virtual auto dim(int d) const -> size_t override {
+    virtual auto dim(int d) const -> size_t {
         // Add support for negative indices.
         if (d < 0) {
             d += _rank;
@@ -684,10 +716,10 @@ class RuntimeTensor : public virtual tensor_props::TensorBase,
     }
     virtual auto dims() const -> std::vector<size_t> { return _dims; }
 
-    virtual auto vector_data() const -> const Vector & { return _data.get(); }
-    virtual auto vector_data() -> Vector & { return _data.get(); }
+    virtual auto vector_data() const -> const Vector & { return _data; }
+    virtual auto vector_data() -> Vector & { return _data; }
 
-    [[nodiscard]] virtual auto stride(int d) const noexcept -> size_t override {
+    virtual auto stride(int d) const noexcept -> size_t {
         if (d < 0) {
             d += _rank;
         }
@@ -697,14 +729,14 @@ class RuntimeTensor : public virtual tensor_props::TensorBase,
     virtual auto strides() const noexcept -> std::vector<size_t> { return _strides; }
 
     virtual auto to_rank_1_view() const -> RuntimeTensorView<T> {
-        size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
-        Dim<1> dim{size};
+        size_t              size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
+        std::vector<size_t> dim{size};
 
         return RuntimeTensorView<T>{*this, dim};
     }
 
     // Returns the linear size of the tensor
-    [[nodiscard]] virtual auto size() const -> size_t { return _data.size(); }
+    virtual auto size() const -> size_t { return _data.size(); }
 
     virtual auto full_view_of_underlying() const noexcept -> bool override { return true; }
 
@@ -832,7 +864,8 @@ class RuntimeTensor : public virtual tensor_props::TensorBase,
 
     pybind11::object assign_values(const pybind11::buffer &value, const pybind11::tuple &index) {
         if (index.size() < _rank) {
-            return pybind11::cast(assign_to_view(value, index));
+            assign_to_view(value, index);
+            return pybind11::cast(subscript_to_view(index));
         }
         if (index.size() > _rank) {
             throw EINSUMSEXCEPTION("Too many indices passed to tensor!");
@@ -850,7 +883,8 @@ class RuntimeTensor : public virtual tensor_props::TensorBase,
 
     pybind11::object assign_values(T value, const pybind11::tuple &index) {
         if (index.size() < _rank) {
-            return pybind11::cast(assign_to_view(value, index));
+            assign_to_view(value, index);
+            return pybind11::cast(subscript_to_view(index));
         }
         if (index.size() > _rank) {
             throw EINSUMSEXCEPTION("Too many indices passed to tensor!");
@@ -898,7 +932,7 @@ class RuntimeTensor : public virtual tensor_props::TensorBase,
         return this->operator()(pass);
     }
 
-    RuntimeTensorView<T> assign_values(const pybind11::buffer &value, const pybind11::slice &index) {
+    virtual RuntimeTensorView<T> assign_values(const pybind11::buffer &value, const pybind11::slice &index) {
         size_t start, end, step, length;
 
         pybind11::cast<pybind11::slice>(index).compute(_dims[0], &start, &end, &step, &length);
@@ -912,7 +946,7 @@ class RuntimeTensor : public virtual tensor_props::TensorBase,
         return this->operator()(pass) = value;
     }
 
-    RuntimeTensorView<T> assign_values(T value, const pybind11::slice &index) {
+    virtual RuntimeTensorView<T> assign_values(T value, const pybind11::slice &index) {
         size_t start, end, step, length;
 
         pybind11::cast<pybind11::slice>(index).compute(_dims[0], &start, &end, &step, &length);
@@ -926,7 +960,7 @@ class RuntimeTensor : public virtual tensor_props::TensorBase,
         return this->operator()(pass) = value;
     }
 
-    virtual pybind11::object subscript(int index) {
+    virtual pybind11::object subscript(ssize_t index) {
         if (_rank == 1) {
             return pybind11::cast(this->operator()(index));
         } else {
@@ -934,15 +968,15 @@ class RuntimeTensor : public virtual tensor_props::TensorBase,
         }
     }
 
-    virtual const pybind11::object subscript(int index) const {
+    virtual const pybind11::object subscript(ssize_t index) const {
         if (_rank == 1) {
-            return pybind11::cast(this->operator()(index));
+            return pybind11::cast(this->operator()(std::array<ssize_t, 1>{index}));
         } else {
             return pybind11::cast(this->operator()(std::vector<Range>{Range{-1, index}}));
         }
     }
 
-    RuntimeTensorView<T> assign_values(const pybind11::buffer &value, int index) {
+    virtual RuntimeTensorView<T> assign_values(const pybind11::buffer &value, ssize_t index) {
         if (_rank <= 1) {
             throw EINSUMSEXCEPTION("Can not assign buffer to a single position!");
         }
@@ -950,7 +984,7 @@ class RuntimeTensor : public virtual tensor_props::TensorBase,
         return this->operator()(std::vector<Range>{Range{-1, index}}) = value;
     }
 
-    pybind11::object assign_values(T value, int index) {
+    virtual pybind11::object assign_values(T value, ssize_t index) {
         if (_rank <= 1) {
             T &target = this->operator()({index});
             target    = value;
@@ -962,7 +996,7 @@ class RuntimeTensor : public virtual tensor_props::TensorBase,
         return pybind11::cast(view);
     }
 
-    virtual size_t rank() const { return _rank; }
+    virtual size_t rank() const override { return _rank; }
 }; // namespace einsums
 
 /**
@@ -972,9 +1006,9 @@ class RuntimeTensor : public virtual tensor_props::TensorBase,
  */
 template <typename T>
 class RuntimeTensorView : public virtual tensor_props::TensorViewBase<RuntimeTensor<T>>,
-                          virtual tensor_props::TypedTensorBase<T>,
-                          virtual tensor_props::BasicTensorBase,
-                          std::enable_shared_from_this<RuntimeTensorView<T>> {
+                          public virtual tensor_props::TypedTensorBase<T>,
+                          public virtual tensor_props::BasicTensorBase,
+                          public std::enable_shared_from_this<RuntimeTensorView<T>> {
   private:
     T                  *_data;
     std::string         _name{"(unnamed view)"};
@@ -996,12 +1030,12 @@ class RuntimeTensorView : public virtual tensor_props::TensorViewBase<RuntimeTen
     }
 
     RuntimeTensorView(const RuntimeTensor<T> &view)
-        : _data{view.data()}, _name{view.name()}, _dims{view.dims()}, _strides{view.strides()}, _rank{view.rank()}, _size{view.size()},
+        : _data{(T *)view.data()}, _name{view.name()}, _dims{view.dims()}, _strides{view.strides()}, _rank{view.rank()}, _size{view.size()},
           _full_view{true}, _index_strides(view.rank()) {
         tensor_algebra::detail::dims_to_strides(_dims, _index_strides);
     }
 
-    RuntimeTensorView(RuntimeTensor<T> &other, const std::vector<size_t> &dims)
+    RuntimeTensorView(const RuntimeTensor<T> &other, const std::vector<size_t> &dims)
         : _rank{dims.size()}, _dims{dims}, _full_view{true}, _index_strides(dims.size()) {
         _size = 1;
         _strides.resize(_rank);
@@ -1011,11 +1045,11 @@ class RuntimeTensorView : public virtual tensor_props::TensorViewBase<RuntimeTen
             _size *= _dims[i];
         }
 
-        _data = other.data();
+        _data = (T *)other.data();
         tensor_algebra::detail::dims_to_strides(_dims, _index_strides);
     }
 
-    RuntimeTensorView(const RuntimeTensor<T> &other, const std::vector<size_t> &dims)
+    RuntimeTensorView(RuntimeTensor<T> &other, const std::vector<size_t> &dims)
         : _rank{dims.size()}, _dims{dims}, _full_view{true}, _index_strides(dims.size()) {
         _size = 1;
         _strides.resize(_rank);
@@ -1053,7 +1087,7 @@ class RuntimeTensorView : public virtual tensor_props::TensorViewBase<RuntimeTen
             _size *= _dims[i];
         }
 
-        _data = other.data();
+        _data = (T *)other.data();
         tensor_algebra::detail::dims_to_strides(_dims, _index_strides);
     }
 
@@ -1075,7 +1109,7 @@ class RuntimeTensorView : public virtual tensor_props::TensorViewBase<RuntimeTen
 
         _size = std::accumulate(dims.begin(), dims.end(), 1, std::multiplies<size_t>{});
 
-        _data = other.data(offsets);
+        _data = (T *)other.data(offsets);
         tensor_algebra::detail::dims_to_strides(_dims, _index_strides);
     }
 
@@ -1097,7 +1131,7 @@ class RuntimeTensorView : public virtual tensor_props::TensorViewBase<RuntimeTen
 
         _size = std::accumulate(dims.begin(), dims.end(), 1, std::multiplies<size_t>{});
 
-        _data = other.data(offsets);
+        _data = (T *)other.data(offsets);
         tensor_algebra::detail::dims_to_strides(_dims, _index_strides);
     }
 
@@ -1105,7 +1139,7 @@ class RuntimeTensorView : public virtual tensor_props::TensorViewBase<RuntimeTen
         pybind11::buffer_info buffer_info = buffer.request(true);
 
         if (buffer_info.item_type_is_equivalent_to<T>()) {
-            _data = buffer_info.ptr;
+            _data = (T *)buffer_info.ptr;
         } else {
             throw EINSUMSEXCEPTION("Can not create RuntimeTensorView from buffer whose type does not match!");
         }
@@ -1131,7 +1165,7 @@ class RuntimeTensorView : public virtual tensor_props::TensorViewBase<RuntimeTen
         _index_strides.resize(Rank);
 
         _size = 1;
-        for (int i = Rank; i >= 0; i--) {
+        for (int i = Rank - 1; i >= 0; i--) {
             _index_strides[i] = _size;
             _size *= _dims[i];
         }
@@ -1143,7 +1177,7 @@ class RuntimeTensorView : public virtual tensor_props::TensorViewBase<RuntimeTen
         _index_strides.resize(Rank);
 
         _size = 1;
-        for (int i = Rank; i >= 0; i--) {
+        for (int i = Rank - 1; i >= 0; i--) {
             _index_strides[i] = _size;
             _size *= _dims[i];
         }
@@ -1189,28 +1223,60 @@ class RuntimeTensorView : public virtual tensor_props::TensorViewBase<RuntimeTen
         }
     }
 
-    T *data() override { return _data; }
+    T *data() { return _data; }
 
-    const T *data() const override { return _data; }
+    const T *data() const { return _data; }
 
     template <typename Storage>
+        requires(!std::is_arithmetic_v<Storage>)
     T *data(const Storage &index) {
-        return &(_data[indices_to_sentinel_negative_check(_strides, _dims, index)]);
+        return &(_data[einsums::tensor_algebra::detail::indices_to_sentinel_negative_check(_strides, _dims, index)]);
     }
 
     template <typename Storage>
+        requires(!std::is_arithmetic_v<Storage>)
     const T *data(const Storage &index) const {
-        return &(_data[indices_to_sentinel_negative_check(_strides, _dims, index)]);
+        return &(_data[einsums::tensor_algebra::detail::indices_to_sentinel_negative_check(_strides, _dims, index)]);
     }
 
     template <typename Storage>
+        requires(!std::is_arithmetic_v<Storage>)
     T &operator()(const Storage &index) {
-        return _data[indices_to_sentinel_negative_check(_strides, _dims, index)];
+        return _data[einsums::tensor_algebra::detail::indices_to_sentinel_negative_check(_strides, _dims, index)];
     }
 
     template <typename Storage>
+        requires(!std::is_arithmetic_v<Storage>)
     const T &operator()(const Storage &index) const {
-        return _data[indices_to_sentinel_negative_check(_strides, _dims, index)];
+        return _data[einsums::tensor_algebra::detail::indices_to_sentinel_negative_check(_strides, _dims, index)];
+    }
+
+    T *data(ssize_t index) {
+        if (index < 0) {
+            index += _dims[0];
+        }
+        return &(_data[index * _strides[0]]);
+    }
+
+    const T *data(ssize_t index) const {
+        if (index < 0) {
+            index += _dims[0];
+        }
+        return &(_data[index * _strides[0]]);
+    }
+
+    T &operator()(ssize_t index) {
+        if (index < 0) {
+            index += _dims[0];
+        }
+        return _data[index * _strides[0]];
+    }
+
+    const T &operator()(ssize_t index) const {
+        if (index < 0) {
+            index += _dims[0];
+        }
+        return _data[index * _strides[0]];
     }
 
     /*
@@ -1243,7 +1309,7 @@ class RuntimeTensorView : public virtual tensor_props::TensorViewBase<RuntimeTen
                         end += _dims[i];
                     }
 
-                    if (start < 0 || end < 0 || start >= _dims[i] || end >= _dims[i] || start > end) {
+                    if (start < 0 || end < 0 || start >= _dims[i] || end > _dims[i] || start >= end) {
                         throw EINSUMSEXCEPTION("Index out of range! Either the start or end is out of range!");
                     }
 
@@ -1282,7 +1348,7 @@ class RuntimeTensorView : public virtual tensor_props::TensorViewBase<RuntimeTen
                         end += _dims[i];
                     }
 
-                    if (start < 0 || end < 0 || start >= _dims[i] || end >= _dims[i] || start > end) {
+                    if (start < 0 || end < 0 || start >= _dims[i] || end > _dims[i] || start >= end) {
                         throw EINSUMSEXCEPTION("Index out of range! Either the start or end is out of range!");
                     }
 
@@ -1485,8 +1551,7 @@ class RuntimeTensorView : public virtual tensor_props::TensorViewBase<RuntimeTen
             } else if constexpr (!IsComplexV<T> && IsComplexV<TOther>) {                                                                   \
                 _data[ord] OP(T) buffer_data[buffer_sent].real();                                                                          \
             } else if constexpr (IsComplexV<T> && IsComplexV<TOther>) {                                                                    \
-                _data[ord].real() OP(RemoveComplexT<T>) buffer_data[buffer_sent].real();                                                   \
-                _data[ord].imag() OP(RemoveComplexT<T>) buffer_data[buffer_sent].imag();                                                   \
+                _data[ord] OP(T) buffer_data[buffer_sent];                                                                                 \
             } else {                                                                                                                       \
                 _data[ord] OP(T) buffer_data[buffer_sent];                                                                                 \
             }                                                                                                                              \
@@ -1508,7 +1573,7 @@ class RuntimeTensorView : public virtual tensor_props::TensorViewBase<RuntimeTen
             throw EINSUMSEXCEPTION("Can not change the rank of a runtime tensor view when assigning!");
         }
 
-        for (int i = buffer_info.ndim; i >= 0; i--) {
+        for (int i = buffer_info.ndim - 1; i >= 0; i--) {
             if (_dims[i] != buffer_info.shape[i]) {
                 throw EINSUMSEXCEPTION("Can not assign buffer to runtime tensor view with different shapes!");
             }
@@ -1637,14 +1702,15 @@ class RuntimeTensorView : public virtual tensor_props::TensorViewBase<RuntimeTen
                                                                                                                                            \
             _data[ord] OP b.data()[b_ord];                                                                                                 \
         }                                                                                                                                  \
+        return *this;                                                                                                                      \
     }                                                                                                                                      \
-    virtual RuntimeTensor<T> &operator OP(const pybind11::buffer & buffer) {                                                               \
+    virtual RuntimeTensorView<T> &operator OP(const pybind11::buffer & buffer) {                                                           \
         auto buffer_info = buffer.request();                                                                                               \
                                                                                                                                            \
         if (rank() != buffer_info.ndim) {                                                                                                  \
             throw EINSUMSEXCEPTION("Can not perform " #OP " with buffer object with different rank!");                                     \
         }                                                                                                                                  \
-        for (int i = buffer_info.ndim; i >= 0; i--) {                                                                                      \
+        for (int i = buffer_info.ndim - 1; i >= 0; i--) {                                                                                  \
             if (_dims[i] != buffer_info.shape[i]) {                                                                                        \
                 throw EINSUMSEXCEPTION("Can not perform " #OP " with buffer object with different dimensions!");                           \
             }                                                                                                                              \
@@ -1724,7 +1790,7 @@ class RuntimeTensorView : public virtual tensor_props::TensorViewBase<RuntimeTen
 
 #undef OPERATOR
 
-    virtual auto dim(int d) const -> size_t override {
+    virtual auto dim(int d) const -> size_t {
         // Add support for negative indices.
         if (d < 0) {
             d += _rank;
@@ -1733,7 +1799,7 @@ class RuntimeTensorView : public virtual tensor_props::TensorViewBase<RuntimeTen
     }
     virtual auto dims() const -> std::vector<size_t> { return _dims; }
 
-    virtual auto stride(int d) const noexcept -> size_t override {
+    virtual auto stride(int d) const noexcept -> size_t {
         if (d < 0) {
             d += _rank;
         }
@@ -1743,8 +1809,8 @@ class RuntimeTensorView : public virtual tensor_props::TensorViewBase<RuntimeTen
     virtual auto strides() const noexcept -> std::vector<size_t> { return _strides; }
 
     virtual auto to_rank_1_view() const -> RuntimeTensorView<T> {
-        size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
-        Dim<1> dim{size};
+        size_t              size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
+        std::vector<size_t> dim{size};
 
         return RuntimeTensorView<T>{*this, dim};
     }
@@ -1878,7 +1944,8 @@ class RuntimeTensorView : public virtual tensor_props::TensorViewBase<RuntimeTen
 
     pybind11::object assign_values(const pybind11::buffer &value, const pybind11::tuple &index) {
         if (index.size() < _rank) {
-            return pybind11::cast(assign_to_view(value, index));
+            assign_to_view(value, index);
+            return pybind11::cast(*this);
         }
         if (index.size() > _rank) {
             throw EINSUMSEXCEPTION("Too many indices passed to tensor!");
@@ -1896,7 +1963,8 @@ class RuntimeTensorView : public virtual tensor_props::TensorViewBase<RuntimeTen
 
     pybind11::object assign_values(T value, const pybind11::tuple &index) {
         if (index.size() < _rank) {
-            return pybind11::cast(assign_to_view(value, index));
+            assign_to_view(value, index);
+            return pybind11::cast(*this);
         }
         if (index.size() > _rank) {
             throw EINSUMSEXCEPTION("Too many indices passed to tensor!");
@@ -1944,7 +2012,7 @@ class RuntimeTensorView : public virtual tensor_props::TensorViewBase<RuntimeTen
         return this->operator()(pass);
     }
 
-    RuntimeTensorView<T> assign_values(const pybind11::buffer &value, const pybind11::slice &index) {
+    virtual RuntimeTensorView<T> assign_values(const pybind11::buffer &value, const pybind11::slice &index) {
         size_t start, end, step, length;
 
         pybind11::cast<pybind11::slice>(index).compute(_dims[0], &start, &end, &step, &length);
@@ -1958,7 +2026,7 @@ class RuntimeTensorView : public virtual tensor_props::TensorViewBase<RuntimeTen
         return this->operator()(pass) = value;
     }
 
-    RuntimeTensorView<T> assign_values(T value, const pybind11::slice &index) {
+    virtual RuntimeTensorView<T> assign_values(T value, const pybind11::slice &index) {
         size_t start, end, step, length;
 
         pybind11::cast<pybind11::slice>(index).compute(_dims[0], &start, &end, &step, &length);
@@ -1988,7 +2056,7 @@ class RuntimeTensorView : public virtual tensor_props::TensorViewBase<RuntimeTen
         }
     }
 
-    RuntimeTensorView<T> assign_values(const pybind11::buffer &value, int index) {
+    virtual RuntimeTensorView<T> assign_values(const pybind11::buffer &value, int index) {
         if (_rank <= 1) {
             throw EINSUMSEXCEPTION("Can not assign buffer to a single position!");
         }
@@ -1996,7 +2064,7 @@ class RuntimeTensorView : public virtual tensor_props::TensorViewBase<RuntimeTen
         return this->operator()(std::vector<Range>{Range{-1, index}}) = value;
     }
 
-    pybind11::object assign_values(T value, int index) {
+    virtual pybind11::object assign_values(T value, int index) {
         if (_rank <= 1) {
             T &target = this->operator()({index});
             target    = value;
@@ -2008,7 +2076,7 @@ class RuntimeTensorView : public virtual tensor_props::TensorViewBase<RuntimeTen
         return pybind11::cast(view);
     }
 
-    virtual size_t rank() const { return _rank; }
+    virtual size_t rank() const override { return _rank; }
 };
 
 } // namespace einsums

@@ -17,6 +17,11 @@ add_executable(test-all
     FunctionTensor.cpp
 )
 
+set_target_properties(test-all PROPERTIES
+    BUILD_RPATH                     "${_LIB_RPATH};${CMAKE_BUILD_RPATH}"
+    INSTALL_RPATH                   "${_LIB_RPATH};${CMAKE_INSTALL_RPATH};${_LIB_RPATH}/../../lib"
+)
+
 file(GLOB __data_files data/water_sto3g/*)
 file(COPY ${__data_files} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/data/water_sto3g)
 
@@ -81,3 +86,9 @@ if(EINSUMS_COVERAGE AND NOT MSVC)
     target_compile_options(test-all PUBLIC $<$<COMPILE_LANG_AND_ID:CXX,GNU>:--coverage>)
     target_link_options(test-all PUBLIC -lgcov --coverage)
 endif()
+
+install(TARGETS test-all
+    RUNTIME DESTINATION ${EINSUMS_DATA_PATH})
+
+install(FILES ${__data_files}
+    DESTINATION ${EINSUMS_DATA_PATH}/data/water_sto3g)

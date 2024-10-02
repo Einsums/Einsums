@@ -401,7 +401,7 @@ template <TensorConcept AType, TensorConcept BType>
     requires requires {
         requires SameUnderlyingAndRank<AType, BType>;
         requires InSamePlace<AType, BType>;
-        requires AType::rank != 1;
+        requires AType::Rank != 1;
     }
 auto dot(const AType &A, const BType &B) -> typename AType::data_type {
 
@@ -436,7 +436,7 @@ template <TensorConcept AType, TensorConcept BType>
     requires requires {
         requires SameUnderlyingAndRank<AType, BType>;
         requires InSamePlace<AType, BType>;
-        requires AType::rank != 1;
+        requires AType::Rank != 1;
     }
 auto true_dot(const AType &A, const BType &B) -> typename AType::data_type {
 

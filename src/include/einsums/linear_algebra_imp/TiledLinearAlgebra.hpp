@@ -12,7 +12,7 @@ namespace einsums::linear_algebra::detail {
 template <TiledTensorConcept AType, TiledTensorConcept BType>
     requires SameUnderlyingAndRank<AType, BType>
 auto dot(const AType &A, const BType &B) -> typename AType::data_type {
-    constexpr size_t Rank = AType::rank;
+    constexpr size_t Rank = AType::Rank;
     using T               = typename AType::data_type;
     std::array<size_t, Rank> strides;
 
@@ -50,7 +50,7 @@ auto dot(const AType &A, const BType &B) -> typename AType::data_type {
 template <TiledTensorConcept AType, TiledTensorConcept BType>
     requires SameUnderlyingAndRank<AType, BType>
 auto true_dot(const AType &A, const BType &B) -> typename AType::data_type {
-    constexpr size_t Rank = AType::rank;
+    constexpr size_t Rank = AType::Rank;
     using T               = typename AType::data_type;
     std::array<size_t, Rank> strides;
 
@@ -301,7 +301,7 @@ template <TiledTensorConcept AType, TiledTensorConcept BType, TiledTensorConcept
     requires SameUnderlyingAndRank<AType, BType, CType>
 void direct_product(typename AType::data_type alpha, const AType &A, const BType &B, typename AType::data_type beta, CType *C) {
     using T               = typename AType::data_type;
-    constexpr size_t Rank = AType::rank;
+    constexpr size_t Rank = AType::Rank;
     EINSUMS_OMP_PARALLEL_FOR
     for (size_t sentinel = 0; sentinel < A.grid_size(); sentinel++) {
         std::array<int, Rank> index = std::array<int, Rank>{};

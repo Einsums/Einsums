@@ -14,7 +14,7 @@ template <TensorConcept AType, TensorConcept BType>
         requires SameRank<AType, BType>;
     }
 auto dot(const AType &A, const BType &B) -> BiggestTypeT<typename AType::data_type, typename BType::data_type> {
-    constexpr size_t Rank = AType::rank;
+    constexpr size_t Rank = AType::Rank;
     using T               = BiggestTypeT<typename AType::data_type, typename BType::data_type>;
 
     T                        out{0.0};
@@ -53,7 +53,7 @@ template <TensorConcept AType, TensorConcept BType>
         requires SameRank<AType, BType>;
     }
 auto true_dot(const AType &A, const BType &B) -> typename AType::data_type {
-    constexpr size_t Rank = AType::rank;
+    constexpr size_t Rank = AType::Rank;
     using T               = BiggestTypeT<typename AType::data_type, typename BType::data_type>;
 
     T                        out{0.0};
@@ -180,7 +180,7 @@ template <TensorConcept AType, TensorConcept BType, TensorConcept CType, typenam
     }
 void direct_product(U alpha, const AType &A, const BType &B, U, CType *C) {
     using T               = typename AType::data_type;
-    constexpr size_t Rank = AType::rank;
+    constexpr size_t Rank = AType::Rank;
 
     std::array<size_t, Rank> strides;
 
@@ -240,7 +240,7 @@ void ger(U alpha, const XType &X, const YType &Y, AType *A) {
 template <TensorConcept AType>
     requires(!AlgebraTensorConcept<AType>)
 void scale(typename AType::data_type alpha, AType *A) {
-    constexpr size_t         Rank = AType::rank;
+    constexpr size_t         Rank = AType::Rank;
     std::array<size_t, Rank> strides;
 
     size_t prod = 1;

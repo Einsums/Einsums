@@ -1,9 +1,13 @@
 #pragma once
 
 #include "einsums/python/RuntimeTensor.hpp"
+#include "einsums/utility/IndexUtils.hpp"
 
 #include <pybind11/attr.h>
+#include <pybind11/detail/common.h>
+#include <pybind11/operators.h>
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 namespace einsums::python {
 
@@ -14,38 +18,36 @@ class PyTensorView;
 template <typename T>
 class PyTensorIterator {
   private:
-    std::mutex            _lock;
-    std::vector<ssize_t>  _curr_index;
-    RuntimeTensorView<T> &_tensor;
-    bool                  _stop{false}, _reverse{false};
+    std::mutex           _lock;
+    size_t               _curr_index, _elements;
+    std::vector<size_t>  _index_strides;
+    RuntimeTensorView<T> _tensor;
+    bool                 _stop{false}, _reverse{false};
 
   public:
-    PyTensorIterator(RuntimeTensor<T> &other, bool reverse = false) : _curr_index(other.rank()), _tensor{other}, _reverse{reverse} {
-        for (int i = 0; i < _curr_index.size(); i++) {
-            _curr_index[i] = 0;
+    PyTensorIterator(const RuntimeTensor<T> &other, bool reverse = false)
+        : _tensor{other}, _reverse{reverse}, _index_strides(other.rank()), _elements(other.size()) {
+        if (!reverse) {
+            _curr_index = 0;
+        } else {
+            _curr_index = other.size();
         }
-    }
 
-    PyTensorIterator(const RuntimeTensor<T> &other, bool reverse = false) : _curr_index(other.rank()), _tensor{other}, _reverse{reverse} {
-        for (int i = 0; i < _curr_index.size(); i++) {
-            _curr_index[i] = 0;
-        }
-    }
-
-    PyTensorIterator(RuntimeTensorView<T> &other, bool reverse = false) : _curr_index(other.rank()), _tensor{other}, _reverse{reverse} {
-        for (int i = 0; i < _curr_index.size(); i++) {
-            _curr_index[i] = 0;
-        }
+        tensor_algebra::detail::dims_to_strides(other.dims(), _index_strides);
     }
 
     PyTensorIterator(const RuntimeTensorView<T> &other, bool reverse = false)
-        : _curr_index(other.rank()), _tensor{other}, _reverse{reverse} {
-        for (int i = 0; i < _curr_index.size(); i++) {
-            _curr_index[i] = 0;
+        : _tensor{other}, _reverse{reverse}, _index_strides(other.rank()), _elements(other.size()) {
+        if (!reverse) {
+            _curr_index = 0;
+        } else {
+            _curr_index = other.size();
         }
+
+        tensor_algebra::detail::dims_to_strides(other.dims(), _index_strides);
     }
 
-    T &next() {
+    T next() {
         _lock.lock();
 
         if (_stop) {
@@ -53,30 +55,20 @@ class PyTensorIterator {
             throw pybind11::stop_iteration();
         }
 
-        T &out = _tensor(_curr_index);
+        std::vector<size_t> ind;
 
-        if (!_reverse) {
-            _curr_index[0] += 1;
+        tensor_algebra::detail::sentinel_to_indices(_curr_index, _index_strides, ind);
 
-            for (int i = 0; i < _curr_index.size() - 1 && _curr_index[i] >= _tensor.dim(i); i++) {
-                _curr_index[i] = 0;
-                _curr_index[i + 1] += 1;
-            }
+        T &out = _tensor(ind);
 
-            if (_curr_index[_curr_index.size() - 1] >= _tensor.dim(_curr_index.size() - 1)) {
-                _stop = true;
-            }
+        if (_reverse) {
+            _curr_index--;
         } else {
-            _curr_index[0] -= 1;
+            _curr_index++;
+        }
 
-            for (int i = 0; i < _curr_index.size() - 1 && _curr_index[i] < 0; i++) {
-                _curr_index[i] = _tensor.dim(i) - 1;
-                _curr_index[i + 1] -= 1;
-            }
-
-            if (_curr_index[_curr_index.size() - 1] < 0) {
-                _stop = true;
-            }
+        if (_curr_index < 0 || _curr_index >= _elements) {
+            _stop = true;
         }
 
         _lock.unlock();
@@ -109,8 +101,20 @@ class PyTensor : RuntimeTensor<T> {
         PYBIND11_OVERRIDE_NAME(const pybind11::object, RuntimeTensor<T>, "__subscript", subscript, args);
     }
 
-    T &set_value_at(T value, const std::vector<size_t> &index) override {
-        PYBIND11_OVERRIDE_NAME(T &, RuntimeTensor<T>, "__set_value_at", set_value_at, value, index);
+    RuntimeTensorView<T> assign_values(const pybind11::buffer &value, ssize_t index) override {
+        PYBIND11_OVERRIDE_NAME(RuntimeTensorView<T>, RuntimeTensor<T>, "__assign", assign_values, value, index);
+    }
+
+    pybind11::object assign_values(T value, ssize_t index) override {
+        PYBIND11_OVERRIDE_NAME(pybind11::object, RuntimeTensor<T>, "__assign", assign_values, value, index);
+    }
+
+    RuntimeTensorView<T> assign_values(const pybind11::buffer &value, const pybind11::slice &index) override {
+        PYBIND11_OVERRIDE_NAME(RuntimeTensorView<T>, RuntimeTensor<T>, "__assign", assign_values, value, index);
+    }
+
+    RuntimeTensorView<T> assign_values(T value, const pybind11::slice &index) override {
+        PYBIND11_OVERRIDE_NAME(RuntimeTensorView<T>, RuntimeTensor<T>, "__assign", assign_values, value, index);
     }
 
     RuntimeTensor<T> &operator=(const RuntimeTensor<T> &other) override {
@@ -160,7 +164,7 @@ class PyTensor : RuntimeTensor<T> {
 
     RuntimeTensorView<T> to_rank_1_view() const override { PYBIND11_OVERRIDE(RuntimeTensorView<T>, RuntimeTensor<T>, to_rank_1_view); }
 
-    bool full_view_of_underlying() const override { PYBIND11_OVERRIDE(bool, RuntimeTensor<T>, full_view_of_underlying); }
+    bool full_view_of_underlying() const noexcept override { PYBIND11_OVERRIDE(bool, RuntimeTensor<T>, full_view_of_underlying); }
 
     const std::string &name() const override { PYBIND11_OVERRIDE(const std::string &, RuntimeTensor<T>, name); }
 
@@ -174,22 +178,37 @@ class PyTensorView : RuntimeTensorView<T> {
   public:
     using RuntimeTensorView<T>::RuntimeTensorView;
 
+    PyTensorView(const PyTensorView<T> &) = default;
+    PyTensorView(const RuntimeTensorView<T> &copy) : RuntimeTensorView<T>(copy) {}
+
     virtual ~PyTensorView() = default;
 
     void zero() override { PYBIND11_OVERRIDE(void, RuntimeTensorView<T>, zero); }
 
     void set_all(T val) override { PYBIND11_OVERRIDE(void, RuntimeTensorView<T>, set_all, val); }
 
-    T &subscript(const pybind11::tuple &args) override {
-        PYBIND11_OVERRIDE_NAME(T &, RuntimeTensorView<T>, "__subscript", subscript, args);
+    pybind11::object subscript(const pybind11::tuple &args) override {
+        PYBIND11_OVERRIDE_NAME(pybind11::object, RuntimeTensorView<T>, "__subscript", subscript, args);
     }
 
-    const T &subscript(const pybind11::tuple &args) const override {
-        PYBIND11_OVERRIDE_NAME(const T &, RuntimeTensorView<T>, "__subscript", subscript, args);
+    const pybind11::object subscript(const pybind11::tuple &args) const override {
+        PYBIND11_OVERRIDE_NAME(const pybind11::object, RuntimeTensorView<T>, "__subscript", subscript, args);
     }
 
-    T &set_value_at(T value, const std::vector<size_t> &index) override {
-        PYBIND11_OVERRIDE_NAME(T &, RuntimeTensorView<T>, "__set_value_at", set_value_at, value, index);
+    RuntimeTensorView<T> assign_values(const pybind11::buffer &value, int index) override {
+        PYBIND11_OVERRIDE_NAME(RuntimeTensorView<T>, RuntimeTensorView<T>, "__assign", assign_values, value, index);
+    }
+
+    pybind11::object assign_values(T value, int index) override {
+        PYBIND11_OVERRIDE_NAME(pybind11::object, RuntimeTensorView<T>, "__assign", assign_values, value, index);
+    }
+
+    RuntimeTensorView<T> assign_values(const pybind11::buffer &value, const pybind11::slice &index) override {
+        PYBIND11_OVERRIDE_NAME(RuntimeTensorView<T>, RuntimeTensorView<T>, "__assign", assign_values, value, index);
+    }
+
+    RuntimeTensorView<T> assign_values(T value, const pybind11::slice &index) override {
+        PYBIND11_OVERRIDE_NAME(RuntimeTensorView<T>, RuntimeTensorView<T>, "__assign", assign_values, value, index);
     }
 
     RuntimeTensorView<T> &operator=(const RuntimeTensor<T> &other) override {
@@ -209,6 +228,9 @@ class PyTensorView : RuntimeTensorView<T> {
     }                                                                                                                                      \
     RuntimeTensorView<T> &OP(const RuntimeTensorView<T> &other) override {                                                                 \
         PYBIND11_OVERRIDE(RuntimeTensorView<T> &, RuntimeTensorView<T>, OP, other);                                                        \
+    }                                                                                                                                      \
+    RuntimeTensorView<T> &OP(const pybind11::buffer &other) override {                                                                     \
+        PYBIND11_OVERRIDE(RuntimeTensorView<T> &, RuntimeTensorView<T>, OP, other);                                                        \
     }
 
     OPERATOR(operator*=)
@@ -226,7 +248,7 @@ class PyTensorView : RuntimeTensorView<T> {
 
     std::vector<size_t> strides() const noexcept override { PYBIND11_OVERRIDE(std::vector<size_t>, RuntimeTensorView<T>, strides); }
 
-    bool full_view_of_underlying() const override { PYBIND11_OVERRIDE(bool, RuntimeTensorView<T>, full_view_of_underlying); }
+    bool full_view_of_underlying() const noexcept override { PYBIND11_OVERRIDE(bool, RuntimeTensorView<T>, full_view_of_underlying); }
 
     const std::string &name() const override { PYBIND11_OVERRIDE(const std::string &, RuntimeTensorView<T>, name); }
 
@@ -237,30 +259,58 @@ class PyTensorView : RuntimeTensorView<T> {
 
 template <typename T>
 void export_tensor(pybind11::module &mod) {
-    pybind11::class_<PyTensorIterator<T>, std::shared_ptr<PyTensorIterator<T>>>(mod, "RuntimeTensorIterator")
-        .def("__next__", &PyTensorIterator<T>::next)
+    std::string suffix = "";
+
+    if constexpr (std::is_same_v<T, float>) {
+        suffix = "F";
+    } else if constexpr (std::is_same_v<T, double>) {
+        suffix = "";
+    } else if constexpr (std::is_same_v<T, std::complex<float>>) {
+        suffix = "C";
+    } else if constexpr (std::is_same_v<T, std::complex<double>>) {
+        suffix = "Z";
+    }
+
+    pybind11::class_<PyTensorIterator<T>, std::shared_ptr<PyTensorIterator<T>>>(mod, ("RuntimeTensorIterator" + suffix).c_str())
+        .def("__next__", &PyTensorIterator<T>::next, pybind11::return_value_policy::reference)
         .def("reversed", &PyTensorIterator<T>::reversed);
-    auto tensor_view = pybind11::class_<RuntimeTensorView<T>, PyTensorView<T>, SharedRuntimeTensorView<T>>(mod, "RuntimeTensorView",
-                                                                                                           pybind11::buffer_protocol());
-    pybind11::class_<RuntimeTensor<T>, PyTensor<T>, SharedRuntimeTensor<T>>(mod, "RuntimeTensor", pybind11::buffer_protocol())
+
+    auto tensor_view = pybind11::class_<RuntimeTensorView<T>, PyTensorView<T>, SharedRuntimeTensorView<T>>(
+        mod, ("RuntimeTensorView" + suffix).c_str(), pybind11::buffer_protocol());
+    pybind11::class_<RuntimeTensor<T>, PyTensor<T>, SharedRuntimeTensor<T>>(mod, ("RuntimeTensor" + suffix).c_str(),
+                                                                            pybind11::buffer_protocol())
         .def(pybind11::init<>())
         .def(pybind11::init<std::string, const std::vector<size_t> &>())
         .def(pybind11::init<const std::vector<size_t> &>())
         .def("zero", &RuntimeTensor<T>::zero)
         .def("set_all", &RuntimeTensor<T>::set_all)
-        .def("__getitem__", &RuntimeTensor<T>::subscript)
+        .def("__getitem__", [](const RuntimeTensor<T> &self, const pybind11::tuple &args) { return self.subscript(args); })
+        .def("__getitem__", [](const RuntimeTensor<T> &self, const pybind11::slice &args) { return self.subscript(args); })
+        .def("__getitem__", [](const RuntimeTensor<T> &self, int args) { return self.subscript(args); })
         .def("__setitem__", [](RuntimeTensor<T> &self, const pybind11::tuple &key, T value) { self.assign_values(value, key); })
         .def("__setitem__",
              [](RuntimeTensor<T> &self, const pybind11::tuple &key, const pybind11::buffer &values) { self.assign_values(values, key); })
-        .def("__imult__", &RuntimeTensor<T>::operator*=, pybind11::is_operator())
-        .def("__idiv__", &RuntimeTensor<T>::operator/=, pybind11::is_operator())
-        .def("__iadd__", &RuntimeTensor<T>::operator+=, pybind11::is_operator())
-        .def("__isub__", &RuntimeTensor<T>::operator-=, pybind11::is_operator())
+        .def(pybind11::self *= T())
+        .def(pybind11::self *= pybind11::self)
+        .def(pybind11::self *= RuntimeTensorView<T>())
+        .def(pybind11::self *= pybind11::buffer())
+        .def(pybind11::self /= T())
+        .def(pybind11::self /= pybind11::self)
+        .def(pybind11::self /= RuntimeTensorView<T>())
+        .def(pybind11::self /= pybind11::buffer())
+        .def(pybind11::self += T())
+        .def(pybind11::self += pybind11::self)
+        .def(pybind11::self += RuntimeTensorView<T>())
+        .def(pybind11::self += pybind11::buffer())
+        .def(pybind11::self -= T())
+        .def(pybind11::self -= pybind11::self)
+        .def(pybind11::self -= RuntimeTensorView<T>())
+        .def(pybind11::self -= pybind11::buffer())
+        .def("assign", [](RuntimeTensor<T> &self, pybind11::buffer &buffer) { self = buffer; })
         .def("dim", &RuntimeTensor<T>::dim)
         .def("dims", &RuntimeTensor<T>::dims)
         .def("stride", &RuntimeTensor<T>::stride)
         .def("strides", &RuntimeTensor<T>::strides)
-        .def("vector_data", &RuntimeTensor<T>::vector_data)
         .def("to_rank_1_view", &RuntimeTensor<T>::to_rank_1_view)
         .def("get_name", &RuntimeTensor<T>::name)
         .def("set_name", &RuntimeTensor<T>::set_name)
@@ -270,28 +320,52 @@ void export_tensor(pybind11::module &mod) {
         .def("__iter__", [](const RuntimeTensor<T> &tensor) { return std::make_shared<PyTensorIterator<T>>(tensor); })
         .def("__reversed__", [](const RuntimeTensor<T> &tensor) { return std::make_shared<PyTensorIterator<T>>(tensor, true); })
         .def("rank", &RuntimeTensor<T>::rank)
+        .def("__copy__", [](const RuntimeTensor<T> &self) { return RuntimeTensor<T>(self); })
+        .def("__deepcopy__", [](const RuntimeTensor<T> &self) { return RuntimeTensor<T>(self); })
+        .def("copy", [](const RuntimeTensor<T> &self) { return RuntimeTensor<T>(self); })
+        .def("deepcopy", [](const RuntimeTensor<T> &self) { return RuntimeTensor<T>(self); })
         .def_buffer([](RuntimeTensor<T> &self) {
             std::vector<ssize_t> dims(self.rank()), strides(self.rank());
             for (int i = 0; i < self.rank(); i++) {
-                dims[i]    = self.dims(i);
-                strides[i] = sizeof(T) * self.strides(i);
+                dims[i]    = self.dim(i);
+                strides[i] = sizeof(T) * self.stride(i);
             }
 
             return pybind11::buffer_info(self.data(), sizeof(T), pybind11::format_descriptor<T>::format(), self.rank(), dims, strides);
         });
     tensor_view.def(pybind11::init<>())
-        .def(pybind11::init<std::string, const std::vector<size_t> &>())
-        .def(pybind11::init<const std::vector<size_t> &>())
+        .def(pybind11::init<RuntimeTensor<T> &>())
+        .def(pybind11::init<const RuntimeTensor<T> &>())
+        .def(pybind11::init<const RuntimeTensorView<T> &>())
+        .def(pybind11::init<RuntimeTensor<T> &, const std::vector<size_t> &>())
+        .def(pybind11::init<const RuntimeTensor<T> &, const std::vector<size_t> &>())
+        .def(pybind11::init<RuntimeTensorView<T> &, const std::vector<size_t> &>())
+        .def(pybind11::init<const RuntimeTensorView<T> &, const std::vector<size_t> &>())
+        .def(pybind11::init<pybind11::buffer &>())
         .def("zero", &RuntimeTensorView<T>::zero)
         .def("set_all", &RuntimeTensorView<T>::set_all)
-        .def("__getitem__", &RuntimeTensorView<T>::subscript)
+        .def("__getitem__", [](const RuntimeTensorView<T> &self, const pybind11::tuple &args) { return self.subscript(args); })
+        .def("__getitem__", [](const RuntimeTensorView<T> &self, const pybind11::slice &args) { return self.subscript(args); })
+        .def("__getitem__", [](const RuntimeTensorView<T> &self, int args) { return self.subscript(args); })
         .def("__setitem__", [](RuntimeTensorView<T> &self, const pybind11::tuple &key, T value) { self.assign_values(value, key); })
         .def("__setitem__", [](RuntimeTensorView<T> &self, const pybind11::tuple &key,
                                const pybind11::buffer &values) { self.assign_values(values, key); })
-        .def("__imult__", &RuntimeTensorView<T>::operator*=, pybind11::is_operator())
-        .def("__idiv__", &RuntimeTensorView<T>::operator/=, pybind11::is_operator())
-        .def("__iadd__", &RuntimeTensorView<T>::operator+=, pybind11::is_operator())
-        .def("__isub__", &RuntimeTensorView<T>::operator-=, pybind11::is_operator())
+        .def(pybind11::self *= T())
+        .def(pybind11::self *= pybind11::self)
+        .def(pybind11::self *= RuntimeTensor<T>())
+        .def(pybind11::self *= pybind11::buffer())
+        .def(pybind11::self /= T())
+        .def(pybind11::self /= pybind11::self)
+        .def(pybind11::self /= RuntimeTensor<T>())
+        .def(pybind11::self /= pybind11::buffer())
+        .def(pybind11::self += T())
+        .def(pybind11::self += pybind11::self)
+        .def(pybind11::self += RuntimeTensor<T>())
+        .def(pybind11::self += pybind11::buffer())
+        .def(pybind11::self -= T())
+        .def(pybind11::self -= pybind11::self)
+        .def(pybind11::self -= RuntimeTensor<T>())
+        .def(pybind11::self -= pybind11::buffer())
         .def("dim", &RuntimeTensorView<T>::dim)
         .def("dims", &RuntimeTensorView<T>::dims)
         .def("stride", &RuntimeTensorView<T>::stride)
@@ -307,8 +381,8 @@ void export_tensor(pybind11::module &mod) {
         .def_buffer([](RuntimeTensorView<T> &self) {
             std::vector<ssize_t> dims(self.rank()), strides(self.rank());
             for (int i = 0; i < self.rank(); i++) {
-                dims[i]    = self.dims(i);
-                strides[i] = sizeof(T) * self.strides(i);
+                dims[i]    = self.dim(i);
+                strides[i] = sizeof(T) * self.stride(i);
             }
 
             return pybind11::buffer_info(self.data(), sizeof(T), pybind11::format_descriptor<T>::format(), self.rank(), dims, strides);

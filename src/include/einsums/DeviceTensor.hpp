@@ -1302,7 +1302,7 @@ struct DeviceTensorView : public virtual tensor_props::TRBasicTensorBase<T, Rank
      * Create a device tensor view that maps an in-core tensor to the GPU.
      */
     template <CoreBasicTensorConcept TensorType>
-        requires(TensorType::rank == Rank)
+        requires(TensorType::Rank == Rank)
     explicit DeviceTensorView(TensorType &core_tensor) {
         _name                    = core_tensor.name();
         _dims                    = core_tensor.dims();

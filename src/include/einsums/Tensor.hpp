@@ -1309,7 +1309,7 @@ struct TensorView final : public virtual tensor_props::CoreTensorBase,
     template <TensorConcept TensorType, typename... Args>
         requires(std::is_same_v<T, typename TensorType::data_type>)
     auto common_initialization(TensorType &other, Args &&...args) -> void {
-        constexpr size_t OtherRank = TensorType::rank;
+        constexpr size_t OtherRank = TensorType::Rank;
 
         static_assert(Rank <= OtherRank, "A TensorView must be the same Rank or smaller that the Tensor being viewed.");
 
@@ -2065,7 +2065,7 @@ template <einsums::TensorConcept AType>
     requires(einsums::BasicTensorConcept<AType> || !einsums::AlgebraTensorConcept<AType>)
 void println(const AType &A, TensorPrintOptions options) {
     using T               = typename AType::data_type;
-    constexpr size_t Rank = AType::rank;
+    constexpr size_t Rank = AType::Rank;
 
     println("Name: {}", A.name());
     {
@@ -2226,7 +2226,7 @@ template <einsums::TensorConcept AType>
     requires(einsums::BasicTensorConcept<AType> || !einsums::AlgebraTensorConcept<AType>)
 void fprintln(std::FILE *fp, const AType &A, TensorPrintOptions options) {
     using T               = typename AType::data_type;
-    constexpr size_t Rank = AType::rank;
+    constexpr size_t Rank = AType::Rank;
 
     fprintln(fp, "Name: {}", A.name());
     {
@@ -2387,7 +2387,7 @@ template <einsums::TensorConcept AType>
     requires(einsums::BasicTensorConcept<AType> || !einsums::AlgebraTensorConcept<AType>)
 void fprintln(std::ostream &os, const AType &A, TensorPrintOptions options) {
     using T               = typename AType::data_type;
-    constexpr size_t Rank = AType::rank;
+    constexpr size_t Rank = AType::Rank;
 
     fprintln(os, "Name: {}", A.name());
     {

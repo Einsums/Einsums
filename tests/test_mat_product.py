@@ -11,9 +11,9 @@ def test_mat_prod(a, b, c) :
 
     C_actual = np.array([[0.0 for i in range(c)] for j in range(a)])
 
-    plan = ein.compile_plan("ij", "ik", "kj")
+    plan = ein.core.compile_plan("ij", "ik", "kj")
 
-    assert(type(plan) is ein.EinsumGemmPlan)
+    assert(type(plan) is ein.core.EinsumGemmPlan)
 
     plan.execute(0.0, C, 1.0, A, B)
 
@@ -27,7 +27,7 @@ def test_mat_prod(a, b, c) :
         for j in range(c) :
             assert(abs(C[i, j] - C_actual[i, j]) < 1e-6)
 
-@pytest.mark.skipif(not ein.gpu_enabled(), reason = "Einsums not built with GPU support!")
+@pytest.mark.skipif(not ein.core.gpu_enabled(), reason = "Einsums not built with GPU support!")
 def test_mat_prod_gpu_copy(a, b, c) :
     A = np.array([[np.random.rand() for i in range(b)] for j in range(a)])
     B = np.array([[np.random.rand() for i in range(c)] for j in range(b)])
@@ -35,13 +35,13 @@ def test_mat_prod_gpu_copy(a, b, c) :
 
     C_actual = np.array([[0.0 for i in range(c)] for j in range(a)])
 
-    plan = ein.compile_plan("ij", "ik", "kj")
+    plan = ein.core.compile_plan("ij", "ik", "kj")
 
-    assert(type(plan) is ein.EinsumGemmPlan)
+    assert(type(plan) is ein.core.EinsumGemmPlan)
 
-    A_view = ein.GPUView(A, ein.COPY)
-    B_view = ein.GPUView(B, ein.COPY)
-    C_view = ein.GPUView(C, ein.COPY)
+    A_view = ein.core.GPUView(A, ein.core.COPY)
+    B_view = ein.core.GPUView(B, ein.core.COPY)
+    C_view = ein.core.GPUView(C, ein.core.COPY)
 
     plan.execute(0.0, C_view, 1.0, A_view, B_view)
 
@@ -57,7 +57,7 @@ def test_mat_prod_gpu_copy(a, b, c) :
         for j in range(c) :
             assert(abs(C[i, j] - C_actual[i, j]) < 1e-6)
 
-@pytest.mark.skipif(not ein.gpu_enabled(), reason = "Einsums not built with GPU support!")
+@pytest.mark.skipif(not ein.core.gpu_enabled(), reason = "Einsums not built with GPU support!")
 def test_mat_prod_gpu_map(a, b, c) :
     A = np.array([[np.random.rand() for i in range(b)] for j in range(a)])
     B = np.array([[np.random.rand() for i in range(c)] for j in range(b)])
@@ -65,13 +65,13 @@ def test_mat_prod_gpu_map(a, b, c) :
 
     C_actual = np.array([[0.0 for i in range(c)] for j in range(a)])
 
-    plan = ein.compile_plan("ij", "ik", "kj")
+    plan = ein.core.compile_plan("ij", "ik", "kj")
 
-    assert(type(plan) is ein.EinsumGemmPlan)
+    assert(type(plan) is ein.core.EinsumGemmPlan)
 
-    A_view = ein.GPUView(A, ein.MAP)
-    B_view = ein.GPUView(B, ein.MAP)
-    C_view = ein.GPUView(C, ein.MAP)
+    A_view = ein.core.GPUView(A, ein.core.MAP)
+    B_view = ein.core.GPUView(B, ein.core.MAP)
+    C_view = ein.core.GPUView(C, ein.core.MAP)
 
     plan.execute(0.0, C_view, 1.0, A_view, B_view)
 

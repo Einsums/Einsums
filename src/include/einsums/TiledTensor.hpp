@@ -1188,7 +1188,7 @@ struct TiledDeviceTensorView final : public virtual tensor_props::TiledTensorBas
 template <einsums::TiledTensorConcept TensorType>
 void println(const TensorType &A, TensorPrintOptions options = {}) {
     using T               = typename TensorType::data_type;
-    constexpr size_t Rank = TensorType::rank;
+    constexpr size_t Rank = TensorType::Rank;
     println("Name: {}", A.name());
     {
         print::Indent const indent{};
@@ -1229,7 +1229,7 @@ void println(const TensorType &A, TensorPrintOptions options = {}) {
 template <einsums::TiledTensorConcept TensorType>
 void fprintln(FILE *fp, const TensorType &A, TensorPrintOptions options = {}) {
     using T               = typename TensorType::data_type;
-    constexpr size_t Rank = TensorType::rank;
+    constexpr size_t Rank = TensorType::Rank;
     fprintln(fp, "Name: {}", A.name());
     {
         print::Indent const indent{};
@@ -1270,7 +1270,7 @@ void fprintln(FILE *fp, const TensorType &A, TensorPrintOptions options = {}) {
 template <einsums::TiledTensorConcept TensorType>
 void fprintln(std::ostream &os, const TensorType &A, TensorPrintOptions options = {}) {
     using T               = typename TensorType::data_type;
-    constexpr size_t Rank = TensorType::rank;
+    constexpr size_t Rank = TensorType::Rank;
     fprintln(os, "Name: {}", A.name());
     {
         print::Indent const indent{};

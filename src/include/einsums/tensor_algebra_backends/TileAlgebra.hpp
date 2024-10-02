@@ -13,15 +13,15 @@ namespace einsums::tensor_algebra::detail {
 
 template <bool OnlyUseGenericAlgorithm, TiledTensorConcept AType, TiledTensorConcept BType, TiledTensorConcept CType, typename... CIndices,
           typename... AIndices, typename... BIndices>
-    requires(CType::rank != 0)
+    requires(CType::Rank != 0)
 auto einsum_special_dispatch(const typename CType::data_type C_prefactor, const std::tuple<CIndices...> &C_indices, CType *C,
                              const BiggestTypeT<typename AType::data_type, typename BType::data_type> AB_prefactor,
                              const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices,
                              const BType &B) -> void {
 
-    constexpr size_t ARank = AType::rank;
-    constexpr size_t BRank = BType::rank;
-    constexpr size_t CRank = CType::rank;
+    constexpr size_t ARank = AType::Rank;
+    constexpr size_t BRank = BType::Rank;
+    constexpr size_t CRank = CType::Rank;
 
     using ADataType = typename AType::data_type;
     using BDataType = typename BType::data_type;
@@ -95,8 +95,8 @@ auto einsum_special_dispatch(const DataTypeT<CType> C_prefactor, const std::tupl
                              const std::tuple<AIndices...> &A_indices, const AType &A, const std::tuple<BIndices...> &B_indices,
                              const BType &B) -> void {
 
-    constexpr size_t ARank = AType::rank;
-    constexpr size_t BRank = BType::rank;
+    constexpr size_t ARank = AType::Rank;
+    constexpr size_t BRank = BType::Rank;
     constexpr size_t CRank = 0;
 
     using ADataType = typename AType::data_type;
