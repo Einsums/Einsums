@@ -7,8 +7,6 @@
 
 #include "einsums/_Export.hpp"
 
-#include <complex>
-#include <functional>
 #include <iterator>
 #include <memory>
 #include <mutex>

@@ -1,8 +1,10 @@
 #pragma once
 
-#include "einsums/_Common.hpp"
+#include "einsums/_Export.hpp"
 
 #include <source_location>
+#include <stdexcept>
+#include <string>
 
 namespace einsums {
 

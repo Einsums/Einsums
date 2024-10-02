@@ -1,11 +1,9 @@
 #pragma once
 
-#include "einsums/_Common.hpp"
 #include "einsums/_Export.hpp"
 
 #include "einsums/Blas.hpp"
 #include "einsums/Exception.hpp"
-#include "einsums/Python.hpp"
 #include "einsums/utility/IndexUtils.hpp"
 #include "einsums/utility/TensorBases.hpp"
 

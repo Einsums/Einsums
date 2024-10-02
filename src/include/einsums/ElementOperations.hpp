@@ -9,7 +9,6 @@
 #include "einsums/_Compiler.hpp"
 
 #include "einsums/Section.hpp"
-#include "einsums/Tensor.hpp"
 #include "einsums/Utilities.hpp"
 #include "einsums/utility/TensorTraits.hpp"
 

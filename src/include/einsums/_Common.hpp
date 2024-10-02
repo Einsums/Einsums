@@ -5,15 +5,13 @@
 
 #pragma once
 
-#include "einsums/_Compiler.hpp"
 #include "einsums/_Export.hpp"
 
-#include "einsums/Print.hpp"
 #include "einsums/STL.hpp"
 
 #include <array>
 #include <cstdint>
-#include <ostream>
+#include <fmt/format.h>
 
 #define EINSUMS_STRINGIFY(a)  EINSUMS_STRINGIFY2(a)
 #define EINSUMS_STRINGIFY2(a) #a

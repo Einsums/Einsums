@@ -6,6 +6,8 @@
 #include "einsums/_Common.hpp"
 #include "einsums/_GPUUtils.hpp"
 
+#include <vector>
+
 #include <hip/hip_common.h>
 #include <hip/hip_runtime.h>
 #include <hip/hip_runtime_api.h>

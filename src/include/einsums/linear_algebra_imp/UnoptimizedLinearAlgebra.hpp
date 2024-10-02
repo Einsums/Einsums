@@ -1,5 +1,7 @@
 #pragma once
 
+#include "einsums/Exception.hpp"
+#include "einsums/utility/ComplexTraits.hpp"
 #include "einsums/utility/TensorTraits.hpp"
 
 #ifdef __HIP__

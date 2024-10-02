@@ -10,8 +10,6 @@
 #include "einsums/utility/TensorBases.hpp"
 #include "einsums/utility/TensorTraits.hpp"
 
-#include <stdexcept>
-
 namespace einsums {
 
 namespace tensor_props {

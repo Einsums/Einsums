@@ -2,7 +2,6 @@
 
 #include "einsums/_GPUCast.hpp"
 #include "einsums/_GPUUtils.hpp"
-#include "einsums/_TensorAlgebraUtilities.hpp"
 
 #include "einsums/utility/IndexUtils.hpp"
 

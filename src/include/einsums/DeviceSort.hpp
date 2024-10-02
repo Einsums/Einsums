@@ -6,18 +6,13 @@
 #pragma once
 
 #include "einsums/_Common.hpp"
-#include "einsums/_Compiler.hpp"
 #include "einsums/_GPUCast.hpp"
 #include "einsums/_GPUUtils.hpp"
 #include "einsums/_TensorAlgebraUtilities.hpp"
 
-#include "einsums/DeviceTensor.hpp"
-#include "einsums/LinearAlgebra.hpp"
-#include "einsums/STL.hpp"
 #include "einsums/Section.hpp"
-#include "einsums/TensorAlgebra.hpp"
+#include "einsums/LinearAlgebra.hpp"
 #include "einsums/utility/IndexUtils.hpp"
-#include "einsums/utility/SmartPointerTraits.hpp"
 #include "einsums/utility/TensorTraits.hpp"
 
 #include <hip/driver_types.h>
@@ -140,7 +135,7 @@ auto sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<
     }
 #endif
     if constexpr (std::is_same_v<decltype(A_indices), decltype(C_indices)>) {
-        ::einsums::linear_algebra::axpby(A_prefactor, A, C_prefactor, C);
+        einsums::linear_algebra::axpby(A_prefactor, A, C_prefactor, C);
     } else {
         int *index_table = new int[sizeof...(AIndices)];
         int *gpu_index_table;

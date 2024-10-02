@@ -6,7 +6,6 @@
 #include "einsums/utility/TensorBases.hpp"
 #include "einsums/utility/TensorTraits.hpp"
 
-#include <stdexcept>
 #include <type_traits>
 
 namespace einsums {

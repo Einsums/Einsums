@@ -11,7 +11,6 @@
 #    include "einsums/DeviceTensor.hpp"
 #endif
 #include "einsums/BlockTensor.hpp"
-#include "einsums/OpenMP.h"
 #include "einsums/Section.hpp"
 #include "einsums/Tensor.hpp"
 #include "einsums/utility/ComplexTraits.hpp"

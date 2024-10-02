@@ -3,7 +3,6 @@
 #include "einsums/_Common.hpp"
 #include "einsums/_Compiler.hpp"
 
-#include <stdexcept>
 #ifdef __HIP__
 #    include "einsums/_GPUUtils.hpp"
 #endif

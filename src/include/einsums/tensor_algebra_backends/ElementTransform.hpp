@@ -1,6 +1,7 @@
 #pragma once
 
 #include "einsums/_Compiler.hpp"
+#include "einsums/_TensorAlgebraUtilities.hpp"
 
 #include "einsums/Print.hpp"
 #include "einsums/Section.hpp"
@@ -9,7 +10,6 @@
 
 #include <cmath>
 #include <cstddef>
-#include <stdexcept>
 #include <tuple>
 
 namespace einsums::tensor_algebra {

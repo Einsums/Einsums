@@ -2,7 +2,7 @@
 
 #include "einsums/_Common.hpp"
 
-#include "einsums/utility/TensorTraits.hpp"
+#include "einsums/utility/TensorBases.hpp"
 
 #include <cstddef>
 #include <type_traits>

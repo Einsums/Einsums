@@ -5,17 +5,9 @@
 
 #pragma once
 
-#include "einsums/_Common.hpp"
 #include "einsums/_Compiler.hpp"
-#include "einsums/_TensorAlgebraUtilities.hpp"
 
-#include "einsums/BlockTensor.hpp"
-#include "einsums/LinearAlgebra.hpp"
 #include "einsums/STL.hpp"
-#include "einsums/Section.hpp"
-#include "einsums/Tensor.hpp"
-#include "einsums/TiledTensor.hpp"
-#include "einsums/utility/SmartPointerTraits.hpp"
 #include "einsums/utility/TensorTraits.hpp"
 #ifdef __HIP__
 #    include "einsums/DeviceSort.hpp"

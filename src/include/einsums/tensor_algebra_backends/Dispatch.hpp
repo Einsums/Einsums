@@ -1,11 +1,9 @@
 #pragma once
 
 #include "einsums/_Common.hpp"
-#include "einsums/_Compiler.hpp"
 #include "einsums/_TensorAlgebraUtilities.hpp"
 
 #include "einsums/BlockTensor.hpp"
-#include "einsums/FunctionTensor.hpp"
 #include "einsums/LinearAlgebra.hpp"
 #include "einsums/Print.hpp"
 #include "einsums/STL.hpp"

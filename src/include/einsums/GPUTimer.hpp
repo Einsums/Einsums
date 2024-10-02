@@ -6,9 +6,6 @@
 #pragma once
 
 #include "einsums/_Export.hpp"
-#include "einsums/_GPUUtils.hpp"
-
-#include "einsums/Timer.hpp"
 
 #include <hip/hip_common.h>
 #include <hip/hip_runtime_api.h>

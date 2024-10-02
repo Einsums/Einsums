@@ -10,6 +10,7 @@
 #include "einsums/Exception.hpp"
 
 #include <cstring>
+#include <source_location>
 #include <hip/hip_common.h>
 #include <hip/hip_complex.h>
 #include <hip/hip_runtime.h>

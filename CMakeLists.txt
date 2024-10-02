@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.24) # 3.24 for FetchContent_Declare(FIND_PACKAGE_ARGS
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
+if(CMAKE_COMPILE_WARNING_AS_ERROR)
+    set(EINSUMS_COMPILE_WARNING_AS_ERROR ${CMAKE_COMPILE_WARNING_AS_ERROR})
+    unset(CMAKE_COMPILE_WARNING_AS_ERROR CACHE)
+endif()
+
 include(EinsumsBranding)
 
 project(
@@ -143,6 +148,10 @@ if(EINSUMS_BUILD_HIP)
     find_package(hipsolver REQUIRED)
     set(CURSES_NEED_NCURSES True)
     find_package(Curses)
+endif()
+
+if(EINSUMS_COMPILE_WARNING_AS_ERROR)
+    set(CMAKE_COMPILE_WARNING_AS_ERROR ${EINSUMS_COMPILE_WARNING_AS_ERROR})
 endif()
 
 add_subdirectory(src)
