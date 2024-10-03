@@ -581,16 +581,11 @@ class RuntimeTensor : public virtual tensor_props::TensorBase,
         if (size() != b.size()) {                                                                                                          \
             throw EINSUMSEXCEPTION(fmt::format("tensors differ in size : {} {}", size(), b.size()));                                       \
         }                                                                                                                                  \
-        EINSUMS_OMP_PARALLEL {                                                                                                             \
-            auto tid       = omp_get_thread_num();                                                                                         \
-            auto chunksize = _data.size() / omp_get_num_threads();                                                                         \
-            auto abegin    = _data.begin() + chunksize * tid;                                                                              \
-            auto bbegin    = b._data.begin() + chunksize * tid;                                                                            \
-            auto aend      = (tid == omp_get_num_threads() - 1) ? _data.end() : abegin + chunksize;                                        \
-            auto j         = bbegin;                                                                                                       \
-            EINSUMS_OMP_SIMD for (auto i = abegin; i < aend; i++, j++) {                                                                   \
-                (*i) OP(*j);                                                                                                               \
-            }                                                                                                                              \
+        T       *this_data = this->data();                                                                                                 \
+        const T *b_data    = b.data();                                                                                                     \
+        EINSUMS_OMP_PARALLEL_FOR                                                                                                           \
+        for (size_t sentinel = 0; sentinel < size(); sentinel++) {                                                                         \
+            this_data[sentinel] OP b_data[sentinel];                                                                                       \
         }                                                                                                                                  \
         return *this;                                                                                                                      \
     }                                                                                                                                      \
