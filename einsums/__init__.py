@@ -19,7 +19,7 @@ except (ModuleNotFoundError, ImportError) :
     try :
         import core
     except (ModuleNotFoundError, ImportError) as e :
-        raise RuntimeError(f"Path is {sys.path} and version is {sys.version}") from e
+        raise RuntimeError(f"File is {__file__}, path is {sys.path} and version is {sys.version}") from e
 
 from . import utils # pylint: disable=wrong-import-position
 
