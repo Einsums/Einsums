@@ -67,7 +67,7 @@ einsums_option(EINSUMS_FAST_INTRINSICS BOOL "When generating code for GPU, use t
 rather than the normal math functions (expf, sinf, etc.) for single-precision floats and single-precision complex floats." OFF)
 einsums_option(EINSUMS_ANONYMIZE BOOL "When generating error messages, decides whether to anonymize the file names or not." OFF)
 einsums_option(EINSUMS_BUILD_PYTHON STRING "Can be either a Python version to set the Python version to compile for, the string ON to compile \
-for your current Python version, or the string OFF to not build the Python extension module." ON)
+for your current Python version, a list of Python version separated by semicolons, or the string OFF to not build the Python extension module." ON)
 
 add_feature_info(EINSUMS_CONTINUOUSLY_TEST_EINSUM ${EINSUMS_CONTINUOUSLY_TEST_EINSUM} "Test every call to einsum. EXPENSIVE!")
 add_feature_info(EINSUMS_TEST_EINSUM_ABORT ${EINSUMS_TEST_EINSUM_ABORT} "Abort execution if an error is found")

@@ -7,6 +7,10 @@
 
 #include "einsums/_Export.hpp"
 
+#include <fmt/color.h>
+#include <fmt/core.h>
+#include <fmt/format.h>
+
 #include <array>
 #include <cassert>
 #include <cstring>
@@ -14,10 +18,6 @@
 #include <sstream>
 #include <string_view>
 #include <tuple>
-
-#include "fmt/color.h"
-#include "fmt/core.h"
-#include "fmt/format.h"
 
 namespace print {
 

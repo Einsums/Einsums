@@ -49,4 +49,18 @@ void finalize(bool timerReport) {
     timer::finalize();
 }
 
+void finalize(std::string output_file) {
+
+    blas::finalize();
+
+#ifdef __HIP__
+    einsums::gpu::finalize();
+
+#endif
+
+    timer::report(output_file);
+
+    timer::finalize();
+}
+
 } // namespace einsums

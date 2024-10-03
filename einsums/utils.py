@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import typing
 
-import core
+from einsums import core
 import random
 
 

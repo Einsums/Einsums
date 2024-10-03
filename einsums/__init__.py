@@ -10,7 +10,8 @@ import os
 
 __modpath = os.path.dirname(__file__)
 
-sys.path.insert(1, __modpath)
+if __modpath not in sys.path :
+    sys.path.append(__modpath)
 
 try :
     from . import core

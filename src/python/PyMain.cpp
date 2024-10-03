@@ -1,6 +1,7 @@
 #include "einsums/_Common.hpp"
 
 #include "einsums/Python.hpp"
+#include "einsums/Timer.hpp"
 
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
@@ -43,7 +44,12 @@ static bool gpu_enabled() {
 void einsums::python::export_python_base(pybind11::module_ &mod) {
     mod.def("gpu_enabled", gpu_enabled)
         .def("initialize", einsums::initialize)
-        .def("finalize", einsums::finalize, py::arg("timer_report") = false);
+        .def(
+            "finalize", [](bool timer_report) { einsums::finalize(timer_report); }, py::arg("timer_report") = false)
+        .def(
+            "finalize", [](std::string timer_report) { einsums::finalize(timer_report); }, py::arg("output_file"))
+        .def("report", []() { einsums::timer::report(); })
+        .def("report", [](std::string output_file) { einsums::timer::report(output_file); }, py::arg("output_file"));
 
     py::register_exception<einsums::EinsumsException>(mod, "CoreEinsumsException");
 }
@@ -56,7 +62,8 @@ PYBIND11_MODULE(core, mod) {
     export_python_base(mod);
     export_tensor_algebra(mod);
 #ifdef __HIP__
-    export_gpu(mod);
+    auto gpu_except_mod = mod.def_submodule("gpu_except", "Contains all of the exceptions wrapping the HIP return statuses.");
+    export_gpu_except(gpu_except_mod);
     export_gpu_view(mod);
 #endif
     export_tensor<float>(mod);

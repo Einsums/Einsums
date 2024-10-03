@@ -186,13 +186,13 @@ size_t PyGPUView::itemsize() const {
 }
 
 void PyGPUView::update_H2D() {
-    if(_mode == detail::COPY) {
+    if (_mode == detail::COPY) {
         gpu::hip_catch(hipMemcpy(_dev_data, _host_data, _alloc_size, hipMemcpyHostToDevice));
     }
 }
 
 void PyGPUView::update_D2H() {
-    if(_mode == detail::COPY) {
+    if (_mode == detail::COPY) {
         gpu::hip_catch(hipMemcpy(_host_data, _dev_data, _alloc_size, hipMemcpyDeviceToHost));
     }
 }

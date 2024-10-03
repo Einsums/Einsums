@@ -94,11 +94,16 @@ using blas_elong = long int;     // NOLINT
 auto EINSUMS_EXPORT initialize() -> int;
 
 /**
- * Shuts down Einsums and possibly print out a timings report.
+ * Shuts down Einsums and possibly print out a timings report to stdout.
  *
  * @param timerReport whether to print the timings report of not. Defaults to false.
  */
 void EINSUMS_EXPORT finalize(bool timerReport = false);
+
+/**
+ * Shuts down Einsums and prints out the timing report to the specified file.
+ */
+void EINSUMS_EXPORT finalize(std::string output_file);
 
 #define DEFINE_STRUCT(Name, UnderlyingType)                                                                                                \
     template <std::size_t Rank>                                                                                                            \

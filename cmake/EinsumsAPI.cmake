@@ -144,6 +144,7 @@ function(add_einsums_library name)
         VISIBILITY_INLINES_HIDDEN       ON
         BUILD_RPATH                     "${_LIB_RPATH};${CMAKE_BUILD_RPATH}"
         INSTALL_RPATH                   "${_LIB_RPATH};${CMAKE_INSTALL_RPATH}"
+        INSTALL_RPATH_USE_LINK_PATH     ON
         RUNTIME_OUTPUT_DIRECTORY        "${_output_binary_dir}/${_DESTINATION}"
         LIBRARY_OUTPUT_DIRECTORY        "${_output_binary_dir}/${EINSUMS_LIBRARY_PATH}"
         ARCHIVE_OUTPUT_DIRECTORY        "${_output_binary_dir}/${EINSUMS_LIBRARY_ARCHIVE_PATH}"

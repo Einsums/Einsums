@@ -12,7 +12,7 @@ dependencies:
   # Prebuilts to save einsums the work
   - catch2
   - fftw
-  - fmt
+  - fmt=11
   - range-v3
 
   # HDF5
