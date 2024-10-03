@@ -238,3 +238,57 @@ function(einsums_add_public_header header)
     #    COMPONENT Devel EXCLUDE_FROM_ALL
     #)
 endfunction()
+
+function(add_einsums_pymod name)
+    cmake_parse_arguments(_arg "STATIC;SHARED;MODULE" "MODULENAME" "" ${ARGN})
+
+    set(library_type SHARED)
+    if (_arg_STATIC OR (EINSUMS_STATIC_BUILD AND NOT _arg_SHARED))
+        set(library_type STATIC)
+    endif()
+    if (_arg_MODULE)
+        set(library_type MODULE)
+    endif()
+
+    add_einsums_library(${name} ${library_type} ${_arg_UNPARSED_ARGUMENTS})
+
+    set_target_properties(${name} PROPERTIES
+        BUILD_RPATH                     "${_LIB_RPATH};${CMAKE_BUILD_RPATH}"
+        INSTALL_RPATH                   "${_LIB_RPATH};${CMAKE_INSTALL_RPATH};${_LIB_RPATH}/../"
+    )
+
+    if(_arg_MODULENAME)
+        set_target_properties(${name} PROPERTIES
+            OUTPUT_NAME "${_arg_MODULENAME}"
+        )
+    endif()
+
+    extend_einsums_target(${name}
+        DEPENDS pybind11::lto
+    )
+
+    extend_einsums_target(${name}
+        DEPENDS pybind11::module ${Python3_LIBRARIES}
+        CONDITION
+            library_type STREQUAL "MODULE"
+    )
+
+    extend_einsums_target(${name}
+        DEPENDS pybind11::embed
+        CONDITION
+            library_type STREQUAL "SHARED"
+    )
+
+    extend_einsums_target(${name}
+        DEPENDS pybind11::windows_extras
+        CONDITION MSVC)
+
+    if(NOT MSVC AND NOT ${CMAKE_BUILD_TYPE} MATCHES Debug|RelWithDebInfo)
+        # Strip unnecessary sections of the binary on Linux/macOS
+        pybind11_strip(${name})
+    endif()
+
+    pybind11_extension(${name})
+
+    target_compile_features(${name} PUBLIC cxx_std_20)
+endfunction()

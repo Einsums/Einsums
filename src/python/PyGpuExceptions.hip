@@ -217,3 +217,9 @@ void einsums::python::export_gpu_except(py::module_ &mod) {
     py::register_local_exception<einsums::gpu::detail::solverInvalidEnum>(mod, "solverInvalidEnum");
     py::register_local_exception<einsums::gpu::detail::solverUnknown>(mod, "solverUnknown");
 }
+
+PYBIND11_MODULE(gpu_except, mod) {
+    mod.doc() = "Contains all of the exceptions that wrap status values for all of the HIP libraries.";
+
+    export_gpu_except(mod);
+}

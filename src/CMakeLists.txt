@@ -137,6 +137,7 @@ list(
     EINSUMS_SHOW_WARNING
     EINSUMS_TEST_NANS
     EINSUMS_RUNTIME_INDICES_CHECK
+    EINSUMS_ENABLE_TESTING
 )
 foreach(define IN LISTS defines)
     extend_einsums_target(

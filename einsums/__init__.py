@@ -15,9 +15,13 @@ if __modpath not in sys.path :
 
 try :
     from . import core
+    if core.gpu_enabled() :
+        from . import gpu_except
 except (ModuleNotFoundError, ImportError) :
     try :
         import core
+        if core.gpu_enabled() :
+            import gpu_except
     except (ModuleNotFoundError, ImportError) as e :
         raise RuntimeError(f"File is {__file__}, path is {sys.path} and version is {sys.version}") from e
 

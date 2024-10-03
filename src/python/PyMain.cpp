@@ -62,14 +62,19 @@ PYBIND11_MODULE(core, mod) {
     export_python_base(mod);
     export_tensor_algebra(mod);
 #ifdef __HIP__
-    auto gpu_except_mod = mod.def_submodule("gpu_except", "Contains all of the exceptions wrapping the HIP return statuses.");
-    export_gpu_except(gpu_except_mod);
     export_gpu_view(mod);
 #endif
     export_tensor<float>(mod);
     export_tensor<double>(mod);
     export_tensor<std::complex<float>>(mod);
     export_tensor<std::complex<double>>(mod);
+
+#ifdef EINSUMS_ENABLE_TESTING
+    export_python_testing(mod);
+#    ifdef __HIP__
+    export_python_testing_gpu(mod);
+#    endif
+#endif
 
     auto atexit = py::module_::import("atexit");
     atexit.attr("register")(py::cpp_function([]() -> void { einsums::finalize(); }));
