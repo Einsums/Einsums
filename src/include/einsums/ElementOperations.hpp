@@ -122,7 +122,7 @@ auto sum(const TensorType &tensor) -> TensorType::data_type {
         T result{0};
 
 #pragma omp parallel for reduction(+ : result)
-        for (ssize_t i = 0; i < tensor.size(); i++) {
+        for (ptrdiff_t i = 0; i < tensor.size(); i++) {
             size_t index = 0, quotient = i;
 
 #pragma unroll

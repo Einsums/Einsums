@@ -46,18 +46,18 @@ __global__ void sort_kernel(const int *perm, const T alpha, const T *A, const si
     size_t A_index[Rank], B_index[Rank];
     size_t A_sentinel, B_sentinel;
 
-    for (ssize_t curr_index = thread_id; curr_index < size; curr_index++) {
+    for (ptrdiff_t curr_index = thread_id; curr_index < size; curr_index++) {
         einsums::tensor_algebra::detail::sentinel_to_indices<Rank>(curr_index, strideA, A_index);
         A_sentinel = 0;
         B_sentinel = 0;
 
 #pragma unroll
-        for (ssize_t i = 0; i < Rank; i++) {
+        for (ptrdiff_t i = 0; i < Rank; i++) {
             A_sentinel += strideA[i] * A_index[i];
         }
 
 #pragma unroll
-        for (ssize_t i = 0; i < Rank; i++) {
+        for (ptrdiff_t i = 0; i < Rank; i++) {
             B_sentinel += strideB[i] * A_index[perm[i]];
         }
 

@@ -281,7 +281,7 @@ template <size_t Rank>
 __host__ __device__ void index_to_combination(size_t index, const size_t *dims, size_t *out) {
     size_t quot = index;
 
-    for (ssize_t i = Rank - 1; i >= 0; i--) {
+    for (ptrdiff_t i = Rank - 1; i >= 0; i--) {
         out[i] = quot % dims[i];
         quot /= dims[i];
     }
@@ -293,7 +293,7 @@ __host__ __device__ void index_to_combination(size_t index, const size_t *dims, 
 template <size_t Rank>
 __host__ __device__ size_t combination_to_index(const size_t *inds, const size_t *dims, const size_t *strides) {
     size_t out = 0;
-    for (ssize_t i = 0; i < Rank; i++) {
+    for (ptrdiff_t i = 0; i < Rank; i++) {
         int ind = inds[i];
 
         if (ind < 0) {
@@ -313,7 +313,7 @@ template <size_t Rank>
 __host__ __device__ void index_to_combination(size_t index, const einsums::Dim<Rank> &dims, std::array<size_t, Rank> &out) {
     size_t quot = index;
 
-    for (ssize_t i = Rank - 1; i >= 0; i--) {
+    for (ptrdiff_t i = Rank - 1; i >= 0; i--) {
         out[i] = quot % dims[i];
         quot /= dims[i];
     }
@@ -326,7 +326,7 @@ template <size_t Rank>
 __host__ __device__ size_t combination_to_index(const std::array<size_t, Rank> &inds, const einsums::Dim<Rank> &dims,
                                                 const einsums::Stride<Rank> &strides) {
     size_t out = 0;
-    for (ssize_t i = 0; i < Rank; i++) {
+    for (ptrdiff_t i = 0; i < Rank; i++) {
         int ind = inds[i];
 
         if (ind < 0) {

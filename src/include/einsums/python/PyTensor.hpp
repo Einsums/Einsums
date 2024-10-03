@@ -101,11 +101,11 @@ class PyTensor : RuntimeTensor<T> {
         PYBIND11_OVERRIDE_NAME(const pybind11::object, RuntimeTensor<T>, "__subscript", subscript, args);
     }
 
-    RuntimeTensorView<T> assign_values(const pybind11::buffer &value, ssize_t index) override {
+    RuntimeTensorView<T> assign_values(const pybind11::buffer &value, ptrdiff_t index) override {
         PYBIND11_OVERRIDE_NAME(RuntimeTensorView<T>, RuntimeTensor<T>, "__assign", assign_values, value, index);
     }
 
-    pybind11::object assign_values(T value, ssize_t index) override {
+    pybind11::object assign_values(T value, ptrdiff_t index) override {
         PYBIND11_OVERRIDE_NAME(pybind11::object, RuntimeTensor<T>, "__assign", assign_values, value, index);
     }
 
@@ -325,7 +325,7 @@ void export_tensor(pybind11::module &mod) {
         .def("copy", [](const RuntimeTensor<T> &self) { return RuntimeTensor<T>(self); })
         .def("deepcopy", [](const RuntimeTensor<T> &self) { return RuntimeTensor<T>(self); })
         .def_buffer([](RuntimeTensor<T> &self) {
-            std::vector<ssize_t> dims(self.rank()), strides(self.rank());
+            std::vector<ptrdiff_t> dims(self.rank()), strides(self.rank());
             for (int i = 0; i < self.rank(); i++) {
                 dims[i]    = self.dim(i);
                 strides[i] = sizeof(T) * self.stride(i);
@@ -379,7 +379,7 @@ void export_tensor(pybind11::module &mod) {
         .def("__reversed__", [](const RuntimeTensorView<T> &tensor) { return std::make_shared<PyTensorIterator<T>>(tensor, true); })
         .def("rank", &RuntimeTensorView<T>::rank)
         .def_buffer([](RuntimeTensorView<T> &self) {
-            std::vector<ssize_t> dims(self.rank()), strides(self.rank());
+            std::vector<ptrdiff_t> dims(self.rank()), strides(self.rank());
             for (int i = 0; i < self.rank(); i++) {
                 dims[i]    = self.dim(i);
                 strides[i] = sizeof(T) * self.stride(i);

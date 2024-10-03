@@ -86,7 +86,7 @@ struct IsTypedTensor : public std::is_base_of<tensor_props::TypedTensorBase<T>, 
  * @tparam D The tensor type to check.
  * @tparam Rank The rank the tensor should have.
  */
-template <typename D, ssize_t Rank = -1>
+template <typename D, ptrdiff_t Rank = -1>
 struct IsRankTensor : public std::conditional_t<Rank == -1, std::is_base_of<tensor_props::RankTensorBaseNoRank, D>,
                                               std::is_base_of<tensor_props::RankTensorBase<(size_t)Rank>, D>> {};
 
@@ -320,7 +320,7 @@ constexpr inline bool IsTypedTensorV = IsTypedTensor<D, T>::value;
  * @tparam D The tensor type to check.
  * @tparam Rank The rank the tensor should have.
  */
-template <typename D, ssize_t Rank = -1>
+template <typename D, ptrdiff_t Rank = -1>
 constexpr inline bool IsRankTensorV = IsRankTensor<D, Rank>::value;
 
 /**
@@ -863,7 +863,7 @@ concept TypedTensorConcept = detail::IsTypedTensorV<D, T>;
  * @tparam D The tensor type to check.
  * @tparam Rank The rank the tensor should have.
  */
-template <typename D, ssize_t Rank = -1>
+template <typename D, ptrdiff_t Rank = -1>
 concept RankTensorConcept = detail::IsRankTensorV<D, Rank>;
 
 /**

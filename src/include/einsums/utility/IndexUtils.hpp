@@ -121,7 +121,7 @@ HOSTDEV inline void sentinel_to_indices(size_t sentinel, const size_t *unique_st
     size_t hold = sentinel;
 
 #pragma unroll
-    for (ssize_t i = 0; i < num_unique_inds; i++) {
+    for (ptrdiff_t i = 0; i < num_unique_inds; i++) {
         if (unique_strides[i] != 0) {
             out_inds[i] = hold / unique_strides[i];
             hold %= unique_strides[i];
@@ -137,7 +137,7 @@ inline void sentinel_to_indices(size_t sentinel, const std::array<size_t, num_un
     size_t hold = sentinel;
 
 #pragma unroll
-    for (ssize_t i = 0; i < num_unique_inds; i++) {
+    for (ptrdiff_t i = 0; i < num_unique_inds; i++) {
         if (unique_strides[i] != 0) {
             out_inds[i] = hold / unique_strides[i];
             hold %= unique_strides[i];
@@ -155,7 +155,7 @@ inline void sentinel_to_indices(size_t sentinel, const StorageType1 &unique_stri
         out_inds.resize(unique_strides.size());
     }
 
-    for (ssize_t i = 0; i < unique_strides.size(); i++) {
+    for (ptrdiff_t i = 0; i < unique_strides.size(); i++) {
         if (unique_strides[i] != 0) {
             out_inds[i] = hold / unique_strides[i];
             hold %= unique_strides[i];

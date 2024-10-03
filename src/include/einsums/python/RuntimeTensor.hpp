@@ -138,28 +138,28 @@ class RuntimeTensor : public virtual tensor_props::TensorBase,
         return _data.at(einsums::tensor_algebra::detail::indices_to_sentinel_negative_check(_strides, _dims, index));
     }
 
-    T *data(ssize_t index) {
+    T *data(ptrdiff_t index) {
         if (index < 0) {
             index += _dims[0];
         }
         return &(_data.at(index));
     }
 
-    const T *data(ssize_t index) const {
+    const T *data(ptrdiff_t index) const {
         if (index < 0) {
             index += _dims[0];
         }
         return &(_data.at(index));
     }
 
-    T &operator()(ssize_t index) {
+    T &operator()(ptrdiff_t index) {
         if (index < 0) {
             index += _dims[0];
         }
         return _data.at(index);
     }
 
-    const T &operator()(ssize_t index) const {
+    const T &operator()(ptrdiff_t index) const {
         if (index < 0) {
             index += _dims[0];
         }
@@ -955,7 +955,7 @@ class RuntimeTensor : public virtual tensor_props::TensorBase,
         return this->operator()(pass) = value;
     }
 
-    virtual pybind11::object subscript(ssize_t index) {
+    virtual pybind11::object subscript(ptrdiff_t index) {
         if (_rank == 1) {
             return pybind11::cast(this->operator()(index));
         } else {
@@ -963,15 +963,15 @@ class RuntimeTensor : public virtual tensor_props::TensorBase,
         }
     }
 
-    virtual const pybind11::object subscript(ssize_t index) const {
+    virtual const pybind11::object subscript(ptrdiff_t index) const {
         if (_rank == 1) {
-            return pybind11::cast(this->operator()(std::array<ssize_t, 1>{index}));
+            return pybind11::cast(this->operator()(std::array<ptrdiff_t, 1>{index}));
         } else {
             return pybind11::cast(this->operator()(std::vector<Range>{Range{-1, index}}));
         }
     }
 
-    virtual RuntimeTensorView<T> assign_values(const pybind11::buffer &value, ssize_t index) {
+    virtual RuntimeTensorView<T> assign_values(const pybind11::buffer &value, ptrdiff_t index) {
         if (_rank <= 1) {
             throw EINSUMSEXCEPTION("Can not assign buffer to a single position!");
         }
@@ -979,7 +979,7 @@ class RuntimeTensor : public virtual tensor_props::TensorBase,
         return this->operator()(std::vector<Range>{Range{-1, index}}) = value;
     }
 
-    virtual pybind11::object assign_values(T value, ssize_t index) {
+    virtual pybind11::object assign_values(T value, ptrdiff_t index) {
         if (_rank <= 1) {
             T &target = this->operator()({index});
             target    = value;
@@ -1246,28 +1246,28 @@ class RuntimeTensorView : public virtual tensor_props::TensorViewBase<RuntimeTen
         return _data[einsums::tensor_algebra::detail::indices_to_sentinel_negative_check(_strides, _dims, index)];
     }
 
-    T *data(ssize_t index) {
+    T *data(ptrdiff_t index) {
         if (index < 0) {
             index += _dims[0];
         }
         return &(_data[index * _strides[0]]);
     }
 
-    const T *data(ssize_t index) const {
+    const T *data(ptrdiff_t index) const {
         if (index < 0) {
             index += _dims[0];
         }
         return &(_data[index * _strides[0]]);
     }
 
-    T &operator()(ssize_t index) {
+    T &operator()(ptrdiff_t index) {
         if (index < 0) {
             index += _dims[0];
         }
         return _data[index * _strides[0]];
     }
 
-    const T &operator()(ssize_t index) const {
+    const T &operator()(ptrdiff_t index) const {
         if (index < 0) {
             index += _dims[0];
         }

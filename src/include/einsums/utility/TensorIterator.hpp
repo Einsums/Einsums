@@ -12,7 +12,7 @@ template <typename T, size_t Rank>
 struct TensorIterator : public std::iterator<std::input_iterator_tag, T> {
   private:
     TensorView<T, Rank>       _tensor;
-    std::array<ssize_t, Rank> _curr_index;
+    std::array<ptrdiff_t, Rank> _curr_index;
 
   public:
     TensorIterator(Tensor<T, Rank> &tensor) : _tensor{tensor}, _curr_index{0} {}
@@ -23,7 +23,7 @@ struct TensorIterator : public std::iterator<std::input_iterator_tag, T> {
     TensorIterator &operator++() {
         _curr_index[Rank - 1] += 1;
 
-        for (ssize_t i = Rank - 1; i > 0 && _curr_index[i] >= _tensor.dim(i); i--) {
+        for (ptrdiff_t i = Rank - 1; i > 0 && _curr_index[i] >= _tensor.dim(i); i--) {
             _curr_index[i] = 0;
             _curr_index[i - 1] += 1;
         }
@@ -35,7 +35,7 @@ struct TensorIterator : public std::iterator<std::input_iterator_tag, T> {
         auto retval = *this;
         _curr_index[Rank - 1] += 1;
 
-        for (ssize_t i = Rank - 1; i > 0 && _curr_index[i] >= _tensor.dim(i); i--) {
+        for (ptrdiff_t i = Rank - 1; i > 0 && _curr_index[i] >= _tensor.dim(i); i--) {
             _curr_index[i] = 0;
             _curr_index[i - 1] += 1;
         }
@@ -46,7 +46,7 @@ struct TensorIterator : public std::iterator<std::input_iterator_tag, T> {
     TensorIterator &operator--() {
         _curr_index[Rank - 1] -= 1;
 
-        for (ssize_t i = Rank - 1; i > 0 && _curr_index[i] < 0; i--) {
+        for (ptrdiff_t i = Rank - 1; i > 0 && _curr_index[i] < 0; i--) {
             _curr_index[i] = _tensor.dims(i);
             _curr_index[i - 1] -= 1;
         }
@@ -58,7 +58,7 @@ struct TensorIterator : public std::iterator<std::input_iterator_tag, T> {
         auto retval = *this;
         _curr_index[Rank - 1] -= 1;
 
-        for (ssize_t i = Rank - 1; i > 0 && _curr_index[i] < 0; i--) {
+        for (ptrdiff_t i = Rank - 1; i > 0 && _curr_index[i] < 0; i--) {
             _curr_index[i] = 0;
             _curr_index[i - 1] -= 1;
         }

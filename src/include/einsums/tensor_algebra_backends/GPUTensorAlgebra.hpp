@@ -66,17 +66,17 @@ einsum_generic_algorithm_gpu(const size_t *__restrict__ unique_strides, const si
 
         // Unroll these loops since they are known.
 #pragma unroll
-        for (ssize_t i = 0; i < CRank; i++) {
+        for (ptrdiff_t i = 0; i < CRank; i++) {
             C_sentinel += C_stride[i] * Unique_index[C_index_table[i]];
         }
 
 #pragma unroll
-        for (ssize_t i = 0; i < ARank; i++) {
+        for (ptrdiff_t i = 0; i < ARank; i++) {
             A_sentinel += A_stride[i] * Unique_index[A_index_table[i]];
         }
 
 #pragma unroll
-        for (ssize_t i = 0; i < BRank; i++) {
+        for (ptrdiff_t i = 0; i < BRank; i++) {
             B_sentinel += B_stride[i] * Unique_index[B_index_table[i]];
         }
 
@@ -111,17 +111,17 @@ __global__ void einsum_generic_algorithm_direct_product_gpu(
 
         // Unroll these loops since they are known.
 #pragma unroll
-        for (ssize_t i = 0; i < CRank; i++) {
+        for (ptrdiff_t i = 0; i < CRank; i++) {
             C_sentinel += C_stride[i] * Unique_index[C_index_table[i]];
         }
 
 #pragma unroll
-        for (ssize_t i = 0; i < ARank; i++) {
+        for (ptrdiff_t i = 0; i < ARank; i++) {
             A_sentinel += A_stride[i] * Unique_index[A_index_table[i]];
         }
 
 #pragma unroll
-        for (ssize_t i = 0; i < BRank; i++) {
+        for (ptrdiff_t i = 0; i < BRank; i++) {
             B_sentinel += B_stride[i] * Unique_index[B_index_table[i]];
         }
         
@@ -166,12 +166,12 @@ einsum_generic_zero_rank_gpu(const size_t *__restrict__ unique_strides, const in
         B_sentinel = 0;
 
 #pragma unroll
-        for (ssize_t i = 0; i < ARank; i++) {
+        for (ptrdiff_t i = 0; i < ARank; i++) {
             A_sentinel += A_stride[i] * Unique_index[A_index_table[i]];
         }
 
 #pragma unroll
-        for (ssize_t i = 0; i < BRank; i++) {
+        for (ptrdiff_t i = 0; i < BRank; i++) {
             B_sentinel += B_stride[i] * Unique_index[B_index_table[i]];
         }
 

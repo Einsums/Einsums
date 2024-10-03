@@ -7,13 +7,14 @@
 
 #include "einsums/_Export.hpp"
 
+#include <algorithm>
+#include <cctype>
 #include <iterator>
 #include <memory>
 #include <mutex>
 #include <tuple>
 #include <type_traits>
 #include <utility>
-#include <algorithm>
 
 namespace einsums {
 
