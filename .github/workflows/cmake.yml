@@ -181,7 +181,6 @@ jobs:
             export PYTHONPATH="$PYTHONPATH;${{github.workspace}}/installed/lib;$CONDA_PREFIX/lib"
           else
             export PYTHONPATH=$PYTHONPATH:${{github.workspace}}/installed/lib:$CONDA_PREFIX/lib
-            for i in $(find . -name "libeinsums*") $(find . -name "core"); do ldd $i && true; done;
           fi
           
           pytest "${{github.workspace}}/tests"
