@@ -26,7 +26,7 @@ struct Section::Impl {
 #endif
 };
 
-Section::Section(const std::string &name, bool pushTimer) : _impl{new Section::Impl} {
+Section::Section(const std::string &name, bool pushTimer) : _impl{std::make_unique<Impl>()} {
     _impl->name       = einsums::trim_copy(name);
     _impl->push_timer = pushTimer;
 
@@ -38,7 +38,7 @@ Section::Section(const std::string &name, bool pushTimer) : _impl{new Section::I
     begin();
 }
 
-Section::Section(const std::string &name, const std::string &domain, bool pushTimer) : _impl{new Section::Impl} {
+Section::Section(const std::string &name, const std::string &domain, bool pushTimer) : _impl{std::make_unique<Impl>()} {
     _impl->name       = einsums::trim_copy(name);
     _impl->push_timer = pushTimer;
 

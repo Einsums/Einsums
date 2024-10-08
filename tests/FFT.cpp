@@ -223,31 +223,33 @@ auto fft1d_1() -> void {
     }
 }
 
-TEST_CASE("fft1") {
-    fft1d_1<float, std::complex<float>>();
-}
-TEST_CASE("fft2") {
-    fft1d_1<double, std::complex<double>>();
-}
-TEST_CASE("fft3") {
-    fft1d_1<double, std::complex<double>, 10>();
-}
-TEST_CASE("fft4") {
-    fft1d_1<std::complex<float>, std::complex<float>>();
-}
-TEST_CASE("fft5") {
-    fft1d_1<std::complex<double>, std::complex<double>>();
+TEST_CASE("fft") {
+    SECTION("f, cf") {
+        fft1d_1<float, std::complex<float>>();
+    }
+    SECTION("d, cd") {
+        fft1d_1<double, std::complex<double>>();
+        fft1d_1<double, std::complex<double>, 10>();
+    }
+    SECTION("cf, cf") {
+        fft1d_1<std::complex<float>, std::complex<float>>();
+    }
+    SECTION("df, df") {
+        fft1d_1<std::complex<double>, std::complex<double>>();
+    }
 }
 
 TEST_CASE("ifft1") {
-    ifft1d_1<std::complex<float>, float>();
-}
-TEST_CASE("ifft2") {
-    ifft1d_1<std::complex<double>, double>();
-}
-TEST_CASE("ifft3") {
-    ifft1d_1<std::complex<float>, std::complex<float>>();
-}
-TEST_CASE("ifft4") {
-    ifft1d_1<std::complex<double>, std::complex<double>>();
+    SECTION("cf, f") {
+        ifft1d_1<std::complex<float>, float>();
+    }
+    SECTION("cd, d") {
+        ifft1d_1<std::complex<double>, double>();
+    }
+    SECTION("cf, cf") {
+        ifft1d_1<std::complex<float>, std::complex<float>>();
+    }
+    SECTION("cd, cd") {
+        ifft1d_1<std::complex<double>, std::complex<double>>();
+    }
 }

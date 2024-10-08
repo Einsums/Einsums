@@ -15,7 +15,7 @@ void initialize();
 void finalize();
 
 /*!
- * Performs matrix multiplication for general square matices of type double.
+ * Performs matrix multiplication for general square matrices of type double.
  */
 void sgemm(char transa, char transb, blas_int m, blas_int n, blas_int k, float alpha, const float *a, blas_int lda, const float *b,
            blas_int ldb, float beta, float *c, blas_int ldc);

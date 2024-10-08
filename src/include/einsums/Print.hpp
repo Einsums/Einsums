@@ -23,6 +23,10 @@
 #include <stdexcept>
 #include <string_view>
 
+#if defined(EINSUMS_HAVE_CPPTRACE)
+#    include <cpptrace/cpptrace.hpp>
+#endif
+
 namespace print {
 
 /** Adds spaces to the global indentation counter. */
@@ -50,7 +54,7 @@ void EINSUMS_EXPORT always_print_thread_id(bool onoff);
 void EINSUMS_EXPORT suppress_output(bool onoff);
 
 struct Indent {
-    Indent() { indent(); }
+     Indent() { indent(); }
     ~Indent() { deindent(); }
 };
 
@@ -282,6 +286,10 @@ inline void println_abort(const std::string_view &format, const Ts... ts) {
     std::string message = std::string("ERROR: ") + format.data();
     println(bg(fmt::color::red) | fg(fmt::color::white), message, ts...);
 
+#if defined(EINSUMS_HAVE_CPPTRACE)
+    cpptrace::generate_trace().print();
+#endif
+
     std::abort();
 }
 
@@ -289,6 +297,10 @@ template <typename... Ts>
 inline void println_warn(const std::string_view &format, const Ts... ts) {
     std::string message = std::string("WARNING: ") + format.data();
     println(bg(fmt::color::yellow) | fg(fmt::color::black), message, ts...);
+
+#if defined(EINSUMS_HAVE_CPPTRACE)
+    cpptrace::generate_trace(0, 3).print();
+#endif
 }
 
 template <typename... Ts>

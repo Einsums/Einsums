@@ -1,7 +1,11 @@
 name: einsums-dev
+channels:
+  - conda-forge
+  - nodefaults
 dependencies:
   # Development
   - cmake
+  - ccache
   - cxx-compiler
   - ninja
 
