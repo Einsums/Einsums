@@ -49,6 +49,7 @@ jobs:
             - pytest
             - numpy
             - pytest-cov
+            - coverage
           EOF
           if [[ "${{ runner.os }}" == "Linux" ]]; then
             :
@@ -126,7 +127,7 @@ jobs:
           else
             export PYTHONPATH=$PYTHONPATH:${{github.workspace}}/installed/lib:$CONDA_PREFIX/lib
           fi
-          pytest "${{github.workspace}}/tests" --cov
+          pytest --cov "${{github.workspace}}/tests"
       
       - name: Test timings
         working-directory: "${{github.workspace}}/build"
@@ -152,7 +153,6 @@ jobs:
         uses: codecov/codecov-action@v4
         with:
           directory: "${{github.workspace}}/installed"
-          file: .coverage
           flags: python
           token: ${{ secrets.CODECOV_TOKEN }}
 
