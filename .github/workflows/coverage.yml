@@ -127,14 +127,6 @@ jobs:
             export PYTHONPATH=$PYTHONPATH:${{github.workspace}}/installed/lib:$CONDA_PREFIX/lib
           fi
           pytest "${{github.workspace}}/tests" --cov
-    
-      - name: Upload C++ coverage to Codecov
-        uses: codecov/codecov-action@v4
-        with:
-          directory: "${{github.workspace}}/installed"
-          file: .coverage
-          flags: python
-          token: ${{ secrets.CODECOV_TOKEN }}
       
       - name: Test timings
         working-directory: "${{github.workspace}}/build"
@@ -154,5 +146,13 @@ jobs:
           directory: "${{github.workspace}}/build"
           file: coverage.info
           flags: cpp
+          token: ${{ secrets.CODECOV_TOKEN }}
+      
+      - name: Upload Python coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          directory: "${{github.workspace}}/installed"
+          file: .coverage
+          flags: python
           token: ${{ secrets.CODECOV_TOKEN }}
 
