@@ -15,6 +15,7 @@ add_executable(test-all
     OtherCatch.cpp
     ArithmeticTensor.cpp
     FunctionTensor.cpp
+    RuntimeTensors.cpp
 )
 
 set_target_properties(test-all PROPERTIES
