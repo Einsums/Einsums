@@ -94,7 +94,7 @@ jobs:
           mamba list
       
       - name: Pytest dependencies
-        run: pip3 install coverage pytest pytest-cov
+        run: pip3 install coverage pytest pytest-cov xcrun
   
       - name: Configure CMake
         run: |
