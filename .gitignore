@@ -50,6 +50,7 @@ _deps
 *.h5
 .cache
 *timings.txt*
+*.coverage
 
 # Visual Studio files
 .vs
