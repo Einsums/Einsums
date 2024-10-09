@@ -1,19 +1,28 @@
 #pragma once
 
-#include "einsums/python/RuntimeTensor.hpp"
+#include "einsums/RuntimeTensor.hpp"
 #include "einsums/utility/IndexUtils.hpp"
 
-#include <pybind11/attr.h>
-#include <pybind11/detail/common.h>
+#include <memory>
+#include <pybind11/complex.h>
 #include <pybind11/operators.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
 namespace einsums::python {
 
-// Forward declaration
+// Forward declarations
+template <typename T>
+class PyTensor;
+
+template <typename T>
+using SharedRuntimeTensor = std::shared_ptr<RuntimeTensor<T>>;
+
 template <typename T>
 class PyTensorView;
+
+template <typename T>
+using SharedRuntimeTensorView = std::shared_ptr<RuntimeTensorView<T>>;
 
 template <typename T>
 class PyTensorIterator {
@@ -80,12 +89,102 @@ class PyTensorIterator {
 };
 
 template <typename T>
-class PyTensor : RuntimeTensor<T> {
+class PyTensor : public RuntimeTensor<T> {
   public:
     using RuntimeTensor<T>::RuntimeTensor;
 
     PyTensor(const PyTensor<T> &) = default;
     PyTensor(const std::shared_ptr<PyTensor<T>> &other) : PyTensor(*other) {}
+
+    PyTensor(const pybind11::buffer &buffer) {
+        auto buffer_info = buffer.request();
+
+        this->_rank = buffer_info.ndim;
+        this->_dims.resize(this->_rank);
+        this->_strides.resize(this->_rank);
+
+        size_t new_size = 1;
+        bool   is_view  = false;
+        for (int i = buffer_info.ndim - 1; i >= 0; i--) {
+            this->_dims[i]    = buffer_info.shape[i];
+            this->_strides[i] = new_size;
+            new_size *= this->_dims[i];
+
+            if (this->_strides[i] != buffer_info.strides[i] / buffer_info.itemsize) {
+                is_view = true;
+            }
+        }
+
+        this->_data.resize(new_size);
+
+        if (buffer_info.item_type_is_equivalent_to<T>()) {
+            T *buffer_data = (T *)buffer_info.ptr;
+            if (is_view) {
+                EINSUMS_OMP_PARALLEL_FOR
+                for (size_t sentinel = 0; sentinel < this->size(); sentinel++) {
+                    size_t buffer_sent = 0, hold = sentinel;
+                    for (int i = 0; i < this->_rank; i++) {
+                        buffer_sent += (buffer_info.strides[i] / buffer_info.itemsize) * (hold / this->_strides[i]);
+                        hold %= this->_strides[i];
+                    }
+                    this->_data[sentinel] = buffer_data[buffer_sent];
+                }
+            } else {
+                std::memcpy(this->_data.data(), buffer_data, sizeof(T) * this->_data.size());
+            }
+        } else {
+            switch (buffer_info.format[0]) {
+            case 'b':
+                copy_and_cast_assign<char>(buffer_info, is_view);
+                break;
+            case 'B':
+                copy_and_cast_assign<unsigned char>(buffer_info, is_view);
+                break;
+            case 'h':
+                copy_and_cast_assign<short>(buffer_info, is_view);
+                break;
+            case 'H':
+                copy_and_cast_assign<unsigned short>(buffer_info, is_view);
+                break;
+            case 'i':
+                copy_and_cast_assign<int>(buffer_info, is_view);
+                break;
+            case 'I':
+                copy_and_cast_assign<unsigned int>(buffer_info, is_view);
+                break;
+            case 'q':
+                copy_and_cast_assign<long>(buffer_info, is_view);
+                break;
+            case 'Q':
+                copy_and_cast_assign<unsigned long>(buffer_info, is_view);
+                break;
+            case 'f':
+                copy_and_cast_assign<float>(buffer_info, is_view);
+                break;
+            case 'd':
+                copy_and_cast_assign<double>(buffer_info, is_view);
+                break;
+            case 'g':
+                copy_and_cast_assign<long double>(buffer_info, is_view);
+                break;
+            case 'Z':
+                switch (buffer_info.format[1]) {
+                case 'f':
+                    copy_and_cast_assign<std::complex<float>>(buffer_info, is_view);
+                    break;
+                case 'd':
+                    copy_and_cast_assign<std::complex<double>>(buffer_info, is_view);
+                    break;
+                case 'g':
+                    copy_and_cast_assign<std::complex<long double>>(buffer_info, is_view);
+                    break;
+                }
+                [[fallthrough]];
+            default:
+                throw EINSUMSEXCEPTION("Can not convert format descriptor " + buffer_info.format + " to " + type_name<T>() + "!");
+            }
+        }
+    }
 
     virtual ~PyTensor() = default;
 
@@ -93,56 +192,583 @@ class PyTensor : RuntimeTensor<T> {
 
     void set_all(T val) override { PYBIND11_OVERRIDE(void, RuntimeTensor<T>, set_all, val); }
 
-    pybind11::object subscript(const pybind11::tuple &args) override {
-        PYBIND11_OVERRIDE_NAME(pybind11::object, RuntimeTensor<T>, "__subscript", subscript, args);
+  private:
+    T &subscript_to_val(const pybind11::tuple &args) {
+        std::vector<size_t> pass(args.size());
+
+        for (int i = 0; i < args.size(); i++) {
+            const auto &arg = args[i];
+
+            pass[i] = pybind11::cast<size_t>(arg);
+        }
+        return this->operator()(pass);
     }
 
-    const pybind11::object subscript(const pybind11::tuple &args) const override {
-        PYBIND11_OVERRIDE_NAME(const pybind11::object, RuntimeTensor<T>, "__subscript", subscript, args);
+    const T &subscript_to_val(const pybind11::tuple &args) const {
+        std::vector<size_t> pass(args.size());
+
+        for (int i = 0; i < args.size(); i++) {
+            const auto &arg = args[i];
+
+            pass[i] = pybind11::cast<size_t>(arg);
+        }
+        return this->operator()(pass);
     }
 
-    RuntimeTensorView<T> assign_values(const pybind11::buffer &value, ptrdiff_t index) override {
-        PYBIND11_OVERRIDE_NAME(RuntimeTensorView<T>, RuntimeTensor<T>, "__assign", assign_values, value, index);
+    RuntimeTensorView<T> subscript_to_view(const pybind11::tuple &args) {
+        std::vector<Range> pass(args.size());
+
+        for (int i = 0; i < args.size(); i++) {
+            const auto &arg = args[i];
+
+            if (pybind11::isinstance<pybind11::int_>(arg)) {
+                pass[i] = Range{-1, pybind11::cast<size_t>(arg)};
+            } else if (pybind11::isinstance<pybind11::slice>(arg)) {
+                size_t start, stop, step, slice_length;
+                (pybind11::cast<pybind11::slice>(arg)).compute(this->dim(i), &start, &stop, &step, &slice_length);
+                if (step != 1) {
+                    throw EINSUMSEXCEPTION("Can not handle slices with step sizes other than 1!");
+                }
+                pass[i] = Range{start, stop};
+            }
+        }
+        return this->operator()(pass);
     }
 
-    pybind11::object assign_values(T value, ptrdiff_t index) override {
-        PYBIND11_OVERRIDE_NAME(pybind11::object, RuntimeTensor<T>, "__assign", assign_values, value, index);
+    RuntimeTensorView<T> subscript_to_view(const pybind11::tuple &args) const {
+        std::vector<Range> pass(args.size());
+
+        for (int i = 0; i < args.size(); i++) {
+            const auto &arg = args[i];
+
+            if (pybind11::isinstance<pybind11::int_>(arg)) {
+                pass[i] = Range{-1, pybind11::cast<size_t>(arg)};
+            } else if (pybind11::isinstance<pybind11::slice>(arg)) {
+                size_t start, stop, step, slice_length;
+                (pybind11::cast<pybind11::slice>(arg)).compute(this->dim(i), &start, &stop, &step, &slice_length);
+                if (step != 1) {
+                    throw EINSUMSEXCEPTION("Can not handle slices with step sizes other than 1!");
+                }
+                pass[i] = Range{start, stop};
+            }
+        }
+        return this->operator()(pass);
     }
 
-    RuntimeTensorView<T> assign_values(const pybind11::buffer &value, const pybind11::slice &index) override {
-        PYBIND11_OVERRIDE_NAME(RuntimeTensorView<T>, RuntimeTensor<T>, "__assign", assign_values, value, index);
+    void set_value_at(T value, const std::vector<size_t> &index) {
+        T &target = this->operator()(index);
+        target    = value;
+        return target;
     }
 
-    RuntimeTensorView<T> assign_values(T value, const pybind11::slice &index) override {
-        PYBIND11_OVERRIDE_NAME(RuntimeTensorView<T>, RuntimeTensor<T>, "__assign", assign_values, value, index);
+    void assign_to_view(const pybind11::buffer &view, const pybind11::tuple &args) {
+        PyTensorView<T> this_view = subscript_to_view(args);
+
+        this_view = view;
     }
 
-    RuntimeTensor<T> &operator=(const RuntimeTensor<T> &other) override {
-        PYBIND11_OVERRIDE(RuntimeTensor<T> &, RuntimeTensor<T>, operator=, other);
+    void assign_to_view(T value, const pybind11::tuple &args) {
+        auto this_view = subscript_to_view(args);
+
+        this_view = value;
     }
 
-    RuntimeTensor<T> &operator=(const RuntimeTensorView<T> &other) override {
-        PYBIND11_OVERRIDE(RuntimeTensor<T> &, RuntimeTensor<T>, operator=, other);
+  public:
+    pybind11::object subscript(const pybind11::tuple &args) {
+        pybind11::gil_scoped_acquire gil;
+        pybind11::function           override = pybind11::get_override(static_cast<RuntimeTensor<T> *>(this), "__subscript");
+
+        if (override) {
+            auto o = override(args);
+            if (pybind11 ::detail ::cast_is_temporary_value_reference<pybind11 ::object>::value) {
+                static pybind11 ::detail ::override_caster_t<pybind11 ::object> caster;
+                return pybind11 ::detail ::cast_ref<pybind11 ::object>(std ::move(o), caster);
+            }
+            return pybind11 ::detail ::cast_safe<pybind11 ::object>(std ::move(o));
+        } else {
+            if (args.size() < this->_rank) {
+                return pybind11::cast(subscript_to_view(args));
+            }
+            if (args.size() > this->_rank) {
+                throw EINSUMSEXCEPTION("Too many indices passed to tensor!");
+            }
+            for (int i = 0; i < args.size(); i++) {
+                const auto &arg = args[i];
+
+                if (pybind11::isinstance<pybind11::slice>(arg)) {
+                    return pybind11::cast(subscript_to_view(args));
+                }
+            }
+
+            return pybind11::cast(subscript_to_val(args));
+        }
     }
 
-    RuntimeTensor<T> &operator=(T other) override { PYBIND11_OVERRIDE(RuntimeTensor<T> &, RuntimeTensor<T>, operator=, other); }
+    pybind11::object assign_values(const pybind11::buffer &value, const pybind11::tuple &index) {
+        pybind11::gil_scoped_acquire gil;
+        pybind11::function           override = pybind11::get_override(static_cast<RuntimeTensor<T> *>(this), "__assign");
 
-    RuntimeTensor<T> &operator=(const pybind11::buffer &buffer) override {
-        PYBIND11_OVERRIDE(RuntimeTensor<T> &, RuntimeTensor<T>, operator=, buffer);
+        if (override) {
+            auto o = override(value, index);
+            if (pybind11 ::detail ::cast_is_temporary_value_reference<pybind11::object>::value) {
+                static pybind11 ::detail ::override_caster_t<pybind11::object> caster;
+                return pybind11 ::detail ::cast_ref<pybind11::object>(std ::move(o), caster);
+            }
+            return pybind11 ::detail ::cast_safe<pybind11::object>(std ::move(o));
+        } else {
+            if (index.size() < this->_rank) {
+                assign_to_view(value, index);
+                return pybind11::cast(subscript_to_view(index));
+            }
+            if (index.size() > this->_rank) {
+                throw EINSUMSEXCEPTION("Too many indices passed to tensor!");
+            }
+            for (int i = 0; i < index.size(); i++) {
+                const auto &arg = index[i];
+
+                if (pybind11::isinstance<pybind11::slice>(arg)) {
+                    assign_to_view(value, index);
+                    return subscript(index);
+                }
+            }
+            throw EINSUMSEXCEPTION("Can not assign buffer object to a single position!");
+        }
     }
 
-#define OPERATOR(OP)                                                                                                                       \
-    RuntimeTensor<T> &OP(const T &other) override { PYBIND11_OVERRIDE(RuntimeTensor<T> &, RuntimeTensor<T>, OP, other); }                  \
-    RuntimeTensor<T> &OP(const RuntimeTensor<T> &other) override { PYBIND11_OVERRIDE(RuntimeTensor<T> &, RuntimeTensor<T>, OP, other); }   \
-    RuntimeTensor<T> &OP(const RuntimeTensorView<T> &other) override {                                                                     \
-        PYBIND11_OVERRIDE(RuntimeTensor<T> &, RuntimeTensor<T>, OP, other);                                                                \
+    pybind11::object assign_values(T value, const pybind11::tuple &index) {
+        pybind11::gil_scoped_acquire gil;
+        pybind11::function           override = pybind11::get_override(static_cast<RuntimeTensor<T> *>(this), "__assign");
+
+        if (override) {
+            auto o = override(value, index);
+            if (pybind11 ::detail ::cast_is_temporary_value_reference<pybind11::object>::value) {
+                static pybind11 ::detail ::override_caster_t<pybind11::object> caster;
+                return pybind11 ::detail ::cast_ref<pybind11::object>(std ::move(o), caster);
+            }
+            return pybind11 ::detail ::cast_safe<pybind11::object>(std ::move(o));
+        } else {
+            if (index.size() < this->_rank) {
+                assign_to_view(value, index);
+                return pybind11::cast(subscript_to_view(index));
+            }
+            if (index.size() > this->_rank) {
+                throw EINSUMSEXCEPTION("Too many indices passed to tensor!");
+            }
+            for (int i = 0; i < index.size(); i++) {
+                const auto &arg = index[i];
+
+                if (pybind11::isinstance<pybind11::slice>(arg)) {
+                    assign_to_view(value, index);
+                    return subscript(index);
+                }
+            }
+
+            T &target = subscript_to_val(index);
+            target    = value;
+
+            return subscript(index);
+        }
+    }
+
+    RuntimeTensorView<T> subscript(const pybind11::slice &arg) {
+        pybind11::gil_scoped_acquire gil;
+        pybind11::function           override = pybind11::get_override(static_cast<RuntimeTensor<T> *>(this), "__subscript");
+
+        if (override) {
+            auto o = override(arg);
+            if (pybind11 ::detail ::cast_is_temporary_value_reference<RuntimeTensorView<T>>::value) {
+                static pybind11 ::detail ::override_caster_t<RuntimeTensorView<T>> caster;
+                return pybind11 ::detail ::cast_ref<RuntimeTensorView<T>>(std ::move(o), caster);
+            }
+            return pybind11 ::detail ::cast_safe<RuntimeTensorView<T>>(std ::move(o));
+        } else {
+            size_t start, end, step, length;
+
+            pybind11::cast<pybind11::slice>(arg).compute(this->_dims[0], &start, &end, &step, &length);
+
+            if (step != 1) {
+                throw EINSUMSEXCEPTION("Can not handle slices with steps not equal to 1!");
+            }
+
+            std::vector<Range> pass{Range{start, end}};
+
+            return this->operator()(pass);
+        }
+    }
+
+    RuntimeTensorView<T> assign_values(const pybind11::buffer &value, const pybind11::slice &index) {
+        pybind11::gil_scoped_acquire gil;
+        pybind11::function           override = pybind11::get_override(static_cast<RuntimeTensor<T> *>(this), "__assign");
+
+        if (override) {
+            auto o = override(value, index);
+            if (pybind11 ::detail ::cast_is_temporary_value_reference<RuntimeTensorView<T>>::value) {
+                static pybind11 ::detail ::override_caster_t<RuntimeTensorView<T>> caster;
+                return pybind11 ::detail ::cast_ref<RuntimeTensorView<T>>(std ::move(o), caster);
+            }
+            return pybind11 ::detail ::cast_safe<RuntimeTensorView<T>>(std ::move(o));
+        } else {
+            size_t start, end, step, length;
+
+            pybind11::cast<pybind11::slice>(index).compute(this->_dims[0], &start, &end, &step, &length);
+
+            if (step != 1) {
+                throw EINSUMSEXCEPTION("Can not handle slices with steps not equal to 1!");
+            }
+
+            std::vector<Range> pass{Range{start, end}};
+
+            return this->operator()(pass) = value;
+        }
+    }
+
+    RuntimeTensorView<T> assign_values(T value, const pybind11::slice &index) {
+        pybind11::gil_scoped_acquire gil;
+        pybind11::function           override = pybind11::get_override(static_cast<RuntimeTensor<T> *>(this), "__assign");
+
+        if (override) {
+            auto o = override(value, index);
+            if (pybind11 ::detail ::cast_is_temporary_value_reference<RuntimeTensorView<T>>::value) {
+                static pybind11 ::detail ::override_caster_t<RuntimeTensorView<T>> caster;
+                return pybind11 ::detail ::cast_ref<RuntimeTensorView<T>>(std ::move(o), caster);
+            }
+            return pybind11 ::detail ::cast_safe<RuntimeTensorView<T>>(std ::move(o));
+        } else {
+            size_t start, end, step, length;
+
+            pybind11::cast<pybind11::slice>(index).compute(this->_dims[0], &start, &end, &step, &length);
+
+            if (step != 1) {
+                throw EINSUMSEXCEPTION("Can not handle slices with steps not equal to 1!");
+            }
+
+            std::vector<Range> pass{Range{start, end}};
+
+            return this->operator()(pass) = value;
+        }
+    }
+
+    pybind11::object subscript(ptrdiff_t index) {
+        pybind11::gil_scoped_acquire gil;
+        pybind11::function           override = pybind11::get_override(static_cast<RuntimeTensor<T> *>(this), "__subscript");
+
+        if (override) {
+            auto o = override(index);
+            if (pybind11 ::detail ::cast_is_temporary_value_reference<pybind11::object>::value) {
+                static pybind11 ::detail ::override_caster_t<pybind11::object> caster;
+                return pybind11 ::detail ::cast_ref<pybind11::object>(std ::move(o), caster);
+            }
+            return pybind11 ::detail ::cast_safe<pybind11::object>(std ::move(o));
+        } else {
+            if (this->_rank == 1) {
+                return pybind11::cast(this->operator()(index));
+            } else {
+                return pybind11::cast(this->operator()(std::vector<Range>{Range{-1, index}}));
+            }
+        }
+    }
+
+    RuntimeTensorView<T> assign_values(const pybind11::buffer &value, ptrdiff_t index) {
+        pybind11::gil_scoped_acquire gil;
+        pybind11::function           override = pybind11::get_override(static_cast<RuntimeTensor<T> *>(this), "__assign");
+
+        if (override) {
+            auto o = override(value, index);
+            if (pybind11 ::detail ::cast_is_temporary_value_reference<RuntimeTensorView<T>>::value) {
+                static pybind11 ::detail ::override_caster_t<RuntimeTensorView<T>> caster;
+                return pybind11 ::detail ::cast_ref<RuntimeTensorView<T>>(std ::move(o), caster);
+            }
+            return pybind11 ::detail ::cast_safe<RuntimeTensorView<T>>(std ::move(o));
+        } else {
+            if (this->_rank <= 1) {
+                throw EINSUMSEXCEPTION("Can not assign buffer to a single position!");
+            }
+
+            return this->operator()(std::vector<Range>{Range{-1, index}}) = value;
+        }
+    }
+
+    pybind11::object assign_values(T value, ptrdiff_t index) {
+        pybind11::gil_scoped_acquire gil;
+        pybind11::function           override = pybind11::get_override(static_cast<RuntimeTensor<T> *>(this), "__assign");
+
+        if (override) {
+            auto o = override(value, index);
+            if (pybind11 ::detail ::cast_is_temporary_value_reference<pybind11::object>::value) {
+                static pybind11 ::detail ::override_caster_t<pybind11::object> caster;
+                return pybind11 ::detail ::cast_ref<pybind11::object>(std ::move(o), caster);
+            }
+            return pybind11 ::detail ::cast_safe<pybind11::object>(std ::move(o));
+        } else {
+            if (this->_rank <= 1) {
+                T &target = this->operator()({index});
+                target    = value;
+                return pybind11::cast(target);
+            }
+
+            auto view = this->operator()(std::vector<Range>{Range{-1, index}});
+            view      = value;
+            return pybind11::cast(view);
+        }
+    }
+
+    RuntimeTensor<T> &operator=(const pybind11::buffer &buffer) {
+        auto buffer_info = buffer.request();
+
+        if (this->rank() != buffer_info.ndim) {
+            this->_rank = buffer_info.ndim;
+            this->_dims.resize(this->_rank);
+            this->_strides.resize(this->_rank);
+        }
+
+        size_t new_size = 1;
+        bool   is_view  = false;
+        for (int i = buffer_info.ndim - 1; i >= 0; i--) {
+            this->_dims[i]    = buffer_info.shape[i];
+            this->_strides[i] = new_size;
+            new_size *= this->_dims[i];
+
+            if (this->_strides[i] != buffer_info.strides[i] / buffer_info.itemsize) {
+                is_view = true;
+            }
+        }
+
+        if (new_size != this->_data.size()) {
+            this->_data.resize(new_size);
+        }
+
+        if (buffer_info.item_type_is_equivalent_to<T>()) {
+            T *buffer_data = (T *)buffer_info.ptr;
+            if (is_view) {
+                EINSUMS_OMP_PARALLEL_FOR
+                for (size_t sentinel = 0; sentinel < this->size(); sentinel++) {
+                    size_t buffer_sent = 0, hold = sentinel;
+                    for (int i = 0; i < this->_rank; i++) {
+                        buffer_sent += (buffer_info.strides[i] / buffer_info.itemsize) * (hold / this->_strides[i]);
+                        hold %= this->_strides[i];
+                    }
+                    this->_data[sentinel] = buffer_data[buffer_sent];
+                }
+            } else {
+                std::memcpy(this->_data.data(), buffer_data, sizeof(T) * this->_data.size());
+            }
+        } else {
+            switch (buffer_info.format[0]) {
+            case 'b':
+                copy_and_cast_assign<char>(buffer_info, is_view);
+                break;
+            case 'B':
+                copy_and_cast_assign<unsigned char>(buffer_info, is_view);
+                break;
+            case 'h':
+                copy_and_cast_assign<short>(buffer_info, is_view);
+                break;
+            case 'H':
+                copy_and_cast_assign<unsigned short>(buffer_info, is_view);
+                break;
+            case 'i':
+                copy_and_cast_assign<int>(buffer_info, is_view);
+                break;
+            case 'I':
+                copy_and_cast_assign<unsigned int>(buffer_info, is_view);
+                break;
+            case 'q':
+                copy_and_cast_assign<long>(buffer_info, is_view);
+                break;
+            case 'Q':
+                copy_and_cast_assign<unsigned long>(buffer_info, is_view);
+                break;
+            case 'f':
+                copy_and_cast_assign<float>(buffer_info, is_view);
+                break;
+            case 'd':
+                copy_and_cast_assign<double>(buffer_info, is_view);
+                break;
+            case 'g':
+                copy_and_cast_assign<long double>(buffer_info, is_view);
+                break;
+            case 'Z':
+                switch (buffer_info.format[1]) {
+                case 'f':
+                    copy_and_cast_assign<std::complex<float>>(buffer_info, is_view);
+                    break;
+                case 'd':
+                    copy_and_cast_assign<std::complex<double>>(buffer_info, is_view);
+                    break;
+                case 'g':
+                    copy_and_cast_assign<std::complex<long double>>(buffer_info, is_view);
+                    break;
+                }
+                [[fallthrough]];
+            default:
+                throw EINSUMSEXCEPTION("Can not convert format descriptor " + buffer_info.format + " to " + type_name<T>() + "!");
+            }
+        }
+        return *this;
+    }
+
+  private:
+#define COPY_CAST_OP(OP, NAME)                                                                                                             \
+    template <typename TOther>                                                                                                             \
+    void copy_and_cast_##NAME(const pybind11::buffer_info &buffer_info, bool is_view) {                                                    \
+        TOther *buffer_data = (TOther *)buffer_info.ptr;                                                                                   \
+        if (is_view) {                                                                                                                     \
+            EINSUMS_OMP_PARALLEL_FOR                                                                                                       \
+            for (size_t sentinel = 0; sentinel < this->size(); sentinel++) {                                                               \
+                size_t buffer_sent = 0, hold = sentinel;                                                                                   \
+                for (int i = 0; i < this->_rank; i++) {                                                                                    \
+                    buffer_sent += (buffer_info.strides[i] / buffer_info.itemsize) * (hold / this->_strides[i]);                           \
+                    hold %= this->_strides[i];                                                                                             \
+                }                                                                                                                          \
+                if constexpr (IsComplexV<T> && !IsComplexV<TOther> && !std::is_same_v<RemoveComplexT<T>, TOther>) {                        \
+                    this->_data[sentinel] OP(T)(RemoveComplexT<T>) buffer_data[buffer_sent];                                               \
+                } else if constexpr (!IsComplexV<T> && IsComplexV<TOther>) {                                                               \
+                    this->_data[sentinel] OP(T) buffer_data[buffer_sent].real();                                                           \
+                } else if constexpr (IsComplexV<T> && IsComplexV<TOther>) {                                                                \
+                    this->_data[sentinel] OP(T) buffer_data[buffer_sent];                                                                  \
+                } else {                                                                                                                   \
+                    this->_data[sentinel] OP(T) buffer_data[buffer_sent];                                                                  \
+                }                                                                                                                          \
+            }                                                                                                                              \
+        } else {                                                                                                                           \
+            EINSUMS_OMP_PARALLEL_FOR                                                                                                       \
+            for (size_t sentinel = 0; sentinel < this->size(); sentinel++) {                                                               \
+                if constexpr (IsComplexV<T> && !IsComplexV<TOther> && !std::is_same_v<RemoveComplexT<T>, TOther>) {                        \
+                    this->_data[sentinel] OP(T)(RemoveComplexT<T>) buffer_data[sentinel];                                                  \
+                } else if constexpr (!IsComplexV<T> && IsComplexV<TOther>) {                                                               \
+                    this->_data[sentinel] OP(T) buffer_data[sentinel].real();                                                              \
+                } else if constexpr (IsComplexV<T> && IsComplexV<TOther>) {                                                                \
+                    this->_data[sentinel] OP(T) buffer_data[sentinel];                                                                     \
+                } else {                                                                                                                   \
+                    this->_data[sentinel] OP(T) buffer_data[sentinel];                                                                     \
+                }                                                                                                                          \
+            }                                                                                                                              \
+        }                                                                                                                                  \
+    }
+
+    COPY_CAST_OP(=, assign)
+    COPY_CAST_OP(+=, add)
+    COPY_CAST_OP(-=, sub)
+    COPY_CAST_OP(*=, mult)
+    COPY_CAST_OP(/=, div)
+#undef COPY_CAST_OP
+
+  public:
+#define OPERATOR(OP, NAME, OPNAME)                                                                                                         \
+    RuntimeTensor<T> &operator OP(const T & other) override { PYBIND11_OVERRIDE(RuntimeTensor<T> &, RuntimeTensor<T>, OPNAME, other); }    \
+    RuntimeTensor<T> &operator OP(const RuntimeTensor<T> &other) override {                                                                \
+        PYBIND11_OVERRIDE(RuntimeTensor<T> &, RuntimeTensor<T>, OPNAME, other);                                                            \
     }                                                                                                                                      \
-    RuntimeTensor<T> &OP(const pybind11::buffer &buffer) override { PYBIND11_OVERRIDE(RuntimeTensor<T> &, RuntimeTensor<T>, OP, buffer); }
+    RuntimeTensor<T> &operator OP(const RuntimeTensorView<T> &other) override {                                                            \
+        PYBIND11_OVERRIDE(RuntimeTensor<T> &, RuntimeTensor<T>, OPNAME, other);                                                            \
+    }                                                                                                                                      \
+    RuntimeTensor<T> &operator OP(const pybind11::buffer & buffer) {                                                                       \
+        pybind11::gil_scoped_acquire gil;                                                                                                  \
+        pybind11::function           override = pybind11::get_override(static_cast<PyTensor<T> *>(this), #OPNAME);                         \
+                                                                                                                                           \
+        if (override) {                                                                                                                    \
+            auto o = override(buffer);                                                                                                     \
+            if (pybind11 ::detail ::cast_is_temporary_value_reference<RuntimeTensor<T> &>::value) {                                        \
+                static pybind11 ::detail ::override_caster_t<RuntimeTensor<T> &> caster;                                                   \
+                return pybind11 ::detail ::cast_ref<RuntimeTensor<T> &>(std ::move(o), caster);                                            \
+            }                                                                                                                              \
+            return pybind11 ::detail ::cast_safe<RuntimeTensor<T> &>(std ::move(o));                                                       \
+        } else {                                                                                                                           \
+            auto buffer_info = buffer.request();                                                                                           \
+                                                                                                                                           \
+            if (this->rank() != buffer_info.ndim) {                                                                                        \
+                throw EINSUMSEXCEPTION("Can not perform " #OP " with buffer object with different rank!");                                 \
+            }                                                                                                                              \
+                                                                                                                                           \
+            bool is_view = false;                                                                                                          \
+            for (int i = buffer_info.ndim - 1; i >= 0; i--) {                                                                              \
+                if (this->_dims[i] != buffer_info.shape[i]) {                                                                              \
+                    throw EINSUMSEXCEPTION("Can not perform " #OP " with buffer object with different dimensions!");                       \
+                }                                                                                                                          \
+                                                                                                                                           \
+                if (this->_strides[i] != buffer_info.strides[i] / buffer_info.itemsize) {                                                  \
+                    is_view = true;                                                                                                        \
+                }                                                                                                                          \
+            }                                                                                                                              \
+                                                                                                                                           \
+            if (buffer_info.item_type_is_equivalent_to<T>()) {                                                                             \
+                T *buffer_data = (T *)buffer_info.ptr;                                                                                     \
+                if (is_view) {                                                                                                             \
+                    EINSUMS_OMP_PARALLEL_FOR                                                                                               \
+                    for (size_t sentinel = 0; sentinel < this->size(); sentinel++) {                                                       \
+                        size_t buffer_sent = 0, hold = sentinel;                                                                           \
+                        for (int i = 0; i < this->_rank; i++) {                                                                            \
+                            buffer_sent += (buffer_info.strides[i] / buffer_info.itemsize) * (hold / this->_strides[i]);                   \
+                            hold %= this->_strides[i];                                                                                     \
+                        }                                                                                                                  \
+                        this->_data[sentinel] OP buffer_data[buffer_sent];                                                                 \
+                    }                                                                                                                      \
+                } else {                                                                                                                   \
+                    EINSUMS_OMP_PARALLEL_FOR                                                                                               \
+                    for (size_t sentinel = 0; sentinel < this->size(); sentinel++) {                                                       \
+                        this->_data[sentinel] OP buffer_data[sentinel];                                                                    \
+                    }                                                                                                                      \
+                }                                                                                                                          \
+            } else {                                                                                                                       \
+                switch (buffer_info.format[0]) {                                                                                           \
+                case 'b':                                                                                                                  \
+                    copy_and_cast_##NAME<char>(buffer_info, is_view);                                                                      \
+                    break;                                                                                                                 \
+                case 'B':                                                                                                                  \
+                    copy_and_cast_##NAME<unsigned char>(buffer_info, is_view);                                                             \
+                    break;                                                                                                                 \
+                case 'h':                                                                                                                  \
+                    copy_and_cast_##NAME<short>(buffer_info, is_view);                                                                     \
+                    break;                                                                                                                 \
+                case 'H':                                                                                                                  \
+                    copy_and_cast_##NAME<unsigned short>(buffer_info, is_view);                                                            \
+                    break;                                                                                                                 \
+                case 'i':                                                                                                                  \
+                    copy_and_cast_##NAME<int>(buffer_info, is_view);                                                                       \
+                    break;                                                                                                                 \
+                case 'I':                                                                                                                  \
+                    copy_and_cast_##NAME<unsigned int>(buffer_info, is_view);                                                              \
+                    break;                                                                                                                 \
+                case 'q':                                                                                                                  \
+                    copy_and_cast_##NAME<long>(buffer_info, is_view);                                                                      \
+                    break;                                                                                                                 \
+                case 'Q':                                                                                                                  \
+                    copy_and_cast_##NAME<unsigned long>(buffer_info, is_view);                                                             \
+                    break;                                                                                                                 \
+                case 'f':                                                                                                                  \
+                    copy_and_cast_##NAME<float>(buffer_info, is_view);                                                                     \
+                    break;                                                                                                                 \
+                case 'd':                                                                                                                  \
+                    copy_and_cast_##NAME<double>(buffer_info, is_view);                                                                    \
+                    break;                                                                                                                 \
+                case 'g':                                                                                                                  \
+                    copy_and_cast_##NAME<long double>(buffer_info, is_view);                                                               \
+                    break;                                                                                                                 \
+                case 'Z':                                                                                                                  \
+                    switch (buffer_info.format[1]) {                                                                                       \
+                    case 'f':                                                                                                              \
+                        copy_and_cast_##NAME<std::complex<float>>(buffer_info, is_view);                                                   \
+                        break;                                                                                                             \
+                    case 'd':                                                                                                              \
+                        copy_and_cast_##NAME<std::complex<double>>(buffer_info, is_view);                                                  \
+                        break;                                                                                                             \
+                    case 'g':                                                                                                              \
+                        copy_and_cast_##NAME<std::complex<long double>>(buffer_info, is_view);                                             \
+                        break;                                                                                                             \
+                    }                                                                                                                      \
+                    [[fallthrough]];                                                                                                       \
+                default:                                                                                                                   \
+                    throw EINSUMSEXCEPTION("Can not convert format descriptor " + buffer_info.format + " to " + type_name<T>() + "!");     \
+                }                                                                                                                          \
+            }                                                                                                                              \
+            return *this;                                                                                                                  \
+        }                                                                                                                                  \
+    }
 
-    OPERATOR(operator*=)
-    OPERATOR(operator/=)
-    OPERATOR(operator+=)
-    OPERATOR(operator-=)
+    OPERATOR(*=, mult, operator*=)
+    OPERATOR(/=, div, operator/=)
+    OPERATOR(+=, add, operator+=)
+    OPERATOR(-=, sub, operator-=)
 
 #undef OPERATOR
 
@@ -150,7 +776,7 @@ class PyTensor : RuntimeTensor<T> {
 
     std::vector<size_t> dims() const override { PYBIND11_OVERRIDE(std::vector<size_t>, RuntimeTensor<T>, dims); }
 
-    const typename RuntimeTensor<T>::Vector &vector_data() const override {
+    const typename PyTensor<T>::Vector &vector_data() const override {
         PYBIND11_OVERRIDE(const typename RuntimeTensor<T>::Vector &, RuntimeTensor<T>, vector_data);
     }
 
@@ -171,15 +797,39 @@ class PyTensor : RuntimeTensor<T> {
     void set_name(const std::string &new_name) override { PYBIND11_OVERRIDE(void, RuntimeTensor<T>, set_name, new_name); }
 
     size_t rank() const override { PYBIND11_OVERRIDE(size_t, RuntimeTensor<T>, rank); }
-}; // namespace einsums::python
+};
 
 template <typename T>
-class PyTensorView : RuntimeTensorView<T> {
+class PyTensorView : public RuntimeTensorView<T> {
   public:
     using RuntimeTensorView<T>::RuntimeTensorView;
 
     PyTensorView(const PyTensorView<T> &) = default;
     PyTensorView(const RuntimeTensorView<T> &copy) : RuntimeTensorView<T>(copy) {}
+
+    PyTensorView(pybind11::buffer &buffer) {
+        pybind11::buffer_info buffer_info = buffer.request(true);
+
+        if (buffer_info.item_type_is_equivalent_to<T>()) {
+            this->_data = (T *)buffer_info.ptr;
+        } else {
+            throw EINSUMSEXCEPTION("Can not create RuntimeTensorView from buffer whose type does not match!");
+        }
+
+        this->_rank = buffer_info.ndim;
+        this->_dims.resize(this->_rank);
+        this->_strides.resize(this->_rank);
+        this->_index_strides.resize(this->_rank);
+        this->_size       = 1;
+        this->_alloc_size = buffer_info.shape[0] * buffer_info.strides[0];
+
+        for (int i = this->_rank - 1; i >= 0; i--) {
+            this->_strides[i]       = buffer_info.strides[i] / buffer_info.itemsize;
+            this->_dims[i]          = buffer_info.shape[i];
+            this->_index_strides[i] = this->_size;
+            this->_size *= this->_dims[i];
+        }
+    }
 
     virtual ~PyTensorView() = default;
 
@@ -187,56 +837,544 @@ class PyTensorView : RuntimeTensorView<T> {
 
     void set_all(T val) override { PYBIND11_OVERRIDE(void, RuntimeTensorView<T>, set_all, val); }
 
-    pybind11::object subscript(const pybind11::tuple &args) override {
-        PYBIND11_OVERRIDE_NAME(pybind11::object, RuntimeTensorView<T>, "__subscript", subscript, args);
+  private:
+    T &subscript_to_val(const pybind11::tuple &args) {
+        std::vector<size_t> pass(args.size());
+
+        for (int i = 0; i < args.size(); i++) {
+            const auto &arg = args[i];
+
+            pass[i] = pybind11::cast<size_t>(arg);
+        }
+        return this->operator()(pass);
     }
 
-    const pybind11::object subscript(const pybind11::tuple &args) const override {
-        PYBIND11_OVERRIDE_NAME(const pybind11::object, RuntimeTensorView<T>, "__subscript", subscript, args);
+    const T &subscript_to_val(const pybind11::tuple &args) const {
+        std::vector<size_t> pass(args.size());
+
+        for (int i = 0; i < args.size(); i++) {
+            const auto &arg = args[i];
+
+            pass[i] = pybind11::cast<size_t>(arg);
+        }
+        return this->operator()(pass);
     }
 
-    RuntimeTensorView<T> assign_values(const pybind11::buffer &value, int index) override {
-        PYBIND11_OVERRIDE_NAME(RuntimeTensorView<T>, RuntimeTensorView<T>, "__assign", assign_values, value, index);
+    RuntimeTensorView<T> subscript_to_view(const pybind11::tuple &args) {
+        std::vector<Range> pass(args.size());
+
+        for (int i = 0; i < args.size(); i++) {
+            const auto &arg = args[i];
+
+            if (pybind11::isinstance<pybind11::int_>(arg)) {
+                pass[i] = Range{-1, pybind11::cast<size_t>(arg)};
+            } else if (pybind11::isinstance<pybind11::slice>(arg)) {
+                size_t start, stop, step, slice_length;
+                (pybind11::cast<pybind11::slice>(arg)).compute(this->dim(i), &start, &stop, &step, &slice_length);
+                if (step != 1) {
+                    throw EINSUMSEXCEPTION("Can not handle slices with step sizes other than 1!");
+                }
+                pass[i] = Range{start, stop};
+            }
+        }
+        return this->operator()(pass);
     }
 
-    pybind11::object assign_values(T value, int index) override {
-        PYBIND11_OVERRIDE_NAME(pybind11::object, RuntimeTensorView<T>, "__assign", assign_values, value, index);
+    RuntimeTensorView<T> subscript_to_view(const pybind11::tuple &args) const {
+        std::vector<Range> pass(args.size());
+
+        for (int i = 0; i < args.size(); i++) {
+            const auto &arg = args[i];
+
+            if (pybind11::isinstance<pybind11::int_>(arg)) {
+                pass[i] = Range{-1, pybind11::cast<size_t>(arg)};
+            } else if (pybind11::isinstance<pybind11::slice>(arg)) {
+                size_t start, stop, step, slice_length;
+                (pybind11::cast<pybind11::slice>(arg)).compute(this->dim(i), &start, &stop, &step, &slice_length);
+                if (step != 1) {
+                    throw EINSUMSEXCEPTION("Can not handle slices with step sizes other than 1!");
+                }
+                pass[i] = Range{start, stop};
+            }
+        }
+        return this->operator()(pass);
     }
 
-    RuntimeTensorView<T> assign_values(const pybind11::buffer &value, const pybind11::slice &index) override {
-        PYBIND11_OVERRIDE_NAME(RuntimeTensorView<T>, RuntimeTensorView<T>, "__assign", assign_values, value, index);
+    void set_value_at(T value, const std::vector<size_t> &index) {
+        T &target = this->operator()(index);
+        target    = value;
+        return target;
     }
 
-    RuntimeTensorView<T> assign_values(T value, const pybind11::slice &index) override {
-        PYBIND11_OVERRIDE_NAME(RuntimeTensorView<T>, RuntimeTensorView<T>, "__assign", assign_values, value, index);
+    void assign_to_view(const pybind11::buffer &view, const pybind11::tuple &args) {
+        PyTensorView<T> this_view = subscript_to_view(args);
+
+        this_view = view;
     }
 
-    RuntimeTensorView<T> &operator=(const RuntimeTensor<T> &other) override {
-        PYBIND11_OVERRIDE(RuntimeTensorView<T> &, RuntimeTensorView<T>, operator=, other);
+    void assign_to_view(T value, const pybind11::tuple &args) {
+        auto this_view = subscript_to_view(args);
+
+        this_view = value;
     }
 
-    RuntimeTensorView<T> &operator=(const RuntimeTensorView<T> &other) override {
-        PYBIND11_OVERRIDE(RuntimeTensorView<T> &, RuntimeTensorView<T>, operator=, other);
+  public:
+    pybind11::object subscript(const pybind11::tuple &args) {
+        pybind11::gil_scoped_acquire gil;
+        pybind11::function           override = pybind11::get_override(static_cast<RuntimeTensorView<T> *>(this), "__subscript");
+
+        if (override) {
+            auto o = override(args);
+            if (pybind11 ::detail ::cast_is_temporary_value_reference<pybind11 ::object>::value) {
+                static pybind11 ::detail ::override_caster_t<pybind11 ::object> caster;
+                return pybind11 ::detail ::cast_ref<pybind11 ::object>(std ::move(o), caster);
+            }
+            return pybind11 ::detail ::cast_safe<pybind11 ::object>(std ::move(o));
+        } else {
+            if (args.size() < this->_rank) {
+                return pybind11::cast(subscript_to_view(args));
+            }
+            if (args.size() > this->_rank) {
+                throw EINSUMSEXCEPTION("Too many indices passed to tensor!");
+            }
+            for (int i = 0; i < args.size(); i++) {
+                const auto &arg = args[i];
+
+                if (pybind11::isinstance<pybind11::slice>(arg)) {
+                    return pybind11::cast(subscript_to_view(args));
+                }
+            }
+
+            return pybind11::cast(subscript_to_val(args));
+        }
     }
 
-    RuntimeTensorView<T> &operator=(T other) override { PYBIND11_OVERRIDE(RuntimeTensorView<T> &, RuntimeTensorView<T>, operator=, other); }
+    pybind11::object assign_values(const pybind11::buffer &value, const pybind11::tuple &index) {
+        pybind11::gil_scoped_acquire gil;
+        pybind11::function           override = pybind11::get_override(static_cast<RuntimeTensorView<T> *>(this), "__assign");
 
-#define OPERATOR(OP)                                                                                                                       \
-    RuntimeTensorView<T> &OP(const T &other) override { PYBIND11_OVERRIDE(RuntimeTensorView<T> &, RuntimeTensorView<T>, OP, other); }      \
-    RuntimeTensorView<T> &OP(const RuntimeTensor<T> &other) override {                                                                     \
-        PYBIND11_OVERRIDE(RuntimeTensorView<T> &, RuntimeTensorView<T>, OP, other);                                                        \
+        if (override) {
+            auto o = override(value, index);
+            if (pybind11 ::detail ::cast_is_temporary_value_reference<pybind11::object>::value) {
+                static pybind11 ::detail ::override_caster_t<pybind11::object> caster;
+                return pybind11 ::detail ::cast_ref<pybind11::object>(std ::move(o), caster);
+            }
+            return pybind11 ::detail ::cast_safe<pybind11::object>(std ::move(o));
+        } else {
+            if (index.size() < this->_rank) {
+                assign_to_view(value, index);
+                return pybind11::cast(*this);
+            }
+            if (index.size() > this->_rank) {
+                throw EINSUMSEXCEPTION("Too many indices passed to tensor!");
+            }
+            for (int i = 0; i < index.size(); i++) {
+                const auto &arg = index[i];
+
+                if (pybind11::isinstance<pybind11::slice>(arg)) {
+                    assign_to_view(value, index);
+                    return subscript(index);
+                }
+            }
+            throw EINSUMSEXCEPTION("Can not assign buffer object to a single position!");
+        }
+    }
+
+    pybind11::object assign_values(T value, const pybind11::tuple &index) {
+        pybind11::gil_scoped_acquire gil;
+        pybind11::function           override = pybind11::get_override(static_cast<RuntimeTensorView<T> *>(this), "__assign");
+
+        if (override) {
+            auto o = override(value, index);
+            if (pybind11 ::detail ::cast_is_temporary_value_reference<pybind11::object>::value) {
+                static pybind11 ::detail ::override_caster_t<pybind11::object> caster;
+                return pybind11 ::detail ::cast_ref<pybind11::object>(std ::move(o), caster);
+            }
+            return pybind11 ::detail ::cast_safe<pybind11::object>(std ::move(o));
+        } else {
+            if (index.size() < this->_rank) {
+                assign_to_view(value, index);
+                return pybind11::cast(*this);
+            }
+            if (index.size() > this->_rank) {
+                throw EINSUMSEXCEPTION("Too many indices passed to tensor!");
+            }
+            for (int i = 0; i < index.size(); i++) {
+                const auto &arg = index[i];
+
+                if (pybind11::isinstance<pybind11::slice>(arg)) {
+                    assign_to_view(value, index);
+                    return subscript(index);
+                }
+            }
+
+            T &target = subscript_to_val(index);
+            target    = value;
+
+            return subscript(index);
+        }
+    }
+
+    RuntimeTensorView<T> subscript(const pybind11::slice &arg) {
+        pybind11::gil_scoped_acquire gil;
+        pybind11::function           override = pybind11::get_override(static_cast<RuntimeTensorView<T> *>(this), "__subscript");
+
+        if (override) {
+            auto o = override(arg);
+            if (pybind11 ::detail ::cast_is_temporary_value_reference<RuntimeTensorView<T>>::value) {
+                static pybind11 ::detail ::override_caster_t<RuntimeTensorView<T>> caster;
+                return pybind11 ::detail ::cast_ref<RuntimeTensorView<T>>(std ::move(o), caster);
+            }
+            return pybind11 ::detail ::cast_safe<RuntimeTensorView<T>>(std ::move(o));
+        } else {
+            size_t start, end, step, length;
+
+            pybind11::cast<pybind11::slice>(arg).compute(this->_dims[0], &start, &end, &step, &length);
+
+            if (step != 1) {
+                throw EINSUMSEXCEPTION("Can not handle slices with steps not equal to 1!");
+            }
+
+            std::vector<Range> pass{Range{start, end}};
+
+            return this->operator()(pass);
+        }
+    }
+
+    RuntimeTensorView<T> assign_values(const pybind11::buffer &value, const pybind11::slice &index) {
+        pybind11::gil_scoped_acquire gil;
+        pybind11::function           override = pybind11::get_override(static_cast<RuntimeTensorView<T> *>(this), "__assign");
+
+        if (override) {
+            auto o = override(value, index);
+            if (pybind11 ::detail ::cast_is_temporary_value_reference<RuntimeTensorView<T>>::value) {
+                static pybind11 ::detail ::override_caster_t<RuntimeTensorView<T>> caster;
+                return pybind11 ::detail ::cast_ref<RuntimeTensorView<T>>(std ::move(o), caster);
+            }
+            return pybind11 ::detail ::cast_safe<RuntimeTensorView<T>>(std ::move(o));
+        } else {
+            size_t start, end, step, length;
+
+            pybind11::cast<pybind11::slice>(index).compute(this->_dims[0], &start, &end, &step, &length);
+
+            if (step != 1) {
+                throw EINSUMSEXCEPTION("Can not handle slices with steps not equal to 1!");
+            }
+
+            std::vector<Range> pass{Range{start, end}};
+
+            return this->operator()(pass) = value;
+        }
+    }
+
+    RuntimeTensorView<T> assign_values(T value, const pybind11::slice &index) {
+        pybind11::gil_scoped_acquire gil;
+        pybind11::function           override = pybind11::get_override(static_cast<RuntimeTensorView<T> *>(this), "__assign");
+
+        if (override) {
+            auto o = override(value, index);
+            if (pybind11 ::detail ::cast_is_temporary_value_reference<RuntimeTensorView<T>>::value) {
+                static pybind11 ::detail ::override_caster_t<RuntimeTensorView<T>> caster;
+                return pybind11 ::detail ::cast_ref<RuntimeTensorView<T>>(std ::move(o), caster);
+            }
+            return pybind11 ::detail ::cast_safe<RuntimeTensorView<T>>(std ::move(o));
+        } else {
+            size_t start, end, step, length;
+
+            pybind11::cast<pybind11::slice>(index).compute(this->_dims[0], &start, &end, &step, &length);
+
+            if (step != 1) {
+                throw EINSUMSEXCEPTION("Can not handle slices with steps not equal to 1!");
+            }
+
+            std::vector<Range> pass{Range{start, end}};
+
+            return this->operator()(pass) = value;
+        }
+    }
+
+    pybind11::object subscript(ptrdiff_t index) {
+        pybind11::gil_scoped_acquire gil;
+        pybind11::function           override = pybind11::get_override(static_cast<RuntimeTensorView<T> *>(this), "__subscript");
+
+        if (override) {
+            auto o = override(index);
+            if (pybind11 ::detail ::cast_is_temporary_value_reference<pybind11::object>::value) {
+                static pybind11 ::detail ::override_caster_t<pybind11::object> caster;
+                return pybind11 ::detail ::cast_ref<pybind11::object>(std ::move(o), caster);
+            }
+            return pybind11 ::detail ::cast_safe<pybind11::object>(std ::move(o));
+        } else {
+            if (this->_rank == 1) {
+                return pybind11::cast(this->operator()(index));
+            } else {
+                return pybind11::cast(this->operator()(std::vector<Range>{Range{-1, index}}));
+            }
+        }
+    }
+
+    RuntimeTensorView<T> assign_values(const pybind11::buffer &value, ptrdiff_t index) {
+        pybind11::gil_scoped_acquire gil;
+        pybind11::function           override = pybind11::get_override(static_cast<RuntimeTensorView<T> *>(this), "__assign");
+
+        if (override) {
+            auto o = override(value, index);
+            if (pybind11 ::detail ::cast_is_temporary_value_reference<RuntimeTensorView<T>>::value) {
+                static pybind11 ::detail ::override_caster_t<RuntimeTensorView<T>> caster;
+                return pybind11 ::detail ::cast_ref<RuntimeTensorView<T>>(std ::move(o), caster);
+            }
+            return pybind11 ::detail ::cast_safe<RuntimeTensorView<T>>(std ::move(o));
+        } else {
+            if (this->_rank <= 1) {
+                throw EINSUMSEXCEPTION("Can not assign buffer to a single position!");
+            }
+
+            return this->operator()(std::vector<Range>{Range{-1, index}}) = value;
+        }
+    }
+
+    pybind11::object assign_values(T value, ptrdiff_t index) {
+        pybind11::gil_scoped_acquire gil;
+        pybind11::function           override = pybind11::get_override(static_cast<RuntimeTensorView<T> *>(this), "__assign");
+
+        if (override) {
+            auto o = override(value, index);
+            if (pybind11 ::detail ::cast_is_temporary_value_reference<pybind11::object>::value) {
+                static pybind11 ::detail ::override_caster_t<pybind11::object> caster;
+                return pybind11 ::detail ::cast_ref<pybind11::object>(std ::move(o), caster);
+            }
+            return pybind11 ::detail ::cast_safe<pybind11::object>(std ::move(o));
+        } else {
+            if (this->_rank <= 1) {
+                T &target = this->operator()({index});
+                target    = value;
+                return pybind11::cast(target);
+            }
+
+            auto view = this->operator()(std::vector<Range>{Range{-1, index}});
+            view      = value;
+            return pybind11::cast(view);
+        }
+    }
+
+  private:
+#define COPY_CAST_OP(OP, NAME)                                                                                                             \
+    template <typename TOther>                                                                                                             \
+    void copy_and_cast_##NAME(const pybind11::buffer_info &buffer_info) {                                                                  \
+        TOther *buffer_data = (TOther *)buffer_info.ptr;                                                                                   \
+        EINSUMS_OMP_PARALLEL_FOR                                                                                                           \
+        for (size_t sentinel = 0; sentinel < this->size(); sentinel++) {                                                                   \
+            size_t buffer_sent = 0, hold = sentinel, ord = 0;                                                                              \
+            for (int i = 0; i < this->_rank; i++) {                                                                                        \
+                ord += this->_strides[i] * (hold / this->_index_strides[i]);                                                               \
+                buffer_sent += (buffer_info.strides[i] / buffer_info.itemsize) * (hold / this->_strides[i]);                               \
+                hold %= this->_strides[i];                                                                                                 \
+            }                                                                                                                              \
+            if constexpr (IsComplexV<T> && !IsComplexV<TOther> && !std::is_same_v<RemoveComplexT<T>, TOther>) {                            \
+                this->_data[ord] OP(T)(RemoveComplexT<T>) buffer_data[buffer_sent];                                                        \
+            } else if constexpr (!IsComplexV<T> && IsComplexV<TOther>) {                                                                   \
+                this->_data[ord] OP(T) buffer_data[buffer_sent].real();                                                                    \
+            } else if constexpr (IsComplexV<T> && IsComplexV<TOther>) {                                                                    \
+                this->_data[ord] OP(T) buffer_data[buffer_sent];                                                                           \
+            } else {                                                                                                                       \
+                this->_data[ord] OP(T) buffer_data[buffer_sent];                                                                           \
+            }                                                                                                                              \
+        }                                                                                                                                  \
+    }
+
+    COPY_CAST_OP(=, assign)
+    COPY_CAST_OP(+=, add)
+    COPY_CAST_OP(-=, sub)
+    COPY_CAST_OP(*=, mult)
+    COPY_CAST_OP(/=, div)
+#undef COPY_CAST_OP
+
+  public:
+    PyTensorView<T> &operator=(const pybind11::buffer &buffer) {
+        auto buffer_info = buffer.request();
+
+        if (this->rank() != buffer_info.ndim) {
+            throw EINSUMSEXCEPTION("Can not change the rank of a runtime tensor view when assigning!");
+        }
+
+        for (int i = buffer_info.ndim - 1; i >= 0; i--) {
+            if (this->_dims[i] != buffer_info.shape[i]) {
+                throw EINSUMSEXCEPTION("Can not assign buffer to runtime tensor view with different shapes!");
+            }
+        }
+
+        if (buffer_info.item_type_is_equivalent_to<T>()) {
+            T *buffer_data = (T *)buffer_info.ptr;
+            EINSUMS_OMP_PARALLEL_FOR
+            for (size_t sentinel = 0; sentinel < this->size(); sentinel++) {
+                size_t buffer_sent = 0, hold = sentinel, ord = 0;
+                for (int i = 0; i < this->_rank; i++) {
+                    ord += this->_strides[i] * (hold / this->_index_strides[i]);
+                    buffer_sent += (buffer_info.strides[i] / buffer_info.itemsize) * (hold / this->_index_strides[i]);
+                    hold %= this->_index_strides[i];
+                }
+                this->_data[ord] = buffer_data[buffer_sent];
+            }
+        } else {
+            switch (buffer_info.format[0]) {
+            case 'b':
+                copy_and_cast_assign<char>(buffer_info);
+                break;
+            case 'B':
+                copy_and_cast_assign<unsigned char>(buffer_info);
+                break;
+            case 'h':
+                copy_and_cast_assign<short>(buffer_info);
+                break;
+            case 'H':
+                copy_and_cast_assign<unsigned short>(buffer_info);
+                break;
+            case 'i':
+                copy_and_cast_assign<int>(buffer_info);
+                break;
+            case 'I':
+                copy_and_cast_assign<unsigned int>(buffer_info);
+                break;
+            case 'q':
+                copy_and_cast_assign<long>(buffer_info);
+                break;
+            case 'Q':
+                copy_and_cast_assign<unsigned long>(buffer_info);
+                break;
+            case 'f':
+                copy_and_cast_assign<float>(buffer_info);
+                break;
+            case 'd':
+                copy_and_cast_assign<double>(buffer_info);
+                break;
+            case 'g':
+                copy_and_cast_assign<long double>(buffer_info);
+                break;
+            case 'Z':
+                switch (buffer_info.format[1]) {
+                case 'f':
+                    copy_and_cast_assign<std::complex<float>>(buffer_info);
+                    break;
+                case 'd':
+                    copy_and_cast_assign<std::complex<double>>(buffer_info);
+                    break;
+                case 'g':
+                    copy_and_cast_assign<std::complex<long double>>(buffer_info);
+                    break;
+                }
+                [[fallthrough]];
+            default:
+                throw EINSUMSEXCEPTION("Can not convert format descriptor " + buffer_info.format + " to " + type_name<T>() + "!");
+            }
+        }
+        return *this;
+    }
+
+#define OPERATOR(OP, NAME, OPNAME)                                                                                                         \
+    RuntimeTensorView<T> &operator OP(const T & other) override {                                                                          \
+        PYBIND11_OVERRIDE(RuntimeTensorView<T> &, RuntimeTensorView<T>, OPNAME, other);                                                    \
     }                                                                                                                                      \
-    RuntimeTensorView<T> &OP(const RuntimeTensorView<T> &other) override {                                                                 \
-        PYBIND11_OVERRIDE(RuntimeTensorView<T> &, RuntimeTensorView<T>, OP, other);                                                        \
+    RuntimeTensorView<T> &operator OP(const RuntimeTensor<T> &other) override {                                                            \
+        PYBIND11_OVERRIDE(RuntimeTensorView<T> &, RuntimeTensorView<T>, OPNAME, other);                                                    \
     }                                                                                                                                      \
-    RuntimeTensorView<T> &OP(const pybind11::buffer &other) override {                                                                     \
-        PYBIND11_OVERRIDE(RuntimeTensorView<T> &, RuntimeTensorView<T>, OP, other);                                                        \
+    RuntimeTensorView<T> &operator OP(const RuntimeTensorView<T> &other) override {                                                        \
+        PYBIND11_OVERRIDE(RuntimeTensorView<T> &, RuntimeTensorView<T>, OPNAME, other);                                                    \
+    }                                                                                                                                      \
+    RuntimeTensorView<T> &operator OP(const pybind11::buffer & buffer) {                                                                   \
+        pybind11::gil_scoped_acquire gil;                                                                                                  \
+        pybind11::function           override = pybind11::get_override(static_cast<PyTensorView<T> *>(this), #OPNAME);                     \
+                                                                                                                                           \
+        if (override) {                                                                                                                    \
+            auto o = override(buffer);                                                                                                     \
+            if (pybind11 ::detail ::cast_is_temporary_value_reference<RuntimeTensorView<T> &>::value) {                                    \
+                static pybind11 ::detail ::override_caster_t<RuntimeTensor<T> &> caster;                                                   \
+                return pybind11 ::detail ::cast_ref<RuntimeTensorView<T> &>(std ::move(o), caster);                                        \
+            }                                                                                                                              \
+            return pybind11 ::detail ::cast_safe<RuntimeTensorView<T> &>(std ::move(o));                                                   \
+        } else {                                                                                                                           \
+            auto buffer_info = buffer.request();                                                                                           \
+                                                                                                                                           \
+            if (this->rank() != buffer_info.ndim) {                                                                                        \
+                throw EINSUMSEXCEPTION("Can not perform " #OP " with buffer object with different rank!");                                 \
+            }                                                                                                                              \
+            for (int i = buffer_info.ndim - 1; i >= 0; i--) {                                                                              \
+                if (this->_dims[i] != buffer_info.shape[i]) {                                                                              \
+                    throw EINSUMSEXCEPTION("Can not perform " #OP " with buffer object with different dimensions!");                       \
+                }                                                                                                                          \
+            }                                                                                                                              \
+                                                                                                                                           \
+            if (buffer_info.item_type_is_equivalent_to<T>()) {                                                                             \
+                T *buffer_data = (T *)buffer_info.ptr;                                                                                     \
+                EINSUMS_OMP_PARALLEL_FOR                                                                                                   \
+                for (size_t sentinel = 0; sentinel < this->size(); sentinel++) {                                                           \
+                    size_t buffer_sent = 0, hold = sentinel, ord = 0;                                                                      \
+                    for (int i = 0; i < this->_rank; i++) {                                                                                \
+                        ord += this->_strides[i] * (hold / this->_index_strides[i]);                                                       \
+                        buffer_sent += (buffer_info.strides[i] / buffer_info.itemsize) * (hold / this->_index_strides[i]);                 \
+                        hold %= this->_index_strides[i];                                                                                   \
+                    }                                                                                                                      \
+                    this->_data[ord] OP buffer_data[buffer_sent];                                                                          \
+                }                                                                                                                          \
+            } else {                                                                                                                       \
+                switch (buffer_info.format[0]) {                                                                                           \
+                case 'b':                                                                                                                  \
+                    copy_and_cast_##NAME<char>(buffer_info);                                                                               \
+                    break;                                                                                                                 \
+                case 'B':                                                                                                                  \
+                    copy_and_cast_##NAME<unsigned char>(buffer_info);                                                                      \
+                    break;                                                                                                                 \
+                case 'h':                                                                                                                  \
+                    copy_and_cast_##NAME<short>(buffer_info);                                                                              \
+                    break;                                                                                                                 \
+                case 'H':                                                                                                                  \
+                    copy_and_cast_##NAME<unsigned short>(buffer_info);                                                                     \
+                    break;                                                                                                                 \
+                case 'i':                                                                                                                  \
+                    copy_and_cast_##NAME<int>(buffer_info);                                                                                \
+                    break;                                                                                                                 \
+                case 'I':                                                                                                                  \
+                    copy_and_cast_##NAME<unsigned int>(buffer_info);                                                                       \
+                    break;                                                                                                                 \
+                case 'q':                                                                                                                  \
+                    copy_and_cast_##NAME<long>(buffer_info);                                                                               \
+                    break;                                                                                                                 \
+                case 'Q':                                                                                                                  \
+                    copy_and_cast_##NAME<unsigned long>(buffer_info);                                                                      \
+                    break;                                                                                                                 \
+                case 'f':                                                                                                                  \
+                    copy_and_cast_##NAME<float>(buffer_info);                                                                              \
+                    break;                                                                                                                 \
+                case 'd':                                                                                                                  \
+                    copy_and_cast_##NAME<double>(buffer_info);                                                                             \
+                    break;                                                                                                                 \
+                case 'g':                                                                                                                  \
+                    copy_and_cast_##NAME<long double>(buffer_info);                                                                        \
+                    break;                                                                                                                 \
+                case 'Z':                                                                                                                  \
+                    switch (buffer_info.format[1]) {                                                                                       \
+                    case 'f':                                                                                                              \
+                        copy_and_cast_##NAME<std::complex<float>>(buffer_info);                                                            \
+                        break;                                                                                                             \
+                    case 'd':                                                                                                              \
+                        copy_and_cast_##NAME<std::complex<double>>(buffer_info);                                                           \
+                        break;                                                                                                             \
+                    case 'g':                                                                                                              \
+                        copy_and_cast_##NAME<std::complex<long double>>(buffer_info);                                                      \
+                        break;                                                                                                             \
+                    }                                                                                                                      \
+                    [[fallthrough]];                                                                                                       \
+                default:                                                                                                                   \
+                    throw EINSUMSEXCEPTION("Can not convert format descriptor " + buffer_info.format + " to " + type_name<T>() + "!");     \
+                }                                                                                                                          \
+            }                                                                                                                              \
+            return *this;                                                                                                                  \
+        }                                                                                                                                  \
     }
 
-    OPERATOR(operator*=)
-    OPERATOR(operator/=)
-    OPERATOR(operator+=)
-    OPERATOR(operator-=)
+    OPERATOR(*=, mult, operator*=)
+    OPERATOR(/=, div, operator/=)
+    OPERATOR(+=, add, operator+=)
+    OPERATOR(-=, sub, operator-=)
 
 #undef OPERATOR
 
@@ -271,7 +1409,7 @@ void export_tensor(pybind11::module &mod) {
         suffix = "Z";
     }
 
-    pybind11::class_<PyTensorIterator<T>, std::shared_ptr<PyTensorIterator<T>>>(mod, ("RuntimeTensorIterator" + suffix).c_str())
+    pybind11::class_<PyTensorIterator<T>, std::shared_ptr<PyTensorIterator<T>>>(mod, ("PyTensorIterator" + suffix).c_str())
         .def("__next__", &PyTensorIterator<T>::next, pybind11::return_value_policy::reference)
         .def("reversed", &PyTensorIterator<T>::reversed);
 
@@ -282,31 +1420,59 @@ void export_tensor(pybind11::module &mod) {
         .def(pybind11::init<>())
         .def(pybind11::init<std::string, const std::vector<size_t> &>())
         .def(pybind11::init<const std::vector<size_t> &>())
+        .def(pybind11::init<const pybind11::buffer &>())
         .def("zero", &RuntimeTensor<T>::zero)
         .def("set_all", &RuntimeTensor<T>::set_all)
-        .def("__getitem__", [](const RuntimeTensor<T> &self, const pybind11::tuple &args) { return self.subscript(args); })
-        .def("__getitem__", [](const RuntimeTensor<T> &self, const pybind11::slice &args) { return self.subscript(args); })
-        .def("__getitem__", [](const RuntimeTensor<T> &self, int args) { return self.subscript(args); })
-        .def("__setitem__", [](RuntimeTensor<T> &self, const pybind11::tuple &key, T value) { self.assign_values(value, key); })
+        .def("__getitem__",
+             [](RuntimeTensor<T> &self, const pybind11::tuple &args) {
+                 PyTensorView<T> cast(self);
+                 return cast.subscript(args);
+             })
+        .def("__getitem__",
+             [](RuntimeTensor<T> &self, const pybind11::slice &args) {
+                 PyTensorView<T> cast(self);
+                 return cast.subscript(args);
+             })
+        .def("__getitem__",
+             [](RuntimeTensor<T> &self, int args) {
+                 PyTensorView<T> cast(self);
+                 return cast.subscript(args);
+             })
         .def("__setitem__",
-             [](RuntimeTensor<T> &self, const pybind11::tuple &key, const pybind11::buffer &values) { self.assign_values(values, key); })
+             [](RuntimeTensor<T> &self, const pybind11::tuple &key, T value) {
+                 PyTensorView<T> cast(self);
+                 cast.assign_values(value, key);
+             })
+        .def("__setitem__",
+             [](RuntimeTensor<T> &self, const pybind11::tuple &key, const pybind11::buffer &values) {
+                 PyTensorView<T> cast(self);
+                 cast.assign_values(values, key);
+             })
         .def(pybind11::self *= T())
         .def(pybind11::self *= pybind11::self)
         .def(pybind11::self *= RuntimeTensorView<T>())
-        .def(pybind11::self *= pybind11::buffer())
+        .def(
+            "__imul__", [](PyTensor<T> &self, const pybind11::buffer &other) -> RuntimeTensor<T> & { return self *= other; },
+            pybind11::is_operator())
         .def(pybind11::self /= T())
         .def(pybind11::self /= pybind11::self)
         .def(pybind11::self /= RuntimeTensorView<T>())
-        .def(pybind11::self /= pybind11::buffer())
+        .def(
+            "__itruediv__", [](PyTensor<T> &self, const pybind11::buffer &other) -> RuntimeTensor<T> & { return self /= other; },
+            pybind11::is_operator())
         .def(pybind11::self += T())
         .def(pybind11::self += pybind11::self)
         .def(pybind11::self += RuntimeTensorView<T>())
-        .def(pybind11::self += pybind11::buffer())
+        .def(
+            "__iadd__", [](PyTensor<T> &self, const pybind11::buffer &other) -> RuntimeTensor<T> & { return self += other; },
+            pybind11::is_operator())
         .def(pybind11::self -= T())
         .def(pybind11::self -= pybind11::self)
         .def(pybind11::self -= RuntimeTensorView<T>())
-        .def(pybind11::self -= pybind11::buffer())
-        .def("assign", [](RuntimeTensor<T> &self, pybind11::buffer &buffer) { self = buffer; })
+        .def(
+            "__isub__", [](PyTensor<T> &self, const pybind11::buffer &other) -> RuntimeTensor<T> & { return self -= other; },
+            pybind11::is_operator())
+        .def("assign", [](PyTensor<T> &self, pybind11::buffer &buffer) { return self = buffer; })
         .def("dim", &RuntimeTensor<T>::dim)
         .def("dims", &RuntimeTensor<T>::dims)
         .def("stride", &RuntimeTensor<T>::stride)
@@ -344,28 +1510,33 @@ void export_tensor(pybind11::module &mod) {
         .def(pybind11::init<pybind11::buffer &>())
         .def("zero", &RuntimeTensorView<T>::zero)
         .def("set_all", &RuntimeTensorView<T>::set_all)
-        .def("__getitem__", [](const RuntimeTensorView<T> &self, const pybind11::tuple &args) { return self.subscript(args); })
-        .def("__getitem__", [](const RuntimeTensorView<T> &self, const pybind11::slice &args) { return self.subscript(args); })
-        .def("__getitem__", [](const RuntimeTensorView<T> &self, int args) { return self.subscript(args); })
-        .def("__setitem__", [](RuntimeTensorView<T> &self, const pybind11::tuple &key, T value) { self.assign_values(value, key); })
-        .def("__setitem__", [](RuntimeTensorView<T> &self, const pybind11::tuple &key,
-                               const pybind11::buffer &values) { self.assign_values(values, key); })
+        .def("__getitem__", [](PyTensorView<T> &self, const pybind11::tuple &args) { return self.subscript(args); })
+        .def("__getitem__", [](PyTensorView<T> &self, const pybind11::slice &args) { return self.subscript(args); })
+        .def("__getitem__", [](PyTensorView<T> &self, int args) { return self.subscript(args); })
+        .def("__setitem__", [](PyTensorView<T> &self, const pybind11::tuple &key, T value) { self.assign_values(value, key); })
+        .def("__setitem__",
+             [](PyTensorView<T> &self, const pybind11::tuple &key, const pybind11::buffer &values) { self.assign_values(values, key); })
         .def(pybind11::self *= T())
         .def(pybind11::self *= pybind11::self)
         .def(pybind11::self *= RuntimeTensor<T>())
-        .def(pybind11::self *= pybind11::buffer())
+        .def(
+            "__imul__", [](PyTensorView<T> &self, const pybind11::buffer &other) { return self *= other; }, pybind11::is_operator())
         .def(pybind11::self /= T())
         .def(pybind11::self /= pybind11::self)
         .def(pybind11::self /= RuntimeTensor<T>())
-        .def(pybind11::self /= pybind11::buffer())
+        .def(
+            "__itruediv__", [](PyTensorView<T> &self, const pybind11::buffer &other) { return self /= other; }, pybind11::is_operator())
         .def(pybind11::self += T())
         .def(pybind11::self += pybind11::self)
         .def(pybind11::self += RuntimeTensor<T>())
-        .def(pybind11::self += pybind11::buffer())
+        .def(
+            "__iadd__", [](PyTensorView<T> &self, const pybind11::buffer &other) { return self += other; }, pybind11::is_operator())
         .def(pybind11::self -= T())
         .def(pybind11::self -= pybind11::self)
         .def(pybind11::self -= RuntimeTensor<T>())
-        .def(pybind11::self -= pybind11::buffer())
+        .def(
+            "__isub__", [](PyTensorView<T> &self, const pybind11::buffer &other) { return self -= other; }, pybind11::is_operator())
+        .def("assign", [](PyTensorView<T> &self, pybind11::buffer &buffer) { return self = buffer; })
         .def("dim", &RuntimeTensorView<T>::dim)
         .def("dims", &RuntimeTensorView<T>::dims)
         .def("stride", &RuntimeTensorView<T>::stride)
