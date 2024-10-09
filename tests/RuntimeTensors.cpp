@@ -1,6 +1,3 @@
-#include "einsums/Utilities.hpp"
-#include "einsums/RuntimeTensor.hpp"
-
 #include <catch2/catch_all.hpp>
 
 #include "einsums.hpp"

@@ -68,23 +68,39 @@ class RuntimeTensor : public virtual tensor_props::TensorBase,
     }
 
     template <size_t Rank>
-    explicit RuntimeTensor(const Tensor<T, Rank> &copy) : _rank{Rank}, _dims{copy.dims()}, _strides{copy.strides()}, _name{copy.name()} {
+    RuntimeTensor(const Tensor<T, Rank> &copy) : _rank{Rank}, _dims(Rank), _strides(Rank), _name{copy.name()} {
+        for (int i = 0; i < Rank; i++) {
+            _dims[i]    = copy.dim(i);
+            _strides[i] = copy.stride(i);
+        }
+
         _data.resize(size());
 
         std::memcpy(_data.data(), copy.data(), size() * sizeof(T));
     }
 
     template <size_t Rank>
-    explicit RuntimeTensor(const TensorView<T, Rank> &copy) : _rank{Rank}, _dims{copy.dims()} {
+    RuntimeTensor(const TensorView<T, Rank> &copy) : _rank{Rank}, _dims(Rank) {
         size_t size = 1;
         _strides.resize(rank());
 
         for (int i = Rank - 1; i >= 0; i--) {
             _strides[i] = size;
+            _dims[i]    = (size_t)copy.dim(i);
             size *= _dims[i];
         }
 
         _data.resize(size);
+
+        EINSUMS_OMP_PARALLEL_FOR
+        for (size_t sentinel = 0; sentinel < this->size(); sentinel++) {
+            size_t hold = sentinel, ord = 0;
+            for (int i = 0; i < Rank; i++) {
+                ord += copy.stride(i) * (hold / _strides[i]);
+                hold %= _strides[i];
+            }
+            _data[sentinel] = copy.data()[ord];
+        }
     }
 
     virtual ~RuntimeTensor() = default;
@@ -628,7 +644,7 @@ class RuntimeTensorView : public virtual tensor_props::TensorViewBase<RuntimeTen
     }
 
     template <size_t Rank>
-    explicit RuntimeTensorView(TensorView<T, Rank> &copy)
+    RuntimeTensorView(TensorView<T, Rank> &copy)
         : _data{copy.data()}, _dims{copy.dims()}, _strides{copy.strides()}, _rank{Rank}, _full_view{copy.full_view_of_underlying()} {
         _index_strides.resize(Rank);
 
@@ -640,7 +656,7 @@ class RuntimeTensorView : public virtual tensor_props::TensorViewBase<RuntimeTen
     }
 
     template <size_t Rank>
-    explicit RuntimeTensorView(const TensorView<T, Rank> &copy)
+    RuntimeTensorView(const TensorView<T, Rank> &copy)
         : _data{copy.data()}, _dims{copy.dims()}, _strides{copy.strides()}, _rank{Rank}, _full_view{copy.full_view_of_underlying()} {
         _index_strides.resize(Rank);
 
@@ -652,12 +668,12 @@ class RuntimeTensorView : public virtual tensor_props::TensorViewBase<RuntimeTen
     }
 
     template <size_t Rank>
-    explicit RuntimeTensorView(Tensor<T, Rank> &copy)
+    RuntimeTensorView(Tensor<T, Rank> &copy)
         : _data{copy.data()}, _dims{copy.dims()}, _strides{copy.strides()}, _rank{Rank}, _full_view{true}, _index_strides{copy.strides()},
           _size{copy.size()} {}
 
     template <size_t Rank>
-    explicit RuntimeTensorView(const Tensor<T, Rank> &copy)
+    RuntimeTensorView(const Tensor<T, Rank> &copy)
         : _data{copy.data()}, _dims{copy.dims()}, _strides{copy.strides()}, _rank{Rank}, _full_view{true}, _index_strides{copy.strides()},
           _size{copy.size()} {}
 
