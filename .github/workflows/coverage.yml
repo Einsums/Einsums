@@ -128,6 +128,13 @@ jobs:
           fi
           pytest "${{github.workspace}}/tests" --cov
     
+      - name: Upload C++ coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          directory: "${{github.workspace}}/installed"
+          file: .coverage
+          flags: python
+          token: ${{ secrets.CODECOV_TOKEN }}
       
       - name: Test timings
         working-directory: "${{github.workspace}}/build"
@@ -141,9 +148,11 @@ jobs:
           gcov $SOURCES || echo "returned $?"
           lcov --capture --directory . --output-file coverage.info --exclude /usr/\* --exclude \*/build/_deps/\*
       
-      - name: Upload coverage to Codecov
+      - name: Upload C++ coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
-          files: ${{github.workspace}}/build/coverage.info,${{github.workspace}}/installed/.coverage
+          directory: "${{github.workspace}}/build"
+          file: coverage.info
+          flags: cpp
           token: ${{ secrets.CODECOV_TOKEN }}
 
