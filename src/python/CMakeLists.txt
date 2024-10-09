@@ -45,6 +45,14 @@ foreach(define IN LISTS defines)
     )
 endforeach()
 
+set_target_properties(einsums PROPERTIES ${ein}_VERSION ${Einsums_VERSION})
+set(export_properties "Einsums_VERSION")
+set_property(
+        TARGET einsums
+        APPEND
+        PROPERTY EXPORT_PROPERTIES "${export_properties}"
+)
+
 # All need to be LIBRARY_BASE_PATH because Windows thinks this is a runtime artifact, not a library.
 install(
     TARGETS ${__core_name} 

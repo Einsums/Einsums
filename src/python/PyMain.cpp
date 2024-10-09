@@ -55,8 +55,6 @@ void einsums::python::export_python_base(pybind11::module_ &mod) {
 }
 
 PYBIND11_MODULE(core, mod) {
-    einsums::initialize();
-
     mod.doc() = einsums_docstring;
 
     export_python_base(mod);
@@ -75,7 +73,4 @@ PYBIND11_MODULE(core, mod) {
     export_python_testing_gpu(mod);
 #    endif
 #endif
-
-    auto atexit = py::module_::import("atexit");
-    atexit.attr("register")(py::cpp_function([]() -> void { einsums::finalize(); }));
 }
