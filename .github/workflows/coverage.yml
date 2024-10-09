@@ -127,7 +127,7 @@ jobs:
           else
             export PYTHONPATH=$PYTHONPATH:${{github.workspace}}/installed/lib:$CONDA_PREFIX/lib
           fi
-          pytest --cov "${{github.workspace}}/tests"
+          pytest "${{github.workspace}}/tests" --cov
       
       - name: Test timings
         working-directory: "${{github.workspace}}/build"
