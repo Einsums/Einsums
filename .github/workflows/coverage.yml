@@ -48,6 +48,7 @@ jobs:
             - pybind11
             - pytest
             - numpy
+            - pytest-cov
           EOF
           if [[ "${{ runner.os }}" == "Linux" ]]; then
             :
@@ -125,7 +126,14 @@ jobs:
           else
             export PYTHONPATH=$PYTHONPATH:${{github.workspace}}/installed/lib:$CONDA_PREFIX/lib
           fi
-          pytest "${{github.workspace}}/tests"
+          pytest "${{github.workspace}}/tests" --cov
+        
+      - name: Upload Python coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          directory: "${{github.workspace}}/installed"
+          file: .coverage
+          token: ${{ secrets.CODECOV_TOKEN }}
       
       - name: Test timings
         working-directory: "${{github.workspace}}/build"
@@ -139,7 +147,7 @@ jobs:
           gcov $SOURCES || echo "returned $?"
           lcov --capture --directory . --output-file coverage.info --exclude /usr/\* --exclude \*/build/_deps/\*
       
-      - name: Upload coverage to Codecov
+      - name: Upload C++ coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
           directory: "${{github.workspace}}/build"
