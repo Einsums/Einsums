@@ -24,8 +24,15 @@ class PyTensorView;
 template <typename T>
 using SharedRuntimeTensorView = std::shared_ptr<RuntimeTensorView<T>>;
 
+/**
+ * @struct PyTensorIterator<T>
+ *
+ * @brief Walks through the elements of a tensor.
+ *
+ * @tparam T The type stored in the tensor.
+ */
 template <typename T>
-class PyTensorIterator {
+class EINSUMS_EXPORT PyTensorIterator {
   private:
     std::mutex           _lock;
     size_t               _curr_index, _elements;
@@ -34,29 +41,44 @@ class PyTensorIterator {
     bool                 _stop{false}, _reverse{false};
 
   public:
+    /**
+     * Create an iterator around a tensor. Can be reversed.
+     *
+     * @param other The tensor to walk through.
+     * @param reverse Whether to go forward or backward.
+     */
     PyTensorIterator(const RuntimeTensor<T> &other, bool reverse = false)
         : _tensor{other}, _reverse{reverse}, _index_strides(other.rank()), _elements(other.size()) {
         if (!reverse) {
             _curr_index = 0;
         } else {
-            _curr_index = other.size();
+            _curr_index = other.size() - 1;
         }
 
         tensor_algebra::detail::dims_to_strides(other.dims(), _index_strides);
     }
 
+    /**
+     * Create an iterator around a tensor view. Can be reversed.
+     *
+     * @param other The tensor view to walk through.
+     * @param reverse Whether to go forward or backward.
+     */
     PyTensorIterator(const RuntimeTensorView<T> &other, bool reverse = false)
         : _tensor{other}, _reverse{reverse}, _index_strides(other.rank()), _elements(other.size()) {
         if (!reverse) {
             _curr_index = 0;
         } else {
-            _curr_index = other.size();
+            _curr_index = other.size() - 1;
         }
 
         tensor_algebra::detail::dims_to_strides(other.dims(), _index_strides);
     }
 
-    T next() {
+    /**
+     * Get the next element in the tensor.
+     */
+    T next() THROWS(pybind11::stop_iteration) {
         _lock.lock();
 
         if (_stop) {
@@ -85,7 +107,10 @@ class PyTensorIterator {
         return out;
     }
 
-    bool reversed() const { return _reverse; }
+    /**
+     * Returns whether the iterator is stepping forward or backward.
+     */
+    bool reversed() const noexcept { return _reverse; }
 };
 
 template <typename T>
@@ -93,10 +118,15 @@ class PyTensor : public RuntimeTensor<T> {
   public:
     using RuntimeTensor<T>::RuntimeTensor;
 
-    PyTensor(const PyTensor<T> &) = default;
+    /**
+     * @brief Copy constructor from shared pointer.
+     */
     PyTensor(const std::shared_ptr<PyTensor<T>> &other) : PyTensor(*other) {}
 
-    PyTensor(const pybind11::buffer &buffer) {
+    /**
+     * Create a tensor from a Python buffer object.
+     */
+    PyTensor(const pybind11::buffer &buffer) THROWS(einsums::EinsumsException) {
         auto buffer_info = buffer.request();
 
         this->_rank = buffer_info.ndim;
@@ -188,11 +218,24 @@ class PyTensor : public RuntimeTensor<T> {
 
     virtual ~PyTensor() = default;
 
+    /**
+     * Clear the tensor.
+     */
     void zero() override { PYBIND11_OVERRIDE(void, RuntimeTensor<T>, zero); }
 
+    /**
+     * Set the tensor to the given values.
+     *
+     * @param val The value to set the tensor to.
+     */
     void set_all(T val) override { PYBIND11_OVERRIDE(void, RuntimeTensor<T>, set_all, val); }
 
   private:
+    /**
+     * @brief Subscript the tensor to get a value.
+     *
+     * @param args The index of the value.
+     */
     T &subscript_to_val(const pybind11::tuple &args) {
         std::vector<size_t> pass(args.size());
 
@@ -204,6 +247,11 @@ class PyTensor : public RuntimeTensor<T> {
         return this->operator()(pass);
     }
 
+    /**
+     * @brief Subscript the tensor to get a value.
+     *
+     * @param args The index of the value.
+     */
     const T &subscript_to_val(const pybind11::tuple &args) const {
         std::vector<size_t> pass(args.size());
 
@@ -215,7 +263,12 @@ class PyTensor : public RuntimeTensor<T> {
         return this->operator()(pass);
     }
 
-    RuntimeTensorView<T> subscript_to_view(const pybind11::tuple &args) {
+    /**
+     * @brief Subscript the tensor to get a view
+     *
+     * @param args The index of the view. Can contain slices.
+     */
+    RuntimeTensorView<T> subscript_to_view(const pybind11::tuple &args) THROWS(einsums::EinsumsException) {
         std::vector<Range> pass(args.size());
 
         for (int i = 0; i < args.size(); i++) {
@@ -235,7 +288,12 @@ class PyTensor : public RuntimeTensor<T> {
         return this->operator()(pass);
     }
 
-    RuntimeTensorView<T> subscript_to_view(const pybind11::tuple &args) const {
+    /**
+     * @brief Subscript the tensor to get a view
+     *
+     * @param args The index of the view. Can contain slices.
+     */
+    RuntimeTensorView<T> subscript_to_view(const pybind11::tuple &args) const THROWS(einsums::EinsumsException) {
         std::vector<Range> pass(args.size());
 
         for (int i = 0; i < args.size(); i++) {
@@ -255,26 +313,49 @@ class PyTensor : public RuntimeTensor<T> {
         return this->operator()(pass);
     }
 
-    void set_value_at(T value, const std::vector<size_t> &index) {
+    /**
+     * @brief Set the value of a certain position.
+     *
+     * @param index The index of the position.
+     */
+    void set_value_at(T value, const std::vector<ptrdiff_t> &index) {
         T &target = this->operator()(index);
         target    = value;
         return target;
     }
 
-    void assign_to_view(const pybind11::buffer &view, const pybind11::tuple &args) {
+    /**
+     * @brief Copy multiple values to multiple positions.
+     *
+     * @param view The values to copy.
+     * @param args The indices to copy to. Can contain slices.
+     */
+    void assign_to_view(const pybind11::buffer &view, const pybind11::tuple &args) THROWS(einsums::EinsumsException) {
         PyTensorView<T> this_view = subscript_to_view(args);
 
         this_view = view;
     }
 
-    void assign_to_view(T value, const pybind11::tuple &args) {
+    /**
+     * @brief Copy one value to multiple positions.
+     *
+     * @param value The value to set.
+     * @param args The indices to set. Can contain slices.
+     */
+    void assign_to_view(T value, const pybind11::tuple &args) THROWS(einsums::EinsumsException) {
         auto this_view = subscript_to_view(args);
 
         this_view = value;
     }
 
   public:
-    pybind11::object subscript(const pybind11::tuple &args) {
+    /**
+     * @brief Subscript into the tensor. Can contain slices.
+     *
+     * @param args The indices to use to subscript.
+     * @return A Python object containing a reference to a single value or a RuntimeTensorView.
+     */
+    pybind11::object subscript(const pybind11::tuple &args) THROWS(einsums::EinsumsException) {
         pybind11::gil_scoped_acquire gil;
         pybind11::function           override = pybind11::get_override(static_cast<RuntimeTensor<T> *>(this), "__subscript");
 
@@ -304,7 +385,14 @@ class PyTensor : public RuntimeTensor<T> {
         }
     }
 
-    pybind11::object assign_values(const pybind11::buffer &value, const pybind11::tuple &index) {
+    /**
+     * @brief Copy multiple values into a section of the tensor.
+     *
+     * @param value The values to copy.
+     * @param args The indices to use to subscript.
+     * @return A Python object containing a reference to a single value or a RuntimeTensorView.
+     */
+    pybind11::object assign_values(const pybind11::buffer &value, const pybind11::tuple &index) THROWS(einsums::EinsumsException) {
         pybind11::gil_scoped_acquire gil;
         pybind11::function           override = pybind11::get_override(static_cast<RuntimeTensor<T> *>(this), "__assign");
 
@@ -335,7 +423,14 @@ class PyTensor : public RuntimeTensor<T> {
         }
     }
 
-    pybind11::object assign_values(T value, const pybind11::tuple &index) {
+    /**
+     * @brief Copy a single value over a section of the tensor.
+     *
+     * @param value The value to copy.
+     * @param args The indices to use to subscript.
+     * @return A Python object containing a reference to a single value or a RuntimeTensorView.
+     */
+    pybind11::object assign_values(T value, const pybind11::tuple &index) THROWS(einsums::EinsumsException) {
         pybind11::gil_scoped_acquire gil;
         pybind11::function           override = pybind11::get_override(static_cast<RuntimeTensor<T> *>(this), "__assign");
 
@@ -370,7 +465,13 @@ class PyTensor : public RuntimeTensor<T> {
         }
     }
 
-    RuntimeTensorView<T> subscript(const pybind11::slice &arg) {
+    /**
+     * @brief Subscript into the tensor using a single slice.
+     *
+     * @param arg The slice to use for the tensor.
+     * @return The view containing the slice.
+     */
+    RuntimeTensorView<T> subscript(const pybind11::slice &arg) THROWS(einsums::EinsumsException) {
         pybind11::gil_scoped_acquire gil;
         pybind11::function           override = pybind11::get_override(static_cast<RuntimeTensor<T> *>(this), "__subscript");
 
@@ -396,7 +497,14 @@ class PyTensor : public RuntimeTensor<T> {
         }
     }
 
-    RuntimeTensorView<T> assign_values(const pybind11::buffer &value, const pybind11::slice &index) {
+    /**
+     * @brief Assign multiple values from a buffer into a slice of the tensor.
+     *
+     * @param value The values to copy.
+     * @param index The slice to use for the tensor.
+     * @return The view containing the slice.
+     */
+    RuntimeTensorView<T> assign_values(const pybind11::buffer &value, const pybind11::slice &index) THROWS(einsums::EinsumsException) {
         pybind11::gil_scoped_acquire gil;
         pybind11::function           override = pybind11::get_override(static_cast<RuntimeTensor<T> *>(this), "__assign");
 
@@ -422,7 +530,14 @@ class PyTensor : public RuntimeTensor<T> {
         }
     }
 
-    RuntimeTensorView<T> assign_values(T value, const pybind11::slice &index) {
+    /**
+     * @brief Assign a single value over a slice of the tensor.
+     *
+     * @param value The value to copy.
+     * @param index The slice to use for the tensor.
+     * @return The view containing the slice.
+     */
+    RuntimeTensorView<T> assign_values(T value, const pybind11::slice &index) THROWS(einsums::EinsumsException) {
         pybind11::gil_scoped_acquire gil;
         pybind11::function           override = pybind11::get_override(static_cast<RuntimeTensor<T> *>(this), "__assign");
 
@@ -448,6 +563,12 @@ class PyTensor : public RuntimeTensor<T> {
         }
     }
 
+    /**
+     * @brief Get the value at a certain index.
+     *
+     * @param index The index to use.
+     * @return A Python object containing either a single value if the tensor is rank-1 or a RuntimeTensorView otherwise.
+     */
     pybind11::object subscript(ptrdiff_t index) {
         pybind11::gil_scoped_acquire gil;
         pybind11::function           override = pybind11::get_override(static_cast<RuntimeTensor<T> *>(this), "__subscript");
@@ -468,7 +589,14 @@ class PyTensor : public RuntimeTensor<T> {
         }
     }
 
-    RuntimeTensorView<T> assign_values(const pybind11::buffer &value, ptrdiff_t index) {
+    /**
+     * @brief Copy values into a view of the tensor whose first index is set.
+     *
+     * @param value The buffer to copy.
+     * @param index The index to use.
+     * @return The view containing the the modified indices.
+     */
+    RuntimeTensorView<T> assign_values(const pybind11::buffer &value, ptrdiff_t index) THROWS(einsums::EinsumsException) {
         pybind11::gil_scoped_acquire gil;
         pybind11::function           override = pybind11::get_override(static_cast<RuntimeTensor<T> *>(this), "__assign");
 
@@ -488,6 +616,13 @@ class PyTensor : public RuntimeTensor<T> {
         }
     }
 
+    /**
+     * @brief Copy a value over a section of a tensor.
+     *
+     * @param value The value to copy.
+     * @param index The index to use.
+     * @return A Python object containing either a single value if the tensor is rank-1 or a RuntimeTensorView otherwise.
+     */
     pybind11::object assign_values(T value, ptrdiff_t index) {
         pybind11::gil_scoped_acquire gil;
         pybind11::function           override = pybind11::get_override(static_cast<RuntimeTensor<T> *>(this), "__assign");
@@ -512,7 +647,13 @@ class PyTensor : public RuntimeTensor<T> {
         }
     }
 
-    RuntimeTensor<T> &operator=(const pybind11::buffer &buffer) {
+    /**
+     * @brief Assign a buffer to this tensor, reshaping if necessary.
+     *
+     * @param buffer The buffer to assign.
+     * @return A reference to this.
+     */
+    RuntimeTensor<T> &operator=(const pybind11::buffer &buffer) THROWS(einsums::EinsumsException) {
         auto buffer_info = buffer.request();
 
         if (this->rank() != buffer_info.ndim) {
@@ -609,6 +750,12 @@ class PyTensor : public RuntimeTensor<T> {
 
   private:
 #define COPY_CAST_OP(OP, NAME)                                                                                                             \
+    /**                                                                                                                                    \
+     * @brief Copy values from a buffer into this, casting as necessary. Can also perform in-place operations.                             \
+     *                                                                                                                                     \
+     * @param buffer_info The buffer to operate on.                                                                                        \
+     * @param is_view Whether the buffer is a view, which would necessitate involving strides.                                             \
+     */                                                                                                                                    \
     template <typename TOther>                                                                                                             \
     void copy_and_cast_##NAME(const pybind11::buffer_info &buffer_info, bool is_view) {                                                    \
         TOther *buffer_data = (TOther *)buffer_info.ptr;                                                                                   \
@@ -624,8 +771,6 @@ class PyTensor : public RuntimeTensor<T> {
                     this->_data[sentinel] OP(T)(RemoveComplexT<T>) buffer_data[buffer_sent];                                               \
                 } else if constexpr (!IsComplexV<T> && IsComplexV<TOther>) {                                                               \
                     this->_data[sentinel] OP(T) buffer_data[buffer_sent].real();                                                           \
-                } else if constexpr (IsComplexV<T> && IsComplexV<TOther>) {                                                                \
-                    this->_data[sentinel] OP(T) buffer_data[buffer_sent];                                                                  \
                 } else {                                                                                                                   \
                     this->_data[sentinel] OP(T) buffer_data[buffer_sent];                                                                  \
                 }                                                                                                                          \
@@ -662,7 +807,7 @@ class PyTensor : public RuntimeTensor<T> {
     RuntimeTensor<T> &operator OP(const RuntimeTensorView<T> &other) override {                                                            \
         PYBIND11_OVERRIDE(RuntimeTensor<T> &, RuntimeTensor<T>, OPNAME, other);                                                            \
     }                                                                                                                                      \
-    RuntimeTensor<T> &operator OP(const pybind11::buffer & buffer) {                                                                       \
+    RuntimeTensor<T> &operator OP(const pybind11::buffer & buffer) THROWS(einsums::EinsumsException) {                                     \
         pybind11::gil_scoped_acquire gil;                                                                                                  \
         pybind11::function           override = pybind11::get_override(static_cast<PyTensor<T> *>(this), #OPNAME);                         \
                                                                                                                                            \
@@ -774,17 +919,17 @@ class PyTensor : public RuntimeTensor<T> {
 
     size_t dim(int d) const override { PYBIND11_OVERRIDE(size_t, RuntimeTensor<T>, dim, d); }
 
-    std::vector<size_t> dims() const override { PYBIND11_OVERRIDE(std::vector<size_t>, RuntimeTensor<T>, dims); }
+    std::vector<size_t> dims() const noexcept override { PYBIND11_OVERRIDE(std::vector<size_t>, RuntimeTensor<T>, dims); }
 
-    const typename PyTensor<T>::Vector &vector_data() const override {
+    const typename PyTensor<T>::Vector &vector_data() const noexcept override {
         PYBIND11_OVERRIDE(const typename RuntimeTensor<T>::Vector &, RuntimeTensor<T>, vector_data);
     }
 
-    typename RuntimeTensor<T>::Vector &vector_data() override {
+    typename RuntimeTensor<T>::Vector &vector_data() noexcept override {
         PYBIND11_OVERRIDE(typename RuntimeTensor<T>::Vector &, RuntimeTensor<T>, vector_data);
     }
 
-    size_t stride(int d) const noexcept override { PYBIND11_OVERRIDE(size_t, RuntimeTensor<T>, stride, d); }
+    size_t stride(int d) const override { PYBIND11_OVERRIDE(size_t, RuntimeTensor<T>, stride, d); }
 
     std::vector<size_t> strides() const noexcept override { PYBIND11_OVERRIDE(std::vector<size_t>, RuntimeTensor<T>, strides); }
 
@@ -792,13 +937,20 @@ class PyTensor : public RuntimeTensor<T> {
 
     bool full_view_of_underlying() const noexcept override { PYBIND11_OVERRIDE(bool, RuntimeTensor<T>, full_view_of_underlying); }
 
-    const std::string &name() const override { PYBIND11_OVERRIDE(const std::string &, RuntimeTensor<T>, name); }
+    const std::string &name() const noexcept override { PYBIND11_OVERRIDE(const std::string &, RuntimeTensor<T>, name); }
 
     void set_name(const std::string &new_name) override { PYBIND11_OVERRIDE(void, RuntimeTensor<T>, set_name, new_name); }
 
-    size_t rank() const override { PYBIND11_OVERRIDE(size_t, RuntimeTensor<T>, rank); }
+    size_t rank() const noexcept override { PYBIND11_OVERRIDE(size_t, RuntimeTensor<T>, rank); }
 };
 
+/**
+ * @class PyTensorView<T>
+ *
+ * @brief Views a runtime tensor and makes it available to Python.
+ *
+ * @see PyTensor<T> for information on methods.
+ */
 template <typename T>
 class PyTensorView : public RuntimeTensorView<T> {
   public:
@@ -807,7 +959,7 @@ class PyTensorView : public RuntimeTensorView<T> {
     PyTensorView(const PyTensorView<T> &) = default;
     PyTensorView(const RuntimeTensorView<T> &copy) : RuntimeTensorView<T>(copy) {}
 
-    PyTensorView(pybind11::buffer &buffer) {
+    PyTensorView(pybind11::buffer &buffer) THROWS(einsums::EinsumsException) {
         pybind11::buffer_info buffer_info = buffer.request(true);
 
         if (buffer_info.item_type_is_equivalent_to<T>()) {
@@ -860,7 +1012,7 @@ class PyTensorView : public RuntimeTensorView<T> {
         return this->operator()(pass);
     }
 
-    RuntimeTensorView<T> subscript_to_view(const pybind11::tuple &args) {
+    RuntimeTensorView<T> subscript_to_view(const pybind11::tuple &args) THROWS(einsums::EinsumsException) {
         std::vector<Range> pass(args.size());
 
         for (int i = 0; i < args.size(); i++) {
@@ -880,7 +1032,7 @@ class PyTensorView : public RuntimeTensorView<T> {
         return this->operator()(pass);
     }
 
-    RuntimeTensorView<T> subscript_to_view(const pybind11::tuple &args) const {
+    RuntimeTensorView<T> subscript_to_view(const pybind11::tuple &args) const THROWS(einsums::EinsumsException) {
         std::vector<Range> pass(args.size());
 
         for (int i = 0; i < args.size(); i++) {
@@ -919,7 +1071,7 @@ class PyTensorView : public RuntimeTensorView<T> {
     }
 
   public:
-    pybind11::object subscript(const pybind11::tuple &args) {
+    pybind11::object subscript(const pybind11::tuple &args) THROWS(einsums::EinsumsException) {
         pybind11::gil_scoped_acquire gil;
         pybind11::function           override = pybind11::get_override(static_cast<RuntimeTensorView<T> *>(this), "__subscript");
 
@@ -949,7 +1101,7 @@ class PyTensorView : public RuntimeTensorView<T> {
         }
     }
 
-    pybind11::object assign_values(const pybind11::buffer &value, const pybind11::tuple &index) {
+    pybind11::object assign_values(const pybind11::buffer &value, const pybind11::tuple &index) THROWS(einsums::EinsumsException) {
         pybind11::gil_scoped_acquire gil;
         pybind11::function           override = pybind11::get_override(static_cast<RuntimeTensorView<T> *>(this), "__assign");
 
@@ -980,7 +1132,7 @@ class PyTensorView : public RuntimeTensorView<T> {
         }
     }
 
-    pybind11::object assign_values(T value, const pybind11::tuple &index) {
+    pybind11::object assign_values(T value, const pybind11::tuple &index) THROWS(einsums::EinsumsException) {
         pybind11::gil_scoped_acquire gil;
         pybind11::function           override = pybind11::get_override(static_cast<RuntimeTensorView<T> *>(this), "__assign");
 
@@ -1015,7 +1167,7 @@ class PyTensorView : public RuntimeTensorView<T> {
         }
     }
 
-    RuntimeTensorView<T> subscript(const pybind11::slice &arg) {
+    RuntimeTensorView<T> subscript(const pybind11::slice &arg) THROWS(einsums::EinsumsException) {
         pybind11::gil_scoped_acquire gil;
         pybind11::function           override = pybind11::get_override(static_cast<RuntimeTensorView<T> *>(this), "__subscript");
 
@@ -1041,7 +1193,7 @@ class PyTensorView : public RuntimeTensorView<T> {
         }
     }
 
-    RuntimeTensorView<T> assign_values(const pybind11::buffer &value, const pybind11::slice &index) {
+    RuntimeTensorView<T> assign_values(const pybind11::buffer &value, const pybind11::slice &index) THROWS(einsums::EinsumsException) {
         pybind11::gil_scoped_acquire gil;
         pybind11::function           override = pybind11::get_override(static_cast<RuntimeTensorView<T> *>(this), "__assign");
 
@@ -1067,7 +1219,7 @@ class PyTensorView : public RuntimeTensorView<T> {
         }
     }
 
-    RuntimeTensorView<T> assign_values(T value, const pybind11::slice &index) {
+    RuntimeTensorView<T> assign_values(T value, const pybind11::slice &index) THROWS(einsums::EinsumsException) {
         pybind11::gil_scoped_acquire gil;
         pybind11::function           override = pybind11::get_override(static_cast<RuntimeTensorView<T> *>(this), "__assign");
 
@@ -1113,7 +1265,7 @@ class PyTensorView : public RuntimeTensorView<T> {
         }
     }
 
-    RuntimeTensorView<T> assign_values(const pybind11::buffer &value, ptrdiff_t index) {
+    RuntimeTensorView<T> assign_values(const pybind11::buffer &value, ptrdiff_t index) THROWS(einsums::EinsumsException) {
         pybind11::gil_scoped_acquire gil;
         pybind11::function           override = pybind11::get_override(static_cast<RuntimeTensorView<T> *>(this), "__assign");
 
@@ -1190,7 +1342,7 @@ class PyTensorView : public RuntimeTensorView<T> {
 #undef COPY_CAST_OP
 
   public:
-    PyTensorView<T> &operator=(const pybind11::buffer &buffer) {
+    PyTensorView<T> &operator=(const pybind11::buffer &buffer) THROWS(einsums::EinsumsException) {
         auto buffer_info = buffer.request();
 
         if (this->rank() != buffer_info.ndim) {
@@ -1280,7 +1432,7 @@ class PyTensorView : public RuntimeTensorView<T> {
     RuntimeTensorView<T> &operator OP(const RuntimeTensorView<T> &other) override {                                                        \
         PYBIND11_OVERRIDE(RuntimeTensorView<T> &, RuntimeTensorView<T>, OPNAME, other);                                                    \
     }                                                                                                                                      \
-    RuntimeTensorView<T> &operator OP(const pybind11::buffer & buffer) {                                                                   \
+    RuntimeTensorView<T> &operator OP(const pybind11::buffer & buffer) THROWS(einsums::EinsumsException) {                                 \
         pybind11::gil_scoped_acquire gil;                                                                                                  \
         pybind11::function           override = pybind11::get_override(static_cast<PyTensorView<T> *>(this), #OPNAME);                     \
                                                                                                                                            \
@@ -1380,21 +1532,27 @@ class PyTensorView : public RuntimeTensorView<T> {
 
     size_t dim(int d) const override { PYBIND11_OVERRIDE(size_t, RuntimeTensorView<T>, dim, d); }
 
-    std::vector<size_t> dims() const override { PYBIND11_OVERRIDE(std::vector<size_t>, RuntimeTensorView<T>, dims); }
+    std::vector<size_t> dims() const noexcept override { PYBIND11_OVERRIDE(std::vector<size_t>, RuntimeTensorView<T>, dims); }
 
-    size_t stride(int d) const noexcept override { PYBIND11_OVERRIDE(size_t, RuntimeTensorView<T>, stride, d); }
+    size_t stride(int d) const override { PYBIND11_OVERRIDE(size_t, RuntimeTensorView<T>, stride, d); }
 
     std::vector<size_t> strides() const noexcept override { PYBIND11_OVERRIDE(std::vector<size_t>, RuntimeTensorView<T>, strides); }
 
     bool full_view_of_underlying() const noexcept override { PYBIND11_OVERRIDE(bool, RuntimeTensorView<T>, full_view_of_underlying); }
 
-    const std::string &name() const override { PYBIND11_OVERRIDE(const std::string &, RuntimeTensorView<T>, name); }
+    const std::string &name() const noexcept override { PYBIND11_OVERRIDE(const std::string &, RuntimeTensorView<T>, name); }
 
     void set_name(const std::string &new_name) override { PYBIND11_OVERRIDE(void, RuntimeTensorView<T>, set_name, new_name); }
 
-    size_t rank() const override { PYBIND11_OVERRIDE(size_t, RuntimeTensorView<T>, rank); }
+    size_t rank() const noexcept override { PYBIND11_OVERRIDE(size_t, RuntimeTensorView<T>, rank); }
 };
 
+/**
+ * @brief Expose runtime tensors to Python.
+ *
+ * @tparam T The stored type of the tensors to export.
+ * @param mod The module which will contain the definitions.
+ */
 template <typename T>
 void export_tensor(pybind11::module &mod) {
     std::string suffix = "";

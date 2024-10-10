@@ -469,23 +469,23 @@ class RuntimeTensor : public virtual tensor_props::TensorBase,
 
 #undef OPERATOR
 
-    virtual auto dim(int d) const -> size_t {
+    virtual auto dim(int d) const THROWS(std::out_of_range) -> size_t {
         // Add support for negative indices.
         if (d < 0) {
             d += _rank;
         }
-        return _dims[d];
+        return _dims.at(d);
     }
-    virtual auto dims() const -> std::vector<size_t> { return _dims; }
+    virtual auto dims() const noexcept -> std::vector<size_t> { return _dims; }
 
     virtual auto vector_data() const -> const Vector & { return _data; }
     virtual auto vector_data() -> Vector & { return _data; }
 
-    virtual auto stride(int d) const noexcept -> size_t {
+    virtual auto stride(int d) const THROWS(std::out_of_range) -> size_t {
         if (d < 0) {
             d += _rank;
         }
-        return _strides[d];
+        return _strides.at(d);
     }
 
     virtual auto strides() const noexcept -> std::vector<size_t> { return _strides; }
@@ -502,11 +502,11 @@ class RuntimeTensor : public virtual tensor_props::TensorBase,
 
     virtual auto full_view_of_underlying() const noexcept -> bool override { return true; }
 
-    virtual const std::string &name() const override { return _name; };
+    virtual const std::string &name() const noexcept override { return _name; };
 
     virtual void set_name(const std::string &new_name) override { _name = new_name; };
 
-    virtual size_t rank() const override { return _rank; }
+    virtual size_t rank() const noexcept override { return _rank; }
 }; // namespace einsums
 
 /**
@@ -1083,20 +1083,20 @@ class RuntimeTensorView : public virtual tensor_props::TensorViewBase<RuntimeTen
 
 #undef OPERATOR
 
-    virtual auto dim(int d) const -> size_t {
+    virtual auto dim(int d) const THROWS(std::out_of_range) -> size_t {
         // Add support for negative indices.
         if (d < 0) {
             d += _rank;
         }
-        return _dims[d];
+        return _dims.at(d);
     }
-    virtual auto dims() const -> std::vector<size_t> { return _dims; }
+    virtual auto dims() const noexcept -> std::vector<size_t> { return _dims; }
 
-    virtual auto stride(int d) const noexcept -> size_t {
+    virtual auto stride(int d) const THROWS(std::out_of_range) -> size_t {
         if (d < 0) {
             d += _rank;
         }
-        return _strides[d];
+        return _strides.at(d);
     }
 
     virtual auto strides() const noexcept -> std::vector<size_t> { return _strides; }
@@ -1109,7 +1109,7 @@ class RuntimeTensorView : public virtual tensor_props::TensorViewBase<RuntimeTen
     }
 
     // Returns the linear size of the tensor
-    virtual auto size() const -> size_t { return _size; }
+    virtual auto size() const noexcept -> size_t { return _size; }
 
     virtual auto full_view_of_underlying() const noexcept -> bool override { return true; }
 
@@ -1117,7 +1117,7 @@ class RuntimeTensorView : public virtual tensor_props::TensorViewBase<RuntimeTen
 
     virtual void set_name(const std::string &new_name) override { _name = new_name; };
 
-    virtual size_t rank() const override { return _rank; }
+    virtual size_t rank() const noexcept override { return _rank; }
 };
 
 } // namespace einsums
