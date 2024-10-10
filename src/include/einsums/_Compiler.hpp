@@ -63,4 +63,17 @@
 // other warnings you want to deactivate...
 
 #endif
+
+/**
+ * @def THROWS(...)
+ *
+ * @brief Marks a function as being able to throw an exception.
+ * 
+ * This macro hopefully provides similar support to the old `throw()` syntax from C++ or
+ * Java's `throws()` property. It can also aid the user in determining what kinds of exceptions
+ * to expect from a function.
+ * If the argument is empty, it is just like using `noexcept`. Otherwise, it is like `noexcept(false)`,
+ * which means that it can throw exceptions. This macro is mostly for documenting code.
+ */
+#define THROWS(...) noexcept(true __VA_OPT__(== false))
 // clang-format on
