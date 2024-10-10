@@ -31,6 +31,9 @@ if(EINSUMS_COVERAGE AND NOT MSVC)
     target_compile_options(test-all PUBLIC $<$<COMPILE_LANG_AND_ID:CXX,Clang>:-fprofile-instr-generate -fcoverage-mapping>)
     target_compile_options(test-all PUBLIC $<$<COMPILE_LANGUAGE:HIP>:-fprofile-instr-generate -fcoverage-mapping>)
     target_compile_options(test-all PUBLIC $<$<COMPILE_LANG_AND_ID:CXX,GNU>:--coverage>)
+    target_link_options(test-all PUBLIC $<$<COMPILE_LANG_AND_ID:CXX,Clang>:-fprofile-instr-generate -fcoverage-mapping>)
+    target_link_options(test-all PUBLIC $<$<COMPILE_LANGUAGE:HIP>:-fprofile-instr-generate -fcoverage-mapping>)
+    target_link_options(test-all PUBLIC $<$<COMPILE_LANG_AND_ID:CXX,GNU>:-lgcov --coverage>)
 endif()
 
 if (NOT MSVC)
@@ -81,13 +84,6 @@ target_link_libraries(test-all PUBLIC Catch2::Catch2 einsums)
 include(CTest)
 include(Catch)
 catch_discover_tests(test-all)
-
-if(EINSUMS_COVERAGE AND NOT MSVC)
-    target_compile_options(test-all PUBLIC $<$<COMPILE_LANG_AND_ID:CXX,Clang>:-fprofile-instr-generate -fcoverage-mapping>)
-    target_compile_options(test-all PUBLIC $<$<COMPILE_LANGUAGE:HIP>:-fprofile-instr-generate -fcoverage-mapping>)
-    target_compile_options(test-all PUBLIC $<$<COMPILE_LANG_AND_ID:CXX,GNU>:--coverage>)
-    target_link_options(test-all PUBLIC -lgcov --coverage)
-endif()
 
 install(TARGETS test-all
     RUNTIME DESTINATION ${EINSUMS_DATA_PATH})
