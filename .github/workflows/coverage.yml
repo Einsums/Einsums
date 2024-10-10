@@ -94,6 +94,7 @@ jobs:
             - numpy
             - pytest-cov
             - coverage
+            - lcov
           EOF
           if [[ "${{ runner.os }}" == "Linux" ]]; then
             :
