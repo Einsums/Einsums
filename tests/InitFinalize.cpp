@@ -23,14 +23,18 @@ TEST_CASE("Initialize Finalize") {
 
     SECTION("No print") {
         einsums::finalize(false);
+
+        REQUIRE(stat("timings.txt", &buffer) != 0);
     }
 
     SECTION("Print to standard file") {
         einsums::finalize(true);
+        REQUIRE(stat("timings.txt", &buffer) == 0);
     }
 
     SECTION("Print to other file") {
         einsums::finalize("timings_2.txt");
+        REQUIRE(stat("timings_2.txt", &buffer) == 0);
     }
 
     einsums::initialize();
