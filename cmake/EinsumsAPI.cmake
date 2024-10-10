@@ -180,7 +180,7 @@ function(add_einsums_library name)
         target_compile_options(${name} PUBLIC $<$<COMPILE_LANG_AND_ID:CXX,Clang>:-fprofile-instr-generate -fcoverage-mapping>)
         target_compile_options(${name} PUBLIC $<$<COMPILE_LANGUAGE:HIP>:-fprofile-instr-generate -fcoverage-mapping>)
         target_compile_options(${name} PUBLIC $<$<COMPILE_LANG_AND_ID:CXX,GNU>:--coverage>)
-        target_link_options(${name} PUBLIC $<$<COMPILE_LANG_AND_ID:CXX,GNU>:-lgcov --coverage>)
+        target_link_options(${name} PUBLIC -lgcov --coverage)
     endif()
 
     if (EINSUMS_ENABLE_TESTING AND NOT MSVC)
