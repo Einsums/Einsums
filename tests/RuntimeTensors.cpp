@@ -6,6 +6,7 @@ using namespace einsums;
 
 TEST_CASE("Runtime Tensor Assignment") {
     RuntimeTensor<double> A = create_random_tensor("A", 10, 10);
+    RuntimeTensor<double> C = create_random_tensor("C", 10, 10);
 
     REQUIRE(A.rank() == 2);
 
@@ -22,6 +23,14 @@ TEST_CASE("Runtime Tensor Assignment") {
                     REQUIRE(B(std::vector<ptrdiff_t>{i, j, k, l}) == B_base(i, j + 1, k + 2, l + 3));
                 }
             }
+        }
+    }
+
+    A = C;
+
+    for(int i = 0; i < 10; i++) {
+        for(int j = 0; j < 10; j++) {
+            REQUIRE(A(std::vector<ptrdiff_t>{i, j}) == C(std::vector<ptrdiff_t>{i, j}));
         }
     }
 }
