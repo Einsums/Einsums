@@ -98,7 +98,8 @@ PyGPUView::PyGPUView(const pybind11::buffer &buffer, detail::PyViewMode mode) {
     gpu::hip_catch(hipMemcpy((void *)_gpu_strides, (const void *)_strides.data(), _rank * sizeof(size_t), hipMemcpyHostToDevice));
 }
 
-PyGPUView::~PyGPUView() {
+PyGPUView::~PyGPUView() THROWS(einsums::gpu::detail::ErrorInvalidDevicePointer, einsums::gpu::detail::ErrorInvalidValue,
+                        einsums::gpu::detail::ErrorHostMemoryNotRegistered) {
     if (_mode == detail::COPY) {
         // Don't copy before. There is no guarantee that the host data is still valid.
         gpu::hip_catch(hipFree(_dev_data));
