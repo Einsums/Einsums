@@ -63,7 +63,9 @@ EINSUMS_EXPORT std::vector<size_t> get_dim_ranges_for_many(const python::PyGPUVi
 
 EINSUMS_EXPORT std::vector<size_t> get_dim_ranges_for_many(const python::PyGPUView &A, const std::vector<int> &A_perm,
                                                            const python::PyGPUView &B, const std::vector<int> &B_perm, int unique_indices);
-
+/**
+ * Perform the generic algorithm on the GPU.
+ */
 template <typename DataType>
 __global__ void einsum_generic_algorithm_gpu(const size_t *__restrict__ unique_strides, const size_t *__restrict__ C_index_strides,
                                              const int *__restrict__ C_index_table, const int *__restrict__ A_index_table,
@@ -124,7 +126,10 @@ __global__ void einsum_generic_algorithm_gpu(const size_t *__restrict__ unique_s
     }
 }
 
-// When we will only see a certain element once, we can ignore atomicity for a speedup.
+/**
+ * Perform the generic algorithm on the GPU. This is the special case where each element in C will be seen exactly once, so we can
+ * skip synchronizations.
+ */
 template <typename DataType>
 __global__ void einsum_generic_algorithm_direct_product_gpu(
     const size_t *__restrict__ unique_strides, const size_t *__restrict__ C_index_strides, const int *__restrict__ C_index_table,
@@ -212,6 +217,9 @@ __global__ void einsum_generic_zero_rank_gpu(const size_t *__restrict__ unique_s
     atomicAdd_wrap(C, AB_prefactor * value);
 }
 
+/**
+ * Compute the dot product on GPU.
+ */
 template <typename T>
 __global__ void dot_kernel(const size_t *unique_strides, T *__restrict__ C, const T *__restrict__ A, const size_t *__restrict__ A_strides,
                            const T *__restrict__ B, const size_t *__restrict__ B_strides, size_t max_index, size_t rank) {
@@ -251,6 +259,9 @@ __global__ void dot_kernel(const size_t *unique_strides, T *__restrict__ C, cons
     atomicAdd_wrap(C, value);
 }
 
+/**
+ * Compute the direct product on GPU.
+ */
 template <typename DataType>
 __global__ void direct_product_kernel(const size_t *__restrict__ index_strides, const DataType C_prefactor, DataType *__restrict__ C,
                                       const size_t *__restrict__ C_stride, const DataType      AB_prefactor, const DataType *__restrict__ A,
@@ -288,6 +299,9 @@ __global__ void direct_product_kernel(const size_t *__restrict__ index_strides, 
     }
 }
 
+/**
+ * Scale a tensor on GPU.
+ */
 template <typename T>
 __global__ void scale_array(T factor, T *__restrict__ array, size_t max_index) {
     using namespace einsums::gpu;
@@ -323,6 +337,9 @@ class PyEinsumGenericPlan {
     bool             _direct_product_swap;
 
 #ifdef __HIP__
+    /**
+     * Set up and execute the GPU code.
+     */
     template <typename T>
     void execute_generic_gpu(T C_prefactor, python::PyGPUView &C, T AB_prefactor, const python::PyGPUView &A,
                              const python::PyGPUView &B) const {
@@ -487,6 +504,9 @@ class PyEinsumGenericPlan {
     }
 #endif
 
+    /**
+     * Execute the generic algorithm.
+     */
     template <typename T>
     void execute_generic(T C_prefactor, pybind11::buffer &C, T AB_prefactor, const pybind11::buffer &A, const pybind11::buffer &B) const {
         using namespace einsums::tensor_algebra::detail;
@@ -579,10 +599,16 @@ class PyEinsumGenericPlan {
     ~PyEinsumGenericPlan()                           = default;
 
 #ifdef __HIP__
+    /**
+     * Execute the specified plan on the given tensors. This one uses the GPU algorithm.
+     */
     virtual void execute(const pybind11::object &C_prefactor, python::PyGPUView &C, const pybind11::object &AB_prefactor,
                          const python::PyGPUView &A, const python::PyGPUView &B) const;
 #endif
 
+    /**
+     * Execute the specified plan on the given tensors.
+     */
     virtual void execute(const pybind11::object &C_prefactor, pybind11::buffer &C, const pybind11::object &AB_prefactor,
                          const pybind11::buffer &A, const pybind11::buffer &B) const;
 };
