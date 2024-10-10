@@ -114,23 +114,23 @@ PyGPUView::~PyGPUView() {
     }
 }
 
-void *PyGPUView::host_data() {
+void *PyGPUView::host_data() noexcept {
     return _host_data;
 }
 
-const void *PyGPUView::host_data() const {
+const void *PyGPUView::host_data() const noexcept {
     return _host_data;
 }
 
-void *PyGPUView::dev_data() {
+void *PyGPUView::dev_data() noexcept {
     return _dev_data;
 }
 
-const void *PyGPUView::dev_data() const {
+const void *PyGPUView::dev_data() const noexcept {
     return _dev_data;
 }
 
-std::vector<size_t> PyGPUView::dims() const {
+std::vector<size_t> PyGPUView::dims() const noexcept {
     return _dims;
 }
 
@@ -141,7 +141,7 @@ size_t PyGPUView::dim(int i) const {
     return _dims.at(i);
 }
 
-std::vector<size_t> PyGPUView::strides() const {
+std::vector<size_t> PyGPUView::strides() const noexcept {
     return _strides;
 }
 
@@ -153,35 +153,35 @@ size_t PyGPUView::stride(int i) const {
     }
 }
 
-std::string PyGPUView::fmt_spec() const {
+std::string PyGPUView::fmt_spec() const noexcept {
     return _fmt_spec;
 }
 
-size_t *PyGPUView::gpu_dims() {
+size_t *PyGPUView::gpu_dims() noexcept {
     return _gpu_dims;
 }
 
-const size_t *PyGPUView::gpu_dims() const {
+const size_t *PyGPUView::gpu_dims() const noexcept {
     return _gpu_dims;
 }
 
-size_t *PyGPUView::gpu_strides() {
+size_t *PyGPUView::gpu_strides() noexcept {
     return _gpu_strides;
 }
 
-const size_t *PyGPUView::gpu_strides() const {
+const size_t *PyGPUView::gpu_strides() const noexcept {
     return _gpu_strides;
 }
 
-size_t PyGPUView::rank() const {
+size_t PyGPUView::rank() const noexcept {
     return _rank;
 }
 
-size_t PyGPUView::size() const {
+size_t PyGPUView::size() const noexcept {
     return _num_items;
 }
 
-size_t PyGPUView::itemsize() const {
+size_t PyGPUView::itemsize() const noexcept {
     return _itemsize;
 }
 

@@ -8,6 +8,7 @@
 #include <hip/hip_runtime.h>
 #include <hip/hip_runtime_api.h>
 #include <pybind11/pybind11.h>
+#include <vector>
 
 namespace einsums::python {
 
@@ -76,7 +77,9 @@ class PyGPUView {
      * @param buffer The buffer to make available.
      * @param mode The mode for making the data available. Can not be detail::DEVICE_TENSOR.
      */
-    PyGPUView(pybind11::buffer &buffer, detail::PyViewMode mode = detail::COPY);
+    PyGPUView(pybind11::buffer &buffer, detail::PyViewMode mode = detail::COPY)
+        THROWS(einsums::EinsumsException, einsums::gpu::detail::ErrorOutOfMemory, einsums::gpu::detail::ErrorInvalidValue,
+               einsums::gpu::detail::ErrorUnknown, std::bad_alloc, pybind11::error_already_set);
 
     /**
      * @brief Creates a view of the given buffer object.
@@ -86,7 +89,9 @@ class PyGPUView {
      * @param buffer The buffer to make available.
      * @param mode The mode for making the data available. Can not be detail::DEVICE_TENSOR.
      */
-    PyGPUView(const pybind11::buffer &buffer, detail::PyViewMode mode = detail::COPY);
+    PyGPUView(const pybind11::buffer &buffer, detail::PyViewMode mode = detail::COPY)
+        THROWS(einsums::EinsumsException, einsums::gpu::detail::ErrorOutOfMemory, einsums::gpu::detail::ErrorInvalidValue,
+               einsums::gpu::detail::ErrorUnknown, std::bad_alloc, pybind11::error_already_set);
 
     /**
      * @brief Creates a view of the given tensor.
@@ -96,7 +101,8 @@ class PyGPUView {
      * @param tensor The tensor to convert.
      */
     template <typename T, size_t Rank>
-    PyGPUView(DeviceTensor<T, Rank> &tensor)
+    PyGPUView(DeviceTensor<T, Rank> &tensor) THROWS(einsums::gpu::detail::ErrorOutOfMemory, einsums::gpu::detail::ErrorInvalidValue,
+                                                    einsums::gpu::detail::ErrorUnknown, std::bad_alloc)
         : _dims{tensor.dims()}, _strides(Rank), _gpu_dims{tensor.gpu_dims()}, _rank{Rank}, _itemsize{sizeof(T)},
           _alloc_size{sizeof(T) * tensor.dims(0) * tensor.strides(0)}, _num_items{tensor.size()}, _mode{detail::DEVICE_TENSOR},
           _fmt_spec{pybind11::format_descriptor<T>::format()}, _host_data{(void *)tensor.host_data()}, _dev_data{(void *)tensor.data()},
@@ -118,7 +124,8 @@ class PyGPUView {
      * @param tensor The tensor to convert.
      */
     template <typename T, size_t Rank>
-    PyGPUView(DeviceTensorView<T, Rank> &tensor)
+    PyGPUView(DeviceTensorView<T, Rank> &tensor) THROWS(einsums::gpu::detail::ErrorOutOfMemory, einsums::gpu::detail::ErrorInvalidValue,
+                                                        einsums::gpu::detail::ErrorUnknown, std::bad_alloc)
         : _dims{tensor.dims()}, _strides(Rank), _gpu_dims{tensor.gpu_dims()}, _rank{Rank}, _itemsize{sizeof(T)},
           _alloc_size{sizeof(T) * tensor.dims(0) * tensor.strides(0)}, _num_items{tensor.size()}, _mode{detail::DEVICE_TENSOR},
           _fmt_spec{pybind11::format_descriptor<T>::format()}, _host_data{(void *)tensor.host_data()}, _dev_data{(void *)tensor.data()},
@@ -140,7 +147,8 @@ class PyGPUView {
      * @param tensor The tensor to convert.
      */
     template <typename T, size_t Rank>
-    PyGPUView(const DeviceTensor<T, Rank> &tensor)
+    PyGPUView(const DeviceTensor<T, Rank> &tensor) THROWS(einsums::gpu::detail::ErrorOutOfMemory, einsums::gpu::detail::ErrorInvalidValue,
+                                                          einsums::gpu::detail::ErrorUnknown, std::bad_alloc)
         : _dims{tensor.dims()}, _strides(Rank), _gpu_dims{tensor.gpu_dims()}, _rank{Rank}, _itemsize{sizeof(T)},
           _alloc_size{sizeof(T) * tensor.dims(0) * tensor.strides(0)}, _num_items{tensor.size()}, _mode{detail::DEVICE_TENSOR},
           _fmt_spec{pybind11::format_descriptor<T>::format()} {
@@ -162,6 +170,8 @@ class PyGPUView {
      */
     template <typename T, size_t Rank>
     PyGPUView(const DeviceTensorView<T, Rank> &tensor)
+        THROWS(einsums::gpu::detail::ErrorOutOfMemory, einsums::gpu::detail::ErrorInvalidValue, einsums::gpu::detail::ErrorUnknown,
+               std::bad_alloc)
         : _dims{tensor.dims()}, _strides(Rank), _gpu_dims{tensor.gpu_dims()}, _rank{Rank}, _itemsize{sizeof(T)},
           _alloc_size{sizeof(T) * tensor.dims(0) * tensor.strides(0)}, _num_items{tensor.size()}, _mode{detail::DEVICE_TENSOR},
           _fmt_spec{pybind11::format_descriptor<T>::format()} {
@@ -176,37 +186,38 @@ class PyGPUView {
 
     PyGPUView(const PyGPUView &) = delete;
 
-    ~PyGPUView();
+    ~PyGPUView() THROWS(einsums::gpu::detail::ErrorInvalidDevicePointer, einsums::gpu::detail::ErrorInvalidValue,
+                        einsums::gpu::detail::ErrorHostMemoryNotRegistered);
 
     /**
      * @brief Get the pointer to the host data.
      */
-    void *host_data();
+    void *host_data() noexcept;
 
     /**
      * @brief Get the pointer to the host data.
      */
-    const void *host_data() const;
+    const void *host_data() const noexcept;
 
     /**
      * @brief Get the pointer to the device data.
      */
-    void *dev_data();
+    void *dev_data() noexcept;
 
     /**
      * @brief Get the pointer to the device data.
      */
-    const void *dev_data() const;
+    const void *dev_data() const noexcept;
 
     /**
      * @brief Get the dimensions of each axis.
      */
-    std::vector<size_t> dims() const;
+    std::vector<size_t> dims() const noexcept;
 
     /**
      * @brief Get the dimension of the given axis. Supports negative indexing.
      */
-    size_t dim(int i) const;
+    size_t dim(int i) const THROWS(std::out_of_range);
 
     /**
      * @brief Get the strides of each axis in bytes.
@@ -214,7 +225,7 @@ class PyGPUView {
      * This is different from how the C++ side works, which is in elements. To get
      * the equivalent C++ stride, you must divide by PyGPUView::itemsize().
      */
-    std::vector<size_t> strides() const;
+    std::vector<size_t> strides() const noexcept;
 
     /**
      * @brief Get the strides of the given axis in bytes. Supports negative indexing.
@@ -222,7 +233,7 @@ class PyGPUView {
      * This is different from how the C++ side works, which is in elements. To get
      * the equivalent C++ stride, you must divide by PyGPUView::itemsize().
      */
-    size_t stride(int i) const;
+    size_t stride(int i) const THROWS(std::out_of_range);
 
     /**
      * @brief Get the format specifier for the data type.
@@ -230,56 +241,56 @@ class PyGPUView {
      * This is specified by pybind11. For instance, floats are "f", doubles are "d", and long doubles are "g".
      * Complex types are "Z" followed by their underlying type.
      */
-    std::string fmt_spec() const;
+    std::string fmt_spec() const noexcept;
 
     /**
      * @brief Get the device pointer to the array of the dimensions.
      */
-    size_t *gpu_dims();
+    size_t *gpu_dims() noexcept;
 
     /**
      * @brief Get the device pointer to the array of the dimensions.
      */
-    const size_t *gpu_dims() const;
+    const size_t *gpu_dims() const noexcept;
 
     /**
      * @brief Get the device pointer to the array of the strides in bytes.
      */
-    size_t *gpu_strides();
+    size_t *gpu_strides() noexcept;
 
     /**
      * @brief Get the device pointer to the array of the strides in bytes.
      */
-    const size_t *gpu_strides() const;
+    const size_t *gpu_strides() const noexcept;
 
     /**
      * @brief Get the rank.
      */
-    size_t rank() const;
+    size_t rank() const noexcept;
 
     /**
      * @brief Get the number of elements.
      */
-    size_t size() const;
+    size_t size() const noexcept;
 
     /**
      * @brief Get the size of each item.
      */
-    size_t itemsize() const;
+    size_t itemsize() const noexcept;
 
     /**
      * @brief Synchronize the data by sending the host data to the device.
      *
      * This only does something when the mode is set to detail::COPY. Otherwise, it does nothing.
      */
-    void update_H2D();
+    void update_H2D() THROWS(einsums::gpu::detail::ErrorInvalidValue, einsums::gpu::detail::ErrorUnknown);
 
     /**
      * @brief Synchronize the data by sending the device data to the host.
      *
      * This only does something when the mode is set to detail::COPY. Otherwise, it does nothing.
      */
-    void update_D2H();
+    void update_D2H() THROWS(einsums::gpu::detail::ErrorInvalidValue, einsums::gpu::detail::ErrorUnknown);
 };
 
 /**
