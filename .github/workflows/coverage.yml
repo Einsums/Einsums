@@ -137,7 +137,7 @@ jobs:
         uses: codecov/codecov-action@v4
         with:
           directory: "${{github.workspace}}/build"
-          working_directory: "${{github.workspace}}"
+          working-directory: "${{github.workspace}}"
           disable_search: true
           file: ${{github.workspace}}/build/coverage.info
           flags: cpp
@@ -147,7 +147,7 @@ jobs:
         uses: codecov/codecov-action@v4
         with:
           directory: "${{github.workspace}}/installed"
-          working_directory: "${{github.workspace}}"
+          working-directory: "${{github.workspace}}"
           disable_search: true
           flags: python
           file: ${{github.workspace}}/installed/coverage.xml
