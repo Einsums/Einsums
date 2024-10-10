@@ -5,12 +5,15 @@ import numpy as np
 def test_creation() :
     A = ein.core.RuntimeTensor("A", [3, 3])
     B = ein.core.RuntimeTensor([3, 3])
+    C = ein.core.RuntimeTensor(np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]], dtype=float))
 
     A_dims = A.dims()
     B_dims = B.dims()
+    C_dims = C.dims()
 
     assert A.rank() == 2
     assert B.rank() == 2
+    assert C.rank() == 2
 
     assert A_dims[0] == 3
     assert A_dims[1] == 3
@@ -22,8 +25,14 @@ def test_creation() :
     assert B.dim(0) == 3
     assert B.dim(1) == 3
 
+    assert C_dims[0] == 3
+    assert C_dims[1] == 3
+    assert C.dim(0) == 3
+    assert C.dim(1) == 3
+
     A_strides = A.strides()
     B_strides = B.strides()
+    C_strides = C.strides()
 
     assert A_strides[0] == 3
     assert A_strides[1] == 1
@@ -34,6 +43,11 @@ def test_creation() :
     assert B_strides[1] == 1
     assert B.stride(0) == 3
     assert B.stride(1) == 1
+
+    assert C_strides[0] == 3
+    assert C_strides[1] == 1
+    assert C.stride(0) == 3
+    assert C.stride(1) == 1
 
     assert A.get_name() == "A"
     assert A.name == "A"
