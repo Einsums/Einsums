@@ -152,7 +152,7 @@ jobs:
       - name: Upload Python coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
-          directory: "${{github.workspace}}/installed"
+          directory: "${{github.workspace}}"
           flags: python
           file: ${{github.workspace}}/installed/.coverage
           token: ${{ secrets.CODECOV_TOKEN }}
