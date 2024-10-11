@@ -30,7 +30,7 @@ TEST_CASE("Runtime Tensor Assignment") {
 
     for(int i = 0; i < 10; i++) {
         for(int j = 0; j < 10; j++) {
-            REQUIRE(A(std::vector<ptrdiff_t>{i, j}) == C(std::vector<ptrdiff_t>{i, j}));
+            REQUIRE(A(i, j) == C(i, j));
         }
     }
 }

@@ -41,6 +41,11 @@ class EINSUMS_EXPORT PyTensorIterator {
     bool                 _stop{false}, _reverse{false};
 
   public:
+    PyTensorIterator(const PyTensorIterator &copy, bool reverse = false)
+        : _curr_index{copy._curr_index}, _elements{copy._elements},
+          _index_strides(copy._index_strides.cbegin(), copy._index_strides.cend()), _tensor(copy._tensor),
+          _stop{copy._curr_index < 0 || copy._curr_index >= copy._elements}, _reverse{reverse != copy._reverse} {}
+
     /**
      * Create an iterator around a tensor. Can be reversed.
      *
@@ -1569,7 +1574,9 @@ void export_tensor(pybind11::module &mod) {
 
     pybind11::class_<PyTensorIterator<T>, std::shared_ptr<PyTensorIterator<T>>>(mod, ("PyTensorIterator" + suffix).c_str())
         .def("__next__", &PyTensorIterator<T>::next, pybind11::return_value_policy::reference)
-        .def("reversed", &PyTensorIterator<T>::reversed);
+        .def("reversed", &PyTensorIterator<T>::reversed)
+        .def("__iter__", [](const PyTensorIterator<T> &copy) { return copy; })
+        .def("__reversed__", [](const PyTensorIterator<T> &copy) { return PyTensorIterator<T>(copy, true); });
 
     auto tensor_view = pybind11::class_<RuntimeTensorView<T>, PyTensorView<T>, SharedRuntimeTensorView<T>>(
         mod, ("RuntimeTensorView" + suffix).c_str(), pybind11::buffer_protocol());

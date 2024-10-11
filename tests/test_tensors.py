@@ -417,4 +417,28 @@ def test_view_ops() :
             assert A_res[index] == A[index] / 2 / B[index] / C[index] / D[index]
         else :
             assert A_res[index] == A[index]
+
+def test_iterators() :
+    A = ein.core.RuntimeTensor("A", [10, 10])
+    B = A.copy()
+
+    B *= 2
+
+    # Test tensor iterators.
+    for x, y in zip(A, B) :
+        assert 2 * x == y
     
+    # Test tensor view iterators
+    A_view = A[0:5, 0:5]
+    B_view = B[0:5, 0:5]
+
+    for x, y in zip(A_view, B_view) :
+        assert 2 * x == y
+    
+    # Test reverse tensor iterators.
+    for x, y in zip(reversed(A), reversed(B)) :
+        assert 2 * x == y
+    
+    # Test reverse tensor view iterators.
+    for x, y in zip(reversed(A_view), reversed(B_view)) :
+        assert 2 * x == y

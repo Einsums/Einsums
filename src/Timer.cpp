@@ -139,8 +139,8 @@ void report() {
     detail::print_timer_info(detail::root, stdout);
 }
 
-void report(const std::string &fname) {
-    std::FILE *fp = std::fopen(fname.c_str(), "w+");
+void report(const char *fname) {
+    std::FILE *fp = std::fopen(fname, "w+");
 
     detail::print_timer_info(detail::root, fp);
 
@@ -148,15 +148,9 @@ void report(const std::string &fname) {
     std::fclose(fp);
 }
 
-// Handled by const std::string& above
-// void report(const char *fname) {
-//    std::FILE *fp = std::fopen(fname, "w+");
-//
-//    detail::print_timer_info(detail::root, fp);
-//
-//    std::fflush(fp);
-//    std::fclose(fp);
-//}
+void report(const std::string &fname) {
+    report(fname.c_str());
+}
 
 void report(std::FILE *fp) {
     detail::print_timer_info(detail::root, fp);

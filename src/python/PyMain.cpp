@@ -47,7 +47,7 @@ void einsums::python::export_python_base(pybind11::module_ &mod) {
         .def(
             "finalize", [](bool timer_report) { einsums::finalize(timer_report); }, py::arg("timer_report") = false)
         .def(
-            "finalize", [](std::string timer_report) { einsums::finalize(timer_report); }, py::arg("output_file"))
+            "finalize", [](std::string timer_report) { einsums::finalize(timer_report.c_str()); }, py::arg("output_file"))
         .def("report", []() { einsums::timer::report(); })
         .def("report", [](std::string output_file) { einsums::timer::report(output_file); }, py::arg("output_file"));
 

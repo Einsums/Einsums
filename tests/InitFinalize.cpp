@@ -1,6 +1,8 @@
 #include <einsums.hpp>
 #include <catch2/catch_all.hpp>
 #include <sys/stat.h>
+#include <error.h>
+#include <errno.h>
 //#include <unistd.h>
 
 TEST_CASE("Initialize Finalize") {
@@ -15,11 +17,7 @@ TEST_CASE("Initialize Finalize") {
         remove("timings.txt");
     }
 
-    result = stat("timings_2.txt", &buffer);
-
-    if(result == 0) {
-        remove("timings_2.txt");
-    }
+    errno = 0;
 
     SECTION("No print") {
         einsums::finalize(false);
@@ -27,14 +25,22 @@ TEST_CASE("Initialize Finalize") {
         REQUIRE(stat("timings.txt", &buffer) != 0);
     }
 
-    SECTION("Print to standard file") {
+    SECTION("Print to standard output") {
         einsums::finalize(true);
-        REQUIRE(stat("timings.txt", &buffer) == 0);
+
+        REQUIRE(stat("timings.txt", &buffer) != 0);
     }
 
     SECTION("Print to other file") {
-        einsums::finalize("timings_2.txt");
-        REQUIRE(stat("timings_2.txt", &buffer) == 0);
+        einsums::finalize("timings.txt");
+        
+        result = stat("timings.txt", &buffer);
+
+        if(result != 0) {
+            perror("Could not stat file!");
+        }
+
+        REQUIRE(result == 0);
     }
 
     einsums::initialize();

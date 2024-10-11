@@ -7,6 +7,7 @@
 #include "einsums/utility/TensorBases.hpp"
 
 #include <vector>
+#include <variant>
 
 namespace einsums {
 
@@ -74,15 +75,14 @@ class RuntimeTensor : public virtual tensor_props::TensorBase,
             _strides[i] = copy.stride(i);
         }
 
-        _data.resize(size());
+        _data.resize(copy.size());
 
-        std::memcpy(_data.data(), copy.data(), size() * sizeof(T));
+        std::memcpy(_data.data(), copy.data(), copy.size() * sizeof(T));
     }
 
     template <size_t Rank>
-    RuntimeTensor(const TensorView<T, Rank> &copy) : _rank{Rank}, _dims(Rank) {
+    RuntimeTensor(const TensorView<T, Rank> &copy) : _rank{Rank}, _dims(Rank), _strides(Rank) {
         size_t size = 1;
-        _strides.resize(rank());
 
         for (int i = Rank - 1; i >= 0; i--) {
             _strides[i] = size;
@@ -163,6 +163,44 @@ class RuntimeTensor : public virtual tensor_props::TensorBase,
             index += _dims[0];
         }
         return _data.at(index);
+    }
+
+    /**
+     * TODO: std::variant can't handle references. We might be able to make our own variant that can.
+     * This new variant may also be able to replace HostDevReference.
+     */
+    template <typename... Args>
+        requires(std::is_integral_v<Args> && ...)
+    T &operator()(Args... args) THROWS(einsums::EinsumsException) {
+        if (sizeof...(Args) < rank()) {
+            throw EINSUMSEXCEPTION("Not yet implemented: can not handle fewer integral indices than rank in runtime tensor.");
+        } else if (sizeof...(Args) > rank()) {
+            throw EINSUMSEXCEPTION("Too many indices passed to subscript operator!");
+        }
+        std::array<ptrdiff_t, sizeof...(Args)> index{static_cast<ptrdiff_t>(args)...};
+        return _data.at(einsums::tensor_algebra::detail::indices_to_sentinel_negative_check(_strides, _dims, index));
+    }
+
+    template <typename... Args>
+        requires(std::is_integral_v<Args> && ...)
+    std::variant<T, RuntimeTensorView<T>> operator()(Args... args) const THROWS(einsums::EinsumsException) {
+        if (sizeof...(Args) > rank()) {
+            throw EINSUMSEXCEPTION("Too many indices passed to subscript operator!");
+        }
+
+        std::array<ptrdiff_t, sizeof...(Args)> index{static_cast<ptrdiff_t>(args)...};
+
+        if (sizeof...(Args) < rank()) {
+            std::vector<Range> slices(sizeof...(Args));
+
+            for (int i = 0; i < sizeof...(Args); i++) {
+                slices[i] = Range{-1, index[i]};
+            }
+            return std::variant<T, RuntimeTensorView<T>>((*this)(slices));
+        } else {
+            return std::variant<T, RuntimeTensorView<T>>(
+                _data.at(einsums::tensor_algebra::detail::indices_to_sentinel_negative_check(_strides, _dims, index)));
+        }
     }
 
     /*

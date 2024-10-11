@@ -34,33 +34,63 @@ auto initialize() -> int {
     return 0;
 }
 
-void finalize(bool timerReport) {
-
-    blas::finalize();
+static void finalize_pre(void) {
+        blas::finalize();
 
 #ifdef __HIP__
     einsums::gpu::finalize();
 
 #endif
+}
+
+static void finalize_post(void) {
+    timer::finalize();
+}
+
+void finalize(const char *output_file) {
+    finalize_pre();
+
+
+    timer::report(output_file);
+
+    finalize_post();
+}
+
+void finalize(bool timerReport) {
+
+    finalize_pre();
 
     if (timerReport)
         timer::report();
 
-    timer::finalize();
+    finalize_post();
 }
 
-void finalize(std::string output_file) {
+void finalize(const std::string &output_file) {
+    finalize_pre();
 
-    blas::finalize();
-
-#ifdef __HIP__
-    einsums::gpu::finalize();
-
-#endif
 
     timer::report(output_file);
 
-    timer::finalize();
+    finalize_post();
+}
+
+void finalize(FILE *file_pointer) {
+    finalize_pre();
+
+
+    timer::report(file_pointer);
+
+    finalize_post();
+}
+
+void finalize(std::ostream &output_stream) {
+    finalize_pre();
+
+
+    timer::report(output_stream);
+
+    finalize_post();
 }
 
 } // namespace einsums
