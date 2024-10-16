@@ -82,18 +82,6 @@ class PyGPUView {
                einsums::gpu::detail::ErrorUnknown, std::bad_alloc, pybind11::error_already_set);
 
     /**
-     * @brief Creates a view of the given buffer object.
-     *
-     * This makes the data in the buffer available to the GPU with the given mode.
-     *
-     * @param buffer The buffer to make available.
-     * @param mode The mode for making the data available. Can not be detail::DEVICE_TENSOR.
-     */
-    PyGPUView(const pybind11::buffer &buffer, detail::PyViewMode mode = detail::COPY)
-        THROWS(einsums::EinsumsException, einsums::gpu::detail::ErrorOutOfMemory, einsums::gpu::detail::ErrorInvalidValue,
-               einsums::gpu::detail::ErrorUnknown, std::bad_alloc, pybind11::error_already_set);
-
-    /**
      * @brief Creates a view of the given tensor.
      *
      * This makes the data in the DeviceTensor available to be used alongside Python buffers.

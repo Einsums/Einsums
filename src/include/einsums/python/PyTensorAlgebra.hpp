@@ -22,11 +22,11 @@
 #    include <hipblas/hipblas.h>
 #endif
 
+#include <cstddef>
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 #include <string>
 #include <vector>
-#include <cstddef>
 
 namespace einsums::tensor_algebra {
 
@@ -1032,16 +1032,25 @@ class PyEinsumGemvPlan : public PyEinsumGenericPlan {
         } else {
             pybind11::buffer_info C_info = C.request(true), A_info = A.request(false), B_info = B.request(false);
 
+            if(_swap_AB) {
+                std::swap(A_info, B_info);
+            }
+
             const T *A_data = (const T *)A_info.ptr, *B_data = (const T *)B_info.ptr;
 
             size_t dC = 1, dA0 = 1, dA1 = 1, dB = 1, sA0, sA1, sB, sC;
 
             for (int i = 0; i < _AC_pos.size(); i++) {
+                assert(_AC_pos[i] < C_info.ndim);
                 dA0 *= C_info.shape[_AC_pos[i]];
             }
             for (int i = 0; i < _AC_pos.size(); i++) {
+                assert(_A_link_pos[i] < A_info.ndim);
                 dA1 *= A_info.shape[_A_link_pos[i]];
             }
+
+            assert(_A_target_last_ind < A_info.ndim);
+            assert(_A_link_last_ind < A_info.ndim);
 
             sA0 = A_info.strides[_A_target_last_ind] / sizeof(T);
             sA1 = A_info.strides[_A_link_last_ind] / sizeof(T);
@@ -1052,15 +1061,18 @@ class PyEinsumGemvPlan : public PyEinsumGenericPlan {
             }
 
             for (int i = 0; i < _B_link_pos.size(); i++) {
+                assert(_B_link_pos[i] < B_info.ndim);
                 dB *= B_info.shape[_B_link_pos[i]];
             }
 
             sB = B_info.strides[_B_link_last_ind] / sizeof(T);
 
             for (int i = 0; i < _AC_pos.size(); i++) {
+                assert(_AC_pos[i] < C_info.ndim);
                 dC *= C_info.shape[_AC_pos[i]];
             }
 
+            assert(_C_target_last_ind < C_info.ndim);
             sC = C_info.strides[_C_target_last_ind] / sizeof(T);
 
             T *C_data = (T *)C_info.ptr;

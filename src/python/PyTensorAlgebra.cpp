@@ -732,7 +732,7 @@ void PyEinsumGerPlan::execute(const pybind11::object &C_prefactor, pybind11::buf
         }
     } else {
         if (use_generic) {
-            PyEinsumGenericPlan::execute(C_prefactor, C, AB_prefactor, B, A);
+            PyEinsumGenericPlan::execute(C_prefactor, C, AB_prefactor, A, B);
             return;
         }
         if (C_info.format != A_info.format || C_info.format != B_info.format) {
@@ -914,18 +914,38 @@ void PyEinsumGemvPlan::execute(const pybind11::object &C_prefactor, python::PyGP
         PyEinsumGenericPlan::execute(C_prefactor, C, AB_prefactor, A, B);
         return;
     }
-    if (C.fmt_spec() != A.fmt_spec() || C.fmt_spec() != B.fmt_spec()) {
-        throw EINSUMSEXCEPTION("Can not handle tensors with different dtypes (yet)!");
-    } else if (C.fmt_spec() == pybind11::format_descriptor<float>::format()) {
-        execute_imp_gpu<float>(C_prefactor.cast<float>(), C, AB_prefactor.cast<float>(), A, B);
-    } else if (C.fmt_spec() == pybind11::format_descriptor<std::complex<double>>::format()) {
-        execute_imp_gpu<std::complex<double>>(C_prefactor.cast<std::complex<double>>(), C, AB_prefactor.cast<std::complex<double>>(), A, B);
-    } else if (C.fmt_spec() == pybind11::format_descriptor<std::complex<float>>::format()) {
-        execute_imp_gpu<std::complex<float>>(C_prefactor.cast<std::complex<float>>(), C, AB_prefactor.cast<std::complex<float>>(), A, B);
-    } else if (C.fmt_spec() == pybind11::format_descriptor<double>::format()) {
-        execute_imp_gpu<double>(C_prefactor.cast<double>(), C, AB_prefactor.cast<double>(), A, B);
+    if (!_swap_AB) {
+        if (C.fmt_spec() != A.fmt_spec() || C.fmt_spec() != B.fmt_spec()) {
+            throw EINSUMSEXCEPTION("Can not handle tensors with different dtypes (yet)!");
+        } else if (C.fmt_spec() == pybind11::format_descriptor<float>::format()) {
+            execute_imp_gpu<float>(C_prefactor.cast<float>(), C, AB_prefactor.cast<float>(), A, B);
+        } else if (C.fmt_spec() == pybind11::format_descriptor<std::complex<double>>::format()) {
+            execute_imp_gpu<std::complex<double>>(C_prefactor.cast<std::complex<double>>(), C, AB_prefactor.cast<std::complex<double>>(), A,
+                                                  B);
+        } else if (C.fmt_spec() == pybind11::format_descriptor<std::complex<float>>::format()) {
+            execute_imp_gpu<std::complex<float>>(C_prefactor.cast<std::complex<float>>(), C, AB_prefactor.cast<std::complex<float>>(), A,
+                                                 B);
+        } else if (C.fmt_spec() == pybind11::format_descriptor<double>::format()) {
+            execute_imp_gpu<double>(C_prefactor.cast<double>(), C, AB_prefactor.cast<double>(), A, B);
+        } else {
+            throw EINSUMSEXCEPTION("Can not handle tensor type!");
+        }
     } else {
-        throw EINSUMSEXCEPTION("Can not handle tensor type!");
+        if (C.fmt_spec() != A.fmt_spec() || C.fmt_spec() != B.fmt_spec()) {
+            throw EINSUMSEXCEPTION("Can not handle tensors with different dtypes (yet)!");
+        } else if (C.fmt_spec() == pybind11::format_descriptor<float>::format()) {
+            execute_imp_gpu<float>(C_prefactor.cast<float>(), C, AB_prefactor.cast<float>(), B, A);
+        } else if (C.fmt_spec() == pybind11::format_descriptor<std::complex<double>>::format()) {
+            execute_imp_gpu<std::complex<double>>(C_prefactor.cast<std::complex<double>>(), C, AB_prefactor.cast<std::complex<double>>(), B,
+                                                  A);
+        } else if (C.fmt_spec() == pybind11::format_descriptor<std::complex<float>>::format()) {
+            execute_imp_gpu<std::complex<float>>(C_prefactor.cast<std::complex<float>>(), C, AB_prefactor.cast<std::complex<float>>(), B,
+                                                 A);
+        } else if (C.fmt_spec() == pybind11::format_descriptor<double>::format()) {
+            execute_imp_gpu<double>(C_prefactor.cast<double>(), C, AB_prefactor.cast<double>(), B, A);
+        } else {
+            throw EINSUMSEXCEPTION("Can not handle tensor type!");
+        }
     }
 }
 #endif
