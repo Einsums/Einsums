@@ -58,6 +58,26 @@ def test_creation() :
     B.name = "B2"
     assert B.get_name() == "B2"
 
+    for dtype in [int, float, complex, np.single, np.double, np.complex64, np.complex128, np.int8, np.int16, np.int32, np.int64] :
+        C = ein.core.RuntimeTensor(np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]], dtype=dtype))
+        
+        for n, x in enumerate(C) :
+            assert x == n + 1
+    
+    # Test errors
+    for dtype in ["X", "ZX", "T{}"] :
+        try :
+            x = ein.core.BadBuffer(np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]], dtype=float))
+            x.set_format(dtype)
+            C = ein.core.RuntimeTensor(x)
+            assert False
+        except ein.core.CoreEinsumsException as exc :
+            if dtype in ["X", "ZX"] :
+                assert "convert" in exc.args[0]
+            else :
+                assert "handle" in exc.args[0]
+
+
 def test_set() :
     A = ein.core.RuntimeTensor("A", [3, 3])
     B = ein.core.RuntimeTensor("B", [3, 3])

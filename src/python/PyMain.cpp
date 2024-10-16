@@ -3,6 +3,10 @@
 #include "einsums/Python.hpp"
 #include "einsums/Timer.hpp"
 
+#ifdef EINSUMS_ENABLE_TESTING
+#    include "einsums/python/PyTesting.hpp"
+#endif
+
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 

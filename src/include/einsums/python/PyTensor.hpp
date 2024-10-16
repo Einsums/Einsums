@@ -5,6 +5,7 @@
 
 #include <memory>
 #include <pybind11/complex.h>
+#include <pybind11/detail/common.h>
 #include <pybind11/operators.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
@@ -168,56 +169,7 @@ class PyTensor : public RuntimeTensor<T> {
                 std::memcpy(this->_data.data(), buffer_data, sizeof(T) * this->_data.size());
             }
         } else {
-            switch (buffer_info.format[0]) {
-            case 'b':
-                copy_and_cast_assign<char>(buffer_info, is_view);
-                break;
-            case 'B':
-                copy_and_cast_assign<unsigned char>(buffer_info, is_view);
-                break;
-            case 'h':
-                copy_and_cast_assign<short>(buffer_info, is_view);
-                break;
-            case 'H':
-                copy_and_cast_assign<unsigned short>(buffer_info, is_view);
-                break;
-            case 'i':
-                copy_and_cast_assign<int>(buffer_info, is_view);
-                break;
-            case 'I':
-                copy_and_cast_assign<unsigned int>(buffer_info, is_view);
-                break;
-            case 'q':
-                copy_and_cast_assign<long>(buffer_info, is_view);
-                break;
-            case 'Q':
-                copy_and_cast_assign<unsigned long>(buffer_info, is_view);
-                break;
-            case 'f':
-                copy_and_cast_assign<float>(buffer_info, is_view);
-                break;
-            case 'd':
-                copy_and_cast_assign<double>(buffer_info, is_view);
-                break;
-            case 'g':
-                copy_and_cast_assign<long double>(buffer_info, is_view);
-                break;
-            case 'Z':
-                switch (buffer_info.format[1]) {
-                case 'f':
-                    copy_and_cast_assign<std::complex<float>>(buffer_info, is_view);
-                    break;
-                case 'd':
-                    copy_and_cast_assign<std::complex<double>>(buffer_info, is_view);
-                    break;
-                case 'g':
-                    copy_and_cast_assign<std::complex<long double>>(buffer_info, is_view);
-                    break;
-                }
-                [[fallthrough]];
-            default:
-                throw EINSUMSEXCEPTION("Can not convert format descriptor " + buffer_info.format + " to " + type_name<T>() + "!");
-            }
+            copy_and_cast_assign(buffer_info, is_view);
         }
     }
 
@@ -699,56 +651,7 @@ class PyTensor : public RuntimeTensor<T> {
                 std::memcpy(this->_data.data(), buffer_data, sizeof(T) * this->_data.size());
             }
         } else {
-            switch (buffer_info.format[0]) {
-            case 'b':
-                copy_and_cast_assign<char>(buffer_info, is_view);
-                break;
-            case 'B':
-                copy_and_cast_assign<unsigned char>(buffer_info, is_view);
-                break;
-            case 'h':
-                copy_and_cast_assign<short>(buffer_info, is_view);
-                break;
-            case 'H':
-                copy_and_cast_assign<unsigned short>(buffer_info, is_view);
-                break;
-            case 'i':
-                copy_and_cast_assign<int>(buffer_info, is_view);
-                break;
-            case 'I':
-                copy_and_cast_assign<unsigned int>(buffer_info, is_view);
-                break;
-            case 'q':
-                copy_and_cast_assign<long>(buffer_info, is_view);
-                break;
-            case 'Q':
-                copy_and_cast_assign<unsigned long>(buffer_info, is_view);
-                break;
-            case 'f':
-                copy_and_cast_assign<float>(buffer_info, is_view);
-                break;
-            case 'd':
-                copy_and_cast_assign<double>(buffer_info, is_view);
-                break;
-            case 'g':
-                copy_and_cast_assign<long double>(buffer_info, is_view);
-                break;
-            case 'Z':
-                switch (buffer_info.format[1]) {
-                case 'f':
-                    copy_and_cast_assign<std::complex<float>>(buffer_info, is_view);
-                    break;
-                case 'd':
-                    copy_and_cast_assign<std::complex<double>>(buffer_info, is_view);
-                    break;
-                case 'g':
-                    copy_and_cast_assign<std::complex<long double>>(buffer_info, is_view);
-                    break;
-                }
-                [[fallthrough]];
-            default:
-                throw EINSUMSEXCEPTION("Can not convert format descriptor " + buffer_info.format + " to " + type_name<T>() + "!");
-            }
+            copy_and_cast_assign(buffer_info, is_view);
         }
         return *this;
     }
@@ -762,7 +665,7 @@ class PyTensor : public RuntimeTensor<T> {
      * @param is_view Whether the buffer is a view, which would necessitate involving strides.                                             \
      */                                                                                                                                    \
     template <typename TOther>                                                                                                             \
-    void copy_and_cast_##NAME(const pybind11::buffer_info &buffer_info, bool is_view) {                                                    \
+    void copy_and_cast_imp_##NAME(const pybind11::buffer_info &buffer_info, bool is_view) {                                                \
         TOther *buffer_data = (TOther *)buffer_info.ptr;                                                                                   \
         if (is_view) {                                                                                                                     \
             EINSUMS_OMP_PARALLEL_FOR                                                                                                       \
@@ -772,7 +675,9 @@ class PyTensor : public RuntimeTensor<T> {
                     buffer_sent += (buffer_info.strides[i] / buffer_info.itemsize) * (hold / this->_strides[i]);                           \
                     hold %= this->_strides[i];                                                                                             \
                 }                                                                                                                          \
-                if constexpr (IsComplexV<T> && !IsComplexV<TOther> && !std::is_same_v<RemoveComplexT<T>, TOther>) {                        \
+                if constexpr (std::is_base_of_v<pybind11::object, TOther>) {                                                               \
+                    this->_data[sentinel] OP pybind11::cast<T>((TOther)buffer_data[buffer_sent]);                                          \
+                } else if constexpr (IsComplexV<T> && !IsComplexV<TOther> && !std::is_same_v<RemoveComplexT<T>, TOther>) {                 \
                     this->_data[sentinel] OP(T)(RemoveComplexT<T>) buffer_data[buffer_sent];                                               \
                 } else if constexpr (!IsComplexV<T> && IsComplexV<TOther>) {                                                               \
                     this->_data[sentinel] OP(T) buffer_data[buffer_sent].real();                                                           \
@@ -783,7 +688,9 @@ class PyTensor : public RuntimeTensor<T> {
         } else {                                                                                                                           \
             EINSUMS_OMP_PARALLEL_FOR                                                                                                       \
             for (size_t sentinel = 0; sentinel < this->size(); sentinel++) {                                                               \
-                if constexpr (IsComplexV<T> && !IsComplexV<TOther> && !std::is_same_v<RemoveComplexT<T>, TOther>) {                        \
+                if constexpr (std::is_base_of_v<pybind11::object, TOther>) {                                                               \
+                    this->_data[sentinel] OP pybind11::cast<T>((TOther)buffer_data[sentinel]);                                             \
+                } else if constexpr (IsComplexV<T> && !IsComplexV<TOther> && !std::is_same_v<RemoveComplexT<T>, TOther>) {                 \
                     this->_data[sentinel] OP(T)(RemoveComplexT<T>) buffer_data[sentinel];                                                  \
                 } else if constexpr (!IsComplexV<T> && IsComplexV<TOther>) {                                                               \
                     this->_data[sentinel] OP(T) buffer_data[sentinel].real();                                                              \
@@ -793,6 +700,68 @@ class PyTensor : public RuntimeTensor<T> {
                     this->_data[sentinel] OP(T) buffer_data[sentinel];                                                                     \
                 }                                                                                                                          \
             }                                                                                                                              \
+        }                                                                                                                                  \
+    }                                                                                                                                      \
+    void copy_and_cast_##NAME(const pybind11::buffer_info &buffer_info, bool is_view) {                                                    \
+        auto format = buffer_info.format;                                                                                                  \
+        if (format.length() > 2) {                                                                                                         \
+            throw EINSUMSEXCEPTION("Can't handle most user defined data type " + format + "!");                                            \
+        }                                                                                                                                  \
+        switch (format[0]) {                                                                                                               \
+        case 'b':                                                                                                                          \
+            copy_and_cast_imp_##NAME<char>(buffer_info, is_view);                                                                          \
+            break;                                                                                                                         \
+        case 'B':                                                                                                                          \
+            copy_and_cast_imp_##NAME<unsigned char>(buffer_info, is_view);                                                                 \
+            break;                                                                                                                         \
+        case 'h':                                                                                                                          \
+            copy_and_cast_imp_##NAME<short>(buffer_info, is_view);                                                                         \
+            break;                                                                                                                         \
+        case 'H':                                                                                                                          \
+            copy_and_cast_imp_##NAME<unsigned short>(buffer_info, is_view);                                                                \
+            break;                                                                                                                         \
+        case 'i':                                                                                                                          \
+            copy_and_cast_imp_##NAME<int>(buffer_info, is_view);                                                                           \
+            break;                                                                                                                         \
+        case 'I':                                                                                                                          \
+            copy_and_cast_imp_##NAME<unsigned int>(buffer_info, is_view);                                                                  \
+            break;                                                                                                                         \
+        case 'q':                                                                                                                          \
+        case 'l':                                                                                                                          \
+            copy_and_cast_imp_##NAME<long>(buffer_info, is_view);                                                                          \
+            break;                                                                                                                         \
+        case 'Q':                                                                                                                          \
+        case 'L':                                                                                                                          \
+            copy_and_cast_imp_##NAME<unsigned long>(buffer_info, is_view);                                                                 \
+            break;                                                                                                                         \
+        case 'f':                                                                                                                          \
+            copy_and_cast_imp_##NAME<float>(buffer_info, is_view);                                                                         \
+            break;                                                                                                                         \
+        case 'd':                                                                                                                          \
+            copy_and_cast_imp_##NAME<double>(buffer_info, is_view);                                                                        \
+            break;                                                                                                                         \
+        case 'g':                                                                                                                          \
+            copy_and_cast_imp_##NAME<long double>(buffer_info, is_view);                                                                   \
+            break;                                                                                                                         \
+        case 'Z':                                                                                                                          \
+            switch (format[1]) {                                                                                                           \
+            case 'f':                                                                                                                      \
+                copy_and_cast_imp_##NAME<std::complex<float>>(buffer_info, is_view);                                                       \
+                break;                                                                                                                     \
+            case 'd':                                                                                                                      \
+                copy_and_cast_imp_##NAME<std::complex<double>>(buffer_info, is_view);                                                      \
+                break;                                                                                                                     \
+            case 'g':                                                                                                                      \
+                copy_and_cast_imp_##NAME<std::complex<long double>>(buffer_info, is_view);                                                 \
+                break;                                                                                                                     \
+            default:                                                                                                                       \
+                throw EINSUMSEXCEPTION("Can not convert format descriptor " + format + " to " + pybind11::type_id<T>() + " (" +            \
+                                       pybind11::format_descriptor<T>::format() + ")!");                                                   \
+            }                                                                                                                              \
+            break;                                                                                                                         \
+        default:                                                                                                                           \
+            throw EINSUMSEXCEPTION("Can not convert format descriptor " + format + " to " + pybind11::type_id<T>() + " (" +                \
+                                   pybind11::format_descriptor<T>::format() + ")!");                                                       \
         }                                                                                                                                  \
     }
 
@@ -860,56 +829,7 @@ class PyTensor : public RuntimeTensor<T> {
                     }                                                                                                                      \
                 }                                                                                                                          \
             } else {                                                                                                                       \
-                switch (buffer_info.format[0]) {                                                                                           \
-                case 'b':                                                                                                                  \
-                    copy_and_cast_##NAME<char>(buffer_info, is_view);                                                                      \
-                    break;                                                                                                                 \
-                case 'B':                                                                                                                  \
-                    copy_and_cast_##NAME<unsigned char>(buffer_info, is_view);                                                             \
-                    break;                                                                                                                 \
-                case 'h':                                                                                                                  \
-                    copy_and_cast_##NAME<short>(buffer_info, is_view);                                                                     \
-                    break;                                                                                                                 \
-                case 'H':                                                                                                                  \
-                    copy_and_cast_##NAME<unsigned short>(buffer_info, is_view);                                                            \
-                    break;                                                                                                                 \
-                case 'i':                                                                                                                  \
-                    copy_and_cast_##NAME<int>(buffer_info, is_view);                                                                       \
-                    break;                                                                                                                 \
-                case 'I':                                                                                                                  \
-                    copy_and_cast_##NAME<unsigned int>(buffer_info, is_view);                                                              \
-                    break;                                                                                                                 \
-                case 'q':                                                                                                                  \
-                    copy_and_cast_##NAME<long>(buffer_info, is_view);                                                                      \
-                    break;                                                                                                                 \
-                case 'Q':                                                                                                                  \
-                    copy_and_cast_##NAME<unsigned long>(buffer_info, is_view);                                                             \
-                    break;                                                                                                                 \
-                case 'f':                                                                                                                  \
-                    copy_and_cast_##NAME<float>(buffer_info, is_view);                                                                     \
-                    break;                                                                                                                 \
-                case 'd':                                                                                                                  \
-                    copy_and_cast_##NAME<double>(buffer_info, is_view);                                                                    \
-                    break;                                                                                                                 \
-                case 'g':                                                                                                                  \
-                    copy_and_cast_##NAME<long double>(buffer_info, is_view);                                                               \
-                    break;                                                                                                                 \
-                case 'Z':                                                                                                                  \
-                    switch (buffer_info.format[1]) {                                                                                       \
-                    case 'f':                                                                                                              \
-                        copy_and_cast_##NAME<std::complex<float>>(buffer_info, is_view);                                                   \
-                        break;                                                                                                             \
-                    case 'd':                                                                                                              \
-                        copy_and_cast_##NAME<std::complex<double>>(buffer_info, is_view);                                                  \
-                        break;                                                                                                             \
-                    case 'g':                                                                                                              \
-                        copy_and_cast_##NAME<std::complex<long double>>(buffer_info, is_view);                                             \
-                        break;                                                                                                             \
-                    }                                                                                                                      \
-                    [[fallthrough]];                                                                                                       \
-                default:                                                                                                                   \
-                    throw EINSUMSEXCEPTION("Can not convert format descriptor " + buffer_info.format + " to " + type_name<T>() + "!");     \
-                }                                                                                                                          \
+                copy_and_cast_##NAME(buffer_info, is_view);                                                                                \
             }                                                                                                                              \
             return *this;                                                                                                                  \
         }                                                                                                                                  \
@@ -942,7 +862,7 @@ class PyTensor : public RuntimeTensor<T> {
 
     bool full_view_of_underlying() const noexcept override { PYBIND11_OVERRIDE(bool, RuntimeTensor<T>, full_view_of_underlying); }
 
-    const std::string &name() const noexcept override { PYBIND11_OVERRIDE(const std::string &, RuntimeTensor<T>, name); }
+    const std::string &name() const noexcept override { PYBIND11_OVERRIDE_NAME(const std::string &, RuntimeTensor<T>, "get_name", name); }
 
     void set_name(const std::string &new_name) override { PYBIND11_OVERRIDE(void, RuntimeTensor<T>, set_name, new_name); }
 
@@ -1317,7 +1237,7 @@ class PyTensorView : public RuntimeTensorView<T> {
   private:
 #define COPY_CAST_OP(OP, NAME)                                                                                                             \
     template <typename TOther>                                                                                                             \
-    void copy_and_cast_##NAME(const pybind11::buffer_info &buffer_info) {                                                                  \
+    void copy_and_cast_imp_##NAME(const pybind11::buffer_info &buffer_info) {                                                              \
         TOther *buffer_data = (TOther *)buffer_info.ptr;                                                                                   \
         EINSUMS_OMP_PARALLEL_FOR                                                                                                           \
         for (size_t sentinel = 0; sentinel < this->size(); sentinel++) {                                                                   \
@@ -1336,6 +1256,68 @@ class PyTensorView : public RuntimeTensorView<T> {
             } else {                                                                                                                       \
                 this->_data[ord] OP(T) buffer_data[buffer_sent];                                                                           \
             }                                                                                                                              \
+        }                                                                                                                                  \
+    }                                                                                                                                      \
+    void copy_and_cast_##NAME(const pybind11::buffer_info &buffer_info) {                                                                  \
+        auto format = buffer_info.format;                                                                                                  \
+        if (format.length() > 2) {                                                                                                         \
+            throw EINSUMSEXCEPTION("Can not handle most user defined types (" + format + ")!");                                            \
+        }                                                                                                                                  \
+        switch (format[0]) {                                                                                                               \
+        case 'b':                                                                                                                          \
+            copy_and_cast_imp_##NAME<char>(buffer_info);                                                                                   \
+            break;                                                                                                                         \
+        case 'B':                                                                                                                          \
+            copy_and_cast_imp_##NAME<unsigned char>(buffer_info);                                                                          \
+            break;                                                                                                                         \
+        case 'h':                                                                                                                          \
+            copy_and_cast_imp_##NAME<short>(buffer_info);                                                                                  \
+            break;                                                                                                                         \
+        case 'H':                                                                                                                          \
+            copy_and_cast_imp_##NAME<unsigned short>(buffer_info);                                                                         \
+            break;                                                                                                                         \
+        case 'i':                                                                                                                          \
+            copy_and_cast_imp_##NAME<int>(buffer_info);                                                                                    \
+            break;                                                                                                                         \
+        case 'I':                                                                                                                          \
+            copy_and_cast_imp_##NAME<unsigned int>(buffer_info);                                                                           \
+            break;                                                                                                                         \
+        case 'q':                                                                                                                          \
+        case 'l':                                                                                                                          \
+            copy_and_cast_imp_##NAME<long>(buffer_info);                                                                                   \
+            break;                                                                                                                         \
+        case 'Q':                                                                                                                          \
+        case 'L':                                                                                                                          \
+            copy_and_cast_imp_##NAME<unsigned long>(buffer_info);                                                                          \
+            break;                                                                                                                         \
+        case 'f':                                                                                                                          \
+            copy_and_cast_imp_##NAME<float>(buffer_info);                                                                                  \
+            break;                                                                                                                         \
+        case 'd':                                                                                                                          \
+            copy_and_cast_imp_##NAME<double>(buffer_info);                                                                                 \
+            break;                                                                                                                         \
+        case 'g':                                                                                                                          \
+            copy_and_cast_imp_##NAME<long double>(buffer_info);                                                                            \
+            break;                                                                                                                         \
+        case 'Z':                                                                                                                          \
+            switch (format[1]) {                                                                                                           \
+            case 'f':                                                                                                                      \
+                copy_and_cast_imp_##NAME<std::complex<float>>(buffer_info);                                                                \
+                break;                                                                                                                     \
+            case 'd':                                                                                                                      \
+                copy_and_cast_imp_##NAME<std::complex<double>>(buffer_info);                                                               \
+                break;                                                                                                                     \
+            case 'g':                                                                                                                      \
+                copy_and_cast_imp_##NAME<std::complex<long double>>(buffer_info);                                                          \
+                break;                                                                                                                     \
+            default:                                                                                                                       \
+                throw EINSUMSEXCEPTION("Can not convert format descriptor " + format + " to " + pybind11::type_id<T>() + " (" +            \
+                                       pybind11::format_descriptor<T>::format() + ")!");                                                   \
+            }                                                                                                                              \
+            break;                                                                                                                         \
+        default:                                                                                                                           \
+            throw EINSUMSEXCEPTION("Can not convert format descriptor " + format + " to " + pybind11::type_id<T>() + " (" +                \
+                                   pybind11::format_descriptor<T>::format() + ")!");                                                       \
         }                                                                                                                                  \
     }
 
@@ -1373,56 +1355,7 @@ class PyTensorView : public RuntimeTensorView<T> {
                 this->_data[ord] = buffer_data[buffer_sent];
             }
         } else {
-            switch (buffer_info.format[0]) {
-            case 'b':
-                copy_and_cast_assign<char>(buffer_info);
-                break;
-            case 'B':
-                copy_and_cast_assign<unsigned char>(buffer_info);
-                break;
-            case 'h':
-                copy_and_cast_assign<short>(buffer_info);
-                break;
-            case 'H':
-                copy_and_cast_assign<unsigned short>(buffer_info);
-                break;
-            case 'i':
-                copy_and_cast_assign<int>(buffer_info);
-                break;
-            case 'I':
-                copy_and_cast_assign<unsigned int>(buffer_info);
-                break;
-            case 'q':
-                copy_and_cast_assign<long>(buffer_info);
-                break;
-            case 'Q':
-                copy_and_cast_assign<unsigned long>(buffer_info);
-                break;
-            case 'f':
-                copy_and_cast_assign<float>(buffer_info);
-                break;
-            case 'd':
-                copy_and_cast_assign<double>(buffer_info);
-                break;
-            case 'g':
-                copy_and_cast_assign<long double>(buffer_info);
-                break;
-            case 'Z':
-                switch (buffer_info.format[1]) {
-                case 'f':
-                    copy_and_cast_assign<std::complex<float>>(buffer_info);
-                    break;
-                case 'd':
-                    copy_and_cast_assign<std::complex<double>>(buffer_info);
-                    break;
-                case 'g':
-                    copy_and_cast_assign<std::complex<long double>>(buffer_info);
-                    break;
-                }
-                [[fallthrough]];
-            default:
-                throw EINSUMSEXCEPTION("Can not convert format descriptor " + buffer_info.format + " to " + type_name<T>() + "!");
-            }
+            copy_and_cast_assign(buffer_info);
         }
         return *this;
     }
@@ -1473,56 +1406,7 @@ class PyTensorView : public RuntimeTensorView<T> {
                     this->_data[ord] OP buffer_data[buffer_sent];                                                                          \
                 }                                                                                                                          \
             } else {                                                                                                                       \
-                switch (buffer_info.format[0]) {                                                                                           \
-                case 'b':                                                                                                                  \
-                    copy_and_cast_##NAME<char>(buffer_info);                                                                               \
-                    break;                                                                                                                 \
-                case 'B':                                                                                                                  \
-                    copy_and_cast_##NAME<unsigned char>(buffer_info);                                                                      \
-                    break;                                                                                                                 \
-                case 'h':                                                                                                                  \
-                    copy_and_cast_##NAME<short>(buffer_info);                                                                              \
-                    break;                                                                                                                 \
-                case 'H':                                                                                                                  \
-                    copy_and_cast_##NAME<unsigned short>(buffer_info);                                                                     \
-                    break;                                                                                                                 \
-                case 'i':                                                                                                                  \
-                    copy_and_cast_##NAME<int>(buffer_info);                                                                                \
-                    break;                                                                                                                 \
-                case 'I':                                                                                                                  \
-                    copy_and_cast_##NAME<unsigned int>(buffer_info);                                                                       \
-                    break;                                                                                                                 \
-                case 'q':                                                                                                                  \
-                    copy_and_cast_##NAME<long>(buffer_info);                                                                               \
-                    break;                                                                                                                 \
-                case 'Q':                                                                                                                  \
-                    copy_and_cast_##NAME<unsigned long>(buffer_info);                                                                      \
-                    break;                                                                                                                 \
-                case 'f':                                                                                                                  \
-                    copy_and_cast_##NAME<float>(buffer_info);                                                                              \
-                    break;                                                                                                                 \
-                case 'd':                                                                                                                  \
-                    copy_and_cast_##NAME<double>(buffer_info);                                                                             \
-                    break;                                                                                                                 \
-                case 'g':                                                                                                                  \
-                    copy_and_cast_##NAME<long double>(buffer_info);                                                                        \
-                    break;                                                                                                                 \
-                case 'Z':                                                                                                                  \
-                    switch (buffer_info.format[1]) {                                                                                       \
-                    case 'f':                                                                                                              \
-                        copy_and_cast_##NAME<std::complex<float>>(buffer_info);                                                            \
-                        break;                                                                                                             \
-                    case 'd':                                                                                                              \
-                        copy_and_cast_##NAME<std::complex<double>>(buffer_info);                                                           \
-                        break;                                                                                                             \
-                    case 'g':                                                                                                              \
-                        copy_and_cast_##NAME<std::complex<long double>>(buffer_info);                                                      \
-                        break;                                                                                                             \
-                    }                                                                                                                      \
-                    [[fallthrough]];                                                                                                       \
-                default:                                                                                                                   \
-                    throw EINSUMSEXCEPTION("Can not convert format descriptor " + buffer_info.format + " to " + type_name<T>() + "!");     \
-                }                                                                                                                          \
+                copy_and_cast_##NAME(buffer_info);                                                                                         \
             }                                                                                                                              \
             return *this;                                                                                                                  \
         }                                                                                                                                  \

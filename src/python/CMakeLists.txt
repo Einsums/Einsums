@@ -16,7 +16,6 @@ add_einsums_pymod(${__core_name} SHARED MODULENAME core
         PyMain.cpp
         PyTensorAlgebra.cpp
         PyTensors.cpp
-        PyTesting.cpp
     PUBLIC_DEPENDS einsums
 )
 
@@ -32,9 +31,22 @@ extend_einsums_target(${__core_name}
     SOURCES
         PyGPUView.hip
         PyTensorAlgebra.hip
-        PyTesting.hip
     CONDITION
         EINSUMS_BUILD_HIP
+)
+
+extend_einsums_target(${__core_name}
+    SOURCES
+        PyTesting.cpp
+    CONDITION
+        EINSUMS_ENABLE_TESTING
+)
+
+extend_einsums_target(${__core_name}
+    SOURCES
+        PyTesting.hip
+    CONDITION
+        EINSUMS_ENABLE_TESTING AND EINSUMS_BUILD_HIP
 )
 
 foreach(define IN LISTS defines)
