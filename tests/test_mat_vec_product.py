@@ -130,6 +130,8 @@ def test_mat_vec_prod_gpu_map(a, b) :
 
     assert(type(plan) is ein.core.EinsumGemvPlan)
 
+    A_view = ein.core.GPUView(A, ein.core.MAP)
+    B_view = ein.core.GPUView(B, ein.core.MAP)
     C_view = ein.core.GPUView(C, ein.core.MAP)
 
     plan.execute(0.0, C_view, 1.0, B_view, A_view)
