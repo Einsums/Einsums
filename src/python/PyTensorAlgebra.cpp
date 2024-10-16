@@ -712,42 +712,22 @@ void PyEinsumGerPlan::execute(const pybind11::object &C_prefactor, pybind11::buf
         B_check *= B_info.shape[i];
     }
 
-    if (!_swap_AB) {
-        if (use_generic) {
-            PyEinsumGenericPlan::execute(C_prefactor, C, AB_prefactor, A, B);
-            return;
-        }
-        if (C_info.format != A_info.format || C_info.format != B_info.format) {
-            throw EINSUMSEXCEPTION("Can not handle tensors with different dtypes (yet)!");
-        } else if (C_info.format == pybind11::format_descriptor<float>::format()) {
-            execute_imp<float>(C_prefactor.cast<float>(), C, AB_prefactor.cast<float>(), A, B);
-        } else if (C_info.format == pybind11::format_descriptor<std::complex<double>>::format()) {
-            execute_imp<std::complex<double>>(C_prefactor.cast<std::complex<double>>(), C, AB_prefactor.cast<std::complex<double>>(), A, B);
-        } else if (C_info.format == pybind11::format_descriptor<std::complex<float>>::format()) {
-            execute_imp<std::complex<float>>(C_prefactor.cast<std::complex<float>>(), C, AB_prefactor.cast<std::complex<float>>(), A, B);
-        } else if (C_info.format == pybind11::format_descriptor<double>::format()) {
-            execute_imp<double>(C_prefactor.cast<double>(), C, AB_prefactor.cast<double>(), A, B);
-        } else {
-            throw EINSUMSEXCEPTION("Can not handle tensor type!");
-        }
+    if (use_generic) {
+        PyEinsumGenericPlan::execute(C_prefactor, C, AB_prefactor, A, B);
+        return;
+    }
+    if (C_info.format != A_info.format || C_info.format != B_info.format) {
+        throw EINSUMSEXCEPTION("Can not handle tensors with different dtypes (yet)!");
+    } else if (C_info.format == pybind11::format_descriptor<float>::format()) {
+        execute_imp<float>(C_prefactor.cast<float>(), C, AB_prefactor.cast<float>(), A, B);
+    } else if (C_info.format == pybind11::format_descriptor<std::complex<double>>::format()) {
+        execute_imp<std::complex<double>>(C_prefactor.cast<std::complex<double>>(), C, AB_prefactor.cast<std::complex<double>>(), A, B);
+    } else if (C_info.format == pybind11::format_descriptor<std::complex<float>>::format()) {
+        execute_imp<std::complex<float>>(C_prefactor.cast<std::complex<float>>(), C, AB_prefactor.cast<std::complex<float>>(), A, B);
+    } else if (C_info.format == pybind11::format_descriptor<double>::format()) {
+        execute_imp<double>(C_prefactor.cast<double>(), C, AB_prefactor.cast<double>(), A, B);
     } else {
-        if (use_generic) {
-            PyEinsumGenericPlan::execute(C_prefactor, C, AB_prefactor, A, B);
-            return;
-        }
-        if (C_info.format != A_info.format || C_info.format != B_info.format) {
-            throw EINSUMSEXCEPTION("Can not handle tensors with different dtypes (yet)!");
-        } else if (C_info.format == pybind11::format_descriptor<float>::format()) {
-            execute_imp<float>(C_prefactor.cast<float>(), C, AB_prefactor.cast<float>(), B, A);
-        } else if (C_info.format == pybind11::format_descriptor<std::complex<double>>::format()) {
-            execute_imp<std::complex<double>>(C_prefactor.cast<std::complex<double>>(), C, AB_prefactor.cast<std::complex<double>>(), B, A);
-        } else if (C_info.format == pybind11::format_descriptor<std::complex<float>>::format()) {
-            execute_imp<std::complex<float>>(C_prefactor.cast<std::complex<float>>(), C, AB_prefactor.cast<std::complex<float>>(), B, A);
-        } else if (C_info.format == pybind11::format_descriptor<double>::format()) {
-            execute_imp<double>(C_prefactor.cast<double>(), C, AB_prefactor.cast<double>(), B, A);
-        } else {
-            throw EINSUMSEXCEPTION("Can not handle tensor type!");
-        }
+        throw EINSUMSEXCEPTION("Can not handle tensor type!");
     }
 }
 
@@ -783,46 +763,22 @@ void PyEinsumGerPlan::execute(const pybind11::object &C_prefactor, python::PyGPU
         B_check *= B.dim(i);
     }
 
-    if (!_swap_AB) {
-        if (use_generic) {
-            PyEinsumGenericPlan::execute(C_prefactor, C, AB_prefactor, A, B);
-            return;
-        }
-        if (C.fmt_spec() != A.fmt_spec() || C.fmt_spec() != B.fmt_spec()) {
-            throw EINSUMSEXCEPTION("Can not handle tensors with different dtypes (yet)!");
-        } else if (C.fmt_spec() == pybind11::format_descriptor<float>::format()) {
-            execute_imp_gpu<float>(C_prefactor.cast<float>(), C, AB_prefactor.cast<float>(), A, B);
-        } else if (C.fmt_spec() == pybind11::format_descriptor<std::complex<double>>::format()) {
-            execute_imp_gpu<std::complex<double>>(C_prefactor.cast<std::complex<double>>(), C, AB_prefactor.cast<std::complex<double>>(), A,
-                                                  B);
-        } else if (C.fmt_spec() == pybind11::format_descriptor<std::complex<float>>::format()) {
-            execute_imp_gpu<std::complex<float>>(C_prefactor.cast<std::complex<float>>(), C, AB_prefactor.cast<std::complex<float>>(), A,
-                                                 B);
-        } else if (C.fmt_spec() == pybind11::format_descriptor<double>::format()) {
-            execute_imp_gpu<double>(C_prefactor.cast<double>(), C, AB_prefactor.cast<double>(), A, B);
-        } else {
-            throw EINSUMSEXCEPTION("Can not handle tensor type!");
-        }
+    if (use_generic) {
+        PyEinsumGenericPlan::execute(C_prefactor, C, AB_prefactor, A, B);
+        return;
+    }
+    if (C.fmt_spec() != A.fmt_spec() || C.fmt_spec() != B.fmt_spec()) {
+        throw EINSUMSEXCEPTION("Can not handle tensors with different dtypes (yet)!");
+    } else if (C.fmt_spec() == pybind11::format_descriptor<float>::format()) {
+        execute_imp_gpu<float>(C_prefactor.cast<float>(), C, AB_prefactor.cast<float>(), A, B);
+    } else if (C.fmt_spec() == pybind11::format_descriptor<std::complex<double>>::format()) {
+        execute_imp_gpu<std::complex<double>>(C_prefactor.cast<std::complex<double>>(), C, AB_prefactor.cast<std::complex<double>>(), A, B);
+    } else if (C.fmt_spec() == pybind11::format_descriptor<std::complex<float>>::format()) {
+        execute_imp_gpu<std::complex<float>>(C_prefactor.cast<std::complex<float>>(), C, AB_prefactor.cast<std::complex<float>>(), A, B);
+    } else if (C.fmt_spec() == pybind11::format_descriptor<double>::format()) {
+        execute_imp_gpu<double>(C_prefactor.cast<double>(), C, AB_prefactor.cast<double>(), A, B);
     } else {
-        if (use_generic) {
-            PyEinsumGenericPlan::execute(C_prefactor, C, AB_prefactor, B, A);
-            return;
-        }
-        if (C.fmt_spec() != A.fmt_spec() || C.fmt_spec() != B.fmt_spec()) {
-            throw EINSUMSEXCEPTION("Can not handle tensors with different dtypes (yet)!");
-        } else if (C.fmt_spec() == pybind11::format_descriptor<float>::format()) {
-            execute_imp_gpu<float>(C_prefactor.cast<float>(), C, AB_prefactor.cast<float>(), B, A);
-        } else if (C.fmt_spec() == pybind11::format_descriptor<std::complex<double>>::format()) {
-            execute_imp_gpu<std::complex<double>>(C_prefactor.cast<std::complex<double>>(), C, AB_prefactor.cast<std::complex<double>>(), B,
-                                                  A);
-        } else if (C.fmt_spec() == pybind11::format_descriptor<std::complex<float>>::format()) {
-            execute_imp_gpu<std::complex<float>>(C_prefactor.cast<std::complex<float>>(), C, AB_prefactor.cast<std::complex<float>>(), B,
-                                                 A);
-        } else if (C.fmt_spec() == pybind11::format_descriptor<double>::format()) {
-            execute_imp_gpu<double>(C_prefactor.cast<double>(), C, AB_prefactor.cast<double>(), B, A);
-        } else {
-            throw EINSUMSEXCEPTION("Can not handle tensor type!");
-        }
+        throw EINSUMSEXCEPTION("Can not handle tensor type!");
     }
 }
 #endif
