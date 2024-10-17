@@ -694,8 +694,6 @@ class PyTensor : public RuntimeTensor<T> {
                     this->_data[sentinel] OP(T)(RemoveComplexT<T>) buffer_data[sentinel];                                                  \
                 } else if constexpr (!IsComplexV<T> && IsComplexV<TOther>) {                                                               \
                     this->_data[sentinel] OP(T) buffer_data[sentinel].real();                                                              \
-                } else if constexpr (IsComplexV<T> && IsComplexV<TOther>) {                                                                \
-                    this->_data[sentinel] OP(T) buffer_data[sentinel];                                                                     \
                 } else {                                                                                                                   \
                     this->_data[sentinel] OP(T) buffer_data[sentinel];                                                                     \
                 }                                                                                                                          \
@@ -846,7 +844,7 @@ class PyTensor : public RuntimeTensor<T> {
 
     std::vector<size_t> dims() const noexcept override { PYBIND11_OVERRIDE(std::vector<size_t>, RuntimeTensor<T>, dims); }
 
-    const typename PyTensor<T>::Vector &vector_data() const noexcept override {
+    const typename RuntimeTensor<T>::Vector &vector_data() const noexcept override {
         PYBIND11_OVERRIDE(const typename RuntimeTensor<T>::Vector &, RuntimeTensor<T>, vector_data);
     }
 
@@ -1244,15 +1242,13 @@ class PyTensorView : public RuntimeTensorView<T> {
             size_t buffer_sent = 0, hold = sentinel, ord = 0;                                                                              \
             for (int i = 0; i < this->_rank; i++) {                                                                                        \
                 ord += this->_strides[i] * (hold / this->_index_strides[i]);                                                               \
-                buffer_sent += (buffer_info.strides[i] / buffer_info.itemsize) * (hold / this->_strides[i]);                               \
-                hold %= this->_strides[i];                                                                                                 \
+                buffer_sent += (buffer_info.strides[i] / buffer_info.itemsize) * (hold / this->_index_strides[i]);                         \
+                hold %= this->_index_strides[i];                                                                                           \
             }                                                                                                                              \
             if constexpr (IsComplexV<T> && !IsComplexV<TOther> && !std::is_same_v<RemoveComplexT<T>, TOther>) {                            \
                 this->_data[ord] OP(T)(RemoveComplexT<T>) buffer_data[buffer_sent];                                                        \
             } else if constexpr (!IsComplexV<T> && IsComplexV<TOther>) {                                                                   \
                 this->_data[ord] OP(T) buffer_data[buffer_sent].real();                                                                    \
-            } else if constexpr (IsComplexV<T> && IsComplexV<TOther>) {                                                                    \
-                this->_data[ord] OP(T) buffer_data[buffer_sent];                                                                           \
             } else {                                                                                                                       \
                 this->_data[ord] OP(T) buffer_data[buffer_sent];                                                                           \
             }                                                                                                                              \

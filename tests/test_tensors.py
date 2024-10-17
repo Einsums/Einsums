@@ -107,13 +107,20 @@ def test_set() :
     for x, y in zip(B, B_expected) :
         assert x == y
 
+    A.assign(B)
+
+    for x, y in zip(A, B) :
+        assert x == y
+
 def test_ops() :
     A = ein.utils.create_random_tensor("A", [3, 3])
     B = ein.utils.create_random_tensor("B", [3, 3])
     C = ein.utils.create_random_tensor("C", [3, 3])
     D = np.array(ein.utils.create_random_tensor("D", [3, 3]))
-    E = ein.core.BadBuffer(ein.utils.create_random_tensor("E", [3, 3]))
-    E.set_format("X")
+    E = np.array(ein.utils.create_random_tensor("E", [3, 3]), dtype=np.single)
+    F = ein.core.BadBuffer(ein.utils.create_random_tensor("F", [3, 3]))
+    F.set_format("X")
+    
 
     # Multiplication
     A_res = A.copy()
@@ -137,9 +144,14 @@ def test_ops() :
 
     for x, y, z, w, u in zip(A_res, A, B, C, D.flat) :
         assert x == 2 * y * z * w * u
+    
+    A_res *= E
+
+    for x, y, z, w, u, v in zip(A_res, A, B, C, D.flat, E.flat) :
+        assert x == 2 * y * z * w * u * v
 
     with pytest.raises(ein.core.CoreEinsumsException) :
-        A_res *= E
+        A_res *= F
     
     # Addition
     A_res = A.copy()
@@ -164,8 +176,13 @@ def test_ops() :
     for x, y, z, w, u in zip(A_res, A, B, C, D.flat) :
         assert x == 2 + y + z + w + u
     
+    A_res += E
+
+    for x, y, z, w, u, v in zip(A_res, A, B, C, D.flat, E.flat) :
+        assert x == 2 + y + z + w + u + v
+
     with pytest.raises(ein.core.CoreEinsumsException) :
-        A_res += E
+        A_res += F
 
     # Division
     A_res = A.copy()
@@ -190,8 +207,13 @@ def test_ops() :
     for x, y, z, w, u in zip(A_res, A, B, C, D.flat) :
         assert x == y / 2 / z / w / u
 
+    A_res /= E
+
+    for x, y, z, w, u, v in zip(A_res, A, B, C, D.flat, E.flat) :
+        assert x == y / 2 / z / w / u / v
+
     with pytest.raises(ein.core.CoreEinsumsException) :
-        A_res /= E
+        A_res /= F
 
     # Subtraction
     A_res = A.copy()
@@ -216,8 +238,13 @@ def test_ops() :
     for x, y, z, w, u in zip(A_res, A, B, C, D.flat) :
         assert x == y - 2 - z - w - u
 
+    A_res -= E
+
+    for x, y, z, w, u, v in zip(A_res, A, B, C, D.flat, E.flat) :
+        assert x == y - 2 - z - w - u - v
+
     with pytest.raises(ein.core.CoreEinsumsException) :
-        A_res -= E
+        A_res -= F
 
 
 
@@ -307,8 +334,9 @@ def test_view_ops() :
     B = ein.utils.create_random_tensor("B", [3, 3])
     C = ein.utils.create_random_tensor("C", [5, 5])
     D = np.array(ein.utils.create_random_tensor("D", [3, 3]))
-    E = ein.core.BadBuffer(ein.utils.create_random_tensor("E", [3, 3]))
-    E.set_format("X")
+    E = np.array(ein.utils.create_random_tensor("E", [3, 3]), dtype=np.single)
+    F = ein.core.BadBuffer(ein.utils.create_random_tensor("F", [3, 3]))
+    F.set_format("X")
 
     # Multiplication
     A_res = A.copy()
@@ -346,8 +374,16 @@ def test_view_ops() :
         else :
             assert A_res[index] == A[index]
 
+    A_view *= E
+
+    for index in ein.utils.TensorIndices(A) :
+        if index[0] < 3 and index[1] < 3 :
+            assert A_res[index] == A[index] * 2 * B[index] * C[index] * D[index] * E[index]
+        else :
+            assert A_res[index] == A[index]
+
     with pytest.raises(ein.core.CoreEinsumsException) :
-        A_view *= E
+        A_view *= F
     
     # Addition
     A_res = A.copy()
@@ -385,8 +421,16 @@ def test_view_ops() :
         else :
             assert A_res[index] == A[index]
     
+    A_view += E
+
+    for index in ein.utils.TensorIndices(A) :
+        if index[0] < 3 and index[1] < 3 :
+            assert A_res[index] == A[index] + 2 + B[index] + C[index] + D[index] + E[index]
+        else :
+            assert A_res[index] == A[index]
+
     with pytest.raises(ein.core.CoreEinsumsException) :
-        A_view += E
+        A_view += F
 
     # Subtraction
     A_res = A.copy()
@@ -424,8 +468,16 @@ def test_view_ops() :
         else :
             assert A_res[index] == A[index]
 
+    A_view -= E
+
+    for index in ein.utils.TensorIndices(A) :
+        if index[0] < 3 and index[1] < 3 :
+            assert A_res[index] == A[index] - 2 - B[index] - C[index] - D[index] - E[index]
+        else :
+            assert A_res[index] == A[index]
+
     with pytest.raises(ein.core.CoreEinsumsException) :
-        A_view -= E
+        A_view -= F
 
     # Division
     A_res = A.copy()
@@ -463,8 +515,16 @@ def test_view_ops() :
         else :
             assert A_res[index] == A[index]
     
+    A_view /= E
+
+    for index in ein.utils.TensorIndices(A) :
+        if index[0] < 3 and index[1] < 3 :
+            assert A_res[index] == A[index] / 2 / B[index] / C[index] / D[index] / E[index]
+        else :
+            assert A_res[index] == A[index]
+
     with pytest.raises(ein.core.CoreEinsumsException) :
-        A_view /= E
+        A_view /= F
 
 def test_iterators() :
     A = ein.core.RuntimeTensor("A", [10, 10])
