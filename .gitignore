@@ -51,8 +51,10 @@ _deps
 .cache
 *timings.txt*
 *.coverage
-*coverage.xml
+coverage.xml
 *.profraw
+*.profdata
+*.info
 
 # Visual Studio files
 .vs
