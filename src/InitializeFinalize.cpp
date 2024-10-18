@@ -8,6 +8,7 @@
 #include "einsums/Blas.hpp"
 #include "einsums/OpenMP.h"
 #include "einsums/Timer.hpp"
+#include <fstream>
 
 #ifdef __HIP__
 #    include "einsums/_GPUUtils.hpp"
@@ -48,31 +49,25 @@ static void finalize_post(void) {
 }
 
 void finalize(const char *output_file) {
-    finalize_pre();
+    auto fp = std::fopen(output_file, "w");
 
+    finalize(fp);
 
-    timer::report(output_file);
-
-    finalize_post();
+    std::fclose(fp);
 }
 
 void finalize(bool timerReport) {
-
-    finalize_pre();
-
-    if (timerReport)
-        timer::report();
-
-    finalize_post();
+    if(timerReport) {
+        finalize(std::cout);
+    }
 }
 
 void finalize(const std::string &output_file) {
-    finalize_pre();
+    auto fp = std::ofstream(output_file);
 
+    finalize(fp);
 
-    timer::report(output_file);
-
-    finalize_post();
+    fp.close();
 }
 
 void finalize(FILE *file_pointer) {

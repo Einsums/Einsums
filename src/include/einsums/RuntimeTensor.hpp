@@ -6,8 +6,8 @@
 #include "einsums/utility/IndexUtils.hpp"
 #include "einsums/utility/TensorBases.hpp"
 
-#include <vector>
 #include <variant>
+#include <vector>
 
 namespace einsums {
 
@@ -203,10 +203,40 @@ class RuntimeTensor : public virtual tensor_props::TensorBase,
         }
     }
 
+    template <typename... Args>
+        requires((!std::is_integral_v<Args>) || ...)
+    RuntimeTensorView<T> operator()(Args... args) const THROWS(einsums::EinsumsException) {
+        if (sizeof...(Args) > rank()) {
+            throw EINSUMSEXCEPTION("Too many indices passed to subscript operator!");
+        }
+
+        std::tuple<Args...> arg_tuple = std::make_tuple(args...);
+        std::vector<Range>  slices(sizeof...(Args));
+
+        for_sequence<sizeof...(Args)>([&](auto n) {
+            using Arg = std::tuple_element_t<n, std::tuple<Args...>>;
+            if constexpr (std::is_same_v<Arg, AllT>) {
+                slices[n] = Range{0, this->dim(n)};
+            } else if constexpr (std::is_same_v<Arg, Range>) {
+                slices[n] = std::get<n>(arg_tuple);
+            } else if constexpr (std::is_integral_v<Arg>) {
+                auto index = std::get<n>(arg_tuple);
+
+                if (index < 0) {
+                    index += this->dim(n);
+                }
+
+                slices[n] = Range{-1, index};
+            }
+        });
+
+        return (*this)(slices);
+    }
+
     /*
      * Special cases:
-     *    Rank{a, a + 1}: Keep the axis in the view. It will have dimension 1 and only have the a'th element. a can not be negative.
-     *    Rank{-1, a}: Remove the axis from the view. It will still affect the offset. a can not be negative.
+     *    Range{a, a + 1}: Keep the axis in the view. It will have dimension 1 and only have the a'th element. a can not be negative.
+     *    Range{-1, a}: Remove the axis from the view. It will still affect the offset. a can not be negative.
      */
     RuntimeTensorView<T> operator()(const std::vector<Range> &slices) {
         if (slices.size() > _rank) {
@@ -378,17 +408,21 @@ class RuntimeTensor : public virtual tensor_props::TensorBase,
     }
 
     virtual RuntimeTensor<T> &operator=(const RuntimeTensorView<T> &other) {
-        if (_rank != other.rank()) {
-            _rank = other.rank();
-            _dims.resize(other.rank());
-            _strides.resize(other.rank());
-        }
-        for (int i = 0; i < other.rank(); i++) {
-            _dims[i]    = other.dim(i);
-            _strides[i] = other.stride(i);
-        }
-        if (_data.size() != other.size()) {
+        if (_dims != other.dims() || _rank != other.rank()) {
+            if (_rank != other.rank()) {
+                _rank = other.rank();
+                _dims.resize(other.rank());
+                _strides.resize(other.rank());
+            }
             _data.resize(other.size());
+            for (int i = 0; i < other.rank(); i++) {
+                _dims[i] = other.dim(i);
+            }
+            size_t stride = 1;
+            for (int i = _rank - 1; i >= 0; i--) {
+                _strides[i] = stride;
+                stride *= _dims[i];
+            }
         }
 
         EINSUMS_OMP_PARALLEL_FOR

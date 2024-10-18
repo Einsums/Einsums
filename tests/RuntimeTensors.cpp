@@ -7,6 +7,8 @@ using namespace einsums;
 TEST_CASE("Runtime Tensor Assignment") {
     RuntimeTensor<double> A = create_random_tensor("A", 10, 10);
     RuntimeTensor<double> C = create_random_tensor("C", 10, 10);
+    RuntimeTensor<double> D = create_random_tensor("D", 20, 20);
+    auto D_view = D(Range{0, 10}, Range{0, 10});
 
     REQUIRE(A.rank() == 2);
 
@@ -33,4 +35,16 @@ TEST_CASE("Runtime Tensor Assignment") {
             REQUIRE(A(i, j) == C(i, j));
         }
     }
+
+    A = D_view;
+
+    for(int i = 0; i < 10; i++) {
+        for(int j = 0; j < 10; j++) {
+            REQUIRE(A(i, j) == D(i, j));
+        }
+    }
+
+    D_view.zero();
+
+    D_view = 1.0;
 }
