@@ -53,7 +53,9 @@ void einsums::python::export_python_base(pybind11::module_ &mod) {
         .def(
             "finalize", [](std::string timer_report) { einsums::finalize(timer_report.c_str()); }, py::arg("output_file"))
         .def("report", []() { einsums::timer::report(); })
-        .def("report", [](std::string output_file) { einsums::timer::report(output_file); }, py::arg("output_file"));
+        .def(
+            "report", [](std::string output_file) { einsums::timer::report(output_file); }, py::arg("output_file"))
+        .def("get_buffer_format", [](pybind11::buffer &buf) { return buf.request().format; });
 
     py::register_exception<einsums::EinsumsException>(mod, "CoreEinsumsException");
 }
@@ -66,6 +68,7 @@ PYBIND11_MODULE(core, mod) {
 #ifdef __HIP__
     export_gpu_view(mod);
 #endif
+    export_tensor_typeless(mod);
     export_tensor<float>(mod);
     export_tensor<double>(mod);
     export_tensor<std::complex<float>>(mod);

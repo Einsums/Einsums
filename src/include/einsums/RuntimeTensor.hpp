@@ -11,6 +11,24 @@
 
 namespace einsums {
 
+namespace detail {
+class RuntimeTensorNoType {
+  public:
+    RuntimeTensorNoType()                            = default;
+    RuntimeTensorNoType(const RuntimeTensorNoType &) = default;
+
+    virtual ~RuntimeTensorNoType() = default;
+};
+
+class RuntimeTensorViewNoType : public virtual RuntimeTensorNoType {
+  public:
+    RuntimeTensorViewNoType()                                = default;
+    RuntimeTensorViewNoType(const RuntimeTensorViewNoType &) = default;
+
+    virtual ~RuntimeTensorViewNoType() = default;
+};
+} // namespace detail
+
 // forward declaration.
 template <typename T>
 class RuntimeTensorView;
@@ -23,7 +41,8 @@ class RuntimeTensorView;
 template <typename T>
 class RuntimeTensor : public virtual tensor_props::TensorBase,
                       public virtual tensor_props::TypedTensorBase<T>,
-                      public virtual tensor_props::BasicTensorBase {
+                      public virtual tensor_props::BasicTensorBase,
+                      public virtual detail::RuntimeTensorNoType {
   public:
     using Vector = VectorData<T>;
 
@@ -493,32 +512,47 @@ class RuntimeTensor : public virtual tensor_props::TensorBase,
     }
 
 #define OPERATOR(OP, NAME)                                                                                                                 \
-    virtual auto operator OP(const T &b)->RuntimeTensor<T> & {                                                                             \
+    template <typename TOther>                                                                                                             \
+    auto operator OP(const TOther &b)->RuntimeTensor<T> & {                                                                                \
         EINSUMS_OMP_PARALLEL {                                                                                                             \
             auto tid       = omp_get_thread_num();                                                                                         \
             auto chunksize = _data.size() / omp_get_num_threads();                                                                         \
             auto begin     = _data.begin() + chunksize * tid;                                                                              \
             auto end       = (tid == omp_get_num_threads() - 1) ? _data.end() : begin + chunksize;                                         \
             EINSUMS_OMP_SIMD for (auto i = begin; i < end; i++) {                                                                          \
-                (*i) OP b;                                                                                                                 \
+                if constexpr (IsComplexV<T> && !IsComplexV<TOther> && !std::is_same_v<RemoveComplexT<T>, TOther>) {                        \
+                    (*i) OP(T)(RemoveComplexT<T>) b;                                                                                       \
+                } else if constexpr (!IsComplexV<T> && IsComplexV<TOther>) {                                                               \
+                    (*i) OP(T) b.real();                                                                                                   \
+                } else {                                                                                                                   \
+                    (*i) OP(T) b;                                                                                                          \
+                }                                                                                                                          \
+            }                                                                                                                              \
+        }                                                                                                                                  \
+        return *this;                                                                                                                      \
+    }                                                                                                                                      \
+    template <typename TOther>                                                                                                             \
+    auto operator OP(const RuntimeTensor<TOther> &b)->RuntimeTensor<T> & {                                                                 \
+        if (size() != b.size()) {                                                                                                          \
+            throw EINSUMSEXCEPTION(fmt::format("tensors differ in size : {} {}", size(), b.size()));                                       \
+        }                                                                                                                                  \
+        T            *this_data = this->data();                                                                                            \
+        const TOther *b_data    = b.data();                                                                                                \
+        EINSUMS_OMP_PARALLEL_FOR                                                                                                           \
+        for (size_t sentinel = 0; sentinel < size(); sentinel++) {                                                                         \
+            if constexpr (IsComplexV<T> && !IsComplexV<TOther> && !std::is_same_v<RemoveComplexT<T>, TOther>) {                            \
+                this->_data[sentinel] OP(T)(RemoveComplexT<T>) b_data[sentinel];                                                           \
+            } else if constexpr (!IsComplexV<T> && IsComplexV<TOther>) {                                                                   \
+                this->_data[sentinel] OP(T) b_data[sentinel].real();                                                                       \
+            } else {                                                                                                                       \
+                this->_data[sentinel] OP(T) b_data[sentinel];                                                                              \
             }                                                                                                                              \
         }                                                                                                                                  \
         return *this;                                                                                                                      \
     }                                                                                                                                      \
                                                                                                                                            \
-    virtual auto operator OP(const RuntimeTensor<T> &b)->RuntimeTensor<T> & {                                                              \
-        if (size() != b.size()) {                                                                                                          \
-            throw EINSUMSEXCEPTION(fmt::format("tensors differ in size : {} {}", size(), b.size()));                                       \
-        }                                                                                                                                  \
-        T       *this_data = this->data();                                                                                                 \
-        const T *b_data    = b.data();                                                                                                     \
-        EINSUMS_OMP_PARALLEL_FOR                                                                                                           \
-        for (size_t sentinel = 0; sentinel < size(); sentinel++) {                                                                         \
-            this_data[sentinel] OP b_data[sentinel];                                                                                       \
-        }                                                                                                                                  \
-        return *this;                                                                                                                      \
-    }                                                                                                                                      \
-    virtual auto operator OP(const RuntimeTensorView<T> &b)->RuntimeTensor<T> & {                                                          \
+    template <typename TOther>                                                                                                             \
+    auto operator OP(const RuntimeTensorView<TOther> &b)->RuntimeTensor<T> & {                                                             \
         if (b.rank() != rank()) {                                                                                                          \
             throw EINSUMSEXCEPTION("Can not perform " #OP " with runtime tensor and view of different ranks!");                            \
         }                                                                                                                                  \
@@ -529,7 +563,13 @@ class RuntimeTensor : public virtual tensor_props::TensorBase,
         for (size_t sentinel = 0; sentinel < size(); sentinel++) {                                                                         \
             std::vector<size_t> index(rank());                                                                                             \
             tensor_algebra::detail::sentinel_to_indices(sentinel, this->_strides, index);                                                  \
-            this->operator()(index) OP b(index);                                                                                           \
+            if constexpr (IsComplexV<T> && !IsComplexV<TOther> && !std::is_same_v<RemoveComplexT<T>, TOther>) {                            \
+                (*this)(index) OP(T)(RemoveComplexT<T>) b(index);                                                                          \
+            } else if constexpr (!IsComplexV<T> && IsComplexV<TOther>) {                                                                   \
+                (*this)(index) OP(T) b(index).real();                                                                                      \
+            } else {                                                                                                                       \
+                (*this)(index) OP(T) b(index);                                                                                             \
+            }                                                                                                                              \
         }                                                                                                                                  \
         return *this;                                                                                                                      \
     }
@@ -590,7 +630,7 @@ template <typename T>
 class RuntimeTensorView : public virtual tensor_props::TensorViewBase<RuntimeTensor<T>>,
                           public virtual tensor_props::TypedTensorBase<T>,
                           public virtual tensor_props::BasicTensorBase,
-                          public std::enable_shared_from_this<RuntimeTensorView<T>> {
+                          public virtual detail::RuntimeTensorViewNoType {
   protected:
     T                  *_data;
     std::string         _name{"(unnamed view)"};
@@ -1090,7 +1130,8 @@ class RuntimeTensorView : public virtual tensor_props::TensorViewBase<RuntimeTen
     }
 
 #define OPERATOR(OP, NAME)                                                                                                                 \
-    virtual auto operator OP(const T &b)->RuntimeTensorView<T> & {                                                                         \
+    template <typename TOther>                                                                                                             \
+    auto operator OP(const TOther &b)->RuntimeTensorView<T> & {                                                                            \
         EINSUMS_OMP_PARALLEL_FOR                                                                                                           \
         for (size_t sentinel = 0; sentinel < _size; sentinel++) {                                                                          \
             size_t hold = sentinel, ord = 0;                                                                                               \
@@ -1100,12 +1141,47 @@ class RuntimeTensorView : public virtual tensor_props::TensorViewBase<RuntimeTen
                 hold %= _index_strides[i];                                                                                                 \
             }                                                                                                                              \
                                                                                                                                            \
-            _data[ord] OP b;                                                                                                               \
+            if constexpr (IsComplexV<T> && !IsComplexV<TOther> && !std::is_same_v<RemoveComplexT<T>, TOther>) {                            \
+                this->_data[ord] OP(T)(RemoveComplexT<T>) b;                                                                               \
+            } else if constexpr (!IsComplexV<T> && IsComplexV<TOther>) {                                                                   \
+                this->_data[ord] OP(T) b.real();                                                                                           \
+            } else {                                                                                                                       \
+                this->_data[ord] OP(T) b;                                                                                                  \
+            }                                                                                                                              \
         }                                                                                                                                  \
         return *this;                                                                                                                      \
     }                                                                                                                                      \
                                                                                                                                            \
-    virtual auto operator OP(const RuntimeTensor<T> &b)->RuntimeTensorView<T> & {                                                          \
+    template <typename TOther>                                                                                                             \
+    auto operator OP(const RuntimeTensor<TOther> &b)->RuntimeTensorView<T> & {                                                             \
+        if (b.rank() != rank()) {                                                                                                          \
+            throw EINSUMSEXCEPTION("Can not perform " #OP " with runtime views of different ranks!");                                      \
+        }                                                                                                                                  \
+        if (b.dims() != dims()) {                                                                                                          \
+            throw EINSUMSEXCEPTION("Can not perform " #OP " with runtime views of different dimensions!");                                 \
+        }                                                                                                                                  \
+        EINSUMS_OMP_PARALLEL_FOR                                                                                                           \
+        for (size_t sentinel = 0; sentinel < _size; sentinel++) {                                                                          \
+            size_t hold = sentinel, ord = 0, b_ord = 0;                                                                                    \
+                                                                                                                                           \
+            for (int i = 0; i < _rank; i++) {                                                                                              \
+                ord += _strides[i] * (hold / _index_strides[i]);                                                                           \
+                b_ord += b.stride(i) * (hold / _index_strides[i]);                                                                         \
+                hold %= _index_strides[i];                                                                                                 \
+            }                                                                                                                              \
+            if constexpr (IsComplexV<T> && !IsComplexV<TOther> && !std::is_same_v<RemoveComplexT<T>, TOther>) {                            \
+                this->_data[ord] OP(T)(RemoveComplexT<T>) b.data()[b_ord];                                                                   \
+            } else if constexpr (!IsComplexV<T> && IsComplexV<TOther>) {                                                                   \
+                this->_data[ord] OP(T) b.data()[b_ord].real();                                                                               \
+            } else {                                                                                                                       \
+                this->_data[ord] OP(T) b.data()[b_ord];                                                                                      \
+            }                                                                                                                              \
+        }                                                                                                                                  \
+        return *this;                                                                                                                      \
+    }                                                                                                                                      \
+                                                                                                                                           \
+    template <typename TOther>                                                                                                             \
+    auto operator OP(const RuntimeTensorView<TOther> &b)->RuntimeTensorView<T> & {                                                         \
         if (b.rank() != rank()) {                                                                                                          \
             throw EINSUMSEXCEPTION("Can not perform " #OP " with runtime views of different ranks!");                                      \
         }                                                                                                                                  \
@@ -1122,28 +1198,13 @@ class RuntimeTensorView : public virtual tensor_props::TensorViewBase<RuntimeTen
                 hold %= _index_strides[i];                                                                                                 \
             }                                                                                                                              \
                                                                                                                                            \
-            _data[ord] OP b.data()[b_ord];                                                                                                 \
-        }                                                                                                                                  \
-        return *this;                                                                                                                      \
-    }                                                                                                                                      \
-    virtual auto operator OP(const RuntimeTensorView<T> &b)->RuntimeTensorView<T> & {                                                      \
-        if (b.rank() != rank()) {                                                                                                          \
-            throw EINSUMSEXCEPTION("Can not perform " #OP " with runtime views of different ranks!");                                      \
-        }                                                                                                                                  \
-        if (b.dims() != dims()) {                                                                                                          \
-            throw EINSUMSEXCEPTION("Can not perform " #OP " with runtime views of different dimensions!");                                 \
-        }                                                                                                                                  \
-        EINSUMS_OMP_PARALLEL_FOR                                                                                                           \
-        for (size_t sentinel = 0; sentinel < _size; sentinel++) {                                                                          \
-            size_t hold = sentinel, ord = 0, b_ord = 0;                                                                                    \
-                                                                                                                                           \
-            for (int i = 0; i < _rank; i++) {                                                                                              \
-                ord += _strides[i] * (hold / _index_strides[i]);                                                                           \
-                b_ord += b.stride(i) * (hold / _index_strides[i]);                                                                         \
-                hold %= _index_strides[i];                                                                                                 \
+            if constexpr (IsComplexV<T> && !IsComplexV<TOther> && !std::is_same_v<RemoveComplexT<T>, TOther>) {                            \
+                this->_data[ord] OP(T)(RemoveComplexT<T>) b.data()[b_ord];                                                                   \
+            } else if constexpr (!IsComplexV<T> && IsComplexV<TOther>) {                                                                   \
+                this->_data[ord] OP(T) b.data()[b_ord].real();                                                                               \
+            } else {                                                                                                                       \
+                this->_data[ord] OP(T) b.data()[b_ord];                                                                                      \
             }                                                                                                                              \
-                                                                                                                                           \
-            _data[ord] OP b.data()[b_ord];                                                                                                 \
         }                                                                                                                                  \
         return *this;                                                                                                                      \
     }
@@ -1190,6 +1251,6 @@ class RuntimeTensorView : public virtual tensor_props::TensorViewBase<RuntimeTen
     virtual void set_name(const std::string &new_name) override { _name = new_name; };
 
     virtual size_t rank() const noexcept override { return _rank; }
-};
+}; // namespace einsums
 
 } // namespace einsums
