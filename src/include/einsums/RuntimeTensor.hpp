@@ -156,32 +156,22 @@ class RuntimeTensor : public virtual tensor_props::TensorBase,
         return _data.at(einsums::tensor_algebra::detail::indices_to_sentinel_negative_check(_strides, _dims, index));
     }
 
-    T *data(ptrdiff_t index) {
-        if (index < 0) {
-            index += _dims[0];
+    template <typename... Args>
+    T *data(Args... args) THROWS(einsums::EinsumsException, std::out_of_range) {
+        if (sizeof...(Args) > rank()) {
+            throw EINSUMSEXCEPTION("Too many indices passed to data!");
         }
-        return &(_data.at(index));
+        std::array<ptrdiff_t, sizeof...(Args)> index{static_cast<ptrdiff_t>(args)...};
+        return _data.at(einsums::tensor_algebra::detail::indices_to_sentinel_negative_check(_strides, _dims, index));
     }
 
-    const T *data(ptrdiff_t index) const {
-        if (index < 0) {
-            index += _dims[0];
+    template <typename... Args>
+    const T *data(Args... args) const THROWS(einsums::EinsumsException, std::out_of_range) {
+        if (sizeof...(Args) > rank()) {
+            throw EINSUMSEXCEPTION("Too many indices passed to data!");
         }
-        return &(_data.at(index));
-    }
-
-    T &operator()(ptrdiff_t index) {
-        if (index < 0) {
-            index += _dims[0];
-        }
-        return _data.at(index);
-    }
-
-    const T &operator()(ptrdiff_t index) const {
-        if (index < 0) {
-            index += _dims[0];
-        }
-        return _data.at(index);
+        std::array<ptrdiff_t, sizeof...(Args)> index{static_cast<ptrdiff_t>(args)...};
+        return _data.at(einsums::tensor_algebra::detail::indices_to_sentinel_negative_check(_strides, _dims, index));
     }
 
     /**
@@ -192,7 +182,7 @@ class RuntimeTensor : public virtual tensor_props::TensorBase,
         requires(std::is_integral_v<Args> && ...)
     T &operator()(Args... args) THROWS(einsums::EinsumsException) {
         if (sizeof...(Args) < rank()) {
-            throw EINSUMSEXCEPTION("Not yet implemented: can not handle fewer integral indices than rank in runtime tensor.");
+            throw EINSUMSEXCEPTION("Not yet implemented: can not handle fewer integral indices than rank in (non-const) runtime tensor.");
         } else if (sizeof...(Args) > rank()) {
             throw EINSUMSEXCEPTION("Too many indices passed to subscript operator!");
         }
@@ -262,18 +252,20 @@ class RuntimeTensor : public virtual tensor_props::TensorBase,
             throw EINSUMSEXCEPTION("Too many indices passed to tensor!");
         }
 
-        std::vector<size_t> dims, offsets, strides;
+        std::vector<size_t> dims, offsets(_rank), strides;
+        dims.reserve(_rank);
+        strides.reserve(_rank);
 
         for (int i = 0; i < _rank; i++) {
             if (i >= slices.size()) {
                 dims.push_back(_dims[i]);
                 strides.push_back(_strides[i]);
-                offsets.push_back(0);
+                offsets[i] = 0;
             } else {
                 size_t start = slices[i][0], end = slices[i][1];
 
                 if (start == -1 && end >= 0) {
-                    offsets.push_back(end);
+                    offsets[i] = end;
                 } else {
                     if (start < 0) {
                         start += _dims[i];
@@ -287,7 +279,7 @@ class RuntimeTensor : public virtual tensor_props::TensorBase,
                     }
 
                     dims.push_back(end - start);
-                    offsets.push_back(start);
+                    offsets[i] = start;
                     strides.push_back(_strides[i]);
                 }
             }
@@ -301,18 +293,20 @@ class RuntimeTensor : public virtual tensor_props::TensorBase,
             throw EINSUMSEXCEPTION("Too many indices passed to tensor!");
         }
 
-        std::vector<size_t> dims, offsets, strides;
+        std::vector<size_t> dims, offsets(_rank), strides;
+        dims.reserve(_rank);
+        strides.reserve(_rank);
 
         for (int i = 0; i < _rank; i++) {
             if (i >= slices.size()) {
                 dims.push_back(_dims[i]);
                 strides.push_back(_strides[i]);
-                offsets.push_back(0);
+                offsets[i] = 0;
             } else {
                 size_t start = slices[i][0], end = slices[i][1];
 
                 if (start == -1 && end >= 0) {
-                    offsets.push_back(end);
+                    offsets[i] = end;
                 } else {
                     if (start < 0) {
                         start += _dims[i];
@@ -326,7 +320,7 @@ class RuntimeTensor : public virtual tensor_props::TensorBase,
                     }
 
                     dims.push_back(end - start);
-                    offsets.push_back(start);
+                    offsets[i] = start;
                     strides.push_back(_strides[i]);
                 }
             }
@@ -885,18 +879,20 @@ class RuntimeTensorView : public virtual tensor_props::TensorViewBase<RuntimeTen
             throw EINSUMSEXCEPTION("Too many indices passed to tensor!");
         }
 
-        std::vector<size_t> dims, offsets, strides;
+        std::vector<size_t> dims, offsets(_rank), strides;
+        dims.reserve(_rank);
+        strides.reserve(_rank);
 
         for (int i = 0; i < _rank; i++) {
             if (i >= slices.size()) {
                 dims.push_back(_dims[i]);
                 strides.push_back(_strides[i]);
-                offsets.push_back(0);
+                offsets[i] = 0;
             } else {
                 size_t start = slices[i][0], end = slices[i][1];
 
                 if (start == -1 && end >= 0) {
-                    offsets.push_back(end);
+                    offsets[i] = end;
                 } else {
                     if (start < 0) {
                         start += _dims[i];
@@ -910,7 +906,7 @@ class RuntimeTensorView : public virtual tensor_props::TensorViewBase<RuntimeTen
                     }
 
                     dims.push_back(end - start);
-                    offsets.push_back(start);
+                    offsets[i] = start;
                     strides.push_back(_strides[i]);
                 }
             }
@@ -924,18 +920,20 @@ class RuntimeTensorView : public virtual tensor_props::TensorViewBase<RuntimeTen
             throw EINSUMSEXCEPTION("Too many indices passed to tensor!");
         }
 
-        std::vector<size_t> dims, offsets, strides;
+        std::vector<size_t> dims, offsets(_rank), strides;
+        dims.reserve(_rank);
+        strides.reserve(_rank);
 
         for (int i = 0; i < _rank; i++) {
             if (i >= slices.size()) {
                 dims.push_back(_dims[i]);
                 strides.push_back(_strides[i]);
-                offsets.push_back(0);
+                offsets[i] = 0;
             } else {
                 size_t start = slices[i][0], end = slices[i][1];
 
                 if (start == -1 && end >= 0) {
-                    offsets.push_back(end);
+                    offsets[i] = end;
                 } else {
                     if (start < 0) {
                         start += _dims[i];
@@ -949,7 +947,7 @@ class RuntimeTensorView : public virtual tensor_props::TensorViewBase<RuntimeTen
                     }
 
                     dims.push_back(end - start);
-                    offsets.push_back(start);
+                    offsets[i] = start;
                     strides.push_back(_strides[i]);
                 }
             }
@@ -1170,11 +1168,11 @@ class RuntimeTensorView : public virtual tensor_props::TensorViewBase<RuntimeTen
                 hold %= _index_strides[i];                                                                                                 \
             }                                                                                                                              \
             if constexpr (IsComplexV<T> && !IsComplexV<TOther> && !std::is_same_v<RemoveComplexT<T>, TOther>) {                            \
-                this->_data[ord] OP(T)(RemoveComplexT<T>) b.data()[b_ord];                                                                   \
+                this->_data[ord] OP(T)(RemoveComplexT<T>) b.data()[b_ord];                                                                 \
             } else if constexpr (!IsComplexV<T> && IsComplexV<TOther>) {                                                                   \
-                this->_data[ord] OP(T) b.data()[b_ord].real();                                                                               \
+                this->_data[ord] OP(T) b.data()[b_ord].real();                                                                             \
             } else {                                                                                                                       \
-                this->_data[ord] OP(T) b.data()[b_ord];                                                                                      \
+                this->_data[ord] OP(T) b.data()[b_ord];                                                                                    \
             }                                                                                                                              \
         }                                                                                                                                  \
         return *this;                                                                                                                      \
@@ -1199,11 +1197,11 @@ class RuntimeTensorView : public virtual tensor_props::TensorViewBase<RuntimeTen
             }                                                                                                                              \
                                                                                                                                            \
             if constexpr (IsComplexV<T> && !IsComplexV<TOther> && !std::is_same_v<RemoveComplexT<T>, TOther>) {                            \
-                this->_data[ord] OP(T)(RemoveComplexT<T>) b.data()[b_ord];                                                                   \
+                this->_data[ord] OP(T)(RemoveComplexT<T>) b.data()[b_ord];                                                                 \
             } else if constexpr (!IsComplexV<T> && IsComplexV<TOther>) {                                                                   \
-                this->_data[ord] OP(T) b.data()[b_ord].real();                                                                               \
+                this->_data[ord] OP(T) b.data()[b_ord].real();                                                                             \
             } else {                                                                                                                       \
-                this->_data[ord] OP(T) b.data()[b_ord];                                                                                      \
+                this->_data[ord] OP(T) b.data()[b_ord];                                                                                    \
             }                                                                                                                              \
         }                                                                                                                                  \
         return *this;                                                                                                                      \

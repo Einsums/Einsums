@@ -271,8 +271,12 @@ inline size_t indices_to_sentinel_negative_check(const StorageType1 &unique_stri
                                                  const StorageType3 &inds) {
     size_t out = 0;
 
+    if(inds.size() > unique_strides.size() || inds.size() > unique_dims.size()) {
+        throw EINSUMSEXCEPTION("Too many indices supplied!");
+    }
+
     for (size_t i = 0; i < inds.size(); i++) {
-        size_t ind = inds[i];
+        ptrdiff_t ind = inds[i];
 
         if (ind < 0) {
             [[unlikely]] ind += unique_dims[i];
@@ -281,7 +285,7 @@ inline size_t indices_to_sentinel_negative_check(const StorageType1 &unique_stri
         if (ind < 0 || ind >= unique_dims[i]) {
             [[unlikely]] throw EINSUMSEXCEPTION(
                 fmt::format("Index out of range! Index {} in rank {} was either greater than or equal to {} or less than {}", inds[i], i,
-                            unique_dims[i], -unique_dims[i]));
+                            unique_dims[i], -(ptrdiff_t) unique_dims[i]));
         }
 
         out += ind * unique_strides[i];

@@ -1,10 +1,7 @@
 #include <catch2/catch_all.hpp>
 #include <einsums.hpp>
-#include <errno.h>
-#include <error.h>
 #include <fstream>
 #include <sys/stat.h>
-// #include <unistd.h>
 
 TEST_CASE("Initialize Finalize") {
     einsums::initialize();
