@@ -86,10 +86,9 @@ class EINSUMS_EXPORT PyTensorIterator {
      * Get the next element in the tensor.
      */
     T next() THROWS(pybind11::stop_iteration) {
-        _lock.lock();
+        auto guard = std::lock_guard(_lock);
 
         if (_stop) {
-            _lock.unlock();
             throw pybind11::stop_iteration();
         }
 
@@ -99,7 +98,7 @@ class EINSUMS_EXPORT PyTensorIterator {
 
         T &out = _tensor(ind);
 
-        if (_reverse) {
+        if (reversed()) {
             _curr_index--;
         } else {
             _curr_index++;
@@ -108,8 +107,6 @@ class EINSUMS_EXPORT PyTensorIterator {
         if (_curr_index < 0 || _curr_index >= _elements) {
             _stop = true;
         }
-
-        _lock.unlock();
 
         return out;
     }

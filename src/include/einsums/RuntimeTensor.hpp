@@ -147,12 +147,18 @@ class RuntimeTensor : public virtual tensor_props::TensorBase,
     template <typename Storage>
         requires(!std::is_arithmetic_v<Storage>)
     T &operator()(const Storage &index) {
+        if (index.size() < rank()) {
+            throw EINSUMSEXCEPTION("Too few indices passed to subscript tensor!");
+        }
         return _data.at(einsums::tensor_algebra::detail::indices_to_sentinel_negative_check(_strides, _dims, index));
     }
 
     template <typename Storage>
         requires(!std::is_arithmetic_v<Storage>)
     const T &operator()(const Storage &index) const {
+        if (index.size() < rank()) {
+            throw EINSUMSEXCEPTION("Too few indices passed to subscript tensor!");
+        }
         return _data.at(einsums::tensor_algebra::detail::indices_to_sentinel_negative_check(_strides, _dims, index));
     }
 
