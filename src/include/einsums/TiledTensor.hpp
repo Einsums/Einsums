@@ -89,7 +89,9 @@ struct TiledTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
         }
         for (int i = 0; i < Rank; i++) {
             _tile_offsets[i] = std::vector<int>();
-            int sum          = 0;
+            _tile_offsets[i].reserve(_tile_sizes[i].size());
+
+            int sum = 0;
             for (int j = 0; j < _tile_sizes[i].size(); j++) {
                 _tile_offsets[i].push_back(sum);
                 sum += _tile_sizes[i].at(j);
@@ -110,6 +112,7 @@ struct TiledTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
         _size = 1;
         for (int i = 0; i < Rank; i++) {
             _tile_offsets[i] = std::vector<int>();
+            _tile_offsets[i].reserve(_tile_sizes[i].size());
             int sum          = 0;
             for (int j = 0; j < _tile_sizes[i].size(); j++) {
                 _tile_offsets[i].push_back(sum);

@@ -930,6 +930,8 @@ struct BlockDeviceTensor : public virtual tensor_props::BlockTensorBase<T, Rank,
     explicit BlockDeviceTensor(std::string name, detail::HostToDeviceMode mode, Dims... block_dims)
         : tensor_props::BlockTensorBase<T, Rank, DeviceTensor<T, Rank>>(name) {
 
+        this->_blocks.reserve(sizeof...(Dims));
+
         auto dims = std::array<size_t, sizeof...(Dims)>{static_cast<size_t>(block_dims)...};
 
         for (int i = 0; i < sizeof...(Dims); i++) {
@@ -963,6 +965,8 @@ struct BlockDeviceTensor : public virtual tensor_props::BlockTensorBase<T, Rank,
     template <typename ArrayArg>
     explicit BlockDeviceTensor(std::string name, detail::HostToDeviceMode mode, const ArrayArg &block_dims)
         : tensor_props::BlockTensorBase<T, Rank, DeviceTensor<T, Rank>>(name) {
+
+        this->_blocks.reserve(block_dims.size());
         for (int i = 0; i < block_dims.size(); i++) {
 
             Dim<Rank> pass_dims;
@@ -982,6 +986,7 @@ struct BlockDeviceTensor : public virtual tensor_props::BlockTensorBase<T, Rank,
     template <size_t Dims>
     explicit BlockDeviceTensor(detail::HostToDeviceMode mode, Dim<Dims> block_dims)
         : tensor_props::BlockTensorBase<T, Rank, DeviceTensor<T, Rank>>() {
+        this->_blocks.reserve(Dims);
         for (int i = 0; i < block_dims.size(); i++) {
 
             Dim<Rank> pass_dims;
@@ -1013,6 +1018,7 @@ struct BlockDeviceTensor : public virtual tensor_props::BlockTensorBase<T, Rank,
     template <typename... Dims>
         requires(NoneOfType<detail::HostToDeviceMode, Dims...>)
     explicit BlockDeviceTensor(std::string name, Dims... block_dims) : tensor_props::BlockTensorBase<T, Rank, DeviceTensor<T, Rank>>(name) {
+        this->_blocks.reserve(sizeof...(Dims));
 
         auto dims = std::array<size_t, sizeof...(Dims)>{static_cast<size_t>(block_dims)...};
 
@@ -1047,6 +1053,8 @@ struct BlockDeviceTensor : public virtual tensor_props::BlockTensorBase<T, Rank,
     template <typename ArrayArg>
     explicit BlockDeviceTensor(std::string name, const ArrayArg &block_dims)
         : tensor_props::BlockTensorBase<T, Rank, DeviceTensor<T, Rank>>(name) {
+        this->_blocks.reserve(block_dims.size());
+
         for (int i = 0; i < block_dims.size(); i++) {
 
             Dim<Rank> pass_dims;
@@ -1064,6 +1072,8 @@ struct BlockDeviceTensor : public virtual tensor_props::BlockTensorBase<T, Rank,
      */
     template <size_t Dims>
     explicit BlockDeviceTensor(Dim<Dims> block_dims) : tensor_props::BlockTensorBase<T, Rank, DeviceTensor<T, Rank>>() {
+        this->_blocks.reserve(Dims);
+        
         for (int i = 0; i < block_dims.size(); i++) {
 
             Dim<Rank> pass_dims;

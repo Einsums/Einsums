@@ -178,6 +178,7 @@ auto initialize_cp(std::vector<Tensor<TType, 2>> &folds, size_t rank) -> std::ve
     using namespace einsums::tensor_algebra::index;
 
     std::vector<Tensor<TType, 2>> factors;
+    factors.reserve(TRank);
 
     // Perform compile-time looping.
     for_sequence<TRank>([&](auto i) {
@@ -248,6 +249,7 @@ auto parafac(const TTensor<TType, TRank> &tensor, size_t rank, int n_iter_max = 
 
     // Compute set of unfolded matrices
     std::vector<Tensor<TType, 2>> unfolded_matrices;
+    unfolded_matrices.reserve(TRank);
     for_sequence<TRank>([&](auto i) { unfolded_matrices.push_back(tensor_algebra::unfold<i>(tensor)); });
 
     // Perform SVD guess for parafac decomposition procedure
@@ -345,6 +347,7 @@ auto weighted_parafac(const TTensor<TType, TRank> &tensor, const TTensor<TType, 
 
     // Compute set of unfolded matrices (unweighted)
     std::vector<Tensor<TType, 2>> unfolded_matrices;
+    unfolded_matrices.reserve(TRank);
     for_sequence<TRank>([&](auto i) { unfolded_matrices.push_back(tensor_algebra::unfold<i>(tensor)); });
 
     // Perform SVD guess for parafac decomposition procedure
@@ -532,6 +535,7 @@ auto tucker_ho_svd(const TTensor<TType, TRank> &tensor, std::vector<size_t> &ran
 
     // Compute set of unfolded matrices
     std::vector<Tensor<TType, 2>> unfolded_matrices;
+    unfolded_matrices.reserve(TRank);
     if (!folds.size()) {
         for_sequence<TRank>([&](auto i) { unfolded_matrices.push_back(tensor_algebra::unfold<i>(tensor)); });
     } else {
@@ -602,6 +606,7 @@ auto tucker_ho_oi(const TTensor<TType, TRank> &tensor, std::vector<size_t> &rank
     bool converged = false;
     while (iter < n_iter_max) {
         std::vector<Tensor<TType, 2>> new_folds;
+        new_folds.reserve(TRank);
 
         for_sequence<TRank>([&](auto i) {
             // Make the workspace for the contraction
