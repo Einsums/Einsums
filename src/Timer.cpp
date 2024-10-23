@@ -17,7 +17,7 @@
 #include <map>
 #include <memory>
 #include <mutex>
-#include <stack>
+#include <deque>
 
 namespace einsums::timer {
 
