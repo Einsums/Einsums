@@ -496,6 +496,7 @@ auto initialize_tucker(std::vector<Tensor<TType, 2>> &folds, std::vector<size_t>
     LabeledSection0();
 
     std::vector<Tensor<TType, 2>> factors;
+    factors.reserve(TRank);
 
     // Perform compile-time looping.
     for_sequence<TRank>([&](auto i) {
