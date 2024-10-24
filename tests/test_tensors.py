@@ -69,6 +69,10 @@ def test_creation(tensor_type):
     B.name = "B2"
     assert B.get_name() == "B2"
 
+    print(A)
+    print(B)
+    print(C)
+
     for dtype in [
         int,
         float,
