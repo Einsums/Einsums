@@ -69,10 +69,6 @@ def test_creation(tensor_type):
     B.name = "B2"
     assert B.get_name() == "B2"
 
-    print(A)
-    print(B)
-    print(C)
-
     for dtype in [
         int,
         float,
@@ -87,6 +83,8 @@ def test_creation(tensor_type):
         np.int64,
     ]:
         C = tensor_type(np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]], dtype=dtype))
+
+        print(C)
 
         for n, x in enumerate(C):
             assert x == n + 1
@@ -108,6 +106,8 @@ def test_creation(tensor_type):
             [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 16]], dtype=dtype
         )
         C = tensor_type(x[0:3, 0:3])
+
+        print(C)
 
         for n, x in enumerate(C):
             assert x == n + (n // 3) + 1

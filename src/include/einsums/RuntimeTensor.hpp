@@ -65,7 +65,8 @@ template <typename T>
 class RuntimeTensor : public virtual tensor_props::TensorBase,
                       public virtual tensor_props::TypedTensorBase<T>,
                       public virtual tensor_props::BasicTensorBase,
-                      public virtual detail::RuntimeTensorNoType {
+                      public virtual detail::RuntimeTensorNoType,
+                      public virtual tensor_props::CoreTensorBase {
   public:
     using Vector = VectorData<T>;
 
@@ -653,7 +654,8 @@ template <typename T>
 class RuntimeTensorView : public virtual tensor_props::TensorViewBase<RuntimeTensor<T>>,
                           public virtual tensor_props::TypedTensorBase<T>,
                           public virtual tensor_props::BasicTensorBase,
-                          public virtual detail::RuntimeTensorViewNoType {
+                          public virtual detail::RuntimeTensorViewNoType,
+                          public virtual tensor_props::CoreTensorBase {
   protected:
     T                  *_data;
     std::string         _name{"(unnamed view)"};
@@ -1349,8 +1351,9 @@ void fprintln(std::ostream &os, const AType &A, TensorPrintOptions options) {
                     }
                 } else if constexpr (einsums::IsComplexV<T>) {
                     oss << fmt::format("({:14.8f} ", value.real()) << " + " << fmt::format("{:14.8f}i)", value.imag());
-                } else
+                } else {
                     oss << fmt::format("{:14} ", value);
+                }
 
                 fprintln(os, "{}", oss.str());
                 fprintln(os);
@@ -1360,7 +1363,11 @@ void fprintln(std::ostream &os, const AType &A, TensorPrintOptions options) {
 #else
                 if constexpr (einsums::CoreTensorConcept<AType> || einsums::DeviceTensorConcept<AType>) {
 #endif
-                    auto                target_dims = std::vector<size_t>(A.dims().begin(), A.dims().end() - 1);
+                    auto                target_dims = std::vector<size_t>(Rank - 1);
+                    for(int i = 0; i < Rank - 1; i++) {
+                        target_dims[i] = A.dim(i);
+                    }
+
                     auto                final_dim   = A.dim(Rank - 1);
                     auto                ndigits     = einsums::ndigits(final_dim);
                     std::vector<size_t> index_strides, index(Rank - 1);
@@ -1387,7 +1394,7 @@ void fprintln(std::ostream &os, const AType &A, TensorPrintOptions options) {
                                                        fmt::format("({} {:{}d}-{:{}d}): ", tmp.str(), j, ndigits, final_dim - 1, ndigits));
                             }
                             index[Rank - 1] = j;
-                            T value         = std::get<T>(A(index));
+                            T value         = A(index);
                             if (std::abs(value) > 1.0E+10) {
                                 if constexpr (std::is_floating_point_v<T>)
                                     oss << "\x1b[0;37;41m" << fmt::format("{:14.8f} ", value) << "\x1b[0m";
@@ -1415,45 +1422,46 @@ void fprintln(std::ostream &os, const AType &A, TensorPrintOptions options) {
                         fprintln(os, "{}", oss.str());
                         fprintln(os);
                     }
-                } else if (Rank == 1) {
+                }
+            } else if (Rank == 1) {
 #ifndef __HIP__
-                    if constexpr (einsums::CoreTensorConcept<AType>) {
+                if constexpr (einsums::CoreTensorConcept<AType>) {
 #else
-                    if constexpr (einsums::CoreTensorConcept<AType> || einsums::DeviceTensorConcept<AType>) {
+                if constexpr (einsums::CoreTensorConcept<AType> || einsums::DeviceTensorConcept<AType>) {
 #endif
-                        for (size_t i = 0; i < A.size(); i++) {
-                            std::ostringstream oss;
-                            oss << "(" << i << "): ";
+                    for (size_t i = 0; i < A.size(); i++) {
+                        std::ostringstream oss;
+                        oss << "(" << i << "): ";
 
-                            T value = A(i);
-                            if (std::abs(value) > 1.0E+5) {
-                                if constexpr (std::is_floating_point_v<T>)
-                                    oss << "\x1b[0;37;41m" << fmt::format("{:14.8f} ", value) << "\x1b[0m";
-                                else if constexpr (einsums::IsComplexV<T>) {
-                                    oss << "\x1b[0;37;41m(" << fmt::format("{:14.8f} ", value.real()) << " + "
-                                        << fmt::format("{:14.8f}i)", value.imag()) << "\x1b[0m";
-                                } else
-                                    oss << "\x1b[0;37;41m" << fmt::format("{:14} ", value) << "\x1b[0m";
-                            } else {
-                                if constexpr (std::is_floating_point_v<T>)
-                                    if (std::abs(value) < 1.0E-4) {
-                                        oss << fmt::format("{:14.4e} ", value);
-                                    } else {
-                                        oss << fmt::format("{:14.8f} ", value);
-                                    }
-                                else if constexpr (einsums::IsComplexV<T>) {
-                                    oss << fmt::format("({:14.8f} ", value.real()) << " + " << fmt::format("{:14.8f}i)", value.imag());
-                                } else
-                                    oss << fmt::format("{:14} ", value);
-                            }
-
-                            fprintln(os, "{}", oss.str());
+                        T value = std::get<T>(A(i));
+                        if (std::abs(value) > 1.0E+5) {
+                            if constexpr (std::is_floating_point_v<T>)
+                                oss << "\x1b[0;37;41m" << fmt::format("{:14.8f} ", value) << "\x1b[0m";
+                            else if constexpr (einsums::IsComplexV<T>) {
+                                oss << "\x1b[0;37;41m(" << fmt::format("{:14.8f} ", value.real()) << " + "
+                                    << fmt::format("{:14.8f}i)", value.imag()) << "\x1b[0m";
+                            } else
+                                oss << "\x1b[0;37;41m" << fmt::format("{:14} ", value) << "\x1b[0m";
+                        } else {
+                            if constexpr (std::is_floating_point_v<T>)
+                                if (std::abs(value) < 1.0E-4) {
+                                    oss << fmt::format("{:14.4e} ", value);
+                                } else {
+                                    oss << fmt::format("{:14.8f} ", value);
+                                }
+                            else if constexpr (einsums::IsComplexV<T>) {
+                                oss << fmt::format("({:14.8f} ", value.real()) << " + " << fmt::format("{:14.8f}i)", value.imag());
+                            } else
+                                oss << fmt::format("{:14} ", value);
                         }
+
+                        fprintln(os, "{}", oss.str());
                     }
                 }
             }
         }
     }
+
     fprintln(os);
 }
 
