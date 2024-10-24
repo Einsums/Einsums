@@ -17,7 +17,7 @@
 #include <map>
 #include <memory>
 #include <mutex>
-#include <vector>
+#include <deque>
 
 namespace einsums::timer {
 
@@ -37,7 +37,7 @@ struct TimerDetail {
 
     TimerDetail                       *parent{nullptr};
     std::map<std::string, TimerDetail> children;
-    std::vector<std::string>           order;
+    std::deque<std::string>           order;
 
     time_point start_time;
 };
