@@ -380,7 +380,7 @@ struct Tensor : public virtual tensor_props::CoreTensorBase,
      * @param dims The new dimensions of a tensor.
      */
     template <typename... Dims>
-    auto resize(Dims... dims) -> void
+    void resize(Dims... dims)
         requires((std::is_arithmetic_v<Dims> && ... && (sizeof...(Dims) == Rank)))
     {
         resize(Dim<Rank>{static_cast<size_t>(dims)...});
@@ -426,7 +426,7 @@ struct Tensor : public virtual tensor_props::CoreTensorBase,
      *
      * @return T* A pointer to the data.
      */
-    auto data() -> T * override { return _data.data(); }
+    T *data() override { return _data.data(); }
 
     /**
      * @brief Returns a constant pointer to the data.
@@ -436,7 +436,7 @@ struct Tensor : public virtual tensor_props::CoreTensorBase,
      *
      * @return const T* An immutable pointer to the data.
      */
-    auto data() const -> const T * override { return _data.data(); }
+    const T *data() const override { return _data.data(); }
 
     /**
      * Returns a pointer into the tensor at the given location.
@@ -889,26 +889,26 @@ struct Tensor : public virtual tensor_props::CoreTensorBase,
 
 #undef OPERATOR
 
-    auto dim(int d) const -> size_t override {
+    size_t dim(int d) const override {
         // Add support for negative indices.
         if (d < 0) {
             d += Rank;
         }
         return _dims[d];
     }
-    auto dims() const -> Dim<Rank> override { return _dims; }
+    Dim<Rank> dims() const override { return _dims; }
 
     auto vector_data() const -> const Vector & { return _data; }
     auto vector_data() -> Vector & { return _data; }
 
-    [[nodiscard]] auto stride(int d) const noexcept -> size_t override {
+    size_t stride(int d) const noexcept override {
         if (d < 0) {
             d += Rank;
         }
         return _strides[d];
     }
 
-    auto strides() const noexcept -> Stride<Rank> override { return _strides; }
+    Stride<Rank> strides() const noexcept override { return _strides; }
 
     auto to_rank_1_view() const -> TensorView<T, 1> {
         size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
@@ -920,7 +920,7 @@ struct Tensor : public virtual tensor_props::CoreTensorBase,
     // Returns the linear size of the tensor
     [[nodiscard]] auto size() const { return std::accumulate(std::begin(_dims), std::begin(_dims) + Rank, 1, std::multiplies<>{}); }
 
-    auto full_view_of_underlying() const noexcept -> bool override { return true; }
+    bool full_view_of_underlying() const noexcept override { return true; }
 
     const std::string &name() const override { return _name; };
 
