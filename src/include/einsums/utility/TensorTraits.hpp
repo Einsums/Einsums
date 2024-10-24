@@ -65,7 +65,7 @@ namespace detail {
  * @tparam D The type to check.
  */
 template <typename D>
-struct IsTensor : public std::is_base_of<tensor_props::TensorBaseNoExtra, D> {};
+struct IsTensor : public std::is_base_of<tensor_props::TensorBase, D> {};
 
 /**
  * @struct IsTypedTensor
@@ -86,8 +86,9 @@ struct IsTypedTensor : public std::is_base_of<tensor_props::TypedTensorBase<T>, 
  * @tparam D The tensor type to check.
  * @tparam Rank The rank the tensor should have.
  */
-template <typename D, size_t Rank>
-struct IsRankTensor : public std::is_base_of<tensor_props::RankTensorBase<Rank>, D> {};
+template <typename D, ptrdiff_t Rank = -1>
+struct IsRankTensor : public std::conditional_t<Rank == -1, std::is_base_of<tensor_props::RankTensorBaseNoRank, D>,
+                                              std::is_base_of<tensor_props::RankTensorBase<(size_t)Rank>, D>> {};
 
 /**
  * @struct IsScalar
@@ -184,12 +185,12 @@ struct IsDiskTensor : public std::is_base_of<tensor_props::DiskTensorBase, D> {}
  *
  * @brief Checks to see if the tensor is a view of another.
  *
- * Checks whether the tensor inherits TensorViewBaseNoExtra.
+ * Checks whether the tensor inherits TensorViewBaseNoViewed.
  *
  * @tparam D The tensor type to check.
  */
 template <typename D>
-struct IsTensorView : public std::is_base_of<tensor_props::TensorViewBaseNoExtra, D> {};
+struct IsTensorView : public std::is_base_of<tensor_props::TensorViewBaseNoViewed, D> {};
 
 /**
  * @struct IsViewOf
@@ -202,36 +203,35 @@ struct IsTensorView : public std::is_base_of<tensor_props::TensorViewBaseNoExtra
  * @tparam Viewed The type of tensor expected to be viewed.
  */
 template <typename D, typename Viewed>
-struct IsViewOf : public std::is_base_of<tensor_props::TensorViewBaseOnlyViewed<Viewed>, D> {};
+struct IsViewOf : public std::is_base_of<tensor_props::TensorViewBase<Viewed>, D> {};
 
 /**
  * @struct IsBasicTensor
  *
  * @brief Checks to see if the tensor is a basic tensor.
  *
- * Checks to see if the tensor inherits BasicTensorBaseNoExtra.
+ * Checks to see if the tensor inherits BasicTensorBase.
  *
  * @tparam D The tensor to check.
  */
 template <typename D>
-struct IsBasicTensor : public std::is_base_of<tensor_props::BasicTensorBaseNoExtra, D> {};
+struct IsBasicTensor : public std::is_base_of<tensor_props::BasicTensorBase, D> {};
 
 /**
  * @struct IsCollectedTensor
  *
  * @brief Checks to see if the tensor is a tensor collection with the given storage type.
  *
- * Checks to see if the tensor inherits CollectedTensorBaseOnlyStored if a type is given, or CollectedTensorBaseNoExtra if type is not
+ * Checks to see if the tensor inherits CollectedTensorBase if a type is given, or CollectedTensorBaseNoExtra if type is not
  * given.
  *
  * @tparam D The tensor to check.
  * @tparam StoredType The type of the tensors stored in the collection, or void if you don't care.
  */
 template <typename D, typename StoredType = void>
-struct IsCollectedTensor : public std::bool_constant<std::is_void_v<StoredType>
-                                                         ? std::is_base_of_v<tensor_props::CollectedTensorBaseNoExtra, D>
-                                                         : std::is_base_of_v<tensor_props::CollectedTensorBaseOnlyStored<StoredType>, D>> {
-};
+struct IsCollectedTensor
+    : public std::bool_constant<std::is_void_v<StoredType> ? std::is_base_of_v<tensor_props::CollectedTensorBaseNoExtra, D>
+                                                           : std::is_base_of_v<tensor_props::CollectedTensorBase<StoredType>, D>> {};
 
 /**
  * @struct IsTiledTensor
@@ -239,15 +239,15 @@ struct IsCollectedTensor : public std::bool_constant<std::is_void_v<StoredType>
  * @brief Checks to see if the tensor is a tiled tensor with the given storage type.
  *
  * Checks to see if the tensor inherits TiledTensorBaseNoExtra. If a type is given, also check to see if it inherits
- * the appropriate CollectedTensorBaseOnlyStored.
+ * the appropriate CollectedTensorBase.
  *
  * @tparam D The tensor to check.
  * @tparam StoredType The type of the tensors stored in the collection, or void if you don't care.
  */
 template <typename D, typename StoredType = void>
-struct IsTiledTensor : public std::bool_constant<std::is_base_of_v<tensor_props::TiledTensorBaseNoExtra, D> &&
-                                                 (std::is_void_v<StoredType> ||
-                                                  std::is_base_of_v<tensor_props::CollectedTensorBaseOnlyStored<StoredType>, D>)> {};
+struct IsTiledTensor
+    : public std::bool_constant<std::is_base_of_v<tensor_props::TiledTensorBaseNoExtra, D> &&
+                                (std::is_void_v<StoredType> || std::is_base_of_v<tensor_props::CollectedTensorBase<StoredType>, D>)> {};
 
 /**
  * @struct IsBlockTensor
@@ -255,15 +255,15 @@ struct IsTiledTensor : public std::bool_constant<std::is_base_of_v<tensor_props:
  * @brief Checks to see if the tensor is a block tensor with the given storage type.
  *
  * Checks to see if the tensor inherits BlockTensorBaseNoExtra. If a type is given, also check to see if it inherits
- * the appropriate CollectedTensorBaseOnlyStored.
+ * the appropriate CollectedTensorBase.
  *
  * @tparam D The tensor to check.
  * @tparam StoredType The type of the tensors stored in the collection, or void if you don't care.
  */
 template <typename D, typename StoredType = void>
-struct IsBlockTensor : public std::bool_constant<std::is_base_of_v<tensor_props::BlockTensorBaseNoExtra, D> &&
-                                                 (std::is_void_v<StoredType> ||
-                                                  std::is_base_of_v<tensor_props::CollectedTensorBaseOnlyStored<StoredType>, D>)> {};
+struct IsBlockTensor
+    : public std::bool_constant<std::is_base_of_v<tensor_props::BlockTensorBaseNoExtra, D> &&
+                                (std::is_void_v<StoredType> || std::is_base_of_v<tensor_props::CollectedTensorBase<StoredType>, D>)> {};
 
 /**
  * @struct IsFunctionTensor
@@ -320,7 +320,7 @@ constexpr inline bool IsTypedTensorV = IsTypedTensor<D, T>::value;
  * @tparam D The tensor type to check.
  * @tparam Rank The rank the tensor should have.
  */
-template <typename D, size_t Rank>
+template <typename D, ptrdiff_t Rank = -1>
 constexpr inline bool IsRankTensorV = IsRankTensor<D, Rank>::value;
 
 /**
@@ -817,7 +817,7 @@ constexpr inline bool IsSameUnderlyingV = (std::is_same_v<typename First::data_t
  * @tparam Rest The rest of the tensors
  */
 template <typename First, typename... Rest>
-constexpr inline bool IsSameRankV = ((First::rank == Rest::rank) && ...);
+constexpr inline bool IsSameRankV = ((First::Rank == Rest::Rank) && ...);
 
 /**
  * @property IsSameUnderlyingAndRankV
@@ -863,7 +863,7 @@ concept TypedTensorConcept = detail::IsTypedTensorV<D, T>;
  * @tparam D The tensor type to check.
  * @tparam Rank The rank the tensor should have.
  */
-template <typename D, size_t Rank>
+template <typename D, ptrdiff_t Rank = -1>
 concept RankTensorConcept = detail::IsRankTensorV<D, Rank>;
 
 /**
@@ -1472,14 +1472,14 @@ using DataTypeT = typename DataType<D>::type;
  *
  * @brief Gets the rank of a tensor/scalar.
  *
- * Normally, you can get the rank using an expression such as AType::rank. However,
+ * Normally, you can get the rank using an expression such as AType::Rank. However,
  * if you want to support both zero-rank tensors and scalars, then this constant can help with brevity.
  */
 template <typename D>
 constexpr size_t TensorRank = 0;
 
 template <TensorConcept D>
-constexpr size_t TensorRank<D> = D::rank;
+constexpr size_t TensorRank<D> = D::Rank;
 
 /**
  * @struct BiggestType
@@ -1565,5 +1565,13 @@ concept AtLeastOneOfType = detail::count_of_type<T, Args...>() >= 1;
 
 template <typename T, size_t Num, typename... Args>
 concept NumOfType = detail::count_of_type<T, Args...>() == Num;
+
+template <typename T, typename... Args>
+concept AllOfType = (std::is_same_v<T, Args> && ... && true);
+
+#ifdef __HIP__
+template <typename T>
+using DevDatatype = typename tensor_props::DevTypedTensorBase<T>::dev_datatype;
+#endif
 
 } // namespace einsums

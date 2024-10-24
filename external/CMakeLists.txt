@@ -19,6 +19,10 @@ add_subdirectory(fmt)
 
 add_subdirectory(rangev3)
 
+FetchContent_MakeAvailable(fmt)
+
+find_package(fmt 11)
+
 find_package(ZLIB REQUIRED)
 find_package(TargetHDF5 REQUIRED)
 # promote Mm version's scope so that it can be baked into EinsumsConfig
@@ -32,15 +36,23 @@ if(EINSUMS_USE_HPTT)
 
     if(EINSUMS_BUILD_HIP)
         set(ENABLE_HIP ON)
+        
+        if(ENABLE_TESTS)
+            set(__temp_enable_tests ${ENABLE_TESTS})
+        endif()
+
+        set(ENABLE_TESTS OFF)
         add_subdirectory(librett)
         FetchContent_MakeAvailable(librett)
+
+        if(__temp_enable_tests)
+            set(ENABLE_TESTS ${__temp_enable_tests})
+        endif()
     endif()
 endif()
 
 if(EINSUMS_ENABLE_TESTING)
     FetchContent_MakeAvailable(Catch2)
 endif()
-
-FetchContent_MakeAvailable(fmt)
 
 FetchContent_MakeAvailable(range-v3)

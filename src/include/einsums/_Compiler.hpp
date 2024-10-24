@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include <complex>
+
 #if defined(__INTEL_LLVM_COMPILER) || defined(__INTEL_COMPILER)
 #    define EINSUMS_OMP_PARALLEL_FOR _Pragma("omp parallel for simd")
 #    define EINSUMS_OMP_SIMD         _Pragma("omp simd")
@@ -13,6 +15,7 @@
 #    define EINSUMS_OMP_TASK         _Pragma("omp task")
 #    define EINSUMS_OMP_FOR_NOWAIT   _Pragma("omp for nowait")
 #    define EINSUMS_OMP_CRITICAL     _Pragma("omp critical")
+#    define EINSUMS_SIMD_ENABLED
 #else
 #    define EINSUMS_OMP_PARALLEL_FOR _Pragma("omp parallel for")
 #    define EINSUMS_OMP_SIMD
@@ -21,6 +24,14 @@
 #    define EINSUMS_OMP_TASK       _Pragma("omp task")
 #    define EINSUMS_OMP_FOR_NOWAIT _Pragma("omp for nowait")
 #    define EINSUMS_OMP_CRITICAL   _Pragma("omp critical")
+#endif
+
+#ifdef __GNUC__
+
+// gcc does not have reductions for complex values.
+#    pragma omp declare reduction(+ : std::complex<float> : omp_out += omp_in) initializer(omp_priv = omp_orig)
+#    pragma omp declare reduction(+ : std::complex<double> : omp_out += omp_in) initializer(omp_priv = omp_orig)
+
 #endif
 
 #define EINSUMS_ALWAYS_INLINE __attribute__((always_inline)) inline
@@ -53,4 +64,17 @@
 // other warnings you want to deactivate...
 
 #endif
+
+/**
+ * @def THROWS(...)
+ *
+ * @brief Marks a function as being able to throw an exception.
+ * 
+ * This macro hopefully provides similar support to the old `throw()` syntax from C++ or
+ * Java's `throws()` property. It can also aid the user in determining what kinds of exceptions
+ * to expect from a function.
+ * If the argument is empty, it is just like using `noexcept`. Otherwise, it is like `noexcept(false)`,
+ * which means that it can throw exceptions. This macro is mostly for documenting code.
+ */
+#define THROWS(...) noexcept(true __VA_OPT__(== false))
 // clang-format on

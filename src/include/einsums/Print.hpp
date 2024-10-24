@@ -7,21 +7,17 @@
 
 #include "einsums/_Export.hpp"
 
-#include "fmt/color.h"
-#include "fmt/core.h"
-#include "fmt/format.h"
-#include "fmt/std.h"
-// #include "fmt/ranges.h"
+#include <fmt/color.h>
+#include <fmt/core.h>
+#include <fmt/format.h>
 
-#include <algorithm>
+#include <array>
 #include <cassert>
-#include <complex>
 #include <cstring>
-#include <iomanip>
 #include <iostream>
 #include <sstream>
-#include <stdexcept>
 #include <string_view>
+#include <tuple>
 
 namespace print {
 

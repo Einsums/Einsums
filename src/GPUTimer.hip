@@ -1,4 +1,7 @@
+#include "einsums/_GPUUtils.hpp"
+
 #include "einsums/GPUTimer.hpp"
+#include "einsums/Timer.hpp"
 
 #include <chrono>
 #include <hip/hip_common.h>

@@ -33,8 +33,8 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
     using ADataType        = typename AType::data_type;
     using BDataType        = typename BType::data_type;
     using CDataType        = DataTypeT<CType>;
-    constexpr size_t ARank = AType::rank;
-    constexpr size_t BRank = BType::rank;
+    constexpr size_t ARank = AType::Rank;
+    constexpr size_t BRank = BType::Rank;
     constexpr size_t CRank = TensorRank<CType>;
 
     auto view = std::apply(ranges::views::cartesian_product, target_dims);

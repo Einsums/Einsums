@@ -15,6 +15,34 @@ namespace einsums::tensor_props {
  *===============*/
 
 /**
+ * @struct TensorBase
+ *
+ * @brief Base class for all tensors. Just says that a class is a tensor.
+ *
+ * Indicates a tensor. Some virtual methods need to be defined. Don't use this directly.
+ * All the tensor bases either directly or indirectly inherit from this.
+ *
+ * @tparam T The type stored by the tensor.
+ * @tparam Rank The rank of the tensor.
+ */
+struct TensorBase {
+  public:
+    TensorBase() = default;
+
+    TensorBase(const TensorBase &) = default;
+
+    virtual ~TensorBase() = default;
+
+    virtual bool full_view_of_underlying() const { return true; }
+
+    virtual const std::string &name() const = 0;
+
+    virtual void set_name(const std::string &new_name) = 0;
+
+    virtual size_t rank() const = 0;
+};
+
+/**
  * @struct TypedTensorBase
  *
  * @brief Represents a tensor that stores a data type.
@@ -22,7 +50,7 @@ namespace einsums::tensor_props {
  * @tparam T The data type the tensor stores.
  */
 template <typename T>
-struct TypedTensorBase {
+struct TypedTensorBase : public virtual TensorBase {
   public:
     /**
      * @typedef data_type
@@ -72,21 +100,36 @@ struct DevTypedTensorBase : public virtual TypedTensorBase<HostT> {
 #endif
 
 /**
+ * @struct RankTensorBaseNoRank
+ *
+ * @brief Base class for RankTensorBase that does not store the rank.
+ *
+ * This is used to indicate that the tensor has a rank that is known at
+ * compile time without needing to provide the rank. Internal use only.
+ */
+struct RankTensorBaseNoRank {
+  RankTensorBaseNoRank() = default;
+  RankTensorBaseNoRank(const RankTensorBaseNoRank &) = default;
+
+  virtual ~RankTensorBaseNoRank() = default;
+};
+
+/**
  * @struct RankTensorBase
  *
  * @brief Base class for tensors with a rank. Used for querying the rank.
  *
  * @tparam Rank The rank of the tensor.
  */
-template <size_t Rank>
-struct RankTensorBase {
+template <size_t _Rank>
+struct RankTensorBase : public virtual TensorBase, public virtual RankTensorBaseNoRank {
   public:
     /**
      * @property rank
      *
      * @brief The rank of the tensor.
      */
-    static constexpr size_t rank = Rank;
+    static constexpr size_t Rank = _Rank;
 
     RankTensorBase()                       = default;
     RankTensorBase(const RankTensorBase &) = default;
@@ -96,47 +139,18 @@ struct RankTensorBase {
     virtual Dim<Rank> dims() const = 0;
 
     virtual auto dim(int d) const -> size_t = 0;
+
+    virtual size_t rank() const override { return Rank; }
 };
 
-/**
- * @struct TensorBaseNoExtra
- *
- * @brief Specifies that a class is a tensor, just without any template parameters. Internal use only. Use TensorBase instead.
- *
- * Used for checking that a type is a tensor without regard for storage type.
- */
-struct TensorBaseNoExtra {
-  public:
-    TensorBaseNoExtra()                          = default;
-    TensorBaseNoExtra(const TensorBaseNoExtra &) = default;
-
-    virtual ~TensorBaseNoExtra() = default;
-};
-
-/**
- * @struct TensorBase
- *
- * @brief Base class for all tensors. Just says that a class is a tensor.
- *
- * Indicates a tensor with a rank and type. Some virtual methods need to be defined.
- *
- * @tparam T The type stored by the tensor.
- * @tparam Rank The rank of the tensor.
- */
 template <typename T, size_t Rank>
-struct TensorBase : public virtual TensorBaseNoExtra, virtual TypedTensorBase<T>, virtual RankTensorBase<Rank> {
+struct TRTensorBase : public virtual TensorBase, virtual TypedTensorBase<T>, virtual RankTensorBase<Rank> {
   public:
-    TensorBase() = default;
+    TRTensorBase() = default;
 
-    TensorBase(const TensorBase &) = default;
+    TRTensorBase(const TRTensorBase &) = default;
 
-    virtual ~TensorBase() = default;
-
-    virtual bool full_view_of_underlying() const { return true; }
-
-    virtual const std::string &name() const = 0;
-
-    virtual void set_name(const std::string &new_name) = 0;
+    virtual ~TRTensorBase() = default;
 };
 
 /**
@@ -234,44 +248,40 @@ struct DiskTensorBase {
  *===================*/
 
 /**
- * @struct TensorViewBaseNoExtra
+ * @struct TensorViewBaseNoViewed
  *
- * @brief Internal property that specifies that a tensor is a view.
+ * @brief Internal property for tensor views without template parameters.
  *
- * This specifies that a tensor is a view without needing to specify template parameters.
- * This struct is not intended to be used directly by the user, and is used as a base class
- * for TensorViewBase.
+ * Property for tensor views that does not include template parameters.
  */
-struct TensorViewBaseNoExtra {
+struct TensorViewBaseNoViewed {
   public:
-    TensorViewBaseNoExtra()                              = default;
-    TensorViewBaseNoExtra(const TensorViewBaseNoExtra &) = default;
+    TensorViewBaseNoViewed()                               = default;
+    TensorViewBaseNoViewed(const TensorViewBaseNoViewed &) = default;
 
-    virtual ~TensorViewBaseNoExtra() = default;
-};
-
-/**
- * @struct TensorViewBaseOnlyViewed
- *
- * @brief Internal property that specifies that a tensor is a view.
- *
- * This specifies that a tensor is a view without needing to specify type and rank.
- * This struct is not intended to be used directly by the user, and is used as a base class
- * for TensorViewBase.
- *
- * @tparam Viewed The tensor type viewed by this tensor.
- */
-template <typename Viewed>
-struct TensorViewBaseOnlyViewed {
-  public:
-    TensorViewBaseOnlyViewed()                                 = default;
-    TensorViewBaseOnlyViewed(const TensorViewBaseOnlyViewed &) = default;
-
-    virtual ~TensorViewBaseOnlyViewed() = default;
+    virtual ~TensorViewBaseNoViewed() = default;
 };
 
 /**
  * @struct TensorViewBase
+ *
+ * @brief Property that specifies that a tensor is a view.
+ *
+ * This specifies that a tensor is a view without needing to specify template parameters.
+ */
+template <typename UnderlyingType>
+struct TensorViewBase : public virtual TensorBase, virtual TensorViewBaseNoViewed {
+  public:
+    using underlying_type = UnderlyingType;
+
+    TensorViewBase()                       = default;
+    TensorViewBase(const TensorViewBase &) = default;
+
+    virtual ~TensorViewBase() = default;
+};
+
+/**
+ * @struct TRTensorViewBase
  *
  * @brief Represents a view of a different tensor.
  *
@@ -280,16 +290,12 @@ struct TensorViewBaseOnlyViewed {
  * @tparam UnderlyingType The tensor type viewed by this view.
  */
 template <typename T, size_t Rank, typename UnderlyingType>
-struct TensorViewBase : public virtual TensorViewBaseNoExtra,
-                        virtual TensorViewBaseOnlyViewed<UnderlyingType>,
-                        virtual TensorBase<T, Rank> {
+struct TRTensorViewBase : public virtual TensorViewBase<UnderlyingType>, virtual TRTensorBase<T, Rank> {
   public:
-    using underlying_type = UnderlyingType;
+    TRTensorViewBase()                         = default;
+    TRTensorViewBase(const TRTensorViewBase &) = default;
 
-    TensorViewBase()                       = default;
-    TensorViewBase(const TensorViewBase &) = default;
-
-    virtual ~TensorViewBase() = default;
+    virtual ~TRTensorViewBase() = default;
 
     virtual bool full_view_of_underlying() const override = 0;
 };
@@ -301,12 +307,12 @@ struct TensorViewBase : public virtual TensorViewBaseNoExtra,
  *
  * Represents a regular tensor, but without template parameters. See BasicTensorBase for more details.
  */
-struct BasicTensorBaseNoExtra {
+struct BasicTensorBase : public virtual TensorBase {
   public:
-    BasicTensorBaseNoExtra()                               = default;
-    BasicTensorBaseNoExtra(const BasicTensorBaseNoExtra &) = default;
+    BasicTensorBase()                        = default;
+    BasicTensorBase(const BasicTensorBase &) = default;
 
-    virtual ~BasicTensorBaseNoExtra() = default;
+    virtual ~BasicTensorBase() = default;
 };
 
 /**
@@ -322,11 +328,11 @@ struct BasicTensorBaseNoExtra {
  * @tparam Rank The rank of the tensor.
  */
 template <typename T, size_t Rank>
-struct BasicTensorBase : virtual TensorBase<T, Rank>, virtual BasicTensorBaseNoExtra {
-    BasicTensorBase()                        = default;
-    BasicTensorBase(const BasicTensorBase &) = default;
+struct TRBasicTensorBase : public virtual TRTensorBase<T, Rank>, virtual BasicTensorBase {
+    TRBasicTensorBase()                          = default;
+    TRBasicTensorBase(const TRBasicTensorBase &) = default;
 
-    virtual ~BasicTensorBase() = default;
+    virtual ~TRBasicTensorBase() = default;
 
     virtual T       *data()       = 0;
     virtual const T *data() const = 0;
@@ -351,24 +357,6 @@ struct CollectedTensorBaseNoExtra {
 };
 
 /**
- * @struct CollectedTensorBaseOnlyStored
- *
- * @brief Represents a tensor that stores things in a collection. Internal use only.
- *
- * Specifies that a tensor is actually a collection of tensors without needing to specify
- * template parameters. Only used internally. Use CollectedTensorBase for your code.
- *
- * @tparam Stored The type of tensor stored.
- */
-template <typename Stored>
-struct CollectedTensorBaseOnlyStored {
-    CollectedTensorBaseOnlyStored()                                      = default;
-    CollectedTensorBaseOnlyStored(const CollectedTensorBaseOnlyStored &) = default;
-
-    virtual ~CollectedTensorBaseOnlyStored() = default;
-};
-
-/**
  * @struct CollectedTensorBase
  *
  * @brief Specifies that a tensor is a collection of other tensors.
@@ -380,10 +368,8 @@ struct CollectedTensorBaseOnlyStored {
  * @tparam Rank The rank of the tensor.
  * @tparam TensorType The type of tensor stored by the collection.
  */
-template <typename T, size_t Rank, typename TensorType>
-struct CollectedTensorBase : public virtual CollectedTensorBaseNoExtra,
-                             virtual CollectedTensorBaseOnlyStored<TensorType>,
-                             virtual TensorBase<T, Rank> {
+template <typename TensorType>
+struct CollectedTensorBase : public virtual CollectedTensorBaseNoExtra, virtual TensorBase {
   public:
     using tensor_type = TensorType;
 

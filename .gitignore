@@ -50,6 +50,11 @@ _deps
 *.h5
 .cache
 *timings.txt*
+*.coverage
+coverage.xml
+*.profraw
+*.profdata
+*.info
 
 # Visual Studio files
 .vs
@@ -69,3 +74,4 @@ docs/build
 
 # JetBrains project files
 .idea
+*.env

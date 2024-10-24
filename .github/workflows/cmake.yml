@@ -89,6 +89,9 @@ jobs:
             - zlib
             #- dpcpp_linux-64
             #- mkl
+            - pybind11
+            - pytest
+            - numpy
           EOF
           if [[ "${{ runner.os }}" == "Linux" ]]; then
             :
@@ -170,6 +173,17 @@ jobs:
       - name: Test (CTest) - unit tests
         working-directory: "${{github.workspace}}/build"
         run: ctest --rerun-failed --output-on-failure
+
+      - name: Test (pytest) - unit tests
+        working-directory: "${{github.workspace}}/installed"
+        run: |
+          if [[ ${{runner.os}} == "Windows" ]]; then
+            export PYTHONPATH="$PYTHONPATH;${{github.workspace}}/installed/lib;$CONDA_PREFIX/lib"
+          else
+            export PYTHONPATH=$PYTHONPATH:${{github.workspace}}/installed/lib:$CONDA_PREFIX/lib
+          fi
+          
+          pytest "${{github.workspace}}/tests"
 
       - name: Test (find_package) - consume installation
         shell: bash -l {0}

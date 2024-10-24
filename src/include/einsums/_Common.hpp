@@ -5,15 +5,15 @@
 
 #pragma once
 
-#include "einsums/_Compiler.hpp"
 #include "einsums/_Export.hpp"
 
-#include "einsums/Print.hpp"
 #include "einsums/STL.hpp"
+
+#include <fmt/format.h>
 
 #include <array>
 #include <cstdint>
-#include <ostream>
+#include <sstream>
 
 #define EINSUMS_STRINGIFY(a)  EINSUMS_STRINGIFY2(a)
 #define EINSUMS_STRINGIFY2(a) #a
@@ -94,11 +94,19 @@ using blas_elong = long int;     // NOLINT
 auto EINSUMS_EXPORT initialize() -> int;
 
 /**
- * Shuts down Einsums and possibly print out a timings report.
+ * Shuts down Einsums and prints out the timing report to the specified file.
+ */
+EINSUMS_EXPORT void finalize(const char *output_file);
+EINSUMS_EXPORT void finalize(const std::string &output_file);
+EINSUMS_EXPORT void finalize(FILE *file_pointer);
+EINSUMS_EXPORT void finalize(std::ostream &output_stream);
+
+/**
+ * Shuts down Einsums and possibly print out a timings report to stdout.
  *
  * @param timerReport whether to print the timings report of not. Defaults to false.
  */
-void EINSUMS_EXPORT finalize(bool timerReport = false);
+EINSUMS_EXPORT void finalize(bool timerReport = false);
 
 #define DEFINE_STRUCT(Name, UnderlyingType)                                                                                                \
     template <std::size_t Rank>                                                                                                            \

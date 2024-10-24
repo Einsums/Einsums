@@ -73,38 +73,6 @@ namespace detail {
 using std::chrono::duration_cast;
 using std::chrono::milliseconds;
 
-void print_timer_info(TimerDetail *timer, std::FILE *fp) { // NOLINT
-    if (timer != root) {
-        std::string buffer;
-        if (timer->total_calls != 0) {
-            buffer = fmt::format("{:>5} : {:>5} calls : {:>5} per call", duration_cast<milliseconds>(timer->total_time), timer->total_calls,
-                                 duration_cast<milliseconds>(timer->total_time) / timer->total_calls);
-        } else {
-            buffer = "total_calls == 0!!!";
-        }
-        int width = 70 - print::current_indent_level();
-        if (width < 0) {
-            width = 0;
-        }
-        fprintln(fp, "{0:<{1}} : {3: <{4}}{2}", buffer, width, timer->name, "", print::current_indent_level());
-    } else {
-        fprintln(fp);
-        fprintln(fp);
-        fprintln(fp, "Timing information:");
-        fprintln(fp);
-    }
-
-    if (!timer->children.empty()) {
-        print::indent();
-
-        for (auto &child : timer->order) {
-            print_timer_info(&timer->children[child], fp);
-        }
-
-        print::deindent();
-    }
-}
-
 void print_timer_info(TimerDetail *timer, std::ostream &os) { // NOLINT
     if (timer != root) {
         std::string buffer;
@@ -133,14 +101,23 @@ void print_timer_info(TimerDetail *timer, std::ostream &os) { // NOLINT
     }
 }
 
+void print_timer_info(TimerDetail *timer, std::FILE *fp) { // NOLINT
+    std::stringstream stream;
+
+    print_timer_info(timer, stream);
+
+    std::fprintf(fp, "%s", stream.str().c_str());
+    std::fflush(fp);
+}
+
 } // namespace detail
 
 void report() {
     detail::print_timer_info(detail::root, stdout);
 }
 
-void report(const std::string &fname) {
-    std::FILE *fp = std::fopen(fname.c_str(), "w+");
+void report(const char *fname) {
+    std::FILE *fp = std::fopen(fname, "w+");
 
     detail::print_timer_info(detail::root, fp);
 
@@ -148,15 +125,9 @@ void report(const std::string &fname) {
     std::fclose(fp);
 }
 
-// Handled by const std::string& above
-// void report(const char *fname) {
-//    std::FILE *fp = std::fopen(fname, "w+");
-//
-//    detail::print_timer_info(detail::root, fp);
-//
-//    std::fflush(fp);
-//    std::fclose(fp);
-//}
+void report(const std::string &fname) {
+    report(fname.c_str());
+}
 
 void report(std::FILE *fp) {
     detail::print_timer_info(detail::root, fp);

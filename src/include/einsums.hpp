@@ -35,6 +35,7 @@
 
 #include "einsums/Blas.hpp"
 #include "einsums/Decomposition.hpp"
+#include "einsums/RuntimeTensor.hpp"
 #include "einsums/TensorAlgebra.hpp"
 #include "einsums/Timer.hpp"
 #include "einsums/Utilities.hpp"

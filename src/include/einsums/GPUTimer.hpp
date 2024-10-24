@@ -6,9 +6,6 @@
 #pragma once
 
 #include "einsums/_Export.hpp"
-#include "einsums/_GPUUtils.hpp"
-
-#include "einsums/Timer.hpp"
 
 #include <hip/hip_common.h>
 #include <hip/hip_runtime_api.h>
@@ -25,7 +22,7 @@ namespace einsums::timer {
  * kernel runs. Then, an event is pushed to the stream after a kernel is pushed. When the events reach the
  * head of the stream, they record their time. This allows for kernel timing.
  */
-struct GPUTimer {
+struct EINSUMS_EXPORT GPUTimer {
   private:
     hipEvent_t start_event, end_event;
 

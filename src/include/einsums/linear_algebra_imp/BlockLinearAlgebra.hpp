@@ -1,6 +1,5 @@
 #pragma once
 
-#include "einsums/BlockTensor.hpp"
 #include "einsums/linear_algebra_imp/BaseLinearAlgebra.hpp"
 #include "einsums/utility/TensorTraits.hpp"
 
