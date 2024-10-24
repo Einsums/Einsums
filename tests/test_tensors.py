@@ -85,6 +85,7 @@ def test_creation(tensor_type):
         C = tensor_type(np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]], dtype=dtype))
 
         print(C)
+        print(dtype)
 
         for n, x in enumerate(C):
             assert x == n + 1
@@ -108,6 +109,7 @@ def test_creation(tensor_type):
         C = tensor_type(x[0:3, 0:3])
 
         print(C)
+        print(dtype)
 
         for n, x in enumerate(C):
             assert x == n + (n // 3) + 1
