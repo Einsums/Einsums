@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdarg>
 #include <cstddef>
 #include <tuple>
 #include <type_traits>
@@ -165,6 +166,100 @@ inline void sentinel_to_indices(size_t sentinel, const StorageType1 &unique_stri
     }
 }
 
+template <size_t num_indices>
+HOSTDEV inline void sentinel_to_indices_mult_imp(size_t ordinal) {
+    return;
+}
+
+template <size_t num_indices, typename Extra>
+HOSTDEV inline void sentinel_to_indices_mult_imp(size_t ordinal, Extra extra) = delete;
+
+template <size_t num_indices, typename... Rest>
+HOSTDEV inline void sentinel_to_indices_mult_imp(size_t ordinal, size_t index, const size_t *strides, size_t *indices, Rest... rest) {
+    indices[index] = strides[index] * ordinal;
+
+    sentinel_to_indices_mult_imp<num_indices>(ordinal, rest...);
+}
+
+/**
+ * @brief Converts a single sentinel value into lists of indices.
+ *
+ * @param sentinel The sentinel to convert.
+ * @param unique_strides The strides of the unique indices that the sentinel is iterating over.
+ * @param out_inds The converted indices.
+ */
+template <size_t num_indices, typename StorageType, typename... StridesInds>
+    requires(sizeof...(StridesInds) % 2 == 0)
+HOSTDEV inline void sentinel_to_indices(size_t sentinel, const size_t *index_strides, StridesInds... strides_inds) {
+    size_t hold = sentinel;
+
+#pragma unroll
+    for (ptrdiff_t i = 0; i < num_indices; i++) {
+        size_t ordinal;
+        if (index_strides[i] != 0) {
+            ordinal = hold / index_strides[i];
+            hold %= index_strides[i];
+        } else {
+            [[unlikely]] ordinal = 0;
+        }
+
+        sentinel_to_indices_mult_imp<num_indices>(ordinal, strides_inds...);
+    }
+}
+
+template <size_t num_indices, typename StorageType, typename... StridesInds>
+    requires(sizeof...(StridesInds) % 2 == 0)
+inline void sentinel_to_indices(size_t sentinel, const std::array<size_t, num_indices> &index_strides, StridesInds... strides_inds) {
+    size_t hold = sentinel;
+
+    auto args = std::forward_as_tuple(strides_inds...);
+
+#pragma unroll
+    for (ptrdiff_t i = 0; i < num_indices; i++) {
+        size_t ordinal;
+        if (index_strides[i] != 0) {
+            ordinal = hold / index_strides[i];
+            hold %= index_strides[i];
+        } else {
+            [[unlikely]] ordinal = 0;
+        }
+
+#pragma unroll
+        for (size_t j = 0; j < std::tuple_size_v<decltype(args)>; j++) {
+            const auto &strides = std::get<2 * j>(args);
+            auto       &inds    = std::get<2 * j + 1>(args);
+
+            inds[i] = strides[i] * ordinal;
+        }
+    }
+}
+
+template <typename StorageType, typename... StridesInds>
+    requires(sizeof...(StridesInds) % 2 == 0)
+inline void sentinel_to_indices(size_t sentinel, const StorageType &index_strides, StridesInds... strides_inds) {
+    size_t hold = sentinel;
+
+    auto args = std::forward_as_tuple(strides_inds...);
+
+    for (ptrdiff_t i = 0; i < index_strides.size(); i++) {
+        size_t ordinal;
+        if (index_strides[i] != 0) {
+            ordinal = hold / index_strides[i];
+            hold %= index_strides[i];
+        } else {
+            [[unlikely]] ordinal = 0;
+        }
+
+#pragma unroll
+        for (size_t j = 0; j < std::tuple_size_v<decltype(args)>; j++) {
+            const auto &strides = std::get<2 * j>(args);
+            auto       &inds    = std::get<2 * j + 1>(args);
+
+            inds[i] = strides[i] * ordinal;
+        }
+    }
+}
+
 /**
  * @brief The opposite of sentinel_to_indices. Calculates a sentinel given indices and strides.
  */
@@ -271,7 +366,7 @@ inline size_t indices_to_sentinel_negative_check(const StorageType1 &unique_stri
                                                  const StorageType3 &inds) {
     size_t out = 0;
 
-    if(inds.size() > unique_strides.size() || inds.size() > unique_dims.size()) {
+    if (inds.size() > unique_strides.size() || inds.size() > unique_dims.size()) {
         throw EINSUMSEXCEPTION("Too many indices supplied!");
     }
 
@@ -285,7 +380,7 @@ inline size_t indices_to_sentinel_negative_check(const StorageType1 &unique_stri
         if (ind < 0 || ind >= unique_dims[i]) {
             [[unlikely]] throw EINSUMSEXCEPTION(
                 fmt::format("Index out of range! Index {} in rank {} was either greater than or equal to {} or less than {}", inds[i], i,
-                            unique_dims[i], -(ptrdiff_t) unique_dims[i]));
+                            unique_dims[i], -(ptrdiff_t)unique_dims[i]));
         }
 
         out += ind * unique_strides[i];
@@ -294,32 +389,37 @@ inline size_t indices_to_sentinel_negative_check(const StorageType1 &unique_stri
     return out;
 }
 
-EINSUMS_EXPORT void dims_to_strides(const std::vector<size_t> &dims, std::vector<size_t> &out);
+EINSUMS_EXPORT size_t dims_to_strides(const std::vector<size_t> &dims, std::vector<size_t> &out);
 
 /**
  * @brief Compute the strides for turning a sentinel into a list of indices.
  *
  * @param dims The list of dimensions.
- * @param out The calculated strides.
+ * @param out The calculated strides
+ * @return The product of the dimensions, or the size of the object represented by the dimensions.
  */
 template <size_t Dims>
-void dims_to_strides(const ::std::array<size_t, Dims> &dims, std::array<size_t, Dims> &out) {
+size_t dims_to_strides(const ::std::array<size_t, Dims> &dims, std::array<size_t, Dims> &out) {
     size_t stride = 1;
 
     for (int i = Dims - 1; i >= 0; i--) {
         out[i] = stride;
         stride *= dims[i];
     }
+
+    return stride;
 }
 
 template <size_t Dims>
-void dims_to_strides(const Dim<Dims> &dims, std::array<size_t, Dims> &out) {
+size_t dims_to_strides(const Dim<Dims> &dims, std::array<size_t, Dims> &out) {
     size_t stride = 1;
 
     for (int i = Dims - 1; i >= 0; i--) {
         out[i] = stride;
         stride *= dims[i];
     }
+
+    return stride;
 }
 
 template <int I, typename Head, typename Index>

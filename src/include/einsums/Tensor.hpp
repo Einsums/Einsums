@@ -67,15 +67,15 @@ struct TensorPrintOptions {
 };
 
 // Forward declaration of the Tensor printing function.
-template <einsums::TensorConcept AType>
+template <einsums::RankTensorConcept AType>
     requires(einsums::BasicTensorConcept<AType> || !einsums::AlgebraTensorConcept<AType>)
 void println(const AType &A, TensorPrintOptions options = {});
 
-template <einsums::TensorConcept AType>
+template <einsums::RankTensorConcept AType>
     requires(einsums::BasicTensorConcept<AType> || !einsums::AlgebraTensorConcept<AType>)
 void fprintln(std::FILE *fp, const AType &A, TensorPrintOptions options = {});
 
-template <einsums::TensorConcept AType>
+template <einsums::RankTensorConcept AType>
     requires(einsums::BasicTensorConcept<AType> || !einsums::AlgebraTensorConcept<AType>)
 void fprintln(std::ostream &os, const AType &A, TensorPrintOptions options = {});
 
@@ -2052,7 +2052,7 @@ auto create_disk_tensor_like(h5::fd_t &file, const Tensor<T, Rank> &tensor) -> D
 
 } // namespace einsums
 
-template <einsums::TensorConcept AType>
+template <einsums::RankTensorConcept AType>
     requires(einsums::BasicTensorConcept<AType> || !einsums::AlgebraTensorConcept<AType>)
 void fprintln(std::ostream &os, const AType &A, TensorPrintOptions options) {
     using T               = typename AType::data_type;
@@ -2213,7 +2213,7 @@ void fprintln(std::ostream &os, const AType &A, TensorPrintOptions options) {
     fprintln(os);
 }
 
-template <einsums::TensorConcept AType>
+template <einsums::RankTensorConcept AType>
     requires(einsums::BasicTensorConcept<AType> || !einsums::AlgebraTensorConcept<AType>)
 void fprintln(std::FILE *fp, const AType &A, TensorPrintOptions options) {
     std::stringstream stream;
@@ -2225,7 +2225,7 @@ void fprintln(std::FILE *fp, const AType &A, TensorPrintOptions options) {
     std::fflush(fp);
 }
 
-template <einsums::TensorConcept AType>
+template <einsums::RankTensorConcept AType>
     requires(einsums::BasicTensorConcept<AType> || !einsums::AlgebraTensorConcept<AType>)
 void println(const AType &A, TensorPrintOptions options) {
     fprintln(std::cout, A, options);

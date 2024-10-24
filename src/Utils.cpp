@@ -2,7 +2,7 @@
 
 using namespace einsums;
 
-void einsums::tensor_algebra::detail::dims_to_strides(const std::vector<size_t> &dims, std::vector<size_t> &out) {
+size_t einsums::tensor_algebra::detail::dims_to_strides(const std::vector<size_t> &dims, std::vector<size_t> &out) {
     size_t stride = 1;
 
     out.resize(dims.size());
@@ -11,4 +11,6 @@ void einsums::tensor_algebra::detail::dims_to_strides(const std::vector<size_t> 
         out[i] = stride;
         stride *= dims[i];
     }
+
+    return stride;
 }
