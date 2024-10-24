@@ -703,75 +703,30 @@ class PyTensor : public RuntimeTensor<T> {
         if (format.length() > 2) {                                                                                                         \
             throw EINSUMSEXCEPTION("Can't handle most user defined data type " + format + "!");                                            \
         }                                                                                                                                  \
-        println(fmt::format("Format is {} and item size is {}.", format, buffer_info.itemsize));                                           \
-        std::flush(std::cout);                                                                                                             \
-        if (format[0] == 'l') {                                                                                                            \
-            switch (buffer_info.itemsize) {                                                                                                \
-            case 1:                                                                                                                        \
-                format = "b";                                                                                                              \
-                break;                                                                                                                     \
-            case 2:                                                                                                                        \
-                format = "h";                                                                                                              \
-                break;                                                                                                                     \
-            case 4:                                                                                                                        \
-                format = "i";                                                                                                              \
-                break;                                                                                                                     \
-            case 8:                                                                                                                        \
-                format = "q";                                                                                                              \
-                break;                                                                                                                     \
-            case 16:                                                                                                                       \
-                format = "l";                                                                                                              \
-                break;                                                                                                                     \
-            }                                                                                                                              \
-        } else if (format[0] == 'L') {                                                                                                     \
-            switch (buffer_info.itemsize) {                                                                                                \
-            case 1:                                                                                                                        \
-                format = "B";                                                                                                              \
-                break;                                                                                                                     \
-            case 2:                                                                                                                        \
-                format = "H";                                                                                                              \
-                break;                                                                                                                     \
-            case 4:                                                                                                                        \
-                format = "I";                                                                                                              \
-                break;                                                                                                                     \
-            case 8:                                                                                                                        \
-                format = "Q";                                                                                                              \
-                break;                                                                                                                     \
-            case 16:                                                                                                                       \
-                format = "L";                                                                                                              \
-                break;                                                                                                                     \
-            }                                                                                                                              \
-        }                                                                                                                                  \
         switch (format[0]) {                                                                                                               \
         case 'b':                                                                                                                          \
-            copy_and_cast_imp_##NAME<char>(buffer_info, is_view);                                                                          \
+            copy_and_cast_imp_##NAME<int8_t>(buffer_info, is_view);                                                                        \
             break;                                                                                                                         \
         case 'B':                                                                                                                          \
-            copy_and_cast_imp_##NAME<unsigned char>(buffer_info, is_view);                                                                 \
+            copy_and_cast_imp_##NAME<uint8_t>(buffer_info, is_view);                                                                       \
             break;                                                                                                                         \
         case 'h':                                                                                                                          \
-            copy_and_cast_imp_##NAME<short>(buffer_info, is_view);                                                                         \
+            copy_and_cast_imp_##NAME<int16_t>(buffer_info, is_view);                                                                       \
             break;                                                                                                                         \
         case 'H':                                                                                                                          \
-            copy_and_cast_imp_##NAME<unsigned short>(buffer_info, is_view);                                                                \
+            copy_and_cast_imp_##NAME<uint16_t>(buffer_info, is_view);                                                                      \
             break;                                                                                                                         \
         case 'i':                                                                                                                          \
-            copy_and_cast_imp_##NAME<int>(buffer_info, is_view);                                                                           \
+            copy_and_cast_imp_##NAME<int32_t>(buffer_info, is_view);                                                                       \
             break;                                                                                                                         \
         case 'I':                                                                                                                          \
-            copy_and_cast_imp_##NAME<unsigned int>(buffer_info, is_view);                                                                  \
+            copy_and_cast_imp_##NAME<uint32_t>(buffer_info, is_view);                                                                      \
             break;                                                                                                                         \
         case 'q':                                                                                                                          \
-            copy_and_cast_imp_##NAME<long>(buffer_info, is_view);                                                                          \
+            copy_and_cast_imp_##NAME<int64_t>(buffer_info, is_view);                                                                       \
             break;                                                                                                                         \
         case 'Q':                                                                                                                          \
-            copy_and_cast_imp_##NAME<unsigned long>(buffer_info, is_view);                                                                 \
-            break;                                                                                                                         \
-        case 'l':                                                                                                                          \
-            copy_and_cast_imp_##NAME<long long>(buffer_info, is_view);                                                                     \
-            break;                                                                                                                         \
-        case 'L':                                                                                                                          \
-            copy_and_cast_imp_##NAME<unsigned long long>(buffer_info, is_view);                                                            \
+            copy_and_cast_imp_##NAME<uint64_t>(buffer_info, is_view);                                                                      \
             break;                                                                                                                         \
         case 'f':                                                                                                                          \
             copy_and_cast_imp_##NAME<float>(buffer_info, is_view);                                                                         \
@@ -1306,74 +1261,30 @@ class PyTensorView : public RuntimeTensorView<T> {
         if (format.length() > 2) {                                                                                                         \
             throw EINSUMSEXCEPTION("Can't handle most user defined data type " + format + "!");                                            \
         }                                                                                                                                  \
-        println(fmt::format("Format is {} and item size is {}.", format, buffer_info.itemsize));                                           \
-        if (format[0] == 'l') {                                                                                                            \
-            switch (buffer_info.itemsize) {                                                                                                \
-            case 1:                                                                                                                        \
-                format = "b";                                                                                                              \
-                break;                                                                                                                     \
-            case 2:                                                                                                                        \
-                format = "h";                                                                                                              \
-                break;                                                                                                                     \
-            case 4:                                                                                                                        \
-                format = "i";                                                                                                              \
-                break;                                                                                                                     \
-            case 8:                                                                                                                        \
-                format = "q";                                                                                                              \
-                break;                                                                                                                     \
-            case 16:                                                                                                                       \
-                format = "l";                                                                                                              \
-                break;                                                                                                                     \
-            }                                                                                                                              \
-        } else if (format[0] == 'L') {                                                                                                     \
-            switch (buffer_info.itemsize) {                                                                                                \
-            case 1:                                                                                                                        \
-                format = "B";                                                                                                              \
-                break;                                                                                                                     \
-            case 2:                                                                                                                        \
-                format = "H";                                                                                                              \
-                break;                                                                                                                     \
-            case 4:                                                                                                                        \
-                format = "I";                                                                                                              \
-                break;                                                                                                                     \
-            case 8:                                                                                                                        \
-                format = "Q";                                                                                                              \
-                break;                                                                                                                     \
-            case 16:                                                                                                                       \
-                format = "L";                                                                                                              \
-                break;                                                                                                                     \
-            }                                                                                                                              \
-        }                                                                                                                                  \
         switch (format[0]) {                                                                                                               \
         case 'b':                                                                                                                          \
-            copy_and_cast_imp_##NAME<char>(buffer_info);                                                                                   \
+            copy_and_cast_imp_##NAME<int8_t>(buffer_info);                                                                                 \
             break;                                                                                                                         \
         case 'B':                                                                                                                          \
-            copy_and_cast_imp_##NAME<unsigned char>(buffer_info);                                                                          \
+            copy_and_cast_imp_##NAME<uint8_t>(buffer_info);                                                                                \
             break;                                                                                                                         \
         case 'h':                                                                                                                          \
-            copy_and_cast_imp_##NAME<short>(buffer_info);                                                                                  \
+            copy_and_cast_imp_##NAME<int16_t>(buffer_info);                                                                                \
             break;                                                                                                                         \
         case 'H':                                                                                                                          \
-            copy_and_cast_imp_##NAME<unsigned short>(buffer_info);                                                                         \
+            copy_and_cast_imp_##NAME<uint16_t>(buffer_info);                                                                               \
             break;                                                                                                                         \
         case 'i':                                                                                                                          \
-            copy_and_cast_imp_##NAME<int>(buffer_info);                                                                                    \
+            copy_and_cast_imp_##NAME<int32_t>(buffer_info);                                                                                \
             break;                                                                                                                         \
         case 'I':                                                                                                                          \
-            copy_and_cast_imp_##NAME<unsigned int>(buffer_info);                                                                           \
+            copy_and_cast_imp_##NAME<uint32_t>(buffer_info);                                                                               \
             break;                                                                                                                         \
         case 'q':                                                                                                                          \
-            copy_and_cast_imp_##NAME<long>(buffer_info);                                                                                   \
+            copy_and_cast_imp_##NAME<int64_t>(buffer_info);                                                                                \
             break;                                                                                                                         \
         case 'Q':                                                                                                                          \
-            copy_and_cast_imp_##NAME<unsigned long>(buffer_info);                                                                          \
-            break;                                                                                                                         \
-        case 'l':                                                                                                                          \
-            copy_and_cast_imp_##NAME<long long>(buffer_info);                                                                              \
-            break;                                                                                                                         \
-        case 'L':                                                                                                                          \
-            copy_and_cast_imp_##NAME<unsigned long long>(buffer_info);                                                                     \
+            copy_and_cast_imp_##NAME<uint64_t>(buffer_info);                                                                               \
             break;                                                                                                                         \
         case 'f':                                                                                                                          \
             copy_and_cast_imp_##NAME<float>(buffer_info);                                                                                  \
