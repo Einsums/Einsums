@@ -704,6 +704,7 @@ class PyTensor : public RuntimeTensor<T> {
             throw EINSUMSEXCEPTION("Can't handle most user defined data type " + format + "!");                                            \
         }                                                                                                                                  \
         println(fmt::format("Format is {} and item size is {}.", format, buffer_info.itemsize));                                           \
+        std::flush(std::cout);                                                                                                             \
         if (format[0] == 'l') {                                                                                                            \
             switch (buffer_info.itemsize) {                                                                                                \
             case 1:                                                                                                                        \
