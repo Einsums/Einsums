@@ -80,7 +80,7 @@ def test_creation(tensor_type):
         np.int8,
         np.int16,
         np.int32,
-        np.int64,
+        np.int64
     ]:
         C = tensor_type(np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]], dtype=dtype))
 
@@ -101,7 +101,7 @@ def test_creation(tensor_type):
         np.int8,
         np.int16,
         np.int32,
-        np.int64,
+        np.int64
     ]:
         x = np.array(
             [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 16]], dtype=dtype
