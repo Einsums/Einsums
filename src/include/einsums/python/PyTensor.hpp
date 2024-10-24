@@ -1542,6 +1542,12 @@ void export_tensor(pybind11::module &mod) {
         .def("__deepcopy__", [](const RuntimeTensor<T> &self) { return RuntimeTensor<T>(self); })
         .def("copy", [](const RuntimeTensor<T> &self) { return RuntimeTensor<T>(self); })
         .def("deepcopy", [](const RuntimeTensor<T> &self) { return RuntimeTensor<T>(self); })
+        .def("__str__",
+             [](const RuntimeTensor<T> &self) {
+                 std::stringstream stream;
+                 fprintln(stream, self);
+                 return stream.str();
+             })
         .def_buffer([](RuntimeTensor<T> &self) {
             std::vector<ptrdiff_t> dims(self.rank()), strides(self.rank());
             for (int i = 0; i < self.rank(); i++) {
@@ -1597,6 +1603,12 @@ void export_tensor(pybind11::module &mod) {
         .def("__iter__", [](const RuntimeTensorView<T> &tensor) { return std::make_shared<PyTensorIterator<T>>(tensor); })
         .def("__reversed__", [](const RuntimeTensorView<T> &tensor) { return std::make_shared<PyTensorIterator<T>>(tensor, true); })
         .def("rank", &RuntimeTensorView<T>::rank)
+        .def("__str__",
+             [](const RuntimeTensor<T> &self) {
+                 std::stringstream stream;
+                 fprintln(stream, self);
+                 return stream.str();
+             })
         .def_buffer([](RuntimeTensorView<T> &self) {
             std::vector<ptrdiff_t> dims(self.rank()), strides(self.rank());
             for (int i = 0; i < self.rank(); i++) {

@@ -10,6 +10,28 @@
 #include <variant>
 #include <vector>
 
+// Forward declaration of the Tensor printing function.
+template <einsums::TensorConcept AType>
+    requires requires {
+        requires einsums::BasicTensorConcept<AType> || !einsums::AlgebraTensorConcept<AType>;
+        requires !einsums::RankTensorConcept<AType>;
+    }
+void println(const AType &A, TensorPrintOptions options = {});
+
+template <einsums::TensorConcept AType>
+    requires requires {
+        requires einsums::BasicTensorConcept<AType> || !einsums::AlgebraTensorConcept<AType>;
+        requires !einsums::RankTensorConcept<AType>;
+    }
+void fprintln(std::FILE *fp, const AType &A, TensorPrintOptions options = {});
+
+template <einsums::TensorConcept AType>
+    requires requires {
+        requires einsums::BasicTensorConcept<AType> || !einsums::AlgebraTensorConcept<AType>;
+        requires !einsums::RankTensorConcept<AType>;
+    }
+void fprintln(std::ostream &os, const AType &A, TensorPrintOptions options = {});
+
 namespace einsums {
 
 namespace detail {
@@ -1315,7 +1337,7 @@ void fprintln(std::ostream &os, const AType &A, TensorPrintOptions options) {
             fprintln(os);
 
             if (Rank == 0) {
-                T value = A;
+                T value = std::get<T>(A(0));
 
                 std::ostringstream oss;
                 oss << "              ";

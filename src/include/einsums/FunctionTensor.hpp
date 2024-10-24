@@ -69,8 +69,6 @@ struct FunctionTensorBase : public virtual TRTensorBase<T, Rank>, virtual Functi
     FunctionTensorBase(std::string name, Args... dims) : _dims{dims...}, _name{name} {
         _size = 1;
 
-        // Not parallel. Just vectorize.
-#pragma omp for simd reduction(* : _size)
         for (int i = 0; i < Rank; i++) {
             _size *= _dims[i];
         }
@@ -79,8 +77,6 @@ struct FunctionTensorBase : public virtual TRTensorBase<T, Rank>, virtual Functi
     FunctionTensorBase(std::string name, Dim<Rank> dims) : _dims(dims), _name{name} {
         _size = 1;
 
-        // Not parallel. Just vectorize.
-#pragma omp for simd reduction(* : _size)
         for (int i = 0; i < Rank; i++) {
             _size *= _dims[i];
         }
@@ -89,8 +85,6 @@ struct FunctionTensorBase : public virtual TRTensorBase<T, Rank>, virtual Functi
     FunctionTensorBase(Dim<Rank> dims) : _dims(dims) {
         _size = 1;
 
-        // Not parallel. Just vectorize.
-#pragma omp for simd reduction(* : _size)
         for (int i = 0; i < Rank; i++) {
             _size *= _dims[i];
         }

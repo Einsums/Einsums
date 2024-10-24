@@ -1033,7 +1033,6 @@ typename AType::data_type det(const AType &A) {
     int parity = 0;
 
     // Calculate the effect of the pivots.
-#pragma omp parallel for simd reduction(+ : parity)
     for (int i = 0; i < A.dim(0); i++) {
         int      temp_parity = 0;
         blas_int curr        = pivots.at(i);
@@ -1054,8 +1053,7 @@ typename AType::data_type det(const AType &A) {
         }
     }
 
-// Calculate the contribution of the diagonal elements.
-#pragma omp parallel for simd reduction(* : ret)
+    // Calculate the contribution of the diagonal elements.
     for (int i = 0; i < A.dim(0); i++) {
         ret *= A(i, i);
     }

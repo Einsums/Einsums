@@ -691,7 +691,11 @@ class PyEinsumDotPlan : public PyEinsumGenericPlan {
             C_data *= C_prefactor;
         }
 
-#pragma omp parallel for simd reduction(+ : C_data)
+#ifdef EINSUMS_SIMD_ENABLED
+#    pragma omp parallel for simd reduction(+ : C_data)
+#else
+#    pragma omp parallel for reduction(+ : C_data)
+#endif
         for (size_t sentinel = 0; sentinel < A_info.shape[0] * unique_strides[0]; sentinel++) {
             size_t quotient = sentinel;
             size_t A_index  = 0;
@@ -779,7 +783,7 @@ class PyEinsumDirectProductPlan : public PyEinsumGenericPlan {
         T       *C_data = (T *)C_info.ptr;
         const T *A_data = (const T *)A_info.ptr, *B_data = (const T *)B_info.ptr;
 
-#pragma omp parallel for simd
+        EINSUMS_OMP_PARALLEL_FOR
         for (size_t sentinel = 0; sentinel < elements; sentinel++) {
             size_t quotient = sentinel;
             size_t A_index = 0, B_index = 0, C_index = 0;
@@ -1032,7 +1036,7 @@ class PyEinsumGemvPlan : public PyEinsumGenericPlan {
         } else {
             pybind11::buffer_info C_info = C.request(true), A_info = A.request(false), B_info = B.request(false);
 
-            if(_swap_AB) {
+            if (_swap_AB) {
                 std::swap(A_info, B_info);
             }
 

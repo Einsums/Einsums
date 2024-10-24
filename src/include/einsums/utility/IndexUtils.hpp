@@ -166,19 +166,25 @@ inline void sentinel_to_indices(size_t sentinel, const StorageType1 &unique_stri
     }
 }
 
-template <size_t num_indices>
 HOSTDEV inline void sentinel_to_indices_mult_imp(size_t ordinal) {
     return;
 }
 
-template <size_t num_indices, typename Extra>
+template <typename Extra>
 HOSTDEV inline void sentinel_to_indices_mult_imp(size_t ordinal, Extra extra) = delete;
 
-template <size_t num_indices, typename... Rest>
+template <typename... Rest>
 HOSTDEV inline void sentinel_to_indices_mult_imp(size_t ordinal, size_t index, const size_t *strides, size_t *indices, Rest... rest) {
     indices[index] = strides[index] * ordinal;
 
-    sentinel_to_indices_mult_imp<num_indices>(ordinal, rest...);
+    sentinel_to_indices_mult_imp(ordinal, rest...);
+}
+
+template <typename Stride, typename Indices, typename... Rest>
+inline void sentinel_to_indices_mult_imp(size_t ordinal, size_t index, const Stride &strides, Indices &indices, Rest... rest) {
+    indices[index] = strides[index] * ordinal;
+
+    sentinel_to_indices_mult_imp(ordinal, rest...);
 }
 
 /**
@@ -203,7 +209,7 @@ HOSTDEV inline void sentinel_to_indices(size_t sentinel, const size_t *index_str
             [[unlikely]] ordinal = 0;
         }
 
-        sentinel_to_indices_mult_imp<num_indices>(ordinal, strides_inds...);
+        sentinel_to_indices_mult_imp(ordinal, strides_inds...);
     }
 }
 
@@ -224,13 +230,7 @@ inline void sentinel_to_indices(size_t sentinel, const std::array<size_t, num_in
             [[unlikely]] ordinal = 0;
         }
 
-#pragma unroll
-        for (size_t j = 0; j < std::tuple_size_v<decltype(args)>; j++) {
-            const auto &strides = std::get<2 * j>(args);
-            auto       &inds    = std::get<2 * j + 1>(args);
-
-            inds[i] = strides[i] * ordinal;
-        }
+        sentinel_to_indices_mult_imp(ordinal, strides_inds...);
     }
 }
 
@@ -250,13 +250,7 @@ inline void sentinel_to_indices(size_t sentinel, const StorageType &index_stride
             [[unlikely]] ordinal = 0;
         }
 
-#pragma unroll
-        for (size_t j = 0; j < std::tuple_size_v<decltype(args)>; j++) {
-            const auto &strides = std::get<2 * j>(args);
-            auto       &inds    = std::get<2 * j + 1>(args);
-
-            inds[i] = strides[i] * ordinal;
-        }
+        sentinel_to_indices_mult_imp(ordinal, strides_inds...);
     }
 }
 
