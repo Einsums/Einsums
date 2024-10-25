@@ -32,7 +32,6 @@ along with a brief description of each.
     free memory to accomodate.
 
 .. py:exception:: ErrorMemoryAllocation
-    :deprecated:
 
     Indicates a memory allocation error. It is superceded by :py:exc:`ErrorOutOfMemory`.
 
@@ -41,7 +40,6 @@ along with a brief description of each.
     This is thrown when the GPU device has not been initialized, such as by a call to :code:`hipFree(nullptr);`.
 
 .. py:exception:: ErrorInitializationError
-    :deprecated:
 
     Superceded by :py:exc:`ErrorNotInitialized`.
 
@@ -133,7 +131,6 @@ along with a brief description of each.
     Thrown when an attempt to map some portion of memory into some virtual address space fails.
 
 .. py:exception:: ErrorMapBufferObjectFailed
-    :deprecated:
 
     Superceded by :py:exc:`ErrorMapFailed`.
 
@@ -221,7 +218,6 @@ along with a brief description of each.
     Thrown when using a handle for an event or stream that is invalid for some reason.
 
 .. py:exception:: ErrorInvalidResourceHandle
-    :deprecated:
     
     Superceded by ErrorInvalidHandle
 

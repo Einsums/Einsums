@@ -1638,7 +1638,7 @@ void export_tensor(pybind11::module &mod) {
         .def("__reversed__", [](const RuntimeTensorView<T> &tensor) { return std::make_shared<PyTensorIterator<T>>(tensor, true); })
         .def("rank", &RuntimeTensorView<T>::rank)
         .def("__str__",
-             [](const RuntimeTensor<T> &self) {
+             [](const RuntimeTensorView<T> &self) {
                  std::stringstream stream;
                  fprintln(stream, self);
                  return stream.str();
