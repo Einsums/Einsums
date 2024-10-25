@@ -1,5 +1,8 @@
 #pragma once
 
+#include <pybind11/pybind11.h>
+// Pybind needs to come first.
+
 #include "einsums/_GPUUtils.hpp"
 
 #include "einsums/DeviceTensor.hpp"
@@ -7,7 +10,6 @@
 #include <hip/hip_common.h>
 #include <hip/hip_runtime.h>
 #include <hip/hip_runtime_api.h>
-#include <pybind11/pybind11.h>
 #include <vector>
 
 namespace einsums::python {

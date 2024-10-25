@@ -1,5 +1,9 @@
 #pragma once
 
+#include <pybind11/numpy.h>
+#include <pybind11/pybind11.h>
+// Pybind needs to come first.
+
 #include "einsums/_Compiler.hpp"
 #include "einsums/_Export.hpp"
 
@@ -23,8 +27,6 @@
 #endif
 
 #include <cstddef>
-#include <pybind11/numpy.h>
-#include <pybind11/pybind11.h>
 #include <string>
 #include <vector>
 

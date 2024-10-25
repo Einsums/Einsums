@@ -1,3 +1,7 @@
+#include <pybind11/numpy.h>
+#include <pybind11/pybind11.h>
+// Pybind needs to come first.
+
 #include "einsums/_Common.hpp"
 
 #include "einsums/Python.hpp"
@@ -6,9 +10,6 @@
 #ifdef EINSUMS_ENABLE_TESTING
 #    include "einsums/python/PyTesting.hpp"
 #endif
-
-#include <pybind11/numpy.h>
-#include <pybind11/pybind11.h>
 
 BEGIN_EINSUMS_NAMESPACE_CPP(einsums::python)
 END_EINSUMS_NAMESPACE_CPP(einsums::python)

@@ -1,6 +1,9 @@
-#include "einsums/python/PyTesting.hpp"
+#include <pybind11/numpy.h>
+#include <pybind11/pybind11.h>
+// Pybind needs to come first.
 
 #include "einsums/Python.hpp"
+#include "einsums/python/PyTesting.hpp"
 
 #include <cstdlib>
 #include <cstring>

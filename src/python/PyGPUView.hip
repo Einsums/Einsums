@@ -1,3 +1,7 @@
+#include <pybind11/gil.h>
+#include <pybind11/pybind11.h>
+// Pybind needs to come first.
+
 #include "einsums/Python.hpp"
 #include "einsums/python/PyGPUView.hpp"
 
@@ -5,8 +9,6 @@
 #include <hip/hip_runtime.h>
 #include <hip/hip_runtime_api.h>
 #include <mutex>
-#include <pybind11/gil.h>
-#include <pybind11/pybind11.h>
 
 using namespace einsums;
 using namespace einsums::python;

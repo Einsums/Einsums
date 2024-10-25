@@ -1,8 +1,9 @@
 #pragma once
 
-#include "einsums/_Common.hpp"
-
 #include <pybind11/pybind11.h>
+// Pybind needs to come first.
+
+#include "einsums/_Common.hpp"
 
 BEGIN_EINSUMS_NAMESPACE_HPP(einsums::python)
 

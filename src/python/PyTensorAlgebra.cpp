@@ -1,13 +1,14 @@
+#include <pybind11/buffer_info.h>
+#include <pybind11/detail/common.h>
+#include <pybind11/numpy.h>
+#include <pybind11/pybind11.h>
+// Pybind needs to come first.
+
 #include "include/einsums/python/PyTensorAlgebra.hpp"
 
 #ifdef __HIP__
 #    include "einsums/python/PyGPUView.hpp"
 #endif
-
-#include <pybind11/buffer_info.h>
-#include <pybind11/detail/common.h>
-#include <pybind11/numpy.h>
-#include <pybind11/pybind11.h>
 
 #include "einsums.hpp"
 #include "include/einsums/Python.hpp"

@@ -1,3 +1,6 @@
+#include <pybind11/pybind11.h>
+// Pybind needs to come first.
+
 #include "einsums/_GPUUtils.hpp"
 
 #include "einsums/Python.hpp"

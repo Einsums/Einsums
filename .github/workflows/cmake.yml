@@ -134,7 +134,6 @@ jobs:
           miniforge-variant: Mambaforge
           use-mamba: true
           channels: conda-forge
-          python-version: "3.8"
 
       # Step is unnecessary; remove step for debugging.
       - name: Confound Environment - test fetched everything

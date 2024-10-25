@@ -1,9 +1,10 @@
-#include "einsums/RuntimeTensor.hpp"
-#include "einsums/python/PyTensor.hpp"
-
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/pytypes.h>
+// Pybind needs to come first.
+
+#include "einsums/RuntimeTensor.hpp"
+#include "einsums/python/PyTensor.hpp"
 
 #include "einsums.hpp"
 

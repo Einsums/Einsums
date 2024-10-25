@@ -1,9 +1,11 @@
 #pragma once
 
+#include <pybind11/pybind11.h>
+// Pybind needs to come first.
+
 #include "einsums/_Compiler.hpp"
 #include "einsums/_Export.hpp"
 
-#include <pybind11/pybind11.h>
 #include <stdexcept>
 
 namespace einsums::python::testing {

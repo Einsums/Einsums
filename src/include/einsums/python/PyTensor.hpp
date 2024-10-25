@@ -1,15 +1,17 @@
 #pragma once
 
-#include "einsums/RuntimeTensor.hpp"
-#include "einsums/utility/IndexUtils.hpp"
-
-#include <memory>
 #include <pybind11/complex.h>
 #include <pybind11/detail/common.h>
 #include <pybind11/numpy.h>
 #include <pybind11/operators.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+// Pybind needs to come first.
+
+#include "einsums/RuntimeTensor.hpp"
+#include "einsums/utility/IndexUtils.hpp"
+
+#include <memory>
 
 namespace einsums::python {
 
