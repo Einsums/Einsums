@@ -62,7 +62,7 @@ class RuntimeTensorView;
  * @brief Represents a tensor whose properties can be determined at runtime but not compile time.
  */
 template <typename T>
-class RuntimeTensor : public virtual tensor_props::TensorBase,
+class EINSUMS_EXPORT RuntimeTensor : public virtual tensor_props::TensorBase,
                       public virtual tensor_props::TypedTensorBase<T>,
                       public virtual tensor_props::BasicTensorBase,
                       public virtual detail::RuntimeTensorNoType,
@@ -651,7 +651,7 @@ class RuntimeTensor : public virtual tensor_props::TensorBase,
  * @brief Represents a view of a tensor whose properties can be determined at runtime but not compile time.
  */
 template <typename T>
-class RuntimeTensorView : public virtual tensor_props::TensorViewBase<RuntimeTensor<T>>,
+class EINSUMS_EXPORT RuntimeTensorView : public virtual tensor_props::TensorViewBase<RuntimeTensor<T>>,
                           public virtual tensor_props::TypedTensorBase<T>,
                           public virtual tensor_props::BasicTensorBase,
                           public virtual detail::RuntimeTensorViewNoType,

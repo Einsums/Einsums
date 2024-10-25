@@ -332,7 +332,7 @@ __global__ void scale_array(T factor, T *__restrict__ array, size_t max_index) {
  *
  * @brief Holds the info for the generic algorithm, called when all the optimizations fail.
  */
-class PyEinsumGenericPlan {
+class EINSUMS_EXPORT PyEinsumGenericPlan {
   protected:
     std::vector<int> _C_permute, _A_permute, _B_permute;
     int              _num_inds;
@@ -615,7 +615,7 @@ class PyEinsumGenericPlan {
                          const pybind11::buffer &A, const pybind11::buffer &B) const;
 };
 
-class PyEinsumDotPlan : public PyEinsumGenericPlan {
+class EINSUMS_EXPORT PyEinsumDotPlan : public PyEinsumGenericPlan {
   private:
 #ifdef __HIP__
     template <typename T>
@@ -729,7 +729,7 @@ class PyEinsumDotPlan : public PyEinsumGenericPlan {
                          const pybind11::buffer &A, const pybind11::buffer &B) const override;
 };
 
-class PyEinsumDirectProductPlan : public PyEinsumGenericPlan {
+class EINSUMS_EXPORT PyEinsumDirectProductPlan : public PyEinsumGenericPlan {
   private:
 #ifdef __HIP__
     template <typename T>
@@ -821,7 +821,7 @@ class PyEinsumDirectProductPlan : public PyEinsumGenericPlan {
                          const pybind11::buffer &A, const pybind11::buffer &B) const override;
 };
 
-class PyEinsumGerPlan : public PyEinsumGenericPlan {
+class EINSUMS_EXPORT PyEinsumGerPlan : public PyEinsumGenericPlan {
   private:
     bool _swap_AB;
 
@@ -950,7 +950,7 @@ class PyEinsumGerPlan : public PyEinsumGenericPlan {
                          const pybind11::buffer &A, const pybind11::buffer &B) const override;
 };
 
-class PyEinsumGemvPlan : public PyEinsumGenericPlan {
+class EINSUMS_EXPORT PyEinsumGemvPlan : public PyEinsumGenericPlan {
   private:
     std::vector<int> _AC_pos, _A_link_pos, _B_link_pos;
     int              _A_target_last_ind, _A_link_last_ind, _B_link_last_ind, _C_target_last_ind;
@@ -1104,7 +1104,7 @@ class PyEinsumGemvPlan : public PyEinsumGenericPlan {
                          const pybind11::buffer &A, const pybind11::buffer &B) const override;
 };
 
-class PyEinsumGemmPlan : public PyEinsumGenericPlan {
+class EINSUMS_EXPORT PyEinsumGemmPlan : public PyEinsumGenericPlan {
   private:
     std::vector<int> _AC_inds, _BC_inds, _A_link_inds, _B_link_inds;
     int              _A_target_last_ind, _A_link_last_ind, _B_target_last_ind, _B_link_last_ind, _CA_target_last_ind, _CB_target_last_ind;
