@@ -108,7 +108,6 @@ jobs:
           fi
           if [[ "${{ runner.os }}" == "macOS" ]]; then
             :
-            echo "  - python=3.8" >> export.yaml
             sed -E -i.bak "s;#OBL;;g" export.yaml
             sed -E -i.bak "s;- elfutils;;g" export.yaml
           fi
@@ -135,6 +134,7 @@ jobs:
           miniforge-variant: Mambaforge
           use-mamba: true
           channels: conda-forge
+          python-version: "3.8"
 
       # Step is unnecessary; remove step for debugging.
       - name: Confound Environment - test fetched everything
