@@ -728,6 +728,24 @@ class PyTensor : public RuntimeTensor<T> {
         case 'Q':                                                                                                                          \
             copy_and_cast_imp_##NAME<uint64_t>(buffer_info, is_view);                                                                      \
             break;                                                                                                                         \
+        case 'l':                                                                                                                          \
+            if (buffer_info.itemsize == 4) {                                                                                               \
+                copy_and_cast_imp_##NAME<int32_t>(buffer_info, is_view);                                                                   \
+            } else if (buffer_info.itemsize == 8) {                                                                                        \
+                copy_and_cast_imp_##NAME<int64_t>(buffer_info, is_view);                                                                   \
+            } else {                                                                                                                       \
+                throw EINSUMSEXCEPTION("Something's wrong with your system! Python ints are neither 32 nor 64 bits!");                     \
+            }                                                                                                                              \
+            break;                                                                                                                         \
+        case 'L':                                                                                                                          \
+            if (buffer_info.itemsize == 4) {                                                                                               \
+                copy_and_cast_imp_##NAME<uint32_t>(buffer_info, is_view);                                                                  \
+            } else if (buffer_info.itemsize == 8) {                                                                                        \
+                copy_and_cast_imp_##NAME<uint64_t>(buffer_info, is_view);                                                                  \
+            } else {                                                                                                                       \
+                throw EINSUMSEXCEPTION("Something's wrong with your system! Python ints are neither 32 nor 64 bits!");                     \
+            }                                                                                                                              \
+            break;                                                                                                                         \
         case 'f':                                                                                                                          \
             copy_and_cast_imp_##NAME<float>(buffer_info, is_view);                                                                         \
             break;                                                                                                                         \
@@ -1285,6 +1303,24 @@ class PyTensorView : public RuntimeTensorView<T> {
             break;                                                                                                                         \
         case 'Q':                                                                                                                          \
             copy_and_cast_imp_##NAME<uint64_t>(buffer_info);                                                                               \
+            break;                                                                                                                         \
+        case 'l':                                                                                                                          \
+            if (buffer_info.itemsize == 4) {                                                                                               \
+                copy_and_cast_imp_##NAME<int32_t>(buffer_info);                                                                            \
+            } else if (buffer_info.itemsize == 8) {                                                                                        \
+                copy_and_cast_imp_##NAME<int64_t>(buffer_info);                                                                            \
+            } else {                                                                                                                       \
+                throw EINSUMSEXCEPTION("Something's wrong with your system! Python ints are neither 32 nor 64 bits!");                     \
+            }                                                                                                                              \
+            break;                                                                                                                         \
+        case 'L':                                                                                                                          \
+            if (buffer_info.itemsize == 4) {                                                                                               \
+                copy_and_cast_imp_##NAME<uint32_t>(buffer_info);                                                                           \
+            } else if (buffer_info.itemsize == 8) {                                                                                        \
+                copy_and_cast_imp_##NAME<uint64_t>(buffer_info);                                                                           \
+            } else {                                                                                                                       \
+                throw EINSUMSEXCEPTION("Something's wrong with your system! Python ints are neither 32 nor 64 bits!");                     \
+            }                                                                                                                              \
             break;                                                                                                                         \
         case 'f':                                                                                                                          \
             copy_and_cast_imp_##NAME<float>(buffer_info);                                                                                  \
