@@ -92,6 +92,7 @@ jobs:
             - pybind11
             - pytest
             - numpy
+            - valgrind
           EOF
           if [[ "${{ runner.os }}" == "Linux" ]]; then
             :
@@ -177,13 +178,17 @@ jobs:
       - name: Test (pytest) - unit tests
         working-directory: "${{github.workspace}}/installed"
         run: |
-          if [[ ${{runner.os}} == "Windows" ]]; then
+          if [[ "${{runner.os}}" == "Windows" ]]; then
             export PYTHONPATH="$PYTHONPATH;${{github.workspace}}/installed/lib;$CONDA_PREFIX/lib"
           else
             export PYTHONPATH=$PYTHONPATH:${{github.workspace}}/installed/lib:$CONDA_PREFIX/lib
           fi
           
-          pytest "${{github.workspace}}/tests"
+          if [[ "${{runner.os}}" == "macOS" ]]; then
+            valgrind pytest "${{github.workspace}}/tests"
+          else
+            pytest "${{github.workspace}}/tests"
+          fi
 
       - name: Test (find_package) - consume installation
         shell: bash -l {0}
