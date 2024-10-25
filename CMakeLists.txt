@@ -65,7 +65,6 @@ einsums_option(EINSUMS_BUILD_HIP BOOL "Build HIP GPU code." OFF)
 einsums_option(EINSUMS_COVERAGE BOOL "Enable code coverage checking" OFF)
 einsums_option(EINSUMS_FAST_INTRINSICS BOOL "When generating code for GPU, use the fast math intrinsics (__expf, __sinf, etc.) \
 rather than the normal math functions (expf, sinf, etc.) for single-precision floats and single-precision complex floats." OFF)
-einsums_option(EINSUMS_ANONYMIZE BOOL "When generating error messages, decides whether to anonymize the file names or not." OFF)
 einsums_option(EINSUMS_BUILD_PYTHON STRING "Can be either a Python version to set the Python version to compile for, the string ON to compile \
 for your current Python version, a list of Python version separated by semicolons, or the string OFF to not build the Python extension module." ON)
 
@@ -162,10 +161,6 @@ endif()
 
 if(EINSUMS_FAST_INTRINSICS)
     add_compile_definitions(-DEINSUMS_FAST_INTRINSICS)
-endif()
-
-if(EINSUMS_ANONYMIZE)
-    add_compile_definitions(-DEINSUMS_ANONYMIZE)
 endif()
 
 if (EINSUMS_ENABLE_TESTING)
