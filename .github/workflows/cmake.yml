@@ -21,7 +21,7 @@ jobs:
           - cxx: L-Gnu
             os: ubuntu-latest
           - cxx: M-Clang
-            os: macos-latest
+            os: macos-13
           - cxx: L-Intel
             os: ubuntu-latest
             cmargs: >
