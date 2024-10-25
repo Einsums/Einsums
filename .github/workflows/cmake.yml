@@ -108,6 +108,7 @@ jobs:
           fi
           if [[ "${{ runner.os }}" == "macOS" ]]; then
             :
+            echo "- python=3.8" >> export.yaml
             sed -E -i.bak "s;#OBL;;g" export.yaml
             sed -E -i.bak "s;- elfutils;;g" export.yaml
           fi
