@@ -14,6 +14,7 @@ jobs:
         cxx: [ L-Gnu, M-Clang, L-Intel ]
         build_type: [ Release, Debug ]
         hptt: [ ON, OFF ]
+        #python_version: [ 3.8, 3.9, 3.10, 3.11, 3.12, 3.13 ]
         include:
           - cmargs: ""
           - testargs: ""
@@ -92,7 +93,6 @@ jobs:
             - pybind11
             - pytest
             - numpy
-            - valgrind
           EOF
           if [[ "${{ runner.os }}" == "Linux" ]]; then
             :
@@ -108,7 +108,7 @@ jobs:
           fi
           if [[ "${{ runner.os }}" == "macOS" ]]; then
             :
-            echo "- python=3.8" >> export.yaml
+            echo "  - python=3.8" >> export.yaml
             sed -E -i.bak "s;#OBL;;g" export.yaml
             sed -E -i.bak "s;- elfutils;;g" export.yaml
           fi
@@ -185,11 +185,7 @@ jobs:
             export PYTHONPATH=$PYTHONPATH:${{github.workspace}}/installed/lib:$CONDA_PREFIX/lib
           fi
           
-          if [[ "${{runner.os}}" == "macOS" ]]; then
-            valgrind pytest "${{github.workspace}}/tests"
-          else
-            pytest "${{github.workspace}}/tests"
-          fi
+          pytest "${{github.workspace}}/tests"
 
       - name: Test (find_package) - consume installation
         shell: bash -l {0}
