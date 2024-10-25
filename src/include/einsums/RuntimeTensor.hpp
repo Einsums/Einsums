@@ -63,10 +63,10 @@ class RuntimeTensorView;
  */
 template <typename T>
 class EINSUMS_EXPORT RuntimeTensor : public virtual tensor_props::TensorBase,
-                      public virtual tensor_props::TypedTensorBase<T>,
-                      public virtual tensor_props::BasicTensorBase,
-                      public virtual detail::RuntimeTensorNoType,
-                      public virtual tensor_props::CoreTensorBase {
+                                     public virtual tensor_props::TypedTensorBase<T>,
+                                     public virtual tensor_props::BasicTensorBase,
+                                     public virtual detail::RuntimeTensorNoType,
+                                     public virtual tensor_props::CoreTensorBase {
   public:
     using Vector = VectorData<T>;
 
@@ -652,10 +652,10 @@ class EINSUMS_EXPORT RuntimeTensor : public virtual tensor_props::TensorBase,
  */
 template <typename T>
 class EINSUMS_EXPORT RuntimeTensorView : public virtual tensor_props::TensorViewBase<RuntimeTensor<T>>,
-                          public virtual tensor_props::TypedTensorBase<T>,
-                          public virtual tensor_props::BasicTensorBase,
-                          public virtual detail::RuntimeTensorViewNoType,
-                          public virtual tensor_props::CoreTensorBase {
+                                         public virtual tensor_props::TypedTensorBase<T>,
+                                         public virtual tensor_props::BasicTensorBase,
+                                         public virtual detail::RuntimeTensorViewNoType,
+                                         public virtual tensor_props::CoreTensorBase {
   protected:
     T                  *_data;
     std::string         _name{"(unnamed view)"};
@@ -1339,7 +1339,12 @@ void fprintln(std::ostream &os, const AType &A, TensorPrintOptions options) {
             fprintln(os);
 
             if (Rank == 0) {
-                T value = std::get<T>(A(0));
+                T value;
+                if constexpr (std::is_same_v<std::decay_t<decltype(A(0))>, T>) {
+                    value = A(0);
+                } else {
+                    value = std::get<T>(A(0));
+                }
 
                 std::ostringstream oss;
                 oss << "              ";
@@ -1363,13 +1368,13 @@ void fprintln(std::ostream &os, const AType &A, TensorPrintOptions options) {
 #else
                 if constexpr (einsums::CoreTensorConcept<AType> || einsums::DeviceTensorConcept<AType>) {
 #endif
-                    auto                target_dims = std::vector<size_t>(Rank - 1);
-                    for(int i = 0; i < Rank - 1; i++) {
+                    auto target_dims = std::vector<size_t>(Rank - 1);
+                    for (int i = 0; i < Rank - 1; i++) {
                         target_dims[i] = A.dim(i);
                     }
 
-                    auto                final_dim   = A.dim(Rank - 1);
-                    auto                ndigits     = einsums::ndigits(final_dim);
+                    auto                final_dim = A.dim(Rank - 1);
+                    auto                ndigits   = einsums::ndigits(final_dim);
                     std::vector<size_t> index_strides, index(Rank - 1);
                     index.reserve(Rank);
 
@@ -1433,7 +1438,12 @@ void fprintln(std::ostream &os, const AType &A, TensorPrintOptions options) {
                         std::ostringstream oss;
                         oss << "(" << i << "): ";
 
-                        T value = std::get<T>(A(i));
+                        T value;
+                        if constexpr (std::is_same_v<std::decay_t<decltype(A(i))>, T>) {
+                            value = A(i);
+                        } else {
+                            value = std::get<T>(A(i));
+                        }
                         if (std::abs(value) > 1.0E+5) {
                             if constexpr (std::is_floating_point_v<T>)
                                 oss << "\x1b[0;37;41m" << fmt::format("{:14.8f} ", value) << "\x1b[0m";

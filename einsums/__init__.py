@@ -35,7 +35,7 @@ __outfile = False
 def set_finalize_arg(out_arg : bool | str) :
     """
 Sets the argument to pass to einsums.core.finalize. By default, the argument is False, which tells it not to print the
-timing file. If the argument is True, the timing file will be printed at exit, and it will be called timings.txt. If
+timing file. If the argument is True, the timing file will be printed to standard output. If
 it is a file name, that will be used as the timing file, and the timing will be printed there on exit.
     """
     __outfile = out_arg

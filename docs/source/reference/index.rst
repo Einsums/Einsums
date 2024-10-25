@@ -15,7 +15,6 @@ Einsums reference
 
 This reference manual details functions, modules, and objects
 included in Einsums, describing what they are and what they do.
-For learning how to use Einsums, see the .
 
 
 .. toctree::
@@ -23,4 +22,5 @@ For learning how to use Einsums, see the .
 
    classes
    functions
+   python_module
    Coverage Report <https://codecov.io/github/Einsums/Einsums>

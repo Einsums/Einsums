@@ -18,6 +18,7 @@ details are found in reference.
     :maxdepth: 1
 
     absolute_beginners
+    python
 
 .. toctree::
     :caption: Extras

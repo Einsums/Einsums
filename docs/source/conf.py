@@ -45,7 +45,8 @@ extensions = [
     'sphinx.ext.ifconfig',
     'sphinx.ext.intersphinx',
     'breathe',
-    'sphinx_design'
+    'sphinx_design',
+    'sphinx.ext.autodoc'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
