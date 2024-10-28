@@ -87,16 +87,39 @@ def create_tensor(*args, dtype=float) :
         return core.RuntimeTensorZ(*args)
     raise PyEinsumsException(f"Can not create tensor with data type {dtype}!")
 
-def create_random_tensor(name: str, dims: list[int], dtype=float):
+def create_random_tensor(name: str, dims: list[int], dtype=float, random_func = random.random):
     """
     Creates a random tensor with the given name and dimensions.
     """
     out = create_tensor(name, dims, dtype=dtype)
 
+    # Check to see if the user-specified function gives real or complex values.
+    complex_func = lambda : random_func() + 1j * random_func()
+    real_func = random_func
+
+    # Check if the data type is complex.
+    if dtype in __complex_singles or dtype in __complex_doubles :
+        # Check if the random function gives real or complex values.
+        # If it gives complex values, then use the random function for
+        # complex tensors. If it returns real values, use these as the
+        # real and imaginary components.
+        test_val = random_func()
+
+        if type(test_val) in __complex_singles or type(test_val) in __complex_doubles :
+            complex_func = random_func
+    else : # The data type is real.
+        # Check if the random function gives real or complex values.
+        # If it gives complex values, then only use the real parts of the random
+        # numbers. Otherwise, use the function directly.
+        test_val = random_func()
+
+        if type(test_val) in __complex_singles or type(test_val) in __complex_doubles :
+            real_func = lambda : random_func().real
+
     for ind in TensorIndices(out):
         if dtype in __complex_singles or dtype in __complex_doubles :
-            out[ind] = random.random() + 1j * random.random()
+            out[ind] = complex_func()
         else :
-            out[ind] = random.random()
+            out[ind] = real_func()
 
     return out

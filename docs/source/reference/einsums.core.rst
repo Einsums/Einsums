@@ -56,3 +56,4 @@ This module contains many functions and classes implemented in C++.
     einsums.core.runtimetensor
     einsums.core.runtimetensorview
     einsums.core.testing_utils
+    einsums.core.tensoriterator
