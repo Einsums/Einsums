@@ -636,7 +636,7 @@ class EINSUMS_EXPORT RuntimeTensor : public virtual tensor_props::TensorBase,
     // Returns the linear size of the tensor
     virtual auto size() const -> size_t { return _data.size(); }
 
-    virtual auto full_view_of_underlying() const noexcept -> bool override { return true; }
+    virtual bool full_view_of_underlying() const noexcept override { return true; }
 
     virtual const std::string &name() const noexcept override { return _name; };
 
@@ -1273,7 +1273,7 @@ class EINSUMS_EXPORT RuntimeTensorView : public virtual tensor_props::TensorView
     // Returns the linear size of the tensor
     virtual auto size() const noexcept -> size_t { return _size; }
 
-    virtual auto full_view_of_underlying() const noexcept -> bool override { return true; }
+    virtual bool full_view_of_underlying() const noexcept override { return true; }
 
     virtual const std::string &name() const override { return _name; };
 

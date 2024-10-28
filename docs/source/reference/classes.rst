@@ -24,3 +24,8 @@ It is also assumed, in many examples, that the following `using namespace` comma
     :maxdepth: 2
 
     class.tensor
+    class.tensorview
+    class.devicetensor
+    class.devicetensorview
+    class.runtimetensor
+    class.runtimetensorview

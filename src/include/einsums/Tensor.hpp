@@ -1141,8 +1141,8 @@ struct TensorView final : public virtual tensor_props::CoreTensorBase,
 
 #undef OPERATOR
 
-    auto data() -> T * override { return &_data[0]; }
-    auto data() const -> const T * override { return static_cast<const T *>(&_data[0]); }
+    T       *data() override { return &_data[0]; }
+    const T *data() const override { return static_cast<const T *>(&_data[0]); }
     template <typename... MultiIndex>
     auto data(MultiIndex... index) const -> T * {
         assert(sizeof...(MultiIndex) <= _dims.size());
@@ -1235,23 +1235,23 @@ struct TensorView final : public virtual tensor_props::CoreTensorBase,
         return _data[ordinal];
     }
 
-    [[nodiscard]] auto dim(int d) const -> size_t override {
+    size_t dim(int d) const override {
         if (d < 0)
             d += Rank;
         return _dims[d];
     }
-    auto dims() const -> Dim<Rank> override { return _dims; }
+    Dim<Rank> dims() const override { return _dims; }
 
-    [[nodiscard]] auto name() const -> const std::string & override { return _name; }
+    const std::string &name() const override { return _name; }
     void               set_name(const std::string &name) override { _name = name; }
 
-    [[nodiscard]] auto stride(int d) const noexcept -> size_t override {
+    size_t stride(int d) const noexcept override {
         if (d < 0)
             d += Rank;
         return _strides[d];
     }
 
-    auto strides() const noexcept -> Stride<Rank> override { return _strides; }
+    Stride<Rank> strides() const noexcept override { return _strides; }
 
     auto to_rank_1_view() const -> TensorView<T, 1> {
         if constexpr (Rank == 1) {
@@ -1271,9 +1271,9 @@ struct TensorView final : public virtual tensor_props::CoreTensorBase,
         }
     }
 
-    [[nodiscard]] auto full_view_of_underlying() const noexcept -> bool override { return _full_view_of_underlying; }
+    bool full_view_of_underlying() const noexcept override { return _full_view_of_underlying; }
 
-    [[nodiscard]] auto size() const { return std::accumulate(std::begin(_dims), std::begin(_dims) + Rank, 1, std::multiplies<>{}); }
+    size_t size() const { return std::accumulate(std::begin(_dims), std::begin(_dims) + Rank, 1, std::multiplies<>{}); }
 
   private:
     auto common_initialization(const T *other) {

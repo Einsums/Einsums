@@ -575,7 +575,7 @@ struct DeviceTensor : public virtual einsums::tensor_props::DeviceTensorBase,
      *
      * @return T* A pointer to the data.
      */
-    auto data() -> host_datatype * override { return _host_data; }
+    host_datatype *data() override { return _host_data; }
 
     /**
      * @brief Returns a pointer to the host-readable data.
@@ -586,7 +586,7 @@ struct DeviceTensor : public virtual einsums::tensor_props::DeviceTensorBase,
      *
      * @return const T* An immutable pointer to the data.
      */
-    auto data() const -> const host_datatype * override { return _host_data; }
+    const host_datatype *data() const override { return _host_data; }
 
     /**
      * Returns a pointer into the tensor at the given location.
@@ -766,7 +766,7 @@ struct DeviceTensor : public virtual einsums::tensor_props::DeviceTensorBase,
     /**
      * @brief Get the dimension for the given rank.
      */
-    [[nodiscard]] auto dim(int d) const -> size_t override {
+    size_t dim(int d) const override {
         // Add support for negative indices.
         if (d < 0)
             d += Rank;
@@ -776,7 +776,7 @@ struct DeviceTensor : public virtual einsums::tensor_props::DeviceTensorBase,
     /**
      * @brief Get all the dimensions.
      */
-    auto dims() const -> Dim<Rank> override { return _dims; }
+    Dim<Rank> dims() const override { return _dims; }
 
     /**
      * @brief Get the dimensions available to the GPU.
@@ -793,7 +793,7 @@ struct DeviceTensor : public virtual einsums::tensor_props::DeviceTensorBase,
     /**
      * @brief Get the name of the tensor.
      */
-    [[nodiscard]] auto name() const -> const std::string & override { return _name; }
+    const std::string &name() const override { return _name; }
 
     /**
      * @brief Set the name of the tensor.
@@ -803,7 +803,7 @@ struct DeviceTensor : public virtual einsums::tensor_props::DeviceTensorBase,
     /**
      * @brief Get the stride of the given rank.
      */
-    [[nodiscard]] auto stride(int d) const noexcept -> size_t override {
+    size_t stride(int d) const noexcept override {
         if (d < 0)
             d += Rank;
         return _strides[d];
@@ -812,7 +812,7 @@ struct DeviceTensor : public virtual einsums::tensor_props::DeviceTensorBase,
     /**
      * @brief Get all the strides.
      */
-    auto strides() const noexcept -> Stride<Rank> override { return _strides; }
+    Stride<Rank> strides() const noexcept override { return _strides; }
 
     /**
      * @brief Get the strides available to the GPU.
@@ -827,7 +827,7 @@ struct DeviceTensor : public virtual einsums::tensor_props::DeviceTensorBase,
     /**
      * Convert to a rank 1 tensor view.
      */
-    auto to_rank_1_view() const -> DeviceTensorView<T, 1> {
+    DeviceTensorView<T, 1> to_rank_1_view() const {
         size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
         Dim<1> dim{size};
 
@@ -835,12 +835,12 @@ struct DeviceTensor : public virtual einsums::tensor_props::DeviceTensorBase,
     }
 
     /// @brief Returns the linear size of the tensor
-    [[nodiscard]] auto size() const { return std::accumulate(std::begin(_dims), std::begin(_dims) + Rank, 1, std::multiplies<>{}); }
+    size_t size() const { return std::accumulate(std::begin(_dims), std::begin(_dims) + Rank, 1, std::multiplies<>{}); }
 
     /**
      * @brief Whether this object is the full view.
      */
-    [[nodiscard]] auto full_view_of_underlying() const noexcept -> bool override { return true; }
+    bool full_view_of_underlying() const noexcept override { return true; }
 
     /**
      * Return the mode of the tensor.
@@ -1393,7 +1393,7 @@ struct DeviceTensorView : public virtual tensor_props::TRBasicTensorBase<T, Rank
      *
      * @return T* A pointer to the data.
      */
-    auto data() -> host_datatype * override { return _host_data; }
+    host_datatype *data() override { return _host_data; }
 
     /**
      * @brief Returns a pointer to the host-readable data.
@@ -1404,28 +1404,39 @@ struct DeviceTensorView : public virtual tensor_props::TRBasicTensorBase<T, Rank
      *
      * @return const T* An immutable pointer to the data.
      */
-    auto data() const -> const host_datatype * override { return _host_data; }
+    const host_datatype *data() const override { return _host_data; }
 
     /**
      * @brief Get a pointer to the GPU data.
      */
-    auto gpu_data() -> dev_datatype * { return _data; }
+    dev_datatype *gpu_data() { return _data; }
 
     /**
      * @brief Get a pointer to the GPU data.
      */
-    auto gpu_data() const -> const dev_datatype * { return static_cast<const T *>(_data); }
+    const dev_datatype *gpu_data() const { return static_cast<const T *>(_data); }
 
     /**
      * @brief Get a pointer to an element in the view.
      */
     template <typename... MultiIndex>
-    auto gpu_data(MultiIndex... index) const -> dev_datatype *;
+    dev_datatype *gpu_data(MultiIndex... index);
+
+    /**
+     * @brief Get a const pointer to an element in the view.
+     */
+    template <typename... MultiIndex>
+    const dev_datatype *gpu_data(MultiIndex... index) const;
 
     /**
      * @brief Get a pointer to an element in the view.
      */
-    auto gpu_data_array(const std::array<size_t, Rank> &index_list) const -> __device_ptr__ T *;
+    dev_datatype *gpu_data_array(const std::array<size_t, Rank> &index_list);
+
+    /**
+     * @brief Get a const pointer to an element in the view.
+     */
+    const dev_datatype *gpu_data_array(const std::array<size_t, Rank> &index_list) const;
 
     /**
      * @brief Get a value from the view.
@@ -1436,7 +1447,7 @@ struct DeviceTensorView : public virtual tensor_props::TRBasicTensorBase<T, Rank
     /**
      * @brief Get the dimension of the given rank.
      */
-    [[nodiscard]] auto dim(int d) const -> size_t override {
+    size_t dim(int d) const override {
         if (d < 0)
             d += Rank;
         return _dims[d];
@@ -1445,7 +1456,7 @@ struct DeviceTensorView : public virtual tensor_props::TRBasicTensorBase<T, Rank
     /**
      * @brief Get the dimensions of the view.
      */
-    auto dims() const -> Dim<Rank> override { return _dims; }
+    Dim<Rank> dims() const override { return _dims; }
 
     /**
      * @brief Get the dimensions of the view made available to the GPU.
@@ -1460,7 +1471,7 @@ struct DeviceTensorView : public virtual tensor_props::TRBasicTensorBase<T, Rank
     /**
      * @brief Get the name of the view.
      */
-    [[nodiscard]] auto name() const -> const std::string & override { return _name; }
+    const std::string &name() const override { return _name; }
 
     /**
      * @brief Set the name of the view.
@@ -1470,7 +1481,7 @@ struct DeviceTensorView : public virtual tensor_props::TRBasicTensorBase<T, Rank
     /**
      * @brief Get the stride of the given rank.
      */
-    [[nodiscard]] auto stride(int d) const noexcept -> size_t override {
+    size_t stride(int d) const noexcept override {
         if (d < 0)
             d += Rank;
         return _strides[d];
@@ -1479,7 +1490,7 @@ struct DeviceTensorView : public virtual tensor_props::TRBasicTensorBase<T, Rank
     /**
      * @brief Get the strides of the view.
      */
-    auto strides() const noexcept -> Stride<Rank> override { return _strides; }
+    Stride<Rank> strides() const noexcept override { return _strides; }
 
     /**
      * @brief Get the strides of the view made available to the GPU.
@@ -1499,12 +1510,12 @@ struct DeviceTensorView : public virtual tensor_props::TRBasicTensorBase<T, Rank
     /**
      * @brief Whether the view wraps all the data.
      */
-    [[nodiscard]] auto full_view_of_underlying() const noexcept -> bool override { return _full_view_of_underlying; }
+    bool full_view_of_underlying() const noexcept override { return _full_view_of_underlying; }
 
     /**
      * @brief Get the size of the view.
      */
-    [[nodiscard]] auto size() const { return std::accumulate(std::begin(_dims), std::begin(_dims) + Rank, 1, std::multiplies<>{}); }
+    size_t size() const { return std::accumulate(std::begin(_dims), std::begin(_dims) + Rank, 1, std::multiplies<>{}); }
 
     operator Tensor<T, Rank>() const {
         DeviceTensor temp(*this);
