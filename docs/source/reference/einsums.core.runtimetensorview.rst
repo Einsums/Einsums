@@ -10,6 +10,10 @@
 Einsums Python Runtime Tensor Views
 ***********************************
 
+.. sectionauthor:: Connor Briggs
+
+.. codeauthor:: Connor Briggs
+
 .. py:currentmodule:: einsums.core
 
 These tensor views are how the Python and C++ sides of Einsums are able to interact. There

@@ -10,6 +10,10 @@
 Einsums Python GPU Views
 ************************
 
+.. sectionauthor:: Connor Briggs
+
+.. codeauthor:: Connor Briggs
+
 .. py:currentmodule:: einsums.core
 
 The idea behind the :py:class:`GPUView` is to make transferring data between the host and the GPU much simpler
@@ -53,29 +57,27 @@ the ones defined by Einsums. In fact, much of the testing for these is done on N
     A view that wraps data to allow for it to be transferred between the host and a device. As an example
     of the use of these views, see below.
 
-    .. code:: Python
-
-        >>> import einsums as ein
-        >>> import numpy as np
-        >>> plan = ein.core.compile_plan("ij", "ik", "kj")
-        >>> A = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]], dtype=float)
-        >>> B = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]], dtype=float)
-        >>> C = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0]], dtype=float)
-        >>> A_view = ein.core.GPUView(A, ein.core.COPY) # Copy the data into the GPU.
-        >>> B_view = ein.core.GPUView(B, ein.core.COPY)
-        >>> C_view = ein.core.GPUView(C, ein.core.COPY)
-        >>> # At this point, the data is all synchronized, since view creation performs synchronization.
-        >>> plan.execute(0, C_view, 1, A_view, B_view)
-        >>> # After this call to execute, C has become desynchronized.
-        >>> print(C)
-            [[0. 0. 0.]
-             [0. 0. 0.]
-             [0. 0. 0.]]
-        >>> C_view.update_D2H() # Bring C back into synchronization.
-        >>> print(C)
-            [[ 30.  36.  42.]
-             [ 66.  81.  96.]
-             [102. 126. 150.]]
+    >>> import einsums as ein
+    >>> import numpy as np
+    >>> plan = ein.core.compile_plan("ij", "ik", "kj")
+    >>> A = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]], dtype=float)
+    >>> B = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]], dtype=float)
+    >>> C = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0]], dtype=float)
+    >>> A_view = ein.core.GPUView(A, ein.core.COPY) # Copy the data into the GPU.
+    >>> B_view = ein.core.GPUView(B, ein.core.COPY)
+    >>> C_view = ein.core.GPUView(C, ein.core.COPY)
+    >>> # At this point, the data is all synchronized, since view creation performs synchronization.
+    >>> plan.execute(0, C_view, 1, A_view, B_view)
+    >>> # After this call to execute, C has become desynchronized.
+    >>> print(C)
+    [[0. 0. 0.]
+     [0. 0. 0.]
+     [0. 0. 0.]]
+    >>> C_view.update_D2H() # Bring C back into synchronization.
+    >>> print(C)
+    [[ 30.  36.  42.]
+     [ 66.  81.  96.]
+     [102. 126. 150.]]
 
     .. py:method:: __init__(buffer, mode: GPUViewMode)
 

@@ -10,6 +10,10 @@
 Einsums Python Runtime Tensors
 ******************************
 
+.. sectionauthor:: Connor Briggs
+
+.. codeauthor:: Connor Briggs
+
 .. py:currentmodule:: einsums.core
 
 These tensors are how the Python and C++ sides of Einsums are able to interact. There
@@ -127,37 +131,35 @@ much code to itself.
 
         Return a view of the tensor where all the elements are in a list. Here is an example.
 
-        .. code:: Python
-
-            >>> A = einsums.utils.create_random_tensor("A", [3, 3])
-            >>> print(A)
-                Name: A
-                    Type: In Core Runtime Tensor
-                    Data Type: double
-                    Dims{3 3 }
-                    Strides{3 1 }
-
-                    (0,  0-2):        0.03651354     0.25669908     0.11172557 
-
-                    (1,  0-2):        0.56452605     0.26229278     0.13112895 
-
-                    (2,  0-2):        0.45176621     0.25069921     0.54104020
-            >>> print(A.to_rank_1_view())
-                Name: (unnamed view)
-                    Type: In Core Runtime Tensor View
-                    Data Type: double
-                    Dims{9 }
-                    Strides{1 }
-
-                    (0):     0.03651354 
-                    (1):     0.25669908 
-                    (2):     0.11172557 
-                    (3):     0.56452605 
-                    (4):     0.26229278 
-                    (5):     0.13112895 
-                    (6):     0.45176621 
-                    (7):     0.25069921 
-                    (8):     0.54104020
+        >>> A = einsums.utils.create_random_tensor("A", [3, 3])
+        >>> print(A)
+        Name: A
+            Type: In Core Runtime Tensor
+            Data Type: double
+            Dims{3 3 }
+            Strides{3 1 }
+        <BLANKLINE>
+            (0,  0-2):        0.03651354     0.25669908     0.11172557 
+        <BLANKLINE>
+            (1,  0-2):        0.56452605     0.26229278     0.13112895 
+        <BLANKLINE>
+            (2,  0-2):        0.45176621     0.25069921     0.54104020
+        >>> print(A.to_rank_1_view())
+        Name: (unnamed view)
+            Type: In Core Runtime Tensor View
+            Data Type: double
+            Dims{9 }
+            Strides{1 }
+        <BLANKLINE>
+            (0):     0.03651354 
+            (1):     0.25669908 
+            (2):     0.11172557 
+            (3):     0.56452605 
+            (4):     0.26229278 
+            (5):     0.13112895 
+            (6):     0.45176621 
+            (7):     0.25069921 
+            (8):     0.54104020
     
     .. py:method:: get_name() -> str
 

@@ -12,6 +12,8 @@ HIP Exceptions in Python
 
 .. sectionauthor:: Connor Briggs
 
+.. codeauthor:: Connor Briggs
+
 .. py:currentmodule:: einsums.gpu_except
 
 This module contains all possible exceptions that can be thrown by HIP and related libraries,

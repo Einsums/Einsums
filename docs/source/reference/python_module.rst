@@ -10,6 +10,10 @@
 Einsums Python Module
 *********************
 
+.. sectionauthor:: Connor Briggs
+
+.. codeauthor:: Connor Briggs
+
 This is the reference documentation for the Einsums Python module. It contains many sub-modules as well.
 
 .. py:module:: einsums
@@ -22,19 +26,15 @@ This module contains various facilities for interfacing with the Einsums library
     timing file. If the argument is True, the timing information will be printed to standard output. If
     it is a file name, that will be used as the timing file, and the timing will be printed there on exit. Calling this
     function with a string, then again with `True` or `False` will override the behavior. For instance,
-
-    .. code:: Python
-            
-        >>> einsums.set_finalize_arg("timings.txt")
-        >>> exit()
+  
+    >>> einsums.set_finalize_arg("timings.txt")
+    >>> exit()
 
     will create a file called :code:`timings.txt` and put the timing information there. However, the following will have different behavior.
 
-    .. code:: Python
-
-        >>> einsums.set_finalize_arg("timings.txt")
-        >>> einsums.set_finalize_arg(True) # Overrides the previous.
-        >>> exit()
+    >>> einsums.set_finalize_arg("timings.txt")
+    >>> einsums.set_finalize_arg(True) # Overrides the previous.
+    >>> exit()
 
     This will not create the file and will instead print timing information to standard output.
 

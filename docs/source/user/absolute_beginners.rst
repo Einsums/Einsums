@@ -8,6 +8,8 @@
 Einsums: the absolute basics for beginners
 ******************************************
 
+.. sectionauthor:: Justin M. Turney
+
 Welcome to the absolute beginner's guide to Einsums! If you have comments or
 suggestions, please do not hesitate to `reach out <https://github.com/Einsums/Einsums/discussions>`_!
 

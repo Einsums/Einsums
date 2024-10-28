@@ -12,6 +12,8 @@ Einsums Core Module
 
 .. sectionauthor:: Connor Briggs
 
+.. codeauthor:: Connor Briggs
+
 This module contains many functions and classes implemented in C++.
 
 .. py:currentmodule:: einsums.core

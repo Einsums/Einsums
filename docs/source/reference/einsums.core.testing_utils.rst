@@ -10,6 +10,11 @@
 Einsums Python Testing Utilities
 ********************************
 
+.. sectionauthor:: Connor Briggs
+
+.. codeauthor:: Connor Briggs
+
+
 In order to make testing Einsums smoother, several utilities have been added to push Einsums to its limits.
 
 .. py:currentmodule:: einsums.core

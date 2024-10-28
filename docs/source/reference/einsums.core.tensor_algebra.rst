@@ -12,6 +12,8 @@ Einsums Python Tensor Algebra
 
 .. sectionauthor:: Connor Briggs
 
+.. codeauthor:: Connor Briggs
+
 This page will discuss functions and classes relating to tensor algebra calls in Python.
 
 .. py:currentmodule:: einsums.core
@@ -25,14 +27,12 @@ This page will discuss functions and classes relating to tensor algebra calls in
 
     As an example on how to use this, here is a matrix multiplication.
 
-    .. code:: Python
-
-        >>> import einsums
-        >>> plan = einsums.core.compile_plan("ij", "ik", "kj")
-        >>> A = einsums.util.create_random_tensor("A", [3, 3])
-        >>> B = einsums.util.create_random_tensor("B", [3, 3])
-        >>> C = einsums.util.create_random_tensor("C", [3, 3])
-        >>> plan.execute(0, C, 1, A, B)
+    >>> import einsums
+    >>> plan = einsums.core.compile_plan("ij", "ik", "kj")
+    >>> A = einsums.util.create_random_tensor("A", [3, 3])
+    >>> B = einsums.util.create_random_tensor("B", [3, 3])
+    >>> C = einsums.util.create_random_tensor("C", [3, 3])
+    >>> plan.execute(0, C, 1, A, B)
 
     :param C_indices: The indices on the output tensor.
     :param A_indices: The indices on the left input tensor.
