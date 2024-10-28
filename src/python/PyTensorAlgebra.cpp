@@ -105,8 +105,8 @@ static string unique(const string &str) {
     return out;
 }
 
-static vector<pair<char, size_t>> find_ind_with_pos(const string &st1, const string &st2) {
-    vector<pair<char, size_t>> out;
+static deque<pair<char, size_t>> find_ind_with_pos(const string &st1, const string &st2) {
+    deque<pair<char, size_t>> out;
 
     for (int i = 0; i < st1.length(); i++) {
         for (int j = 0; j < st2.length(); j++) {
@@ -119,7 +119,7 @@ static vector<pair<char, size_t>> find_ind_with_pos(const string &st1, const str
     return out;
 }
 
-static bool contiguous_indices(const vector<pair<char, size_t>> &pairs) {
+static bool contiguous_indices(const deque<pair<char, size_t>> &pairs) {
     if (pairs.size() == 0) {
         return true;
     }
@@ -131,7 +131,7 @@ static bool contiguous_indices(const vector<pair<char, size_t>> &pairs) {
     return true;
 }
 
-static bool same_ordering(const vector<pair<char, size_t>> &x, const vector<pair<char, size_t>> &y) {
+static bool same_ordering(const deque<pair<char, size_t>> &x, const deque<pair<char, size_t>> &y) {
     if (x.size() != y.size()) {
         return false;
     } else if (x.size() == 0 && y.size() == 0) {
@@ -258,7 +258,9 @@ einsums::tensor_algebra::compile_plan(std::string C_indices, std::string A_indic
         return make_shared<PyEinsumDirectProductPlan>(base);
     } else if (outer_product) {
         std::vector<int> CA_target_pos, CB_target_pos;
-        bool             swap_AB = A_target_position_in_C[0].second != 0;
+        CA_target_pos.reserve(A_target_position_in_C.size());
+        CB_target_pos.reserve(B_target_position_in_C.size());
+        bool swap_AB = A_target_position_in_C[0].second != 0;
 
         for (const auto &pair : A_target_position_in_C) {
             bool has_index = false;
@@ -291,8 +293,11 @@ einsums::tensor_algebra::compile_plan(std::string C_indices, std::string A_indic
         bool swap_AB = is_gemv_BA_possible && !is_gemv_AB_possible;
         if (!swap_AB) {
             std::vector<int> A_link_inds, B_link_inds, AC_inds;
-            int              A_target_last_ind = std::max_element(target_position_in_A.cbegin(), target_position_in_A.cend(),
-                                                                  [](const std::pair<char, size_t> &a, const std::pair<char, size_t> &b) -> bool {
+            A_link_inds.reserve(link_position_in_A.size());
+            B_link_inds.reserve(link_position_in_B.size());
+            AC_inds.reserve(A_target_position_in_C.size());
+            int A_target_last_ind = std::max_element(target_position_in_A.cbegin(), target_position_in_A.cend(),
+                                                     [](const std::pair<char, size_t> &a, const std::pair<char, size_t> &b) -> bool {
                                                          return a.second < b.second;
                                                      })
                                         ->second,
@@ -356,6 +361,9 @@ einsums::tensor_algebra::compile_plan(std::string C_indices, std::string A_indic
                                                  C_target_last_ind, trans_A, swap_AB, base);
         } else {
             std::vector<int> A_link_inds, B_link_inds, AC_inds;
+            A_link_inds.reserve(link_position_in_B.size());
+            B_link_inds.reserve(link_position_in_A.size());
+            AC_inds.reserve(B_target_position_in_C.size());
             int              A_target_last_ind = std::max_element(target_position_in_B.cbegin(), target_position_in_B.cend(),
                                                                   [](const std::pair<char, size_t> &a, const std::pair<char, size_t> &b) -> bool {
                                                          return a.second < b.second;
@@ -422,6 +430,10 @@ einsums::tensor_algebra::compile_plan(std::string C_indices, std::string A_indic
         }
     } else if (is_gemm_possible) {
         std::vector<int> A_link_inds, B_link_inds, AC_inds, BC_inds;
+        AC_inds.reserve(A_target_position_in_C.size());
+        BC_inds.reserve(B_target_position_in_C.size());
+        A_link_inds.reserve(link_position_in_A.size());
+        B_link_inds.reserve(link_position_in_B.size());
         int              A_target_last_ind = std::max_element(target_position_in_A.cbegin(), target_position_in_A.cend(),
                                                               [](const std::pair<char, size_t> &a, const std::pair<char, size_t> &b) -> bool {
                                                      return a.second < b.second;

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <list>
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 // Pybind needs to come first.
@@ -44,8 +45,8 @@ EINSUMS_EXPORT std::vector<size_t> get_dim_ranges_for_many(const pybind11::buffe
 EINSUMS_EXPORT std::string intersect(const std::string &st1, const std::string &st2);
 
 template <typename T>
-std::vector<T> intersect(const std::vector<T> &vec1, const std::vector<T> &vec2) {
-    std::vector<T> out;
+std::list<T> intersect(const std::vector<T> &vec1, const std::vector<T> &vec2) {
+    std::list<T> out;
 
     for (int i = 0; i < vec1.size(); i++) {
         for (int j = 0; j < vec2.size(); j++) {

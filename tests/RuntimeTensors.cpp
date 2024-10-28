@@ -1,3 +1,4 @@
+#include "einsums/_Common.hpp"
 #include <catch2/catch_all.hpp>
 
 #include "einsums.hpp"
@@ -29,26 +30,6 @@ TEST_CASE("Runtime Tensor Assignment") {
     REQUIRE(D.data() != nullptr);
     REQUIRE((E.data() != nullptr && E.data() != A.data()));
     REQUIRE((F.data() != nullptr && F.data() != C.data()));
-
-    std::stringstream stream;
-
-    fprintln(stream, A);
-    INFO(stream.str());
-
-    fprintln(stream, B);
-    INFO(stream.str());
-
-    fprintln(stream, C);
-    INFO(stream.str());
-
-    fprintln(stream, D);
-    INFO(stream.str());
-
-    fprintln(stream, E);
-    INFO(stream.str());
-
-    fprintln(stream, F);
-    INFO(stream.str());
 
     REQUIRE(A.data(std::array<ptrdiff_t, 2>{-1, 1}) != nullptr);
 

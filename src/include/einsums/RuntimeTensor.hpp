@@ -886,6 +886,92 @@ class EINSUMS_EXPORT RuntimeTensorView : public virtual tensor_props::TensorView
         return &(_data[index * _strides[0]]);
     }
 
+    template <typename... Args>
+    T *data(Args... args) THROWS(einsums::EinsumsException, std::out_of_range) {
+        if (sizeof...(Args) > rank()) {
+            throw EINSUMSEXCEPTION("Too many indices passed to data!");
+        }
+        std::array<ptrdiff_t, sizeof...(Args)> index{static_cast<ptrdiff_t>(args)...};
+        return _data[einsums::tensor_algebra::detail::indices_to_sentinel_negative_check(_strides, _dims, index)];
+    }
+
+    template <typename... Args>
+    const T *data(Args... args) const THROWS(einsums::EinsumsException, std::out_of_range) {
+        if (sizeof...(Args) > rank()) {
+            throw EINSUMSEXCEPTION("Too many indices passed to data!");
+        }
+        std::array<ptrdiff_t, sizeof...(Args)> index{static_cast<ptrdiff_t>(args)...};
+        return _data[einsums::tensor_algebra::detail::indices_to_sentinel_negative_check(_strides, _dims, index)];
+    }
+
+    /**
+     * TODO: std::variant can't handle references. We might be able to make our own variant that can.
+     * This new variant may also be able to replace HostDevReference.
+     */
+    template <typename... Args>
+        requires(std::is_integral_v<Args> && ...)
+    T &operator()(Args... args) THROWS(einsums::EinsumsException) {
+        if (sizeof...(Args) < rank()) {
+            throw EINSUMSEXCEPTION("Not yet implemented: can not handle fewer integral indices than rank in (non-const) runtime tensor.");
+        } else if (sizeof...(Args) > rank()) {
+            throw EINSUMSEXCEPTION("Too many indices passed to subscript operator!");
+        }
+        std::array<ptrdiff_t, sizeof...(Args)> index{static_cast<ptrdiff_t>(args)...};
+        return _data[einsums::tensor_algebra::detail::indices_to_sentinel_negative_check(_strides, _dims, index)];
+    }
+
+    template <typename... Args>
+        requires(std::is_integral_v<Args> && ...)
+    std::variant<T, RuntimeTensorView<T>> operator()(Args... args) const THROWS(einsums::EinsumsException) {
+        if (sizeof...(Args) > rank()) {
+            throw EINSUMSEXCEPTION("Too many indices passed to subscript operator!");
+        }
+
+        std::array<ptrdiff_t, sizeof...(Args)> index{static_cast<ptrdiff_t>(args)...};
+
+        if (sizeof...(Args) < rank()) {
+            std::vector<Range> slices(sizeof...(Args));
+
+            for (int i = 0; i < sizeof...(Args); i++) {
+                slices[i] = Range{-1, index[i]};
+            }
+            return std::variant<T, RuntimeTensorView<T>>((*this)(slices));
+        } else {
+            return std::variant<T, RuntimeTensorView<T>>(
+                _data[einsums::tensor_algebra::detail::indices_to_sentinel_negative_check(_strides, _dims, index)]);
+        }
+    }
+
+    template <typename... Args>
+        requires((!std::is_integral_v<Args>) || ...)
+    RuntimeTensorView<T> operator()(Args... args) const THROWS(einsums::EinsumsException) {
+        if (sizeof...(Args) > rank()) {
+            throw EINSUMSEXCEPTION("Too many indices passed to subscript operator!");
+        }
+
+        std::tuple<Args...> arg_tuple = std::make_tuple(args...);
+        std::vector<Range>  slices(sizeof...(Args));
+
+        for_sequence<sizeof...(Args)>([&](auto n) {
+            using Arg = std::tuple_element_t<n, std::tuple<Args...>>;
+            if constexpr (std::is_same_v<Arg, AllT>) {
+                slices[n] = Range{0, this->dim(n)};
+            } else if constexpr (std::is_same_v<Arg, Range>) {
+                slices[n] = std::get<n>(arg_tuple);
+            } else if constexpr (std::is_integral_v<Arg>) {
+                auto index = std::get<n>(arg_tuple);
+
+                if (index < 0) {
+                    index += this->dim(n);
+                }
+
+                slices[n] = Range{-1, index};
+            }
+        });
+
+        return (*this)(slices);
+    }
+
     T &operator()(ptrdiff_t index) {
         if (index < 0) {
             index += _dims[0];
