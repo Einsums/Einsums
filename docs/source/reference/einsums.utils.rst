@@ -6,9 +6,9 @@
 
 .. _einsums.utils :
 
-*******************
+************************
 Einsums Utilities Module
-*******************
+************************
 
 .. sectionauthor:: Connor Briggs
 
