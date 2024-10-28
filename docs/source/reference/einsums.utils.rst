@@ -4,10 +4,10 @@
      Licensed under the MIT License. See LICENSE.txt in the project root for license information.
     ----------------------------------------------------------------------------------------------
 
-.. _einsums.core :
+.. _einsums.utils :
 
 *******************
-Einsums Core Module
+Einsums Utilities Module
 *******************
 
 .. sectionauthor:: Connor Briggs
@@ -49,7 +49,7 @@ This module contains extra utilities written in Python for the Einsums library.
     Create a new tensor with the given data type. The arguments will be passed to the proper
     constructor.
 
-    :param *args: Arguments to pass to the constructor.
+    :param args: Arguments to pass to the constructor.
     :param dtype: The data type of the tensor.
 
     :return: A tensor that holds the requested type.
