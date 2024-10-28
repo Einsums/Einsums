@@ -46,7 +46,6 @@ much code to itself.
         :noindex:
 
         Construct a new tensor with the given dimensions. Its name will be initialized to a default value.
-        Wraps :cpp:func:`einsums::python::PyTensor(const std::vector<size_t> &)`
 
         :param dims: The dimensions of the tensor. The rank is determined from the length of this argument.
 
@@ -60,7 +59,7 @@ much code to itself.
 
     .. py:method:: zero() -> None
 
-        Zero out the data in the tensor. Wraps :cpp:func:`einsums::RuntimeTensor::zero()`.
+        Zero out the data in the tensor. Wraps :cpp:func:`einsums::RuntimeTensor::zero`.
 
     .. py:method:: set_all(value) -> None
 
