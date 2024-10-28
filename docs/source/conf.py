@@ -27,7 +27,7 @@ author = 'Einsums Developers'
 
 # The full version, including alpha/beta/rc tags
 branding = open('../../cmake/EinsumsBranding.cmake', 'r').read()
-p = re.compile('set\(EINSUMS_VERSION\s+"(\d+\.\d+\.\d+)')
+p = re.compile(r'set\(EINSUMS_VERSION\s+"(\d+\.\d+\.\d+)')
 m = p.match(branding)
 release = 'unknown-version'
 version = 'unknown-version'
