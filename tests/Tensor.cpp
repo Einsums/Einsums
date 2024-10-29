@@ -138,6 +138,7 @@ TEST_CASE("Tensor Invert") {
 }
 
 TEST_CASE("TensorView creation", "[tensor]") {
+    using namespace einsums;
     // With the aid of deduction guides we can choose to not specify the rank on the tensor
     einsums::Tensor     A("A", 3, 3, 3);
     einsums::TensorView viewA(A, einsums::Dim{3, 9});
@@ -164,8 +165,8 @@ TEST_CASE("TensorView creation", "[tensor]") {
         array[i] = i;
     }
 
+    // Drop down in scope to make sure the view is deleted before the array it is viewing.
     {
-
         TensorView<double, 2>       view1{array, Dim<2>{10, 10}}, view2{array, Dim{10, 10}, Stride{10, 1}};
         const TensorView<double, 2> const_view1{(const double *)array, Dim<2>{10, 10}},
             const_view2{(const double *)array, Dim{10, 10}, Stride{10, 1}};
