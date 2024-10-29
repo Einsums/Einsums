@@ -82,6 +82,9 @@ TEST_CASE("Runtime Tensor View Creation") {
     RuntimeTensor<double>        Base       = create_random_tensor("Base", 10, 10, 10);
     const RuntimeTensor<double> &const_base = Base;
 
+    RuntimeTensorView<double>        base_view{Base};
+    const RuntimeTensorView<double> &const_base_view = base_view;
+
     Tensor<double, 3>        rank_base       = create_random_tensor("rank_base", 10, 10, 10);
     const Tensor<double, 3> &const_rank_base = rank_base;
 
@@ -90,17 +93,16 @@ TEST_CASE("Runtime Tensor View Creation") {
 
     RuntimeTensorView<double> A{Base, std::vector<size_t>{10, 100}}, B{A, std::vector<size_t>{100, 10}},
         C{Base, std::vector<size_t>{5, 5, 5}, std::vector<size_t>{100, 10, 1}, std::vector<size_t>{1, 2, 3}},
-        D{RuntimeTensorView<double>(Base), std::vector<size_t>{5, 5, 5}, std::vector<size_t>{100, 10, 1},
-          std::vector<size_t>{1, 2, 3}},
+        D{RuntimeTensorView<double>(Base), std::vector<size_t>{5, 5, 5}, std::vector<size_t>{100, 10, 1}, std::vector<size_t>{1, 2, 3}},
         E{rank_view}, F{rank_base};
 
-    const RuntimeTensorView<double> G{const_base, std::vector<size_t>{10, 100}}, H{C, std::vector<size_t>{10, 100}}, I{const_rank_view},
-        J{const_rank_base};
+    const RuntimeTensorView<double> G{const_base, std::vector<size_t>{10, 100}}, H{const_base_view, std::vector<size_t>{100, 10}},
+        I{const_rank_view}, J{const_rank_base};
 
     REQUIRE(A.rank() == 2);
     REQUIRE(B.rank() == 2);
     REQUIRE(C.rank() == 3);
-    REQUIRE(D.rank() == 2);
+    REQUIRE(D.rank() == 3);
     REQUIRE(E.rank() == 3);
     REQUIRE(F.rank() == 3);
     REQUIRE(G.rank() == 2);
@@ -108,9 +110,9 @@ TEST_CASE("Runtime Tensor View Creation") {
     REQUIRE(I.rank() == 3);
     REQUIRE(J.rank() == 3);
 
-    for(int i = 0; i < 10; i++) {
-        for(int j = 0; j < 10; j++) {
-            for(int k = 0; k < 10; k++) {
+    for (int i = 0; i < 10; i++) {
+        for (int j = 0; j < 10; j++) {
+            for (int k = 0; k < 10; k++) {
                 REQUIRE(A(i, j * 10 + k) == Base(i, j, k));
                 REQUIRE(B(i * 10 + j, k) == Base(i, j, k));
                 REQUIRE(E(i, j, k) == rank_base(i, j, k));
@@ -123,9 +125,9 @@ TEST_CASE("Runtime Tensor View Creation") {
         }
     }
 
-    for(int i = 0; i < 5; i++) {
-        for(int j = 0; j < 5; j++) {
-            for(int k = 0; k < 5; k++) {
+    for (int i = 0; i < 5; i++) {
+        for (int j = 0; j < 5; j++) {
+            for (int k = 0; k < 5; k++) {
                 REQUIRE(C(i, j, k) == Base(i + 1, j + 2, k + 3));
                 REQUIRE(D(i, j, k) == Base(i + 1, j + 2, k + 3));
             }

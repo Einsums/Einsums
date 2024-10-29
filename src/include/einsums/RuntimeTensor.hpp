@@ -782,12 +782,13 @@ class EINSUMS_EXPORT RuntimeTensorView : public virtual tensor_props::TensorView
 
     template <size_t Rank>
     RuntimeTensorView(TensorView<T, Rank> &copy)
-        : _data{copy.data()}, _dims(copy.dims().cbegin(), copy.dims().cend()), _strides(copy.strides().cbegin(), copy.strides().cend()),
-          _rank{Rank}, _full_view{copy.full_view_of_underlying()} {
+        : _data{copy.data()}, _dims(Rank), _strides(Rank), _rank{Rank}, _full_view{copy.full_view_of_underlying()} {
         _index_strides.resize(Rank);
 
         _size = 1;
         for (int i = Rank - 1; i >= 0; i--) {
+            _dims[i]          = copy.dim(i);
+            _strides[i]       = copy.stride(i);
             _index_strides[i] = _size;
             _size *= _dims[i];
         }
@@ -795,14 +796,15 @@ class EINSUMS_EXPORT RuntimeTensorView : public virtual tensor_props::TensorView
 
     template <size_t Rank>
     RuntimeTensorView(const TensorView<T, Rank> &copy)
-        : _dims(copy.dims().cbegin(), copy.dims().cend()), _strides(copy.strides().cbegin(), copy.strides().cend()), _rank{Rank},
-          _full_view{copy.full_view_of_underlying()} {
+        : _dims(Rank), _strides(Rank), _rank{Rank}, _full_view{copy.full_view_of_underlying()} {
         _data = const_cast<T *>(copy.data());
 
         _index_strides.resize(Rank);
 
         _size = 1;
         for (int i = Rank - 1; i >= 0; i--) {
+            _dims[i]          = copy.dim(i);
+            _strides[i]       = copy.stride(i);
             _index_strides[i] = _size;
             _size *= _dims[i];
         }
@@ -810,14 +812,23 @@ class EINSUMS_EXPORT RuntimeTensorView : public virtual tensor_props::TensorView
 
     template <size_t Rank>
     RuntimeTensorView(Tensor<T, Rank> &copy)
-        : _data{copy.data()}, _dims(copy.dims().cbegin(), copy.dims().cend()), _strides(copy.strides().cbegin(), copy.strides().cend()),
-          _rank{Rank}, _full_view{true}, _index_strides(copy.strides().cbegin(), copy.strides().cend()), _size{copy.size()} {}
+        : _data{copy.data()}, _dims(Rank), _strides(Rank), _rank{Rank}, _full_view{true}, _index_strides(Rank), _size{copy.size()} {
+        for (int i = Rank - 1; i >= 0; i--) {
+            _dims[i]          = copy.dim(i);
+            _strides[i]       = copy.stride(i);
+            _index_strides[i] = copy.stride(i);
+        }
+    }
 
     template <size_t Rank>
     RuntimeTensorView(const Tensor<T, Rank> &copy)
-        : _dims(copy.dims().cbegin(), copy.dims().cend()), _strides(copy.strides().cbegin(), copy.strides().cend()), _rank{Rank},
-          _full_view{true}, _index_strides(copy.strides().cbegin(), copy.strides().cend()), _size{copy.size()} {
+        : _dims(Rank), _strides(Rank), _rank{Rank}, _full_view{true}, _index_strides(Rank), _size{copy.size()} {
         _data = const_cast<T *>(copy.data());
+        for (int i = Rank - 1; i >= 0; i--) {
+            _dims[i]          = copy.dim(i);
+            _strides[i]       = copy.stride(i);
+            _index_strides[i] = copy.stride(i);
+        }
     }
 
     virtual ~RuntimeTensorView() = default;
