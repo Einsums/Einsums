@@ -389,23 +389,12 @@ EINSUMS_EXPORT size_t dims_to_strides(const std::vector<size_t> &dims, std::vect
  * @brief Compute the strides for turning a sentinel into a list of indices.
  *
  * @param dims The list of dimensions.
- * @param out The calculated strides
- * @return The product of the dimensions, or the size of the object represented by the dimensions.
+ * @param out The calculated strides.
+ * @return The size calculated from the dimensions. Can be safely ignored.
  */
-template <size_t Dims>
-size_t dims_to_strides(const ::std::array<size_t, Dims> &dims, std::array<size_t, Dims> &out) {
-    size_t stride = 1;
-
-    for (int i = Dims - 1; i >= 0; i--) {
-        out[i] = stride;
-        stride *= dims[i];
-    }
-
-    return stride;
-}
-
-template <size_t Dims>
-size_t dims_to_strides(const Dim<Dims> &dims, std::array<size_t, Dims> &out) {
+template <typename arr_type1, typename arr_type2, size_t Dims>
+requires(std::is_integral_v<arr_type1> && std::is_integral_v<arr_type2>)
+size_t dims_to_strides(const ::std::array<arr_type1, Dims> &dims, std::array<arr_type2, Dims> &out) {
     size_t stride = 1;
 
     for (int i = Dims - 1; i >= 0; i--) {

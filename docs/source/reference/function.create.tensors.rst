@@ -18,7 +18,7 @@ In Einsums, there are two-basic types of tensors: :cpp:class:`einsums::Tensor` a
 Tensor is an in-memory variant of a tensor and DiskTensor is an on-disk variant of a tensor. DiskTensor
 can and will use Tensors.
 
-.. doxygenfunction:: einsums::create_tensor(const std::string, Args...)
+.. doxygenfunction:: einsums::create_tensor(const std::string &, Args...)
 
 .. doxygenfunction:: einsums::create_disk_tensor
 

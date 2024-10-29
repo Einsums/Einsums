@@ -142,8 +142,8 @@ auto create_incremented_tensor(const std::string &name, MultiIndex... index) -> 
  * A \p name is required for the tensor. \p name is used when printing and performing disk operations.
  *
  * @code
- * auto a = create_incremented_tensor("a", 3, 3);          // auto -> Tensor<double, 2>
- * auto b = create_incremented_tensor<float>("b" 4, 5, 6); // auto -> Tensor<float, 3>
+ * auto a = create_random_tensor("a", 3, 3);          // auto -> Tensor<double, 2>
+ * auto b = create_random_tensor<float>("b" 4, 5, 6); // auto -> Tensor<float, 3>
  * @endcode
  *
  * @tparam T The datatype of the underlying tensor. Defaults to double.
