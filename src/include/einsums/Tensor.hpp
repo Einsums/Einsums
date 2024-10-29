@@ -918,7 +918,7 @@ struct Tensor : public virtual tensor_props::CoreTensorBase,
     }
 
     // Returns the linear size of the tensor
-    [[nodiscard]] auto size() const { return std::accumulate(std::begin(_dims), std::begin(_dims) + Rank, 1, std::multiplies<>{}); }
+    size_t size() const { return std::accumulate(std::begin(_dims), std::begin(_dims) + Rank, 1, std::multiplies<>{}); }
 
     bool full_view_of_underlying() const noexcept override { return true; }
 
