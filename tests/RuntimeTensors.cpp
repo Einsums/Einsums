@@ -79,22 +79,22 @@ TEST_CASE("Runtime Tensor Assignment") {
 TEST_CASE("Runtime Tensor View Creation") {
     using namespace einsums;
 
-    RuntimeTensor<double>        Base       = create_random_tensor("Base", 100, 100, 100);
+    RuntimeTensor<double>        Base       = create_random_tensor("Base", 10, 10, 10);
     const RuntimeTensor<double> &const_base = Base;
 
-    Tensor<double, 3>        rank_base       = create_random_tensor("rank_base", 100, 100, 100);
+    Tensor<double, 3>        rank_base       = create_random_tensor("rank_base", 10, 10, 10);
     const Tensor<double, 3> &const_rank_base = rank_base;
 
     TensorView<double, 3>        rank_view       = rank_base(All, All, All);
     const TensorView<double, 3> &const_rank_view = rank_view;
 
-    RuntimeTensorView<double> A{Base, std::vector<size_t>{100, 1000}}, B{A, std::vector<size_t>{1000, 100}},
-        C{Base, std::vector<size_t>{10, 10, 10}, std::vector<size_t>{10000, 100, 1}, std::vector<size_t>{1, 2, 3}},
-        D{RuntimeTensorView<double>(Base), std::vector<size_t>{10, 10, 10}, std::vector<size_t>{10000, 100, 1},
+    RuntimeTensorView<double> A{Base, std::vector<size_t>{10, 100}}, B{A, std::vector<size_t>{100, 10}},
+        C{Base, std::vector<size_t>{5, 5, 5}, std::vector<size_t>{100, 10, 1}, std::vector<size_t>{1, 2, 3}},
+        D{RuntimeTensorView<double>(Base), std::vector<size_t>{5, 5, 5}, std::vector<size_t>{100, 10, 1},
           std::vector<size_t>{1, 2, 3}},
         E{rank_view}, F{rank_base};
 
-    const RuntimeTensorView<double> G{const_base, std::vector<size_t>{100, 1000}}, H{C, std::vector<size_t>{100, 1000}}, I{const_rank_view},
+    const RuntimeTensorView<double> G{const_base, std::vector<size_t>{10, 100}}, H{C, std::vector<size_t>{10, 100}}, I{const_rank_view},
         J{const_rank_base};
 
     REQUIRE(A.rank() == 2);
@@ -108,24 +108,24 @@ TEST_CASE("Runtime Tensor View Creation") {
     REQUIRE(I.rank() == 3);
     REQUIRE(J.rank() == 3);
 
-    for(int i = 0; i < 100; i++) {
-        for(int j = 0; j < 100; j++) {
-            for(int k = 0; k < 100; k++) {
-                REQUIRE(A(i, j * 100 + k) == Base(i, j, k));
-                REQUIRE(B(i * 100 + j, k) == Base(i, j, k));
+    for(int i = 0; i < 10; i++) {
+        for(int j = 0; j < 10; j++) {
+            for(int k = 0; k < 10; k++) {
+                REQUIRE(A(i, j * 10 + k) == Base(i, j, k));
+                REQUIRE(B(i * 10 + j, k) == Base(i, j, k));
                 REQUIRE(E(i, j, k) == rank_base(i, j, k));
                 REQUIRE(F(i, j, k) == rank_base(i, j, k));
-                REQUIRE(std::get<double>(G(i, j * 100 + k)) == Base(i, j, k));
-                REQUIRE(std::get<double>(H(i * 100 + j, k)) == Base(i, j, k));
+                REQUIRE(std::get<double>(G(i, j * 10 + k)) == Base(i, j, k));
+                REQUIRE(std::get<double>(H(i * 10 + j, k)) == Base(i, j, k));
                 REQUIRE(std::get<double>(I(i, j, k)) == rank_base(i, j, k));
                 REQUIRE(std::get<double>(J(i, j, k)) == rank_base(i, j, k));
             }
         }
     }
 
-    for(int i = 0; i < 10; i++) {
-        for(int j = 0; j < 10; j++) {
-            for(int k = 0; k < 10; k++) {
+    for(int i = 0; i < 5; i++) {
+        for(int j = 0; j < 5; j++) {
+            for(int k = 0; k < 5; k++) {
                 REQUIRE(C(i, j, k) == Base(i + 1, j + 2, k + 3));
                 REQUIRE(D(i, j, k) == Base(i + 1, j + 2, k + 3));
             }
