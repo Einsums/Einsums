@@ -17,6 +17,7 @@
 #include "einsums/utility/ComplexTraits.hpp"
 #include "einsums/utility/TensorBases.hpp"
 #include "einsums/utility/TensorTraits.hpp"
+#include "einsums/utility/IndexUtils.hpp"
 #include "range/v3/range_fwd.hpp"
 #include "range/v3/view/cartesian_product.hpp"
 #include "range/v3/view/iota.hpp"
@@ -1007,6 +1008,52 @@ struct TensorView final : public virtual tensor_props::CoreTensorBase,
         : _name{std::move(name)}, _dims{dim} {
         // println(" here 5");
         common_initialization(other, args...);
+    }
+
+    /**
+     * Wrap a const pointer in a tensor view, specifying the dimensions.
+     *
+     * @param data The pointer to wrap.
+     * @param dims The dimensions of the view.
+     */
+    explicit TensorView(const T *data, const Dim<Rank> &dims) : _data{const_cast<T *>(data)}, _dims(dims), _full_view_of_underlying{true} {
+        tensor_algebra::detail::dims_to_strides(dims, _strides);
+    }
+
+    /**
+     * Wrap a pointer in a tensor view, specifying the dimensions.
+     *
+     * @param data The pointer to wrap.
+     * @param dims The dimensions of the view.
+     */
+    explicit TensorView(T *data, const Dim<Rank> &dims) : _data{const_cast<T *>(data)}, _dims(dims), _full_view_of_underlying{true} {
+        tensor_algebra::detail::dims_to_strides(dims, _strides);
+    }
+
+    /**
+     * Wrap a const pointer in a tensor view, specifying the dimensions and strides.
+     *
+     * @param data The pointer to wrap.
+     * @param dims The dimensions of the view.
+     * @param strides The strides for the view.
+     */
+    explicit TensorView(const T *data, const Dim<Rank> &dims, const Stride<Rank> &strides) : _data{const_cast<T *>(data)}, _dims(dims), _strides(strides) {
+        Stride<Rank> temp_strides;
+        tensor_algebra::detail::dims_to_strides(dims, temp_strides);
+        _full_view_of_underlying = (strides == temp_strides);
+    }
+
+    /**
+     * Wrap a const pointer in a tensor view, specifying the dimensions and strides.
+     *
+     * @param data The pointer to wrap.
+     * @param dims The dimensions of the view.
+     * @param strides The strides for the view.
+     */
+    explicit TensorView(T *data, const Dim<Rank> &dims, const Stride<Rank> &strides) : _data{const_cast<T *>(data)}, _dims(dims), _strides(strides) {
+        Stride<Rank> temp_strides;
+        tensor_algebra::detail::dims_to_strides(dims, temp_strides);
+        _full_view_of_underlying = (strides == temp_strides);
     }
 
     // template <typename... Args>
