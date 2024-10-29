@@ -145,3 +145,168 @@ TEST_CASE("Runtime Tensor View Creation") {
         }
     }
 }
+
+TEST_CASE("Runtime Tensor View Assignment") {
+    using namespace einsums;
+
+    RuntimeTensor<double> Base = create_random_tensor("Base", 10, 10, 10);
+    RuntimeTensor<double> Base_copy = Base;
+
+    RuntimeTensorView<double> A = Base(Range{5, 10}, Range{5, 10}, Range{5, 10});
+    const RuntimeTensorView<double> &const_A = A;
+
+    RuntimeTensor<double> B = create_random_tensor("B", 5, 5, 5);
+    const RuntimeTensor<double> &const_B = B;
+
+    RuntimeTensor<double> Base2 = create_random_tensor("Base2", 10, 10, 10);
+    RuntimeTensorView<double> C = Base2(Range{0, 5}, Range{0, 5}, Range{0, 5});
+    const RuntimeTensorView<double> &const_C = C;
+
+    Tensor<double, 3> D = create_random_tensor("D", 5, 5, 5);
+    TensorView<double, 3> E = D(All, All, All);
+
+    const Tensor<double, 3> &const_D = D;
+    const TensorView<double, 3> const_E = E;
+
+
+
+    A.zero();
+
+    for(int i = 0; i < 10; i++) {
+        for(int j = 0; j < 10; j++) {
+            for(int k = 0; k < 10; k++) {
+                if(i >= 5 && j >= 5 && k >= 5) {
+                    REQUIRE(Base(i, j, k) == 0);
+                } else {
+                    REQUIRE(Base(i, j, k) == Base_copy(i, j, k));
+                }
+            }
+        }
+    }
+
+    A = 1.0;
+
+    for(int i = 0; i < 10; i++) {
+        for(int j = 0; j < 10; j++) {
+            for(int k = 0; k < 10; k++) {
+                if(i >= 5 && j >= 5 && k >= 5) {
+                    REQUIRE(Base(i, j, k) == 1);
+                } else {
+                    REQUIRE(Base(i, j, k) == Base_copy(i, j, k));
+                }
+            }
+        }
+    }
+
+    A = B;
+
+    for(int i = 0; i < 10; i++) {
+        for(int j = 0; j < 10; j++) {
+            for(int k = 0; k < 10; k++) {
+                if(i >= 5 && j >= 5 && k >= 5) {
+                    REQUIRE(Base(i, j, k) == B(i - 5, j - 5, k - 5));
+                } else {
+                    REQUIRE(Base(i, j, k) == Base_copy(i, j, k));
+                }
+            }
+        }
+    }
+
+    A = C;
+
+    for(int i = 0; i < 10; i++) {
+        for(int j = 0; j < 10; j++) {
+            for(int k = 0; k < 10; k++) {
+                if(i >= 5 && j >= 5 && k >= 5) {
+                    REQUIRE(Base(i, j, k) == C(i - 5, j - 5, k - 5));
+                } else {
+                    REQUIRE(Base(i, j, k) == Base_copy(i, j, k));
+                }
+            }
+        }
+    }
+
+    A = const_B;
+
+    for(int i = 0; i < 10; i++) {
+        for(int j = 0; j < 10; j++) {
+            for(int k = 0; k < 10; k++) {
+                if(i >= 5 && j >= 5 && k >= 5) {
+                    REQUIRE(Base(i, j, k) == B(i - 5, j - 5, k - 5));
+                } else {
+                    REQUIRE(Base(i, j, k) == Base_copy(i, j, k));
+                }
+            }
+        }
+    }
+
+    A = const_C;
+
+    for(int i = 0; i < 10; i++) {
+        for(int j = 0; j < 10; j++) {
+            for(int k = 0; k < 10; k++) {
+                if(i >= 5 && j >= 5 && k >= 5) {
+                    REQUIRE(Base(i, j, k) == C(i - 5, j - 5, k - 5));
+                } else {
+                    REQUIRE(Base(i, j, k) == Base_copy(i, j, k));
+                }
+            }
+        }
+    }
+
+    A = D;
+
+    for(int i = 0; i < 10; i++) {
+        for(int j = 0; j < 10; j++) {
+            for(int k = 0; k < 10; k++) {
+                if(i >= 5 && j >= 5 && k >= 5) {
+                    REQUIRE(Base(i, j, k) == D(i - 5, j - 5, k - 5));
+                } else {
+                    REQUIRE(Base(i, j, k) == Base_copy(i, j, k));
+                }
+            }
+        }
+    }
+
+    A = E;
+
+    for(int i = 0; i < 10; i++) {
+        for(int j = 0; j < 10; j++) {
+            for(int k = 0; k < 10; k++) {
+                if(i >= 5 && j >= 5 && k >= 5) {
+                    REQUIRE(Base(i, j, k) == E(i - 5, j - 5, k - 5));
+                } else {
+                    REQUIRE(Base(i, j, k) == Base_copy(i, j, k));
+                }
+            }
+        }
+    }
+
+    A = const_D;
+
+    for(int i = 0; i < 10; i++) {
+        for(int j = 0; j < 10; j++) {
+            for(int k = 0; k < 10; k++) {
+                if(i >= 5 && j >= 5 && k >= 5) {
+                    REQUIRE(Base(i, j, k) == D(i - 5, j - 5, k - 5));
+                } else {
+                    REQUIRE(Base(i, j, k) == Base_copy(i, j, k));
+                }
+            }
+        }
+    }
+
+    A = const_E;
+
+    for(int i = 0; i < 10; i++) {
+        for(int j = 0; j < 10; j++) {
+            for(int k = 0; k < 10; k++) {
+                if(i >= 5 && j >= 5 && k >= 5) {
+                    REQUIRE(Base(i, j, k) == E(i - 5, j - 5, k - 5));
+                } else {
+                    REQUIRE(Base(i, j, k) == Base_copy(i, j, k));
+                }
+            }
+        }
+    }
+}
