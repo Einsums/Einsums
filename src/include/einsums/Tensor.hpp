@@ -15,6 +15,7 @@
 #include "einsums/Section.hpp"
 #include "einsums/State.hpp"
 #include "einsums/utility/ComplexTraits.hpp"
+#include "einsums/utility/IndexUtils.hpp"
 #include "einsums/utility/TensorBases.hpp"
 #include "einsums/utility/TensorTraits.hpp"
 #include "range/v3/range_fwd.hpp"
@@ -389,9 +390,8 @@ struct Tensor : public virtual tensor_props::CoreTensorBase,
      * @param dims The new dimensions of a tensor.
      */
     template <typename... Dims>
-    auto resize(Dims... dims) -> void
         requires((std::is_arithmetic_v<Dims> && ... && (sizeof...(Dims) == Rank)))
-    {
+    void resize(Dims... dims) {
         resize(Dim<Rank>{static_cast<size_t>(dims)...});
     }
 
@@ -435,7 +435,7 @@ struct Tensor : public virtual tensor_props::CoreTensorBase,
      *
      * @return T* A pointer to the data.
      */
-    auto data() -> T * override { return _data.data(); }
+    T *data() override { return _data.data(); }
 
     /**
      * @brief Returns a constant pointer to the data.
@@ -445,7 +445,7 @@ struct Tensor : public virtual tensor_props::CoreTensorBase,
      *
      * @return const T* An immutable pointer to the data.
      */
-    auto data() const -> const T * override { return _data.data(); }
+    const T *data() const override { return _data.data(); }
 
     /**
      * Returns a pointer into the tensor at the given location.
@@ -849,26 +849,26 @@ struct Tensor : public virtual tensor_props::CoreTensorBase,
 
 #undef OPERATOR
 
-    auto dim(int d) const -> size_t override {
+    size_t dim(int d) const override {
         // Add support for negative indices.
         if (d < 0) {
             d += Rank;
         }
         return _dims[d];
     }
-    auto dims() const -> Dim<Rank> override { return _dims; }
+    Dim<Rank> dims() const override { return _dims; }
 
     auto vector_data() const -> const Vector & { return _data; }
     auto vector_data() -> Vector & { return _data; }
 
-    [[nodiscard]] auto stride(int d) const noexcept -> size_t override {
+    size_t stride(int d) const noexcept override {
         if (d < 0) {
             d += Rank;
         }
         return _strides[d];
     }
 
-    auto strides() const noexcept -> Stride<Rank> override { return _strides; }
+    Stride<Rank> strides() const noexcept override { return _strides; }
 
     auto to_rank_1_view() const -> TensorView<T, 1> {
         size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
@@ -878,9 +878,9 @@ struct Tensor : public virtual tensor_props::CoreTensorBase,
     }
 
     // Returns the linear size of the tensor
-    [[nodiscard]] auto size() const { return std::accumulate(std::begin(_dims), std::begin(_dims) + Rank, 1, std::multiplies<>{}); }
+    [[nodiscard]] size_t size() const { return std::accumulate(std::begin(_dims), std::begin(_dims) + Rank, 1, std::multiplies<>{}); }
 
-    auto full_view_of_underlying() const noexcept -> bool override { return true; }
+    bool full_view_of_underlying() const noexcept override { return true; }
 
     const std::string &name() const override { return _name; };
 
@@ -914,8 +914,8 @@ struct Tensor<T, 0> : public virtual tensor_props::CoreTensorBase,
 
     explicit Tensor(Dim<0> _ignore) {}
 
-    auto               data() -> T               *override { return &_data; }
-    [[nodiscard]] auto data() const -> const T * override { return &_data; }
+    T       *data() override { return &_data; }
+    const T *data() const override { return &_data; }
 
     auto operator=(const Tensor<T, 0> &other) -> Tensor<T, 0> & {
         _data = other._data;
@@ -946,14 +946,14 @@ struct Tensor<T, 0> : public virtual tensor_props::CoreTensorBase,
     operator T() const { return _data; } // NOLINT
     operator T &() { return _data; }     // NOLINT
 
-    [[nodiscard]] auto name() const -> const std::string & override { return _name; }
-    void               set_name(const std::string &name) override { _name = name; }
+    const std::string &name() const override { return _name; }
+    void          set_name(const std::string &name) override { _name = name; }
 
-    [[nodiscard]] auto dim(int) const -> size_t override { return 1; }
+    size_t dim(int) const override { return 1; }
 
-    [[nodiscard]] auto dims() const -> Dim<0> override { return Dim<0>{}; }
+    Dim<0> dims() const override { return Dim<0>{}; }
 
-    [[nodiscard]] auto full_view_of_underlying() const noexcept -> bool override { return true; }
+    bool full_view_of_underlying() const noexcept override { return true; }
 
     size_t stride(int d) const override { return 0; }
 
@@ -1007,6 +1007,54 @@ struct TensorView final : public virtual tensor_props::CoreTensorBase,
         : _name{std::move(name)}, _dims{dim} {
         // println(" here 5");
         common_initialization(other, args...);
+    }
+
+    /**
+     * Wrap a const pointer in a tensor view, specifying the dimensions.
+     *
+     * @param data The pointer to wrap.
+     * @param dims The dimensions of the view.
+     */
+    explicit TensorView(const T *data, const Dim<Rank> &dims) : _data{const_cast<T *>(data)}, _dims(dims), _full_view_of_underlying{true} {
+        tensor_algebra::detail::dims_to_strides(dims, _strides);
+    }
+
+    /**
+     * Wrap a pointer in a tensor view, specifying the dimensions.
+     *
+     * @param data The pointer to wrap.
+     * @param dims The dimensions of the view.
+     */
+    explicit TensorView(T *data, const Dim<Rank> &dims) : _data{const_cast<T *>(data)}, _dims(dims), _full_view_of_underlying{true} {
+        tensor_algebra::detail::dims_to_strides(dims, _strides);
+    }
+
+    /**
+     * Wrap a const pointer in a tensor view, specifying the dimensions and strides.
+     *
+     * @param data The pointer to wrap.
+     * @param dims The dimensions of the view.
+     * @param strides The strides for the view.
+     */
+    explicit TensorView(const T *data, const Dim<Rank> &dims, const Stride<Rank> &strides)
+        : _data{const_cast<T *>(data)}, _dims(dims), _strides(strides) {
+        Stride<Rank> temp_strides;
+        tensor_algebra::detail::dims_to_strides(dims, temp_strides);
+        _full_view_of_underlying = (strides == temp_strides);
+    }
+
+    /**
+     * Wrap a const pointer in a tensor view, specifying the dimensions and strides.
+     *
+     * @param data The pointer to wrap.
+     * @param dims The dimensions of the view.
+     * @param strides The strides for the view.
+     */
+    explicit TensorView(T *data, const Dim<Rank> &dims, const Stride<Rank> &strides)
+        : _data{const_cast<T *>(data)}, _dims(dims), _strides(strides) {
+        Stride<Rank> temp_strides;
+        tensor_algebra::detail::dims_to_strides(dims, temp_strides);
+        _full_view_of_underlying = (strides == temp_strides);
     }
 
     // template <typename... Args>
@@ -1101,8 +1149,8 @@ struct TensorView final : public virtual tensor_props::CoreTensorBase,
 
 #undef OPERATOR
 
-    auto data() -> T * override { return &_data[0]; }
-    auto data() const -> const T * override { return static_cast<const T *>(&_data[0]); }
+    T       *data() override { return &_data[0]; }
+    const T *data() const override { return static_cast<const T *>(&_data[0]); }
     template <typename... MultiIndex>
     auto data(MultiIndex... index) const -> T * {
         assert(sizeof...(MultiIndex) <= _dims.size());
@@ -1147,23 +1195,23 @@ struct TensorView final : public virtual tensor_props::CoreTensorBase,
         return _data[ordinal];
     }
 
-    [[nodiscard]] auto dim(int d) const -> size_t override {
+    size_t dim(int d) const override {
         if (d < 0)
             d += Rank;
         return _dims[d];
     }
-    auto dims() const -> Dim<Rank> override { return _dims; }
+    Dim<Rank> dims() const override { return _dims; }
 
-    [[nodiscard]] auto name() const -> const std::string & override { return _name; }
+    const std::string &name() const override { return _name; }
     void               set_name(const std::string &name) override { _name = name; }
 
-    [[nodiscard]] auto stride(int d) const noexcept -> size_t override {
+    size_t stride(int d) const noexcept override {
         if (d < 0)
             d += Rank;
         return _strides[d];
     }
 
-    auto strides() const noexcept -> Stride<Rank> override { return _strides; }
+    Stride<Rank> strides() const noexcept override { return _strides; }
 
     auto to_rank_1_view() const -> TensorView<T, 1> {
         if constexpr (Rank == 1) {
@@ -1183,9 +1231,9 @@ struct TensorView final : public virtual tensor_props::CoreTensorBase,
         }
     }
 
-    [[nodiscard]] auto full_view_of_underlying() const noexcept -> bool override { return _full_view_of_underlying; }
+    bool full_view_of_underlying() const noexcept override { return _full_view_of_underlying; }
 
-    [[nodiscard]] auto size() const { return std::accumulate(std::begin(_dims), std::begin(_dims) + Rank, 1, std::multiplies<>{}); }
+    size_t size() const { return std::accumulate(std::begin(_dims), std::begin(_dims) + Rank, 1, std::multiplies<>{}); }
 
   private:
     auto common_initialization(const T *other) {
@@ -1605,8 +1653,8 @@ struct DiskTensor final : public virtual tensor_props::DiskTensorBase,
 
     // Provides ability to store another tensor to a part of a disk tensor.
 
-    [[nodiscard]] auto dim(int d) const -> size_t override { return _dims[d]; }
-    auto               dims() const -> Dim<Rank> override { return _dims; }
+    size_t    dim(int d) const override { return _dims[d]; }
+    Dim<Rank> dims() const override { return _dims; }
 
     [[nodiscard]] auto existed() const -> bool { return _existed; }
 
@@ -1614,11 +1662,11 @@ struct DiskTensor final : public virtual tensor_props::DiskTensorBase,
 
     // void _write(Tensor<T, Rank> &data) { h5::write(disk(), data); }
 
-    [[nodiscard]] auto name() const -> const std::string & override { return _name; }
+    const std::string &name() const override { return _name; }
 
     void set_name(const std::string &new_name) override { _name = new_name; }
 
-    [[nodiscard]] auto stride(int d) const noexcept -> size_t { return _strides[d]; }
+    size_t stride(int d) const noexcept { return _strides[d]; }
 
     // This creates a Disk object with its Rank being equal to the number of All{} parameters
     // Range is not inclusive. Range{10, 11} === size of 1
@@ -1812,8 +1860,8 @@ struct DiskView final : public virtual tensor_props::DiskTensorBase,
         return _tensor(std::forward<MultiIndex>(index)...);
     }
 
-    [[nodiscard]] auto dim(int d) const -> size_t override { return _tensor.dim(d); }
-    auto               dims() const -> Dim<ViewRank> override { return _tensor.dims(); }
+    size_t    dim(int d) const override { return _tensor.dim(d); }
+    Dim<ViewRank> dims() const override { return _tensor.dims(); }
 
     const std::string &name() const override { return _name; }
     void               set_name(const std::string &new_name) override { _name = new_name; }
@@ -1907,7 +1955,7 @@ DiskTensor(h5::fd_t &file, std::string name, Chunk<sizeof...(Dims)> chunk, Dims.
  * @return A new tensor. By default memory is not initialized to anything. It may be filled with garbage.
  */
 template <typename Type = double, typename... Args>
-auto create_tensor(const std::string name, Args... args) {
+auto create_tensor(const std::string &name, Args... args) {
     return Tensor<Type, sizeof...(Args)>{name, args...};
 }
 
@@ -1935,7 +1983,7 @@ auto create_tensor(Args... args) {
  * @return A new disk tensor.
  */
 template <typename Type = double, typename... Args>
-auto create_disk_tensor(h5::fd_t &file, const std::string name, Args... args) -> DiskTensor<Type, sizeof...(Args)> {
+auto create_disk_tensor(h5::fd_t &file, const std::string &name, Args... args) -> DiskTensor<Type, sizeof...(Args)> {
     return DiskTensor<Type, sizeof...(Args)>{file, name, args...};
 }
 

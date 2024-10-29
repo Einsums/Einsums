@@ -138,6 +138,7 @@ TEST_CASE("Tensor Invert") {
 }
 
 TEST_CASE("TensorView creation", "[tensor]") {
+    using namespace einsums;
     // With the aid of deduction guides we can choose to not specify the rank on the tensor
     einsums::Tensor     A("A", 3, 3, 3);
     einsums::TensorView viewA(A, einsums::Dim{3, 9});
@@ -157,9 +158,35 @@ TEST_CASE("TensorView creation", "[tensor]") {
     for (int i = 0, ij = 0; i < 3; i++)
         for (int j = 0; j < 9; j++, ij++)
             REQUIRE(viewA(i, j) == ij);
+
+    double *array = new double[100];
+
+    for (int i = 0; i < 100; i++) {
+        array[i] = i;
+    }
+
+    // Drop down in scope to make sure the view is deleted before the array it is viewing.
+    {
+        TensorView<double, 2>       view1{array, Dim<2>{10, 10}}, view2{array, Dim{10, 10}, Stride{10, 1}};
+        const TensorView<double, 2> const_view1{(const double *)array, Dim<2>{10, 10}},
+            const_view2{(const double *)array, Dim{10, 10}, Stride{10, 1}};
+
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                REQUIRE(view1(i, j) == array[10 * i + j]);
+                REQUIRE(const_view1(i, j) == array[10 * i + j]);
+                REQUIRE(view2(i, j) == array[10 * i + j]);
+                REQUIRE(const_view2(i, j) == array[10 * i + j]);
+            }
+        }
+    }
+
+    delete[] array;
 }
 
 TEST_CASE("Tensor-2D HDF5") {
+    using namespace einsums;
+
     einsums::Tensor A("A", 3, 3);
 
     for (int i = 0, ij = 0; i < 3; i++) {
