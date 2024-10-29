@@ -1955,7 +1955,7 @@ DiskTensor(h5::fd_t &file, std::string name, Chunk<sizeof...(Dims)> chunk, Dims.
  * @return A new tensor. By default memory is not initialized to anything. It may be filled with garbage.
  */
 template <typename Type = double, typename... Args>
-auto create_tensor(const std::string name, Args... args) {
+auto create_tensor(const std::string &name, Args... args) {
     return Tensor<Type, sizeof...(Args)>{name, args...};
 }
 
@@ -1983,7 +1983,7 @@ auto create_tensor(Args... args) {
  * @return A new disk tensor.
  */
 template <typename Type = double, typename... Args>
-auto create_disk_tensor(h5::fd_t &file, const std::string name, Args... args) -> DiskTensor<Type, sizeof...(Args)> {
+auto create_disk_tensor(h5::fd_t &file, const std::string &name, Args... args) -> DiskTensor<Type, sizeof...(Args)> {
     return DiskTensor<Type, sizeof...(Args)>{file, name, args...};
 }
 
