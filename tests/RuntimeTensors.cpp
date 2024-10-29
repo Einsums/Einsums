@@ -99,6 +99,10 @@ TEST_CASE("Runtime Tensor View Creation") {
     const RuntimeTensorView<double> G{const_base, std::vector<size_t>{10, 100}}, H{const_base_view, std::vector<size_t>{100, 10}},
         I{const_rank_view}, J{const_rank_base};
 
+    RuntimeTensorView<double> K = A(All, Range{0, 10});
+
+    const RuntimeTensorView<double> L = G(All, Range{0, 10});
+
     REQUIRE(A.rank() == 2);
     REQUIRE(B.rank() == 2);
     REQUIRE(C.rank() == 3);
@@ -131,6 +135,13 @@ TEST_CASE("Runtime Tensor View Creation") {
                 REQUIRE(C(i, j, k) == Base(i + 1, j + 2, k + 3));
                 REQUIRE(D(i, j, k) == Base(i + 1, j + 2, k + 3));
             }
+        }
+    }
+
+    for (int i = 0; i < 10; i++) {
+        for (int j = 0; j < 10; j++) {
+            REQUIRE(K(i, j) == A(i, j));
+            REQUIRE(std::get<double>(L(i, j)) == std::get<double>(G(i, j)));
         }
     }
 }

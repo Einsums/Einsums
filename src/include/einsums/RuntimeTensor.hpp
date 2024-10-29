@@ -961,7 +961,37 @@ class EINSUMS_EXPORT RuntimeTensorView : public virtual tensor_props::TensorView
 
     template <typename... Args>
         requires((!std::is_integral_v<Args>) || ...)
-    RuntimeTensorView<T> operator()(Args... args) const THROWS(einsums::EinsumsException) {
+    const RuntimeTensorView<T> operator()(Args... args) const THROWS(einsums::EinsumsException) {
+        if (sizeof...(Args) > rank()) {
+            throw EINSUMSEXCEPTION("Too many indices passed to subscript operator!");
+        }
+
+        std::tuple<Args...> arg_tuple = std::make_tuple(args...);
+        std::vector<Range>  slices(sizeof...(Args));
+
+        for_sequence<sizeof...(Args)>([&](auto n) {
+            using Arg = std::tuple_element_t<n, std::tuple<Args...>>;
+            if constexpr (std::is_same_v<Arg, AllT>) {
+                slices[n] = Range{0, this->dim(n)};
+            } else if constexpr (std::is_same_v<Arg, Range>) {
+                slices[n] = std::get<n>(arg_tuple);
+            } else if constexpr (std::is_integral_v<Arg>) {
+                auto index = std::get<n>(arg_tuple);
+
+                if (index < 0) {
+                    index += this->dim(n);
+                }
+
+                slices[n] = Range{-1, index};
+            }
+        });
+
+        return (*this)(slices);
+    }
+
+    template <typename... Args>
+        requires((!std::is_integral_v<Args>) || ...)
+    RuntimeTensorView<T> operator()(Args... args) THROWS(einsums::EinsumsException) {
         if (sizeof...(Args) > rank()) {
             throw EINSUMSEXCEPTION("Too many indices passed to subscript operator!");
         }
