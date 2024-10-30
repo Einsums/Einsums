@@ -259,6 +259,10 @@ function(add_einsums_pymod name)
         INSTALL_RPATH                   "${_LIB_RPATH};${CMAKE_INSTALL_RPATH};${_LIB_RPATH}/../"
     )
 
+    if(APPLE)
+        target_compile_options(${name} "-undefined dynamic_lookup")
+    endif()
+
     if(_arg_MODULENAME)
         set_target_properties(${name} PROPERTIES
             OUTPUT_NAME "${_arg_MODULENAME}"
