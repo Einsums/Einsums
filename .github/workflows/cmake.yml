@@ -186,7 +186,7 @@ jobs:
           fi
           
           pytest "${{github.workspace}}/tests/test_python.py"
-          pytest "${{github.workspace}}/tests"
+          pytest -s "${{github.workspace}}/tests"
 
       - name: Test (find_package) - consume installation
         shell: bash -l {0}
