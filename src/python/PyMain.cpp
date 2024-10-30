@@ -62,21 +62,21 @@ void einsums::python::export_python_base(pybind11::module_ &mod) {
 }
 
 PYBIND11_MODULE(core, mod) {
-    mod.doc() = einsums_docstring;
+    //mod.doc() = einsums_docstring;
 
-    export_python_base(mod);
+    //export_python_base(mod);
     //export_tensor_algebra(mod);
 #ifdef __HIP__
     export_gpu_view(mod);
 #endif
-    export_tensor_typeless(mod);
+    //export_tensor_typeless(mod);
     //export_tensor<float>(mod);
     //export_tensor<double>(mod);
     //export_tensor<std::complex<float>>(mod);
     //export_tensor<std::complex<double>>(mod);
 
 #ifdef EINSUMS_ENABLE_TESTING
-    export_python_testing(mod);
+    //export_python_testing(mod);
 #    ifdef __HIP__
     export_python_testing_gpu(mod);
 #    endif
