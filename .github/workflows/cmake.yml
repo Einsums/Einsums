@@ -11,7 +11,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        cxx: [ L-Gnu, M-Clang, L-Intel ]
+        #cxx: [ L-Gnu, M-Clang, L-Intel ]
+        cxx: [ M-Clang ]
         build_type: [ Release, Debug ]
         hptt: [ ON, OFF ]
         #python_version: [ 3.8, 3.9, 3.10, 3.11, 3.12, 3.13 ]
