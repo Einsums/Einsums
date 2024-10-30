@@ -201,7 +201,7 @@ using ErrorTbd                         = hip_exception<hipErrorTbd>;
  * @tparam error The status code handled by this exception.
  */
 template <hipblasStatus_t error>
-struct hipblas_exception : public std::exception {
+struct EINSUMS_EXPORT hipblas_exception : public std::exception {
   private:
     ::std::string message;
 
@@ -308,7 +308,7 @@ EINSUMS_EXPORT const char *hipsolverStatusToString(hipsolverStatus_t status);
  * @tparam error The status code wrapped by the object.
  */
 template <hipsolverStatus_t error>
-struct hipsolver_exception : public std::exception {
+struct EINSUMS_EXPORT hipsolver_exception : public std::exception {
   private:
     ::std::string message;
 
