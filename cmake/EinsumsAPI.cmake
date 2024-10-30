@@ -260,7 +260,7 @@ function(add_einsums_pymod name)
     )
 
     if(APPLE)
-        target_compile_options(${name} "-undefined dynamic_lookup")
+        target_compile_options(${name} PUBLIC -undefined dynamic_lookup)
     endif()
 
     if(_arg_MODULENAME)
