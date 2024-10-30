@@ -46,6 +46,7 @@ jobs:
             #- dpcpp_linux-64
             #- mkl
             - pybind11
+            - pytest
             - numpy
           EOF
           if [[ "${{ runner.os }}" == "Linux" ]]; then
