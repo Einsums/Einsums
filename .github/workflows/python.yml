@@ -12,9 +12,7 @@ jobs:
       fail-fast: false
       matrix:
         cxx: [ L-Gnu, M-Clang, L-Intel, W-ClangCL ]
-        # Here, we specify the oldest version, the newest version, and one in between.
-        # If it works for these, it should work for all versions in this range.
-        python_version: [ "3.9", "3.11", "3.13" ]
+        python_version: [ "3.10", "3.11", "3.12", "3.13" ]
         include:
           - cmargs: ""
           - testargs: ""
