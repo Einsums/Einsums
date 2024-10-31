@@ -165,6 +165,7 @@ jobs:
             -D EINSUMS_BUILD_PYTHON="${{matrix.python_version}}" \
             -D CMAKE_INSTALL_PREFIX="${{github.workspace}}/installed" \
             -D CMAKE_PREFIX_PATH="${CONDA_PREFIX}" \
+            -D EINSUMS_COVERAGE=ON \
             ${{ matrix.cmargs }}
 
       - name: Build & Install
@@ -181,7 +182,17 @@ jobs:
             export PYTHONPATH=$PYTHONPATH:${{github.workspace}}/installed/lib:$CONDA_PREFIX/lib
           fi
           
-          pytest "${{github.workspace}}/tests"
+          pytest "${{github.workspace}}/tests" --cov="${{github.workspace}}/tests" --cov="${{github.workspace}}/einsums" --cov-report=xml
+
+      - name: Upload Python coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          directory: "${{github.workspace}}"
+          working-directory: "${{github.workspace}}"
+          disable_search: true
+          flags: python
+          file: ${{github.workspace}}/coverage.xml
+          token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Test (find_package) - consume installation
         shell: bash -l {0}
