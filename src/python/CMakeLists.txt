@@ -1,20 +1,23 @@
 if(__VERSION)
-    set(PYBIND11_PYTHON_VERSION ${__VERSION} CACHE STRING "Python version for Pybind11")
-    find_package(Python "${__VERSION}" EXACT COMPONENTS Interpreter Development REQUIRED)
+    if(NOT EINSUMS_PYBIND11_SUBDIR)
+        find_package(Python "${__VERSION}" EXACT COMPONENTS Interpreter Development REQUIRED)
+    endif()
     set(__core_name "core-${__VERSION}")
     set(__except_name "gpu_except-${__VERSION}")
+    set(__pybind_dir "pybind11-${__VERSION}")
 else()
     if(NOT EINSUMS_PYBIND11_SUBDIR)
         find_package(Python COMPONENTS Interpreter Development REQUIRED)
     endif()
     set(__core_name "core")
     set(__except_name "gpu_except")
+    set(__pybind_dir "pybind11")
 endif()
 
 if(NOT EINSUMS_PYBIND11_SUBDIR)
-    find_package(pybind11 CONFIG REQUIRED)
-    message("Found Python version ${Python_VERSION}")
+    find_package(pybind11 REQUIRED)
 endif()
+message("Found Python version ${Python_VERSION}")
 
 add_einsums_pymod(${__core_name} SHARED MODULENAME core
     SOURCES

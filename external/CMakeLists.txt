@@ -57,19 +57,21 @@ endif()
 
 FetchContent_MakeAvailable(range-v3)
 
-
+set(EINSUMS_PYBIND11_SUBDIR OFF PARENT_SCOPE)
 if(EINSUMS_BUILD_PYTHON STREQUAL "ON")
     message("Finding default Python")
-    find_package(Python COMPONENTS Interpreter Development REQUIRED)
-    set(PYBIND11_PYTHON_VERSION ${Python_VERSION})
-    set(PYBIND11_FINDPYTHON OFF)
 
     add_subdirectory(pybind11)
     set(EINSUMS_PYBIND11_SUBDIR ON PARENT_SCOPE)
-elseif(EINSUMS_BUILD_PYTHON MATCHES "3(\\.[0-9]+)*")
-    if(APPLE)
-        message(FATAL_ERROR "Setting Python version not currently available on MacOS.")
-    endif()
+elseif(EINSUMS_BUILD_PYTHON MATCHES "^3(\\.[0-9]+)*$")
+    message("Finding Python version ${EINSUMS_BUILD_PYTHON}")
+    find_package(Python ${EINSUMS_BUILD_PYTHON} EXACT COMPONENTS Interpreter Development REQUIRED)
+
+    set(PYBIND11_PYTHON_VERSION ${EINSUMS_BUILD_PYTHON})
+    unset(PYBIND11_FINDPYTHON)
+
+    add_subdirectory(pybind11)
+    set(EINSUMS_PYBIND11_SUBDIR ON PARENT_SCOPE)
 elseif(EINSUMS_BUILD_PYTHON MATCHES "(;|3(\\.[0-9]+)*)+")
     if(APPLE)
         message(FATAL_ERROR "Setting multiple versions of Python not currently available on MacOS.")

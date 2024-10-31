@@ -66,8 +66,8 @@ einsums_option(EINSUMS_COVERAGE BOOL "Enable code coverage checking" OFF)
 einsums_option(EINSUMS_FAST_INTRINSICS BOOL "When generating code for GPU, use the fast math intrinsics (__expf, __sinf, etc.) \
 rather than the normal math functions (expf, sinf, etc.) for single-precision floats and single-precision complex floats." OFF)
 einsums_option(EINSUMS_BUILD_PYTHON STRING "Can be either a Python version to set the Python version to compile for, the string ON to compile \
-for your current Python version, a list of Python versions separated by semicolons, or the string OFF to not build the Python extension module. \
-On MacOS, the Python version can not be specified, so the only accepted values are ON or OFF." ON)
+for your current Python version, or the string OFF to not build the Python extension module. If the Pybind11 module is stored externally and can \
+be found by find_package(pybind11), then multiple Python versions can be specified, each separated by a semicolon." ON)
 
 add_feature_info(EINSUMS_CONTINUOUSLY_TEST_EINSUM ${EINSUMS_CONTINUOUSLY_TEST_EINSUM} "Test every call to einsum. EXPENSIVE!")
 add_feature_info(EINSUMS_TEST_EINSUM_ABORT ${EINSUMS_TEST_EINSUM_ABORT} "Abort execution if an error is found")
