@@ -93,7 +93,7 @@ jobs:
             - zlib
             #- dpcpp_linux-64
             #- mkl
-            - pybind11
+            #- pybind11
             - pytest
             - numpy
           EOF
