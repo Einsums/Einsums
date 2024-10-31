@@ -147,7 +147,7 @@ jobs:
             -G Ninja \
             -D CMAKE_BUILD_TYPE=Release \
             -D EINSUMS_SHOW_WARNING=OFF \
-            -D EINSUMS_USE_HPTT=ON \
+            -D EINSUMS_USE_HPTT=OFF \
             -D EINSUMS_STATIC_BUILD=ON \
             -D EINSUMS_BUILD_PYTHON="${{matrix.python_version}}" \
             -D CMAKE_INSTALL_PREFIX="${{github.workspace}}/installed" \
