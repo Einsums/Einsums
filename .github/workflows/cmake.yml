@@ -176,7 +176,7 @@ jobs:
         working-directory: "${{github.workspace}}/build"
         run: ctest --rerun-failed --output-on-failure
 
-      - name: Test (pytest) - unit tests
+      - name: Test (pytest) - pytest working
         working-directory: "${{github.workspace}}/installed"
         run: |
           if [[ "${{runner.os}}" == "Windows" ]]; then
@@ -186,7 +186,28 @@ jobs:
           fi
           
           pytest "${{github.workspace}}/tests/test_python.py"
-          pytest -s "${{github.workspace}}/tests"
+
+      - name: Test (Python) - import working
+        working-directory: "${{github.workspace}}/installed"
+        run: |
+          if [[ "${{runner.os}}" == "Windows" ]]; then
+            export PYTHONPATH="$PYTHONPATH;${{github.workspace}}/installed/lib;$CONDA_PREFIX/lib"
+          else
+            export PYTHONPATH=$PYTHONPATH:${{github.workspace}}/installed/lib:$CONDA_PREFIX/lib
+          fi
+          
+          python "${{github.workspace}}/tests/test_import.py"
+
+      - name: Test (pytest) - unit tests
+        working-directory: "${{github.workspace}}/installed"
+        run: |
+          if [[ "${{runner.os}}" == "Windows" ]]; then
+            export PYTHONPATH="$PYTHONPATH;${{github.workspace}}/installed/lib;$CONDA_PREFIX/lib"
+          else
+            export PYTHONPATH=$PYTHONPATH:${{github.workspace}}/installed/lib:$CONDA_PREFIX/lib
+          fi
+          
+          pytest -s -v "${{github.workspace}}/tests"
 
       - name: Test (find_package) - consume installation
         shell: bash -l {0}
