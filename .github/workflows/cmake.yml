@@ -11,8 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        #cxx: [ L-Gnu, M-Clang, L-Intel ]
-        cxx: [ M-Clang ]
+        cxx: [ L-Gnu, M-Clang, L-Intel ]
         build_type: [ Release, Debug ]
         hptt: [ ON, OFF ]
         #python_version: [ 3.8, 3.9, 3.10, 3.11, 3.12, 3.13 ]
@@ -93,7 +92,7 @@ jobs:
             - zlib
             #- dpcpp_linux-64
             #- mkl
-            #- pybind11
+            - pybind11
             - pytest
             - numpy
           EOF
@@ -178,28 +177,6 @@ jobs:
         working-directory: "${{github.workspace}}/build"
         run: ctest --rerun-failed --output-on-failure
 
-      - name: Test (pytest) - pytest working
-        working-directory: "${{github.workspace}}/installed"
-        run: |
-          if [[ "${{runner.os}}" == "Windows" ]]; then
-            export PYTHONPATH="$PYTHONPATH;${{github.workspace}}/installed/lib;$CONDA_PREFIX/lib"
-          else
-            export PYTHONPATH=$PYTHONPATH:${{github.workspace}}/installed/lib:$CONDA_PREFIX/lib
-          fi
-          
-          pytest "${{github.workspace}}/tests/test_python.py"
-
-      - name: Test (Python) - import working
-        working-directory: "${{github.workspace}}/installed"
-        run: |
-          if [[ "${{runner.os}}" == "Windows" ]]; then
-            export PYTHONPATH="$PYTHONPATH;${{github.workspace}}/installed/lib;$CONDA_PREFIX/lib"
-          else
-            export PYTHONPATH=$PYTHONPATH:${{github.workspace}}/installed/lib:$CONDA_PREFIX/lib
-          fi
-          
-          python "${{github.workspace}}/tests/test_import.py"
-
       - name: Test (pytest) - unit tests
         working-directory: "${{github.workspace}}/installed"
         run: |
@@ -209,7 +186,7 @@ jobs:
             export PYTHONPATH=$PYTHONPATH:${{github.workspace}}/installed/lib:$CONDA_PREFIX/lib
           fi
           
-          pytest -s -v "${{github.workspace}}/tests"
+          pytest "${{github.workspace}}/tests"
 
       - name: Test (find_package) - consume installation
         shell: bash -l {0}
