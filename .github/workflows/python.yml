@@ -12,8 +12,8 @@ jobs:
       fail-fast: false
       matrix:
         cxx: [ L-Gnu, M-Clang, L-Intel ]
-        build_type: [ Release, Debug ]
-        python_version: [ 3.9, 3.10, 3.11, 3.12, 3.13 ]
+        build_type: [ Release ]
+        python_version: [ "3.9", "3.10", "3.11", "3.12", "3.13" ]
         include:
           - cmargs: ""
           - testargs: ""
