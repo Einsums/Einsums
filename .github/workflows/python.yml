@@ -69,6 +69,7 @@ jobs:
             - fmt
             - range-v3
             - blas-devel
+            - lcov
             #WMKL- mkl-devel=2023.2.0
             #MKL- libblas=*=*mkl
             #ACC- libblas=*=*accelerate
@@ -81,6 +82,7 @@ jobs:
             - pybind11
             - pytest
             - numpy
+            - pytest-cov
           EOF
           if [[ "${{ runner.os }}" == "Linux" ]]; then
             :
