@@ -13,7 +13,7 @@ jobs:
       matrix:
         cxx: [ L-Gnu, M-Clang, L-Intel ]
         build_type: [ Release, Debug ]
-        hptt: [ ON, OFF ]
+        python_version: [ 3.9, 3.10, 3.11, 3.12, 3.13 ]
         include:
           - cmargs: ""
           - testargs: ""
@@ -56,15 +56,13 @@ jobs:
         exclude:
           - cxx: L-Intel
             build_type: Debug
-    name: "Build • ${{ matrix.cxx }} • ${{ matrix.build_type }} • HPTT=${{ matrix.hptt }}"
+    name: "Python ${{matrix.python_version}} • ${{ matrix.cxx }} • ${{ matrix.build_type }}"
     runs-on: ${{matrix.os}}
     defaults:
       run:
         shell: bash -el {0}
     steps:
       - uses: actions/checkout@v3
-        with:
-          submodules: 'recursive'
 
       - name: Write a Conda Env File
         run: |
@@ -91,6 +89,9 @@ jobs:
             - zlib
             #- dpcpp_linux-64
             #- mkl
+            - pybind11
+            - pytest
+            - numpy
           EOF
           if [[ "${{ runner.os }}" == "Linux" ]]; then
             :
@@ -132,6 +133,7 @@ jobs:
           miniforge-variant: Mambaforge
           use-mamba: true
           channels: conda-forge
+          python-version: "${{matrix.python_version}}"
 
       # Step is unnecessary; remove step for debugging.
       - name: Confound Environment - test fetched everything
@@ -158,9 +160,9 @@ jobs:
             -G Ninja \
             -D CMAKE_BUILD_TYPE=${{matrix.build_type}} \
             -D EINSUMS_SHOW_WARNING=OFF \
-            -D EINSUMS_USE_HPTT=${{matrix.hptt}} \
-            -D EINSUMS_STATIC_BUILD=${{matrix.hptt}} \
-            -D EINSUMS_BUILD_PYTHON=OFF \
+            -D EINSUMS_USE_HPTT=ON \
+            -D EINSUMS_STATIC_BUILD=ON \
+            -D EINSUMS_BUILD_PYTHON="${{matrix.python_version}}" \
             -D CMAKE_INSTALL_PREFIX="${{github.workspace}}/installed" \
             -D CMAKE_PREFIX_PATH="${CONDA_PREFIX}" \
             ${{ matrix.cmargs }}
@@ -170,9 +172,16 @@ jobs:
           cmake --build "${{github.workspace}}/build" --config ${{matrix.build_type}} --target install
           cat "${{github.workspace}}/installed/share/cmake/Einsums/EinsumsConfig.cmake"
 
-      - name: Test (CTest) - unit tests
-        working-directory: "${{github.workspace}}/build"
-        run: ctest --rerun-failed --output-on-failure
+      - name: Test (pytest) - unit tests
+        working-directory: "${{github.workspace}}/installed"
+        run: |
+          if [[ "${{runner.os}}" == "Windows" ]]; then
+            export PYTHONPATH="$PYTHONPATH;${{github.workspace}}/installed/lib;$CONDA_PREFIX/lib"
+          else
+            export PYTHONPATH=$PYTHONPATH:${{github.workspace}}/installed/lib:$CONDA_PREFIX/lib
+          fi
+          
+          pytest "${{github.workspace}}/tests"
 
       - name: Test (find_package) - consume installation
         shell: bash -l {0}
