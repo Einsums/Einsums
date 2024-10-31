@@ -134,9 +134,6 @@ function(add_einsums_library name)
         LINK_DEPENDS_NO_SHARED          ON
         SOURCES_DIR                     "${CMAKE_CURRENT_SOURCE_DIR}"
         VERSION                         "${EINSUMS_VERSION}"
-        SOVERSION                       "${EINSUMS_VERSION_MAJOR}"
-        MACHO_CURRENT_VERSION           ${EINSUMS_VERSION}
-        MACHO_COMPATIBILITY_VERSION     ${EINSUMS_VERSION_COMPAT}
         CXX_EXTENSIONS                  OFF
         C_VISIBILITY_PRESET             hidden
         CXX_VISIBILITY_PRESET           hidden
@@ -151,6 +148,14 @@ function(add_einsums_library name)
         ARCHIVE_OUTPUT_DIRECTORY        "${_output_binary_dir}/${EINSUMS_LIBRARY_ARCHIVE_PATH}"
         ${_arg_PROPERTIES}
     )
+
+    if(library_type STREQUAL SHARED)
+        set_target_properties(${name} PROPERTIES
+            SOVERSION                       "${EINSUMS_VERSION_MAJOR}"
+            MACHO_CURRENT_VERSION           ${EINSUMS_VERSION}
+            MACHO_COMPATIBILITY_VERSION     ${EINSUMS_VERSION_COMPAT}
+        )
+    endif()
 
     unset(NAMELINK_OPTION)
     if ((library_type STREQUAL "SHARED") OR (library_type STREQUAL "MODULE"))
