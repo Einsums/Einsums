@@ -19,7 +19,13 @@ if(NOT EINSUMS_PYBIND11_SUBDIR)
 endif()
 message("Found Python version ${Python_VERSION}")
 
-add_einsums_pymod(${__core_name} SHARED MODULENAME core
+if(NOT APPLE)
+    set(__libtype "SHARED")
+else()
+    set(__libtype "MODULE")
+endif()
+
+add_einsums_pymod(${__core_name} ${__libtype} MODULENAME core
     SOURCES
         PyMain.cpp
         PyTensorAlgebra.cpp
@@ -28,7 +34,7 @@ add_einsums_pymod(${__core_name} SHARED MODULENAME core
 )
 
 if(EINSUMS_BUILD_HIP)
-add_einsums_pymod(${__except_name} SHARED MODULENAME gpu_except
+add_einsums_pymod(${__except_name} ${__libtype} MODULENAME gpu_except
     SOURCES
         PyGpuExceptions.hip
     PUBLIC_DEPENDS einsums
@@ -57,22 +63,6 @@ extend_einsums_target(${__core_name}
         EINSUMS_ENABLE_TESTING AND EINSUMS_BUILD_HIP
 )
 
-foreach(define IN LISTS defines)
-    extend_einsums_target(
-        ${__core_name}
-        DEFINES ${define}
-        CONDITION ${define}
-    )
-endforeach()
-
-set_target_properties(einsums PROPERTIES ${ein}_VERSION ${Einsums_VERSION})
-set(export_properties "Einsums_VERSION")
-set_property(
-        TARGET einsums
-        APPEND
-        PROPERTY EXPORT_PROPERTIES "${export_properties}"
-)
-
 # All need to be LIBRARY_BASE_PATH because Windows thinks this is a runtime artifact, not a library.
 install(
     TARGETS ${__core_name} 
@@ -83,14 +73,6 @@ install(
 )
 
 if(EINSUMS_BUILD_HIP)
-    foreach(define IN LISTS defines)
-    extend_einsums_target(
-        ${__except_name}
-        DEFINES ${define}
-        CONDITION ${define}
-    )
-    endforeach()
-
     # All need to be LIBRARY_BASE_PATH because Windows thinks this is a runtime artifact, not a library.
     install(
         TARGETS ${__except_name} 
