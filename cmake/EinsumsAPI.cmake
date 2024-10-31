@@ -133,7 +133,6 @@ function(add_einsums_library name)
     set_target_properties(${name} PROPERTIES
         LINK_DEPENDS_NO_SHARED          ON
         SOURCES_DIR                     "${CMAKE_CURRENT_SOURCE_DIR}"
-        VERSION                         "${EINSUMS_VERSION}"
         CXX_EXTENSIONS                  OFF
         C_VISIBILITY_PRESET             hidden
         CXX_VISIBILITY_PRESET           hidden
@@ -152,6 +151,7 @@ function(add_einsums_library name)
     if(library_type STREQUAL SHARED)
         set_target_properties(${name} PROPERTIES
             SOVERSION                       "${EINSUMS_VERSION_MAJOR}"
+            VERSION                         "${EINSUMS_VERSION}"
             MACHO_CURRENT_VERSION           ${EINSUMS_VERSION}
             MACHO_COMPATIBILITY_VERSION     ${EINSUMS_VERSION_COMPAT}
         )
