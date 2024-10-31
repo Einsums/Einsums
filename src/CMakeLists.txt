@@ -21,19 +21,11 @@ add_einsums_library(
         PUBLIC_DEPENDS range-v3::range-v3 fmt::fmt Einsums::h5cpp
 )
 
-target_compile_features(einsums PUBLIC cxx_std_20)
-
-
 extend_einsums_target(
         einsums
         SOURCES _GPUUtils.hip backends/linear_algebra/hipblas/hipblas.hip backends/linear_algebra/hipblas/hipsolver.hip GPULinearAlgebra.hip GPUTimer.hip
         CONDITION EINSUMS_BUILD_HIP PUBLIC_DEPENDS roc::hipblas roc::hipsolver hip::host hip::device
 )
-
-if(MSVC)
-    target_compile_definitions(einsums PUBLIC _USE_MATH_DEFINES)
-    target_compile_options(einsums PUBLIC "/EHsc")
-endif()
 
 extend_einsums_target(
         einsums
@@ -126,25 +118,6 @@ extend_einsums_target(
         einsums PUBLIC_OPTIONS -ffp-model=precise -Rno-debug-disables-optimization CONDITION (UNIX AND (CMAKE_CXX_COMPILER_ID MATCHES Intel OR CMAKE_CXX_COMPILIER_ID MATCHES IntelLLVM)
 )
 )
-
-list(
-        APPEND
-        defines
-    EINSUMS_CONTINUOUSLY_TEST_EINSUM
-    EINSUMS_TEST_EINSUM_ABORT
-    EINSUMS_WARN_NOT_IMPLEMENTED
-    EINSUMS_SHOW_WARNING
-    EINSUMS_TEST_NANS
-    EINSUMS_RUNTIME_INDICES_CHECK
-    EINSUMS_ENABLE_TESTING
-)
-foreach(define IN LISTS defines)
-    extend_einsums_target(
-            einsums
-            DEFINES ${define}
-            CONDITION ${define}
-    )
-endforeach()
 
 # <<<  Install & Export  >>>
 

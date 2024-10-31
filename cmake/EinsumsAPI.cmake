@@ -16,6 +16,7 @@ set(EINSUMS_BIN_PATH "${_EINSUMS_BIN_PATH}")                    # The Einsums bi
 set(EINSUMS_HEADER_INSTALL_PATH "${_EINSUMS_HEADER_INSTALL_PATH}")
 set(EINSUMS_CMAKE_INSTALL_PATH "${_EINSUMS_CMAKE_INSTALL_PATH}")
 
+set(EINSUMS_DEFINES "")
 
 option(EINSUMS_STATIC_BUILD "Build libraries as static libraries" OFF)
 
@@ -191,6 +192,21 @@ function(add_einsums_library name)
         target_compile_options(${name} BEFORE PUBLIC $<$<CONFIG:Debug>:$<$<COMPILE_LANG_AND_ID:HIP,Clang>:-gdwarf-4 -O0 -g3 -ggdb>>)
         target_compile_options(${name} BEFORE PUBLIC $<$<CONFIG:Debug>:$<$<COMPILE_LANG_AND_ID:CXX,GNU>:-Og -g3 -ggdb>>)
     endif()
+
+    target_compile_features(${name} PUBLIC cxx_std_20)
+
+    if(MSVC)
+        target_compile_definitions(${name} PUBLIC _USE_MATH_DEFINES)
+        target_compile_options(${name} PUBLIC "/EHsc")
+    endif()
+
+    foreach(define IN LISTS EINSUMS_DEFINES)
+        extend_einsums_target(
+            ${name}
+            DEFINES ${define}
+            CONDITION ${define}
+        )
+    endforeach()
 
 #    if (NOT EINSUMS_STATIC_BUILD OR _arg_SHARED)
 #        install(TARGETS ${name}
