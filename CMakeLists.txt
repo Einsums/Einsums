@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.24) # 3.24 for FetchContent_Declare(FIND_PACKAGE_ARGS
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
+if(CMAKE_COMPILE_WARNING_AS_ERROR)
+    set(EINSUMS_COMPILE_WARNING_AS_ERROR ${CMAKE_COMPILE_WARNING_AS_ERROR})
+    unset(CMAKE_COMPILE_WARNING_AS_ERROR CACHE)
+endif()
+
 include(EinsumsBranding)
 
 project(
@@ -60,7 +65,9 @@ einsums_option(EINSUMS_BUILD_HIP BOOL "Build HIP GPU code." OFF)
 einsums_option(EINSUMS_COVERAGE BOOL "Enable code coverage checking" OFF)
 einsums_option(EINSUMS_FAST_INTRINSICS BOOL "When generating code for GPU, use the fast math intrinsics (__expf, __sinf, etc.) \
 rather than the normal math functions (expf, sinf, etc.) for single-precision floats and single-precision complex floats." OFF)
-einsums_option(EINSUMS_ANONYMIZE BOOL "When generating error messages, decides whether to anonymize the file names or not." OFF)
+einsums_option(EINSUMS_BUILD_PYTHON STRING "Can be either a Python version to set the Python version to compile for, the string ON to compile \
+for your current Python version, or the string OFF to not build the Python extension module. If the Pybind11 module is stored externally and can \
+be found by find_package(pybind11), then multiple Python versions can be specified, each separated by a semicolon." ON)
 
 add_feature_info(EINSUMS_CONTINUOUSLY_TEST_EINSUM ${EINSUMS_CONTINUOUSLY_TEST_EINSUM} "Test every call to einsum. EXPENSIVE!")
 add_feature_info(EINSUMS_TEST_EINSUM_ABORT ${EINSUMS_TEST_EINSUM_ABORT} "Abort execution if an error is found")
@@ -69,6 +76,21 @@ add_feature_info(EINSUMS_SHOW_WARNING ${EINSUMS_SHOW_WARNING} "Does the code rep
 add_feature_info(EINSUMS_TEST_NANS ${EINSUMS_TEST_NANS} "Test the result of every einsum for nans, infs, and large values")
 add_feature_info(EINSUMS_RUNTIME_INDICES_CHECK ${EINSUMS_RUNTIME_INDICES_CHECK} "Check the sizes of corresponding indices at runtime")
 add_feature_info(EINSUMS_USE_HPTT ${EINSUMS_USE_HPTT} "Build with internal HPTT version")
+
+list(APPEND EINSUMS_DEFINES
+    EINSUMS_CONTINUOUSLY_TEST_EINSUM
+    EINSUMS_TEST_EINSUM_ABORT
+    EINSUMS_WARN_NOT_IMPLEMENTED
+    EINSUMS_SHOW_WARNING
+    EINSUMS_RUNTIME_INDICES_CHECK
+    EINSUMS_TEST_NANS
+    EINSUMS_USE_HPTT
+    EINSUMS_ENABLE_TESTING
+    EINSUMS_H5CPP_USE_OMP_ALIGNED_ALLOC
+    EINSUMS_BUILD_HIP
+    EINSUMS_COVERAGE
+    EINSUMS_FAST_INTRINSICS
+)
 
 if(EINSUMS_BUILD_HIP)
     if (NOT HIP_INSTALL_DIR)
@@ -143,29 +165,14 @@ if(EINSUMS_BUILD_HIP)
     find_package(Curses)
 endif()
 
+if(EINSUMS_COMPILE_WARNING_AS_ERROR)
+    set(CMAKE_COMPILE_WARNING_AS_ERROR ${EINSUMS_COMPILE_WARNING_AS_ERROR})
+endif()
+
 add_subdirectory(src)
 
 if(EINSUMS_COVERAGE AND NOT MSVC)
-    target_compile_options(einsums PUBLIC $<$<COMPILE_LANG_AND_ID:CXX,Clang>:-fprofile-instr-generate -fcoverage-mapping>)
-    target_compile_options(einsums PUBLIC $<$<COMPILE_LANGUAGE:HIP>:-fprofile-instr-generate -fcoverage-mapping>)
-    target_compile_options(einsums PUBLIC $<$<COMPILE_LANG_AND_ID:CXX,GNU>:--coverage>)
-    target_link_options(einsums PUBLIC -lgcov --coverage)
     set(COV_CMD gcov)
-endif()
-
-if (EINSUMS_ENABLE_TESTING AND NOT MSVC)
-    target_compile_options(einsums BEFORE PUBLIC $<$<CONFIG:Debug>:$<$<COMPILE_LANG_AND_ID:CXX,Clang>:-gdwarf-4 -O0 -g3 -ggdb>>)
-    target_compile_options(einsums BEFORE PUBLIC $<$<CONFIG:Debug>:$<$<COMPILE_LANG_AND_ID:CXX,Intel>:-gdwarf-4 -O0 -g3 -ggdb>>)
-    target_compile_options(einsums BEFORE PUBLIC $<$<CONFIG:Debug>:$<$<COMPILE_LANG_AND_ID:HIP,Clang>:-gdwarf-4 -O0 -g3 -ggdb>>)
-    target_compile_options(einsums BEFORE PUBLIC $<$<CONFIG:Debug>:$<$<COMPILE_LANG_AND_ID:CXX,GNU>:-Og -g3 -ggdb>>)
-endif()
-
-if(EINSUMS_FAST_INTRINSICS)
-    target_compile_definitions(einsums PUBLIC -DEINSUMS_FAST_INTRINSICS)
-endif()
-
-if(EINSUMS_ANONYMIZE)
-    target_compile_definitions(einsums PUBLIC -DEINSUMS_ANONYMIZE)
 endif()
 
 if (EINSUMS_ENABLE_TESTING)
@@ -175,5 +182,6 @@ endif ()
 
 add_subdirectory(timing)
 # add_subdirectory(experiments)
+add_subdirectory(einsums)
 
 feature_summary(INCLUDE_QUIET_PACKAGES WHAT PACKAGES_FOUND PACKAGES_NOT_FOUND ENABLED_FEATURES DISABLED_FEATURES)

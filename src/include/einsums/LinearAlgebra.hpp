@@ -28,10 +28,8 @@
 
 #include <algorithm>
 #include <cmath>
-#include <complex>
 #include <cstddef>
 #include <limits>
-#include <stdexcept>
 #include <tuple>
 #include <type_traits>
 
@@ -366,7 +364,7 @@ void scale_column(size_t col, typename AType::data_type scale, AType *A) {
  * @param alpha The power to take
  * @param cutoff Values below cutoff are considered zero.
  *
- * @return std::enable_if_t<std::is_base_of_v<Detail::TensorBase<double, 2>, AType>, AType>
+ * @return std::enable_if_t<std::is_base_of_v<Detail::TRTensorBase<double, 2>, AType>, AType>
  */
 template <MatrixConcept AType>
 auto pow(const AType &a, typename AType::data_type alpha,
@@ -401,7 +399,7 @@ template <TensorConcept AType, TensorConcept BType>
     requires requires {
         requires SameUnderlyingAndRank<AType, BType>;
         requires InSamePlace<AType, BType>;
-        requires AType::rank != 1;
+        requires AType::Rank != 1;
     }
 auto dot(const AType &A, const BType &B) -> typename AType::data_type {
 
@@ -436,7 +434,7 @@ template <TensorConcept AType, TensorConcept BType>
     requires requires {
         requires SameUnderlyingAndRank<AType, BType>;
         requires InSamePlace<AType, BType>;
-        requires AType::rank != 1;
+        requires AType::Rank != 1;
     }
 auto true_dot(const AType &A, const BType &B) -> typename AType::data_type {
 
@@ -1035,7 +1033,6 @@ typename AType::data_type det(const AType &A) {
     int parity = 0;
 
     // Calculate the effect of the pivots.
-#pragma omp parallel for simd reduction(+ : parity)
     for (int i = 0; i < A.dim(0); i++) {
         int      temp_parity = 0;
         blas_int curr        = pivots.at(i);
@@ -1056,8 +1053,7 @@ typename AType::data_type det(const AType &A) {
         }
     }
 
-// Calculate the contribution of the diagonal elements.
-#pragma omp parallel for simd reduction(* : ret)
+    // Calculate the contribution of the diagonal elements.
     for (int i = 0; i < A.dim(0); i++) {
         ret *= A(i, i);
     }

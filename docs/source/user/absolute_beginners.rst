@@ -8,6 +8,8 @@
 Einsums: the absolute basics for beginners
 ******************************************
 
+.. sectionauthor:: Justin M. Turney
+
 Welcome to the absolute beginner's guide to Einsums! If you have comments or
 suggestions, please do not hesitate to `reach out <https://github.com/Einsums/Einsums/discussions>`_!
 
@@ -59,6 +61,9 @@ Then in your main.cpp you can have something like
 
         return 0;
     }
+
+Einsums is also compatible with Python through Pybind 11. To use it, simply use :code:`import einsums`. Much of
+the C++ code is exported under the :code:`einsums.core` module, with some extra utilities in other modules. 
 
 Reading the example code
 ------------------------------

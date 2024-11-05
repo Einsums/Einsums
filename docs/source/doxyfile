@@ -281,9 +281,12 @@ EXPAND_ONLY_PREDEF     = NO
 SEARCH_INCLUDES        = YES
 INCLUDE_PATH           =
 INCLUDE_FILE_PATTERNS  =
-PREDEFINED             = __cplusplus \
-                         __HIP__
-EXPAND_AS_DEFINED      =
+PREDEFINED             = __cplusplus= \
+                         __HIP__= \
+                         __device_ptr__= \
+                         __host_ptr__= 
+EXPAND_AS_DEFINED      = __device_ptr__ \
+                         __host_ptr__
 SKIP_FUNCTION_MACROS   = YES
 #---------------------------------------------------------------------------
 # Configuration options related to external references

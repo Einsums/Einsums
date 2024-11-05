@@ -34,7 +34,8 @@ namespace tensor_props {
  * @tparam Rank The tensor rank.
  */
 template <typename T, size_t Rank, typename TensorType>
-struct TiledTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>,
+struct TiledTensorBase : public virtual CollectedTensorBase<TensorType>,
+                         virtual TRTensorBase<T, Rank>,
                          virtual TiledTensorBaseNoExtra,
                          virtual LockableTensorBase,
                          virtual AlgebraOptimizedTensor {
@@ -426,6 +427,77 @@ struct TiledTensorBase : public virtual CollectedTensorBase<T, Rank, TensorType>
         auto coords = tile_of(index...);
 
         auto array_ind = std::array<int, Rank>{static_cast<int>(index)...};
+
+        // Find the index in the tile.
+        for (int i = 0; i < Rank; i++) {
+            if (array_ind[i] < 0) {
+                array_ind[i] += _dims[i];
+            }
+            array_ind[i] -= _tile_offsets[i].at(coords[i]);
+        }
+        auto &out = tile(coords);
+
+        return std::apply(out, array_ind);
+    }
+
+    template <typename Container>
+        requires requires {
+            requires !std::is_integral_v<Container>;
+            requires !std::is_same_v<Container, Dim<Rank>>;
+            requires !std::is_same_v<Container, Stride<Rank>>;
+            requires !std::is_same_v<Container, Offset<Rank>>;
+            requires !std::is_same_v<Container, Range>;
+        }
+    T operator()(const Container &index) const {
+        if (index.size() < Rank) {
+            [[unlikely]] throw EINSUMSEXCEPTION("Not enough indices passed to Tensor!");
+        } else if (index.size() > Rank) {
+            [[unlikely]] throw EINSUMSEXCEPTION("Too many indices passed to Tensor!");
+        }
+        auto coords = tile_of(index);
+
+        std::array<std::int64_t, Rank> array_ind;
+
+        for (size_t i = 0; i < Rank; i++) {
+            array_ind[i] = index[i];
+        }
+
+        // Find the index in the tile.
+        for (int i = 0; i < Rank; i++) {
+            if (array_ind[i] < 0) {
+                array_ind[i] += _dims[i];
+            }
+            array_ind[i] -= _tile_offsets[i].at(coords[i]);
+        }
+
+        if (has_tile(coords)) {
+            return std::apply(tile(coords), array_ind);
+        } else {
+            return T{0.0};
+        }
+    }
+
+    template <typename Container>
+        requires requires {
+            requires !std::is_integral_v<Container>;
+            requires !std::is_same_v<Container, Dim<Rank>>;
+            requires !std::is_same_v<Container, Stride<Rank>>;
+            requires !std::is_same_v<Container, Offset<Rank>>;
+            requires !std::is_same_v<Container, Range>;
+        }
+    T &operator()(const Container &index) {
+        if (index.size() < Rank) {
+            [[unlikely]] throw EINSUMSEXCEPTION("Not enough indices passed to Tensor!");
+        } else if (index.size() > Rank) {
+            [[unlikely]] throw EINSUMSEXCEPTION("Too many indices passed to Tensor!");
+        }
+        auto coords = tile_of(index);
+
+        std::array<std::int64_t, Rank> array_ind;
+
+        for (size_t i = 0; i < Rank; i++) {
+            array_ind[i] = index[i];
+        }
 
         // Find the index in the tile.
         for (int i = 0; i < Rank; i++) {
@@ -875,7 +947,7 @@ struct TiledTensor final : public virtual tensor_props::TiledTensorBase<T, Rank,
 
 template <typename T, size_t Rank>
 struct TiledTensorView final : public virtual tensor_props::TiledTensorBase<T, Rank, TensorView<T, Rank>>,
-                               virtual tensor_props::TensorViewBase<T, Rank, TiledTensor<T, Rank>>,
+                               virtual tensor_props::TRTensorViewBase<T, Rank, TiledTensor<T, Rank>>,
                                virtual tensor_props::CoreTensorBase {
   private:
     bool _full_view_of_underlying{false};
@@ -1026,7 +1098,7 @@ struct TiledDeviceTensor final : public virtual tensor_props::TiledTensorBase<T,
 template <typename T, size_t Rank>
 struct TiledDeviceTensorView final : public virtual tensor_props::TiledTensorBase<T, Rank, DeviceTensorView<T, Rank>>,
                                      virtual tensor_props::DeviceTensorBase,
-                                     virtual tensor_props::TensorViewBase<T, Rank, TiledDeviceTensor<T, Rank>> {
+                                     virtual tensor_props::TRTensorViewBase<T, Rank, TiledDeviceTensor<T, Rank>> {
   private:
     bool                     _full_view_of_underlying{false};
     detail::HostToDeviceMode _mode{detail::DEV_ONLY};
@@ -1119,7 +1191,7 @@ struct TiledDeviceTensorView final : public virtual tensor_props::TiledTensorBas
 template <einsums::TiledTensorConcept TensorType>
 void println(const TensorType &A, TensorPrintOptions options = {}) {
     using T               = typename TensorType::data_type;
-    constexpr size_t Rank = TensorType::rank;
+    constexpr size_t Rank = TensorType::Rank;
     println("Name: {}", A.name());
     {
         print::Indent const indent{};
@@ -1160,7 +1232,7 @@ void println(const TensorType &A, TensorPrintOptions options = {}) {
 template <einsums::TiledTensorConcept TensorType>
 void fprintln(FILE *fp, const TensorType &A, TensorPrintOptions options = {}) {
     using T               = typename TensorType::data_type;
-    constexpr size_t Rank = TensorType::rank;
+    constexpr size_t Rank = TensorType::Rank;
     fprintln(fp, "Name: {}", A.name());
     {
         print::Indent const indent{};
@@ -1201,7 +1273,7 @@ void fprintln(FILE *fp, const TensorType &A, TensorPrintOptions options = {}) {
 template <einsums::TiledTensorConcept TensorType>
 void fprintln(std::ostream &os, const TensorType &A, TensorPrintOptions options = {}) {
     using T               = typename TensorType::data_type;
-    constexpr size_t Rank = TensorType::rank;
+    constexpr size_t Rank = TensorType::Rank;
     fprintln(os, "Name: {}", A.name());
     {
         print::Indent const indent{};

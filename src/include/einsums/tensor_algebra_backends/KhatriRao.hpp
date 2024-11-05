@@ -13,18 +13,15 @@
 
 #include <algorithm>
 #include <cmath>
-#include <cstddef>
-#include <stdexcept>
 #include <tuple>
-#include <type_traits>
 #include <utility>
 
 namespace einsums::tensor_algebra {
 template <TensorConcept AType, TensorConcept BType, typename... AIndices, typename... BIndices>
     requires requires {
         requires InSamePlace<AType, BType>;
-        requires AType::rank == sizeof...(AIndices);
-        requires BType::rank == sizeof...(BIndices);
+        requires AType::Rank == sizeof...(AIndices);
+        requires BType::Rank == sizeof...(BIndices);
     }
 auto khatri_rao(const std::tuple<AIndices...> &, const AType &A, const std::tuple<BIndices...> &,
                 const BType &B) -> BasicTensorLike<AType, typename AType::data_type, 2> {

@@ -27,7 +27,7 @@ author = 'Einsums Developers'
 
 # The full version, including alpha/beta/rc tags
 branding = open('../../cmake/EinsumsBranding.cmake', 'r').read()
-p = re.compile('set\(EINSUMS_VERSION\s+"(\d+\.\d+\.\d+)')
+p = re.compile(r'set\(EINSUMS_VERSION\s+"(\d+\.\d+\.\d+)')
 m = p.match(branding)
 release = 'unknown-version'
 version = 'unknown-version'
@@ -45,7 +45,8 @@ extensions = [
     'sphinx.ext.ifconfig',
     'sphinx.ext.intersphinx',
     'breathe',
-    'sphinx_design'
+    'sphinx_design',
+    'sphinx.ext.autodoc'
 ]
 
 # Add any paths that contain templates here, relative to this directory.

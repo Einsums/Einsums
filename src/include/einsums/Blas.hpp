@@ -9,8 +9,7 @@
 #include "einsums/_Export.hpp"
 
 #include "einsums/utility/ComplexTraits.hpp"
-
-#include <vector>
+#include <complex>
 
 // Namespace for BLAS and LAPACK routines.
 namespace einsums::blas {

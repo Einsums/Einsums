@@ -12,6 +12,7 @@
 
 namespace einsums {
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 template <typename T, size_t Rank>
 DeviceTensor<T, Rank>::DeviceTensor(const DeviceTensor<T, Rank> &copy, detail::HostToDeviceMode mode) {
     *this = copy;
@@ -271,6 +272,7 @@ DeviceTensor<T, Rank>::DeviceTensor(Dim<Rank> dims, einsums::detail::HostToDevic
     hip_catch(hipMemcpy((void *)this->_gpu_strides, (const void *)this->_strides.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
     gpu::device_synchronize();
 }
+#endif
 
 namespace detail {
 
@@ -281,7 +283,7 @@ template <size_t Rank>
 __host__ __device__ void index_to_combination(size_t index, const size_t *dims, size_t *out) {
     size_t quot = index;
 
-    for (ssize_t i = Rank - 1; i >= 0; i--) {
+    for (ptrdiff_t i = Rank - 1; i >= 0; i--) {
         out[i] = quot % dims[i];
         quot /= dims[i];
     }
@@ -293,7 +295,7 @@ __host__ __device__ void index_to_combination(size_t index, const size_t *dims, 
 template <size_t Rank>
 __host__ __device__ size_t combination_to_index(const size_t *inds, const size_t *dims, const size_t *strides) {
     size_t out = 0;
-    for (ssize_t i = 0; i < Rank; i++) {
+    for (ptrdiff_t i = 0; i < Rank; i++) {
         int ind = inds[i];
 
         if (ind < 0) {
@@ -313,7 +315,7 @@ template <size_t Rank>
 __host__ __device__ void index_to_combination(size_t index, const einsums::Dim<Rank> &dims, std::array<size_t, Rank> &out) {
     size_t quot = index;
 
-    for (ssize_t i = Rank - 1; i >= 0; i--) {
+    for (ptrdiff_t i = Rank - 1; i >= 0; i--) {
         out[i] = quot % dims[i];
         quot /= dims[i];
     }
@@ -326,7 +328,7 @@ template <size_t Rank>
 __host__ __device__ size_t combination_to_index(const std::array<size_t, Rank> &inds, const einsums::Dim<Rank> &dims,
                                                 const einsums::Stride<Rank> &strides) {
     size_t out = 0;
-    for (ssize_t i = 0; i < Rank; i++) {
+    for (ptrdiff_t i = 0; i < Rank; i++) {
         int ind = inds[i];
 
         if (ind < 0) {
@@ -435,6 +437,8 @@ __global__ void copy_to_tensor_conv(T *to_data, const size_t *to_dims, const siz
 
 } // namespace detail
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
 template <typename T, size_t Rank>
 DeviceTensor<T, Rank>::DeviceTensor(const DeviceTensorView<T, Rank> &other) : _name{other.name()}, _dims{other.dims()} {
     using namespace einsums::gpu;
@@ -469,6 +473,8 @@ DeviceTensor<T, Rank>::DeviceTensor(const DeviceTensorView<T, Rank> &other) : _n
 
     gpu::stream_wait();
 }
+
+#endif
 
 namespace detail {
 
@@ -516,6 +522,7 @@ __global__ void set_all(T *data, const size_t *dims, const size_t *strides, T va
 
 } // namespace detail
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 template <typename T, size_t Rank>
 void DeviceTensor<T, Rank>::resize(Dim<Rank> dims) {
     using namespace einsums::gpu;
@@ -1250,6 +1257,7 @@ auto DeviceTensor<T, Rank>::operator=(const T &fill_value) -> DeviceTensor<T, Ra
     this->set_all(fill_value);
     return *this;
 }
+#endif
 
 namespace detail {
 /**
@@ -1612,6 +1620,8 @@ __global__ void div_and_assign_scal(T *to_data, const size_t *to_dims, const siz
 
 } // namespace detail
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
 template <typename T, size_t Rank>
 DeviceTensor<T, Rank> &DeviceTensor<T, Rank>::add_assign(const T &other) {
     using namespace einsums::gpu;
@@ -1730,5 +1740,7 @@ DeviceTensor<T, Rank>::operator Tensor<T, Rank>() const {
 
     return out;
 }
+
+#endif
 
 } // namespace einsums

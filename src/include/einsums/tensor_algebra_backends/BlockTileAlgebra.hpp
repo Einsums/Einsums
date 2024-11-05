@@ -2,7 +2,6 @@
 
 #include "einsums/TensorAlgebra.hpp"
 #include "einsums/tensor_algebra_backends/Dispatch.hpp"
-#include "einsums/tensor_algebra_backends/TileAlgebra.hpp"
 #include "einsums/utility/IndexUtils.hpp"
 #include "einsums/utility/TensorTraits.hpp"
 
@@ -27,9 +26,9 @@ auto einsum_special_dispatch(const typename CType::data_type C_prefactor, const 
     using ADataType        = typename AType::data_type;
     using BDataType        = typename BType::data_type;
     using CDataType        = typename CType::data_type;
-    constexpr size_t ARank = AType::rank;
-    constexpr size_t BRank = BType::rank;
-    constexpr size_t CRank = CType::rank;
+    constexpr size_t ARank = AType::Rank;
+    constexpr size_t BRank = BType::Rank;
+    constexpr size_t CRank = CType::Rank;
 
     constexpr auto unique_indices = unique_t<std::tuple<CIndices..., AIndices..., BIndices...>>();
     auto           unique_grid    = get_grid_ranges_for_many(*C, C_indices, A, A_indices, B, B_indices, unique_indices);

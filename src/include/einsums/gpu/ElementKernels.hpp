@@ -1,6 +1,5 @@
 #pragma once
 
-#include "einsums/_Common.hpp"
 #include "einsums/_GPUUtils.hpp"
 
 #include <hip/hip_common.h>
@@ -25,7 +24,7 @@ __global__ void sum_kernel(T *out, const T *data, size_t *dims, size_t *strides,
         *out = T{0};
     }
 
-    for (ssize_t sentinel = worker; sentinel < size; sentinel += kernel_size) {
+    for (ptrdiff_t sentinel = worker; sentinel < size; sentinel += kernel_size) {
         size_t index = 0, quotient = sentinel, remainder = 0;
 
 #pragma unroll
@@ -69,7 +68,7 @@ __global__ void max_kernel(T *out, const T *data, size_t *dims, size_t *strides,
         *out = T{0};
     }
 
-    for (ssize_t sentinel = worker; sentinel < size; sentinel += kernel_size) {
+    for (ptrdiff_t sentinel = worker; sentinel < size; sentinel += kernel_size) {
         size_t index = 0, quotient = sentinel, remainder = 0;
 
 #pragma unroll
@@ -116,7 +115,7 @@ __global__ void min_kernel(T *out, const T *data, size_t *dims, size_t *strides,
         *out = T{0};
     }
 
-    for (ssize_t sentinel = worker; sentinel < size; sentinel += kernel_size) {
+    for (ptrdiff_t sentinel = worker; sentinel < size; sentinel += kernel_size) {
         size_t index = 0, quotient = sentinel, remainder = 0;
 
 #pragma unroll
@@ -155,7 +154,7 @@ __global__ void abs_kernel(T *data, size_t *dims, size_t *strides, size_t size) 
 
     get_worker_info(worker, kernel_size);
 
-    for (ssize_t sentinel = worker; sentinel < size; sentinel += kernel_size) {
+    for (ptrdiff_t sentinel = worker; sentinel < size; sentinel += kernel_size) {
         size_t index = 0, quotient = sentinel, remainder = 0;
 
 #pragma unroll
@@ -185,7 +184,7 @@ __global__ void invert_kernel(T *data, size_t *dims, size_t *strides, size_t siz
 
     get_worker_info(worker, kernel_size);
 
-    for (ssize_t sentinel = worker; sentinel < size; sentinel += kernel_size) {
+    for (ptrdiff_t sentinel = worker; sentinel < size; sentinel += kernel_size) {
         size_t index = 0, quotient = sentinel, remainder = 0;
 
 #pragma unroll
@@ -205,7 +204,7 @@ __global__ void exp_kernel(T *data, size_t *dims, size_t *strides, size_t size) 
 
     get_worker_info(worker, kernel_size);
 
-    for (ssize_t sentinel = worker; sentinel < size; sentinel += kernel_size) {
+    for (ptrdiff_t sentinel = worker; sentinel < size; sentinel += kernel_size) {
         size_t index = 0, quotient = sentinel, remainder = 0;
 
 #pragma unroll
@@ -252,7 +251,7 @@ __global__ void scale_kernel(T *data, T scale, size_t *dims, size_t *strides, si
 
     get_worker_info(worker, kernel_size);
 
-    for (ssize_t sentinel = worker; sentinel < size; sentinel += kernel_size) {
+    for (ptrdiff_t sentinel = worker; sentinel < size; sentinel += kernel_size) {
         size_t index = 0, quotient = sentinel, remainder = 0;
 
 #pragma unroll

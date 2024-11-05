@@ -6,7 +6,6 @@
 #include "einsums/utility/TensorBases.hpp"
 #include "einsums/utility/TensorTraits.hpp"
 
-#include <stdexcept>
 #include <type_traits>
 
 namespace einsums {
@@ -31,7 +30,7 @@ struct DeviceFunctionTensorView;
  */
 namespace tensor_props {
 template <typename T, size_t Rank>
-struct FunctionTensorBase : public virtual TensorBase<T, Rank>, virtual FunctionTensorBaseNoExtra, virtual CoreTensorBase {
+struct FunctionTensorBase : public virtual TRTensorBase<T, Rank>, virtual FunctionTensorBaseNoExtra, virtual CoreTensorBase {
   protected:
     Dim<Rank>   _dims;
     std::string _name{"(unnamed)"};
@@ -70,8 +69,6 @@ struct FunctionTensorBase : public virtual TensorBase<T, Rank>, virtual Function
     FunctionTensorBase(std::string name, Args... dims) : _dims{dims...}, _name{name} {
         _size = 1;
 
-        // Not parallel. Just vectorize.
-#pragma omp for simd reduction(* : _size)
         for (int i = 0; i < Rank; i++) {
             _size *= _dims[i];
         }
@@ -80,8 +77,6 @@ struct FunctionTensorBase : public virtual TensorBase<T, Rank>, virtual Function
     FunctionTensorBase(std::string name, Dim<Rank> dims) : _dims(dims), _name{name} {
         _size = 1;
 
-        // Not parallel. Just vectorize.
-#pragma omp for simd reduction(* : _size)
         for (int i = 0; i < Rank; i++) {
             _size *= _dims[i];
         }
@@ -90,8 +85,6 @@ struct FunctionTensorBase : public virtual TensorBase<T, Rank>, virtual Function
     FunctionTensorBase(Dim<Rank> dims) : _dims(dims) {
         _size = 1;
 
-        // Not parallel. Just vectorize.
-#pragma omp for simd reduction(* : _size)
         for (int i = 0; i < Rank; i++) {
             _size *= _dims[i];
         }
@@ -259,7 +252,7 @@ struct FuncPointerTensor : public virtual tensor_props::FunctionTensorBase<T, Ra
 
 template <typename T, size_t Rank, size_t UnderlyingRank>
 struct FunctionTensorView : public virtual tensor_props::FunctionTensorBase<T, Rank>,
-                            virtual tensor_props::TensorViewBase<T, Rank, tensor_props::FunctionTensorBase<T, UnderlyingRank>> {
+                            virtual tensor_props::TRTensorViewBase<T, Rank, tensor_props::FunctionTensorBase<T, UnderlyingRank>> {
   protected:
     const tensor_props::FunctionTensorBase<T, UnderlyingRank> *_func_tensor;
     Offset<Rank>                                               _offsets;

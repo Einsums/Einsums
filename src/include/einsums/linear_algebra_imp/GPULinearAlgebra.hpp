@@ -270,7 +270,7 @@ typename AType::data_type dot(const AType &A, const BType &B) {
 
     using dev_datatype    = typename AType::dev_datatype;
     using T               = typename AType::data_type;
-    constexpr size_t Rank = AType::rank;
+    constexpr size_t Rank = AType::Rank;
 
     __device_ptr__ dev_datatype *gpu_out;
     auto                         grid       = block_size(A.size());
@@ -311,7 +311,7 @@ typename AType::data_type true_dot(const AType &A, const BType &B) {
 
     using dev_datatype    = typename AType::dev_datatype;
     using T               = typename AType::data_type;
-    constexpr size_t Rank = AType::rank;
+    constexpr size_t Rank = AType::Rank;
 
     __device_ptr__ dev_datatype *gpu_out;
     size_t                      *gpu_strides;
@@ -730,7 +730,7 @@ void direct_product(T alpha, const AType &A, const BType &B, T beta, CType *C) {
     using T_devtype  = typename CType::dev_datatype;
     using T_hosttype = typename CType::host_datatype;
 
-    constexpr size_t Rank = CType::rank;
+    constexpr size_t Rank = CType::Rank;
 
     assert(A.dims() == B.dims() && A.dims() == C->dims());
 

@@ -6,18 +6,13 @@
 #pragma once
 
 #include "einsums/_Common.hpp"
-#include "einsums/_Compiler.hpp"
 #include "einsums/_GPUCast.hpp"
 #include "einsums/_GPUUtils.hpp"
 #include "einsums/_TensorAlgebraUtilities.hpp"
 
-#include "einsums/DeviceTensor.hpp"
-#include "einsums/LinearAlgebra.hpp"
-#include "einsums/STL.hpp"
 #include "einsums/Section.hpp"
-#include "einsums/TensorAlgebra.hpp"
+#include "einsums/LinearAlgebra.hpp"
 #include "einsums/utility/IndexUtils.hpp"
-#include "einsums/utility/SmartPointerTraits.hpp"
 #include "einsums/utility/TensorTraits.hpp"
 
 #include <hip/driver_types.h>
@@ -51,18 +46,18 @@ __global__ void sort_kernel(const int *perm, const T alpha, const T *A, const si
     size_t A_index[Rank], B_index[Rank];
     size_t A_sentinel, B_sentinel;
 
-    for (ssize_t curr_index = thread_id; curr_index < size; curr_index++) {
+    for (ptrdiff_t curr_index = thread_id; curr_index < size; curr_index++) {
         einsums::tensor_algebra::detail::sentinel_to_indices<Rank>(curr_index, strideA, A_index);
         A_sentinel = 0;
         B_sentinel = 0;
 
 #pragma unroll
-        for (ssize_t i = 0; i < Rank; i++) {
+        for (ptrdiff_t i = 0; i < Rank; i++) {
             A_sentinel += strideA[i] * A_index[i];
         }
 
 #pragma unroll
-        for (ssize_t i = 0; i < Rank; i++) {
+        for (ptrdiff_t i = 0; i < Rank; i++) {
             B_sentinel += strideB[i] * A_index[perm[i]];
         }
 
@@ -140,7 +135,7 @@ auto sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<
     }
 #endif
     if constexpr (std::is_same_v<decltype(A_indices), decltype(C_indices)>) {
-        ::einsums::linear_algebra::axpby(A_prefactor, A, C_prefactor, C);
+        einsums::linear_algebra::axpby(A_prefactor, A, C_prefactor, C);
     } else {
         int *index_table = new int[sizeof...(AIndices)];
         int *gpu_index_table;

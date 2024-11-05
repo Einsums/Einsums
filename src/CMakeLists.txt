@@ -6,7 +6,6 @@ add_einsums_library(
         SOURCES Blas.cpp
         Decomposition.cpp
         ElementOperations.cpp
-        Exception.cpp
         InitializeFinalize.cpp
         LinearAlgebra.cpp
         Memory.cpp
@@ -15,40 +14,18 @@ add_einsums_library(
         State.cpp
         TensorAlgebra.cpp
         Timer.cpp
+        Utils.cpp
         polynomial/Laguerre.cpp
         PUBLIC_INCLUDES include
         DEPENDS tgt::lapack
         PUBLIC_DEPENDS range-v3::range-v3 fmt::fmt Einsums::h5cpp
 )
-target_compile_features(einsums PUBLIC cxx_std_20)
 
 extend_einsums_target(
         einsums
         SOURCES _GPUUtils.hip backends/linear_algebra/hipblas/hipblas.hip backends/linear_algebra/hipblas/hipsolver.hip GPULinearAlgebra.hip GPUTimer.hip
         CONDITION EINSUMS_BUILD_HIP PUBLIC_DEPENDS roc::hipblas roc::hipsolver hip::host hip::device
 )
-
-# HIP's amd_comgr needs ncurses. Ncurses needs tinfo. Neither target adds the appropriate dependencies or paths. If this gets fixed, this can be removed.
-if(EINSUMS_BUILD_HIP)
-    target_compile_options(einsums PUBLIC ${CURSES_CFLAGS})
-    target_include_directories(einsums PUBLIC ${CURSES_INCLUDE_DIR})
-    list(GET CURSES_LIBRARIES 0 __first)
-    cmake_path(GET __first PARENT_PATH CURSES_LIB_DIR)
-    message(STATUS "Curses directory: ${CURSES_LIB_DIR}")
-    target_link_directories(einsums BEFORE PUBLIC ${CURSES_LIB_DIR})
-    target_link_libraries(einsums PUBLIC ${CURSES_LIBRARIES})
-    if(EINSUMS_USE_HPTT)
-        message("Librett populated: ${librett_POPULATED}")
-        message("Librett source: ${librett_SOURCE_DIR}")
-        #target_include_directories(einsums PUBLIC ${LIBRETT_INCLUDE_DIRS})
-        target_include_directories(einsums PRIVATE ${librett_SOURCE_DIR}/src)
-    endif()
-endif()
-
-if(MSVC)
-    target_compile_definitions(einsums PUBLIC _USE_MATH_DEFINES)
-    target_compile_options(einsums PUBLIC "/EHsc")
-endif()
 
 extend_einsums_target(
         einsums
@@ -142,24 +119,6 @@ extend_einsums_target(
 )
 )
 
-list(
-        APPEND
-        defines
-    EINSUMS_CONTINUOUSLY_TEST_EINSUM
-    EINSUMS_TEST_EINSUM_ABORT
-    EINSUMS_WARN_NOT_IMPLEMENTED
-    EINSUMS_SHOW_WARNING
-    EINSUMS_TEST_NANS
-    EINSUMS_RUNTIME_INDICES_CHECK
-)
-foreach(define IN LISTS defines)
-    extend_einsums_target(
-            einsums
-            DEFINES ${define}
-            CONDITION ${define}
-    )
-endforeach()
-
 # <<<  Install & Export  >>>
 
 include(CMakePackageConfigHelpers)
@@ -197,6 +156,8 @@ install(
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
+
+
 install(
         EXPORT primary_set
         FILE "${ein}Targets-CXX.cmake"
@@ -226,6 +187,24 @@ install(
         DESTINATION ${EINSUMS_INSTALL_CMAKEDIR}
         COMPONENT ${ein}_Development
 )
+
+if(EINSUMS_BUILD_PYTHON STREQUAL "ON")
+        unset(__VERSION)
+        add_subdirectory(python)
+elseif(EINSUMS_BUILD_PYTHON STREQUAL OFF)
+        # Skip
+else()
+        foreach(__VERSION IN LISTS EINSUMS_BUILD_PYTHON)
+                if(NOT __VERSION)
+                        # skip
+                elseif(__VERSION MATCHES "3(\\.[1-9][0-9]*)+")
+                        message("Building Python version ${__VERSION}")
+                        add_subdirectory(python python-${__VERSION})
+                else()
+                        message(FATAL_ERROR "EINSUMS_BUILD_PYTHON value ${EINSUMS_BUILD_PYTHON} not recognized! Continuing without building the Python module.")
+                endif()
+        endforeach()
+endif()
 
 # include(JoinPaths) join_paths(libdir_for_pc_file "\${exec_prefix}" "${CMAKE_INSTALL_LIBDIR}") join_paths(includedir_for_pc_file "\${prefix}" "${CMAKE_INSTALL_INCLUDEDIR}")
 #

@@ -2,7 +2,7 @@
 
 #include "einsums/_Common.hpp"
 
-#include "einsums/utility/TensorTraits.hpp"
+#include "einsums/utility/TensorBases.hpp"
 
 #include <cstddef>
 #include <type_traits>
@@ -92,7 +92,7 @@ __host__ __device__ inline T compute_arithmetic(const std::tuple<SubtractionOp, 
  * @tparam Args The specific set of operations needed to perform the arithmetic operations.
  */
 template <typename T, size_t Rank, typename... Args>
-struct ArithmeticTensor : public virtual tensor_props::TensorBase<T, Rank>, virtual tensor_props::CoreTensorBase {
+struct ArithmeticTensor : public virtual tensor_props::TRTensorBase<T, Rank>, virtual tensor_props::CoreTensorBase {
   protected:
     std::tuple<Args...> _tuple;
     Dim<Rank>           _dims;

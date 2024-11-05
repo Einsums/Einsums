@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include "einsums/Tensor.hpp"
+
 #include <h5cpp/core>
 #include <type_traits>
 

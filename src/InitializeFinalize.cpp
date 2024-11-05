@@ -8,6 +8,7 @@
 #include "einsums/Blas.hpp"
 #include "einsums/OpenMP.h"
 #include "einsums/Timer.hpp"
+#include <fstream>
 
 #ifdef __HIP__
 #    include "einsums/_GPUUtils.hpp"
@@ -34,19 +35,57 @@ auto initialize() -> int {
     return 0;
 }
 
-void finalize(bool timerReport) {
-
-    blas::finalize();
+static void finalize_pre(void) {
+        blas::finalize();
 
 #ifdef __HIP__
     einsums::gpu::finalize();
 
 #endif
+}
 
-    if (timerReport)
-        timer::report();
-
+static void finalize_post(void) {
     timer::finalize();
+}
+
+void finalize(const char *output_file) {
+    auto fp = std::fopen(output_file, "w");
+
+    finalize(fp);
+
+    std::fclose(fp);
+}
+
+void finalize(bool timerReport) {
+    if(timerReport) {
+        finalize(std::cout);
+    }
+}
+
+void finalize(const std::string &output_file) {
+    auto fp = std::ofstream(output_file);
+
+    finalize(fp);
+
+    fp.close();
+}
+
+void finalize(FILE *file_pointer) {
+    finalize_pre();
+
+
+    timer::report(file_pointer);
+
+    finalize_post();
+}
+
+void finalize(std::ostream &output_stream) {
+    finalize_pre();
+
+
+    timer::report(output_stream);
+
+    finalize_post();
 }
 
 } // namespace einsums

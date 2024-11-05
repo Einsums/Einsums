@@ -17,6 +17,7 @@
 #include <hipblas/hipblas.h>
 #include <hipsolver/hipsolver.h>
 #include <omp.h>
+#include <source_location>
 
 BEGIN_EINSUMS_NAMESPACE_HPP(einsums::gpu)
 
@@ -200,7 +201,7 @@ using ErrorTbd                         = hip_exception<hipErrorTbd>;
  * @tparam error The status code handled by this exception.
  */
 template <hipblasStatus_t error>
-struct hipblas_exception : public std::exception {
+struct EINSUMS_EXPORT hipblas_exception : public std::exception {
   private:
     ::std::string message;
 
@@ -307,7 +308,7 @@ EINSUMS_EXPORT const char *hipsolverStatusToString(hipsolverStatus_t status);
  * @tparam error The status code wrapped by the object.
  */
 template <hipsolverStatus_t error>
-struct hipsolver_exception : public std::exception {
+struct EINSUMS_EXPORT hipsolver_exception : public std::exception {
   private:
     ::std::string message;
 
@@ -459,18 +460,17 @@ __host__ EINSUMS_EXPORT void __hip_catch__(hipError_t condition, const char *fun
 #define hip_catch_STR1(x) #x
 #define hip_catch_STR(x)  hip_catch_STR1(x)
 #define hip_catch(condition, ...)                                                                                                          \
-    __hip_catch__(                                                                                                                         \
-        (condition), "hip_catch" hip_catch_STR((condition)) ";", einsums::detail::anonymize(__FILE__).c_str(),                             \
-        ":" hip_catch_STR(__LINE__) ":\nIn function: ", std::source_location::current().function_name() __VA_OPT__(, ) __VA_ARGS__)
+    __hip_catch__((condition), "hip_catch" hip_catch_STR((condition)) ";", __FILE__, ":" hip_catch_STR(__LINE__) ":\nIn function: ",       \
+                  std::source_location::current().function_name() __VA_OPT__(, ) __VA_ARGS__)
 
 #define hipblas_catch(condition, ...)                                                                                                      \
     __hipblas_catch__(                                                                                                                     \
-        (condition), "hipblas_catch" hip_catch_STR((condition)) ";", einsums::detail::anonymize(__FILE__).c_str(),                         \
+        (condition), "hipblas_catch" hip_catch_STR((condition)) ";", __FILE__,                                                             \
         ":" hip_catch_STR(__LINE__) ":\nIn function: ", std::source_location::current().function_name() __VA_OPT__(, ) __VA_ARGS__)
 
 #define hipsolver_catch(condition, ...)                                                                                                    \
     __hipsolver_catch__(                                                                                                                   \
-        (condition), "hipsolver_catch" hip_catch_STR((condition)) ";", einsums::detail::anonymize(__FILE__).c_str(),                       \
+        (condition), "hipsolver_catch" hip_catch_STR((condition)) ";", __FILE__,                                                           \
         ":" hip_catch_STR(__LINE__) ":\nIn function: ", std::source_location::current().function_name() __VA_OPT__(, ) __VA_ARGS__)
 
 /**
@@ -596,7 +596,6 @@ __device__ inline bool is_zero(hipComplex value) {
 __device__ inline bool is_zero(hipDoubleComplex value) {
     return value.x == 0.0 && value.y == 0.0;
 }
-
 
 /**
  * @brief Sets the input to zero for its type.

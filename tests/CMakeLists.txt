@@ -15,6 +15,13 @@ add_executable(test-all
     OtherCatch.cpp
     ArithmeticTensor.cpp
     FunctionTensor.cpp
+    RuntimeTensors.cpp
+    InitFinalize.cpp
+)
+
+set_target_properties(test-all PROPERTIES
+    BUILD_RPATH                     "${_LIB_RPATH};${CMAKE_BUILD_RPATH}"
+    INSTALL_RPATH                   "${_LIB_RPATH};${CMAKE_INSTALL_RPATH};${_LIB_RPATH}/../../lib"
 )
 
 file(GLOB __data_files data/water_sto3g/*)
@@ -24,6 +31,9 @@ if(EINSUMS_COVERAGE AND NOT MSVC)
     target_compile_options(test-all PUBLIC $<$<COMPILE_LANG_AND_ID:CXX,Clang>:-fprofile-instr-generate -fcoverage-mapping>)
     target_compile_options(test-all PUBLIC $<$<COMPILE_LANGUAGE:HIP>:-fprofile-instr-generate -fcoverage-mapping>)
     target_compile_options(test-all PUBLIC $<$<COMPILE_LANG_AND_ID:CXX,GNU>:--coverage>)
+    target_link_options(test-all PUBLIC $<$<COMPILE_LANG_AND_ID:CXX,Clang>:-fprofile-instr-generate -fcoverage-mapping>)
+    target_link_options(test-all PUBLIC $<$<COMPILE_LANGUAGE:HIP>:-fprofile-instr-generate -fcoverage-mapping>)
+    target_link_options(test-all PUBLIC $<$<COMPILE_LANG_AND_ID:CXX,GNU>:-lgcov --coverage>)
 endif()
 
 if (NOT MSVC)
@@ -58,8 +68,6 @@ extend_einsums_target(test-all
         hip::device
 )
 
-set_source_files_properties(TensorAlgebra_Jobs.cpp PROPERTIES COMPILE_OPTIONS "-Werror")
-
 # Enable einsum auto test capabilities
 target_compile_definitions(test-all 
     PRIVATE 
@@ -75,9 +83,8 @@ include(CTest)
 include(Catch)
 catch_discover_tests(test-all)
 
-if(EINSUMS_COVERAGE AND NOT MSVC)
-    target_compile_options(test-all PUBLIC $<$<COMPILE_LANG_AND_ID:CXX,Clang>:-fprofile-instr-generate -fcoverage-mapping>)
-    target_compile_options(test-all PUBLIC $<$<COMPILE_LANGUAGE:HIP>:-fprofile-instr-generate -fcoverage-mapping>)
-    target_compile_options(test-all PUBLIC $<$<COMPILE_LANG_AND_ID:CXX,GNU>:--coverage>)
-    target_link_options(test-all PUBLIC -lgcov --coverage)
-endif()
+install(TARGETS test-all
+    RUNTIME DESTINATION ${EINSUMS_DATA_PATH})
+
+install(FILES ${__data_files}
+    DESTINATION ${EINSUMS_DATA_PATH}/data/water_sto3g)
