@@ -63,8 +63,6 @@ jobs:
         shell: bash -el {0}
     steps:
       - uses: actions/checkout@v3
-        with:
-          submodules: 'recursive'
 
       - name: Write a Conda Env File
         run: |
