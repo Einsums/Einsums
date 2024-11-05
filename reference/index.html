@@ -307,12 +307,31 @@
   <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="classes.html">Classes/Structs</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="class.tensor.html">Tensor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="class.tensorview.html">Tensor View</a></li>
+<li class="toctree-l2"><a class="reference internal" href="class.devicetensor.html">Device Tensor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="class.devicetensorview.html">Device Tensor Views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="class.runtimetensor.html">Runtime Tensors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="class.runtimetensorview.html">Runtime Tensor Views</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="functions.html">Functions</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="function.create.tensors.html">Tensor creation functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="function.linear_algebra.html">Linear Algebra (BLAS, LAPACK, etc.)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="function.low_level.linear_algebra.html">Low-Level Linear Algebra (BLAS, LAPACK, etc.)</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="python_module.html">Einsums Python Module</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="einsums.core.html">Einsums Core Module</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.tensor_algebra.html">Einsums Python Tensor Algebra</a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.gpu_view.html">Einsums Python GPU Views</a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.runtimetensor.html">Einsums Python Runtime Tensors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.runtimetensorview.html">Einsums Python Runtime Tensor Views</a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.testing_utils.html">Einsums Python Testing Utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.tensoriterator.html">Runtime Tensor Iterators</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="einsums.utils.html">Einsums Utilities Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="einsums.gpu_except.html">HIP Exceptions in Python</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference external" href="https://codecov.io/github/Einsums/Einsums">Coverage Report</a></li>
@@ -375,16 +394,20 @@
 <dd class="field-odd"><p>0.6.1</p>
 </dd>
 <dt class="field-even">Date<span class="colon">:</span></dt>
-<dd class="field-even"><p>Oct 29, 2024</p>
+<dd class="field-even"><p>Nov 05, 2024</p>
 </dd>
 </dl>
 <p>This reference manual details functions, modules, and objects
-included in Einsums, describing what they are and what they do.
-For learning how to use Einsums, see the .</p>
+included in Einsums, describing what they are and what they do.</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="classes.html">Classes/Structs</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="class.tensor.html">Tensor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="class.tensorview.html">Tensor View</a></li>
+<li class="toctree-l2"><a class="reference internal" href="class.devicetensor.html">Device Tensor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="class.devicetensorview.html">Device Tensor Views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="class.runtimetensor.html">Runtime Tensors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="class.runtimetensorview.html">Runtime Tensor Views</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="functions.html">Functions</a><ul>
@@ -407,6 +430,135 @@ For learning how to use Einsums, see the .</p>
 <li class="toctree-l3"><a class="reference internal" href="function.low_level.linear_algebra.html#blas-level-3-functions">BLAS Level 3 Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="function.low_level.linear_algebra.html#lapack-functions">LAPACK Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="function.low_level.linear_algebra.html#to-be-classified">To Be Classified</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="python_module.html">Einsums Python Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="python_module.html#einsums.set_finalize_arg"><code class="docutils literal notranslate"><span class="pre">set_finalize_arg()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="einsums.core.html">Einsums Core Module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.html#einsums.core.gpu_enabled"><code class="docutils literal notranslate"><span class="pre">gpu_enabled()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.html#einsums.core.initialize"><code class="docutils literal notranslate"><span class="pre">initialize()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.html#einsums.core.finalize"><code class="docutils literal notranslate"><span class="pre">finalize()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.html#einsums.core.report"><code class="docutils literal notranslate"><span class="pre">report()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.html#einsums.core.get_buffer_format"><code class="docutils literal notranslate"><span class="pre">get_buffer_format()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.tensor_algebra.html">Einsums Python Tensor Algebra</a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.gpu_view.html">Einsums Python GPU Views</a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.runtimetensor.html">Einsums Python Runtime Tensors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.runtimetensorview.html">Einsums Python Runtime Tensor Views</a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.testing_utils.html">Einsums Python Testing Utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.tensoriterator.html">Runtime Tensor Iterators</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="einsums.utils.html">Einsums Utilities Module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="einsums.utils.html#einsums.utils.TensorIndices"><code class="docutils literal notranslate"><span class="pre">TensorIndices</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.utils.html#einsums.utils.create_tensor"><code class="docutils literal notranslate"><span class="pre">create_tensor()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.utils.html#einsums.utils.create_random_tensor"><code class="docutils literal notranslate"><span class="pre">create_random_tensor()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="einsums.gpu_except.html">HIP Exceptions in Python</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.Success"><code class="docutils literal notranslate"><span class="pre">Success</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorInvalidValue"><code class="docutils literal notranslate"><span class="pre">ErrorInvalidValue</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorOutOfMemory"><code class="docutils literal notranslate"><span class="pre">ErrorOutOfMemory</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorMemoryAllocation"><code class="docutils literal notranslate"><span class="pre">ErrorMemoryAllocation</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorNotInitialized"><code class="docutils literal notranslate"><span class="pre">ErrorNotInitialized</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorInitializationError"><code class="docutils literal notranslate"><span class="pre">ErrorInitializationError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorDeinitialized"><code class="docutils literal notranslate"><span class="pre">ErrorDeinitialized</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorProfilerDisabled"><code class="docutils literal notranslate"><span class="pre">ErrorProfilerDisabled</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorProfilerNotInitialized"><code class="docutils literal notranslate"><span class="pre">ErrorProfilerNotInitialized</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorProfilerAlreadyStarted"><code class="docutils literal notranslate"><span class="pre">ErrorProfilerAlreadyStarted</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorProfilerAlreadyStopped"><code class="docutils literal notranslate"><span class="pre">ErrorProfilerAlreadyStopped</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorInvalidConfiguration"><code class="docutils literal notranslate"><span class="pre">ErrorInvalidConfiguration</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorInvalidPitchValue"><code class="docutils literal notranslate"><span class="pre">ErrorInvalidPitchValue</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorInvalidSymbol"><code class="docutils literal notranslate"><span class="pre">ErrorInvalidSymbol</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorInvalidDevicePointer"><code class="docutils literal notranslate"><span class="pre">ErrorInvalidDevicePointer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorInvalidMemcpyDirection"><code class="docutils literal notranslate"><span class="pre">ErrorInvalidMemcpyDirection</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorInsufficientDriver"><code class="docutils literal notranslate"><span class="pre">ErrorInsufficientDriver</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorMissingConfiguration"><code class="docutils literal notranslate"><span class="pre">ErrorMissingConfiguration</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorPriorLaunchFailure"><code class="docutils literal notranslate"><span class="pre">ErrorPriorLaunchFailure</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorInvalidDeviceFunction"><code class="docutils literal notranslate"><span class="pre">ErrorInvalidDeviceFunction</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorNoDevice"><code class="docutils literal notranslate"><span class="pre">ErrorNoDevice</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorInvalidDevice"><code class="docutils literal notranslate"><span class="pre">ErrorInvalidDevice</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorInvalidImage"><code class="docutils literal notranslate"><span class="pre">ErrorInvalidImage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorInvalidContext"><code class="docutils literal notranslate"><span class="pre">ErrorInvalidContext</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorContextAlreadyCurrent"><code class="docutils literal notranslate"><span class="pre">ErrorContextAlreadyCurrent</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorMapFailed"><code class="docutils literal notranslate"><span class="pre">ErrorMapFailed</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorMapBufferObjectFailed"><code class="docutils literal notranslate"><span class="pre">ErrorMapBufferObjectFailed</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorUnmapFailed"><code class="docutils literal notranslate"><span class="pre">ErrorUnmapFailed</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorArrayIsMapped"><code class="docutils literal notranslate"><span class="pre">ErrorArrayIsMapped</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorAlreadyMapped"><code class="docutils literal notranslate"><span class="pre">ErrorAlreadyMapped</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorNoBinaryForGpu"><code class="docutils literal notranslate"><span class="pre">ErrorNoBinaryForGpu</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorAlreadyAcquired"><code class="docutils literal notranslate"><span class="pre">ErrorAlreadyAcquired</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorNotMapped"><code class="docutils literal notranslate"><span class="pre">ErrorNotMapped</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorNotMappedAsArray"><code class="docutils literal notranslate"><span class="pre">ErrorNotMappedAsArray</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorNotMappedAsPointer"><code class="docutils literal notranslate"><span class="pre">ErrorNotMappedAsPointer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorECCNotCorrectable"><code class="docutils literal notranslate"><span class="pre">ErrorECCNotCorrectable</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorUnsupportedLimit"><code class="docutils literal notranslate"><span class="pre">ErrorUnsupportedLimit</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorContextAlreadyInUse"><code class="docutils literal notranslate"><span class="pre">ErrorContextAlreadyInUse</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorPeerAccessUnsupported"><code class="docutils literal notranslate"><span class="pre">ErrorPeerAccessUnsupported</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorInvalidKernelFile"><code class="docutils literal notranslate"><span class="pre">ErrorInvalidKernelFile</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorInvalidGraphicsContext"><code class="docutils literal notranslate"><span class="pre">ErrorInvalidGraphicsContext</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorInvalidSource"><code class="docutils literal notranslate"><span class="pre">ErrorInvalidSource</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorFileNotFound"><code class="docutils literal notranslate"><span class="pre">ErrorFileNotFound</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorSharedObjectSymbolNotFound"><code class="docutils literal notranslate"><span class="pre">ErrorSharedObjectSymbolNotFound</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorSharedObjectInitFailed"><code class="docutils literal notranslate"><span class="pre">ErrorSharedObjectInitFailed</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorOperatingSystem"><code class="docutils literal notranslate"><span class="pre">ErrorOperatingSystem</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorInvalidHandle"><code class="docutils literal notranslate"><span class="pre">ErrorInvalidHandle</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorInvalidResourceHandle"><code class="docutils literal notranslate"><span class="pre">ErrorInvalidResourceHandle</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorIllegalState"><code class="docutils literal notranslate"><span class="pre">ErrorIllegalState</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorNotFound"><code class="docutils literal notranslate"><span class="pre">ErrorNotFound</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorNotReady"><code class="docutils literal notranslate"><span class="pre">ErrorNotReady</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorIllegalAddress"><code class="docutils literal notranslate"><span class="pre">ErrorIllegalAddress</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorLaunchOutOfResources"><code class="docutils literal notranslate"><span class="pre">ErrorLaunchOutOfResources</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorLaunchTimeOut"><code class="docutils literal notranslate"><span class="pre">ErrorLaunchTimeOut</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorPeerAccessAlreadyEnabled"><code class="docutils literal notranslate"><span class="pre">ErrorPeerAccessAlreadyEnabled</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorPeerAccessNotEnabled"><code class="docutils literal notranslate"><span class="pre">ErrorPeerAccessNotEnabled</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorSetOnActiveProcess"><code class="docutils literal notranslate"><span class="pre">ErrorSetOnActiveProcess</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorContextIsDestroyed"><code class="docutils literal notranslate"><span class="pre">ErrorContextIsDestroyed</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorAssert"><code class="docutils literal notranslate"><span class="pre">ErrorAssert</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorHostMemoyrAlreadyRegistered"><code class="docutils literal notranslate"><span class="pre">ErrorHostMemoyrAlreadyRegistered</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorHostMemoryNotRegistered"><code class="docutils literal notranslate"><span class="pre">ErrorHostMemoryNotRegistered</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorLaunchFailure"><code class="docutils literal notranslate"><span class="pre">ErrorLaunchFailure</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorCooperativeLaunchTooLarge"><code class="docutils literal notranslate"><span class="pre">ErrorCooperativeLaunchTooLarge</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorNotSupported"><code class="docutils literal notranslate"><span class="pre">ErrorNotSupported</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorStreamCaptureUnsupported"><code class="docutils literal notranslate"><span class="pre">ErrorStreamCaptureUnsupported</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorStreamCaptureInvalidated"><code class="docutils literal notranslate"><span class="pre">ErrorStreamCaptureInvalidated</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorStreamCaptureMerge"><code class="docutils literal notranslate"><span class="pre">ErrorStreamCaptureMerge</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorStreamCaptureUnmatched"><code class="docutils literal notranslate"><span class="pre">ErrorStreamCaptureUnmatched</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorStreamCaptureUnjoined"><code class="docutils literal notranslate"><span class="pre">ErrorStreamCaptureUnjoined</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorStreamCaptureIsolation"><code class="docutils literal notranslate"><span class="pre">ErrorStreamCaptureIsolation</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorStreamCaptureImplicit"><code class="docutils literal notranslate"><span class="pre">ErrorStreamCaptureImplicit</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorCapturedEvent"><code class="docutils literal notranslate"><span class="pre">ErrorCapturedEvent</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorStreamCaptureWrongThread"><code class="docutils literal notranslate"><span class="pre">ErrorStreamCaptureWrongThread</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorGraphExecUpdateFailure"><code class="docutils literal notranslate"><span class="pre">ErrorGraphExecUpdateFailure</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorUnknown"><code class="docutils literal notranslate"><span class="pre">ErrorUnknown</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorRuntimeMemory"><code class="docutils literal notranslate"><span class="pre">ErrorRuntimeMemory</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorRuntimeOther"><code class="docutils literal notranslate"><span class="pre">ErrorRuntimeOther</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.ErrorTbd"><code class="docutils literal notranslate"><span class="pre">ErrorTbd</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.blasSuccess"><code class="docutils literal notranslate"><span class="pre">blasSuccess</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.blasNotInitialized"><code class="docutils literal notranslate"><span class="pre">blasNotInitialized</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.blasAllocFailed"><code class="docutils literal notranslate"><span class="pre">blasAllocFailed</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.blasInvalidValue"><code class="docutils literal notranslate"><span class="pre">blasInvalidValue</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.blasMappingError"><code class="docutils literal notranslate"><span class="pre">blasMappingError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.blasExecutionFailed"><code class="docutils literal notranslate"><span class="pre">blasExecutionFailed</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.blasInternalError"><code class="docutils literal notranslate"><span class="pre">blasInternalError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.blasNotSupported"><code class="docutils literal notranslate"><span class="pre">blasNotSupported</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.blasArchMismatch"><code class="docutils literal notranslate"><span class="pre">blasArchMismatch</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.blasHandleIsNullptr"><code class="docutils literal notranslate"><span class="pre">blasHandleIsNullptr</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.blasInvalidEnum"><code class="docutils literal notranslate"><span class="pre">blasInvalidEnum</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.blasUnknown"><code class="docutils literal notranslate"><span class="pre">blasUnknown</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.solverSuccess"><code class="docutils literal notranslate"><span class="pre">solverSuccess</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.solverNotInitialized"><code class="docutils literal notranslate"><span class="pre">solverNotInitialized</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.solverAllocFailed"><code class="docutils literal notranslate"><span class="pre">solverAllocFailed</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.solverInvalidValue"><code class="docutils literal notranslate"><span class="pre">solverInvalidValue</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.solverMappingError"><code class="docutils literal notranslate"><span class="pre">solverMappingError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.solverExecutionFailed"><code class="docutils literal notranslate"><span class="pre">solverExecutionFailed</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.solverInternalError"><code class="docutils literal notranslate"><span class="pre">solverInternalError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.solverFuncNotSupported"><code class="docutils literal notranslate"><span class="pre">solverFuncNotSupported</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.solverArchMismatch"><code class="docutils literal notranslate"><span class="pre">solverArchMismatch</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.solverHandleIsNullptr"><code class="docutils literal notranslate"><span class="pre">solverHandleIsNullptr</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.solverInvalidEnum"><code class="docutils literal notranslate"><span class="pre">solverInvalidEnum</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.gpu_except.html#einsums.gpu_except.solverUnknown"><code class="docutils literal notranslate"><span class="pre">solverUnknown</span></code></a></li>
 </ul>
 </li>
 </ul>

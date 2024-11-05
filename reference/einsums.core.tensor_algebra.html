@@ -1,0 +1,668 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Einsums Python Tensor Algebra &#8212; Einsums 0.6.1 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.4cbf315f70debaebd550c87a6162cf0f.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/einsums.css" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/design-tabs.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'reference/einsums.core.tensor_algebra';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Einsums Python GPU Views" href="einsums.core.gpu_view.html" />
+    <link rel="prev" title="Einsums Core Module" href="einsums.core.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.6.1" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/einsums-logo.png" class="logo__image only-light" alt=""/>
+    <img src="../_static/einsums-logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">Einsums</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../building/index.html">
+    Building from source
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../building/index.html">
+    Building from source
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Einsums/Einsums" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="classes.html">Classes/Structs</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="class.tensor.html">Tensor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="class.tensorview.html">Tensor View</a></li>
+<li class="toctree-l2"><a class="reference internal" href="class.devicetensor.html">Device Tensor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="class.devicetensorview.html">Device Tensor Views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="class.runtimetensor.html">Runtime Tensors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="class.runtimetensorview.html">Runtime Tensor Views</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="functions.html">Functions</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="function.create.tensors.html">Tensor creation functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="function.linear_algebra.html">Linear Algebra (BLAS, LAPACK, etc.)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="function.low_level.linear_algebra.html">Low-Level Linear Algebra (BLAS, LAPACK, etc.)</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="python_module.html">Einsums Python Module</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="einsums.core.html">Einsums Core Module</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3 current active"><a class="current reference internal" href="#">Einsums Python Tensor Algebra</a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.gpu_view.html">Einsums Python GPU Views</a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.runtimetensor.html">Einsums Python Runtime Tensors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.runtimetensorview.html">Einsums Python Runtime Tensor Views</a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.testing_utils.html">Einsums Python Testing Utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="einsums.core.tensoriterator.html">Runtime Tensor Iterators</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="einsums.utils.html">Einsums Utilities Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="einsums.gpu_except.html">HIP Exceptions in Python</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference external" href="https://codecov.io/github/Einsums/Einsums">Coverage Report</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Einsums reference</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="python_module.html" class="nav-link">Einsums Python Module</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="einsums.core.html" class="nav-link">Einsums Core Module</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Einsums Python Tensor Algebra</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="einsums-python-tensor-algebra">
+<span id="einsums-core-tensor-algebra"></span><h1>Einsums Python Tensor Algebra<a class="headerlink" href="#einsums-python-tensor-algebra" title="Permalink to this heading">#</a></h1>
+<p>This page will discuss functions and classes relating to tensor algebra calls in Python.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="einsums.core.compile_plan">
+<span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">compile_plan</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">C_indices</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_indices</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">B_indices</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#einsums.core.EinsumsGenericPlan" title="einsums.core.EinsumsGenericPlan"><span class="pre">einsums.core.EinsumsGenericPlan</span></a></span></span><a class="headerlink" href="#einsums.core.compile_plan" title="Permalink to this definition">#</a></dt>
+<dd><p>Inspects the indices passed in the strings and determines any optimizations that can be done to the subsequent
+operations with this plan. The call will look something like
+<span class="math notranslate nohighlight">\(C_{abc\cdots} = \alpha C_{abc\cdots} + \beta A_{def\cdots} B_{ghi\cdots}\)</span>, though we
+don’t have to specify the prefactors here. Only the indices need to be specified.</p>
+<p>As an example on how to use this, here is a matrix multiplication.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">einsums</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plan</span> <span class="o">=</span> <span class="n">einsums</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">compile_plan</span><span class="p">(</span><span class="s2">&quot;ij&quot;</span><span class="p">,</span> <span class="s2">&quot;ik&quot;</span><span class="p">,</span> <span class="s2">&quot;kj&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span> <span class="o">=</span> <span class="n">einsums</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">create_random_tensor</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">B</span> <span class="o">=</span> <span class="n">einsums</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">create_random_tensor</span><span class="p">(</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">C</span> <span class="o">=</span> <span class="n">einsums</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">create_random_tensor</span><span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plan</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>C_indices</strong> – The indices on the output tensor.</p></li>
+<li><p><strong>A_indices</strong> – The indices on the left input tensor.</p></li>
+<li><p><strong>B_indices</strong> – The indices on the right input tensor.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A plan which can execute the given tensor operation.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="einsums.core.EinsumsGenericPlan">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">EinsumsGenericPlan</span></span><a class="headerlink" href="#einsums.core.EinsumsGenericPlan" title="Permalink to this definition">#</a></dt>
+<dd><p>This is the base for all plans. It is also the fall-back when a plan that normally could be optimized
+is passed values that it can’t handle, such as tensors with different types or tensor views whose smallest
+stride is more than one element (usually).</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="einsums.core.EinsumsGenericPlan.execute">
+<span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">C_prefactor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">C</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">AB_prefactor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">B</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#einsums.core.EinsumsGenericPlan.execute" title="Permalink to this definition">#</a></dt>
+<dd><p>Execute the plan. This can work when <code class="code docutils literal notranslate"><span class="pre">C_prefactor</span></code> and <code class="code docutils literal notranslate"><span class="pre">AB_prefactor</span></code> can be cast to numbers, as well
+as when <code class="code docutils literal notranslate"><span class="pre">A</span></code>, <code class="code docutils literal notranslate"><span class="pre">B</span></code>, and <code class="code docutils literal notranslate"><span class="pre">C</span></code> are either all buffer objects or all <a class="reference internal" href="einsums.core.gpu_view.html#einsums.core.GPUView" title="einsums.core.GPUView"><code class="xref py py-class docutils literal notranslate"><span class="pre">einsums.core.GPUView</span></code></a> objects.
+If they are all <a class="reference internal" href="einsums.core.gpu_view.html#einsums.core.GPUView" title="einsums.core.GPUView"><code class="xref py py-class docutils literal notranslate"><span class="pre">einsums.core.GPUView</span></code></a> objects, make sure to watch the state of the synchronization of
+the objects, as they may become desynchronized.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="einsums.core.EinsumsDotPlan">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">EinsumsDotPlan</span></span><a class="headerlink" href="#einsums.core.EinsumsDotPlan" title="Permalink to this definition">#</a></dt>
+<dd><p>This plan optimizes calls that are equivalent to dot products. At this time, <code class="code docutils literal notranslate"><span class="pre">C</span></code> cannot be a scalar value.
+This may change in the future. This does not conjugate <code class="code docutils literal notranslate"><span class="pre">A</span></code> or <code class="code docutils literal notranslate"><span class="pre">B</span></code>, meaning this is not a true dot product.
+The form of the dot product is this: <span class="math notranslate nohighlight">\(C = \alpha C + \beta A_{i} B_{i}\)</span>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="einsums.core.EinsumsDotPlan.execute">
+<span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">C_prefactor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">C</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">AB_prefactor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">B</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#einsums.core.EinsumsDotPlan.execute" title="Permalink to this definition">#</a></dt>
+<dd><p>Execute the plan. This can work when <code class="code docutils literal notranslate"><span class="pre">C_prefactor</span></code> and <code class="code docutils literal notranslate"><span class="pre">AB_prefactor</span></code> can be cast to numbers, as well
+as when <code class="code docutils literal notranslate"><span class="pre">A</span></code>, <code class="code docutils literal notranslate"><span class="pre">B</span></code>, and <code class="code docutils literal notranslate"><span class="pre">C</span></code> are either all buffer objects or all <a class="reference internal" href="einsums.core.gpu_view.html#einsums.core.GPUView" title="einsums.core.GPUView"><code class="xref py py-class docutils literal notranslate"><span class="pre">einsums.core.GPUView</span></code></a> objects.
+If they are all <a class="reference internal" href="einsums.core.gpu_view.html#einsums.core.GPUView" title="einsums.core.GPUView"><code class="xref py py-class docutils literal notranslate"><span class="pre">einsums.core.GPUView</span></code></a> objects, make sure to watch the state of the synchronization of
+the objects, as they may become desynchronized.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="einsums.core.EinsumsDirectProductPlan">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">EinsumsDirectProductPlan</span></span><a class="headerlink" href="#einsums.core.EinsumsDirectProductPlan" title="Permalink to this definition">#</a></dt>
+<dd><p>This plan optimizes calls that are equivalent to direct products. The ideal form of the direct product is this:
+<span class="math notranslate nohighlight">\(C_{i} = \alpha C_{i} + \beta A_{i} B_{i}\)</span>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="einsums.core.EinsumsDirectProductPlan.execute">
+<span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">C_prefactor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">C</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">AB_prefactor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">B</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#einsums.core.EinsumsDirectProductPlan.execute" title="Permalink to this definition">#</a></dt>
+<dd><p>Execute the plan. This can work when <code class="code docutils literal notranslate"><span class="pre">C_prefactor</span></code> and <code class="code docutils literal notranslate"><span class="pre">AB_prefactor</span></code> can be cast to numbers, as well
+as when <code class="code docutils literal notranslate"><span class="pre">A</span></code>, <code class="code docutils literal notranslate"><span class="pre">B</span></code>, and <code class="code docutils literal notranslate"><span class="pre">C</span></code> are either all buffer objects or all <a class="reference internal" href="einsums.core.gpu_view.html#einsums.core.GPUView" title="einsums.core.GPUView"><code class="xref py py-class docutils literal notranslate"><span class="pre">einsums.core.GPUView</span></code></a> objects.
+If they are all <a class="reference internal" href="einsums.core.gpu_view.html#einsums.core.GPUView" title="einsums.core.GPUView"><code class="xref py py-class docutils literal notranslate"><span class="pre">einsums.core.GPUView</span></code></a> objects, make sure to watch the state of the synchronization of
+the objects, as they may become desynchronized.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="einsums.core.EinsumsGerPlan">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">EinsumsGerPlan</span></span><a class="headerlink" href="#einsums.core.EinsumsGerPlan" title="Permalink to this definition">#</a></dt>
+<dd><p>This plan optimizes calls that are equivalent to outer products, calling BLAS’s <code class="code docutils literal notranslate"><span class="pre">ger</span></code> at its core.
+The ideal form of the direct product is this: <span class="math notranslate nohighlight">\(C_{ij} = \alpha C_{ij} + \beta A_{i} B_{j}\)</span>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="einsums.core.EinsumsGerPlan.execute">
+<span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">C_prefactor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">C</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">AB_prefactor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">B</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#einsums.core.EinsumsGerPlan.execute" title="Permalink to this definition">#</a></dt>
+<dd><p>Execute the plan. This can work when <code class="code docutils literal notranslate"><span class="pre">C_prefactor</span></code> and <code class="code docutils literal notranslate"><span class="pre">AB_prefactor</span></code> can be cast to numbers, as well
+as when <code class="code docutils literal notranslate"><span class="pre">A</span></code>, <code class="code docutils literal notranslate"><span class="pre">B</span></code>, and <code class="code docutils literal notranslate"><span class="pre">C</span></code> are either all buffer objects or all <a class="reference internal" href="einsums.core.gpu_view.html#einsums.core.GPUView" title="einsums.core.GPUView"><code class="xref py py-class docutils literal notranslate"><span class="pre">einsums.core.GPUView</span></code></a> objects.
+If they are all <a class="reference internal" href="einsums.core.gpu_view.html#einsums.core.GPUView" title="einsums.core.GPUView"><code class="xref py py-class docutils literal notranslate"><span class="pre">einsums.core.GPUView</span></code></a> objects, make sure to watch the state of the synchronization of
+the objects, as they may become desynchronized.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="einsums.core.EinsumsGemvPlan">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">EinsumsGemvPlan</span></span><a class="headerlink" href="#einsums.core.EinsumsGemvPlan" title="Permalink to this definition">#</a></dt>
+<dd><p>This plan optimizes calls that are equivalent to matrix-vector products, calling BLAS’s <code class="code docutils literal notranslate"><span class="pre">gemv</span></code> at its core.
+The ideal form of the direct product is this: <span class="math notranslate nohighlight">\(C_{i} = \alpha C_{i} + \beta A_{ij} B_{j}\)</span>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="einsums.core.EinsumsGemvPlan.execute">
+<span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">C_prefactor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">C</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">AB_prefactor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">B</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#einsums.core.EinsumsGemvPlan.execute" title="Permalink to this definition">#</a></dt>
+<dd><p>Execute the plan. This can work when <code class="code docutils literal notranslate"><span class="pre">C_prefactor</span></code> and <code class="code docutils literal notranslate"><span class="pre">AB_prefactor</span></code> can be cast to numbers, as well
+as when <code class="code docutils literal notranslate"><span class="pre">A</span></code>, <code class="code docutils literal notranslate"><span class="pre">B</span></code>, and <code class="code docutils literal notranslate"><span class="pre">C</span></code> are either all buffer objects or all <a class="reference internal" href="einsums.core.gpu_view.html#einsums.core.GPUView" title="einsums.core.GPUView"><code class="xref py py-class docutils literal notranslate"><span class="pre">einsums.core.GPUView</span></code></a> objects.
+If they are all <a class="reference internal" href="einsums.core.gpu_view.html#einsums.core.GPUView" title="einsums.core.GPUView"><code class="xref py py-class docutils literal notranslate"><span class="pre">einsums.core.GPUView</span></code></a> objects, make sure to watch the state of the synchronization of
+the objects, as they may become desynchronized.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="einsums.core.EinsumsGemmPlan">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.core.</span></span><span class="sig-name descname"><span class="pre">EinsumsGemmPlan</span></span><a class="headerlink" href="#einsums.core.EinsumsGemmPlan" title="Permalink to this definition">#</a></dt>
+<dd><p>This plan optimizes calls that are equivalent to matrix products, calling BLAS’s <code class="code docutils literal notranslate"><span class="pre">gemm</span></code> at its core.
+The ideal form of the direct product is this: <span class="math notranslate nohighlight">\(C_{ij} = \alpha C_{ij} + \beta A_{ik} B_{kj}\)</span>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="einsums.core.EinsumsGemmPlan.execute">
+<span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">C_prefactor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">C</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">AB_prefactor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">B</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#einsums.core.EinsumsGemmPlan.execute" title="Permalink to this definition">#</a></dt>
+<dd><p>Execute the plan. This can work when <code class="code docutils literal notranslate"><span class="pre">C_prefactor</span></code> and <code class="code docutils literal notranslate"><span class="pre">AB_prefactor</span></code> can be cast to numbers, as well
+as when <code class="code docutils literal notranslate"><span class="pre">A</span></code>, <code class="code docutils literal notranslate"><span class="pre">B</span></code>, and <code class="code docutils literal notranslate"><span class="pre">C</span></code> are either all buffer objects or all <a class="reference internal" href="einsums.core.gpu_view.html#einsums.core.GPUView" title="einsums.core.GPUView"><code class="xref py py-class docutils literal notranslate"><span class="pre">einsums.core.GPUView</span></code></a> objects.
+If they are all <a class="reference internal" href="einsums.core.gpu_view.html#einsums.core.GPUView" title="einsums.core.GPUView"><code class="xref py py-class docutils literal notranslate"><span class="pre">einsums.core.GPUView</span></code></a> objects, make sure to watch the state of the synchronization of
+the objects, as they may become desynchronized.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="einsums.core.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Einsums Core Module</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="einsums.core.gpu_view.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Einsums Python GPU Views</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.compile_plan"><code class="docutils literal notranslate"><span class="pre">compile_plan()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.EinsumsGenericPlan"><code class="docutils literal notranslate"><span class="pre">EinsumsGenericPlan</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.EinsumsGenericPlan.execute"><code class="docutils literal notranslate"><span class="pre">EinsumsGenericPlan.execute()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.EinsumsDotPlan"><code class="docutils literal notranslate"><span class="pre">EinsumsDotPlan</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.EinsumsDotPlan.execute"><code class="docutils literal notranslate"><span class="pre">EinsumsDotPlan.execute()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.EinsumsDirectProductPlan"><code class="docutils literal notranslate"><span class="pre">EinsumsDirectProductPlan</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.EinsumsDirectProductPlan.execute"><code class="docutils literal notranslate"><span class="pre">EinsumsDirectProductPlan.execute()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.EinsumsGerPlan"><code class="docutils literal notranslate"><span class="pre">EinsumsGerPlan</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.EinsumsGerPlan.execute"><code class="docutils literal notranslate"><span class="pre">EinsumsGerPlan.execute()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.EinsumsGemvPlan"><code class="docutils literal notranslate"><span class="pre">EinsumsGemvPlan</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.EinsumsGemvPlan.execute"><code class="docutils literal notranslate"><span class="pre">EinsumsGemvPlan.execute()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.EinsumsGemmPlan"><code class="docutils literal notranslate"><span class="pre">EinsumsGemmPlan</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.core.EinsumsGemmPlan.execute"><code class="docutils literal notranslate"><span class="pre">EinsumsGemmPlan.execute()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022-2024, Einsums Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.2.1.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

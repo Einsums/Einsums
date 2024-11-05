@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Functions &#8212; Einsums 0.6.1 documentation</title>
+    <title>Einsums Utilities Module &#8212; Einsums 0.6.1 documentation</title>
   
   
   
@@ -45,11 +45,12 @@
     <script src="../_static/doctools.js"></script>
     <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/design-tabs.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'reference/functions';</script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'reference/einsums.utils';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Tensor creation functions" href="function.create.tensors.html" />
-    <link rel="prev" title="Runtime Tensor Views" href="class.runtimetensorview.html" />
+    <link rel="next" title="HIP Exceptions in Python" href="einsums.gpu_except.html" />
+    <link rel="prev" title="Runtime Tensor Iterators" href="einsums.core.tensoriterator.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="0.6.1" />
@@ -215,6 +216,10 @@
   
 
   
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
 </div>
 
     </header>
@@ -314,13 +319,13 @@
 <li class="toctree-l2"><a class="reference internal" href="class.runtimetensorview.html">Runtime Tensor Views</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">Functions</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="functions.html">Functions</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="function.create.tensors.html">Tensor creation functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="function.linear_algebra.html">Linear Algebra (BLAS, LAPACK, etc.)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="function.low_level.linear_algebra.html">Low-Level Linear Algebra (BLAS, LAPACK, etc.)</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="python_module.html">Einsums Python Module</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="python_module.html">Einsums Python Module</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2 has-children"><a class="reference internal" href="einsums.core.html">Einsums Core Module</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="einsums.core.tensor_algebra.html">Einsums Python Tensor Algebra</a></li>
 <li class="toctree-l3"><a class="reference internal" href="einsums.core.gpu_view.html">Einsums Python GPU Views</a></li>
@@ -330,7 +335,7 @@
 <li class="toctree-l3"><a class="reference internal" href="einsums.core.tensoriterator.html">Runtime Tensor Iterators</a></li>
 </ul>
 </details></li>
-<li class="toctree-l2"><a class="reference internal" href="einsums.utils.html">Einsums Utilities Module</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Einsums Utilities Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="einsums.gpu_except.html">HIP Exceptions in Python</a></li>
 </ul>
 </details></li>
@@ -373,7 +378,10 @@
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">Einsums reference</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Functions</span></li>
+    
+    <li class="breadcrumb-item"><a href="python_module.html" class="nav-link">Einsums Python Module</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Einsums Utilities Module</span></li>
   </ul>
 </nav>
 </div>
@@ -390,43 +398,104 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="functions">
-<span id="id1"></span><h1>Functions<a class="headerlink" href="#functions" title="Permalink to this heading">#</a></h1>
-<p>In this chapter, Doxygen docstrings are presented for functions, grouped by functionality.
-Many docstrings contain example code, which demonstrates basic usage of the function.
-The examples assume that Einsums has been include with:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;einsums.hpp&gt;</span>
-</pre></div>
-</div>
-<p>It is also assumed, in many examples, that the following <cite>using namespace</cite> command has been used:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">einsums</span><span class="p">;</span>
-</pre></div>
-</div>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="function.create.tensors.html">Tensor creation functions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function.create.tensors.html#functions-for-creating-standard-tensors">Functions for creating standard tensors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="function.create.tensors.html#functions-for-creating-pre-filled-tensors">Functions for creating pre-filled tensors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="function.create.tensors.html#additional-functions-for-creating-tensors">Additional functions for creating tensors</a></li>
+  <section id="einsums-utilities-module">
+<span id="einsums-utils"></span><h1>Einsums Utilities Module<a class="headerlink" href="#einsums-utilities-module" title="Permalink to this heading">#</a></h1>
+<p>This module contains extra utilities written in Python for the Einsums library.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="einsums.utils.TensorIndices">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">einsums.utils.</span></span><span class="sig-name descname"><span class="pre">TensorIndices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">reverse</span> <span class="pre">:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#einsums.utils.TensorIndices" title="Permalink to this definition">#</a></dt>
+<dd><p>This is an iterator that goes through all possible combinations of indices for a tensor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>other</strong> – The tensor to use to generate index combinations, or a <a class="reference internal" href="#einsums.utils.TensorIndices" title="einsums.utils.TensorIndices"><code class="xref py py-class docutils literal notranslate"><span class="pre">TensorIndices</span></code></a> object to copy.</p></li>
+<li><p><strong>reverse</strong> – If true, walk through the indices in reverse. Otherwise, walk forward.</p></li>
 </ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="function.linear_algebra.html">Linear Algebra (BLAS, LAPACK, etc.)</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function.linear_algebra.html#blas-level-1-functions">BLAS Level 1 Functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="function.linear_algebra.html#blas-level-2-functions">BLAS Level 2 Functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="function.linear_algebra.html#blas-level-3-functions">BLAS Level 3 Functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="function.linear_algebra.html#lapack-functions">LAPACK Functions</a></li>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="einsums.utils.TensorIndices.__iter__">
+<span class="sig-name descname"><span class="pre">__iter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#einsums.utils.TensorIndices.__iter__" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the iterator for this iterator (itself).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The object itself.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="einsums.utils.TensorIndices.__reversed__">
+<span class="sig-name descname"><span class="pre">__reversed__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#einsums.utils.TensorIndices.__reversed__" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the iterator that goes in reverse.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The iterator that goes from the current index back to the beginning.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="einsums.utils.TensorIndices.__next__">
+<span class="sig-name descname"><span class="pre">__next__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#einsums.utils.TensorIndices.__next__" title="Permalink to this definition">#</a></dt>
+<dd><p>Get the next index and update the internal state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The next index.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>StopIteration</strong> – Raises this if there are no more indices.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="einsums.utils.create_tensor">
+<span class="sig-prename descclassname"><span class="pre">einsums.utils.</span></span><span class="sig-name descname"><span class="pre">create_tensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*args</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">dtype</span> <span class="pre">=</span> <span class="pre">float</span></span></em><span class="optional">]</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="einsums.core.runtimetensor.html#einsums.core.RuntimeTensor" title="einsums.core.RuntimeTensor"><span class="pre">einsums.core.RuntimeTensor</span></a></span></span><a class="headerlink" href="#einsums.utils.create_tensor" title="Permalink to this definition">#</a></dt>
+<dd><p>Create a new tensor with the given data type. The arguments will be passed to the proper
+constructor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>args</strong> – Arguments to pass to the constructor.</p></li>
+<li><p><strong>dtype</strong> – The data type of the tensor.</p></li>
 </ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="function.low_level.linear_algebra.html">Low-Level Linear Algebra (BLAS, LAPACK, etc.)</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="function.low_level.linear_algebra.html#blas-level-1-functions">BLAS Level 1 Functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="function.low_level.linear_algebra.html#blas-level-2-functions">BLAS Level 2 Functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="function.low_level.linear_algebra.html#blas-level-3-functions">BLAS Level 3 Functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="function.low_level.linear_algebra.html#lapack-functions">LAPACK Functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="function.low_level.linear_algebra.html#to-be-classified">To Be Classified</a></li>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tensor that holds the requested type.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="einsums.utils.create_random_tensor">
+<span class="sig-prename descclassname"><span class="pre">einsums.utils.</span></span><span class="sig-name descname"><span class="pre">create_random_tensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dims</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_func</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">random.random</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#einsums.utils.create_random_tensor" title="Permalink to this definition">#</a></dt>
+<dd><p>Creates a tensor with the given name, dimensions, and data type, then fills that tensor with random data.
+An optional function for specifying the random numbers can be given as well. By default, this is the
+<code class="xref py py-func docutils literal notranslate"><span class="pre">random.random()</span></code> function, which gives a uniformly distributed random number on the range
+<span class="math notranslate nohighlight">\([0, 1)\)</span> for real values, and complex values <span class="math notranslate nohighlight">\(a + b i\)</span> where <span class="math notranslate nohighlight">\(a\)</span> and <span class="math notranslate nohighlight">\(b\)</span> are
+each uniformly distributed on the range <span class="math notranslate nohighlight">\([0, 1)\)</span>.</p>
+<p>If the random function returns real values and
+a complex tensor is requested, then the real and imaginary parts will each be distributed according to
+that random distribution. If the random function returns complex values and a real tensor is requested,
+then the values of the tensor will be taken from the real part of the random values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – The name of the tensor.</p></li>
+<li><p><strong>dims</strong> – The dimensions of the tensor. The rank will be determined from these dimensions.</p></li>
+<li><p><strong>dtype</strong> – The type of data to store.</p></li>
+<li><p><strong>random_func</strong> – The function that will give the random values.</p></li>
 </ul>
-</li>
-</ul>
-</div>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tensor with the specified name, dimensions, and data type that has been filled with random data.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
 
@@ -440,20 +509,20 @@ The examples assume that Einsums has been include with:</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="class.runtimetensorview.html"
+       href="einsums.core.tensoriterator.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Runtime Tensor Views</p>
+        <p class="prev-next-title">Runtime Tensor Iterators</p>
       </div>
     </a>
     <a class="right-next"
-       href="function.create.tensors.html"
+       href="einsums.gpu_except.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Tensor creation functions</p>
+        <p class="prev-next-title">HIP Exceptions in Python</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -463,6 +532,31 @@ The examples assume that Einsums has been include with:</p>
             </div>
             
             
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.utils.TensorIndices"><code class="docutils literal notranslate"><span class="pre">TensorIndices</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.utils.TensorIndices.__iter__"><code class="docutils literal notranslate"><span class="pre">TensorIndices.__iter__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.utils.TensorIndices.__reversed__"><code class="docutils literal notranslate"><span class="pre">TensorIndices.__reversed__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.utils.TensorIndices.__next__"><code class="docutils literal notranslate"><span class="pre">TensorIndices.__next__()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.utils.create_tensor"><code class="docutils literal notranslate"><span class="pre">create_tensor()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#einsums.utils.create_random_tensor"><code class="docutils literal notranslate"><span class="pre">create_random_tensor()</span></code></a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>
