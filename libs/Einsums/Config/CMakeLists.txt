@@ -1,0 +1,30 @@
+#----------------------------------------------------------------------------------------------
+# Copyright (c) The Einsums Developers. All rights reserved.
+# Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+#----------------------------------------------------------------------------------------------
+
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
+set(ConfigHeaders
+    Einsums/Config.hpp
+    Einsums/Config/BranchHints.hpp
+    Einsums/Config/ExportDefinitions.hpp
+    Einsums/Config/Namespace.hpp
+    Einsums/Config/Types.hpp
+)
+
+set(ConfigSources
+    Version.cpp
+)
+
+include(Einsums_AddModule)
+einsums_add_module(
+  Einsums Config CONFIG_FILES
+  GLOBAL_HEADER_GEN OFF
+  SOURCES ${ConfigSources}
+  HEADERS ${ConfigHeaders}
+  DEPENDENCIES
+  MODULE_DEPENDENCIES
+    Einsums_Preprocessor
+  CMAKE_SUBDIRS examples tests
+)
