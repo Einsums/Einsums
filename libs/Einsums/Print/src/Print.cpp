@@ -7,11 +7,11 @@
 
 #include <cstdio>
 #include <iomanip>
+#include <mutex>
 #include <omp.h>
 #include <sstream>
 #include <string>
 #include <thread>
-#include <mutex>
 
 #if defined(_WIN32) || defined(_WIN64)
 #    include <io.h>
@@ -68,7 +68,7 @@ void suppress_output(bool onoff) {
 
 namespace {
 
-void print_line(const std::string &line) {
+void print_line(std::string const &line) {
     constexpr int rank = 0;
 
     if (rank == 0) {
@@ -93,7 +93,7 @@ void print_line(const std::string &line) {
     }
 }
 
-void fprint_line(std::FILE *fp, const std::string &line) {
+void fprint_line(std::FILE *fp, std::string const &line) {
     constexpr int rank = 0;
 
     if (rank == 0) {
@@ -118,7 +118,7 @@ void fprint_line(std::FILE *fp, const std::string &line) {
     }
 }
 
-void fprint_line(std::ostream &os, const std::string &line) {
+void fprint_line(std::ostream &os, std::string const &line) {
     constexpr int rank = 0;
 
     if (rank == 0) {
@@ -145,7 +145,7 @@ void fprint_line(std::ostream &os, const std::string &line) {
 } // namespace
 
 namespace detail {
-void println(const std::string &str) {
+void println(std::string const &str) {
     if (!print::suppress) {
         std::istringstream iss(str);
 
@@ -155,7 +155,7 @@ void println(const std::string &str) {
     }
 }
 
-void fprintln(std::FILE *fp, const std::string &str) {
+void fprintln(std::FILE *fp, std::string const &str) {
     if (!print::suppress) {
         std::istringstream iss(str);
 
@@ -165,7 +165,7 @@ void fprintln(std::FILE *fp, const std::string &str) {
     }
 }
 
-void fprintln(std::ostream &os, const std::string &str) {
+void fprintln(std::ostream &os, std::string const &str) {
     if (!print::suppress) {
         std::istringstream iss(str);
 
