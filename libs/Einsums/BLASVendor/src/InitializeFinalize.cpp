@@ -4,12 +4,12 @@
 //----------------------------------------------------------------------------------------------
 
 #include <Einsums/Config.hpp>
-#include <Einsums/BLASVendor/Defines.hpp>
 
+#include <Einsums/BLASVendor/Defines.hpp>
 #include <Einsums/Print.hpp>
 
 #if defined(EINSUMS_HAVE_MKL)
-typedef void (*XerblaEntry)(char const *Name, int const *Num, intLen const);
+typedef void (*XerblaEntry)(char const *Name, int const *Num, int const len);
 extern "C" {
 XerblaEntry mkl_set_xerbla(XerblaEntry xerbla);
 }

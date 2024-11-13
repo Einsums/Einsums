@@ -13,7 +13,6 @@ jobs:
       matrix:
         cxx: [ L-Gnu, M-Clang, L-Intel ]
         build_type: [ Release, Debug ]
-        hptt: [ ON, OFF ]
         include:
           - cmargs: ""
           - testargs: ""
@@ -32,14 +31,12 @@ jobs:
           - cxx: L-src
             os: ubuntu-latest
             build_type: Debug
-            hptt: ON
             cmargs: >
               -DFETCHCONTENT_QUIET=OFF
               -DFETCHCONTENT_TRY_FIND_PACKAGE_MODE=NEVER
           - cxx: W-ClangCL
             os: windows-latest
             build_type: Release
-            hptt: OFF
             llvm-version: "17.0.6"
             cmargs: >
               -DCMAKE_CXX_COMPILER=clang-cl
@@ -56,7 +53,7 @@ jobs:
         exclude:
           - cxx: L-Intel
             build_type: Debug
-    name: "Build • ${{ matrix.cxx }} • ${{ matrix.build_type }} • HPTT=${{ matrix.hptt }}"
+    name: "Build • ${{ matrix.cxx }} • ${{ matrix.build_type }}"
     runs-on: ${{matrix.os}}
     defaults:
       run:
@@ -157,8 +154,7 @@ jobs:
             -G Ninja \
             -D CMAKE_BUILD_TYPE=${{matrix.build_type}} \
             -D EINSUMS_SHOW_WARNING=OFF \
-            -D EINSUMS_USE_HPTT=${{matrix.hptt}} \
-            -D EINSUMS_STATIC_BUILD=${{matrix.hptt}} \
+            -D EINSUMS_STATIC_BUILD=ON \
             -D EINSUMS_BUILD_PYTHON=OFF \
             -D EINSUMS_COVERAGE=ON \
             -D CMAKE_INSTALL_PREFIX="${{github.workspace}}/installed" \
@@ -184,7 +180,7 @@ jobs:
           echo "SOURCES=$SOURCES"
           gcov $SOURCES || echo "returned $?"
           lcov --capture --directory . --output-file coverage.info --exclude /usr/\* --exclude \*/build/_deps/\*
-      
+
       - name: Upload C++ coverage to Codecov
         uses: codecov/codecov-action@v4
         if: ${{runner.os != 'Windows'}}
