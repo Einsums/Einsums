@@ -164,7 +164,7 @@ jobs:
       - name: Build & Install
         run: |
           cmake --build "${{github.workspace}}/build" --config ${{matrix.build_type}} --target install
-          cat "${{github.workspace}}/installed/share/cmake/Einsums/EinsumsConfig.cmake"
+      #          cat "${{github.workspace}}/installed/share/cmake/Einsums/EinsumsConfig.cmake"
 
       - name: Test (CTest) - unit tests
         working-directory: "${{github.workspace}}/build"

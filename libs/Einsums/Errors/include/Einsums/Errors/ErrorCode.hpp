@@ -59,7 +59,7 @@ struct ErrorCode : std::error_code {
     EINSUMS_EXPORT ErrorCode(Error e, std::string const &msg, std::source_location const &location = std::source_location::current(),
                              ThrowMode mode = ThrowMode::plain);
 
-    EINSUMS_EXPORT [[nodiscard]] auto get_message() const -> std::string;
+    EINSUMS_EXPORT auto get_message() const -> std::string;
 
     void clear() {
         assign(static_cast<int>(Error::success), get_einsums_category());
