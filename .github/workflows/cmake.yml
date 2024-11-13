@@ -51,9 +51,9 @@ jobs:
               -DMKL_ROOT="${CONDA_PREFIX}"
               -DEINSUMS_STATIC_BUILD=ON
               -D ZLIB_USE_STATIC_LIBS=ON
-        exclude:
-          - cxx: L-Intel
-            build_type: Debug
+        # exclude:
+        #   - cxx: L-Intel
+        #     build_type: Debug
     name: "Build • ${{ matrix.cxx }} • ${{ matrix.build_type }}"
     runs-on: ${{matrix.os}}
     defaults:
@@ -193,40 +193,40 @@ jobs:
           flags: cpp
           token: ${{ secrets.CODECOV_TOKEN }}
 
-#      - name: Test (find_package) - consume installation
-#        shell: bash -l {0}
-#        run: |
-#          mkdir test_installed_library && cd test_installed_library
-#          cat > CMakeLists.txt <<EOF
-#          cmake_minimum_required(VERSION 3.8)
-#          project(sample)
-#          find_package(Einsums REQUIRED)
-#          include(CMakePrintHelpers)
-#          cmake_print_properties(
-#            TARGETS
-#              Einsums::einsums
-#              HDF5::HDF5
-#              tgt::lapack
-#              OpenMP::OpenMP_CXX
-#            PROPERTIES
-#              IMPORTED_LINK_DEPENDENT_LIBRARIES
-#              INTERFACE_LOCATION
-#              INTERFACE_LINK_LIBRARIES
-#              INTERFACE_INCLUDE_DIRECTORIES
-#              INTERFACE_COMPILE_DEFINITIONS
-#              INTERFACE_COMPILE_OPTIONS
-#              INTERFACE_SYSTEM_INCLUDE_DIRECTORIES
-#            )
-#          add_executable(timings "../timing/main.cpp")
-#          target_link_libraries(timings Einsums::einsums)
-#          EOF
-#          cmake -S . \
-#            -B build \
-#            -G Ninja \
-#            --log-level verbose \
-#            -DCMAKE_BUILD_TYPE=Release \
-#            -DCMAKE_PREFIX_PATH="${CONDA_PREFIX};${CONDA_PREFIX}/Library;${{ github.workspace }}/installed" \
-#            ${{ matrix.testargs }}
-#          cmake --build build
-#          ./build/timings
+      # - name: Test (find_package) - consume installation
+      #   shell: bash -l {0}
+      #   run: |
+      #     mkdir test_installed_library && cd test_installed_library
+      #     cat > CMakeLists.txt <<EOF
+      #     cmake_minimum_required(VERSION 3.8)
+      #     project(sample)
+      #     find_package(Einsums REQUIRED)
+      #     include(CMakePrintHelpers)
+      #     cmake_print_properties(
+      #       TARGETS
+      #         Einsums::einsums
+      #         HDF5::HDF5
+      #         tgt::lapack
+      #         OpenMP::OpenMP_CXX
+      #       PROPERTIES
+      #         IMPORTED_LINK_DEPENDENT_LIBRARIES
+      #         INTERFACE_LOCATION
+      #         INTERFACE_LINK_LIBRARIES
+      #         INTERFACE_INCLUDE_DIRECTORIES
+      #         INTERFACE_COMPILE_DEFINITIONS
+      #         INTERFACE_COMPILE_OPTIONS
+      #         INTERFACE_SYSTEM_INCLUDE_DIRECTORIES
+      #       )
+      #     add_executable(timings "../timing/main.cpp")
+      #     target_link_libraries(timings Einsums::einsums)
+      #     EOF
+      #     cmake -S . \
+      #       -B build \
+      #       -G Ninja \
+      #       --log-level verbose \
+      #       -DCMAKE_BUILD_TYPE=Release \
+      #       -DCMAKE_PREFIX_PATH="${CONDA_PREFIX};${CONDA_PREFIX}/Library;${{ github.workspace }}/installed" \
+      #       ${{ matrix.testargs }}
+      #     cmake --build build
+      #     ./build/timings
 
