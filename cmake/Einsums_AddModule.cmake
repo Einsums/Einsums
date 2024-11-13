@@ -16,10 +16,15 @@ function(einsums_add_module libname modulename)
       DEPENDENCIES
       MODULE_DEPENDENCIES
       CMAKE_SUBDIRS
-      EXCLUDE_FROM_GLOBAL_HEADER)
-  cmake_parse_arguments(${modulename} "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
+      EXCLUDE_FROM_GLOBAL_HEADER
+  )
+  cmake_parse_arguments(
+    ${modulename} "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN}
+  )
   if(${modulename}_UNPARSED_ARGUMENTS)
-    message(AUTHOR_WARNING "Arguments were not used by the module: ${${modulename}_UNPARSED_ARGUMENTS}")
+    message(
+      AUTHOR_WARNING "Arguments were not used by the module: ${${modulename}_UNPARSED_ARGUMENTS}"
+    )
   endif()
 
   include(Einsums_Message)
@@ -36,7 +41,8 @@ function(einsums_add_module libname modulename)
   # Mark the module as enabled (see einsums/libs/CMakeLists.txt)
   set(EINSUMS_ENABLED_MODULES
       ${EINSUMS_ENABLED_MODULES} ${modulename}
-      CACHE INTERNAL "List of enabled einsums modules" FORCE)
+      CACHE INTERNAL "List of enabled einsums modules" FORCE
+  )
 
   # Main directories of the module
   set(SOURCE_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/src")
@@ -59,7 +65,8 @@ function(einsums_add_module libname modulename)
                "Global header generation turned on for module ${modulename} but the "
                "header \"Einsums/Modules/${modulename}.hpp\" is also listed explicitly as"
                "a header. Turn off global header generation or remove the "
-               "\"Einsums/Modules/${modulename}.hpp\" file.")
+               "\"Einsums/Modules/${modulename}.hpp\" file."
+      )
       einsums_error(${error_message})
     endif()
     # Add a global include file that include all module headers
@@ -67,12 +74,15 @@ function(einsums_add_module libname modulename)
     set(module_headers)
     foreach(header_file ${${modulename}_HEADERS})
       # Exclude the files specified
-      if((NOT (${header_file} IN_LIST ${modulename}_EXCLUDE_FROM_GLOBAL_HEADER)) AND (NOT ("${header_file}" MATCHES
-                                                                                           "detail")))
+      if((NOT (${header_file} IN_LIST ${modulename}_EXCLUDE_FROM_GLOBAL_HEADER))
+         AND (NOT ("${header_file}" MATCHES "(D|d)etail"))
+      )
         set(module_headers "${module_headers}#include <${header_file}>\n")
       endif()
     endforeach(header_file)
-    configure_file("${PROJECT_SOURCE_DIR}/cmake/templates/GlobalModuleHeader.hpp.in" "${global_header}")
+    configure_file(
+      "${PROJECT_SOURCE_DIR}/cmake/templates/GlobalModuleHeader.hpp.in" "${global_header}"
+    )
     set(generated_headers ${global_header})
   endif()
 
@@ -84,20 +94,27 @@ function(einsums_add_module libname modulename)
   if(${modulename}_CONFIG_FILES)
     # Version file
     set(global_config_file ${CMAKE_CURRENT_BINARY_DIR}/include/Einsums/Config/Version.hpp)
-    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake/templates/ConfigVersion.hpp.in" "${global_config_file}" @ONLY)
+    configure_file(
+      "${CMAKE_CURRENT_SOURCE_DIR}/cmake/templates/ConfigVersion.hpp.in" "${global_config_file}"
+      @ONLY
+    )
     set(generated_headers ${generated_headers} ${global_config_file})
     # Global config defines file (different from the one for each module)
     set(global_config_file ${CMAKE_CURRENT_BINARY_DIR}/include/Einsums/Config/Defines.hpp)
-    einsums_write_config_defines_file(TEMPLATE "${CMAKE_CURRENT_SOURCE_DIR}/cmake/templates/ConfigDefines.hpp.in"
-                                      NAMESPACE default FILENAME "${global_config_file}")
+    einsums_write_config_defines_file(
+      TEMPLATE "${CMAKE_CURRENT_SOURCE_DIR}/cmake/templates/ConfigDefines.hpp.in" NAMESPACE default
+      FILENAME "${global_config_file}"
+    )
     set(generated_headers ${generated_headers} ${global_config_file})
   endif()
 
   # collect zombie generated headers
   file(GLOB_RECURSE zombie_generated_headers ${CMAKE_CURRENT_BINARY_DIR}/include/*.hpp
-       ${CMAKE_CURRENT_BINARY_DIR}/include_compatibility/*.hpp)
+       ${CMAKE_CURRENT_BINARY_DIR}/include_compatibility/*.hpp
+  )
   list(REMOVE_ITEM zombie_generated_headers ${generated_headers} ${compat_headers}
-       ${CMAKE_CURRENT_BINARY_DIR}/include/Einsums/Config/ModulesEnabled.hpp)
+       ${CMAKE_CURRENT_BINARY_DIR}/include/Einsums/Config/ModulesEnabled.hpp
+  )
   foreach(zombie_header IN LISTS zombie_generated_headers)
     einsums_warn("Removing zombie generated header: ${zombie_header}")
     file(REMOVE ${zombie_header})
@@ -134,22 +151,31 @@ function(einsums_add_module libname modulename)
         string(SUBSTRING ${dep} 5 -1 dep) # cut off leading "einsums_"
         list(FIND _${libname}_modules ${dep} dep_index)
         if(${dep_index} EQUAL -1)
-          einsums_error("The module ${dep} should not be be listed in MODULE_DEPENDENCIES "
-                        "for module Einsums_${modulename}")
+          einsums_error(
+            "The module ${dep} should not be be listed in MODULE_DEPENDENCIES "
+            "for module Einsums_${modulename}"
+          )
         endif()
       endif()
     endforeach()
   endif()
 
-  target_link_libraries(${libname}_${modulename} ${module_public_keyword} ${${modulename}_MODULE_DEPENDENCIES})
-  target_link_libraries(${libname}_${modulename} ${module_public_keyword} ${${modulename}_DEPENDENCIES})
+  target_link_libraries(
+    ${libname}_${modulename} ${module_public_keyword} ${${modulename}_MODULE_DEPENDENCIES}
+  )
+  target_link_libraries(
+    ${libname}_${modulename} ${module_public_keyword} ${${modulename}_DEPENDENCIES}
+  )
 
-  target_link_libraries(${libname}_${modulename} ${module_public_keyword} einsums_public_flags einsums_base_libraries)
+  target_link_libraries(
+    ${libname}_${modulename} ${module_public_keyword} einsums_public_flags einsums_base_libraries
+  )
 
   target_include_directories(
     ${libname}_${modulename} ${module_public_keyword} $<BUILD_INTERFACE:${HEADER_ROOT}>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include> $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>
-    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+  )
 
   if(NOT module_is_interface_library)
     target_link_libraries(${libname}_${modulename} PRIVATE einsums_private_flags)
@@ -164,44 +190,32 @@ function(einsums_add_module libname modulename)
   endif()
 
   einsums_add_source_group(
-    NAME
-    ${libname}_${modulename}
-    ROOT
-    ${HEADER_ROOT}/Einsums
-    CLASS
-    "Header Files"
-    TARGETS
-    ${headers})
+    NAME ${libname}_${modulename}
+    ROOT ${HEADER_ROOT}/Einsums
+    CLASS "Header Files"
+    TARGETS ${headers}
+  )
   einsums_add_source_group(
-    NAME
-    ${libname}_${modulename}
-    ROOT
-    ${SOURCE_ROOT}
-    CLASS
-    "Source Files"
-    TARGETS
-    ${sources})
+    NAME ${libname}_${modulename}
+    ROOT ${SOURCE_ROOT}
+    CLASS "Source Files"
+    TARGETS ${sources}
+  )
 
   if(${modulename}_GLOBAL_HEADER_GEN OR ${modulename}_CONFIG_FILES)
     einsums_add_source_group(
-      NAME
-      ${libname}_${modulename}
-      ROOT
-      ${CMAKE_CURRENT_BINARY_DIR}/include/Einsums
-      CLASS
-      "Generated Files"
-      TARGETS
-      ${generated_headers})
+      NAME ${libname}_${modulename}
+      ROOT ${CMAKE_CURRENT_BINARY_DIR}/include/Einsums
+      CLASS "Generated Files"
+      TARGETS ${generated_headers}
+    )
   endif()
   einsums_add_source_group(
-    NAME
-    ${libname}_${modulename}
-    ROOT
-    ${CMAKE_CURRENT_BINARY_DIR}/include/Einsums
-    CLASS
-    "Generated Files"
-    TARGETS
-    ${config_header})
+    NAME ${libname}_${modulename}
+    ROOT ${CMAKE_CURRENT_BINARY_DIR}/include/Einsums
+    CLASS "Generated Files"
+    TARGETS ${config_header}
+  )
 
   # capitalize string
   string(SUBSTRING ${libname} 0 1 first_letter)
@@ -209,25 +223,33 @@ function(einsums_add_module libname modulename)
   string(REGEX REPLACE "^.(.*)" "${first_letter}\\1" libname_cap "${libname}")
 
   if(NOT module_is_interface_library)
-    set_target_properties(${libname}_${modulename} PROPERTIES FOLDER "Core/Modules/${libname_cap}"
-                                                           POSITION_INDEPENDENT_CODE ON)
+    set_target_properties(
+      ${libname}_${modulename} PROPERTIES FOLDER "Core/Modules/${libname_cap}"
+                                          POSITION_INDEPENDENT_CODE ON
+    )
   endif()
 
   if(EINSUMS_WITH_UNITY_BUILD AND NOT module_is_interface_library)
     set_target_properties(${libname}_${modulename} PROPERTIES UNITY_BUILD ON)
-    set_target_properties(${libname}_${modulename} PROPERTIES UNITY_BUILD_CODE_BEFORE_INCLUDE
-                                                           "// NOLINTBEGIN(bugprone-suspicious-include)")
-    set_target_properties(einsums_${modulename} PROPERTIES UNITY_BUILD_CODE_AFTER_INCLUDE
-                                                           "// NOLINTEND(bugprone-suspicious-include)")
+    set_target_properties(
+      ${libname}_${modulename} PROPERTIES UNITY_BUILD_CODE_BEFORE_INCLUDE
+                                          "// NOLINTBEGIN(bugprone-suspicious-include)"
+    )
+    set_target_properties(
+      einsums_${modulename} PROPERTIES UNITY_BUILD_CODE_AFTER_INCLUDE
+                                       "// NOLINTEND(bugprone-suspicious-include)"
+    )
   endif()
 
   if(MSVC)
     set_target_properties(
-        ${libname}_${modulename}
+      ${libname}_${modulename}
       PROPERTIES COMPILE_PDB_NAME_DEBUG ${libname}_${modulename}d
                  COMPILE_PDB_NAME_RELWITHDEBINFO ${libname}_${modulename}
                  COMPILE_PDB_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/Debug
-                 COMPILE_PDB_OUTPUT_DIRECTORY_RELWITHDEBINFO ${CMAKE_CURRENT_BINARY_DIR}/RelWithDebInfo)
+                 COMPILE_PDB_OUTPUT_DIRECTORY_RELWITHDEBINFO
+                 ${CMAKE_CURRENT_BINARY_DIR}/RelWithDebInfo
+    )
   endif()
 
   install(
@@ -235,31 +257,37 @@ function(einsums_add_module libname modulename)
     EXPORT einsums_internal_targets
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT ${modulename})
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT ${modulename}
+  )
   einsums_export_internal_targets(${libname}_${modulename})
 
   # Install the headers from the source
   install(
     DIRECTORY include/
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-    COMPONENT ${modulename})
+    COMPONENT ${modulename}
+  )
 
   # Installing the generated header files from the build dir
   install(
     DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/include/Einsums
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-    COMPONENT ${modulename})
+    COMPONENT ${modulename}
+  )
 
   # install PDB if needed
   if(MSVC)
     foreach(cfg DEBUG;RELWITHDEBINFO)
       einsums_get_target_property(_pdb_file ${libname}_${modulename} COMPILE_PDB_NAME_${cfg})
-      einsums_get_target_property(_pdb_dir ${libname}_${modulename} COMPILE_PDB_OUTPUT_DIRECTORY_${cfg})
+      einsums_get_target_property(
+        _pdb_dir ${libname}_${modulename} COMPILE_PDB_OUTPUT_DIRECTORY_${cfg}
+      )
       install(
         FILES ${_pdb_dir}/${_pdb_file}.pdb
         DESTINATION ${CMAKE_INSTALL_LIBDIR}
         CONFIGURATIONS ${cfg}
-        OPTIONAL)
+        OPTIONAL
+      )
     endforeach()
   endif()
 

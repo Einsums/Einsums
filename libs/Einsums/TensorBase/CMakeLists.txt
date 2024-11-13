@@ -5,17 +5,23 @@
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-set(TensorBaseHeaders)
+set(TensorBaseHeaders
+    Einsums/TensorBase/Common.hpp
+    Einsums/TensorBase/IndexUtilities.hpp
+    Einsums/TensorBase/TensorBase.hpp
+)
 
 set(TensorBaseSources)
 
 include(Einsums_AddModule)
 einsums_add_module(
   Einsums TensorBase
-  GLOBAL_HEADER_GEN ON
+  GLOBAL_HEADER_GEN OFF
   SOURCES ${TensorBaseSources}
   HEADERS ${TensorBaseHeaders}
   DEPENDENCIES
   MODULE_DEPENDENCIES
+        Einsums_Errors
+        Einsums_StringUtil
   CMAKE_SUBDIRS examples tests
 )

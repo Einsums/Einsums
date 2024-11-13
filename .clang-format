@@ -12,6 +12,7 @@ AlignConsecutiveMacros: true
 IndentPPDirectives: AfterHash
 AlignConsecutiveAssignments: true
 AlignConsecutiveDeclarations: true
+QualifierAlignment: Right
 IncludeCategories:
   - Regex: '^<Einsums/Config/WarningsPrefix.hpp>'
     Priority: 100

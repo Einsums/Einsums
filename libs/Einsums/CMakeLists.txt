@@ -10,24 +10,30 @@ include(Einsums_Message)
 
 # cmake-format: off
 set(_Einsums_modules
+    Assertion
     BLAS
     BLASBase
+    BLASVendor
     Backtrace
     Benchmark
+    Concepts
     Config
     Debugging
     Errors
     Graph
     ITTNotify
+    Iterator
     LinearAlgebra
     Memory
     Preprocessor
     Print
     Profile
+    StringUtil
     Tensor
     TensorAlgebra
     TensorBase
     TensorUtilities
+    TypeSupport
 )
 # cmake-format: on
 

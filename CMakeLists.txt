@@ -53,7 +53,7 @@ set(EINSUMS_VERSION_FULL
 
 set(EINSUMS_LIBRARY_VERSION "${EINSUMS_VERSION}")
 set(EINSUMS_SOVERSION ${EINSUMS_VERSION_MAJOR})
-set(EINSUMS_PACKAGE_NAME einsums)
+set(EINSUMS_PACKAGE_NAME Einsums)
 # To keep track of the einsums_root when other subprojects are declared
 set(EINSUMS_SOURCE_DIR "${PROJECT_SOURCE_DIR}")
 set(EINSUMS_BINARY_DIR "${PROJECT_BINARY_DIR}")
@@ -469,6 +469,7 @@ get_property(
   TARGET tgt::lapack
   PROPERTY INT_INTERFACE
 )
+einsums_info("EINSUMS_LINALG_INT_INTERFACE ${EINSUMS_LINALG_INT_INTERFACE}")
 
 find_package(OpenMP REQUIRED MODULE COMPONENTS CXX)
 target_link_libraries(einsums_base_libraries INTERFACE OpenMP::OpenMP_CXX)

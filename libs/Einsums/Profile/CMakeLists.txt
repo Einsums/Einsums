@@ -5,7 +5,9 @@
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-set(ProfileHeaders)
+set(ProfileHeaders
+    Einsums/Profile/LabeledSection.hpp
+)
 
 set(ProfileSources)
 

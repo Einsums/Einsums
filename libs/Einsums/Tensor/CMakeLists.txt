@@ -5,7 +5,7 @@
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-set(TensorHeaders)
+set(TensorHeaders Einsums/Tensor/H5.hpp Einsums/Tensor/Tensor.hpp Einsums/Tensor/TensorForward.hpp)
 
 set(TensorSources)
 
@@ -15,7 +15,18 @@ einsums_add_module(
   GLOBAL_HEADER_GEN ON
   SOURCES ${TensorSources}
   HEADERS ${TensorHeaders}
-  DEPENDENCIES
+  EXCLUDE_FROM_GLOBAL_HEADER
+        "Einsums/Tensor/H5.hpp"
+        "Einsums/Tensor/TensorForward.hpp"
+  DEPENDENCIES Einsums::h5cpp
   MODULE_DEPENDENCIES
+        Einsums_Concepts
+        Einsums_Config
+        Einsums_Errors
+        Einsums_Iterator
+        Einsums_TensorBase
+        Einsums_TypeSupport
+        Einsums_Profile
+        Einsums_Print
   CMAKE_SUBDIRS examples tests
 )

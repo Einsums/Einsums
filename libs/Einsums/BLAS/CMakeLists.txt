@@ -5,17 +5,25 @@
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-set(BLASHeaders)
+set(BLASHeaders
+    Einsums/BLAS.hpp
+)
 
-set(BLASSources)
+set(BLASSources
+    BLAS.cpp
+)
 
 include(Einsums_AddModule)
 einsums_add_module(
   Einsums BLAS
-  GLOBAL_HEADER_GEN ON
+  GLOBAL_HEADER_GEN OFF
   SOURCES ${BLASSources}
   HEADERS ${BLASHeaders}
   DEPENDENCIES
   MODULE_DEPENDENCIES
+        Einsums_Config
+        Einsums_Concepts
+        Einsums_BLASBase
+        Einsums_BLASVendor
   CMAKE_SUBDIRS examples tests
 )

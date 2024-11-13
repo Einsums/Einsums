@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <einsums/config.hpp>
+#include <Einsums/Config.hpp>
 
 // clang-format off
 @module_headers@

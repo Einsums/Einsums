@@ -5,7 +5,17 @@
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-set(BLASBaseHeaders)
+if (EINSUMS_LINALG_INT_INTERFACE STREQUAL ilp64)
+    einsums_add_config_define_namespace(DEFINE EINSUMS_BLAS_INTERFACE_ILP64 NAMESPACE BLASBASE)
+elseif(EINSUMS_LINALG_INT_INTERFACE STREQUAL lp64)
+    einsums_add_config_define_namespace(DEFINE EINSUMS_BLAS_INTERFACE_LP64 NAMESPACE BLASBASE)
+else()
+    einsums_error("EINSUMS_LINALG_INT_INTERFACE is not defined")
+endif()
+
+set(BLASBaseHeaders
+    Einsums/BLAS/Types.hpp
+)
 
 set(BLASBaseSources)
 

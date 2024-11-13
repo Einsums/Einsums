@@ -8,14 +8,14 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 set(ConfigHeaders
     Einsums/Config.hpp
     Einsums/Config/BranchHints.hpp
+    Einsums/Config/CompilerSpecific.hpp
     Einsums/Config/ExportDefinitions.hpp
+    Einsums/Config/ForceInline.hpp
     Einsums/Config/Namespace.hpp
     Einsums/Config/Types.hpp
 )
 
-set(ConfigSources
-    Version.cpp
-)
+set(ConfigSources Version.cpp)
 
 include(Einsums_AddModule)
 einsums_add_module(
@@ -24,7 +24,6 @@ einsums_add_module(
   SOURCES ${ConfigSources}
   HEADERS ${ConfigHeaders}
   DEPENDENCIES
-  MODULE_DEPENDENCIES
-    Einsums_Preprocessor
+  MODULE_DEPENDENCIES Einsums_Preprocessor
   CMAKE_SUBDIRS examples tests
 )

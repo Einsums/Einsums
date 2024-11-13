@@ -180,6 +180,12 @@ if module_name != "--recreate-index":
     ################################################################################
     # Generate CMakeLists.txt skeletons
 
+    # Generate .gitkeep files to keep empty directories around until they get filled
+    f = open(os.path.join(lib_name, module_name, "include", "Einsums", include_path, ".gitkeep"), "w")
+    f.write("# Keep directory around")
+    f = open(os.path.join(lib_name, module_name, "src", ".gitkeep"), "w")
+    f.write("# Keep directory around")
+
     # Generate top level CMakeLists.txt
     f = open(os.path.join(lib_name, module_name, "CMakeLists.txt"), "w")
     f.write(root_cmakelists_template)
