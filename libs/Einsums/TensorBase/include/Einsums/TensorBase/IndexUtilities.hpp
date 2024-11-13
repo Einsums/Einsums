@@ -13,6 +13,10 @@
 #include <type_traits>
 #include <vector>
 
+#include <range/v3/range_fwd.hpp>
+#include <range/v3/view/cartesian_product.hpp>
+#include <range/v3/view/iota.hpp>
+
 namespace einsums {
 
 #if defined(__HIP__) && !defined(HOSTDEV)
@@ -115,6 +119,61 @@ inline auto get_dim_ranges_for_many(CType const &C, std::tuple<CIndices...> cons
                                     std::tuple<AIndices...> const &A_indices, BType const &B, std::tuple<BIndices...> const &B_indices,
                                     std::tuple<AllUniqueIndices...> const &All_unique_indices) {
     return std::array{get_dim_ranges_for_many_c<AllUniqueIndices, 0>(C, C_indices, A, A_indices, B, B_indices)...};
+}
+
+namespace detail {
+
+/**
+ * @brief Get the dim ranges object
+ *
+ * @tparam TensorType
+ * @tparam I
+ * @param tensor The tensor object to query
+ * @return A tuple containing the dimension ranges compatible with range-v3 cartesian_product function.
+ */
+template <typename TensorType, std::size_t... I>
+auto get_dim_ranges(TensorType const &tensor, std::index_sequence<I...>) {
+    return std::tuple{ranges::views::ints(0, (int)tensor.dim(I))...};
+}
+
+/**
+ * @brief Adds elements from two sources into the target.
+ *
+ * Useful in adding offsets to a set of indices.
+ *
+ * @tparam N The rank of the data.
+ * @tparam Target
+ * @tparam Source1
+ * @tparam Source2
+ * @param target The output
+ * @param source1 The first source
+ * @param source2 The second source
+ */
+template <size_t N, typename Target, typename Source1, typename Source2>
+void add_elements(Target &target, Source1 const &source1, Source2 const &source2) {
+    if constexpr (N > 1) {
+        add_elements<N - 1>(target, source1, source2);
+    }
+    target[N - 1] = source1[N - 1] + std::get<N - 1>(source2);
+}
+
+} // namespace detail
+
+/**
+ * @brief Find the ranges for each dimension of a tensor.
+ *
+ * The returned tuple is compatible with ranges-v3 cartesian_product function.
+ *
+ * @tparam N
+ * @tparam TensorType
+ * @tparam Rank
+ * @tparam T
+ * @param tensor Tensor to query
+ * @return Tuple containing the range for each dimension of the tensor.
+ */
+template <int N, typename TensorType>
+auto get_dim_ranges(TensorType const &tensor) {
+    return detail::get_dim_ranges(tensor, std::make_index_sequence<N>{});
 }
 
 /**

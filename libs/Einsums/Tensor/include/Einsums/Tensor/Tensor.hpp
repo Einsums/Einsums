@@ -79,61 +79,6 @@ template <RankTensorConcept AType>
     requires(BasicTensorConcept<AType> || !AlgebraTensorConcept<AType>)
 void fprintln(std::ostream &os, AType const &A, TensorPrintOptions options = {});
 
-namespace detail {
-
-/**
- * @brief Get the dim ranges object
- *
- * @tparam TensorType
- * @tparam I
- * @param tensor The tensor object to query
- * @return A tuple containing the dimension ranges compatible with range-v3 cartesian_product function.
- */
-template <typename TensorType, std::size_t... I>
-auto get_dim_ranges(TensorType const &tensor, std::index_sequence<I...>) {
-    return std::tuple{ranges::views::ints(0, (int)tensor.dim(I))...};
-}
-
-/**
- * @brief Adds elements from two sources into the target.
- *
- * Useful in adding offsets to a set of indices.
- *
- * @tparam N The rank of the data.
- * @tparam Target
- * @tparam Source1
- * @tparam Source2
- * @param target The output
- * @param source1 The first source
- * @param source2 The second source
- */
-template <size_t N, typename Target, typename Source1, typename Source2>
-void add_elements(Target &target, Source1 const &source1, Source2 const &source2) {
-    if constexpr (N > 1) {
-        add_elements<N - 1>(target, source1, source2);
-    }
-    target[N - 1] = source1[N - 1] + std::get<N - 1>(source2);
-}
-
-} // namespace detail
-
-/**
- * @brief Find the ranges for each dimension of a tensor.
- *
- * The returned tuple is compatible with ranges-v3 cartesian_product function.
- *
- * @tparam N
- * @tparam TensorType
- * @tparam Rank
- * @tparam T
- * @param tensor Tensor to query
- * @return Tuple containing the range for each dimension of the tensor.
- */
-template <int N, typename TensorType>
-auto get_dim_ranges(TensorType const &tensor) {
-    return detail::get_dim_ranges(tensor, std::make_index_sequence<N>{});
-}
-
 // template <typename T>
 // using VectorData = std::vector<T, AlignedAllocator<T, 64>>;
 
@@ -190,19 +135,7 @@ struct Tensor : public virtual tensor_base::CoreTensor,
     explicit Tensor(std::string name, Dims... dims) : _name{std::move(name)}, _dims{static_cast<size_t>(dims)...} {
         static_assert(Rank == sizeof...(dims), "Declared Rank does not match provided dims");
 
-        struct Stride {
-            size_t value{1};
-                   Stride() = default;
-            auto   operator()(size_t dim) -> size_t {
-                auto old_value = value;
-                value *= dim;
-                return old_value;
-            }
-        };
-
-        // Row-major order of dimensions
-        std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
-        size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
+        size_t size = dims_to_strides(_dims, _strides);
 
         // Resize the data structure
         _data.resize(size);
@@ -238,16 +171,6 @@ struct Tensor : public virtual tensor_base::CoreTensor,
         : _data(std::move(existingTensor._data)), _name{std::move(name)}, _dims{static_cast<size_t>(dims)...} {
         static_assert(Rank == sizeof...(dims), "Declared rank does not match provided dims");
 
-        struct Stride {
-            size_t value{1};
-                   Stride() = default;
-            auto   operator()(size_t dim) -> size_t {
-                auto old_value = value;
-                value *= dim;
-                return old_value;
-            }
-        };
-
         // Check to see if the user provided a dim of "-1" in one place. If found then the user requests that we
         // compute this dimensionality of this "0" index for them.
         int nfound{0};
@@ -276,9 +199,7 @@ struct Tensor : public virtual tensor_base::CoreTensor,
             _dims[location] = existingTensor.size() / size;
         }
 
-        // Row-major order of dimensions
-        std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
-        size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
+        size_t size = dims_to_strides(_dims, _strides);
 
         // Check size
         if (_data.size() != size) {
@@ -292,19 +213,7 @@ struct Tensor : public virtual tensor_base::CoreTensor,
      * @param dims The dimensions of the new tensor in Dim form.
      */
     explicit Tensor(Dim<Rank> dims) : _dims{std::move(dims)} {
-        struct Stride {
-            size_t value{1};
-                   Stride() = default;
-            auto   operator()(size_t dim) -> size_t {
-                auto old_value = value;
-                value *= dim;
-                return old_value;
-            }
-        };
-
-        // Row-major order of dimensions
-        std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
-        size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
+        size_t size = dims_to_strides(_dims, _strides);
 
         // Resize the data structure
         _data.resize(size);
@@ -318,29 +227,17 @@ struct Tensor : public virtual tensor_base::CoreTensor,
      * @param other The tensor view to copy.
      */
     Tensor(TensorView<T, Rank> const &other) : _name{other._name}, _dims{other._dims} {
-        struct Stride {
-            size_t value{1};
-                   Stride() = default;
-            auto   operator()(size_t dim) -> size_t {
-                auto old_value = value;
-                value *= dim;
-                return old_value;
-            }
-        };
-
-        // Row-major order of dimensions
-        std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
-        size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
+        size_t size = dims_to_strides(_dims, _strides);
 
         // Resize the data structure
         _data.resize(size);
 
-        // TODO: Attempt to thread this.
-        auto target_dims = get_dim_ranges<Rank>(*this);
-        for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
-            T &target_value = std::apply(*this, target_combination);
-            T  value        = std::apply(other, target_combination);
-            target_value    = value;
+        EINSUMS_OMP_PARALLEL_FOR
+        for (size_t sentinel = 0; sentinel < size; sentinel++) {
+            thread_local std::array<size_t, Rank> index;
+
+            sentinel_to_indices(sentinel, _strides, index);
+            std::apply(*this, index) = std::apply(other, index);
         }
     }
 
@@ -354,21 +251,9 @@ struct Tensor : public virtual tensor_base::CoreTensor,
             return;
         }
 
-        struct Stride {
-            size_t value{1};
-                   Stride() = default;
-            auto   operator()(size_t dim) -> size_t {
-                auto old_value = value;
-                value *= dim;
-                return old_value;
-            }
-        };
-
         _dims = dims;
 
-        // Row-major order of dimensions
-        std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
-        size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
+        size_t size = dims_to_strides(_dims, _strides);
 
         // Resize the data structure
         _data.resize(size);
@@ -388,34 +273,14 @@ struct Tensor : public virtual tensor_base::CoreTensor,
     /**
      * @brief Zeroes out the tensor data.
      */
-    void zero() {
-        // #pragma omp parallel
-        //         {
-        //             auto tid       = omp_get_thread_num();
-        //             auto chunksize = _data.size() / omp_get_num_threads();
-        //             auto begin     = _data.begin() + chunksize * tid;
-        //             auto end       = (tid == omp_get_num_threads() - 1) ? _data.end() : begin + chunksize;
-        //             memset(&(*begin), 0, end - begin);
-        //         }
-        memset(_data.data(), 0, sizeof(T) * _data.size());
-    }
+    void zero() { memset(_data.data(), 0, sizeof(T) * _data.size()); }
 
     /**
      * @brief Set the all entries to the given value.
      *
      * @param value Value to set the elements to.
      */
-    void set_all(T value) {
-        // #pragma omp parallel
-        //         {
-        //             auto tid       = omp_get_thread_num();
-        //             auto chunksize = _data.size() / omp_get_num_threads();
-        //             auto begin     = _data.begin() + chunksize * tid;
-        //             auto end       = (tid == omp_get_num_threads() - 1) ? _data.end() : begin + chunksize;
-        //             std::fill(begin, end, value);
-        //         }
-        std::fill(_data.begin(), _data.end(), value);
-    }
+    void set_all(T value) { std::fill(_data.begin(), _data.end(), value); }
 
     /**
      * @brief Returns a pointer to the data.
@@ -448,7 +313,7 @@ struct Tensor : public virtual tensor_base::CoreTensor,
      *
      *
      * @tparam MultiIndex The datatypes of the passed parameters. Must be castable to
-     * @param index The explicit desired index into the tensor. Must be castable to std::int64_t.
+     * @param index The explicit desired index into the tensor. Must be castable to ptrdiff_t.
      * @return A pointer into the tensor at the requested location.
      */
     template <typename... MultiIndex>
@@ -462,13 +327,10 @@ struct Tensor : public virtual tensor_base::CoreTensor,
 #if !defined(DOXYGEN_SHOULD_SKIP_THIS)
         assert(sizeof...(MultiIndex) <= _dims.size());
 
-        auto index_list = std::array{static_cast<std::int64_t>(index)...};
-        for (auto [i, _index] : enumerate(index_list)) {
-            if (_index < 0) {
-                index_list[i] = _dims[i] + _index;
-            }
-        }
-        size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
+        auto index_list = std::array{static_cast<ptrdiff_t>(index)...};
+
+        size_t ordinal = indices_to_sentinel_negative_check(_strides, _dims, index_list);
+
         return &_data[ordinal];
 #endif
     }
@@ -479,8 +341,8 @@ struct Tensor : public virtual tensor_base::CoreTensor,
      * This version works when all elements are explicit values into the tensor.
      * It does not work with the All or Range tags.
      *
-     * @tparam MultiIndex Datatype of the indices. Must be castable to std::int64_t.
-     * @param index The explicit desired index into the tensor. Elements must be castable to std::int64_t.
+     * @tparam MultiIndex Datatype of the indices. Must be castable to ptrdiff_t.
+     * @param index The explicit desired index into the tensor. Elements must be castable to ptrdiff_t.
      * @return const T&
      */
     template <typename... MultiIndex>
@@ -494,13 +356,9 @@ struct Tensor : public virtual tensor_base::CoreTensor,
 
         assert(sizeof...(MultiIndex) == _dims.size());
 
-        auto index_list = std::array{static_cast<std::int64_t>(index)...};
-        for (auto [i, _index] : enumerate(index_list)) {
-            if (_index < 0) {
-                index_list[i] = _dims[i] + _index;
-            }
-        }
-        size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
+        auto   index_list = std::array{static_cast<ptrdiff_t>(index)...};
+        size_t ordinal    = indices_to_sentinel_negative_check(_strides, _dims, index_list);
+
         return _data[ordinal];
     }
 
@@ -510,8 +368,8 @@ struct Tensor : public virtual tensor_base::CoreTensor,
      * This version works when all elements are explicit values into the tensor.
      * It does not work with the All or Range tags.
      *
-     * @tparam MultiIndex Datatype of the indices. Must be castable to std::int64_t.
-     * @param index The explicit desired index into the tensor. Elements must be castable to std::int64_t.
+     * @tparam MultiIndex Datatype of the indices. Must be castable to ptrdiff_t.
+     * @param index The explicit desired index into the tensor. Elements must be castable to ptrdiff_t.
      * @return T&
      */
     template <typename... MultiIndex>
@@ -525,13 +383,9 @@ struct Tensor : public virtual tensor_base::CoreTensor,
 
         assert(sizeof...(MultiIndex) == _dims.size());
 
-        auto index_list = std::array{static_cast<std::int64_t>(index)...};
-        for (auto [i, _index] : enumerate(index_list)) {
-            if (_index < 0) {
-                index_list[i] = _dims[i] + _index;
-            }
-        }
-        size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
+        auto index_list = std::array{static_cast<ptrdiff_t>(index)...};
+
+        size_t ordinal = indices_to_sentinel_negative_check(_strides, _dims, index_list);
         return _data[ordinal];
     }
 
@@ -553,8 +407,8 @@ struct Tensor : public virtual tensor_base::CoreTensor,
         int counter{0};
         for_sequence<sizeof...(MultiIndex)>([&](auto i) {
             // println("looking at {}", i);
-            if constexpr (std::is_convertible_v<std::tuple_element_t<i, std::tuple<MultiIndex...>>, std::int64_t>) {
-                auto tmp = static_cast<std::int64_t>(std::get<i>(indices));
+            if constexpr (std::is_convertible_v<std::tuple_element_t<i, std::tuple<MultiIndex...>>, ptrdiff_t>) {
+                auto tmp = static_cast<ptrdiff_t>(std::get<i>(indices));
                 if (tmp < 0)
                     tmp = _dims[i] + tmp;
                 offsets[i] = tmp;
@@ -599,8 +453,8 @@ struct Tensor : public virtual tensor_base::CoreTensor,
         int counter{0};
         for_sequence<sizeof...(MultiIndex)>([&](auto i) {
             // println("looking at {}", i);
-            if constexpr (std::is_convertible_v<std::tuple_element_t<i, std::tuple<MultiIndex...>>, std::int64_t>) {
-                auto tmp = static_cast<std::int64_t>(std::get<i>(indices));
+            if constexpr (std::is_convertible_v<std::tuple_element_t<i, std::tuple<MultiIndex...>>, ptrdiff_t>) {
+                auto tmp = static_cast<ptrdiff_t>(std::get<i>(indices));
                 if (tmp < 0)
                     tmp = _dims[i] + tmp;
                 offsets[i] = tmp;
@@ -663,12 +517,7 @@ struct Tensor : public virtual tensor_base::CoreTensor,
             [[unlikely]] EINSUMS_THROW_EXCEPTION(Error::bad_parameter, "Too many indices passed to Tensor!");
         }
 
-        for (auto [i, _index] : enumerate(index)) {
-            if (_index < 0) {
-                index[i] = _dims[i] + _index;
-            }
-        }
-        size_t ordinal = std::inner_product(index.begin(), index.end(), _strides.begin(), size_t{0});
+        size_t ordinal = indices_to_sentinel_negative_check(_strides, _dims, index);
         return _data[ordinal];
     }
 
@@ -687,12 +536,7 @@ struct Tensor : public virtual tensor_base::CoreTensor,
             [[unlikely]] EINSUMS_THROW_EXCEPTION(Error::bad_parameter, "Too many indices passed to Tensor!");
         }
 
-        for (auto [i, _index] : enumerate(index)) {
-            if (_index < 0) {
-                index[i] = _dims[i] + _index;
-            }
-        }
-        size_t ordinal = std::inner_product(index.begin(), index.end(), _strides.begin(), size_t{0});
+        size_t ordinal = indices_to_sentinel_negative_check(_strides, _dims, index);
         return _data[ordinal];
     }
 
@@ -705,21 +549,9 @@ struct Tensor : public virtual tensor_base::CoreTensor,
         }
 
         if (realloc) {
-            struct Stride {
-                size_t value{1};
-                       Stride() = default;
-                auto   operator()(size_t dim) -> size_t {
-                    auto old_value = value;
-                    value *= dim;
-                    return old_value;
-                }
-            };
-
             _dims = other._dims;
 
-            // Row-major order of dimensions
-            std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
-            size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
+            size_t size = dims_to_strides(_dims, _strides);
 
             // Resize the data structure
             _data.resize(size);
@@ -747,31 +579,21 @@ struct Tensor : public virtual tensor_base::CoreTensor,
         }
 
         if (realloc) {
-            struct Stride {
-                size_t value{1};
-                       Stride() = default;
-                auto   operator()(size_t dim) -> size_t {
-                    auto old_value = value;
-                    value *= dim;
-                    return old_value;
-                }
-            };
-
             _dims = other._dims;
 
-            // Row-major order of dimensions
-            std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
-            size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
+            size_t size = dims_to_strides(_dims, _strides);
 
             // Resize the data structure
             _data.resize(size);
         }
 
-        auto target_dims = get_dim_ranges<Rank>(*this);
-        for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
-            T &target_value = std::apply(*this, target_combination);
-            T  value        = std::apply(other, target_combination);
-            target_value    = value;
+        size_t size = this->size();
+
+        EINSUMS_OMP_PARALLEL_FOR
+        for (size_t sentinel = 0; sentinel < size; sentinel++) {
+            thread_local std::array<size_t, Rank> index;
+            sentinel_to_indices(sentinel, index);
+            std::apply(*this, index) = std::apply(other, index);
         }
 
         return *this;
@@ -784,11 +606,13 @@ struct Tensor : public virtual tensor_base::CoreTensor,
             requires CoreTensorConcept<OtherTensor>;
         }
     auto operator=(OtherTensor const &other) -> Tensor<T, Rank> & {
-        auto target_dims = get_dim_ranges<Rank>(*this);
-        for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
-            T &target_value = std::apply(*this, target_combination);
-            T  value        = std::apply(other, target_combination);
-            target_value    = value;
+        size_t size = this->size();
+
+        EINSUMS_OMP_PARALLEL_FOR
+        for (size_t sentinel = 0; sentinel < size; sentinel++) {
+            thread_local std::array<size_t, Rank> index;
+            sentinel_to_indices(sentinel, index);
+            std::apply(*this, index) = std::apply(other, index);
         }
 
         return *this;
@@ -796,11 +620,13 @@ struct Tensor : public virtual tensor_base::CoreTensor,
 
     template <typename TOther>
     auto operator=(TensorView<TOther, Rank> const &other) -> Tensor<T, Rank> & {
-        auto target_dims = get_dim_ranges<Rank>(*this);
-        for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
-            T &target_value = std::apply(*this, target_combination);
-            T  value        = std::apply(other, target_combination);
-            target_value    = value;
+        size_t size = this->size();
+
+        EINSUMS_OMP_PARALLEL_FOR
+        for (size_t sentinel = 0; sentinel < size; sentinel++) {
+            thread_local std::array<size_t, Rank> index;
+            sentinel_to_indices(sentinel, index);
+            std::apply(*this, index) = std::apply(other, index);
         }
 
         return *this;
@@ -816,21 +642,9 @@ struct Tensor : public virtual tensor_base::CoreTensor,
         }
 
         if (realloc) {
-            struct Stride {
-                size_t value{1};
-                       Stride() = default;
-                auto   operator()(size_t dim) -> size_t {
-                    auto old_value = value;
-                    value *= dim;
-                    return old_value;
-                }
-            };
-
             _dims = other.dims();
 
-            // Row-major order of dimensions
-            std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
-            size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
+            size_t size = dims_to_strides(_dims, _strides);
 
             // Resize the data structure
             _data.resize(size);
@@ -848,7 +662,7 @@ struct Tensor : public virtual tensor_base::CoreTensor,
     }
 
 #define OPERATOR(OP)                                                                                                                       \
-    auto operator OP(const T &b) -> Tensor<T, Rank> & {                                                                                    \
+    auto operator OP(const T &b)->Tensor<T, Rank> & {                                                                                      \
         EINSUMS_OMP_PARALLEL {                                                                                                             \
             auto tid       = omp_get_thread_num();                                                                                         \
             auto chunksize = _data.size() / omp_get_num_threads();                                                                         \
@@ -861,7 +675,7 @@ struct Tensor : public virtual tensor_base::CoreTensor,
         return *this;                                                                                                                      \
     }                                                                                                                                      \
                                                                                                                                            \
-    auto operator OP(const Tensor<T, Rank> &b) -> Tensor<T, Rank> & {                                                                      \
+    auto operator OP(const Tensor<T, Rank> &b)->Tensor<T, Rank> & {                                                                        \
         if (size() != b.size()) {                                                                                                          \
             throw EINSUMSEXCEPTION(fmt::format("tensors differ in size : {} {}", size(), b.size()));                                       \
         }                                                                                                                                  \
@@ -916,7 +730,7 @@ struct Tensor : public virtual tensor_base::CoreTensor,
     }
 
     // Returns the linear size of the tensor
-    [[nodiscard]] size_t size() const { return std::accumulate(std::begin(_dims), std::begin(_dims) + Rank, 1, std::multiplies<>{}); }
+    [[nodiscard]] size_t size() const { return _dims[0] * _strides[0]; }
 
     bool full_view_of_underlying() const noexcept override { return true; }
 
@@ -935,7 +749,7 @@ struct Tensor : public virtual tensor_base::CoreTensor,
 
     template <typename T_, size_t OtherRank>
     friend struct Tensor;
-}; // namespace einsums
+};
 
 template <typename T>
 struct Tensor<T, 0> : virtual tensor_base::CoreTensor,
@@ -943,10 +757,10 @@ struct Tensor<T, 0> : virtual tensor_base::CoreTensor,
                       virtual tensor_base::LockableTensor,
                       virtual tensor_base::AlgebraOptimizedTensor {
 
-     Tensor()                   = default;
-     Tensor(Tensor const &)     = default;
-     Tensor(Tensor &&) noexcept = default;
-    ~Tensor()                   = default;
+    Tensor()                   = default;
+    Tensor(Tensor const &)     = default;
+    Tensor(Tensor &&) noexcept = default;
+    ~Tensor()                  = default;
 
     explicit Tensor(std::string name) : _name{std::move(name)} {};
 
@@ -969,7 +783,7 @@ struct Tensor<T, 0> : virtual tensor_base::CoreTensor,
 #    undef OPERATOR
 #endif
 #define OPERATOR(OP)                                                                                                                       \
-    auto operator OP(const T &other) -> Tensor<T, 0> & {                                                                                   \
+    auto operator OP(const T &other)->Tensor<T, 0> & {                                                                                     \
         _data OP other;                                                                                                                    \
         return *this;                                                                                                                      \
     }
@@ -1009,9 +823,9 @@ struct TensorView final : public virtual tensor_base::CoreTensor,
                           virtual tensor_base::LockableTensor,
                           virtual tensor_base::AlgebraOptimizedTensor {
 
-     TensorView()                   = delete;
-     TensorView(TensorView const &) = default;
-    ~TensorView()                   = default;
+    TensorView()                   = delete;
+    TensorView(TensorView const &) = default;
+    ~TensorView()                  = default;
 
     // std::enable_if doesn't work with constructors.  So we explicitly create individual
     // constructors for the types of tensors we support (Tensor and TensorView).  The
@@ -1055,6 +869,7 @@ struct TensorView final : public virtual tensor_base::CoreTensor,
      */
     explicit TensorView(T const *data, Dim<Rank> const &dims) : _data{const_cast<T *>(data)}, _dims(dims), _full_view_of_underlying{true} {
         dims_to_strides(dims, _strides);
+        dims_to_strides(dims, _index_strides);
     }
 
     /**
@@ -1065,6 +880,7 @@ struct TensorView final : public virtual tensor_base::CoreTensor,
      */
     explicit TensorView(T *data, Dim<Rank> const &dims) : _data{const_cast<T *>(data)}, _dims(dims), _full_view_of_underlying{true} {
         dims_to_strides(dims, _strides);
+        dims_to_strides(dims, _index_strides);
     }
 
     /**
@@ -1076,9 +892,8 @@ struct TensorView final : public virtual tensor_base::CoreTensor,
      */
     explicit TensorView(T const *data, Dim<Rank> const &dims, Stride<Rank> const &strides)
         : _data{const_cast<T *>(data)}, _dims(dims), _strides(strides) {
-        Stride<Rank> temp_strides;
-        dims_to_strides(dims, temp_strides);
-        _full_view_of_underlying = (strides == temp_strides);
+        dims_to_strides(dims, _index_strides);
+        _full_view_of_underlying = (strides == _index_strides);
     }
 
     /**
@@ -1090,27 +905,23 @@ struct TensorView final : public virtual tensor_base::CoreTensor,
      */
     explicit TensorView(T *data, Dim<Rank> const &dims, Stride<Rank> const &strides)
         : _data{const_cast<T *>(data)}, _dims(dims), _strides(strides) {
-        Stride<Rank> temp_strides;
-        dims_to_strides(dims, temp_strides);
-        _full_view_of_underlying = (strides == temp_strides);
+        dims_to_strides(dims, _index_strides);
+        _full_view_of_underlying = (strides == _index_strides);
     }
-
-    // template <typename... Args>
-    // explicit TensorView(const double *other, const Dim<Rank> &dim) : _name{"Raw Array"}, _dims{dim} {
-    //     common_initialization(other);
-    // }
 
     auto operator=(T const *other) -> TensorView & {
         // Can't perform checks on data. Assume the user knows what they're doing.
         // This function is used when interfacing with libint2.
 
-        auto   target_dims = get_dim_ranges<Rank>(*this);
-        size_t item{0};
+        size_t size = this->size();
 
-        for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
-            T &target = std::apply(*this, target_combination);
-            target    = other[item];
-            item++;
+        EINSUMS_OMP_PARALLEL_FOR
+        for (size_t sentinel = 0; sentinel < size; sentinel++) {
+            thread_local std::array<size_t, Rank> index;
+
+            sentinel_to_indices(_index_strides, index);
+
+            std::apply(*this, index) = other[sentinel];
         }
 
         return *this;
@@ -1120,13 +931,15 @@ struct TensorView final : public virtual tensor_base::CoreTensor,
         if (this == &other)
             return *this;
 
-        auto target_dims = get_dim_ranges<Rank>(*this);
-        auto view        = std::apply(ranges::views::cartesian_product, target_dims);
+        size_t size = this->size();
 
-#pragma omp parallel for default(none) shared(view, other)
-        for (auto target_combination = view.begin(); target_combination != view.end(); target_combination++) {
-            T &target = std::apply(*this, *target_combination);
-            target    = std::apply(other, *target_combination);
+        EINSUMS_OMP_PARALLEL_FOR
+        for (size_t sentinel = 0; sentinel < size; sentinel++) {
+            thread_local std::array<size_t, Rank> index;
+
+            sentinel_to_indices(_index_strides, index);
+
+            std::apply(*this, index) = std::apply(other, index);
         }
 
         return *this;
@@ -1140,26 +953,31 @@ struct TensorView final : public virtual tensor_base::CoreTensor,
                 return *this;
         }
 
-        auto target_dims = get_dim_ranges<Rank>(*this);
-        auto view        = std::apply(ranges::views::cartesian_product, target_dims);
+        size_t size = this->size();
 
-        // #pragma omp parallel for default(none) shared(view, other)
-        for (auto target_combination = view.begin(); target_combination != view.end(); target_combination++) {
-            T &target = std::apply(*this, *target_combination);
-            target    = std::apply(other, *target_combination);
+        EINSUMS_OMP_PARALLEL_FOR
+        for (size_t sentinel = 0; sentinel < size; sentinel++) {
+            thread_local std::array<size_t, Rank> index;
+
+            sentinel_to_indices(_index_strides, index);
+
+            std::apply(*this, index) = std::apply(other, index);
         }
 
         return *this;
     }
 
     auto operator=(T const &fill_value) -> TensorView & {
-        auto target_dims = get_dim_ranges<Rank>(*this);
-        auto view        = std::apply(ranges::views::cartesian_product, target_dims);
 
-#pragma omp parallel for default(none) shared(view, fill_value)
-        for (auto target_combination = view.begin(); target_combination != view.end(); target_combination++) {
-            T &target = std::apply(*this, *target_combination);
-            target    = fill_value;
+        size_t size = this->size();
+
+        EINSUMS_OMP_PARALLEL_FOR
+        for (size_t sentinel = 0; sentinel < size; sentinel++) {
+            thread_local std::array<size_t, Rank> index;
+
+            sentinel_to_indices(_index_strides, index);
+
+            std::apply(*this, index) = fill_value;
         }
 
         return *this;
@@ -1169,12 +987,13 @@ struct TensorView final : public virtual tensor_base::CoreTensor,
 #    undef OPERATOR
 #endif
 #define OPERATOR(OP)                                                                                                                       \
-    auto operator OP(const T &value) -> TensorView & {                                                                                     \
-        auto target_dims = get_dim_ranges<Rank>(*this);                                                                                    \
-        auto view        = std::apply(ranges::views::cartesian_product, target_dims);                                                      \
-        EINSUMS_OMP_PARALLEL_FOR for (auto target_combination = view.begin(); target_combination != view.end(); target_combination++) {    \
-            T        &target = std::apply(*this, *target_combination);                                                                     \
-            target OP value;                                                                                                               \
+    auto operator OP(const T &value)->TensorView & {                                                                                       \
+        size_t size = this->size();                                                                                                        \
+        EINSUMS_OMP_PARALLEL_FOR                                                                                                           \
+        for (size_t sentinel = 0; sentinel < size; sentinel++) {                                                                           \
+            thread_local std::array<size_t, Rank> index;                                                                                   \
+            sentinel_to_indices(sentinel, _index_strides, index);                                                                          \
+            std::apply(*this, index) = value;                                                                                              \
         }                                                                                                                                  \
                                                                                                                                            \
         return *this;                                                                                                                      \
@@ -1187,49 +1006,38 @@ struct TensorView final : public virtual tensor_base::CoreTensor,
 
 #undef OPERATOR
 
-    T       *data() override { return &_data[0]; }
-    T const *data() const override { return static_cast<T const *>(&_data[0]); }
+    T       *data() override { return _data; }
+    T const *data() const override { return static_cast<T const *>(_data); }
     template <typename... MultiIndex>
     auto data(MultiIndex... index) const -> T * {
         assert(sizeof...(MultiIndex) <= _dims.size());
-        auto index_list = std::array{static_cast<std::int64_t>(index)...};
-        for (auto [i, _index] : enumerate(index_list)) {
-            if (_index < 0) {
-                index_list[i] = _dims[i] + _index;
-            }
-        }
-        size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
+
+        auto index_list = std::array{static_cast<ptrdiff_t>(index)...};
+
+        size_t ordinal = indices_to_sentinel_negative_check(_strides, _dims, index_list);
         return &_data[ordinal];
     }
 
     auto data_array(std::array<size_t, Rank> const &index_list) const -> T * {
-        size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
+        size_t ordinal = indices_to_sentinel(_strides, _dims, index_list);
         return &_data[ordinal];
     }
 
     template <typename... MultiIndex>
     auto operator()(MultiIndex... index) const -> T const & {
         assert(sizeof...(MultiIndex) == _dims.size());
-        auto index_list = std::array{static_cast<std::int64_t>(index)...};
-        for (auto [i, _index] : enumerate(index_list)) {
-            if (_index < 0) {
-                index_list[i] = _dims[i] + _index;
-            }
-        }
-        size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
+        auto index_list = std::array{static_cast<ptrdiff_t>(index)...};
+
+        size_t ordinal = indices_to_sentinel_negative_check(_strides, _dims, index_list);
         return _data[ordinal];
     }
 
     template <typename... MultiIndex>
     auto operator()(MultiIndex... index) -> T & {
         assert(sizeof...(MultiIndex) == _dims.size());
-        auto index_list = std::array{static_cast<std::int64_t>(index)...};
-        for (auto [i, _index] : enumerate(index_list)) {
-            if (_index < 0) {
-                index_list[i] = _dims[i] + _index;
-            }
-        }
-        size_t ordinal = std::inner_product(index_list.begin(), index_list.end(), _strides.begin(), size_t{0});
+        auto index_list = std::array{static_cast<ptrdiff_t>(index)...};
+
+        size_t ordinal = indices_to_sentinel_negative_check(_strides, _dims, index_list);
         return _data[ordinal];
     }
 
@@ -1248,12 +1056,7 @@ struct TensorView final : public virtual tensor_base::CoreTensor,
             [[unlikely]] EINSUMS_THROW_EXCEPTION(Error::bad_parameter, "Too many indices passed to Tensor!");
         }
 
-        for (auto [i, _index] : enumerate(index)) {
-            if (_index < 0) {
-                index[i] = _dims[i] + _index;
-            }
-        }
-        size_t ordinal = std::inner_product(index.begin(), index.end(), _strides.begin(), size_t{0});
+        size_t ordinal = indices_to_sentinel_negative_check(_strides, _dims, index);
         return _data[ordinal];
     }
 
@@ -1272,12 +1075,7 @@ struct TensorView final : public virtual tensor_base::CoreTensor,
             [[unlikely]] EINSUMS_THROW_EXCEPTION(Error::bad_parameter, "Too many indices passed to Tensor!");
         }
 
-        for (auto [i, _index] : enumerate(index)) {
-            if (_index < 0) {
-                index[i] = _dims[i] + _index;
-            }
-        }
-        size_t ordinal = std::inner_product(index.begin(), index.end(), _strides.begin(), size_t{0});
+        size_t ordinal = indices_to_sentinel_negative_check(_strides, _dims, index);
         return _data[ordinal];
     }
 
@@ -1319,24 +1117,14 @@ struct TensorView final : public virtual tensor_base::CoreTensor,
 
     bool full_view_of_underlying() const noexcept override { return _full_view_of_underlying; }
 
-    size_t size() const { return std::accumulate(std::begin(_dims), std::begin(_dims) + Rank, 1, std::multiplies<>{}); }
+    size_t size() const { return _dims[0] * _index_strides[0]; }
 
   private:
     auto common_initialization(T const *other) {
         _data = const_cast<T *>(other);
 
-        struct Stride {
-            size_t value{1};
-                   Stride() = default;
-            auto   operator()(size_t dim) -> size_t {
-                auto old_value = value;
-                value *= dim;
-                return old_value;
-            }
-        };
-
-        // Row-major order of dimensions
-        std::transform(_dims.rbegin(), _dims.rend(), _strides.rbegin(), Stride());
+        dims_to_strides(_dims, _index_strides);
+        dims_to_strides(_dims, _strides);
 
         // At this time we'll assume we have full view of the underlying tensor since we were only provided
         // pointer.
@@ -1394,19 +1182,8 @@ struct TensorView final : public virtual tensor_base::CoreTensor,
         } else {
             if (std::accumulate(_dims.begin(), _dims.end(), 1.0, std::multiplies<>()) ==
                 std::accumulate(other._dims.begin(), other._dims.end(), 1.0, std::multiplies<>())) {
-                struct Stride {
-                    size_t value{1};
-                           Stride() = default;
-                    auto   operator()(size_t dim) -> size_t {
-                        auto old_value = value;
-                        value *= dim;
-                        return old_value;
-                    }
-                };
 
-                // Row-major order of dimensions
-                std::transform(_dims.rbegin(), _dims.rend(), default_strides.rbegin(), Stride());
-                size_t size = default_strides.size() == 0 ? 0 : default_strides[0] * _dims[0];
+                size_t size = dims_to_strides(_dims, default_strides);
             } else {
                 // Stride information cannot be automatically deduced.  It must be provided.
                 default_strides = arguments::get(error_strides, args...);
@@ -1424,13 +1201,16 @@ struct TensorView final : public virtual tensor_base::CoreTensor,
         Offset<OtherRank> const &offsets = arguments::get(default_offsets, args...);
 
         // Determine the ordinal using the offsets provided (if any) and the strides of the parent
-        size_t ordinal = std::inner_product(offsets.begin(), offsets.end(), other._strides.begin(), size_t{0});
+        size_t ordinal = indices_to_sentinel(other._strides, offsets);
         _data          = &(other._data[ordinal]);
+
+        // Calculate the index strides.
+        dims_to_strides(_dims, _index_strides);
     }
 
     std::string  _name{"(Unnamed View)"};
     Dim<Rank>    _dims;
-    Stride<Rank> _strides;
+    Stride<Rank> _strides, _index_strides;
     // Offset<Rank> _offsets;
 
     bool _full_view_of_underlying{false};
@@ -1590,18 +1370,18 @@ template <typename T, size_t Rank>
 struct DiskTensor final : public virtual tensor_base::DiskTensor,
                           virtual tensor_base::Tensor<T, Rank>,
                           virtual tensor_base::LockableTensor {
-     DiskTensor()                       = default;
-     DiskTensor(DiskTensor const &)     = default;
-     DiskTensor(DiskTensor &&) noexcept = default;
-    ~DiskTensor()                       = default;
+    DiskTensor()                       = default;
+    DiskTensor(DiskTensor const &)     = default;
+    DiskTensor(DiskTensor &&) noexcept = default;
+    ~DiskTensor()                      = default;
 
     template <typename... Dims>
     explicit DiskTensor(h5::fd_t &file, std::string name, Chunk<sizeof...(Dims)> chunk, Dims... dims)
         : _file{file}, _name{std::move(name)}, _dims{static_cast<size_t>(dims)...} {
         struct Stride {
             size_t value{1};
-                   Stride() = default;
-            auto   operator()(size_t dim) -> size_t {
+            Stride() = default;
+            auto operator()(size_t dim) -> size_t {
                 auto old_value = value;
                 value *= dim;
                 return old_value;
@@ -1640,8 +1420,8 @@ struct DiskTensor final : public virtual tensor_base::DiskTensor,
 
         struct Stride {
             size_t value{1};
-                   Stride() = default;
-            auto   operator()(size_t dim) -> size_t {
+            Stride() = default;
+            auto operator()(size_t dim) -> size_t {
                 auto old_value = value;
                 value *= dim;
                 return old_value;
@@ -1695,8 +1475,8 @@ struct DiskTensor final : public virtual tensor_base::DiskTensor,
 
         struct Stride {
             size_t value{1};
-                   Stride() = default;
-            auto   operator()(size_t dim) -> size_t {
+            Stride() = default;
+            auto operator()(size_t dim) -> size_t {
                 auto old_value = value;
                 value *= dim;
                 return old_value;
