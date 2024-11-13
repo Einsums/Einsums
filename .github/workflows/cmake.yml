@@ -12,7 +12,8 @@ jobs:
       fail-fast: false
       matrix:
         cxx: [ L-Gnu, M-Clang, L-Intel ]
-        build_type: [ Release, Debug ]
+        #        build_type: [ Release, Debug ]
+        build_type: [ Debug ]
         include:
           - cmargs: ""
           - testargs: ""

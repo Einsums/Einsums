@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 #include <Einsums/Print.hpp>
 
@@ -11,6 +11,7 @@
 #include <sstream>
 #include <string>
 #include <thread>
+#include <mutex>
 
 #if defined(_WIN32) || defined(_WIN64)
 #    include <io.h>
