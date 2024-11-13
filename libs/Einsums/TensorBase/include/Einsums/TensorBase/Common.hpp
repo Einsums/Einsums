@@ -24,11 +24,11 @@ namespace einsums {
     template <typename... Args>                                                                                                            \
     Name(Args... args)->Name<sizeof...(Args)> /**/
 
-DEFINE_STRUCT(Dim, std::int64_t);
+DEFINE_STRUCT(Dim, std::ptrdiff_t);
 DEFINE_STRUCT(Stride, std::size_t);
 DEFINE_STRUCT(Offset, std::size_t);
 DEFINE_STRUCT(Count, std::size_t);
-DEFINE_STRUCT(Chunk, std::int64_t);
+DEFINE_STRUCT(Chunk, std::ptrdiff_t);
 
 struct Range : std::array<std::int64_t, 2> {
     template <typename... Args>

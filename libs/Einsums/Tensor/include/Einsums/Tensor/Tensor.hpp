@@ -1167,7 +1167,14 @@ struct TensorView final : public virtual tensor_base::CoreTensor,
             auto offsets = arguments::get(default_offsets, args...);
             auto strides = arguments::get(default_strides, args...);
 
-            _dims[location] = static_cast<std::int64_t>(std::ceil((other.size() - offsets[0]) / static_cast<float>(strides[0])));
+            ptrdiff_t numerator = other.size() - offsets[0];
+            size_t denominator = strides[0];
+
+            _dims[location] = numerator / denominator;
+
+            if(numerator % denominator != 0) {
+                _dims[location] += 1;
+            }
         }
 
         if (nfound == 1 && Rank > 1) {
