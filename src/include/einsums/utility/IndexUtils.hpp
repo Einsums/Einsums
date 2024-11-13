@@ -300,56 +300,6 @@ inline size_t indices_to_sentinel(const StorageType1 &unique_strides, const Stor
  * the range for that dimension. Can not be used on GPU since it throws errors. Also, running all those if-statements
  * would be very slow.
  */
-template <size_t num_unique_inds>
-inline size_t indices_to_sentinel_negative_check(const size_t *unique_strides, const size_t *unique_dims, const size_t *inds) {
-    size_t out = 0;
-
-#pragma unroll
-    for (size_t i = 0; i < num_unique_inds; i++) {
-        size_t ind = inds[i];
-
-        if (ind < 0) {
-            [[unlikely]] ind += unique_dims[i];
-        }
-
-        if (ind < 0 || ind >= unique_dims[i]) {
-            [[unlikely]] throw EINSUMSEXCEPTION(
-                fmt::format("Index out of range! Index {} in rank {} was either greater than or equal to {} or less than {}", inds[i], i,
-                            unique_dims[i], -unique_dims[i]));
-        }
-
-        out += ind * unique_strides[i];
-    }
-
-    return out;
-}
-
-template <size_t num_unique_inds>
-inline size_t indices_to_sentinel_negative_check(const std::array<size_t, num_unique_inds> &unique_strides,
-                                                 const std::array<size_t, num_unique_inds> &unique_dims,
-                                                 const std::array<size_t, num_unique_inds> &inds) {
-    size_t out = 0;
-
-#pragma unroll
-    for (size_t i = 0; i < num_unique_inds; i++) {
-        size_t ind = inds[i];
-
-        if (ind < 0) {
-            [[unlikely]] ind += unique_dims[i];
-        }
-
-        if (ind < 0 || ind >= unique_dims[i]) {
-            [[unlikely]] throw EINSUMSEXCEPTION(
-                fmt::format("Index out of range! Index {} in rank {} was either greater than or equal to {} or less than {}", inds[i], i,
-                            unique_dims[i], -unique_dims[i]));
-        }
-
-        out += ind * unique_strides[i];
-    }
-
-    return out;
-}
-
 template <typename StorageType1, typename StorageType2, typename StorageType3>
     requires requires {
         requires !std::is_arithmetic_v<StorageType1>;
@@ -367,12 +317,12 @@ inline size_t indices_to_sentinel_negative_check(const StorageType1 &unique_stri
     for (size_t i = 0; i < inds.size(); i++) {
         ptrdiff_t ind = inds[i];
 
-        if (ind < 0) {
-            [[unlikely]] ind += unique_dims[i];
+        if (ind < 0) [[unlikely]] {
+            ind += unique_dims[i];
         }
 
-        if (ind < 0 || ind >= unique_dims[i]) {
-            [[unlikely]] throw EINSUMSEXCEPTION(
+        if (ind < 0 || ind >= unique_dims[i]) [[unlikely]] {
+            throw EINSUMSEXCEPTION(
                 fmt::format("Index out of range! Index {} in rank {} was either greater than or equal to {} or less than {}", inds[i], i,
                             unique_dims[i], -(ptrdiff_t)unique_dims[i]));
         }
