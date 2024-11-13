@@ -8,6 +8,7 @@
 #include <Einsums/TensorBase/Common.hpp>
 
 #include <complex>
+#include <memory>
 #include <mutex>
 
 #if defined(EINSUMS_COMPUTE_CODE)
