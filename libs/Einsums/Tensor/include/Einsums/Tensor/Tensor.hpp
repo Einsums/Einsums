@@ -1167,6 +1167,10 @@ struct TensorView final : public virtual tensor_base::CoreTensor,
             auto offsets = arguments::get(default_offsets, args...);
             auto strides = arguments::get(default_strides, args...);
 
+            // Perform this with integer arithmetic. There is a chance that with
+            // sizes greater than 2^52 that the division becomes inaccurate with
+            // floating points. Integer divisions should never become inaccurate.
+            // In floating point, it would be ceil((size - offset) / stride)
             ptrdiff_t numerator = other.size() - offsets[0];
             size_t denominator = strides[0];
 
