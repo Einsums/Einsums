@@ -174,7 +174,7 @@ einsums_option(
 )
 
 einsums_option(
-        EINSUMS_WITH_DOCUMENTATION BOOL "Build the Einsums documentation (default ON)." ON
+        EINSUMS_WITH_DOCUMENTATION BOOL "Build the Einsums documentation (default OFF)." OFF
         CATEGORY "Build Targets"
 )
 
