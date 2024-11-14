@@ -10,8 +10,8 @@
 
 namespace einsums::arguments {
 
+/// \cond NOINTERNAL
 namespace detail {
-
 // declaration
 template <class SearchPattern, int Position, int Count, bool Branch, class PrevHead, class Arguments>
 struct tuple_position;
@@ -33,8 +33,8 @@ template <class S, class H, int P, int C>
 struct tuple_position<S, P, C, false, H, std::tuple<>> : std::integral_constant<int, -1> {
     static constexpr bool present = false;
 };
-
 } // namespace detail
+/// \endcond NOINTERNAL
 
 template <typename SearchPattern, typename... Args>
 struct tuple_position : detail::tuple_position<SearchPattern const &, -1, 0, false, void, std::tuple<Args...>> {};
@@ -58,8 +58,8 @@ auto getn(Args &&...args) -> typename std::tuple_element<Idx, std::tuple<Args...
     return std::get<Idx>(tuple);
 }
 
+/// \cond NOINTERNAL
 namespace detail {
-
 template <typename T, int Position>
 constexpr auto positions_of_type() {
     return std::make_tuple();
@@ -73,7 +73,7 @@ constexpr auto positions_of_type() {
         return positions_of_type<T, Position + 1, Args...>();
     }
 }
-
+/// \endcond NOINTERNAL
 } // namespace detail
 
 template <typename T, typename... Args>
@@ -99,7 +99,7 @@ constexpr auto for_each(Tuple &&t, F &&f) -> F {
 }
 
 template <typename ReturnType, typename Tuple>
-inline auto get_from_tuple(Tuple &&tuple, std::size_t index) -> ReturnType {
+auto get_from_tuple(Tuple &&tuple, std::size_t index) -> ReturnType {
     std::size_t currentIndex = 0;
     ReturnType  returnValue{-1ul};
 

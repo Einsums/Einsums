@@ -81,4 +81,5 @@ EINSUMS_EXPORT void set_assertion_handler(assertion_handler_type handler);
                                "message it means that you have found a bug in EINSUMS. Please report it "                                  \
                                "on the issue tracker: https://github.com/Einsums/Einsums/issues.");                                        \
         std::terminate()
+/// \endcond NOINTERNAL
 #endif

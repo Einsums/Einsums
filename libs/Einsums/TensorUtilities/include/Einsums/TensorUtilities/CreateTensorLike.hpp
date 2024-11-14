@@ -32,7 +32,7 @@ auto create_tensor_like(TensorType<DataType, Rank> const &t) -> Tensor<DataType,
     return Tensor<DataType, Rank>{t.name(), t.dims()};
 }
 
-#ifndef DOXYGEN
+#if !defined(DOXYGEN)
 #    if defined(EINSUMS_COMPUTE_CODE)
 /**
  * @brief Creates a new tensor with the same rank and dimensions of the provided tensor.
@@ -118,7 +118,7 @@ auto create_tensor_like(std::string const name, TensorType<DataType, Rank> const
     return result;
 }
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
+#if !defined(DOXYGEN)
 #    if defined(EINSUMS_COMPUTE_CODE)
 /**
  * @brief Creates a new tensor with the same rank and dimensions of the provided tensor.
