@@ -7,7 +7,7 @@ include(CMakePackageConfigHelpers)
 include(Einsums_GeneratePackageUtils)
 
 set(CMAKE_DIR
-    "cmake-${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}"
+    "cmake"
     CACHE STRING "directory (in share), where to put FindEinsums cmake module")
 
 write_basic_package_version_file(
@@ -26,7 +26,7 @@ install(
   EXPORT einsums_internal_targets
   NAMESPACE EinsumsInternal::
   FILE einsums_internal_targets.cmake
-  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${EINSUMS_PACKAGE_NAME})
+  DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${CMAKE_DIR}/${EINSUMS_PACKAGE_NAME})
 
 # Export einsums_targets in the build directory
 export(
@@ -48,7 +48,7 @@ install(
   EXPORT einsums_targets
   NAMESPACE Einsums::
   FILE EinsumsTargets.cmake
-  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${EINSUMS_PACKAGE_NAME}
+  DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${CMAKE_DIR}/${EINSUMS_PACKAGE_NAME}
   COMPONENT cmake)
 
 # Install dir
@@ -71,5 +71,5 @@ install(
   FILES "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/EinsumsConfig.cmake"
         "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/EinsumsMacros.cmake"
         "${CMAKE_CURRENT_BINARY_DIR}/lib/cmake/${EINSUMS_PACKAGE_NAME}/EinsumsConfigVersion.cmake"
-  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${EINSUMS_PACKAGE_NAME}
+  DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${CMAKE_DIR}/${EINSUMS_PACKAGE_NAME}
   COMPONENT cmake)

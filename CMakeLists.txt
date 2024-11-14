@@ -695,7 +695,7 @@ endif()
 # Note: on windows systems the ':' will be converted to a ';' at runtime
 einsums_add_config_cond_define(
   EINSUMS_DEFAULT_COMPONENT_PATH_SUFFIXES
-  "\"/${CMAKE_INSTALL_LIBDIR}/einsums:/${CMAKE_INSTALL_BINDIR}/einsums:/lib/einsums:/bin/einsums\""
+  "\"/${CMAKE_INSTALL_LIBDIR}/${PROJECT_NAME}:/${CMAKE_INSTALL_BINDIR}/${PROJECT_NAME}:/lib/${PROJECT_NAME}:/bin/${PROJECT_NAME}\""
 )
 
 # ##################################################################################################
@@ -765,8 +765,8 @@ add_subdirectory(libs)
 # ##################################################################################################
 # Install all einsums header that have been configured using various CMake options
 install(
-  DIRECTORY "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/einsums/"
-  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/einsums
+  DIRECTORY "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${PROJECT_NAME}/"
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}
   COMPONENT core
   FILES_MATCHING
   PATTERN "*.hpp"
@@ -778,7 +778,7 @@ install(
 install(
   # Install all einsums CMake utility files
   DIRECTORY cmake/
-  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/einsums
+  DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/cmake/${PROJECT_NAME}
   COMPONENT core
   PATTERN "templates" EXCLUDE
   PATTERN "packaging" EXCLUDE
@@ -787,7 +787,7 @@ install(
 
 install(
   FILES "${PROJECT_SOURCE_DIR}/LICENSE.txt"
-  DESTINATION ${CMAKE_INSTALL_DATADIR}/einsums
+  DESTINATION ${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}
   COMPONENT license
 )
 

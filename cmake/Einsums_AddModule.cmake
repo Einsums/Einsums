@@ -59,18 +59,18 @@ function(einsums_add_module libname modulename)
 
   # This header generation is disabled for config module specific generated headers are included
   if(${modulename}_GLOBAL_HEADER_GEN)
-    if("Einsums/Modules/${modulename}.hpp" IN_LIST all_headers)
+    if("${PROJECT_NAME}/Modules/${modulename}.hpp" IN_LIST all_headers)
       string(
         CONCAT error_message
                "Global header generation turned on for module ${modulename} but the "
-               "header \"Einsums/Modules/${modulename}.hpp\" is also listed explicitly as"
+               "header \"${PROJECT_NAME}/Modules/${modulename}.hpp\" is also listed explicitly as"
                "a header. Turn off global header generation or remove the "
-               "\"Einsums/Modules/${modulename}.hpp\" file."
+               "\"${PROJECT_NAME}/Modules/${modulename}.hpp\" file."
       )
       einsums_error(${error_message})
     endif()
     # Add a global include file that include all module headers
-    set(global_header "${CMAKE_CURRENT_BINARY_DIR}/include/Einsums/Modules/${modulename}.hpp")
+    set(global_header "${CMAKE_CURRENT_BINARY_DIR}/include/${PROJECT_NAME}/Modules/${modulename}.hpp")
     set(module_headers)
     foreach(header_file ${${modulename}_HEADERS})
       # Exclude the files specified
@@ -87,20 +87,20 @@ function(einsums_add_module libname modulename)
   endif()
 
   # generate configuration header for this module
-  set(config_header "${CMAKE_CURRENT_BINARY_DIR}/include/Einsums/${modulename}/Defines.hpp")
+  set(config_header "${CMAKE_CURRENT_BINARY_DIR}/include/${PROJECT_NAME}/${modulename}/Defines.hpp")
   einsums_write_config_defines_file(NAMESPACE ${modulename_upper} FILENAME ${config_header})
   set(generated_headers ${generated_headers} ${config_header})
 
   if(${modulename}_CONFIG_FILES)
     # Version file
-    set(global_config_file ${CMAKE_CURRENT_BINARY_DIR}/include/Einsums/Config/Version.hpp)
+    set(global_config_file ${CMAKE_CURRENT_BINARY_DIR}/include/${PROJECT_NAME}/Config/Version.hpp)
     configure_file(
       "${CMAKE_CURRENT_SOURCE_DIR}/cmake/templates/ConfigVersion.hpp.in" "${global_config_file}"
       @ONLY
     )
     set(generated_headers ${generated_headers} ${global_config_file})
     # Global config defines file (different from the one for each module)
-    set(global_config_file ${CMAKE_CURRENT_BINARY_DIR}/include/Einsums/Config/Defines.hpp)
+    set(global_config_file ${CMAKE_CURRENT_BINARY_DIR}/include/${PROJECT_NAME}/Config/Defines.hpp)
     einsums_write_config_defines_file(
       TEMPLATE "${CMAKE_CURRENT_SOURCE_DIR}/cmake/templates/ConfigDefines.hpp.in" NAMESPACE default
       FILENAME "${global_config_file}"
@@ -113,7 +113,7 @@ function(einsums_add_module libname modulename)
        ${CMAKE_CURRENT_BINARY_DIR}/include_compatibility/*.hpp
   )
   list(REMOVE_ITEM zombie_generated_headers ${generated_headers} ${compat_headers}
-       ${CMAKE_CURRENT_BINARY_DIR}/include/Einsums/Config/ModulesEnabled.hpp
+       ${CMAKE_CURRENT_BINARY_DIR}/include/${PROJECT_NAME}/Config/ModulesEnabled.hpp
   )
   foreach(zombie_header IN LISTS zombie_generated_headers)
     einsums_warn("Removing zombie generated header: ${zombie_header}")
@@ -191,7 +191,7 @@ function(einsums_add_module libname modulename)
 
   einsums_add_source_group(
     NAME ${libname}_${modulename}
-    ROOT ${HEADER_ROOT}/Einsums
+    ROOT ${HEADER_ROOT}/${PROJECT_NAME}
     CLASS "Header Files"
     TARGETS ${headers}
   )
@@ -205,14 +205,14 @@ function(einsums_add_module libname modulename)
   if(${modulename}_GLOBAL_HEADER_GEN OR ${modulename}_CONFIG_FILES)
     einsums_add_source_group(
       NAME ${libname}_${modulename}
-      ROOT ${CMAKE_CURRENT_BINARY_DIR}/include/Einsums
+      ROOT ${CMAKE_CURRENT_BINARY_DIR}/include/${PROJECT_NAME}
       CLASS "Generated Files"
       TARGETS ${generated_headers}
     )
   endif()
   einsums_add_source_group(
     NAME ${libname}_${modulename}
-    ROOT ${CMAKE_CURRENT_BINARY_DIR}/include/Einsums
+    ROOT ${CMAKE_CURRENT_BINARY_DIR}/include/${PROJECT_NAME}
     CLASS "Generated Files"
     TARGETS ${config_header}
   )
@@ -270,7 +270,7 @@ function(einsums_add_module libname modulename)
 
   # Installing the generated header files from the build dir
   install(
-    DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/include/Einsums
+    DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/include/${PROJECT_NAME}
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
     COMPONENT ${modulename}
   )

@@ -47,7 +47,7 @@ target_include_directories(
         INTERFACE
         $<BUILD_INTERFACE:${h5cpp_SOURCE_DIR}>
         # TODO return to this when build headers adjusted   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/einsums>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}>
 )
 target_link_libraries(
         Einsums_h5cpp
@@ -66,19 +66,19 @@ install(
         DIRECTORY
         ${h5cpp_SOURCE_DIR}/h5cpp
         COMPONENT core
-        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/einsums
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}
 )
 
 export(
         TARGETS Einsums_h5cpp
         NAMESPACE Einsums::
-        FILE "${CMAKE_CURRENT_BINARY_DIR}/lib/cmake/Einsums/EinsumsH5cppTarget.cmake"
+        FILE "${CMAKE_CURRENT_BINARY_DIR}/lib/cmake/${PROJECT_NAME}/${PROJECT_NAME}H5cppTarget.cmake"
 )
 
 install(
         EXPORT EinsumsH5cppTarget
         NAMESPACE Einsums::
         FILE EinsumsH5cppTarget.cmake
-        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/einsums
+        DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/cmake/${PROJECT_NAME}
         COMPONENT cmake
 )

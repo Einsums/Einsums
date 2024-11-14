@@ -68,6 +68,6 @@ function(einsums_create_configuration_summary message module_name)
 
   if("${module_name_uc}" STREQUAL "EINSUMS")
     configure_file("${EINSUMS_SOURCE_DIR}/cmake/templates/ConfigDefinesStrings.hpp.in"
-                   "${EINSUMS_BINARY_DIR}/libs/Einsums/Config/include/Einsums/Config/ConfigStrings.hpp" @ONLY)
+                   "${EINSUMS_BINARY_DIR}/libs/${PROJECT_NAME}/Config/include/${PROJECT_NAME}/Config/ConfigStrings.hpp" @ONLY)
   endif()
 endfunction()

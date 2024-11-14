@@ -165,7 +165,7 @@ jobs:
       - name: Build & Install
         run: |
           cmake --build "${{github.workspace}}/build" --config ${{matrix.build_type}} --target install
-      #          cat "${{github.workspace}}/installed/share/cmake/Einsums/EinsumsConfig.cmake"
+          cat "${{github.workspace}}/installed/share/cmake/Einsums/EinsumsConfig.cmake"
 
       - name: Test (CTest) - unit tests
         working-directory: "${{github.workspace}}/build"
@@ -193,40 +193,50 @@ jobs:
           flags: cpp
           token: ${{ secrets.CODECOV_TOKEN }}
 
-      # - name: Test (find_package) - consume installation
-      #   shell: bash -l {0}
-      #   run: |
-      #     mkdir test_installed_library && cd test_installed_library
-      #     cat > CMakeLists.txt <<EOF
-      #     cmake_minimum_required(VERSION 3.8)
-      #     project(sample)
-      #     find_package(Einsums REQUIRED)
-      #     include(CMakePrintHelpers)
-      #     cmake_print_properties(
-      #       TARGETS
-      #         Einsums::einsums
-      #         HDF5::HDF5
-      #         tgt::lapack
-      #         OpenMP::OpenMP_CXX
-      #       PROPERTIES
-      #         IMPORTED_LINK_DEPENDENT_LIBRARIES
-      #         INTERFACE_LOCATION
-      #         INTERFACE_LINK_LIBRARIES
-      #         INTERFACE_INCLUDE_DIRECTORIES
-      #         INTERFACE_COMPILE_DEFINITIONS
-      #         INTERFACE_COMPILE_OPTIONS
-      #         INTERFACE_SYSTEM_INCLUDE_DIRECTORIES
-      #       )
-      #     add_executable(timings "../timing/main.cpp")
-      #     target_link_libraries(timings Einsums::einsums)
-      #     EOF
-      #     cmake -S . \
-      #       -B build \
-      #       -G Ninja \
-      #       --log-level verbose \
-      #       -DCMAKE_BUILD_TYPE=Release \
-      #       -DCMAKE_PREFIX_PATH="${CONDA_PREFIX};${CONDA_PREFIX}/Library;${{ github.workspace }}/installed" \
-      #       ${{ matrix.testargs }}
-      #     cmake --build build
-      #     ./build/timings
+      - name: Test (find_package) - consume installation
+        shell: bash -l {0}
+        run: |
+          mkdir test_installed_library && cd test_installed_library
+          cat > CMakeLists.txt <<EOF
+          cmake_minimum_required(VERSION 3.8)
+          project(sample)
+          find_package(Einsums REQUIRED)
+          include(CMakePrintHelpers)
+          cmake_print_properties(
+            TARGETS
+              Einsums::einsums
+              HDF5::HDF5
+              tgt::lapack
+              OpenMP::OpenMP_CXX
+            PROPERTIES
+              IMPORTED_LINK_DEPENDENT_LIBRARIES
+              INTERFACE_LOCATION
+              INTERFACE_LINK_LIBRARIES
+              INTERFACE_INCLUDE_DIRECTORIES
+              INTERFACE_COMPILE_DEFINITIONS
+              INTERFACE_COMPILE_OPTIONS
+              INTERFACE_SYSTEM_INCLUDE_DIRECTORIES
+            )
+          add_executable(timings "../timing/main.cpp")
+          target_link_libraries(timings Einsums::einsums)
+          EOF
+          if [[ ${{runner.os}} == "macOS" ]]; then 
+            cmake -S . \
+              -B build \
+              -G Ninja \
+              --log-level verbose \
+              -DCMAKE_BUILD_TYPE=Release \
+              -DCMAKE_PREFIX_PATH="${CONDA_PREFIX};${CONDA_PREFIX}/Library;${{ github.workspace }}/installed" \
+              ${{ matrix.testargs }}
+          else
+            cmake -S . \
+              -B build \
+              -G Ninja \
+              --log-level verbose \
+              -DCMAKE_BUILD_TYPE=Release \
+              -DCMAKE_PREFIX_PATH="${CONDA_PREFIX};${CONDA_PREFIX}/lib;${{ github.workspace }}/installed" \
+              ${{ matrix.testargs }}
+          fi
+          cmake --build build
+          ./build/timings
 
