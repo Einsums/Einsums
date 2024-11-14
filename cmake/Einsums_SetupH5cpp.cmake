@@ -72,7 +72,7 @@ install(
 export(
         TARGETS Einsums_h5cpp
         NAMESPACE Einsums::
-        FILE "${CMAKE_CURRENT_BINARY_DIR}/lib/cmake/${PROJECT_NAME}/${PROJECT_NAME}H5cppTarget.cmake"
+        FILE "${CMAKE_CURRENT_BINARY_DIR}/lib/cmake/${PROJECT_NAME}/EinsumsH5cppTarget.cmake"
 )
 
 install(
