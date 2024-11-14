@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //----------------------------------------------------------------------------------------------
 
-// This file is tended for use in precompiled headers targets.
+// This file is intended for use in precompiled header targets.
 
 int main() {
 }

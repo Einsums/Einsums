@@ -10,7 +10,7 @@
 Overview
 ========
 
-|einsums| is organized into different sub-libraries and those in turn into modules.
+|einsums| is organized into different sublibraries and those in turn into modules.
 The libraries and modules are independent, with clear dependencies and no
 cycles. As an end-user, the use of these libraries is completely transparent. If
 you use e.g. ``add_einsums_executable`` to create a target in your project you will

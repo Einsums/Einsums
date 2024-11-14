@@ -41,7 +41,7 @@ readme_template = f"""
 {module_name}
 {header_str}
 
-This module is part of einsums.
+This module is part of Einsums.
 """
 
 index_rst = f"""
