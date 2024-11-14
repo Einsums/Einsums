@@ -6,9 +6,6 @@
 ----------------------------------------------------------------------------------------------
 """
 
-#  Copyright (c) The Einsums Developers. All rights reserved.
-#  Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-
 import sys, os
 
 if len(sys.argv) != 3:
@@ -23,13 +20,13 @@ lib_name_upper = lib_name.upper()
 module_name = sys.argv[2]
 header_str = "=" * len(module_name)
 
-cmake_root_header = f"""#----------------------------------------------------------------------------------------------
+cmake_root_header = """#----------------------------------------------------------------------------------------------
 # Copyright (c) The Einsums Developers. All rights reserved.
 # Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 #----------------------------------------------------------------------------------------------
 """
 
-cmake_header = f"""#----------------------------------------------------------------------------------------------
+cmake_header = """#----------------------------------------------------------------------------------------------
 # Copyright (c) The Einsums Developers. All rights reserved.
 # Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 #----------------------------------------------------------------------------------------------
@@ -66,8 +63,8 @@ details.
 """
 
 root_cmakelists_template = (
-        cmake_root_header
-        + f"""
+    cmake_root_header
+    + f"""
 list(APPEND CMAKE_MODULE_PATH "${{CMAKE_CURRENT_SOURCE_DIR}}/cmake")
 
 set({module_name}Headers)
@@ -88,8 +85,8 @@ einsums_add_module(
 )
 
 examples_cmakelists_template = (
-        cmake_header
-        + f"""
+    cmake_header
+    + f"""
 if(EINSUMS_WITH_EXAMPLES)
   einsums_add_pseudo_target(examples.modules.{module_name})
   einsums_add_pseudo_dependencies(examples.modules examples.modules.{module_name})
@@ -104,8 +101,8 @@ endif()
 )
 
 tests_cmakelists_template = (
-        cmake_header
-        + f"""
+    cmake_header
+    + f"""
 include(Einsums_Message)
 
 if(EINSUMS_WITH_TESTS)
@@ -147,10 +144,14 @@ endif()
 
 if module_name != "--recreate-index":
 
-    def mkdir(path):
-        if not os.path.exists(path):
-            os.makedirs(path)
+    def mkdir(path_name):
+        """
+        Creates a new directory.
 
+        :param path_name: The path name that will be given to this new directory.
+        """
+        if not os.path.exists(path_name):
+            os.makedirs(path_name)
 
     mkdir(os.path.join(lib_name, module_name))
 
@@ -174,54 +175,80 @@ if module_name != "--recreate-index":
 
     ################################################################################
     # Generate README skeleton
-    f = open(os.path.join(lib_name, module_name, "README.rst"), "w")
-    f.write(readme_template)
+    with open(
+        os.path.join(lib_name, module_name, "README.rst"), "w", encoding="utf8"
+    ) as f:
+        f.write(readme_template)
     ################################################################################
 
     ################################################################################
     # Generate CMakeLists.txt skeletons
 
     # Generate .gitkeep files to keep empty directories around until they get filled
-    f = open(os.path.join(lib_name, module_name, "include", "Einsums", include_path, ".gitkeep"), "w")
-    f.write("# Keep directory around")
-    f = open(os.path.join(lib_name, module_name, "src", ".gitkeep"), "w")
-    f.write("# Keep directory around")
+    with open(
+        os.path.join(
+            lib_name, module_name, "include", "Einsums", include_path, ".gitkeep"
+        ),
+        "w",
+        encoding="utf8",
+    ) as f:
+        f.write("# Keep directory around")
+    with open(
+        os.path.join(lib_name, module_name, "src", ".gitkeep"), "w", encoding="utf8"
+    ) as f:
+        f.write("# Keep directory around")
 
     # Generate top level CMakeLists.txt
-    f = open(os.path.join(lib_name, module_name, "CMakeLists.txt"), "w")
-    f.write(root_cmakelists_template)
+    with open(
+        os.path.join(lib_name, module_name, "CMakeLists.txt"), "w", encoding="utf8"
+    ) as f:
+        f.write(root_cmakelists_template)
 
     # Generate docs/index.rst
-    f = open(os.path.join(lib_name, module_name, "docs", "index.rst"), "w")
-    f.write(index_rst)
+    with open(
+        os.path.join(lib_name, module_name, "docs", "index.rst"), "w", encoding="utf8"
+    ) as f:
+        f.write(index_rst)
 
     # Generate examples/CMakeLists.txt
-    f = open(os.path.join(lib_name, module_name, "examples", "CMakeLists.txt"), "w")
-    f.write(examples_cmakelists_template)
+    with open(
+        os.path.join(lib_name, module_name, "examples", "CMakeLists.txt"),
+        "w",
+        encoding="utf8",
+    ) as f:
+        f.write(examples_cmakelists_template)
 
     # Generate tests/CMakeLists.txt
-    f = open(os.path.join(lib_name, module_name, "tests", "CMakeLists.txt"), "w")
-    f.write(tests_cmakelists_template)
+    with open(
+        os.path.join(lib_name, module_name, "tests", "CMakeLists.txt"),
+        "w",
+        encoding="utf8",
+    ) as f:
+        f.write(tests_cmakelists_template)
 
     # Generate tests/unit/CMakeLists.txt
-    f = open(
-        os.path.join(lib_name, module_name, "tests", "unit", "CMakeLists.txt"), "w"
-    )
-    f.write(cmake_header)
+    with open(
+        os.path.join(lib_name, module_name, "tests", "unit", "CMakeLists.txt"),
+        "w",
+        encoding="utf8",
+    ) as f:
+        f.write(cmake_header)
 
     # Generate tests/regressions/CMakeLists.txt
-    f = open(
+    with open(
         os.path.join(lib_name, module_name, "tests", "regressions", "CMakeLists.txt"),
         "w",
-    )
-    f.write(cmake_header)
+        encoding="utf8",
+    ) as f:
+        f.write(cmake_header)
 
     # Generate tests/performance/CMakeLists.txt
-    f = open(
+    with open(
         os.path.join(lib_name, module_name, "tests", "performance", "CMakeLists.txt"),
         "w",
-    )
-    f.write(cmake_header)
+        encoding="utf8",
+    ) as f:
+        f.write(cmake_header)
     ################################################################################
 
 ################################################################################
@@ -238,8 +265,8 @@ modules = sorted(
 
 # Adapting top level CMakeLists.txt
 modules_cmakelists = (
-        cmake_header
-        + f"""
+    cmake_header
+    + """
 # Do not edit this file! It has been generated by the
 # libs/create_module_skeleton.py script.
 """
@@ -265,11 +292,13 @@ foreach(module ${{_{lib_name}_modules}})
 endforeach()
 """
 
-f = open(os.path.join(cwd, lib_name, "CMakeLists.txt"), "w")
-f.write(modules_cmakelists)
+with open(os.path.join(cwd, lib_name, "CMakeLists.txt"), "w", encoding="utf8") as f:
+    f.write(modules_cmakelists)
 
 header_name_str = (
-    "Main |einsums| modules" if lib_name == "full" else lib_name.capitalize() + " modules"
+    "Main |einsums| modules"
+    if lib_name == "full"
+    else lib_name.capitalize() + " modules"
 )
 header_underline_str = "=" * len(header_name_str)
 
@@ -290,7 +319,7 @@ modules_rst = f"""..
 for module in modules:
     modules_rst += f"   /libs/{lib_name}/{module}/docs/index.rst\n"
 
-f = open(os.path.join(cwd, lib_name, "modules.rst"), "w")
-f.write(modules_rst)
+with open(os.path.join(cwd, lib_name, "modules.rst"), "w", encoding="utf8") as f:
+    f.write(modules_rst)
 
 ################################################################################
