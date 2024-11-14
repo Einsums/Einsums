@@ -270,7 +270,7 @@ struct IsAlgebraTensor : public std::is_base_of<tensor_base::AlgebraOptimizedTen
  ********************************/
 
 /**
- * @property is_tensor_v
+ * @property IsTensorV
  *
  * @brief Tests whether the given type is a tensor or not.
  *
@@ -282,7 +282,7 @@ template <typename D>
 constexpr inline bool IsTensorV = detail::IsTensor<D>::value;
 
 /**
- * @property is_typed_tensor_v
+ * @property IsTypedTensorV
  *
  * @brief Tests whether the given type is a tensor with an underlying type.
  *
@@ -293,7 +293,7 @@ template <typename D, typename T>
 constexpr inline bool IsTypedTensorV = detail::IsTypedTensor<D, T>::value;
 
 /**
- * @property is_rank_tensor_v
+ * @property IsRankTensorV
  *
  * @brief Tests whether the given type is a tensor with the given rank.
  *
@@ -316,7 +316,7 @@ template <typename D>
 constexpr inline bool IsScalarV = detail::IsScalar<D>::value;
 
 /**
- * @property is_lockable_tensor_v
+ * @property IsLockableTensorV
  *
  * @brief Tests whether the given tensor type can be locked.
  *
@@ -326,7 +326,7 @@ template <typename D>
 constexpr inline bool IsLockableTensorV = detail::IsLockableTensor<D>::value;
 
 /**
- * @property is_tr_tensor_v
+ * @property IsTRTensorV
  *
  * @brief Tests whether the given tensor type has a storage type and rank.
  *
@@ -341,7 +341,7 @@ template <typename D, size_t Rank, typename T>
 constexpr inline bool IsTRTensorV = detail::IsTRTensor<D, Rank, T>::value;
 
 /**
- * @property is_trl_tensor_v
+ * @property IsTRLTensorV
  *
  * @brief Tests whether the given tensor type has a storage type and rank and can be locked.
  *
@@ -382,7 +382,7 @@ constexpr inline bool IsDeviceTensorV = detail::IsDeviceTensor<D>::value;
 #endif
 
 /**
- * @property is_disk_tensor_v
+ * @property IsDiskTensorV
  *
  * @brief Checks to see if the tensor is stored on-disk.
  *
@@ -394,7 +394,7 @@ template <typename D>
 constexpr inline bool IsDiskTensorV = detail::IsDiskTensor<D>::value;
 
 /**
- * @property is_tensor_view_v
+ * @property IsTensorViewV
  *
  * @brief Checks to see if the tensor is a view of another.
  *
@@ -406,7 +406,7 @@ template <typename D>
 constexpr inline bool IsTensorViewV = detail::IsTensorView<D>::value;
 
 /**
- * @property is_view_of_v
+ * @property IsViewOfV
  *
  * @brief Checks to see if the tensor is a view of another tensor with the kind of tensor specified.
  *
@@ -419,7 +419,7 @@ template <typename D, typename Viewed>
 constexpr inline bool IsViewOfV = detail::IsViewOf<D, Viewed>::value;
 
 /**
- * @property is_basic_tensor_v
+ * @property IsBasicTensorV
  *
  * @brief Checks to see if the tensor is a basic tensor.
  *
@@ -431,7 +431,7 @@ template <typename D>
 constexpr inline bool IsBasicTensorV = detail::IsBasicTensor<D>::value;
 
 /**
- * @property is_collected_tensor_v
+ * @property IsCollectedTensorV
  *
  * @brief Checks to see if the tensor is a tensor collection with the given storage type.
  *
@@ -473,7 +473,7 @@ template <typename D, typename StoredType = void>
 constexpr inline bool IsBlockTensorV = detail::IsBlockTensor<D, StoredType>::value;
 
 /**
- * @property is_function_tensor_v
+ * @property IsFunctionTensorV
  *
  * @brief Checks to see if the tensor is a function tensor.
  *
@@ -483,7 +483,7 @@ template <typename D>
 constexpr inline bool IsFunctionTensorV = detail::IsFunctionTensor<D>::value;
 
 /**
- * @property is_algebra_tensor_v
+ * @property IsAlgebraTensorV
  *
  * @brief Checks to see if operations with the tensor can be optimized using libraries, indicated by deriving AlgebraOptimizedTensor.
  *
@@ -497,7 +497,7 @@ constexpr inline bool IsAlgebraTensorV = detail::IsAlgebraTensor<D>::value;
  **************************************/
 
 /**
- * @property IsSamePlaceV
+ * @property IsInSamePlaceV
  *
  * @brief Requires that all tensors are in the same storage place.
  *
@@ -511,7 +511,7 @@ constexpr inline bool IsInSamePlaceV = (IsIncoreTensorV<Tensors> && ...) || (IsD
     ;
 
 /**
- * @property is_incore_rank_tensor_v
+ * @property IsIncoreRankTensorV
  *
  * @brief Requires that a tensor is in-core, stores the required type, and has the required rank.
  *
@@ -537,7 +537,7 @@ constexpr inline bool IsDeviceRankTensorV = IsDeviceTensorV<D> && is_tr_tensor_v
 #endif
 
 /**
- * @property is_disk_rank_tensor_v
+ * @property IsDiskRankTensorV
  *
  * @brief Requires that a tensor is stored on disk, stores the required type, and has the required rank.
  *
@@ -549,7 +549,7 @@ template <typename D, size_t Rank, typename T>
 constexpr inline bool IsDiskRankTensorV = IsDiskTensorV<D> && IsTRTensorV<D, Rank, T>;
 
 /**
- * @property is_rank_basic_tensor_v
+ * @property IsRankBasicTensorV
  *
  * @brief Requires that a tensor is a basic tensor, stores the required type, and has the required rank.
  *
@@ -561,7 +561,7 @@ template <typename D, size_t Rank, typename T>
 constexpr inline bool IsRankBasicTensorV = IsBasicTensorV<D> && IsTRTensorV<D, Rank, T>;
 
 /**
- * @property is_rank_tiled_tensor_v
+ * @property IsRankTiledTensorV
  *
  * @brief Requires that a tensor is a Tiled tensor, stores the required type, and has the required rank.
  *
@@ -573,7 +573,7 @@ template <typename D, size_t Rank, typename T>
 constexpr inline bool IsRankTiledTensorV = IsTiledTensorV<D> && IsTRTensorV<D, Rank, T>;
 
 /**
- * @property is_rank_block_tensor_v
+ * @property IsRankBlockTensorV
  *
  * @brief Requires that a tensor is a block tensor, stores the required type, and has the required rank.
  *
@@ -585,7 +585,7 @@ template <typename D, size_t Rank, typename T>
 constexpr inline bool IsRankBlockTensorV = IsBlockTensorV<D> && IsTRTensorV<D, Rank, T>;
 
 /**
- * @property is_incore_rank_basic_tensor_v
+ * @property IsIncoreRankBasicTensorV
  *
  * @brief Requires that a tensor is a basic tensor stored in-core, stores the required type, and has the required rank.
  *
@@ -611,7 +611,7 @@ constexpr inline bool IsDeviceRankBasicTensorV = is_basic_tensor_v<D> && is_tr_t
 #endif
 
 /**
- * @property is_incore_rank_block_tensor_v
+ * @property IsIncoreRankBlockTensorV
  *
  * @brief Requires that a tensor is a block tensor stored in-core, stores the required type, and has the required rank.
  *
@@ -637,7 +637,7 @@ constexpr inline bool IsDeviceRankBlockTensorV = IsBlockTensorV<D> && is_tr_tens
 #endif
 
 /**
- * @property is_incore_rank_tiled_tensor_v
+ * @property IsIncoreRankTiledTensorV
  *
  * @brief Requires that a tensor is a tiled tensor stored in-core, stores the required type, and has the required rank.
  *
@@ -663,7 +663,7 @@ constexpr inline bool IsDeviceRankTiledTensorV = IsTiledTensorV<D> && IsTRTensor
 #endif
 
 /**
- * @property is_incore_basic_tensor_v
+ * @property IsIncoreBasicTensorV
  *
  * @brief Checks to see if the tensor is available in-core and is a basic tensor.
  *
@@ -689,7 +689,7 @@ constexpr inline bool IsDeviceBasicTensorV = IsDeviceTensorV<D> && IsBasicTensor
 #endif
 
 /**
- * @property is_disk_basic_tensor_v
+ * @property IsDiskBasicTensorV
  *
  * @brief Checks to see if the tensor is stored on-disk and is a basic tensor.
  *
@@ -701,7 +701,7 @@ template <typename D>
 constexpr inline bool IsDiskBasicTensorV = IsDiskTensorV<D> && IsBasicTensorV<D>;
 
 /**
- * @property is_incore_tiled_tensor_v
+ * @property IsIncoreTiledTensorV
  *
  * @brief Checks to see if the tensor is available in-core and is a basic tensor.
  *
@@ -727,7 +727,7 @@ constexpr inline bool IsDeviceTiledTensorV = IsDeviceTensorV<D> && IsTiledTensor
 #endif
 
 /**
- * @property is_disk_tiled_tensor_v
+ * @property IsDiskTiledTensorV
  *
  * @brief Checks to see if the tensor is stored on-disk and is a tiled tensor.
  *
@@ -739,7 +739,7 @@ template <typename D>
 constexpr inline bool IsDiskTiledTensorV = IsDiskTensorV<D> && IsTiledTensorV<D>;
 
 /**
- * @property is_incore_block_tensor_v
+ * @property IsIncoreBlockTensorV
  *
  * @brief Checks to see if the tensor is available in-core and is a block tensor.
  *
@@ -1338,7 +1338,7 @@ struct RemoveView<D> {
 };
 
 /**
- * @typedef remove_view_t
+ * @typedef RemoveViewT
  *
  * @brief Gets the underlying type of a view.
  *
@@ -1377,13 +1377,13 @@ Tensor<NewT, NewRank> create_basic_tensor_like(TensorType const &tensor) {
 
 #if defined(EINSUMS_COMPUTE_CODE)
 template <typename NewT, size_t NewRank, DeviceTensorConcept TensorType>
-DeviceTensor<NewT, NewRank> create_basic_tensor_like(const TensorType &tensor) {
+DeviceTensor<NewT, NewRank> create_basic_tensor_like(TensorType const &tensor) {
     return DeviceTensor<NewT, NewRank>();
 }
 #endif
 
 template <typename NewT, size_t NewRank, DiskTensorConcept TensorType>
-disk::Tensor<NewT, NewRank> create_basic_tensor_like(const TensorType &) {
+disk::Tensor<NewT, NewRank> create_basic_tensor_like(TensorType const &) {
     return disk::Tensor<NewT, NewRank>();
 }
 
@@ -1432,9 +1432,9 @@ struct ValueType<D> {
 };
 
 /**
- * @typedef DataTypeT
+ * @typedef ValueTypeT
  *
- * @brief Gets the data type of a tensor/scalar.
+ * @brief Gets the data type of tensor/scalar.
  *
  * Normally, you can get the data type using an expression such as typename AType::ValueType. However, if you want
  * to support both zero-rank tensors and scalars, then this typedef can help with brevity.
@@ -1517,7 +1517,7 @@ struct LocationTensorBaseOf<D> {
  * @tparam D The tensor type to query.
  */
 template <typename D>
-using LocationTensorBaseOfIt = typename LocationTensorBaseOf<D>::type;
+using LocationTensorBaseOfT = typename LocationTensorBaseOf<D>::type;
 
 namespace detail {
 

@@ -30,6 +30,9 @@ DEFINE_STRUCT(Offset, std::size_t);
 DEFINE_STRUCT(Count, std::size_t);
 DEFINE_STRUCT(Chunk, std::ptrdiff_t);
 
+/**
+ * Range object
+ */
 struct Range : std::array<std::int64_t, 2> {
     template <typename... Args>
     constexpr explicit Range(Args... args) : std::array<std::int64_t, 2>{static_cast<std::int64_t>(args)...} {}
@@ -42,8 +45,9 @@ static struct AllT All; // NOLINT
 
 } // namespace einsums
 
+namespace fmt {
 template <size_t Rank>
-struct fmt::formatter<einsums::Dim<Rank>> {
+struct formatter<einsums::Dim<Rank>> {
     constexpr auto parse(format_parse_context &ctx) -> format_parse_context::iterator {
         // Parse the presentation format and store it in the formatter:
 
@@ -70,8 +74,10 @@ struct fmt::formatter<einsums::Dim<Rank>> {
     }
 };
 
+#if !defined(DOXYGEN)
+
 template <size_t Rank>
-struct fmt::formatter<einsums::Stride<Rank>> {
+struct formatter<einsums::Stride<Rank>> {
     constexpr auto parse(format_parse_context &ctx) -> format_parse_context::iterator {
         // Parse the presentation format and store it in the formatter:
 
@@ -98,7 +104,7 @@ struct fmt::formatter<einsums::Stride<Rank>> {
 };
 
 template <size_t Rank>
-struct fmt::formatter<einsums::Count<Rank>> {
+struct formatter<einsums::Count<Rank>> {
     constexpr auto parse(format_parse_context &ctx) -> format_parse_context::iterator {
         // Parse the presentation format and store it in the formatter:
 
@@ -125,7 +131,7 @@ struct fmt::formatter<einsums::Count<Rank>> {
 };
 
 template <size_t Rank>
-struct fmt::formatter<einsums::Offset<Rank>> {
+struct formatter<einsums::Offset<Rank>> {
     constexpr auto parse(format_parse_context &ctx) -> format_parse_context::iterator {
         // Parse the presentation format and store it in the formatter:
 
@@ -152,7 +158,7 @@ struct fmt::formatter<einsums::Offset<Rank>> {
 };
 
 template <>
-struct fmt::formatter<einsums::Range> {
+struct formatter<einsums::Range> {
     constexpr auto parse(format_parse_context &ctx) -> format_parse_context::iterator {
         // Parse the presentation format and store it in the formatter:
 
@@ -173,3 +179,5 @@ struct fmt::formatter<einsums::Range> {
         return format_to(ctx.out(), "Range{{{}, {}}}", dim[0], dim[1]);
     }
 };
+} // namespace fmt
+#endif

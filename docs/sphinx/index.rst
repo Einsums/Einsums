@@ -7,16 +7,17 @@
 .. _einsums_docs_mainpage:
 
 #######################
-Einsums's documentation
+Einsums's Documentation
 #######################
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :hidden:
 
    User Guide <user/index>
    API Reference <reference/index>
    Building from source <building/index>
+   Modules <libs/overview>
 
 **Version**: |release|
 
@@ -121,11 +122,8 @@ dgemm call:
       +++
 
 
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+.. Indices and tables
+.. ==================
+..
+.. * :ref:`genindex`
+.. * :ref:`search`

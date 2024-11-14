@@ -1,7 +1,7 @@
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 #pragma once
 
@@ -46,18 +46,23 @@ void EINSUMS_EXPORT always_print_thread_id(bool onoff);
  */
 void EINSUMS_EXPORT suppress_output(bool onoff);
 
+/**
+ * @brief Controls indentation.
+ */
 struct Indent {
-    Indent() { indent(); }
+     Indent() { indent(); }
     ~Indent() { deindent(); }
 };
 
 } // namespace print
 
+/// \cond NOINTERNAL
 namespace detail {
 void EINSUMS_EXPORT println(std::string const &str);
 void EINSUMS_EXPORT fprintln(std::FILE *fp, std::string const &str);
 void EINSUMS_EXPORT fprintln(std::ostream &os, std::string const &str);
 } // namespace detail
+/// \endcond NOINTERNAL
 
 using fmt::bg;
 using fmt::color;
@@ -197,6 +202,7 @@ void fprintln_warn(std::ostream &os, std::string_view const &format, Ts const...
 
 } // namespace einsums
 
+#if !defined(DOXYGEN)
 template <typename... Ts>
 struct fmt::formatter<ranges::common_tuple<Ts...>> {
     template <typename ParseContext>
@@ -213,3 +219,4 @@ struct fmt::formatter<ranges::common_tuple<Ts...>> {
         return fmt::format_to(ctx.out(), "{}", fmt::join(tpl, ", "));
     }
 };
+#endif

@@ -79,6 +79,7 @@ include(CMakeDependentOption)
 # include additional macro definitions
 include(Einsums_AddConfigTest)
 include(Einsums_AddDefinitions)
+include(Einsums_CreateSymbolicLink)
 
 einsums_force_out_of_tree_build(
   "This project requires an out-of-source-tree build. See README.rst. Clean your CMake cache and CMakeFiles if this message persists."
@@ -171,6 +172,30 @@ einsums_option(
   CATEGORY "Build Targets"
   ADVANCED
 )
+
+einsums_option(
+        EINSUMS_WITH_DOCUMENTATION BOOL "Build the Einsums documentation (default ON)." ON
+        CATEGORY "Build Targets"
+)
+
+if (EINSUMS_WITH_DOCUMENTATION)
+  set(valid_output_formats html)
+  einsums_option(
+          EINSUMS_WITH_DOCUMENTATION_OUTPUT_FORMATS
+          STRING
+          "List of documentation output formats to generate. Valid options are ${valid_output_formats}. Multiple values can be separated with semicolons. (default html)."
+          "html"
+          CATEGORY "Build Targets"
+  )
+
+  foreach (output_format ${EINSUMS_WITH_DOCUMENTATION_OUTPUT_FORMATS})
+    if (NOT ${output_format} IN_LIST valid_output_formats)
+      einsums_error(
+              "${output_format} is not a valid value for EINSUMS_WITH_DOCUMENTATION_OUTPUT_FORMATS. Valid output format are: ${valid_output_formats}."
+      )
+    endif ()
+  endforeach ()
+endif ()
 
 einsums_option(
   EINSUMS_WITH_BINARY_DIR
@@ -759,6 +784,15 @@ set(EINSUMS_DEBUG_POSTFIX "d")
 # Add libraries
 # ##################################################################################################
 add_subdirectory(libs)
+
+# ##############################################################################
+# Documentation toolchain (Sphinx, Doxygen, Breathe)
+# ##############################################################################
+include(Einsums_Documentation)
+
+if (EINSUMS_WITH_DOCUMENTATION)
+  add_subdirectory(docs)
+endif ()
 
 # ##################################################################################################
 # installation instructions

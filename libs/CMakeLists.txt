@@ -50,9 +50,9 @@ set(CONFIG_STRINGS_MODULES_INCLUDES)
 set(CONFIG_STRINGS_MODULES_ENTRIES)
 
 # List of sub-directories to work through
-set(einsums_libs Einsums)
+set(EINSUMS_LIBS Einsums CACHE INTERNAL "List of Einums libraries" FORCE)
 
-foreach(lib ${einsums_libs})
+foreach (lib ${EINSUMS_LIBS})
   add_library(${lib} SHARED src/dummy.cpp)
   set_target_properties(
     ${lib}

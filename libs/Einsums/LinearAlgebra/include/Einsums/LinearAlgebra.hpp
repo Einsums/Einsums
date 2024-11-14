@@ -351,7 +351,7 @@ auto pow(AType const &a, typename AType::value_type alpha,
     return detail::pow(a, alpha, cutoff);
 }
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
+#if !defined(DOXYGEN)
 template <VectorConcept AType, VectorConcept BType>
     requires requires {
         requires InSamePlace<AType, BType>;
