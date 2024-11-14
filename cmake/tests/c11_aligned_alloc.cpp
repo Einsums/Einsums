@@ -10,7 +10,7 @@
 
 int main()
 {
-    char* s = aligned_alloc(1024, 1024 * sizeof(char));
+    char* s = (char *) aligned_alloc(1024, 1024 * sizeof(char));
 
     free(s);
     return 0;

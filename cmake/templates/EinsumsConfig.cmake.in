@@ -11,21 +11,25 @@ include("${CMAKE_CURRENT_LIST_DIR}/EinsumsCacheVariables.cmake")
 # include einsums cmake utilities
 include("${CMAKE_CURRENT_LIST_DIR}/EinsumsMacros.cmake")
 
-# include exported targets
+# include external targets
 include("${CMAKE_CURRENT_LIST_DIR}/EinsumsH5cppTarget.cmake")
 einsums_find_package(range-v3 REQUIRED)
+# include exported targets
 include("${CMAKE_CURRENT_LIST_DIR}/einsums_internal_targets.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/EinsumsTargets.cmake")
 
+# Find the installation root.
 get_filename_component(_einsums_root_dir "${CMAKE_CURRENT_LIST_DIR}/../../.." ABSOLUTE)
 
 einsums_set_cmake_policy(CMP0144 NEW)
 
+# Get the version number
 set(EINSUMS_VERSION_STRING "@EINSUMS_VERSION@")
 set(EINSUMS_VERSION_MAJOR @EINSUMS_VERSION_MAJOR@)
 set(EINSUMS_VERSION_MINOR @EINSUMS_VERSION_MINOR@)
 set(EINSUMS_VERSION_PATCH @EINSUMS_VERSION_PATCH@)
 
+# Get the build type
 set(EINSUMS_DEBUG_POSTFIX "@EINSUMS_DEBUG_POSTFIX@")
 set(EINSUMS_BUILD_TYPE "@EINSUMS_BUILD_TYPE@")
 

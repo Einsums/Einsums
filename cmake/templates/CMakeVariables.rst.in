@@ -13,7 +13,7 @@
 |cmake| options
 ===============
 
-In order to configure |einsums|, you can set a variety of options to allow CMake to
+When configuring |einsums|, you can set a variety of options to allow CMake to
 generate your specific makefiles/project files. A list of the most important
 |cmake| options can be found in :ref:`important_cmake_options`, while this section
 includes the comprehensive list.

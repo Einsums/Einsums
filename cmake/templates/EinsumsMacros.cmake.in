@@ -8,6 +8,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "@EINSUMS_CMAKE_MODULE_PATH@")
 include(GNUInstallDirs)
 include(Einsums_Utils)
 
+# Check compiler features to ensure that Einsums is compatible.
 function(einsums_check_compiler_compatibility)
   if (EINSUMS_IGNORE_COMPILER_COMPATIBILITY)
     return()
