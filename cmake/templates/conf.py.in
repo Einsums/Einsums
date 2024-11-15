@@ -49,7 +49,8 @@ extensions = [
     'sphinx_copybutton',
 ]
 
-breathe_projects = {"Einsums": os.path.join('..', 'doxygen', 'xml')}
+# breathe_projects = {"Einsums": os.path.join('..', 'doxygen', 'xml')}
+breathe_projects = {}
 breathe_projects_source = {}
 breathe_default_members = ("members", "undoc-members", "protected-members")
 
@@ -199,11 +200,13 @@ api_file = '''
 
 '''
 
-# print(breathe_projects_source)
+print(breathe_projects_source)
 
 for lib in einsums_libs.keys():
     for module in sorted(einsums_libs[lib]):
-        # print(module)
+        print(module)
+        breathe_projects[module] = os.path.join('..', 'breathe', 'doxygen', module, 'xml')
+
         assert module in breathe_projects_source.keys()
         module_sources = breathe_projects_source[module]
         if len(module_sources[1]) == 0:
@@ -244,7 +247,8 @@ with open(os.path.abspath('.') + '/api/full_api.rst', 'w') as api_rst, open(f"{e
     for line in lines:
         api_rst.write(line.format(api_refs))
 
-breathe_default_project = "Einsums"
+# breathe_default_project = "Einsums"
+print(breathe_projects)
 
 breathe_doxygen_config_options = {
     'EXPAND_ONLY_PREDEF': 'YES',
