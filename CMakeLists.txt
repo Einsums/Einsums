@@ -851,5 +851,5 @@ include(Einsums_ForwardCacheVariables)
 include(Einsums_GeneratePackage)
 
 message("")
-message("einsums will be installed to ${CMAKE_INSTALL_PREFIX}")
+message("Einsums will be installed to ${CMAKE_INSTALL_PREFIX}")
 message("")
