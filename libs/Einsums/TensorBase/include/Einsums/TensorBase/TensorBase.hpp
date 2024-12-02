@@ -1,7 +1,7 @@
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 
 #pragma once
 
@@ -17,6 +17,20 @@
 
 namespace einsums::tensor_base {
 
+struct TensorBase {
+  public:
+    TensorBase() = default;
+
+    TensorBase(TensorBase const &) = default;
+
+    virtual ~TensorBase() = default;
+
+    virtual bool               full_view_of_underlying() const { return true; }
+    virtual std::string const &name() const                          = 0;
+    virtual void               set_name(std::string const &new_name) = 0;
+    // virtual size_t             rank() const                          = 0;
+};
+
 /**
  * @struct TypedTensor
  *
@@ -25,13 +39,14 @@ namespace einsums::tensor_base {
  * @tparam T The data type the tensor stores.
  */
 template <typename T>
-struct TypedTensor {
+struct TypedTensor : virtual TensorBase {
     /**
      * @typedef value_type
      *
      * @brief Gets the stored data type.
      */
     using value_type = T;
+    using data_type  = T;
 
     TypedTensor()                    = default;
     TypedTensor(TypedTensor const &) = default;
@@ -51,7 +66,7 @@ struct TypedTensor {
  */
 template <typename HostT, typename DevT = void>
     requires(std::is_void_v<DevT> || sizeof(HostT) == sizeof(DevT))
-struct DeviceTypedTensor : virtual typed_tensor<HostT> {
+struct DeviceTypedTensor : virtual TypedTensor<HostT> {
   public:
     /**
      * @typedef dev_datatype
@@ -74,6 +89,21 @@ struct DeviceTypedTensor : virtual typed_tensor<HostT> {
 #endif
 
 /**
+ * @struct RankTensorBaseNoRank
+ *
+ * @brief Base class for RankTensorBase that does not store the rank.
+ *
+ * This is used to indicate that the tensor has a rank that is known at
+ * compile time without needing to provide the rank. Internal use only.
+ */
+struct RankTensorNoRank {
+    RankTensorNoRank()                         = default;
+    RankTensorNoRank(RankTensorNoRank const &) = default;
+
+    virtual ~RankTensorNoRank() = default;
+};
+
+/**
  * @struct RankTensor
  *
  * @brief Base class for tensors with a rank. Used for querying the rank.
@@ -81,7 +111,7 @@ struct DeviceTypedTensor : virtual typed_tensor<HostT> {
  * @tparam Rank The rank of the tensor.
  */
 template <size_t Rank>
-struct RankTensor {
+struct RankTensor : virtual TensorBase, virtual RankTensorNoRank {
     /**
      * @property rank
      *
@@ -92,11 +122,13 @@ struct RankTensor {
     RankTensor()                   = default;
     RankTensor(RankTensor const &) = default;
 
-    virtual ~RankTensor() = default;
+    ~RankTensor() override = default;
 
     virtual Dim<Rank> dims() const = 0;
 
     virtual auto dim(int d) const -> size_t = 0;
+
+    // size_t rank() const override { return Rank; }
 };
 
 /**
@@ -130,9 +162,9 @@ struct Tensor : virtual TensorNoExtra, virtual TypedTensor<T>, virtual RankTenso
 
     ~Tensor() override = default;
 
-    virtual auto full_view_of_underlying() const -> bool { return true; }
-    virtual auto name() const -> std::string const   & = 0;
-    virtual void set_name(std::string const &new_name) = 0;
+    auto full_view_of_underlying() const -> bool override { return true; }
+    auto name() const -> std::string const & override   = 0;
+    void set_name(std::string const &new_name) override = 0;
 };
 
 /**
@@ -318,7 +350,7 @@ struct BasicTensor : virtual Tensor<T, Rank>, virtual BasicTensorNoExtra {
 
     ~BasicTensor() override = default;
 
-    virtual auto data() -> T             * = 0;
+    virtual auto data() -> T *             = 0;
     virtual auto data() const -> T const * = 0;
 
     virtual auto stride(int d) const -> size_t   = 0;
@@ -366,12 +398,10 @@ struct CollectedTensorOnlyStored {
  * Examples of tensor collections include BlockTensors and TiledTensors, which store
  * lists of tensors to save on memory.
  *
- * @tparam T The type of data stored by the tensors in the collection.
- * @tparam Rank The rank of the tensor.
  * @tparam TensorType The type of tensor stored by the collection.
  */
-template <typename T, size_t Rank, typename TensorType>
-struct CollectedTensor : public virtual CollectedTensorNoExtra, virtual CollectedTensorOnlyStored<TensorType>, virtual Tensor<T, Rank> {
+template <typename TensorType>
+struct CollectedTensor : virtual CollectedTensorNoExtra, virtual TensorNoExtra {
     using tensor_type = TensorType;
 
     CollectedTensor()                        = default;
@@ -415,12 +445,13 @@ struct BlockTensorNoExtra {
 
 // Large class. See BlockTensor.hpp for code.
 template <typename T, size_t Rank, typename TensorType>
-struct BlockTensorBase;
+struct BlockTensor;
 
 /**
  * @struct FunctionTensorNoExtra
  *
- * @brief Specifies that a tensor is a function tensor, but with no template parameters. Internal use only. Use FunctionTensorBase instead.
+ * @brief Specifies that a tensor is a function tensor, but with no template parameters. Internal use only. Use FunctionTensorBase
+ * instead.
  *
  * Used for checking to see if a tensor is a function tensor. Internal use only. Use FunctionTensorBase instead.
  */

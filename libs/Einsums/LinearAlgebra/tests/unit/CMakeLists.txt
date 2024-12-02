@@ -16,7 +16,7 @@ set(linear_algebra_tests
         heev
         lassq
         norm
-#        pow
+        pow
         syev
 )
 

@@ -1,7 +1,7 @@
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 
 #pragma once
 
@@ -65,19 +65,14 @@
 #endif
 
 namespace einsums {
-
 // Forward declaration of the Tensor printing function.
 template <RankTensorConcept AType>
     requires(BasicTensorConcept<AType> || !AlgebraTensorConcept<AType>)
 void println(AType const &A, TensorPrintOptions options = {});
 
-template <RankTensorConcept AType>
+template <FileOrOStream Output, TensorConcept AType>
     requires(BasicTensorConcept<AType> || !AlgebraTensorConcept<AType>)
-void fprintln(std::FILE *fp, AType const &A, TensorPrintOptions options = {});
-
-template <RankTensorConcept AType>
-    requires(BasicTensorConcept<AType> || !AlgebraTensorConcept<AType>)
-void fprintln(std::ostream &os, AType const &A, TensorPrintOptions options = {});
+void fprintln(Output fp, AType const &A, TensorPrintOptions options);
 
 // template <typename T>
 // using VectorData = std::vector<T, AlignedAllocator<T, 64>>;
@@ -96,7 +91,6 @@ struct Tensor : public virtual tensor_base::CoreTensor,
                 virtual tensor_base::BasicTensor<T, Rank>,
                 virtual tensor_base::LockableTensor,
                 virtual tensor_base::AlgebraOptimizedTensor {
-
     using datatype = T;
     using Vector   = VectorData<T>;
 
@@ -353,7 +347,6 @@ struct Tensor : public virtual tensor_base::CoreTensor,
             requires NoneOfType<Offset<Rank>, MultiIndex...>;
         }
     auto operator()(MultiIndex... index) const -> T const & {
-
         assert(sizeof...(MultiIndex) == _dims.size());
 
         auto   index_list = std::array{static_cast<ptrdiff_t>(index)...};
@@ -380,7 +373,6 @@ struct Tensor : public virtual tensor_base::CoreTensor,
             requires NoneOfType<Offset<Rank>, MultiIndex...>;
         }
     auto operator()(MultiIndex... index) -> T & {
-
         assert(sizeof...(MultiIndex) == _dims.size());
 
         auto index_list = std::array{static_cast<ptrdiff_t>(index)...};
@@ -416,7 +408,6 @@ struct Tensor : public virtual tensor_base::CoreTensor,
                 strides[counter] = _strides[i];
                 dims[counter]    = _dims[i];
                 counter++;
-
             } else if constexpr (std::is_same_v<Range, std::tuple_element_t<i, std::tuple<MultiIndex...>>>) {
                 auto range       = std::get<i>(indices);
                 offsets[counter] = range[0];
@@ -462,7 +453,6 @@ struct Tensor : public virtual tensor_base::CoreTensor,
                 strides[counter] = _strides[i];
                 dims[counter]    = _dims[i];
                 counter++;
-
             } else if constexpr (std::is_same_v<Range, std::tuple_element_t<i, std::tuple<MultiIndex...>>>) {
                 auto range       = std::get<i>(indices);
                 offsets[counter] = range[0];
@@ -487,7 +477,7 @@ struct Tensor : public virtual tensor_base::CoreTensor,
         Offset<Rank> offset{};
         Stride<Rank> stride = _strides;
 
-        auto ranges = get_array_from_tuple<std::array<Range, Rank>>(std::forward_as_tuple(index...));
+        auto ranges = arguments::get_array_from_tuple<std::array<Range, Rank>>(std::forward_as_tuple(index...));
 
         for (int r = 0; r < Rank; r++) {
             auto range = ranges[r];
@@ -708,6 +698,7 @@ struct Tensor : public virtual tensor_base::CoreTensor,
         }
         return _dims[d];
     }
+
     Dim<Rank> dims() const override { return _dims; }
 
     auto vector_data() const -> Vector const & { return _data; }
@@ -756,11 +747,13 @@ struct Tensor<T, 0> : virtual tensor_base::CoreTensor,
                       virtual tensor_base::BasicTensor<T, 0>,
                       virtual tensor_base::LockableTensor,
                       virtual tensor_base::AlgebraOptimizedTensor {
+    Tensor() = default;
 
-    Tensor()                   = default;
-    Tensor(Tensor const &)     = default;
+    Tensor(Tensor const &) = default;
+
     Tensor(Tensor &&) noexcept = default;
-    ~Tensor()                  = default;
+
+    ~Tensor() = default;
 
     explicit Tensor(std::string name) : _name{std::move(name)} {};
 
@@ -817,15 +810,16 @@ struct Tensor<T, 0> : virtual tensor_base::CoreTensor,
 };
 
 template <typename T, size_t Rank>
-struct TensorView final : public virtual tensor_base::CoreTensor,
+struct TensorView final : virtual tensor_base::CoreTensor,
                           virtual tensor_base::BasicTensor<T, Rank>,
                           virtual tensor_base::TensorView<T, Rank, Tensor<T, Rank>>,
                           virtual tensor_base::LockableTensor,
                           virtual tensor_base::AlgebraOptimizedTensor {
+    TensorView() = delete;
 
-    TensorView()                   = delete;
     TensorView(TensorView const &) = default;
-    ~TensorView()                  = default;
+
+    ~TensorView() override = default;
 
     // std::enable_if doesn't work with constructors.  So we explicitly create individual
     // constructors for the types of tensors we support (Tensor and TensorView).  The
@@ -913,33 +907,29 @@ struct TensorView final : public virtual tensor_base::CoreTensor,
         // Can't perform checks on data. Assume the user knows what they're doing.
         // This function is used when interfacing with libint2.
 
-        size_t size = this->size();
+        auto   target_dims = get_dim_ranges<Rank>(*this);
+        size_t item{0};
 
-        EINSUMS_OMP_PARALLEL_FOR
-        for (size_t sentinel = 0; sentinel < size; sentinel++) {
-            thread_local std::array<size_t, Rank> index;
-
-            sentinel_to_indices(_index_strides, index);
-
-            std::apply(*this, index) = other[sentinel];
+        for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
+            T &target = std::apply(*this, target_combination);
+            target    = other[item];
+            item++;
         }
 
         return *this;
     }
 
-    auto operator=(TensorView<T, Rank> const &other) -> TensorView & {
+    auto operator=(TensorView const &other) -> TensorView & {
         if (this == &other)
             return *this;
 
-        size_t size = this->size();
+        auto target_dims = get_dim_ranges<Rank>(*this);
+        auto view        = std::apply(ranges::views::cartesian_product, target_dims);
 
-        EINSUMS_OMP_PARALLEL_FOR
-        for (size_t sentinel = 0; sentinel < size; sentinel++) {
-            thread_local std::array<size_t, Rank> index;
-
-            sentinel_to_indices(_index_strides, index);
-
-            std::apply(*this, index) = std::apply(other, index);
+#pragma omp parallel for default(none) shared(view, other)
+        for (auto target_combination = view.begin(); target_combination != view.end(); target_combination++) {
+            T &target = std::apply(*this, *target_combination);
+            target    = std::apply(other, *target_combination);
         }
 
         return *this;
@@ -953,22 +943,19 @@ struct TensorView final : public virtual tensor_base::CoreTensor,
                 return *this;
         }
 
-        size_t size = this->size();
+        auto target_dims = get_dim_ranges<Rank>(*this);
+        auto view        = std::apply(ranges::views::cartesian_product, target_dims);
 
-        EINSUMS_OMP_PARALLEL_FOR
-        for (size_t sentinel = 0; sentinel < size; sentinel++) {
-            thread_local std::array<size_t, Rank> index;
-
-            sentinel_to_indices(_index_strides, index);
-
-            std::apply(*this, index) = std::apply(other, index);
+        // #pragma omp parallel for default(none) shared(view, other)
+        for (auto target_combination = view.begin(); target_combination != view.end(); target_combination++) {
+            T &target = std::apply(*this, *target_combination);
+            target    = std::apply(other, *target_combination);
         }
 
         return *this;
     }
 
     auto operator=(T const &fill_value) -> TensorView & {
-
         size_t size = this->size();
 
         EINSUMS_OMP_PARALLEL_FOR
@@ -988,12 +975,11 @@ struct TensorView final : public virtual tensor_base::CoreTensor,
 #endif
 #define OPERATOR(OP)                                                                                                                       \
     auto operator OP(const T &value)->TensorView & {                                                                                       \
-        size_t size = this->size();                                                                                                        \
-        EINSUMS_OMP_PARALLEL_FOR                                                                                                           \
-        for (size_t sentinel = 0; sentinel < size; sentinel++) {                                                                           \
-            thread_local std::array<size_t, Rank> index;                                                                                   \
-            sentinel_to_indices(sentinel, _index_strides, index);                                                                          \
-            std::apply(*this, index) = value;                                                                                              \
+        auto target_dims = get_dim_ranges<Rank>(*this);                                                                                    \
+        auto view        = std::apply(ranges::views::cartesian_product, target_dims);                                                      \
+        EINSUMS_OMP_PARALLEL_FOR for (auto target_combination = view.begin(); target_combination != view.end(); target_combination++) {    \
+            T        &target = std::apply(*this, *target_combination);                                                                     \
+            target OP value;                                                                                                               \
         }                                                                                                                                  \
                                                                                                                                            \
         return *this;                                                                                                                      \
@@ -1008,6 +994,7 @@ struct TensorView final : public virtual tensor_base::CoreTensor,
 
     T       *data() override { return _data; }
     T const *data() const override { return static_cast<T const *>(_data); }
+
     template <typename... MultiIndex>
     auto data(MultiIndex... index) const -> T * {
         assert(sizeof...(MultiIndex) <= _dims.size());
@@ -1084,6 +1071,7 @@ struct TensorView final : public virtual tensor_base::CoreTensor,
             d += Rank;
         return _dims[d];
     }
+
     Dim<Rank> dims() const override { return _dims; }
 
     std::string const &name() const override { return _name; }
@@ -1171,12 +1159,12 @@ struct TensorView final : public virtual tensor_base::CoreTensor,
             // sizes greater than 2^52 that the division becomes inaccurate with
             // floating points. Integer divisions should never become inaccurate.
             // In floating point, it would be ceil((size - offset) / stride)
-            ptrdiff_t numerator = other.size() - offsets[0];
-            size_t denominator = strides[0];
+            ptrdiff_t numerator   = other.size() - offsets[0];
+            size_t    denominator = strides[0];
 
             _dims[location] = numerator / denominator;
 
-            if(numerator % denominator != 0) {
+            if (numerator % denominator != 0) {
                 _dims[location] += 1;
             }
         }
@@ -1193,7 +1181,6 @@ struct TensorView final : public virtual tensor_base::CoreTensor,
         } else {
             if (std::accumulate(_dims.begin(), _dims.end(), 1.0, std::multiplies<>()) ==
                 std::accumulate(other._dims.begin(), other._dims.end(), 1.0, std::multiplies<>())) {
-
                 size_t size = dims_to_strides(_dims, default_strides);
             } else {
                 // Stride information cannot be automatically deduced.  It must be provided.
@@ -1234,7 +1221,6 @@ struct TensorView final : public virtual tensor_base::CoreTensor,
     template <typename T_, size_t OtherRank_>
     friend struct TensorView;
 };
-
 } // namespace einsums
 
 // Include HDF5 interface
@@ -1381,17 +1367,22 @@ template <typename T, size_t Rank>
 struct DiskTensor final : public virtual tensor_base::DiskTensor,
                           virtual tensor_base::Tensor<T, Rank>,
                           virtual tensor_base::LockableTensor {
-    DiskTensor()                       = default;
-    DiskTensor(DiskTensor const &)     = default;
+    DiskTensor() = default;
+
+    DiskTensor(DiskTensor const &) = default;
+
     DiskTensor(DiskTensor &&) noexcept = default;
-    ~DiskTensor()                      = default;
+
+    ~DiskTensor() override = default;
 
     template <typename... Dims>
     explicit DiskTensor(h5::fd_t &file, std::string name, Chunk<sizeof...(Dims)> chunk, Dims... dims)
         : _file{file}, _name{std::move(name)}, _dims{static_cast<size_t>(dims)...} {
         struct Stride {
             size_t value{1};
+
             Stride() = default;
+
             auto operator()(size_t dim) -> size_t {
                 auto old_value = value;
                 value *= dim;
@@ -1431,7 +1422,9 @@ struct DiskTensor final : public virtual tensor_base::DiskTensor,
 
         struct Stride {
             size_t value{1};
+
             Stride() = default;
+
             auto operator()(size_t dim) -> size_t {
                 auto old_value = value;
                 value *= dim;
@@ -1486,7 +1479,9 @@ struct DiskTensor final : public virtual tensor_base::DiskTensor,
 
         struct Stride {
             size_t value{1};
+
             Stride() = default;
+
             auto operator()(size_t dim) -> size_t {
                 auto old_value = value;
                 value *= dim;
@@ -1671,6 +1666,7 @@ struct DiskView final : virtual tensor_base::DiskTensor,
         : _parent(parent), _dims(dims), _counts(counts), _offsets(offsets), _strides(strides), _tensor{_dims} {
         h5::read<T>(_parent.disk(), _tensor.data(), h5::count{_counts}, h5::offset{_offsets});
     };
+
     DiskView(einsums::DiskTensor<T, Rank> const &parent, Dim<ViewRank> const &dims, Count<Rank> const &counts, Offset<Rank> const &offsets,
              Stride<Rank> const &strides)
         : _parent(const_cast<einsums::DiskTensor<T, Rank> &>(parent)), _dims(dims), _counts(counts), _offsets(offsets), _strides(strides),
@@ -1679,7 +1675,9 @@ struct DiskView final : virtual tensor_base::DiskTensor,
         h5::read<T>(_parent.disk(), _tensor.data(), h5::count{_counts}, h5::offset{_offsets});
         set_read_only(true);
     };
-    DiskView(DiskView const &)     = default;
+
+    DiskView(DiskView const &) = default;
+
     DiskView(DiskView &&) noexcept = default;
 
     ~DiskView() { put(); }
@@ -1780,24 +1778,31 @@ struct DiskView final : virtual tensor_base::DiskTensor,
 #ifdef __cpp_deduction_guides
 template <typename... Args>
 Tensor(std::string const &, Args...) -> Tensor<double, sizeof...(Args)>;
+
 template <typename T, size_t OtherRank, typename... Dims>
 explicit Tensor(Tensor<T, OtherRank> &&otherTensor, std::string name, Dims... dims) -> Tensor<T, sizeof...(dims)>;
+
 template <size_t Rank, typename... Args>
 explicit Tensor(Dim<Rank> const &, Args...) -> Tensor<double, Rank>;
 
 template <typename T, size_t Rank, size_t OtherRank, typename... Args>
 TensorView(Tensor<T, OtherRank> &, Dim<Rank> const &, Args...) -> TensorView<T, Rank>;
+
 template <typename T, size_t Rank, size_t OtherRank, typename... Args>
 TensorView(Tensor<T, OtherRank> const &, Dim<Rank> const &, Args...) -> TensorView<T, Rank>;
+
 template <typename T, size_t Rank, size_t OtherRank, typename... Args>
 TensorView(TensorView<T, OtherRank> &, Dim<Rank> const &, Args...) -> TensorView<T, Rank>;
+
 template <typename T, size_t Rank, size_t OtherRank, typename... Args>
 TensorView(TensorView<T, OtherRank> const &, Dim<Rank> const &, Args...) -> TensorView<T, Rank>;
+
 template <typename T, size_t Rank, size_t OtherRank, typename... Args>
 TensorView(std::string, Tensor<T, OtherRank> &, Dim<Rank> const &, Args...) -> TensorView<T, Rank>;
 
 template <typename... Dims>
 DiskTensor(h5::fd_t &file, std::string name, Dims... dims) -> DiskTensor<double, sizeof...(Dims)>;
+
 template <typename... Dims>
 DiskTensor(h5::fd_t &file, std::string name, Chunk<sizeof...(Dims)> chunk, Dims... dims) -> DiskTensor<double, sizeof...(Dims)>;
 
@@ -2067,5 +2072,4 @@ template <einsums::RankTensorConcept AType>
 void println(AType const &A, TensorPrintOptions options) {
     fprintln(std::cout, A, options);
 }
-
 } // namespace einsums

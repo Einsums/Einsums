@@ -5,7 +5,12 @@
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-set(TensorHeaders Einsums/Tensor/H5.hpp Einsums/Tensor/Tensor.hpp Einsums/Tensor/TensorForward.hpp)
+set(TensorHeaders
+        Einsums/Tensor/BlockTensor.hpp
+        Einsums/Tensor/H5.hpp
+        Einsums/Tensor/Tensor.hpp
+        Einsums/Tensor/TensorForward.hpp
+)
 
 set(TensorSources)
 

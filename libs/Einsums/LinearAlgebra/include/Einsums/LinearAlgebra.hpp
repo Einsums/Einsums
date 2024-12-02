@@ -1,7 +1,7 @@
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 
 #pragma once
 
@@ -620,7 +620,7 @@ auto norm(Norm norm_type, AType const &a) -> RemoveComplexT<typename AType::valu
 }
 
 template <TensorConcept AType>
-RemoveComplexT<AType> vec_norm(AType const &a) {
+auto vec_norm(AType const &a) -> RemoveComplexT<typename AType::value_type> {
     return std::sqrt(std::abs(true_dot(a, a)));
 }
 

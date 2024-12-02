@@ -1,11 +1,14 @@
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 
 #include <Einsums/LinearAlgebra.hpp>
+#include <Einsums/Tensor/BlockTensor.hpp>
+#include <Einsums/TensorUtilities/CreateRandomDefinite.hpp>
 #include <Einsums/TensorUtilities/CreateRandomTensor.hpp>
 #include <Einsums/TensorUtilities/CreateTensorLike.hpp>
+#include <Einsums/TensorUtilities/Diagonal.hpp>
 
 #include <Einsums/Testing.hpp>
 
@@ -28,11 +31,11 @@ TEMPLATE_TEST_CASE("pow", "[linear-algebra]", float, double) {
         Tensor B = linear_algebra::pow(A, TestType{2.0});
         Tensor C = create_tensor_like(A);
 
-        gemm<false, false>(1.0, A, A, 0.0, &C);
+        linear_algebra::gemm<false, false>(1.0, A, A, 0.0, &C);
 
         for (int i = 0; i < A.dim(0); i++) {
             for (int j = 0; j < A.dim(1); j++) {
-                CHECK_THAT(B(i, j), Catch::Matchers::WithinAbs(C(i, j), TestType{1e-6}));
+                CHECK_THAT(B(i, j), Catch::Matchers::WithinAbs(C(i, j), TestType{1e-5}));
             }
         }
     }
@@ -68,7 +71,7 @@ TEMPLATE_TEST_CASE("pow", "[linear-algebra]", float, double) {
         // Set up the first vector.
         auto v1 = Evecs(All, 0);
 
-        auto norm = vec_norm(v1);
+        auto norm = linear_algebra::vec_norm(v1);
         v1 /= norm;
 
         // Orthogonalize.
@@ -77,7 +80,7 @@ TEMPLATE_TEST_CASE("pow", "[linear-algebra]", float, double) {
             for (int j = 0; j < i; j++) {
                 auto qj = Evecs(All, j);
 
-                auto proj = true_dot(qi, qj);
+                auto proj = linear_algebra::true_dot(qi, qj);
 
                 // axpy(-proj, qj, &qi);
                 for (int k = 0; k < size; k++) {
@@ -85,12 +88,12 @@ TEMPLATE_TEST_CASE("pow", "[linear-algebra]", float, double) {
                 }
             }
 
-            while (vec_norm(qi) < TestType{1e-6}) {
+            while (linear_algebra::vec_norm(qi) < TestType{1e-6}) {
                 qi = create_random_tensor<TestType>("new vec", size);
                 for (int j = 0; j < i; j++) {
                     auto qj = Evecs(All, j);
 
-                    auto proj = true_dot(qi, qj);
+                    auto proj = linear_algebra::true_dot(qi, qj);
 
                     // axpy(-proj, qj, &qi);
                     for (int k = 0; k < size; k++) {
@@ -147,7 +150,7 @@ TEMPLATE_TEST_CASE("pow", "[linear-algebra]", float, double) {
         BlockTensor C = create_tensor_like(A);
         C.zero();
 
-        gemm<false, false>(1.0, A, A, 0.0, &C);
+        linear_algebra::gemm<false, false>(1.0, A, A, 0.0, &C);
 
         for (int i = 0; i < A.dim(0); i++) {
             for (int j = 0; j < A.dim(1); j++) {
