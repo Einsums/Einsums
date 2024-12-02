@@ -95,6 +95,12 @@ function(einsums_add_test category name)
     set_tests_properties("${_full_name}" PROPERTIES WILL_FAIL TRUE)
   endif()
 
+  if (TARGET ${${name}_EXECUTABLE}_test)
+    set_target_properties(${${name}_EXECUTABLE}_test PROPERTIES
+            RUNTIME_OUTPUT_DIRECTORY ""
+    )
+  endif ()
+
   # Only real tests, i.e. executables ending in _test, link to einsums_testing
   if(TARGET ${${name}_EXECUTABLE}_test AND ${name}_TESTING)
     target_link_libraries(${${name}_EXECUTABLE}_test PRIVATE Catch2::Catch2)
