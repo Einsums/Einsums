@@ -7,15 +7,15 @@
 
 #include <Einsums/Errors/ThrowException.hpp>
 
+#include <range/v3/range_fwd.hpp>
+#include <range/v3/view/cartesian_product.hpp>
+#include <range/v3/view/iota.hpp>
+
 #include <cstdarg>
 #include <cstddef>
 #include <tuple>
 #include <type_traits>
 #include <vector>
-
-#include <range/v3/range_fwd.hpp>
-#include <range/v3/view/cartesian_product.hpp>
-#include <range/v3/view/iota.hpp>
 
 namespace einsums {
 
@@ -199,8 +199,8 @@ HOSTDEV inline void sentinel_to_indices(size_t sentinel, size_t const *unique_st
 }
 
 template <size_t num_unique_inds>
- void sentinel_to_indices(size_t sentinel, std::array<size_t, num_unique_inds> const &unique_strides,
-                                std::array<size_t, num_unique_inds> &out_inds) {
+void sentinel_to_indices(size_t sentinel, std::array<size_t, num_unique_inds> const &unique_strides,
+                         std::array<size_t, num_unique_inds> &out_inds) {
     size_t hold = sentinel;
 
 #pragma unroll
@@ -232,21 +232,21 @@ inline void sentinel_to_indices(size_t sentinel, StorageType1 const &unique_stri
     }
 }
 
-HOSTDEV inline void sentinel_to_indices_mult_imp(size_t ) {
+HOSTDEV inline void sentinel_to_indices_mult_imp(size_t) {
 }
 
 template <typename Extra>
-HOSTDEV  void sentinel_to_indices_mult_imp(size_t ordinal, Extra extra) = delete;
+HOSTDEV void sentinel_to_indices_mult_imp(size_t ordinal, Extra extra) = delete;
 
 template <typename... Rest>
-HOSTDEV  void sentinel_to_indices_mult_imp(size_t ordinal, size_t index, size_t const *strides, size_t *indices, Rest... rest) {
+HOSTDEV void sentinel_to_indices_mult_imp(size_t ordinal, size_t index, size_t const *strides, size_t *indices, Rest... rest) {
     indices[index] = strides[index] * ordinal;
 
     sentinel_to_indices_mult_imp(ordinal, rest...);
 }
 
 template <typename Stride, typename Indices, typename... Rest>
- void sentinel_to_indices_mult_imp(size_t ordinal, size_t index, Stride const &strides, Indices &indices, Rest... rest) {
+void sentinel_to_indices_mult_imp(size_t ordinal, size_t index, Stride const &strides, Indices &indices, Rest... rest) {
     indices[index] = strides[index] * ordinal;
 
     sentinel_to_indices_mult_imp(ordinal, rest...);
@@ -280,7 +280,7 @@ HOSTDEV inline void sentinel_to_indices(size_t sentinel, size_t const *index_str
 
 template <size_t num_indices, typename StorageType, typename... StridesInds>
     requires(sizeof...(StridesInds) % 2 == 0)
- void sentinel_to_indices(size_t sentinel, std::array<size_t, num_indices> const &index_strides, StridesInds... strides_inds) {
+void sentinel_to_indices(size_t sentinel, std::array<size_t, num_indices> const &index_strides, StridesInds... strides_inds) {
     size_t hold = sentinel;
 
     auto args = std::forward_as_tuple(strides_inds...);
@@ -301,7 +301,7 @@ template <size_t num_indices, typename StorageType, typename... StridesInds>
 
 template <typename StorageType, typename... StridesInds>
     requires(sizeof...(StridesInds) % 2 == 0)
- void sentinel_to_indices(size_t sentinel, StorageType const &index_strides, StridesInds... strides_inds) {
+void sentinel_to_indices(size_t sentinel, StorageType const &index_strides, StridesInds... strides_inds) {
     size_t hold = sentinel;
 
     auto args = std::forward_as_tuple(strides_inds...);
