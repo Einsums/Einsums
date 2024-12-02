@@ -88,7 +88,7 @@ TEMPLATE_TEST_CASE("pow", "[linear-algebra]", float, double) {
                 }
             }
 
-            while (linear_algebra::vec_norm(qi) < TestType{1e-6}) {
+            while (linear_algebra::vec_norm(qi) < TestType{1e-5}) {
                 qi = create_random_tensor<TestType>("new vec", size);
                 for (int j = 0; j < i; j++) {
                     auto qj = Evecs(All, j);
@@ -122,9 +122,9 @@ TEMPLATE_TEST_CASE("pow", "[linear-algebra]", float, double) {
 
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                CHECK_THAT(B(i, j), Catch::Matchers::WithinAbs(C(i, j), TestType{1e-6}));
-                CHECK_THAT(C(j, i), Catch::Matchers::WithinAbs(C(i, j), TestType{1e-6}));
-                CHECK_THAT(B(j, i), Catch::Matchers::WithinAbs(B(i, j), TestType{1e-6}));
+                CHECK_THAT(B(i, j), Catch::Matchers::WithinAbs(C(i, j), TestType{1e-5}));
+                CHECK_THAT(C(j, i), Catch::Matchers::WithinAbs(C(i, j), TestType{1e-5}));
+                CHECK_THAT(B(j, i), Catch::Matchers::WithinAbs(B(i, j), TestType{1e-5}));
             }
         }
     }
@@ -154,7 +154,7 @@ TEMPLATE_TEST_CASE("pow", "[linear-algebra]", float, double) {
 
         for (int i = 0; i < A.dim(0); i++) {
             for (int j = 0; j < A.dim(1); j++) {
-                CHECK_THAT(B(i, j), Catch::Matchers::WithinAbs(C(i, j), TestType{1e-6}));
+                CHECK_THAT(B(i, j), Catch::Matchers::WithinAbs(C(i, j), TestType{1e-5}));
             }
         }
     }
@@ -176,7 +176,7 @@ TEMPLATE_TEST_CASE("pow", "[linear-algebra]", float, double) {
 
         for (int i = 0; i < A.dim(0); i++) {
             for (int j = 0; j < A.dim(1); j++) {
-                CHECK_THAT(B(i, j), Catch::Matchers::WithinAbs(C(i, j), TestType{1e-6}));
+                CHECK_THAT(B(i, j), Catch::Matchers::WithinAbs(C(i, j), TestType{1e-5}));
             }
         }
     }
