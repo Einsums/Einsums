@@ -113,6 +113,10 @@ function(einsums_add_header_tests category)
     string(FIND "${header}" "detail" detail_pos)
     list(FIND ${category}_EXCLUDE "${header}" exclude_pos)
 
+    if (${detail_pos} EQUAL -1)
+        string(FIND "${header}" "Detail" detail_pos)
+    endif ()
+
     if(${detail_pos} EQUAL -1 AND ${exclude_pos} EQUAL -1)
       # extract relative path of header
       string(REGEX REPLACE "${${category}_HEADER_ROOT}/" "" relpath "${header}")
