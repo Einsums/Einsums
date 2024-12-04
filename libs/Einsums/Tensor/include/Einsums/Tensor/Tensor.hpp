@@ -87,7 +87,7 @@ using VectorData = std::vector<T>;
  * @tparam Rank the rank of the tensor
  */
 template <typename T, size_t Rank>
-struct Tensor : public virtual tensor_base::CoreTensor,
+struct Tensor : virtual tensor_base::CoreTensor,
                 virtual tensor_base::BasicTensor<T, Rank>,
                 virtual tensor_base::LockableTensor,
                 virtual tensor_base::AlgebraOptimizedTensor {
@@ -126,7 +126,7 @@ struct Tensor : public virtual tensor_base::CoreTensor,
      * @param dims The dimensions of each rank of the tensor.
      */
     template <typename... Dims>
-    explicit Tensor(std::string name, Dims... dims) : _name{std::move(name)}, _dims{static_cast<size_t>(dims)...} {
+    Tensor(std::string name, Dims... dims) : _name{std::move(name)}, _dims{static_cast<size_t>(dims)...} {
         static_assert(Rank == sizeof...(dims), "Declared Rank does not match provided dims");
 
         size_t size = dims_to_strides(_dims, _strides);

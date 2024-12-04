@@ -7,6 +7,7 @@ set(linear_algebra_tests
         dot
         geev
         gemm
+        GEMMTensorView
         gesv
         gesvd
         gemv
