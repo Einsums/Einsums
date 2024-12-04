@@ -8,7 +8,7 @@
 Tensor
 ======
 
-TODO: High-level description of the module.
+This module contains code for the tensor types used in Einsums.
 
 See the :ref:`API reference <modules_Tensor_api>` of this module for more
 details.
