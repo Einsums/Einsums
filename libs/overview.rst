@@ -50,9 +50,9 @@ The governing equation is this.
 .. math::
     
     E_{CCSD} = E_{HF} + \sum_{i}^{occ}\sum_{a}^{virt} F_{ia} t_{i}^{a} + 
-    \frac{1}{4}\sum_{ij}^{occ} \sum{ab}^{virt} \left<ij\middle|\middle| ab\right> \tau_{ij}^{ab}
+    \frac{1}{4}\sum_{ij}^{occ} \sum_{ab}^{virt} \left<ij\middle|\middle| ab\right> \tau_{ij}^{ab}
 
-    \tau_{ij}^{ab} = t_{ij}^{ab} + 2t_{i}^{a}t_{j}^b}
+    \tau_{ij}^{ab} = t_{ij}^{ab} + 2t_{i}^{a}t_{j}^{b}
 
     \left<pq \middle|\middle| rs \right> = \left<pq\middle|\middle|rs\right> - \left<pq\middle|\middle|sr\right>
 
@@ -62,7 +62,7 @@ This becomes the following code.
 .. code:: C++
 
     double E_hf;
-    int n_occ; // The number of occupied orbitals.
+    int n_occ; // The number of occupied orbitals. 
     int n_orbs; // The number of orbitals.
     int n_virt = n_orbs - n_occ; // The number of virtual orbitals.
     Tensor<double, 2> F{"F", n_orbs, n_orbs}; // The Fock matrix.
@@ -82,7 +82,6 @@ This becomes the following code.
     // Compute the antisymmetrized two-electron integrals.
     Tensor<double, 4> TEI_antisym = TEI;
     sort(1.0, index::Indices{index::p, index::q, index::r, index::s}, &TEI_antisym, -1.0, index::Indices{index::p, index::q, index::s, index::r} TEI);
-
 
     // Computing each term.
     TensorView<double, 2> Fia = F(Range{0, n_occ}, Range{n_occ, n_orbs});

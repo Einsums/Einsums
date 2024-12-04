@@ -8,7 +8,7 @@
 Assertion
 =========
 
-TODO: High-level description of the module.
+This module contains several macros for handling assertions.
 
 See the :ref:`API reference <modules_Assertion_api>` of this module for more
 details.

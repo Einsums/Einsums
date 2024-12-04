@@ -19,7 +19,7 @@ namespace einsums::blas {
  * For example, a GPU implementation would likely need to obtain a device handle to
  * run. That would be handled by this function.
  *
- * You typically will not need to call this function manually. \ref einsums::initialize()
+ * You typically will not need to call this function manually. einsums::initialize()
  * will handle calling this function for you.
  *
  */

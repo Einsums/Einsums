@@ -26,7 +26,17 @@ EINSUMS_EXPORT void set_assertion_handler(assertion_handler_type handler);
 } // namespace einsums::detail
 
 #if defined(DOXYGEN)
-/// \def EINSUMS_ASSERT(expr, msg)
+
+/**
+ * @def EINSUMS_ASSERT(expr)
+ * 
+ * @brief This macro asserts that @a expr evaluates to true, but does not have a custom message.
+ *
+ * @sa EINSUMS_ASSERT_MSG
+ */
+#    define EINSUMS_ASSERT(expr)
+
+/// \def EINSUMS_ASSERT_MSG(expr, msg)
 /// \brief This macro asserts that \a expr evaluates to true.
 ///
 /// \param expr The expression to assert on. This can either be an expression
@@ -41,9 +51,6 @@ EINSUMS_EXPORT void set_assertion_handler(assertion_handler_type handler);
 ///
 /// Asserts are enabled if \a EINSUMS_DEBUG is set. This is the default for
 /// `CMAKE_BUILD_TYPE=Debug`
-#    define EINSUMS_ASSERT(expr)
-
-/// \see EINSUMS_ASSERT
 #    define EINSUMS_ASSERT_MSG(expr, msg)
 #else
 /// \cond NOINTERNAL

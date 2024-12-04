@@ -103,12 +103,12 @@ dgemm call:
 
       +++
 
-      .. button-ref:: reference/index
+      .. button-ref:: libs/overview 
          :expand:
          :color: primary
          :click-parent:
 
-         To the developer's guide
+         To the developer's guide 
 
    .. grid-item-card::
       :img-top: _static/index-images/contributor.svg
