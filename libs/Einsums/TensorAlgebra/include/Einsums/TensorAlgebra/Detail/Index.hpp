@@ -30,8 +30,8 @@ struct LabelBase {};
     for easy printing using fmtlib.
 */
 #define MAKE_INDEX(x)                                                                                                                      \
-    namespace einsums::index {                                                                                             \
-    struct x : public LabelBase {                                                                                                          \
+    namespace einsums::index {                                                                                                             \
+    struct EINSUMS_EXPORT x : public LabelBase {                                                                                           \
         static constexpr const char *letter = #x;                                                                                          \
         constexpr x()                       = default;                                                                                     \
         size_t operator()(std::va_list args) const {                                                                                       \
@@ -58,10 +58,10 @@ struct LabelBase {};
     }                                                                                                                                      \
     }                                                                                                                                      \
     template <>                                                                                                                            \
-    struct EINSUMS_EXPORT fmt::formatter<struct ::einsums::index::x> : fmt::formatter<const char *> {                      \
+    struct EINSUMS_EXPORT fmt::formatter<struct ::einsums::index::x> : fmt::formatter<const char *> {                                      \
         template <typename FormatContext>                                                                                                  \
-        auto format(const struct ::einsums::index::x &, FormatContext &ctx) const {                                        \
-            return formatter<const char *>::format(::einsums::index::x::letter, ctx);                                      \
+        auto format(const struct ::einsums::index::x &, FormatContext &ctx) const {                                                        \
+            return formatter<const char *>::format(::einsums::index::x::letter, ctx);                                                      \
         }                                                                                                                                  \
     };
 
@@ -175,7 +175,7 @@ MAKE_INDEX(Omega)
 
 #undef MAKE_INDEX
 
-namespace einsums{
+namespace einsums {
 
 namespace index {
 
@@ -192,7 +192,7 @@ constexpr auto list = std::make_tuple(i, j, k, l, m, n, a, b, c, d, e, f, p, q, 
  */
 template <typename... Args>
 struct EINSUMS_EXPORT Indices : public std::tuple<Args...> {
-    Indices(Args... args) : std::tuple<Args...>(args...){};
+    Indices(Args... args) : std::tuple<Args...>(args...) {};
 };
 
-} // namespace einsums::tensor_algebra
+} // namespace einsums
