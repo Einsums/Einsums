@@ -18,6 +18,7 @@ set(linear_algebra_tests
         norm
         pow
         syev
+        Scale
 )
 
 foreach(test ${linear_algebra_tests})
