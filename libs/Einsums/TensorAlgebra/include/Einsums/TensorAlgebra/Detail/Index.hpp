@@ -19,21 +19,21 @@
 #    undef I
 #endif
 
-namespace einsums::tensor_algebra::index {
+namespace einsums::index {
 /// Base struct for index tags. It might not be technically needed but it will allow
 /// compile-time checks to be performed.
 struct LabelBase {};
-} // namespace einsums::tensor_algebra::index
+} // namespace einsums::index
 
 /*! \def MAKE_INDEX(x)
     Macro that defines new index tags that can be used with einsums. Also includes code
     for easy printing using fmtlib.
 */
 #define MAKE_INDEX(x)                                                                                                                      \
-    namespace einsums::tensor_algebra::index {                                                                                             \
+    namespace einsums::index {                                                                                             \
     struct x : public LabelBase {                                                                                                          \
-        static constexpr char letter = static_cast<const char (&)[2]>(#x)[0];                                                              \
-        constexpr x()                = default;                                                                                            \
+        static constexpr const char *letter = #x;                                                                                          \
+        constexpr x()                       = default;                                                                                     \
         size_t operator()(std::va_list args) const {                                                                                       \
             return va_arg(args, size_t);                                                                                                   \
         }                                                                                                                                  \
@@ -58,10 +58,10 @@ struct LabelBase {};
     }                                                                                                                                      \
     }                                                                                                                                      \
     template <>                                                                                                                            \
-    struct EINSUMS_EXPORT fmt::formatter<struct ::einsums::tensor_algebra::index::x> : fmt::formatter<char> {                              \
+    struct EINSUMS_EXPORT fmt::formatter<struct ::einsums::index::x> : fmt::formatter<const char *> {                      \
         template <typename FormatContext>                                                                                                  \
-        auto format(const struct ::einsums::tensor_algebra::index::x &, FormatContext &ctx) const {                                        \
-            return formatter<char>::format(::einsums::tensor_algebra::index::x::letter, ctx);                                              \
+        auto format(const struct ::einsums::index::x &, FormatContext &ctx) const {                                        \
+            return formatter<const char *>::format(::einsums::index::x::letter, ctx);                                      \
         }                                                                                                                                  \
     };
 
@@ -120,11 +120,62 @@ MAKE_INDEX(z); // NOLINT
 
 // Z is a special index used internally. Unless you know what you're doing, DO NOT USE.
 MAKE_INDEX(Z); // NOLINT
+
+// Greek indices are useful too!
+MAKE_INDEX(alpha)
+MAKE_INDEX(beta)
+MAKE_INDEX(gamma)
+MAKE_INDEX(delta)
+MAKE_INDEX(epsilon)
+MAKE_INDEX(zeta)
+MAKE_INDEX(eta)
+MAKE_INDEX(theta)
+MAKE_INDEX(iota)
+MAKE_INDEX(kappa)
+MAKE_INDEX(lambda)
+MAKE_INDEX(mu)
+MAKE_INDEX(nu)
+MAKE_INDEX(xi)
+MAKE_INDEX(omicron)
+MAKE_INDEX(pi)
+MAKE_INDEX(rho)
+MAKE_INDEX(sigma)
+MAKE_INDEX(tau)
+MAKE_INDEX(upsilon)
+MAKE_INDEX(phi)
+MAKE_INDEX(chi)
+MAKE_INDEX(psi)
+MAKE_INDEX(omega)
+
+MAKE_INDEX(Alpha)
+MAKE_INDEX(Beta)
+MAKE_INDEX(Gamma)
+MAKE_INDEX(Delta)
+MAKE_INDEX(Epsilon)
+MAKE_INDEX(Zeta)
+MAKE_INDEX(Eta)
+MAKE_INDEX(Theta)
+MAKE_INDEX(Iota)
+MAKE_INDEX(Kappa)
+MAKE_INDEX(Lambda)
+MAKE_INDEX(Mu)
+MAKE_INDEX(Nu)
+MAKE_INDEX(Xi)
+MAKE_INDEX(Omicron)
+MAKE_INDEX(Pi)
+MAKE_INDEX(Rho)
+MAKE_INDEX(Sigma)
+MAKE_INDEX(Tau)
+MAKE_INDEX(Upsilon)
+MAKE_INDEX(Phi)
+MAKE_INDEX(Chi)
+MAKE_INDEX(Psi)
+MAKE_INDEX(Omega)
 #endif
 
 #undef MAKE_INDEX
 
-namespace einsums::tensor_algebra {
+namespace einsums{
 
 namespace index {
 
@@ -137,11 +188,11 @@ constexpr auto list = std::make_tuple(i, j, k, l, m, n, a, b, c, d, e, f, p, q, 
 /**
  * @brief Identifier for providing index labels to the the einsum function.
  *
- * @tparam Args
+ * @tparam Args The indices to pass.
  */
 template <typename... Args>
 struct EINSUMS_EXPORT Indices : public std::tuple<Args...> {
-    Indices(Args... args) : std::tuple<Args...>(args...) {};
+    Indices(Args... args) : std::tuple<Args...>(args...){};
 };
 
 } // namespace einsums::tensor_algebra

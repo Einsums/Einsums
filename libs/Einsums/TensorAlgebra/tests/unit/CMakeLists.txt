@@ -4,6 +4,7 @@
 #----------------------------------------------------------------------------------------------
 
 set(TensorAlgebraTests
+    Indices
 )
 
 foreach (test ${TensorAlgebraTests})
