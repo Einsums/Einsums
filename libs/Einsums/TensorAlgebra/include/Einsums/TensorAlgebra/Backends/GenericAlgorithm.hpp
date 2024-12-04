@@ -30,16 +30,16 @@ void einsum_generic_algorithm(std::tuple<CUniqueIndices...> const &C_unique, std
                               std::tuple<BIndices...> const & /*B_indices*/, std::tuple<TargetDims...> const &target_dims,
                               std::tuple<LinkDims...> const &link_dims, std::tuple<TargetPositionInC...> const &target_position_in_C,
                               std::tuple<LinkPositionInLink...> const &link_position_in_link, ValueTypeT<CType> const C_prefactor, CType *C,
-                              std::conditional_t<(sizeof(typename AType::data_type) > sizeof(typename BType::data_type)),
-                                                 typename AType::data_type, typename BType::data_type> const AB_prefactor,
+                              std::conditional_t<(sizeof(typename AType::ValueType) > sizeof(typename BType::ValueType)),
+                                                 typename AType::ValueType, typename BType::ValueType> const AB_prefactor,
                               AType const &A, BType const &B) {
     LabeledSection0();
 
-    using ADataType        = typename AType::data_type;
-    using BDataType        = typename BType::data_type;
+    using ADataType        = typename AType::ValueType;
+    using BDataType        = typename BType::ValueType;
     using CDataType        = ValueTypeT<CType>;
-    constexpr size_t ARank = AType::rank;
-    constexpr size_t BRank = BType::rank;
+    constexpr size_t ARank = AType::Rank;
+    constexpr size_t BRank = BType::Rank;
     constexpr size_t CRank = TensorRank<CType>;
 
     auto view = std::apply(ranges::views::cartesian_product, target_dims);

@@ -1,7 +1,7 @@
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 
 #pragma once
 
@@ -18,14 +18,14 @@ template <bool TransA, bool TransB, BlockTensorConcept AType, BlockTensorConcept
     requires requires {
         requires SameUnderlyingAndRank<AType, BType, CType>;
         requires MatrixConcept<AType>;
-        requires std::convertible_to<U, typename AType::value_type>;
+        requires std::convertible_to<U, typename AType::ValueType>;
     }
 void gemm(U const alpha, AType const &A, BType const &B, U const beta, CType *C) {
     if (A.num_blocks() != B.num_blocks() || A.num_blocks() != C->num_blocks() || B.num_blocks() != C->num_blocks()) {
         EINSUMS_THROW_EXCEPTION(Error::bad_parameter, "gemm: Tensors need the same number of blocks.");
     }
 
-    using T = typename AType::value_type;
+    using T = typename AType::ValueType;
 
 #if defined(EINSUMS_COMPUTE_CODE)
     if constexpr (einsums::detail::IsDeviceTensorV<AType>) {
@@ -68,10 +68,10 @@ template <bool TransA, BlockTensorConcept AType, VectorConcept XType, VectorConc
     requires requires {
         requires MatrixConcept<AType>;
         requires SameUnderlying<AType, XType, YType>;
-        requires std::convertible_to<U, typename AType::data_type>;
+        requires std::convertible_to<U, typename AType::ValueType>;
     }
 void gemv(U const alpha, AType const &A, XType const &z, U const beta, YType *y) {
-    using T = typename AType::data_type;
+    using T = typename AType::ValueType;
     if (beta == U(0.0)) {
         y->zero();
     } else {
@@ -106,7 +106,7 @@ void syev(AType *A, WType *W) {
 
 template <bool ComputeEigenvectors = true, BlockTensorConcept AType, VectorConcept WType>
     requires requires {
-        requires std::is_same_v<AddComplexT<typename AType::data_type>, typename WType::data_type>;
+        requires std::is_same_v<AddComplexT<typename AType::ValueType>, typename WType::ValueType>;
         requires MatrixConcept<AType>;
     }
 void geev(AType *A, WType *W, AType *lvecs, AType *rvecs) {
@@ -124,7 +124,7 @@ template <bool ComputeEigenvectors = true, BlockTensorConcept AType, VectorConce
     requires requires {
         requires MatrixConcept<AType>;
         requires Complex<AType>;
-        requires std::is_same_v<RemoveComplexT<typename AType::data_type>, typename WType::data_type>;
+        requires std::is_same_v<RemoveComplexT<typename AType::ValueType>, typename WType::ValueType>;
     }
 void heev(AType *A, WType *W) {
     EINSUMS_OMP_PARALLEL_FOR
@@ -167,7 +167,7 @@ auto gesv(AType *A, BType *B) -> int {
 }
 
 template <BlockTensorConcept AType>
-void scale(typename AType::data_type alpha, AType *A) {
+void scale(typename AType::ValueType alpha, AType *A) {
     EINSUMS_OMP_PARALLEL_FOR
     for (int i = 0; i < A->num_blocks(); i++) {
         if (A->block_dim(i) == 0) {
@@ -179,7 +179,7 @@ void scale(typename AType::data_type alpha, AType *A) {
 
 template <BlockTensorConcept AType>
     requires MatrixConcept<AType>
-void scale_row(size_t row, typename AType::data_type alpha, AType *A) {
+void scale_row(size_t row, typename AType::ValueType alpha, AType *A) {
     int  block_ind = A->block_of(row);
     auto temp      = A->block(block_ind)(row - A->block_range(block_ind)[0], All);
     scale(alpha, &temp);
@@ -187,7 +187,7 @@ void scale_row(size_t row, typename AType::data_type alpha, AType *A) {
 
 template <BlockTensorConcept AType>
     requires MatrixConcept<AType>
-void scale_column(size_t column, typename AType::data_type alpha, AType *A) {
+void scale_column(size_t column, typename AType::ValueType alpha, AType *A) {
     int  block_ind = A->block_of(column);
     auto temp      = A->block(block_ind)(All, column - A->block_range(block_ind)[0]);
     scale(alpha, &temp);
@@ -195,7 +195,7 @@ void scale_column(size_t column, typename AType::data_type alpha, AType *A) {
 
 template <BlockTensorConcept AType, BlockTensorConcept BType>
     requires SameUnderlyingAndRank<AType, BType>
-auto dot(AType const &A, BType const &B) -> typename AType::data_type {
+auto dot(AType const &A, BType const &B) -> typename AType::ValueType {
     if (A.num_blocks() != B.num_blocks()) {
         return dot(typename AType::tensor_type(A), typename BType::tensor_type(B));
     }
@@ -204,7 +204,7 @@ auto dot(AType const &A, BType const &B) -> typename AType::data_type {
         return dot(typename AType::tensor_type(A), typename BType::tensor_type(B));
     }
 
-    using T = typename AType::data_type;
+    using T = typename AType::ValueType;
 
     T out{0};
 
@@ -221,7 +221,7 @@ auto dot(AType const &A, BType const &B) -> typename AType::data_type {
 
 template <BlockTensorConcept AType, BlockTensorConcept BType>
     requires SameUnderlyingAndRank<AType, BType>
-auto true_dot(AType const &A, BType const &B) -> typename AType::data_type {
+auto true_dot(AType const &A, BType const &B) -> typename AType::ValueType {
     if (A.num_blocks() != B.num_blocks()) {
         return true_dot(typename AType::tensor_type(A), typename BType::tensor_type(B));
     }
@@ -230,7 +230,7 @@ auto true_dot(AType const &A, BType const &B) -> typename AType::data_type {
         return true_dot(typename AType::tensor_type(A), typename BType::tensor_type(B));
     }
 
-    using T = typename AType::data_type;
+    using T = typename AType::ValueType;
 
     T out{0};
 
@@ -247,7 +247,7 @@ auto true_dot(AType const &A, BType const &B) -> typename AType::data_type {
 
 template <BlockTensorConcept AType, BlockTensorConcept BType, BlockTensorConcept CType>
     requires SameUnderlyingAndRank<AType, BType, CType>
-auto dot(AType const &A, BType const &B, CType const &C) -> typename AType::data_type {
+auto dot(AType const &A, BType const &B, CType const &C) -> typename AType::ValueType {
     if (A.num_blocks() != B.num_blocks() || A.num_blocks() != C.num_blocks() || B.num_blocks() != C.num_blocks()) {
         return dot(AType::tensor_type(A), BType::tensor_type(B), CType::tensor_type(C));
     }
@@ -256,7 +256,7 @@ auto dot(AType const &A, BType const &B, CType const &C) -> typename AType::data
         return dot(AType::tensor_type(A), BType::tensor_type(B), CType::tensor_type(C));
     }
 
-    using T = typename AType::data_type;
+    using T = typename AType::ValueType;
 
     T out{0};
 
@@ -273,7 +273,7 @@ auto dot(AType const &A, BType const &B, CType const &C) -> typename AType::data
 
 template <BlockTensorConcept XType, BlockTensorConcept YType>
     requires SameUnderlyingAndRank<XType, YType>
-void axpy(typename XType::data_type alpha, XType const &X, YType *Y) {
+void axpy(typename XType::ValueType alpha, XType const &X, YType *Y) {
 
     if (X.num_blocks() != Y->num_blocks()) {
         EINSUMS_THROW_EXCEPTION(Error::bad_parameter, "axpy: Tensors need to have the same number of blocks.");
@@ -295,7 +295,7 @@ void axpy(typename XType::data_type alpha, XType const &X, YType *Y) {
 
 template <BlockTensorConcept XType, BlockTensorConcept YType>
     requires SameUnderlyingAndRank<XType, YType>
-void axpby(typename XType::data_type alpha, XType const &X, typename YType::data_type beta, YType *Y) {
+void axpby(typename XType::ValueType alpha, XType const &X, typename YType::ValueType beta, YType *Y) {
 
     if (X.num_blocks() != Y->num_blocks()) {
         EINSUMS_THROW_EXCEPTION(Error::bad_parameter, "axpby: Tensors need to have the same number of blocks.");
@@ -316,7 +316,7 @@ void axpby(typename XType::data_type alpha, XType const &X, typename YType::data
 
 template <BlockTensorConcept AType, BlockTensorConcept BType, BlockTensorConcept CType>
     requires SameUnderlyingAndRank<AType, BType, CType>
-void direct_product(typename AType::data_type alpha, AType const &A, BType const &B, typename CType::data_type beta, CType *C) {
+void direct_product(typename AType::ValueType alpha, AType const &A, BType const &B, typename CType::ValueType beta, CType *C) {
     EINSUMS_OMP_PARALLEL_FOR
     for (int i = 0; i < A.num_blocks(); i++) {
         if (A.block_dim(i) == 0) {
@@ -328,8 +328,8 @@ void direct_product(typename AType::data_type alpha, AType const &A, BType const
 
 template <BlockTensorConcept AType>
     requires MatrixConcept<AType>
-auto pow(AType const &a, typename AType::data_type alpha,
-         typename AType::data_type cutoff = std::numeric_limits<typename AType::data_type>::epsilon()) -> RemoveViewT<AType> {
+auto pow(AType const &a, typename AType::ValueType alpha,
+         typename AType::ValueType cutoff = std::numeric_limits<typename AType::ValueType>::epsilon()) -> RemoveViewT<AType> {
     RemoveViewT<AType> out{"pow result", a.vector_dims()};
 
     EINSUMS_OMP_PARALLEL_FOR

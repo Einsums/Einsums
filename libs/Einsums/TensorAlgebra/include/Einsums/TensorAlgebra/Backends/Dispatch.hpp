@@ -61,21 +61,21 @@ template <bool OnlyUseGenericAlgorithm, TensorConcept AType, TensorConcept BType
           typename... AIndices, typename... BIndices>
     requires(TensorConcept<CType> || (ScalarConcept<CType> && sizeof...(CIndices) == 0))
 auto einsum(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const & /*Cs*/, CType *C,
-            BiggestTypeT<typename AType::data_type, typename BType::data_type> const AB_prefactor, std::tuple<AIndices...> const & /*As*/,
+            BiggestTypeT<typename AType::ValueType, typename BType::ValueType> const AB_prefactor, std::tuple<AIndices...> const & /*As*/,
             AType const &A, std::tuple<BIndices...> const & /*Bs*/, BType const &B) -> void {
     print::Indent const _indent;
 
-    using ADataType        = AType::data_type;
-    using BDataType        = BType::data_type;
+    using ADataType        = AType::ValueType;
+    using BDataType        = BType::ValueType;
     using CDataType        = ValueTypeT<CType>;
-    constexpr size_t ARank = AType::rank;
-    constexpr size_t BRank = BType::rank;
+    constexpr size_t ARank = AType::Rank;
+    constexpr size_t BRank = BType::Rank;
     constexpr size_t CRank = TensorRank<CType>;
 
     constexpr auto A_indices = std::tuple<AIndices...>();
     constexpr auto B_indices = std::tuple<BIndices...>();
     constexpr auto C_indices = std::tuple<CIndices...>();
-    using ABDataType         = BiggestTypeT<typename AType::data_type, typename BType::data_type>;
+    using ABDataType         = BiggestTypeT<typename AType::ValueType, typename BType::ValueType>;
 
     // 1. Ensure the ranks are correct. (Compile-time check.)
     static_assert(sizeof...(CIndices) == CRank, "Rank of C does not match Indices given for C.");
@@ -489,11 +489,11 @@ template <TensorConcept AType, TensorConcept BType, typename CType, typename U, 
     }
 auto einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CType *C, U const UAB_prefactor,
             std::tuple<AIndices...> const &A_indices, AType const &A, std::tuple<BIndices...> const &B_indices, BType const &B) -> void {
-    using ADataType        = AType::data_type;
-    using BDataType        = BType::data_type;
+    using ADataType        = AType::ValueType;
+    using BDataType        = BType::ValueType;
     using CDataType        = ValueTypeT<CType>;
-    constexpr size_t ARank = AType::rank;
-    constexpr size_t BRank = BType::rank;
+    constexpr size_t ARank = AType::Rank;
+    constexpr size_t BRank = BType::Rank;
     constexpr size_t CRank = TensorRank<CType>;
 
     using ABDataType = std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType>;

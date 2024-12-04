@@ -1,7 +1,7 @@
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 
 #pragma once
 
@@ -44,7 +44,7 @@ concept IsComplex = IsComplexV<T>;
  */
 template <typename T>
 concept IsComplexTensor = requires {
-    requires IsComplex<typename T::data_type>;
+    requires IsComplex<typename T::ValueType>;
     requires TensorConcept<T>;
 };
 

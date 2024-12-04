@@ -1,7 +1,7 @@
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 
 #pragma once
 
@@ -16,7 +16,7 @@ namespace einsums::linear_algebra::detail {
 
 template <CoreBasicTensorConcept AType>
     requires(RankTensorConcept<AType, 1>)
-void sum_square(AType const &a, RemoveComplexT<typename AType::value_type> *scale, RemoveComplexT<typename AType::value_type> *sumsq) {
+void sum_square(AType const &a, RemoveComplexT<typename AType::ValueType> *scale, RemoveComplexT<typename AType::ValueType> *sumsq) {
     int n    = a.dim(0);
     int incx = a.stride(0);
     blas::lassq(n, a.data(), incx, scale, sumsq);
@@ -26,14 +26,14 @@ template <bool TransA, bool TransB, typename U, CoreBasicTensorConcept AType, Co
     requires requires {
         requires RankTensorConcept<AType, 2>;
         requires SameUnderlyingAndRank<AType, BType, CType>;
-        requires(std::convertible_to<U, typename AType::value_type>);
+        requires(std::convertible_to<U, typename AType::ValueType>);
     }
 void gemm(U const alpha, AType const &A, BType const &B, U const beta, CType *C) {
     auto m = C->dim(0), n = C->dim(1), k = TransA ? A.dim(0) : A.dim(1);
     auto lda = A.stride(0), ldb = B.stride(0), ldc = C->stride(0);
 
-    blas::gemm(TransA ? 't' : 'n', TransB ? 't' : 'n', m, n, k, static_cast<typename AType::value_type>(alpha), A.data(), lda, B.data(),
-               ldb, static_cast<typename AType::value_type>(beta), C->data(), ldc);
+    blas::gemm(TransA ? 't' : 'n', TransB ? 't' : 'n', m, n, k, static_cast<typename AType::ValueType>(alpha), A.data(), lda, B.data(), ldb,
+               static_cast<typename AType::ValueType>(beta), C->data(), ldc);
 }
 
 template <bool TransA, typename U, CoreBasicTensorConcept AType, CoreBasicTensorConcept XType, CoreBasicTensorConcept YType>
@@ -43,7 +43,7 @@ template <bool TransA, typename U, CoreBasicTensorConcept AType, CoreBasicTensor
         requires RankTensorConcept<AType, 2>;
         requires RankTensorConcept<XType, 1>;
         requires RankTensorConcept<YType, 1>;
-        requires std::convertible_to<U, typename AType::value_type>;
+        requires std::convertible_to<U, typename AType::ValueType>;
     }
 void gemv(U const alpha, AType const &A, XType const &z, U const beta, YType *y) {
     auto m = A.dim(0), n = A.dim(1);
@@ -51,8 +51,8 @@ void gemv(U const alpha, AType const &A, XType const &z, U const beta, YType *y)
     auto incx = z.stride(0);
     auto incy = y->stride(0);
 
-    blas::gemv(TransA ? 't' : 'n', m, n, static_cast<typename AType::value_type>(alpha), A.data(), lda, z.data(), incx,
-               static_cast<typename AType::value_type>(beta), y->data(), incy);
+    blas::gemv(TransA ? 't' : 'n', m, n, static_cast<typename AType::ValueType>(alpha), A.data(), lda, z.data(), incx,
+               static_cast<typename AType::ValueType>(beta), y->data(), incy);
 }
 
 template <bool ComputeEigenvectors = true, CoreBasicTensorConcept AType, CoreBasicTensorConcept WType>
@@ -65,17 +65,17 @@ template <bool ComputeEigenvectors = true, CoreBasicTensorConcept AType, CoreBas
 void syev(AType *A, WType *W) {
     assert(A->dim(0) == A->dim(1));
 
-    auto                                    n     = A->dim(0);
-    auto                                    lda   = A->stride(0);
-    int                                     lwork = 3 * n;
-    std::vector<typename AType::value_type> work(lwork);
+    auto                                   n     = A->dim(0);
+    auto                                   lda   = A->stride(0);
+    int                                    lwork = 3 * n;
+    std::vector<typename AType::ValueType> work(lwork);
 
     blas::syev(ComputeEigenvectors ? 'v' : 'n', 'u', n, A->data(), lda, W->data(), work.data(), lwork);
 }
 
 template <bool ComputeLeftRightEigenvectors = true, CoreBasicTensorConcept AType, CoreBasicTensorConcept WType>
     requires requires {
-        requires std::is_same_v<AddComplexT<typename AType::value_type>, typename WType::value_type>;
+        requires std::is_same_v<AddComplexT<typename AType::ValueType>, typename WType::ValueType>;
         requires RankTensorConcept<AType, 2>;
         requires RankTensorConcept<WType, 1>;
     }
@@ -94,18 +94,18 @@ void geev(AType *A, WType *W, AType *lvecs, AType *rvecs) {
 template <bool ComputeEigenvectors = true, CoreBasicTensorConcept AType, CoreBasicTensorConcept WType>
     requires requires {
         requires NotComplex<WType>;
-        requires std::is_same_v<typename AType::value_type, AddComplexT<typename WType::value_type>>;
+        requires std::is_same_v<typename AType::ValueType, AddComplexT<typename WType::ValueType>>;
         requires MatrixConcept<AType>;
         requires VectorConcept<WType>;
     }
 void heev(AType *A, WType *W) {
     EINSUMS_ASSERT(A->dim(0) == A->dim(1));
 
-    auto                                    n     = A->dim(0);
-    auto                                    lda   = A->stride(0);
-    int                                     lwork = 2 * n;
-    std::vector<typename AType::value_type> work(lwork);
-    std::vector<typename WType::value_type> rwork(3 * n);
+    auto                                   n     = A->dim(0);
+    auto                                   lda   = A->stride(0);
+    int                                    lwork = 2 * n;
+    std::vector<typename AType::ValueType> work(lwork);
+    std::vector<typename WType::ValueType> rwork(3 * n);
 
     blas::heev(ComputeEigenvectors ? 'v' : 'n', 'u', n, A->data(), lda, W->data(), work.data(), lwork, rwork.data());
 }
@@ -130,18 +130,18 @@ auto gesv(AType *A, BType *B) -> int {
 }
 
 template <CoreBasicTensorConcept AType>
-void scale(typename AType::value_type scale, AType *A) {
+void scale(typename AType::ValueType scale, AType *A) {
     blas::scal(A->dim(0) * A->stride(0), scale, A->data(), 1);
 }
 
 template <CoreBasicTensorConcept AType>
     requires(MatrixConcept<AType>)
-void scale_row(size_t row, typename AType::value_type scale, AType *A) {
+void scale_row(size_t row, typename AType::ValueType scale, AType *A) {
     blas::scal(A->dim(1), scale, A->data(row, 0ul), A->stride(1));
 }
 
 template <CoreBasicTensorConcept AType>
-void scale_column(size_t col, typename AType::value_type scale, AType *A) {
+void scale_column(size_t col, typename AType::ValueType scale, AType *A) {
     blas::scal(A->dim(0), scale, A->data(0ul, col), A->stride(0));
 }
 
@@ -150,7 +150,7 @@ template <CoreBasicTensorConcept AType, CoreBasicTensorConcept BType>
         requires VectorConcept<AType>;
         requires SameUnderlyingAndRank<AType, BType>;
     }
-auto dot(AType const &A, BType const &B) -> typename AType::value_type {
+auto dot(AType const &A, BType const &B) -> typename AType::ValueType {
     EINSUMS_ASSERT(A.dim(0) == B.dim(0));
 
     auto result = blas::dot(A.dim(0), A.data(), A.stride(0), B.data(), B.stride(0));
@@ -162,29 +162,29 @@ template <CoreBasicTensorConcept AType, CoreBasicTensorConcept BType>
         requires SameUnderlyingAndRank<AType, BType>;
         requires !VectorConcept<AType>;
     }
-auto dot(AType const &A, BType const &B) -> typename AType::value_type {
+auto dot(AType const &A, BType const &B) -> typename AType::ValueType {
     if (A.full_view_of_underlying() && B.full_view_of_underlying()) {
         Dim<1> dim{1};
 
-        for (size_t i = 0; i < AType::rank; i++) {
+        for (size_t i = 0; i < AType::Rank; i++) {
             assert(A.dim(i) == B.dim(i));
             dim[0] *= A.dim(i);
         }
 
-        return dot(TensorView<typename AType::value_type, 1>(const_cast<AType &>(A), dim),
-                   TensorView<typename BType::value_type, 1>(const_cast<BType &>(B), dim));
+        return dot(TensorView<typename AType::ValueType, 1>(const_cast<AType &>(A), dim),
+                   TensorView<typename BType::ValueType, 1>(const_cast<BType &>(B), dim));
     } else {
         auto dims = A.dims();
 
-        std::array<size_t, AType::rank> strides;
-        strides[AType::rank - 1] = 1;
-        std::array<size_t, AType::rank> index;
+        std::array<size_t, AType::Rank> strides;
+        strides[AType::Rank - 1] = 1;
+        std::array<size_t, AType::Rank> index;
 
-        for (int i = AType::rank - 1; i > 0; i--) {
+        for (int i = AType::Rank - 1; i > 0; i--) {
             strides[i - 1] = strides[i] * dims[i];
         }
 
-        typename AType::value_type out{0.0};
+        typename AType::ValueType out{0.0};
 
         for (size_t sentinel = 0; sentinel < strides[0] * dims[0]; sentinel++) {
             sentinel_to_indices(sentinel, strides, index);
@@ -201,7 +201,7 @@ template <CoreBasicTensorConcept AType, CoreBasicTensorConcept BType>
         requires SameUnderlyingAndRank<AType, BType>;
         requires VectorConcept<AType>;
     }
-auto true_dot(AType const &A, BType const &B) -> typename AType::value_type {
+auto true_dot(AType const &A, BType const &B) -> typename AType::ValueType {
     assert(A.dim(0) == B.dim(0));
 
     if constexpr (IsComplexV<AType>) {
@@ -216,7 +216,7 @@ template <CoreBasicTensorConcept AType, CoreBasicTensorConcept BType>
         requires SameUnderlyingAndRank<AType, BType>;
         requires !VectorConcept<AType>;
     }
-auto true_dot(AType const &A, BType const &B) -> typename AType::value_type {
+auto true_dot(AType const &A, BType const &B) -> typename AType::ValueType {
     if (A.full_view_of_underlying() && B.full_view_of_underlying()) {
         Dim<1> dim{1};
 
@@ -225,8 +225,8 @@ auto true_dot(AType const &A, BType const &B) -> typename AType::value_type {
             dim[0] *= A.dim(i);
         }
 
-        return true_dot(TensorView<typename AType::value_type, 1>(const_cast<AType &>(A), dim),
-                        TensorView<typename BType::value_type, 1>(const_cast<BType &>(B), dim));
+        return true_dot(TensorView<typename AType::ValueType, 1>(const_cast<AType &>(A), dim),
+                        TensorView<typename BType::ValueType, 1>(const_cast<BType &>(B), dim));
     } else {
         auto dims = A.dims();
 
@@ -238,7 +238,7 @@ auto true_dot(AType const &A, BType const &B) -> typename AType::value_type {
             strides[i - 1] = strides[i] * dims[i];
         }
 
-        typename AType::value_type out{0.0};
+        typename AType::ValueType out{0.0};
 
         for (size_t sentinel = 0; sentinel < strides[0] * dims[0]; sentinel++) {
             sentinel_to_indices(sentinel, strides, index);
@@ -252,9 +252,9 @@ auto true_dot(AType const &A, BType const &B) -> typename AType::value_type {
 
 template <CoreBasicTensorConcept AType, CoreBasicTensorConcept BType, CoreBasicTensorConcept CType>
     requires SameUnderlyingAndRank<AType, BType, CType>
-auto dot(AType const &A, BType const &B, CType const &C) -> typename AType::value_type {
+auto dot(AType const &A, BType const &B, CType const &C) -> typename AType::ValueType {
     Dim<1> dim{1};
-    using T = typename AType::value_type;
+    using T = typename AType::ValueType;
 
     for (size_t i = 0; i < AType::rank; i++) {
         assert(A.dim(i) == B.dim(i) && A.dim(i) == C.dim(i));
@@ -275,13 +275,13 @@ auto dot(AType const &A, BType const &B, CType const &C) -> typename AType::valu
 
 template <CoreBasicTensorConcept XType, CoreBasicTensorConcept YType>
     requires SameUnderlyingAndRank<XType, YType>
-void axpy(typename XType::value_type alpha, XType const &X, YType *Y) {
+void axpy(typename XType::ValueType alpha, XType const &X, YType *Y) {
     blas::axpy(X.dim(0) * X.stride(0), alpha, X.data(), 1, Y->data(), 1);
 }
 
 template <CoreBasicTensorConcept XType, CoreBasicTensorConcept YType>
     requires SameUnderlyingAndRank<XType, YType>
-void axpby(typename XType::value_type alpha, XType const &X, typename YType::value_type beta, YType *Y) {
+void axpby(typename XType::ValueType alpha, XType const &X, typename YType::ValueType beta, YType *Y) {
     blas::axpby(X.dim(0) * X.stride(0), alpha, X.data(), 1, beta, Y->data(), 1);
 }
 
@@ -291,7 +291,7 @@ template <CoreBasicTensorConcept AType, CoreBasicTensorConcept XYType>
         requires VectorConcept<XYType>;
         requires SameUnderlying<AType, XYType>;
     }
-void ger(typename XYType::value_type alpha, XYType const &X, XYType const &Y, AType *A) {
+void ger(typename XYType::ValueType alpha, XYType const &X, XYType const &Y, AType *A) {
     blas::ger(X.dim(0), Y.dim(0), alpha, X.data(), X.stride(0), Y.data(), Y.stride(0), A->data(), A->stride(0));
 }
 
@@ -324,20 +324,20 @@ void symm_gemm(AType const &A, BType const &B, CType *C) {
         temp_cols = B.dim(1);
     }
 
-    *C = typename CType::value_type(0.0);
+    *C = typename CType::ValueType(0.0);
 
-    Tensor<typename AType::value_type, 2> temp{"temp", temp_rows, temp_cols};
+    Tensor<typename AType::ValueType, 2> temp{"temp", temp_rows, temp_cols};
 
-    gemm<TransA, TransB>(typename AType::value_type{1.0}, A, B, typename CType::value_type{0.0}, &temp);
-    gemm<!TransB, false>(typename AType::value_type{1.0}, B, temp, typename CType::value_type{0.0}, C);
+    gemm<TransA, TransB>(typename AType::ValueType{1.0}, A, B, typename CType::ValueType{0.0}, &temp);
+    gemm<!TransB, false>(typename AType::ValueType{1.0}, B, temp, typename CType::ValueType{0.0}, C);
 }
 
 template <CoreBasicTensorConcept AType, CoreBasicTensorConcept BType, CoreBasicTensorConcept CType>
     requires SameUnderlyingAndRank<AType, BType, CType>
-void direct_product(typename AType::value_type alpha, AType const &A, BType const &B, typename CType::value_type beta, CType *C) {
+void direct_product(typename AType::ValueType alpha, AType const &A, BType const &B, typename CType::ValueType beta, CType *C) {
     auto target_dims = get_dim_ranges<CType::rank>(*C);
     auto view        = std::apply(ranges::views::cartesian_product, target_dims);
-    using T          = typename AType::value_type;
+    using T          = typename AType::ValueType;
 
     // Ensure the various tensors passed in are the same dimensionality
     if (((C->dims() != A.dims()) || C->dims() != B.dims())) {
@@ -360,12 +360,12 @@ void direct_product(typename AType::value_type alpha, AType const &A, BType cons
 
 template <CoreBasicTensorConcept AType>
     requires MatrixConcept<AType>
-auto pow(AType const &a, typename AType::value_type alpha,
-         typename AType::value_type cutoff = std::numeric_limits<typename AType::value_type>::epsilon())
-    -> Tensor<typename AType::value_type, 2> {
+auto pow(AType const &a, typename AType::ValueType alpha,
+         typename AType::ValueType cutoff = std::numeric_limits<typename AType::ValueType>::epsilon())
+    -> Tensor<typename AType::ValueType, 2> {
     assert(a.dim(0) == a.dim(1));
 
-    using T = typename AType::value_type;
+    using T = typename AType::ValueType;
 
     size_t             n      = a.dim(0);
     RemoveViewT<AType> a1     = a;

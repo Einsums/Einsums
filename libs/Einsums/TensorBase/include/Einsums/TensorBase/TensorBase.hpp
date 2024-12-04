@@ -45,8 +45,7 @@ struct TypedTensor : virtual TensorBase {
      *
      * @brief Gets the stored data type.
      */
-    using value_type = T;
-    using data_type  = T;
+    using ValueType = T;
 
     TypedTensor()                    = default;
     TypedTensor(TypedTensor const &) = default;
@@ -108,23 +107,23 @@ struct RankTensorNoRank {
  *
  * @brief Base class for tensors with a rank. Used for querying the rank.
  *
- * @tparam Rank The rank of the tensor.
+ * @tparam R The rank of the tensor.
  */
-template <size_t Rank>
+template <size_t R>
 struct RankTensor : virtual TensorBase, virtual RankTensorNoRank {
     /**
      * @property rank
      *
      * @brief The rank of the tensor.
      */
-    static constexpr size_t rank = Rank;
+    static constexpr size_t Rank = R;
 
     RankTensor()                   = default;
     RankTensor(RankTensor const &) = default;
 
     ~RankTensor() override = default;
 
-    virtual Dim<Rank> dims() const = 0;
+    virtual Dim<R> dims() const = 0;
 
     virtual auto dim(int d) const -> size_t = 0;
 

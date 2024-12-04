@@ -48,7 +48,7 @@ namespace einsums::linear_algebra {
  * @param sumsq sumsq_in and sumsq_out for the equation provided
  */
 template <TensorConcept AType>
-void sum_square(AType const &a, RemoveComplexT<typename AType::value_type> *scale, RemoveComplexT<typename AType::value_type> *sumsq) {
+void sum_square(AType const &a, RemoveComplexT<typename AType::ValueType> *scale, RemoveComplexT<typename AType::ValueType> *sumsq) {
     LabeledSection0();
     detail::sum_square(a, scale, sumsq);
 }
@@ -84,7 +84,7 @@ void sum_square(AType const &a, RemoveComplexT<typename AType::value_type> *scal
 template <bool TransA, bool TransB, MatrixConcept AType, MatrixConcept BType, MatrixConcept CType, typename U>
     requires requires {
         requires InSamePlace<AType, BType, CType>;
-        requires std::convertible_to<U, typename AType::value_type>;
+        requires std::convertible_to<U, typename AType::ValueType>;
         requires SameUnderlying<AType, BType, CType>;
     }
 void gemm(U const alpha, AType const &A, BType const &B, U const beta, CType *C) {
@@ -116,14 +116,14 @@ template <bool TransA, bool TransB, MatrixConcept AType, MatrixConcept BType, ty
     requires requires {
         requires InSamePlace<AType, BType>;
         requires std::is_same_v<RemoveViewT<AType>, RemoveViewT<BType>>;
-        requires std::convertible_to<U, typename AType::value_type>;
+        requires std::convertible_to<U, typename AType::ValueType>;
         requires SameUnderlying<AType, BType>;
     }
 auto gemm(U const alpha, AType const &A, BType const &B) -> RemoveViewT<AType> {
     LabeledSection0();
 
     RemoveViewT<AType> C{"gemm result", TransA ? A.dim(1) : A.dim(0), TransB ? B.dim(0) : B.dim(1)};
-    gemm<TransA, TransB>(static_cast<typename AType::value_type>(alpha), A, B, static_cast<typename AType::value_type>(0.0), &C);
+    gemm<TransA, TransB>(static_cast<typename AType::ValueType>(alpha), A, B, static_cast<typename AType::ValueType>(0.0), &C);
 
     return C;
 }
@@ -172,7 +172,7 @@ template <bool TransA, MatrixConcept AType, VectorConcept XType, VectorConcept Y
     requires requires {
         requires InSamePlace<AType, XType, YType>;
         requires SameUnderlying<AType, XType, YType>;
-        requires std::convertible_to<U, typename AType::value_type>;
+        requires std::convertible_to<U, typename AType::ValueType>;
     }
 void gemv(U const alpha, AType const &A, XType const &z, U const beta, YType *y) {
     LabeledSection1(fmt::format("<TransA={}>", TransA));
@@ -228,7 +228,7 @@ void syev(AType *A, WType *W) {
 template <bool ComputeLeftRightEigenvectors = true, MatrixConcept AType, VectorConcept WType>
     requires requires {
         requires InSamePlace<AType, WType>;
-        requires std::is_same_v<typename WType::value_type, AddComplexT<typename AType::value_type>>;
+        requires std::is_same_v<typename WType::ValueType, AddComplexT<typename AType::ValueType>>;
     }
 void geev(AType *A, WType *W, AType *lvecs, AType *rvecs) {
     LabeledSection1(fmt::format("<ComputeLeftRightEigenvectors={}>", ComputeLeftRightEigenvectors));
@@ -241,7 +241,7 @@ template <bool ComputeEigenvectors = true, MatrixConcept AType, VectorConcept WT
         requires InSamePlace<AType, WType>;
         requires Complex<AType>;
         requires NotComplex<WType>;
-        requires std::is_same_v<typename WType::value_type, RemoveComplexT<typename AType::value_type>>;
+        requires std::is_same_v<typename WType::ValueType, RemoveComplexT<typename AType::ValueType>>;
     }
 void heev(AType *A, WType *W) {
     LabeledSection1(fmt::format("<ComputeEigenvectors={}>", ComputeEigenvectors));
@@ -283,14 +283,14 @@ auto gesv(AType *A, BType *B) -> int {
  */
 template <bool ComputeEigenvectors = true, MatrixConcept AType>
     requires(NotComplex<AType>)
-auto syev(AType const &A) -> std::tuple<RemoveViewT<AType>, BasicTensorLike<AType, typename AType::value_type, 1>> {
+auto syev(AType const &A) -> std::tuple<RemoveViewT<AType>, BasicTensorLike<AType, typename AType::ValueType, 1>> {
     LabeledSection0();
 
     assert(A.dim(0) == A.dim(1));
 
     RemoveViewT<AType> a = A;
 
-    BasicTensorLike<AType, typename AType::value_type, 1> w{"eigenvalues", A.dim(0)};
+    BasicTensorLike<AType, typename AType::ValueType, 1> w{"eigenvalues", A.dim(0)};
 
     syev<ComputeEigenvectors>(&a, &w);
 
@@ -313,21 +313,21 @@ auto syev(AType const &A) -> std::tuple<RemoveViewT<AType>, BasicTensorLike<ATyp
  * @param A The tensor to scale
  */
 template <TensorConcept AType>
-void scale(typename AType::value_type scale, AType *A) {
+void scale(typename AType::ValueType scale, AType *A) {
     LabeledSection0();
 
     detail::scale(scale, A);
 }
 
 template <MatrixConcept AType>
-void scale_row(size_t row, typename AType::value_type scale, AType *A) {
+void scale_row(size_t row, typename AType::ValueType scale, AType *A) {
     LabeledSection0();
 
     detail::scale_row(row, scale, A);
 }
 
 template <MatrixConcept AType>
-void scale_column(size_t col, typename AType::value_type scale, AType *A) {
+void scale_column(size_t col, typename AType::ValueType scale, AType *A) {
     LabeledSection0();
 
     detail::scale_column(col, scale, A);
@@ -344,8 +344,8 @@ void scale_column(size_t col, typename AType::value_type scale, AType *A) {
  * @return std::enable_if_t<std::is_base_of_v<Detail::TensorBase<double, 2>, AType>, AType>
  */
 template <MatrixConcept AType>
-auto pow(AType const &a, typename AType::value_type alpha,
-         typename AType::value_type cutoff = std::numeric_limits<typename AType::value_type>::epsilon()) -> RemoveViewT<AType> {
+auto pow(AType const &a, typename AType::ValueType alpha,
+         typename AType::ValueType cutoff = std::numeric_limits<typename AType::ValueType>::epsilon()) -> RemoveViewT<AType> {
     LabeledSection0();
 
     return detail::pow(a, alpha, cutoff);
@@ -357,7 +357,7 @@ template <VectorConcept AType, VectorConcept BType>
         requires InSamePlace<AType, BType>;
         requires SameUnderlying<AType, BType>;
     }
-auto dot(AType const &A, BType const &B) -> typename AType::value_type {
+auto dot(AType const &A, BType const &B) -> typename AType::ValueType {
     LabeledSection0();
 
     return detail::dot(A, B);
@@ -376,9 +376,9 @@ template <TensorConcept AType, TensorConcept BType>
     requires requires {
         requires SameUnderlyingAndRank<AType, BType>;
         requires InSamePlace<AType, BType>;
-        requires AType::rank != 1;
+        requires AType::Rank != 1;
     }
-auto dot(AType const &A, BType const &B) -> typename AType::value_type {
+auto dot(AType const &A, BType const &B) -> typename AType::ValueType {
 
     LabeledSection0();
 
@@ -391,7 +391,7 @@ template <VectorConcept AType, VectorConcept BType>
         requires InSamePlace<AType, BType>;
         requires SameUnderlying<AType, BType>;
     }
-auto true_dot(AType const &A, BType const &B) -> typename AType::value_type {
+auto true_dot(AType const &A, BType const &B) -> typename AType::ValueType {
     LabeledSection0();
 
     return detail::true_dot(A, B);
@@ -411,9 +411,9 @@ template <TensorConcept AType, TensorConcept BType>
     requires requires {
         requires SameUnderlyingAndRank<AType, BType>;
         requires InSamePlace<AType, BType>;
-        requires AType::rank != 1;
+        requires AType::Rank != 1;
     }
-auto true_dot(AType const &A, BType const &B) -> typename AType::value_type {
+auto true_dot(AType const &A, BType const &B) -> typename AType::ValueType {
 
     LabeledSection0();
 
@@ -434,7 +434,7 @@ template <TensorConcept AType, TensorConcept BType, TensorConcept CType>
         requires InSamePlace<AType, BType, CType>;
         requires SameUnderlyingAndRank<AType, BType, CType>;
     }
-auto dot(AType const &A, BType const &B, CType const &C) -> typename AType::value_type {
+auto dot(AType const &A, BType const &B, CType const &C) -> typename AType::ValueType {
 
     LabeledSection0();
     return detail::dot(A, B, C);
@@ -445,7 +445,7 @@ template <TensorConcept XType, TensorConcept YType>
         requires InSamePlace<XType, YType>;
         requires SameUnderlyingAndRank<XType, YType>;
     }
-void axpy(typename XType::value_type alpha, XType const &X, YType *Y) {
+void axpy(typename XType::ValueType alpha, XType const &X, YType *Y) {
     LabeledSection0();
 
     detail::axpy(alpha, X, Y);
@@ -456,7 +456,7 @@ template <TensorConcept XType, TensorConcept YType>
         requires InSamePlace<XType, YType>;
         requires SameUnderlyingAndRank<XType, YType>;
     }
-void axpby(typename XType::value_type alpha, XType const &X, typename XType::value_type beta, YType *Y) {
+void axpby(typename XType::ValueType alpha, XType const &X, typename XType::ValueType beta, YType *Y) {
     LabeledSection0();
 
     detail::axpby(alpha, X, beta, Y);
@@ -467,7 +467,7 @@ template <MatrixConcept AType, VectorConcept XYType>
         requires SameUnderlying<AType, XYType>;
         requires InSamePlace<AType, XYType>;
     }
-void ger(typename AType::value_type alpha, XYType const &X, XYType const &Y, AType *A) {
+void ger(typename AType::ValueType alpha, XYType const &X, XYType const &Y, AType *A) {
     LabeledSection0();
 
     detail::ger(alpha, X, Y, A);
@@ -612,24 +612,24 @@ enum class Norm : char {
  */
 template <MatrixConcept AType>
     requires(CoreTensorConcept<AType>)
-auto norm(Norm norm_type, AType const &a) -> RemoveComplexT<typename AType::value_type> {
+auto norm(Norm norm_type, AType const &a) -> RemoveComplexT<typename AType::ValueType> {
     LabeledSection0();
 
-    std::vector<RemoveComplexT<typename AType::value_type>> work(4 * a.dim(0), 0.0);
+    std::vector<RemoveComplexT<typename AType::ValueType>> work(4 * a.dim(0), 0.0);
     return blas::lange(static_cast<char>(norm_type), a.dim(0), a.dim(1), a.data(), a.stride(0), work.data());
 }
 
 template <TensorConcept AType>
-auto vec_norm(AType const &a) -> RemoveComplexT<typename AType::value_type> {
+auto vec_norm(AType const &a) -> RemoveComplexT<typename AType::ValueType> {
     return std::sqrt(std::abs(true_dot(a, a)));
 }
 
 // Uses the original svd function found in lapack, gesvd, request all left and right vectors.
 template <MatrixConcept AType>
     requires(CoreTensorConcept<AType>)
-auto svd(AType const &_A) -> std::tuple<Tensor<typename AType::value_type, 2>, Tensor<RemoveComplexT<typename AType::value_type>, 1>,
-                                        Tensor<typename AType::value_type, 2>> {
-    using T = typename AType::value_type;
+auto svd(AType const &_A) -> std::tuple<Tensor<typename AType::ValueType, 2>, Tensor<RemoveComplexT<typename AType::ValueType>, 1>,
+                                        Tensor<typename AType::ValueType, 2>> {
+    using T = typename AType::ValueType;
     LabeledSection0();
 
     // Calling svd will destroy the original data. Make a copy of it.
@@ -666,8 +666,8 @@ auto svd(AType const &_A) -> std::tuple<Tensor<typename AType::value_type, 2>, T
 
 template <MatrixConcept AType>
     requires(CoreTensorConcept<AType>)
-auto svd_nullspace(AType const &_A) -> Tensor<typename AType::value_type, 2> {
-    using T = typename AType::value_type;
+auto svd_nullspace(AType const &_A) -> Tensor<typename AType::ValueType, 2> {
+    using T = typename AType::ValueType;
     LabeledSection0();
 
     // Calling svd will destroy the original data. Make a copy of it.
@@ -726,9 +726,9 @@ enum class Vectors : char { All = 'A', Some = 'S', Overwrite = 'O', None = 'N' }
 template <MatrixConcept AType>
     requires(CoreTensorConcept<AType>)
 auto svd_dd(AType const &_A, Vectors job = Vectors::All)
-    -> std::tuple<Tensor<typename AType::value_type, 2>, Tensor<RemoveComplexT<typename AType::value_type>, 1>,
-                  Tensor<typename AType::value_type, 2>> {
-    using T = typename AType::value_type;
+    -> std::tuple<Tensor<typename AType::ValueType, 2>, Tensor<RemoveComplexT<typename AType::ValueType>, 1>,
+                  Tensor<typename AType::ValueType, 2>> {
+    using T = typename AType::ValueType;
     LabeledSection0();
 
     //    DisableOMPThreads const nothreads;
@@ -765,8 +765,8 @@ auto svd_dd(AType const &_A, Vectors job = Vectors::All)
 template <MatrixConcept AType>
     requires(CoreTensorConcept<AType>)
 auto truncated_svd(AType const &_A, size_t k)
-    -> std::tuple<Tensor<typename AType::value_type, 2>, Tensor<RemoveComplexT<AType>, 1>, Tensor<typename AType::value_type, 2>> {
-    using T = typename AType::value_type;
+    -> std::tuple<Tensor<typename AType::ValueType, 2>, Tensor<RemoveComplexT<AType>, 1>, Tensor<typename AType::ValueType, 2>> {
+    using T = typename AType::ValueType;
     LabeledSection0();
 
     size_t m = _A.dim(0);
@@ -805,8 +805,8 @@ auto truncated_svd(AType const &_A, size_t k)
 
 template <MatrixConcept AType>
     requires(CoreTensorConcept<AType>)
-auto truncated_syev(AType const &A, size_t k) -> std::tuple<Tensor<typename AType::value_type, 2>, Tensor<typename AType::value_type, 1>> {
-    using T = typename AType::value_type;
+auto truncated_syev(AType const &A, size_t k) -> std::tuple<Tensor<typename AType::ValueType, 2>, Tensor<typename AType::ValueType, 1>> {
+    using T = typename AType::ValueType;
     LabeledSection0();
 
     if (A.dim(0) != A.dim(1)) {
@@ -853,7 +853,7 @@ auto truncated_syev(AType const &A, size_t k) -> std::tuple<Tensor<typename ATyp
 template <MatrixConcept AType, typename T>
     requires requires {
         requires CoreTensorConcept<AType>;
-        requires std::is_same_v<typename AType::value_type, T>;
+        requires std::is_same_v<typename AType::ValueType, T>;
     }
 inline auto pseudoinverse(AType const &A, T tol) -> Tensor<T, 2> {
     LabeledSection0();
@@ -886,8 +886,8 @@ template <MatrixConcept AType, MatrixConcept QType>
         requires CoreTensorConcept<QType>;
         requires SameUnderlying<AType, QType>;
     }
-inline auto solve_continuous_lyapunov(AType const &A, QType const &Q) -> Tensor<typename AType::value_type, 2> {
-    using T = typename AType::value_type;
+inline auto solve_continuous_lyapunov(AType const &A, QType const &Q) -> Tensor<typename AType::ValueType, 2> {
+    using T = typename AType::ValueType;
     LabeledSection0();
 
     if (A.dim(0) != A.dim(1)) {
@@ -931,8 +931,8 @@ inline auto solve_continuous_lyapunov(AType const &A, QType const &Q) -> Tensor<
 
 template <MatrixConcept AType>
     requires(CoreTensorConcept<AType>)
-auto qr(AType const &_A) -> std::tuple<Tensor<typename AType::value_type, 2>, Tensor<typename AType::value_type, 1>> {
-    using T = typename AType::value_type;
+auto qr(AType const &_A) -> std::tuple<Tensor<typename AType::ValueType, 2>, Tensor<typename AType::ValueType, 1>> {
+    using T = typename AType::ValueType;
     LabeledSection0();
 
     // Copy A because it will be overwritten by the QR call.
@@ -959,8 +959,8 @@ template <MatrixConcept AType, VectorConcept TauType>
         requires CoreTensorConcept<TauType>;
         requires SameUnderlying<AType, TauType>;
     }
-auto q(AType const &qr, TauType const &tau) -> Tensor<typename AType::value_type, 2> {
-    using T             = typename AType::value_type;
+auto q(AType const &qr, TauType const &tau) -> Tensor<typename AType::ValueType, 2> {
+    using T             = typename AType::ValueType;
     blas::int_t const m = qr.dim(1);
     blas::int_t const p = qr.dim(0);
 
@@ -986,8 +986,8 @@ void direct_product(T alpha, AType const &A, BType const &B, T beta, CType *C) {
  * Computes the determinant of a matrix.
  */
 template <MatrixConcept AType>
-typename AType::value_type det(AType const &A) {
-    using T = typename AType::value_type;
+typename AType::ValueType det(AType const &A) {
+    using T = typename AType::ValueType;
     if (A.dim(0) != A.dim(1)) {
         EINSUMS_THROW_EXCEPTION(Error::bad_parameter, "Can only take the determinant of a square matrix.");
     }

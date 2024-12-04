@@ -1,7 +1,7 @@
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 
 #pragma once
 
@@ -785,7 +785,7 @@ constexpr inline bool IsDiskBlockTensorV = IsDiskTensorV<D> && IsBlockTensorV<D>
  * @tparam Rest The rest of the tensors.
  */
 template <typename First, typename... Rest>
-constexpr inline bool IsSameUnderlyingV = (std::is_same_v<typename First::value_type, typename Rest::value_type> && ...);
+constexpr inline bool IsSameUnderlyingV = (std::is_same_v<typename First::ValueType, typename Rest::ValueType> && ...);
 
 /**
  * @property IsSameRankV
@@ -796,7 +796,7 @@ constexpr inline bool IsSameUnderlyingV = (std::is_same_v<typename First::value_
  * @tparam Rest The rest of the tensors
  */
 template <typename First, typename... Rest>
-constexpr inline bool IsSameRankV = ((First::rank == Rest::rank) && ...);
+constexpr inline bool IsSameRankV = ((First::Rank == Rest::Rank) && ...);
 
 /**
  * @property IsSameUnderlyingAndRankV
@@ -1414,7 +1414,7 @@ template <TensorConcept D, typename T, size_t Rank>
 using BasicTensorLike = decltype(detail::create_basic_tensor_like<T, Rank>(D()));
 
 /**
- * @struct value_type
+ * @struct ValueType
  *
  * @brief Gets the data type of tensor/scalar.
  *

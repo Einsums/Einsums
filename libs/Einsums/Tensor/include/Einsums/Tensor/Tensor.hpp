@@ -1120,9 +1120,9 @@ struct TensorView final : virtual tensor_base::CoreTensor,
     }
 
     template <TensorConcept TensorType, typename... Args>
-        requires(std::is_same_v<T, typename TensorType::value_type>)
+        requires(std::is_same_v<T, typename TensorType::ValueType>)
     auto common_initialization(TensorType &other, Args &&...args) -> void {
-        constexpr size_t OtherRank = TensorType::rank;
+        constexpr size_t OtherRank = TensorType::Rank;
 
         static_assert(Rank <= OtherRank, "A TensorView must be the same Rank or smaller that the Tensor being viewed.");
 
@@ -1909,7 +1909,7 @@ auto ndigits(T number) -> int {
 template <FileOrOStream Output, TensorConcept AType>
     requires(einsums::BasicTensorConcept<AType> || !einsums::AlgebraTensorConcept<AType>)
 void fprintln(Output fp, AType const &A, TensorPrintOptions options) {
-    using T                    = typename AType::value_type;
+    using T                    = typename AType::ValueType;
     constexpr std::size_t Rank = AType::rank;
 
     fprintln(fp, "Name: {}", A.name());
@@ -1934,7 +1934,7 @@ void fprintln(Output fp, AType const &A, TensorPrintOptions options) {
             fprintln(fp, "Type: {}", type_name<AType>());
         }
 
-        fprintln(fp, "Data Type: {}", type_name<typename AType::value_type>());
+        fprintln(fp, "Data Type: {}", type_name<typename AType::ValueType>());
 
         if constexpr (Rank > 0) {
             std::ostringstream oss;
