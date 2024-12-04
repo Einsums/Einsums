@@ -6,6 +6,9 @@
 ----------------------------------------------------------------------------------------------
 """
 
+#  Copyright (c) The Einsums Developers. All rights reserved.
+#  Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+
 import sys, os
 
 if len(sys.argv) != 3:
@@ -63,8 +66,8 @@ details.
 """
 
 root_cmakelists_template = (
-    cmake_root_header
-    + f"""
+        cmake_root_header
+        + f"""
 list(APPEND CMAKE_MODULE_PATH "${{CMAKE_CURRENT_SOURCE_DIR}}/cmake")
 
 set({module_name}Headers)
@@ -85,8 +88,8 @@ einsums_add_module(
 )
 
 examples_cmakelists_template = (
-    cmake_header
-    + f"""
+        cmake_header
+        + f"""
 if(EINSUMS_WITH_EXAMPLES)
   einsums_add_pseudo_target(examples.modules.{module_name})
   einsums_add_pseudo_dependencies(examples.modules examples.modules.{module_name})
@@ -101,8 +104,8 @@ endif()
 )
 
 tests_cmakelists_template = (
-    cmake_header
-    + f"""
+        cmake_header
+        + f"""
 include(Einsums_Message)
 
 if(EINSUMS_WITH_TESTS)
@@ -142,6 +145,28 @@ endif()
 """
 )
 
+unit_tests_cmakelists_template = (
+        cmake_header
+        + f"""
+set({module_name}Tests
+        
+)
+
+foreach(test ${{{module_name}Tests}})
+    set(sources ${{test}}.cpp)
+
+    source_group("Source Files" FILES ${{sources}})
+
+    einsums_add_executable(
+            ${{test}}_test INTERNAL_FLAGS
+            SOURCES ${{sources}} ${{${{test}}_FLAGS}}
+            FOLDER "Unit/{module_name}"
+    )
+
+    einsums_add_unit_test("modules.LinearAlgebra" ${{test}})
+endforeach ()"""
+)
+
 if module_name != "--recreate-index":
 
     def mkdir(path_name):
@@ -152,6 +177,7 @@ if module_name != "--recreate-index":
         """
         if not os.path.exists(path_name):
             os.makedirs(path_name)
+
 
     mkdir(os.path.join(lib_name, module_name))
 
@@ -176,7 +202,7 @@ if module_name != "--recreate-index":
     ################################################################################
     # Generate README skeleton
     with open(
-        os.path.join(lib_name, module_name, "README.rst"), "w", encoding="utf8"
+            os.path.join(lib_name, module_name, "README.rst"), "w", encoding="utf8"
     ) as f:
         f.write(readme_template)
     ################################################################################
@@ -186,67 +212,67 @@ if module_name != "--recreate-index":
 
     # Generate .gitkeep files to keep empty directories around until they get filled
     with open(
-        os.path.join(
-            lib_name, module_name, "include", "Einsums", include_path, ".gitkeep"
-        ),
-        "w",
-        encoding="utf8",
+            os.path.join(
+                lib_name, module_name, "include", "Einsums", include_path, ".gitkeep"
+            ),
+            "w",
+            encoding="utf8",
     ) as f:
         f.write("# Keep directory around")
     with open(
-        os.path.join(lib_name, module_name, "src", ".gitkeep"), "w", encoding="utf8"
+            os.path.join(lib_name, module_name, "src", ".gitkeep"), "w", encoding="utf8"
     ) as f:
         f.write("# Keep directory around")
 
     # Generate top level CMakeLists.txt
     with open(
-        os.path.join(lib_name, module_name, "CMakeLists.txt"), "w", encoding="utf8"
+            os.path.join(lib_name, module_name, "CMakeLists.txt"), "w", encoding="utf8"
     ) as f:
         f.write(root_cmakelists_template)
 
     # Generate docs/index.rst
     with open(
-        os.path.join(lib_name, module_name, "docs", "index.rst"), "w", encoding="utf8"
+            os.path.join(lib_name, module_name, "docs", "index.rst"), "w", encoding="utf8"
     ) as f:
         f.write(index_rst)
 
     # Generate examples/CMakeLists.txt
     with open(
-        os.path.join(lib_name, module_name, "examples", "CMakeLists.txt"),
-        "w",
-        encoding="utf8",
+            os.path.join(lib_name, module_name, "examples", "CMakeLists.txt"),
+            "w",
+            encoding="utf8",
     ) as f:
         f.write(examples_cmakelists_template)
 
     # Generate tests/CMakeLists.txt
     with open(
-        os.path.join(lib_name, module_name, "tests", "CMakeLists.txt"),
-        "w",
-        encoding="utf8",
+            os.path.join(lib_name, module_name, "tests", "CMakeLists.txt"),
+            "w",
+            encoding="utf8",
     ) as f:
         f.write(tests_cmakelists_template)
 
     # Generate tests/unit/CMakeLists.txt
     with open(
-        os.path.join(lib_name, module_name, "tests", "unit", "CMakeLists.txt"),
-        "w",
-        encoding="utf8",
+            os.path.join(lib_name, module_name, "tests", "unit", "CMakeLists.txt"),
+            "w",
+            encoding="utf8",
     ) as f:
         f.write(cmake_header)
 
     # Generate tests/regressions/CMakeLists.txt
     with open(
-        os.path.join(lib_name, module_name, "tests", "regressions", "CMakeLists.txt"),
-        "w",
-        encoding="utf8",
+            os.path.join(lib_name, module_name, "tests", "regressions", "CMakeLists.txt"),
+            "w",
+            encoding="utf8",
     ) as f:
         f.write(cmake_header)
 
     # Generate tests/performance/CMakeLists.txt
     with open(
-        os.path.join(lib_name, module_name, "tests", "performance", "CMakeLists.txt"),
-        "w",
-        encoding="utf8",
+            os.path.join(lib_name, module_name, "tests", "performance", "CMakeLists.txt"),
+            "w",
+            encoding="utf8",
     ) as f:
         f.write(cmake_header)
     ################################################################################
@@ -265,8 +291,8 @@ modules = sorted(
 
 # Adapting top level CMakeLists.txt
 modules_cmakelists = (
-    cmake_header
-    + """
+        cmake_header
+        + """
 # Do not edit this file! It has been generated by the
 # libs/create_module_skeleton.py script.
 """

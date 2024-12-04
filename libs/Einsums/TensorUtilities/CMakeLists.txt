@@ -6,12 +6,14 @@
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 set(TensorUtilitiesHeaders
+        Einsums/TensorUtilities/CreateIdentity.hpp
         Einsums/TensorUtilities/CreateIncrementedTensor.hpp
         Einsums/TensorUtilities/CreateRandomDefinite.hpp
         Einsums/TensorUtilities/CreateRandomSemidefinite.hpp
         Einsums/TensorUtilities/CreateRandomTensor.hpp
         Einsums/TensorUtilities/CreateTensorLike.hpp
         Einsums/TensorUtilities/Diagonal.hpp
+        Einsums/TensorUtilities/Detail/SetTo.hpp
 )
 
 set(TensorUtilitiesSources)
@@ -24,6 +26,10 @@ einsums_add_module(
   HEADERS ${TensorUtilitiesHeaders}
   DEPENDENCIES
   MODULE_DEPENDENCIES
-        Einsums_TensorBase Einsums_Tensor Einsums_LinearAlgebra Einsums_Concepts
+        Einsums_TensorBase
+        Einsums_Tensor
+        Einsums_LinearAlgebra
+        Einsums_Concepts
+        Einsums_Utilities
   CMAKE_SUBDIRS examples tests
 )

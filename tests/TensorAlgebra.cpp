@@ -1,7 +1,7 @@
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 
 #include "einsums/TensorAlgebra.hpp"
 
@@ -13,23 +13,6 @@
 #include <H5Fpublic.h>
 #include <catch2/catch_all.hpp>
 #include <complex>
-
-TEST_CASE("Identity Tensor", "[tensor]") {
-    using namespace einsums;
-    using namespace einsums::tensor_algebra;
-
-    Tensor I = create_identity_tensor("I", 3, 3);
-
-    REQUIRE(I(0, 0) == 1.0);
-    REQUIRE(I(0, 1) == 0.0);
-    REQUIRE(I(0, 2) == 0.0);
-    REQUIRE(I(1, 0) == 0.0);
-    REQUIRE(I(1, 1) == 1.0);
-    REQUIRE(I(1, 2) == 0.0);
-    REQUIRE(I(2, 0) == 0.0);
-    REQUIRE(I(2, 1) == 0.0);
-    REQUIRE(I(2, 2) == 1.0);
-}
 
 TEST_CASE("Scale Row", "[tensor]") {
     using namespace einsums;
