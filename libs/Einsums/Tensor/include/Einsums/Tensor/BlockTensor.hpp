@@ -19,7 +19,7 @@ namespace einsums {
 namespace tensor_base {
 
 /**
- * @struct BlockTensorBase
+ * @struct BlockTensor
  *
  * Represents a block-diagonal tensor.
  *

@@ -742,6 +742,13 @@ struct Tensor : virtual tensor_base::CoreTensor,
     friend struct Tensor;
 };
 
+/**
+ * @struct Tensor<T, 0>
+ *
+ * @brief Represents a zero-rank tensor. It has a special implementation since it is essentially a scalar.
+ *
+ * @tparam T The data type being stored.
+ */
 template <typename T>
 struct Tensor<T, 0> : virtual tensor_base::CoreTensor,
                       virtual tensor_base::BasicTensor<T, 0>,
@@ -809,6 +816,14 @@ struct Tensor<T, 0> : virtual tensor_base::CoreTensor,
     T           _data{};
 };
 
+/**
+ * @struct TensorView
+ *
+ * @brief Represents a view of a tensor, which may have different dimensions and start at a different index.
+ *
+ * @tparam T The data type being stored.
+ * @tparam Rank The rank of the view.
+ */
 template <typename T, size_t Rank>
 struct TensorView final : virtual tensor_base::CoreTensor,
                           virtual tensor_base::BasicTensor<T, Rank>,

@@ -9,12 +9,13 @@
 
 #include <array>
 #include <h5cpp/core>
+#include <h5cpp/io>
 #include <type_traits>
 
-namespace h5::impl {
+namespace h5 {
+namespace impl {
 
-// 1. Object -> H5T_xxx
-//    Conversion from Tensor to the underlying double.
+#ifndef DOXYGEN
 template <typename T, size_t Rank>
 struct decay<::einsums::Tensor<T, Rank>> {
     using type = T;
@@ -24,29 +25,52 @@ template <typename T, size_t Rank>
 struct decay<::einsums::TensorView<T, Rank>> {
     using type = T;
 };
+#endif
 
+/**
+ * Gets the pointer to the data contained in a tensor.
+ *
+ * @param ref The tensor to query.
+ */
 template <typename T, size_t Rank>
 auto data(::einsums::Tensor<T, Rank> const &ref) -> T const * {
     return ref.data();
 }
 
+/**
+ * Gets the pointer to the data contained in a tensor view.
+ *
+ * @param ref The tensor to query.
+ */
 template <typename T, size_t Rank>
 auto data(::einsums::TensorView<T, Rank> const &ref) -> T const * {
     return ref.data();
 }
 
+/**
+ * Gets the pointer to the data contained in a tensor.
+ *
+ * @param ref The tensor to query.
+ */
 template <typename T, size_t Rank>
 auto data(::einsums::Tensor<T, Rank> &ref) -> T * {
     return ref.data();
 }
 
-// Determine rank and dimensions
+/**
+ * @brief Determines the rank of a tensor or view.
+ *
+ */
 template <typename T, size_t Rank>
 struct rank<::einsums::Tensor<T, Rank>> : public std::integral_constant<size_t, Rank> {};
 
 template <typename T, size_t Rank>
 struct rank<::einsums::TensorView<T, Rank>> : public std::integral_constant<size_t, Rank> {};
 
+/**
+ * @brief Determines the dimensions of a tensor or view.
+ *
+ */
 template <typename T, size_t Rank>
 inline auto size(::einsums::Tensor<T, Rank> const &ref) -> std::array<std::int64_t, Rank> {
     return ref.dims();
@@ -57,39 +81,17 @@ inline auto size(::einsums::TensorView<T, Rank> const &ref) -> std::array<std::i
     return ref.dims();
 }
 
-// Constructors
-//  Not sure if this can be generalized.
-//  Only allow Tensor to be read in and not TensorView
-template <typename T>
-struct get<::einsums::Tensor<T, 1>> {
-    static inline auto ctor(std::array<size_t, 1> dims) -> ::einsums::Tensor<T, 1> {
-        return ::einsums::Tensor<T, 1>("hdf5 auto created", dims[0]);
+#ifndef DOXYGEN
+template <typename T, size_t Rank>
+struct get<::einsums::Tensor<T, Rank>> {
+    static inline auto ctor(std::array<size_t, Rank> dims) -> ::einsums::Tensor<T, Rank> {
+        auto ctor_bind = std::bind_front(::einsums::Tensor<T, Rank>::Tensor, "hdf5 auto created");
+        return std::apply(ctor_bind, dims);
     }
 };
-template <typename T>
-struct get<::einsums::Tensor<T, 2>> {
-    static inline auto ctor(std::array<size_t, 2> dims) -> ::einsums::Tensor<T, 2> {
-        return ::einsums::Tensor<T, 2>("hdf5 auto created", dims[0], dims[1]);
-    }
-};
-template <typename T>
-struct get<::einsums::Tensor<T, 3>> {
-    static inline auto ctor(std::array<size_t, 3> dims) -> ::einsums::Tensor<T, 3> {
-        return ::einsums::Tensor<T, 3>("hdf5 auto created", dims[0], dims[1], dims[2]);
-    }
-};
-template <typename T>
-struct get<::einsums::Tensor<T, 4>> {
-    static inline auto ctor(std::array<size_t, 4> dims) -> ::einsums::Tensor<T, 4> {
-        return ::einsums::Tensor<T, 4>("hdf5 auto created", dims[0], dims[1], dims[2], dims[3]);
-    }
-};
+#endif
 
-} // namespace h5::impl
-
-#include <h5cpp/io>
-
-namespace h5 {
+} // namespace impl
 
 inline bool exists(hid_t hid, std::string const &name) {
     return H5Lexists(hid, name.c_str(), H5P_DEFAULT) > 0 ? true : false;
