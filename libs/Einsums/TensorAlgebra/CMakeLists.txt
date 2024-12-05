@@ -21,7 +21,9 @@ set(TensorAlgebraHeaders
         Einsums/TensorAlgebra/Detail/Utilities.hpp
 )
 
+if (NOT WINDOWS)
 set(TensorAlgebraSources Sort.cpp)
+endif ()
 
 if (EINSUMS_WITH_GPU_SUPPORT)
     list(APPEND TensorAlgebraHeaders Einsums/TensorAlgebra/Backends/GPUTensorAlgebra.hpp)

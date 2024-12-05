@@ -21,6 +21,7 @@
 
 namespace einsums::tensor_algebra {
 
+#if !defined(EINSUMS_WINDOWS)
 namespace detail {
 
 void EINSUMS_EXPORT sort(int const *perm, int const dim, float const alpha, float const *A, int const *sizeA, float const beta, float *B);
@@ -32,6 +33,7 @@ void EINSUMS_EXPORT sort(int const *perm, int const dim, std::complex<double> co
                          std::complex<double> const beta, std::complex<double> *B);
 
 } // namespace detail
+#endif
 
 //
 // sort algorithm
@@ -74,6 +76,7 @@ void sort(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CType 
     }
 
     // HPTT interface currently only works for full Tensors and not TensorViews
+#if !defined(EINSUMS_WINDOWS)
     if constexpr (std::is_same_v<CType, Tensor<T, CRank>> && std::is_same_v<AType, Tensor<T, ARank>>) {
         std::array<int, ARank> perms{};
         std::array<int, ARank> size{};
@@ -84,7 +87,9 @@ void sort(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CType 
         }
 
         detail::sort(perms.data(), ARank, A_prefactor, A.data(), size.data(), C_prefactor, C->data());
-    } else if constexpr (std::is_same_v<decltype(A_indices), decltype(C_indices)>) {
+    } else
+#endif
+        if constexpr (std::is_same_v<decltype(A_indices), decltype(C_indices)>) {
         linear_algebra::axpby(A_prefactor, A, C_prefactor, C);
     } else {
         auto view = std::apply(ranges::views::cartesian_product, target_dims);
