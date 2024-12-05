@@ -1542,7 +1542,7 @@ concept AllOfType = (std::is_same_v<T, Args> && ... && true);
 
 #ifdef __HIP__
 template <typename T>
-using DevDatatype = typename tensor_props::DevTypedTensorBase<T>::dev_datatype;
+using DevDatatype = typename tensor_props::DeviceTypedTensor<T>::dev_datatype;
 #endif
 
 } // namespace einsums

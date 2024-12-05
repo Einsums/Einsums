@@ -3,6 +3,12 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //--------------------------------------------------------------------------------------------
 
+/**
+ * @file BlockTensor.hpp
+ *
+ * @tableofcontents
+ */
+
 #pragma once
 
 #include <Einsums/TensorBase/IndexUtilities.hpp>
@@ -33,42 +39,11 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
                      virtual BlockTensorNoExtra,
                      virtual LockableTensor,
                      virtual AlgebraOptimizedTensor {
-  protected:
-    std::string _name{"(Unnamed)"};
-    size_t      _dim{0}; // Only allowing square tensors.
-
-    std::vector<TensorType> _blocks{};
-    std::vector<Range>      _ranges{};
-    std::vector<size_t>     _dims;
-
-    template <typename T_, size_t OtherRank, typename OtherTensorType>
-    friend struct BlockTensor;
-
-    T _zero_value{0.0};
-
-    // template <typename T_, size_t Rank_>
-    // friend struct BlockTensorViewBase;
-
-    void update_dims() {
-        if (_dims.size() != _blocks.size()) {
-            _dims.resize(_blocks.size());
-        }
-        if (_ranges.size() != _blocks.size()) {
-            _ranges.resize(_blocks.size());
-        }
-
-        size_t sum = 0;
-
-        for (int i = 0; i < _blocks.size(); i++) {
-            _dims[i]   = _blocks[i].dim(0);
-            _ranges[i] = Range{sum, sum + _dims[i]};
-            sum += _dims[i];
-        }
-
-        _dim = sum;
-    }
-
   public:
+    /**
+    * @defgroup constructors Constructors
+    * @{
+    */
     /**
      * @brief Construct a new BlockTensor object. Default constructor.
      */
@@ -85,11 +60,6 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
 
         update_dims();
     }
-
-    /**
-     * @brief Destroy the BlockTensor object.
-     */
-    virtual ~BlockTensor() = default;
 
     /**
      * @brief Construct a new BlockTensor object with the given name and blockdimensions.
@@ -176,6 +146,15 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
 
         update_dims();
     }
+    // End constructor group
+    /**
+     * @}
+     */
+
+    /**
+     * @brief Destroy the BlockTensor object.
+     */
+    virtual ~BlockTensor() = default;
 
     /**
      * @brief Find the block which can be indexed by the given index.
@@ -463,6 +442,16 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
         return std::apply(_blocks.at(block), index_list);
     }
 
+    /**
+     * @brief Subscripts into the tensor.
+     *
+     * This version works when all elements are explicit values into the tensor.
+     * It does not work with the All or Range tags.
+     *
+     * @tparam Container A container type, such as std::array.
+     * @param index The explicit desired index into the tensor. Elements must be castable to std::int64_t.
+     * @return T& A reference to the value at that index.
+     */
     template <typename Container>
         requires requires {
             requires !std::is_integral_v<Container>;
@@ -906,6 +895,41 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
             _blocks.at(block).unlock();
         }
     }
+
+  protected:
+    std::string _name{"(Unnamed)"};
+    size_t      _dim{0}; // Only allowing square tensors.
+
+    std::vector<TensorType> _blocks{};
+    std::vector<Range>      _ranges{};
+    std::vector<size_t>     _dims;
+
+    template <typename T_, size_t OtherRank, typename OtherTensorType>
+    friend struct BlockTensor;
+
+    T _zero_value{0.0};
+
+    // template <typename T_, size_t Rank_>
+    // friend struct BlockTensorViewBase;
+
+    void update_dims() {
+        if (_dims.size() != _blocks.size()) {
+            _dims.resize(_blocks.size());
+        }
+        if (_ranges.size() != _blocks.size()) {
+            _ranges.resize(_blocks.size());
+        }
+
+        size_t sum = 0;
+
+        for (int i = 0; i < _blocks.size(); i++) {
+            _dims[i]   = _blocks[i].dim(0);
+            _ranges[i] = Range{sum, sum + _dims[i]};
+            sum += _dims[i];
+        }
+
+        _dim = sum;
+    }
 };
 } // namespace tensor_base
 
@@ -998,10 +1022,25 @@ struct BlockTensor : virtual tensor_base::BlockTensor<T, Rank, Tensor<T, Rank>>,
 template <typename T, size_t Rank>
 struct BlockDeviceTensor : public virtual tensor_props::BlockTensorBase<T, Rank, DeviceTensor<T, Rank>>,
                            virtual tensor_props::DeviceTensorBase,
-                           virtual tensor_props::DevTypedTensorBase<T> {
+                           virtual tensor_props::DeviceTypedTensor<T> {
   public:
-    using host_datatype = typename tensor_props::DevTypedTensorBase<T>::host_datatype;
-    using dev_datatype  = typename tensor_props::DevTypedTensorBase<T>::dev_datatype;
+    /**
+     * @typedef host_datatype
+     *
+     * @brief The type of data stored as seen by the host.
+     *
+     * @sa tensor_props::DeviceTypedTensor::host_datatype
+     */
+    using host_datatype = typename tensor_props::DeviceTypedTensor<T>::host_datatype;
+
+    /**
+     * @typedef dev_datatype
+     *
+     * @brief The type of data stored as seen by the device.
+     *
+     * @sa tensor_props::DeviceTypedTensor::dev_datatype
+     */
+    using dev_datatype = typename tensor_props::DeviceTypedTensor<T>::dev_datatype;
 
     /**
      * @brief Construct a new BlockDeviceTensor object. Default constructor.
@@ -1286,6 +1325,9 @@ struct BlockDeviceTensor : public virtual tensor_props::BlockTensorBase<T, Rank,
         return std::apply(this->_blocks.at(block), index_list);
     }
 
+    /**
+     * Get the dimension of the tensor along a given axis.
+     */
     size_t dim(int d) const override { return tensor_props::BlockTensorBase<T, Rank, DeviceTensor<T, Rank>>::dim(d); }
 };
 #endif

@@ -357,7 +357,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'Einsums'
-project_copyright = f"20022-{datetime.now().year}, Einsums Developers"
+project_copyright = f"2022-{datetime.now().year}, Einsums Developers"
 author = 'Einsums Developers'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -400,7 +400,7 @@ pygments_style = 'sphinx'
 modindex_common_prefix = ['einsums']
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
-todo_include_todos = False
+todo_include_todos = True
 
 # -- Options for HTML output ----------------------------------------------
 

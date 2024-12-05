@@ -312,7 +312,7 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
 
         hip_catch(hipFreeAsync(C_index_strides_gpu, get_stream()));
     } else {
-        using C_devtype   = typename einsums::tensor_props::DevTypedTensorBase<DataTypeT<CType>>::dev_datatype;
+        using C_devtype   = typename einsums::tensor_props::DeviceTypedTensor<DataTypeT<CType>>::dev_datatype;
         using A_devtype   = typename AType::dev_datatype;
         using B_devtype   = typename BType::dev_datatype;
         using AB_devtype  = BiggestTypeT<A_devtype, B_devtype>;
