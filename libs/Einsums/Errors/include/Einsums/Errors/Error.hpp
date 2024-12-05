@@ -38,10 +38,10 @@ enum class Error : std::uint16_t {
 };
 
 namespace detail {
-extern char const *const error_names[];
+EINSUMS_EXPORT extern char const *const error_names[];
 
-std::string make_error_message(char const *type_name, char const *str, std::source_location const &location);
-std::string make_error_message(char const *type_name, std::string const &str, std::source_location const &location);
+EINSUMS_EXPORT std::string make_error_message(char const *type_name, char const *str, std::source_location const &location);
+EINSUMS_EXPORT std::string make_error_message(char const *type_name, std::string const &str, std::source_location const &location);
 
 } // namespace detail
 
