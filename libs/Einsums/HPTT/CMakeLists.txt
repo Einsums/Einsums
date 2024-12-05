@@ -17,6 +17,7 @@ set(HPTTHeaders
         Einsums/HPTT/Plan.hpp
         Einsums/HPTT/Transpose.hpp
         Einsums/HPTT/Utils.hpp
+        Einsums/HPTT/Primes.hpp
 )
 
 set(HPTTSources HPTT.cpp Plan.cpp Transpose.cpp Utils.cpp)

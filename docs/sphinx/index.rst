@@ -103,7 +103,7 @@ dgemm call:
 
       +++
 
-      .. button-ref:: libs/overview 
+      .. button-ref:: libs/overview
          :expand:
          :color: primary
          :click-parent:

@@ -21,7 +21,18 @@ namespace hptt {
  */
 enum SelectionMethod { ESTIMATE, MEASURE, PATIENT, CRAZY };
 
+/** 
+ * @typedef FloatComplex
+ *
+ * @brief Alias for std::complex<float>.
+ */
 using FloatComplex = std::complex<float>;
+
+/**
+ * @typedef DoubleComplex
+ *
+ * @brief Alias for std::complex<double>.
+ */
 using DoubleComplex = std::complex<double>;
 
 }
