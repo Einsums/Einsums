@@ -33,20 +33,36 @@ void EINSUMS_EXPORT push(std::string name);
 void EINSUMS_EXPORT pop();
 void EINSUMS_EXPORT pop(duration elapsed);
 
+/**
+ * @struct Timer
+ *
+ * Holds timing information for profiling Einsums.
+ */
 struct Timer {
-  private:
-    time_point start;
-
   public:
+    /**
+     * Create a new timer with the given label.
+     */
     explicit Timer(std::string const &name) {
         start = clock::now();
         push(name);
     }
 
+    /**
+     * Destroy the timer and update the timer stack.
+     */
     ~Timer() {
         auto difference = clock::now() - start;
         pop(difference);
     }
+
+  private:
+    /**
+     * @var start
+     *
+     * The time that the timer was started at.
+     */
+    time_point start;
 };
 
 } // namespace einsums::profile
