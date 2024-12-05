@@ -22,7 +22,8 @@ set(TensorAlgebraHeaders
 )
 
 if (NOT WIN32)
-set(TensorAlgebraSources Sort.cpp)
+    set(TensorAlgebraSources Sort.cpp)
+    set(EXTRA_TENSOR_ALGEBRA_DEPENDENCIES Einsums_HPTT)
 endif ()
 
 if (EINSUMS_WITH_GPU_SUPPORT)
@@ -41,10 +42,10 @@ einsums_add_module(
         Einsums_LinearAlgebra
         Einsums_Concepts
         Einsums_Errors
-        Einsums_HPTT
         Einsums_Print
         Einsums_Profile
         Einsums_Tensor
         Einsums_TensorUtilities
+        ${EXTRA_TENSOR_ALGEBRA_DEPENDENCIES}
   CMAKE_SUBDIRS examples tests
 )
