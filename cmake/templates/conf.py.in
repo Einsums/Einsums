@@ -66,12 +66,11 @@ def get_info_from_file(source):
 
     if os.path.exists(source):
         with open(source, 'r') as file:
-            # Search for patterns indicating the title and header
             for line in file:
-                if re.match(r"\s*(/\*\*|///|\*)\s*[\\@]page.*", line):
+                if re.match(r"[\\@]page", line):
                     title = line.split(r"page", 1)[-1].strip()
-                elif re.match(r"\s*(/\*\*|///|\*)\s*[\\@]headerfile.*", line):
-                    header = line.split(r"headerfile", 1)[-1].strip()
+                elif re.match(r"[\\@](header)?file", line):
+                    header = line.split(r"file", 1)[-1].strip()
 
     return title, header
 

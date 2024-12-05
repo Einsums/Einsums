@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <Einsums/Errors/Error.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
 
 #include <range/v3/range_fwd.hpp>
@@ -376,7 +377,7 @@ inline size_t indices_to_sentinel_negative_check(StorageType1 const &unique_stri
     size_t out = 0;
 
     if (inds.size() > unique_strides.size() || inds.size() > unique_dims.size()) {
-        EINSUMS_THROW_EXCEPTION(Error::bad_parameter, "Too many indices supplied!");
+        EINSUMS_THROW_EXCEPTION(error::bad_parameter, "Too many indices supplied!");
     }
 
     for (size_t i = 0; i < inds.size(); i++) {
@@ -387,7 +388,7 @@ inline size_t indices_to_sentinel_negative_check(StorageType1 const &unique_stri
         }
 
         if (ind < 0 || ind >= unique_dims[i]) [[unlikely]] {
-            EINSUMS_THROW_EXCEPTION(Error::bad_parameter,
+            EINSUMS_THROW_EXCEPTION(error::bad_parameter,
                                     "Index out of range! Index {} in rank {} was either greater than or equal to {} or less than {}",
                                     inds[i], i, unique_dims[i], -(ptrdiff_t)unique_dims[i]);
         }

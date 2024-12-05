@@ -9,6 +9,7 @@
 
 #include <fmt/format.h>
 
+#include <source_location>
 #include <string>
 #include <system_error>
 
@@ -37,42 +38,52 @@ enum class Error : std::uint16_t {
 };
 
 namespace detail {
+extern char const *const error_names[];
 
-char const *const error_names[] = {"success",      "no_success",        "unknown_error",       "bad_parameter",
-                                   "kernel_error", "out_of_memory",     "invalid_status",      "tensors_incompatible",
-                                   "disk_error",   "assertion_failure", "unhandled_exception", "lock_error"};
-
-inline auto error_code_has_system_error(int const e) -> bool {
-    return e & static_cast<int>(Error::system_error_flag);
-}
+std::string make_error_message(char const *type_name, char const *str, std::source_location const &location);
+std::string make_error_message(char const *type_name, std::string const &str, std::source_location const &location);
 
 } // namespace detail
 
+class EinsumsException {
+  public:
+    EinsumsException(char const *what) : what_{what} {}
+    EinsumsException(std::string const &what) : what_{what} {}
+    EinsumsException(const EinsumsException &other) = default;
+    virtual ~EinsumsException() = default;
+
+    std::string what() const { return this->what_; }
+
+  protected:
+    std::string what_;
+};
+
+template <Error Code>
+class ErrorCode : public EinsumsException {
+  public:
+    using EinsumsException::EinsumsException;
+
+    ~ErrorCode() = default;
+
+    constexpr inline Error get_code() const { return Code; }
+};
+
+// Generate the exceptions.
+namespace error {
+
+using success = ErrorCode<Error::success>;
+using no_success = ErrorCode<Error::no_success>;
+using unknown_error = ErrorCode<Error::unknown_error>;
+using bad_parameter = ErrorCode<Error::bad_parameter>;
+using kernel_error = ErrorCode<Error::kernel_error>;
+using out_of_memory = ErrorCode<Error::out_of_memory>;
+using invalid_status = ErrorCode<Error::invalid_status>;
+using tensors_incompatible = ErrorCode<Error::tensors_incompatible>;
+using disk_error = ErrorCode<Error::disk_error>;
+using assertion_failure = ErrorCode<Error::assertion_failure>;
+using unhandled_exception = ErrorCode<Error::unhandled_exception>;
+using lock_error = ErrorCode<Error::lock_error>;
+
+}
+
 } // namespace einsums
-
-template <>
-struct fmt::formatter<einsums::Error> : fmt::formatter<std::string> {
-    template <typename FormatContext>
-    auto format(einsums::Error e, FormatContext &ctx) const {
-        int e_int = static_cast<int>(e);
-        if (e_int >= static_cast<int>(einsums::Error::success) && e_int < static_cast<int>(einsums::Error::last_error)) {
-            return fmt::formatter<std::string>::format(einsums::detail::error_names[e_int], ctx);
-        } else {
-            return fmt::formatter<std::string>::format(fmt::format("invalid einsums::error ({})", e_int), ctx);
-        }
-    }
-};
-
-namespace std {
-
-template <>
-struct is_error_code_enum<einsums::Error> {
-    static constexpr bool value = true;
-};
-
-template <>
-struct is_error_condition_enum<einsums::Error> {
-    static constexpr bool value = true;
-};
-
-} // namespace std

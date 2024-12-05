@@ -7,15 +7,10 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 set(ErrorsHeaders
     Einsums/Errors/Error.hpp
-    Einsums/Errors/ErrorCode.hpp
-    Einsums/Errors/Exception.hpp
-    Einsums/Errors/ExceptionForward.hpp
-    Einsums/Errors/ExceptionInfo.hpp
     Einsums/Errors/ThrowException.hpp
-    Einsums/Errors/TryCatchExceptionPointer.hpp
 )
 
-set(ErrorsSources ErrorCode.cpp Exception.cpp ThrowException.cpp)
+set(ErrorsSources ErrorNames.cpp)
 
 include(Einsums_AddModule)
 einsums_add_module(

@@ -368,13 +368,13 @@ struct DiskView final : virtual tensor_base::DiskTensor,
     template <template <typename, size_t> typename TType>
     auto operator=(TType<T, ViewRank> const &other) -> DiskView & {
         if (_readOnly) {
-            EINSUMS_THROW_EXCEPTION(Error::bad_parameter, "Attempting to write data to a read only disk view.");
+            EINSUMS_THROW_EXCEPTION(error::bad_parameter, "Attempting to write data to a read only disk view.");
         }
 
         // Check dims
         for (int i = 0; i < ViewRank; i++) {
             if (_dims[i] != other.dim(i)) {
-                EINSUMS_THROW_EXCEPTION(Error::bad_parameter, "dims do not match (i {} dim {} other {})", i, _dims[i], other.dim(i));
+                EINSUMS_THROW_EXCEPTION(error::bad_parameter, "dims do not match (i {} dim {} other {})", i, _dims[i], other.dim(i));
             }
         }
 

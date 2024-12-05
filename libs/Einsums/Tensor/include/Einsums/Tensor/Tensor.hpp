@@ -10,7 +10,6 @@
 #include <Einsums/Concepts/Complex.hpp>
 #include <Einsums/Concepts/File.hpp>
 #include <Einsums/Concepts/Tensor.hpp>
-#include <Einsums/Errors/Exception.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/Iterator/Enumerate.hpp>
 #include <Einsums/Print.hpp>
@@ -177,7 +176,7 @@ struct Tensor : virtual tensor_base::CoreTensor,
         }
 
         if (nfound > 1) {
-            EINSUMS_THROW_EXCEPTION(Error::bad_parameter, "More than one -1 was provided.");
+            EINSUMS_THROW_EXCEPTION(error::bad_parameter, "More than one -1 was provided.");
         }
 
         if (nfound == 1) {
@@ -188,7 +187,7 @@ struct Tensor : virtual tensor_base::CoreTensor,
                 }
             }
             if (size > existingTensor.size()) {
-                EINSUMS_THROW_EXCEPTION(Error::bad_parameter, "Size of new tensor is larger than the parent tensor.");
+                EINSUMS_THROW_EXCEPTION(error::bad_parameter, "Size of new tensor is larger than the parent tensor.");
             }
             _dims[location] = existingTensor.size() / size;
         }
@@ -197,7 +196,7 @@ struct Tensor : virtual tensor_base::CoreTensor,
 
         // Check size
         if (_data.size() != size) {
-            EINSUMS_THROW_EXCEPTION(Error::bad_parameter, "Provided dims to not match size of parent tensor");
+            EINSUMS_THROW_EXCEPTION(error::bad_parameter, "Provided dims to not match size of parent tensor");
         }
     }
 
@@ -502,9 +501,9 @@ struct Tensor : virtual tensor_base::CoreTensor,
         }
     T &operator()(Container const &index) {
         if (index.size() < Rank) {
-            [[unlikely]] EINSUMS_THROW_EXCEPTION(Error::bad_parameter, "Not enough indices passed to Tensor!");
+            [[unlikely]] EINSUMS_THROW_EXCEPTION(error::bad_parameter, "Not enough indices passed to Tensor!");
         } else if (index.size() > Rank) {
-            [[unlikely]] EINSUMS_THROW_EXCEPTION(Error::bad_parameter, "Too many indices passed to Tensor!");
+            [[unlikely]] EINSUMS_THROW_EXCEPTION(error::bad_parameter, "Too many indices passed to Tensor!");
         }
 
         size_t ordinal = indices_to_sentinel_negative_check(_strides, _dims, index);
@@ -521,9 +520,9 @@ struct Tensor : virtual tensor_base::CoreTensor,
         }
     const T &operator()(Container const &index) const {
         if (index.size() < Rank) {
-            [[unlikely]] EINSUMS_THROW_EXCEPTION(Error::bad_parameter, "Not enough indices passed to Tensor!");
+            [[unlikely]] EINSUMS_THROW_EXCEPTION(error::bad_parameter, "Not enough indices passed to Tensor!");
         } else if (index.size() > Rank) {
-            [[unlikely]] EINSUMS_THROW_EXCEPTION(Error::bad_parameter, "Too many indices passed to Tensor!");
+            [[unlikely]] EINSUMS_THROW_EXCEPTION(error::bad_parameter, "Too many indices passed to Tensor!");
         }
 
         size_t ordinal = indices_to_sentinel_negative_check(_strides, _dims, index);
@@ -561,7 +560,7 @@ struct Tensor : virtual tensor_base::CoreTensor,
                 realloc = true;
             } else if (dim(i) != other.dim(i)) {
                 if constexpr (Rank != 1) {
-                    EINSUMS_THROW_EXCEPTION(Error::bad_parameter, "dimensions do not match (this){} (other){}", dim(i), other.dim(i));
+                    EINSUMS_THROW_EXCEPTION(error::bad_parameter, "dimensions do not match (this){} (other){}", dim(i), other.dim(i));
                 } else {
                     realloc = true;
                 }
@@ -1053,9 +1052,9 @@ struct TensorView final : virtual tensor_base::CoreTensor,
         }
     T &operator()(Container const &index) {
         if (index.size() < Rank) {
-            [[unlikely]] EINSUMS_THROW_EXCEPTION(Error::bad_parameter, "Not enough indices passed to Tensor!");
+            [[unlikely]] EINSUMS_THROW_EXCEPTION(error::bad_parameter, "Not enough indices passed to Tensor!");
         } else if (index.size() > Rank) {
-            [[unlikely]] EINSUMS_THROW_EXCEPTION(Error::bad_parameter, "Too many indices passed to Tensor!");
+            [[unlikely]] EINSUMS_THROW_EXCEPTION(error::bad_parameter, "Too many indices passed to Tensor!");
         }
 
         size_t ordinal = indices_to_sentinel_negative_check(_strides, _dims, index);
@@ -1072,9 +1071,9 @@ struct TensorView final : virtual tensor_base::CoreTensor,
         }
     const T &operator()(Container const &index) const {
         if (index.size() < Rank) {
-            [[unlikely]] EINSUMS_THROW_EXCEPTION(Error::bad_parameter, "Not enough indices passed to Tensor!");
+            [[unlikely]] EINSUMS_THROW_EXCEPTION(error::bad_parameter, "Not enough indices passed to Tensor!");
         } else if (index.size() > Rank) {
-            [[unlikely]] EINSUMS_THROW_EXCEPTION(Error::bad_parameter, "Too many indices passed to Tensor!");
+            [[unlikely]] EINSUMS_THROW_EXCEPTION(error::bad_parameter, "Too many indices passed to Tensor!");
         }
 
         size_t ordinal = indices_to_sentinel_negative_check(_strides, _dims, index);
@@ -1105,7 +1104,7 @@ struct TensorView final : virtual tensor_base::CoreTensor,
             return *this;
         } else {
             if (_strides[Rank - 1] != 1) {
-                EINSUMS_THROW_EXCEPTION(Error::bad_parameter, "Creating a Rank-1 TensorView for this Tensor(View) is not supported.");
+                EINSUMS_THROW_EXCEPTION(error::bad_parameter, "Creating a Rank-1 TensorView for this Tensor(View) is not supported.");
             }
             size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
             Dim<1> dim{size};
@@ -1160,7 +1159,7 @@ struct TensorView final : virtual tensor_base::CoreTensor,
         }
 
         if (nfound > 1) {
-            EINSUMS_THROW_EXCEPTION(Error::bad_parameter, "More than one -1 was provided.");
+            EINSUMS_THROW_EXCEPTION(error::bad_parameter, "More than one -1 was provided.");
         }
 
         if (nfound == 1 && Rank == 1) {
@@ -1185,7 +1184,7 @@ struct TensorView final : virtual tensor_base::CoreTensor,
         }
 
         if (nfound == 1 && Rank > 1) {
-            EINSUMS_THROW_EXCEPTION(Error::bad_parameter, "Haven't coded up this case yet.");
+            EINSUMS_THROW_EXCEPTION(error::bad_parameter, "Haven't coded up this case yet.");
         }
 
         // If the Ranks are the same then use "other"s stride information
@@ -1201,7 +1200,7 @@ struct TensorView final : virtual tensor_base::CoreTensor,
                 // Stride information cannot be automatically deduced.  It must be provided.
                 default_strides = arguments::get(error_strides, args...);
                 if (default_strides[0] == static_cast<size_t>(-1)) {
-                    EINSUMS_THROW_EXCEPTION(Error::bad_parameter,
+                    EINSUMS_THROW_EXCEPTION(error::bad_parameter,
                                             "Unable to automatically deduce stride information. Stride must be passed in.");
                 }
             }
@@ -1308,7 +1307,7 @@ void write(h5::fd_t const &fd, TensorView<T, Rank> const &ref, Args &&...args) {
     disk_offset.rank    = Rank;
 
     if (ref.stride(Rank - 1) != 1) {
-        EINSUMS_THROW_EXCEPTION(Error::bad_parameter, "Final dimension of TensorView must be contiguous to write.");
+        EINSUMS_THROW_EXCEPTION(error::bad_parameter, "Final dimension of TensorView must be contiguous to write.");
     }
 
     h5::offset const &offset = h5::arg::get(offset_default, args...);

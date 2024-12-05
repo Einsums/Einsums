@@ -989,7 +989,7 @@ template <MatrixConcept AType>
 typename AType::ValueType det(AType const &A) {
     using T = typename AType::ValueType;
     if (A.dim(0) != A.dim(1)) {
-        EINSUMS_THROW_EXCEPTION(Error::bad_parameter, "Can only take the determinant of a square matrix.");
+        EINSUMS_THROW_EXCEPTION(error::bad_parameter, "Can only take the determinant of a square matrix.");
     }
 
     RemoveViewT<AType> temp = A;

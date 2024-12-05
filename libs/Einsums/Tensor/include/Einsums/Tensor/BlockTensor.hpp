@@ -5,14 +5,13 @@
 
 /**
  * @file BlockTensor.hpp
- *
- * @tableofcontents
  */
 
 #pragma once
 
 #include <Einsums/TensorBase/IndexUtilities.hpp>
 #include <Einsums/TensorBase/TensorBase.hpp>
+#include <concepts>
 
 // TODO:
 #ifdef __HIP__
@@ -41,16 +40,16 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
                      virtual AlgebraOptimizedTensor {
   public:
     /**
-    * @defgroup constructors Constructors
+    * @name Constructors
     * @{
     */
     /**
-     * @brief Construct a new BlockTensor object. Default constructor.
+     * Construct a new BlockTensor object.
      */
     BlockTensor() = default;
 
-    /**
-     * @brief Construct a new BlockTensor object. Default copy constructor
+    /** 
+     * Copy constructs a new BlockTensor object.
      */
     BlockTensor(BlockTensor const &other) : _ranges{other._ranges}, _dims{other._dims}, _blocks{}, _dim{other._dim} {
         _blocks.reserve(other._blocks.size());
@@ -62,9 +61,8 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
     }
 
     /**
-     * @brief Construct a new BlockTensor object with the given name and blockdimensions.
-     *
      * Constructs a new BlockTensor object using the information provided in \p name and \p block_dims .
+     * The values in \p block_dims must be castable to size_t.
      *
      * @code
      * // Constructs a rank 4 tensor with two blocks, the first is 2x2x2x2, the second is 3x3x3x3.
@@ -72,13 +70,13 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
      * @endcode
      *
      * The newly constructed Tensor is NOT zeroed out for you. If you start having NaN issues
-     * in your code try calling Tensor.zero() or zero(Tensor) to see if that resolves it.
+     * in your code try calling BlockTensor.zero() or zero(BlockTensor) to see if that resolves it.
      *
      * @tparam Dims Variadic template arguments for the dimensions. Must be castable to size_t.
      * @param name Name of the new tensor.
      * @param block_dims The size of each block.
      */
-    template <typename... Dims>
+    template <std::convertible_to<size_t>... Dims>
     explicit BlockTensor(std::string name, Dims... block_dims)
         : _name{std::move(name)}, _dim{(static_cast<size_t>(block_dims) + ... + 0)}, _blocks(), _ranges(), _dims(sizeof...(Dims)) {
         auto dim_array   = Dim<sizeof...(Dims)>{block_dims...};
@@ -95,19 +93,18 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
     }
 
     /**
-     * @brief Construct a new BlockTensor object with the given name and blockdimensions.
-     *
      * Constructs a new BlockTensor object using the information provided in \p name and \p block_dims .
+     * The values in \p block_dims need to be castable to size_t.
      *
      * @code
      * // Constructs a rank 4 tensor with two blocks, the first is 2x2x2x2, the second is 3x3x3x3.
-     * auto A = BlockTensor<double, 4>("A", 2, 3);
+     * auto A = BlockTensor<double, 4>("A", std::array<int>{2, 3});
      * @endcode
-     *
+     * 
      * The newly constructed Tensor is NOT zeroed out for you. If you start having NaN issues
      * in your code try calling Tensor.zero() or zero(Tensor) to see if that resolves it.
      *
-     * @tparam Dims Variadic template arguments for the dimensions. Must be castable to size_t.
+     * @tparam ArrayArg A container type that stores the dimensions. For instance, std::array or einsums::Dim.
      * @param name Name of the new tensor.
      * @param block_dims The size of each block.
      */
@@ -128,17 +125,59 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
     }
 
     /**
-     * @brief Construct a new BlockTensor object using the dimensions given by Dim object.
+     * Constructs a new BlockTensor object using the information provided in \p name and \p block_dims .
+     * The values in \p block_dims need to be castable to size_t.
      *
-     * @param block_dims The dimension of each block.
+     * @code
+     * // Constructs a rank 4 tensor with two blocks, the first is 2x2x2x2, the second is 3x3x3x3.
+     * auto A = BlockTensor<double, 4>("A", {2, 3});
+     * @endcode
+     * 
+     * The newly constructed Tensor is NOT zeroed out for you. If you start having NaN issues
+     * in your code try calling Tensor.zero() or zero(Tensor) to see if that resolves it.
+     *
+     * @tparam IntType The type of the size values. This should be determined automatically.
+     * @param name Name of the new tensor.
+     * @param block_dims The size of each block.
      */
-    template <size_t Dims>
-    explicit BlockTensor(Dim<Dims> block_dims) : _blocks(), _ranges(), _dims(block_dims) {
+    template<std::convertible_to<size_t> IntType>
+    explicit BlockTensor(std::string name, std::initializer_list<IntType> block_dims)
+        : _name{std::move(name)}, _dim{0}, _blocks(), _ranges(), _dims(block_dims.begin(), block_dims.end()) {
+
+        auto _block_dims = Dim<Rank>();
+        _blocks.reserve(block_dims.size());
+
+        for (int i = 0; i < block_dims.size(); i++) {
+            _block_dims.fill(block_dims[i]);
+
+            _blocks.emplace_back(_block_dims);
+        }
+
+        update_dims();
+    }
+
+    /**
+     * Constructs a new BlockTensor object using the information provided in \p block_dims .
+     * The values in \p block_dims need to be castable to size_t.
+     *
+     * @code
+     * // Constructs a rank 4 tensor with two blocks, the first is 2x2x2x2, the second is 3x3x3x3.
+     * auto A = BlockTensor<double, 4>(std::array<int>{2, 3});
+     * @endcode
+     * 
+     * The newly constructed Tensor is NOT zeroed out for you. If you start having NaN issues
+     * in your code try calling Tensor.zero() or zero(Tensor) to see if that resolves it.
+     *
+     * @tparam ArrayArg A container type that stores the dimensions. For instance, std::array or einsums::Dim.
+     * @param block_dims The size of each block.
+     */
+    template <typename ArrayArg>
+    explicit BlockTensor(const ArrayArg &block_dims) : _blocks(), _ranges(), _dims(block_dims.cbegin(), block_dims.cend()) {
         auto _block_dims = Dim<Rank>();
 
-        _blocks.reserve(Dims);
+        _blocks.reserve(block_dims.size());
 
-        for (int i = 0; i < Dims; i++) {
+        for (int i = 0; i < block_dims.size(); i++) {
             _block_dims.fill(_block_dims[i]);
 
             _blocks.emplace_back(_block_dims);
@@ -146,20 +185,57 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
 
         update_dims();
     }
+
+    /**
+     * Constructs a new BlockTensor object using the information provided in \p block_dims .
+     * The values in \p block_dims need to be castable to size_t.
+     *
+     * @code
+     * // Constructs a rank 4 tensor with two blocks, the first is 2x2x2x2, the second is 3x3x3x3.
+     * auto A = BlockTensor<double, 4>({2, 3});
+     * @endcode
+     * 
+     * The newly constructed Tensor is NOT zeroed out for you. If you start having NaN issues
+     * in your code try calling Tensor.zero() or zero(Tensor) to see if that resolves it.
+     *
+     * @tparam ArrayArg A container type that stores the dimensions. For instance, std::array or einsums::Dim.
+     * @param block_dims The size of each block.
+     */
+    template <std::convertible_to<size_t> IntType>
+    explicit BlockTensor(std::initializer_list<IntType> block_dims) : _blocks(), _ranges(), _dims(block_dims.begin(), block_dims.end()) {
+        auto _block_dims = Dim<Rank>();
+
+        _blocks.reserve(block_dims.size());
+
+        for (int i = 0; i < block_dims.size(); i++) {
+            _block_dims.fill(_block_dims[i]);
+
+            _blocks.emplace_back(_block_dims);
+        }
+
+        update_dims();
+    }
+
+    /**
+     * Destroy the BlockTensor object.
+     */
+    virtual ~BlockTensor() = default;
     // End constructor group
     /**
      * @}
      */
 
     /**
-     * @brief Destroy the BlockTensor object.
-     */
-    virtual ~BlockTensor() = default;
-
-    /**
-     * @brief Find the block which can be indexed by the given index.
+     * @brief Find the block which can be indexed by the given \p index.
      *
-     * This finds the block for which the index is within its range.
+     * This finds the block for which the \p index is within its range. Since these
+     * tensors are always square/hypercubic, the index is valid for all axes.
+     * This index should be greater than or equal to zero and less than the dimension
+     * of the tensor along any axis.
+     *
+     * @param index The index to test.
+     * @return The index of the block containing the given index.
+     * @throws error::out_of_range Throws this when the index it outside of the tensor.
      */
     int block_of(size_t index) const {
         for (int i = 0; i < _ranges.size(); i++) {
@@ -168,7 +244,7 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
             }
         }
 
-        EINSUMS_THROW_EXCEPTION(Error::bad_parameter, "Index out of range!");
+        EINSUMS_THROW_EXCEPTION(std::out_of_range, "Index out of range!");
     }
 
     /**
@@ -184,6 +260,8 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
     /**
      * @brief Set the all entries in the blocks to the given value.
      *
+     * This does not set the value in the unoccupied blocks.
+     *
      * @param value Value to set the elements to.
      */
     void set_all(T value) {
@@ -195,16 +273,22 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
 
     /**
      * @brief Return the selected block with an integer ID.
+     *
+     * @param id The index of the block in the list of blocks.
+     * @return The block requested.
+     * @throws std::out_of_range if \p id is outside of the list of blocks.
      */
     TensorType const &block(int id) const { return _blocks.at(id); }
 
-    /**
-     * @brief Return the selected block with an integer ID.
-     */
+    /// @copydoc block(int) const
     TensorType &block(int id) { return _blocks.at(id); }
 
     /**
-     * @brief Return the selected block with an integer ID.
+     * @brief Return the first block with the given name.
+     *
+     * @param name The name of the block to find.
+     * @return The requested block.
+     * @throws error::bad_parameter if no block with the given name is contained in this tensor.
      */
     TensorType const &block(std::string const &name) const {
         for (int i = 0; i < _blocks.size(); i++) {
@@ -213,13 +297,13 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
             }
         }
         if (_blocks.size() == 0) {
-            EINSUMS_THROW_EXCEPTION(Error::bad_parameter, "Could not find block with the name {}: no blocks in tensor", name);
+            EINSUMS_THROW_EXCEPTION(error::bad_parameter, "Could not find block with the name {}: no blocks in tensor", name);
         }
-        EINSUMS_THROW_EXCEPTION(Error::bad_parameter, "Could not find block with the name {}: no blocks with given name", name);
+        EINSUMS_THROW_EXCEPTION(error::bad_parameter, "Could not find block with the name {}: no blocks with given name", name);
     }
 
     /**
-     * @brief Return the selected block with an integer ID.
+     * @copydoc block(std::string const &) const
      */
     TensorType &block(std::string const &name) {
         for (int i = 0; i < _blocks.size(); i++) {
@@ -228,19 +312,22 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
             }
         }
         if (_blocks.size() == 0) {
-            EINSUMS_THROW_EXCEPTION(Error::bad_parameter, "Could not find block with the name {}: no blocks in tensor", name);
+            EINSUMS_THROW_EXCEPTION(error::bad_parameter, "Could not find block with the name {}: no blocks in tensor", name);
         }
-        EINSUMS_THROW_EXCEPTION(Error::bad_parameter, "Could not find block with the name {}: no blocks with given name", name);
+        EINSUMS_THROW_EXCEPTION(error::bad_parameter, "Could not find block with the name {}: no blocks with given name", name);
     }
 
     /**
      * @brief Add a block to the end of the list of blocks.
+     *
+     * @param value The tensor to push.
+     * @throws error::bad_parameter if the tensor being pushed is not square.
      */
     void push_block(TensorType &&value) {
         for (int i = 0; i < Rank; i++) {
             if (value.dim(i) != value.dim(0)) {
                 EINSUMS_THROW_EXCEPTION(
-                    Error::bad_parameter,
+                    error::bad_parameter,
                     "Can only push square/hypersquare tensors to a block tensor. Make sure all dimensions are the same.");
             }
         }
@@ -249,13 +336,17 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
     }
 
     /**
-     * @brief Add a block to the specified position in the
+     * @brief Add a block to the specified position in the list of blocks.
+     *
+     * @param pos The position to insert at.
+     * @param value The tensor to insert.
+     * @throws error::bad_parameter if the 
      */
     void insert_block(int pos, TensorType &&value) {
         for (int i = 0; i < Rank; i++) {
             if (value.dim(i) != value.dim(0)) {
                 EINSUMS_THROW_EXCEPTION(
-                    Error::bad_parameter,
+                    error::bad_parameter,
                     "Can only push square/hypersquare tensors to a block tensor. Make sure all dimensions are the same.");
             }
         }
@@ -272,7 +363,7 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
         for (int i = 0; i < Rank; i++) {
             if (value.dim(i) != value.dim(0)) {
                 EINSUMS_THROW_EXCEPTION(
-                    Error::bad_parameter,
+                    error::bad_parameter,
                     "Can only push square/hypersquare tensors to a block tensor. Make sure all dimensions are the same.");
             }
         }
@@ -287,7 +378,7 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
         for (int i = 0; i < Rank; i++) {
             if (value.dim(i) != value.dim(0)) {
                 EINSUMS_THROW_EXCEPTION(
-                    Error::bad_parameter,
+                    error::bad_parameter,
                     "Can only push square/hypersquare tensors to a block tensor. Make sure all dimensions are the same.");
             }
         }
@@ -462,9 +553,9 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
         }
     T &operator()(Container const &index) {
         if (index.size() < Rank) [[unlikely]] {
-            EINSUMS_THROW_EXCEPTION(Error::bad_parameter, "Not enough indices passed to Tensor!");
+            EINSUMS_THROW_EXCEPTION(error::bad_parameter, "Not enough indices passed to Tensor!");
         } else if (index.size() > Rank) [[unlikely]] {
-            EINSUMS_THROW_EXCEPTION(Error::bad_parameter, "Too many indices passed to Tensor!");
+            EINSUMS_THROW_EXCEPTION(error::bad_parameter, "Too many indices passed to Tensor!");
         }
 
         std::array<std::int64_t, Rank> index_list{};
@@ -512,9 +603,9 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
         }
     const T &operator()(Container const &index) const {
         if (index.size() < Rank) [[unlikely]] {
-            EINSUMS_THROW_EXCEPTION(Error::bad_parameter, "Not enough indices passed to Tensor!");
+            EINSUMS_THROW_EXCEPTION(error::bad_parameter, "Not enough indices passed to Tensor!");
         } else if (index.size() > Rank) [[unlikely]] {
-            EINSUMS_THROW_EXCEPTION(Error::bad_parameter, "Too many indices passed to Tensor!");
+            EINSUMS_THROW_EXCEPTION(error::bad_parameter, "Too many indices passed to Tensor!");
         }
 
         std::array<std::int64_t, Rank> index_list{};
@@ -640,11 +731,11 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
                                                                                                                                            \
     auto operator OP(const BlockTensor<T, Rank, TensorType> &b)->BlockTensor<T, Rank, TensorType> & {                                      \
         if (_blocks.size() != b._blocks.size()) {                                                                                          \
-            EINSUMS_THROW_EXCEPTION(Error::bad_parameter, "tensors differ in number of blocks : {} {}", _blocks.size(), b._blocks.size()); \
+            EINSUMS_THROW_EXCEPTION(error::bad_parameter, "tensors differ in number of blocks : {} {}", _blocks.size(), b._blocks.size()); \
         }                                                                                                                                  \
         for (int i = 0; i < _blocks.size(); i++) {                                                                                         \
             if (_blocks[i].size() != b._blocks[i].size()) {                                                                                \
-                EINSUMS_THROW_EXCEPTION(Error::bad_parameter, "tensor blocks differ in size : {} {}", _blocks[i].size(),                   \
+                EINSUMS_THROW_EXCEPTION(error::bad_parameter, "tensor blocks differ in size : {} {}", _blocks[i].size(),                   \
                                         b._blocks[i].size());                                                                              \
             }                                                                                                                              \
         }                                                                                                                                  \
@@ -764,7 +855,7 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
             }
         }
 
-        EINSUMS_THROW_EXCEPTION(Error::bad_parameter, "Could not find block with the name {}", name);
+        EINSUMS_THROW_EXCEPTION(error::bad_parameter, "Could not find block with the name {}", name);
     }
 
     /**
@@ -780,7 +871,7 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
             }
         }
 
-        EINSUMS_THROW_EXCEPTION(Error::bad_parameter, "Could not find block with the name {}", name);
+        EINSUMS_THROW_EXCEPTION(error::bad_parameter, "Could not find block with the name {}", name);
     }
 
     /**
