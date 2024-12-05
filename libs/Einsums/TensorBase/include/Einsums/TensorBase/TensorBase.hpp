@@ -17,18 +17,42 @@
 
 namespace einsums::tensor_base {
 
+/**
+ * @struct TensorBase
+ *
+ * @brief Base type for all tensors in Einsums.
+ */
 struct TensorBase {
   public:
+  /**
+   * Default constructor.
+   */
     TensorBase() = default;
 
+    /**
+     * Default copy constructor.
+     */
     TensorBase(TensorBase const &) = default;
 
+    /**
+     * Default destructor.
+     */
     virtual ~TensorBase() = default;
 
+    /**
+     * Indicates that the tensor contains all elements.
+     */
     virtual bool               full_view_of_underlying() const { return true; }
+    
+    /**
+     * Gets the name of the tensor.
+     */
     virtual std::string const &name() const                          = 0;
+    
+    /**
+     * Sets the name of the tensor.
+     */
     virtual void               set_name(std::string const &new_name) = 0;
-    // virtual size_t             rank() const                          = 0;
 };
 
 /**
@@ -41,15 +65,25 @@ struct TensorBase {
 template <typename T>
 struct TypedTensor : virtual TensorBase {
     /**
-     * @typedef value_type
+     * @typedef ValueType
      *
      * @brief Gets the stored data type.
      */
     using ValueType = T;
 
+    /**
+     * Default constructor.
+     */
     TypedTensor()                    = default;
+
+    /**
+     * Default copy constructor.
+     */
     TypedTensor(TypedTensor const &) = default;
 
+    /**
+     * Default destructor.
+     */
     virtual ~TypedTensor() = default;
 };
 
@@ -78,17 +112,32 @@ struct DeviceTypedTensor : virtual TypedTensor<HostT> {
                                               std::conditional_t<std::is_same_v<HostT, std::complex<double>>, hipDoubleComplex, HostT>>,
                            DevT>;
 
+    /**
+     * @typedef host_datatype
+     *
+     * @brief The datatype that the host sees.
+     */
     using host_datatype = HostT;
 
+    /**
+     * Default constructor.
+     */
     DeviceTypedTensor()                          = default;
+
+    /**
+     * Default copy constructor.
+     */
     DeviceTypedTensor(DeviceTypedTensor const &) = default;
 
+    /**
+     * Default destructor.
+     */
     ~DeviceTypedTensor() override = default;
 };
 #endif
 
 /**
- * @struct RankTensorBaseNoRank
+ * @struct RankTensorNoRank
  *
  * @brief Base class for RankTensorBase that does not store the rank.
  *
@@ -96,9 +145,19 @@ struct DeviceTypedTensor : virtual TypedTensor<HostT> {
  * compile time without needing to provide the rank. Internal use only.
  */
 struct RankTensorNoRank {
+    /**
+     * Default constructor.
+     */
     RankTensorNoRank()                         = default;
+
+    /**
+     * Default copy constructor.
+     */
     RankTensorNoRank(RankTensorNoRank const &) = default;
 
+    /**
+     * Default destructor.
+     */
     virtual ~RankTensorNoRank() = default;
 };
 
@@ -112,22 +171,36 @@ struct RankTensorNoRank {
 template <size_t R>
 struct RankTensor : virtual TensorBase, virtual RankTensorNoRank {
     /**
-     * @property rank
+     * @property Rank
      *
      * @brief The rank of the tensor.
      */
     static constexpr size_t Rank = R;
 
+    /** 
+     * Default constructor.
+     */
     RankTensor()                   = default;
+
+    /**
+     * Default copy constructor.
+     */
     RankTensor(RankTensor const &) = default;
 
+    /**
+     * Default destructor.
+     */
     ~RankTensor() override = default;
 
+    /**
+     * Gets the dimensions of the tensor.
+     */
     virtual Dim<R> dims() const = 0;
 
+    /**
+     * Gets the dimension along a given axis.
+     */
     virtual auto dim(int d) const -> size_t = 0;
-
-    // size_t rank() const override { return Rank; }
 };
 
 /**
@@ -138,16 +211,26 @@ struct RankTensor : virtual TensorBase, virtual RankTensorNoRank {
  * Used for checking that a type is a tensor without regard for storage type.
  */
 struct TensorNoExtra {
+    /**
+     * Default constructor.
+     */
     TensorNoExtra()                      = default;
+
+    /**
+     * Default copy constructor.
+     */
     TensorNoExtra(TensorNoExtra const &) = default;
 
+    /**
+     * Default destructor.
+     */
     virtual ~TensorNoExtra() = default;
 };
 
 /**
  * @struct Tensor
  *
- * @brief Base class for all tensors. Just says that a class is a tensor.
+ * @brief Base class for all tensors with a type and rank. Just says that a class is a tensor.
  *
  * Indicates a tensor with a rank and type. Some virtual methods need to be defined.
  *
@@ -156,13 +239,28 @@ struct TensorNoExtra {
  */
 template <typename T, size_t Rank>
 struct Tensor : virtual TensorNoExtra, virtual TypedTensor<T>, virtual RankTensor<Rank> {
+    /**
+     * Default constructor.
+     */
     Tensor()               = default;
+
+    /**
+     * Default copy constructor.
+     */
     Tensor(Tensor const &) = default;
 
+    /**
+     * Default destructor.
+     */
     ~Tensor() override = default;
 
+    /// @copydoc TensorBase::full_view_of_underlying()
     auto full_view_of_underlying() const -> bool override { return true; }
+
+    /// @copydoc TensorBase::name()
     auto name() const -> std::string const & override   = 0;
+
+    /// @copydoc TensorBase::set_name()
     void set_name(std::string const &new_name) override = 0;
 };
 
@@ -181,9 +279,19 @@ struct LockableTensor {
     mutable std::shared_ptr<std::recursive_mutex> _lock; // Make it mutable so that it can be modified even in const methods.
 
   public:
+    /**
+     * Default destructor.
+     */
     virtual ~LockableTensor() = default;
 
+    /**
+     * Default constructor.
+     */
     LockableTensor() { _lock = std::make_shared<std::recursive_mutex>(); }
+
+    /**
+     * Default copy constructor.
+     */
     LockableTensor(LockableTensor const &) { _lock = std::make_shared<std::recursive_mutex>(); }
 
     /**
@@ -222,9 +330,19 @@ struct LockableTensor {
  * @brief Represents a tensor only available to the core.
  */
 struct CoreTensor {
+    /**
+     * Default constructor.
+     */
     CoreTensor()                   = default;
+
+    /**
+     * Default copy constructor.
+     */
     CoreTensor(CoreTensor const &) = default;
 
+    /** 
+     * Default destructor.
+     */
     virtual ~CoreTensor() = default;
 };
 
@@ -236,9 +354,19 @@ struct CoreTensor {
  */
 struct DeviceTensor {
   public:
+    /**
+     * Default constructor.
+     */
     DeviceTensor()                     = default;
+
+    /**
+     * Default copy constructor.
+     */
     DeviceTensor(DeviceTensor const &) = default;
 
+    /**
+     * Default destructor.
+     */
     virtual ~DeviceTensor() = default;
 };
 #endif
@@ -249,9 +377,19 @@ struct DeviceTensor {
  * @brief Represents a tensor stored on disk.
  */
 struct DiskTensor {
+    /**
+     * Default constructor.
+     */
     DiskTensor()                   = default;
+
+    /**
+     * Default copy constructor.
+     */
     DiskTensor(DiskTensor const &) = default;
 
+    /** 
+     * Default destructor.
+     */
     virtual ~DiskTensor() = default;
 };
 
@@ -269,9 +407,19 @@ struct DiskTensor {
  * for TensorViewBase.
  */
 struct TensorViewNoExtra {
+    /**
+     * Default constructor.
+     */
     TensorViewNoExtra()                          = default;
+    
+    /**
+     * Default copy constructor.
+     */
     TensorViewNoExtra(TensorViewNoExtra const &) = default;
 
+    /**
+     * Default destructor.
+     */
     virtual ~TensorViewNoExtra() = default;
 };
 
@@ -288,9 +436,19 @@ struct TensorViewNoExtra {
  */
 template <typename Viewed>
 struct TensorViewOnlyViewed {
+    /**
+     * Default constructor.
+     */
     TensorViewOnlyViewed()                             = default;
+
+    /**
+     * Default copy constructor. 
+     */
     TensorViewOnlyViewed(TensorViewOnlyViewed const &) = default;
 
+    /**
+     * Default destructor. 
+     */
     virtual ~TensorViewOnlyViewed() = default;
 };
 
@@ -306,13 +464,31 @@ struct TensorViewOnlyViewed {
 template <typename T, size_t Rank, typename UnderlyingType>
 struct TensorView : public virtual TensorViewNoExtra, virtual TensorViewOnlyViewed<UnderlyingType>, virtual Tensor<T, Rank> {
   public:
+    /** 
+     * @typedef underlying_type
+     *
+     * This is the type of tensor being viewed.
+     */
     using underlying_type = UnderlyingType;
 
+    /**
+     * Default constructor.
+     */
     TensorView()                   = default;
+    
+    /**
+     * Default copy constructor.
+     */
     TensorView(TensorView const &) = default;
 
+    /**
+     * Default destructor.
+     */
     ~TensorView() override = default;
 
+    /**
+     * @copydoc TensorBase::full_view_of_underlying()
+     */
     bool full_view_of_underlying() const override = 0;
 };
 
@@ -324,9 +500,19 @@ struct TensorView : public virtual TensorViewNoExtra, virtual TensorViewOnlyView
  * Represents a regular tensor, but without template parameters. See BasicTensorBase for more details.
  */
 struct BasicTensorNoExtra {
+    /**
+     * Default constructor.
+     */
     BasicTensorNoExtra()                           = default;
+
+    /**
+     * Default copy constructor.
+     */
     BasicTensorNoExtra(BasicTensorNoExtra const &) = default;
 
+    /**
+     * Default destructor.
+     */
     virtual ~BasicTensorNoExtra() = default;
 };
 
@@ -344,15 +530,41 @@ struct BasicTensorNoExtra {
  */
 template <typename T, size_t Rank>
 struct BasicTensor : virtual Tensor<T, Rank>, virtual BasicTensorNoExtra {
+    /**
+     * Default constructor.
+     */
     BasicTensor()                    = default;
+
+    /**
+     * Default copy constructor.
+     */
     BasicTensor(BasicTensor const &) = default;
 
+    /**
+     * Default destructor.
+     */
     ~BasicTensor() override = default;
 
+    /**
+     * Get a pointer to the data stored in this tensor.
+     */
     virtual auto data() -> T *             = 0;
+
+    /**
+     * @copydoc BasicTensor::data()
+     */
     virtual auto data() const -> T const * = 0;
 
+    /**
+     * Get the stride of the tensor along a given axis.
+     *
+     * @param d The axis to query.
+     */
     virtual auto stride(int d) const -> size_t   = 0;
+
+    /**
+     * Get the strides of the tensor.
+     */
     virtual auto strides() const -> Stride<Rank> = 0;
 };
 
@@ -365,9 +577,19 @@ struct BasicTensor : virtual Tensor<T, Rank>, virtual BasicTensorNoExtra {
  * template parameters. Only used internally. Use CollectedTensorBase for your code.
  */
 struct CollectedTensorNoExtra {
+    /**
+     * Default constructor.
+     */
     CollectedTensorNoExtra()                               = default;
+
+    /**
+     * Default copy constructor.
+     */
     CollectedTensorNoExtra(CollectedTensorNoExtra const &) = default;
 
+    /**
+     * Default destructor.
+     */
     virtual ~CollectedTensorNoExtra() = default;
 };
 
@@ -383,9 +605,19 @@ struct CollectedTensorNoExtra {
  */
 template <typename Stored>
 struct CollectedTensorOnlyStored {
+    /**
+     * Default constructor.
+     */
     CollectedTensorOnlyStored()                                  = default;
+
+    /**
+     * Default copy constructor.
+     */
     CollectedTensorOnlyStored(CollectedTensorOnlyStored const &) = default;
 
+    /**
+     * Default destructor.
+     */
     virtual ~CollectedTensorOnlyStored() = default;
 };
 
@@ -401,11 +633,26 @@ struct CollectedTensorOnlyStored {
  */
 template <typename TensorType>
 struct CollectedTensor : virtual CollectedTensorNoExtra, virtual TensorNoExtra {
+    /**
+     * @typedef tensor_type
+     *
+     * This is the type of tensor being stored.
+     */
     using tensor_type = TensorType;
 
+    /**
+     * Default constructor.
+     */
     CollectedTensor()                        = default;
+
+    /**
+     * Default copy constructor.
+     */
     CollectedTensor(CollectedTensor const &) = default;
 
+    /**
+     * Default destructor.
+     */
     ~CollectedTensor() override = default;
 };
 
@@ -417,9 +664,19 @@ struct CollectedTensor : virtual CollectedTensorNoExtra, virtual TensorNoExtra {
  * Only used internally. Use TiledTensorBase in your code.
  */
 struct TiledTensorNoExtra {
+    /**
+     * Default constructor.
+     */
     TiledTensorNoExtra()                           = default;
+
+    /**
+     * Default copy constructor.
+     */
     TiledTensorNoExtra(TiledTensorNoExtra const &) = default;
 
+    /**
+     * Default destructor.
+     */
     virtual ~TiledTensorNoExtra() = default;
 };
 
@@ -436,9 +693,19 @@ struct TiledTensor;
  * Use BlockTensorBase in your code.
  */
 struct BlockTensorNoExtra {
+    /**
+     * Default constructor.
+     */
     BlockTensorNoExtra()                           = default;
+
+    /**
+     * Default copy constructor.
+     */
     BlockTensorNoExtra(BlockTensorNoExtra const &) = default;
 
+    /**
+     * Default destructor.
+     */
     virtual ~BlockTensorNoExtra() = default;
 };
 
@@ -455,9 +722,19 @@ struct BlockTensor;
  * Used for checking to see if a tensor is a function tensor. Internal use only. Use FunctionTensorBase instead.
  */
 struct FunctionTensorNoExtra {
+    /**
+     * Default constructor.
+     */
     FunctionTensorNoExtra()                              = default;
+
+    /**
+     * Default copy constructor.
+     */
     FunctionTensorNoExtra(FunctionTensorNoExtra const &) = default;
 
+    /**
+     * Default destructor.
+     */
     virtual ~FunctionTensorNoExtra() = default;
 };
 
@@ -471,9 +748,19 @@ struct FunctionTensor;
  * @brief Specifies that the tensor type can be used by einsum to select different routines other than the generic algorithm.
  */
 struct AlgebraOptimizedTensor {
+    /**
+     * Default constructor.
+     */
     AlgebraOptimizedTensor()                               = default;
+
+    /**
+     * Default copy constructor.
+     */
     AlgebraOptimizedTensor(AlgebraOptimizedTensor const &) = default;
 
+    /**
+     * Default destructor.
+     */
     virtual ~AlgebraOptimizedTensor() = default;
 };
 

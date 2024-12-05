@@ -31,9 +31,14 @@ DEFINE_STRUCT(Count, std::size_t);
 DEFINE_STRUCT(Chunk, std::ptrdiff_t);
 
 /**
- * Range object
+ * @struct Range
+ *
+ * Holds two values: a starting value and an ending value.
  */
 struct Range : std::array<std::int64_t, 2> {
+    /**
+     * Initialize a range.
+     */
     template <typename... Args>
     constexpr explicit Range(Args... args) : std::array<std::int64_t, 2>{static_cast<std::int64_t>(args)...} {}
 };
