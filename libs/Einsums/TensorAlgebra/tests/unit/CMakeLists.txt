@@ -6,7 +6,8 @@
 set(TensorAlgebraTests
         Einsum1
         Einsum2
-    Indices
+        Indices
+        Sort
 )
 
 foreach (test ${TensorAlgebraTests})
