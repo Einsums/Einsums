@@ -22,6 +22,7 @@ Einsums modules
    /libs/Einsums/Debugging/docs/index.rst
    /libs/Einsums/Errors/docs/index.rst
    /libs/Einsums/Graph/docs/index.rst
+   /libs/Einsums/HPTT/docs/index.rst
    /libs/Einsums/ITTNotify/docs/index.rst
    /libs/Einsums/Iterator/docs/index.rst
    /libs/Einsums/LinearAlgebra/docs/index.rst

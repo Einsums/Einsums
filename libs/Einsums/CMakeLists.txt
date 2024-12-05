@@ -21,6 +21,7 @@ set(_Einsums_modules
     Debugging
     Errors
     Graph
+        HPTT
     ITTNotify
     Iterator
     LinearAlgebra

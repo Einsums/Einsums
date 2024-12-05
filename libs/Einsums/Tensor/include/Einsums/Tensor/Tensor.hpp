@@ -970,15 +970,13 @@ struct TensorView final : virtual tensor_base::CoreTensor,
     }
 
     auto operator=(T const &fill_value) -> TensorView & {
-        size_t size = this->size();
+        auto target_dims = get_dim_ranges<Rank>(*this);
+        auto view        = std::apply(ranges::views::cartesian_product, target_dims);
 
-        EINSUMS_OMP_PARALLEL_FOR
-        for (size_t sentinel = 0; sentinel < size; sentinel++) {
-            thread_local std::array<size_t, Rank> index;
-
-            sentinel_to_indices(_index_strides, index);
-
-            std::apply(*this, index) = fill_value;
+#pragma omp parallel for default(none) shared(view, fill_value)
+        for (auto target_combination = view.begin(); target_combination != view.end(); target_combination++) {
+            T &target = std::apply(*this, *target_combination);
+            target    = fill_value;
         }
 
         return *this;
