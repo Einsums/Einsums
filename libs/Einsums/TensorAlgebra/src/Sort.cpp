@@ -3,15 +3,18 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //--------------------------------------------------------------------------------------------
 
-#include <Einsums/HPTT/HPTT.hpp>
-#include <Einsums/TensorAlgebra/Sort.hpp>
+#include <Einsums/Config.hpp>
+
+#if !defined(EINSUMS_WINDOWS)
+#    include <Einsums/HPTT/HPTT.hpp>
+#    include <Einsums/TensorAlgebra/Sort.hpp>
 
 // HPTT includes <complex> which defined I as a shorthand for complex values.
 // This causes issues with einsums since we define I to be a useable index
 // for the user. Undefine the one defined in <complex> here.
-#if defined(I)
-#    undef I
-#endif
+#    if defined(I)
+#        undef I
+#    endif
 
 namespace einsums::tensor_algebra::detail {
 
@@ -42,3 +45,5 @@ void sort(int const *perm, int const dim, std::complex<double> const alpha, std:
 }
 
 } // namespace einsums::tensor_algebra::detail
+
+#endif

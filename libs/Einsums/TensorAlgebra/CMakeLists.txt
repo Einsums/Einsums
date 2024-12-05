@@ -21,7 +21,7 @@ set(TensorAlgebraHeaders
         Einsums/TensorAlgebra/Detail/Utilities.hpp
 )
 
-if (NOT WINDOWS)
+if (NOT WIN32)
 set(TensorAlgebraSources Sort.cpp)
 endif ()
 
