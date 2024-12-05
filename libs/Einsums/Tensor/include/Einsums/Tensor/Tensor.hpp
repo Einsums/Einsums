@@ -90,8 +90,19 @@ struct Tensor : virtual tensor_base::CoreTensor,
                 virtual tensor_base::BasicTensor<T, Rank>,
                 virtual tensor_base::LockableTensor,
                 virtual tensor_base::AlgebraOptimizedTensor {
+    /**
+     * @typedef datatype
+     *
+     * @brief Holds the data type stored by the tensor.
+     */
     using datatype = T;
-    using Vector   = VectorData<T>;
+
+    /**
+     * @typedef Vector
+     *
+     * This represents the internal storage method of the tensor.
+     */
+    using Vector = VectorData<T>;
 
     /**
      * @brief Construct a new Tensor object. Default constructor.
@@ -380,7 +391,15 @@ struct Tensor : virtual tensor_base::CoreTensor,
         return _data[ordinal];
     }
 
-    // WARNING: Chances are this function will not work if you mix All{}, Range{} and explicit indexes.
+    /**
+     * @brief Subscripts into the tensor.
+     *
+     * This version works when some of the indices are All or Range. It then constructs a view of the tensor with those properties.
+     *
+     * @tparam MultiIndex Data type of the indices.
+     * @param index The indices.
+     * @return A tensor view with the appropriate starting point and dimensions.
+     */
     template <typename... MultiIndex>
         requires requires { requires AtLeastOneOfType<AllT, MultiIndex...>; }
     auto operator()(MultiIndex... index) -> TensorView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>()> {
@@ -424,7 +443,15 @@ struct Tensor : virtual tensor_base::CoreTensor,
                                                                                                            strides};
     }
 
-    // WARNING: Chances are this function will not work if you mix All{}, Range{} and explicit indexes.
+    /**
+     * @brief Subscripts into the tensor.
+     *
+     * This version works when some of the indices are All or Range. It then constructs a view of the tensor with those properties.
+     *
+     * @tparam MultiIndex Data type of the indices.
+     * @param index The indices.
+     * @return A tensor view with the appropriate starting point and dimensions.
+     */
     template <typename... MultiIndex>
         requires requires { requires AtLeastOneOfType<AllT, MultiIndex...>; }
     auto operator()(MultiIndex... index) const
@@ -469,6 +496,13 @@ struct Tensor : virtual tensor_base::CoreTensor,
                                                                                                            strides};
     }
 
+    /**
+     * Subscripts into the tensor, creating a view based on the given ranges
+     *
+     * @tparam MultiIndex The types of the Ranges.
+     * @param index The ranges.
+     * @return The view based on these ranges.
+     */
     template <typename... MultiIndex>
         requires NumOfType<Range, Rank, MultiIndex...>
     auto operator()(MultiIndex... index) const -> TensorView<T, Rank> {
@@ -491,6 +525,9 @@ struct Tensor : virtual tensor_base::CoreTensor,
         return TensorView<T, Rank>{*this, std::move(dims), std::move(offset), std::move(stride)};
     }
 
+    /**
+     * @copydoc Tensor<T, Rank>::operator(MultiIndex...) -> T&
+     */
     template <typename Container>
         requires requires {
             requires !std::is_integral_v<Container>;
@@ -510,6 +547,9 @@ struct Tensor : virtual tensor_base::CoreTensor,
         return _data[ordinal];
     }
 
+    /**
+     * @copydoc Tensor<T, Rank>::operator(MultiIndex...) -> T&
+     */
     template <typename Container>
         requires requires {
             requires !std::is_integral_v<Container>;
@@ -529,6 +569,11 @@ struct Tensor : virtual tensor_base::CoreTensor,
         return _data[ordinal];
     }
 
+    /**
+     * Copy the data from one tensor into this.
+     *
+     * @param other The tensor to copy.
+     */
     auto operator=(Tensor<T, Rank> const &other) -> Tensor<T, Rank> & {
         bool realloc{false};
         for (int i = 0; i < Rank; i++) {
@@ -551,6 +596,11 @@ struct Tensor : virtual tensor_base::CoreTensor,
         return *this;
     }
 
+    /**
+     * Cast the data from one tensor while copying its data into this tensor.
+     *
+     * @param other The tensor to cast and copy.
+     */
     template <typename TOther>
         requires(!std::same_as<T, TOther>)
     auto operator=(Tensor<TOther, Rank> const &other) -> Tensor<T, Rank> & {
@@ -588,6 +638,9 @@ struct Tensor : virtual tensor_base::CoreTensor,
         return *this;
     }
 
+    /**
+     * Copy the data from a tensor of a different kind into this one.
+     */
     template <TensorConcept OtherTensor>
         requires requires {
             requires !BasicTensorConcept<OtherTensor>;
@@ -607,6 +660,9 @@ struct Tensor : virtual tensor_base::CoreTensor,
         return *this;
     }
 
+    /**
+     * Cast the data from a tensor view while copying into this tensor.
+     */
     template <typename TOther>
     auto operator=(TensorView<TOther, Rank> const &other) -> Tensor<T, Rank> & {
         size_t size = this->size();
@@ -622,6 +678,9 @@ struct Tensor : virtual tensor_base::CoreTensor,
     }
 
 #ifdef __HIP__
+    /**
+     * Copy the data from the device into this tensor.
+     */
     auto operator=(DeviceTensor<T, Rank> const &other) -> Tensor<T, Rank> & {
         bool realloc{false};
         for (int i = 0; i < Rank; i++) {
@@ -645,51 +704,59 @@ struct Tensor : virtual tensor_base::CoreTensor,
     }
 #endif
 
+    /**
+     * Fill this tensor with a value.
+     */
     auto operator=(T const &fill_value) -> Tensor & {
         set_all(fill_value);
         return *this;
     }
 
-#define OPERATOR(OP)                                                                                                                       \
-    auto operator OP(const T &b)->Tensor<T, Rank> & {                                                                                      \
-        EINSUMS_OMP_PARALLEL {                                                                                                             \
-            auto tid       = omp_get_thread_num();                                                                                         \
-            auto chunksize = _data.size() / omp_get_num_threads();                                                                         \
-            auto begin     = _data.begin() + chunksize * tid;                                                                              \
-            auto end       = (tid == omp_get_num_threads() - 1) ? _data.end() : begin + chunksize;                                         \
-            EINSUMS_OMP_SIMD for (auto i = begin; i < end; i++) {                                                                          \
-                (*i) OP b;                                                                                                                 \
+#ifndef DOXYGEN
+#    define OPERATOR(OP)                                                                                                                   \
+        auto operator OP(const T &b)->Tensor<T, Rank> & {                                                                                  \
+            EINSUMS_OMP_PARALLEL {                                                                                                         \
+                auto tid       = omp_get_thread_num();                                                                                     \
+                auto chunksize = _data.size() / omp_get_num_threads();                                                                     \
+                auto begin     = _data.begin() + chunksize * tid;                                                                          \
+                auto end       = (tid == omp_get_num_threads() - 1) ? _data.end() : begin + chunksize;                                     \
+                EINSUMS_OMP_SIMD for (auto i = begin; i < end; i++) {                                                                      \
+                    (*i) OP b;                                                                                                             \
+                }                                                                                                                          \
             }                                                                                                                              \
+            return *this;                                                                                                                  \
         }                                                                                                                                  \
-        return *this;                                                                                                                      \
-    }                                                                                                                                      \
                                                                                                                                            \
-    auto operator OP(const Tensor<T, Rank> &b)->Tensor<T, Rank> & {                                                                        \
-        if (size() != b.size()) {                                                                                                          \
-            throw EINSUMSEXCEPTION(fmt::format("tensors differ in size : {} {}", size(), b.size()));                                       \
-        }                                                                                                                                  \
-        EINSUMS_OMP_PARALLEL {                                                                                                             \
-            auto tid       = omp_get_thread_num();                                                                                         \
-            auto chunksize = _data.size() / omp_get_num_threads();                                                                         \
-            auto abegin    = _data.begin() + chunksize * tid;                                                                              \
-            auto bbegin    = b._data.begin() + chunksize * tid;                                                                            \
-            auto aend      = (tid == omp_get_num_threads() - 1) ? _data.end() : abegin + chunksize;                                        \
-            auto j         = bbegin;                                                                                                       \
-            EINSUMS_OMP_SIMD for (auto i = abegin; i < aend; i++) {                                                                        \
-                (*i) OP(*j);                                                                                                               \
-                j++;                                                                                                                       \
+        auto operator OP(const Tensor<T, Rank> &b)->Tensor<T, Rank> & {                                                                    \
+            if (size() != b.size()) {                                                                                                      \
+                throw EINSUMSEXCEPTION(fmt::format("tensors differ in size : {} {}", size(), b.size()));                                   \
             }                                                                                                                              \
-        }                                                                                                                                  \
-        return *this;                                                                                                                      \
-    }
+            EINSUMS_OMP_PARALLEL {                                                                                                         \
+                auto tid       = omp_get_thread_num();                                                                                     \
+                auto chunksize = _data.size() / omp_get_num_threads();                                                                     \
+                auto abegin    = _data.begin() + chunksize * tid;                                                                          \
+                auto bbegin    = b._data.begin() + chunksize * tid;                                                                        \
+                auto aend      = (tid == omp_get_num_threads() - 1) ? _data.end() : abegin + chunksize;                                    \
+                auto j         = bbegin;                                                                                                   \
+                EINSUMS_OMP_SIMD for (auto i = abegin; i < aend; i++) {                                                                    \
+                    (*i) OP(*j);                                                                                                           \
+                    j++;                                                                                                                   \
+                }                                                                                                                          \
+            }                                                                                                                              \
+            return *this;                                                                                                                  \
+        }
 
     OPERATOR(*=)
     OPERATOR(/=)
     OPERATOR(+=)
     OPERATOR(-=)
 
-#undef OPERATOR
+#    undef OPERATOR
+#endif
 
+    /**
+     * Get the dimension of the tensor along a given axis.
+     */
     size_t dim(int d) const override {
         // Add support for negative indices.
         if (d < 0) {
@@ -698,20 +765,37 @@ struct Tensor : virtual tensor_base::CoreTensor,
         return _dims[d];
     }
 
+    /**
+     * Get all the dimensions of the tensor.
+     */
     Dim<Rank> dims() const override { return _dims; }
 
+    /**
+     * Get the internal vector containing the tensor's data.
+     */
     auto vector_data() const -> Vector const & { return _data; }
+
+    /// @copydoc Tensor<T,Rank>::vector_data() const
     auto vector_data() -> Vector & { return _data; }
 
-    size_t stride(int d) const noexcept override {
+    /**
+     * Get the stride along a given axis.
+     */
+    size_t stride(int d) const override {
         if (d < 0) {
             d += Rank;
         }
         return _strides[d];
     }
 
-    Stride<Rank> strides() const noexcept override { return _strides; }
+    /**
+     * Get all of the strides of this tensor.
+     */
+    Stride<Rank> strides() const override { return _strides; }
 
+    /**
+     * Flatten out the tensor.
+     */
     auto to_rank_1_view() const -> TensorView<T, 1> {
         size_t size = _strides.size() == 0 ? 0 : _strides[0] * _dims[0];
         Dim<1> dim{size};
@@ -719,13 +803,24 @@ struct Tensor : virtual tensor_base::CoreTensor,
         return TensorView<T, 1>{*this, dim};
     }
 
-    // Returns the linear size of the tensor
+    /**
+     * Returns the linear size of the tensor.
+     */
     [[nodiscard]] size_t size() const { return _dims[0] * _strides[0]; }
 
+    /**
+     * Indicates that the tensor is contiguous.
+     */
     bool full_view_of_underlying() const noexcept override { return true; }
 
+    /**
+     * Get the name of the tensor.
+     */
     std::string const &name() const override { return _name; };
 
+    /**
+     * Set the name of the tensor.
+     */
     void set_name(std::string const &new_name) override { _name = new_name; };
 
   private:
@@ -753,66 +848,139 @@ struct Tensor<T, 0> : virtual tensor_base::CoreTensor,
                       virtual tensor_base::BasicTensor<T, 0>,
                       virtual tensor_base::LockableTensor,
                       virtual tensor_base::AlgebraOptimizedTensor {
+
+    /**
+     * Default constructor
+     */
     Tensor() = default;
 
+    /**
+     * Default copy constructor
+     */
     Tensor(Tensor const &) = default;
 
+    /**
+     * Default move constructor
+     */
     Tensor(Tensor &&) noexcept = default;
 
+    /**
+     * Default destructor
+     */
     ~Tensor() = default;
 
+    /**
+     * Create a new zero-rank tensor with the given name.
+     */
     explicit Tensor(std::string name) : _name{std::move(name)} {};
 
+    /**
+     * Create a new zero-rank tensor with the given dimensions. Since it is zero-rank,
+     * the dimensions will be empty, and are ignored.
+     */
     explicit Tensor(Dim<0> _ignore) {}
 
-    T       *data() override { return &_data; }
+    /**
+     * Get the pointer to the data stored by this tensor.
+     */
+    T *data() override { return &_data; }
+
+    /**
+     * @copydoc Tensor<T,0>::data()
+     */
     T const *data() const override { return &_data; }
 
+    /**
+     * Copy assignment.
+     */
     auto operator=(Tensor<T, 0> const &other) -> Tensor<T, 0> & {
         _data = other._data;
         return *this;
     }
 
+    /**
+     * Set the value of the tensor to the value passed in.
+     */
     auto operator=(T const &other) -> Tensor<T, 0> & {
         _data = other;
         return *this;
     }
 
-#if defined(OPERATOR)
-#    undef OPERATOR
-#endif
-#define OPERATOR(OP)                                                                                                                       \
-    auto operator OP(const T &other)->Tensor<T, 0> & {                                                                                     \
-        _data OP other;                                                                                                                    \
-        return *this;                                                                                                                      \
-    }
+#ifndef DOXYGEN
+#    if defined(OPERATOR)
+#        undef OPERATOR
+#    endif
+#    define OPERATOR(OP)                                                                                                                   \
+        auto operator OP(const T &other)->Tensor<T, 0> & {                                                                                 \
+            _data OP other;                                                                                                                \
+            return *this;                                                                                                                  \
+        }
 
     OPERATOR(*=)
     OPERATOR(/=)
     OPERATOR(+=)
     OPERATOR(-=)
 
-#undef OPERATOR
+#    undef OPERATOR
+#endif
 
+    /**
+     * Cast the tensor to a scalar.
+     */
     operator T() const { return _data; } // NOLINT
-    operator T &() { return _data; }     // NOLINT
 
+    /**
+     * Cast the tensor to a scalar.
+     */
+    operator T &() { return _data; } // NOLINT
+
+    /**
+     * Get the name of the tensor.
+     */
     std::string const &name() const override { return _name; }
-    void               set_name(std::string const &name) override { _name = name; }
 
+    /**
+     * Set the name of the tensor.
+     */
+    void set_name(std::string const &name) override { _name = name; }
+
+    /**
+     * Get the dimension of the tensor. Always returns 1.
+     */
     size_t dim(int) const override { return 1; }
 
+    /**
+     * Get the dimensions of the tensor. The result is empty.
+     */
     Dim<0> dims() const override { return Dim<0>{}; }
 
+    /**
+     * Indicates that the tensor is contiguous.
+     */
     bool full_view_of_underlying() const noexcept override { return true; }
 
+    /**
+     * Get the stride of the tensor. Always returns 1.
+     */
     size_t stride(int d) const override { return 0; }
 
+    /**
+     * Get the strides of the tensor. The result is empty.
+     */
     Stride<0> strides() const override { return Stride<0>(); }
 
   private:
+    /**
+     * @var _name
+     *
+     * The name of the tensor used for printing.
+     */
     std::string _name{"(Unnamed)"};
-    T           _data{};
+
+    /**
+     * The value stored by the tensor.
+     */
+    T _data{};
 };
 
 /**
@@ -831,37 +999,58 @@ struct TensorView final : virtual tensor_base::CoreTensor,
                           virtual tensor_base::AlgebraOptimizedTensor {
     TensorView() = delete;
 
+    /**
+     * Default copy constructor.
+     */
     TensorView(TensorView const &) = default;
 
+    /**
+     * Default destructor.
+     */
     ~TensorView() override = default;
 
     // std::enable_if doesn't work with constructors.  So we explicitly create individual
     // constructors for the types of tensors we support (Tensor and TensorView).  The
     // call to common_initialization is able to perform an enable_if check.
+    /**
+     * Creates a view of a tensor with the given properties.
+     */
     template <size_t OtherRank, typename... Args>
     explicit TensorView(Tensor<T, OtherRank> const &other, Dim<Rank> const &dim, Args &&...args) : _name{other._name}, _dims{dim} {
         // println(" here 1");
         common_initialization(const_cast<Tensor<T, OtherRank> &>(other), args...);
     }
 
+    /**
+     * Creates a view of a tensor with the given properties.
+     */
     template <size_t OtherRank, typename... Args>
     explicit TensorView(Tensor<T, OtherRank> &other, Dim<Rank> const &dim, Args &&...args) : _name{other._name}, _dims{dim} {
         // println(" here 2");
         common_initialization(other, args...);
     }
 
+    /**
+     * Creates a view of a tensor with the given properties.
+     */
     template <size_t OtherRank, typename... Args>
     explicit TensorView(TensorView<T, OtherRank> &other, Dim<Rank> const &dim, Args &&...args) : _name{other._name}, _dims{dim} {
         // println(" here 3");
         common_initialization(other, args...);
     }
 
+    /**
+     * Creates a view of a tensor with the given properties.
+     */
     template <size_t OtherRank, typename... Args>
     explicit TensorView(TensorView<T, OtherRank> const &other, Dim<Rank> const &dim, Args &&...args) : _name{other._name}, _dims{dim} {
         // println(" here 4");
         common_initialization(const_cast<TensorView<T, OtherRank> &>(other), args...);
     }
 
+    /**
+     * Creates a view of a tensor with the given properties.
+     */
     template <size_t OtherRank, typename... Args>
     explicit TensorView(std::string name, Tensor<T, OtherRank> &other, Dim<Rank> const &dim, Args &&...args)
         : _name{std::move(name)}, _dims{dim} {
@@ -917,6 +1106,11 @@ struct TensorView final : virtual tensor_base::CoreTensor,
         _full_view_of_underlying = (strides == _index_strides);
     }
 
+    /**
+     * Copy data from a pointer into this view.
+     *
+     * @attention This is an expert function only. If you are using it, you must know what you are doing!
+     */
     auto operator=(T const *other) -> TensorView & {
         // Can't perform checks on data. Assume the user knows what they're doing.
         // This function is used when interfacing with libint2.
@@ -933,6 +1127,9 @@ struct TensorView final : virtual tensor_base::CoreTensor,
         return *this;
     }
 
+    /**
+     * Copy assignment.
+     */
     auto operator=(TensorView const &other) -> TensorView & {
         if (this == &other)
             return *this;
@@ -949,6 +1146,9 @@ struct TensorView final : virtual tensor_base::CoreTensor,
         return *this;
     }
 
+    /**
+     * Copy the data from another tensor into this view.
+     */
     template <template <typename, size_t> typename AType>
         requires CoreRankTensor<AType<T, Rank>, Rank, T>
     auto operator=(AType<T, Rank> const &other) -> TensorView & {
@@ -969,6 +1169,9 @@ struct TensorView final : virtual tensor_base::CoreTensor,
         return *this;
     }
 
+    /**
+     * Fill this view with a single value.
+     */
     auto operator=(T const &fill_value) -> TensorView & {
         auto target_dims = get_dim_ranges<Rank>(*this);
         auto view        = std::apply(ranges::views::cartesian_product, target_dims);
@@ -982,31 +1185,44 @@ struct TensorView final : virtual tensor_base::CoreTensor,
         return *this;
     }
 
-#if defined(OPERATOR)
-#    undef OPERATOR
-#endif
-#define OPERATOR(OP)                                                                                                                       \
-    auto operator OP(const T &value)->TensorView & {                                                                                       \
-        auto target_dims = get_dim_ranges<Rank>(*this);                                                                                    \
-        auto view        = std::apply(ranges::views::cartesian_product, target_dims);                                                      \
-        EINSUMS_OMP_PARALLEL_FOR for (auto target_combination = view.begin(); target_combination != view.end(); target_combination++) {    \
-            T        &target = std::apply(*this, *target_combination);                                                                     \
-            target OP value;                                                                                                               \
-        }                                                                                                                                  \
+#ifndef DOXYGEN
+#    if defined(OPERATOR)
+#        undef OPERATOR
+#    endif
+#    define OPERATOR(OP)                                                                                                                   \
+        auto operator OP(const T &value)->TensorView & {                                                                                   \
+            auto target_dims = get_dim_ranges<Rank>(*this);                                                                                \
+            auto view        = std::apply(ranges::views::cartesian_product, target_dims);                                                  \
+            EINSUMS_OMP_PARALLEL_FOR for (auto target_combination = view.begin(); target_combination != view.end();                        \
+                                          target_combination++) {                                                                          \
+                T        &target = std::apply(*this, *target_combination);                                                                 \
+                target OP value;                                                                                                           \
+            }                                                                                                                              \
                                                                                                                                            \
-        return *this;                                                                                                                      \
-    }
+            return *this;                                                                                                                  \
+        }
 
     OPERATOR(*=)
     OPERATOR(/=)
     OPERATOR(+=)
     OPERATOR(-=)
 
-#undef OPERATOR
+#    undef OPERATOR
+#endif
 
-    T       *data() override { return _data; }
+    /**
+     * Get a pointer to the data.
+     */
+    T *data() override { return _data; }
+
+    /**
+     * @copydoc TensorView<T,Rank>::data()
+     */
     T const *data() const override { return static_cast<T const *>(_data); }
 
+    /**
+     * Get a pointer to the data at a certain index in the tensor.
+     */
     template <typename... MultiIndex>
     auto data(MultiIndex... index) const -> T * {
         assert(sizeof...(MultiIndex) <= _dims.size());
@@ -1017,11 +1233,17 @@ struct TensorView final : virtual tensor_base::CoreTensor,
         return &_data[ordinal];
     }
 
+    /**
+     * Get a pointer to the data at a certain index in the tensor.
+     */
     auto data_array(std::array<size_t, Rank> const &index_list) const -> T * {
         size_t ordinal = indices_to_sentinel(_strides, _dims, index_list);
         return &_data[ordinal];
     }
 
+    /**
+     * Subscript into the tensor.
+     */
     template <typename... MultiIndex>
     auto operator()(MultiIndex... index) const -> T const & {
         assert(sizeof...(MultiIndex) == _dims.size());
@@ -1031,6 +1253,9 @@ struct TensorView final : virtual tensor_base::CoreTensor,
         return _data[ordinal];
     }
 
+    /**
+     * Subscript into the tensor.
+     */
     template <typename... MultiIndex>
     auto operator()(MultiIndex... index) -> T & {
         assert(sizeof...(MultiIndex) == _dims.size());
@@ -1040,6 +1265,9 @@ struct TensorView final : virtual tensor_base::CoreTensor,
         return _data[ordinal];
     }
 
+    /**
+     * Subscript into the tensor.
+     */
     template <typename Container>
         requires requires {
             requires !std::is_integral_v<Container>;
@@ -1059,6 +1287,9 @@ struct TensorView final : virtual tensor_base::CoreTensor,
         return _data[ordinal];
     }
 
+    /**
+     * Subscript into the tensor.
+     */
     template <typename Container>
         requires requires {
             requires !std::is_integral_v<Container>;
@@ -1078,25 +1309,49 @@ struct TensorView final : virtual tensor_base::CoreTensor,
         return _data[ordinal];
     }
 
+    /**
+     * Get the dimension of the view along a given axis.
+     */
     size_t dim(int d) const override {
         if (d < 0)
             d += Rank;
         return _dims[d];
     }
 
+    /**
+     * Get all of the dimensions of the view.
+     */
     Dim<Rank> dims() const override { return _dims; }
 
+    /**
+     * Get the name of the view.
+     */
     std::string const &name() const override { return _name; }
-    void               set_name(std::string const &name) override { _name = name; }
 
+    /**
+     * Set the name of the view.
+     */
+    void set_name(std::string const &name) override { _name = name; }
+
+    /**
+     * Get the stride of the view along a given axis.
+     */
     size_t stride(int d) const noexcept override {
         if (d < 0)
             d += Rank;
         return _strides[d];
     }
 
+    /**
+     * Get the strides of the tensor.
+     */
     Stride<Rank> strides() const noexcept override { return _strides; }
 
+    /**
+     * Flatten the view.
+     *
+     * @warning Creating a Rank-1 TensorView of an existing TensorView may not work. Be careful!
+     */
     auto to_rank_1_view() const -> TensorView<T, 1> {
         if constexpr (Rank == 1) {
             return *this;
@@ -1115,11 +1370,20 @@ struct TensorView final : virtual tensor_base::CoreTensor,
         }
     }
 
+    /**
+     * Check whether the view has all of the elements of the tensor it is viewing.
+     */
     bool full_view_of_underlying() const noexcept override { return _full_view_of_underlying; }
 
+    /**
+     * Get the number of elements in the view.
+     */
     size_t size() const { return _dims[0] * _index_strides[0]; }
 
   private:
+    /**
+     * Initialize the view using a pointer.
+     */
     auto common_initialization(T const *other) {
         _data = const_cast<T *>(other);
 
@@ -1131,6 +1395,9 @@ struct TensorView final : virtual tensor_base::CoreTensor,
         _full_view_of_underlying = true;
     }
 
+    /**
+     * Initialize a view using a tensor.
+     */
     template <TensorConcept TensorType, typename... Args>
         requires(std::is_same_v<T, typename TensorType::ValueType>)
     auto common_initialization(TensorType &other, Args &&...args) -> void {
@@ -1218,13 +1485,47 @@ struct TensorView final : virtual tensor_base::CoreTensor,
         dims_to_strides(_dims, _index_strides);
     }
 
-    std::string  _name{"(Unnamed View)"};
-    Dim<Rank>    _dims;
+    /**
+     * @var _name
+     *
+     * The name of the view used for printing.
+     */
+    std::string _name{"(Unnamed View)"};
+
+    /**
+     * @var _dims
+     *
+     * The dimensions of the view.
+     */
+    Dim<Rank> _dims;
+
+    /**
+     * @var _strides
+     *
+     * The strides of the tensor.
+     */
+    /**
+     * @var _index_strides
+     *
+     * These are strides used for iterating over indices in the tensor.
+     * These are based on the dimensions of the view, while _strides are based on the
+     * dimensions of the tensor being viewed.
+     */
     Stride<Rank> _strides, _index_strides;
     // Offset<Rank> _offsets;
 
+    /**
+     * @var _full_view_of_underlying
+     *
+     * Whether the view is viewing the whole tensor.
+     */
     bool _full_view_of_underlying{false};
 
+    /**
+     * @var _data
+     *
+     * Pointer to the data of the tensor.
+     */
     T *_data;
 
     template <typename T_, size_t Rank_>
@@ -1240,6 +1541,10 @@ struct TensorView final : virtual tensor_base::CoreTensor,
 
 // Tensor IO interface
 namespace einsums {
+
+/**
+ * Write a tensor to the disk.
+ */
 template <size_t Rank, typename T, class... Args>
 void write(h5::fd_t const &fd, Tensor<T, Rank> const &ref, Args &&...args) {
     // Can these h5 parameters be moved into the Tensor class?
@@ -1279,6 +1584,9 @@ void write(h5::fd_t const &fd, Tensor<T, Rank> const &ref, Args &&...args) {
     h5::write(ds, ref, count, offset, stride);
 }
 
+/**
+ * Write a zero-rank tensor to the disk.
+ */
 template <typename T>
 void write(h5::fd_t const &fd, Tensor<T, 0> const &ref) {
     h5::ds_t ds;
@@ -1290,6 +1598,9 @@ void write(h5::fd_t const &fd, Tensor<T, 0> const &ref) {
     h5::write<T>(ds, ref.data(), h5::count{1});
 }
 
+/**
+ * Write a tensor view to the disk.
+ */
 template <size_t Rank, typename T, class... Args>
 void write(h5::fd_t const &fd, TensorView<T, Rank> const &ref, Args &&...args) {
     h5::count  count_default{1, 1, 1, 1, 1, 1, 1};
@@ -1342,7 +1653,11 @@ void write(h5::fd_t const &fd, TensorView<T, Rank> const &ref, Args &&...args) {
     }
 }
 
-// This needs to be expanded to handle the various h5 parameters like above.
+/**
+ * Read data from a disk and put it into a tensor.
+ *
+ * @todo This needs to be expanded to handle the various h5 parameters like above.
+ */
 template <typename T, size_t Rank>
 auto read(h5::fd_t const &fd, std::string const &name) -> Tensor<T, Rank> {
     try {
@@ -1356,6 +1671,9 @@ auto read(h5::fd_t const &fd, std::string const &name) -> Tensor<T, Rank> {
     }
 }
 
+/**
+ * Read data from a disk and put it into a zero-rank tensor.
+ */
 template <typename T>
 auto read(h5::fd_t const &fd, std::string const &name) -> Tensor<T, 0> {
     try {
@@ -1370,12 +1688,16 @@ auto read(h5::fd_t const &fd, std::string const &name) -> Tensor<T, 0> {
     }
 }
 
+/**
+ * Function that zeros a tensor.
+ */
 template <template <typename, size_t> typename TensorType, typename T, size_t Rank>
 void zero(TensorType<T, Rank> &A) {
     A.zero();
 }
 
-#ifdef __cpp_deduction_guides
+#ifndef DOXYGEN
+#    ifdef __cpp_deduction_guides
 template <typename... Args>
 Tensor(std::string const &, Args...) -> Tensor<double, sizeof...(Args)>;
 
@@ -1402,6 +1724,7 @@ TensorView(std::string, Tensor<T, OtherRank> &, Dim<Rank> const &, Args...) -> T
 
 // Supposedly C++20 will allow template deduction guides for template aliases. i.e. Dim, Stride, Offset, Count, Range.
 // Clang has no support for class template argument deduction for alias templates. P1814R0
+#    endif
 #endif
 
 // Useful factories
@@ -1435,13 +1758,40 @@ auto create_tensor(std::string const &name, Args... args) {
     return Tensor<Type, sizeof...(Args)>{name, args...};
 }
 
+/**
+ * @brief Create a new tensor with \p name and \p args .
+ *
+ * Just a simple factory function for creating new tensors. Defaults to using double for the
+ * underlying data and automatically determines rank of the tensor from args.
+ *
+ * A \p name for the tensor is required. \p name is used when printing and performing disk I/O.
+ *
+ * By default, the allocated tensor data is not initialized to zero. This was a performance
+ * decision. In many cases the next step after creating a tensor is to load or store data into
+ * it...why waste the CPU cycles zeroing something that will immediately get set to something
+ * else.  If you wish to explicitly zero the contents of your tensor use the zero function.
+ *
+ * @code
+ * auto a = create_tensor(3, 3);           // auto -> Tensor<double, 2>
+ * auto b = create_tensor<float>(4, 5, 6); // auto -> Tensor<float, 3>
+ * @endcode
+ *
+ * @tparam Type The datatype of the underlying tensor. Defaults to double.
+ * @tparam Args The datatype of the calling parameters. In almost all cases you should not need to worry about this parameter.
+ * @param args The arguments needed to construct the tensor.
+ * @return A new tensor. By default memory is not initialized to anything. It may be filled with garbage.
+ */
 template <typename Type = double, std::integral... Args>
 auto create_tensor(Args... args) {
     return Tensor<Type, sizeof...(Args)>{"Temporary", args...};
 }
 
 namespace detail {
-template <typename T>
+
+/**
+ * Count the number of digits in a number.
+ */
+template <std::integral T>
 auto ndigits(T number) -> int {
     int digits{0};
     if (number < 0)
@@ -1454,6 +1804,7 @@ auto ndigits(T number) -> int {
 }
 } // namespace detail
 
+#ifndef DOXYGEN
 template <FileOrOStream Output, TensorConcept AType>
     requires(einsums::BasicTensorConcept<AType> || !einsums::AlgebraTensorConcept<AType>)
 void fprintln(Output fp, AType const &A, TensorPrintOptions options) {
@@ -1469,13 +1820,13 @@ void fprintln(Output fp, AType const &A, TensorPrintOptions options) {
                 fprintln(fp, "Type: In Core Tensor");
             else
                 fprintln(fp, "Type: In Core Tensor View");
-#if defined(EINSUMS_COMPUTE_CODE)
+#    if defined(EINSUMS_COMPUTE_CODE)
         } else if constexpr (DeviceTensorConcept<AType>) {
             if constexpr (!DeviceTensorViewConcept<AType>)
                 fprintln(fp, "Type: Device Tensor");
             else
                 fprintln(fp, "Type: Device Tensor View");
-#endif
+#    endif
         } else if constexpr (DiskTensorConcept<AType>) {
             fprintln(fp, "Type: Disk Tensor");
         } else {
@@ -1521,11 +1872,11 @@ void fprintln(Output fp, AType const &A, TensorPrintOptions options) {
 
                 fprintln(fp, "{}", oss.str());
                 fprintln(fp);
-#if !defined(EINSUMS_COMPUTE_CODE)
+#    if !defined(EINSUMS_COMPUTE_CODE)
             } else if constexpr (Rank > 1 && einsums::CoreTensorConcept<AType>) {
-#else
+#    else
             } else if constexpr (Rank > 1 && (einsums::CoreTensorConcept<AType> || einsums::DeviceTensorConcept<AType>)) {
-#endif
+#    endif
                 auto target_dims = einsums::get_dim_ranges<Rank - 1>(A);
                 auto final_dim   = A.dim(Rank - 1);
                 auto ndigits     = detail::ndigits(final_dim);
@@ -1572,11 +1923,11 @@ void fprintln(Output fp, AType const &A, TensorPrintOptions options) {
                     fprintln(fp, "{}", oss.str());
                     fprintln(fp);
                 }
-#if !defined(EINSUMS_COMPUTE_CODE)
+#    if !defined(EINSUMS_COMPUTE_CODE)
             } else if constexpr (Rank == 1 && einsums::CoreTensorConcept<AType>) {
-#else
+#    else
             } else if constexpr (Rank == 1 && (einsums::CoreTensorConcept<AType> || einsums::DeviceTensorConcept<AType>)) {
-#endif
+#    endif
                 auto target_dims = einsums::get_dim_ranges<Rank>(A);
 
                 for (auto target_combination : std::apply(ranges::views::cartesian_product, target_dims)) {
@@ -1620,4 +1971,6 @@ template <einsums::RankTensorConcept AType>
 void println(AType const &A, TensorPrintOptions options) {
     fprintln(std::cout, A, options);
 }
+#endif
+
 } // namespace einsums

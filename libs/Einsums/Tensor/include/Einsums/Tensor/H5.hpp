@@ -76,6 +76,9 @@ inline auto size(::einsums::Tensor<T, Rank> const &ref) -> std::array<std::int64
     return ref.dims();
 }
 
+/**
+ * @copydoc size(::einsums::Tensor<T,Rank> const &ref)
+ */
 template <typename T, size_t Rank>
 inline auto size(::einsums::TensorView<T, Rank> const &ref) -> std::array<std::int64_t, Rank> {
     return ref.dims();

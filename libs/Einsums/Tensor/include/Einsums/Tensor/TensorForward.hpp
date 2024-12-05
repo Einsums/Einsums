@@ -12,11 +12,23 @@
 namespace einsums {
 
 /**
+ * @struct TensorPrintOptions
  * @brief Represents options and default options for printing tensors.
  */
 struct TensorPrintOptions {
-    int  width{7};          /// How many columns of tensor data are printed per line.
-    bool full_output{true}; /// Print the tensor data (true) or just name and data span information (false).
+    /**
+     * @var width
+     *
+     * How many columns of tensor data are printed per line.
+     */
+    int width{7};
+
+    /**
+     * @var full_output
+     *
+     * Print the tensor data (true) or just name and data span information (false).
+     */
+    bool full_output{true};
 };
 
 // Forward declarations of tensors.

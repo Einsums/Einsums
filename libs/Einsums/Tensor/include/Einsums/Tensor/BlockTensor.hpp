@@ -11,6 +11,7 @@
 
 #include <Einsums/TensorBase/IndexUtilities.hpp>
 #include <Einsums/TensorBase/TensorBase.hpp>
+
 #include <concepts>
 
 // TODO:
@@ -40,15 +41,15 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
                      virtual AlgebraOptimizedTensor {
   public:
     /**
-    * @name Constructors
-    * @{
-    */
+     * @name Constructors
+     * @{
+     */
     /**
      * Construct a new BlockTensor object.
      */
     BlockTensor() = default;
 
-    /** 
+    /**
      * Copy constructs a new BlockTensor object.
      */
     BlockTensor(BlockTensor const &other) : _ranges{other._ranges}, _dims{other._dims}, _blocks{}, _dim{other._dim} {
@@ -100,7 +101,7 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
      * // Constructs a rank 4 tensor with two blocks, the first is 2x2x2x2, the second is 3x3x3x3.
      * auto A = BlockTensor<double, 4>("A", std::array<int>{2, 3});
      * @endcode
-     * 
+     *
      * The newly constructed Tensor is NOT zeroed out for you. If you start having NaN issues
      * in your code try calling Tensor.zero() or zero(Tensor) to see if that resolves it.
      *
@@ -132,7 +133,7 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
      * // Constructs a rank 4 tensor with two blocks, the first is 2x2x2x2, the second is 3x3x3x3.
      * auto A = BlockTensor<double, 4>("A", {2, 3});
      * @endcode
-     * 
+     *
      * The newly constructed Tensor is NOT zeroed out for you. If you start having NaN issues
      * in your code try calling Tensor.zero() or zero(Tensor) to see if that resolves it.
      *
@@ -140,7 +141,7 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
      * @param name Name of the new tensor.
      * @param block_dims The size of each block.
      */
-    template<std::convertible_to<size_t> IntType>
+    template <std::convertible_to<size_t> IntType>
     explicit BlockTensor(std::string name, std::initializer_list<IntType> block_dims)
         : _name{std::move(name)}, _dim{0}, _blocks(), _ranges(), _dims(block_dims.begin(), block_dims.end()) {
 
@@ -164,7 +165,7 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
      * // Constructs a rank 4 tensor with two blocks, the first is 2x2x2x2, the second is 3x3x3x3.
      * auto A = BlockTensor<double, 4>(std::array<int>{2, 3});
      * @endcode
-     * 
+     *
      * The newly constructed Tensor is NOT zeroed out for you. If you start having NaN issues
      * in your code try calling Tensor.zero() or zero(Tensor) to see if that resolves it.
      *
@@ -172,7 +173,7 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
      * @param block_dims The size of each block.
      */
     template <typename ArrayArg>
-    explicit BlockTensor(const ArrayArg &block_dims) : _blocks(), _ranges(), _dims(block_dims.cbegin(), block_dims.cend()) {
+    explicit BlockTensor(ArrayArg const &block_dims) : _blocks(), _ranges(), _dims(block_dims.cbegin(), block_dims.cend()) {
         auto _block_dims = Dim<Rank>();
 
         _blocks.reserve(block_dims.size());
@@ -194,7 +195,7 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
      * // Constructs a rank 4 tensor with two blocks, the first is 2x2x2x2, the second is 3x3x3x3.
      * auto A = BlockTensor<double, 4>({2, 3});
      * @endcode
-     * 
+     *
      * The newly constructed Tensor is NOT zeroed out for you. If you start having NaN issues
      * in your code try calling Tensor.zero() or zero(Tensor) to see if that resolves it.
      *
@@ -340,7 +341,7 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
      *
      * @param pos The position to insert at.
      * @param value The tensor to insert.
-     * @throws error::bad_parameter if the 
+     * @throws error::bad_parameter if the
      */
     void insert_block(int pos, TensorType &&value) {
         for (int i = 0; i < Rank; i++) {
@@ -394,7 +395,7 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
      *
      * @tparam MultiIndex The datatypes of the passed parameters. Must be castable to
      * @param index The explicit desired index into the tensor. Must be castable to std::int64_t.
-     * @return A pointer into the tensor at the requested location.
+     * @return A pointer into the tensor at the requested location, or nullptr if it is outside of the blocks.
      */
     template <typename... MultiIndex>
         requires requires {
@@ -484,14 +485,7 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
     }
 
     /**
-     * @brief Subscripts into the tensor.
-     *
-     * This version works when all elements are explicit values into the tensor.
-     * It does not work with the All or Range tags.
-     *
-     * @tparam MultiIndex Datatype of the indices. Must be castable to std::int64_t.
-     * @param index The explicit desired index into the tensor. Elements must be castable to std::int64_t.
-     * @return T&
+     * @copydoc BlockTensor<T, Rank>::operator(MultiIndex... index) const
      */
     template <typename... MultiIndex>
         requires requires {
@@ -593,6 +587,9 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
         return std::apply(_blocks.at(block), index_list);
     }
 
+    /**
+     * @copydoc BlockTensor<T, Rank>::operator()(Container const &index)
+     */
     template <typename Container>
         requires requires {
             requires !std::is_integral_v<Container>;
@@ -644,22 +641,22 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
     }
 
     /**
-     * @brief Return the block with the given index.
+     * @brief Return the block with the given index. Equivalent to block(index)
      */
     TensorType const &operator[](size_t index) const { return this->block(index); }
 
     /**
-     * @brief Return the block with the given index.
+     * @copydoc operator[](size_t) const
      */
     TensorType &operator[](size_t index) { return this->block(index); }
 
     /**
-     * @brief Return the block with the given name.
+     * @copydoc operator[](size_t) const
      */
     TensorType const &operator[](std::string const &name) const { return this->block(name); }
 
     /**
-     * @brief Return the block with the given name.
+     * @copydoc operator[](size_t) const
      */
     TensorType &operator[](std::string const &name) { return this->block(name); }
 
@@ -718,43 +715,46 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
         return *this;
     }
 
-#define OPERATOR(OP)                                                                                                                       \
-    auto operator OP(const T &b)->BlockTensor<T, Rank, TensorType> & {                                                                     \
-        for (int i = 0; i < _blocks.size(); i++) {                                                                                         \
-            if (block_dim(i) == 0) {                                                                                                       \
-                continue;                                                                                                                  \
+#ifndef DOXYGEN
+#    define OPERATOR(OP)                                                                                                                   \
+        auto operator OP(const T &b)->BlockTensor<T, Rank, TensorType> & {                                                                 \
+            for (int i = 0; i < _blocks.size(); i++) {                                                                                     \
+                if (block_dim(i) == 0) {                                                                                                   \
+                    continue;                                                                                                              \
+                }                                                                                                                          \
+                _blocks[i] OP b;                                                                                                           \
             }                                                                                                                              \
-            _blocks[i] OP b;                                                                                                               \
+            return *this;                                                                                                                  \
         }                                                                                                                                  \
-        return *this;                                                                                                                      \
-    }                                                                                                                                      \
                                                                                                                                            \
-    auto operator OP(const BlockTensor<T, Rank, TensorType> &b)->BlockTensor<T, Rank, TensorType> & {                                      \
-        if (_blocks.size() != b._blocks.size()) {                                                                                          \
-            EINSUMS_THROW_EXCEPTION(error::bad_parameter, "tensors differ in number of blocks : {} {}", _blocks.size(), b._blocks.size()); \
-        }                                                                                                                                  \
-        for (int i = 0; i < _blocks.size(); i++) {                                                                                         \
-            if (_blocks[i].size() != b._blocks[i].size()) {                                                                                \
-                EINSUMS_THROW_EXCEPTION(error::bad_parameter, "tensor blocks differ in size : {} {}", _blocks[i].size(),                   \
-                                        b._blocks[i].size());                                                                              \
+        auto operator OP(const BlockTensor<T, Rank, TensorType> &b)->BlockTensor<T, Rank, TensorType> & {                                  \
+            if (_blocks.size() != b._blocks.size()) {                                                                                      \
+                EINSUMS_THROW_EXCEPTION(error::bad_parameter, "tensors differ in number of blocks : {} {}", _blocks.size(),                \
+                                        b._blocks.size());                                                                                 \
             }                                                                                                                              \
-        }                                                                                                                                  \
-        EINSUMS_OMP_PARALLEL_FOR                                                                                                           \
-        for (int i = 0; i < _blocks.size(); i++) {                                                                                         \
-            if (block_dim(i) == 0) {                                                                                                       \
-                continue;                                                                                                                  \
+            for (int i = 0; i < _blocks.size(); i++) {                                                                                     \
+                if (_blocks[i].size() != b._blocks[i].size()) {                                                                            \
+                    EINSUMS_THROW_EXCEPTION(error::bad_parameter, "tensor blocks differ in size : {} {}", _blocks[i].size(),               \
+                                            b._blocks[i].size());                                                                          \
+                }                                                                                                                          \
             }                                                                                                                              \
-            _blocks[i] OP b._blocks[i];                                                                                                    \
-        }                                                                                                                                  \
-        return *this;                                                                                                                      \
-    }
+            EINSUMS_OMP_PARALLEL_FOR                                                                                                       \
+            for (int i = 0; i < _blocks.size(); i++) {                                                                                     \
+                if (block_dim(i) == 0) {                                                                                                   \
+                    continue;                                                                                                              \
+                }                                                                                                                          \
+                _blocks[i] OP b._blocks[i];                                                                                                \
+            }                                                                                                                              \
+            return *this;                                                                                                                  \
+        }
 
     OPERATOR(*=)
     OPERATOR(/=)
     OPERATOR(+=)
     OPERATOR(-=)
 
-#undef OPERATOR
+#    undef OPERATOR
+#endif
 
     /**
      * @brief Convert block tensor into a normal tensor.
@@ -785,6 +785,9 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
         return out;
     }
 
+    /**
+     * @copydoc BlockTensor<T, Rank>::operatorTensorType() const
+     */
     explicit operator TensorType() {
         update_dims();
         Dim<Rank> block_dims;
@@ -890,6 +893,9 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
      */
     virtual size_t dim(int dim) const override { return _dim; }
 
+    /**
+     * @brief Return the dimension of this tensor along the first axis.
+     */
     virtual size_t dim() const { return _dim; }
 
     /**
@@ -911,7 +917,7 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
     auto vector_data() const -> std::vector<TensorType> const & { return _blocks; }
 
     /**
-     * @brief Returns the list of tensors.
+     * @copydoc vector_data() const
      */
     auto vector_data() -> std::vector<TensorType> & { return _blocks; }
 
@@ -940,26 +946,31 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
      */
     auto strides(int i) const noexcept -> auto const & { return _blocks[i].strides(); }
 
-    // Returns the linear size of the tensor
-    [[nodiscard]] auto size() const {
-        size_t sum = 0;
-        for (auto tens : _blocks) {
-            sum += tens.size();
+    /**
+     * Returns the size of the tensor. That is, the product of the dimensions.
+     */
+    [[nodiscard]] size_t size() const {
+        size_t product = 1;
+        for (int i = 0; i < Rank; i++) {
+            product *= this->_dim;
         }
 
-        return sum;
+        return product;
     }
 
+    /**
+     * @brief Returns true if all of the elements are viewed by this tensor.
+     */
     [[nodiscard]] auto full_view_of_underlying() const noexcept -> bool override { return true; }
 
-    virtual void lock() const override { LockableTensor::lock(); }
+    // virtual void lock() const override { LockableTensor::lock(); }
 
-    virtual void unlock() const override { LockableTensor::unlock(); }
+    // virtual void unlock() const override { LockableTensor::unlock(); }
 
-    virtual bool try_lock() const override { return LockableTensor::try_lock(); }
+    // virtual bool try_lock() const override { return LockableTensor::try_lock(); }
 
     /**
-     * Lock the specific block.
+     * Lock a specific block.
      */
     virtual void lock(int block) const {
         if constexpr (einsums::IsLockableTensorV<TensorType>) {
@@ -968,7 +979,7 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
     }
 
     /**
-     * Try to lock the specific block.
+     * Try to lock a specific block.
      */
     virtual bool try_lock(int block) const {
         if constexpr (einsums::IsLockableTensorV<TensorType>) {
@@ -979,7 +990,7 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
     }
 
     /**
-     * Unlock the specific block.
+     * Unlock a specific block.
      */
     virtual void unlock(int block) const {
         if constexpr (einsums::IsLockableTensorV<TensorType>) {
@@ -988,21 +999,64 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
     }
 
   protected:
+    /**
+     * @var _name
+     *
+     * @brief This is the name of the tensor used for printing.
+     */
     std::string _name{"(Unnamed)"};
-    size_t      _dim{0}; // Only allowing square tensors.
 
+    /**
+     * @var _dim
+     *
+     * @brief This is the dimension of the tensor along one axis.
+     */
+    size_t _dim{0}; // Only allowing square tensors.
+
+    /**
+     * @var _blocks
+     *
+     * @brief This stores the blocks of the tensor.
+     */
     std::vector<TensorType> _blocks{};
-    std::vector<Range>      _ranges{};
-    std::vector<size_t>     _dims;
+
+    /**
+     * @var _ranges
+     *
+     * @brief This stores the starting and ending indices for each of the blocks in relation
+     * to the whole tensor.
+     */
+    std::vector<Range> _ranges{};
+
+    /**
+     * @var _dims
+     *
+     * @brief This stores the dimensions of each of the blocks along an axis.
+     */
+    std::vector<size_t> _dims;
 
     template <typename T_, size_t OtherRank, typename OtherTensorType>
     friend struct BlockTensor;
 
+    /**
+     * @var _zero_value
+     *
+     * @brief This holds the value outside of the blocks of the tensor.
+     *
+     * This value is updated to be zero whenever it is accessed, meaning it
+     * essentially cannot be changed. However, if it is changed, it won't be
+     * reset until the next time it is returned.
+     */
     T _zero_value{0.0};
 
     // template <typename T_, size_t Rank_>
     // friend struct BlockTensorViewBase;
 
+    /**
+     * Go through the blocks of the tensor and make sure that the tensor's dimensions
+     * matches the sum of the dimensions of the blocks. Also make sure that the stored
+     * dimensions match the actual dimensions.
+     */
     void update_dims() {
         if (_dims.size() != _blocks.size()) {
             _dims.resize(_blocks.size());
@@ -1252,7 +1306,6 @@ struct BlockDeviceTensor : public virtual tensor_props::BlockTensorBase<T, Rank,
      *
      * @tparam Dims Variadic template arguments for the dimensions. Must be castable to size_t.
      * @param name Name of the new tensor.
-     * @param mode The storage mode.
      * @param block_dims The size of each block.
      */
     template <typename... Dims>
@@ -1287,7 +1340,6 @@ struct BlockDeviceTensor : public virtual tensor_props::BlockTensorBase<T, Rank,
      *
      * @tparam Dims Variadic template arguments for the dimensions. Must be castable to size_t.
      * @param name Name of the new tensor.
-     * @param mode The storage mode.
      * @param block_dims The size of each block.
      */
     template <typename ArrayArg>
@@ -1423,6 +1475,7 @@ struct BlockDeviceTensor : public virtual tensor_props::BlockTensorBase<T, Rank,
 };
 #endif
 
+#ifndef DOXYGEN
 template <einsums::BlockTensorConcept AType>
 void println(AType const &A, TensorPrintOptions options = {}) {
     println("Name: {}", A.name());
@@ -1464,4 +1517,5 @@ void fprintln(std::ostream &os, AType const &A, TensorPrintOptions options = {})
         }
     }
 }
+#endif
 } // namespace einsums
