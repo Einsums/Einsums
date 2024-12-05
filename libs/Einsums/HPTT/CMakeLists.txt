@@ -3,7 +3,7 @@
 # Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 #----------------------------------------------------------------------------------------------
 
-if (WINDOWS)
+if (WIN32)
     return()
 endif ()
 
