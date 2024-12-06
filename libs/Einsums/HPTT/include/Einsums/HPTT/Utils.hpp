@@ -11,6 +11,7 @@
 
 #include <Einsums/HPTT/HPTTTypes.hpp>
 
+#include <cstdint>
 #include <iostream>
 #include <list>
 #include <vector>
@@ -80,7 +81,7 @@ int hasItem(std::vector<t> const &vec, t value) {
     return (std::find(vec.begin(), vec.end(), value) != vec.end());
 }
 
-/** 
+/**
  * Print a vector to stdout.
  */
 template <typename t>
@@ -109,22 +110,22 @@ void printVector(std::list<t> const &vec, char const *label) {
  * @param n The number to factor.
  * @param primeFactors The list of factors.
  */
-template<typename T>
+template <typename T>
 void getPrimeFactors(T n, std::list<T> &primeFactors);
 
 #ifndef DOXYGEN
-template<>
+template <>
 void getPrimeFactors(std::uint8_t n, std::list<std::uint8_t> &primeFactors);
-template<>
+template <>
 void getPrimeFactors(std::uint16_t n, std::list<std::uint16_t> &primeFactors);
-template<>
+template <>
 void getPrimeFactors(std::uint32_t n, std::list<std::uint32_t> &primeFactors);
 
-template<>
+template <>
 void getPrimeFactors(std::int8_t n, std::list<std::int8_t> &primeFactors);
-template<>
+template <>
 void getPrimeFactors(std::int16_t n, std::list<std::int16_t> &primeFactors);
-template<>
+template <>
 void getPrimeFactors(std::int32_t n, std::list<std::int32_t> &primeFactors);
 #endif
 
@@ -163,7 +164,7 @@ int findPos(int value, int const *array, int n);
 std::uint64_t factorial(std::uint8_t n);
 
 /**
- * Reorders parameters to swap between row-major and column-major forms. 
+ * Reorders parameters to swap between row-major and column-major forms.
  */
 void accountForRowMajor(int const *sizeA, int const *outerSizeA, int const *outerSizeB, int const *perm, int *tmpSizeA, int *tmpOuterSizeA,
                         int *tmpouterSizeB, int *tmpPerm, int const dim, bool const useRowMajor);
