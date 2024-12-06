@@ -519,33 +519,64 @@ template <typename T, typename... Ts>
 struct HasType<T, std::tuple<T, Ts...>> : std::true_type {};
 } // namespace detail
 
+/**
+ * @struct Intersect
+ *
+ * Find the intersection between two tuples.
+ */
 template <typename S1, typename S2>
 struct Intersect {
+    /**
+     * Make the compiler perform the difference operation. The return type of this function
+     * is the desired result.
+     */
     template <std::size_t... Indices>
     static auto make_intersection(std::index_sequence<Indices...>) {
 
         return std::tuple_cat(std::conditional_t<detail::HasType<std::decay_t<std::tuple_element_t<Indices, S1>>, std::decay_t<S2>>::value,
                                                  std::tuple<std::tuple_element_t<Indices, S1>>, std::tuple<>>{}...);
     }
+
+    /**
+     * @typedef type
+     *
+     * Holds the result of this operation.
+     */
     using type = decltype(make_intersection(std::make_index_sequence<std::tuple_size<S1>::value>{}));
 };
 
+/**
+ * @typedef IntersectT
+ *
+ * Gives the result of an intersection operation. @sa Intersect
+ */
 template <typename S1, typename S2>
 using IntersectT = typename Intersect<S1, S2>::type;
 
 /**
  * @struct Difference
  *
- * Find the elements in \p S1 that are not in \p S2.
+ * Find the elements in \p S1 that are not in \p S2 .
  */
 template <typename S1, typename S2>
 struct Difference {
+
+    /**
+     * Make the compiler perform the difference operation. The return type of this function
+     * is the desired result.
+     */
     template <std::size_t... Indices>
     static auto make_difference(std::index_sequence<Indices...>) {
 
         return std::tuple_cat(std::conditional_t<detail::HasType<std::decay_t<std::tuple_element_t<Indices, S1>>, std::decay_t<S2>>::value,
                                                  std::tuple<>, std::tuple<std::tuple_element_t<Indices, S1>>>{}...);
     }
+
+    /**
+     * @typedef type
+     *
+     * Holds the result of this operation.
+     */
     using type = decltype(make_difference(std::make_index_sequence<std::tuple_size<S1>::value>{}));
 };
 
@@ -617,6 +648,11 @@ using UniqueT = typename Filter<std::tuple<>, T>::type;
  */
 template <class T>
 struct CUnique {
+    /**
+     * @typedef type
+     *
+     * Holds the result of this operation
+     */
     using type = UniqueT<std::decay_t<T>>;
 };
 

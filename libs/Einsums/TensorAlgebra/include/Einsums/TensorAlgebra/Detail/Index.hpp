@@ -186,12 +186,17 @@ constexpr auto list = std::make_tuple(i, j, k, l, m, n, a, b, c, d, e, f, p, q, 
 } // namespace index
 
 /**
+ * @struct Indices
+ *
  * @brief Identifier for providing index labels to the the einsum function.
  *
  * @tparam Args The indices to pass.
  */
 template <typename... Args>
 struct Indices : std::tuple<Args...> {
+    /**
+     * Construct a new Indices object using the given indices.
+     */
     Indices(Args... args) : std::tuple<Args...>(args...) {};
 };
 
