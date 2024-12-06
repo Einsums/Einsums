@@ -858,7 +858,7 @@ void Transpose<floatType>::executeEstimate(Plan const *plan) noexcept {
 #endif
     for (int taskId = 0; taskId < numTasks; taskId++)
         if (perm_[0] != 0) {
-            auto rootNode = plan->getRootNode_const(taskId);
+            auto rootNode = plan->getRootNode(taskId);
             if (std::abs(beta_) < getZeroThreshold<floatType>()) {
                 if (conjA_)
                     transpose_int<blocking_, blocking_, 1, floatType, useStreamingStores, true>(A_, A_, B_, B_, 0.0, 1.0, rootNode);
@@ -871,7 +871,7 @@ void Transpose<floatType>::executeEstimate(Plan const *plan) noexcept {
                     transpose_int<blocking_, blocking_, 0, floatType, useStreamingStores, false>(A_, A_, B_, B_, 0.0, 1.0, rootNode);
             }
         } else {
-            auto rootNode = plan->getRootNode_const(taskId);
+            auto rootNode = plan->getRootNode(taskId);
             if (std::abs(beta_) < getZeroThreshold<floatType>()) {
                 if (conjA_)
                     transpose_int_constStride1<1, floatType, useStreamingStores, true>(A_, B_, 0.0, 1.0, rootNode);
@@ -993,7 +993,7 @@ void Transpose<floatType>::execute_expert() noexcept {
     HPTT_DUPLICATE(
         spawnThreads,
         for (int taskId = myStart; taskId < myEnd; taskId++) if (perm_[0] != 0) {
-            auto rootNode = masterPlan_->getRootNode_const(taskId);
+            auto rootNode = masterPlan_->getRootNode(taskId);
             if (conjA_)
                 transpose_int<blocking_, blocking_, betaIsZero, floatType, useStreamingStores, true>(A_, A_, B_, B_, alpha_, beta_,
                                                                                                      rootNode);
@@ -1001,7 +1001,7 @@ void Transpose<floatType>::execute_expert() noexcept {
                 transpose_int<blocking_, blocking_, betaIsZero, floatType, useStreamingStores, false>(A_, A_, B_, B_, alpha_, beta_,
                                                                                                       rootNode);
         } else {
-            auto rootNode = masterPlan_->getRootNode_const(taskId);
+            auto rootNode = masterPlan_->getRootNode(taskId);
             if (conjA_)
                 transpose_int_constStride1<betaIsZero, floatType, useStreamingStores, true>(A_, B_, alpha_, beta_, rootNode);
             else

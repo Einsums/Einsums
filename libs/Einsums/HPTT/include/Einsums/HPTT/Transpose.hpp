@@ -21,6 +21,8 @@ namespace hptt {
 class Plan;
 
 /**
+ * @class Transpose
+ *
  * \brief The Transpose class encodes all information related to the execution of the tensor transposition.
  *
  * Once a transpose (henceforth referred to as plan) t has been created it can be
@@ -36,6 +38,8 @@ class Plan;
  * interface, then you might want to checkout the following functions as well:
  * * resetThreadIds()
  * * addThreadId()
+ *
+ * @tparam floatType The type of data this class can handle.
  */
 template <typename floatType>
 class Transpose {
@@ -79,6 +83,9 @@ class Transpose {
               floatType const alpha, floatType *B, floatType const beta, SelectionMethod const selectionMethod, int const numThreads,
               int const *threadIds = nullptr, bool const useRowMajor = false);
 
+    /**
+     * Copy construct a Transpose object.
+     */
     Transpose(Transpose const &other);
 
     ~Transpose();
@@ -86,18 +93,42 @@ class Transpose {
     /***************************************************
      * Getter & Setter
      ***************************************************/
+
+    /**
+     * Indicates whether to conjugate the input tensor.
+     */
     bool      getConjA() noexcept { return conjA_; }
+
+    /**
+     * Change whether to conjugate the input tensor.
+     */
     void      setConjA(bool conjA) noexcept { conjA_ = conjA; }
+
+    /**
+     * Get the number of threads to use in this operation.
+     */
     int       getNumThreads() const noexcept { return numThreads_; }
+
+    /**
+     * Set the number of threads to use in this operation.
+     */
     void      setNumThreads(int numThreads) noexcept { numThreads_ = numThreads; }
+
+    /**
+     * Get the scaling factor for A.
+     */
     floatType getAlpha() const noexcept { return alpha_; }
+
+    /**
+     * Get the scaling factor for B.
+     */
     floatType getBeta() const noexcept { return beta_; }
     /**
-     * \brief set the scaling factor for A
+     * \brief set the scaling factor for A.
      */
     void setAlpha(floatType alpha) noexcept { alpha_ = alpha; }
     /**
-     * \brief set the scaling factor for B
+     * \brief set the scaling factor for B.
      */
     void setBeta(floatType beta) noexcept { beta_ = beta; }
     /**
@@ -154,11 +185,18 @@ class Transpose {
 #endif
     }
 
+    /**
+     * Prints the thread ID's used in this operation.
+     */
     void printThreadIds() const noexcept {
         for (auto id : threadIds_)
             printf("%d, ", id);
         printf("\n");
     }
+
+    /**
+     * Gets the ID of the master thread for the operation.
+     */
     int getMasterThreadId() const noexcept { return threadIds_[0]; }
 
     /***************************************************
@@ -176,18 +214,18 @@ class Transpose {
      * offers additional template parameters to improve performance for very
      * small tensor transpositions. Moreover it adds more flexibility.
      *
-     * \param[in] useStreamingStores Iff this variable is set, HPTT will use
+     * \tparam useStreamingStores Iff this variable is set, HPTT will use
      *                         streaming stores which improves performance because they avoid the
      *                         write-allocate traffic incurred by the write to B. However, sometimes
      *                         the user might want to avoid streaming stores
      *                         because the packed data fits int cache and is
      *                         reused shortly (e.g., within BLAS packing
      *                         routines).
-     * \param[in] spawnThreads If the variable is set, the threads will be
+     * \tparam spawnThreads If the variable is set, the threads will be
      *                         spawned from within this call, otherwise it is
      *                         expected that this function call executes from
      *                         within a parallel region.
-     * \param[in] betaIsZero   Only set this variable if beta is zero.
+     * \tparam betaIsZero   Only set this variable if beta is zero.
      */
     template <bool useStreamingStores = true, bool spawnThreads = true, bool betaIsZero>
     void execute_expert() noexcept;
@@ -198,6 +236,9 @@ class Transpose {
      */
     void execute() noexcept;
 
+    /**
+     * Print information about this transpose operation.
+     */
     void print() noexcept;
 
   private:

@@ -14,6 +14,12 @@
 
 #pragma once
 
+/**
+ * @def HPTT_ERROR_INFO
+ *
+ * If we build this project with the DEBUG flag, this will print info messages onto standard out, then exit.
+ * Otherwise, this will do nothing.
+ */
 #ifdef DEBUG
 #define HPTT_ERROR_INFO(str) fprintf(stdout, "[INFO] %s:%d : %s\n", __FILE__, __LINE__, str); exit(-1);
 #else

@@ -9,7 +9,7 @@
  * \section intro Introduction
  * HPTT supports tensor transpositions of the general form:
  *
- *       \f[ \mathcal{B}_{\pi(i_0,i_1,...,i_{d-1})} \gets \alpha *
+ * \f[ \mathcal{B}_{\pi(i_0,i_1,...,i_{d-1})} \gets \alpha *
  * \mathcal{A}_{i_0,i_1,...,i_{d-1}} + \beta *
  * \mathcal{B}_{\pi(i_0,i_1,...,i_{d-1})}, \f] where \f$\alpha\f$ and
  * \f$\beta\f$ are scalars and \f$\mathcal{A}\f$ and \f$\mathcal{B}\f$ are
@@ -141,7 +141,7 @@
 #include <vector>
 
 #ifdef _OPENMP
-#include <omp.h>
+#    include <omp.h>
 #endif
 
 #include <Einsums/HPTT/Transpose.hpp>
@@ -192,138 +192,156 @@ namespace hptt {
  * \param[in] useRowMajor This flag indicates whether a row-major memory layout
  * should be used (default: off = column-major).
  */
-std::shared_ptr<hptt::Transpose<float>>
-create_plan(const int *perm, const int dim, const float alpha, const float *A,
-            const int *sizeA, const int *outerSizeA, const float beta, float *B,
-            const int *outerSizeB, const SelectionMethod selectionMethod,
-            const int numThreads, const int *threadIds = nullptr,
-            const bool useRowMajor = false);
+std::shared_ptr<hptt::Transpose<float>> create_plan(int const *perm, int const dim, float const alpha, float const *A, int const *sizeA,
+                                                    int const *outerSizeA, float const beta, float *B, int const *outerSizeB,
+                                                    SelectionMethod const selectionMethod, int const numThreads,
+                                                    int const *threadIds = nullptr, bool const useRowMajor = false);
+
+// The space before the second line is important. Otherwise, it will try to combine the const and the SelectionMethod into one word, rather
+// than two.
+/**
+ * @copydoc create_plan(const int *,const int,const float,const float *,const int *,const int *,const float,float *,const int *,const
+ *  SelectionMethod,const int,const int *,const bool)
+ */
+std::shared_ptr<hptt::Transpose<double>> create_plan(int const *perm, int const dim, double const alpha, double const *A, int const *sizeA,
+                                                     int const *outerSizeA, double const beta, double *B, int const *outerSizeB,
+                                                     SelectionMethod const selectionMethod, int const numThreads,
+                                                     int const *threadIds = nullptr, bool const useRowMajor = false);
 
 /**
- * @copydoc create_plan(const int *,const int,const float,const float *,const int *,const int *,const float,float *,const int *,const SelectionMethod,const int,const int *,const bool)
+ * @copydoc create_plan(const int *,const int,const float,const float *,const int *,const int *,const float,float *,const int *,const
+ *  SelectionMethod,const int,const int *,const bool)
  */
-std::shared_ptr<hptt::Transpose<double>>
-create_plan(const int *perm, const int dim, const double alpha, const double *A,
-            const int *sizeA, const int *outerSizeA, const double beta,
-            double *B, const int *outerSizeB,
-            const SelectionMethod selectionMethod, const int numThreads,
-            const int *threadIds = nullptr, const bool useRowMajor = false);
-
+std::shared_ptr<hptt::Transpose<FloatComplex>> create_plan(int const *perm, int const dim, FloatComplex const alpha, FloatComplex const *A,
+                                                           int const *sizeA, int const *outerSizeA, FloatComplex const beta,
+                                                           FloatComplex *B, int const *outerSizeB, SelectionMethod const selectionMethod,
+                                                           int const numThreads, int const *threadIds = nullptr,
+                                                           bool const useRowMajor = false);
 
 /**
- * @copydoc create_plan(const int *,const int,const float,const float *,const int *,const int *,const float,float *,const int *,const SelectionMethod,const int,const int *,const bool)
+ * @copydoc create_plan(const int *,const int,const float,const float *,const int *,const int *,const float,float *,const int *,const
+ *  SelectionMethod,const int,const int *,const bool)
  */
-std::shared_ptr<hptt::Transpose<FloatComplex>>
-create_plan(const int *perm, const int dim, const FloatComplex alpha,
-            const FloatComplex *A, const int *sizeA, const int *outerSizeA,
-            const FloatComplex beta, FloatComplex *B, const int *outerSizeB,
-            const SelectionMethod selectionMethod, const int numThreads,
-            const int *threadIds = nullptr, const bool useRowMajor = false);
-
+std::shared_ptr<hptt::Transpose<DoubleComplex>> create_plan(int const *perm, int const dim, DoubleComplex const alpha,
+                                                            DoubleComplex const *A, int const *sizeA, int const *outerSizeA,
+                                                            DoubleComplex const beta, DoubleComplex *B, int const *outerSizeB,
+                                                            SelectionMethod const selectionMethod, int const numThreads,
+                                                            int const *threadIds = nullptr, bool const useRowMajor = false);
 
 /**
- * @copydoc create_plan(const int *,const int,const float,const float *,const int *,const int *,const float,float *,const int *,const SelectionMethod,const int,const int *,const bool)
+ * @copydoc create_plan(const int *,const int,const float,const float *,const int *,const int *,const float,float *,const int *,const
+ *  SelectionMethod,const int,const int *,const bool)
  */
-std::shared_ptr<hptt::Transpose<DoubleComplex>>
-create_plan(const int *perm, const int dim, const DoubleComplex alpha,
-            const DoubleComplex *A, const int *sizeA, const int *outerSizeA,
-            const DoubleComplex beta, DoubleComplex *B, const int *outerSizeB,
-            const SelectionMethod selectionMethod, const int numThreads,
-            const int *threadIds = nullptr, const bool useRowMajor = false);
-
+std::shared_ptr<hptt::Transpose<float>> create_plan(std::vector<int> const &perm, int const dim, float const alpha, float const *A,
+                                                    std::vector<int> const &sizeA, std::vector<int> const &outerSizeA, float const beta,
+                                                    float *B, std::vector<int> const &outerSizeB, SelectionMethod const selectionMethod,
+                                                    int const numThreads, std::vector<int> const &threadIds = {},
+                                                    bool const useRowMajor = false);
 
 /**
- * @copydoc create_plan(const int *,const int,const float,const float *,const int *,const int *,const float,float *,const int *,const SelectionMethod,const int,const int *,const bool)
+ * @copydoc create_plan(const int *,const int,const float,const float *,const int *,const int *,const float,float *,const int *,const
+ *  SelectionMethod,const int,const int *,const bool)
  */
-std::shared_ptr<hptt::Transpose<float>>
-create_plan(const std::vector<int> &perm, const int dim, const float alpha,
-            const float *A, const std::vector<int> &sizeA,
-            const std::vector<int> &outerSizeA, const float beta, float *B,
-            const std::vector<int> &outerSizeB,
-            const SelectionMethod selectionMethod, const int numThreads,
-            const std::vector<int> &threadIds = {},
-            const bool useRowMajor = false);
-
+std::shared_ptr<hptt::Transpose<double>> create_plan(std::vector<int> const &perm, int const dim, double const alpha, double const *A,
+                                                     std::vector<int> const &sizeA, std::vector<int> const &outerSizeA, double const beta,
+                                                     double *B, std::vector<int> const &outerSizeB, SelectionMethod const selectionMethod,
+                                                     int const numThreads, std::vector<int> const &threadIds = {},
+                                                     bool const useRowMajor = false);
 
 /**
- * @copydoc create_plan(const int *,const int,const float,const float *,const int *,const int *,const float,float *,const int *,const SelectionMethod,const int,const int *,const bool)
+ * @copydoc create_plan(const int *,const int,const float,const float *,const int *,const int *,const float,float *,const int *,const
+ *  SelectionMethod,const int,const int *,const bool)
  */
-std::shared_ptr<hptt::Transpose<double>>
-create_plan(const std::vector<int> &perm, const int dim, const double alpha,
-            const double *A, const std::vector<int> &sizeA,
-            const std::vector<int> &outerSizeA, const double beta, double *B,
-            const std::vector<int> &outerSizeB,
-            const SelectionMethod selectionMethod, const int numThreads,
-            const std::vector<int> &threadIds = {},
-            const bool useRowMajor = false);
-
+std::shared_ptr<hptt::Transpose<FloatComplex>> create_plan(std::vector<int> const &perm, int const dim, FloatComplex const alpha,
+                                                           FloatComplex const *A, std::vector<int> const &sizeA,
+                                                           std::vector<int> const &outerSizeA, FloatComplex const beta, FloatComplex *B,
+                                                           std::vector<int> const &outerSizeB, SelectionMethod const selectionMethod,
+                                                           int const numThreads, std::vector<int> const &threadIds = {},
+                                                           bool const useRowMajor = false);
 
 /**
- * @copydoc create_plan(const int *,const int,const float,const float *,const int *,const int *,const float,float *,const int *,const SelectionMethod,const int,const int *,const bool)
+ * @copydoc create_plan(const int *,const int,const float,const float *,const int *,const int *,const float,float *,const int *,const
+ *  SelectionMethod,const int,const int *,const bool)
  */
-std::shared_ptr<hptt::Transpose<FloatComplex>> create_plan(
-    const std::vector<int> &perm, const int dim, const FloatComplex alpha,
-    const FloatComplex *A, const std::vector<int> &sizeA,
-    const std::vector<int> &outerSizeA, const FloatComplex beta,
-    FloatComplex *B, const std::vector<int> &outerSizeB,
-    const SelectionMethod selectionMethod, const int numThreads,
-    const std::vector<int> &threadIds = {}, const bool useRowMajor = false);
-
+std::shared_ptr<hptt::Transpose<DoubleComplex>> create_plan(std::vector<int> const &perm, int const dim, DoubleComplex const alpha,
+                                                            DoubleComplex const *A, std::vector<int> const &sizeA,
+                                                            std::vector<int> const &outerSizeA, DoubleComplex const beta, DoubleComplex *B,
+                                                            std::vector<int> const &outerSizeB, SelectionMethod const selectionMethod,
+                                                            int const numThreads, std::vector<int> const &threadIds = {},
+                                                            bool const useRowMajor = false);
 
 /**
- * @copydoc create_plan(const int *,const int,const float,const float *,const int *,const int *,const float,float *,const int *,const SelectionMethod,const int,const int *,const bool)
+ * \brief Creates a Tensor Transposition plan
+ *
+ * A tensor transposition plan is a data structure that encodes the execution of
+ * the tensor transposition. HPTT supports tensor transpositions of the form:
+ * \f[ B_{\pi(i_0,i_1,...)} = \alpha * A_{i_0,i_1,...} + \beta *
+ * B_{\pi(i_0,i_1,...)}. \f] The plan can be reused over several transpositions.
+ *
+ * \param[in] perm dim-dimensional array representing the permutation of the
+ * indices.
+ *                 * For instance, perm[] = {1,0,2} denotes the following
+ * transposition: \f$B_{i1,i0,i2} \gets A_{i0,i1,i2}\f$. \param[in] dim
+ * Dimensionality of the tensors \param[in] alpha scaling factor for A
+ * \param[in] A Pointer to the raw-data of the input tensor A
+ * \param[in] sizeA dim-dimensional array that stores the sizes of each
+ * dimension of A \param[in] outerSizeA dim-dimensional array that stores the
+ * outer-sizes of each dimension of A.
+ *                       * This parameter may be NULL, indicating that the
+ * outer-size is equal to sizeA.
+ *                       * If outerSizeA is not NULL, outerSizeA[i] >= sizeA[i]
+ * for all 0 <= i < dim must hold.
+ *                       * This option enables HPTT to operate on sub-tensors.
+ * \param[in] beta scaling factor for B
+ * \param[inout] B Pointer to the raw-data of the output tensor B
+ * \param[in] outerSizeB dim-dimensional array that stores the outer-sizes of
+ * each dimension of B.
+ *                       * This parameter may be NULL, indicating that the
+ * outer-size is equal to the perm(sizeA).
+ *                       * If outerSizeA is not NULL, outerSizeB[i] >=
+ * perm(sizeA)[i] for all 0 <= i < dim must hold.
+ *                       * This option enables HPTT to operate on sub-tensors.
+ * \param[in] maxAutotuningCandidates Sets the number of candidates to be tested during the autotuning phase.
+ * \param[in] numThreads number of threads that participate in this tensor transposition.
+ * \param[in] threadIds Array of OpenMP threadIds that participate in this
+ *            tensor transposition. This parameter is only important if you want
+ * to call HPTT from within a parallel region (i.e., via execute_expert()).
+ * \param[in] useRowMajor This flag indicates whether a row-major memory layout
+ * should be used (default: off = column-major).
  */
-std::shared_ptr<hptt::Transpose<DoubleComplex>> create_plan(
-    const std::vector<int> &perm, const int dim, const DoubleComplex alpha,
-    const DoubleComplex *A, const std::vector<int> &sizeA,
-    const std::vector<int> &outerSizeA, const DoubleComplex beta,
-    DoubleComplex *B, const std::vector<int> &outerSizeB,
-    const SelectionMethod selectionMethod, const int numThreads,
-    const std::vector<int> &threadIds = {}, const bool useRowMajor = false);
-
+std::shared_ptr<hptt::Transpose<float>> create_plan(int const *perm, int const dim, float const alpha, float const *A, int const *sizeA,
+                                                    int const *outerSizeA, float const beta, float *B, int const *outerSizeB,
+                                                    int const maxAutotuningCandidates, int const numThreads, int const *threadIds = nullptr,
+                                                    bool const useRowMajor = false);
 
 /**
- * @copydoc create_plan(const int *,const int,const float,const float *,const int *,const int *,const float,float *,const int *,const SelectionMethod,const int,const int *,const bool)
+ * @copydoc create_plan(const int *,const int,const float,const float *,const int *,const int *,const float,float *,const int *,const
+ *  int,const int,const int *,const bool)
  */
-std::shared_ptr<hptt::Transpose<float>>
-create_plan(const int *perm, const int dim, const float alpha, const float *A,
-            const int *sizeA, const int *outerSizeA, const float beta, float *B,
-            const int *outerSizeB, const int maxAutotuningCandidates,
-            const int numThreads, const int *threadIds = nullptr,
-            const bool useRowMajor = false);
-
+std::shared_ptr<hptt::Transpose<double>> create_plan(int const *perm, int const dim, double const alpha, double const *A, int const *sizeA,
+                                                     int const *outerSizeA, double const beta, double *B, int const *outerSizeB,
+                                                     int const maxAutotuningCandidates, int const numThreads,
+                                                     int const *threadIds = nullptr, bool const useRowMajor = false);
 
 /**
- * @copydoc create_plan(const int *,const int,const float,const float *,const int *,const int *,const float,float *,const int *,const SelectionMethod,const int,const int *,const bool)
+ * @copydoc create_plan(const int *,const int,const float,const float *,const int *,const int *,const float,float *,const int *,const
+ *  int,const int,const int *,const bool)
  */
-std::shared_ptr<hptt::Transpose<double>>
-create_plan(const int *perm, const int dim, const double alpha, const double *A,
-            const int *sizeA, const int *outerSizeA, const double beta,
-            double *B, const int *outerSizeB, const int maxAutotuningCandidates,
-            const int numThreads, const int *threadIds = nullptr,
-            const bool useRowMajor = false);
-
+std::shared_ptr<hptt::Transpose<FloatComplex>> create_plan(int const *perm, int const dim, FloatComplex const alpha, FloatComplex const *A,
+                                                           int const *sizeA, int const *outerSizeA, FloatComplex const beta,
+                                                           FloatComplex *B, int const *outerSizeB, int const maxAutotuningCandidates,
+                                                           int const numThreads, int const *threadIds = nullptr,
+                                                           bool const useRowMajor = false);
 
 /**
- * @copydoc create_plan(const int *,const int,const float,const float *,const int *,const int *,const float,float *,const int *,const SelectionMethod,const int,const int *,const bool)
+ * @copydoc create_plan(const int *,const int,const float,const float *,const int *,const int *,const float,float *,const int *,const
+ *  int,const int,const int *,const bool)
  */
-std::shared_ptr<hptt::Transpose<FloatComplex>>
-create_plan(const int *perm, const int dim, const FloatComplex alpha,
-            const FloatComplex *A, const int *sizeA, const int *outerSizeA,
-            const FloatComplex beta, FloatComplex *B, const int *outerSizeB,
-            const int maxAutotuningCandidates, const int numThreads,
-            const int *threadIds = nullptr, const bool useRowMajor = false);
-
-
-/**
- * @copydoc create_plan(const int *,const int,const float,const float *,const int *,const int *,const float,float *,const int *,const SelectionMethod,const int,const int *,const bool)
- */
-std::shared_ptr<hptt::Transpose<DoubleComplex>>
-create_plan(const int *perm, const int dim, const DoubleComplex alpha,
-            const DoubleComplex *A, const int *sizeA, const int *outerSizeA,
-            const DoubleComplex beta, DoubleComplex *B, const int *outerSizeB,
-            const int maxAutotuningCandidates, const int numThreads,
-            const int *threadIds = nullptr, const bool useRowMajor = false);
+std::shared_ptr<hptt::Transpose<DoubleComplex>> create_plan(int const *perm, int const dim, DoubleComplex const alpha,
+                                                            DoubleComplex const *A, int const *sizeA, int const *outerSizeA,
+                                                            DoubleComplex const beta, DoubleComplex *B, int const *outerSizeB,
+                                                            int const maxAutotuningCandidates, int const numThreads,
+                                                            int const *threadIds = nullptr, bool const useRowMajor = false);
 } // namespace hptt
 
 // extern "C"
@@ -363,30 +381,58 @@ create_plan(const int *perm, const int dim, const DoubleComplex alpha,
  * transposition. \param[in] useRowMajor This flag indicates whether a row-major
  * memory layout should be used (default: off = column-major).
  */
-void sTensorTranspose(const int *perm, const int dim, const float alpha,
-                      const float *A, const int *sizeA, const int *outerSizeA,
-                      const float beta, float *B, const int *outerSizeB,
-                      const int numThreads, const int useRowMajor = 0);
-                      
-/// @copydoc sTensorTranspose(const int *,const int,const float,const float *,const int *,const int*,const float,float *,const int *,const int,const int)
-void dTensorTranspose(const int *perm, const int dim, const double alpha,
-                      const double *A, const int *sizeA, const int *outerSizeA,
-                      const double beta, double *B, const int *outerSizeB,
-                      const int numThreads, const int useRowMajor = 0);
+void sTensorTranspose(int const *perm, int const dim, float const alpha, float const *A, int const *sizeA, int const *outerSizeA,
+                      float const beta, float *B, int const *outerSizeB, int const numThreads, int const useRowMajor = 0);
 
-/// @copydoc sTensorTranspose(const int *,const int,const float,const float *,const int *,const int*,const float,float *,const int *,const int,const int)
-void cTensorTranspose(const int *perm, const int dim,
-                      const float _Complex alpha, bool conjA,
-                      const float _Complex *A, const int *sizeA,
-                      const int *outerSizeA, const float _Complex beta,
-                      float _Complex *B, const int *outerSizeB,
-                      const int numThreads, const int useRowMajor = 0);
+/// @copydoc sTensorTranspose(const int *,const int,const float,const float *,const int *,const int*,const float,float *,const int *,const
+///  int,const int)
+void dTensorTranspose(int const *perm, int const dim, double const alpha, double const *A, int const *sizeA, int const *outerSizeA,
+                      double const beta, double *B, int const *outerSizeB, int const numThreads, int const useRowMajor = 0);
 
-/// @copydoc sTensorTranspose(const int *,const int,const float,const float *,const int *,const int*,const float,float *,const int *,const int,const int)
-void zTensorTranspose(const int *perm, const int dim,
-                      const double _Complex alpha, bool conjA,
-                      const double _Complex *A, const int *sizeA,
-                      const int *outerSizeA, const double _Complex beta,
-                      double _Complex *B, const int *outerSizeB,
-                      const int numThreads, const int useRowMajor = 0);
+/**
+ * \brief Computes the out-of-place tensor transposition of A into B
+ *
+ * A tensor transposition plan is a data structure that encodes the execution of
+ * the tensor transposition. HPTT supports tensor transpositions of the form:
+ * \f[ B_{\pi(i_0,i_1,...)} = \alpha * A_{i_0,i_1,...} + \beta *
+ * B_{\pi(i_0,i_1,...)}. \f] The plan can be reused over several transpositions.
+ *
+ * \param[in] perm dim-dimensional array representing the permutation of the
+ * indices.
+ *                 * For instance, perm[] = {1,0,2} denotes the following
+ * transposition: \f$B_{i1,i0,i2} \gets A_{i0,i1,i2}\f$. \param[in] dim
+ * Dimensionality of the tensors \param[in] alpha scaling factor for A
+ * @param[in] conjA Whether to conjugate A.
+ * \param[in] A Pointer to the raw-data of the input tensor A
+ * \param[in] sizeA dim-dimensional array that stores the sizes of each
+ * dimension of A \param[in] outerSizeA dim-dimensional array that stores the
+ * outer-sizes of each dimension of A.
+ *                       * This parameter may be NULL, indicating that the
+ * outer-size is equal to sizeA.
+ *                       * If outerSizeA is not NULL, outerSizeA[i] >= sizeA[i]
+ * for all 0 <= i < dim must hold.
+ *                       * This option enables HPTT to operate on sub-tensors.
+ * \param[in] beta scaling factor for B
+ * \param[inout] B Pointer to the raw-data of the output tensor B
+ * \param[in] outerSizeB dim-dimensional array that stores the outer-sizes of
+ * each dimension of B.
+ *                       * This parameter may be NULL, indicating that the
+ * outer-size is equal to the perm(sizeA).
+ *                       * If outerSizeA is not NULL, outerSizeB[i] >=
+ * perm(sizeA)[i] for all 0 <= i < dim must hold.
+ *                       * This option enables HPTT to operate on sub-tensors.
+ * \param[in] numThreads number of threads that participate in this tensor
+ * transposition. \param[in] useRowMajor This flag indicates whether a row-major
+ * memory layout should be used (default: off = column-major).
+ */
+void cTensorTranspose(int const *perm, int const dim, float const _Complex alpha, bool conjA, float const _Complex *A, int const *sizeA,
+                      int const *outerSizeA, float const _Complex beta, float _Complex *B, int const *outerSizeB, int const numThreads,
+                      int const useRowMajor = 0);
+
+/// @copydoc cTensorTranspose(const int *,const int,float const _Complex,bool,float const _Complex *,const int *,const int*,float const
+///  _Complex,float _Complex *,const int *,const
+///  int,const int)
+void zTensorTranspose(int const *perm, int const dim, double const _Complex alpha, bool conjA, double const _Complex *A, int const *sizeA,
+                      int const *outerSizeA, double const _Complex beta, double _Complex *B, int const *outerSizeB, int const numThreads,
+                      int const useRowMajor = 0);
 // }
