@@ -8,6 +8,7 @@ set(TensorAlgebraTests
         Einsum2
         Einsum3
         Einsum4
+        Einsum5
         Indices
         Sort
 )
