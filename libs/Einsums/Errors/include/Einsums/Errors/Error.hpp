@@ -11,7 +11,6 @@
 
 #include <source_location>
 #include <string>
-#include <system_error>
 
 namespace einsums {
 

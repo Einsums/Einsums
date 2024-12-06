@@ -6,11 +6,11 @@
 using namespace einsums;
 
 std::string einsums::detail::make_error_message(char const *type_name, char const *str, std::source_location const &location) {
-    return fmt::format("{}:{}:{}:{}:\n{}: {}", location.file_name(), location.function_name(), location.line(), location.column(),
+    return fmt::format("{}:{}:{}:\nIn {}\n{}: {}", location.file_name(), location.line(), location.column(), location.function_name(),
                        type_name, str);
 }
 
 std::string einsums::detail::make_error_message(char const *type_name, std::string const &str, std::source_location const &location) {
-    return fmt::format("{}:{}:{}:{}:\n{}: {}", location.file_name(), location.function_name(), location.line(), location.column(),
+    return fmt::format("{}:{}:{}:\nIn {}\n{}: {}", location.file_name(), location.line(), location.column(), location.function_name(),
                        type_name, str);
 }
