@@ -10,6 +10,7 @@
 #include <fmt/format.h>
 
 #include <source_location>
+#include <stdexcept>
 #include <string>
 
 namespace einsums {
@@ -78,7 +79,7 @@ struct EINSUMS_EXPORT tensor_compat_error : public std::logic_error {
  * Indicates that a function did not receive the correct amount of arguments.
  */
 struct EINSUMS_EXPORT num_argument_error : public std::invalid_argument {
-  using std::invalid_argument::invalid_argument;
+    using std::invalid_argument::invalid_argument;
 };
 
 /**
@@ -87,7 +88,7 @@ struct EINSUMS_EXPORT num_argument_error : public std::invalid_argument {
  * Indicates that a function did not receive enough arguments. Child of num_argument_error .
  */
 struct EINSUMS_EXPORT not_enough_args : public num_argument_error {
-  using num_argument_error::num_argument_error;
+    using num_argument_error::num_argument_error;
 };
 
 /**
@@ -96,7 +97,7 @@ struct EINSUMS_EXPORT not_enough_args : public num_argument_error {
  * Indicates that a function received too many arguments. Child of num_argument_error .
  */
 struct EINSUMS_EXPORT too_many_args : public num_argument_error {
-  using num_argument_error::num_argument_error;
+    using num_argument_error::num_argument_error;
 };
 
 /**
@@ -105,7 +106,7 @@ struct EINSUMS_EXPORT too_many_args : public num_argument_error {
  * Indicates that an operation was stopped due to access restrictions, for instance writing to read-only data.
  */
 struct EINSUMS_EXPORT access_denied : public std::logic_error {
-  using std::logic_error::logic_error;
+    using std::logic_error::logic_error;
 };
 
 /**
@@ -114,7 +115,7 @@ struct EINSUMS_EXPORT access_denied : public std::logic_error {
  * Indicates that a certain code path is not yet finished.
  */
 struct EINSUMS_EXPORT todo_error : public std::logic_error {
-  using std::logic_error::logic_error;
+    using std::logic_error::logic_error;
 };
 
 /**
@@ -125,7 +126,7 @@ struct EINSUMS_EXPORT todo_error : public std::logic_error {
  * std::logic_error, this acts as a way to not break things.
  */
 struct EINSUMS_EXPORT bad_logic : public std::logic_error {
-  using std::logic_error::logic_error;
+    using std::logic_error::logic_error;
 };
 
 } // namespace einsums
