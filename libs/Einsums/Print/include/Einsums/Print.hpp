@@ -65,51 +65,72 @@ struct ordinal {
   public:
     constexpr ordinal() = default;
 
+    /**
+     * Copy constructor.
+     */
     constexpr ordinal(ordinal<IntType> const &other) : val_{other.val_} {}
 
+    /**
+     * Move constructor.
+     */
     constexpr ordinal(ordinal<IntType> &&other) : val_{std::move(other.val_)} {}
 
-    constexpr ordinal(IntType const &&value) : val_{value} {}
+    /**
+     * Cast constructor.
+     */
+    constexpr ordinal(IntType const &value) : val_{value} {}
 
-    template <std::integral OtherType>
-    constexpr ordinal(OtherType const &&value) : val_{static_cast<IntType>(value)} {}
-
+    /**
+     * Deleter.
+     */
     constexpr ~ordinal() = default;
 
+    /**
+     * Copy assignment.
+     */
     constexpr ordinal<IntType> &operator=(ordinal<IntType> const &other) {
         val_ = other.val_;
         return *this;
     }
 
+    /**
+     * Move assignment.
+     */
     constexpr ordinal<IntType> &operator=(ordinal<IntType> &&other) {
         val_ = std::move(other.val_);
         return *this;
     }
 
+    /**
+     * Cast to underlying integer type.
+     */
     constexpr operator IntType() const { return val_; }
 
+    /**
+     * Cast to reference of the underlying integer type.
+     */
     constexpr operator IntType &() { return val_; }
 
-    template<typename T>
-    constexpr operator T() const {return T(val_);}
-
-    template<typename T>
-    constexpr operator T &() {return T(val_);}
-
-    template<typename T>
-    constexpr operator T const &() const {return T(val_);}
-
-#define OPERATOR(OP)                                                                                                                       \
-    template <std::integral OtherType>                                                                                                     \
-    constexpr ordinal<IntType> &operator OP##=(const ordinal<OtherType> &&other) {                                                         \
-        val_ OP## = other.val_;                                                                                                            \
-        return *this;                                                                                                                      \
-    }                                                                                                                                      \
-    template <std::integral OtherType>                                                                                                     \
-    constexpr ordinal<IntType> &operator OP##=(const OtherType && other) {                                                                 \
-        val_ OP## = other;                                                                                                                 \
-        return *this;                                                                                                                      \
+    /**
+     * Cast to arbitrary type.
+     */
+    template <typename T>
+    constexpr operator T() const {
+        return T(val_);
     }
+
+#ifndef DOXYGEN
+#    define OPERATOR(OP)                                                                                                                   \
+        template <std::integral OtherType>                                                                                                 \
+        constexpr ordinal<IntType> &operator OP##=(const ordinal<OtherType> &other) {                                                      \
+            val_ OP## = other.val_;                                                                                                        \
+            return *this;                                                                                                                  \
+        }                                                                                                                                  \
+        template <std::integral OtherType>                                                                                                 \
+        constexpr ordinal<IntType> &operator OP##=(const OtherType & other) {                                                              \
+            val_ OP## = other;                                                                                                             \
+            return *this;                                                                                                                  \
+        }
 
     OPERATOR(+)
     OPERATOR(-)
@@ -121,29 +142,35 @@ struct ordinal {
     OPERATOR(^)
     OPERATOR(&)
     OPERATOR(|)
-#undef OPERATOR
+#    undef OPERATOR
 
     template <std::integral OtherType>
-    constexpr auto operator<=>(ordinal<OtherType> const &&other) const {
+    constexpr auto operator<=>(ordinal<OtherType> const &other) const {
         return val_ <=> other.val_;
     }
 
     template <std::integral OtherType>
-    constexpr auto operator<=>(OtherType const &&other) const {
+    constexpr auto operator<=>(OtherType const &other) const {
         return val_ <=> other;
     }
 
     template <std::integral OtherType>
-    constexpr bool operator==(ordinal<OtherType> const &&other) const {
+    constexpr bool operator==(ordinal<OtherType> const &other) const {
         return val_ == other.val_;
     }
 
     template <std::integral OtherType>
-    constexpr bool operator==(OtherType const &&other) const {
+    constexpr bool operator==(OtherType const &other) const {
         return val_ == other;
     }
+#endif
 
   private:
+    /**
+     * @var val_
+     *
+     * The value wrapped by the ordinal.
+     */
     IntType val_{0};
 };
 
@@ -313,41 +340,41 @@ struct fmt::formatter<ranges::common_tuple<Ts...>> {
     }
 };
 
-template<std::integral IntType>
+template <std::integral IntType>
 struct fmt::formatter<einsums::print::ordinal<IntType>> {
-    template<typename ParseContext>
+    template <typename ParseContext>
     constexpr auto parse(ParseContext &ctx) {
         return fmt_.parse(ctx);
     }
 
-    template<typename FormatContext>
+    template <typename FormatContext>
     auto format(einsums::print::ordinal<IntType> const &value, FormatContext &ctx) const {
-        ctx.advance_to(fmt_.format((IntType) value, ctx));
+        ctx.advance_to(fmt_.format((IntType)value, ctx));
         auto suffix = get_suffix(value);
         return fmt::format_to(ctx.out(), "{}", suffix);
     }
 
-protected:
-    constexpr inline const char *get_suffix(IntType value) const {
-        const IntType hundreds = (value % 100 + 100) % 100;
-        
-        if(hundreds > 20 || hundreds < 10) {
-            switch(hundreds % 10) {
-                case 1:
-                    return "st";
-                case 2:
-                    return "nd";
-                case 3:
-                    return "rd";
-                default :
-                    return "th";
+  protected:
+    constexpr inline char const *get_suffix(IntType value) const {
+        IntType const hundreds = (value % 100 + 100) % 100;
+
+        if (hundreds > 20 || hundreds < 10) {
+            switch (hundreds % 10) {
+            case 1:
+                return "st";
+            case 2:
+                return "nd";
+            case 3:
+                return "rd";
+            default:
+                return "th";
             }
         } else {
             return "th";
         }
     }
 
-private:
+  private:
     fmt::formatter<IntType> fmt_;
 };
 

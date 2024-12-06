@@ -9,5 +9,11 @@ static void thrower() {
 }
 
 TEST_CASE("Test catching", "[error]") {
+    try {
+        thrower();
+    } catch(const einsums::dimension_error &e) {
+        REQUIRE(true);
+    }
+
     REQUIRE_THROWS_AS(thrower(), einsums::dimension_error);
 }
