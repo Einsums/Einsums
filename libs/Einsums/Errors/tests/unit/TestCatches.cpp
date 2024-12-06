@@ -11,7 +11,7 @@ static void thrower() {
 TEST_CASE("Test catching", "[error]") {
     try {
         thrower();
-    } catch(const einsums::dimension_error &e) {
+    } catch(einsums::dimension_error &e) {
         REQUIRE(true);
     }
 

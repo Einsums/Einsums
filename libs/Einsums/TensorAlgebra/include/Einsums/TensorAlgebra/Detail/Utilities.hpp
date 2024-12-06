@@ -25,6 +25,15 @@ auto order_indices(std::tuple<Args...> const &combination, std::array<size_t, Ra
 } // namespace detail
 #endif
 
+/**
+ * Swap around the indices to the desired order. For instance, if we have a list of indices
+ * <tt>{a,b,c}</tt> and we want to reverse it, we would give the order <tt>{2, 1, 0}</tt>.
+ * There is no requirement that all the orders be different, so if we were to pass <tt>{1, 1, 0}</tt>
+ * instead, we would get <tt>{b,b,a}</tt>.
+ *
+ * @param combination The indices to reorder.
+ * @param order The array containing the new order.
+ */
 template <size_t Rank, typename... Args>
 auto order_indices(const std::tuple<Args...> &combination, const std::array<size_t, Rank> &order) {
     return detail::order_indices(combination, order, std::make_index_sequence<Rank>{});
@@ -60,7 +69,7 @@ constexpr auto _unique_find_type_with_position() {
         return _unique_find_type_with_position<T, Position + 1, Args...>();
     }
 }
-#endif
+
 
 template <TensorConcept TensorType, typename... Args, size_t... I>
 auto get_dim_ranges_for(const TensorType &tensor, const std::tuple<Args...> &args, std::index_sequence<I...> /*seq*/) {
@@ -92,41 +101,80 @@ constexpr auto find_position() {
     return find_position<AIndex, 0, Args...>();
 }
 
+#endif
+
+/**
+ * Find the position of an index within a tuple of indices.
+ *
+ * @tparam AIndex The index to find.
+ * @tparam TargetCombination The indices to search through.
+ *
+ * @return The position of the index in the tuple, or -1 if not found.
+ */
 template <typename AIndex, typename... TargetCombination>
 constexpr auto find_position(std::tuple<TargetCombination...> const & /*indices*/) {
     return detail::find_position<AIndex, TargetCombination...>();
 }
 
+#ifndef DOXYGEN
 template <typename S1, typename... S2, std::size_t... Is>
 constexpr auto _find_type_with_position(std::index_sequence<Is...> /*seq*/) {
     return std::tuple_cat(detail::_find_type_with_position<std::tuple_element_t<Is, S1>, 0, S2...>()...);
 }
+#endif
 
+/**
+ * Find the positions of several types in a tuple. The type will be in the even elements of the output
+ * and the positions will be in the odd elements.
+ *
+ * @tparam Ts The types to find.
+ * @tparam Us The indices to search through.
+ *
+ * @return A tuple containing the types found and their positions.
+ */
 template <typename... Ts, typename... Us>
 constexpr auto find_type_with_position(std::tuple<Ts...> const & /*unused*/, std::tuple<Us...> const & /*unused*/) {
     return _find_type_with_position<std::tuple<Ts...>, Us...>(std::make_index_sequence<sizeof...(Ts)>{});
 }
 
+#ifndef DOXYGEN
 template <typename S1, typename... S2, std::size_t... Is>
 constexpr auto _unique_find_type_with_position(std::index_sequence<Is...> /*seq*/) {
     return std::tuple_cat(detail::_unique_find_type_with_position<std::tuple_element_t<Is, S1>, 0, S2...>()...);
 }
+#endif
 
 template <typename... Ts, typename... Us>
 constexpr auto unique_find_type_with_position(std::tuple<Ts...> const & /*unused*/, std::tuple<Us...> const & /*unused*/) {
     return _unique_find_type_with_position<std::tuple<Ts...>, Us...>(std::make_index_sequence<sizeof...(Ts)>{});
 }
 
+
+/**
+ * Create a tuple of ranges that move along each of the tensor's axes.
+ *
+ * @param tensor The tensor we want to iterate over.
+ * @param args A tuple containing the axis indices in the odd positions and the index objects in the even positions.
+ * 
+ * @return A tuple of ranges to be used to iterate over a tensor.
+ */
 template <TensorConcept TensorType, typename... Args>
 auto get_dim_ranges_for(TensorType const &tensor, std::tuple<Args...> const &args) {
     return detail::get_dim_ranges_for(tensor, args, std::make_index_sequence<sizeof...(Args) / 2>{});
 }
 
+/**
+ * Create a tuple containing the dimensions of a tensor.
+ *
+ * @param tensor The tensor to query.
+ * @param args A tuple containing the indices and positions to use to query the axes of the tensor.
+ */
 template <TensorConcept TensorType, typename... Args>
 auto get_dim_for(TensorType const &tensor, std::tuple<Args...> const &args) {
     return detail::get_dim_for(tensor, args, std::make_index_sequence<sizeof...(Args) / 2>{});
 }
 
+#ifndef DOXYGEN
 template <typename ScalarType>
     requires(!TensorConcept<ScalarType>)
 auto get_dim_ranges_for(ScalarType const &tensor, std::tuple<> const &args) {
@@ -137,6 +185,7 @@ template <typename ScalarType>
 auto get_dim_for(ScalarType const &tensor, std::tuple<> const &args) {
     return std::tuple{};
 }
+#endif
 
 template <typename AIndex, typename... TargetCombination, typename... TargetPositionInC, typename... LinkCombination,
           typename... LinkPositionInLink>
