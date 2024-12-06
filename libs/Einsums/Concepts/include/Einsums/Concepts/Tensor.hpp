@@ -1329,13 +1329,21 @@ concept SameUnderlyingAndRank = IsSameUnderlyingAndRankV<First, Rest...>;
  */
 template <typename D>
 struct RemoveView {
+    /**
+     * @typedef base_type
+     *
+     * This will contain the type of tensor being viewed by the tensor view, if given a view.
+     * Otherwise, it will be the same as the tensor being passed.
+     */
     using base_type = D;
 };
 
+#ifndef DOXYGEN
 template <TensorViewConcept D>
 struct RemoveView<D> {
     using base_type = typename D::underlying_type;
 };
+#endif
 
 /**
  * @typedef RemoveViewT
@@ -1368,24 +1376,26 @@ TensorType<NewT, NewRank> create_tensor_of_same_type(TensorType<T, Rank> const &
  * This does not initialize the new tensor and more or less is used to get the return type with a decltype.
  *
  * @param tensor The tensor whose type is being copied.
- * @tparam TensorType The type of the
+ * @tparam TensorType The type of the tensor to be copied.
  */
 template <typename NewT, size_t NewRank, CoreTensorConcept TensorType>
 Tensor<NewT, NewRank> create_basic_tensor_like(TensorType const &tensor) {
     return Tensor<NewT, NewRank>();
 }
 
-#if defined(EINSUMS_COMPUTE_CODE)
+#ifndef DOXYGEN
+#    if defined(EINSUMS_COMPUTE_CODE)
 template <typename NewT, size_t NewRank, DeviceTensorConcept TensorType>
 DeviceTensor<NewT, NewRank> create_basic_tensor_like(TensorType const &tensor) {
     return DeviceTensor<NewT, NewRank>();
 }
-#endif
+#    endif
 
 template <typename NewT, size_t NewRank, DiskTensorConcept TensorType>
 disk::Tensor<NewT, NewRank> create_basic_tensor_like(TensorType const &) {
     return disk::Tensor<NewT, NewRank>();
 }
+#endif
 
 } // namespace detail
 
@@ -1423,13 +1433,20 @@ using BasicTensorLike = decltype(detail::create_basic_tensor_like<T, Rank>(D()))
  */
 template <typename D>
 struct ValueType {
+    /**
+     * @typedef type
+     *
+     * This will contain the type of data stored by the tensor.
+     */
     using type = D;
 };
 
+#ifndef DOXYGEN
 template <TensorConcept D>
 struct ValueType<D> {
     using type = typename D::ValueType;
 };
+#endif
 
 /**
  * @typedef ValueTypeT
@@ -1463,14 +1480,21 @@ constexpr size_t TensorRank<D> = D::Rank;
  */
 template <typename First, typename... Rest>
 struct BiggestType {
+    /**
+     * @typedef type
+     *
+     * The result of the operation. This will be the biggest type passed to this struct.
+     */
     using type =
         std::conditional_t<(sizeof(First) > sizeof(typename BiggestType<Rest...>::type)), First, typename BiggestType<Rest...>::type>;
 };
 
+#ifndef DOXYGEN
 template <typename First>
 struct BiggestType<First> {
     using type = First;
 };
+#endif
 
 /**
  * @typedef BiggestTypeT
@@ -1490,6 +1514,7 @@ using BiggestTypeT = typename BiggestType<Args...>::type;
 template <typename D>
 struct LocationTensorBaseOf {};
 
+#ifndef DOXYGEN
 template <CoreTensorConcept D>
 struct LocationTensorBaseOf<D> {
     using type = tensor_base::CoreTensor;
@@ -1500,11 +1525,12 @@ struct LocationTensorBaseOf<D> {
     using type = tensor_base::DiskTensor;
 };
 
-#if defined(EINSUMS_COMPUTE_CODE)
+#    if defined(EINSUMS_COMPUTE_CODE)
 template <DeviceTensorConcept D>
 struct LocationTensorBaseOf<D> {
     using type = tensor_base::DeviceTensorBase;
 };
+#    endif
 #endif
 
 /**
