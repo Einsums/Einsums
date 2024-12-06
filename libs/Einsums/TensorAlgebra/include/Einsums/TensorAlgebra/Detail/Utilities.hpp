@@ -35,7 +35,7 @@ auto order_indices(std::tuple<Args...> const &combination, std::array<size_t, Ra
  * @param order The array containing the new order.
  */
 template <size_t Rank, typename... Args>
-auto order_indices(const std::tuple<Args...> &combination, const std::array<size_t, Rank> &order) {
+auto order_indices(std::tuple<Args...> const &combination, std::array<size_t, Rank> const &order) {
     return detail::order_indices(combination, order, std::make_index_sequence<Rank>{});
 }
 
@@ -70,9 +70,8 @@ constexpr auto _unique_find_type_with_position() {
     }
 }
 
-
 template <TensorConcept TensorType, typename... Args, size_t... I>
-auto get_dim_ranges_for(const TensorType &tensor, const std::tuple<Args...> &args, std::index_sequence<I...> /*seq*/) {
+auto get_dim_ranges_for(TensorType const &tensor, std::tuple<Args...> const &args, std::index_sequence<I...> /*seq*/) {
     return std::tuple{ranges::views::ints(0, (int)tensor.dim(std::get<2 * I + 1>(args)))...};
 }
 
@@ -149,13 +148,12 @@ constexpr auto unique_find_type_with_position(std::tuple<Ts...> const & /*unused
     return _unique_find_type_with_position<std::tuple<Ts...>, Us...>(std::make_index_sequence<sizeof...(Ts)>{});
 }
 
-
 /**
  * Create a tuple of ranges that move along each of the tensor's axes.
  *
  * @param tensor The tensor we want to iterate over.
  * @param args A tuple containing the axis indices in the odd positions and the index objects in the even positions.
- * 
+ *
  * @return A tuple of ranges to be used to iterate over a tensor.
  */
 template <TensorConcept TensorType, typename... Args>
@@ -260,7 +258,7 @@ constexpr auto construct_indices(std::tuple<AIndices...> const & /*unused*/, std
 
 #if !defined(DOXYGEN)
 template <typename... PositionsInX, std::size_t... I>
-constexpr auto _contiguous_positions(const std::tuple<PositionsInX...> &x, std::index_sequence<I...> /*unused*/) -> bool {
+constexpr auto _contiguous_positions(std::tuple<PositionsInX...> const &x, std::index_sequence<I...> /*unused*/) -> bool {
     return ((std::get<2 * I + 1>(x) == std::get<2 * I + 3>(x) - 1) && ... && true);
 }
 #endif
@@ -379,8 +377,8 @@ size_t get_grid_ranges_for_many_b(BType const &B, std::tuple<> const &B_indices)
 }
 
 template <typename UniqueIndex, int BDim, TensorConcept BType, typename BHead>
-auto get_grid_ranges_for_many_b(BType const &B, std::tuple<BHead> const &B_indices)
-    -> std::enable_if<std::is_same_v<BHead, UniqueIndex>, size_t> {
+auto get_grid_ranges_for_many_b(BType const             &B,
+                                std::tuple<BHead> const &B_indices) -> std::enable_if<std::is_same_v<BHead, UniqueIndex>, size_t> {
     if constexpr (IsTiledTensorV<BType>) {
         return B.grid_size(BDim);
     } else if constexpr (IsBlockTensorV<BType>) {
@@ -471,8 +469,8 @@ size_t get_grid_ranges_for_many_c(CType const &C, std::tuple<CHead> const &C_ind
 template <typename UniqueIndex, int CDim, typename CType, TensorConcept AType, TensorConcept BType, typename CHead, typename... CIndices,
           typename... AIndices, typename... BIndices>
 auto get_grid_ranges_for_many_c(CType const &C, std::tuple<CHead, CIndices...> const &C_indices, AType const &A,
-                                std::tuple<AIndices...> const &A_indices, BType const &B, std::tuple<BIndices...> const &B_indices)
-    -> std::enable_if_t<sizeof...(CIndices) != 0, size_t> {
+                                std::tuple<AIndices...> const &A_indices, BType const &B,
+                                std::tuple<BIndices...> const &B_indices) -> std::enable_if_t<sizeof...(CIndices) != 0, size_t> {
     if constexpr (std::is_same_v<CHead, UniqueIndex>) {
         if constexpr (IsTiledTensorV<CType>) {
             return C.grid_size(CDim);
@@ -535,6 +533,11 @@ struct Intersect {
 template <typename S1, typename S2>
 using IntersectT = typename Intersect<S1, S2>::type;
 
+/**
+ * @struct Difference
+ *
+ * Find the elements in \p S1 that are not in \p S2.
+ */
 template <typename S1, typename S2>
 struct Difference {
     template <std::size_t... Indices>
@@ -546,12 +549,26 @@ struct Difference {
     using type = decltype(make_difference(std::make_index_sequence<std::tuple_size<S1>::value>{}));
 };
 
+/**
+ * @typedef DifferenceT
+ *
+ * The result of a difference operation. @sa Difference
+ */
 template <typename S1, typename S2>
 using DifferenceT = typename Difference<S1, S2>::type;
 
+/**
+ * @struct Contains
+ *
+ * Check whether a tuple contains an element.
+ *
+ * @tparam Haystack The tuple to search through.
+ * @tparam Needle The type to search for.
+ */
 template <class Haystack, class Needle>
 struct Contains;
 
+#ifndef DOXYGEN
 template <class Car, class... Cdr, class Needle>
 struct Contains<std::tuple<Car, Cdr...>, Needle> : Contains<std::tuple<Cdr...>, Needle> {};
 
@@ -560,10 +577,20 @@ struct Contains<std::tuple<Needle, Cdr...>, Needle> : std::true_type {};
 
 template <class Needle>
 struct Contains<std::tuple<>, Needle> : std::false_type {};
+#endif
 
+/**
+ * @struct Filter
+ *
+ * Removes duplicate values from a tuple. To use, you should start with an empty tuple for the \p Out parameter.
+ *
+ * @tparam In The tuple to filter.
+ * @tparam Out The output of the filter.
+ */
 template <class Out, class In>
 struct Filter;
 
+#ifndef DOXYGEN
 template <class... Out, class InCar, class... InCdr>
 struct Filter<std::tuple<Out...>, std::tuple<InCar, InCdr...>> {
     using type =
@@ -575,16 +602,29 @@ template <class Out>
 struct Filter<Out, std::tuple<>> {
     using type = Out;
 };
+#endif
 
 template <class T>
 using UniqueT = typename Filter<std::tuple<>, T>::type;
 
 // template <class T>
 // using c_unique_t = typename filter<std::tuple<>, const T>::type;
+
+/**
+ * @struct CUnique
+ *
+ * Looks for a unique type in a tuple, but decays away all cvref modifiers on the tuple.
+ */
 template <class T>
 struct CUnique {
     using type = UniqueT<std::decay_t<T>>;
 };
+
+/**
+ * @typedef CUniqueT
+ *
+ * Same as UniqueT, but it decays away all cvref modifiers on the tuple.
+ */
 template <class T>
 using CUniqueT = typename CUnique<T>::type;
 
