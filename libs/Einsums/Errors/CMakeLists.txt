@@ -19,6 +19,6 @@ einsums_add_module(
   SOURCES ${ErrorsSources}
   HEADERS ${ErrorsHeaders}
   DEPENDENCIES
-  MODULE_DEPENDENCIES Einsums_Assertion Einsums_Config Einsums_Preprocessor Einsums_TypeSupport
+  MODULE_DEPENDENCIES Einsums_Config Einsums_TypeSupport
   CMAKE_SUBDIRS examples tests
 )

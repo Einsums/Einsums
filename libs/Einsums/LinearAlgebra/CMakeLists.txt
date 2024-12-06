@@ -20,6 +20,7 @@ einsums_add_module(
   HEADERS ${LinearAlgebraHeaders}
   DEPENDENCIES
         MODULE_DEPENDENCIES
+        Einsums_Assertion
         Einsums_Config
         Einsums_BLAS
         Einsums_Concepts

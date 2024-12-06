@@ -5,11 +5,7 @@
 
 #pragma once
 
-#include <Einsums/Config.hpp>
-
 #include <Einsums/Errors/Error.hpp>
-#include <Einsums/Preprocessor/Expand.hpp>
-#include <Einsums/Preprocessor/NArgs.hpp>
 #include <Einsums/TypeSupport/TypeName.hpp>
 
 #include <exception>
