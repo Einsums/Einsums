@@ -5,9 +5,9 @@
 #include <Einsums/Testing.hpp>
 
 static void thrower() {
-    EINSUMS_THROW_EXCEPTION(einsums::error::no_success, "Test error.");
+    EINSUMS_THROW_EXCEPTION(einsums::dimension_error, "Test error.");
 }
 
 TEST_CASE("Test catching", "[error]") {
-    REQUIRE_THROWS_AS(thrower(), einsums::error::no_success);
+    REQUIRE_THROWS_AS(thrower(), einsums::dimension_error);
 }

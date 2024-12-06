@@ -49,11 +49,11 @@ auto element(MultiOperator multi_opt, CType<T, Rank> *C, MultiTensors<T, Rank> &
     if constexpr ((IsIncoreRankBlockTensorV<MultiTensors<T, Rank>, Rank, T> && ... && IsIncoreRankBlockTensorV<CType<T, Rank>, Rank, T>)) {
 
         if (((C->num_blocks() != tensors.num_blocks()) || ...)) {
-            EINSUMS_THROW_EXCEPTION(error::bad_parameter, "element: All tensors need to have the same number of blocks.");
+            EINSUMS_THROW_EXCEPTION(tensor_compat_error, "element: All tensors need to have the same number of blocks.");
         }
         for (int i = 0; i < C->num_blocks; i++) {
             if (((C->block_dim(i) != tensors.block_dim(i)) || ...)) {
-                EINSUMS_THROW_EXCEPTION(error::bad_parameter, "element: All tensor blocks need to have the same size.");
+                EINSUMS_THROW_EXCEPTION(dimension_error, "element: All tensor blocks need to have the same size.");
             }
         }
 

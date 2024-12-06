@@ -30,7 +30,7 @@ auto dot(AType const &A, BType const &B) -> Result {
 
     for (int i = 0; i < Rank; i++) {
         if (A.dim(i) != B.dim(i)) {
-            EINSUMS_THROW_EXCEPTION(error::tensors_incompatible, "Generic tensors have incompatible dimensions!");
+            EINSUMS_THROW_EXCEPTION(dimension_error, "Generic tensors have incompatible dimensions!");
         }
         strides[Rank - i - 1] = prod;
 
@@ -69,7 +69,7 @@ auto true_dot(AType const &A, BType const &B) -> typename AType::value_type {
 
     for (int i = 0; i < Rank; i++) {
         if (A.dim(i) != B.dim(i)) {
-            EINSUMS_THROW_EXCEPTION(error::tensors_incompatible, "Generic tensors have incompatible dimensions!");
+            EINSUMS_THROW_EXCEPTION(dimension_error, "Generic tensors have incompatible dimensions!");
         }
         strides[Rank - i - 1] = prod;
 
@@ -104,13 +104,13 @@ template <bool TransA, bool TransB, MatrixConcept AType, MatrixConcept BType, Ma
 void gemm(U const alpha, AType const &A, BType const &B, U const beta, CType *C) {
     // Check for compatibility.
     if (((TransA) ? A.dim(0) : A.dim(1)) != ((TransB) ? B.dim(1) : B.dim(0))) {
-        EINSUMS_THROW_EXCEPTION(error::tensors_incompatible, "Matrices require compatible inner dimensions!");
+        EINSUMS_THROW_CODED_EXCEPTION(dimension_error, 0, "Matrices require compatible inner dimensions!");
     }
     if (((TransA) ? A.dim(1) : A.dim(0)) != C->dim(0)) {
-        EINSUMS_THROW_EXCEPTION(error::tensors_incompatible, "Input and output matrices need to have compatible rows!");
+        EINSUMS_THROW_CODED_EXCEPTION(dimension_error, 1, "Input and output matrices need to have compatible rows!");
     }
     if (((TransB) ? B.dim(0) : B.dim(1)) != C->dim(1)) {
-        EINSUMS_THROW_EXCEPTION(error::tensors_incompatible, "Input and output matrices need to have compatible columns!");
+        EINSUMS_THROW_CODED_EXCEPTION(dimension_error, 1, "Input and output matrices need to have compatible columns!");
     }
 
     size_t rows  = (TransA) ? A.dim(1) : A.dim(0);
@@ -150,10 +150,10 @@ template <bool TransA, MatrixConcept AType, VectorConcept XType, VectorConcept Y
 void gemv(U const alpha, AType const &A, XType const &z, U const beta, YType *y) {
     // Check bounds.
     if (((TransA) ? A.dim(0) : A.dim(1)) != z.dim(0)) {
-        EINSUMS_THROW_EXCEPTION(error::tensors_incompatible, "Matrix and input vector need to have compatible sizes!");
+        EINSUMS_THROW_EXCEPTION(dimension_error, "Matrix and input vector need to have compatible sizes!");
     }
     if (((TransA) ? A.dim(1) : A.dim(0)) != y->dim(0)) {
-        EINSUMS_THROW_EXCEPTION(error::tensors_incompatible, "Matrix and output vector need to have compatible sizes!");
+        EINSUMS_THROW_EXCEPTION(dimension_error, "Matrix and output vector need to have compatible sizes!");
     }
 
     size_t rows = y->dim(0);
@@ -208,7 +208,7 @@ void direct_product(U alpha, AType const &A, BType const &B, U, CType *C) {
                 message = fmt::format("Generic tensors have incompatible dimensions! The {}th dimensions are A: {}, B: {}, C: {}", i,
                                       A.dim(i), B.dim(i), C->dim(i));
             }
-            EINSUMS_THROW_EXCEPTION(error::tensors_incompatible, fmt::runtime(message));
+            EINSUMS_THROW_EXCEPTION(dimension_error, fmt::runtime(message));
         }
         strides[Rank - i - 1] = prod;
 
@@ -233,7 +233,7 @@ template <MatrixConcept AType, VectorConcept XType, VectorConcept YType, typenam
     requires requires { requires !AlgebraTensorConcept<AType> || !AlgebraTensorConcept<XType> || !AlgebraTensorConcept<YType>; }
 void ger(U alpha, XType const &X, YType const &Y, AType *A) {
     if (A->dim(0) != X.dim(0) || A->dim(1) != Y.dim(0)) {
-        EINSUMS_THROW_EXCEPTION(error::tensors_incompatible, "Incompatible matrix and vector sizes!");
+        EINSUMS_THROW_EXCEPTION(dimension_error, "Incompatible matrix and vector sizes!");
     }
 
     size_t rows = A->dim(0);

@@ -13,6 +13,7 @@
 #include <Einsums/TensorBase/TensorBase.hpp>
 
 #include <concepts>
+#include <functional>
 
 // TODO:
 #ifdef __HIP__
@@ -236,7 +237,7 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
      *
      * @param index The index to test.
      * @return The index of the block containing the given index.
-     * @throws error::out_of_range Throws this when the index it outside of the tensor.
+     * @throws std::out_of_range Throws this when the index it outside of the tensor.
      */
     int block_of(size_t index) const {
         for (int i = 0; i < _ranges.size(); i++) {
@@ -289,7 +290,7 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
      *
      * @param name The name of the block to find.
      * @return The requested block.
-     * @throws error::bad_parameter if no block with the given name is contained in this tensor.
+     * @throws std::out_of_range if no block with the given name is contained in this tensor.
      */
     TensorType const &block(std::string const &name) const {
         for (int i = 0; i < _blocks.size(); i++) {
@@ -298,9 +299,9 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
             }
         }
         if (_blocks.size() == 0) {
-            EINSUMS_THROW_EXCEPTION(error::bad_parameter, "Could not find block with the name {}: no blocks in tensor", name);
+            EINSUMS_THROW_EXCEPTION(std::out_of_range, "Could not find block with the name {}: no blocks in tensor", name);
         }
-        EINSUMS_THROW_EXCEPTION(error::bad_parameter, "Could not find block with the name {}: no blocks with given name", name);
+        EINSUMS_THROW_EXCEPTION(std::out_of_range, "Could not find block with the name {}: no blocks with given name", name);
     }
 
     /**
@@ -313,23 +314,22 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
             }
         }
         if (_blocks.size() == 0) {
-            EINSUMS_THROW_EXCEPTION(error::bad_parameter, "Could not find block with the name {}: no blocks in tensor", name);
+            EINSUMS_THROW_EXCEPTION(std::out_of_range, "Could not find block with the name {}: no blocks in tensor", name);
         }
-        EINSUMS_THROW_EXCEPTION(error::bad_parameter, "Could not find block with the name {}: no blocks with given name", name);
+        EINSUMS_THROW_EXCEPTION(std::out_of_range, "Could not find block with the name {}: no blocks with given name", name);
     }
 
     /**
      * @brief Add a block to the end of the list of blocks.
      *
      * @param value The tensor to push.
-     * @throws error::bad_parameter if the tensor being pushed is not square.
+     * @throws dimension_error if the tensor being pushed is not square.
      */
-    void push_block(TensorType &&value) {
+    void push_block(TensorType value) {
         for (int i = 0; i < Rank; i++) {
             if (value.dim(i) != value.dim(0)) {
                 EINSUMS_THROW_EXCEPTION(
-                    error::bad_parameter,
-                    "Can only push square/hypersquare tensors to a block tensor. Make sure all dimensions are the same.");
+                    dimension_error, "Can only push square/hypersquare tensors to a block tensor. Make sure all dimensions are the same.");
             }
         }
         _blocks.push_back(value);
@@ -341,46 +341,13 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
      *
      * @param pos The position to insert at.
      * @param value The tensor to insert.
-     * @throws error::bad_parameter if the
+     * @throws dimension_error if the tensor being pushed is not square.
      */
-    void insert_block(int pos, TensorType &&value) {
+    void insert_block(int pos, TensorType value) {
         for (int i = 0; i < Rank; i++) {
             if (value.dim(i) != value.dim(0)) {
                 EINSUMS_THROW_EXCEPTION(
-                    error::bad_parameter,
-                    "Can only push square/hypersquare tensors to a block tensor. Make sure all dimensions are the same.");
-            }
-        }
-        // Add the block.
-        _blocks.insert(std::next(_blocks.begin(), pos), value);
-
-        update_dims();
-    }
-
-    /**
-     * @brief Add a block to the end of the list of blocks.
-     */
-    void push_block(TensorType const &value) {
-        for (int i = 0; i < Rank; i++) {
-            if (value.dim(i) != value.dim(0)) {
-                EINSUMS_THROW_EXCEPTION(
-                    error::bad_parameter,
-                    "Can only push square/hypersquare tensors to a block tensor. Make sure all dimensions are the same.");
-            }
-        }
-        _blocks.push_back(value);
-        update_dims();
-    }
-
-    /**
-     * @brief Add a block to the specified position in the list of blocks.
-     */
-    void insert_block(int pos, TensorType const &value) {
-        for (int i = 0; i < Rank; i++) {
-            if (value.dim(i) != value.dim(0)) {
-                EINSUMS_THROW_EXCEPTION(
-                    error::bad_parameter,
-                    "Can only push square/hypersquare tensors to a block tensor. Make sure all dimensions are the same.");
+                    dimension_error, "Can only push square/hypersquare tensors to a block tensor. Make sure all dimensions are the same.");
             }
         }
         // Add the block.
@@ -536,6 +503,9 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
      * @tparam Container A container type, such as std::array.
      * @param index The explicit desired index into the tensor. Elements must be castable to std::int64_t.
      * @return T& A reference to the value at that index.
+     *
+     * @throws not_enough_args Throws this if the container doesn't have enough indices.
+     * @throws too_many_args Throws this if the container has too many indices.
      */
     template <typename Container>
         requires requires {
@@ -547,9 +517,9 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
         }
     T &operator()(Container const &index) {
         if (index.size() < Rank) [[unlikely]] {
-            EINSUMS_THROW_EXCEPTION(error::bad_parameter, "Not enough indices passed to Tensor!");
+            EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to Tensor!");
         } else if (index.size() > Rank) [[unlikely]] {
-            EINSUMS_THROW_EXCEPTION(error::bad_parameter, "Too many indices passed to Tensor!");
+            EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to Tensor!");
         }
 
         std::array<std::int64_t, Rank> index_list{};
@@ -600,9 +570,9 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
         }
     const T &operator()(Container const &index) const {
         if (index.size() < Rank) [[unlikely]] {
-            EINSUMS_THROW_EXCEPTION(error::bad_parameter, "Not enough indices passed to Tensor!");
+            EINSUMS_THROW_EXCEPTION(not_enough_args, "Not enough indices passed to Tensor!");
         } else if (index.size() > Rank) [[unlikely]] {
-            EINSUMS_THROW_EXCEPTION(error::bad_parameter, "Too many indices passed to Tensor!");
+            EINSUMS_THROW_EXCEPTION(too_many_args, "Too many indices passed to Tensor!");
         }
 
         std::array<std::int64_t, Rank> index_list{};
@@ -729,12 +699,12 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
                                                                                                                                            \
         auto operator OP(const BlockTensor<T, Rank, TensorType> &b)->BlockTensor<T, Rank, TensorType> & {                                  \
             if (_blocks.size() != b._blocks.size()) {                                                                                      \
-                EINSUMS_THROW_EXCEPTION(error::bad_parameter, "tensors differ in number of blocks : {} {}", _blocks.size(),                \
+                EINSUMS_THROW_EXCEPTION(tensor_compat_error, "tensors differ in number of blocks : {} {}", _blocks.size(),                 \
                                         b._blocks.size());                                                                                 \
             }                                                                                                                              \
             for (int i = 0; i < _blocks.size(); i++) {                                                                                     \
                 if (_blocks[i].size() != b._blocks[i].size()) {                                                                            \
-                    EINSUMS_THROW_EXCEPTION(error::bad_parameter, "tensor blocks differ in size : {} {}", _blocks[i].size(),               \
+                    EINSUMS_THROW_EXCEPTION(dimension_error, "tensor blocks differ in size : {} {}", _blocks[i].size(),                    \
                                             b._blocks[i].size());                                                                          \
                 }                                                                                                                          \
             }                                                                                                                              \
@@ -858,7 +828,7 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
             }
         }
 
-        EINSUMS_THROW_EXCEPTION(error::bad_parameter, "Could not find block with the name {}", name);
+        EINSUMS_THROW_EXCEPTION(std::out_of_range, "Could not find block with the name {}", name);
     }
 
     /**
@@ -874,7 +844,7 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
             }
         }
 
-        EINSUMS_THROW_EXCEPTION(error::bad_parameter, "Could not find block with the name {}", name);
+        EINSUMS_THROW_EXCEPTION(std::out_of_range, "Could not find block with the name {}", name);
     }
 
     /**

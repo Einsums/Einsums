@@ -36,7 +36,7 @@ namespace einsums {
 template <typename T = double>
 auto create_random_definite(std::string const &name, int rows, int cols, T mean = T{1.0}) -> Tensor<T, 2> {
     if (rows != cols) {
-        EINSUMS_THROW_EXCEPTION(error::bad_parameter, "Can only make square positive definite matrices.");
+        EINSUMS_THROW_EXCEPTION(dimension_error, "Can only make square positive definite matrices.");
     }
     Tensor<T, 2> Evecs("name", rows, cols);
 
