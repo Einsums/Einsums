@@ -36,7 +36,7 @@ namespace hptt {
 
 template <typename floatType, int betaIsZero, bool conjA>
 struct micro_kernel {
-    static void execute(floatType const *__restrict__ A, size_t const lda, floatType *__restrict__ B, size_t const ldb,
+    static void execute(floatType const *A, size_t const lda, floatType *B, size_t const ldb,
                         floatType const alpha, floatType const beta) {
         constexpr int n = (REGISTER_BITS / 8) / sizeof(floatType);
 
@@ -75,7 +75,7 @@ static INLINE void prefetch(const floatType *A, const int lda) {
 }
 template <int betaIsZero, bool conjA>
 struct micro_kernel<double, betaIsZero, conjA> {
-    static void execute(double const *__restrict__ A, size_t const lda, double *__restrict__ B, size_t const ldb, double const alpha,
+    static void execute(double const *A, size_t const lda, double *B, size_t const ldb, double const alpha,
                         double const beta) {
         __m256d reg_alpha = _mm256_set1_pd(alpha); // do not alter the content of B
         __m256d reg_beta  = _mm256_set1_pd(beta);  // do not alter the content of B
@@ -130,7 +130,7 @@ struct micro_kernel<double, betaIsZero, conjA> {
 
 template <int betaIsZero, bool conjA>
 struct micro_kernel<float, betaIsZero, conjA> {
-    static void execute(float const *__restrict__ A, size_t const lda, float *__restrict__ B, size_t const ldb, float const alpha,
+    static void execute(float const *A, size_t const lda, float *B, size_t const ldb, float const alpha,
                         float const beta) {
         __m256 reg_alpha = _mm256_set1_ps(alpha); // do not alter the content of B
         __m256 reg_beta  = _mm256_set1_ps(beta);  // do not alter the content of B
@@ -241,7 +241,7 @@ static INLINE void prefetch(const floatType *A, const int lda) {
 
 template <int betaIsZero, bool conjA>
 struct micro_kernel<float, betaIsZero, conjA> {
-    static void execute(float const *__restrict__ A, size_t const lda, float *__restrict__ B, size_t const ldb, float const alpha,
+    static void execute(float const * A, size_t const lda, float * B, size_t const ldb, float const alpha,
                         float const beta) {
         float32x4_t reg_alpha = vdupq_n_f32(alpha);
         float32x4_t reg_beta  = vdupq_n_f32(beta);
@@ -298,8 +298,8 @@ struct micro_kernel<float, betaIsZero, conjA> {
 // template <int betaIsZero>
 // struct micro_kernel<float, betaIsZero>
 //{
-//     static void execute(const float* __restrict__ A, const size_t lda, float*
-//     __restrict__ B, const size_t ldb, const float alpha ,const float beta)
+//     static void execute(const float*  A, const size_t lda, float*
+//      B, const size_t ldb, const float alpha ,const float beta)
 //     {
 //        vector float reg_alpha = vec_splats(alpha);
 //
@@ -362,7 +362,7 @@ struct micro_kernel<float, betaIsZero, conjA> {
 #endif
 
 template <int betaIsZero, typename floatType, bool conjA>
-static INLINE void macro_kernel_scalar(const floatType *__restrict__ A, const size_t lda, int blockingA, floatType *__restrict__ B,
+static INLINE void macro_kernel_scalar(const floatType * A, const size_t lda, int blockingA, floatType * B,
                                        const size_t ldb, int blockingB, const floatType alpha, const floatType beta) {
 #ifdef DEBUG
     assert(blockingA > 0 && blockingB > 0);
@@ -385,8 +385,8 @@ static INLINE void macro_kernel_scalar(const floatType *__restrict__ A, const si
 }
 
 template <int blockingA, int blockingB, int betaIsZero, typename floatType, bool useStreamingStores_, bool conjA>
-static INLINE void macro_kernel(floatType const *__restrict__ A, floatType const *__restrict__ Anext, size_t const lda,
-                                floatType *__restrict__ B, floatType const *__restrict__ Bnext, size_t const ldb, floatType const alpha,
+static INLINE void macro_kernel(floatType const * A, floatType const * Anext, size_t const lda,
+                                floatType * B, floatType const * Bnext, size_t const ldb, floatType const alpha,
                                 floatType const beta) {
     constexpr int blocking_micro_ = REGISTER_BITS / 8 / sizeof(floatType);
     constexpr int blocking_       = blocking_micro_ * 4;
@@ -616,7 +616,7 @@ static INLINE void macro_kernel(floatType const *__restrict__ A, floatType const
 }
 
 template <int betaIsZero, typename floatType, bool conjA>
-void transpose_int_scalar(floatType const *__restrict__ A, int sizeStride1A, floatType *__restrict__ B, int sizeStride1B,
+void transpose_int_scalar(floatType const * A, int sizeStride1A, floatType * B, int sizeStride1B,
                           floatType const alpha, floatType const beta, ComputeNode const *plan) {
     int32_t const end = plan->end;
     size_t const  lda = plan->lda;
@@ -651,8 +651,8 @@ void transpose_int_scalar(floatType const *__restrict__ A, int sizeStride1A, flo
     }
 }
 template <int blockingA, int blockingB, int betaIsZero, typename floatType, bool useStreamingStores, bool conjA>
-void transpose_int(floatType const *__restrict__ A, floatType const *__restrict__ Anext, floatType *__restrict__ B,
-                   floatType const *__restrict__ Bnext, floatType const alpha, floatType const beta, ComputeNode const *plan) {
+void transpose_int(floatType const * A, floatType const * Anext, floatType * B,
+                   floatType const * Bnext, floatType const alpha, floatType const beta, ComputeNode const *plan) {
     int32_t const end = plan->end - (plan->inc - 1);
     int32_t const inc = plan->inc;
     size_t const  lda = plan->lda;
@@ -743,7 +743,7 @@ void transpose_int(floatType const *__restrict__ A, floatType const *__restrict_
 }
 
 template <int betaIsZero, typename floatType, bool useStreamingStores, bool conjA>
-void transpose_int_constStride1(floatType const *__restrict__ A, floatType *__restrict__ B, floatType const alpha, floatType const beta,
+void transpose_int_constStride1(floatType const * A, floatType * B, floatType const alpha, floatType const beta,
                                 ComputeNode const *plan) {
     int32_t const     end = plan->end - (plan->inc - 1);
     constexpr int32_t inc = 1; // TODO
@@ -887,7 +887,7 @@ void Transpose<floatType>::executeEstimate(Plan const *plan) noexcept {
 }
 
 template <int betaIsZero, typename floatType, bool useStreamingStores, bool spawnThreads, bool conjA>
-static void axpy_1D(floatType const *__restrict__ A, floatType *__restrict__ B, int const myStart, int const myEnd, floatType const alpha,
+static void axpy_1D(floatType const * A, floatType * B, int const myStart, int const myEnd, floatType const alpha,
                     floatType const beta, int numThreads) {
     if (!betaIsZero) {
         HPTT_DUPLICATE(spawnThreads, for (int32_t i = myStart; i < myEnd; i++) if (conjA) B[i] = alpha * conj(A[i]) + beta * B[i];
@@ -903,7 +903,7 @@ static void axpy_1D(floatType const *__restrict__ A, floatType *__restrict__ B, 
 }
 
 template <int betaIsZero, typename floatType, bool useStreamingStores, bool spawnThreads, bool conjA>
-static void axpy_2D(floatType const *__restrict__ A, int const lda, floatType *__restrict__ B, int const ldb, int const n0,
+static void axpy_2D(floatType const * A, int const lda, floatType * B, int const ldb, int const n0,
                     int const myStart, int const myEnd, floatType const alpha, floatType const beta, int numThreads) {
     if (!betaIsZero) {
         HPTT_DUPLICATE(spawnThreads, for (int32_t j = myStart; j < myEnd; j++) for (int32_t i = 0; i < n0; i++) if (conjA) B[i + j * ldb] =

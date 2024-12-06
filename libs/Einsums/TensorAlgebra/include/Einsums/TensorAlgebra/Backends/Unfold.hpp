@@ -67,9 +67,8 @@ constexpr auto get_n(std::tuple<List...> const &) {
  * @returns unfolded_tensor of shape ``(tensor.dim(mode), -1)``
  */
 template <unsigned int mode, template <typename, size_t> typename CType, size_t CRank, typename T>
-auto unfold(CType<T, CRank> const &source) -> Tensor<T, 2>
     requires(std::is_same_v<Tensor<T, CRank>, CType<T, CRank>>)
-{
+Tensor<T, 2> unfold(CType<T, CRank> const &source) {
     LabeledSection1(fmt::format("mode-{} unfold", mode));
 
     Dim<2> target_dims;

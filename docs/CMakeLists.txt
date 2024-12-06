@@ -1,6 +1,6 @@
 # used while generating sphinx config file
 set(doxygen_definition_list "DOXYGEN:=1" "EINSUMS_EXPORT=" "EINSUMS_FORCEINLINE=" "__HIP__="
-        "__device_ptr__=" "__host_ptr__="
+        "__device_ptr__=" "__host_ptr__=" "HOSTDEV="
 )
 
 foreach (doxygen_predef ${doxygen_definition_list})
@@ -106,7 +106,7 @@ file(
 # exclude api.rst...
 list(FILTER sphinx_source_files EXCLUDE REGEX "sphinx/api/full_api.rst")
 
-foreach (sphinx_source_file ${sphinx_source_files})
+foreach (sphinx_source_file ${sphinx_source_files}) 
     add_custom_command(
             OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${sphinx_source_file}"
             DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/${sphinx_source_file}"

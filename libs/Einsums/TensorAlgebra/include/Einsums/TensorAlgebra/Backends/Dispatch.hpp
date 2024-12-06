@@ -4,6 +4,7 @@
 //--------------------------------------------------------------------------------------------
 
 #pragma once
+#ifndef DOXYGEN
 
 #include <Einsums/Config.hpp>
 
@@ -746,3 +747,5 @@ auto einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTyp
 #endif
 }
 } // namespace einsums::tensor_algebra
+
+#endif

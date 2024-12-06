@@ -385,7 +385,7 @@ auto dot(AType const &A, BType const &B) -> typename AType::ValueType {
     return detail::dot(A, B);
 }
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
+#ifndef DOXYGEN
 template <VectorConcept AType, VectorConcept BType>
     requires requires {
         requires InSamePlace<AType, BType>;

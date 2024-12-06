@@ -28,9 +28,9 @@ namespace detail {
 template <bool OnlyUseGenericAlgorithm, TensorConcept AType, TensorConcept BType, typename CType, typename... CIndices,
           typename... AIndices, typename... BIndices>
     requires(TensorConcept<CType> || (ScalarConcept<CType> && sizeof...(CIndices) == 0))
-auto einsum(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const & /*Cs*/, CType *C,
+void einsum(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const & /*Cs*/, CType *C,
             BiggestTypeT<typename AType::data_type, typename BType::data_type> const AB_prefactor, std::tuple<AIndices...> const & /*As*/,
-            AType const &A, std::tuple<BIndices...> const & /*Bs*/, BType const &B) -> void;
+            AType const &A, std::tuple<BIndices...> const & /*Bs*/, BType const &B);
 } // namespace detail
 
 /*
@@ -42,8 +42,8 @@ template <TensorConcept AType, TensorConcept BType, typename CType, typename U, 
         requires InSamePlace<AType, BType>;
         requires InSamePlace<AType, CType> || !TensorConcept<CType>;
     }
-auto einsum(U const C_prefactor, std::tuple<CIndices...> const & /*Cs*/, CType *C, U const UAB_prefactor,
-            std::tuple<AIndices...> const & /*As*/, AType const &A, std::tuple<BIndices...> const & /*Bs*/, BType const &B) -> void;
+void einsum(U const C_prefactor, std::tuple<CIndices...> const & /*Cs*/, CType *C, U const UAB_prefactor,
+            std::tuple<AIndices...> const & /*As*/, AType const &A, std::tuple<BIndices...> const & /*Bs*/, BType const &B);
 
 // Einsums with provided prefactors.
 // 1. C n A n B n is defined above as the base implementation.
@@ -59,7 +59,7 @@ void einsum(T const C_prefactor, std::tuple<CIndices...> const &C_indices, CType
 // 3. C n A y B n
 template <SmartPointer AType, NotASmartPointer BType, NotASmartPointer CType, typename... CIndices, typename... AIndices,
           typename... BIndices, typename T>
-auto einsum(T const C_prefactor, std::tuple<CIndices...> const &C_indices, CType *C, T const AB_prefactor,
+void einsum(T const C_prefactor, std::tuple<CIndices...> const &C_indices, CType *C, T const AB_prefactor,
             std::tuple<AIndices...> const &A_indices, AType const &A, std::tuple<BIndices...> const &B_indices, BType const &B) {
     einsum(C_prefactor, C_indices, C, AB_prefactor, A_indices, *A, B_indices, B);
 }
@@ -67,7 +67,7 @@ auto einsum(T const C_prefactor, std::tuple<CIndices...> const &C_indices, CType
 // 4. C n A y B y
 template <SmartPointer AType, SmartPointer BType, NotASmartPointer CType, typename... CIndices, typename... AIndices, typename... BIndices,
           typename T>
-auto einsum(T const C_prefactor, std::tuple<CIndices...> const &C_indices, CType *C, T const AB_prefactor,
+void einsum(T const C_prefactor, std::tuple<CIndices...> const &C_indices, CType *C, T const AB_prefactor,
             std::tuple<AIndices...> const &A_indices, AType const &A, std::tuple<BIndices...> const &B_indices, BType const &B) {
     einsum(C_prefactor, C_indices, C, AB_prefactor, A_indices, *A, B_indices, *B);
 }
@@ -75,7 +75,7 @@ auto einsum(T const C_prefactor, std::tuple<CIndices...> const &C_indices, CType
 // 5. C y A n B n
 template <NotASmartPointer AType, NotASmartPointer BType, SmartPointer CType, typename... CIndices, typename... AIndices,
           typename... BIndices, typename T>
-auto einsum(T const C_prefactor, std::tuple<CIndices...> const &C_indices, CType *C, T const AB_prefactor,
+void einsum(T const C_prefactor, std::tuple<CIndices...> const &C_indices, CType *C, T const AB_prefactor,
             std::tuple<AIndices...> const &A_indices, AType const &A, std::tuple<BIndices...> const &B_indices, BType const &B) {
     einsum(C_prefactor, C_indices, C->get(), AB_prefactor, A_indices, A, B_indices, B);
 }
@@ -83,7 +83,7 @@ auto einsum(T const C_prefactor, std::tuple<CIndices...> const &C_indices, CType
 // 6. C y A n B y
 template <NotASmartPointer AType, SmartPointer BType, SmartPointer CType, typename... CIndices, typename... AIndices, typename... BIndices,
           typename T>
-auto einsum(T const C_prefactor, std::tuple<CIndices...> const &C_indices, CType *C, T const AB_prefactor,
+void einsum(T const C_prefactor, std::tuple<CIndices...> const &C_indices, CType *C, T const AB_prefactor,
             std::tuple<AIndices...> const &A_indices, AType const &A, std::tuple<BIndices...> const &B_indices, BType const &B) {
     einsum(C_prefactor, C_indices, C->get(), AB_prefactor, A_indices, A, B_indices, *B);
 }
@@ -91,7 +91,7 @@ auto einsum(T const C_prefactor, std::tuple<CIndices...> const &C_indices, CType
 // 7. C y A y B n
 template <SmartPointer AType, NotASmartPointer BType, SmartPointer CType, typename... CIndices, typename... AIndices, typename... BIndices,
           typename T>
-auto einsum(T const C_prefactor, std::tuple<CIndices...> const &C_indices, CType *C, T const AB_prefactor,
+void einsum(T const C_prefactor, std::tuple<CIndices...> const &C_indices, CType *C, T const AB_prefactor,
             std::tuple<AIndices...> const &A_indices, AType const &A, std::tuple<BIndices...> const &B_indices, BType const &B) {
     einsum(C_prefactor, C_indices, C->get(), AB_prefactor, A_indices, *A, B_indices, B);
 }
@@ -99,7 +99,7 @@ auto einsum(T const C_prefactor, std::tuple<CIndices...> const &C_indices, CType
 // 8. C y A y B y
 template <SmartPointer AType, SmartPointer BType, SmartPointer CType, typename... CIndices, typename... AIndices, typename... BIndices,
           typename T>
-auto einsum(T const C_prefactor, std::tuple<CIndices...> const &C_indices, CType *C, T const AB_prefactor,
+void einsum(T const C_prefactor, std::tuple<CIndices...> const &C_indices, CType *C, T const AB_prefactor,
             std::tuple<AIndices...> const &A_indices, AType const &A, std::tuple<BIndices...> const &B_indices, BType const &B) {
     einsum(C_prefactor, C_indices, C->get(), AB_prefactor, A_indices, *A, B_indices, *B);
 }
@@ -174,7 +174,7 @@ void einsum(std::tuple<CIndices...> const &C_indices, CType *C, std::tuple<AIndi
 
 template <template <typename, size_t> typename CType, size_t CRank, typename UnaryOperator, typename T = double>
     requires std::derived_from<CType<T, CRank>, tensor_base::Tensor<T, CRank>>
-auto element_transform(CType<T, CRank> *C, UnaryOperator unary_opt) -> void;
+void element_transform(CType<T, CRank> *C, UnaryOperator unary_opt);
 
 template <SmartPointer SmartPtr, typename UnaryOperator>
 void element_transform(SmartPtr *C, UnaryOperator unary_opt) {
@@ -194,7 +194,7 @@ constexpr auto get_n(std::tuple<List...> const &);
  * @returns unfolded_tensor of shape ``(tensor.dim(mode), -1)``
  */
 template <unsigned int mode, template <typename, size_t> typename CType, size_t CRank, typename T = double>
-auto unfold(CType<T, CRank> const &source) -> Tensor<T, 2>
+Tensor<T, 2> unfold(CType<T, CRank> const &source)
     requires(std::is_same_v<Tensor<T, CRank>, CType<T, CRank>>);
 
 /** Computes the Khatri-Rao product of tensors A and B.
@@ -210,8 +210,8 @@ template <TensorConcept AType, TensorConcept BType, typename... AIndices, typena
         requires AType::rank == sizeof...(AIndices);
         requires BType::rank == sizeof...(BIndices);
     }
-auto khatri_rao(std::tuple<AIndices...> const &, AType const &A, std::tuple<BIndices...> const &, BType const &B)
-    -> BasicTensorLike<AType, typename AType::data_type, 2>;
+BasicTensorLike<AType, typename AType::data_type, 2> khatri_rao(std::tuple<AIndices...> const &, AType const &A,
+                                                                std::tuple<BIndices...> const &, BType const &B);
 } // namespace einsums::tensor_algebra
 
 #include <Einsums/TensorAlgebra/Backends/Dispatch.hpp>

@@ -1,11 +1,11 @@
+#include <type_traits>
+
 #include "einsums/Section.hpp"
 #include "einsums/Tensor.hpp"
 #include "einsums/TensorAlgebra.hpp"
 #include "einsums/Utilities.hpp"
 #include "einsums/_Index.hpp"
 #include "mkl_cblas.h"
-
-#include <type_traits>
 
 using namespace einsums;
 using namespace einsums::tensor_algebra;
@@ -75,7 +75,7 @@ struct Tensor : public einsums::tensor_props::TRTensorBase<T, Rank> {
         static_assert(2 == sizeof...(Dims));
     }
 
-    [[nodiscard]] auto dim(int d) const -> size_t override { return 0; }
+    [[nodiscard]] size_t dim(int d) const override { return 0; }
 };
 
 } // namespace test
@@ -86,7 +86,7 @@ void test_tensor_construction() {
 
 template <template <typename, size_t> typename CType, template <typename, size_t> typename... MultiTensors, size_t Rank,
           typename MultiOperator, typename T = double>
-auto element_if(MultiOperator multi_opt, const CType<T, Rank> &A, const CType<T, Rank> &B) {
+auto element_if(MultiOperator multi_opt, CType<T, Rank> const &A, CType<T, Rank> const &B) {
     // LabeledSection0();
 
     auto target_dims = get_dim_ranges<Rank>(A);
@@ -99,8 +99,8 @@ auto element_if(MultiOperator multi_opt, const CType<T, Rank> &A, const CType<T,
 
     bool result{false};
     for (auto it = view.begin(); it != view.end(); it++) {
-        const T &A_value = std::apply(A, *it);
-        const T &B_value = std::apply(B, *it);
+        T const &A_value = std::apply(A, *it);
+        T const &B_value = std::apply(B, *it);
         result |= multi_opt(A_value, B_value);
     }
 
@@ -109,13 +109,13 @@ auto element_if(MultiOperator multi_opt, const CType<T, Rank> &A, const CType<T,
 
 // Returns false if they are equal. True if not
 template <typename T, size_t Rank>
-auto not_equal(const Tensor<T, Rank> &A, const Tensor<T, Rank> &B, T tolerance = 1.0E-10) -> bool {
-    return element_if([&](const T &A_value, const T &B_value) -> bool { return std::abs(A_value - B_value) > tolerance; }, A, B);
+auto not_equal(Tensor<T, Rank> const &A, Tensor<T, Rank> const &B, T tolerance = 1.0E-10) -> bool {
+    return element_if([&](T const &A_value, T const &B_value) -> bool { return std::abs(A_value - B_value) > tolerance; }, A, B);
 }
 
 void test1() {
-    const int B = 5, C = 5, D = 5;
-    const int K = 2, L = 2;
+    int const B = 5, C = 5, D = 5;
+    int const K = 2, L = 2;
 
     auto t_temp_vv = create_tensor("t", B, C);
     auto KLCD      = create_tensor("v", K, L, C, D);
@@ -140,7 +140,7 @@ void test1() {
 
 void test2() {
     Section   test2{"test2"};
-    const int A = 5, B = 5, C = 5, I = 2, J = 2;
+    int const A = 5, B = 5, C = 5, I = 2, J = 2;
 
     auto t_temp_vvoo = create_tensor("t", A, B, I, J);
     auto t_temp_vv   = create_random_tensor("t", B, C);

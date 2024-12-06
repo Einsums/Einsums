@@ -894,7 +894,7 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
     /**
      * @brief Gets the name of the tensor.
      */
-    [[nodiscard]] auto name() const -> std::string const & override { return _name; }
+    [[nodiscard]] std::string const &name() const override { return _name; }
 
     /**
      * @brief Sets the name of the tensor.
@@ -931,7 +931,7 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
     /**
      * @brief Returns true if all of the elements are viewed by this tensor.
      */
-    [[nodiscard]] auto full_view_of_underlying() const noexcept -> bool override { return true; }
+    [[nodiscard]] bool full_view_of_underlying() const noexcept override { return true; }
 
     // virtual void lock() const override { LockableTensor::lock(); }
 

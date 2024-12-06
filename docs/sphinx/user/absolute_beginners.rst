@@ -27,7 +27,7 @@ You have two choices for installing Einsums, compiling from source directly or b
 Compiling from source allows you to enable/disable certain features and to include debugging
 options into your code.
 
-If you desire to compile from source, visit
+If you wish to compile from source, visit
 :ref:`Building from source <building-from-source>`.
 
 If you have Python, you can install Einsums with::

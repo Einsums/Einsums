@@ -5,6 +5,8 @@
 
 #pragma once
 
+#ifndef DOXYGEN
+
 #include <Einsums/Concepts/Tensor.hpp>
 #include <Einsums/Profile/LabeledSection.hpp>
 #include <Einsums/Tensor/Tensor.hpp>
@@ -92,3 +94,5 @@ auto khatri_rao(std::tuple<AIndices...> const &, AType const &A, std::tuple<BInd
 #endif
 }
 } // namespace einsums::tensor_algebra
+
+#endif

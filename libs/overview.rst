@@ -122,6 +122,8 @@ The following is not supported, but may be supported in the future.
 * Tensors stored on disk are not fully fleshed out yet, and the interface is not yet stable.
 
 .. toctree::
-   :maxdepth: 2
+    :caption: Modules
+    :maxdepth: 2
+    
+    /libs/Einsums/modules
 
-   /libs/Einsums/modules.rst

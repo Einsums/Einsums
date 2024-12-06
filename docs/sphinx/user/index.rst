@@ -11,7 +11,7 @@ Einsums user guide
 ##################
 
 This guide is an overview and explains the important features;
-details are found in reference.
+details are found in the reference.
 
 .. toctree::
     :caption: Getting started
@@ -19,6 +19,12 @@ details are found in reference.
 
     absolute_beginners
     python
+
+.. toctree::
+    :caption: User's Reference
+    :maxdepth: 1
+
+    libs/overview
 
 .. toctree::
     :caption: Extras

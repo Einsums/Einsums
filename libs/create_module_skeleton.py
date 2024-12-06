@@ -343,7 +343,7 @@ modules_rst = f"""..
 
 """
 for module in modules:
-    modules_rst += f"   /libs/{lib_name}/{module}/docs/index.rst\n"
+    modules_rst += f"    /libs/{lib_name}/{module}/docs/index.rst\n"
 
 with open(os.path.join(cwd, lib_name, "modules.rst"), "w", encoding="utf8") as f:
     f.write(modules_rst)

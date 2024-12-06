@@ -15,9 +15,8 @@ Einsums's Documentation
    :hidden:
 
    User Guide <user/index>
-   API Reference <reference/index>
+   API Reference <libs/overview>
    Building from source <building/index>
-   Modules <libs/overview>
 
 **Version**: |release|
 
@@ -103,7 +102,7 @@ dgemm call:
 
       +++
 
-      .. button-ref:: libs/overview 
+      .. button-ref:: libs/overview
          :expand:
          :color: primary
          :click-parent:

@@ -97,22 +97,22 @@ class Transpose {
     /**
      * Indicates whether to conjugate the input tensor.
      */
-    bool      getConjA() noexcept { return conjA_; }
+    bool getConjA() noexcept { return conjA_; }
 
     /**
      * Change whether to conjugate the input tensor.
      */
-    void      setConjA(bool conjA) noexcept { conjA_ = conjA; }
+    void setConjA(bool conjA) noexcept { conjA_ = conjA; }
 
     /**
      * Get the number of threads to use in this operation.
      */
-    int       getNumThreads() const noexcept { return numThreads_; }
+    int getNumThreads() const noexcept { return numThreads_; }
 
     /**
      * Set the number of threads to use in this operation.
      */
-    void      setNumThreads(int numThreads) noexcept { numThreads_ = numThreads; }
+    void setNumThreads(int numThreads) noexcept { numThreads_ = numThreads; }
 
     /**
      * Get the scaling factor for A.
@@ -280,18 +280,18 @@ class Transpose {
     executeEstimate(Plan const *plan) noexcept; // almost identical to execute, but it just executes few iterations and then extrapolates
     double getTimeLimit() const;
 
-    floatType const *__restrict__ A_; //!< rawdata pointer for A
-    floatType *__restrict__ B_;       //!< rawdata pointer for B
-    floatType           alpha_;       //!< scaling factor for A
-    floatType           beta_;        //!< scaling factor for B
-    int                 dim_;         //!< dimension of the tensor
-    std::vector<size_t> sizeA_;       //!< size of A
-    std::vector<int>    perm_;        //!< permutation
-    std::vector<size_t> outerSizeA_;  //!< outer sizes of A
-    std::vector<size_t> outerSizeB_;  //!< outer sizes of B
-    std::vector<size_t> lda_;         //!< strides for all dimensions of A (first dimension has a stride of 1)
-    std::vector<size_t> ldb_;         //!< strides for all dimensions of B (first dimension has a stride of 1)
-    std::vector<int>    threadIds_;   //!< OpenMP threadIds of the threads involed in the transposition
+    floatType const    *A_;          //!< rawdata pointer for A
+    floatType          *B_;          //!< rawdata pointer for B
+    floatType           alpha_;      //!< scaling factor for A
+    floatType           beta_;       //!< scaling factor for B
+    int                 dim_;        //!< dimension of the tensor
+    std::vector<size_t> sizeA_;      //!< size of A
+    std::vector<int>    perm_;       //!< permutation
+    std::vector<size_t> outerSizeA_; //!< outer sizes of A
+    std::vector<size_t> outerSizeB_; //!< outer sizes of B
+    std::vector<size_t> lda_;        //!< strides for all dimensions of A (first dimension has a stride of 1)
+    std::vector<size_t> ldb_;        //!< strides for all dimensions of B (first dimension has a stride of 1)
+    std::vector<int>    threadIds_;  //!< OpenMP threadIds of the threads involed in the transposition
     int                 numThreads_;
     int                 selectedParallelStrategyId_;
     int                 selectedLoopOrderId_;

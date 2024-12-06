@@ -425,14 +425,13 @@ void dTensorTranspose(int const *perm, int const dim, double const alpha, double
  * transposition. \param[in] useRowMajor This flag indicates whether a row-major
  * memory layout should be used (default: off = column-major).
  */
-void cTensorTranspose(int const *perm, int const dim, float const _Complex alpha, bool conjA, float const _Complex *A, int const *sizeA,
-                      int const *outerSizeA, float const _Complex beta, float _Complex *B, int const *outerSizeB, int const numThreads,
+void cTensorTranspose(int const *perm, int const dim, _Complex float const alpha, bool conjA, _Complex float const *A, int const *sizeA,
+                      int const *outerSizeA, _Complex float const beta, _Complex float *B, int const *outerSizeB, int const numThreads,
                       int const useRowMajor = 0);
 
-/// @copydoc cTensorTranspose(const int *,const int,float const _Complex,bool,float const _Complex *,const int *,const int*,float const
-///  _Complex,float _Complex *,const int *,const
-///  int,const int)
-void zTensorTranspose(int const *perm, int const dim, double const _Complex alpha, bool conjA, double const _Complex *A, int const *sizeA,
-                      int const *outerSizeA, double const _Complex beta, double _Complex *B, int const *outerSizeB, int const numThreads,
+/// @copydoc cTensorTranspose(const int *,const int,_Complex float const,bool,_Complex float const *,const int *,const int*,_Complex float const,
+///  _Complex float *,const int *,const int,const int)
+void zTensorTranspose(int const *perm, int const dim, _Complex double const alpha, bool conjA, _Complex double const *A, int const *sizeA,
+                      int const *outerSizeA, _Complex double const beta, _Complex double *B, int const *outerSizeB, int const numThreads,
                       int const useRowMajor = 0);
 // }

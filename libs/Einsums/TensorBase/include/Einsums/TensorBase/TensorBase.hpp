@@ -24,9 +24,9 @@ namespace einsums::tensor_base {
  */
 struct TensorBase {
   public:
-  /**
-   * Default constructor.
-   */
+    /**
+     * Default constructor.
+     */
     TensorBase() = default;
 
     /**
@@ -42,17 +42,17 @@ struct TensorBase {
     /**
      * Indicates that the tensor contains all elements.
      */
-    virtual bool               full_view_of_underlying() const { return true; }
-    
+    virtual bool full_view_of_underlying() const { return true; }
+
     /**
      * Gets the name of the tensor.
      */
-    virtual std::string const &name() const                          = 0;
-    
+    virtual std::string const &name() const = 0;
+
     /**
      * Sets the name of the tensor.
      */
-    virtual void               set_name(std::string const &new_name) = 0;
+    virtual void set_name(std::string const &new_name) = 0;
 };
 
 /**
@@ -74,7 +74,7 @@ struct TypedTensor : virtual TensorBase {
     /**
      * Default constructor.
      */
-    TypedTensor()                    = default;
+    TypedTensor() = default;
 
     /**
      * Default copy constructor.
@@ -122,7 +122,7 @@ struct DeviceTypedTensor : virtual TypedTensor<HostT> {
     /**
      * Default constructor.
      */
-    DeviceTypedTensor()                          = default;
+    DeviceTypedTensor() = default;
 
     /**
      * Default copy constructor.
@@ -148,7 +148,7 @@ struct RankTensorNoRank {
     /**
      * Default constructor.
      */
-    RankTensorNoRank()                         = default;
+    RankTensorNoRank() = default;
 
     /**
      * Default copy constructor.
@@ -177,10 +177,10 @@ struct RankTensor : virtual TensorBase, virtual RankTensorNoRank {
      */
     static constexpr size_t Rank = R;
 
-    /** 
+    /**
      * Default constructor.
      */
-    RankTensor()                   = default;
+    RankTensor() = default;
 
     /**
      * Default copy constructor.
@@ -200,7 +200,7 @@ struct RankTensor : virtual TensorBase, virtual RankTensorNoRank {
     /**
      * Gets the dimension along a given axis.
      */
-    virtual auto dim(int d) const -> size_t = 0;
+    virtual size_t dim(int d) const = 0;
 };
 
 /**
@@ -214,7 +214,7 @@ struct TensorNoExtra {
     /**
      * Default constructor.
      */
-    TensorNoExtra()                      = default;
+    TensorNoExtra() = default;
 
     /**
      * Default copy constructor.
@@ -242,7 +242,7 @@ struct Tensor : virtual TensorNoExtra, virtual TypedTensor<T>, virtual RankTenso
     /**
      * Default constructor.
      */
-    Tensor()               = default;
+    Tensor() = default;
 
     /**
      * Default copy constructor.
@@ -255,10 +255,10 @@ struct Tensor : virtual TensorNoExtra, virtual TypedTensor<T>, virtual RankTenso
     ~Tensor() override = default;
 
     /// @copydoc TensorBase::full_view_of_underlying()
-    auto full_view_of_underlying() const -> bool override { return true; }
+    bool full_view_of_underlying() const override { return true; }
 
     /// @copydoc TensorBase::name()
-    auto name() const -> std::string const & override   = 0;
+    std::string const &name() const override = 0;
 
     /// @copydoc TensorBase::set_name()
     void set_name(std::string const &new_name) override = 0;
@@ -297,12 +297,12 @@ struct LockableTensor {
     /**
      * @brief Lock the tensor.
      */
-    virtual auto lock() const -> void { _lock->lock(); }
+    virtual void lock() const { _lock->lock(); }
 
     /**
      * @brief Try to lock the tensor. Returns false if a lock could not be obtained, or true if it could.
      */
-    virtual auto try_lock() const -> bool { return _lock->try_lock(); }
+    virtual bool try_lock() const { return _lock->try_lock(); }
 
     /**
      * @brief Unlock the tensor.
@@ -312,7 +312,7 @@ struct LockableTensor {
     /**
      * @brief Get the mutex.
      */
-    auto get_mutex() const -> std::shared_ptr<std::recursive_mutex> { return _lock; }
+    virtual std::shared_ptr<std::recursive_mutex> get_mutex() const { return _lock; }
 
     /**
      * @brief Set the mutex.
@@ -333,14 +333,14 @@ struct CoreTensor {
     /**
      * Default constructor.
      */
-    CoreTensor()                   = default;
+    CoreTensor() = default;
 
     /**
      * Default copy constructor.
      */
     CoreTensor(CoreTensor const &) = default;
 
-    /** 
+    /**
      * Default destructor.
      */
     virtual ~CoreTensor() = default;
@@ -357,7 +357,7 @@ struct DeviceTensor {
     /**
      * Default constructor.
      */
-    DeviceTensor()                     = default;
+    DeviceTensor() = default;
 
     /**
      * Default copy constructor.
@@ -380,14 +380,14 @@ struct DiskTensor {
     /**
      * Default constructor.
      */
-    DiskTensor()                   = default;
+    DiskTensor() = default;
 
     /**
      * Default copy constructor.
      */
     DiskTensor(DiskTensor const &) = default;
 
-    /** 
+    /**
      * Default destructor.
      */
     virtual ~DiskTensor() = default;
@@ -410,8 +410,8 @@ struct TensorViewNoExtra {
     /**
      * Default constructor.
      */
-    TensorViewNoExtra()                          = default;
-    
+    TensorViewNoExtra() = default;
+
     /**
      * Default copy constructor.
      */
@@ -439,15 +439,15 @@ struct TensorViewOnlyViewed {
     /**
      * Default constructor.
      */
-    TensorViewOnlyViewed()                             = default;
+    TensorViewOnlyViewed() = default;
 
     /**
-     * Default copy constructor. 
+     * Default copy constructor.
      */
     TensorViewOnlyViewed(TensorViewOnlyViewed const &) = default;
 
     /**
-     * Default destructor. 
+     * Default destructor.
      */
     virtual ~TensorViewOnlyViewed() = default;
 };
@@ -464,7 +464,7 @@ struct TensorViewOnlyViewed {
 template <typename T, size_t Rank, typename UnderlyingType>
 struct TensorView : public virtual TensorViewNoExtra, virtual TensorViewOnlyViewed<UnderlyingType>, virtual Tensor<T, Rank> {
   public:
-    /** 
+    /**
      * @typedef underlying_type
      *
      * This is the type of tensor being viewed.
@@ -474,8 +474,8 @@ struct TensorView : public virtual TensorViewNoExtra, virtual TensorViewOnlyView
     /**
      * Default constructor.
      */
-    TensorView()                   = default;
-    
+    TensorView() = default;
+
     /**
      * Default copy constructor.
      */
@@ -503,7 +503,7 @@ struct BasicTensorNoExtra {
     /**
      * Default constructor.
      */
-    BasicTensorNoExtra()                           = default;
+    BasicTensorNoExtra() = default;
 
     /**
      * Default copy constructor.
@@ -533,7 +533,7 @@ struct BasicTensor : virtual Tensor<T, Rank>, virtual BasicTensorNoExtra {
     /**
      * Default constructor.
      */
-    BasicTensor()                    = default;
+    BasicTensor() = default;
 
     /**
      * Default copy constructor.
@@ -547,25 +547,29 @@ struct BasicTensor : virtual Tensor<T, Rank>, virtual BasicTensorNoExtra {
 
     /**
      * Get a pointer to the data stored in this tensor.
+     * @pure
      */
-    virtual auto data() -> T *             = 0;
+    virtual T *data() = 0;
 
     /**
      * @copydoc BasicTensor::data()
+     * @pure
      */
-    virtual auto data() const -> T const * = 0;
+    virtual T const *data() const = 0;
 
     /**
      * Get the stride of the tensor along a given axis.
      *
      * @param d The axis to query.
+     * @pure
      */
-    virtual auto stride(int d) const -> size_t   = 0;
+    virtual size_t stride(int d) const = 0;
 
     /**
      * Get the strides of the tensor.
+     * @pure
      */
-    virtual auto strides() const -> Stride<Rank> = 0;
+    virtual Stride<Rank> strides() const = 0;
 };
 
 /**
@@ -580,7 +584,7 @@ struct CollectedTensorNoExtra {
     /**
      * Default constructor.
      */
-    CollectedTensorNoExtra()                               = default;
+    CollectedTensorNoExtra() = default;
 
     /**
      * Default copy constructor.
@@ -608,7 +612,7 @@ struct CollectedTensorOnlyStored {
     /**
      * Default constructor.
      */
-    CollectedTensorOnlyStored()                                  = default;
+    CollectedTensorOnlyStored() = default;
 
     /**
      * Default copy constructor.
@@ -643,7 +647,7 @@ struct CollectedTensor : virtual CollectedTensorNoExtra, virtual TensorNoExtra {
     /**
      * Default constructor.
      */
-    CollectedTensor()                        = default;
+    CollectedTensor() = default;
 
     /**
      * Default copy constructor.
@@ -667,7 +671,7 @@ struct TiledTensorNoExtra {
     /**
      * Default constructor.
      */
-    TiledTensorNoExtra()                           = default;
+    TiledTensorNoExtra() = default;
 
     /**
      * Default copy constructor.
@@ -696,7 +700,7 @@ struct BlockTensorNoExtra {
     /**
      * Default constructor.
      */
-    BlockTensorNoExtra()                           = default;
+    BlockTensorNoExtra() = default;
 
     /**
      * Default copy constructor.
@@ -725,7 +729,7 @@ struct FunctionTensorNoExtra {
     /**
      * Default constructor.
      */
-    FunctionTensorNoExtra()                              = default;
+    FunctionTensorNoExtra() = default;
 
     /**
      * Default copy constructor.
@@ -751,7 +755,7 @@ struct AlgebraOptimizedTensor {
     /**
      * Default constructor.
      */
-    AlgebraOptimizedTensor()                               = default;
+    AlgebraOptimizedTensor() = default;
 
     /**
      * Default copy constructor.

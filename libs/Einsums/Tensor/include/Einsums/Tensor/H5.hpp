@@ -57,15 +57,13 @@ auto data(::einsums::Tensor<T, Rank> &ref) -> T * {
     return ref.data();
 }
 
-/**
- * @brief Determines the rank of a tensor or view.
- *
- */
+#ifndef DOXYGEN
 template <typename T, size_t Rank>
 struct rank<::einsums::Tensor<T, Rank>> : public std::integral_constant<size_t, Rank> {};
 
 template <typename T, size_t Rank>
 struct rank<::einsums::TensorView<T, Rank>> : public std::integral_constant<size_t, Rank> {};
+#endif
 
 /**
  * @brief Determines the dimensions of a tensor or view.

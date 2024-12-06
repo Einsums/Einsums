@@ -160,7 +160,7 @@ api_ref_header = '''
 {0}
 -------------------------------------------------------------------------------
 
-See :ref:`public_api` for a list of names and headers that are part of the public
+See :ref:`modules_overview` for a list of names and headers that are part of the public
 |einsums| API.
 '''
 
@@ -185,7 +185,7 @@ api_header_file = '''
 
 Defined in header {3}.
 
-See :ref:`public_api` for a list of names and headers that are part of the public
+See :ref:`modules_overview` for a list of names and headers that are part of the public
 |einsums| API.
 
 .. autodoxygenfile:: {0}

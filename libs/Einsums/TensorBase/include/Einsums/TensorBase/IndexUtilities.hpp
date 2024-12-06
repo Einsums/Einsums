@@ -26,6 +26,7 @@ namespace einsums {
 #    define HOSTDEV
 #endif
 
+#ifndef DOXYGEN
 template <typename UniqueIndex, int BDim, typename BType>
 inline size_t get_dim_ranges_for_many_b(BType const &B, std::tuple<> const &B_indices) {
     return 1;
@@ -102,6 +103,8 @@ inline auto get_dim_ranges_for_many_c(CType const &C, std::tuple<CHead, CIndices
         return get_dim_ranges_for_many_c<UniqueIndex, CDim + 1>(C, std::tuple<CIndices...>(), A, A_indices, B, B_indices);
     }
 }
+
+#endif
 
 /**
  * @brief Finds the dimensions for the requested indices.
@@ -421,6 +424,7 @@ size_t dims_to_strides(std::array<arr_type1, Dims> const &dims, std::array<arr_t
     return stride;
 }
 
+#ifndef DOXYGEN
 template <int I, typename Head, typename Index>
 int compile_index_table(std::tuple<Head> const &, Index const &, int &out) {
     if constexpr (std::is_same_v<Head, Index>) {
@@ -447,6 +451,7 @@ void compile_index_table(std::tuple<UniqueIndices...> const &from_inds, std::tup
                          std::index_sequence<I...>) {
     std::array<int, sizeof...(Indices)> arr{compile_index_table<0>(from_inds, std::get<I>(to_inds), out[I])...};
 }
+#endif
 
 /**
  * @brief Turn a list of indices into a link table.
@@ -458,6 +463,7 @@ void compile_index_table(std::tuple<UniqueIndices...> const &from_inds, std::tup
     compile_index_table(from_inds, to_inds, out, std::make_index_sequence<sizeof...(Indices)>());
 }
 
+#ifndef DOXYGEN
 template <typename... UniqueIndices, typename... Indices, size_t... I>
 void compile_index_table(std::tuple<UniqueIndices...> const &from_inds, std::tuple<Indices...> const &to_inds,
                          std::array<int, sizeof...(Indices)> &out, std::index_sequence<I...>) {
@@ -469,4 +475,5 @@ void compile_index_table(std::tuple<UniqueIndices...> const &from_inds, std::tup
                          std::array<int, sizeof...(Indices)> &out) {
     compile_index_table(from_inds, to_inds, out, std::make_index_sequence<sizeof...(Indices)>());
 }
+#endif
 } // namespace einsums
