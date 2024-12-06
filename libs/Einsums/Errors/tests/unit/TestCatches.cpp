@@ -19,6 +19,8 @@ TEST_CASE("Test catching", "[error]") {
         REQUIRE(true);
     }
 
+    REQUIRE_THROWS_AS(thrower2(), einsums::dimension_error);
+
     try {
         thrower();
     } catch(einsums::dimension_error &e) {
