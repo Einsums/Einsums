@@ -527,6 +527,11 @@ else()
 
 endif(NOT WIN32)
 
+if (WIN32)
+  # Ensure both C++ exceptions and SEH exceptions are enabled
+  einsums_add_compile_flag(/EHa)
+endif ()
+
 # Configure Warnings
 if(EINSUMS_WITH_COMPILER_WARNINGS)
   if(MSVC) # Adding special warning settings for the MSVC compiler ...
