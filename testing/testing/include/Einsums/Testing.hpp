@@ -1,13 +1,15 @@
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 
 #pragma once
 
 #if defined(_WIN32) && !defined(CATCH_CONFIG_WINDOWS_SEH)
 #define CATCH_CONFIG_WINDOWS_SEH
 #endif
+
+#include <Einsums/Concepts/Complex.hpp>
 
 #include <catch2/catch_all.hpp>
 
@@ -74,4 +76,16 @@ template <typename T>
 auto WithinStrict(T value, T scale = T{1.0}) -> WithinStrictMatcher<T> {
     return WithinStrictMatcher<T>{value, scale};
 }
+
+template <typename TestType>
+void CheckWithinRel(TestType const &value, TestType const &reference, RemoveComplexT<TestType> const &tolerance) {
+    if constexpr (!IsComplexV<TestType>) {
+        CHECK_THAT(value, Catch::Matchers::WithinRel(reference, tolerance));
+    } else {
+        using RealType = RemoveComplexT<TestType>;
+        CHECK_THAT(value.real(), Catch::Matchers::WithinRel(reference.real(), RealType{tolerance}));
+        CHECK_THAT(value.imag(), Catch::Matchers::WithinRel(reference.imag(), RealType{tolerance}));
+    }
+}
+
 } // namespace einsums

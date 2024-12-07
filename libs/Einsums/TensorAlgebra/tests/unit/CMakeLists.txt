@@ -9,6 +9,7 @@ set(TensorAlgebraTests
         Einsum3
         Einsum4
         Einsum5
+        Hadamard
         Indices
         Sort
 )
