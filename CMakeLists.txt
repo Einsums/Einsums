@@ -527,9 +527,22 @@ else()
 
 endif(NOT WIN32)
 
-if (WIN32)
-  # Ensure both C++ exceptions and SEH exceptions are enabled
-  einsums_add_compile_flag(/EHa)
+# Add exception handling flags based on the compiler and platform
+if (MSVC)
+  # For MSVC, use /EHsc or /EHa depending on the level of SEH required
+  add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/EHsc>)
+elseif (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  # For Clang and ClangCL
+  if (WIN32)
+    # ClangCL on Windows
+    add_compile_options(-fcxx-exceptions -fseh-exceptions)
+  else ()
+    # Clang on macOS/Linux
+    add_compile_options(-fcxx-exceptions)
+  endif ()
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  # For GCC (Linux/macOS)
+  add_compile_options(-fexceptions)
 endif ()
 
 # Configure Warnings
