@@ -4,6 +4,8 @@ channels:
 dependencies:
   - sphinx=6.2.1
   - sphinx-design
+  - sphinx-copybutton
+  - sphinxcontrib-bibtex
   - six
   - pydata-sphinx-theme
   - doxygen

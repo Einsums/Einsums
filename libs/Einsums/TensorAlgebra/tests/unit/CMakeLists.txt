@@ -1,0 +1,29 @@
+#----------------------------------------------------------------------------------------------
+# Copyright (c) The Einsums Developers. All rights reserved.
+# Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+#----------------------------------------------------------------------------------------------
+
+set(TensorAlgebraTests
+        Einsum1
+        Einsum2
+        Einsum3
+        Einsum4
+        Einsum5
+        Hadamard
+        Indices
+        Sort
+)
+
+foreach (test ${TensorAlgebraTests})
+    set(sources ${test}.cpp)
+
+    source_group("Source Files" FILES ${sources})
+
+    einsums_add_executable(
+            ${test}_test INTERNAL_FLAGS
+            SOURCES ${sources} ${${test}_FLAGS}
+            FOLDER ${folder_name}
+    )
+
+    einsums_add_unit_test("modules.TensorAlgebra" ${test})
+endforeach ()
