@@ -5,12 +5,12 @@
 
 #pragma once
 
-#if defined(_WIN32) && !defined(CATCH_CONFIG_WINDOWS_SEH)
-#define CATCH_CONFIG_WINDOWS_SEH
-#endif
+#include <Einsums/Config.hpp>
 
 #include <Einsums/Concepts/Complex.hpp>
-
+#if defined(EINSUMS_WINDOWS)
+#    define CATCH_CONFIG_WINDOWS_SEH
+#endif
 #include <catch2/catch_all.hpp>
 
 namespace einsums {
