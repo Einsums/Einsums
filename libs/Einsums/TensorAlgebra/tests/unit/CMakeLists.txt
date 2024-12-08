@@ -12,6 +12,7 @@ set(TensorAlgebraTests
         Hadamard
         Indices
         Sort
+        Transpose
         UniquePointer
 )
 

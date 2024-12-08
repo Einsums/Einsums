@@ -80,11 +80,11 @@ auto WithinStrict(T value, T scale = T{1.0}) -> WithinStrictMatcher<T> {
 template <typename TestType>
 void CheckWithinRel(TestType const &value, TestType const &reference, RemoveComplexT<TestType> const &tolerance) {
     if constexpr (!IsComplexV<TestType>) {
-        CHECK_THAT(value, Catch::Matchers::WithinRel(reference, tolerance));
+        REQUIRE_THAT(value, Catch::Matchers::WithinRel(reference, tolerance));
     } else {
         using RealType = RemoveComplexT<TestType>;
-        CHECK_THAT(value.real(), Catch::Matchers::WithinRel(reference.real(), RealType{tolerance}));
-        CHECK_THAT(value.imag(), Catch::Matchers::WithinRel(reference.imag(), RealType{tolerance}));
+        REQUIRE_THAT(value.real(), Catch::Matchers::WithinRel(reference.real(), RealType{tolerance}));
+        REQUIRE_THAT(value.imag(), Catch::Matchers::WithinRel(reference.imag(), RealType{tolerance}));
     }
 }
 
