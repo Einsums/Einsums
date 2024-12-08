@@ -12,6 +12,7 @@ set(TensorAlgebraTests
         Hadamard
         Indices
         Sort
+        UniquePointer
 )
 
 foreach (test ${TensorAlgebraTests})
