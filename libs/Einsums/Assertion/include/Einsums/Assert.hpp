@@ -44,9 +44,9 @@ EINSUMS_EXPORT void set_assertion_handler(assertion_handler_type handler);
 /// \param msg The optional message that is used to give further information if
 ///             the assert fails. This should be convertible to a std::string
 ///
-/// If \p expr evaluates to false, The source location and \p msg is being
+/// If \p expr evaluates to false, The source location and \p msg is
 /// printed along with the expression and additional. Afterwards the program is
-/// being aborted. The assertion handler can be customized by calling
+/// aborted. The assertion handler can be customized by calling
 /// einsums::assertion::set_assertion_handler().
 ///
 /// Asserts are enabled if \a EINSUMS_DEBUG is set. This is the default for

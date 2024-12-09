@@ -10,7 +10,7 @@ set(ErrorsHeaders
     Einsums/Errors/ThrowException.hpp
 )
 
-set(ErrorsSources ErrorNames.cpp)
+set(ErrorsSources ErrorNames.cpp Errors.cpp)
 
 include(Einsums_AddModule)
 einsums_add_module(
