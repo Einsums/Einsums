@@ -29,15 +29,15 @@ struct TimerDetail {
     // Number of times the timer has been called
     size_t total_calls{0};
 
-    TimerDetail                       *parent{nullptr};
-    std::map<std::string, TimerDetail> children;
-    std::vector<std::string>           order;
+    std::shared_ptr<TimerDetail>                        parent{nullptr};
+    std::map<std::string, std::shared_ptr<TimerDetail>> children;
+    std::vector<std::string>                            order;
 
     time_point start_time;
 };
 
-TimerDetail *current_timer{nullptr};
-TimerDetail *root{nullptr};
+std::shared_ptr<TimerDetail> current_timer{nullptr};
+std::shared_ptr<TimerDetail> root{nullptr};
 
 } // namespace detail
 
@@ -45,7 +45,7 @@ namespace detail {
 using std::chrono::duration_cast;
 using std::chrono::milliseconds;
 
-void print_timer_info(TimerDetail *timer, std::FILE *fp) { // NOLINT
+void print_timer_info(std::shared_ptr<TimerDetail> timer, std::FILE *fp) { // NOLINT
     if (timer != root) {
         std::string buffer;
         if (timer->total_calls != 0) {
@@ -70,14 +70,14 @@ void print_timer_info(TimerDetail *timer, std::FILE *fp) { // NOLINT
         print::indent();
 
         for (auto &child : timer->order) {
-            print_timer_info(&timer->children[child], fp);
+            print_timer_info(timer->children[child], fp);
         }
 
         print::deindent();
     }
 }
 
-void print_timer_info(TimerDetail *timer, std::ostream &os) { // NOLINT
+void print_timer_info(std::shared_ptr<TimerDetail> timer, std::ostream &os) { // NOLINT
     if (timer != root) {
         std::string buffer;
         if (timer->total_calls != 0) {
@@ -98,7 +98,7 @@ void print_timer_info(TimerDetail *timer, std::ostream &os) { // NOLINT
         print::indent();
 
         for (auto &child : timer->order) {
-            print_timer_info(&timer->children[child], os);
+            print_timer_info(timer->children[child], os);
         }
 
         print::deindent();
@@ -109,7 +109,7 @@ void print_timer_info(TimerDetail *timer, std::ostream &os) { // NOLINT
 
 void initialize() {
     using namespace detail;
-    root              = new TimerDetail();
+    root              = std::make_shared<TimerDetail>();
     root->name        = "Total Run Time";
     root->total_calls = 1;
 
@@ -125,8 +125,8 @@ void initialize() {
 void finalize() {
     using namespace detail;
     assert(root == current_timer);
-    delete root;
-    root = current_timer = nullptr;
+    root.reset();
+    current_timer.reset();
 }
 
 void report() {
@@ -171,12 +171,12 @@ void push(std::string name) {
         }
 
         if (current_timer->children.count(name) == 0) {
-            current_timer->children[name].name   = name;
-            current_timer->children[name].parent = current_timer;
+            current_timer->children[name]->name   = name;
+            current_timer->children[name]->parent = current_timer;
             current_timer->order.push_back(name);
         }
 
-        current_timer             = &current_timer->children[name];
+        current_timer             = current_timer->children[name];
         current_timer->start_time = clock::now();
     }
 }
