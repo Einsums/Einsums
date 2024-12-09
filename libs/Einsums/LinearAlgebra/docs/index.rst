@@ -25,7 +25,7 @@ Here are some of the public symbols that are available to use.
     On exit, the value of :code:`scale` will normally be 1. However, it may be different if the 
     result of the sum would have caused either an overflow or an underflow.
 
-    Currently only supports :cpp:class:`BasicTensor`s of rank 1.
+    Currently only supports :code:`BasicTensor`s of rank 1.
 
     :param A: The tensor to evaluate.
     :param scale: The scale factor. It is both an input and output parameter.

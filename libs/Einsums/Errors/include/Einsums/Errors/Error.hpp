@@ -62,9 +62,6 @@ struct CodedError : public ErrorClass {
 struct EINSUMS_EXPORT dimension_error : public std::invalid_argument {
     dimension_error(const char *what);
     dimension_error(const std::string &what);
-    dimension_error(const dimension_error &other) = default;
-
-    ~dimension_error() = default;
 };
 
 /**
@@ -76,9 +73,6 @@ struct EINSUMS_EXPORT dimension_error : public std::invalid_argument {
 struct EINSUMS_EXPORT tensor_compat_error : public std::logic_error {
     tensor_compat_error(const char *what);
     tensor_compat_error(const std::string &what);
-    tensor_compat_error(const tensor_compat_error &other) = default;
-
-    ~tensor_compat_error() = default;
 };
 
 /**
@@ -89,8 +83,6 @@ struct EINSUMS_EXPORT tensor_compat_error : public std::logic_error {
 struct EINSUMS_EXPORT num_argument_error : public std::invalid_argument {
     num_argument_error(char const *what);
     num_argument_error(std ::string const &what);
-    num_argument_error(num_argument_error const &other) = default;
-    ~num_argument_error() = default;
 };
 
 /**
@@ -101,8 +93,6 @@ struct EINSUMS_EXPORT num_argument_error : public std::invalid_argument {
 struct EINSUMS_EXPORT not_enough_args : public num_argument_error {
     not_enough_args(char const *what);
     not_enough_args(std ::string const &what);
-    not_enough_args(not_enough_args const &other) = default;
-    ~not_enough_args() = default;
 };
 
 /**
@@ -113,8 +103,6 @@ struct EINSUMS_EXPORT not_enough_args : public num_argument_error {
 struct EINSUMS_EXPORT too_many_args : public num_argument_error {
     too_many_args(char const *what);
     too_many_args(std ::string const &what);
-    too_many_args(too_many_args const &other) = default;
-    ~too_many_args() = default;
 };
 
 /**
@@ -125,8 +113,6 @@ struct EINSUMS_EXPORT too_many_args : public num_argument_error {
 struct EINSUMS_EXPORT access_denied : public std::logic_error {
     access_denied(char const *what);
     access_denied(std ::string const &what);
-    access_denied(access_denied const &other) = default;
-    ~access_denied() = default;
 };
 
 /**
@@ -137,8 +123,6 @@ struct EINSUMS_EXPORT access_denied : public std::logic_error {
 struct EINSUMS_EXPORT todo_error : public std::logic_error {
     todo_error(char const *what);
     todo_error(std ::string const &what);
-    todo_error(todo_error const &other) = default;
-    ~todo_error() = default;
 };
 
 /**
@@ -151,8 +135,6 @@ struct EINSUMS_EXPORT todo_error : public std::logic_error {
 struct EINSUMS_EXPORT bad_logic : public std::logic_error {
     bad_logic(char const *what);
     bad_logic(std ::string const &what);
-    bad_logic(bad_logic const &other) = default;
-    ~bad_logic() = default;
 };
 
 } // namespace einsums
