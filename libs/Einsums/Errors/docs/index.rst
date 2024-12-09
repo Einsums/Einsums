@@ -8,7 +8,8 @@
 Errors
 ======
 
-TODO: High-level description of the module.
+This module contains symbols used for error handling. This included exception classes and macros for throwing
+exceptions with location information. 
 
 See the :ref:`API reference <modules_Errors_api>` of this module for more
 details.

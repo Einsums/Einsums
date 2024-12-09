@@ -9,7 +9,7 @@
 HPTT
 ====
 
-TODO: High-level description of the module.
+Fork of the High-performance Tensor Transpose library.
 
 See the :ref:`API reference <modules_HPTT_api>` of this module for more
 details.

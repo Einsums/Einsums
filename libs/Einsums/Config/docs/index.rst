@@ -8,8 +8,7 @@
 Config
 ======
 
-TODO: High-level description of the module.
+This module contains several utilities for telling the compiler how to handle things.
 
 See the :ref:`API reference <modules_Config_api>` of this module for more
 details.
-

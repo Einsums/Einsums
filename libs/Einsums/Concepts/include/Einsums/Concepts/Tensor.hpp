@@ -1371,7 +1371,7 @@ TensorType<NewT, NewRank> create_tensor_of_same_type(TensorType<T, Rank> const &
 }
 
 /**
- * @brief Creates a new basic tensor in the same place as the input, but with a different rank and storage type..
+ * @brief Creates a new basic tensor in the same place as the input, but with a different rank and storage type.
  *
  * This does not initialize the new tensor and more or less is used to get the return type with a decltype.
  *
