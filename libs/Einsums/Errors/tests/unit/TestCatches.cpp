@@ -63,3 +63,24 @@ TEST_CASE("Test catching 3", "[error]") {
 
     REQUIRE_THROWS_AS(thrower3(), std::logic_error);
 }
+
+TEST_CASE("Test catching 4", "[error]") {
+    INFO("Starting test.");
+
+    std::vector<int> vec(0);
+
+    try {
+        INFO("Throwing...");
+
+        auto x = vec.at(1);
+    } catch(std::out_of_range const &e) {
+        INFO("Caught exception!");
+        REQUIRE(true);
+    } catch(...){
+        INFO("Caught the exception but not in the correct handler!");
+    }
+
+    int x;
+
+    REQUIRE_THROWS_AS((x = vec.at(1)), std::out_of_range);
+}

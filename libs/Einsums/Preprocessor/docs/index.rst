@@ -8,7 +8,7 @@
 Preprocessor
 ============
 
-TODO: High-level description of the module.
+This module contains several macros for performing operations with the preprocessor.
 
 See the :ref:`API reference <modules_Preprocessor_api>` of this module for more
 details.

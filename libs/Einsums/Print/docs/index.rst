@@ -8,8 +8,28 @@
 Print
 =====
 
-TODO: High-level description of the module.
+This module contains overloads for :code:`fmt::println` that work with Tensors, as well as a few special symbols for
+other tasks.
 
 See the :ref:`API reference <modules_Print_api>` of this module for more
 details.
+
+--------------
+Public Symbols
+--------------
+
+.. cpp:class:: template<std::integral IntType> print::ordinal
+
+    This is a wrapper for a value that allows formatting an integer as an ordinal, such as 1st, 2nd, etc.
+    Here is an example.
+
+    .. code::
+        
+        fmt::format("Error with the {} argument", print::ordinal{arg_num});
+    
+    This might give a string like :code:`Error with the 3rd argument`, if the value passed was 3.
+
+    This class puts the correct ordinal abbreviation after the number based on its value. It can also
+    handle negative numbers. To make things easier for users, there are also a few basic operations that
+    are defined to allow these to act like normal numbers, such as in-place arithmetic.
 

@@ -4,9 +4,7 @@
 TEST_CASE("Formatting ordinals", "[print]") {
     using namespace einsums;
 
-    print::ordinal<int> first = 1;
-
-    std::string formatted = fmt::format("{}", first);
+    std::string formatted = fmt::format("{}", print::ordinal{1});
 
     REQUIRE(formatted == "1st");
 }
