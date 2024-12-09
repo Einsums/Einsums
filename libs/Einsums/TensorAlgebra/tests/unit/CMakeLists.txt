@@ -9,9 +9,11 @@ set(TensorAlgebraTests
         Einsum3
         Einsum4
         Einsum5
+        Einsum6
         Element
         Hadamard
         Indices
+        KhatriRao
         OuterProduct
         Sort
         Transpose
