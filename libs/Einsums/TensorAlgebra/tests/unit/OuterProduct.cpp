@@ -25,7 +25,7 @@ TEMPLATE_TEST_CASE("outer product", "[tensor_algebra]", float, double, std::comp
 
         for (int x = 0; x < _x; x++) {
             for (int y = 0; y < _y; y++) {
-                CheckWithinRel(C(x, y), A(x) * B(y), RemoveComplexT<TestType>{0.001});
+                CheckWithinRel(C(x, y), A(x) * B(y), 0.001);
                 // REQUIRE_THAT(C(x, y), Catch::Matchers::WithinAbs(A(x) * B(y), 0.001));
             }
         }
@@ -35,7 +35,7 @@ TEMPLATE_TEST_CASE("outer product", "[tensor_algebra]", float, double, std::comp
 
         for (int x = 0; x < _x; x++) {
             for (int y = 0; y < _y; y++) {
-                CheckWithinRel(C(x, y), A(y) * B(x), RemoveComplexT<TestType>{0.001});
+                CheckWithinRel(C(x, y), A(y) * B(x), 0.001);
                 // REQUIRE_THAT(C(x, y), Catch::Matchers::WithinAbs(A(y) * B(x), 0.001));
             }
         }
@@ -45,7 +45,7 @@ TEMPLATE_TEST_CASE("outer product", "[tensor_algebra]", float, double, std::comp
 
         for (int x = 0; x < _x; x++) {
             for (int y = 0; y < _y; y++) {
-                CheckWithinRel(C(y, x), A(y) * B(x), RemoveComplexT<TestType>{0.001});
+                CheckWithinRel(C(y, x), A(y) * B(x), 0.001);
                 // REQUIRE_THAT(C(y, x), Catch::Matchers::WithinAbs(A(y) * B(x), 0.001));
             }
         }
@@ -55,7 +55,7 @@ TEMPLATE_TEST_CASE("outer product", "[tensor_algebra]", float, double, std::comp
 
         for (int x = 0; x < _x; x++) {
             for (int y = 0; y < _y; y++) {
-                CheckWithinRel(C(y, x), A(x) * B(y), RemoveComplexT<TestType>{0.001});
+                CheckWithinRel(C(y, x), A(x) * B(y), 0.001);
                 // REQUIRE_THAT(C(y, x), Catch::Matchers::WithinAbs(A(x) * B(y), 0.001));
             }
         }
@@ -72,7 +72,7 @@ TEMPLATE_TEST_CASE("outer product", "[tensor_algebra]", float, double, std::comp
         for (int x = 0; x < 3; x++) {
             for (int y = 0; y < 3; y++) {
                 for (int z = 0; z < 3; z++) {
-                    CheckWithinRel(C(x, y, z), A(x, y) * B(z), RemoveComplexT<TestType>{0.001});
+                    CheckWithinRel(C(x, y, z), A(x, y) * B(z), 0.001);
                     // REQUIRE_THAT(C(x, y, z), Catch::Matchers::WithinAbs(A(x, y) * B(z), 0.001));
                 }
             }
@@ -84,7 +84,7 @@ TEMPLATE_TEST_CASE("outer product", "[tensor_algebra]", float, double, std::comp
         for (int x = 0; x < 3; x++) {
             for (int y = 0; y < 3; y++) {
                 for (int z = 0; z < 3; z++) {
-                    CheckWithinRel(C(z, x, y), A(x, y) * B(z), RemoveComplexT<TestType>{0.001});
+                    CheckWithinRel(C(z, x, y), A(x, y) * B(z), 0.001);
                     // REQUIRE_THAT(C(z, x, y), Catch::Matchers::WithinAbs(A(x, y) * B(z), 0.001));
                 }
             }
@@ -96,7 +96,7 @@ TEMPLATE_TEST_CASE("outer product", "[tensor_algebra]", float, double, std::comp
         for (int x = 0; x < 3; x++) {
             for (int y = 0; y < 3; y++) {
                 for (int z = 0; z < 3; z++) {
-                    CheckWithinRel(C(z, x, y), A(x, y) * B(z), RemoveComplexT<TestType>{0.001});
+                    CheckWithinRel(C(z, x, y), A(x, y) * B(z), 0.001);
                     // REQUIRE_THAT(C(z, x, y), Catch::Matchers::WithinAbs(A(x, y) * B(z), 0.001));
                 }
             }
@@ -116,7 +116,7 @@ TEMPLATE_TEST_CASE("outer product", "[tensor_algebra]", float, double, std::comp
             for (int x = 0; x < 3; x++) {
                 for (int y = 0; y < 3; y++) {
                     for (int z = 0; z < 3; z++) {
-                        CheckWithinRel(C(w, x, y, z), A(w, x) * B(y, z), RemoveComplexT<TestType>{0.001});
+                        CheckWithinRel(C(w, x, y, z), A(w, x) * B(y, z), 0.001);
                         // REQUIRE_THAT(C(w, x, y, z), Catch::Matchers::WithinAbs(A(w, x) * B(y, z), 0.001));
                     }
                 }
@@ -130,7 +130,7 @@ TEMPLATE_TEST_CASE("outer product", "[tensor_algebra]", float, double, std::comp
             for (int x = 0; x < 3; x++) {
                 for (int y = 0; y < 3; y++) {
                     for (int z = 0; z < 3; z++) {
-                        CheckWithinRel(C(w, x, y, z), A(y, z) * B(w, x), RemoveComplexT<TestType>{0.001});
+                        CheckWithinRel(C(w, x, y, z), A(y, z) * B(w, x), 0.001);
                         // REQUIRE_THAT(C(w, x, y, z), Catch::Matchers::WithinAbs(A(y, z) * B(w, x), 0.001));
                     }
                 }
@@ -156,7 +156,7 @@ TEMPLATE_TEST_CASE("view outer product", "[tensor_algebra]", float, double, std:
 
         for (int x = 0; x < 3; x++) {
             for (int y = 0; y < 3; y++) {
-                CheckWithinRel(C(x, y), vA(x) * vB(y), RemoveComplexT<TestType>{0.001});
+                CheckWithinRel(C(x, y), vA(x) * vB(y), 0.001);
                 // REQUIRE_THAT(C(x, y), Catch::Matchers::WithinAbs(vA(x) * vB(y), 0.001));
             }
         }
@@ -166,7 +166,7 @@ TEMPLATE_TEST_CASE("view outer product", "[tensor_algebra]", float, double, std:
 
         for (int x = 0; x < 3; x++) {
             for (int y = 0; y < 3; y++) {
-                CheckWithinRel(C(x, y), vA(y) * vB(x), RemoveComplexT<TestType>{0.001});
+                CheckWithinRel(C(x, y), vA(y) * vB(x), 0.001);
                 // REQUIRE_THAT(C(x, y), Catch::Matchers::WithinAbs(vA(y) * vB(x), 0.001));
             }
         }
@@ -176,7 +176,7 @@ TEMPLATE_TEST_CASE("view outer product", "[tensor_algebra]", float, double, std:
 
         for (int x = 0; x < 3; x++) {
             for (int y = 0; y < 3; y++) {
-                CheckWithinRel(C(y, x), vA(y) * vB(x), RemoveComplexT<TestType>{0.001});
+                CheckWithinRel(C(y, x), vA(y) * vB(x), 0.001);
                 // REQUIRE_THAT(C(y, x), Catch::Matchers::WithinAbs(vA(y) * vB(x), 0.001));
             }
         }
@@ -186,7 +186,7 @@ TEMPLATE_TEST_CASE("view outer product", "[tensor_algebra]", float, double, std:
 
         for (int x = 0; x < 3; x++) {
             for (int y = 0; y < 3; y++) {
-                CheckWithinRel(C(y, x), vA(x) * vB(y), RemoveComplexT<TestType>{0.001});
+                CheckWithinRel(C(y, x), vA(x) * vB(y), 0.001);
                 // REQUIRE_THAT(C(y, x), Catch::Matchers::WithinAbs(vA(x) * vB(y), 0.001));
             }
         }
