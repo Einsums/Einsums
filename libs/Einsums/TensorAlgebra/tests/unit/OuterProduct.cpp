@@ -138,3 +138,92 @@ TEMPLATE_TEST_CASE("outer product", "[tensor_algebra]", float, double, std::comp
         }
     }
 }
+
+TEMPLATE_TEST_CASE("view outer product", "[tensor_algebra]", float, double, std::complex<float>, std::complex<double>) {
+    using namespace einsums;
+    using namespace einsums::tensor_algebra;
+    using namespace einsums::index;
+
+    SECTION("1 * 1 -> 2") {
+        Tensor A = create_random_tensor<TestType>("A", 6);
+        Tensor B = create_random_tensor<TestType>("B", 6);
+
+        auto   vA = TensorView(A, Dim{3}, Offset{3});
+        auto   vB = TensorView(B, Dim{3});
+        Tensor C  = create_zero_tensor<TestType>("C", 3, 3);
+
+        REQUIRE_NOTHROW(einsum(Indices{i, j}, &C, Indices{i}, vA, Indices{j}, vB));
+
+        for (int x = 0; x < 3; x++) {
+            for (int y = 0; y < 3; y++) {
+                CheckWithinRel(C(x, y), vA(x) * vB(y), RemoveComplexT<TestType>{0.001});
+                // REQUIRE_THAT(C(x, y), Catch::Matchers::WithinAbs(vA(x) * vB(y), 0.001));
+            }
+        }
+
+        C.set_all(0.0);
+        REQUIRE_NOTHROW(einsum(Indices{i, j}, &C, Indices{j}, vA, Indices{i}, vB));
+
+        for (int x = 0; x < 3; x++) {
+            for (int y = 0; y < 3; y++) {
+                CheckWithinRel(C(x, y), vA(y) * vB(x), RemoveComplexT<TestType>{0.001});
+                // REQUIRE_THAT(C(x, y), Catch::Matchers::WithinAbs(vA(y) * vB(x), 0.001));
+            }
+        }
+
+        C.set_all(0.0);
+        REQUIRE_NOTHROW(einsum(Indices{j, i}, &C, Indices{j}, vA, Indices{i}, vB));
+
+        for (int x = 0; x < 3; x++) {
+            for (int y = 0; y < 3; y++) {
+                CheckWithinRel(C(y, x), vA(y) * vB(x), RemoveComplexT<TestType>{0.001});
+                // REQUIRE_THAT(C(y, x), Catch::Matchers::WithinAbs(vA(y) * vB(x), 0.001));
+            }
+        }
+
+        C.set_all(0.0);
+        REQUIRE_NOTHROW(einsum(Indices{j, i}, &C, Indices{i}, vA, Indices{j}, vB));
+
+        for (int x = 0; x < 3; x++) {
+            for (int y = 0; y < 3; y++) {
+                CheckWithinRel(C(y, x), vA(x) * vB(y), RemoveComplexT<TestType>{0.001});
+                // REQUIRE_THAT(C(y, x), Catch::Matchers::WithinAbs(vA(x) * vB(y), 0.001));
+            }
+        }
+    }
+
+    SECTION("2 * 2 -> 4") {
+        Tensor A  = create_random_tensor<TestType>("A", 9, 9);
+        Tensor B  = create_random_tensor<TestType>("B", 12, 12);
+        auto   vA = TensorView{A, Dim{3, 3}, Offset{6, 3}};
+        auto   vB = TensorView{B, Dim{3, 3}, Offset{5, 7}};
+        Tensor C  = create_zero_tensor<TestType>("C", 3, 3, 3, 3);
+
+        REQUIRE_NOTHROW(einsum(Indices{i, j, k, l}, &C, Indices{i, j}, vA, Indices{k, l}, vB));
+
+        for (int w = 0; w < 3; w++) {
+            for (int x = 0; x < 3; x++) {
+                for (int y = 0; y < 3; y++) {
+                    for (int z = 0; z < 3; z++) {
+                        CheckWithinRel(C(w, x, y, z), vA(w, x) * vB(y, z), 0.001);
+                        // REQUIRE_THAT(C(w, x, y, z), Catch::Matchers::WithinAbs(vA(w, x) * vB(y, z), 0.001));
+                    }
+                }
+            }
+        }
+
+        C.set_all(0.0);
+        REQUIRE_NOTHROW(einsum(Indices{i, j, k, l}, &C, Indices{k, l}, vA, Indices{i, j}, vB));
+
+        for (int w = 0; w < 3; w++) {
+            for (int x = 0; x < 3; x++) {
+                for (int y = 0; y < 3; y++) {
+                    for (int z = 0; z < 3; z++) {
+                        CheckWithinRel(C(w, x, y, z), vA(y, z) * vB(w, x), 0.001);
+                        // REQUIRE_THAT(C(w, x, y, z), Catch::Matchers::WithinAbs(vA(y, z) * vB(w, x), 0.001));
+                    }
+                }
+            }
+        }
+    }
+}
