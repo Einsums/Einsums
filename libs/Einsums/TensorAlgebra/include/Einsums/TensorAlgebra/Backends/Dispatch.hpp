@@ -6,23 +6,23 @@
 #pragma once
 #ifndef DOXYGEN
 
-#include <Einsums/Config.hpp>
+#    include <Einsums/Config.hpp>
 
-#include <Einsums/Concepts/Tensor.hpp>
-#include <Einsums/LinearAlgebra.hpp>
-#include <Einsums/Print.hpp>
-#include <Einsums/Tensor/BlockTensor.hpp>
-#include <Einsums/Tensor/Tensor.hpp>
-#include <Einsums/TensorAlgebra/Backends/BlockAlgebra.hpp>
-#include <Einsums/TensorAlgebra/Backends/BlockTileAlgebra.hpp>
-#include <Einsums/TensorAlgebra/Backends/GenericAlgorithm.hpp>
-#include <Einsums/TensorAlgebra/Backends/TileAlgebra.hpp>
-#include <Einsums/TensorAlgebra/Detail/Utilities.hpp>
-#include <Einsums/TensorBase/Common.hpp>
-#if defined(EINSUMS_COMPUTE)
-#    include <Einsums/TensorAlgebra/Backends/GPUTensorAlgebra.hpp>
-#endif
-#include <Einsums/Profile/Timer.hpp>
+#    include <Einsums/Concepts/Tensor.hpp>
+#    include <Einsums/LinearAlgebra.hpp>
+#    include <Einsums/Print.hpp>
+#    include <Einsums/Tensor/BlockTensor.hpp>
+#    include <Einsums/Tensor/Tensor.hpp>
+#    include <Einsums/TensorAlgebra/Backends/BlockAlgebra.hpp>
+#    include <Einsums/TensorAlgebra/Backends/BlockTileAlgebra.hpp>
+#    include <Einsums/TensorAlgebra/Backends/GenericAlgorithm.hpp>
+#    include <Einsums/TensorAlgebra/Backends/TileAlgebra.hpp>
+#    include <Einsums/TensorAlgebra/Detail/Utilities.hpp>
+#    include <Einsums/TensorBase/Common.hpp>
+#    if defined(EINSUMS_COMPUTE)
+#        include <Einsums/TensorAlgebra/Backends/GPUTensorAlgebra.hpp>
+#    endif
+#    include <Einsums/Profile/Timer.hpp>
 
 // #include "einsums/FunctionTensor.hpp"
 // #include "einsums/LinearAlgebra.hpp"
@@ -41,18 +41,18 @@
 // #include "einsums/tensor_algebra_backends/GenericAlgorithm.hpp"
 // #include "einsums/utility/TensorTraits.hpp"
 
-#include <algorithm>
-#include <cmath>
-#include <cstddef>
-#include <stdexcept>
-#include <string>
-#include <tuple>
-#include <type_traits>
-#include <utility>
+#    include <algorithm>
+#    include <cmath>
+#    include <cstddef>
+#    include <stdexcept>
+#    include <string>
+#    include <tuple>
+#    include <type_traits>
+#    include <utility>
 
-#if defined(EINSUMS_USE_CATCH2)
-#    include <catch2/catch_all.hpp>
-#endif
+#    if defined(EINSUMS_USE_CATCH2)
+#        include <catch2/catch_all.hpp>
+#    endif
 
 namespace einsums::tensor_algebra {
 namespace detail {
@@ -166,7 +166,7 @@ auto einsum(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const &
                                    contiguous_target_position_in_B && !A_hadamard_found && !B_hadamard_found && !C_hadamard_found;
 
     // Runtime check of sizes
-#if defined(EINSUMS_RUNTIME_INDICES_CHECK)
+#    if defined(EINSUMS_RUNTIME_INDICES_CHECK)
     bool runtime_indices_abort{false};
     for_sequence<ARank>([&](auto a) {
         size_t dimA = A.dim(a);
@@ -174,11 +174,11 @@ auto einsum(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const &
             size_t dimB = B.dim(b);
             if (std::get<a>(A_indices).letter == std::get<b>(B_indices).letter) {
                 if (dimA != dimB) {
-#    if !defined(EINSUMS_IS_TESTING)
+#        if !defined(EINSUMS_IS_TESTING)
                     println(bg(fmt::color::red) | fg(fmt::color::white), "{:f} {}({:}) += {:f} {}({:}) * {}({:})", C_prefactor, C->name(),
                             print_tuple_no_type(C_indices), AB_prefactor, A.name(), print_tuple_no_type(A_indices), B.name(),
                             print_tuple_no_type(B_indices));
-#    endif
+#        endif
                     runtime_indices_abort = true;
                 }
             }
@@ -192,11 +192,11 @@ auto einsum(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const &
             }
             if (std::get<a>(A_indices).letter == std::get<c>(C_indices).letter) {
                 if (dimA != dimC) {
-#    if !defined(EINSUMS_IS_TESTING)
+#        if !defined(EINSUMS_IS_TESTING)
                     println(bg(fmt::color::red) | fg(fmt::color::white), "{:f} {}({:}) += {:f} {}({:}) * {}({:})", C_prefactor, C->name(),
                             print_tuple_no_type(C_indices), AB_prefactor, A.name(), print_tuple_no_type(A_indices), B.name(),
                             print_tuple_no_type(B_indices));
-#    endif
+#        endif
                     runtime_indices_abort = true;
                 }
             }
@@ -213,11 +213,11 @@ auto einsum(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const &
             }
             if (std::get<b>(B_indices).letter == std::get<c>(C_indices).letter) {
                 if (dimB != dimC) {
-#    if !defined(EINSUMS_IS_TESTING)
+#        if !defined(EINSUMS_IS_TESTING)
                     println(bg(fmt::color::red) | fg(fmt::color::white), "{:f} {}({:}) += {:f} {}({:}) * {}({:})", C_prefactor, C->name(),
                             print_tuple_no_type(C_indices), AB_prefactor, A.name(), print_tuple_no_type(A_indices), B.name(),
                             print_tuple_no_type(B_indices));
-#    endif
+#        endif
                     runtime_indices_abort = true;
                 }
             }
@@ -227,7 +227,7 @@ auto einsum(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const &
     if (runtime_indices_abort) {
         throw EINSUMSEXCEPTION("Inconsistent dimensions found!");
     }
-#endif
+#    endif
 
     if constexpr (!std::is_same_v<CDataType, ADataType> || !std::is_same_v<CDataType, BDataType> ||
                   (!IsAlgebraTensorV<AType> || !IsAlgebraTensorV<BType> || (!IsAlgebraTensorV<CType> && !IsScalarV<CType>))) {
@@ -259,12 +259,12 @@ auto einsum(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const &
         if constexpr (swap_AB)
             std::swap(dC[0], dC[1]);
 
-#ifdef __HIP__
+#    ifdef __HIP__
         std::conditional_t<IsIncoreRankTensorV<CType, CRank, CDataType>, TensorView<CDataType, 2>, DeviceTensorView<CDataType, 2>> tC{*C,
                                                                                                                                       dC};
-#else
+#    else
         TensorView<CDataType, 2> tC{*C, dC};
-#endif
+#    endif
         if (C_prefactor != CDataType{1.0})
             linear_algebra::scale(C_prefactor, C);
 
@@ -275,17 +275,28 @@ auto einsum(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const &
                 linear_algebra::ger(AB_prefactor, A.to_rank_1_view(), B.to_rank_1_view(), &tC);
             }
         } catch (std::runtime_error &e) {
-#if defined(EINSUMS_SHOW_WARNING)
+#    if defined(EINSUMS_SHOW_WARNING)
             println(bg(fmt::color::yellow) | fg(fmt::color::black), "Optimized outer product failed. Likely from a non-contiguous "
                                                                     "TensorView. Attempting to perform generic algorithm.");
-#endif
-            if (C_prefactor == CDataType{0.0}) {
-#if defined(EINSUMS_SHOW_WARNING)
-                println(bg(fmt::color::red) | fg(fmt::color::white),
-                        "WARNING!! Unable to undo C_prefactor ({}) on C ({}) tensor. Check your results!!!", C_prefactor, C->name());
-#endif
+#    endif
+            if constexpr (IsComplexV<CDataType>) {
+                if (C_prefactor == CDataType{0.0, 0.0}) {
+#    if defined(EINSUMS_SHOW_WARNING)
+                    println(bg(fmt::color::red) | fg(fmt::color::white),
+                            "WARNING!! Unable to undo C_prefactor ({}) on C ({}) tensor. Check your results!!!", C_prefactor, C->name());
+#    endif
+                } else {
+                    linear_algebra::scale(CDataType{1.0, 1.0} / C_prefactor, C);
+                }
             } else {
-                linear_algebra::scale(1.0 / C_prefactor, C);
+                if (C_prefactor == CDataType{0.0}) {
+#    if defined(EINSUMS_SHOW_WARNING)
+                    println(bg(fmt::color::red) | fg(fmt::color::white),
+                            "WARNING!! Unable to undo C_prefactor ({}) on C ({}) tensor. Check your results!!!", C_prefactor, C->name());
+#    endif
+                } else {
+                    linear_algebra::scale(CDataType{1.0} / C_prefactor, C);
+                }
             }
             goto generic_default; // Go to the generic algorithm.
         }
@@ -320,7 +331,7 @@ auto einsum(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const &
             dC[0] = product_dims(A_target_position_in_C, *C);
             sC[0] = last_stride(A_target_position_in_C, *C);
 
-#ifdef __HIP__
+#    ifdef __HIP__
             std::conditional_t<einsums::detail::IsIncoreTensorV<AType>, const TensorView<ADataType, 2>,
                                const DeviceTensorView<ADataType, 2>>
                 tA{const_cast<AType &>(A), dA, sA};
@@ -329,11 +340,11 @@ auto einsum(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const &
                 tB{const_cast<BType &>(B), dB, sB};
             std::conditional_t<einsums::detail::IsIncoreTensorV<CType>, TensorView<CDataType, 1>, DeviceTensorView<CDataType, 1>> tC{*C, dC,
                                                                                                                                      sC};
-#else
+#    else
             const TensorView<ADataType, 2> tA{const_cast<AType &>(A), dA, sA};
             TensorView<BDataType, 1> const tB{const_cast<BType &>(B), dB, sB};
             TensorView<CDataType, 1>       tC{*C, dC, sC};
-#endif
+#    endif
 
             // println(*C);
             // println(tC);
@@ -406,7 +417,7 @@ auto einsum(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const &
                             std::swap(sC[0], sC[1]);
                         }
 
-#ifdef __HIP__
+#    ifdef __HIP__
                         std::conditional_t<einsums::detail::IsIncoreRankTensorV<AType, ARank, ADataType>, const TensorView<ADataType, 2>,
                                            const DeviceTensorView<ADataType, 2>>
                             tA{const_cast<AType &>(A), dA, sA};
@@ -416,11 +427,11 @@ auto einsum(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const &
                         std::conditional_t<einsums::detail::IsIncoreRankTensorV<CType, CRank, CDataType>, TensorView<CDataType, 2>,
                                            DeviceTensorView<CDataType, 2>>
                             tC{*C, dC, sC};
-#else
+#    else
                         const TensorView<ADataType, 2> tA{const_cast<AType &>(A), dA, sA};
                         TensorView<BDataType, 2> const tB{const_cast<BType &>(B), dB, sB};
                         TensorView<CDataType, 2>       tC{*C, dC, sC};
-#endif
+#    endif
 
                         // println("--------------------");
                         // println(*C);
@@ -519,12 +530,12 @@ auto einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTyp
     CDataType const  C_prefactor  = UC_prefactor;
     ABDataType const AB_prefactor = UAB_prefactor;
 
-#if defined(EINSUMS_CONTINUOUSLY_TEST_EINSUM)
+#    if defined(EINSUMS_CONTINUOUSLY_TEST_EINSUM)
     // Clone C into a new tensor
     auto testC = Tensor<CDataType, CRank>(*C);
     {
         Section t1("testing");
-#    ifdef __HIP__
+#        ifdef __HIP__
         if constexpr (einsums::detail::IsDeviceTensorV<CType>) {
             auto testA = Tensor<ADataType, ARank>(A);
             auto testB = Tensor<BDataType, BRank>(B);
@@ -535,7 +546,7 @@ auto einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTyp
             }
             // #pragma omp taskwait depend(in: testC)
         } else {
-#    endif
+#        endif
             if constexpr (!einsums::detail::IsBasicTensorV<AType> && !einsums::detail::IsBasicTensorV<BType>) {
                 auto testA = Tensor<ADataType, ARank>(A);
                 auto testB = Tensor<BDataType, BRank>(B);
@@ -560,16 +571,16 @@ auto einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTyp
                 }
                 // #pragma omp taskwait depend(in: testC)
             }
-#    ifdef __HIP__
+#        ifdef __HIP__
         }
-#    endif
+#        endif
     }
-#endif
+#    endif
 
     // Default einsums.
     detail::einsum<false>(C_prefactor, C_indices, C, AB_prefactor, A_indices, A, B_indices, B);
 
-#if defined(EINSUMS_TEST_NANS)
+#    if defined(EINSUMS_TEST_NANS)
     // The tests need a wait.
     // #pragma omp taskwait depend(in: *C, testC)
     if constexpr (CRank != 0) {
@@ -618,9 +629,9 @@ auto einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTyp
             }
         }
     }
-#endif
+#    endif
 
-#if defined(EINSUMS_CONTINUOUSLY_TEST_EINSUM)
+#    if defined(EINSUMS_CONTINUOUSLY_TEST_EINSUM)
     if constexpr (CRank != 0) {
         // Need to walk through the entire C and testC comparing values and reporting differences.
         auto target_dims = get_dim_ranges<CRank>(*C);
@@ -651,13 +662,13 @@ auto einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTyp
                 }
             }
 
-#    if defined(EINSUMS_USE_CATCH2)
+#        if defined(EINSUMS_USE_CATCH2)
             if constexpr (!IsComplexV<CDataType>) {
                 REQUIRE_THAT(Cvalue,
                              Catch::Matchers::WithinRel(Ctest, static_cast<CDataType>(0.001)) || Catch::Matchers::WithinAbs(0, 0.0001));
                 CHECK(print_info_and_abort == false);
             }
-#    endif
+#        endif
 
             if (std::abs(Cvalue - Ctest) > 1.0E-6) {
                 print_info_and_abort = true;
@@ -696,9 +707,9 @@ auto einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTyp
                 println(*C);
                 println(A);
                 println(B);
-#    if defined(EINSUMS_TEST_EINSUM_ABORT)
+#        if defined(EINSUMS_TEST_EINSUM_ABORT)
                 std::abort();
-#    endif
+#        endif
             }
         }
     } else {
@@ -739,12 +750,12 @@ auto einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTyp
             println(A);
             println(B);
 
-#    if defined(EINSUMS_TEST_EINSUM_ABORT)
+#        if defined(EINSUMS_TEST_EINSUM_ABORT)
             std::abort();
-#    endif
+#        endif
         }
     }
-#endif
+#    endif
 }
 } // namespace einsums::tensor_algebra
 

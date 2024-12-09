@@ -12,6 +12,7 @@ set(TensorUtilitiesHeaders
         Einsums/TensorUtilities/CreateRandomSemidefinite.hpp
         Einsums/TensorUtilities/CreateRandomTensor.hpp
         Einsums/TensorUtilities/CreateTensorLike.hpp
+        Einsums/TensorUtilities/CreateZeroTensor.hpp
         Einsums/TensorUtilities/Diagonal.hpp
         Einsums/TensorUtilities/Detail/SetTo.hpp
 )

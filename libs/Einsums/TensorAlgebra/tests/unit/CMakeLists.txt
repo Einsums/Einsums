@@ -11,6 +11,7 @@ set(TensorAlgebraTests
         Einsum5
         Hadamard
         Indices
+        OuterProduct
         Sort
         Transpose
         UniquePointer

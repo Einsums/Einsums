@@ -8,6 +8,7 @@
 #include <Einsums/Config.hpp>
 
 #include <Einsums/Concepts/Complex.hpp>
+
 #if defined(EINSUMS_WINDOWS)
 #    define CATCH_CONFIG_WINDOWS_SEH
 #endif
