@@ -20,6 +20,7 @@ TEST_CASE("Test catching 1", "[error]") {
     try {
         thrower2();
     } catch(const einsums::dimension_error &e) {
+        INFO("Caught exception!");
         REQUIRE(true);
     } catch(...) {
         INFO("Caught the exception, but not in the correct exception handler!");
@@ -32,6 +33,7 @@ TEST_CASE("Test catching 2", "[error]") {
     try {
         thrower3();
     } catch(std::logic_error &e) {
+        INFO("Caught exception!");
         REQUIRE(true);
     } catch(...) {
         INFO("Caught the exception, but not in the correct exception handler!");
@@ -44,6 +46,7 @@ TEST_CASE("Test catching 3", "[error]") {
     try {
         thrower();
     } catch(einsums::dimension_error &e) {
+        INFO("Caught exception!");
         REQUIRE(true);
     } catch(...) {
         INFO("Caught the exception, but not in the correct exception handler!");
