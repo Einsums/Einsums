@@ -4,13 +4,19 @@
 #----------------------------------------------------------------------------------------------
 
 set(TensorAlgebraTests
+        Dot
         Einsum1
         Einsum2
         Einsum3
         Einsum4
         Einsum5
+        Einsum6
+        Einsum7
+        Element
         Hadamard
         Indices
+        KhatriRao
+        MixedPrecision
         OuterProduct
         Sort
         Transpose

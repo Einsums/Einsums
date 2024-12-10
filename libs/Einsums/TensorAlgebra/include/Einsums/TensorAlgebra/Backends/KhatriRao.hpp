@@ -7,34 +7,34 @@
 
 #ifndef DOXYGEN
 
-#include <Einsums/Concepts/Tensor.hpp>
-#include <Einsums/Profile/LabeledSection.hpp>
-#include <Einsums/Tensor/Tensor.hpp>
-#include <Einsums/TensorAlgebra/Detail/Utilities.hpp>
+#    include <Einsums/Concepts/Tensor.hpp>
+#    include <Einsums/Profile/LabeledSection.hpp>
+#    include <Einsums/Tensor/Tensor.hpp>
+#    include <Einsums/TensorAlgebra/Detail/Utilities.hpp>
 
-#ifdef EINSUMS_COMPUTE_CODE
-#    include <Einsums/Tensor/DeviceTensor.hpp>
-#endif
+#    ifdef EINSUMS_COMPUTE_CODE
+#        include <Einsums/Tensor/DeviceTensor.hpp>
+#    endif
 
-#include <algorithm>
-#include <cmath>
-#include <cstddef>
-#include <stdexcept>
-#include <tuple>
-#include <type_traits>
-#include <utility>
+#    include <algorithm>
+#    include <cmath>
+#    include <cstddef>
+#    include <stdexcept>
+#    include <tuple>
+#    include <type_traits>
+#    include <utility>
 
 namespace einsums::tensor_algebra {
 template <TensorConcept AType, TensorConcept BType, typename... AIndices, typename... BIndices>
     requires requires {
         requires InSamePlace<AType, BType>;
-        requires AType::rank == sizeof...(AIndices);
-        requires BType::rank == sizeof...(BIndices);
+        requires AType::Rank == sizeof...(AIndices);
+        requires BType::Rank == sizeof...(BIndices);
     }
-auto khatri_rao(std::tuple<AIndices...> const &, AType const &A, std::tuple<BIndices...> const &, BType const &B)
-    -> BasicTensorLike<AType, typename AType::data_type, 2> {
-    using OutType = BasicTensorLike<AType, typename AType::data_type, 2>;
-    using T       = typename AType::data_type;
+auto khatri_rao(std::tuple<AIndices...> const &, AType const &A, std::tuple<BIndices...> const &,
+                BType const &B) -> BasicTensorLike<AType, typename AType::ValueType, 2> {
+    using OutType = BasicTensorLike<AType, typename AType::ValueType, 2>;
+    using T       = typename AType::ValueType;
     LabeledSection0();
 
     constexpr auto A_indices = std::tuple<AIndices...>();
@@ -66,7 +66,7 @@ auto khatri_rao(std::tuple<AIndices...> const &, AType const &A, std::tuple<BInd
         }
     });
 
-#ifdef EINSUMS_COMPUTE_CODE
+#    ifdef EINSUMS_COMPUTE_CODE
     if constexpr (std::is_same_v<OutType, DeviceTensor<T, 2>>) {
         auto result_dims = std::tuple_cat(std::make_tuple("KR product"), std::make_tuple(einsums::detail::DEV_ONLY), A_only_dims,
                                           B_only_dims, A_common_dims);
@@ -79,7 +79,7 @@ auto khatri_rao(std::tuple<AIndices...> const &, AType const &A, std::tuple<BInd
 
         return OutType{std::move(result), "KR product", -1, detail::product_dims(A_common_position, A)};
     } else {
-#endif
+#    endif
         auto result_dims = std::tuple_cat(std::make_tuple("KR product"), A_only_dims, B_only_dims, A_common_dims);
         // Construct resulting tensor
         auto result = std::make_from_tuple<Tensor<T, std::tuple_size_v<decltype(result_dims)> - 1>>(result_dims);
@@ -89,9 +89,9 @@ auto khatri_rao(std::tuple<AIndices...> const &, AType const &A, std::tuple<BInd
         // Return a reconstruction of the result tensor ... this can be considered as a simple reshape of the tensor.
 
         return OutType{std::move(result), "KR product", -1, detail::product_dims(A_common_position, A)};
-#ifdef EINSUMS_COMPUTE_CODE
+#    ifdef EINSUMS_COMPUTE_CODE
     }
-#endif
+#    endif
 }
 } // namespace einsums::tensor_algebra
 

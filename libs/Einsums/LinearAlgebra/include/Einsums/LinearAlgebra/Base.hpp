@@ -335,7 +335,7 @@ void symm_gemm(AType const &A, BType const &B, CType *C) {
 template <CoreBasicTensorConcept AType, CoreBasicTensorConcept BType, CoreBasicTensorConcept CType>
     requires SameUnderlyingAndRank<AType, BType, CType>
 void direct_product(typename AType::ValueType alpha, AType const &A, BType const &B, typename CType::ValueType beta, CType *C) {
-    auto target_dims = get_dim_ranges<CType::rank>(*C);
+    auto target_dims = get_dim_ranges<CType::Rank>(*C);
     auto view        = std::apply(ranges::views::cartesian_product, target_dims);
     using T          = typename AType::ValueType;
 
@@ -346,8 +346,14 @@ void direct_product(typename AType::ValueType alpha, AType const &A, BType const
 
     // Horrible hack. For some reason, in the for loop below, the result could be
     // NAN if the target_value is initially a trash value.
-    if (beta == T(0)) {
-        C->zero();
+    if constexpr (IsComplexV<typename CType::ValueType>) {
+        if (beta == typename CType::ValueType{0.0, 0.0}) {
+            C->zero();
+        }
+    } else {
+        if (beta == T(0)) {
+            C->zero();
+        }
     }
 
     EINSUMS_OMP_PARALLEL_FOR
