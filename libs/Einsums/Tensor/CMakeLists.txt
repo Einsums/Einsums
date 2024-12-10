@@ -16,8 +16,7 @@ set(TensorHeaders
 )
 
 if(EINSUMS_WITH_GPU_SUPPORT)
-      list(APPEND TensorHeaders Einsums/Tensor/DeviceTensor.hpp Einsums/Tensor/Backends/DeviceTensor.hpp
-            Einsums/Tensor/Backends/DeviceTensorView.hpp)
+      list(APPEND TensorHeaders Einsums/Tensor/DeviceTensor.hpp)
       
       set(TensorGPUModules Einsums_GPUStreams hip::host hip::device)
 endif()

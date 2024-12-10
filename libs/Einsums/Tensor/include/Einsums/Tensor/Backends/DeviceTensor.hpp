@@ -4,10 +4,6 @@
 // If this is included on its own, we should not include DeviceTensorView.hpp here.
 // It depends on functions in this file, and tests break if it is included first.
 #include "Einsums/TensorBase/IndexUtilities.hpp"
-#ifndef DEVICE_TENSOR_HPP
-#    define BACKENDS_DEVICE_TENSOR_VIEW_HPP
-#    define SOLO_INCLUDE
-#endif
 
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Tensor/DeviceTensor.hpp>
@@ -1631,9 +1627,4 @@ DeviceTensor<T, Rank>::operator Tensor<T, Rank>() const {
 
 } // namespace einsums
 
-#ifdef SOLO_INCLUDE
-#    undef BACKENDS_DEVICE_TENSOR_VIEW_HPP
-#    include <Einsums/Tensor/Backends/DeviceTensorView.hpp>
-#    undef SOLO_INCLUDE
-#endif
 #endif
