@@ -172,10 +172,6 @@ void einsum(std::tuple<CIndices...> const &C_indices, CType *C, std::tuple<AIndi
 // Element Transform
 //
 
-template <template <typename, size_t> typename CType, size_t CRank, typename UnaryOperator, typename T = double>
-    requires std::derived_from<CType<T, CRank>, tensor_base::Tensor<T, CRank>>
-void element_transform(CType<T, CRank> *C, UnaryOperator unary_opt);
-
 template <SmartPointer SmartPtr, typename UnaryOperator>
 void element_transform(SmartPtr *C, UnaryOperator unary_opt) {
     element_transform(C->get(), unary_opt);

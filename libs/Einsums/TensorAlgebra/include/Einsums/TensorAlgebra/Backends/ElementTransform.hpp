@@ -22,15 +22,11 @@ namespace einsums::tensor_algebra {
 namespace detail {}
 
 template <template <typename, size_t> typename CType, size_t CRank, typename UnaryOperator, typename T>
-    requires std::derived_from<CType<T, CRank>, tensor_base::Tensor<T, CRank>>
-auto element_transform(CType<T, CRank> *C, UnaryOperator unary_opt) -> void {
-    if constexpr (IsIncoreRankBlockTensorV<CType<T, CRank>, CRank, T>) {
-        for (int i = 0; i < C->num_blocks(); i++) {
-            element_transform(&(C->block(i)), unary_opt);
-        }
-        return;
+    requires requires {
+        requires std::derived_from<CType<T, CRank>, tensor_base::Tensor<T, CRank>>;
+        requires !BlockTensorConcept<CType<T, CRank>>;
     }
-
+auto element_transform(CType<T, CRank> *C, UnaryOperator unary_opt) -> void {
     LabeledSection0();
 
     auto target_dims = get_dim_ranges<CRank>(*C);
@@ -43,26 +39,34 @@ auto element_transform(CType<T, CRank> *C, UnaryOperator unary_opt) -> void {
     }
 }
 
-template <template <typename, size_t> typename CType, template <typename, size_t> typename... MultiTensors, size_t Rank,
-          typename MultiOperator, typename T>
-auto element(MultiOperator multi_opt, CType<T, Rank> *C, MultiTensors<T, Rank> &...tensors) {
-    if constexpr ((IsIncoreRankBlockTensorV<MultiTensors<T, Rank>, Rank, T> && ... && IsIncoreRankBlockTensorV<CType<T, Rank>, Rank, T>)) {
+template <BlockTensorConcept CType, typename UnaryOperator>
+auto element_transform(CType *C, UnaryOperator unary_opt) -> void {
+    for (int i = 0; i < C->num_blocks(); i++) {
+        element_transform(&(C->block(i)), unary_opt);
+    }
+}
 
-        if (((C->num_blocks() != tensors.num_blocks()) || ...)) {
-            EINSUMS_THROW_EXCEPTION(tensor_compat_error, "element: All tensors need to have the same number of blocks.");
+template <BlockTensorConcept CType, BlockTensorConcept... MultiTensors, size_t Rank, typename MultiOperator, typename T>
+    requires(IsIncoreRankBlockTensorV<MultiTensors, Rank, T> && ... && IsIncoreRankBlockTensorV<CType, Rank, T>)
+auto element(MultiOperator multi_opt, CType *C, MultiTensors &...tensors) {
+    if (((C->num_blocks() != tensors.num_blocks()) || ...)) {
+        EINSUMS_THROW_EXCEPTION(tensor_compat_error, "element: All tensors need to have the same number of blocks.");
+    }
+    for (int i = 0; i < C->num_blocks; i++) {
+        if (((C->block_dim(i) != tensors.block_dim(i)) || ...)) {
+            EINSUMS_THROW_EXCEPTION(dimension_error, "element: All tensor blocks need to have the same size.");
         }
-        for (int i = 0; i < C->num_blocks; i++) {
-            if (((C->block_dim(i) != tensors.block_dim(i)) || ...)) {
-                EINSUMS_THROW_EXCEPTION(dimension_error, "element: All tensor blocks need to have the same size.");
-            }
-        }
-
-        for (int i = 0; i < C->num_blocks; i++) {
-            element(multi_opt, &(C->block(i)), tensors.block(i)...);
-        }
-        return;
     }
 
+    for (int i = 0; i < C->num_blocks; i++) {
+        element(multi_opt, &(C->block(i)), tensors.block(i)...);
+    }
+}
+
+template <template <typename, size_t> typename CType, template <typename, size_t> typename... MultiTensors, size_t Rank,
+          typename MultiOperator, typename T>
+    requires(!(IsIncoreRankBlockTensorV<MultiTensors<T, Rank>, Rank, T> && ... && IsIncoreRankBlockTensorV<CType<T, Rank>, Rank, T>))
+auto element(MultiOperator multi_opt, CType<T, Rank> *C, MultiTensors<T, Rank> &...tensors) {
     LabeledSection0();
 
     auto target_dims = get_dim_ranges<Rank>(*C);
