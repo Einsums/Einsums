@@ -11,6 +11,7 @@ set(TensorAlgebraTests
         Einsum4
         Einsum5
         Einsum6
+        Einsum7
         Element
         Hadamard
         Indices
