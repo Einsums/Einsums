@@ -14,6 +14,7 @@ set(TensorAlgebraTests
         Hadamard
         Indices
         KhatriRao
+        MixedPrecision
         OuterProduct
         Sort
         Transpose
