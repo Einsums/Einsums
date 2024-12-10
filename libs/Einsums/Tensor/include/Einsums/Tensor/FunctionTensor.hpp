@@ -1,8 +1,16 @@
 #pragma once
 
+#include <Einsums/Tensor/TensorForward.hpp>
+#include <Einsums/TensorBase/IndexUtilities.hpp>
 #include <Einsums/TensorBase/TensorBase.hpp>
+#include <Einsums/TypeSupport/AreAllConvertible.hpp>
+#include <Einsums/TypeSupport/Arguments.hpp>
+#include <Einsums/TypeSupport/CountOfType.hpp>
+#include <Einsums/TypeSupport/TypeName.hpp>
 
 #include <type_traits>
+
+#include "Einsums/Concepts/Tensor.hpp"
 
 namespace einsums {
 
@@ -16,17 +24,17 @@ struct DeviceFunctionTensorView;
 #endif
 
 /**
- * @struct FunctionTensorBase
+ * @struct FunctionTensor
  *
  * @brief Base class for function tensors.
  *
  * A function tensor is one which takes advantage of the use of the operator() to index tensors to provide a way to
  * call a function. An example of this might be the Kronecker delta, which has such simple structure that creating
- * a whole new tensor object for it would be wasteful. 
+ * a whole new tensor object for it would be wasteful.
  */
 namespace tensor_base {
 template <typename T, size_t Rank>
-struct FunctionTensorBase : public virtual Tensor<T, Rank>, virtual FunctionTensorNoExtra, virtual CoreTensor {
+struct FunctionTensor : public virtual Tensor<T, Rank>, virtual FunctionTensorNoExtra, virtual CoreTensor {
   protected:
     Dim<Rank>   _dims;
     std::string _name{"(unnamed)"};
@@ -54,15 +62,15 @@ struct FunctionTensorBase : public virtual Tensor<T, Rank>, virtual FunctionTens
     }
 
   public:
-    FunctionTensorBase()                           = default;
-    FunctionTensorBase(const FunctionTensorBase &) = default;
+    FunctionTensor()                       = default;
+    FunctionTensor(FunctionTensor const &) = default;
 
     template <typename... Args>
         requires requires {
             requires(!std::is_same_v<Args, Dim<Rank>> || ...);
             requires sizeof...(Args) == Rank;
         }
-    FunctionTensorBase(std::string name, Args... dims) : _dims{dims...}, _name{name} {
+    FunctionTensor(std::string name, Args... dims) : _dims{dims...}, _name{name} {
         _size = 1;
 
         for (int i = 0; i < Rank; i++) {
@@ -70,7 +78,7 @@ struct FunctionTensorBase : public virtual Tensor<T, Rank>, virtual FunctionTens
         }
     }
 
-    FunctionTensorBase(std::string name, Dim<Rank> dims) : _dims(dims), _name{name} {
+    FunctionTensor(std::string name, Dim<Rank> dims) : _dims(dims), _name{name} {
         _size = 1;
 
         for (int i = 0; i < Rank; i++) {
@@ -78,7 +86,7 @@ struct FunctionTensorBase : public virtual Tensor<T, Rank>, virtual FunctionTens
         }
     }
 
-    FunctionTensorBase(Dim<Rank> dims) : _dims(dims) {
+    FunctionTensor(Dim<Rank> dims) : _dims(dims) {
         _size = 1;
 
         for (int i = 0; i < Rank; i++) {
@@ -86,7 +94,7 @@ struct FunctionTensorBase : public virtual Tensor<T, Rank>, virtual FunctionTens
         }
     }
 
-    virtual ~FunctionTensorBase() = default;
+    virtual ~FunctionTensor() = default;
 
     /**
      * @brief Call the function.
@@ -95,7 +103,7 @@ struct FunctionTensorBase : public virtual Tensor<T, Rank>, virtual FunctionTens
      * function call. Due to the inability to override methods with variable parameters,
      * this method with a set input type is the workaround.
      */
-    virtual T call(const std::array<int, Rank> &inds) const = 0;
+    virtual T call(std::array<int, Rank> const &inds) const = 0;
 
     template <typename... MultiIndex>
         requires requires {
@@ -117,7 +125,7 @@ struct FunctionTensorBase : public virtual Tensor<T, Rank>, virtual FunctionTens
             requires !std::is_same_v<Storage, Range>;
             requires !std::is_same_v<Storage, std::array<int, Rank>>;
         }
-    T operator()(const Storage &inds) const {
+    T operator()(Storage const &inds) const {
         auto new_inds = std::array<int, Rank>();
 
         for (int i = 0; i < Rank; i++) {
@@ -137,7 +145,7 @@ struct FunctionTensorBase : public virtual Tensor<T, Rank>, virtual FunctionTens
         }
     auto operator()(MultiIndex... inds) const
         -> FunctionTensorView<T, count_of_type<AllT, MultiIndex...>() + count_of_type<Range, MultiIndex...>(), Rank> {
-        const auto &indices = std::forward_as_tuple(inds...);
+        auto const &indices = std::forward_as_tuple(inds...);
 
         std::array<int, Rank> index_template;
 
@@ -202,9 +210,9 @@ struct FunctionTensorBase : public virtual Tensor<T, Rank>, virtual FunctionTens
 
     virtual auto dim(int d) const -> size_t override { return _dims[d]; }
 
-    virtual const std::string &name() const override { return _name; }
+    virtual std::string const &name() const override { return _name; }
 
-    virtual void set_name(const std::string &str) override { _name = str; }
+    virtual void set_name(std::string const &str) override { _name = str; }
 
     operator Tensor<T, Rank>() const {
         Tensor<T, Rank> out(dims());
@@ -223,39 +231,37 @@ struct FunctionTensorBase : public virtual Tensor<T, Rank>, virtual FunctionTens
     }
 };
 
-} // namespace tensor_props
+} // namespace tensor_base
 
 template <typename T, size_t Rank>
-struct FuncPointerTensor : public virtual tensor_props::FunctionTensorBase<T, Rank>, virtual tensor_props::CoreTensorBase {
+struct FuncPointerTensor : public virtual tensor_base::FunctionTensor<T, Rank>, virtual tensor_base::CoreTensor {
   protected:
-    T (*_func_ptr)(const std::array<int, Rank> &);
+    T (*_func_ptr)(std::array<int, Rank> const &);
 
   public:
     template <typename... Args>
-    FuncPointerTensor(std::string name, T (*func_ptr)(const std::array<int, Rank> &), Args... dims)
-        : tensor_props::FunctionTensorBase<T, Rank>(name, dims...), _func_ptr(func_ptr) {}
+    FuncPointerTensor(std::string name, T (*func_ptr)(std::array<int, Rank> const &), Args... dims)
+        : tensor_base::FunctionTensor<T, Rank>(name, dims...), _func_ptr(func_ptr) {}
 
-    FuncPointerTensor(const FuncPointerTensor<T, Rank> &copy) : tensor_props::FunctionTensorBase<T, Rank>(copy) {
-        _func_ptr = copy._func_ptr;
-    }
+    FuncPointerTensor(FuncPointerTensor<T, Rank> const &copy) : tensor_base::FunctionTensor<T, Rank>(copy) { _func_ptr = copy._func_ptr; }
 
     virtual ~FuncPointerTensor() = default;
 
-    virtual T call(const std::array<int, Rank> &inds) const override { return _func_ptr(inds); }
+    virtual T call(std::array<int, Rank> const &inds) const override { return _func_ptr(inds); }
 
-    size_t dim(int d) const override { return tensor_props::FunctionTensorBase<T, Rank>::dim(d); }
+    size_t dim(int d) const override { return tensor_base::FunctionTensor<T, Rank>::dim(d); }
 };
 
 template <typename T, size_t Rank, size_t UnderlyingRank>
-struct FunctionTensorView : public virtual tensor_props::FunctionTensorBase<T, Rank>,
-                            virtual tensor_props::TRTensorViewBase<T, Rank, tensor_props::FunctionTensorBase<T, UnderlyingRank>> {
+struct FunctionTensorView : public virtual tensor_base::FunctionTensor<T, Rank>,
+                            virtual tensor_base::TensorView<T, Rank, tensor_base::FunctionTensor<T, UnderlyingRank>> {
   protected:
-    const tensor_props::FunctionTensorBase<T, UnderlyingRank> *_func_tensor;
-    Offset<Rank>                                               _offsets;
-    std::array<int, UnderlyingRank>                            _index_template;
-    bool                                                       _full_view{true};
+    tensor_base::FunctionTensor<T, UnderlyingRank> const *_func_tensor;
+    Offset<Rank>                                          _offsets;
+    std::array<int, UnderlyingRank>                       _index_template;
+    bool                                                  _full_view{true};
 
-    virtual std::array<int, UnderlyingRank> apply_view(const std::array<int, Rank> &inds) const {
+    virtual std::array<int, UnderlyingRank> apply_view(std::array<int, Rank> const &inds) const {
         std::array<int, UnderlyingRank> out{_index_template};
         int                             curr_rank = 0;
         for (int i = 0; i < Rank && curr_rank < UnderlyingRank; i++) {
@@ -281,10 +287,9 @@ struct FunctionTensorView : public virtual tensor_props::FunctionTensorBase<T, R
 
   public:
     FunctionTensorView() = default;
-    FunctionTensorView(std::string name, const tensor_props::FunctionTensorBase<T, UnderlyingRank> *func_tens, const Offset<Rank> &offsets,
-                       const Dim<Rank> &dims, const std::array<int, UnderlyingRank> &index_template)
-        : _offsets{offsets}, _func_tensor(func_tens), _index_template{index_template},
-          tensor_props::FunctionTensorBase<T, Rank>(name, dims) {
+    FunctionTensorView(std::string name, tensor_base::FunctionTensor<T, UnderlyingRank> *func_tens, Offset<Rank> const &offsets,
+                       Dim<Rank> const &dims, std::array<int, UnderlyingRank> const &index_template)
+        : _offsets{offsets}, _func_tensor(func_tens), _index_template{index_template}, tensor_base::FunctionTensor<T, Rank>(name, dims) {
         if constexpr (Rank != UnderlyingRank) {
             _full_view = false;
         } else {
@@ -305,18 +310,18 @@ struct FunctionTensorView : public virtual tensor_props::FunctionTensorBase<T, R
         }
     }
 
-    FunctionTensorView(const tensor_props::FunctionTensorBase<T, UnderlyingRank> *func_tens, const Offset<Rank> &offsets,
-                       const Dim<Rank> &dims, const std::array<int, UnderlyingRank> &index_template)
-        : _offsets{offsets}, _func_tensor(func_tens), _index_template{index_template}, tensor_props::FunctionTensorBase<T, Rank>(dims) {}
+    FunctionTensorView(tensor_base::FunctionTensor<T, UnderlyingRank> const *func_tens, Offset<Rank> const &offsets, Dim<Rank> const &dims,
+                       std::array<int, UnderlyingRank> const &index_template)
+        : _offsets{offsets}, _func_tensor(func_tens), _index_template{index_template}, tensor_base::FunctionTensor<T, Rank>(dims) {}
 
-    FunctionTensorView(const FunctionTensorView &copy) : tensor_props::FunctionTensorBase<T, Rank>(copy) {
+    FunctionTensorView(FunctionTensorView const &copy) : tensor_base::FunctionTensor<T, Rank>(copy) {
         _func_tensor    = copy._func_tensor;
         _offsets        = copy._offsets;
         _index_template = copy._index_template;
         _full_view      = copy._full_view;
     }
 
-    virtual T call(const std::array<int, Rank> &inds) const override {
+    virtual T call(std::array<int, Rank> const &inds) const override {
         auto fixed_inds = apply_view(inds);
         return _func_tensor->call(fixed_inds);
     }
@@ -331,14 +336,12 @@ struct FunctionTensorView : public virtual tensor_props::FunctionTensorBase<T, R
  *
  * This function tensor can act as an example of what can be done with the more general function tensors.
  */
-template<typename T>
-struct KroneckerDelta : public virtual tensor_base::FunctionTensorBase<T, 2>, virtual tensor_props::CoreTensorBase {
-public:
-    KroneckerDelta(size_t dim) : tensor_base::FunctionTensorBase<T, 2>("Kronecker Delta", dim, dim) {}
+template <typename T>
+struct KroneckerDelta : public virtual tensor_base::FunctionTensor<T, 2>, virtual tensor_base::CoreTensor {
+  public:
+    KroneckerDelta(size_t dim) : tensor_base::FunctionTensor<T, 2>("Kronecker Delta", dim, dim) {}
 
-    virtual T call(const std::array<int, 2> &inds) const override {
-        return (inds[0] == inds[1])? T{1.0}: T{0.0};
-    }
+    virtual T call(std::array<int, 2> const &inds) const override { return (inds[0] == inds[1]) ? T{1.0} : T{0.0}; }
 };
 
 } // namespace einsums
