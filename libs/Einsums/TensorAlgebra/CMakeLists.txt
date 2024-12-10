@@ -27,7 +27,7 @@ if (NOT WIN32)
 endif ()
 
 if (EINSUMS_WITH_GPU_SUPPORT)
-    list(APPEND TensorAlgebraHeaders Einsums/TensorAlgebra/Backends/GPUTensorAlgebra.hpp)
+    list(APPEND TensorAlgebraHeaders Einsums/TensorAlgebra/Backends/GPUTensorAlgebra.hpp Einsums/TensorAlgebraBackends/DeviceSort.hpp)
 endif ()
 
 include(Einsums_AddModule)

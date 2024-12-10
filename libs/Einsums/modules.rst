@@ -9,19 +9,7 @@ Einsums modules
 ===============
 
 .. toctree::
-    :caption: Public Modules
-    :maxdepth: 2
-
-    /libs/Einsums/Errors/docs/index.rst
-    /libs/Einsums/LinearAlgebra/docs/index.rst
-    /libs/Einsums/Tensor/docs/index.rst
-    /libs/Einsums/TensorAlgebra/docs/index.rst
-    /libs/Einsums/TensorUtilities/docs/index.rst
-    /libs/Einsums/Utilities/docs/index.rst
-
-.. toctree::
-    :caption: All Modules
-    :maxdepth: 2
+   :maxdepth: 2
 
     /libs/Einsums/Assertion/docs/index.rst
     /libs/Einsums/BLAS/docs/index.rst
@@ -33,6 +21,7 @@ Einsums modules
     /libs/Einsums/Config/docs/index.rst
     /libs/Einsums/Debugging/docs/index.rst
     /libs/Einsums/Errors/docs/index.rst
+    /libs/Einsums/GPUStreams/docs/index.rst
     /libs/Einsums/Graph/docs/index.rst
     /libs/Einsums/HPTT/docs/index.rst
     /libs/Einsums/ITTNotify/docs/index.rst

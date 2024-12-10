@@ -14,7 +14,7 @@
 #include "einsums/Print.hpp"
 #include "einsums/STL.hpp"
 #include "einsums/Section.hpp"
-#ifdef __HIP__
+#ifdef EINSUMS_COMPUTE_CODE
 #    include "einsums/DeviceSort.hpp"
 #endif
 #include "einsums/ArithmeticTensor.hpp"
@@ -26,7 +26,7 @@
 #include "einsums/Tensor.hpp"
 #include "einsums/TiledTensor.hpp"
 
-#ifdef __HIP__
+#ifdef EINSUMS_COMPUTE_CODE
 #    include "einsums/_GPUCast.hpp"
 #    include "einsums/_GPUUtils.hpp"
 

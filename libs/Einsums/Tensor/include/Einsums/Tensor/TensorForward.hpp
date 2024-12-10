@@ -31,6 +31,17 @@ struct TensorPrintOptions {
     bool full_output{true};
 };
 
+namespace detail {
+
+/**
+ * @enum HostToDeviceMode
+ *
+ * @brief Enum that specifies how device tensors store data and make it available to the GPU.
+ */
+enum HostToDeviceMode { UNKNOWN, DEV_ONLY, MAPPED, PINNED };
+
+} // namespace detail
+
 // Forward declarations of tensors.
 template <typename T, size_t Rank>
 struct Tensor;

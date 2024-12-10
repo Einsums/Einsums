@@ -65,6 +65,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake")
 
 include(GNUInstallDirs)
 include(Einsums_Utils)
+include(CheckLanguage)
 
 # Explicitly set certain policies
 einsums_set_cmake_policy(CMP0144 NEW)
@@ -343,6 +344,7 @@ if(EINSUMS_WITH_CUDA OR EINSUMS_WITH_HIP)
       ON
       CACHE INTERNAL "" FORCE
   )
+
 else()
   set(EINSUMS_WITH_GPU_SUPPORT
       OFF
@@ -503,8 +505,8 @@ target_link_libraries(einsums_base_libraries INTERFACE OpenMP::OpenMP_CXX)
 # C++ feature tests
 # ##################################################################################################
 # Need to set up CUDA/HIP before feature tests to enable the respective languages
-#include(Einsums_SetupCUDA)
-#include(Einsums_SetupHIP)
+include(Einsums_SetupCUDA)
+include(Einsums_SetupHIP)
 include(Einsums_PerformCXXFeatureTests)
 einsums_perform_cxx_feature_tests()
 

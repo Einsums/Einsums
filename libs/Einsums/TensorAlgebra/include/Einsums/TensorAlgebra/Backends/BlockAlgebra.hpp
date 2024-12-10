@@ -10,8 +10,8 @@
 #include <Einsums/TensorAlgebra/Detail/Utilities.hpp>
 
 #include <stdexcept>
-#ifdef __HIP__
-#    include "einsums/_GPUUtils.hpp"
+#ifdef EINSUMS_COMPUTE_CODE
+#    include <Einsums/GPUStreams/GPUStreams.hpp>
 #endif
 
 #include <Einsums/Concepts/Tensor.hpp>
@@ -118,11 +118,11 @@ auto einsum_special_dispatch(ValueTypeT<CType> const C_prefactor, std::tuple<CIn
         }
     }
 
-#ifdef __HIP__
-    if constexpr (einsums::detail::IsDeviceTensorV<AType>) {
+#ifdef EINSUMS_COMPUTE_CODE
+    if constexpr (IsDeviceTensorV<AType>) {
 
         size_t     elems = omp_get_max_threads();
-        CDataType *temp  = new CDataType[elems];
+        std::vector<CDataType> temp(elems);
 
         for (int i = 0; i < elems; i++) {
             temp[i] = CDataType{0.0};
@@ -144,9 +144,7 @@ auto einsum_special_dispatch(ValueTypeT<CType> const C_prefactor, std::tuple<CIn
             *C *= C_prefactor;
         }
 
-        *C = std::accumulate(temp, temp + elems, (CDataType)*C);
-
-        delete[] temp;
+        *C = std::accumulate(temp.cbegin(), temp.cend(), (CDataType)*C);
     } else {
 #endif
         if (C_prefactor == CDataType{0.0}) {
@@ -167,7 +165,7 @@ auto einsum_special_dispatch(ValueTypeT<CType> const C_prefactor, std::tuple<CIn
             temp += (CDataType)temp_c;
         }
         *C += temp;
-#ifdef __HIP__
+#ifdef EINSUMS_COMPUTE_CODE
     }
 #endif
 }
@@ -240,13 +238,13 @@ auto einsum_special_dispatch(ValueTypeT<CType> const C_prefactor, std::tuple<CIn
 
     using CDataType = ValueTypeT<CType>;
 
-#ifdef __HIP__
-    if constexpr (einsums::detail::IsDeviceTensorV<AType>) {
-        __device_ptr__ CDataType *temp;
+#ifdef EINSUMS_COMPUTE_CODE
+    if constexpr (IsDeviceTensorV<AType>) {
+        CDataType *temp;
 
         size_t elems = omp_get_max_threads();
-        gpu::hip_catch(hipMalloc(temp, elems * sizeof(CDataType)));
-        __host_ptr__ CDataType *host_temp = new CDataType[elems];
+        hip_catch(hipMalloc(temp, elems * sizeof(CDataType)));
+        std::vector<CDataType> host_temp(elems);
         EINSUMS_OMP_PARALLEL_FOR
         for (int i = 0; i < B.num_blocks(); i++) {
             if (B.block_dim(i) == 0) {
@@ -264,11 +262,10 @@ auto einsum_special_dispatch(ValueTypeT<CType> const C_prefactor, std::tuple<CIn
             *C *= C_prefactor;
         }
 
-        gpu::hip_catch(hipMemcpy(host_temp, temp, elems * sizeof(CDataType), hipMemcpyDeviceToHost));
-        *C = std::accumulate(host_temp, host_temp + elems, (CDataType)*C);
+        hip_catch(hipMemcpy(host_temp.data(), temp, elems * sizeof(CDataType), hipMemcpyDeviceToHost));
+        *C = std::accumulate(host_temp.cbegin(), host_temp.cend(), (CDataType)*C);
 
-        delete[] host_temp;
-        gpu::hip_catch(hipFree(temp));
+        hip_catch(hipFree(temp));
     } else {
 #endif
         if (C_prefactor == CDataType{0.0}) {
@@ -292,7 +289,7 @@ auto einsum_special_dispatch(ValueTypeT<CType> const C_prefactor, std::tuple<CIn
             temp += (CDataType)temp_c;
         }
         *C += temp;
-#ifdef __HIP__
+#ifdef EINSUMS_COMPUTE_CODE
     }
 #endif
 }
@@ -364,14 +361,14 @@ auto einsum_special_dispatch(ValueTypeT<CType> const C_prefactor, std::tuple<CIn
                              BType const &B) -> void {
     using CDataType = ValueTypeT<CType>;
 
-#ifdef __HIP__
-    if constexpr (einsums::detail::IsDeviceTensorV<AType>) {
-        __device_ptr__ CDataType *temp;
+#ifdef EINSUMS_COMPUTE_CODE
+    if constexpr (IsDeviceTensorV<AType>) {
+        CDataType *temp;
 
         size_t elems = omp_get_max_threads();
 
-        gpu::hip_catch(hipMalloc(temp, elems * sizeof(CDataType)));
-        __host_ptr__ CDataType *host_temp = new CDataType[elems];
+        hip_catch(hipMalloc(temp, elems * sizeof(CDataType)));
+        std::vector<CDataType> host_temp(elems);
         EINSUMS_OMP_PARALLEL_FOR
         for (int i = 0; i < A.num_blocks(); i++) {
             if (A.block_dim(i) == 0) {
@@ -389,11 +386,10 @@ auto einsum_special_dispatch(ValueTypeT<CType> const C_prefactor, std::tuple<CIn
             *C *= C_prefactor;
         }
 
-        gpu::hip_catch(hipMemcpy(host_temp, temp, elems * sizeof(CDataType), hipMemcpyDeviceToHost));
-        *C = std::accumulate(host_temp, host_temp + elems, (CDataType)*C);
+        hip_catch(hipMemcpy(host_temp.data(), temp, elems * sizeof(CDataType), hipMemcpyDeviceToHost));
+        *C = std::accumulate(host_temp.cbegin(), host_temp.cend(), (CDataType)*C);
 
-        delete[] host_temp;
-        gpu::hip_catch(hipFree(temp));
+        hip_catch(hipFree(temp));
     } else {
 #endif
         if (C_prefactor == CDataType{0.0}) {
@@ -417,7 +413,7 @@ auto einsum_special_dispatch(ValueTypeT<CType> const C_prefactor, std::tuple<CIn
             temp += temp_c;
         }
         *C += temp;
-#ifdef __HIP__
+#ifdef EINSUMS_COMPUTE_CODE
     }
 #endif
 }

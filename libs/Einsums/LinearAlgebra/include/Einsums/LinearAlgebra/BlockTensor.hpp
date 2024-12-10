@@ -13,6 +13,12 @@
 #include <Einsums/Print.hpp>
 #include "Einsums/Errors/Error.hpp"
 
+#ifdef EINSUMS_COMPUTE_CODE
+#include <hip/hip_common.h>
+#include <hip/hip_runtime.h>
+#include <hip/hip_runtime_api.h>
+#endif
+
 namespace einsums::linear_algebra::detail {
 
 template <bool TransA, bool TransB, BlockTensorConcept AType, BlockTensorConcept BType, BlockTensorConcept CType, typename U>
@@ -29,9 +35,7 @@ void gemm(U const alpha, AType const &A, BType const &B, U const beta, CType *C)
     using T = typename AType::ValueType;
 
 #if defined(EINSUMS_COMPUTE_CODE)
-    if constexpr (einsums::detail::IsDeviceTensorV<AType>) {
-        using namespace einsums::gpu;
-
+    if constexpr (IsDeviceTensorV<AType>) {
         using dev_datatype = typename AType::dev_datatype;
         dev_datatype *alpha_gpu, *beta_gpu;
 

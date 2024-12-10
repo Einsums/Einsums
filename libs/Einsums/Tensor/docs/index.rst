@@ -13,3 +13,10 @@ This module contains code for the tensor types used in Einsums.
 See the :ref:`API reference <modules_Tensor_api>` of this module for more
 details.
 
+----------------
+Public Reference
+----------------
+
+.. cpp:class:: template<typename T, size_t Rank> Tensor
+
+    Represents a tensor.

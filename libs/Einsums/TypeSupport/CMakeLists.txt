@@ -14,6 +14,14 @@ set(TypeSupportHeaders
 
 set(TypeSupportSources)
 
+if(EINSUMS_WITH_GPU_SUPPORT)
+  list(APPEND TypeSupportHeaders Einsums/TypeSupport/GPUCase.hpp)
+
+  set(TypeSupportGPUDeps hip::host hip::device)
+else()
+  set(TypeSupportGPUDeps)
+endif()
+
 include(Einsums_AddModule)
 einsums_add_module(
   Einsums TypeSupport
@@ -22,5 +30,6 @@ einsums_add_module(
   HEADERS ${TypeSupportHeaders}
   DEPENDENCIES
   MODULE_DEPENDENCIES
+    ${TypeSupportGPUDeps}
   CMAKE_SUBDIRS examples tests
 )

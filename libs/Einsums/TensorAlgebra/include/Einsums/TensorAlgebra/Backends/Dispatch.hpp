@@ -19,7 +19,7 @@
 #    include <Einsums/TensorAlgebra/Backends/TileAlgebra.hpp>
 #    include <Einsums/TensorAlgebra/Detail/Utilities.hpp>
 #    include <Einsums/TensorBase/Common.hpp>
-#    if defined(EINSUMS_COMPUTE)
+#    if defined(EINSUMS_COMPUTE_CODE)
 #        include <Einsums/TensorAlgebra/Backends/GPUTensorAlgebra.hpp>
 #    endif
 #    include <Einsums/Profile/Timer.hpp>
@@ -35,7 +35,7 @@
 // #include "einsums/tensor_algebra_backends/BlockAlgebra.hpp"
 // #include "einsums/tensor_algebra_backends/BlockTileAlgebra.hpp"
 // #include "einsums/tensor_algebra_backends/TileAlgebra.hpp"
-// #ifdef __HIP__
+// #ifdef EINSUMS_COMPUTE_CODE
 // #    include "einsums/tensor_algebra_backends/GPUTensorAlgebra.hpp"
 // #endif
 // #include "einsums/tensor_algebra_backends/GenericAlgorithm.hpp"
@@ -259,7 +259,7 @@ auto einsum(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const &
         if constexpr (swap_AB)
             std::swap(dC[0], dC[1]);
 
-#    ifdef __HIP__
+#    ifdef EINSUMS_COMPUTE_CODE
         std::conditional_t<IsIncoreRankTensorV<CType, CRank, CDataType>, TensorView<CDataType, 2>, DeviceTensorView<CDataType, 2>> tC{*C,
                                                                                                                                       dC};
 #    else
@@ -331,14 +331,14 @@ auto einsum(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const &
             dC[0] = product_dims(A_target_position_in_C, *C);
             sC[0] = last_stride(A_target_position_in_C, *C);
 
-#    ifdef __HIP__
-            std::conditional_t<einsums::detail::IsIncoreTensorV<AType>, const TensorView<ADataType, 2>,
+#    ifdef EINSUMS_COMPUTE_CODE
+            std::conditional_t<IsIncoreTensorV<AType>, const TensorView<ADataType, 2>,
                                const DeviceTensorView<ADataType, 2>>
                 tA{const_cast<AType &>(A), dA, sA};
-            std::conditional_t<einsums::detail::IsIncoreTensorV<BType>, TensorView<BDataType, 1> const,
+            std::conditional_t<IsIncoreTensorV<BType>, TensorView<BDataType, 1> const,
                                DeviceTensorView<BDataType, 1> const>
                 tB{const_cast<BType &>(B), dB, sB};
-            std::conditional_t<einsums::detail::IsIncoreTensorV<CType>, TensorView<CDataType, 1>, DeviceTensorView<CDataType, 1>> tC{*C, dC,
+            std::conditional_t<IsIncoreTensorV<CType>, TensorView<CDataType, 1>, DeviceTensorView<CDataType, 1>> tC{*C, dC,
                                                                                                                                      sC};
 #    else
             const TensorView<ADataType, 2> tA{const_cast<AType &>(A), dA, sA};
@@ -417,14 +417,14 @@ auto einsum(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const &
                             std::swap(sC[0], sC[1]);
                         }
 
-#    ifdef __HIP__
-                        std::conditional_t<einsums::detail::IsIncoreRankTensorV<AType, ARank, ADataType>, const TensorView<ADataType, 2>,
+#    ifdef EINSUMS_COMPUTE_CODE
+                        std::conditional_t<IsIncoreRankTensorV<AType, ARank, ADataType>, const TensorView<ADataType, 2>,
                                            const DeviceTensorView<ADataType, 2>>
                             tA{const_cast<AType &>(A), dA, sA};
-                        std::conditional_t<einsums::detail::IsIncoreRankTensorV<BType, BRank, BDataType>, TensorView<BDataType, 2> const,
+                        std::conditional_t<IsIncoreRankTensorV<BType, BRank, BDataType>, TensorView<BDataType, 2> const,
                                            DeviceTensorView<BDataType, 2> const>
                             tB{const_cast<BType &>(B), dB, sB};
-                        std::conditional_t<einsums::detail::IsIncoreRankTensorV<CType, CRank, CDataType>, TensorView<CDataType, 2>,
+                        std::conditional_t<IsIncoreRankTensorV<CType, CRank, CDataType>, TensorView<CDataType, 2>,
                                            DeviceTensorView<CDataType, 2>>
                             tC{*C, dC, sC};
 #    else
@@ -535,7 +535,7 @@ auto einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTyp
     auto testC = Tensor<CDataType, CRank>(*C);
     {
         Section t1("testing");
-#        ifdef __HIP__
+#        ifdef EINSUMS_COMPUTE_CODE
         if constexpr (einsums::detail::IsDeviceTensorV<CType>) {
             auto testA = Tensor<ADataType, ARank>(A);
             auto testB = Tensor<BDataType, BRank>(B);
@@ -571,7 +571,7 @@ auto einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTyp
                 }
                 // #pragma omp taskwait depend(in: testC)
             }
-#        ifdef __HIP__
+#        ifdef EINSUMS_COMPUTE_CODE
         }
 #        endif
     }

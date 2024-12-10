@@ -16,8 +16,8 @@
 #include <functional>
 
 // TODO:
-#ifdef __HIP__
-#    include "einsums/DeviceTensor.hpp"
+#ifdef EINSUMS_COMPUTE_CODE
+#    include "Einsums/Tensor/DeviceTensor.hpp"
 #endif
 #include <Einsums/Concepts/Tensor.hpp>
 #include <Einsums/Tensor/Tensor.hpp>
@@ -1125,7 +1125,7 @@ struct BlockTensor : virtual tensor_base::BlockTensor<T, Rank, Tensor<T, Rank>>,
     // size_t dim(int d) const override { return detail::BlockTensorBase<T, Rank, Tensor>::dim(d); }
 };
 
-#ifdef __HIP__
+#ifdef EINSUMS_COMPUTE_CODE
 /**
  * @struct BlockDeviceTensor
  *
@@ -1135,9 +1135,9 @@ struct BlockTensor : virtual tensor_base::BlockTensor<T, Rank, Tensor<T, Rank>>,
  * @tparam Rank The rank of the tensor.
  */
 template <typename T, size_t Rank>
-struct BlockDeviceTensor : public virtual tensor_props::BlockTensorBase<T, Rank, DeviceTensor<T, Rank>>,
-                           virtual tensor_props::DeviceTensorBase,
-                           virtual tensor_props::DeviceTypedTensor<T> {
+struct BlockDeviceTensor : public virtual tensor_base::BlockTensor<T, Rank, einsums::DeviceTensor<T, Rank>>,
+                           virtual tensor_base::DeviceTensor,
+                           virtual tensor_base::DeviceTypedTensor<T> {
   public:
     /**
      * @typedef host_datatype
@@ -1146,7 +1146,7 @@ struct BlockDeviceTensor : public virtual tensor_props::BlockTensorBase<T, Rank,
      *
      * @sa tensor_props::DeviceTypedTensor::host_datatype
      */
-    using host_datatype = typename tensor_props::DeviceTypedTensor<T>::host_datatype;
+    using host_datatype = typename tensor_base::DeviceTypedTensor<T>::host_datatype;
 
     /**
      * @typedef dev_datatype
@@ -1155,7 +1155,7 @@ struct BlockDeviceTensor : public virtual tensor_props::BlockTensorBase<T, Rank,
      *
      * @sa tensor_props::DeviceTypedTensor::dev_datatype
      */
-    using dev_datatype = typename tensor_props::DeviceTypedTensor<T>::dev_datatype;
+    using dev_datatype = typename tensor_base::DeviceTypedTensor<T>::dev_datatype;
 
     /**
      * @brief Construct a new BlockDeviceTensor object. Default constructor.
@@ -1192,7 +1192,7 @@ struct BlockDeviceTensor : public virtual tensor_props::BlockTensorBase<T, Rank,
      */
     template <typename... Dims>
     explicit BlockDeviceTensor(std::string name, detail::HostToDeviceMode mode, Dims... block_dims)
-        : tensor_props::BlockTensorBase<T, Rank, DeviceTensor<T, Rank>>(name) {
+        : tensor_base::BlockTensor<T, Rank, einsums::DeviceTensor<T, Rank>>(name) {
 
         this->_blocks.reserve(sizeof...(Dims));
 
@@ -1204,7 +1204,7 @@ struct BlockDeviceTensor : public virtual tensor_props::BlockTensorBase<T, Rank,
 
             pass_dims.fill(dims[i]);
 
-            tensor_props::BlockTensorBase<T, Rank, DeviceTensor<T, Rank>>::push_block(DeviceTensor<T, Rank>(pass_dims, mode));
+            tensor_base::BlockTensor<T, Rank, einsums::DeviceTensor<T, Rank>>::push_block(einsums::DeviceTensor<T, Rank>(pass_dims, mode));
         }
     }
 
@@ -1228,7 +1228,7 @@ struct BlockDeviceTensor : public virtual tensor_props::BlockTensorBase<T, Rank,
      */
     template <typename ArrayArg>
     explicit BlockDeviceTensor(std::string name, detail::HostToDeviceMode mode, ArrayArg const &block_dims)
-        : tensor_props::BlockTensorBase<T, Rank, DeviceTensor<T, Rank>>(name) {
+        : tensor_base::BlockTensor<T, Rank, einsums::DeviceTensor<T, Rank>>(name) {
 
         this->_blocks.reserve(block_dims.size());
         for (int i = 0; i < block_dims.size(); i++) {
@@ -1237,7 +1237,7 @@ struct BlockDeviceTensor : public virtual tensor_props::BlockTensorBase<T, Rank,
 
             pass_dims.fill(block_dims[i]);
 
-            tensor_props::BlockTensorBase<T, Rank, DeviceTensor<T, Rank>>::push_block(DeviceTensor<T, Rank>(pass_dims, mode));
+            tensor_base::BlockTensor<T, Rank, einsums::DeviceTensor<T, Rank>>::push_block(einsums::DeviceTensor<T, Rank>(pass_dims, mode));
         }
     }
 
@@ -1249,7 +1249,7 @@ struct BlockDeviceTensor : public virtual tensor_props::BlockTensorBase<T, Rank,
      */
     template <size_t Dims>
     explicit BlockDeviceTensor(detail::HostToDeviceMode mode, Dim<Dims> block_dims)
-        : tensor_props::BlockTensorBase<T, Rank, DeviceTensor<T, Rank>>() {
+        : tensor_base::BlockTensor<T, Rank, einsums::DeviceTensor<T, Rank>>() {
         this->_blocks.reserve(Dims);
         for (int i = 0; i < block_dims.size(); i++) {
 
@@ -1257,7 +1257,7 @@ struct BlockDeviceTensor : public virtual tensor_props::BlockTensorBase<T, Rank,
 
             pass_dims.fill(block_dims[i]);
 
-            this->push_block(DeviceTensor<T, Rank>(pass_dims, mode));
+            this->push_block(einsums::DeviceTensor<T, Rank>(pass_dims, mode));
         }
     }
 
@@ -1280,7 +1280,7 @@ struct BlockDeviceTensor : public virtual tensor_props::BlockTensorBase<T, Rank,
      */
     template <typename... Dims>
         requires(NoneOfType<detail::HostToDeviceMode, Dims...>)
-    explicit BlockDeviceTensor(std::string name, Dims... block_dims) : tensor_props::BlockTensorBase<T, Rank, DeviceTensor<T, Rank>>(name) {
+    explicit BlockDeviceTensor(std::string name, Dims... block_dims) : tensor_base::BlockTensor<T, Rank, einsums::DeviceTensor<T, Rank>>(name) {
         this->_blocks.reserve(sizeof...(Dims));
 
         auto dims = std::array<size_t, sizeof...(Dims)>{static_cast<size_t>(block_dims)...};
@@ -1291,7 +1291,7 @@ struct BlockDeviceTensor : public virtual tensor_props::BlockTensorBase<T, Rank,
 
             pass_dims.fill(dims[i]);
 
-            tensor_props::BlockTensorBase<T, Rank, DeviceTensor<T, Rank>>::push_block(DeviceTensor<T, Rank>(pass_dims, detail::DEV_ONLY));
+            tensor_base::BlockTensor<T, Rank, einsums::DeviceTensor<T, Rank>>::push_block(einsums::DeviceTensor<T, Rank>(pass_dims, detail::DEV_ONLY));
         }
     }
 
@@ -1314,7 +1314,7 @@ struct BlockDeviceTensor : public virtual tensor_props::BlockTensorBase<T, Rank,
      */
     template <typename ArrayArg>
     explicit BlockDeviceTensor(std::string name, ArrayArg const &block_dims)
-        : tensor_props::BlockTensorBase<T, Rank, DeviceTensor<T, Rank>>(name) {
+        : tensor_base::BlockTensor<T, Rank, einsums::DeviceTensor<T, Rank>>(name) {
         this->_blocks.reserve(block_dims.size());
 
         for (int i = 0; i < block_dims.size(); i++) {
@@ -1323,7 +1323,7 @@ struct BlockDeviceTensor : public virtual tensor_props::BlockTensorBase<T, Rank,
 
             pass_dims.fill(block_dims[i]);
 
-            tensor_props::BlockTensorBase<T, Rank, DeviceTensor<T, Rank>>::push_block(DeviceTensor<T, Rank>(pass_dims, detail::DEV_ONLY));
+            tensor_base::BlockTensor<T, Rank, einsums::DeviceTensor<T, Rank>>::push_block(einsums::DeviceTensor<T, Rank>(pass_dims, detail::DEV_ONLY));
         }
     }
 
@@ -1333,7 +1333,7 @@ struct BlockDeviceTensor : public virtual tensor_props::BlockTensorBase<T, Rank,
      * @param block_dims The dimensions of the new tensor in Dim form.
      */
     template <size_t Dims>
-    explicit BlockDeviceTensor(Dim<Dims> block_dims) : tensor_props::BlockTensorBase<T, Rank, DeviceTensor<T, Rank>>() {
+    explicit BlockDeviceTensor(Dim<Dims> block_dims) : tensor_base::BlockTensor<T, Rank, einsums::DeviceTensor<T, Rank>>() {
         this->_blocks.reserve(Dims);
 
         for (int i = 0; i < block_dims.size(); i++) {
@@ -1342,7 +1342,7 @@ struct BlockDeviceTensor : public virtual tensor_props::BlockTensorBase<T, Rank,
 
             pass_dims.fill(block_dims[i]);
 
-            this->push_block(DeviceTensor<T, Rank>(pass_dims, detail::DEV_ONLY));
+            this->push_block(einsums::DeviceTensor<T, Rank>(pass_dims, detail::DEV_ONLY));
         }
     }
 
@@ -1441,7 +1441,7 @@ struct BlockDeviceTensor : public virtual tensor_props::BlockTensorBase<T, Rank,
     /**
      * Get the dimension of the tensor along a given axis.
      */
-    size_t dim(int d) const override { return tensor_props::BlockTensorBase<T, Rank, DeviceTensor<T, Rank>>::dim(d); }
+    size_t dim(int d) const override { return tensor_base::BlockTensor<T, Rank,einsums:: DeviceTensor<T, Rank>>::dim(d); }
 };
 #endif
 

@@ -1,9 +1,8 @@
 #pragma once
 
-#include "einsums/_GPUUtils.hpp"
-#include "einsums/_TensorAlgebraUtilities.hpp"
-
-#include "einsums/utility/IndexUtils.hpp"
+#include <Einsums/GPUStreams/GPUStreams.hpp>
+#include <Einsums/TensorBase/IndexUtilities.hpp>
+#include <Einsums/Concepts/Tensor.hpp>
 
 #include <bits/utility.h>
 #include <hip/hip_common.h>
@@ -219,7 +218,7 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
                               const std::tuple<CIndices...> &C_indices, const std::tuple<AIndices...> &A_indices,
                               const std::tuple<BIndices...> &B_indices, const std::tuple<TargetDims...> &target_dims,
                               const std::tuple<LinkDims...> &link_dims, const std::tuple<TargetPositionInC...> &target_position_in_C,
-                              const std::tuple<LinkPositionInLink...> &link_position_in_link, const DataTypeT<CType> C_prefactor, CType *C,
+                              const std::tuple<LinkPositionInLink...> &link_position_in_link, const ValueTypeT<CType> C_prefactor, CType *C,
                               const BiggestTypeT<typename AType::data_type, typename BType::data_type> AB_prefactor, const AType &A,
                               const BType &B) {
     using namespace einsums::gpu;
@@ -230,9 +229,9 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
 
     constexpr bool direct_product_swap =
         (sizeof...(AIndices) == sizeof...(BIndices)) && (sizeof...(AIndices) == sizeof...(CIndices)) &&
-        (std::tuple_size_v<intersect_t<std::tuple<AIndices...>, std::tuple<BIndices...>>> == sizeof...(AIndices)) &&
-        (std::tuple_size_v<intersect_t<std::tuple<AIndices...>, std::tuple<CIndices...>>> == sizeof...(AIndices)) &&
-        (std::tuple_size_v<intersect_t<std::tuple<CIndices...>, std::tuple<BIndices...>>> == sizeof...(AIndices));
+        (std::tuple_size_v<IntersectT<std::tuple<AIndices...>, std::tuple<BIndices...>>> == sizeof...(AIndices)) &&
+        (std::tuple_size_v<IntersectT<std::tuple<AIndices...>, std::tuple<CIndices...>>> == sizeof...(AIndices)) &&
+        (std::tuple_size_v<IntersectT<std::tuple<CIndices...>, std::tuple<BIndices...>>> == sizeof...(AIndices));
 
     constexpr auto unique_indices = unique_t<std::tuple<CIndices..., AIndices..., BIndices...>>();
     auto           unique_dims    = get_dim_ranges_for_many(*C, C_indices, A, A_indices, B, B_indices, unique_indices);
@@ -243,8 +242,8 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
 
     int A_index_table[sizeof...(AIndices)], B_index_table[sizeof...(BIndices)], C_index_table[sizeof...(CIndices)];
 
-    __device_ptr__ int    *A_index_table_gpu, *B_index_table_gpu, *C_index_table_gpu;
-    __device_ptr__ size_t *unique_strides_gpu, *C_index_strides_gpu;
+    int    *A_index_table_gpu, *B_index_table_gpu, *C_index_table_gpu;
+    size_t *unique_strides_gpu, *C_index_strides_gpu;
 
     compile_index_table(unique_indices, A_indices, A_index_table);
     compile_index_table(unique_indices, B_indices, B_index_table);
@@ -287,7 +286,7 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
 
         dims_to_strides(C->dims(), C_index_strides);
 
-        __device_ptr__ size_t *C_index_strides_gpu;
+        size_t *C_index_strides_gpu;
 
         hip_catch(hipMallocAsync((void **)&C_index_strides_gpu, CRank * sizeof(size_t), get_stream()));
 
@@ -312,26 +311,26 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
 
         hip_catch(hipFreeAsync(C_index_strides_gpu, get_stream()));
     } else {
-        using C_devtype   = typename einsums::tensor_props::DeviceTypedTensor<DataTypeT<CType>>::dev_datatype;
+        using C_devtype   = typename einsums::tensor_base::DeviceTypedTensor<ValueTypeT<CType>>::dev_datatype;
         using A_devtype   = typename AType::dev_datatype;
         using B_devtype   = typename BType::dev_datatype;
         using AB_devtype  = BiggestTypeT<A_devtype, B_devtype>;
-        using C_hosttype  = DataTypeT<CType>;
+        using C_hosttype  = ValueTypeT<CType>;
         using A_hosttype  = typename AType::host_datatype;
         using B_hosttype  = typename BType::host_datatype;
         using AB_hosttype = BiggestTypeT<A_hosttype, B_hosttype>;
 
         // CDataType *work;
         // hip_catch(hipMalloc((void **)&work, threads.x * threads.y * threads.z * blocks.x * blocks.y * blocks.z * sizeof(CDataType)));
-        if (C_prefactor == DataTypeT<CType>{0.0}) {
-            *C = DataTypeT<CType>{0.0};
+        if (C_prefactor == ValueTypeT<CType>{0.0}) {
+            *C = ValueTypeT<CType>{0.0};
         } else {
             *C *= C_prefactor;
         }
 
-        __device_ptr__ C_devtype *C_data;
+        C_devtype *C_data;
 
-        if constexpr (einsums::detail::IsTensorV<CType>) {
+        if constexpr (einsums::IsTensorV<CType>) {
             C_data = C->gpu_data();
         } else {
             hip_catch(hipMalloc((void **)&C_data, sizeof(C_devtype)));
@@ -345,7 +344,7 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
                                                  ::std::get<0>(unique_dims) * unique_strides[0]);
         gpu::stream_wait();
 
-        if constexpr (!einsums::detail::IsTensorV<CType>) {
+        if constexpr (!einsums::IsTensorV<CType>) {
             hip_catch(hipMemcpy(C, C_data, sizeof(C_devtype), hipMemcpyDeviceToHost));
             // No sync
             hip_catch(hipFree(C_data));

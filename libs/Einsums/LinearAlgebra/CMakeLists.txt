@@ -12,6 +12,12 @@ set(LinearAlgebraHeaders
 
 set(LinearAlgebraSources LinearAlgebra.cpp)
 
+if(EINSUMS_WITH_GPU_SUPPORT)
+  list(APPEND LinearAlgebraHeaders Einsums/LinearAlgebra/GPULinearAlgebra.hpp)
+  list(APPEND LinearAlgebraSources GPULinearAlgebra.hip)
+  set(LinAlgGPUModules Einsums_GPUStreams roc::hipblas roc::hipsolver hip::host hip::device)
+endif()
+
 include(Einsums_AddModule)
 einsums_add_module(
   Einsums LinearAlgebra
@@ -28,5 +34,7 @@ einsums_add_module(
         Einsums_Print
         Einsums_Tensor
         Einsums_TensorUtilities
+        Einsums_TypeSupport
+        ${LinAlgGPUModules}
   CMAKE_SUBDIRS examples tests
 )

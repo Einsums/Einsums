@@ -13,7 +13,7 @@
 #include <Einsums/Print.hpp>
 
 #if defined(EINSUMS_COMPUTE_CODE)
-#    include "einsums/_GPUUtils.hpp"
+#include <Einsums/Tensor/DeviceTensor.hpp>
 #endif
 
 namespace einsums::linear_algebra::detail {

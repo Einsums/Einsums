@@ -15,8 +15,8 @@
 #include <Einsums/TensorAlgebra/Detail/Utilities.hpp>
 #include <Einsums/TensorBase/Common.hpp>
 
-#ifdef __HIP__
-#    include "einsums/DeviceSort.hpp"
+#ifdef EINSUMS_COMPUTE_CODE
+#    include "Einsums/TensorAlgebra/Backends/DeviceSort.hpp"
 #endif
 
 namespace einsums::tensor_algebra {

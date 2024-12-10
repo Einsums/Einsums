@@ -192,10 +192,12 @@
 #define EINSUMS_DEVICE __device__
 #define EINSUMS_HOST __host__
 #define EINSUMS_CONSTANT __constant__
+#define EINSUMS_HOSTDEV __host__ __device__
 #else
 #define EINSUMS_DEVICE
 #define EINSUMS_HOST
 #define EINSUMS_CONSTANT
+#define EINSUMS_HOSTDEV
 #endif
 #define EINSUMS_HOST_DEVICE EINSUMS_HOST EINSUMS_DEVICE
 

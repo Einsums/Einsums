@@ -12,8 +12,8 @@
 #include <Einsums/Tensor/Tensor.hpp>
 #include <Einsums/TensorAlgebra/Detail/Utilities.hpp>
 
-#ifdef __HIP__
-#    include "einsums/DeviceTensor.hpp"
+#ifdef EINSUMS_COMPUTE_CODE
+#    include <Einsums/Tensor/DeviceTensor.hpp>
 #endif
 
 #include <algorithm>
@@ -66,7 +66,7 @@ auto khatri_rao(std::tuple<AIndices...> const &, AType const &A, std::tuple<BInd
         }
     });
 
-#ifdef __HIP__
+#ifdef EINSUMS_COMPUTE_CODE
     if constexpr (std::is_same_v<OutType, DeviceTensor<T, 2>>) {
         auto result_dims = std::tuple_cat(std::make_tuple("KR product"), std::make_tuple(einsums::detail::DEV_ONLY), A_only_dims,
                                           B_only_dims, A_common_dims);
@@ -89,7 +89,7 @@ auto khatri_rao(std::tuple<AIndices...> const &, AType const &A, std::tuple<BInd
         // Return a reconstruction of the result tensor ... this can be considered as a simple reshape of the tensor.
 
         return OutType{std::move(result), "KR product", -1, detail::product_dims(A_common_position, A)};
-#ifdef __HIP__
+#ifdef EINSUMS_COMPUTE_CODE
     }
 #endif
 }

@@ -60,8 +60,6 @@
 #    include <hip/hip_common.h>
 #    include <hip/hip_runtime.h>
 #    include <hip/hip_runtime_api.h>
-
-#    include "einsums/_GPUUtils.hpp"
 #endif
 
 namespace einsums {
@@ -678,7 +676,7 @@ struct Tensor : virtual tensor_base::CoreTensor,
         return *this;
     }
 
-#ifdef __HIP__
+#ifdef EINSUMS_COMPUTE_CODE
     /**
      * Copy the data from the device into this tensor.
      */
@@ -699,7 +697,7 @@ struct Tensor : virtual tensor_base::CoreTensor,
             _data.resize(size);
         }
 
-        gpu::hip_catch(hipMemcpy(_data.data(), other.gpu_data(), _strides[0] * _dims[0] * sizeof(T), hipMemcpyDeviceToHost));
+        hip_catch(hipMemcpy(_data.data(), other.gpu_data(), _strides[0] * _dims[0] * sizeof(T), hipMemcpyDeviceToHost));
 
         return *this;
     }
@@ -1820,7 +1818,7 @@ void fprintln(Output fp, AType const &A, TensorPrintOptions options) {
                 fprintln(fp, "Type: In Core Tensor View");
 #    if defined(EINSUMS_COMPUTE_CODE)
         } else if constexpr (DeviceTensorConcept<AType>) {
-            if constexpr (!DeviceTensorViewConcept<AType>)
+            if constexpr (!TensorViewConcept<AType>)
                 fprintln(fp, "Type: Device Tensor");
             else
                 fprintln(fp, "Type: Device Tensor View");

@@ -144,7 +144,7 @@ struct IsIncoreTensor : std::is_base_of<tensor_base::CoreTensor, D> {};
  * @tparam D The tensor to check.
  */
 template <typename D>
-struct IsDeviceTensor : public std::is_base_of<tensor_base::DeviceTensorBase, D> {};
+struct IsDeviceTensor : public std::is_base_of<tensor_base::DeviceTensor, D> {};
 #endif
 
 /**
@@ -533,7 +533,7 @@ constexpr inline bool IsIncoreRankTensorV = IsIncoreTensorV<D> && IsTRTensorV<D,
  * @tparam T The type that should be stored.
  */
 template <typename D, size_t Rank, typename T>
-constexpr inline bool IsDeviceRankTensorV = IsDeviceTensorV<D> && is_tr_tensor_v<D, Rank, T>;
+constexpr inline bool IsDeviceRankTensorV = IsDeviceTensorV<D> && IsTRTensorV<D, Rank, T>;
 #endif
 
 /**
@@ -607,7 +607,7 @@ constexpr inline bool IsIncoreRankBasicTensorV = IsBasicTensorV<D> && IsTRTensor
  * @tparam T The type that should be stored.
  */
 template <typename D, size_t Rank, typename T>
-constexpr inline bool IsDeviceRankBasicTensorV = is_basic_tensor_v<D> && is_tr_tensor_v<D, Rank, T> && IsDeviceTensorV<D>;
+constexpr inline bool IsDeviceRankBasicTensorV = IsBasicTensorV<D> && IsTRTensorV<D, Rank, T> && IsDeviceTensorV<D>;
 #endif
 
 /**
@@ -633,7 +633,7 @@ constexpr inline bool IsIncoreRankBlockTensorV = IsBlockTensorV<D> && IsTRTensor
  * @tparam T The type that should be stored.
  */
 template <typename D, size_t Rank, typename T>
-constexpr inline bool IsDeviceRankBlockTensorV = IsBlockTensorV<D> && is_tr_tensor_v<D, Rank, T> && IsDeviceTensorV<D>;
+constexpr inline bool IsDeviceRankBlockTensorV = IsBlockTensorV<D> && IsTRTensorV<D, Rank, T> && IsDeviceTensorV<D>;
 #endif
 
 /**
@@ -1528,7 +1528,7 @@ struct LocationTensorBaseOf<D> {
 #    if defined(EINSUMS_COMPUTE_CODE)
 template <DeviceTensorConcept D>
 struct LocationTensorBaseOf<D> {
-    using type = tensor_base::DeviceTensorBase;
+    using type = tensor_base::DeviceTensor;
 };
 #    endif
 #endif
@@ -1566,9 +1566,9 @@ concept NumOfType = detail::count_of_type<T, Args...>() == Num;
 template <typename T, typename... Args>
 concept AllOfType = (std::is_same_v<T, Args> && ... && true);
 
-#ifdef __HIP__
+#ifdef EINSUMS_COMPUTE_CODE
 template <typename T>
-using DevDatatype = typename tensor_props::DeviceTypedTensor<T>::dev_datatype;
+using DevDatatype = typename tensor_base::DeviceTypedTensor<T>::dev_datatype;
 #endif
 
 } // namespace einsums

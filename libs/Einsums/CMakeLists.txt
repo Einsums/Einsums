@@ -21,7 +21,7 @@ set(_Einsums_modules
     Debugging
     Errors
     Graph
-        HPTT
+    HPTT
     ITTNotify
     Iterator
     LinearAlgebra
@@ -35,8 +35,12 @@ set(_Einsums_modules
     TensorBase
     TensorUtilities
     TypeSupport
-        Utilities
+    Utilities
 )
+
+if(EINSUMS_WITH_GPU_SUPPORT)
+  list(APPEND _Einsums_modules GPUStreams)
+endif()
 # cmake-format: on
 
 einsums_info("")

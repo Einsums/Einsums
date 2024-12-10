@@ -18,6 +18,10 @@
 #include <Einsums/Tensor/Tensor.hpp>
 #include <Einsums/TensorUtilities/CreateRandomTensor.hpp>
 
+#ifdef EINSUMS_COMPUTE_CODE
+#include <Einsums/LinearAlgebra/GPULinearAlgebra.hpp>
+#endif
+
 #include <algorithm>
 #include <cmath>
 #include <complex>

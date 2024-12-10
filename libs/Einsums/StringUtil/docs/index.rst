@@ -8,7 +8,7 @@
 StringUtil
 ==========
 
-TODO: High-level description of the module.
+This module contains functions for modifying strings.
 
 See the :ref:`API reference <modules_StringUtil_api>` of this module for more
 details.

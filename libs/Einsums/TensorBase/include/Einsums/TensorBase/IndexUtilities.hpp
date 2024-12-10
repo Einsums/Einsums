@@ -20,12 +20,6 @@
 
 namespace einsums {
 
-#if defined(__HIP__) && !defined(HOSTDEV)
-#    define HOSTDEV __host__ __device__
-#else
-#    define HOSTDEV
-#endif
-
 #ifndef DOXYGEN
 template <typename UniqueIndex, int BDim, typename BType>
 inline size_t get_dim_ranges_for_many_b(BType const &B, std::tuple<> const &B_indices) {
@@ -188,7 +182,7 @@ auto get_dim_ranges(TensorType const &tensor) {
  * @param out_inds The converted indices.
  */
 template <size_t num_unique_inds>
-HOSTDEV inline void sentinel_to_indices(size_t sentinel, size_t const *unique_strides, size_t *out_inds) {
+EINSUMS_HOSTDEV inline void sentinel_to_indices(size_t sentinel, size_t const *unique_strides, size_t *out_inds) {
     size_t hold = sentinel;
 
 #pragma unroll
@@ -236,14 +230,14 @@ inline void sentinel_to_indices(size_t sentinel, StorageType1 const &unique_stri
     }
 }
 
-HOSTDEV inline void sentinel_to_indices_mult_imp(size_t) {
+EINSUMS_HOSTDEV inline void sentinel_to_indices_mult_imp(size_t) {
 }
 
 template <typename Extra>
-HOSTDEV void sentinel_to_indices_mult_imp(size_t ordinal, Extra extra) = delete;
+EINSUMS_HOSTDEV void sentinel_to_indices_mult_imp(size_t ordinal, Extra extra) = delete;
 
 template <typename... Rest>
-HOSTDEV void sentinel_to_indices_mult_imp(size_t ordinal, size_t index, size_t const *strides, size_t *indices, Rest... rest) {
+EINSUMS_HOSTDEV void sentinel_to_indices_mult_imp(size_t ordinal, size_t index, size_t const *strides, size_t *indices, Rest... rest) {
     indices[index] = strides[index] * ordinal;
 
     sentinel_to_indices_mult_imp(ordinal, rest...);
@@ -265,7 +259,7 @@ void sentinel_to_indices_mult_imp(size_t ordinal, size_t index, Stride const &st
  */
 template <size_t num_indices, typename StorageType, typename... StridesInds>
     requires(sizeof...(StridesInds) % 2 == 0)
-HOSTDEV inline void sentinel_to_indices(size_t sentinel, size_t const *index_strides, StridesInds... strides_inds) {
+EINSUMS_HOSTDEV inline void sentinel_to_indices(size_t sentinel, size_t const *index_strides, StridesInds... strides_inds) {
     size_t hold = sentinel;
 
 #pragma unroll
@@ -327,7 +321,7 @@ void sentinel_to_indices(size_t sentinel, StorageType const &index_strides, Stri
  * @brief The opposite of sentinel_to_indices. Calculates a sentinel given indices and strides.
  */
 template <size_t num_unique_inds>
-HOSTDEV inline size_t indices_to_sentinel(size_t const *unique_strides, size_t const *inds) {
+EINSUMS_HOSTDEV inline size_t indices_to_sentinel(size_t const *unique_strides, size_t const *inds) {
     size_t out = 0;
 
 #pragma unroll

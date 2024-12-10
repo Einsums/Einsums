@@ -13,6 +13,13 @@ set(TensorHeaders
         Einsums/Tensor/TensorForward.hpp
 )
 
+if(EINSUMS_WITH_GPU_SUPPORT)
+      list(APPEND TensorHeaders Einsums/Tensor/DeviceTensor.hpp Einsums/Tensor/Backends/DeviceTensor.hpp
+            Einsums/Tensor/Backends/DeviceTensorView.hpp)
+      
+      set(TensorGPUModules Einsums_GPUStreams hip::host hip::device)
+endif()
+
 set(TensorSources)
 
 include(Einsums_AddModule)
@@ -34,5 +41,7 @@ einsums_add_module(
         Einsums_TypeSupport
         Einsums_Profile
         Einsums_Print
+        ${TensorGPUModules}
   CMAKE_SUBDIRS examples tests
 )
+

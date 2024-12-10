@@ -53,7 +53,7 @@ template <template <typename, size_t> typename TensorType, typename DataType, si
     requires DeviceRankBasicTensor<TensorType<DataType, Rank>, Rank, DataType>
 auto create_tensor_like(TensorType<DataType, Rank> const &tensor, einsums::detail::HostToDeviceMode mode = einsums::detail::DEV_ONLY)
     -> DeviceTensor<DataType, Rank> {
-    return device_tensor<DataType, Rank>{tensor.dims(), mode};
+    return einsums::DeviceTensor<DataType, Rank>{tensor.dims(), mode};
 }
 #    endif
 

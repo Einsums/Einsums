@@ -12,6 +12,12 @@ set(ErrorsHeaders
 
 set(ErrorsSources ErrorNames.cpp Errors.cpp)
 
+if(EINSUMS_WITH_GPU_SUPPORT)
+  list(APPEND ErrorsHeaders hipblas_status_doc.hpp)
+  list(APPEND ErrorsSources GPUErrors.hip)
+  set(ErrorsGPUModules hip::host hip::device roc::hipblas roc::hipsolver)
+endif()
+
 include(Einsums_AddModule)
 einsums_add_module(
   Einsums Errors
@@ -20,5 +26,6 @@ einsums_add_module(
   HEADERS ${ErrorsHeaders}
   DEPENDENCIES
   MODULE_DEPENDENCIES Einsums_Config Einsums_TypeSupport
+    ${ErrorsGPUModules}
   CMAKE_SUBDIRS examples tests
 )

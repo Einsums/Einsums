@@ -6,6 +6,7 @@
 #pragma once
 
 #include <Einsums/TensorBase/Common.hpp>
+#include <Einsums/Config.hpp>
 
 #include <complex>
 #include <memory>
