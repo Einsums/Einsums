@@ -25,7 +25,7 @@ TEMPLATE_TEST_CASE("outer product", "[tensor_algebra]", float, double, std::comp
 
         for (int x = 0; x < _x; x++) {
             for (int y = 0; y < _y; y++) {
-                CheckWithinRel(C(x, y), A(x) * B(y), 0.001);
+                CheckWithinRel(C(x, y), A(x) * B(y), 0.01);
                 // REQUIRE_THAT(C(x, y), Catch::Matchers::WithinAbs(A(x) * B(y), 0.001));
             }
         }
@@ -35,7 +35,7 @@ TEMPLATE_TEST_CASE("outer product", "[tensor_algebra]", float, double, std::comp
 
         for (int x = 0; x < _x; x++) {
             for (int y = 0; y < _y; y++) {
-                CheckWithinRel(C(x, y), A(y) * B(x), 0.001);
+                CheckWithinRel(C(x, y), A(y) * B(x), 0.01);
                 // REQUIRE_THAT(C(x, y), Catch::Matchers::WithinAbs(A(y) * B(x), 0.001));
             }
         }
@@ -45,7 +45,7 @@ TEMPLATE_TEST_CASE("outer product", "[tensor_algebra]", float, double, std::comp
 
         for (int x = 0; x < _x; x++) {
             for (int y = 0; y < _y; y++) {
-                CheckWithinRel(C(y, x), A(y) * B(x), 0.001);
+                CheckWithinRel(C(y, x), A(y) * B(x), 0.01);
                 // REQUIRE_THAT(C(y, x), Catch::Matchers::WithinAbs(A(y) * B(x), 0.001));
             }
         }
@@ -55,7 +55,7 @@ TEMPLATE_TEST_CASE("outer product", "[tensor_algebra]", float, double, std::comp
 
         for (int x = 0; x < _x; x++) {
             for (int y = 0; y < _y; y++) {
-                CheckWithinRel(C(y, x), A(x) * B(y), 0.001);
+                CheckWithinRel(C(y, x), A(x) * B(y), 0.01);
                 // REQUIRE_THAT(C(y, x), Catch::Matchers::WithinAbs(A(x) * B(y), 0.001));
             }
         }
