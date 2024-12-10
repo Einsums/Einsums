@@ -2,9 +2,9 @@
 #define DEVICE_TENSOR_HPP
 // We use this so that the implementation headers work on their own.
 
-
 #include <Einsums/Config.hpp>
 
+#include <Einsums/Concepts/Tensor.hpp>
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/GPUStreams/GPUStreams.hpp>
@@ -15,7 +15,6 @@
 #include <Einsums/TypeSupport/Arguments.hpp>
 #include <Einsums/TypeSupport/CountOfType.hpp>
 #include <Einsums/TypeSupport/TypeName.hpp>
-#include <Einsums/Concepts/Tensor.hpp>
 
 #include <cstddef>
 #include <hip/driver_types.h>
@@ -1149,7 +1148,7 @@ struct DeviceTensorView : public virtual tensor_base::BasicTensor<T, Rank>,
     template <size_t OtherRank, typename... Args>
     DeviceTensorView(einsums::DeviceTensor<T, OtherRank> const &other, Dim<Rank> const &dim, Args &&...args)
         : _name{other._name}, _dims{dim} {
-        common_initialization(other, std::forward(args)...);
+        common_initialization(other, std::forward<Args>(args)...);
     }
 
     /**
@@ -1158,7 +1157,7 @@ struct DeviceTensorView : public virtual tensor_base::BasicTensor<T, Rank>,
     template <size_t OtherRank, typename... Args>
     explicit DeviceTensorView(DeviceTensorView<T, OtherRank> &other, Dim<Rank> const &dim, Args &&...args)
         : _name{other.name()}, _dims{dim} {
-        common_initialization(other, args...);
+        common_initialization(other, std::forward<Args>(args)...);
     }
 
     /**
@@ -1167,7 +1166,7 @@ struct DeviceTensorView : public virtual tensor_base::BasicTensor<T, Rank>,
     template <size_t OtherRank, typename... Args>
     explicit DeviceTensorView(DeviceTensorView<T, OtherRank> const &other, Dim<Rank> const &dim, Args &&...args)
         : _name{other.name()}, _dims{dim} {
-        common_initialization(const_cast<DeviceTensorView<T, OtherRank> &>(other), args...);
+        common_initialization(const_cast<DeviceTensorView<T, OtherRank> &>(other), std::forward<Args>(args)...);
     }
 
     /**
@@ -1184,11 +1183,16 @@ struct DeviceTensorView : public virtual tensor_base::BasicTensor<T, Rank>,
 
         _free_dev_data = true;
 
-        hip_catch(hipMalloc((void **)&(_gpu_dims), 2 * sizeof(size_t) * Rank));
-        this->_gpu_strides = this->_gpu_dims + Rank;
+        dims_to_strides(_dims, _strides);
+
+        hip_catch(hipMalloc((void **)&(_gpu_dims), 3 * sizeof(size_t) * Rank));
+        this->_gpu_strides       = this->_gpu_dims + Rank;
+        this->_gpu_index_strides = this->_gpu_dims + 2 * Rank;
 
         hip_catch(hipMemcpy((void *)this->_gpu_dims, (void const *)this->_dims.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
         hip_catch(hipMemcpy((void *)this->_gpu_strides, (void const *)this->_strides.data(), sizeof(size_t) * Rank, hipMemcpyHostToDevice));
+        hip_catch(hipMemcpy((void *)this->_gpu_index_strides, (void const *)this->_index_strides.data(), sizeof(size_t) * Rank,
+                            hipMemcpyHostToDevice));
         gpu::device_synchronize();
 
         hip_catch(hipHostRegister(_host_data, _strides[0] * _dims[0] * sizeof(T), hipHostRegisterDefault));
@@ -1285,7 +1289,7 @@ struct DeviceTensorView : public virtual tensor_base::BasicTensor<T, Rank>,
     /**
      * @brief Get a pointer to the GPU data.
      */
-    dev_datatype const *gpu_data() const { return static_cast<T const *>(_data); }
+    dev_datatype const *gpu_data() const { return const_cast<dev_datatype const *>(_data); }
 
     /**
      * @brief Get a pointer to an element in the view.
@@ -1421,14 +1425,14 @@ struct DeviceTensorView : public virtual tensor_base::BasicTensor<T, Rank>,
      *
      * @brief The strides of the view.
      */
-    einsums::Stride<Rank> _strides;
+    einsums::Stride<Rank> _strides, _index_strides;
 
     /**
      * @property _gpu_strides
      *
      * @brief The strides of the view made available to the GPU.
      */
-    size_t *_gpu_strides{nullptr};
+    size_t *_gpu_strides{nullptr}, *_gpu_index_strides;
     // Offsets<Rank> _offsets;
 
     /**
@@ -1457,7 +1461,7 @@ struct DeviceTensorView : public virtual tensor_base::BasicTensor<T, Rank>,
      * @brief Method for initializing the view.
      */
     template <template <typename, size_t> typename TensorType, size_t OtherRank, typename... Args>
-    auto common_initialization(TensorType<T, OtherRank> &other, Args &&...args)
+    auto common_initialization(TensorType<T, OtherRank> const &other, Args &&...args)
         -> std::enable_if_t<std::is_base_of_v<::einsums::tensor_base::Tensor<T, OtherRank>, TensorType<T, OtherRank>>>;
 
     template <typename OtherT, size_t OtherRank>

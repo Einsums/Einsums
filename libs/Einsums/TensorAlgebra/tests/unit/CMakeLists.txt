@@ -36,3 +36,23 @@ foreach (test ${TensorAlgebraTests})
 
     einsums_add_unit_test("modules.TensorAlgebra" ${test})
 endforeach ()
+
+if(EINSUMS_WITH_GPU_SUPPORT)
+set(TensorAlgebraTests2
+        Dot
+)
+
+foreach (test ${TensorAlgebraTests2})
+    set(sources ${test}.hip)
+
+    source_group("Source Files" FILES ${sources})
+
+    einsums_add_executable(
+            ${test}_gpu_test INTERNAL_FLAGS
+            SOURCES ${sources} ${${test}_FLAGS}
+            FOLDER ${folder_name}
+    )
+
+    einsums_add_unit_test("modules.TensorAlgebra" ${test}_gpu)
+endforeach ()
+endif()

@@ -221,12 +221,12 @@ void einsum_generic_algorithm(std::tuple<CUniqueIndices...> const &C_unique, std
                               std::tuple<BIndices...> const &B_indices, std::tuple<TargetDims...> const &target_dims,
                               std::tuple<LinkDims...> const &link_dims, std::tuple<TargetPositionInC...> const &target_position_in_C,
                               std::tuple<LinkPositionInLink...> const &link_position_in_link, ValueTypeT<CType> const C_prefactor, CType *C,
-                              BiggestTypeT<typename AType::data_type, typename BType::data_type> const AB_prefactor, AType const &A,
+                              BiggestTypeT<typename AType::ValueType, typename BType::ValueType> const AB_prefactor, AType const &A,
                               BType const &B) {
     using namespace einsums::gpu;
 
-    constexpr size_t ARank = AType::rank;
-    constexpr size_t BRank = BType::rank;
+    constexpr size_t ARank = AType::Rank;
+    constexpr size_t BRank = BType::Rank;
     constexpr size_t CRank = TensorRank<CType>;
 
     constexpr bool direct_product_swap =
@@ -235,7 +235,7 @@ void einsum_generic_algorithm(std::tuple<CUniqueIndices...> const &C_unique, std
         (std::tuple_size_v<IntersectT<std::tuple<AIndices...>, std::tuple<CIndices...>>> == sizeof...(AIndices)) &&
         (std::tuple_size_v<IntersectT<std::tuple<CIndices...>, std::tuple<BIndices...>>> == sizeof...(AIndices));
 
-    constexpr auto unique_indices = unique_t<std::tuple<CIndices..., AIndices..., BIndices...>>();
+    constexpr auto unique_indices = UniqueT<std::tuple<CIndices..., AIndices..., BIndices...>>();
     auto           unique_dims    = get_dim_ranges_for_many(*C, C_indices, A, A_indices, B, B_indices, unique_indices);
 
     auto unique_strides = std::array<size_t, std::tuple_size<decltype(unique_indices)>::value>();

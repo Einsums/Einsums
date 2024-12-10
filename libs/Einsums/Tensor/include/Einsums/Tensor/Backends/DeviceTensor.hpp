@@ -3,6 +3,7 @@
 
 // If this is included on its own, we should not include DeviceTensorView.hpp here.
 // It depends on functions in this file, and tests break if it is included first.
+#include "Einsums/TensorBase/IndexUtilities.hpp"
 #ifndef DEVICE_TENSOR_HPP
 #    define BACKENDS_DEVICE_TENSOR_VIEW_HPP
 #    define SOLO_INCLUDE
@@ -412,7 +413,7 @@ DeviceTensor<T, Rank>::DeviceTensor(DeviceTensorView<T, Rank> const &other) : _n
     gpu::device_synchronize();
 
     einsums::detail::copy_to_tensor<dev_datatype, Rank><<<block_size(size), blocks(size), 0, get_stream()>>>(
-        this->_data, this->_gpu_dims, this->_gpu_strides, other.gpu_data(), other.gpu_dims(), other.gpu_strides(), size);
+        this->_data, this->_gpu_strides, this->_gpu_strides, other.gpu_data(), other.gpu_strides(), size);
 
     gpu::stream_wait();
 }
@@ -423,7 +424,7 @@ namespace detail {
 
 // Set every entry in a tensor to an element.
 template <typename T, size_t Rank>
-__global__ void set_all(T *data, size_t const *dims, size_t const *strides, T value) {
+__global__ void set_all(T *data, size_t const *index_strides, size_t const *strides, T value, size_t elements) {
     using namespace einsums::gpu;
     int worker, kernel_size;
 
@@ -434,7 +435,6 @@ __global__ void set_all(T *data, size_t const *dims, size_t const *strides, T va
     // Wrap around to help save work load.
     size_t block_size = blockDim.x * blockDim.y * blockDim.z;
 
-    size_t elements = strides[0] * dims[0];
     size_t elements_adjusted;
 
     if (elements % block_size == 0) {
@@ -448,10 +448,10 @@ __global__ void set_all(T *data, size_t const *dims, size_t const *strides, T va
     while (curr_element < elements) {
 
         // Convert index into index combination.
-        index_to_combination<Rank>(curr_element, dims, inds);
+        sentinel_to_indices<Rank>(curr_element, index_strides, inds);
 
         // Map index combination onto the tensor.
-        size_t ind = combination_to_index<Rank>(inds, dims, strides);
+        size_t ind = indices_to_sentinel<Rank>(strides, inds);
 
         // Do the copy.
         data[ind] = value;
@@ -543,7 +543,7 @@ template <typename T, size_t Rank>
 void DeviceTensor<T, Rank>::zero() {
     using namespace einsums::gpu;
     einsums::detail::set_all<dev_datatype, Rank><<<block_size(this->size()), blocks(this->size()), 0, get_stream()>>>(
-        this->_data, this->_gpu_dims, this->_gpu_strides, einsums::HipCast<dev_datatype, double>::cast(0.0));
+        this->_data, this->_gpu_strides, this->_gpu_strides, einsums::HipCast<dev_datatype, double>::cast(0.0), _dims[0] * _strides[0]);
     stream_wait();
 }
 
@@ -551,7 +551,7 @@ template <typename T, size_t Rank>
 void DeviceTensor<T, Rank>::set_all(T value) {
     using namespace einsums::gpu;
     einsums::detail::set_all<T, Rank><<<block_size(this->size()), blocks(this->size()), 0, get_stream()>>>(
-        this->_data, this->_gpu_dims, this->_gpu_strides, HipCast<dev_datatype, T>::cast(value));
+        this->_data, this->_gpu_strides, this->_gpu_strides, HipCast<dev_datatype, T>::cast(value), _dims[0] * _strides[0]);
     stream_wait();
 }
 
@@ -925,10 +925,10 @@ DeviceTensor<T, Rank> &DeviceTensor<T, Rank>::assign(DeviceTensor<T, Rank> const
         gpu::device_synchronize();
 
         einsums::detail::copy_to_tensor<dev_datatype, Rank><<<block_size(other.size()), blocks(other.size()), 0, get_stream()>>>(
-            this->_data, this->_gpu_dims, this->_gpu_strides, other._data, other._gpu_dims, other._gpu_strides, size);
+            this->_data, this->_gpu_strides, this->_gpu_strides, other._data, other._gpu_strides, size);
     } else {
         einsums::detail::copy_to_tensor<dev_datatype, Rank><<<block_size(other.size()), blocks(other.size()), 0, get_stream()>>>(
-            this->_data, this->_gpu_dims, this->_gpu_strides, other._data, other._gpu_dims, other._gpu_strides, _strides[0] * _dims[0]);
+            this->_data, this->_gpu_strides, this->_gpu_strides, other._data, other._gpu_strides, _strides[0] * _dims[0]);
     }
 
     gpu::stream_wait();
@@ -1006,13 +1006,13 @@ auto DeviceTensor<T, Rank>::assign(DeviceTensor<TOther, Rank> const &other) -> D
 
         einsums::detail::copy_to_tensor_conv<typename DeviceTensor<T, Rank>::dev_datatype, Rank,
                                              typename DeviceTensor<TOther, Rank>::dev_datatype>
-            <<<block_size(other.size()), blocks(other.size()), 0, get_stream()>>>(this->_data, this->_gpu_dims, this->_gpu_strides,
-                                                                                  other._data, other._gpu_dims, other._gpu_strides, size);
+            <<<block_size(other.size()), blocks(other.size()), 0, get_stream()>>>(this->_data, this->_gpu_strides, this->_gpu_strides,
+                                                                                  other._data, other._gpu_strides, size);
     } else {
         einsums::detail::copy_to_tensor_conv<typename DeviceTensor<T, Rank>::dev_datatype, Rank,
                                              typename DeviceTensor<TOther, Rank>::dev_datatype>
-            <<<block_size(other.size()), blocks(other.size()), 0, get_stream()>>>(
-                this->_data, this->_gpu_dims, this->_gpu_strides, other._data, other._gpu_dims, other._gpu_strides, _strides[0] * _dims[0]);
+            <<<block_size(other.size()), blocks(other.size()), 0, get_stream()>>>(this->_data, this->_gpu_strides, this->_gpu_strides,
+                                                                                  other._data, other._gpu_strides, _strides[0] * _dims[0]);
     }
 
     gpu::stream_wait();
@@ -1097,9 +1097,8 @@ auto DeviceTensor<T, Rank>::assign(DeviceTensorView<TOther, Rank> const &other) 
     using namespace einsums::gpu;
     einsums::detail::copy_to_tensor_conv<typename DeviceTensor<T, Rank>::dev_datatype, Rank,
                                          typename DeviceTensor<TOther, Rank>::dev_datatype>
-        <<<block_size(other.size()), blocks(other.size()), 0, get_stream()>>>(this->_data, this->_gpu_dims, this->_gpu_strides,
-                                                                              other.gpu_data(), other.gpu_dims(), other.gpu_strides(),
-                                                                              _strides[0] * _dims[0]);
+        <<<block_size(other.size()), blocks(other.size()), 0, get_stream()>>>(
+            this->_data, this->_gpu_strides, this->_gpu_strides, other.gpu_data(), other.gpu_strides(), _strides[0] * _dims[0]);
 
     gpu::stream_wait();
     return *this;
@@ -1207,7 +1206,7 @@ namespace detail {
  * Kernel to do assignment and operation. This is addition.
  */
 template <typename T, size_t Rank>
-__global__ void add_and_assign(T *to_data, size_t const *to_dims, size_t const *to_strides, T const *from_data, size_t const *from_dims,
+__global__ void add_and_assign(T *to_data, size_t const *index_strides, size_t const *to_strides, T const *from_data,
                                size_t const *from_strides, size_t elements) {
     using namespace einsums::gpu;
 
@@ -1219,25 +1218,18 @@ __global__ void add_and_assign(T *to_data, size_t const *to_dims, size_t const *
 
     // Wrap around to help save work load.
     size_t block_size = blockDim.x * blockDim.y * blockDim.z;
-    size_t elements_adjusted;
-
-    if (elements % block_size == 0) {
-        elements_adjusted = elements;
-    } else {
-        elements_adjusted = elements + (block_size - (elements % block_size));
-    }
 
     size_t inds[Rank];
     while (curr_element < elements) {
 
         // Convert index into index combination.
-        index_to_combination<Rank>(curr_element, to_dims, inds);
+        sentinel_to_indices<Rank>(curr_element, index_strides, inds);
 
         // Map index combination onto the view.
-        size_t from_ind = combination_to_index<Rank>(inds, from_dims, from_strides);
+        size_t from_ind = indices_to_sentinel<Rank>(from_strides, inds);
 
         // Map index combination onto the tensor.
-        size_t to_ind = combination_to_index<Rank>(inds, to_dims, to_strides);
+        size_t to_ind = indices_to_sentinel<Rank>(to_strides, inds);
 
         // Do the copy.
         to_data[to_ind] += from_data[from_ind];
@@ -1253,7 +1245,7 @@ __global__ void add_and_assign(T *to_data, size_t const *to_dims, size_t const *
  * Kernel to do assignment and operation. This is subtraction.
  */
 template <typename T, size_t Rank>
-__global__ void sub_and_assign(T *to_data, size_t const *to_dims, size_t const *to_strides, T const *from_data, size_t const *from_dims,
+__global__ void sub_and_assign(T *to_data, size_t const *index_strides, size_t const *to_strides, T const *from_data,
                                size_t const *from_strides, size_t elements) {
     using namespace einsums::gpu;
 
@@ -1265,26 +1257,19 @@ __global__ void sub_and_assign(T *to_data, size_t const *to_dims, size_t const *
 
     // Wrap around to help save work load.
     size_t block_size = blockDim.x * blockDim.y * blockDim.z;
-    size_t elements_adjusted;
-
-    if (elements % block_size == 0) {
-        elements_adjusted = elements;
-    } else {
-        elements_adjusted = elements + (block_size - (elements % block_size));
-    }
 
     size_t inds[Rank];
 
     while (curr_element < elements) {
 
         // Convert index into index combination.
-        index_to_combination<Rank>(curr_element, to_dims, inds);
+        sentinel_to_indices<Rank>(curr_element, index_strides, inds);
 
         // Map index combination onto the view.
-        size_t from_ind = combination_to_index<Rank>(inds, from_dims, from_strides);
+        size_t from_ind = indices_to_sentinel<Rank>(from_strides, inds);
 
         // Map index combination onto the tensor.
-        size_t to_ind = combination_to_index<Rank>(inds, to_dims, to_strides);
+        size_t to_ind = indices_to_sentinel<Rank>(to_strides, inds);
 
         // Do the copy.
         to_data[to_ind] -= from_data[from_ind];
@@ -1300,7 +1285,7 @@ __global__ void sub_and_assign(T *to_data, size_t const *to_dims, size_t const *
  * Kernel to do assignment and operation. This is multiplication.
  */
 template <typename T, size_t Rank>
-__global__ void mul_and_assign(T *to_data, size_t const *to_dims, size_t const *to_strides, T const *from_data, size_t const *from_dims,
+__global__ void mul_and_assign(T *to_data, size_t const *index_strides, size_t const *to_strides, T const *from_data,
                                size_t const *from_strides, size_t elements) {
     using namespace einsums::gpu;
 
@@ -1312,26 +1297,19 @@ __global__ void mul_and_assign(T *to_data, size_t const *to_dims, size_t const *
 
     // Wrap around to help save work load.
     size_t block_size = blockDim.x * blockDim.y * blockDim.z;
-    size_t elements_adjusted;
-
-    if (elements % block_size == 0) {
-        elements_adjusted = elements;
-    } else {
-        elements_adjusted = elements + (block_size - (elements % block_size));
-    }
 
     size_t inds[Rank];
 
     while (curr_element < elements) {
 
         // Convert index into index combination.
-        index_to_combination<Rank>(curr_element, to_dims, inds);
+        sentinel_to_indices<Rank>(curr_element, index_strides, inds);
 
         // Map index combination onto the view.
-        size_t from_ind = combination_to_index<Rank>(inds, from_dims, from_strides);
+        size_t from_ind = indices_to_sentinel<Rank>(from_strides, inds);
 
         // Map index combination onto the tensor.
-        size_t to_ind = combination_to_index<Rank>(inds, to_dims, to_strides);
+        size_t to_ind = indices_to_sentinel<Rank>(to_strides, inds);
 
         // Do the copy.
         to_data[to_ind] *= from_data[from_ind];
@@ -1347,7 +1325,7 @@ __global__ void mul_and_assign(T *to_data, size_t const *to_dims, size_t const *
  * Kernel to do assignment and operation. This is division.
  */
 template <typename T, size_t Rank>
-__global__ void div_and_assign(T *to_data, size_t const *to_dims, size_t const *to_strides, T const *from_data, size_t const *from_dims,
+__global__ void div_and_assign(T *to_data, size_t const *index_strides, size_t const *to_strides, T const *from_data,
                                size_t const *from_strides, size_t elements) {
     using namespace einsums::gpu;
 
@@ -1359,26 +1337,19 @@ __global__ void div_and_assign(T *to_data, size_t const *to_dims, size_t const *
 
     // Wrap around to help save work load.
     size_t block_size = blockDim.x * blockDim.y * blockDim.z;
-    size_t elements_adjusted;
-
-    if (elements % block_size == 0) {
-        elements_adjusted = elements;
-    } else {
-        elements_adjusted = elements + (block_size - (elements % block_size));
-    }
 
     size_t inds[Rank];
 
     while (curr_element < elements) {
 
         // Convert index into index combination.
-        index_to_combination<Rank>(curr_element, to_dims, inds);
+        sentinel_to_indices<Rank>(curr_element, index_strides, inds);
 
         // Map index combination onto the view.
-        size_t from_ind = combination_to_index<Rank>(inds, from_dims, from_strides);
+        size_t from_ind = indices_to_sentinel<Rank>(from_strides, inds);
 
         // Map index combination onto the tensor.
-        size_t to_ind = combination_to_index<Rank>(inds, to_dims, to_strides);
+        size_t to_ind = indices_to_sentinel<Rank>(to_strides, inds);
 
         // Do the copy.
         to_data[to_ind] /= from_data[from_ind];
@@ -1394,7 +1365,7 @@ __global__ void div_and_assign(T *to_data, size_t const *to_dims, size_t const *
  * Kernel to do assignment and scalar operation. This is addition.
  */
 template <typename T, size_t Rank>
-__global__ void add_and_assign_scal(T *to_data, size_t const *to_dims, size_t const *to_strides, T scalar, size_t elements) {
+__global__ void add_and_assign_scal(T *to_data, size_t const *index_strides, size_t const *to_strides, T scalar, size_t elements) {
     using namespace einsums::gpu;
 
     int worker, kernel_size;
@@ -1405,23 +1376,16 @@ __global__ void add_and_assign_scal(T *to_data, size_t const *to_dims, size_t co
 
     // Wrap around to help save work load.
     size_t block_size = blockDim.x * blockDim.y * blockDim.z;
-    size_t elements_adjusted;
-
-    if (elements % block_size == 0) {
-        elements_adjusted = elements;
-    } else {
-        elements_adjusted = elements + (block_size - (elements % block_size));
-    }
 
     size_t inds[Rank];
 
     while (curr_element < elements) {
 
         // Convert index into index combination.
-        index_to_combination<Rank>(curr_element, to_dims, inds);
+        sentinel_to_indices<Rank>(curr_element, index_strides, inds);
 
         // Map index combination onto the tensor.
-        size_t to_ind = combination_to_index<Rank>(inds, to_dims, to_strides);
+        size_t to_ind = indices_to_sentinel<Rank>(to_strides, inds);
 
         // Do the copy.
         to_data[to_ind] = to_data[to_ind] + scalar;
@@ -1437,7 +1401,7 @@ __global__ void add_and_assign_scal(T *to_data, size_t const *to_dims, size_t co
  * Kernel to do assignment and scalar operation. This is subtraction.
  */
 template <typename T, size_t Rank>
-__global__ void sub_and_assign_scal(T *to_data, size_t const *to_dims, size_t const *to_strides, T scalar, size_t elements) {
+__global__ void sub_and_assign_scal(T *to_data, size_t const *index_strides, size_t const *to_strides, T scalar, size_t elements) {
     using namespace einsums::gpu;
 
     int worker, kernel_size;
@@ -1448,23 +1412,16 @@ __global__ void sub_and_assign_scal(T *to_data, size_t const *to_dims, size_t co
 
     // Wrap around to help save work load.
     size_t block_size = blockDim.x * blockDim.y * blockDim.z;
-    size_t elements_adjusted;
-
-    if (elements % block_size == 0) {
-        elements_adjusted = elements;
-    } else {
-        elements_adjusted = elements + (block_size - (elements % block_size));
-    }
 
     size_t inds[Rank];
 
     while (curr_element < elements) {
 
         // Convert index into index combination.
-        index_to_combination<Rank>(curr_element, to_dims, inds);
+        sentinel_to_indices<Rank>(curr_element, index_strides, inds);
 
         // Map index combination onto the tensor.
-        size_t to_ind = combination_to_index<Rank>(inds, to_dims, to_strides);
+        size_t to_ind = indices_to_sentinel<Rank>(to_strides, inds);
 
         // Do the copy.
         to_data[to_ind] = to_data[to_ind] - scalar;
@@ -1480,7 +1437,7 @@ __global__ void sub_and_assign_scal(T *to_data, size_t const *to_dims, size_t co
  * Kernel to do assignment and scalar operation. This is multiplication.
  */
 template <typename T, size_t Rank>
-__global__ void mul_and_assign_scal(T *to_data, size_t const *to_dims, size_t const *to_strides, T scalar, size_t elements) {
+__global__ void mul_and_assign_scal(T *to_data, size_t const *index_strides, size_t const *to_strides, T scalar, size_t elements) {
     using namespace einsums::gpu;
 
     int worker, kernel_size;
@@ -1491,23 +1448,16 @@ __global__ void mul_and_assign_scal(T *to_data, size_t const *to_dims, size_t co
 
     // Wrap around to help save work load.
     size_t block_size = blockDim.x * blockDim.y * blockDim.z;
-    size_t elements_adjusted;
-
-    if (elements % block_size == 0) {
-        elements_adjusted = elements;
-    } else {
-        elements_adjusted = elements + (block_size - (elements % block_size));
-    }
 
     size_t inds[Rank];
 
     while (curr_element < elements) {
 
         // Convert index into index combination.
-        index_to_combination<Rank>(curr_element, to_dims, inds);
+        sentinel_to_indices<Rank>(curr_element, index_strides, inds);
 
         // Map index combination onto the tensor.
-        size_t to_ind = combination_to_index<Rank>(inds, to_dims, to_strides);
+        size_t to_ind = indices_to_sentinel<Rank>(to_strides, inds);
 
         // Do the copy.
         to_data[to_ind] = to_data[to_ind] * scalar;
@@ -1522,7 +1472,7 @@ __global__ void mul_and_assign_scal(T *to_data, size_t const *to_dims, size_t co
  * Kernel to do assignment and scalar operation. This is division.
  */
 template <typename T, size_t Rank>
-__global__ void div_and_assign_scal(T *to_data, size_t const *to_dims, size_t const *to_strides, T scalar, size_t elements) {
+__global__ void div_and_assign_scal(T *to_data, size_t const *index_strides, size_t const *to_strides, T scalar, size_t elements) {
     using namespace einsums::gpu;
 
     int worker, kernel_size;
@@ -1533,23 +1483,16 @@ __global__ void div_and_assign_scal(T *to_data, size_t const *to_dims, size_t co
 
     // Wrap around to help save work load.
     size_t block_size = blockDim.x * blockDim.y * blockDim.z;
-    size_t elements_adjusted;
-
-    if (elements % block_size == 0) {
-        elements_adjusted = elements;
-    } else {
-        elements_adjusted = elements + (block_size - (elements % block_size));
-    }
 
     size_t inds[Rank];
 
     while (curr_element < elements) {
 
         // Convert index into index combination.
-        index_to_combination<Rank>(curr_element, to_dims, inds);
+        sentinel_to_indices<Rank>(curr_element, index_strides, inds);
 
         // Map index combination onto the tensor.
-        size_t to_ind = combination_to_index<Rank>(inds, to_dims, to_strides);
+        size_t to_ind = indices_to_sentinel<Rank>(to_strides, inds);
 
         // Do the copy.
         to_data[to_ind] = to_data[to_ind] / scalar;
@@ -1569,7 +1512,7 @@ template <typename T, size_t Rank>
 DeviceTensor<T, Rank> &DeviceTensor<T, Rank>::add_assign(T const &other) {
     using namespace einsums::gpu;
     einsums::detail::add_and_assign_scal<dev_datatype, Rank><<<block_size(this->size()), blocks(this->size()), 0, get_stream()>>>(
-        this->_data, this->_gpu_dims, this->_gpu_strides, HipCast<dev_datatype, T>::cast(other), _strides[0] * _dims[0]);
+        this->_data, this->_gpu_strides, this->_gpu_strides, HipCast<dev_datatype, T>::cast(other), _strides[0] * _dims[0]);
     gpu::stream_wait();
     return *this;
 }
@@ -1578,7 +1521,7 @@ template <typename T, size_t Rank>
 DeviceTensor<T, Rank> &DeviceTensor<T, Rank>::sub_assign(T const &other) {
     using namespace einsums::gpu;
     einsums::detail::sub_and_assign_scal<dev_datatype, Rank><<<block_size(this->size()), blocks(this->size()), 0, get_stream()>>>(
-        this->_data, this->_gpu_dims, this->_gpu_strides, HipCast<dev_datatype, T>::cast(other), _strides[0] * _dims[0]);
+        this->_data, this->_gpu_strides, this->_gpu_strides, HipCast<dev_datatype, T>::cast(other), _strides[0] * _dims[0]);
     gpu::stream_wait();
     return *this;
 }
@@ -1587,7 +1530,7 @@ template <typename T, size_t Rank>
 DeviceTensor<T, Rank> &DeviceTensor<T, Rank>::mult_assign(T const &other) {
     using namespace einsums::gpu;
     einsums::detail::mul_and_assign_scal<dev_datatype, Rank><<<block_size(this->size()), blocks(this->size()), 0, get_stream()>>>(
-        this->_data, this->_gpu_dims, this->_gpu_strides, HipCast<dev_datatype, T>::cast(other), _strides[0] * _dims[0]);
+        this->_data, this->_gpu_strides, this->_gpu_strides, HipCast<dev_datatype, T>::cast(other), _strides[0] * _dims[0]);
     gpu::stream_wait();
     return *this;
 }
@@ -1596,7 +1539,7 @@ template <typename T, size_t Rank>
 DeviceTensor<T, Rank> &DeviceTensor<T, Rank>::div_assign(T const &other) {
     using namespace einsums::gpu;
     einsums::detail::div_and_assign_scal<dev_datatype, Rank><<<block_size(this->size()), blocks(this->size()), 0, get_stream()>>>(
-        this->_data, this->_gpu_dims, this->_gpu_strides, HipCast<dev_datatype, T>::cast(other), _strides[0] * _dims[0]);
+        this->_data, this->_gpu_strides, this->_gpu_strides, HipCast<dev_datatype, T>::cast(other), _strides[0] * _dims[0]);
     gpu::stream_wait();
     return *this;
 }
@@ -1605,7 +1548,7 @@ template <typename T, size_t Rank>
 DeviceTensor<T, Rank> &DeviceTensor<T, Rank>::add_assign(DeviceTensor<T, Rank> const &other) {
     using namespace einsums::gpu;
     einsums::detail::add_and_assign<T, Rank><<<block_size(other.size()), blocks(other.size()), 0, get_stream()>>>(
-        this->_data, this->_gpu_dims, this->_gpu_strides, other.gpu_data(), other.gpu_dims(), other.gpu_strides(), _strides[0] * _dims[0]);
+        this->_data, this->_gpu_strides, this->_gpu_strides, other.gpu_data(), other.gpu_strides(), _strides[0] * _dims[0]);
     gpu::stream_wait();
     return *this;
 }
@@ -1614,7 +1557,7 @@ template <typename T, size_t Rank>
 DeviceTensor<T, Rank> &DeviceTensor<T, Rank>::sub_assign(DeviceTensor<T, Rank> const &other) {
     using namespace einsums::gpu;
     einsums::detail::sub_and_assign<T, Rank><<<block_size(other.size()), blocks(other.size()), 0, get_stream()>>>(
-        this->_data, this->_gpu_dims, this->_gpu_strides, other.gpu_data(), other.gpu_dims(), other.gpu_strides(), _strides[0] * _dims[0]);
+        this->_data, this->_gpu_strides, this->_gpu_strides, other.gpu_data(), other.gpu_strides(), _strides[0] * _dims[0]);
     gpu::stream_wait();
     return *this;
 }
@@ -1623,7 +1566,7 @@ template <typename T, size_t Rank>
 DeviceTensor<T, Rank> &DeviceTensor<T, Rank>::mult_assign(DeviceTensor<T, Rank> const &other) {
     using namespace einsums::gpu;
     einsums::detail::mul_and_assign<T, Rank><<<block_size(other.size()), blocks(other.size()), 0, get_stream()>>>(
-        this->_data, this->_gpu_dims, this->_gpu_strides, other.gpu_data(), other.gpu_dims(), other.gpu_strides(), _strides[0] * _dims[0]);
+        this->_data, this->_gpu_strides, this->_gpu_strides, other.gpu_data(), other.gpu_strides(), _strides[0] * _dims[0]);
     gpu::stream_wait();
     return *this;
 }
@@ -1632,7 +1575,7 @@ template <typename T, size_t Rank>
 DeviceTensor<T, Rank> &DeviceTensor<T, Rank>::div_assign(DeviceTensor<T, Rank> const &other) {
     using namespace einsums::gpu;
     einsums::detail::div_and_assign<T, Rank><<<block_size(other.size()), blocks(other.size()), 0, get_stream()>>>(
-        this->_data, this->_gpu_dims, this->_gpu_strides, other.gpu_data(), other.gpu_dims(), other.gpu_strides(), _strides[0] * _dims[0]);
+        this->_data, this->_gpu_strides, this->_gpu_strides, other.gpu_data(), other.gpu_strides(), _strides[0] * _dims[0]);
     gpu::stream_wait();
     return *this;
 }
@@ -1689,7 +1632,7 @@ DeviceTensor<T, Rank>::operator Tensor<T, Rank>() const {
 } // namespace einsums
 
 #ifdef SOLO_INCLUDE
-#undef BACKENDS_DEVICE_TENSOR_VIEW_HPP
+#    undef BACKENDS_DEVICE_TENSOR_VIEW_HPP
 #    include <Einsums/Tensor/Backends/DeviceTensorView.hpp>
 #    undef SOLO_INCLUDE
 #endif
