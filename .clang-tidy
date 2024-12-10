@@ -1,4 +1,6 @@
-Checks: '-*,performance-*,misc-*,-misc-non-private-member-variables-in-classes,modernize-*,bugprone-*,-bugprone-reserved-identifier,-bugprone-easily-swappable-parameters,-performance-no-int-to-ptr,readability-identifier-naming,-readability-magic-numbers,-readability-identifier-length'
+#Checks: '-*,performance-*,misc-*,-misc-non-private-member-variables-in-classes,modernize-*,bugprone-*,-bugprone-reserved-identifier,-bugprone-easily-swappable-parameters,-performance-no-int-to-ptr,readability-identifier-naming,-readability-magic-numbers,-readability-identifier-length'
+Checks: '*'
+AnalyzeTemporaryDtors: true
 CheckOptions: {
   { readability-identifier-naming.NamespaceCase: lower_case },
   { readability-identifier-naming.ClassCase: CamelCase },
