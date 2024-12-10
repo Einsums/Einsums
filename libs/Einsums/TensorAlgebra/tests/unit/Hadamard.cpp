@@ -32,7 +32,7 @@ TEMPLATE_TEST_CASE("Hadamard", "[tensor_algebra]", float, double, std::complex<f
 
         for (size_t i0 = 0; i0 < _i; i0++) {
             for (size_t j0 = 0; j0 < _j; j0++) {
-                CheckWithinRel(C(i0, j0), C0(i0, j0), RemoveComplexT<TestType>{0.0001});
+                REQUIRE_THAT(C(i0, j0), CheckWithinRel(C0(i0, j0), RemoveComplexT<TestType>{0.0001}));
             }
         }
     }
@@ -55,7 +55,7 @@ TEMPLATE_TEST_CASE("Hadamard", "[tensor_algebra]", float, double, std::complex<f
 
         for (size_t i0 = 0; i0 < _i; i0++) {
             for (size_t j0 = 0; j0 < _j; j0++) {
-                CheckWithinRel(C(i0, j0), C0(i0, j0), RemoveComplexT<TestType>{0.0001});
+                REQUIRE_THAT(C(i0, j0), CheckWithinRel(C0(i0, j0), RemoveComplexT<TestType>{0.0001}));
             }
         }
     }
@@ -78,7 +78,7 @@ TEMPLATE_TEST_CASE("Hadamard", "[tensor_algebra]", float, double, std::complex<f
 
         for (size_t i0 = 0; i0 < _i; i0++) {
             for (size_t j0 = 0; j0 < _j; j0++) {
-                CheckWithinRel(C(i0, j0), C0(i0, j0), RemoveComplexT<TestType>{0.0001});
+                REQUIRE_THAT(C(i0, j0), CheckWithinRel(C0(i0, j0), 0.0001));
             }
         }
     }
@@ -101,7 +101,7 @@ TEMPLATE_TEST_CASE("Hadamard", "[tensor_algebra]", float, double, std::complex<f
 
         for (size_t i0 = 0; i0 < _i; i0++) {
             for (size_t j0 = 0; j0 < _j; j0++) {
-                CheckWithinRel(C(i0, j0, i0), C0(i0, j0, i0), RemoveComplexT<TestType>{0.0001});
+                REQUIRE_THAT(C(i0, j0, i0), CheckWithinRel(C0(i0, j0, i0), 0.0001));
             }
         }
     }
@@ -123,7 +123,7 @@ TEMPLATE_TEST_CASE("Hadamard", "[tensor_algebra]", float, double, std::complex<f
         REQUIRE_NOTHROW(einsum(Indices{i, i, i}, &C, Indices{i, j, i}, A, Indices{j, i, j}, B));
 
         for (size_t i0 = 0; i0 < _i; i0++) {
-            CheckWithinRel(C(i0, i0, i0), C0(i0, i0, i0), RemoveComplexT<TestType>{0.0001});
+            REQUIRE_THAT(C(i0, i0, i0), CheckWithinRel(C0(i0, i0, i0), 0.0001));
         }
     }
 
@@ -147,7 +147,7 @@ TEMPLATE_TEST_CASE("Hadamard", "[tensor_algebra]", float, double, std::complex<f
 
         for (size_t i0 = 0; i0 < _i; i0++) {
             for (size_t j0 = 0; j0 < _i; j0++) {
-                CheckWithinRel(C(i0, j0), C0(i0, j0), RemoveComplexT<TestType>{0.0001});
+                REQUIRE_THAT(C(i0, j0), CheckWithinRel(C0(i0, j0), RemoveComplexT<TestType>{0.0001}));
             }
         }
     }

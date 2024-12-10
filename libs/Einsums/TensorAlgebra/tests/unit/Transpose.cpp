@@ -33,7 +33,7 @@ TEMPLATE_TEST_CASE("Transpose C", "[tensor_algebra]", float, double, std::comple
 
         for (size_t i0 = 0; i0 < _i; i0++) {
             for (size_t j0 = 0; j0 < _j; j0++) {
-                CheckWithinRel(C(i0, j0), C0(i0, j0), RemoveComplexT<TestType>{0.001});
+                REQUIRE_THAT(C(i0, j0), CheckWithinRel(C0(i0, j0), 0.001));
                 // REQUIRE_THAT(C(i0, j0), Catch::Matchers::WithinAbs(C0(i0, j0), 0.001));
             }
         }
@@ -61,7 +61,7 @@ TEMPLATE_TEST_CASE("Transpose C", "[tensor_algebra]", float, double, std::comple
 
         for (size_t i0 = 0; i0 < _i; i0++) {
             for (size_t j0 = 0; j0 < _j; j0++) {
-                CheckWithinRel(C(i0, j0), C0(i0, j0), RemoveComplexT<TestType>{0.001});
+                REQUIRE_THAT(C(i0, j0), CheckWithinRel(C0(i0, j0), 0.001));
                 // REQUIRE_THAT(C(i0, j0), Catch::Matchers::WithinAbs(C0(i0, j0), 0.001));
             }
         }
@@ -89,7 +89,7 @@ TEMPLATE_TEST_CASE("Transpose C", "[tensor_algebra]", float, double, std::comple
 
         for (size_t i0 = 0; i0 < _i; i0++) {
             for (size_t j0 = 0; j0 < _j; j0++) {
-                CheckWithinRel(C(i0, j0), C0(i0, j0), RemoveComplexT<TestType>{0.001});
+                REQUIRE_THAT(C(i0, j0), CheckWithinRel(C0(i0, j0), 0.001));
                 // REQUIRE_THAT(C(i0, j0), Catch::Matchers::WithinAbs(C0(i0, j0), 0.001));
             }
         }
@@ -117,7 +117,7 @@ TEMPLATE_TEST_CASE("Transpose C", "[tensor_algebra]", float, double, std::comple
 
         for (size_t i0 = 0; i0 < _i; i0++) {
             for (size_t j0 = 0; j0 < _j; j0++) {
-                CheckWithinRel(C(i0, j0), C0(i0, j0), RemoveComplexT<TestType>{0.001});
+                REQUIRE_THAT(C(i0, j0), CheckWithinRel(C0(i0, j0), 0.001));
                 // REQUIRE_THAT(C(i0, j0), Catch::Matchers::WithinAbs(C0(i0, j0), 0.001));
             }
         }

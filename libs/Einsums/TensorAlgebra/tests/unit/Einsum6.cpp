@@ -58,7 +58,7 @@ TEMPLATE_TEST_CASE("F12 - V term", "[tensor_algebra]", float, double, std::compl
         for (size_t _j = 0; _j < nocc; _j++) {
             for (size_t _k = 0; _k < nocc; _k++) {
                 for (size_t _l = 0; _l < nocc; _l++) {
-                    CheckWithinRel(result2(_i, _j, _k, _l), result(_i, _j, _k, _l), 0.001);
+                    REQUIRE_THAT(result2(_i, _j, _k, _l), CheckWithinRel(result(_i, _j, _k, _l), 0.001));
                     // REQUIRE_THAT(result2(_i, _j, _k, _l), Catch::Matchers::WithinAbs(result(_i, _j, _k, _l), 0.001));
                 }
             }
@@ -69,7 +69,7 @@ TEMPLATE_TEST_CASE("F12 - V term", "[tensor_algebra]", float, double, std::compl
         for (size_t _j = 0; _j < nocc; _j++) {
             for (size_t _k = 0; _k < nocc; _k++) {
                 for (size_t _l = 0; _l < nocc; _l++) {
-                    CheckWithinRel(ijkl_1(_i, _j, _k, _l), result(_i, _j, _k, _l), 0.001);
+                    REQUIRE_THAT(ijkl_1(_i, _j, _k, _l), CheckWithinRel(result(_i, _j, _k, _l), 0.001));
                     // REQUIRE_THAT(ijkl_1(_i, _j, _k, _l), Catch::Matchers::WithinAbs(result(_i, _j, _k, _l), 0.001));
                 }
             }
@@ -109,7 +109,7 @@ TEMPLATE_TEST_CASE("B_tilde", "[tensor_algebra]", float, double, std::complex<fl
         for (int _l = 0; _l < nocc; _l++) {
             for (int _a = 0; _a < nvir; _a++) {
                 for (int _b = 0; _b < nvir; _b++) {
-                    CheckWithinRel(CD(_k, _l, _a, _b), CD0(_k, _l, _a, _b), 0.0001);
+                    REQUIRE_THAT(CD(_k, _l, _a, _b), CheckWithinRel(CD0(_k, _l, _a, _b), 0.0001));
                     // REQUIRE_THAT(CD(_k, _l, _a, _b), Catch::Matchers::WithinAbs(CD0(_k, _l, _a, _b), 0.000001));
                 }
             }

@@ -24,7 +24,7 @@ TEMPLATE_TEST_CASE("unique_ptr", "[tensor_algebra]", float, double, std::complex
 
         for (size_t i0 = 0; i0 < C0->dim(0); i0++) {
             for (size_t j0 = 0; j0 < C0->dim(1); j0++) {
-                CheckWithinRel(C0->operator()(i0, j0), C1(i0, j0), RemoveComplexT<TestType>{0.001});
+                REQUIRE_THAT(C0->operator()(i0, j0), CheckWithinRel(C1(i0, j0), 0.001));
                 // REQUIRE_THAT(C0->operator()(i0, j0), Catch::Matchers::WithinRel(C1(i0, j0), 0.0001));
             }
         }
@@ -42,7 +42,7 @@ TEMPLATE_TEST_CASE("unique_ptr", "[tensor_algebra]", float, double, std::complex
 
         for (size_t i0 = 0; i0 < C0.dim(0); i0++) {
             for (size_t j0 = 0; j0 < C0.dim(1); j0++) {
-                CheckWithinRel(C0(i0, j0), C1(i0, j0), RemoveComplexT<TestType>{0.0001});
+                REQUIRE_THAT(C0(i0, j0), CheckWithinRel(C1(i0, j0), 0.0001));
                 // REQUIRE_THAT(C0(i0, j0), Catch::Matchers::WithinRel(C1(i0, j0), 0.0001));
             }
         }
@@ -60,7 +60,7 @@ TEMPLATE_TEST_CASE("unique_ptr", "[tensor_algebra]", float, double, std::complex
 
         for (size_t i0 = 0; i0 < C0.dim(0); i0++) {
             for (size_t j0 = 0; j0 < C0.dim(1); j0++) {
-                CheckWithinRel(C0(i0, j0), C1(i0, j0), RemoveComplexT<TestType>{0.0001});
+                REQUIRE_THAT(C0(i0, j0), CheckWithinRel(C1(i0, j0), 0.0001));
                 // REQUIRE_THAT(C0(i0, j0), Catch::Matchers::WithinRel(C1(i0, j0), 0.0001));
             }
         }
@@ -78,7 +78,7 @@ TEMPLATE_TEST_CASE("unique_ptr", "[tensor_algebra]", float, double, std::complex
 
         for (size_t i0 = 0; i0 < C0.dim(0); i0++) {
             for (size_t j0 = 0; j0 < C0.dim(1); j0++) {
-                CheckWithinRel(C0(i0, j0), C1(i0, j0), RemoveComplexT<TestType>{0.0001});
+                REQUIRE_THAT(C0(i0, j0), CheckWithinRel(C1(i0, j0), 0.0001));
                 // REQUIRE_THAT(C0(i0, j0), Catch::Matchers::WithinRel(C1(i0, j0), 0.0001));
             }
         }
@@ -96,7 +96,7 @@ TEMPLATE_TEST_CASE("unique_ptr", "[tensor_algebra]", float, double, std::complex
 
         for (size_t i0 = 0; i0 < C0->dim(0); i0++) {
             for (size_t j0 = 0; j0 < C0->dim(1); j0++) {
-                CheckWithinRel(C0->operator()(i0, j0), C1(i0, j0), RemoveComplexT<TestType>{0.0001});
+                REQUIRE_THAT(C0->operator()(i0, j0), CheckWithinRel(C1(i0, j0), 0.0001));
                 // REQUIRE_THAT(C0->operator()(i0, j0), Catch::Matchers::WithinRel(C1(i0, j0), 0.0001));
             }
         }
@@ -114,7 +114,7 @@ TEMPLATE_TEST_CASE("unique_ptr", "[tensor_algebra]", float, double, std::complex
 
         for (size_t i0 = 0; i0 < C0->dim(0); i0++) {
             for (size_t j0 = 0; j0 < C0->dim(1); j0++) {
-                CheckWithinRel(C0->operator()(i0, j0), C1(i0, j0), RemoveComplexT<TestType>{0.0001});
+                REQUIRE_THAT(C0->operator()(i0, j0), CheckWithinRel(C1(i0, j0), 0.0001));
                 // REQUIRE_THAT(C0->operator()(i0, j0), Catch::Matchers::WithinRel(C1(i0, j0), 0.0001));
             }
         }
@@ -132,7 +132,7 @@ TEMPLATE_TEST_CASE("unique_ptr", "[tensor_algebra]", float, double, std::complex
 
         for (size_t i0 = 0; i0 < C0->dim(0); i0++) {
             for (size_t j0 = 0; j0 < C0->dim(1); j0++) {
-                CheckWithinRel(C0->operator()(i0, j0), C1(i0, j0), RemoveComplexT<TestType>{0.0001});
+                REQUIRE_THAT(C0->operator()(i0, j0), CheckWithinRel(C1(i0, j0), RemoveComplexT<TestType>{0.0001}));
                 // REQUIRE_THAT(C0->operator()(i0, j0), Catch::Matchers::WithinRel(C1(i0, j0), 0.0001));
             }
         }

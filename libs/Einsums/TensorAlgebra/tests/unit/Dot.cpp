@@ -130,7 +130,7 @@ TEMPLATE_TEST_CASE("Dot TensorView and Tensor", "[tensor_algebra]", float, doubl
         for (size_t j = 0; j < j_; j++) {
             // println("{:20.14f} {:20.14f} {:20.14f}", C(l, j), C0(l, j), std::abs(C(l, j) - C0(l, j)));
             // REQUIRE_THAT(C(l, j), Catch::Matchers::WithinAbs(C0(l, j), 1e-12));
-            CheckWithinRel(C(l, j), C0(l, j), 0.0001);
+            REQUIRE_THAT(C(l, j), CheckWithinRel(C0(l, j), 0.0001));
         }
     }
 }

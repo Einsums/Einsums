@@ -36,7 +36,7 @@ TEMPLATE_TEST_CASE("Khatri-Rao", "[tensor_algebra]", float, double, std::complex
         for (int x = 0; x < _I; x++) {
             for (int y = 0; y < _M; y++) {
                 for (int z = 0; z < _r; z++) {
-                    CheckWithinRel(KR(x, y, z), KR0(x, y, z), 0.0001);
+                    REQUIRE_THAT(KR(x, y, z), CheckWithinRel(KR0(x, y, z), 0.0001));
                     // REQUIRE_THAT(KR(x, y, z), Catch::Matchers::WithinAbs(KR0(x, y, z), 0.000001));
                 }
             }
@@ -64,7 +64,7 @@ TEMPLATE_TEST_CASE("Khatri-Rao", "[tensor_algebra]", float, double, std::complex
 
         for (int x = 0; x < _I * _M; x++) {
             for (int z = 0; z < _r; z++) {
-                CheckWithinRel(KR(x, z), KR0_view(x, z), 0.0001);
+                REQUIRE_THAT(KR(x, z), CheckWithinRel(KR0_view(x, z), 0.0001));
                 // REQUIRE_THAT(KR(x, z), Catch::Matchers::WithinAbs(KR0_view(x, z), 0.000001));
             }
         }

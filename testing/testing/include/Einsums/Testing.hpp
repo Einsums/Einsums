@@ -9,10 +9,14 @@
 
 #include <Einsums/Concepts/Complex.hpp>
 
+#include "catch2/matchers/catch_matchers_floating_point.hpp"
+#include "catch2/matchers/catch_matchers_templated.hpp"
+
 #if defined(EINSUMS_WINDOWS)
 #    define CATCH_CONFIG_WINDOWS_SEH
 #endif
 #include <catch2/catch_all.hpp>
+#include <type_traits>
 
 namespace einsums {
 /**
@@ -79,14 +83,41 @@ auto WithinStrict(T value, T scale = T{1.0}) -> WithinStrictMatcher<T> {
 }
 
 template <typename TestType>
-void CheckWithinRel(TestType const &value, TestType const &reference, RemoveComplexT<TestType> const &tolerance) {
-    if constexpr (!IsComplexV<TestType>) {
-        REQUIRE_THAT(value, Catch::Matchers::WithinRel(reference, tolerance));
-    } else {
-        using RealType = RemoveComplexT<TestType>;
-        REQUIRE_THAT(value.real(), Catch::Matchers::WithinRel(reference.real(), RealType{tolerance}));
-        REQUIRE_THAT(value.imag(), Catch::Matchers::WithinRel(reference.imag(), RealType{tolerance}));
+class WithinRelMatcher : public Catch::Matchers::MatcherGenericBase {
+  public:
+    WithinRelMatcher(TestType value, double eps) : target_{value}, eps_{eps} {}
+    bool match(TestType value) const {
+        if (target_ == RemoveComplexT<std::remove_cvref_t<TestType>>{0.0}) {
+            return std::abs(value) <= eps_;
+        } else {
+            return std::abs((value - target_) / target_) <= eps_;
+        }
     }
+
+    std::string describe() const override {
+        if constexpr (IsComplexV<std::remove_cvref_t<TestType>>) {
+            return "and " + Catch::StringMaker<RemoveComplexT<std::remove_cvref_t<TestType>>>::convert(target_.real()) + ((target_.imag() < 0) ? "-" : "+") +
+                   Catch::StringMaker<RemoveComplexT<std::remove_cvref_t<TestType>>>::convert(std::abs(target_.imag())) + "i are within " +
+                   Catch::StringMaker<double>::convert(eps_ * 100) + "% of each other";
+        } else {
+            return "and " + Catch::StringMaker<std::remove_cvref_t<TestType>>::convert(target_) + " are within " +
+                   Catch::StringMaker<double>::convert(eps_ * 100) + "% of each other";
+        }
+    }
+
+  private:
+    TestType target_;
+    double   eps_;
+};
+
+#ifdef __cpp_deduction_guides
+template <typename TestType>
+WithinRelMatcher(TestType, double) -> WithinRelMatcher<TestType>;
+#endif
+
+template <typename TestType>
+WithinRelMatcher<std::remove_cvref_t<TestType>> CheckWithinRel(TestType reference, double tolerance) {
+    return WithinRelMatcher(reference, tolerance);
 }
 
 } // namespace einsums

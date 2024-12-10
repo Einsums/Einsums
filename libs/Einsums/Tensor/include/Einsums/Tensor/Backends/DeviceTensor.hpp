@@ -1,4 +1,12 @@
-#pragma once
+#ifndef BACKENDS_DEVICE_TENSOR_HPP
+#define BACKENDS_DEVICE_TENSOR_HPP
+
+// If this is included on its own, we should not include DeviceTensorView.hpp here.
+// It depends on functions in this file, and tests break if it is included first.
+#ifndef DEVICE_TENSOR_HPP
+#    define BACKENDS_DEVICE_TENSOR_VIEW_HPP
+#    define SOLO_INCLUDE
+#endif
 
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Tensor/DeviceTensor.hpp>
@@ -275,71 +283,6 @@ DeviceTensor<T, Rank>::DeviceTensor(Dim<Rank> dims, einsums::detail::HostToDevic
 #endif
 
 namespace detail {
-
-/**
- * Turns a single numerical index into a list of indices into the tensor.
- */
-template <size_t Rank>
-__host__ __device__ void index_to_combination(size_t index, size_t const *dims, size_t *out) {
-    size_t quot = index;
-
-    for (ptrdiff_t i = Rank - 1; i >= 0; i--) {
-        out[i] = quot % dims[i];
-        quot /= dims[i];
-    }
-}
-
-/**
- * Turns a list of indices into a single numerical index.
- */
-template <size_t Rank>
-__host__ __device__ size_t combination_to_index(size_t const *inds, size_t const *dims, size_t const *strides) {
-    size_t out = 0;
-    for (ptrdiff_t i = 0; i < Rank; i++) {
-        int ind = inds[i];
-
-        if (ind < 0) {
-            ind += dims[i];
-        }
-
-        out += strides[i] * ind;
-    }
-
-    return out;
-}
-
-/**
- * Turns a single numerical index into a list of indices into the tensor.
- */
-template <size_t Rank>
-__host__ __device__ void index_to_combination(size_t index, einsums::Dim<Rank> const &dims, std::array<size_t, Rank> &out) {
-    size_t quot = index;
-
-    for (ptrdiff_t i = Rank - 1; i >= 0; i--) {
-        out[i] = quot % dims[i];
-        quot /= dims[i];
-    }
-}
-
-/**
- * Turns a list of indices into a single numerical index.
- */
-template <size_t Rank>
-__host__ __device__ size_t combination_to_index(std::array<size_t, Rank> const &inds, einsums::Dim<Rank> const &dims,
-                                                einsums::Stride<Rank> const &strides) {
-    size_t out = 0;
-    for (ptrdiff_t i = 0; i < Rank; i++) {
-        int ind = inds[i];
-
-        if (ind < 0) {
-            ind += dims[i];
-        }
-
-        out += strides[i] * ind;
-    }
-
-    return out;
-}
 
 /**
  * Kernel to copy a DeviceTensorView into a DeviceTensor object.
@@ -1744,3 +1687,10 @@ DeviceTensor<T, Rank>::operator Tensor<T, Rank>() const {
 #endif
 
 } // namespace einsums
+
+#ifdef SOLO_INCLUDE
+#undef BACKENDS_DEVICE_TENSOR_VIEW_HPP
+#    include <Einsums/Tensor/Backends/DeviceTensorView.hpp>
+#    undef SOLO_INCLUDE
+#endif
+#endif

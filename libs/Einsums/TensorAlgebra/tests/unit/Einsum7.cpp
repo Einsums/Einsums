@@ -43,7 +43,7 @@ TEMPLATE_TEST_CASE("andy", "[tensor_algebra]", float, double, std::complex<float
 
         for (int x = 0; x < nvirt_; x++) {
             for (int y = 0; y < nvirt_; y++) {
-                CheckWithinRel(c(x, y), -a(x, y) * b(x, y), 0.001);
+                REQUIRE_THAT(c(x, y), CheckWithinRel(-a(x, y) * b(x, y), 0.001));
                 // REQUIRE_THAT(c(x, y), Catch::Matchers::WithinRel(-a(x, y) * b(x, y)));
             }
         }
@@ -71,7 +71,7 @@ TEMPLATE_TEST_CASE("andy", "[tensor_algebra]", float, double, std::complex<float
 
         for (size_t Q = 0; Q < proj_rank_; Q++) {
             for (size_t X = 0; X < proj_rank_; X++) {
-                CheckWithinRel(c(Q, X), c0(Q, X), 0.001);
+                REQUIRE_THAT(c(Q, X), CheckWithinRel(c0(Q, X), 0.001));
                 // REQUIRE_THAT(c(Q, X), Catch::Matchers::WithinRel(c0(Q, X), 0.00001));
             }
         }
@@ -101,7 +101,7 @@ TEMPLATE_TEST_CASE("andy", "[tensor_algebra]", float, double, std::complex<float
         for (size_t Q = 0; Q < proj_rank_; Q++) {
             for (size_t a = 0; a < nvirt_; a++) {
                 for (size_t X = 0; X < proj_rank_; X++) {
-                    CheckWithinRel(F_BAR(Q, a, X), F_BAR0(Q, a, X), 0.001);
+                    REQUIRE_THAT(F_BAR(Q, a, X), CheckWithinRel(F_BAR0(Q, a, X), 0.001));
                     // REQUIRE_THAT(F_BAR(Q, a, X), Catch::Matchers::WithinRel(F_BAR0(Q, a, X), 0.00001));
                 }
             }
@@ -117,7 +117,7 @@ TEMPLATE_TEST_CASE("andy", "[tensor_algebra]", float, double, std::complex<float
 
         for (size_t a = 0; a < 84; a++) {
             for (size_t b = 0; b < 84; b++) {
-                CheckWithinRel(C(a, b), A(a) * A(b), 0.001);
+                REQUIRE_THAT(C(a, b), CheckWithinRel(A(a) * A(b), 0.001));
                 // REQUIRE_THAT(C(a, b), Catch::Matchers::WithinRel(A(a) * A(b), 0.00001));
             }
         }
@@ -141,7 +141,7 @@ TEMPLATE_TEST_CASE("andy", "[tensor_algebra]", float, double, std::complex<float
 
         for (size_t a = 0; a < 9; a++) {
             for (size_t b = 0; b < 9; b++) {
-                CheckWithinRel(C(a, b), A(a) * A(b), 0.001);
+                REQUIRE_THAT(C(a, b), CheckWithinRel(A(a) * A(b), 0.001));
                 // REQUIRE_THAT(C(a, b), Catch::Matchers::WithinRel(A(a) * A(b), 0.00001));
             }
         }

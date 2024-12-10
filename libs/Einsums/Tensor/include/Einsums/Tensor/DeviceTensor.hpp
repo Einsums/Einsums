@@ -1,20 +1,29 @@
-#pragma once
+#ifndef DEVICE_TENSOR_HPP
+#define DEVICE_TENSOR_HPP
+// We use this so that the implementation headers work on their own.
+
+
+#include <Einsums/Config.hpp>
 
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/GPUStreams/GPUStreams.hpp>
+#include <Einsums/Tensor/TensorForward.hpp>
 #include <Einsums/TensorBase/Common.hpp>
 #include <Einsums/TensorBase/TensorBase.hpp>
-#include <Einsums/Config.hpp>
-#include <Einsums/Tensor/TensorForward.hpp>
+#include <Einsums/TypeSupport/AreAllConvertible.hpp>
+#include <Einsums/TypeSupport/Arguments.hpp>
+#include <Einsums/TypeSupport/CountOfType.hpp>
+#include <Einsums/TypeSupport/TypeName.hpp>
+#include <Einsums/Concepts/Tensor.hpp>
 
 #include <cstddef>
-#include <vector>
-#include <numeric>
 #include <hip/driver_types.h>
 #include <hip/hip_common.h>
 #include <hip/hip_complex.h>
 #include <hip/hip_runtime_api.h>
+#include <numeric>
+#include <vector>
 
 namespace einsums {
 
@@ -1186,7 +1195,7 @@ struct DeviceTensorView : public virtual tensor_base::BasicTensor<T, Rank>,
         hip_catch(hipHostGetDevicePointer((void **)&_data, _host_data, 0));
     }
 
-    DeviceTensorView<T, Rank> &assign(const T *other);
+    DeviceTensorView<T, Rank> &assign(T const *other);
 
     template <template <typename, size_t> typename AType>
         requires DeviceRankTensor<AType<T, Rank>, Rank, T>
@@ -1199,7 +1208,7 @@ struct DeviceTensorView : public virtual tensor_base::BasicTensor<T, Rank>,
     /**
      * @brief Copy as much data as is needed from the host pointer to the device.
      */
-    auto operator=(const T *other) -> DeviceTensorView &;
+    auto operator=(T const *other) -> DeviceTensorView &;
 
     /**
      * @brief Copy data from another tensor.
@@ -1328,7 +1337,7 @@ struct DeviceTensorView : public virtual tensor_base::BasicTensor<T, Rank>,
     /**
      * @brief Get the dimensions of the view made available to the GPU.
      */
-    const size_t *gpu_dims() const { return _gpu_dims; }
+    size_t const *gpu_dims() const { return _gpu_dims; }
 
     /**
      * @brief Get the name of the view.
@@ -1362,7 +1371,7 @@ struct DeviceTensorView : public virtual tensor_base::BasicTensor<T, Rank>,
     /**
      * @brief Get the strides of the view made available to the GPU.
      */
-    const size_t *gpu_strides() const { return _gpu_strides; }
+    size_t const *gpu_strides() const { return _gpu_strides; }
 
     /**
      * @brief Convert the view to a one-dimensional array.
@@ -1490,3 +1499,4 @@ DeviceTensorView(std::string, DeviceTensor<T, OtherRank> &, Dim<Rank> const &, A
 
 #include "Einsums/Tensor/Backends/DeviceTensor.hpp"
 #include "Einsums/Tensor/Backends/DeviceTensorView.hpp"
+#endif

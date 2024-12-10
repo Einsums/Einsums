@@ -1,7 +1,9 @@
-#pragma once
+#ifndef BACKENDS_DEVICE_TENSOR_VIEW_HPP
+#define BACKENDS_DEVICE_TENSOR_VIEW_HPP
 
 #include <Einsums/Tensor/DeviceTensor.hpp>
 #include <Einsums/TypeSupport/Arguments.hpp>
+#include <Einsums/Tensor/Backends/DeviceTensor.hpp>
 
 namespace einsums {
 
@@ -356,3 +358,4 @@ auto DeviceTensorView<T, Rank>::common_initialization(TensorType<T, OtherRank> &
 #endif
 
 } // namespace einsums
+#endif

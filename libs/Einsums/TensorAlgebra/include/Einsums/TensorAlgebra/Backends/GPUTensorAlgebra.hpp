@@ -1,8 +1,10 @@
 #pragma once
 
-#include <Einsums/GPUStreams/GPUStreams.hpp>
-#include <Einsums/TensorBase/IndexUtilities.hpp>
 #include <Einsums/Concepts/Tensor.hpp>
+#include <Einsums/GPUStreams/GPUStreams.hpp>
+#include <Einsums/TensorAlgebra/Detail/Utilities.hpp>
+#include <Einsums/TensorBase/IndexUtilities.hpp>
+#include <Einsums/TypeSupport/GPUCast.hpp>
 
 #include <bits/utility.h>
 #include <hip/hip_common.h>
@@ -17,12 +19,12 @@ namespace detail {
 
 template <typename CDataType, typename ADataType, typename BDataType, size_t UniqueRank, size_t CRank, size_t ARank, size_t BRank>
 __global__ void einsum_generic_algorithm_gpu(
-    const size_t *__restrict__ unique_strides, const size_t *__restrict__ C_index_strides, const int *__restrict__ C_index_table,
-    const int *__restrict__ A_index_table, const int *__restrict__ B_index_table, const CDataType C_prefactor, CDataType *__restrict__ C,
-    const size_t *__restrict__ C_dims, const size_t *__restrict__ C_stride,
-    const ::std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> AB_prefactor, const ADataType *__restrict__ A,
-    const size_t *__restrict__ A_dims, const size_t *__restrict__ A_stride, const BDataType *__restrict__ B,
-    const size_t *__restrict__ B_dims, const size_t *__restrict__ B_stride, size_t max_index) {
+    size_t const *__restrict__ unique_strides, size_t const *__restrict__ C_index_strides, int const *__restrict__ C_index_table,
+    int const *__restrict__ A_index_table, int const *__restrict__ B_index_table, CDataType const C_prefactor, CDataType *__restrict__ C,
+    size_t const *__restrict__ C_dims, size_t const *__restrict__ C_stride,
+    ::std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> const AB_prefactor, ADataType const *__restrict__ A,
+    size_t const *__restrict__ A_dims, size_t const *__restrict__ A_stride, BDataType const *__restrict__ B,
+    size_t const *__restrict__ B_dims, size_t const *__restrict__ B_stride, size_t max_index) {
     using namespace einsums::gpu;
 
     int thread_id, kernel_size;
@@ -91,12 +93,12 @@ __global__ void einsum_generic_algorithm_gpu(
 // When we will only see a certain element once, we can ignore atomicity for a speedup.
 template <typename CDataType, typename ADataType, typename BDataType, size_t UniqueRank, size_t CRank, size_t ARank, size_t BRank>
 __global__ void einsum_generic_algorithm_direct_product_gpu(
-    const size_t *__restrict__ unique_strides, const size_t *__restrict__ C_index_strides, const int *__restrict__ C_index_table,
-    const int *__restrict__ A_index_table, const int *__restrict__ B_index_table, const CDataType C_prefactor, CDataType *__restrict__ C,
-    const size_t *__restrict__ C_dims, const size_t *__restrict__ C_stride,
-    const ::std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> AB_prefactor, const ADataType *__restrict__ A,
-    const size_t *__restrict__ A_dims, const size_t *__restrict__ A_stride, const BDataType *__restrict__ B,
-    const size_t *__restrict__ B_dims, const size_t *__restrict__ B_stride, size_t max_index) {
+    size_t const *__restrict__ unique_strides, size_t const *__restrict__ C_index_strides, int const *__restrict__ C_index_table,
+    int const *__restrict__ A_index_table, int const *__restrict__ B_index_table, CDataType const C_prefactor, CDataType *__restrict__ C,
+    size_t const *__restrict__ C_dims, size_t const *__restrict__ C_stride,
+    ::std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> const AB_prefactor, ADataType const *__restrict__ A,
+    size_t const *__restrict__ A_dims, size_t const *__restrict__ A_stride, BDataType const *__restrict__ B,
+    size_t const *__restrict__ B_dims, size_t const *__restrict__ B_stride, size_t max_index) {
     using namespace einsums::gpu;
 
     int thread_id, kernel_size;
@@ -167,10 +169,10 @@ __global__ void einsum_generic_algorithm_direct_product_gpu(
  */
 template <typename CDataType, typename ADataType, typename BDataType, size_t UniqueRank, size_t ARank, size_t BRank>
 __global__ void einsum_generic_zero_rank_gpu(
-    const size_t *__restrict__ unique_strides, const int *__restrict__ A_index_table, const int *__restrict__ B_index_table,
-    CDataType *__restrict__ C, const ::std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> AB_prefactor,
-    const ADataType *__restrict__ A, const size_t *__restrict__ A_dims, const size_t *__restrict__ A_stride,
-    const BDataType *__restrict__ B, const size_t *__restrict__ B_dims, const size_t *__restrict__ B_stride, size_t max_index) {
+    size_t const *__restrict__ unique_strides, int const *__restrict__ A_index_table, int const *__restrict__ B_index_table,
+    CDataType *__restrict__ C, ::std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType> const AB_prefactor,
+    ADataType const *__restrict__ A, size_t const *__restrict__ A_dims, size_t const *__restrict__ A_stride,
+    BDataType const *__restrict__ B, size_t const *__restrict__ B_dims, size_t const *__restrict__ B_stride, size_t max_index) {
 
     CDataType value;
 
@@ -213,14 +215,14 @@ template <typename... CUniqueIndices, typename... AUniqueIndices, typename... BU
           typename... TargetPositionInC, typename... LinkPositionInLink, typename CType, DeviceBasicTensorConcept AType,
           DeviceBasicTensorConcept BType>
     requires(DeviceBasicTensorConcept<CType> || (!TensorConcept<CType> && sizeof...(CIndices) == 0))
-void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, const std::tuple<AUniqueIndices...> & /*A_unique*/,
-                              const std::tuple<BUniqueIndices...> & /*B_unique*/, const std::tuple<LinkUniqueIndices...> &link_unique,
-                              const std::tuple<CIndices...> &C_indices, const std::tuple<AIndices...> &A_indices,
-                              const std::tuple<BIndices...> &B_indices, const std::tuple<TargetDims...> &target_dims,
-                              const std::tuple<LinkDims...> &link_dims, const std::tuple<TargetPositionInC...> &target_position_in_C,
-                              const std::tuple<LinkPositionInLink...> &link_position_in_link, const ValueTypeT<CType> C_prefactor, CType *C,
-                              const BiggestTypeT<typename AType::data_type, typename BType::data_type> AB_prefactor, const AType &A,
-                              const BType &B) {
+void einsum_generic_algorithm(std::tuple<CUniqueIndices...> const &C_unique, std::tuple<AUniqueIndices...> const & /*A_unique*/,
+                              std::tuple<BUniqueIndices...> const & /*B_unique*/, std::tuple<LinkUniqueIndices...> const &link_unique,
+                              std::tuple<CIndices...> const &C_indices, std::tuple<AIndices...> const &A_indices,
+                              std::tuple<BIndices...> const &B_indices, std::tuple<TargetDims...> const &target_dims,
+                              std::tuple<LinkDims...> const &link_dims, std::tuple<TargetPositionInC...> const &target_position_in_C,
+                              std::tuple<LinkPositionInLink...> const &link_position_in_link, ValueTypeT<CType> const C_prefactor, CType *C,
+                              BiggestTypeT<typename AType::data_type, typename BType::data_type> const AB_prefactor, AType const &A,
+                              BType const &B) {
     using namespace einsums::gpu;
 
     constexpr size_t ARank = AType::rank;
@@ -257,15 +259,15 @@ void einsum_generic_algorithm(const std::tuple<CUniqueIndices...> &C_unique, con
     hip_catch(
         hipMallocAsync((void **)&unique_strides_gpu, std::tuple_size<decltype(unique_indices)>::value * sizeof(size_t), get_stream()));
 
-    hip_catch(hipMemcpyAsync((void *)A_index_table_gpu, (const void *)A_index_table, sizeof...(AIndices) * sizeof(int),
+    hip_catch(hipMemcpyAsync((void *)A_index_table_gpu, (void const *)A_index_table, sizeof...(AIndices) * sizeof(int),
                              hipMemcpyHostToDevice, get_stream()));
-    hip_catch(hipMemcpyAsync((void *)B_index_table_gpu, (const void *)B_index_table, sizeof...(BIndices) * sizeof(int),
+    hip_catch(hipMemcpyAsync((void *)B_index_table_gpu, (void const *)B_index_table, sizeof...(BIndices) * sizeof(int),
                              hipMemcpyHostToDevice, get_stream()));
     if constexpr (sizeof...(CIndices) != 0) {
-        hip_catch(hipMemcpyAsync((void *)C_index_table_gpu, (const void *)C_index_table, sizeof...(CIndices) * sizeof(int),
+        hip_catch(hipMemcpyAsync((void *)C_index_table_gpu, (void const *)C_index_table, sizeof...(CIndices) * sizeof(int),
                                  hipMemcpyHostToDevice, get_stream()));
     }
-    hip_catch(hipMemcpyAsync((void *)unique_strides_gpu, (const void *)unique_strides.data(),
+    hip_catch(hipMemcpyAsync((void *)unique_strides_gpu, (void const *)unique_strides.data(),
                              std::tuple_size<decltype(unique_indices)>::value * sizeof(size_t), hipMemcpyHostToDevice, get_stream()));
 
     // Calculate the optimal launch bounds.

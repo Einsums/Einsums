@@ -5,8 +5,12 @@
 
 #pragma once
 
+#include <Einsums/Concepts/Tensor.hpp>
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/GPUStreams/GPUStreams.hpp>
+#include <Einsums/LinearAlgebra.hpp>
+#include <Einsums/TensorAlgebra/Detail/Utilities.hpp>
+#include <Einsums/TypeSupport/GPUCast.hpp>
 
 #include <hip/driver_types.h>
 #include <hip/hip_common.h>
@@ -19,18 +23,18 @@ namespace detail {
 
 #if defined(EINSUMS_USE_HPTT)
 
-void EINSUMS_EXPORT gpu_sort(const int *perm, const int dim, const float alpha, const float *A, const int *sizeA, const float beta,
+void EINSUMS_EXPORT gpu_sort(int const *perm, int const dim, float const alpha, float const *A, int const *sizeA, float const beta,
                              float *B);
-void EINSUMS_EXPORT gpu_sort(const int *perm, const int dim, const double alpha, const double *A, const int *sizeA, const double beta,
+void EINSUMS_EXPORT gpu_sort(int const *perm, int const dim, double const alpha, double const *A, int const *sizeA, double const beta,
                              double *B);
-void EINSUMS_EXPORT gpu_sort(const int *perm, const int dim, const hipComplex alpha, const hipComplex *A, const int *sizeA,
-                             const hipComplex beta, hipComplex *B);
-void EINSUMS_EXPORT gpu_sort(const int *perm, const int dim, const hipDoubleComplex alpha, const hipDoubleComplex *A, const int *sizeA,
-                             const hipDoubleComplex beta, hipDoubleComplex *B);
+void EINSUMS_EXPORT gpu_sort(int const *perm, int const dim, hipComplex const alpha, hipComplex const *A, int const *sizeA,
+                             hipComplex const beta, hipComplex *B);
+void EINSUMS_EXPORT gpu_sort(int const *perm, int const dim, hipDoubleComplex const alpha, hipDoubleComplex const *A, int const *sizeA,
+                             hipDoubleComplex const beta, hipDoubleComplex *B);
 #endif
 
 template <typename T, size_t Rank>
-__global__ void sort_kernel(const int *perm, const T alpha, const T *A, const size_t *strideA, const T beta, T *B, const size_t *strideB,
+__global__ void sort_kernel(int const *perm, T const alpha, T const *A, size_t const *strideA, T const beta, T *B, size_t const *strideB,
                             size_t size) {
     int thread_id, kernel_size;
 
@@ -59,13 +63,13 @@ __global__ void sort_kernel(const int *perm, const T alpha, const T *A, const si
 }
 
 template <typename Index>
-auto reverse_inds(const std::tuple<Index> &ind) {
+auto reverse_inds(std::tuple<Index> const &ind) {
     return ind;
 }
 
 template <typename Head, typename... Tail>
     requires(sizeof...(Tail) > 0)
-auto reverse_inds(const std::tuple<Head, Tail...> &inds) {
+auto reverse_inds(std::tuple<Head, Tail...> const &inds) {
     return std::tuple_cat(reverse_inds(std::tuple<Tail...>{}), std::tuple<Head>{});
 }
 
@@ -80,9 +84,9 @@ template <template <typename, size_t> typename AType, size_t ARank, template <ty
         requires DeviceRankTensor<AType<T, ARank>, ARank, T>;
         requires DeviceRankTensor<CType<T, CRank>, CRank, T>;
     }
-auto sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<T, CRank> *C, const U UA_prefactor,
-          const std::tuple<AIndices...> &A_indices,
-          const AType<T, ARank> &A) -> std::enable_if_t<sizeof...(CIndices) == sizeof...(AIndices) && sizeof...(CIndices) == CRank &&
+auto sort(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CType<T, CRank> *C, U const UA_prefactor,
+          std::tuple<AIndices...> const &A_indices,
+          AType<T, ARank> const &A) -> std::enable_if_t<sizeof...(CIndices) == sizeof...(AIndices) && sizeof...(CIndices) == CRank &&
                                                         sizeof...(AIndices) == ARank && std::is_arithmetic_v<U>> {
 
     LabeledSection1((std::fabs(UC_prefactor) > EINSUMS_ZERO)
@@ -91,8 +95,8 @@ auto sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<
                         : fmt::format(R"(sort: "{}"{} = {} "{}"{})", C->name(), print_tuple_no_type(C_indices), UA_prefactor, A.name(),
                                       print_tuple_no_type(A_indices)));
 
-    const T C_prefactor = UC_prefactor;
-    const T A_prefactor = UA_prefactor;
+    T const C_prefactor = UC_prefactor;
+    T const A_prefactor = UA_prefactor;
 
     // Error check:  If there are any remaining indices then we cannot perform a sort
     constexpr auto check = difference_t<std::tuple<AIndices...>, std::tuple<CIndices...>>();
@@ -146,8 +150,7 @@ auto sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType<
         hip_catch(hipMalloc((void **)&stride_A_gpu, sizeof...(AIndices) * sizeof(size_t)));
         hip_catch(hipMalloc((void **)&stride_C_gpu, sizeof...(AIndices) * sizeof(size_t)));
 
-        hip_catch(
-            hipMemcpy((void *)stride_A_gpu, (void *)A.strides().data(), sizeof(size_t) * sizeof...(AIndices), hipMemcpyHostToDevice));
+        hip_catch(hipMemcpy((void *)stride_A_gpu, (void *)A.strides().data(), sizeof(size_t) * sizeof...(AIndices), hipMemcpyHostToDevice));
         hip_catch(
             hipMemcpy((void *)stride_C_gpu, (void *)C->strides().data(), sizeof(size_t) * sizeof...(AIndices), hipMemcpyHostToDevice));
 

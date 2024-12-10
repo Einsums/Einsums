@@ -28,9 +28,9 @@ TEMPLATE_TEST_CASE("element transform", "[tensor_algebra]", float, double, std::
                 for (int y = 0; y < 3; y++) {
                     for (int z = 0; z < 3; z++) {
                         if constexpr (IsComplexV<TestType>) {
-                            CheckWithinRel(A(w, x, y, z), TestType{1.0, 1.0} / Acopy(w, x, y, z), 0.001);
+                            REQUIRE_THAT(A(w, x, y, z), CheckWithinRel(TestType{1.0, 1.0} / Acopy(w, x, y, z), 0.001));
                         } else {
-                            CheckWithinRel(A(w, x, y, z), TestType{1.0} / Acopy(w, x, y, z), 0.001);
+                            REQUIRE_THAT(A(w, x, y, z), CheckWithinRel(TestType{1.0} / Acopy(w, x, y, z), 0.001));
                             // REQUIRE_THAT(A(w, x, y, z), Catch::Matchers::WithinAbs(1.0 / Acopy(w, x, y, z), 0.001));
                         }
                     }
@@ -57,7 +57,7 @@ TEMPLATE_TEST_CASE("element", "[tensor_algebra]", float, double, std::complex<fl
             for (int x = 0; x < 10; x++) {
                 for (int y = 0; y < 10; y++) {
                     for (int z = 0; z < 10; z++) {
-                        CheckWithinRel(A(w, x, y, z), Acopy(w, x, y, z) + B(w, x, y, z), 0.001);
+                        REQUIRE_THAT(A(w, x, y, z), CheckWithinRel(Acopy(w, x, y, z) + B(w, x, y, z), 0.001));
                         // REQUIRE_THAT(A(w, x, y, z), Catch::Matchers::WithinAbs(Acopy(w, x, y, z) + B(w, x, y, z), 0.001));
                     }
                 }
@@ -78,7 +78,7 @@ TEMPLATE_TEST_CASE("element", "[tensor_algebra]", float, double, std::complex<fl
             for (int x = 0; x < 10; x++) {
                 for (int y = 0; y < 10; y++) {
                     for (int z = 0; z < 10; z++) {
-                        CheckWithinRel(A(w, x, y, z), Acopy(w, x, y, z) + B(w, x, y, z) + C(w, x, y, z), 0.001);
+                        REQUIRE_THAT(A(w, x, y, z), CheckWithinRel(Acopy(w, x, y, z) + B(w, x, y, z) + C(w, x, y, z), 0.001));
                         // REQUIRE_THAT(A(w, x, y, z), Catch::Matchers::WithinAbs(Acopy(w, x, y, z) + B(w, x, y, z) + C(w, x, y, z),
                         // 0.001));
                     }
@@ -108,7 +108,7 @@ TEMPLATE_TEST_CASE("einsum element", "[tensor_algebra]", float, double, std::com
 
         for (int w = 0; w < _i; w++) {
             for (int x = 0; x < _j; x++) {
-                CheckWithinRel(C(w, x), C0(w, x), 1.0e-5);
+                REQUIRE_THAT(C(w, x), CheckWithinRel(C0(w, x), 1.0e-5));
                 // REQUIRE_THAT(C(w, x), Catch::Matchers::WithinAbs(C0(w, x), 1.0e-5));
             }
         }
@@ -127,7 +127,7 @@ TEMPLATE_TEST_CASE("einsum element", "[tensor_algebra]", float, double, std::com
 
         for (int w = 0; w < _i; w++) {
             for (int x = 0; x < _j; x++) {
-                CheckWithinRel(C(w, x), testresult(w, x), 1.0e-5);
+                REQUIRE_THAT(C(w, x), CheckWithinRel(testresult(w, x), 1.0e-5));
                 // REQUIRE_THAT(C(w, x), Catch::Matchers::WithinAbs(testresult(w, x), 1.0e-5));
             }
         }
@@ -156,7 +156,7 @@ TEMPLATE_TEST_CASE("einsum element", "[tensor_algebra]", float, double, std::com
 
         for (int w = 0; w < _i; w++) {
             for (int x = 0; x < _j; x++) {
-                CheckWithinRel(C(w, x), testresult(w, x), 1.0e-5);
+                REQUIRE_THAT(C(w, x), CheckWithinRel(testresult(w, x), 1.0e-5));
                 // REQUIRE_THAT(C(w, x), Catch::Matchers::WithinAbs(testresult(w, x), 1.0e-5));
             }
         }

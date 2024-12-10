@@ -11,13 +11,14 @@
 
 #include <Einsums/TensorBase/IndexUtilities.hpp>
 #include <Einsums/TensorBase/TensorBase.hpp>
+#include <Einsums/Config.hpp>
 
 #include <concepts>
 #include <functional>
 
 // TODO:
 #ifdef EINSUMS_COMPUTE_CODE
-#    include "Einsums/Tensor/DeviceTensor.hpp"
+#    include <Einsums/Tensor/DeviceTensor.hpp>
 #endif
 #include <Einsums/Concepts/Tensor.hpp>
 #include <Einsums/Tensor/Tensor.hpp>

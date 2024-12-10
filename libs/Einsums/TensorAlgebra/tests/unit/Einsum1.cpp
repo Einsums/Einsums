@@ -118,9 +118,9 @@ TEMPLATE_TEST_CASE("TensorView einsum", "[tensor]", float, double, std::complex<
 
     for (int x = 0; x < 3; x++) {
         for (int y = 0; y < 3; y++) {
-            CheckWithinRel(C_view(x, y), C_solution(x, y), RemoveComplexT<TestType>{0.001});
+            REQUIRE_THAT(C_view(x, y), CheckWithinRel(C_solution(x, y), 0.001));
             // REQUIRE_THAT(C_view(x, y), Catch::Matchers::WithinAbs(C_solution(x, y), 0.001));
-            CheckWithinRel(C(x + 5, y + 5), C_solution(x, y), RemoveComplexT<TestType>{0.001});
+            REQUIRE_THAT(C(x + 5, y + 5), CheckWithinRel(C_solution(x, y), 0.001));
             // REQUIRE_THAT(C(x + 5, y + 5), Catch::Matchers::WithinAbs(C_solution(x, y), 0.001));
         }
     }

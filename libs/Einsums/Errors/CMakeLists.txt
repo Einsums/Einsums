@@ -13,7 +13,7 @@ set(ErrorsHeaders
 set(ErrorsSources ErrorNames.cpp Errors.cpp)
 
 if(EINSUMS_WITH_GPU_SUPPORT)
-  list(APPEND ErrorsHeaders hipblas_status_doc.hpp)
+  list(APPEND ErrorsHeaders Einsums/Errors/hipblas_status_doc.hpp)
   list(APPEND ErrorsSources GPUErrors.hip)
   set(ErrorsGPUModules hip::host hip::device roc::hipblas roc::hipsolver)
 endif()
