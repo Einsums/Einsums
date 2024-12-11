@@ -80,7 +80,7 @@ Tensor<T, 2> unfold(CType<T, CRank> const &source) {
         target_dims[1] *= source.dim(i);
     }
 
-    auto target         = Tensor{fmt::format("mode-{} unfolding of {}", mode, source.name()), target_dims[0], target_dims[1]};
+    auto target         = Tensor<T, 2>{fmt::format("mode-{} unfolding of {}", mode, source.name()), target_dims[0], target_dims[1]};
     auto target_indices = std::make_tuple(std::get<mode>(index::list), index::Z);
     auto source_indices = get_n<CRank>(index::list);
 

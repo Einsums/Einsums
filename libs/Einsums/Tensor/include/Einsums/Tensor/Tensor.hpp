@@ -118,6 +118,9 @@ struct Tensor : virtual tensor_base::CoreTensor,
      */
     ~Tensor() override = default;
 
+    Tensor(Tensor &&)                 = default;
+    Tensor &operator=(Tensor &&other) = default;
+
     /**
      * @brief Construct a new Tensor object with the given name and dimensions.
      *
@@ -1464,8 +1467,7 @@ struct TensorView final : virtual tensor_base::CoreTensor,
                 // Stride information cannot be automatically deduced.  It must be provided.
                 default_strides = arguments::get(error_strides, args...);
                 if (default_strides[0] == static_cast<size_t>(-1)) {
-                    EINSUMS_THROW_EXCEPTION(bad_logic,
-                                            "Unable to automatically deduce stride information. Stride must be passed in.");
+                    EINSUMS_THROW_EXCEPTION(bad_logic, "Unable to automatically deduce stride information. Stride must be passed in.");
                 }
             }
         }

@@ -189,9 +189,9 @@ constexpr auto get_n(std::tuple<List...> const &);
  *
  * @returns unfolded_tensor of shape ``(tensor.dim(mode), -1)``
  */
-template <unsigned int mode, template <typename, size_t> typename CType, size_t CRank, typename T = double>
-Tensor<T, 2> unfold(CType<T, CRank> const &source)
-    requires(std::is_same_v<Tensor<T, CRank>, CType<T, CRank>>);
+// template <unsigned int mode, template <typename, size_t> typename CType, size_t CRank, typename T = double>
+// Tensor<T, 2> unfold(CType<T, CRank> const &source)
+// requires(std::is_same_v<Tensor<T, CRank>, CType<T, CRank>>);
 
 /** Computes the Khatri-Rao product of tensors A and B.
  *
@@ -203,8 +203,8 @@ Tensor<T, 2> unfold(CType<T, CRank> const &source)
 template <TensorConcept AType, TensorConcept BType, typename... AIndices, typename... BIndices>
     requires requires {
         requires InSamePlace<AType, BType>;
-        requires AType::rank == sizeof...(AIndices);
-        requires BType::rank == sizeof...(BIndices);
+        requires AType::Rank == sizeof...(AIndices);
+        requires BType::Rank == sizeof...(BIndices);
     }
 BasicTensorLike<AType, typename AType::data_type, 2> khatri_rao(std::tuple<AIndices...> const &, AType const &A,
                                                                 std::tuple<BIndices...> const &, BType const &B);
