@@ -38,6 +38,9 @@ function(einsums_add_module libname modulename)
   string(TOUPPER ${libname} libname_upper)
   string(TOUPPER ${modulename} modulename_upper)
 
+  string(MAKE_C_IDENTIFIER ${libname_upper} libname_upper)
+  string(MAKE_C_IDENTIFIER ${modulename_upper} modulename_upper)
+
   # Mark the module as enabled (see einsums/libs/CMakeLists.txt)
   set(EINSUMS_ENABLED_MODULES
       ${EINSUMS_ENABLED_MODULES} ${modulename}

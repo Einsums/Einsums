@@ -1,6 +1,6 @@
 # used while generating sphinx config file
 set(doxygen_definition_list "DOXYGEN:=1" "EINSUMS_EXPORT=" "EINSUMS_FORCEINLINE=" "__HIP__="
-        "__device_ptr__=" "__host_ptr__=" "EINSUMS_HOSTDEV="
+        "__device_ptr__=" "__host_ptr__=" "EINSUMS_HOST=" "EINSUMS_DEVICE=" "EINSUMS_HOSTDEV="
 )
 
 foreach (doxygen_predef ${doxygen_definition_list})

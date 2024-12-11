@@ -1,0 +1,9 @@
+@{lib_name}_HEADERS@
+
+#include <pybind11/pybind11.h>
+
+namespace py = pybind11;
+
+PYBIND11_MODULE({python_name}, mod) {{
+    @{lib_name}_EXPORTS@
+}}

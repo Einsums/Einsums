@@ -2,6 +2,36 @@ import os
 import sys
 
 
+def configure_python(output_base, lib_name, **kwargs):
+    if not kwargs["python"]:
+        return
+    base = os.path.dirname(__file__)
+
+    export = ""
+
+    with open(os.path.join(base, "ExportAll.cpp.in"), "r") as fp:
+        export = fp.read()
+
+    with open(os.path.join(output_base, lib_name, "ExportAll.cpp.in"), "w+") as fp:
+        fp.write(export.format(lib_name = lib_name, **kwargs))
+
+    if not os.path.exists(os.path.join(output_base, lib_name, "preamble.txt")):
+        preamble = ""
+        with open(os.path.join(base, "python_preamble.txt"), "r") as fp:
+            preamble = fp.read()
+
+        with open(os.path.join(output_base, lib_name, "preamble.txt"), "w+") as fp:
+            fp.write(preamble.format(lib_name = lib_name, **kwargs))
+
+    if not os.path.exists(os.path.join(output_base, lib_name, "closer.txt")):
+        preamble = ""
+        with open(os.path.join(base, "python_closer.txt"), "r") as fp:
+            preamble = fp.read()
+
+        with open(os.path.join(output_base, lib_name, "closer.txt"), "w+") as fp:
+            fp.write(preamble.format(lib_name = lib_name, **kwargs))
+
+
 def configure_cmake(output_base, lib_name, **kwargs):
     base = os.path.dirname(__file__)
 
@@ -16,6 +46,11 @@ def configure_cmake(output_base, lib_name, **kwargs):
         with open(os.path.join(output_base, lib_name, "preamble.txt"), "r") as fp:
             preamble = fp.read()
 
+    closer = ""
+    if os.path.exists(os.path.join(output_base, lib_name, "closer.txt")):
+        with open(os.path.join(output_base, lib_name, "closer.txt"), "r") as fp:
+            closer = fp.read()
+
     modules = "\n  ".join(
         filter(
             lambda x: os.path.isdir(os.path.join(output_base, lib_name, x)),
@@ -26,16 +61,20 @@ def configure_cmake(output_base, lib_name, **kwargs):
     modules = modules.rstrip()
 
     with open(os.path.join(output_base, lib_name, "CMakeLists.txt"), "w+") as fp:
-        if kwargs["gpu"] :
-            print("if(EINSUMS_WITH_GPU_SUPPORT)", file = fp)
+        if kwargs["gpu"]:
+            print("if(EINSUMS_WITH_GPU_SUPPORT)", file=fp)
 
         fp.write(
             format.format(
-                modules=modules, preamble=preamble, lib_name=lib_name, **kwargs
+                modules=modules,
+                preamble=preamble,
+                closer=closer,
+                lib_name=lib_name,
+                **kwargs,
             )
         )
 
-        if kwargs["gpu"] :
+        if kwargs["gpu"]:
             print("endif()")
 
 

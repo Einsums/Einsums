@@ -13,9 +13,11 @@ def parse_template(filename, output_file, **kwargs):
 
 def build_layer(input_dir, output_dir, **kwargs):
     for item in os.listdir(input_dir):
-        item_out = item
-        if item in kwargs :
-            item_out = kwargs[item]
+        # Skip exports if we don't need them.
+        if item in ["Export.cpp", "Export.hpp"] and not kwargs["python"] :
+            continue
+        item_out = kwargs.get(item, item)
+
         if os.path.isdir(os.path.join(input_dir, item)):
             if not os.path.isdir(os.path.join(output_dir, item_out)):
                 os.mkdir(os.path.join(output_dir, item_out))
@@ -24,10 +26,14 @@ def build_layer(input_dir, output_dir, **kwargs):
             )
         elif not os.path.exists(os.path.join(output_dir, item_out)):
             format_str = ""
-            with open(os.path.join(input_dir, item), "r") as fp:
-                format_str = fp.read()
-            with open(os.path.join(output_dir, item_out), "w+") as fp:
-                fp.write(format_str.format(**kwargs))
+            try :
+                with open(os.path.join(input_dir, item), "r") as fp:
+                    format_str = fp.read()
+                with open(os.path.join(output_dir, item_out), "w+") as fp:
+                    fp.write(format_str.format(**kwargs))
+            except KeyError as e:
+                print(format_str)
+                raise RuntimeError(f"File being parsed was {input_dir}/{item}.") from e
 
 
 def build_structure(output_base, lib_name, module_name, **kwargs):
@@ -44,8 +50,12 @@ def build_structure(output_base, lib_name, module_name, **kwargs):
         os.path.join(output_base, lib_name, module_name),
         module_name=module_name,
         lib_name=lib_name,
-        docs_head = "=".join(lib_name + ' ' + module_name),
-        readme_head = "=".join(module_name),
+        docs_head = "".join("=" for i in lib_name + ' ' + module_name),
+        readme_head = "".join("=" for i in module_name),
+        export_header = f"{lib_name}/{module_name}/Export.hpp" if "python" in kwargs else "",
+        export_source = f"Export.cpp" if "python" in kwargs else "",
+        export_depends = "Einsums_Config" if "python" in kwargs else "",
+        python_footer = f"include(Einsums_ExtendWithPython)\neinsums_extend_with_python(${{EINSUMS_PYTHON_LIB_NAME}}_{module_name} ${{PYTHON_LIB_TYPE}})" if "python" in kwargs else "",
         **kwargs
     )
 

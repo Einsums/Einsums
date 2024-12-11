@@ -5,9 +5,9 @@
 
 list(APPEND CMAKE_MODULE_PATH "${{CMAKE_CURRENT_SOURCE_DIR}}/cmake")
 
-set({module_name}Headers)
+set({module_name}Headers {export_header})
 
-set({module_name}Sources)
+set({module_name}Sources {export_source})
 
 include(Einsums_AddModule)
 einsums_add_module(
@@ -17,5 +17,8 @@ einsums_add_module(
   HEADERS ${{{module_name}Headers}}
   DEPENDENCIES
   MODULE_DEPENDENCIES
+    {export_depends}
   CMAKE_SUBDIRS examples tests
 )
+
+{python_footer}
