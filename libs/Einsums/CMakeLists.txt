@@ -19,6 +19,7 @@ set(_Einsums_modules
     Concepts
     Config
     Debugging
+        Decomposition
     Errors
     GPUStreams
     Graph

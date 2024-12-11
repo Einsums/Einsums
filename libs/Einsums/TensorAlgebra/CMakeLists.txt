@@ -6,6 +6,7 @@
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 set(TensorAlgebraHeaders
+        Einsums/TensorAlgebra.hpp
         Einsums/TensorAlgebra/Sort.hpp
         Einsums/TensorAlgebra/TensorAlgebra.hpp
         Einsums/TensorAlgebra/Backends/BaseAlgebra.hpp
@@ -22,8 +23,8 @@ set(TensorAlgebraHeaders
 )
 
 if (NOT WIN32)
-    set(TensorAlgebraSources Sort.cpp)
-    set(EXTRA_TENSOR_ALGEBRA_DEPENDENCIES Einsums_HPTT)
+  set(TensorAlgebraSources Sort.cpp)
+  set(EXTRA_TENSOR_ALGEBRA_DEPENDENCIES Einsums_HPTT)
 endif ()
 
 if (EINSUMS_WITH_GPU_SUPPORT)
@@ -33,7 +34,7 @@ endif ()
 include(Einsums_AddModule)
 einsums_add_module(
   Einsums TensorAlgebra
-  GLOBAL_HEADER_GEN ON
+        GLOBAL_HEADER_GEN OFF
   SOURCES ${TensorAlgebraSources}
   HEADERS ${TensorAlgebraHeaders}
   DEPENDENCIES

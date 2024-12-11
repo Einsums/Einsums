@@ -220,7 +220,7 @@ auto true_dot(AType const &A, BType const &B) -> typename AType::ValueType {
     if (A.full_view_of_underlying() && B.full_view_of_underlying()) {
         Dim<1> dim{1};
 
-        for (size_t i = 0; i < AType::rank; i++) {
+        for (size_t i = 0; i < AType::Rank; i++) {
             assert(A.dim(i) == B.dim(i));
             dim[0] *= A.dim(i);
         }
@@ -230,11 +230,11 @@ auto true_dot(AType const &A, BType const &B) -> typename AType::ValueType {
     } else {
         auto dims = A.dims();
 
-        std::array<size_t, AType::rank> strides;
-        strides[AType::rank - 1] = 1;
-        std::array<size_t, AType::rank> index;
+        std::array<size_t, AType::Rank> strides;
+        strides[AType::Rank - 1] = 1;
+        std::array<size_t, AType::Rank> index;
 
-        for (int i = AType::rank - 1; i > 0; i--) {
+        for (int i = AType::Rank - 1; i > 0; i--) {
             strides[i - 1] = strides[i] * dims[i];
         }
 
@@ -243,7 +243,11 @@ auto true_dot(AType const &A, BType const &B) -> typename AType::ValueType {
         for (size_t sentinel = 0; sentinel < strides[0] * dims[0]; sentinel++) {
             sentinel_to_indices(sentinel, strides, index);
 
-            out += std::conj(std::apply(A, index)) * std::apply(B, index);
+            if constexpr (IsComplexV<AType>) {
+                out += std::conj(std::apply(A, index)) * std::apply(B, index);
+            } else {
+                out += std::apply(A, index) * std::apply(B, index);
+            }
         }
 
         return out;
@@ -256,7 +260,7 @@ auto dot(AType const &A, BType const &B, CType const &C) -> typename AType::Valu
     Dim<1> dim{1};
     using T = typename AType::ValueType;
 
-    for (size_t i = 0; i < AType::rank; i++) {
+    for (size_t i = 0; i < AType::Rank; i++) {
         assert(A.dim(i) == B.dim(i) && A.dim(i) == C.dim(i));
         dim[0] *= A.dim(i);
     }

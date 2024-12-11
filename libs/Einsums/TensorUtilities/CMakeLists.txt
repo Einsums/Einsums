@@ -15,6 +15,7 @@ set(TensorUtilitiesHeaders
         Einsums/TensorUtilities/CreateZeroTensor.hpp
         Einsums/TensorUtilities/Diagonal.hpp
         Einsums/TensorUtilities/Detail/SetTo.hpp
+        Einsums/TensorUtilities/RMSD.hpp
 )
 
 set(TensorUtilitiesSources)

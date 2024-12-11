@@ -213,12 +213,12 @@ void sentinel_to_indices(size_t sentinel, std::array<size_t, num_unique_inds> co
 }
 
 template <typename StorageType1, typename StorageType2>
-inline void sentinel_to_indices(size_t sentinel, StorageType1 const &unique_strides, StorageType2 &out_inds) {
+void sentinel_to_indices(size_t sentinel, StorageType1 const &unique_strides, StorageType2 &out_inds) {
     size_t hold = sentinel;
 
-    if (out_inds.size() != unique_strides.size()) {
-        out_inds.resize(unique_strides.size());
-    }
+    // if (out_inds.size() != unique_strides.size()) {
+    //     out_inds.resize(unique_strides.size());
+    // }
 
     for (ptrdiff_t i = 0; i < unique_strides.size(); i++) {
         if (unique_strides[i] != 0) {
