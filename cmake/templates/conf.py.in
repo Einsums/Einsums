@@ -154,7 +154,7 @@ api_ref_header = '''
      Licensed under the MIT License. See LICENSE.txt in the project root for license information.
     ----------------------------------------------------------------------------------------------
 
-.. _modules_{0}_api:
+.. _modules_{0}_{1}_api:
 
 -------------------------------------------------------------------------------
 {0}
@@ -177,7 +177,7 @@ api_header_file = '''
      Licensed under the MIT License. See LICENSE.txt in the project root for license information.
     ----------------------------------------------------------------------------------------------
 
-.. _modules_{0}_api:
+.. _modules_{4}_{0}_api:
 
 -------------------------------------------------------------------------------
 {2}
@@ -214,7 +214,7 @@ for lib in einsums_libs.keys():
         if not os.path.exists(basedir):
             os.makedirs(basedir)
         with open(basedir + '/full_api.rst', 'w') as module_api_ref :
-            module_api_ref.write(api_ref_header.format(module))
+            module_api_ref.write(api_ref_header.format(lib, module))
             header_refs = ''
             header_names = set()
             for source in module_sources[1]:
@@ -236,7 +236,7 @@ for lib in einsums_libs.keys():
 
                 with open(basedir + '/' + header_name + '.rst', 'w') as header_ref :
                     header_ref.write(
-                        api_header_file.format(header, module, page_title, find_link_einsums_header(include_header)))
+                        api_header_file.format(header, module, page_title, find_link_einsums_header(include_header), lib))
                 header_refs += '   /libs/' + lib + '/' + module + '/api/' + header_name + '.rst\n'
             module_api_ref.write(api_file)
             module_api_ref.write(header_refs)
