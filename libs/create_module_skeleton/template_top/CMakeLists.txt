@@ -11,7 +11,7 @@ set({module_name}Sources)
 
 include(Einsums_AddModule)
 einsums_add_module(
-  {lib_name} {module_name}
+  {lib_symb} {module_name}
   GLOBAL_HEADER_GEN ON
   SOURCES ${{{module_name}Sources}}
   HEADERS ${{{module_name}Headers}}

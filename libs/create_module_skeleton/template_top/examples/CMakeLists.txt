@@ -4,12 +4,12 @@
 #----------------------------------------------------------------------------------------------
 
 if(EINSUMS_WITH_EXAMPLES)
-  einsums_add_pseudo_target(examples.modules.{lib_name}.{module_name})
-  einsums_add_pseudo_dependencies(examples.modules examples.modules.{lib_name}.{module_name})
+  einsums_add_pseudo_target(examples.modules.{lib_symb}.{module_name})
+  einsums_add_pseudo_dependencies(examples.modules examples.modules.{lib_symb}.{module_name})
   if(EINSUMS_WITH_TESTS AND EINSUMS_WITH_TESTS_EXAMPLES)
-    einsums_add_pseudo_target(tests.examples.modules.{lib_name}.{module_name})
+    einsums_add_pseudo_target(tests.examples.modules.{lib_symb}.{module_name})
     einsums_add_pseudo_dependencies(
-      tests.examples.modules tests.examples.modules.{lib_name}.{module_name}
+      tests.examples.modules tests.examples.modules.{lib_symb}.{module_name}
     )
   endif()
 endif()

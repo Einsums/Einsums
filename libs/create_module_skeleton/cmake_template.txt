@@ -12,7 +12,7 @@ include(Einsums_Message)
 
 # cmake-format: off
 set(_{lib_name}_modules
-{modules}
+  {modules}
 )
 #cmake-format: on
 
