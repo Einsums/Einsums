@@ -20,6 +20,7 @@ set(_Einsums_modules
     Config
     Debugging
     Errors
+    GPUStreams
     Graph
     HPTT
     ITTNotify
@@ -37,10 +38,6 @@ set(_Einsums_modules
     TypeSupport
     Utilities
 )
-
-if(EINSUMS_WITH_GPU_SUPPORT)
-  list(APPEND _Einsums_modules GPUStreams)
-endif()
 # cmake-format: on
 
 einsums_info("")
