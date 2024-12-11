@@ -3,6 +3,7 @@
 # Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 #----------------------------------------------------------------------------------------------
 
+if(EINSUMS_WITH_GPU_SUPPORT)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 set(GPUStreamsHeaders Einsums/GPUStreams/GPUStreams.hpp)
@@ -25,3 +26,4 @@ einsums_add_module(
     roc::hipsolver
   CMAKE_SUBDIRS examples tests
 )
+endif()
