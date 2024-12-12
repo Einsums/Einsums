@@ -16,7 +16,6 @@ set(BLASSources
 include(Einsums_AddModule)
 einsums_add_module(
   Einsums BLAS
-  GLOBAL_HEADER_GEN OFF
   SOURCES ${BLASSources}
   HEADERS ${BLASHeaders}
   DEPENDENCIES

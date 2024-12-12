@@ -20,7 +20,6 @@ set(ConfigSources Version.cpp)
 include(Einsums_AddModule)
 einsums_add_module(
   Einsums Config CONFIG_FILES
-  GLOBAL_HEADER_GEN OFF
   SOURCES ${ConfigSources}
   HEADERS ${ConfigHeaders}
   DEPENDENCIES

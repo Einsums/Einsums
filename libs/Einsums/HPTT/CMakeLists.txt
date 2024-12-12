@@ -25,7 +25,6 @@ set(HPTTSources HPTT.cpp Plan.cpp Transpose.cpp Utils.cpp)
 include(Einsums_AddModule)
 einsums_add_module(
         Einsums HPTT
-        GLOBAL_HEADER_GEN ON
         SOURCES ${HPTTSources}
         HEADERS ${HPTTHeaders}
         DEPENDENCIES

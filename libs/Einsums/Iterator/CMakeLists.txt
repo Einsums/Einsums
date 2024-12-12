@@ -14,7 +14,6 @@ set(IteratorSources)
 include(Einsums_AddModule)
 einsums_add_module(
   Einsums Iterator
-  GLOBAL_HEADER_GEN OFF
   SOURCES ${IteratorSources}
   HEADERS ${IteratorHeaders}
   DEPENDENCIES

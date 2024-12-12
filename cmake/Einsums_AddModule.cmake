@@ -8,7 +8,7 @@ include(Einsums_ExportTargets)
 function(einsums_add_module libname modulename)
   # Retrieve arguments
   set(options CONFIG_FILES)
-  set(one_value_args GLOBAL_HEADER_GEN)
+  set(one_value_args)
   set(multi_value_args
       SOURCES
       HEADERS
@@ -16,7 +16,6 @@ function(einsums_add_module libname modulename)
       DEPENDENCIES
       MODULE_DEPENDENCIES
       CMAKE_SUBDIRS
-      EXCLUDE_FROM_GLOBAL_HEADER
   )
   cmake_parse_arguments(
     ${modulename} "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN}
@@ -29,11 +28,6 @@ function(einsums_add_module libname modulename)
 
   include(Einsums_Message)
   include(Einsums_Option)
-
-  # Global headers should be always generated except if explicitly disabled
-  if("${${modulename}_GLOBAL_HEADER_GEN}" STREQUAL "")
-    set(${modulename}_GLOBAL_HEADER_GEN ON)
-  endif()
 
   string(TOUPPER ${libname} libname_upper)
   string(TOUPPER ${modulename} modulename_upper)
@@ -59,35 +53,6 @@ function(einsums_add_module libname modulename)
   # Write full path for the sources files
   list(TRANSFORM ${modulename}_SOURCES PREPEND ${SOURCE_ROOT}/ OUTPUT_VARIABLE sources)
   list(TRANSFORM ${modulename}_HEADERS PREPEND ${HEADER_ROOT}/ OUTPUT_VARIABLE headers)
-
-  # This header generation is disabled for config module specific generated headers are included
-  if(${modulename}_GLOBAL_HEADER_GEN)
-    if("${PROJECT_NAME}/Modules/${modulename}.hpp" IN_LIST all_headers)
-      string(
-        CONCAT error_message
-               "Global header generation turned on for module ${modulename} but the "
-               "header \"${PROJECT_NAME}/Modules/${modulename}.hpp\" is also listed explicitly as"
-               "a header. Turn off global header generation or remove the "
-               "\"${PROJECT_NAME}/Modules/${modulename}.hpp\" file."
-      )
-      einsums_error(${error_message})
-    endif()
-    # Add a global include file that include all module headers
-    set(global_header "${CMAKE_CURRENT_BINARY_DIR}/include/${PROJECT_NAME}/Modules/${modulename}.hpp")
-    set(module_headers)
-    foreach(header_file ${${modulename}_HEADERS})
-      # Exclude the files specified
-      if((NOT (${header_file} IN_LIST ${modulename}_EXCLUDE_FROM_GLOBAL_HEADER))
-         AND (NOT ("${header_file}" MATCHES "(D|d)etail"))
-      )
-        set(module_headers "${module_headers}#include <${header_file}>\n")
-      endif()
-    endforeach(header_file)
-    configure_file(
-      "${PROJECT_SOURCE_DIR}/cmake/templates/GlobalModuleHeader.hpp.in" "${global_header}"
-    )
-    set(generated_headers ${global_header})
-  endif()
 
   # generate configuration header for this module
   set(config_header "${CMAKE_CURRENT_BINARY_DIR}/include/${PROJECT_NAME}/${modulename}/Defines.hpp")
@@ -205,7 +170,7 @@ function(einsums_add_module libname modulename)
     TARGETS ${sources}
   )
 
-  if(${modulename}_GLOBAL_HEADER_GEN OR ${modulename}_CONFIG_FILES)
+  if (${modulename}_CONFIG_FILES)
     einsums_add_source_group(
       NAME ${libname}_${modulename}
       ROOT ${CMAKE_CURRENT_BINARY_DIR}/include/${PROJECT_NAME}

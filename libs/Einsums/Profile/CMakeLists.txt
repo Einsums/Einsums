@@ -15,7 +15,6 @@ set(ProfileSources Timer.cpp)
 include(Einsums_AddModule)
 einsums_add_module(
   Einsums Profile
-  GLOBAL_HEADER_GEN ON
   SOURCES ${ProfileSources}
   HEADERS ${ProfileHeaders}
   DEPENDENCIES

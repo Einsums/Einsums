@@ -17,7 +17,6 @@ set(PreprocessorSources)
 include(Einsums_AddModule)
 einsums_add_module(
   Einsums Preprocessor
-  GLOBAL_HEADER_GEN ON
   SOURCES ${PreprocessorSources}
   HEADERS ${PreprocessorHeaders}
   DEPENDENCIES

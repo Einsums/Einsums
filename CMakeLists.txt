@@ -519,6 +519,7 @@ endif()
 # Need to set up CUDA/HIP before feature tests to enable the respective languages
 include(Einsums_SetupCUDA)
 include(Einsums_SetupHIP)
+include(Einsums_SetupFFT)
 include(Einsums_PerformCXXFeatureTests)
 einsums_perform_cxx_feature_tests()
 

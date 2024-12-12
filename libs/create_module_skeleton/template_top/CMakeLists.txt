@@ -13,7 +13,6 @@ set({module_name}Sources {export_source})
 include(Einsums_AddModule)
 einsums_add_module(
   {lib_symb} {module_name}
-  GLOBAL_HEADER_GEN ON
   SOURCES ${{{module_name}Sources}}
   HEADERS ${{{module_name}Headers}}
   DEPENDENCIES {export_depends}

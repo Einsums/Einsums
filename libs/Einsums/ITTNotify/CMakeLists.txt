@@ -12,7 +12,6 @@ set(ITTNotifySources)
 include(Einsums_AddModule)
 einsums_add_module(
   Einsums ITTNotify
-  GLOBAL_HEADER_GEN ON
   SOURCES ${ITTNotifySources}
   HEADERS ${ITTNotifyHeaders}
   DEPENDENCIES

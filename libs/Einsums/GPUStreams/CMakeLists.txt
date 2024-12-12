@@ -13,7 +13,6 @@ set(GPUStreamsSources GPUStreams.hip)
 include(Einsums_AddModule)
 einsums_add_module(
   Einsums GPUStreams
-  GLOBAL_HEADER_GEN ON
   SOURCES ${GPUStreamsSources}
   HEADERS ${GPUStreamsHeaders}
   DEPENDENCIES

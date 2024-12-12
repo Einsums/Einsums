@@ -12,7 +12,6 @@ set(MemorySources)
 include(Einsums_AddModule)
 einsums_add_module(
   Einsums Memory
-  GLOBAL_HEADER_GEN ON
   SOURCES ${MemorySources}
   HEADERS ${MemoryHeaders}
   DEPENDENCIES

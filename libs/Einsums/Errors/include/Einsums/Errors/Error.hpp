@@ -1,7 +1,7 @@
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 
 #pragma once
 
@@ -129,7 +129,7 @@ struct EINSUMS_EXPORT todo_error : public std::logic_error {
 /**
  * @struct bad_logic
  *
- * Indicates that an error occured for some unspecified reason. It means
+ * Indicates that an error occurred for some unspecified reason. It means
  * the same as std::logic_error. However, since so many exceptions are derived from
  * std::logic_error, this acts as a way to not break things.
  */

@@ -25,7 +25,6 @@ endif()
 include(Einsums_AddModule)
 einsums_add_module(
   Einsums TypeSupport
-  GLOBAL_HEADER_GEN OFF
   SOURCES ${TypeSupportSources}
   HEADERS ${TypeSupportHeaders}
   DEPENDENCIES

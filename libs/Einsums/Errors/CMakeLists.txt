@@ -21,7 +21,6 @@ endif()
 include(Einsums_AddModule)
 einsums_add_module(
   Einsums Errors
-  GLOBAL_HEADER_GEN ON
   SOURCES ${ErrorsSources}
   HEADERS ${ErrorsHeaders}
   DEPENDENCIES

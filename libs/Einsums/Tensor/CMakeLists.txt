@@ -27,12 +27,8 @@ set(TensorSources)
 include(Einsums_AddModule)
 einsums_add_module(
   Einsums Tensor
-  GLOBAL_HEADER_GEN ON
   SOURCES ${TensorSources}
   HEADERS ${TensorHeaders}
-  EXCLUDE_FROM_GLOBAL_HEADER
-        "Einsums/Tensor/H5.hpp"
-        "Einsums/Tensor/TensorForward.hpp"
   DEPENDENCIES Einsums::h5cpp
   MODULE_DEPENDENCIES
         Einsums_Concepts

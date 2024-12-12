@@ -12,7 +12,6 @@ set(BenchmarkSources)
 include(Einsums_AddModule)
 einsums_add_module(
   Einsums Benchmark
-  GLOBAL_HEADER_GEN ON
   SOURCES ${BenchmarkSources}
   HEADERS ${BenchmarkHeaders}
   DEPENDENCIES

@@ -15,7 +15,6 @@ set(AssertionSources Assertion.cpp)
 include(Einsums_AddModule)
 einsums_add_module(
   Einsums Assertion
-  GLOBAL_HEADER_GEN OFF
   SOURCES ${AssertionSources}
   HEADERS ${AssertionHeaders}
   DEPENDENCIES
