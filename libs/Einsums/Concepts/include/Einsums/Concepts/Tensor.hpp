@@ -182,7 +182,7 @@ struct IsTensorView : std::is_base_of<tensor_base::TensorViewNoExtra, D> {};
  * @tparam Viewed The type of tensor expected to be viewed.
  */
 template <typename D, typename Viewed>
-struct IsViewOf : std::is_base_of<tensor_base::TensorViewOnlyViewed<Viewed>, D> {};
+struct IsViewOf : std::is_base_of<tensor_base::TensorView<Viewed>, D> {};
 
 /**
  * @struct IsBasicTensor

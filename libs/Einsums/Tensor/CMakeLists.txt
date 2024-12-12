@@ -13,6 +13,7 @@ set(TensorHeaders
         Einsums/Tensor/TensorForward.hpp
         Einsums/Tensor/ArithmeticTensor.hpp
         Einsums/Tensor/FunctionTensor.hpp
+        Einsums/Tensor/RuntimeTensor.hpp
 )
 
 if(EINSUMS_WITH_GPU_SUPPORT)

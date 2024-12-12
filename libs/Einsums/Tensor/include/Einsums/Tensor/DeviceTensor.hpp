@@ -1119,7 +1119,7 @@ struct DeviceTensor<T, 0> : public virtual tensor_base::DeviceTensor,
 template <typename T, size_t Rank>
 struct DeviceTensorView : public virtual tensor_base::BasicTensor<T, Rank>,
                           virtual tensor_base::DeviceTensor,
-                          virtual tensor_base::TensorView<T, Rank, DeviceTensor<T, Rank>>,
+                          virtual tensor_base::TensorView<DeviceTensor<T, Rank>>,
                           virtual tensor_base::DeviceTypedTensor<T>,
                           virtual tensor_base::LockableTensor,
                           virtual tensor_base::AlgebraOptimizedTensor {

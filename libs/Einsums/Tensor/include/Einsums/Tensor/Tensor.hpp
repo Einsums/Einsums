@@ -996,7 +996,7 @@ struct Tensor<T, 0> : virtual tensor_base::CoreTensor,
 template <typename T, size_t Rank>
 struct TensorView final : virtual tensor_base::CoreTensor,
                           virtual tensor_base::BasicTensor<T, Rank>,
-                          virtual tensor_base::TensorView<T, Rank, Tensor<T, Rank>>,
+                          virtual tensor_base::TensorView<Tensor<T, Rank>>,
                           virtual tensor_base::LockableTensor,
                           virtual tensor_base::AlgebraOptimizedTensor {
     TensorView() = delete;

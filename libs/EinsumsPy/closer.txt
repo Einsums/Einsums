@@ -1,0 +1,14 @@
+set(EinsumsPy_HEADERS)
+set(EinsumsPy_EXPORTS)
+
+foreach(module ${_EinsumsPy_modules})
+    if(TARGET ${EINSUMS_PYTHON_LIB_NAME}_${module})
+        list(APPEND EinsumsPy_HEADERS "#include <EinsumsPy/${module}/Export.hpp>\n")
+        list(APPEND EinsumsPy_EXPORTS "export_${module}(mod);\n")
+    endif()
+endforeach()
+
+configure_file(ExportAll.cpp.in ExportAll.cpp @ONLY)
+target_sources(${EINSUMS_PYTHON_LIB_NAME} PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/ExportAll.cpp)
+
+

@@ -72,6 +72,63 @@ foreach (lib ${EINSUMS_LIBS})
   add_subdirectory(${lib})
 endforeach()
 
+set(PYTHON_LIBS EinsumsPy CACHE INTERNAL "List of Python libraries for Einsums" FORCE)
+
+if(APPLE)
+  set(PYTHON_LIB_TYPE MODULE)
+else()
+  set(PYTHON_LIB_TYPE SHARED)
+endif()
+
+if(EINSUMS_BUILD_PYTHON STREQUAL "ON")
+  unset(EINSUMS_PYTHON_VERSION)
+  foreach (lib ${PYTHON_LIBS})
+    set(EINSUMS_PYTHON_LIB_NAME ${lib})
+    add_library(${lib} ${PYTHON_LIB_TYPE} src/dummy.cpp)
+    set_target_properties(
+      ${lib}
+      PROPERTIES VERSION ${EINSUMS_VERSION}
+                SOVERSION ${EINSUMS_SOVERSION}
+                CLEAN_DIRECT_OUTPUT 1
+                OUTPUT_NAME ${lib}
+                FOLDER "Core")
+    install(
+      TARGETS ${lib}
+      EXPORT einsums_targets
+      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/einsums
+      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/einsums
+      RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}/einsums COMPONENT ${lib})
+    einsums_export_targets(${lib})
+
+    add_subdirectory(${lib})
+  endforeach()
+elseif(EINSUMS_BUILD_PYTHON MATCHES "3(\.[0-9]+)*")
+  foreach(version ${EINSUMS_BUILD_PYTHON})
+    set(EINSUMS_PYTHON_VERSION ${version})
+
+    foreach (lib ${PYTHON_LIBS})
+    set(EINSUMS_PYTHON_LIB_NAME ${lib}-${version})
+      add_library(${lib}-${version} ${PYTHON_LIB_TYPE} src/dummy.cpp)
+      set_target_properties(
+        ${lib}-${version}
+        PROPERTIES VERSION ${EINSUMS_VERSION}
+                  SOVERSION ${EINSUMS_SOVERSION}
+                  CLEAN_DIRECT_OUTPUT 1
+                  OUTPUT_NAME ${lib}
+                  FOLDER "Core")
+      install(
+        TARGETS ${lib}-${version}
+        EXPORT einsums_targets
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/einsums
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/einsums
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}/einsums COMPONENT ${lib})
+      einsums_export_targets(${lib}-${version})
+
+      add_subdirectory(${lib} ${lib}-${version})
+    endforeach()
+  endforeach()
+endif()
+
 # einsums_add_module populates EINSUMS_ENABLED_MODULES
 foreach(module ${EINSUMS_ENABLED_MODULES})
   string(TOUPPER ${module} uppercase_module)

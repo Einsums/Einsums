@@ -471,6 +471,13 @@ einsums_option(
   ADVANCED
 )
 
+einsums_option(
+  EINSUMS_BUILD_PYTHON STRING
+  "Build the Python module. One or more Python versions may be specified to build, or the value may be set to 'ON' for your current Python interpreter.
+  Disable by specifying 'OFF'. Defaults to 'ON'."
+  ON
+)
+
 if(EINSUMS_WITH_ITTNOTIFY)
   find_package(Amplifier)
 
@@ -500,6 +507,11 @@ einsums_info("EINSUMS_LINALG_INT_INTERFACE ${EINSUMS_LINALG_INT_INTERFACE}")
 
 find_package(OpenMP REQUIRED MODULE COMPONENTS CXX)
 target_link_libraries(einsums_base_libraries INTERFACE OpenMP::OpenMP_CXX)
+
+# Add the Python module.
+if(EINSUMS_BUILD_PYTHON)
+  add_subdirectory(einsums)
+endif()
 
 # ##################################################################################################
 # C++ feature tests

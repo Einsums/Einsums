@@ -425,35 +425,6 @@ struct TensorViewNoExtra {
 };
 
 /**
- * @struct TensorViewOnlyViewed
- *
- * @brief Internal property that specifies that a tensor is a view.
- *
- * This specifies that a tensor is a view without needing to specify type and rank.
- * This struct is not intended to be used directly by the user, and is used as a base class
- * for TensorViewBase.
- *
- * @tparam Viewed The tensor type viewed by this tensor.
- */
-template <typename Viewed>
-struct TensorViewOnlyViewed {
-    /**
-     * Default constructor.
-     */
-    TensorViewOnlyViewed() = default;
-
-    /**
-     * Default copy constructor.
-     */
-    TensorViewOnlyViewed(TensorViewOnlyViewed const &) = default;
-
-    /**
-     * Default destructor.
-     */
-    virtual ~TensorViewOnlyViewed() = default;
-};
-
-/**
  * @struct TensorView
  *
  * @brief Represents a view of a different tensor.
@@ -462,8 +433,8 @@ struct TensorViewOnlyViewed {
  * @tparam Rank The rank of the view.
  * @tparam UnderlyingType The tensor type viewed by this view.
  */
-template <typename T, size_t Rank, typename UnderlyingType>
-struct TensorView : public virtual TensorViewNoExtra, virtual TensorViewOnlyViewed<UnderlyingType>, virtual Tensor<T, Rank> {
+template <typename UnderlyingType>
+struct TensorView : public virtual TensorViewNoExtra, virtual TensorBase {
   public:
     /**
      * @typedef underlying_type

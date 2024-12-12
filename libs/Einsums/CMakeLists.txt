@@ -8,38 +8,41 @@
 
 include(Einsums_Message)
 
+
+
 # cmake-format: off
 set(_Einsums_modules
-    Assertion
-    BLAS
-    BLASBase
-    BLASVendor
-    Backtrace
-    Benchmark
-    Concepts
-    Config
-    Debugging
-        Decomposition
-    Errors
-    GPUStreams
-    Graph
-    HPTT
-    ITTNotify
-    Iterator
-    LinearAlgebra
-    Memory
-    Preprocessor
-    Print
-    Profile
-    StringUtil
-    Tensor
-    TensorAlgebra
-    TensorBase
-    TensorUtilities
-    TypeSupport
-    Utilities
+  BLASBase
+  Debugging
+  ITTNotify
+  Iterator
+  Memory
+  BLAS
+  Graph
+  LinearAlgebra
+  Assertion
+  Config
+  Tensor
+  BLASVendor
+  TensorBase
+  Decomposition
+  TypeSupport
+  Profile
+  TensorUtilities
+  HPTT
+  Benchmark
+  Errors
+  Print
+  Backtrace
+  TensorAlgebra
+  Utilities
+  GPUStreams
+  Preprocessor
+  Concepts
+  SmartVector
+  StringUtil
 )
-# cmake-format: on
+#cmake-format: on
 
 einsums_info("")
 einsums_info("  Configuring Einsums modules:")
@@ -47,3 +50,5 @@ einsums_info("  Configuring Einsums modules:")
 foreach(module ${_Einsums_modules})
   add_subdirectory(${module})
 endforeach()
+
+
