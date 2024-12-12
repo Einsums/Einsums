@@ -54,6 +54,8 @@ struct TensorBase {
      * Sets the name of the tensor.
      */
     virtual void set_name(std::string const &new_name) = 0;
+
+    virtual size_t rank() const = 0;
 };
 
 /**
@@ -202,6 +204,11 @@ struct RankTensor : virtual TensorBase, virtual RankTensorNoRank {
      * Gets the dimension along a given axis.
      */
     virtual size_t dim(int d) const = 0;
+
+
+    size_t rank() const override {
+        return Rank;
+    }
 };
 
 /**
@@ -739,5 +746,9 @@ struct AlgebraOptimizedTensor {
      */
     virtual ~AlgebraOptimizedTensor() = default;
 };
+
+class RuntimeTensorNoType {};
+
+class RuntimeTensorViewNoType {};
 
 } // namespace einsums::tensor_base

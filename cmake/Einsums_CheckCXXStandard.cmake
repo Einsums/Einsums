@@ -9,7 +9,7 @@ einsums_option(EINSUMS_WITH_CXX_STANDARD STRING "C++ standard to use for compili
 
 if(EINSUMS_WITH_CXX_STANDARD LESS 20)
   einsums_error(
-    "You've set EINSUMS_WITH_CXX_STANDARD to ${EINSUMS_WITH_CXX_STANDARD}, which is less than 17 which is the minimum required by einsums"
+    "You've set EINSUMS_WITH_CXX_STANDARD to ${EINSUMS_WITH_CXX_STANDARD}, which is less than 20 which is the minimum required by einsums"
   )
 endif()
 

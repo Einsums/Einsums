@@ -12,3 +12,4 @@ EinsumsPy modules
     :maxdepth: 2
 
     /libs/EinsumsPy/Core/docs/index.rst
+    /libs/EinsumsPy/Tensor/docs/index.rst

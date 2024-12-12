@@ -21,7 +21,7 @@ namespace einsums {
  * @tparam T The type to test.
  */
 template <typename T>
-concept IsFilePointer = std::is_same_v<T, FILE *>;
+concept IsFilePointer = std::is_same_v<std::remove_cvref_t<T>, FILE *>;
 
 /**
  * @concept IsOStream
@@ -33,7 +33,7 @@ concept IsFilePointer = std::is_same_v<T, FILE *>;
  * @tparam T The type to test.
  */
 template <typename T>
-concept IsOStream = std::is_base_of_v<std::ostream, T>;
+concept IsOStream = std::is_base_of_v<std::ostream, std::remove_cvref_t<T>>;
 
 /**
  * @concept FileOrOStream

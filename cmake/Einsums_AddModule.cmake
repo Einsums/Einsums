@@ -149,7 +149,7 @@ function(einsums_add_module libname modulename)
     # verify that all dependencies are from the same module category
     foreach(dep ${${modulename}_MODULE_DEPENDENCIES})
       # consider only module dependencies, not other targets
-      string(FIND ${dep} "Einsums_" find_index)
+      string(FIND ${dep} "${libname}_" find_index)
       if(${find_index} EQUAL 0)
         string(SUBSTRING ${dep} 5 -1 dep) # cut off leading "einsums_"
         list(FIND _${libname}_modules ${dep} dep_index)
@@ -239,7 +239,7 @@ function(einsums_add_module libname modulename)
                                           "// NOLINTBEGIN(bugprone-suspicious-include)"
     )
     set_target_properties(
-      einsums_${modulename} PROPERTIES UNITY_BUILD_CODE_AFTER_INCLUDE
+      ${libname}_${modulename} PROPERTIES UNITY_BUILD_CODE_AFTER_INCLUDE
                                        "// NOLINTEND(bugprone-suspicious-include)"
     )
   endif()

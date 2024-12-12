@@ -7,33 +7,33 @@ include(Einsums_Message)
 
 if(EINSUMS_WITH_TESTS)
   if(EINSUMS_WITH_TESTS_UNIT)
-    einsums_add_pseudo_target(tests.unit.modules.Einsums.SmartVector)
+    einsums_add_pseudo_target(tests.unit.modules.${EINSUMS_PYTHON_LIB_NAME}.Tensor)
     einsums_add_pseudo_dependencies(
-      tests.unit.modules tests.unit.modules.Einsums.SmartVector
+      tests.unit.modules tests.unit.modules.${EINSUMS_PYTHON_LIB_NAME}.Tensor
     )
     add_subdirectory(unit)
   endif()
 
   if(EINSUMS_WITH_TESTS_REGRESSIONS)
-    einsums_add_pseudo_target(tests.regressions.modules.Einsums.SmartVector)
+    einsums_add_pseudo_target(tests.regressions.modules.${EINSUMS_PYTHON_LIB_NAME}.Tensor)
     einsums_add_pseudo_dependencies(
-      tests.regressions.modules tests.regressions.modules.Einsums.SmartVector
+      tests.regressions.modules tests.regressions.modules.${EINSUMS_PYTHON_LIB_NAME}.Tensor
     )
     add_subdirectory(regressions)
   endif()
 
   if(EINSUMS_WITH_TESTS_BENCHMARKS)
-    einsums_add_pseudo_target(tests.performance.modules.Einsums.SmartVector)
+    einsums_add_pseudo_target(tests.performance.modules.${EINSUMS_PYTHON_LIB_NAME}.Tensor)
     einsums_add_pseudo_dependencies(
-      tests.performance.modules tests.performance.modules.Einsums.SmartVector
+      tests.performance.modules tests.performance.modules.${EINSUMS_PYTHON_LIB_NAME}.Tensor
     )
     add_subdirectory(performance)
   endif()
 
   if(EINSUMS_WITH_TESTS_HEADERS)
     einsums_add_header_tests(
-      modules.Einsums.SmartVector
-      HEADERS ${SmartVectorHeaders}
+      modules.${EINSUMS_PYTHON_LIB_NAME}.Tensor
+      HEADERS ${TensorHeaders}
       HEADER_ROOT ${PROJECT_SOURCE_DIR}/include
       DEPENDENCIES einsums_LinearAlgebra
     )

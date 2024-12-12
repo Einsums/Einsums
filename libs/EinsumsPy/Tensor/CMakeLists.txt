@@ -3,21 +3,24 @@
 # Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 #----------------------------------------------------------------------------------------------
 
+
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-set(SmartVectorHeaders )
+set(TensorHeaders EinsumsPy/Tensor/Export.hpp EinsumsPy/Tensor/PyTensor.hpp)
 
-set(SmartVectorSources )
+set(TensorSources Export.cpp)
 
 include(Einsums_AddModule)
 einsums_add_module(
-  Einsums SmartVector
+  ${EINSUMS_PYTHON_LIB_NAME} Tensor
   GLOBAL_HEADER_GEN ON
-  SOURCES ${SmartVectorSources}
-  HEADERS ${SmartVectorHeaders}
+  SOURCES ${TensorSources}
+  HEADERS ${TensorHeaders}
   DEPENDENCIES
+    Einsums
   MODULE_DEPENDENCIES
-    
   CMAKE_SUBDIRS examples tests
 )
 
+include(Einsums_ExtendWithPython)
+einsums_extend_with_python(${EINSUMS_PYTHON_LIB_NAME}_Tensor ${PYTHON_LIB_TYPE})

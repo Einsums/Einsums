@@ -33,7 +33,6 @@ set(_Einsums_modules
   Preprocessor
   Print
   Profile
-  SmartVector
   StringUtil
   Tensor
   TensorAlgebra

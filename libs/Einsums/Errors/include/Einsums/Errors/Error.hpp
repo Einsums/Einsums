@@ -68,8 +68,7 @@ struct CodedError : public ErrorClass {
  * Indicates that the dimensions of some tensor arguments are not compatible with the given operation.
  */
 struct EINSUMS_EXPORT dimension_error : public std::invalid_argument {
-    dimension_error(char const *what);
-    dimension_error(std::string const &what);
+    using std::invalid_argument::invalid_argument;
 };
 
 /**
@@ -79,8 +78,7 @@ struct EINSUMS_EXPORT dimension_error : public std::invalid_argument {
  * than their dimensions.
  */
 struct EINSUMS_EXPORT tensor_compat_error : public std::logic_error {
-    tensor_compat_error(char const *what);
-    tensor_compat_error(std::string const &what);
+    using std::logic_error::logic_error;
 };
 
 /**
@@ -89,8 +87,7 @@ struct EINSUMS_EXPORT tensor_compat_error : public std::logic_error {
  * Indicates that a function did not receive the correct amount of arguments.
  */
 struct EINSUMS_EXPORT num_argument_error : public std::invalid_argument {
-    num_argument_error(char const *what);
-    num_argument_error(std ::string const &what);
+    using std::invalid_argument::invalid_argument;
 };
 
 /**
@@ -99,8 +96,7 @@ struct EINSUMS_EXPORT num_argument_error : public std::invalid_argument {
  * Indicates that a function did not receive enough arguments. Child of num_argument_error .
  */
 struct EINSUMS_EXPORT not_enough_args : public num_argument_error {
-    not_enough_args(char const *what);
-    not_enough_args(std ::string const &what);
+    using num_argument_error::num_argument_error;
 };
 
 /**
@@ -109,8 +105,7 @@ struct EINSUMS_EXPORT not_enough_args : public num_argument_error {
  * Indicates that a function received too many arguments. Child of num_argument_error .
  */
 struct EINSUMS_EXPORT too_many_args : public num_argument_error {
-    too_many_args(char const *what);
-    too_many_args(std ::string const &what);
+    using num_argument_error::num_argument_error;
 };
 
 /**
@@ -119,8 +114,7 @@ struct EINSUMS_EXPORT too_many_args : public num_argument_error {
  * Indicates that an operation was stopped due to access restrictions, for instance writing to read-only data.
  */
 struct EINSUMS_EXPORT access_denied : public std::logic_error {
-    access_denied(char const *what);
-    access_denied(std ::string const &what);
+    using std::logic_error::logic_error;
 };
 
 /**
@@ -129,8 +123,7 @@ struct EINSUMS_EXPORT access_denied : public std::logic_error {
  * Indicates that a certain code path is not yet finished.
  */
 struct EINSUMS_EXPORT todo_error : public std::logic_error {
-    todo_error(char const *what);
-    todo_error(std ::string const &what);
+    using std::logic_error::logic_error;
 };
 
 /**
@@ -141,8 +134,7 @@ struct EINSUMS_EXPORT todo_error : public std::logic_error {
  * std::logic_error, this acts as a way to not break things.
  */
 struct EINSUMS_EXPORT bad_logic : public std::logic_error {
-    bad_logic(char const *what);
-    bad_logic(std ::string const &what);
+    using std::logic_error::logic_error;
 };
 
 /**

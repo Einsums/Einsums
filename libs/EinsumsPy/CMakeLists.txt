@@ -25,6 +25,7 @@ set_target_properties(${EINSUMS_PYTHON_LIB_NAME} PROPERTIES OUTPUT_NAME core)
 # cmake-format: off
 set(_EinsumsPy_modules
   Core
+  Tensor
 )
 #cmake-format: on
 
@@ -40,8 +41,8 @@ set(EinsumsPy_EXPORTS)
 
 foreach(module ${_EinsumsPy_modules})
     if(TARGET ${EINSUMS_PYTHON_LIB_NAME}_${module})
-        list(APPEND EinsumsPy_HEADERS "#include <EinsumsPy/${module}/Export.hpp>\n")
-        list(APPEND EinsumsPy_EXPORTS "export_${module}(mod);\n")
+        set(EinsumsPy_HEADERS "${EinsumsPy_HEADERS}#include <EinsumsPy/${module}/Export.hpp>\n")
+        set(EinsumsPy_EXPORTS "${EinsumsPy_EXPORTS}export_${module}(mod);\n")
     endif()
 endforeach()
 

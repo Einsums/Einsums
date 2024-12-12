@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Einsums/Concepts/File.hpp"
 #include "einsums/_Common.hpp"
 #include "einsums/_Compiler.hpp"
 
@@ -1298,22 +1299,9 @@ void println(const AType &A, TensorPrintOptions options = {}) {
     }
 }
 
-template <einsums::BlockTensorConcept AType, typename... Args>
-void fprintln(FILE *fp, const AType &A, TensorPrintOptions options = {}) {
-    fprintln(fp, "Name: {}", A.name());
-    {
-        print::Indent const indent{};
-        fprintln(fp, "Block Tensor");
-        fprintln(fp, "Data Type: {}", type_name<typename AType::data_type>());
 
-        for (int i = 0; i < A.num_blocks(); i++) {
-            fprintln(fp, A[i], options);
-        }
-    }
-}
-
-template <einsums::BlockTensorConcept AType, typename... Args>
-void fprintln(std::ostream &os, const AType &A, TensorPrintOptions options = {}) {
+template <einsums::FileOrOStream Output, einsums::BlockTensorConcept AType, typename... Args>
+void fprintln(Output &os, const AType &A, TensorPrintOptions options = {}) {
     fprintln(os, "Name: {}", A.name());
     {
         print::Indent const indent{};

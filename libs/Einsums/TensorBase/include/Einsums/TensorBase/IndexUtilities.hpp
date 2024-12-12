@@ -17,6 +17,7 @@
 #include <tuple>
 #include <type_traits>
 #include <vector>
+#include <source_location>
 
 namespace einsums {
 

@@ -3,8 +3,8 @@ set({lib_name}_EXPORTS)
 
 foreach(module ${{_{lib_name}_modules}})
     if(TARGET ${{EINSUMS_PYTHON_LIB_NAME}}_${{module}})
-        list(APPEND {lib_name}_HEADERS "#include <{lib_name}/${{module}}/Export.hpp>\n")
-        list(APPEND {lib_name}_EXPORTS "export_${{module}}(mod);\n")
+        set({lib_name}_HEADERS "${{{lib_name}_HEADERS}}#include <{lib_name}/${{module}}/Export.hpp>\n")
+        set({lib_name}_EXPORTS "${{{libname}_EXPORTS}}export_${{module}}(mod);\n")
     endif()
 endforeach()
 

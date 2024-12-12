@@ -16,9 +16,8 @@ einsums_add_module(
   GLOBAL_HEADER_GEN ON
   SOURCES ${{{module_name}Sources}}
   HEADERS ${{{module_name}Headers}}
-  DEPENDENCIES
+  DEPENDENCIES {export_depends}
   MODULE_DEPENDENCIES
-    {export_depends}
   CMAKE_SUBDIRS examples tests
 )
 

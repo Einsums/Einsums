@@ -68,9 +68,9 @@ template <RankTensorConcept AType>
     requires(BasicTensorConcept<AType> || !AlgebraTensorConcept<AType>)
 void println(AType const &A, TensorPrintOptions options = {});
 
-template <FileOrOStream Output, TensorConcept AType>
+template <FileOrOStream Output, RankTensorConcept AType>
     requires(BasicTensorConcept<AType> || !AlgebraTensorConcept<AType>)
-void fprintln(Output fp, AType const &A, TensorPrintOptions options);
+void fprintln(Output &fp, AType const &A, TensorPrintOptions options = {});
 
 // template <typename T>
 // using VectorData = std::vector<T, AlignedAllocator<T, 64>>;
@@ -1803,11 +1803,11 @@ auto ndigits(T number) -> int {
 } // namespace detail
 
 #ifndef DOXYGEN
-template <FileOrOStream Output, TensorConcept AType>
+template <FileOrOStream Output, RankTensorConcept AType>
     requires(einsums::BasicTensorConcept<AType> || !einsums::AlgebraTensorConcept<AType>)
-void fprintln(Output fp, AType const &A, TensorPrintOptions options) {
+void fprintln(Output &fp, AType const &A, TensorPrintOptions options) {
     using T                    = typename AType::ValueType;
-    constexpr std::size_t Rank = AType::rank;
+    constexpr std::size_t Rank = AType::Rank;
 
     fprintln(fp, "Name: {}", A.name());
     {

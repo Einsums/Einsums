@@ -16,8 +16,8 @@ einsums_add_module(
   SOURCES ${CoreSources}
   HEADERS ${CoreHeaders}
   DEPENDENCIES
+    Einsums
   MODULE_DEPENDENCIES
-    Einsums_Config
   CMAKE_SUBDIRS examples tests
 )
 

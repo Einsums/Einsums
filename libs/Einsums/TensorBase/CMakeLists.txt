@@ -11,7 +11,7 @@ set(TensorBaseHeaders
     Einsums/TensorBase/TensorBase.hpp
 )
 
-set(TensorBaseSources)
+set(TensorBaseSources IndexUtilities.cpp)
 
 include(Einsums_AddModule)
 einsums_add_module(

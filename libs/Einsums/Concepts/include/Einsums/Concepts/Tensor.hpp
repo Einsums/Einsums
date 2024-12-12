@@ -45,7 +45,7 @@ namespace detail {
  * @tparam D The type to check.
  */
 template <typename D>
-struct IsTensor : public std::is_base_of<tensor_base::TensorNoExtra, D> {};
+struct IsTensor : public std::is_base_of<tensor_base::TensorBase, D> {};
 
 /**
  * @struct IsTypedTensor
