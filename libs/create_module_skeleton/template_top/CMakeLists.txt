@@ -3,6 +3,7 @@
 # Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 #----------------------------------------------------------------------------------------------
 
+{gpu_head}
 list(APPEND CMAKE_MODULE_PATH "${{CMAKE_CURRENT_SOURCE_DIR}}/cmake")
 
 set({module_name}Headers {export_header})
@@ -22,3 +23,4 @@ einsums_add_module(
 )
 
 {python_footer}
+{gpu_foot}

@@ -57,6 +57,8 @@ def build_structure(output_base, lib_name, module_name, python = False, **kwargs
         export_depends = "Einsums_Config" if python else "",
         python_footer = f"include(Einsums_ExtendWithPython)\neinsums_extend_with_python(${{EINSUMS_PYTHON_LIB_NAME}}_{module_name} ${{PYTHON_LIB_TYPE}})" if python else "",
         python = python,
+        gpu_head = "if(EINSUMS_WITH_GPU_SUPPORT)" if kwargs["gpu"] else "",
+        gpu_foot = "endif()" if kwargs["gpu"] else "",
         **kwargs
     )
 

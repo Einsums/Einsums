@@ -4,9 +4,9 @@
 
 .. _EinsumsPy_modules:
 
-E=i=n=s=u=m=s=P=y= =m=o=d=u=l=e=s
+=================
 EinsumsPy modules
-E=i=n=s=u=m=s=P=y= =m=o=d=u=l=e=s
+=================
 
 .. toctree::
     :maxdepth: 2

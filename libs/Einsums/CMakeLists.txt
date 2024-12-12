@@ -12,35 +12,35 @@ include(Einsums_Message)
 
 # cmake-format: off
 set(_Einsums_modules
+  Assertion
+  BLAS
   BLASBase
+  BLASVendor
+  Backtrace
+  Benchmark
+  Concepts
+  Config
   Debugging
+  Decomposition
+  Errors
+  GPUStreams
+  Graph
+  HPTT
   ITTNotify
   Iterator
-  Memory
-  BLAS
-  Graph
   LinearAlgebra
-  Assertion
-  Config
-  Tensor
-  BLASVendor
-  TensorBase
-  Decomposition
-  TypeSupport
-  Profile
-  TensorUtilities
-  HPTT
-  Benchmark
-  Errors
-  Print
-  Backtrace
-  TensorAlgebra
-  Utilities
-  GPUStreams
+  Memory
   Preprocessor
-  Concepts
+  Print
+  Profile
   SmartVector
   StringUtil
+  Tensor
+  TensorAlgebra
+  TensorBase
+  TensorUtilities
+  TypeSupport
+  Utilities
 )
 #cmake-format: on
 

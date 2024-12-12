@@ -63,9 +63,6 @@ def configure_cmake(output_base, lib_name, **kwargs):
     modules = modules.rstrip()
 
     with open(os.path.join(output_base, lib_name, "CMakeLists.txt"), "w+") as fp:
-        if kwargs["gpu"]:
-            print("if(EINSUMS_WITH_GPU_SUPPORT)", file=fp)
-
         fp.write(
             format.format(
                 modules=modules,
@@ -75,9 +72,6 @@ def configure_cmake(output_base, lib_name, **kwargs):
                 **kwargs,
             )
         )
-
-        if kwargs["gpu"]:
-            print("endif()")
 
 
 def configure_module_docs(output_base, lib_name, **kwargs):
