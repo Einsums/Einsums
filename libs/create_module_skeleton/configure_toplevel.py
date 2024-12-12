@@ -13,7 +13,7 @@ def configure_python(output_base, lib_name, **kwargs):
         export = fp.read()
 
     with open(os.path.join(output_base, lib_name, "ExportAll.cpp.in"), "w+") as fp:
-        fp.write(export.format(lib_name = lib_name, **kwargs))
+        fp.write(export.format(lib_name=lib_name, **kwargs))
 
     if not os.path.exists(os.path.join(output_base, lib_name, "preamble.txt")):
         preamble = ""
@@ -21,7 +21,7 @@ def configure_python(output_base, lib_name, **kwargs):
             preamble = fp.read()
 
         with open(os.path.join(output_base, lib_name, "preamble.txt"), "w+") as fp:
-            fp.write(preamble.format(lib_name = lib_name, **kwargs))
+            fp.write(preamble.format(lib_name=lib_name, **kwargs))
 
     if not os.path.exists(os.path.join(output_base, lib_name, "closer.txt")):
         preamble = ""
@@ -29,7 +29,7 @@ def configure_python(output_base, lib_name, **kwargs):
             preamble = fp.read()
 
         with open(os.path.join(output_base, lib_name, "closer.txt"), "w+") as fp:
-            fp.write(preamble.format(lib_name = lib_name, **kwargs))
+            fp.write(preamble.format(lib_name=lib_name, **kwargs))
 
 
 def configure_cmake(output_base, lib_name, **kwargs):
@@ -52,9 +52,11 @@ def configure_cmake(output_base, lib_name, **kwargs):
             closer = fp.read()
 
     modules = "\n  ".join(
-        filter(
-            lambda x: os.path.isdir(os.path.join(output_base, lib_name, x)),
-            os.listdir(os.path.join(output_base, lib_name)),
+        sorted(
+            filter(
+                lambda x: os.path.isdir(os.path.join(output_base, lib_name, x)),
+                os.listdir(os.path.join(output_base, lib_name)),
+            )
         )
     )
 
@@ -87,12 +89,14 @@ def configure_module_docs(output_base, lib_name, **kwargs):
         format_str = fp.read()
 
     module_docs = "\n    ".join(
-        map(
-            lambda x: os.path.join("/libs", lib_name, x, "docs", "index.rst"),
-            filter(
-                lambda x: os.path.isdir(os.path.join(output_base, lib_name, x)),
-                os.listdir(os.path.join(output_base, lib_name)),
-            ),
+        sorted(
+            map(
+                lambda x: os.path.join("/libs", lib_name, x, "docs", "index.rst"),
+                filter(
+                    lambda x: os.path.isdir(os.path.join(output_base, lib_name, x)),
+                    os.listdir(os.path.join(output_base, lib_name)),
+                ),
+            )
         )
     )
 
