@@ -7,32 +7,32 @@ include(Einsums_Message)
 
 if (EINSUMS_WITH_TESTS)
     if (EINSUMS_WITH_TESTS_UNIT)
-        einsums_add_pseudo_target(tests.unit.modules.Einsums.FFT)
+        einsums_add_pseudo_target(tests.unit.modules.FFT)
         einsums_add_pseudo_dependencies(
-                tests.unit.modules tests.unit.modules.Einsums.FFT
+                tests.unit.modules tests.unit.modules.FFT
         )
         add_subdirectory(unit)
     endif ()
 
     if (EINSUMS_WITH_TESTS_REGRESSIONS)
-        einsums_add_pseudo_target(tests.regressions.modules.Einsums.FFT)
+        einsums_add_pseudo_target(tests.regressions.modules.FFT)
         einsums_add_pseudo_dependencies(
-                tests.regressions.modules tests.regressions.modules.Einsums.FFT
+                tests.regressions.modules tests.regressions.modules.FFT
         )
         add_subdirectory(regressions)
     endif ()
 
     if (EINSUMS_WITH_TESTS_BENCHMARKS)
-        einsums_add_pseudo_target(tests.performance.modules.Einsums.FFT)
+        einsums_add_pseudo_target(tests.performance.modules.FFT)
         einsums_add_pseudo_dependencies(
-                tests.performance.modules tests.performance.modules.Einsums.FFT
+                tests.performance.modules tests.performance.modules.FFT
         )
         add_subdirectory(performance)
     endif ()
 
     if (EINSUMS_WITH_TESTS_HEADERS)
         einsums_add_header_tests(
-                modules.Einsums.FFT
+                modules.FFT
                 HEADERS ${FFTHeaders}
                 HEADER_ROOT ${PROJECT_SOURCE_DIR}/include
                 DEPENDENCIES einsums_LinearAlgebra

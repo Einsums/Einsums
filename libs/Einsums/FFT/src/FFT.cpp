@@ -5,8 +5,13 @@
 
 #include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/FFT.hpp>
+#include <Einsums/FFT/Defines.hpp>
 #include <Einsums/LinearAlgebra.hpp>
 #include <Einsums/TensorUtilities/ARange.hpp>
+
+#if defined(EINSUMS_HAVE_FFT_LIBRARY_FFTW3)
+#    include "Backends/FFTW3/FFT.hpp"
+#endif
 
 namespace einsums::fft {
 
@@ -50,47 +55,47 @@ void icheck_size(Tensor<std::complex<T>, 1> const &a, Tensor<T, 1> const *result
 void scfft(Tensor<float, 1> const &a, Tensor<std::complex<float>, 1> *result) {
     check_size(a, result);
     // backend::mkl::scfft(a, result);
-    backend::fft::fftw3::scfft(a, result);
+    backend::fftw3::scfft(a, result);
 }
 
 void ccfft(Tensor<std::complex<float>, 1> const &a, Tensor<std::complex<float>, 1> *result) {
     // backend::mkl::ccfft(a, result);
-    backend::fft::fftw3::ccfft(a, result);
+    backend::fftw3::ccfft(a, result);
 }
 
 void dzfft(Tensor<double, 1> const &a, Tensor<std::complex<double>, 1> *result) {
     check_size(a, result);
     // backend::mkl::dzfft(a, result);
-    backend::fft::fftw3::dzfft(a, result);
+    backend::fftw3::dzfft(a, result);
 }
 
 void zzfft(Tensor<std::complex<double>, 1> const &a, Tensor<std::complex<double>, 1> *result) {
     // backend::mkl::zzfft(a, result);
-    backend::fft::fftw3::zzfft(a, result);
+    backend::fftw3::zzfft(a, result);
 }
 
 void csifft(Tensor<std::complex<float>, 1> const &a, Tensor<float, 1> *result) {
     icheck_size(a, result);
     // backend::mkl::csifft(a, result);
-    backend::fft::fftw3::csifft(a, result);
+    backend::fftw3::csifft(a, result);
 }
 
 void zdifft(Tensor<std::complex<double>, 1> const &a, Tensor<double, 1> *result) {
     icheck_size(a, result);
     // backend::mkl::zdifft(a, result);
-    backend::fft::fftw3::zdifft(a, result);
+    backend::fftw3::zdifft(a, result);
 }
 
 void ccifft(Tensor<std::complex<float>, 1> const &a, Tensor<std::complex<float>, 1> *result) {
     // TODO: Add appropriate icheck_size(...);
     // backend::mkl::ccifft(a, result);
-    backend::fft::fftw3::ccifft(a, result);
+    backend::fftw3::ccifft(a, result);
 }
 
 void zzifft(Tensor<std::complex<double>, 1> const &a, Tensor<std::complex<double>, 1> *result) {
     // TODO: Add appropriate icheck_size(...);
     // backend::mkl::zzifft(a, result);
-    backend::fft::fftw3::zzifft(a, result);
+    backend::fftw3::zzifft(a, result);
 }
 
 } // namespace detail
