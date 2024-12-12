@@ -101,7 +101,7 @@ def configure_module_docs(output_base, lib_name, **kwargs):
             format_str.format(
                 module_docs=module_docs,
                 lib_name=lib_name,
-                section_head="=".join(f"{lib_name} modules"),
+                section_head="".join("=" for i in f"{lib_name} modules"),
                 **kwargs,
             )
         )
