@@ -36,7 +36,7 @@ def build_layer(input_dir, output_dir, **kwargs):
                 raise RuntimeError(f"File being parsed was {input_dir}/{item}.") from e
 
 
-def build_structure(output_base, lib_name, module_name, **kwargs):
+def build_structure(output_base, lib_name, module_name, python = False, **kwargs):
     base = os.path.dirname(__file__)
 
     if not os.path.exists(os.path.join(output_base, lib_name)):
@@ -52,10 +52,11 @@ def build_structure(output_base, lib_name, module_name, **kwargs):
         lib_name=lib_name,
         docs_head = "".join("=" for i in lib_name + ' ' + module_name),
         readme_head = "".join("=" for i in module_name),
-        export_header = f"{lib_name}/{module_name}/Export.hpp" if "python" in kwargs else "",
-        export_source = f"Export.cpp" if "python" in kwargs else "",
-        export_depends = "Einsums_Config" if "python" in kwargs else "",
-        python_footer = f"include(Einsums_ExtendWithPython)\neinsums_extend_with_python(${{EINSUMS_PYTHON_LIB_NAME}}_{module_name} ${{PYTHON_LIB_TYPE}})" if "python" in kwargs else "",
+        export_header = f"{lib_name}/{module_name}/Export.hpp" if python else "",
+        export_source = f"Export.cpp" if python else "",
+        export_depends = "Einsums_Config" if python else "",
+        python_footer = f"include(Einsums_ExtendWithPython)\neinsums_extend_with_python(${{EINSUMS_PYTHON_LIB_NAME}}_{module_name} ${{PYTHON_LIB_TYPE}})" if python else "",
+        python = python,
         **kwargs
     )
 
