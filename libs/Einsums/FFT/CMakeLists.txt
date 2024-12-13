@@ -17,6 +17,7 @@ if (EINSUMS_FFT_LIBRARY MATCHES fftw3)
   list(APPEND FFTSources Backends/FFTW3/FFT.cpp Backends/FFTW3/FFT.hpp)
   einsums_add_config_cond_define_namespace(DEFINE EINSUMS_HAVE_FFT_LIBRARY_FFTW3 NAMESPACE FFT)
 elseif (EINSUMS_FFT_LIBRARY MATCHES mkl)
+  list(APPEND FFTSources Backends/MKL/FFT.cpp Backends/MKL/FFT.hpp)
   einsums_add_config_cond_define_namespace(DEFINE EINSUMS_HAVE_FFT_LIBRARY_MKL NAMESPACE FFT)
 endif ()
 
