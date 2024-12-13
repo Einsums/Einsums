@@ -35,7 +35,7 @@ if (EINSUMS_WITH_TESTS)
                 modules.FFT
                 HEADERS ${FFTHeaders}
                 HEADER_ROOT ${PROJECT_SOURCE_DIR}/include
-                DEPENDENCIES einsums_LinearAlgebra
+                DEPENDENCIES einsums_FFT
         )
     endif ()
 endif ()

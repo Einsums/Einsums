@@ -5,6 +5,7 @@
 #include <Einsums/Concepts/Tensor.hpp>
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
+#include <Einsums/Tensor/Tensor.hpp>
 #include <Einsums/Tensor/TensorForward.hpp>
 #include <Einsums/TensorBase/HashFunctions.hpp>
 #include <Einsums/TensorBase/TensorBase.hpp>

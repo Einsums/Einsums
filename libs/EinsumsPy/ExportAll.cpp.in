@@ -4,6 +4,6 @@
 
 namespace py = pybind11;
 
-PYBIND11_MODULE(EinsumsPy, mod) {
+PYBIND11_MODULE(core, mod) {
     @EinsumsPy_EXPORTS@
 }

@@ -427,7 +427,7 @@ struct EINSUMS_EXPORT RuntimeTensor : public virtual tensor_base::TypedTensor<T>
 
         EINSUMS_OMP_PARALLEL_FOR
         for (size_t sentinel = 0; sentinel < _data.size(); sentinel++) {
-            std::vector<size_t> index;
+            thread_local std::vector<size_t> index(_rank);
 
             sentinel_to_indices(sentinel, _strides, index);
 
@@ -477,7 +477,7 @@ struct EINSUMS_EXPORT RuntimeTensor : public virtual tensor_base::TypedTensor<T>
 
         EINSUMS_OMP_PARALLEL_FOR
         for (size_t sentinel = 0; sentinel < _data.size(); sentinel++) {
-            std::vector<size_t> index;
+            thread_local std::vector<size_t> index(_rank);
 
             sentinel_to_indices(sentinel, _strides, index);
 
@@ -544,7 +544,7 @@ struct EINSUMS_EXPORT RuntimeTensor : public virtual tensor_base::TypedTensor<T>
         }                                                                                                                                  \
         EINSUMS_OMP_PARALLEL_FOR                                                                                                           \
         for (size_t sentinel = 0; sentinel < size(); sentinel++) {                                                                         \
-            std::vector<size_t> index(rank());                                                                                             \
+            thread_local std::vector<size_t> index(rank());                                                                                             \
             sentinel_to_indices(sentinel, this->_strides, index);                                                                          \
             if constexpr (IsComplexV<T> && !IsComplexV<TOther> && !std::is_same_v<RemoveComplexT<T>, TOther>) {                            \
                 (*this)(index) OP(T)(RemoveComplexT<T>) b(index);                                                                          \
@@ -1471,7 +1471,7 @@ void fprintln(Output &fp, AType const &A, einsums::TensorPrintOptions options = 
                     std::vector<size_t> index_strides;
                     dims_to_strides(A.dims(), index_strides);
                     size_t              size = A.size();
-                    std::vector<size_t> indices;
+                    std::vector<size_t> indices(A.rank());
 
                     for (size_t sentinel = 0; sentinel < size; sentinel++) {
 

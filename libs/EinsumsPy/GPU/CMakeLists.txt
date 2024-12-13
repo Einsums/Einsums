@@ -13,12 +13,12 @@ set(GPUSources Export.hip PyGPUView.hip)
 include(Einsums_AddModule)
 einsums_add_module(
   ${EINSUMS_PYTHON_LIB_NAME} GPU
-  GLOBAL_HEADER_GEN ON
   SOURCES ${GPUSources}
   HEADERS ${GPUHeaders}
   DEPENDENCIES Einsums
   MODULE_DEPENDENCIES
   CMAKE_SUBDIRS examples tests
+  BASE_LIBNAME EinsumsPy
 )
 
 include(Einsums_ExtendWithPython)

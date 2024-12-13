@@ -95,7 +95,7 @@ class EINSUMS_EXPORT PyTensorIterator {
             throw pybind11::stop_iteration();
         }
 
-        std::vector<size_t> ind;
+        std::vector<size_t> ind(_tensor.rank());
 
         sentinel_to_indices(_curr_index, _index_strides, ind);
 
@@ -858,7 +858,120 @@ class PyTensor : public RuntimeTensor<T> {
         }                                                                                                                                  \
     }
 
-    OPERATOR(*=, mult, operator*=)
+    template <typename TOther>
+    RuntimeTensor<T> &operator*=(TOther const &other) {
+        do {
+            do {
+                pybind11 ::gil_scoped_acquire gil;
+                pybind11 ::function           override = pybind11 ::get_override(static_cast<RuntimeTensor<T> const *>(this), "operator*=");
+                if (override) {
+                    auto o = override(other);
+                    if (pybind11 ::detail ::cast_is_temporary_value_reference<RuntimeTensor<T> &>::value &&
+                        !pybind11 ::detail ::is_same_ignoring_cvref<RuntimeTensor<T> &, PyObject *>::value) {
+                        static pybind11 ::detail ::override_caster_t<RuntimeTensor<T> &> caster;
+                        return pybind11 ::detail ::cast_ref<RuntimeTensor<T> &>(std ::move(o), caster);
+                    }
+                    return pybind11 ::detail ::cast_safe<RuntimeTensor<T> &>(std ::move(o));
+                }
+            } while (false);
+            return RuntimeTensor<T>::operator*=(other);
+        } while (false);
+    }
+    template <typename TOther>
+    RuntimeTensor<T> &operator*=(RuntimeTensor<TOther> const &other) {
+        do {
+            do {
+                pybind11 ::gil_scoped_acquire gil;
+                pybind11 ::function           override = pybind11 ::get_override(static_cast<RuntimeTensor<T> const *>(this), "operator*=");
+                if (override) {
+                    auto o = override(other);
+                    if (pybind11 ::detail ::cast_is_temporary_value_reference<RuntimeTensor<T> &>::value &&
+                        !pybind11 ::detail ::is_same_ignoring_cvref<RuntimeTensor<T> &, PyObject *>::value) {
+                        static pybind11 ::detail ::override_caster_t<RuntimeTensor<T> &> caster;
+                        return pybind11 ::detail ::cast_ref<RuntimeTensor<T> &>(std ::move(o), caster);
+                    }
+                    return pybind11 ::detail ::cast_safe<RuntimeTensor<T> &>(std ::move(o));
+                }
+            } while (false);
+            return RuntimeTensor<T>::operator*=(other);
+        } while (false);
+    }
+    template <typename TOther>
+    RuntimeTensor<T> &operator*=(RuntimeTensorView<TOther> const &other) {
+        do {
+            do {
+                pybind11 ::gil_scoped_acquire gil;
+                pybind11 ::function           override = pybind11 ::get_override(static_cast<RuntimeTensor<T> const *>(this), "operator*=");
+                if (override) {
+                    auto o = override(other);
+                    if (pybind11 ::detail ::cast_is_temporary_value_reference<RuntimeTensor<T> &>::value &&
+                        !pybind11 ::detail ::is_same_ignoring_cvref<RuntimeTensor<T> &, PyObject *>::value) {
+                        static pybind11 ::detail ::override_caster_t<RuntimeTensor<T> &> caster;
+                        return pybind11 ::detail ::cast_ref<RuntimeTensor<T> &>(std ::move(o), caster);
+                    }
+                    return pybind11 ::detail ::cast_safe<RuntimeTensor<T> &>(std ::move(o));
+                }
+            } while (false);
+            return RuntimeTensor<T>::operator*=(other);
+        } while (false);
+    }
+    RuntimeTensor<T> &operator*=(pybind11 ::buffer const &buffer) {
+        pybind11 ::gil_scoped_acquire gil;
+        pybind11 ::function           override = pybind11 ::get_override(static_cast<PyTensor<T> *>(this), "operator*=");
+        if (override) {
+            auto o = override(buffer);
+            if (pybind11 ::detail ::cast_is_temporary_value_reference<RuntimeTensor<T> &>::value) {
+                static pybind11 ::detail ::override_caster_t<RuntimeTensor<T> &> caster;
+                return pybind11 ::detail ::cast_ref<RuntimeTensor<T> &>(std ::move(o), caster);
+            }
+            return pybind11 ::detail ::cast_safe<RuntimeTensor<T> &>(std ::move(o));
+        } else {
+            auto buffer_info = buffer.request();
+            if (this->rank() != buffer_info.ndim) {
+                throw tensor_compat_error(einsums ::detail ::make_error_message(einsums ::type_name<tensor_compat_error>(),
+                                                                                fmt ::format("Can not perform "
+                                                                                             "*="
+                                                                                             " with buffer object with different rank!"),
+                                                                                std ::source_location ::current()));
+            }
+            bool is_view = false;
+            for (int i = buffer_info.ndim - 1; i >= 0; i--) {
+                if (this->_dims[i] != buffer_info.shape[i]) {
+                    throw dimension_error(
+                        einsums ::detail ::make_error_message(einsums ::type_name<dimension_error>(),
+                                                              fmt ::format("Can not perform "
+                                                                           "*="
+                                                                           " with buffer object with different dimensions!"),
+                                                              std ::source_location ::current()));
+                }
+                if (this->_strides[i] != buffer_info.strides[i] / buffer_info.itemsize) {
+                    is_view = true;
+                }
+            }
+            if (buffer_info.item_type_is_equivalent_to<T>()) {
+                T *buffer_data = (T *)buffer_info.ptr;
+                if (is_view) { 
+                    #pragma omp parallel for 
+                for ( size_t sentinel = 0 ; sentinel < this -> size ( ) ; sentinel ++ ) {
+                        size_t buffer_sent = 0, hold = sentinel;
+                        for (int i = 0; i < this->_rank; i++) {
+                            buffer_sent += (buffer_info.strides[i] / buffer_info.itemsize) * (hold / this->_strides[i]);
+                            hold %= this->_strides[i];
+                        }
+                        this->_data[sentinel] *= buffer_data[buffer_sent];
+                    }
+                } else { 
+                    #pragma omp parallel for 
+                    for ( size_t sentinel = 0 ; sentinel < this -> size ( ) ; sentinel ++ ) {
+                        this->_data[sentinel] *= buffer_data[sentinel];
+                    }
+                }
+            } else {
+                copy_and_cast_mult(buffer_info, is_view);
+            }
+            return *this;
+        }
+    }
     OPERATOR(/=, div, operator/=)
     OPERATOR(+=, add, operator+=)
     OPERATOR(-=, sub, operator-=)
@@ -1350,12 +1463,12 @@ class PyTensorView : public RuntimeTensorView<T> {
                 copy_and_cast_imp_##NAME<std::complex<long double>>(buffer_info);                                                          \
                 break;                                                                                                                     \
             default:                                                                                                                       \
-                EINSUMS_THROW_EXCEPTION(pybind11::type_error, "Can not convert format descriptor {} to {} ({})!", format,                  \
+                EINSUMS_THROW_EXCEPTION(pybind11::value_error, "Can not convert format descriptor {} to {} ({})!", format,                  \
                                         pybind11::type_id<T>(), pybind11::format_descriptor<T>::format());                                 \
             }                                                                                                                              \
             break;                                                                                                                         \
         default:                                                                                                                           \
-            EINSUMS_THROW_EXCEPTION(pybind11::type_error, "Can not convert format descriptor {} to {} ({})!", format,                      \
+            EINSUMS_THROW_EXCEPTION(pybind11::value_error, "Can not convert format descriptor {} to {} ({})!", format,                      \
                                     pybind11::type_id<T>(), pybind11::format_descriptor<T>::format());                                     \
         }                                                                                                                                  \
     }

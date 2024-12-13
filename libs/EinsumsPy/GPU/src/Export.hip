@@ -5,6 +5,18 @@
 namespace py = pybind11;
 using namespace einsums::python;
 
+void throw_hip(int status) {
+    einsums::hip_catch(static_cast<hipError_t>(status));
+}
+
+void throw_hipblas(int status) {
+    einsums::hipblas_catch(static_cast<hipblasStatus_t>(status));
+}
+
+void throw_hipsolver(int status) {
+    einsums::hipsolver_catch(static_cast<hipsolverStatus_t>(status));
+}
+
 void export_GPU(py::module_ &mod) {
     pybind11::enum_<detail::PyViewMode>(mod, "GPUViewMode")
         .value("COPY", detail::COPY)
@@ -25,4 +37,8 @@ void export_GPU(py::module_ &mod) {
         .def("__len__", &PyGPUView::size)
         .def("rank", &PyGPUView::rank)
         .def("itemsize", &PyGPUView::itemsize);
+    
+    mod.def("throw_hip", throw_hip)
+    .def("throw_hipblas", throw_hipblas)
+    .def("throw_hipsolver", throw_hipsolver);
 }

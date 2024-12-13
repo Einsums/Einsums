@@ -10,6 +10,7 @@
 #include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/Print.hpp>
 #include <Einsums/Tensor/H5.hpp>
+#include <Einsums/Tensor/Tensor.hpp>
 #include <Einsums/TensorBase/IndexUtilities.hpp>
 #include <Einsums/TensorBase/TensorBase.hpp>
 #include <Einsums/TypeSupport/AreAllConvertible.hpp>

@@ -8,7 +8,8 @@ include(Einsums_ExportTargets)
 function(einsums_add_module libname modulename)
   # Retrieve arguments
   set(options CONFIG_FILES)
-  set(one_value_args)
+  set(one_value_args
+      BASE_LIBNAME)
   set(multi_value_args
       SOURCES
       HEADERS
@@ -26,18 +27,26 @@ function(einsums_add_module libname modulename)
     )
   endif()
 
+  if(NOT ${modulename}_BASE_LIBNAME)
+    set(basename ${libname})
+  else()
+    set(basename ${${modulename}_BASE_LIBNAME})
+  endif()
+
   include(Einsums_Message)
   include(Einsums_Option)
 
   string(TOUPPER ${libname} libname_upper)
   string(TOUPPER ${modulename} modulename_upper)
+  string(TOUPPER ${basename} basename_upper)
 
   string(MAKE_C_IDENTIFIER ${libname_upper} libname_upper)
   string(MAKE_C_IDENTIFIER ${modulename_upper} modulename_upper)
+  string(MAKE_C_IDENTIFIER ${basename_upper} basename_upper)
 
   # Mark the module as enabled (see einsums/libs/CMakeLists.txt)
   set(EINSUMS_ENABLED_MODULES
-      ${EINSUMS_ENABLED_MODULES} ${modulename}
+      ${EINSUMS_ENABLED_MODULES} ${basename_upper}_${modulename}
       CACHE INTERNAL "List of enabled einsums modules" FORCE
   )
 
@@ -55,7 +64,7 @@ function(einsums_add_module libname modulename)
   list(TRANSFORM ${modulename}_HEADERS PREPEND ${HEADER_ROOT}/ OUTPUT_VARIABLE headers)
 
   # generate configuration header for this module
-  set(config_header "${CMAKE_CURRENT_BINARY_DIR}/include/${PROJECT_NAME}/${modulename}/Defines.hpp")
+  set(config_header "${CMAKE_CURRENT_BINARY_DIR}/include/${basename}/${modulename}/Defines.hpp")
   einsums_write_config_defines_file(NAMESPACE ${modulename_upper} FILENAME ${config_header})
   set(generated_headers ${generated_headers} ${config_header})
 
@@ -159,7 +168,7 @@ function(einsums_add_module libname modulename)
 
   einsums_add_source_group(
     NAME ${libname}_${modulename}
-    ROOT ${HEADER_ROOT}/${PROJECT_NAME}
+    ROOT ${HEADER_ROOT}/${libname}
     CLASS "Header Files"
     TARGETS ${headers}
   )
@@ -173,14 +182,14 @@ function(einsums_add_module libname modulename)
   if (${modulename}_CONFIG_FILES)
     einsums_add_source_group(
       NAME ${libname}_${modulename}
-      ROOT ${CMAKE_CURRENT_BINARY_DIR}/include/${PROJECT_NAME}
+      ROOT ${CMAKE_CURRENT_BINARY_DIR}/include/${libname}
       CLASS "Generated Files"
       TARGETS ${generated_headers}
     )
   endif()
   einsums_add_source_group(
     NAME ${libname}_${modulename}
-    ROOT ${CMAKE_CURRENT_BINARY_DIR}/include/${PROJECT_NAME}
+    ROOT ${CMAKE_CURRENT_BINARY_DIR}/include/${libname}
     CLASS "Generated Files"
     TARGETS ${config_header}
   )
@@ -238,7 +247,7 @@ function(einsums_add_module libname modulename)
 
   # Installing the generated header files from the build dir
   install(
-    DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/include/${PROJECT_NAME}
+    DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/include/${basename}
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
     COMPONENT ${modulename}
   )

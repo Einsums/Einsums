@@ -13,13 +13,13 @@ set(TensorSources Export.cpp)
 include(Einsums_AddModule)
 einsums_add_module(
   ${EINSUMS_PYTHON_LIB_NAME} Tensor
-  GLOBAL_HEADER_GEN ON
   SOURCES ${TensorSources}
   HEADERS ${TensorHeaders}
   DEPENDENCIES
     Einsums
   MODULE_DEPENDENCIES
   CMAKE_SUBDIRS examples tests
+  BASE_LIBNAME EinsumsPy
 )
 
 include(Einsums_ExtendWithPython)

@@ -18,6 +18,7 @@ einsums_add_module(
   DEPENDENCIES {export_depends}
   MODULE_DEPENDENCIES
   CMAKE_SUBDIRS examples tests
+  BASE_LIBNAME {lib_name}
 )
 
 {python_footer}

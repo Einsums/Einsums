@@ -32,10 +32,10 @@ if(EINSUMS_WITH_TESTS)
 
   if(EINSUMS_WITH_TESTS_HEADERS)
     einsums_add_header_tests(
-            modules.{module_name}
+            modules.{lib_symb}.{module_name}
       HEADERS ${{{module_name}Headers}}
       HEADER_ROOT ${{PROJECT_SOURCE_DIR}}/include
-      DEPENDENCIES einsums_LinearAlgebra
+      DEPENDENCIES {lib_symb}_{module_name} {python_deps}
     )
   endif()
 endif()

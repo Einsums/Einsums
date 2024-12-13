@@ -19,7 +19,6 @@ endif()
 include(Einsums_AddModule)
 einsums_add_module(
   ${EINSUMS_PYTHON_LIB_NAME} TensorAlgebra
-  GLOBAL_HEADER_GEN ON
   SOURCES ${TensorAlgebraSources}
   HEADERS ${TensorAlgebraHeaders}
   DEPENDENCIES Einsums ${TensorAlgebraGPUDeps}
@@ -27,6 +26,7 @@ einsums_add_module(
     ${EINSUMS_PYTHON_LIB_NAME}_Tensor
     ${TensorAlgebraGPUModules}
   CMAKE_SUBDIRS examples tests
+  BASE_LIBNAME EinsumsPy
 )
 
 include(Einsums_ExtendWithPython)

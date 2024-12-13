@@ -80,7 +80,7 @@ def test_creation(tensor_type):
         np.int8,
         np.int16,
         np.int32,
-        np.int64
+        np.int64,
     ]:
         C = tensor_type(np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]], dtype=dtype))
 
@@ -101,7 +101,7 @@ def test_creation(tensor_type):
         np.int8,
         np.int16,
         np.int32,
-        np.int64
+        np.int64,
     ]:
         x = np.array(
             [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 16]], dtype=dtype
@@ -116,16 +116,10 @@ def test_creation(tensor_type):
 
     # Test errors
     for dtype in ["X", "ZX", "T{}"]:
-        try:
+        with pytest.raises((ValueError, TypeError)):
             x = ein.core.BadBuffer(np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]]))
             x.set_format(dtype)
             C = tensor_type(x)
-            assert False
-        except ein.core.CoreEinsumsException as exc:
-            if dtype in ["X", "ZX"]:
-                assert "convert" in exc.args[0]
-            else:
-                assert "handle" in exc.args[0]
 
 
 @pytest.mark.parametrize(
@@ -218,7 +212,7 @@ def test_ops(dtype, etype):
     for x, y, z, w, u, v in zip(A_res, A, B, C, D_test.flat, E_test.flat):
         assert x == pytest.approx(2 * y * z * w * u * v)
 
-    with pytest.raises(ein.core.CoreEinsumsException):
+    with pytest.raises(ValueError):
         A_res *= F
 
     # Addition
@@ -249,7 +243,7 @@ def test_ops(dtype, etype):
     for x, y, z, w, u, v in zip(A_res, A, B, C, D_test.flat, E_test.flat):
         assert x == pytest.approx(2 + y + z + w + u + v)
 
-    with pytest.raises(ein.core.CoreEinsumsException):
+    with pytest.raises(ValueError):
         A_res += F
 
     # Division
@@ -280,7 +274,7 @@ def test_ops(dtype, etype):
     for x, y, z, w, u, v in zip(A_res, A, B, C, D_test.flat, E_test.flat):
         assert x == pytest.approx(y / 2 / z / w / u / v)
 
-    with pytest.raises(ein.core.CoreEinsumsException):
+    with pytest.raises(ValueError):
         A_res /= F
 
     # Subtraction
@@ -311,7 +305,7 @@ def test_ops(dtype, etype):
     for x, y, z, w, u, v in zip(A_res, A, B, C, D_test.flat, E_test.flat):
         assert x == pytest.approx(y - 2 - z - w - u - v)
 
-    with pytest.raises(ein.core.CoreEinsumsException):
+    with pytest.raises(ValueError):
         A_res -= F
 
 
@@ -492,7 +486,7 @@ def test_view_ops(dtype, etype):
         else:
             assert A_res[index] == A[index]
 
-    with pytest.raises(ein.core.CoreEinsumsException):
+    with pytest.raises(ValueError):
         A_view *= F
 
     # Addition
@@ -543,7 +537,7 @@ def test_view_ops(dtype, etype):
         else:
             assert A_res[index] == A[index]
 
-    with pytest.raises(ein.core.CoreEinsumsException):
+    with pytest.raises(ValueError):
         A_view += F
 
     # Subtraction
@@ -594,7 +588,7 @@ def test_view_ops(dtype, etype):
         else:
             assert A_res[index] == A[index]
 
-    with pytest.raises(ein.core.CoreEinsumsException):
+    with pytest.raises(ValueError):
         A_view -= F
 
     # Division
@@ -645,7 +639,7 @@ def test_view_ops(dtype, etype):
         else:
             assert A_res[index] == A[index]
 
-    with pytest.raises(ein.core.CoreEinsumsException):
+    with pytest.raises(ValueError):
         A_view /= F
 
 

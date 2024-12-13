@@ -35,7 +35,7 @@ if(EINSUMS_WITH_TESTS)
       modules.${EINSUMS_PYTHON_LIB_NAME}.Tensor
       HEADERS ${TensorHeaders}
       HEADER_ROOT ${PROJECT_SOURCE_DIR}/include
-      DEPENDENCIES einsums_LinearAlgebra
+      DEPENDENCIES ${EINSUMS_PYTHON_LIB_NAME}_Tensor pybind11::embed
     )
   endif()
 endif()

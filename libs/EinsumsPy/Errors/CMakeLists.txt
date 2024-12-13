@@ -13,12 +13,12 @@ set(ErrorsSources Export.cpp)
 include(Einsums_AddModule)
 einsums_add_module(
   ${EINSUMS_PYTHON_LIB_NAME} Errors
-  GLOBAL_HEADER_GEN ON
   SOURCES ${ErrorsSources}
   HEADERS ${ErrorsHeaders}
   DEPENDENCIES Einsums
   MODULE_DEPENDENCIES
   CMAKE_SUBDIRS examples tests
+  BASE_LIBNAME EinsumsPy
 )
 
 include(Einsums_ExtendWithPython)

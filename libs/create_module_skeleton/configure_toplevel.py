@@ -9,11 +9,12 @@ def configure_python(output_base, lib_name, **kwargs):
 
     export = ""
 
-    with open(os.path.join(base, "ExportAll.cpp.in"), "r") as fp:
-        export = fp.read()
+    if not os.path.exists(os.path.join(output_base, lib_name, "ExportAll.cpp.in")) :
+        with open(os.path.join(base, "ExportAll.cpp.in"), "r") as fp:
+            export = fp.read()
 
-    with open(os.path.join(output_base, lib_name, "ExportAll.cpp.in"), "w+") as fp:
-        fp.write(export.format(lib_name=lib_name, **kwargs))
+        with open(os.path.join(output_base, lib_name, "ExportAll.cpp.in"), "w+") as fp:
+            fp.write(export.format(lib_name=lib_name, **kwargs))
 
     if not os.path.exists(os.path.join(output_base, lib_name, "preamble.txt")):
         preamble = ""
