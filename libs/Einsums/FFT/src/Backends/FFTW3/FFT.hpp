@@ -7,6 +7,8 @@
 
 #include <Einsums/Tensor/Tensor.hpp>
 
+#define FFT_BACKEND fftw3
+
 namespace einsums::fft::backend::fftw3 {
 
 void scfft(Tensor<float, 1> const &a, Tensor<std::complex<float>, 1> *result);
