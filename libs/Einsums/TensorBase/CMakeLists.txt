@@ -9,6 +9,7 @@ set(TensorBaseHeaders
     Einsums/TensorBase/Common.hpp
     Einsums/TensorBase/IndexUtilities.hpp
     Einsums/TensorBase/TensorBase.hpp
+    Einsums/TensorBase/HashFunctions.hpp
 )
 
 set(TensorBaseSources IndexUtilities.cpp)

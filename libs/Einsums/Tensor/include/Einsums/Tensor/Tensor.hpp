@@ -75,9 +75,6 @@ void fprintln(Output &fp, AType const &A, TensorPrintOptions options = {});
 // template <typename T>
 // using VectorData = std::vector<T, AlignedAllocator<T, 64>>;
 
-template <typename T>
-using VectorData = std::vector<T>;
-
 /**
  * @brief Represents a general tensor
  *
@@ -731,7 +728,7 @@ struct Tensor : virtual tensor_base::CoreTensor,
                                                                                                                                            \
         auto operator OP(const Tensor<T, Rank> &b)->Tensor<T, Rank> & {                                                                    \
             if (size() != b.size()) {                                                                                                      \
-                throw EINSUMSEXCEPTION(fmt::format("tensors differ in size : {} {}", size(), b.size()));                                   \
+                EINSUMS_THROW_EXCEPTION(dimension_error, "tensors differ in size : {} {}", size(), b.size());                              \
             }                                                                                                                              \
             EINSUMS_OMP_PARALLEL {                                                                                                         \
                 auto tid       = omp_get_thread_num();                                                                                     \
@@ -1239,7 +1236,7 @@ struct TensorView final : virtual tensor_base::CoreTensor,
      * Get a pointer to the data at a certain index in the tensor.
      */
     auto data_array(std::array<size_t, Rank> const &index_list) const -> T * {
-        size_t ordinal = indices_to_sentinel(_strides, _dims, index_list);
+        size_t ordinal = indices_to_sentinel(_strides, index_list);
         return &_data[ordinal];
     }
 
@@ -1969,6 +1966,10 @@ template <einsums::RankTensorConcept AType>
 void println(AType const &A, TensorPrintOptions options) {
     fprintln(std::cout, A, options);
 }
+
+TENSOR_EXPORT_RANK(Tensor, 0)
+TENSOR_EXPORT(Tensor)
+TENSOR_EXPORT(TensorView)
 #endif
 
 } // namespace einsums

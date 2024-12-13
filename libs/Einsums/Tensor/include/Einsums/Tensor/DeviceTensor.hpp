@@ -747,7 +747,7 @@ struct DeviceTensor : public virtual einsums::tensor_base::DeviceTensor,
     /**
      * @brief Copy a device tensor to the host.
      */
-    explicit operator Tensor<T, Rank>() const;
+    operator einsums::Tensor<T, Rank>() const;
 
   private:
     /**
@@ -1073,8 +1073,8 @@ struct DeviceTensor<T, 0> : public virtual tensor_base::DeviceTensor,
     /**
      * @brief Copy a device tensor to the host.
      */
-    explicit operator Tensor<T, 0>() {
-        Tensor<T, 0> out(std::move(_name));
+    explicit operator einsums::Tensor<T, 0>() {
+        einsums::Tensor<T, 0> out(std::move(_name));
 
         out = (T) * this;
         return out;
@@ -1392,10 +1392,10 @@ struct DeviceTensorView : public virtual tensor_base::BasicTensor<T, Rank>,
      */
     size_t size() const { return std::accumulate(std::begin(_dims), std::begin(_dims) + Rank, 1, std::multiplies<>{}); }
 
-    operator Tensor<T, Rank>() const {
-        DeviceTensor temp(*this);
+    operator einsums::Tensor<T, Rank>() const {
+        einsums::DeviceTensor<T, Rank> temp(*this);
 
-        return (Tensor<T, Rank>)temp;
+        return (einsums::Tensor<T, Rank>)temp;
     }
 
   private:
@@ -1503,4 +1503,10 @@ DeviceTensorView(std::string, DeviceTensor<T, OtherRank> &, Dim<Rank> const &, A
 
 #include "Einsums/Tensor/Backends/DeviceTensor.hpp"
 #include "Einsums/Tensor/Backends/DeviceTensorView.hpp"
+
+namespace einsums {
+TENSOR_EXPORT_RANK(DeviceTensor, 0)
+TENSOR_EXPORT(DeviceTensor)
+TENSOR_EXPORT(DeviceTensorView)
+}
 #endif

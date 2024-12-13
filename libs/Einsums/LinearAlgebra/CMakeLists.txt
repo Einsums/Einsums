@@ -25,6 +25,7 @@ einsums_add_module(
   SOURCES ${LinearAlgebraSources}
   HEADERS ${LinearAlgebraHeaders}
   DEPENDENCIES
+    ${LinAlgGPUModules}
         MODULE_DEPENDENCIES
         Einsums_Assertion
         Einsums_Config
@@ -35,6 +36,5 @@ einsums_add_module(
         Einsums_Tensor
         Einsums_TensorUtilities
         Einsums_TypeSupport
-        ${LinAlgGPUModules}
   CMAKE_SUBDIRS examples tests
 )

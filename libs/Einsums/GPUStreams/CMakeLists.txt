@@ -17,13 +17,13 @@ einsums_add_module(
   SOURCES ${GPUStreamsSources}
   HEADERS ${GPUStreamsHeaders}
   DEPENDENCIES
-  MODULE_DEPENDENCIES
-    Einsums_Config
-    Einsums_Errors
     hip::host
     hip::device
     roc::hipblas
     roc::hipsolver
+  MODULE_DEPENDENCIES
+    Einsums_Config
+    Einsums_Errors
   CMAKE_SUBDIRS examples tests
 )
 endif()

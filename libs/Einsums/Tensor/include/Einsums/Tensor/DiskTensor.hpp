@@ -10,11 +10,13 @@
 #include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/Print.hpp>
 #include <Einsums/Tensor/H5.hpp>
+#include <Einsums/TensorBase/IndexUtilities.hpp>
+#include <Einsums/TensorBase/TensorBase.hpp>
 #include <Einsums/TypeSupport/AreAllConvertible.hpp>
 #include <Einsums/TypeSupport/Arguments.hpp>
 #include <Einsums/TypeSupport/CountOfType.hpp>
 
-#include "Einsums/TensorBase/IndexUtilities.hpp"
+#include <string>
 
 namespace einsums {
 
@@ -377,8 +379,9 @@ struct DiskTensor final : public virtual tensor_base::DiskTensor,
  */
 template <typename T, size_t ViewRank, size_t Rank>
 struct DiskView final : virtual tensor_base::DiskTensor,
-                        virtual tensor_base::TensorView<T, ViewRank, DiskTensor<T, Rank>>,
-                        virtual tensor_base::LockableTensor {
+                        virtual tensor_base::TensorView<DiskTensor<T, Rank>>,
+                        virtual tensor_base::LockableTensor,
+                        virtual tensor_base::Tensor<T, ViewRank> {
     /**
      * Construct a view of a tensor with the given dimensions, counts, strides, and offsets.
      */
@@ -515,7 +518,7 @@ struct DiskView final : virtual tensor_base::DiskTensor,
     /**
      * Cast the tensor to Tensor<T,ViewRank>.
      */
-    operator Tensor<T, ViewRank> &() const { return _tensor; } // NOLINT
+    operator Tensor<T, ViewRank> &() { return _tensor; } // NOLINT
 
     /**
      * Cast the tensor to Tensor<T,ViewRank>.
@@ -662,5 +665,13 @@ template <typename T, size_t Rank>
 auto create_disk_tensor_like(h5::fd_t &file, Tensor<T, Rank> const &tensor) -> DiskTensor<T, Rank> {
     return DiskTensor(file, tensor);
 }
+
+#ifndef DOXYGEN
+
+TENSOR_EXPORT(DiskTensor)
+
+TENSOR_EXPORT_DISK_VIEW(DiskView)
+
+#endif
 
 } // namespace einsums

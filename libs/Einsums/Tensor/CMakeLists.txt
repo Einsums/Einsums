@@ -14,15 +14,20 @@ set(TensorHeaders
         Einsums/Tensor/ArithmeticTensor.hpp
         Einsums/Tensor/FunctionTensor.hpp
         Einsums/Tensor/RuntimeTensor.hpp
+        Einsums/Tensor/TiledTensor.hpp
 )
 
-if(EINSUMS_WITH_GPU_SUPPORT)
-      list(APPEND TensorHeaders Einsums/Tensor/DeviceTensor.hpp)
-      
-      set(TensorGPUModules Einsums_GPUStreams hip::host hip::device)
-endif()
+set(TensorSources TensorDefs.cpp)
 
-set(TensorSources)
+if(EINSUMS_WITH_GPU_SUPPORT)
+      set_source_files_properties(TensorDefs.cpp PROPERTIES LANGUAGE CXX)
+
+      list(APPEND TensorHeaders Einsums/Tensor/DeviceTensor.hpp)
+      list(APPEND TensorSources TensorDefs.hip)
+      
+      set(TensorGPUModules Einsums_GPUStreams)
+      set(TensorGPUDeps hip::host hip::device)
+endif()
 
 include(Einsums_AddModule)
 einsums_add_module(
@@ -34,6 +39,7 @@ einsums_add_module(
         "Einsums/Tensor/H5.hpp"
         "Einsums/Tensor/TensorForward.hpp"
   DEPENDENCIES Einsums::h5cpp
+      ${TensorGPUDeps}
   MODULE_DEPENDENCIES
         Einsums_Concepts
         Einsums_Config

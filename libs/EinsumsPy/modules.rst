@@ -11,5 +11,7 @@ EinsumsPy modules
 .. toctree::
     :maxdepth: 2
 
-    /libs/EinsumsPy/Core/docs/index.rst
+    /libs/EinsumsPy/Errors/docs/index.rst
+    /libs/EinsumsPy/GPU/docs/index.rst
     /libs/EinsumsPy/Tensor/docs/index.rst
+    /libs/EinsumsPy/TensorAlgebra/docs/index.rst

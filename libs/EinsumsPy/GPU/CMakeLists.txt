@@ -1,0 +1,26 @@
+#----------------------------------------------------------------------------------------------
+# Copyright (c) The Einsums Developers. All rights reserved.
+# Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+#----------------------------------------------------------------------------------------------
+
+if(EINSUMS_WITH_GPU_SUPPORT)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
+set(GPUHeaders EinsumsPy/GPU/Export.hpp EinsumsPy/GPU/PyGPUView.hpp)
+
+set(GPUSources Export.hip PyGPUView.hip)
+
+include(Einsums_AddModule)
+einsums_add_module(
+  ${EINSUMS_PYTHON_LIB_NAME} GPU
+  GLOBAL_HEADER_GEN ON
+  SOURCES ${GPUSources}
+  HEADERS ${GPUHeaders}
+  DEPENDENCIES Einsums
+  MODULE_DEPENDENCIES
+  CMAKE_SUBDIRS examples tests
+)
+
+include(Einsums_ExtendWithPython)
+einsums_extend_with_python(${EINSUMS_PYTHON_LIB_NAME}_GPU ${PYTHON_LIB_TYPE})
+endif()

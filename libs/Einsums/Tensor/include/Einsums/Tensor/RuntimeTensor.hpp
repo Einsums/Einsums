@@ -1,23 +1,32 @@
 #pragma once
 
+#include <Einsums/Config.hpp>
+
 #include <Einsums/Concepts/File.hpp>
 #include <Einsums/Concepts/Tensor.hpp>
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/Tensor/Tensor.hpp>
+#include <Einsums/Tensor/TensorForward.hpp>
 #include <Einsums/TensorBase/IndexUtilities.hpp>
 #include <Einsums/TensorBase/TensorBase.hpp>
 
+#ifdef EINSUMS_COMPUTE_CODE
+#    include <hip/hip_common.h>
+#    include <hip/hip_runtime.h>
+#    include <hip/hip_runtime_api.h>
+#endif
+
+#include <fmt/format.h>
+
+#include <memory>
 #include <source_location>
 #include <stdexcept>
+#include <string>
 #include <variant>
 #include <vector>
 
 namespace einsums {
-
-// forward declaration.
-template <typename T>
-class RuntimeTensorView;
 
 /**
  * @class RuntimeTensor
@@ -25,9 +34,9 @@ class RuntimeTensorView;
  * @brief Represents a tensor whose properties can be determined at runtime but not compile time.
  */
 template <typename T>
-class EINSUMS_EXPORT RuntimeTensor : public virtual tensor_base::TypedTensor<T>,
-                                     public virtual tensor_base::CoreTensor,
-                                     public virtual tensor_base::RuntimeTensorNoType {
+struct EINSUMS_EXPORT RuntimeTensor : public virtual tensor_base::TypedTensor<T>,
+                                      public virtual tensor_base::CoreTensor,
+                                      public virtual tensor_base::RuntimeTensorNoType {
   public:
     using Vector = VectorData<T>;
 
@@ -526,10 +535,12 @@ class EINSUMS_EXPORT RuntimeTensor : public virtual tensor_base::TypedTensor<T>,
     template <typename TOther>                                                                                                             \
     auto operator OP(const RuntimeTensorView<TOther> &b)->RuntimeTensor<T> & {                                                             \
         if (b.rank() != rank()) {                                                                                                          \
-            EINSUMS_THROW_EXCEPTION(tensor_compat_error, "Can not perform " #OP " with runtime tensor and view of different ranks!");      \
+            EINSUMS_THROW_EXCEPTION(tensor_compat_error,                                                                                   \
+                                    "Can not perform the operation with runtime tensor and view of different ranks!");                     \
         }                                                                                                                                  \
         if (b.dims() != dims()) {                                                                                                          \
-            EINSUMS_THROW_EXCEPTION(dimension_error, "Can not perform " #OP " with runtime tensor and view of different dimensions!");     \
+            EINSUMS_THROW_EXCEPTION(dimension_error,                                                                                       \
+                                    "Can not perform the operation with runtime tensor and view of different dimensions!");                \
         }                                                                                                                                  \
         EINSUMS_OMP_PARALLEL_FOR                                                                                                           \
         for (size_t sentinel = 0; sentinel < size(); sentinel++) {                                                                         \
@@ -553,17 +564,17 @@ class EINSUMS_EXPORT RuntimeTensor : public virtual tensor_base::TypedTensor<T>,
 
 #undef OPERATOR
 
-    virtual auto dim(int d) const -> size_t {
+    virtual size_t dim(int d) const {
         // Add support for negative indices.
         if (d < 0) {
             d += _rank;
         }
         return _dims.at(d);
     }
-    virtual auto dims() const noexcept -> std::vector<size_t> { return _dims; }
+    virtual std::vector<size_t> dims() const noexcept { return _dims; }
 
-    virtual auto vector_data() const -> Vector const & { return _data; }
-    virtual auto vector_data() -> Vector & { return _data; }
+    virtual Vector const &vector_data() const { return _data; }
+    virtual Vector       &vector_data() { return _data; }
 
     virtual auto stride(int d) const -> size_t {
         if (d < 0) {
@@ -586,11 +597,11 @@ class EINSUMS_EXPORT RuntimeTensor : public virtual tensor_base::TypedTensor<T>,
 
     virtual bool full_view_of_underlying() const noexcept override { return true; }
 
-    virtual std::string const &name() const noexcept override { return _name; };
+    virtual size_t rank() const noexcept { return this->_rank; }
 
-    virtual void set_name(std::string const &new_name) override { _name = new_name; };
+    void set_name(std::string const &new_name) override { this->_name = new_name; }
 
-    virtual size_t rank() const noexcept override { return _rank; }
+    std::string const &name() const noexcept override { return this->_name; }
 
   protected:
     Vector              _data;
@@ -611,18 +622,11 @@ class EINSUMS_EXPORT RuntimeTensor : public virtual tensor_base::TypedTensor<T>,
  * @brief Represents a view of a tensor whose properties can be determined at runtime but not compile time.
  */
 template <typename T>
-class EINSUMS_EXPORT RuntimeTensorView : public virtual tensor_base::TensorView<RuntimeTensor<T>>,
-                                         public virtual tensor_base::TypedTensor<T>,
-                                         public virtual tensor_base::CoreTensor,
-                                         public virtual tensor_base::RuntimeTensorNoType,
-                                         public virtual tensor_base::RuntimeTensorViewNoType {
-  protected:
-    T                  *_data;
-    std::string         _name{"(unnamed view)"};
-    std::vector<size_t> _dims, _strides, _index_strides;
-    size_t              _rank{0}, _size{0}, _alloc_size{0};
-    bool                _full_view{false};
-
+struct EINSUMS_EXPORT RuntimeTensorView : public virtual tensor_base::TensorView<RuntimeTensor<T>>,
+                                          public virtual tensor_base::TypedTensor<T>,
+                                          public virtual tensor_base::CoreTensor,
+                                          public virtual tensor_base::RuntimeTensorNoType,
+                                          public virtual tensor_base::RuntimeTensorViewNoType {
   public:
     RuntimeTensorView() = default;
 
@@ -1277,10 +1281,10 @@ class EINSUMS_EXPORT RuntimeTensorView : public virtual tensor_base::TensorView<
     template <typename TOther>                                                                                                             \
     auto operator OP(const RuntimeTensor<TOther> &b)->RuntimeTensorView<T> & {                                                             \
         if (b.rank() != rank()) {                                                                                                          \
-            EINSUMS_THROW_EXCEPTION(tensor_compat_error, "Can not perform " #OP " with runtime views of different ranks!");                \
+            EINSUMS_THROW_EXCEPTION(tensor_compat_error, "Can not perform the operation with runtime views of different ranks!");          \
         }                                                                                                                                  \
         if (b.dims() != dims()) {                                                                                                          \
-            EINSUMS_THROW_EXCEPTION(dimension_error, "Can not perform " #OP " with runtime views of different dimensions!");               \
+            EINSUMS_THROW_EXCEPTION(dimension_error, "Can not perform the operation with runtime views of different dimensions!");         \
         }                                                                                                                                  \
         EINSUMS_OMP_PARALLEL_FOR                                                                                                           \
         for (size_t sentinel = 0; sentinel < _size; sentinel++) {                                                                          \
@@ -1305,10 +1309,10 @@ class EINSUMS_EXPORT RuntimeTensorView : public virtual tensor_base::TensorView<
     template <typename TOther>                                                                                                             \
     auto operator OP(const RuntimeTensorView<TOther> &b)->RuntimeTensorView<T> & {                                                         \
         if (b.rank() != rank()) {                                                                                                          \
-            EINSUMS_THROW_EXCEPTION(tensor_compat_error, "Can not perform " #OP " with runtime views of different ranks!");                \
+            EINSUMS_THROW_EXCEPTION(tensor_compat_error, "Can not perform the operation with runtime views of different ranks!");          \
         }                                                                                                                                  \
         if (b.dims() != dims()) {                                                                                                          \
-            EINSUMS_THROW_EXCEPTION(dimension_error, "Can not perform " #OP " with runtime views of different dimensions!");               \
+            EINSUMS_THROW_EXCEPTION(dimension_error, "Can not perform the operation with runtime views of different dimensions!");         \
         }                                                                                                                                  \
         EINSUMS_OMP_PARALLEL_FOR                                                                                                           \
         for (size_t sentinel = 0; sentinel < _size; sentinel++) {                                                                          \
@@ -1372,8 +1376,15 @@ class EINSUMS_EXPORT RuntimeTensorView : public virtual tensor_base::TensorView<
 
     virtual void set_name(std::string const &new_name) override { _name = new_name; };
 
-    virtual size_t rank() const noexcept override { return _rank; }
-}; // namespace einsums
+    virtual size_t rank() const noexcept { return _rank; }
+
+  protected:
+    T                  *_data;
+    std::string         _name{"(unnamed view)"};
+    std::vector<size_t> _dims, _strides, _index_strides;
+    size_t              _rank{0}, _size{0}, _alloc_size{0};
+    bool                _full_view{false};
+};
 
 #ifndef DOXYGEN
 template <einsums::FileOrOStream Output, einsums::TensorConcept AType>
@@ -1455,11 +1466,11 @@ void fprintln(Output &fp, AType const &A, einsums::TensorPrintOptions options = 
             } else if constexpr ((einsums::CoreTensorConcept<AType> || einsums::DeviceTensorConcept<AType>)) {
 #    endif
                 if (Rank > 1) {
-                    auto final_dim = A.dim(A.rank() - 1);
-                    auto ndigits     = detail::ndigits(final_dim);
+                    auto                final_dim = A.dim(A.rank() - 1);
+                    auto                ndigits   = detail::ndigits(final_dim);
                     std::vector<size_t> index_strides;
                     dims_to_strides(A.dims(), index_strides);
-                    size_t size = A.size();
+                    size_t              size = A.size();
                     std::vector<size_t> indices;
 
                     for (size_t sentinel = 0; sentinel < size; sentinel++) {
@@ -1478,7 +1489,7 @@ void fprintln(Output &fp, AType const &A, einsums::TensorPrintOptions options = 
                                     oss << fmt::format("{:<14}",
                                                        fmt::format("({}, {:{}d}-{:{}d}): ", tmp.str(), j, ndigits, final_dim - 1, ndigits));
                             }
-                            T    value     = A(indices);
+                            T value = A(indices);
                             if (std::abs(value) > 1.0E+10) {
                                 if constexpr (std::is_floating_point_v<T>)
                                     oss << "\x1b[0;37;41m" << fmt::format("{:14.8f} ", value) << "\x1b[0m";
@@ -1554,5 +1565,16 @@ template <einsums::TensorConcept AType>
 void println(AType const &A, einsums::TensorPrintOptions options = {}) {
     fprintln(std::cout, A, options);
 }
+
+// EINSUMS_EXPORT extern template class RuntimeTensor<float>;
+// EINSUMS_EXPORT extern template class RuntimeTensor<double>;
+// EINSUMS_EXPORT extern template class RuntimeTensor<std::complex<float>>;
+// EINSUMS_EXPORT extern template class RuntimeTensor<std::complex<double>>;
+
+// EINSUMS_EXPORT extern template class RuntimeTensorView<float>;
+// EINSUMS_EXPORT extern template class RuntimeTensorView<double>;
+// EINSUMS_EXPORT extern template class RuntimeTensorView<std::complex<float>>;
+// EINSUMS_EXPORT extern template class RuntimeTensorView<std::complex<double>>;
+
 #endif
 } // namespace einsums

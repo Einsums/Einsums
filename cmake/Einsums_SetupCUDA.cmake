@@ -40,6 +40,7 @@ if (EINSUMS_WITH_CUDA AND NOT TARGET einsums_internal::cuda)
 
         set(CMAKE_CUDA_STANDARD_REQUIRED ON)
         set(CMAKE_CUDA_EXTENSIONS OFF)
+        set(CMAKE_CUDA_STANDARD ${CMAKE_CXX_STANDARD})
 
         enable_language(CUDA)
 

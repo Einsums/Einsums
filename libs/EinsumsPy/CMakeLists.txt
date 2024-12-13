@@ -24,8 +24,10 @@ set_target_properties(${EINSUMS_PYTHON_LIB_NAME} PROPERTIES OUTPUT_NAME core)
 
 # cmake-format: off
 set(_EinsumsPy_modules
-  Core
+  Errors
+  GPU
   Tensor
+  TensorAlgebra
 )
 #cmake-format: on
 

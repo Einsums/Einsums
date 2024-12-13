@@ -254,7 +254,7 @@ struct FuncPointerTensor : public virtual tensor_base::FunctionTensor<T, Rank>, 
 
 template <typename T, size_t Rank, size_t UnderlyingRank>
 struct FunctionTensorView : public virtual tensor_base::FunctionTensor<T, Rank>,
-                            virtual tensor_base::TensorView<T, Rank, tensor_base::FunctionTensor<T, UnderlyingRank>> {
+                            virtual tensor_base::TensorView<tensor_base::FunctionTensor<T, UnderlyingRank>> {
   protected:
     tensor_base::FunctionTensor<T, UnderlyingRank> const *_func_tensor;
     Offset<Rank>                                          _offsets;
