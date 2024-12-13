@@ -38,7 +38,6 @@ set(BLASVendorSources
 include(Einsums_AddModule)
 einsums_add_module(
   Einsums BLASVendor
-  GLOBAL_HEADER_GEN OFF
   SOURCES ${BLASVendorSources}
   HEADERS ${BLASVendorHeaders}
   DEPENDENCIES tgt::lapack

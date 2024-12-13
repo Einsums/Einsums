@@ -21,7 +21,6 @@ endif()
 include(Einsums_AddModule)
 einsums_add_module(
   Einsums LinearAlgebra
-  GLOBAL_HEADER_GEN OFF
   SOURCES ${LinearAlgebraSources}
   HEADERS ${LinearAlgebraHeaders}
   DEPENDENCIES

@@ -7,32 +7,32 @@ include(Einsums_Message)
 
 if(EINSUMS_WITH_TESTS)
   if(EINSUMS_WITH_TESTS_UNIT)
-    einsums_add_pseudo_target(tests.unit.modules.{lib_symb}.{module_name})
+    einsums_add_pseudo_target(tests.unit.modules.{module_name})
     einsums_add_pseudo_dependencies(
-      tests.unit.modules tests.unit.modules.{lib_symb}.{module_name}
+            tests.unit.modules tests.unit.modules.{module_name}
     )
     add_subdirectory(unit)
   endif()
 
   if(EINSUMS_WITH_TESTS_REGRESSIONS)
-    einsums_add_pseudo_target(tests.regressions.modules.{lib_symb}.{module_name})
+    einsums_add_pseudo_target(tests.regressions.modules.{module_name})
     einsums_add_pseudo_dependencies(
-      tests.regressions.modules tests.regressions.modules.{lib_symb}.{module_name}
+            tests.regressions.modules tests.regressions.modules.{module_name}
     )
     add_subdirectory(regressions)
   endif()
 
   if(EINSUMS_WITH_TESTS_BENCHMARKS)
-    einsums_add_pseudo_target(tests.performance.modules.{lib_symb}.{module_name})
+    einsums_add_pseudo_target(tests.performance.modules.{module_name})
     einsums_add_pseudo_dependencies(
-      tests.performance.modules tests.performance.modules.{lib_symb}.{module_name}
+            tests.performance.modules tests.performance.modules.{module_name}
     )
     add_subdirectory(performance)
   endif()
 
   if(EINSUMS_WITH_TESTS_HEADERS)
     einsums_add_header_tests(
-      modules.{lib_symb}.{module_name}
+            modules.{module_name}
       HEADERS ${{{module_name}Headers}}
       HEADER_ROOT ${{PROJECT_SOURCE_DIR}}/include
       DEPENDENCIES einsums_LinearAlgebra

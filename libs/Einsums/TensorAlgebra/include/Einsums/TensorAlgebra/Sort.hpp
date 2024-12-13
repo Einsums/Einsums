@@ -139,13 +139,13 @@ template <BlockTensorConcept AType, BlockTensorConcept CType, typename... CIndic
         requires InSamePlace<AType, CType>;
         requires std::is_arithmetic_v<U>;
     }
-void sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType *C, const U UA_prefactor,
-          const std::tuple<AIndices...> &A_indices, const AType &A) {
+void sort(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CType *C, U const UA_prefactor,
+          std::tuple<AIndices...> const &A_indices, AType const &A) {
 
     EINSUMS_OMP_PARALLEL_FOR
     for (int i = 0; i < A.num_blocks(); i++) {
         auto       &C_block = (*C)[i];
-        const auto &A_block = A[i];
+        auto const &A_block = A[i];
         sort(UC_prefactor, C_indices, &C_block, UA_prefactor, A_indices, A_block);
     }
 }
@@ -161,9 +161,9 @@ void sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType 
  */
 template <typename CType, TensorConcept AType, TensorConcept BType, typename... CIndices, typename... AIndices, typename... BIndices,
           typename... AllUniqueIndices>
-inline auto get_grid_ranges_for_many(const CType &C, const ::std::tuple<CIndices...> &C_indices, const AType &A,
-                                     const ::std::tuple<AIndices...>         &A_indices,
-                                     const ::std::tuple<AllUniqueIndices...> &All_unique_indices) {
+inline auto get_grid_ranges_for_many(CType const &C, ::std::tuple<CIndices...> const &C_indices, AType const &A,
+                                     ::std::tuple<AIndices...> const         &A_indices,
+                                     ::std::tuple<AllUniqueIndices...> const &All_unique_indices) {
     return ::std::array{get_grid_ranges_for_many_a<AllUniqueIndices, 0>(C, C_indices, A, A_indices)...};
 }
 
@@ -176,15 +176,15 @@ template <TiledTensorConcept AType, TiledTensorConcept CType, typename... CIndic
         requires InSamePlace<AType, CType>;
         requires std::is_arithmetic_v<U>;
     }
-void sort(const U UC_prefactor, const std::tuple<CIndices...> &C_indices, CType *C, const U UA_prefactor,
-          const std::tuple<AIndices...> &A_indices, const AType &A) {
+void sort(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CType *C, U const UA_prefactor,
+          std::tuple<AIndices...> const &A_indices, AType const &A) {
 
-    using ADataType        = typename AType::data_type;
-    using CDataType        = typename CType::data_type;
+    using ADataType        = typename AType::ValueType;
+    using CDataType        = typename CType::ValueType;
     constexpr size_t ARank = AType::Rank;
     constexpr size_t CRank = CType::Rank;
 
-    constexpr auto unique_indices = unique_t<std::tuple<CIndices..., AIndices...>>();
+    constexpr auto unique_indices = UniqueT<std::tuple<CIndices..., AIndices...>>();
     auto           unique_grid    = get_grid_ranges_for_many(*C, C_indices, A, A_indices, unique_indices);
 
     auto unique_strides = std::array<size_t, std::tuple_size<decltype(unique_indices)>::value>();

@@ -15,7 +15,6 @@ set(DecompositionSources)
 include(Einsums_AddModule)
 einsums_add_module(
         Einsums Decomposition
-        GLOBAL_HEADER_GEN OFF
         SOURCES ${DecompositionSources}
         HEADERS ${DecompositionHeaders}
         DEPENDENCIES

@@ -17,7 +17,6 @@ set(TensorBaseSources IndexUtilities.cpp)
 include(Einsums_AddModule)
 einsums_add_module(
   Einsums TensorBase
-  GLOBAL_HEADER_GEN OFF
   SOURCES ${TensorBaseSources}
   HEADERS ${TensorBaseHeaders}
   DEPENDENCIES

@@ -12,7 +12,6 @@ set(GraphSources)
 include(Einsums_AddModule)
 einsums_add_module(
   Einsums Graph
-  GLOBAL_HEADER_GEN ON
   SOURCES ${GraphSources}
   HEADERS ${GraphHeaders}
   DEPENDENCIES

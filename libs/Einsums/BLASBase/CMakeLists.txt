@@ -22,7 +22,6 @@ set(BLASBaseSources)
 include(Einsums_AddModule)
 einsums_add_module(
   Einsums BLASBase
-  GLOBAL_HEADER_GEN ON
   SOURCES ${BLASBaseSources}
   HEADERS ${BLASBaseHeaders}
   DEPENDENCIES

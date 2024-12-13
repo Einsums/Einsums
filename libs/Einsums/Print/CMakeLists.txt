@@ -12,7 +12,6 @@ set(PrintSources Print.cpp)
 include(Einsums_AddModule)
 einsums_add_module(
   Einsums Print
-  GLOBAL_HEADER_GEN OFF
   SOURCES ${PrintSources}
   HEADERS ${PrintHeaders}
   DEPENDENCIES

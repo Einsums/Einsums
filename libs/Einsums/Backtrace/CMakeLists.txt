@@ -12,7 +12,6 @@ set(BacktraceSources)
 include(Einsums_AddModule)
 einsums_add_module(
   Einsums Backtrace
-  GLOBAL_HEADER_GEN ON
   SOURCES ${BacktraceSources}
   HEADERS ${BacktraceHeaders}
   DEPENDENCIES

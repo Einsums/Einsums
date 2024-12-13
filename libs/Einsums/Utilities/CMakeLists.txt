@@ -14,7 +14,6 @@ set(UtilitiesSources)
 include(Einsums_AddModule)
 einsums_add_module(
         Einsums Utilities
-        GLOBAL_HEADER_GEN ON
         SOURCES ${UtilitiesSources}
         HEADERS ${UtilitiesHeaders}
         DEPENDENCIES

@@ -14,7 +14,6 @@ set(StringUtilSources)
 include(Einsums_AddModule)
 einsums_add_module(
   Einsums StringUtil
-  GLOBAL_HEADER_GEN OFF
   SOURCES ${StringUtilSources}
   HEADERS ${StringUtilHeaders}
   DEPENDENCIES

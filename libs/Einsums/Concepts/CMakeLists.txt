@@ -17,7 +17,6 @@ set(ConceptsSources)
 include(Einsums_AddModule)
 einsums_add_module(
   Einsums Concepts
-  GLOBAL_HEADER_GEN OFF
   SOURCES ${ConceptsSources}
   HEADERS ${ConceptsHeaders}
   DEPENDENCIES

@@ -12,7 +12,6 @@ set(DebuggingSources)
 include(Einsums_AddModule)
 einsums_add_module(
   Einsums Debugging
-  GLOBAL_HEADER_GEN ON
   SOURCES ${DebuggingSources}
   HEADERS ${DebuggingHeaders}
   DEPENDENCIES

@@ -8,8 +8,6 @@
 
 include(Einsums_Message)
 
-
-
 # cmake-format: off
 set(_Einsums_modules
   Assertion
@@ -23,6 +21,7 @@ set(_Einsums_modules
   Debugging
   Decomposition
   Errors
+  FFT
   GPUStreams
   Graph
   HPTT
@@ -41,7 +40,7 @@ set(_Einsums_modules
   TypeSupport
   Utilities
 )
-#cmake-format: on
+# cmake-format: on
 
 einsums_info("")
 einsums_info("  Configuring Einsums modules:")
@@ -49,5 +48,3 @@ einsums_info("  Configuring Einsums modules:")
 foreach(module ${_Einsums_modules})
   add_subdirectory(${module})
 endforeach()
-
-

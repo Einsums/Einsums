@@ -35,7 +35,6 @@ endif ()
 include(Einsums_AddModule)
 einsums_add_module(
   Einsums TensorAlgebra
-        GLOBAL_HEADER_GEN OFF
   SOURCES ${TensorAlgebraSources}
   HEADERS ${TensorAlgebraHeaders}
   DEPENDENCIES
