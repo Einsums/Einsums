@@ -8,6 +8,7 @@
 #include <Einsums/Concepts/Complex.hpp>
 #include <Einsums/Tensor/TensorForward.hpp>
 #include <Einsums/TensorBase/Common.hpp>
+#include <Einsums/Utilities/Random.hpp>
 
 #include <range/v3/view/cartesian_product.hpp>
 
@@ -46,38 +47,37 @@ auto create_random_tensor(std::string const &name, MultiIndex... index) -> Tenso
     double const upper_bound = 1.0;
 
     std::uniform_real_distribution<double> unif(lower_bound, upper_bound);
-    std::default_random_engine             re;
 
     if constexpr (std::is_same_v<T, std::complex<float>>) {
-#pragma omp parallel default(none) shared(A, re, unif)
+#pragma omp parallel default(none) shared(A, einsums::random_engine, unif)
         {
             auto tid       = omp_get_thread_num();
             auto chunksize = A.vector_data().size() / omp_get_num_threads();
             auto begin     = A.vector_data().begin() + chunksize * tid;
             auto end       = (tid == omp_get_num_threads() - 1) ? A.vector_data().end() : begin + chunksize;
             std::generate(A.vector_data().begin(), A.vector_data().end(), [&]() {
-                return T{static_cast<float>(unif(re)), static_cast<float>(unif(re))};
+                return T{static_cast<float>(unif(einsums::random_engine)), static_cast<float>(unif(einsums::random_engine))};
             });
         }
     } else if constexpr (std::is_same_v<T, std::complex<double>>) {
-#pragma omp parallel default(none) shared(A, re, unif)
+#pragma omp parallel default(none) shared(A, einsums::random_engine, unif)
         {
             auto tid       = omp_get_thread_num();
             auto chunksize = A.vector_data().size() / omp_get_num_threads();
             auto begin     = A.vector_data().begin() + chunksize * tid;
             auto end       = (tid == omp_get_num_threads() - 1) ? A.vector_data().end() : begin + chunksize;
             std::generate(A.vector_data().begin(), A.vector_data().end(), [&]() {
-                return T{static_cast<double>(unif(re)), static_cast<double>(unif(re))};
+                return T{static_cast<double>(unif(einsums::random_engine)), static_cast<double>(unif(einsums::random_engine))};
             });
         }
     } else {
-#pragma omp parallel default(none) shared(A, re, unif)
+#pragma omp parallel default(none) shared(A, einsums::random_engine, unif)
         {
             auto tid       = omp_get_thread_num();
             auto chunksize = A.vector_data().size() / omp_get_num_threads();
             auto begin     = A.vector_data().begin() + chunksize * tid;
             auto end       = (tid == omp_get_num_threads() - 1) ? A.vector_data().end() : begin + chunksize;
-            std::generate(A.vector_data().begin(), A.vector_data().end(), [&]() { return static_cast<T>(unif(re)); });
+            std::generate(A.vector_data().begin(), A.vector_data().end(), [&]() { return static_cast<T>(unif(einsums::random_engine)); });
         }
     }
 
