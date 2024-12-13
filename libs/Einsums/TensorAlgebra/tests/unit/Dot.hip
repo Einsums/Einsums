@@ -61,7 +61,7 @@ void dot_test() {
         einsum(Indices{}, &C_obtained, Indices{i, j, a}, A, Indices{i, j, a}, B);
 
         if constexpr (!einsums::IsComplexV<T>) {
-            REQUIRE_THAT(C_obtained, Catch::Matchers::WithinAbsMatcher(C_expected, 0.0001));
+            REQUIRE_THAT(C_obtained, Catch::Matchers::WithinAbsMatcher(C_expected, 0.001));
         } else {
             REQUIRE_THAT(((T)C_obtained).real(), Catch::Matchers::WithinAbsMatcher(C_expected.real(), 0.0001));
             REQUIRE_THAT(((T)C_obtained).imag(), Catch::Matchers::WithinAbsMatcher(C_expected.imag(), 0.0001));

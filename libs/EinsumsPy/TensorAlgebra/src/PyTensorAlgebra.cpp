@@ -8,6 +8,7 @@
 
 #ifdef EINSUMS_COMPUTE_CODE
 #    include <EinsumsPy/GPU/PyGPUView.hpp>
+using namespace einsums::python;
 #endif
 
 #include <deque>
@@ -15,7 +16,6 @@
 using namespace std;
 using namespace einsums;
 using namespace einsums::tensor_algebra;
-using namespace einsums::python;
 
 namespace py = pybind11;
 
