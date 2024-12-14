@@ -177,10 +177,6 @@ void element_transform(SmartPtr *C, UnaryOperator unary_opt) {
     element_transform(C->get(), unary_opt);
 }
 
-template <template <typename, size_t> typename CType, template <typename, size_t> typename... MultiTensors, size_t Rank,
-          typename MultiOperator, typename T = double>
-auto element(MultiOperator multi_opt, CType<T, Rank> *C, MultiTensors<T, Rank> &...tensors);
-
 template <unsigned int N, typename... List>
 constexpr auto get_n(std::tuple<List...> const &);
 

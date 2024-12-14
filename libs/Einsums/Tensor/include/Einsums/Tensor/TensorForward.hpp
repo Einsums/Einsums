@@ -93,7 +93,7 @@ using VectorData = std::vector<T>;
  * @param type The type held by that tensor.
  * @param rank The rank of the tensor.
  */
-#define TENSOR_EXPORT_TR(tensortype, type, rank) EINSUMS_EXPORT extern template class tensortype<type, rank>;
+#define TENSOR_EXPORT_TR(tensortype, type, rank) extern template class EINSUMS_EXPORT tensortype<type, rank>;
 
 /**
  * @def TENSOR_EXPORT_RANK
@@ -174,7 +174,7 @@ using VectorData = std::vector<T>;
  * @param view_rank The rank of the view.
  * @param rank The rank of the base tensor.
  */
-#define TENSOR_EXPORT_TR_DISK_VIEW(tensortype, type, view_rank, rank) EINSUMS_EXPORT extern template class tensortype<type, view_rank, rank>;
+#define TENSOR_EXPORT_TR_DISK_VIEW(tensortype, type, view_rank, rank) extern template class EINSUMS_EXPORT tensortype<type, view_rank, rank>;
 
 /**
  * @def TENSOR_EXPORT_RANK_DISK_VIEW

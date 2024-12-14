@@ -51,7 +51,7 @@ TEMPLATE_TEST_CASE("element", "[tensor_algebra]", float, double, std::complex<fl
 
         Tensor B = create_random_tensor<TestType>("B", 10, 10, 10, 10);
 
-        element([](TestType const &Aval, TestType const &Bval) -> TestType { return Aval + Bval; }, &A, B);
+        element([](TestType const &Aval, TestType const &Bval) { return Aval + Bval; }, &A, B);
 
         for (int w = 0; w < 10; w++) {
             for (int x = 0; x < 10; x++) {
@@ -72,7 +72,7 @@ TEMPLATE_TEST_CASE("element", "[tensor_algebra]", float, double, std::complex<fl
         Tensor B = create_random_tensor<TestType>("B", 10, 10, 10, 10);
         Tensor C = create_random_tensor<TestType>("C", 10, 10, 10, 10);
 
-        element([](TestType const &Aval, TestType const &Bval, TestType const &Cval) -> TestType { return Aval + Bval + Cval; }, &A, B, C);
+        element([](TestType const &Aval, TestType const &Bval, TestType const &Cval) { return Aval + Bval + Cval; }, &A, B, C);
 
         for (int w = 0; w < 10; w++) {
             for (int x = 0; x < 10; x++) {
@@ -102,7 +102,7 @@ TEMPLATE_TEST_CASE("einsum element", "[tensor_algebra]", float, double, std::com
         Tensor B = create_random_tensor<TestType>("B", _i, _j);
         Tensor A = create_random_tensor<TestType>("A", _i, _j);
 
-        element([](TestType const & /*Cval*/, TestType const &Aval, TestType const &Bval) -> TestType { return Aval * Bval; }, &C0, A, B);
+        element([](TestType const & /*Cval*/, TestType const &Aval, TestType const &Bval) { return Aval * Bval; }, &C0, A, B);
 
         einsum(Indices{i, j}, &C, Indices{i, j}, A, Indices{i, j}, B);
 
@@ -121,7 +121,7 @@ TEMPLATE_TEST_CASE("einsum element", "[tensor_algebra]", float, double, std::com
 
         Tensor A = create_random_tensor<TestType>("A", _i, _j);
 
-        element([](TestType const &Cval, TestType const &Aval) -> TestType { return Cval * Aval; }, &C, A);
+        element([](TestType const &Cval, TestType const &Aval) { return Cval * Aval; }, &C, A);
 
         einsum(Indices{i, j}, &testresult, Indices{i, j}, C0, Indices{i, j}, A);
 
@@ -150,7 +150,7 @@ TEMPLATE_TEST_CASE("einsum element", "[tensor_algebra]", float, double, std::com
 
         auto A = parentA(1, 2, All, All);
 
-        element([](TestType const &Cval, TestType const &Aval) -> TestType { return Cval * Aval; }, &C, A);
+        element([](TestType const &Cval, TestType const &Aval) { return Cval * Aval; }, &C, A);
 
         einsum(Indices{i, j}, &testresult, Indices{i, j}, C0, Indices{i, j}, A);
 
