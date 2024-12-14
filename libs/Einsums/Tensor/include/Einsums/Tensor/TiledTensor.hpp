@@ -1,3 +1,8 @@
+//--------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//--------------------------------------------------------------------------------------------
+
 #pragma once
 
 #include <Einsums/Config.hpp>
@@ -972,7 +977,7 @@ struct TiledTensorView final : public virtual tensor_base::TiledTensor<T, Rank, 
     [[nodiscard]] bool full_view_of_underlying() const override { return _full_view_of_underlying; }
 
     void insert_tile(std::array<int, Rank> pos, einsums::TensorView<T, Rank> &&view) {
-        std::lock_guard(*this);
+        std::lock_guard lock(*this);
         this->_tiles.emplace(pos, std::move(view));
     }
 
