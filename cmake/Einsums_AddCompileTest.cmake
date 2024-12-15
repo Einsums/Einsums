@@ -22,37 +22,29 @@ function(einsums_add_compile_test category name)
   if(${name}_OBJECT)
     einsums_add_library(
       ${test_name}
-      SOURCE_ROOT
-      ${${name}_SOURCE_ROOT}
-      SOURCES
-      ${${name}_SOURCES}
-      EXCLUDE_FROM_ALL
-      EXCLUDE_FROM_DEFAULT_BUILD
-      FOLDER
-      ${${name}_FOLDER}
-      DEPENDENCIES
-      ${${name}_DEPENDENCIES}
-      ${_additional_flags})
+      SOURCE_ROOT ${${name}_SOURCE_ROOT}
+      SOURCES ${${name}_SOURCES}
+      EXCLUDE_FROM_ALL EXCLUDE_FROM_DEFAULT_BUILD
+      FOLDER ${${name}_FOLDER}
+      DEPENDENCIES ${${name}_DEPENDENCIES} ${_additional_flags}
+    )
   else()
     einsums_add_executable(
       ${test_name}
-      SOURCE_ROOT
-      ${${name}_SOURCE_ROOT}
-      SOURCES
-      ${${name}_SOURCES}
-      EXCLUDE_FROM_ALL
-      EXCLUDE_FROM_DEFAULT_BUILD
-      FOLDER
-      ${${name}_FOLDER}
-      DEPENDENCIES
-      ${${name}_DEPENDENCIES}
-      ${_additional_flags})
+      SOURCE_ROOT ${${name}_SOURCE_ROOT}
+      SOURCES ${${name}_SOURCES}
+      EXCLUDE_FROM_ALL EXCLUDE_FROM_DEFAULT_BUILD
+      FOLDER ${${name}_FOLDER}
+      DEPENDENCIES ${${name}_DEPENDENCIES} ${_additional_flags}
+    )
   endif()
 
   add_test(
     NAME "${category}.${name}"
-    COMMAND ${CMAKE_COMMAND} --build ${PROJECT_BINARY_DIR} --target ${test_name} --config $<CONFIGURATION>
-    WORKING_DIRECTORY ${PROJECT_BINARY_DIR})
+    COMMAND ${CMAKE_COMMAND} --build ${PROJECT_BINARY_DIR} --target ${test_name} --config
+            $<CONFIGURATION>
+    WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
+  )
 
   set_tests_properties("${category}.${name}" PROPERTIES LABELS "COMPILE_ONLY")
 
@@ -87,8 +79,8 @@ function(einsums_add_regression_compile_test subcategory name)
 endfunction(einsums_add_regression_compile_test)
 
 function(einsums_add_headers_compile_test subcategory name)
-  # Important to keep the double quotes around subcategory otherwise it doesn't consider empty argument but just removes
-  # it
+  # Important to keep the double quotes around subcategory otherwise it doesn't consider empty
+  # argument but just removes it
   einsums_add_test_and_deps_compile_test("headers" "${subcategory}" ${name} ${ARGN} OBJECT)
 endfunction(einsums_add_headers_compile_test)
 
@@ -113,9 +105,9 @@ function(einsums_add_header_tests category)
     string(FIND "${header}" "detail" detail_pos)
     list(FIND ${category}_EXCLUDE "${header}" exclude_pos)
 
-    if (${detail_pos} EQUAL -1)
-        string(FIND "${header}" "Detail" detail_pos)
-    endif ()
+    if(${detail_pos} EQUAL -1)
+      string(FIND "${header}" "Detail" detail_pos)
+    endif()
 
     if(${detail_pos} EQUAL -1 AND ${exclude_pos} EQUAL -1)
       # extract relative path of header
@@ -129,7 +121,9 @@ function(einsums_add_header_tests category)
 
       # generate the test
       file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/${full_test_file}
-           "#include <${relpath}>\n" "#ifndef EINSUMS_MAIN_DEFINED\n" "int main() { return 0; }\n" "#endif\n")
+           "#include <${relpath}>\n" "#ifndef EINSUMS_MAIN_DEFINED\n" "int main() { return 0; }\n"
+           "#endif\n"
+      )
 
       set(exclude_all_pos -1)
       list(FIND ${category}_EXCLUDE_FROM_ALL "${header}" exclude_all_pos)
@@ -140,38 +134,28 @@ function(einsums_add_header_tests category)
       get_filename_component(header_dir "${relpath}" DIRECTORY)
 
       einsums_add_headers_compile_test(
-        "${category}"
-        ${test_name}
-        SOURCES
-        "${CMAKE_CURRENT_BINARY_DIR}/${full_test_file}"
-        SOURCE_ROOT
-        "${CMAKE_CURRENT_BINARY_DIR}/${header_dir}"
-        FOLDER
-        "Tests/Headers/${header_dir}"
-        DEPENDENCIES
-        ${${category}_DEPENDENCIES}
-        einsums_private_flags
-        einsums_public_flags
-        ${_additional_flags})
+        "${category}" ${test_name}
+        SOURCES "${CMAKE_CURRENT_BINARY_DIR}/${full_test_file}"
+        SOURCE_ROOT "${CMAKE_CURRENT_BINARY_DIR}/${header_dir}"
+        FOLDER "Tests/Headers/${header_dir}"
+        DEPENDENCIES ${${category}_DEPENDENCIES} einsums_private_flags einsums_public_flags
+                     ${_additional_flags}
+      )
 
     endif()
   endforeach()
 
   set(test_name "all_headers")
   set(all_headers_test_file "${CMAKE_CURRENT_BINARY_DIR}/${test_name}.cpp")
-  file(WRITE ${all_headers_test_file} ${all_headers} "#ifndef EINSUMS_MAIN_DEFINED\n" "int main() { return 0; }\n"
-                                      "#endif\n")
+  file(WRITE ${all_headers_test_file} ${all_headers} "#ifndef EINSUMS_MAIN_DEFINED\n"
+                                      "int main() { return 0; }\n" "#endif\n"
+  )
 
   einsums_add_headers_compile_test(
-    "${category}"
-    ${test_name}
-    SOURCES
-    "${all_headers_test_file}"
-    SOURCE_ROOT
-    "${CMAKE_CURRENT_BINARY_DIR}"
-    FOLDER
-    "Tests/Headers"
-    DEPENDENCIES
-    ${${category}_DEPENDENCIES}
-    ${_additional_flags})
+    "${category}" ${test_name}
+    SOURCES "${all_headers_test_file}"
+    SOURCE_ROOT "${CMAKE_CURRENT_BINARY_DIR}"
+    FOLDER "Tests/Headers"
+    DEPENDENCIES ${${category}_DEPENDENCIES} ${_additional_flags}
+  )
 endfunction()

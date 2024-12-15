@@ -148,15 +148,18 @@ endfunction(einsums_add_test_and_deps_test)
 # library. Performance tests link to the performance_testing library.
 function(einsums_add_unit_test subcategory name)
   einsums_add_test_and_deps_test("unit" "${subcategory}" ${name} ${ARGN} TESTING)
+  set_tests_properties("tests.unit.${subcategory}.${name}" PROPERTIES LABELS "UNIT_ONLY")
 endfunction(einsums_add_unit_test)
 
 function(einsums_add_regression_test subcategory name)
   # ARGN needed in case we add a test with the same executable
   einsums_add_test_and_deps_test("regressions" "${subcategory}" ${name} ${ARGN} TESTING)
+  set_tests_properties("tests.regressions.${subcategory}.${name}" PROPERTIES LABELS "UNIT_ONLY")
 endfunction(einsums_add_regression_test)
 
 function(einsums_add_performance_test subcategory name)
   einsums_add_test_and_deps_test("performance" "${subcategory}" ${name} ${ARGN} RUN_SERIAL PERFORMANCE_TESTING)
+  set_tests_properties("tests.performance.${subcategory}.${name}" PROPERTIES LABELS "UNIT_ONLY")
 endfunction(einsums_add_performance_test)
 
 function(einsums_add_example_test subcategory name)
