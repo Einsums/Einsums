@@ -4,7 +4,7 @@
 #----------------------------------------------------------------------------------------------
 
 function(einsums_add_executable name)
-  set(options GPU EXCLUDE_FROM_ALL EXCLUDE_FROM_DEFAULT_BUILD INTERNAL_FLAGS NOLIBS UNITYT_BUILD)
+  set(options GPU EXCLUDE_FROM_ALL EXCLUDE_FROM_DEFAULT_BUILD INTERNAL_FLAGS NOLIBS UNITY_BUILD)
   set(one_value_args
       INI
       FOLDER
