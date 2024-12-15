@@ -121,7 +121,7 @@ jobs:
           cat export.yaml
 
       - name: Install dependencies
-        uses: conda-incubator/setup-miniconda@v2
+        uses: conda-incubator/setup-miniconda@v3
         with:
           activate-environment: einsums-dev
           #environment-file: devtools/conda-envs/${{matrix.environment}}
