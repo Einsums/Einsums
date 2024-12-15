@@ -24,25 +24,23 @@ set(TensorAlgebraTests
 )
 
 foreach (test ${TensorAlgebraTests})
-    set(sources ${test}.cpp)
+  set(sources ${test}.cpp)
 
-    source_group("Source Files" FILES ${sources})
+  source_group("Source Files" FILES ${sources})
 
-    einsums_add_executable(
-            ${test}_test INTERNAL_FLAGS
-            SOURCES ${sources} ${${test}_FLAGS}
-            FOLDER ${folder_name}
-    )
+  einsums_add_executable(
+          ${test}_test INTERNAL_FLAGS
+          SOURCES ${sources} ${${test}_FLAGS}
+          FOLDER ${folder_name}
+  )
 
-    einsums_add_unit_test("modules.TensorAlgebra" ${test})
+  einsums_add_unit_test("modules.TensorAlgebra" ${test})
 endforeach ()
 
 if(EINSUMS_WITH_GPU_SUPPORT)
-set(TensorAlgebraTests2
-        Dot
-)
+  set(TensorAlgebraTests2 Dot)
 
-foreach (test ${TensorAlgebraTests2})
+  foreach (test ${TensorAlgebraTests2})
     set(sources ${test}.hip)
 
     source_group("Source Files" FILES ${sources})
@@ -54,5 +52,5 @@ foreach (test ${TensorAlgebraTests2})
     )
 
     einsums_add_unit_test("modules.TensorAlgebra" ${test}_gpu)
-endforeach ()
+  endforeach ()
 endif()

@@ -5,10 +5,7 @@
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-set(UtilitiesHeaders
-        Einsums/Utilities/Tuple.hpp
-        Einsums/Utilities/Random.hpp
-)
+set(UtilitiesHeaders Einsums/Utilities/Tuple.hpp Einsums/Utilities/Random.hpp)
 
 set(UtilitiesSources Random.cpp)
 
@@ -18,7 +15,6 @@ einsums_add_module(
         SOURCES ${UtilitiesSources}
         HEADERS ${UtilitiesHeaders}
         DEPENDENCIES
-        MODULE_DEPENDENCIES
-                Einsums_Config
+        MODULE_DEPENDENCIES Einsums_Config
         CMAKE_SUBDIRS examples tests
 )

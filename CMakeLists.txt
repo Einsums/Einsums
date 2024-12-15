@@ -393,8 +393,7 @@ if(EINSUMS_WITH_STACKTRACES)
   endif()
 
   einsums_option(
-    EINSUMS_WITH_BACKTRACE_DEPTH STRING
-    "Stack trace depth being captured (default: 20)" "20"
+          EINSUMS_WITH_BACKTRACE_DEPTH STRING "Stack trace depth being captured (default: 20)" "20"
     CATEGORY "Errors"
     ADVANCED
   )
@@ -472,7 +471,8 @@ einsums_option(
 )
 
 einsums_option(
-  EINSUMS_BUILD_PYTHON STRING
+        EINSUMS_BUILD_PYTHON
+        STRING
   "Build the Python module. One or more Python versions may be specified to build, or the value may be set to 'ON' for your current Python interpreter.
   Disable by specifying 'OFF'. Defaults to 'ON'."
   ON
@@ -742,9 +742,7 @@ include(Einsums_SetupFmt)
 include(Einsums_SetupCatch)
 include(Einsums_SetupRangev3)
 include(Einsums_SetupH5cpp)
-#include(einsums_SetupHPTT)
-#include(Einsums_SetupHWLOC)
-#include(Einsums_SetupSpdlog)
+# include(einsums_SetupHPTT) include(Einsums_SetupHWLOC) include(Einsums_SetupSpdlog)
 # include(Einsums_SetupCppTrace)
 
 if(EINSUMS_WITH_SANITIZERS)
@@ -819,9 +817,9 @@ set(EINSUMS_DEBUG_POSTFIX "d")
 # ##################################################################################################
 add_subdirectory(libs)
 
-# ##############################################################################
+# ##################################################################################################
 # Documentation toolchain (Sphinx, Doxygen, Breathe)
-# ##############################################################################
+# ##################################################################################################
 include(Einsums_Documentation)
 
 if (EINSUMS_WITH_DOCUMENTATION)

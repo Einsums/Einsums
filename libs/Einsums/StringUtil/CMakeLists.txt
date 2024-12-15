@@ -5,9 +5,7 @@
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-set(StringUtilHeaders
-    Einsums/StringUtil/Trim.hpp
-)
+set(StringUtilHeaders Einsums/StringUtil/Trim.hpp)
 
 set(StringUtilSources)
 
@@ -17,7 +15,6 @@ einsums_add_module(
   SOURCES ${StringUtilSources}
   HEADERS ${StringUtilHeaders}
   DEPENDENCIES
-  MODULE_DEPENDENCIES
-        Einsums_Config
+        MODULE_DEPENDENCIES Einsums_Config
   CMAKE_SUBDIRS examples tests
 )

@@ -7,26 +7,19 @@ function(create_symbolic_link SYM_TARGET SYM_DESTINATION)
             if (IS_DIRECTORY ${SYM_TARGET})
                 # Create a directory junction
                 execute_process(
-                        COMMAND
-                        cmd /C
-                        "${PROJECT_SOURCE_DIR}/cmake/scripts/create_symbolic_link_directory.bat"
+                        COMMAND cmd /C "${PROJECT_SOURCE_DIR}/cmake/scripts/create_symbolic_link_directory.bat"
                         ${SYM_DESTINATION} ${SYM_TARGET}
                 )
             else ()
                 # Create a file link
                 execute_process(
-                        COMMAND
-                        cmd /C
-                        "${PROJECT_SOURCE_DIR}/cmake/scripts/create_symbolic_link_file.bat"
+                        COMMAND cmd /C "${PROJECT_SOURCE_DIR}/cmake/scripts/create_symbolic_link_file.bat"
                         ${SYM_DESTINATION} ${SYM_TARGET}
                 )
             endif ()
         endif ()
     else ()
         # Only available on unix derivates
-        execute_process(
-                COMMAND "${CMAKE_COMMAND}" -E create_symlink ${SYM_TARGET}
-                ${SYM_DESTINATION}
-        )
+        execute_process(COMMAND "${CMAKE_COMMAND}" -E create_symlink ${SYM_TARGET} ${SYM_DESTINATION})
     endif ()
 endfunction(create_symbolic_link)

@@ -13,9 +13,7 @@ else()
     einsums_error("EINSUMS_LINALG_INT_INTERFACE is not defined")
 endif()
 
-set(BLASBaseHeaders
-    Einsums/BLAS/Types.hpp
-)
+set(BLASBaseHeaders Einsums/BLAS/Types.hpp)
 
 set(BLASBaseSources)
 

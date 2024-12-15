@@ -3,7 +3,6 @@
 # Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 #----------------------------------------------------------------------------------------------
 
-
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 set(TensorHeaders EinsumsPy/Tensor/Export.hpp EinsumsPy/Tensor/PyTensor.hpp)
@@ -15,11 +14,9 @@ einsums_add_module(
   ${EINSUMS_PYTHON_LIB_NAME} Tensor
   SOURCES ${TensorSources}
   HEADERS ${TensorHeaders}
-  DEPENDENCIES
-    Einsums
+        DEPENDENCIES Einsums
   MODULE_DEPENDENCIES
-  CMAKE_SUBDIRS examples tests
-  BASE_LIBNAME EinsumsPy
+        CMAKE_SUBDIRS examples tests BASE_LIBNAME EinsumsPy
 )
 
 include(Einsums_ExtendWithPython)

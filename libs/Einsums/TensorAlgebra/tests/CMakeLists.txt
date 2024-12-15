@@ -8,9 +8,7 @@ include(Einsums_Message)
 if(EINSUMS_WITH_TESTS)
   if(EINSUMS_WITH_TESTS_UNIT)
     einsums_add_pseudo_target(tests.unit.modules.TensorAlgebra)
-    einsums_add_pseudo_dependencies(
-      tests.unit.modules tests.unit.modules.TensorAlgebra
-    )
+    einsums_add_pseudo_dependencies(tests.unit.modules tests.unit.modules.TensorAlgebra)
     add_subdirectory(unit)
   endif()
 

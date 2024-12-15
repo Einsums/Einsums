@@ -20,13 +20,13 @@ set(TensorHeaders
 set(TensorSources TensorDefs.cpp)
 
 if(EINSUMS_WITH_GPU_SUPPORT)
-      set_source_files_properties(TensorDefs.cpp PROPERTIES LANGUAGE CXX)
+    set_source_files_properties(TensorDefs.cpp PROPERTIES LANGUAGE CXX)
 
-      list(APPEND TensorHeaders Einsums/Tensor/DeviceTensor.hpp)
-      list(APPEND TensorSources TensorDefs.hip)
-      
-      set(TensorGPUModules Einsums_GPUStreams)
-      set(TensorGPUDeps hip::host hip::device)
+    list(APPEND TensorHeaders Einsums/Tensor/DeviceTensor.hpp)
+    list(APPEND TensorSources TensorDefs.hip)
+
+    set(TensorGPUModules Einsums_GPUStreams)
+    set(TensorGPUDeps hip::host hip::device)
 endif()
 
 include(Einsums_AddModule)
@@ -34,8 +34,7 @@ einsums_add_module(
   Einsums Tensor
   SOURCES ${TensorSources}
   HEADERS ${TensorHeaders}
-  DEPENDENCIES Einsums::h5cpp
-      ${TensorGPUDeps}
+        DEPENDENCIES Einsums::h5cpp ${TensorGPUDeps}
   MODULE_DEPENDENCIES
         Einsums_Concepts
         Einsums_Config
@@ -48,4 +47,3 @@ einsums_add_module(
         ${TensorGPUModules}
   CMAKE_SUBDIRS examples tests
 )
-

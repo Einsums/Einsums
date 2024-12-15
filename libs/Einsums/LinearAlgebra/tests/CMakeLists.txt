@@ -8,9 +8,7 @@ include(Einsums_Message)
 if(EINSUMS_WITH_TESTS)
   if(EINSUMS_WITH_TESTS_UNIT)
     einsums_add_pseudo_target(tests.unit.modules.LinearAlgebra)
-    einsums_add_pseudo_dependencies(
-      tests.unit.modules tests.unit.modules.LinearAlgebra
-    )
+    einsums_add_pseudo_dependencies(tests.unit.modules tests.unit.modules.LinearAlgebra)
     add_subdirectory(unit)
   endif()
 

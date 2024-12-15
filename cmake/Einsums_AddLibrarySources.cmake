@@ -14,7 +14,8 @@ function(einsums_add_library_sources name globtype)
   if(NOT SOURCES_APPEND)
     set(${name}_SOURCES
         ""
-        CACHE INTERNAL "Sources for lib${name}." FORCE)
+            CACHE INTERNAL "Sources for lib${name}." FORCE
+    )
   endif()
 
   foreach(source ${sources})
@@ -29,29 +30,34 @@ function(einsums_add_library_sources name globtype)
     endif()
 
     if(add_flag)
-      einsums_debug("add_library_sources.${name}" "Adding ${absolute_path} to source list for lib${name}")
+        einsums_debug(
+                "add_library_sources.${name}" "Adding ${absolute_path} to source list for lib${name}"
+        )
       set(${name}_SOURCES
           ${${name}_SOURCES} ${absolute_path}
-          CACHE INTERNAL "Sources for lib${name}." FORCE)
+              CACHE INTERNAL "Sources for lib${name}." FORCE
+      )
     endif()
   endforeach()
 endfunction()
 
-# ######################################################################################################################
+# ##################################################################################################
 function(einsums_add_library_sources_noglob name)
   set(options APPEND)
   set(one_value_args)
   set(multi_value_args EXCLUDE SOURCES)
   cmake_parse_arguments(SOURCES "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
 
-  # einsums_print_list("DEBUG" "einsums_add_library_sources_noglob.${name}" "Sources for ${name}" ${SOURCES_SOURCES})
+  # einsums_print_list("DEBUG" "einsums_add_library_sources_noglob.${name}" "Sources for ${name}"
+  # ${SOURCES_SOURCES})
 
   set(sources ${SOURCES_SOURCES})
 
   if(NOT SOURCES_APPEND)
     set(${name}_SOURCES
         ""
-        CACHE INTERNAL "Sources for lib${name}." FORCE)
+            CACHE INTERNAL "Sources for lib${name}." FORCE
+    )
   endif()
 
   foreach(source ${sources})
@@ -66,10 +72,13 @@ function(einsums_add_library_sources_noglob name)
     endif()
 
     if(add_flag)
-      einsums_debug("add_library_sources.${name}" "Adding ${absolute_path} to source list for lib${name}")
+        einsums_debug(
+                "add_library_sources.${name}" "Adding ${absolute_path} to source list for lib${name}"
+        )
       set(${name}_SOURCES
           ${${name}_SOURCES} ${absolute_path}
-          CACHE INTERNAL "Sources for lib${name}." FORCE)
+              CACHE INTERNAL "Sources for lib${name}." FORCE
+      )
     endif()
   endforeach()
 endfunction()

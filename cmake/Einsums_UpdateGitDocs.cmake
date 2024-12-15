@@ -10,10 +10,7 @@ cmake_minimum_required(VERSION 3.18 FATAL_ERROR)
 find_package(Git)
 
 if (NOT GIT_FOUND)
-    message(
-            FATAL_ERROR
-            "Could not find git. git is needed to download and update the GitHub pages."
-    )
+    message(FATAL_ERROR "Could not find git. git is needed to download and update the GitHub pages.")
 endif ()
 
 macro(add_docs what)
@@ -26,8 +23,7 @@ macro(add_docs what)
     )
     if (NOT "${git_add_result}" EQUAL "0")
         message(
-                FATAL_ERROR
-                "Adding files to the GitHub pages branch failed: ${git_add_result_message}."
+                FATAL_ERROR "Adding files to the GitHub pages branch failed: ${git_add_result_message}."
         )
     endif ()
 endmacro()
@@ -49,8 +45,7 @@ macro(commit_docs message)
         )
         if (NOT "${git_commit_result}" EQUAL "0")
             message(
-                    FATAL_ERROR
-                    "Committing to the GitHub pages branch failed: ${git_pull_result_message}."
+                    FATAL_ERROR "Committing to the GitHub pages branch failed: ${git_pull_result_message}."
             )
         endif ()
 
@@ -62,10 +57,7 @@ macro(commit_docs message)
                 ERROR_VARIABLE git_push_result_message COMMAND_ECHO STDERR
         )
         if (NOT "${git_push_result}" EQUAL "0")
-            message(
-                    FATAL_ERROR
-                    "Pushing to the GitHub pages branch failed: ${git_push_result_message}."
-            )
+            message(FATAL_ERROR "Pushing to the GitHub pages branch failed: ${git_push_result_message}.")
         endif ()
     endif ()
 endmacro()
@@ -82,10 +74,7 @@ if (EXISTS "${EINSUMS_BINARY_DIR}/docs/gh-pages")
             ERROR_VARIABLE git_pull_result_message COMMAND_ECHO STDERR
     )
     if (NOT "${git_pull_result}" EQUAL "0")
-        message(
-                FATAL_ERROR
-                "Updating the GitHub pages branch failed: ${git_pull_result_message}."
-        )
+        message(FATAL_ERROR "Updating the GitHub pages branch failed: ${git_pull_result_message}.")
     endif ()
 else ()
     execute_process(
@@ -111,12 +100,8 @@ string(REGEX REPLACE " " ";" EINSUMS_WITH_DOCUMENTATION_OUTPUT_FORMATS
 
 # If a branch name has been set, we copy files to a corresponding directory
 if (EINSUMS_WITH_GIT_BRANCH)
-    message("Updating branch directory, "
-            "EINSUMS_WITH_GIT_BRANCH=\"${EINSUMS_WITH_GIT_BRANCH}\""
-    )
-    set(DOCS_BRANCH_DEST
-            "${EINSUMS_BINARY_DIR}/docs/gh-pages/branches/${EINSUMS_WITH_GIT_BRANCH}"
-    )
+    message("Updating branch directory, " "EINSUMS_WITH_GIT_BRANCH=\"${EINSUMS_WITH_GIT_BRANCH}\"")
+    set(DOCS_BRANCH_DEST "${EINSUMS_BINARY_DIR}/docs/gh-pages/branches/${EINSUMS_WITH_GIT_BRANCH}")
     file(REMOVE_RECURSE "${DOCS_BRANCH_DEST}")
     if ("html" IN_LIST EINSUMS_WITH_DOCUMENTATION_OUTPUT_FORMATS)
         file(
@@ -138,9 +123,7 @@ if (EINSUMS_WITH_GIT_BRANCH)
     endif ()
     if ("latexpdf" IN_LIST EINSUMS_WITH_DOCUMENTATION_OUTPUT_FORMATS)
         if (EXISTS "${DOCS_SOURCE}/latexpdf/latex/EINSUMS.pdf")
-            file(COPY "${DOCS_SOURCE}/latexpdf/latex/EINSUMS.pdf"
-                    DESTINATION "${DOCS_BRANCH_DEST}/pdf/"
-            )
+            file(COPY "${DOCS_SOURCE}/latexpdf/latex/EINSUMS.pdf" DESTINATION "${DOCS_BRANCH_DEST}/pdf/")
             add_docs("branches/${EINSUMS_WITH_GIT_BRANCH}/*")
             commit_docs("branch (latexpdf)")
         endif ()
@@ -194,10 +177,9 @@ if (EINSUMS_WITH_GIT_TAG)
         commit_docs("tag (depreport)")
     endif ()
 
-    # If a tag name has been set and it is a suitable version number, we also copy
-    # files to the "latest" directory. The regex only matches full version numbers
-    # with three numerical components (X.Y.Z). It does not match release
-    # candidates or other non-version tag names.
+    # If a tag name has been set and it is a suitable version number, we also copy files to the
+    # "latest" directory. The regex only matches full version numbers with three numerical components
+    # (X.Y.Z). It does not match release candidates or other non-version tag names.
     if ("${EINSUMS_WITH_GIT_TAG}" MATCHES "^v[0-9]+\\.[0-9]+\\.[0-9]+$")
         message("Updating latest directory")
         set(DOCS_LATEST_DEST "${EINSUMS_BINARY_DIR}/docs/gh-pages/latest")

@@ -40,22 +40,29 @@ function(einsums_create_configuration_summary message module_name)
           get_property(
             _value
             CACHE "${_variableName}"
-            PROPERTY VALUE)
+                  PROPERTY VALUE
+          )
           einsums_info("    ${_variableName}=${_value}")
         endif()
 
         string(REPLACE "_WITH_" "_HAVE_" __variableName ${_variableName})
         list(FIND DEFINITIONS_VARS ${__variableName} __pos)
         if(NOT ${__pos} EQUAL -1)
-          set(einsums_config_information "${einsums_config_information}" "\n        \"${_variableName}=${_value}\",")
-        elseif(NOT ${_variableName}Category STREQUAL "Generic" AND NOT ${_variableName}Category STREQUAL
-                                                                   "Build Targets")
+            set(einsums_config_information "${einsums_config_information}"
+                    "\n        \"${_variableName}=${_value}\","
+            )
+        elseif (NOT ${_variableName}Category STREQUAL "Generic" AND NOT ${_variableName}Category
+                STREQUAL "Build Targets"
+        )
           get_property(
             _type
             CACHE "${_variableName}"
-            PROPERTY TYPE)
+                  PROPERTY TYPE
+          )
           if(_type STREQUAL "BOOL")
-            set(einsums_config_information "${einsums_config_information}" "\n        \"${_variableName}=OFF\",")
+              set(einsums_config_information "${einsums_config_information}"
+                      "\n        \"${_variableName}=OFF\","
+              )
           endif()
         endif()
       endif()
@@ -67,7 +74,10 @@ function(einsums_create_configuration_summary message module_name)
   endif()
 
   if("${module_name_uc}" STREQUAL "EINSUMS")
-    configure_file("${EINSUMS_SOURCE_DIR}/cmake/templates/ConfigDefinesStrings.hpp.in"
-                   "${EINSUMS_BINARY_DIR}/libs/${PROJECT_NAME}/Config/include/${PROJECT_NAME}/Config/ConfigStrings.hpp" @ONLY)
+      configure_file(
+              "${EINSUMS_SOURCE_DIR}/cmake/templates/ConfigDefinesStrings.hpp.in"
+              "${EINSUMS_BINARY_DIR}/libs/${PROJECT_NAME}/Config/include/${PROJECT_NAME}/Config/ConfigStrings.hpp"
+              @ONLY
+      )
   endif()
 endfunction()

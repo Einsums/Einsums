@@ -5,11 +5,8 @@
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-set(PreprocessorHeaders
-    Einsums/Preprocessor/Cat.hpp
-    Einsums/Preprocessor/Expand.hpp
-    Einsums/Preprocessor/NArgs.hpp
-    Einsums/Preprocessor/Stringify.hpp
+set(PreprocessorHeaders Einsums/Preprocessor/Cat.hpp Einsums/Preprocessor/Expand.hpp
+        Einsums/Preprocessor/NArgs.hpp Einsums/Preprocessor/Stringify.hpp
 )
 
 set(PreprocessorSources)

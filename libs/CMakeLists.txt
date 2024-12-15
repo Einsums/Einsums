@@ -93,14 +93,14 @@ if(EINSUMS_BUILD_PYTHON STREQUAL "ON")
 
   if (NOT EINSUMS_PYTHON_VERSION)
     find_package(
-	    Python3 3.10
-	    COMPONENTS Interpreter Development NumPy
+            Python3 3.10
+            COMPONENTS Interpreter Development NumPy
             REQUIRED
     )
   else ()
     find_package(
             Python3 "${EINSUMS_PYTHON_VERSION}" EXACT
-	    COMPONENTS Interpreter Development NumPy
+            COMPONENTS Interpreter Development NumPy
             REQUIRED
     )
   endif ()

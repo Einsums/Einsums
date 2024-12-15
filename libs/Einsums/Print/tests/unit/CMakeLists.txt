@@ -3,9 +3,7 @@
 # Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 #----------------------------------------------------------------------------------------------
 
-set(PrintTests
-        OrdinalTest
-)
+set(PrintTests OrdinalTest)
 
 foreach (test ${PrintTests})
     set(sources ${test}.cpp)

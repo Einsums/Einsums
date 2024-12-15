@@ -8,8 +8,6 @@ if(EINSUMS_WITH_EXAMPLES)
   einsums_add_pseudo_dependencies(examples.modules examples.modules.Print)
   if(EINSUMS_WITH_TESTS AND EINSUMS_WITH_TESTS_EXAMPLES)
     einsums_add_pseudo_target(tests.examples.modules.Print)
-    einsums_add_pseudo_dependencies(
-      tests.examples.modules tests.examples.modules.Print
-    )
+    einsums_add_pseudo_dependencies(tests.examples.modules tests.examples.modules.Print)
   endif()
 endif()

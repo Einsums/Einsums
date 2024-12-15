@@ -5,7 +5,9 @@
 
 if(EINSUMS_WITH_EXAMPLES)
   einsums_add_pseudo_target(examples.modules.${EINSUMS_PYTHON_LIB_NAME}.Tensor)
-  einsums_add_pseudo_dependencies(examples.modules examples.modules.${EINSUMS_PYTHON_LIB_NAME}.Tensor)
+  einsums_add_pseudo_dependencies(
+          examples.modules examples.modules.${EINSUMS_PYTHON_LIB_NAME}.Tensor
+  )
   if(EINSUMS_WITH_TESTS AND EINSUMS_WITH_TESTS_EXAMPLES)
     einsums_add_pseudo_target(tests.examples.modules.${EINSUMS_PYTHON_LIB_NAME}.Tensor)
     einsums_add_pseudo_dependencies(

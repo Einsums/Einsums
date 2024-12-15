@@ -4,25 +4,19 @@
 #----------------------------------------------------------------------------------------------
 
 if(EINSUMS_WITH_GPU_SUPPORT)
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+    list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-set(GPUStreamsHeaders Einsums/GPUStreams/GPUStreams.hpp)
+    set(GPUStreamsHeaders Einsums/GPUStreams/GPUStreams.hpp)
 
-set(GPUStreamsSources GPUStreams.hip)
+    set(GPUStreamsSources GPUStreams.hip)
 
-include(Einsums_AddModule)
-einsums_add_module(
-  Einsums GPUStreams
-  SOURCES ${GPUStreamsSources}
-  HEADERS ${GPUStreamsHeaders}
-  DEPENDENCIES
-    hip::host
-    hip::device
-    roc::hipblas
-    roc::hipsolver
-  MODULE_DEPENDENCIES
-    Einsums_Config
-    Einsums_Errors
-  CMAKE_SUBDIRS examples tests
-)
+    include(Einsums_AddModule)
+    einsums_add_module(
+            Einsums GPUStreams
+            SOURCES ${GPUStreamsSources}
+            HEADERS ${GPUStreamsHeaders}
+            DEPENDENCIES hip::host hip::device roc::hipblas roc::hipsolver
+            MODULE_DEPENDENCIES Einsums_Config Einsums_Errors
+            CMAKE_SUBDIRS examples tests
+    )
 endif()

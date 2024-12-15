@@ -3,8 +3,8 @@
 # Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 #----------------------------------------------------------------------------------------------
 
-# The goal is to store all EINSUMS_* cache variables in a file, so that they would be forwarded to projects using
-# einsums (the file is included in the einsums-config.cmake)
+# The goal is to store all EINSUMS_* cache variables in a file, so that they would be forwarded to
+# projects using einsums (the file is included in the einsums-config.cmake)
 
 get_cmake_property(cache_vars CACHE_VARIABLES)
 
@@ -13,7 +13,9 @@ list(FILTER cache_vars INCLUDE REGEX "^EINSUMS")
 list(FILTER cache_vars EXCLUDE REGEX "Category$")
 
 # Generate einsums_cache_variables.cmake in the BUILD directory
-set(_cache_var_file ${CMAKE_CURRENT_BINARY_DIR}/lib/cmake/${PROJECT_NAME}/EinsumsCacheVariables.cmake)
+set(_cache_var_file
+        ${CMAKE_CURRENT_BINARY_DIR}/lib/cmake/${PROJECT_NAME}/EinsumsCacheVariables.cmake
+)
 set(_cache_var_file_template "${EINSUMS_SOURCE_DIR}/cmake/templates/EinsumsCacheVariables.cmake.in")
 set(_cache_variables)
 foreach(_var IN LISTS cache_vars)
@@ -26,4 +28,5 @@ configure_file(${_cache_var_file_template} ${_cache_var_file})
 install(
   FILES ${_cache_var_file}
   DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/cmake/${PROJECT_NAME}
-  COMPONENT cmake)
+        COMPONENT cmake
+)

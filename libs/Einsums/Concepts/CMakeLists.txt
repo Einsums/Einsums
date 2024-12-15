@@ -5,11 +5,8 @@
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-set(ConceptsHeaders
-    Einsums/Concepts/Complex.hpp
-    Einsums/Concepts/File.hpp
-    Einsums/Concepts/SmartPointer.hpp
-    Einsums/Concepts/Tensor.hpp
+set(ConceptsHeaders Einsums/Concepts/Complex.hpp Einsums/Concepts/File.hpp
+        Einsums/Concepts/SmartPointer.hpp Einsums/Concepts/Tensor.hpp
 )
 
 set(ConceptsSources)
@@ -20,9 +17,6 @@ einsums_add_module(
   SOURCES ${ConceptsSources}
   HEADERS ${ConceptsHeaders}
   DEPENDENCIES
-  MODULE_DEPENDENCIES
-        Einsums_Config
-        Einsums_Preprocessor
-        Einsums_TensorBase
+        MODULE_DEPENDENCIES Einsums_Config Einsums_Preprocessor Einsums_TensorBase
   CMAKE_SUBDIRS examples tests
 )

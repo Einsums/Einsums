@@ -10,7 +10,9 @@ macro(einsums_add_link_flag FLAG)
   set(options PUBLIC)
   set(one_value_args)
   set(multi_value_args TARGETS CONFIGURATIONS)
-  cmake_parse_arguments(EINSUMS_ADD_LINK_FLAG "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
+  cmake_parse_arguments(
+          EINSUMS_ADD_LINK_FLAG "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN}
+  )
 
   if(EINSUMS_ADD_LINK_FLAG_PUBLIC)
     set(_dest einsums_public_flags)
@@ -31,7 +33,9 @@ macro(einsums_add_link_flag FLAG)
   foreach(_config ${_configurations})
     foreach(_target ${_targets})
       if(NOT _config STREQUAL "none" AND NOT _target STREQUAL "none")
-        set(_flag "$<$<AND:$<CONFIG:${_config}>,$<STREQUAL:$<TARGET_PROPERTY:TYPE>,${_target}>:${FLAG}>")
+          set(_flag
+                  "$<$<AND:$<CONFIG:${_config}>,$<STREQUAL:$<TARGET_PROPERTY:TYPE>,${_target}>:${FLAG}>"
+          )
       elseif(_config STREQUAL "none" AND NOT _target STREQUAL "none")
         set(_flag "$<$<STREQUAL:$<TARGET_PROPERTY:TYPE>,${_target}>:${FLAG}>")
       elseif(NOT _config STREQUAL "none" AND _target STREQUAL "none")
@@ -48,7 +52,9 @@ macro(einsums_add_link_flag_if_available FLAG)
   set(options PUBLIC)
   set(one_value_args NAME)
   set(multi_value_args TARGETS)
-  cmake_parse_arguments(EINSUMS_ADD_LINK_FLAG_IA "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
+  cmake_parse_arguments(
+          EINSUMS_ADD_LINK_FLAG_IA "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN}
+  )
 
   set(_public)
   if(EINSUMS_ADD_LINK_FLAG_IA_PUBLIC)

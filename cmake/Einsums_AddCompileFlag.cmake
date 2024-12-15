@@ -10,7 +10,9 @@ function(einsums_add_target_compile_option FLAG)
   set(options PUBLIC)
   set(one_value_args)
   set(multi_value_args CONFIGURATIONS LANGUAGES)
-  cmake_parse_arguments(target_compile_option "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
+  cmake_parse_arguments(
+          target_compile_option "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN}
+  )
 
   if(target_compile_option_PUBLIC)
     set(_dest einsums_public_flags)
@@ -44,7 +46,9 @@ function(einsums_add_target_compile_option_if_available FLAG)
   set(options PUBLIC)
   set(one_value_args NAME)
   set(multi_value_args CONFIGURATIONS LANGUAGES)
-  cmake_parse_arguments(target_compile_option_ia "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
+  cmake_parse_arguments(
+          target_compile_option_ia "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN}
+  )
 
   if(target_compile_option_ia_PUBLIC)
     set(_modifier PUBLIC)
@@ -78,7 +82,8 @@ function(einsums_add_target_compile_option_if_available FLAG)
       einsums_add_target_compile_option(
         ${FLAG} ${_modifier}
         CONFIGURATIONS ${target_compile_option_ia_CONFIGURATIONS}
-        LANGUAGES ${_lang})
+              LANGUAGES ${_lang}
+      )
     else()
       einsums_info("\"${FLAG}\" not available for language ${_lang}.")
     endif()
@@ -89,16 +94,23 @@ function(einsums_remove_target_compile_option FLAG)
   set(options PUBLIC)
   set(one_value_args)
   set(multi_value_args CONFIGURATIONS)
-  cmake_parse_arguments(EINSUMS_ADD_TARGET_COMPILE_OPTION "${options}" "${one_value_args}" "${multi_value_args}"
-                        ${ARGN})
+  cmake_parse_arguments(
+          EINSUMS_ADD_TARGET_COMPILE_OPTION "${options}" "${one_value_args}" "${multi_value_args}"
+          ${ARGN}
+  )
 
   set(_configurations "none")
   if(EINSUMS_ADD_TARGET_COMPILE_OPTION_CONFIGURATIONS)
     set(_configurations "${EINSUMS_ADD_TARGET_COMPILE_OPTION_CONFIGURATIONS}")
   endif()
 
-  get_property(EINSUMS_TARGET_COMPILE_OPTIONS_PUBLIC_VAR GLOBAL PROPERTY EINSUMS_TARGET_COMPILE_OPTIONS_PUBLIC)
-  get_property(EINSUMS_TARGET_COMPILE_OPTIONS_PRIVATE_VAR GLOBAL PROPERTY EINSUMS_TARGET_COMPILE_OPTIONS_PRIVATE)
+  get_property(
+          EINSUMS_TARGET_COMPILE_OPTIONS_PUBLIC_VAR GLOBAL PROPERTY EINSUMS_TARGET_COMPILE_OPTIONS_PUBLIC
+  )
+  get_property(
+          EINSUMS_TARGET_COMPILE_OPTIONS_PRIVATE_VAR GLOBAL
+          PROPERTY EINSUMS_TARGET_COMPILE_OPTIONS_PRIVATE
+  )
   set_property(GLOBAL PROPERTY EINSUMS_TARGET_COMPILE_OPTIONS_PUBLIC "")
   set_property(GLOBAL PROPERTY EINSUMS_TARGET_COMPILE_OPTIONS_PRIVATE "")
 
@@ -124,8 +136,10 @@ function(einsums_add_target_compile_definition FLAG)
   set(options PUBLIC)
   set(one_value_args)
   set(multi_value_args CONFIGURATIONS)
-  cmake_parse_arguments(EINSUMS_ADD_TARGET_COMPILE_DEFINITION "${options}" "${one_value_args}" "${multi_value_args}"
-                        ${ARGN})
+  cmake_parse_arguments(
+          EINSUMS_ADD_TARGET_COMPILE_DEFINITION "${options}" "${one_value_args}" "${multi_value_args}"
+          ${ARGN}
+  )
 
   if(EINSUMS_ADD_TARGET_COMPILE_DEFINITION_PUBLIC)
     set(_dest einsums_public_flags)
@@ -156,7 +170,9 @@ function(einsums_add_compile_flag_if_available FLAG)
   set(options PUBLIC)
   set(one_value_args NAME)
   set(multi_value_args CONFIGURATIONS LANGUAGES)
-  cmake_parse_arguments(EINSUMS_ADD_COMPILE_FLAG_IA "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
+  cmake_parse_arguments(
+          EINSUMS_ADD_COMPILE_FLAG_IA "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN}
+  )
 
   set(_public)
   if(EINSUMS_ADD_COMPILE_FLAG_IA_PUBLIC)
@@ -186,8 +202,10 @@ function(einsums_add_compile_flag_if_available FLAG)
       einsums_error("Unsupported language ${_lang}.")
     endif()
     if(EINSUMS_WITH_${_lang}_FLAG_${_name})
-      einsums_add_compile_flag(${FLAG} CONFIGURATIONS ${EINSUMS_ADD_COMPILE_FLAG_IA_CONFIGURATIONS} LANGUAGES ${_lang}
-                               ${_public})
+        einsums_add_compile_flag(
+                ${FLAG} CONFIGURATIONS ${EINSUMS_ADD_COMPILE_FLAG_IA_CONFIGURATIONS} LANGUAGES ${_lang}
+                ${_public}
+        )
     else()
       einsums_info("\"${FLAG}\" not available for language ${_lang}.")
     endif()

@@ -8,16 +8,8 @@ include(Einsums_ExportTargets)
 function(einsums_add_module libname modulename)
   # Retrieve arguments
   set(options CONFIG_FILES)
-  set(one_value_args
-      BASE_LIBNAME)
-  set(multi_value_args
-      SOURCES
-      HEADERS
-      OBJECTS
-      DEPENDENCIES
-      MODULE_DEPENDENCIES
-      CMAKE_SUBDIRS
-  )
+  set(one_value_args BASE_LIBNAME)
+  set(multi_value_args SOURCES HEADERS OBJECTS DEPENDENCIES MODULE_DEPENDENCIES CMAKE_SUBDIRS)
   cmake_parse_arguments(
     ${modulename} "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN}
   )
@@ -214,7 +206,7 @@ function(einsums_add_module libname modulename)
     )
     set_target_properties(
       ${libname}_${modulename} PROPERTIES UNITY_BUILD_CODE_AFTER_INCLUDE
-                                       "// NOLINTEND(bugprone-suspicious-include)"
+            "// NOLINTEND(bugprone-suspicious-include)"
     )
   endif()
 

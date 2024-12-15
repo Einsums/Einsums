@@ -4,23 +4,22 @@
 #----------------------------------------------------------------------------------------------
 
 if(EINSUMS_WITH_GPU_SUPPORT)
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+  list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-set(GPUHeaders EinsumsPy/GPU/Export.hpp EinsumsPy/GPU/PyGPUView.hpp)
+  set(GPUHeaders EinsumsPy/GPU/Export.hpp EinsumsPy/GPU/PyGPUView.hpp)
 
-set(GPUSources Export.hip PyGPUView.hip)
+  set(GPUSources Export.hip PyGPUView.hip)
 
-include(Einsums_AddModule)
-einsums_add_module(
-  ${EINSUMS_PYTHON_LIB_NAME} GPU
-  SOURCES ${GPUSources}
-  HEADERS ${GPUHeaders}
-  DEPENDENCIES Einsums
-  MODULE_DEPENDENCIES
-  CMAKE_SUBDIRS examples tests
-  BASE_LIBNAME EinsumsPy
-)
+  include(Einsums_AddModule)
+  einsums_add_module(
+          ${EINSUMS_PYTHON_LIB_NAME} GPU
+          SOURCES ${GPUSources}
+          HEADERS ${GPUHeaders}
+          DEPENDENCIES Einsums
+          MODULE_DEPENDENCIES
+          CMAKE_SUBDIRS examples tests BASE_LIBNAME EinsumsPy
+  )
 
-include(Einsums_ExtendWithPython)
-einsums_extend_with_python(${EINSUMS_PYTHON_LIB_NAME}_GPU ${PYTHON_LIB_TYPE})
+  include(Einsums_ExtendWithPython)
+  einsums_extend_with_python(${EINSUMS_PYTHON_LIB_NAME}_GPU ${PYTHON_LIB_TYPE})
 endif()

@@ -5,8 +5,10 @@
 
 include(FetchContent)
 
-FetchContent_Declare(snitch
+fetchcontent_declare(
+        snitch
         GIT_REPOSITORY https://github.com/snitch-org/snitch.git
-        GIT_TAG v1.2.5) # update version number as needed
+        GIT_TAG v1.2.5
+) # update version number as needed
 
-FetchContent_MakeAvailable(snitch)
+fetchcontent_makeavailable(snitch)

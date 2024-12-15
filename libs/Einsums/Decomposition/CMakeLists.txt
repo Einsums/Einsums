@@ -5,10 +5,7 @@
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-set(DecompositionHeaders
-        Einsums/Decomposition/CP.hpp
-        Einsums/Decomposition/Tucker.hpp
-)
+set(DecompositionHeaders Einsums/Decomposition/CP.hpp Einsums/Decomposition/Tucker.hpp)
 
 set(DecompositionSources)
 

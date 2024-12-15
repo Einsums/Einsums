@@ -28,7 +28,9 @@ if (NOT WIN32)
 endif ()
 
 if (EINSUMS_WITH_GPU_SUPPORT)
-    list(APPEND TensorAlgebraHeaders Einsums/TensorAlgebra/Backends/GPUTensorAlgebra.hpp Einsums/TensorAlgebra/Backends/DeviceSort.hpp)
+    list(APPEND TensorAlgebraHeaders Einsums/TensorAlgebra/Backends/GPUTensorAlgebra.hpp
+            Einsums/TensorAlgebra/Backends/DeviceSort.hpp
+    )
     set(TensorAlgebraGPUDeps hip::host hip::device roc::hipblas roc::hipsolver)
 endif ()
 
@@ -37,8 +39,7 @@ einsums_add_module(
   Einsums TensorAlgebra
   SOURCES ${TensorAlgebraSources}
   HEADERS ${TensorAlgebraHeaders}
-  DEPENDENCIES
-    ${TensorAlgebraGPUDeps}
+        DEPENDENCIES ${TensorAlgebraGPUDeps}
   MODULE_DEPENDENCIES
         Einsums_Config
         Einsums_LinearAlgebra

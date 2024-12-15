@@ -5,10 +5,7 @@
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-set(AssertionHeaders
-    Einsums/Assert.hpp
-    Einsums/Assertion/EvaluateAssert.hpp
-)
+set(AssertionHeaders Einsums/Assert.hpp Einsums/Assertion/EvaluateAssert.hpp)
 
 set(AssertionSources Assertion.cpp)
 

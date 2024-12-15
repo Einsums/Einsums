@@ -35,15 +35,15 @@ if(NOT TARGET einsums_internal::hwloc)
     )
 
     # Set HWLOC_ROOT in case the other hints are used
-    if(HWLOC_ROOT)
+    if (HWLOC_ROOT)
         # The call to file is for compatibility with windows paths
         file(TO_CMAKE_PATH ${HWLOC_ROOT} HWLOC_ROOT)
-    elseif("$ENV{HWLOC_ROOT}")
+    elseif ("$ENV{HWLOC_ROOT}")
         file(TO_CMAKE_PATH $ENV{HWLOC_ROOT} HWLOC_ROOT)
-    else()
+    else ()
         file(TO_CMAKE_PATH "${HWLOC_INCLUDE_DIR}" HWLOC_INCLUDE_DIR)
         string(REPLACE "/include" "" HWLOC_ROOT "${HWLOC_INCLUDE_DIR}")
-    endif()
+    endif ()
 
     set(HWLOC_LIBRARIES ${HWLOC_LIBRARY})
     set(HWLOC_INCLUDE_DIRS ${HWLOC_INCLUDE_DIR})
@@ -55,12 +55,12 @@ if(NOT TARGET einsums_internal::hwloc)
             CACHE HWLOC_ROOT
             PROPERTY TYPE
     )
-    if(_type)
+    if (_type)
         set_property(CACHE HWLOC_ROOT PROPERTY ADVANCED 1)
-        if("x${_type}" STREQUAL "xUNINITIALIZED")
+        if ("x${_type}" STREQUAL "xUNINITIALIZED")
             set_property(CACHE HWLOC_ROOT PROPERTY TYPE PATH)
-        endif()
-    endif()
+        endif ()
+    endif ()
 
     add_library(einsums_internal::hwloc INTERFACE IMPORTED)
     target_include_directories(einsums_internal::hwloc SYSTEM INTERFACE ${HWLOC_INCLUDE_DIR})

@@ -5,10 +5,7 @@
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-set(ErrorsHeaders
-    Einsums/Errors/Error.hpp
-    Einsums/Errors/ThrowException.hpp
-)
+set(ErrorsHeaders Einsums/Errors/Error.hpp Einsums/Errors/ThrowException.hpp)
 
 set(ErrorsSources ErrorNames.cpp)
 
@@ -23,8 +20,7 @@ einsums_add_module(
   Einsums Errors
   SOURCES ${ErrorsSources}
   HEADERS ${ErrorsHeaders}
-  DEPENDENCIES
-    ${ErrorsGPUModules}
+        DEPENDENCIES ${ErrorsGPUModules}
   MODULE_DEPENDENCIES Einsums_Config Einsums_TypeSupport
   CMAKE_SUBDIRS examples tests
 )

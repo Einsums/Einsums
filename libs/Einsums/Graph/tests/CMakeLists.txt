@@ -8,25 +8,19 @@ include(Einsums_Message)
 if(EINSUMS_WITH_TESTS)
   if(EINSUMS_WITH_TESTS_UNIT)
     einsums_add_pseudo_target(tests.unit.modules.Graph)
-    einsums_add_pseudo_dependencies(
-      tests.unit.modules tests.unit.modules.Graph
-    )
+    einsums_add_pseudo_dependencies(tests.unit.modules tests.unit.modules.Graph)
     add_subdirectory(unit)
   endif()
 
   if(EINSUMS_WITH_TESTS_REGRESSIONS)
     einsums_add_pseudo_target(tests.regressions.modules.Graph)
-    einsums_add_pseudo_dependencies(
-      tests.regressions.modules tests.regressions.modules.Graph
-    )
+    einsums_add_pseudo_dependencies(tests.regressions.modules tests.regressions.modules.Graph)
     add_subdirectory(regressions)
   endif()
 
   if(EINSUMS_WITH_TESTS_BENCHMARKS)
     einsums_add_pseudo_target(tests.performance.modules.Graph)
-    einsums_add_pseudo_dependencies(
-      tests.performance.modules tests.performance.modules.Graph
-    )
+    einsums_add_pseudo_dependencies(tests.performance.modules tests.performance.modules.Graph)
     add_subdirectory(performance)
   endif()
 

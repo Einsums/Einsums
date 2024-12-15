@@ -3,9 +3,7 @@
 # Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 #----------------------------------------------------------------------------------------------
 
-set(ErrorTests
-        TestCatches
-)
+set(ErrorTests TestCatches)
 
 foreach (test ${ErrorTests})
     set(sources ${test}.cpp)

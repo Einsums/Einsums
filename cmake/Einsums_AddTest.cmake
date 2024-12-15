@@ -19,7 +19,9 @@ function(einsums_add_test category name)
 
   if(NOT ${name}_THREADS)
     set(${name}_THREADS 1)
-  elseif(EINSUMS_WITH_TESTS_MAX_THREADS GREATER 0 AND ${name}_THREADS GREATER EINSUMS_WITH_TESTS_MAX_THREADS)
+  elseif (EINSUMS_WITH_TESTS_MAX_THREADS GREATER 0 AND ${name}_THREADS GREATER
+          EINSUMS_WITH_TESTS_MAX_THREADS
+  )
     set(${name}_THREADS ${CALIBIRI_WITH_TESTS_MAX_THREADS})
   endif()
 
@@ -56,7 +58,8 @@ function(einsums_add_test category name)
 
   if(EINSUMS_WITH_PARALLEL_TESTS_BIND_NONE
      AND NOT run_serial
-     AND NOT "${name}_MPIWRAPPER")
+          AND NOT "${name}_MPIWRAPPER"
+  )
     set(args ${args} "--einsums:bind=none")
   endif()
 
@@ -73,7 +76,9 @@ function(einsums_add_test category name)
   if(${name}_MPIWRAPPER)
     set(_preflags_list_ ${MPIEXEC_PREFLAGS})
     separate_arguments(_preflags_list_)
-    list(PREPEND cmd "${MPIEXEC_EXECUTABLE}" "${MPIEXEC_NUMPROC_FLAG}" "${${name}_RANKS}" ${_preflags_list_})
+    list(PREPEND cmd "${MPIEXEC_EXECUTABLE}" "${MPIEXEC_NUMPROC_FLAG}" "${${name}_RANKS}"
+            ${_preflags_list_}
+    )
   endif()
 
   if(EINSUMS_WITH_TESTS_VALGRIND)
@@ -96,9 +101,7 @@ function(einsums_add_test category name)
   endif()
 
   if (TARGET ${${name}_EXECUTABLE}_test)
-    set_target_properties(${${name}_EXECUTABLE}_test PROPERTIES
-            RUNTIME_OUTPUT_DIRECTORY ""
-    )
+    set_target_properties(${${name}_EXECUTABLE}_test PROPERTIES RUNTIME_OUTPUT_DIRECTORY "")
   endif ()
 
   # Only real tests, i.e. executables ending in _test, link to einsums_testing
@@ -144,8 +147,8 @@ function(einsums_add_test_and_deps_test category subcategory name)
   endif()
 endfunction(einsums_add_test_and_deps_test)
 
-# Only unit and regression tests link to the testing library. Performance tests and examples don't link to the testing
-# library. Performance tests link to the performance_testing library.
+# Only unit and regression tests link to the testing library. Performance tests and examples don't
+# link to the testing library. Performance tests link to the performance_testing library.
 function(einsums_add_unit_test subcategory name)
   einsums_add_test_and_deps_test("unit" "${subcategory}" ${name} ${ARGN} TESTING)
   set_tests_properties("tests.unit.${subcategory}.${name}" PROPERTIES LABELS "UNIT_ONLY")
@@ -154,19 +157,22 @@ endfunction(einsums_add_unit_test)
 function(einsums_add_regression_test subcategory name)
   # ARGN needed in case we add a test with the same executable
   einsums_add_test_and_deps_test("regressions" "${subcategory}" ${name} ${ARGN} TESTING)
-  set_tests_properties("tests.regressions.${subcategory}.${name}" PROPERTIES LABELS "UNIT_ONLY")
+  set_tests_properties("tests.regressions.${subcategory}.${name}" PROPERTIES LABELS "REGRESSION_ONLY")
 endfunction(einsums_add_regression_test)
 
 function(einsums_add_performance_test subcategory name)
-  einsums_add_test_and_deps_test("performance" "${subcategory}" ${name} ${ARGN} RUN_SERIAL PERFORMANCE_TESTING)
-  set_tests_properties("tests.performance.${subcategory}.${name}" PROPERTIES LABELS "UNIT_ONLY")
+  einsums_add_test_and_deps_test(
+          "performance" "${subcategory}" ${name} ${ARGN} RUN_SERIAL PERFORMANCE_TESTING
+  )
+  set_tests_properties("tests.performance.${subcategory}.${name}" PROPERTIES LABELS "PERFORMANCE_ONLY")
 endfunction(einsums_add_performance_test)
 
 function(einsums_add_example_test subcategory name)
   einsums_add_test_and_deps_test("examples" "${subcategory}" ${name} ${ARGN})
 endfunction(einsums_add_example_test)
 
-# To create target examples.<name> when calling make examples need 2 distinct rules for examples and tests.examples
+# To create target examples.<name> when calling make examples need 2 distinct rules for examples and
+# tests.examples
 function(einsums_add_example_target_dependencies subcategory name)
   set(options DEPS_ONLY)
   cmake_parse_arguments(${name} "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})

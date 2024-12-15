@@ -23,8 +23,7 @@ einsums_add_module(
   Einsums LinearAlgebra
   SOURCES ${LinearAlgebraSources}
   HEADERS ${LinearAlgebraHeaders}
-  DEPENDENCIES
-    ${LinAlgGPUModules}
+        DEPENDENCIES ${LinAlgGPUModules}
         MODULE_DEPENDENCIES
         Einsums_Assertion
         Einsums_Config

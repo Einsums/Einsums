@@ -13,5 +13,6 @@ function(einsums_set_lib_name target name)
                DEBUG_OUTPUT_NAME einsums_${name}
                RELEASE_OUTPUT_NAME einsums_${name}
                MINSIZEREL_OUTPUT_NAME einsums_${name}
-               RELWITHDEBINFO_OUTPUT_NAME einsums_${name})
+          RELWITHDEBINFO_OUTPUT_NAME einsums_${name}
+  )
 endfunction()

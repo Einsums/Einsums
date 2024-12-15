@@ -3,9 +3,7 @@
 # Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 #----------------------------------------------------------------------------------------------
 
-set(FFTTests
-        FFT
-)
+set(FFTTests FFT)
 
 foreach (test ${FFTTests})
     set(sources ${test}.cpp)

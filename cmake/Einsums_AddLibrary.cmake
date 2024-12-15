@@ -126,19 +126,26 @@ function(einsums_add_library name)
   endif()
 
   add_library(
-          ${name} ${${name}_linktype} ${exclude_from_all} ${${name}_SOURCES} ${${name}_HEADERS} ${${name}_AUXILIARY}
+          ${name} ${${name}_linktype} ${exclude_from_all} ${${name}_SOURCES} ${${name}_HEADERS}
+          ${${name}_AUXILIARY}
   )
 
   if(${name}_OUTPUT_SUFFIX)
     if(MSVC)
       set_target_properties(
         ${name}
-        PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELEASE "${EINSUMS_WITH_BINARY_DIR}/Release/bin/${${name}_OUTPUT_SUFFIX}"
-                   LIBRARY_OUTPUT_DIRECTORY_RELEASE "${EINSUMS_WITH_BINARY_DIR}/Release/bin/${${name}_OUTPUT_SUFFIX}"
-                   ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${EINSUMS_WITH_BINARY_DIR}/Release/lib/${${name}_OUTPUT_SUFFIX}"
-                   RUNTIME_OUTPUT_DIRECTORY_DEBUG "${EINSUMS_WITH_BINARY_DIR}/Debug/bin/${${name}_OUTPUT_SUFFIX}"
-                   LIBRARY_OUTPUT_DIRECTORY_DEBUG "${EINSUMS_WITH_BINARY_DIR}/Debug/bin/${${name}_OUTPUT_SUFFIX}"
-                   ARCHIVE_OUTPUT_DIRECTORY_DEBUG "${EINSUMS_WITH_BINARY_DIR}/Debug/lib/${${name}_OUTPUT_SUFFIX}"
+              PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELEASE
+              "${EINSUMS_WITH_BINARY_DIR}/Release/bin/${${name}_OUTPUT_SUFFIX}"
+              LIBRARY_OUTPUT_DIRECTORY_RELEASE
+              "${EINSUMS_WITH_BINARY_DIR}/Release/bin/${${name}_OUTPUT_SUFFIX}"
+              ARCHIVE_OUTPUT_DIRECTORY_RELEASE
+              "${EINSUMS_WITH_BINARY_DIR}/Release/lib/${${name}_OUTPUT_SUFFIX}"
+              RUNTIME_OUTPUT_DIRECTORY_DEBUG
+              "${EINSUMS_WITH_BINARY_DIR}/Debug/bin/${${name}_OUTPUT_SUFFIX}"
+              LIBRARY_OUTPUT_DIRECTORY_DEBUG
+              "${EINSUMS_WITH_BINARY_DIR}/Debug/bin/${${name}_OUTPUT_SUFFIX}"
+              ARCHIVE_OUTPUT_DIRECTORY_DEBUG
+              "${EINSUMS_WITH_BINARY_DIR}/Debug/lib/${${name}_OUTPUT_SUFFIX}"
                    RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL
                    "${EINSUMS_WITH_BINARY_DIR}/MinSizeRel/bin/${${name}_OUTPUT_SUFFIX}"
                    LIBRARY_OUTPUT_DIRECTORY_MINSIZEREL
@@ -155,9 +162,12 @@ function(einsums_add_library name)
     else()
       set_target_properties(
         ${name}
-        PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${EINSUMS_WITH_BINARY_DIR}/bin/${${name}_OUTPUT_SUFFIX}"
-                   LIBRARY_OUTPUT_DIRECTORY "${EINSUMS_WITH_BINARY_DIR}/lib/${${name}_OUTPUT_SUFFIX}"
-              ARCHIVE_OUTPUT_DIRECTORY "${EINSUMS_WITH_BINARY_DIR}/lib/${${name}_OUTPUT_SUFFIX}"
+              PROPERTIES RUNTIME_OUTPUT_DIRECTORY
+              "${EINSUMS_WITH_BINARY_DIR}/bin/${${name}_OUTPUT_SUFFIX}"
+              LIBRARY_OUTPUT_DIRECTORY
+              "${EINSUMS_WITH_BINARY_DIR}/lib/${${name}_OUTPUT_SUFFIX}"
+              ARCHIVE_OUTPUT_DIRECTORY
+              "${EINSUMS_WITH_BINARY_DIR}/lib/${${name}_OUTPUT_SUFFIX}"
       )
     endif()
   endif()

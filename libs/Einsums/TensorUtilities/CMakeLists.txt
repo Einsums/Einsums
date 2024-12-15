@@ -27,11 +27,7 @@ einsums_add_module(
   SOURCES ${TensorUtilitiesSources}
   HEADERS ${TensorUtilitiesHeaders}
   DEPENDENCIES
-  MODULE_DEPENDENCIES
-        Einsums_TensorBase
-        Einsums_Tensor
-        Einsums_LinearAlgebra
-        Einsums_Concepts
+        MODULE_DEPENDENCIES Einsums_TensorBase Einsums_Tensor Einsums_LinearAlgebra Einsums_Concepts
         Einsums_Utilities
   CMAKE_SUBDIRS examples tests
 )

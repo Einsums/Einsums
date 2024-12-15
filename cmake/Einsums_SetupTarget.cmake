@@ -19,7 +19,8 @@ function(einsums_setup_target target)
       NOLIBS
       NONAMEPREFIX
       NOLLKEYWORD
-      UNITY_BUILD)
+          UNITY_BUILD
+  )
   set(one_value_args TYPE FOLDER NAME SOVERSION VERSION HEADER_ROOT)
   set(multi_value_args DEPENDENCIES COMPILE_FLAGS LINK_FLAGS INSTALL_FLAGS INSTALL_PDB)
   cmake_parse_arguments(target "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
@@ -86,13 +87,16 @@ function(einsums_setup_target target)
   endif()
 
   if("${_type}" STREQUAL "EXECUTABLE")
-    target_compile_definitions(${target} PRIVATE "EINSUMS_APPLICATION_NAME=${name}"
-                                                 "EINSUMS_APPLICATION_STRING=\"${name}\"")
+      target_compile_definitions(
+              ${target} PRIVATE "EINSUMS_APPLICATION_NAME=${name}" "EINSUMS_APPLICATION_STRING=\"${name}\""
+      )
   endif()
 
   if("${_type}" STREQUAL "LIBRARY")
     if(DEFINED EINSUMS_LIBRARY_VERSION AND DEFINED EINSUMS_SOVERSION)
-      set_target_properties(${target} PROPERTIES VESRION ${EINSUMS_LIBRARY_VERSION} SOVERSION ${EINSUMS_SOVERSION})
+        set_target_properties(
+                ${target} PROPERTIES VESRION ${EINSUMS_LIBRARY_VERSION} SOVERSION ${EINSUMS_SOVERSION}
+        )
     endif()
 
     if(NOT target_NONAMEPREFIX)
@@ -119,10 +123,14 @@ function(einsums_setup_target target)
 
   if(target_UNITY_BUILD)
     set_target_properties(${target} PROPERTIES UNITY_BUILD ON)
-    set_target_properties(${target} PROPERTIES UNITY_BUILD_CODE_BEFORE_INCLUDE
-                                               "// NOLINTBEGIN(bugprone-suspicious-include)")
-    set_target_properties(${target} PROPERTIES UNITY_BUILD_CODE_AFTER_INCLUDE
-                                               "// NOLINTEND(bugprone-suspicious-include)")
+    set_target_properties(
+            ${target} PROPERTIES UNITY_BUILD_CODE_BEFORE_INCLUDE
+            "// NOLINTBEGIN(bugprone-suspicious-include)"
+    )
+    set_target_properties(
+            ${target} PROPERTIES UNITY_BUILD_CODE_AFTER_INCLUDE
+            "// NOLINTEND(bugprone-suspicious-include)"
+    )
   endif()
 
   get_target_property(target_EXCLUDE_FROM_ALL ${target} EXCLUDE_FROM_ALL)
@@ -132,9 +140,7 @@ function(einsums_setup_target target)
     set(install_export EXPORT einsums_targets)
   endif()
 
-#  set_target_properties(${target} PROPERTIES
-#    BUILD_WITH_INSTALL_RPATH TRUE
-#  )
+  # set_target_properties(${target} PROPERTIES BUILD_WITH_INSTALL_RPATH TRUE )
 
   if(target_INSTALL AND NOT target_EXCLUDE_FROM_ALL)
     install(TARGETS ${target} ${install_export} ${target_INSTALL_FLAGS})
@@ -145,7 +151,8 @@ function(einsums_setup_target target)
       install(
         DIRECTORY "${target_HEADER_ROOT}/"
         DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
-        COMPONENT ${name})
+              COMPONENT ${name}
+      )
     endif()
   endif()
 endfunction()

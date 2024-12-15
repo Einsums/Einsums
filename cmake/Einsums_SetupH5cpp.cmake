@@ -12,49 +12,35 @@ find_package(ZLIB REQUIRED)
 find_package(TargetHDF5 REQUIRED)
 
 include(FetchContent)
-FetchContent_Declare(
+fetchcontent_declare(
         h5cpp
         URL https://github.com/Einsums/h5cpp/archive/v1.10.4-6+4.tar.gz
         URL_HASH SHA256=f9acf8d35ac1584d0c0f36471abc3faaa3e181d2713950b1af21e4f4bc0f9991
 )
 
-FetchContent_GetProperties(h5cpp)
+fetchcontent_getproperties(h5cpp)
 if (NOT h5cpp_POPULATED)
-    FetchContent_Populate(h5cpp)
+    fetchcontent_populate(h5cpp)
 endif()
 set(h5cpp_ROOT ${h5cpp_SOURCE_DIR})
-
 
 add_library(Einsums_h5cpp INTERFACE)
 add_library("Einsums::h5cpp" ALIAS Einsums_h5cpp)
 
 if (EINSUMS_H5CPP_USE_OMP_ALIGNED_ALLOC)
-    target_compile_definitions(
-            Einsums_h5cpp
-            INTERFACE
-            $<BUILD_INTERFACE:H5CPP_USE_OMP_ALIGNED_ALLOC>
-    )
+    target_compile_definitions(Einsums_h5cpp INTERFACE $<BUILD_INTERFACE:H5CPP_USE_OMP_ALIGNED_ALLOC>)
 endif()
-set_target_properties(
-        Einsums_h5cpp
-        PROPERTIES
-        EXPORT_NAME h5cpp
-)
+set_target_properties(Einsums_h5cpp PROPERTIES EXPORT_NAME h5cpp)
 target_include_directories(
         Einsums_h5cpp
         # SYSTEM suppresses "error: non-constant-expression cannot be narrowed" for some compilers
         SYSTEM
-        INTERFACE
-        $<BUILD_INTERFACE:${h5cpp_SOURCE_DIR}>
-        # TODO return to this when build headers adjusted   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+        INTERFACE $<BUILD_INTERFACE:${h5cpp_SOURCE_DIR}>
+        # TODO return to this when build headers adjusted
+        # $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}>
 )
-target_link_libraries(
-        Einsums_h5cpp
-        INTERFACE
-        tgt::hdf5
-        ZLIB::ZLIB
-)
+target_link_libraries(Einsums_h5cpp INTERFACE tgt::hdf5 ZLIB::ZLIB)
 
 install(
         TARGETS Einsums_h5cpp
@@ -63,8 +49,7 @@ install(
 )
 
 install(
-        DIRECTORY
-        ${h5cpp_SOURCE_DIR}/h5cpp
+        DIRECTORY ${h5cpp_SOURCE_DIR}/h5cpp
         COMPONENT core
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}
 )
