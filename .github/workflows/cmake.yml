@@ -126,20 +126,20 @@ jobs:
           activate-environment: einsums-dev
           #environment-file: devtools/conda-envs/${{matrix.environment}}
           environment-file: export.yaml
-          miniforge-variant: Mambaforge
-          use-mamba: true
+          #miniforge-variant: Mambaforge
+          #use-mamba: true
           channels: conda-forge
 
       # Step is unnecessary; remove step for debugging.
       - name: Confound Environment - test fetched everything
         if: matrix.cxx == 'L-src'
         run: |
-          conda remove catch2 fmt range-v3 --solver=libmamba
+          conda remove catch2 fmt range-v3
 
       - name: Conda environment
         run: |
-          mamba info
-          mamba list
+          conda info
+          conda list
 
       - name: Prepare compiler environment for Windows
         if: ${{ runner.os == 'Windows' }}
