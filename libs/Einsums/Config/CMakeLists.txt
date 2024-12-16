@@ -15,7 +15,7 @@ set(ConfigHeaders
     Einsums/Config/Types.hpp
 )
 
-set(ConfigSources Version.cpp)
+set(ConfigSources Version.cpp Types.cpp)
 
 include(Einsums_AddModule)
 einsums_add_module(

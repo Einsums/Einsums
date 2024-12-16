@@ -8,7 +8,7 @@ include(Einsums_Message)
 if(EINSUMS_WITH_TESTS)
   if(EINSUMS_WITH_TESTS_UNIT)
       einsums_add_pseudo_target(Tests.Unit.Modules.GPUStreams)
-      einsums_add_pseudo_dependencies(Tests.Unit.Modules.Tests.Unit.Modules.GPUStreams)
+      einsums_add_pseudo_dependencies(Tests.Unit.Modules Tests.Unit.Modules.GPUStreams)
     add_subdirectory(unit)
   endif()
 
