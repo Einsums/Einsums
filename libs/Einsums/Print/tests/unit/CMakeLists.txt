@@ -16,5 +16,5 @@ foreach (test ${PrintTests})
             FOLDER ${folder_name}
     )
 
-    einsums_add_unit_test("modules.Print" ${test})
+    einsums_add_unit_test("Modules.Print" ${test})
 endforeach ()

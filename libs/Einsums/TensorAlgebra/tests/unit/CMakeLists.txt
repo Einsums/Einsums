@@ -34,7 +34,7 @@ foreach (test ${TensorAlgebraTests})
           FOLDER ${folder_name}
   )
 
-  einsums_add_unit_test("modules.TensorAlgebra" ${test})
+  einsums_add_unit_test("Modules.TensorAlgebra" ${test})
 endforeach ()
 
 if(EINSUMS_WITH_GPU_SUPPORT)
@@ -51,6 +51,6 @@ if(EINSUMS_WITH_GPU_SUPPORT)
             FOLDER ${folder_name}
     )
 
-    einsums_add_unit_test("modules.TensorAlgebra" ${test}_gpu)
+    einsums_add_unit_test("Modules.TensorAlgebra" ${test}_gpu)
   endforeach ()
 endif()

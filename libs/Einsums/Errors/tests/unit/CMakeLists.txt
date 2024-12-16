@@ -16,5 +16,5 @@ foreach (test ${ErrorTests})
             FOLDER ${folder_name}
     )
 
-    einsums_add_unit_test("modules.Errors" ${test})
+    einsums_add_unit_test("Modules.Errors" ${test})
 endforeach ()

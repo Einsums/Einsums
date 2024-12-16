@@ -16,5 +16,5 @@ foreach (test ${TensorUtilitiesTests})
             FOLDER ${folder_name}
     )
 
-    einsums_add_unit_test("modules.TensorUtilities" ${test})
+    einsums_add_unit_test("Modules.TensorUtilities" ${test})
 endforeach ()

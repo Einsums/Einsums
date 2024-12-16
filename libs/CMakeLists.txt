@@ -9,35 +9,35 @@ include(Einsums_AddPseudoTarget)
 
 # add example pseudo targets needed for modules
 if(EINSUMS_WITH_EXAMPLES)
-  einsums_add_pseudo_target(examples.modules)
-  einsums_add_pseudo_dependencies(examples examples.modules)
+  einsums_add_pseudo_target(Examples.Modules)
+  einsums_add_pseudo_dependencies(Examples Examples.Modules)
 endif()
 
 # add test pseudo targets needed for modules
 if(EINSUMS_WITH_TESTS)
   if(EINSUMS_WITH_TESTS_UNIT)
-    einsums_add_pseudo_target(tests.unit.modules)
-    einsums_add_pseudo_dependencies(tests.unit tests.unit.modules)
+    einsums_add_pseudo_target(Tests.Unit.Modules)
+    einsums_add_pseudo_dependencies(Tests.Unit Tests.Unit.Modules)
   endif()
 
   if(EINSUMS_WITH_EXAMPLES AND EINSUMS_WITH_TESTS_EXAMPLES)
-    einsums_add_pseudo_target(tests.examples.modules)
-    einsums_add_pseudo_dependencies(tests.examples tests.examples.modules)
+    einsums_add_pseudo_target(Tests.Examples.Modules)
+    einsums_add_pseudo_dependencies(Tests.Examples Tests.Examples.Modules)
   endif()
 
   if(EINSUMS_WITH_TESTS_REGRESSIONS)
-    einsums_add_pseudo_target(tests.regressions.modules)
-    einsums_add_pseudo_dependencies(tests.regressions tests.regressions.modules)
+    einsums_add_pseudo_target(Tests.Regressions.Modules)
+    einsums_add_pseudo_dependencies(Tests.Regressions Tests.Regressions.Modules)
   endif()
 
   if(EINSUMS_WITH_TESTS_BENCHMARKS)
-    einsums_add_pseudo_target(tests.performance.modules)
-    einsums_add_pseudo_dependencies(tests.performance tests.performance.modules)
+    einsums_add_pseudo_target(Tests.Performance.Modules)
+    einsums_add_pseudo_dependencies(Tests.Performance Tests.Performance.Modules)
   endif()
 
   if(EINSUMS_WITH_TESTS_HEADERS)
-    einsums_add_pseudo_target(tests.headers.modules)
-    einsums_add_pseudo_dependencies(tests.headers tests.headers.modules)
+    einsums_add_pseudo_target(Tests.Headers.Modules)
+    einsums_add_pseudo_dependencies(Tests.Headers Tests.Headers.Modules)
   endif()
 endif()
 
@@ -105,7 +105,6 @@ if(EINSUMS_BUILD_PYTHON STREQUAL "ON")
     )
   endif ()
 
-  # find_package(pybind11 REQUIRED)
   include(Einsums_SetupPybind11)
 
   unset(EINSUMS_PYTHON_VERSION)

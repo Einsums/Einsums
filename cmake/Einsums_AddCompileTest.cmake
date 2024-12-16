@@ -62,26 +62,26 @@ endfunction()
 # To add test to the category root as in tests/regressions/ with correct name
 function(einsums_add_test_and_deps_compile_test category subcategory name)
   if("${subcategory}" STREQUAL "")
-    einsums_add_compile_test(tests.${category} ${name} ${ARGN})
-    einsums_add_compile_test_target_dependencies(tests.${category} ${name})
+    einsums_add_compile_test(Tests.${category} ${name} ${ARGN})
+    einsums_add_compile_test_target_dependencies(Tests.${category} ${name})
   else()
-    einsums_add_compile_test(tests.${category}.${subcategory} ${name} ${ARGN})
-    einsums_add_compile_test_target_dependencies(tests.${category}.${subcategory} ${name})
+    einsums_add_compile_test(Tests.${category}.${subcategory} ${name} ${ARGN})
+    einsums_add_compile_test_target_dependencies(Tests.${category}.${subcategory} ${name})
   endif()
 endfunction(einsums_add_test_and_deps_compile_test)
 
 function(einsums_add_unit_compile_test subcategory name)
-  einsums_add_test_and_deps_compile_test("unit" "${subcategory}" ${name} ${ARGN})
+  einsums_add_test_and_deps_compile_test("Unit" "${subcategory}" ${name} ${ARGN})
 endfunction(einsums_add_unit_compile_test)
 
 function(einsums_add_regression_compile_test subcategory name)
-  einsums_add_test_and_deps_compile_test("regressions" "${subcategory}" ${name} ${ARGN})
+  einsums_add_test_and_deps_compile_test("Regressions" "${subcategory}" ${name} ${ARGN})
 endfunction(einsums_add_regression_compile_test)
 
 function(einsums_add_headers_compile_test subcategory name)
   # Important to keep the double quotes around subcategory otherwise it doesn't consider empty
   # argument but just removes it
-  einsums_add_test_and_deps_compile_test("headers" "${subcategory}" ${name} ${ARGN} OBJECT)
+  einsums_add_test_and_deps_compile_test("Headers" "${subcategory}" ${name} ${ARGN} OBJECT)
 endfunction(einsums_add_headers_compile_test)
 
 function(einsums_add_header_tests category)
@@ -97,7 +97,7 @@ function(einsums_add_header_tests category)
   endif()
 
   set(all_headers)
-  add_custom_target(tests.headers.${category})
+  add_custom_target(Tests.Headers.${category})
 
   foreach(header ${${category}_HEADERS})
 

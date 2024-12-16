@@ -16,5 +16,5 @@ foreach (test ${FFTTests})
             FOLDER ${folder_name}
     )
 
-    einsums_add_unit_test("modules.FFT" ${test})
+    einsums_add_unit_test("Modules.FFT" ${test})
 endforeach ()

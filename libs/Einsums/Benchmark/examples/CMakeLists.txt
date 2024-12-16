@@ -4,10 +4,10 @@
 #----------------------------------------------------------------------------------------------
 
 if(EINSUMS_WITH_EXAMPLES)
-  einsums_add_pseudo_target(examples.modules.Benchmark)
-  einsums_add_pseudo_dependencies(examples.modules examples.modules.Benchmark)
+  einsums_add_pseudo_target(Examples.Modules.Benchmark)
+  einsums_add_pseudo_dependencies(Examples.Modules Examples.Modules.Benchmark)
   if(EINSUMS_WITH_TESTS AND EINSUMS_WITH_TESTS_EXAMPLES)
-    einsums_add_pseudo_target(tests.examples.modules.Benchmark)
-    einsums_add_pseudo_dependencies(tests.examples.modules tests.examples.modules.Benchmark)
+    einsums_add_pseudo_target(Tests.Examples.Modules.Benchmark)
+    einsums_add_pseudo_dependencies(Tests.Examples.Modules Tests.Examples.Modules.Benchmark)
   endif()
 endif()

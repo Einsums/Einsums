@@ -16,5 +16,5 @@ foreach (test ${DecompositionTests})
             FOLDER ${folder_name}
     )
 
-    einsums_add_unit_test("modules.Decomposition" ${test})
+    einsums_add_unit_test("Modules.Decomposition" ${test})
 endforeach ()

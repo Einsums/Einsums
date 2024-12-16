@@ -8,7 +8,7 @@ if(EINSUMS_WITH_TESTS_VALGRIND)
 endif()
 
 function(einsums_add_test category name)
-  set(options FAILURE_EXPECTED RUN_SERIAL TESTING PROFORMANCE_TESTING MPIWRAPPER)
+  set(options FAILURE_EXPECTED RUN_SERIAL TESTING PERFORMANCE_TESTING MPIWRAPPER)
   set(one_value_args COST EXECUTABLE RANKS THREADS TIMEOUT WRAPPER)
   set(multi_value_args ARGS)
   cmake_parse_arguments(${name} "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
@@ -120,7 +120,7 @@ function(einsums_add_test_target_dependencies category name)
   set(one_value_args PSEUDO_DEPS_NAME)
   cmake_parse_arguments(${name} "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
   # default target_extension is _test but for examples.* target, it may vary
-  if(NOT ("${category}" MATCHES "tests.examples*"))
+  if (NOT ("${category}" MATCHES "Tests.Examples*"))
     set(_ext "_test")
   endif()
   # Add a custom target for this example
@@ -139,36 +139,36 @@ endfunction(einsums_add_test_target_dependencies)
 # To add test to the category root as in tests/regressions/ with correct name
 function(einsums_add_test_and_deps_test category subcategory name)
   if("${subcategory}" STREQUAL "")
-    einsums_add_test(tests.${category} ${name} ${ARGN})
-    einsums_add_test_target_dependencies(tests.${category} ${name} ${ARGN})
+    einsums_add_test(Tests.${category} ${name} ${ARGN})
+    einsums_add_test_target_dependencies(Tests.${category} ${name} ${ARGN})
   else()
-    einsums_add_test(tests.${category}.${subcategory} ${name} ${ARGN})
-    einsums_add_test_target_dependencies(tests.${category}.${subcategory} ${name} ${ARGN})
+    einsums_add_test(Tests.${category}.${subcategory} ${name} ${ARGN})
+    einsums_add_test_target_dependencies(Tests.${category}.${subcategory} ${name} ${ARGN})
   endif()
 endfunction(einsums_add_test_and_deps_test)
 
 # Only unit and regression tests link to the testing library. Performance tests and examples don't
 # link to the testing library. Performance tests link to the performance_testing library.
 function(einsums_add_unit_test subcategory name)
-  einsums_add_test_and_deps_test("unit" "${subcategory}" ${name} ${ARGN} TESTING)
-  set_tests_properties("tests.unit.${subcategory}.${name}" PROPERTIES LABELS "UNIT_ONLY")
+  einsums_add_test_and_deps_test("Unit" "${subcategory}" ${name} ${ARGN} TESTING)
+  set_tests_properties("Tests.Unit.${subcategory}.${name}" PROPERTIES LABELS "UNIT_ONLY")
 endfunction(einsums_add_unit_test)
 
 function(einsums_add_regression_test subcategory name)
   # ARGN needed in case we add a test with the same executable
-  einsums_add_test_and_deps_test("regressions" "${subcategory}" ${name} ${ARGN} TESTING)
-  set_tests_properties("tests.regressions.${subcategory}.${name}" PROPERTIES LABELS "REGRESSION_ONLY")
+  einsums_add_test_and_deps_test("Regressions" "${subcategory}" ${name} ${ARGN} TESTING)
+  set_tests_properties("Tests.Regressions.${subcategory}.${name}" PROPERTIES LABELS "REGRESSION_ONLY")
 endfunction(einsums_add_regression_test)
 
 function(einsums_add_performance_test subcategory name)
   einsums_add_test_and_deps_test(
-          "performance" "${subcategory}" ${name} ${ARGN} RUN_SERIAL PERFORMANCE_TESTING
+          "Performance" "${subcategory}" ${name} ${ARGN} RUN_SERIAL PERFORMANCE_TESTING
   )
-  set_tests_properties("tests.performance.${subcategory}.${name}" PROPERTIES LABELS "PERFORMANCE_ONLY")
+  set_tests_properties("Tests.Performance.${subcategory}.${name}" PROPERTIES LABELS "PERFORMANCE_ONLY")
 endfunction(einsums_add_performance_test)
 
 function(einsums_add_example_test subcategory name)
-  einsums_add_test_and_deps_test("examples" "${subcategory}" ${name} ${ARGN})
+  einsums_add_test_and_deps_test("Examples" "${subcategory}" ${name} ${ARGN})
 endfunction(einsums_add_example_test)
 
 # To create target examples.<name> when calling make examples need 2 distinct rules for examples and

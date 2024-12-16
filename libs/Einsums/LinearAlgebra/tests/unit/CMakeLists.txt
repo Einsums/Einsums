@@ -33,5 +33,5 @@ foreach(test ${linear_algebra_tests})
             FOLDER ${folder_name}
     )
 
-    einsums_add_unit_test("modules.LinearAlgebra" ${test})
+    einsums_add_unit_test("Modules.LinearAlgebra" ${test})
 endforeach ()

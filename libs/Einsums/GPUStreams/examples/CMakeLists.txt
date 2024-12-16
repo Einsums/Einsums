@@ -4,10 +4,10 @@
 #----------------------------------------------------------------------------------------------
 
 if(EINSUMS_WITH_EXAMPLES)
-  einsums_add_pseudo_target(examples.modules.GPUStreams)
-  einsums_add_pseudo_dependencies(examples.modules examples.modules.GPUStreams)
+    einsums_add_pseudo_target(Examples.Modules.GPUStreams)
+    einsums_add_pseudo_dependencies(Examples.Modules Examples.Modules.GPUStreams)
   if(EINSUMS_WITH_TESTS AND EINSUMS_WITH_TESTS_EXAMPLES)
-    einsums_add_pseudo_target(tests.examples.modules.GPUStreams)
-    einsums_add_pseudo_dependencies(tests.examples.modules tests.examples.modules.GPUStreams)
+      einsums_add_pseudo_target(Tests.Examples.Modules.GPUStreams)
+      einsums_add_pseudo_dependencies(Tests.Examples.Modules Tests.Examples.Modules.GPUStreams)
   endif()
 endif()

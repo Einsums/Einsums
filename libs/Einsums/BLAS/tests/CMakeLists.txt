@@ -7,26 +7,26 @@ include(Einsums_Message)
 
 if(EINSUMS_WITH_TESTS)
   if(EINSUMS_WITH_TESTS_UNIT)
-    einsums_add_pseudo_target(tests.unit.modules.BLAS)
-    einsums_add_pseudo_dependencies(tests.unit.modules tests.unit.modules.BLAS)
+    einsums_add_pseudo_target(Tests.Unit.Modules.BLAS)
+    einsums_add_pseudo_dependencies(Tests.Unit.Modules Tests.Unit.Modules.BLAS)
     add_subdirectory(unit)
   endif()
 
   if(EINSUMS_WITH_TESTS_REGRESSIONS)
-    einsums_add_pseudo_target(tests.regressions.modules.BLAS)
-    einsums_add_pseudo_dependencies(tests.regressions.modules tests.regressions.modules.BLAS)
+    einsums_add_pseudo_target(Tests.Regressions.Modules.BLAS)
+    einsums_add_pseudo_dependencies(Tests.Regressions.Modules Tests.Regressions.Modules.BLAS)
     add_subdirectory(regressions)
   endif()
 
   if(EINSUMS_WITH_TESTS_BENCHMARKS)
-    einsums_add_pseudo_target(tests.performance.modules.BLAS)
-    einsums_add_pseudo_dependencies(tests.performance.modules tests.performance.modules.BLAS)
+    einsums_add_pseudo_target(Tests.Performance.Modules.BLAS)
+    einsums_add_pseudo_dependencies(Tests.Performance.Modules Tests.Performance.Modules.BLAS)
     add_subdirectory(performance)
   endif()
 
   if(EINSUMS_WITH_TESTS_HEADERS)
     einsums_add_header_tests(
-      modules.BLAS
+            Modules.BLAS
       HEADERS ${BLASHeaders}
       HEADER_ROOT ${PROJECT_SOURCE_DIR}/include
       DEPENDENCIES einsums_BLAS
