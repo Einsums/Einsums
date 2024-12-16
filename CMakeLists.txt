@@ -10,7 +10,7 @@ cmake_minimum_required(VERSION 3.24 FATAL_ERROR) # 3.24 for FetchContent_Declare
 # ##################################################################################################
 # C++ overrides
 # ##################################################################################################
-# Not currently used but provided as an exmaple for the future.
+# Not currently used but provided as an example for the future.
 #
 # set(CMAKE_USER_MAKE_RULES_OVERRIDE_CXX
 # "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Einsums_CXXOverrides.cmake" )
