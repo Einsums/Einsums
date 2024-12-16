@@ -10,13 +10,17 @@ set(RuntimeHeaders Einsums/Runtime.hpp Einsums/Runtime/InitializeFinalize.hpp)
 
 set(RuntimeSources InitializeFinalize.cpp)
 
+if(EINSUMS_WITH_GPU_SUPPORT)
+        set(RuntimeGPUStreamsInit Einsums_GPUStreams)
+endif()
+
 include(Einsums_AddModule)
 einsums_add_module(
         Einsums Runtime
         SOURCES ${RuntimeSources}
         HEADERS ${RuntimeHeaders}
         DEPENDENCIES Einsums::h5cpp
-        MODULE_DEPENDENCIES Einsums_BLAS Einsums_Config Einsums_Profile
+        MODULE_DEPENDENCIES Einsums_BLAS Einsums_Config Einsums_Profile Einsums_Utilities ${RuntimeGPUStreamsInit}
         CMAKE_SUBDIRS examples tests
         #  BASE_LIBNAME Einsums
 )

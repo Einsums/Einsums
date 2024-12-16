@@ -30,8 +30,8 @@ struct TimerDetail {
     size_t total_calls{0};
 
     std::shared_ptr<TimerDetail>                        parent{nullptr};
-    std::map<std::string, std::shared_ptr<TimerDetail>> children;
-    std::vector<std::string>                            order;
+    std::map<std::string, std::shared_ptr<TimerDetail>> children{};
+    std::vector<std::string>                            order{};
 
     time_point start_time;
 };
@@ -162,7 +162,7 @@ void push(std::string name) {
             name = fmt::format("{} (master thread only)", name);
         }
 
-        if (current_timer == nullptr) {
+        if (!current_timer) {
             if (already_warned == false) {
                 println("Timer::push: Timer was not initialized prior to calling `push`. This is the only warning you will receive.");
                 already_warned = true;
@@ -171,6 +171,7 @@ void push(std::string name) {
         }
 
         if (current_timer->children.count(name) == 0) {
+            current_timer->children[name] = std::make_shared<TimerDetail>();
             current_timer->children[name]->name   = name;
             current_timer->children[name]->parent = current_timer;
             current_timer->order.push_back(name);

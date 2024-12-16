@@ -3,7 +3,7 @@
 # Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 #----------------------------------------------------------------------------------------------
 
-set(testing_sources src/main.cpp)
+set(testing_sources src/main.cpp src/Initialize.cpp)
 
 add_library(einsums_testing OBJECT ${testing_sources})
 target_include_directories(einsums_testing PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)

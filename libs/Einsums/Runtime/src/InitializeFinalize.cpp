@@ -8,6 +8,11 @@
 #include <Einsums/BLAS.hpp>
 #include <Einsums/Profile/Timer.hpp>
 #include <Einsums/Runtime/InitializeFinalize.hpp>
+#include <Einsums/Utilities/Random.hpp>
+
+#ifdef EINSUMS_COMPUTE_CODE
+#include <Einsums/GPUStreams/GPUStreams.hpp>
+#endif
 
 #include <h5cpp/all>
 #include <string>
@@ -24,6 +29,8 @@ int initialize() {
 
     // Disable HDF5 diagnostic reporting
     H5Eset_auto(0, nullptr, nullptr);
+
+    einsums::random_engine = std::default_random_engine(std::chrono::system_clock::now().time_since_epoch().count());
 
     return 0;
 }

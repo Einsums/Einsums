@@ -19,6 +19,13 @@
 #include <type_traits>
 
 namespace einsums {
+
+/**
+ * Called instead of einsums::initialize() for tests. In particular,
+ * this re-seeds the random number generator with Catch2's seed.
+ */
+int EINSUMS_EXPORT initialize_testing();
+
 /**
  * @struct WithinStrictMatcher
  *

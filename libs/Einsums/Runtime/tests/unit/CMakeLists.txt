@@ -18,7 +18,7 @@
 
 # Name of test file. Include .cpp, .hip, etc. extension.
 set(RuntimeTests
-
+    InitializeFinalize.cpp
 )
 
 foreach (test ${RuntimeTests})
@@ -47,5 +47,5 @@ foreach (test ${RuntimeTests})
             ${${TestName}_${TestExtension}_FLAGS}
     )
 
-    einsums_add_unit_test("Modules.Einsums.Runtime" ${test} ${${TestName}_${TestExtension}_PARAMETERS})
+    einsums_add_unit_test("Modules.Einsums.Runtime" ${TestName})
 endforeach ()
