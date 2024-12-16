@@ -51,7 +51,7 @@ set(CONFIG_STRINGS_MODULES_ENTRIES)
 
 # List of sub-directories to work through
 set(EINSUMS_LIBS
-        Einsums
+        Einsums EinsumsExperimental
         CACHE INTERNAL "List of Einsums libraries" FORCE
 )
 

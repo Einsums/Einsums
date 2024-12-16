@@ -10,43 +10,16 @@ include(Einsums_Message)
 
 
 # cmake-format: off
-set(_Einsums_modules
-  Assertion
-  BLAS
-  BLASBase
-  BLASVendor
-  Backtrace
-  Benchmark
-  Concepts
-  Config
-  Debugging
-  Decomposition
-  Errors
-  FFT
-  GPUStreams
-  HPTT
-  ITTNotify
-  Iterator
-  LinearAlgebra
-  Memory
-  Preprocessor
-  Print
-  Profile
-  StringUtil
-  Tensor
-  TensorAlgebra
-  TensorBase
-  TensorUtilities
-  TypeSupport
-  Utilities
+set(_EinsumsExperimental_modules
+        Graph
 )
 #cmake-format: on
 
 einsums_info("")
-einsums_info("  Configuring Einsums modules:")
+einsums_info("  Configuring EinsumsExperimental modules:")
 
-foreach(module ${_Einsums_modules})
-  add_subdirectory(${module})
-endforeach()
+foreach (module ${_EinsumsExperimental_modules})
+    add_subdirectory(${module})
+endforeach ()
 
 

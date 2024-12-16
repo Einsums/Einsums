@@ -145,7 +145,7 @@ function(einsums_add_header_tests category)
     endif()
   endforeach()
 
-  set(test_name "all_headers")
+  set(test_name "AllHeaders")
   set(all_headers_test_file "${CMAKE_CURRENT_BINARY_DIR}/${test_name}.cpp")
   file(WRITE ${all_headers_test_file} ${all_headers} "#ifndef EINSUMS_MAIN_DEFINED\n"
                                       "int main() { return 0; }\n" "#endif\n"

@@ -1,3 +1,6 @@
+#  Copyright (c) The Einsums Developers. All rights reserved.
+#  Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+
 import os
 import sys
 import argparse
@@ -23,9 +26,7 @@ def build_new(library, module, args):
     )
 
 
-def reindex(libraries = None):
-    
-
+def reindex(libraries=None):
     if libraries is None or len(libraries) == 0:
         libraries = filter(
             lambda x: os.path.isfile(os.path.join(os.curdir, x, "CMakeLists.txt")),
@@ -42,9 +43,9 @@ def main():
         prog="create_module_skeleton",
         description="Creates a module skeleton for developing in Einsums.",
         usage="""
+        
 %(prog)s --reindex [LIBRARIES, ...]
-%(prog)s [OPTIONS] LIBRARY_NAME MODULE_NAME
-                                     """,
+%(prog)s [OPTIONS] LIBRARY_NAME MODULE_NAME""",
     )
 
     parser.add_argument(
@@ -63,14 +64,18 @@ def main():
     parser.add_argument(
         "--reindex",
         help="Reindex the libraries. The libraries may be specified afterwards. This is incompatible with other options.",
-        action = "store_true"
+        action="store_true"
     )
 
     known_args, unknown_args = parser.parse_known_intermixed_args()
 
-    if known_args.reindex :
+    if len(sys.argv) == 1:
+        parser.print_help()
+        sys.exit(1)
+
+    if known_args.reindex:
         reindex(unknown_args)
-    else :
+    else:
         assert len(unknown_args) == 2
         build_new(unknown_args[0], unknown_args[1], known_args)
 

@@ -1,5 +1,9 @@
+#  Copyright (c) The Einsums Developers. All rights reserved.
+#  Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+
 import os
 import sys
+
 
 def parse_template(filename, output_file, **kwargs):
     format_str = ""
@@ -14,7 +18,7 @@ def parse_template(filename, output_file, **kwargs):
 def build_layer(input_dir, output_dir, **kwargs):
     for item in os.listdir(input_dir):
         # Skip exports if we don't need them.
-        if item in ["Export.cpp", "Export.hpp"] and not kwargs["python"] :
+        if item in ["Export.cpp", "Export.hpp"] and not kwargs["python"]:
             continue
         item_out = kwargs.get(item, item)
 
@@ -26,7 +30,7 @@ def build_layer(input_dir, output_dir, **kwargs):
             )
         elif not os.path.exists(os.path.join(output_dir, item_out)):
             format_str = ""
-            try :
+            try:
                 with open(os.path.join(input_dir, item), "r") as fp:
                     format_str = fp.read()
                 with open(os.path.join(output_dir, item_out), "w+") as fp:
@@ -34,9 +38,13 @@ def build_layer(input_dir, output_dir, **kwargs):
             except KeyError as e:
                 print(format_str)
                 raise RuntimeError(f"File being parsed was {input_dir}/{item}.") from e
+            except ValueError as e:
+                print(format_str)
+                print(e)
+                raise RuntimeError(f"File being parsed was {input_dir}/{item}.") from e
 
 
-def build_structure(output_base, lib_name, module_name, python = False, **kwargs):
+def build_structure(output_base, lib_name, module_name, python=False, **kwargs):
     base = os.path.dirname(__file__)
 
     if not os.path.exists(os.path.join(output_base, lib_name)):
@@ -50,17 +58,15 @@ def build_structure(output_base, lib_name, module_name, python = False, **kwargs
         os.path.join(output_base, lib_name, module_name),
         module_name=module_name,
         lib_name=lib_name,
-        docs_head = "".join("=" for i in lib_name + ' ' + module_name),
-        readme_head = "".join("=" for i in module_name),
-        export_header = f"{lib_name}/{module_name}/Export.hpp" if python else "",
-        export_source = f"Export.cpp" if python else "",
-        export_depends = "Einsums" if python else "",
-        python_footer = f"include(Einsums_ExtendWithPython)\neinsums_extend_with_python(${{EINSUMS_PYTHON_LIB_NAME}}_{module_name} ${{PYTHON_LIB_TYPE}})" if python else "",
-        python = python,
-        python_deps = "pybind11::embed" if python else "",
-        gpu_head = "if(EINSUMS_WITH_GPU_SUPPORT)" if kwargs["gpu"] else "",
-        gpu_foot = "endif()" if kwargs["gpu"] else "",
+        docs_head="".join("=" for i in lib_name + ' ' + module_name),
+        readme_head="".join("=" for i in module_name),
+        export_header=f"{lib_name}/{module_name}/Export.hpp" if python else "",
+        export_source=f"Export.cpp" if python else "",
+        export_depends="Einsums" if python else "",
+        python_footer=f"include(Einsums_ExtendWithPython)\neinsums_extend_with_python(${{EINSUMS_PYTHON_LIB_NAME}}_{module_name} ${{PYTHON_LIB_TYPE}})" if python else "",
+        python=python,
+        python_deps="pybind11::embed" if python else "",
+        gpu_head="if(EINSUMS_WITH_GPU_SUPPORT)" if kwargs["gpu"] else "",
+        gpu_foot="endif()" if kwargs["gpu"] else "",
         **kwargs
     )
-
-
