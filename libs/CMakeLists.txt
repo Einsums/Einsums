@@ -56,7 +56,9 @@ set(EINSUMS_LIBS
 )
 
 foreach (lib ${EINSUMS_LIBS})
+  string(TOUPPER ${lib} LIB)
   add_library(${lib} SHARED src/dummy.cpp)
+  target_compile_definitions(${lib} PRIVATE ${LIB}_EXPORTS)
   set_target_properties(
     ${lib}
     PROPERTIES VERSION ${EINSUMS_VERSION}
