@@ -35,22 +35,22 @@ jobs:
             cmargs: >
               -DFETCHCONTENT_QUIET=OFF
               -DFETCHCONTENT_TRY_FIND_PACKAGE_MODE=NEVER
-          - cxx: W-ClangCL
-            os: windows-latest
-            build_type: Release
-            llvm-version: "17.0.6"
-            cmargs: >
-              -DCMAKE_CXX_COMPILER=clang-cl
-              -DCMAKE_C_COMPILER=clang-cl
-              -DMKL_ROOT="${CONDA_PREFIX}"
-              -DEINSUMS_STATIC_BUILD=ON
-              -D CMAKE_CXX_FLAGS="-IC:\Miniconda3\envs\einsums-dev\opt\compiler\include"
-            testargs: >
-              -DCMAKE_CXX_COMPILER=clang-cl
-              -DCMAKE_C_COMPILER=clang-cl
-              -DMKL_ROOT="${CONDA_PREFIX}"
-              -DEINSUMS_STATIC_BUILD=ON
-              -D ZLIB_USE_STATIC_LIBS=ON
+          # - cxx: W-ClangCL
+          #   os: windows-latest
+          #   build_type: Release
+          #   llvm-version: "17.0.6"
+          #   cmargs: >
+          #     -DCMAKE_CXX_COMPILER=clang-cl
+          #     -DCMAKE_C_COMPILER=clang-cl
+          #     -DMKL_ROOT="${CONDA_PREFIX}"
+          #     -DEINSUMS_STATIC_BUILD=ON
+          #     -D CMAKE_CXX_FLAGS="-IC:\Miniconda3\envs\einsums-dev\opt\compiler\include"
+          #   testargs: >
+          #     -DCMAKE_CXX_COMPILER=clang-cl
+          #     -DCMAKE_C_COMPILER=clang-cl
+          #     -DMKL_ROOT="${CONDA_PREFIX}"
+          #     -DEINSUMS_STATIC_BUILD=ON
+          #     -D ZLIB_USE_STATIC_LIBS=ON
         # exclude:
         #   - cxx: L-Intel
         #     build_type: Debug
