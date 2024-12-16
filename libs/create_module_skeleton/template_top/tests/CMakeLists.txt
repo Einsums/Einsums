@@ -34,6 +34,7 @@ if(EINSUMS_WITH_TESTS)
     einsums_add_header_tests(
             Modules.{lib_symb}.{module_name}
       HEADERS ${{{module_name}Headers}}
+            HEADER_ROOT ${{PROJECT_SOURCE_DIR}}/include
       DEPENDENCIES {lib_symb}_{module_name} {python_deps}
     )
   endif()

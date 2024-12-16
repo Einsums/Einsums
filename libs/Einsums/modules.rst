@@ -32,6 +32,7 @@ Einsums modules
     /libs/Einsums/Preprocessor/docs/index.rst
     /libs/Einsums/Print/docs/index.rst
     /libs/Einsums/Profile/docs/index.rst
+    /libs/Einsums/Runtime/docs/index.rst
     /libs/Einsums/StringUtil/docs/index.rst
     /libs/Einsums/Tensor/docs/index.rst
     /libs/Einsums/TensorAlgebra/docs/index.rst

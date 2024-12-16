@@ -9,6 +9,7 @@
 include(Einsums_Message)
 
 
+
 # cmake-format: off
 set(_Einsums_modules
   Assertion
@@ -32,6 +33,7 @@ set(_Einsums_modules
   Preprocessor
   Print
   Profile
+        Runtime
   StringUtil
   Tensor
   TensorAlgebra
