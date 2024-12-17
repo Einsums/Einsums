@@ -16,7 +16,6 @@ set(_Einsums_modules
   BLAS
   BLASBase
   BLASVendor
-  Backtrace
   Benchmark
   Concepts
   Config

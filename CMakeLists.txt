@@ -372,7 +372,7 @@ einsums_option(
 )
 
 einsums_option(
-  EINSUMS_WITH_STACKTRACES BOOL "Attach backtraces to einsums exceptions (default: ON)" ON
+        EINSUMS_WITH_BACKTRACES BOOL "Attach backtraces to einsums exceptions (default: ON)" ON
   CATEGORY "Errors"
   ADVANCED
 )
@@ -385,49 +385,21 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
   target_link_libraries(einsums_base_libraries INTERFACE imf svml irng intlc)
 endif()
 
-if(EINSUMS_WITH_STACKTRACES)
-  einsums_info("Stack traces are enabled.")
-  einsums_add_config_define(EINSUMS_HAVE_STACKTRACES)
-  if(WIN32)
-    target_link_libraries(einsums_base_libraries INTERFACE dbghelp)
-  endif()
+if (EINSUMS_WITH_BACKTRACES)
+  einsums_info("Back traces are enabled.")
+  einsums_add_config_define(EINSUMS_HAVE_BACKTRACES)
+  include(Einsums_SetupCppTrace)
 
   einsums_option(
-          EINSUMS_WITH_BACKTRACE_DEPTH STRING "Stack trace depth being captured (default: 20)" "20"
-    CATEGORY "Errors"
-    ADVANCED
+          EINSUMS_WITH_THREAD_BACKTRACE_DEPTH STRING
+          "Thread stack back trace depth being captured (default: 20)" "20"
+          CATEGORY "Thread Manager"
+          ADVANCED
   )
   einsums_add_config_define(
-    EINSUMS_HAVE_THREAD_BACKTRACE_DEPTH ${EINSUMS_WITH_THREAD_BACKTRACE_DEPTH}
+          EINSUMS_HAVE_THREAD_BACKTRACE_DEPTH ${EINSUMS_WITH_THREAD_BACKTRACE_DEPTH}
   )
 
-  if(("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux") AND ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang"
-                                                    OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-  )
-
-    # This option is OFF by default as we have seen random segfaults out in the wild if this is
-    # enabled.
-    einsums_option(
-      EINSUMS_WITH_STACKTRACES_STATIC_SYMBOLS BOOL
-      "Stack back trace will resolve static symbols (default: OFF)" OFF
-      CATEGORY "Errors"
-      ADVANCED
-    )
-    einsums_add_config_define(
-      EINSUMS_HAVE_STACKTRACES_STATIC_SYMBOLS ${EINSUMS_WITH_STACKTRACES_STATIC_SYMBOLS}
-    )
-
-    # Demangling can segfault in certain configurations.
-    einsums_option(
-      EINSUMS_WITH_STACKTRACES_DEMANGLE_SYMBOLS BOOL
-      "Thread stack back trace symbols will be demangled (default: ON)" ON
-      CATEGORY "Errors"
-      ADVANCED
-    )
-    if(EINSUMS_WITH_STACKTRACES_DEMANGLE_SYMBOLS)
-      einsums_add_config_define(EINSUMS_HAVE_STACKTRACES_DEMANGLE_SYMBOLS)
-    endif()
-  endif()
 endif()
 
 einsums_option(
