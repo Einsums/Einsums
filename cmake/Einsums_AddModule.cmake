@@ -155,7 +155,14 @@ function(einsums_add_module libname modulename)
   endif()
 
   if(NOT module_is_interface_library)
-    target_compile_definitions(${libname}_${modulename} PRIVATE ${libname_upper}_EXPORTS)
+    # Add underscores before uppercase letters, except the first one
+    string(REGEX REPLACE "([A-Z])" "_\\1" transformed_string ${libname})
+    # Remove the leading underscore if it exists
+    string(REGEX REPLACE "^_" "" transformed_string ${transformed_string})
+    # Convert to uppercase
+    string(TOUPPER ${transformed_string} LIB_NAME)
+
+    target_compile_definitions(${libname}_${modulename} PRIVATE ${LIB_NAME}_EXPORTS)
   endif()
 
   einsums_add_source_group(

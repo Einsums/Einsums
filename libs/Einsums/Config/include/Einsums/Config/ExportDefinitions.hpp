@@ -1,16 +1,19 @@
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 
 #pragma once
 
 #include <Einsums/Config/Defines.hpp>
 
 #if defined(DOXYGEN)
-/// Marks a class or function to be exported from einsums or imported if it is
+/// Marks a class or function to be exported from Einsums or imported if it is
 /// consumed.
 #    define EINSUMS_EXPORT
+/// Marks a class or function to be exported from EinsumsExperimental or imported if it is
+/// consumed.
+#    define EINSUMS_EXPERIMENTAL_EXPORT
 #else
 
 #    if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
@@ -45,6 +48,12 @@
 #        define EINSUMS_EXPORT EINSUMS_SYMBOL_EXPORT
 #    else
 #        define EINSUMS_EXPORT EINSUMS_SYMBOL_IMPORT
+#    endif
+
+#    if defined(EINSUMS_EXPERIMENTAL_EXPORTS)
+#        define EINSUMS_EXPERIMENTAL_EXPORT EINSUMS_SYMBOL_EXPORT
+#    else
+#        define EINSUMS_EXPERIMENTAL_EXPORT EINSUMS_SYMBOL_IMPORT
 #    endif
 
 ///////////////////////////////////////////////////////////////////////////////

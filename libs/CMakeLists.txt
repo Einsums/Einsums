@@ -56,9 +56,17 @@ set(EINSUMS_LIBS
 )
 
 foreach (lib ${EINSUMS_LIBS})
-  string(TOUPPER ${lib} LIB)
   add_library(${lib} SHARED src/dummy.cpp)
-  target_compile_definitions(${lib} PRIVATE ${LIB}_EXPORTS)
+
+  # Add underscores before uppercase letters, except the first one
+  string(REGEX REPLACE "([A-Z])" "_\\1" transformed_string ${lib})
+  # Remove the leading underscore if it exists
+  string(REGEX REPLACE "^_" "" transformed_string ${transformed_string})
+  # Convert to uppercase
+  string(TOUPPER ${transformed_string} LIB_NAME)
+
+  target_compile_definitions(${lib} PRIVATE ${LIB_NAME}_EXPORTS)
+
   set_target_properties(
     ${lib}
     PROPERTIES VERSION ${EINSUMS_VERSION}
