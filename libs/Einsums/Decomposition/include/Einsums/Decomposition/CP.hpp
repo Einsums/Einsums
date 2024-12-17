@@ -114,7 +114,7 @@ auto initialize_cp(std::vector<Tensor<TType, 2>> &folds, size_t rank) -> std::ve
 
         // Reorder into row major form
         Tensor U = create_tensor<TType>("Left Singular Vectors", m, m);
-        sort(Indices{index::M, index::N}, &U, Indices{index::N, index::M}, fold_squared);
+        permute(Indices{index::M, index::N}, &U, Indices{index::N, index::M}, fold_squared);
 
         // If (i == 0), Scale U by the singular values
         if (i == 0) {

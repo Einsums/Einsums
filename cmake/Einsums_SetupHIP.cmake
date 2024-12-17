@@ -68,10 +68,10 @@ if (EINSUMS_WITH_HIP AND NOT TARGET roc::rocblas)
   set(CURSES_NEED_NCURSES True)
   find_package(Curses)
 
-    enable_language(HIP)
+  if (NOT EINSUMS_FIND_PACKAGE)
+      einsums_add_config_define(EINSUMS_HAVE_HIP)
+  endif ()
 
-    if (NOT EINSUMS_FIND_PACKAGE)
-        einsums_add_config_define(EINSUMS_HAVE_HIP)
-    endif ()
+  set(ENABLE_HIP "ON")    
 
 endif()

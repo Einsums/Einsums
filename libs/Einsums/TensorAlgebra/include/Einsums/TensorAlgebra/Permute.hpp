@@ -16,7 +16,7 @@
 #include <Einsums/TensorBase/Common.hpp>
 
 #ifdef EINSUMS_COMPUTE_CODE
-#    include "Einsums/TensorAlgebra/Backends/DeviceSort.hpp"
+#    include <Einsums/TensorAlgebra/Backends/DevicePermute.hpp>
 #endif
 
 namespace einsums::tensor_algebra {
@@ -24,19 +24,19 @@ namespace einsums::tensor_algebra {
 #if !defined(EINSUMS_WINDOWS)
 namespace detail {
 
-void EINSUMS_EXPORT sort(int const *perm, int const dim, float const alpha, float const *A, int const *sizeA, float const beta, float *B);
-void EINSUMS_EXPORT sort(int const *perm, int const dim, double const alpha, double const *A, int const *sizeA, double const beta,
+void EINSUMS_EXPORT permute(int const *perm, int const dim, float const alpha, float const *A, int const *sizeA, float const beta, float *B);
+void EINSUMS_EXPORT permute(int const *perm, int const dim, double const alpha, double const *A, int const *sizeA, double const beta,
                          double *B);
-void EINSUMS_EXPORT sort(int const *perm, int const dim, std::complex<float> const alpha, std::complex<float> const *A, int const *sizeA,
+void EINSUMS_EXPORT permute(int const *perm, int const dim, std::complex<float> const alpha, std::complex<float> const *A, int const *sizeA,
                          std::complex<float> const beta, std::complex<float> *B);
-void EINSUMS_EXPORT sort(int const *perm, int const dim, std::complex<double> const alpha, std::complex<double> const *A, int const *sizeA,
+void EINSUMS_EXPORT permute(int const *perm, int const dim, std::complex<double> const alpha, std::complex<double> const *A, int const *sizeA,
                          std::complex<double> const beta, std::complex<double> *B);
 
 } // namespace detail
 #endif
 
 //
-// sort algorithm
+// permute algorithm
 //
 template <CoreTensorConcept AType, CoreTensorConcept CType, typename... CIndices, typename... AIndices, typename U>
     requires requires {
@@ -46,22 +46,22 @@ template <CoreTensorConcept AType, CoreTensorConcept CType, typename... CIndices
         requires SameUnderlyingAndRank<AType, CType>;
         requires std::is_arithmetic_v<U>;
     }
-void sort(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CType *C, U const UA_prefactor,
+void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CType *C, U const UA_prefactor,
           std::tuple<AIndices...> const &A_indices, AType const &A) {
     using T                = typename AType::ValueType;
     constexpr size_t ARank = AType::Rank;
     constexpr size_t CRank = CType::Rank;
 
     LabeledSection1((std::fabs(UC_prefactor) > EINSUMS_ZERO)
-                        ? fmt::format(R"(sort: "{}"{} = {} "{}"{} + {} "{}"{})", C->name(), print_tuple_no_type(C_indices), UA_prefactor,
+                        ? fmt::format(R"(permute: "{}"{} = {} "{}"{} + {} "{}"{})", C->name(), print_tuple_no_type(C_indices), UA_prefactor,
                                       A.name(), print_tuple_no_type(A_indices), UC_prefactor, C->name(), print_tuple_no_type(C_indices))
-                        : fmt::format(R"(sort: "{}"{} = {} "{}"{})", C->name(), print_tuple_no_type(C_indices), UA_prefactor, A.name(),
+                        : fmt::format(R"(permute: "{}"{} = {} "{}"{})", C->name(), print_tuple_no_type(C_indices), UA_prefactor, A.name(),
                                       print_tuple_no_type(A_indices)));
 
     T const C_prefactor = UC_prefactor;
     T const A_prefactor = UA_prefactor;
 
-    // Error check:  If there are any remaining indices then we cannot perform a sort
+    // Error check:  If there are any remaining indices then we cannot perform a permute
     constexpr auto check = DifferenceT<std::tuple<AIndices...>, std::tuple<CIndices...>>();
     static_assert(std::tuple_size_v<decltype(check)> == 0);
 
@@ -86,7 +86,7 @@ void sort(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CType 
             size[i0]  = A.dim(i0);
         }
 
-        detail::sort(perms.data(), ARank, A_prefactor, A.data(), size.data(), C_prefactor, C->data());
+        detail::permute(perms.data(), ARank, A_prefactor, A.data(), size.data(), C_prefactor, C->data());
     } else
 #endif
         if constexpr (std::is_same_v<decltype(A_indices), decltype(C_indices)>) {
@@ -108,26 +108,26 @@ void sort(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CType 
 
 // Sort with default values, no smart pointers
 template <NotASmartPointer ObjectA, NotASmartPointer ObjectC, typename... CIndices, typename... AIndices>
-void sort(std::tuple<CIndices...> const &C_indices, ObjectC *C, std::tuple<AIndices...> const &A_indices, ObjectA const &A) {
-    sort(0, C_indices, C, 1, A_indices, A);
+void permute(std::tuple<CIndices...> const &C_indices, ObjectC *C, std::tuple<AIndices...> const &A_indices, ObjectA const &A) {
+    permute(0, C_indices, C, 1, A_indices, A);
 }
 
 // Sort with default values, two smart pointers
 template <SmartPointer SmartPointerA, SmartPointer SmartPointerC, typename... CIndices, typename... AIndices>
-void sort(std::tuple<CIndices...> const &C_indices, SmartPointerC *C, std::tuple<AIndices...> const &A_indices, SmartPointerA const &A) {
-    sort(0, C_indices, C->get(), 1, A_indices, *A);
+void permute(std::tuple<CIndices...> const &C_indices, SmartPointerC *C, std::tuple<AIndices...> const &A_indices, SmartPointerA const &A) {
+    permute(0, C_indices, C->get(), 1, A_indices, *A);
 }
 
 // Sort with default values, one smart pointer (A)
 template <SmartPointer SmartPointerA, NotASmartPointer PointerC, typename... CIndices, typename... AIndices>
-void sort(std::tuple<CIndices...> const &C_indices, PointerC *C, std::tuple<AIndices...> const &A_indices, SmartPointerA const &A) {
-    sort(0, C_indices, C, 1, A_indices, *A);
+void permute(std::tuple<CIndices...> const &C_indices, PointerC *C, std::tuple<AIndices...> const &A_indices, SmartPointerA const &A) {
+    permute(0, C_indices, C, 1, A_indices, *A);
 }
 
 // Sort with default values, one smart pointer (C)
 template <NotASmartPointer ObjectA, SmartPointer SmartPointerC, typename... CIndices, typename... AIndices>
-void sort(std::tuple<CIndices...> const &C_indices, SmartPointerC *C, std::tuple<AIndices...> const &A_indices, ObjectA const &A) {
-    sort(0, C_indices, C->get(), 1, A_indices, A);
+void permute(std::tuple<CIndices...> const &C_indices, SmartPointerC *C, std::tuple<AIndices...> const &A_indices, ObjectA const &A) {
+    permute(0, C_indices, C->get(), 1, A_indices, A);
 }
 
 template <BlockTensorConcept AType, BlockTensorConcept CType, typename... CIndices, typename... AIndices, typename U>
@@ -139,14 +139,14 @@ template <BlockTensorConcept AType, BlockTensorConcept CType, typename... CIndic
         requires InSamePlace<AType, CType>;
         requires std::is_arithmetic_v<U>;
     }
-void sort(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CType *C, U const UA_prefactor,
+void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CType *C, U const UA_prefactor,
           std::tuple<AIndices...> const &A_indices, AType const &A) {
 
     EINSUMS_OMP_PARALLEL_FOR
     for (int i = 0; i < A.num_blocks(); i++) {
         auto       &C_block = (*C)[i];
         auto const &A_block = A[i];
-        sort(UC_prefactor, C_indices, &C_block, UA_prefactor, A_indices, A_block);
+        permute(UC_prefactor, C_indices, &C_block, UA_prefactor, A_indices, A_block);
     }
 }
 
@@ -176,7 +176,7 @@ template <TiledTensorConcept AType, TiledTensorConcept CType, typename... CIndic
         requires InSamePlace<AType, CType>;
         requires std::is_arithmetic_v<U>;
     }
-void sort(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CType *C, U const UA_prefactor,
+void permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CType *C, U const UA_prefactor,
           std::tuple<AIndices...> const &A_indices, AType const &A) {
 
     using ADataType        = typename AType::ValueType;
@@ -221,9 +221,15 @@ void sort(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CType 
         auto &C_tile = C->tile(C_tile_index);
         C->unlock();
         C_tile.lock();
-        sort(UC_prefactor, C_indices, &C_tile, UA_prefactor, A_indices, A.tile(A_tile_index));
+        permute(UC_prefactor, C_indices, &C_tile, UA_prefactor, A_indices, A.tile(A_tile_index));
         C_tile.unlock();
     }
+}
+
+template <typename... Args>
+[[deprecated("The name sort is confusing, since we are not sorting values. Please use permute instead. This function will be removed in the future.")]]
+inline auto sort(Args &&...args) -> decltype(permute(std ::forward<Args>(args)...)) {
+    return permute(std ::forward<Args>(args)...);
 }
 
 } // namespace einsums::tensor_algebra

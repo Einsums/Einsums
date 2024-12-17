@@ -23,18 +23,18 @@ namespace detail {
 
 #if defined(EINSUMS_USE_HPTT)
 
-void EINSUMS_EXPORT gpu_sort(int const *perm, int const dim, float const alpha, float const *A, int const *sizeA, float const beta,
+void EINSUMS_EXPORT gpu_permute(int const *perm, int const dim, float const alpha, float const *A, int const *sizeA, float const beta,
                              float *B);
-void EINSUMS_EXPORT gpu_sort(int const *perm, int const dim, double const alpha, double const *A, int const *sizeA, double const beta,
+void EINSUMS_EXPORT gpu_permute(int const *perm, int const dim, double const alpha, double const *A, int const *sizeA, double const beta,
                              double *B);
-void EINSUMS_EXPORT gpu_sort(int const *perm, int const dim, hipComplex const alpha, hipComplex const *A, int const *sizeA,
+void EINSUMS_EXPORT gpu_permute(int const *perm, int const dim, hipComplex const alpha, hipComplex const *A, int const *sizeA,
                              hipComplex const beta, hipComplex *B);
-void EINSUMS_EXPORT gpu_sort(int const *perm, int const dim, hipDoubleComplex const alpha, hipDoubleComplex const *A, int const *sizeA,
+void EINSUMS_EXPORT gpu_permute(int const *perm, int const dim, hipDoubleComplex const alpha, hipDoubleComplex const *A, int const *sizeA,
                              hipDoubleComplex const beta, hipDoubleComplex *B);
 #endif
 
 template <typename T, size_t Rank>
-__global__ void sort_kernel(int const *perm, T const alpha, T const *A, size_t const *strideA, T const beta, T *B, size_t const *strideB,
+__global__ void permute_kernel(int const *perm, T const alpha, T const *A, size_t const *strideA, T const beta, T *B, size_t const *strideB,
                             size_t size) {
     int thread_id, kernel_size;
 
@@ -76,7 +76,7 @@ auto reverse_inds(std::tuple<Head, Tail...> const &inds) {
 } // namespace detail
 
 //
-// sort algorithm
+// permute algorithm
 //
 template <template <typename, size_t> typename AType, size_t ARank, template <typename, size_t> typename CType, size_t CRank,
           typename... CIndices, typename... AIndices, typename U, typename T = double>
@@ -84,21 +84,21 @@ template <template <typename, size_t> typename AType, size_t ARank, template <ty
         requires DeviceRankTensor<AType<T, ARank>, ARank, T>;
         requires DeviceRankTensor<CType<T, CRank>, CRank, T>;
     }
-auto sort(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CType<T, CRank> *C, U const UA_prefactor,
+auto permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CType<T, CRank> *C, U const UA_prefactor,
           std::tuple<AIndices...> const &A_indices,
           AType<T, ARank> const &A) -> std::enable_if_t<sizeof...(CIndices) == sizeof...(AIndices) && sizeof...(CIndices) == CRank &&
                                                         sizeof...(AIndices) == ARank && std::is_arithmetic_v<U>> {
 
     LabeledSection1((std::fabs(UC_prefactor) > EINSUMS_ZERO)
-                        ? fmt::format(R"(sort: "{}"{} = {} "{}"{} + {} "{}"{})", C->name(), print_tuple_no_type(C_indices), UA_prefactor,
+                        ? fmt::format(R"(permute: "{}"{} = {} "{}"{} + {} "{}"{})", C->name(), print_tuple_no_type(C_indices), UA_prefactor,
                                       A.name(), print_tuple_no_type(A_indices), UC_prefactor, C->name(), print_tuple_no_type(C_indices))
-                        : fmt::format(R"(sort: "{}"{} = {} "{}"{})", C->name(), print_tuple_no_type(C_indices), UA_prefactor, A.name(),
+                        : fmt::format(R"(permute: "{}"{} = {} "{}"{})", C->name(), print_tuple_no_type(C_indices), UA_prefactor, A.name(),
                                       print_tuple_no_type(A_indices)));
 
     T const C_prefactor = UC_prefactor;
     T const A_prefactor = UA_prefactor;
 
-    // Error check:  If there are any remaining indices then we cannot perform a sort
+    // Error check:  If there are any remaining indices then we cannot perform a permute
     constexpr auto check = difference_t<std::tuple<AIndices...>, std::tuple<CIndices...>>();
     static_assert(std::tuple_size_v<decltype(check)> == 0);
 
@@ -120,7 +120,7 @@ auto sort(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CType<
             using T_devtype  = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<decltype(C->gpu_data())>>>;
             using T_hosttype = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<T>>>;
 
-            detail::gpu_sort(perms.data(), ARank, einsums::gpu::HipCast<T_devtype, T_hosttype>::cast(A_prefactor), A.gpu_data(),
+            detail::gpu_permute(perms.data(), ARank, einsums::gpu::HipCast<T_devtype, T_hosttype>::cast(A_prefactor), A.gpu_data(),
                              size.data(), einsums::gpu::HipCast<T_devtype, T_hosttype>::cast(C_prefactor), C->gpu_data());
             if (A_prefactor != T{1.0}) {
                 *C *= A_prefactor; // Librett does not handle prefactors (yet?)
@@ -159,7 +159,7 @@ auto sort(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CType<
         using T_devtype  = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<decltype(C->gpu_data())>>>;
         using T_hosttype = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<T>>>;
 
-        detail::sort_kernel<T_devtype, ARank><<<gpu::blocks(A.size()), gpu::block_size(A.size()), 0, stream>>>(
+        detail::permute_kernel<T_devtype, ARank><<<gpu::blocks(A.size()), gpu::block_size(A.size()), 0, stream>>>(
             gpu_index_table, HipCast<T_devtype, T_hosttype>::cast(A_prefactor), A.gpu_data(), stride_A_gpu,
             HipCast<T_devtype, T_hosttype>::cast(C_prefactor), C->gpu_data(), stride_C_gpu, A.size());
         hipEvent_t wait_event;

@@ -7,6 +7,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 set(ConfigHeaders
     Einsums/Config.hpp
+    Einsums/Config/Alias.hpp
     Einsums/Config/BranchHints.hpp
     Einsums/Config/CompilerSpecific.hpp
     Einsums/Config/ExportDefinitions.hpp

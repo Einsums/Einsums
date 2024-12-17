@@ -7,7 +7,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 set(TensorAlgebraHeaders
         Einsums/TensorAlgebra.hpp
-        Einsums/TensorAlgebra/Sort.hpp
+        Einsums/TensorAlgebra/Permute.hpp
         Einsums/TensorAlgebra/TensorAlgebra.hpp
         Einsums/TensorAlgebra/Backends/BaseAlgebra.hpp
         Einsums/TensorAlgebra/Backends/BlockAlgebra.hpp
@@ -23,15 +23,20 @@ set(TensorAlgebraHeaders
 )
 
 if (NOT WIN32)
-  set(TensorAlgebraSources Sort.cpp)
+  set(TensorAlgebraSources Permute.cpp)
   set(EXTRA_TENSOR_ALGEBRA_DEPENDENCIES Einsums_HPTT)
 endif ()
 
 if (EINSUMS_WITH_GPU_SUPPORT)
     list(APPEND TensorAlgebraHeaders Einsums/TensorAlgebra/Backends/GPUTensorAlgebra.hpp
-            Einsums/TensorAlgebra/Backends/DeviceSort.hpp
+            Einsums/TensorAlgebra/Backends/DevicePermute.hpp
     )
     set(TensorAlgebraGPUDeps hip::host hip::device roc::hipblas roc::hipsolver)
+
+    if(EINSUMS_USE_HPTT AND TARGET librett::librett)
+      list(APPEND TensorAlgebraSources DevicePermute.hip)
+      list(APPEND TensorAlgebraGPUDeps librett::librett)
+    endif()
 endif ()
 
 include(Einsums_AddModule)
@@ -52,3 +57,7 @@ einsums_add_module(
         ${EXTRA_TENSOR_ALGEBRA_DEPENDENCIES}
   CMAKE_SUBDIRS examples tests
 )
+
+if(EINSUMS_WITH_GPU_SUPPORT AND EINSUMS_USE_HPTT AND TARGET librett::librett)
+  target_compile_definitions(Einsums_TensorAlgebra PUBLIC EINSUMS_USE_LIBRETT)
+endif()

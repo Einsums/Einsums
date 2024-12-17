@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <Einsums/Config/Alias.hpp>
 #include <Einsums/Config/BranchHints.hpp>
 #include <Einsums/Config/CompilerSpecific.hpp>
 #include <Einsums/Config/ExportDefinitions.hpp>

@@ -140,6 +140,8 @@ if (EINSUMS_WITH_CUDA AND NOT TARGET einsums_internal::cuda)
             target_link_libraries(einsums_base_libraries INTERFACE einsums_internal::cuda)
         endif ()
     endif ()
+
+    set(ENABLE_CUDA "ON")
 endif()
 
 function(einsums_add_nvhpc_cuda_flags source)

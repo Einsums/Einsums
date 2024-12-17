@@ -5,5 +5,5 @@
 
 #pragma once
 
-#include <Einsums/TensorAlgebra/Sort.hpp>
+#include <Einsums/TensorAlgebra/Permute.hpp>
 #include <Einsums/TensorAlgebra/TensorAlgebra.hpp>
