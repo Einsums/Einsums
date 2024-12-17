@@ -145,9 +145,6 @@ EINSUMS_HOST hipStream_t get_stream() {
 
 EINSUMS_HOST hipStream_t get_stream(int thread_id) {
     auto guard = std::lock_guard(detail::wait_mutex);
-    if (detail::default_streams.size() == 0) {
-        initialize();
-    }
     return detail::default_streams.at(thread_id);
 }
 
@@ -160,10 +157,6 @@ EINSUMS_HOST void set_stream(hipStream_t stream) {
 
 EINSUMS_HOST void set_stream(hipStream_t stream, int thread_id) {
     auto guard = std::lock_guard(detail::wait_mutex);
-
-    if (detail::default_streams.size() == 0) {
-        initialize();
-    }
 
     detail::default_streams.at(thread_id) = stream;
 
@@ -182,10 +175,6 @@ EINSUMS_HOST int get_warpsize(void) {
 EINSUMS_HOST hipblasHandle_t get_blas_handle(int thread_id) {
     auto guard = std::lock_guard(detail::wait_mutex);
 
-    if (detail::blas_handles.size() == 0) {
-        initialize();
-    }
-
     return detail::blas_handles.at(thread_id);
 }
 
@@ -195,10 +184,6 @@ EINSUMS_HOST hipblasHandle_t get_blas_handle() {
 
 EINSUMS_HOST hipblasHandle_t set_blas_handle(hipblasHandle_t value, int thread_id) {
     auto guard = std::lock_guard(detail::wait_mutex);
-
-    if (detail::blas_handles.size() == 0) {
-        initialize();
-    }
 
     detail::blas_handles.at(thread_id) = value;
     return value;
@@ -211,10 +196,6 @@ EINSUMS_HOST hipblasHandle_t set_blas_handle(hipblasHandle_t value) {
 EINSUMS_HOST hipsolverHandle_t get_solver_handle(int thread_id) {
     auto guard = std::lock_guard(detail::wait_mutex);
 
-    if(detail::solver_handles.size() == 0) {
-        initialize();
-    }
-
     return detail::solver_handles.at(thread_id);
 }
 
@@ -224,10 +205,6 @@ EINSUMS_HOST hipsolverHandle_t get_solver_handle() {
 
 hipsolverHandle_t set_solver_handle(hipsolverHandle_t value, int thread_id) {
     auto guard = std::lock_guard(detail::wait_mutex);
-
-    if(detail::solver_handles.size() == 0) {
-        initialize();
-    }
 
     detail::solver_handles.at(thread_id) = value;
     return detail::solver_handles.at(thread_id);
