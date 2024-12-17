@@ -115,7 +115,7 @@ EINSUMS_EXPORT EINSUMS_HOST hipsolverHandle_t set_solver_handle(hipsolverHandle_
  * @param may_skip Indicate that the wait may be skipped to avoid unnecessary waits. Only skipped after a call to skip_next_wait,
  * then resets the skip flag so that later waits are not skipped.
  */
- EINSUMS_HOST EINSUMS_EXPORT void stream_wait(bool may_skip = true);
+ EINSUMS_HOST EINSUMS_EXPORT void stream_wait(bool may_skip = false);
 
 /**
  * @brief Wait on all streams managed by Einsums.

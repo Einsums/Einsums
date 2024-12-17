@@ -6,12 +6,13 @@
 #include <Einsums/Config.hpp>
 
 #include <Einsums/BLAS.hpp>
+#include <Einsums/Errors/Error.hpp>
 #include <Einsums/Profile/Timer.hpp>
 #include <Einsums/Runtime/InitializeFinalize.hpp>
 #include <Einsums/Utilities/Random.hpp>
 
 #ifdef EINSUMS_COMPUTE_CODE
-#include <Einsums/GPUStreams/GPUStreams.hpp>
+#    include <Einsums/GPUStreams/GPUStreams.hpp>
 #endif
 
 #include <h5cpp/all>
@@ -20,6 +21,8 @@
 namespace einsums {
 
 int initialize() {
+    error::initialize();
+
 #ifdef EINSUMS_COMPUTE_CODE
     einsums::gpu::initialize();
 #endif

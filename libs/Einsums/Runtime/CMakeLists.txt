@@ -20,7 +20,7 @@ einsums_add_module(
         SOURCES ${RuntimeSources}
         HEADERS ${RuntimeHeaders}
         DEPENDENCIES Einsums::h5cpp
-        MODULE_DEPENDENCIES Einsums_BLAS Einsums_Config Einsums_Profile Einsums_Utilities ${RuntimeGPUStreamsInit}
+        MODULE_DEPENDENCIES Einsums_BLAS Einsums_Config Einsums_Profile Einsums_Utilities Einsums_Errors ${RuntimeGPUStreamsInit}
         CMAKE_SUBDIRS examples tests
         #  BASE_LIBNAME Einsums
 )

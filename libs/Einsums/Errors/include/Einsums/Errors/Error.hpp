@@ -25,6 +25,8 @@ namespace einsums {
 
 namespace detail {
 
+extern EINSUMS_EXPORT bool __is_library_initialized;
+
 /**
  * Construct a message that contains the type of error being produced, the location that error is being emitted,
  * and the actual message for the error.
@@ -41,6 +43,12 @@ EINSUMS_EXPORT std::string make_error_message(char const *type_name, char const 
 EINSUMS_EXPORT std::string make_error_message(char const *type_name, std::string const &str, std::source_location const &location);
 
 } // namespace detail
+
+namespace error {
+
+EINSUMS_EXPORT void initialize();
+
+}
 
 /**
  * @struct CodedError
