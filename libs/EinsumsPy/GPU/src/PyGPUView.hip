@@ -18,7 +18,7 @@ using namespace einsums::python;
 struct MappingList;
 
 static std::mutex   __constructor_lock;
-static MappingList *__singleton = nullptr;
+static std::shared_ptr<MappingList> __singleton{nullptr};
 
 // Subject. Observed by PyGPUView.
 struct MappingList final {
@@ -59,7 +59,7 @@ struct MappingList final {
         bool has_refs() const { return _observers.size() > 0; }
 
         bool observed_by(PyGPUView &observer) const {
-            for (auto item : _observers) {
+            for (const auto &item : _observers) {
                 if (item == &observer) {
                     return true;
                 }
@@ -76,20 +76,26 @@ struct MappingList final {
     std::recursive_mutex   _lock;
 
     MappingList()  = default;
-    ~MappingList() = default;
 
     void refresh_list() {
         auto guard = std::lock_guard(_lock);
         _pointers.remove_if([](MappingData const &data) { return !data.has_refs(); });
     }
 
+    class PrivateConstructor {
+        public:
+        PrivateConstructor() = default;
+    };
+
   public:
-    static MappingList &get_singleton() {
+    MappingList(PrivateConstructor) : MappingList() {}
+
+    static std::shared_ptr<MappingList> get_singleton() {
         auto guard = std::lock_guard(__constructor_lock);
-        if (__singleton == nullptr) {
-            __singleton = new MappingList();
+        if (!__singleton) {
+            __singleton = std::make_shared<MappingList>(PrivateConstructor());
         }
-        return *__singleton;
+        return __singleton;
     }
 
     /**
@@ -160,7 +166,7 @@ PyGPUView::PyGPUView(pybind11::buffer &buffer, detail::PyViewMode mode) {
         hip_catch(
             hipMemcpy((void *)_dev_data, (void const *)_host_data, buffer_info.strides[0] * buffer_info.shape[0], hipMemcpyHostToDevice));
     } else if (_mode == detail::MAP) {
-        _dev_data = MappingList::get_singleton().attach(*this, _host_data, buffer_info.strides[0] * buffer_info.shape[0]);
+        _dev_data = MappingList::get_singleton()->attach(*this, _host_data, buffer_info.strides[0] * buffer_info.shape[0]);
     } else if (_mode == detail::DEVICE_TENSOR) {
         EINSUMS_THROW_EXCEPTION(
             enum_error, "Can not use DEVICE_TENSOR mode with buffer object. Only used to convert einsums::DeviceTensor to PyGPUView.");
@@ -191,7 +197,7 @@ PyGPUView::~PyGPUView() {
         // Don't copy before. There is no guarantee that the host data is still valid.
         hip_catch(hipFree(_dev_data));
     } else if (_mode == detail::MAP) {
-        MappingList::get_singleton().detach(*this);
+        MappingList::get_singleton()->detach(*this);
     } else if (_mode == detail::DEVICE_TENSOR) {
         hip_catch(hipFree(_gpu_strides));
     }
