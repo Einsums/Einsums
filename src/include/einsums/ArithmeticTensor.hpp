@@ -43,7 +43,7 @@ struct MultiplicationOp {};
  */
 struct DivisionOp {};
 
-#ifndef __HIP__
+#ifndef EINSUMS_COMPUTE_CODE
 #    define __host__
 #    define __device__
 #endif
