@@ -400,6 +400,10 @@ if (EINSUMS_WITH_BACKTRACES)
           EINSUMS_HAVE_THREAD_BACKTRACE_DEPTH ${EINSUMS_WITH_THREAD_BACKTRACE_DEPTH}
   )
 
+  if (APPLE)
+    find_program(dsymutil_EXECUTABLE NAMES dsymutil)
+  endif ()
+
 endif()
 
 einsums_option(

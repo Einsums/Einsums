@@ -21,4 +21,5 @@ foreach (test ${AssertionTests})
     )
 
     einsums_add_unit_test("Modules.Assertion" ${test} ${${test}_PARAMETERS})
+
 endforeach ()
