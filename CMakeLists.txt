@@ -487,6 +487,25 @@ target_link_libraries(einsums_base_libraries INTERFACE OpenMP::OpenMP_CXX)
 # Add the Python module.
 if(EINSUMS_BUILD_PYTHON)
   add_subdirectory(einsums)
+
+  include(Einsums_ExtendWithPython)
+
+  if (NOT EINSUMS_PYTHON_VERSION)
+    find_package(
+            Python3 3.10
+            COMPONENTS Interpreter Development NumPy
+            REQUIRED
+    )
+  else ()
+    find_package(
+            Python3 "${EINSUMS_PYTHON_VERSION}" EXACT
+            COMPONENTS Interpreter Development NumPy
+            REQUIRED
+    )
+  endif ()
+
+  include(Einsums_SetupPybind11)
+
 endif()
 
 # ##################################################################################################
@@ -721,7 +740,7 @@ include(Einsums_SetupH5cpp)
 # include(einsums_SetupHPTT) include(Einsums_SetupHWLOC) include(Einsums_SetupSpdlog)
 # include(Einsums_SetupCppTrace)
 
-if(EINSUMS_USE_HPTT AND EINSUMS_WITH_GPU_SUPPORT) 
+if (EINSUMS_USE_HPTT AND EINSUMS_WITH_GPU_SUPPORT)
   include(Einsums_SetupLibreTT)
 endif()
 
