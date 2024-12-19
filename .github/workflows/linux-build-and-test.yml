@@ -76,6 +76,7 @@ jobs:
       - name: Merge Conda YAML files
         working-directory: src/devtools/conda-envs
         run: |
+          pwd
           python merge_yaml.py ${{ matrix.compiler }} ${{ matrix.blas }}
 
       - name: Get Date
