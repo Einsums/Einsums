@@ -30,6 +30,9 @@ def merge_yaml_files(output_file, *input_files):
         if package:
             merged["dependencies"].remove(package)
 
+    print(merged)
+    print("Writing to {}".format(output_file))
+
     with open(output_file, 'w') as f:
         yaml.dump(merged, f)
 
