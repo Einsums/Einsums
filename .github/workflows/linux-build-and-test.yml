@@ -98,7 +98,7 @@ jobs:
       - name: Update environment
         run: |
           pwd
-          conda env update -n einsums-env -f src/devtools/conda-env/conda.yml
+          conda env update -n einsums-env -f src/devtools/conda-envs/conda.yml
           conda activate einsums-env
         if: steps.cache.outputs.cache-hit != 'true'
 
