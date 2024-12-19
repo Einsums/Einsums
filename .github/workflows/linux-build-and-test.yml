@@ -40,7 +40,7 @@ jobs:
           - compiler: intel
             blas: openblas
 
-    name: "${{ matrix.compiler }} • ${{ matrix.blas }} • HPTT=${{ matrix.hptt }}"
+    name: "${{ matrix.compiler }} • ${{ matrix.blas }} • ${{ matrix.build_type }}"
     runs-on: ubuntu-latest
     env:
       CCACHE_DIR: $GITHUB_WORKSPACE/build_cache_${{ inputs.build_cache_suffix }}
@@ -74,7 +74,7 @@ jobs:
           conda install -c conda-forge ruamel.yaml
 
       - name: Merge Conda YAML files
-        working-directory: devtools/conda-envs
+        working-directory: ./devtools/conda-envs
         run: |
           python merge_yaml.py ${{ matrix.compiler }} ${{ matrix.blas }}
 
