@@ -77,7 +77,7 @@ jobs:
         working-directory: src/devtools/conda-envs
         run: |
           pwd
-          python merge_yaml.py ${{ matrix.compiler }} ${{ matrix.blas }}
+          python merge_yml.py ${{ matrix.compiler }} ${{ matrix.blas }}
 
       - name: Get Date
         id: get-date
