@@ -8,6 +8,6 @@ FetchContent_Declare(
         cpptrace
         GIT_REPOSITORY https://github.com/jeremy-rifkin/cpptrace.git
         GIT_TAG v0.7.3 # <HASH or TAG>
+        FIND_PACKAGE_ARGS 0.7
 )
 FetchContent_MakeAvailable(cpptrace)
-#target_link_libraries(einsums_base_libraries cpptrace::cpptrace)

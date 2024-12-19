@@ -1,6 +1,7 @@
 name: docs-env
 channels:
   - conda-forge
+  - nodefaults
 dependencies:
   - sphinx=6.2.1
   - sphinx-design

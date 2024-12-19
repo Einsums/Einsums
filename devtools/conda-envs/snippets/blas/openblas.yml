@@ -1,0 +1,9 @@
+name: einsums-dev
+channels:
+  - conda-forge
+  - nodefaults
+dependencies:
+  # OpenBLAS
+  - libblas[build=*openblas]
+  - openblas[build=*openmp*]
+  - fftw

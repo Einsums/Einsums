@@ -1,0 +1,20 @@
+name: einsums-dev
+channels:
+  - conda-forge
+  - nodefaults
+dependencies:
+  # Development
+  - cmake
+  - ccache
+  - cxx-compiler
+  - ninja
+  # Prebuilts to save einsums the work
+  - catch2
+  - fftw
+  - fmt
+  - range-v3
+  - cpptrace
+  # HDF5
+  # * zlib brings headers; hdf5 package only bring libzlib
+  - hdf5
+  - zlib

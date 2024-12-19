@@ -486,7 +486,7 @@ target_link_libraries(einsums_base_libraries INTERFACE OpenMP::OpenMP_CXX)
 
 # Add the Python module.
 if(EINSUMS_BUILD_PYTHON)
-  add_subdirectory(einsums)
+  #  add_subdirectory(einsums)
 
   include(Einsums_ExtendWithPython)
 
