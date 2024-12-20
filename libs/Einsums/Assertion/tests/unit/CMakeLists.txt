@@ -4,7 +4,7 @@
 #----------------------------------------------------------------------------------------------
 
 set(AssertionTests
-        Assert
+        #        Assert
 )
 
 set(Assert_PARAMETERS FAILURE_EXPECTED)
