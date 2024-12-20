@@ -88,8 +88,12 @@ function(einsums_add_test category name)
     set(valgrind_cmd ${VALGRIND_EXECUTABLE} ${EINSUMS_WITH_TESTS_VALGRIND_OPTIONS})
   endif()
 
+  if (${name}_FAILURE_EXPECTED)
+    set(precommand ${CMAKE_COMMAND} -E env)
+  endif ()
+
   set(_full_name "${category}.${name}")
-  add_test(NAME "${category}.${name}" COMMAND ${valgrind_cmd} ${cmd} ${args})
+  add_test(NAME "${category}.${name}" COMMAND ${precommand} ${valgrind_cmd} ${cmd} ${args})
   if(${run_serial})
     set_tests_properties("${_full_name}" PROPERTIES RUN_SERIAL TRUE)
   endif()
