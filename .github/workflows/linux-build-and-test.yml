@@ -26,7 +26,7 @@ jobs:
       matrix:
         compiler: [ gcc, intel ]
         blas: [ openblas, mkl ]
-        build_type: [ Debug, RelWithDebInfo ]
+        build_type: [ RelWithDebInfo ]
         include:
           - cmake_extra: ""
           - compiler: intel
@@ -59,8 +59,8 @@ jobs:
         uses: actions/cache@v4
         with:
           path: build_cache_${{ inputs.build_cache_suffix }}
-          key: einsums-${{ runner.os }}-${{ inputs.build_cache_suffix }}-${{ matrix.compiler }}-${{ matrix.blas }}-hptt-${{ matrix.hptt }}-${{ github.sha }}
-          restore-keys: einsums-${{ runner.os }}-${{ inputs.build_cache_suffix }}-${{ matrix.compiler }}-${{ matrix.blas }}-hptt-${{ matrix.hptt }}-
+          key: einsums-${{ runner.os }}-${{ inputs.build_cache_suffix }}-${{ matrix.compiler }}-${{ matrix.blas }}-${{ github.sha }}
+          restore-keys: einsums-${{ runner.os }}-${{ inputs.build_cache_suffix }}-${{ matrix.compiler }}-${{ matrix.blas }}-
 
       # From https://github.com/conda-incubator/setup-miniconda?tab=readme-ov-file#caching-environments
       - name: Setup Miniforge
