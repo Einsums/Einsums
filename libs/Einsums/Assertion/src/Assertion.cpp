@@ -36,8 +36,8 @@ void handle_assert(std::source_location const &loc, char const *expr, std::strin
 
         std::cerr << "\n" << util::backtrace() << "\n";
 
-        // std::exit(EXIT_FAILURE);
-        std::abort();
+        std::exit(EXIT_FAILURE);
+        // std::abort();
     }
     get_handler()(loc, expr, msg);
 }
