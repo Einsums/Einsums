@@ -1,0 +1,25 @@
+#----------------------------------------------------------------------------------------------
+# Copyright (c) The Einsums Developers. All rights reserved.
+# Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+#----------------------------------------------------------------------------------------------
+
+{gpu_head}
+list(APPEND CMAKE_MODULE_PATH "${{CMAKE_CURRENT_SOURCE_DIR}}/cmake")
+
+set({module_name}Headers {export_header})
+
+set({module_name}Sources {export_source})
+
+include(Einsums_AddModule)
+einsums_add_module(
+  {lib_symb} {module_name}
+  SOURCES ${{{module_name}Sources}}
+  HEADERS ${{{module_name}Headers}}
+  DEPENDENCIES {export_depends}
+  MODULE_DEPENDENCIES
+  CMAKE_SUBDIRS examples tests
+  BASE_LIBNAME {lib_name}
+)
+
+{python_footer}
+{gpu_foot}

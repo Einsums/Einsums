@@ -10,7 +10,7 @@
 #include "einsums/Timer.hpp"
 #include <fstream>
 
-#ifdef __HIP__
+#ifdef EINSUMS_COMPUTE_CODE
 #    include "einsums/_GPUUtils.hpp"
 #endif
 
@@ -19,7 +19,7 @@
 namespace einsums {
 
 auto initialize() -> int {
-#ifdef __HIP__
+#ifdef EINSUMS_COMPUTE_CODE
     einsums::gpu::initialize();
 #endif
 
@@ -38,7 +38,7 @@ auto initialize() -> int {
 static void finalize_pre(void) {
         blas::finalize();
 
-#ifdef __HIP__
+#ifdef EINSUMS_COMPUTE_CODE
     einsums::gpu::finalize();
 
 #endif

@@ -11,6 +11,10 @@
 using namespace einsums::python;
 using namespace einsums::python::testing;
 
+namespace einsums {
+    namespace python {
+        namespace testing {
+
 BadBuffer::BadBuffer(const BadBuffer &copy)
     : _itemsize{copy._itemsize}, _ndim{copy._ndim}, _dims(copy._dims), _strides(copy._strides), _size{copy._size} {
     if (copy._ptr == nullptr) {
@@ -128,6 +132,9 @@ void BadBuffer::set_stride(int i, size_t stride) THROWS(std::out_of_range) {
 
 void BadBuffer::change_strides_size(size_t new_size) {
     _strides.resize(new_size);
+}
+        }
+    }
 }
 
 void einsums::python::export_python_testing(pybind11::module_ &mod) {
