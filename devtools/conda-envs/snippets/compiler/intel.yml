@@ -4,4 +4,4 @@ channels:
   - nodefaults
 dependencies:
   - cxx-compiler
-  - dpcpp-cpp-rt
+  - dpcpp_linux-64
