@@ -18,3 +18,4 @@ dependencies:
   # * zlib brings headers; hdf5 package only bring libzlib
   - hdf5
   - zlib
+  - numpy
