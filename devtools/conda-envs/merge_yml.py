@@ -6,7 +6,8 @@ import platform
 import argparse
 
 packages_to_filter = [
-    'cpptrace' if platform.system() == 'Windows' else None
+    'cpptrace' if platform.system() == 'Windows' else None,
+    'cpptrace' if platform.system() == 'Darwin' and platform.machine() == 'arm64' else None,
 ]
 
 
