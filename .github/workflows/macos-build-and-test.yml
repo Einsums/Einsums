@@ -24,9 +24,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        build_type: [ RelWithDebInfo ]
+        build_type: [ Debug, RelWithDebInfo ]
 
-    name: "${{ matrix.build_type }}"
+    name: "clang • openblas • ${{ matrix.build_type }}"
     runs-on: macos-latest
     env:
       CCACHE_DIR: $GITHUB_WORKSPACE/build_cache_${{ inputs.build_cache_suffix }}
