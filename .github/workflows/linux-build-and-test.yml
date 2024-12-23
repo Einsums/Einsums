@@ -60,8 +60,8 @@ jobs:
         uses: actions/cache@v4
         with:
           path: build_cache_${{ inputs.build_cache_suffix }}
-          key: einsums-${{ runner.os }}-${{ inputs.build_cache_suffix }}-${{ matrix.compiler }}-${{ matrix.blas }}-${{ github.sha }}
-          restore-keys: einsums-${{ runner.os }}-${{ inputs.build_cache_suffix }}-${{ matrix.compiler }}-${{ matrix.blas }}-
+          key: einsums-${{ runner.os }}-${{ matrix.build_type }}-${{ inputs.build_cache_suffix }}-${{ matrix.compiler }}-${{ matrix.blas }}-${{ github.sha }}
+          restore-keys: einsums-${{ runner.os }}-${{ matrix.build_type }}-${{ inputs.build_cache_suffix }}-${{ matrix.compiler }}-${{ matrix.blas }}-
 
       # From https://github.com/conda-incubator/setup-miniconda?tab=readme-ov-file#caching-environments
       - name: Setup Miniforge
