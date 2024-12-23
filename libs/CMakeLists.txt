@@ -67,6 +67,10 @@ foreach (lib ${EINSUMS_LIBS})
 
   target_compile_definitions(${lib} PRIVATE ${LIB_NAME}_EXPORTS)
 
+  if (UNIX AND (CMAKE_CXX_COMPILER_ID MATCHES Intel OR CMAKE_CXX_COMPILIER_ID MATCHES IntelLLVM))
+    target_compile_options(${lib} PUBLIC -ffp-model=precise -Rno-debug-disables-optimization)
+  endif ()
+
   if (EINSUMS_HAVE_BACKTRACES)
     # Copy the cpptrace.dll on windows to the same directory as the executable for your_target.
     # Not required if static linking.
