@@ -62,7 +62,7 @@ def build_structure(output_base, lib_name, module_name, python=False, **kwargs):
         readme_head="".join("=" for i in module_name),
         export_header=f"{lib_name}/{module_name}/Export.hpp" if python else "",
         export_source=f"Export.cpp" if python else "",
-        export_depends="Einsums" if python else "",
+        export_depends="" if lib_name == "Einsums" else "Einsums",
         python_footer=f"include(Einsums_ExtendWithPython)\neinsums_extend_with_python(${{EINSUMS_PYTHON_LIB_NAME}}_{module_name} ${{PYTHON_LIB_TYPE}})" if python else "",
         python=python,
         python_deps="pybind11::embed" if python else "",

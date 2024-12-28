@@ -7,6 +7,8 @@
 
 #include <Einsums/Config.hpp>
 
+#include <Einsums/TypeSupport/StringLiteral.hpp>
+
 #include <fmt/format.h>
 
 #include <source_location>
@@ -37,10 +39,23 @@ extern EINSUMS_EXPORT bool __is_library_initialized;
  *
  * @return A message with this extra debugging info.
  */
-EINSUMS_EXPORT std::string make_error_message(char const *type_name, char const *str, std::source_location const &location);
+EINSUMS_EXPORT std::string make_error_message(std::string_view const &type_name, char const *str, std::source_location const &location);
 
 /// @copydoc make_error_message(char const *,char const *,std::source_location const &)
-EINSUMS_EXPORT std::string make_error_message(char const *type_name, std::string const &str, std::source_location const &location);
+template <size_t N>
+std::string make_error_message(StringLiteral<N> const type_name, char const *str, std::source_location const &location) {
+    return make_error_message(type_name.string_view(), str, location);
+}
+
+/// @copydoc make_error_message(char const *,char const *,std::source_location const &)
+EINSUMS_EXPORT std::string make_error_message(std::string_view const &type_name, std::string const &str,
+                                              std::source_location const &location);
+
+/// @copydoc make_error_message(char const *,char const *,std::source_location const &)
+template <size_t N>
+std::string make_error_message(StringLiteral<N> const type_name, std::string const &str, std::source_location const &location) {
+    return make_error_message(type_name.string_view(), str, location);
+}
 
 } // namespace detail
 
@@ -131,6 +146,15 @@ struct EINSUMS_EXPORT access_denied : public std::logic_error {
  * Indicates that a certain code path is not yet finished.
  */
 struct EINSUMS_EXPORT todo_error : public std::logic_error {
+    using std::logic_error::logic_error;
+};
+
+/**
+ * @struct not_implemented
+ *
+ * Indicates that a certain code path is not implemented.
+ */
+struct EINSUMS_EXPORT not_implemented : public std::logic_error {
     using std::logic_error::logic_error;
 };
 

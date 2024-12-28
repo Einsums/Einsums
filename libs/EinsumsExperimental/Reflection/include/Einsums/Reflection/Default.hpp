@@ -5,11 +5,11 @@
 
 #pragma once
 
-#include <Einsums/Config/Alias.hpp>
-#include <Einsums/Config/BranchHints.hpp>
-#include <Einsums/Config/CompilerSpecific.hpp>
-#include <Einsums/Config/ExportDefinitions.hpp>
-#include <Einsums/Config/ForceInline.hpp>
-#include <Einsums/Config/Namespace.hpp>
-#include <Einsums/Config/Types.hpp>
-#include <Einsums/Config/Version.hpp>
+namespace einsums {
+
+/// Helper class that can be passed to a field to trigger the default value of the type.
+struct Default {};
+
+inline static const auto default_value = Default{};
+
+}

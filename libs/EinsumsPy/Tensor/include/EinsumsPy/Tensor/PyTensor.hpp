@@ -1,3 +1,8 @@
+//--------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//--------------------------------------------------------------------------------------------
+
 #pragma once
 
 #include <Einsums/Errors/Error.hpp>
@@ -319,11 +324,11 @@ class PyTensor : public RuntimeTensor<T> {
 
         if (override) {
             auto o = override(args);
-            if (pybind11 ::detail ::cast_is_temporary_value_reference<pybind11 ::object>::value) {
-                static pybind11 ::detail ::override_caster_t<pybind11 ::object> caster;
-                return pybind11 ::detail ::cast_ref<pybind11 ::object>(std ::move(o), caster);
+            if (pybind11::detail::cast_is_temporary_value_reference<pybind11::object>::value) {
+                static pybind11::detail::override_caster_t<pybind11::object> caster;
+                return pybind11::detail::cast_ref<pybind11::object>(std::move(o), caster);
             }
-            return pybind11 ::detail ::cast_safe<pybind11 ::object>(std ::move(o));
+            return pybind11::detail::cast_safe<pybind11::object>(std::move(o));
         } else {
             if (args.size() < this->_rank) {
                 return pybind11::cast(subscript_to_view(args));
@@ -356,11 +361,11 @@ class PyTensor : public RuntimeTensor<T> {
 
         if (override) {
             auto o = override(value, index);
-            if (pybind11 ::detail ::cast_is_temporary_value_reference<pybind11::object>::value) {
-                static pybind11 ::detail ::override_caster_t<pybind11::object> caster;
-                return pybind11 ::detail ::cast_ref<pybind11::object>(std ::move(o), caster);
+            if (pybind11::detail::cast_is_temporary_value_reference<pybind11::object>::value) {
+                static pybind11::detail::override_caster_t<pybind11::object> caster;
+                return pybind11::detail::cast_ref<pybind11::object>(std::move(o), caster);
             }
-            return pybind11 ::detail ::cast_safe<pybind11::object>(std ::move(o));
+            return pybind11::detail::cast_safe<pybind11::object>(std::move(o));
         } else {
             if (index.size() < this->_rank) {
                 assign_to_view(value, index);
@@ -394,11 +399,11 @@ class PyTensor : public RuntimeTensor<T> {
 
         if (override) {
             auto o = override(value, index);
-            if (pybind11 ::detail ::cast_is_temporary_value_reference<pybind11::object>::value) {
-                static pybind11 ::detail ::override_caster_t<pybind11::object> caster;
-                return pybind11 ::detail ::cast_ref<pybind11::object>(std ::move(o), caster);
+            if (pybind11::detail::cast_is_temporary_value_reference<pybind11::object>::value) {
+                static pybind11::detail::override_caster_t<pybind11::object> caster;
+                return pybind11::detail::cast_ref<pybind11::object>(std::move(o), caster);
             }
-            return pybind11 ::detail ::cast_safe<pybind11::object>(std ::move(o));
+            return pybind11::detail::cast_safe<pybind11::object>(std::move(o));
         } else {
             if (index.size() < this->_rank) {
                 assign_to_view(value, index);
@@ -435,11 +440,11 @@ class PyTensor : public RuntimeTensor<T> {
 
         if (override) {
             auto o = override(arg);
-            if (pybind11 ::detail ::cast_is_temporary_value_reference<RuntimeTensorView<T>>::value) {
-                static pybind11 ::detail ::override_caster_t<RuntimeTensorView<T>> caster;
-                return pybind11 ::detail ::cast_ref<RuntimeTensorView<T>>(std ::move(o), caster);
+            if (pybind11::detail::cast_is_temporary_value_reference<RuntimeTensorView<T>>::value) {
+                static pybind11::detail::override_caster_t<RuntimeTensorView<T>> caster;
+                return pybind11::detail::cast_ref<RuntimeTensorView<T>>(std::move(o), caster);
             }
-            return pybind11 ::detail ::cast_safe<RuntimeTensorView<T>>(std ::move(o));
+            return pybind11::detail::cast_safe<RuntimeTensorView<T>>(std::move(o));
         } else {
             size_t start, end, step, length;
 
@@ -468,11 +473,11 @@ class PyTensor : public RuntimeTensor<T> {
 
         if (override) {
             auto o = override(value, index);
-            if (pybind11 ::detail ::cast_is_temporary_value_reference<RuntimeTensorView<T>>::value) {
-                static pybind11 ::detail ::override_caster_t<RuntimeTensorView<T>> caster;
-                return pybind11 ::detail ::cast_ref<RuntimeTensorView<T>>(std ::move(o), caster);
+            if (pybind11::detail::cast_is_temporary_value_reference<RuntimeTensorView<T>>::value) {
+                static pybind11::detail::override_caster_t<RuntimeTensorView<T>> caster;
+                return pybind11::detail::cast_ref<RuntimeTensorView<T>>(std::move(o), caster);
             }
-            return pybind11 ::detail ::cast_safe<RuntimeTensorView<T>>(std ::move(o));
+            return pybind11::detail::cast_safe<RuntimeTensorView<T>>(std::move(o));
         } else {
             size_t start, end, step, length;
 
@@ -501,11 +506,11 @@ class PyTensor : public RuntimeTensor<T> {
 
         if (override) {
             auto o = override(value, index);
-            if (pybind11 ::detail ::cast_is_temporary_value_reference<RuntimeTensorView<T>>::value) {
-                static pybind11 ::detail ::override_caster_t<RuntimeTensorView<T>> caster;
-                return pybind11 ::detail ::cast_ref<RuntimeTensorView<T>>(std ::move(o), caster);
+            if (pybind11::detail::cast_is_temporary_value_reference<RuntimeTensorView<T>>::value) {
+                static pybind11::detail::override_caster_t<RuntimeTensorView<T>> caster;
+                return pybind11::detail::cast_ref<RuntimeTensorView<T>>(std::move(o), caster);
             }
-            return pybind11 ::detail ::cast_safe<RuntimeTensorView<T>>(std ::move(o));
+            return pybind11::detail::cast_safe<RuntimeTensorView<T>>(std::move(o));
         } else {
             size_t start, end, step, length;
 
@@ -533,11 +538,11 @@ class PyTensor : public RuntimeTensor<T> {
 
         if (override) {
             auto o = override(index);
-            if (pybind11 ::detail ::cast_is_temporary_value_reference<pybind11::object>::value) {
-                static pybind11 ::detail ::override_caster_t<pybind11::object> caster;
-                return pybind11 ::detail ::cast_ref<pybind11::object>(std ::move(o), caster);
+            if (pybind11::detail::cast_is_temporary_value_reference<pybind11::object>::value) {
+                static pybind11::detail::override_caster_t<pybind11::object> caster;
+                return pybind11::detail::cast_ref<pybind11::object>(std::move(o), caster);
             }
-            return pybind11 ::detail ::cast_safe<pybind11::object>(std ::move(o));
+            return pybind11::detail::cast_safe<pybind11::object>(std::move(o));
         } else {
             if (this->_rank == 1) {
                 return pybind11::cast(this->operator()(index));
@@ -560,11 +565,11 @@ class PyTensor : public RuntimeTensor<T> {
 
         if (override) {
             auto o = override(value, index);
-            if (pybind11 ::detail ::cast_is_temporary_value_reference<RuntimeTensorView<T>>::value) {
-                static pybind11 ::detail ::override_caster_t<RuntimeTensorView<T>> caster;
-                return pybind11 ::detail ::cast_ref<RuntimeTensorView<T>>(std ::move(o), caster);
+            if (pybind11::detail::cast_is_temporary_value_reference<RuntimeTensorView<T>>::value) {
+                static pybind11::detail::override_caster_t<RuntimeTensorView<T>> caster;
+                return pybind11::detail::cast_ref<RuntimeTensorView<T>>(std::move(o), caster);
             }
-            return pybind11 ::detail ::cast_safe<RuntimeTensorView<T>>(std ::move(o));
+            return pybind11::detail::cast_safe<RuntimeTensorView<T>>(std::move(o));
         } else {
             if (this->_rank <= 1) {
                 EINSUMS_THROW_EXCEPTION(std::length_error, "Can not assign buffer to a single position!");
@@ -587,11 +592,11 @@ class PyTensor : public RuntimeTensor<T> {
 
         if (override) {
             auto o = override(value, index);
-            if (pybind11 ::detail ::cast_is_temporary_value_reference<pybind11::object>::value) {
-                static pybind11 ::detail ::override_caster_t<pybind11::object> caster;
-                return pybind11 ::detail ::cast_ref<pybind11::object>(std ::move(o), caster);
+            if (pybind11::detail::cast_is_temporary_value_reference<pybind11::object>::value) {
+                static pybind11::detail::override_caster_t<pybind11::object> caster;
+                return pybind11::detail::cast_ref<pybind11::object>(std::move(o), caster);
             }
-            return pybind11 ::detail ::cast_safe<pybind11::object>(std ::move(o));
+            return pybind11::detail::cast_safe<pybind11::object>(std::move(o));
         } else {
             if (this->_rank <= 1) {
                 T &target = this->operator()({index});
@@ -810,11 +815,11 @@ class PyTensor : public RuntimeTensor<T> {
                                                                                                                                            \
         if (override) {                                                                                                                    \
             auto o = override(buffer);                                                                                                     \
-            if (pybind11 ::detail ::cast_is_temporary_value_reference<RuntimeTensor<T> &>::value) {                                        \
-                static pybind11 ::detail ::override_caster_t<RuntimeTensor<T> &> caster;                                                   \
-                return pybind11 ::detail ::cast_ref<RuntimeTensor<T> &>(std ::move(o), caster);                                            \
+            if (pybind11::detail::cast_is_temporary_value_reference<RuntimeTensor<T> &>::value) {                                          \
+                static pybind11::detail::override_caster_t<RuntimeTensor<T> &> caster;                                                     \
+                return pybind11::detail::cast_ref<RuntimeTensor<T> &>(std::move(o), caster);                                               \
             }                                                                                                                              \
-            return pybind11 ::detail ::cast_safe<RuntimeTensor<T> &>(std ::move(o));                                                       \
+            return pybind11::detail::cast_safe<RuntimeTensor<T> &>(std::move(o));                                                          \
         } else {                                                                                                                           \
             auto buffer_info = buffer.request();                                                                                           \
                                                                                                                                            \
@@ -862,16 +867,16 @@ class PyTensor : public RuntimeTensor<T> {
     RuntimeTensor<T> &operator*=(TOther const &other) {
         do {
             do {
-                pybind11 ::gil_scoped_acquire gil;
-                pybind11 ::function           override = pybind11 ::get_override(static_cast<RuntimeTensor<T> const *>(this), "operator*=");
+                pybind11::gil_scoped_acquire gil;
+                pybind11::function           override = pybind11::get_override(static_cast<RuntimeTensor<T> const *>(this), "operator*=");
                 if (override) {
                     auto o = override(other);
-                    if (pybind11 ::detail ::cast_is_temporary_value_reference<RuntimeTensor<T> &>::value &&
-                        !pybind11 ::detail ::is_same_ignoring_cvref<RuntimeTensor<T> &, PyObject *>::value) {
-                        static pybind11 ::detail ::override_caster_t<RuntimeTensor<T> &> caster;
-                        return pybind11 ::detail ::cast_ref<RuntimeTensor<T> &>(std ::move(o), caster);
+                    if (pybind11::detail::cast_is_temporary_value_reference<RuntimeTensor<T> &>::value &&
+                        !pybind11::detail::is_same_ignoring_cvref<RuntimeTensor<T> &, PyObject *>::value) {
+                        static pybind11::detail::override_caster_t<RuntimeTensor<T> &> caster;
+                        return pybind11::detail::cast_ref<RuntimeTensor<T> &>(std::move(o), caster);
                     }
-                    return pybind11 ::detail ::cast_safe<RuntimeTensor<T> &>(std ::move(o));
+                    return pybind11::detail::cast_safe<RuntimeTensor<T> &>(std::move(o));
                 }
             } while (false);
             return RuntimeTensor<T>::operator*=(other);
@@ -881,16 +886,16 @@ class PyTensor : public RuntimeTensor<T> {
     RuntimeTensor<T> &operator*=(RuntimeTensor<TOther> const &other) {
         do {
             do {
-                pybind11 ::gil_scoped_acquire gil;
-                pybind11 ::function           override = pybind11 ::get_override(static_cast<RuntimeTensor<T> const *>(this), "operator*=");
+                pybind11::gil_scoped_acquire gil;
+                pybind11::function           override = pybind11::get_override(static_cast<RuntimeTensor<T> const *>(this), "operator*=");
                 if (override) {
                     auto o = override(other);
-                    if (pybind11 ::detail ::cast_is_temporary_value_reference<RuntimeTensor<T> &>::value &&
-                        !pybind11 ::detail ::is_same_ignoring_cvref<RuntimeTensor<T> &, PyObject *>::value) {
-                        static pybind11 ::detail ::override_caster_t<RuntimeTensor<T> &> caster;
-                        return pybind11 ::detail ::cast_ref<RuntimeTensor<T> &>(std ::move(o), caster);
+                    if (pybind11::detail::cast_is_temporary_value_reference<RuntimeTensor<T> &>::value &&
+                        !pybind11::detail::is_same_ignoring_cvref<RuntimeTensor<T> &, PyObject *>::value) {
+                        static pybind11::detail::override_caster_t<RuntimeTensor<T> &> caster;
+                        return pybind11::detail::cast_ref<RuntimeTensor<T> &>(std::move(o), caster);
                     }
-                    return pybind11 ::detail ::cast_safe<RuntimeTensor<T> &>(std ::move(o));
+                    return pybind11::detail::cast_safe<RuntimeTensor<T> &>(std::move(o));
                 }
             } while (false);
             return RuntimeTensor<T>::operator*=(other);
@@ -900,49 +905,48 @@ class PyTensor : public RuntimeTensor<T> {
     RuntimeTensor<T> &operator*=(RuntimeTensorView<TOther> const &other) {
         do {
             do {
-                pybind11 ::gil_scoped_acquire gil;
-                pybind11 ::function           override = pybind11 ::get_override(static_cast<RuntimeTensor<T> const *>(this), "operator*=");
+                pybind11::gil_scoped_acquire gil;
+                pybind11::function           override = pybind11::get_override(static_cast<RuntimeTensor<T> const *>(this), "operator*=");
                 if (override) {
                     auto o = override(other);
-                    if (pybind11 ::detail ::cast_is_temporary_value_reference<RuntimeTensor<T> &>::value &&
-                        !pybind11 ::detail ::is_same_ignoring_cvref<RuntimeTensor<T> &, PyObject *>::value) {
-                        static pybind11 ::detail ::override_caster_t<RuntimeTensor<T> &> caster;
-                        return pybind11 ::detail ::cast_ref<RuntimeTensor<T> &>(std ::move(o), caster);
+                    if (pybind11::detail::cast_is_temporary_value_reference<RuntimeTensor<T> &>::value &&
+                        !pybind11::detail::is_same_ignoring_cvref<RuntimeTensor<T> &, PyObject *>::value) {
+                        static pybind11::detail::override_caster_t<RuntimeTensor<T> &> caster;
+                        return pybind11::detail::cast_ref<RuntimeTensor<T> &>(std::move(o), caster);
                     }
-                    return pybind11 ::detail ::cast_safe<RuntimeTensor<T> &>(std ::move(o));
+                    return pybind11::detail::cast_safe<RuntimeTensor<T> &>(std::move(o));
                 }
             } while (false);
             return RuntimeTensor<T>::operator*=(other);
         } while (false);
     }
-    RuntimeTensor<T> &operator*=(pybind11 ::buffer const &buffer) {
-        pybind11 ::gil_scoped_acquire gil;
-        pybind11 ::function           override = pybind11 ::get_override(static_cast<PyTensor<T> *>(this), "operator*=");
+    RuntimeTensor<T> &operator*=(pybind11::buffer const &buffer) {
+        pybind11::gil_scoped_acquire gil;
+        pybind11::function           override = pybind11::get_override(static_cast<PyTensor<T> *>(this), "operator*=");
         if (override) {
             auto o = override(buffer);
-            if (pybind11 ::detail ::cast_is_temporary_value_reference<RuntimeTensor<T> &>::value) {
-                static pybind11 ::detail ::override_caster_t<RuntimeTensor<T> &> caster;
-                return pybind11 ::detail ::cast_ref<RuntimeTensor<T> &>(std ::move(o), caster);
+            if (pybind11::detail::cast_is_temporary_value_reference<RuntimeTensor<T> &>::value) {
+                static pybind11::detail::override_caster_t<RuntimeTensor<T> &> caster;
+                return pybind11::detail::cast_ref<RuntimeTensor<T> &>(std::move(o), caster);
             }
-            return pybind11 ::detail ::cast_safe<RuntimeTensor<T> &>(std ::move(o));
+            return pybind11::detail::cast_safe<RuntimeTensor<T> &>(std::move(o));
         } else {
             auto buffer_info = buffer.request();
             if (this->rank() != buffer_info.ndim) {
-                throw tensor_compat_error(einsums ::detail ::make_error_message(einsums ::type_name<tensor_compat_error>(),
-                                                                                fmt ::format("Can not perform "
-                                                                                             "*="
-                                                                                             " with buffer object with different rank!"),
-                                                                                std ::source_location ::current()));
+                throw tensor_compat_error(detail::make_error_message(einsums::type_name<tensor_compat_error>(),
+                                                                     fmt::format("Can not perform "
+                                                                                 "*="
+                                                                                 " with buffer object with different rank!"),
+                                                                     std::source_location::current()));
             }
             bool is_view = false;
             for (int i = buffer_info.ndim - 1; i >= 0; i--) {
                 if (this->_dims[i] != buffer_info.shape[i]) {
-                    throw dimension_error(
-                        einsums ::detail ::make_error_message(einsums ::type_name<dimension_error>(),
-                                                              fmt ::format("Can not perform "
-                                                                           "*="
-                                                                           " with buffer object with different dimensions!"),
-                                                              std ::source_location ::current()));
+                    throw dimension_error(einsums::detail::make_error_message(einsums::type_name<dimension_error>(),
+                                                                              fmt::format("Can not perform "
+                                                                                          "*="
+                                                                                          " with buffer object with different dimensions!"),
+                                                                              std::source_location::current()));
                 }
                 if (this->_strides[i] != buffer_info.strides[i] / buffer_info.itemsize) {
                     is_view = true;
@@ -950,9 +954,9 @@ class PyTensor : public RuntimeTensor<T> {
             }
             if (buffer_info.item_type_is_equivalent_to<T>()) {
                 T *buffer_data = (T *)buffer_info.ptr;
-                if (is_view) { 
-                    #pragma omp parallel for 
-                for ( size_t sentinel = 0 ; sentinel < this -> size ( ) ; sentinel ++ ) {
+                if (is_view) {
+#pragma omp parallel for
+                    for (size_t sentinel = 0; sentinel < this->size(); sentinel++) {
                         size_t buffer_sent = 0, hold = sentinel;
                         for (int i = 0; i < this->_rank; i++) {
                             buffer_sent += (buffer_info.strides[i] / buffer_info.itemsize) * (hold / this->_strides[i]);
@@ -960,9 +964,9 @@ class PyTensor : public RuntimeTensor<T> {
                         }
                         this->_data[sentinel] *= buffer_data[buffer_sent];
                     }
-                } else { 
-                    #pragma omp parallel for 
-                    for ( size_t sentinel = 0 ; sentinel < this -> size ( ) ; sentinel ++ ) {
+                } else {
+#pragma omp parallel for
+                    for (size_t sentinel = 0; sentinel < this->size(); sentinel++) {
                         this->_data[sentinel] *= buffer_data[sentinel];
                     }
                 }
@@ -1138,11 +1142,11 @@ class PyTensorView : public RuntimeTensorView<T> {
 
         if (override) {
             auto o = override(args);
-            if (pybind11 ::detail ::cast_is_temporary_value_reference<pybind11 ::object>::value) {
-                static pybind11 ::detail ::override_caster_t<pybind11 ::object> caster;
-                return pybind11 ::detail ::cast_ref<pybind11 ::object>(std ::move(o), caster);
+            if (pybind11::detail::cast_is_temporary_value_reference<pybind11::object>::value) {
+                static pybind11::detail::override_caster_t<pybind11::object> caster;
+                return pybind11::detail::cast_ref<pybind11::object>(std::move(o), caster);
             }
-            return pybind11 ::detail ::cast_safe<pybind11 ::object>(std ::move(o));
+            return pybind11::detail::cast_safe<pybind11::object>(std::move(o));
         } else {
             if (args.size() < this->_rank) {
                 return pybind11::cast(subscript_to_view(args));
@@ -1168,11 +1172,11 @@ class PyTensorView : public RuntimeTensorView<T> {
 
         if (override) {
             auto o = override(value, index);
-            if (pybind11 ::detail ::cast_is_temporary_value_reference<pybind11::object>::value) {
-                static pybind11 ::detail ::override_caster_t<pybind11::object> caster;
-                return pybind11 ::detail ::cast_ref<pybind11::object>(std ::move(o), caster);
+            if (pybind11::detail::cast_is_temporary_value_reference<pybind11::object>::value) {
+                static pybind11::detail::override_caster_t<pybind11::object> caster;
+                return pybind11::detail::cast_ref<pybind11::object>(std::move(o), caster);
             }
-            return pybind11 ::detail ::cast_safe<pybind11::object>(std ::move(o));
+            return pybind11::detail::cast_safe<pybind11::object>(std::move(o));
         } else {
             if (index.size() < this->_rank) {
                 assign_to_view(value, index);
@@ -1199,11 +1203,11 @@ class PyTensorView : public RuntimeTensorView<T> {
 
         if (override) {
             auto o = override(value, index);
-            if (pybind11 ::detail ::cast_is_temporary_value_reference<pybind11::object>::value) {
-                static pybind11 ::detail ::override_caster_t<pybind11::object> caster;
-                return pybind11 ::detail ::cast_ref<pybind11::object>(std ::move(o), caster);
+            if (pybind11::detail::cast_is_temporary_value_reference<pybind11::object>::value) {
+                static pybind11::detail::override_caster_t<pybind11::object> caster;
+                return pybind11::detail::cast_ref<pybind11::object>(std::move(o), caster);
             }
-            return pybind11 ::detail ::cast_safe<pybind11::object>(std ::move(o));
+            return pybind11::detail::cast_safe<pybind11::object>(std::move(o));
         } else {
             if (index.size() < this->_rank) {
                 assign_to_view(value, index);
@@ -1234,11 +1238,11 @@ class PyTensorView : public RuntimeTensorView<T> {
 
         if (override) {
             auto o = override(arg);
-            if (pybind11 ::detail ::cast_is_temporary_value_reference<RuntimeTensorView<T>>::value) {
-                static pybind11 ::detail ::override_caster_t<RuntimeTensorView<T>> caster;
-                return pybind11 ::detail ::cast_ref<RuntimeTensorView<T>>(std ::move(o), caster);
+            if (pybind11::detail::cast_is_temporary_value_reference<RuntimeTensorView<T>>::value) {
+                static pybind11::detail::override_caster_t<RuntimeTensorView<T>> caster;
+                return pybind11::detail::cast_ref<RuntimeTensorView<T>>(std::move(o), caster);
             }
-            return pybind11 ::detail ::cast_safe<RuntimeTensorView<T>>(std ::move(o));
+            return pybind11::detail::cast_safe<RuntimeTensorView<T>>(std::move(o));
         } else {
             size_t start, end, step, length;
 
@@ -1260,11 +1264,11 @@ class PyTensorView : public RuntimeTensorView<T> {
 
         if (override) {
             auto o = override(value, index);
-            if (pybind11 ::detail ::cast_is_temporary_value_reference<RuntimeTensorView<T>>::value) {
-                static pybind11 ::detail ::override_caster_t<RuntimeTensorView<T>> caster;
-                return pybind11 ::detail ::cast_ref<RuntimeTensorView<T>>(std ::move(o), caster);
+            if (pybind11::detail::cast_is_temporary_value_reference<RuntimeTensorView<T>>::value) {
+                static pybind11::detail::override_caster_t<RuntimeTensorView<T>> caster;
+                return pybind11::detail::cast_ref<RuntimeTensorView<T>>(std::move(o), caster);
             }
-            return pybind11 ::detail ::cast_safe<RuntimeTensorView<T>>(std ::move(o));
+            return pybind11::detail::cast_safe<RuntimeTensorView<T>>(std::move(o));
         } else {
             size_t start, end, step, length;
 
@@ -1286,11 +1290,11 @@ class PyTensorView : public RuntimeTensorView<T> {
 
         if (override) {
             auto o = override(value, index);
-            if (pybind11 ::detail ::cast_is_temporary_value_reference<RuntimeTensorView<T>>::value) {
-                static pybind11 ::detail ::override_caster_t<RuntimeTensorView<T>> caster;
-                return pybind11 ::detail ::cast_ref<RuntimeTensorView<T>>(std ::move(o), caster);
+            if (pybind11::detail::cast_is_temporary_value_reference<RuntimeTensorView<T>>::value) {
+                static pybind11::detail::override_caster_t<RuntimeTensorView<T>> caster;
+                return pybind11::detail::cast_ref<RuntimeTensorView<T>>(std::move(o), caster);
             }
-            return pybind11 ::detail ::cast_safe<RuntimeTensorView<T>>(std ::move(o));
+            return pybind11::detail::cast_safe<RuntimeTensorView<T>>(std::move(o));
         } else {
             size_t start, end, step, length;
 
@@ -1312,11 +1316,11 @@ class PyTensorView : public RuntimeTensorView<T> {
 
         if (override) {
             auto o = override(index);
-            if (pybind11 ::detail ::cast_is_temporary_value_reference<pybind11::object>::value) {
-                static pybind11 ::detail ::override_caster_t<pybind11::object> caster;
-                return pybind11 ::detail ::cast_ref<pybind11::object>(std ::move(o), caster);
+            if (pybind11::detail::cast_is_temporary_value_reference<pybind11::object>::value) {
+                static pybind11::detail::override_caster_t<pybind11::object> caster;
+                return pybind11::detail::cast_ref<pybind11::object>(std::move(o), caster);
             }
-            return pybind11 ::detail ::cast_safe<pybind11::object>(std ::move(o));
+            return pybind11::detail::cast_safe<pybind11::object>(std::move(o));
         } else {
             if (this->_rank == 1) {
                 return pybind11::cast(this->operator()(index));
@@ -1332,11 +1336,11 @@ class PyTensorView : public RuntimeTensorView<T> {
 
         if (override) {
             auto o = override(value, index);
-            if (pybind11 ::detail ::cast_is_temporary_value_reference<RuntimeTensorView<T>>::value) {
-                static pybind11 ::detail ::override_caster_t<RuntimeTensorView<T>> caster;
-                return pybind11 ::detail ::cast_ref<RuntimeTensorView<T>>(std ::move(o), caster);
+            if (pybind11::detail::cast_is_temporary_value_reference<RuntimeTensorView<T>>::value) {
+                static pybind11::detail::override_caster_t<RuntimeTensorView<T>> caster;
+                return pybind11::detail::cast_ref<RuntimeTensorView<T>>(std::move(o), caster);
             }
-            return pybind11 ::detail ::cast_safe<RuntimeTensorView<T>>(std ::move(o));
+            return pybind11::detail::cast_safe<RuntimeTensorView<T>>(std::move(o));
         } else {
             if (this->_rank <= 1) {
                 EINSUMS_THROW_EXCEPTION(std::length_error, "Can not assign buffer to a single position!");
@@ -1352,11 +1356,11 @@ class PyTensorView : public RuntimeTensorView<T> {
 
         if (override) {
             auto o = override(value, index);
-            if (pybind11 ::detail ::cast_is_temporary_value_reference<pybind11::object>::value) {
-                static pybind11 ::detail ::override_caster_t<pybind11::object> caster;
-                return pybind11 ::detail ::cast_ref<pybind11::object>(std ::move(o), caster);
+            if (pybind11::detail::cast_is_temporary_value_reference<pybind11::object>::value) {
+                static pybind11::detail::override_caster_t<pybind11::object> caster;
+                return pybind11::detail::cast_ref<pybind11::object>(std::move(o), caster);
             }
-            return pybind11 ::detail ::cast_safe<pybind11::object>(std ::move(o));
+            return pybind11::detail::cast_safe<pybind11::object>(std::move(o));
         } else {
             if (this->_rank <= 1) {
                 T &target = this->operator()({index});
@@ -1463,12 +1467,12 @@ class PyTensorView : public RuntimeTensorView<T> {
                 copy_and_cast_imp_##NAME<std::complex<long double>>(buffer_info);                                                          \
                 break;                                                                                                                     \
             default:                                                                                                                       \
-                EINSUMS_THROW_EXCEPTION(pybind11::value_error, "Can not convert format descriptor {} to {} ({})!", format,                  \
+                EINSUMS_THROW_EXCEPTION(pybind11::value_error, "Can not convert format descriptor {} to {} ({})!", format,                 \
                                         pybind11::type_id<T>(), pybind11::format_descriptor<T>::format());                                 \
             }                                                                                                                              \
             break;                                                                                                                         \
         default:                                                                                                                           \
-            EINSUMS_THROW_EXCEPTION(pybind11::value_error, "Can not convert format descriptor {} to {} ({})!", format,                      \
+            EINSUMS_THROW_EXCEPTION(pybind11::value_error, "Can not convert format descriptor {} to {} ({})!", format,                     \
                                     pybind11::type_id<T>(), pybind11::format_descriptor<T>::format());                                     \
         }                                                                                                                                  \
     }
@@ -1531,11 +1535,11 @@ class PyTensorView : public RuntimeTensorView<T> {
                                                                                                                                            \
         if (override) {                                                                                                                    \
             auto o = override(buffer);                                                                                                     \
-            if (pybind11 ::detail ::cast_is_temporary_value_reference<RuntimeTensorView<T> &>::value) {                                    \
-                static pybind11 ::detail ::override_caster_t<RuntimeTensor<T> &> caster;                                                   \
-                return pybind11 ::detail ::cast_ref<RuntimeTensorView<T> &>(std ::move(o), caster);                                        \
+            if (pybind11::detail::cast_is_temporary_value_reference<RuntimeTensorView<T> &>::value) {                                      \
+                static pybind11::detail::override_caster_t<RuntimeTensor<T> &> caster;                                                     \
+                return pybind11::detail::cast_ref<RuntimeTensorView<T> &>(std::move(o), caster);                                           \
             }                                                                                                                              \
-            return pybind11 ::detail ::cast_safe<RuntimeTensorView<T> &>(std ::move(o));                                                   \
+            return pybind11::detail::cast_safe<RuntimeTensorView<T> &>(std::move(o));                                                      \
         } else {                                                                                                                           \
             auto buffer_info = buffer.request();                                                                                           \
                                                                                                                                            \

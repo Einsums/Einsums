@@ -33,6 +33,7 @@ set(_Einsums_modules
   Print
   Profile
         Runtime
+        RuntimeConfiguration
   StringUtil
   Tensor
   TensorAlgebra

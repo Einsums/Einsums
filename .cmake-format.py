@@ -1,4 +1,5 @@
-# Copyright (c) 2020-2023 Hartmut Kaiser
+#  Copyright (c) The Einsums Developers. All rights reserved.
+#  Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 #
 # SPDX-License-Identifier: BSL-1.0
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -345,7 +346,7 @@ with section("parse"):
                                                           'SOURCES': '+'},
                                                'pargs': {'flags': ['APPEND'],
                                                          'nargs': '1+'}},
-        'einsums_add_module': {'kwargs': {'CMAKE_SUBDIRS': '+',
+        'einsums_add_module': {'kwargs': {'BASE_LIBNAME': 1, 'CMAKE_SUBDIRS': '+',
                                           'COMPAT_HEADERS': '+',
                                           'GENERATED_HEADERS': '+',
                                           'DEPENDENCIES': '+',
