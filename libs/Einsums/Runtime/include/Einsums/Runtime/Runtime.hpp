@@ -7,29 +7,31 @@
 
 #include <Einsums/Config.hpp>
 
+#include <Einsums/Print.hpp>
 #include <Einsums/Runtime/ShutdownFunction.hpp>
 #include <Einsums/Runtime/StartupFunction.hpp>
 #include <Einsums/RuntimeConfiguration/RuntimeConfiguration.hpp>
 
 #include <list>
 #include <mutex>
+#include <string_view>
 
 namespace einsums {
 
 enum class RuntimeState : std::int8_t {
-    invalid          = -1,
-    initialized      = 0,
-    pre_startup      = 1,
-    startup          = 2,
-    pre_main         = 3,
-    starting         = 4,
-    running          = 5,
-    pre_shutdown     = 6,
-    shutdown         = 7,
-    stopping         = 8,
-    terminating      = 9,
-    stopped          = 10,
-    last_valid_state = stopped,
+    Invalid        = -1,
+    Initialized    = 0,
+    PreStartup     = 1,
+    Startup        = 2,
+    PreMain        = 3,
+    Starting       = 4,
+    Running        = 5,
+    PreShutdown    = 6,
+    Shutdown       = 7,
+    Stopping       = 8,
+    Terminating    = 9,
+    Stopped        = 10,
+    LastValidState = Stopped,
 };
 
 namespace detail {
@@ -100,8 +102,13 @@ struct EINSUMS_EXPORT Runtime {
   protected:
     /// Common initialization for different constructors
     void init();
+    void init_global_data();
+    void deinit_global_data();
 
   private:
+    void call_startup_functions(bool pre_startup);
+    void call_shutdown_functions(bool pre_shutdown);
+
     std::list<StartupFunctionType>  _pre_startup_functions;
     std::list<StartupFunctionType>  _startup_functions;
     std::list<ShutdownFunctionType> _pre_shutdown_functions;
@@ -117,5 +124,70 @@ struct EINSUMS_EXPORT Runtime {
 EINSUMS_EXPORT void on_exit() noexcept;
 EINSUMS_EXPORT void on_abort(int signal) noexcept;
 
+/// The function \a get_runtime returns a reference to the (thread
+/// specific) runtime instance.
+EINSUMS_EXPORT Runtime  &runtime();
+EINSUMS_EXPORT Runtime *&runtime_ptr();
+
+///////////////////////////////////////////////////////////////////////////
+/// \brief Test whether the runtime system is currently running.
+///
+/// This function returns whether the runtime system is currently running
+/// or not, e.g.  whether the current state of the runtime system is
+/// \a einsums::RuntimeState::Running
+///
+/// \note   This function needs to be executed on a pika-thread. It will
+///         return false otherwise.
+EINSUMS_EXPORT bool is_running();
+
 } // namespace detail
 } // namespace einsums
+
+template <>
+struct fmt::formatter<einsums::RuntimeState> : formatter<string_view> {
+    template <typename FormatContext>
+    auto format(einsums::RuntimeState state, FormatContext &ctx) const {
+        std::string_view name = "unknown";
+        switch (state) {
+        case einsums::RuntimeState::Invalid:
+            name = "Invalid";
+            break;
+        case einsums::RuntimeState::Initialized:
+            name = "Initialized";
+            break;
+        case einsums::RuntimeState::PreStartup:
+            name = "PreStartup";
+            break;
+        case einsums::RuntimeState::Startup:
+            name = "Startup";
+            break;
+        case einsums::RuntimeState::PreMain:
+            name = "PreMain";
+            break;
+        case einsums::RuntimeState::Starting:
+            name = "Starting";
+            break;
+        case einsums::RuntimeState::Running:
+            name = "Running";
+            break;
+        case einsums::RuntimeState::PreShutdown:
+            name = "PreShutdown";
+            break;
+        case einsums::RuntimeState::Shutdown:
+            name = "Shutown";
+            break;
+        case einsums::RuntimeState::Stopping:
+            name = "Stopping";
+            break;
+        case einsums::RuntimeState::Terminating:
+            name = "Terminating";
+            break;
+        case einsums::RuntimeState::Stopped:
+            name = "Stopped";
+            break;
+        default:
+            name = "Unknown";
+        }
+        return formatter<string_view>::format(name, ctx);
+    }
+};

@@ -46,4 +46,14 @@ EINSUMS_EXPORT int init(std::function<int(int, char **)> f, int argc, char const
 EINSUMS_EXPORT int init(std::function<int()> f, int argc, char const *const *argv, InitParams const &params = InitParams());
 EINSUMS_EXPORT int init(std::nullptr_t, int argc, char const *const *argv, InitParams const &params = InitParams());
 
+/// \brief Signal the runtime that it may be stopped.
+///
+/// Until \ref einsums::finalize() has been called, \ref einsums::stop() will not return. This
+/// function exists to distinguish between the runtime being idle but still expecting work to be
+/// scheduled on it and the runtime being idle and ready to be shutdown. Unlike \ref
+/// einsums::stop(), \ref einsums::finalize() can be called from within or outside the runtime.
+///
+/// \pre the runtime is initialized
+EINSUMS_EXPORT void finalize();
+
 } // namespace einsums

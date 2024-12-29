@@ -246,7 +246,7 @@ endif()
 
 # ##################################################################################################
 einsums_option(
-  EINSUMS_WITH_EXAMPLES BOOL "Build examples (default: OFF)" OFF CATEGORY "Build Targets"
+        EINSUMS_WITH_EXAMPLES BOOL "Build examples (default: ON)" ON CATEGORY "Build Targets"
 )
 einsums_option(EINSUMS_WITH_TESTS BOOL "Build tests (default: ON)" ON CATEGORY "Build Targets")
 einsums_option(
@@ -737,7 +737,8 @@ include(Einsums_SetupFmt)
 include(Einsums_SetupCatch)
 include(Einsums_SetupRangev3)
 include(Einsums_SetupH5cpp)
-# include(einsums_SetupHPTT) include(Einsums_SetupHWLOC) include(Einsums_SetupSpdlog)
+# include(einsums_SetupHPTT) include(Einsums_SetupHWLOC)
+include(Einsums_SetupSpdlog)
 # include(Einsums_SetupCppTrace)
 
 if (EINSUMS_USE_HPTT AND EINSUMS_WITH_GPU_SUPPORT)
@@ -802,7 +803,7 @@ if(EINSUMS_WITH_TESTS)
 endif()
 
 if(EINSUMS_WITH_EXAMPLES)
-  add_subdirectory(examples)
+  einsums_add_pseudo_target(Examples)
 endif()
 
 # ##################################################################################################

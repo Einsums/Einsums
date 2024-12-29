@@ -9,8 +9,6 @@
 
 #include <Einsums/TypeSupport/StringLiteral.hpp>
 
-#include <fmt/format.h>
-
 #include <source_location>
 #include <stdexcept>
 #include <string>
@@ -26,8 +24,6 @@
 namespace einsums {
 
 namespace detail {
-
-extern EINSUMS_EXPORT bool __is_library_initialized;
 
 /**
  * Construct a message that contains the type of error being produced, the location that error is being emitted,
@@ -58,12 +54,6 @@ std::string make_error_message(StringLiteral<N> const type_name, std::string con
 }
 
 } // namespace detail
-
-namespace error {
-
-EINSUMS_EXPORT void initialize();
-
-}
 
 /**
  * @struct CodedError
@@ -196,7 +186,7 @@ struct EINSUMS_EXPORT enum_error : public std::domain_error {
 template <hipError_t error>
 struct hip_exception : public std::exception {
   private:
-    ::std::string message;
+    std::string message;
 
   public:
     /**
@@ -354,7 +344,7 @@ using ErrorTbd                         = hip_exception<hipErrorTbd>;
 template <hipblasStatus_t error>
 struct EINSUMS_EXPORT hipblas_exception : public std::exception {
   private:
-    ::std::string message;
+    std::string message;
 
   public:
     /**
@@ -461,7 +451,7 @@ EINSUMS_EXPORT EINSUMS_HOST const char *hipsolverStatusToString(hipsolverStatus_
 template <hipsolverStatus_t error>
 struct EINSUMS_EXPORT hipsolver_exception : public std::exception {
   private:
-    ::std::string message;
+    std::string message;
 
   public:
     /**

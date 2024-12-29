@@ -18,7 +18,7 @@
 
 # Name of test file. Include .cpp, .hip, etc. extension.
 set(RuntimeTests
-    InitializeFinalize.cpp
+        #    InitializeFinalize.cpp
 )
 
 foreach (test ${RuntimeTests})

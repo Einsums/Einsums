@@ -8,14 +8,17 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 set(RuntimeHeaders
         Einsums/Runtime.hpp
         Einsums/Runtime/InitRuntime.hpp
-        Einsums/Runtime/InitializeFinalize.hpp
+        #    Einsums/Runtime/InitializeFinalize.hpp
         Einsums/Runtime/Runtime.hpp
         Einsums/Runtime/RuntimeForward.hpp
         Einsums/Runtime/StartupFunction.hpp
         Einsums/Runtime/ShutdownFunction.hpp
 )
 
-set(RuntimeSources InitializeFinalize.cpp InitRuntime.cpp Runtime.cpp)
+set(RuntimeSources
+        #        InitializeFinalize.cpp
+        InitRuntime.cpp
+        Runtime.cpp)
 
 if(EINSUMS_WITH_GPU_SUPPORT)
   set(RuntimeGPUStreamsInit Einsums_GPUStreams)
@@ -28,6 +31,7 @@ einsums_add_module(
         HEADERS ${RuntimeHeaders}
         DEPENDENCIES Einsums::h5cpp
         MODULE_DEPENDENCIES
+        Einsums_Assertion
         Einsums_BLAS
         Einsums_Config
         Einsums_Debugging

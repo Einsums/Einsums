@@ -3,13 +3,24 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //--------------------------------------------------------------------------------------------
 
+#include <Einsums/Config.hpp>
+
+#include <Einsums/BLAS.hpp>
+#include <Einsums/Errors/Error.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
+#include <Einsums/Profile/Timer.hpp>
 #include <Einsums/Runtime/InitRuntime.hpp>
 #include <Einsums/Runtime/Runtime.hpp>
+#include <Einsums/Utilities/Random.hpp>
+
+#ifdef EINSUMS_COMPUTE_CODE
+#    include <Einsums/GPUStreams/GPUStreams.hpp>
+#endif
 
 #include <csignal>
 #include <cstdlib>
 #include <functional>
+#include <h5cpp/all>
 #include <tuple>
 #include <unordered_map>
 
@@ -89,6 +100,19 @@ int run(std::function<int(RuntimeConfiguration const &map)> const &f, int argc, 
     RuntimeConfiguration                         config;
 
     // This might be a good place to initialize MPI, HIP, CUDA, etc.
+    // error::initialize();
+
+#if defined(EINSUMS_COMPUTE_CODE)
+    gpu::initialize();
+#endif
+
+    profile::initialize();
+    blas::initialize();
+
+    // Disable HDF5 diagnostic reporting
+    H5Eset_auto(0, nullptr, nullptr);
+
+    einsums::random_engine = std::default_random_engine(std::chrono::system_clock::now().time_since_epoch().count());
 
     // TODO: Build and configure a runtime instance
     // Using cmdline, call a function to parse and translate all known command line options into a GlobalConfigMap
@@ -98,7 +122,20 @@ int run(std::function<int(RuntimeConfiguration const &map)> const &f, int argc, 
 
     rt.reset(new Runtime(config, true));
 
-    return run(f, *rt, config, params);
+    int result = run(f, *rt, config, params);
+
+    // Finalize everything
+    blas::finalize();
+
+    // TODO: If we are generating a timing report do it here before profile::finalize().
+
+    profile::finalize();
+
+#if defined(EINSUMS_COMPUTE_CODE)
+    gpu::finalize();
+#endif
+
+    return result;
 }
 
 int run_impl(std::function<int(RuntimeConfiguration const &)> f, int argc, char const *const *argv, InitParams const &params) {
@@ -135,6 +172,9 @@ int init(std::function<int()> f, int argc, char const *const *argv, InitParams c
 int init(std::nullptr_t, int argc, char const *const *argv, InitParams const &params) {
     std::function<int(RuntimeConfiguration const &)> main_f;
     return detail::run_impl(std::move(main_f), argc, argv, params);
+}
+
+void finalize() {
 }
 
 } // namespace einsums

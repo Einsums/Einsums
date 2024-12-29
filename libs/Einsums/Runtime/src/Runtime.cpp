@@ -5,10 +5,12 @@
 
 #include <Einsums/Config.hpp>
 
+#include <Einsums/Assert.hpp>
 #include <Einsums/Debugging/AttachDebugger.hpp>
 #include <Einsums/Runtime/Runtime.hpp>
 
 #include <csignal>
+#include <spdlog/spdlog.h>
 
 namespace einsums::detail {
 
@@ -38,7 +40,26 @@ void on_abort(int) noexcept {
     std::exit(-1);
 }
 
+bool is_running() {
+    Runtime *rt = runtime_ptr();
+    if (nullptr != rt)
+        return rt->state() == RuntimeState::Running;
+    return false;
+}
+
+Runtime &runtime() {
+    EINSUMS_ASSERT(runtime_ptr() != nullptr);
+    return *runtime_ptr();
+}
+
+Runtime *&runtime_ptr() {
+    static Runtime *runtime_ = nullptr;
+    return runtime_;
+}
+
 Runtime::Runtime(RuntimeConfiguration &rtcfg, bool initialize) : _rtcfg(rtcfg) {
+    init_global_data();
+
     if (initialize) {
         init();
     }
@@ -49,7 +70,7 @@ RuntimeState Runtime::state() const {
 }
 
 void Runtime::state(RuntimeState state) {
-    // TODO: Log the state change.
+    spdlog::info("state change: from {} to {}", _state, state);
     _state = state;
 }
 
@@ -62,6 +83,7 @@ RuntimeConfiguration const &Runtime::config() const {
 }
 
 void Runtime::init() {
+    spdlog::info("Runtime::init: initializing...");
     try {
         // TODO: This would be a good place to create and initialize a thread pool
 
@@ -88,6 +110,19 @@ void Runtime::init() {
     }
 }
 
+void Runtime::init_global_data() {
+    Runtime *&runtime_ = runtime_ptr();
+    EINSUMS_ASSERT(!runtime_);
+
+    runtime_ = this;
+}
+
+void Runtime::deinit_global_data() {
+    Runtime *&runtime_ = runtime_ptr();
+    EINSUMS_ASSERT(runtime_);
+    runtime_ = nullptr;
+}
+
 void Runtime::add_pre_shutdown_function(ShutdownFunctionType f) {
     std::lock_guard l(_mutex);
     _pre_shutdown_functions.push_back(f);
@@ -108,10 +143,54 @@ void Runtime::add_startup_function(StartupFunctionType f) {
     _startup_functions.push_back(f);
 }
 
+void Runtime::call_startup_functions(bool pre_startup) {
+    if (pre_startup) {
+        state(RuntimeState::PreStartup);
+        for (StartupFunctionType &f : _pre_startup_functions) {
+            f();
+        }
+    } else {
+        state(RuntimeState::Startup);
+        for (StartupFunctionType &f : _startup_functions) {
+            f();
+        }
+    }
+}
+
+void Runtime::call_shutdown_functions(bool pre_shutdown) {
+    if (pre_shutdown) {
+        state(RuntimeState::PreShutdown);
+        for (ShutdownFunctionType &f : _pre_shutdown_functions) {
+            f();
+        }
+    } else {
+        state(RuntimeState::Shutdown);
+        for (ShutdownFunctionType &f : _shutdown_functions) {
+            f();
+        }
+    }
+}
+
 int Runtime::run(std::function<EinsumsMainFunctionType> const &func) {
+    call_startup_functions(true);
+    spdlog::debug("run: ran pre-startup functions");
+
+    call_startup_functions(false);
+    spdlog::info("run: ran startup functions");
+
+    // Set the state to running.
+    state(RuntimeState::Running);
     // Once we start using a thread pool / threading manager we can
     // pass the function to the pool and have the manager handle it.
-    return func();
+    spdlog::info("run: running user provided function");
+    int result = func();
+
+    call_shutdown_functions(true);
+    spdlog::info("run: ran pre-shutdown functions");
+    call_shutdown_functions(false);
+    spdlog::info("run: ran shutdown functions");
+
+    return result;
 }
 
 } // namespace einsums::detail

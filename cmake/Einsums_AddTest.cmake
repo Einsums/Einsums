@@ -185,10 +185,10 @@ function(einsums_add_example_target_dependencies subcategory name)
   cmake_parse_arguments(${name} "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
   if(NOT ${name}_DEPS_ONLY)
     # Add a custom target for this example
-    einsums_add_pseudo_target(examples.${subcategory}.${name})
+    einsums_add_pseudo_target(Examples.${subcategory}.${name})
   endif()
   # Make pseudo-targets depend on master pseudo-target
-  einsums_add_pseudo_dependencies(examples.${subcategory} examples.${subcategory}.${name})
+  einsums_add_pseudo_dependencies(Examples.${subcategory} Examples.${subcategory}.${name})
   # Add dependencies to pseudo-target
-  einsums_add_pseudo_dependencies(examples.${subcategory}.${name} ${name})
+  einsums_add_pseudo_dependencies(Examples.${subcategory}.${name} ${name})
 endfunction(einsums_add_example_target_dependencies)
