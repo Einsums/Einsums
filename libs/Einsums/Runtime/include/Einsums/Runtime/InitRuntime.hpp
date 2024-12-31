@@ -40,11 +40,48 @@ struct InitParams {
     mutable ShutdownFunctionType shutdown;
 };
 
-EINSUMS_EXPORT int init(std::function<int(ConfigMap<std::string> &)> f, int argc, char const *const *argv,
-                        InitParams const &params = InitParams());
-EINSUMS_EXPORT int init(std::function<int(int, char **)> f, int argc, char const *const *argv, InitParams const &params = InitParams());
-EINSUMS_EXPORT int init(std::function<int()> f, int argc, char const *const *argv, InitParams const &params = InitParams());
-EINSUMS_EXPORT int init(std::nullptr_t, int argc, char const *const *argv, InitParams const &params = InitParams());
+EINSUMS_EXPORT int initialize(std::function<int(ConfigMap<std::string> &)> f, int argc, char const *const *argv,
+                              InitParams const &params = InitParams());
+EINSUMS_EXPORT int initialize(std::function<int(int, char **)> f, int argc, char const *const *argv,
+                              InitParams const &params = InitParams());
+EINSUMS_EXPORT int initialize(std::function<int()> f, int argc, char const *const *argv, InitParams const &params = InitParams());
+EINSUMS_EXPORT int initialize(std::nullptr_t, int argc, char const *const *argv, InitParams const &params = InitParams());
+
+/// \brief Start the runtime.
+///
+/// \param f entry point of the first task on the einsums runtime. f will be passed all non-einsums
+/// command line arguments.
+/// \param argc number of arguments in argv
+/// \param argv array of arguments. The first element is ignored.
+///
+/// \pre `(argc == 0 && argv == nullptr) || (argc >= 1 && argv != nullptr)`
+/// \pre the runtime is stopped
+/// \post the runtime is running
+EINSUMS_EXPORT void start(std::function<int(int, char **)> f, int argc, char const *const *argv, InitParams const &params = InitParams());
+
+/// \brief Start the runtime.
+///
+/// \param f entry point of the first task on the einsums runtime
+/// \param argc number of arguments in argv
+/// \param argv array of arguments. The first element is ignored.
+///
+/// \pre `(argc == 0 && argv == nullptr) || (argc >= 1 && argv != nullptr)`
+/// \pre the runtime is not running
+EINSUMS_EXPORT void start(std::function<int()> f, int argc, char const *const *argv, InitParams const &params = InitParams());
+
+EINSUMS_EXPORT void start(std::nullptr_t, int argc, char const *const *argv, InitParams const &params = InitParams());
+
+/// \brief Start the runtime.
+///
+/// No task is created on the runtime.
+///
+/// \param argc number of arguments in argv
+/// \param argv array of arguments. The first element is ignored.
+///
+/// \pre `(argc == 0 && argv == nullptr) || (argc >= 1 && argv != nullptr)`
+/// \pre the runtime is not initialized
+/// \post the runtime is running
+EINSUMS_EXPORT void start(int argc, char const *const *argv, InitParams const &params = InitParams());
 
 /// \brief Signal the runtime that it may be stopped.
 ///

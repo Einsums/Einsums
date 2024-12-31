@@ -4,14 +4,16 @@
 //--------------------------------------------------------------------------------------------
 
 #include <Einsums/Print.hpp>
-#include <Einsums/Runtime/InitRuntime.hpp>
-#include <Einsums/Runtime/Runtime.hpp>
+#include <Einsums/Runtime.hpp>
 
 int einsums_main() {
     einsums::println("Hello world!");
+
+    einsums::finalize();
+
     return EXIT_SUCCESS;
 }
 
 int main(int argc, char **argv) {
-    return einsums::init(einsums_main, argc, argv);
+    return einsums::initialize(einsums_main, argc, argv);
 }

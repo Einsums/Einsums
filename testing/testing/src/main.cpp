@@ -22,5 +22,5 @@ int main(int argc, char **argv) {
 
     auto const wrapped = std::bind_front(&einsums_main, argc, argv);
 
-    return einsums::init(wrapped, argc, argv);
+    return einsums::initialize(wrapped, argc, argv);
 }

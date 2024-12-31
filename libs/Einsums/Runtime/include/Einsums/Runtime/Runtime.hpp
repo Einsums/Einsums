@@ -8,12 +8,12 @@
 #include <Einsums/Config.hpp>
 
 #include <Einsums/Print.hpp>
+#include <Einsums/Runtime/InitRuntime.hpp>
 #include <Einsums/Runtime/ShutdownFunction.hpp>
 #include <Einsums/Runtime/StartupFunction.hpp>
 #include <Einsums/RuntimeConfiguration/RuntimeConfiguration.hpp>
 
 #include <list>
-#include <mutex>
 #include <string_view>
 
 namespace einsums {
@@ -98,6 +98,7 @@ struct EINSUMS_EXPORT Runtime {
     virtual void add_shutdown_function(ShutdownFunctionType f);
 
     virtual int run(std::function<EinsumsMainFunctionType> const &func);
+    virtual int run();
 
   protected:
     /// Common initialization for different constructors
@@ -109,6 +110,8 @@ struct EINSUMS_EXPORT Runtime {
     void call_startup_functions(bool pre_startup);
     void call_shutdown_functions(bool pre_shutdown);
 
+    friend void einsums::finalize();
+
     std::list<StartupFunctionType>  _pre_startup_functions;
     std::list<StartupFunctionType>  _startup_functions;
     std::list<ShutdownFunctionType> _pre_shutdown_functions;
@@ -118,7 +121,7 @@ struct EINSUMS_EXPORT Runtime {
     mutable std::mutex   _mutex;
     RuntimeConfiguration _rtcfg;
 
-    std::atomic<RuntimeState> _state;
+    std::atomic<RuntimeState> _state{RuntimeState::Invalid};
 };
 
 EINSUMS_EXPORT void on_exit() noexcept;
@@ -147,7 +150,7 @@ template <>
 struct fmt::formatter<einsums::RuntimeState> : formatter<string_view> {
     template <typename FormatContext>
     auto format(einsums::RuntimeState state, FormatContext &ctx) const {
-        std::string_view name = "unknown";
+        std::string_view name;
         switch (state) {
         case einsums::RuntimeState::Invalid:
             name = "Invalid";

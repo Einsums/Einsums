@@ -185,12 +185,20 @@ int Runtime::run(std::function<EinsumsMainFunctionType> const &func) {
     spdlog::info("run: running user provided function");
     int result = func();
 
-    call_shutdown_functions(true);
-    spdlog::info("run: ran pre-shutdown functions");
-    call_shutdown_functions(false);
-    spdlog::info("run: ran shutdown functions");
-
     return result;
+}
+
+int Runtime::run() {
+    call_startup_functions(true);
+    spdlog::debug("run: ran pre-startup functions");
+
+    call_startup_functions(false);
+    spdlog::info("run: ran startup functions");
+
+    // Set the state to running.
+    state(RuntimeState::Running);
+
+    return 0;
 }
 
 } // namespace einsums::detail

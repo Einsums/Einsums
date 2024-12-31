@@ -5,6 +5,7 @@
 
 #include <Einsums/Config.hpp>
 
+#include <Einsums/Assert.hpp>
 #include <Einsums/BLAS.hpp>
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
@@ -21,6 +22,7 @@
 #include <cstdlib>
 #include <functional>
 #include <h5cpp/all>
+#include <spdlog/spdlog.h>
 #include <tuple>
 #include <unordered_map>
 
@@ -85,12 +87,12 @@ int run(std::function<int(RuntimeConfiguration const &map)> const &f, Runtime &r
         return rt.run(std::bind_front(f, cfg));
     }
 
-    EINSUMS_THROW_NOT_IMPLEMENTED;
     // Run this runtime instance without an einsums_main
-    // return rt.run();
+    return rt.run();
 }
 
-int run(std::function<int(RuntimeConfiguration const &map)> const &f, int argc, char const *const *argv, InitParams const &params) {
+int run(std::function<int(RuntimeConfiguration const &map)> const &f, int argc, char const *const *argv, InitParams const &params,
+        bool blocking) {
     // TODO: Add a check to ensure the runtime hasn't already been initialized
 
     // TODO: Translate argv to unordered_map.
@@ -122,23 +124,20 @@ int run(std::function<int(RuntimeConfiguration const &map)> const &f, int argc, 
 
     rt.reset(new Runtime(config, true));
 
-    int result = run(f, *rt, config, params);
+    if (blocking) {
+        return run(f, *rt, config, params);
+    }
 
-    // Finalize everything
-    blas::finalize();
+    run(f, *rt, config, params);
 
-    // TODO: If we are generating a timing report do it here before profile::finalize().
+    // pointer to runtime is stored in TLS
+    [[maybe_unused]] Runtime *p = rt.release();
 
-    profile::finalize();
-
-#if defined(EINSUMS_COMPUTE_CODE)
-    gpu::finalize();
-#endif
-
-    return result;
+    return 0;
 }
 
-int run_impl(std::function<int(RuntimeConfiguration const &)> f, int argc, char const *const *argv, InitParams const &params) {
+int run_impl(std::function<int(RuntimeConfiguration const &)> f, int argc, char const *const *argv, InitParams const &params,
+             bool blocking) {
     if (argc == 0 || argv == nullptr) {
         argc = dummy_argc;
         argv = dummy_argv;
@@ -150,31 +149,76 @@ int run_impl(std::function<int(RuntimeConfiguration const &)> f, int argc, char 
 #if defined(EINSUMS_HAVE_CXX11_STD_QUICK_EXIT)
     [[maybe_unused]] auto quick_exit_result = std::at_quick_exit(on_exit);
 #endif
-    return run(f, argc, argv, params);
+    return run(f, argc, argv, params, blocking);
 }
 
 } // namespace detail
 
-int init(std::function<int(RuntimeConfiguration const &)> f, int argc, char const *const *argv, InitParams const &params) {
-    return detail::run_impl(std::move(f), argc, argv, params);
+int initialize(std::function<int(RuntimeConfiguration const &)> f, int argc, char const *const *argv, InitParams const &params) {
+    return detail::run_impl(std::move(f), argc, argv, params, true);
 }
 
-int init(std::function<int(int, char **)> f, int argc, char const *const *argv, InitParams const &params) {
+int initialize(std::function<int(int, char **)> f, int argc, char const *const *argv, InitParams const &params) {
     std::function<int(RuntimeConfiguration const &)> main_f = bind_back(detail::init_helper, f);
-    return detail::run_impl(std::move(main_f), argc, argv, params);
+    return detail::run_impl(std::move(main_f), argc, argv, params, true);
 }
 
-int init(std::function<int()> f, int argc, char const *const *argv, InitParams const &params) {
+int initialize(std::function<int()> f, int argc, char const *const *argv, InitParams const &params) {
     std::function<int(RuntimeConfiguration const &)> main_f = std::bind(f);
-    return detail::run_impl(std::move(main_f), argc, argv, params);
+    return detail::run_impl(std::move(main_f), argc, argv, params, true);
 }
 
-int init(std::nullptr_t, int argc, char const *const *argv, InitParams const &params) {
+int initialize(std::nullptr_t, int argc, char const *const *argv, InitParams const &params) {
     std::function<int(RuntimeConfiguration const &)> main_f;
-    return detail::run_impl(std::move(main_f), argc, argv, params);
+    return detail::run_impl(std::move(main_f), argc, argv, params, true);
+}
+
+void start(std::function<int(int, char **)> f, int argc, char const *const *argv, InitParams const &params) {
+    std::function<int(RuntimeConfiguration const &)> main_f = bind_back(detail::init_helper, f);
+    if (detail::run_impl(std::move(main_f), argc, argv, params, false) != 0) {
+        EINSUMS_UNREACHABLE;
+    }
+}
+
+void start(std::function<int()> f, int argc, char const *const *argv, InitParams const &params) {
+    std::function<int(RuntimeConfiguration const &)> main_f = std::bind(f);
+    if (detail::run_impl(std::move(main_f), argc, argv, params, false) != 0) {
+        EINSUMS_UNREACHABLE;
+    }
+}
+
+void start(std::nullptr_t, int argc, char const *const *argv, InitParams const &params) {
+    std::function<int(RuntimeConfiguration const &)> main_f;
+    if (detail::run_impl(std::move(main_f), argc, argv, params, false) != 0) {
+        EINSUMS_UNREACHABLE;
+    }
+}
+
+void start(int argc, char const *const *argv, InitParams const &params) {
+    std::function<int(RuntimeConfiguration const &)> main_f;
+    if (detail::run_impl(std::move(main_f), argc, argv, params, false) != 0) {
+        EINSUMS_UNREACHABLE;
+    }
 }
 
 void finalize() {
+    auto &rt = detail::runtime();
+    rt.call_shutdown_functions(true);
+    spdlog::info("run: ran pre-shutdown functions");
+    rt.call_shutdown_functions(false);
+    spdlog::info("run: ran shutdown functions");
+    rt.deinit_global_data();
+
+    // Finalize everything
+    blas::finalize();
+
+    // TODO: If we are generating a timing report do it here before profile::finalize().
+
+    profile::finalize();
+
+#if defined(EINSUMS_COMPUTE_CODE)
+    gpu::finalize();
+#endif
 }
 
 } // namespace einsums

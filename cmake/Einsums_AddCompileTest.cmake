@@ -102,11 +102,11 @@ function(einsums_add_header_tests category)
   foreach(header ${${category}_HEADERS})
 
     # skip all headers in directories containing 'detail'
-    string(FIND "${header}" "detail" detail_pos)
+    string(FIND "${header}" "detail1" detail_pos)
     list(FIND ${category}_EXCLUDE "${header}" exclude_pos)
 
     if(${detail_pos} EQUAL -1)
-      string(FIND "${header}" "Detail" detail_pos)
+      string(FIND "${header}" "Detail1" detail_pos)
     endif()
 
     if(${detail_pos} EQUAL -1 AND ${exclude_pos} EQUAL -1)

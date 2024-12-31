@@ -14,7 +14,7 @@ else ()
     return()
 endif ()
 
-set(example_programs HelloWorld)
+set(example_programs HelloWorld HelloWorld2)
 
 foreach (example_program ${example_programs})
     set(sources ${example_program}.cpp)

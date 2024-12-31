@@ -3,13 +3,15 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //--------------------------------------------------------------------------------------------
 
-#pragma once
+#include <Einsums/Print.hpp>
+#include <Einsums/Runtime.hpp>
 
-namespace einsums {
+int main(int argc, char **argv) {
+    einsums::start(argc, argv);
 
-/// Helper class that can be passed to a field to trigger the default value of the type.
-struct Default {};
+    einsums::println("Hello world!");
 
-inline static const auto default_value = Default{};
+    einsums::finalize();
 
+    return EXIT_SUCCESS;
 }
