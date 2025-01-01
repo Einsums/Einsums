@@ -15,6 +15,7 @@
 
 #include <list>
 #include <string_view>
+#include <mutex>
 
 namespace einsums {
 

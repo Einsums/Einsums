@@ -12,6 +12,10 @@
 
 #include <csignal>
 
+#if defined(EINSUMS_WINDOWS)
+#include <Windows.h>
+#endif
+
 namespace einsums::detail {
 
 std::list<StartupFunctionType>  global_pre_startup_functions;
@@ -19,6 +23,42 @@ std::list<StartupFunctionType>  global_startup_functions;
 std::list<ShutdownFunctionType> global_pre_shutdown_functions;
 std::list<ShutdownFunctionType> global_shutdown_functions;
 
+#if defined(EINSUMS_WINDOWS)
+
+void handle_termination(char const* reason)
+{
+    if (runtime_config().einsums.attach_debugger)
+    {
+        util::attach_debugger();
+    }
+
+    if (runtime_config().einsums.diagnostics_on_terminate)
+    {
+        // Add more information here.
+        std::cerr << "{what}: " << (reason ? reason : "Unknown reason") << "\n";
+    }
+}
+
+EINSUMS_EXPORT BOOL WINAPI termination_handler(DWORD ctrl_type)
+{
+    switch (ctrl_type)
+    {
+    case CTRL_C_EVENT: handle_termination("Ctrl-C"); return TRUE;
+
+    case CTRL_BREAK_EVENT: handle_termination("Ctrl-Break"); return TRUE;
+
+    case CTRL_CLOSE_EVENT: handle_termination("Ctrl-Close"); return TRUE;
+
+    case CTRL_LOGOFF_EVENT: handle_termination("Logoff"); return TRUE;
+
+    case CTRL_SHUTDOWN_EVENT: handle_termination("Shutdown"); return TRUE;
+
+    default: break;
+    }
+    return FALSE;
+}
+
+#else
 [[noreturn]] EINSUMS_EXPORT void termination_handler(int signum) {
     if (signum != SIGINT && runtime_config().einsums.attach_debugger) {
         util::attach_debugger();
@@ -28,6 +68,7 @@ std::list<ShutdownFunctionType> global_shutdown_functions;
 
     std::abort();
 }
+#endif
 
 static bool exit_called = false;
 

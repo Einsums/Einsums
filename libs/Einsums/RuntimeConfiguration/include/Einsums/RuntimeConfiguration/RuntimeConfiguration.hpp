@@ -11,6 +11,10 @@
 #    include <unistd.h>
 #endif
 
+#if defined(EINSUMS_WINDOWS)
+#include <process.h>
+#endif
+
 namespace einsums {
 
 namespace detail {
@@ -21,7 +25,7 @@ struct EINSUMS_EXPORT Log {
 };
 
 struct EINSUMS_EXPORT System {
-    pid_t       pid{-1};
+    int         pid{-1};
     std::string executable_prefix;
 };
 
