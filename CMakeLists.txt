@@ -534,7 +534,7 @@ if(NOT WIN32)
   endif()
 
 else()
-
+  add_definitions(-D_ITERATOR_DEBUG_LEVEL=0)
 endif(NOT WIN32)
 
 # Add exception handling flags based on the compiler and platform
