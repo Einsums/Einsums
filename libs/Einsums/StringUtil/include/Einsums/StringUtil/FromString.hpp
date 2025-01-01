@@ -9,6 +9,8 @@
 
 #include <Einsums/StringUtil/BadLexicalCast.hpp>
 
+#include <algorithm>
+
 namespace einsums {
 
 template <typename T, typename Enable = void>
