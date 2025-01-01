@@ -9,6 +9,8 @@
 #include <Einsums/RuntimeConfiguration/RuntimeConfiguration.hpp>
 
 #include <filesystem>
+#include <string>
+#include <vector>
 
 #if defined(EINSUMS_WINDOWS)
 #    include <process.h>
