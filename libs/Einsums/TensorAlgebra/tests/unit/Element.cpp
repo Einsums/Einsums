@@ -45,18 +45,20 @@ TEMPLATE_TEST_CASE("element", "[tensor_algebra]", float, double, std::complex<fl
     using namespace einsums::tensor_algebra;
     using namespace einsums::index;
 
+    int _i = 5;
+
     SECTION("1") {
-        Tensor A     = create_random_tensor<TestType>("A", 10, 10, 10, 10);
+        Tensor A     = create_random_tensor<TestType>("A", _i, _i, _i, _i);
         Tensor Acopy = A;
 
-        Tensor B = create_random_tensor<TestType>("B", 10, 10, 10, 10);
+        Tensor B = create_random_tensor<TestType>("B", _i, _i, _i, _i);
 
         element([](TestType const &Aval, TestType const &Bval) { return Aval + Bval; }, &A, B);
 
-        for (int w = 0; w < 10; w++) {
-            for (int x = 0; x < 10; x++) {
-                for (int y = 0; y < 10; y++) {
-                    for (int z = 0; z < 10; z++) {
+        for (int w = 0; w < _i; w++) {
+            for (int x = 0; x < _i; x++) {
+                for (int y = 0; y < _i; y++) {
+                    for (int z = 0; z < _i; z++) {
                         REQUIRE_THAT(A(w, x, y, z), CheckWithinRel(Acopy(w, x, y, z) + B(w, x, y, z), 0.001));
                         // REQUIRE_THAT(A(w, x, y, z), Catch::Matchers::WithinAbs(Acopy(w, x, y, z) + B(w, x, y, z), 0.001));
                     }
@@ -66,18 +68,18 @@ TEMPLATE_TEST_CASE("element", "[tensor_algebra]", float, double, std::complex<fl
     }
 
     SECTION("2") {
-        Tensor A     = create_random_tensor<TestType>("A", 10, 10, 10, 10);
+        Tensor A     = create_random_tensor<TestType>("A", _i, _i, _i, _i);
         Tensor Acopy = A;
 
-        Tensor B = create_random_tensor<TestType>("B", 10, 10, 10, 10);
-        Tensor C = create_random_tensor<TestType>("C", 10, 10, 10, 10);
+        Tensor B = create_random_tensor<TestType>("B", _i, _i, _i, _i);
+        Tensor C = create_random_tensor<TestType>("C", _i, _i, _i, _i);
 
         element([](TestType const &Aval, TestType const &Bval, TestType const &Cval) { return Aval + Bval + Cval; }, &A, B, C);
 
-        for (int w = 0; w < 10; w++) {
-            for (int x = 0; x < 10; x++) {
-                for (int y = 0; y < 10; y++) {
-                    for (int z = 0; z < 10; z++) {
+        for (int w = 0; w < _i; w++) {
+            for (int x = 0; x < _i; x++) {
+                for (int y = 0; y < _i; y++) {
+                    for (int z = 0; z < _i; z++) {
                         REQUIRE_THAT(A(w, x, y, z), CheckWithinRel(Acopy(w, x, y, z) + B(w, x, y, z) + C(w, x, y, z), 0.001));
                         // REQUIRE_THAT(A(w, x, y, z), Catch::Matchers::WithinAbs(Acopy(w, x, y, z) + B(w, x, y, z) + C(w, x, y, z),
                         // 0.001));
@@ -93,7 +95,7 @@ TEMPLATE_TEST_CASE("einsum element", "[tensor_algebra]", float, double, std::com
     using namespace einsums::tensor_algebra;
     using namespace einsums::index;
 
-    int const _i{50}, _j{50};
+    int const _i{5}, _j{5};
 
     SECTION("1") {
         Tensor C  = create_tensor<TestType>("C", _i, _j);

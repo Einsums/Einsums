@@ -111,7 +111,7 @@ void einsum_generic_algorithm(std::tuple<CUniqueIndices...> const &C_unique, std
         // println("BIndices... {}", print_tuple_no_type(B_indices));
         // println("CIndices... {}", print_tuple_no_type(C_indices));
 
-        EINSUMS_OMP_PARALLEL_FOR
+        // EINSUMS_OMP_PARALLEL_FOR
         for (auto it = view.begin(); it < view.end(); it++) {
 
             // Construct the tuples that will be used to access the tensor elements of A and B
