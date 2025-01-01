@@ -13,7 +13,10 @@
 int einsums_main(int argc, char **argv) {
     Catch::Session session;
     session.applyCommandLine(argc, argv);
-    return session.run();
+    int result = session.run();
+    einsums::finalize();
+
+    return result;
 }
 
 int main(int argc, char **argv) {

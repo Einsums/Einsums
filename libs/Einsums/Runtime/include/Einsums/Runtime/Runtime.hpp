@@ -126,11 +126,14 @@ struct EINSUMS_EXPORT Runtime {
 
 EINSUMS_EXPORT void on_exit() noexcept;
 EINSUMS_EXPORT void on_abort(int signal) noexcept;
+EINSUMS_EXPORT void set_signal_handlers();
 
 /// The function \a get_runtime returns a reference to the (thread
 /// specific) runtime instance.
 EINSUMS_EXPORT Runtime  &runtime();
 EINSUMS_EXPORT Runtime *&runtime_ptr();
+
+EINSUMS_EXPORT RuntimeConfiguration &runtime_config();
 
 ///////////////////////////////////////////////////////////////////////////
 /// \brief Test whether the runtime system is currently running.

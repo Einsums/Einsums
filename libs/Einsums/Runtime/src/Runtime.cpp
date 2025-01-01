@@ -7,10 +7,10 @@
 
 #include <Einsums/Assert.hpp>
 #include <Einsums/Debugging/AttachDebugger.hpp>
+#include <Einsums/Logging.hpp>
 #include <Einsums/Runtime/Runtime.hpp>
 
 #include <csignal>
-#include <spdlog/spdlog.h>
 
 namespace einsums::detail {
 
@@ -20,7 +20,7 @@ std::list<ShutdownFunctionType> global_pre_shutdown_functions;
 std::list<ShutdownFunctionType> global_shutdown_functions;
 
 [[noreturn]] EINSUMS_EXPORT void termination_handler(int signum) {
-    if (signum != SIGINT /* && get_config_entry("einsums.attach_debugger", "") == "exception" */) {
+    if (signum != SIGINT && runtime_config().einsums.attach_debugger) {
         util::attach_debugger();
     }
 
@@ -40,6 +40,25 @@ void on_abort(int) noexcept {
     std::exit(-1);
 }
 
+void set_signal_handlers() {
+#if defined(EINSUMS_WINDOWS)
+    SetConsoleCtrlHandler(termination_handler, TRUE);
+#else
+    struct sigaction new_action;
+    new_action.sa_handler = termination_handler;
+    sigemptyset(&new_action.sa_mask);
+    new_action.sa_flags = 0;
+
+    sigaction(SIGINT, &new_action, nullptr);  // Interrupted
+    sigaction(SIGBUS, &new_action, nullptr);  // Bus error
+    sigaction(SIGFPE, &new_action, nullptr);  // Floating point exception
+    sigaction(SIGILL, &new_action, nullptr);  // Illegal instruction
+    sigaction(SIGPIPE, &new_action, nullptr); // Bad pipe
+    sigaction(SIGSEGV, &new_action, nullptr); // Segmentation fault
+    sigaction(SIGSYS, &new_action, nullptr);  // Bad syscall
+#endif
+}
+
 bool is_running() {
     Runtime *rt = runtime_ptr();
     if (nullptr != rt)
@@ -57,6 +76,10 @@ Runtime *&runtime_ptr() {
     return runtime_;
 }
 
+RuntimeConfiguration &runtime_config() {
+    return runtime().config();
+}
+
 Runtime::Runtime(RuntimeConfiguration &rtcfg, bool initialize) : _rtcfg(rtcfg) {
     init_global_data();
 
@@ -70,7 +93,7 @@ RuntimeState Runtime::state() const {
 }
 
 void Runtime::state(RuntimeState state) {
-    spdlog::info("state change: from {} to {}", _state, state);
+    EINSUMS_LOG(info, "Runtime state changed from {} to {}", _state, state);
     _state = state;
 }
 
@@ -83,7 +106,7 @@ RuntimeConfiguration const &Runtime::config() const {
 }
 
 void Runtime::init() {
-    spdlog::info("Runtime::init: initializing...");
+    EINSUMS_LOG(info, "Runtime::init: initializing...");
     try {
         // TODO: This would be a good place to create and initialize a thread pool
 
@@ -173,16 +196,16 @@ void Runtime::call_shutdown_functions(bool pre_shutdown) {
 
 int Runtime::run(std::function<EinsumsMainFunctionType> const &func) {
     call_startup_functions(true);
-    spdlog::debug("run: ran pre-startup functions");
+    EINSUMS_LOG(info, "ran pre-startup functions");
 
     call_startup_functions(false);
-    spdlog::info("run: ran startup functions");
+    EINSUMS_LOG(info, "ran startup functions");
 
     // Set the state to running.
     state(RuntimeState::Running);
     // Once we start using a thread pool / threading manager we can
     // pass the function to the pool and have the manager handle it.
-    spdlog::info("run: running user provided function");
+    EINSUMS_LOG(info, "running user provided function");
     int result = func();
 
     return result;
@@ -190,10 +213,10 @@ int Runtime::run(std::function<EinsumsMainFunctionType> const &func) {
 
 int Runtime::run() {
     call_startup_functions(true);
-    spdlog::debug("run: ran pre-startup functions");
+    EINSUMS_LOG(info, "ran pre-startup functions");
 
     call_startup_functions(false);
-    spdlog::info("run: ran startup functions");
+    EINSUMS_LOG(info, "ran startup functions");
 
     // Set the state to running.
     state(RuntimeState::Running);

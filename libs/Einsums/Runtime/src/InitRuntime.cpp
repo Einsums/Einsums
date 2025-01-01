@@ -9,7 +9,9 @@
 #include <Einsums/BLAS.hpp>
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
+#include <Einsums/Logging.hpp>
 #include <Einsums/Profile/Timer.hpp>
+#include <Einsums/Runtime/Detail/InitLogging.hpp>
 #include <Einsums/Runtime/InitRuntime.hpp>
 #include <Einsums/Runtime/Runtime.hpp>
 #include <Einsums/Utilities/Random.hpp>
@@ -100,6 +102,12 @@ int run(std::function<int(RuntimeConfiguration const &map)> const &f, int argc, 
     // For example, "--einsums:verbose=1" will be translated to verbose=1
     std::unordered_map<std::string, std::string> cmdline;
     RuntimeConfiguration                         config;
+
+    if (config.einsums.install_signal_handlers) {
+        set_signal_handlers();
+    }
+
+    init_logging(config);
 
     // This might be a good place to initialize MPI, HIP, CUDA, etc.
     // error::initialize();
@@ -204,9 +212,9 @@ void start(int argc, char const *const *argv, InitParams const &params) {
 void finalize() {
     auto &rt = detail::runtime();
     rt.call_shutdown_functions(true);
-    spdlog::info("run: ran pre-shutdown functions");
+    EINSUMS_LOG(info, "ran pre-shutdown functions");
     rt.call_shutdown_functions(false);
-    spdlog::info("run: ran shutdown functions");
+    EINSUMS_LOG(info, "ran shutdown functions");
     rt.deinit_global_data();
 
     // Finalize everything
