@@ -66,10 +66,6 @@ auto bind_back(F &&func, BoundArgs &&...bound_args) {
 
 namespace detail {
 
-int init_helper(RuntimeConfiguration const &map, std::function<int(int, char **)> const &f) {
-    return 0;
-}
-
 void add_startup_functions(Runtime &rt, RuntimeConfiguration const &cfg, StartupFunctionType startup, ShutdownFunctionType shutdown) {
     if (!!startup) {
         rt.add_startup_function(std::move(startup));
@@ -101,7 +97,7 @@ int run(std::function<int(RuntimeConfiguration const &map)> const &f, int argc, 
     // Command line arguments for Einsums will be prefixed with --einsums:
     // For example, "--einsums:verbose=1" will be translated to verbose=1
     std::unordered_map<std::string, std::string> cmdline;
-    RuntimeConfiguration                         config;
+    RuntimeConfiguration                         config(argc, argv);
 
     if (config.einsums.install_signal_handlers) {
         set_signal_handlers();
@@ -162,30 +158,23 @@ int run_impl(std::function<int(RuntimeConfiguration const &)> f, int argc, char 
 
 } // namespace detail
 
-int initialize(std::function<int(RuntimeConfiguration const &)> f, int argc, char const *const *argv, InitParams const &params) {
+int initialize(std::function<int(RuntimeConfiguration const &)> f, int argc, char **argv, InitParams const &params) {
     return detail::run_impl(std::move(f), argc, argv, params, true);
 }
 
-int initialize(std::function<int(int, char **)> f, int argc, char const *const *argv, InitParams const &params) {
-    std::function<int(RuntimeConfiguration const &)> main_f = bind_back(detail::init_helper, f);
+int initialize(std::function<int(int, char **)> f, int argc, char **argv, InitParams const &params) {
+    std::function<int(RuntimeConfiguration const &)> main_f = std::bind(f, argc, argv);
     return detail::run_impl(std::move(main_f), argc, argv, params, true);
 }
 
-int initialize(std::function<int()> f, int argc, char const *const *argv, InitParams const &params) {
+int initialize(std::function<int()> f, int argc, char **argv, InitParams const &params) {
     std::function<int(RuntimeConfiguration const &)> main_f = std::bind(f);
     return detail::run_impl(std::move(main_f), argc, argv, params, true);
 }
 
-int initialize(std::nullptr_t, int argc, char const *const *argv, InitParams const &params) {
+int initialize(std::nullptr_t, int argc, char **argv, InitParams const &params) {
     std::function<int(RuntimeConfiguration const &)> main_f;
     return detail::run_impl(std::move(main_f), argc, argv, params, true);
-}
-
-void start(std::function<int(int, char **)> f, int argc, char const *const *argv, InitParams const &params) {
-    std::function<int(RuntimeConfiguration const &)> main_f = bind_back(detail::init_helper, f);
-    if (detail::run_impl(std::move(main_f), argc, argv, params, false) != 0) {
-        EINSUMS_UNREACHABLE;
-    }
 }
 
 void start(std::function<int()> f, int argc, char const *const *argv, InitParams const &params) {

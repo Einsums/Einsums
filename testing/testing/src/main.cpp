@@ -23,7 +23,7 @@ int main(int argc, char **argv) {
     Catch::StringMaker<float>::precision  = std::numeric_limits<float>::digits10;
     Catch::StringMaker<double>::precision = std::numeric_limits<double>::digits10;
 
-    auto const wrapped = std::bind_front(&einsums_main, argc, argv);
+    // auto const wrapped = std::bind_front(&einsums_main, argc, argv);
 
-    return einsums::initialize(wrapped, argc, argv);
+    return einsums::initialize(einsums_main, argc, argv);
 }

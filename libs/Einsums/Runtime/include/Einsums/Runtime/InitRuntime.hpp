@@ -7,11 +7,12 @@
 
 #include <Einsums/Config.hpp>
 
+#include <Einsums/Runtime/ShutdownFunction.hpp>
+#include <Einsums/Runtime/StartupFunction.hpp>
+#include <Einsums/RuntimeConfiguration/RuntimeConfiguration.hpp>
+
 #include <functional>
 #include <string>
-
-#include "ShutdownFunction.hpp"
-#include "StartupFunction.hpp"
 
 #if defined(EINSUMS_APPLICATION_NAME_DEFAULT) && !defined(EINSUMS_APPLICATION_NAME)
 #    define EINSUMS_APPLICATION_NAME EINSUMS_APPLICATION_NAME_DEFAULT
@@ -40,12 +41,11 @@ struct InitParams {
     mutable ShutdownFunctionType shutdown;
 };
 
-EINSUMS_EXPORT int initialize(std::function<int(ConfigMap<std::string> &)> f, int argc, char const *const *argv,
+EINSUMS_EXPORT int initialize(std::function<int(RuntimeConfiguration const &)> f, int argc, char **argv,
                               InitParams const &params = InitParams());
-EINSUMS_EXPORT int initialize(std::function<int(int, char **)> f, int argc, char const *const *argv,
-                              InitParams const &params = InitParams());
-EINSUMS_EXPORT int initialize(std::function<int()> f, int argc, char const *const *argv, InitParams const &params = InitParams());
-EINSUMS_EXPORT int initialize(std::nullptr_t, int argc, char const *const *argv, InitParams const &params = InitParams());
+EINSUMS_EXPORT int initialize(std::function<int(int, char **)> f, int argc, char **argv, InitParams const &params = InitParams());
+EINSUMS_EXPORT int initialize(std::function<int()> f, int argc, char **argv, InitParams const &params = InitParams());
+EINSUMS_EXPORT int initialize(std::nullptr_t, int argc, char **argv, InitParams const &params = InitParams());
 
 /// \brief Start the runtime.
 ///

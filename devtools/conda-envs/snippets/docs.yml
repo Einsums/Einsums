@@ -11,4 +11,4 @@ dependencies:
   - pydata-sphinx-theme
   - doxygen
   - breathe=4.35.0
-  - docutils>=0.12
+  - docutils=0.20

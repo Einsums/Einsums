@@ -106,7 +106,10 @@ struct EINSUMS_EXPORT RuntimeConfiguration {
     detail::System  system;
     detail::Einsums einsums;
 
-    RuntimeConfiguration();
+    int const          argc;
+    char const *const *argv;
+
+    RuntimeConfiguration(int argc, char const *const *argv);
 
   private:
     /**

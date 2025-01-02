@@ -94,7 +94,7 @@ void RuntimeConfiguration::pre_initialize() {
     einsums.log.format      = "[%Y-%m-%d %H:%M:%S.%F] [%n] [%^%l%$] [host:%j] [pid:%P] [tid:%t] [%s:%#/%!] %v";
 }
 
-RuntimeConfiguration::RuntimeConfiguration() {
+RuntimeConfiguration::RuntimeConfiguration(int argc, char const *const argv[]) : argc(argc), argv(argv) {
     pre_initialize();
 }
 

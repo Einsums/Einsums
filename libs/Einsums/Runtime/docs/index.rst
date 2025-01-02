@@ -17,7 +17,10 @@ details.
 Public API
 ----------
 
-.. cpp:function:: int initialize()
+.. cpp:function:: int initialize(std::function<int(ConfigMap<std::string> &)> f, int argc, char const *const *argv, InitParams const &params = InitParams());
+.. cpp:function:: int initialize(std::function<int(int, char **)> f, int argc, char const *const *argv, InitParams const &params = InitParams());
+.. cpp:function:: int initialize(std::function<int()> f, int argc, char const *const *argv, InitParams const &params = InitParams());
+.. cpp:function:: int initialize(std::nullptr_t, int argc, char const *const *argv, InitParams const &params = InitParams());
 
     Initializes the state of the Einsums library. It must be called before certain things are available.
 
