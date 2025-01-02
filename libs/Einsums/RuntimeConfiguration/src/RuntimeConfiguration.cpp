@@ -91,8 +91,7 @@ void RuntimeConfiguration::pre_initialize() {
 
     einsums.log.level       = 2;
     einsums.log.destination = "cerr";
-    einsums.log.format      = "[%Y-%m-%d %H:%M:%S.%F] [%n] [%^%l%$] [host:%j] [pid:%P] [tid:%t] "
-                              "[%s:%#/%!] %v";
+    einsums.log.format      = "[%Y-%m-%d %H:%M:%S.%F] [%n] [%^%l%$] [host:%j] [pid:%P] [tid:%t] [%s:%#/%!] %v";
 }
 
 RuntimeConfiguration::RuntimeConfiguration() {
