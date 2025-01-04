@@ -5,14 +5,8 @@
 
 include(FetchContent)
 
-set(SPDLOG_INSTALL TRUE)
-set(SPDLOG_FMT_EXTERNAL TRUE)
-fetchcontent_declare(
-        spdlog
-        GIT_REPOSITORY https://github.com/gabime/spdlog.git
-        GIT_TAG v1.x
+fetchcontent_declare(argparse
+        GIT_REPOSITORY https://github.com/Einsums/argparse.git
+        FIND_PACKAGE_ARGS 3
 )
-
-fetchcontent_makeavailable(spdlog)
-
-#target_link_libraries(einsums_base_libraries INTERFACE spdlog::spdlog)
+fetchcontent_makeavailable(argparse)

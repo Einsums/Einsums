@@ -8,6 +8,7 @@
 #include <Einsums/Config.hpp>
 
 #include <Einsums/Concepts/Tensor.hpp>
+#include <Einsums/Logging.hpp>
 #include <Einsums/Profile/LabeledSection.hpp>
 #include <Einsums/TensorAlgebra/Detail/Utilities.hpp>
 

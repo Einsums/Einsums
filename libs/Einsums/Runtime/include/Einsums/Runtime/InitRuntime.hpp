@@ -41,8 +41,6 @@ struct InitParams {
     mutable ShutdownFunctionType shutdown;
 };
 
-EINSUMS_EXPORT int initialize(std::function<int(RuntimeConfiguration const &)> f, int argc, char **argv,
-                              InitParams const &params = InitParams());
 EINSUMS_EXPORT int initialize(std::function<int(int, char **)> f, int argc, char **argv, InitParams const &params = InitParams());
 EINSUMS_EXPORT int initialize(std::function<int()> f, int argc, char **argv, InitParams const &params = InitParams());
 EINSUMS_EXPORT int initialize(std::nullptr_t, int argc, char **argv, InitParams const &params = InitParams());

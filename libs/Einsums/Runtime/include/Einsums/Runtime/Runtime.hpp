@@ -14,10 +14,19 @@
 #include <Einsums/RuntimeConfiguration/RuntimeConfiguration.hpp>
 
 #include <list>
-#include <string_view>
 #include <mutex>
+#include <string_view>
 
 namespace einsums {
+
+/**
+ * @struct invalid_runtime_state
+ *
+ * Indicates that the code is handling data that is uninitialized.
+ */
+struct EINSUMS_EXPORT invalid_runtime_state : std::runtime_error {
+    using std::runtime_error::runtime_error;
+};
 
 enum class RuntimeState : std::int8_t {
     Invalid        = -1,
@@ -36,7 +45,6 @@ enum class RuntimeState : std::int8_t {
 };
 
 namespace detail {
-
 extern std::list<StartupFunctionType>  global_pre_startup_functions;
 extern std::list<StartupFunctionType>  global_startup_functions;
 extern std::list<ShutdownFunctionType> global_pre_shutdown_functions;
@@ -50,7 +58,7 @@ struct EINSUMS_EXPORT Runtime {
     using EinsumsMainFunctionType = int();
 
     /// Construct a new Einsums runtime instance
-    Runtime(RuntimeConfiguration &rtcfg, bool initialize);
+    Runtime(RuntimeConfiguration &&rtcfg, bool initialize);
 
     RuntimeState state() const;
     void         state(RuntimeState s);
@@ -128,11 +136,12 @@ struct EINSUMS_EXPORT Runtime {
 EINSUMS_EXPORT void on_exit() noexcept;
 EINSUMS_EXPORT void on_abort(int signal) noexcept;
 EINSUMS_EXPORT void set_signal_handlers();
+} // namespace detail
 
 /// The function \a get_runtime returns a reference to the (thread
 /// specific) runtime instance.
-EINSUMS_EXPORT Runtime  &runtime();
-EINSUMS_EXPORT Runtime *&runtime_ptr();
+EINSUMS_EXPORT detail::Runtime &runtime();
+EINSUMS_EXPORT detail::Runtime *&runtime_ptr();
 
 EINSUMS_EXPORT RuntimeConfiguration &runtime_config();
 
@@ -147,7 +156,6 @@ EINSUMS_EXPORT RuntimeConfiguration &runtime_config();
 ///         return false otherwise.
 EINSUMS_EXPORT bool is_running();
 
-} // namespace detail
 } // namespace einsums
 
 template <>

@@ -76,21 +76,20 @@ void add_startup_functions(Runtime &rt, RuntimeConfiguration const &cfg, Startup
     }
 }
 
-int run(std::function<int(RuntimeConfiguration const &map)> const &f, Runtime &rt, RuntimeConfiguration const &cfg,
-        InitParams const &params) {
-    add_startup_functions(rt, cfg, std::move(params.startup), std::move(params.shutdown));
+int run(std::function<int()> const &f, Runtime &rt, InitParams const &params) {
+    add_startup_functions(rt, rt.config(), std::move(params.startup), std::move(params.shutdown));
 
     // Run this runtime instance using the given function f
     if (f) {
-        return rt.run(std::bind_front(f, cfg));
+        return rt.run(f);
     }
 
     // Run this runtime instance without an einsums_main
     return rt.run();
 }
 
-int run(std::function<int(RuntimeConfiguration const &map)> const &f, int argc, char const *const *argv, InitParams const &params,
-        bool blocking) {
+int run(std::function<int()> const &f, int argc, char const *const *argv, InitParams const &params, bool blocking) {
+    EINSUMS_LOG(info, "Running common initialization routines...");
     // TODO: Add a check to ensure the runtime hasn't already been initialized
 
     // TODO: Translate argv to unordered_map.
@@ -103,6 +102,7 @@ int run(std::function<int(RuntimeConfiguration const &map)> const &f, int argc, 
         set_signal_handlers();
     }
 
+    // Before this line logging does not work.
     init_logging(config);
 
     // This might be a good place to initialize MPI, HIP, CUDA, etc.
@@ -126,13 +126,13 @@ int run(std::function<int(RuntimeConfiguration const &map)> const &f, int argc, 
     // Build and configure this runtime instance.
     std::unique_ptr<Runtime> rt;
 
-    rt.reset(new Runtime(config, true));
+    rt.reset(new Runtime(std::move(config), true));
 
     if (blocking) {
-        return run(f, *rt, config, params);
+        return run(f, *rt, params);
     }
 
-    run(f, *rt, config, params);
+    run(f, *rt, params);
 
     // pointer to runtime is stored in TLS
     [[maybe_unused]] Runtime *p = rt.release();
@@ -140,8 +140,7 @@ int run(std::function<int(RuntimeConfiguration const &map)> const &f, int argc, 
     return 0;
 }
 
-int run_impl(std::function<int(RuntimeConfiguration const &)> f, int argc, char const *const *argv, InitParams const &params,
-             bool blocking) {
+int run_impl(std::function<int()> f, int argc, char const *const *argv, InitParams const &params, bool blocking) {
     if (argc == 0 || argv == nullptr) {
         argc = dummy_argc;
         argv = dummy_argv;
@@ -158,52 +157,53 @@ int run_impl(std::function<int(RuntimeConfiguration const &)> f, int argc, char 
 
 } // namespace detail
 
-int initialize(std::function<int(RuntimeConfiguration const &)> f, int argc, char **argv, InitParams const &params) {
+int initialize(std::function<int()> f, int argc, char **argv, InitParams const &params) {
     return detail::run_impl(std::move(f), argc, argv, params, true);
 }
 
 int initialize(std::function<int(int, char **)> f, int argc, char **argv, InitParams const &params) {
-    std::function<int(RuntimeConfiguration const &)> main_f = std::bind(f, argc, argv);
-    return detail::run_impl(std::move(main_f), argc, argv, params, true);
-}
-
-int initialize(std::function<int()> f, int argc, char **argv, InitParams const &params) {
-    std::function<int(RuntimeConfiguration const &)> main_f = std::bind(f);
+    // So doing this the user function "f" will receive einsums specific command line parameters too
+    // If they are not expecting that they may produce an error.
+    //
+    // We should bind through a helper function that will take the constructed RuntimeConfiguration's
+    // post-processed command-line options (einsums options filtered out) and pass that to the
+    // user function.
+    std::function<int()> main_f = std::bind(f, argc, argv);
     return detail::run_impl(std::move(main_f), argc, argv, params, true);
 }
 
 int initialize(std::nullptr_t, int argc, char **argv, InitParams const &params) {
-    std::function<int(RuntimeConfiguration const &)> main_f;
+    std::function<int()> main_f;
     return detail::run_impl(std::move(main_f), argc, argv, params, true);
 }
 
 void start(std::function<int()> f, int argc, char const *const *argv, InitParams const &params) {
-    std::function<int(RuntimeConfiguration const &)> main_f = std::bind(f);
+    std::function<int()> main_f = std::bind(f);
     if (detail::run_impl(std::move(main_f), argc, argv, params, false) != 0) {
         EINSUMS_UNREACHABLE;
     }
 }
 
 void start(std::nullptr_t, int argc, char const *const *argv, InitParams const &params) {
-    std::function<int(RuntimeConfiguration const &)> main_f;
+    std::function<int()> main_f;
     if (detail::run_impl(std::move(main_f), argc, argv, params, false) != 0) {
         EINSUMS_UNREACHABLE;
     }
 }
 
 void start(int argc, char const *const *argv, InitParams const &params) {
-    std::function<int(RuntimeConfiguration const &)> main_f;
+    std::function<int()> main_f;
     if (detail::run_impl(std::move(main_f), argc, argv, params, false) != 0) {
         EINSUMS_UNREACHABLE;
     }
 }
 
 void finalize() {
-    auto &rt = detail::runtime();
+    auto &rt = runtime();
     rt.call_shutdown_functions(true);
-    EINSUMS_LOG(info, "ran pre-shutdown functions");
+    EINSUMS_LOG_INFO("ran pre-shutdown functions");
     rt.call_shutdown_functions(false);
-    EINSUMS_LOG(info, "ran shutdown functions");
+    EINSUMS_LOG_INFO("ran shutdown functions");
     rt.deinit_global_data();
 
     // Finalize everything
@@ -216,6 +216,8 @@ void finalize() {
 #if defined(EINSUMS_COMPUTE_CODE)
     gpu::finalize();
 #endif
+
+    EINSUMS_LOG_INFO("einsums shutdown completed");
 }
 
 } // namespace einsums

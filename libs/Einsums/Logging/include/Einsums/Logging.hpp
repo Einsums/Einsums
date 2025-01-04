@@ -7,6 +7,8 @@
 
 #include <Einsums/Config.hpp>
 
+#include <Einsums/Logging/Defines.hpp>
+
 #include <spdlog/sinks/sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
@@ -37,6 +39,25 @@ namespace einsums::detail {
 
 #define EINSUMS_LOG(loglevel, ...)    EINSUMS_DETAIL_SPDLOG(einsums, loglevel, __VA_ARGS__)
 #define EINSUMS_LOG_ENABLED(loglevel) EINSUMS_DETAIL_SPDLOG_ENABLED(einsums, loglevel)
+
+// Only EINSUMS_LOG_TRACE and EINSUMS_LOG_DEBUG can be disabled during compile time.
+#if EINSUMS_ACTIVE_LOG_LEVEL <= 0
+#    define EINSUMS_LOG_TRACE(...) EINSUMS_LOG(trace, __VA_ARGS__)
+#else
+#    define EINSUMS_LOG_TRACE(...)
+#endif
+
+#if EINSUMS_ACTIVE_LOG_LEVEL <= 1
+#    define EINSUMS_LOG_DEBUG(...) EINSUMS_LOG(debug, __VA_ARGS__)
+#else
+#    define EINSUMS_LOG_DEBUG(...)
+#endif
+
+// These logging macros cannot be disabled at compile-time but they can be disabled at runtime
+#define EINSUMS_LOG_INFO(...)     EINSUMS_LOG(info, __VA_ARGS__)
+#define EINSUMS_LOG_WARN(...)     EINSUMS_LOG(warn, __VA_ARGS__)
+#define EINSUMS_LOG_ERROR(...)    EINSUMS_LOG(error, __VA_ARGS__)
+#define EINSUMS_LOG_CRITICAL(...) EINSUMS_LOG(critical, __VA_ARGS__)
 
 EINSUMS_EXPORT spdlog::level::level_enum get_spdlog_level(std::string const &env);
 EINSUMS_EXPORT std::shared_ptr<spdlog::sinks::sink> get_spdlog_sink(std::string const &env);

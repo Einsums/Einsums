@@ -15,6 +15,9 @@
 #    include <process.h>
 #endif
 
+#include <argparse/argparse.hpp>
+#include <memory>
+
 namespace einsums {
 
 namespace detail {
@@ -106,16 +109,32 @@ struct EINSUMS_EXPORT RuntimeConfiguration {
     detail::System  system;
     detail::Einsums einsums;
 
-    int const          argc;
-    char const *const *argv;
+    struct {
+        int                argc;
+        char const *const *argv;
+    } original;
 
-    RuntimeConfiguration(int argc, char const *const *argv);
+    std::unique_ptr<argparse::ArgumentParser> argument_parser;
+
+    /**
+     * Constructor of the runtime configuration object of einsums.
+     *
+     * @param argc the argc argument from main
+     * @param argv the argv argument from main
+     */
+    RuntimeConfiguration(int argc, char const *const *argv, std::function<void(argparse::ArgumentParser &)> const &user_command_line = {});
+    RuntimeConfiguration() = delete;
 
   private:
     /**
      * Currently sets reasonable defaults for the development of Einsums.
      */
     void pre_initialize();
+
+    /**
+     * Parse the command line arguments provided in argc and argv.
+     */
+    void parse_command_line(std::function<void(argparse::ArgumentParser &)> const &user_command_line = {});
 };
 
 } // namespace einsums

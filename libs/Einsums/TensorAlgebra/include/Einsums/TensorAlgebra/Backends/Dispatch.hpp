@@ -24,23 +24,6 @@
 #    endif
 #    include <Einsums/Profile/Timer.hpp>
 
-// #include "einsums/FunctionTensor.hpp"
-// #include "einsums/LinearAlgebra.hpp"
-// #include "einsums/Print.hpp"
-// #include "einsums/STL.hpp"
-// #include "einsums/Section.hpp"
-// #include "einsums/Tensor.hpp"
-// #include "einsums/TiledTensor.hpp"
-// #include "einsums/Timer.hpp"
-// #include "einsums/tensor_algebra_backends/BlockAlgebra.hpp"
-// #include "einsums/tensor_algebra_backends/BlockTileAlgebra.hpp"
-// #include "einsums/tensor_algebra_backends/TileAlgebra.hpp"
-// #ifdef EINSUMS_COMPUTE_CODE
-// #    include "einsums/tensor_algebra_backends/GPUTensorAlgebra.hpp"
-// #endif
-// #include "einsums/tensor_algebra_backends/GenericAlgorithm.hpp"
-// #include "einsums/utility/TensorTraits.hpp"
-
 #    include <algorithm>
 #    include <cmath>
 #    include <cstddef>
@@ -165,6 +148,9 @@ auto einsum(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const &
     constexpr auto outer_product = std::tuple_size_v<decltype(linksAB)> == 0 && contiguous_target_position_in_A &&
                                    contiguous_target_position_in_B && !A_hadamard_found && !B_hadamard_found && !C_hadamard_found;
 
+    EINSUMS_LOG_DEBUG("is_gemm_possible {}, is_gemv_possible {}, element_wise_multiplication {}, dot_product {}, outer_product {}",
+                      is_gemm_possible, is_gemv_possible, element_wise_multiplication, dot_product, outer_product);
+
     // Runtime check of sizes
 #    if defined(EINSUMS_RUNTIME_INDICES_CHECK)
     bool runtime_indices_abort{false};
@@ -248,10 +234,14 @@ auto einsum(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const &
     } else if constexpr (!IsBasicTensorV<AType> || !IsBasicTensorV<BType> || !IsBasicTensorV<CType>) {
         goto generic_default;
     } else if constexpr (outer_product) {
+        EINSUMS_LOG_TRACE("outer_product");
         if (!A.full_view_of_underlying() || !B.full_view_of_underlying()) {
+            EINSUMS_LOG_TRACE("do not have full view of underlying data A {} B{}", !A.full_view_of_underlying(),
+                              !B.full_view_of_underlying());
             goto generic_default;
         }
         constexpr bool swap_AB = std::get<1>(A_target_position_in_C) != 0;
+        EINSUMS_LOG_TRACE("swap_AB {}", swap_AB);
 
         Dim<2> dC;
         dC[0] = product_dims(A_target_position_in_C, *C);
@@ -265,10 +255,12 @@ auto einsum(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const &
 #    else
         TensorView<CDataType, 2> tC{*C, dC};
 #    endif
-        if (C_prefactor != CDataType{1.0})
+        if (C_prefactor != CDataType{1.0}) {
+            EINSUMS_LOG_TRACE("scaling C");
             linear_algebra::scale(C_prefactor, C);
-
+        }
         try {
+            EINSUMS_LOG_TRACE("calling ger");
             if constexpr (swap_AB) {
                 linear_algebra::ger(AB_prefactor, B.to_rank_1_view(), A.to_rank_1_view(), &tC);
             } else {
@@ -332,14 +324,11 @@ auto einsum(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const &
             sC[0] = last_stride(A_target_position_in_C, *C);
 
 #    ifdef EINSUMS_COMPUTE_CODE
-            std::conditional_t<IsIncoreTensorV<AType>, const TensorView<ADataType, 2>,
-                               const DeviceTensorView<ADataType, 2>>
-                tA{const_cast<AType &>(A), dA, sA};
-            std::conditional_t<IsIncoreTensorV<BType>, TensorView<BDataType, 1> const,
-                               DeviceTensorView<BDataType, 1> const>
-                tB{const_cast<BType &>(B), dB, sB};
-            std::conditional_t<IsIncoreTensorV<CType>, TensorView<CDataType, 1>, DeviceTensorView<CDataType, 1>> tC{*C, dC,
-                                                                                                                                     sC};
+            std::conditional_t<IsIncoreTensorV<AType>, const TensorView<ADataType, 2>, const DeviceTensorView<ADataType, 2>> tA{
+                const_cast<AType &>(A), dA, sA};
+            std::conditional_t<IsIncoreTensorV<BType>, TensorView<BDataType, 1> const, DeviceTensorView<BDataType, 1> const> tB{
+                const_cast<BType &>(B), dB, sB};
+            std::conditional_t<IsIncoreTensorV<CType>, TensorView<CDataType, 1>, DeviceTensorView<CDataType, 1>> tC{*C, dC, sC};
 #    else
             const TensorView<ADataType, 2> tA{const_cast<AType &>(A), dA, sA};
             TensorView<BDataType, 1> const tB{const_cast<BType &>(B), dB, sB};
@@ -510,21 +499,19 @@ auto einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTyp
 
     using ABDataType = std::conditional_t<(sizeof(ADataType) > sizeof(BDataType)), ADataType, BDataType>;
 
+    EINSUMS_LOG_TRACE("BEGIN: einsum");
     if constexpr (IsTensorV<CType>) {
-        LabeledSection1((std::fabs(UC_prefactor) > EINSUMS_ZERO)
-                            ? fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{} + {} "{}"{})", C->name(), print_tuple_no_type(C_indices),
-                                          UAB_prefactor, A.name(), print_tuple_no_type(A_indices), B.name(), print_tuple_no_type(B_indices),
-                                          UC_prefactor, C->name(), print_tuple_no_type(C_indices))
-                            : fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{})", C->name(), print_tuple_no_type(C_indices),
-                                          UAB_prefactor, A.name(), print_tuple_no_type(A_indices), B.name(),
-                                          print_tuple_no_type(B_indices)));
+        EINSUMS_LOG_INFO(std::fabs(UC_prefactor) > EINSUMS_ZERO
+                             ? fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{} + {} "{}"{})", C->name(), C_indices, UAB_prefactor,
+                                           A.name(), A_indices, B.name(), B_indices, UC_prefactor, C->name(), C_indices)
+                             : fmt::format(R"(einsum: "{}"{} = {} "{}"{} * "{}"{})", C->name(), C_indices, UAB_prefactor, A.name(),
+                                           A_indices, B.name(), B_indices));
     } else {
-        LabeledSection1((std::fabs(UC_prefactor) > EINSUMS_ZERO)
-                            ? fmt::format(R"(einsum: "C"{} = {} "{}"{} * "{}"{} + {} "C"{})", print_tuple_no_type(C_indices), UAB_prefactor,
-                                          A.name(), print_tuple_no_type(A_indices), B.name(), print_tuple_no_type(B_indices), UC_prefactor,
-                                          print_tuple_no_type(C_indices))
-                            : fmt::format(R"(einsum: "C"{} = {} "{}"{} * "{}"{})", print_tuple_no_type(C_indices), UAB_prefactor, A.name(),
-                                          print_tuple_no_type(A_indices), B.name(), print_tuple_no_type(B_indices)));
+        EINSUMS_LOG_INFO(
+            std::fabs(UC_prefactor) > EINSUMS_ZERO
+                ? fmt::format(R"(einsum: "C"{} = {} "{}"{} * "{}"{} + {} "C"{})", C_indices, UAB_prefactor, A.name(), A_indices, B.name(),
+                              B_indices, UC_prefactor, C_indices)
+                : fmt::format(R"(einsum: "C"{} = {} "{}"{} * "{}"{})", C_indices, UAB_prefactor, A.name(), A_indices, B.name(), B_indices));
     }
 
     CDataType const  C_prefactor  = UC_prefactor;
@@ -756,6 +743,7 @@ auto einsum(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTyp
         }
     }
 #    endif
+    EINSUMS_LOG_TRACE("END: einsum");
 }
 } // namespace einsums::tensor_algebra
 

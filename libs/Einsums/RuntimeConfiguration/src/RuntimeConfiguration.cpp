@@ -6,6 +6,7 @@
 #include <Einsums/Config.hpp>
 
 #include <Einsums/Errors/ThrowException.hpp>
+#include <Einsums/Logging.hpp>
 #include <Einsums/RuntimeConfiguration/RuntimeConfiguration.hpp>
 
 #include <filesystem>
@@ -25,6 +26,8 @@
 #elif __APPLE__
 #    include <mach-o/dyld.h>
 #endif
+
+#include <argparse/argparse.hpp>
 
 namespace einsums {
 namespace detail {
@@ -57,7 +60,9 @@ std::string get_executable_filename() {
 
 std::string get_executable_prefix() {
     std::filesystem::path p(get_executable_filename());
-    return p.parent_path().parent_path().string();
+    std::string           prefix = p.parent_path().parent_path().string();
+
+    return prefix;
 }
 } // namespace detail
 
@@ -81,21 +86,70 @@ void RuntimeConfiguration::pre_initialize() {
     };
 
     // For now set the values to their default values.
-    system.pid               = getpid();
-    system.executable_prefix = detail::get_executable_prefix();
-
+    system.pid                       = getpid();
+    system.executable_prefix         = detail::get_executable_prefix();
     einsums.master_yaml_path         = detail::get_executable_prefix();
     einsums.install_signal_handlers  = true;
     einsums.attach_debugger          = true;
     einsums.diagnostics_on_terminate = true;
-
-    einsums.log.level       = 2;
-    einsums.log.destination = "cerr";
-    einsums.log.format      = "[%Y-%m-%d %H:%M:%S.%F] [%n] [%^%l%$] [host:%j] [pid:%P] [tid:%t] [%s:%#/%!] %v";
+    einsums.log.level                = 3;
+    einsums.log.destination          = "cerr";
+    // einsums.log.format               = "[%Y-%m-%d %H:%M:%S.%F] [%n] [%^%l%$] [host:%j] [pid:%P] [tid:%t] [%s:%#/%!] %v";
+    einsums.log.format = "[%Y-%m-%d %H:%M:%S.%F] [%n] [%^%l%$] [%s:%#/%!] %v";
 }
 
-RuntimeConfiguration::RuntimeConfiguration(int argc, char const *const argv[]) : argc(argc), argv(argv) {
+RuntimeConfiguration::RuntimeConfiguration(int argc, char const *const argv[],
+                                           std::function<void(argparse::ArgumentParser &)> const &user_command_line)
+    : original{.argc = argc, .argv = argv} {
+    EINSUMS_LOG(info, "RuntimeConfiguration::RuntimeConfiguration()");
     pre_initialize();
+
+    parse_command_line(user_command_line);
+}
+
+void RuntimeConfiguration::parse_command_line(std::function<void(argparse::ArgumentParser &)> const &user_command_line) {
+    // Imperative that pre_initialize is called first as it is responsible for setting
+    // default values. This is done in the constructor.
+    // There should be a mechanism that allows the user to change the program name.
+    argument_parser.reset(new argparse::ArgumentParser("einsums"));
+
+    argument_parser->add_argument("--einsums:install-signal-handlers")
+        .default_value(einsums.install_signal_handlers)
+        .help("install signal handlers")
+        .store_into(einsums.install_signal_handlers);
+    argument_parser->add_argument("--einsums:attach-debugger")
+        .default_value(einsums.attach_debugger)
+        .help("provides mechanism to attach debugger on detected errors")
+        .store_into(einsums.attach_debugger);
+    argument_parser->add_argument("--einsums:diagnostics-on-terminate")
+        .default_value(einsums.diagnostics_on_terminate)
+        .help("print additional diagnostic information on termination")
+        .store_into(einsums.diagnostics_on_terminate);
+
+    argument_parser->add_argument("--einsums:log-level")
+        .default_value(einsums.log.level)
+        .help("set log level")
+        .choices(0, 1, 2, 3, 4)
+        .store_into(einsums.log.level);
+    argument_parser->add_argument("--einsums:log-destination")
+        .default_value(einsums.log.destination)
+        .help("set log destination")
+        .choices("cerr", "cout")
+        .store_into(einsums.log.destination);
+    argument_parser->add_argument("--einsums:log-format").default_value(einsums.log.format).store_into(einsums.log.format);
+
+    // Allow the user to inject their own command line options
+    if (user_command_line) {
+        user_command_line(*argument_parser);
+    }
+
+    try {
+        argument_parser->parse_args(original.argc, original.argv);
+    } catch (std::exception const &err) {
+        std::cerr << err.what() << std::endl;
+        std::cerr << argument_parser;
+        std::exit(1);
+    }
 }
 
 } // namespace einsums

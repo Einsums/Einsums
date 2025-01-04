@@ -11,12 +11,14 @@ set(RuntimeConfigurationHeaders
 
 set(RuntimeConfigurationSources RuntimeConfiguration.cpp)
 
+find_package(argparse 3 REQUIRED)
+
 include(Einsums_AddModule)
 einsums_add_module(
         Einsums RuntimeConfiguration
         SOURCES ${RuntimeConfigurationSources}
         HEADERS ${RuntimeConfigurationHeaders}
-        DEPENDENCIES
+        DEPENDENCIES argparse::argparse
         MODULE_DEPENDENCIES Einsums_Config Einsums_Errors Einsums_Logging
         CMAKE_SUBDIRS examples tests
         BASE_LIBNAME Einsums

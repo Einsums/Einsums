@@ -27,7 +27,7 @@ spdlog::level::level_enum get_spdlog_level(std::string const &env) {
         return static_cast<spdlog::level::level_enum>(from_string<std::underlying_type_t<spdlog::level::level_enum>>(env));
     } catch (bad_lexical_cast const &) {
         fmt::print(std::cerr,
-                   "einsums given invalid log level: \"{}\". Using default level instead {} (warn). "
+                   "Einsums given invalid log level: \"{}\". Using default level instead {} (warn). "
                    "Valid values are {} (trace) to {} (off).\n",
                    env, SPDLOG_LEVEL_WARN, SPDLOG_LEVEL_TRACE, SPDLOG_LEVEL_OFF);
         return spdlog::level::warn;
@@ -35,8 +35,10 @@ spdlog::level::level_enum get_spdlog_level(std::string const &env) {
 }
 
 std::shared_ptr<spdlog::sinks::sink> get_spdlog_sink(std::string const &env) {
+    // In the future it might be useful to include a tcp sink option.
+    // Could be useful when we are doing MPI/distributed development.
     if (env.empty()) {
-        fmt::print(std::cerr, "einsums given empty log destination. Using default instead (cerr).\n");
+        fmt::print(std::cerr, "Einsums given empty log destination. Using default instead (cerr).\n");
     } else if (env == "cout") {
         return std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
     } else if (env == "cerr") {

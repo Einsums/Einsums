@@ -3,22 +3,30 @@
 # Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 #----------------------------------------------------------------------------------------------
 
-
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 set(LoggingHeaders Einsums/Logging.hpp)
 
 set(LoggingSources Logging.cpp)
 
+string(TOLOWER "${CMAKE_BUILD_TYPE}" BUILD_TYPE_LOWER)
+
+if (BUILD_TYPE_LOWER STREQUAL "debug")
+    set(EINSUMS_ACTIVE_LOG_LEVEL 0)
+else ()
+    set(EINSUMS_ACTIVE_LOG_LEVEL 2)
+endif ()
+
+einsums_add_config_cond_define_namespace(DEFINE EINSUMS_ACTIVE_LOG_LEVEL VALUE ${EINSUMS_ACTIVE_LOG_LEVEL} NAMESPACE LOGGING)
+
 include(Einsums_AddModule)
 einsums_add_module(
         Einsums Logging
         SOURCES ${LoggingSources}
         HEADERS ${LoggingHeaders}
-        DEPENDENCIES
+        DEPENDENCIES spdlog::spdlog
         MODULE_DEPENDENCIES Einsums_Assertion Einsums_Config Einsums_StringUtil
         CMAKE_SUBDIRS examples tests
         BASE_LIBNAME Einsums
 )
-
-
+target_compile_definitions(Einsums_Logging PUBLIC -DEINSUMS_ACTIVE_LOG_LEVEL=${EINSUMS_ACTIVE_LOG_LEVEL})

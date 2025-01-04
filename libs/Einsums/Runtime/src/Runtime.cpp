@@ -7,16 +7,18 @@
 
 #include <Einsums/Assert.hpp>
 #include <Einsums/Debugging/AttachDebugger.hpp>
+#include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/Logging.hpp>
 #include <Einsums/Runtime/Runtime.hpp>
 
 #include <csignal>
 
 #if defined(EINSUMS_WINDOWS)
-#include <Windows.h>
+#    include <Windows.h>
 #endif
 
-namespace einsums::detail {
+namespace einsums {
+namespace detail {
 
 std::list<StartupFunctionType>  global_pre_startup_functions;
 std::list<StartupFunctionType>  global_startup_functions;
@@ -25,35 +27,41 @@ std::list<ShutdownFunctionType> global_shutdown_functions;
 
 #if defined(EINSUMS_WINDOWS)
 
-void handle_termination(char const* reason)
-{
-    if (runtime_config().einsums.attach_debugger)
-    {
+void handle_termination(char const *reason) {
+    if (runtime_config().einsums.attach_debugger) {
         util::attach_debugger();
     }
 
-    if (runtime_config().einsums.diagnostics_on_terminate)
-    {
+    if (runtime_config().einsums.diagnostics_on_terminate) {
         // Add more information here.
         std::cerr << "{what}: " << (reason ? reason : "Unknown reason") << "\n";
     }
 }
 
-EINSUMS_EXPORT BOOL WINAPI termination_handler(DWORD ctrl_type)
-{
-    switch (ctrl_type)
-    {
-    case CTRL_C_EVENT: handle_termination("Ctrl-C"); return TRUE;
+EINSUMS_EXPORT BOOL WINAPI termination_handler(DWORD ctrl_type) {
+    switch (ctrl_type) {
+    case CTRL_C_EVENT:
+        handle_termination("Ctrl-C");
+        return TRUE;
 
-    case CTRL_BREAK_EVENT: handle_termination("Ctrl-Break"); return TRUE;
+    case CTRL_BREAK_EVENT:
+        handle_termination("Ctrl-Break");
+        return TRUE;
 
-    case CTRL_CLOSE_EVENT: handle_termination("Ctrl-Close"); return TRUE;
+    case CTRL_CLOSE_EVENT:
+        handle_termination("Ctrl-Close");
+        return TRUE;
 
-    case CTRL_LOGOFF_EVENT: handle_termination("Logoff"); return TRUE;
+    case CTRL_LOGOFF_EVENT:
+        handle_termination("Logoff");
+        return TRUE;
 
-    case CTRL_SHUTDOWN_EVENT: handle_termination("Shutdown"); return TRUE;
+    case CTRL_SHUTDOWN_EVENT:
+        handle_termination("Shutdown");
+        return TRUE;
 
-    default: break;
+    default:
+        break;
     }
     return FALSE;
 }
@@ -100,28 +108,7 @@ void set_signal_handlers() {
 #endif
 }
 
-bool is_running() {
-    Runtime *rt = runtime_ptr();
-    if (nullptr != rt)
-        return rt->state() == RuntimeState::Running;
-    return false;
-}
-
-Runtime &runtime() {
-    EINSUMS_ASSERT(runtime_ptr() != nullptr);
-    return *runtime_ptr();
-}
-
-Runtime *&runtime_ptr() {
-    static Runtime *runtime_ = nullptr;
-    return runtime_;
-}
-
-RuntimeConfiguration &runtime_config() {
-    return runtime().config();
-}
-
-Runtime::Runtime(RuntimeConfiguration &rtcfg, bool initialize) : _rtcfg(rtcfg) {
+Runtime::Runtime(RuntimeConfiguration &&rtcfg, bool initialize) : _rtcfg(std::move(rtcfg)) {
     init_global_data();
 
     if (initialize) {
@@ -265,4 +252,79 @@ int Runtime::run() {
     return 0;
 }
 
-} // namespace einsums::detail
+} // namespace detail
+
+bool is_running() {
+    detail::Runtime *rt = runtime_ptr();
+    if (nullptr != rt)
+        return rt->state() == RuntimeState::Running;
+    return false;
+}
+
+detail::Runtime &runtime() {
+    EINSUMS_ASSERT(runtime_ptr() != nullptr);
+    return *runtime_ptr();
+}
+
+detail::Runtime *&runtime_ptr() {
+    static detail::Runtime *runtime_ = nullptr;
+    return runtime_;
+}
+
+RuntimeConfiguration &runtime_config() {
+    return runtime().config();
+}
+
+void register_pre_startup_function(StartupFunctionType f) {
+    auto *runtime = runtime_ptr();
+    if (runtime != nullptr) {
+        if (runtime->state() > RuntimeState::PreStartup) {
+            EINSUMS_THROW_EXCEPTION(invalid_runtime_state, "Too late to register a pre-startup function");
+            return;
+        }
+        runtime->add_pre_startup_function(std::move(f));
+    } else {
+        detail::global_pre_startup_functions.emplace_back(std::move(f));
+    }
+}
+
+void register_startup_function(StartupFunctionType f) {
+    auto *runtime = runtime_ptr();
+    if (runtime != nullptr) {
+        if (runtime->state() > RuntimeState::Startup) {
+            EINSUMS_THROW_EXCEPTION(invalid_runtime_state, "Too late to register a startup function");
+            return;
+        }
+        runtime->add_startup_function(std::move(f));
+    } else {
+        detail::global_startup_functions.emplace_back(std::move(f));
+    }
+}
+
+void register_pre_shutdown_function(ShutdownFunctionType f) {
+    auto *runtime = runtime_ptr();
+    if (runtime != nullptr) {
+        if (runtime->state() > RuntimeState::PreShutdown) {
+            EINSUMS_THROW_EXCEPTION(invalid_runtime_state, "Too late to register a pre-shutdown function");
+            return;
+        }
+        runtime->add_pre_shutdown_function(std::move(f));
+    } else {
+        detail::global_pre_shutdown_functions.emplace_back(std::move(f));
+    }
+}
+
+void register_shutdown_function(ShutdownFunctionType f) {
+    auto *runtime = runtime_ptr();
+    if (runtime != nullptr) {
+        if (runtime->state() > RuntimeState::Shutdown) {
+            EINSUMS_THROW_EXCEPTION(invalid_runtime_state, "Too late to register a shutdown function");
+            return;
+        }
+        runtime->add_pre_shutdown_function(std::move(f));
+    } else {
+        detail::global_shutdown_functions.emplace_back(std::move(f));
+    }
+}
+
+} // namespace einsums

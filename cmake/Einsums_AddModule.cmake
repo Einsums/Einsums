@@ -9,7 +9,7 @@ function(einsums_add_module libname modulename)
   # Retrieve arguments
   set(options CONFIG_FILES)
   set(one_value_args BASE_LIBNAME)
-  set(multi_value_args SOURCES HEADERS OBJECTS DEPENDENCIES MODULE_DEPENDENCIES CMAKE_SUBDIRS)
+  set(multi_value_args SOURCES HEADERS OBJECTS PRIVATE_DEPENDENCIES DEPENDENCIES MODULE_DEPENDENCIES CMAKE_SUBDIRS)
   cmake_parse_arguments(
     ${modulename} "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN}
   )
@@ -134,6 +134,9 @@ function(einsums_add_module libname modulename)
   )
   target_link_libraries(
     ${libname}_${modulename} ${module_public_keyword} ${${modulename}_DEPENDENCIES}
+  )
+  target_link_libraries(
+          ${libname}_${modulename} PRIVATE ${${modulename}_PRIVATE_DEPENDENCIES}
   )
 
   target_link_libraries(
