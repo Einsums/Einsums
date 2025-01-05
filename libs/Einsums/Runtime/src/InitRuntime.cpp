@@ -89,7 +89,7 @@ int run(std::function<int()> const &f, Runtime &rt, InitParams const &params) {
 }
 
 int run(std::function<int()> const &f, int argc, char const *const *argv, InitParams const &params, bool blocking) {
-    EINSUMS_LOG(info, "Running common initialization routines...");
+    EINSUMS_LOG_INFO("Running common initialization routines...");
     // TODO: Add a check to ensure the runtime hasn't already been initialized
 
     // TODO: Translate argv to unordered_map.

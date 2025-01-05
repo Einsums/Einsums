@@ -95,13 +95,13 @@ void RuntimeConfiguration::pre_initialize() {
     einsums.log.level                = 3;
     einsums.log.destination          = "cerr";
     // einsums.log.format               = "[%Y-%m-%d %H:%M:%S.%F] [%n] [%^%l%$] [host:%j] [pid:%P] [tid:%t] [%s:%#/%!] %v";
-    einsums.log.format = "[%Y-%m-%d %H:%M:%S.%F] [%n] [%^%l%$] [%s:%#/%!] %v";
+    einsums.log.format = "[%Y-%m-%d %H:%M:%S.%F] [%n] [%^%-8l%$] [%s:%#/%!] %v";
 }
 
 RuntimeConfiguration::RuntimeConfiguration(int argc, char const *const argv[],
                                            std::function<void(argparse::ArgumentParser &)> const &user_command_line)
     : original{.argc = argc, .argv = argv} {
-    EINSUMS_LOG(info, "RuntimeConfiguration::RuntimeConfiguration()");
+    EINSUMS_LOG_INFO("RuntimeConfiguration::RuntimeConfiguration()");
     pre_initialize();
 
     parse_command_line(user_command_line);

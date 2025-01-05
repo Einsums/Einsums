@@ -121,7 +121,7 @@ RuntimeState Runtime::state() const {
 }
 
 void Runtime::state(RuntimeState state) {
-    EINSUMS_LOG(info, "Runtime state changed from {} to {}", _state, state);
+    EINSUMS_LOG_INFO("Runtime state changed from {} to {}", _state, state);
     _state = state;
 }
 
@@ -134,7 +134,7 @@ RuntimeConfiguration const &Runtime::config() const {
 }
 
 void Runtime::init() {
-    EINSUMS_LOG(info, "Runtime::init: initializing...");
+    EINSUMS_LOG_INFO("Runtime::init: initializing...");
     try {
         // TODO: This would be a good place to create and initialize a thread pool
 
@@ -224,16 +224,16 @@ void Runtime::call_shutdown_functions(bool pre_shutdown) {
 
 int Runtime::run(std::function<EinsumsMainFunctionType> const &func) {
     call_startup_functions(true);
-    EINSUMS_LOG(info, "ran pre-startup functions");
+    EINSUMS_LOG_INFO("ran pre-startup functions");
 
     call_startup_functions(false);
-    EINSUMS_LOG(info, "ran startup functions");
+    EINSUMS_LOG_INFO("ran startup functions");
 
     // Set the state to running.
     state(RuntimeState::Running);
     // Once we start using a thread pool / threading manager we can
     // pass the function to the pool and have the manager handle it.
-    EINSUMS_LOG(info, "running user provided function");
+    EINSUMS_LOG_INFO("running user provided function");
     int result = func();
 
     return result;
@@ -241,10 +241,10 @@ int Runtime::run(std::function<EinsumsMainFunctionType> const &func) {
 
 int Runtime::run() {
     call_startup_functions(true);
-    EINSUMS_LOG(info, "ran pre-startup functions");
+    EINSUMS_LOG_INFO("ran pre-startup functions");
 
     call_startup_functions(false);
-    EINSUMS_LOG(info, "ran startup functions");
+    EINSUMS_LOG_INFO("ran startup functions");
 
     // Set the state to running.
     state(RuntimeState::Running);

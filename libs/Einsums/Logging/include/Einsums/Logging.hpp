@@ -30,34 +30,34 @@ namespace einsums::detail {
     }
 
 #define EINSUMS_DETAIL_SPDLOG(name, loglevel, ...)                                                                                         \
-    if (::einsums::detail::get_##name##_logger().level() <= spdlog::level::loglevel) {                                                     \
-        ::einsums::detail::get_##name##_logger().log(spdlog::source_loc{__FILE__, __LINE__, SPDLOG_FUNCTION}, spdlog::level::loglevel,     \
-                                                     __VA_ARGS__);                                                                         \
+    if (::einsums::detail::get_##name##_logger().level() <= loglevel) {                                                                    \
+        ::einsums::detail::get_##name##_logger().log(spdlog::source_loc{__FILE__, __LINE__, SPDLOG_FUNCTION},                              \
+                                                     static_cast<::spdlog::level::level_enum>(loglevel), __VA_ARGS__);                     \
     }
 
-#define EINSUMS_DETAIL_SPDLOG_ENABLED(name, loglevel) (::einsums::detail::get_##name##_logger().level() <= spdlog::level::loglevel)
+#define EINSUMS_DETAIL_SPDLOG_ENABLED(name, loglevel) (::einsums::detail::get_##name##_logger().level() <= loglevel)
 
 #define EINSUMS_LOG(loglevel, ...)    EINSUMS_DETAIL_SPDLOG(einsums, loglevel, __VA_ARGS__)
 #define EINSUMS_LOG_ENABLED(loglevel) EINSUMS_DETAIL_SPDLOG_ENABLED(einsums, loglevel)
 
 // Only EINSUMS_LOG_TRACE and EINSUMS_LOG_DEBUG can be disabled during compile time.
 #if EINSUMS_ACTIVE_LOG_LEVEL <= 0
-#    define EINSUMS_LOG_TRACE(...) EINSUMS_LOG(trace, __VA_ARGS__)
+#    define EINSUMS_LOG_TRACE(...) EINSUMS_LOG(SPDLOG_LEVEL_TRACE, __VA_ARGS__)
 #else
 #    define EINSUMS_LOG_TRACE(...)
 #endif
 
 #if EINSUMS_ACTIVE_LOG_LEVEL <= 1
-#    define EINSUMS_LOG_DEBUG(...) EINSUMS_LOG(debug, __VA_ARGS__)
+#    define EINSUMS_LOG_DEBUG(...) EINSUMS_LOG(SPDLOG_LEVEL_DEBUG, __VA_ARGS__)
 #else
 #    define EINSUMS_LOG_DEBUG(...)
 #endif
 
-// These logging macros cannot be disabled at compile-time but they can be disabled at runtime
-#define EINSUMS_LOG_INFO(...)     EINSUMS_LOG(info, __VA_ARGS__)
-#define EINSUMS_LOG_WARN(...)     EINSUMS_LOG(warn, __VA_ARGS__)
-#define EINSUMS_LOG_ERROR(...)    EINSUMS_LOG(error, __VA_ARGS__)
-#define EINSUMS_LOG_CRITICAL(...) EINSUMS_LOG(critical, __VA_ARGS__)
+// These logging macros cannot be disabled at compile-time, but they can be disabled at runtime
+#define EINSUMS_LOG_INFO(...)     EINSUMS_LOG(SPDLOG_LEVEL_INFO, __VA_ARGS__)
+#define EINSUMS_LOG_WARN(...)     EINSUMS_LOG(SPDLOG_LEVEL_WARN, __VA_ARGS__)
+#define EINSUMS_LOG_ERROR(...)    EINSUMS_LOG(SPDLOG_LEVEL_ERROR, __VA_ARGS__)
+#define EINSUMS_LOG_CRITICAL(...) EINSUMS_LOG(SPDLOG_LEVEL_CRITICAL, __VA_ARGS__)
 
 EINSUMS_EXPORT spdlog::level::level_enum get_spdlog_level(std::string const &env);
 EINSUMS_EXPORT std::shared_ptr<spdlog::sinks::sink> get_spdlog_sink(std::string const &env);

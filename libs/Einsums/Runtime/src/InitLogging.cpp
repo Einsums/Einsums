@@ -85,7 +85,7 @@ void init_logging(RuntimeConfiguration &config) {
     EINSUMS_LOG_TRACE("test trace");
     EINSUMS_LOG_INFO("test info");
     EINSUMS_LOG_WARN("test warn");
-    // EINSUMS_LOG_ERROR("test error"); // This doesn't know how to use spdlog error over einsums error struct.
+    EINSUMS_LOG_ERROR("test error");
     EINSUMS_LOG_CRITICAL("test critical");
 }
 
