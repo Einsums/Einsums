@@ -67,6 +67,7 @@ std::string get_executable_prefix() {
 } // namespace detail
 
 void RuntimeConfiguration::pre_initialize() {
+    EINSUMS_LOG_INFO("Setting default configuration values");
     /*
      * This routine will eventually contain a "master" yaml template that
      * will include all the default settings for Einsums and its subsystems.
@@ -101,13 +102,14 @@ void RuntimeConfiguration::pre_initialize() {
 RuntimeConfiguration::RuntimeConfiguration(int argc, char const *const argv[],
                                            std::function<void(argparse::ArgumentParser &)> const &user_command_line)
     : original{.argc = argc, .argv = argv} {
-    EINSUMS_LOG_INFO("RuntimeConfiguration::RuntimeConfiguration()");
     pre_initialize();
 
     parse_command_line(user_command_line);
 }
 
 void RuntimeConfiguration::parse_command_line(std::function<void(argparse::ArgumentParser &)> const &user_command_line) {
+    EINSUMS_LOG_INFO("Configuring command line parser and parsing user provided command line");
+
     // Imperative that pre_initialize is called first as it is responsible for setting
     // default values. This is done in the constructor.
     // There should be a mechanism that allows the user to change the program name.
@@ -140,6 +142,7 @@ void RuntimeConfiguration::parse_command_line(std::function<void(argparse::Argum
 
     // Allow the user to inject their own command line options
     if (user_command_line) {
+        EINSUMS_LOG_INFO("adding user command line options");
         user_command_line(*argument_parser);
     }
 

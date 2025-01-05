@@ -121,6 +121,7 @@ struct EINSUMS_EXPORT RuntimeConfiguration {
      *
      * @param argc the argc argument from main
      * @param argv the argv argument from main
+     * @param user_command_line callback function that can be used to register additional command-line options
      */
     RuntimeConfiguration(int argc, char const *const *argv, std::function<void(argparse::ArgumentParser &)> const &user_command_line = {});
     RuntimeConfiguration() = delete;
