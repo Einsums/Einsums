@@ -19,7 +19,7 @@ einsums_add_module(
         SOURCES ${RuntimeConfigurationSources}
         HEADERS ${RuntimeConfigurationHeaders}
         DEPENDENCIES argparse::argparse
-        MODULE_DEPENDENCIES Einsums_Config Einsums_Errors Einsums_Logging
+        MODULE_DEPENDENCIES Einsums_Config Einsums_Errors Einsums_Logging Einsums_TypeSupport
         CMAKE_SUBDIRS examples tests
         BASE_LIBNAME Einsums
 )

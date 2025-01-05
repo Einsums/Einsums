@@ -97,6 +97,10 @@ void RuntimeConfiguration::pre_initialize() {
     einsums.log.destination          = "cerr";
     // einsums.log.format               = "[%Y-%m-%d %H:%M:%S.%F] [%n] [%^%l%$] [host:%j] [pid:%P] [tid:%t] [%s:%#/%!] %v";
     einsums.log.format = "[%Y-%m-%d %H:%M:%S.%F] [%n] [%^%-8l%$] [%s:%#/%!] %v";
+
+    einsums.profiler.generate_report = true;
+    einsums.profiler.filename        = "profile.txt";
+    einsums.profiler.append          = true;
 }
 
 RuntimeConfiguration::RuntimeConfiguration(int argc, char const *const argv[],
@@ -139,6 +143,19 @@ void RuntimeConfiguration::parse_command_line(std::function<void(argparse::Argum
         .choices("cerr", "cout")
         .store_into(einsums.log.destination);
     argument_parser->add_argument("--einsums:log-format").default_value(einsums.log.format).store_into(einsums.log.format);
+
+    argument_parser->add_argument("--einsums:profiler-generate_report")
+        .default_value(einsums.profiler.generate_report)
+        .help("generate profiling report")
+        .store_into(einsums.profiler.generate_report);
+    argument_parser->add_argument("--einsums:profiler-filename")
+        .default_value(einsums.profiler.filename)
+        .help("filename of the profiling report")
+        .store_into(einsums.profiler.filename);
+    argument_parser->add_argument("--einsums:profiler-append")
+        .default_value(einsums.profiler.append)
+        .help("append to an existing file")
+        .store_into(einsums.profiler.append);
 
     // Allow the user to inject their own command line options
     if (user_command_line) {

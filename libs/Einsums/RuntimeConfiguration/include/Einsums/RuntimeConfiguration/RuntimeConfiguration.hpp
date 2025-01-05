@@ -7,6 +7,8 @@
 
 #include <Einsums/Config.hpp>
 
+#include <Einsums/TypeSupport/Observable.hpp>
+
 #if defined(EINSUMS_HAVE_UNISTD_H)
 #    include <unistd.h>
 #endif
@@ -31,15 +33,37 @@ struct EINSUMS_EXPORT Log {
      * Default value is 2, currently.
      */
     int level;
+
     /**
      * The destination sink for the logging messages.
      * Default value is "cerr" which is mapped to std::cerr.
      */
     std::string destination;
+
     /**
      * The format string for logging messages.
      */
     std::string format;
+};
+
+/**
+ * Settings for the timer/profiler system.
+ */
+struct EINSUMS_EXPORT Profiler {
+    /**
+     * Generate a timing report.
+     */
+    bool generate_report;
+
+    /**
+     * Filename to save the timing data to.
+     */
+    std::string filename;
+
+    /**
+     * If true, append to the filename. Otherwise, truncate the file before writing.
+     */
+    bool append;
 };
 
 /**
@@ -92,6 +116,9 @@ struct EINSUMS_EXPORT Einsums {
 
     /// Settings for the logging submodule.
     Log log;
+
+    /// Setting for the profile submodule.
+    Profiler profiler;
 };
 } // namespace detail
 

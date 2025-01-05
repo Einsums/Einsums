@@ -198,26 +198,4 @@ void start(int argc, char const *const *argv, InitParams const &params) {
     }
 }
 
-void finalize() {
-    auto &rt = runtime();
-    rt.call_shutdown_functions(true);
-    EINSUMS_LOG_INFO("ran pre-shutdown functions");
-    rt.call_shutdown_functions(false);
-    EINSUMS_LOG_INFO("ran shutdown functions");
-    rt.deinit_global_data();
-
-    // Finalize everything
-    blas::finalize();
-
-    // TODO: If we are generating a timing report do it here before profile::finalize().
-
-    profile::finalize();
-
-#if defined(EINSUMS_COMPUTE_CODE)
-    gpu::finalize();
-#endif
-
-    EINSUMS_LOG_INFO("einsums shutdown completed");
-}
-
 } // namespace einsums

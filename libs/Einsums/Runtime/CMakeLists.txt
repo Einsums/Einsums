@@ -15,7 +15,7 @@ set(RuntimeHeaders
         Einsums/Runtime/Detail/InitLogging.hpp
 )
 
-set(RuntimeSources InitLogging.cpp InitRuntime.cpp Runtime.cpp)
+set(RuntimeSources Finalize.cpp InitLogging.cpp InitRuntime.cpp Runtime.cpp)
 
 if(EINSUMS_WITH_GPU_SUPPORT)
   set(RuntimeGPUStreamsInit Einsums_GPUStreams)

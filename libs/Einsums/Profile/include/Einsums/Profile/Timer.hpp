@@ -23,11 +23,7 @@ struct TimerDetail;
 void EINSUMS_EXPORT initialize();
 void EINSUMS_EXPORT finalize();
 
-void EINSUMS_EXPORT report();
-void EINSUMS_EXPORT report(std::string const &fname);
-// void EINSUMS_EXPORT report(const char *fname); // const std::string& should be able to handle this case.
-void EINSUMS_EXPORT report(std::FILE *fp);
-void EINSUMS_EXPORT report(std::ostream &os);
+void EINSUMS_EXPORT report(std::string const &fname, bool append);
 
 void EINSUMS_EXPORT push(std::string name);
 void EINSUMS_EXPORT pop();
