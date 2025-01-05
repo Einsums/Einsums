@@ -54,6 +54,7 @@ jobs:
         with:
           miniforge-version: latest
           activate-environment: einsums-env
+          use-only-tar-bz2: true
 
       - name: Install ruamel.yaml
         run: |
