@@ -3,7 +3,7 @@ channels:
   - conda-forge
   - nodefaults
 dependencies:
-  - sphinx=6.2.1
+  - sphinx=7.1.2
   - sphinx-design
   - sphinx-copybutton
   - sphinxcontrib-bibtex

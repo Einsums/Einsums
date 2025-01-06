@@ -6,9 +6,13 @@
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 set(TypeSupportHeaders
-        Einsums/TypeSupport/AreAllConvertible.hpp Einsums/TypeSupport/Arguments.hpp
-        Einsums/TypeSupport/CountOfType.hpp Einsums/TypeSupport/Observable.hpp
-        Einsums/TypeSupport/StringLiteral.hpp Einsums/TypeSupport/TypeName.hpp
+    Einsums/TypeSupport/AreAllConvertible.hpp
+    Einsums/TypeSupport/Arguments.hpp
+    Einsums/TypeSupport/CountOfType.hpp
+    Einsums/TypeSupport/Observable.hpp
+    Einsums/TypeSupport/StringLiteral.hpp
+    Einsums/TypeSupport/Tuple.hpp
+    Einsums/TypeSupport/TypeName.hpp
 )
 
 set(TypeSupportSources)
@@ -27,6 +31,6 @@ einsums_add_module(
   SOURCES ${TypeSupportSources}
   HEADERS ${TypeSupportHeaders}
   DEPENDENCIES
-        MODULE_DEPENDENCIES ${TypeSupportGPUDeps}
+  MODULE_DEPENDENCIES ${TypeSupportGPUDeps}
   CMAKE_SUBDIRS examples tests
 )
