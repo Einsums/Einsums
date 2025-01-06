@@ -37,7 +37,6 @@ def reindex(libraries=None):
         configure_toplevel.configure_cmake(os.curdir, lib)
         configure_toplevel.configure_module_docs(os.curdir, lib)
 
-
 def main():
     parser = argparse.ArgumentParser(
         prog="create_module_skeleton",
@@ -64,6 +63,11 @@ def main():
     parser.add_argument(
         "--reindex",
         help="Reindex the libraries. The libraries may be specified afterwards. This is incompatible with other options.",
+        action="store_true"
+    )
+    parser.add_argument(
+        "--rebuild",
+        help="Adds new files that were added to the template but do not exist in the output structure. It also re-indexes.",
         action="store_true"
     )
 

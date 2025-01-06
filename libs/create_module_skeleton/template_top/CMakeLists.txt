@@ -6,16 +6,16 @@
 {gpu_head}
 list(APPEND CMAKE_MODULE_PATH "${{CMAKE_CURRENT_SOURCE_DIR}}/cmake")
 
-set({module_name}Headers {export_header})
+set({module_name}Headers {export_header} {lib_name}/{module_name}/InitModule.hpp)
 
-set({module_name}Sources {export_source})
+set({module_name}Sources {export_source} {lib_name}/{module_name}/InitModule.cpp)
 
 include(Einsums_AddModule)
 einsums_add_module(
   {lib_symb} {module_name}
   SOURCES ${{{module_name}Sources}}
   HEADERS ${{{module_name}Headers}}
-  DEPENDENCIES {export_depends}
+  DEPENDENCIES {export_depends} Einsums_Runtime
   MODULE_DEPENDENCIES
   CMAKE_SUBDIRS examples tests
   BASE_LIBNAME {lib_name}

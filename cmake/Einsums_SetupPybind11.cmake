@@ -13,8 +13,4 @@ fetchcontent_declare(
   FIND_PACKAGE_ARGS 2.13
 )
 
-fetchcontent_getproperties(pybind11)
-if(NOT pybind11_POPULATED)
-  fetchcontent_populate(pybind11)
-  add_subdirectory(${pybind11_SOURCE_DIR} ${pybind11_BINARY_DIR})
-endif()
+FetchContent_MakeAvailable(pybind11)

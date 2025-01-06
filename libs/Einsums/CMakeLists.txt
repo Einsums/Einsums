@@ -9,6 +9,7 @@
 include(Einsums_Message)
 
 
+
 # cmake-format: off
 set(_Einsums_modules
   Assertion
@@ -27,14 +28,14 @@ set(_Einsums_modules
   ITTNotify
   Iterator
   LinearAlgebra
-        Logging
+  Logging
   Memory
   Preprocessor
   Print
   Profile
-        Reflection
-        Runtime
-        RuntimeConfiguration
+  Reflection
+  Runtime
+  RuntimeConfiguration
   StringUtil
   Tensor
   TensorAlgebra
@@ -51,5 +52,7 @@ einsums_info("  Configuring Einsums modules:")
 foreach(module ${_Einsums_modules})
   add_subdirectory(${module})
 endforeach()
+
+
 
 

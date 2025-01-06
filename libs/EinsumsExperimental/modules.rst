@@ -12,4 +12,3 @@ EinsumsExperimental modules
     :maxdepth: 2
 
     /libs/EinsumsExperimental/Graph/docs/index.rst
-    /libs/EinsumsExperimental/Reflection/docs/index.rst

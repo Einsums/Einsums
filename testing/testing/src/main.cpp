@@ -4,15 +4,22 @@
 //--------------------------------------------------------------------------------------------
 
 #include <Einsums/Runtime.hpp>
+#include <Einsums/Utilities/Random.hpp>
 
 #include <functional>
+#include "catch2/catch_get_random_seed.hpp"
 
 #define CATCH_CONFIG_RUNNER
 #include <catch2/catch_all.hpp>
 
+
+
 int einsums_main(int argc, char **argv) {
     Catch::Session session;
     session.applyCommandLine(argc, argv);
+
+    einsums::seed_random(Catch::getSeed());
+
     int result = session.run();
     einsums::finalize();
 

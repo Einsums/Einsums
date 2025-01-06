@@ -6,7 +6,6 @@
 #include <Einsums/Config.hpp>
 
 #include <Einsums/Assert.hpp>
-#include <Einsums/BLAS.hpp>
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/Logging.hpp>
@@ -15,10 +14,6 @@
 #include <Einsums/Runtime/InitRuntime.hpp>
 #include <Einsums/Runtime/Runtime.hpp>
 #include <Einsums/Utilities/Random.hpp>
-
-#ifdef EINSUMS_COMPUTE_CODE
-#    include <Einsums/GPUStreams/GPUStreams.hpp>
-#endif
 
 #include <csignal>
 #include <cstdlib>
@@ -108,12 +103,10 @@ int run(std::function<int()> const &f, int argc, char const *const *argv, InitPa
     // This might be a good place to initialize MPI, HIP, CUDA, etc.
     // error::initialize();
 
-#if defined(EINSUMS_COMPUTE_CODE)
-    gpu::initialize();
-#endif
-
+    // This is the only initialization routine that needs to be explicitly called here.
+    // This is because the runtime environment depends on the profiler. If the profiler
+    // depended on the runtime environment, then there would be a dependency issue.
     profile::initialize();
-    blas::initialize();
 
     // Disable HDF5 diagnostic reporting
     H5Eset_auto(0, nullptr, nullptr);
@@ -124,9 +117,7 @@ int run(std::function<int()> const &f, int argc, char const *const *argv, InitPa
     // Using cmdline, call a function to parse and translate all known command line options into a GlobalConfigMap
 
     // Build and configure this runtime instance.
-    std::unique_ptr<Runtime> rt;
-
-    rt.reset(new Runtime(std::move(config), true));
+    std::unique_ptr<Runtime> rt = std::make_unique<Runtime>(std::move(config), true);
 
     if (blocking) {
         return run(f, *rt, params);

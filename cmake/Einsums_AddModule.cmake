@@ -164,8 +164,9 @@ function(einsums_add_module libname modulename)
     string(REGEX REPLACE "^_" "" transformed_string ${transformed_string})
     # Convert to uppercase
     string(TOUPPER ${transformed_string} LIB_NAME)
+    string(MAKE_C_IDENTIFIER ${LIB_NAME} MACRO_LIB_NAME)
 
-    target_compile_definitions(${libname}_${modulename} PRIVATE ${LIB_NAME}_EXPORTS)
+    target_compile_definitions(${libname}_${modulename} PRIVATE ${MACRO_LIB_NAME}_EXPORTS)
   endif()
 
   einsums_add_source_group(

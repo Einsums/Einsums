@@ -6,7 +6,7 @@
 #include <Einsums/TensorAlgebra/TensorAlgebra.hpp>
 #include <Einsums/TensorUtilities/CreateZeroTensor.hpp>
 
-#include "Einsums/Runtime/InitializeFinalize.hpp"
+#include "Einsums/Runtime.hpp"
 
 #include <Einsums/Testing.hpp>
 #include <hip/hip_common.h>
@@ -29,8 +29,6 @@ void dot_test() {
     using namespace einsums::tensor_algebra;
     using namespace einsums::index;
     using namespace einsums::linear_algebra;
-
-    initialize_testing();
 
     int num_blocks;
     hip_catch(hipOccupancyMaxActiveBlocksPerMultiprocessor(&num_blocks, sample_func<float>, 512, 0));
@@ -103,8 +101,6 @@ void dot_test() {
         REQUIRE_THAT((T)C_obtained, CheckWithinRel(C_expected, 0.0001));
         REQUIRE_THAT((T)C_gpu, CheckWithinRel(C_expected, 0.0001));
     }
-
-    finalize();
 }
 
 TEST_CASE("dot") {
@@ -126,8 +122,6 @@ TEMPLATE_TEST_CASE("Dot TensorView and Tensor", "[tensor_algebra]", float, doubl
     using namespace einsums;
     using namespace einsums::tensor_algebra;
     using namespace einsums::index;
-
-    initialize_testing();
 
     auto const i_ = 10, j_ = 10, k_ = 10, l_ = 2;
 
@@ -156,6 +150,4 @@ TEMPLATE_TEST_CASE("Dot TensorView and Tensor", "[tensor_algebra]", float, doubl
             REQUIRE_THAT(C(l, j), CheckWithinRel((TestType)C0(l, j), 0.0001));
         }
     }
-
-    finalize();
 }

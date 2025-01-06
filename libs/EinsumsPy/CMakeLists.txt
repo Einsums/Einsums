@@ -10,6 +10,16 @@ include(Einsums_Message)
 
 include(Einsums_ExtendWithPython)
 
+if(NOT EINSUMS_PYTHON_VERSION)
+  find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
+else()
+  find_package(Python3 "${EINSUMS_PYTHON_VERSION}" EXACT COMPONENTS Interpreter Development REQUIRED)
+endif()
+
+find_package(pybind11 REQUIRED)
+
+einsums_extend_with_python(${EINSUMS_PYTHON_LIB_NAME} ${PYTHON_LIB_TYPE})
+
 set_target_properties(${EINSUMS_PYTHON_LIB_NAME} PROPERTIES OUTPUT_NAME core)
 
 # cmake-format: off
@@ -25,12 +35,12 @@ set(_EinsumsPy_modules
 
 einsums_info("")
 einsums_info("  Configuring EinsumsPy modules:")
-einsums_info("")
 
 foreach(module ${_EinsumsPy_modules})
-    einsums_info("    ${module}")
   add_subdirectory(${module})
 endforeach()
+
+
 
 set(EinsumsPy_HEADERS)
 set(EinsumsPy_EXPORTS)

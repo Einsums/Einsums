@@ -62,16 +62,6 @@ EINSUMS_EXPORT EINSUMS_HOST hipsolverHandle_t set_solver_handle(hipsolverHandle_
 EINSUMS_EXPORT EINSUMS_HOST hipsolverHandle_t set_solver_handle(hipsolverHandle_t value, int thread_id);
 
 /**
- * Initialize the GPU and HIP.
- */
- EINSUMS_HOST EINSUMS_EXPORT void initialize();
-
-/**
- * Finalize HIP.
- */
- EINSUMS_HOST EINSUMS_EXPORT void finalize();
-
-/**
  * Get an appropriate block size for a kernel.
  */
  EINSUMS_HOST inline dim3 block_size(size_t compute_size) {

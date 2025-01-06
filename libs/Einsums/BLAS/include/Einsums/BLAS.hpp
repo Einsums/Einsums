@@ -12,25 +12,6 @@
 
 namespace einsums::blas {
 
-/**
- * @brief Initializes the underlying BLAS and LAPACK library.
- *
- * Handles any initialization that the underlying BLAS implementation requires.
- * For example, a GPU implementation would likely need to obtain a device handle to
- * run. That would be handled by this function.
- *
- * You typically will not need to call this function manually. einsums::initialize()
- * will handle calling this function for you.
- *
- */
-void EINSUMS_EXPORT initialize();
-
-/**
- * @brief Handles any shutdown procedure needed by the BLAS implementation.
- *
- */
-void EINSUMS_EXPORT finalize();
-
 #if !defined(DOXYGEN)
 namespace detail {
 // These routines take care of actually making the call to the BLAS equivalent.

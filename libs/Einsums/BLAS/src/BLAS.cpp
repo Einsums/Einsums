@@ -8,14 +8,6 @@
 
 namespace einsums::blas {
 
-void initialize() {
-    vendor::initialize();
-}
-
-void finalize() {
-    vendor::finalize();
-}
-
 namespace detail {
 void sgemm(char transa, char transb, int_t m, int_t n, int_t k, float alpha, float const *a, int_t lda, float const *b, int_t ldb,
            float beta, float *c, int_t ldc) {

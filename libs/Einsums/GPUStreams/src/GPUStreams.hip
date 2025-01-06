@@ -2,6 +2,8 @@
 
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/GPUStreams/GPUStreams.hpp>
+#include <Einsums/GPUStreams/InitModule.hpp>
+#include <Einsums/Runtime.hpp>
 
 #include <hip/hip_common.h>
 #include <hip/hip_runtime.h>
@@ -22,75 +24,90 @@ std::vector<hipStream_t>       default_streams;
 std::vector<bool>              skip_waits;
 std::recursive_mutex           wait_mutex;
 } // namespace detail
+}
+}
 
-EINSUMS_HOST void initialize() {
+einsums::init_Einsums_GPUStreams::init_Einsums_GPUStreams() {
+    // Auto-generated code. Do not touch if you are unsure of what you are doing.
+    // Instead, modify the other functions below.
+    einsums::detail::global_startup_functions.push_back(einsums::initialize_Einsums_GPUStreams);
+    einsums::detail::global_shutdown_functions.push_back(einsums::initialize_Einsums_GPUStreams);
+}
+
+einsums::init_Einsums_GPUStreams einsums::detail::initialize_module_Einsums_GPUStreams;
+
+EINSUMS_HOST void einsums::initialize_Einsums_GPUStreams() {
+    using namespace einsums::gpu;
     hip_catch(hipFree(nullptr));
 
     hip_catch(hipSetDevice(0));
 
-    if (detail::default_streams.size() == 0) {
-        detail::default_streams.resize(omp_get_max_threads());
+    if (gpu::detail::default_streams.size() == 0) {
+        gpu::detail::default_streams.resize(omp_get_max_threads());
 
         for (int i = 0; i < omp_get_max_threads(); i++) {
-            hip_catch(hipStreamCreateWithFlags(&(detail::default_streams.at(i)), hipStreamNonBlocking));
+            hip_catch(hipStreamCreateWithFlags(&(gpu::detail::default_streams.at(i)), hipStreamNonBlocking));
         }
     }
 
-    if (detail::skip_waits.size() == 0) {
-        detail::skip_waits.resize(omp_get_max_threads());
+    if (gpu::detail::skip_waits.size() == 0) {
+        gpu::detail::skip_waits.resize(omp_get_max_threads());
 
         for (int i = 0; i < omp_get_max_threads(); i++) {
-            detail::skip_waits.at(i) = false;
+            gpu::detail::skip_waits.at(i) = false;
         }
     }
 
-    if (detail::blas_handles.size() == 0) {
-        detail::blas_handles.resize(omp_get_max_threads());
+    if (gpu::detail::blas_handles.size() == 0) {
+        gpu::detail::blas_handles.resize(omp_get_max_threads());
 
         for (int i = 0; i < omp_get_max_threads(); i++) {
-            hipblas_catch(hipblasCreate(&(detail::blas_handles.at(i))));
-            hipblas_catch(hipblasSetStream(detail::blas_handles.at(i), get_stream(i)));
+            hipblas_catch(hipblasCreate(&(gpu::detail::blas_handles.at(i))));
+            hipblas_catch(hipblasSetStream(gpu::detail::blas_handles.at(i), get_stream(i)));
         }
     }
 
-    if (detail::solver_handles.size() == 0) {
-        detail::solver_handles.resize(omp_get_max_threads());
+    if (gpu::detail::solver_handles.size() == 0) {
+        gpu::detail::solver_handles.resize(omp_get_max_threads());
 
         for (int i = 0; i < omp_get_max_threads(); i++) {
-            hipsolver_catch(hipsolverCreate(&(detail::solver_handles.at(i))));
-            hipsolver_catch(hipsolverSetStream(detail::solver_handles.at(i), get_stream(i)));
+            hipsolver_catch(hipsolverCreate(&(gpu::detail::solver_handles.at(i))));
+            hipsolver_catch(hipsolverSetStream(gpu::detail::solver_handles.at(i), get_stream(i)));
         }
     }
 }
 
-EINSUMS_HOST void finalize() {
-
-    if (detail::default_streams.size() != 0) {
-        for (int i = 0; i < detail::default_streams.size(); i++) {
-            hip_catch(hipStreamDestroy(detail::default_streams.at(i)));
+EINSUMS_HOST void einsums::finalize_Einsums_GPUStreams() {
+    using namespace einsums::gpu;
+    if (gpu::detail::default_streams.size() != 0) {
+        for (int i = 0; i < gpu::detail::default_streams.size(); i++) {
+            hip_catch(hipStreamDestroy(gpu::detail::default_streams.at(i)));
         }
 
-        detail::default_streams.clear();
+        gpu::detail::default_streams.clear();
     }
 
-    detail::skip_waits.clear();
+    gpu::detail::skip_waits.clear();
 
-    if (detail::blas_handles.size() != 0) {
-        for (int i = 0; i < detail::blas_handles.size(); i++) {
-            hipblas_catch(hipblasDestroy(detail::blas_handles.at(i)));
+    if (gpu::detail::blas_handles.size() != 0) {
+        for (int i = 0; i < gpu::detail::blas_handles.size(); i++) {
+            hipblas_catch(hipblasDestroy(gpu::detail::blas_handles.at(i)));
         }
-        detail::blas_handles.clear();
+        gpu::detail::blas_handles.clear();
     }
 
-    if (detail::solver_handles.size() != 0) {
-        for (int i = 0; i < detail::solver_handles.size(); i++) {
-            hipsolver_catch(hipsolverDestroy(detail::solver_handles.at(i)));
+    if (gpu::detail::solver_handles.size() != 0) {
+        for (int i = 0; i < gpu::detail::solver_handles.size(); i++) {
+            hipsolver_catch(hipsolverDestroy(gpu::detail::solver_handles.at(i)));
         }
-        detail::solver_handles.clear();
+        gpu::detail::solver_handles.clear();
     }
 
     hip_catch(hipDeviceReset());
 }
+
+namespace einsums {
+namespace gpu {
 
 EINSUMS_HOST void skip_next_wait() {
     detail::skip_waits.at(omp_get_thread_num()) = true;

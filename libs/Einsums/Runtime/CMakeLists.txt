@@ -17,10 +17,6 @@ set(RuntimeHeaders
 
 set(RuntimeSources Finalize.cpp InitLogging.cpp InitRuntime.cpp Runtime.cpp)
 
-if(EINSUMS_WITH_GPU_SUPPORT)
-  set(RuntimeGPUStreamsInit Einsums_GPUStreams)
-endif()
-
 include(Einsums_AddModule)
 einsums_add_module(
         Einsums Runtime
@@ -29,7 +25,6 @@ einsums_add_module(
         DEPENDENCIES Einsums::h5cpp
         MODULE_DEPENDENCIES
         Einsums_Assertion
-        Einsums_BLAS
         Einsums_Config
         Einsums_Debugging
         Einsums_Profile
@@ -37,7 +32,6 @@ einsums_add_module(
         Einsums_RuntimeConfiguration
         Einsums_Errors
         Einsums_Logging
-        ${RuntimeGPUStreamsInit}
         CMAKE_SUBDIRS examples tests
         # BASE_LIBNAME Einsums
 )

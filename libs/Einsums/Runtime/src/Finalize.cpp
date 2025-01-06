@@ -6,17 +6,12 @@
 #include <Einsums/Config.hpp>
 
 #include <Einsums/Assert.hpp>
-#include <Einsums/BLAS.hpp>
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
 #include <Einsums/Logging.hpp>
 #include <Einsums/Profile/Timer.hpp>
 #include <Einsums/Runtime/InitRuntime.hpp>
 #include <Einsums/Runtime/Runtime.hpp>
-
-#ifdef EINSUMS_COMPUTE_CODE
-#    include <Einsums/GPUStreams/GPUStreams.hpp>
-#endif
 
 namespace einsums {
 void finalize() {
@@ -34,14 +29,10 @@ void finalize() {
     // this function destroys the runtime.
     rt.deinit_global_data();
 
+    // This is the only explicit finalization routine. This is because the runtime depends on the 
+    // profiler. If the profiler used the normal finalization, then it would also depend on the runtime.
+    // This would cause a dependency error.
     profile::finalize();
-
-    // Finalize everything
-    blas::finalize();
-
-#if defined(EINSUMS_COMPUTE_CODE)
-    gpu::finalize();
-#endif
 
     EINSUMS_LOG_INFO("einsums shutdown completed");
 }

@@ -64,8 +64,9 @@ foreach (lib ${EINSUMS_LIBS})
   string(REGEX REPLACE "^_" "" transformed_string ${transformed_string})
   # Convert to uppercase
   string(TOUPPER ${transformed_string} LIB_NAME)
+  string(MAKE_C_IDENTIFIER ${LIB_NAME} MACRO_LIB_NAME)
 
-  target_compile_definitions(${lib} PRIVATE ${LIB_NAME}_EXPORTS)
+  target_compile_definitions(${lib} PRIVATE ${MACRO_LIB_NAME}_EXPORTS)
 
   if (UNIX AND (CMAKE_CXX_COMPILER_ID MATCHES Intel OR CMAKE_CXX_COMPILIER_ID MATCHES IntelLLVM))
     target_compile_options(${lib} PUBLIC -ffp-model=precise -Rno-debug-disables-optimization)
