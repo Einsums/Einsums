@@ -9,7 +9,7 @@ dependencies:
   - cxx-compiler
   - ninja
   # Prebuilts to save einsums the work
-  - cpp-argparse
+  # - cpp-argparse
   - catch2
   - fftw
   - fmt
