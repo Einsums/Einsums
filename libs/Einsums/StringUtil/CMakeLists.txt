@@ -5,7 +5,9 @@
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-set(StringUtilHeaders Einsums/StringUtil/Trim.hpp)
+set(StringUtilHeaders Einsums/StringUtil/BadLexicalCast.hpp Einsums/StringUtil/FromString.hpp
+        Einsums/StringUtil/Trim.hpp
+)
 
 set(StringUtilSources)
 

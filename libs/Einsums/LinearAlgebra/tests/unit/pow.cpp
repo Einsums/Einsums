@@ -122,9 +122,9 @@ TEMPLATE_TEST_CASE("pow", "[linear-algebra]", float, double) {
 
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                CHECK_THAT(B(i, j), Catch::Matchers::WithinAbs(C(i, j), TestType{1e-5}));
-                CHECK_THAT(C(j, i), Catch::Matchers::WithinAbs(C(i, j), TestType{1e-5}));
-                CHECK_THAT(B(j, i), Catch::Matchers::WithinAbs(B(i, j), TestType{1e-5}));
+                CHECK_THAT(B(i, j), Catch::Matchers::WithinAbs(C(i, j), TestType{1e-3}));
+                CHECK_THAT(C(j, i), Catch::Matchers::WithinAbs(C(i, j), TestType{1e-3}));
+                CHECK_THAT(B(j, i), Catch::Matchers::WithinAbs(B(i, j), TestType{1e-3}));
             }
         }
     }

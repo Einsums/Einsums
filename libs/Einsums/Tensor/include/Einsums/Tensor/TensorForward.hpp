@@ -84,6 +84,7 @@ using VectorData = std::vector<T>;
 
 } // namespace einsums
 
+#if !defined(EINSUMS_WINDOWS)
 /**
  * @def TENSOR_EXPORT_TR
  *
@@ -277,3 +278,22 @@ using VectorData = std::vector<T>;
     TENSOR_DEFINE_RANK2_DISK_VIEW(tensortype, 2)                                                                                           \
     TENSOR_DEFINE_RANK2_DISK_VIEW(tensortype, 3)                                                                                           \
     TENSOR_DEFINE_RANK2_DISK_VIEW(tensortype, 4)
+
+#else
+
+#define TENSOR_EXPORT_TR(tensortype, type, rank)
+#define TENSOR_EXPORT_RANK(tensortype, rank)
+#define TENSOR_EXPORT(tensortype)
+#define TENSOR_DEFINE_TR(tensortype, type, rank)
+#define TENSOR_DEFINE_RANK(tensortype, rank)
+#define TENSOR_DEFINE(tensortype)
+#define TENSOR_EXPORT_TR_DISK_VIEW(tensortype, type, view_rank, rank)
+#define TENSOR_EXPORT_RANK_DISK_VIEW(tensortype, view_rank, rank)
+#define TENSOR_EXPORT_RANK2_DISK_VIEW(tensortype, rank)
+#define TENSOR_EXPORT_DISK_VIEW(tensortype)
+#define TENSOR_DEFINE_TR_DISK_VIEW(tensortype, type, view_rank, rank)
+#define TENSOR_DEFINE_RANK_DISK_VIEW(tensortype, view_rank, rank)
+#define TENSOR_DEFINE_RANK2_DISK_VIEW(tensortype, rank)
+#define TENSOR_DEFINE_DISK_VIEW(tensortype)
+
+#endif

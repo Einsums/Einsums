@@ -77,34 +77,6 @@ void print_timer_info(std::shared_ptr<TimerDetail> timer, std::FILE *fp) { // NO
     }
 }
 
-void print_timer_info(std::shared_ptr<TimerDetail> timer, std::ostream &os) { // NOLINT
-    if (timer != root) {
-        std::string buffer;
-        if (timer->total_calls != 0) {
-            buffer = fmt::format("{:>5} : {:>5} calls : {:>5} per call", duration_cast<milliseconds>(timer->total_time), timer->total_calls,
-                                 duration_cast<milliseconds>(timer->total_time) / timer->total_calls);
-        } else {
-            buffer = "total_calls == 0!!!";
-        }
-        fprintln(os, "{0:<{1}} : {3: <{4}}{2}", buffer, 70 - print::current_indent_level(), timer->name, "", print::current_indent_level());
-    } else {
-        fprintln(os);
-        fprintln(os);
-        fprintln(os, "Timing information:");
-        fprintln(os);
-    }
-
-    if (!timer->children.empty()) {
-        print::indent();
-
-        for (auto &child : timer->order) {
-            print_timer_info(timer->children[child], os);
-        }
-
-        print::deindent();
-    }
-}
-
 } // namespace detail
 
 void initialize() {
@@ -129,25 +101,13 @@ void finalize() {
     current_timer.reset();
 }
 
-void report() {
-    detail::print_timer_info(detail::root, stdout);
-}
-
-void report(std::string const &fname) {
-    std::FILE *fp = std::fopen(fname.c_str(), "w+");
+void report(std::string const &fname, bool append) {
+    std::FILE *fp = std::fopen(fname.c_str(), append ? "w+" : "w");
 
     detail::print_timer_info(detail::root, fp);
 
     std::fflush(fp);
     std::fclose(fp);
-}
-
-void report(std::FILE *fp) {
-    detail::print_timer_info(detail::root, fp);
-}
-
-void report(std::ostream &os) {
-    detail::print_timer_info(detail::root, os);
 }
 
 void push(std::string name) {
@@ -171,7 +131,7 @@ void push(std::string name) {
         }
 
         if (current_timer->children.count(name) == 0) {
-            current_timer->children[name] = std::make_shared<TimerDetail>();
+            current_timer->children[name]         = std::make_shared<TimerDetail>();
             current_timer->children[name]->name   = name;
             current_timer->children[name]->parent = current_timer;
             current_timer->order.push_back(name);

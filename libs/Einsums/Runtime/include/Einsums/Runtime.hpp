@@ -5,5 +5,5 @@
 
 #pragma once
 
-#include <Einsums/Runtime/InitializeFinalize.hpp>
-
+#include <Einsums/Runtime/InitRuntime.hpp>
+#include <Einsums/Runtime/Runtime.hpp>

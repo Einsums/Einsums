@@ -1,0 +1,7 @@
+name: einsums-dev
+channels:
+  - conda-forge
+  - nodefaults
+dependencies:
+  - cxx-compiler
+  - dpcpp_linux-64

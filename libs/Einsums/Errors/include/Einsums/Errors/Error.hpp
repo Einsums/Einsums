@@ -7,7 +7,7 @@
 
 #include <Einsums/Config.hpp>
 
-#include <fmt/format.h>
+#include <Einsums/TypeSupport/StringLiteral.hpp>
 
 #include <source_location>
 #include <stdexcept>
@@ -25,8 +25,6 @@ namespace einsums {
 
 namespace detail {
 
-extern EINSUMS_EXPORT bool __is_library_initialized;
-
 /**
  * Construct a message that contains the type of error being produced, the location that error is being emitted,
  * and the actual message for the error.
@@ -37,18 +35,25 @@ extern EINSUMS_EXPORT bool __is_library_initialized;
  *
  * @return A message with this extra debugging info.
  */
-EINSUMS_EXPORT std::string make_error_message(char const *type_name, char const *str, std::source_location const &location);
+EINSUMS_EXPORT std::string make_error_message(std::string_view const &type_name, char const *str, std::source_location const &location);
 
 /// @copydoc make_error_message(char const *,char const *,std::source_location const &)
-EINSUMS_EXPORT std::string make_error_message(char const *type_name, std::string const &str, std::source_location const &location);
+template <size_t N>
+std::string make_error_message(StringLiteral<N> const type_name, char const *str, std::source_location const &location) {
+    return make_error_message(type_name.string_view(), str, location);
+}
+
+/// @copydoc make_error_message(char const *,char const *,std::source_location const &)
+EINSUMS_EXPORT std::string make_error_message(std::string_view const &type_name, std::string const &str,
+                                              std::source_location const &location);
+
+/// @copydoc make_error_message(char const *,char const *,std::source_location const &)
+template <size_t N>
+std::string make_error_message(StringLiteral<N> const type_name, std::string const &str, std::source_location const &location) {
+    return make_error_message(type_name.string_view(), str, location);
+}
 
 } // namespace detail
-
-namespace error {
-
-EINSUMS_EXPORT void initialize();
-
-}
 
 /**
  * @struct CodedError
@@ -60,14 +65,13 @@ EINSUMS_EXPORT void initialize();
  * if needed.
  */
 template <class ErrorClass, int ErrorCode>
-struct CodedError : public ErrorClass {
-  public:
+struct CodedError : ErrorClass {
     using ErrorClass::ErrorClass;
 
     /**
      * Get the error code for this exception
      */
-    constexpr inline int get_code() const { return ErrorCode; }
+    constexpr int get_code() const { return ErrorCode; }
 };
 
 /**
@@ -75,7 +79,7 @@ struct CodedError : public ErrorClass {
  *
  * Indicates that the dimensions of some tensor arguments are not compatible with the given operation.
  */
-struct EINSUMS_EXPORT dimension_error : public std::invalid_argument {
+struct EINSUMS_EXPORT dimension_error : std::invalid_argument {
     using std::invalid_argument::invalid_argument;
 };
 
@@ -85,7 +89,7 @@ struct EINSUMS_EXPORT dimension_error : public std::invalid_argument {
  * Indicates that two or more tensors are incompatible to be operated with each other for a reason other
  * than their dimensions.
  */
-struct EINSUMS_EXPORT tensor_compat_error : public std::logic_error {
+struct EINSUMS_EXPORT tensor_compat_error : std::logic_error {
     using std::logic_error::logic_error;
 };
 
@@ -94,7 +98,7 @@ struct EINSUMS_EXPORT tensor_compat_error : public std::logic_error {
  *
  * Indicates that a function did not receive the correct amount of arguments.
  */
-struct EINSUMS_EXPORT num_argument_error : public std::invalid_argument {
+struct EINSUMS_EXPORT num_argument_error : std::invalid_argument {
     using std::invalid_argument::invalid_argument;
 };
 
@@ -103,7 +107,7 @@ struct EINSUMS_EXPORT num_argument_error : public std::invalid_argument {
  *
  * Indicates that a function did not receive enough arguments. Child of num_argument_error .
  */
-struct EINSUMS_EXPORT not_enough_args : public num_argument_error {
+struct EINSUMS_EXPORT not_enough_args : num_argument_error {
     using num_argument_error::num_argument_error;
 };
 
@@ -112,7 +116,7 @@ struct EINSUMS_EXPORT not_enough_args : public num_argument_error {
  *
  * Indicates that a function received too many arguments. Child of num_argument_error .
  */
-struct EINSUMS_EXPORT too_many_args : public num_argument_error {
+struct EINSUMS_EXPORT too_many_args : num_argument_error {
     using num_argument_error::num_argument_error;
 };
 
@@ -121,7 +125,7 @@ struct EINSUMS_EXPORT too_many_args : public num_argument_error {
  *
  * Indicates that an operation was stopped due to access restrictions, for instance writing to read-only data.
  */
-struct EINSUMS_EXPORT access_denied : public std::logic_error {
+struct EINSUMS_EXPORT access_denied : std::logic_error {
     using std::logic_error::logic_error;
 };
 
@@ -130,7 +134,16 @@ struct EINSUMS_EXPORT access_denied : public std::logic_error {
  *
  * Indicates that a certain code path is not yet finished.
  */
-struct EINSUMS_EXPORT todo_error : public std::logic_error {
+struct EINSUMS_EXPORT todo_error : std::logic_error {
+    using std::logic_error::logic_error;
+};
+
+/**
+ * @struct not_implemented
+ *
+ * Indicates that a certain code path is not implemented.
+ */
+struct EINSUMS_EXPORT not_implemented : std::logic_error {
     using std::logic_error::logic_error;
 };
 
@@ -141,7 +154,7 @@ struct EINSUMS_EXPORT todo_error : public std::logic_error {
  * the same as std::logic_error. However, since so many exceptions are derived from
  * std::logic_error, this acts as a way to not break things.
  */
-struct EINSUMS_EXPORT bad_logic : public std::logic_error {
+struct EINSUMS_EXPORT bad_logic : std::logic_error {
     using std::logic_error::logic_error;
 };
 
@@ -150,7 +163,16 @@ struct EINSUMS_EXPORT bad_logic : public std::logic_error {
  *
  * Indicates that the code is handling data that is uninitialized.
  */
-struct EINSUMS_EXPORT uninitialized_error : public std::runtime_error {
+struct EINSUMS_EXPORT uninitialized_error : std::runtime_error {
+    using std::runtime_error::runtime_error;
+};
+
+/**
+ * @struct system_error
+ *
+ * Indicates that the code is handling data that is uninitialized.
+ */
+struct EINSUMS_EXPORT system_error : std::runtime_error {
     using std::runtime_error::runtime_error;
 };
 
@@ -159,7 +181,7 @@ struct EINSUMS_EXPORT uninitialized_error : public std::runtime_error {
  *
  * Indicates that an invalid enum value was passed to a function.
  */
-struct EINSUMS_EXPORT enum_error : public std::domain_error {
+struct EINSUMS_EXPORT enum_error : std::domain_error {
     using std::domain_error::domain_error;
 };
 
@@ -170,9 +192,9 @@ struct EINSUMS_EXPORT enum_error : public std::domain_error {
  * @brief Wraps an hipError_t value as an exception object to be handled by C++'s exception system.
  */
 template <hipError_t error>
-struct hip_exception : public std::exception {
+struct hip_exception : std::exception {
   private:
-    ::std::string message;
+    std::string message;
 
   public:
     /**
@@ -328,9 +350,9 @@ using ErrorTbd                         = hip_exception<hipErrorTbd>;
  * @tparam error The status code handled by this exception.
  */
 template <hipblasStatus_t error>
-struct EINSUMS_EXPORT hipblas_exception : public std::exception {
+struct EINSUMS_EXPORT hipblas_exception : std::exception {
   private:
-    ::std::string message;
+    std::string message;
 
   public:
     /**
@@ -397,7 +419,7 @@ bool operator!=(hipblasStatus_t first, hipblas_exception<error> const &second) {
     return first != error;
 }
 
-// Put the status code documentaion in a different header for cleaner code.
+// Put the status code documentation in a different header for cleaner code.
 #    include "Einsums/Errors/hipblas_status_doc.hpp"
 
 using blasSuccess         = hipblas_exception<HIPBLAS_STATUS_SUCCESS>;
@@ -435,9 +457,9 @@ EINSUMS_EXPORT EINSUMS_HOST const char *hipsolverStatusToString(hipsolverStatus_
  * @tparam error The status code wrapped by the object.
  */
 template <hipsolverStatus_t error>
-struct EINSUMS_EXPORT hipsolver_exception : public std::exception {
+struct EINSUMS_EXPORT hipsolver_exception : std::exception {
   private:
-    ::std::string message;
+    std::string message;
 
   public:
     /**
@@ -472,7 +494,7 @@ struct EINSUMS_EXPORT hipsolver_exception : public std::exception {
     bool operator==(hipsolverStatus_t other) const { return error == other; }
 
     /**
-     * Inquality operator.
+     * Inequality operator.
      */
     template <hipsolverStatus_t other_error>
     bool operator!=(hipsolver_exception<other_error> const &other) const {
@@ -480,7 +502,7 @@ struct EINSUMS_EXPORT hipsolver_exception : public std::exception {
     }
 
     /**
-     * Inquality operator.
+     * Inequality operator.
      */
     bool operator!=(hipsolverStatus_t other) const { return error != other; }
 

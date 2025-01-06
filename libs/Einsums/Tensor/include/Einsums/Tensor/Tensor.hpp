@@ -17,20 +17,12 @@
 #include <Einsums/Tensor/TensorForward.hpp>
 #include <Einsums/TensorBase/IndexUtilities.hpp>
 #include <Einsums/TensorBase/TensorBase.hpp>
-#include <Einsums/TypeSupport/AreAllConvertible.hpp>
 #include <Einsums/TypeSupport/Arguments.hpp>
 #include <Einsums/TypeSupport/CountOfType.hpp>
 #include <Einsums/TypeSupport/TypeName.hpp>
 
-#include <range/v3/range_fwd.hpp>
 #include <range/v3/view/cartesian_product.hpp>
 #include <range/v3/view/iota.hpp>
-
-// #include "einsums/ArithmeticTensor.hpp"
-// #include "einsums/Exception.hpp"
-// #include "einsums/OpenMP.h"
-// #include "einsums/STL.hpp"
-// #include "einsums/State.hpp"
 
 #include <algorithm>
 #include <array>
@@ -41,7 +33,6 @@
 #include <cstdint>
 #include <exception>
 #include <functional>
-#include <iomanip>
 #include <limits>
 #include <memory>
 #include <new>
@@ -71,9 +62,6 @@ void println(AType const &A, TensorPrintOptions options = {});
 template <FileOrOStream Output, RankTensorConcept AType>
     requires(BasicTensorConcept<AType> || !AlgebraTensorConcept<AType>)
 void fprintln(Output &fp, AType const &A, TensorPrintOptions options = {});
-
-// template <typename T>
-// using VectorData = std::vector<T, AlignedAllocator<T, 64>>;
 
 /**
  * @brief Represents a general tensor
@@ -156,14 +144,14 @@ struct Tensor : virtual tensor_base::CoreTensor,
      * // At this point A is no longer valid.
      * @endcode
      *
-     * Supports using -1 for one of the ranks to automatically compute the dimensional of it.
+     * Supports using -1 for one of the ranks to automatically compute the dimension of it.
      *
      * @code
      * auto A = Tensor("A", 27);
      * auto B = Tensor(std::move(A), "B", 3, -1, 3); // Automatically determines that -1 should be 3.
      * @endcode
      *
-     * @tparam OtherRank The rank of \p existingTensor can be different than the rank of the new tensor
+     * @tparam OtherRank The rank of \p existingTensor can be different from the rank of the new tensor
      * @tparam Dims Variadic template arguments for the dimensions. Must be castable to size_t.
      * @param existingTensor The existing tensor that holds the tensor data.
      * @param name The name of the new tensor
@@ -171,7 +159,7 @@ struct Tensor : virtual tensor_base::CoreTensor,
      */
     template <size_t OtherRank, typename... Dims>
     explicit Tensor(Tensor<T, OtherRank> &&existingTensor, std::string name, Dims... dims)
-        : _data(std::move(existingTensor._data)), _name{std::move(name)}, _dims{static_cast<size_t>(dims)...} {
+        : _name{std::move(name)}, _dims{static_cast<size_t>(dims)...}, _data(std::move(existingTensor._data)) {
         static_assert(Rank == sizeof...(dims), "Declared rank does not match provided dims");
 
         // Check to see if the user provided a dim of "-1" in one place. If found then the user requests that we
@@ -342,7 +330,7 @@ struct Tensor : virtual tensor_base::CoreTensor,
      * @brief Subscripts into the tensor.
      *
      * This version works when all elements are explicit values into the tensor.
-     * It does not work with the All or Range tags.
+     * It does not work with All or Range tags.
      *
      * @tparam MultiIndex Datatype of the indices. Must be castable to ptrdiff_t.
      * @param index The explicit desired index into the tensor. Elements must be castable to ptrdiff_t.
@@ -368,7 +356,7 @@ struct Tensor : virtual tensor_base::CoreTensor,
      * @brief Subscripts into the tensor.
      *
      * This version works when all elements are explicit values into the tensor.
-     * It does not work with the All or Range tags.
+     * It does not work with All or Range tags.
      *
      * @tparam MultiIndex Datatype of the indices. Must be castable to ptrdiff_t.
      * @param index The explicit desired index into the tensor. Elements must be castable to ptrdiff_t.
@@ -459,7 +447,6 @@ struct Tensor : virtual tensor_base::CoreTensor,
         // e.g.:
         //    Tensor T{"Big Tensor", 7, 7, 7, 7};
         //    T(0, 0) === T(0, 0, :, :) === TensorView{T, Dims<2>{7, 7}, Offset{0, 0}, Stride{49, 1}} ??
-        // println("Here");
         auto const &indices = std::forward_as_tuple(index...);
 
         Offset<Rank>                                                                         offsets;
@@ -468,7 +455,6 @@ struct Tensor : virtual tensor_base::CoreTensor,
 
         int counter{0};
         for_sequence<sizeof...(MultiIndex)>([&](auto i) {
-            // println("looking at {}", i);
             if constexpr (std::is_convertible_v<std::tuple_element_t<i, std::tuple<MultiIndex...>>, ptrdiff_t>) {
                 auto tmp = static_cast<ptrdiff_t>(std::get<i>(indices));
                 if (tmp < 0)
@@ -573,7 +559,7 @@ struct Tensor : virtual tensor_base::CoreTensor,
      *
      * @param other The tensor to copy.
      */
-    auto operator=(Tensor<T, Rank> const &other) -> Tensor<T, Rank> & {
+    auto operator=(Tensor const &other) -> Tensor & {
         bool realloc{false};
         for (int i = 0; i < Rank; i++) {
             if (dim(i) == 0 || (dim(i) != other.dim(i))) {
@@ -602,7 +588,7 @@ struct Tensor : virtual tensor_base::CoreTensor,
      */
     template <typename TOther>
         requires(!std::same_as<T, TOther>)
-    auto operator=(Tensor<TOther, Rank> const &other) -> Tensor<T, Rank> & {
+    auto operator=(Tensor<TOther, Rank> const &other) -> Tensor & {
         bool realloc{false};
         for (int i = 0; i < Rank; i++) {
             if (dim(i) == 0) {
@@ -643,10 +629,10 @@ struct Tensor : virtual tensor_base::CoreTensor,
     template <TensorConcept OtherTensor>
         requires requires {
             requires !BasicTensorConcept<OtherTensor>;
-            requires SameRank<Tensor<T, Rank>, OtherTensor>;
+            requires SameRank<Tensor, OtherTensor>;
             requires CoreTensorConcept<OtherTensor>;
         }
-    auto operator=(OtherTensor const &other) -> Tensor<T, Rank> & {
+    auto operator=(OtherTensor const &other) -> Tensor & {
         size_t size = this->size();
 
         EINSUMS_OMP_PARALLEL_FOR
@@ -663,7 +649,7 @@ struct Tensor : virtual tensor_base::CoreTensor,
      * Cast the data from a tensor view while copying into this tensor.
      */
     template <typename TOther>
-    auto operator=(TensorView<TOther, Rank> const &other) -> Tensor<T, Rank> & {
+    auto operator=(TensorView<TOther, Rank> const &other) -> Tensor & {
         size_t size = this->size();
 
         EINSUMS_OMP_PARALLEL_FOR
@@ -788,7 +774,7 @@ struct Tensor : virtual tensor_base::CoreTensor,
     }
 
     /**
-     * Get all of the strides of this tensor.
+     * Get the strides of this tensor.
      */
     Stride<Rank> strides() const override { return _strides; }
 
@@ -843,10 +829,10 @@ struct Tensor : virtual tensor_base::CoreTensor,
  * @tparam T The data type being stored.
  */
 template <typename T>
-struct Tensor<T, 0> : virtual tensor_base::CoreTensor,
-                      virtual tensor_base::BasicTensor<T, 0>,
-                      virtual tensor_base::LockableTensor,
-                      virtual tensor_base::AlgebraOptimizedTensor {
+struct Tensor<T, 0> final : virtual tensor_base::CoreTensor,
+                            virtual tensor_base::BasicTensor<T, 0>,
+                            virtual tensor_base::LockableTensor,
+                            virtual tensor_base::AlgebraOptimizedTensor {
 
     /**
      * Default constructor
@@ -866,7 +852,7 @@ struct Tensor<T, 0> : virtual tensor_base::CoreTensor,
     /**
      * Default destructor
      */
-    ~Tensor() = default;
+    ~Tensor() override = default;
 
     /**
      * Create a new zero-rank tensor with the given name.
@@ -892,7 +878,7 @@ struct Tensor<T, 0> : virtual tensor_base::CoreTensor,
     /**
      * Copy assignment.
      */
-    auto operator=(Tensor<T, 0> const &other) -> Tensor<T, 0> & {
+    auto operator=(Tensor const &other) -> Tensor & {
         _data = other._data;
         return *this;
     }
@@ -900,7 +886,7 @@ struct Tensor<T, 0> : virtual tensor_base::CoreTensor,
     /**
      * Set the value of the tensor to the value passed in.
      */
-    auto operator=(T const &other) -> Tensor<T, 0> & {
+    auto operator=(T const &other) -> Tensor & {
         _data = other;
         return *this;
     }
@@ -910,7 +896,7 @@ struct Tensor<T, 0> : virtual tensor_base::CoreTensor,
 #        undef OPERATOR
 #    endif
 #    define OPERATOR(OP)                                                                                                                   \
-        auto operator OP(const T &other)->Tensor<T, 0> & {                                                                                 \
+        auto operator OP(const T &other)->Tensor & {                                                                                       \
             _data OP other;                                                                                                                \
             return *this;                                                                                                                  \
         }
@@ -951,7 +937,7 @@ struct Tensor<T, 0> : virtual tensor_base::CoreTensor,
     /**
      * Get the dimensions of the tensor. The result is empty.
      */
-    Dim<0> dims() const override { return Dim<0>{}; }
+    Dim<0> dims() const override { return Dim{}; }
 
     /**
      * Indicates that the tensor is contiguous.
@@ -966,7 +952,7 @@ struct Tensor<T, 0> : virtual tensor_base::CoreTensor,
     /**
      * Get the strides of the tensor. The result is empty.
      */
-    Stride<0> strides() const override { return Stride<0>(); }
+    Stride<0> strides() const override { return Stride{}; }
 
   private:
     /**
@@ -1016,7 +1002,6 @@ struct TensorView final : virtual tensor_base::CoreTensor,
      */
     template <size_t OtherRank, typename... Args>
     explicit TensorView(Tensor<T, OtherRank> const &other, Dim<Rank> const &dim, Args &&...args) : _name{other._name}, _dims{dim} {
-        // println(" here 1");
         common_initialization(const_cast<Tensor<T, OtherRank> &>(other), args...);
     }
 
@@ -1025,7 +1010,6 @@ struct TensorView final : virtual tensor_base::CoreTensor,
      */
     template <size_t OtherRank, typename... Args>
     explicit TensorView(Tensor<T, OtherRank> &other, Dim<Rank> const &dim, Args &&...args) : _name{other._name}, _dims{dim} {
-        // println(" here 2");
         common_initialization(other, args...);
     }
 
@@ -1034,7 +1018,6 @@ struct TensorView final : virtual tensor_base::CoreTensor,
      */
     template <size_t OtherRank, typename... Args>
     explicit TensorView(TensorView<T, OtherRank> &other, Dim<Rank> const &dim, Args &&...args) : _name{other._name}, _dims{dim} {
-        // println(" here 3");
         common_initialization(other, args...);
     }
 
@@ -1043,7 +1026,6 @@ struct TensorView final : virtual tensor_base::CoreTensor,
      */
     template <size_t OtherRank, typename... Args>
     explicit TensorView(TensorView<T, OtherRank> const &other, Dim<Rank> const &dim, Args &&...args) : _name{other._name}, _dims{dim} {
-        // println(" here 4");
         common_initialization(const_cast<TensorView<T, OtherRank> &>(other), args...);
     }
 
@@ -1053,7 +1035,6 @@ struct TensorView final : virtual tensor_base::CoreTensor,
     template <size_t OtherRank, typename... Args>
     explicit TensorView(std::string name, Tensor<T, OtherRank> &other, Dim<Rank> const &dim, Args &&...args)
         : _name{std::move(name)}, _dims{dim} {
-        // println(" here 5");
         common_initialization(other, args...);
     }
 
@@ -1063,7 +1044,7 @@ struct TensorView final : virtual tensor_base::CoreTensor,
      * @param data The pointer to wrap.
      * @param dims The dimensions of the view.
      */
-    explicit TensorView(T const *data, Dim<Rank> const &dims) : _data{const_cast<T *>(data)}, _dims(dims), _full_view_of_underlying{true} {
+    explicit TensorView(T const *data, Dim<Rank> const &dims) : _dims(dims), _full_view_of_underlying{true}, _data{const_cast<T *>(data)} {
         dims_to_strides(dims, _strides);
         dims_to_strides(dims, _index_strides);
     }
@@ -1074,7 +1055,7 @@ struct TensorView final : virtual tensor_base::CoreTensor,
      * @param data The pointer to wrap.
      * @param dims The dimensions of the view.
      */
-    explicit TensorView(T *data, Dim<Rank> const &dims) : _data{const_cast<T *>(data)}, _dims(dims), _full_view_of_underlying{true} {
+    explicit TensorView(T *data, Dim<Rank> const &dims) : _dims(dims), _full_view_of_underlying{true}, _data{const_cast<T *>(data)} {
         dims_to_strides(dims, _strides);
         dims_to_strides(dims, _index_strides);
     }
@@ -1087,7 +1068,7 @@ struct TensorView final : virtual tensor_base::CoreTensor,
      * @param strides The strides for the view.
      */
     explicit TensorView(T const *data, Dim<Rank> const &dims, Stride<Rank> const &strides)
-        : _data{const_cast<T *>(data)}, _dims(dims), _strides(strides) {
+        : _dims(dims), _strides(strides), _data{const_cast<T *>(data)} {
         dims_to_strides(dims, _index_strides);
         _full_view_of_underlying = (strides == _index_strides);
     }
@@ -1100,7 +1081,7 @@ struct TensorView final : virtual tensor_base::CoreTensor,
      * @param strides The strides for the view.
      */
     explicit TensorView(T *data, Dim<Rank> const &dims, Stride<Rank> const &strides)
-        : _data{const_cast<T *>(data)}, _dims(dims), _strides(strides) {
+        : _dims(dims), _strides(strides), _data{const_cast<T *>(data)} {
         dims_to_strides(dims, _index_strides);
         _full_view_of_underlying = (strides == _index_strides);
     }
@@ -1137,7 +1118,7 @@ struct TensorView final : virtual tensor_base::CoreTensor,
         auto view        = std::apply(ranges::views::cartesian_product, target_dims);
 
 #pragma omp parallel for default(none) shared(view, other)
-        for (auto target_combination = view.begin(); target_combination != view.end(); target_combination++) {
+        for (auto target_combination = view.begin(); target_combination != view.end(); ++target_combination) {
             T &target = std::apply(*this, *target_combination);
             target    = std::apply(other, *target_combination);
         }
@@ -1151,7 +1132,7 @@ struct TensorView final : virtual tensor_base::CoreTensor,
     template <template <typename, size_t> typename AType>
         requires CoreRankTensor<AType<T, Rank>, Rank, T>
     auto operator=(AType<T, Rank> const &other) -> TensorView & {
-        if constexpr (std::is_same_v<AType<T, Rank>, TensorView<T, Rank>>) {
+        if constexpr (std::is_same_v<AType<T, Rank>, TensorView>) {
             if (this == &other)
                 return *this;
         }
@@ -1160,7 +1141,7 @@ struct TensorView final : virtual tensor_base::CoreTensor,
         auto view        = std::apply(ranges::views::cartesian_product, target_dims);
 
         // #pragma omp parallel for default(none) shared(view, other)
-        for (auto target_combination = view.begin(); target_combination != view.end(); target_combination++) {
+        for (auto target_combination = view.begin(); target_combination != view.end(); ++target_combination) {
             T &target = std::apply(*this, *target_combination);
             target    = std::apply(other, *target_combination);
         }
@@ -1176,7 +1157,7 @@ struct TensorView final : virtual tensor_base::CoreTensor,
         auto view        = std::apply(ranges::views::cartesian_product, target_dims);
 
 #pragma omp parallel for default(none) shared(view, fill_value)
-        for (auto target_combination = view.begin(); target_combination != view.end(); target_combination++) {
+        for (auto target_combination = view.begin(); target_combination != view.end(); ++target_combination) {
             T &target = std::apply(*this, *target_combination);
             target    = fill_value;
         }
@@ -1318,7 +1299,7 @@ struct TensorView final : virtual tensor_base::CoreTensor,
     }
 
     /**
-     * Get all of the dimensions of the view.
+     * Get the dimensions of the view.
      */
     Dim<Rank> dims() const override { return _dims; }
 
@@ -1365,12 +1346,12 @@ struct TensorView final : virtual tensor_base::CoreTensor,
             println("Creating a Rank-1 TensorView of an existing TensorView may not work. Be careful!");
 #endif
 
-            return TensorView<T, 1>{*this, dim, Stride<1>{1}};
+            return TensorView<T, 1>{*this, dim, Stride{1}};
         }
     }
 
     /**
-     * Check whether the view has all of the elements of the tensor it is viewing.
+     * Check whether the view has all elements of the tensor it is viewing.
      */
     bool full_view_of_underlying() const noexcept override { return _full_view_of_underlying; }
 
@@ -1457,9 +1438,9 @@ struct TensorView final : virtual tensor_base::CoreTensor,
             // Else since we're different Ranks we cannot automatically determine our stride and the user MUST
             // provide the information
         } else {
-            if (std::accumulate(_dims.begin(), _dims.end(), 1.0, std::multiplies<>()) ==
-                std::accumulate(other._dims.begin(), other._dims.end(), 1.0, std::multiplies<>())) {
-                size_t size = dims_to_strides(_dims, default_strides);
+            if (std::accumulate(_dims.begin(), _dims.end(), 1.0, std::multiplies()) ==
+                std::accumulate(other._dims.begin(), other._dims.end(), 1.0, std::multiplies())) {
+                dims_to_strides(_dims, default_strides);
             } else {
                 // Stride information cannot be automatically deduced.  It must be provided.
                 default_strides = arguments::get(error_strides, args...);
@@ -1571,7 +1552,7 @@ void write(h5::fd_t const &fd, Tensor<T, Rank> const &ref, Args &&...args) {
     h5::count const        &count        = h5::arg::get(count_default, args...);
     h5::offset const       &offset       = h5::arg::get(offset_default, args...);
     h5::stride const       &stride       = h5::arg::get(stride_default, args...);
-    h5::block const        &block        = h5::arg::get(block_default, args...);
+    // h5::block const        &block        = h5::arg::get(block_default, args...);
 
     h5::ds_t ds;
     if (H5Lexists(fd, ref.name().c_str(), H5P_DEFAULT) <= 0) {
@@ -1618,7 +1599,7 @@ void write(h5::fd_t const &fd, TensorView<T, Rank> const &ref, Args &&...args) {
     }
 
     h5::offset const &offset = h5::arg::get(offset_default, args...);
-    h5::stride const &stride = h5::arg::get(stride_default, args...);
+    // h5::stride const &stride = h5::arg::get(stride_default, args...);
 
     count_default[Rank - 1] = ref.dim(Rank - 1);
 
@@ -1746,7 +1727,7 @@ TensorView(std::string, Tensor<T, OtherRank> &, Dim<Rank> const &, Args...) -> T
  * @tparam Args The datatype of the calling parameters. In almost all cases you should not need to worry about this parameter.
  * @param name The name of the new tensor.
  * @param args The arguments needed to construct the tensor.
- * @return A new tensor. By default memory is not initialized to anything. It may be filled with garbage.
+ * @return A new tensor. By default, memory is not initialized to anything. It may be filled with garbage.
  */
 template <typename Type = double, typename... Args>
 auto create_tensor(std::string const &name, Args... args) {
@@ -1774,7 +1755,7 @@ auto create_tensor(std::string const &name, Args... args) {
  * @tparam Type The datatype of the underlying tensor. Defaults to double.
  * @tparam Args The datatype of the calling parameters. In almost all cases you should not need to worry about this parameter.
  * @param args The arguments needed to construct the tensor.
- * @return A new tensor. By default memory is not initialized to anything. It may be filled with garbage.
+ * @return A new tensor. By default, memory is not initialized to anything. It may be filled with garbage.
  */
 template <typename Type = double, std::integral... Args>
 auto create_tensor(Args... args) {
@@ -1934,12 +1915,11 @@ void fprintln(Output &fp, AType const &A, TensorPrintOptions options) {
                     T value = std::apply(A, target_combination);
                     if (std::abs(value) > 1.0E+5) {
                         if constexpr (std::is_floating_point_v<T>)
-                            oss << fmt::format(fmt::fg(fmt::color::white) | fmt::bg(fmt::color::red), "{:14.8f} ", value);
+                            oss << fmt::format(fg(fmt::color::white) | bg(fmt::color::red), "{:14.8f} ", value);
                         else if constexpr (IsComplexV<T>) {
-                            oss << fmt::format(fmt::fg(fmt::color::white) | fmt::bg(fmt::color::red), "({:14.8f} + {:14.8f})", value.real(),
-                                               value.imag());
+                            oss << fmt::format(fg(color::white) | bg(color::red), "({:14.8f} + {:14.8f})", value.real(), value.imag());
                         } else
-                            oss << fmt::format(fmt::fg(fmt::color::white) | fmt::bg(fmt::color::red), "{:14} ", value);
+                            oss << fmt::format(fg(color::white) | bg(color::red), "{:14} ", value);
                     } else {
                         if constexpr (std::is_floating_point_v<T>)
                             if (std::abs(value) < 1.0E-4) {
@@ -1961,8 +1941,8 @@ void fprintln(Output &fp, AType const &A, TensorPrintOptions options) {
     fprintln(fp);
 }
 
-template <einsums::RankTensorConcept AType>
-    requires(einsums::BasicTensorConcept<AType> || !einsums::AlgebraTensorConcept<AType>)
+template <RankTensorConcept AType>
+    requires(BasicTensorConcept<AType> || !AlgebraTensorConcept<AType>)
 void println(AType const &A, TensorPrintOptions options) {
     fprintln(std::cout, A, options);
 }

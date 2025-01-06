@@ -18,7 +18,7 @@ macro(einsums_option option type description default)
 
   if("${type}" STREQUAL "BOOL")
     # Use regular CMake options for booleans
-    if(NOT CALIIBRI_OPTION_DEPENDS)
+    if (NOT EINSUMS_OPTION_DEPENDS)
       option(${option} "${description}" ${default})
     else()
       cmake_dependent_option(${option} "${description}" ${default} "${EINSUMS_OPTION_DEPENDS}" OFF)

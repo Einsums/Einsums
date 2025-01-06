@@ -3,15 +3,22 @@
 # Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 #----------------------------------------------------------------------------------------------
 
-
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-set(RuntimeHeaders Einsums/Runtime.hpp Einsums/Runtime/InitializeFinalize.hpp)
+set(RuntimeHeaders
+        Einsums/Runtime.hpp
+        Einsums/Runtime/InitRuntime.hpp
+        Einsums/Runtime/Runtime.hpp
+        Einsums/Runtime/RuntimeForward.hpp
+        Einsums/Runtime/StartupFunction.hpp
+        Einsums/Runtime/ShutdownFunction.hpp
+        Einsums/Runtime/Detail/InitLogging.hpp
+)
 
-set(RuntimeSources InitializeFinalize.cpp)
+set(RuntimeSources Finalize.cpp InitLogging.cpp InitRuntime.cpp Runtime.cpp)
 
 if(EINSUMS_WITH_GPU_SUPPORT)
-        set(RuntimeGPUStreamsInit Einsums_GPUStreams)
+  set(RuntimeGPUStreamsInit Einsums_GPUStreams)
 endif()
 
 include(Einsums_AddModule)
@@ -20,9 +27,17 @@ einsums_add_module(
         SOURCES ${RuntimeSources}
         HEADERS ${RuntimeHeaders}
         DEPENDENCIES Einsums::h5cpp
-        MODULE_DEPENDENCIES Einsums_BLAS Einsums_Config Einsums_Profile Einsums_Utilities Einsums_Errors ${RuntimeGPUStreamsInit}
+        MODULE_DEPENDENCIES
+        Einsums_Assertion
+        Einsums_BLAS
+        Einsums_Config
+        Einsums_Debugging
+        Einsums_Profile
+        Einsums_Utilities
+        Einsums_RuntimeConfiguration
+        Einsums_Errors
+        Einsums_Logging
+        ${RuntimeGPUStreamsInit}
         CMAKE_SUBDIRS examples tests
-        #  BASE_LIBNAME Einsums
+        # BASE_LIBNAME Einsums
 )
-
-

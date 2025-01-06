@@ -5,8 +5,10 @@
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-set(TypeSupportHeaders Einsums/TypeSupport/AreAllConvertible.hpp Einsums/TypeSupport/Arguments.hpp
-        Einsums/TypeSupport/CountOfType.hpp Einsums/TypeSupport/TypeName.hpp
+set(TypeSupportHeaders
+        Einsums/TypeSupport/AreAllConvertible.hpp Einsums/TypeSupport/Arguments.hpp
+        Einsums/TypeSupport/CountOfType.hpp Einsums/TypeSupport/Observable.hpp
+        Einsums/TypeSupport/StringLiteral.hpp Einsums/TypeSupport/TypeName.hpp
 )
 
 set(TypeSupportSources)

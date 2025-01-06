@@ -65,6 +65,9 @@ function(einsums_add_test category name)
 
   set(args "${${name}_ARGS}" "${${name}_UNPARSED_ARGUMENTS}" ${args})
 
+  # TODO: Perhaps one day we will allow command line arguments to tests.
+  unset(args)
+
   set(_script_location ${PROJECT_BINARY_DIR})
 
   set(cmd ${_exe})
@@ -85,8 +88,12 @@ function(einsums_add_test category name)
     set(valgrind_cmd ${VALGRIND_EXECUTABLE} ${EINSUMS_WITH_TESTS_VALGRIND_OPTIONS})
   endif()
 
+  if (${name}_FAILURE_EXPECTED)
+    set(precommand ${CMAKE_COMMAND} -E env)
+  endif ()
+
   set(_full_name "${category}.${name}")
-  add_test(NAME "${category}.${name}" COMMAND ${valgrind_cmd} ${cmd} ${args})
+  add_test(NAME "${category}.${name}" COMMAND ${precommand} ${valgrind_cmd} ${cmd} ${args})
   if(${run_serial})
     set_tests_properties("${_full_name}" PROPERTIES RUN_SERIAL TRUE)
   endif()
@@ -178,10 +185,10 @@ function(einsums_add_example_target_dependencies subcategory name)
   cmake_parse_arguments(${name} "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
   if(NOT ${name}_DEPS_ONLY)
     # Add a custom target for this example
-    einsums_add_pseudo_target(examples.${subcategory}.${name})
+    einsums_add_pseudo_target(Examples.${subcategory}.${name})
   endif()
   # Make pseudo-targets depend on master pseudo-target
-  einsums_add_pseudo_dependencies(examples.${subcategory} examples.${subcategory}.${name})
+  einsums_add_pseudo_dependencies(Examples.${subcategory} Examples.${subcategory}.${name})
   # Add dependencies to pseudo-target
-  einsums_add_pseudo_dependencies(examples.${subcategory}.${name} ${name})
+  einsums_add_pseudo_dependencies(Examples.${subcategory}.${name} ${name})
 endfunction(einsums_add_example_target_dependencies)

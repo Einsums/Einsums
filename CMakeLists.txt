@@ -246,7 +246,7 @@ endif()
 
 # ##################################################################################################
 einsums_option(
-  EINSUMS_WITH_EXAMPLES BOOL "Build examples (default: OFF)" OFF CATEGORY "Build Targets"
+        EINSUMS_WITH_EXAMPLES BOOL "Build examples (default: ON)" ON CATEGORY "Build Targets"
 )
 einsums_option(EINSUMS_WITH_TESTS BOOL "Build tests (default: ON)" ON CATEGORY "Build Targets")
 einsums_option(
@@ -372,7 +372,7 @@ einsums_option(
 )
 
 einsums_option(
-  EINSUMS_WITH_STACKTRACES BOOL "Attach backtraces to einsums exceptions (default: ON)" ON
+        EINSUMS_WITH_BACKTRACES BOOL "Attach backtraces to einsums exceptions (default: ON)" ON
   CATEGORY "Errors"
   ADVANCED
 )
@@ -385,49 +385,25 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
   target_link_libraries(einsums_base_libraries INTERFACE imf svml irng intlc)
 endif()
 
-if(EINSUMS_WITH_STACKTRACES)
-  einsums_info("Stack traces are enabled.")
-  einsums_add_config_define(EINSUMS_HAVE_STACKTRACES)
-  if(WIN32)
-    target_link_libraries(einsums_base_libraries INTERFACE dbghelp)
-  endif()
+if (EINSUMS_WITH_BACKTRACES)
+  einsums_info("Back traces are enabled.")
+  einsums_add_config_define(EINSUMS_HAVE_BACKTRACES)
+  include(Einsums_SetupCppTrace)
 
   einsums_option(
-          EINSUMS_WITH_BACKTRACE_DEPTH STRING "Stack trace depth being captured (default: 20)" "20"
-    CATEGORY "Errors"
-    ADVANCED
+          EINSUMS_WITH_THREAD_BACKTRACE_DEPTH STRING
+          "Thread stack back trace depth being captured (default: 20)" "20"
+          CATEGORY "Thread Manager"
+          ADVANCED
   )
   einsums_add_config_define(
-    EINSUMS_HAVE_THREAD_BACKTRACE_DEPTH ${EINSUMS_WITH_THREAD_BACKTRACE_DEPTH}
+          EINSUMS_HAVE_THREAD_BACKTRACE_DEPTH ${EINSUMS_WITH_THREAD_BACKTRACE_DEPTH}
   )
 
-  if(("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux") AND ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang"
-                                                    OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-  )
+  if (APPLE)
+    find_program(dsymutil_EXECUTABLE NAMES dsymutil)
+  endif ()
 
-    # This option is OFF by default as we have seen random segfaults out in the wild if this is
-    # enabled.
-    einsums_option(
-      EINSUMS_WITH_STACKTRACES_STATIC_SYMBOLS BOOL
-      "Stack back trace will resolve static symbols (default: OFF)" OFF
-      CATEGORY "Errors"
-      ADVANCED
-    )
-    einsums_add_config_define(
-      EINSUMS_HAVE_STACKTRACES_STATIC_SYMBOLS ${EINSUMS_WITH_STACKTRACES_STATIC_SYMBOLS}
-    )
-
-    # Demangling can segfault in certain configurations.
-    einsums_option(
-      EINSUMS_WITH_STACKTRACES_DEMANGLE_SYMBOLS BOOL
-      "Thread stack back trace symbols will be demangled (default: ON)" ON
-      CATEGORY "Errors"
-      ADVANCED
-    )
-    if(EINSUMS_WITH_STACKTRACES_DEMANGLE_SYMBOLS)
-      einsums_add_config_define(EINSUMS_HAVE_STACKTRACES_DEMANGLE_SYMBOLS)
-    endif()
-  endif()
 endif()
 
 einsums_option(
@@ -510,7 +486,26 @@ target_link_libraries(einsums_base_libraries INTERFACE OpenMP::OpenMP_CXX)
 
 # Add the Python module.
 if(EINSUMS_BUILD_PYTHON)
-  add_subdirectory(einsums)
+  #  add_subdirectory(einsums)
+
+  include(Einsums_ExtendWithPython)
+
+  if (NOT EINSUMS_PYTHON_VERSION)
+    find_package(
+            Python3 3.10
+            COMPONENTS Interpreter Development NumPy
+            REQUIRED
+    )
+  else ()
+    find_package(
+            Python3 "${EINSUMS_PYTHON_VERSION}" EXACT
+            COMPONENTS Interpreter Development NumPy
+            REQUIRED
+    )
+  endif ()
+
+  include(Einsums_SetupPybind11)
+
 endif()
 
 # ##################################################################################################
@@ -539,7 +534,7 @@ if(NOT WIN32)
   endif()
 
 else()
-
+  add_definitions(-D_ITERATOR_DEBUG_LEVEL=0)
 endif(NOT WIN32)
 
 # Add exception handling flags based on the compiler and platform
@@ -742,7 +737,9 @@ include(Einsums_SetupFmt)
 include(Einsums_SetupCatch)
 include(Einsums_SetupRangev3)
 include(Einsums_SetupH5cpp)
-# include(einsums_SetupHPTT) include(Einsums_SetupHWLOC) include(Einsums_SetupSpdlog)
+include(Einsums_SetupArgparse)
+# include(einsums_SetupHPTT) include(Einsums_SetupHWLOC)
+include(Einsums_SetupSpdlog)
 # include(Einsums_SetupCppTrace)
 
 if(EINSUMS_USE_LIBRETT AND EINSUMS_WITH_GPU_SUPPORT) 
@@ -807,7 +804,7 @@ if(EINSUMS_WITH_TESTS)
 endif()
 
 if(EINSUMS_WITH_EXAMPLES)
-  add_subdirectory(examples)
+  einsums_add_pseudo_target(Examples)
 endif()
 
 # ##################################################################################################

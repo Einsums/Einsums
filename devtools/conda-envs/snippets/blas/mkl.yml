@@ -1,0 +1,10 @@
+name: einsums-dev
+channels:
+  - conda-forge
+  - nodefaults
+dependencies:
+  - libblas[build=*mkl]
+  - mkl-devel
+  - mkl
+  - tbb-devel
+

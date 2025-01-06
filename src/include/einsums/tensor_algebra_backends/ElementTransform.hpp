@@ -1,16 +1,15 @@
 #pragma once
 
-#include "einsums/_Compiler.hpp"
-#include "einsums/_TensorAlgebraUtilities.hpp"
+#include <cmath>
+#include <cstddef>
+#include <tuple>
 
 #include "einsums/Print.hpp"
 #include "einsums/Section.hpp"
 #include "einsums/Tensor.hpp"
+#include "einsums/_Compiler.hpp"
+#include "einsums/_TensorAlgebraUtilities.hpp"
 #include "einsums/utility/TensorTraits.hpp"
-
-#include <cmath>
-#include <cstddef>
-#include <tuple>
 
 namespace einsums::tensor_algebra {
 
@@ -31,7 +30,7 @@ auto element_transform(CType<T, CRank> *C, UnaryOperator unary_opt) -> void {
     auto target_dims = get_dim_ranges<CRank>(*C);
     auto view        = std::apply(ranges::views::cartesian_product, target_dims);
 
-    EINSUMS_OMP_PARALLEL_FOR
+    // EINSUMS_OMP_PARALLEL_FOR
     for (auto it = view.begin(); it != view.end(); it++) {
         T &target_value = std::apply(*C, *it);
         target_value    = unary_opt(target_value);
@@ -69,7 +68,7 @@ auto element(MultiOperator multi_opt, CType<T, Rank> *C, MultiTensors<T, Rank> &
         println_abort("element: at least one tensor does not have same dimensionality as destination");
     }
 
-    EINSUMS_OMP_PARALLEL_FOR
+    // EINSUMS_OMP_PARALLEL_FOR
     for (auto it = view.begin(); it != view.end(); it++) {
         T target_value      = std::apply(*C, *it);
         std::apply(*C, *it) = multi_opt(target_value, std::apply(tensors, *it)...);

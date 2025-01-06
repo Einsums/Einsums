@@ -15,7 +15,6 @@ Einsums modules
     /libs/Einsums/BLAS/docs/index.rst
     /libs/Einsums/BLASBase/docs/index.rst
     /libs/Einsums/BLASVendor/docs/index.rst
-    /libs/Einsums/Backtrace/docs/index.rst
     /libs/Einsums/Benchmark/docs/index.rst
     /libs/Einsums/Concepts/docs/index.rst
     /libs/Einsums/Config/docs/index.rst
@@ -28,11 +27,14 @@ Einsums modules
     /libs/Einsums/ITTNotify/docs/index.rst
     /libs/Einsums/Iterator/docs/index.rst
     /libs/Einsums/LinearAlgebra/docs/index.rst
+    /libs/Einsums/Logging/docs/index.rst
     /libs/Einsums/Memory/docs/index.rst
     /libs/Einsums/Preprocessor/docs/index.rst
     /libs/Einsums/Print/docs/index.rst
     /libs/Einsums/Profile/docs/index.rst
+    /libs/Einsums/Reflection/docs/index.rst
     /libs/Einsums/Runtime/docs/index.rst
+    /libs/Einsums/RuntimeConfiguration/docs/index.rst
     /libs/Einsums/StringUtil/docs/index.rst
     /libs/Einsums/Tensor/docs/index.rst
     /libs/Einsums/TensorAlgebra/docs/index.rst

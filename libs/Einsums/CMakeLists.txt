@@ -9,14 +9,12 @@
 include(Einsums_Message)
 
 
-
 # cmake-format: off
 set(_Einsums_modules
   Assertion
   BLAS
   BLASBase
   BLASVendor
-  Backtrace
   Benchmark
   Concepts
   Config
@@ -29,11 +27,14 @@ set(_Einsums_modules
   ITTNotify
   Iterator
   LinearAlgebra
+        Logging
   Memory
   Preprocessor
   Print
   Profile
+        Reflection
         Runtime
+        RuntimeConfiguration
   StringUtil
   Tensor
   TensorAlgebra

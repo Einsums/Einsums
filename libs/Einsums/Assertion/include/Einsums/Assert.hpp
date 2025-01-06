@@ -1,7 +1,7 @@
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 
 #pragma once
 
@@ -85,7 +85,7 @@ EINSUMS_EXPORT void set_assertion_handler(assertion_handler_type handler);
 
 #    define EINSUMS_UNREACHABLE                                                                                                            \
         EINSUMS_ASSERT_(false, "This code is meant to be unreachable. If you are seeing this error "                                       \
-                               "message it means that you have found a bug in EINSUMS. Please report it "                                  \
+                               "message it means that you have found a bug in Einsums. Please report it "                                  \
                                "on the issue tracker: https://github.com/Einsums/Einsums/issues.");                                        \
         std::terminate()
 /// \endcond NOINTERNAL

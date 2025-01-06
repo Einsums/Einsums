@@ -1,11 +1,12 @@
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 
 #include <Einsums/Config.hpp>
 
 #include <Einsums/Assert.hpp>
+#include <Einsums/Debugging/Backtrace.hpp>
 
 #include <iostream>
 
@@ -32,7 +33,11 @@ void handle_assert(std::source_location const &loc, char const *expr, std::strin
         } else {
             std::cerr << "\n";
         }
-        std::abort();
+
+        std::cerr << "\n" << util::backtrace() << "\n";
+
+        std::exit(EXIT_FAILURE);
+        // std::abort();
     }
     get_handler()(loc, expr, msg);
 }

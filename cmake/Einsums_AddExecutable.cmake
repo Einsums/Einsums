@@ -103,6 +103,17 @@ function(einsums_add_executable name)
 
   add_executable(${name} ${${name}_SOURCES} ${${name}_HEADERS} ${${name}_AUXILIARY})
 
+  # Create a .dSYM file on macOS
+  if (APPLE AND dsymutil_EXECUTABLE)
+    add_custom_command(
+            TARGET ${name}
+            POST_BUILD
+            COMMENT "Running dsymutil on: $<TARGET_FILE:${name}>"
+            VERBATIM
+            COMMAND dsymutil $<TARGET_FILE:${name}>
+    )
+  endif ()
+
   if(${name}_OUTPUT_SUFFIX)
     if(MSVC)
       set_target_properties(

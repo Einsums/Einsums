@@ -9,7 +9,7 @@ function(einsums_add_module libname modulename)
   # Retrieve arguments
   set(options CONFIG_FILES)
   set(one_value_args BASE_LIBNAME)
-  set(multi_value_args SOURCES HEADERS OBJECTS DEPENDENCIES MODULE_DEPENDENCIES CMAKE_SUBDIRS)
+  set(multi_value_args SOURCES HEADERS OBJECTS PRIVATE_DEPENDENCIES DEPENDENCIES MODULE_DEPENDENCIES CMAKE_SUBDIRS)
   cmake_parse_arguments(
     ${modulename} "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN}
   )
@@ -135,6 +135,9 @@ function(einsums_add_module libname modulename)
   target_link_libraries(
     ${libname}_${modulename} ${module_public_keyword} ${${modulename}_DEPENDENCIES}
   )
+  target_link_libraries(
+          ${libname}_${modulename} PRIVATE ${${modulename}_PRIVATE_DEPENDENCIES}
+  )
 
   target_link_libraries(
     ${libname}_${modulename} ${module_public_keyword} einsums_public_flags einsums_base_libraries
@@ -155,7 +158,14 @@ function(einsums_add_module libname modulename)
   endif()
 
   if(NOT module_is_interface_library)
-    target_compile_definitions(${libname}_${modulename} PRIVATE ${libname_upper}_EXPORTS)
+    # Add underscores before uppercase letters, except the first one
+    string(REGEX REPLACE "([A-Z])" "_\\1" transformed_string ${libname})
+    # Remove the leading underscore if it exists
+    string(REGEX REPLACE "^_" "" transformed_string ${transformed_string})
+    # Convert to uppercase
+    string(TOUPPER ${transformed_string} LIB_NAME)
+
+    target_compile_definitions(${libname}_${modulename} PRIVATE ${LIB_NAME}_EXPORTS)
   endif()
 
   einsums_add_source_group(

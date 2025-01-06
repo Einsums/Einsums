@@ -1,74 +1,59 @@
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 // Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-//----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 
 #pragma once
 
-#include <array>
-#include <cstdint>
+#include <Einsums/TypeSupport/StringLiteral.hpp>
+
+#include <string_view>
+#include <utility>
+
+#if __has_include(<source_location>)
+#    include <source_location>
+#endif
 
 namespace einsums {
 
-//
-// Taken from https://stackoverflow.com/posts/59522794/revisions
-//
 namespace detail {
 template <typename T>
-constexpr auto raw_type_name() -> auto const & {
-#ifdef _MSC_VER
-    return __FUNCSIG__;
-#else
-    return __PRETTY_FUNCTION__;
-#endif
-}
-
-struct raw_type_name_format {
-    std::size_t leading_junk = 0, trailing_junk = 0;
-};
-
-// Returns `false` on failure.
-inline constexpr auto get_raw_type_name_format(raw_type_name_format *format) -> bool {
-    auto const &str = raw_type_name<int>();
-    for (std::size_t i = 0;; i++) {
-        if (str[i] == 'i' && str[i + 1] == 'n' && str[i + 2] == 't') {
-            if (format) {
-                format->leading_junk  = i;
-                format->trailing_junk = sizeof(str) - i - 3 - 1; // `3` is the length of "int", `1` is the space for the null terminator.
-            }
-            return true;
-        }
+consteval auto get_type_name_string_view() {
+#if __cpp_lib_source_location >= 201907L
+    const auto func_name = std::string_view{std::source_location::current().function_name()};
+#elif defined(_MSC_VER)
+    const auto func_name = std::string_view {
+        __FUNCSIG__
     }
-    return false;
-}
+#else
+    const auto func_name = std::string_view{__PRETTY_FUNCTION__};
+#endif
 
-inline static constexpr raw_type_name_format format = [] {
-    static_assert(get_raw_type_name_format(nullptr), "Unable to figure out how to generate type names on this compiler.");
-    raw_type_name_format format;
-    get_raw_type_name_format(&format);
-    return format;
-}();
-
-// Returns the type name in a `std::array<char, N>` (null-terminated).
-template <typename T>
-[[nodiscard]] constexpr auto cexpr_type_name() {
-    constexpr std::size_t len = sizeof(raw_type_name<T>()) - format.leading_junk - format.trailing_junk;
-    std::array<char, len> name{};
-    for (std::size_t i = 0; i < len - 1; i++)
-        name[i] = raw_type_name<T>()[i + format.leading_junk];
-    return name;
+#if defined(__clang__) || defined(__GNUC__)
+    const auto split = func_name.substr(0, func_name.size() - 1);
+    return split.substr(split.find("T = ") + 4);
+#elif defined(_MSC_VER)
+    auto split = func_name.substr(0, func_name.size() - 7);
+    split      = split.substr(split.find("get_type_name_str_view<") + 23);
+    auto pos   = split.find(" ");
+    if (pos != std::string_view::npos) {
+        return split.substr(pos + 1);
+    }
+    return split;
+#else
+    static_assert(false, "You are using an unsupported compiler. Please use GCC, Clang "
+                         "or MSVC or explicity tag your structs using 'Tag' or 'Name'.");
+#endif
 }
 
 } // namespace detail
 
 template <typename T>
-[[nodiscard]] auto type_name() -> char const * {
-    static constexpr auto name = detail::cexpr_type_name<T>();
-    return name.data();
-}
-template <typename T>
-[[nodiscard]] auto type_name(T const &) -> char const * {
-    return type_name<T>();
+consteval auto type_name() {
+    static_assert(detail::get_type_name_string_view<int>() == "int", "Expected 'int', got something else.");
+    constexpr auto name       = detail::get_type_name_string_view<T>();
+    auto const     to_str_lit = [&]<auto... Ns>(std::index_sequence<Ns...>) { return StringLiteral<sizeof...(Ns) + 1>{name[Ns]...}; };
+    return to_str_lit(std::make_index_sequence<name.size()>{});
 }
 
 } // namespace einsums
