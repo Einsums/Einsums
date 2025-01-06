@@ -745,7 +745,7 @@ include(Einsums_SetupH5cpp)
 # include(einsums_SetupHPTT) include(Einsums_SetupHWLOC) include(Einsums_SetupSpdlog)
 # include(Einsums_SetupCppTrace)
 
-if(EINSUMS_USE_HPTT AND EINSUMS_WITH_GPU_SUPPORT) 
+if(EINSUMS_USE_LIBRETT AND EINSUMS_WITH_GPU_SUPPORT) 
   include(Einsums_SetupLibreTT)
 endif()
 

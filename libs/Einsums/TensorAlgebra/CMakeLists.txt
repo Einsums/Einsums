@@ -33,7 +33,7 @@ if (EINSUMS_WITH_GPU_SUPPORT)
     )
     set(TensorAlgebraGPUDeps hip::host hip::device roc::hipblas roc::hipsolver)
 
-    if(EINSUMS_USE_HPTT AND TARGET librett::librett)
+    if(EINSUMS_USE_LIBRETT AND TARGET librett::librett)
       list(APPEND TensorAlgebraSources DevicePermute.hip)
       list(APPEND TensorAlgebraGPUDeps librett::librett)
     endif()
@@ -58,6 +58,7 @@ einsums_add_module(
   CMAKE_SUBDIRS examples tests
 )
 
-if(EINSUMS_WITH_GPU_SUPPORT AND EINSUMS_USE_HPTT AND TARGET librett::librett)
+if(EINSUMS_WITH_GPU_SUPPORT AND EINSUMS_USE_LIBRETT AND TARGET librett::librett)
   target_compile_definitions(Einsums_TensorAlgebra PUBLIC EINSUMS_USE_LIBRETT)
+  target_include_directories(Einsums_TensorAlgebra PUBLIC ${LIBRETT_INCLUDE_DIRS})
 endif()

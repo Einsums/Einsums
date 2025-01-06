@@ -21,7 +21,7 @@ namespace einsums::tensor_algebra {
 
 namespace detail {
 
-#if defined(EINSUMS_USE_HPTT)
+#if defined(EINSUMS_USE_LIBRETT)
 
 void EINSUMS_EXPORT gpu_permute(int const *perm, int const dim, float const alpha, float const *A, int const *sizeA, float const beta,
                              float *B);
@@ -106,7 +106,7 @@ auto permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
     auto target_position_in_A = detail::find_type_with_position(detail::reverse_inds(C_indices), detail::reverse_inds(A_indices));
 
     // LibreTT interface currently only works for full Tensors and not TensorViews
-#if defined(EINSUMS_USE_HPTT)
+#if defined(EINSUMS_USE_LIBRETT)
     if constexpr (std::is_same_v<CType<T, CRank>, DeviceTensor<T, CRank>> && std::is_same_v<AType<T, ARank>, DeviceTensor<T, ARank>>) {
         if (C_prefactor == T{0.0}) {
             std::array<int, ARank> perms{};
@@ -120,8 +120,8 @@ auto permute(U const UC_prefactor, std::tuple<CIndices...> const &C_indices, CTy
             using T_devtype  = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<decltype(C->gpu_data())>>>;
             using T_hosttype = std::remove_cvref_t<std::remove_pointer_t<std::decay_t<T>>>;
 
-            detail::gpu_permute(perms.data(), ARank, einsums::gpu::HipCast<T_devtype, T_hosttype>::cast(A_prefactor), A.gpu_data(),
-                             size.data(), einsums::gpu::HipCast<T_devtype, T_hosttype>::cast(C_prefactor), C->gpu_data());
+            detail::gpu_permute(perms.data(), ARank, HipCast<T_devtype, T_hosttype>::cast(A_prefactor), A.gpu_data(),
+                             size.data(), HipCast<T_devtype, T_hosttype>::cast(C_prefactor), C->gpu_data());
             if (A_prefactor != T{1.0}) {
                 *C *= A_prefactor; // Librett does not handle prefactors (yet?)
             }
