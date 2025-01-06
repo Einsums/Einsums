@@ -6,6 +6,8 @@
 # * note that upstream uses `write_basic_package_version_file(... COMPATIBILITY ExactVersion)` so no
 #   version range of compatibilty can be expressed here.
 
+
+
 fetchcontent_declare(
         range-v3
         URL https://github.com/ericniebler/range-v3/archive/0.12.0.tar.gz
@@ -13,6 +15,6 @@ fetchcontent_declare(
         # FIND_PACKAGE_ARGS 0.12.0
 )
 
-fetchcontent_makeavailable(range-v3)
+FetchContent_MakeAvailable(range-v3)
 
 target_link_libraries(einsums_base_libraries INTERFACE range-v3::range-v3)

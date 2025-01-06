@@ -88,6 +88,8 @@ EINSUMS_HOST void finalize() {
         }
         detail::solver_handles.clear();
     }
+
+    hip_catch(hipDeviceReset());
 }
 
 EINSUMS_HOST void skip_next_wait() {

@@ -14,6 +14,6 @@ fetchcontent_declare(
         FIND_PACKAGE_ARGS 11
 )
 
-fetchcontent_makeavailable(fmt)
+FetchContent_MakeAvailable(fmt)
 
 target_link_libraries(einsums_base_libraries INTERFACE fmt::fmt)

@@ -9,6 +9,19 @@
 #include "Einsums/Runtime/InitializeFinalize.hpp"
 
 #include <Einsums/Testing.hpp>
+#include <hip/hip_common.h>
+#include <hip/hip_runtime.h>
+#include <hip/hip_runtime_api.h>
+
+template<typename T>
+__global__ void sample_func(T *out, const T *in, int elements) {
+    int id = threadIdx.x;
+    int size = blockDim.x;
+
+    for(int element = id; element < elements; element += size) {
+        out[element] += in[element];
+    }
+}
 
 template <typename T>
 void dot_test() {
@@ -18,6 +31,9 @@ void dot_test() {
     using namespace einsums::linear_algebra;
 
     initialize_testing();
+
+    int num_blocks;
+    hip_catch(hipOccupancyMaxActiveBlocksPerMultiprocessor(&num_blocks, sample_func<float>, 512, 0));
 
     size_t i_{10}, j_{10}, a_{10}, b_{10};
 

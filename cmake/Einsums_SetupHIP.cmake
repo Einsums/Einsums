@@ -48,23 +48,19 @@ if (EINSUMS_WITH_HIP AND NOT TARGET roc::rocblas)
     cmake_path(APPEND __hip_cmake_dir "amd_comgr" OUTPUT_VARIABLE amd_comgr_DIR)
     set(ENV{amd_comgr_DIR} ${amd_comgr_DIR})
 
-    cmake_path(APPEND __hip_cmake_dir "hipblas" OUTPUT_VARIABLE hipblas_DIR)
-    set(ENV{hipblas_DIR} ${hipblas_DIR})
-
     cmake_path(APPEND __hip_cmake_dir "hip" OUTPUT_VARIABLE hip_DIR)
     set(ENV{hip_DIR} ${hipblas_DIR})
 
     cmake_path(APPEND __hip_cmake_dir "hsa-runtime64" OUTPUT_VARIABLE hsa-runtime64_DIR)
     set(ENV{hsa-runtime64_DIR} ${hsa-runtime64_DIR})
 
-    cmake_path(APPEND __hip_cmake_dir "hipsolver" OUTPUT_VARIABLE hipsolver_DIR)
-    set(ENV{hipsolver_DIR} ${hipsolver_DIR})
   endif()
 
   enable_language(HIP)
 
-  find_package(hipblas REQUIRED)
-  find_package(hipsolver REQUIRED)
+  include(Einsums_SetuphipBlas)
+  include(Einsums_SetuphipSolver)
+
   set(CURSES_NEED_NCURSES True)
   find_package(Curses)
 
