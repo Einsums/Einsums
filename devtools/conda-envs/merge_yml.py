@@ -1,4 +1,4 @@
-#  Copyright (c) The Einsums Developers. All rights reserved.
+#  Copyright (c) The Einsums Developers. All Rights Reserved.
 #  Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 from ruamel.yaml import YAML
@@ -51,6 +51,11 @@ if __name__ == "__main__":
         "--output", help="Name of the output yml file", default="conda.yml"
     )
 
+    parser.add_argument(
+        "--docs", help="Install packages needed to build documentation",
+        action="store_true"
+    )
+
     parser.add_argument("compiler", choices=["gcc", "intel", "windows"],
                         help="The compiler to use (choices: gcc, intel, Windows)")
 
@@ -75,5 +80,9 @@ if __name__ == "__main__":
         print(f"Defaulting to MKL for BLAS.")
         args.blas = "mkl"
 
-    merge_yaml_files(args.output, "snippets/common.yml", "snippets/docs.yml", f"snippets/compiler/{args.compiler}.yml",
-                     f"snippets/blas/{args.blas}.yml")
+    snippets = ["snippets/common.yml", f"snippets/compiler/{args.compiler}.yml",
+                f"snippets/blas/{args.blas}.yml"]
+    if args.docs:
+        snippets.append("snippets/docs.yml")
+
+    merge_yaml_files(args.output, *snippets)
