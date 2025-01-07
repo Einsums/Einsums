@@ -13,6 +13,7 @@
 #include <unordered_map>
 #include <variant>
 #include <cstdint>
+#include <Einsums/DesignPatterns/Singleton.hpp>
 
 namespace einsums {
 
@@ -344,17 +345,8 @@ class ConfigObserver {
 };
 
 class EINSUMS_EXPORT GlobalConfigMap {
-  private:
-    class PrivateType {
-      public:
-        explicit PrivateType() = default;
-    };
-
+    EINSUMS_SINGLETON_DEF(GlobalConfigMap)
   public:
-    GlobalConfigMap(PrivateType);
-
-    static std::shared_ptr<GlobalConfigMap> get_singleton();
-
     bool empty() const noexcept;
 
     size_t size() const noexcept;

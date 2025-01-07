@@ -4,21 +4,10 @@
 
 namespace einsums {
 
+EINSUMS_SINGLETON_IMPL(GlobalConfigMap)
+
 GlobalConfigMap::GlobalConfigMap()
     : str_map_{ConfigMap<std::string>::create()}, int_map_{ConfigMap<std::int64_t>::create()}, double_map_{ConfigMap<double>::create()} {
-}
-
-GlobalConfigMap::GlobalConfigMap(GlobalConfigMap::PrivateType)
-    : str_map_{ConfigMap<std::string>::create()}, int_map_{ConfigMap<std::int64_t>::create()}, double_map_{ConfigMap<double>::create()} {
-}
-
-std::shared_ptr<GlobalConfigMap> GlobalConfigMap::get_singleton() {
-    static std::shared_ptr<GlobalConfigMap> single_instance{nullptr};
-
-    if (!single_instance) {
-        single_instance = std::make_shared<GlobalConfigMap>(GlobalConfigMap::PrivateType());
-    }
-    return single_instance;
 }
 
 bool GlobalConfigMap::empty() const noexcept {

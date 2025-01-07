@@ -24,6 +24,6 @@ einsums_add_module(
   SOURCES ${ConfigSources}
   HEADERS ${ConfigHeaders}
   DEPENDENCIES
-  MODULE_DEPENDENCIES Einsums_Preprocessor
+  MODULE_DEPENDENCIES Einsums_Preprocessor Einsums_DesignPatterns
   CMAKE_SUBDIRS examples tests
 )
