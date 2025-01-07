@@ -24,13 +24,13 @@ bool gpu_enabled() {
 }
 
 void export_Core(py::module_ &mod) {
-    mod.def("gpu_enabled", gpu_enabled)
+    mod.def("gpu_enabled", gpu_enabled);
         // .def("initialize", einsums::initialize)
         // .def(
         // "finalize", [](std::string file_name) { einsums::finalize(file_name); }, py::arg("file_name"))
         // .def("finalize", [](bool timer_report) { einsums::finalize(timer_report); }, py::arg("timer_report") = false)
 
-        
+
 
     auto config_map = py::class_<einsums::GlobalConfigMap, std::shared_ptr<einsums::GlobalConfigMap>>(mod, "GlobalConfigMap");
 
