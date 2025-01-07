@@ -6,7 +6,7 @@
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-set(DesignPatternsHeaders Einsums/DesignPatterns/Singleton.hpp)
+set(DesignPatternsHeaders Einsums/DesignPatterns/Singleton.hpp Einsums/DesignPatterns/Lockable.hpp)
 
 set(DesignPatternsSources)
 

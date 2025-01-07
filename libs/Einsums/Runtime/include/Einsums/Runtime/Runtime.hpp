@@ -17,6 +17,8 @@
 #include <mutex>
 #include <string_view>
 
+#include "Einsums/DesignPatterns/Lockable.hpp"
+
 namespace einsums {
 
 /**
@@ -45,12 +47,21 @@ enum class RuntimeState : std::int8_t {
 };
 
 namespace detail {
-extern EINSUMS_EXPORT std::unique_ptr<std::list<StartupFunctionType>>  global_pre_startup_functions;
-extern EINSUMS_EXPORT std::unique_ptr<std::list<StartupFunctionType>>  global_startup_functions;
-extern EINSUMS_EXPORT std::unique_ptr<std::list<ShutdownFunctionType>> global_pre_shutdown_functions;
-extern EINSUMS_EXPORT std::unique_ptr<std::list<ShutdownFunctionType>> global_shutdown_functions;
 
-struct EINSUMS_EXPORT Runtime {
+class EINSUMS_EXPORT RuntimeVars : public design_pats::Lockable<std::recursive_mutex> {
+    EINSUMS_SINGLETON_DEF(RuntimeVars)
+
+  public:
+    std::list<StartupFunctionType>  global_pre_startup_functions;
+    std::list<StartupFunctionType>  global_startup_functions;
+    std::list<ShutdownFunctionType> global_pre_shutdown_functions;
+    std::list<ShutdownFunctionType> global_shutdown_functions;
+
+  private:
+    explicit RuntimeVars() = default;
+};
+
+struct EINSUMS_EXPORT Runtime : public design_pats::Lockable<std::recursive_mutex> {
     virtual ~Runtime() = default;
 
     /// The \a EinsumsMainFunctionType is the default function type used as
@@ -127,7 +138,6 @@ struct EINSUMS_EXPORT Runtime {
     std::list<ShutdownFunctionType> _shutdown_functions;
 
   protected:
-    mutable std::mutex   _mutex;
     RuntimeConfiguration _rtcfg;
 
     std::atomic<RuntimeState> _state{RuntimeState::Invalid};

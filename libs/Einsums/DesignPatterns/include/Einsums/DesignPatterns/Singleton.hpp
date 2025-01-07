@@ -19,7 +19,9 @@
   public:                                                                                                                                  \
     Type(PrivateConstructorStuff ignore) : Type() {                                                                                        \
     }                                                                                                                                      \
-    static Type &get_singleton();
+    static Type &get_singleton(); \
+    Type(const Type &) = delete; \
+    Type(Type &&) = delete;
 
 /**
  * @def EINSUMS_SINGLETON_IMPL
