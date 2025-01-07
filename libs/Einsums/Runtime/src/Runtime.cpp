@@ -211,11 +211,13 @@ void Runtime::add_startup_function(StartupFunctionType f) {
 
 void Runtime::call_startup_functions(bool pre_startup) {
     if (pre_startup) {
+        EINSUMS_LOG_TRACE("Calling pre-startup routines");
         state(RuntimeState::PreStartup);
         for (StartupFunctionType &f : _pre_startup_functions) {
             f();
         }
     } else {
+        EINSUMS_LOG_TRACE("Calling startup routines");
         state(RuntimeState::Startup);
         for (StartupFunctionType &f : _startup_functions) {
             f();
@@ -225,11 +227,13 @@ void Runtime::call_startup_functions(bool pre_startup) {
 
 void Runtime::call_shutdown_functions(bool pre_shutdown) {
     if (pre_shutdown) {
+        EINSUMS_LOG_TRACE("Calling pre-shutdown routines");
         state(RuntimeState::PreShutdown);
         for (ShutdownFunctionType &f : _pre_shutdown_functions) {
             f();
         }
     } else {
+        EINSUMS_LOG_TRACE("Calling shutdown routines");
         state(RuntimeState::Shutdown);
         for (ShutdownFunctionType &f : _shutdown_functions) {
             f();
@@ -239,10 +243,7 @@ void Runtime::call_shutdown_functions(bool pre_shutdown) {
 
 int Runtime::run(std::function<EinsumsMainFunctionType> const &func) {
     call_startup_functions(true);
-    EINSUMS_LOG_INFO("ran pre-startup functions");
-
     call_startup_functions(false);
-    EINSUMS_LOG_INFO("ran startup functions");
 
     // Set the state to running.
     state(RuntimeState::Running);
@@ -256,10 +257,7 @@ int Runtime::run(std::function<EinsumsMainFunctionType> const &func) {
 
 int Runtime::run() {
     call_startup_functions(true);
-    EINSUMS_LOG_INFO("ran pre-startup functions");
-
     call_startup_functions(false);
-    EINSUMS_LOG_INFO("ran startup functions");
 
     // Set the state to running.
     state(RuntimeState::Running);

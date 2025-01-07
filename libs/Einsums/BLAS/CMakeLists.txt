@@ -15,6 +15,7 @@ einsums_add_module(
   SOURCES ${BLASSources}
   HEADERS ${BLASHeaders}
   DEPENDENCIES
-        MODULE_DEPENDENCIES Einsums_Config Einsums_Concepts Einsums_BLASBase Einsums_BLASVendor Einsums_Runtime
+  MODULE_DEPENDENCIES Einsums_Config Einsums_Concepts Einsums_BLASBase Einsums_BLASVendor
+                      Einsums_Runtime
   CMAKE_SUBDIRS examples tests
 )

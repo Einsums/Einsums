@@ -5,6 +5,7 @@
 
 #include <{lib_name}/{module_name}/InitModule.hpp>
 #include <Einsums/Runtime.hpp>
+#include <Einsums/Logging.hpp>
 
 namespace einsums {{
     
@@ -25,10 +26,12 @@ init_{lib_name}_{module_name}::init_{lib_name}_{module_name}() {{
 init_{lib_name}_{module_name} detail::initialize_module_{lib_name}_{module_name};
 
 void initialize_{lib_name}_{module_name}() {{
+    EINSUMS_LOG_TRACE("initializing module");
     // TODO: Fill in.
 }}
 
 void finalize_{lib_name}_{module_name}() {{
+    EINSUMS_LOG_TRACE("finalizing module");
     // TODO: Fill in.
 }}
 
