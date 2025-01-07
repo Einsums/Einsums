@@ -5,7 +5,7 @@
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-set(IteratorHeaders Einsums/Iterator/Enumerate.hpp)
+set(IteratorHeaders Einsums/Iterator/CartesianProduct.hpp Einsums/Iterator/Enumerate.hpp)
 
 set(IteratorSources)
 
@@ -15,6 +15,6 @@ einsums_add_module(
   SOURCES ${IteratorSources}
   HEADERS ${IteratorHeaders}
   DEPENDENCIES
-  MODULE_DEPENDENCIES
+  MODULE_DEPENDENCIES Einsums_TypeSupport
   CMAKE_SUBDIRS examples tests
 )

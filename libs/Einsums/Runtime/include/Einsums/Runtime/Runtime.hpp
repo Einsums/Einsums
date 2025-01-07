@@ -1,5 +1,5 @@
 //--------------------------------------------------------------------------------------------
-// Copyright (c) The Einsums Developers. All rights reserved.
+// Copyright (c) The Einsums Developers. All Rights Reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //--------------------------------------------------------------------------------------------
 
@@ -45,10 +45,10 @@ enum class RuntimeState : std::int8_t {
 };
 
 namespace detail {
-extern std::unique_ptr<std::list<StartupFunctionType>>  global_pre_startup_functions;
-extern std::unique_ptr<std::list<StartupFunctionType>>  global_startup_functions;
-extern std::unique_ptr<std::list<ShutdownFunctionType>> global_pre_shutdown_functions;
-extern std::unique_ptr<std::list<ShutdownFunctionType>> global_shutdown_functions;
+extern EINSUMS_EXPORT std::unique_ptr<std::list<StartupFunctionType>>  global_pre_startup_functions;
+extern EINSUMS_EXPORT std::unique_ptr<std::list<StartupFunctionType>>  global_startup_functions;
+extern EINSUMS_EXPORT std::unique_ptr<std::list<ShutdownFunctionType>> global_pre_shutdown_functions;
+extern EINSUMS_EXPORT std::unique_ptr<std::list<ShutdownFunctionType>> global_shutdown_functions;
 
 struct EINSUMS_EXPORT Runtime {
     virtual ~Runtime() = default;

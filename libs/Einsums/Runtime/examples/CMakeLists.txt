@@ -30,7 +30,7 @@ foreach (example_program ${example_programs})
 
     einsums_add_example_target_dependencies("Modules.Einsums.Runtime" ${example_program})
 
-    if (PIKA_WITH_TESTS AND PIKA_WITH_TESTS_EXAMPLES)
+    if (EINSUMS_WITH_TESTS AND EINSUMS_WITH_TESTS_EXAMPLES)
         einsums_add_example_test(
                 "Modules.Einsums.Runtime" ${example_program} ${${example_program}_PARAMETERS}
         )

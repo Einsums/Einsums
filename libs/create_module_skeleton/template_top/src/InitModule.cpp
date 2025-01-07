@@ -1,6 +1,14 @@
+//--------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All Rights Reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//--------------------------------------------------------------------------------------------
+
 #include <{lib_name}/{module_name}/InitModule.hpp>
 #include <Einsums/Runtime.hpp>
+#include <Einsums/Logging.hpp>
 
+namespace einsums {{
+    
 /*
  * Set up the internal state of the module. If the module does not need to be set up, then this
  * file can be safely deleted. Make sure that if you do, you also remove its reference in the CMakeLists.txt,
@@ -8,19 +16,23 @@
  * aren't being used otherwise.
  */
 
-einsums::init_{lib_name}_{module_name}::init_{lib_name}_{module_name}() {{
+init_{lib_name}_{module_name}::init_{lib_name}_{module_name}() {{
     // Auto-generated code. Do not touch if you are unsure of what you are doing.
     // Instead, modify the other functions below.
     einsums::register_startup_function(einsums::initialize_{lib_name}_{module_name});
     einsums::register_shutdown_function(einsums::finalize_{lib_name}_{module_name});
 }}
 
-einsums::init_{lib_name}_{module_name} einsums::detail::initialize_module_{lib_name}_{module_name};
+init_{lib_name}_{module_name} detail::initialize_module_{lib_name}_{module_name};
 
-void einsums::initialize_{lib_name}_{module_name}() {{
+void initialize_{lib_name}_{module_name}() {{
+    EINSUMS_LOG_TRACE("initializing module");
     // TODO: Fill in.
 }}
 
-void einsums::finalize_{lib_name}_{module_name}() {{
+void finalize_{lib_name}_{module_name}() {{
+    EINSUMS_LOG_TRACE("finalizing module");
     // TODO: Fill in.
+}}
+
 }}

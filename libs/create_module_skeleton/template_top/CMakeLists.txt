@@ -15,8 +15,8 @@ einsums_add_module(
   {lib_symb} {module_name}
   SOURCES ${{{module_name}Sources}}
   HEADERS ${{{module_name}Headers}}
-  DEPENDENCIES {export_depends} Einsums_Runtime
-  MODULE_DEPENDENCIES
+  DEPENDENCIES {export_depends}
+  MODULE_DEPENDENCIES Einsums_Runtime Einsums_Logging
   CMAKE_SUBDIRS examples tests
   BASE_LIBNAME {lib_name}
 )
