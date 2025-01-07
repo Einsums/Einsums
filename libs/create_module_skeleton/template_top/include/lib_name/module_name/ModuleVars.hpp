@@ -1,12 +1,14 @@
 #pragma once
 
 #include <Einsums/DesignPatterns/Singleton.hpp>
+#include <Einsums/Config.hpp>
 
 namespace einsums {{
+namespace detail {{
 
 // TODO: This class can be freely changed. It is provided as a starting point for your convenience.
 
-class {lib_name}_{module_name}_vars {{
+class EINSUMS_EXPORT {lib_name}_{module_name}_vars {{
     EINSUMS_SINGLETON_DEF({lib_name}_{module_name}_vars)
 
 public:
@@ -17,5 +19,6 @@ private:
 
 }};
 
+}}
 
 }}
