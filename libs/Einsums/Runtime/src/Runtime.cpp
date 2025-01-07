@@ -1,5 +1,5 @@
 //--------------------------------------------------------------------------------------------
-// Copyright (c) The Einsums Developers. All Rights Reserved.
+// Copyright (c) The Einsums Developers. All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //--------------------------------------------------------------------------------------------
 
@@ -325,7 +325,7 @@ void register_shutdown_function(ShutdownFunctionType f) {
             EINSUMS_THROW_EXCEPTION(invalid_runtime_state, "Too late to register a shutdown function");
             return;
         }
-        runtime->add_shutdown_function(std::move(f));
+        runtime->add_pre_shutdown_function(std::move(f));
     } else {
         auto                                &runtime_vars = detail::RuntimeVars::get_singleton();
         std::lock_guard<detail::RuntimeVars> guard(runtime_vars);
