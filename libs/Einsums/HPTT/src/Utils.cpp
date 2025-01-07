@@ -11,12 +11,12 @@
 #include <Einsums/HPTT/Utils.hpp>
 
 #include <bit>
+#include <cstdint>
 #include <list>
 #include <stdexcept>
 #include <stdio.h>
 #include <stdlib.h>
 #include <vector>
-#include <cstdint>
 
 namespace hptt {
 
@@ -24,41 +24,69 @@ template <>
 void getPrimeFactors(std::uint8_t n, std::list<std::uint8_t> &primeFactors) {
     primeFactors.clear();
 
-    /*
-     * 1 is not a prime and zero is not prime.
-     */
-    if (n <= 1) {
+    std::uint64_t factor_list = detail::char_factors[n];
+
+    constexpr std::uint64_t mask_0 = 0xffUL, mask_1 = 0xff00UL, mask_2 = 0xff0000UL, mask_3 = 0xff000000UL, mask_4 = 0xff00000000UL,
+                            mask_5 = 0xff0000000000UL, mask_6 = 0xff000000000000UL, mask_7 = 0xff00000000000000UL;
+
+    // Extract the factors.
+    std::uint8_t factor = factor_list & mask_0;
+
+    if(!factor) {
         return;
     }
 
-    std::uint8_t quotient = n;
+    primeFactors.push_back(factor);
 
-    for (size_t index = 0; index < CHAR_PRIMES; index++) {
-        std::uint8_t prime = detail::char_primes[index];
-        while (quotient % prime == 0) {
-            quotient /= prime;
-            primeFactors.push_back(prime);
-        }
+    factor = (factor_list & mask_1) >> 8;
 
-        /*
-         * To test if a number is prime, we only need to
-         * check up to its square root. If there is some prime p that is greater than
-         * the square root of n, then p * p > n. The only way for n to be divisible by p
-         * is if there is some other prime p' less than p such that p * p' = n. Since p' < p,
-         * we have already done this check, so there are no more primes to test. We can use the
-         * same logic when doing the factorization. At this point, we have removed all primes less than
-         * p, so we know quotient is not divisible by those. Thus, if p is greater than the square root
-         * of the quotient, we know there are no more primes to check, and either the quotient is 1 or
-         * the quotient is prime.
-         */
-        if (prime * prime > quotient) {
-            break;
-        }
+    if(!factor) {
+        return;
     }
 
-    if (quotient != 1) {
-        primeFactors.push_back(quotient);
+    primeFactors.push_back(factor);
+
+    factor = (factor_list & mask_2) >> 16;
+
+    if(!factor) {
+        return;
     }
+
+    primeFactors.push_back(factor);
+
+    factor = (factor_list & mask_3) >> 24;
+
+    if(!factor) {
+        return;
+    }
+
+    primeFactors.push_back(factor);
+
+    factor = (factor_list & mask_4) >> 32;
+
+    if(!factor) {
+        return;
+    }
+
+    primeFactors.push_back(factor);
+
+    factor = (factor_list & mask_5) >> 40;
+
+    if(!factor) {
+        return;
+    }
+
+    primeFactors.push_back(factor);
+
+    factor = (factor_list & mask_6) >> 48;
+
+    if(!factor) {
+        return;
+    }
+
+    primeFactors.push_back(factor);
+
+    // There will never be a seventh factor.
 }
 
 template <>
@@ -265,8 +293,6 @@ void getPrimeFactors(std::int32_t n, std::list<std::int32_t> &primeFactors) {
         primeFactors.push_back(quotient);
     }
 }
-
-
 
 int findPos(int value, int const *array, int n) {
     for (int i = 0; i < n; ++i)
