@@ -45,10 +45,10 @@ enum class RuntimeState : std::int8_t {
 };
 
 namespace detail {
-extern std::list<StartupFunctionType>  global_pre_startup_functions;
-extern std::list<StartupFunctionType>  global_startup_functions;
-extern std::list<ShutdownFunctionType> global_pre_shutdown_functions;
-extern std::list<ShutdownFunctionType> global_shutdown_functions;
+extern std::unique_ptr<std::list<StartupFunctionType>>  global_pre_startup_functions;
+extern std::unique_ptr<std::list<StartupFunctionType>>  global_startup_functions;
+extern std::unique_ptr<std::list<ShutdownFunctionType>> global_pre_shutdown_functions;
+extern std::unique_ptr<std::list<ShutdownFunctionType>> global_shutdown_functions;
 
 struct EINSUMS_EXPORT Runtime {
     virtual ~Runtime() = default;

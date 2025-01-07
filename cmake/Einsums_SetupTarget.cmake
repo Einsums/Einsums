@@ -141,6 +141,7 @@ function(einsums_setup_target target)
   endif()
 
   # set_target_properties(${target} PROPERTIES BUILD_WITH_INSTALL_RPATH TRUE )
+  set_target_properties(${target} PROPERTIES BUILD_RPATH "${CMAKE_BUILD_RPATH}" INSTALL_RPATH "${CMAKE_INSTALL_RPATH};${CMAKE_INSTALL_LIBDIR}")
 
   if(target_INSTALL AND NOT target_EXCLUDE_FROM_ALL)
     install(TARGETS ${target} ${install_export} ${target_INSTALL_FLAGS})

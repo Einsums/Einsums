@@ -20,5 +20,5 @@ function(einsums_extend_with_python target)
     pybind11_strip(${target})
   endif ()
 
-  set_target_properties(${target} PROPERTIES PREFIX "" DEBUG_POSTFIX "")
+  set_target_properties(${target} PROPERTIES PREFIX "" DEBUG_POSTFIX "" INSTALL_RPATH "${CMAKE_INSTALL_RPATH};\$ORIGIN/../")
 endfunction()

@@ -13,6 +13,7 @@
 #include <mutex>
 #include <omp.h>
 #include <vector>
+#include "Einsums/Runtime/ShutdownFunction.hpp"
 
 namespace einsums {
 namespace gpu {
@@ -30,8 +31,8 @@ std::recursive_mutex           wait_mutex;
 einsums::init_Einsums_GPUStreams::init_Einsums_GPUStreams() {
     // Auto-generated code. Do not touch if you are unsure of what you are doing.
     // Instead, modify the other functions below.
-    einsums::detail::global_startup_functions.push_back(einsums::initialize_Einsums_GPUStreams);
-    einsums::detail::global_shutdown_functions.push_back(einsums::initialize_Einsums_GPUStreams);
+    einsums::register_startup_function(einsums::initialize_Einsums_GPUStreams);
+    einsums::register_shutdown_function(einsums::finalize_Einsums_GPUStreams);
 }
 
 einsums::init_Einsums_GPUStreams einsums::detail::initialize_module_Einsums_GPUStreams;

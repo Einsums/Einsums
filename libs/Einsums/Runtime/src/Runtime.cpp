@@ -20,10 +20,10 @@
 namespace einsums {
 namespace detail {
 
-std::list<StartupFunctionType>  global_pre_startup_functions;
-std::list<StartupFunctionType>  global_startup_functions;
-std::list<ShutdownFunctionType> global_pre_shutdown_functions;
-std::list<ShutdownFunctionType> global_shutdown_functions;
+std::unique_ptr<std::list<StartupFunctionType>>  global_pre_startup_functions;
+std::unique_ptr<std::list<StartupFunctionType>>  global_startup_functions;
+std::unique_ptr<std::list<ShutdownFunctionType>> global_pre_shutdown_functions;
+std::unique_ptr<std::list<ShutdownFunctionType>> global_shutdown_functions;
 
 #if defined(EINSUMS_WINDOWS)
 
@@ -139,19 +139,19 @@ void Runtime::init() {
         // TODO: This would be a good place to create and initialize a thread pool
 
         // Copy over all startup functions registered so far.
-        for (StartupFunctionType &f : global_pre_startup_functions) {
+        for (StartupFunctionType &f : *global_pre_startup_functions) {
             add_pre_startup_function(f);
         }
 
-        for (StartupFunctionType &f : global_startup_functions) {
+        for (StartupFunctionType &f : *global_startup_functions) {
             add_startup_function(f);
         }
 
-        for (ShutdownFunctionType &f : global_pre_shutdown_functions) {
+        for (ShutdownFunctionType &f : *global_pre_shutdown_functions) {
             add_pre_shutdown_function(f);
         }
 
-        for (ShutdownFunctionType &f : global_shutdown_functions) {
+        for (ShutdownFunctionType &f : *global_shutdown_functions) {
             add_shutdown_function(f);
         }
     } catch (std::exception const &e) {
@@ -284,7 +284,10 @@ void register_pre_startup_function(StartupFunctionType f) {
         }
         runtime->add_pre_startup_function(std::move(f));
     } else {
-        detail::global_pre_startup_functions.emplace_back(std::move(f));
+        if(!detail::global_pre_startup_functions) {
+            detail::global_pre_startup_functions = std::make_unique<std::list<StartupFunctionType>>();
+        }
+        detail::global_pre_startup_functions->emplace_back(std::move(f));
     }
 }
 
@@ -297,7 +300,10 @@ void register_startup_function(StartupFunctionType f) {
         }
         runtime->add_startup_function(std::move(f));
     } else {
-        detail::global_startup_functions.emplace_back(std::move(f));
+        if(!detail::global_startup_functions) {
+            detail::global_startup_functions = std::make_unique<std::list<StartupFunctionType>>();
+        }
+        detail::global_startup_functions->emplace_back(std::move(f));
     }
 }
 
@@ -310,7 +316,10 @@ void register_pre_shutdown_function(ShutdownFunctionType f) {
         }
         runtime->add_pre_shutdown_function(std::move(f));
     } else {
-        detail::global_pre_shutdown_functions.emplace_back(std::move(f));
+        if(!detail::global_pre_shutdown_functions) {
+            detail::global_pre_shutdown_functions = std::make_unique<std::list<ShutdownFunctionType>>();
+        }
+        detail::global_pre_shutdown_functions->emplace_back(std::move(f));
     }
 }
 
@@ -321,9 +330,12 @@ void register_shutdown_function(ShutdownFunctionType f) {
             EINSUMS_THROW_EXCEPTION(invalid_runtime_state, "Too late to register a shutdown function");
             return;
         }
-        runtime->add_pre_shutdown_function(std::move(f));
+        runtime->add_shutdown_function(std::move(f));
     } else {
-        detail::global_shutdown_functions.emplace_back(std::move(f));
+        if(!detail::global_shutdown_functions) {
+            detail::global_shutdown_functions = std::make_unique<std::list<ShutdownFunctionType>>();
+        }
+        detail::global_shutdown_functions->emplace_back(std::move(f));
     }
 }
 

@@ -11,8 +11,8 @@
 einsums::init_{lib_name}_{module_name}::init_{lib_name}_{module_name}() {{
     // Auto-generated code. Do not touch if you are unsure of what you are doing.
     // Instead, modify the other functions below.
-    einsums::detail::global_startup_functions.push_back(einsums::initialize_{lib_name}_{module_name});
-    einsums::detail::global_shutdown_functions.push_back(einsums::initialize_{lib_name}_{module_name});
+    einsums::register_startup_function(einsums::initialize_{lib_name}_{module_name});
+    einsums::register_shutdown_function(einsums::finalize_{lib_name}_{module_name});
 }}
 
 einsums::init_{lib_name}_{module_name} einsums::detail::initialize_module_{lib_name}_{module_name};
