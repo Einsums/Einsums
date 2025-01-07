@@ -111,8 +111,6 @@ int run(std::function<int()> const &f, int argc, char const *const *argv, InitPa
     // Disable HDF5 diagnostic reporting
     H5Eset_auto(0, nullptr, nullptr);
 
-    einsums::random_engine = std::default_random_engine(std::chrono::system_clock::now().time_since_epoch().count());
-
     // TODO: Build and configure a runtime instance
     // Using cmdline, call a function to parse and translate all known command line options into a GlobalConfigMap
 
@@ -148,11 +146,11 @@ int run_impl(std::function<int()> f, int argc, char const *const *argv, InitPara
 
 } // namespace detail
 
-int initialize(std::function<int()> f, int argc, char **argv, InitParams const &params) {
+int start(std::function<int()> f, int argc, char **argv, InitParams const &params) {
     return detail::run_impl(std::move(f), argc, argv, params, true);
 }
 
-int initialize(std::function<int(int, char **)> f, int argc, char **argv, InitParams const &params) {
+int start(std::function<int(int, char **)> f, int argc, char **argv, InitParams const &params) {
     // So doing this the user function "f" will receive einsums specific command line parameters too
     // If they are not expecting that they may produce an error.
     //
@@ -163,26 +161,26 @@ int initialize(std::function<int(int, char **)> f, int argc, char **argv, InitPa
     return detail::run_impl(std::move(main_f), argc, argv, params, true);
 }
 
-int initialize(std::nullptr_t, int argc, char **argv, InitParams const &params) {
+int start(std::nullptr_t, int argc, char **argv, InitParams const &params) {
     std::function<int()> main_f;
     return detail::run_impl(std::move(main_f), argc, argv, params, true);
 }
 
-void start(std::function<int()> f, int argc, char const *const *argv, InitParams const &params) {
+void initialize(std::function<int()> f, int argc, char const *const *argv, InitParams const &params) {
     std::function<int()> main_f = std::bind(f);
     if (detail::run_impl(std::move(main_f), argc, argv, params, false) != 0) {
         EINSUMS_UNREACHABLE;
     }
 }
 
-void start(std::nullptr_t, int argc, char const *const *argv, InitParams const &params) {
+void initialize(std::nullptr_t, int argc, char const *const *argv, InitParams const &params) {
     std::function<int()> main_f;
     if (detail::run_impl(std::move(main_f), argc, argv, params, false) != 0) {
         EINSUMS_UNREACHABLE;
     }
 }
 
-void start(int argc, char const *const *argv, InitParams const &params) {
+void initialize(int argc, char const *const *argv, InitParams const &params) {
     std::function<int()> main_f;
     if (detail::run_impl(std::move(main_f), argc, argv, params, false) != 0) {
         EINSUMS_UNREACHABLE;

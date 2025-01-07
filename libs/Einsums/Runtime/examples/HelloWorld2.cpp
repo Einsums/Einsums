@@ -7,7 +7,7 @@
 #include <Einsums/Runtime.hpp>
 
 int main(int argc, char **argv) {
-    einsums::start(argc, argv);
+    einsums::initialize(argc, argv);
 
     einsums::println("Hello world!");
 

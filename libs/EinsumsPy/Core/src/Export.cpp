@@ -10,7 +10,10 @@
 #include <Einsums/Runtime.hpp>
 
 #include <EinsumsPy/Core/Export.hpp>
+#include <exception>
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+#include <stdexcept>
 
 namespace py = pybind11;
 using namespace einsums;
@@ -23,14 +26,51 @@ bool gpu_enabled() {
 #endif
 }
 
+void initialize_wrap(std::vector<std::string> &argv) {
+    // Be sure you know what you are doing!
+    // Low-level memory management like this is a beast.
+    // Any exceptions could potentially cause memory leaks.
+    char const **pass_argv = (char const **)std::malloc(argv.size() * sizeof(char *));
+    
+    if (pass_argv == nullptr) {
+        throw std::bad_alloc();
+    }
+
+    
+    for (ptrdiff_t i = 0; i < argv.size(); i++) {
+        try {
+            pass_argv[i] = argv.at(i).c_str();
+        } catch (std::out_of_range &e) {
+            std::free(pass_argv);
+            std::perror("Could not process command line arguments!");
+            std::exit(-1);
+        }
+    }
+    
+    int argc = argv.size();
+
+    try {
+        einsums::initialize(argc, pass_argv);
+        std::free(pass_argv);
+    } catch (...) {
+        std::perror("Something went wrong! Freeing argv.");
+        std::free(pass_argv);
+
+        auto ex = std::current_exception();
+
+        try {
+            std::rethrow_exception(ex);
+        } catch (...) {
+            std::perror("Bad exception!");
+            std::exit(-1);
+        }
+    }
+}
+
 void export_Core(py::module_ &mod) {
-    mod.def("gpu_enabled", gpu_enabled);
-        // .def("initialize", einsums::initialize)
-        // .def(
-        // "finalize", [](std::string file_name) { einsums::finalize(file_name); }, py::arg("file_name"))
-        // .def("finalize", [](bool timer_report) { einsums::finalize(timer_report); }, py::arg("timer_report") = false)
-
-
+    mod.def("gpu_enabled", gpu_enabled)
+        .def("initialize", [](std::vector<std::string> &argv) { initialize_wrap(argv); })
+        .def("finalize", einsums::finalize);
 
     auto config_map = py::class_<einsums::GlobalConfigMap, std::shared_ptr<einsums::GlobalConfigMap>>(mod, "GlobalConfigMap");
 

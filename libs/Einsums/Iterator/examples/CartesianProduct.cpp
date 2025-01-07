@@ -36,5 +36,5 @@ int einsums_main() {
 }
 
 int main(int argc, char **argv) {
-    return einsums::initialize(einsums_main, argc, argv);
+    return einsums::start(einsums_main, argc, argv);
 }

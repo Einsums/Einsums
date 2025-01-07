@@ -18,6 +18,7 @@ try:
     from . import core
 except (ModuleNotFoundError, ImportError):
     try:
+        print("Importing core in a different way.")
         import core
     except (ModuleNotFoundError, ImportError) as e:
         raise RuntimeError(
@@ -26,8 +27,24 @@ except (ModuleNotFoundError, ImportError):
 
 from . import utils  # pylint: disable=wrong-import-position
 
-core.initialize()
+def initialize() :
+    """
+    Filter out Python arguments and pass on einsums arguments. Einsums arguments are prefixed with
+    '--einsums'.
+    """
+    pass_args = [sys.argv[0]]
 
-finalize_arg = False # pylint: disable=invalid-name
+    if len(sys.argv) > 1 :
+        einsums_arg = False
+        for arg in sys.argv[1:] :
+            if einsums_arg :
+                pass_args.append(arg)
+                einsums_arg = False
+            elif arg == "--einsums" :
+                einsums_arg = True
 
-atexit.register(core.finalize, finalize_arg)
+    core.initialize(pass_args)
+
+initialize()
+
+atexit.register(core.finalize)

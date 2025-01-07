@@ -81,12 +81,12 @@ void init_logging(RuntimeConfiguration &config) {
 
     EINSUMS_LOG_INFO("logging submodule has been initialized");
     EINSUMS_LOG_INFO("log level: {} (0=TRACE,1=DEBUG,2=INFO,3=WARN,4=ERROR,5=CRITICAL)", config.einsums.log.level);
-    EINSUMS_LOG_DEBUG("test debug");
-    EINSUMS_LOG_TRACE("test trace");
-    EINSUMS_LOG_INFO("test info");
-    EINSUMS_LOG_WARN("test warn");
-    EINSUMS_LOG_ERROR("test error");
-    EINSUMS_LOG_CRITICAL("test critical");
+    // EINSUMS_LOG_DEBUG("test debug");
+    // EINSUMS_LOG_TRACE("test trace");
+    // EINSUMS_LOG_INFO("test info");
+    // EINSUMS_LOG_WARN("test warn");
+    // EINSUMS_LOG_ERROR("test error");
+    // EINSUMS_LOG_CRITICAL("test critical");
 }
 
 } // namespace einsums::detail

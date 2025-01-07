@@ -35,5 +35,6 @@ void finalize() {
     profile::finalize();
 
     EINSUMS_LOG_INFO("einsums shutdown completed");
+
 }
 } // namespace einsums
