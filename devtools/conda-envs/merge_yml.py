@@ -1,7 +1,8 @@
-#  Copyright (c) The Einsums Developers. All Rights Reserved.
+#  Copyright (c) The Einsums Developers. All rights reserved.
 #  Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 from ruamel.yaml import YAML
+import os
 import platform
 import argparse
 
@@ -10,13 +11,15 @@ packages_to_filter = [
     'cpptrace' if platform.system() == 'Darwin' and platform.machine() == 'arm64' else None,
 ]
 
+dir_path = os.path.dirname(os.path.realpath(__file__))
+
 
 def merge_yaml_files(output_file, *input_files):
     yaml = YAML()
     merged = {"name": None, "channels": [], "dependencies": []}
 
     for file in input_files:
-        with open(file, 'r') as f:
+        with open(os.path.join(dir_path, file), 'r') as f:
             data = yaml.load(f)
             if "name" in data and not merged["name"]:
                 merged["name"] = data["name"]

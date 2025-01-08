@@ -75,3 +75,6 @@ docs/build
 # JetBrains project files
 .idea
 *.env
+
+# File created by merge_yaml.py script
+conda.yml
