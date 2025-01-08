@@ -4,6 +4,7 @@
 #----------------------------------------------------------------------------------------------
 
 include(Einsums_ExportTargets)
+include(Einsums_WriteModuleHeader)
 
 function(einsums_add_module libname modulename)
   # Retrieve arguments
@@ -58,7 +59,9 @@ function(einsums_add_module libname modulename)
   # generate configuration header for this module
   set(config_header "${CMAKE_CURRENT_BINARY_DIR}/include/${basename}/${modulename}/Defines.hpp")
   einsums_write_config_defines_file(NAMESPACE ${modulename_upper} FILENAME ${config_header})
-  set(generated_headers ${generated_headers} ${config_header})
+  set(module_header "${CMAKE_CURRENT_BINARY_DIR}/include/${basename}/${modulename}.hpp")
+  einsums_write_module_header(NAMESPACE ${modulename_upper} FILENAME ${module_header})
+  set(generated_headers ${generated_headers} ${config_header} ${module_header})
 
   if(${modulename}_CONFIG_FILES)
     # Version file
