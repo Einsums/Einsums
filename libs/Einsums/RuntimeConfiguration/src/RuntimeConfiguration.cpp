@@ -87,20 +87,16 @@ void RuntimeConfiguration::pre_initialize() {
     };
 
     // For now set the values to their default values.
-    system.pid                       = getpid();
-    system.executable_prefix         = detail::get_executable_prefix();
-    einsums.master_yaml_path         = detail::get_executable_prefix();
-    einsums.install_signal_handlers  = true;
-    einsums.attach_debugger          = true;
-    einsums.diagnostics_on_terminate = true;
-    einsums.log.level                = 3;
-    einsums.log.destination          = "cerr";
+    system.pid               = getpid();
+    system.executable_prefix = detail::get_executable_prefix();
+    einsums.master_yaml_path = detail::get_executable_prefix();
+    einsums.log.level        = 3;
+    einsums.log.destination  = "cerr";
     // einsums.log.format               = "[%Y-%m-%d %H:%M:%S.%F] [%n] [%^%l%$] [host:%j] [pid:%P] [tid:%t] [%s:%#/%!] %v";
     einsums.log.format = "[%Y-%m-%d %H:%M:%S.%F] [%n] [%^%-8l%$] [%s:%#/%!] %v";
 
-    einsums.profiler.generate_report = true;
-    einsums.profiler.filename        = "profile.txt";
-    einsums.profiler.append          = true;
+    einsums.profiler.filename = "profile.txt";
+    einsums.profiler.append   = true;
 }
 
 RuntimeConfiguration::RuntimeConfiguration(int argc, char const *const argv[],
@@ -134,18 +130,26 @@ void RuntimeConfiguration::parse_command_line(std::function<void(argparse::Argum
     // There should be a mechanism that allows the user to change the program name.
     argument_parser.reset(new argparse::ArgumentParser("einsums"));
 
-    argument_parser->add_argument("--einsums:install-signal-handlers")
-        .default_value(einsums.install_signal_handlers)
-        .help("install signal handlers")
-        .store_into(einsums.install_signal_handlers);
-    argument_parser->add_argument("--einsums:attach-debugger")
-        .default_value(einsums.attach_debugger)
-        .help("provides mechanism to attach debugger on detected errors")
-        .store_into(einsums.attach_debugger);
-    argument_parser->add_argument("--einsums:diagnostics-on-terminate")
-        .default_value(einsums.diagnostics_on_terminate)
-        .help("print additional diagnostic information on termination")
-        .store_into(einsums.diagnostics_on_terminate);
+    einsums.install_signal_handlers = true;
+    argument_parser->add_argument("--einsums:no-install-signal-handlers")
+        .default_value(false)
+        .implicit_value(true)
+        .help("do not install signal handlers")
+        .action([&](auto const &) { einsums.install_signal_handlers = false; });
+
+    einsums.attach_debugger = true;
+    argument_parser->add_argument("--einsums:no-attach-debugger")
+        .default_value(false)
+        .implicit_value(true)
+        .help("do not provide mechanism to attach debugger on detected errors")
+        .action([&](auto const &) { einsums.attach_debugger = false; });
+
+    einsums.diagnostics_on_terminate = true;
+    argument_parser->add_argument("--einsums:no-diagnostics-on-terminate")
+        .default_value(false)
+        .implicit_value(true)
+        .help("do not print additional diagnostic information on termination")
+        .action([&](auto const &) { einsums.diagnostics_on_terminate = false; });
 
     argument_parser->add_argument("--einsums:log-level")
         .default_value(einsums.log.level)
@@ -159,10 +163,13 @@ void RuntimeConfiguration::parse_command_line(std::function<void(argparse::Argum
         .store_into(einsums.log.destination);
     argument_parser->add_argument("--einsums:log-format").default_value(einsums.log.format).store_into(einsums.log.format);
 
-    argument_parser->add_argument("--einsums:profiler-generate_report")
-        .default_value(einsums.profiler.generate_report)
+    einsums.profiler.generate_report = true;
+    argument_parser->add_argument("--einsums:no-profiler-report")
+        .default_value(false)
+        .implicit_value(true)
         .help("generate profiling report")
-        .store_into(einsums.profiler.generate_report);
+        .action([&](auto const &) { einsums.profiler.generate_report = false; });
+
     argument_parser->add_argument("--einsums:profiler-filename")
         .default_value(einsums.profiler.filename)
         .help("filename of the profiling report")
