@@ -52,6 +52,12 @@ function(einsums_add_module libname modulename)
 
   set(all_headers ${${modulename}_HEADERS})
 
+  set(module_headers "")
+
+  foreach(header IN LISTS all_headers)
+    set(module_headers "${module_headers}#include <${header}>\n")
+  endforeach()
+
   # Write full path for the sources files
   list(TRANSFORM ${modulename}_SOURCES PREPEND ${SOURCE_ROOT}/ OUTPUT_VARIABLE sources)
   list(TRANSFORM ${modulename}_HEADERS PREPEND ${HEADER_ROOT}/ OUTPUT_VARIABLE headers)
