@@ -41,28 +41,7 @@ function(einsums_add_test category name)
     set(run_serial TRUE)
   endif()
 
-  # If --einsums:threads=cores or all
-  if(${name}_THREADS LESS_EQUAL 0)
-    set(run_serial TRUE)
-    if(${name}_THREADS EQUAL -1)
-      set(${name}_THREADS "all")
-    elseif(${name}_THREADS EQUAL -2)
-      set(${name}_THREADS "cores")
-    endif()
-  endif()
-
-  set(args "--einsums:threads=${${name}_THREADS}")
-  if(EINSUMS_WITH_TESTS_DEBUG_LOG)
-    set(args ${args} "--einsums:debug-einsums-log=${EINSUMS_WITH_TESTS_DEBUG_LOG_DESTINATION}")
-  endif()
-
-  if(EINSUMS_WITH_PARALLEL_TESTS_BIND_NONE
-     AND NOT run_serial
-          AND NOT "${name}_MPIWRAPPER"
-  )
-    set(args ${args} "--einsums:bind=none")
-  endif()
-
+  set(args "--einsums:no-install-signal-handlers")
   set(args "${${name}_ARGS}" "${${name}_UNPARSED_ARGUMENTS}" ${args})
 
   # TODO: Perhaps one day we will allow command line arguments to tests.
@@ -74,14 +53,6 @@ function(einsums_add_test category name)
 
   if(${name}_WRAPPER)
     list(PREPEND cmd "${${name}_WRAPPER}" ${_preflags_list_})
-  endif()
-
-  if(${name}_MPIWRAPPER)
-    set(_preflags_list_ ${MPIEXEC_PREFLAGS})
-    separate_arguments(_preflags_list_)
-    list(PREPEND cmd "${MPIEXEC_EXECUTABLE}" "${MPIEXEC_NUMPROC_FLAG}" "${${name}_RANKS}"
-            ${_preflags_list_}
-    )
   endif()
 
   if(EINSUMS_WITH_TESTS_VALGRIND)
