@@ -87,21 +87,18 @@ int run(std::function<int()> const &f, int argc, char const *const *argv, InitPa
     EINSUMS_LOG_INFO("Running common initialization routines...");
     // TODO: Add a check to ensure the runtime hasn't already been initialized
 
-    // TODO: Translate argv to unordered_map.
     // Command line arguments for Einsums will be prefixed with --einsums:
     // For example, "--einsums:verbose=1" will be translated to verbose=1
     std::unordered_map<std::string, std::string> cmdline;
     RuntimeConfiguration                         config(argc, argv);
 
-    if (config.einsums.install_signal_handlers) {
-        set_signal_handlers();
-    }
-
     // Before this line logging does not work.
     init_logging(config);
 
-    // This might be a good place to initialize MPI, HIP, CUDA, etc.
-    // error::initialize();
+    if (config.einsums.install_signal_handlers) {
+        EINSUMS_LOG_TRACE("Installing signal handlers...");
+        set_signal_handlers();
+    }
 
     // This is the only initialization routine that needs to be explicitly called here.
     // This is because the runtime environment depends on the profiler. If the profiler
@@ -110,9 +107,6 @@ int run(std::function<int()> const &f, int argc, char const *const *argv, InitPa
 
     // Disable HDF5 diagnostic reporting
     H5Eset_auto(0, nullptr, nullptr);
-
-    // TODO: Build and configure a runtime instance
-    // Using cmdline, call a function to parse and translate all known command line options into a GlobalConfigMap
 
     // Build and configure this runtime instance.
     std::unique_ptr<Runtime> rt = std::make_unique<Runtime>(std::move(config), true);
