@@ -130,7 +130,7 @@ void push(std::string name) {
             return;
         }
 
-        if (current_timer->children.count(name) == 0) {
+        if (current_timer->children.contains(name) == false) {
             current_timer->children[name]         = std::make_shared<TimerDetail>();
             current_timer->children[name]->name   = name;
             current_timer->children[name]->parent = current_timer;
