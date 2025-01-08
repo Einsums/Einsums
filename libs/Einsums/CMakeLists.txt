@@ -26,7 +26,6 @@ set(_Einsums_modules
   FFT
   GPUStreams
   HPTT
-  ITTNotify
   Iterator
   LinearAlgebra
   Logging
