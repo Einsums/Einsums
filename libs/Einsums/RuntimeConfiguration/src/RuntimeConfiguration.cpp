@@ -105,7 +105,22 @@ void RuntimeConfiguration::pre_initialize() {
 
 RuntimeConfiguration::RuntimeConfiguration(int argc, char const *const argv[],
                                            std::function<void(argparse::ArgumentParser &)> const &user_command_line)
-    : original{.argc = argc, .argv = argv} {
+    : original(argc) {
+
+    // Make a copy. If a new argv was derived from the argv on entry, then it may not
+    // be available at every point. Also, making it a vector makes it easier to use.
+    for (int i = 0; i < argc; i++) {
+        original[i] = std::string(argv[i]);
+    }
+
+    pre_initialize();
+
+    parse_command_line(user_command_line);
+}
+
+RuntimeConfiguration::RuntimeConfiguration(std::vector<std::string> const                        &argv,
+                                           std::function<void(argparse::ArgumentParser &)> const &user_command_line)
+    : original(argv) {
     pre_initialize();
 
     parse_command_line(user_command_line);
@@ -164,7 +179,7 @@ void RuntimeConfiguration::parse_command_line(std::function<void(argparse::Argum
     }
 
     try {
-        argument_parser->parse_args(original.argc, original.argv);
+        argument_parser->parse_args(original);
     } catch (std::exception const &err) {
         std::cerr << err.what() << std::endl;
         std::cerr << argument_parser;

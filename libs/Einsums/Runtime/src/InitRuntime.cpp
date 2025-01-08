@@ -83,7 +83,7 @@ int run(std::function<int()> const &f, Runtime &rt, InitParams const &params) {
     return rt.run();
 }
 
-int run(std::function<int()> const &f, int argc, char const *const *argv, InitParams const &params, bool blocking) {
+int run(std::function<int()> const &f, std::vector<std::string> const &argv, InitParams const &params, bool blocking) {
     EINSUMS_LOG_INFO("Running common initialization routines...");
     // TODO: Add a check to ensure the runtime hasn't already been initialized
 
@@ -91,7 +91,7 @@ int run(std::function<int()> const &f, int argc, char const *const *argv, InitPa
     // Command line arguments for Einsums will be prefixed with --einsums:
     // For example, "--einsums:verbose=1" will be translated to verbose=1
     std::unordered_map<std::string, std::string> cmdline;
-    RuntimeConfiguration                         config(argc, argv);
+    RuntimeConfiguration                         config(argv);
 
     if (config.einsums.install_signal_handlers) {
         set_signal_handlers();
@@ -129,10 +129,10 @@ int run(std::function<int()> const &f, int argc, char const *const *argv, InitPa
     return 0;
 }
 
-int run_impl(std::function<int()> f, int argc, char const *const *argv, InitParams const &params, bool blocking) {
-    if (argc == 0 || argv == nullptr) {
-        argc = dummy_argc;
-        argv = dummy_argv;
+int run_impl(std::function<int()> f, std::vector<std::string> const &argv, InitParams const &params, bool blocking) {
+    std::vector<std::string> const *pass_argv = &argv;
+    if (argv.size() == 0) {
+        pass_argv = &dummy_argv;
     }
 
     // register default handlers
@@ -141,50 +141,159 @@ int run_impl(std::function<int()> f, int argc, char const *const *argv, InitPara
 #if defined(EINSUMS_HAVE_CXX11_STD_QUICK_EXIT)
     [[maybe_unused]] auto quick_exit_result = std::at_quick_exit(on_exit);
 #endif
-    return run(f, argc, argv, params, blocking);
+    return run(f, *pass_argv, params, blocking);
 }
 
 } // namespace detail
 
-int start(std::function<int()> f, int argc, char **argv, InitParams const &params) {
-    return detail::run_impl(std::move(f), argc, argv, params, true);
+int start(std::function<int()> f, std::vector<std::string> const &argv, InitParams const &params) {
+    return detail::run_impl(std::move(f), argv, params, true);
+}
+
+int start(std::nullptr_t, std::vector<std::string> const &argv, InitParams const &params) {
+    std::function<int()> main_f;
+    return detail::run_impl(std::move(main_f), argv, params, true);
+}
+
+int start(std::function<int(int, char **)> f, std::vector<std::string> &argv, InitParams const &params) {
+    std::vector<char *> copy_argv(argv.size()); // We do it this way so that the memory gets freed on return.
+
+    for (ptrdiff_t i = 0; i < argv.size(); i++) {
+        /*BADCODEBADCODEBADCODEBADCODEBADCODEBADCODEBADCODEBADCODEBADCODEBADCODEBADCODEBADCODEBADCODE
+         *BADCODE                                                                             BADCODE
+         *BADCODE                              BAD CODE ALERT                                 BADCODE
+         *BADCODE                                                                             BADCODE
+         *BADCODE   ATTENTION: THIS IS BAD CODE. IT WILL NEED TO BE REWRITTEN IN THE FUTURE.  BADCODE
+         *BADCODE         MEMORY SAFETY IS NOT ONLY NOT GUARANTEED BUT OUTRIGHT FLOUTED.      BADCODE
+         *BADCODE         WHEN REWRITING, PLEASE ENSURE THAT THE MEMORY IS BOTH SAFE ON       BADCODE
+         *BADCODE         ENTRY TO THE CALL OF THE MAIN FUNCTION AND PROPERLY DESTROYED       BADCODE
+         *BADCODE         ON EXIT. THIS IS A TEMPORARY FIX ONLY.                              BADCODE
+         *BADCODE                                                                             BADCODE
+         *BADCODEBADCODEBADCODEBADCODEBADCODEBADCODEBADCODEBADCODEBADCODEBADCODEBADCODEBADCODEBADCODE
+         */
+        // TODO: Fix bad code.
+        copy_argv[i] = const_cast<char *>(argv[i].c_str());
+    }
+
+    std::function<int()> main_f = std::bind(f, (int)copy_argv.size(), copy_argv.data());
+
+    return detail::run_impl(main_f, argv, params, true);
+}
+
+int start(std::function<int(int, char const *const *)> f, std::vector<std::string> const &argv, InitParams const &params) {
+    std::vector<char const *> copy_argv(argv.size()); // We do it this way so that the memory gets freed on return.
+
+    for (ptrdiff_t i = 0; i < argv.size(); i++) {
+        copy_argv[i] = argv[i].c_str();
+    }
+
+    std::function<int()> main_f = std::bind(f, (int)copy_argv.size(), copy_argv.data());
+
+    return detail::run_impl(main_f, argv, params, true);
+}
+
+int start(std::function<int(std::vector<std::string> &)> f, std::vector<std::string> &argv, InitParams const &params) {
+    std::function<int()> main_f = std::bind(f, argv);
+
+    return detail::run_impl(main_f, argv, params, true);
+}
+
+int start(std::function<int(std::vector<std::string> const &)> f, std::vector<std::string> const &argv, InitParams const &params) {
+    std::function<int()> main_f = std::bind(f, argv);
+
+    return detail::run_impl(main_f, argv, params, true);
 }
 
 int start(std::function<int(int, char **)> f, int argc, char **argv, InitParams const &params) {
-    // So doing this the user function "f" will receive einsums specific command line parameters too
-    // If they are not expecting that they may produce an error.
-    //
-    // We should bind through a helper function that will take the constructed RuntimeConfiguration's
-    // post-processed command-line options (einsums options filtered out) and pass that to the
-    // user function.
+    std::vector<std::string> pass_argv(argv, argv + argc);
+
     std::function<int()> main_f = std::bind(f, argc, argv);
-    return detail::run_impl(std::move(main_f), argc, argv, params, true);
+
+    return detail::run_impl(main_f, pass_argv, params, true);
 }
 
-int start(std::nullptr_t, int argc, char **argv, InitParams const &params) {
+int start(std::function<int(int, char const *const *)> f, int argc, char const *const *argv, InitParams const &params) {
+    std::vector<std::string> pass_argv(argv, argv + argc);
+
+    std::function<int()> main_f = std::bind(f, argc, argv);
+
+    return detail::run_impl(main_f, pass_argv, params, true);
+}
+
+void initialize(std::function<int(int, char **)> f, std::vector<std::string> &argv, InitParams const &params) {
+    std::vector<char *> copy_argv(argv.size()); // We do it this way so that the memory gets freed on return.
+
+    for (ptrdiff_t i = 0; i < argv.size(); i++) {
+        /*BADCODEBADCODEBADCODEBADCODEBADCODEBADCODEBADCODEBADCODEBADCODEBADCODEBADCODEBADCODEBADCODE
+         *BADCODE                                                                             BADCODE
+         *BADCODE                              BAD CODE ALERT                                 BADCODE
+         *BADCODE                                                                             BADCODE
+         *BADCODE   ATTENTION: THIS IS BAD CODE. IT WILL NEED TO BE REWRITTEN IN THE FUTURE.  BADCODE
+         *BADCODE         MEMORY SAFETY IS NOT ONLY NOT GUARANTEED BUT OUTRIGHT FLOUTED.      BADCODE
+         *BADCODE         WHEN REWRITING, PLEASE ENSURE THAT THE MEMORY IS BOTH SAFE ON       BADCODE
+         *BADCODE         ENTRY TO THE CALL OF THE MAIN FUNCTION AND PROPERLY DESTROYED       BADCODE
+         *BADCODE         ON EXIT. THIS IS A TEMPORARY FIX ONLY.                              BADCODE
+         *BADCODE                                                                             BADCODE
+         *BADCODEBADCODEBADCODEBADCODEBADCODEBADCODEBADCODEBADCODEBADCODEBADCODEBADCODEBADCODEBADCODE
+         */
+        // TODO: Fix bad code.
+        copy_argv[i] = const_cast<char *>(argv[i].c_str());
+    }
+
+    std::function<int()> main_f = std::bind(f, (int)copy_argv.size(), copy_argv.data());
+
+    if (detail::run_impl(std::move(main_f), argv, params, false) != 0) {
+        EINSUMS_UNREACHABLE;
+    }
+}
+
+void initialize(std::function<int(int, char const *const *)> f, std::vector<std::string> const &argv, InitParams const &params) {
+    std::vector<char const *> copy_argv(argv.size()); // We do it this way so that the memory gets freed on return.
+
+    for (ptrdiff_t i = 0; i < argv.size(); i++) {
+        copy_argv[i] = argv[i].c_str();
+    }
+
+    std::function<int()> main_f = std::bind(f, (int)copy_argv.size(), copy_argv.data());
+
+    if (detail::run_impl(std::move(main_f), argv, params, false) != 0) {
+        EINSUMS_UNREACHABLE;
+    }
+}
+
+void initialize(std::function<int()> f, std::vector<std::string> const &argv, InitParams const &params) {
+    if (detail::run_impl(std::move(f), argv, params, false) != 0) {
+        EINSUMS_UNREACHABLE;
+    }
+}
+
+void initialize(std::nullptr_t, std::vector<std::string> const &argv, InitParams const &params) {
     std::function<int()> main_f;
-    return detail::run_impl(std::move(main_f), argc, argv, params, true);
+    if (detail::run_impl(std::move(main_f), argv, params, false) != 0) {
+        EINSUMS_UNREACHABLE;
+    }
 }
 
-void initialize(std::function<int()> f, int argc, char const *const *argv, InitParams const &params) {
-    std::function<int()> main_f = std::bind(f);
-    if (detail::run_impl(std::move(main_f), argc, argv, params, false) != 0) {
+void initialize(std::function<int(int, char **)> f, int argc, char **argv, InitParams const &params) {
+    std::vector<std::string> pass_argv(argv, argv + argc);
+    std::function<int()>     main_f = std::bind(f, argc, argv);
+    if (detail::run_impl(std::move(main_f), pass_argv, params, false) != 0) {
+        EINSUMS_UNREACHABLE;
+    }
+}
+
+void initialize(std::function<int(int, char const *const *)> f, int argc, char const *const *argv, InitParams const &params) {
+    std::vector<std::string> pass_argv(argv, argv + argc);
+    std::function<int()>     main_f = std::bind(f, argc, argv);
+    if (detail::run_impl(std::move(main_f), pass_argv, params, false) != 0) {
         EINSUMS_UNREACHABLE;
     }
 }
 
 void initialize(std::nullptr_t, int argc, char const *const *argv, InitParams const &params) {
     std::function<int()> main_f;
-    if (detail::run_impl(std::move(main_f), argc, argv, params, false) != 0) {
-        EINSUMS_UNREACHABLE;
-    }
-}
 
-void initialize(int argc, char const *const *argv, InitParams const &params) {
-    std::function<int()> main_f;
-    if (detail::run_impl(std::move(main_f), argc, argv, params, false) != 0) {
-        EINSUMS_UNREACHABLE;
-    }
+    initialize(main_f, argc, argv, params);
 }
 
 } // namespace einsums

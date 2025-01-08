@@ -136,10 +136,7 @@ struct EINSUMS_EXPORT RuntimeConfiguration {
     detail::System  system;
     detail::Einsums einsums;
 
-    struct {
-        int                argc;
-        char const *const *argv;
-    } original;
+    std::vector<std::string> original;
 
     std::unique_ptr<argparse::ArgumentParser> argument_parser;
 
@@ -151,6 +148,16 @@ struct EINSUMS_EXPORT RuntimeConfiguration {
      * @param user_command_line callback function that can be used to register additional command-line options
      */
     RuntimeConfiguration(int argc, char const *const *argv, std::function<void(argparse::ArgumentParser &)> const &user_command_line = {});
+
+    /**
+     * Constructor of the runtime configuration object of einsums. This is used when argv has been packaged into a vector.
+     *
+     * @param argv The argv that has been packaged up.
+     * @param user_command_line callback function that can be used to register additional command-line options
+     */
+    explicit RuntimeConfiguration(std::vector<std::string> const                        &argv,
+                                  std::function<void(argparse::ArgumentParser &)> const &user_command_line = {});
+
     RuntimeConfiguration() = delete;
 
   private:
