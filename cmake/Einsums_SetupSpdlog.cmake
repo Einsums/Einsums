@@ -11,6 +11,7 @@ fetchcontent_declare(
         spdlog
         GIT_REPOSITORY https://github.com/gabime/spdlog.git
         GIT_TAG v1.x
+        FIND_PACKAGE_ARGS 1
 )
 
 fetchcontent_makeavailable(spdlog)

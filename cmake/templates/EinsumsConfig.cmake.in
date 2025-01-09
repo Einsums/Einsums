@@ -59,12 +59,57 @@ set(EINSUMS_CXX_COMPILER_VERSION
 )
 
 einsums_find_package(fmt 11 REQUIRED)
+einsums_find_package(cpptrace 0.7 REQUIRED)
+einsums_find_package(argparse 3 REQUIRED)
+einsums_find_package(spdlog 1 REQUIRED)
+einsums_find_package(ZLIB REQUIRED)
+einsums_find_package(TargetHDF5 REQUIRED)
+einsums_find_package(OpenMP MODULE COMPONENTS CXX)
+
+if (NOT TARGET tgt::lapack)
+  add_library(tgt::lapack INTERFACE IMPORTED)
+  if (@EINSUMS_LINALG_VENDOR@ STREQUAL MKL)  # EINSUMS_LINALG_VENDOR
+    set(MKL_INTERFACE @EINSUMS_LINALG_INT_INTERFACE@)  # EINSUMS_LINALG_INT_INTERFACE
+    find_package(MKL CONFIG ${extraArgs})
+    set_property(TARGET tgt::lapack PROPERTY INTERFACE_LINK_LIBRARIES MKL::MKL)
+  else ()
+    set(BLA_VENDOR @EINSUMS_LINALG_VENDOR@)  # EINSUMS_LINALG_VENDOR
+    if (@EINSUMS_LINALG_INT_INTERFACE@ STREQUAL lp64)  # EINSUMS_LINALG_INT_INTERFACE
+      set(BLA_SIZEOF_INTEGER 4)
+    else ()
+      set(BLA_SIZEOF_INTEGER 8)
+    endif ()
+    find_package(BLAS MODULE ${extraArgs})
+    find_package(LAPACK MODULE ${extraArgs})
+    set_property(TARGET tgt::lapack PROPERTY INTERFACE_LINK_LIBRARIES LAPACK::LAPACK BLAS::BLAS)
+  endif ()
+  set(EINSUMS_@EINSUMS_LINALG_INT_INTERFACE@_FOUND 1)
+endif ()
+
+if (@EINSUMS_FFT_LIBRARY@ STREQUAL mkl)  # EINSUMS_FFT_LIBRARY
+  if (@EINSUMS_LINALG_VENDOR@ STREQUAL MKL)  # EINSUMS_LINALG_VENDOR
+    add_library(FFT::FFT ALIAS tgt::lapack)
+  endif ()
+elseif (@EINSUMS_FFT_LIBRARY@ STREQUAL fftw3)  # EINSUMS_FFT_LIBRARY
+  find_package(FFTW MODULE COMPONENTS FLOAT_LIB DOUBLE_LIB ${extraArgs})
+  add_library(FFT::FFT INTERFACE IMPORTED)
+  target_link_libraries(FFT::FFT INTERFACE FFTW::Float FFTW::Double)
+endif ()
+
+# If using hip...then dependencies need to be found and listed here.
 
 if (NOT EINSUMS_CMAKE_LOGLEVEL)
   set(EINSUMS_CMAKE_LOGLEVEL "WARN")
 endif ()
 
 einsums_check_compiler_compatibility()
+
+# Since we offer Einsums::Einsums, Einsums::EinsumsPy, and Einsums::EinsumsExperimental
+# we need to let the user ask for COMPONENTS and then ensure we have everything needed
+# for the specified COMPONENT and set Einsums_FOUND to TRUE or FALSE
+if (TARGET Einsums::Einsums)
+  set(Einsums_FOUND TRUE)
+endif ()
 
 if (NOT DEFINED ${CMAKE_FIND_PACKAGE_NAME}_FOUND)
   set(${CMAKE_FIND_PACKAGE_NAME}_FOUND TRUE)

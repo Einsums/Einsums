@@ -151,3 +151,17 @@ jobs:
           file: ${{github.workspace}}/build/coverage.info
           flags: cpp
           token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Test (find_package) - consume installation
+        shell: bash -l {0}
+        run: |
+          cmake -S . \
+            -B build \
+            -G Ninja \
+            --log-level verbose \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_PREFIX_PATH="${CONDA_PREFIX};${CONDA_PREFIX}/Library;${{ github.workspace }}/installed"
+          cmake --build build
+          ./build/HelloWorld
+        with:
+          working-directory: "${{github.workspace}}/src/testing/consume"
