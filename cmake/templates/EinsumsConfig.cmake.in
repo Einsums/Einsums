@@ -98,6 +98,18 @@ elseif (@EINSUMS_FFT_LIBRARY@ STREQUAL fftw3)  # EINSUMS_FFT_LIBRARY
   target_link_libraries(FFT::FFT INTERFACE FFTW::Float FFTW::Double)
 endif ()
 
+# Look for Python dependencies ... I'm not entirely sure this is needed
+# since the Python module is just consumed and not compiled again.
+if (@EINSUMS_BUILD_PYTHON@)
+  find_package(
+          Python3
+          COMPONENTS Interpreter Development
+          REQUIRED
+  )
+  find_package(pybind11 REQUIRED)
+endif ()
+
+
 # If using hip...then dependencies need to be found and listed here.
 
 if (NOT EINSUMS_CMAKE_LOGLEVEL)
