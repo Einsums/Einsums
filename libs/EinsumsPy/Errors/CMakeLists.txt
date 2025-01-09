@@ -5,7 +5,7 @@
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-set(ErrorsHeaders EinsumsPy/Errors/Export.hpp)
+set(ErrorsHeaders)
 
 set(ErrorsSources Export.cpp)
 

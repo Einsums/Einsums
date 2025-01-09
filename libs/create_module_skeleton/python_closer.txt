@@ -1,14 +1,14 @@
-set({lib_name}_HEADERS)
-set({lib_name}_EXPORTS)
+set(EinsumsPy_EXPORT_FUNCTIONS)
+set(EinsumsPy_EXPORTS)
 
-foreach(module ${{_{lib_name}_modules}})
-    if(TARGET ${{EINSUMS_PYTHON_LIB_NAME}}_${{module}})
-        set({lib_name}_HEADERS "${{{lib_name}_HEADERS}}#include <{lib_name}/${{module}}/Export.hpp>\n")
-        set({lib_name}_EXPORTS "${{{lib_name}_EXPORTS}}export_${{module}}(mod);\n")
-    endif()
+foreach(module ${_EinsumsPy_modules})
+  if(TARGET ${EINSUMS_PYTHON_LIB_NAME}_${module})
+    set(EinsumsPy_EXPORT_FUNCTIONS
+        "${EinsumsPy_EXPORT_FUNCTIONS}void export_${module}(py::module_ &mod);\n"
+    )
+    set(EinsumsPy_EXPORTS "${EinsumsPy_EXPORTS}    export_${module}(mod);\n")
+  endif()
 endforeach()
 
 configure_file(ExportAll.cpp.in ExportAll.cpp @ONLY)
-target_sources(${{EINSUMS_PYTHON_LIB_NAME}} PRIVATE ${{CMAKE_CURRENT_BINARY_DIR}}/ExportAll.cpp)
-
-
+target_sources(${EINSUMS_PYTHON_LIB_NAME} PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/ExportAll.cpp)

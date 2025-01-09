@@ -1,16 +1,21 @@
-#include <EinsumsPy/TestUtils/Export.hpp>
+//--------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//--------------------------------------------------------------------------------------------
+
+#include <Einsums/Config.hpp>
+
 #include <EinsumsPy/TestUtils/BadBuffer.hpp>
 #include <pybind11/pybind11.h>
 
 namespace py = pybind11;
 using namespace einsums::python::testing;
 
-
 void export_TestUtils(py::module_ &mod) {
     pybind11::class_<BadBuffer>(mod, "BadBuffer", pybind11::buffer_protocol())
         .def(pybind11::init())
-        .def(pybind11::init<const BadBuffer &>())
-        .def(pybind11::init<const pybind11::buffer &>())
+        .def(pybind11::init<BadBuffer const &>())
+        .def(pybind11::init<pybind11::buffer const &>())
         .def("get_ptr", [](BadBuffer &self) { return self.get_ptr(); })
         .def("clear_ptr", &BadBuffer::clear_ptr)
         .def("get_ndim", &BadBuffer::get_ndim)

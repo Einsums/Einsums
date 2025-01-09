@@ -23,6 +23,4 @@ foreach(module ${{_{lib_name}_modules}})
   add_subdirectory(${{module}})
 endforeach()
 
-
-
 {closer}

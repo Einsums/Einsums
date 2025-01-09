@@ -1,12 +1,12 @@
+//--------------------------------------------------------------------------------------------
+// Copyright (c) The Einsums Developers. All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+//--------------------------------------------------------------------------------------------
+
 #include <{lib_name}/{module_name}/ModuleVars.hpp>
 
-namespace einsums {{
-
-namespace detail {{
+namespace einsums::detail {{
 
 EINSUMS_SINGLETON_IMPL({lib_name}_{module_name}_vars)
-
-
-}}
 
 }}

@@ -5,7 +5,7 @@
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-set(CoreHeaders EinsumsPy/Core/Export.hpp)
+set(CoreHeaders)
 
 set(CoreSources Export.cpp)
 
@@ -16,7 +16,8 @@ einsums_add_module(
   HEADERS ${CoreHeaders}
   DEPENDENCIES Einsums
   MODULE_DEPENDENCIES
-        CMAKE_SUBDIRS examples tests BASE_LIBNAME EinsumsPy
+  CMAKE_SUBDIRS examples tests
+  BASE_LIBNAME EinsumsPy
 )
 
 include(Einsums_ExtendWithPython)

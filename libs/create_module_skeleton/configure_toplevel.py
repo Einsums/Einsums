@@ -1,3 +1,6 @@
+#  Copyright (c) The Einsums Developers. All rights reserved.
+#  Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+
 import os
 import sys
 
@@ -9,7 +12,7 @@ def configure_python(output_base, lib_name, **kwargs):
 
     export = ""
 
-    if not os.path.exists(os.path.join(output_base, lib_name, "ExportAll.cpp.in")) :
+    if not os.path.exists(os.path.join(output_base, lib_name, "ExportAll.cpp.in")):
         with open(os.path.join(base, "ExportAll.cpp.in"), "r") as fp:
             export = fp.read()
 
