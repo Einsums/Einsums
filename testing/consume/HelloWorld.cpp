@@ -3,10 +3,17 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 //--------------------------------------------------------------------------------------------
 
-#include <{lib_name}/{module_name}/ModuleVars.hpp>
+#include <Einsums/Print.hpp>
+#include <Einsums/Runtime.hpp>
 
-namespace einsums::detail {{
+int einsums_main() {
+    einsums::println("Hello world!");
 
-EINSUMS_SINGLETON_IMPL({lib_name}_{module_name}_vars)
+    einsums::finalize();
 
-}}
+    return EXIT_SUCCESS;
+}
+
+int main(int argc, char **argv) {
+    return einsums::start(einsums_main, argc, argv);
+}

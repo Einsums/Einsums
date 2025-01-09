@@ -1,4 +1,5 @@
 /*build*/
+testing/consume/build
 
 # Prerequisites
 *.d
@@ -38,7 +39,6 @@ CMakeLists.txt.user
 CMakeCache.txt
 CMakeFiles
 CMakeScripts
-Testing
 Makefile
 cmake_install.cmake
 install_manifest.txt

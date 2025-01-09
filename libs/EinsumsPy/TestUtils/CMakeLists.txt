@@ -5,7 +5,7 @@
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-set(TestUtilsHeaders EinsumsPy/TestUtils/Export.hpp EinsumsPy/TestUtils/BadBuffer.hpp)
+set(TestUtilsHeaders EinsumsPy/TestUtils/BadBuffer.hpp)
 
 set(TestUtilsSources Export.cpp BadBuffer.cpp)
 
@@ -16,7 +16,8 @@ einsums_add_module(
   HEADERS ${TestUtilsHeaders}
   DEPENDENCIES Einsums
   MODULE_DEPENDENCIES
-        CMAKE_SUBDIRS examples tests BASE_LIBNAME EinsumsPy
+  CMAKE_SUBDIRS examples tests
+  BASE_LIBNAME EinsumsPy
 )
 
 include(Einsums_ExtendWithPython)

@@ -5,9 +5,7 @@
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-set(TensorAlgebraHeaders EinsumsPy/TensorAlgebra/Export.hpp
-        EinsumsPy/TensorAlgebra/PyTensorAlgebra.hpp
-)
+set(TensorAlgebraHeaders EinsumsPy/TensorAlgebra/PyTensorAlgebra.hpp)
 
 set(TensorAlgebraSources Export.cpp PyTensorAlgebra.cpp)
 
@@ -23,8 +21,9 @@ einsums_add_module(
   SOURCES ${TensorAlgebraSources}
   HEADERS ${TensorAlgebraHeaders}
   DEPENDENCIES Einsums ${TensorAlgebraGPUDeps}
-        MODULE_DEPENDENCIES ${EINSUMS_PYTHON_LIB_NAME}_Tensor ${TensorAlgebraGPUModules}
-        CMAKE_SUBDIRS examples tests BASE_LIBNAME EinsumsPy
+  MODULE_DEPENDENCIES ${EINSUMS_PYTHON_LIB_NAME}_Tensor ${TensorAlgebraGPUModules}
+  CMAKE_SUBDIRS examples tests
+  BASE_LIBNAME EinsumsPy
 )
 
 include(Einsums_ExtendWithPython)

@@ -18,7 +18,7 @@ def parse_template(filename, output_file, **kwargs):
 def build_layer(input_dir, output_dir, **kwargs):
     for item in os.listdir(input_dir):
         # Skip exports if we don't need them.
-        if item in ["Export.cpp", "Export.hpp"] and not kwargs["python"]:
+        if item in ["Export.cpp"] and not kwargs["python"]:
             continue
         item_out = kwargs.get(item, item)
 
@@ -60,7 +60,6 @@ def build_structure(output_base, lib_name, module_name, python=False, **kwargs):
         lib_name=lib_name,
         docs_head="".join("=" for i in lib_name + ' ' + module_name),
         readme_head="".join("=" for i in module_name),
-        export_header=f"{lib_name}/{module_name}/Export.hpp" if python else "",
         export_source=f"Export.cpp" if python else "",
         export_depends="" if lib_name == "Einsums" else "Einsums",
         python_footer=f"include(Einsums_ExtendWithPython)\neinsums_extend_with_python(${{EINSUMS_PYTHON_LIB_NAME}}_{module_name} ${{PYTHON_LIB_TYPE}})" if python else "",

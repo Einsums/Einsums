@@ -6,7 +6,7 @@
 {gpu_head}
 list(APPEND CMAKE_MODULE_PATH "${{CMAKE_CURRENT_SOURCE_DIR}}/cmake")
 
-set({module_name}Headers {export_header} {lib_name}/{module_name}/InitModule.hpp {lib_name}/{module_name}/ModuleVars.hpp)
+set({module_name}Headers {lib_name}/{module_name}/InitModule.hpp {lib_name}/{module_name}/ModuleVars.hpp)
 
 set({module_name}Sources {export_source} {lib_name}/{module_name}/InitModule.cpp {lib_name}/{module_name}/ModuleVars.cpp)
 

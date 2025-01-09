@@ -9,7 +9,6 @@
 #include <Einsums/Errors/Error.hpp>
 #include <Einsums/Runtime.hpp>
 
-#include <EinsumsPy/Core/Export.hpp>
 #include <exception>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
