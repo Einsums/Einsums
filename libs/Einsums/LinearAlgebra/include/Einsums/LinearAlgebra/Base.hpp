@@ -11,6 +11,7 @@
 #include <Einsums/Concepts/Tensor.hpp>
 #include <Einsums/Tensor/Tensor.hpp>
 #include <Einsums/TensorBase/IndexUtilities.hpp>
+#include <Einsums/TensorUtilities/CreateTensorLike.hpp>
 
 namespace einsums::linear_algebra::detail {
 

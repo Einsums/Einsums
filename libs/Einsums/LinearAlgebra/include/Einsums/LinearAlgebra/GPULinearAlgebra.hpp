@@ -9,6 +9,7 @@
 #include <Einsums/Tensor/DeviceTensor.hpp>
 #include <Einsums/TensorBase/IndexUtilities.hpp>
 #include <Einsums/TypeSupport/GPUCast.hpp>
+#include <Einsums/TensorUtilities/CreateTensorLike.hpp>
 
 #include <hip/driver_types.h>
 #include <hip/hip_common.h>

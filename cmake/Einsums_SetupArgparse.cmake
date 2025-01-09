@@ -10,3 +10,7 @@ fetchcontent_declare(argparse
         FIND_PACKAGE_ARGS 3
 )
 fetchcontent_makeavailable(argparse)
+
+find_package(argparse)
+
+target_link_libraries(einsums_base_libraries INTERFACE argparse::argparse)

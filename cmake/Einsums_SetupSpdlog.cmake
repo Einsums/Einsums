@@ -15,4 +15,6 @@ fetchcontent_declare(
 
 fetchcontent_makeavailable(spdlog)
 
-#target_link_libraries(einsums_base_libraries INTERFACE spdlog::spdlog)
+find_package(spdlog)
+
+target_link_libraries(einsums_base_libraries INTERFACE spdlog::spdlog)
