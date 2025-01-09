@@ -13,9 +13,4 @@ fetchcontent_declare(
         GIT_TAG v1.x
         FIND_PACKAGE_ARGS 1
 )
-
 fetchcontent_makeavailable(spdlog)
-
-find_package(spdlog)
-
-target_link_libraries(einsums_base_libraries INTERFACE spdlog::spdlog)

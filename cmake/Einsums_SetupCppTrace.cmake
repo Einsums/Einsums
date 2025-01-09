@@ -11,7 +11,3 @@ FetchContent_Declare(
         FIND_PACKAGE_ARGS 0.7
 )
 FetchContent_MakeAvailable(cpptrace)
-
-find_package(cpptrace)
-
-target_link_libraries(einsums_base_libraries INTERFACE cpptrace::cpptrace)
