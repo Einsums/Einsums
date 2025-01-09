@@ -56,7 +56,7 @@ struct FunctionTensor : public virtual Tensor<T, Rank>, virtual FunctionTensorNo
                 } else {
                     message = fmt::format("{}({}) ", message, inds->at(i));
                 }
-                throw EINSUMSEXCEPTION(fmt::format("{}is too far less than zero or is greater than {}", message, _dims[i]));
+                EINSUMS_THROW_EXCEPTION(std::out_of_range, "{}is too far less than zero or is greater than {}", message, _dims[i]);
             }
         }
     }
@@ -273,9 +273,9 @@ struct FunctionTensorView : public virtual tensor_base::FunctionTensor<T, Rank>,
                 out.at(curr_rank) += this->_dims[i];
             }
             if (out.at(curr_rank) >= this->_dims[i] || out.at(curr_rank) < 0) {
-                throw EINSUMSEXCEPTION(
-                    fmt::format("Function tensor view index out of range! Index of rank {} is {}, which is < 0 or >= {}.", i, inds.at(i),
-                                this->_dims[i]));
+                EINSUMS_THROW_EXCEPTION(std::out_of_range,
+                                        "Function tensor view index out of range! Index of rank {} is {}, which is < 0 or >= {}.", i,
+                                        inds.at(i), this->_dims[i]);
             }
 
             out.at(curr_rank) += _offsets[i];

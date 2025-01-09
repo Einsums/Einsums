@@ -64,10 +64,14 @@ struct IsTypedTensor : std::is_base_of<tensor_base::TypedTensor<T>, D> {};
  * @brief Tests whether the given type is a tensor with the given rank.
  *
  * @tparam D The tensor type to check.
- * @tparam Rank The rank the tensor should have.
+ * @tparam Rank The rank the tensor should have. If it is -1, then it just checks to see if the tensor has a
+ * compile time rank.
  */
-template <typename D, size_t Rank>
+template <typename D, ptrdiff_t Rank>
 struct IsRankTensor : public std::is_base_of<tensor_base::RankTensor<Rank>, D> {};
+
+template <typename D>
+struct IsRankTensor<D, -1> : public std::is_base_of<tensor_base::RankTensorNoRank, D> {};
 
 /**
  * @struct IsScalar
@@ -298,9 +302,9 @@ constexpr inline bool IsTypedTensorV = detail::IsTypedTensor<D, T>::value;
  * @brief Tests whether the given type is a tensor with the given rank.
  *
  * @tparam D The tensor type to check.
- * @tparam Rank The rank the tensor should have.
+ * @tparam Rank The rank the tensor should have. If the rank is -1, it only checks that the tensor has a rank that is known at compile time.
  */
-template <typename D, size_t Rank>
+template <typename D, ptrdiff_t Rank = -1>
 constexpr inline bool IsRankTensorV = detail::IsRankTensor<D, Rank>::value;
 
 /**
@@ -845,6 +849,7 @@ concept TypedTensorConcept = IsTypedTensorV<D, T>;
  */
 template <typename D, ptrdiff_t Rank = -1>
 concept RankTensorConcept = IsRankTensorV<D, Rank>;
+
 /**
  * @concept LockableTensorConcept
  *
@@ -1464,7 +1469,7 @@ using ValueTypeT = typename ValueType<D>::type;
  *
  * @brief Gets the rank of a tensor/scalar.
  *
- * Normally, you can get the rank using an expression such as AType::rank. However,
+ * Normally, you can get the rank using an expression such as AType::Rank. However,
  * if you want to support both zero-rank tensors and scalars, then this constant can help with brevity.
  */
 template <typename D>

@@ -10,13 +10,18 @@
 #include <Einsums/BLAS.hpp>
 #include <Einsums/Concepts/Tensor.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
+#include <Einsums/LinearAlgebra/Base.hpp>
+#include <Einsums/LinearAlgebra/Unoptimized.hpp>
 #include <Einsums/Print.hpp>
+
 #include "Einsums/Errors/Error.hpp"
 
 #ifdef EINSUMS_COMPUTE_CODE
-#include <hip/hip_common.h>
-#include <hip/hip_runtime.h>
-#include <hip/hip_runtime_api.h>
+#    include <Einsums/LinearAlgebra/GPULinearAlgebra.hpp>
+
+#    include <hip/hip_common.h>
+#    include <hip/hip_runtime.h>
+#    include <hip/hip_runtime_api.h>
 #endif
 
 namespace einsums::linear_algebra::detail {

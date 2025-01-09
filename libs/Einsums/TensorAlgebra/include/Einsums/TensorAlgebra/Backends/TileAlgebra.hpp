@@ -17,19 +17,19 @@ namespace einsums::tensor_algebra::detail {
 
 template <bool OnlyUseGenericAlgorithm, TiledTensorConcept AType, TiledTensorConcept BType, TiledTensorConcept CType, typename... CIndices,
           typename... AIndices, typename... BIndices>
-    requires(CType::rank != 0)
-auto einsum_special_dispatch(typename CType::data_type const C_prefactor, std::tuple<CIndices...> const &C_indices, CType *C,
-                             BiggestTypeT<typename AType::data_type, typename BType::data_type> const AB_prefactor,
+    requires(CType::Rank != 0)
+auto einsum_special_dispatch(typename CType::ValueType const C_prefactor, std::tuple<CIndices...> const &C_indices, CType *C,
+                             BiggestTypeT<typename AType::ValueType, typename BType::ValueType> const AB_prefactor,
                              std::tuple<AIndices...> const &A_indices, AType const &A, std::tuple<BIndices...> const &B_indices,
                              BType const &B) -> void {
 
-    constexpr size_t ARank = AType::rank;
-    constexpr size_t BRank = BType::rank;
-    constexpr size_t CRank = CType::rank;
+    constexpr size_t ARank = AType::Rank;
+    constexpr size_t BRank = BType::Rank;
+    constexpr size_t CRank = CType::Rank;
 
-    using ADataType = typename AType::data_type;
-    using BDataType = typename BType::data_type;
-    using CDataType = typename CType::data_type;
+    using ADataType = typename AType::ValueType;
+    using BDataType = typename BType::ValueType;
+    using CDataType = typename CType::ValueType;
 
     constexpr auto unique_indices = UniqueT<std::tuple<CIndices..., AIndices..., BIndices...>>();
     auto           unique_grid    = get_grid_ranges_for_many(*C, C_indices, A, A_indices, B, B_indices, unique_indices);
@@ -95,16 +95,16 @@ auto einsum_special_dispatch(typename CType::data_type const C_prefactor, std::t
 template <bool OnlyUseGenericAlgorithm, TiledTensorConcept AType, TiledTensorConcept BType, ScalarConcept CType, typename... CIndices,
           typename... AIndices, typename... BIndices>
 auto einsum_special_dispatch(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const &C_indices, CType *C,
-                             BiggestTypeT<typename AType::data_type, typename BType::data_type> const AB_prefactor,
+                             BiggestTypeT<typename AType::ValueType, typename BType::ValueType> const AB_prefactor,
                              std::tuple<AIndices...> const &A_indices, AType const &A, std::tuple<BIndices...> const &B_indices,
                              BType const &B) -> void {
 
-    constexpr size_t ARank = AType::rank;
-    constexpr size_t BRank = BType::rank;
+    constexpr size_t ARank = AType::Rank;
+    constexpr size_t BRank = BType::Rank;
     constexpr size_t CRank = 0;
 
-    using ADataType = typename AType::data_type;
-    using BDataType = typename BType::data_type;
+    using ADataType = typename AType::ValueType;
+    using BDataType = typename BType::ValueType;
     using CDataType = ValueTypeT<CType>;
 
     constexpr auto unique_indices = UniqueT<std::tuple<CIndices..., AIndices..., BIndices...>>();

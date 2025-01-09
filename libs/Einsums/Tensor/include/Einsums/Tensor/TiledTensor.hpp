@@ -1211,7 +1211,7 @@ TENSOR_EXPORT(TiledTensorView)
 
 template <einsums::TiledTensorConcept TensorType>
 void println(TensorType const &A, TensorPrintOptions options = {}) {
-    using T               = typename TensorType::data_type;
+    using T               = typename TensorType::ValueType;
     constexpr size_t Rank = TensorType::Rank;
     println("Name: {}", A.name());
     {
@@ -1252,7 +1252,7 @@ void println(TensorType const &A, TensorPrintOptions options = {}) {
 
 template <einsums::TiledTensorConcept TensorType>
 void fprintln(FILE *fp, TensorType const &A, TensorPrintOptions options = {}) {
-    using T               = typename TensorType::data_type;
+    using T               = typename TensorType::ValueType;
     constexpr size_t Rank = TensorType::Rank;
     fprintln(fp, "Name: {}", A.name());
     {
@@ -1293,7 +1293,7 @@ void fprintln(FILE *fp, TensorType const &A, TensorPrintOptions options = {}) {
 
 template <einsums::TiledTensorConcept TensorType>
 void fprintln(std::ostream &os, TensorType const &A, TensorPrintOptions options = {}) {
-    using T               = typename TensorType::data_type;
+    using T               = typename TensorType::ValueType;
     constexpr size_t Rank = TensorType::Rank;
     fprintln(os, "Name: {}", A.name());
     {

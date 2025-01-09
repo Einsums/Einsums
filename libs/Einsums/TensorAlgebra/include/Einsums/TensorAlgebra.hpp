@@ -7,3 +7,4 @@
 
 #include <Einsums/TensorAlgebra/Permute.hpp>
 #include <Einsums/TensorAlgebra/TensorAlgebra.hpp>
+#include <Einsums/TensorAlgebra/Detail/Index.hpp>

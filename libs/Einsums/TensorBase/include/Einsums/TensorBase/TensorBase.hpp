@@ -239,7 +239,7 @@ struct TensorNoExtra {
  * @tparam Rank The rank of the tensor.
  */
 template <typename T, size_t Rank>
-struct Tensor : virtual TensorNoExtra, virtual TypedTensor<T>, virtual RankTensor<Rank> {
+struct Tensor : public virtual TensorNoExtra, virtual TypedTensor<T>, virtual RankTensor<Rank> {
     /**
      * Default constructor.
      */

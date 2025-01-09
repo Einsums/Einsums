@@ -267,7 +267,7 @@ size_t const *PyGPUView::gpu_strides() const noexcept {
     return _gpu_strides;
 }
 
-size_t PyGPUView::rank() const noexcept {
+size_t PyGPUView::Rank() const noexcept {
     return _rank;
 }
 

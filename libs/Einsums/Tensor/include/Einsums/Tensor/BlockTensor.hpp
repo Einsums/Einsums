@@ -37,7 +37,7 @@ namespace tensor_base {
  * @tparam TensorType The underlying type for the tensors.
  */
 template <typename T, size_t Rank, typename TensorType>
-struct BlockTensor : virtual CollectedTensor<TensorType>,
+struct BlockTensor : public virtual CollectedTensor<TensorType>,
                      virtual Tensor<T, Rank>,
                      virtual BlockTensorNoExtra,
                      virtual LockableTensor,
@@ -1059,7 +1059,7 @@ struct BlockTensor : virtual CollectedTensor<TensorType>,
  * @tparam Rank The rank of the tensor.
  */
 template <typename T, size_t Rank>
-struct BlockTensor : virtual tensor_base::BlockTensor<T, Rank, Tensor<T, Rank>>, virtual tensor_base::CoreTensor {
+struct BlockTensor : public virtual tensor_base::BlockTensor<T, Rank, Tensor<T, Rank>>, virtual tensor_base::CoreTensor {
     /**
      * @brief Construct a new BlockTensor object. Default constructor.
      */
@@ -1454,7 +1454,7 @@ void println(AType const &A, TensorPrintOptions options = {}) {
     {
         print::Indent const indent{};
         println("Block Tensor");
-        println("Data Type: {}", type_name<typename AType::data_type>());
+        println("Data Type: {}", type_name<typename AType::ValueType>());
 
         for (int i = 0; i < A.num_blocks(); i++) {
             println(A[i], options);
@@ -1468,7 +1468,7 @@ void fprintln(FILE *fp, AType const &A, TensorPrintOptions options = {}) {
     {
         print::Indent const indent{};
         fprintln(fp, "Block Tensor");
-        fprintln(fp, "Data Type: {}", type_name<typename AType::data_type>());
+        fprintln(fp, "Data Type: {}", type_name<typename AType::ValueType>());
 
         for (int i = 0; i < A.num_blocks(); i++) {
             fprintln(fp, A[i], options);
@@ -1482,7 +1482,7 @@ void fprintln(std::ostream &os, AType const &A, TensorPrintOptions options = {})
     {
         print::Indent const indent{};
         fprintln(os, "Block Tensor");
-        fprintln(os, "Data Type: {}", type_name<typename AType::data_type>());
+        fprintln(os, "Data Type: {}", type_name<typename AType::ValueType>());
 
         for (int i = 0; i < A.num_blocks(); i++) {
             fprintln(os, A[i], options);

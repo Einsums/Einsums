@@ -10,19 +10,22 @@
 #include <Einsums/BLAS.hpp>
 #include <Einsums/Concepts/Tensor.hpp>
 #include <Einsums/Errors/ThrowException.hpp>
+#include <Einsums/LinearAlgebra/Base.hpp>
+#include <Einsums/LinearAlgebra/Unoptimized.hpp>
 #include <Einsums/Print.hpp>
 
 #if defined(EINSUMS_COMPUTE_CODE)
-#include <Einsums/Tensor/DeviceTensor.hpp>
+#    include <Einsums/LinearAlgebra/GPULinearAlgebra.hpp>
+#    include <Einsums/Tensor/DeviceTensor.hpp>
 #endif
 
 namespace einsums::linear_algebra::detail {
 
 template <TiledTensorConcept AType, TiledTensorConcept BType>
     requires SameUnderlyingAndRank<AType, BType>
-auto dot(AType const &A, BType const &B) -> typename AType::value_type {
-    constexpr size_t Rank = AType::rank;
-    using T               = typename AType::value_type;
+auto dot(AType const &A, BType const &B) -> typename AType::ValueType {
+    constexpr size_t Rank = AType::Rank;
+    using T               = typename AType::ValueType;
     std::array<size_t, Rank> strides;
 
     size_t prod = 1;
@@ -58,9 +61,9 @@ auto dot(AType const &A, BType const &B) -> typename AType::value_type {
 
 template <TiledTensorConcept AType, TiledTensorConcept BType>
     requires SameUnderlyingAndRank<AType, BType>
-auto true_dot(AType const &A, BType const &B) -> typename AType::value_type {
-    constexpr size_t Rank = AType::rank;
-    using T               = typename AType::value_type;
+auto true_dot(AType const &A, BType const &B) -> typename AType::ValueType {
+    constexpr size_t Rank = AType::Rank;
+    using T               = typename AType::ValueType;
     std::array<size_t, Rank> strides;
 
     size_t prod = 1;
@@ -98,7 +101,7 @@ template <bool TransA, bool TransB, TiledTensorConcept AType, TiledTensorConcept
     requires requires {
         requires MatrixConcept<AType>;
         requires SameUnderlyingAndRank<AType, BType, CType>;
-        requires std::convertible_to<U, typename AType::value_type>;
+        requires std::convertible_to<U, typename AType::ValueType>;
     }
 void gemm(U const alpha, AType const &A, BType const &B, U const beta, CType *C) {
     // Check for compatibility.
@@ -197,7 +200,7 @@ template <bool TransA, TiledTensorConcept AType, VectorConcept XType, VectorConc
     requires requires {
         requires MatrixConcept<AType>;
         requires SameUnderlying<AType, XType, YType>;
-        requires std::convertible_to<U, typename AType::value_type>;
+        requires std::convertible_to<U, typename AType::ValueType>;
     }
 void gemv(U const alpha, AType const &A, XType const &z, U const beta, YType *y) {
     if constexpr (IsTiledTensorV<XType>) {
@@ -308,9 +311,9 @@ void gemv(U const alpha, AType const &A, XType const &z, U const beta, YType *y)
 
 template <TiledTensorConcept AType, TiledTensorConcept BType, TiledTensorConcept CType>
     requires SameUnderlyingAndRank<AType, BType, CType>
-void direct_product(typename AType::value_type alpha, AType const &A, BType const &B, typename AType::value_type beta, CType *C) {
-    using T               = typename AType::value_type;
-    constexpr size_t Rank = AType::rank;
+void direct_product(typename AType::ValueType alpha, AType const &A, BType const &B, typename AType::ValueType beta, CType *C) {
+    using T               = typename AType::ValueType;
+    constexpr size_t Rank = AType::Rank;
     EINSUMS_OMP_PARALLEL_FOR
     for (size_t sentinel = 0; sentinel < A.grid_size(); sentinel++) {
         std::array<int, Rank> index = std::array<int, Rank>{};
@@ -336,7 +339,7 @@ template <TiledTensorConcept AType, TiledTensorConcept XYType>
         requires VectorConcept<XYType>;
         requires SameUnderlying<AType, XYType>;
     }
-void ger(typename AType::value_type alpha, XYType const &X, XYType const &Y, AType *A) {
+void ger(typename AType::ValueType alpha, XYType const &X, XYType const &Y, AType *A) {
     if (A->grid_size(0) != X.grid_size(0) && A->grid_size(1) != Y.grid_size(0)) {
         EINSUMS_THROW_EXCEPTION(tensor_compat_error, "Tiled tensors have incompatible grids!");
     }
@@ -357,7 +360,7 @@ void ger(typename AType::value_type alpha, XYType const &X, XYType const &Y, ATy
 }
 
 template <TiledTensorConcept AType>
-void scale(typename AType::value_type alpha, AType *A) {
+void scale(typename AType::ValueType alpha, AType *A) {
     EINSUMS_OMP_PARALLEL_FOR
     for (auto it = A->tiles().begin(); it != A->tiles().end(); it++) {
         scale(alpha, &(it->second));

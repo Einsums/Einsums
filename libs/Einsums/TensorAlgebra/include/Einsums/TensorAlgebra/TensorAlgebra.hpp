@@ -29,7 +29,7 @@ template <bool OnlyUseGenericAlgorithm, TensorConcept AType, TensorConcept BType
           typename... AIndices, typename... BIndices>
     requires(TensorConcept<CType> || (ScalarConcept<CType> && sizeof...(CIndices) == 0))
 void einsum(ValueTypeT<CType> const C_prefactor, std::tuple<CIndices...> const & /*Cs*/, CType *C,
-            BiggestTypeT<typename AType::data_type, typename BType::data_type> const AB_prefactor, std::tuple<AIndices...> const & /*As*/,
+            BiggestTypeT<typename AType::ValueType, typename BType::ValueType> const AB_prefactor, std::tuple<AIndices...> const & /*As*/,
             AType const &A, std::tuple<BIndices...> const & /*Bs*/, BType const &B);
 } // namespace detail
 
@@ -202,7 +202,7 @@ template <TensorConcept AType, TensorConcept BType, typename... AIndices, typena
         requires AType::Rank == sizeof...(AIndices);
         requires BType::Rank == sizeof...(BIndices);
     }
-BasicTensorLike<AType, typename AType::data_type, 2> khatri_rao(std::tuple<AIndices...> const &, AType const &A,
+BasicTensorLike<AType, typename AType::ValueType, 2> khatri_rao(std::tuple<AIndices...> const &, AType const &A,
                                                                 std::tuple<BIndices...> const &, BType const &B);
 } // namespace einsums::tensor_algebra
 
