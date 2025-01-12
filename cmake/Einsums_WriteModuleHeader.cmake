@@ -5,7 +5,7 @@ function(einsums_write_module_header)
     cmake_parse_arguments(OPTION "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
 
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/include/${basename}/${modulename}.hpp")
-        configure_file("${CMAKE_CURRENT_SOURCE_DIR}/include/${basename}/${modulename}.hpp" "${OPTION_FILENAME}" @ONLY)
+        return()
     elseif(OPTION_TEMPLATE)
         configure_file("${OPTION_TEMPLATE}" "${OPTION_FILENAME}" @ONLY)
     else()
