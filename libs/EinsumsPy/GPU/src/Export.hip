@@ -39,7 +39,7 @@ void export_GPU(py::module_ &mod) {
         .def("update_D2H", &PyGPUView::update_D2H)
         .def("size", &PyGPUView::size)
         .def("__len__", &PyGPUView::size)
-        .def("rank", &PyGPUView::Rank)
+        .def("rank", &PyGPUView::rank)
         .def("itemsize", &PyGPUView::itemsize);
     
     mod.def("throw_hip", throw_hip)

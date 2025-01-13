@@ -173,8 +173,8 @@ auto dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueTy
 
     auto const *A_data   = A.data();
     auto const *B_data   = B.data();
-    auto const  A_stride = A.strides(0);
-    auto const  B_stride = B.strides(0);
+    auto const  A_stride = A.stride(0);
+    auto const  B_stride = B.stride(0);
 
     EINSUMS_OMP_SIMD
     for (size_t i = 0; i < A.dim(0); i++) {
@@ -253,8 +253,8 @@ auto true_dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::Va
 
     auto const *A_data   = A.data();
     auto const *B_data   = B.data();
-    auto const  A_stride = A.strides(0);
-    auto const  B_stride = B.strides(0);
+    auto const  A_stride = A.stride(0);
+    auto const  B_stride = B.stride(0);
 
     EINSUMS_OMP_SIMD
     for (size_t i = 0; i < A.dim(0); i++) {

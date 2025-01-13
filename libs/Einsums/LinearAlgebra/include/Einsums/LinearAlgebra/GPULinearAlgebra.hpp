@@ -305,7 +305,7 @@ auto true_dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::Va
     using namespace einsums::gpu;
 
     using dev_datatype    = typename AType::dev_datatype;
-    using T               = tBiggestTypeT<typename AType::ValueType, typename BType::ValueType>;
+    using T               = BiggestTypeT<typename AType::ValueType, typename BType::ValueType>;
     constexpr size_t Rank = AType::Rank;
 
     dev_datatype            *gpu_out;
