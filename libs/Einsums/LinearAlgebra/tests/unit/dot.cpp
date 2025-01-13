@@ -88,3 +88,25 @@ TEMPLATE_TEST_CASE("dot", "[linear-algebra]", float, double) {
     //     }
     // }
 }
+
+TEST_CASE("mixed dots", "[linear-algebra]") {
+    using namespace einsums;
+    using namespace einsums::linear_algebra;
+
+    constexpr int size = 10;
+
+    SECTION("Rank 1 tensors") {
+        Tensor<float, 1> A = create_random_tensor<float>("A", size);
+        Tensor<double, 1> B = create_random_tensor<double>("B", size);
+
+        double test{0.0};
+
+        for (int i = 0; i < size; i++) {
+            test += A(i) * B(i);
+        }
+
+        auto dot_res = dot(A, B);
+
+        REQUIRE_THAT(dot_res, einsums::WithinStrict(test, double{100000.0}));
+    }
+}
