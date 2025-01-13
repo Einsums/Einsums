@@ -8,8 +8,8 @@
 #include <Einsums/GPUStreams/GPUStreams.hpp>
 #include <Einsums/Tensor/DeviceTensor.hpp>
 #include <Einsums/TensorBase/IndexUtilities.hpp>
-#include <Einsums/TypeSupport/GPUCast.hpp>
 #include <Einsums/TensorUtilities/CreateTensorLike.hpp>
+#include <Einsums/TypeSupport/GPUCast.hpp>
 
 #include <hip/driver_types.h>
 #include <hip/hip_common.h>
@@ -25,15 +25,15 @@ namespace detail {
 
 namespace gpu {
 
-template <size_t Rank, typename T>
-__global__ void dot_kernel(T *C, T const *__restrict__ A, T const *__restrict__ B, size_t const *__restrict__ dims,
+template <size_t Rank, typename T1, typename T2>
+__global__ void dot_kernel(BiggestTypeT<T1, T2> *C, T1 const *__restrict__ A, T2 const *__restrict__ B, size_t const *__restrict__ dims,
                            size_t const *__restrict__ strides, size_t const *__restrict__ A_strides, size_t const *__restrict__ B_strides) {
     using namespace einsums::gpu;
     int thread_id, kernel_size;
 
     get_worker_info(thread_id, kernel_size);
 
-    T temp;
+    BiggestTypeT<T1, T2> temp;
     make_zero(temp);
     if (thread_id == 0) {
         make_zero(*C);
@@ -58,16 +58,16 @@ __global__ void dot_kernel(T *C, T const *__restrict__ A, T const *__restrict__ 
     einsums::gpu::atomicAdd_wrap(C, temp);
 }
 
-template <size_t Rank, typename T>
-__global__ void true_dot_kernel(T *C, T const *__restrict__ A, T const *__restrict__ B, size_t const *__restrict__ dims,
-                                size_t const *__restrict__ strides, size_t const *__restrict__ A_strides,
+template <size_t Rank, typename T1, typename T2>
+__global__ void true_dot_kernel(BiggestTypeT<T1, T2> *C, T1 const *__restrict__ A, T2 const *__restrict__ B,
+                                size_t const *__restrict__ dims, size_t const *__restrict__ strides, size_t const *__restrict__ A_strides,
                                 size_t const *__restrict__ B_strides) {
     using namespace einsums::gpu;
     int thread_id, kernel_size;
 
     get_worker_info(thread_id, kernel_size);
 
-    T temp;
+    BiggestTypeT<T1, T2> temp;
     make_zero(temp);
     if (thread_id == 0) {
         make_zero(*C);
@@ -86,10 +86,10 @@ __global__ void true_dot_kernel(T *C, T const *__restrict__ A, T const *__restri
             quotient %= strides[i];
         }
 
-        if constexpr (std::is_same_v<T, hipComplex> || std::is_same_v<T, hipDoubleComplex>) {
-            T conjugate = A[curr_index];
-            conjugate.y = -conjugate.y;
-            temp        = temp + conjugate * B[curr_index];
+        if constexpr (std::is_same_v<T1, hipComplex> || std::is_same_v<T1, hipDoubleComplex>) {
+            T1 conjugate = A[curr_index];
+            conjugate.y  = -conjugate.y;
+            temp         = temp + conjugate * B[curr_index];
         } else {
             temp = temp + A[curr_index] * B[curr_index];
         }
@@ -259,12 +259,12 @@ void gemm(T const *alpha, AType const &A, BType const &B, T const *beta, CType *
 }
 
 template <DeviceBasicTensorConcept AType, DeviceBasicTensorConcept BType>
-    requires(SameUnderlyingAndRank<AType, BType>)
-typename AType::ValueType dot(AType const &A, BType const &B) {
+    requires(SameRank<AType, BType>)
+auto dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType> {
     using namespace einsums::gpu;
 
     using dev_datatype    = typename AType::dev_datatype;
-    using T               = typename AType::ValueType;
+    using T               = BiggestTypeT<typename AType::ValueType, typename BType::ValueType>;
     constexpr size_t Rank = AType::Rank;
 
     dev_datatype            *gpu_out;
@@ -300,12 +300,12 @@ typename AType::ValueType dot(AType const &A, BType const &B) {
 }
 
 template <DeviceBasicTensorConcept AType, DeviceBasicTensorConcept BType>
-    requires(SameUnderlyingAndRank<AType, BType>)
-typename AType::ValueType true_dot(AType const &A, BType const &B) {
+    requires(SameRank<AType, BType>)
+auto true_dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType> {
     using namespace einsums::gpu;
 
     using dev_datatype    = typename AType::dev_datatype;
-    using T               = typename AType::ValueType;
+    using T               = tBiggestTypeT<typename AType::ValueType, typename BType::ValueType>;
     constexpr size_t Rank = AType::Rank;
 
     dev_datatype            *gpu_out;

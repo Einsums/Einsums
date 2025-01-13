@@ -160,10 +160,36 @@ auto dot(AType const &A, BType const &B) -> typename AType::ValueType {
 
 template <CoreBasicTensorConcept AType, CoreBasicTensorConcept BType>
     requires requires {
+        requires VectorConcept<AType>;
+        requires SameRank<AType, BType>;
+        requires !SameUnderlying<AType, BType>;
+    }
+auto dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType> {
+    EINSUMS_ASSERT(A.dim(0) == B.dim(0));
+
+    using OutType = BiggestTypeT<typename AType::ValueType, typename BType::ValueType>;
+
+    OutType result = OutType{0.0};
+
+    auto const *A_data   = A.data();
+    auto const *B_data   = B.data();
+    auto const  A_stride = A.strides(0);
+    auto const  B_stride = B.strides(0);
+
+    EINSUMS_OMP_SIMD
+    for (size_t i = 0; i < A.dim(0); i++) {
+        result += A_data[A_stride * i] * B_data[B_stride * i];
+    }
+
+    return result;
+}
+
+template <CoreBasicTensorConcept AType, CoreBasicTensorConcept BType>
+    requires requires {
         requires SameUnderlyingAndRank<AType, BType>;
         requires !VectorConcept<AType>;
     }
-auto dot(AType const &A, BType const &B) -> typename AType::ValueType {
+auto dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType> {
     if (A.full_view_of_underlying() && B.full_view_of_underlying()) {
         Dim<1> dim{1};
 
@@ -185,7 +211,7 @@ auto dot(AType const &A, BType const &B) -> typename AType::ValueType {
             strides[i - 1] = strides[i] * dims[i];
         }
 
-        typename AType::ValueType out{0.0};
+        BiggestTypeT<typename AType::ValueType, typename BType::ValueType> out{0.0};
 
         for (size_t sentinel = 0; sentinel < strides[0] * dims[0]; sentinel++) {
             sentinel_to_indices(sentinel, strides, index);
@@ -214,10 +240,40 @@ auto true_dot(AType const &A, BType const &B) -> typename AType::ValueType {
 
 template <CoreBasicTensorConcept AType, CoreBasicTensorConcept BType>
     requires requires {
-        requires SameUnderlyingAndRank<AType, BType>;
+        requires VectorConcept<AType>;
+        requires SameRank<AType, BType>;
+        requires !SameUnderlying<AType, BType>;
+    }
+auto true_dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType> {
+    EINSUMS_ASSERT(A.dim(0) == B.dim(0));
+
+    using OutType = BiggestTypeT<typename AType::ValueType, typename BType::ValueType>;
+
+    OutType result = OutType{0.0};
+
+    auto const *A_data   = A.data();
+    auto const *B_data   = B.data();
+    auto const  A_stride = A.strides(0);
+    auto const  B_stride = B.strides(0);
+
+    EINSUMS_OMP_SIMD
+    for (size_t i = 0; i < A.dim(0); i++) {
+        if constexpr (IsComplexV<typename AType::ValueType>) {
+            result += A_data[A_stride * i].conj() * B_data[B_stride * i];
+        } else {
+            result += A_data[A_stride * i] * B_data[B_stride * i];
+        }
+    }
+
+    return result;
+}
+
+template <CoreBasicTensorConcept AType, CoreBasicTensorConcept BType>
+    requires requires {
+        requires SameRank<AType, BType>;
         requires !VectorConcept<AType>;
     }
-auto true_dot(AType const &A, BType const &B) -> typename AType::ValueType {
+auto true_dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType> {
     if (A.full_view_of_underlying() && B.full_view_of_underlying()) {
         Dim<1> dim{1};
 
@@ -239,7 +295,7 @@ auto true_dot(AType const &A, BType const &B) -> typename AType::ValueType {
             strides[i - 1] = strides[i] * dims[i];
         }
 
-        typename AType::ValueType out{0.0};
+        BiggestTypeT<typename AType::ValueType, typename BType::ValueType> out{0.0};
 
         for (size_t sentinel = 0; sentinel < strides[0] * dims[0]; sentinel++) {
             sentinel_to_indices(sentinel, strides, index);
@@ -256,10 +312,11 @@ auto true_dot(AType const &A, BType const &B) -> typename AType::ValueType {
 }
 
 template <CoreBasicTensorConcept AType, CoreBasicTensorConcept BType, CoreBasicTensorConcept CType>
-    requires SameUnderlyingAndRank<AType, BType, CType>
-auto dot(AType const &A, BType const &B, CType const &C) -> typename AType::ValueType {
+    requires SameRank<AType, BType, CType>
+auto dot(AType const &A, BType const &B, CType const &C)
+    -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType, typename CType::ValueType> {
     Dim<1> dim{1};
-    using T = typename AType::ValueType;
+    using T = BiggestTypeT<typename AType::ValueType, typename BType::ValueType, typename CType::ValueType>;
 
     for (size_t i = 0; i < AType::Rank; i++) {
         assert(A.dim(i) == B.dim(i) && A.dim(i) == C.dim(i));

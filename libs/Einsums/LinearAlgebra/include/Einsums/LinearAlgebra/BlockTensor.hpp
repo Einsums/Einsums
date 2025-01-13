@@ -204,8 +204,8 @@ void scale_column(size_t column, typename AType::ValueType alpha, AType *A) {
 }
 
 template <BlockTensorConcept AType, BlockTensorConcept BType>
-    requires SameUnderlyingAndRank<AType, BType>
-auto dot(AType const &A, BType const &B) -> typename AType::ValueType {
+    requires SameRank<AType, BType>
+auto dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType> {
     if (A.num_blocks() != B.num_blocks()) {
         return dot(typename AType::tensor_type(A), typename BType::tensor_type(B));
     }
@@ -214,7 +214,7 @@ auto dot(AType const &A, BType const &B) -> typename AType::ValueType {
         return dot(typename AType::tensor_type(A), typename BType::tensor_type(B));
     }
 
-    using T = typename AType::ValueType;
+    using T = BiggestTypeT<typename AType::ValueType, typename BType::ValueType>;
 
     T out{0};
 
@@ -230,8 +230,8 @@ auto dot(AType const &A, BType const &B) -> typename AType::ValueType {
 }
 
 template <BlockTensorConcept AType, BlockTensorConcept BType>
-    requires SameUnderlyingAndRank<AType, BType>
-auto true_dot(AType const &A, BType const &B) -> typename AType::ValueType {
+    requires SameRank<AType, BType>
+auto true_dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType> {
     if (A.num_blocks() != B.num_blocks()) {
         return true_dot(typename AType::tensor_type(A), typename BType::tensor_type(B));
     }
@@ -240,7 +240,7 @@ auto true_dot(AType const &A, BType const &B) -> typename AType::ValueType {
         return true_dot(typename AType::tensor_type(A), typename BType::tensor_type(B));
     }
 
-    using T = typename AType::ValueType;
+    using T = BiggestTypeT<typename AType::ValueType, typename BType::ValueType>;
 
     T out{0};
 
@@ -256,8 +256,8 @@ auto true_dot(AType const &A, BType const &B) -> typename AType::ValueType {
 }
 
 template <BlockTensorConcept AType, BlockTensorConcept BType, BlockTensorConcept CType>
-    requires SameUnderlyingAndRank<AType, BType, CType>
-auto dot(AType const &A, BType const &B, CType const &C) -> typename AType::ValueType {
+    requires SameRank<AType, BType, CType>
+auto dot(AType const &A, BType const &B, CType const &C) -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType, typename CType::ValueType> {
     if (A.num_blocks() != B.num_blocks() || A.num_blocks() != C.num_blocks() || B.num_blocks() != C.num_blocks()) {
         return dot(AType::tensor_type(A), BType::tensor_type(B), CType::tensor_type(C));
     }
@@ -266,7 +266,7 @@ auto dot(AType const &A, BType const &B, CType const &C) -> typename AType::Valu
         return dot(AType::tensor_type(A), BType::tensor_type(B), CType::tensor_type(C));
     }
 
-    using T = typename AType::ValueType;
+    using T = BiggestTypeT<typename AType::ValueType, typename BType::ValueType, typename CType::ValueType>;
 
     T out{0};
 

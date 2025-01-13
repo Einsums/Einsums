@@ -19,7 +19,7 @@
 #include <Einsums/TensorUtilities/CreateRandomTensor.hpp>
 
 #ifdef EINSUMS_COMPUTE_CODE
-#include <Einsums/LinearAlgebra/GPULinearAlgebra.hpp>
+#    include <Einsums/LinearAlgebra/GPULinearAlgebra.hpp>
 #endif
 
 #include <algorithm>
@@ -359,9 +359,9 @@ auto pow(AType const &a, typename AType::ValueType alpha,
 template <VectorConcept AType, VectorConcept BType>
     requires requires {
         requires InSamePlace<AType, BType>;
-        requires SameUnderlying<AType, BType>;
+        requires SameRank<AType, BType>;
     }
-auto dot(AType const &A, BType const &B) -> typename AType::ValueType {
+auto dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType> {
     LabeledSection0();
 
     return detail::dot(A, B);
@@ -378,11 +378,11 @@ auto dot(AType const &A, BType const &B) -> typename AType::ValueType {
  */
 template <TensorConcept AType, TensorConcept BType>
     requires requires {
-        requires SameUnderlyingAndRank<AType, BType>;
+        requires SameRank<AType, BType>;
         requires InSamePlace<AType, BType>;
         requires AType::Rank != 1;
     }
-auto dot(AType const &A, BType const &B) -> typename AType::ValueType {
+auto dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType> {
 
     LabeledSection0();
 
@@ -393,9 +393,9 @@ auto dot(AType const &A, BType const &B) -> typename AType::ValueType {
 template <VectorConcept AType, VectorConcept BType>
     requires requires {
         requires InSamePlace<AType, BType>;
-        requires SameUnderlying<AType, BType>;
+        requires SameRank<AType, BType>;
     }
-auto true_dot(AType const &A, BType const &B) -> typename AType::ValueType {
+auto true_dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType> {
     LabeledSection0();
 
     return detail::true_dot(A, B);
@@ -413,11 +413,11 @@ auto true_dot(AType const &A, BType const &B) -> typename AType::ValueType {
  */
 template <TensorConcept AType, TensorConcept BType>
     requires requires {
-        requires SameUnderlyingAndRank<AType, BType>;
+        requires SameRank<AType, BType>;
         requires InSamePlace<AType, BType>;
         requires AType::Rank != 1;
     }
-auto true_dot(AType const &A, BType const &B) -> typename AType::ValueType {
+auto true_dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType> {
 
     LabeledSection0();
 
@@ -436,9 +436,10 @@ auto true_dot(AType const &A, BType const &B) -> typename AType::ValueType {
 template <TensorConcept AType, TensorConcept BType, TensorConcept CType>
     requires requires {
         requires InSamePlace<AType, BType, CType>;
-        requires SameUnderlyingAndRank<AType, BType, CType>;
+        requires SameRank<AType, BType, CType>;
     }
-auto dot(AType const &A, BType const &B, CType const &C) -> typename AType::ValueType {
+auto dot(AType const &A, BType const &B, CType const &C)
+    -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType, typename CType::ValueType> {
 
     LabeledSection0();
     return detail::dot(A, B, C);

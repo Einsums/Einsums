@@ -54,12 +54,12 @@ auto dot(AType const &A, BType const &B) -> Result {
     return out;
 }
 
-template <TensorConcept AType, TensorConcept BType>
+template <TensorConcept AType, TensorConcept BType, typename Result = BiggestTypeT<typename AType::ValueType, typename BType::ValueType>>
     requires requires {
         requires !AlgebraTensorConcept<AType> || !AlgebraTensorConcept<BType>;
         requires SameRank<AType, BType>;
     }
-auto true_dot(AType const &A, BType const &B) -> typename AType::ValueType {
+auto true_dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType> {
     constexpr size_t Rank = AType::Rank;
     using T               = BiggestTypeT<typename AType::ValueType, typename BType::ValueType>;
 

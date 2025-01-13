@@ -22,10 +22,10 @@
 namespace einsums::linear_algebra::detail {
 
 template <TiledTensorConcept AType, TiledTensorConcept BType>
-    requires SameUnderlyingAndRank<AType, BType>
-auto dot(AType const &A, BType const &B) -> typename AType::ValueType {
+    requires(SameRank<AType, BType>)
+auto dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType> {
     constexpr size_t Rank = AType::Rank;
-    using T               = typename AType::ValueType;
+    using T               = BiggestTypeT<typename AType::ValueType, typename BType::ValueType>;
     std::array<size_t, Rank> strides;
 
     size_t prod = 1;
@@ -60,10 +60,10 @@ auto dot(AType const &A, BType const &B) -> typename AType::ValueType {
 }
 
 template <TiledTensorConcept AType, TiledTensorConcept BType>
-    requires SameUnderlyingAndRank<AType, BType>
-auto true_dot(AType const &A, BType const &B) -> typename AType::ValueType {
+    requires(SameRank<AType, BType>)
+auto true_dot(AType const &A, BType const &B) -> BiggestTypeT<typename AType::ValueType, typename BType::ValueType> {
     constexpr size_t Rank = AType::Rank;
-    using T               = typename AType::ValueType;
+    using T               = BiggestTypeT<typename AType::ValueType, typename BType::ValueType>;
     std::array<size_t, Rank> strides;
 
     size_t prod = 1;
