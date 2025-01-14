@@ -5,7 +5,9 @@
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-set(MemoryHeaders)
+set(MemoryHeaders Einsums/Memory/Allocator.hpp Einsums/Memory/Manager.hpp
+        Einsums/Memory/StdAllocator.hpp
+)
 
 set(MemorySources)
 
@@ -14,7 +16,7 @@ einsums_add_module(
   Einsums Memory
   SOURCES ${MemorySources}
   HEADERS ${MemoryHeaders}
-  DEPENDENCIES
-  MODULE_DEPENDENCIES
+        DEPENDENCIES einsums_dependencies_allocator
+        MODULE_DEPENDENCIES Einsums_Config Einsums_Logging
   CMAKE_SUBDIRS examples tests
 )

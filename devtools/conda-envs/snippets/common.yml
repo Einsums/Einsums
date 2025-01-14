@@ -20,3 +20,4 @@ dependencies:
   - hdf5
   - zlib
   - numpy
+  - mimalloc

@@ -139,24 +139,10 @@ set(DEFAULT_MALLOC "system")
 einsums_option(
   EINSUMS_WITH_MALLOC
   STRING
-  "Define which allocator should be linked in. Options are: system, tcmalloc, jemalloc, mimalloc, tbbmalloc, and custom. (default: ${DEFAULT_MALLOC})"
+        "Define which allocator should be linked in. Options are: system and mimalloc. (default: ${DEFAULT_MALLOC})"
   ${DEFAULT_MALLOC}
-  STRINGS "system;tcmalloc;jemalloc;mimalloc;tbbmalloc;custom"
+        STRINGS "system;mimalloc"
 )
-
-# On some systems, jemalloc requires an explicit prefix for the API functions (i.e. 'malloc' is
-# called 'je_malloc', etc.)
-if(${EINSUMS_WITH_MALLOC} STREQUAL "jemalloc")
-  if(MSVC)
-    set(EINSUMS_WITH_JEMALLOC_PREFIX_DEFAULT "je_")
-  else()
-    set(EINSUMS_WITH_JEMALLOC_PREFIX_DEFAULT "<none>")
-  endif()
-  einsums_option(
-    EINSUMS_WITH_JEMALLOC_PREFIX STRING "Optional naming prefix for jemalloc API functions"
-    ${EINSUMS_WITH_JEMALLOC_PREFIX_DEFAULT} ADVANCED
-  )
-endif()
 
 # Compiler related build options
 einsums_option(
@@ -716,6 +702,7 @@ include(Einsums_SetupH5cpp)
 include(Einsums_SetupArgparse)
 # include(einsums_SetupHPTT) include(Einsums_SetupHWLOC)
 include(Einsums_SetupSpdlog)
+include(Einsums_SetupAllocator)
 # include(Einsums_SetupCppTrace)
 
 if(EINSUMS_USE_LIBRETT AND EINSUMS_WITH_GPU_SUPPORT) 
