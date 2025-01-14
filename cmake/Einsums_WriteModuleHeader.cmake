@@ -1,3 +1,8 @@
+#----------------------------------------------------------------------------------------------
+# Copyright (c) The Einsums Developers. All rights reserved.
+# Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+#----------------------------------------------------------------------------------------------
+
 function(einsums_write_module_header)
     set(options)
     set(one_value_args TEMPLATE NAMESPACE FILENAME)
