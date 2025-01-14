@@ -4,7 +4,7 @@
 #----------------------------------------------------------------------------------------------
 
 function(einsums_extend_with_python_headers target)
-target_include_directories(${target} PRIVATE pybind11::headers)
+target_link_libraries(${target} INTERFACE pybind11::headers)
 target_include_directories(${target} PRIVATE ${Python_INCLUDE_DIRS})
 endfunction()
 
