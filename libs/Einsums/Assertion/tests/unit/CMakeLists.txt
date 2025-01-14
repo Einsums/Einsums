@@ -4,10 +4,10 @@
 #----------------------------------------------------------------------------------------------
 
 set(AssertionTests
-        #        Assert
+        Assert
 )
 
-set(Assert_PARAMETERS FAILURE_EXPECTED)
+set(Assert_PARAMETERS )
 
 foreach (test ${AssertionTests})
     set(sources ${test}.cpp)

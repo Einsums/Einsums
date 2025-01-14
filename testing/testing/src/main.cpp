@@ -8,17 +8,23 @@
 
 #include <functional>
 
+#include "Einsums/Runtime/ShutdownFunction.hpp"
 #include "catch2/catch_get_random_seed.hpp"
+#include "catch2/catch_session.hpp"
+#include "catch2/internal/catch_context.hpp"
 
 #define CATCH_CONFIG_RUNNER
 #include <catch2/catch_all.hpp>
 
-int einsums_main(int argc, char **argv) {
+int einsums_main(int argc, char *const *const argv) {
     Catch::Session session;
     session.applyCommandLine(argc, argv);
 
-    // This is crashing.
-    // einsums::seed_random(Catch::getSeed());
+    Catch::StringMaker<float>::precision  = std::numeric_limits<float>::digits10;
+    Catch::StringMaker<double>::precision = std::numeric_limits<double>::digits10;
+    auto seed = session.config().rngSeed();
+
+    einsums::seed_random(seed);
 
     int result = session.run();
     einsums::finalize();
@@ -27,10 +33,5 @@ int einsums_main(int argc, char **argv) {
 }
 
 int main(int argc, char **argv) {
-    Catch::StringMaker<float>::precision  = std::numeric_limits<float>::digits10;
-    Catch::StringMaker<double>::precision = std::numeric_limits<double>::digits10;
-
-    // auto const wrapped = std::bind_front(&einsums_main, argc, argv);
-
     return einsums::start(einsums_main, argc, argv);
 }

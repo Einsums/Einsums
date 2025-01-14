@@ -21,6 +21,8 @@ namespace einsums::detail {
 
 using assertion_handler_type = void (*)(std::source_location const &loc, char const *expr, std::string const &msg);
 
+EINSUMS_EXPORT void default_assertion_handler(std::source_location const &loc, char const *expr, std::string const &msg);
+
 EINSUMS_EXPORT void set_assertion_handler(assertion_handler_type handler);
 
 } // namespace einsums::detail
@@ -29,7 +31,7 @@ EINSUMS_EXPORT void set_assertion_handler(assertion_handler_type handler);
 
 /**
  * @def EINSUMS_ASSERT(expr)
- * 
+ *
  * @brief This macro asserts that @a expr evaluates to true, but does not have a custom message.
  *
  * @sa EINSUMS_ASSERT_MSG
@@ -55,14 +57,14 @@ EINSUMS_EXPORT void set_assertion_handler(assertion_handler_type handler);
 #else
 /// \cond NOINTERNAL
 #    define EINSUMS_ASSERT_(expr, ...)                                                                                                     \
-        (!!(expr) ? void()                                                                                                                 \
-                  : ::einsums::detail::handle_assert(std::source_location::current(), EINSUMS_PP_STRINGIFY(expr),                          \
-                                                     fmt::format(__VA_ARGS__))) /**/
+        ((bool)(expr) ? void()                                                                                                             \
+                      : ::einsums::detail::handle_assert(std::source_location::current(), EINSUMS_PP_STRINGIFY(expr),                      \
+                                                         fmt::format(__VA_ARGS__))) /**/
 
 #    define EINSUMS_ASSERT_LOCKED_(l, expr, ...)                                                                                           \
-        (!!(expr) ? void()                                                                                                                 \
-                  : ((l).unlock(), ::einsums::detail::handle_assert(std::source_location::current(), EINSUMS_PP_STRINGIFY(expr),           \
-                                                                    fmt::format(__VA_ARGS__)))) /**/
+        ((bool)(expr) ? void()                                                                                                             \
+                      : ((l).unlock(), ::einsums::detail::handle_assert(std::source_location::current(), EINSUMS_PP_STRINGIFY(expr),       \
+                                                                        fmt::format(__VA_ARGS__)))) /**/
 
 #    if defined(EINSUMS_DEBUG)
 #        if defined(EINSUMS_COMPUTE_DEVICE_CODE)

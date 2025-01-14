@@ -14,30 +14,33 @@ namespace einsums::detail {
 
 namespace {
 auto get_handler() -> assertion_handler_type & {
-    static assertion_handler_type handler{nullptr};
+    static assertion_handler_type handler{default_assertion_handler};
     return handler;
 }
 } // namespace
 
+void default_assertion_handler(std::source_location const &loc, char const *expr, std::string const &msg) {
+    std::cerr << loc.function_name() << ":" << loc.line() << " : Assertion '" << expr << "' failed";
+    if (!msg.empty()) {
+        std::cerr << " (" << msg << ")\n";
+    } else {
+        std::cerr << "\n";
+    }
+
+    std::cerr << "\n" << util::backtrace() << "\n";
+
+    std::exit(EXIT_FAILURE);
+}
+
 void set_assertion_handler(assertion_handler_type handler) {
-    if (get_handler() == nullptr) {
+    if (get_handler() == nullptr || get_handler() == detail::default_assertion_handler) {
         get_handler() = handler;
     }
 }
 
 void handle_assert(std::source_location const &loc, char const *expr, std::string const &msg) noexcept {
     if (get_handler() == nullptr) {
-        std::cerr << loc.function_name() << ":" << loc.line() << " : Assertion '" << expr << "' failed";
-        if (!msg.empty()) {
-            std::cerr << " (" << msg << ")\n";
-        } else {
-            std::cerr << "\n";
-        }
-
-        std::cerr << "\n" << util::backtrace() << "\n";
-
-        std::exit(EXIT_FAILURE);
-        // std::abort();
+        default_assertion_handler(loc, expr, msg);
     }
     get_handler()(loc, expr, msg);
 }
