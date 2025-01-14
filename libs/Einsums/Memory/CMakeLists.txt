@@ -11,12 +11,16 @@ set(MemoryHeaders Einsums/Memory/Allocator.hpp Einsums/Memory/Manager.hpp
 
 set(MemorySources)
 
+if (TARGET einsums_dependencies_allocator)
+    set(extra_dependencies einsums_dependencies_allocator)
+endif ()
+
 include(Einsums_AddModule)
 einsums_add_module(
   Einsums Memory
   SOURCES ${MemorySources}
   HEADERS ${MemoryHeaders}
-        DEPENDENCIES einsums_dependencies_allocator
+        DEPENDENCIES ${extra_dependencies}
         MODULE_DEPENDENCIES Einsums_Config Einsums_Logging
   CMAKE_SUBDIRS examples tests
 )
