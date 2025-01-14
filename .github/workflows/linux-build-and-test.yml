@@ -131,3 +131,37 @@ jobs:
       - name: Test (CTest) - Unit Tests
         working-directory: "${{ github.workspace }}/build"
         run: ctest --rerun-failed --output-on-failure
+
+#      - name: Generate coverage information
+#        working-directory: "${{github.workspace}}/build"
+#        run: |
+#          export NOTES=$(find . -name "*.gcno")
+#          export SOURCES=${NOTES/.gcno/}
+#          echo "NOTES=$NOTES"
+#          echo "SOURCES=$SOURCES"
+#          gcov $SOURCES || echo "returned $?"
+#          lcov --capture --directory . --output-file coverage.info --exclude /usr/\* --exclude \*/build/_deps/\*
+#
+#      - name: Upload C++ coverage to Codecov
+#        uses: codecov/codecov-action@v4
+#        with:
+#          directory: "${{github.workspace}}/build"
+#          working-directory: "${{github.workspace}}"
+#          disable_search: true
+#          file: ${{github.workspace}}/build/coverage.info
+#          flags: cpp
+#          token: ${{ secrets.CODECOV_TOKEN }}
+
+#      - name: Test (find_package) - consume installation
+#        shell: bash -l {0}
+#        run: |
+#          cmake -S . \
+#            -B build \
+#            -G Ninja \
+#            --log-level verbose \
+#            -DCMAKE_BUILD_TYPE=Release \
+#            -DCMAKE_PREFIX_PATH="${CONDA_PREFIX};${CONDA_PREFIX}/Library;${{ github.workspace }}/installed"
+#          cmake --build build
+#          ./build/HelloWorld
+#        with:
+#          working-directory: "${{github.workspace}}/src/testing/consume"
