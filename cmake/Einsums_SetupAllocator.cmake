@@ -28,9 +28,8 @@ if (NOT TARGET einsums_dependencies_allocator)
 
     string(TOUPPER "${EINSUMS_WITH_MALLOC}" EINSUMS_WITH_MALLOC_UPPER)
 
-    add_library(einsums_dependencies_allocator INTERFACE IMPORTED)
-
     if (NOT EINSUMS_WITH_MALLOC_DEFAULT)
+        add_library(einsums_dependencies_allocator INTERFACE IMPORTED)
 
         # ##############################################################################################
         # MIMALLOC
@@ -57,7 +56,7 @@ if (NOT TARGET einsums_dependencies_allocator)
     if ("${EINSUMS_WITH_MALLOC_UPPER}" MATCHES "SYSTEM")
         if (NOT MSVC)
             einsums_warn(
-                    "einsums will perform poorly without jemalloc or mimalloc. See docs for more info,"
+                    "einsums will perform poorly without mimalloc. See docs for more info,"
             )
         endif ()
     endif ()
