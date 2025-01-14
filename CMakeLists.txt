@@ -435,7 +435,7 @@ einsums_option(
 einsums_option(
         EINSUMS_BUILD_PYTHON
         STRING
-  "Build the Python module. One or more Python versions may be specified to build, or the value may be set to 'ON' for your current Python interpreter.
+  "Build the Python module. A version for the Python build may be specified, or the value may be set to 'ON' for your current Python interpreter.
   Disable by specifying 'OFF'. Defaults to 'ON'."
   ON
 )

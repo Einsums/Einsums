@@ -3,6 +3,11 @@
 # Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 #----------------------------------------------------------------------------------------------
 
+function(einsums_extend_with_python_headers target)
+target_include_directories(${target} PRIVATE ${Python_INCLUDE_DIRS})
+endfunction()
+
+
 function(einsums_extend_with_python target)
   # if (APPLE) target_link_options(${target} PUBLIC -undefined dynamic_lookup) endif ()
 
@@ -12,7 +17,7 @@ function(einsums_extend_with_python target)
   # )
 
   target_link_libraries(${target} PRIVATE pybind11::module pybind11::lto pybind11::embed)
-  target_include_directories(${target} PRIVATE ${Python3_INCLUDE_DIRS})
+  einsums_extend_with_python_headers(${target})
 
   if(MSVC)
     target_link_libraries(${target} PRIVATE pybind11::windows_extras)

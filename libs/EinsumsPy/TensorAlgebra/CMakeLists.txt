@@ -27,4 +27,4 @@ einsums_add_module(
 )
 
 include(Einsums_ExtendWithPython)
-einsums_extend_with_python(${EINSUMS_PYTHON_LIB_NAME}_TensorAlgebra ${PYTHON_LIB_TYPE})
+einsums_extend_with_python_headers(${EINSUMS_PYTHON_LIB_NAME}_TensorAlgebra)

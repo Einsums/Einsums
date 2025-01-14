@@ -22,5 +22,5 @@ if(EINSUMS_WITH_GPU_SUPPORT)
   )
 
   include(Einsums_ExtendWithPython)
-  einsums_extend_with_python(${EINSUMS_PYTHON_LIB_NAME}_GPU ${PYTHON_LIB_TYPE})
+  einsums_extend_with_python_headers(${EINSUMS_PYTHON_LIB_NAME}_GPU)
 endif()
