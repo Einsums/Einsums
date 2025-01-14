@@ -153,6 +153,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Test (find_package) - consume installation
+        working-directory: "${{github.workspace}}/src/testing/consume"
         shell: bash -l {0}
         run: |
           cmake -S . \
@@ -163,5 +164,3 @@ jobs:
             -DCMAKE_PREFIX_PATH="${CONDA_PREFIX};${CONDA_PREFIX}/Library;${{ github.workspace }}/installed"
           cmake --build build
           ./build/HelloWorld
-        with:
-          working-directory: "${{github.workspace}}/src/testing/consume"
