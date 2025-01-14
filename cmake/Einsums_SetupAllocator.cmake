@@ -29,11 +29,12 @@ if (NOT TARGET einsums_dependencies_allocator)
     string(TOUPPER "${EINSUMS_WITH_MALLOC}" EINSUMS_WITH_MALLOC_UPPER)
 
     if (NOT EINSUMS_WITH_MALLOC_DEFAULT)
-        add_library(einsums_dependencies_allocator INTERFACE IMPORTED)
 
         # ##############################################################################################
         # MIMALLOC
         if ("${EINSUMS_WITH_MALLOC_UPPER}" STREQUAL "MIMALLOC")
+            add_library(einsums_dependencies_allocator INTERFACE IMPORTED)
+
             find_package(mimalloc)
             if (NOT mimalloc_FOUND)
                 einsums_error(${allocator_error})
