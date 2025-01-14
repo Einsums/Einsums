@@ -28,12 +28,13 @@ if (NOT TARGET einsums_dependencies_allocator)
 
     string(TOUPPER "${EINSUMS_WITH_MALLOC}" EINSUMS_WITH_MALLOC_UPPER)
 
-    if (NOT EINSUMS_WITH_MALLOC_DEFAULT)
+    if (NOT EINSUMS_WITH_MALLOC_UPPER STREQUAL "SYSTEM")
+
+        add_library(einsums_dependencies_allocator INTERFACE IMPORTED)
 
         # ##############################################################################################
         # MIMALLOC
         if ("${EINSUMS_WITH_MALLOC_UPPER}" STREQUAL "MIMALLOC")
-            add_library(einsums_dependencies_allocator INTERFACE IMPORTED)
 
             find_package(mimalloc)
             if (NOT mimalloc_FOUND)
@@ -49,9 +50,6 @@ if (NOT TARGET einsums_dependencies_allocator)
                     "einsums is using mimalloc as the allocator. Typically, exporting the following environment variables will further improve performance: MIMALLOC_EAGER_COMMIT_DELAY=0 and MIMALLOC_ALLOW_LARGE_OS_PAGES=1."
             )
         endif ()
-
-    else ()
-        set(EINSUMS_WITH_MALLOC ${EINSUMS_WITH_MALLOC_DEFAULT})
     endif ()
 
     if ("${EINSUMS_WITH_MALLOC_UPPER}" MATCHES "SYSTEM")
