@@ -7,6 +7,7 @@
 
 #include <source_location>
 #include <string>
+
 #include "Einsums/Debugging/Backtrace.hpp"
 
 #include <Einsums/Testing.hpp>
@@ -35,10 +36,17 @@ TEST_CASE("assert") {
 
     result_string = "";
 
-    ((bool)(true) ? void() : ::einsums ::detail ::handle_assert(std ::source_location ::current(), "true", fmt ::format("")));
+    SECTION("True") {
+        EINSUMS_ASSERT(true);
 
-    REQUIRE(result_string == "");
+        REQUIRE(result_string == "");
+    }
+
+    SECTION("False") {
+        EINSUMS_ASSERT(false);
+
+        REQUIRE(result_string != "");
+    }
 
     einsums::detail::set_assertion_handler(einsums::detail::default_assertion_handler);
-
 }
