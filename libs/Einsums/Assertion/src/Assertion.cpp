@@ -33,9 +33,7 @@ void default_assertion_handler(std::source_location const &loc, char const *expr
 }
 
 void set_assertion_handler(assertion_handler_type handler) {
-    if (get_handler() == nullptr || get_handler() == detail::default_assertion_handler) {
-        get_handler() = handler;
-    }
+    get_handler() = handler;
 }
 
 void handle_assert(std::source_location const &loc, char const *expr, std::string const &msg) noexcept {
