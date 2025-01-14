@@ -16,6 +16,7 @@ static std::string result_string;
 
 void test_assertion_handler(std::source_location const &loc, char const *expr, std::string const &msg) {
     using namespace einsums;
+    INFO("Assertion failed. Making string.");
     std::ostringstream result;
     result << loc.function_name() << ":" << loc.line() << " : Assertion '" << expr << "' failed";
     if (!msg.empty()) {
