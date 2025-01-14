@@ -8,6 +8,7 @@ dependencies:
   - ccache
   - cxx-compiler
   - ninja
+  - lcov
   # Prebuilts to save einsums the work
   - cpp-argparse
   - catch2
