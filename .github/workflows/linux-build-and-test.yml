@@ -118,7 +118,7 @@ jobs:
             -D EINSUMS_COVERAGE=ON \
             -D CMAKE_C_COMPILER_LAUNCHER=ccache \
             -D CMAKE_CXX_COMPILER_LAUNCHER=ccache \
-            -D CMAKE_BUILD_TYPE=$${{ matrix.build_type }} \
+            -D CMAKE_BUILD_TYPE=${{ matrix.build_type }} \
             -D EINSUMS_SHOW_WARNING=OFF \
             -D CMAKE_INSTALL_PREFIX="${{ github.workspace }}/installed" \
             -D CMAKE_PREFIX_PATH="${CONDA_PREFIX}" \
