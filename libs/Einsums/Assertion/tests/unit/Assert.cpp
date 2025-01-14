@@ -46,7 +46,11 @@ TEST_CASE("assert") {
     SECTION("False") {
         EINSUMS_ASSERT(false);
 
+#ifdef EINSUMS_DEBUG
         REQUIRE(result_string != "");
+#else
+        REQUIRE(result_string == "");
+#endif
     }
 
     einsums::detail::set_assertion_handler(einsums::detail::default_assertion_handler);
