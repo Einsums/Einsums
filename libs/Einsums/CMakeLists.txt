@@ -29,7 +29,6 @@ set(_Einsums_modules
   Iterator
   LinearAlgebra
   Logging
-  Memory
   Preprocessor
   Print
   Profile
