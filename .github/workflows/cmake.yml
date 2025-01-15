@@ -29,6 +29,12 @@ jobs:
     if: ${{ contains(needs.detect_changes.outputs.filters, 'ci') || contains(needs.detect_changes.outputs.filters, 'src') }}
     uses: ./.github/workflows/macos-build-and-test.yml
 
+  documentation:
+    name: Documentation
+    needs: [ detect_changes ]
+    if: ${{ contains(needs.detect_chages.outputs.filters, 'docs') }}
+    uses: ./.github/workflows/docs.yml
+    
 #  windows_default:
 #    name: Windows
 #    needs: [ detect_changes ]
