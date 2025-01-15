@@ -28,8 +28,8 @@ jobs:
         blas: [ openblas, mkl ]
         build_type: [ RelWithDebInfo ]
         include:
-          - cmake_extra: ""
           - compiler: intel
+            blas: mkl
             cmake_extra: >
               -DCMAKE_C_COMPILER=icx
               -DCMAKE_CXX_COMPILER=icpx
@@ -37,12 +37,13 @@ jobs:
               -DCMAKE_CXX_FLAGS="--gcc-toolchain=${CONDA_PREFIX} --sysroot=${CONDA_PREFIX}/${HOST}/sysroot -target ${HOST}"
               -DOpenMP_CXX_INCLUDE_DIR="${CONDA_PREFIX}/include"
           - compiler: intel
+            blas: mkl
             cmake_extra: >
               -DCMAKE_C_COMPILER=icx
               -DCMAKE_CXX_COMPILER=icpx
+              -DMKL_INTERFACE=ilp64
               -DCMAKE_CXX_FLAGS="--gcc-toolchain=${CONDA_PREFIX} --sysroot=${CONDA_PREFIX}/${HOST}/sysroot -target ${HOST}"
-              -DOpenMP_CXX_INCLUDE_DIR="${CONDA_PREFIX}/include"
-
+              -DENABLE_EXTENDED_PRECISION=ON
         exclude:
           - compiler: intel
             blas: openblas
