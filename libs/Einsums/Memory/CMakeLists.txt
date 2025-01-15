@@ -9,7 +9,7 @@ set(MemoryHeaders Einsums/Memory/Allocator.hpp Einsums/Memory/Manager.hpp
         Einsums/Memory/StdAllocator.hpp
 )
 
-set(MemorySources)
+set(MemorySources dummy.cpp)
 
 if (TARGET einsums_dependencies_allocator)
     set(extra_dependencies einsums_dependencies_allocator)
