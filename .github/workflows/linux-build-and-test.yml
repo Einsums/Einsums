@@ -31,6 +31,7 @@ jobs:
         include:
           - compiler: intel
             blas: mkl
+            build_type: RelWithDebInfo
             variant: lp64
             cmake_extra: >
               -DCMAKE_C_COMPILER=icx
@@ -40,6 +41,7 @@ jobs:
               -DOpenMP_CXX_INCLUDE_DIR="${CONDA_PREFIX}/include"
           - compiler: intel
             blas: mkl
+            build_type: RelWithDebInfo
             variant: ilp64
             cmake_extra: >
               -DCMAKE_C_COMPILER=icx
@@ -51,7 +53,7 @@ jobs:
           - compiler: intel
             blas: openblas
 
-    name: "${{ matrix.compiler }} • ${{ matrix.blas }} • ${{ matrix.build_type }}"
+    name: "${{ matrix.compiler }} • ${{ matrix.blas }} • ${{ matrix.build_type }} • ${{ matrix.variant }}"
     runs-on: ubuntu-latest
     env:
       CCACHE_DIR: $GITHUB_WORKSPACE/build_cache_${{ inputs.build_cache_suffix }}
