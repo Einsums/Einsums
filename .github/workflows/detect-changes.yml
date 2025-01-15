@@ -24,6 +24,7 @@ jobs:
           filters: |
             docs:
               - 'docs/**'
+              - 'libs/**/*.hpp'
             ci:
               - '.github/workflows/**'
             src:
@@ -42,6 +43,6 @@ jobs:
               return '${{ steps.changes.outputs.changes }}';
             }
             // Treat everything as changed for huge PRs.
-            return ["docs", "ci"];
+            return ["docs", "ci", "src"];
 
       - run: echo '${{ steps.result.outputs.result }}'
