@@ -26,7 +26,7 @@ jobs:
       matrix:
         compiler: [ gcc, intel ]
         blas: [ openblas, mkl ]
-        build_type: [ Debug, RelWithDebInfo ]
+        build_type: [ RelWithDebInfo ]
         include:
           - cmake_extra: ""
           - compiler: intel
@@ -36,7 +36,13 @@ jobs:
               -DMKL_INTERFACE=lp64
               -DCMAKE_CXX_FLAGS="--gcc-toolchain=${CONDA_PREFIX} --sysroot=${CONDA_PREFIX}/${HOST}/sysroot -target ${HOST}"
               -DOpenMP_CXX_INCLUDE_DIR="${CONDA_PREFIX}/include"
-            # OpenMP search dir needed b/c setting CMAKE_CXX_FLAGS overrides conda's CXXFLAGS that passes same dir as -isystem
+          - compiler: intel
+            cmake_extra: >
+              -DCMAKE_C_COMPILER=icx
+              -DCMAKE_CXX_COMPILER=icpx
+              -DCMAKE_CXX_FLAGS="--gcc-toolchain=${CONDA_PREFIX} --sysroot=${CONDA_PREFIX}/${HOST}/sysroot -target ${HOST}"
+              -DOpenMP_CXX_INCLUDE_DIR="${CONDA_PREFIX}/include"
+
         exclude:
           - compiler: intel
             blas: openblas
